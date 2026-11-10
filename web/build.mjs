@@ -74,7 +74,7 @@ writeFileSync(join(DIST, 'palettes.css'), palettesCss({
 // onglet a deux dessins : au trait au repos (_off), plein quand il est actif (_on).
 mkdirSync(join(DIST, 'icones'), { recursive: true });
 const onglets = ['ic_nav_today', 'ic_nav_texts', 'ic_nav_zmanim', 'ic_nav_journal', 'ic_nav_settings'];
-for (const nom of [...onglets.flatMap((n) => [`${n}_off`, `${n}_on`]), 'ic_chevron']) {
+for (const nom of [...onglets.flatMap((n) => [`${n}_off`, `${n}_on`]), 'ic_chevron', 'ic_menu_principal']) {
   const xml = readFileSync(join(RES, 'drawable', `${nom}.xml`), 'utf8');
   const vue = xml.match(/android:viewportWidth="([\d.]+)"[\s\S]*?android:viewportHeight="([\d.]+)"/);
   const chemins = [...xml.matchAll(/<path\b([\s\S]*?)\/>/g)].map(([, attrs]) => {

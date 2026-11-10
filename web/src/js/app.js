@@ -1250,6 +1250,7 @@ function plateau(dessin, classe) {
  */
 function bandeau(titre, { puce = null, dessin = null } = {}) {
   return h('header', { class: 'bandeau' },
+    boutonMenu(),
     h('button', { class: 'retour', 'aria-label': tr.t('action_back'), onclick: retour }),
     h('div', { class: 'bandeau-corps' }, h('h1', {}, titre), puce),
     dessin ? plateau(dessin, 'plateau-bandeau') : null);
@@ -2318,6 +2319,7 @@ function onglets() {
 function bandeauPriere(titreHe, etiquettes, horaire) {
   return h('header', { class: 'bandeau bandeau-priere' },
     h('div', { class: 'bandeau-haut' },
+      boutonMenu(),
       h('button', { class: 'retour', 'aria-label': tr.t('action_back'), onclick: retour }),
       h('div', { class: 'bandeau-actions' })),
     h('div', { class: 'bandeau-corps' },
@@ -2340,8 +2342,18 @@ function horairePriere(id) {
 
 function barre(titre) {
   return h('header', { class: 'barre' },
+    boutonMenu(),
     h('button', { class: 'retour', 'aria-label': tr.t('action_back'), onclick: retour }),
     h('h1', {}, titre));
+}
+
+/**
+ * Les trois traits du haut (10/11, « comme l'application Claude ») : ils
+ * ramènent au menu principal, sur l'onglet quitté, d'aussi loin qu'on soit
+ * allé (MenuPrincipal.kt).
+ */
+function boutonMenu() {
+  return h('button', { class: 'menu-principal', 'aria-label': tr.t('menu_principal'), title: tr.t('menu_principal'), onclick: allerAuMenu });
 }
 
 let apercuAmbiance = null;
@@ -4957,7 +4969,7 @@ function annulerSeance() {
   relacheEcran();
   chizukBravo = chizuk ? ChizukBag.tirer(store, chizuk, 'relance') : null;
   bravo = { annulee: true };
-  history.pushState({ interne: true }, '', '#bravo');
+  history.pushState({ interne: true, n: profondeur() + 1 }, '', '#bravo');
   rendre();
 }
 
@@ -5304,7 +5316,7 @@ function ecranCourant() {
 function ouvrir(ecran) {
   // L'entrée sur l'écran de séance tire le mot d'ouverture (SessionActivity.onCreate).
   if (ecran === 'seance' && ecranCourant() !== 'seance') tireChizuk('ouverture');
-  if (ecranCourant() !== ecran) history.pushState({ interne: true }, '', `#${ecran}`);
+  if (ecranCourant() !== ecran) history.pushState({ interne: true, n: profondeur() + 1 }, '', `#${ecran}`);
   rendre();
 }
 
@@ -5316,7 +5328,21 @@ function retour() {
   if (history.state?.interne) history.back();
   else { history.replaceState(null, '', location.pathname); rendre(); }
 }
+/** Le nombre d'écrans ouverts au-dessus de l'accueil dans l'historique de la page. */
+function profondeur() {
+  return history.state?.interne ? (history.state.n ?? 1) : 0;
+}
+
+/** Le menu principal : autant de pas en arrière qu'il y a d'écrans ouverts, en un seul saut. */
+let versLeMenu = false;
+function allerAuMenu() {
+  const n = profondeur();
+  if (n > 0) { versLeMenu = true; history.go(-n); }
+  else { history.replaceState(null, '', location.pathname); rendre(); }
+}
 window.addEventListener('popstate', () => {
+  // Ouverte directement sur un écran secondaire, la page a pour fond cet écran, pas l'accueil.
+  if (versLeMenu) { versLeMenu = false; if (location.hash) history.replaceState(null, '', location.pathname); }
   // Le retour d'un renvoi (« Hallel › ») rouvre la prière d'où l'on venait.
   if (history.state?.priere) priere = history.state.priere;
   rendre();
@@ -5325,7 +5351,7 @@ window.addEventListener('popstate', () => {
 /** Un renvoi du jour : la prière [cible] en haut de page ; le retour ramène à [depuis]. */
 function ouvrirRenvoi(depuis, cible) {
   history.replaceState({ ...(history.state ?? {}), priere: depuis }, '', location.hash);
-  history.pushState({ interne: true, priere: cible }, '', '#priere');
+  history.pushState({ interne: true, n: profondeur() + 1, priere: cible }, '', '#priere');
   priere = cible;
   rendre();
   const defile = app.querySelector('.defile');
@@ -5353,7 +5379,7 @@ function rendre() {
     const minutes = store.takePendingCelebration();
     if (minutes !== null) {
       bravo = { minutes };
-      history.pushState({ interne: true }, '', '#bravo');
+      history.pushState({ interne: true, n: profondeur() + 1 }, '', '#bravo');
     }
   }
   if (ecranCourant() === 'bravo' && !bravo) history.replaceState(null, '', location.pathname);
@@ -5456,7 +5482,7 @@ async function demarrer() {
   chizuk = c;
   // Rouvert sur l'écran de séance : son mot d'ouverture.
   if (ecranCourant() === 'seance') tireChizuk('ouverture');
-  if (store.ouverture() === 'zmanim' && ecranCourant() === 'accueil') history.pushState({ interne: true }, '', '#zmanim');
+  if (store.ouverture() === 'zmanim' && ecranCourant() === 'accueil') history.pushState({ interne: true, n: profondeur() + 1 }, '', '#zmanim');
   rendre();
   // Le premier lancement, ou une présentation qui a changé depuis (Onboarding.VERSION).
   if (store.onboardedVersion() < PRESENTATION_VERSION) presentation();

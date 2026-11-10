@@ -81,6 +81,19 @@ button { font: inherit; color: inherit; }
   transform: scaleX(-1);
 }
 [dir="rtl"] .retour::before { transform: none; }
+/* Les trois traits du haut (10/11, « comme l'application Claude ») : le menu principal. */
+.menu-principal {
+  width: 44px; height: 44px; border: 0; background: none; border-radius: 20px; flex: none;
+  display: grid; place-items: center; cursor: pointer; color: var(--brand);
+}
+.menu-principal::before {
+  content: ""; width: 24px; height: 24px; background: currentColor;
+  -webkit-mask: url(icones/ic_menu_principal.svg) center / contain no-repeat;
+  mask: url(icones/ic_menu_principal.svg) center / contain no-repeat;
+}
+.menu-principal:active, .retour:active { background: color-mix(in srgb, currentColor 14%, transparent); }
+.bandeau .menu-principal { align-self: flex-start; margin-top: -8px; color: var(--white); }
+.bandeau .menu-principal + .retour { margin-inline-start: -8px; }
 
 /* --- Accueil -------------------------------------------------------------------- */
 .marque { color: var(--muted); font-size: 13px; letter-spacing: 0.08em; }
@@ -272,27 +285,33 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .feuille .actions .neutre { margin-inline-end: auto; }
 
 /* --- Onglets ------------------------------------------------------------------------- */
+/* La pilule flottante (10/11, sur le modèle de l'application Claude) : un ruban arrondi
+   détaché des bords, l'onglet actif enveloppé d'une pastille, icône et libellé ensemble. */
 .onglets {
-  display: flex; background: var(--card); border-top: 1px solid var(--line);
-  padding-bottom: env(safe-area-inset-bottom);
+  display: flex; justify-content: center; gap: 0;
+  margin: 6px calc(12px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+  padding: 5px; background: var(--card); border: 1px solid var(--line); border-radius: 36px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
 }
-.onglets { justify-content: center; }
+@media (min-width: 600px) { .onglets { width: min(560px, 100% - 24px); align-self: center; margin-inline: auto; } }
 .onglet {
-  flex: 1; max-width: 186px; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 8px 0 8px; border: 0; background: none; color: var(--muted); font-size: 12px; cursor: pointer;
+  flex: 1; max-width: 186px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 0; padding: 8px 2px 7px; border: 0; border-radius: 30px; background: none; color: var(--muted);
+  font-size: 11.5px; white-space: nowrap; cursor: pointer;
+  transition: background-color .2s ease;
 }
 .onglet .icone {
-  width: 56px; height: 30px; border-radius: 12px; display: grid; place-items: center;
+  width: 30px; height: 28px; display: grid; place-items: center;
 }
+.onglet[aria-current="page"] { background: var(--line); }
 /* Cinq onglets depuis le journal (02/11) : sur le plus petit téléphone (320 px), « Aujourd’hui »
    en gras ne tenait plus dans ses 64 px. */
-@media (max-width: 374px) { .onglet { font-size: 10.5px; letter-spacing: -0.01em; } }
+@media (max-width: 374px) { .onglet { font-size: 10px; letter-spacing: -0.02em; } }
 .onglet .icone::before {
   content: ""; width: 24px; height: 24px; background: currentColor;
   -webkit-mask: var(--icone) center / contain no-repeat; mask: var(--icone) center / contain no-repeat;
 }
 .onglet[aria-current="page"] { color: var(--brand); font-weight: 600; }
-.onglet[aria-current="page"] .icone { background: var(--line); }
 .onglet[data-onglet="aujourdhui"] { --icone: url(icones/ic_nav_today_off.svg); }
 .onglet[data-onglet="textes"] { --icone: url(icones/ic_nav_texts_off.svg); }
 .onglet[data-onglet="journal"] { --icone: url(icones/ic_nav_journal_off.svg); }
@@ -312,12 +331,13 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 @media (min-width: 900px), (orientation: landscape) and (max-height: 500px) {
   .ecran.avec-onglets { flex-direction: row; }
   .ecran.avec-onglets .onglets {
-    order: -1; flex: none; flex-direction: column; justify-content: flex-start; gap: 8px; width: 104px;
-    border-top: 0; border-inline-end: 1px solid var(--line);
-    padding: calc(20px + env(safe-area-inset-top)) 0 calc(12px + env(safe-area-inset-bottom));
-    padding-inline-start: env(safe-area-inset-left);
+    order: -1; flex: none; flex-direction: column; justify-content: flex-start; gap: 8px; width: 96px;
+    align-self: stretch;
+    margin: calc(10px + env(safe-area-inset-top)) 0 calc(10px + env(safe-area-inset-bottom));
+    margin-inline-start: calc(10px + env(safe-area-inset-left));
+    padding: 10px 5px;
   }
-  .ecran.avec-onglets .onglet { flex: none; max-width: none; padding: 8px 0; }
+  .ecran.avec-onglets .onglet { flex: none; max-width: none; padding: 10px 0; }
   .ecran.avec-onglets .contenu { max-width: 720px; }
   .toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
 }
@@ -1341,8 +1361,9 @@ button.corps { min-height: 44px; }
 .plateau-bandeau { box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 25%, transparent), 0 8px 18px -8px rgba(0, 0, 0, .45); }
 /* La bannière d'une prière : titre hébreu, étiquettes, horaire, actions. */
 .bandeau-priere { flex-direction: column; align-items: stretch; gap: 0px; padding-top: calc(6px + env(safe-area-inset-top)); }
-.bandeau-haut { display: flex; align-items: center; justify-content: space-between; }
-.bandeau-priere .retour { margin-top: 0; }
+.bandeau-haut { display: flex; align-items: center; }
+.bandeau-haut .bandeau-actions { margin-inline-start: auto; }
+.bandeau-priere .retour, .bandeau-priere .menu-principal { margin-top: 0; }
 .bandeau-priere .bandeau-corps { padding-inline: 8px 0; }
 .titre-priere { font-family: var(--police-texte); font-size: 30px !important; line-height: 1.2 !important; text-align: right; }
 .etiquettes-bandeau { display: flex; flex-wrap: wrap; justify-content: right; gap: 4px; margin-top: 8px; }

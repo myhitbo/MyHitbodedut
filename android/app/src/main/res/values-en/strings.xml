@@ -398,6 +398,7 @@
     <string name="hero_greeting_afternoon">Good afternoon, %1$s</string>
     <string name="hero_greeting_evening">Good evening, %1$s</string>
     <string name="nav_today">Today</string>
+    <string name="menu_principal">Main menu</string>
     <string name="nav_texts">Library</string>
     <string name="nav_journal">Journal</string>
     <string name="section_around">Around the hitbodedut</string>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    L'onglet actif : une pastille arrondie qui enveloppe l'icône et le libellé,
+    comme dans l'application Claude. Au repos, rien.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <inset
+            android:insetLeft="3dp"
+            android:insetTop="5dp"
+            android:insetRight="3dp"
+            android:insetBottom="5dp">
+            <shape android:shape="rectangle">
+                <solid android:color="?attr/mhLine" />
+                <corners android:radius="30dp" />
+            </shape>
+        </inset>
+    </item>
+    <item android:drawable="@android:color/transparent" />
+</selector>

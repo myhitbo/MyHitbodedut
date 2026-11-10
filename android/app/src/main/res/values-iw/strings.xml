@@ -407,6 +407,7 @@
     <string name="hero_greeting_afternoon">צהריים טובים, %1$s</string>
     <string name="hero_greeting_evening">ערב טוב, %1$s</string>
     <string name="nav_today">היום</string>
+    <string name="menu_principal">תפריט ראשי</string>
     <string name="nav_texts">ספרייה</string>
     <string name="nav_journal">יומן</string>
     <string name="section_around">סביב ההתבודדות</string>

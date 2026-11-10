@@ -89,6 +89,8 @@ class MainActivity : AppCompatActivity() {
     private fun wireTabs(onglet: Int) {
         onBackPressedDispatcher.addCallback(this, retourAujourdhui)
         val nav = findViewById<BottomNavigationView>(R.id.bottom_nav)
+        // La pastille de l'onglet actif est son fond (bg_nav_item), pas l'indicateur de Material.
+        nav.isItemActiveIndicatorEnabled = false
         nav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_today, R.id.nav_texts -> {

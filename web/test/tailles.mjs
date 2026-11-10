@@ -187,10 +187,12 @@ async function verifie(langue, mode, [taille, largeur, hauteur], e) {
     const n = mesure.nav;
     if (e.onglets) {
       if (!n) erreurs.push(`${id} : onglets absents`);
+      // La pilule flottante (10/11) se tient à un peu plus de 10 px des bords : on tolère 16 px.
+      // En bas, elle occupe toute la largeur d'un téléphone, et 560 px au plus sur un écran plus large.
       else if (ontLaColonne(largeur, hauteur)) {
-        const cote = langue === 'he' ? Math.abs(n.droite - largeur) < 1 : n.gauche < 1;
+        const cote = langue === 'he' ? Math.abs(n.droite - largeur) <= 16 : n.gauche <= 16;
         if (n.hauteur < n.largeur || !cote) erreurs.push(`${id} : onglets attendus en colonne sur le côté ${JSON.stringify(n)}`);
-      } else if (Math.abs(n.bas - hauteur) > 1 || n.largeur < largeur - 1) {
+      } else if (Math.abs(n.bas - hauteur) > 16 || n.largeur < Math.min(560, largeur - 32)) {
         erreurs.push(`${id} : onglets attendus en bas ${JSON.stringify(n)}`);
       }
     }

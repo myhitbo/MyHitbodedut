@@ -169,7 +169,11 @@ object Apparence {
             }
 
             // La banderole s'efface au défilement (13/10) : les vues existent à ce moment.
-            override fun onActivityStarted(activity: Activity) = BandeauDefilant.installer(activity)
+            // Les trois traits du haut (10/11) sont posés avant, une fois par écran.
+            override fun onActivityStarted(activity: Activity) {
+                MenuPrincipal.installer(activity)
+                BandeauDefilant.installer(activity)
+            }
             override fun onActivityPaused(activity: Activity) = Unit
             override fun onActivityStopped(activity: Activity) = Unit
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
