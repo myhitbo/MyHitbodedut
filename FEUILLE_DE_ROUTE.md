@@ -1153,8 +1153,11 @@ toucher. CI verte (Android, web, Nokia).
 1. **Musique de Noam Shpayer** : en attente des fichiers que l'utilisateur
    doit fournir (les 10 morceaux `shpayer_*` déjà livrés le 03/11 sont
    dans PUBLICATION_PLAY_STORE.md).
-2. **Check complet de l'app** : six audits indépendants à effort maximal,
-   puis corriger tous les défauts confirmés.
+2. **Check complet de l'app** : audit fait le 11/11 (design, traductions,
+   fonctionnalités, repli des textes, fluidité), voir
+   `CHECKUP_2026-11-11.md`. Reste à corriger les défauts confirmés.
+   Design : 5 habillages et 5 refontes animées **retenus en option**,
+   même fichier, section 6.
 3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
    replie en rond tournant (pochette, ou hassid à la guitare).
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
