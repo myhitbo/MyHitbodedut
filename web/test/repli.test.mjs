@@ -45,9 +45,10 @@ test('למנצח, לדוד ה׳ אורי, בית האבל, ברכת כהנים d
   assert.ok(si('edot', 'arvit').has('motsae_chabbat_yt'));
 });
 
-// Birkat haMazon (03/11, « replie tout ce qui n'est pas obligatoire ») : psaumes d'avant, הרחמן
-// et fin repliés (« facultatif », jamais du jour) ; les quatre bénédictions restent dépliées.
-test('Birkat haMazon : ce qui n\'est pas obligatoire est replié, les bénédictions non', () => {
+// Birkat haMazon (03/11, « replie tout ce qui n'est pas obligatoire ») : les psaumes d'avant repliés
+// (« facultatif », jamais du jour) ; les quatre bénédictions dépliées. Depuis le 12/11, les הרחמן
+// et la fin aussi ; ceux d'un jour (Chabbat, Roch 'Hodech, fêtes) suivent leur jour.
+test('Birkat haMazon : psaumes d\'avant repliés ; bénédictions et הרחמן en clair', () => {
   const NOM = { edot: 'siddur_edot', sefard: 'siddur_sefard', ashkenaz: 'siddur_ashkenaz' };
   const nu = (s) => s.replace(/<[^>]+>/g, ' ').replace(/[֑-ׇ]/g, '').replace(/\s+/g, ' ').trim();
   for (const nusah of Object.keys(NOM)) {
@@ -61,8 +62,18 @@ test('Birkat haMazon : ce qui n\'est pas obligatoire est replié, les bénédict
       const i = blocs.findIndex((b) => b.t && nu(b.t).replace(/[.,]/g, '').startsWith(debut));
       assert.ok(i >= 0 && !replie.has(i), `${nusah} : ${debut}`);
     }
-    const harahaman = blocs.findIndex((b) => b.t && nu(b.t).startsWith('הרחמן'));
-    assert.ok(replie.has(harahaman), `${nusah} : הרחמן`);
+    // Les הרחמן de chaque jour : sans annotation ; ceux d'un jour, sous leur condition à eux.
+    const notes = new Map(a.map((e) => [e.b, e]));
+    blocs.forEach((b, i) => {
+      if (!b.t || !nu(b.t).startsWith('הרחמן')) return;
+      const e = notes.get(i);
+      assert.ok(!e || ['chabbat', 'roch_hodech', 'roch_hachana', 'soukkot', 'moed', 'yom_tov', 'cheva_berakhot', 'oubli'].includes(e.racine), `${nusah} : הרחמן ${i} sous ${e?.racine}`);
+    });
+    const shabbat = blocs.findIndex((b) => b.t && /שכלו שבת/.test(nu(b.t)));
+    if (shabbat >= 0) {
+      assert.equal(notes.get(shabbat)?.racine, 'chabbat', nusah);
+      assert.ok(vrai('chabbat', c('2026-10-17')) && !vrai('chabbat', c('2026-10-19')));
+    }
     assert.ok(replie.has(1), `${nusah} : psaume d'avant`);
     // Le zimoun, les Chéva bérakhot et les oublis gardent leur repli à eux.
     assert.ok(a.some((e) => e.racine === 'zimun') && a.some((e) => e.racine === 'cheva_berakhot'), nusah);

@@ -504,6 +504,10 @@ def annoter(texte_id, sections, nusah):
             # Al hanissim, puis ses parties de 'Hanouka et de Pourim.
             if not cons[bi] and (commence(x, "על הנסים ועל הפרקן") or commence(x, "ועל הנסים ועל הפרקן")):
                 en_tete(bi, "al_hanissim", "חנוכה")
+                # Birkat haMazon (Sfard, Ashkenaz) : la note « בחנוכה ופורים אומרים כאן על הניסים… »
+                # est un paragraphe, pas une consigne ; elle suit Al hanissim (12/11).
+                if bi > 0 and not cons[bi - 1] and txt[bi - 1].startswith("בחנוכה ופורים אומרים כאן על הניסים"):
+                    prend(bi - 1, "al_hanissim")
                 prend(bi, "al_hanissim")
                 j = bi + 1
                 while j < n:
@@ -576,10 +580,12 @@ def annoter(texte_id, sections, nusah):
                 j = bi + 1
                 # Le Hallel partiel ne saute que le premier bloc annoncé (Ps 115:1-11, 116:1-11) :
                 # « יהוה זכרנו » et « מה אשיב » se disent tous les jours de Hallel ; de même,
-                # un « הרחמן » de fête n'annonce que sa ligne.
-                while j < n and not cons[j] and ((c != "hallel_complet" and c not in UNE_LIGNE) or j == bi + 1):
-                    # La suite de Modim (« ועל כלם יתברך… הטוב שמך ולך נאה להודות ») se dit tous
-                    # les jours : le groupe de 'Hanouka s'arrête avant elle (audit du 12/11, TSIDDUR-02).
+                # un « הרחמן » de fête n'annonce que sa ligne (12/11 : « בסוכות: » prenait aussi,
+                # en Ashkenaz, « הרחמן הוא יזכנו », « עושה שלום » et « יראו », dits chaque jour).
+                une_ligne = c in UNE_LIGNE or c == "hallel_complet" or commence(txt[bi + 1], "הרחמן")
+                while j < n and not cons[j] and (not une_ligne or j == bi + 1):
+                    # « בחנוכה אומרים » annonce Al hanissim, pas la fin de Modim (12/11 : « ועל כלם »
+                    # et « הטוב שמך » du Moussaf de Roch 'Hodech étaient repliés hors de 'Hanouka).
                     if j > bi + 1 and (commence(txt[j], "ועל כלם") or commence(txt[j], "ועל כולם")):
                         break
                     prend(j, c, lib)
@@ -721,6 +727,14 @@ def annoter(texte_id, sections, nusah):
                         if interne and nu(interne.group(1)).strip(" ,.:"):
                             extra["texte"] = nu(interne.group(1)).strip(" ,.:")
                     note("indice", si, bi, c, extra)
+                # « מגדול » pour « מגדיל » à la fin du Birkat (12/11) : Edot, « ביום שמתפללים מוסף » ;
+                # Ashkenaz, « בשבת וביו״ט ». Un repère du jour, rien de replié ; une condition par jour
+                # de Moussaf (Chabbat, Roch 'Hodech, fêtes et 'Hol hamoed, Yom tov). Motsaé Chabbat,
+                # que les Edot nomment aussi, n'est pas un jour du calendrier : il n'est pas repéré.
+                if texte_id == "birkat_hamazon" and re.search(r"\( ?(ביום שמתפללים מוסף|בשבת וביו״ט)[^:]*: ?מגדול", x):
+                    jours = ("chabbat", "roch_hodech", "moed", "yom_tov") if "מוסף" in x else ("chabbat", "yom_tov")
+                    for c in jours:
+                        note("indice", si, bi, c, {"texte": "מִגְדּוֹל"})
                 if re.fullmatch(r"בקיץ: מוריד הטל\. בחורף: משיב הרוח ומוריד הגשם\.?", x):
                     brut = sec["blocs"][bi]["t"]
                     k = brut.index("<small>בחורף")
@@ -959,11 +973,13 @@ def facultatif(sections, sortie, note):
     jour :
       - avant : les psaumes d'avant le Birkat (למנצח, אברכה, על נהרות בבל, שיר המעלות)
         et « הנני מוכן » ;
-      - après : de la première ligne « הרחמן » jusqu'aux Chéva bérakhot ou aux règles
-        d'oubli, exclues. Cela comprend les הרחמן des fêtes, la bénédiction de l'hôte,
-        « מגדיל », « עושה שלום » et « יראו ».
-    Les annotations du jour qui portaient sur ces blocs (Chabbat, semaine, fêtes) en
-    deviennent les variantes. Le groupe est imposé (« force ») : les fêtes ne le coupent pas.
+      - après (03/11) : de la première ligne « הרחמן » jusqu'aux Chéva bérakhot ou aux
+        règles d'oubli. Ce n'est plus replié depuis le 12/11 (« corrige הרחמן replié ») :
+        les הרחמן de chaque jour, la bénédiction de l'hôte, « מגדיל », « עושה שלום » et
+        « יראו » se lisent en clair ; ceux d'un jour (« בשבת », « בר״ח », « בסוכות »…) se
+        déplient ce jour-là et se replient les autres, comme tout ajout du jour.
+    Les annotations du jour qui portaient sur les psaumes d'avant (Chabbat, semaine) en
+    deviennent les variantes. Le groupe est imposé (« force ») : les jours ne le coupent pas.
     """
     for si, sec in enumerate(sections):
         blocs = sec["blocs"]
@@ -983,7 +999,10 @@ def facultatif(sections, sortie, note):
         # La consigne juste avant la première « הרחמן » (« בשבת », « אורח אומר ») va avec elle.
         while apres and apres[0] - 1 > premier and cons[apres[0] - 1] and apres[0] - 1 not in avant:
             apres.insert(0, apres[0] - 1)
-        for liste, libelle in ((avant, "ajout_facultatif_avant"), (apres, "ajout_facultatif_apres")):
+        # Les « הרחמן » et la fin (« מגדיל », « עושה שלום », « יראו ») ne sont plus repliés
+        # (demande du 12/11) : seuls ceux d'un jour (Chabbat, Roch 'Hodech, fêtes) suivent leur
+        # jour, par les consignes courtes ; « apres » ne sert plus qu'à le vérifier.
+        for liste, libelle in ((avant, "ajout_facultatif_avant"),):
             for j in liste:
                 ancien = deja.get(j)
                 if ancien is not None:

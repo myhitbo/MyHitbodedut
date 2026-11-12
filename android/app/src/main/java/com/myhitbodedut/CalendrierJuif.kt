@@ -113,7 +113,7 @@ object CalendrierJuif {
         /** Le zimoun de Birkat haMazon, à trois convives ou plus (29/10) : jamais du jour, replié. */
         const val ZIMUN = "zimun"
 
-        /** Ce qui n'est pas obligatoire dans Birkat haMazon (03/11) : psaumes d'avant, הרחמן et fin. Jamais du jour, replié. */
+        /** Ce qui n'est pas obligatoire dans Birkat haMazon (03/11) : les psaumes d'avant (les הרחמן en clair depuis le 12/11). Jamais du jour, replié. */
         const val FACULTATIF = "facultatif"
 
         /** Roch 'Hodech d'une année embolismique ; avant Nissan (« וּלְכַפָּרַת פָּשַׁע », 28/10). */

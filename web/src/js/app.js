@@ -1634,8 +1634,9 @@ function ecranPriere() {
     const tous = idx.indices.get(`${si}:${i}`) ?? [];
     const hors = tous.filter((a) => a.retire && !ajoutVrai(a.si, c));
     const brut = s.blocs[i].t ?? s.blocs[i].c;
-    const reduit = hors.reduce((t, a) => t.replace(a.retire, ''), brut).trim();
-    const du = tous.filter((a) => !a.retire && ajoutVrai(a.si, c));
+    const reduit = hors.length ? hors.reduce((t, a) => t.replace(a.retire, ''), brut).trim() : brut;
+    // Une fois chacune : « מגדול » vaut le Chabbat comme Roch 'Hodech (12/11).
+    const du = tous.filter((a) => !a.retire && ajoutVrai(a.si, c)).filter((a, k, l) => l.findIndex((y) => y.texte === a.texte) === k);
     const pli = hors.length && reduit !== brut
       ? ajout(nom(hors[0], hors[0].si), false, hors.map((a) => h('p', { class: 'priere hors-jour', lang: 'he', dir: 'rtl' }, a.texte)), hors[0].si) : null;
     return [paragraphe(s, i, reduit !== brut ? reduit : undefined), pli, ...du.map((a) => h('p', { class: 'indice-jour' },
