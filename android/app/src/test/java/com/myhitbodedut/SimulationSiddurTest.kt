@@ -74,6 +74,8 @@ class SimulationSiddurTest {
         Regle(setOf("arvit"), "אתה חוננתנו", si(C.MOTSAE_CHABBAT_YT)),
         Regle(setOf("minha"), "נחם יהוה אלהינו", si(C.TICHA_BEAV)),
         Regle(setOf("chaharit"), "ויאמר דוד אל גד", si(C.TAHANOUN_CHAHARIT)),
+        // Le retour du Sefer Torah, les seuls jours de lecture (12/11 : Edot et Sfard l'affichaient tous les jours).
+        Regle(setOf("chaharit"), "ובנחה יאמר שובה יהוה", si(C.KRIAT_HATORAH)),
         Regle(setOf("minha"), "ויאמר דוד אל גד", si(C.TAHANOUN_MINHA)),
         // Méèn chaloch.
         Regle(setOf("meen_chaloch"), "ורצה והחליצנו", si(C.CHABBAT)),
@@ -167,6 +169,28 @@ class SimulationSiddurTest {
             val k = blocs.indexOfFirst { it.contains(plat(p)) }
             assertTrue(p, k > bamarom && k < blocs.indexOfFirst { it.contains(plat("שהכל ברא לכבודו")) })
         }
+    }
+
+    /**
+     * Aucun repli figé : chaque condition d'annotation est vraie certains jours de la période et fausse
+     * d'autres, sauf celles qui ne sont jamais du jour par construction (minyan, oubli, zimoun…).
+     */
+    @Test
+    fun `chaque condition de repli change avec les jours`() {
+        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL)
+        val vues = mutableMapOf<String, MutableSet<Boolean>>()
+        for (lieu in lieux) for (date in jours) {
+            val jour = CalendrierJuif.jour(date, lieu.israel, lieu.muree)
+            for (n in Nusah.entries) {
+                if (lieu.sud && n != Nusah.EDOT) continue
+                val c = SiddurJour.conditionsPour(n.cle, lieu.israel, jour.conditions, sud = lieu.sud)
+                annotations.getValue(n).values.flatten().forEach { a ->
+                    listOfNotNull(a.condition, a.racine).forEach { k -> vues.getOrPut("${n.cle} $k") { mutableSetOf() } += SiddurJour.vrai(k, c) }
+                }
+            }
+        }
+        val figees = vues.filter { (k, v) -> v.size < 2 && k.substringAfter(' ').removePrefix("!") !in jamais }
+        assertTrue("Conditions figées : $figees", figees.isEmpty())
     }
 
     /** Les situations demandées, nommées : Roch 'Hodech, motsaé Chabbat, fêtes, jeûnes, Hanouka, Pourim, dix jours. */

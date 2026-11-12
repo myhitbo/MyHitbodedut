@@ -613,6 +613,17 @@ def annoter(texte_id, sections, nusah):
                 prend(bi + 1, c)
                 bi += 2
                 continue
+            # Le retour du Sefer Torah (12/11) : « יהללו », « הודו », « לדוד מזמור », « ובנחה יאמר »
+            # ne se disent que les jours de lecture ; Edot et Sfard les ont après Achré ou Ouva
+            # létsion, hors de la section de lecture (Ashkenaz les y a déjà).
+            elif cons[bi] and office == "chaharit" and re.search(r"(מחזירין את ספר התורה|כשמחזירים הס״ת|שמוציאין ספר תורה אומרים יהללו)", x):
+                prend(bi, "kriat_hatorah")
+                j = bi + 1
+                while j < n and (cons[j] or any(commence(txt[j], m) for m in ("יהללו", "הודו", "לדוד מזמור", "ובנחה יאמר"))):
+                    prend(j, "kriat_hatorah")
+                    j += 1
+                bi = j
+                continue
             # Barekhi nafchi à Roch 'Hodech, dans la même section que le psaume du jour (Ashkenaz).
             elif cons[bi] and "ברכי נפשי בראש חדש" in x:
                 prend(bi, "roch_hodech")
