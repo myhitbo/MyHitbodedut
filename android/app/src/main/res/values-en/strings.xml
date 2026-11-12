@@ -737,6 +737,9 @@
     <string name="ajout_minyan">With a minyan</string>
     <string name="siddur_toucher_lire">Tap to read</string>
     <string name="ajout_oubli">If forgotten</string>
+    <string name="ajout_ticha_beav_kippour">Tisha B’Av and Yom Kippur</string>
+    <string name="ajout_sauf_ticha_beav_kippour">Except Tisha B’Av and Yom Kippur</string>
+    <string name="ajout_sauf_hanouka">Except on Chanukah</string>
     <string name="ajout_chol">Weekdays</string>
     <string name="siddur_aujourdhui">Today</string>
     <string name="siddur_pas_aujourdhui">Not today · tap to read</string>

@@ -75,6 +75,8 @@ object CalendrierJuif {
         val JOURS_SEMAINE = (1..6).map { "jour_$it" }
         const val TSOM_GUEDALIA_TEVET = "tsom_guedalia_tevet"
         const val LENDEMAIN_KIPPOUR = "lendemain_kippour"
+        /** Le 9 Av ou Kippour (12/11) : « שעשה לי כל צרכי » ne se dit pas (Edot, Ben Ich 'Haï, Vayechev 9). */
+        const val TICHA_BEAV_KIPPOUR = "ticha_beav_kippour"
         const val ESTHER_POURIM = "esther_pourim"
         const val CHIVA_ASSAR_TAMOUZ = "chiva_assar_tamouz"
         /**
@@ -121,7 +123,7 @@ object CalendrierJuif {
         /** Ce qui ne se dit qu'avec un minyan (Kaddich, Barekhou, Kedoucha…) : jamais du jour, replié. */
         const val MINYAN = "minyan"
         val DERIVEES = listOf(AVINOU_MALKENOU, KRIAT_HATORAH) + JOURS_SEMAINE +
-            listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
+            listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN)
     }
@@ -279,6 +281,7 @@ object CalendrierJuif {
             val index = regles.yomTovIndex
             if (index == JewishCalendar.FAST_OF_GEDALYAH || index == JewishCalendar.TENTH_OF_TEVES) add(C.TSOM_GUEDALIA_TEVET)
             if (regles.jewishMonth == JewishDate.TISHREI && regles.jewishDayOfMonth == 11) add(C.LENDEMAIN_KIPPOUR)
+            if (regles.isTishaBav || regles.isYomKippur) add(C.TICHA_BEAV_KIPPOUR)
             if (index == JewishCalendar.FAST_OF_ESTHER || C.POURIM in this) add(C.ESTHER_POURIM)
             if (index == JewishCalendar.SEVENTEEN_OF_TAMMUZ) add(C.CHIVA_ASSAR_TAMOUZ)
             if ((regles.jewishMonth == JewishDate.TISHREI && regles.jewishDayOfMonth == 22) ||

@@ -41,7 +41,7 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
 
 /** Les conditions déduites (SiddurJour, CalendrierJuif.C.DERIVEES), hors des vecteurs KosherJava. */
 export const DERIVEES = ['avinou_malkenou', 'kriat_hatorah', 'jour_1', 'jour_2', 'jour_3', 'jour_4', 'jour_5', 'jour_6',
-  'tsom_guedalia_tevet', 'lendemain_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
+  'tsom_guedalia_tevet', 'lendemain_kippour', 'ticha_beav_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
   'lamnatseah', 'ledavid', 'techouva_hochaana', 'yom_tov', 'moed', 'chabbat_roch_hodech', 'yom_tov_chabbat', 'roch_hachana_chabbat',
   'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan'];
 

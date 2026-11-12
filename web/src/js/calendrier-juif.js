@@ -117,6 +117,8 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   const index = regles.getYomTovIndex();
   si(index === JewishCalendar.FAST_OF_GEDALYAH || index === JewishCalendar.TENTH_OF_TEVES, 'tsom_guedalia_tevet');
   si(regles.getJewishMonth() === JewishDate.TISHREI && regles.getJewishDayOfMonth() === 11, 'lendemain_kippour');
+  // Le 9 Av ou Kippour (12/11, CalendrierJuif.C.TICHA_BEAV_KIPPOUR) : pas de « שעשה לי כל צרכי » (Edot).
+  si(regles.isTishaBav() || regles.isYomKippur(), 'ticha_beav_kippour');
   si(index === JewishCalendar.FAST_OF_ESTHER || c.has('pourim'), 'esther_pourim');
   si(index === JewishCalendar.SEVENTEEN_OF_TAMMUZ, 'chiva_assar_tamouz');
   // Les jours de bascule et la veille de Kippour un vendredi (CalendrierJuif.C.BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI).

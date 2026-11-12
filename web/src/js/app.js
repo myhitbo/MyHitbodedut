@@ -1465,7 +1465,9 @@ function ecranPriere() {
           i++;
         }
         i--;
-        corps.push(ajout(nom(a, a.racine ?? a.si), ajoutVrai(a.racine ?? a.si, c), membres, a.racine ?? a.si));
+        // Discret (12/11, SiddurJour.Annotation.discret) : le jour dit, en clair, sans étiquette.
+        if (a.discret && ajoutVrai(a.racine ?? a.si, c)) corps.push(...membres);
+        else corps.push(ajout(nom(a, a.racine ?? a.si), ajoutVrai(a.racine ?? a.si, c), membres, a.racine ?? a.si));
         corps.push(...seuls(si, i));
       }
     return [...corps, ...renvois(si)];

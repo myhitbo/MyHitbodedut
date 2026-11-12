@@ -751,6 +751,9 @@
     <string name="ajout_minyan">במניין</string>
     <string name="siddur_toucher_lire">הקשה לקריאה</string>
     <string name="ajout_oubli">אם שכח</string>
+    <string name="ajout_ticha_beav_kippour">תשעה באב ויום כיפור</string>
+    <string name="ajout_sauf_ticha_beav_kippour">חוץ מתשעה באב ויום כיפור</string>
+    <string name="ajout_sauf_hanouka">חוץ מחנוכה</string>
     <string name="ajout_chol">בחול</string>
     <string name="siddur_aujourdhui">היום</string>
     <string name="siddur_pas_aujourdhui">לא היום · הקשה לקריאה</string>

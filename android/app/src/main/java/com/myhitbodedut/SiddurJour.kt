@@ -36,6 +36,11 @@ object SiddurJour {
         val consigne: String? = null,
         /** Pour un indice : le passage brut du bloc, replié hors du jour (« המלך הקדוש », 28/10). */
         val retire: String? = null,
+        /**
+         * Ce qui se dit presque tous les jours (12/11 : « שעשה לי כל צרכי », la fin du Kaddich après
+         * le Hallel) : le jour dit, en clair sans étiquette ni mise en évidence ; les autres, replié.
+         */
+        val discret: Boolean = false,
     )
 
     /** Les annotations d'un nusah, par identifiant de texte. */
@@ -62,6 +67,7 @@ object SiddurJour {
                     cible = a.optString("cible", "").ifBlank { null },
                     consigne = a.optString("consigne", "").ifBlank { null },
                     retire = a.optString("retire", "").ifBlank { null },
+                    discret = a.optBoolean("discret", false),
                 )
             }
         }
@@ -174,7 +180,9 @@ object SiddurJour {
                     i++
                 }
                 val racine = a.racine ?: a.condition
-                if (vrai(racine, conditions)) {
+                if (a.discret && vrai(racine, conditions)) {
+                    membres.forEach { (b, _) -> sortie += Ligne.Bloc(b, Style.NORMAL) }
+                } else if (vrai(racine, conditions)) {
                     sortie += Ligne.Etiquette(racine, nom(a, racine))
                     membres.forEach { (b, m) -> sortie += Ligne.Bloc(b, if (vrai(m.condition, conditions)) Style.DU_JOUR else Style.HORS) }
                 } else {
