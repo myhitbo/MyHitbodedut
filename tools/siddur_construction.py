@@ -154,6 +154,22 @@ class Source:
         return [{"titre": titre, "blocs": blocs(list(aplatit(self.noeud(chemin)))[debut:fin], sauter_titre=False)}]
 
 
+def completer_birkat_sefard(st, sm):
+    """
+    Birkat haMazon Sfard (12/11) : Torat Emet laisse vides les paragraphes qui suivent
+    « בַּמָּרוֹם » — les הרחמן de Chabbat, Roch 'Hodech, Yom tov, Roch Hachana et Souccot,
+    puis « יְזַכֵּנוּ… מַגְדִּיל… עֹשֶׂה שָׁלוֹם » et « יִרְאוּ ». Le Metsudah 1981 (CC-BY, déjà la
+    source des offices Sfard) les donne au même rang : ils sont repris de lui, mot pour mot.
+    Les autres paragraphes vides (notes historiques) le restent.
+    """
+    chemin = ["Birchat HaMazon", "Birchat HaMazon"]
+    te, ms = st.noeud(chemin), sm.noeud(chemin)
+    i = next(k for k, x in enumerate(te) if NFC(x).startswith(NFC("<b>בַּמָּרוֹם</b>"))) + 1
+    while i < len(te) and not te[i].strip() and i < len(ms) and ms[i].strip():
+        te[i] = ms[i]
+        i += 1
+
+
 def qere(v):
     v = re.sub(r"([^\s\[\]\u05BE]+\u05BE?) ?\[([^\]]+)\]", r"\2", v)
     v = re.sub(r"\[([^\]]+)\]", r"\1", v)
@@ -350,6 +366,7 @@ def main(dossier):
     EM = Source(em_merged["text"], em_merged["schema"], "Siddur Edot HaMizrach (Torat Emet 357, Public Domain; Shaliehsaboo Edition, CC0)")
     SM = Source(charge(dossier, "Siddur_Sefard__Hebrew__The_Metsudah_siddur,_1981.json")["text"], sf_merged["schema"], "Siddur Sefard, The Metsudah Siddur 1981 (CC-BY)")
     ST = Source(charge(dossier, "Siddur_Sefard__Hebrew__Torat_Emet_357.json")["text"], sf_merged["schema"], "Siddur Sefard, Torat Emet 357 (Public Domain)")
+    completer_birkat_sefard(ST, SM)
     AM = Source(charge(dossier, "Ashk__The_Metsudah_siddur,_1981.json")["text"], as_merged["schema"], "Siddur Ashkenaz, The Metsudah Siddur 1981 (CC-BY)")
     AD = Source(charge(dossier, "Ashk__Daat_Siddur_Ashkenaz.json")["text"], as_merged["schema"], "Siddur Ashkenaz, Daat (Public Domain)")
     exode = charge(dossier, "Exodus_TN.json")["text"]

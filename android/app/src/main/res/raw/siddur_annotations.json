@@ -7951,199 +7951,197 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "cheva_berakhot",
+    "si": "chabbat",
     "b": 74,
-    "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 75,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שהכל ברא",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 76,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, יוצר האד",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 77,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר יצר ",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 78,
-    "empreinte": "שוש תשיש ותגל העקרה, בקבוץ בניה לתוכה במ",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 79,
-    "empreinte": "שמח תשמח רעים אהובים כשמחך יצירך בגן עדן",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 80,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר ברא ",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 81,
-    "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 82,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, בורא פרי",
-    "g": 6,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 83,
-    "empreinte": "דיני שכחה:",
-    "g": 7,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 84,
     "empreinte": "בשבת אומר:",
-    "g": 7,
-    "racine": "oubli"
+    "g": 6,
+    "racine": "chabbat"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "oubli",
-    "b": 85,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 7,
-    "racine": "oubli"
+    "si": "chabbat",
+    "b": 75,
+    "empreinte": "הרחמן הוא ינחילנו יום שכלו שבת ומנוחה לח",
+    "g": 6,
+    "racine": "chabbat"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "oubli",
-    "b": 86,
+    "si": "roch_hodech",
+    "b": 76,
     "empreinte": "בראש חודש:",
     "g": 7,
-    "racine": "oubli"
+    "racine": "roch_hodech"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "oubli",
-    "b": 87,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
+    "si": "roch_hodech",
+    "b": 77,
+    "empreinte": "הרחמן הוא יחדש עלינו את החדש הזה לטובה ו",
     "g": 7,
-    "racine": "oubli"
+    "racine": "roch_hodech"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "oubli",
-    "b": 88,
-    "empreinte": "בראש חודש שחל בשבת:",
-    "g": 7,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 89,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 7,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 90,
+    "si": "yom_tov",
+    "b": 78,
     "empreinte": "ביו״ט אומר:",
-    "g": 7,
-    "racine": "oubli"
+    "g": 8,
+    "racine": "yom_tov"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "oubli",
-    "b": 91,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 7,
-    "racine": "oubli"
+    "si": "yom_tov",
+    "b": 79,
+    "empreinte": "הרחמן הוא ינחילנו יום שכלו טוב:",
+    "g": 8,
+    "racine": "yom_tov"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "oubli",
-    "b": 92,
-    "empreinte": "ביו״ט שחל בשבת:",
-    "g": 7,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 93,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 7,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 94,
+    "si": "roch_hachana",
+    "b": 80,
     "empreinte": "בראש השנה:",
-    "g": 7,
-    "racine": "oubli"
+    "g": 9,
+    "racine": "roch_hachana"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "roch_hachana",
+    "b": 81,
+    "empreinte": "הרחמן הוא יחדש עלינו את השנה הזאת לטובה ",
+    "g": 9,
+    "racine": "roch_hachana"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "soukkot",
+    "b": 82,
+    "empreinte": "בסוכות:",
+    "g": 10,
+    "racine": "soukkot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "soukkot",
+    "b": 83,
+    "empreinte": "הרחמן הוא יקים לנו אתסכת דוד הנופלת:",
+    "g": 10,
+    "racine": "soukkot"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "chabbat",
+    "b": 84,
+    "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
+    "texte": "מִגְדּוֹל"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "yom_tov",
+    "b": 84,
+    "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
+    "texte": "מִגְדּוֹל"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 86,
+    "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 87,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שהכל ברא",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 88,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, יוצר האד",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 89,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר יצר ",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 90,
+    "empreinte": "שוש תשיש ותגל העקרה, בקבוץ בניה לתוכה במ",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 91,
+    "empreinte": "שמח תשמח רעים אהובים כשמחך יצירך בגן עדן",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 92,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר ברא ",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 93,
+    "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
+    "g": 11,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 94,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, בורא פרי",
+    "g": 11,
+    "racine": "cheva_berakhot"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "oubli",
     "b": 95,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 7,
+    "empreinte": "דיני שכחה:",
+    "g": 12,
     "racine": "oubli"
    },
    {
@@ -8151,8 +8149,8 @@
     "s": 0,
     "si": "oubli",
     "b": 96,
-    "empreinte": "בראש השנה שחל בשבת:",
-    "g": 7,
+    "empreinte": "בשבת אומר:",
+    "g": 12,
     "racine": "oubli"
    },
    {
@@ -8161,7 +8159,115 @@
     "si": "oubli",
     "b": 97,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 7,
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 98,
+    "empreinte": "בראש חודש:",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 99,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 100,
+    "empreinte": "בראש חודש שחל בשבת:",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 101,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 102,
+    "empreinte": "ביו״ט אומר:",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 103,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 104,
+    "empreinte": "ביו״ט שחל בשבת:",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 105,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 106,
+    "empreinte": "בראש השנה:",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 107,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 108,
+    "empreinte": "בראש השנה שחל בשבת:",
+    "g": 12,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 109,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
+    "g": 12,
     "racine": "oubli"
    }
   ],
