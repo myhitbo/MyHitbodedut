@@ -147,15 +147,18 @@ object SiddurJour {
                     val cleVariante = "v$si:$i"
                     val ouverte = cleVariante in ouverts
                     var bloc = s.blocs[i]
-                    if (!ouverte) {
+                    // Sans variante hors du jour, le bloc reste lui-même (12/11) : une copie rognée de ses
+                    // espaces n'était plus retrouvée par les marque-pages, qui le cherchent par identité.
+                    if (!ouverte && horsJour.isNotEmpty()) {
                         val reduit = horsJour.fold(bloc.texte) { t, v -> t.replaceFirst(v.retire!!, "") }.trim()
                         if (reduit != bloc.texte) bloc = bloc.copy(texte = reduit)
                     }
                     sortie += Ligne.Bloc(bloc, Style.NORMAL)
                     // Le texte du jour se lit dans le bloc même ; l'ancien « Aujourd'hui : … » ne
                     // reste que pour les variantes qu'on ne sait pas replier.
+                    // Une fois chacune : « מגדול » vaut le Chabbat comme Roch 'Hodech (12/11).
                     ind.filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
-                        .forEach { sortie += Ligne.Indice(it.texte!!) }
+                        .map { it.texte!! }.distinct().forEach { sortie += Ligne.Indice(it) }
                     if (horsJour.isNotEmpty() && (ouverte || bloc !== s.blocs[i])) {
                         val v = horsJour.first()
                         sortie += Ligne.Replie(cleVariante, v.condition, ouverte, nom(v, v.condition))
