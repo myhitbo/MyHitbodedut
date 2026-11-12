@@ -125,10 +125,10 @@ class SimulationSiddurTest {
         assertTrue("la simulation a tourné ($verifications)", verifications > 100_000)
     }
 
-    /** « מגדול » à la fin du Birkat (12/11) : les jours de Moussaf en Edot, Chabbat et Yom tov en Ashkenaz ; une fois. */
+    /** « מגדול » à la fin du Birkat (12/11) : les jours de Moussaf en Edot, Chabbat et Yom tov en Ashkenaz et en Sfard ; une fois. */
     @Test
     fun `migdol les jours dits, une seule fois`() {
-        val jours = mapOf(Nusah.EDOT to setOf(C.CHABBAT, C.ROCH_HODECH, C.MOED, C.YOM_TOV), Nusah.ASHKENAZ to setOf(C.CHABBAT, C.YOM_TOV))
+        val jours = mapOf(Nusah.EDOT to setOf(C.CHABBAT, C.ROCH_HODECH, C.MOED, C.YOM_TOV), Nusah.ASHKENAZ to setOf(C.CHABBAT, C.YOM_TOV), Nusah.SEFARD to setOf(C.CHABBAT, C.YOM_TOV))
         for ((n, cles) in jours) for (date in this.jours) for (israel in listOf(false, true)) {
             val c = CalendrierJuif.jour(date, israel).conditions
             val l = SiddurJour.lignes(siddurs.getValue(n).texte("birkat_hamazon")!!, annotations.getValue(n).getValue("birkat_hamazon"), c, nusah = n.cle, enIsrael = israel)
@@ -154,6 +154,18 @@ class SimulationSiddurTest {
             val lundi = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere("arvit", samedi.plusDays(1), java.time.LocalTime.of(20, 0)), false).conditions
             val l2 = SiddurJour.lignes(texte, annotations.getValue(n).getValue("arvit"), lundi, nusah = n.cle)
             assertTrue("${n.cle} : dimanche soir", l2.none { it is SiddurJour.Ligne.Bloc && it.style != SiddurJour.Style.HORS && plat(it.bloc.texte).contains(plat("אתה חוננתנו")) })
+        }
+    }
+
+    /** Le Birkat Sfard complété (12/11) : les הרחמן des jours et la fin, du Metsudah 1981, après « בַּמָּרוֹם ». */
+    @Test
+    fun `birkat sefard - harahaman des jours et fin presents`() {
+        val blocs = siddurs.getValue(Nusah.SEFARD).texte("birkat_hamazon")!!.sections[0].blocs.map { plat(it.texte) }
+        val bamarom = blocs.indexOfFirst { it.startsWith(plat("במרום ילמדו")) }
+        listOf("שכלו שבת", "יחדש עלינו את החדש הזה", "ינחילנו יום שכלו טוב", "יחדש עלינו את השנה הזאת",
+            "סכת דוד הנופלת", "עשה שלום במרומיו", "יראו את יהוה קדושיו").forEach { p ->
+            val k = blocs.indexOfFirst { it.contains(plat(p)) }
+            assertTrue(p, k > bamarom && k < blocs.indexOfFirst { it.contains(plat("שהכל ברא לכבודו")) })
         }
     }
 
