@@ -257,12 +257,18 @@ object CalendrierJuif {
             if (tefila.isVeseinBerachaRecited(regles)) add(C.BERAKHA)
             if (tefila.isHallelRecited(regles)) add(C.HALLEL)
             if (tefila.isHallelShalemRecited(regles)) add(C.HALLEL_COMPLET)
+            // Pourim triple (le 15 Adar un Chabbat) : à Jérusalem, le dimanche 16 est le jour du
+            // festin et des michloa'h manot, sans Ta'hanoun ni למנצח, Min'ha comprise (Kaf
+            // ha'Haïm 690:118 ; Michna beroura 690:61 ; Luah Erets Israël), que TefilaRules
+            // 2.5.0 fait dire. Ailleurs, l'usage commun le dit.
+            val pourimTriple = mukafChoma && semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
+                (regles.jewishMonth == JewishDate.ADAR_II || (regles.jewishMonth == JewishDate.ADAR && !regles.isJewishLeapYear))
             // La veille de Roch Hachana, pas de Ta'hanoun à la prière (Choul'han
             // Aroukh, OC 581:3), que TefilaRules 2.5.0 fait dire.
             val tahanoun = tefila.isTachanunRecitedShacharis(regles) &&
-                regles.yomTovIndex != JewishCalendar.EREV_ROSH_HASHANA
+                regles.yomTovIndex != JewishCalendar.EREV_ROSH_HASHANA && !pourimTriple
             if (tahanoun) add(C.TAHANOUN_CHAHARIT)
-            if (tefila.isTachanunRecitedMincha(regles)) add(C.TAHANOUN_MINHA)
+            if (tefila.isTachanunRecitedMincha(regles) && !pourimTriple) add(C.TAHANOUN_MINHA)
             // « לשני וחמישי » : le titre de la section du siddour le dit ; les
             // jours sans Ta'hanoun, la section ne se dit pas non plus.
             if (tahanoun && (semaine == DayOfWeek.MONDAY || semaine == DayOfWeek.THURSDAY)) add(C.LUNDI_JEUDI)
@@ -293,7 +299,7 @@ object CalendrierJuif {
             val mois = regles.jewishMonth
             val quantieme = regles.jewishDayOfMonth
             val adar1415 = (mois == JewishDate.ADAR || mois == JewishDate.ADAR_II) && quantieme in 14..15
-            if (!(regles.isRoshChodesh || regles.isChanukah || adar1415 || regles.isTishaBav || regles.isAssurBemelacha ||
+            if (!(regles.isRoshChodesh || regles.isChanukah || adar1415 || pourimTriple || regles.isTishaBav || regles.isAssurBemelacha ||
                     index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR)) add(C.LAMNATSEAH)
             if (mois == JewishDate.ELUL || (mois == JewishDate.TISHREI && quantieme <= 21)) add(C.LEDAVID)
             if (regles.isAseresYemeiTeshuva || (mois == JewishDate.TISHREI && quantieme == 21)) add(C.TECHOUVA_HOCHAANA)
