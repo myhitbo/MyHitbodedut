@@ -455,6 +455,7 @@
     <string name="onboarding_private_body_web">What you write stays in this browser, on this device: nothing is sent anywhere, except a flight’s callsign and an approximate position if you turn on live tracking.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">Loading the books…</string>
+    <string name="lecture_chargement">Opening the book…</string>
     <string name="livres_echec_web">The books could not be loaded. Check your connection, then try again.</string>
     <string name="livres_reessayer_web">Try again</string>
     <!-- Pour la version web (02/11) : la ligne de version des réglages, avec l’empreinte de la construction (version.txt) au lieu du numéro Android. -->

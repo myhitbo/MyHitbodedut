@@ -465,6 +465,7 @@
     <string name="onboarding_private_body_web">מה שתכתבו נשאר בדפדפן הזה, במכשיר הזה: שום דבר לא נשלח לשום מקום, מלבד אות הקריאה של טיסה ומיקום משוער אם תפעילו מעקב בזמן אמת.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">טוען את הספרים…</string>
+    <string name="lecture_chargement">פותח את הספר…</string>
     <string name="livres_echec_web">לא ניתן היה לטעון את הספרים. בדקו את החיבור ונסו שוב.</string>
     <string name="livres_reessayer_web">לנסות שוב</string>
     <!-- Pour la version web (02/11) : la ligne de version des réglages, avec l’empreinte de la construction (version.txt) au lieu du numéro Android. -->

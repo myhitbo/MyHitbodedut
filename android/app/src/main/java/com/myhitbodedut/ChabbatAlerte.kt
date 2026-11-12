@@ -1,6 +1,5 @@
 package com.myhitbodedut
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -40,20 +39,12 @@ object ChabbatAlerte {
         return null
     }
 
-    private fun intent(context: Context): PendingIntent = PendingIntent.getBroadcast(
-        context, REQUETE,
-        Intent(context, ChabbatAlerteReceiver::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
-
     fun programmer(context: Context) {
-        val alarmes = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pending = intent(context)
-        alarmes.cancel(pending)
+        Alarme.annuler(context, REQUETE, ChabbatAlerteReceiver::class.java)
         val lieu = Store.lieuAlertes(context) ?: return
         val minutes = Store.allumage(context)
         val quand = prochaine(ZonedDateTime.now()) { d -> Zmanim.allumage(lieu, d, minutes).local } ?: return
-        runCatching { alarmes.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, quand.toInstant().toEpochMilli(), pending) }
+        Alarme.poser(context, REQUETE, ChabbatAlerteReceiver::class.java, quand.toInstant().toEpochMilli())
     }
 }
 

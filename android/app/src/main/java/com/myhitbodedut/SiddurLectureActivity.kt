@@ -8,8 +8,6 @@ import android.text.Html
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.widget.HorizontalScrollView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -83,13 +81,29 @@ class SiddurLectureActivity : AppCompatActivity() {
         }
         ReglagesLecture.installer(this, liste, avecNusah = !livre) {
             // Même nusah : on garde sa place ; un autre nusah n'a pas les mêmes paragraphes.
-            afficher(garderPlace = recueil().nusah == nusahAffiche)
+            if (pret) afficher(garderPlace = recueil().nusah == nusahAffiche)
         }
-        afficher(garderPlace = false)
-        // Ouvert depuis un marque-page (15/10) : à sa place ; sinon, reprendre là où on s'était arrêté (14/10).
-        val marque = intent.getStringExtra(MARQUE)?.split(':')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 }
-        if (marque != null) liste.post { allerA(marque[0], marque[1]) }
-        else Store.positionLecture(this, cle())?.let { p -> liste.post { (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(p, 0) } }
+        // Un livre de 10 Mo (Likoutei Moharan, Yalkout Yossef) se lit hors du fil de
+        // l'interface (check-up du 11/11) : l'écran gelait jusqu'à 2 s à l'ouverture.
+        if (livre && Data.livreEnMemoire(id) == null) {
+            val cadre = findViewById<android.widget.FrameLayout>(R.id.siddur_lecture_cadre)
+            val attente = android.widget.ProgressBar(this).apply {
+                isIndeterminate = true
+                contentDescription = getString(R.string.lecture_chargement)
+                layoutParams = android.widget.FrameLayout.LayoutParams(dp(40), dp(40), android.view.Gravity.CENTER)
+            }
+            cadre.addView(attente)
+            Thread {
+                Data.livre(applicationContext, id)
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    cadre.removeView(attente)
+                    ouvrir()
+                }
+            }.start()
+        } else {
+            ouvrir()
+        }
         findViewById<android.widget.ImageView>(R.id.siddur_lecture_marques).apply {
             // Ruban en contour pour une prière, livre ouvert et ruban pour une étude (15/10).
             setImageResource(icone(livre))
@@ -105,6 +119,19 @@ class SiddurLectureActivity : AppCompatActivity() {
             setOnClickListener { Store.basculerFavori(this@SiddurLectureActivity, cle()); etoile() }
         }
     }
+
+    /** Le texte prêt : l'afficher, puis aller au marque-page ou à la place quittée. */
+    private fun ouvrir() {
+        pret = true
+        afficher(garderPlace = false)
+        // Ouvert depuis un marque-page (15/10) : à sa place ; sinon, reprendre là où on s'était arrêté (14/10).
+        val marque = intent.getStringExtra(MARQUE)?.split(':')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 }
+        if (marque != null) liste.post { allerA(marque[0], marque[1]) }
+        else Store.positionLecture(this, cle())?.let { p -> liste.post { (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(p, 0) } }
+    }
+
+    /** Le texte est lu et affiché ; avant, ni réglage ni retour ne le redessinent. */
+    private var pret = false
 
     /** Le gras qui ouvre le paragraphe, un quart plus grand. */
     private fun premierMotAgrandi(texte: android.text.Spanned): CharSequence {
@@ -136,7 +163,9 @@ class SiddurLectureActivity : AppCompatActivity() {
         val (si, bi) = places[bloc] ?: return
         val pose = Store.basculerMarque(this, MarquesPages.Marque(cle(), nusahMarques(), si, bi, MarquesPages.apercu(bloc.texte)))
         android.widget.Toast.makeText(this, if (pose) R.string.marque_posee else R.string.marque_retiree, android.widget.Toast.LENGTH_SHORT).show()
-        liste.adapter?.notifyDataSetChanged()
+        // Seul ce paragraphe change : le redessiner, pas tout le livre (check-up du 11/11).
+        val i = lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && it.bloc === bloc }
+        if (i >= 0) liste.adapter?.notifyItemChanged(i) else liste.adapter?.notifyDataSetChanged()
     }
 
     /** Va au paragraphe ; replié aujourd'hui, au titre de sa section. */
@@ -172,7 +201,7 @@ class SiddurLectureActivity : AppCompatActivity() {
      */
     override fun onRestart() {
         super.onRestart()
-        if (pauseA == 0L || Store.repriseValable(cle(), pauseA, System.currentTimeMillis())) return
+        if (!pret || pauseA == 0L || Store.repriseValable(cle(), pauseA, System.currentTimeMillis())) return
         afficher(garderPlace = false)
         (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(0, 0)
     }
@@ -295,43 +324,79 @@ class SiddurLectureActivity : AppCompatActivity() {
         liste.post { suivre() }
     }
 
-    /** La bande de signets, rebâtie avec le texte : un autre nusah, la nuit, une autre taille. */
+    /**
+     * La bande de signets, rebâtie avec le texte : un autre nusah, la nuit, une autre taille.
+     * Une liste recyclée (check-up du 11/11) : Likoutei Moharan en compte 1 048, qui
+     * étaient autant de vues construites d'un coup.
+     */
     private fun bande(lignes: List<Any>, rendu: ReglagesLecture.Rendu) {
-        val defile = findViewById<HorizontalScrollView>(R.id.siddur_lecture_signets_defile)
+        val defile = findViewById<RecyclerView>(R.id.siddur_lecture_signets_defile)
         val trait = findViewById<View>(R.id.siddur_lecture_signets_trait)
-        val rang = findViewById<LinearLayout>(R.id.siddur_lecture_signets)
-        rang.removeAllViews()
         actif = -1
         choisi = null
         renduBande = rendu
         val presente = debuts.size > 1
         defile.visibility = if (presente) View.VISIBLE else View.GONE
         trait.visibility = defile.visibility
-        if (!presente) return
+        if (!presente) {
+            defile.adapter = null
+            return
+        }
         defile.setBackgroundColor(rendu.fond)
         defile.contentDescription = getString(R.string.siddur_signets)
         trait.setBackgroundColor(ColorUtils.setAlphaComponent(rendu.discret, 0x40))
-        val ondulation = TypedValue().also {
+        if (defile.layoutManager == null) {
+            defile.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            defile.itemAnimator = null
+        }
+        defile.adapter = Signets(debuts.map { (lignes[it] as SiddurJour.Ligne.Titre).texte }, rendu)
+    }
+
+    /** Les signets de la bande ; celui de la section en cours porte une pastille pâle. */
+    private inner class Signets(
+        private val titres: List<CharSequence>,
+        private val rendu: ReglagesLecture.Rendu,
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+        private val ondulation = TypedValue().also {
             theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, it, true)
         }.resourceId
-        debuts.forEachIndexed { i, position ->
-            rang.addView(TextView(this).apply {
-                text = (lignes[position] as SiddurJour.Ligne.Titre).texte
+
+        override fun getItemCount() = titres.size
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val vue = TextView(parent.context).apply {
+                layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 textSize = 13f
                 setPadding(dp(8), dp(4), dp(8), dp(4))
                 // 48 dp de haut : une cible qu'on touche sans viser (audit du 16/10).
                 minHeight = dp(48)
                 gravity = android.view.Gravity.CENTER
-                setTextColor(rendu.discret)
                 PoliceHebraique.appliquer(this)
                 foreground = ContextCompat.getDrawable(context, ondulation)
+            }
+            return object : RecyclerView.ViewHolder(vue) {}
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            (holder.itemView as TextView).apply {
+                text = titres[position]
+                val oui = position == actif
+                isSelected = oui
+                setTextColor(if (oui) rendu.titre else rendu.discret)
+                background = if (oui) GradientDrawable().apply {
+                    cornerRadius = dp(999).toFloat()
+                    setColor(ColorUtils.setAlphaComponent(rendu.titre, 0x26))
+                } else null
                 setOnClickListener {
+                    val i = holder.bindingAdapterPosition
+                    if (i == RecyclerView.NO_POSITION) return@setOnClickListener
                     choisi = i
                     liste.stopScroll()
-                    (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 0)
+                    (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(debuts[i], 0)
                     marquer(i)
                 }
-            })
+            }
         }
     }
 
@@ -348,22 +413,24 @@ class SiddurLectureActivity : AppCompatActivity() {
 
     /** Une pastille pâle sous le signet en cours, rien sous les autres ; la bande le garde en vue. */
     private fun marquer(i: Int) {
-        val rendu = renduBande ?: return
-        if (i == actif) return
+        if (renduBande == null || i == actif) return
+        val avant = actif
         actif = i
-        val rang = findViewById<LinearLayout>(R.id.siddur_lecture_signets)
-        for (k in 0 until rang.childCount) (rang.getChildAt(k) as TextView).apply {
-            val oui = k == i
-            isSelected = oui
-            setTextColor(if (oui) rendu.titre else rendu.discret)
-            background = if (oui) GradientDrawable().apply {
-                cornerRadius = dp(999).toFloat()
-                setColor(ColorUtils.setAlphaComponent(rendu.titre, 0x26))
-            } else null
+        val defile = findViewById<RecyclerView>(R.id.siddur_lecture_signets_defile)
+        val signets = defile.adapter ?: return
+        if (avant in 0 until signets.itemCount) signets.notifyItemChanged(avant)
+        if (i in 0 until signets.itemCount) signets.notifyItemChanged(i) else return
+        val gestion = defile.layoutManager as? LinearLayoutManager ?: return
+        fun centrer() {
+            val vue = gestion.findViewByPosition(i) ?: return
+            defile.smoothScrollBy(vue.left + vue.width / 2 - defile.width / 2, 0)
         }
-        val defile = findViewById<HorizontalScrollView>(R.id.siddur_lecture_signets_defile)
-        val vue = rang.getChildAt(i) ?: return
-        defile.post { defile.smoothScrollTo(vue.left - (defile.width - vue.width) / 2, 0) }
+        if (gestion.findViewByPosition(i) == null) {
+            gestion.scrollToPosition(i)
+            defile.post { centrer() }
+        } else {
+            defile.post { centrer() }
+        }
     }
 
     /** Un libellé (clé de chaîne) dans la langue de l'application. */

@@ -17,7 +17,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import java.time.format.DateTimeFormatter
 
 /** Écran principal : état du jour, diagnostic de la barrière, réglages. */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     /** Les cartes du moment n'entrent en cascade qu'une fois par ouverture de l'accueil (19/10). */
     private var momentAnime = false
 
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         // rotation ne la rouvre pas.
         if (savedInstanceState == null) {
             intent?.getStringExtra(EXTRA_ASK_NOTE)?.let { date ->
-                if (!Store.hasPendingCelebration(this)) NoteDialog.show(this, date, onSaved = { refresh() })
+                if (!Store.hasPendingCelebration(this)) NoteDialog.show(this, date)
             }
             intent?.removeExtra(EXTRA_ASK_NOTE)
         }
@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener { toucherPlaque() }
         }
         findViewById<Button>(R.id.today_note).setOnClickListener {
-            NoteDialog.show(this, Store.today(), onSaved = { refresh() })
+            NoteDialog.show(this, Store.today())
         }
     }
 
@@ -312,6 +312,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     // --- Rendu --------------------------------------------------------------
+
+    override fun noteEnregistree(date: String) = refresh()
 
     private fun refresh() {
         renderToday()
@@ -952,12 +954,20 @@ class MainActivity : AppCompatActivity() {
      * pendant que l'application attend (capture du 15/10, trois secondes de menthe).
      * Photo : le tsiyoun, sous la matséva (Lord Mountbatten, Wikimedia Commons, domaine public),
      * depuis le 29/10 : la précédente portait le filigrane d'une banque d'images (audit 1.390).
+     *
+     * Une fois par jour, et un toucher l'écarte (check-up du 11/11) : rouvrir l'application
+     * dix fois par jour coûtait chaque fois deux secondes avant de pouvoir toucher quoi que
+     * ce soit, et le voile avalait les touchers.
      */
     private fun ouverture(demarrage: Boolean) {
         // Le fond du thème (la palette choisie) remplace celui de l'ouverture.
         val fond = android.util.TypedValue().also { theme.resolveAttribute(android.R.attr.colorBackground, it, true) }.data
         window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(fond))
         if (!demarrage) return
+        val memoire = getSharedPreferences(PREFS_OUVERTURE, MODE_PRIVATE)
+        val aujourdhui = Store.today()
+        if (!ouvertureDuJour(memoire.getString(CLE_JOUR_OUVERTURE, null), aujourdhui)) return
+        memoire.edit().putString(CLE_JOUR_OUVERTURE, aujourdhui).apply()
         val decor = window.decorView as android.view.ViewGroup
         val haut = resources.displayMetrics.heightPixels
         val voile = android.widget.FrameLayout(this).apply {
@@ -993,14 +1003,20 @@ class MainActivity : AppCompatActivity() {
             })
         }
         decor.addView(voile, android.view.ViewGroup.LayoutParams(-1, -1))
+        var leve = false
+        fun lever() {
+            if (leve) return
+            leve = true
+            voile.isClickable = false
+            voile.animate().alpha(0f).setDuration(250).withEndAction { decor.removeView(voile) }.start()
+        }
+        voile.setOnClickListener { lever() }
         // La seconde et demie se compte depuis le premier dessin du voile, pas depuis
         // onCreate : sur un téléphone lent, l'écran du système occupait déjà ce temps.
         voile.viewTreeObserver.addOnPreDrawListener(object : android.view.ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 voile.viewTreeObserver.removeOnPreDrawListener(this)
-                voile.postDelayed({
-                    voile.animate().alpha(0f).setDuration(350).withEndAction { decor.removeView(voile) }.start()
-                }, OUVERTURE_MS)
+                voile.postDelayed({ lever() }, OUVERTURE_MS)
                 return true
             }
         })
@@ -1009,6 +1025,13 @@ class MainActivity : AppCompatActivity() {
     companion object {
         /** La durée de l'écran d'ouverture (15/10 : une seconde et demie). */
         const val OUVERTURE_MS = 1500L
+
+        /** Hors des préférences sauvegardées : ce n'est qu'une mémoire d'affichage. */
+        private const val PREFS_OUVERTURE = "ouverture"
+        private const val CLE_JOUR_OUVERTURE = "jour"
+
+        /** Le voile d'ouverture : au premier démarrage de la journée seulement. */
+        fun ouvertureDuJour(dernierJour: String?, aujourdhui: String): Boolean = dernierJour != aujourdhui
 
         /** Le jour de la séance dont la note est proposée (AAAA-MM-JJ). */
         const val EXTRA_ASK_NOTE = "ask_note"

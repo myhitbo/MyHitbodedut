@@ -1,6 +1,5 @@
 package com.myhitbodedut
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -21,8 +20,8 @@ import java.time.LocalTime
  * reprogramme à chaque déclenchement. C'est plus sûr qu'une alarme par
  * heure : rien à nettoyer quand la liste change.
  *
- * Alarme inexacte volontairement : elle se déclenche même en veille profonde
- * et n'exige pas la permission d'alarme exacte, que Google Play restreint.
+ * Sans permission d'alarme exacte, que Google Play restreint : une fenêtre
+ * de 10 min et un filet pour la veille profonde (Alarme).
  */
 object Reminder {
 
@@ -34,17 +33,8 @@ object Reminder {
     /** Report demandé depuis la notification. */
     const val SNOOZE_MINUTES = 30
 
-    private fun intent(context: Context): PendingIntent = PendingIntent.getBroadcast(
-        context,
-        REQUEST,
-        Intent(context, ReminderReceiver::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
-
     fun reschedule(context: Context) {
-        val alarms = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pending = intent(context)
-        alarms.cancel(pending)
+        Alarme.annuler(context, REQUEST, ReminderReceiver::class.java)
         if (!Store.reminderEnabled(context)) return
 
         val maintenant = System.currentTimeMillis()
@@ -58,12 +48,11 @@ object Reminder {
         if (reporte > maintenant && (quand == null || reporte < quand)) quand = reporte
 
         if (quand == null) return
-        runCatching { alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, quand, pending) }
+        Alarme.poser(context, REQUEST, ReminderReceiver::class.java, quand)
     }
 
     fun cancel(context: Context) {
-        val alarms = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarms.cancel(intent(context))
+        Alarme.annuler(context, REQUEST, ReminderReceiver::class.java)
         Store.setReminderSnoozedUntil(context, 0L)
     }
 

@@ -6,14 +6,17 @@ import android.app.PendingIntent
 import android.app.Service
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.PowerManager
 import android.view.Gravity
 import android.view.WindowManager
 
@@ -36,17 +39,44 @@ class GateService : Service() {
     private var foregroundPackage: String? = null
     private var previewing = false
 
+    /**
+     * Le rythme suit l'état (check-up du 11/11) : on interrogeait le système
+     * toutes les 900 ms toute la journée, même barrière désarmée et écran
+     * éteint. Désormais : 900 ms seulement quand la barrière est armée et
+     * l'écran allumé, 15 s sinon ; écran éteint, la boucle s'arrête et
+     * reprend à l'allumage.
+     */
     private val tick = object : Runnable {
         override fun run() {
-            evaluate()
-            handler.postDelayed(this, POLL_MS)
+            val rapide = evaluate()
+            val delai = GateRythme.delai(armee = rapide, ecranAllume = ecranAllume(), relanceAllumage = ecouteEcran) ?: return
+            handler.postDelayed(this, delai)
         }
     }
+
+    private fun ecranAllume(): Boolean =
+        runCatching { getSystemService(PowerManager::class.java).isInteractive }.getOrDefault(true)
+
+    /** Écran rallumé : reprendre aussitôt, sans attendre le tour suivant. */
+    private val ecran = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            handler.removeCallbacks(tick)
+            if (intent.action != Intent.ACTION_SCREEN_OFF) handler.post(tick)
+        }
+    }
+    private var ecouteEcran = false
 
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         Notifications.ensureChannels(this)
+        ecouteEcran = runCatching {
+            registerReceiver(ecran, IntentFilter().apply {
+                addAction(Intent.ACTION_SCREEN_ON)
+                addAction(Intent.ACTION_SCREEN_OFF)
+                addAction(Intent.ACTION_USER_PRESENT)
+            })
+        }.isSuccess
     }
 
     /**
@@ -72,6 +102,7 @@ class GateService : Service() {
 
     override fun onDestroy() {
         handler.removeCallbacks(tick)
+        if (ecouteEcran) runCatching { unregisterReceiver(ecran) }
         hideOverlay()
         super.onDestroy()
     }
@@ -80,15 +111,16 @@ class GateService : Service() {
 
     // --- Boucle de décision -------------------------------------------------
 
-    private fun evaluate() {
-        if (previewing) return
+    /** Vrai quand la barrière est armée : il faut alors guetter de près. */
+    private fun evaluate(): Boolean {
+        if (previewing) return false
         rafraichirNotification()
 
         val running = Store.isSessionRunning(this)
         val armed = GateStatus.isArmed(this) || (running && GateStatus.shouldRunService(this))
         if (!armed) {
             hideOverlay()
-            return
+            return false
         }
 
         val current = readForegroundPackage()
@@ -102,6 +134,7 @@ class GateService : Service() {
         } else {
             hideOverlay()
         }
+        return true
     }
 
     /**
@@ -272,7 +305,6 @@ class GateService : Service() {
     }
 
     companion object {
-        private const val POLL_MS = 900L
         private const val QUERY_BACKFILL_MS = 60_000L
         private const val QUERY_OVERLAP_MS = 2_000L
         const val ACTION_PREVIEW = "com.myhitbodedut.PREVIEW_GATE"

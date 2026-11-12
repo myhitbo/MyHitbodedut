@@ -29,13 +29,16 @@ import kotlin.random.Random
  * (Likoutei Moharan II, 78 : אֵין שׁוּם יֵאוּשׁ בָּעוֹלָם כְּלָל). Demande du
  * propriétaire, 28/09.
  */
-class CelebrationActivity : AppCompatActivity() {
+class CelebrationActivity : AppCompatActivity(), NoteDialog.Hote {
 
     private var danse: ValueAnimator? = null
 
     private val notes = Handler(Looper.getMainLooper())
 
     private val annulee: Boolean by lazy { intent.getBooleanExtra(EXTRA_ANNULEE, false) }
+
+    /** La note proposée après le bravo : fermée, on quitte l'écran. */
+    override fun noteFermee(date: String) = finish()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +98,7 @@ class CelebrationActivity : AppCompatActivity() {
             if (dateNote == null || annulee) {
                 finish()
             } else {
-                NoteDialog.show(this, dateNote, onSaved = {}, onClosed = { finish() })
+                NoteDialog.show(this, dateNote)
             }
         }
     }

@@ -548,6 +548,7 @@
     <string name="onboarding_private_body_web">Ce que vous écrivez reste dans ce navigateur, sur cet appareil : rien n’est envoyé nulle part, sauf l’indicatif d’un vol et une position approchée si vous activez le suivi en direct.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">Chargement des livres…</string>
+    <string name="lecture_chargement">Ouverture du livre…</string>
     <string name="livres_echec_web">Les livres n’ont pas pu être chargés. Vérifiez la connexion, puis réessayez.</string>
     <string name="livres_reessayer_web">Réessayer</string>
     <!-- Pour la version web (02/11) : la ligne de version des réglages, avec l’empreinte de la construction (version.txt) au lieu du numéro Android. -->

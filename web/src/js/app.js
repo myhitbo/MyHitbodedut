@@ -1583,6 +1583,50 @@ function dansRecueil(recueil, q, livre) {
   }
   return r;
 }
+// La recherche hors du fil de l'interface (check-up du 11/11) : js/recherche-worker.js lit et met
+// à plat chaque fichier une fois, et répond à chaque frappe sans geler l'écran. Là où un Worker ne
+// démarre pas, la recherche d'ici (dansRecueil) sert de repli.
+let travailleurRecherche = null;
+let reponseRecherche = null;
+let demandeRecherche = null;
+function chercherEnFond(texte, portee) {
+  if (travailleurRecherche === false) return false;
+  if (!travailleurRecherche) {
+    try {
+      travailleurRecherche = new Worker('js/recherche-worker.js');
+    } catch {
+      travailleurRecherche = false;
+      return false;
+    }
+    travailleurRecherche.onmessage = (e) => {
+      if (e.data?.echec) { travailleurRecherche.onerror(); return; }
+      if (e.data?.cle !== demandeRecherche) return;
+      reponseRecherche = e.data;
+      if (ecranCourant() === 'recherche') rendre();
+    };
+    travailleurRecherche.onerror = () => {
+      arreterRechercheEnFond();
+      travailleurRecherche = false;
+      if (ecranCourant() === 'recherche') rendre();
+    };
+  }
+  const nusah = store.siddurNusah();
+  const cle = JSON.stringify([portee, nusah, tr.langue, nuRecherche(texte.trim())]);
+  if (demandeRecherche !== cle) {
+    demandeRecherche = cle;
+    travailleurRecherche.postMessage({ cle, texte, portee, nusah, langue: tr.langue });
+  }
+  return reponseRecherche;
+}
+/** En quittant la recherche : le Worker et ses textes à plat rendent leur mémoire. */
+function arreterRechercheEnFond() {
+  if (!travailleurRecherche) return;
+  travailleurRecherche.terminate();
+  travailleurRecherche = null;
+  reponseRecherche = null;
+  demandeRecherche = null;
+}
+
 function ecranRecherche() {
   // Les livres ne se chargent plus à l'entrée (02/11) : seulement quand on cherche dedans.
   chargeLivres();
@@ -1594,22 +1638,36 @@ function ecranRecherche() {
   const groupes = [];
   if (q.length >= 2) {
     const p = porteeRecherche;
-    const sid = (p === 'tout' || p === 'tefilot') && chargeSiddur() ? dansRecueil(siddur, q, false) : [];
-    // Chaque livre arrivé relance l'affichage : les résultats se complètent au fil des fichiers.
-    const liv = (p === 'tout' || p === 'sefarim') && livres ? (chargeTousLesLivres(), dansRecueil(livres, q, true)) : [];
     const halakhot = p === 'tout' || p === 'halakhot';
-    const yy = halakhot && livreYalkut ? rechercheYalkut(livreYalkut, texteRecherche).slice(0, 30) : [];
-    const bih = halakhot && livreHalakha ? rechercheHalakha(livreHalakha, texteRecherche).slice(0, 30) : [];
     const hil = (p === 'tout' || p === 'hilloulot') && tableHilloulot() ? rechercheHilloula(tableHilloulot(), texteRecherche).slice(0, 30) : [];
-    yalkutDuJour(); livreDuJour();
+    let sid, liv, yy, bih;
+    const fond = p === 'hilloulot' ? false : chercherEnFond(texteRecherche, p);
+    // Le Worker renvoie des places et des extraits ; les titres se prennent dans les tables d'ici.
+    const parTitre = (t) => (titreTexte(t.titre) !== t.titre.he ? titreTexte(t.titre) : '');
+    if (fond === false) {
+      sid = (p === 'tout' || p === 'tefilot') && chargeSiddur() ? dansRecueil(siddur, q, false) : [];
+      // Chaque livre arrivé relance l'affichage : les résultats se complètent au fil des fichiers.
+      liv = (p === 'tout' || p === 'sefarim') && livres ? (chargeTousLesLivres(), dansRecueil(livres, q, true)) : [];
+      yy = halakhot && livreYalkut ? rechercheYalkut(livreYalkut, texteRecherche).slice(0, 30).map((x) => ({ ...x, extrait: extraitRecherche(x.t, q) })) : [];
+      bih = halakhot && livreHalakha ? rechercheHalakha(livreHalakha, texteRecherche).slice(0, 30).map((x) => ({ ...x, extrait: extraitRecherche(x.texte, q) })) : [];
+      yalkutDuJour(); livreDuJour();
+    } else {
+      const avecSiddur = (fond?.sid?.length ?? 0) > 0 && chargeSiddur();
+      sid = avecSiddur ? fond.sid.map((r) => siddur.textes[r.i] && { t: siddur.textes[r.i], extrait: r.parTitre ? parTitre(siddur.textes[r.i]) : r.extrait }).filter(Boolean) : [];
+      liv = livres && fond ? fond.liv.map((r) => livres.textes[r.i] && { t: livres.textes[r.i], extrait: r.parTitre ? parTitre(livres.textes[r.i]) : r.extrait }).filter(Boolean) : [];
+      yy = fond?.yy ?? [];
+      bih = fond?.bih ?? [];
+    }
     const total = sid.length + liv.length + yy.length + bih.length + hil.length;
-    groupes.push(h('p', { class: 'jour-sous-titre' }, tr.t('hilloulot_resultats', total)));
+    // La première recherche attend les fichiers : on le dit plutôt que « 0 résultat ».
+    if (fond === null || (fond && !fond.complet && total === 0)) groupes.push(attenteLivres());
+    else groupes.push(h('p', { class: 'jour-sous-titre' }, tr.t('hilloulot_resultats', total)));
     const groupe = (nom, l) => (l.length ? [h('h2', { class: 'section' }, tr.t(nom)), ...l] : []);
     // Les titres des groupes reprennent les noms des filtres (audit 1.390).
     groupes.push(...groupe('recherche_tefilot', sid.map((r) => resultat(r.t.titre.he, r.extrait, () => { priere = r.t.id; ouvrir('priere'); }))));
     groupes.push(...groupe('recherche_livres', liv.map((r) => resultat(r.t.titre.he, r.extrait, () => { priere = `livre:${r.t.id}`; ouvrir('priere'); }))));
-    groupes.push(...groupe('recherche_halakhot', [...yy.map((x) => resultat(sourceYalkut(x), extraitRecherche(x.t, q), () => { rechercheHalakhaTexte = texteRecherche; ouvrir('halakha'); })),
-      ...bih.map((x) => resultat(sourceHalakha(x, (n) => Reference.lettres(n)), extraitRecherche(x.texte, q), () => { rechercheHalakhaTexte = texteRecherche; ouvrir('halakha'); }))]));
+    groupes.push(...groupe('recherche_halakhot', [...yy.map((x) => resultat(sourceYalkut(x), x.extrait, () => { rechercheHalakhaTexte = texteRecherche; ouvrir('halakha'); })),
+      ...bih.map((x) => resultat(sourceHalakha(x, (n) => Reference.lettres(n)), x.extrait, () => { rechercheHalakhaTexte = texteRecherche; ouvrir('halakha'); }))]));
     // Le nom dans la langue de l'interface s'il existe, sinon l'hébreu (RechercheGlobale.resultatHilloula).
     const nomHilloula = nomTraduitHilloula;
     groupes.push(...groupe('hilloulot_title', hil.map(([, x]) => resultat(nomHilloula(x) ?? x.he,
@@ -5374,6 +5432,7 @@ function rendre() {
   const memeEcran = app.dataset.ecran === `${ecran}/${onglet}` && !app.querySelector('.ecran[data-attente]');
   rendreSurPlace = memeEcran;
   if (ecran !== 'recherche' && ecran !== 'priere') rendreLivresDeRecherche();
+  if (!['recherche', 'priere', 'halakha', 'hilloulot'].includes(ecran)) arreterRechercheEnFond();
   // Un livre redessiné sur place (« Aa », 02/11) : ses chapitres reviennent vides, à la hauteur
   // estimée ; on retrouve le paragraphe du haut plutôt que le nombre de pixels.
   const defileAvant = app.querySelector('.defile.defile-livre');
@@ -5504,17 +5563,7 @@ if ('serviceWorker' in navigator) {
 }
 demarrer();
 
-// L'écran d'ouverture (15/10) : le 'hassid devant le tziyoun une seconde et demie, puis un fondu ;
-// une seule fois par session (un rechargement ne le rejoue pas).
-{
-  const ouverture = document.getElementById('ouverture');
-  let deja = false;
-  try { deja = sessionStorage.getItem('ouverture-vue') === '1'; sessionStorage.setItem('ouverture-vue', '1'); } catch { /* stockage refusé : on le montre */ }
-  if (ouverture) {
-    if (deja) ouverture.remove();
-    else setTimeout(() => { ouverture.classList.add('fin'); setTimeout(() => ouverture.remove(), 400); }, 1500);
-  }
-}
+// L'écran d'ouverture : js/ouverture.js, lu avant app.js (une fois par jour, un toucher l'écarte).
 
 // La banderole du haut s'efface quand on fait défiler vers le bas, et revient en haut
 // de la page (13/10) ; seulement si la page la dépasse, sinon elle reviendrait aussitôt.

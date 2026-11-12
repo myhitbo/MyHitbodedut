@@ -225,6 +225,9 @@ object Data {
             livresIndex ?: SiddurLoader.parse(Json.readRaw(context.applicationContext, R.raw.livres_titres)).also { livresIndex = it }
         }
 
+    /** Le livre s'il est déjà lu, sans le lire : l'écran de lecture décide ainsi de le charger à part. */
+    fun livreEnMemoire(id: String): Siddur? = livresLus[id]
+
     /** Un livre entier, seul (res/raw/livre_<id>.json, tools/livres_decoupe.py) ; null s'il n'existe pas. */
     fun livre(context: Context, id: String): Siddur? {
         livresLus[id]?.let { return it }

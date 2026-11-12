@@ -94,25 +94,17 @@
          le texte. Discrète exprès : petite, du ton de la page, un trait fin
          dessous ; seule la section en cours se marque. Absente d'un texte
          d'une seule section. -->
-    <HorizontalScrollView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/siddur_lecture_signets_defile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
+        android:clipToPadding="false"
         android:layoutDirection="rtl"
         android:overScrollMode="never"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
         android:scrollbars="none"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:id="@+id/siddur_lecture_signets"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layoutDirection="rtl"
-            android:orientation="horizontal"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp" />
-    </HorizontalScrollView>
+        android:visibility="gone" />
 
     <View
         android:id="@+id/siddur_lecture_signets_trait"

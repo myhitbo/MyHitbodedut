@@ -136,7 +136,7 @@ class SessionActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.simplement_parler).setOnClickListener { demarrer() }
         findViewById<View>(R.id.simplement_ecrire).setOnClickListener {
-            demarrer { NoteDialog.show(this, Store.today(), onSaved = {}) }
+            demarrer { NoteDialog.show(this, Store.today()) }
         }
         findViewById<View>(R.id.simplement_prier).setOnClickListener {
             demarrer { startActivity(android.content.Intent(this, TefilotActivity::class.java)) }

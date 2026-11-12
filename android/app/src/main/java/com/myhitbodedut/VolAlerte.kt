@@ -1,6 +1,5 @@
 package com.myhitbodedut
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,11 +25,6 @@ object VolAlerte {
     /** Un rappel déclenché avec un peu de retard (Android regroupe les alarmes) s'affiche encore ; au-delà, il est passé. */
     private const val TOLERANCE_MS = 20 * 60_000L
 
-    private fun intent(context: Context): PendingIntent = PendingIntent.getBroadcast(
-        context, REQUETE, Intent(context, VolAlerteReceiver::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
-
     /** Garde les rappels d'un vol calculé et programme le prochain ; une liste vide les efface. */
     fun enregistrer(context: Context, rappels: List<VolRappels.Rappel>) {
         Store.setVolRappels(context, rappels)
@@ -38,14 +32,12 @@ object VolAlerte {
     }
 
     fun programmer(context: Context) {
-        val alarmes = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pending = intent(context)
-        alarmes.cancel(pending)
+        Alarme.annuler(context, REQUETE, VolAlerteReceiver::class.java)
         if (!Store.volRappelsActifs(context)) return
         val maintenant = System.currentTimeMillis()
         val vu = Store.volRappelVu(context)
         val prochain = Store.volRappels(context).map { it.instant.toEpochMilli() }.filter { it > vu && it > maintenant - TOLERANCE_MS }.minOrNull() ?: return
-        runCatching { alarmes.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, prochain.coerceAtLeast(maintenant), pending) }
+        Alarme.poser(context, REQUETE, VolAlerteReceiver::class.java, prochain.coerceAtLeast(maintenant))
     }
 
     /** Les rappels dus maintenant, pas encore montrés (plusieurs peuvent tomber à la même minute). */
