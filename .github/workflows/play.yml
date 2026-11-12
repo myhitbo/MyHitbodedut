@@ -67,7 +67,20 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.PLAY_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.PLAY_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.PLAY_KEY_PASSWORD }}
-        run: ./gradlew --no-daemon -Pplay=true bundleFullRelease
+          # Le relais du suivi de vol (tools/relais_vol), variable du dépôt RELAIS_VOL. Sans lui,
+          # la construction Play n'a pas de suivi en direct : jamais OpenSky depuis chaque téléphone,
+          # ce que ses conditions excluent (audit du 12/11, TPLAYDOCS-01). La route adsbdb reste.
+          RELAIS_VOL: ${{ vars.RELAIS_VOL }}
+        run: |
+          if [ -n "$RELAIS_VOL" ]; then
+            case "$RELAIS_VOL" in https://*) ;; *) echo "::error::RELAIS_VOL doit commencer par https://"; exit 1 ;; esac
+            ./gradlew --no-daemon -Pplay=true -PrelaisVol="$RELAIS_VOL" bundleFullRelease
+            echo "**Suivi en direct** : par le relais $RELAIS_VOL." >> "$GITHUB_STEP_SUMMARY"
+          else
+            ./gradlew --no-daemon -Pplay=true bundleFullRelease
+            echo "::notice::Pas de variable RELAIS_VOL : AAB sans suivi en direct (OpenSky), route adsbdb seule."
+            echo "**Suivi en direct** : absent (pas de relais)." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       # Dernier contrôle sur le fichier lui-même, pas sur les sources : seuls
       # les morceaux dont la diffusion publique est établie y entrent.

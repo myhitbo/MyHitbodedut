@@ -52,6 +52,10 @@ celles de la documentation de KosherJava 2.5.0 (`zmanim-2.5.0-sources.jar`).
   18 minutes par défaut, réglable à 18, 20, 22, 30 ou 40 ;
 - un jour chômé suivi d'un autre (deuxième jour de fête, Chabbat puis fête) :
   allumage pas avant tsét à 8,5° ;
+- sauf une fête un vendredi (2e jour de Pessa'h le 23/04/2027 en diaspora,
+  Chavouot le 11/06/2027…) : l'allumage de Chabbat se fait avant la chki'a,
+  d'une flamme existante, comme une veille ordinaire (audit du 12/11,
+  FCALENDRIER-01). En vol, Chabbat entre alors à la chki'a ;
 - le dernier jour chômé, la sortie : tsét à 8,5°. Rabbénou Tam reste dans la
   liste.
 

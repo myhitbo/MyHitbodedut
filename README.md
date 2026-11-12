@@ -167,7 +167,7 @@ Le plus simple, sans rien installer : le workflow GitHub Actions `Android`
 compile à chaque envoi sur `main` et publie l'APK dans la release `latest`.
 
 Lien de téléchargement direct, dépôt privé donc connexion GitHub nécessaire :
-<https://github.com/hil123/MyHitbodedut/releases/latest/download/MyHitbodedut.apk>
+<https://github.com/myhitbo/MyHitbodedut/releases/latest/download/MyHitbodedut.apk>
 
 L'APK est signé par la clé stable de `android/keystore`, et n'est pas déboguable.
 Android demandera d'autoriser l'installation depuis une source inconnue pour le
@@ -221,7 +221,7 @@ faut lui donner un jeton GitHub à portée restreinte, dans ses réglages, secti
 des sources externes.
 
 Marche à suivre : installer Obtainium, ajouter une application, coller
-`https://github.com/hil123/MyHitbodedut`, choisir l'archive voulue, complète ou
+`https://github.com/myhitbo/MyHitbodedut`, choisir l'archive voulue, complète ou
 Light, et laisser la vérification automatique active.
 
 **Les autres voies.** Un mécanisme de mise à jour intégré à l'application

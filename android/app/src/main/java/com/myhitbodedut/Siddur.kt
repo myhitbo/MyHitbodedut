@@ -23,6 +23,8 @@ data class SiddurTexte(
     val emprunt: LocalizedText? = null,
     /** Le nombre de chapitres : celui de [sections], ou celui de l'index des livres, qui n'a pas leur texte. */
     val chapitres: Int = sections.size,
+    /** Ses traductions sont automatiques, pas encore relues (clé « traduction » de livres.json ; audit du 12/11, COUV-05). */
+    val traductionAuto: Boolean = false,
 )
 
 data class SiddurGroupe(val cle: String, val titre: LocalizedText)
@@ -87,6 +89,7 @@ object SiddurLoader {
                     source = t.optString("source", ""),
                     emprunt = t.optJSONObject("nusah")?.let { LocalizedText.parse(it) },
                     chapitres = t.optInt("chapitres", t.getJSONArray("sections").length()),
+                    traductionAuto = t.has("traduction"),
                     sections = Json.array(t.getJSONArray("sections")) { s ->
                         SiddurSection(
                             titre = s.optString("titre", ""),

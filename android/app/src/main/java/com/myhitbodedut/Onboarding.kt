@@ -86,7 +86,9 @@ object Onboarding {
         OnboardingEcran(
             "prive",
             R.string.onboarding_private,
-            R.string.onboarding_private_body,
+            // Sans suivi en direct (construction Play sans relais), OpenSky n'est pas nommé.
+            if (BuildConfig.SUIVI_VOL && !BuildConfig.OPENSKY_DIRECT && !BuildConfig.RELAIS_VOL.startsWith("https://"))
+                R.string.onboarding_private_body_route else R.string.onboarding_private_body,
             R.drawable.char_thumbs_up
         )
     )

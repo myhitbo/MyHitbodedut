@@ -191,6 +191,13 @@ def annoter(texte_id, sections, nusah):
                 pris.add(bi)
                 note("bloc", si, bi, c, {"libelle": libelle} if libelle else None)
 
+        def sceau(bi, c, motif, libelle=None):
+            """Le sceau d'un ajout, quand le siddour le met dans le bloc suivant (Edot : « ברוך אתה
+            יהוה מנחם ציון », « … העונה בעת צרה »), suit le sort de l'ajout : sans cela il restait
+            affiché tous les jours, avant le sceau ordinaire (audit du 12/11, TSIDDUR-01)."""
+            if bi + 1 < len(txt) and not cons[bi + 1] and re.match(motif, txt[bi + 1]):
+                prend(bi + 1, c, libelle)
+
         def en_tete(bi, c, *mots_cles, libelle=None):
             """La consigne juste avant un ajout, si elle l'annonce, en suit le sort."""
             if bi > 0 and cons[bi - 1] and all(m in txt[bi - 1] for m in mots_cles):
@@ -409,6 +416,8 @@ def annoter(texte_id, sections, nusah):
                 c, libelle = anenou(bi)
                 en_tete(bi, c, "תענית", libelle=libelle)
                 prend(bi, c, libelle)
+                if libelle == "ajout_anenou_officiant":
+                    sceau(bi, c, r"ברוך אתה \S+,? העונה (לעמו ישראל )?בעת צרה", libelle)
             elif cons[bi] and re.fullmatch(r"\(?בתענית ציבור אומר כאן הש״ץ עננו ?\)?:?", x):
                 prend(bi, "jeune", "ajout_anenou_officiant")
             # Avinou malkénou des jeûnes et des dix jours (Ashkenaz, Sfard) : la consigne
@@ -459,6 +468,10 @@ def annoter(texte_id, sections, nusah):
                 # « יהוה זכרנו » et « מה אשיב » se disent tous les jours de Hallel ; de même,
                 # un « הרחמן » de fête n'annonce que sa ligne.
                 while j < n and not cons[j] and ((c != "hallel_complet" and c not in UNE_LIGNE) or j == bi + 1):
+                    # La suite de Modim (« ועל כלם יתברך… הטוב שמך ולך נאה להודות ») se dit tous
+                    # les jours : le groupe de 'Hanouka s'arrête avant elle (audit du 12/11, TSIDDUR-02).
+                    if j > bi + 1 and (commence(txt[j], "ועל כלם") or commence(txt[j], "ועל כולם")):
+                        break
                     prend(j, c, lib)
                     j += 1
                 bi = j
@@ -497,9 +510,11 @@ def annoter(texte_id, sections, nusah):
             elif not cons[bi] and commence(x, "נחם יהוה אלהינו"):
                 en_tete(bi, "ticha_beav", "באב")
                 prend(bi, "ticha_beav")
+                sceau(bi, "ticha_beav", r"ברוך אתה \S+,? מנחם ציון")
             # Na'hem annoncé dans son propre bloc (Edot, Min'ha : « בתשעה באב אומרים: נחם » ; relevé le 14/10).
             elif not cons[bi] and re.match(r"בתשעה באב (יש )?אומרים:? ?נחם", x):
                 prend(bi, "ticha_beav")
+                sceau(bi, "ticha_beav", r"ברוך אתה \S+,? מנחם ציון")
             # Avinou malkénou des jeûnes (Ashkenaz : « בתענית ציבור: אבינו מלכנו ברך עלינו » ; relevé le 14/10).
             elif not cons[bi] and (x.startswith("בתענית ציבור:") or x.startswith("לתענית ציבור:")):
                 prend(bi, "jeune", JEUNE)

@@ -318,10 +318,14 @@ export function prochaine(horaires, maintenant) {
   return ['arvit', null];
 }
 
-/** Les horaires que prochaine attend, pris sur la route (Vol.horaires). */
+/**
+ * Les horaires que prochaine attend, pris sur la route (Vol.horaires) : le repère d'aube passé
+ * le plus récent, alot, sinon michéyakir ou nets (l'été au nord d'environ 50°, FVOL-01).
+ */
 export function horaires(calcul, maintenant) {
   const ev = calcul.evenements;
-  const alot = ev.filter((e) => e.cle === 'alot' && +e.instant <= +maintenant).at(-1)?.instant ?? null;
+  const aube = ['alot', 'misheyakir', 'netz'];
+  const alot = ev.filter((e) => aube.includes(e.cle) && +e.instant <= +maintenant).at(-1)?.instant ?? null;
   const apres = alot ?? maintenant;
   const suivant = (cle) => ev.find((e) => e.cle === cle && +e.instant > +apres)?.instant ?? null;
   return { alot, szt_gra: suivant('szt_gra'), chkia: suivant('chkia'), chatsot_layla: suivant('chatsot_layla') };
@@ -349,10 +353,12 @@ export function jalons(calcul, enIsrael, minutes) {
       type, instant: e.instant, date: j.date, chabbat: new Date(`${j.date}T12:00:00Z`).getUTCDay() === 6, fetes: j.fetes, omer, allumage,
       latitude: e.latitude, longitude: e.longitude,
     });
-    if (e.cle === 'chkia' && demain.chome && !aujourdhui.chome) sortie.push(jalon('entree', demain, new Date(+e.instant - minutes * MIN)));
+    // Fête un vendredi (FCALENDRIER-01) : Chabbat entre à la chki'a, allumage avant elle.
+    const vendredi = new Date(`${iso}T12:00:00Z`).getUTCDay() === 5;
+    if (e.cle === 'chkia' && demain.chome && (!aujourdhui.chome || vendredi)) sortie.push(jalon('entree', demain, new Date(+e.instant - minutes * MIN)));
     if (e.cle === 'tset') {
       if (aujourdhui.chome && !demain.chome) sortie.push(jalon('sortie', aujourdhui));
-      if (aujourdhui.chome && demain.chome) sortie.push(jalon('enchainement', demain));
+      if (aujourdhui.chome && demain.chome && !vendredi) sortie.push(jalon('enchainement', demain));
       if (demain.omer > 0) sortie.push(jalon('omer', demain, null, demain.omer));
     }
   }

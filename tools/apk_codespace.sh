@@ -57,4 +57,4 @@ gh release create "v1.$NUM" MyHitbodedut.apk MyHitbodedut-Light.apk mapping-full
 rm -f MyHitbodedut.apk MyHitbodedut-Light.apk mapping-full.txt
 
 echo
-echo "Fait : https://github.com/hil123/MyHitbodedut/releases/latest/download/MyHitbodedut.apk"
+echo "Fait : https://github.com/myhitbo/MyHitbodedut/releases/latest/download/MyHitbodedut.apk"

@@ -793,7 +793,7 @@ const paragraphesTraduits = (heb, fr, en, fait) => heb.flatMap((p, i) => {
   return textes.map(([l, t]) => (l === 'he' ? fait(t) : paraTraduction(l, t, !avecHe)));
 });
 /** Une traduction affichée : de gauche à droite, en romain ; plus discrète sous l'hébreu. */
-const paraTraduction = (langue, texte, seule) => h('p', { class: `traduction${seule ? ' seule' : ''}`, lang: langue, dir: 'ltr' }, texte);
+const paraTraduction = (langue, texte, seule) => h('p', { class: `traduction${seule ? ' seule' : ''}`, lang: langue, dir: 'ltr' }, riche(texte));
 /** Le choix des six façons de lire : la feuille, et l'écran redessiné. */
 function choisirLangues() {
   feuille(tl('lecture_langues'), (f, fermer) => {
@@ -1470,7 +1470,9 @@ function ecranPriere() {
     return [...corps, ...renvois(si)];
   };
   // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
-  const sansTraduction = livre && LanguesTexte.manque(languesLecture(), x.sections.some((s) => s.blocs.some((b) => b.fr || b.en)));
+  const traduitIci = x.sections.some((s) => s.blocs.some((b) => b.fr || b.en));
+  const sansTraduction = livre && LanguesTexte.manque(languesLecture(), traduitIci);
+  const traductionAuto = livre && traduitIci && !!x.traduction && languesLecture() !== 'he';
   // Une longue prière (Cha'harit, 04/11) se construit comme un livre, section par section à
   // l'approche de l'écran : construite et mise en page d'un coup, son ouverture gelait l'écran
   // (0,5 s mesurée sur un téléphone moyen, Chromium ralenti 4 fois : 0,4 s de construction et
@@ -1479,6 +1481,8 @@ function ecranPriere() {
     x.sections.reduce((t, s) => t + hauteurEstimee(s), 0) > 6 * Math.max(600, window.innerHeight));
   const contenu = h('div', { class: 'contenu lecture siddour' },
     sansTraduction ? h('p', { class: 'indice' }, tl('lecture_sans_traduction')) : null,
+    // Une traduction automatique affichée : non relue, l'hébreu fait foi (COUV-05).
+    traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     annotations ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
     ...x.sections.flatMap((s, si) => {
@@ -4497,10 +4501,13 @@ function carteMesDonnees() {
   } });
   return h('div', { class: 'carte' },
     h('h3', {}, tr.t('section_data')),
-    h('p', { class: 'indice' }, tr.t('section_data_hint')),
+    h('p', { class: 'indice' }, tr.t('section_data_hint_web')),
     h('div', { class: 'actions-donnees' },
       h('button', { type: 'button', class: 'secondaire', onclick: exporter }, tr.t('action_export')),
       h('button', { type: 'button', class: 'secondaire', onclick: () => champ.click() }, tr.t('action_import'))),
+    // Les règles de confidentialité, dans la langue de l'interface (audit du 12/11, TWEBCONF-08).
+    h('p', {}, h('a', { href: `confidentialite.html#${['fr', 'en', 'he'].includes(tr.langue) ? tr.langue : 'en'}`, target: '_blank', rel: 'noopener' },
+      `${tr.t('settings_confidentialite')} ↗`)),
     champ);
 }
 
@@ -5233,7 +5240,7 @@ function ecranBravo() {
       !annulee && bravo.minutes > 0 ? h('button', { class: 'lien-bouton bravo-partage', onclick: () => partagerSeance(bravo.minutes) }, tr.t('partage_action')) : null)));
 }
 
-const LIEN_WEB = 'https://hil123.github.io/myhitbodedut-web/';
+const LIEN_WEB = 'https://myhitbo.github.io/myhitbodedut-web/';
 /** Le texte d'une séance faite et le lien de la version web : le partage du téléphone, sinon le presse-papiers. */
 async function partagerSeance(minutes) {
   const serie = store.streak?.() ?? 0;

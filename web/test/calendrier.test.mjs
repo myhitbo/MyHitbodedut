@@ -109,6 +109,26 @@ const LIEUX = [
   { nom: 'Melbourne', latitude: -37.814, longitude: 144.96332, altitude: 0, fuseau: 'Australia/Melbourne' },
 ];
 
+test('chaque zman tombe le jour civil demandé, dans les 51 villes (FCALENDRIER-02, Sydney)', async () => {
+  const { villes } = JSON.parse(readFileSync(join(ICI, '../../android/app/src/main/res/raw/villes.json'), 'utf8'));
+  const lieu = (v) => ({ nom: v.nom.fr, latitude: v.latitude, longitude: v.longitude, altitude: v.altitude, fuseau: v.fuseau });
+  const jourCivil = (t, fuseau) => new Intl.DateTimeFormat('en-CA', { timeZone: fuseau }).format(t);
+  const auckland = { nom: 'Auckland', latitude: -36.85, longitude: 174.76, altitude: 0, fuseau: 'Pacific/Auckland' };
+  for (const l of [...villes.map(lieu), auckland]) {
+    for (const iso of ['2026-01-15', '2026-04-05', '2026-06-21', '2026-10-04', '2026-12-21', '2027-04-03']) {
+      for (const z of Z.jour(l, iso)) {
+        if (z.instant && z.cle !== 'chatsot_layla') assert.equal(jourCivil(z.instant, l.fuseau), iso, `${l.nom} ${iso} ${z.cle}`);
+      }
+    }
+  }
+  // KosherJava 2.5.0 : Sydney, netz du 21/06/2026 à 06:59:57 ; sortie de Chabbat du 03/04/2027 à 19:25:21.
+  const sydney = lieu(villes.find((v) => v.nom.fr === 'Sydney'));
+  const { horaires } = await import('../src/js/jour-affiche.js');
+  const heure = (t) => new Intl.DateTimeFormat('fr-FR', { timeZone: sydney.fuseau, timeStyle: 'medium' }).format(t);
+  assert.equal(heure(Z.jour(sydney, '2026-06-21').find((z) => z.cle === 'netz').instant), '06:59:57');
+  assert.equal(heure(horaires(sydney, '2027-04-03', false, 18).find((z) => z.cle === 'sortie').instant), '19:25:21');
+});
+
 test('Hebcal : les zmanim de même méthode s’accordent à 5 secondes près', () => {
   // [clé du profil, méthode Hebcal réellement équivalente]
   const paires = [
@@ -217,6 +237,13 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   const rh1 = parIndex(A.horaires(paris, '2026-09-12', false, 18));
   assert.equal(rh1.allumage.methode, 'apres_tset');
   assert.ok('sortie' in parIndex(A.horaires(paris, '2026-09-13', false, 18)));
+  // Fête un vendredi (FCALENDRIER-01) : allumage de Chabbat avant la chki'a, jamais à tsét.
+  for (const [iso, israel] of [['2027-04-23', false], ['2027-06-11', false], ['2027-06-11', true], ['2028-09-22', false]]) {
+    const h = parIndex(A.horaires(israel ? jer : paris, iso, israel, 18));
+    assert.equal(h.allumage.methode, 'avant_chkia', iso);
+    assert.ok(+h.allumage.instant < +h.chkia.instant, iso);
+    assert.ok(!('sortie' in h), iso);
+  }
   assert.deepEqual(A.ajouts(jour('2026-10-12', false).conditions),
     ['ajout_machiv_harouah', 'ajout_barkhenou', 'ajout_yaale_veyavo', 'ajout_hallel_partiel_sans_berakha', 'ajout_sans_tahanoun']);
   // Les Edot disent ברכנו / ברך עלינו ; les autres noussa'h ותן ברכה / ותן טל ומטר.
