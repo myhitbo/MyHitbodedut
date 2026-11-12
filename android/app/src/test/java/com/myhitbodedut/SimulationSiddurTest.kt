@@ -4,11 +4,16 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import com.kosherjava.zmanim.hebrewcalendar.JewishDate
 import java.time.LocalDate
 
 /**
- * La lecture du siddour simulée chaque jour de deux années hébraïques (demande du 12/11) :
- * 5786, ordinaire, et 5787, embolismique, de la veille de Roch Hachana à Souccot suivant ;
+ * La lecture du siddour simulée chaque jour des quatorze sortes d'années hébraïques (demandes du 12/11) :
+ * 5779 à 5790 de suite, plus 5795, 5797 et 5812, les trois sortes qui manquent entre-temps ; chacune de
+ * la veille de Roch Hachana au lendemain de Sim'hat Torah suivant. Embolismiques ou non, déficientes,
+ * régulières ou pleines, Roch Hachana lundi, mardi, jeudi ou Chabbat ; avec les cas rares qui en
+ * découlent : Pourim triple à Jérusalem, veille de Pessa'h un Chabbat, 9 Av reporté au dimanche,
+ * Roch 'Hodech Tévèt d'un seul jour, jeûne de Tévèt un vendredi, Pourim Katan ;
  * en diaspora, en Israël, à Jérusalem (Pourim le 15) et, pour les Edot, dans l'hémisphère sud ;
  * dans les trois noussa'h.
  *
@@ -23,8 +28,16 @@ class SimulationSiddurTest {
     private val json = File("src/main/res/raw/siddur_annotations.json").readText()
     private val siddurs = Nusah.entries.associateWith { DataFiles.siddur(it) }
     private val annotations = Nusah.entries.associateWith { SiddurJour.parse(json, it.cle) }
-    private val jours = generateSequence(LocalDate.parse("2025-09-20")) { it.plusDays(1) }
-        .takeWhile { !it.isAfter(LocalDate.parse("2027-10-05")) }.toList()
+    private fun rochHachana(annee: Int): LocalDate =
+        com.kosherjava.zmanim.hebrewcalendar.JewishCalendar(annee, JewishDate.TISHREI, 1).localDate
+    private val annees = (5779..5790) + listOf(5795, 5797, 5812)
+    private val jours = annees.flatMap { a ->
+        generateSequence(rochHachana(a).minusDays(1)) { it.plusDays(1) }.takeWhile { !it.isAfter(rochHachana(a + 1).plusDays(23)) }.toList()
+    }.distinct().sorted()
+    /** Un jour par lieu, calculé une fois pour tous les tests. */
+    private val calendrier = HashMap<Triple<LocalDate, Boolean, Boolean>, CalendrierJuif.Jour>()
+    private fun jour(date: LocalDate, israel: Boolean, muree: Boolean = false) =
+        calendrier.getOrPut(Triple(date, israel, muree)) { CalendrierJuif.jour(date, israel, muree) }
 
     private class Lieu(val nom: String, val israel: Boolean, val muree: Boolean = false, val sud: Boolean = false)
     private val lieux = listOf(Lieu("diaspora", false), Lieu("Israël", true), Lieu("Jérusalem", true, muree = true), Lieu("sud", false, sud = true))
@@ -80,6 +93,9 @@ class SimulationSiddurTest {
         Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { C.TICHA_BEAV_KIPPOUR !in it }, setOf(Nusah.EDOT)),
         Regle(setOf("hallel"), "תתקבל", { C.HANOUKA !in it }),
         Regle(setOf("minha"), "ויאמר דוד אל גד", si(C.TAHANOUN_MINHA)),
+        // Avinou malkénou (Ashkenaz, Sfard) ; à Min'ha, pas la veille de Chabbat (12/11 : jeûne de Tévèt un vendredi).
+        Regle(setOf("chaharit"), "אבינו מלכנו חטאנו לפניך", si(C.AVINOU_MALKENOU), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
+        Regle(setOf("minha"), "אבינו מלכנו חטאנו לפניך", si(C.AVINOU_MALKENOU_MINHA), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
         // Méèn chaloch.
         Regle(setOf("meen_chaloch"), "ורצה והחליצנו", si(C.CHABBAT)),
         Regle(setOf("meen_chaloch"), "ביום הזכרון הזה", si(C.ROCH_HACHANA)),
@@ -89,50 +105,62 @@ class SimulationSiddurTest {
     fun `chaque jour, chaque passage du moment se lit le jour dit et rien ne se perd`() {
         val ecarts = sortedMapOf<String, MutableList<LocalDate>>()
         var verifications = 0
+        // Les jours de mêmes conditions se lisent pareil : une lecture par lieu et jeu de conditions.
+        val lus = HashMap<Pair<String, Set<String>>, Pair<List<String>, Int>>()
+        for (lieu in lieux) for (date in jours) {
+            val conditions = jour(date, lieu.israel, lieu.muree).conditions
+            val (trouves, faites) = lus.getOrPut(lieu.nom to conditions) { lire(lieu, conditions) }
+            trouves.forEach { ecarts.getOrPut(it) { mutableListOf() } += date }
+            verifications += faites
+        }
+        val rapport = ecarts.entries.joinToString("\n") { (k, v) -> "$k : ${v.size} jour(s), dont ${v.take(4).joinToString()}" }
+        assertTrue("Écarts :\n$rapport", ecarts.isEmpty())
+        assertTrue("la simulation a tourné ($verifications)", verifications > 1_000_000)
+    }
+
+    /** Les écarts d'un lieu pour un jeu de conditions, et le nombre de vérifications faites. */
+    private fun lire(lieu: Lieu, conditions: Set<String>): Pair<List<String>, Int> {
+        val ecarts = mutableListOf<String>()
+        var verifications = 0
         val textes = setOf("chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "hallel", "birkot_hachahar")
         // Les consignes d'oubli (12/11) : toujours repliées, jamais en clair.
         val oubli = Regex("^\\(?(טעה|שכח|אם שכח|אם טעה|ואם טעה|אם לא אמר|ואם לא אמר)(?=\\s|:|$)|^בכל השנה אם אמר המלך המשפט")
-        for (lieu in lieux) for (date in jours) {
-            val jour = CalendrierJuif.jour(date, lieu.israel, lieu.muree)
-            for (n in Nusah.entries) {
-                if (lieu.sud && n != Nusah.EDOT) continue
-                val c = SiddurJour.conditionsPour(n.cle, lieu.israel, jour.conditions, sud = lieu.sud)
-                for (id in textes) {
-                    val texte = siddurs.getValue(n).texte(id) ?: continue
-                    val ann = annotations.getValue(n)[id].orEmpty()
-                    val lignes = SiddurJour.lignes(texte, ann, jour.conditions, nusah = n.cle, enIsrael = lieu.israel, sud = lieu.sud)
-                    // Rien n'est retiré : tous les replis ouverts, chaque bloc revient, une fois.
-                    val cles = lignes.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }.toSet()
-                    val tout = SiddurJour.lignes(texte, ann, jour.conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
-                    val vus = tout.filterIsInstance<SiddurJour.Ligne.Bloc>().map { it.bloc }
-                    if (vus.size != texte.sections.sumOf { it.blocs.size } ||
-                        texte.sections.any { s -> s.blocs.any { b -> vus.none { it === b } } }) {
-                        ecarts.getOrPut("${n.cle} $id ${lieu.nom} : un bloc manque, replis ouverts") { mutableListOf() } += date
+        for (n in Nusah.entries) {
+            if (lieu.sud && n != Nusah.EDOT) continue
+            val c = SiddurJour.conditionsPour(n.cle, lieu.israel, conditions, sud = lieu.sud)
+            for (id in textes) {
+                val texte = siddurs.getValue(n).texte(id) ?: continue
+                val ann = annotations.getValue(n)[id].orEmpty()
+                val lignes = SiddurJour.lignes(texte, ann, conditions, nusah = n.cle, enIsrael = lieu.israel, sud = lieu.sud)
+                // Rien n'est retiré : tous les replis ouverts, chaque bloc revient, une fois.
+                val cles = lignes.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }.toSet()
+                val tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
+                val vus = tout.filterIsInstance<SiddurJour.Ligne.Bloc>().map { it.bloc }
+                if (vus.size != texte.sections.sumOf { it.blocs.size } ||
+                    texte.sections.any { s -> s.blocs.any { b -> vus.none { it === b } } }) {
+                    ecarts += "${n.cle} $id ${lieu.nom} : un bloc manque, replis ouverts"
+                }
+                if (lignes.any { it is SiddurJour.Ligne.Bloc && it.bloc.consigne && oubli.containsMatchIn(SiddurJour.empreinte(it.bloc.texte)) }) {
+                    ecarts += "${n.cle} $id ${lieu.nom} : consigne d'oubli en clair"
+                }
+                // Les passages du moment.
+                for (r in regles) {
+                    if (id !in r.textes || n !in r.nusah) continue
+                    val p = plat(r.phrase)
+                    if (texte.sections.none { s -> s.blocs.any { !it.consigne && platBloc(it).contains(p) } }) continue
+                    val clair = lignes.any {
+                        it is SiddurJour.Ligne.Bloc && it.style != SiddurJour.Style.HORS && !it.bloc.consigne &&
+                            (if (it.bloc.texte.length == 0) false else (platDe[it.bloc] ?: plat(it.bloc.texte)).contains(p))
                     }
-                    if (lignes.any { it is SiddurJour.Ligne.Bloc && it.bloc.consigne && oubli.containsMatchIn(SiddurJour.empreinte(it.bloc.texte)) }) {
-                        ecarts.getOrPut("${n.cle} $id ${lieu.nom} : consigne d'oubli en clair") { mutableListOf() } += date
-                    }
-                    // Les passages du moment.
-                    for (r in regles) {
-                        if (id !in r.textes || n !in r.nusah) continue
-                        val p = plat(r.phrase)
-                        if (texte.sections.none { s -> s.blocs.any { !it.consigne && platBloc(it).contains(p) } }) continue
-                        val clair = lignes.any {
-                            it is SiddurJour.Ligne.Bloc && it.style != SiddurJour.Style.HORS && !it.bloc.consigne &&
-                                (if (it.bloc.texte.length == 0) false else (platDe[it.bloc] ?: plat(it.bloc.texte)).contains(p))
-                        }
-                        verifications++
-                        val attendu = r.quand(c)
-                        if (clair != attendu) {
-                            ecarts.getOrPut("${n.cle} $id ${lieu.nom} « ${r.phrase} » ${if (attendu) "replié le jour dit" else "en clair hors du jour"}") { mutableListOf() } += date
-                        }
+                    verifications++
+                    val attendu = r.quand(c)
+                    if (clair != attendu) {
+                        ecarts += "${n.cle} $id ${lieu.nom} « ${r.phrase} » ${if (attendu) "replié le jour dit" else "en clair hors du jour"}"
                     }
                 }
             }
         }
-        val rapport = ecarts.entries.joinToString("\n") { (k, v) -> "$k : ${v.size} jour(s), dont ${v.take(4).joinToString()}" }
-        assertTrue("Écarts :\n$rapport", ecarts.isEmpty())
-        assertTrue("la simulation a tourné ($verifications)", verifications > 100_000)
+        return ecarts to verifications
     }
 
     /** « מגדול » à la fin du Birkat (12/11) : les jours de Moussaf en Edot, Chabbat et Yom tov en Ashkenaz et en Sfard ; une fois. */
@@ -140,7 +168,7 @@ class SimulationSiddurTest {
     fun `migdol les jours dits, une seule fois`() {
         val jours = mapOf(Nusah.EDOT to setOf(C.CHABBAT, C.ROCH_HODECH, C.MOED, C.YOM_TOV), Nusah.ASHKENAZ to setOf(C.CHABBAT, C.YOM_TOV), Nusah.SEFARD to setOf(C.CHABBAT, C.YOM_TOV))
         for ((n, cles) in jours) for (date in this.jours) for (israel in listOf(false, true)) {
-            val c = CalendrierJuif.jour(date, israel).conditions
+            val c = jour(date, israel).conditions
             val l = SiddurJour.lignes(siddurs.getValue(n).texte("birkat_hamazon")!!, annotations.getValue(n).getValue("birkat_hamazon"), c, nusah = n.cle, enIsrael = israel)
             val migdol = l.count { it is SiddurJour.Ligne.Indice && plat(it.texte) == "מגדול" }
             assertEquals("${n.cle} $date ${if (israel) "Israël" else "diaspora"}", if (cles.any { it in c }) 1 else 0, migdol)
@@ -188,7 +216,7 @@ class SimulationSiddurTest {
         val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL)
         val vues = mutableMapOf<String, MutableSet<Boolean>>()
         for (lieu in lieux) for (date in jours) {
-            val jour = CalendrierJuif.jour(date, lieu.israel, lieu.muree)
+            val jour = jour(date, lieu.israel, lieu.muree)
             for (n in Nusah.entries) {
                 if (lieu.sud && n != Nusah.EDOT) continue
                 val c = SiddurJour.conditionsPour(n.cle, lieu.israel, jour.conditions, sud = lieu.sud)
@@ -217,13 +245,71 @@ class SimulationSiddurTest {
     /** Les situations demandées, nommées : Roch 'Hodech, motsaé Chabbat, fêtes, jeûnes, Hanouka, Pourim, dix jours. */
     @Test
     fun `les situations nommees existent dans la periode simulee`() {
-        fun a(cle: String, israel: Boolean = false) = jours.count { cle in CalendrierJuif.jour(it, israel).conditions }
+        fun a(cle: String, israel: Boolean = false) = jours.count { cle in jour(it, israel).conditions }
         listOf(C.ROCH_HODECH, C.MOTSAE_CHABBAT, C.MOTSAE_CHABBAT_YT, C.CHABBAT, C.CHABBAT_ROCH_HODECH, C.YOM_TOV, C.YOM_TOV_CHABBAT,
             C.PESSAH, C.SOUKKOT, C.CHAVOUOT, C.ROCH_HACHANA, C.KIPPOUR, C.CHEMINI_ATSERET, C.HANOUKA, C.POURIM, C.JEUNE, C.TICHA_BEAV,
             C.ASSERET_YEMEI_TECHOUVA, C.OMER, C.EMBOLISMIQUE, C.BASCULE_PLUIE)
             .forEach { assertTrue(it, a(it) > 0) }
         // Roch 'Hodech de deux jours, et Hanouka qui le traverse (Tévèt).
         assertTrue(jours.any { C.ROCH_HODECH in CalendrierJuif.jour(it, false).conditions && C.HANOUKA in CalendrierJuif.jour(it, false).conditions })
-        assertEquals("deux années complètes", true, jours.size > 700)
+        assertEquals("quinze années complètes", true, jours.size > 5_500)
+    }
+
+    /**
+     * Les quatorze sortes d'années (קביעות) et leurs cas rares (12/11) : présents dans la période, et
+     * le calendrier les traite comme le siddour l'attend.
+     */
+    @Test
+    fun `les quatorze sortes d'annees et leurs cas rares`() {
+        val sortes = annees.map { a -> rochHachana(a).dayOfWeek to java.time.temporal.ChronoUnit.DAYS.between(rochHachana(a), rochHachana(a + 1)) }
+        assertEquals("$sortes", 14, sortes.toSet().size)
+        fun heb(d: LocalDate) = com.kosherjava.zmanim.hebrewcalendar.JewishCalendar(d)
+        fun c(d: LocalDate, israel: Boolean = false, muree: Boolean = false) = jour(d, israel, muree).conditions
+
+        val samedi = java.time.DayOfWeek.SATURDAY
+
+        // Pourim triple : le 15 Adar un Chabbat. À Jérusalem, Al hanissim ce Chabbat-là, pas le vendredi
+        // (Choul'han Aroukh 688:6) ; ailleurs, Pourim le vendredi 14.
+        val triples = jours.filter { it.dayOfWeek == samedi && heb(it).jewishDayOfMonth == 15 && heb(it).jewishMonth == (if (heb(it).isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR) }
+        assertTrue("Pourim triple", triples.size >= 2)
+        triples.forEach { d ->
+            assertTrue("$d Jérusalem", C.AL_HANISSIM in c(d, true, true) && C.POURIM in c(d, true, true))
+            assertTrue("${d.minusDays(1)} Jérusalem", C.AL_HANISSIM !in c(d.minusDays(1), true, true))
+            assertTrue("${d.minusDays(1)} ailleurs", C.AL_HANISSIM in c(d.minusDays(1), true) && C.AL_HANISSIM in c(d.minusDays(1), false))
+            assertTrue("${d.minusDays(1)} pas de Ta'hanoun", C.TAHANOUN_CHAHARIT !in c(d.minusDays(1), true, true))
+        }
+
+        // 9 Av un Chabbat : le jeûne passe au dimanche, « נחם » et le reste avec lui.
+        val reportes = jours.filter { it.dayOfWeek == samedi && heb(it).jewishMonth == JewishDate.AV && heb(it).jewishDayOfMonth == 9 }
+        assertTrue("9 Av reporté", reportes.size >= 3)
+        reportes.forEach { d ->
+            assertTrue("$d", C.TICHA_BEAV !in c(d) && C.JEUNE !in c(d))
+            assertTrue("${d.plusDays(1)}", C.TICHA_BEAV in c(d.plusDays(1)) && C.MOTSAE_CHABBAT_YT in c(d.plusDays(1)) && C.TICHA_BEAV_KIPPOUR in c(d.plusDays(1)))
+        }
+
+        // La veille de Pessa'h un Chabbat (5781, 5785).
+        assertTrue(jours.any { it.dayOfWeek == samedi && heb(it).jewishMonth == JewishDate.NISSAN && heb(it).jewishDayOfMonth == 14 })
+
+        // Kislev de 29 jours : Roch 'Hodech Tévèt d'un seul jour, au milieu de 'Hanouka ; Al hanissim et יעלה ויבא.
+        val unJour = jours.filter { C.HANOUKA in c(it) && C.ROCH_HODECH in c(it) && C.ROCH_HODECH !in c(it.minusDays(1)) && C.ROCH_HODECH !in c(it.plusDays(1)) }
+        assertTrue("Roch 'Hodech Tévèt d'un jour", unJour.isNotEmpty())
+        unJour.forEach { assertTrue("$it", C.AL_HANISSIM in c(it) && C.YAALE_VEYAVO in c(it) && C.HALLEL_COMPLET in c(it)) }
+
+        // Le 10 Tévèt un vendredi : jeûne quand même ; Avinou malkénou à Cha'harit, pas à Min'ha (12/11).
+        val tevet = jours.filter { it.dayOfWeek == java.time.DayOfWeek.FRIDAY && C.TSOM_GUEDALIA_TEVET in c(it) && C.JEUNE in c(it) }
+        assertTrue(tevet.size >= 3)
+        tevet.forEach {
+            val pour = SiddurJour.conditionsPour("ashkenaz", false, c(it))
+            assertTrue("$it", C.AVINOU_MALKENOU in pour && C.AVINOU_MALKENOU_MINHA !in pour)
+        }
+
+        // Pourim Katan (14 et 15 Adar I) : pas de Ta'hanoun, mais ni Pourim ni Al hanissim.
+        val katan = jours.filter { heb(it).isJewishLeapYear && heb(it).jewishMonth == JewishDate.ADAR && heb(it).jewishDayOfMonth in 14..15 }
+        assertTrue(katan.size >= 8)
+        katan.forEach { assertTrue("$it", C.TAHANOUN_CHAHARIT !in c(it) && C.POURIM !in c(it) && C.AL_HANISSIM !in c(it)) }
+
+        // Roch Hachana un Chabbat, Kippour un Chabbat.
+        assertTrue(jours.any { C.ROCH_HACHANA_CHABBAT in c(it) })
+        assertTrue(jours.any { it.dayOfWeek == samedi && C.KIPPOUR in c(it) })
     }
 }

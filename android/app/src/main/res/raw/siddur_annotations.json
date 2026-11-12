@@ -6700,38 +6700,38 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 0,
     "empreinte": "בתענית ציבור ובעשי״ת אומרים כאן אבינו מל",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 1,
     "empreinte": "אבינו מלכנו חטאנו לפניך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 2,
     "empreinte": "אבינו מלכנו אין לנו מלך אלא אתה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 3,
     "empreinte": "אבינו מלכנו עשה עמנו למען שמך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6740,7 +6740,7 @@
     "b": 4,
     "empreinte": "בעשי״ת:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6749,7 +6749,7 @@
     "b": 5,
     "empreinte": "אבינו מלכנו חדש עלינו שנה טובה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6758,7 +6758,7 @@
     "b": 6,
     "empreinte": "בתענית ציבור:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6767,133 +6767,133 @@
     "b": 7,
     "empreinte": "אבינו מלכנו ברך עלינו שנה טובה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 8,
     "empreinte": "אבינו מלכנו בטל מעלינו כל גזרות קשות:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 9,
     "empreinte": "אבינו מלכנו בטל מחשבות שונאינו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 10,
     "empreinte": "אבינו מלכנו הפר עצת אויבינו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 11,
     "empreinte": "אבינו מלכנו כלה כל צר ומשטין מעלינו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 12,
     "empreinte": "אבינו מלכנו סתום פיות משטיננו ומקטריגנו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 13,
     "empreinte": "אבינו מלכנו כלה דבר וחרב ורעב ושבי ומשחי",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 14,
     "empreinte": "אבינו מלכנו מנע מגפה מנחלתך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 15,
     "empreinte": "אבינו מלכנו סלח ומחל לכל עונותינו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 16,
     "empreinte": "אבינו מלכנו מחה והעבר פשעינו וחטאתינו מנ",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 17,
     "empreinte": "אבינו מלכנו מחוק ברחמיך הרבים כל שטרי חו",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 18,
     "empreinte": "אבינו מלכנו החזירנו בתשובה שלמה לפניך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 19,
     "empreinte": "אבינו מלכנו שלח רפואה שלמה לחולי עמך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 20,
     "empreinte": "אבינו מלכנו קרע רע גזר דיננו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 21,
     "empreinte": "אבינו מלכנו זכרנו בזכרון טוב לפניך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6902,7 +6902,7 @@
     "b": 22,
     "empreinte": "בעשרת ימי תשובה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6911,7 +6911,7 @@
     "b": 23,
     "empreinte": "אבינו מלכנו כתבנו בספר חיים טובים:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6920,7 +6920,7 @@
     "b": 24,
     "empreinte": "אבינו מלכנו כתבנו בספר גאלה וישועה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6929,7 +6929,7 @@
     "b": 25,
     "empreinte": "אבינו מלכנו כתבנו בספר פרנסה וכלכלה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6938,7 +6938,7 @@
     "b": 26,
     "empreinte": "אבינו מלכנו כתבנו בספר זכיות:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6947,7 +6947,7 @@
     "b": 27,
     "empreinte": "אבינו מלכנו כתבנו בספר סליחה ומחילה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6956,7 +6956,7 @@
     "b": 28,
     "empreinte": "בתענית ציבור",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6965,7 +6965,7 @@
     "b": 29,
     "empreinte": "אבינו מלכנו זכרנו לחיים טובים:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6974,7 +6974,7 @@
     "b": 30,
     "empreinte": "אבינו מלכנו זכרנו לגאלה וישועה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6983,7 +6983,7 @@
     "b": 31,
     "empreinte": "אבינו מלכנו זכרנו לפרנסה וכלכלה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -6992,7 +6992,7 @@
     "b": 32,
     "empreinte": "אבינו מלכנו זכרנו לזכיות:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -7001,196 +7001,196 @@
     "b": 33,
     "empreinte": "אבינו מלכנו זכרנו לסליחה ומחילה:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 34,
     "empreinte": "אבינו מלכנו הצמח לנו ישועה בקרוב:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 35,
     "empreinte": "אבינו מלכנו הרם קרן ישראל עמך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 36,
     "empreinte": "אבינו מלכנו הרם קרן משיחך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 37,
     "empreinte": "אבינו מלכנו מלא ידינו מברכותיך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 38,
     "empreinte": "אבינו מלכנו מלא אסמינו שבע:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 39,
     "empreinte": "אבינו מלכנו שמע קולנו חוס ורחם עלינו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 40,
     "empreinte": "אבינו מלכנו קבל ברחמים וברצון את תפלתנו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 41,
     "empreinte": "אבינו מלכנו פתח שערי שמים לתפלתנו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 42,
     "empreinte": "אבינו מלכנו זכור כי עפר אנחנו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 43,
     "empreinte": "אבינו מלכנו נא אל תשיבנו ריקם מלפניך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 44,
     "empreinte": "אבינו מלכנו תהא השעה הזאת שעת רחמים ועת ",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 45,
     "empreinte": "אבינו מלכנו חמול עלינו ועל עוללינו וטפנו",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 46,
     "empreinte": "אבינו מלכנו עשה למען הרוגים על שם קדשך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 47,
     "empreinte": "אבינו מלכנו עשה למען טבוחים על יחודך:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 48,
     "empreinte": "אבינו מלכנו עשה למען באי באש ובמים על קד",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 49,
     "empreinte": "אבינו מלכנו נקום לעינינו נקמת דם עבדיך ה",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 50,
     "empreinte": "אבינו מלכנו עשה למענך אם לא למעננו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 51,
     "empreinte": "אבינו מלכנו עשה למענך והושיענו:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 52,
     "empreinte": "אבינו מלכנו עשה למען רחמיך הרבים:",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 53,
     "empreinte": "אבינו מלכנו עשה למען שמך הגדול הגבור והנ",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 54,
     "empreinte": "אבינו מלכנו חננו ועננו כי אין בנו מעשים ",
     "g": 26,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    }
   ],
   "arvit": [
@@ -12249,38 +12249,38 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 0,
     "empreinte": "בתענית ציבור ובעשי״ת אומרים כאן אבינו מל",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 1,
     "empreinte": "אבינו מלכנו חטאנו לפניך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 2,
     "empreinte": "אבינו מלכנו אין לנו מלך אלא אתה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 3,
     "empreinte": "אבינו מלכנו עשה עמנו למען שמך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12289,7 +12289,7 @@
     "b": 4,
     "empreinte": "בעשי״ת: אבינו מלכנו חדש עלינו שנה טובה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12298,133 +12298,133 @@
     "b": 5,
     "empreinte": "בתענית ציבור: אבינו מלכנו ברך עלינו שנה ",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 6,
     "empreinte": "אבינו מלכנו בטל מעלינו כל גזרות קשות:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 7,
     "empreinte": "אבינו מלכנו בטל מחשבות שונאינו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 8,
     "empreinte": "אבינו מלכנו הפר עצת אויבינו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 9,
     "empreinte": "אבינו מלכנו כלה כל צר ומשטין מעלינו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 10,
     "empreinte": "אבינו מלכנו סתום פיות משטיננו ומקטרגנו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 11,
     "empreinte": "אבינו מלכנו כלה דבר וחרב ורעב ושבי ומשחי",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 12,
     "empreinte": "אבינו מלכנו מנע מגפה מנחלתך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 13,
     "empreinte": "אבינו מלכנו סלח ומחל לכל עונותינו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 14,
     "empreinte": "אבינו מלכנו מחה והעבר פשעינו וחטאתינו מנ",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 15,
     "empreinte": "אבינו מלכנו מחוק ברחמיך הרבים כל שטרי חו",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 16,
     "empreinte": "אבינו מלכנו החזירנו בתשובה שלמה לפניך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 17,
     "empreinte": "אבינו מלכנו שלח רפואה שלמה לחולי עמך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 18,
     "empreinte": "אבינו מלכנו קרע רע גזר דיננו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 19,
     "empreinte": "אבינו מלכנו זכרנו בזכרון טוב לפניך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12433,7 +12433,7 @@
     "b": 20,
     "empreinte": "בעשרת ימי תשובה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12442,7 +12442,7 @@
     "b": 21,
     "empreinte": "אבינו מלכנו כתבנו בספר חיים טובים:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12451,7 +12451,7 @@
     "b": 22,
     "empreinte": "אבינו מלכנו כתבנו בספר גאלה וישועה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12460,7 +12460,7 @@
     "b": 23,
     "empreinte": "אבינו מלכנו כתבנו בספר פרנסה וכלכלה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12469,7 +12469,7 @@
     "b": 24,
     "empreinte": "אבינו מלכנו כתבנו בספר זכיות:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12478,7 +12478,7 @@
     "b": 25,
     "empreinte": "אבינו מלכנו כתבנו בספר סליחה ומחילה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12487,7 +12487,7 @@
     "b": 26,
     "empreinte": "בתענית ציבור",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12496,7 +12496,7 @@
     "b": 27,
     "empreinte": "אבינו מלכנו זכרנו לחיים טובים:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12505,7 +12505,7 @@
     "b": 28,
     "empreinte": "אבינו מלכנו זכרנו לגאלה וישועה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12514,7 +12514,7 @@
     "b": 29,
     "empreinte": "אבינו מלכנו זכרנו לפרנסה וכלכלה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12523,7 +12523,7 @@
     "b": 30,
     "empreinte": "אבינו מלכנו זכרנו לזכיות:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
@@ -12532,196 +12532,196 @@
     "b": 31,
     "empreinte": "אבינו מלכנו זכרנו לסליחה ומחילה:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 32,
     "empreinte": "אבינו מלכנו הצמח לנו ישועה בקרוב:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 33,
     "empreinte": "אבינו מלכנו הרם קרן ישראל עמך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 34,
     "empreinte": "אבינו מלכנו הרם קרן משיחך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 35,
     "empreinte": "אבינו מלכנו מלא ידינו מברכותיך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 36,
     "empreinte": "אבינו מלכנו מלא אסמינו שבע:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 37,
     "empreinte": "אבינו מלכנו שמע קולנו חוס ורחם עלינו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 38,
     "empreinte": "אבינו מלכנו קבל ברחמים וברצון את תפלתנו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 39,
     "empreinte": "אבינו מלכנו פתח שערי שמים לתפלתנו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 40,
     "empreinte": "אבינו מלכנו זכור כי עפר אנחנו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 41,
     "empreinte": "אבינו מלכנו נא אל תשיבנו ריקם מלפניך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 42,
     "empreinte": "אבינו מלכנו תהא השעה הזאת שעת רחמים ועת ",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 43,
     "empreinte": "אבינו מלכנו חמול עלינו ועל עוללינו וטפנו",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 44,
     "empreinte": "אבינו מלכנו עשה למען הרוגים על שם קדשך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 45,
     "empreinte": "אבינו מלכנו עשה למען טבוחים על יחודך:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 46,
     "empreinte": "אבינו מלכנו עשה למען באי באש ובמים על קד",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 47,
     "empreinte": "אבינו מלכנו נקום לעינינו נקמת דםעבדיך הש",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 48,
     "empreinte": "אבינו מלכנו עשה למענך אם לא למעננו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 49,
     "empreinte": "אבינו מלכנו עשה למענך והושיענו:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 50,
     "empreinte": "אבינו מלכנו עשה למען רחמיך הרבים:",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 51,
     "empreinte": "אבינו מלכנו עשה למען שמך הגדול הגבור והנ",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "avinou_malkenou",
+    "si": "avinou_malkenou_minha",
     "b": 52,
     "empreinte": "אבינו מלכנו חננו ועננו כי אין בנו מעשים ",
     "g": 28,
-    "racine": "avinou_malkenou"
+    "racine": "avinou_malkenou_minha"
    },
    {
     "sorte": "bloc",

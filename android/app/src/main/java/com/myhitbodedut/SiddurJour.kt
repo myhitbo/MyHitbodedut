@@ -225,7 +225,11 @@ object SiddurJour {
         if (sansTahanounFinTichri && CalendrierJuif.C.FIN_TICHRI in c) {
             c = c - setOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
         }
-        if (avinouMalkenou(conditions)) c = c + CalendrierJuif.C.AVINOU_MALKENOU
+        if (avinouMalkenou(conditions)) {
+            c = c + CalendrierJuif.C.AVINOU_MALKENOU
+            // Min'ha d'un vendredi (jeûne de Tévèt, dix jours, veille de Kippour un vendredi) : sans (12/11).
+            if ("jour_6" !in conditions) c = c + CalendrierJuif.C.AVINOU_MALKENOU_MINHA
+        }
         return c
     }
 
@@ -233,8 +237,8 @@ object SiddurJour {
      * Avinou malkénou (Ashkenaz, Sfard ; 14/10) : les jeûnes publics sauf le 9 Av
      * et les dix jours de pénitence, Roch
      * Hachana et Kippour compris, jamais le Chabbat. Déduit, non vérifié ligne à
-     * ligne : la veille de Kippour, sans Ta'hanoun, en est exclue ; les nuances de
-     * Min'ha (veille de Chabbat) ne sont pas codées.
+     * ligne : la veille de Kippour, sans Ta'hanoun, en est exclue ; à Min'ha, pas la
+     * veille de Chabbat (AVINOU_MALKENOU_MINHA, 12/11).
      */
     fun avinouMalkenou(conditions: Set<String>): Boolean {
         val c = CalendrierJuif.C
@@ -281,6 +285,7 @@ object SiddurJour {
             // « אומרים כאן הלל » : le Hallel, complet ou non selon le jour.
             c == "hallel" -> "ajout_hallel_annonce"
             c.startsWith("embolismique") -> "ajout_embolismique"
+            c.startsWith("avinou_malkenou") -> "ajout_avinou_malkenou"
             c in setOf("pessah", "soukkot", "chavouot", "roch_hachana", "chemini_atseret", "hanouka", "pourim") -> "fete_$c"
             else -> "ajout_$c"
         }

@@ -455,8 +455,10 @@ def annoter(texte_id, sections, nusah):
             # « … אומרים כאן אבינו מלכנו » et toute la suite, en un seul groupe ; ses lignes
             # propres à un seul des deux en sont des variantes, estompées l'autre jour
             # (SOUS ; relevé du 14/10).
+            # À Min'ha, pas la veille de Chabbat (12/11 : jeûne de Tévèt un vendredi) : sa propre condition.
             elif cons[bi] and "אומרים כאן אבינו מלכנו" in x:
-                prend(bi, "avinou_malkenou")
+                avinou = "avinou_malkenou_minha" if texte_id == "minha" else "avinou_malkenou"
+                prend(bi, avinou)
                 j = bi + 1
                 sous = None
                 souche = None
@@ -483,7 +485,7 @@ def annoter(texte_id, sections, nusah):
                             sous = None
                         if sous and souche is None:
                             souche = mots
-                        prend(j, sous or "avinou_malkenou")
+                        prend(j, sous or avinou)
                     else:
                         break
                     j += 1
@@ -821,6 +823,7 @@ SOUS = {
     "al_hanissim": {"hanouka", "pourim"},
     "moed": {"pessah", "chavouot", "soukkot", "chemini_atseret"},
     "avinou_malkenou": {"jeune", "asseret_yemei_techouva"},
+    "avinou_malkenou_minha": {"jeune", "asseret_yemei_techouva"},
 }
 
 # Une consigne courte annonce les blocs de prière qui la suivent, jusqu'à la
