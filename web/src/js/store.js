@@ -12,6 +12,9 @@ import { SessionRule } from './seance.js';
 import { Anneaux, JaugeSemaine, Plaque } from './regles.js';
 import { JournalPlus } from './regles.js';
 
+// Rien d'importé avant 2000 : une coquille (« 0026-11-04 ») faisait compter la série depuis l'an 26 (check-up du 11/11).
+const PREMIER_JOUR_IMPORTABLE = '2000-01-01';
+
 export const DEFAULT_START = 6 * 60;
 export const DEFAULT_END = 11 * 60;
 export const DEFAULT_SNOOZE = 15;
@@ -559,7 +562,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
       for (const [date, e] of Object.entries(jours)) {
         if (!e || typeof e !== 'object' || Array.isArray(e)) continue;
         // Une vraie date, pas dans l'avenir (Store.importJson).
-        if (!dateValide(date) || date >= demain) continue;
+        if (!dateValide(date) || date >= demain || date < PREMIER_JOUR_IMPORTABLE) continue;
         const noteSeule = e.note_seule === true;
         const entrant = {
           date,
@@ -586,7 +589,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
       // Le journal enrichi (02/11) : un jour déjà noté ici garde ce qu'il a, comme la note.
       if (root.journal_plus && typeof root.journal_plus === 'object' && !Array.isArray(root.journal_plus)) {
         for (const [date, e] of Object.entries(root.journal_plus)) {
-          if (!dateValide(date) || date >= demain) continue;
+          if (!dateValide(date) || date >= demain || date < PREMIER_JOUR_IMPORTABLE) continue;
           if (JournalPlus.vide(store.journalPlus(date))) store.setJournalPlus(date, JournalPlus.lire(e));
         }
       }

@@ -71,6 +71,10 @@ class JournalActivity : AppCompatActivity() {
         )
     }
 
+    private companion object {
+        const val LIGNES_REPLIEES = 6
+    }
+
     private inner class Adapter : RecyclerView.Adapter<Adapter.Holder>() {
 
         // Les dates dans la langue de l'application : la langue par défaut de Java
@@ -83,7 +87,11 @@ class JournalActivity : AppCompatActivity() {
             val date: TextView = view.findViewById(R.id.entry_date)
             val duration: TextView = view.findViewById(R.id.entry_duration)
             val note: TextView = view.findViewById(R.id.entry_note)
+            val plus: TextView = view.findViewById(R.id.entry_more)
         }
+
+        /** Les journées dont la note est dépliée. */
+        private val deplies = mutableSetOf<String>()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder =
             Holder(LayoutInflater.from(parent.context).inflate(R.layout.item_journal, parent, false))
@@ -111,6 +119,21 @@ class JournalActivity : AppCompatActivity() {
             val texte = listOf(row.note, plus).filter { it.isNotBlank() }.joinToString("\n")
             holder.note.visibility = if (texte.isBlank()) View.GONE else View.VISIBLE
             holder.note.text = texte
+            // Une longue note occupait plusieurs écrans : repliée à six lignes,
+            // « Lire la suite » la déplie (check-up du 11/11).
+            val deplie = row.date in deplies
+            holder.note.maxLines = if (deplie) Int.MAX_VALUE else LIGNES_REPLIEES
+            holder.plus.text = getString(if (deplie) R.string.hilloula_reduire else R.string.hilloula_lire_plus)
+            holder.plus.visibility = if (deplie) View.VISIBLE else View.GONE
+            if (!deplie && texte.isNotBlank()) holder.note.post {
+                val l = holder.note.layout ?: return@post
+                if (l.lineCount > 0 && l.getEllipsisCount(l.lineCount - 1) > 0) holder.plus.visibility = View.VISIBLE
+            }
+            holder.plus.setOnClickListener {
+                if (!deplies.add(row.date)) deplies.remove(row.date)
+                val p = holder.bindingAdapterPosition
+                if (p != RecyclerView.NO_POSITION) notifyItemChanged(p)
+            }
             holder.itemView.setOnClickListener {
                 NoteDialog.show(this@JournalActivity, row.date, onSaved = { reload() })
             }

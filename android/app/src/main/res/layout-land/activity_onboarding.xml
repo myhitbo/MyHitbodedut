@@ -126,6 +126,12 @@
                     <Button
                         android:id="@+id/onboarding_duree_0"
                         style="@style/Widget.Material3.Button.OutlinedButton"
+                android:minWidth="0dp"
+                android:paddingHorizontal="4dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:maxLines="1"
+                android:ellipsize="end"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -133,6 +139,12 @@
                     <Button
                         android:id="@+id/onboarding_duree_1"
                         style="@style/Widget.Material3.Button.OutlinedButton"
+                android:minWidth="0dp"
+                android:paddingHorizontal="4dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:maxLines="1"
+                android:ellipsize="end"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -140,6 +152,12 @@
                     <Button
                         android:id="@+id/onboarding_duree_2"
                         style="@style/Widget.Material3.Button.OutlinedButton"
+                android:minWidth="0dp"
+                android:paddingHorizontal="4dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:maxLines="1"
+                android:ellipsize="end"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -147,6 +165,12 @@
                     <Button
                         android:id="@+id/onboarding_duree_3"
                         style="@style/Widget.Material3.Button.OutlinedButton"
+                android:minWidth="0dp"
+                android:paddingHorizontal="4dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:maxLines="1"
+                android:ellipsize="end"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />

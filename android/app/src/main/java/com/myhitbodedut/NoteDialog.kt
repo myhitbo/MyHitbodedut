@@ -63,7 +63,10 @@ object NoteDialog {
                     text = e
                     textSize = 26f
                     gravity = Gravity.CENTER
-                    layoutParams = LinearLayout.LayoutParams(0, (44 * density).toInt(), 1f)
+                    // Hauteur minimale plutôt que fixe : en grande police, les
+                    // visages étaient rognés (check-up du 11/11).
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    minHeight = (48 * density).toInt()
                     alpha = if (initiale == i + 1) 1f else 0.35f
                     contentDescription = "${i + 1}/5"
                 }
@@ -82,14 +85,20 @@ object NoteDialog {
             filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
             setText(plus.gratitude)
             setHint(R.string.journal_gratitude_hint)
-            setSingleLine()
+            // Jusqu'à 200 caractères : sur une seule ligne, ni l'indice ni la
+            // réponse ne se relisaient (check-up du 11/11).
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            minLines = 1
+            maxLines = 3
         }
         // La seconde question de fin (19/10) : une chose à travailler.
         val travail = EditText(activity).apply {
             filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
             setText(plus.travail)
             setHint(R.string.journal_travail_hint)
-            setSingleLine()
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            minLines = 1
+            maxLines = 3
         }
 
         val layout = LinearLayout(activity).apply {

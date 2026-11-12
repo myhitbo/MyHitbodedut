@@ -54,7 +54,13 @@ class GateService : Service() {
      * startForegroundService, service déjà lancé ou non.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startInForeground()
+        // Relancé en arrière-plan (START_STICKY) là où Android l'interdit :
+        // s'arrêter proprement plutôt que planter en boucle ; l'ouverture de
+        // l'application ou le redémarrage le relancent (check-up du 11/11).
+        if (runCatching { startInForeground() }.isFailure) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         if (intent?.action == ACTION_PREVIEW) {
             previewing = true
             showOverlay(BlockerMode.PREVIEW)
@@ -88,12 +94,36 @@ class GateService : Service() {
         val current = readForegroundPackage()
         val blocked = current != null &&
             current != packageName &&
+            current !in jamaisBloquees &&
             Store.blockedApps(this).contains(current)
 
         if (blocked) {
             showOverlay(if (running) BlockerMode.SESSION_RUNNING else BlockerMode.PROMPT)
         } else {
             hideOverlay()
+        }
+    }
+
+    /**
+     * Ce que l'écran de garde ne couvre jamais, même coché : le téléphone
+     * (un appel décroché le matin se retrouvait sous l'écran, sans moyen de
+     * raccrocher), les Réglages et l'écran d'accueil (check-up du 11/11).
+     */
+    private val jamaisBloquees: Set<String> by lazy {
+        buildSet {
+            addAll(listOf(
+                "com.android.settings", "com.android.phone", "com.android.server.telecom",
+                "com.android.incallui", "com.google.android.dialer", "com.samsung.android.incallui",
+                "com.samsung.android.dialer"
+            ))
+            runCatching { (getSystemService(Context.TELECOM_SERVICE) as android.telecom.TelecomManager).defaultDialerPackage }
+                .getOrNull()?.let { add(it) }
+            runCatching {
+                packageManager.resolveActivity(
+                    Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME),
+                    android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
+                )?.activityInfo?.packageName
+            }.getOrNull()?.let { add(it) }
         }
     }
 

@@ -158,6 +158,9 @@ object Store {
     /** Les jours où le Tikoun a été dit en entier (04/11), « 2026-11-04,… » : pour ses trophées. */
     private const val KEY_TIKKUN_JOURNAL = "tikkun_journal"
 
+    /** Rien d'importé avant cette date : l'application n'existait pas, c'est une coquille. */
+    private val PREMIER_JOUR_IMPORTABLE: LocalDate = LocalDate.of(2000, 1, 1)
+
     /** Le jour du Tikoun bascule à 4 h, pas à minuit : commencé à 23 h 45, il se finit après minuit (bug du 02/11). */
     fun jourTikkun(maintenant: java.time.LocalDateTime = java.time.LocalDateTime.now()): String =
         maintenant.minusHours(4).toLocalDate().format(FORMAT)
@@ -199,12 +202,34 @@ object Store {
 
     // --- Journées -----------------------------------------------------------
 
+    /*
+     * La dernière lecture du journal, gardée tant que son texte ne change pas.
+     * L'accueil appelait days() 30 à 40 fois à chaque retour, et chaque appel
+     * réanalysait tout l'historique : l'application ralentissait à mesure
+     * qu'on s'en servait (check-up du 11/11). La clé est le texte lui-même,
+     * que SharedPreferences rend tel quel tant que rien ne l'a réécrit.
+     */
+    @Volatile private var joursBrut: String? = null
+    @Volatile private var joursAnciens: Set<String>? = null
+    @Volatile private var joursLus: Map<String, DayRecord>? = null
+
     /** Lit la carte des journées, en reprenant l'ancien format s'il existe encore. */
     fun days(context: Context): Map<String, DayRecord> {
-        val result = linkedMapOf<String, DayRecord>()
         // Fichier du journal d'abord, puis reprise de l'ancien emplacement.
         val raw = journalPrefs(context).getString(KEY_DAYS, null)
             ?: prefs(context).getString(KEY_DAYS, null)
+        val anciens = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
+        val memoire = joursLus
+        if (memoire != null && raw == joursBrut && anciens == joursAnciens) return memoire
+        val lus = lireJours(context, raw, anciens)
+        joursBrut = raw
+        joursAnciens = HashSet(anciens)
+        joursLus = lus
+        return lus
+    }
+
+    private fun lireJours(context: Context, raw: String?, legacy: Set<String>): Map<String, DayRecord> {
+        val result = linkedMapOf<String, DayRecord>()
         if (raw != null) {
             runCatching {
                 val root = JSONObject(raw)
@@ -230,11 +255,10 @@ object Store {
             }
         }
         // Reprise des jours validés par les versions précédentes.
-        val legacy = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
         legacy.forEach { date ->
             if (!result.containsKey(date)) result[date] = DayRecord(date, 0, "")
         }
-        return result
+        return java.util.Collections.unmodifiableMap(result)
     }
 
     private fun writeDays(context: Context, days: Map<String, DayRecord>) {
@@ -1518,6 +1542,11 @@ object Store {
         root.put("settings", settings)
         root.put("paused_dates", org.json.JSONArray(pausedDates(context).toList()))
         root.put("blocked_apps", org.json.JSONArray(blockedApps(context).toList()))
+        // Le journal enrichi (humeur, gratitude, « à travailler ») et les jours
+        // du Tikoun : un changement de téléphone les perdait (check-up du 11/11).
+        // Même clé que la version web, qui l'exportait déjà.
+        root.put("journal_plus", runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject()))
+        root.put("tikkun_journal", org.json.JSONArray(tikkunJournal(context).map { it.toString() }.sorted()))
         return root.toString(2)
     }
 
@@ -1536,6 +1565,9 @@ object Store {
                 // ouverture ; une date à venir n'a rien à faire dans un journal.
                 val jour = dateValide(date) ?: continue
                 if (!jour.isBefore(demain)) continue
+                // Une coquille (« 0026-11-04 ») faisait compter la série jour
+                // par jour depuis l'an 26 : blocage à chaque ouverture (check-up du 11/11).
+                if (jour.isBefore(PREMIER_JOUR_IMPORTABLE)) continue
                 val incoming = DayRecord(
                     date,
                     entry.optInt("minutes", 0).coerceIn(0, 24 * 60),
@@ -1562,6 +1594,35 @@ object Store {
             }
         }
         writeDays(context, merged)
+
+        // Le journal enrichi : un jour déjà rempli ici garde ce qu'il a, comme la note.
+        root.optJSONObject("journal_plus")?.let { plus ->
+            val demain = LocalDate.now().plusDays(1)
+            for (date in plus.keys()) {
+                val jour = dateValide(date) ?: continue
+                if (!jour.isBefore(demain) || jour.isBefore(PREMIER_JOUR_IMPORTABLE)) continue
+                val e = plus.optJSONObject(date) ?: continue
+                if (!JournalPlus.lire(context, date).vide) continue
+                JournalPlus.ecrire(
+                    context, date,
+                    JournalPlus.Plus(
+                        e.optInt("avant", 0).coerceIn(0, 5),
+                        e.optInt("apres", 0).coerceIn(0, 5),
+                        e.optString("gratitude", "").take(JournalPlus.GRATITUDE_MAX),
+                        e.optString("travail", "").take(JournalPlus.GRATITUDE_MAX)
+                    )
+                )
+            }
+        }
+        root.optJSONArray("tikkun_journal")?.let { array ->
+            val aujourdhui = LocalDate.now()
+            val jours = tikkunJournal(context).toMutableSet()
+            for (i in 0 until array.length()) {
+                val jour = dateValide(array.optString(i)) ?: continue
+                if (!jour.isAfter(aujourdhui) && !jour.isBefore(PREMIER_JOUR_IMPORTABLE)) jours += jour
+            }
+            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, jours.sorted().joinToString(",")).apply()
+        }
 
         root.optJSONObject("settings")?.let { settings ->
             // Chaque valeur est ramenée dans ce que l'écran permet : un

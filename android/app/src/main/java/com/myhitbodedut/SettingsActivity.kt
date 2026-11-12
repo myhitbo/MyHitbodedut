@@ -136,12 +136,16 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.window_start).setOnClickListener {
             pickTime(Store.windowStart(this)) {
+                // Début = fin : la fenêtre serait vide et la barrière ne
+                // s'armerait jamais (check-up du 11/11).
+                if (it == Store.windowEnd(this)) { fenetreVide(); return@pickTime }
                 Store.setWindow(this, it, Store.windowEnd(this))
                 refresh()
             }
         }
         findViewById<Button>(R.id.window_end).setOnClickListener {
             pickTime(Store.windowEnd(this)) {
+                if (it == Store.windowStart(this)) { fenetreVide(); return@pickTime }
                 Store.setWindow(this, Store.windowStart(this), it)
                 refresh()
             }
@@ -175,6 +179,10 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<Button>(R.id.reset_app).setOnClickListener { confirmerReinitialisation() }
     }
 
+    private fun fenetreVide() {
+        android.widget.Toast.makeText(this, R.string.window_same_error, android.widget.Toast.LENGTH_LONG).show()
+    }
+
     /** Tout effacer, après confirmation : séance, barrière, rappels, notifications, puis les données ; on repart de la présentation. */
     private fun confirmerReinitialisation() {
         MaterialAlertDialogBuilder(this)
@@ -182,6 +190,9 @@ class SettingsActivity : AppCompatActivity() {
             .setMessage(R.string.reset_confirm_text)
             .setNegativeButton(R.string.reset_confirm_no, null)
             .setPositiveButton(R.string.reset_confirm_yes) { _, _ ->
+                // Avant d'effacer les préférences, qui gardent le mode d'avant
+                // la séance (check-up du 11/11).
+                NePasDeranger.retablir(this)
                 stopService(Intent(this, SessionService::class.java))
                 GateService.stop(this)
                 Reminder.cancel(this)

@@ -106,6 +106,9 @@ class SessionService : Service() {
                 }
                 // L'ambiance suit son réglage, que la musique soit là ou non (19/10).
                 ambiance.start(AmbiancePlayer.choisie(this), Store.musicVolume(this))
+                // Le volume réglé pendant la séance s'applique tout de suite
+                // (check-up du 11/11 : il n'était qu'enregistré).
+                music.setVolume(Store.musicVolume(this))
                 if (!Store.musicEnabled(this)) {
                     music.stop()
                     // Service déjà en marche : rien d'autre à faire. Sinon
@@ -121,7 +124,14 @@ class SessionService : Service() {
                 // Réactivée : le chemin ordinaire ci-dessous relance le morceau.
             }
         }
-        startForegroundNow()
+        if (!startForegroundNow()) {
+            // Relancé en arrière-plan (START_STICKY) sur un Android qui
+            // interdit d'y passer au premier plan : ne pas planter.
+            // reconcilier() reprendra la séance à la prochaine ouverture
+            // (check-up du 11/11).
+            stopSelf()
+            return START_NOT_STICKY
+        }
         enMarche = true
         lecteur = music
         garderEveille()
@@ -136,6 +146,11 @@ class SessionService : Service() {
     }
 
     override fun onDestroy() {
+        // Arrêté de l'extérieur (Réinitialiser) : rien ne doit continuer à
+        // jouer sans personne pour l'arrêter (check-up du 11/11). Sans effet
+        // après stopSelfAndClear, qui a déjà tout coupé.
+        music.stop(fade = false)
+        NePasDeranger.retablir(this)
         ambiance.stop()
         lecteur = null
         handler.removeCallbacks(tick)
@@ -166,7 +181,16 @@ class SessionService : Service() {
 
     /** Renvoie vrai tant que la séance continue. */
     private fun refresh(): Boolean {
-        if (!Store.isSessionRunning(this)) {
+        // Une séance sans durée oubliée s'arrête au plafond, comme une séance
+        // reprise après coup : sans cela elle courait indéfiniment, musique,
+        // « Ne pas déranger » et barrière compris (check-up du 11/11).
+        val echue = SessionRule.estEchue(
+            Store.sessionStartedAt(this),
+            Store.sessionEndsAt(this),
+            Store.sessionTarget(this),
+            System.currentTimeMillis()
+        )
+        if (!Store.isSessionRunning(this) || echue) {
             finishSession(early = false)
             return false
         }
@@ -327,6 +351,9 @@ class SessionService : Service() {
         val notification = Notification.Builder(this, Notifications.CHANNEL_REMINDER)
             .setContentTitle(getString(R.string.session_done_title))
             .setContentText(getString(R.string.session_done_text, Store.formatDuration(this, minutes)))
+            // Le texte entier, « Touchez pour laisser une note » compris : il
+            // était coupé sur une ligne (check-up du 11/11).
+            .setStyle(Notification.BigTextStyle().bigText(getString(R.string.session_done_text, Store.formatDuration(this, minutes))))
             .setSmallIcon(R.drawable.ic_notification)
             // Les anneaux tels que la séance les laisse.
             .setLargeIcon(AnneauxImage.notification(this))
@@ -349,7 +376,10 @@ class SessionService : Service() {
             getString(R.string.session_remaining, Store.formatDuration(this, remainingMinutes()))
     }
 
-    private fun startForegroundNow() {
+    /** Passe au premier plan ; faux si Android le refuse (relance en arrière-plan). */
+    private fun startForegroundNow(): Boolean = runCatching { premierPlan() }.isSuccess
+
+    private fun premierPlan() {
         val open = PendingIntent.getActivity(
             this,
             0,
@@ -423,6 +453,10 @@ class SessionService : Service() {
                 maintenant
             )
             if (echue) {
+                // Le mode d'avant la séance, retenu par activer(), revient :
+                // sans cela le téléphone restait en « Ne pas déranger » après
+                // un redémarrage en pleine séance (check-up du 11/11).
+                NePasDeranger.retablir(context)
                 val theme = Store.sessionTheme(context)
                 val close = Store.endSession(context)
                 if (close.minutes > 0) inscrire(context, close, theme)

@@ -299,9 +299,26 @@ class HilloulotActivity : AppCompatActivity() {
         orientation = LinearLayout.VERTICAL
         setPadding(0, 0, 0, VueJour.dp(context, 14))
         h.description?.let { d ->
-            addView(VueJour.texte(context, VueJour.paragraphes(d), 14f, R.color.ink).apply {
+            val notice = VueJour.texte(context, VueJour.paragraphes(d), 14f, R.color.ink).apply {
                 textDirection = View.TEXT_DIRECTION_RTL; PoliceHebraique.appliquer(this)
-            })
+            }
+            addView(notice)
+            // La notice se replie comme les biographies : 65 dépassaient
+            // 500 caractères et s'affichaient en entier (check-up du 11/11).
+            if (d.length > 500) {
+                notice.maxLines = 8
+                notice.ellipsize = android.text.TextUtils.TruncateAt.END
+                addView(VueJour.texte(context, getString(R.string.hilloula_lire_plus), 13f, R.color.brand, gras = true, haut = 4).apply {
+                    textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                    gravity = Gravity.CENTER_VERTICAL or Gravity.START
+                    setOnClickListener {
+                        val replie = notice.maxLines != Int.MAX_VALUE
+                        notice.maxLines = if (replie) Int.MAX_VALUE else 8
+                        text = getString(if (replie) R.string.hilloula_reduire else R.string.hilloula_lire_plus)
+                    }
+                    VueJour.touchable(this)
+                })
+            }
         }
         // La source : Wikipédia (l'article s'il existe), החכם היומי, תורת אמת.
         if ('w' in h.sources) addView(source(getString(R.string.hilloula_source_wiki), h.article?.let(Hilloulot::lienArticle), haut = 4))

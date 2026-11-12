@@ -1425,4 +1425,6 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+    <!-- Fenêtre vide refusée (check-up du 11/11) -->
+    <string name="window_same_error">שעת ההתחלה ושעת הסיום צריכות להיות שונות.</string>
 </resources>

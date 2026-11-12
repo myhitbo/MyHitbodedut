@@ -4702,11 +4702,16 @@ function ajusteLesTextes() {
   for (const el of app.querySelectorAll('.ajuste')) {
     const max = parseFloat(getComputedStyle(el).getPropertyValue('--corps-max')) || 19;
     let taille = max;
+    el.classList.remove('allonge');
     el.style.fontSize = `${taille}px`;
-    while (taille > 8 && el.scrollHeight > el.clientHeight + 1) {
+    // Plancher à 12 px, comme Android (12 sp) : en dessous, l'hébreu voyellé
+    // devenait illisible. Si le texte ne tient toujours pas, la carte s'allonge
+    // au lieu de le rogner (check-up du 11/11).
+    while (taille > 12 && el.scrollHeight > el.clientHeight + 1) {
       taille -= 1;
       el.style.fontSize = `${taille}px`;
     }
+    if (el.scrollHeight > el.clientHeight + 1) el.classList.add('allonge');
   }
 }
 
