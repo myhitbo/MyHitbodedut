@@ -212,6 +212,17 @@
     <string name="export_failed">Export failed.</string>
     <string name="import_failed">The file could not be read.</string>
     <string name="import_invalid">This file is not a MyHitbodedut backup.</string>
+    <string name="export_mdp_titre">Protect the backup</string>
+    <string name="export_mdp_message">A password encrypts the file. Without it the backup cannot be read, and there is no way to recover it. Leave empty for a plain file, readable by anyone who opens it.</string>
+    <string name="export_mdp_champ">Password</string>
+    <string name="export_mdp_confirmer">The same one, once more</string>
+    <string name="export_mdp_different">The two passwords differ.</string>
+    <string name="import_mdp_titre">Encrypted backup</string>
+    <string name="import_mdp_faux">Wrong password, or damaged file.</string>
+    <string name="journal_verrou">Lock the journal</string>
+    <string name="journal_verrou_hint">The phone’s code or fingerprint is asked to open the journal.</string>
+    <string name="journal_verrou_titre">Open the journal</string>
+    <string name="journal_verrou_sans_code">Set a screen lock on this phone first.</string>
 
     <plurals name="status_streak">
         <item quantity="one">%d day in a row</item>

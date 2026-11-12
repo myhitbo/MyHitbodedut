@@ -1,0 +1,14 @@
+{
+  "commentaire": "Sauvegarde chiffrée par coffre.js, relue par coffre.test.mjs et CoffreTest.kt.",
+  "mot_de_passe": "Vecteur de test é ש",
+  "clair": "{\"format\":\"myhitbodedut\",\"version\":1,\"days\":{\"2026-11-12\":{\"minutes\":20,\"note\":\"שלום — une note\"}}}",
+  "chiffre": {
+    "format": "myhitbodedut-chiffre",
+    "version": 1,
+    "kdf": "PBKDF2-HMAC-SHA256",
+    "iterations": 100000,
+    "salt": "Jr9qIRSOHjPShQlzfY8HqQ==",
+    "iv": "HtfSIdKBh8Q4WOGX",
+    "data": "DQtlpMeeguoOtrRh/W9vUUoYAO5zYyZynl/qcK5vII0HIh8VWCOALtlnIIRnQ4iopoQkeyOOGytqSVrK6EMx/dyOCrqKoDVmrf6kbm+qgUe7k9dGdrX0XLXMbL+oz3paHTP7XkyYXSUCjq6uDE+ClHDK6PVwwEw0Cg=="
+  }
+}
