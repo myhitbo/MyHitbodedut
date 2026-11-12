@@ -19,7 +19,9 @@ Trois sortes d'annotations :
 Un bloc dont le libellé est « ajout_autres_jours » (audit du 12/11, TSIDDUR-06) est le texte
 ordinaire qu'une formule du jour remplace (« האל הקדוש » pendant les dix jours, « בונה
 ירושלים » à Min'ha du 9 Av) : sa condition est niée ; quand il se dit, il s'affiche tel quel,
-sans étiquette ; le jour où il est remplacé, il est replié.
+sans étiquette ; le jour où il est remplacé, il est replié. Un bloc « discret » (12/11 : « שעשה
+לי כל צרכי », la fin du Kaddich après le Hallel) se dit presque tous les jours : même traitement,
+mais sous son libellé propre (« Sauf à 'Hanouka »).
 
 Aucune règle de calendrier n'est écrite ici. Chaque annotation renvoie à une
 clé de condition (CalendrierJuif.C), calculée par KosherJava ; l'outil ne
@@ -39,7 +41,13 @@ import sys
 
 RACINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 RAW = os.path.join(RACINE, "android", "app", "src", "main", "res", "raw")
-TEXTES = ["chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "havdala", "hallel"]
+TEXTES = ["chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "havdala", "hallel",
+          "birkot_hachahar"]
+
+# Les consignes d'oubli (12/11) : « טעה ולא אמר… », « אם שכח… », « אם לא אמר… », ce qu'on fait si l'on
+# s'est trompé. « כל שלא אמר אמת ויציב… לא יצא » n'en est pas une : c'est l'obligation même.
+OUBLI = re.compile(r"^\(?(?:טעה|שכח|אם שכח|אם טעה|ואם טעה|אם לא אמר|ואם לא אמר)\b"
+                   r"|^בכל השנה אם אמר המלך המשפט|^בעשי״ת אומרים בספר חיים\. ואם לא אמר")
 OFFICE = {"chaharit": "chaharit", "minha": "minha"}
 
 
@@ -236,6 +244,12 @@ def annoter(texte_id, sections, nusah):
                     and re.fullmatch(r"ברוך אתה \S+,? בונה ירושלים:?", txt[j]):
                 prend(j, "!ticha_beav", AUTRES_JOURS)
 
+        def prend_discret(bi, c, libelle):
+            """Presque tous les jours : en clair le jour dit, sans étiquette ; replié les autres (12/11)."""
+            if bi not in pris:
+                pris.add(bi)
+                note("bloc", si, bi, c, {"libelle": libelle, "discret": True})
+
         def en_tete(bi, c, *mots_cles, libelle=None):
             """La consigne juste avant un ajout, si elle l'annonce, en suit le sort."""
             if bi > 0 and cons[bi - 1] and all(m in txt[bi - 1] for m in mots_cles):
@@ -362,6 +376,30 @@ def annoter(texte_id, sections, nusah):
                 j = bi
                 while j < n and (j == bi or not commence(txt[j], "ברוך אתה יהוה אלהינו מלך העולם לעד")):
                     prend(j, "oubli")
+                    j += 1
+                bi = j
+                continue
+            # Les consignes d'oubli de la Amida et du Birkat (12/11) : repliées sous « En cas d'oubli »,
+            # comme les bénédictions de qui a oublié רצה ; elles s'affichaient chaque jour.
+            if cons[bi] and bi not in pris and OUBLI.search(x):
+                prend(bi, "oubli")
+                bi += 1
+                continue
+            # « שעשה לי כל צרכי » (Edot) : pas le 9 Av ni à Kippour, la consigne le dit (Ben Ich 'Haï,
+            # Vayechev 9). Les autres jours en clair, sans étiquette (12/11).
+            if cons[bi] and re.match(r"בתשעה באב ויום הכי?פורים אין אומרים ברכה זו", x) and bi + 1 < n and not cons[bi + 1]:
+                prend_discret(bi, "!ticha_beav_kippour", "ajout_sauf_ticha_beav_kippour")
+                prend_discret(bi + 1, "!ticha_beav_kippour", "ajout_sauf_ticha_beav_kippour")
+                bi += 2
+                continue
+            # Après le Hallel, la fin du Kaddich (תתקבל, יהא שלמא, עושה שלום) : pas à 'Hanouka, où l'on
+            # s'arrête au demi-Kaddich (« עד כאן אומרים בחנוכה », « ובחנוכה אומר רק חצי קדיש », 12/11).
+            if texte_id == "hallel" and not cons[bi] and commence(x, "תתקבל") and any(
+                    cons[k] and ("עד כאן אומרים בחנוכה" in txt[k] or "ובחנוכה אומר רק חצי קדיש" in txt[k])
+                    for k in range(max(0, bi - 3), bi)):
+                j = bi
+                while j < n and not cons[j] and any(commence(txt[j], m) for m in ("תתקבל", "יהא שלמא", "יפסע", "עושה שלום", "עשה שלום")):
+                    prend_discret(j, "!hanouka", "ajout_sauf_hanouka")
                     j += 1
                 bi = j
                 continue

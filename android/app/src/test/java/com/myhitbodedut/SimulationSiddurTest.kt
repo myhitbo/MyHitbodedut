@@ -34,7 +34,7 @@ class SimulationSiddurTest {
     private val platDe = java.util.IdentityHashMap<SiddurBloc, String>()
     private fun platBloc(b: SiddurBloc) = platDe.getOrPut(b) { plat(b.texte) }
 
-    private class Regle(val textes: Set<String>, val phrase: String, val quand: (Set<String>) -> Boolean)
+    private class Regle(val textes: Set<String>, val phrase: String, val quand: (Set<String>) -> Boolean, val nusah: Set<Nusah> = Nusah.entries.toSet())
 
     private val C = CalendrierJuif.C
     private val AMIDOT = setOf("chaharit", "minha", "arvit")
@@ -76,6 +76,9 @@ class SimulationSiddurTest {
         Regle(setOf("chaharit"), "ויאמר דוד אל גד", si(C.TAHANOUN_CHAHARIT)),
         // Le retour du Sefer Torah, les seuls jours de lecture (12/11 : Edot et Sfard l'affichaient tous les jours).
         Regle(setOf("chaharit"), "ובנחה יאמר שובה יהוה", si(C.KRIAT_HATORAH)),
+        // 12/11 : « שעשה לי כל צרכי » (Edot) pas le 9 Av ni à Kippour ; la fin du Kaddich après le Hallel pas à 'Hanouka.
+        Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { C.TICHA_BEAV_KIPPOUR !in it }, setOf(Nusah.EDOT)),
+        Regle(setOf("hallel"), "תתקבל", { C.HANOUKA !in it }),
         Regle(setOf("minha"), "ויאמר דוד אל גד", si(C.TAHANOUN_MINHA)),
         // Méèn chaloch.
         Regle(setOf("meen_chaloch"), "ורצה והחליצנו", si(C.CHABBAT)),
@@ -86,7 +89,9 @@ class SimulationSiddurTest {
     fun `chaque jour, chaque passage du moment se lit le jour dit et rien ne se perd`() {
         val ecarts = sortedMapOf<String, MutableList<LocalDate>>()
         var verifications = 0
-        val textes = setOf("chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "hallel")
+        val textes = setOf("chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "hallel", "birkot_hachahar")
+        // Les consignes d'oubli (12/11) : toujours repliées, jamais en clair.
+        val oubli = Regex("^\\(?(טעה|שכח|אם שכח|אם טעה|ואם טעה|אם לא אמר|ואם לא אמר)(?=\\s|:|$)|^בכל השנה אם אמר המלך המשפט")
         for (lieu in lieux) for (date in jours) {
             val jour = CalendrierJuif.jour(date, lieu.israel, lieu.muree)
             for (n in Nusah.entries) {
@@ -104,9 +109,12 @@ class SimulationSiddurTest {
                         texte.sections.any { s -> s.blocs.any { b -> vus.none { it === b } } }) {
                         ecarts.getOrPut("${n.cle} $id ${lieu.nom} : un bloc manque, replis ouverts") { mutableListOf() } += date
                     }
+                    if (lignes.any { it is SiddurJour.Ligne.Bloc && it.bloc.consigne && oubli.containsMatchIn(SiddurJour.empreinte(it.bloc.texte)) }) {
+                        ecarts.getOrPut("${n.cle} $id ${lieu.nom} : consigne d'oubli en clair") { mutableListOf() } += date
+                    }
                     // Les passages du moment.
                     for (r in regles) {
-                        if (id !in r.textes) continue
+                        if (id !in r.textes || n !in r.nusah) continue
                         val p = plat(r.phrase)
                         if (texte.sections.none { s -> s.blocs.any { !it.consigne && platBloc(it).contains(p) } }) continue
                         val clair = lignes.any {
@@ -191,6 +199,19 @@ class SimulationSiddurTest {
         }
         val figees = vues.filter { (k, v) -> v.size < 2 && k.substringAfter(' ').removePrefix("!") !in jamais }
         assertTrue("Conditions figées : $figees", figees.isEmpty())
+    }
+
+    /** « Discret » (12/11) : « שעשה לי כל צרכי » en clair sans étiquette d'ordinaire, replié le 9 Av. */
+    @Test
+    fun `discret - en clair sans etiquette, replie le jour sans`() {
+        val texte = siddurs.getValue(Nusah.EDOT).texte("birkot_hachahar")!!
+        val ann = annotations.getValue(Nusah.EDOT).getValue("birkot_hachahar")
+        val ordinaire = SiddurJour.lignes(texte, ann, CalendrierJuif.jour(LocalDate.parse("2026-11-12"), false).conditions)
+        assertTrue(ordinaire.none { it is SiddurJour.Ligne.Etiquette })
+        assertTrue(ordinaire.any { it is SiddurJour.Ligne.Bloc && it.style == SiddurJour.Style.NORMAL && plat(it.bloc.texte).contains(plat("שעשה לי כל צרכי")) })
+        val av = SiddurJour.lignes(texte, ann, CalendrierJuif.jour(LocalDate.parse("2026-07-23"), false).conditions)
+        assertTrue(av.any { it is SiddurJour.Ligne.Replie && it.libelle == "ajout_sauf_ticha_beav_kippour" })
+        assertTrue(av.none { it is SiddurJour.Ligne.Bloc && plat(it.bloc.texte).contains(plat("שעשה לי כל צרכי")) })
     }
 
     /** Les situations demandées, nommées : Roch 'Hodech, motsaé Chabbat, fêtes, jeûnes, Hanouka, Pourim, dix jours. */

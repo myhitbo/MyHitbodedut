@@ -47,7 +47,7 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
 
 /** Les conditions déduites (SiddurJour, CalendrierJuif.C.DERIVEES), hors des vecteurs KosherJava. */
 export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hatorah', 'jour_1', 'jour_2', 'jour_3', 'jour_4', 'jour_5', 'jour_6',
-  'tsom_guedalia_tevet', 'lendemain_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
+  'tsom_guedalia_tevet', 'lendemain_kippour', 'ticha_beav_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
   'lamnatseah', 'ledavid', 'techouva_hochaana', 'yom_tov', 'moed', 'chabbat_roch_hodech', 'yom_tov_chabbat', 'roch_hachana_chabbat',
   'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan'];
 
@@ -122,7 +122,8 @@ export function index(annotations = []) {
  * l'ordre, la section entière si elle est annotée, sinon ses blocs libres (sans annotation) et
  * ses groupes, variantes comprises. [etat] : « du_jour », mis en évidence sous son étiquette ;
  * « replie », hors du jour, derrière sa flèche ; « ordinaire », le texte de tous les jours qu'une
- * formule du jour remplace (AUTRES_JOURS), affiché tel quel quand il se dit.
+ * formule du jour remplace (AUTRES_JOURS), ou un passage « discret » (12/11 : « שעשה לי כל צרכי »,
+ * la fin du Kaddich après le Hallel ; SiddurJour.Annotation.discret), affiché tel quel quand il se dit.
  */
 export function plan(section, si, idx, conditions) {
   const entiere = idx.sections.get(si);
@@ -136,7 +137,7 @@ export function plan(section, si, idx, conditions) {
     while (i < section.blocs.length && idx.blocs.get(`${si}:${i}`)?.g === a.g) blocs.push(i++);
     i--;
     const racine = a.racine ?? a.si;
-    parties.push({ annotation: a, racine, blocs, etat: !vrai(racine, conditions) ? 'replie' : a.libelle === AUTRES_JOURS ? 'ordinaire' : 'du_jour' });
+    parties.push({ annotation: a, racine, blocs, etat: !vrai(racine, conditions) ? 'replie' : a.libelle === AUTRES_JOURS || a.discret ? 'ordinaire' : 'du_jour' });
   }
   return parties;
 }

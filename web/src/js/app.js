@@ -1656,7 +1656,8 @@ function ecranPriere() {
         if (groupe && !ajoutVrai(idx.blocs.get(`${si}:${i}`).si, c)) p.classList.add('hors-jour');
         return p;
       });
-      // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06) : tel quel quand il se dit, sans étiquette.
+      // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage discret (12/11,
+      // SiddurJour.Annotation.discret) : tel quel quand il se dit, sans étiquette.
       if (partie.etat === 'ordinaire') corps.push(...membres);
       else corps.push(ajout(nom(a, partie.racine), partie.etat === 'du_jour', membres, partie.racine));
       if (groupe) corps.push(...seuls(si, dernier));

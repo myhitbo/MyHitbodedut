@@ -65,10 +65,13 @@ object Libelles {
         "ajout_roch_hachana_chabbat" -> R.string.ajout_roch_hachana_chabbat
         "ajout_roch_hodech" -> R.string.ajout_roch_hodech
         "ajout_sans_tahanoun" -> R.string.ajout_sans_tahanoun
+        "ajout_sauf_hanouka" -> R.string.ajout_sauf_hanouka
+        "ajout_sauf_ticha_beav_kippour" -> R.string.ajout_sauf_ticha_beav_kippour
         "ajout_tahanoun" -> R.string.ajout_tahanoun
         "ajout_tal_oumatar" -> R.string.ajout_tal_oumatar
         "ajout_techouva_hochaana" -> R.string.ajout_techouva_hochaana
         "ajout_ticha_beav" -> R.string.ajout_ticha_beav
+        "ajout_ticha_beav_kippour" -> R.string.ajout_ticha_beav_kippour
         "ajout_tsom_guedalia_tevet" -> R.string.ajout_tsom_guedalia_tevet
         "ajout_yaale_veyavo" -> R.string.ajout_yaale_veyavo
         "ajout_yom_tov" -> R.string.ajout_yom_tov
