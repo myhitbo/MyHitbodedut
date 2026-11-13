@@ -1,0 +1,46 @@
+name: iOS (cœur, Linux)
+
+# Le paquet Swift « Coeur » de la version iOS, compilé et testé sous Linux, sans Mac
+# (ios/PORTAGE.md § 7.2, ios/ROADMAP.md tâche 1). Un envoi qui ne touche que android/
+# ne le déclenche pas ; les contenus d'Android s'ajouteront aux chemins avec leur export (tâche 5).
+# Budget (décision D5) : Linux seulement ici, aucune minute macOS.
+
+on:
+  push:
+    paths:
+      - 'ios/**'
+      - 'tools/export_contenu/**'
+      - 'web/test/vecteurs_*'
+      - '.github/workflows/ios-coeur.yml'
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'tools/export_contenu/**'
+      - 'web/test/vecteurs_*'
+      - '.github/workflows/ios-coeur.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  coeur:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    # Swift 6.2, celui de Xcode 26 (§ 7.7).
+    container: swift:6.2-noble
+    defaults:
+      run:
+        working-directory: ios/Paquets/Coeur
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version
+        run: swift --version
+      - name: Construction (avertissements = erreurs)
+        run: swift build --build-tests -Xswiftc -warnings-as-errors
+      - name: Tests
+        run: swift test --skip-build
