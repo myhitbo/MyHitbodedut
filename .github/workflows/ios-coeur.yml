@@ -1,8 +1,8 @@
 name: iOS (cœur, Linux)
 
 # Le paquet Swift « Coeur » de la version iOS, compilé et testé sous Linux, sans Mac
-# (ios/PORTAGE.md § 7.2, ios/ROADMAP.md tâche 1). Un envoi qui ne touche que android/
-# ne le déclenche pas ; les contenus d'Android s'ajouteront aux chemins avec leur export (tâche 5).
+# (ios/PORTAGE.md § 7.2, ios/ROADMAP.md tâches 1 et 5). Un envoi qui ne touche que le code
+# d'Android ne le déclenche pas ; ses contenus, que l'export lit, si.
 # Budget (décision D5) : Linux seulement ici, aucune minute macOS.
 
 on:
@@ -12,12 +12,32 @@ on:
       - 'tools/export_contenu/**'
       - 'web/test/vecteurs_*'
       - '.github/workflows/ios-coeur.yml'
+      # Les contenus d'Android que l'export lit (tâche 5) : un changement doit suivre dans le manifeste.
+      - 'android/app/src/main/res/raw/**'
+      - 'android/app/src/main/res/values*/strings.xml'
+      - 'android/app/src/main/res/values*/colors.xml'
+      - 'android/app/src/main/res/values*/palettes.xml'
+      - 'android/app/src/main/res/drawable*/**'
+      - 'android/app/src/main/res/font/**'
+      - 'android/app/src/main/assets/licences/**'
+      - 'android/app/src/main/java/com/myhitbodedut/MusiquePlay.kt'
+      - 'android/app/src/test/resources/zmanim_reference_*'
   pull_request:
     paths:
       - 'ios/**'
       - 'tools/export_contenu/**'
       - 'web/test/vecteurs_*'
       - '.github/workflows/ios-coeur.yml'
+      # Les contenus d'Android que l'export lit (tâche 5) : un changement doit suivre dans le manifeste.
+      - 'android/app/src/main/res/raw/**'
+      - 'android/app/src/main/res/values*/strings.xml'
+      - 'android/app/src/main/res/values*/colors.xml'
+      - 'android/app/src/main/res/values*/palettes.xml'
+      - 'android/app/src/main/res/drawable*/**'
+      - 'android/app/src/main/res/font/**'
+      - 'android/app/src/main/assets/licences/**'
+      - 'android/app/src/main/java/com/myhitbodedut/MusiquePlay.kt'
+      - 'android/app/src/test/resources/zmanim_reference_*'
   workflow_dispatch:
 
 permissions:
@@ -28,6 +48,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # La garde de dérive (PORTAGE.md § 4.2) : l'export relit les contenus d'Android et échoue,
+  # en nommant les fichiers, si ios/Ressources/MANIFESTE.json ne suit pas.
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export des contenus et garde de dérive
+        run: python3 tools/export_contenu/export.py --verifier
+      - name: Un second export donne le même manifeste
+        run: python3 tools/export_contenu/export.py --verifier
+
   coeur:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

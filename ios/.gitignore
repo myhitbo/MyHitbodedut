@@ -14,3 +14,11 @@ BouclierAction/*.entitlements
 fastlane/report.xml
 fastlane/README.md
 build/
+# Engendrés par tools/export_contenu/export.py (PORTAGE.md § 4.2) : seuls le manifeste et les
+# chaînes propres à iOS sont versionnés.
+Ressources/*
+!Ressources/MANIFESTE.json
+!Ressources/Chaines/
+Ressources/Chaines/*
+!Ressources/Chaines/ios.xcstrings
+Paquets/Coeur/Tests/Ressources/
