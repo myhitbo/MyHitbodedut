@@ -200,7 +200,7 @@ class CelebrationActivity : AppCompatActivity() {
 
     companion object {
         /** La version web de l'application, jointe à chaque partage. */
-        const val LIEN_WEB = "https://hil123.github.io/myhitbodedut-web/"
+        const val LIEN_WEB = "https://myhitbodedut.pages.dev/"
 
         const val EXTRA_MINUTES = "minutes"
         const val EXTRA_ANNULEE = "annulee"

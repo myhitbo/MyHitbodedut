@@ -331,9 +331,9 @@ Tout est obligatoire avant le premier envoi en test fermé.
 hébreu (ancres `#fr`, `#en`, `#he`). `web/build.mjs` copie `web/src` en entier
 dans le site (vérifié : la page sort identique dans `web/dist`, et le service
 worker la garde hors connexion). URL à saisir dans la Play Console, une fois
-la branche fusionnée sur `main` et le site remis en ligne par `web.yml` :
+la branche fusionnée sur `main` et le site remis en ligne par `web.yml` (Cloudflare Pages depuis le 13/11, secrets `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`) :
 
-**https://hil123.github.io/myhitbodedut-web/confidentialite.html**
+**https://myhitbodedut.pages.dev/confidentialite.html**
 
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de

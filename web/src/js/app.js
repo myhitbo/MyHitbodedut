@@ -5233,7 +5233,7 @@ function ecranBravo() {
       !annulee && bravo.minutes > 0 ? h('button', { class: 'lien-bouton bravo-partage', onclick: () => partagerSeance(bravo.minutes) }, tr.t('partage_action')) : null)));
 }
 
-const LIEN_WEB = 'https://hil123.github.io/myhitbodedut-web/';
+const LIEN_WEB = 'https://myhitbodedut.pages.dev/';
 /** Le texte d'une séance faite et le lien de la version web : le partage du téléphone, sinon le presse-papiers. */
 async function partagerSeance(minutes) {
   const serie = store.streak?.() ?? 0;

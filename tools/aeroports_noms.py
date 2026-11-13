@@ -51,7 +51,7 @@ def requete(codes):
     req = urllib.request.Request(
         "https://query.wikidata.org/sparql",
         data=urllib.parse.urlencode({"query": sparql, "format": "json"}).encode(),
-        headers={"User-Agent": "MyHitbodedut-build/1.0 (https://github.com/hil123/MyHitbodedut)", "Accept": "application/sparql-results+json"})
+        headers={"User-Agent": "MyHitbodedut-build/1.0 (https://github.com/myhitbo/MyHitbodedut)", "Accept": "application/sparql-results+json"})
     return json.load(urllib.request.urlopen(req, timeout=180))["results"]["bindings"]
 
 
