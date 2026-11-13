@@ -1,0 +1,66 @@
+name: iOS (KosherSwift, 1.10.11 et 3.1.2)
+
+# Chiffre les deux étiquettes de KosherSwift pour ios/KOSHERSWIFT.md (ROADMAP.md tâche 2,
+# décision D4) : compilation sous Linux, leurs propres tests, diagnostics en mode Swift 6,
+# et l'écart de la 3.1.2 aux vecteurs d'Android. Sur demande, ou quand l'outil change.
+
+on:
+  push:
+    paths:
+      - 'ios/Outils/KosherSwift3/**'
+      - '.github/workflows/ios-kosherswift.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bibliotheque:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container: swift:6.2-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        etiquette: ['1.10.11', '3.1.2']
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Cloner l'étiquette
+        run: git clone --depth 1 --branch '${{ matrix.etiquette }}' https://github.com/Elyahu41/KosherSwift.git ks
+      - name: Construction (Swift 5, comme elle se déclare)
+        working-directory: ks
+        run: |
+          swift build 2>&1 | tee construction.log
+          echo "avertissements : $(grep -c ': warning:' construction.log || true)"
+      - name: Ses propres tests sous Linux
+        working-directory: ks
+        continue-on-error: true
+        run: swift test 2>&1 | tail -40
+      - name: Diagnostics en mode de langage Swift 6
+        working-directory: ks
+        continue-on-error: true
+        run: |
+          rm -rf .build
+          swift build -Xswiftc -swift-version -Xswiftc 6 2>&1 | tee swift6.log || true
+          echo "erreurs : $(grep -c ': error:' swift6.log || true)"
+          echo "avertissements : $(grep -c ': warning:' swift6.log || true)"
+          grep -E ': (error|warning):' swift6.log | sed -E 's/.*: (error|warning): //' | sort | uniq -c | sort -rn | head -20 || true
+
+  ecarts-312:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container: swift:6.2-noble
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Écarts de la 3.1.2 aux vecteurs d'Android
+        working-directory: ios/Outils/KosherSwift3
+        run: swift run -c release Ecarts312 "$GITHUB_WORKSPACE/web/test/vecteurs_kosherjava.json" | tee -a "$GITHUB_STEP_SUMMARY"
