@@ -704,6 +704,38 @@ test('la source du jour : la même qu’Android, le même jour (19/10)', async (
   assert.ok(SourceDuJour.extrait('א'.repeat(10) + ' ' + 'ב'.repeat(400)).endsWith('…'));
 });
 
+// Audit du 12/11 (COUV-08, BIBLIO-03, FACCUEIL-08, FWEBCODE-08) : la carte ne montrait que l'hébreu.
+test('la source du jour donne la traduction du même paragraphe, selon les langues de lecture', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const b = JSON.parse(await readFile(new URL('../../android/app/src/main/res/raw/bibliotheque.json', import.meta.url), 'utf8'));
+  const c = SourceDuJour.candidats(b);
+  // Le rang gardé est celui du paragraphe dans sa source, et chaque candidat a ses deux traductions.
+  for (const p of c) {
+    assert.equal(LibraryRules.paragraphes(b, p.source)[p.indice], p.texte);
+    assert.deepEqual(SourceDuJour.textes(p, 'fr+en').map(([l]) => l), ['fr', 'en'], `${p.source.id}[${p.indice}]`);
+    for (const [, t] of SourceDuJour.textes(p, 'fr+en')) assert.ok(t.length <= 321);
+  }
+  // L'exemple de l'audit : Likoutei Tefilot II, 22, deuxième paragraphe.
+  const p = c.find((x) => x.source.id === 'src-lt-hitbodedut' && x.indice === 1);
+  const fr = SourceDuJour.textes(p, 'he+fr');
+  assert.deepEqual(fr.map(([l]) => l), ['he', 'fr']);
+  assert.equal(fr[0][1], SourceDuJour.extrait(p.texte));
+  assert.ok(fr[1][1].startsWith('Aie pitié de moi et ouvre ma bouche en tout temps'));
+  assert.ok(SourceDuJour.textes(p, 'he+en')[1][1].startsWith('Have mercy on me and open my mouth at all times'));
+  assert.deepEqual(SourceDuJour.textes(p, 'he'), [['he', SourceDuJour.extrait(p.texte)]]);
+  // Un paragraphe court écarté ne décale pas les traductions.
+  const petite = { _meta: { editions: { e: { nikkoud_ok: true } } }, sections: [{ sous_sections: [{ entrees: [{ type: 'source', id: 's', edition: 'e',
+    paragraphes: ['קצר', 'א'.repeat(80)], paragraphes_fr: ['court', 'long'], paragraphes_en: ['short', 'long one'] }] }] }] };
+  const [seul] = SourceDuJour.candidats(petite);
+  assert.equal(seul.indice, 1);
+  assert.deepEqual(SourceDuJour.textes(seul, 'he+fr'), [['he', 'א'.repeat(80)], ['fr', 'long']]);
+  assert.deepEqual(SourceDuJour.textes(seul, 'en'), [['en', 'long one']]);
+  // L'accueil passe par là : plus d'hébreu posé seul.
+  const app = await readFile(new URL('../src/js/app.js', import.meta.url), 'utf8');
+  assert.match(app, /SourceDuJour\.textes\(p, languesLecture\(\)\)/);
+  assert.ok(!app.includes('SourceDuJour.extrait(p.texte)'));
+});
+
 test('mon parcours : jours faits, temps, moyenne, sujets fréquents (19/10)', () => {
   const b = Parcours.bilan([
     { date: '2026-10-01', minutes: 20, faite: true, themes: ['famille', 'parnassa'] },

@@ -737,9 +737,13 @@ function momentAccueil() {
   // La source du jour (SourceDuJour, 19/10) : la même toute la journée, distincte du ’hizouk.
   const p = chargeBibliotheque() ? SourceDuJour.choix(bibliotheque, store.today()) : null;
   if (p) {
+    // Dans les langues de lecture, comme la carte de ’hizouk : l'hébreu et sa traduction par défaut (COUV-08).
+    const textes = SourceDuJour.textes(p, languesLecture());
+    const avecHe = textes.some(([l]) => l === 'he');
     cartes.push(h('div', { class: 'carte source-du-jour' },
       h('span', { class: 'maintenant-libelle' }, tr.t('source_du_jour')),
-      h('p', { class: 'source-du-jour-texte', lang: 'he', dir: 'rtl' }, SourceDuJour.extrait(p.texte)),
+      ...textes.map(([l, t]) => (l === 'he' ? h('p', { class: 'source-du-jour-texte', lang: 'he', dir: 'rtl' }, t)
+        : h('p', { class: `source-du-jour-traduction${avecHe ? '' : ' seule'}`, lang: l, dir: 'ltr' }, t))),
       h('p', { class: 'source-du-jour-ref' }, Reference.localise(p.source.ref, tr.langue)),
       h('div', { class: 'source-du-jour-actions' },
         // Un seul « Commencer » sur l'accueil, celui du haut : la source invite à lire.

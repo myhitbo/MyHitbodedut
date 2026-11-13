@@ -19,10 +19,16 @@ import java.time.LocalDate
  * bibliotheque.json, dans la forme que leur licence permet) ; jamais les
  * articles sans autorisation. Le web choisit le même paragraphe le même jour
  * (regles.js, SourceDuJour).
+ *
+ * La carte suit les langues de lecture (LanguesTexte), comme la carte de 'hizouk et la
+ * fiche de la source : l'hébreu et sa traduction par défaut en français et en anglais
+ * (13/11, audit du 12/11, COUV-08, BIBLIO-03, FACCUEIL-08, FWEBCODE-08 : elle ne
+ * montrait que l'hébreu, alors que chaque paragraphe est traduit).
  */
 object SourceDuJour {
 
-    data class Pensee(val source: SourceEntry, val texte: String)
+    /** [indice] : le rang du paragraphe dans sa source, celui de ses traductions. */
+    data class Pensee(val source: SourceEntry, val texte: String, val indice: Int)
 
     /** Un paragraphe plus court n'a pas assez à dire seul. */
     const val MIN = 80
@@ -32,7 +38,8 @@ object SourceDuJour {
 
     fun candidats(library: Library): List<Pensee> =
         library.entrees.filterIsInstance<SourceEntry>().flatMap { s ->
-            LibraryRules.paragraphs(library, s).filter { it.length >= MIN }.map { Pensee(s, it) }
+            // Le rang d'abord, le filtre ensuite : un paragraphe court écarté ne décale pas les traductions.
+            LibraryRules.paragraphs(library, s).withIndex().filter { it.value.length >= MIN }.map { Pensee(s, it.value, it.index) }
         }
 
     fun choix(library: Library, jour: LocalDate): Pensee? {
@@ -45,8 +52,18 @@ object SourceDuJour {
     fun extrait(texte: String, max: Int = 320): String =
         if (texte.length <= max) texte else texte.take(max).substringBeforeLast(' ').trimEnd(',', ' ', ':', ';') + "…"
 
+    /**
+     * Ce que la carte donne à lire, dans l'ordre des langues choisies : (langue, extrait). La
+     * règle de LanguesTexte : une traduction absente est sautée, et l'hébreu reste s'il n'y a rien.
+     */
+    fun textes(p: Pensee, mode: LanguesTexte.Mode): List<Pair<String, String>> =
+        LanguesTexte.textes(mode, p.texte, p.source.paragraphesFr.getOrNull(p.indice), p.source.paragraphesEn.getOrNull(p.indice))
+            .map { (langue, texte) -> langue to extrait(texte) }
+
     fun carte(c: Context): View? {
         val p = choix(Data.library(c), LocalDate.now()) ?: return null
+        val textes = textes(p, LanguesTexte.mode(c))
+        val avecHebreu = textes.any { it.first == "he" }
         fun dp(v: Int) = (v * c.resources.displayMetrics.density).toInt()
         return LinearLayout(c).apply {
             orientation = LinearLayout.VERTICAL
@@ -60,17 +77,29 @@ object SourceDuJour {
                 letterSpacing = 0.06f
                 setTextColor(Apparence.couleur(c, R.color.brand))
             })
-            addView(TextView(c).apply {
-                text = extrait(p.texte)
-                textSize = 18f
-                setLineSpacing(dp(4).toFloat(), 1f)
-                textDirection = View.TEXT_DIRECTION_RTL
-                textAlignment = View.TEXT_ALIGNMENT_VIEW_START
-                layoutDirection = View.LAYOUT_DIRECTION_RTL
-                setTextColor(Apparence.couleur(c, R.color.ink))
-                setPadding(0, dp(8), 0, dp(4))
-                PoliceHebraique.appliquer(this)
-            })
+            textes.forEachIndexed { rang, (langue, texte) ->
+                addView(TextView(c).apply {
+                    text = texte
+                    textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                    setPadding(0, dp(if (rang == 0) 8 else 2), 0, dp(4))
+                    if (langue == "he") {
+                        textSize = 18f
+                        setLineSpacing(dp(4).toFloat(), 1f)
+                        textDirection = View.TEXT_DIRECTION_RTL
+                        layoutDirection = View.LAYOUT_DIRECTION_RTL
+                        setTextColor(Apparence.couleur(c, R.color.ink))
+                        PoliceHebraique.appliquer(this)
+                    } else {
+                        // La traduction : de gauche à droite en toute langue d'interface, plus discrète
+                        // sous l'hébreu, à l'encre quand elle est seule (comme la carte de 'hizouk).
+                        textSize = if (avecHebreu) 15f else 17f
+                        setLineSpacing(dp(3).toFloat(), 1f)
+                        textDirection = View.TEXT_DIRECTION_LTR
+                        layoutDirection = View.LAYOUT_DIRECTION_LTR
+                        setTextColor(Apparence.couleur(c, if (avecHebreu) R.color.muted else R.color.ink))
+                    }
+                })
+            }
             addView(TextView(c).apply {
                 text = Reference.localise(c, p.source.ref)
                 textSize = 13f
