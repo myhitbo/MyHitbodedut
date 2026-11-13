@@ -19,9 +19,6 @@ struct ZmanimTests {
             FichierVecteurs.self, from: Depot.donnees("web/test/vecteurs_kosherjava.json"))
         #expect(fichier.moteur == "KosherJava 2.5.0, NOAACalculator")
         #expect(fichier.zmanim.count == 35)
-        let lecteur = ISO8601DateFormatter()
-        lecteur.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
         var comparees = 0, absents = 0
         var pire = (ecart: 0.0, ou: "")
         for ligne in fichier.zmanim {
@@ -37,7 +34,7 @@ struct ZmanimTests {
                     absents += 1
                     continue
                 }
-                let instantAttendu = try #require(lecteur.date(from: attendu), "\(ou) : « \(attendu) » illisible")
+                let instantAttendu = try #require(instantISO(attendu), "\(ou) : « \(attendu) » illisible")
                 guard z.statut == .ok, let instant = z.instant else {
                     Issue.record("\(ou) : attendu \(attendu), calculé \(z.statut)")
                     continue
@@ -203,6 +200,16 @@ private func jourLocal(_ instant: Date, _ fuseau: TimeZone) -> JourCivil? {
     gregorien.timeZone = fuseau
     let c = gregorien.dateComponents([.year, .month, .day], from: instant)
     return JourCivil(annee: c.year ?? 0, mois: c.month ?? 0, jour: c.day ?? 0)
+}
+
+/// « 2026-01-15T03:23:04.722Z » → l'instant. Écrit à la main : sous Linux,
+/// ISO8601DateFormatter ne lit pas les fractions de seconde.
+private func instantISO(_ texte: String) -> Date? {
+    guard texte.hasSuffix("Z"), let t = texte.firstIndex(of: "T"),
+          let jour = JourCivil(iso: String(texte[..<t])) else { return nil }
+    let p = texte[texte.index(after: t)..<texte.index(before: texte.endIndex)].split(separator: ":")
+    guard p.count == 3, let h = Int(p[0]), let m = Int(p[1]), let s = Double(p[2]) else { return nil }
+    return Date(timeIntervalSince1970: Double(jour.jourJulien - 2_440_588) * 86_400 + Double(h * 3600 + m * 60) + s)
 }
 
 /// « 06:39:29 » → 23 969.

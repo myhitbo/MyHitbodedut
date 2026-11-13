@@ -8,6 +8,7 @@ on:
   push:
     paths:
       - 'ios/Outils/KosherSwift3/**'
+      - 'ios/Paquets/Correctifs/**'
       - '.github/workflows/ios-kosherswift.yml'
   workflow_dispatch:
 
@@ -31,13 +32,25 @@ jobs:
       run:
         shell: bash
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: ios/Paquets/Correctifs
       - name: Cloner l'étiquette
         run: git clone --depth 1 --branch '${{ matrix.etiquette }}' https://github.com/Elyahu41/KosherSwift.git ks
-      - name: Construction (Swift 5, comme elle se déclare)
+      - name: Construction telle quelle (Swift 5, comme elle se déclare)
         working-directory: ks
+        continue-on-error: true
         run: |
           swift build 2>&1 | tee construction.log
+          echo "erreurs : $(grep -c ': error:' construction.log || true)"
           echo "avertissements : $(grep -c ': warning:' construction.log || true)"
+      - name: Correctif Linux (1.10.11)
+        if: matrix.etiquette == '1.10.11'
+        working-directory: ks
+        run: |
+          git apply "$GITHUB_WORKSPACE/ios/Paquets/Correctifs/kosherswift-1.10.11-linux.patch"
+          swift build 2>&1 | tee construction-corrigee.log
+          echo "erreurs : $(grep -c ': error:' construction-corrigee.log || true)"
       - name: Ses propres tests sous Linux
         working-directory: ks
         continue-on-error: true

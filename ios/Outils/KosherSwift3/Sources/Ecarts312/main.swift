@@ -70,8 +70,16 @@ func valeur(_ c: ComprehensiveZmanimCalendar, _ cle: String) -> Date? {
 
 let chemin = CommandLine.arguments.dropFirst().first ?? "web/test/vecteurs_kosherjava.json"
 let fichier = try JSONDecoder().decode(Fichier.self, from: Data(contentsOf: URL(fileURLWithPath: chemin)))
-let lecteur = ISO8601DateFormatter()
-lecteur.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+/// « 2026-01-15T03:23:04.722Z » ; sous Linux, ISO8601DateFormatter ne lit pas les fractions de seconde.
+func instantISO(_ texte: String) -> Date {
+    var utc = Calendar(identifier: .gregorian)
+    utc.timeZone = TimeZone(identifier: "UTC")!
+    let p = texte.dropLast().split(whereSeparator: { "-T:".contains($0) })
+    let secondes = Double(p[5])!
+    let entier = utc.date(from: DateComponents(year: Int(p[0])!, month: Int(p[1])!, day: Int(p[2])!,
+                                               hour: Int(p[3])!, minute: Int(p[4])!))!
+    return entier.addingTimeInterval(secondes)
+}
 
 var parCle: [String: (max: Double, au: String, horsTolerance: Int)] = [:]
 var desaccordsAbsent: [String] = []
@@ -88,7 +96,7 @@ for l in fichier.zmanim {
             }
             continue
         }
-        let ecart = abs(calcule!.timeIntervalSince(lecteur.date(from: attendu)!))
+        let ecart = abs(calcule!.timeIntervalSince(instantISO(attendu)))
         var s = parCle[cle] ?? (0, "", 0)
         if ecart > s.max { s.max = ecart; s.au = "\(l.lieu) \(l.date)" }
         if ecart > 1 { s.horsTolerance += 1 }
