@@ -48,7 +48,10 @@ data class SeanceClose(val minutes: Int, val date: String)
 
 /**
  * Toute la persistance de l'application, dans les préférences locales.
- * Rien ne quitte l'appareil : aucune permission Internet n'est déclarée.
+ * L'application n'envoie rien de ce qu'elle garde ici. Le fichier des réglages peut
+ * toutefois partir dans la sauvegarde Android du compte Google (backup_rules.xml) ; le
+ * journal n'en sort que par l'export ou le transfert d'appareil. Seule l'édition complète
+ * déclare Internet, pour les services de vol (13/11, TWEBCONF-07).
  */
 object Store {
 
