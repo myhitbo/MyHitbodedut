@@ -38,6 +38,7 @@ jobs:
       - name: Cloner l'étiquette
         run: git clone --depth 1 --branch '${{ matrix.etiquette }}' https://github.com/Elyahu41/KosherSwift.git ks
       - name: Construction telle quelle (Swift 5, comme elle se déclare)
+        id: brute
         working-directory: ks
         continue-on-error: true
         run: |
@@ -45,6 +46,7 @@ jobs:
           echo "erreurs : $(grep -c ': error:' construction.log || true)"
           echo "avertissements : $(grep -c ': warning:' construction.log || true)"
       - name: Correctif Linux (1.10.11)
+        id: corrigee
         if: matrix.etiquette == '1.10.11'
         working-directory: ks
         run: |
@@ -52,18 +54,29 @@ jobs:
           swift build 2>&1 | tee construction-corrigee.log
           echo "erreurs : $(grep -c ': error:' construction-corrigee.log || true)"
       - name: Ses propres tests sous Linux
+        id: tests
         working-directory: ks
         continue-on-error: true
-        run: swift test 2>&1 | tail -40
+        run: swift test 2>&1 | tee tests.log | tail -40
       - name: Diagnostics en mode de langage Swift 6
         working-directory: ks
         continue-on-error: true
         run: |
           rm -rf .build
           swift build -Xswiftc -swift-version -Xswiftc 6 2>&1 | tee swift6.log || true
-          echo "erreurs : $(grep -c ': error:' swift6.log || true)"
-          echo "avertissements : $(grep -c ': warning:' swift6.log || true)"
+          echo "erreurs distinctes : $(grep -E '^/.*: error:' swift6.log | sort -u | wc -l)"
+          echo "avertissements distincts : $(grep -E '^/.*: warning:' swift6.log | sort -u | wc -l)"
           grep -E ': (error|warning):' swift6.log | sed -E 's/.*: (error|warning): //' | sort | uniq -c | sort -rn | head -20 || true
+      - name: Bilan
+        if: always()
+        working-directory: ks
+        run: |
+          echo "KosherSwift ${{ matrix.etiquette }} sous Linux"
+          echo "- construction telle quelle : ${{ steps.brute.outcome }}"
+          echo "- construction avec le correctif : ${{ steps.corrigee.outcome || 'sans objet' }}"
+          echo "- ses propres tests : ${{ steps.tests.outcome }}"
+          grep -E 'Executed|Test run with|tests? (passed|failed)|error:' tests.log | tail -5 || true
+          echo "- mode Swift 6, erreurs distinctes : $(grep -E '^/.*: error:' swift6.log 2>/dev/null | sort -u | wc -l)"
 
   ecarts-312:
     runs-on: ubuntu-24.04
