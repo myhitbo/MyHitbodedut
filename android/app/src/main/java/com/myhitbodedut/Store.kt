@@ -97,6 +97,7 @@ object Store {
     /** Les langues d'un texte à lire (04/11) : « he », « fr », « en », « he+fr », « he+en », « fr+en ». */
     private const val KEY_LECTURE_LANGUES = "lecture_langues"
     private const val KEY_LECTURE_MASQUEE = "lecture_masquee"
+    private const val KEY_LECTURE_ECRAN_ALLUME = "lecture_ecran_allume"
     private const val KEY_PAUSE_SHABBAT = "pause_shabbat"
     private const val KEY_IN_ISRAEL = "in_israel"
     private const val KEY_LIEU_NOM = "lieu_nom"
@@ -784,6 +785,16 @@ object Store {
 
     fun setLectureMasquee(context: Context, masquee: Boolean) {
         prefs(context).edit().putBoolean(KEY_LECTURE_MASQUEE, masquee).apply()
+    }
+
+    /**
+     * L'écran gardé allumé pendant la lecture (audit du 12/11, FLECTURE-01), par défaut : il
+     * s'éteignait au milieu d'une prière. VeilleLecture le relâche après dix minutes sans toucher.
+     */
+    fun lectureEcranAllume(context: Context): Boolean = prefs(context).getBoolean(KEY_LECTURE_ECRAN_ALLUME, true)
+
+    fun setLectureEcranAllume(context: Context, allume: Boolean) {
+        prefs(context).edit().putBoolean(KEY_LECTURE_ECRAN_ALLUME, allume).apply()
     }
 
     /** Le nusah du siddour : Edot HaMizra'h par défaut. */
@@ -1522,6 +1533,7 @@ object Store {
             .put("lecture_police", lecturePolice(context).cle)
             .put("lecture_sombre", lectureSombre(context))
             .put("lecture_masquee", lectureMasquee(context))
+            .put("lecture_ecran_allume", lectureEcranAllume(context))
         lectureLangues(context)?.let { settings.put("lecture_langues", it) }
         root.put("settings", settings)
         root.put("paused_dates", org.json.JSONArray(pausedDates(context).toList()))
@@ -1678,6 +1690,7 @@ object Store {
             LanguesTexte.Mode.entries.firstOrNull { it.cle == settings.optString("lecture_langues") }?.let { setLectureLangues(context, it.cle) }
             if (settings.has("lecture_sombre")) setLectureSombre(context, settings.optBoolean("lecture_sombre"))
             if (settings.has("lecture_masquee")) setLectureMasquee(context, settings.optBoolean("lecture_masquee"))
+            if (settings.has("lecture_ecran_allume")) setLectureEcranAllume(context, settings.optBoolean("lecture_ecran_allume", true))
         }
         root.optJSONArray("paused_dates")?.let { array ->
             val dates = pausedDates(context).toMutableSet()

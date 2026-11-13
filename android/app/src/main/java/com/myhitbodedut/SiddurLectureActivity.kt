@@ -156,8 +156,22 @@ class SiddurLectureActivity : AppCompatActivity() {
         dialogue.setPositiveButton(android.R.string.ok, null).show()
     }
 
+    /** L'écran reste allumé tant qu'on lit (FLECTURE-01). */
+    private val veille by lazy { VeilleLecture(this) }
+
+    override fun onResume() {
+        super.onResume()
+        veille.toucher()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        veille.toucher()
+    }
+
     override fun onPause() {
         super.onPause()
+        veille.arreter()
         pauseA = System.currentTimeMillis()
         val p = (liste.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         if (p >= 0) Store.setPositionLecture(this, cle(), p, pauseA)

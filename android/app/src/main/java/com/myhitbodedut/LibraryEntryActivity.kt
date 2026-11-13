@@ -44,6 +44,24 @@ class LibraryEntryActivity : AppCompatActivity() {
         facts.visibility = if (facts.childCount == 0) View.GONE else View.VISIBLE
     }
 
+    /** L'écran reste allumé tant qu'on lit (FLECTURE-01). */
+    private val veille by lazy { VeilleLecture(this) }
+
+    override fun onResume() {
+        super.onResume()
+        veille.toucher()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        veille.toucher()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        veille.arreter()
+    }
+
     // --- Source ---------------------------------------------------------------
 
     private fun bindSource(library: Library, source: SourceEntry) {

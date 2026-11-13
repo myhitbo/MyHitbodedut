@@ -1039,6 +1039,7 @@
     <string name="marque_retiree">Bookmark removed</string>
     <string name="fond_contraste">High contrast</string>
     <string name="settings_grand_texte">Large reading text</string>
+    <string name="settings_ecran_allume">Keep the screen on while reading</string>
     <string name="journal_humeur_avant">Before the hitbodedut</string>
     <string name="journal_humeur_apres">After</string>
     <string name="journal_gratitude">Gratitude</string>

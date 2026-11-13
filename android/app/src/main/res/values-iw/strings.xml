@@ -1069,6 +1069,7 @@
     <string name="marque_retiree">הסימנייה הוסרה</string>
     <string name="fond_contraste">ניגודיות גבוהה</string>
     <string name="settings_grand_texte">טקסט קריאה גדול</string>
+    <string name="settings_ecran_allume">השארת המסך דולק בזמן הקריאה</string>
     <string name="journal_humeur_avant">לפני ההתבודדות</string>
     <string name="journal_humeur_apres">אחרי</string>
     <string name="journal_gratitude">הודיה</string>

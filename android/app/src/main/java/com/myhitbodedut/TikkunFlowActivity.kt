@@ -108,6 +108,24 @@ class TikkunFlowActivity : AppCompatActivity() {
         }
     }
 
+    /** L'écran reste allumé tant qu'on lit (FLECTURE-01) : le Tikoun se dit d'un trait. */
+    private val veille by lazy { VeilleLecture(this) }
+
+    override fun onResume() {
+        super.onResume()
+        veille.toucher()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        veille.toucher()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        veille.arreter()
+    }
+
     /** Le nom d'un psaume ou d'une partie, sur un filet, sans rien a toucher. */
     private fun titre(texte: String, premier: Boolean): View = ReglagesLecture.marquer(TextView(this).apply {
         layoutParams = LinearLayout.LayoutParams(

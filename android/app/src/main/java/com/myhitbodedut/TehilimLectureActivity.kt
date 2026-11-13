@@ -47,6 +47,24 @@ class TehilimLectureActivity : AppCompatActivity() {
         intent.getIntExtra(MARQUE_VERSET, 0).takeIf { it > 0 }?.let { v -> allerAuVerset(portion.debut, v) }
     }
 
+    /** L'écran reste allumé tant qu'on lit (FLECTURE-01). */
+    private val veille by lazy { VeilleLecture(this) }
+
+    override fun onResume() {
+        super.onResume()
+        veille.toucher()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        veille.toucher()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        veille.arreter()
+    }
+
     /** Les versets affichés, psaume par psaume : la vue, et pour chaque verset sa place dans le texte. */
     private val places = mutableMapOf<Int, Pair<TextView, List<Triple<Int, Int, Int>>>>()
 
