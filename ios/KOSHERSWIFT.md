@@ -10,17 +10,18 @@ flux `ios-coeur.yml` (Coeur sur la 1.10.11) et `ios-kosherswift.yml` (les deux �
 - **3.1.2 ne le tient pas.** 'Hatsot s'écarte de 15 s, le lever et le coucher jusqu'à 29 s,
   l'allumage de 13 min à Tromsø. Passer à la 3.x reste une décision pour les trois plateformes ensemble.
 - **La 1.10.11 ne compile pas telle quelle sous Linux**, pour un seul fichier, que Coeur n'emploie pas ;
-  un correctif de CI de quelques lignes suffit. Sur iOS, elle compile telle quelle.
+  un commit de quelques lignes suffit. Il vit dans le fork public `myhitbo/KosherSwift` (décision D12),
+  dont Coeur dépend.
 
 ## Les deux étiquettes
 
 | | 1.10.11 | 3.1.2 |
 | --- | --- | --- |
-| Révision | `1fb606ea5b02c87b0a02931ecf3c06503134b6fc` | `6b12b4089f2a8b198971b793e6d29e171c3f1b37` |
-| Employée par | `ios/Paquets/Coeur` (épinglée par révision) | `ios/Outils/KosherSwift3` (mesure seulement) |
+| Révision | `1fb606ea5b02c87b0a02931ecf3c06503134b6fc` (étiquette amont) ; Coeur emploie `97551b47c3682fbf97ec95adae891d5c3e7dd076`, la même plus le correctif Linux | `6b12b4089f2a8b198971b793e6d29e171c3f1b37` |
+| Employée par | `ios/Paquets/Coeur`, par le fork `myhitbo/KosherSwift`, branche `linux-1.10.11` (épinglée par révision) | `ios/Outils/KosherSwift3` (mesure seulement) |
 | API | celle de KosherJava 2.5.0 (`ComplexZmanimCalendar`, `getSofZmanShmaMGA`, `getTzais72`…) | celle de la 3.x (`ComprehensiveZmanimCalendar`, `…MGA72Minutes`, `getTzais72Minutes`, `getChatzosHayom`) |
 | Compilation sous Linux, telle quelle | **non** : `ZmanimFormatter` emploie `DateComponentsFormatter`, absent de `swift-corelibs-foundation` | oui |
-| Compilation sous Linux, avec le correctif | oui (`Correctifs/kosherswift-1.10.11-linux.patch`) | sans objet |
+| Compilation sous Linux, avec le correctif | oui (fork, branche `linux-1.10.11`) | sans objet |
 | Ses propres tests sous Linux | 36 tests, verts avec le correctif | 42 tests, verts |
 | Mode de langage | Swift 5 (`swift-tools-version: 5.7.1`) | Swift 5 |
 | Compilée en mode Swift 6 | 11 erreurs distinctes, toutes « static property … is not concurrency-safe » (`NOAACalculator.geoLocation`, listes de paracha, de massekhtot, comparateurs de `Zman`…) | 13, de même nature |
@@ -32,9 +33,11 @@ flux `ios-coeur.yml` (Coeur sur la 1.10.11) et `ios-kosherswift.yml` (les deux �
 n'existe pas sous Linux. Le correctif garde ce code pour Darwin (`#if canImport(Darwin)`) et en donne
 une version écrite à la main pour Linux. Il ne touche aucun calcul.
 
-Il n'est appliqué que par la CI Linux (`swift package edit`, puis `git apply`) : l'app, sur iOS, compile
-la bibliothèque telle quelle. Quand le fork public existera (décision D12), le correctif y sera versé, et
-proposé en amont ; Coeur pointera alors vers le fork, même révision de base, et l'étape de CI disparaîtra.
+Il est le seul commit de la branche `linux-1.10.11` du fork public https://github.com/myhitbo/KosherSwift
+(décision D12), posé sur l'étiquette 1.10.11 (`1fb606e`). Coeur dépend de ce commit, épinglé par révision
+(`97551b4`), sous Linux comme sur iOS. Le fork tient aussi l'obligation de la LGPL : les sources de la
+bibliothèque employée, modifications comprises, sont publiques. Le proposer à l'auteur, Elyahu41, reste à
+faire, avec l'accord du propriétaire.
 
 ## 1.10.11 : les mesures
 

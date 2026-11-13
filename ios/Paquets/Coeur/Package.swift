@@ -11,11 +11,12 @@ let package = Package(
         .library(name: "Coeur", targets: ["Coeur"]),
     ],
     dependencies: [
-        // KosherSwift 1.10.11 (LGPL 2.1), épinglé par révision : la dernière étiquette à l'API
-        // et aux définitions de KosherJava 2.5.0, celui d'Android (PORTAGE.md § 5.1, décision D4).
-        // À remplacer par le fork public de l'organisation, même révision (décision D12).
-        .package(url: "https://github.com/Elyahu41/KosherSwift.git",
-                 revision: "1fb606ea5b02c87b0a02931ecf3c06503134b6fc"),
+        // KosherSwift 1.10.11 (LGPL 2.1) : la dernière étiquette à l'API et aux définitions de
+        // KosherJava 2.5.0, celui d'Android (PORTAGE.md § 5.1, décision D4). Fork public de
+        // l'organisation (décision D12), branche linux-1.10.11 : l'étiquette 1.10.11 et un seul
+        // commit, qui la fait compiler sous Linux sans toucher aux calculs (ios/KOSHERSWIFT.md).
+        .package(url: "https://github.com/myhitbo/KosherSwift.git",
+                 revision: "97551b47c3682fbf97ec95adae891d5c3e7dd076"),
     ],
     targets: [
         .target(

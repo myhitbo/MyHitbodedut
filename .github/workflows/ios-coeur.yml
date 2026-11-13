@@ -41,15 +41,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Version
         run: swift --version
-      # KosherSwift 1.10.11 emploie DateComponentsFormatter, absent de Foundation sous Linux,
-      # dans ZmanimFormatter seulement (que Coeur n'appelle pas). Le correctif n'existe que
-      # pour cette CI : l'app, sur iOS, compile la bibliothèque telle quelle (ios/KOSHERSWIFT.md).
-      - name: KosherSwift sous Linux (correctif)
-        run: |
-          swift package resolve
-          swift package edit kosherswift --path "$GITHUB_WORKSPACE/.kosherswift-linux"
-          git -C "$GITHUB_WORKSPACE/.kosherswift-linux" apply \
-            "$GITHUB_WORKSPACE/ios/Paquets/Correctifs/kosherswift-1.10.11-linux.patch"
       # -warnings-as-errors n'est pas passé à swiftc : SwiftPM le donnerait aussi à KosherSwift,
       # dont il tait les avertissements (-suppress-warnings), et les deux options se contredisent.
       # Les avertissements de Coeur et de ses tests sont donc cherchés dans le journal.
