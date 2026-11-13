@@ -342,9 +342,22 @@ Tout est obligatoire avant le premier envoi en test fermé.
 hébreu (ancres `#fr`, `#en`, `#he`). `web/build.mjs` copie `web/src` en entier
 dans le site (vérifié : la page sort identique dans `web/dist`, et le service
 worker la garde hors connexion). URL à saisir dans la Play Console, une fois
-la branche fusionnée sur `main` et le site remis en ligne par `web.yml` :
+la branche fusionnée sur `main` et le site remis en ligne par `web.yml` (Cloudflare Pages depuis le 13/11, secrets `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`) :
 
-**https://myhitbo.github.io/myhitbodedut-web/confidentialite.html**
+**https://myhitbodedut.pages.dev/confidentialite.html**
+
+**Hébergement (tranché le 13/11) : Cloudflare Pages**, projet `myhitbodedut`,
+gratuit, public, adresse indépendante du nom du compte GitHub (l'ancienne
+`hil123.github.io/…` est morte depuis le changement de nom en `myhitbo`).
+`web.yml` déploie `web/dist` avec `wrangler pages deploy` ; le dépôt
+`myhitbodedut-web` n'est plus alimenté et peut être archivé. Secrets du dépôt
+`myhitbo/MyHitbodedut` : `CLOUDFLARE_API_TOKEN` (jeton d'API, permission
+*Account → Cloudflare Pages → Edit*) et `CLOUDFLARE_ACCOUNT_ID`. L'adresse est
+la même dans `CelebrationActivity.LIEN_WEB`, `web/src/js/app.js` et
+`ConfidentialiteTest`, qui échoue si l'une dérive. *Si le nom `myhitbodedut`
+est déjà pris sur pages.dev, changer `CLOUDFLARE_PROJET` dans `web.yml` et partout
+ci-dessus.* Les morceaux non autorisés (§ 3.2) restent dans ce site public :
+à retirer de `web/` avant la mise en ligne.
 
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de
