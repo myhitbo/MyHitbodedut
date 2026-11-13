@@ -95,9 +95,16 @@
     <string name="ring_streak">Streak</string>
     <string name="ring_day_detail">Today: %1$s of %2$s</string>
     <string name="ring_day_reached">Daily goal reached: %1$s of %2$s</string>
-    <string name="ring_streak_detail">Streak: %1$d of %2$d days</string>
+    <plurals name="ring_streak_detail">
+        <item quantity="one">Streak: %1$d of %2$d days</item>
+        <item quantity="other">Streak: %1$d of %2$d days</item>
+    </plurals>
+    <plurals name="ring_week_detail">
+        <item quantity="one">Week: %1$d of %2$d days</item>
+        <item quantity="other">Week: %1$d of %2$d days</item>
+    </plurals>
     <string name="ring_streak_reached">%2$d-day milestone reached!</string>
-    <string name="rings_description">Rings. Today: %1$s of %2$s. Week: %3$d of %4$d days. Streak: %5$d of %6$d days.</string>
+    <string name="rings_description">Rings. Today: %1$s of %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">Shabbat and Yom Tov</string>
     <string name="settings_shabbat_hint">On those days: the mode is silent, no reminder, and the streak stays intact.</string>
     <string name="settings_exempt_today">Rest day today</string>
@@ -236,8 +243,8 @@
     </plurals>
 
     <plurals name="journal_summary">
-        <item quantity="one">%1$d time hitbodedut, %2$s in total</item>
-        <item quantity="other">%1$d times hitbodedut, %2$s in total</item>
+        <item quantity="one">%1$d day of hitbodedut, %2$s in total</item>
+        <item quantity="other">%1$d days of hitbodedut, %2$s in total</item>
     </plurals>
 
     <!-- Music -->
@@ -851,14 +858,23 @@
     <string name="trophees_paliers_titre">Trophies and milestones</string>
     <string name="trophees_titre">Trophies</string>
     <string name="grade_titre">%1$s grade</string>
-    <string name="grade_sous">%1$d trophies earned · %2$d more for %3$s</string>
-    <string name="grade_sous_max">%1$d trophies earned</string>
+    <plurals name="grade_sous">
+        <item quantity="one">%1$d trophy earned · %2$d more for %3$s</item>
+        <item quantity="other">%1$d trophies earned · %2$d more for %3$s</item>
+    </plurals>
+    <plurals name="grade_sous_max">
+        <item quantity="one">%1$d trophy earned</item>
+        <item quantity="other">%1$d trophies earned</item>
+    </plurals>
     <string name="grade_atteint">%1$s grade reached</string>
     <string name="grade_au">at trophy %1$d</string>
     <string name="trophee_gagne">Earned ✓</string>
     <string name="trophees_ici">YOU ARE HERE · NEXT GOAL</string>
     <string name="trophee_encore">%1$d / %2$d · %3$d to go</string>
-    <string name="trophees_autres">… and %1$d more trophies further on</string>
+    <plurals name="trophees_autres">
+        <item quantity="one">… and %1$d more trophy further on</item>
+        <item quantity="other">… and %1$d more trophies further on</item>
+    </plurals>
     <string name="grade_nouveau">New grade: %1$s</string>
     <string name="grade_prochain">Next grade: %1$s, at trophy %2$d.</string>
     <string name="trophees_prochain">Next trophy</string>
@@ -901,7 +917,7 @@
     <string name="trophee_plume">The pen</string>
     <plurals name="trophee_premier_pas_desc">
         <item quantity="one">A first hitbodedut</item>
-        <item quantity="other">First %1$d times hitbodedut</item>
+        <item quantity="other">First %1$d days of hitbodedut</item>
     </plurals>
     <plurals name="trophee_seance_longue_desc">
         <item quantity="one">%1$d minute in one day</item>
@@ -928,7 +944,7 @@
         <item quantity="other">%1$d Fridays of hitbodedut</item>
     </plurals>
     <plurals name="trophee_retour_desc">
-        <item quantity="one">Coming back %1$d time after a week’s break</item>
+        <item quantity="one">Coming back once after a week’s break</item>
         <item quantity="other">Coming back %1$d times after a week’s break</item>
     </plurals>
     <plurals name="trophee_plume_desc">
@@ -954,7 +970,7 @@
     <string name="trophee_niveau_court">Level %1$d of %2$d</string>
     <string name="trophees_explication">Each trophy climbs level by level, from bronze to silver, gold and platinum. Under each one: your level, what the next one asks, and how far you are.</string>
     <string name="trophee_a_venir">To win</string>
-    <string name="trophee_niveau_gagne">“%1$s” trophy: level %2$d, %3$s!</string>
+    <string name="trophee_niveau_gagne">“%1$s” trophy: level %2$d!</string>
     <string name="trophee_prochain">Next level: %1$s</string>
     <string name="trophee_sommet">Highest level reached</string>
     <string name="trophee_vedette">Your finest trophy</string>
@@ -1052,13 +1068,19 @@
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">Earned on %1$s</string>
     <string name="trophee_a_gagner">To earn · %1$d / %2$d</string>
-    <string name="trophee_detail_grade">In %1$s: it was your trophy no. %2$d.</string>
+    <plurals name="trophee_detail_grade">
+        <item quantity="one">In %1$s: it was your first trophy.</item>
+        <item quantity="other">In %1$s: it was your trophy no. %2$d.</item>
+    </plurals>
     <string name="trophees_proches_titre">Closest</string>
     <string name="trophees_filtre_tous">All</string>
     <string name="trophees_filtre">Show trophies: %1$s</string>
     <string name="accueil_prochain_trophee">Next trophy: %1$s · %2$d to go</string>
     <string name="grade_partager">Share my grade</string>
-    <string name="grade_partage_texte">%1$s grade on MyHitbodedut: %2$d trophies, day after day.</string>
+    <plurals name="grade_partage_texte">
+        <item quantity="one">%1$s grade on MyHitbodedut: %2$d trophy, day after day.</item>
+        <item quantity="other">%1$s grade on MyHitbodedut: %2$d trophies, day after day.</item>
+    </plurals>
     <string name="bilan_titre">Your week</string>
     <string name="bilan_minutes">%1$s of hitbodedut, over %2$s.</string>
     <string name="bilan_plus">%1$s more than the week before.</string>

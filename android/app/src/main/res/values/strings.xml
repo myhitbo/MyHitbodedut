@@ -103,9 +103,16 @@
     <string name="ring_streak">Série</string>
     <string name="ring_day_detail">Aujourd’hui : %1$s sur %2$s</string>
     <string name="ring_day_reached">Objectif du jour atteint : %1$s sur %2$s</string>
-    <string name="ring_streak_detail">Série : %1$d jours sur %2$d</string>
+    <plurals name="ring_streak_detail">
+        <item quantity="one">Série : %1$d jour sur %2$d</item>
+        <item quantity="other">Série : %1$d jours sur %2$d</item>
+    </plurals>
+    <plurals name="ring_week_detail">
+        <item quantity="one">Semaine : %1$d jour sur %2$d</item>
+        <item quantity="other">Semaine : %1$d jours sur %2$d</item>
+    </plurals>
     <string name="ring_streak_reached">Palier de %2$d jours atteint !</string>
-    <string name="rings_description">Anneaux. Aujourd’hui : %1$s sur %2$s. Semaine : %3$d jours sur %4$d. Série : %5$d jours sur %6$d.</string>
+    <string name="rings_description">Anneaux. Aujourd’hui : %1$s sur %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">Chabbat et Yom Tov</string>
     <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
     <string name="settings_exempt_today">Pause aujourd’hui</string>
@@ -915,14 +922,23 @@
     <string name="trophees_paliers_titre">Trophées et paliers</string>
     <string name="trophees_titre">Trophées</string>
     <string name="grade_titre">Grade %1$s</string>
-    <string name="grade_sous">%1$d trophées gagnés · encore %2$d pour %3$s</string>
-    <string name="grade_sous_max">%1$d trophées gagnés</string>
+    <plurals name="grade_sous">
+        <item quantity="one">%1$d trophée gagné · encore %2$d pour %3$s</item>
+        <item quantity="other">%1$d trophées gagnés · encore %2$d pour %3$s</item>
+    </plurals>
+    <plurals name="grade_sous_max">
+        <item quantity="one">%1$d trophée gagné</item>
+        <item quantity="other">%1$d trophées gagnés</item>
+    </plurals>
     <string name="grade_atteint">Grade %1$s atteint</string>
     <string name="grade_au">au %1$dᵉ trophée</string>
     <string name="trophee_gagne">Gagné ✓</string>
     <string name="trophees_ici">VOUS ÊTES ICI · PROCHAIN OBJECTIF</string>
     <string name="trophee_encore">%1$d / %2$d · encore %3$d</string>
-    <string name="trophees_autres">… et %1$d autres trophées plus loin</string>
+    <plurals name="trophees_autres">
+        <item quantity="one">… et %1$d autre trophée plus loin</item>
+        <item quantity="other">… et %1$d autres trophées plus loin</item>
+    </plurals>
     <string name="grade_nouveau">Nouveau grade : %1$s</string>
     <string name="grade_prochain">Prochain grade : %1$s, au %2$dᵉ trophée.</string>
     <string name="trophees_prochain">Prochain trophée</string>
@@ -1018,7 +1034,7 @@
     <string name="trophee_niveau_court">Niveau %1$d sur %2$d</string>
     <string name="trophees_explication">Chaque trophée monte de niveau en niveau, du bronze à l’argent, à l’or puis au platine. Sous chacun : votre niveau, ce que demande le suivant, et où vous en êtes.</string>
     <string name="trophee_a_venir">À gagner</string>
-    <string name="trophee_niveau_gagne">Trophée « %1$s » : niveau %2$d, %3$s !</string>
+    <string name="trophee_niveau_gagne">Trophée « %1$s » : niveau %2$d !</string>
     <string name="trophee_prochain">Prochain niveau : %1$s</string>
     <string name="trophee_sommet">Niveau le plus haut atteint</string>
     <string name="trophee_vedette">Votre plus beau trophée</string>
@@ -1116,13 +1132,19 @@
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">Gagné le %1$s</string>
     <string name="trophee_a_gagner">À gagner · %1$d / %2$d</string>
-    <string name="trophee_detail_grade">En %1$s : c’était votre %2$dᵉ trophée.</string>
+    <plurals name="trophee_detail_grade">
+        <item quantity="one">En %1$s : c’était votre premier trophée.</item>
+        <item quantity="other">En %1$s : c’était votre %2$dᵉ trophée.</item>
+    </plurals>
     <string name="trophees_proches_titre">Les plus proches</string>
     <string name="trophees_filtre_tous">Tous</string>
     <string name="trophees_filtre">Montrer les trophées : %1$s</string>
     <string name="accueil_prochain_trophee">Prochain trophée : %1$s · encore %2$d</string>
     <string name="grade_partager">Partager mon grade</string>
-    <string name="grade_partage_texte">Grade %1$s sur MyHitbodedut : %2$d trophées, jour après jour.</string>
+    <plurals name="grade_partage_texte">
+        <item quantity="one">Grade %1$s sur MyHitbodedut : %2$d trophée, jour après jour.</item>
+        <item quantity="other">Grade %1$s sur MyHitbodedut : %2$d trophées, jour après jour.</item>
+    </plurals>
     <string name="bilan_titre">Votre semaine</string>
     <string name="bilan_minutes">%1$s de hitbodedout, sur %2$s.</string>
     <string name="bilan_plus">%1$s de plus que la semaine d’avant.</string>

@@ -1,6 +1,7 @@
 // Les trophées (Trophees.kt, 11/10, à niveaux depuis le 12/10) : onze
-// familles qui montent par niveaux, la médaille passant du bronze à
-// l'argent, à l'or puis au platine. Mêmes règles que l'application Android.
+// familles qui montent par niveaux. Le métal est celui du grade (15/10) :
+// bronze, argent, or, platine, d'après le nombre de trophées gagnés en tout.
+// Mêmes règles que l'application Android.
 
 // L'icône : clé de ICONES (trophees-formes.js), au trait, variante B choisie le 16/10.
 // L'objet (12/10) : coupe, écusson, étoile, rosette, médaille, pièces, cristal, gemme (tools/trophees_formes.py).
@@ -20,12 +21,6 @@ export const FAMILLES = [
 ].map(([cle, icone, seuils, forme]) => ({ cle, icone, seuils, forme }));
 
 export const METAUX = ['bronze', 'argent', 'or', 'platine'];
-
-/** Le métal d'un rang : un quart de la famille par métal ; une famille d'un seul niveau est de bronze. */
-export function metal(f, rang) {
-  if (f.seuils.length === 1) return 'bronze';
-  return METAUX[Math.min(3, Math.max(0, Math.floor(((rang - 1) * 4) / f.seuils.length)))];
-}
 
 const jourDe = (iso) => Math.round(Date.parse(`${iso}T12:00:00Z`) / 86400000);
 const semaineDe = (iso) => new Date(`${iso}T12:00:00Z`).getUTCDay(); // 0 dimanche … 6 samedi
@@ -89,8 +84,9 @@ export function progres(p, f) {
 }
 
 /**
- * Les niveaux gagnés depuis la dernière fois, le plus haut de chaque famille ;
- * rien la première fois (vus null) ni depuis l'ancien format (clés sans « : »).
+ * Les niveaux gagnés depuis la dernière fois, le plus haut de chaque famille, le plus coûteux
+ * d'abord (Trophees.nouveaux, 13/11) ; rien la première fois (vus null) ni depuis l'ancien
+ * format (clés sans « : »).
  */
 export function nouveaux(g, vus) {
   if (!vus || (vus.size && ![...vus].some((k) => k.includes(':')))) return [];
@@ -100,8 +96,8 @@ export function nouveaux(g, vus) {
     const [cle, r] = k.split(':');
     if (!parFamille.has(cle) || parFamille.get(cle) < Number(r)) parFamille.set(cle, Number(r));
   }
-  return [...parFamille].map(([cle, r]) => { const famille = FAMILLES.find((f) => f.cle === cle); return { famille, rang: r, metal: metal(famille, r) }; })
-    .sort((a, b) => METAUX.indexOf(b.metal) * 100 + b.rang - (METAUX.indexOf(a.metal) * 100 + a.rang));
+  return [...parFamille].map(([cle, r]) => ({ famille: FAMILLES.find((f) => f.cle === cle), rang: r }))
+    .sort((a, b) => cout(b.famille, b.famille.seuils[b.rang - 1]) - cout(a.famille, a.famille.seuils[a.rang - 1]));
 }
 
 /** Le chemin (15/10, Trophees.chemin) : tous les niveaux en une liste, du plus facile au plus dur. */

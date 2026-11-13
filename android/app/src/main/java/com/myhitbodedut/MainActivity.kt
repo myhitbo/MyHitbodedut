@@ -407,10 +407,12 @@ class MainActivity : AppCompatActivity() {
         val etat = Store.anneaux(this)
         val anneaux = findViewById<AnneauxView>(R.id.week_gauge)
         anneaux.montrer(etat)
+        // La semaine et la série s'accordent au nombre (13/11, TFRLANGUE-01) : « 1 jour sur 7 ».
         anneaux.contentDescription = getString(
             R.string.rings_description,
             Store.formatDuration(this, etat.jour.fait), Store.formatDuration(this, etat.jour.objectif),
-            semaine.faits, semaine.dus, etat.serie.fait, etat.serie.objectif
+            resources.getQuantityString(R.plurals.ring_week_detail, semaine.faits, semaine.faits, semaine.dus),
+            resources.getQuantityString(R.plurals.ring_streak_detail, etat.serie.fait, etat.serie.fait, etat.serie.objectif)
         )
         anneaux.surChoix = { quel ->
             renderLegende(quel)
@@ -634,10 +636,8 @@ class MainActivity : AppCompatActivity() {
                 if (etat.jour.atteint) R.string.ring_day_reached else R.string.ring_day_detail,
                 Store.formatDuration(this, etat.jour.fait), Store.formatDuration(this, etat.jour.objectif)
             )
-            Anneaux.Quel.SERIE -> getString(
-                if (etat.serie.atteint) R.string.ring_streak_reached else R.string.ring_streak_detail,
-                etat.serie.fait, etat.serie.objectif
-            )
+            Anneaux.Quel.SERIE -> if (etat.serie.atteint) getString(R.string.ring_streak_reached, etat.serie.fait, etat.serie.objectif)
+                else resources.getQuantityString(R.plurals.ring_streak_detail, etat.serie.fait, etat.serie.fait, etat.serie.objectif)
             else -> resources.getQuantityString(R.plurals.week_gauge, semaine.fait, semaine.fait, semaine.objectif)
         }
         legende.setTextColor(

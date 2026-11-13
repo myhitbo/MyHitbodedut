@@ -7,8 +7,9 @@ import java.time.LocalDate
  * Les trophées (demande du 11/10, à niveaux depuis le 12/10) : onze familles
  * qui regardent la forme de la pratique — la plus longue séance d'un jour,
  * les jours, la série, les heures, les semaines pleines, les vendredis, les
- * retours après une pause, le journal, le Tikoun HaKlali (04/11). Chacune monte par niveaux, et la
- * médaille change de métal en montant : bronze, argent, or, platine. Les
+ * retours après une pause, le journal, le Tikoun HaKlali (04/11). Chacune monte par niveaux. Le
+ * métal ne dépend plus de la famille (15/10) : c'est celui du grade, d'après le nombre de
+ * trophées gagnés en tout (grade) — bronze, argent, or, platine. Les
  * seuils reprennent des nombres qui parlent d'eux-mêmes (7, 18, 40, 70, 100,
  * 613), avec des paliers intermédiaires à chaque dizaine et quinzaine (12/10) ;
  * choix de l'application, sans source à citer.
@@ -17,7 +18,7 @@ import java.time.LocalDate
  */
 object Trophees {
 
-    /** Le métal de la médaille : où l'on en est dans la famille, à l'œil. */
+    /** Le métal du grade (grade) : le même pour tous les trophées gagnés à ce moment du chemin. */
     enum class Metal { BRONZE, ARGENT, OR, PLATINE }
 
     /** L'objet (12/10, d'après les planches envoyées) : pas que des pièces. Clé de res/raw/trophees_formes.json. */
@@ -43,14 +44,6 @@ object Trophees {
     data class Niveau(val famille: Famille, val rang: Int) {
         val cle: String get() = "${famille.cle}:$rang"
         val seuil: Int get() = famille.seuils[rang - 1]
-        val metal: Metal get() = metal(famille, rang)
-    }
-
-    /** Le métal d'un rang : un quart de la famille par métal ; une famille d'un seul niveau est de bronze. */
-    fun metal(f: Famille, rang: Int): Metal {
-        if (f.seuils.size == 1) return Metal.BRONZE
-        val i = ((rang - 1) * 4 / f.seuils.size).coerceIn(0, 3)
-        return Metal.entries[i]
     }
 
     /**
@@ -247,14 +240,15 @@ object Trophees {
 
     /**
      * Les niveaux gagnés depuis la dernière fois, le plus haut de chaque
-     * famille d'abord ; rien la première fois ([vus] null), ni quand [vus]
+     * famille, le plus coûteux d'abord (cout) ; rien la première fois ([vus] null), ni quand [vus]
      * date d'avant les niveaux (des clés sans « : ») : pas de pluie de
-     * vieux trophées.
+     * vieux trophées. L'ordre suivait le métal par famille, que plus aucun écran ne montre
+     * (13/11, FDONNEES-06).
      */
     fun nouveaux(gagnes: Set<Niveau>, vus: Set<String>?): List<Niveau> {
         if (vus == null || (vus.isNotEmpty() && vus.none { ':' in it })) return emptyList()
         return gagnes.filter { it.cle !in vus }
             .groupBy { it.famille }.values.map { n -> n.maxBy { it.rang } }
-            .sortedByDescending { it.metal.ordinal * 100 + it.rang }
+            .sortedByDescending { cout(it.famille, it.seuil) }
     }
 }

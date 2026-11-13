@@ -96,9 +96,18 @@
     <string name="ring_streak">רצף</string>
     <string name="ring_day_detail">היום: %1$s מתוך %2$s</string>
     <string name="ring_day_reached">היעד היומי הושג: %1$s מתוך %2$s</string>
-    <string name="ring_streak_detail">רצף: %1$d ימים מתוך %2$d</string>
+    <plurals name="ring_streak_detail">
+        <item quantity="one">רצף: יום אחד מתוך %2$d</item>
+        <item quantity="two">רצף: יומיים מתוך %2$d</item>
+        <item quantity="other">רצף: %1$d ימים מתוך %2$d</item>
+    </plurals>
+    <plurals name="ring_week_detail">
+        <item quantity="one">השבוע: יום אחד מתוך %2$d</item>
+        <item quantity="two">השבוע: יומיים מתוך %2$d</item>
+        <item quantity="other">השבוע: %1$d ימים מתוך %2$d</item>
+    </plurals>
     <string name="ring_streak_reached">הגעתם ליעד של %2$d ימים!</string>
-    <string name="rings_description">טבעות. היום: %1$s מתוך %2$s. השבוע: %3$d ימים מתוך %4$d. רצף: %5$d ימים מתוך %6$d.</string>
+    <string name="rings_description">טבעות. היום: %1$s מתוך %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">שבת ויום טוב</string>
     <string name="settings_shabbat_hint">בימים אלה: המצב שותק, אין תזכורת, והרצף נשמר.</string>
     <string name="settings_exempt_today">הפסקה היום</string>
@@ -868,14 +877,26 @@
     <string name="trophees_paliers_titre">גביעים ויעדים</string>
     <string name="trophees_titre">גביעים</string>
     <string name="grade_titre">דרגת %1$s</string>
-    <string name="grade_sous">%1$d גביעים הושגו · עוד %2$d ל%3$s</string>
-    <string name="grade_sous_max">%1$d גביעים הושגו</string>
+    <plurals name="grade_sous">
+        <item quantity="one">גביע אחד הושג · עוד %2$d ל%3$s</item>
+        <item quantity="two">שני גביעים הושגו · עוד %2$d ל%3$s</item>
+        <item quantity="other">%1$d גביעים הושגו · עוד %2$d ל%3$s</item>
+    </plurals>
+    <plurals name="grade_sous_max">
+        <item quantity="one">גביע אחד הושג</item>
+        <item quantity="two">שני גביעים הושגו</item>
+        <item quantity="other">%1$d גביעים הושגו</item>
+    </plurals>
     <string name="grade_atteint">הגעתם לדרגת %1$s</string>
     <string name="grade_au">בגביע ה־%1$d</string>
     <string name="trophee_gagne">הושג ✓</string>
     <string name="trophees_ici">אתם כאן · היעד הבא</string>
     <string name="trophee_encore">%1$d מתוך %2$d · עוד %3$d</string>
-    <string name="trophees_autres">… ועוד %1$d גביעים בהמשך</string>
+    <plurals name="trophees_autres">
+        <item quantity="one">… ועוד גביע אחד בהמשך</item>
+        <item quantity="two">… ועוד שני גביעים בהמשך</item>
+        <item quantity="other">… ועוד %1$d גביעים בהמשך</item>
+    </plurals>
     <string name="grade_nouveau">דרגה חדשה: %1$s</string>
     <string name="grade_prochain">הדרגה הבאה: %1$s, בגביע ה־%2$d.</string>
     <string name="trophees_prochain">הגביע הבא</string>
@@ -983,7 +1004,7 @@
     <string name="trophee_niveau_court">דרגה %1$d מתוך %2$d</string>
     <string name="trophees_explication">כל גביע עולה מדרגה לדרגה: ארד, כסף, זהב ופלטינה. מתחת לכל אחד: הדרגה שלכם, מה דורשת הבאה, וכמה כבר עשיתם.</string>
     <string name="trophee_a_venir">עוד לא הושג</string>
-    <string name="trophee_niveau_gagne">גביע „%1$s”: דרגה %2$d, %3$s!</string>
+    <string name="trophee_niveau_gagne">גביע „%1$s”: דרגה %2$d!</string>
     <string name="trophee_prochain">הדרגה הבאה: %1$s</string>
     <string name="trophee_sommet">הדרגה הגבוהה ביותר הושגה</string>
     <string name="trophee_vedette">הגביע הכי יפה שלכם</string>
@@ -1083,13 +1104,21 @@
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">הושג ב־%1$s</string>
     <string name="trophee_a_gagner">להשגה · %1$d מתוך %2$d</string>
-    <string name="trophee_detail_grade">ב%1$s: זה היה הגביע ה־%2$d שלכם.</string>
+    <plurals name="trophee_detail_grade">
+        <item quantity="one">ב%1$s: זה היה הגביע הראשון שלכם.</item>
+        <item quantity="two">ב%1$s: זה היה הגביע ה־%2$d שלכם.</item>
+        <item quantity="other">ב%1$s: זה היה הגביע ה־%2$d שלכם.</item>
+    </plurals>
     <string name="trophees_proches_titre">הכי קרובים</string>
     <string name="trophees_filtre_tous">הכול</string>
     <string name="trophees_filtre">להציג גביעים: %1$s</string>
     <string name="accueil_prochain_trophee">הגביע הבא: %1$s · עוד %2$d</string>
     <string name="grade_partager">לשתף את הדרגה שלי</string>
-    <string name="grade_partage_texte">דרגת %1$s ב־MyHitbodedut: %2$d גביעים, יום אחר יום.</string>
+    <plurals name="grade_partage_texte">
+        <item quantity="one">דרגת %1$s ב־MyHitbodedut: גביע אחד, יום אחר יום.</item>
+        <item quantity="two">דרגת %1$s ב־MyHitbodedut: שני גביעים, יום אחר יום.</item>
+        <item quantity="other">דרגת %1$s ב־MyHitbodedut: %2$d גביעים, יום אחר יום.</item>
+    </plurals>
     <string name="bilan_titre">השבוע שלכם</string>
     <string name="bilan_minutes">%1$s של התבודדות, ב־%2$s.</string>
     <string name="bilan_plus">%1$s יותר מהשבוע הקודם.</string>
