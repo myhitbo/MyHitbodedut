@@ -22,6 +22,14 @@ on:
         description: "Avec captures : l'edition minifiee comme la version publiee (R8), au lieu de debug"
         type: boolean
         default: false
+      api:
+        description: "Avec captures : niveau d'API de l'emulateur (34 = Android 14, 36 = Android 16)"
+        type: string
+        default: "34"
+      play:
+        description: "Avec captures : la construction Play (-Pplay=true), celle de l'AAB envoye"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -29,7 +37,7 @@ permissions:
 # Une nouvelle poussée annule le run encore en cours de la même branche : seul le dernier
 # commit compte, et il passe sans attendre (16/10).
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ inputs.api || '34' }}
   cancel-in-progress: true
 
 jobs:
@@ -177,7 +185,7 @@ jobs:
         working-directory: android
         env:
           VERSION_CODE: ${{ github.run_number }}
-        run: ./gradlew --no-daemon ${{ inputs.minifie && ':app:assembleFullVerifR8' || ':app:assembleFullDebug' }}
+        run: ./gradlew --no-daemon ${{ inputs.play && '-Pplay=true' || '' }} ${{ inputs.minifie && ':app:assembleFullVerifR8' || ':app:assembleFullDebug' }}
 
       - name: Capture the screens
         uses: reactivecircus/android-emulator-runner@v2
@@ -186,7 +194,7 @@ jobs:
           CAPTURES_ETAPES: ${{ inputs.etapes }}
           CAPTURES_VARIANTE: ${{ inputs.minifie && 'verifR8' || 'debug' }}
         with:
-          api-level: 34
+          api-level: ${{ inputs.api || '34' }}
           target: google_apis
           arch: x86_64
           profile: pixel_6
@@ -224,20 +232,24 @@ jobs:
                   print("@@ERREUR", f, e)
           PY
 
-      # Les captures aussi sur une branche à part (claude/captures-android) :
-      # lisibles avec git là où l'artefact ne se télécharge pas.
+      # Les captures aussi sur une branche à part (claude/captures-android, ou
+      # claude/captures-android-api36 pour un autre niveau d'API) : lisibles avec
+      # git là où l'artefact ne se télécharge pas.
       - name: Publish the captures to a branch
         if: always()
         env:
           JETON: ${{ secrets.GITHUB_TOKEN }}
+          API: ${{ inputs.api || '34' }}
         run: |
           ls out/*.png >/dev/null 2>&1 || exit 0
+          BRANCHE=claude/captures-android
+          [ "$API" = "34" ] || BRANCHE="$BRANCHE-api$API"
           rm -rf /tmp/pub && mkdir -p /tmp/pub && cp out/*.png /tmp/pub/ && cp out/*.txt out/*.mp4 /tmp/pub/ 2>/dev/null || true
           cd /tmp/pub
-          git init -q && git checkout -q -b claude/captures-android
+          git init -q && git checkout -q -b "$BRANCHE"
           git add .
-          git -c user.name="captures" -c user.email="actions@github.com" commit -q -m "Captures ${GITHUB_SHA::7}"
-          git push -q -f "https://x-access-token:${JETON}@github.com/${GITHUB_REPOSITORY}.git" claude/captures-android
+          git -c user.name="captures" -c user.email="actions@github.com" commit -q -m "Captures ${GITHUB_SHA::7} (API $API)"
+          git push -q -f "https://x-access-token:${JETON}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCHE"
 
       - name: Upload the captures
         if: always()
