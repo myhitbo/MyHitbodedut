@@ -35,7 +35,7 @@ struct LivresTests {
         #expect(index.groupes == source.groupes)
         #expect(index.textes.map(\.id) == source.textes.map(\.id))
         #expect(index.textes.map(\.chapitres) == source.textes.map(\.sections.count))
-        #expect(index.textes.allSatisfy(\.sections.isEmpty))
+        #expect(index.textes.allSatisfy { $0.sections.isEmpty })
         // Chaque livre a son fichier, ou son dossier s'il est découpé, et il n'y en a pas d'autre.
         let contenu = Depot.racine.appendingPathComponent("ios/Ressources/Contenu")
         let entiers = try FileManager.default.contentsOfDirectory(atPath: contenu.path)
