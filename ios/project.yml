@@ -1,0 +1,83 @@
+# L'app complète : l'app, les widgets et les trois extensions Temps d'écran de la barrière
+# (PORTAGE.md § 2.1.2). Voir projet-commun.yml.
+
+include:
+  - projet-commun.yml
+
+targets:
+  MyHitbodedut:
+    templates: [App]
+    dependencies:
+      - package: Coeur
+      - target: Widgets
+      - target: Surveillance
+      - target: Bouclier
+      - target: BouclierAction
+    entitlements:
+      path: App/MyHitbodedut.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.myhitbodedut]
+        com.apple.developer.family-controls: true
+
+  Surveillance:
+    type: app-extension
+    platform: iOS
+    sources: [Surveillance]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.surveillance
+    info:
+      path: Surveillance/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.deviceactivity.monitor-extension
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).Surveillance
+    entitlements:
+      path: Surveillance/Surveillance.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.myhitbodedut]
+        com.apple.developer.family-controls: true
+
+  Bouclier:
+    type: app-extension
+    platform: iOS
+    sources: [Bouclier]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.bouclier
+    info:
+      path: Bouclier/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.ManagedSettingsUI.shield-configuration-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).Bouclier
+    entitlements:
+      path: Bouclier/Bouclier.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.myhitbodedut]
+        com.apple.developer.family-controls: true
+
+  BouclierAction:
+    type: app-extension
+    platform: iOS
+    sources: [BouclierAction]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.bouclier-action
+    info:
+      path: BouclierAction/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.ManagedSettings.shield-action-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).BouclierAction
+    entitlements:
+      path: BouclierAction/BouclierAction.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.myhitbodedut]
+        com.apple.developer.family-controls: true

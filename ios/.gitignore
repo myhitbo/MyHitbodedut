@@ -1,0 +1,16 @@
+# Engendrés par XcodeGen à partir de project.yml : jamais versionnés (PORTAGE.md § 7.1).
+*.xcodeproj/
+App/Info.plist
+App/*.entitlements
+Widgets/Info.plist
+Widgets/*.entitlements
+Surveillance/Info.plist
+Surveillance/*.entitlements
+Bouclier/Info.plist
+Bouclier/*.entitlements
+BouclierAction/Info.plist
+BouclierAction/*.entitlements
+# fastlane
+fastlane/report.xml
+fastlane/README.md
+build/

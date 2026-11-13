@@ -1,0 +1,104 @@
+# Constructions iOS sur macOS, chez Codemagic (ios/PORTAGE.md § 7.2 à 7.5 ; décision D5 :
+# 500 minutes gratuites par mois, aucun secours payant). Android, le site et Nokia n'y passent pas.
+#
+#   ios-verification : compile l'app sur simulateur, sans signature, avec et sans la barrière.
+#                      À chaque envoi sur une branche claude/ios-* qui touche l'app ou ses extensions.
+#   ios-dev          : archive de développement signée, pour l'iPhone de l'ami (recette R1).
+#                      À la main ; demande le compte Apple (P1) et la clé d'API (P2), voir ios/SIGNATURE.md.
+
+definitions:
+  scripts:
+    - &xcodegen
+      name: XcodeGen 2.46.0
+      script: |
+        set -e
+        curl -fsSL -o "$HOME/xcodegen.zip" \
+          https://github.com/yonaskolb/XcodeGen/releases/download/2.46.0/xcodegen.zip
+        unzip -q -o "$HOME/xcodegen.zip" -d "$HOME/xcodegen"
+        XG="$HOME/xcodegen/xcodegen/bin/xcodegen"
+        if [ ! -x "$XG" ]; then brew install xcodegen; XG="$(command -v xcodegen)"; fi
+        "$XG" --version
+        echo "XG=$XG" >> "$CM_ENV"
+
+workflows:
+  ios-verification:
+    name: iOS – compilation sur simulateur
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: 26.6
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'claude/ios-*'
+          include: true
+      cancel_previous_builds: true
+    when:
+      changeset:
+        includes:
+          - 'ios/**'
+          - 'codemagic.yaml'
+        excludes:
+          - 'ios/Paquets/**'   # Coeur est jugé sous Linux, sur GitHub
+          - 'ios/Outils/**'
+          - '**/*.md'
+    scripts:
+      - *xcodegen
+      - name: L'app complète, avec la barrière
+        script: |
+          set -eo pipefail
+          cd ios
+          "$XG" generate --spec project.yml
+          xcodebuild -project MyHitbodedut.xcodeproj -scheme MyHitbodedut \
+            -destination 'generic/platform=iOS Simulator' -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build
+      - name: La construction SANS_BARRIERE
+        script: |
+          set -eo pipefail
+          cd ios
+          "$XG" generate --spec project-sans-barriere.yml
+          xcodebuild -project MyHitbodedut.xcodeproj -scheme MyHitbodedut \
+            -destination 'generic/platform=iOS Simulator' -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build
+
+  ios-dev:
+    name: iOS – archive de développement signée
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    integrations:
+      # Le nom donné, dans Codemagic, à la clé d'API d'équipe d'App Store Connect (P2).
+      app_store_connect: MyHitbodedut
+    environment:
+      xcode: 26.6
+      ios_signing:
+        distribution_type: development
+        bundle_identifier: com.myhitbodedut   # et ses extensions com.myhitbodedut.*
+    scripts:
+      - *xcodegen
+      - name: Projet
+        script: cd ios && "$XG" generate --spec project.yml
+      - name: Profils de signature
+        script: xcode-project use-profiles --project ios/MyHitbodedut.xcodeproj
+      - name: Archive
+        script: |
+          xcode-project build-ipa --project ios/MyHitbodedut.xcodeproj --scheme MyHitbodedut \
+            --ipa-directory ios/build
+      - name: Les quatre extensions et Family Controls
+        script: |
+          set -eo pipefail
+          cd ios/build
+          rm -rf Payload && unzip -q -o ./*.ipa
+          APP=Payload/MyHitbodedut.app
+          ls -d "$APP"/PlugIns/*.appex
+          test "$(ls -d "$APP"/PlugIns/*.appex | wc -l | tr -d ' ')" -eq 4
+          for p in "$APP" "$APP/PlugIns/Surveillance.appex" "$APP/PlugIns/Bouclier.appex" \
+                   "$APP/PlugIns/BouclierAction.appex"; do
+            if codesign -d --entitlements - --xml "$p" 2>/dev/null | grep -q 'com.apple.developer.family-controls'; then
+              echo "Family Controls : $p"
+            else
+              echo "Family Controls absent : $p"; exit 1
+            fi
+          done
+    artifacts:
+      - ios/build/*.ipa

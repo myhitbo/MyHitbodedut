@@ -94,7 +94,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 ### 3. Projet, signature, première installation
 
 - **But** : la chaîne complète, du dépôt à l'iPhone, sur une app vide (§ 7).
-- **Livrable** : `ios/project.yml` (l'app, les widgets, les trois extensions de la barrière, vides ; groupe d'apps ; entitlements ; configuration `SANS_BARRIERE`), `codemagic.yaml`, `ios/fastlane/` (voies `dev` et `beta`), un flux GitHub `macos-26` de secours, lancé à la main ; les cinq identifiants créés.
+- **Livrable** : `ios/project.yml` (l'app, les widgets, les trois extensions de la barrière, vides ; groupe d'apps ; entitlements) et `ios/project-sans-barriere.yml` (la construction `SANS_BARRIERE`) ; `codemagic.yaml` (`ios-verification` sur simulateur, `ios-dev` signée par la signature automatique de Codemagic, § 7.4) ; `ios/SIGNATURE.md`, les gestes du propriétaire ; les cinq identifiants créés. Ni fastlane, qui viendra avec la fiche et les captures (tâche 30), ni secours GitHub `macos-26` (décision D5).
 - **Critère de fin** : Codemagic produit une archive de développement signée qui contient les quatre extensions et l'entitlement Family Controls de développement ; **recette R1** réussie ; P3 déposé.
 - **Où** : macOS, iPhone.
 

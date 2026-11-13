@@ -1,0 +1,20 @@
+# La construction SANS_BARRIERE : l'app et les widgets, sans les extensions Temps d'écran ni
+# l'entitlement Family Controls. Pour TestFlight tant qu'Apple n'a pas accordé l'entitlement de
+# distribution (décision D3, ROADMAP.md tâche 19). Voir projet-commun.yml.
+
+include:
+  - projet-commun.yml
+
+targets:
+  MyHitbodedut:
+    templates: [App]
+    dependencies:
+      - package: Coeur
+      - target: Widgets
+    settings:
+      base:
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) SANS_BARRIERE
+    entitlements:
+      path: App/MyHitbodedut-SansBarriere.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.myhitbodedut]
