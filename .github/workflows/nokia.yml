@@ -1,6 +1,6 @@
 # L'application pour téléphone à touches (Java ME, nokia/) : construite,
 # testée, puis publiée dans son propre dépôt, avrahamohayon02102001/Nokia-my-hitbodedut-app,
-# comme le site iPhone l'est dans hil123/myhitbodedut-web. C'est un
+# comme le site iPhone l'est sur Cloudflare Pages (myhitbodedut.pages.dev). C'est un
 # produit à part : rien n'est ajouté à la release Android.
 name: Nokia (Java ME)
 

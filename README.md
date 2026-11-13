@@ -268,7 +268,10 @@ Ce que le dépôt fournit et ce qui reste à faire :
 - [ ] Clé d'envoi Play et ses quatre secrets `PLAY_*` (voir
       `PUBLICATION_PLAY_STORE.md`, § 5)
 - [ ] Politique de confidentialité en ligne, obligatoire dès qu'une
-      autorisation sensible est demandée
+      autorisation sensible est demandée :
+      <https://myhitbodedut.pages.dev/confidentialite.html> (Cloudflare Pages,
+      déployée par le flux `Web` ; secrets `CLOUDFLARE_API_TOKEN` et
+      `CLOUDFLARE_ACCOUNT_ID`, voir `PUBLICATION_PLAY_STORE.md` § 6.1)
 - [ ] Formulaire Sécurité des données, à remplir « aucune donnée collectée »
 - [ ] Justification de l'usage du service au premier plan de type `specialUse`
 

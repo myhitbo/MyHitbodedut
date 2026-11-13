@@ -335,6 +335,19 @@ la branche fusionnée sur `main` et le site remis en ligne par `web.yml` (Cloudf
 
 **https://myhitbodedut.pages.dev/confidentialite.html**
 
+**Hébergement (tranché le 13/11) : Cloudflare Pages**, projet `myhitbodedut`,
+gratuit, public, adresse indépendante du nom du compte GitHub (l'ancienne
+`hil123.github.io/…` est morte depuis le changement de nom en `myhitbo`).
+`web.yml` déploie `web/dist` avec `wrangler pages deploy` ; le dépôt
+`myhitbodedut-web` n'est plus alimenté et peut être archivé. Secrets du dépôt
+`myhitbo/MyHitbodedut` : `CLOUDFLARE_API_TOKEN` (jeton d'API, permission
+*Account → Cloudflare Pages → Edit*) et `CLOUDFLARE_ACCOUNT_ID`. L'adresse est
+la même dans `CelebrationActivity.LIEN_WEB`, `web/src/js/app.js` et
+`ConfidentialiteTest`, qui échoue si l'une dérive. *Si le nom `myhitbodedut`
+est déjà pris sur pages.dev, changer `CLOUDFLARE_PROJET` dans `web.yml` et partout
+ci-dessus.* Les morceaux non autorisés (§ 3.2) restent dans ce site public :
+à retirer de `web/` avant la mise en ligne.
+
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de
 l'interface. Contenu, relu dans le code et tenu par `ConfidentialiteTest` :

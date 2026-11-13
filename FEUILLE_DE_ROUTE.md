@@ -1120,7 +1120,7 @@ Réponse du propriétaire aux sept questions du 05/10 : « oui tout ».
   PUBLICATION_PLAY_STORE.md. Également poussée sur les branches
   ccr-8e34e693, ccr-ed3855d9 et claude/quirky-ptolemy. La branche
   ccr-49d373f9 (session active) a été prévenue, non modifiée. Le site
-  (myhitbodedut-web) passera à la nouvelle adresse au déploiement suivant
+  (Cloudflare Pages) passera à la nouvelle adresse au déploiement suivant
   la fusion ;
 - captures Android : plantages et ANR relevés dans `plantages.txt`.
 
@@ -1138,7 +1138,7 @@ dans `plantages.txt` de la branche `claude/captures-android`).
 - lire `plantages.txt` et revoir les captures (dont « Lire la suite » des
   hilloulot sur Android, pas recapturé après la correction 1c72ebc) ;
 - relancer le test des boutons du web ;
-- ajouter le secret `NOKIA_DEPLOY_TOKEN` dans hil123/MyHitbodedut (utilisateur) ;
+- ajouter le secret `NOKIA_DEPLOY_TOKEN` dans myhitbo/MyHitbodedut (utilisateur) ;
 - toujours valables : la liste « Reste » du 19/10 ci-dessus.
 
 ## Sujets ouverts de la session ccr-a461212d (04/11)
