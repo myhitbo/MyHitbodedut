@@ -14,6 +14,11 @@ enum Depot {
     static func donnees(_ chemin: String) throws -> Data {
         try Data(contentsOf: racine.appendingPathComponent(chemin))
     }
+
+    /// Un contenu exporté par tools/export_contenu (ios/Ressources/Contenu) : lancer l'export avant les tests.
+    static func contenu(_ nom: String) throws -> Data {
+        try donnees("ios/Ressources/Contenu/" + nom)
+    }
 }
 
 /// Les lieux des tests d'Android (ZmanimTest.kt, tools/vecteurs_kosherjava/Vecteurs.kt).

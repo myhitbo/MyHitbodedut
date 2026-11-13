@@ -73,6 +73,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Version
         run: swift --version
+      # Les tests de données lisent ios/Ressources/Contenu : l'export d'abord.
+      - name: Contenus exportés
+        working-directory: ${{ github.workspace }}
+        run: |
+          command -v python3 >/dev/null || { apt-get update -qq && apt-get install -y -qq python3 >/dev/null; }
+          python3 tools/export_contenu/export.py
       # -warnings-as-errors n'est pas passé à swiftc : SwiftPM le donnerait aussi à KosherSwift,
       # dont il tait les avertissements (-suppress-warnings), et les deux options se contredisent.
       # Les avertissements de Coeur et de ses tests sont donc cherchés dans le journal.
