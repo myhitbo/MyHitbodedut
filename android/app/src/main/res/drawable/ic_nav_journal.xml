@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-    Onglet Journal : au trait au repos, plein quand l'onglet est actif. Des
-    formes douces et arrondies, qui vont avec le hassid en 3D (finition du 04/10).
--->
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_nav_journal_on" android:state_checked="true" />
-    <item android:drawable="@drawable/ic_nav_journal_off" />
-</selector>

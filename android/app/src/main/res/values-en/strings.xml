@@ -69,7 +69,7 @@
     <string name="gate_window_title">Outside the window</string>
     <string name="gate_window_detail">The mode acts between %1$s and %2$s. Outside that, nothing is held back.</string>
 
-    <string name="action_start_session">Start a %1$s hitbodedut</string>
+    <string name="action_start_session">Out to the field · %1$s</string>
     <string name="action_another_session">Another hitbodedut</string>
     <string name="action_back_to_session">Back to the hitbodedut in progress</string>
     <string name="action_write_note">Write a note</string>
@@ -407,9 +407,7 @@
     </plurals>
     <string name="start_duration">Length</string>
     <string name="start_theme">Subject</string>
-    <string name="start_music">Music</string>
     <string name="start_focus">With Hashem</string>
-    <string name="start_music_off">none</string>
     <string name="start_focus_on">on</string>
     <string name="start_focus_off">off</string>
     <string name="settings_name">First name</string>
@@ -1389,4 +1387,22 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+
+    <!-- La refonte du 13/11 : trois lieux (Le Jour, Les Livres, Le Chemin) et la barre de départ. -->
+    <string name="nav_chemin">The Path</string>
+    <string name="depart_titre">Your hitbodedut</string>
+    <string name="depart_regler">Hitbodedut options</string>
+    <string name="depart_fermer">Close</string>
+    <string name="rayon_prier">Pray</string>
+    <string name="rayon_etudier">Study</string>
+    <string name="rayon_renforcer">Find strength</string>
+    <string name="chemin_stat_serie">days in a row</string>
+    <string name="chemin_stat_meilleure">best streak</string>
+    <string name="chemin_stat_total">in total</string>
+    <string name="chemin_parcours_hint">A summary of your practice</string>
+    <string name="chemin_trophees">Trophies and milestones</string>
+    <string name="jour_ciel">%1$s. Zmanim, calendar, hillulot, compass</string>
+    <!-- La fin de séance sur un seul écran (13/11). -->
+    <string name="celebration_humeur">How do you feel now?</string>
+    <string name="celebration_prive">Everything stays on this phone.</string>
 </resources>

@@ -76,7 +76,7 @@
     <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est retenu.</string>
 
     <!-- Actions -->
-    <string name="action_start_session">Commencer une hitbodedout de %1$s</string>
+    <string name="action_start_session">Sortir au champ · %1$s</string>
     <string name="action_another_session">Faire une hitbodedout de plus</string>
     <string name="action_back_to_session">Revenir à la hitbodedout en cours</string>
     <string name="action_write_note">Écrire une note</string>
@@ -490,8 +490,8 @@
     <string name="hero_greeting_morning">Bonjour, %1$s</string>
     <string name="hero_greeting_afternoon">Bon après-midi, %1$s</string>
     <string name="hero_greeting_evening">Bonsoir, %1$s</string>
-    <string name="nav_today">Aujourd’hui</string>
-    <string name="nav_texts">Bibliothèque</string>
+    <string name="nav_today">Le Jour</string>
+    <string name="nav_texts">Les Livres</string>
     <string name="nav_journal">Journal</string>
     <string name="section_around">Autour de la hitbodedout</string>
     <plurals name="week_gauge">
@@ -500,9 +500,7 @@
     </plurals>
     <string name="start_duration">Durée</string>
     <string name="start_theme">Sujet</string>
-    <string name="start_music">Musique</string>
     <string name="start_focus">Avec Hachem</string>
-    <string name="start_music_off">aucune</string>
     <string name="start_focus_on">activée</string>
     <string name="start_focus_off">désactivée</string>
     <string name="settings_name">Prénom</string>
@@ -1454,4 +1452,32 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+
+    <!-- La refonte du 13/11 : trois lieux (Le Jour, Les Livres, Le Chemin) et la barre de départ. -->
+    <string name="nav_chemin">Le Chemin</string>
+    <string name="depart_titre">Votre hitbodedout</string>
+    <string name="depart_regler">Régler la hitbodedout</string>
+    <string name="depart_fermer">Fermer</string>
+    <string name="rayon_prier">Prier</string>
+    <string name="rayon_etudier">Étudier</string>
+    <string name="rayon_renforcer">Se renforcer</string>
+    <string name="chemin_stat_serie">jours d’affilée</string>
+    <string name="chemin_stat_meilleure">meilleure série</string>
+    <string name="chemin_stat_total">au total</string>
+    <string name="chemin_parcours_hint">Le bilan de votre pratique</string>
+    <string name="chemin_trophees">Trophées et paliers</string>
+    <string name="jour_ciel">%1$s. Zmanim, calendrier, hilloulot, boussole</string>
+    <!-- Les titres hébreux des couvertures du rayonnage : les mêmes dans toutes les langues. -->
+    <string name="couv_siddur" translatable="false">סידור</string>
+    <string name="couv_tehilim" translatable="false">תהלים</string>
+    <string name="couv_tikkun" translatable="false">תיקון הכללי</string>
+    <string name="couv_tefilot" translatable="false">תפילות</string>
+    <string name="couv_sources" translatable="false">מקורות</string>
+    <string name="couv_livres" translatable="false">ספרים</string>
+    <string name="couv_halakha" translatable="false">הלכה</string>
+    <string name="couv_chizuk" translatable="false">חיזוק</string>
+    <string name="couv_conseils" translatable="false">עצות</string>
+    <!-- La fin de séance sur un seul écran (13/11). -->
+    <string name="celebration_humeur">Comment vous sentez-vous maintenant ?</string>
+    <string name="celebration_prive">Tout reste sur ce téléphone.</string>
 </resources>

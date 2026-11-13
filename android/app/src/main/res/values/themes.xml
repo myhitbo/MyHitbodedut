@@ -340,4 +340,138 @@
     <style name="Theme.MyHitbodedut.Ouverture" parent="Theme.MyHitbodedut">
         <item name="android:windowBackground">@drawable/fond_ouverture</item>
     </style>
+    <!--
+        Le rayonnage des Livres (13/11) : un titre de rayon, une rangée de
+        quatre couvertures de même largeur, et la planche dessous. Une
+        couverture porte le titre du livre en hébreu, et son nom dans la
+        langue de l'application en pied.
+    -->
+    <style name="RayonTitre">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:paddingHorizontal">@dimen/edge_inner</item>
+        <item name="android:textColor">?attr/mhInk</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Rayon">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:baselineAligned">false</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingHorizontal">@dimen/edge_inner</item>
+    </style>
+
+    <style name="Couverture">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">124dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingVertical">8dp</item>
+    </style>
+
+    <style name="CouvertureTitre">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:autoSizeMaxTextSize">20sp</item>
+        <item name="android:autoSizeMinTextSize">11sp</item>
+        <item name="android:autoSizeTextType">uniform</item>
+        <item name="android:fontFamily">@font/frank_ruhl</item>
+        <item name="android:gravity">center</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/couv_encre_claire</item>
+        <item name="android:textDirection">rtl</item>
+    </style>
+
+    <style name="CouvertureTitre.Clair">
+        <item name="android:textColor">@color/couv_encre_sombre</item>
+    </style>
+
+    <style name="CouvertureLibelle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/couv_encre_claire</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="CouvertureLibelle.Clair">
+        <item name="android:textColor">@color/couv_encre_sombre</item>
+    </style>
+
+    <style name="Etagere">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">6dp</item>
+        <item name="android:layout_marginHorizontal">@dimen/edge_inner</item>
+        <item name="android:background">@drawable/bg_etagere</item>
+    </style>
+
+    <!-- Les trois chiffres en tête du Chemin (13/11) : la série, la meilleure, le total. -->
+    <style name="CheminChiffre">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="CheminValeur">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFeatureSettings">tnum</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/mhBrand</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CheminLegende">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">?attr/mhMuted</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Le libellé d'une ligne du volet de la séance (13/11) : à l'encre, plus lisible que la pastille d'avant. -->
+    <style name="StartLabel.Volet">
+        <item name="android:textColor">?attr/mhInk</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <!-- La page du carnet, en fin de séance (13/11) : un libellé discret au-dessus de chaque champ. -->
+    <style name="CarnetLibelle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:textColor">?attr/mhMuted</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="CarnetChamp">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:background">@drawable/bg_carnet_champ</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:paddingVertical">12dp</item>
+        <item name="android:textColor">?attr/mhInk</item>
+        <item name="android:textColorHint">?attr/mhMuted</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

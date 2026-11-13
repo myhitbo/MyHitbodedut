@@ -66,6 +66,40 @@ class HomeTest {
         assertTrue("il manque des entrées de section : $lignes", lignes >= 6)
     }
 
+    /**
+     * La barre de depart (13/11) : hors des panneaux, donc visible dans les
+     * trois lieux, et le volet de la seance qu'elle ouvre et que le retour
+     * referme.
+     */
+    @Test
+    fun `la barre de depart est visible partout et ouvre le volet`() {
+        val panneaux = layout.substringBefore("@+id/depart_barre\"")
+        assertTrue("la barre doit suivre les panneaux, pas en faire partie",
+            panneaux.contains("@+id/chemin_scroll\"") && panneaux.trimEnd().substringBeforeLast("<FrameLayout").contains("</FrameLayout>"))
+        assertTrue(layout.substringAfter("@+id/depart_barre\"").substringBefore("</FrameLayout>").contains("@+id/start_session\""))
+        listOf("depart_regler", "depart_volet", "depart_voile").forEach {
+            assertTrue("« $it » manque", layout.contains("@+id/$it\""))
+            assertTrue("« $it » non branché", Regex("""R\.id\.$it\b""").containsMatchIn(code))
+        }
+        val volet = layout.substringAfter("@+id/depart_volet\"").substringBefore("</ScrollView>")
+        listOf("start_duration", "start_theme", "music_button", "start_focus", "reminders_button").forEach {
+            assertTrue("« $it » doit être dans le volet", volet.contains("@+id/$it\""))
+        }
+        assertTrue("le retour doit refermer le volet", code.contains("override fun handleOnBackPressed() = montrerVolet(false)"))
+    }
+
+    /** Les Livres (13/11) : trois rayons de couvertures, et aucune section perdue en route. */
+    @Test
+    fun `les livres sont ranges en trois rayons`() {
+        val livres = layout.substringAfter("@+id/texts_scroll\"").substringBefore("</ScrollView>")
+        assertTrue(Regex("""style="@style/RayonTitre"""").findAll(livres).count() == 3)
+        listOf("siddur_button", "tehilim_button", "tikkun_button", "tefilot_button", "library_button",
+               "livres_button", "halakha_button", "chizuk_button", "tips_button").forEach {
+            assertTrue("le livre « $it » manque au rayonnage", Regex("""@\+id/$it"\s+style="@style/Couverture"""").containsMatchIn(livres))
+            assertTrue("le livre « $it » n'est pas branché", Regex("""R\.id\.$it\b""").containsMatchIn(code))
+        }
+    }
+
     /** L'action doit rester la plus grosse chose de l'ecran. */
     @Test
     fun `commencer une seance reste l action principale`() {
@@ -89,7 +123,9 @@ class HomeTest {
      */
     @Test
     fun `la carte de depart est complete et branchee`() {
-        listOf("start_duration", "start_theme", "start_music", "start_focus").forEach {
+        // La musique n'est plus une pastille (13/11) : dans le volet de la séance, elle a sa ligne
+        // entière, avec son état et son interrupteur (« les etats des sections sont toujours affiches »).
+        listOf("start_duration", "start_theme", "start_focus").forEach {
             assertTrue("la ligne « $it » manque", layout.contains("@+id/$it\""))
             assertTrue("la ligne « $it » n'est pas branchée",
                 Regex("""R\.id\.$it\b""").containsMatchIn(code))
@@ -137,8 +173,9 @@ class HomeTest {
 
     /**
      * L'accueil A + D (28/09) : le hassid au creux de la jauge de la
-     * semaine, et quatre onglets. Journal et Reglages ouvrent leurs ecrans ;
-     * Aujourd'hui et Textes changent de panneau.
+     * semaine. Depuis la refonte du 13/11, trois onglets qui changent de
+     * panneau — Le Jour, Les Livres, Le Chemin ; Zmanim et Reglages sont en
+     * tete du Jour, sous les memes identifiants.
      */
     @Test
     fun `la jauge entoure le hassid et les onglets menent partout`() {
@@ -146,9 +183,17 @@ class HomeTest {
         assertTrue("le hassid doit être dans la jauge", jauge.substringBefore("week_gauge_label").contains("@+id/hero_character\""))
         assertTrue(code.contains("JaugeSemaine.progression(Store.currentWeek(this))"))
         val menu = File("src/main/res/menu/nav_main.xml").readText()
-        listOf("nav_today", "nav_texts", "nav_zmanim", "nav_journal", "nav_settings").forEach {
+        listOf("nav_today", "nav_texts", "nav_journal").forEach {
             assertTrue("onglet « $it » absent", menu.contains("@+id/$it\""))
             assertTrue("onglet « $it » non branché", Regex("""R\.id\.$it\b""").containsMatchIn(code))
+        }
+        assertTrue("trois onglets, pas plus", Regex("<item").findAll(menu).count() == 3)
+        listOf("nav_zmanim" to "ZmanimActivity", "nav_settings" to "SettingsActivity").forEach { (id, ecran) ->
+            assertTrue("« $id » doit être en tête du Jour", layout.contains("@+id/$id\"") && !menu.contains("@+id/$id\""))
+            assertTrue("« $id » non branché", Regex("""R\.id\.$id\)\.setOnClickListener \{ startActivity\(Intent\(this, $ecran::class""").containsMatchIn(code))
+        }
+        listOf("main_scroll", "texts_scroll", "chemin_scroll").forEach {
+            assertTrue("le panneau « $it » manque", layout.contains("@+id/$it\""))
         }
         assertTrue(code.contains("JournalActivity::class.java"))
         // Les réglages : l'onglet seul (la ligne en double est retirée le 29/09),
@@ -156,7 +201,6 @@ class HomeTest {
         // (demande du 10/10) : elles se lisent dans les Réglages.
         assertTrue(!layout.contains("@+id/settings_button\""))
         assertTrue(!code.contains("getOrCreateBadge("))
-        assertTrue(code.contains("removeBadge(R.id.nav_settings)"))
         assertTrue("l'onglet doit survivre à une rotation", code.contains("ETAT_ONGLET"))
     }
 

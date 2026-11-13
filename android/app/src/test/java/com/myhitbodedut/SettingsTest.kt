@@ -67,12 +67,11 @@ class SettingsTest {
                 !principal.contains("""@+id/$it"""),
             )
         }
-        // Depuis le 29/09, les réglages s'ouvrent par l'onglet du bas ; la
-        // ligne qui faisait doublon dans l'onglet Hitbodedout est retirée.
+        // Depuis le 13/11, les réglages s'ouvrent par la roue en tête du Jour
+        // (l'onglet du bas du 29/09 a laissé sa place aux trois lieux).
         assertTrue(
             "l'écran principal doit porter l'entrée vers les réglages",
-            principal.contains("""app:menu="@menu/nav_main"""") &&
-                lire("src/main/res/menu/nav_main.xml").contains("""@+id/nav_settings"""),
+            Regex("""<ImageButton\s+android:id="@\+id/nav_settings"""").containsMatchIn(principal),
         )
     }
 

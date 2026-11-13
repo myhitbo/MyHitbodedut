@@ -28,6 +28,11 @@ import kotlin.random.Random
  * de ’hizouk du moment « relance », ceux qui disent de ne jamais désespérer
  * (Likoutei Moharan II, 78 : אֵין שׁוּם יֵאוּשׁ בָּעוֹלָם כְּלָל). Demande du
  * propriétaire, 28/09.
+ *
+ * Depuis le 13/11, la fin de séance tient sur cet écran : sous le bravo,
+ * l'humeur d'une touche, puis la gratitude, la chose à travailler et la note,
+ * qui s'ouvraient dans une fenêtre à part après « Continuer ». Ce qui est
+ * écrit est enregistré en quittant l'écran, par le bouton comme par le retour.
  */
 class CelebrationActivity : AppCompatActivity() {
 
@@ -36,6 +41,16 @@ class CelebrationActivity : AppCompatActivity() {
     private val notes = Handler(Looper.getMainLooper())
 
     private val annulee: Boolean by lazy { intent.getBooleanExtra(EXTRA_ANNULEE, false) }
+
+    /** Le jour de la séance (AAAA-MM-JJ) : celui dont la page du carnet est proposée ; null, pas de page. */
+    private val dateNote: String? by lazy { intent.getStringExtra(EXTRA_NOTE_DATE)?.takeIf { !annulee } }
+
+    /** L'humeur choisie après la séance, de 1 à 5 ; 0, aucune. */
+    private var apres = 0
+
+    /** La page du carnet telle qu'elle était à l'ouverture : on n'écrit que ce qui a changé. */
+    private var initiale = JournalPlus.Plus()
+    private var noteInitiale = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,21 +98,144 @@ class CelebrationActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.celebration_title).setText(
             if (annulee) Adresse.hazak(adresse) else Adresse.bravo(adresse)
         )
-        // Après le bravo, la note de la séance, si elle est proposée : dans
-        // cet ordre, et plus l'une sous l'autre (revue du 29/09).
-        val dateNote = intent.getStringExtra(EXTRA_NOTE_DATE)
+        carnet(savedInstanceState)
         // Partager la séance faite (12/10) : un texte et le lien de la version web, par le choix du téléphone.
         findViewById<Button>(R.id.celebration_share).apply {
             visibility = if (!annulee && minutes > 0) View.VISIBLE else View.GONE
             setOnClickListener { partager(minutes) }
         }
         findViewById<Button>(R.id.celebration_continue).setOnClickListener {
-            if (dateNote == null || annulee) {
+            enregistrer()
+            finish()
+        }
+        // Le retour enregistre aussi : ce qu'on a écrit ne se perd pas d'un geste (revue du 29/09).
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                enregistrer()
                 finish()
-            } else {
-                NoteDialog.show(this, dateNote, onSaved = {}, onClosed = { finish() })
+            }
+        })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ETAT_APRES, apres)
+        outState.putBoolean(ETAT_SUITE, findViewById<View>(R.id.celebration_suite).visibility == View.VISIBLE)
+    }
+
+    /**
+     * La page du carnet sous le bravo : cinq humeurs, puis — dès qu'on en
+     * touche une, ou « Écrire une note » — la gratitude, la chose à
+     * travailler et la note. Préremplie avec ce que le jour porte déjà
+     * (une seconde séance le même jour).
+     */
+    private fun carnet(etat: Bundle?) {
+        val date = dateNote ?: return
+        findViewById<View>(R.id.celebration_carnet).visibility = View.VISIBLE
+        initiale = JournalPlus.lire(this, date)
+        noteInitiale = Store.record(this, date)?.note.orEmpty()
+        apres = etat?.getInt(ETAT_APRES, initiale.apres) ?: initiale.apres
+        val gratitude = findViewById<android.widget.EditText>(R.id.celebration_gratitude)
+        val travail = findViewById<android.widget.EditText>(R.id.celebration_travail)
+        val note = findViewById<android.widget.EditText>(R.id.celebration_note)
+        gratitude.filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
+        travail.filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
+        note.filters = arrayOf(android.text.InputFilter.LengthFilter(Store.NOTE_MAX))
+        // À la première création seulement : une rotation garde ce qui est en cours de saisie.
+        if (etat == null) {
+            gratitude.setText(initiale.gratitude)
+            travail.setText(initiale.travail)
+            note.setText(noteInitiale)
+        }
+        val d = resources.displayMetrics.density
+        val rang = findViewById<LinearLayout>(R.id.celebration_humeurs)
+        val cases = JournalPlus.HUMEURS.mapIndexed { i, emoji ->
+            TextView(this).apply {
+                text = emoji
+                textSize = 26f
+                gravity = android.view.Gravity.CENTER
+                setBackgroundResource(R.drawable.bg_humeur)
+                contentDescription = "${i + 1}/5"
+                isSelected = apres == i + 1
+                layoutParams = LinearLayout.LayoutParams(0, (56 * d).toInt(), 1f).apply {
+                    if (i > 0) marginStart = (8 * d).toInt()
+                }
             }
         }
+        cases.forEachIndexed { i, case ->
+            case.setOnClickListener {
+                // Retoucher l'humeur choisie la retire.
+                apres = if (apres == i + 1) 0 else i + 1
+                cases.forEachIndexed { j, c -> c.isSelected = apres == j + 1 }
+                ouvrirSuite(anime = true)
+                majBouton()
+            }
+            rang.addView(case)
+        }
+        findViewById<Button>(R.id.celebration_ecrire).setOnClickListener {
+            ouvrirSuite(anime = true)
+            note.requestFocus()
+        }
+        val suit = object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: android.text.Editable?) = majBouton()
+        }
+        listOf(gratitude, travail, note).forEach { it.addTextChangedListener(suit) }
+        if (etat?.getBoolean(ETAT_SUITE, false) == true) ouvrirSuite(anime = false)
+        majBouton()
+    }
+
+    /**
+     * La suite du carnet apparaît, et la scène se réduit pour lui laisser la
+     * place : le hassid continue de danser, plus petit, en tête de la page.
+     */
+    private fun ouvrirSuite(anime: Boolean) {
+        val suite = findViewById<View>(R.id.celebration_suite)
+        if (suite.visibility == View.VISIBLE) return
+        suite.visibility = View.VISIBLE
+        findViewById<View>(R.id.celebration_ecrire).visibility = View.GONE
+        findViewById<View>(R.id.celebration_share).visibility = View.GONE
+        findViewById<FrameLayout>(R.id.celebration_stage).apply {
+            minimumHeight = 0
+            layoutParams = (layoutParams as LinearLayout.LayoutParams).apply {
+                height = (PETITE_SCENE_DP * resources.displayMetrics.density).toInt()
+                weight = 0f
+            }
+        }
+        if (anime && ValueAnimator.areAnimatorsEnabled()) {
+            suite.alpha = 0f
+            suite.animate().alpha(1f).setDuration(220L).start()
+        }
+    }
+
+    /** Ce que la page porte maintenant. */
+    private fun saisie(): Pair<JournalPlus.Plus, String> = Pair(
+        initiale.copy(
+            apres = apres,
+            gratitude = findViewById<android.widget.EditText>(R.id.celebration_gratitude).text.toString().trim(),
+            travail = findViewById<android.widget.EditText>(R.id.celebration_travail).text.toString().trim(),
+        ),
+        findViewById<android.widget.EditText>(R.id.celebration_note).text.toString().trim(),
+    )
+
+    /** « Enregistrer » dès que la page porte quelque chose de neuf ; « Continuer » sinon. */
+    private fun majBouton() {
+        if (dateNote == null) return
+        val (plus, note) = saisie()
+        findViewById<Button>(R.id.celebration_continue).setText(
+            if (plus != initiale || note != noteInitiale.trim()) R.string.action_save else R.string.celebration_continue
+        )
+    }
+
+    /** N'écrit que ce qui a changé : une page laissée telle quelle ne touche à rien. */
+    private fun enregistrer() {
+        val date = dateNote ?: return
+        val (plus, note) = saisie()
+        if (note != noteInitiale.trim()) Store.setNote(this, date, note)
+        if (plus != initiale) JournalPlus.ecrire(this, date, plus)
+        initiale = plus
+        noteInitiale = note
     }
 
     override fun onStart() {
@@ -205,6 +343,12 @@ class CelebrationActivity : AppCompatActivity() {
         const val EXTRA_MINUTES = "minutes"
         const val EXTRA_ANNULEE = "annulee"
         const val EXTRA_NOTE_DATE = "note_date"
+
+        private const val ETAT_APRES = "apres"
+        private const val ETAT_SUITE = "suite"
+
+        /** La hauteur de la scène quand le carnet est ouvert. */
+        private const val PETITE_SCENE_DP = 132
 
         private val SIGNES = arrayOf("♪", "♫", "♪", "✦")
 

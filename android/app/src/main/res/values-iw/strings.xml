@@ -70,7 +70,7 @@
     <string name="gate_window_title">מחוץ לחלון</string>
     <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לזה דבר לא מעוכב.</string>
 
-    <string name="action_start_session">להתחיל התבודדות של %1$s</string>
+    <string name="action_start_session">יוצאים לשדה · %1$s</string>
     <string name="action_another_session">עוד התבודדות</string>
     <string name="action_back_to_session">חזרה להתבודדות</string>
     <string name="action_write_note">לכתוב הערה</string>
@@ -417,9 +417,7 @@
     </plurals>
     <string name="start_duration">משך</string>
     <string name="start_theme">נושא</string>
-    <string name="start_music">מוזיקה</string>
     <string name="start_focus">עם השם</string>
-    <string name="start_music_off">ללא</string>
     <string name="start_focus_on">פעיל</string>
     <string name="start_focus_off">כבוי</string>
     <string name="settings_name">שם פרטי</string>
@@ -1425,4 +1423,22 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+
+    <!-- La refonte du 13/11 : trois lieux (Le Jour, Les Livres, Le Chemin) et la barre de départ. -->
+    <string name="nav_chemin">הדרך</string>
+    <string name="depart_titre">ההתבודדות שלכם</string>
+    <string name="depart_regler">אפשרויות ההתבודדות</string>
+    <string name="depart_fermer">סגירה</string>
+    <string name="rayon_prier">להתפלל</string>
+    <string name="rayon_etudier">ללמוד</string>
+    <string name="rayon_renforcer">להתחזק</string>
+    <string name="chemin_stat_serie">ימים ברצף</string>
+    <string name="chemin_stat_meilleure">הרצף הטוב ביותר</string>
+    <string name="chemin_stat_total">בסך הכול</string>
+    <string name="chemin_parcours_hint">סיכום ההתמדה שלכם</string>
+    <string name="chemin_trophees">גביעים ויעדים</string>
+    <string name="jour_ciel">%1$s. זמנים, לוח שנה, הילולות, מצפן</string>
+    <!-- La fin de séance sur un seul écran (13/11). -->
+    <string name="celebration_humeur">איך אתם מרגישים עכשיו?</string>
+    <string name="celebration_prive">הכול נשאר בטלפון הזה.</string>
 </resources>
