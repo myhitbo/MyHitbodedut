@@ -45,7 +45,13 @@ adb logcat -G 16M || true
 adb logcat -c || true
 adb logcat -b crash -c || true
 
-python3 .github/captures/captures.py || true
+# Le parcours (14/11) : celui des gestes (captures.py, par defaut), la recette ecran par ecran
+# avant Google Play (recette.py), ou les captures de la fiche Play (fiche.py).
+case "${CAPTURES_PARCOURS:-captures}" in
+  recette) python3 .github/captures/recette.py || true ;;
+  fiche) python3 .github/captures/fiche.py || true ;;
+  *) python3 .github/captures/captures.py || true ;;
+esac
 
 {
   echo "== Plantages (logcat -b crash) =="

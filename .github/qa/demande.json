@@ -1,0 +1,9 @@
+{
+  "parcours": "recette",
+  "variante": "release",
+  "passes": "",
+  "cibles": [
+    { "api": 36, "nom": "api36" },
+    { "api": 34, "nom": "api34" }
+  ]
+}
