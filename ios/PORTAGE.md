@@ -1170,9 +1170,9 @@ Vérifié le 13/11/2026 : GitHub ne compte plus en minutes multipliées mais en 
 | Tests du cœur, export | GitHub, Linux | à chaque envoi qui touche `ios/`, `tools/export_contenu/` ou les contenus |
 | Construction, tests d'interface, captures | **Codemagic** (500 min gratuites par mois, machine M2, compte personnel) | à la demande et sur les demandes de fusion qui touchent `ios/App`, `Widgets` ou les extensions |
 | Archive signée, TestFlight | Codemagic | à la demande, ou sur une étiquette `ios-v*` |
-| Secours | GitHub `macos-26` | à la demande seulement, avec un plafond de dépense |
+| Secours | aucun : plafond de dépense GitHub à 0 $ (D5, 13/11/2026) | si les 500 minutes de Codemagic sont épuisées, on attend le mois suivant |
 
-Décision D5.
+Décision D5 : gratuit strict.
 
 ### 7.4 Signer
 
@@ -1228,6 +1228,26 @@ Chacune dit ce qu'elle bloque. Les recommandations sont celles que la feuille de
 | D13 | **Périmètre de la v1** | parité complète (30 tâches) ; v1 resserrée (séance, journal, barrière, siddour, Tehilim, zmanim) puis lots | parité complète, **dans l'ordre de la feuille de route**, qui livre une app utile dès la tâche 19 | ordre des tâches |
 | D14 | **Fiche App Store** | langues de la fiche ; catégorie ; statut au sens du DSA européen (à déclarer dans tous les cas) ; nom ; identifiant `com.myhitbodedut` | **comme sur Play** : anglais et hébreu, Style de vie ; l'identifiant d'Android ; le français s'ajoute sans peine si vous le voulez | tâche 30 |
 | D15 | **L'iPhone de l'ami** | modèle, version d'iOS (26.5 au moins), quatre rendez-vous d'essai ; où héberger le lien d'installation | le relever maintenant | tâches 3 et 4 |
+
+### 8.1 Choix arrêtés le 13/11/2026
+
+| # | Choix | Conséquence |
+| --- | --- | --- |
+| D1 | compte **individuel** | votre nom légal apparaît comme vendeur ; P1 peut se faire tout de suite |
+| D2 | iOS **26.5** minimum | pas de repli à écrire pour le bouclier |
+| D3 | entitlement demandé **dès que les quatre identifiants existent** (tâche 3) | TestFlight sans barrière en attendant |
+| D4 | **KosherSwift 1.10.11** | la 3.x plus tard, pour Android, le site et iOS ensemble |
+| D5 | **gratuit strict** : Codemagic (500 min par mois) et Linux sur GitHub, plafond GitHub à 0 $ | pas de secours macOS payant ; un mois à court de minutes Codemagic suspend les tâches 14 à 30 jusqu'au mois suivant |
+| D6 | journal **exclu** de la sauvegarde iCloud par défaut, **interrupteur** pour l'inclure | tâche 7 |
+| D7 | **aucune** synchronisation en v1 | tâche 29 sans CloudKit |
+| D8 | **étendre d'abord l'export d'Android**, par une demande séparée | P8 levée ; annonce de la migration après cette extension |
+| D9 | les **26 morceaux**, après la mention « App Store » dans les accords ; origine de המלך בשדה consignée | P6 |
+| D10 | vol en direct **après la v1** | tâche 26 limitée au vol hors ligne |
+| D11 | **écrits nommant l'App Store**, sinon iOS part sans le texte concerné | P6 |
+| D12 | **offre écrite** des fichiers objets et **fork public** de KosherSwift | `ios/` reste privé |
+| D13 | **parité complète**, 30 tâches dans l'ordre de la feuille de route | — |
+| D14 | fiche en **anglais, hébreu et français** ; Style de vie ; `com.myhitbodedut` ; **non-commerçant** au sens du DSA | une fiche française de plus à rédiger (tâche 30) ; aucune coordonnée publiée dans l'UE |
+| D15 | lien TestFlight envoyé **en message privé** à l'ami | modèle, version d'iOS, identifiant et rendez-vous restent à relever (P4) |
 
 ## 9. Sources lues le 13/11/2026
 

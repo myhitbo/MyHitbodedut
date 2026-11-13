@@ -23,7 +23,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 | P5 | Ouvrir un compte Codemagic personnel relié au dépôt | tâche 3 | D5 |
 | P6 | Faire préciser « App Store » dans les accords des ayants droit (musique, textes) | tâche 30 | D9, D11 |
 | P7 | Fournir une vraie sauvegarde exportée d'Android (hors dépôt si elle porte des notes) | tâche 7 | — |
-| P8 | Décider de l'extension de l'export d'Android | annonce de la migration | D8 |
+| P8 | Étendre l'export d'Android (demande séparée ; décidé le 13/11/2026) | annonce de la migration | D8 |
 
 ## Vue d'ensemble
 
