@@ -1,5 +1,5 @@
 diff --git a/Sources/KosherSwift/util/ZmanimFormatter.swift b/Sources/KosherSwift/util/ZmanimFormatter.swift
-index 96210a3..6ef3d5f 100644
+index 96210a3..bff3331 100644
 --- a/Sources/KosherSwift/util/ZmanimFormatter.swift
 +++ b/Sources/KosherSwift/util/ZmanimFormatter.swift
 @@ -25,6 +25,7 @@ public class ZmanimFormatter {
@@ -18,7 +18,7 @@ index 96210a3..6ef3d5f 100644
      
      /// Initializes a zmanim formatter with configurable display settings.
      ///
-@@ -83,6 +85,19 @@ public class ZmanimFormatter {
+@@ -83,6 +85,21 @@ public class ZmanimFormatter {
      
      /// Formats milliseconds into a readable string like "01:30:00"
      public func format(milliseconds: Double) -> String {
@@ -28,17 +28,19 @@ index 96210a3..6ef3d5f 100644
 +            let s = String(n)
 +            return String(repeating: "0", count: max(0, width - s.count)) + s
 +        }
-+        let total = Int((milliseconds / 1000.0).rounded(.towardZero))
++        // Time.toString adds the sign itself: format the magnitude.
++        let magnitude = abs(milliseconds)
++        let total = Int((magnitude / 1000.0).rounded(.towardZero))
 +        let h = total / 3600, m = (total % 3600) / 60, sec = total % 60
 +        var linux = (prependZeroHours ? pad(h, 2) : String(h)) + ":" + pad(m, 2)
 +        if useSeconds { linux += ":" + pad(sec, 2) }
-+        if useMillis { linux += "." + pad(Int(milliseconds.truncatingRemainder(dividingBy: 1000)), 3) }
++        if useMillis { linux += "." + pad(Int(magnitude.truncatingRemainder(dividingBy: 1000)), 3) }
 +        return linux
 +        #else
          let seconds = milliseconds / 1000.0
          
          // Adjust padding based on prependZeroHours
-@@ -100,6 +115,7 @@ public class ZmanimFormatter {
+@@ -100,6 +117,7 @@ public class ZmanimFormatter {
          }
          
          return formattedString

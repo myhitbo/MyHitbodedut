@@ -21,8 +21,9 @@ flux `ios-coeur.yml` (Coeur sur la 1.10.11) et `ios-kosherswift.yml` (les deux �
 | API | celle de KosherJava 2.5.0 (`ComplexZmanimCalendar`, `getSofZmanShmaMGA`, `getTzais72`…) | celle de la 3.x (`ComprehensiveZmanimCalendar`, `…MGA72Minutes`, `getTzais72Minutes`, `getChatzosHayom`) |
 | Compilation sous Linux, telle quelle | **non** : `ZmanimFormatter` emploie `DateComponentsFormatter`, absent de `swift-corelibs-foundation` | oui |
 | Compilation sous Linux, avec le correctif | oui (`Correctifs/kosherswift-1.10.11-linux.patch`) | sans objet |
+| Ses propres tests sous Linux | 36 tests, verts avec le correctif | 42 tests, verts |
 | Mode de langage | Swift 5 (`swift-tools-version: 5.7.1`) | Swift 5 |
-| Compilée en mode Swift 6 | 11 diagnostics distincts, tous « static property … is not concurrency-safe » (`NOAACalculator.geoLocation`, listes de paracha, de massekhtot, comparateurs de `Zman`…) | 13, de même nature |
+| Compilée en mode Swift 6 | 11 erreurs distinctes, toutes « static property … is not concurrency-safe » (`NOAACalculator.geoLocation`, listes de paracha, de massekhtot, comparateurs de `Zman`…) | 13, de même nature |
 | Depuis Coeur, en Swift 6 | aucun avertissement : les objets de KosherSwift ne quittent pas la fonction qui les crée | — |
 
 ## Le correctif Linux
