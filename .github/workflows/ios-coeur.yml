@@ -22,6 +22,10 @@ on:
       - 'android/app/src/main/assets/licences/**'
       - 'android/app/src/main/java/com/myhitbodedut/MusiquePlay.kt'
       - 'android/app/src/test/resources/zmanim_reference_*'
+      # Ce que les tests de données lisent en place : la source des livres, la musique hors des apps.
+      - 'android/app/src/main/livres/**'
+      - 'android/app/src/musique_hors_play/res/raw/**'
+      - 'musique/**'
   pull_request:
     paths:
       - 'ios/**'
@@ -38,6 +42,10 @@ on:
       - 'android/app/src/main/assets/licences/**'
       - 'android/app/src/main/java/com/myhitbodedut/MusiquePlay.kt'
       - 'android/app/src/test/resources/zmanim_reference_*'
+      # Ce que les tests de données lisent en place : la source des livres, la musique hors des apps.
+      - 'android/app/src/main/livres/**'
+      - 'android/app/src/musique_hors_play/res/raw/**'
+      - 'musique/**'
   workflow_dispatch:
 
 permissions:

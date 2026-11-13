@@ -19,6 +19,50 @@ enum Depot {
     static func contenu(_ nom: String) throws -> Data {
         try donnees("ios/Ressources/Contenu/" + nom)
     }
+
+    /// Le lecteur des contenus exportés (`LecteurContenu`) : nil pour un fichier absent.
+    static func lire(_ chemin: String) throws -> Data? {
+        let url = racine.appendingPathComponent("ios/Ressources/Contenu/" + chemin)
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+        return try Data(contentsOf: url)
+    }
+}
+
+/// ios/Ressources/Chaines/Localizable.xcstrings, écrit par l'export d'après les strings.xml d'Android.
+struct Catalogue: Decodable {
+    struct Unite: Decodable { let value: String }
+    struct Forme: Decodable { let stringUnit: Unite }
+    struct Variations: Decodable { let plural: [String: Forme] }
+    struct Localisation: Decodable {
+        let stringUnit: Unite?
+        let variations: Variations?
+    }
+    struct Entree: Decodable { let localizations: [String: Localisation] }
+
+    let sourceLanguage: String
+    let strings: [String: Entree]
+
+    static let langues = ["fr", "en", "he"]
+
+    static func lire() throws -> Catalogue {
+        try JSONDecoder().decode(Catalogue.self, from: Depot.donnees("ios/Ressources/Chaines/Localizable.xcstrings"))
+    }
+
+    /// Les chaînes simples d'une langue : clé → valeur.
+    func simples(_ langue: String) -> [String: String] {
+        strings.compactMapValues { $0.localizations[langue]?.stringUnit?.value }
+    }
+
+    /// Les pluriels d'une langue : « clé[forme] » → valeur.
+    func pluriels(_ langue: String) -> [String: String] {
+        var resultat: [String: String] = [:]
+        for (cle, entree) in strings {
+            for (forme, valeur) in entree.localizations[langue]?.variations?.plural ?? [:] {
+                resultat["\(cle)[\(forme)]"] = valeur.stringUnit.value
+            }
+        }
+        return resultat
+    }
 }
 
 /// Les lieux des tests d'Android (ZmanimTest.kt, tools/vecteurs_kosherjava/Vecteurs.kt).

@@ -21,7 +21,17 @@ public struct TexteLocalise: Sendable, Equatable, Decodable {
         self.en = en
     }
 
-    static let vide = TexteLocalise(he: "", fr: "", en: "")
+    public static let vide = TexteLocalise(he: "", fr: "", en: "")
+
+    /// Trois langues, et l'hébreu en dernier recours, seul champ sûrement rempli (forLanguage).
+    /// Une langue que ce `switch` ne nomme pas serait servie en hébreu sans que rien ne le signale.
+    public func pour(_ langue: String) -> String {
+        switch langue {
+        case "fr": fr.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? he : fr
+        case "en": en.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? he : en
+        default: he
+        }
+    }
 }
 
 /// Une édition déclarée dans `_meta.editions` (Json.editions).
@@ -248,6 +258,23 @@ public enum Villes {
 
     public static func lire(_ donnees: Data) throws -> [Ville] {
         try JSONDecoder().decode(Fichier.self, from: donnees).villes
+    }
+}
+
+// MARK: Musique
+
+/// Un morceau livré (`musique.json`, dans l'ordre de MusiquePlay.kt) : jamais ceux de
+/// `src/musique_hors_play`, que seule la version GitHub d'Android livre.
+public struct Morceau: Sendable, Equatable, Decodable {
+    public let id: String
+    /// La clé de son titre dans les chaînes (`track_<id>`).
+    public let titre: String
+    /// Son chemin sous `ios/Ressources` (`Musique/<id>.m4a`).
+    public let fichier: String
+    public let octets: Int
+
+    public static func lire(_ donnees: Data) throws -> [Morceau] {
+        try JSONDecoder().decode([Morceau].self, from: donnees)
     }
 }
 
