@@ -61,9 +61,8 @@ struct ZmanimTests {
     @Test func concordeAvecLesFormulesDeLaNOAA() throws {
         let date = try #require(JourCivil(iso: "2026-10-10"))
         let c = try #require(Zmanim.calendrier(Lieux.paris, date))
-        #expect(c.getAstronomicalCalculator() is NOAACalculator)
-        #expect(c.getAstronomicalCalculator().getCalculatorName()
-                == "US National Oceanic and Atmospheric Administration Algorithm")
+        let noaa = try #require(c.getAstronomicalCalculator() as? NOAACalculator)
+        #expect(noaa.getCalculatorName() == "US National Oceanic and Atmospheric Administration Algorithm")
         // 'Hatsot : KosherJava évalue l'équation du temps à JD − 0,5, la traduction Python
         // (tools/zmanim_reference_noaa.py) à l'heure de midi. Écart mesuré sur Android : 15 s au plus.
         let pire = try comparerAuxHeuresLocales("android/app/src/test/resources/zmanim_reference_noaa.json",
@@ -192,7 +191,9 @@ private func heureLocale(_ instant: Date, _ fuseau: TimeZone) -> Double {
     var gregorien = Calendar(identifier: .gregorian)
     gregorien.timeZone = fuseau
     let c = gregorien.dateComponents([.hour, .minute, .second, .nanosecond], from: instant)
-    return Double((c.hour ?? 0) * 3600 + (c.minute ?? 0) * 60 + (c.second ?? 0)) + Double(c.nanosecond ?? 0) / 1e9
+    let h: Int = c.hour ?? 0, m: Int = c.minute ?? 0, s: Int = c.second ?? 0, ns: Int = c.nanosecond ?? 0
+    let entieres: Int = h * 3600 + m * 60 + s
+    return Double(entieres) + Double(ns) / 1e9
 }
 
 private func jourLocal(_ instant: Date, _ fuseau: TimeZone) -> JourCivil? {
