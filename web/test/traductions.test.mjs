@@ -31,3 +31,15 @@ test('les contresens corrigés ne reviennent pas (YALKUT-01, MIDOT-01, HICHT-01,
     assert.ok(!tout.includes(faux), faux);
   }
 });
+
+test('le site dit ce qui n’est pas traduit et d’où viennent les textes (COUV-01, 02, 05, TLIVRES-09)', () => {
+  const app = lire('web/src/js/app.js');
+  assert.match(app, /const sansTraduction = LanguesTexte\.manque\(languesLecture\(\), traduitIci\);/);
+  assert.match(app, /lecture_traduction_partielle', chapitresTraduits, x\.sections\.length/);
+  assert.equal((app.match(/tl\('lecture_traduction_auto'\)/g) ?? []).length, 3);
+  assert.match(app, /function carteLicences\(\)[\s\S]*?licences_texte/);
+  for (const dossier of ['values', 'values-en', 'values-iw']) {
+    const xml = lire(`android/app/src/main/res/${dossier}/strings.xml`);
+    for (const mot of ['licences_texte', 'KosherJava', 'CC BY-NC-SA 2.5', 'GeoNames']) assert.ok(xml.includes(mot), `${dossier} ${mot}`);
+  }
+});

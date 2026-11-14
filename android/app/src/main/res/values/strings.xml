@@ -1427,6 +1427,9 @@
 
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">Règles de confidentialité</string>
+    <string name="settings_licences">Sources et licences</string>
+    <string name="licences_texte">Textes\nLes textes hébreux (siddour, Tehilim, Tikoun, livres, sources) viennent d’éditions du domaine public, notamment Sefaria, Torat Emet, tanach.us et rabenubook, ou sont repris avec l’accord de leurs auteurs ; l’édition et la licence de chacun sont déclarées dans les fichiers de l’application.\nYalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef : texte de Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilloulot : Wikipédia hébreu (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik et HaMéir LaArets avec leur accord.\n\nTraductions\nLes traductions françaises et anglaises sont faites par ordinateur et n’ont pas été relues : l’hébreu fait foi. Celles du Yalkout Yossef sont partielles, sous la même licence que le texte. Pour les Tehilim, le Tikoun, Esther et Chir HaChirim : Bible du Rabbinat (1899) et JPS (1917), domaine public.\n\nPolices\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew et Varela Round, sous licence SIL OFL 1.1.\n\nDonnées\nVilles : GeoNames (CC BY 4.0). Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms : Wikidata (CC0). Routes des vols : adsbdb.com.\n\nCalendrier et zmanim\nKosherJava (LGPL 2.1), directement ou par son portage JavaScript. L’application est livrée avec le texte de la licence ; le code source de l’application est disponible sur demande écrite à myhitbodedut26@gmail.com.</string>
+    <string name="licences_android">\n\nBibliothèques de l’application Android\nLecture des codes-barres : ZXing (Apache 2.0). AndroidX et Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
     <string name="vol_en_ligne_aide">Désactivés par défaut : rien ne quitte le téléphone. Activés, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée, et le suivi en direct interroge OpenSky Network.</string>
@@ -1453,6 +1456,7 @@
     <string name="lecture_langues">Langues du texte</string>
     <string name="lecture_sans_traduction">Ce texte n’a pas encore de traduction : il reste en hébreu.</string>
     <string name="lecture_traduction_auto">Traduction automatique, non relue : l’hébreu fait foi.</string>
+    <string name="lecture_traduction_partielle">Traduit en partie : %1$d chapitres sur %2$d. Les autres restent en hébreu.</string>
     <string name="langues_he">עברית</string>
     <string name="langues_fr">Français</string>
     <string name="langues_en">English</string>

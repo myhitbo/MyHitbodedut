@@ -251,11 +251,16 @@ class SiddurLectureActivity : AppCompatActivity() {
         // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
         langues = LanguesTexte.mode(this)
         val traduit = texte.sections.any { s -> s.blocs.any { it.fr != null || it.en != null } }
-        val sansTraduction = if (livre && LanguesTexte.manque(langues, traduit)) listOf(Note(getString(R.string.lecture_sans_traduction))) else emptyList()
+        // Le siddour aussi : ses prières et ses consignes ne sont pas traduites, et il le dit (COUV-02).
+        val sansTraduction = if (LanguesTexte.manque(langues, traduit)) listOf(Note(getString(R.string.lecture_sans_traduction))) else emptyList()
+        // Un livre traduit en partie (le Yalkout Yossef) : combien de chapitres, les autres restent en hébreu (COUV-01, TLIVRES-05).
+        val chapitresTraduits = texte.chapitresTraduits()
+        val partielle = if (livre && traduit && chapitresTraduits < texte.sections.size && langues.langues.any { it != "he" })
+            listOf(Note(getString(R.string.lecture_traduction_partielle, chapitresTraduits, texte.sections.size))) else emptyList()
         // Une traduction automatique affichée : on dit qu'elle n'est pas relue, l'hébreu fait foi (COUV-05).
         val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
             listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
-        val lignes: List<Any> = sansTraduction + auto + note + SiddurJour.lignes(texte, annotations, jour.conditions, ouverts,
+        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, jour.conditions, ouverts,
             Store.siddurNusah(this).cle, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this))
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager

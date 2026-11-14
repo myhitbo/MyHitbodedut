@@ -73,6 +73,10 @@ class LibraryEntryActivity : AppCompatActivity() {
             }
         }
 
+        // Des traductions affichées : on dit d'où elles viennent (COUV-05).
+        if (LanguesTexte.montreTraduction(mode) && (source.paragraphesFr.isNotEmpty() || source.paragraphesEn.isNotEmpty()))
+            container.addView(LanguesTexte.mentionAuto(this))
+
         // Le bouton de lecture, pour le texte hébreu : taille et lecture de nuit.
         val defilement = findViewById<ScrollView>(R.id.entry_scroll)
         ReglagesLecture.marquer(container, ReglagesLecture.Role.FOND)
