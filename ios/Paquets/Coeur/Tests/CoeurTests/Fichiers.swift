@@ -77,3 +77,11 @@ enum Lieux {
         "Jérusalem": jerusalem, "Paris": paris, "New York": newYork, "Melbourne": melbourne,
     ]
 }
+
+extension JourCivil {
+    /// Une date écrite dans un test : illisible, c'est une faute du test lui-même.
+    static func du(_ iso: String) -> JourCivil {
+        guard let date = JourCivil(iso: iso) else { preconditionFailure("date illisible : \(iso)") }
+        return date
+    }
+}
