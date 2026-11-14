@@ -837,6 +837,9 @@ object Store {
 
         val yalkut get() = this != BEN_ISH_HAI
         val benIshHai get() = this != YALKUT
+
+        /** Les deux livres quand on vient de la recherche globale, qui les interroge tous deux (FLECTURE-05). */
+        fun pourRecherche(deuxLivres: Boolean): SourceHalakha = if (deuxLivres) LES_DEUX else this
     }
 
     fun sourceHalakha(context: Context): SourceHalakha =

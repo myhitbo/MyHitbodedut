@@ -31,3 +31,19 @@ class RepereLectureTest {
         assertNull(ReglagesLecture.placeDuRepere(hebreu, 9 to 0.5f))
     }
 }
+
+/** FLECTURE-05 : un résultat touché dans la recherche globale se retrouve dans l'écran Halakha. */
+class RechercheHalakhaTest {
+    @Test fun `venu de la recherche globale, les deux livres sont interroges`() {
+        Store.SourceHalakha.values().forEach { s ->
+            val c = s.pourRecherche(true)
+            assertEquals(true, c.yalkut)
+            assertEquals(true, c.benIshHai)
+        }
+    }
+
+    @Test fun `ouvert normalement, le livre choisi seul`() {
+        assertEquals(false, Store.SourceHalakha.YALKUT.pourRecherche(false).benIshHai)
+        assertEquals(false, Store.SourceHalakha.BEN_ISH_HAI.pourRecherche(false).yalkut)
+    }
+}
