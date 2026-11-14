@@ -128,4 +128,24 @@ class ExamenConformiteTest {
         assertTrue(service.substringAfter("override fun onDestroy()").substringBefore("super.onDestroy()").contains("handler.removeCallbacks(finDuSon)"))
         assertTrue("chime() dit si le son est parti", service.contains("private fun chime(): Boolean"))
     }
+
+    /** Constat 12 : sans application Fichiers, ouvrir le sélecteur fermait l'application. */
+    @Test
+    fun `le selecteur de fichiers est toujours garde`() {
+        val contrat = Regex("""val (\w+) =\s*registerForActivityResult\(ActivityResultContracts\.(OpenDocument|CreateDocument|OpenMultipleDocuments|OpenDocumentTree|GetContent)\b""")
+        var lanceurs = 0
+        File("src/main/java/com/myhitbodedut").listFiles { f -> f.extension == "kt" }!!.forEach { f ->
+            val texte = code(f.name)
+            contrat.findAll(texte).map { it.groupValues[1] }.forEach { nom ->
+                lanceurs++
+                val appels = texte.lines().filter { it.contains("$nom.launch(") }
+                assertTrue("${f.name} : $nom n'est jamais lancé", appels.isNotEmpty())
+                appels.forEach { assertTrue("${f.name} : $it", it.contains("runCatching { $nom.launch(")) }
+            }
+        }
+        assertEquals("pickAudio, exportFile, importFile, choixBillet", 4, lanceurs)
+        listOf("values", "values-en", "values-iw").forEach { d ->
+            assertTrue(d, File("src/main/res/$d/strings.xml").readText().contains("name=\"fichiers_absents\""))
+        }
+    }
 }

@@ -175,10 +175,13 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         findViewById<Button>(R.id.export_data).setOnClickListener {
-            exportFile.launch("myhitbodedut-${Store.today()}.json")
+            // Sans sélecteur de fichiers, un message plutôt qu'un plantage (examen du 14/11, constat 12).
+            runCatching { exportFile.launch("myhitbodedut-${Store.today()}.json") }
+                .onFailure { Toast.makeText(this, R.string.fichiers_absents, Toast.LENGTH_LONG).show() }
         }
         findViewById<Button>(R.id.import_data).setOnClickListener {
-            importFile.launch(arrayOf("application/json", "text/plain", "*/*"))
+            runCatching { importFile.launch(arrayOf("application/json", "text/plain", "*/*")) }
+                .onFailure { Toast.makeText(this, R.string.fichiers_absents, Toast.LENGTH_LONG).show() }
         }
         findViewById<Button>(R.id.privacy_policy).setOnClickListener { ouvrirConfidentialite() }
         findViewById<Button>(R.id.licences_button).setOnClickListener { montrerLicences() }

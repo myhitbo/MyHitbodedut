@@ -366,7 +366,9 @@ class VolActivity : AppCompatActivity() {
             appliquer(SaisieVol.lire(phrase, aeroports, LocalDate.now()), source = null)
         }.apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(12) })
         addView(bouton(getString(R.string.vol_rapide_billet), Genre.SECONDAIRE) {
-            choixBillet.launch(arrayOf("application/pdf", "image/*"))
+            // Sans sélecteur de fichiers, un message plutôt qu'un plantage (examen du 14/11, constat 12).
+            runCatching { choixBillet.launch(arrayOf("application/pdf", "image/*")) }
+                .onFailure { message(getString(R.string.fichiers_absents)) }
         }.apply {
             (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8)
             setIconResource(R.drawable.ic_billet)

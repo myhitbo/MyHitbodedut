@@ -122,6 +122,7 @@
     <string name="settings_exempt_today">הפסקה היום</string>
     <string name="settings_exempt_today_hint">ליום טוב, נסיעה או מחלה: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
+    <string name="fichiers_absents">אין בטלפון אפליקציה שמאפשרת לפתוח או לשמור קובץ.</string>
 
     <string name="permission_overlay">הצגה מעל אפליקציות אחרות</string>
     <string name="permission_usage">גישה לנתוני שימוש</string>
