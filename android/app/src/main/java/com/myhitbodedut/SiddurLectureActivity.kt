@@ -87,6 +87,7 @@ class SiddurLectureActivity : AppCompatActivity() {
             // Même nusah : on garde sa place ; un autre nusah n'a pas les mêmes paragraphes.
             afficher(garderPlace = recueil().nusah == nusahAffiche)
         }
+        val ouvrir = {
         afficher(garderPlace = false)
         // Ouvert depuis un marque-page (15/10) : à sa place ; sinon, reprendre là où on s'était arrêté (14/10).
         // Le marque-page n'est suivi qu'à l'ouverture : l'écran recréé reprend la dernière place lue,
@@ -94,6 +95,19 @@ class SiddurLectureActivity : AppCompatActivity() {
         val marque = intent.getStringExtra(MARQUE)?.split(':')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && savedInstanceState == null }
         if (marque != null) liste.post { allerA(marque[0], marque[1]) }
         else Store.positionLecture(this, cle())?.let { p -> liste.post { (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(p, 0) } }
+        }
+        // Un gros livre (Likoutei Moharan, 10 Mo) se lit et s'analyse hors du fil principal, avec un
+        // mot d'attente, puis s'affiche (audit du 12/11, FLECTURE-06) : l'écran ne reste plus figé.
+        if (livre && !Data.livreEnMemoire(id)) {
+            chargement = true
+            findViewById<TextView>(R.id.siddur_lecture_subtitle).setText(R.string.lecture_chargement)
+            val contexte = applicationContext
+            val numero = id
+            Thread {
+                runCatching { Data.livre(contexte, numero) }
+                runOnUiThread { if (!isFinishing && !isDestroyed) { chargement = false; ouvrir() } }
+            }.start()
+        } else ouvrir()
         findViewById<android.widget.ImageView>(R.id.siddur_lecture_marques).apply {
             // Ruban en contour pour une prière, livre ouvert et ruban pour une étude (15/10).
             setImageResource(icone(livre))
@@ -183,7 +197,7 @@ class SiddurLectureActivity : AppCompatActivity() {
         veille.arreter()
         pauseA = System.currentTimeMillis()
         val p = (liste.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-        if (p >= 0) Store.setPositionLecture(this, cle(), p, pauseA)
+        if (p >= 0 && !chargement) Store.setPositionLecture(this, cle(), p, pauseA)
     }
 
     /** Quand la lecture a été quittée (onPause), pour onRestart. */
@@ -212,7 +226,11 @@ class SiddurLectureActivity : AppCompatActivity() {
     // Un livre seul (04/11) : ouvrir la Méguila ne lit plus les 16 Mo de tous les livres.
     private fun recueil(): Siddur = if (livre) Data.livre(this, id) ?: Siddur(emptyList(), emptyList()) else Data.siddur(this)
 
+    /** Le livre se charge encore : rien à dessiner, ni à relire en position. */
+    private var chargement = false
+
     private fun afficher(garderPlace: Boolean) {
+        if (chargement) return
         val siddur = recueil()
         val texte = siddur.texte(id)
         if (texte == null) {

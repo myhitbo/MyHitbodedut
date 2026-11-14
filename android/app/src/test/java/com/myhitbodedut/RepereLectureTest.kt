@@ -47,3 +47,12 @@ class RechercheHalakhaTest {
         assertEquals(false, Store.SourceHalakha.BEN_ISH_HAI.pourRecherche(false).yalkut)
     }
 }
+
+/** FLECTURE-06 : les livres entiers lus ne s'accumulent pas en mémoire. */
+class LivresEnMemoireTest {
+    @Test fun `rien n est garde avant la premiere lecture et apres le vidage`() {
+        Data.viderLivres()
+        assertEquals(false, Data.livreEnMemoire("likoutei_moharan"))
+        assertEquals(2, Data.LIVRES_GARDES)
+    }
+}

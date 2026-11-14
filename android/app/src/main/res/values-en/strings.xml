@@ -1395,4 +1395,5 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+    <string name="lecture_chargement">Loading…</string>
 </resources>
