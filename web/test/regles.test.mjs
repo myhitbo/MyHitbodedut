@@ -783,6 +783,15 @@ test('trophées du Tikoun (04/11) : lectures complètes et jours d’affilée, c
   assert.equal(d['tikkun_serie:1'], '2026-11-03');
 });
 
+test('un jour exempté ne casse pas la suite du Tikoun (FDONNEES-09)', async () => {
+  const T = await import('../src/js/trophees.js');
+  const exempt = (d) => d === '2026-11-04' || d === '2026-11-05';
+  const tikkun = ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-06', '2026-11-07', '2026-11-09'];
+  assert.equal(T.valeur({ minutes: {}, notes: 0, meilleureSerie: 0, tikkun, exempt }, 'tikkun_serie'), 5);
+  assert.equal(T.valeur({ minutes: {}, notes: 0, meilleureSerie: 0, tikkun }, 'tikkun_serie'), 3);
+  assert.equal(T.datesGain({}, [], exempt, tikkun.slice(0, 5))['tikkun_serie:1'], '2026-11-03');
+});
+
 test('langues de lecture (04/11) : six modes, la règle d’avant par défaut, l’hébreu faute de traduction', async () => {
   const { LanguesTexte } = await import('../src/js/regles.js');
   assert.equal(LanguesTexte.defaut('he'), 'he');

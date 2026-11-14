@@ -1040,7 +1040,7 @@ object Store {
     fun pratique(context: Context): Trophees.Pratique {
         val tous = days(context).values
         val minutes = tous.filter { it.faite }.mapNotNull { r -> dateValide(r.date)?.let { it to r.minutes } }.toMap()
-        return Trophees.Pratique(minutes, tous.count { it.note.isNotBlank() }, meilleureSerie(context), tikkunJournal(context))
+        return Trophees.Pratique(minutes, tous.count { it.note.isNotBlank() }, meilleureSerie(context), tikkunJournal(context)) { isExempt(context, it) }
     }
 
     /**

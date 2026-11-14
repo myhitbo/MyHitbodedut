@@ -3860,7 +3860,7 @@ function lignePaliers() {
     medailleGrade(g, 26), h('span', {}, `${texte}  ›`));
 }
 
-const pratique = () => ({ minutes: store.minutesParJour(), notes: store.nombreNotes(), meilleureSerie: store.meilleureSerie(), tikkun: store.tikkunJournal() });
+const pratique = () => ({ minutes: store.minutesParJour(), notes: store.nombreNotes(), meilleureSerie: store.meilleureSerie(), tikkun: store.tikkunJournal(), exempt: (d) => store.isExempt(d) });
 
 /** Des confettis par-dessus l'écran, 2,8 s ; rien si l'on a demandé moins d'animations. */
 function confettis() {

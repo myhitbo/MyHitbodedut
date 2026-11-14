@@ -37,16 +37,27 @@ export function retours(jours) {
   return n.filter((v, i) => i > 0 && v - n[i - 1] > 7).length;
 }
 
-/** La plus longue suite de jours consécutifs (Trophees.plusLongueSuite). */
-export function plusLongueSuite(jours) {
-  const n = [...new Set([...jours].map(jourDe))].sort((a, b) => a - b);
+/** Tous les jours entre a et b (exclus) sont-ils exemptés ? Alors la suite continue (Trophees.suiteContinue). */
+function suiteContinue(a, b, exempt) {
+  for (let t = Date.parse(`${a}T12:00:00Z`) + 86400000; t < Date.parse(`${b}T12:00:00Z`); t += 86400000) {
+    if (!exempt(new Date(t).toISOString().slice(0, 10))) return false;
+  }
+  return true;
+}
+
+/**
+ * La plus longue suite de jours de pratique (Trophees.plusLongueSuite) ; un jour exempté ne compte
+ * pas et ne casse pas la suite (FDONNEES-09).
+ */
+export function plusLongueSuite(jours, exempt = () => false) {
+  const tries = [...new Set(jours)].sort();
   let meilleure = 0; let courante = 0;
-  n.forEach((v, i) => { courante = i > 0 && v - n[i - 1] === 1 ? courante + 1 : 1; meilleure = Math.max(meilleure, courante); });
+  tries.forEach((iso, i) => { courante = i > 0 && suiteContinue(tries[i - 1], iso, exempt) ? courante + 1 : 1; meilleure = Math.max(meilleure, courante); });
   return meilleure;
 }
 
 /** La valeur que compte une famille. pratique = { minutes: { iso: min }, notes, meilleureSerie, tikkun: [iso] }. */
-export function valeur({ minutes, notes, meilleureSerie, tikkun = [] }, cle) {
+export function valeur({ minutes, notes, meilleureSerie, tikkun = [], exempt = () => false }, cle) {
   // Un jour validé compte, même à 0 min (Trophees.valeur) : comme la série.
   const jours = Object.keys(minutes);
   const valeurs = Object.values(minutes);
@@ -61,7 +72,7 @@ export function valeur({ minutes, notes, meilleureSerie, tikkun = [] }, cle) {
     case 'retour': return retours(jours);
     case 'plume': return notes;
     case 'tikkun': return new Set(tikkun).size;
-    case 'tikkun_serie': return plusLongueSuite(tikkun);
+    case 'tikkun_serie': return plusLongueSuite(tikkun, exempt);
     default: return 0;
   }
 }
@@ -155,7 +166,7 @@ export function datesGain(minutes, notes, exempt, tikkun = []) {
     if (notesSet.has(d)) notesVues++;
     if (tikkunSet.has(d)) {
       tikkunN++;
-      tikkunSuite = tikkunAvant && jourDe(d) - jourDe(tikkunAvant) === 1 ? tikkunSuite + 1 : 1;
+      tikkunSuite = tikkunAvant && suiteContinue(tikkunAvant, d, exempt) ? tikkunSuite + 1 : 1;
       tikkunMeilleure = Math.max(tikkunMeilleure, tikkunSuite);
       tikkunAvant = d;
     }

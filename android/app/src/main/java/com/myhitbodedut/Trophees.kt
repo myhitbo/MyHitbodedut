@@ -50,13 +50,22 @@ object Trophees {
      * Ce que les trophées regardent : les minutes par jour fait, les notes écrites, la meilleure
      * série ; et les jours où le Tikoun HaKlali a été dit en entier (04/11).
      */
-    data class Pratique(val minutes: Map<LocalDate, Int>, val notes: Int, val meilleureSerie: Int, val tikkun: Set<LocalDate> = emptySet())
+    data class Pratique(val minutes: Map<LocalDate, Int>, val notes: Int, val meilleureSerie: Int, val tikkun: Set<LocalDate> = emptySet(),
+        /** Les jours exemptés : ils ne cassent pas la suite du Tikoun. */
+        val exempt: (LocalDate) -> Boolean = { false })
 
-    /** La plus longue suite de jours consécutifs. */
-    fun plusLongueSuite(jours: Set<LocalDate>): Int {
+    /** Tous les jours entre [avant] et [d] (exclus) sont-ils exemptés ? Alors la suite continue. */
+    private fun suiteContinue(avant: LocalDate, d: LocalDate, exempt: (LocalDate) -> Boolean): Boolean =
+        generateSequence(avant.plusDays(1)) { it.plusDays(1) }.takeWhile { it.isBefore(d) }.all(exempt)
+
+    /**
+     * La plus longue suite de jours de pratique. Un jour exempté (Chabbat, Yom Tov, pause) ne
+     * compte pas et ne casse pas la suite, comme la série de hitbodedout (FDONNEES-09).
+     */
+    fun plusLongueSuite(jours: Set<LocalDate>, exempt: (LocalDate) -> Boolean = { false }): Int {
         var meilleure = 0; var courante = 0; var avant: LocalDate? = null
         for (d in jours.sorted()) {
-            courante = if (avant != null && d.toEpochDay() - avant.toEpochDay() == 1L) courante + 1 else 1
+            courante = if (avant != null && suiteContinue(avant, d, exempt)) courante + 1 else 1
             meilleure = maxOf(meilleure, courante)
             avant = d
         }
@@ -86,7 +95,7 @@ object Trophees {
             Famille.RETOUR -> retours(jours)
             Famille.PLUME -> p.notes
             Famille.TIKKUN -> p.tikkun.size
-            Famille.TIKKUN_SERIE -> plusLongueSuite(p.tikkun)
+            Famille.TIKKUN_SERIE -> plusLongueSuite(p.tikkun, p.exempt)
         }
     }
 
@@ -185,7 +194,7 @@ object Trophees {
             if (d in tikkun) {
                 tikkunN++
                 val a = tikkunAvant
-                tikkunSuite = if (a != null && d.toEpochDay() - a.toEpochDay() == 1L) tikkunSuite + 1 else 1
+                tikkunSuite = if (a != null && suiteContinue(a, d, exempt)) tikkunSuite + 1 else 1
                 tikkunMeilleure = maxOf(tikkunMeilleure, tikkunSuite)
                 tikkunAvant = d
             }
