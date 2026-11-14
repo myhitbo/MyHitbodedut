@@ -97,8 +97,11 @@ L'application n'a ni compte ni contenu réservé : choisir *All functionality in
 my app is available without any access restrictions* si la console le propose.
 
 Google n'a pas de champ « note aux examinateurs » ; c'est ici qu'on peut leur
-dire comment voir la barrière à n'importe quelle heure. Si la console permet
-d'ajouter des instructions (*Add new instructions*), créer une entrée :
+dire comment voir la barrière à n'importe quelle heure. Ajouter des
+instructions (*Add new instructions*). Si la console ne les accepte qu'avec
+l'option *All or some functionality is restricted*, choisir cette option : la
+barrière n'agit que dans une plage horaire, et l'examinateur a besoin du
+chemin ci-dessous pour la voir. Créer une entrée :
 
 - *Instruction name* : `Morning gate preview (no login needed)`
 - *Username* et *Password* : laisser vides (ou `none` si la console les exige)
