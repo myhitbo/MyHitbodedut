@@ -789,6 +789,7 @@
     <string name="siddur_toucher_lire">Tap to read</string>
     <string name="ajout_oubli">If forgotten</string>
     <string name="ajout_chol">Weekdays</string>
+    <string name="ajout_autres_jours">Other days</string>
     <string name="siddur_aujourdhui">Today</string>
     <string name="siddur_pas_aujourdhui">Not today · tap to read</string>
     <string name="siddur_replier">Collapse</string>
