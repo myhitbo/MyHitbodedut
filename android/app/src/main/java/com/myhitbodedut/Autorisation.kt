@@ -56,6 +56,21 @@ object PermissionRules {
         Autorisation.values().filter { avecBarriere || !it.barriere }
 
     /**
+     * Celles qu'il y a lieu de signaler comme manquantes en tête des Réglages (13/11,
+     * TFRUX-05 et FACCUEIL-06). Aucune n'est obligatoire : les deux accès de la barrière ne
+     * comptent que mode allumé, la batterie jamais, les notifications toujours (elles servent
+     * la hitbodedout et le rappel de Birkat haLevana, allumé par défaut).
+     */
+    fun aSignaler(avecBarriere: Boolean, modeActif: Boolean, accordee: (Autorisation) -> Boolean): List<Autorisation> =
+        demandees(avecBarriere).filterNot(accordee).filter {
+            when (it) {
+                Autorisation.BATTERIE -> false
+                Autorisation.OVERLAY, Autorisation.USAGE -> modeActif
+                else -> true
+            }
+        }
+
+    /**
      * Celles qui manquent, dans l'ordre. L'état est passé plutôt que lu :
      * il demande un contexte Android, la règle non.
      */

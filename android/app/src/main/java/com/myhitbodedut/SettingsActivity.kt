@@ -69,10 +69,22 @@ class SettingsActivity : AppCompatActivity() {
         // Le moment « lieu » accompagne les réglages de lieu et de moment :
         // il ne change pas d'un aller-retour à l'autre, on le tire une fois.
         ChizukCard.show(findViewById(R.id.lieu_chizuk), Moment.LIEU)
+        // La pastille « Avec Hachem » de l'accueil mène ici quand le mode ne peut pas agir
+        // (13/11, FBARRIERE-08) : la carte d'état, pas l'interrupteur.
+        if (BuildConfig.HAS_GATE && savedInstanceState == null && intent.getBooleanExtra(EXTRA_CARTE_BARRIERE, false)) {
+            val defil = findViewById<ScrollView>(R.id.settings_scroll)
+            val carte = findViewById<View>(R.id.card_gate_state)
+            defil.post { defil.scrollTo(0, carte.top) }
+        }
     }
 
     override fun onResume() {
         super.onResume()
+        // Un accès accordé à l'instant, ou un service arrêté depuis (13/11, FBARRIERE-01) :
+        // la carte d'état dit ce qui est, et le service reprend sans attendre un interrupteur.
+        if (BuildConfig.HAS_GATE) {
+            if (GateStatus.shouldRunService(this)) GateService.start(this) else GateService.stop(this)
+        }
         refresh()
     }
 
@@ -130,7 +142,14 @@ class SettingsActivity : AppCompatActivity() {
             refresh()
         }
         findViewById<Button>(R.id.preview_gate).setOnClickListener { previewGate() }
-        findViewById<Button>(R.id.gate_fix_permissions).setOnClickListener { scrollToPermissions() }
+        findViewById<Button>(R.id.gate_fix_permissions).setOnClickListener {
+            if (GateStatus.evaluate(this) == GateState.SERVICE_STOPPED) {
+                GateService.start(this)
+                refresh()
+            } else {
+                scrollToPermissions()
+            }
+        }
         findViewById<Button>(R.id.pick_apps).setOnClickListener {
             startActivity(Intent(this, AppPickerActivity::class.java))
         }
@@ -254,19 +273,33 @@ class SettingsActivity : AppCompatActivity() {
     private fun renderPermissions() {
         val liste = findViewById<LinearLayout>(R.id.permission_list)
         liste.removeAllViews()
-        var manquantes = 0
+        val modeActif = Store.isEnabled(this)
+        val manquantes = PermissionRules.aSignaler(BuildConfig.HAS_GATE, modeActif) {
+            Permissions.isGranted(this, it)
+        }.size
         PermissionRules.demandees(BuildConfig.HAS_GATE).forEach { autorisation ->
             val accordee = Permissions.isGranted(this, autorisation)
-            if (!accordee) manquantes++
+            // Les deux accès de la barrière ne sont pas réclamés tant que le mode est éteint.
+            val facultative = !accordee && autorisation.barriere && !modeActif
             val ligne = layoutInflater.inflate(R.layout.item_permission, liste, false)
             ligne.findViewById<TextView>(R.id.permission_title).setText(autorisation.titre)
             ligne.findViewById<TextView>(R.id.permission_why).setText(autorisation.pourquoi)
             ligne.findViewById<TextView>(R.id.permission_state).apply {
-                setText(if (accordee) R.string.permission_granted else R.string.permission_missing)
+                setText(
+                    when {
+                        accordee -> R.string.permission_granted
+                        facultative -> R.string.permission_optional_off
+                        else -> R.string.permission_missing
+                    }
+                )
                 setTextColor(
                     Apparence.couleur(
                         this@SettingsActivity,
-                        if (accordee) R.color.brand else R.color.warning
+                        when {
+                            accordee -> R.color.brand
+                            facultative -> R.color.muted
+                            else -> R.color.warning
+                        }
                     )
                 )
             }
@@ -289,6 +322,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun renderDiagnostic() {
         val state = GateStatus.evaluate(this)
         val missing = state == GateState.MISSING_PERMISSIONS
+        val arrete = state == GateState.SERVICE_STOPPED
 
         val title = findViewById<TextView>(R.id.gate_state_title)
         title.setText(GateStatus.titleOf(state))
@@ -297,8 +331,10 @@ class SettingsActivity : AppCompatActivity() {
         title.visibility = if (missing) View.GONE else View.VISIBLE
 
         findViewById<TextView>(R.id.gate_state_detail).text = GateStatus.detailOf(this, state)
-        findViewById<Button>(R.id.gate_fix_permissions).visibility =
-            if (missing) View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.gate_fix_permissions).apply {
+            setText(if (arrete) R.string.gate_stopped_action else R.string.gate_permissions_action)
+            visibility = if (missing || arrete) View.VISIBLE else View.GONE
+        }
     }
 
     /** Amène la carte des autorisations sous les yeux, plutôt que « plus bas ». */
@@ -649,13 +685,15 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private companion object {
-        const val ETAT_DEMANDE = "notifications_demandees"
+    companion object {
+        /** Ouvrir les Réglages sur la carte « État du mode ». */
+        const val EXTRA_CARTE_BARRIERE = "carte_barriere"
+        private const val ETAT_DEMANDE = "notifications_demandees"
         /** La page publique des règles de confidentialité, sur GitHub Pages avec le site (web/build.mjs). */
-        const val LIEN_CONFIDENTIALITE = CelebrationActivity.LIEN_WEB + "confidentialite.html"
+        private const val LIEN_CONFIDENTIALITE = CelebrationActivity.LIEN_WEB + "confidentialite.html"
         /** Au-delà, ce n'est pas une sauvegarde de cette application. */
-        const val IMPORT_MAX_OCTETS = 2 * 1024 * 1024
+        private const val IMPORT_MAX_OCTETS = 2 * 1024 * 1024
         /** Grand texte (14/10) : l'échelle des textes de lecture. */
-        const val GRAND_TEXTE = 1.4f
+        private const val GRAND_TEXTE = 1.4f
     }
 }

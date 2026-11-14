@@ -25,10 +25,10 @@
     <string name="section_practice">Ma pratique</string>
     <string name="section_gate_state">État du mode</string>
     <string name="section_gate">Je suis avec Hachem</string>
-    <string name="section_gate_hint">Les applications choisies restent fermées tant que la pratique n’est pas faite.</string>
+    <string name="section_gate_hint">Les applications choisies restent fermées tant que la pratique n’est pas faite, et pendant une hitbodedout en cours.</string>
     <string name="section_rhythm">Rythme</string>
-    <string name="section_permissions">Autorisations nécessaires</string>
-    <string name="section_permissions_hint">Ce que l’application demande, et pourquoi.</string>
+    <string name="section_permissions">Autorisations</string>
+    <string name="section_permissions_hint">Aucune n’est obligatoire. Chacune sert une fonction précise, et se retire à tout moment dans les réglages d’Android.</string>
     <string name="section_data">Mes données</string>
     <string name="section_data_hint">Le journal et vos notes restent sur ce téléphone. Les réglages (dont le lieu des zmanim) peuvent être repris par la sauvegarde Android de votre compte Google, si elle est activée. Exportez de temps en temps.</string>
     <string name="section_data_hint_web">Tout est gardé dans ce navigateur, sur cet appareil. Exportez de temps en temps.</string>
@@ -62,11 +62,15 @@
         <item quantity="other">%1$d applications sont bloquées jusqu’à %2$s ou jusqu’à votre hitbodedout.</item>
     </plurals>
     <string name="gate_permissions_title">Autorisations manquantes</string>
-    <string name="gate_permissions_detail">Accordez l’affichage par-dessus les autres applications et l’accès aux données d’utilisation, plus bas.</string>
+    <string name="gate_permissions_detail">Pour fonctionner, « Je suis avec Hachem » a besoin de deux accès : l’affichage par-dessus les autres applications et l’accès aux données d’utilisation.</string>
     <string name="gate_disabled_title">Mode désactivé</string>
     <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour que le mode agisse.</string>
     <string name="gate_no_apps_title">Aucune application choisie</string>
     <string name="gate_no_apps_detail">Le mode n’a rien à retenir. Choisissez au moins une application.</string>
+    <string name="gate_stopped_title">Surveillance arrêtée</string>
+    <string name="gate_stopped_detail">Tout est réglé, mais le service qui surveille ne tourne pas. Relancez-le, ou rouvrez l’application.</string>
+    <string name="gate_stopped_action">Relancer le mode</string>
+    <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
     <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
     <string name="gate_exempt_title">Jour sans obligation</string>
@@ -118,14 +122,15 @@
     <string name="permission_battery">Batterie sans restriction</string>
     <string name="settings_title">Réglages</string>
     <string name="action_open">Ouvrir</string>
-    <string name="settings_all_granted">Toutes les autorisations sont accordées.</string>
+    <string name="settings_all_granted">Toutes les autorisations utiles sont accordées.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Sans elles, le rappel se programme et n’apparaît jamais, et la hitbodedout n’affiche rien quand le téléphone est posé.</string>
-    <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures pour économiser la batterie.</string>
+    <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures. Dans la liste qui s’ouvre, cherchez MyHitbodedut et choisissez « Ne pas optimiser ».</string>
     <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez le matin.</string>
     <string name="permission_usage_why">Pour savoir quelle application vient de s’ouvrir. Rien n’est enregistré ni envoyé.</string>
     <string name="permission_granted">Accordée</string>
-    <string name="permission_missing">Manquante</string>
+    <string name="permission_missing">Non accordée</string>
+    <string name="permission_optional_off">Facultative tant que le mode est éteint</string>
 
     <!-- Applications -->
     <string name="apps_title">Applications à bloquer</string>
@@ -370,7 +375,7 @@
     <string name="week_shabbat_mark" translatable="false">ש</string>
     <string name="week_done">faite</string>
     <string name="week_todo">à faire</string>
-    <string name="gate_permissions_action">Autorisations manquantes, les accorder</string>
+    <string name="gate_permissions_action">Voir les deux accès</string>
     <string name="settings_language">Langue</string>
     <string name="settings_region">Région</string>
     <string name="region_israel">Israël</string>
@@ -472,8 +477,8 @@
         <item quantity="other">%1$d heures réglées.</item>
     </plurals>
     <plurals name="permissions_missing">
-        <item quantity="one">%1$d autorisation à accorder.</item>
-        <item quantity="other">%1$d autorisations à accorder.</item>
+        <item quantity="one">%1$d autorisation utile non accordée.</item>
+        <item quantity="other">%1$d autorisations utiles non accordées.</item>
     </plurals>
     <string name="session_theme_title">Sur quoi voulez-vous parler ?</string>
     <string name="session_theme_none">Sujet : aucun (facultatif)</string>
@@ -507,6 +512,8 @@
     <string name="start_music_off">aucune</string>
     <string name="start_focus_on">activée</string>
     <string name="start_focus_off">désactivée</string>
+    <string name="start_focus_setup">à régler</string>
+    <string name="start_focus_stopped">arrêtée</string>
     <string name="settings_name">Prénom</string>
     <string name="settings_name_hint">Pour que l’accueil vous salue. Il ne quitte pas le téléphone.</string>
     <string name="settings_name_empty">Non renseigné</string>
@@ -536,6 +543,8 @@
     <string name="onboarding_texts_body">Le Tikoun HaKlali, les Tehilim, le siddour, les Tefilot classées par sujet, une bibliothèque et des conseils pour la hitbodedout, à ouvrir quand vous voulez.</string>
     <string name="onboarding_yours">À votre façon</string>
     <string name="onboarding_yours_body">Dans les réglages : la langue (français, anglais ou hébreu), les couleurs de l’écran, votre prénom et la durée habituelle d’une hitbodedout. La musique a sa propre section.</string>
+    <string name="onboarding_gate">Le matin, avant tout le reste</string>
+    <string name="onboarding_gate_body">Choisissez les applications qui attendront votre hitbodedout : en ouvrant l’une d’elles, vous verrez d’abord « Avez-vous fait votre hitbodedout ? ». Ce mode se règle dans les Réglages et se coupe quand vous voulez.</string>
     <string name="onboarding_adresse">Comment vous appeler ?</string>
     <string name="onboarding_adresse_body">À la fin de chaque hitbodedout, l’application vous félicite. Choisissez le mot qui vous convient ; vous pourrez le changer dans les réglages.</string>
     <string name="onboarding_rappel">Me le rappeler chaque jour</string>

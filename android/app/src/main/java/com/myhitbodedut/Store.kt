@@ -706,11 +706,7 @@ object Store {
 
     fun inWindow(context: Context): Boolean {
         val now = LocalTime.now()
-        val minutes = now.hour * 60 + now.minute
-        val start = windowStart(context)
-        val end = windowEnd(context)
-        return if (start <= end) minutes >= start && minutes < end
-        else minutes >= start || minutes < end
+        return GateRule.dansLaFenetre(now.hour * 60 + now.minute, windowStart(context), windowEnd(context))
     }
 
     fun snoozeMinutes(context: Context): Int = prefs(context).getInt(KEY_SNOOZE, DEFAULT_SNOOZE)

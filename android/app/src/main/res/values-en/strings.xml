@@ -20,10 +20,10 @@
     <string name="section_practice">My practice</string>
     <string name="section_gate_state">Mode status</string>
     <string name="section_gate">I am with Hashem</string>
-    <string name="section_gate_hint">The apps you choose stay closed until the practice is done.</string>
+    <string name="section_gate_hint">The apps you choose stay closed until the practice is done, and during a hitbodedut in progress.</string>
     <string name="section_rhythm">Rhythm</string>
-    <string name="section_permissions">Required permissions</string>
-    <string name="section_permissions_hint">What the app asks for, and why.</string>
+    <string name="section_permissions">Permissions</string>
+    <string name="section_permissions_hint">None is required. Each serves one specific function, and can be withdrawn at any time in Android settings.</string>
     <string name="section_data">My data</string>
     <string name="section_data_hint">Your journal and notes stay on this phone. Settings (including the zmanim location) may be included in Android’s backup to your Google account, if it is turned on. Export from time to time.</string>
     <string name="section_data_hint_web">Everything is kept in this browser, on this device. Export from time to time.</string>
@@ -56,11 +56,15 @@
         <item quantity="other">%1$d apps are blocked until %2$s or until your hitbodedut.</item>
     </plurals>
     <string name="gate_permissions_title">Permissions missing</string>
-    <string name="gate_permissions_detail">Grant display over other apps and usage access, further down.</string>
+    <string name="gate_permissions_detail">To work, “I am with Hashem” needs two accesses: display over other apps and usage access.</string>
     <string name="gate_disabled_title">Mode switched off</string>
     <string name="gate_disabled_detail">Turn on the “I am with Hashem” switch for the mode to act.</string>
     <string name="gate_no_apps_title">No app selected</string>
     <string name="gate_no_apps_detail">The mode has nothing to hold back. Choose at least one app.</string>
+    <string name="gate_stopped_title">Monitoring stopped</string>
+    <string name="gate_stopped_detail">Everything is set, but the service that watches is not running. Restart it, or reopen the app.</string>
+    <string name="gate_stopped_action">Restart the mode</string>
+    <string name="gate_session_detail">The apps you chose stay blocked until the hitbodedut ends.</string>
     <string name="gate_done_title">Day confirmed</string>
     <string name="gate_done_detail">Nothing will be held back today, except during a hitbodedut in progress. The mode returns tomorrow.</string>
     <string name="gate_exempt_title">Rest day</string>
@@ -109,14 +113,15 @@
     <string name="permission_battery">Unrestricted battery</string>
     <string name="settings_title">Settings</string>
     <string name="action_open">Open</string>
-    <string name="settings_all_granted">All permissions granted.</string>
+    <string name="settings_all_granted">All useful permissions are granted.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Without them the reminder is scheduled and never appears, and the hitbodedut shows nothing once the phone is down.</string>
-    <string name="permission_battery_why">Without it, Android may hold the reminder back for hours to save power.</string>
+    <string name="permission_battery_why">Without it, Android may hold the reminder back for hours. In the list that opens, find MyHitbodedut and choose “Don’t optimize”.</string>
     <string name="permission_overlay_why">To show the “I am with Hashem” screen over the app you open in the morning.</string>
     <string name="permission_usage_why">To know which app has just opened. Nothing is recorded or sent.</string>
     <string name="permission_granted">Granted</string>
-    <string name="permission_missing">Missing</string>
+    <string name="permission_missing">Not granted</string>
+    <string name="permission_optional_off">Optional while the mode is off</string>
 
     <string name="apps_title">Apps to block</string>
     <string name="apps_loading">Loading apps…</string>
@@ -277,7 +282,7 @@
     <string name="edition_light">Light edition</string>
     <string name="week_done">done</string>
     <string name="week_todo">to do</string>
-    <string name="gate_permissions_action">Permissions missing, grant them</string>
+    <string name="gate_permissions_action">See the two accesses</string>
     <string name="settings_language">Language</string>
     <string name="settings_region">Region</string>
     <string name="region_israel">Israel</string>
@@ -379,8 +384,8 @@
         <item quantity="other">%1$d times set.</item>
     </plurals>
     <plurals name="permissions_missing">
-        <item quantity="one">%1$d permission to grant.</item>
-        <item quantity="other">%1$d permissions to grant.</item>
+        <item quantity="one">%1$d useful permission not granted.</item>
+        <item quantity="other">%1$d useful permissions not granted.</item>
     </plurals>
     <string name="session_theme_title">What do you want to talk about?</string>
     <string name="session_theme_none">Subject: none (optional)</string>
@@ -414,6 +419,8 @@
     <string name="start_music_off">none</string>
     <string name="start_focus_on">on</string>
     <string name="start_focus_off">off</string>
+    <string name="start_focus_setup">needs setup</string>
+    <string name="start_focus_stopped">stopped</string>
     <string name="settings_name">First name</string>
     <string name="settings_name_hint">So the home screen can greet you. It never leaves the phone.</string>
     <string name="settings_name_empty">Not set</string>
@@ -443,6 +450,8 @@
     <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, a library and tips for hitbodedut, ready whenever you are.</string>
     <string name="onboarding_yours">Your way</string>
     <string name="onboarding_yours_body">In Settings: the language (French, English or Hebrew), the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
+    <string name="onboarding_gate">In the morning, before everything else</string>
+    <string name="onboarding_gate_body">Choose the apps that will wait for your hitbodedut: when you open one of them, you will first see “Have you done your hitbodedut?”. This mode is set up in Settings and can be turned off whenever you like.</string>
     <string name="onboarding_adresse">What should we call you?</string>
     <string name="onboarding_adresse_body">At the end of each hitbodedut, the app congratulates you. Pick the word that fits you; you can change it in Settings.</string>
     <string name="onboarding_rappel">Remind me every day</string>
