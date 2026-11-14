@@ -140,7 +140,7 @@ class SiddurJourTest {
 
     @Test
     fun `les sceaux visibles - fin d office, Hallel, dix jours, supplications (audit du 12-11)`() {
-        fun nu(t: String) = t.replace(Regex("<[^>]+>"), " ").replace(Regex("[\u0591-\u05C7]"), "").replace(Regex("\\s+"), " ")
+        fun nu(t: String) = t.replace(Regex("<[^>]+>"), " ").replace(Regex("[\u0591-\u05C7]"), "").replace(Regex("\\s+"), " ").trim()
         fun visibles(n: Nusah, id: String, date: String) = SiddurJour.lignes(DataFiles.siddur(n).texte(id)!!,
             SiddurJour.parse(json, n.cle).getValue(id), CalendrierJuif.jour(java.time.LocalDate.parse(date), false).conditions, nusah = n.cle)
             .filterIsInstance<SiddurJour.Ligne.Bloc>().map { nu(it.bloc.texte) }
