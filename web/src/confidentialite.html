@@ -18,6 +18,11 @@
   estimée : « En bref » et « Les vols » sont à réécrire avant d'envoyer l'AAB
   (texte prêt : PUBLICATION_PLAY_STORE.md § 3.1).
 
+  14/11 (examen du 14/11, constat 3 ; TWEBCONF-05) : « Position approximative » dit la
+  relecture sans geste (ChoixLieu.rafraichir, rafraichirSiBesoin, reprendreEnFond), l'usage
+  de la position exacte si elle a été accordée pour le vol, et l'arrondi de la position
+  gardée (PositionSol.arrondie).
+
   Éditeur : MyHitbodedut Team ; contact : myhitbodedut26@gmail.com (02/11), le même que sur la fiche Play.
 -->
 <html lang="fr">
@@ -81,7 +86,7 @@
 
     <h2>Localisation</h2>
     <ul>
-      <li><strong>Position approximative</strong> : demandée seulement si vous choisissez « Ma position » au lieu d’une ville. Elle sert, sur l’appareil, à calculer les zmanim et la direction de Jérusalem. L’application ne l’envoie jamais. Elle est gardée dans les réglages (voir la sauvegarde ci-dessus).</li>
+      <li><strong>Position approximative</strong> : l’autorisation est demandée seulement si vous choisissez « Ma position » au lieu d’une ville. Tant que « Ma position » reste choisie, l’application relit la position quand vous ouvrez l’accueil (au plus toutes les six heures), les zmanim ou la boussole, et après un changement de fuseau horaire, pour que les horaires suivent l’endroit où vous êtes. Si vous avez aussi accordé la position exacte pour le GPS en vol, elle peut servir alors ; dans tous les cas, la position gardée est arrondie au centième de degré (moins d’un kilomètre). Elle sert, sur l’appareil, à calculer les zmanim et la direction de Jérusalem. L’application ne l’envoie jamais ; elle est gardée dans les réglages (voir la sauvegarde ci-dessus).</li>
       <li><strong>Position exacte</strong> : demandée seulement dans l’écran « Zmanim en vol », quand vous touchez « Position réelle (GPS) ». Un relevé GPS recale la route du vol sur l’appareil ; il est gardé avec les détails du vol. L’édition publiée sur Google Play ne l’envoie jamais.</li>
     </ul>
 
@@ -144,7 +149,7 @@
 
     <h2>Location</h2>
     <ul>
-      <li><strong>Approximate location</strong>: requested only if you choose “My location” instead of a city. It is used, on the device, to compute the zmanim and the direction of Jerusalem. The app never sends it. It is kept in the settings (see backup above).</li>
+      <li><strong>Approximate location</strong>: the permission is requested only if you choose “My location” instead of a city. As long as “My location” stays selected, the app reads the location again when you open the home screen (at most every six hours), the zmanim or the compass, and after a time-zone change, so that the times follow where you are. If you also granted precise location for in-flight GPS, it may then be used; either way, the position kept is rounded to a hundredth of a degree (less than a kilometre). It is used, on the device, to compute the zmanim and the direction of Jerusalem. The app never sends it; it is kept in the settings (see backup above).</li>
       <li><strong>Precise location</strong>: requested only on the “Zmanim in flight” screen, when you tap “Real position (GPS)”. A GPS reading adjusts the flight route on the device; it is kept with the flight details. The edition published on Google Play never sends it.</li>
     </ul>
 
@@ -207,7 +212,7 @@
 
     <h2>מיקום</h2>
     <ul>
-      <li><strong>מיקום משוער</strong>: מתבקש רק אם תבחרו „המיקום שלי” במקום עיר. הוא משמש, במכשיר, לחישוב הזמנים ולכיוון ירושלים. האפליקציה לעולם אינה שולחת אותו. הוא נשמר בהגדרות (ראו גיבוי למעלה).</li>
+      <li><strong>מיקום משוער</strong>: ההרשאה מתבקשת רק אם תבחרו „המיקום שלי” במקום עיר. כל עוד „המיקום שלי” נבחר, האפליקציה קוראת שוב את המיקום כשפותחים את מסך הבית (לכל היותר פעם בשש שעות), את הזמנים או את המצפן, ואחרי שינוי אזור זמן, כדי שהזמנים יתאימו למקום שבו אתם נמצאים. אם הענקתם גם מיקום מדויק עבור ה־GPS בטיסה, ייתכן שהוא ישמש אז; בכל מקרה, המיקום שנשמר מעוגל למאית המעלה (פחות מקילומטר). הוא משמש, במכשיר, לחישוב הזמנים ולכיוון ירושלים. האפליקציה לעולם אינה שולחת אותו; הוא נשמר בהגדרות (ראו גיבוי למעלה).</li>
       <li><strong>מיקום מדויק</strong>: מתבקש רק במסך „זמנים בטיסה”, כשתגעו ב„מיקום אמיתי (GPS)”. קריאת GPS מתקנת את מסלול הטיסה במכשיר; היא נשמרת עם פרטי הטיסה. המהדורה שמתפרסמת ב־Google Play אינה שולחת אותה לעולם.</li>
     </ul>
 

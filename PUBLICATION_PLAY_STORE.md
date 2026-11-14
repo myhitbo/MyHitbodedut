@@ -474,7 +474,7 @@ Play « Data safety ».*
 | Donnée | Réponse |
 | --- | --- |
 | Activité dans l'application → **Historique des recherches dans l'application** (le numéro de vol envoyé à adsbdb) | collectée, **non partagée**, **facultative** (interrupteur éteint par défaut, accord demandé), finalité **Fonctionnement de l'application**, traitement éphémère **non coché** (adsbdb est un tiers dont on ne maîtrise pas la conservation) |
-| Position, infos personnelles, applications installées, identifiants, diagnostics | **non déclarées** : rien de cela ne quitte le téléphone par l'application |
+| Position, infos personnelles, applications installées, identifiants, diagnostics | **non déclarées** : l'application n'en transmet rien à personne. Le lieu des zmanim et la liste des applications de la barrière ne sortent du téléphone que dans la sauvegarde Android de l'utilisateur, faite par le système vers son propre compte Google et décrite dans les règles de confidentialité (examen du 14/11, constat 6) |
 
 Questions générales : l'application collecte des données = **oui** ;
 chiffrement en transit = **oui** (HTTPS seulement) ; création de compte =
@@ -528,23 +528,27 @@ n'importe quelle heure par le bouton d'aperçu des réglages.
 
 ### 6.6 Services de premier plan — déclaration
 
-Requise pour toute app ciblant Android 14+ (vérifié). Deux services, trois
-types :
+Requise pour toute app ciblant Android 14+ (vérifié). Deux services, deux
+types (`specialUse` pour les deux, `mediaPlayback` pour la séance), donc deux
+déclarations : la console en demande une par **type**, pas par service, et le
+bloc `specialUse` porte à la fois la séance et la barrière (examen du 14/11,
+constat 1) :
 
 | Service | Type | Ce que dit la description (en anglais dans le manifeste et dans la console) | Vidéo |
 | --- | --- | --- | --- |
-| `SessionService` | `specialUse` | Compte à rebours d'une séance de prière personnelle (hitbodedout) lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Oui : lancer une séance, verrouiller l'écran, montrer la notification |
-| `SessionService` | `mediaPlayback` | Lecture du morceau choisi par l'utilisateur pendant sa séance, écran éteint. | Même vidéo |
-| `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour, et pendant toute séance qu'il a lancée, jusqu'à sa fin. | Oui : choisir une app, ouvrir l'app, voir l'écran, valider |
+| `SessionService` | `specialUse` | Compte à rebours d'une séance de prière personnelle (hitbodedout) lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Bloc `specialUse`, vidéo unique : la séance (lancer, verrouiller l'écran, montrer la notification), puis la barrière |
+| `SessionService` | `mediaPlayback` | Lecture du morceau ou de l'ambiance choisis par l'utilisateur pendant sa séance, écran éteint. Demandé par le code tant que la musique ou une ambiance est allumée, ajouté à `specialUse` ; refusé (relance au démarrage du téléphone, Android 15+), la séance reste sous `specialUse` seul (examen du 14/11). | Même vidéo |
+| `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour, et pendant toute séance qu'il a lancée, jusqu'à sa fin. | Même bloc `specialUse`, même vidéo, seconde séquence : choisir une app, l'ouvrir, voir l'écran, valider |
 
 Les textes à saisir sont en anglais et reprennent mot pour mot les
 `PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE` des manifestes : la cohérence
-entre manifeste et déclaration compte. Pour chaque ligne, la console demande
+entre manifeste et déclaration compte. Pour chaque type, la console demande
 aussi le cas d'usage (« Other » pour `specialUse`, « Media Playback » pour la
 musique), l'effet pour l'utilisateur si la tâche est différée ou interrompue,
 et le lien d'une vidéo. *Vérifié, aide Play « Understanding foreground service
-requirements ».* Tout est prêt à coller dans `play/CONSOLE.md` § 3.9. Vidéos :
-YouTube non répertoriée, moins de 2 minutes. *Format supposé.*
+requirements » (« For each foreground service type you declare »).* Tout est
+prêt à coller dans `play/CONSOLE.md` § 3.9. Vidéo : YouTube non répertoriée,
+chaque séquence en moins de 2 minutes. *Format supposé.*
 
 ### 6.7 Autorisations sensibles — argumentaire
 
@@ -552,8 +556,8 @@ YouTube non répertoriée, moins de 2 minutes. *Format supposé.*
 | --- | --- | --- |
 | `SYSTEM_ALERT_WINDOW` | pas de formulaire, examinée en revue | Écran de garde volontaire, configuré par l'utilisateur |
 | `PACKAGE_USAGE_STATS` | pas de formulaire, examinée en revue (politique « stalkerware ») | Ne surveille que **l'utilisateur lui-même**, à sa demande ; rien n'est transmis ; icône et notification permanentes, jamais cachée |
-| `ACCESS_COARSE_LOCATION` | pas de déclaration (premier plan seulement) | Zmanim et boussole : demandée seule au toucher de « Ma position » ; ville de la liste sans autorisation. **Fait le 31/10** (`ChoixLieu`) — vérifié par `PositionApprocheeTest` |
-| `ACCESS_FINE_LOCATION` | **déclaration Play Console exigée à compter du 27/01/2027** (règle annoncée en avril 2026, précisée le 29/10/2026 ; formulaire ouvert en novembre 2026) : justifier pourquoi ni la position approximative ni le bouton de position d'Android ne suffisent | **Seulement** le GPS des zmanim en vol (`VolActivity`), au toucher de « Position réelle (GPS) » : sans réseau en avion, seul le GPS donne une position, et sous Android 8 à 11 ce fournisseur exige la position exacte. Un relevé par toucher, jamais envoyé. Ni les zmanim au sol ni la boussole ne la demandent depuis le 31/10. Texte de la déclaration : `play/CONSOLE.md` § 3.10 |
+| `ACCESS_COARSE_LOCATION` | pas de déclaration (premier plan, sauf la dernière position connue relue au changement de fuseau, effective seulement sous Android 8 et 9, faute d'autorisation d'arrière-plan) | Zmanim et boussole : demandée seule au toucher de « Ma position » ; ville de la liste sans autorisation ; tant que « Ma position » reste choisie, relue sans geste à l'ouverture de l'accueil (au plus toutes les six heures), des zmanim, de la boussole, et après un changement de fuseau. Position gardée arrondie au centième de degré, moins d'1 km (examen du 14/11). **Fait le 31/10** (`ChoixLieu`) — vérifié par `PositionApprocheeTest` |
+| `ACCESS_FINE_LOCATION` | **déclaration Play Console exigée à compter du 27/01/2027** (règle annoncée en avril 2026, précisée le 29/10/2026 ; formulaire ouvert en novembre 2026) : justifier pourquoi ni la position approximative ni le bouton de position d'Android ne suffisent | **Seulement** le GPS des zmanim en vol (`VolActivity`), au toucher de « Position réelle (GPS) » : sans réseau en avion, seul le GPS donne une position, et sous Android 8 à 11 ce fournisseur exige la position exacte. Sous Android 12 et plus, l'approximative est floutée et ses relevés ralentis : trop pour un avion. Un relevé par toucher, jamais envoyé. Ni les zmanim au sol ni la boussole ne la demandent depuis le 31/10 ; une fois accordée, « Ma position » peut s'en servir, mais n'en garde qu'une position arrondie à moins d'1 km (examen du 14/11). Texte de la déclaration : `play/CONSOLE.md` § 3.10 |
 | `ACCESS_NOTIFICATION_POLICY` | aucune | « Ne pas déranger » pendant la séance, accordé dans Android |
 | `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK` | aucune | Rappels, reprise après redémarrage, séance minutée |
 | `QUERY_ALL_PACKAGES` | **non demandée** — `<queries>` limité aux apps lançables | Évite le formulaire le plus restrictif — vérifié |
@@ -683,7 +687,7 @@ décrit, tel que l'application l'affiche :
    de nouveau ;
 4. l'écran de garde s'affiche à toute heure avec le bandeau **PREVIEW, NO
    EFFECT** ;
-5. pour la voir agir : carte **Required permissions** → **Grant** (deux
+5. pour la voir agir : carte **Permissions** → **Grant** (deux
    accès) ; carte **I am with Hashem** → interrupteur, **Choose apps**,
    **Mode hours** autour de l'heure courante ; puis ouvrir l'application
    choisie. Chabbat et Yom Tov : la barrière se tait par défaut (carte

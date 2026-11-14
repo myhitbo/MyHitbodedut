@@ -40,7 +40,7 @@ l'AAB : voir « Si le relais arrive » à la fin.
 | Icône 512 × 512 | `play/icone-512.png` |
 | Image de présentation 1024 × 500 | `play/fiche/<langue>/images/featureGraphic.png` |
 | Captures (8 par langue) | prises sur la construction Play, puis composées avec les légendes de `play/visuels/legendes.json` (dossiers `en-US` et `iw-IL`) |
-| Deux vidéos YouTube « non répertoriées » | à tourner : voir 3.9 |
+| Une vidéo YouTube « non répertoriée », en deux séquences | à tourner : voir 3.9 |
 | Adresse de contact | `myhitbodedut26@gmail.com` |
 | 12 testeurs (adresses Gmail) | pour le test fermé de 14 jours (§ 4, § 9) |
 
@@ -118,7 +118,7 @@ To see the morning gate at any time of day:
 4. The gate appears over the home screen with the badge [PREVIEW, NO EFFECT]. [Close the preview] dismisses it.
 
 To see it act for real:
-1. [Settings], card [Required permissions]: tap [Grant] for [Display over other apps] and for [Usage access]. Each shows an in-app disclosure first.
+1. [Settings], card [Permissions]: tap [Grant] for [Display over other apps] and for [Usage access]. Each shows an in-app disclosure first.
 2. Card [I am with Hashem]: turn the switch on, tap [Choose apps] and pick one app, and set [Mode hours] around the current time.
 3. Open the app you picked: the gate appears in front of it.
 On Saturdays and Jewish festivals the gate is silent by default (card [Rhythm], [Shabbat and Yom Tov]).
@@ -126,7 +126,7 @@ On Saturdays and Jewish festivals the gate is silent by default (card [Rhythm], 
 The gate is a self-discipline tool that users set up on their own phone, for themselves, and can switch off at any time (Settings, [I am with Hashem] switch). It monitors no one else, has a permanent notification and never hides. No usage data leaves the device.
 ```
 
-Le même texte sert de description aux deux vidéos (3.9).
+Le même texte sert de description à la vidéo (3.9).
 
 ### 3.3 Ads
 
@@ -172,11 +172,14 @@ Page *Data types* : cocher **une seule** ligne.
 
 - *App activity* → **In-app search history**
 
-Ne **pas** cocher : *Location* (la position ne quitte pas le téléphone),
-*Personal info* (le prénom et le journal restent sur le téléphone ; l'e-mail
-de dédicace est écrit et envoyé par l'utilisateur dans sa propre messagerie,
-l'application ne transmet rien), *Installed apps* (la liste des applications
-de la barrière reste sur le téléphone), *Device or other IDs*, *Diagnostics*.
+Ne **pas** cocher : *Location* et *Installed apps* (l'application ne les
+transmet à personne ; le lieu des zmanim et la liste des applications de la
+barrière ne sortent du téléphone que dans la sauvegarde Android de
+l'utilisateur, faite par le système vers son propre compte Google et décrite
+dans les règles de confidentialité), *Personal info* (le prénom et le journal
+restent sur le téléphone ; l'e-mail de dédicace est écrit et envoyé par
+l'utilisateur dans sa propre messagerie, l'application ne transmet rien),
+*Device or other IDs*, *Diagnostics*.
 
 Page *Data usage and handling*, pour *In-app search history* :
 
@@ -221,24 +224,33 @@ réponses défendables :
 
 ### 3.9 Foreground service permissions
 
-Trois lignes, à remplir une par une (§ 6.6). Les descriptions reprennent mot
-pour mot celles du manifeste : ne pas les reformuler.
+La console demande une déclaration par **type** de service, pas par service
+(aide Play « Understanding foreground service and full-screen intent
+requirements » : « For each foreground service type you declare… »). Le
+manifeste fusionné de la construction Play en déclare deux : `specialUse`
+(`SessionService` et `GateService`) et `mediaPlayback` (`SessionService`).
+La console présente donc **deux blocs**, et un seul « Special use », qui porte
+à la fois le minuteur et la barrière (examen du 14/11, constat 1 ; § 6.6). Les
+descriptions reprennent mot pour mot les sous-types des manifestes : ne pas
+les reformuler.
 
-**A. Special use — le minuteur (`SessionService`)**
+**A. Special use — le minuteur (`SessionService`) et la barrière (`GateService`)**
 
 - *Use case* : **Other**, puis :
 
 ```
-Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down.
+Two user-started features use this type. (1) Session timer: Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down. (2) Morning gate: Interposes a confirmation screen over user-selected apps during a user-defined morning window, until the user confirms their daily practice, and during any user-started session until it ends.
 ```
 
 - *User impact if the task is deferred or interrupted* :
 
 ```
-The user starts a timed prayer session (5 to 90 minutes) and puts the phone down, screen off. If the task is deferred, the countdown the user just started does not begin. If it is interrupted, the countdown stops silently: the user is never told the time is over and the time spent is not added to their journal.
+(1) The user starts a prayer session, timed (1 minute to 4 hours) or open-ended, and puts the phone down, screen off. If the task is deferred, the countdown the user just started does not begin. If it is interrupted, the countdown stops silently: the user is never told the time is over and the time spent is not added to their journal. (2) The user turns this gate on for themselves and picks the apps it applies to. If the task is deferred or interrupted, the screen does not appear when one of these apps is opened: the feature the user switched on silently stops working. While it runs it shows a permanent notification, and the user can switch it off at any time in Settings.
 ```
 
-- *Video* : vidéo 1.
+- *Video* : la vidéo ci-dessous, qui montre les deux usages l'un après
+  l'autre. Si le champ accepte plusieurs liens, donner aussi les deux
+  séquences en vidéos séparées.
 
 **B. Media playback — la musique de la séance (`SessionService`)**
 
@@ -246,7 +258,7 @@ The user starts a timed prayer session (5 to 90 minutes) and puts the phone down
 - *Description* :
 
 ```
-Plays the track the user chose for their session (a niggun, a wordless melody), with the screen off, until the session ends. Playback starts only when the user starts a session with music turned on.
+Plays the track the user chose for their session (a niggun, a wordless melody), or the ambient sound chosen to go under it (rain, sea, forest), with the screen off, until the session ends. This type is requested only while the user's session has music or an ambient sound turned on; without them, the session runs under the special use type alone.
 ```
 
 - *User impact* :
@@ -255,26 +267,19 @@ Plays the track the user chose for their session (a niggun, a wordless melody), 
 If the task is deferred or interrupted, the music the user started does not play, or stops, as soon as the screen turns off.
 ```
 
-- *Video* : vidéo 1.
+- *Video* : la même vidéo (sa première séquence montre l'utilisateur qui
+  lance la séance avec un morceau, comme Google le demande pour ce type :
+  « Show a user starting video or audio playback »).
 
-**C. Special use — la barrière (`GateService`)**
+Ce que fait le code (examen du 14/11, constat 2) : `SessionService` ajoute ce
+type à l'usage spécial tant que la musique ou une ambiance est allumée, et le
+retire quand les deux sont coupées. Si Android le refuse (relance au
+démarrage du téléphone, interdite à ce type depuis Android 15), la séance
+continue sous l'usage spécial seul.
 
-- *Use case* : **Other**, puis :
-
-```
-Interposes a confirmation screen over user-selected apps during a user-defined morning window, until the user confirms their daily practice, and during any user-started session until it ends.
-```
-
-- *User impact* :
-
-```
-The user turns this gate on for themselves and picks the apps it applies to. If the task is deferred or interrupted, the screen does not appear when one of these apps is opened: the feature the user switched on silently stops working. While it runs it shows a permanent notification, and the user can switch it off at any time in Settings.
-```
-
-- *Video* : vidéo 2.
-
-**Les deux vidéos** (YouTube, *Unlisted*, moins de deux minutes, téléphone en
-anglais, construction Play) :
+**La vidéo** (YouTube, *Unlisted*, téléphone en anglais, construction Play,
+aussi courte que possible : chaque séquence en moins de deux minutes),
+deux séquences à la suite :
 
 1. *Session* — onglet [Today] ; choisir une durée et un morceau ; lancer la
    hitbodedout ; éteindre l'écran ; le rallumer : la notification montre le
@@ -293,17 +298,28 @@ Formulaire ouvert par Google en novembre 2026, **obligatoire à compter du
 - *Explain why ACCESS_COARSE_LOCATION or LocationButton is not sufficient* :
 
 ```
-One feature only: “Zmanim in flight”. The user enters a flight and the app computes the prayer times along the route. When the user taps “Real position (GPS)”, the app takes a single GPS fix to correct the aircraft’s position on that route. In flight there is no network, so only the satellite (GPS) provider can give a position, and on Android 8 to 11, which the app supports, that provider is available only with ACCESS_FINE_LOCATION. The fix is taken once per tap, in the foreground, processed on the device and never sent anywhere. Everywhere else (prayer times on the ground, compass to Jerusalem) the app requests ACCESS_COARSE_LOCATION only. The app targets API 36; when it targets API 37, this one-time request will move to the Android location button.
+Only one feature requests precise location: “Zmanim in flight”. The user enters a flight and the app computes the prayer times along the route. When the user taps “Real position (GPS)”, the app takes a single GPS fix to correct the aircraft’s position on that route. In flight there is no network, so only the satellite (GPS) provider can give a position. On Android 8 to 11, which the app supports, that provider is available only with ACCESS_FINE_LOCATION. On Android 12 and later, approximate location is blurred to about 3 square kilometres and its updates are throttled: at airliner speed (about 15 km a minute) it can leave the aircraft many kilometres from where the app would place it. The fix is taken once per tap, with the flight screen open, processed on the device and never sent anywhere. Prayer times on the ground and the compass to Jerusalem request ACCESS_COARSE_LOCATION only. If precise location was already granted for the flight feature, they may receive a precise position too (while the app is open, or, on Android 8 and 9 only, from the last known position after a time-zone change); they round it to a hundredth of a degree (under 1 km) before using or storing it. The app targets API 36; when it targets API 37, this one-time request will move to the Android location button.
 ```
+
+Ce que le texte affirme, et où le code le tient (examen du 14/11, constat 3) :
+seule `VolActivity` demande la position exacte (`PositionApprocheeTest`) ; au
+sol, `ChoixLieu` ne demande que l'approximative, n'attend pas mieux que 5 km
+et n'enregistre qu'une position arrondie (`PositionSol.arrondie`). La
+proposition de l'examen de ne demander que l'approximative au GPS en vol sous
+Android 12 et plus n'est pas appliquée : Android y ralentit les relevés
+approximatifs (Google parle de « throttled rate » ; des mesures publiées
+donnent un relevé toutes les dix minutes), soit plus de 100 km de retard pour
+un avion. À éprouver sur un téléphone avant de changer d'avis.
 
 ### 3.11 Les deux accès spéciaux de la barrière
 
 `SYSTEM_ALERT_WINDOW` et `PACKAGE_USAGE_STATS` n'ont pas de formulaire : ils
 sont examinés à la revue. Ce qui les défend est déjà en place, à ne pas
 affaiblir : la divulgation dans l'application avant chaque accès, le paragraphe
-« THE MORNING GATE » de la fiche, la note de 3.2 et la vidéo 2. L'argument, le
-même partout : une barrière que l'utilisateur installe sur son propre
-téléphone, contre ses propres habitudes, et qu'il coupe quand il veut.
+« THE MORNING GATE » de la fiche, la note de 3.2 et la seconde séquence de la
+vidéo (3.9). L'argument, le même partout : une barrière que l'utilisateur
+installe sur son propre téléphone, contre ses propres habitudes, et qu'il
+coupe quand il veut.
 
 ---
 

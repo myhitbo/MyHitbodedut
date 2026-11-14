@@ -223,8 +223,18 @@ class SiddurLectureActivity : AppCompatActivity() {
     /** Les langues de lecture (LanguesTexte, 04/11). */
     private var langues = LanguesTexte.Mode.HE
 
+    /**
+     * Le livre ouvert, gardé tant que l'écran vit (examen du 14/11, constat 11) : la mémoire
+     * vidée par Android (MyHitbodedutApp.onTrimMemory) faisait relire et réanalyser tout le
+     * livre sur le fil principal au réglage suivant, au lendemain ou au renvoi touché. Ses
+     * paragraphes sont de toute façon retenus par la liste affichée.
+     */
+    private var livreOuvert: Siddur? = null
+
     // Un livre seul (04/11) : ouvrir la Méguila ne lit plus les 16 Mo de tous les livres.
-    private fun recueil(): Siddur = if (livre) Data.livre(this, id) ?: Siddur(emptyList(), emptyList()) else Data.siddur(this)
+    private fun recueil(): Siddur =
+        if (livre) livreOuvert ?: (Data.livre(this, id) ?: Siddur(emptyList(), emptyList())).also { if (it.textes.isNotEmpty()) livreOuvert = it }
+        else Data.siddur(this)
 
     /** Le livre se charge encore : rien à dessiner, ni à relire en position. */
     private var chargement = false

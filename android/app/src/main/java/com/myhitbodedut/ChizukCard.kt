@@ -258,4 +258,37 @@ object Data {
     /** Le siddour du nusah choisi : environ 550 ko par nusah, lus une fois par processus. */
     fun siddur(context: Context, nusah: Nusah = Store.siddurNusah(context)): Siddur =
         siddurs.getOrPut(nusah) { SiddurLoader.load(context.applicationContext, nusah) }
+
+    /** Le fil où l'accueil lit ses fichiers : un seul, les demandes passent l'une après l'autre. */
+    private val fil by lazy { java.util.concurrent.Executors.newSingleThreadExecutor() }
+
+    /**
+     * Les fichiers de l'accueil ont été lus une fois (ou leur lecture a échoué : l'accueil
+     * réessaie alors sur place, comme avant). Tant que c'est faux, l'accueil ne les demande pas.
+     */
+    @Volatile
+    var pret = false
+        private set
+
+    /**
+     * Lit hors du fil principal ce que l'accueil demande à chaque ouverture : le siddour du
+     * noussa'h (672 à 777 ko), la bibliothèque (256 ko), le Tikoun (131 ko). Analysés sur le fil
+     * principal, ils retardaient la première fenêtre, présentation comprise (examen du 14/11,
+     * constat 8). [apres] passe sur le fil principal une fois la lecture faite ; rien n'est
+     * rappelé quand tout est déjà prêt.
+     */
+    fun prechauffer(context: Context, apres: (() -> Unit)? = null) {
+        if (pret) return
+        val app = context.applicationContext
+        fil.execute {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND)
+            runCatching {
+                siddur(app)
+                library(app)
+                tikkun(app)
+            }
+            pret = true
+            apres?.let { android.os.Handler(android.os.Looper.getMainLooper()).post(it) }
+        }
+    }
 }

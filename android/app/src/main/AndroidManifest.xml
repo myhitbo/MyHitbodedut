@@ -361,7 +361,9 @@
             android:label="@string/music_title" />
 
         <!-- La séance décompte le temps et peut jouer un morceau : les deux
-             types sont déclarés, comme Android l'exige depuis la version 14. -->
+             types sont déclarés, comme Android l'exige depuis la version 14.
+             Le second n'est demandé que tant que la musique ou une ambiance
+             joue (SessionService.startForegroundNow, examen du 14/11). -->
         <service
             android:name=".SessionService"
             android:exported="false"

@@ -25,6 +25,12 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     /** Le texte de relance a déjà été tiré pour la rupture en cours. */
     private var relanceTiree = false
 
+    /**
+     * La présentation vient d'être lancée depuis onCreate : le onResume qui suit ne dessine
+     * pas l'accueil qu'elle va couvrir, son retour repasse par onResume (examen du 14/11, constat 8).
+     */
+    private var presentationLancee = false
+
     /** La position du téléphone reprise au retour sur l'accueil, après un voyage (02/11). */
     private val choixLieu = ChoixLieu(this) {
         refresh()
@@ -131,6 +137,15 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         // close ou relancée avant d'afficher quoi que ce soit.
         SessionService.reconcilier(this)
         applyServiceState()
+        // Les fichiers de l'accueil se lisent hors du fil principal ; lus, l'accueil se redessine,
+        // s'il est encore à l'écran (sinon le prochain onResume le fait).
+        Data.prechauffer(this) {
+            if (!isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)) refresh()
+        }
+        if (presentationLancee) {
+            presentationLancee = false
+            return
+        }
         refresh()
         renderPaliers()
         // Chaque retour sur l'accueil : le hassid au centre, les anneaux se
@@ -157,6 +172,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
      */
     private fun showOnboardingOnce() {
         if (Store.hasOnboarded(this)) return
+        presentationLancee = true
         startActivity(Intent(this, OnboardingActivity::class.java))
     }
 
@@ -352,6 +368,21 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     private fun refresh() {
         renderToday()
         renderWeek()
+        // Ce qui suit lit le siddour, la bibliothèque et le Tikoun : seulement une fois lus hors
+        // du fil principal (Data.prechauffer, examen du 14/11, constat 8), qui rappelle refresh().
+        if (Data.pret) renderDonnees()
+        renderGauge()
+        renderSwitches()
+        renderMusic()
+        renderRelance()
+        renderTehilim()
+        renderReminders()
+        renderSettingsEntry()
+        renderStartCard()
+    }
+
+    /** Les cartes de l'accueil qui lisent les fichiers de données. */
+    private fun renderDonnees() {
         // Reprendre la lecture et les favoris (14/10), en tête de la Bibliothèque.
         findViewById<LinearLayout>(R.id.reprise_favoris).apply {
             removeAllViews()
@@ -368,15 +399,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             // Les effets (19/10) : à la première apparition de l'accueil, les cartes entrent en cascade.
             if (!momentAnime) { momentAnime = true; Effets.enfants(this, depart = 450) }
         }
-        renderGauge()
-        renderSwitches()
-        renderMusic()
-        renderRelance()
         renderTikkun()
-        renderTehilim()
-        renderReminders()
-        renderSettingsEntry()
-        renderStartCard()
     }
 
     /**
