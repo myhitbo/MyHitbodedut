@@ -3502,7 +3502,7 @@ function deuxHeures(plan, t) {
 function dureeEnMots(minutes) {
   if (minutes < 60) return minutes === 1 ? tr.t('vol_duree_une_minute') : tr.t('vol_duree_minutes', String(minutes));
   const h = Math.floor(minutes / 60), m = minutes % 60;
-  return m ? tr.t('vol_duree_heures_minutes', String(h), String(m)) : tr.t('vol_duree_heures', String(h));
+  return m ? tr.t('vol_duree_heures_minutes', String(h), String(m)) : tr.p('vol_duree_heures', h, String(h));
 }
 
 /** « mer. 28 19:20 TLV » : l'heure locale d'un aéroport (celle du billet). */
@@ -3539,6 +3539,8 @@ function carteRapideVol(v, pret, calculer) {
     if (p.numero) v.numero = p.numero;
     if (p.depart) v.depart = p.depart;
     if (p.arrivee) v.arrivee = p.arrivee;
+    // Une date sans heure : l'ancien vol n'est pas repris, l'heure reste à donner (FVOL-03, SaisieVol.dateSansHeure).
+    if (Vol.dateSansHeure(p)) { v.decollage = ''; v.atterrissage = ''; }
     const jour = p.date ?? v.decollage?.slice(0, 10);
     if (jour && p.heureDepart) v.decollage = `${jour}T${p.heureDepart}`;
     let estimee = false;
@@ -3563,13 +3565,15 @@ function carteRapideVol(v, pret, calculer) {
         estimee = true;
       }
     }
+    v.arriveeEstimee = estimee;
     const compris = [p.numero ?? p.compagnie, v.depart || v.arrivee ? `${v.depart ?? '?'} → ${v.arrivee ?? '?'}` : null,
       v.decollage ? v.decollage.replace('T', ' · ') : p.date].filter(Boolean).join(' · ');
     const manque = [!v.depart && tr.t('vol_depart'), !v.arrivee && tr.t('vol_arrivee'), !v.decollage && tr.t('vol_rapide_heure')].filter(Boolean);
     rapideVol = [tr.t('vol_rapide_compris', compris), estimee ? tr.t('vol_rapide_estimee') : null,
       manque.length ? tr.t('vol_rapide_manque', manque.join(', ')) : null].filter(Boolean).join('\n');
     if (v.numero && (!v.depart || !v.arrivee)) { rendre(); return loupeVol(v); }
-    if (v.depart && v.arrivee && v.decollage && v.atterrissage) return calculer();
+    // Ni une arrivée estimée ni un jour repris de l'ancien vol ne s'enregistrent d'eux-mêmes (FVOL-03).
+    if (Vol.calculAutomatique(p, estimee) && v.depart && v.arrivee && v.decollage && v.atterrissage) return calculer();
     rendre();
   };
   return h('div', { class: 'carte carte-texte carte-rapide' },
@@ -3696,12 +3700,14 @@ function signatureVol(c = calculVol, maintenant = new Date()) {
   if (!c) return null;
   const p = Vol.priere(c, maintenant);
   const place = Vol.enVol(c).findIndex((e) => maintenant < e.instant);
-  return `${p?.[0]}|${p?.[1] ? +p[1] : ''}|${place}`;
+  return `${p?.[0]}|${p?.[1] ? +p[1] : ''}|${p?.[2] ? +p[2] : ''}|${place}`;
 }
 let signatureVolAffichee = null;
 
 function texteCompteVol(c = calculVol, maintenant = new Date()) {
-  const limite = c ? Vol.priere(c, maintenant)?.[1] : null;
+  const p = c ? Vol.priere(c, maintenant) : null;
+  // Pas de compte à rebours tant que la prière n'est pas ouverte (FVOL-05).
+  const limite = p && !p[2] ? p[1] : null;
   return limite ? tr.t('vol_dans', dureeEnMots(Math.max(0, Math.floor((limite - maintenant) / 60000)))) : null;
 }
 
@@ -3713,6 +3719,9 @@ function resultatsVol(c) {
   const enVol = Vol.enVol(c);
   let priere;
   if (!p) priere = [h('p', { class: 'message' }, tr.t('vol_hors_fenetre'))];
+  // Entre deux prières (13/11, FVOL-05 : de la fin de Cha'harit à min'ha guedola), aucune n'est
+  // donnée pour ouverte : la prochaine et l'heure où elle commence.
+  else if (p[2]) priere = [h('p', { class: 'vol-compte' }, tr.t('vol_prochaine', tr.t(NOMS[p[0]]))), h('p', {}, tr.t('vol_des', deuxHeures(c.plan, p[2])))];
   else {
     const [nom, limite] = p;
     const minutes = limite ? Math.max(0, Math.floor((limite - maintenant) / 60000)) : 0;
@@ -3726,7 +3735,7 @@ function resultatsVol(c) {
   const date = (iso) => new Intl.DateTimeFormat(tr.langue, { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(`${iso}T12:00:00Z`));
   return [
     // La carte prend le ciel de son heure (04/11) : aube, après-midi, nuit.
-    h('div', { class: `carte carte-texte carte-vol carte-heros ciel-${p ? p[0] : 'hors'}` }, h('p', { class: 'indice' }, tr.t('vol_priere_titre')), ...priere),
+    h('div', { class: `carte carte-texte carte-vol carte-heros ciel-${p && !p[2] ? p[0] : 'hors'}` }, h('p', { class: 'indice' }, tr.t('vol_priere_titre')), ...priere),
     h('div', { class: 'carte carte-texte carte-vol' },
       // La route prévue tient en une étiquette ; le détail du calcul se déplie.
       c.fiabilite === 'route_prevue' ? h('p', { class: 'vol-etiquette' }, tr.t('vol_fiabilite_court'))
@@ -3855,7 +3864,7 @@ function ecranVol() {
     h('span', { class: 'corps' }, h('div', { class: 'etat' }, etiquette), h('div', { class: 'nom' }, valeur)), h('span', { class: 'chevron', 'aria-hidden': 'true' }));
   const heure = (cle, etiquette) => h('label', { class: 'ligne' },
     h('span', { class: 'corps' }, h('div', { class: 'etat' }, etiquette),
-      h('input', { type: 'datetime-local', class: 'champ-recherche champ-vol', value: v[cle] || null, onchange: (e) => { v[cle] = e.target.value; } })));
+      h('input', { type: 'datetime-local', class: 'champ-recherche champ-vol', value: v[cle] || null, onchange: (e) => { v[cle] = e.target.value; if (cle === 'atterrissage') v.arriveeEstimee = false; } })));
   const champNumero = h('input', { type: 'text', class: 'champ-recherche champ-vol', maxlength: 12, autocapitalize: 'characters', value: v.numero || null, onchange: (e) => { v.numero = e.target.value.trim(); } });
   // La loupe au bout du champ cherche la route du numéro (adsbdb) ; une ligne dit ce qui part.
   const loupe = h('button', { class: 'loupe-vol', type: 'button', disabled: routeVol.attente, 'aria-label': tr.t('vol_route_bouton'), title: tr.t('vol_route_bouton'),
@@ -3879,7 +3888,8 @@ function ecranVol() {
     h('div', { class: 'vol-resume-tete' }, h('span', { class: 'vol-resume-titre' }, libelleVol(garde)),
       h('button', { class: 'lien-bouton', onclick: () => { modifierVol = true; rendre(); } }, tr.t('vol_modifier'))),
     // Chaque heure isolée, la flèche dans le sens de lecture (← en hébreu).
-    h('p', { class: 'vol-resume-heures' }, `\u2068${heureAeroport(planGarde.depart, planGarde.decollage)}\u2069 ${tr.rtl ? '←' : '→'} \u2068${heureAeroport(planGarde.arrivee, planGarde.atterrissage)}\u2069`)) : null;
+    h('p', { class: 'vol-resume-heures' }, `\u2068${heureAeroport(planGarde.depart, planGarde.decollage)}\u2069 ${tr.rtl ? '←' : '→'} \u2068${heureAeroport(planGarde.arrivee, planGarde.atterrissage)}\u2069`),
+    garde.arriveeEstimee ? h('p', { class: 'indice' }, tr.t('vol_resume_estimee')) : null) : null;
   formulaireVolOuvert = !resume;
   const puce = h('span', { class: 'puce-bandeau' }, garde ? libelleVol(garde) : tr.t('vol_carte_sous'));
   return h('div', { class: 'ecran avec-bandeau' }, bandeau(tr.t('vol_title'), { puce, dessin: 'scene_airport' }),

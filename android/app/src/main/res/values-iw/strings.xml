@@ -1293,6 +1293,7 @@
     <string name="widget_paracha">פרשת %s</string>
     <string name="widget_jusqua">עד %s</string>
     <string name="widget_reste">נותרו %s</string>
+    <string name="widget_des">מ־%s</string>
     <string name="widget_zmanim_petit_label">זמנים · קטן</string>
     <string name="widget_zmanim_petit_description">התפילה של השעה ועד מתי.</string>
     <string name="widget_zmanim_grand_label">זמנים · כל היום</string>
@@ -1303,7 +1304,12 @@
     <string name="vol_carte_sous">הזינו טיסה: הזמנים מחושבים לאורך המסלול המתוכנן, במכשיר.</string>
     <string name="vol_carte_vol">%1$s · %2$s → %3$s</string>
     <string name="vol_numero">מספר טיסה (רשות)</string>
-    <string name="vol_duree_heures">%1$s שעות</string>
+    <plurals name="vol_duree_heures">
+        <item quantity="one">שעה אחת</item>
+        <item quantity="two">שעתיים</item>
+        <item quantity="many">%1$s שעות</item>
+        <item quantity="other">%1$s שעות</item>
+    </plurals>
     <string name="vol_duree_heures_minutes">%1$s שע׳ ו־%2$s דק׳</string>
     <string name="vol_duree_une_minute">דקה אחת</string>
     <string name="vol_duree_minutes">%1$s דקות</string>
@@ -1346,7 +1352,9 @@
     <string name="vol_priere_titre">התפילה כעת</string>
     <string name="vol_jusqua">עד %1$s</string>
     <string name="vol_sans_limite">עד עלות השחר, ללא שעה מוצגת</string>
-    <string name="vol_dans">עד %1$s</string>
+    <string name="vol_dans">עוד %1$s</string>
+    <string name="vol_prochaine">התפילה הבאה: %1$s</string>
+    <string name="vol_des">החל מ־%1$s</string>
     <string name="vol_hors_fenetre">החישוב מכסה את הטיסה ואת 6 השעות שלפניה ואחריה.</string>
     <string name="vol_en_vol_titre">במהלך הטיסה</string>
     <string name="vol_aucun_zman">אין זמנים במהלך טיסה זו.</string>
@@ -1408,7 +1416,7 @@
     <string name="vol_rappels_sans_permission">ההתראות של האפליקציה כבויות: התזכורות לא יוצגו.</string>
     <string name="vol_rappels_note">לפי שעות הכרטיס: המראה מאוחרת אינה מזיזה את התזכורות. אנדרואיד עשוי לאחר אותן בכמה דקות.</string>
     <string name="vol_rappel_derekh_titre">תפילת הדרך</string>
-    <string name="vol_rappel_derekh_texte">חמש דקות אחרי ההמראה המתוכננת: הזמן לומר תפילת הדרך.</string>
+    <string name="vol_rappel_derekh_texte">ההמראה המתוכננת הייתה לפני חמש דקות. תפילת הדרך, אם עדיין לא אמרתם אותה לנסיעה זו.</string>
     <string name="vol_rappel_derekh_priere">התפילה של עכשיו: %1$s, עד %2$s.</string>
     <string name="vol_rappel_priere_titre">%1$s במטוס</string>
     <string name="vol_rappel_priere_texte">זמן %1$s מתחיל מתחת למטוס. עד %2$s.</string>
@@ -1497,6 +1505,7 @@
     <string name="vol_rapide_heure">שעת ההמראה</string>
     <string name="vol_rapide_compris">הובן: %1$s</string>
     <string name="vol_rapide_estimee">הנחיתה הוערכה לפי המרחק: תקנו אותה לפי השעה שבכרטיס.</string>
+    <string name="vol_resume_estimee">הנחיתה הוערכה לפי המרחק: לחצו על ״עריכה״ כדי להזין את השעה שבכרטיס.</string>
     <string name="vol_rapide_estimee_court">הערכה לפי המרחק: יש לבדוק בכרטיס.</string>
     <string name="vol_rapide_manque">נותר למלא: %1$s.</string>
     <string name="vol_rapide_lecture">קורא את הכרטיס…</string>

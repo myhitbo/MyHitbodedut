@@ -123,6 +123,7 @@ object Store {
     private const val KEY_VOL_RELEVE_SOURCE = "vol_releve_source"
     private const val KEY_VOL_INDICATIF = "vol_indicatif"
     private const val KEY_VOL_RAPPELS = "vol_rappels"
+    private const val KEY_VOL_ARRIVEE_ESTIMEE = "vol_arrivee_estimee"
     private const val KEY_VOL_RAPPELS_ACTIFS = "vol_rappels_actifs"
     private const val KEY_VOL_RAPPEL_VU = "vol_rappel_vu"
     private const val KEY_SUIVI_DIRECT = "vol_suivi_direct"
@@ -576,7 +577,7 @@ object Store {
         val e = prefs(context).edit()
         val releve = listOf(KEY_VOL_RELEVE_LAT, KEY_VOL_RELEVE_LON, KEY_VOL_RELEVE_T, KEY_VOL_RELEVE_SOURCE)
         if (plan == null) {
-            (listOf(KEY_VOL_NUMERO, KEY_VOL_DEPART, KEY_VOL_ARRIVEE, KEY_VOL_DECOLLAGE, KEY_VOL_ATTERRISSAGE, KEY_VOL_RAPPELS) + releve).forEach { e.remove(it) }
+            (listOf(KEY_VOL_NUMERO, KEY_VOL_DEPART, KEY_VOL_ARRIVEE, KEY_VOL_DECOLLAGE, KEY_VOL_ATTERRISSAGE, KEY_VOL_RAPPELS, KEY_VOL_ARRIVEE_ESTIMEE) + releve).forEach { e.remove(it) }
         } else {
             e.putString(KEY_VOL_NUMERO, plan.numero)
                 .putString(KEY_VOL_DEPART, plan.depart.iata)
@@ -590,6 +591,13 @@ object Store {
                 .putLong(KEY_VOL_RELEVE_T, r.instant.toEpochMilli()).putString(KEY_VOL_RELEVE_SOURCE, plan.sourceReleve.name)
         }
         e.apply()
+    }
+
+    /** L'arrivée du vol enregistré est une estimation d'après la distance, pas l'heure du billet (FVOL-03). */
+    fun volArriveeEstimee(context: Context): Boolean = prefs(context).getBoolean(KEY_VOL_ARRIVEE_ESTIMEE, false)
+
+    fun setVolArriveeEstimee(context: Context, estimee: Boolean) {
+        prefs(context).edit().putBoolean(KEY_VOL_ARRIVEE_ESTIMEE, estimee).apply()
     }
 
     /** Les rappels en vol (VolRappels, VolAlerte) : actifs par défaut, un interrupteur sur l'écran du vol. */

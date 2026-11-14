@@ -47,10 +47,13 @@ object ZmanimVignette {
     private val MENTHE = 0xFF9FE3CC.toInt()
     private val HEURE = DateTimeFormatter.ofPattern("HH:mm")
 
-    /** Où commence la fenêtre de la prière du moment, pour la jauge : l'aube, la fin de Cha'harit, la chki'a. */
+    /**
+     * Où commence la fenêtre de la prière du moment, pour la jauge : l'aube, min'ha guedola (13/11,
+     * FVOL-05 : la fin de Cha'harit avant, quand Min'ha s'affichait dès ce moment), la chki'a.
+     */
     fun debut(priere: String, horaires: Map<String, ZonedDateTime?>): ZonedDateTime? = when (priere) {
         "chaharit" -> horaires["alot"]
-        "minha" -> horaires["szt_gra"]
+        "minha" -> horaires["minha_gedola"] ?: horaires["szt_gra"]
         else -> horaires["chkia"]
     }
 
@@ -112,11 +115,15 @@ object ZmanimVignette {
         val zone = runCatching { ZoneId.of(lieu.fuseau) }.getOrDefault(ZoneId.systemDefault())
         val maintenant = ZonedDateTime.now(zone)
         val horaires = Zmanim.jour(lieu, maintenant.toLocalDate()).associate { it.cle to it.local }
-        val (priere, limite) = ZmanimWidget.prochaine(horaires, maintenant)
+        val moment = ZmanimWidget.prochaine(horaires, maintenant)
+        val priere = moment.priere
+        // Pas encore ouverte (13/11, FVOL-05) : « dès 12:05 », sans jauge ni temps restant.
+        val limite = moment.limite.takeIf { moment.debut == null }
         v.setTextViewText(R.id.wv_priere, context.getString(when (priere) {
             "chaharit" -> R.string.widget_zmanim_chaharit; "minha" -> R.string.widget_zmanim_minha; else -> R.string.widget_zmanim_arvit
         }))
-        v.setTextViewText(R.id.wv_limite, limite?.let { context.getString(R.string.widget_jusqua, it.format(HEURE)) } ?: "")
+        v.setTextViewText(R.id.wv_limite, moment.debut?.let { context.getString(R.string.widget_des, it.format(HEURE)) }
+            ?: limite?.let { context.getString(R.string.widget_jusqua, it.format(HEURE)) } ?: "")
         v.setViewVisibility(R.id.wv_jauge, if (limite != null) View.VISIBLE else View.GONE)
         v.setProgressBar(R.id.wv_jauge, 1000, ecoule(debut(priere, horaires), limite, maintenant), false)
         v.setTextViewText(R.id.wv_reste, limite?.let {

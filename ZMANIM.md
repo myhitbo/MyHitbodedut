@@ -361,7 +361,7 @@ même en mode avion, aux heures calculées sur la route :
   vol jusqu'à la descente, avis rapporté dans les sources consultées sans
   être unanime (shulchanaruchharav.com, « When traveling on an airplane, when
   is Tefilas Haderech to be recited? » ; OU Torah, « Airplane Travel »).
-  L'application ne tranche pas entre ces cas.
+  L'application ne tranche pas entre ces cas : la notification dit « décollage prévu il y a cinq minutes, Tefilat haDerekh si vous ne l'avez pas déjà dite pour ce voyage ».
 - **Le début de chaque prière dans l'avion**, aux bornes de l'application
   (HorairePriere, ZmanimWidget) : Min'ha à min'ha guedola, Arvit à la sortie
   des étoiles. Cha'harit n'avait pas de début dans l'application : le rappel

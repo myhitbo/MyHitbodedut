@@ -79,7 +79,7 @@ class VolActivity : AppCompatActivity() {
         val maintenant = Instant.now()
         if (signature(c, maintenant) != signatureAffichee) return afficherResultats()
         val p = VolPriere.priere(c, maintenant) ?: return
-        val limite = p.second ?: return
+        val limite = p.limite ?: return
         compteur?.text = getString(R.string.vol_dans, dureeEnMots(Duration.between(maintenant, limite).toMinutes().toInt().coerceAtLeast(0)))
     }
 
@@ -88,7 +88,7 @@ class VolActivity : AppCompatActivity() {
         val p = VolPriere.priere(c, maintenant)
         val place = c.enVol.indexOfFirst { maintenant.isBefore(it.instant) }
         val rappels = VolRappels.rappels(c, Store.inIsrael(this)).count { it.instant.isAfter(maintenant) }
-        return "${p?.first}|${p?.second}|$place|$rappels|${maintenant.isAfter(c.plan.atterrissage)}"
+        return "${p?.priere}|${p?.limite}|${p?.debut}|$place|$rappels|${maintenant.isAfter(c.plan.atterrissage)}"
     }
 
     private var signatureAffichee: String? = null
@@ -123,6 +123,7 @@ class VolActivity : AppCompatActivity() {
             arrivee = enregistre.arrivee
             decollage = Vol.zone(enregistre.depart.fuseau)?.let { LocalDateTime.ofInstant(enregistre.decollage, it) }
             atterrissage = Vol.zone(enregistre.arrivee.fuseau)?.let { LocalDateTime.ofInstant(enregistre.atterrissage, it) }
+            arriveeEstimee = Store.volArriveeEstimee(this)
         }
         afficherFormulaire()
         // Après une rotation aussi : le calcul n'est pas gardé, il se refait en un instant.
@@ -196,6 +197,7 @@ class VolActivity : AppCompatActivity() {
         val fleche = if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) "←" else "→"
         addView(VueJour.texte(this@VolActivity, "\u2068${heureAeroport(plan.depart, plan.decollage)}\u2069 $fleche " +
             "\u2068${heureAeroport(plan.arrivee, plan.atterrissage)}\u2069", 14f, R.color.muted, haut = 2).apply { fontFeatureSettings = "tnum" })
+        if (Store.volArriveeEstimee(this@VolActivity)) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_resume_estimee), 12f, R.color.muted, haut = 4))
     }
 
     /** « mer. 28 19:20 TLV » : l'heure locale d'un aéroport (celle du billet). */
@@ -396,9 +398,12 @@ class VolActivity : AppCompatActivity() {
         p.depart?.let { depart = it }
         p.arrivee?.let { arrivee = it }
         if (p.depart != null || p.arrivee != null) routeTexte = null
+        // Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas gardé, le sélecteur d'heure
+        // s'ouvre sur cette date (audit du 12/11, FVOL-03 : le vol se calculait sur l'ancienne date).
+        if (SaisieVol.dateSansHeure(p)) { decollage = null; atterrissage = null; dateSeule = p.date }
         val jour = p.date ?: decollage?.toLocalDate()
         if (jour != null && p.heureDepart != null) decollage = LocalDateTime.of(jour, p.heureDepart)
-        else if (jour != null) dateSeule = jour
+        else if (jour != null && decollage == null) dateSeule = jour
         arriveeEstimee = false
         val d = depart
         val a = arrivee
@@ -440,7 +445,9 @@ class VolActivity : AppCompatActivity() {
             depart != null && decollage == null -> choisirHeure(dateSeule?.atTime(12, 0)) {
                 appliquer(SaisieVol.Proposition(date = it.toLocalDate(), heureDepart = it.toLocalTime()), null)
             }
-            depart != null && arrivee != null && decollage != null && atterrissage != null -> calculer()
+            // Une arrivée estimée ou un jour repris de l'ancien vol ne s'enregistrent pas d'eux-mêmes : on remplit
+            // les tuiles, la personne vérifie et touche « Calculer » (FVOL-03).
+            SaisieVol.calculAutomatique(p, arriveeEstimee) && depart != null && arrivee != null && decollage != null && atterrissage != null -> calculer()
         }
     }
 
@@ -693,6 +700,7 @@ class VolActivity : AppCompatActivity() {
         val plan = Vol.Plan(numero, d, a, i1, i2, garde?.releve, garde?.sourceReleve ?: Vol.SourceReleve.GPS)
         Vol.verifier(plan)?.let { return message(getString(invalide(it))) }
         Store.setVol(this, plan)
+        Store.setVolArriveeEstimee(this, arriveeEstimee)
         modifier = false
         afficherFormulaire()
         lancer(plan)
@@ -841,11 +849,13 @@ class VolActivity : AppCompatActivity() {
     /**
      * La prière du moment mise en avant : la carte prend le ciel de son heure (04/11) — l'aube
      * pour Cha'harit, l'or de l'après-midi pour Min'ha, la nuit pour Arvit —, texte en blanc,
-     * le compte à rebours en grand.
+     * le compte à rebours en grand. Entre deux prières (13/11, FVOL-05 : de la fin de Cha'harit à
+     * min'ha guedola), aucune n'est donnée pour ouverte : la prochaine et l'heure où elle commence,
+     * sur le fond neutre.
      */
     private fun cartePriere(c: Vol.Calcul, maintenant: Instant) = VueJour.carte(this).apply {
         val p = VolPriere.priere(c, maintenant)
-        val ciel = when (p?.first) {
+        val ciel = when (p?.priere.takeIf { p?.debut == null }) {
             "chaharit" -> intArrayOf(0xFF2B3F6E.toInt(), 0xFF8C5A7A.toInt(), 0xFFE0906B.toInt())
             "minha" -> intArrayOf(0xFF17525A.toInt(), 0xFF6E7A3E.toInt(), 0xFFC9962E.toInt())
             null -> intArrayOf(Apparence.couleur(this@VolActivity, R.color.brand), androidx.core.graphics.ColorUtils.blendARGB(Apparence.couleur(this@VolActivity, R.color.brand), 0xFF000000.toInt(), 0.35f))
@@ -864,11 +874,18 @@ class VolActivity : AppCompatActivity() {
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_hors_fenetre), 15f, R.color.ink, haut = 8).apply { setTextColor(blanc(240)) })
             return@apply
         }
-        val (priere, limite) = p
+        val (priere, limite, debut) = p
         val nom = when (priere) {
             "chaharit" -> R.string.widget_zmanim_chaharit
             "minha" -> R.string.widget_zmanim_minha
             else -> R.string.widget_zmanim_arvit
+        }
+        if (debut != null) {
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_prochaine, getString(nom)), 22f, R.color.ink, gras = true, haut = 8).apply { setTextColor(blanc(255)) })
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_des, deuxHeures(c.plan, debut)), 14f, R.color.ink, haut = 4).apply {
+                setTextColor(blanc(215)); fontFeatureSettings = "tnum"
+            })
+            return@apply
         }
         addView(VueJour.texte(this@VolActivity, getString(nom), 34f, R.color.ink, gras = true, haut = 4).apply { setTextColor(blanc(255)) })
         if (limite == null) {
@@ -891,7 +908,7 @@ class VolActivity : AppCompatActivity() {
     private fun dureeEnMots(minutes: Int): String = when {
         minutes == 1 -> getString(R.string.vol_duree_une_minute)
         minutes < 60 -> getString(R.string.vol_duree_minutes, minutes.toString())
-        minutes % 60 == 0 -> getString(R.string.vol_duree_heures, (minutes / 60).toString())
+        minutes % 60 == 0 -> resources.getQuantityString(R.plurals.vol_duree_heures, minutes / 60, (minutes / 60).toString())
         else -> getString(R.string.vol_duree_heures_minutes, (minutes / 60).toString(), (minutes % 60).toString())
     }
 

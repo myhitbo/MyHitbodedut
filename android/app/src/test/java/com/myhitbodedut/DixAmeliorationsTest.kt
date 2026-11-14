@@ -31,16 +31,26 @@ class DixAmeliorationsTest {
     fun `widget, la priere du moment et sa limite`() {
         val j = LocalDate.of(2026, 10, 14)
         fun t(h: Int, m: Int) = j.atTime(h, m).atZone(zone)
-        val horaires = mapOf("szt_gra" to t(10, 30), "chkia" to t(17, 50), "chatsot_layla" to t(23, 40))
-        assertEquals("chaharit" to t(10, 30), ZmanimWidget.prochaine(horaires, t(7, 0)))
-        assertEquals("minha" to t(17, 50), ZmanimWidget.prochaine(horaires, t(13, 0)))
-        assertEquals("arvit" to t(23, 40), ZmanimWidget.prochaine(horaires, t(19, 0)))
-        assertEquals("arvit" to null, ZmanimWidget.prochaine(horaires, t(23, 50)))
+        val horaires = mapOf("szt_gra" to t(10, 30), "minha_gedola" to t(12, 20), "chkia" to t(17, 50), "chatsot_layla" to t(23, 40))
+        assertEquals(ZmanimWidget.Moment("chaharit", t(10, 30)), ZmanimWidget.prochaine(horaires, t(7, 0)))
+        assertEquals(ZmanimWidget.Moment("minha", t(17, 50)), ZmanimWidget.prochaine(horaires, t(13, 0)))
+        assertEquals(ZmanimWidget.Moment("arvit", t(23, 40)), ZmanimWidget.prochaine(horaires, t(19, 0)))
+        assertEquals(ZmanimWidget.Moment("arvit", null), ZmanimWidget.prochaine(horaires, t(23, 50)))
+        // De la fin de Cha'harit à min'ha guedola, aucune prière ouverte : Min'ha annoncée avec son
+        // début (13/11, audit du 12/11, FVOL-05 : « Min'ha » s'affichait dès 10:30, avant 'hatsot).
+        assertEquals(ZmanimWidget.Moment("minha", t(17, 50), debut = t(12, 20)), ZmanimWidget.prochaine(horaires, t(10, 30)))
+        assertEquals(ZmanimWidget.Moment("minha", t(17, 50), debut = t(12, 20)), ZmanimWidget.prochaine(horaires, t(12, 19)))
+        assertEquals(ZmanimWidget.Moment("minha", t(17, 50)), ZmanimWidget.prochaine(horaires, t(12, 20)))
+        // La jauge de Min'ha part de min'ha guedola.
+        assertEquals(t(12, 20), ZmanimVignette.debut("minha", horaires))
+        // Sans min'ha guedola connue, l'ancienne règle ; celle du lendemain (après la chki'a) ne ferme pas Min'ha.
+        assertEquals(ZmanimWidget.Moment("minha", t(17, 50)), ZmanimWidget.prochaine(horaires - "minha_gedola", t(11, 0)))
+        assertEquals(ZmanimWidget.Moment("minha", t(17, 50)), ZmanimWidget.prochaine(horaires + ("minha_gedola" to t(12, 20).plusDays(1)), t(13, 0)))
         // Après minuit, avant l'aube : encore Arvit (jusqu'au milieu de la nuit d'hier s'il n'est pas passé).
         val nuit = mapOf("alot" to t(5, 20), "szt_gra" to t(10, 30), "chkia" to t(17, 50), "chatsot_layla" to t(23, 40).plusMinutes(70))
-        assertEquals("arvit" to t(0, 50), ZmanimWidget.prochaine(nuit, t(0, 20)))
-        assertEquals("arvit" to null, ZmanimWidget.prochaine(nuit, t(2, 0)))
-        assertEquals("chaharit" to t(10, 30), ZmanimWidget.prochaine(nuit, t(6, 0)))
+        assertEquals(ZmanimWidget.Moment("arvit", t(0, 50)), ZmanimWidget.prochaine(nuit, t(0, 20)))
+        assertEquals(ZmanimWidget.Moment("arvit", null), ZmanimWidget.prochaine(nuit, t(2, 0)))
+        assertEquals(ZmanimWidget.Moment("chaharit", t(10, 30)), ZmanimWidget.prochaine(nuit, t(6, 0)))
     }
 
     @Test
