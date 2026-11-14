@@ -84,10 +84,27 @@ class HilloulotTest {
     }
 
     @Test
-    fun `un jour range les mieux connus d abord, les dates douteuses en dernier`() {
+    fun `un jour range les mieux connus d abord, les sources avant le doute`() {
         val h = { he: String, s: String, t: String?, d: String? -> Hilloulot.Hilloula(he, null, null, "", s, d, t) }
         val t = mapOf("8-23" to listOf(h("un", "m", null, null), h("doute", "wm", "x", "faux"), h("trois", "hwm", "x", null), h("deux", "wm", null, null), h("deux-notice", "wm", "x", null)))
-        assertEquals(listOf("trois", "deux-notice", "deux", "un", "doute"), Hilloulot.duJour(t, listOf("8-23")).map { it.he })
+        assertEquals(listOf("trois", "deux-notice", "deux", "doute", "un"), Hilloulot.duJour(t, listOf("8-23")).map { it.he })
+        // Les plus célèbres ne sont plus relégués par une simple note : Rachbi (18 Iyar), le Rambam (20 Tevet).
+        val cinq = { cle: String -> Hilloulot.duJour(table, listOf(cle)).take(5).map { it.he } }
+        assertTrue(cinq("2-18").contains("רבי שמעון בר יוחאי"))
+        assertTrue(cinq("10-20").any { it.contains("הרמב\"ם") })
+    }
+
+    @Test
+    fun `un tsadik n apparait qu une fois par jour, et Rav Mandelbaum a la date de sa mort`() {
+        // L'identifiant de dépliage d'une ligne est « jour|nom » : un nom ne se répète pas dans un jour.
+        table.forEach { (cle, liste) -> assertEquals(cle, liste.size, liste.map { it.he.trim() }.distinct().size) }
+        // Rabbi Natan de Breslev : une ligne, qui porte les deux sources et la biographie de MyTzadik.
+        val natan = table.getValue("10-10").filter { it.he.contains("נתן") && it.he.contains("ברסלב") }
+        assertEquals(1, natan.size)
+        assertTrue(table.getValue("10-10").none { it.he.contains("שטרנהרץ") })
+        // 22 Tevet 5594 est sa naissance ; il est mort le 17 Iyar 5665.
+        assertTrue(table.getValue("10-22").none { it.he.contains("מנדלבאום") })
+        assertEquals("ה'תרס\"ה", table.getValue("2-17").single { it.he.contains("מנדלבאום") }.annee)
     }
 
     @Test
