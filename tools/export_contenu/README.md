@@ -10,7 +10,7 @@ Android reste la source ; l'outil n'écrit que sous `ios/`. Python 3, bibliothè
 | Étape | Sortie |
 | --- | --- |
 | 1. Textes | `Contenu/*.json` octet pour octet ; `Contenu/hilloulot_bios/<mois>.json` ; les livres de plus de 2 Mo en `Contenu/livres/<id>/index.json` et un fichier par chapitre (`<texte>-<chapitre>.json`), recomposition vérifiée |
-| 2. Chaînes | `Chaines/Localizable.xcstrings` (clés d'Android, `%1$s` → `%1$@`, `%d` → `%lld`, pluriels), `Chaines/Tableaux.json` ; sans les chaînes propres à Android (divulgations, batterie, superposition) ; mêmes clés et mêmes marqueurs dans les trois langues, sinon arrêt |
+| 2. Chaînes | `Chaines/Localizable.xcstrings` (clés d'Android, `%1$s` → `%1$@`, `%d` → `%lld`, `%2$02d` → `%2$02lld`, pluriels), `Chaines/Tableaux.json` ; sans les chaînes propres à Android (divulgations, batterie, superposition) ; mêmes clés et mêmes marqueurs dans les trois langues, sinon arrêt |
 | 4. Palettes | `Contenu/palettes.json` : 13 jetons × 6 fonds × 6 accents × jour et nuit |
 | 5. Images | `Images/*.webp` tels quels ; `Icones/*.svg` depuis les `VectorDrawable` |
 | 6. Polices | `Polices/*.ttf`, `Polices/licences/` |

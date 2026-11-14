@@ -44,8 +44,8 @@
   {
    "chemin": "Ressources/Chaines/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
-   "octets": 702025,
-   "sha256": "8914a8c73928406a11a1372904aa023eb72541661d27487a81fe99001cb5aa16",
+   "octets": 702031,
+   "sha256": "cd8f3a34fcb6391e6c5d82e7fe1785a6d6d804ab5ffec2761d7a15007642a1e7",
    "licence": "propre à l'app",
    "mention": ""
   },

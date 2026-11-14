@@ -61,7 +61,7 @@ struct TraductionTests {
 
     @Test func lesMarqueursDeFormatSontLesMemesPartout() throws {
         let c = try Catalogue.lire()
-        let motif = try Motif(#"%\d+\$(?:@|lld)|%(?:@|lld)|%%"#)
+        let motif = try Motif(#"%(?:\d+\$)?0?\d*(?:@|lld)|%%"#)
         let fr = c.simples("fr")
         for langue in langues.dropFirst() {
             for (cle, valeur) in c.simples(langue) {
@@ -80,6 +80,20 @@ struct TraductionTests {
                         "\(langue)/\(forme) : « \(valeur) » invente un marqueur absent de « \(other) »")
             }
         }
+    }
+
+    /// Un marqueur d'Android (`%s`, `%d`, `%2$02d`) resté tel quel lirait de travers l'argument
+    /// de Swift : `%d` attend 32 bits, un Int en a 64. L'export écrit `%@` et `%lld`.
+    @Test func aucunMarqueurDAndroidNeReste() throws {
+        let c = try Catalogue.lire()
+        let android = try Motif(#"%(?:\d+\$)?0?\d*[sd]"#)
+        for langue in langues {
+            for (cle, valeur) in c.simples(langue).merging(c.pluriels(langue), uniquingKeysWith: { a, _ in a }) {
+                #expect(android.trouve(valeur.replacingOccurrences(of: "%%", with: "")) == nil, "\(langue)/\(cle) : « \(valeur) »")
+            }
+        }
+        let duree = c.simples("fr")["duration_hours_minutes"]
+        #expect(duree == "%1$lld h %2$02lld")
     }
 
     /// Ce qu'on a appris en ajoutant puis retirant l'espagnol (22/09) : une quatrième langue posée
