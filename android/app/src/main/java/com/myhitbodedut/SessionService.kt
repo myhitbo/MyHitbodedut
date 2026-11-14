@@ -122,7 +122,14 @@ class SessionService : Service() {
                 // Réactivée : le chemin ordinaire ci-dessous relance le morceau.
             }
         }
-        startForegroundNow()
+        // Refusé alors que le service n'était pas encore au premier plan : il s'arrête
+        // proprement au lieu de planter. La séance reste inscrite ; reconcilier() la clôt
+        // ou la relance à la prochaine ouverture, depuis le premier plan.
+        if (!startForegroundNow() && !enMarche) {
+            NePasDeranger.retablir(this)
+            stopSelf()
+            return START_NOT_STICKY
+        }
         enMarche = true
         lecteur = music
         garderEveille()
@@ -359,7 +366,18 @@ class SessionService : Service() {
             getString(R.string.session_remaining, Store.formatDuration(this, remainingMinutes()))
     }
 
-    private fun startForegroundNow() {
+    /**
+     * Pose la notification de séance au premier plan ; rend vrai si Android l'a accepté.
+     *
+     * Il peut le refuser (examen du 14/11, suite de FBARRIERE-06) : service collant relancé
+     * en arrière-plan sous Android 12 et plus après la mort du processus, application
+     * restreinte, type refusé sous Android 14 et plus. L'exception n'était pas rattrapée :
+     * plantage, relance par Android, séance toujours inscrite, et plantage de nouveau
+     * jusqu'à la prochaine ouverture de l'application. GateService porte la même garde.
+     * Au tour de 5 s le résultat s'ignore : le service est déjà au premier plan, un refus
+     * ne l'en retire pas.
+     */
+    private fun startForegroundNow(): Boolean = runCatching {
         val open = PendingIntent.getActivity(
             this,
             0,
@@ -392,7 +410,7 @@ class SessionService : Service() {
         } else {
             startForeground(Notifications.ID_SESSION, notification)
         }
-    }
+    }.isSuccess
 
     companion object {
         private const val TICK_MS = 5_000L
