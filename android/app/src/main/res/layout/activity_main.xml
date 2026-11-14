@@ -178,7 +178,7 @@
                                 android:layout_marginTop="0dp"
                                 android:gravity="center"
                                 android:maxLines="3"
-                                android:textColor="?attr/mhMuted"
+                                android:textColor="@color/on_plate_muted"
                                 android:textSize="12sp" />
                         </LinearLayout>
                     </FrameLayout>

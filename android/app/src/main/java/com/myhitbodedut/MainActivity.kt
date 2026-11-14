@@ -537,10 +537,11 @@ class MainActivity : AppCompatActivity() {
         }
         legende.text = legendeTexte
         valeur.setTextColor(Apparence.couleur(this, when (vers.anneau) {
-            Anneaux.Quel.JOUR -> R.color.brand
-            Anneaux.Quel.SEMAINE -> R.color.ring_week
-            Anneaux.Quel.SERIE -> R.color.ring_streak
-            null -> R.color.ink
+            // La plaque reste claire la nuit : des encres fixes, pas celles qui s'éclaircissent (FACCUEIL-02).
+            Anneaux.Quel.JOUR -> R.color.on_plate
+            Anneaux.Quel.SEMAINE -> R.color.ring_week_on_plate
+            Anneaux.Quel.SERIE -> R.color.ring_streak_on_plate
+            null -> R.color.on_plate_ink
         }))
         findViewById<View>(R.id.hero_plate).contentDescription = listOf(texte(cible), legendeTexte).joinToString(" ")
         compteurFace?.cancel()
