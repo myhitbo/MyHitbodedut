@@ -280,8 +280,15 @@ dans `src/musique_hors_play/` (fichiers et liste `MusiqueHorsPlay.kt`), que
 seule la construction GitHub ajoute ; avec `-Pplay=true`, Gradle prend
 `src/musique_play/`, où la même liste est vide. Vérifié sur l'AAB : il ne
 contenait que `hamelech_basade.m4a`, `yanuka_nigoun_3.m4a` et `shpayer_beyond.m4a` (AAC 96 kb/s depuis le 29/10) ; s'y ajoutent le 03/11 les 23 morceaux `shpayer_*` et `ianir_*`, soit environ 78 Mo d'audio pour la version Play. `MusicFilesTest`
-tient la liste ; `play.yml` recontrôle l'AAB lui-même. Le site web garde les
-33 morceaux, comme avant.
+tient la liste ; `play.yml` recontrôle l'AAB lui-même.
+
+**Règle (13/11, audit du 12/11, FPRODUIT-05).** Ce qui n'entre pas dans Play
+n'entre pas non plus dans le site ni dans le jar. Le site est public : c'est
+une diffusion, au même titre que Play. `web/build.mjs` ne lit plus que
+`MusiquePlay.kt` (`web/tools/musique.mjs`, tenu par
+`web/test/musique-livree.test.mjs`), et le service worker retire de son cache
+les morceaux que le site ne livre plus. Reste à faire : le jar Nokia embarque
+encore `niggoun_33` (`nokia/app/genere-musique.sh`, constat NOKIA-20).
 
 **Ajouter un morceau autorisé** (נעם שפייר, יניר קילינסקי) : le fichier dans
 `main/res/raw`, sa ligne dans `MusiquePlay.kt`, son titre dans
@@ -407,8 +414,8 @@ gratuit, public, adresse indépendante du nom du compte GitHub (l'ancienne
 la même dans `CelebrationActivity.LIEN_WEB`, `web/src/js/app.js` et
 `ConfidentialiteTest`, qui échoue si l'une dérive. *Si le nom `myhitbodedut`
 est déjà pris sur pages.dev, changer `CLOUDFLARE_PROJET` dans `web.yml` et partout
-ci-dessus.* Les morceaux non autorisés (§ 3.2) restent dans ce site public :
-à retirer de `web/` avant la mise en ligne.
+ci-dessus.* Les morceaux non autorisés (§ 3.2) ne sont plus dans ce site public
+depuis le 13/11 : il ne livre que ceux de la version Play.
 
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de
