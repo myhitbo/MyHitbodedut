@@ -260,7 +260,8 @@ object CalendrierJuif {
             // La veille de Roch Hachana, pas de Ta'hanoun à la prière (Choul'han
             // Aroukh, OC 581:3), que TefilaRules 2.5.0 fait dire.
             // Pourim triple (15 Adar un Chabbat) : à Jérusalem, le dimanche 16 est le jour du festin, sans
-            // Ta'hanoun ni למנצח (Rav Mordekhaï Eliyahou ; Piskei techouvot 693:7), ce que TefilaRules ignore.
+            // Ta'hanoun ni למנצח (Kitsour Yalkout Yossef 688:6, § 14 ; Piskei techouvot 693:7), ce que TefilaRules
+            // ignore. Ailleurs, Ta'hanoun lekhat'hila, dans les trois noussa'h (Rav Its'hak Yossef, chiour 488, 5785).
             val festinJerusalem = mukafChoma && semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
                 regles.jewishMonth == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)
             val tahanoun = tefila.isTachanunRecitedShacharis(regles) &&
