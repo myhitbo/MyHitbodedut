@@ -61,6 +61,13 @@ object ZmanimVignette {
     fun jourHebreuAffiche(maintenant: ZonedDateTime, tset: ZonedDateTime?): LocalDate =
         if (tset != null && !maintenant.isBefore(tset)) maintenant.toLocalDate().plusDays(1) else maintenant.toLocalDate()
 
+    /**
+     * Le libellé de la fête du jour pour la pastille, ou null un jour ordinaire. Les clés du
+     * calendrier sont nues (« hanouka ») et celles de la table préfixées (« fete_hanouka ») :
+     * sans le préfixe, la pastille n'affichait jamais la fête (13/11, TMECA-01).
+     */
+    fun libelleFete(jour: CalendrierJuif.Jour): Int? = jour.fetes.firstNotNullOfOrNull { Libelles.res("fete_$it") }
+
     /** La part écoulée de la fenêtre, de 0 à 1000 ; 0 sans bornes. */
     fun ecoule(debut: ZonedDateTime?, fin: ZonedDateTime?, maintenant: ZonedDateTime): Int {
         if (debut == null || fin == null || !fin.isAfter(debut)) return 0
@@ -79,10 +86,11 @@ object ZmanimVignette {
         val maintenantLieu = ZonedDateTime.now(lieuDate?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault())
         val tset = lieuDate?.let { l -> Zmanim.jour(l, maintenantLieu.toLocalDate()).firstOrNull { it.cle == "tset" }?.local }
         val aujourdhui = jourHebreuAffiche(maintenantLieu, tset)
-        val jour = CalendrierJuif.jour(aujourdhui, israel)
+        // À Jérusalem, Pourim est le 15 Adar : la pastille nomme la fête comme le calendrier (13/11).
+        val jour = CalendrierJuif.jour(aujourdhui, israel, Store.mukafChoma(context))
         v.setTextViewText(R.id.wv_date, jour.dateHebraique)
         // La fête du jour, sinon la paracha de la semaine.
-        val fete = jour.fetes.firstNotNullOfOrNull { Libelles.res(it) }?.let { context.getString(it) }
+        val fete = libelleFete(jour)?.let { context.getString(it) }
         val paracha = CalendrierJuif.jour(aujourdhui.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)), israel).paracha
             ?.let { context.getString(R.string.widget_paracha, it) }
         val pastille = fete ?: paracha
