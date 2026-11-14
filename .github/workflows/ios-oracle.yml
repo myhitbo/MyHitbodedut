@@ -1,0 +1,68 @@
+name: iOS (oracle JVM)
+
+# Le code Kotlin de l'app, exécuté sur la JVM seule, répond aux questions que les tests Swift de
+# Coeur rejouent (tools/vecteurs_ios, ios/PORTAGE.md § 4.2 étape 3 et § 5.1). Ses réponses sont
+# versionnées dans ios/Paquets/Coeur/Tests/Vecteurs : ce flux les refait et échoue si elles ont
+# changé, c'est-à-dire si une règle d'Android a bougé sans qu'iOS suive.
+# Budget (décision D5) : Linux seulement, un seul travail, et seulement quand ces fichiers bougent.
+
+on:
+  push:
+    paths:
+      - 'tools/export_contenu/tables/**'
+      - 'tools/vecteurs_ios/**'
+      - 'ios/Paquets/Coeur/Tests/Vecteurs/**'
+      - '.github/workflows/ios-oracle.yml'
+      # Ce que l'oracle compile et lit d'Android.
+      - 'android/app/src/main/java/com/myhitbodedut/**'
+      - 'android/app/src/musique_play/java/**'
+      - 'android/app/src/main/res/values*/strings.xml'
+      - 'android/app/src/main/res/raw/*.json'
+  pull_request:
+    paths:
+      - 'tools/export_contenu/tables/**'
+      - 'tools/vecteurs_ios/**'
+      - 'ios/Paquets/Coeur/Tests/Vecteurs/**'
+      - '.github/workflows/ios-oracle.yml'
+      # Ce que l'oracle compile et lit d'Android.
+      - 'android/app/src/main/java/com/myhitbodedut/**'
+      - 'android/app/src/musique_play/java/**'
+      - 'android/app/src/main/res/values*/strings.xml'
+      - 'android/app/src/main/res/raw/*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  vecteurs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      # Java 21, comme là où les vecteurs sont produits : d'une version à l'autre, Java n'écrit pas
+      # les nombres ni ne lit les expressions régulières tout à fait de même.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: android.jar (plateforme 36), gardé d'une fois sur l'autre
+        uses: actions/cache@v4
+        with:
+          path: tools/export_contenu/tables/build/android-36
+          key: oracle-android-36-r02-${{ hashFiles('tools/export_contenu/tables/build.gradle.kts') }}
+      - name: Vecteurs refaits par le code d'Android
+        run: tools/vecteurs_ios/lancer.sh
+      - name: Garde de dérive
+        run: |
+          if [ -n "$(git status --porcelain -- ios/Paquets/Coeur/Tests/Vecteurs)" ]; then
+            git status --short -- ios/Paquets/Coeur/Tests/Vecteurs
+            git --no-pager diff --stat -- ios/Paquets/Coeur/Tests/Vecteurs
+            echo "::error::Les réponses du code d'Android ont changé : relancer tools/vecteurs_ios/lancer.sh, versionner ios/Paquets/Coeur/Tests/Vecteurs et faire suivre les tests de Coeur."
+            exit 1
+          fi
