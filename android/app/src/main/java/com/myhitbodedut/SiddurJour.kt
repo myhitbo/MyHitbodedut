@@ -225,6 +225,12 @@ object SiddurJour {
         if (sansTahanounFinTichri && CalendrierJuif.C.FIN_TICHRI in c) {
             c = c - setOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
         }
+        // Pourim triple, le dimanche 16 Adar en Israël hors de Jérusalem (14/11) : l'Ashkenaz suit le
+        // Halikhot Chlomo (22:8), sans Ta'hanoun ; למנצח reste (Michna Beroura 131:35). Le Michna Beroura
+        // ne l'omet que « les deux jours de Pourim » (131:33, 693:8) : JourAffiche le précise.
+        if (nusah == "ashkenaz" && CalendrierJuif.C.POURIM_TRIPLE_HORS_JERUSALEM in c) {
+            c = c - setOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
+        }
         if (avinouMalkenou(conditions)) {
             c = c + CalendrierJuif.C.AVINOU_MALKENOU
             // Min'ha d'un vendredi (jeûne de Tévèt, dix jours, veille de Kippour un vendredi) : sans (12/11).

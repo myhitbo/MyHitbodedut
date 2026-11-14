@@ -67,7 +67,13 @@ object JourAffiche {
         if (C.AL_HANISSIM in c) add("ajout_al_hanissim")
         SiddurJour.libelleHallel(nusah, c)?.let { add(it) }
         // Le Chabbat, il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
-        if (C.CHABBAT !in c) add(if (C.TAHANOUN_CHAHARIT in c) "ajout_tahanoun" else "ajout_sans_tahanoun")
+        // Le dimanche d'un Pourim triple hors de Jérusalem, l'Ashkenaz suit le Halikhot Chlomo contre le
+        // Michna Beroura (131:33) : le libellé le dit.
+        if (C.CHABBAT !in c) add(when {
+            C.TAHANOUN_CHAHARIT in c -> "ajout_tahanoun"
+            nusah == "ashkenaz" && C.POURIM_TRIPLE_HORS_JERUSALEM in c -> "ajout_sans_tahanoun_halikhot_chlomo"
+            else -> "ajout_sans_tahanoun"
+        })
     }
 
     /**

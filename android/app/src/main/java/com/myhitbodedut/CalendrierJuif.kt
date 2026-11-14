@@ -80,6 +80,11 @@ object CalendrierJuif {
         /** Le 9 Av ou Kippour (12/11) : « שעשה לי כל צרכי » ne se dit pas (Edot, Ben Ich 'Haï, Vayechev 9). */
         const val TICHA_BEAV_KIPPOUR = "ticha_beav_kippour"
         const val ESTHER_POURIM = "esther_pourim"
+        /**
+         * Le dimanche 16 Adar d'un Pourim triple, en Israël hors de Jérusalem (14/11) : l'Ashkenaz y omet
+         * Ta'hanoun (Halikhot Chlomo 22:8 ; SiddurJour.conditionsPour), Edot et Sfard le disent (Yalkut Yosef).
+         */
+        const val POURIM_TRIPLE_HORS_JERUSALEM = "pourim_triple_hors_jerusalem"
         const val CHIVA_ASSAR_TAMOUZ = "chiva_assar_tamouz"
         /**
          * Les deux jours de bascule (audit du 16/10) : le 22 Tichri, Cha'harit dit מוריד הטל et
@@ -127,7 +132,8 @@ object CalendrierJuif {
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
-                MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN)
+                MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
+                POURIM_TRIPLE_HORS_JERUSALEM)
     }
 
     /**
@@ -261,9 +267,12 @@ object CalendrierJuif {
             // Aroukh, OC 581:3), que TefilaRules 2.5.0 fait dire.
             // Pourim triple (15 Adar un Chabbat) : à Jérusalem, le dimanche 16 est le jour du festin, sans
             // Ta'hanoun ni למנצח (Kitsour Yalkout Yossef 688:6, § 14 ; Piskei techouvot 693:7), ce que TefilaRules
-            // ignore. Ailleurs, Ta'hanoun lekhat'hila, dans les trois noussa'h (Rav Its'hak Yossef, chiour 488, 5785).
-            val festinJerusalem = mukafChoma && semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
+            // ignore. Ailleurs en Israël, Ta'hanoun lekhat'hila (Rav Its'hak Yossef, chiour 488, 5785), sauf en
+            // Ashkenaz (C.POURIM_TRIPLE_HORS_JERUSALEM).
+            val dimanchePourimTriple = semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
                 regles.jewishMonth == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)
+            val festinJerusalem = mukafChoma && dimanchePourimTriple
+            if (enIsrael && !mukafChoma && dimanchePourimTriple) add(C.POURIM_TRIPLE_HORS_JERUSALEM)
             val tahanoun = tefila.isTachanunRecitedShacharis(regles) &&
                 regles.yomTovIndex != JewishCalendar.EREV_ROSH_HASHANA && !festinJerusalem
             if (tahanoun) add(C.TAHANOUN_CHAHARIT)

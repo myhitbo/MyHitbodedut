@@ -36,7 +36,11 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
   const hallel = libelleHallel(nusah, c);
   if (hallel) l.push(hallel);
   // Le Chabbat, il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
-  if (!c.has(C.CHABBAT)) l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun' : 'ajout_sans_tahanoun');
+  // Le dimanche d'un Pourim triple hors de Jérusalem, l'Ashkenaz suit le Halikhot Chlomo contre le Michna Beroura (131:33).
+  if (!c.has(C.CHABBAT)) {
+    l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun'
+      : nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem') ? 'ajout_sans_tahanoun_halikhot_chlomo' : 'ajout_sans_tahanoun');
+  }
   return l;
 }
 
