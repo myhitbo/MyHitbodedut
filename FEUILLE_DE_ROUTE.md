@@ -1050,6 +1050,10 @@ Non vérifié : Eretz Hemdah (avis de Rav Ovadia sur le sud), le site ne répond
   l'accord suffisant pour le Yalkut Yosef (« l'accord suffit ») ; la sélection
   reste telle quelle. Aucune pièce écrite n'est versée au dépôt.*
 - Les icônes signalées le 12/10 : lesquelles.
+- Hilloulot (audit du 12/11, THILLOULOT-07) : l'accord du 12/10 de MyTzadik
+  (YETEV 4 LTD) et de המאיר לארץ pour la reprise des biographies est déclaré,
+  sans écrit au dépôt ; à obtenir par écrit. Détail et cas particuliers
+  (adar-9, 11-8, 2-16) : `PUBLICATION_PLAY_STORE.md` § 3.3.
 
 ## Mise à jour (19/10) : « oui tout »
 

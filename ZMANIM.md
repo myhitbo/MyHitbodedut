@@ -15,9 +15,11 @@ vérifiés ; la mention « profil à valider par un Rav » est retirée de l'éc
 | Règles de prière | `TefilaRules` de KosherJava | `web/src/js/tefila.js`, portage ligne à ligne de `TefilaRules.java` (absent de kosher-zmanim) | LGPL 2.1 |
 | Comparaison | — | Hebcal (`@hebcal/core` 6.14.1), **dans les tests seulement**, jamais servi | GPL 2.0+ |
 
-Tout se calcule sur l'appareil, sans réseau. Le site garde sa politique de
-sécurité (`connect-src 'self'`) ; l'application Android ne déclare toujours
-aucune permission Internet.
+Tout se calcule sur l'appareil, sans réseau. L'édition Light ne déclare
+aucune permission Internet ; l'édition complète ne la déclare que pour les
+services de vol, désactivés par défaut (« Zmanim en vol », plus bas). Le site
+n'autorise qu'une connexion extérieure (`connect-src 'self'
+https://api.adsbdb.com`), pour la route d'un numéro de vol.
 
 Hebcal n'est pas embarqué : sa licence GPL obligerait à publier toute
 l'application sous GPL. Il sert de second avis dans les tests.
