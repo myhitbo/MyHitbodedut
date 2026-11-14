@@ -1433,4 +1433,6 @@
     <string name="langues_fr_en">Français + English</string>
     <string name="lecture_chargement">טוען…</string>
     <string name="recherche_en_cours">מחפש…</string>
+    <string name="siddur_chapitres">פרקים</string>
+    <string name="siddur_chapitres_filtre">מספר או מילה</string>
 </resources>

@@ -362,6 +362,22 @@ class SiddurLectureActivity : AppCompatActivity() {
         val ondulation = TypedValue().also {
             theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, it, true)
         }.resourceId
+        // Un livre de centaines de chapitres : un bouton « Chapitres » et une liste filtrable, non
+        // une bande de pastilles à faire défiler (audit du 12/11, FLECTURE-03).
+        if (debuts.size > SEUIL_CHAPITRES) {
+            rang.addView(TextView(this).apply {
+                text = "${getString(R.string.siddur_chapitres)} (${debuts.size})  ▾"
+                textSize = 14f
+                setPadding(dp(12), dp(4), dp(12), dp(4))
+                minHeight = dp(48)
+                gravity = android.view.Gravity.CENTER
+                setTextColor(rendu.titre)
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                foreground = ContextCompat.getDrawable(context, ondulation)
+                setOnClickListener { listeChapitres(lignes) }
+            })
+            return
+        }
         debuts.forEachIndexed { i, position ->
             rang.addView(TextView(this).apply {
                 text = (lignes[position] as SiddurJour.Ligne.Titre).texte
@@ -383,9 +399,59 @@ class SiddurLectureActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Les chapitres d'un long livre, dans une boîte de dialogue : on filtre par numéro ou par mot,
+     * on touche, on y est (FLECTURE-03).
+     */
+    private fun listeChapitres(lignes: List<Any>) {
+        val titres = debuts.map { (lignes[it] as SiddurJour.Ligne.Titre).texte }
+        val montres = ArrayList<Int>(titres.indices.toList())
+        val adaptateur = object : android.widget.BaseAdapter() {
+            override fun getCount() = montres.size
+            override fun getItem(i: Int) = titres[montres[i]]
+            override fun getItemId(i: Int) = montres[i].toLong()
+            override fun getView(i: Int, v: View?, parent: ViewGroup): View = ((v as? TextView) ?: TextView(this@SiddurLectureActivity).apply {
+                textSize = 17f
+                setPadding(dp(20), dp(12), dp(20), dp(12))
+                layoutDirection = View.LAYOUT_DIRECTION_RTL
+                textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                PoliceHebraique.appliquer(this)
+            }).apply { text = getItem(i) }
+        }
+        val champ = android.widget.EditText(this).apply {
+            hint = getString(R.string.siddur_chapitres_filtre)
+            setSingleLine()
+            setPadding(dp(20), dp(12), dp(20), dp(12))
+        }
+        val vue = android.widget.ListView(this).apply { adapter = adaptateur }
+        val corps = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(champ)
+            addView(vue, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(360)))
+        }
+        val dialogue = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.siddur_chapitres).setView(corps).setNegativeButton(android.R.string.cancel, null).show()
+        champ.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+            override fun afterTextChanged(e: android.text.Editable?) {
+                montres.clear()
+                montres.addAll(Chapitres.filtrer(titres, e?.toString().orEmpty()))
+                adaptateur.notifyDataSetChanged()
+            }
+        })
+        vue.setOnItemClickListener { _, _, i, _ ->
+            val position = debuts[montres[i]]
+            dialogue.dismiss()
+            choisi = null
+            liste.stopScroll()
+            (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 0)
+        }
+    }
+
     /** Marque le signet de la section qu'on lit. */
     private fun suivre() {
-        if (debuts.size < 2) return
+        if (debuts.size < 2 || debuts.size > SEUIL_CHAPITRES) return
         val gestion = liste.layoutManager as LinearLayoutManager
         val premiere = gestion.findFirstVisibleItemPosition()
         if (premiere == RecyclerView.NO_POSITION) return
@@ -734,6 +800,9 @@ class SiddurLectureActivity : AppCompatActivity() {
         private const val LIVRE = "livre"
         private const val MARQUE = "marque"
         private const val ETAT_OUVERTS = "ouverts"
+
+        /** Au-delà, la bande de pastilles cède la place à la liste des chapitres. */
+        const val SEUIL_CHAPITRES = 40
 
         /** L'icône des marque-pages : prière (siddour) ou étude (livre). */
         fun icone(etude: Boolean) = if (etude) R.drawable.ic_marque_etude else R.drawable.ic_marque_priere

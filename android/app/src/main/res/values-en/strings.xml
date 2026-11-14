@@ -1397,4 +1397,6 @@
     <string name="langues_fr_en">Français + English</string>
     <string name="lecture_chargement">Loading…</string>
     <string name="recherche_en_cours">Searching…</string>
+    <string name="siddur_chapitres">Chapters</string>
+    <string name="siddur_chapitres_filtre">Number or word</string>
 </resources>

@@ -83,3 +83,17 @@ class RechercheAnnulableTest {
         assertEquals(true, r.all { it.section >= 0 && it.bloc >= 0 })
     }
 }
+
+/** FLECTURE-03 : la liste des chapitres d'un long livre se filtre par numéro ou par mot. */
+class ChapitresTest {
+    private val titres = listOf("תורה א", "תורה 282", "תורה 28", "סימן 5")
+
+    @Test fun `vide, tous les chapitres`() = assertEquals(listOf(0, 1, 2, 3), Chapitres.filtrer(titres, "  "))
+
+    @Test fun `un numero trouve ses chapitres`() {
+        assertEquals(listOf(1, 2), Chapitres.filtrer(titres, "28"))
+        assertEquals(listOf(1), Chapitres.filtrer(titres, "282"))
+    }
+
+    @Test fun `un mot, sans voyelles`() = assertEquals(listOf(3), Chapitres.filtrer(titres, "סִימָן"))
+}

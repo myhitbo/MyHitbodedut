@@ -1462,4 +1462,6 @@
     <string name="langues_fr_en">Français + English</string>
     <string name="lecture_chargement">Chargement…</string>
     <string name="recherche_en_cours">Recherche…</string>
+    <string name="siddur_chapitres">Chapitres</string>
+    <string name="siddur_chapitres_filtre">Numéro ou mot</string>
 </resources>
