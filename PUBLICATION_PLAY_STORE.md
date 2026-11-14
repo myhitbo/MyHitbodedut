@@ -534,7 +534,7 @@ types :
 | Service | Type | Ce que dit la description (en anglais dans le manifeste et dans la console) | Vidéo |
 | --- | --- | --- | --- |
 | `SessionService` | `specialUse` | Compte à rebours d'une séance de prière personnelle (hitbodedout) lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Oui : lancer une séance, verrouiller l'écran, montrer la notification |
-| `SessionService` | `mediaPlayback` | Lecture du morceau choisi par l'utilisateur pendant sa séance, écran éteint. | Même vidéo |
+| `SessionService` | `mediaPlayback` | Lecture du morceau ou de l'ambiance choisis par l'utilisateur pendant sa séance, écran éteint. Demandé par le code tant que la musique ou une ambiance est allumée, ajouté à `specialUse` ; refusé (relance au démarrage du téléphone, Android 15+), la séance reste sous `specialUse` seul (examen du 14/11). | Même vidéo |
 | `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour, et pendant toute séance qu'il a lancée, jusqu'à sa fin. | Oui : choisir une app, ouvrir l'app, voir l'écran, valider |
 
 Les textes à saisir sont en anglais et reprennent mot pour mot les

@@ -51,6 +51,13 @@ class SessionService : Service() {
      */
     private var eveil: PowerManager.WakeLock? = null
 
+    /**
+     * Android a refusé le type lecture multimédia (Android 15 et plus : service relancé
+     * depuis le démarrage du téléphone ; service collant relancé en arrière-plan) : il
+     * n'est redemandé qu'à la prochaine commande, pas à chaque tour de 5 s.
+     */
+    private var lectureRefusee = false
+
     private val tick = object : Runnable {
         override fun run() {
             if (refresh()) handler.postDelayed(this, delaiTick())
@@ -83,6 +90,8 @@ class SessionService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
+        // Chaque commande redemande le type lecture : la musique a pu être rallumée depuis l'application.
+        lectureRefusee = false
         when (intent?.action) {
             ACTION_CANCEL -> {
                 Store.endSession(this)
@@ -376,6 +385,11 @@ class SessionService : Service() {
      * jusqu'à la prochaine ouverture de l'application. GateService porte la même garde.
      * Au tour de 5 s le résultat s'ignore : le service est déjà au premier plan, un refus
      * ne l'en retire pas.
+     *
+     * Sous Android 14 et plus, le type suit ce qui joue (constat 2) : usage spécial pour le
+     * décompte, plus lecture multimédia tant que la musique ou une ambiance est allumée, comme
+     * Android le prévoit pour un service qui ajoute la lecture à sa tâche. Le type lecture
+     * refusé n'empêche rien : la séance repart sous usage spécial seul, comme jusqu'au 14/11.
      */
     private fun startForegroundNow(): Boolean = runCatching {
         val open = PendingIntent.getActivity(
@@ -406,7 +420,22 @@ class SessionService : Service() {
             .build()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(Notifications.ID_SESSION, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            // La musique ou l'ambiance s'ajoutent en lecture multimédia (examen du 14/11, constat 2).
+            // Refusée, la séance reste au premier plan sous son seul type, comme avant.
+            val lecture = !lectureRefusee &&
+                SessionRule.joueDuSon(Store.musicEnabled(this), AmbiancePlayer.choisie(this))
+            if (lecture) {
+                lectureRefusee = runCatching {
+                    startForeground(
+                        Notifications.ID_SESSION,
+                        notification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+                    )
+                }.isFailure
+            }
+            if (!lecture || lectureRefusee) {
+                startForeground(Notifications.ID_SESSION, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            }
         } else {
             startForeground(Notifications.ID_SESSION, notification)
         }

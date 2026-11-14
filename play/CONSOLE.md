@@ -246,7 +246,7 @@ The user starts a timed prayer session (5 to 90 minutes) and puts the phone down
 - *Description* :
 
 ```
-Plays the track the user chose for their session (a niggun, a wordless melody), with the screen off, until the session ends. Playback starts only when the user starts a session with music turned on.
+Plays the track the user chose for their session (a niggun, a wordless melody), or the ambient sound chosen to go under it (rain, sea, forest), with the screen off, until the session ends. This type is requested only while the user's session has music or an ambient sound turned on; without them, the session runs under the special use type alone.
 ```
 
 - *User impact* :
@@ -254,6 +254,12 @@ Plays the track the user chose for their session (a niggun, a wordless melody), 
 ```
 If the task is deferred or interrupted, the music the user started does not play, or stops, as soon as the screen turns off.
 ```
+
+Ce que fait le code (examen du 14/11, constat 2) : `SessionService` ajoute ce
+type à l'usage spécial tant que la musique ou une ambiance est allumée, et le
+retire quand les deux sont coupées. Si Android le refuse (relance au
+démarrage du téléphone, interdite à ce type depuis Android 15), la séance
+continue sous l'usage spécial seul.
 
 - *Video* : vidéo 1.
 
