@@ -30,9 +30,13 @@ class RechercheActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recherche)
+        // L'écran recréé (rotation, thème) garde la portée choisie ; la saisie revient par l'id du champ
+        // et relance la recherche (audit du 12/11, FLECTURE-04).
+        savedInstanceState?.getString(ETAT_PORTEE)?.let { n -> RechercheGlobale.Portee.values().firstOrNull { it.name == n }?.let { portee = it } }
         val contenu = findViewById<LinearLayout>(R.id.recherche_contenu)
         contenu.addView(VueJour.carte(this).apply {
             addView(EditText(context).apply {
+                id = R.id.recherche_champ
                 hint = getString(R.string.recherche_indice)
                 setSingleLine()
                 requestFocus()
@@ -66,6 +70,11 @@ class RechercheActivity : AppCompatActivity() {
         })
         liste = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         contenu.addView(liste)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(ETAT_PORTEE, portee.name)
     }
 
     override fun onDestroy() {
@@ -127,6 +136,7 @@ class RechercheActivity : AppCompatActivity() {
     companion object {
         /** Le texte recherché, à reprendre dans l'écran ouvert (halakha, hilloulot). */
         const val EXTRA_RECHERCHE = "recherche"
+        private const val ETAT_PORTEE = "portee"
 
         /** Remplit le champ de recherche de l'écran ouvert depuis la recherche globale. */
         fun preremplir(activite: AppCompatActivity, contenu: ViewGroup) {

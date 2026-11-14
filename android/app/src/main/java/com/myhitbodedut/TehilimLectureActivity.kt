@@ -30,21 +30,70 @@ class TehilimLectureActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tehilim_lecture)
+        // L'écran recréé (rotation, thème) reprend le psaume où l'on en était, non celui de l'intent
+        // (audit du 12/11, FLECTURE-04) : ce qu'on lisait, et le verset en haut de l'écran.
+        val etat = savedInstanceState?.takeIf { it.containsKey(ETAT_PRESENT) }
+        val source = { cle: String, defaut: Int -> etat?.getInt("etat_$cle", defaut) ?: intent.getIntExtra(cle, defaut) }
         portion = Portion(
-            debut = intent.getIntExtra(DEBUT, 1).coerceIn(1, Tehilim.PSAUMES),
-            fin = intent.getIntExtra(FIN, 1).coerceIn(1, Tehilim.PSAUMES),
-            debutVerset = intent.getIntExtra(DEBUT_VERSET, 1),
-            finVerset = intent.getIntExtra(FIN_VERSET, 0).takeIf { it > 0 },
+            debut = source(DEBUT, 1).coerceIn(1, Tehilim.PSAUMES),
+            fin = source(FIN, 1).coerceIn(1, Tehilim.PSAUMES),
+            debutVerset = source(DEBUT_VERSET, 1),
+            finVerset = source(FIN_VERSET, 0).takeIf { it > 0 },
         )
         findViewById<Button>(R.id.lecture_previous).setOnClickListener { afficher(Portion(portion.debut - 1, portion.debut - 1)) }
         findViewById<Button>(R.id.lecture_next).setOnClickListener { afficher(Portion(portion.debut + 1, portion.debut + 1)) }
         // Le bouton de lecture : taille des lettres et lecture de nuit (pas de nusah ici).
-        reglages = ReglagesLecture.installer(this, findViewById<ScrollView>(R.id.lecture_scroll), auDessusDe = findViewById(R.id.lecture_nav)) {
+        reglages = ReglagesLecture.installer(this, findViewById<ScrollView>(R.id.lecture_scroll), auDessusDe = findViewById(R.id.lecture_nav), gardeSaPlace = true) {
             afficher(portion, garderPlace = true)
         }
         afficher(portion)
-        // Ouvert depuis un marque-page (28/10) : le verset marqué en haut de l'écran.
-        intent.getIntExtra(MARQUE_VERSET, 0).takeIf { it > 0 }?.let { v -> allerAuVerset(portion.debut, v) }
+        if (etat != null) {
+            if (etat.getInt(ETAT_PSAUME, 0) > 0) allerAuVerset(etat.getInt(ETAT_PSAUME), etat.getInt(ETAT_VERSET))
+        } else {
+            // Ouvert depuis un marque-page (28/10) : le verset marqué en haut de l'écran.
+            intent.getIntExtra(MARQUE_VERSET, 0).takeIf { it > 0 }?.let { v -> allerAuVerset(portion.debut, v) }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ETAT_PRESENT, portion.debut)
+        outState.putInt("etat_$DEBUT", portion.debut)
+        outState.putInt("etat_$FIN", portion.fin)
+        outState.putInt("etat_$DEBUT_VERSET", portion.debutVerset)
+        outState.putInt("etat_$FIN_VERSET", portion.finVerset ?: 0)
+        versetDuHaut()?.let { (n, v) ->
+            outState.putInt(ETAT_PSAUME, n)
+            outState.putInt(ETAT_VERSET, v)
+        }
+    }
+
+    /** La position d'une vue dans le texte qui défile. */
+    private fun hautDans(vue: View, defile: View): Int {
+        var y = vue.top
+        var parent = vue.parent as? View
+        while (parent != null && parent !== defile) { y += parent.top; parent = parent.parent as? View }
+        return y
+    }
+
+    /** Le verset (psaume, verset) en haut de l'écran : celui qu'on retrouve après un redessin ou une rotation. */
+    private fun versetDuHaut(): Pair<Int, Int>? {
+        val defile = findViewById<ScrollView>(R.id.lecture_scroll)
+        val y = defile.scrollY
+        if (y <= 0) return null
+        val trouve = blocs.entries.filter { hautDans(it.value, defile) + it.value.height > y }
+            .minByOrNull { hautDans(it.value, defile) }?.key
+        if (trouve != null) return trouve
+        for ((n, place) in places.toSortedMap()) {
+            val (vue, versets) = place
+            val layout = vue.layout ?: continue
+            val dedans = y - hautDans(vue, defile)
+            if (dedans >= vue.height) continue
+            val o = layout.getLineStart(layout.getLineForVertical(dedans.coerceAtLeast(0)))
+            val v = versets.firstOrNull { o <= it.second }?.third ?: versets.lastOrNull()?.third ?: continue
+            return n to v
+        }
+        return null
     }
 
     /** L'écran reste allumé tant qu'on lit (FLECTURE-01). */
@@ -94,6 +143,8 @@ class TehilimLectureActivity : AppCompatActivity() {
     }
 
     private fun afficher(p: Portion, garderPlace: Boolean = false) {
+        // Redessiné sur place (taille, langues, marque-page) : on revient au verset qui était en haut.
+        val repere = if (garderPlace) versetDuHaut() else null
         portion = p
         rendu = ReglagesLecture.rendu(this)
         val livre = Data.tehilim(this)
@@ -125,6 +176,7 @@ class TehilimLectureActivity : AppCompatActivity() {
             setBackgroundColor(rendu.fond)
             if (!garderPlace) scrollTo(0, 0)
         }
+        repere?.let { (n, v) -> allerAuVerset(n, v) }
     }
 
     private var rendu = ReglagesLecture.Rendu(1f, false, 0, 0, 0, 0)
@@ -279,6 +331,9 @@ class TehilimLectureActivity : AppCompatActivity() {
         private const val DEBUT_VERSET = "debut_verset"
         private const val FIN_VERSET = "fin_verset"
         private const val MARQUE_VERSET = "marque_verset"
+        private const val ETAT_PRESENT = "etat_present"
+        private const val ETAT_PSAUME = "etat_psaume"
+        private const val ETAT_VERSET = "etat_verset"
 
         /** La clé des marque-pages des Tehilim : le psaume en section, le verset en bloc. */
         const val CLE = "t:tehilim"

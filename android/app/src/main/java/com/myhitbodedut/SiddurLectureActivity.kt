@@ -71,6 +71,8 @@ class SiddurLectureActivity : AppCompatActivity() {
         setContentView(R.layout.activity_siddur_lecture)
         id = intent.getStringExtra(ID).orEmpty()
         livre = intent.getBooleanExtra(LIVRE, false)
+        // L'écran recréé (rotation, thème) garde ses ajouts dépliés (audit du 12/11, FLECTURE-04).
+        savedInstanceState?.getStringArrayList(ETAT_OUVERTS)?.let { ouverts.addAll(it) }
         liste = findViewById<RecyclerView>(R.id.siddur_lecture_list).apply {
             layoutManager = LinearLayoutManager(this@SiddurLectureActivity)
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -87,7 +89,9 @@ class SiddurLectureActivity : AppCompatActivity() {
         }
         afficher(garderPlace = false)
         // Ouvert depuis un marque-page (15/10) : à sa place ; sinon, reprendre là où on s'était arrêté (14/10).
-        val marque = intent.getStringExtra(MARQUE)?.split(':')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 }
+        // Le marque-page n'est suivi qu'à l'ouverture : l'écran recréé reprend la dernière place lue,
+        // pas le marque-page d'origine (FLECTURE-04).
+        val marque = intent.getStringExtra(MARQUE)?.split(':')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && savedInstanceState == null }
         if (marque != null) liste.post { allerA(marque[0], marque[1]) }
         else Store.positionLecture(this, cle())?.let { p -> liste.post { (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(p, 0) } }
         findViewById<android.widget.ImageView>(R.id.siddur_lecture_marques).apply {
@@ -156,6 +160,11 @@ class SiddurLectureActivity : AppCompatActivity() {
         dialogue.setPositiveButton(android.R.string.ok, null).show()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putStringArrayList(ETAT_OUVERTS, ArrayList(ouverts))
+    }
+
     /** L'écran reste allumé tant qu'on lit (FLECTURE-01). */
     private val veille by lazy { VeilleLecture(this) }
 
@@ -192,6 +201,7 @@ class SiddurLectureActivity : AppCompatActivity() {
     }
 
     private var nusahAffiche: LocalizedText? = null
+    private var languesDessinees: LanguesTexte.Mode? = null
 
     /** Un livre de la bibliothèque (Likoutei Etsot, Sefer HaMiddot, 12/10), lu comme une prière, sans nusah ni ajouts du jour. */
     private var livre = false
@@ -301,7 +311,10 @@ class SiddurLectureActivity : AppCompatActivity() {
             moveDuration = 260
         } else null
         val ancien = liste.adapter as? Adaptateur
-        if (garderPlace && ancien != null && ancien.rendu == rendu) {
+        // Les langues ont changé : les mêmes lignes se dessinent autrement, l'ancienne liste ne se rebinde pas.
+        val memesLangues = languesDessinees == langues
+        languesDessinees = langues
+        if (garderPlace && ancien != null && ancien.rendu == rendu && memesLangues) {
             ancien.remplacer(avecPieds, panneau)
         } else {
             liste.adapter = Adaptateur(avecPieds, panneau, rendu)
@@ -702,6 +715,7 @@ class SiddurLectureActivity : AppCompatActivity() {
         private const val ID = "id"
         private const val LIVRE = "livre"
         private const val MARQUE = "marque"
+        private const val ETAT_OUVERTS = "ouverts"
 
         /** L'icône des marque-pages : prière (siddour) ou étude (livre). */
         fun icone(etude: Boolean) = if (etude) R.drawable.ic_marque_etude else R.drawable.ic_marque_priere
