@@ -1,0 +1,9 @@
+{
+"_meta": {"source": "tools/vecteurs_ios/VecteursHorloge.kt"},
+"defaut": {"today": "2026-01-01", "jourTikkun": "2026-01-01"},
+"regles": [
+{"civile": "2026-03-29T01:30", "fuseau": "Europe/Paris", "today": "2026-03-29", "jourTikkun": "2026-03-28", "millis": 1774744200000},
+{"civile": "2026-11-14T23:59", "fuseau": "Asia/Jerusalem", "today": "2026-11-14", "jourTikkun": "2026-11-14", "millis": 1794693540000},
+{"civile": "2024-02-29T12:00", "fuseau": "America/New_York", "today": "2024-02-29", "jourTikkun": "2024-02-29", "millis": 1709226000000}
+]
+}

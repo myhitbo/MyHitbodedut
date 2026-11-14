@@ -7,6 +7,8 @@ import java.io.File
 fun main(args: Array<String>) {
     val sortie = File(args[0])
     for (nom in args.drop(1)) {
+        // Chaque générateur part de l'horloge par défaut (bouchons/Horloge.kt), quel que soit l'ordre de lancement.
+        Horloge.defaut()
         val generateur = Class.forName(nom).getField("INSTANCE").get(null) as Generateur
         val cible = File(sortie, generateur.fichier)
         Ecrit.fichier(cible, generateur.produire())

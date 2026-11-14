@@ -54,6 +54,8 @@ Le socle (`Sources/Coeur/Socle`) porte ces différences ; `socle.json` les tient
 | `mapOf`, `LinkedHashMap`, `groupBy` | un tableau de paires, ou des clés triées | un `Dictionary` de Swift se parcourt dans un ordre qui change d'un lancement à l'autre |
 | `sortedBy` (stable) | trier sur `(clé, rang)` | la stabilité du tri de Swift n'est pas promise |
 | `lowercase()`, `uppercase()` | `lowercased()`, `uppercased()` | identiques pour le français, l'anglais et l'hébreu |
+| `context.getString(R.string.x, a, n)`, `getQuantityString(R.plurals.x, n, n)` | `Libelle("x", .texte(a), .entier(n))`, `Libelle.pluriel("x", quantite: n, .entier(n))` | une règle ne met pas en forme : elle rend le `Libelle`, l'écran le résout dans la langue de l'app ; `Libelle.texte(langue:chaine:pluriel:)` le fait comme Android (libelles.json) |
+| `R.string.x`, `R.drawable.x` (un identifiant) | `"x"` | le nom de la ressource, qui est aussi la clé du catalogue d'iOS et le nom de l'image |
 
 Un littéral hébreu se recopie du Kotlin **octet pour octet**, sans le retaper ; là où le test Kotlin
 normalise (`Normalizer`), le test Swift normalise aussi (`formeNFC`).

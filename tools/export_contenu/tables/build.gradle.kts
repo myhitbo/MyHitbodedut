@@ -7,7 +7,7 @@
 //
 // Les sources d'Android sont lues en place, jamais copiées ni modifiées.
 // Les sources d'Android compilées sont celles de fichiers.txt : les règles, pas les écrans.
-// Quatre bouchons : la classe R, engendrée d'après res/ ; android.jar rendu docile (ses méthodes
+// Cinq bouchons : la classe R, engendrée d'après res/ ; l'heure figée (Horloge, réglée par chaque générateur) ; android.jar rendu docile (ses méthodes
 // rendent zéro, faux ou null au lieu de lever « Stub! », comme le fait Android Gradle Plugin pour
 // les tests unitaires) ; un Context de théâtre (préférences en mémoire, vraies ressources) ; des
 // coquilles pour ce que les règles nomment d'androidx et des écrans (bouchons/coquilles).
@@ -26,6 +26,7 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.InsnNode
+import org.objectweb.asm.tree.MethodInsnNode
 
 buildscript {
     repositories { mavenCentral() }
@@ -309,6 +310,58 @@ dependencies {
 java { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 tasks.named("compileKotlin") { dependsOn(engendrerR, androidJarDocile, verifierCopies) }
+
+// L'heure figée (bouchons/Horloge.kt) : dans les classes de l'app, une fois compilées, les appels à l'horloge
+// du système deviennent des appels à Horloge, de même signature ; les générateurs et les bouchons gardent la
+// vraie. Sans cela, Store.streak, currentWeek, inWindow ou importJson répondraient selon le jour du lancement.
+val versHorloge: Map<String, String> = mapOf(
+    "java/time/LocalDate.now()Ljava/time/LocalDate;" to "aujourdhui",
+    "java/time/LocalDate.now(Ljava/time/ZoneId;)Ljava/time/LocalDate;" to "aujourdhui",
+    "java/time/LocalDateTime.now()Ljava/time/LocalDateTime;" to "maintenantCivil",
+    "java/time/LocalDateTime.now(Ljava/time/ZoneId;)Ljava/time/LocalDateTime;" to "maintenantCivil",
+    "java/time/LocalTime.now()Ljava/time/LocalTime;" to "heure",
+    "java/time/LocalTime.now(Ljava/time/ZoneId;)Ljava/time/LocalTime;" to "heure",
+    "java/time/ZonedDateTime.now()Ljava/time/ZonedDateTime;" to "maintenantZone",
+    "java/time/ZonedDateTime.now(Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;" to "maintenantZone",
+    "java/time/YearMonth.now()Ljava/time/YearMonth;" to "moisCourant",
+    "java/time/YearMonth.now(Ljava/time/ZoneId;)Ljava/time/YearMonth;" to "moisCourant",
+    "java/time/Instant.now()Ljava/time/Instant;" to "instant",
+    "java/lang/System.currentTimeMillis()J" to "millis",
+    "java/time/ZoneId.systemDefault()Ljava/time/ZoneId;" to "zone",
+    "java/util/TimeZone.getDefault()Ljava/util/TimeZone;" to "fuseau",
+)
+
+/** La classe réécrite, ou null si elle ne lit pas l'horloge. */
+fun figerLeTemps(octets: ByteArray): ByteArray? {
+    val classe = ClassNode()
+    ClassReader(octets).accept(classe, 0)
+    var change = false
+    for (methode in classe.methods) {
+        for (instruction in methode.instructions) {
+            if (instruction !is MethodInsnNode || instruction.opcode != Opcodes.INVOKESTATIC) continue
+            val nom = versHorloge["${instruction.owner}.${instruction.name}${instruction.desc}"] ?: continue
+            instruction.owner = "Horloge"
+            instruction.name = nom
+            instruction.itf = false
+            change = true
+        }
+    }
+    if (!change) return null
+    val ecrivain = ClassWriter(0)
+    classe.accept(ecrivain)
+    return ecrivain.toByteArray()
+}
+
+tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileKotlin") {
+    doLast {
+        val dossier = destinationDirectory.get().asFile.resolve("com/myhitbodedut")
+        var reecrites = 0
+        dossier.walkTopDown().filter { it.isFile && it.extension == "class" }.forEach { f ->
+            figerLeTemps(f.readBytes())?.let { f.writeBytes(it); reecrites++ }
+        }
+        logger.info("horloge figée dans $reecrites classes de l'app")
+    }
+}
 tasks.named("compileJava") { dependsOn(engendrerR) }
 tasks.named("processResources") { dependsOn(engendrerR) }
 

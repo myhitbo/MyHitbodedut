@@ -28,6 +28,13 @@ Le projet Gradle est `tools/export_contenu/tables` ; il est autonome et ne modif
   pas tout à fait de même.
 - **`Theatre`** (`bouchons/Theatre.kt`) donne un `Context` : préférences en mémoire, vraies chaînes et
   vrais fichiers de `res/raw`, dans la langue demandée. `Store` et ce qui en dépend tournent dessus.
+- **L'heure est figée.** Dans les classes de l'app compilées, `LocalDate.now()`, `LocalDateTime.now()`,
+  `LocalTime.now()`, `ZonedDateTime.now()`, `Instant.now()`, `YearMonth.now()`, `System.currentTimeMillis()`,
+  `ZoneId.systemDefault()` et `TimeZone.getDefault()` sont redirigés vers `bouchons/Horloge.kt` (réécriture
+  du bytecode après la compilation). Un générateur règle le présent par `Horloge.regler(LocalDateTime, ZoneId)`
+  ou `Horloge.regler(millis, ZoneId)` ; chacun part du 1er janvier 2026 à midi UTC. `Store.streak`,
+  `currentWeek`, `inWindow` ou `importJson` répondent ainsi de même quel que soit le jour du lancement
+  (`VecteursHorloge.kt` en garde la preuve).
 - **`bouchons/coquilles/`** : les quelques classes d'androidx, de Material et des écrans que les règles
   nomment, signatures seules. Trois courtes recopies (`HalakhaActivity.source`, `VueJour.usageLevana`,
   les bornes de `ReglagesLecture`) : la construction s'arrête si le fichier d'origine ne les contient
