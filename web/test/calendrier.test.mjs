@@ -309,6 +309,13 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   assert.deepEqual(jour('2027-03-23', true).fetes, ['pourim']);
   assert.ok(jour('2027-03-23', true).conditions.has('al_hanissim'));
   assert.ok(!jour('2027-03-24', true).conditions.has('al_hanissim'));
+  // Pourim triple 5785 : à Jérusalem, le dimanche 16 Adar (16/03/2025), ni Ta'hanoun ni למנצח ; ailleurs, si.
+  for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lamnatseah']) {
+    assert.ok(!jour('2025-03-16', true, true).conditions.has(k), k);
+    assert.ok(jour('2025-03-16', true).conditions.has(k) && jour('2025-03-16', false).conditions.has(k), k);
+  }
+  // Un 16 Adar ordinaire à Jérusalem (jeudi 16 Adar II 5787, 25/03/2027) : Ta'hanoun.
+  assert.ok(jour('2027-03-25', true, true).conditions.has('tahanoun_chaharit'));
   const chaines = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'), 'utf8');
   for (const n of ['edot', 'sefard', 'ashkenaz']) {
     for (const k of [...A.ajouts(rc, n), ...A.ajouts(jeune, n), ...A.ajouts(ete, n), ...A.ajouts(av, n)]) assert.ok(chaines.includes(`name="${k}"`), k);

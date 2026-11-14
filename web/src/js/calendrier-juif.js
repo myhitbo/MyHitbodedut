@@ -98,9 +98,12 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(T.isHallelRecited(regles), C.HALLEL);
   si(T.isHallelShalemRecited(regles), C.HALLEL_COMPLET);
   // La veille de Roch Hachana, pas de Ta'hanoun à la prière (OC 581:3).
-  const tahanoun = T.isTachanunRecitedShacharis(regles) && regles.getYomTovIndex() !== JewishCalendar.EREV_ROSH_HASHANA;
+  // Pourim triple : à Jérusalem, le dimanche 16 Adar, jour du festin, ni Ta'hanoun ni למנצח (CalendrierJuif.kt).
+  const festinJerusalem = mukafChoma && semaine === 0 && regles.getJewishDayOfMonth() === 16
+    && regles.getJewishMonth() === (regles.isJewishLeapYear() ? JewishDate.ADAR_II : JewishDate.ADAR);
+  const tahanoun = T.isTachanunRecitedShacharis(regles) && regles.getYomTovIndex() !== JewishCalendar.EREV_ROSH_HASHANA && !festinJerusalem;
   si(tahanoun, C.TAHANOUN_CHAHARIT);
-  si(T.isTachanunRecitedMincha(regles), C.TAHANOUN_MINHA);
+  si(T.isTachanunRecitedMincha(regles) && !festinJerusalem, C.TAHANOUN_MINHA);
   si(tahanoun && (semaine === 1 || semaine === 4), C.LUNDI_JEUDI);
   si(regles.isAseresYemeiTeshuva(), C.ASSERET_YEMEI_TECHOUVA);
   si(regles.isTaanis() && !regles.isYomKippur(), C.JEUNE);
@@ -127,7 +130,7 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(mois === JewishDate.TISHREI && quantieme === 9 && semaine === 5, 'erev_kippour_vendredi');
   // Relevé du 19/10 (CalendrierJuif.C.LAMNATSEAH…).
   const adar1415 = (mois === JewishDate.ADAR || mois === JewishDate.ADAR_II) && quantieme >= 14 && quantieme <= 15;
-  si(!(regles.isRoshChodesh() || regles.isChanukah() || adar1415 || regles.isTishaBav() || regles.isAssurBemelacha() || regles.isCholHamoed() ||
+  si(!(regles.isRoshChodesh() || regles.isChanukah() || adar1415 || festinJerusalem || regles.isTishaBav() || regles.isAssurBemelacha() || regles.isCholHamoed() ||
     index === JewishCalendar.EREV_PESACH || index === JewishCalendar.EREV_YOM_KIPPUR), 'lamnatseah');
   si(mois === JewishDate.ELUL || (mois === JewishDate.TISHREI && quantieme <= 21), 'ledavid');
   si(regles.isAseresYemeiTeshuva() || (mois === JewishDate.TISHREI && quantieme === 21), 'techouva_hochaana');
