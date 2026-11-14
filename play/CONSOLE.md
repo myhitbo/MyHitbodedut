@@ -299,8 +299,18 @@ Formulaire ouvert par Google en novembre 2026, **obligatoire à compter du
 - *Explain why ACCESS_COARSE_LOCATION or LocationButton is not sufficient* :
 
 ```
-One feature only: “Zmanim in flight”. The user enters a flight and the app computes the prayer times along the route. When the user taps “Real position (GPS)”, the app takes a single GPS fix to correct the aircraft’s position on that route. In flight there is no network, so only the satellite (GPS) provider can give a position, and on Android 8 to 11, which the app supports, that provider is available only with ACCESS_FINE_LOCATION. The fix is taken once per tap, in the foreground, processed on the device and never sent anywhere. Everywhere else (prayer times on the ground, compass to Jerusalem) the app requests ACCESS_COARSE_LOCATION only. The app targets API 36; when it targets API 37, this one-time request will move to the Android location button.
+Only one feature requests precise location: “Zmanim in flight”. The user enters a flight and the app computes the prayer times along the route. When the user taps “Real position (GPS)”, the app takes a single GPS fix to correct the aircraft’s position on that route. In flight there is no network, so only the satellite (GPS) provider can give a position. On Android 8 to 11, which the app supports, that provider is available only with ACCESS_FINE_LOCATION. On Android 12 and later, approximate location is blurred to about 3 square kilometres and its updates are throttled: at airliner speed (about 15 km a minute) it can leave the aircraft many kilometres from where the app would place it. The fix is taken once per tap, with the flight screen open, processed on the device and never sent anywhere. Prayer times on the ground and the compass to Jerusalem request ACCESS_COARSE_LOCATION only. If precise location was already granted for the flight feature, they may receive a precise position too (while the app is open, or, on Android 8 and 9 only, from the last known position after a time-zone change); they round it to a hundredth of a degree (under 1 km) before using or storing it. The app targets API 36; when it targets API 37, this one-time request will move to the Android location button.
 ```
+
+Ce que le texte affirme, et où le code le tient (examen du 14/11, constat 3) :
+seule `VolActivity` demande la position exacte (`PositionApprocheeTest`) ; au
+sol, `ChoixLieu` ne demande que l'approximative, n'attend pas mieux que 5 km
+et n'enregistre qu'une position arrondie (`PositionSol.arrondie`). La
+proposition de l'examen de ne demander que l'approximative au GPS en vol sous
+Android 12 et plus n'est pas appliquée : Android y ralentit les relevés
+approximatifs (Google parle de « throttled rate » ; des mesures publiées
+donnent un relevé toutes les dix minutes), soit plus de 100 km de retard pour
+un avion. À éprouver sur un téléphone avant de changer d'avis.
 
 ### 3.11 Les deux accès spéciaux de la barrière
 

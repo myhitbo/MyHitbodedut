@@ -27,6 +27,9 @@ import java.util.TimeZone
  * de la boussole (±4°) à plus de 50 km — DirectionJerusalemTest), et
  * seulement au moment où on la choisit ; elle ne sert qu'au calcul et reste
  * sur l'appareil. Seul le GPS en vol (VolActivity) demande la position exacte.
+ * Accordée pour lui, elle peut répondre ici aussi : la position enregistrée est
+ * alors arrondie au centième de degré, moins d'un kilomètre, ce que l'approximative
+ * donnerait (examen du 14/11, constat 3 ; la déclaration Play le dit).
  *
  * À créer comme propriété de l'activité, avant onCreate : l'enregistrement de
  * la demande d'autorisation l'exige.
@@ -124,10 +127,10 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
         val precise = permise(Manifest.permission.ACCESS_FINE_LOCATION)
         val permis = if (precise || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) tous else listOf(LocationManager.NETWORK_PROVIDER)
         val connue = tous.mapNotNull { runCatching { lm.getLastKnownLocation(it) }.getOrNull() }.maxByOrNull { it.time }
-        // Assez précis : 100 m avec la position exacte ; avec l'approximative seule (31/10), Android
-        // n'annonce qu'une précision de l'ordre du kilomètre, et 100 m ne serait jamais atteint —
-        // chaque demande attendrait alors les 25 s du délai.
-        val seuil = if (precise) PRECIS_M else APPROCHE_M
+        // Assez précis : 5 km, position exacte accordée ou non (examen du 14/11, constat 3) — la
+        // position est arrondie au kilomètre à l'enregistrement, attendre mieux ne servirait à rien ;
+        // avec l'approximative seule (31/10), Android n'annonce de toute façon que le kilomètre.
+        val seuil = APPROCHE_M
         // Une position connue ne sert telle quelle que fraîche (2 min) et assez précise ; sinon
         // on demande un point neuf.
         if (connue != null && System.currentTimeMillis() - connue.time < DEUX_MINUTES &&
@@ -223,7 +226,10 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
          * « Ma position » vient d'être prise dans la liste des lieux.
          */
         fun enregistrerPosition(context: Context, position: Location, choisie: Boolean = false) {
-            val proche = Villes.plusProche(Data.villes(context), position.latitude, position.longitude)
+            // Au sol, le kilomètre suffit (zmanim, direction de Jérusalem) : rien de plus précis n'est gardé.
+            val latitude = PositionSol.arrondie(position.latitude)
+            val longitude = PositionSol.arrondie(position.longitude)
+            val proche = Villes.plusProche(Data.villes(context), latitude, longitude)
             val langue = ChizukCard.language(context)
             val nom = proche?.let { context.getString(R.string.zmanim_position_pres, it.nom.forLanguage(langue)) }
                 ?: context.getString(R.string.zmanim_position)
@@ -231,7 +237,7 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
             // celle de la ville la plus proche. L'altitude GPS brute (ellipsoïde) n'est pas celle des cartes.
             val altitude = if (Build.VERSION.SDK_INT >= 34 && position.hasMslAltitude()) position.mslAltitudeMeters.coerceAtLeast(0.0)
             else proche?.altitude ?: 0.0
-            val lieu = Zmanim.Lieu(nom, position.latitude, position.longitude, altitude, TimeZone.getDefault().id)
+            val lieu = Zmanim.Lieu(nom, latitude, longitude, altitude, TimeZone.getDefault().id)
             Store.setLieuPosition(context, lieu, choisie)
         }
 
@@ -252,10 +258,18 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
             return true
         }
 
-
-        private const val PRECIS_M = 100f
         /** La position approximative d'Android : de l'ordre de 2 à 3 km ; au-delà de 5 km, on attend mieux. */
         private const val APPROCHE_M = 5_000f
         private const val DELAI_MS = 25_000L
     }
+}
+
+/**
+ * La position gardée au sol (examen du 14/11, constat 3) : arrondie au centième de degré, soit
+ * au plus 560 m en latitude comme en longitude, moins de 800 m en tout. Les zmanim n'en bougent
+ * pas d'une minute ; la direction de Jérusalem, de moins que la tolérance de la boussole au-delà
+ * d'une quinzaine de kilomètres (PositionApprocheeTest).
+ */
+object PositionSol {
+    fun arrondie(degres: Double): Double = Math.round(degres * 100.0) / 100.0
 }
