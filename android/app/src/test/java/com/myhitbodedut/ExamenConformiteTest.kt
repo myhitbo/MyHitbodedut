@@ -160,4 +160,26 @@ class ExamenConformiteTest {
         assertEquals("Data.livre n'est lu qu'ici et dans le chargement hors du fil principal", 2,
             Regex("""Data\.livre\(""").findAll(lecture).count())
     }
+
+    /**
+     * Constat 1 : la console demande une déclaration par type de service, pas par service. Le
+     * pas-à-pas a un bloc par type déclaré, et le bloc « Special use » reprend mot pour mot les
+     * sous-types des deux manifestes.
+     */
+    @Test
+    fun `la declaration des services suit les types du manifeste`() {
+        val console = File("../../play/CONSOLE.md").readText()
+            .substringAfter("### 3.9 Foreground service permissions").substringBefore("### 3.10")
+        val manifestes = listOf("src/main/AndroidManifest.xml", "src/full/AndroidManifest.xml").map { File(it).readText() }
+        val types = manifestes.flatMap { m -> Regex("""android:foregroundServiceType="([^"]+)"""").findAll(m).flatMap { it.groupValues[1].split('|') } }.toSet()
+        assertEquals(setOf("specialUse", "mediaPlayback"), types)
+        assertEquals("un bloc par type", types.size, Regex("""(?m)^\*\*[A-Z]\. """).findAll(console).count())
+        val special = console.substringAfter("**A. Special use").substringBefore("**B.")
+        val sousTypes = manifestes.flatMap { m ->
+            Regex("""PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE"\s+android:value="([^"]+)"""").findAll(m).map { it.groupValues[1] }
+        }
+        assertEquals(2, sousTypes.size)
+        sousTypes.forEach { assertTrue("sous-type absent du bloc Special use : $it", special.contains(it)) }
+        assertTrue(console.substringAfter("**B. Media playback").contains("*Use case* : **Media Playback**"))
+    }
 }

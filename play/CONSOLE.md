@@ -40,7 +40,7 @@ l'AAB : voir « Si le relais arrive » à la fin.
 | Icône 512 × 512 | `play/icone-512.png` |
 | Image de présentation 1024 × 500 | `play/fiche/<langue>/images/featureGraphic.png` |
 | Captures (8 par langue) | prises sur la construction Play, puis composées avec les légendes de `play/visuels/legendes.json` (dossiers `en-US` et `iw-IL`) |
-| Deux vidéos YouTube « non répertoriées » | à tourner : voir 3.9 |
+| Une vidéo YouTube « non répertoriée », en deux séquences | à tourner : voir 3.9 |
 | Adresse de contact | `myhitbodedut26@gmail.com` |
 | 12 testeurs (adresses Gmail) | pour le test fermé de 14 jours (§ 4, § 9) |
 
@@ -126,7 +126,7 @@ On Saturdays and Jewish festivals the gate is silent by default (card [Rhythm], 
 The gate is a self-discipline tool that users set up on their own phone, for themselves, and can switch off at any time (Settings, [I am with Hashem] switch). It monitors no one else, has a permanent notification and never hides. No usage data leaves the device.
 ```
 
-Le même texte sert de description aux deux vidéos (3.9).
+Le même texte sert de description à la vidéo (3.9).
 
 ### 3.3 Ads
 
@@ -221,24 +221,33 @@ réponses défendables :
 
 ### 3.9 Foreground service permissions
 
-Trois lignes, à remplir une par une (§ 6.6). Les descriptions reprennent mot
-pour mot celles du manifeste : ne pas les reformuler.
+La console demande une déclaration par **type** de service, pas par service
+(aide Play « Understanding foreground service and full-screen intent
+requirements » : « For each foreground service type you declare… »). Le
+manifeste fusionné de la construction Play en déclare deux : `specialUse`
+(`SessionService` et `GateService`) et `mediaPlayback` (`SessionService`).
+La console présente donc **deux blocs**, et un seul « Special use », qui porte
+à la fois le minuteur et la barrière (examen du 14/11, constat 1 ; § 6.6). Les
+descriptions reprennent mot pour mot les sous-types des manifestes : ne pas
+les reformuler.
 
-**A. Special use — le minuteur (`SessionService`)**
+**A. Special use — le minuteur (`SessionService`) et la barrière (`GateService`)**
 
 - *Use case* : **Other**, puis :
 
 ```
-Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down.
+Two user-started features use this type. (1) Session timer: Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down. (2) Morning gate: Interposes a confirmation screen over user-selected apps during a user-defined morning window, until the user confirms their daily practice, and during any user-started session until it ends.
 ```
 
 - *User impact if the task is deferred or interrupted* :
 
 ```
-The user starts a timed prayer session (5 to 90 minutes) and puts the phone down, screen off. If the task is deferred, the countdown the user just started does not begin. If it is interrupted, the countdown stops silently: the user is never told the time is over and the time spent is not added to their journal.
+(1) The user starts a prayer session, timed (1 minute to 4 hours) or open-ended, and puts the phone down, screen off. If the task is deferred, the countdown the user just started does not begin. If it is interrupted, the countdown stops silently: the user is never told the time is over and the time spent is not added to their journal. (2) The user turns this gate on for themselves and picks the apps it applies to. If the task is deferred or interrupted, the screen does not appear when one of these apps is opened: the feature the user switched on silently stops working. While it runs it shows a permanent notification, and the user can switch it off at any time in Settings.
 ```
 
-- *Video* : vidéo 1.
+- *Video* : la vidéo ci-dessous, qui montre les deux usages l'un après
+  l'autre. Si le champ accepte plusieurs liens, donner aussi les deux
+  séquences en vidéos séparées.
 
 **B. Media playback — la musique de la séance (`SessionService`)**
 
@@ -255,32 +264,19 @@ Plays the track the user chose for their session (a niggun, a wordless melody), 
 If the task is deferred or interrupted, the music the user started does not play, or stops, as soon as the screen turns off.
 ```
 
+- *Video* : la même vidéo (sa première séquence montre l'utilisateur qui
+  lance la séance avec un morceau, comme Google le demande pour ce type :
+  « Show a user starting video or audio playback »).
+
 Ce que fait le code (examen du 14/11, constat 2) : `SessionService` ajoute ce
 type à l'usage spécial tant que la musique ou une ambiance est allumée, et le
 retire quand les deux sont coupées. Si Android le refuse (relance au
 démarrage du téléphone, interdite à ce type depuis Android 15), la séance
 continue sous l'usage spécial seul.
 
-- *Video* : vidéo 1.
-
-**C. Special use — la barrière (`GateService`)**
-
-- *Use case* : **Other**, puis :
-
-```
-Interposes a confirmation screen over user-selected apps during a user-defined morning window, until the user confirms their daily practice, and during any user-started session until it ends.
-```
-
-- *User impact* :
-
-```
-The user turns this gate on for themselves and picks the apps it applies to. If the task is deferred or interrupted, the screen does not appear when one of these apps is opened: the feature the user switched on silently stops working. While it runs it shows a permanent notification, and the user can switch it off at any time in Settings.
-```
-
-- *Video* : vidéo 2.
-
-**Les deux vidéos** (YouTube, *Unlisted*, moins de deux minutes, téléphone en
-anglais, construction Play) :
+**La vidéo** (YouTube, *Unlisted*, téléphone en anglais, construction Play,
+aussi courte que possible : chaque séquence en moins de deux minutes),
+deux séquences à la suite :
 
 1. *Session* — onglet [Today] ; choisir une durée et un morceau ; lancer la
    hitbodedout ; éteindre l'écran ; le rallumer : la notification montre le
@@ -317,9 +313,10 @@ un avion. À éprouver sur un téléphone avant de changer d'avis.
 `SYSTEM_ALERT_WINDOW` et `PACKAGE_USAGE_STATS` n'ont pas de formulaire : ils
 sont examinés à la revue. Ce qui les défend est déjà en place, à ne pas
 affaiblir : la divulgation dans l'application avant chaque accès, le paragraphe
-« THE MORNING GATE » de la fiche, la note de 3.2 et la vidéo 2. L'argument, le
-même partout : une barrière que l'utilisateur installe sur son propre
-téléphone, contre ses propres habitudes, et qu'il coupe quand il veut.
+« THE MORNING GATE » de la fiche, la note de 3.2 et la seconde séquence de la
+vidéo (3.9). L'argument, le même partout : une barrière que l'utilisateur
+installe sur son propre téléphone, contre ses propres habitudes, et qu'il
+coupe quand il veut.
 
 ---
 
