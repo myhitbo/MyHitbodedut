@@ -172,11 +172,14 @@ Page *Data types* : cocher **une seule** ligne.
 
 - *App activity* → **In-app search history**
 
-Ne **pas** cocher : *Location* (la position ne quitte pas le téléphone),
-*Personal info* (le prénom et le journal restent sur le téléphone ; l'e-mail
-de dédicace est écrit et envoyé par l'utilisateur dans sa propre messagerie,
-l'application ne transmet rien), *Installed apps* (la liste des applications
-de la barrière reste sur le téléphone), *Device or other IDs*, *Diagnostics*.
+Ne **pas** cocher : *Location* et *Installed apps* (l'application ne les
+transmet à personne ; le lieu des zmanim et la liste des applications de la
+barrière ne sortent du téléphone que dans la sauvegarde Android de
+l'utilisateur, faite par le système vers son propre compte Google et décrite
+dans les règles de confidentialité), *Personal info* (le prénom et le journal
+restent sur le téléphone ; l'e-mail de dédicace est écrit et envoyé par
+l'utilisateur dans sa propre messagerie, l'application ne transmet rien),
+*Device or other IDs*, *Diagnostics*.
 
 Page *Data usage and handling*, pour *In-app search history* :
 

@@ -474,7 +474,7 @@ Play « Data safety ».*
 | Donnée | Réponse |
 | --- | --- |
 | Activité dans l'application → **Historique des recherches dans l'application** (le numéro de vol envoyé à adsbdb) | collectée, **non partagée**, **facultative** (interrupteur éteint par défaut, accord demandé), finalité **Fonctionnement de l'application**, traitement éphémère **non coché** (adsbdb est un tiers dont on ne maîtrise pas la conservation) |
-| Position, infos personnelles, applications installées, identifiants, diagnostics | **non déclarées** : rien de cela ne quitte le téléphone par l'application |
+| Position, infos personnelles, applications installées, identifiants, diagnostics | **non déclarées** : l'application n'en transmet rien à personne. Le lieu des zmanim et la liste des applications de la barrière ne sortent du téléphone que dans la sauvegarde Android de l'utilisateur, faite par le système vers son propre compte Google et décrite dans les règles de confidentialité (examen du 14/11, constat 6) |
 
 Questions générales : l'application collecte des données = **oui** ;
 chiffrement en transit = **oui** (HTTPS seulement) ; création de compte =
