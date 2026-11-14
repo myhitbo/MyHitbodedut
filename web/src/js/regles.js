@@ -334,15 +334,10 @@ export const SignetsSiddur = {
 // --- LibraryRules (LibraryRules.kt) ---------------------------------------------
 // Une « source » est du domaine public : ses paragraphes s'affichent. La
 // vocalisation d'une édition dont la licence n'est pas déclarée est un
-// travail éditorial qu'on ne reprend pas : le texte sans nikkoud, alors.
+// travail éditorial qu'on ne reprend pas : le fichier livre déjà ces
+// paragraphes sans nikkoud (LicencesEditionsTest).
 export const LibraryRules = {
-  paragraphes(bibliotheque, source) {
-    const nikkoudOk = bibliotheque?._meta?.editions?.[source.edition]?.nikkoud_ok === true;
-    const avec = source.paragraphes ?? [];
-    if (nikkoudOk) return avec;
-    const sans = source.paragraphes_sans_nikkoud ?? [];
-    return sans.length > 0 ? sans : avec;
-  },
+  paragraphes: (bibliotheque, source) => source.paragraphes ?? [],
   /** Les sources de la bibliothèque, par section et sous-section ; les articles restent sur Android. */
   sources(bibliotheque) {
     return (bibliotheque?.sections ?? []).map((section) => ({

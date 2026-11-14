@@ -35,13 +35,9 @@ object ChizukRules {
         if (moment == Moment.DEMANDE) visible(chizuk, debug) else visible(chizuk, debug).filter { moment in it.moments }
 
     /**
-     * L'hébreu à afficher. `he_sans_nikkoud` est fourni exactement pour les
-     * éditions dont nikkoud_ok est faux ; le repli sur `he` ne sert qu'à ne
-     * jamais rendre une carte vide si une version future l'oubliait.
+     * L'hébreu à afficher. Pour une édition dont nikkoud_ok est faux, le fichier
+     * livre déjà `he` sans vocalisation (LicencesEditionsTest l'impose) : il n'y a
+     * rien à retirer à l'affichage.
      */
-    fun hebrew(chizuk: Chizuk, item: ChizukItem): String {
-        val nikkoudOk = chizuk.editions[item.edition]?.nikkoudOk ?: false
-        if (nikkoudOk) return item.he
-        return item.heSansNikkoud?.ifBlank { null } ?: item.he
-    }
+    fun hebrew(@Suppress("UNUSED_PARAMETER") chizuk: Chizuk, item: ChizukItem): String = item.he
 }

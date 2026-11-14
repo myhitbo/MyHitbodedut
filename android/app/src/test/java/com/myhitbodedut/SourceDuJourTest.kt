@@ -74,7 +74,7 @@ class SourceDuJourTest {
     @Test
     fun `un paragraphe court ecarte ne decale pas les traductions`() {
         val source = SourceEntry(id = "s", titreHe = "", ref = "", refSefaria = null, url = null, edition = "e",
-            paragraphes = listOf("קצר", "א".repeat(SourceDuJour.MIN)), paragraphesSansNikkoud = emptyList(), liensChizuk = emptyList(),
+            paragraphes = listOf("קצר", "א".repeat(SourceDuJour.MIN)), liensChizuk = emptyList(),
             paragraphesFr = listOf("court", "long"), paragraphesEn = listOf("short", "long one"),
             statutVerif = "", sujet = null, leconSurLeSujet = null)
         val bibliotheque = Library("1", mapOf("e" to Edition("e", "", "Public Domain", true)), listOf(Section("a", LocalizedText("", "", ""), listOf(SubSection("b", LocalizedText("", "", ""), listOf(source))))))

@@ -26,15 +26,13 @@ object LibraryRules {
     }
 
     /**
-     * Les paragraphes d'une source, dans la forme que sa licence permet.
-     * Même règle que pour le 'hizouk : la vocalisation d'une édition dont la
-     * licence n'est pas déclarée est un travail éditorial qu'on ne reprend pas.
+     * Les paragraphes d'une source. Même règle que pour le 'hizouk : la vocalisation
+     * d'une édition dont la licence n'est pas déclarée est un travail éditorial qu'on
+     * ne reprend pas ; le fichier livre donc déjà ces paragraphes sans vocalisation
+     * (LicencesEditionsTest l'impose).
      */
-    fun paragraphs(library: Library, source: SourceEntry): List<String> {
-        val nikkoudOk = library.editions[source.edition]?.nikkoudOk ?: false
-        if (nikkoudOk) return source.paragraphes
-        return source.paragraphesSansNikkoud.ifEmpty { source.paragraphes }
-    }
+    fun paragraphs(@Suppress("UNUSED_PARAMETER") library: Library, source: SourceEntry): List<String> =
+        source.paragraphes
 
     /**
      * Le résumé dans la langue de l'interface — et seulement elle. Il

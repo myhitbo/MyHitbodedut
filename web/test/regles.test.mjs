@@ -521,14 +521,24 @@ test('le siddour suggère le texte de l’heure, aux bornes d’Android', () => 
 });
 
 // --- LibraryRules (LibraryRulesTest) ------------------------------------------------
-test('une source sans licence de vocalisation se lit sans nikkoud', () => {
-  const lib = { _meta: { editions: { ok: { nikkoud_ok: true }, non: { nikkoud_ok: false } } } };
-  const s = { paragraphes: ['בְּ'], paragraphes_sans_nikkoud: ['ב'] };
-  assert.deepEqual(LibraryRules.paragraphes(lib, { ...s, edition: 'ok' }), ['בְּ']);
-  assert.deepEqual(LibraryRules.paragraphes(lib, { ...s, edition: 'non' }), ['ב']);
-  assert.deepEqual(LibraryRules.paragraphes(lib, { ...s, edition: 'inconnue' }), ['ב']);
-  // Faute de texte sans nikkoud, le texte tel quel.
-  assert.deepEqual(LibraryRules.paragraphes(lib, { paragraphes: ['בְּ'], edition: 'non' }), ['בְּ']);
+// Signes de vocalisation (le maqaf U+05BE et le sof pasouq U+05C3 sont de la ponctuation).
+const VOCALISATION = /[\u0591-\u05BD\u05BF-\u05C2\u05C4-\u05C7]/;
+
+test('les paragraphes affichés sont ceux du fichier ; sans nikkoud quand l’édition n’a pas de licence de vocalisation', () => {
+  const lib = JSON.parse(readFileSync(join(RES, 'raw', 'bibliotheque.json'), 'utf8'));
+  const sources = LibraryRules.sources(lib).flatMap((s) => s.sous_sections.flatMap((ss) => ss.entrees));
+  let sansLicence = 0;
+  for (const e of sources) {
+    const affiches = LibraryRules.paragraphes(lib, e);
+    assert.deepEqual(affiches, e.paragraphes, e.id);
+    if (lib._meta.editions[e.edition]?.nikkoud_ok !== true) {
+      sansLicence += 1;
+      for (const p of affiches) assert.ok(!VOCALISATION.test(p), `${e.id} : vocalisation livrée`);
+    }
+  }
+  assert.ok(sansLicence > 0, 'aucune source sans licence de vocalisation : le test ne prouve rien');
+  assert.ok(!JSON.stringify(lib).includes('_sans_nikkoud'));
+  assert.deepEqual(LibraryRules.paragraphes(lib, { edition: 'inconnue' }), []);
 });
 
 test('la bibliothèque du web ne montre que des sources, chacune avec du texte', () => {

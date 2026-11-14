@@ -123,13 +123,19 @@ test('chaque moment tire dans son propre vivier, et n’a que des textes relus',
   }
 });
 
-test('l’hébreu sans nikkoud pour les éditions sans licence de vocalisation', () => {
+test('l’hébreu affiché est he, sans nikkoud pour les éditions sans licence de vocalisation', () => {
+  const vocalisation = /[\u0591-\u05BD\u05BF-\u05C2\u05C4-\u05C7]/;
+  let sansLicence = 0;
   for (const it of chizuk.items) {
-    const ok = chizuk._meta.editions[it.edition]?.nikkoud_ok ?? false;
     const he = ChizukRules.hebreu(chizuk, it);
-    if (ok) assert.equal(he, it.he);
-    else if (it.he_sans_nikkoud) assert.equal(he, it.he_sans_nikkoud);
+    assert.equal(he, it.he);
+    assert.ok(!('he_sans_nikkoud' in it), it.id);
+    if (!(chizuk._meta.editions[it.edition]?.nikkoud_ok ?? false)) {
+      sansLicence += 1;
+      assert.ok(!vocalisation.test(he), `${it.id} : vocalisation livrée`);
+    }
   }
+  assert.ok(sansLicence > 0, 'aucun texte sans licence de vocalisation : le test ne prouve rien');
 });
 
 test('la traduction suit la règle des langues', () => {
