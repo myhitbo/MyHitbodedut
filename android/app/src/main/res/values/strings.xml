@@ -1149,6 +1149,7 @@
     <string name="marque_retiree">Marque-page retiré</string>
     <string name="fond_contraste">Contraste élevé</string>
     <string name="settings_grand_texte">Grand texte de lecture</string>
+    <string name="settings_ecran_allume">Garder l’écran allumé pendant la lecture</string>
     <string name="journal_humeur_avant">Avant la hitbodedout</string>
     <string name="journal_humeur_apres">Après</string>
     <string name="journal_gratitude">Gratitude</string>
@@ -1517,4 +1518,8 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+    <string name="lecture_chargement">Chargement…</string>
+    <string name="recherche_en_cours">Recherche…</string>
+    <string name="siddur_chapitres">Chapitres</string>
+    <string name="siddur_chapitres_filtre">Numéro ou mot</string>
 </resources>

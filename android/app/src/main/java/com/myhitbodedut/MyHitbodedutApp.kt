@@ -11,4 +11,10 @@ class MyHitbodedutApp : Application() {
         Apparence.installer(this)
         IconeLanceur.installer(this)
     }
+
+    /** Les livres entiers lus se gardent en mémoire (FLECTURE-06) ; quand elle manque, on les oublie. */
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (level >= TRIM_MEMORY_BACKGROUND || level == TRIM_MEMORY_RUNNING_LOW || level == TRIM_MEMORY_RUNNING_CRITICAL) Data.viderLivres()
+    }
 }

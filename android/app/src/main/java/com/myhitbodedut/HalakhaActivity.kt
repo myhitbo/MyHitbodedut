@@ -58,7 +58,7 @@ class HalakhaActivity : AppCompatActivity() {
                         text = getString(s.libelle)
                         isCheckable = true
                         isChecked = s == Store.sourceHalakha(context)
-                        setOnCheckedChangeListener { _, coche -> if (coche) { Store.setSourceHalakha(context, s); afficher() } }
+                        setOnCheckedChangeListener { _, coche -> if (coche) { Store.setSourceHalakha(context, s); deuxLivres = false; afficher() } }
                     })
                 }
             })
@@ -77,6 +77,7 @@ class HalakhaActivity : AppCompatActivity() {
         liste = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         contenu.addView(liste)
         // Taille et police des textes, comme dans les écrans de lecture (12/10).
+        deuxLivres = intent.getStringExtra(RechercheActivity.EXTRA_RECHERCHE) != null
         ReglagesLecture.installer(this, findViewById(R.id.halakha_defile)) { afficher() }
         afficher()
         RechercheActivity.preremplir(this, contenu)
@@ -108,6 +109,12 @@ class HalakhaActivity : AppCompatActivity() {
         outState.putString(ETAT_JOUR, jour.toString())
     }
 
+    /**
+     * Venu de la recherche globale (FLECTURE-05) : elle interroge les deux livres, l'écran aussi,
+     * quel que soit le livre choisi dans ses réglages ; toucher un livre rend le choix.
+     */
+    private var deuxLivres = false
+
     private fun afficher() {
         remplir()
         ReglagesLecture.retailler(liste)
@@ -118,8 +125,9 @@ class HalakhaActivity : AppCompatActivity() {
         val livre = Halakha.livre(this)
         val source = Store.sourceHalakha(this)
         if (recherche.trim().length >= 2) {
-            val yy = if (source.yalkut) YalkutYosef.recherche(YalkutYosef.livre(this), recherche) else emptyList()
-            val trouves = if (source.benIshHai) Halakha.recherche(livre, recherche) else emptyList()
+            val cherches = source.pourRecherche(deuxLivres)
+            val yy = if (cherches.yalkut) YalkutYosef.recherche(YalkutYosef.livre(this), recherche) else emptyList()
+            val trouves = if (cherches.benIshHai) Halakha.recherche(livre, recherche) else emptyList()
             liste.addView(VueJour.texte(this, getString(R.string.hilloulot_resultats, yy.size + trouves.size), 14f, R.color.muted, gras = true, haut = 14))
             yy.take(40).forEach { liste.addView(carte(YalkutYosef.source(it), it.texte)) }
             trouves.take(40).forEach { liste.addView(carte(source(it), it.texte)) }

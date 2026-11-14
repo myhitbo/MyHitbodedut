@@ -127,6 +127,21 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
+            <!-- L'écran gardé allumé pendant la lecture (audit du 12/11, FLECTURE-01). -->
+            <LinearLayout style="@style/SettingRow">
+
+                <TextView
+                    style="@style/SettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/settings_ecran_allume" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/ecran_allume_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
             <LinearLayout style="@style/SettingRow">
 
                 <TextView style="@style/SettingLabel" android:text="@string/settings_ouverture" />

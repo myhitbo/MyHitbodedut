@@ -30,9 +30,13 @@ class RechercheActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recherche)
+        // L'écran recréé (rotation, thème) garde la portée choisie ; la saisie revient par l'id du champ
+        // et relance la recherche (audit du 12/11, FLECTURE-04).
+        savedInstanceState?.getString(ETAT_PORTEE)?.let { n -> RechercheGlobale.Portee.values().firstOrNull { it.name == n }?.let { portee = it } }
         val contenu = findViewById<LinearLayout>(R.id.recherche_contenu)
         contenu.addView(VueJour.carte(this).apply {
             addView(EditText(context).apply {
+                id = R.id.recherche_champ
                 hint = getString(R.string.recherche_indice)
                 setSingleLine()
                 requestFocus()
@@ -68,6 +72,11 @@ class RechercheActivity : AppCompatActivity() {
         contenu.addView(liste)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(ETAT_PORTEE, portee.name)
+    }
+
     override fun onDestroy() {
         // L'attente de 300 ms d'abord : lancée après l'arrêt du fil, elle plantait (RejectedExecutionException).
         principal.removeCallbacksAndMessages(null)
@@ -78,14 +87,27 @@ class RechercheActivity : AppCompatActivity() {
     private fun lancer(texte: String) {
         dernier = texte
         val n = ++demande
+        // Les résultats de la saisie précédente ne répondent plus à celle-ci : « Recherche… » à la place.
+        if (::liste.isInitialized) liste.removeAllViews()
+        if (::liste.isInitialized && texte.trim().length >= 2) liste.addView(VueJour.texte(this, getString(R.string.recherche_en_cours), 14f, R.color.muted, gras = true, haut = 14))
         val ou = portee
         principal.postDelayed({
             if (n != demande || fil.isShutdown) return@postDelayed
             val c = applicationContext
             val langue = ChizukCard.language(this)
             fil.execute {
+                // Une requête dépassée pendant qu'elle attendait son tour ne fait rien (FLECTURE-07).
+                if (n != demande) return@execute
                 val r = runCatching {
-                    RechercheGlobale.chercher(texte, langue, Data.siddur(c), Data.livres(c), YalkutYosef.livre(c), Halakha.livre(c), Hilloulot.table(c), ou)
+                    // Seules les sources de la portée se chargent : « Hilloulot » ne lit pas les douze livres.
+                    val s = ou.sortes
+                    RechercheGlobale.chercher(texte, langue,
+                        if (RechercheGlobale.Sorte.SIDDOUR in s) Data.siddur(c) else Siddur(emptyList(), emptyList()),
+                        if (RechercheGlobale.Sorte.LIVRE in s) Data.livres(c) else null,
+                        if (RechercheGlobale.Sorte.HALAKHA in s) YalkutYosef.livre(c) else null,
+                        if (RechercheGlobale.Sorte.HALAKHA in s) Halakha.livre(c) else null,
+                        if (RechercheGlobale.Sorte.HILLOULA in s) Hilloulot.table(c) else null,
+                        ou, annule = { n != demande })
                 }.getOrDefault(emptyList())
                 principal.post { if (n == demande && !isFinishing) afficher(texte, r) }
             }
@@ -116,8 +138,8 @@ class RechercheActivity : AppCompatActivity() {
         foreground = Apparence.effetToucher(this@RechercheActivity)
         setOnClickListener {
             when (r.sorte) {
-                RechercheGlobale.Sorte.SIDDOUR -> SiddurLectureActivity.ouvrir(context, r.id)
-                RechercheGlobale.Sorte.LIVRE -> SiddurLectureActivity.ouvrirLivre(context, r.id)
+                RechercheGlobale.Sorte.SIDDOUR -> SiddurLectureActivity.ouvrirA(context, r.id, false, r.section, r.bloc)
+                RechercheGlobale.Sorte.LIVRE -> SiddurLectureActivity.ouvrirA(context, r.id, true, r.section, r.bloc)
                 RechercheGlobale.Sorte.HALAKHA -> startActivity(Intent(context, HalakhaActivity::class.java).putExtra(EXTRA_RECHERCHE, r.id))
                 RechercheGlobale.Sorte.HILLOULA -> startActivity(Intent(context, HilloulotActivity::class.java).putExtra(EXTRA_RECHERCHE, r.id))
             }
@@ -127,6 +149,7 @@ class RechercheActivity : AppCompatActivity() {
     companion object {
         /** Le texte recherché, à reprendre dans l'écran ouvert (halakha, hilloulot). */
         const val EXTRA_RECHERCHE = "recherche"
+        private const val ETAT_PORTEE = "portee"
 
         /** Remplit le champ de recherche de l'écran ouvert depuis la recherche globale. */
         fun preremplir(activite: AppCompatActivity, contenu: ViewGroup) {

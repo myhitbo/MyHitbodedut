@@ -1085,6 +1085,7 @@
     <string name="marque_retiree">Bookmark removed</string>
     <string name="fond_contraste">High contrast</string>
     <string name="settings_grand_texte">Large reading text</string>
+    <string name="settings_ecran_allume">Keep the screen on while reading</string>
     <string name="journal_humeur_avant">Before the hitbodedut</string>
     <string name="journal_humeur_apres">After</string>
     <string name="journal_gratitude">Gratitude</string>
@@ -1452,4 +1453,8 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+    <string name="lecture_chargement">Loading…</string>
+    <string name="recherche_en_cours">Searching…</string>
+    <string name="siddur_chapitres">Chapters</string>
+    <string name="siddur_chapitres_filtre">Number or word</string>
 </resources>

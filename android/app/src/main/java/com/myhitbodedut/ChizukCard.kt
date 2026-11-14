@@ -213,7 +213,17 @@ object Data {
 
     @Volatile
     private var livresIndex: Siddur? = null
-    private val livresLus = java.util.concurrent.ConcurrentHashMap<String, Siddur>()
+    /** Au plus [LIVRES_GARDES] livres entiers en mémoire (FLECTURE-06) : les plus récemment lus. */
+    private val livresLus = object : java.util.LinkedHashMap<String, Siddur>(4, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Siddur>?) = size > LIVRES_GARDES
+    }
+    const val LIVRES_GARDES = 2
+
+    /** Vrai si le livre est déjà lu : l'ouvrir ne coûte rien. */
+    fun livreEnMemoire(id: String): Boolean = synchronized(livresLus) { livresLus.containsKey(id) }
+
+    /** La mémoire manque : les livres lus s'oublient, ils se relisent au besoin. */
+    fun viderLivres() = synchronized(livresLus) { livresLus.clear() }
 
     /**
      * Les livres sans leur texte (res/raw/livres_titres.json, 04/11) : groupes, titres, nombre de
@@ -227,15 +237,22 @@ object Data {
 
     /** Un livre entier, seul (res/raw/livre_<id>.json, tools/livres_decoupe.py) ; null s'il n'existe pas. */
     fun livre(context: Context, id: String): Siddur? {
-        livresLus[id]?.let { return it }
+        synchronized(livresLus) { livresLus[id] }?.let { return it }
         val brut = LivresBruts.parId[id] ?: return null
-        return SiddurLoader.parse(Json.readRaw(context.applicationContext, brut)).also { livresLus[id] = it }
+        return SiddurLoader.parse(Json.readRaw(context.applicationContext, brut)).also { synchronized(livresLus) { livresLus[id] = it } }
+    }
+
+    /** Un livre pour la recherche : lu, puis oublié (sinon les douze livres, 40 Mo, resteraient en mémoire). */
+    private fun livrePasse(context: Context, id: String): Siddur? {
+        synchronized(livresLus) { livresLus[id] }?.let { return it }
+        val brut = LivresBruts.parId[id] ?: return null
+        return SiddurLoader.parse(Json.readRaw(context.applicationContext, brut))
     }
 
     /** Tous les livres entiers, dans l'ordre de l'index : pour la recherche, hors du fil principal. */
     fun livres(context: Context): Siddur {
         val index = livresIndex(context)
-        return Siddur(index.groupes, index.textes.mapNotNull { e -> livre(context, e.id)?.texte(e.id) }, index.nusah, index.sources)
+        return Siddur(index.groupes, index.textes.mapNotNull { e -> livrePasse(context, e.id)?.texte(e.id) }, index.nusah, index.sources)
     }
 
     /** Le siddour du nusah choisi : environ 550 ko par nusah, lus une fois par processus. */

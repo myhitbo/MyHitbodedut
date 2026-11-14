@@ -36,12 +36,31 @@ class LibraryEntryActivity : AppCompatActivity() {
             return
         }
         facts = findViewById(R.id.entry_facts)
+        etatRecu = savedInstanceState
 
         when (entry) {
             is SourceEntry -> bindSource(library, entry)
             is ArticleEntry -> bindArticle(entry)
         }
         facts.visibility = if (facts.childCount == 0) View.GONE else View.VISIBLE
+    }
+
+    /** L'écran reste allumé tant qu'on lit (FLECTURE-01). */
+    private val veille by lazy { VeilleLecture(this) }
+
+    override fun onResume() {
+        super.onResume()
+        veille.toucher()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        veille.toucher()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        veille.arreter()
     }
 
     // --- Source ---------------------------------------------------------------
@@ -59,9 +78,41 @@ class LibraryEntryActivity : AppCompatActivity() {
 
         val container = findViewById<LinearLayout>(R.id.entry_paragraphs)
         container.visibility = View.VISIBLE
-        // Les langues choisies (04/11) : l'hébreu, la traduction, ou les deux.
+        paragraphes(library, source, container)
+
+        // Le bouton de lecture, pour le texte hébreu : taille, lecture de nuit et langues. Le texte
+        // se redessine sur place, au paragraphe où l'on était (audit du 12/11, FLECTURE-04).
+        val defilement = findViewById<ScrollView>(R.id.entry_scroll)
+        ReglagesLecture.marquer(container, ReglagesLecture.Role.FOND)
+        ReglagesLecture.installer(this, defilement) {
+            paragraphes(library, source, container)
+            ReglagesLecture.appliquer(container)
+        }
+        ReglagesLecture.appliquer(container)
+        ReglagesLecture.reprendreRepere(etatRecu, defilement)
+        sauverDefilement = defilement
+
+        // Ni note ni édition sous le texte : ce sont des détails d'atelier,
+        // pas de lecture. Ils restent dans bibliotheque.json, qui est le
+        // registre de ce qui a été vérifié pour chaque source ; l'attribution
+        // passe par le lien vers Sefaria, juste en dessous.
+        linkButton(R.string.library_open_sefaria, source.url)
+    }
+
+    private var etatRecu: Bundle? = null
+    private var sauverDefilement: ScrollView? = null
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        sauverDefilement?.let { ReglagesLecture.sauverRepere(outState, it) }
+    }
+
+    /** Les paragraphes de la source, dans les langues choisies (04/11) : l'hébreu, la traduction, ou les deux. */
+    private fun paragraphes(library: Library, source: SourceEntry, container: LinearLayout) {
+        container.removeAllViews()
         val mode = LanguesTexte.mode(this)
         LibraryRules.paragraphs(library, source).forEachIndexed { index, paragraphe ->
+            val avant = container.childCount
             val textes = LanguesTexte.textes(mode, paragraphe, source.paragraphesFr.getOrNull(index), source.paragraphesEn.getOrNull(index))
             val avecHebreu = textes.any { it.first == "he" }
             if (avecHebreu) container.addView(hebrewParagraph(paragraphe, first = index == 0))
@@ -71,19 +122,8 @@ class LibraryEntryActivity : AppCompatActivity() {
                         .apply { topMargin = if (avecHebreu || k > 0) dp(6) else if (index == 0) 0 else dp(12) }
                 })
             }
+            for (i in avant until container.childCount) ReglagesLecture.reperer(container.getChildAt(i), index + 1)
         }
-
-        // Le bouton de lecture, pour le texte hébreu : taille et lecture de nuit.
-        val defilement = findViewById<ScrollView>(R.id.entry_scroll)
-        ReglagesLecture.marquer(container, ReglagesLecture.Role.FOND)
-        ReglagesLecture.installer(this, defilement) { ReglagesLecture.appliquer(container) }
-        ReglagesLecture.appliquer(container)
-
-        // Ni note ni édition sous le texte : ce sont des détails d'atelier,
-        // pas de lecture. Ils restent dans bibliotheque.json, qui est le
-        // registre de ce qui a été vérifié pour chaque source ; l'attribution
-        // passe par le lien vers Sefaria, juste en dessous.
-        linkButton(R.string.library_open_sefaria, source.url)
     }
 
     /** Un paragraphe hébreu : lu de droite à gauche, quelle que soit l'UI. */

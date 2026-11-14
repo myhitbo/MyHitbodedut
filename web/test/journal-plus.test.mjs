@@ -126,7 +126,7 @@ test('la sauvegarde : Android et le site écrivent et relisent les mêmes clés 
   const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 12, 12) });
   const fichier = JSON.parse(s.exportJson());
   // Les réglages de la barrière et des rappels n'existent que sur Android : le site ne les écrit qu'après un import.
-  const androidSeul = new Set(['window_start', 'window_end', 'snooze_minutes', 'reminder_enabled', 'reminder_minutes', 'reminder_times', 'lecture_langues']);
+  const androidSeul = new Set(['window_start', 'window_end', 'snooze_minutes', 'reminder_enabled', 'reminder_minutes', 'reminder_times', 'lecture_langues', 'lecture_ecran_allume']);
   const clesWeb = new Set([...Object.keys(fichier), ...Object.keys(fichier.settings)]);
   for (const c of clesKt) if (!androidSeul.has(c)) assert.ok(clesWeb.has(c), `le site n'exporte pas « ${c} »`);
   for (const c of clesWeb) assert.ok(clesKt.has(c), `Android n'exporte pas « ${c} »`);
