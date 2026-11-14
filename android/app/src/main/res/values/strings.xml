@@ -803,6 +803,7 @@
     <string name="siddur_toucher_lire">Toucher pour lire</string>
     <string name="ajout_oubli">En cas d’oubli</string>
     <string name="ajout_chol">En semaine</string>
+    <string name="ajout_autres_jours">Les autres jours</string>
     <string name="siddur_aujourdhui">Aujourd’hui</string>
     <string name="siddur_pas_aujourdhui">Pas aujourd’hui · toucher pour lire</string>
     <string name="siddur_replier">Replier</string>

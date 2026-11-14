@@ -288,7 +288,7 @@ object CalendrierJuif {
             val mois = regles.jewishMonth
             val quantieme = regles.jewishDayOfMonth
             val adar1415 = (mois == JewishDate.ADAR || mois == JewishDate.ADAR_II) && quantieme in 14..15
-            if (!(regles.isRoshChodesh || regles.isChanukah || adar1415 || regles.isTishaBav || regles.isAssurBemelacha ||
+            if (!(regles.isRoshChodesh || regles.isChanukah || adar1415 || regles.isTishaBav || regles.isAssurBemelacha || regles.isCholHamoed ||
                     index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR)) add(C.LAMNATSEAH)
             if (mois == JewishDate.ELUL || (mois == JewishDate.TISHREI && quantieme <= 21)) add(C.LEDAVID)
             if (regles.isAseresYemeiTeshuva || (mois == JewishDate.TISHREI && quantieme == 21)) add(C.TECHOUVA_HOCHAANA)

@@ -125,7 +125,7 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(mois === JewishDate.TISHREI && quantieme === 9 && semaine === 5, 'erev_kippour_vendredi');
   // Relevé du 19/10 (CalendrierJuif.C.LAMNATSEAH…).
   const adar1415 = (mois === JewishDate.ADAR || mois === JewishDate.ADAR_II) && quantieme >= 14 && quantieme <= 15;
-  si(!(regles.isRoshChodesh() || regles.isChanukah() || adar1415 || regles.isTishaBav() || regles.isAssurBemelacha() ||
+  si(!(regles.isRoshChodesh() || regles.isChanukah() || adar1415 || regles.isTishaBav() || regles.isAssurBemelacha() || regles.isCholHamoed() ||
     index === JewishCalendar.EREV_PESACH || index === JewishCalendar.EREV_YOM_KIPPUR), 'lamnatseah');
   si(mois === JewishDate.ELUL || (mois === JewishDate.TISHREI && quantieme <= 21), 'ledavid');
   si(regles.isAseresYemeiTeshuva() || (mois === JewishDate.TISHREI && quantieme === 21), 'techouva_hochaana');

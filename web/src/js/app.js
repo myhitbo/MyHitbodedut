@@ -13,7 +13,7 @@ import { DanseMesure } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
 import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, dansIsrael, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
-import { conditionsPour, index as indexAjouts, libelleJour, vrai as ajoutVrai } from './siddur-jour.js';
+import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
 import { distanceKm } from './direction.js';
@@ -1448,25 +1448,23 @@ function ecranPriere() {
   };
   // Le corps d'une section, sans son titre : construit d'un coup pour une prière, à la demande pour un livre.
   const corpsDe = (s, si) => {
-      const section = idx.sections.get(si);
-      if (section) return [ajout(nom(section, section.si), ajoutVrai(section.si, c), s.blocs.map((_, i) => paragraphe(s, i)), section.si), ...renvois(si)];
-      const corps = [];
-      for (let i = 0; i < s.blocs.length; i++) {
-        const a = idx.blocs.get(`${si}:${i}`);
-        if (!a) { corps.push(...avecIndices(s, si, i).filter(Boolean), ...seuls(si, i)); continue; }
-        // Le groupe : les blocs suivants de même groupe, variantes comprises.
-        const membres = [];
-        while (i < s.blocs.length && idx.blocs.get(`${si}:${i}`)?.g === a.g) {
-          const m = idx.blocs.get(`${si}:${i}`);
-          const p = paragraphe(s, i);
-          if (!ajoutVrai(m.si, c)) p.classList.add('hors-jour');
-          membres.push(p);
-          i++;
-        }
-        i--;
-        corps.push(ajout(nom(a, a.racine ?? a.si), ajoutVrai(a.racine ?? a.si, c), membres, a.racine ?? a.si));
-        corps.push(...seuls(si, i));
-      }
+    const corps = [];
+    for (const partie of planSection(s, si, idx, c)) {
+      const a = partie.annotation;
+      const dernier = partie.blocs[partie.blocs.length - 1];
+      if (!a) { corps.push(...avecIndices(s, si, dernier).filter(Boolean), ...seuls(si, dernier)); continue; }
+      // Une section entière, ou un groupe : dans un groupe du jour, la variante d'un autre jour reste lisible, estompée.
+      const groupe = a.sorte === 'bloc';
+      const membres = partie.blocs.map((i) => {
+        const p = paragraphe(s, i);
+        if (groupe && !ajoutVrai(idx.blocs.get(`${si}:${i}`).si, c)) p.classList.add('hors-jour');
+        return p;
+      });
+      // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06) : tel quel quand il se dit, sans étiquette.
+      if (partie.etat === 'ordinaire') corps.push(...membres);
+      else corps.push(ajout(nom(a, partie.racine), partie.etat === 'du_jour', membres, partie.racine));
+      if (groupe) corps.push(...seuls(si, dernier));
+    }
     return [...corps, ...renvois(si)];
   };
   // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.

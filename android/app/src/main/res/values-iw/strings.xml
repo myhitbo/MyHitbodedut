@@ -753,6 +753,7 @@
     <string name="siddur_toucher_lire">הקשה לקריאה</string>
     <string name="ajout_oubli">אם שכח</string>
     <string name="ajout_chol">בחול</string>
+    <string name="ajout_autres_jours">בשאר הימים</string>
     <string name="siddur_aujourdhui">היום</string>
     <string name="siddur_pas_aujourdhui">לא היום · הקשה לקריאה</string>
     <string name="siddur_replier">קיפול</string>
