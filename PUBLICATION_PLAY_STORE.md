@@ -28,10 +28,10 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | --- | --- |
 | Hitbodedout | Séance minutée en service de premier plan, sujet facultatif, hitbodedout guidée, « je ne sais pas quoi dire », journal, parcours, paliers et trophées, célébration |
 | Barrière du matin | `GateService` + `BlockerView` sur les applications choisies (`AppPickerActivity`), fenêtre horaire, report, Shabbat / fête |
-| Musique | 33 morceaux livrés (130 Mo), morceaux ajoutés par le sélecteur de fichiers, lecture écran éteint |
+| Musique | 26 morceaux livrés dans la version Play (§ 3.2), morceaux ajoutés par le sélecteur de fichiers, lecture écran éteint |
 | Textes | Siddour, Tehilim, Tikoun haKlali, Likoutei Tefilot par sujet, 'hizouk, bibliothèque, livres, Halakha (Yalkout Yossef), hilloulot, recherche globale |
 | Calendrier | Zmanim (KosherJava), calendrier hébraïque, Birkat haLevana, alerte « Chabbat dans 3 h », boussole vers Jérusalem |
-| Vol | Zmanim et prières en vol, rappels (Tefilat haDerekh, Omer), **suivi en direct (OpenSky) et route d'un numéro de vol (adsbdb)** |
+| Vol | Zmanim et prières en vol, rappels (Tefilat haDerekh, Omer), **route d'un numéro de vol (adsbdb)** ; le suivi en direct (OpenSky) n'est pas dans la version Play tant qu'il n'y a pas de relais (§ 3.1) |
 | Système | 6 widgets, rappels quotidiens, « Ne pas déranger » pendant la séance, partage d'un jour en image, sauvegarde JSON, 3 langues (fr, en, he) |
 
 **Hors périmètre** :
@@ -178,9 +178,9 @@ raisonnable, pas un avis juridique.* Deux règles en découlent :
   rejoint les autres écrits.
 
 **Conséquence pour Play.** L'édition complète garde la permission
-`INTERNET`. Le formulaire Sécurité des données doit déclarer les deux envois
-(§ 6.2, ligne « Vol en direct conservé »), et les règles de confidentialité
-doivent les décrire (§ 6.1).
+`INTERNET`. Tant qu'il n'y a pas de relais, le formulaire Sécurité des données
+déclare le seul envoi du numéro de vol à adsbdb (§ 6.2), et les règles de
+confidentialité le décrivent (§ 6.1).
 
 ### 3.2 Droits sur la musique livrée **(bloquant à la revue)**
 
@@ -277,6 +277,7 @@ recomposait une liste unique, est suspendu.
 | Vérification d'identité | pièce d'identité, adresse ; nom public du développeur | Vérifié |
 | Vérification d'appareil | accès à un appareil Android via l'appli Play Console | Vérifié |
 | **Test fermé obligatoire** (compte personnel créé après le 13/11/2023) | **12 testeurs inscrits sans interruption pendant 14 jours**, puis demande d'accès à la production | Vérifié |
+| **Statut de commerçant** (*trader status*) | à déclarer dans la Play Console, à la création du compte (exigé depuis novembre 2026 ; les comptes existants ont jusqu'au 01/02/2027). Commerçant ou non au sens du droit européen : déclaration juridique du propriétaire ; sur un compte personnel, « commerçant » rend l'adresse et un téléphone publics | Vérifié ; **à trancher par le propriétaire** (`play/CONSOLE.md` § 1) |
 | Vérification développeur Android | enregistrer le nom de paquet `com.myhitbodedut` (obligatoire depuis le 30/09/2026 au Brésil, en Indonésie, à Singapour et en Thaïlande, puis élargi) | Vérifié pour la date ; extension mondiale à suivre |
 
 L'enregistrement du nom de paquet sert aussi la distribution hors boutique :
@@ -361,28 +362,39 @@ ci-dessus.* Les morceaux non autorisés (§ 3.2) restent dans ce site public :
 
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de
-l'interface. Contenu, relu dans le code et tenu par `ConfidentialiteTest` :
+l'interface. Contenu au 14/11 (audit du 12/11, TWEBCONF-01 à 06), relu dans le
+code et tenu par `ConfidentialiteTest` :
 
 - ni compte, ni publicité, ni analyse d'audience, ni rapport d'erreur ; aucun
-  serveur du développeur ;
+  serveur du développeur ; il ne reçoit que les e-mails que l'utilisateur
+  choisit de lui écrire (question, dédicace) ;
 - stockage local en `SharedPreferences`, deux fichiers : réglages
-  (`myhitbodedut.xml`, dont le lieu des zmanim, les détails d'un vol, la liste
-  des apps de la barrière) et journal (`myhitbodedut-journal.xml` : séances,
-  notes, prénom) ;
+  (`myhitbodedut.xml`, dont le lieu des zmanim, les détails d'un vol, les
+  lectures — favoris, marque-pages, jours du Tikoun — et la liste des apps de
+  la barrière) et journal (`myhitbodedut-journal.xml` : hitbodedout, notes,
+  humeur, gratitude, prénom) ;
 - sauvegarde dans le nuage d'Android : réglages seuls, **journal, notes et
-  prénom exclus** ; transfert d'appareil : réglages **et** journal
-  (`backup_rules.xml`, `data_extraction_rules.xml`) ;
+  prénom exclus** ; transfert d'appareil : réglages **et** journal sous
+  Android 12 et plus (`backup_rules.xml`, `data_extraction_rules.xml`) ;
+  désinstaller n'efface pas la copie des réglages gardée par Google ;
 - export JSON à l'initiative de l'utilisateur (sans la position) ;
 - position approximative pour zmanim et boussole, exacte pour le seul GPS en
-  vol, utilisées sur l'appareil, jamais envoyées par l'application ;
-- barrière : ce que lisent les deux accès spéciaux, et comment la couper ;
-- vol (édition complète) : un seul interrupteur, « Services en ligne : route
-  du vol et suivi en direct », **désactivé par défaut** (02/11 : adsbdb passe
-  aussi derrière lui ; éteint, la loupe n'apparaît pas et rien ne quitte le
-  téléphone). Allumé : à OpenSky, un carré d'environ 10° autour de la
-  position estimée de l'avion, coordonnées arrondies au dixième de degré,
-  au toucher du bouton ; à adsbdb, le numéro de vol saisi, au toucher de la
-  loupe ; l'adresse IP, vue par ces services comme par tout serveur.
+  vol, utilisées sur l'appareil ; l'édition Play ne les envoie jamais ;
+- barrière : ce que lisent les deux accès spéciaux, **y compris pendant toute
+  hitbodedout en cours, à n'importe quelle heure** (FBARRIERE-04), et comment
+  la couper ;
+- vol : un seul interrupteur, **désactivé par défaut**, sous les résultats du
+  vol (« Préciser la position »). La loupe est toujours visible : services
+  éteints, elle demande l'accord, et l'accepter les allume pour de bon.
+  **L'édition Play n'a qu'un service en ligne** : à adsbdb, le numéro de vol
+  saisi (au toucher de la loupe, ou quand un vol est rempli avec un numéro
+  sans son trajet), avec l'adresse IP et les en-têtes techniques que voit tout
+  serveur. Le suivi en direct par OpenSky n'existe que dans l'édition
+  distribuée hors de Play, et la page le dit ;
+- billet importé : lu sur le téléphone, sans connexion ; ni le nom du passager
+  ni le numéro de réservation ne sont gardés ;
+- dédicace : ce que l'équipe reçoit par e-mail, pour quoi faire, combien de
+  temps, et comment en demander l'effacement.
 
 **Contact (02/11)** : éditeur « MyHitbodedut Team », adresse
 **myhitbodedut26@gmail.com**, dans la page (trois langues). La même adresse
@@ -393,14 +405,35 @@ page nomme.
 
 ### 6.2 Sécurité des données
 
-| Cas | Réponse |
-| --- | --- |
-| Vol en direct retiré (option A, § 3.1) | « Aucune donnée collectée ni partagée ». Aucune donnée ne quitte l'appareil. |
-| Vol en direct conservé | Déclarer **Position approximative** (zone envoyée à OpenSky) et **Autres identifiants / infos de l'app** pour le numéro de vol (adsbdb), *facultatif pour l'utilisateur* (les deux derrière un interrupteur désactivé par défaut depuis le 02/11), chiffré en transit (HTTPS). *Déduit — la qualification exacte d'une boîte géographique se confirme dans le formulaire.* |
+Réécrit le 14/11 (audit du 12/11, TWEBCONF-03). Pour Google, « collecter »
+veut dire faire sortir une donnée du téléphone, même vers un tiers et même si
+le développeur ne la reçoit jamais ; une donnée n'est pas « partagée » quand
+son envoi suit un geste de l'utilisateur, averti et d'accord. *Vérifié, aide
+Play « Data safety ».*
 
-Dans tous les cas : chiffrement en transit = oui (HTTPS seulement) ;
-suppression des données = l'utilisateur les efface en désinstallant ou par
-les réglages (aucune donnée côté serveur).
+**Version Play actuelle (pas de suivi en direct)** — une seule donnée :
+
+| Donnée | Réponse |
+| --- | --- |
+| Activité dans l'application → **Historique des recherches dans l'application** (le numéro de vol envoyé à adsbdb) | collectée, **non partagée**, **facultative** (interrupteur éteint par défaut, accord demandé), finalité **Fonctionnement de l'application**, traitement éphémère **non coché** (adsbdb est un tiers dont on ne maîtrise pas la conservation) |
+| Position, infos personnelles, applications installées, identifiants, diagnostics | **non déclarées** : rien de cela ne quitte le téléphone par l'application |
+
+Questions générales : l'application collecte des données = **oui** ;
+chiffrement en transit = **oui** (HTTPS seulement) ; création de compte =
+**aucune** ; demande de suppression = **non**, le développeur ne détenant
+aucune donnée venue de l'application (ce que garde le téléphone s'efface par
+les réglages ou en désinstallant).
+
+L'e-mail de dédicace n'est pas une collecte par l'application : l'utilisateur
+l'écrit et l'envoie dans sa propre messagerie. Les règles de confidentialité
+disent ce que l'équipe en fait (§ 6.1).
+
+**Si le relais du suivi en direct est mis en ligne** (§ 3.1) : ajouter
+Position → **Position approximative** (la position estimée de l'avion,
+arrondie, envoyée au relais avec l'indicatif), collectée, facultative, même
+finalité, et relire toute la rubrique.
+
+Les réponses exactes, écran par écran : `play/CONSOLE.md` § 3.6.
 
 ### 6.3 Publicités, achats
 
@@ -418,29 +451,40 @@ ce jour.*
   position avec d'autres utilisateurs. Classement attendu : tout public.
   *Déduit.*
 - Application d'actualités : non. Application gouvernementale : non.
-  Fonctionnalités financières, santé : non.
+  Fonctionnalités financières : non.
+- **Applications de santé** : « aucune fonction de santé » — l'application est
+  un outil de prière, sans conseil ni promesse de bien-être. Réserve : Google
+  range la « méditation » sous *Stress management, relaxation, mental
+  acuity*, et le manifeste parle de « meditation session » (§ 6.6). Au
+  propriétaire de trancher (`play/CONSOLE.md` § 3.8) ; dans tous les cas, la
+  fiche ne promet aucun effet sur la santé.
 
 ### 6.5 Accès à l'application
 
-Aucune connexion requise : cocher « Toutes les fonctionnalités sont
-disponibles sans restriction ». Ajouter une note aux examinateurs (§ 7.3) sur
-la manière de voir la barrière à n'importe quelle heure : le bouton qui
-affiche l'écran de blocage à la demande (README, « Pourquoi la barrière
-n'agit pas »).
+Rubrique « Sign-in details » de la console (ex-« App access »). Aucune
+connexion requise : toutes les fonctionnalités sont disponibles sans
+restriction. C'est aussi le seul endroit où laisser des instructions aux
+examinateurs : y coller la note du § 7.3, qui dit comment voir la barrière à
+n'importe quelle heure par le bouton d'aperçu des réglages.
 
 ### 6.6 Services de premier plan — déclaration
 
 Requise pour toute app ciblant Android 14+ (vérifié). Deux services, trois
 types :
 
-| Service | Type | Description à saisir | Vidéo |
+| Service | Type | Ce que dit la description (en anglais dans le manifeste et dans la console) | Vidéo |
 | --- | --- | --- | --- |
 | `SessionService` | `specialUse` | Compte à rebours d'une séance de méditation lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Oui : lancer une séance, verrouiller l'écran, montrer la notification |
 | `SessionService` | `mediaPlayback` | Lecture du morceau choisi par l'utilisateur pendant sa séance, écran éteint. | Même vidéo |
 | `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour, et pendant toute séance qu'il a lancée, jusqu'à sa fin. | Oui : choisir une app, ouvrir l'app, voir l'écran, valider |
 
-Les textes reprennent mot pour mot les `PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE`
-des manifestes : la cohérence entre manifeste et déclaration compte. Vidéos :
+Les textes à saisir sont en anglais et reprennent mot pour mot les
+`PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE` des manifestes : la cohérence
+entre manifeste et déclaration compte. Pour chaque ligne, la console demande
+aussi le cas d'usage (« Other » pour `specialUse`, « Media Playback » pour la
+musique), l'effet pour l'utilisateur si la tâche est différée ou interrompue,
+et le lien d'une vidéo. *Vérifié, aide Play « Understanding foreground service
+requirements ».* Tout est prêt à coller dans `play/CONSOLE.md` § 3.9. Vidéos :
 YouTube non répertoriée, moins de 2 minutes. *Format supposé.*
 
 ### 6.7 Autorisations sensibles — argumentaire
@@ -450,7 +494,7 @@ YouTube non répertoriée, moins de 2 minutes. *Format supposé.*
 | `SYSTEM_ALERT_WINDOW` | pas de formulaire, examinée en revue | Écran de garde volontaire, configuré par l'utilisateur |
 | `PACKAGE_USAGE_STATS` | pas de formulaire, examinée en revue (politique « stalkerware ») | Ne surveille que **l'utilisateur lui-même**, à sa demande ; rien n'est transmis ; icône et notification permanentes, jamais cachée |
 | `ACCESS_COARSE_LOCATION` | pas de déclaration (premier plan seulement) | Zmanim et boussole : demandée seule au toucher de « Ma position » ; ville de la liste sans autorisation. **Fait le 31/10** (`ChoixLieu`) — vérifié par `PositionApprocheeTest` |
-| `ACCESS_FINE_LOCATION` | pas de déclaration (premier plan seulement) ; la position exacte doit se justifier quand l'approximative suffirait | **Seulement** le GPS des zmanim en vol (`VolActivity`), au toucher de « Position réelle (GPS) » : sans réseau en avion, c'est la position de l'avion qui recale la route. Ni les zmanim au sol ni la boussole ne la demandent depuis le 31/10 |
+| `ACCESS_FINE_LOCATION` | **déclaration Play Console exigée à compter du 27/01/2027** (règle annoncée en avril 2026, précisée le 29/10/2026 ; formulaire ouvert en novembre 2026) : justifier pourquoi ni la position approximative ni le bouton de position d'Android ne suffisent | **Seulement** le GPS des zmanim en vol (`VolActivity`), au toucher de « Position réelle (GPS) » : sans réseau en avion, seul le GPS donne une position, et sous Android 8 à 11 ce fournisseur exige la position exacte. Un relevé par toucher, jamais envoyé. Ni les zmanim au sol ni la boussole ne la demandent depuis le 31/10. Texte de la déclaration : `play/CONSOLE.md` § 3.10 |
 | `ACCESS_NOTIFICATION_POLICY` | aucune | « Ne pas déranger » pendant la séance, accordé dans Android |
 | `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK` | aucune | Rappels, reprise après redémarrage, séance minutée |
 | `QUERY_ALL_PACKAGES` | **non demandée** — `<queries>` limité aux apps lançables | Évite le formulaire le plus restrictif — vérifié |
@@ -476,6 +520,13 @@ la contourne. L'accueil et l'onboarding n'ouvrent aucun de ces deux écrans
 (vérifié). *Référence : politique « Données utilisateur », section
 divulgation bien visible.*
 
+**À prévoir pour Android 17.** Le jour où l'application cible l'API 37, une
+demande ponctuelle au toucher, comme le GPS en vol, devra passer par le bouton
+de position d'Android (`LocationButton`, permission marquée
+`onlyForLocationButton`). Tant qu'elle cible l'API 36, la demande d'autorisation
+habituelle reste admise, avec la déclaration ci-dessus. *Vérifié, aide Play
+« Minimum Scope: Foreground Location Access and the Location Button ».*
+
 Limite connue de la position approximative : à moins d'une cinquantaine de
 kilomètres de Har haBayit, 3 km d'écart peuvent dépasser la tolérance de la
 boussole (±4°) ; au-delà de 200 km, l'écart reste sous 1°, et les zmanim
@@ -496,7 +547,27 @@ l'application garde ses trois langues.
 | --- | --- | --- |
 | Titre | 30 caractères, **un par langue** | he : `MyHitbodedut – התבודדות` (23) · en : `MyHitbodedut – Hitbodedut` (25) *(tranché le 29/10)* |
 | Description courte | 80 caractères | **Rédigée le 12/11** : `play/fiche/en-US/short_description.txt` (77, avec « התבודדות ») · `play/fiche/iw-IL/short_description.txt` (75) |
-| Description complète | 4 000 caractères | **Rédigée le 12/11** : `play/fiche/<langue>/full_description.txt` (en : 2 110, he : 1 650). La pratique · la séance · le journal · la barrière du matin (argument de 6.7) · textes (avec « traduction automatique, non relue : l'hébreu fait foi ») · zmanim et calendrier · widgets · vie privée. Le jour où le suivi en direct passe par le relais : ajouter « Données aéronautiques : OpenSky Network (opensky-network.org) » (§ 3.1) |
+| Description complète | 4 000 caractères | **Rédigée le 12/11, reprise le 14/11** : `play/fiche/<langue>/full_description.txt` (en : 2 705, he : 2 084). La pratique · la hitbodedout (durées de 5 min à 1 h 30, sujet, niggoun, « chaque minute s'ajoute à votre journée et à votre parcours ») · le journal · la barrière du matin (argument de 6.7, **y compris pendant toute hitbodedout en cours**) · textes (avec « traduction automatique, non relue : l'hébreu fait foi ») · zmanim, calendrier, boussole · widgets · vie privée (journal sur le téléphone, un seul service de vol facultatif) · attribution |
+
+**Ce que la fiche ne doit pas promettre** (audit du 12/11, TPLAYDOCS-08) : ni
+« la journée validée par le temps vraiment passé » (une journée se déclare
+aussi sans minuteur), ni une durée par défaut qui n'est pas celle du code
+(15 minutes), ni le suivi de vol en direct, ni un morceau absent de la
+version Play, ni un bienfait pour la santé (§ 6.4). Vocabulaire de
+l'interface : hitbodedut, length, subject, streak, « I am with Hashem » ; pas
+de « session ».
+
+**Attributions dans la description complète** (dernière ligne, deux langues) :
+
+- routes de vol, **présente** : en « Flight routes: adsbdb.com (data by David
+  J. Taylor and Jim Mason). » · he « מסלולי טיסה: adsbdb.com (נתונים של David
+  J. Taylor ו־Jim Mason). » ;
+- OpenSky, **obligatoire le jour où le suivi en direct passe par le relais**
+  (condition du courriel du 28/10, § 3.1 ; audit TPLAYDOCS-09), à placer avant
+  la précédente : en « Aircraft data: OpenSky Network (opensky-network.org). »
+  · he « נתוני כלי טיס: OpenSky Network ‏(opensky-network.org). » Tant que la
+  version Play n'interroge pas OpenSky, ne pas l'écrire : la fiche décrirait
+  une fonction absente.
 
 **Recherche en hébreu.** Play affiche la fiche dans la langue du téléphone
 et indexe titre, description courte et description longue ; une traduction
@@ -516,31 +587,63 @@ répétés, mots-clés empilés. *Vérifié (bonnes pratiques Play).*
 | --- | --- | --- |
 | Icône | 512 × 512, PNG 32 bits avec alpha, ≤ 1 Mo | **Prête** : `play/icone-512.png` (313 Ko), à envoyer telle quelle. Original en 1024 × 1024 : `play/icone-1024.png`. Même personnage que l'icône de l'appli, en plein cadre ; Google arrondit lui-même les coins |
 | Image de présentation | 1024 × 500, JPEG ou PNG 24 bits sans alpha | **Faite le 12/11** : `play/fiche/<langue>/images/featureGraphic.png` (RGB, sans alpha) : personnage + היכל הציון (`scene_ouverture_tombe.webp`) |
-| Captures téléphone | 2 minimum, 8 maximum, 320–3 840 px, 16:9 ou 9:16 | `captures-calendrier/`, à compléter : accueil, séance, barrière, siddour, zmanim, widgets |
-| Captures tablette 7" et 10" | recommandées (l'app gère les grands écrans) | À produire |
-| Vidéo | facultative, YouTube | Peut réutiliser la vidéo de 6.6 |
+| Captures téléphone | 2 minimum, **8 maximum**, 320–3 840 px, 16:9 ou 9:16 | **À refaire sur la construction Play** (`-Pplay=true`), en anglais puis en hébreu. Huit écrans, dans cet ordre : accueil, hitbodedout en cours, écran « Je suis avec Hachem », siddour, zmanim, textes, boussole, journal. Titres et phrases : `play/visuels/legendes.json` (clés `accueil`, `seance`, `barriere`, `siddour`, `zmanim`, `textes`, `boussole`, `journal`), tenu par `web/test/fiche-play.test.mjs` |
+| Captures tablette 7" et 10" | recommandées (l'app gère les grands écrans) | À produire, ou ne rien envoyer |
+| Vidéo | facultative, YouTube | Laisser vide ; les vidéos du § 6.6 ne sont pas des vidéos de fiche |
 
-Les captures doivent montrer l'interface réelle de la version envoyée. Pas de
-capture du suivi de vol si la fonction est retirée.
+Les captures doivent montrer l'interface réelle de la version envoyée.
 
-### 7.3 Note aux examinateurs (Play Console → Accès à l'application)
+**Les jeux de `play/visuels/{fr,en,he}` ne sont pas à envoyer** (audit du
+12/11, TPLAYDOCS-04 à 08, TEN-01, THE-03). Ce sont des captures du site web,
+antérieures à l'interface actuelle : dix par langue pour une limite de huit,
+sans la barrière en anglais ni en hébreu, avec une liste de morceaux que la
+version Play ne livre pas (visuel 10), une légende que le code ne tient pas
+(visuel 05) et, dans le visuel hébreu 04, le Nom écrit en toutes lettres hors
+d'un verset. Ils restent au dépôt comme modèle d'habillage (fond, cadre) et
+sont à supprimer dès que les nouveaux visuels sont composés.
 
-> L'application ne demande aucun compte. Pour voir la fonction de barrière :
-> Accueil → autorisations (affichage par-dessus les autres applications,
-> accès aux données d'utilisation) → choisir une application → bouton
-> « Voir l’écran « Je suis avec Hachem » maintenant » (s'affiche à toute
-> heure, sans effet).
-> La barrière est un outil d'autodiscipline que l'utilisateur configure et
-> peut désactiver à tout moment. Aucune donnée d'usage ne quitte l'appareil.
+À vérifier à l'œil sur chaque nouveau visuel, surtout en hébreu : aucun Nom en
+toutes lettres hors verset ; aucun morceau ni aucune fonction absents de la
+version Play (pas de suivi de vol en direct) ; une légende qui dit ce que
+l'écran montre.
 
-*Libellé repris de `action_preview_gate` (`values/strings.xml`) ; le traduire
-pour la note en anglais.*
+### 7.3 Note aux examinateurs (Play Console → « Sign-in details »)
+
+Réécrite le 14/11 (audit du 12/11, TPLAYDOCS-11, FBARRIERE-10, TEN-04) :
+l'ancienne note était en français et décrivait un chemin qui n'existe pas
+(« Accueil → autorisations »). La note à coller est **en anglais**, avec les
+libellés exacts de `values-en/strings.xml` : elle est dans
+**`play/CONSOLE.md` § 3.2**, seul exemplaire à tenir à jour. Le chemin qu'elle
+décrit, tel que l'application l'affiche :
+
+1. premier lancement : « Skip » ferme la présentation ;
+2. barre du bas → **Settings** → carte **Mode status** → bouton **Preview the
+   “I am with Hashem” screen now** (`action_preview_gate`) ;
+3. la première fois, la fenêtre de divulgation **Display over other apps** →
+   **Continue** → accorder l'accès dans Android → revenir et toucher le bouton
+   de nouveau ;
+4. l'écran de garde s'affiche à toute heure avec le bandeau **PREVIEW, NO
+   EFFECT** ;
+5. pour la voir agir : carte **Required permissions** → **Grant** (deux
+   accès) ; carte **I am with Hashem** → interrupteur, **Choose apps**,
+   **Mode hours** autour de l'heure courante ; puis ouvrir l'application
+   choisie. Chabbat et Yom Tov : la barrière se tait par défaut (carte
+   **Rhythm**).
+
+Si un de ces libellés change dans `values-en`, la note change avec lui.
 
 ### 7.4 Catégorie et coordonnées
 
-- Catégorie : **Style de vie** *(tranché le 29/10)*.
-- Tags : méditation, prière, judaïsme, calendrier.
-- Adresse e-mail de contact : obligatoire et publique. Site web : facultatif.
+- Catégorie : **Style de vie** (*Lifestyle*) *(tranché le 29/10)*.
+- Tags : à choisir dans la liste de Google, au plus près de religion, prière,
+  calendrier. Éviter « Meditation » tant que la déclaration « Health apps »
+  dit « aucune fonction de santé » (§ 6.4).
+- Adresse e-mail de contact : **myhitbodedut26@gmail.com**, obligatoire et
+  publique. Téléphone : aucun.
+- Site web : facultatif. À laisser vide tant que le site public livre des
+  morceaux dont les droits ne sont pas établis (§ 3.2, § 6.1).
+
+Saisie complète, écran par écran : `play/CONSOLE.md`.
 
 ---
 
@@ -570,8 +673,9 @@ local) :
 - [ ] Tablette, fenêtre libre, Chromebook (écran tactile non requis)
 - [ ] Pré-lancement Play Console (rapport automatique) : aucun plantage,
       aucun avertissement d'accessibilité bloquant
-- [ ] Aucun appel réseau si le suivi de vol est retiré (vérifier avec
-      un proxy ou les statistiques de données d'Android)
+- [ ] Réseau (proxy ou statistiques de données d'Android) : aucun appel tant
+      que les services en ligne sont éteints ; allumés, le seul hôte contacté
+      est `api.adsbdb.com` ; jamais `opensky-network.org`
 
 ---
 
@@ -621,8 +725,9 @@ et chacun doit rester inscrit les 14 jours.
 
 ## 11. Décisions attendues du propriétaire
 
-1. ~~**Suivi de vol en direct**~~ — **tranché le 29/10** : conservé (accord
-   OpenSky reçu, à vérifier selon § 3.1) ; route adsbdb conservée.
+1. ~~**Suivi de vol en direct**~~ — **tranché le 29/10, appliqué le 12/11** :
+   l'accord d'OpenSky exige un relais ; sans relais, la version Play n'a pas
+   de suivi en direct (§ 3.1). Route adsbdb conservée.
 2. ~~**Musique**~~ — **tranché le 29/10** : la version Play livre le niggoun
    du Yanuka et המלך בשדה ; les 30 niggounim sans titre et Ishay Ribo
    restent hors de Play (§ 3.2).
@@ -649,4 +754,9 @@ et chacun doit rester inscrit les 14 jours.
 - Frais d'inscription et étapes du compte — support.google.com/googleplay/android-developer/answer/6112435 ; answer/14659200
 - Vérification développeur Android (30/09/2026, quatre pays) — developer.android.com/developer-verification, cité par un article du 29/08/2026 ; la page Google elle-même n'a pas été relue
 - Conditions d'utilisation OpenSky — opensky-network.org/about/terms-of-use
+- Position exacte, bouton de position et déclaration (lu le 14/11/2026) — support.google.com/googleplay/android-developer/answer/17033915 ; annonce du 29/10/2026 : answer/18100766
+- Statut de commerçant (lu le 14/11/2026) — support.google.com/googleplay/android-developer/answer/17594752
+- Déclaration « Health apps » (lu le 14/11/2026) — support.google.com/googleplay/android-developer/answer/14738291
+- Formulaire « Data safety » (lu le 14/11/2026) — support.google.com/googleplay/android-developer/answer/10787469
+- Instructions d'accès pour la revue, « Sign-in details » (lu le 14/11/2026) — support.google.com/googleplay/android-developer/answer/9859455
 - Spécifications des visuels (icône, image de présentation, captures) — recoupées entre deux guides tiers datés de 2026 ; la page Google correspondante (answer/9866151) ne les détaille pas dans l'extrait lu
