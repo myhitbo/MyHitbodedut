@@ -74,4 +74,39 @@ class ExamenConformiteTest {
         assertTrue(seance.contains("android:foregroundServiceType=\"specialUse|mediaPlayback\""))
         assertTrue(manifeste.contains("android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"))
     }
+
+    /** Constat 8 : l'accueil analysait 1,1 Mo de JSON sur le fil principal, sous la présentation. */
+    @Test
+    fun `l accueil lit ses fichiers hors du fil principal et ne se dessine pas sous la presentation`() {
+        val accueil = code("MainActivity.kt")
+        val reprise = accueil.substringAfter("override fun onResume() {").substringBefore("\n    }\n")
+        val prechauffe = reprise.indexOf("Data.prechauffer(this)")
+        val sortie = reprise.indexOf("if (presentationLancee) {")
+        assertTrue("onResume lance la lecture hors du fil principal", prechauffe >= 0)
+        assertTrue("avant de rendre la main sous la présentation", sortie > prechauffe)
+        assertTrue("les services et les alarmes passent toujours", reprise.indexOf("SessionService.reconcilier(this)") in 0 until sortie)
+        assertTrue(reprise.indexOf("applyServiceState()") in 0 until sortie)
+        assertTrue("rien n'est dessiné sous la présentation", reprise.indexOf("refresh()", sortie) > reprise.indexOf("return", sortie))
+        val presentation = accueil.substringAfter("private fun showOnboardingOnce() {").substringBefore("\n    }\n")
+        assertTrue(presentation.indexOf("presentationLancee = true") in 0 until presentation.indexOf("startActivity(Intent(this, OnboardingActivity"))
+
+        // Ce qui lit le siddour, la bibliothèque ou le Tikoun n'est appelé que données prêtes.
+        val rendu = accueil.substringAfter("private fun refresh() {").substringBefore("\n    }\n")
+        assertTrue(rendu.contains("if (Data.pret) renderDonnees()"))
+        val donnees = accueil.substringAfter("private fun renderDonnees() {").substringBefore("\n    }\n")
+        listOf("RepriseFavoris.lignes(", "AccueilMoment.cartes(", "SourceDuJour.carte(", "renderTikkun()").forEach { appel ->
+            assertTrue("$appel dans renderDonnees", donnees.contains(appel))
+            assertEquals("$appel nulle part ailleurs", 1, Regex("(?<!fun )" + Regex.escape(appel)).findAll(accueil).count())
+        }
+
+        // La lecture : sur son fil, marquée prête même en échec (l'accueil réessaie alors sur place).
+        val data = code("ChizukCard.kt")
+        val lecture = data.substringAfter("fun prechauffer(context: Context, apres: (() -> Unit)? = null) {")
+            .substringBefore("\n    }\n")
+        assertTrue(lecture.contains("if (pret) return"))
+        val tache = lecture.substringAfter("fil.execute {")
+        listOf("siddur(app)", "library(app)", "tikkun(app)").forEach { assertTrue(it, tache.contains(it)) }
+        assertTrue(tache.indexOf("pret = true") > tache.indexOf("tikkun(app)"))
+        assertTrue(tache.contains("Looper.getMainLooper()"))
+    }
 }
