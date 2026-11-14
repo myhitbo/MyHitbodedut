@@ -87,14 +87,27 @@ class RechercheActivity : AppCompatActivity() {
     private fun lancer(texte: String) {
         dernier = texte
         val n = ++demande
+        // Les résultats de la saisie précédente ne répondent plus à celle-ci : « Recherche… » à la place.
+        if (::liste.isInitialized) liste.removeAllViews()
+        if (::liste.isInitialized && texte.trim().length >= 2) liste.addView(VueJour.texte(this, getString(R.string.recherche_en_cours), 14f, R.color.muted, gras = true, haut = 14))
         val ou = portee
         principal.postDelayed({
             if (n != demande || fil.isShutdown) return@postDelayed
             val c = applicationContext
             val langue = ChizukCard.language(this)
             fil.execute {
+                // Une requête dépassée pendant qu'elle attendait son tour ne fait rien (FLECTURE-07).
+                if (n != demande) return@execute
                 val r = runCatching {
-                    RechercheGlobale.chercher(texte, langue, Data.siddur(c), Data.livres(c), YalkutYosef.livre(c), Halakha.livre(c), Hilloulot.table(c), ou)
+                    // Seules les sources de la portée se chargent : « Hilloulot » ne lit pas les douze livres.
+                    val s = ou.sortes
+                    RechercheGlobale.chercher(texte, langue,
+                        if (RechercheGlobale.Sorte.SIDDOUR in s) Data.siddur(c) else Siddur(emptyList(), emptyList()),
+                        if (RechercheGlobale.Sorte.LIVRE in s) Data.livres(c) else null,
+                        if (RechercheGlobale.Sorte.HALAKHA in s) YalkutYosef.livre(c) else null,
+                        if (RechercheGlobale.Sorte.HALAKHA in s) Halakha.livre(c) else null,
+                        if (RechercheGlobale.Sorte.HILLOULA in s) Hilloulot.table(c) else null,
+                        ou, annule = { n != demande })
                 }.getOrDefault(emptyList())
                 principal.post { if (n == demande && !isFinishing) afficher(texte, r) }
             }

@@ -56,3 +56,19 @@ class LivresEnMemoireTest {
         assertEquals(2, Data.LIVRES_GARDES)
     }
 }
+
+/** FLECTURE-07 : une requête dépassée s'abandonne en route. */
+class RechercheAnnulableTest {
+    private val s = Siddur(emptyList(), listOf(SiddurTexte("t", "g", LocalizedText("עלינו", "Alénou", "Aleinu"), "",
+        listOf(SiddurSection("", listOf(SiddurBloc("וַאֲנַחְנוּ כּוֹרְעִים", false)))))))
+
+    @Test fun `une requete dépassée ne rend rien`() {
+        assertEquals(1, RechercheGlobale.chercher("כורעים", "fr", s, null, null, null, null).size)
+        assertEquals(0, RechercheGlobale.chercher("כורעים", "fr", s, null, null, null, null, annule = { true }).size)
+    }
+
+    @Test fun `la normalisation reste la meme`() {
+        assertEquals("birkot hachahar prieres", RechercheGlobale.nu("Birkot hacha’har Prières"))
+        assertEquals("ברוך אתה", RechercheGlobale.nu("<b>בָּרוּךְ</b> אַתָּה"))
+    }
+}
