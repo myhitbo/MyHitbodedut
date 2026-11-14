@@ -1,0 +1,94 @@
+{
+  "langues": {
+    "en": {
+      "dossier": "en-US",
+      "visuels": [
+        {
+          "cle": "accueil",
+          "titre": "A moment alone with Hashem",
+          "phrase": "Daily hitbodedut: your day, your week and your streak at a glance."
+        },
+        {
+          "cle": "seance",
+          "titre": "Pick a length and begin",
+          "phrase": "From 5 minutes to 1 h 30 min, with a subject and a niggun if you like."
+        },
+        {
+          "cle": "barriere",
+          "titre": "First, your hitbodedut",
+          "phrase": "A morning gate you set up yourself, on the apps you choose. Off whenever you want."
+        },
+        {
+          "cle": "siddour",
+          "titre": "The siddur for this hour",
+          "phrase": "Three nuschaot: Edot HaMizrach, Sefard and Ashkenaz."
+        },
+        {
+          "cle": "zmanim",
+          "titre": "Zmanim for your city",
+          "phrase": "Today’s times, Hebrew calendar, halacha and hillulot."
+        },
+        {
+          "cle": "textes",
+          "titre": "Texts to pray with",
+          "phrase": "Siddur, Tehillim, Tikkun HaKlali, Rabbi Nachman’s books."
+        },
+        {
+          "cle": "boussole",
+          "titre": "Toward Jerusalem",
+          "phrase": "A compass for the direction of prayer, wherever you are."
+        },
+        {
+          "cle": "journal",
+          "titre": "Every hitbodedut counts",
+          "phrase": "A note after each one, your streak and your path. Your journal stays on your phone."
+        }
+      ]
+    },
+    "he": {
+      "dossier": "iw-IL",
+      "visuels": [
+        {
+          "cle": "accueil",
+          "titre": "רגע לבד עם השם",
+          "phrase": "התבודדות יומית: היום, השבוע והרצף שלכם במבט אחד."
+        },
+        {
+          "cle": "seance",
+          "titre": "בוחרים משך ומתחילים",
+          "phrase": "מ־5 דקות ועד שעה וחצי, עם נושא ועם ניגון, אם תרצו."
+        },
+        {
+          "cle": "barriere",
+          "titre": "קודם כול, ההתבודדות",
+          "phrase": "מחסום בוקר שאתם מציבים בעצמכם, על האפליקציות שבחרתם. אפשר לכבות בכל רגע."
+        },
+        {
+          "cle": "siddour",
+          "titre": "הסידור, לשעה זו",
+          "phrase": "שלושה נוסחים: עדות המזרח, ספרד ואשכנז."
+        },
+        {
+          "cle": "zmanim",
+          "titre": "זמני היום בעיר שלכם",
+          "phrase": "זמני היום, הלוח העברי, הלכה והילולות."
+        },
+        {
+          "cle": "textes",
+          "titre": "טקסטים לתפילה",
+          "phrase": "סידור, תהילים, תיקון הכללי וספרי רבי נחמן."
+        },
+        {
+          "cle": "boussole",
+          "titre": "לכיוון ירושלים",
+          "phrase": "מצפן לכיוון התפילה, בכל מקום שתהיו בו."
+        },
+        {
+          "cle": "journal",
+          "titre": "התבודדות, יום אחרי יום",
+          "phrase": "הערה אחרי כל התבודדות, הרצף והדרך שלכם. היומן נשאר בטלפון."
+        }
+      ]
+    }
+  }
+}

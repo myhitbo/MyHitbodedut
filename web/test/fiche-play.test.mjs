@@ -29,3 +29,25 @@ test('l’image de présentation fait 1024 × 500, sans alpha', () => {
     assert.equal(png[25], 2, langue);
   }
 });
+
+// Les légendes des visuels (audit du 12/11, TPLAYDOCS-04 à 08, TEN-01, THE-03) : play/visuels/legendes.json,
+// que lit l'outil de composition. Huit visuels par langue, dans le même ordre, courts, sans le Nom en toutes lettres.
+test('les légendes des visuels : huit par langue, dans l’ordre, dans les limites', () => {
+  const { langues } = JSON.parse(readFileSync(new URL('../../play/visuels/legendes.json', import.meta.url), 'utf8'));
+  const cles = ['accueil', 'seance', 'barriere', 'siddour', 'zmanim', 'textes', 'boussole', 'journal'];
+  assert.deepEqual(Object.keys(langues), ['en', 'he']);
+  assert.equal(langues.en.dossier, 'en-US');
+  assert.equal(langues.he.dossier, 'iw-IL');
+  for (const [langue, { visuels }] of Object.entries(langues)) {
+    assert.deepEqual(visuels.map((v) => v.cle), cles, langue);
+    for (const v of visuels) {
+      assert.deepEqual(Object.keys(v), ['cle', 'titre', 'phrase'], `${langue} ${v.cle}`);
+      assert.ok(v.titre && [...v.titre].length <= 30, `${langue} ${v.cle} titre`);
+      assert.ok(v.phrase && [...v.phrase].length <= 90, `${langue} ${v.cle} phrase`);
+      // Ni classement, ni suivi en direct : la version Play ne l'a pas.
+      assert.ok(!/יהוה|\bbest\b|#1|№|\blive\b|OpenSky/i.test(v.titre + ' ' + v.phrase), `${langue} ${v.cle}`);
+    }
+    // L'hébreu est en hébreu, l'anglais en lettres latines.
+    assert.equal(visuels.every((v) => /[\u05D0-\u05EA]/.test(v.titre)), langue === 'he', langue);
+  }
+});
