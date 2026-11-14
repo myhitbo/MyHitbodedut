@@ -114,8 +114,9 @@ Ils viennent avant tout le reste.
 
 ### 3.1 Suivi de vol en direct — licence OpenSky **(bloquant)**
 
-`SuiviVol.kt` interroge `https://opensky-network.org/api/states/all` en accès
-anonyme. Les conditions d'utilisation d'OpenSky (vérifié, page citée) :
+Hors de Play, `SuiviVol.kt` interroge
+`https://opensky-network.org/api/states/all` en accès anonyme. Les conditions
+d'utilisation d'OpenSky (vérifié, page citée) :
 
 > « Use of the REST API in any operational capacity — including integration
 > into a live product, service, or automated system […] — requires a previous
@@ -149,6 +150,41 @@ est en ligne, corriger `confidentialite.html` (l'indicatif part vers le relais :
 « il n'a pas de serveur pour cette application » devient faux), la phrase
 `onboarding_private_body` (« sans envoyer l'indicatif ») et les § 6.1 et 6.2,
 avant d'envoyer l'AAB.
+
+**Texte prêt pour les règles de confidentialité, le jour du relais** (audit
+du 12/11, TWEBCONF-01). Il remplace le point « Suivi en direct » de la section
+« Les vols », dans les trois langues ; dans « En bref », « il n'a pas de
+serveur pour cette application » devient « sauf ce que reçoit le relais du
+suivi de vol, décrit plus bas ».
+
+- FR : « Suivi en direct, via un relais du développeur puis OpenSky Network
+  (opensky-network.org) : lancé par un bouton. Le téléphone envoie au relais
+  (un service hébergé chez Cloudflare et tenu par MyHitbodedut Team)
+  l’indicatif du vol et la position estimée de l’avion, arrondie au dixième de
+  degré. Le relais demande à OpenSky les avions de cette zone et ne renvoie
+  que la position de l’avion cherché. Il ne garde ni l’indicatif ni la
+  position envoyés : seulement la réponse d’OpenSky pour la zone, 15 secondes
+  en mémoire. Cloudflare tient ses propres journaux techniques, dont l’adresse
+  IP. »
+- EN: “Live tracking, through a relay run by the developer, then OpenSky
+  Network (opensky-network.org): started with a button. The phone sends the
+  relay (a service hosted by Cloudflare and operated by MyHitbodedut Team) the
+  flight’s callsign and the aircraft’s estimated position, rounded to a tenth
+  of a degree. The relay asks OpenSky for the aircraft in that area and
+  returns only the position of the aircraft you are looking for. It keeps
+  neither the callsign nor the position you sent: only OpenSky’s answer for
+  the area, for 15 seconds in memory. Cloudflare keeps its own technical logs,
+  including the IP address.”
+- HE : „מעקב בזמן אמת, דרך ממסר של המפתח ולאחר מכן OpenSky Network
+  ‏(opensky-network.org): מתחיל בלחיצה על כפתור. הטלפון שולח לממסר (שירות
+  המתארח ב־Cloudflare ומופעל בידי MyHitbodedut Team) את אות הקריאה של הטיסה
+  ואת המיקום המשוער של המטוס, מעוגל לעשירית מעלה. הממסר מבקש מ־OpenSky את
+  המטוסים באזור הזה ומחזיר רק את מיקום המטוס המבוקש. הוא אינו שומר את אות
+  הקריאה ואת המיקום שנשלחו, אלא רק את תשובת OpenSky לאזור, 15 שניות בזיכרון.
+  ל־Cloudflare יומנים טכניים משלה, ובהם כתובת ה־IP.”
+
+Le même jour : § 6.2 (position approximative), l'attribution OpenSky sur la
+fiche (§ 7.1) et l'en-tête de `play/CONSOLE.md`.
 
 Conserver l'écrit hors dépôt, avec ceux des ayants droit (§ 3.2) : Google ou
 OpenSky peuvent le demander.
@@ -255,17 +291,31 @@ recomposait une liste unique, est suspendu.
 
 ### 3.3 Droits sur les textes
 
-| Source (`res/raw/*.json`) | Licence déclarée | Action |
+Complété le 14/11 (audit du 12/11, TLIVRES-10 et THILLOULOT-07). « Déclaré »
+veut dire : affirmé par le propriétaire, sans écrit versé au dépôt. Chaque
+écrit se conserve hors dépôt, comme au § 3.2, et doit dire sa portée :
+reproduction, **traduction**, diffusion dans l'application et sur le site.
+
+| Source | Licence ou accord | Action |
 | --- | --- | --- |
 | Tanakh, Likoutei Moharan, Sefer haMidot, Siddour Edot haMizra'h, Perek Chira | Domaine public (via Sefaria) | Aucune |
+| Traductions du Rabbinat et de la JPS | Domaine public | Aucune |
+| Siddour, traduction Metsudah | CC-BY | Mention au pied du siddour |
 | Kitsour Choul'han Aroukh Yalkout Yossef (Torat Emet) | **CC BY-NC-SA 2.5** + licence reçue | Application **gratuite, sans publicité ni achat** ; crédit affiché ; garder l'écrit de la licence |
+| Torat Emet, Seder haDorot (hilloulot) | CC BY-NC-SA 2.5 | Crédit affiché ; mêmes conditions que le Yalkout Yossef |
 | Livres du Yanuka (מכון ים שלמה) | « כל הזכויות שמורות », autorisation déclarée | Écrit à conserver, comme 3.2 |
-| or-breslev.co.il | Accord déclaré le 13/10 | Écrit à conserver |
-| Villes (GeoNames) | CC BY 4.0, attribution dans les réglages | OK — vérifié |
+| Bisdei Yaar, Rav Shalom Arush (breslev.co.il) : 86 des 171 textes de 'hizouk (`chizuk.json`) | Autorisation déclarée le 22/09 | **Écrit à conserver** ; portée à faire préciser : reproduction, traduction, site web |
+| or-breslev.co.il | Accord déclaré le 13/10 | Écrit à conserver ; faire préciser s'il couvre la vocalisation de l'éditeur |
+| Traductions automatiques du 04/11 d'œuvres protégées (Yalkout Yossef, Tefila LiChlomo) | Œuvres dérivées : permises seulement si l'accord de l'œuvre d'origine couvre la traduction | Le faire écrire dans chaque accord |
+| Guide de la hitbodedout | Texte du propriétaire, déclaré auteur le 22/09 | Aucune |
+| Hilloulot : Wikipédia en hébreu, 1 701 extraits | CC BY-SA 4.0 | Auteur, lien et licence affichés |
+| Hilloulot : biographies de MyTzadik (2 213, YETEV 4 LTD) et de המאיר לארץ (133), reprises mot pour mot | Accord déclaré le 12/10, aucun écrit au dépôt | **Écrit à obtenir** et à conserver. Biographie d'adar-9 (réserve expresse de l'institut de Stefanesti : pas d'usage sans accord écrit) : à retirer, ou obtenir cet accord. Aux 11-8 et 2-16 : retirer la ligne de crédit des photos, que l'application ne reprend pas |
+| Hilloulot : החכם היומי, Hidabroot | Faits et liens seulement | Aucune |
+| Ben Ish 'Haï (Wikisource via Sefaria) | Domaine public | Aucune |
+| Villes (GeoNames) | CC BY 4.0, attribution au pied des écrans Zmanim, Calendrier et Boussole | OK — vérifié |
+| KosherJava (calcul des zmanim) | LGPL 2.1 | Bibliothèque non modifiée ; licence citée dans `ZMANIM.md` |
 | Polices (6 × OFL) | `assets/licences/` | OK — vérifié |
-| Si'hot haRan, Chiv'hei haRan, Likoutei Etsot (rabenubook), Likoutei Tefilot (Maleh Vigadish 2021) — les 7 anciennes entrées `"unknown"` | Œuvres de Rabbi Natan (m. 1844), domaine public ; licence des éditions non déclarée par Sefaria (vérifié le 29/10) | **Tranché le 29/10** : livrées en texte seul, sans la vocalisation de l'éditeur ; licence réécrite « Public Domain (texte seul) » ; `LicencesEditionsTest` interdit tout retour d'un « unknown » ou de la vocalisation |
-
----
+| Si'hot haRan, Chiv'hei haRan, Likoutei Etsot (rabenubook), Likoutei Tefilot (Maleh Vigadish 2021) — les 7 anciennes entrées `"unknown"` | Œuvres de Rabbi Natan (m. 1844), domaine public ; licence des éditions non déclarée par Sefaria (vérifié le 29/10) | **Tranché le 29/10** : affichées en texte seul, licence réécrite « Public Domain (texte seul) » ; `LicencesEditionsTest` interdit le retour d'un « unknown ». L'audit du 12/11 (TLIVRES-03) a trouvé la vocalisation de l'éditeur encore présente dans des fichiers : tant que ce constat n'est pas clos, « texte seul » vaut pour l'affichage, pas pour les fichiers livrés |
 
 ## 4. Compte développeur
 
