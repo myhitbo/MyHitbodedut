@@ -303,7 +303,10 @@ export function rappelsTefila(aujourdhui, enIsrael, avance = 3, jourDe = (iso) =
     const d = ajoute(aujourdhui, k);
     const j = jourDe(d);
     const pluie = 'tal_oumatar';
-    if (j.conditions.has(pluie) && !veille.conditions.has(pluie)) res.push({ type: 'pluie_debut', date: d });
+    // Premier jour un samedi : on commence à motsaé Chabbat, pas à l'Arvit du vendredi soir (FCALENDRIER-04, RappelsTefila.kt).
+    if (j.conditions.has(pluie) && !veille.conditions.has(pluie)) {
+      res.push({ type: 'pluie_debut', date: new Date(`${d}T12:00:00Z`).getUTCDay() === 6 ? ajoute(d, 1) : d });
+    }
     if (!j.conditions.has(pluie) && veille.conditions.has(pluie)) res.push({ type: 'pluie_fin', date: d });
     // Les Edot de l'hémisphère sud disent מוריד הטל toute l'année (sansGuechem).
     if (!sansGuechem && j.moisHebreu === 7 && j.jourHebreu === 22) res.push({ type: 'guechem_debut', date: d });

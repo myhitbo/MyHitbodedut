@@ -374,7 +374,12 @@ import { rappelsTefila } from '../src/js/calendrier-juif.js';
 test('rappels de tefila : mêmes cas que RappelsTefilaTest', () => {
   assert.deepEqual(rappelsTefila('2026-10-16', true), [{ type: 'pluie_debut', date: '2026-10-18' }]);
   assert.ok(!rappelsTefila('2026-10-16', false).some((r) => r.type === 'pluie_debut'));
-  assert.deepEqual(rappelsTefila('2026-12-02', false, 6).filter((r) => r.type === 'pluie_debut').map((r) => r.date), ['2026-12-05']);
+  // Premier jour le samedi 5/12/2026 : on commence à motsaé Chabbat, rappel daté du dimanche 6 (FCALENDRIER-04).
+  const pluie = (iso, n = 3) => rappelsTefila(iso, false, n).filter((r) => r.type === 'pluie_debut').map((r) => r.date);
+  assert.deepEqual(rappelsTefila('2026-12-02', false, 6).filter((r) => r.type === 'pluie_debut').map((r) => r.date), ['2026-12-06']);
+  for (const iso of ['2026-12-02', '2026-12-04', '2026-12-05']) assert.deepEqual(pluie(iso), ['2026-12-06'], iso);
+  assert.deepEqual(pluie('2026-12-06'), []);
+  assert.deepEqual(pluie('2031-12-05'), ['2031-12-07']);
   const p = rappelsTefila('2027-04-20', true).map((r) => `${r.type}@${r.date}`);
   for (const x of ['pluie_fin@2027-04-22', 'guechem_fin@2027-04-22', 'omer@2027-04-23']) assert.ok(p.includes(x), x);
   assert.ok(rappelsTefila('2027-09-30', false).some((r) => r.type === 'dix_jours' && r.date === '2027-10-02'));
