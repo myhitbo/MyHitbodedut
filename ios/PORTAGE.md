@@ -1007,7 +1007,7 @@ L'étiquette **1.10.11 est la dernière à l'API et aux définitions de l'ère 2
 | `ReferenceNOAA`, `ReferencePyEphem` | `android/app/src/test/resources/zmanim_reference_*.json` | 2 s (20 s pour 'hatsot), 60 s |
 | `VecteursVol` | `web/test/vecteurs_vol.json`, 26 vols | 2 s, mêmes réserves, mêmes dates de ligne |
 
-Ce que ces vecteurs **ne couvrent pas**, et qu'il faut ajouter : le molad et les bornes de Birkat haLevana (`Levana.kt`), la paracha à venir (`Halakha.kt`), `isRoshChodesh` et la numérotation des mois (`YalkutYosef.kt`). Proposition : un second générateur à côté du premier, `tools/vecteurs_kosherjava/VecteursIos.kt`, qui écrit un fichier propre à iOS. Le fichier du site n'est pas touché, `android/` non plus.
+Ce que ces vecteurs **ne couvrent pas**, et qu'il faut ajouter : le molad et les bornes de Birkat haLevana (`Levana.kt`), la paracha à venir (`Halakha.kt`), `isRoshChodesh` et la numérotation des mois (`YalkutYosef.kt`). Fait (tâche 11) : les générateurs de l'oracle JVM, `tools/vecteurs_ios/VecteursLevana.kt`, `VecteursSiddourJour.kt` et `VecteursTextesDuJour.kt`, écrivent des fichiers propres à iOS (`ios/Paquets/Coeur/Tests/Vecteurs`). Le fichier du site n'est pas touché, `android/` non plus.
 
 **Si les vecteurs ne passent pas.** Dans l'ordre : corriger dans le fork (les corrections d'une bibliothèque LGPL se publient, ce qui va de soi) et les proposer en amont ; essayer l'autre portage ; en dernier recours, porter soi-même les trois parties utilisées (calcul NOAA, calendrier, `TefilaRules`), comme le site l'a fait pour `TefilaRules` en 138 lignes (`web/src/js/tefila.js`). Dans tous les cas le juge est le même fichier.
 

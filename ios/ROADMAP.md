@@ -148,7 +148,7 @@ Tout se vérifie sur Linux. Une tâche est finie quand les tests nommés, porté
 ### 11. Siddour du jour, Levana, halakha, hilloulot
 
 - **Sources** : `SiddurJour.kt`, `Siddur.kt`, `Levana.kt`, `Halakha.kt`, `YalkutYosef.kt`, `Hilloulot.kt`, `SourceDuJour.kt`.
-- **Livrable** : les règles ; `tools/vecteurs_kosherjava/VecteursIos.kt` et son fichier (molad, bornes de Birkat haLevana, paracha à venir, Roch 'Hodech), sans toucher au fichier du site.
+- **Livrable** : les règles ; les générateurs de l'oracle JVM `tools/vecteurs_ios/VecteursLevana.kt`, `VecteursSiddourJour.kt` et `VecteursTextesDuJour.kt` et leurs fichiers (molad, bornes de Birkat haLevana, paracha à venir, Roch 'Hodech, lecture du siddour du jour, halakha, Yalkout Yossef, hilloulot, source du jour), sans toucher au fichier du site.
 - **Critère de fin** : portés et verts : `SiddurJourTest`, `MegilaTest`, `IlanotTest`, `LevanaTest`, `HalakhaTest`, `YalkutYosefTest`, `HilloulotTest`, `SourceDuJourTest` ; le fichier de `VecteursIos` rendu à l'identique.
 
 ### 12. Logique de la barrière, planificateur, chronologies

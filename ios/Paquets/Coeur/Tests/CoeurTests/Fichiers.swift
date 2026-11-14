@@ -20,6 +20,16 @@ enum Depot {
         try donnees("ios/Ressources/Contenu/" + nom)
     }
 
+    /// Un contenu exporté, en texte (UTF-8).
+    static func texte(_ nom: String) throws -> String {
+        String(decoding: try contenu(nom), as: UTF8.self)
+    }
+
+    /// Un fichier de vecteurs écrit par le code d'Android (tools/vecteurs_ios, Tests/Vecteurs).
+    static func vecteurs(_ nom: String) throws -> ObjetJSON {
+        try ObjetJSON(texte: String(decoding: donnees("ios/Paquets/Coeur/Tests/Vecteurs/" + nom), as: UTF8.self))
+    }
+
     /// Le lecteur des contenus exportés (`LecteurContenu`) : nil pour un fichier absent.
     static func lire(_ chemin: String) throws -> Data? {
         let url = racine.appendingPathComponent("ios/Ressources/Contenu/" + chemin)
@@ -83,5 +93,16 @@ extension JourCivil {
     static func du(_ iso: String) -> JourCivil {
         guard let date = JourCivil(iso: iso) else { preconditionFailure("date illisible : \(iso)") }
         return date
+    }
+
+    /// Les jours de `debut` inclus à `fin` exclu, comme `generateSequence { it.plusDays(1) }` des tests d'Android.
+    static func jours(_ debut: String, avant fin: String) -> [JourCivil] {
+        let a = du(debut), b = du(fin)
+        return (0..<max(0, b.jourJulien - a.jourJulien)).map { a.plus(jours: $0) }
+    }
+
+    /// Minuit UTC de ce jour, en millisecondes Unix, plus `heures`.
+    func millisUTC(heures: Int = 0) -> Int64 {
+        Int64(jourJulien - 2_440_588) * 86_400_000 + Int64(heures) * 3_600_000
     }
 }

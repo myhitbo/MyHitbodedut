@@ -343,3 +343,117 @@ public enum CalendrierJuif {
             conditions: c)
     }
 }
+
+// MARK: Le jour hébreu seul, et le molad
+
+extension CalendrierJuif {
+
+    /// Ce que `JewishCalendar(date)` de KosherJava dit d'un jour civil, sans les règles de prière :
+    /// assez léger pour les boucles de Levana, du Yalkout Yossef et des hilloulot. Lu dans le calendrier
+    /// hébreu de Foundation, celui que KosherSwift lit lui-même.
+    public struct DateJuive: Sendable, Equatable {
+        public let annee: Int
+        /// Numérotation de KosherJava : NISSAN = 1 … ELUL = 6, TICHREI = 7 … ADAR = 12, ADAR_II = 13.
+        public let mois: Int
+        public let jour: Int
+        public let embolismique: Bool
+
+        /// `isRoshChodesh()` : le 30 d'un mois, ou le 1er d'un mois autre que Tichri.
+        public var rochHodech: Bool { (jour == 1 && mois != Mois.tichri) || jour == 30 }
+    }
+
+    /// Le calendrier hébreu de Foundation, en UTC : le jour civil y est lu à midi.
+    private static let hebreu: Calendar = {
+        var c = Calendar(identifier: .hebrew)
+        c.timeZone = TimeZone(identifier: "UTC") ?? TimeZone(secondsFromGMT: 0)!
+        return c
+    }()
+
+    /// `JewishCalendar(date)` : l'année, le mois et le jour hébreux d'un jour civil.
+    public static func dateJuive(_ date: JourCivil) -> DateJuive {
+        let midi = Date(timeIntervalSince1970: Double(date.jourJulien - 2_440_588) * 86_400 + 43_200)
+        let c = hebreu.dateComponents([.year, .month, .day], from: midi)
+        let annee = c.year ?? 0
+        let embolismique = estEmbolismique(annee)
+        return DateJuive(annee: annee, mois: moisKosherJava(c.month ?? 0, embolismique: embolismique),
+                         jour: c.day ?? 0, embolismique: embolismique)
+    }
+
+    /// Cycle de Méton : 7 années embolismiques sur 19 (`isJewishLeapYear`).
+    public static func estEmbolismique(_ annee: Int) -> Bool { Kotlin.floorMod(7 * annee + 1, 19) < 7 }
+
+    /// `getYomTovIndex() == YOM_KIPPUR` : le 10 Tichri.
+    public static func estKippour(_ date: JourCivil) -> Bool {
+        let d = dateJuive(date)
+        guard d.mois == Mois.tichri && d.jour == 10 else { return false }
+        return verrou.withLock { _ in calendrier(date, enIsrael: false, modernes: false).getYomTovIndex() == JewishCalendar.YOM_KIPPUR }
+    }
+
+    /// `getYomTovIndex() == TISHA_BEAV` : le 9 Av, ou le 10 quand le 9 est un Chabbat.
+    public static func estTichaBeav(_ date: JourCivil) -> Bool {
+        let d = dateJuive(date)
+        guard d.mois == Mois.av && (d.jour == 9 || d.jour == 10) else { return false }
+        return verrou.withLock { _ in calendrier(date, enIsrael: false, modernes: false).getYomTovIndex() == JewishCalendar.TISHA_BEAV }
+    }
+
+    /// `isYomTovAssurBemelacha()` d'un `JewishCalendar(date)` : hors d'Israël, sans les fêtes modernes.
+    public static func estYomTovChome(_ date: JourCivil) -> Bool {
+        verrou.withLock { _ in calendrier(date, enIsrael: false, modernes: false).isYomTovAssurBemelacha() }
+    }
+
+    /// `getDayOfChanukah()` : de 1 à 8, ou -1 hors de 'Hanouka.
+    public static func jourHanouka(_ date: JourCivil) -> Int {
+        let d = dateJuive(date)
+        guard d.mois == Mois.kislev || d.mois == Mois.tevet else { return -1 }
+        return verrou.withLock { _ in calendrier(date, enIsrael: false, modernes: false).getDayOfChanukah() }
+    }
+
+    /// La paracha que suit la halakha du jour (Halakha.pour) : celle du Chabbat même, sinon celle du
+    /// Chabbat qui vient (`getParshah`, puis `getUpcomingParshah`), par le nom de KosherJava (« LECH_LECHA »).
+    public static func parachaAVenir(_ date: JourCivil, enIsrael: Bool) -> String {
+        verrou.withLock { _ -> String in
+            let c = calendrier(date, enIsrael: enIsrael, modernes: false)
+            let p = c.getParshah()
+            return String(describing: p == .NONE ? c.getUpcomingParshah() : p)
+        }
+    }
+
+    // Les heures du molad comptent en halakim : 1 080 par heure, 25 920 par jour.
+    private static let halakimParJour: Int64 = 25_920
+    /// Le molad Tohou (BaHaRaD) : un jour, 5 heures et 204 halakim après le début du compte.
+    private static let halakimMoladTohou: Int64 = 31_524
+    /// Un mois lunaire moyen : 29 jours, 12 heures et 793 halakim.
+    private static let halakimParMois: Int64 = 765_433
+    /// Le jour de la création dans la numérotation de Reingold et Dershowitz (1er janvier 1 = 1), et le 1er janvier 1970.
+    private static let epoqueJuive: Int64 = -1_373_429
+    private static let jourFixe1970: Int64 = 719_163
+
+    /// `getMoladAsDate()` du mois `mois` (numérotation de KosherJava) de l'année `annee`, en millisecondes
+    /// Unix : l'heure moyenne de Jérusalem posée sur l'heure d'hiver d'Israël (UTC+2), moins le décalage de
+    /// l'heure locale du mont du Temple (35,2354 E), 20 min 56,496 s. La milliseconde est tronquée comme
+    /// en Java ; KosherSwift garde, lui, la fraction de milliseconde.
+    public static func molad(annee: Int, mois: Int) -> Int64 {
+        let embolismique = estEmbolismique(annee)
+        let rang = (mois + (embolismique ? 6 : 5)) % (embolismique ? 13 : 12) + 1
+        let a = Int64(annee - 1)
+        let moisEcoules = 235 * (a / 19) + 12 * (a % 19) + (7 * (a % 19) + 1) / 19 + Int64(rang - 1)
+        let halakim = halakimMoladTohou + halakimParMois * moisEcoules
+        let jour = halakim / halakimParJour
+        let parts = halakim - jour * halakimParJour
+        let heures = parts / 1080
+        let minutes = (parts - heures * 1080) / 18
+        let reste = parts - heures * 1080 - minutes * 18
+        // Le jour hébreu commence à 18 h : de sa sixième heure (minuit) on est au jour civil suivant.
+        let civil = jour + epoqueJuive + (heures >= 6 ? 1 : 0)
+        let heureCivile = (heures + 18) % 24
+        let secondes = Double(reste) * 10 / 3
+        let entieres = Int64(secondes)
+        let millis = Int64(1000 * (secondes - Double(entieres)))
+        let minuit: Int64 = (civil - jourFixe1970) * 86_400_000
+        let heure: Int64 = heureCivile * 3_600_000 + minutes * 60_000 + entieres * 1000 + millis
+        return minuit + heure - 7_200_000 - decalageHeureLocale
+    }
+
+    /// `GeoLocation.getLocalMeanTimeOffset()` du mont du Temple sur UTC+2, en millisecondes tronquées.
+    private static let decalageHeureLocale = Int64(35.2354 * 4 * 60_000 - 7_200_000)
+}
