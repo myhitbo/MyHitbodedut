@@ -260,9 +260,11 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
         // L'écran de relecture n'existe que pour lever les relu=false des
         // données : il n'a rien à faire dans une version publiée. Sa classe
-        // n'est compilée qu'en debug (src/debug) : on la nomme par son nom.
+        // n'est compilée qu'en debug (src/debug) : on la nomme par son nom. Pas dans verifR8
+        // (14/11) : débogable mais sans src/debug, le bouton y menait à une classe absente, et il
+        // se voyait sur les captures de la fiche Play.
         findViewById<View>(R.id.proofread_button).apply {
-            visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
+            visibility = if (BuildConfig.DEBUG && BuildConfig.BUILD_TYPE == "debug") View.VISIBLE else View.GONE
             setOnClickListener {
                 startActivity(Intent().setClassName(this@MainActivity, "com.myhitbodedut.ProofreadActivity"))
             }
