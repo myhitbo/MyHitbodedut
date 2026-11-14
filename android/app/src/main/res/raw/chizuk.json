@@ -249,7 +249,7 @@
           "by-55-1",
           "by-55-2"
         ],
-        "noms_divins": "ה׳ / ה’ du texte de l'éditeur développés en toutes lettres (tools/noms_divins.py), comme toutes les citations (décision du 04/10)."
+        "noms_divins": "ה׳ / ה’ du texte de l'éditeur : développés en toutes lettres le 04/10 (tools/noms_divins.py), puis abrégés ה' hors des versets cités depuis le 04/11 (_meta.noms_divins, tools/noms_abreges.py). Seul by-47-1 garde le Nom entier, dans le verset qu'il cite (Tehilim 145:18)."
       }
     }
   },
@@ -3949,7 +3949,7 @@
       "ref": "Bisdei Yaar, chap. 48",
       "ref_sefaria": null,
       "url": "https://breslev.co.il/5222789/",
-      "he": "אפילו אם אדם רואה שהוא לא מסוגל לדבר, יתחזק בכל מיני התחזקות לקבוע לעצמו בכל יום שעה לפחות, שבה יעמוד וירצה ויכסוף לדבר עם יהוה.",
+      "he": "אפילו אם אדם רואה שהוא לא מסוגל לדבר, יתחזק בכל מיני התחזקות לקבוע לעצמו בכל יום שעה לפחות, שבה יעמוד וירצה ויכסוף לדבר עם ה'.",
       "fr": "Même si une personne voit qu’elle est incapable de parler, qu’elle se renforce de toutes les manières pour se fixer chaque jour au moins une heure, pendant laquelle elle se tiendra là, à vouloir parler avec Hachem et à y aspirer.",
       "en": "Even if a person sees that he is unable to speak, he should strengthen himself in every way to set for himself at least an hour every day, in which he will stand and want and yearn to speak with Hashem.",
       "yiddish": null,
@@ -3957,7 +3957,7 @@
       "note": "Texte de l'éditeur (breslev.co.il), seul témoin numérique ; non vocalisé.",
       "tags": [],
       "duree_lecture_sec": 11,
-      "he_sans_nikkoud": "אפילו אם אדם רואה שהוא לא מסוגל לדבר, יתחזק בכל מיני התחזקות לקבוע לעצמו בכל יום שעה לפחות, שבה יעמוד וירצה ויכסוף לדבר עם יהוה.",
+      "he_sans_nikkoud": "אפילו אם אדם רואה שהוא לא מסוגל לדבר, יתחזק בכל מיני התחזקות לקבוע לעצמו בכל יום שעה לפחות, שבה יעמוד וירצה ויכסוף לדבר עם ה'.",
       "statut_verif": "verifie_texte",
       "relu": true
     },
