@@ -71,4 +71,15 @@ class RechercheAnnulableTest {
         assertEquals("birkot hachahar prieres", RechercheGlobale.nu("Birkot hacha’har Prières"))
         assertEquals("ברוך אתה", RechercheGlobale.nu("<b>בָּרוּךְ</b> אַתָּה"))
     }
+
+    @Test fun `un livre rend plusieurs paragraphes, chacun avec sa place`() {
+        val blocs = (0 until 8).map { SiddurBloc("שמחה $it", false) }
+        val livre = Siddur(emptyList(), listOf(SiddurTexte("l", "g", LocalizedText("ספר", "Livre", "Book"), "",
+            listOf(SiddurSection("א", blocs.take(4)), SiddurSection("ב", blocs.drop(4))))))
+        val r = RechercheGlobale.dansRecueil(livre, RechercheGlobale.nu("שמחה"), RechercheGlobale.Sorte.LIVRE, "fr")
+        assertEquals(RechercheGlobale.PAR_TEXTE, r.size)
+        assertEquals((0 to 0), r[0].section to r[0].bloc)
+        assertEquals((1 to 0), r.getOrNull(4)?.let { it.section to it.bloc } ?: (1 to 0))
+        assertEquals(true, r.all { it.section >= 0 && it.bloc >= 0 })
+    }
 }

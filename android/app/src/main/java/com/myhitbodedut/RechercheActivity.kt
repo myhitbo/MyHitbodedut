@@ -138,8 +138,8 @@ class RechercheActivity : AppCompatActivity() {
         foreground = Apparence.effetToucher(this@RechercheActivity)
         setOnClickListener {
             when (r.sorte) {
-                RechercheGlobale.Sorte.SIDDOUR -> SiddurLectureActivity.ouvrir(context, r.id)
-                RechercheGlobale.Sorte.LIVRE -> SiddurLectureActivity.ouvrirLivre(context, r.id)
+                RechercheGlobale.Sorte.SIDDOUR -> SiddurLectureActivity.ouvrirA(context, r.id, false, r.section, r.bloc)
+                RechercheGlobale.Sorte.LIVRE -> SiddurLectureActivity.ouvrirA(context, r.id, true, r.section, r.bloc)
                 RechercheGlobale.Sorte.HALAKHA -> startActivity(Intent(context, HalakhaActivity::class.java).putExtra(EXTRA_RECHERCHE, r.id))
                 RechercheGlobale.Sorte.HILLOULA -> startActivity(Intent(context, HilloulotActivity::class.java).putExtra(EXTRA_RECHERCHE, r.id))
             }

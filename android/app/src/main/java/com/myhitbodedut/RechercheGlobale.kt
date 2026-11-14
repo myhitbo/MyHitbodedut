@@ -10,9 +10,15 @@ object RechercheGlobale {
 
     enum class Sorte { SIDDOUR, LIVRE, HALAKHA, HILLOULA }
 
-    data class Resultat(val sorte: Sorte, val id: String, val titre: String, val extrait: String)
+    data class Resultat(val sorte: Sorte, val id: String, val titre: String, val extrait: String,
+        /** Le paragraphe trouvé (rang de section, rang de bloc) : le toucher y conduit ; -1 pour un titre. */
+        val section: Int = -1, val bloc: Int = -1)
 
     const val PAR_SORTE = 30
+
+    /** Les paragraphes rendus pour un même texte (un livre en compte des milliers), et au plus par sorte (FLECTURE-02). */
+    const val PAR_TEXTE = 5
+    const val PAR_RECUEIL = 50
 
     /**
      * Les accents latins et l'apostrophe typographique tombent aussi : « priere » trouve
@@ -36,14 +42,26 @@ object RechercheGlobale {
     }
 
     /** Les textes d'un recueil (siddour ou livres) : titre d'abord, puis le premier paragraphe qui contient la recherche. */
-    fun dansRecueil(recueil: Siddur, q: String, sorte: Sorte, langue: String, annule: () -> Boolean = { false }): List<Resultat> = recueil.textes.mapNotNull { t ->
+    fun dansRecueil(recueil: Siddur, q: String, sorte: Sorte, langue: String, annule: () -> Boolean = { false }): List<Resultat> = recueil.textes.flatMap { t ->
         // Une requête dépassée par la frappe suivante s'abandonne en route (FLECTURE-07).
-        if (annule()) return@mapNotNull null
+        if (annule()) return@flatMap emptyList<Resultat>()
         val titre = t.titre.he
-        if (nu(titre).contains(q) || nu(t.titre.forLanguage(langue)).contains(q)) return@mapNotNull Resultat(sorte, t.id, titre, t.titre.forLanguage(langue).takeIf { it != titre }.orEmpty())
-        t.sections.asSequence().flatMap { it.blocs.asSequence() }.firstOrNull { !it.consigne && nu(it.texte).contains(q) }
-            ?.let { Resultat(sorte, t.id, titre, extrait(it.texte, q)) }
-    }.take(PAR_SORTE)
+        val trouves = ArrayList<Resultat>()
+        if (nu(titre).contains(q) || nu(t.titre.forLanguage(langue)).contains(q)) trouves += Resultat(sorte, t.id, titre, t.titre.forLanguage(langue).takeIf { it != titre }.orEmpty())
+        // Chaque paragraphe trouvé (cinq au plus par texte), avec sa place : le toucher y conduit (FLECTURE-02).
+        run paragraphes@{
+            t.sections.forEachIndexed { si, sec ->
+                sec.blocs.forEachIndexed { bi, b ->
+                    if (!b.consigne && nu(b.texte).contains(q)) {
+                        val chapitre = sec.titre.takeIf { it.isNotBlank() }?.let { "$it · " }.orEmpty()
+                        trouves += Resultat(sorte, t.id, titre, chapitre + extrait(b.texte, q), si, bi)
+                        if (trouves.size >= PAR_TEXTE) return@paragraphes
+                    }
+                }
+            }
+        }
+        trouves
+    }.take(PAR_RECUEIL)
 
     /** Où chercher (19/10) : tout, ou seulement les prières, les halakhot, les livres ou les hilloulot. */
     enum class Portee(val sortes: Set<Sorte>) {

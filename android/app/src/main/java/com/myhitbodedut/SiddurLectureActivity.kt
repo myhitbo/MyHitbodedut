@@ -753,6 +753,13 @@ class SiddurLectureActivity : AppCompatActivity() {
             context.startActivity(intent(context, id))
         }
 
+        /** Ouvre un texte ou un livre au paragraphe (section, bloc) : un résultat de recherche (FLECTURE-02). */
+        fun ouvrirA(context: Context, id: String, etude: Boolean, section: Int, bloc: Int) {
+            if (section < 0 || bloc < 0) return if (etude) ouvrirLivre(context, id) else ouvrir(context, id)
+            context.startActivity(Intent(context, SiddurLectureActivity::class.java).putExtra(ID, id)
+                .putExtra(LIVRE, etude).putExtra(MARQUE, "$section:$bloc"))
+        }
+
         fun ouvrirLivre(context: Context, id: String) {
             context.startActivity(Intent(context, SiddurLectureActivity::class.java).putExtra(ID, id).putExtra(LIVRE, true))
         }
