@@ -35,6 +35,8 @@ let enChantierSources: [String] = [
     "VillePlusProche.swift",
     "Vol.swift",
     "YalkutYosef.swift",
+    "ZmanimVignette.swift",
+    "ZmanimWidget.swift",
 ]
 let enChantierTests: [String] = [
     "AdresseTests.swift",

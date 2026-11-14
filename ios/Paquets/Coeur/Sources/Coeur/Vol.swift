@@ -574,8 +574,8 @@ public enum Vol {
     }
 
     /// `Math.toRadians` et `Math.toDegrees` de Java : une multiplication, dans cet ordre.
-    private static func radians(_ degres: Double) -> Double { degres * 0.017453292519943295 }
-    private static func degres(_ radians: Double) -> Double { radians * 57.29577951308232 }
+    private static func radians(_ x: Double) -> Double { x * 0.017453292519943295 }
+    private static func degres(_ x: Double) -> Double { x * 57.29577951308232 }
 
     /// Un instant de KosherSwift en millisecondes Unix, tronqué comme la `Date` de Java.
     static func millis(_ date: Date) -> Int64 {
