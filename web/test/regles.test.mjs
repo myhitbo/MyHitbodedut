@@ -605,6 +605,11 @@ test('hilloulot : date lisible et recherche par nom', async () => {
   const cinq = (cle) => J.hilloulotDuJour(reel, [cle]).slice(0, 5).map((x) => x.he);
   assert.ok(cinq('2-18').includes('רבי שמעון בר יוחאי'));
   assert.ok(cinq('10-20').some((x) => x.includes('הרמב"ם')));
+  // Un tsadik n'apparaît qu'une fois par jour (identifiant de dépliage « jour|nom ») ; Rav Mandelbaum est à la date de sa mort.
+  for (const [cle, liste] of Object.entries(reel)) assert.equal(new Set(liste.map((x) => x.he.trim())).size, liste.length, cle);
+  assert.equal(reel['10-10'].filter((x) => x.he.includes('נתן') && x.he.includes('ברסלב')).length, 1);
+  assert.ok(!reel['10-22'].some((x) => x.he.includes('מנדלבאום')));
+  assert.equal(reel['2-17'].find((x) => x.he.includes('מנדלבאום')).a, 'ה\'תרס"ה');
   // « Voir ce jour » : 23 Hechvan 5787 est le 3 novembre 2026.
   assert.equal(J.prochainJourHilloula('8-23', '2026-10-01', false), '2026-11-03');
   assert.ok(J.prochainJourHilloula('adar2-14', '2026-11-04', false));

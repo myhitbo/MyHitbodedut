@@ -95,6 +95,19 @@ class HilloulotTest {
     }
 
     @Test
+    fun `un tsadik n apparait qu une fois par jour, et Rav Mandelbaum a la date de sa mort`() {
+        // L'identifiant de dépliage d'une ligne est « jour|nom » : un nom ne se répète pas dans un jour.
+        table.forEach { (cle, liste) -> assertEquals(cle, liste.size, liste.map { it.he.trim() }.distinct().size) }
+        // Rabbi Natan de Breslev : une ligne, qui porte les deux sources et la biographie de MyTzadik.
+        val natan = table.getValue("10-10").filter { it.he.contains("נתן") && it.he.contains("ברסלב") }
+        assertEquals(1, natan.size)
+        assertTrue(table.getValue("10-10").none { it.he.contains("שטרנהרץ") })
+        // 22 Tevet 5594 est sa naissance ; il est mort le 17 Iyar 5665.
+        assertTrue(table.getValue("10-22").none { it.he.contains("מנדלבאום") })
+        assertEquals("ה'תרס\"ה", table.getValue("2-17").single { it.he.contains("מנדלבאום") }.annee)
+    }
+
+    @Test
     fun `la recherche suit l annee, de Tichri a Eloul`() {
         assertTrue(Hilloulot.rangDansLAnnee("7-1") < Hilloulot.rangDansLAnnee("11-30"))
         assertTrue(Hilloulot.rangDansLAnnee("11-30") < Hilloulot.rangDansLAnnee("adar1-1"))
