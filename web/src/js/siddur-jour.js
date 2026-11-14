@@ -36,6 +36,9 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   if (sud && nusah === 'edot' && c.delete('machiv_harouah')) c.add('morid_hatal');
   // Pas de Ta'hanoun du lendemain de Kippour jusqu'au 2 'Hechvan : Edot, et Sfard au choix.
   if (sansTahanounFinTichri && c.has('fin_tichri')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
+  // Pourim triple, le dimanche 16 Adar en Israël hors de Jérusalem : l'Ashkenaz suit le Halikhot Chlomo (22:8),
+  // sans Ta'hanoun ; למנצח reste (Michna Beroura 131:35, qui fait dire Ta'hanoun : ajouts le précise).
+  if (nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
   if (avinouMalkenou(conditions)) c.add('avinou_malkenou');
   // À Min'ha : seulement si Ta'hanoun s'y dit (TSIDDUR-09) ; Roch Hachana et Kippour gardent le leur, sauf un vendredi (relecture du 15/11).
   const c0 = new Set(conditions);
@@ -49,7 +52,8 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
 export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hatorah', 'jour_1', 'jour_2', 'jour_3', 'jour_4', 'jour_5', 'jour_6',
   'tsom_guedalia_tevet', 'lendemain_kippour', 'ticha_beav_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
   'lamnatseah', 'ledavid', 'techouva_hochaana', 'yom_tov', 'moed', 'chabbat_roch_hodech', 'yom_tov_chabbat', 'roch_hachana_chabbat',
-  'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan'];
+  'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan',
+  'pourim_triple_hors_jerusalem'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix

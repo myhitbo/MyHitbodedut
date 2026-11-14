@@ -283,6 +283,15 @@ class SimulationSiddurTest {
                 assertTrue("$festin Jérusalem $k", k !in c(festin, true, true))
                 assertTrue("$festin ailleurs $k", k in c(festin, true) && k in c(festin, false))
             }
+            // Ailleurs en Israël, l'Ashkenaz suit le Halikhot Chlomo (sans Ta'hanoun, למנצח gardé) ; Edot et
+            // Sfard, le Yalkut Yosef ; en diaspora, Ta'hanoun partout.
+            val israel = c(festin, true)
+            assertTrue("$festin", C.POURIM_TRIPLE_HORS_JERUSALEM in israel && C.POURIM_TRIPLE_HORS_JERUSALEM !in c(festin, false) &&
+                C.POURIM_TRIPLE_HORS_JERUSALEM !in c(festin, true, true))
+            val ashkenaz = SiddurJour.conditionsPour("ashkenaz", true, israel)
+            assertTrue("$festin Ashkenaz", C.TAHANOUN_CHAHARIT !in ashkenaz && C.TAHANOUN_MINHA !in ashkenaz && C.LAMNATSEAH in ashkenaz)
+            listOf("edot", "sefard").forEach { assertTrue("$festin $it", C.TAHANOUN_CHAHARIT in SiddurJour.conditionsPour(it, true, israel)) }
+            assertTrue("$festin Ashkenaz diaspora", C.TAHANOUN_CHAHARIT in SiddurJour.conditionsPour("ashkenaz", false, c(festin, false)))
         }
 
         // 9 Av un Chabbat : le jeûne passe au dimanche, « נחם » et le reste avec lui.

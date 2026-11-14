@@ -755,6 +755,7 @@
     <string name="ajout_hallel_complet">Full Hallel</string>
     <string name="ajout_tahanoun">Tachanun</string>
     <string name="ajout_sans_tahanoun">No Tachanun</string>
+    <string name="ajout_sans_tahanoun_halikhot_chlomo">No Tachanun (Halichos Shlomo); per the Mishna Berura, it is said</string>
     <string name="ajout_asseret_yemei_techouva">Ten Days of Repentance</string>
     <string name="ajout_jeune">Aneinu</string>
     <string name="ajout_jeune_public">Public fast</string>

@@ -77,6 +77,17 @@ class JourAfficheTest {
     }
 
     @Test
+    fun `Pourim triple, le dimanche 16 Adar - Halikhot Chlomo en Ashkenaz, precise contre le Michna Beroura`() {
+        val dimanche = LocalDate.parse("2025-03-16") // 16 Adar 5785, après le Chabbat 15
+        val israel = CalendrierJuif.jour(dimanche, true).conditions
+        assertTrue("ajout_sans_tahanoun_halikhot_chlomo" in JourAffiche.ajouts(israel, "ashkenaz", true))
+        listOf("edot", "sefard").forEach { assertTrue(it, "ajout_tahanoun" in JourAffiche.ajouts(israel, it, true)) }
+        assertTrue("ajout_tahanoun" in JourAffiche.ajouts(CalendrierJuif.jour(dimanche, false).conditions, "ashkenaz", false))
+        assertTrue("ajout_sans_tahanoun" in JourAffiche.ajouts(CalendrierJuif.jour(dimanche, true, true).conditions, "ashkenaz", true))
+        assertTrue(Libelles.res("ajout_sans_tahanoun_halikhot_chlomo") != null)
+    }
+
+    @Test
     fun `le nusah - hallel partiel, morid hatal, anenou`() {
         val rc = CalendrierJuif.jour(LocalDate.parse("2026-10-12"), false).conditions
         // Bénédiction du Hallel partiel : sans, même en communauté (Choul'han

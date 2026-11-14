@@ -805,6 +805,7 @@
     <string name="ajout_hallel_complet">Hallel complet</string>
     <string name="ajout_tahanoun">Ta’hanoun</string>
     <string name="ajout_sans_tahanoun">Pas de Ta’hanoun</string>
+    <string name="ajout_sans_tahanoun_halikhot_chlomo">Pas de Ta’hanoun (Halikhot Chlomo) ; selon le Michna Beroura, on le dit</string>
     <string name="ajout_asseret_yemei_techouva">Dix jours de techouva</string>
     <string name="ajout_jeune">Anénou</string>
     <string name="ajout_jeune_public">Jeûne public</string>

@@ -316,6 +316,17 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   }
   // Un 16 Adar ordinaire à Jérusalem (jeudi 16 Adar II 5787, 25/03/2027) : Ta'hanoun.
   assert.ok(jour('2027-03-25', true, true).conditions.has('tahanoun_chaharit'));
+  // Ailleurs en Israël, l'Ashkenaz suit le Halikhot Chlomo (sans Ta'hanoun, למנצח gardé), précisé contre le
+  // Michna Beroura ; Edot et Sfard (Yalkut Yosef) et la diaspora disent Ta'hanoun.
+  const triple = jour('2025-03-16', true).conditions;
+  assert.ok(triple.has('pourim_triple_hors_jerusalem'));
+  assert.ok(!jour('2025-03-16', false).conditions.has('pourim_triple_hors_jerusalem') && !jour('2025-03-16', true, true).conditions.has('pourim_triple_hors_jerusalem'));
+  const ashk = conditionsPour('ashkenaz', true, triple);
+  assert.ok(!ashk.has('tahanoun_chaharit') && !ashk.has('tahanoun_minha') && ashk.has('lamnatseah'));
+  assert.ok(A.ajouts(triple, 'ashkenaz', true).includes('ajout_sans_tahanoun_halikhot_chlomo'));
+  for (const n of ['edot', 'sefard']) assert.ok(A.ajouts(triple, n, true).includes('ajout_tahanoun'), n);
+  assert.ok(A.ajouts(jour('2025-03-16', false).conditions, 'ashkenaz', false).includes('ajout_tahanoun'));
+  assert.ok(A.ajouts(jour('2025-03-16', true, true).conditions, 'ashkenaz', true).includes('ajout_sans_tahanoun'));
   const chaines = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'), 'utf8');
   for (const n of ['edot', 'sefard', 'ashkenaz']) {
     for (const k of [...A.ajouts(rc, n), ...A.ajouts(jeune, n), ...A.ajouts(ete, n), ...A.ajouts(av, n)]) assert.ok(chaines.includes(`name="${k}"`), k);
