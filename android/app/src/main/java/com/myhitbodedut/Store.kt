@@ -99,6 +99,7 @@ object Store {
     private const val KEY_LECTURE_MASQUEE = "lecture_masquee"
     private const val KEY_PAUSE_SHABBAT = "pause_shabbat"
     private const val KEY_IN_ISRAEL = "in_israel"
+    private const val KEY_IN_ISRAEL_MANUEL = "in_israel_manuel"
     private const val KEY_LIEU_NOM = "lieu_nom"
     private const val KEY_LIEU_LAT = "lieu_latitude"
     private const val KEY_LIEU_LON = "lieu_longitude"
@@ -387,11 +388,12 @@ object Store {
         prefs(context).edit().putBoolean(KEY_PAUSE_SHABBAT, value).apply()
     }
 
-    /** Israël ou diaspora : décide du deuxième jour de fête. */
     /**
-     * Israël ou diaspora. Le premier accès fige la valeur déduite du fuseau :
-     * sans cela, un voyage changeait le deuxième jour de fête après coup, et
-     * pouvait casser une série (revue du 01/10).
+     * Israël ou diaspora : décide du deuxième jour de fête. Le premier accès
+     * fige la valeur déduite du fuseau (revue du 01/10). Ensuite la région suit
+     * le lieu des zmanim — une ville, ou la position du téléphone d'après le
+     * contour du territoire (décision du 16/10, ZMANIM.md) — sauf si elle a
+     * été choisie à la main dans les réglages ([inIsraelManuel]).
      */
     fun inIsrael(context: Context): Boolean {
         val p = prefs(context)
@@ -401,8 +403,17 @@ object Store {
         return p.getBoolean(KEY_IN_ISRAEL, false)
     }
 
-    fun setInIsrael(context: Context, value: Boolean) {
-        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value).apply()
+    /**
+     * La région a été choisie à la main dans les réglages (audit du 12/11,
+     * FCALENDRIER-06) : une reprise de la position du téléphone ne la réécrit
+     * plus (TerritoireIsrael.regionPourPosition). Choisir un lieu (une ville,
+     * « Ma position ») efface ce drapeau et redéduit la région.
+     */
+    fun inIsraelManuel(context: Context): Boolean = prefs(context).getBoolean(KEY_IN_ISRAEL_MANUEL, false)
+
+    /** [manuel] : choisie à la main dans les réglages, et non déduite du lieu. */
+    fun setInIsrael(context: Context, value: Boolean, manuel: Boolean = false) {
+        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value).putBoolean(KEY_IN_ISRAEL_MANUEL, manuel).apply()
     }
 
     /**
@@ -458,9 +469,14 @@ object Store {
      * Choisir le lieu règle aussi Israël ou diaspora : le deuxième jour de
      * fête suit le lieu des zmanim. Une ville le dit ; une position, le
      * contour du territoire (TerritoireIsrael, 16/10). Sans lieu, le fuseau
-     * du téléphone (Holidays.defaultInIsrael).
+     * du téléphone (Holidays.defaultInIsrael). [enIsrael] null : la région
+     * des réglages est gardée (une région choisie à la main, lors d'une
+     * reprise de la position : FCALENDRIER-06).
      */
-    fun setLieuZmanim(context: Context, lieu: Zmanim.Lieu, ville: Ville?) {
+    fun setLieuZmanim(
+        context: Context, lieu: Zmanim.Lieu, ville: Ville?,
+        enIsrael: Boolean? = ville?.enIsrael ?: Holidays.defaultInIsrael(lieu.fuseau),
+    ) {
         prefs(context).edit()
             .putString(KEY_LIEU_NOM, lieu.nom)
             .putString(KEY_LIEU_LAT, lieu.latitude.toString())
@@ -470,7 +486,19 @@ object Store {
             .putLong(KEY_LIEU_VILLE, ville?.id ?: -1L)
             .putLong(KEY_LIEU_T, System.currentTimeMillis())
             .apply()
-        setInIsrael(context, ville?.enIsrael ?: Holidays.defaultInIsrael(lieu.fuseau))
+        if (enIsrael != null) setInIsrael(context, enIsrael)
+    }
+
+    /**
+     * La position du téléphone comme lieu des zmanim. Une reprise — le lieu était déjà la
+     * position, et on ne vient pas de la choisir dans la liste ([choisie]) — garde la région
+     * choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06) : avant, chaque
+     * ouverture de Zmanim ou de la boussole la réécrivait sans rien dire.
+     */
+    fun setLieuPosition(context: Context, lieu: Zmanim.Lieu, choisie: Boolean) {
+        val reprise = !choisie && lieuZmanim(context) != null && lieuVille(context) == -1L
+        setLieuZmanim(context, lieu, null,
+            TerritoireIsrael.regionPourPosition(lieu.latitude, lieu.longitude, inIsraelManuel(context), reprise))
     }
 
     /**
@@ -1501,6 +1529,7 @@ object Store {
             .put("daily_goal_minutes", prefs(context).getInt(KEY_DAILY_GOAL, 0))
             .put("pause_shabbat", shabbatMode(context))
             .put("in_israel", inIsrael(context))
+            .put("in_israel_manuel", inIsraelManuel(context))
             .put("reminder_enabled", reminderEnabled(context))
             .put("reminder_minutes", reminderMinutes(context))
             // Toutes les heures : l'ancienne clé n'en porte qu'une, et une
@@ -1643,7 +1672,11 @@ object Store {
                 setDailyGoal(context, settings.optInt("daily_goal_minutes", 0).coerceIn(0, DureeSeance.MAX))
             }
             setShabbatMode(context, settings.optBoolean("pause_shabbat", shabbatMode(context)))
-            setInIsrael(context, settings.optBoolean("in_israel", inIsrael(context)))
+            // La région et son drapeau « choisie à la main » voyagent ensemble (FCALENDRIER-06).
+            setInIsrael(
+                context, settings.optBoolean("in_israel", inIsrael(context)),
+                manuel = settings.optBoolean("in_israel_manuel", inIsraelManuel(context)),
+            )
             setReminderEnabled(context, settings.optBoolean("reminder_enabled", reminderEnabled(context)))
             // Les heures de rappel : la liste si le fichier l'a, sinon l'heure
             // unique des anciennes sauvegardes. Écrite par setReminderTimes,

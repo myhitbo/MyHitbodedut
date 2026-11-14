@@ -8,6 +8,7 @@
 // Le stockage est passé en paramètre : les tests donnent le leur.
 
 import { ajouteJours, estJourChome, isoLocal, israelParDefaut, jourSemaine } from './calendrier.js';
+import { regionPourPosition } from './calendrier-juif.js';
 import { SessionRule } from './seance.js';
 import { Anneaux, JaugeSemaine, Plaque } from './regles.js';
 import { JournalPlus } from './regles.js';
@@ -244,7 +245,13 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
     shabbatMode: () => get('pause_shabbat', true),
     setShabbatMode: (v) => set('pause_shabbat', !!v),
     inIsrael: () => get('in_israel', israelParDefaut(fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone)),
-    setInIsrael: (v) => set('in_israel', !!v),
+    /**
+     * La région a été choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06,
+     * Store.inIsraelManuel) : une reprise de la position ne la réécrit plus. Choisir un lieu
+     * efface ce drapeau et redéduit la région.
+     */
+    inIsraelManuel: () => get('in_israel_manuel', false) === true,
+    setInIsrael: (v, manuel = false) => { set('in_israel', !!v); set('in_israel_manuel', !!manuel); },
     /**
      * Le lieu des zmanim (10/10) : { nom, latitude, longitude, altitude,
      * fuseau, ville } ; null tant que rien n'est choisi. Il reste dans le
@@ -254,11 +261,23 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
       const l = get('lieu_zmanim', null);
       return l && Number.isFinite(l.latitude) && Number.isFinite(l.longitude) && l.fuseau ? l : null;
     },
-    setLieu(lieu, ville = null) {
+    setLieu(lieu, ville = null, enIsrael = ville ? ville.pays === 'IL' : israelParDefaut(lieu.fuseau)) {
       set('lieu_zmanim', { ...lieu, ville: ville?.id ?? null });
-      // Une ville dit Israël ou diaspora ; la position, elle, suit le fuseau du
-      // téléphone, comme la valeur par défaut (israelParDefaut).
-      set('in_israel', ville ? ville.pays === 'IL' : israelParDefaut(lieu.fuseau));
+      // Une ville dit Israël ou diaspora ; la position, le contour du territoire
+      // (regionPourPosition) ; à défaut, le fuseau (israelParDefaut). null : la région
+      // des réglages est gardée (choisie à la main, lors d'une reprise de la position).
+      if (enIsrael !== null) store.setInIsrael(enIsrael);
+    },
+    /**
+     * La position du téléphone comme lieu des zmanim (Store.setLieuPosition). Une reprise — le
+     * lieu était déjà la position, et on ne vient pas de la choisir dans la liste (choisie) —
+     * garde la région choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06) :
+     * avant, chaque ouverture de Zmanim ou de la boussole la réécrivait sans rien dire.
+     */
+    setLieuPosition(lieu, choisie = false) {
+      const avant = store.lieu();
+      const reprise = !choisie && !!avant && avant.ville == null;
+      store.setLieu(lieu, null, regionPourPosition(lieu.latitude, lieu.longitude, store.inIsraelManuel(), reprise));
     },
     /**
      * Le vol des zmanim en vol (28/10, Store.vol) : { numero, depart, arrivee
@@ -521,6 +540,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           daily_goal_minutes: get('daily_goal_minutes', 0),
           pause_shabbat: store.shabbatMode(),
           in_israel: store.inIsrael(),
+          in_israel_manuel: store.inIsraelManuel(),
           // La hitbodedout guidée (02/11), sous la clé d'Android.
           guided_hitbodedut: store.guidedHitbodedut(),
           first_name: store.firstName(),
@@ -613,7 +633,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
         const texteNonVide = (cle, pref) => { if (typeof s[cle] === 'string' && s[cle].trim() !== '') set(pref ?? cle, s[cle]); };
         entier('window_start'); entier('window_end'); entier('snooze_minutes', null, 1, 240);
         entier('target_minutes', null, 1, 240); entier('daily_goal_minutes', null, 0, 240);
-        bool('pause_shabbat'); bool('in_israel');
+        bool('pause_shabbat'); bool('in_israel'); bool('in_israel_manuel');
         bool('guided_hitbodedut');
         bool('reminder_enabled', 'reminder_on'); entier('reminder_minutes');
         if (Array.isArray(s.reminder_times)) {
