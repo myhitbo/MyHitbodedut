@@ -4,6 +4,62 @@
 
 import PackageDescription
 
+// Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
+// grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
+let enChantierSources: [String] = [
+    "Adresse.swift",
+    "Boussole.swift",
+    "ChabbatAlerte.swift",
+    "DirectionJerusalem.swift",
+    "GuideSujets.swift",
+    "Halakha.swift",
+    "Hitbodedut.swift",
+    "Levana.swift",
+    "LevanaAlerte.swift",
+    "Magnetisme.swift",
+    "Modele.swift",
+    "Poses.swift",
+    "QuestionsBlocage.swift",
+    "Reglages.swift",
+    "Reminder.swift",
+    "ReminderRule.swift",
+    "Salutation.swift",
+    "Tefilot.swift",
+    "Tehilim.swift",
+    "TerritoireIsrael.swift",
+    "Theme.swift",
+    "Tikkun.swift",
+    "VillePlusProche.swift",
+    "YalkutYosef.swift",
+]
+let enChantierTests: [String] = [
+    "AdresseTests.swift",
+    "BoussoleTests.swift",
+    "ChabbatAlerteTests.swift",
+    "DirectionJerusalemTests.swift",
+    "GuideSujetsTests.swift",
+    "HalakhaTests.swift",
+    "HitbodedutTests.swift",
+    "LevanaAlerteTests.swift",
+    "LevanaTests.swift",
+    "MagnetismeTests.swift",
+    "ModeleTests.swift",
+    "PosesTests.swift",
+    "QuestionsBlocageTests.swift",
+    "ReglagesTests.swift",
+    "ReminderRuleTests.swift",
+    "ReminderTests.swift",
+    "ReminderTimesTests.swift",
+    "SalutationTests.swift",
+    "TefilotTests.swift",
+    "TehilimTests.swift",
+    "TerritoireIsraelTests.swift",
+    "ThemeTests.swift",
+    "TikkunTests.swift",
+    "VillePlusProcheTests.swift",
+    "YalkutYosefTests.swift",
+]
+
 let package = Package(
     name: "Coeur",
     platforms: [.iOS("26.5"), .macOS("26.0")],
@@ -21,10 +77,12 @@ let package = Package(
     targets: [
         .target(
             name: "Coeur",
-            dependencies: [.product(name: "KosherSwift", package: "KosherSwift")]),
+            dependencies: [.product(name: "KosherSwift", package: "KosherSwift")],
+            exclude: enChantierSources),
         .testTarget(
             name: "CoeurTests",
-            dependencies: ["Coeur", .product(name: "KosherSwift", package: "KosherSwift")]),
+            dependencies: ["Coeur", .product(name: "KosherSwift", package: "KosherSwift")],
+            exclude: enChantierTests),
     ],
     swiftLanguageModes: [.v6]
 )

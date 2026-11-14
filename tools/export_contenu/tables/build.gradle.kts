@@ -45,6 +45,10 @@ val sortieVecteurs: File = depot.resolve("ios/Paquets/Coeur/Tests/Vecteurs")
 // -PseulVecteur=Nom : ne compile et ne lance que tools/vecteurs_ios/Nom.kt (essai d'un générateur
 // sans dépendre des autres) ; -Psortie=dossier : écrit ailleurs que dans le dépôt.
 val seul: String? = (findProperty("seulVecteur") as String?)?.takeIf { it.isNotBlank() }
+// Les générateurs encore en chantier (tools/vecteurs_ios/en_cours.txt, un nom par ligne) : versionnés pour ne rien
+// perdre, mais ni compilés ni lancés quand on les lance tous ; « lancer.sh VecteursX » les lance un par un.
+val enCours: Set<String> = depot.resolve("tools/vecteurs_ios/en_cours.txt").takeIf { it.exists() }?.readLines()
+    ?.map { it.substringBefore('#').trim() }?.filter { it.isNotEmpty() }?.toSet() ?: emptySet()
 val sortie: String = (findProperty("sortie") as String?) ?: sortieVecteurs.path
 if (seul != null) layout.buildDirectory.set(layout.projectDirectory.dir("build/seul-$seul"))
 
@@ -293,6 +297,8 @@ sourceSets.main {
     kotlin.exclude { it.file.parentFile == paquet && it.name !in compiles }
     if (seul != null) {
         kotlin.exclude { it.file.parentFile == vecteursIos && it.name.startsWith("Vecteurs") && it.name != "VecteursIos.kt" && it.name != "$seul.kt" }
+    } else {
+        kotlin.exclude { it.file.parentFile == vecteursIos && it.file.nameWithoutExtension in enCours }
     }
     java.srcDir(dossierR.map { it.dir("java") })
     resources.srcDir(dossierR.map { it.dir("ressources") })
@@ -381,6 +387,6 @@ tasks.register<JavaExec>("vecteurs") {
     cadre()
     mainClass.set("VecteursIosKt")
     val generateurs = vecteursIos.listFiles()!!.filter { it.extension == "kt" && it.name.startsWith("Vecteurs") && it.name != "VecteursIos.kt" }
-        .map { it.nameWithoutExtension }.filter { seul == null || it == seul }.sorted()
+        .map { it.nameWithoutExtension }.filter { if (seul == null) it !in enCours else it == seul }.sorted()
     args(listOf(sortie) + generateurs)
 }
