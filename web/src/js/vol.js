@@ -579,13 +579,29 @@ function prochaineDate(aujourdhui, mois, jour) {
   return d < plusJours(aujourdhui, -7) ? iso(an + 1, mois, jour) : d;
 }
 
-/** Les heures, dans l'ordre ; celles de l'embarquement ou de la porte sont écartées (SaisieVol.heures). */
-export function heuresPhrase(leger) {
+/**
+ * Les heures, dans l'ordre (SaisieVol.heures). Sont écartées (FVOL-04) : celles de l'embarquement ou
+ * de la porte, sauf si « départ » est plus près que « gate » ; les durées (« Durée 4h25 », « 4h 25m ») ;
+ * les chiffres du numéro de vol déjà lu ; et, dès qu'une forme « HH:MM » figure dans le texte, les
+ * formes « 4h25 », qui sont alors des durées.
+ */
+export function heuresPhrase(leger, numero = null) {
   const r = /(?<![0-9])([01]?[0-9]|2[0-3])(?:\s?h\s?([0-5][0-9])?|:([0-5][0-9])(?:\s?(am|pm))?|\s?(am|pm))(?![0-9])|(?<![a-zא-ת])(?:בשעה|a|à|at|vers)\s([01]?[0-9]|2[0-3])(?![0-9/:.]|\s?h|\s?am|\s?pm)/g;
+  const texte = numero
+    ? leger.replace(new RegExp(`(?<![a-z0-9])${[...numero.toLowerCase()].map((c) => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s?')}(?![0-9])`, 'g'), ' ')
+    : leger;
+  const avecDeuxPoints = /(?<![0-9])[0-9]{1,2}:[0-5][0-9]/.test(texte);
+  const porte = /boarding|embarquement|gate|porte|עלייה|שער|fermeture|closes/g;
+  const depart = /depart[a-z]*|dep(?![a-z])|decollage|takeoff|המראה/g;
+  const duree = /(?:duree|duration|flight time|temps de vol|משך|זמן טיסה)\s*[:\-–]?\s*$/;
   const res = [];
-  for (const m of leger.matchAll(r)) {
-    const avant = leger.slice(Math.max(0, m.index - 24), m.index);
-    if (/boarding|embarquement|gate|porte|עלייה|שער|fermeture|closes/.test(avant)) continue;
+  for (const m of texte.matchAll(r)) {
+    const avant = texte.slice(Math.max(0, m.index - 24), m.index);
+    if (duree.test(avant)) continue;
+    if (/^\s?m(?:in|n)?(?![a-z])/.test(texte.slice(m.index + m[0].length))) continue;
+    if (avecDeuxPoints && !m[3] && !m[4] && !m[5] && !m[6]) continue;
+    const derniereP = [...avant.matchAll(porte)].at(-1);
+    if (derniereP && ([...avant.matchAll(depart)].at(-1)?.index ?? -1) < derniereP.index) continue;
     if (m[6]) { res.push(`${pad(Number(m[6]))}:00`); continue; }
     let h = Number(m[1]);
     const min = Number(m[2] || m[3] || 0);
@@ -611,6 +627,11 @@ export function lirePhrase(texte, liste, aujourdhui) {
   for (const m of pl.matchAll(reNum)) {
     const code = m[1];
     if (['a', 'le', 'la', 'de', 'du', 'au', 'et', 'on', 'at', 'the'].includes(code) || MOTS.has(code)) continue;
+    // « 4h 25m », « 5h45 » sont des durées ou des heures, pas des numéros (FVOL-04) : seul « 6H » (Israir)
+    // est un code « chiffre + h », suivi d'un vrai numéro, pas de deux chiffres de minutes.
+    if (/^[0-9]h$/.test(code) && (code !== '6h' || (m[2].length === 2 && Number(m[2]) < 60 && !m[3]))) continue;
+    // « gate B12 », « porte A3 » : la porte, pas le vol.
+    if (/(?:gate|porte|door|terminal|שער)\s*$/.test(pl.slice(0, m.index))) continue;
     const n = `${code}${m[2]}${m[3]}`.toUpperCase();
     if (normaliserNumero(n)) { numero = n; break; }
   }
@@ -681,7 +702,7 @@ export function lirePhrase(texte, liste, aujourdhui) {
     dates.push([i, plusJours(aujourdhui, (j - jourIso(aujourdhui) + 7) % 7)]);
   });
   const tri = [...new Set(dates.sort((x, y) => x[0] - y[0]).map((x) => x[1]))];
-  const heures = heuresPhrase(leger);
+  const heures = heuresPhrase(leger, numero);
   return {
     numero, compagnie, depart: dep?.a.iata ?? null, arrivee: arr?.a.iata ?? null,
     date: tri[0] ?? null, dateArrivee: tri[1] ?? null, heureDepart: heures[0] ?? null, heureArrivee: heures[1] ?? null,

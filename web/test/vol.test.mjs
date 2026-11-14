@@ -296,3 +296,21 @@ test('saisie rapide : la phrase du propriétaire, en hébreu, et un billet coll�
   assert.equal(lire('Flight LY81 Tel Aviv to Bangkok on Nov 12 at 11:30pm').heureDepart, '23:30');
   assert.ok(Vol.phraseVide(lire('bonjour')));
 });
+
+test('saisie rapide : la durée n’est ni une heure ni un numéro, la porte non plus (FVOL-04)', () => {
+  const R = new URL('../../android/app/src/main/res/raw/', import.meta.url);
+  const liste = Vol.aeroports(JSON.parse(readFileSync(new URL('aeroports.json', R), 'utf8')), JSON.parse(readFileSync(new URL('aeroports_noms.json', R), 'utf8')));
+  const lire = (t) => Vol.lirePhrase(t, liste, '2026-11-04');
+  const a = lire('Vol AF1620 · Durée 4h25 · Paris-Charles de Gaulle (CDG) 10:35 → Tel Aviv (TLV) 16:00');
+  assert.deepEqual([a.numero, a.heureDepart, a.heureArrivee], ['AF1620', '10:35', '16:00']);
+  const b = lire('Flight time 4h 25m. Departs CDG 10:35 arrives TLV 16:00 on 15 Nov');
+  assert.deepEqual([b.numero, b.compagnie, b.heureDepart, b.heureArrivee], [null, null, '10:35', '16:00']);
+  const c = lire('Boarding 5:20 gate B12 Departure 6:05 BUD TLV 15 Nov');
+  assert.deepEqual([c.numero, c.heureDepart], [null, '06:05']);
+  const d = lire('Israir 6H 123 TLV ATH 15/11 10:35 13:00');
+  assert.deepEqual([d.numero, d.heureDepart, d.heureArrivee], ['6H123', '10:35', '13:00']);
+  const e = lire('Porte fermée 5h45, départ 6h05 BUD TLV 15/11');
+  assert.deepEqual([e.numero, e.heureDepart, e.heureArrivee], [null, '06:05', null]);
+  assert.deepEqual(Vol.heuresPhrase('boarding time 5:20'), []);
+  assert.deepEqual(Vol.heuresPhrase('porte fermee 5h45'), []);
+});

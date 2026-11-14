@@ -73,6 +73,40 @@ class SaisieVolTest {
     }
 
     @Test
+    fun `la duree du vol n est ni une heure ni un numero, la porte non plus (FVOL-04)`() {
+        // Audit du 12/11 : « 4h25 » devenait l'heure de départ, « 4h 25m » le numéro 4H25M, « gate » effaçait le départ.
+        lire("Vol AF1620 · Durée 4h25 · Paris-Charles de Gaulle (CDG) 10:35 → Tel Aviv (TLV) 16:00").let {
+            assertEquals("AF1620", it.numero)
+            assertEquals(LocalTime.of(10, 35), it.heureDepart)
+            assertEquals(LocalTime.of(16, 0), it.heureArrivee)
+        }
+        lire("Flight time 4h 25m. Departs CDG 10:35 arrives TLV 16:00 on 15 Nov").let {
+            assertNull(it.numero)
+            assertNull(it.compagnie)
+            assertEquals(LocalTime.of(10, 35), it.heureDepart)
+            assertEquals(LocalTime.of(16, 0), it.heureArrivee)
+        }
+        lire("Boarding 5:20 gate B12 Departure 6:05 BUD TLV 15 Nov").let {
+            assertNull("B12 est la porte", it.numero)
+            assertEquals(LocalTime.of(6, 5), it.heureDepart)
+        }
+        // Israir : 6H est une compagnie, ses chiffres ne sont pas une heure.
+        lire("Israir 6H 123 TLV ATH 15/11 10:35 13:00").let {
+            assertEquals("6H123", it.numero)
+            assertEquals(LocalTime.of(10, 35), it.heureDepart)
+            assertEquals(LocalTime.of(13, 0), it.heureArrivee)
+        }
+        lire("Porte fermée 5h45, départ 6h05 BUD TLV 15/11").let {
+            assertNull(it.numero)
+            assertEquals(LocalTime.of(6, 5), it.heureDepart)
+            assertNull(it.heureArrivee)
+        }
+        // L'embarquement reste écarté.
+        assertEquals(emptyList<LocalTime>(), SaisieVol.heures("boarding time 5:20"))
+        assertEquals(emptyList<LocalTime>(), SaisieVol.heures("porte fermee 5h45"))
+    }
+
+    @Test
     fun `depuis et un jour de la semaine`() {
         val p = lire("aller à Marseille depuis Tel Aviv le 20 novembre à 8h")
         assertEquals("TLV", p.depart?.iata)
