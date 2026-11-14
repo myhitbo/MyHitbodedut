@@ -13,7 +13,7 @@ import { DanseMesure } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, dansIsrael, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
 import { conditionsPour, index as indexAjouts, libelleJour, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
@@ -779,7 +779,7 @@ function momentAccueil() {
   const zone = store.lieu()?.fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   const l = levana(jourLieu(heure), zone, { usage: usageLevanaCourant() });
   const lv = siddur.textes.find((x) => x.id === 'birkat_halevana');
-  if (lv && typeof l.etat === 'string' && heureLieu(heure).heures >= 14) {
+  if (lv && typeof l.etat === 'string' && heureLieu(heure).heures >= 14 && +heure < l.finMs) {
     cartes.push(h('button', { class: 'maintenant', onclick: () => { priere = lv.id; ouvrir('priere'); } },
       plateau('char_praise', 'plateau-maintenant'),
       h('span', { class: 'maintenant-corps' },
@@ -2571,20 +2571,22 @@ const parametre = (p) => (p !== '' && !Number.isNaN(Number(p)) ? Number(p).toLoc
  * La position du téléphone (16/10 ; précise depuis le 28/10, « en fonction de la position exacte ») :
  * haute précision, un point de moins d'une minute ; sans réponse, la dernière connue, même
  * ancienne. La ville la plus proche nomme le lieu. Silencieux : aucun message, aucune demande.
+ * Choisie : « Ma position » vient d'être prise dans la liste des lieux, la région est redéduite ;
+ * sinon une reprise (le lieu était déjà la position) garde la région choisie à la main dans les
+ * réglages (audit du 12/11, FCALENDRIER-06, store.setLieuPosition).
  */
-function localiserPosition({ etat = null, apres = rendre, silencieux = false } = {}) {
+function localiserPosition({ etat = null, apres = rendre, silencieux = false, choisie = false } = {}) {
   const dire = (cle) => { if (etat && !silencieux) etat.textContent = tr.t(cle); };
   if (!navigator.geolocation) { dire('zmanim_position_refusee'); return; }
   dire('zmanim_position_attente');
   const poser = (p, ancienne) => {
     const proche = villePlusProche(villes ?? [], p.coords.latitude, p.coords.longitude);
-    store.setLieu({
+    store.setLieuPosition({
       nom: proche ? tr.t('zmanim_position_pres', titreTexte(proche.nom)) : tr.t('zmanim_position'),
       latitude: p.coords.latitude, longitude: p.coords.longitude,
       // Le fuseau du téléphone ; Israël ou diaspora d'après le territoire (TerritoireIsrael, 16/10).
       altitude: proche?.altitude ?? 0, fuseau: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
-    store.setInIsrael(dansIsrael(p.coords.latitude, p.coords.longitude));
+    }, choisie);
     if (ancienne && !silencieux) signale(tr.t('zmanim_position_ancienne'));
     apres();
   };
@@ -2620,7 +2622,7 @@ function choisirLieu() {
     const etat = h('p', { class: 'message', 'aria-live': 'polite' });
     f.append(h('button', {
       class: 'choix',
-      onclick: () => localiserPosition({ etat, apres: () => { fermer(); rendre(); } }),
+      onclick: () => localiserPosition({ etat, choisie: true, apres: () => { fermer(); rendre(); } }),
     }, tr.t('zmanim_position')), etat);
     // La liste se remplit à l'arrivée de villes.json (FWEBCODE-05) : « Chargement… » en attendant,
     // un message et « Réessayer » si le fichier échoue.
@@ -4384,10 +4386,11 @@ function ecranReglages() {
             }),
         }),
         ligne({ nom: tr.t('reglage_lieu'), etat: store.lieu()?.nom ?? tr.t('reglage_lieu_aucun'), onclick: choisirLieu }),
-        // La région (02/11, SettingsActivity.region_button) : déduite du lieu, et corrigeable à la main.
+        // La région (02/11, SettingsActivity.region_button) : déduite du lieu, et corrigeable à la main ;
+        // choisie à la main, une reprise de la position ne la réécrit plus (FCALENDRIER-06).
         ligne({ nom: tr.t('settings_region'), etat: tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'),
           onclick: () => choisirDans(tr.t('settings_region'), [tr.t('region_israel'), tr.t('region_diaspora')], store.inIsrael() ? 0 : 1,
-            (j) => { store.setInIsrael(j === 0); rendre(); }) }),
+            (j) => { store.setInIsrael(j === 0, true); rendre(); }) }),
         // À Jérusalem, l'usage des 40 minutes est proposé, jamais imposé.
         ligne({ nom: tr.t('reglage_allumage'), onclick: choisirAllumage,
           etat: [libelleAllumage(store.allumage()), mukafChoma() && store.allumage() !== 40 ? tr.t('reglage_allumage_proposition') : null].filter(Boolean).join(' · ') }),

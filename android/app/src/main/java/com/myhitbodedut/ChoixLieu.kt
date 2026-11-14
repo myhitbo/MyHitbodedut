@@ -41,6 +41,12 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
     /** Silencieux : rafraîchit la position sans message (ouverture de l'écran), seulement si déjà permise. */
     private var silencieux = false
 
+    /**
+     * « Ma position » vient d'être choisie dans la liste des lieux : la région est redéduite,
+     * même réglée à la main (audit du 12/11, FCALENDRIER-06). Sinon, Store.setLieuPosition juge.
+     */
+    private var choisie = false
+
     fun montrer() {
         val langue = ChizukCard.language(activite)
         val villes = Data.villes(activite)
@@ -48,7 +54,7 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
         MaterialAlertDialogBuilder(activite)
             .setTitle(R.string.zmanim_choisir_lieu)
             .setItems(noms.toTypedArray()) { _, i ->
-                if (i == 0) demanderPosition()
+                if (i == 0) demanderPosition(choisie = true)
                 else {
                     val ville = villes[i - 1]
                     Store.setLieuZmanim(activite, ville.lieu(langue), ville)
@@ -67,8 +73,9 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
     private fun localisationPermise() =
         permise(Manifest.permission.ACCESS_COARSE_LOCATION) || permise(Manifest.permission.ACCESS_FINE_LOCATION)
 
-    private fun demanderPosition() {
+    private fun demanderPosition(choisie: Boolean = false) {
         silencieux = false
+        this.choisie = choisie
         if (localisationPermise()) localiser()
         else autorisation.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
     }
@@ -85,6 +92,7 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
         if (Store.lieuZmanim(activite) == null || Store.lieuVille(activite) != -1L) return
         if (!localisationPermise()) return
         silencieux = true
+        choisie = false
         localiser()
     }
 
@@ -189,7 +197,7 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
 
     private fun enregistrer(position: Location) {
         if (activite.isFinishing || activite.isDestroyed) return
-        enregistrerPosition(activite, position)
+        enregistrerPosition(activite, position, choisie)
         apres()
     }
 
@@ -211,8 +219,10 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
          * La ville la plus proche ne fait que nommer la position et donner l'altitude. Le fuseau
          * reste celui du téléphone (celui d'une ville voisine fausserait les zmanim près d'une
          * frontière), et Israël ou diaspora se lit sur le territoire, pas sur la ville (16/10).
+         * Une simple reprise garde la région choisie à la main (Store.setLieuPosition) ; [choisie] :
+         * « Ma position » vient d'être prise dans la liste des lieux.
          */
-        fun enregistrerPosition(context: Context, position: Location) {
+        fun enregistrerPosition(context: Context, position: Location, choisie: Boolean = false) {
             val proche = Villes.plusProche(Data.villes(context), position.latitude, position.longitude)
             val langue = ChizukCard.language(context)
             val nom = proche?.let { context.getString(R.string.zmanim_position_pres, it.nom.forLanguage(langue)) }
@@ -222,8 +232,7 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
             val altitude = if (Build.VERSION.SDK_INT >= 34 && position.hasMslAltitude()) position.mslAltitudeMeters.coerceAtLeast(0.0)
             else proche?.altitude ?: 0.0
             val lieu = Zmanim.Lieu(nom, position.latitude, position.longitude, altitude, TimeZone.getDefault().id)
-            Store.setLieuZmanim(context, lieu, null)
-            Store.setInIsrael(context, TerritoireIsrael.contient(position.latitude, position.longitude))
+            Store.setLieuPosition(context, lieu, choisie)
         }
 
         /**

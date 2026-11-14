@@ -128,7 +128,8 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         findViewById<Button>(R.id.region_button).setOnClickListener {
-            Store.setInIsrael(this, !Store.inIsrael(this))
+            // Choisie à la main : une reprise de la position ne la réécrit plus (FCALENDRIER-06).
+            Store.setInIsrael(this, !Store.inIsrael(this), manuel = true)
             refresh()
         }
         findViewById<Button>(R.id.preview_gate).setOnClickListener { previewGate() }

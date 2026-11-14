@@ -177,6 +177,14 @@ siddour Edot, Avinou malkénou suit la consigne du texte (« בעשרת ימי �
   approximative, demandée seulement à ce moment-là ; sur le web,
   `navigator.geolocation`. Depuis le 16/10, la région suit la position
   (contour du territoire, `TerritoireIsrael`) ; le fuseau reste celui du téléphone.
+- **La région choisie à la main** (réglages, « Région ») est mémorisée comme
+  telle (`in_israel_manuel`, sauvegarde comprise) : les reprises de la
+  position — ouverture de Zmanim ou de la boussole, retour sur l'accueil,
+  changement de fuseau, « Actualiser ma position » — ne la réécrivent plus
+  (audit du 12/11, FCALENDRIER-06). Choisir un lieu (une ville, « Ma
+  position » dans la liste, la position à la place d'une ville) redéduit la
+  région et efface ce choix. Sans choix manuel, la région suit toujours la
+  position, voyage compris (décision du 16/10).
 
 Le lieu reste sur l'appareil. Choisir une ville revient sur la décision du
 21/09 (« sans ville ni coucher du soleil »), à la demande du propriétaire.
