@@ -202,6 +202,8 @@ class SettingsActivity : AppCompatActivity() {
             .setNegativeButton(R.string.reset_confirm_no, null)
             .setPositiveButton(R.string.reset_confirm_yes) { _, _ ->
                 stopService(Intent(this, SessionService::class.java))
+                // Avant l'effacement : il emporte le témoin du mode posé, sans retour possible.
+                NePasDeranger.retablir(this)
                 GateService.stop(this)
                 Reminder.cancel(this)
                 (getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager).cancelAll()

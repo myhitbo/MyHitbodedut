@@ -160,7 +160,10 @@
     <string name="settings_hide_countdown">Hide the countdown</string>
     <string name="settings_hide_countdown_hint">Nothing on screen during the hitbodedut, a quiet sound at the end.</string>
     <string name="session_hidden_caption">The countdown is hidden. A sound will tell you.</string>
+    <string name="session_hidden_caption_web">The countdown is hidden. At the end the screen changes, and the music stops if it was playing.</string>
     <string name="session_running_hidden">The countdown is hidden.</string>
+    <string name="session_open_hidden_caption">No set length, countdown hidden: you stop when you stop.</string>
+    <string name="session_running_open_hidden">No set length, countdown hidden.</string>
     <string name="blocker_session_hidden_subtitle">Hitbodedut in progress. The phone can wait.</string>
     <string name="widget_label">MyHitbodedut streak</string>
     <string name="widget_description">The streak so far, and one tap to begin.</string>

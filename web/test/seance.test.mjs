@@ -224,3 +224,19 @@ test('les ambiances calculées : audibles, douces, jamais saturées, le silence 
   }
   assert.deepEqual(generer('mer', 8000, 2), generer('mer', 8000, 2));
 });
+
+// La note après le bravo (audit FWEBLIVE-02) et la légende du décompte masqué (FWEBCODE-02) :
+// app.js ne s'importe pas hors du navigateur, on lit donc le source.
+const appSource = readFileSync(join(ICI, '..', 'src', 'js', 'app.js'), 'utf8');
+
+test('toute séance inscrite propose la note après le bravo, comme sur Android', () => {
+  const clore = appSource.slice(appSource.indexOf('function cloreSeance'), appSource.indexOf('function terminerMaintenant'));
+  assert.match(clore, /if \(inscrite\) \{[\s\S]*?dateNote = date;[\s\S]*?noteApresBravo = true;/s);
+  const hors = appSource.slice(appSource.indexOf('function declarerHorsTelephone'), appSource.indexOf('function ajoutTemps'));
+  assert.match(hors, /if \(date === aujourdhui\) \{[^}]*dateNote = date;[^}]*noteApresBravo = true;/s);
+});
+
+test('le site ne promet pas un son de fin qu’il ne joue pas', () => {
+  assert.doesNotMatch(appSource, /tr\.t\('session_hidden_caption'\)/);
+  assert.match(appSource, /tr\.t\('session_hidden_caption_web'\)/);
+});
