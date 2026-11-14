@@ -185,10 +185,23 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.start_focus).setOnClickListener {
             // La barrière du matin. En édition légère elle n'existe pas,
-            // et la ligne est retirée plutôt que rendue inopérante.
-            Store.setEnabled(this, !Store.isEnabled(this))
-            applyServiceState()
-            refresh()
+            // et la ligne est retirée plutôt que rendue inopérante. Elle ne bascule que si le
+            // mode peut agir (13/11, FBARRIERE-08) : sinon elle mène à la carte d'état.
+            when (GateRule.geste(GateStatus.faits(this))) {
+                GesteBarriere.REGLER -> startActivity(
+                    Intent(this, SettingsActivity::class.java)
+                        .putExtra(SettingsActivity.EXTRA_CARTE_BARRIERE, true)
+                )
+                GesteBarriere.RELANCER -> {
+                    GateService.start(this)
+                    refresh()
+                }
+                GesteBarriere.BASCULER -> {
+                    Store.setEnabled(this, !Store.isEnabled(this))
+                    applyServiceState()
+                    refresh()
+                }
+            }
         }
         findViewById<View>(R.id.music_button).setOnClickListener {
             startActivity(Intent(this, MusicActivity::class.java))
@@ -369,7 +382,7 @@ class MainActivity : AppCompatActivity() {
         focus.visibility = if (BuildConfig.HAS_GATE) View.VISIBLE else View.GONE
         if (BuildConfig.HAS_GATE) {
             findViewById<TextView>(R.id.start_focus_value).setText(
-                if (Store.isEnabled(this)) R.string.start_focus_on else R.string.start_focus_off
+                GateStatus.pastilleDe(GateStatus.evaluate(this))
             )
         }
     }

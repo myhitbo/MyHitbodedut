@@ -20,10 +20,10 @@
     <string name="section_practice">ההתבודדות שלי</string>
     <string name="section_gate_state">מצב הפעולה</string>
     <string name="section_gate">אני עם השם</string>
-    <string name="section_gate_hint">האפליקציות שתבחרו יישארו סגורות עד שתתבודדו.</string>
+    <string name="section_gate_hint">האפליקציות שתבחרו יישארו סגורות עד שתתבודדו, וגם במהלך התבודדות.</string>
     <string name="section_rhythm">קצב</string>
-    <string name="section_permissions">הרשאות נדרשות</string>
-    <string name="section_permissions_hint">מה האפליקציה מבקשת, ולמה.</string>
+    <string name="section_permissions">הרשאות</string>
+    <string name="section_permissions_hint">אף אחת אינה חובה. כל אחת משרתת פעולה מסוימת, וניתן לבטל אותה בכל רגע בהגדרות של Android.</string>
     <string name="section_data">הנתונים שלי</string>
     <string name="section_data_hint">היומן וההערות נשארים בטלפון הזה. ההגדרות (כולל המיקום לזמנים) עשויות להיכלל בגיבוי של Android לחשבון Google שלכם, אם הוא מופעל. כדאי לייצא מדי פעם.</string>
     <string name="section_data_hint_web">הכול נשמר בדפדפן הזה, במכשיר הזה. כדאי לייצא מדי פעם.</string>
@@ -57,11 +57,15 @@
         <item quantity="other">%1$d אפליקציות חסומות עד %2$s או עד להתבודדות.</item>
     </plurals>
     <string name="gate_permissions_title">חסרות הרשאות</string>
-    <string name="gate_permissions_detail">אשרו הצגה מעל אפליקציות אחרות וגישה לנתוני שימוש, למטה.</string>
+    <string name="gate_permissions_detail">כדי לפעול, „אני עם השם” צריך שתי גישות: הצגה מעל אפליקציות אחרות וגישה לנתוני שימוש.</string>
     <string name="gate_disabled_title">המצב כבוי</string>
     <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שהמצב יפעל.</string>
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
     <string name="gate_no_apps_detail">אין מה לעכב. בחרו לפחות אפליקציה אחת.</string>
+    <string name="gate_stopped_title">הניטור הופסק</string>
+    <string name="gate_stopped_detail">הכול מוגדר, אבל השירות שמשגיח אינו פועל. הפעילו אותו מחדש, או פתחו את האפליקציה שוב.</string>
+    <string name="gate_stopped_action">להפעיל את המצב מחדש</string>
+    <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
     <string name="gate_done_title">היום אושר</string>
     <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
     <string name="gate_exempt_title">יום ללא חובה</string>
@@ -110,14 +114,15 @@
     <string name="permission_battery">סוללה ללא הגבלה</string>
     <string name="settings_title">הגדרות</string>
     <string name="action_open">פתיחה</string>
-    <string name="settings_all_granted">כל ההרשאות ניתנו.</string>
+    <string name="settings_all_granted">כל ההרשאות הדרושות ניתנו.</string>
     <string name="permission_notifications">התראות</string>
     <string name="permission_notifications_why">בלעדיהן התזכורת נקבעת ולעולם אינה מופיעה, וההתבודדות לא מציגה דבר כשהטלפון מונח.</string>
-    <string name="permission_battery_why">בלעדיה אנדרואיד עלול לעכב את התזכורת בשעות, כדי לחסוך בסוללה.</string>
+    <string name="permission_battery_why">בלעדיה אנדרואיד עלול לעכב את התזכורת בשעות. ברשימה שתיפתח, חפשו את MyHitbodedut ובחרו „ללא אופטימיזציה”.</string>
     <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בבוקר.</string>
     <string name="permission_usage_why">כדי לדעת איזו אפליקציה נפתחה זה עתה. שום דבר אינו נשמר ואינו נשלח.</string>
     <string name="permission_granted">אושרה</string>
-    <string name="permission_missing">חסרה</string>
+    <string name="permission_missing">לא ניתנה</string>
+    <string name="permission_optional_off">לא חובה כל עוד המצב כבוי</string>
 
     <string name="apps_title">אפליקציות לחסימה</string>
     <string name="apps_loading">האפליקציות נטענות…</string>
@@ -283,7 +288,7 @@
     <string name="edition_light">מהדורת Light</string>
     <string name="week_done">בוצע</string>
     <string name="week_todo">לביצוע</string>
-    <string name="gate_permissions_action">חסרות הרשאות, לאשר אותן</string>
+    <string name="gate_permissions_action">לראות את שתי הגישות</string>
     <string name="settings_language">שפה</string>
     <string name="settings_region">אזור</string>
     <string name="region_israel">ישראל</string>
@@ -387,9 +392,9 @@
         <item quantity="other">הוגדרו %1$d שעות.</item>
     </plurals>
     <plurals name="permissions_missing">
-        <item quantity="one">נותרה הרשאה אחת לאשר.</item>
-        <item quantity="two">נותרו שתי הרשאות לאשר.</item>
-        <item quantity="other">נותרו %1$d הרשאות לאשר.</item>
+        <item quantity="one">הרשאה שימושית אחת לא ניתנה.</item>
+        <item quantity="two">שתי הרשאות שימושיות לא ניתנו.</item>
+        <item quantity="other">%1$d הרשאות שימושיות לא ניתנו.</item>
     </plurals>
     <string name="session_theme_title">על מה תרצו לדבר?</string>
     <string name="session_theme_none">נושא: ללא (רשות)</string>
@@ -424,6 +429,8 @@
     <string name="start_music_off">ללא</string>
     <string name="start_focus_on">פעיל</string>
     <string name="start_focus_off">כבוי</string>
+    <string name="start_focus_setup">נדרשת הגדרה</string>
+    <string name="start_focus_stopped">הופסק</string>
     <string name="settings_name">שם פרטי</string>
     <string name="settings_name_hint">כדי שמסך הבית יפנה אליכם בשמכם. הוא אינו יוצא מהטלפון.</string>
     <string name="settings_name_empty">לא הוזן</string>
@@ -453,6 +460,8 @@
     <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, ספרייה ועצות להתבודדות, זמינים מתי שרוצים.</string>
     <string name="onboarding_yours">בדרך שלכם</string>
     <string name="onboarding_yours_body">בהגדרות: השפה (צרפתית, אנגלית או עברית), צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
+    <string name="onboarding_gate">מחסום הבוקר</string>
+    <string name="onboarding_gate_body">אם תרצו, האפליקציות שתבחרו ימתינו להתבודדות שלכם: בשעות שתקבעו, מסך ישאל קודם אם היא כבר נעשתה. מפעילים בהגדרות, ואפשר לכבות בכל רגע.</string>
     <string name="onboarding_adresse">איך לפנות אליכם?</string>
     <string name="onboarding_adresse_body">בסוף כל התבודדות האפליקציה מברכת אתכם. בחרו את המילה שמתאימה לכם; אפשר לשנות אותה בהגדרות.</string>
     <string name="onboarding_rappel">להזכיר לי כל יום</string>
