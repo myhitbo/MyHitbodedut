@@ -156,6 +156,7 @@
     <string name="settings_hide_countdown">הסתרת הספירה</string>
     <string name="settings_hide_countdown_hint">כלום על המסך במהלך ההתבודדות, וצליל שקט בסוף.</string>
     <string name="session_hidden_caption">הספירה מוסתרת. צליל יודיע על הסיום.</string>
+    <string name="session_hidden_caption_web">הספירה מוסתרת. בסיום המסך מתחלף, והמוזיקה נעצרת אם התנגנה.</string>
     <string name="session_running_hidden">הספירה מוסתרת.</string>
     <string name="session_open_hidden_caption">בלי זמן קצוב, הספירה מוסתרת: מפסיקים כשמפסיקים.</string>
     <string name="session_running_open_hidden">בלי זמן קצוב, הספירה מוסתרת.</string>

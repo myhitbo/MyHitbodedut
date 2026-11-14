@@ -4579,7 +4579,12 @@ function declarerHorsTelephone() {
   const hier = ajouteJours(aujourdhui, -1);
   const inscrire = (date) => choisirDuree((m) => {
     store.addSession(m, { date });
-    if (date === aujourdhui) store.setPendingCelebration(m);
+    if (date === aujourdhui) {
+      store.setPendingCelebration(m);
+      // La note de ce jour-là, proposée après le bravo comme sur Android (MainActivity.declarerHorsTelephone).
+      dateNote = date;
+      noteApresBravo = true;
+    }
     rendre();
   }, tr.t('offline_how_long'));
   const ouvertAujourdhui = !store.isDone(aujourdhui);
@@ -4721,7 +4726,7 @@ function ajusteLesTextes() {
 let tic = null;
 let etaitEnCours = false;
 let verrouEcran = null;
-/** Après « Terminer maintenant », la note est proposée au retour du bravo. */
+/** Après toute séance inscrite ou journée déclarée sans le téléphone, la note est proposée au retour du bravo. */
 let noteApresBravo = false;
 /** { minutes } après une séance close, { annulee: true } après un abandon. */
 let bravo = null;
@@ -4937,10 +4942,13 @@ function cloreSeance({ avantTerme }) {
   // Une séance non inscrite n'a pas de jour : sa note va à aujourd'hui, pas au jour
   // d'une séance d'avant (bug du 02/11).
   dateNote = null;
+  noteApresBravo = false;
   if (inscrite) {
     store.addSession(minutes, { theme: sujet, date });
     store.setPendingCelebration(minutes);
     dateNote = date;
+    // Comme sur Android : la note suit le bravo après toute séance inscrite, pas seulement « Terminer maintenant ».
+    noteApresBravo = true;
   }
   etaitEnCours = false;
   arreteMusique();
@@ -4952,8 +4960,7 @@ function cloreSeance({ avantTerme }) {
 
 /** « Terminer maintenant » : la note est proposée après le bravo, ou tout de suite s'il n'y en a pas. */
 function terminerMaintenant() {
-  if (cloreSeance({ avantTerme: true })) noteApresBravo = true;
-  else setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
+  if (!cloreSeance({ avantTerme: true })) setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
   rendre();
 }
 
@@ -4973,7 +4980,7 @@ const deuxChiffres = (n) => String(n).padStart(2, '0');
 function compteur() {
   const mode = store.sessionCounter();
   const t = Date.now();
-  if (mode === 'masque') return { texte: '', legende: tr.t('session_hidden_caption') };
+  if (mode === 'masque') return { texte: '', legende: tr.t('session_hidden_caption_web') };
   const ms = mode === 'ecoule'
     ? Math.max(0, t - store.sessionStartedAt())
     : Math.max(0, store.sessionEndsAt() - t);

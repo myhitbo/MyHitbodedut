@@ -167,6 +167,7 @@
     <string name="settings_hide_countdown">Masquer le décompte</string>
     <string name="settings_hide_countdown_hint">Rien à l’écran pendant la hitbodedout, un son discret à la fin.</string>
     <string name="session_hidden_caption">Le décompte est masqué. Un son vous préviendra.</string>
+    <string name="session_hidden_caption_web">Le décompte est masqué. À la fin, l’écran change ; la musique s’arrête si elle jouait.</string>
     <string name="session_running_hidden">Le décompte est masqué.</string>
     <string name="session_open_hidden_caption">Sans durée, décompte masqué : vous arrêtez quand vous arrêtez.</string>
     <string name="session_running_open_hidden">Sans durée, décompte masqué.</string>
