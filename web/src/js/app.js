@@ -4213,7 +4213,8 @@ function ecranPaliers() {
 
   requestAnimationFrame(() => {
     const d = ecran.querySelector('.defile');
-    if (d && ici) d.scrollTop = Math.max(0, ici.offsetTop - d.clientHeight / 3);
+    // Le défilement posé par l'écran n'est pas celui de la main : il ne cache pas la banderole (FWEBLIVE-03).
+    if (d && ici) { const cible = Math.max(0, ici.offsetTop - d.clientHeight / 3); if (Math.abs(cible - d.scrollTop) > 1) d.dataset.defilementAuto = '1'; d.scrollTop = cible; }
     // B : la ligne se remplit jusqu'à « Tu es ici », les dernières étapes une à une.
     const gagnes = [...ecran.querySelectorAll('.ligne-etape.gagne')];
     if (!moinsAnime()) gagnes.forEach((el, i) => { el.style.setProperty('--retard', `${Math.max(0, i - (gagnes.length - 6)) * 90}ms`); el.classList.add('pousse'); });
@@ -5607,6 +5608,11 @@ document.addEventListener('scroll', (e) => {
   const ecran = d.closest('.avec-bandeau');
   const bandeau = ecran?.querySelector('.bandeau');
   if (!bandeau) return;
+  if (d.dataset.defilementAuto) { delete d.dataset.defilementAuto; return; }
   if (d.scrollTop > 8 && d.scrollHeight - d.clientHeight > bandeau.offsetHeight) ecran.classList.add('bandeau-cache');
   else if (d.scrollTop <= 0) ecran.classList.remove('bandeau-cache');
 }, true);
+// Dès que la main prend le défilement, celui de l'écran ne compte plus (FWEBLIVE-03).
+for (const evt of ['touchstart', 'wheel']) {
+  document.addEventListener(evt, (e) => { const d = e.target instanceof Element ? e.target.closest('.defile') : null; if (d) delete d.dataset.defilementAuto; }, { capture: true, passive: true });
+}

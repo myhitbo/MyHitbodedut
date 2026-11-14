@@ -116,3 +116,10 @@ test('Réinitialiser vide aussi les morceaux ajoutés et le calibrage, et la lis
   assert.match(app, /function ecranReglages\(\) \{\s*chargeVilles\(\);/);
   assert.doesNotMatch(app, /for \(const v of villes \?\? \[\]\)/);
 });
+
+test('Les paliers ne cachent pas la banderole par leur propre défilement (FWEBLIVE-03, garde-fou)', () => {
+  const app = readFileSync(new URL('../src/js/app.js', import.meta.url), 'utf8');
+  assert.match(app, /d\.dataset\.defilementAuto = '1'; d\.scrollTop = cible;/);
+  assert.match(app, /if \(d\.dataset\.defilementAuto\) \{ delete d\.dataset\.defilementAuto; return; \}/);
+  assert.match(app, /\['touchstart', 'wheel'\]/);
+});
