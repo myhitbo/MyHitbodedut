@@ -2524,13 +2524,17 @@ function confirmerRetrait(m) {
 // --- Zmanim et calendrier (ZmanimActivity, CalendrierActivity, 10/10) ----------------
 let villes = null;
 let villesDemandees = false;
+/** Rend la promesse du chargement de villes.json (vrai si la liste est là, faux si le fichier a échoué) ; un échec peut être retenté. */
+let villesPromesse = null;
 function chargeVilles() {
-  if (villes) return true;
-  if (!villesDemandees) {
+  if (villes) return Promise.resolve(true);
+  if (!villesPromesse) {
     villesDemandees = true;
-    fetch('data/villes.json').then((r) => r.json()).then((d) => { villes = d.villes; rendre(); }).catch(() => {});
+    villesPromesse = fetch('data/villes.json').then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then((d) => { villes = d.villes; rendre(); return true; })
+      .catch(() => { villesPromesse = null; return false; });
   }
-  return false;
+  return villesPromesse;
 }
 let jourCalendrier = null;
 let moisCalendrier = null;
@@ -2596,18 +2600,32 @@ function choisirLieu() {
       class: 'choix',
       onclick: () => localiserPosition({ etat, apres: () => { fermer(); rendre(); } }),
     }, tr.t('zmanim_position')), etat);
-    const courant = store.lieu()?.ville;
-    for (const v of villes ?? []) {
-      f.append(h('button', {
+    // La liste se remplit à l'arrivée de villes.json (FWEBCODE-05) : « Chargement… » en attendant,
+    // un message et « Réessayer » si le fichier échoue.
+    const liste = h('div', {});
+    f.append(liste, h('p', { class: 'indice sources' }, tr.t('zmanim_source_villes')));
+    const remplir = () => {
+      if (!villes) {
+        liste.replaceChildren(h('p', { class: 'indice', 'aria-live': 'polite' }, tr.t('villes_chargement_web')));
+        chargeVilles().then((ok) => {
+          if (!liste.isConnected) return;
+          if (ok) remplir();
+          else liste.replaceChildren(h('p', { class: 'indice' }, tr.t('villes_echec_web')),
+            h('button', { class: 'choix', onclick: remplir }, tr.t('livres_reessayer_web')));
+        });
+        return;
+      }
+      const courant = store.lieu()?.ville;
+      liste.replaceChildren(...villes.map((v) => h('button', {
         class: 'choix', role: 'menuitemradio', 'aria-checked': String(v.id === courant),
         onclick: () => {
           store.setLieu({ nom: titreTexte(v.nom), latitude: v.latitude, longitude: v.longitude, altitude: v.altitude, fuseau: v.fuseau }, v);
           fermer();
           rendre();
         },
-      }, titreTexte(v.nom)));
-    }
-    f.append(h('p', { class: 'indice sources' }, tr.t('zmanim_source_villes')));
+      }, titreTexte(v.nom))));
+    };
+    remplir();
   });
 }
 
@@ -4327,6 +4345,7 @@ const ACCENTS = ['vert', 'bleu', 'violet', 'bordeaux', 'ambre', 'turquoise'];
 const OUVERTURES = [['aujourdhui', 'nav_today'], ['textes', 'nav_texts'], ['zmanim', 'nav_zmanim']];
 
 function ecranReglages() {
+  chargeVilles();
   const courante = LANGUES.find((l) => l.code === tr.langue);
   return h('div', { class: 'ecran' }, barre(tr.t('settings_title')),
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
@@ -4395,9 +4414,14 @@ function ecranReglages() {
       // Réinitialiser l'application (12/10) : en dernier, avec une confirmation.
       h('div', { class: 'carte carte-reinit' },
         h('h3', {}, tr.t('reset_title')),
-        h('p', { class: 'indice' }, tr.t('reset_hint')),
-        h('button', { class: 'bouton-danger', onclick: () => confirmer(tr.t('reset_confirm_title'), tr.t('reset_confirm_text'), tr.t('reset_confirm_yes'), () => {
+        h('p', { class: 'indice' }, tr.t('reset_hint_web')),
+        h('button', { class: 'bouton-danger', onclick: () => confirmer(tr.t('reset_confirm_title'), tr.t('reset_confirm_text_web'), tr.t('reset_confirm_yes'), async () => {
+          // Tout ce que le site garde (FWEBCODE-07) : les morceaux ajoutés (IndexedDB, vidés par une
+          // transaction : deleteDatabase serait bloquée par la connexion ouverte), le calibrage des livres.
           store.reinitialiser();
+          try { await MorceauxPerso.vide(); } catch { /* base indisponible : rien à effacer de plus */ }
+          clearTimeout(calibrageAEcrire);
+          try { localStorage.removeItem(CLE_CALIBRAGE); sessionStorage.clear(); } catch { /* stockage refusé */ }
           location.replace(location.pathname);
         }) }, tr.t('reset_action'))),
       ligneVersion())));

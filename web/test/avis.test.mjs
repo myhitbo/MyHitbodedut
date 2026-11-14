@@ -101,3 +101,18 @@ test('l’application dit ce qu’elle sait du stockage (garde-fou sur app.js)',
   // L'export et l'import datent la dernière sauvegarde.
   assert.equal(app.split('store.setDerniereSauvegarde(store.today())').length - 1, 3);
 });
+
+test('Réinitialiser vide aussi les morceaux ajoutés et le calibrage, et la liste des villes attend son fichier (FWEBCODE-05, -07)', async () => {
+  const perso = await import('../src/js/morceaux-perso.js');
+  await perso.vide(); // sans IndexedDB (Node) : rien à faire, sans erreur
+  assert.deepEqual(await perso.tous(), []);
+  const app = readFileSync(new URL('../src/js/app.js', import.meta.url), 'utf8');
+  assert.match(app, /await MorceauxPerso\.vide\(\);/);
+  assert.match(app, /localStorage\.removeItem\(CLE_CALIBRAGE\); sessionStorage\.clear\(\);/);
+  assert.match(app, /tr\.t\('reset_hint_web'\)/);
+  assert.match(app, /tr\.t\('reset_confirm_text_web'\)/);
+  // La feuille des lieux se remplit à l'arrivée des villes, et les Réglages les demandent.
+  assert.match(app, /chargeVilles\(\)\.then\(\(ok\) => \{/);
+  assert.match(app, /function ecranReglages\(\) \{\s*chargeVilles\(\);/);
+  assert.doesNotMatch(app, /for \(const v of villes \?\? \[\]\)/);
+});
