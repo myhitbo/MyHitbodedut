@@ -687,7 +687,7 @@ décrit, tel que l'application l'affiche :
    de nouveau ;
 4. l'écran de garde s'affiche à toute heure avec le bandeau **PREVIEW, NO
    EFFECT** ;
-5. pour la voir agir : carte **Required permissions** → **Grant** (deux
+5. pour la voir agir : carte **Permissions** → **Grant** (deux
    accès) ; carte **I am with Hashem** → interrupteur, **Choose apps**,
    **Mode hours** autour de l'heure courante ; puis ouvrir l'application
    choisie. Chabbat et Yom Tov : la barrière se tait par défaut (carte

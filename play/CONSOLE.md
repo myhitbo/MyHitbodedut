@@ -118,7 +118,7 @@ To see the morning gate at any time of day:
 4. The gate appears over the home screen with the badge [PREVIEW, NO EFFECT]. [Close the preview] dismisses it.
 
 To see it act for real:
-1. [Settings], card [Required permissions]: tap [Grant] for [Display over other apps] and for [Usage access]. Each shows an in-app disclosure first.
+1. [Settings], card [Permissions]: tap [Grant] for [Display over other apps] and for [Usage access]. Each shows an in-app disclosure first.
 2. Card [I am with Hashem]: turn the switch on, tap [Choose apps] and pick one app, and set [Mode hours] around the current time.
 3. Open the app you picked: the gate appears in front of it.
 On Saturdays and Jewish festivals the gate is silent by default (card [Rhythm], [Shabbat and Yom Tov]).

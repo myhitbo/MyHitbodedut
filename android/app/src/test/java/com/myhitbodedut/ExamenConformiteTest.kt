@@ -182,4 +182,17 @@ class ExamenConformiteTest {
         sousTypes.forEach { assertTrue("sous-type absent du bloc Special use : $it", special.contains(it)) }
         assertTrue(console.substringAfter("**B. Media playback").contains("*Use case* : **Media Playback**"))
     }
+
+    /** Constat 5 : la note aux examinateurs citait une carte « Required permissions » qui n'existe pas. */
+    @Test
+    fun `la note aux examinateurs ne cite que des libelles de l interface anglaise`() {
+        val note = File("../../play/CONSOLE.md").readText()
+            .substringAfter("### 3.2").substringBefore("### 3.3")
+            .substringAfter("```").substringBefore("```")
+        val libelles = Regex("""\[([^\]]+)]""").findAll(note).map { it.groupValues[1] }.toSet()
+        assertTrue("la note a perdu ses libellés", libelles.size >= 10)
+        assertTrue(libelles.contains("Permissions"))
+        val anglais = File("src/main/res/values-en/strings.xml").readText()
+        libelles.forEach { assertTrue("[$it] n'est pas un libellé de l'interface anglaise", anglais.contains(">$it<")) }
+    }
 }
