@@ -125,7 +125,8 @@ struct ModeleTests {
     @Test func lesDeuxLecturesDuJournalSAccordent() throws {
         let texte = "{\"2025-10-02\":{\"minutes\":3,\"note\":\"b\"},\"2025-10-01\":{\"minutes\":1,\"note\":\"a\",\"themes\":[\"x\"]}}"
         let parTexte = Journal(daysTexte: texte, prenom: "Moshe")
-        let parObjet = Journal(days: try ObjetJSON(texte: texte), prenom: "Moshe")
+        let objet = try ObjetJSON(texte: texte)
+        let parObjet = Journal(days: objet, prenom: "Moshe")
         #expect(parTexte == parObjet)
         let relu = parObjet.daysTexte
         #expect(relu == texte)

@@ -4,6 +4,7 @@ VecteursBoussole
 VecteursGeo
 VecteursGuidee
 VecteursHalakha
+VecteursInterfaceA
 VecteursJaugeSemaine
 VecteursLevana
 VecteursModele

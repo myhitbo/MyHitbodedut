@@ -34,12 +34,15 @@ let enChantierSources: [String] = [
     "Tikkun.swift",
     "VillePlusProche.swift",
     "Vol.swift",
+    "VolCalendrier.swift",
+    "VolPriere.swift",
     "YalkutYosef.swift",
     "ZmanimVignette.swift",
     "ZmanimWidget.swift",
 ]
 let enChantierTests: [String] = [
     "AdresseTests.swift",
+    "AnneauxTests.swift",
     "BoussoleTests.swift",
     "ChabbatAlerteTests.swift",
     "DirectionJerusalemTests.swift",
@@ -67,6 +70,8 @@ let enChantierTests: [String] = [
     "TikkunTests.swift",
     "VillePlusProcheTests.swift",
     "YalkutYosefTests.swift",
+    "ZmanimVignetteTests.swift",
+    "ZmanimWidgetTests.swift",
 ]
 
 let package = Package(

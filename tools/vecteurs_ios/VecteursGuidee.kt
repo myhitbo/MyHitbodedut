@@ -16,7 +16,7 @@ import com.myhitbodedut.Theme
 import com.myhitbodedut.ThemeRules
 import java.io.File
 import java.time.LocalDate
-import java.util.TimeZone
+import java.time.ZoneOffset
 import kotlin.random.Random
 import org.json.JSONObject
 
@@ -27,7 +27,7 @@ object VecteursGuidee : Generateur {
         "_meta" to linkedMapOf(
             "source" to "tools/vecteurs_ios/VecteursGuidee.kt",
             "debordements" to "ce que rend Kotlin là où son calcul sur 32 bits déborde ; Swift y rend le résultat exact",
-            "posesJours" to "la règle de Character.ofDay appliquée à des jours fixes, après l'avoir vérifiée sur le vrai code pour les jours du lancement",
+            "posesJours" to "ce que rend le vrai Character, l'horloge de l'oracle (bouchons/Horloge.kt) réglée sur chacun de ces jours, à midi en UTC",
         ),
 
         // --- Hitbodedut.kt --------------------------------------------------------------------------
@@ -230,59 +230,26 @@ object VecteursGuidee : Generateur {
         resumes = emptyMap(), droits = emptyMap(), autorisation = null, texteIntegral = null, sourcesCitees = emptyList(),
         erreursRelevees = emptyMap())
 
-    /** Une des trois réserves de poses, privées dans Character : lue telle qu'elle est dans l'objet. */
-    private fun reserve(nom: String): IntArray =
-        PosesAndroid::class.java.getDeclaredField(nom).apply { isAccessible = true }.get(null) as IntArray
-
-    /** La règle de Character.ofDay : le numéro du jour (LocalDate.toEpochDay), décalé de sept jours par sel. */
-    private fun duJour(reserve: IntArray, sel: Int, numero: Long): Int =
-        reserve[Math.floorMod(numero + sel * 7L, reserve.size.toLong()).toInt()]
-
     /**
-     * Character lit le jour dans l'horloge (LocalDate.now()) : on ne peut pas lui en donner un autre.
-     * La règle ci-dessus est donc comparée à ce que rend le vrai code pour les jours du lancement, vus
-     * de trois fuseaux (deux ou trois jours civils distincts) ; les vecteurs, eux, portent des jours fixes.
+     * Character lit le jour dans l'horloge (LocalDate.now()), que l'oracle fige et réécrit vers bouchons/Horloge.kt :
+     * l'horloge est réglée sur chacun de ces jours, à midi en UTC, et c'est le vrai code qui répond.
      */
-    private fun verifier(call: IntArray, during: IntArray, joy: IntArray) {
-        val fuseau = TimeZone.getDefault()
-        try {
-            for (id in listOf("GMT-12:00", "UTC", "GMT+14:00")) {
-                TimeZone.setDefault(TimeZone.getTimeZone(id))
-                var verifie = false
-                while (!verifie) {
-                    val jour = LocalDate.now()
-                    val rendus = listOf(PosesAndroid.call(), PosesAndroid.during(), PosesAndroid.joy(), PosesAndroid.greeting(true))
-                    // Minuit a pu passer entre deux lectures de l'horloge : on recommence.
-                    if (LocalDate.now() != jour) continue
-                    val numero = jour.toEpochDay()
-                    val attendus = listOf(duJour(call, 1, numero), duJour(during, 2, numero), duJour(joy, 3, numero), duJour(joy, 3, numero))
-                    check(rendus == attendus) {
-                        "Character.ofDay ne suit plus la règle portée ($jour, $id) : revoir Poses.swift et ce générateur"
-                    }
-                    verifie = true
-                }
-            }
-        } finally {
-            TimeZone.setDefault(fuseau)
-        }
-    }
-
     private fun posesJours(): List<Map<String, Any?>> {
-        val call = reserve("CALL")
-        val during = reserve("DURING")
-        val joy = reserve("JOY")
-        verifier(call, during, joy)
         // Autour du 1er janvier 1970 (numéros négatifs compris), un automne entier, et quelques jours repères.
         val jours = (-40L..40L).map { LocalDate.ofEpochDay(it) } +
             (0L until 42L).map { LocalDate.of(2026, 10, 25).plusDays(it) } +
             listOf("0000-01-01", "0000-02-29", "0001-01-01", "1582-10-15", "1899-12-31", "1900-02-28", "1900-03-01", "2000-02-29",
                 "2024-02-29", "2038-01-19", "2100-02-28", "2100-03-01", "9999-12-31").map { LocalDate.parse(it) }
-        return jours.map { jour ->
-            val numero = jour.toEpochDay()
-            linkedMapOf("jour" to jour.toString(), "numero" to numero,
-                "call" to Identifiants.entree(duJour(call, 1, numero)),
-                "during" to Identifiants.entree(duJour(during, 2, numero)),
-                "joy" to Identifiants.entree(duJour(joy, 3, numero)))
+        val lignes = jours.map { jour ->
+            Horloge.regler(jour.atTime(12, 0), ZoneOffset.UTC)
+            linkedMapOf("jour" to jour.toString(), "numero" to jour.toEpochDay(),
+                "call" to Identifiants.entree(PosesAndroid.call()),
+                "during" to Identifiants.entree(PosesAndroid.during()),
+                "joy" to Identifiants.entree(PosesAndroid.joy()),
+                "greeting" to Identifiants.entree(PosesAndroid.greeting(true)),
+                "accueil" to Identifiants.entree(PosesAndroid.greeting(false)))
         }
+        Horloge.defaut()
+        return lignes
     }
 }

@@ -120,8 +120,9 @@ struct ReminderRuleTests {
                                                       tomorrowIsRestDay: s.tomorrowIsRestDay,
                                                       sunsetMinutes: s.sunsetMinutes)
                 let attendu = s.resultats[rang]
+                let coucher = Self.ecrit(s.sunsetMinutes)
                 #expect(sonne == attendu,
-                        "fait \(s.doneToday), repos \(s.todayIsRestDay), veille \(s.tomorrowIsRestDay), coucher \(Self.ecrit(s.sunsetMinutes)), à \(maintenant)")
+                        "fait \(s.doneToday), repos \(s.todayIsRestDay), veille \(s.tomorrowIsRestDay), coucher \(coucher), à \(maintenant)")
                 cas += 1
             }
         }
