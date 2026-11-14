@@ -48,7 +48,10 @@ data class SeanceClose(val minutes: Int, val date: String)
 
 /**
  * Toute la persistance de l'application, dans les préférences locales.
- * Rien ne quitte l'appareil : aucune permission Internet n'est déclarée.
+ * L'application n'envoie rien de ce qu'elle garde ici. Le fichier des réglages peut
+ * toutefois partir dans la sauvegarde Android du compte Google (backup_rules.xml) ; le
+ * journal n'en sort que par l'export ou le transfert d'appareil. Seule l'édition complète
+ * déclare Internet, pour les services de vol (13/11, TWEBCONF-07).
  */
 object Store {
 
@@ -335,6 +338,28 @@ object Store {
         writeDays(context, all)
     }
 
+    /**
+     * Ce que devient un jour quand on corrige sa durée (FDONNEES-04) : [minutes] remplace les
+     * minutes inscrites ; 0 retire la journée (sa note, si elle en a une, reste, sans valider
+     * le jour). Null : rien à garder, la ligne disparaît.
+     */
+    fun jourCorrige(existant: DayRecord?, date: String, minutes: Int): DayRecord? {
+        if (existant == null) return null
+        if (minutes > 0) return existant.copy(minutes = minutes.coerceAtMost(24 * 60), noteSeule = false)
+        return if (existant.note.isBlank()) null else DayRecord(date, 0, existant.note, emptyList(), noteSeule = true)
+    }
+
+    /** Remplace la durée d'un jour (0 : retire la journée). Sans effet sur un jour sans durée. */
+    fun corrigerJour(context: Context, date: String, minutes: Int) {
+        val all = days(context).toMutableMap()
+        val existant = all[date]?.takeIf { it.faite } ?: return
+        val nouveau = jourCorrige(existant, date, minutes)
+        if (nouveau == null) all.remove(date) else all[date] = nouveau
+        writeDays(context, all)
+        // Aujourd'hui retiré : l'instant de la dernière séance ne doit plus honorer la barrière.
+        if (minutes <= 0 && date == today()) prefs(context).edit().remove(KEY_FAIT_A).apply()
+    }
+
     fun unmarkToday(context: Context) {
         val all = days(context).toMutableMap()
         all.remove(today())
@@ -384,8 +409,20 @@ object Store {
     fun shabbatMode(context: Context): Boolean = prefs(context).getBoolean(KEY_PAUSE_SHABBAT, true)
 
     fun setShabbatMode(context: Context, value: Boolean) {
-        prefs(context).edit().putBoolean(KEY_PAUSE_SHABBAT, value).apply()
+        val ancienne = shabbatMode(context)
+        prefs(context).edit().putBoolean(KEY_PAUSE_SHABBAT, value)
+            .putString(KEY_HISTO_SHABBAT, datee(context, KEY_HISTO_SHABBAT, ancienne, value)).apply()
     }
+
+    /** Historique daté d'un réglage qui pèse sur le passé (FDONNEES-05) : voir [HistoriqueReglage]. */
+    private const val KEY_HISTO_SHABBAT = "pause_shabbat_histoire"
+    private const val KEY_HISTO_ISRAEL = "in_israel_histoire"
+
+    private fun histoire(context: Context, cle: String): List<HistoriqueReglage.Entree> =
+        HistoriqueReglage.decoder(prefs(context).getString(cle, null))
+
+    private fun datee(context: Context, cle: String, ancienne: Boolean, nouvelle: Boolean): String =
+        HistoriqueReglage.encoder(HistoriqueReglage.apresChangement(histoire(context, cle), LocalDate.now(), ancienne, nouvelle))
 
     /** Israël ou diaspora : décide du deuxième jour de fête. */
     /**
@@ -402,7 +439,9 @@ object Store {
     }
 
     fun setInIsrael(context: Context, value: Boolean) {
-        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value).apply()
+        val ancienne = inIsrael(context)
+        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value)
+            .putString(KEY_HISTO_ISRAEL, datee(context, KEY_HISTO_ISRAEL, ancienne, value)).apply()
     }
 
     /**
@@ -630,7 +669,10 @@ object Store {
      */
     fun isExempt(context: Context, date: LocalDate): Boolean {
         if (pausedDates(context).contains(date.format(FORMAT))) return true
-        return shabbatMode(context) && Holidays.isRestDay(date, inIsrael(context))
+        // Chaque jour se juge avec le réglage en vigueur ce jour-là (FDONNEES-05) : un voyage
+        // ou un interrupteur changé après coup ne réécrit pas le passé.
+        val chabbat = HistoriqueReglage.valeurLe(histoire(context, KEY_HISTO_SHABBAT), date, shabbatMode(context))
+        return chabbat && Holidays.isRestDay(date, HistoriqueReglage.valeurLe(histoire(context, KEY_HISTO_ISRAEL), date, inIsrael(context)))
     }
 
     /** Veille d'un jour chômé, pour taire le rappel du soir. */
@@ -1001,7 +1043,7 @@ object Store {
     fun pratique(context: Context): Trophees.Pratique {
         val tous = days(context).values
         val minutes = tous.filter { it.faite }.mapNotNull { r -> dateValide(r.date)?.let { it to r.minutes } }.toMap()
-        return Trophees.Pratique(minutes, tous.count { it.note.isNotBlank() }, meilleureSerie(context), tikkunJournal(context))
+        return Trophees.Pratique(minutes, tous.count { it.note.isNotBlank() }, meilleureSerie(context), tikkunJournal(context)) { isExempt(context, it) }
     }
 
     /**

@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Anneaux, CycleTehilim, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, RegleLangue, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from '../src/js/regles.js';
+import { Anneaux, HistoriqueReglage, CycleTehilim, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, RegleLangue, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from '../src/js/regles.js';
 import { estJourChome, israelParDefaut } from '../src/js/calendrier.js';
 import { creeStore, dateValide, memoire } from '../src/js/store.js';
 import { creeTraduction, formate, langueInitiale } from '../src/js/i18n.js';
@@ -203,6 +203,38 @@ test('le format et les pluriels suivent Android', () => {
   const he = creeTraduction('he', { chaines: {}, pluriels: { x: { one: 'יום', two: 'יומיים', other: '%d ימים' } } });
   assert.equal(he.p('x', 2), 'יומיים');
   assert.equal(he.p('x', 5), '5 ימים');
+});
+
+test('les compteurs s’accordent dans les trois langues (audit du 12/11, TFRLANGUE-01 et TEN-02)', () => {
+  const tr = Object.fromEntries([['fr', 'values'], ['en', 'values-en'], ['he', 'values-iw']]
+    .map(([l, d]) => [l, creeTraduction(l, litChaines(readFileSync(join(RES, d, 'strings.xml'), 'utf8')))]));
+  // Dès la première hitbodedout : un trophée, un jour de série.
+  assert.equal(tr.fr.p('grade_sous_max', 1), '1 trophée gagné');
+  assert.equal(tr.fr.p('grade_sous_max', 0), '0 trophée gagné');
+  assert.equal(tr.fr.p('grade_sous_max', 2), '2 trophées gagnés');
+  assert.equal(tr.fr.p('grade_sous', 1, 1, 9, 'Argent'), '1 trophée gagné · encore 9 pour Argent');
+  assert.equal(tr.fr.p('ring_streak_detail', 1, 1, 7), 'Série : 1 jour sur 7');
+  assert.equal(tr.fr.p('ring_streak_detail', 3, 3, 7), 'Série : 3 jours sur 7');
+  assert.equal(tr.fr.p('trophees_autres', 1), '… et 1 autre trophée plus loin');
+  assert.equal(tr.fr.p('trophee_detail_grade', 1, 'Bronze', 1), 'En Bronze : c’était votre premier trophée.');
+  assert.equal(tr.fr.p('trophee_detail_grade', 8, 'Bronze', 8), 'En Bronze : c’était votre 8ᵉ trophée.');
+  assert.equal(tr.fr.t('rings_description', '5 min', '15 min', tr.fr.p('ring_week_detail', 1, 1, 6), tr.fr.p('ring_streak_detail', 1, 1, 7)),
+    'Anneaux. Aujourd’hui : 5 min sur 15 min. Semaine : 1 jour sur 6. Série : 1 jour sur 7.');
+  assert.equal(tr.en.p('grade_sous_max', 1), '1 trophy earned');
+  assert.equal(tr.en.p('grade_sous_max', 0), '0 trophies earned');
+  assert.equal(tr.en.p('trophees_autres', 1), '… and 1 more trophy further on');
+  assert.equal(tr.en.p('grade_partage_texte', 1, 'Bronze', 1), 'Bronze grade on MyHitbodedut: 1 trophy, day after day.');
+  assert.equal(tr.en.p('journal_summary', 3, 3, '1 h 05'), '3 days of hitbodedut, 1 h 05 in total');
+  assert.equal(tr.en.p('journal_summary', 1, 1, '20 min'), '1 day of hitbodedut, 20 min in total');
+  assert.equal(tr.en.p('trophee_premier_pas_desc', 3), 'First 3 days of hitbodedut');
+  assert.equal(tr.en.p('trophee_retour_desc', 1), 'Coming back once after a week’s break');
+  assert.equal(tr.he.p('grade_sous_max', 1), 'גביע אחד הושג');
+  assert.equal(tr.he.p('grade_sous_max', 2), 'שני גביעים הושגו');
+  assert.equal(tr.he.p('grade_sous_max', 7), '7 גביעים הושגו');
+  assert.equal(tr.he.p('ring_streak_detail', 1, 1, 7), 'רצף: יום אחד מתוך 7');
+  assert.equal(tr.he.p('trophee_detail_grade', 1, 'ארד', 1), 'בארד: זה היה הגביע הראשון שלכם.');
+  // Le message d'un trophée neuf ne nomme plus de métal (FDONNEES-06).
+  for (const l of ['fr', 'en', 'he']) assert.ok(!/%3\$s/.test(tr[l].t('trophee_niveau_gagne')), l);
 });
 
 test('la langue : le choix, sinon le téléphone, sinon le français', () => {
@@ -619,12 +651,10 @@ test('trophées à niveaux : mêmes règles que TropheesTest (12/10)', () => {
   assert.equal(Trophees.rang(p, F.premier_pas), 5);
   assert.equal(Trophees.rang(p, F.retour), 1);
   assert.equal(Trophees.semainesPleines(Object.keys(jours(41))), 6);
-  for (const f of Trophees.FAMILLES.filter((x) => x.seuils.length > 1)) {
-    const m = f.seuils.map((_, i) => Trophees.METAUX.indexOf(Trophees.metal(f, i + 1)));
-    assert.equal(m[0], 0, f.cle); assert.equal(m.at(-1), 3, f.cle);
-    assert.ok(m.every((v, i) => i === 0 || v - m[i - 1] <= 1), f.cle);
-  }
-  assert.equal(Trophees.metal(F.premier_pas, 1), 'bronze');
+  // Le métal est celui du grade, pas de la famille (13/11, FDONNEES-06).
+  assert.equal(Trophees.metal, undefined);
+  assert.deepEqual([0, 9, 10, 25, 50].map(Trophees.grade), ['bronze', 'bronze', 'argent', 'or', 'platine']);
+  for (const f of Trophees.FAMILLES) assert.ok(f.seuils.every((s, i) => i === 0 || s > f.seuils[i - 1]), f.cle);
   for (const q of [{ minutes: {}, notes: 0, meilleureSerie: 0 }, { minutes: jours(6, 1, 70), notes: 12, meilleureSerie: 6 }, { minutes: jours(700, 1, 200), notes: 200, meilleureSerie: 700 }]) {
     for (const f of Trophees.FAMILLES) {
       const r = Trophees.rang(q, f); const pr = Trophees.progres(q, f);
@@ -636,6 +666,10 @@ test('trophées à niveaux : mêmes règles que TropheesTest (12/10)', () => {
   assert.deepEqual(Trophees.nouveaux(g, new Set(['chai'])), []);
   const n = Trophees.nouveaux(g, new Set(['premier_pas:1']));
   assert.ok(n.some((x) => x.famille.cle === 'jours' && x.rang === 5));
+  // Le plus coûteux d'abord (Trophees.nouveaux, 13/11) : 20 jours d'affilée (30) devant 20 jours (20).
+  const couts = n.map((x) => Trophees.cout(x.famille, x.famille.seuils[x.rang - 1]));
+  assert.deepEqual(couts, [...couts].sort((a, b) => b - a));
+  assert.equal(n[0].famille.cle, 'serie');
 });
 
 // --- Dates de gain, trophées proches, bilan de la semaine (BilanTropheesTest, 16/10) ---
@@ -749,6 +783,15 @@ test('trophées du Tikoun (04/11) : lectures complètes et jours d’affilée, c
   assert.equal(d['tikkun_serie:1'], '2026-11-03');
 });
 
+test('un jour exempté ne casse pas la suite du Tikoun (FDONNEES-09)', async () => {
+  const T = await import('../src/js/trophees.js');
+  const exempt = (d) => d === '2026-11-04' || d === '2026-11-05';
+  const tikkun = ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-06', '2026-11-07', '2026-11-09'];
+  assert.equal(T.valeur({ minutes: {}, notes: 0, meilleureSerie: 0, tikkun, exempt }, 'tikkun_serie'), 5);
+  assert.equal(T.valeur({ minutes: {}, notes: 0, meilleureSerie: 0, tikkun }, 'tikkun_serie'), 3);
+  assert.equal(T.datesGain({}, [], exempt, tikkun.slice(0, 5))['tikkun_serie:1'], '2026-11-03');
+});
+
 test('langues de lecture (04/11) : six modes, la règle d’avant par défaut, l’hébreu faute de traduction', async () => {
   const { LanguesTexte } = await import('../src/js/regles.js');
   assert.equal(LanguesTexte.defaut('he'), 'he');
@@ -775,4 +818,29 @@ test('Dedicace : la demande va à l’équipe, la formule en hébreu, le lien en
   assert.ok(l.startsWith('mailto:myhitbodedut26@gmail.com?subject='));
   assert.equal(decodeURIComponent(l.split('&body=')[1]), 'a b\nc & d');
   assert.equal(Dedicace.INTENTIONS.length, 5);
+});
+
+test('un réglage daté ne réécrit pas le passé (HistoriqueReglageTest, FDONNEES-05)', () => {
+  const H = HistoriqueReglage;
+  const h = H.apresChangement([], '2026-11-05', false, true);
+  assert.equal(H.encoder(h), '2000-01-01=0,2026-11-05=1');
+  assert.equal(H.valeurLe(h, '2026-11-04', true), false);
+  assert.equal(H.valeurLe(h, '2026-11-05', true), true);
+  assert.equal(H.valeurLe([], '2026-01-01', true), true);
+  assert.deepEqual(H.decoder(H.encoder(h)), h);
+  assert.deepEqual(H.decoder('x,2026-13-45=1,2026-11-05=x,2000-01-01=0'), [{ depuis: '2000-01-01', valeur: false }]);
+  assert.equal(H.encoder(H.apresChangement(H.decoder('2000-01-01=0,2099-01-01=1'), '2026-11-05', false, true)), '2000-01-01=0,2026-11-05=1');
+});
+
+test('un voyage en Israël ne casse plus la série passée (store.js, FDONNEES-05)', () => {
+  let maintenant = new Date(2026, 10, 12, 12);
+  const c = creeStore(memoire(), { maintenant: () => maintenant, fuseau: 'Europe/Paris' });
+  c.setInIsrael(false);
+  assert.equal(c.isExempt('2026-10-04'), true); // Simhat Torah en diaspora (23 Tichri)
+  maintenant = new Date(2026, 10, 13, 12);
+  c.setInIsrael(true);
+  assert.equal(c.isExempt('2026-10-04'), true, 'le passé garde la diaspora');
+  c.setShabbatMode(false);
+  assert.equal(c.isExempt('2026-10-04'), true, 'couper l’interrupteur ne change pas le passé');
+  assert.equal(c.isExempt('2026-11-14'), false, 'le jour même suit le nouveau réglage');
 });
