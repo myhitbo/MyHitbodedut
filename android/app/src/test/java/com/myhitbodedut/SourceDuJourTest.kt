@@ -56,7 +56,7 @@ class SourceDuJourTest {
         assertEquals(listOf("he" to SourceDuJour.extrait(p.texte)), SourceDuJour.textes(p, LanguesTexte.Mode.HE))
         // Chaque extrait tient sur l'accueil, coupé à un mot.
         SourceDuJour.candidats(library).forEach { c ->
-            SourceDuJour.textes(c, LanguesTexte.Mode.FR_EN).forEach { (_, t) -> assertTrue(t, t.length <= 321) }
+            SourceDuJour.textes(c, LanguesTexte.Mode.FR_EN).forEach { (_, t) -> assertTrue(t, t.length <= 321 && '<' !in t) }
         }
     }
 

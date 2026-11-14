@@ -48,6 +48,9 @@ object SourceDuJour {
         return c[Math.floorMod(jour.toEpochDay() * PAS, c.size.toLong()).toInt()]
     }
 
+    /** Les balises (<b>, <small>, <br>) des textes, ôtées avant la coupe : la carte est du texte nu (audit du 12/11, TLIVRES-01). */
+    fun sansBalises(texte: String): String = texte.replace(Regex("<[^>]+>"), " ").replace(Regex("\\s+"), " ").trim()
+
     /** Un extrait qui tient sur l'accueil : coupé à un mot, jamais au milieu. */
     fun extrait(texte: String, max: Int = 320): String =
         if (texte.length <= max) texte else texte.take(max).substringBeforeLast(' ').trimEnd(',', ' ', ':', ';') + "…"
@@ -58,7 +61,7 @@ object SourceDuJour {
      */
     fun textes(p: Pensee, mode: LanguesTexte.Mode): List<Pair<String, String>> =
         LanguesTexte.textes(mode, p.texte, p.source.paragraphesFr.getOrNull(p.indice), p.source.paragraphesEn.getOrNull(p.indice))
-            .map { (langue, texte) -> langue to extrait(texte) }
+            .map { (langue, texte) -> langue to extrait(sansBalises(texte)) }
 
     fun carte(c: Context): View? {
         val p = choix(Data.library(c), LocalDate.now()) ?: return null

@@ -713,7 +713,7 @@ test('la source du jour donne la traduction du même paragraphe, selon les langu
   for (const p of c) {
     assert.equal(LibraryRules.paragraphes(b, p.source)[p.indice], p.texte);
     assert.deepEqual(SourceDuJour.textes(p, 'fr+en').map(([l]) => l), ['fr', 'en'], `${p.source.id}[${p.indice}]`);
-    for (const [, t] of SourceDuJour.textes(p, 'fr+en')) assert.ok(t.length <= 321);
+    for (const [, t] of SourceDuJour.textes(p, 'fr+en')) assert.ok(t.length <= 321 && !t.includes('<'));
   }
   // L'exemple de l'audit : Likoutei Tefilot II, 22, deuxième paragraphe.
   const p = c.find((x) => x.source.id === 'src-lt-hitbodedut' && x.indice === 1);
