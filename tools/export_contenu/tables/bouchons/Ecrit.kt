@@ -77,7 +77,9 @@ object Ecrit {
     private fun nombre(sb: StringBuilder, d: Double) {
         check(d.isFinite()) { "nombre non fini dans un vecteur : $d" }
         // Un entier exact s'écrit sans « .0 » ni exposant ; sinon la forme de Java, relue à l'identique.
-        if (d == Math.rint(d) && Math.abs(d) < 1e15) sb.append(d.toLong()) else sb.append(d)
+        // Le zéro négatif garde son signe.
+        if (d == 0.0 && 1.0 / d < 0) sb.append("-0.0")
+        else if (d == Math.rint(d) && Math.abs(d) < 1e15) sb.append(d.toLong()) else sb.append(d)
     }
 
     private fun chaine(sb: StringBuilder, s: String) {
