@@ -410,6 +410,44 @@ export const Parcours = {
  * après (1 à 5, 0 = non notée), une gratitude et une chose à travailler, gardées à part des
  * journées sous « journal_plus », date → { avant, apres, gratitude, travail }, comme Android.
  */
+/**
+ * L'historique d'un réglage qui pèse sur le passé (HistoriqueReglage.kt, audit du 12/11,
+ * FDONNEES-05) : « 2000-01-01=0,2026-11-05=1 », la date d'effet puis 1 ou 0. Un jour se juge avec
+ * la valeur en vigueur ce jour-là ; vide : la valeur du moment vaut pour tous les jours.
+ */
+export const HistoriqueReglage = {
+  ORIGINE: '2000-01-01',
+  MAX: 200,
+  decoder(brut) {
+    if (typeof brut !== 'string' || brut.trim() === '') return [];
+    const parDate = new Map();
+    for (const morceau of brut.split(',')) {
+      const i = morceau.indexOf('=');
+      const date = (i < 0 ? morceau : morceau.slice(0, i)).trim();
+      const v = i < 0 ? '' : morceau.slice(i + 1).trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00Z`))) continue;
+      if (v === '1') parDate.set(date, true); else if (v === '0') parDate.set(date, false);
+    }
+    return [...parDate].sort(([a], [b]) => (a < b ? -1 : 1)).map(([depuis, valeur]) => ({ depuis, valeur }));
+  },
+  encoder(histoire) { return histoire.map((e) => `${e.depuis}=${e.valeur ? 1 : 0}`).join(','); },
+  valeurLe(histoire, jour, actuelle) {
+    if (histoire.length === 0 || jour >= histoire.at(-1).depuis) return actuelle;
+    const e = [...histoire].reverse().find((x) => x.depuis <= jour) ?? histoire[0];
+    return e.valeur;
+  },
+  apresChangement(histoire, aujourdhui, ancienne, nouvelle) {
+    if (ancienne === nouvelle) return histoire;
+    const base = histoire.length ? histoire : [{ depuis: this.ORIGINE, valeur: ancienne }];
+    let avant = base.filter((e) => e.depuis < aujourdhui);
+    if (avant.length === 0) avant = [{ depuis: this.ORIGINE, valeur: ancienne }];
+    const suite = avant.at(-1).valeur === nouvelle ? avant : [...avant, { depuis: aujourdhui, valeur: nouvelle }];
+    if (suite.length <= this.MAX) return suite;
+    const gardees = suite.slice(-this.MAX);
+    return [{ depuis: this.ORIGINE, valeur: gardees[0].valeur }, ...gardees.slice(1)];
+  },
+};
+
 export const JournalPlus = {
   /** Les cinq humeurs, de la plus lourde à la plus légère. */
   HUMEURS: ['😞', '🙁', '😐', '🙂', '😄'],

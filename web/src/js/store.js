@@ -9,7 +9,7 @@
 
 import { ajouteJours, estJourChome, isoLocal, israelParDefaut, jourSemaine } from './calendrier.js';
 import { SessionRule } from './seance.js';
-import { Anneaux, JaugeSemaine, Plaque } from './regles.js';
+import { Anneaux, HistoriqueReglage, JaugeSemaine, Plaque } from './regles.js';
 import { JournalPlus } from './regles.js';
 
 export const DEFAULT_START = 6 * 60;
@@ -76,6 +76,13 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
   // Les dix psaumes du Tikoun (Tikkun.ORDRE), pour le journal de ses lectures complètes (04/11).
   const TIKKUN_ORDRE = [16, 32, 41, 42, 59, 77, 90, 105, 137, 150];
   const today = () => isoLocal(maintenant());
+  /** Écrit un réglage booléen qui pèse sur le passé et date son changement (HistoriqueReglage). */
+  const changeDate = (cle, valeur) => {
+    const ancienne = cle === 'in_israel' ? store.inIsrael() : store.shabbatMode();
+    set(`${cle}_histoire`, HistoriqueReglage.encoder(HistoriqueReglage.apresChangement(
+      HistoriqueReglage.decoder(get(`${cle}_histoire`)), today(), ancienne, valeur)));
+    set(cle, valeur);
+  };
   // Le jour du Tikoun bascule à 4 h, pas à minuit : commencé à 23 h 45, il se finit après minuit (Store.jourTikkun, 02/11).
   // Quatre heures d'horloge, comme LocalDateTime.minusHours : la nuit du changement d'heure ne décale rien.
   const jourTikkun = () => { const n = maintenant(); return isoLocal(new Date(n.getFullYear(), n.getMonth(), n.getDate(), n.getHours() - 4, n.getMinutes())); };
@@ -242,9 +249,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
 
     // --- Chabbat, fêtes, pauses ---------------------------------------------
     shabbatMode: () => get('pause_shabbat', true),
-    setShabbatMode: (v) => set('pause_shabbat', !!v),
+    setShabbatMode: (v) => { changeDate('pause_shabbat', !!v); },
     inIsrael: () => get('in_israel', israelParDefaut(fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone)),
-    setInIsrael: (v) => set('in_israel', !!v),
+    setInIsrael: (v) => { changeDate('in_israel', !!v); },
     /**
      * Le lieu des zmanim (10/10) : { nom, latitude, longitude, altitude,
      * fuseau, ville } ; null tant que rien n'est choisi. Il reste dans le
@@ -258,7 +265,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
       set('lieu_zmanim', { ...lieu, ville: ville?.id ?? null });
       // Une ville dit Israël ou diaspora ; la position, elle, suit le fuseau du
       // téléphone, comme la valeur par défaut (israelParDefaut).
-      set('in_israel', ville ? ville.pays === 'IL' : israelParDefaut(lieu.fuseau));
+      changeDate('in_israel', ville ? ville.pays === 'IL' : israelParDefaut(lieu.fuseau));
     },
     /**
      * Le vol des zmanim en vol (28/10, Store.vol) : { numero, depart, arrivee
@@ -300,7 +307,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
     },
     isExempt(date) {
       if (store.pausedDates().has(date)) return true;
-      return store.shabbatMode() && estJourChome(date, store.inIsrael());
+      // Chaque jour se juge avec le réglage en vigueur ce jour-là (FDONNEES-05).
+      const valeur = (cle, actuelle) => HistoriqueReglage.valeurLe(HistoriqueReglage.decoder(get(`${cle}_histoire`)), date, actuelle);
+      return valeur('pause_shabbat', store.shabbatMode()) && estJourChome(date, valeur('in_israel', store.inIsrael()));
     },
 
     /** Jours consécutifs validés ; les jours exemptés ne comptent pas et ne cassent pas. */
@@ -613,7 +622,8 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
         const texteNonVide = (cle, pref) => { if (typeof s[cle] === 'string' && s[cle].trim() !== '') set(pref ?? cle, s[cle]); };
         entier('window_start'); entier('window_end'); entier('snooze_minutes', null, 1, 240);
         entier('target_minutes', null, 1, 240); entier('daily_goal_minutes', null, 0, 240);
-        bool('pause_shabbat'); bool('in_israel');
+        if (typeof s.pause_shabbat === 'boolean') store.setShabbatMode(s.pause_shabbat);
+        if (typeof s.in_israel === 'boolean') store.setInIsrael(s.in_israel);
         bool('guided_hitbodedut');
         bool('reminder_enabled', 'reminder_on'); entier('reminder_minutes');
         if (Array.isArray(s.reminder_times)) {

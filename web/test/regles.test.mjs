@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Anneaux, CycleTehilim, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, RegleLangue, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from '../src/js/regles.js';
+import { Anneaux, HistoriqueReglage, CycleTehilim, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, RegleLangue, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from '../src/js/regles.js';
 import { estJourChome, israelParDefaut } from '../src/js/calendrier.js';
 import { creeStore, dateValide, memoire } from '../src/js/store.js';
 import { creeTraduction, formate, langueInitiale } from '../src/js/i18n.js';
@@ -809,4 +809,29 @@ test('Dedicace : la demande va à l’équipe, la formule en hébreu, le lien en
   assert.ok(l.startsWith('mailto:myhitbodedut26@gmail.com?subject='));
   assert.equal(decodeURIComponent(l.split('&body=')[1]), 'a b\nc & d');
   assert.equal(Dedicace.INTENTIONS.length, 5);
+});
+
+test('un réglage daté ne réécrit pas le passé (HistoriqueReglageTest, FDONNEES-05)', () => {
+  const H = HistoriqueReglage;
+  const h = H.apresChangement([], '2026-11-05', false, true);
+  assert.equal(H.encoder(h), '2000-01-01=0,2026-11-05=1');
+  assert.equal(H.valeurLe(h, '2026-11-04', true), false);
+  assert.equal(H.valeurLe(h, '2026-11-05', true), true);
+  assert.equal(H.valeurLe([], '2026-01-01', true), true);
+  assert.deepEqual(H.decoder(H.encoder(h)), h);
+  assert.deepEqual(H.decoder('x,2026-13-45=1,2026-11-05=x,2000-01-01=0'), [{ depuis: '2000-01-01', valeur: false }]);
+  assert.equal(H.encoder(H.apresChangement(H.decoder('2000-01-01=0,2099-01-01=1'), '2026-11-05', false, true)), '2000-01-01=0,2026-11-05=1');
+});
+
+test('un voyage en Israël ne casse plus la série passée (store.js, FDONNEES-05)', () => {
+  let maintenant = new Date(2026, 10, 12, 12);
+  const c = creeStore(memoire(), { maintenant: () => maintenant, fuseau: 'Europe/Paris' });
+  c.setInIsrael(false);
+  assert.equal(c.isExempt('2026-10-04'), true); // Simhat Torah en diaspora (23 Tichri)
+  maintenant = new Date(2026, 10, 13, 12);
+  c.setInIsrael(true);
+  assert.equal(c.isExempt('2026-10-04'), true, 'le passé garde la diaspora');
+  c.setShabbatMode(false);
+  assert.equal(c.isExempt('2026-10-04'), true, 'couper l’interrupteur ne change pas le passé');
+  assert.equal(c.isExempt('2026-11-14'), false, 'le jour même suit le nouveau réglage');
 });

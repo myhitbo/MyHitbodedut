@@ -387,8 +387,20 @@ object Store {
     fun shabbatMode(context: Context): Boolean = prefs(context).getBoolean(KEY_PAUSE_SHABBAT, true)
 
     fun setShabbatMode(context: Context, value: Boolean) {
-        prefs(context).edit().putBoolean(KEY_PAUSE_SHABBAT, value).apply()
+        val ancienne = shabbatMode(context)
+        prefs(context).edit().putBoolean(KEY_PAUSE_SHABBAT, value)
+            .putString(KEY_HISTO_SHABBAT, datee(context, KEY_HISTO_SHABBAT, ancienne, value)).apply()
     }
+
+    /** Historique daté d'un réglage qui pèse sur le passé (FDONNEES-05) : voir [HistoriqueReglage]. */
+    private const val KEY_HISTO_SHABBAT = "pause_shabbat_histoire"
+    private const val KEY_HISTO_ISRAEL = "in_israel_histoire"
+
+    private fun histoire(context: Context, cle: String): List<HistoriqueReglage.Entree> =
+        HistoriqueReglage.decoder(prefs(context).getString(cle, null))
+
+    private fun datee(context: Context, cle: String, ancienne: Boolean, nouvelle: Boolean): String =
+        HistoriqueReglage.encoder(HistoriqueReglage.apresChangement(histoire(context, cle), LocalDate.now(), ancienne, nouvelle))
 
     /** Israël ou diaspora : décide du deuxième jour de fête. */
     /**
@@ -405,7 +417,9 @@ object Store {
     }
 
     fun setInIsrael(context: Context, value: Boolean) {
-        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value).apply()
+        val ancienne = inIsrael(context)
+        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value)
+            .putString(KEY_HISTO_ISRAEL, datee(context, KEY_HISTO_ISRAEL, ancienne, value)).apply()
     }
 
     /**
@@ -633,7 +647,10 @@ object Store {
      */
     fun isExempt(context: Context, date: LocalDate): Boolean {
         if (pausedDates(context).contains(date.format(FORMAT))) return true
-        return shabbatMode(context) && Holidays.isRestDay(date, inIsrael(context))
+        // Chaque jour se juge avec le réglage en vigueur ce jour-là (FDONNEES-05) : un voyage
+        // ou un interrupteur changé après coup ne réécrit pas le passé.
+        val chabbat = HistoriqueReglage.valeurLe(histoire(context, KEY_HISTO_SHABBAT), date, shabbatMode(context))
+        return chabbat && Holidays.isRestDay(date, HistoriqueReglage.valeurLe(histoire(context, KEY_HISTO_ISRAEL), date, inIsrael(context)))
     }
 
     /** Veille d'un jour chômé, pour taire le rappel du soir. */
