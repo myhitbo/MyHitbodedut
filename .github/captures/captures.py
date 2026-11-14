@@ -974,6 +974,7 @@ def main():
         # hitbodedout du jour (le 14/11 etait un Chabbat : « pas de hitbodedout attendue »).
         sh("settings put global auto_time 0")
         log("  date :", sh("date 111709302026.00").strip())
+        pause(10.0)
 
         for code in ("en", "he"):
             log(f"  --- fiche Play, {code}")
@@ -998,7 +999,14 @@ def main():
             journal_de_demonstration()
             langue(code)
 
-            lancer(attente=6)
+            # Apres le changement de date, l'ecran d'attente du systeme (« Pixel is starting… »)
+            # peut repasser devant : on attend que l'accueil soit vraiment la.
+            for essai in range(5):
+                lancer(attente=6)
+                if trouver(rid="nav_texts") is not None or trouver(text={"en": "Continue", "he": "להמשיך"}[code]) is not None:
+                    break
+                log("  l'application n'est pas au premier plan : nouvel essai")
+                pause(6.0)
             fermer_trophees(code)
             defiler(False)
             capture(f"play-{code}-accueil", attente=2.0)
