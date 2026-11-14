@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Un jour de la semaine en lanternes (14/11) : son nom, sa lanterne posée sur l'horizon,
+    puis son numéro (ou sa durée, quand on l'a demandée). Les cases se touchent : leurs bouts
+    d'horizon font une seule ligne d'un bord à l'autre.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:layout_marginHorizontal="0dp"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingVertical="8dp">
+    android:paddingVertical="6dp">
 
     <TextView
         android:id="@+id/day_label"
@@ -15,13 +20,34 @@
         android:textColor="?attr/mhMuted"
         android:textSize="11sp" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="2dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="bottom"
+            android:background="?attr/mhLine" />
+
+        <ImageView
+            android:id="@+id/day_lanterne"
+            android:layout_width="28dp"
+            android:layout_height="36dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="1dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/lanterne_eteinte" />
+    </FrameLayout>
+
     <TextView
         android:id="@+id/day_mark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="4dp"
         android:fontFeatureSettings="tnum"
         android:textColor="?attr/mhInk"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 </LinearLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Le samedi chômé, dans la semaine en lanternes (14/11) : les deux bougies de Chabbat, allumées. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="28dp"
+    android:height="36dp"
+    android:viewportWidth="28"
+    android:viewportHeight="36">
+    <path android:pathData="M4,10a10,10 0,1 0,20 0a10,10 0,1 0,-20 0Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="14"
+                android:centerY="10"
+                android:gradientRadius="10"
+                android:type="radial">
+                <item android:color="#66FFC24D" android:offset="0" />
+                <item android:color="#00FFC24D" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFC24D"
+        android:pathData="M10,6.5C11.8,8.6 11.6,10.8 10,12C8.4,10.8 8.2,8.6 10,6.5ZM18,6.5C19.8,8.6 19.6,10.8 18,12C16.4,10.8 16.2,8.6 18,6.5Z" />
+    <path
+        android:fillColor="#FFF4EEDF"
+        android:pathData="M8.5,13h3a0.5,0.5 0,0 1,0.5 0.5v16.5h-4v-16.5a0.5,0.5 0,0 1,0.5 -0.5ZM16.5,13h3a0.5,0.5 0,0 1,0.5 0.5v16.5h-4v-16.5a0.5,0.5 0,0 1,0.5 -0.5Z"
+        android:strokeColor="?attr/mhLine"
+        android:strokeWidth="1" />
+    <path
+        android:fillColor="?attr/mhBrand"
+        android:pathData="M7,30h14a2,2 0,0 1,0 4h-14a2,2 0,0 1,0 -4Z" />
+</vector>

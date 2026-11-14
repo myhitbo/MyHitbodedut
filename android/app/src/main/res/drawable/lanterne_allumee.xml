@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Un jour de la semaine où la hitbodedout est faite (14/11) : la lanterne allumée, sa flamme et sa lueur. Couleurs fixes : celles d'une lanterne, de jour comme de nuit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="28dp"
+    android:height="36dp"
+    android:viewportWidth="28"
+    android:viewportHeight="36">
+    <!-- La lueur autour du verre. -->
+    <path android:pathData="M0,21a14,14 0,1 0,28 0a14,14 0,1 0,-28 0Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="14"
+                android:centerY="21"
+                android:gradientRadius="14"
+                android:type="radial">
+                <item android:color="#80FFB743" android:offset="0" />
+                <item android:color="#00FFB743" android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M10,7a4,4 0,0 1,8 0"
+        android:strokeColor="#FFC08A2E"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.8" />
+    <path
+        android:fillColor="#FFC08A2E"
+        android:pathData="M6.5,12L14,6.5L21.5,12Z" />
+    <path
+        android:fillColor="#FFFFC75A"
+        android:pathData="M11,12h6a3.5,3.5 0,0 1,3.5 3.5v11a3.5,3.5 0,0 1,-3.5 3.5h-6a3.5,3.5 0,0 1,-3.5 -3.5v-11a3.5,3.5 0,0 1,3.5 -3.5Z"
+        android:strokeColor="#FFC08A2E"
+        android:strokeWidth="1.8" />
+    <path
+        android:fillColor="#FFFFF6D8"
+        android:pathData="M14,15.5C16.8,18.8 16.3,22.4 14,24.4C11.7,22.4 11.2,18.8 14,15.5Z" />
+    <path
+        android:fillColor="#FFC08A2E"
+        android:pathData="M8,30h12a2,2 0,0 1,0 4h-12a2,2 0,0 1,0 -4Z" />
+</vector>

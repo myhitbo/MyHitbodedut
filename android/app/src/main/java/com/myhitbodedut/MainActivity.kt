@@ -189,6 +189,45 @@ class MainActivity : AppCompatActivity() {
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
+        findViewById<View>(R.id.hero_plate).postDelayed(veilleCiel, CIEL_MS)
+    }
+
+    override fun onPause() {
+        findViewById<View>(R.id.hero_plate).removeCallbacks(veilleCiel)
+        super.onPause()
+    }
+
+    // --- Le ciel du Jour (étape 3, 14/11) ---------------------------------------
+
+    /** La fenêtre au creux des anneaux : le ciel du moment, quand la plaque montre le hassid. */
+    private val cielDessin by lazy { CielDessin(CielDuJour.maintenant(this)) }
+
+    /** L'accueil resté ouvert passe de l'aube au jour, du coucher à la nuit, sans attendre un retour. */
+    private val veilleCiel = object : Runnable {
+        override fun run() {
+            renderCiel()
+            findViewById<View>(R.id.hero_plate).postDelayed(this, CIEL_MS)
+        }
+    }
+
+    /**
+     * Le ciel du moment (CielDuJour) : dans la plaque, sur le haut du Jour (un voile de sa
+     * couleur, qui s'efface vers le bas et défile avec la page), et devant la date hébraïque.
+     */
+    private fun renderCiel() {
+        val phase = CielDuJour.maintenant(this)
+        cielDessin.phase = phase
+        if (face == Plaque.Face.HASSID) findViewById<View>(R.id.hero_plate).background = cielDessin
+        val d = resources.displayMetrics.density
+        val voile = android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(androidx.core.graphics.ColorUtils.setAlphaComponent(CielDuJour.PALETTES.getValue(phase).voile, VOILE_ALPHA), android.graphics.Color.TRANSPARENT))
+        findViewById<android.view.ViewGroup>(R.id.main_scroll).getChildAt(0).background =
+            android.graphics.drawable.LayerDrawable(arrayOf(voile)).apply {
+                setLayerGravity(0, android.view.Gravity.TOP or android.view.Gravity.FILL_HORIZONTAL)
+                setLayerHeight(0, (VOILE_DP * d).toInt())
+            }
+        findViewById<TextView>(R.id.nav_zmanim).setCompoundDrawablesRelativeWithIntrinsicBounds(CielDuJour.icone(phase), 0, R.drawable.ic_chevron, 0)
     }
 
     /**
@@ -394,6 +433,7 @@ class MainActivity : AppCompatActivity() {
         renderReminders()
         renderStartCard()
         renderEntete()
+        renderCiel()
         renderChemin()
     }
 
@@ -598,9 +638,13 @@ class MainActivity : AppCompatActivity() {
             hassid.visibility = View.VISIBLE
             chiffres.visibility = View.GONE
             plaque.contentDescription = getString(R.string.rings_character_hint)
+            // Le hassid se tient dans le ciel du moment (14/11).
+            plaque.background = cielDessin
         } else {
             hassid.visibility = View.INVISIBLE
             chiffres.visibility = View.VISIBLE
+            // Les chiffres gardent le disque clair : ils s'y lisent mieux que sur un ciel.
+            plaque.setBackgroundResource(R.drawable.bg_gauge_plate)
             remplirFace(vers)
         }
         findViewById<AnneauxView>(R.id.week_gauge).mettreEnAvant(vers.anneau)
@@ -924,21 +968,30 @@ class MainActivity : AppCompatActivity() {
             val mark = cell.findViewById<TextView>(R.id.day_mark)
             label.text = day.date.format(formatter)
 
-            // Le samedi chômé ne porte pas de point à cocher : il porte sa marque.
+            // Le samedi chômé porte les bougies de Chabbat, pas une lanterne.
             val restDay = day.shabbat && day.exempt
-            // Le numéro du jour remplit les cases encore ouvertes : la bande
-            // se lit comme un calendrier, pas comme des cases vides.
-            // Un jour fait touché montre sa durée à la place du ✓ (14/10) ; touché encore, le ✓ revient.
+            val aujourdhui = day.date == java.time.LocalDate.now()
+            // La semaine en lanternes (14/11) : allumée quand la hitbodedout est faite, qui attend
+            // aujourd'hui, éteinte sinon. Le numéro du jour reste dessous : la bande se lit comme
+            // un calendrier. Un jour fait touché montre sa durée à la place du numéro (14/10).
             val minutes = Store.record(this, day.date.toString())?.minutes ?: 0
             val montre = day.done && day.date in joursMontres
             mark.text = when {
                 montre -> JaugeSemaine.dureeCourte(minutes)
-                day.done -> "✓"
-                restDay -> getString(R.string.week_shabbat_mark)
-                day.exempt -> "—"
+                day.exempt && !day.done && !restDay -> "—"
                 else -> day.date.dayOfMonth.toString()
             }
-            if (day.done) mark.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, mark.textSize * if (montre) 0.75f else 1f)
+            if (montre) mark.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, mark.textSize * 0.8f)
+            cell.findViewById<ImageView>(R.id.day_lanterne).apply {
+                setImageResource(when {
+                    day.done -> R.drawable.lanterne_allumee
+                    restDay -> R.drawable.bougies_chabbat
+                    aujourdhui && !day.exempt -> R.drawable.lanterne_aujourdhui
+                    else -> R.drawable.lanterne_eteinte
+                })
+                // Les jours à venir et les jours de pause, en retrait.
+                alpha = if (!day.done && !restDay && (day.future || day.exempt)) 0.5f else 1f
+            }
             // Tout jour jusqu'à aujourd'hui s'ouvre (16/10) : y ajouter du temps fait hors du
             // téléphone ; un jour fait peut aussi montrer sa durée sur la bande (14/10).
             if (AjoutTemps.possible(day.date)) {
@@ -958,26 +1011,19 @@ class MainActivity : AppCompatActivity() {
                 else -> getString(R.string.week_todo)
             }
 
-            // La case du jour fait est vert foncé : un texte sombre y disparaît.
-            label.setTextColor(Apparence.couleur(this, if (day.done) R.color.white else R.color.muted))
+            // Aujourd'hui, à la couleur de la marque, comme le cadre de sa lanterne.
+            val enAvant = aujourdhui && !day.done && !day.exempt
+            label.setTextColor(Apparence.couleur(this, if (enAvant) R.color.brand else R.color.muted))
+            if (enAvant) label.setTypeface(label.typeface, Typeface.BOLD)
             mark.setTextColor(
                 Apparence.couleur(
                     this,
                     when {
-                        day.done -> R.color.white
-                        restDay -> R.color.brand
-                        day.future -> R.color.muted
+                        enAvant || restDay -> R.color.brand
+                        day.future || day.exempt -> R.color.muted
                         else -> R.color.ink
                     }
                 )
-            )
-            cell.setBackgroundResource(
-                when {
-                    day.done -> R.drawable.bg_day_done
-                    day.exempt -> R.drawable.bg_day_exempt
-                    day.date == java.time.LocalDate.now() -> R.drawable.bg_day_today
-                    else -> R.drawable.bg_day_todo
-                }
             )
             strip.addView(cell)
         }
@@ -1102,6 +1148,13 @@ class MainActivity : AppCompatActivity() {
 
         /** Survit à une rotation ou au redimensionnement d'une fenêtre. */
         private const val ETAT_RELANCE = "relance_tiree"
+
+        /** Le ciel du Jour se revoit chaque minute tant que l'accueil est devant. */
+        private const val CIEL_MS = 60_000L
+
+        /** Le voile du ciel sur le haut du Jour : sa hauteur, et son opacité au plus haut (30 %). */
+        private const val VOILE_DP = 420
+        private const val VOILE_ALPHA = 0x4D
 
         /** L'onglet affiché, pour qu'une rotation ne ramène pas à « Aujourd'hui ». */
         private const val ETAT_ONGLET = "onglet"
