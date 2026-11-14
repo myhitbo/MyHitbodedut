@@ -3610,12 +3610,14 @@ function signatureVol(c = calculVol, maintenant = new Date()) {
   if (!c) return null;
   const p = Vol.priere(c, maintenant);
   const place = Vol.enVol(c).findIndex((e) => maintenant < e.instant);
-  return `${p?.[0]}|${p?.[1] ? +p[1] : ''}|${place}`;
+  return `${p?.[0]}|${p?.[1] ? +p[1] : ''}|${p?.[2] ? +p[2] : ''}|${place}`;
 }
 let signatureVolAffichee = null;
 
 function texteCompteVol(c = calculVol, maintenant = new Date()) {
-  const limite = c ? Vol.priere(c, maintenant)?.[1] : null;
+  const p = c ? Vol.priere(c, maintenant) : null;
+  // Pas de compte à rebours tant que la prière n'est pas ouverte (FVOL-05).
+  const limite = p && !p[2] ? p[1] : null;
   return limite ? tr.t('vol_dans', dureeEnMots(Math.max(0, Math.floor((limite - maintenant) / 60000)))) : null;
 }
 
@@ -3627,6 +3629,9 @@ function resultatsVol(c) {
   const enVol = Vol.enVol(c);
   let priere;
   if (!p) priere = [h('p', { class: 'message' }, tr.t('vol_hors_fenetre'))];
+  // Entre deux prières (13/11, FVOL-05 : de la fin de Cha'harit à min'ha guedola), aucune n'est
+  // donnée pour ouverte : la prochaine et l'heure où elle commence.
+  else if (p[2]) priere = [h('p', { class: 'vol-compte' }, tr.t('vol_prochaine', tr.t(NOMS[p[0]]))), h('p', {}, tr.t('vol_des', deuxHeures(c.plan, p[2])))];
   else {
     const [nom, limite] = p;
     const minutes = limite ? Math.max(0, Math.floor((limite - maintenant) / 60000)) : 0;
@@ -3640,7 +3645,7 @@ function resultatsVol(c) {
   const date = (iso) => new Intl.DateTimeFormat(tr.langue, { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(`${iso}T12:00:00Z`));
   return [
     // La carte prend le ciel de son heure (04/11) : aube, après-midi, nuit.
-    h('div', { class: `carte carte-texte carte-vol carte-heros ciel-${p ? p[0] : 'hors'}` }, h('p', { class: 'indice' }, tr.t('vol_priere_titre')), ...priere),
+    h('div', { class: `carte carte-texte carte-vol carte-heros ciel-${p && !p[2] ? p[0] : 'hors'}` }, h('p', { class: 'indice' }, tr.t('vol_priere_titre')), ...priere),
     h('div', { class: 'carte carte-texte carte-vol' },
       // La route prévue tient en une étiquette ; le détail du calcul se déplie.
       c.fiabilite === 'route_prevue' ? h('p', { class: 'vol-etiquette' }, tr.t('vol_fiabilite_court'))

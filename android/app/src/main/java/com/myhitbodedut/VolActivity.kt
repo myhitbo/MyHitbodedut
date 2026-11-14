@@ -79,7 +79,7 @@ class VolActivity : AppCompatActivity() {
         val maintenant = Instant.now()
         if (signature(c, maintenant) != signatureAffichee) return afficherResultats()
         val p = VolPriere.priere(c, maintenant) ?: return
-        val limite = p.second ?: return
+        val limite = p.limite ?: return
         compteur?.text = getString(R.string.vol_dans, dureeEnMots(Duration.between(maintenant, limite).toMinutes().toInt().coerceAtLeast(0)))
     }
 
@@ -88,7 +88,7 @@ class VolActivity : AppCompatActivity() {
         val p = VolPriere.priere(c, maintenant)
         val place = c.enVol.indexOfFirst { maintenant.isBefore(it.instant) }
         val rappels = VolRappels.rappels(c, Store.inIsrael(this)).count { it.instant.isAfter(maintenant) }
-        return "${p?.first}|${p?.second}|$place|$rappels|${maintenant.isAfter(c.plan.atterrissage)}"
+        return "${p?.priere}|${p?.limite}|${p?.debut}|$place|$rappels|${maintenant.isAfter(c.plan.atterrissage)}"
     }
 
     private var signatureAffichee: String? = null
@@ -841,11 +841,13 @@ class VolActivity : AppCompatActivity() {
     /**
      * La prière du moment mise en avant : la carte prend le ciel de son heure (04/11) — l'aube
      * pour Cha'harit, l'or de l'après-midi pour Min'ha, la nuit pour Arvit —, texte en blanc,
-     * le compte à rebours en grand.
+     * le compte à rebours en grand. Entre deux prières (13/11, FVOL-05 : de la fin de Cha'harit à
+     * min'ha guedola), aucune n'est donnée pour ouverte : la prochaine et l'heure où elle commence,
+     * sur le fond neutre.
      */
     private fun cartePriere(c: Vol.Calcul, maintenant: Instant) = VueJour.carte(this).apply {
         val p = VolPriere.priere(c, maintenant)
-        val ciel = when (p?.first) {
+        val ciel = when (p?.priere.takeIf { p?.debut == null }) {
             "chaharit" -> intArrayOf(0xFF2B3F6E.toInt(), 0xFF8C5A7A.toInt(), 0xFFE0906B.toInt())
             "minha" -> intArrayOf(0xFF17525A.toInt(), 0xFF6E7A3E.toInt(), 0xFFC9962E.toInt())
             null -> intArrayOf(Apparence.couleur(this@VolActivity, R.color.brand), androidx.core.graphics.ColorUtils.blendARGB(Apparence.couleur(this@VolActivity, R.color.brand), 0xFF000000.toInt(), 0.35f))
@@ -864,11 +866,18 @@ class VolActivity : AppCompatActivity() {
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_hors_fenetre), 15f, R.color.ink, haut = 8).apply { setTextColor(blanc(240)) })
             return@apply
         }
-        val (priere, limite) = p
+        val (priere, limite, debut) = p
         val nom = when (priere) {
             "chaharit" -> R.string.widget_zmanim_chaharit
             "minha" -> R.string.widget_zmanim_minha
             else -> R.string.widget_zmanim_arvit
+        }
+        if (debut != null) {
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_prochaine, getString(nom)), 22f, R.color.ink, gras = true, haut = 8).apply { setTextColor(blanc(255)) })
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_des, deuxHeures(c.plan, debut)), 14f, R.color.ink, haut = 4).apply {
+                setTextColor(blanc(215)); fontFeatureSettings = "tnum"
+            })
+            return@apply
         }
         addView(VueJour.texte(this@VolActivity, getString(nom), 34f, R.color.ink, gras = true, haut = 4).apply { setTextColor(blanc(255)) })
         if (limite == null) {

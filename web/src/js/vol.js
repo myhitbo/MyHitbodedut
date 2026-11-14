@@ -304,18 +304,26 @@ export function calculer(plan) {
 
 /**
  * La prière du moment et sa limite : ZmanimWidget.prochaine, ligne pour ligne.
- * horaires : { alot, szt_gra, chkia, chatsot_layla } en Date ou null.
+ * horaires : { alot, szt_gra, minha_gedola, chkia, chatsot_layla } en Date ou null.
+ * Rend [prière, limite, début]. Début null : la prière est ouverte, jusqu'à la limite. Début
+ * non null : aucune prière n'est ouverte, la prochaine commence à ce moment — de la fin de
+ * Cha'harit à min'ha guedola, Min'ha est annoncée, pas affichée comme ouverte (13/11, FVOL-05).
  */
 export function prochaine(horaires, maintenant) {
   const alot = horaires.alot;
   if (alot && +maintenant < +alot) {
     const veille = horaires.chatsot_layla ? new Date(+horaires.chatsot_layla - 24 * H) : null;
-    return ['arvit', veille && +maintenant < +veille ? veille : null];
+    return ['arvit', veille && +maintenant < +veille ? veille : null, null];
   }
-  for (const [priere, limite] of [['chaharit', horaires.szt_gra], ['minha', horaires.chkia], ['arvit', horaires.chatsot_layla]]) {
-    if (limite && +maintenant < +limite) return [priere, limite];
+  if (horaires.szt_gra && +maintenant < +horaires.szt_gra) return ['chaharit', horaires.szt_gra, null];
+  const chkia = horaires.chkia ?? null;
+  const guedola = horaires.minha_gedola;
+  // Une min'ha guedola d'après la chki'a est celle du lendemain (route sans repère d'aube) : Min'ha est ouverte.
+  if (guedola && +maintenant < +guedola && (!chkia || +guedola < +chkia)) return ['minha', chkia, guedola];
+  for (const [priere, limite] of [['minha', chkia], ['arvit', horaires.chatsot_layla]]) {
+    if (limite && +maintenant < +limite) return [priere, limite, null];
   }
-  return ['arvit', null];
+  return ['arvit', null, null];
 }
 
 /**
@@ -328,10 +336,10 @@ export function horaires(calcul, maintenant) {
   const alot = ev.filter((e) => aube.includes(e.cle) && +e.instant <= +maintenant).at(-1)?.instant ?? null;
   const apres = alot ?? maintenant;
   const suivant = (cle) => ev.find((e) => e.cle === cle && +e.instant > +apres)?.instant ?? null;
-  return { alot, szt_gra: suivant('szt_gra'), chkia: suivant('chkia'), chatsot_layla: suivant('chatsot_layla') };
+  return { alot, szt_gra: suivant('szt_gra'), minha_gedola: suivant('minha_gedola'), chkia: suivant('chkia'), chatsot_layla: suivant('chatsot_layla') };
 }
 
-/** La prière du moment en vol et sa limite ; null loin du vol (la fenêtre ne couvre plus). */
+/** La prière du moment en vol, sa limite et son début (prochaine) ; null loin du vol (la fenêtre ne couvre plus). */
 export function priere(calcul, maintenant) {
   if (+maintenant < +calcul.plan.decollage - COUVERT || +maintenant > +calcul.plan.atterrissage + COUVERT) return null;
   return prochaine(horaires(calcul, maintenant), maintenant);

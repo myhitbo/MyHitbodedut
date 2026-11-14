@@ -105,21 +105,25 @@ test('minuit UTC et minuit local, la prière du moment, loin du vol', () => {
   const minuits = Vol.enVol(c).filter((e) => e.cle === 'chatsot_layla');
   assert.equal(minuits.length, 1);
   const m = minuits[0].instant;
-  assert.deepEqual(Vol.priere(c, new Date(+m - 10 * MIN)), ['arvit', m]);
-  assert.deepEqual(Vol.priere(c, new Date(+m + 10 * MIN)), ['arvit', null]);
+  assert.deepEqual(Vol.priere(c, new Date(+m - 10 * MIN)), ['arvit', m, null]);
+  assert.deepEqual(Vol.priere(c, new Date(+m + 10 * MIN)), ['arvit', null, null]);
   const o = Vol.calculer(versOuest);
   const chkia = Vol.enVol(o).find((e) => e.cle === 'chkia').instant;
-  assert.deepEqual(Vol.priere(o, new Date(+chkia - 5 * MIN)), ['minha', chkia]);
+  assert.deepEqual(Vol.priere(o, new Date(+chkia - 5 * MIN)), ['minha', chkia, null]);
   assert.equal(Vol.priere(o, new Date(+versOuest.atterrissage + 7 * H)), null);
 });
 
 test('prochaine : la règle de ZmanimWidget, mêmes cas que DixAmeliorationsTest', () => {
   const t = (h, m) => new Date(Date.UTC(2026, 9, 14, h, m));
-  const horaires = { alot: t(5, 0), szt_gra: t(10, 30), chkia: t(17, 50), chatsot_layla: t(23, 40) };
-  assert.deepEqual(Vol.prochaine(horaires, t(7, 0)), ['chaharit', t(10, 30)]);
-  assert.deepEqual(Vol.prochaine(horaires, t(13, 0)), ['minha', t(17, 50)]);
-  assert.deepEqual(Vol.prochaine(horaires, t(19, 0)), ['arvit', t(23, 40)]);
-  assert.deepEqual(Vol.prochaine(horaires, t(23, 50)), ['arvit', null]);
+  const horaires = { alot: t(5, 0), szt_gra: t(10, 30), minha_gedola: t(12, 20), chkia: t(17, 50), chatsot_layla: t(23, 40) };
+  assert.deepEqual(Vol.prochaine(horaires, t(7, 0)), ['chaharit', t(10, 30), null]);
+  assert.deepEqual(Vol.prochaine(horaires, t(13, 0)), ['minha', t(17, 50), null]);
+  assert.deepEqual(Vol.prochaine(horaires, t(19, 0)), ['arvit', t(23, 40), null]);
+  assert.deepEqual(Vol.prochaine(horaires, t(23, 50)), ['arvit', null, null]);
+  // Entre la fin de Cha'harit et min'ha guedola : aucune prière ouverte, Min'ha annoncée (FVOL-05).
+  assert.deepEqual(Vol.prochaine(horaires, t(11, 0)), ['minha', t(17, 50), t(12, 20)]);
+  assert.deepEqual(Vol.prochaine(horaires, t(12, 20)), ['minha', t(17, 50), null]);
+  assert.deepEqual(Vol.prochaine({ ...horaires, minha_gedola: null }, t(11, 0)), ['minha', t(17, 50), null]);
 });
 
 test('au nord de 50° l’été, sans aube à 16,1° : pas de Cha’harit l’après-midi ni la nuit (FVOL-01)', () => {

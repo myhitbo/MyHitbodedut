@@ -9,11 +9,14 @@ import java.time.Instant
  * le décollage, ZMANIM.md « En vol »), le début de chaque prière dans l'avion et
  * l'approche de sa limite, le compte du Omer du soir.
  *
- * Les bornes des prières sont celles de l'application (HorairePriere,
- * ZmanimWidget.prochaine) : Min'ha de min'ha guedola à la chki'a, Arvit de la
- * sortie des étoiles au milieu de la nuit, Cha'harit jusqu'à la fin du temps de
- * la tefila (GRA). Seul le début de Cha'harit n'y était pas : le lever du soleil
- * (netz), le temps de la prière au départ (Choul'han Aroukh O.H. 89, 1).
+ * Les bornes des prières sont celles de la bannière des prières (HorairePriere) :
+ * Min'ha de min'ha guedola à la chki'a, Arvit de la sortie des étoiles au milieu
+ * de la nuit, Cha'harit jusqu'à la fin du temps de la tefila (GRA). La carte
+ * « Prière du moment » (ZmanimWidget.prochaine) a les mêmes limites et, depuis le
+ * 13/11 (FVOL-05), le même début de Min'ha ; elle garde ses propres débuts pour
+ * Cha'harit (l'aube) et Arvit (la chki'a). Seul le début de Cha'harit n'était pas
+ * dans la bannière : le lever du soleil (netz), le temps de la prière au départ
+ * (Choul'han Aroukh O.H. 89, 1).
  * Le Omer : les jalons de VolCalendrier. Pas d'Android ici.
  */
 object VolRappels {

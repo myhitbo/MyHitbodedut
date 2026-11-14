@@ -1176,6 +1176,7 @@
     <string name="widget_paracha">Parasha %s</string>
     <string name="widget_jusqua">until %s</string>
     <string name="widget_reste">%s left</string>
+    <string name="widget_des">from %s</string>
     <string name="widget_zmanim_petit_label">Zmanim · small</string>
     <string name="widget_zmanim_petit_description">The prayer of the moment and when it closes.</string>
     <string name="widget_zmanim_grand_label">Zmanim · full day</string>
@@ -1230,6 +1231,8 @@
     <string name="vol_jusqua">until %1$s</string>
     <string name="vol_sans_limite">until dawn, no limit shown</string>
     <string name="vol_dans">%1$s left</string>
+    <string name="vol_prochaine">Next prayer: %1$s</string>
+    <string name="vol_des">from %1$s</string>
     <string name="vol_hors_fenetre">The calculation covers the flight and the 6 hours either side.</string>
     <string name="vol_en_vol_titre">During the flight</string>
     <string name="vol_aucun_zman">No zman during this flight.</string>
