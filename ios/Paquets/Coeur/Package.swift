@@ -8,6 +8,7 @@ import PackageDescription
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
     "Adresse.swift",
+    "Anneaux.swift",
     "Boussole.swift",
     "ChabbatAlerte.swift",
     "DirectionJerusalem.swift",
@@ -19,6 +20,7 @@ let enChantierSources: [String] = [
     "LevanaAlerte.swift",
     "Magnetisme.swift",
     "Modele.swift",
+    "Plaque.swift",
     "Poses.swift",
     "QuestionsBlocage.swift",
     "Reglages.swift",
@@ -31,6 +33,7 @@ let enChantierSources: [String] = [
     "Theme.swift",
     "Tikkun.swift",
     "VillePlusProche.swift",
+    "Vol.swift",
     "YalkutYosef.swift",
 ]
 let enChantierTests: [String] = [
@@ -41,6 +44,7 @@ let enChantierTests: [String] = [
     "GuideSujetsTests.swift",
     "HalakhaTests.swift",
     "HitbodedutTests.swift",
+    "IlanotTests.swift",
     "LevanaAlerteTests.swift",
     "LevanaTests.swift",
     "MagnetismeTests.swift",
