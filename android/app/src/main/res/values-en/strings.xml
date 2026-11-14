@@ -112,6 +112,7 @@
     <string name="settings_all_granted">All permissions granted.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Without them the reminder is scheduled and never appears, and the hitbodedut shows nothing once the phone is down.</string>
+    <string name="session_notifications_pourquoi">To show the time left and tell you when the hitbodedut ends once the phone is down, the app needs notifications.</string>
     <string name="permission_battery_why">Without it, Android may hold the reminder back for hours to save power.</string>
     <string name="permission_overlay_why">To show the “I am with Hashem” screen over the app you open in the morning.</string>
     <string name="permission_usage_why">To know which app has just opened. Nothing is recorded or sent.</string>

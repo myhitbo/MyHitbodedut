@@ -60,6 +60,9 @@ class SessionActivity : AppCompatActivity() {
     /** Une séance abandonnée n'est pas une séance close : pas de mot de fin. */
     private var cancelling = false
 
+    /** La demande des notifications, proposée une fois au premier départ (13/11, FACCUEIL-05). */
+    private val notifications = DemandeNotifications(this) { render() }
+
     private val tick = object : Runnable {
         override fun run() {
             render()
@@ -127,12 +130,13 @@ class SessionActivity : AppCompatActivity() {
 
         // « Commencer simplement » (proposition 15) : parler, écrire, prier ou
         // recevoir une question ; chacun démarre la séance aussitôt.
-        fun demarrer(ensuite: () -> Unit = {}) {
+        fun demarrer(ensuite: (() -> Unit)? = null) {
             SessionService.start(this, Store.targetMinutes(this))
             guideStep = 0
             drawOpening()
             render()
-            ensuite()
+            // Écrire, prier ou une question ouvrent aussitôt autre chose : la proposition attendra un départ simple.
+            if (ensuite == null) proposerNotifications() else ensuite()
         }
         findViewById<View>(R.id.simplement_parler).setOnClickListener { demarrer() }
         findViewById<View>(R.id.simplement_ecrire).setOnClickListener {
@@ -160,6 +164,7 @@ class SessionActivity : AppCompatActivity() {
             guideStep = 0
             drawOpening()
             render()
+            proposerNotifications()
         }
 
         intArrayOf(
@@ -200,6 +205,7 @@ class SessionActivity : AppCompatActivity() {
             SessionService.start(this, Store.targetMinutes(this))
             guideStep = 0
             drawOpening()
+            proposerNotifications()
         }
         intent.removeExtra(EXTRA_START_NOW)
         intent.removeExtra(EXTRA_DEPUIS_RAPPEL)
@@ -212,6 +218,25 @@ class SessionActivity : AppCompatActivity() {
         guideStep = 0
         drawOpening()
         render()
+        proposerNotifications()
+    }
+
+    /**
+     * Au premier départ, si les notifications manquent (Android 13 ne les accorde plus d'office) :
+     * sans elles ni le temps qui reste ni la fin de la séance ne s'affichent téléphone posé. Une
+     * phrase le dit, puis Android pose sa question. La séance est déjà partie et n'attend pas la
+     * réponse ; accordées, la notification de séance apparaît au tour suivant du service. Une
+     * seule fois : « Plus tard » est une réponse, et la carte des autorisations reste dans les réglages.
+     */
+    private fun proposerNotifications() {
+        if (Permissions.hasNotifications(this) || Store.notificationsProposees(this)) return
+        Store.setNotificationsProposees(this)
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.permission_notifications)
+            .setMessage(R.string.session_notifications_pourquoi)
+            .setNegativeButton(R.string.action_later, null)
+            .setPositiveButton(R.string.action_grant) { _, _ -> notifications.lancer() }
+            .show()
     }
 
     override fun onResume() {
@@ -341,6 +366,7 @@ class SessionActivity : AppCompatActivity() {
                 guideStep = 0
                 drawOpening()
                 render()
+                proposerNotifications()
             }
             secondary.visibility = View.GONE
         }

@@ -121,6 +121,7 @@
     <string name="settings_all_granted">Toutes les autorisations sont accordées.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Sans elles, le rappel se programme et n’apparaît jamais, et la hitbodedout n’affiche rien quand le téléphone est posé.</string>
+    <string name="session_notifications_pourquoi">Pour montrer le temps qui reste et annoncer la fin de la hitbodedout quand le téléphone est posé, l’application a besoin des notifications.</string>
     <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures pour économiser la batterie.</string>
     <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez le matin.</string>
     <string name="permission_usage_why">Pour savoir quelle application vient de s’ouvrir. Rien n’est enregistré ni envoyé.</string>

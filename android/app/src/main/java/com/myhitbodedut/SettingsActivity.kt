@@ -1,11 +1,9 @@
 package com.myhitbodedut
 
-import android.Manifest
 import android.app.TimePickerDialog
 import android.content.Intent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -40,14 +38,11 @@ import com.google.android.material.materialswitch.MaterialSwitch
 class SettingsActivity : AppCompatActivity() {
 
     /**
-     * La demande de notification a déjà été présentée. Android cesse
-     * d'afficher la boîte après deux refus : il faut alors passer par
-     * l'écran système, sinon le bouton ne ferait plus rien.
+     * La demande des notifications, partagée avec la présentation et Rappels (13/11). Android
+     * cesse d'afficher sa question après deux refus : elle passe alors par l'écran système,
+     * sinon le bouton ne ferait plus rien.
      */
-    private var notificationsDemandees = false
-
-    private val requestNotifications =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { refresh() }
+    private val notifications = DemandeNotifications(this) { refresh() }
 
     private val exportFile =
         registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -63,7 +58,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         bornerValeurs(window.decorView)
-        notificationsDemandees = savedInstanceState?.getBoolean(ETAT_DEMANDE, false) ?: false
         wireActions()
         applyEdition()
         // Le moment « lieu » accompagne les réglages de lieu et de moment :
@@ -76,10 +70,6 @@ class SettingsActivity : AppCompatActivity() {
         refresh()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(ETAT_DEMANDE, notificationsDemandees)
-    }
 
     // --- Actions ------------------------------------------------------------
 
@@ -335,7 +325,14 @@ class SettingsActivity : AppCompatActivity() {
         // Grand texte (14/10) : les textes de lecture à 140 % ; la barre « Aa » règle toujours finement.
         bindSwitch(R.id.grand_texte_switch, Store.lectureEchelle(this) >= GRAND_TEXTE) { Store.setLectureEchelle(this, if (it) GRAND_TEXTE else 1f) }
         bindSwitch(R.id.levana_switch, Store.levanaAffichee(this)) { Store.setLevanaAffichee(this, it) }
-        bindSwitch(R.id.levana_rappel_switch, Store.levanaRappel(this)) { Store.setLevanaRappel(this, it); LevanaAlerte.programmer(this) }
+        bindSwitch(R.id.levana_rappel_switch, Store.levanaRappel(this)) {
+            Store.setLevanaRappel(this, it)
+            LevanaAlerte.programmer(this)
+            // Allumé sans les notifications, il resterait muet : la demande, puis l'avertissement (13/11).
+            if (it) askNotifications()
+            renderLevanaRappel()
+        }
+        renderLevanaRappel()
         bindSwitch(R.id.hilloulot_switch, Store.hilloulotAffichees(this)) { Store.setHilloulotAffichees(this, it) }
         bindSwitch(R.id.halakha_switch, Store.halakhaAffichee(this)) { Store.setHalakhaAffichee(this, it) }
         bindSwitch(R.id.exempt_today_switch, Store.pausedDates(this).contains(Store.today())) {
@@ -346,6 +343,18 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     /** Pose la valeur sans déclencher l'écouteur, puis le réarme. */
+    /**
+     * Le rappel de Birkat haLevana est allumé d'origine : sans les notifications il ne s'affichera
+     * pas, et la ligne le dit comme l'écran Rappels ; la toucher mène à l'autorisation (13/11, FACCUEIL-05).
+     */
+    private fun renderLevanaRappel() {
+        findViewById<TextView>(R.id.levana_rappel_permission).apply {
+            visibility = if (PermissionRules.rappelMuet(Store.levanaRappel(this@SettingsActivity),
+                    Permissions.hasNotifications(this@SettingsActivity), notifications.enCours)) View.VISIBLE else View.GONE
+            setOnClickListener { askNotifications() }
+        }
+    }
+
     private fun bindSwitch(id: Int, checked: Boolean, onChange: (Boolean) -> Unit) {
         val view = findViewById<MaterialSwitch>(id)
         // Sans texte propre, l'interrupteur prend le libellé de sa ligne : TalkBack le lisait
@@ -514,29 +523,8 @@ class SettingsActivity : AppCompatActivity() {
             .forEach { findViewById<View>(it).visibility = View.GONE }
     }
 
-    /**
-     * Demande les notifications. Après deux refus, Android n'affiche plus
-     * rien : le bouton ouvre alors l'écran système, sinon il resterait mort
-     * sans que personne comprenne pourquoi.
-     */
-    private fun askNotifications() {
-        if (Permissions.hasNotifications(this)) return
-        // Coupées dans les réglages du téléphone (avant Android 13, ou permission pourtant accordée) :
-        // il n'y a rien à demander, seulement l'écran système à ouvrir (04/11).
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-            androidx.core.content.ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            safeStart(Permissions.notificationSettingsIntent(this))
-            return
-        }
-        val refuseeDefinitivement = notificationsDemandees &&
-            !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
-        if (refuseeDefinitivement) {
-            safeStart(Permissions.notificationSettingsIntent(this))
-            return
-        }
-        notificationsDemandees = true
-        requestNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
-    }
+    /** Demande les notifications (DemandeNotifications) ; après deux refus, par l'écran système. */
+    private fun askNotifications() = notifications.lancer()
 
     private fun writeBackup(uri: Uri) {
         val ok = runCatching {
@@ -650,7 +638,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private companion object {
-        const val ETAT_DEMANDE = "notifications_demandees"
         /** La page publique des règles de confidentialité, sur GitHub Pages avec le site (web/build.mjs). */
         const val LIEN_CONFIDENTIALITE = CelebrationActivity.LIEN_WEB + "confidentialite.html"
         /** Au-delà, ce n'est pas une sauvegarde de cette application. */

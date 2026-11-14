@@ -113,6 +113,7 @@
     <string name="settings_all_granted">כל ההרשאות ניתנו.</string>
     <string name="permission_notifications">התראות</string>
     <string name="permission_notifications_why">בלעדיהן התזכורת נקבעת ולעולם אינה מופיעה, וההתבודדות לא מציגה דבר כשהטלפון מונח.</string>
+    <string name="session_notifications_pourquoi">כדי להציג את הזמן שנותר ולהודיע על סיום ההתבודדות כשהטלפון מונח, האפליקציה צריכה הרשאה להתראות.</string>
     <string name="permission_battery_why">בלעדיה אנדרואיד עלול לעכב את התזכורת בשעות, כדי לחסוך בסוללה.</string>
     <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בבוקר.</string>
     <string name="permission_usage_why">כדי לדעת איזו אפליקציה נפתחה זה עתה. שום דבר אינו נשמר ואינו נשלח.</string>
