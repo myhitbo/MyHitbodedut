@@ -1094,6 +1094,12 @@
     <string name="jour_fait">%1$s recorded on this day.</string>
     <string name="jour_montrer_duree">Show the duration</string>
     <string name="jour_ajoute">%1$s added.</string>
+    <string name="jour_modifier">Edit this day…</string>
+    <string name="jour_corriger_duree">Correct the duration</string>
+    <string name="jour_retirer">Remove this day</string>
+    <string name="jour_retirer_confirmation">Remove this day (%1$s recorded)? Its note stays.</string>
+    <string name="jour_retire">Day removed.</string>
+    <string name="jour_corrige">Duration corrected: %1$s.</string>
     <!-- Les rappels de tefila (16/10) : un changement dans la prière, annoncé quelques jours avant. -->
     <string name="rappel_pluie_debut_titre">Winter blessing in the Amida</string>
     <string name="rappel_pluie_debut_edot">%1$s, in the Arvit Amida, we begin to say the winter blessing “בָּרֵךְ עָלֵינוּ”.</string>

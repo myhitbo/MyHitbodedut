@@ -1158,6 +1158,12 @@
     <string name="jour_fait">Inscrit ce jour : %1$s.</string>
     <string name="jour_montrer_duree">Montrer la durée</string>
     <string name="jour_ajoute">Ajouté : %1$s.</string>
+    <string name="jour_modifier">Modifier ce jour…</string>
+    <string name="jour_corriger_duree">Corriger la durée</string>
+    <string name="jour_retirer">Retirer cette journée</string>
+    <string name="jour_retirer_confirmation">Retirer ce jour (%1$s inscrites) ? Sa note reste.</string>
+    <string name="jour_retire">Journée retirée.</string>
+    <string name="jour_corrige">Durée corrigée : %1$s.</string>
     <!-- Les rappels de tefila (16/10) : un changement dans la prière, annoncé quelques jours avant. -->
     <string name="rappel_pluie_debut_titre">Bénédiction d’hiver dans la Amida</string>
     <string name="rappel_pluie_debut_edot">%1$s, à la Amida d’Arvit, on commence à dire la bénédiction d’hiver « בָּרֵךְ עָלֵינוּ ».</string>

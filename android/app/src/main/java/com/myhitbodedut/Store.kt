@@ -338,6 +338,28 @@ object Store {
         writeDays(context, all)
     }
 
+    /**
+     * Ce que devient un jour quand on corrige sa durée (FDONNEES-04) : [minutes] remplace les
+     * minutes inscrites ; 0 retire la journée (sa note, si elle en a une, reste, sans valider
+     * le jour). Null : rien à garder, la ligne disparaît.
+     */
+    fun jourCorrige(existant: DayRecord?, date: String, minutes: Int): DayRecord? {
+        if (existant == null) return null
+        if (minutes > 0) return existant.copy(minutes = minutes.coerceAtMost(24 * 60), noteSeule = false)
+        return if (existant.note.isBlank()) null else DayRecord(date, 0, existant.note, emptyList(), noteSeule = true)
+    }
+
+    /** Remplace la durée d'un jour (0 : retire la journée). Sans effet sur un jour sans durée. */
+    fun corrigerJour(context: Context, date: String, minutes: Int) {
+        val all = days(context).toMutableMap()
+        val existant = all[date]?.takeIf { it.faite } ?: return
+        val nouveau = jourCorrige(existant, date, minutes)
+        if (nouveau == null) all.remove(date) else all[date] = nouveau
+        writeDays(context, all)
+        // Aujourd'hui retiré : l'instant de la dernière séance ne doit plus honorer la barrière.
+        if (minutes <= 0 && date == today()) prefs(context).edit().remove(KEY_FAIT_A).apply()
+    }
+
     fun unmarkToday(context: Context) {
         val all = days(context).toMutableMap()
         all.remove(today())

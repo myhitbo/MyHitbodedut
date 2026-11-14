@@ -1132,6 +1132,12 @@
     <string name="jour_fait">%1$s נרשמו ביום הזה.</string>
     <string name="jour_montrer_duree">להציג את משך הזמן</string>
     <string name="jour_ajoute">נוספו %1$s.</string>
+    <string name="jour_modifier">עריכת היום הזה…</string>
+    <string name="jour_corriger_duree">תיקון משך הזמן</string>
+    <string name="jour_retirer">הסרת היום</string>
+    <string name="jour_retirer_confirmation">להסיר את היום הזה (%1$s נרשמו)? ההערה שלו תישאר.</string>
+    <string name="jour_retire">היום הוסר.</string>
+    <string name="jour_corrige">משך הזמן תוקן: %1$s.</string>
     <!-- Les rappels de tefila (16/10) : un changement dans la prière, annoncé quelques jours avant. -->
     <string name="rappel_pluie_debut_titre">ברכת החורף בתפילה</string>
     <string name="rappel_pluie_debut_edot">%1$s, בעמידת ערבית, מתחילים לומר את ברכת החורף „בָּרֵךְ עָלֵינוּ”.</string>
