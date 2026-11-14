@@ -112,7 +112,7 @@ class OnboardingTest {
         val code = File("src/main/java/com/myhitbodedut/OnboardingActivity.kt").readText()
         val attendues = Regex("""R\.id\.(onboarding_[a-z0-9_]+)""").findAll(code)
             .map { it.groupValues[1] }.toSet()
-        assertEquals(18, attendues.size)
+        assertEquals(19, attendues.size)
         attendues.forEach {
             assertTrue("« $it » manque dans activity_onboarding.xml",
                 gabarit.contains("""android:id="@+id/$it""""))

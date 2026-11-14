@@ -557,7 +557,8 @@ function panneauAujourdhui() {
     h('div', { class: `jauge-legende${anneauEnAvant ? ` legende-${anneauEnAvant}` : ''}` }, legendeAnneaux(etat, progression)),
     lignePaliers()),
 
-    h('div', { class: 'accueil-actions' }, h('button', { class: 'principal', onclick: () => ouvrir('seance') }, bouton),
+    // Un toucher démarre, comme sur Android (FPRODUIT-04) ; l'écran de préparation reste à « Autrement » sous le bouton.
+    h('div', { class: 'accueil-actions' }, h('button', { class: 'principal', onclick: () => (store.isSessionRunning() ? ouvrir('seance') : commencer(store.targetMinutes())) }, bouton),
 
     h('div', { class: 'pastilles' },
       pastille(tr.t('start_duration'), tr.duree(store.targetMinutes()), () => choisirDuree((m) => {
@@ -589,6 +590,8 @@ function panneauAujourdhui() {
     })),
 
     fait ? h('button', { class: 'texte-bouton', onclick: () => ecrireNote(store.today(), rendre) }, tr.t('action_write_note')) : null,
+    !store.isSessionRunning()
+      ? h('button', { class: 'texte-bouton', onclick: () => ouvrir('seance') }, tr.t('start_prepare')) : null,
     // « Je l'ai faite sans le téléphone » (MainActivity.today_offline, 02/11) : tant qu'aujourd'hui
     // ou hier reste à inscrire, et hors séance en cours.
     (!fait || hierOuvert()) && !store.isSessionRunning()
