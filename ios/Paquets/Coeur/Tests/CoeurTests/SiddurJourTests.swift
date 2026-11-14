@@ -168,17 +168,17 @@ struct SiddurJourTests {
         let d = try donnees()
         for n in Nusah.allCases {
             let parTexte = try #require(d.annotations[n])
-            func conditions(_ id: String) -> Set<String> { Set((parTexte[id] ?? []).map { $0.condition }) }
-            let chaharit = conditions("chaharit")
+            func annotees(_ id: String) -> Set<String> { Set((parTexte[id] ?? []).map { $0.condition }) }
+            let chaharit = annotees("chaharit")
             for c in ["yaale_veyavo", "al_hanissim", "hanouka", "pourim", "tal_oumatar", "berakha", "asseret_yemei_techouva"] {
                 #expect(chaharit.contains(c), "\(n.rawValue) : \(c)")
             }
             // Été / hiver dans les trois offices (14/10 : l'Arvit ashkénaze n'était pas marqué).
             for office in ["chaharit", "minha", "arvit"] {
-                let c = conditions(office)
+                let c = annotees(office)
                 for saison in ["tal_oumatar", "berakha"] { #expect(c.contains(saison), "\(n.rawValue) \(office) : \(saison)") }
             }
-            let repas = conditions("birkat_hamazon")
+            let repas = annotees("birkat_hamazon")
             for c in ["yaale_veyavo", "al_hanissim", "chabbat"] { #expect(repas.contains(c), "\(n.rawValue) repas : \(c)") }
         }
     }
@@ -330,7 +330,7 @@ struct SiddurJourTests {
 
     // MARK: Les vecteurs de la JVM (tools/vecteurs_ios/VecteursSiddurJour.kt)
 
-    private struct Vecteurs: Decodable {
+    private struct Vecteurs: Decodable, Sendable {
         struct Cas: Decodable {
             let nom: String
             let date: String
@@ -625,7 +625,8 @@ struct SiddurJourTests {
     @Test func parseToleranceEtFautesDOrgJson() throws {
         let v = try vecteurs()
         for e in v.parse.ecrits {
-            for (n, attendu) in [(Nusah.edot, e.edot), (.sefard, e.sefard), (.ashkenaz, e.ashkenaz)] {
+            let reponses: [(Nusah, Vecteurs.Parse.Lu)] = [(Nusah.edot, e.edot), (Nusah.sefard, e.sefard), (Nusah.ashkenaz, e.ashkenaz)]
+            for (n, attendu) in reponses {
                 let lu = try? SiddurJour.parse(e.json, n)
                 switch attendu {
                 case .erreur:
@@ -674,7 +675,10 @@ struct SiddurJourTests {
             let texte = try #require(paire.first), attendu = try #require(paire.last)
             let lu = SiddurJour.empreinte(texte)
             let egal = lu.egalUnites(attendu)
-            #expect(egal, "empreinte(\(Array(texte.unicodeScalars).map { String($0.value, radix: 16) })) : \(Array(lu.unicodeScalars).map { String($0.value, radix: 16) })")
+            let codesTexte = texte.unicodeScalars.map { String($0.value, radix: 16) }
+            let codesLu = lu.unicodeScalars.map { String($0.value, radix: 16) }
+            let codesAttendus = attendu.unicodeScalars.map { String($0.value, radix: 16) }
+            #expect(egal, "empreinte(\(codesTexte)) : \(codesLu) au lieu de \(codesAttendus)")
         }
         let d = try donnees()
         for s in v.empreinte.siddourim {
