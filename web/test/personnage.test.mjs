@@ -21,8 +21,18 @@ test('pour צדקת, chaque pose prend la pose feminine', () => {
 
 test('la table couvre chaque pose du hassid, et chaque pose feminine existe', () => {
   const hassid = DESSINS.filter((n) => n.startsWith('char_') && !n.startsWith('char_f_') && n !== 'char_face');
-  assert.deepEqual(Object.keys(FEMININ).sort(), hassid.sort());
+  const scenes = DESSINS.filter((n) => /^scene_(sleeping|nature|airport|hanukkah|sukkot)$/.test(n));
+  assert.equal(scenes.length, 5);
+  assert.deepEqual(Object.keys(FEMININ).sort(), [...hassid, ...scenes].sort());
   assert.deepEqual([...new Set(Object.values(FEMININ))].sort(), DESSINS.filter((n) => n.startsWith('char_f_')).sort());
+});
+
+test('FACCUEIL-03 : les cinq scenes a decor se replient sur une pose feminine', () => {
+  assert.equal(chemin('img/scene_sleeping.webp', 'f'), 'img/char_f_praying.webp');
+  assert.equal(chemin('img/scene_hanukkah.webp', 'f'), 'img/char_f_praise.webp');
+  assert.equal(chemin('img/scene_sleeping.webp', 'm'), 'img/scene_sleeping.webp');
+  // Les autres scenes (pochettes, ouverture) ne bougent pas.
+  assert.equal(chemin('img/scene_ouverture_tombe.webp', 'f'), 'img/scene_ouverture_tombe.webp');
 });
 
 test('une icône d\'écran d\'accueil par combinaison צדיק / צדקת × couleur des boutons', async () => {

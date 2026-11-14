@@ -7,10 +7,15 @@
     <string name="status_streak_none">Streak to restart</string>
     <string name="status_streak_first">No streak yet</string>
     <string name="action_done_offline">Done without the phone</string>
+    <string name="start_prepare">No set time, or another way to start</string>
     <string name="offline_which_day">Which day?</string>
     <string name="offline_today">Today</string>
     <string name="offline_yesterday">Yesterday</string>
     <string name="offline_how_long">How long?</string>
+    <string name="offline_how_long_today">Today: how long?</string>
+    <string name="offline_how_long_yesterday">Yesterday: how long?</string>
+    <string name="offline_added_today">Added to today: %1$s.</string>
+    <string name="offline_added_yesterday">Added to yesterday: %1$s.</string>
     <string name="note_discard">Don’t save</string>
     <string name="journal_note_only">Note only</string>
     <string name="status_total">%1$s in total</string>
@@ -116,6 +121,7 @@
     <string name="settings_all_granted">All useful permissions are granted.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Without them the reminder is scheduled and never appears, and the hitbodedut shows nothing once the phone is down.</string>
+    <string name="session_notifications_pourquoi">To show the time left and tell you when the hitbodedut ends once the phone is down, the app needs notifications.</string>
     <string name="permission_battery_why">Without it, Android may hold the reminder back for hours. In the list that opens, find MyHitbodedut and choose “Don’t optimize”.</string>
     <string name="permission_overlay_why">To show the “I am with Hashem” screen over the app you open in the morning.</string>
     <string name="permission_usage_why">To know which app has just opened. Nothing is recorded or sent.</string>
@@ -1120,7 +1126,7 @@
     <string name="chizuk_garder">Save</string>
     <string name="chizuk_garde">Saved ✓</string>
     <string name="chizuk_partager">Share</string>
-    <string name="chizuk_commencer">Start a hitbodedut</string>
+    <string name="chizuk_commencer">Prepare a hitbodedut</string>
     <string name="chizuk_favoris">Saved texts</string>
     <string name="source_du_jour">Source of the day</string>
     <string name="source_du_jour_commencer">Start</string>

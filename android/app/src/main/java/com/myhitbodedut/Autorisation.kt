@@ -76,4 +76,22 @@ object PermissionRules {
      */
     fun manquantes(avecBarriere: Boolean, accordee: (Autorisation) -> Boolean): List<Autorisation> =
         demandees(avecBarriere).filterNot(accordee)
+
+    /**
+     * La demande d'une permission vient de revenir : Android l'a-t-il refusée sans rien montrer ?
+     * Après deux refus il ne pose plus la question, et il faut alors mener à l'écran système
+     * (13/11, FACCUEIL-05). On le reconnaît à ce qu'il ne propose d'expliquer la demande ni avant
+     * ni après : après un premier refus il le propose ([expliqueApres]), et un deuxième refus
+     * donné à l'instant, question vue, le proposait encore juste avant ([expliquaitAvant]) —
+     * on ne renvoie pas vers les réglages quelqu'un qui vient de répondre non.
+     */
+    fun refusSansQuestion(accordee: Boolean, expliquaitAvant: Boolean, expliqueApres: Boolean): Boolean =
+        !accordee && !expliquaitAvant && !expliqueApres
+
+    /**
+     * Faut-il avertir qu'un rappel allumé ne s'affichera pas ? Oui s'il l'est sans les
+     * notifications ; pas tant que la question d'Android est à l'écran, où rien n'est encore refusé.
+     */
+    fun rappelMuet(actif: Boolean, notifications: Boolean, demandeEnCours: Boolean): Boolean =
+        actif && !notifications && !demandeEnCours
 }

@@ -170,6 +170,17 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
+            <!-- Rappel allumé sans les notifications (13/11) : le même avertissement que l'écran Rappels. -->
+            <TextView
+                android:id="@+id/levana_rappel_permission"
+                style="@style/CardHint"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:text="@string/reminders_permission_missing"
+                android:textColor="@color/warning"
+                android:visibility="gone" />
+
             <LinearLayout style="@style/SettingRow">
 
                 <TextView style="@style/SettingLabel" android:text="@string/levana_usage_titre" />

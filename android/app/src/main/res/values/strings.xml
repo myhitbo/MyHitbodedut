@@ -11,10 +11,15 @@
     <string name="status_streak_none">Série à relancer</string>
     <string name="status_streak_first">Pas encore de série</string>
     <string name="action_done_offline">Je l’ai faite sans le téléphone</string>
+    <string name="start_prepare">Sans durée ou autre façon de commencer</string>
     <string name="offline_which_day">Quel jour ?</string>
     <string name="offline_today">Aujourd’hui</string>
     <string name="offline_yesterday">Hier</string>
     <string name="offline_how_long">Combien de temps ?</string>
+    <string name="offline_how_long_today">Aujourd’hui : combien de temps ?</string>
+    <string name="offline_how_long_yesterday">Hier : combien de temps ?</string>
+    <string name="offline_added_today">Ajouté à aujourd’hui : %1$s.</string>
+    <string name="offline_added_yesterday">Ajouté à hier : %1$s.</string>
     <string name="note_discard">Ne pas enregistrer</string>
     <string name="journal_note_only">Note seule</string>
     <string name="status_total">%1$s au total</string>
@@ -125,6 +130,7 @@
     <string name="settings_all_granted">Toutes les autorisations utiles sont accordées.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Sans elles, le rappel se programme et n’apparaît jamais, et la hitbodedout n’affiche rien quand le téléphone est posé.</string>
+    <string name="session_notifications_pourquoi">Pour montrer le temps qui reste et annoncer la fin de la hitbodedout quand le téléphone est posé, l’application a besoin des notifications.</string>
     <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures. Dans la liste qui s’ouvre, cherchez MyHitbodedut et choisissez « Ne pas optimiser ».</string>
     <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez le matin.</string>
     <string name="permission_usage_why">Pour savoir quelle application vient de s’ouvrir. Rien n’est enregistré ni envoyé.</string>
@@ -1184,7 +1190,7 @@
     <string name="chizuk_garder">Garder</string>
     <string name="chizuk_garde">Gardé ✓</string>
     <string name="chizuk_partager">Partager</string>
-    <string name="chizuk_commencer">Commencer une hitbodedout</string>
+    <string name="chizuk_commencer">Préparer une hitbodedout</string>
     <string name="chizuk_favoris">Textes gardés</string>
     <string name="source_du_jour">Source du jour</string>
     <string name="source_du_jour_commencer">Commencer</string>

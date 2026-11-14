@@ -32,7 +32,9 @@
             android:background="@drawable/bg_stage_soft"
             android:padding="4dp">
 
-            <ImageView
+            <!-- En toutes lettres (13/11) : l'écran « Je suis avec Hachem » inclut cette carte, et un
+                 service la gonfle sans l'usine qui change <ImageView> en PersonnageImageView. -->
+            <com.myhitbodedut.PersonnageImageView
                 android:id="@+id/chizuk_art"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
