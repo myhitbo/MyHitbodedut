@@ -1,0 +1,148 @@
+== 01-accueil
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+PETIT 363x38dp Button today_offline «Je l’ai faite sans le téléphon»
+== 01b-accueil-suite
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+== 02-onglet-textes
+== 03-siddour-liste
+PETIT 272x36dp TextView siddur_heading_nusah «Noussa’h séfarade (Edot HaMizr»
+== 03b-siddour-liste-suite
+== 05-priere-pastille
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x31dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== 11a-tehilim
+PETIT 26x48dp TextView  «תפילת שחרית»
+== 11-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== 12-tikkun-d-un-trait
+PETIT 56x36dp TextView  «Aa»
+== 14a-bibliotheque
+== 14b-bibliotheque-sous-section
+== 14-bibliotheque-source
+PETIT 56x36dp TextView  «Aa»
+== 18a-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diaspora»
+== 18b-zmanim-horaires
+PETIT 347x26dp TextView  «Partager ce jour ↗»
+== 18c-zmanim-fin
+== 18d-calendrier
+PETIT 95x26dp TextView  «Hébraïque»
+PETIT 92x26dp TextView  «Grégorien»
+PETIT 347x28dp TextView  «Aujourd’hui»
+== 18e-calendrier-jour
+PETIT 50x8dp LinearLayout  «2026-11-15 · ה׳ כסלו תשפ״ז»
+PETIT 50x8dp LinearLayout  «2026-11-16 · ו׳ כסלו תשפ״ז»
+PETIT 50x8dp LinearLayout  «2026-11-17 · ז׳ כסלו תשפ״ז»
+PETIT 50x8dp LinearLayout  «2026-11-18 · ח׳ כסלו תשפ״ז»
+PETIT 50x8dp LinearLayout  «2026-11-19 · ט׳ כסלו תשפ״ז»
+PETIT 50x8dp LinearLayout  «2026-11-20 · י׳ כסלו תשפ״ז»
+PETIT 50x8dp LinearLayout  «2026-11-21 · י״א כסלו תשפ״ז»
+PETIT 347x28dp TextView  «Aujourd’hui»
+== 18f-siddour-pour-cette-heure
+PETIT 272x36dp TextView siddur_heading_nusah «Noussa’h séfarade (Edot HaMizr»
+== 18g-priere-ajouts
+PETIT 40x48dp TextView  «ברכו»
+PETIT 42x48dp TextView  «עלינו»
+== 18h-priere-ajouts-suite
+PETIT 40x48dp TextView  «ברכו»
+PETIT 42x48dp TextView  «עלינו»
+PETIT 411x43dp TextView  «במוצאי שבת ויום טוב אומרים»
+PETIT 411x35dp TextView  «וְחָנֵּ͏נוּ מֵאִתְּךָ חָכְמָה »
+== 19a-halakha
+PETIT 347x45dp EditText  «Rechercher dans la halakha»
+PETIT 56x36dp TextView  «Aa»
+== 19b-halakha-suite
+PETIT 347x45dp EditText  «Rechercher dans la halakha»
+== 19c-hilloulot
+PETIT 56x36dp TextView  «Aa»
+== 19d-hilloulot-fiche
+PETIT 347x26dp LinearLayout  «הרב נחום ווידנפלד, Lire la sui»
+PETIT 56x36dp TextView  «Aa»
+== 19d2-hilloulot-recherche
+PETIT 56x36dp TextView  «Aa»
+== 19e-livres
+== 19f-siddour-occasions
+PETIT 40x48dp TextView  «ברכו»
+PETIT 42x48dp TextView  «עלינו»
+PETIT 411x32dp TextView  «יִ͏הְי֥וּ לְרָצ֨וֹן ׀ אִמְרֵי־»
+== 19g-paliers-trophees
+PETIT 379x6dp LinearLayout  «1 heure en tout»
+== 19h-reglages
+== 19i-reglages-apparence
+PETIT 88x36dp Button accent_button «Vert»
+== 19j-reglages-ecran-zmanim
+PETIT 122x6dp Button ouverture_button «Aujourd’hui»
+== 21a-accueil-grade-prochain
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+PETIT 363x38dp Button today_offline «Je l’ai faite sans le téléphon»
+== 21b-trophees-ici
+PETIT 379x6dp LinearLayout  «1 heure en tout»
+== 21c-trophee-detail
+PETIT 379x6dp LinearLayout  «1 heure en tout»
+== 21d-trophees-tete
+PETIT 379x47dp LinearLayout  «3 premières hitbodedout»
+== 21e-pratique-debut
+== 21f-pratique-calme
+== 21g-pratique-reveil
+== 22a-accueil-moment-source-du-jour
+PETIT 363x12dp Button start_session «Revenir à la hitbodedout en co»
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+== 22a2-accueil-parcours
+PETIT 363x12dp Button start_session «Revenir à la hitbodedout en co»
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+== 22b-hizouk
+== 22c-hizouk-garde
+== 22d-parcours
+== 22e-ambiance-choix
+== 22f-ambiance-pluie
+MUET Switch music_switch (854, 477, 991, 603)
+MUET Switch music_shuffle (854, 890, 991, 1016)
+PETIT 344x40dp LinearLayout music_ambiance «Ambiance Pluie»
+MUET RadioButton track_radio (74, 1465, 200, 1591)
+MUET RadioButton track_radio (74, 1654, 200, 1780)
+MUET RadioButton track_radio (74, 1843, 200, 1969)
+MUET RadioButton track_radio (74, 2032, 200, 2158)
+== 22g-seance-commencer-simplement
+PETIT 363x12dp Button start_session «Revenir à la hitbodedout en co»
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+== 22h-seance-question
+PETIT 363x12dp Button start_session «Revenir à la hitbodedout en co»
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+== 22i-seance-question-suivante
+PETIT 363x12dp Button start_session «Revenir à la hitbodedout en co»
+PETIT 108x40dp LinearLayout start_duration «Durée 15 min»
+PETIT 101x40dp LinearLayout start_theme «Sujet Aucun»
+PETIT 139x40dp LinearLayout start_music «Musique המלך בשדה»
+== 22j-livres
+== 22k-guide
+PETIT 56x36dp TextView  «Aa»
+== 22l-tefila-lishlomo
+PETIT 56x36dp TextView  «Aa»
+== 22m-reglages-avec-hachem
+PETIT 52x18dp Switch ecran_allume_switch «Garder l’écran allumé pendant »
+PETIT 52x14dp Switch enable_switch «Je suis avec Hachem»
+== 23a-je-suis-avec-hachem-reglages
+PETIT 52x21dp Switch halakha_switch «Afficher la halakha du jour»
+== 23b-heures-du-mode
+== 23c-duree-du-report
+== 23d-etat-du-mode
+PETIT 52x21dp Switch halakha_switch «Afficher la halakha du jour»
+== 23e-ecran-je-suis-avec-hachem-apercu
+== 23f-ecran-je-suis-avec-hachem
