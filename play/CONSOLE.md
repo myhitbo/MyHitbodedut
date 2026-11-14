@@ -318,7 +318,7 @@ téléphone, contre ses propres habitudes, et qu'il coupe quand il veut.
 | Full description | `play/fiche/en-US/full_description.txt` |
 | App icon | `play/icone-512.png` |
 | Feature graphic | `play/fiche/en-US/images/featureGraphic.png` |
-| Phone screenshots | les 8 visuels composés pour `en-US`, dans l'ordre de `play/visuels/legendes.json` : accueil, séance, barrière, siddour, zmanim, textes, boussole, journal |
+| Phone screenshots | les 8 visuels composés pour `en-US`, dans l'ordre de `play/visuels/legendes.json` : accueil, séance, barrière, siddour, zmanim, textes, boussole, parcours |
 | Tablet screenshots | facultatif ; ne rien mettre plutôt que des captures de téléphone étirées |
 | Video | laisser vide |
 

@@ -34,7 +34,7 @@ test('l’image de présentation fait 1024 × 500, sans alpha', () => {
 // que lit l'outil de composition. Huit visuels par langue, dans le même ordre, courts, sans le Nom en toutes lettres.
 test('les légendes des visuels : huit par langue, dans l’ordre, dans les limites', () => {
   const { langues } = JSON.parse(readFileSync(new URL('../../play/visuels/legendes.json', import.meta.url), 'utf8'));
-  const cles = ['accueil', 'seance', 'barriere', 'siddour', 'zmanim', 'textes', 'boussole', 'journal'];
+  const cles = ['accueil', 'seance', 'barriere', 'siddour', 'zmanim', 'textes', 'boussole', 'parcours'];
   assert.deepEqual(Object.keys(langues), ['en', 'he']);
   assert.equal(langues.en.dossier, 'en-US');
   assert.equal(langues.he.dossier, 'iw-IL');

@@ -39,9 +39,9 @@
           "phrase": "A compass for the direction of prayer, wherever you are."
         },
         {
-          "cle": "journal",
+          "cle": "parcours",
           "titre": "Every hitbodedut counts",
-          "phrase": "A note after each one, your streak and your path. Your journal stays on your phone."
+          "phrase": "Trophies and milestones mark your path, one day at a time."
         }
       ]
     },
@@ -84,9 +84,9 @@
           "phrase": "מצפן לכיוון התפילה, בכל מקום שתהיו בו."
         },
         {
-          "cle": "journal",
+          "cle": "parcours",
           "titre": "התבודדות, יום אחרי יום",
-          "phrase": "הערה אחרי כל התבודדות, הרצף והדרך שלכם. היומן נשאר בטלפון."
+          "phrase": "גביעים ואבני דרך מסמנים את הדרך, יום אחר יום."
         }
       ]
     }

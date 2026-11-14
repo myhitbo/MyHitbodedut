@@ -25,6 +25,13 @@ PREFS = "shared_prefs/myhitbodedut.xml"
 
 def log(*a):
     print(*a, flush=True)
+    # Le meme journal a cote des captures (14/11) : lisible avec git, la ou le journal du job
+    # ne se telecharge pas.
+    try:
+        with open(os.path.join(OUT, "journal.txt"), "a", encoding="utf-8") as f:
+            f.write(" ".join(str(x) for x in a) + "\n")
+    except OSError:
+        pass
 
 
 def adb(*args, input=None, timeout=90, binary=False):
@@ -934,40 +941,19 @@ def main():
                    f"    <string name=\"days\">{brut}</string>\n</map>\n")
             adb("shell", f"run-as {PKG} sh -c 'cat > shared_prefs/myhitbodedut-journal.xml'", input=xml.encode("utf-8"))
 
-        presentes = [l.split(":", 1)[1].strip() for l in sh("pm list packages").splitlines() if ":" in l]
-        voulues = [a for a in ("com.android.chrome", "com.google.android.youtube", "com.google.android.apps.messaging",
-                               "com.google.android.gm", "com.google.android.apps.photos", "com.google.android.apps.maps")
-                   if a in presentes][:3] or ["com.android.settings"]
-        for op in ("SYSTEM_ALERT_WINDOW", "GET_USAGE_STATS"):
-            sh(f"appops set {PKG} {op} allow")
+        def fermer_trophees(code):
+            # Le journal de demonstration fait gagner des trophees : leurs fenetres s'ouvrent
+            # l'une apres l'autre sur l'accueil.
+            libelle = {"en": "Continue", "he": "להמשיך"}.get(code, "Continuer")
+            for _ in range(10):
+                if trouver(text=libelle) is None:
+                    return
+                toucher(text=libelle, attente=1.2)
 
-        for code in ("en", "he"):
-            log(f"  --- fiche Play, {code}")
-            # Une seance laissee en cours par une etape precedente fausserait l'accueil.
-            if activite("SessionActivity") and toucher(rid="session_secondary", defilements=2, attente=1.0):
-                toucher(rid="button1", attente=1.5)
-            regler({"onboarded_version": ("int", 2), "langue_app": ("string", code),
-                    "enabled": ("boolean", "true"), "window_start": ("int", 360), "window_end": ("int", 660),
-                    "snooze_minutes": ("int", 15), "apparence_accent": ("string", "vert"),
-                    "lecture_sombre": ("boolean", "false")})
-            xml = re.sub(r'\s*<set name="blocked_apps">.*?</set>|\s*<set name="blocked_apps"\s*/>', "", lire_prefs(), flags=re.S)
-            ensemble = '    <set name="blocked_apps">' + "".join(f"<string>{a}</string>" for a in voulues) + "</set>"
-            ecrire_prefs(xml.replace("</map>", ensemble + "\n</map>"))
-            journal_de_demonstration()
-            langue(code)
-
-            lancer(attente=6)
-            defiler(False)
-            capture(f"play-{code}-accueil", attente=2.0)
-
-            ok = toucher(rid="nav_texts", attente=2.0)
-            defiler(False)
-            capture(f"play-{code}-textes", ok=ok)
-
-            ok = toucher(rid="nav_journal", attente=2.0)
-            capture(f"play-{code}-journal", ok=ok)
-
-            # L'ecran « Je suis avec Hachem », par son apercu des Reglages : sans effet, a toute heure.
+        def apercu_de_la_barriere(code):
+            # L'apercu passe l'application a l'arriere-plan : on la rouvre avant chaque essai.
+            lancer(attente=3)
+            fermer_trophees(code)
             ok = toucher(rid="nav_settings", attente=2.0)
             ok = ok and trouver(rid="preview_gate", defilements=14) is not None
             if not ok:
@@ -976,18 +962,70 @@ def main():
                     if trouver(rid="preview_gate") is not None:
                         ok = True
                         break
+            return ok and toucher(rid="preview_gate", attente=3.0) and trouver(rid="blocker_title") is not None
+
+        presentes = [l.split(":", 1)[1].strip() for l in sh("pm list packages").splitlines() if ":" in l]
+        voulues = [a for a in ("com.android.chrome", "com.google.android.youtube", "com.google.android.apps.messaging",
+                               "com.google.android.gm", "com.google.android.apps.photos", "com.google.android.apps.maps")
+                   if a in presentes][:3] or ["com.android.settings"]
+        for op in ("SYSTEM_ALERT_WINDOW", "GET_USAGE_STATS"):
+            sh(f"appops set {PKG} {op} allow")
+        # Un mardi ordinaire a 9 h 30 : ni Chabbat ni fete, pour que l'accueil propose la
+        # hitbodedout du jour (le 14/11 etait un Chabbat : « pas de hitbodedout attendue »).
+        sh("settings put global auto_time 0")
+        log("  date :", sh("date 111709302026.00").strip())
+
+        for code in ("en", "he"):
+            log(f"  --- fiche Play, {code}")
+            # Une seance laissee en cours par une etape precedente fausserait l'accueil.
+            if activite("SessionActivity") and toucher(rid="session_secondary", defilements=2, attente=1.0):
+                toucher(rid="button1", attente=1.5)
+            # Un lieu choisi (villes.json), pour que les zmanim et la boussole aient de quoi montrer.
+            nom, lat, lon, fuseau, ville, israel = {
+                "en": ("New York", "40.71427", "-74.00597", "America/New_York", 5128581, "false"),
+                "he": ("ירושלים", "31.76904", "35.21633", "Asia/Jerusalem", 281184, "true"),
+            }[code]
+            regler({"onboarded_version": ("int", 2), "langue_app": ("string", code),
+                    "enabled": ("boolean", "true"), "window_start": ("int", 360), "window_end": ("int", 660),
+                    "snooze_minutes": ("int", 15), "apparence_accent": ("string", "vert"),
+                    "lecture_sombre": ("boolean", "false"),
+                    "lieu_nom": ("string", nom), "lieu_latitude": ("string", lat), "lieu_longitude": ("string", lon),
+                    "lieu_altitude": ("string", "0.0"), "lieu_fuseau": ("string", fuseau),
+                    "lieu_ville": ("long", ville), "lieu_t": ("long", 1794800000000), "in_israel": ("boolean", israel)})
+            xml = re.sub(r'\s*<set name="blocked_apps">.*?</set>|\s*<set name="blocked_apps"\s*/>', "", lire_prefs(), flags=re.S)
+            ensemble = '    <set name="blocked_apps">' + "".join(f"<string>{a}</string>" for a in voulues) + "</set>"
+            ecrire_prefs(xml.replace("</map>", ensemble + "\n</map>"))
+            journal_de_demonstration()
+            langue(code)
+
+            lancer(attente=6)
+            fermer_trophees(code)
+            defiler(False)
+            capture(f"play-{code}-accueil", attente=2.0)
+
+            ok = toucher(rid="nav_texts", attente=2.0)
+            defiler(False)
+            capture(f"play-{code}-textes", ok=ok)
+
+            # Le parcours (les trophees) et non le journal : JournalActivity porte FLAG_SECURE,
+            # sa capture sort noire.
+            ok = activite("PaliersActivity")
+            capture(f"play-{code}-parcours", ok=ok, attente=2.5)
+            retour()
+
+            # L'ecran « Je suis avec Hachem », par son apercu des Reglages : sans effet, a toute
+            # heure. Sa citation change a chaque ouverture : on en veut une sans le Nom.
             vu = False
             for essai in range(8):
-                if not (ok and toucher(rid="preview_gate", attente=3.0) and trouver(rid="blocker_title") is not None):
+                if not apercu_de_la_barriere(code):
                     break
                 if not nom_en_toutes_lettres():
                     vu = True
                     break
                 log("  le Nom en toutes lettres dans la citation : autre tirage")
-                retour()
-                pause(1.0)
+                toucher(rid="blocker_primary", attente=1.5)
             capture(f"play-{code}-barriere", ok=vu)
-            retour()
+            toucher(rid="blocker_primary", attente=1.5)
 
             ok = activite("SiddurLectureActivity", "--es id chaharit")
             capture(f"play-{code}-siddour", ok=ok, attente=3.0)
@@ -1001,17 +1039,16 @@ def main():
             capture(f"play-{code}-boussole", ok=ok, attente=4.0)
             retour()
 
-            # La seance en cours, saisie avant que la pratique calme n'efface l'ecran.
-            ok = activite("SessionActivity", "--ez start_now true")
-            capture(f"play-{code}-seance", ok=ok, attente=1.5)
-            sh("input tap 540 300")
-            if toucher(rid="session_secondary", attente=1.0):
-                toucher(rid="button1", attente=1.5)
+            # Le choix de la duree, avant de commencer : la seance en cours n'est qu'un
+            # decompte sur fond sombre (la pratique calme efface le reste).
+            ok = activite("SessionActivity")
+            capture(f"play-{code}-seance", ok=ok, attente=2.5)
             retour()
             arreter()
 
         regler({"enabled": ("boolean", "false"), "langue_app": ("string", "fr")})
         langue("fr")
+        sh("settings put global auto_time 1")
     etape("27 visuels Play", s27)
 
     log("\ncaptures :", sorted(os.listdir(OUT)))
