@@ -61,7 +61,8 @@ public enum YalkutYosef {
                 guard case .objet(let o) = element else {
                     throw ErreurJSON(position: 0, raison: "période « \(k) » : un objet attendu")
                 }
-                seifs.append(Seif(siman: try texte(o, "s"), lettre: try texte(o, "l"), texte: try texte(o, "t")))
+                let seif = try Seif(siman: texte(o, "s"), lettre: texte(o, "l"), texte: texte(o, "t"))
+                seifs.append(seif)
             }
             periodes[k] = seifs
         }

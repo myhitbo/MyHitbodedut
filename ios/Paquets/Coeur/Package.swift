@@ -51,6 +51,7 @@ let enChantierTests: [String] = [
     "ReminderTests.swift",
     "ReminderTimesTests.swift",
     "SalutationTests.swift",
+    "SiddurJourTests.swift",
     "TefilotTests.swift",
     "TehilimTests.swift",
     "TerritoireIsraelTests.swift",
@@ -65,6 +66,8 @@ let package = Package(
     platforms: [.iOS("26.5"), .macOS("26.0")],
     products: [
         .library(name: "Coeur", targets: ["Coeur"]),
+        // Les modèles d'écran de l'app : Observation et Coeur, sans SwiftUI, testés sous Linux.
+        .library(name: "Ecrans", targets: ["Ecrans"]),
     ],
     dependencies: [
         // KosherSwift 1.10.11 (LGPL 2.1) : la dernière étiquette à l'API et aux définitions de
@@ -83,6 +86,12 @@ let package = Package(
             name: "CoeurTests",
             dependencies: ["Coeur", .product(name: "KosherSwift", package: "KosherSwift")],
             exclude: enChantierTests),
+        .target(
+            name: "Ecrans",
+            dependencies: ["Coeur"]),
+        .testTarget(
+            name: "EcransTests",
+            dependencies: ["Ecrans", "Coeur"]),
     ],
     swiftLanguageModes: [.v6]
 )

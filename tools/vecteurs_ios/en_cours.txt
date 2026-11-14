@@ -7,11 +7,13 @@ VecteursHalakha
 VecteursJaugeSemaine
 VecteursLevana
 VecteursModele
+VecteursPlaque
 VecteursRappels
 VecteursReglages
 VecteursSiddurJour
 VecteursTefilot
 VecteursTehilim
 VecteursTikkun
+VecteursVignettes
 VecteursVol
 VecteursYalkutYosef

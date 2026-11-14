@@ -104,7 +104,7 @@ object VecteursHalakha : Generateur {
      * (ASCII, guershayim, guéresh), le maqaf et le paseq, une lettre seule, une forme de présentation,
      * des mots fréquents et rares, du latin, des chiffres, un émoji.
      */
-    val REQUETES: List<String> = listOf(
+    private val requetes: List<String> = listOf(
         "ציצית", "צ",
         "", " ", "\t\n", "ציצית ", "  ציצית\n", " ציצית ", "　ציצית",
         "צִיצִית", "צִיצִ֑ית", "ְִ",
@@ -170,7 +170,7 @@ object VecteursHalakha : Generateur {
         // une année impaire et une paire ; puis 'Hanouka, du jour −1 au jour 9.
         "choix" to parachiotChoix.flatMap { p -> listOf(5786, 5787).flatMap { a -> (0..6).map { j -> choix(p, j, a, 0) } } } +
             (-1..9).map { h -> choix("VAYESHEV", 0, 5787, h) },
-        "recherche" to REQUETES.map(::recherche),
+        "recherche" to requetes.map(::recherche),
         // HalakhaActivity.source (recopiée mot pour mot dans les bouchons).
         "source" to anneesSource.flatMap { (a, s) ->
             numeros.map { n ->

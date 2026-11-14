@@ -90,10 +90,10 @@ jobs:
       # -warnings-as-errors n'est pas passé à swiftc : SwiftPM le donnerait aussi à KosherSwift,
       # dont il tait les avertissements (-suppress-warnings), et les deux options se contredisent.
       # Les avertissements de Coeur et de ses tests sont donc cherchés dans le journal.
-      - name: Construction (aucun avertissement dans Coeur ni dans Barriere)
+      - name: Construction (aucun avertissement dans Coeur, Barriere ni Ecrans)
         run: |
           swift build --build-tests 2>&1 | tee construction.log
-          if grep -E '/(Sources/(Coeur|Barriere)|Tests/(CoeurTests|BarriereTests))/[^:]+:[0-9]+:[0-9]+: warning:' construction.log; then
+          if grep -E '/(Sources/(Coeur|Barriere|Ecrans)|Tests/(CoeurTests|BarriereTests|EcransTests))/[^:]+:[0-9]+:[0-9]+: warning:' construction.log; then
             echo "::error::avertissements dans le paquet Coeur"
             exit 1
           fi
