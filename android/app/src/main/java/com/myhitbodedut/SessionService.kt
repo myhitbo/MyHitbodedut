@@ -342,7 +342,11 @@ class SessionService : Service() {
      * quand il y en a un, le temps déjà passé quand la séance est ouverte.
      */
     private fun runningText(): String = when (Store.sessionCounter(this)) {
-        SessionRule.Compteur.MASQUE -> getString(R.string.session_running_hidden)
+        // Masqué, le chiffre se tait ; la séance sans durée se dit tout de même (13/11, audit FSEANCE-05).
+        SessionRule.Compteur.MASQUE -> getString(
+            if (Store.isSessionOpen(this)) R.string.session_running_open_hidden
+            else R.string.session_running_hidden
+        )
         SessionRule.Compteur.ECOULE ->
             getString(R.string.session_elapsed, Store.formatDuration(this, Store.sessionElapsedMinutes(this)))
         SessionRule.Compteur.RESTE ->

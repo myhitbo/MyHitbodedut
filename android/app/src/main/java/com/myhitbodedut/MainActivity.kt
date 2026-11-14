@@ -17,7 +17,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import java.time.format.DateTimeFormatter
 
 /** Écran principal : état du jour, diagnostic de la barrière, réglages. */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     /** Les cartes du moment n'entrent en cascade qu'une fois par ouverture de l'accueil (19/10). */
     private var momentAnime = false
 
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         // rotation ne la rouvre pas.
         if (savedInstanceState == null) {
             intent?.getStringExtra(EXTRA_ASK_NOTE)?.let { date ->
-                if (!Store.hasPendingCelebration(this)) NoteDialog.show(this, date, onSaved = { refresh() })
+                if (!Store.hasPendingCelebration(this)) NoteDialog.show(this, date)
             }
             intent?.removeExtra(EXTRA_ASK_NOTE)
         }
@@ -141,8 +141,9 @@ class MainActivity : AppCompatActivity() {
         }
         montrerFace(Plaque.Face.HASSID)
         findViewById<AnneauxView>(R.id.week_gauge).rejouer()
-        // La séance s'est close téléphone posé : le bravo attendait ici.
-        CelebrationActivity.showIfPending(this)
+        // La séance s'est close téléphone posé : le bravo attendait ici. Sauf par-dessus
+        // une note en cours de frappe : il attend alors sa fermeture (13/11, audit FSEANCE-03).
+        if (!NoteDialog.ouverte(this)) CelebrationActivity.showIfPending(this)
         // La vignette d'accueil suit ce que l'écran vient de montrer.
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
@@ -239,8 +240,18 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener { toucherPlaque() }
         }
         findViewById<Button>(R.id.today_note).setOnClickListener {
-            NoteDialog.show(this, Store.today(), onSaved = { refresh() })
+            NoteDialog.show(this, Store.today())
         }
+    }
+
+    /** La note enregistrée se lit aussitôt sur l'accueil (NoteDialog.Hote). */
+    override fun noteEnregistree(date: String) {
+        refresh()
+    }
+
+    /** Le bravo qui attendait la fermeture de la note s'ouvre, sans la reproposer. */
+    override fun noteFermee(date: String) {
+        CelebrationActivity.showIfPending(this, sansNote = true)
     }
 
     /**

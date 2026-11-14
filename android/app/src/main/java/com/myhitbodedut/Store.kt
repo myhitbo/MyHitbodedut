@@ -952,6 +952,13 @@ object Store {
         journalPrefs(context).edit().putString("journal_plus", v).apply()
     }
 
+    /** Les brouillons de note (13/11), en JSON : NoteBrouillon. Dans le fichier du journal : ni nuage, ni export. */
+    fun noteBrouillonsBrut(context: Context): String? = journalPrefs(context).getString("note_brouillons", null)
+
+    fun setNoteBrouillonsBrut(context: Context, v: String?) {
+        journalPrefs(context).edit().apply { if (v == null) remove("note_brouillons") else putString("note_brouillons", v) }.apply()
+    }
+
     /** L'écran d'ouverture (14/10) : Aujourd'hui, Textes ou Zmanim. */
     enum class Ouverture(val cle: String, val libelle: Int) {
         AUJOURDHUI("aujourdhui", R.string.nav_today),

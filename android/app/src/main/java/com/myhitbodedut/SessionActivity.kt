@@ -60,6 +60,12 @@ class SessionActivity : AppCompatActivity() {
     /** Une séance abandonnée n'est pas une séance close : pas de mot de fin. */
     private var cancelling = false
 
+    /**
+     * Le bravo a attendu la fermeture de la note d'« Écrire » : il s'ouvre
+     * ensuite sans la reproposer (13/11, audit FSEANCE-03).
+     */
+    private var bravoApresNote = false
+
     private val tick = object : Runnable {
         override fun run() {
             render()
@@ -107,6 +113,7 @@ class SessionActivity : AppCompatActivity() {
             question = it.getInt(ETAT_QUESTION, -1)
             wasRunning = it.getBoolean(ETAT_EN_COURS, false)
             cancelling = it.getBoolean(ETAT_ABANDON, false)
+            bravoApresNote = it.getBoolean(ETAT_BRAVO_APRES_NOTE, false)
         }
 
         // Le mini-lecteur (19/10) : changer de morceau sans quitter la pratique.
@@ -136,7 +143,7 @@ class SessionActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.simplement_parler).setOnClickListener { demarrer() }
         findViewById<View>(R.id.simplement_ecrire).setOnClickListener {
-            demarrer { NoteDialog.show(this, Store.today(), onSaved = {}) }
+            demarrer { NoteDialog.show(this, Store.today()) }
         }
         findViewById<View>(R.id.simplement_prier).setOnClickListener {
             demarrer { startActivity(android.content.Intent(this, TefilotActivity::class.java)) }
@@ -227,6 +234,7 @@ class SessionActivity : AppCompatActivity() {
         outState.putInt(ETAT_QUESTION, question)
         outState.putBoolean(ETAT_EN_COURS, wasRunning)
         outState.putBoolean(ETAT_ABANDON, cancelling)
+        outState.putBoolean(ETAT_BRAVO_APRES_NOTE, bravoApresNote)
     }
 
     override fun onPause() {
@@ -268,7 +276,17 @@ class SessionActivity : AppCompatActivity() {
         // Chaque seconde, et pas au seul passage à « terminée » : c'est le
         // service qui clôt la séance, et il peut le faire quelques secondes
         // après que le décompte a touché zéro ici.
-        if (!running) CelebrationActivity.showIfPending(this)
+        // Mode « Écrire » : une fenêtre ne met pas l'écran en pause, et le
+        // bravo s'ouvrait par-dessus la note en cours de frappe, puis en
+        // proposait une seconde. Il attend qu'elle se ferme (13/11).
+        if (!running) {
+            if (NoteDialog.ouverte(this)) {
+                if (Store.hasPendingCelebration(this)) bravoApresNote = true
+            } else {
+                CelebrationActivity.showIfPending(this, sansNote = bravoApresNote)
+                bravoApresNote = false
+            }
+        }
 
         if (running) {
             art.setImageResource(Character.during())
@@ -289,7 +307,11 @@ class SessionActivity : AppCompatActivity() {
                 )
             }
             caption.text = when (counter) {
-                SessionRule.Compteur.MASQUE -> getString(R.string.session_hidden_caption)
+                // Sans durée, aucun son ne viendra : la légende ne le promet pas (13/11, audit FSEANCE-05).
+                SessionRule.Compteur.MASQUE -> getString(
+                    if (Store.isSessionOpen(this)) R.string.session_open_hidden_caption
+                    else R.string.session_hidden_caption
+                )
                 SessionRule.Compteur.ECOULE -> getString(R.string.session_open_caption)
                 SessionRule.Compteur.RESTE -> getString(
                     R.string.session_target,
@@ -470,5 +492,6 @@ class SessionActivity : AppCompatActivity() {
         private const val ETAT_QUESTION = "question"
         private const val ETAT_EN_COURS = "was_running"
         private const val ETAT_ABANDON = "cancelling"
+        private const val ETAT_BRAVO_APRES_NOTE = "bravo_apres_note"
     }
 }
