@@ -1484,7 +1484,9 @@ object Store {
     fun exportJson(context: Context): String {
         val root = JSONObject()
         root.put("format", "myhitbodedut")
-        root.put("version", 1)
+        // Version 2 (audit du 12/11, FDONNEES-01) : le journal enrichi, le journal du Tikoun,
+        // les favoris, les 'hizouk gardés, les marque-pages, le noussa'h et les réglages de lecture.
+        root.put("version", 2)
         root.put("exported_at", java.time.Instant.now().toString())
 
         val daysJson = JSONObject()
@@ -1515,10 +1517,68 @@ object Store {
             .put("apparence_mode", modeApparence(context).cle)
             .put("apparence_fond", fond(context).cle)
             .put("apparence_accent", accent(context).cle)
+            .put("siddur_nusah", siddurNusah(context).cle)
+            .put("lecture_echelle", lectureEchelle(context).toDouble())
+            .put("lecture_police", lecturePolice(context).cle)
+            .put("lecture_sombre", lectureSombre(context))
+            .put("lecture_masquee", lectureMasquee(context))
+        lectureLangues(context)?.let { settings.put("lecture_langues", it) }
         root.put("settings", settings)
         root.put("paused_dates", org.json.JSONArray(pausedDates(context).toList()))
         root.put("blocked_apps", org.json.JSONArray(blockedApps(context).toList()))
+        // Le journal enrichi : humeurs, gratitude, chose à travailler (même forme que le site).
+        root.put("journal_plus", runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject()))
+        root.put("tikkun_journal", org.json.JSONArray(tikkunJournal(context).sorted().map { it.toString() }))
+        root.put("favoris", org.json.JSONArray(favoris(context)))
+        root.put("chizuk_favoris", org.json.JSONArray(chizukFavoris(context)))
+        root.put("marques_pages", org.json.JSONArray(marques(context).map {
+            JSONObject().put("cle", it.cle).put("nusah", it.nusah).put("section", it.section).put("bloc", it.bloc).put("apercu", it.apercu)
+        }))
         return root.toString(2)
+    }
+
+    /** Les chaînes d'un tableau JSON, non vides, sans doublon. */
+    private fun chaines(a: org.json.JSONArray?): List<String> =
+        if (a == null) emptyList() else (0 until a.length()).mapNotNull { a.optString(it).takeIf(String::isNotBlank) }.distinct()
+
+    /**
+     * Ce que la version 2 a ajouté : réuni à ce que le téléphone a déjà, sans rien en retirer.
+     * Un jour du journal enrichi déjà noté ici garde ce qu'il a (store.js fait de même).
+     */
+    private fun importerAjouts(context: Context, root: JSONObject, demain: LocalDate) {
+        root.optJSONObject("journal_plus")?.let { entrant ->
+            val ici = runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject())
+            for (date in entrant.keys()) {
+                val jour = dateValide(date) ?: continue
+                if (!jour.isBefore(demain)) continue
+                val e = entrant.optJSONObject(date) ?: continue
+                val plus = JournalPlus.Plus(e.optInt("avant", 0).coerceIn(0, 5), e.optInt("apres", 0).coerceIn(0, 5),
+                    e.optString("gratitude", "").take(JournalPlus.GRATITUDE_MAX), e.optString("travail", "").take(JournalPlus.GRATITUDE_MAX))
+                val dejaNote = ici.optJSONObject(date)?.let { o ->
+                    o.optInt("avant", 0) != 0 || o.optInt("apres", 0) != 0 || o.optString("gratitude").isNotBlank() || o.optString("travail").isNotBlank()
+                } ?: false
+                if (!plus.vide && !dejaNote) JournalPlus.ecrire(context, date, plus)
+            }
+        }
+        val tikkun = chaines(root.optJSONArray("tikkun_journal")).mapNotNull(::dateValide).filter { it.isBefore(demain) }
+        if (tikkun.isNotEmpty()) {
+            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).sorted().joinToString(",")).apply()
+        }
+        val favoris = chaines(root.optJSONArray("favoris")).filter { it.startsWith("s:") || it.startsWith("l:") }
+        if (favoris.isNotEmpty()) prefs(context).edit().putString("favoris", (favoris(context) + favoris).distinct().joinToString("|")).apply()
+        val chizuk = chaines(root.optJSONArray("chizuk_favoris")).filter { '|' !in it }
+        if (chizuk.isNotEmpty()) prefs(context).edit().putString("chizuk_favoris", (chizukFavoris(context) + chizuk).distinct().joinToString("|")).apply()
+        root.optJSONArray("marques_pages")?.let { a ->
+            val entrantes = (0 until a.length()).mapNotNull { i ->
+                val o = a.optJSONObject(i) ?: return@mapNotNull null
+                val m = MarquesPages.Marque(o.optString("cle"), o.optString("nusah"), o.optInt("section", -1), o.optInt("bloc", -1),
+                    o.optString("apercu").replace('\t', ' ').replace('\n', ' '))
+                m.takeIf { it.cle.isNotBlank() && '\t' !in it.cle && '\t' !in it.nusah && it.section >= 0 && it.bloc >= 0 }
+            }
+            val ici = marques(context)
+            val reunies = (ici + entrantes.filter { e -> ici.none { it.memePlace(e) } }).take(MarquesPages.MAX)
+            prefs(context).edit().putString("marques_pages", MarquesPages.encoder(reunies)).apply()
+        }
     }
 
     /** Fusionne une sauvegarde. Renvoie le nombre de journées importées, ou null si le fichier est invalide. */
@@ -1562,6 +1622,7 @@ object Store {
             }
         }
         writeDays(context, merged)
+        importerAjouts(context, root, LocalDate.now().plusDays(1))
 
         root.optJSONObject("settings")?.let { settings ->
             // Chaque valeur est ramenée dans ce que l'écran permet : un
@@ -1609,6 +1670,14 @@ object Store {
                 ?.let { setFond(context, Apparence.Fond.parse(it)) }
             settings.optString("apparence_accent").takeIf { it.isNotBlank() }
                 ?.let { setAccent(context, Apparence.Accent.parse(it)) }
+            Nusah.entries.firstOrNull { it.cle == settings.optString("siddur_nusah") }?.let { setSiddurNusah(context, it) }
+            if (settings.has("lecture_echelle")) {
+                setLectureEchelle(context, settings.optDouble("lecture_echelle", 1.0).toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))
+            }
+            PoliceHebraique.Police.entries.firstOrNull { it.cle == settings.optString("lecture_police") }?.let { setLecturePolice(context, it) }
+            LanguesTexte.Mode.entries.firstOrNull { it.cle == settings.optString("lecture_langues") }?.let { setLectureLangues(context, it.cle) }
+            if (settings.has("lecture_sombre")) setLectureSombre(context, settings.optBoolean("lecture_sombre"))
+            if (settings.has("lecture_masquee")) setLectureMasquee(context, settings.optBoolean("lecture_masquee"))
         }
         root.optJSONArray("paused_dates")?.let { array ->
             val dates = pausedDates(context).toMutableSet()

@@ -181,8 +181,15 @@ object SuiviVol {
         }
     }
 
-    /** Le fournisseur de l'édition : le relais s'il est configuré à la construction, sinon OpenSky anonyme. */
-    fun fournisseur(relais: String): FournisseurPosition = if (relais.startsWith("https://")) Relais(relais) else OpenSkyAnonyme
+    /**
+     * Le fournisseur de l'édition : le relais s'il est configuré à la construction ; sinon OpenSky
+     * anonyme si [directAutorise] (édition GitHub), sinon aucun (construction Play : pas de suivi en direct).
+     */
+    fun fournisseur(relais: String, directAutorise: Boolean = true): FournisseurPosition? = when {
+        relais.startsWith("https://") -> Relais(relais)
+        directAutorise -> OpenSkyAnonyme
+        else -> null
+    }
 
     /** Le relais OpenSky (tools/relais_vol), en HTTPS seulement ; à appeler hors du fil de l'interface. */
     class Relais(private val relais: String) : FournisseurPosition {

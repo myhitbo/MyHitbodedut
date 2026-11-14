@@ -30,7 +30,8 @@
     <string name="section_permissions">Autorisations nécessaires</string>
     <string name="section_permissions_hint">Ce que l’application demande, et pourquoi.</string>
     <string name="section_data">Mes données</string>
-    <string name="section_data_hint">Tout est stocké sur ce téléphone uniquement. Exportez de temps en temps.</string>
+    <string name="section_data_hint">Le journal et vos notes restent sur ce téléphone. Les réglages (dont le lieu des zmanim) peuvent être repris par la sauvegarde Android de votre compte Google, si elle est activée. Exportez de temps en temps.</string>
+    <string name="section_data_hint_web">Tout est gardé dans ce navigateur, sur cet appareil. Exportez de temps en temps.</string>
     <!-- Dédicace (04/11) : la demande part à l’équipe, par la messagerie de l’utilisateur. -->
     <string name="section_dedicace">Dédicace</string>
     <string name="section_dedicace_hint">Pour dédier votre hitbodedout ou votre étude, la demande passe par l’équipe MyHitbodedut. Elle s’écrit dans votre messagerie, adressée à myhitbodedut26@gmail.com : rien ne part sans vous.</string>
@@ -67,7 +68,7 @@
     <string name="gate_no_apps_title">Aucune application choisie</string>
     <string name="gate_no_apps_detail">Le mode n’a rien à retenir. Choisissez au moins une application.</string>
     <string name="gate_done_title">Journée validée</string>
-    <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui. Le mode reprendra demain.</string>
+    <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
     <string name="gate_exempt_title">Jour sans obligation</string>
     <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
@@ -203,8 +204,9 @@
     <string name="onboarding_start">Commencer</string>
     <string name="onboarding_practice">Parler, simplement</string>
     <string name="onboarding_practice_body">La hitbodedout, c’est se retirer seul un moment chaque jour et parler à Hachem dans sa propre langue, comme on parle à quelqu’un. Pas de formule à réciter, pas de niveau à atteindre.</string>
-    <string name="onboarding_private">Rien ne sort d’ici</string>
+    <string name="onboarding_private">Vos écrits restent ici</string>
     <string name="onboarding_private_body">L’application ne se connecte à Internet que si vous le demandez vous-même : le suivi d’un vol en direct demande à OpenSky Network les avions d’une zone approchée, sans envoyer l’indicatif du vol ; la recherche d’un numéro de vol envoie ce numéro seul à adsbdb.com. Ce que vous écrivez reste sur ce téléphone, et n’en sort que si vous l’exportez vous-même.</string>
+    <string name="onboarding_private_body_route">L’application ne se connecte à Internet que si vous le demandez vous-même : la recherche d’un numéro de vol envoie ce numéro seul à adsbdb.com. Ce que vous écrivez reste sur ce téléphone, et n’en sort que si vous l’exportez vous-même.</string>
     <string name="blocker_session_open_subtitle">Hitbodedout sans durée, depuis %1$s. Le téléphone peut attendre.</string>
     <string name="session_done_title">Vous avez parlé avec Hachem aujourd’hui</string>
     <string name="session_done_text">%1$s de hitbodedout. Touchez pour laisser une note.</string>
@@ -545,7 +547,7 @@
     <string name="music_remove_message_web">Le morceau est effacé de ce navigateur ; le fichier d’origine reste sur l’appareil.</string>
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">La série compte les jours de pratique d’affilée, et la semaine se lit d’un coup d’œil. Après chaque hitbodedout, une note peut rejoindre votre journal.</string>
-    <string name="onboarding_private_body_web">Ce que vous écrivez reste dans ce navigateur, sur cet appareil : rien n’est envoyé nulle part, sauf l’indicatif d’un vol et une position approchée si vous activez le suivi en direct.</string>
+    <string name="onboarding_private_body_web">Ce que vous écrivez reste dans ce navigateur, sur cet appareil. Rien n’est envoyé, sauf le numéro d’un vol à adsbdb.com si vous activez les services en ligne des zmanim en vol.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">Chargement des livres…</string>
     <string name="livres_echec_web">Les livres n’ont pas pu être chargés. Vérifiez la connexion, puis réessayez.</string>
@@ -1330,6 +1332,7 @@
     <string name="vol_direct_titre">Suivi en direct (Internet)</string>
     <string name="vol_direct_explication">Désactivé par défaut. Activé, il envoie au relais de l’application l’indicatif du vol et la position estimée de l’avion, rien d’autre ; le relais demande la position réelle à OpenSky Network. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_direct_activer">Services en ligne : route du vol et suivi en direct</string>
+    <string name="vol_route_activer">Services en ligne : route du vol</string>
     <string name="vol_indicatif">Indicatif radio (OACI), par exemple ELY1</string>
     <string name="vol_indicatif_invalide">Indicatif attendu : trois lettres puis le numéro, par exemple ELY1.</string>
     <string name="vol_direct_bouton">Position en direct</string>
@@ -1416,9 +1419,9 @@
 
     <!-- La divulgation avant les deux accès spéciaux de la barrière (31/10, Divulgation). -->
     <string name="divulgation_overlay_titre">Affichage par-dessus les autres applications</string>
-    <string name="divulgation_overlay_texte">Ce qui est utilisé : l’affichage d’un écran par-dessus les autres applications.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Quand vous ouvrez l’une des applications que vous avez sélectionnées, pendant la plage horaire que vous avez fixée, l’écran « Je suis avec Hachem » s’affiche devant elle, jusqu’à ce que la pratique du jour soit faite.\n\nRien n’est envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
+    <string name="divulgation_overlay_texte">Ce qui est utilisé : l’affichage d’un écran par-dessus les autres applications.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Quand vous ouvrez l’une des applications que vous avez sélectionnées, pendant la plage horaire que vous avez fixée, l’écran « Je suis avec Hachem » s’affiche devant elle, jusqu’à ce que la pratique du jour soit faite. Il s’affiche aussi devant ces applications pendant toute hitbodedout en cours, à n’importe quelle heure, jusqu’à ce qu’elle se termine.\n\nRien n’est envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
     <string name="divulgation_usage_titre">Accès aux données d’utilisation</string>
-    <string name="divulgation_usage_texte">Ce qui est lu : quelle application est affichée au premier plan. Seule la dernière ouverte est retenue, en mémoire ; aucun historique n’est gardé.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Pendant la plage horaire que vous avez fixée, et tant que la pratique du jour n’est pas faite, l’application vérifie si celle qui vient de s’ouvrir fait partie de celles que vous avez sélectionnées.\n\nRien n’est enregistré, envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
+    <string name="divulgation_usage_texte">Ce qui est lu : quelle application est affichée au premier plan. Seule la dernière ouverte est retenue, en mémoire ; aucun historique n’est gardé.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Pendant la plage horaire que vous avez fixée, et tant que la pratique du jour n’est pas faite, l’application vérifie si celle qui vient de s’ouvrir fait partie de celles que vous avez sélectionnées. Elle le vérifie aussi pendant toute hitbodedout en cours, à n’importe quelle heure.\n\nRien n’est enregistré, envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
     <string name="divulgation_continuer">Continuer</string>
     <string name="divulgation_pas_maintenant">Pas maintenant</string>
 
@@ -1427,6 +1430,7 @@
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
     <string name="vol_en_ligne_aide">Désactivés par défaut : rien ne quitte le téléphone. Activés, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée, et le suivi en direct interroge OpenSky Network.</string>
+    <string name="vol_en_ligne_aide_route">Désactivés par défaut : rien ne quitte le téléphone. Activés, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée.</string>
     <string name="vol_en_ligne_titre">Chercher la route en ligne ?</string>
     <string name="vol_en_ligne_oui">Activer et chercher</string>
     <string name="vol_rapide_titre">Décrivez votre vol</string>
@@ -1448,6 +1452,7 @@
     <!-- Les langues d’un texte à lire (04/11), LanguesTexte. -->
     <string name="lecture_langues">Langues du texte</string>
     <string name="lecture_sans_traduction">Ce texte n’a pas encore de traduction : il reste en hébreu.</string>
+    <string name="lecture_traduction_auto">Traduction automatique, non relue : l’hébreu fait foi.</string>
     <string name="langues_he">עברית</string>
     <string name="langues_fr">Français</string>
     <string name="langues_en">English</string>

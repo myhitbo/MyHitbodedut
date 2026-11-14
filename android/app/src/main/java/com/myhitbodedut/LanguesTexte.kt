@@ -51,6 +51,13 @@ object LanguesTexte {
         return tous.ifEmpty { listOf("he" to he) }
     }
 
+    /**
+     * Une traduction et ses balises (<b>, <small>, <br>) rendues, et non affichées en toutes lettres
+     * (audit du 12/11, FWEBLIVE-01, YALKUT-02, TLIVRES-01 : environ 1 775 paragraphes par langue).
+     */
+    fun riche(t: CharSequence): CharSequence =
+        if (t is String && '<' in t) android.text.Html.fromHtml(t, android.text.Html.FROM_HTML_MODE_LEGACY).trimEnd() else t
+
     /** Le mode veut une traduction que ce texte n'a pas. */
     fun manque(mode: Mode, aTraduction: Boolean): Boolean = !aTraduction && mode.langues.any { it != "he" }
 
@@ -60,7 +67,7 @@ object LanguesTexte {
      */
     fun vueTraduction(c: Context, texte: CharSequence, rendu: ReglagesLecture.Rendu, seule: Boolean, base: Float = 19f): TextView =
         TextView(c).apply {
-            text = texte
+            text = riche(texte)
             layoutDirection = View.LAYOUT_DIRECTION_LTR
             textDirection = View.TEXT_DIRECTION_LTR
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
@@ -76,7 +83,7 @@ object LanguesTexte {
      */
     fun vueMarquee(c: Context, texte: CharSequence, seule: Boolean, base: Float = 19f): TextView =
         ReglagesLecture.marquer(TextView(c).apply {
-            text = texte
+            text = riche(texte)
             layoutDirection = View.LAYOUT_DIRECTION_LTR
             textDirection = View.TEXT_DIRECTION_LTR
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START

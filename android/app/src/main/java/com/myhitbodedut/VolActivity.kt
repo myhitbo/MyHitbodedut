@@ -476,7 +476,7 @@ class VolActivity : AppCompatActivity() {
         if (Store.suiviDirect(this)) return chercherRoute()
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.vol_en_ligne_titre)
-            .setMessage(R.string.vol_en_ligne_aide)
+            .setMessage(aideEnLigne)
             .setPositiveButton(R.string.vol_en_ligne_oui) { _, _ ->
                 Store.setSuiviDirect(this, true)
                 chercherRoute()
@@ -964,7 +964,7 @@ class VolActivity : AppCompatActivity() {
     private fun ajouterSuiviDirect(carte: LinearLayout) {
         val actif = Store.suiviDirect(this)
         ajouterInterrupteurEnLigne(carte)
-        if (!actif) return
+        if (!actif || fournisseurDirect == null) return
         val champ = EditText(this).apply {
             hint = getString(R.string.vol_indicatif)
             setText(Store.volIndicatif(this@VolActivity))
@@ -992,12 +992,20 @@ class VolActivity : AppCompatActivity() {
     private fun ajouterInterrupteurEnLigne(carte: LinearLayout) {
         val actif = Store.suiviDirect(this)
         carte.addView(com.google.android.material.materialswitch.MaterialSwitch(this).apply {
-            text = getString(R.string.vol_direct_activer)
+            text = getString(if (fournisseurDirect != null) R.string.vol_direct_activer else R.string.vol_route_activer)
             isChecked = actif
             setOnCheckedChangeListener { _, v -> Store.setSuiviDirect(this@VolActivity, v); afficherFormulaire() }
         })
-        if (!actif) carte.addView(VueJour.texte(this, getString(R.string.vol_en_ligne_aide), 12f, R.color.muted, haut = 2))
+        if (!actif) carte.addView(VueJour.texte(this, getString(aideEnLigne), 12f, R.color.muted, haut = 2))
     }
+
+    /** Le suivi en direct de cette construction ; null : pas de suivi en direct (construction Play sans relais). */
+    private val fournisseurDirect: SuiviVol.FournisseurPosition? by lazy {
+        SuiviVol.fournisseur(BuildConfig.RELAIS_VOL, BuildConfig.OPENSKY_DIRECT)
+    }
+
+    /** Ce que disent les services en ligne : la route seule quand il n'y a pas de suivi en direct. */
+    private val aideEnLigne: Int get() = if (fournisseurDirect != null) R.string.vol_en_ligne_aide else R.string.vol_en_ligne_aide_route
 
     /** Le formulaire est affiché (et non son résumé) : il porte alors l'interrupteur des services en ligne. */
     private var formulaireOuvert = true
@@ -1075,7 +1083,7 @@ class VolActivity : AppCompatActivity() {
         val estime = Vol.position(plan, maintenant)
         directEnCours = true
         afficherResultats()
-        val fournisseur: SuiviVol.FournisseurPosition = SuiviVol.fournisseur(BuildConfig.RELAIS_VOL)
+        val fournisseur = fournisseurDirect ?: return
         Thread {
             val r = fournisseur.position(indicatif, estime)
             runOnUiThread {

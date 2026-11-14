@@ -124,20 +124,31 @@ anonyme. Les conditions d'utilisation d'OpenSky (vérifié, page citée) :
 Une application publiée sur Google Play est un produit en service : il faut
 l'accord écrit d'OpenSky.
 
-**Décision du 29/10 : fonction conservée.** Le propriétaire déclare avoir
-déjà reçu cet accord. Restent trois vérifications, à faire sur le texte de
-l'accord lui-même, qui n'est pas dans le dépôt :
+**Réponse d'OpenSky (courriel du 28/10, ticket 837455)**, consignée dans
+`tools/relais_vol/README.md` : usage gratuit et non commercial accordé, à
+quatre conditions :
 
-- [ ] l'accord couvre une **application mobile publique et gratuite**
-      distribuée sur Google Play, et pas seulement le site ou un usage de test ;
-- [ ] il autorise l'**accès anonyme** que fait `SuiviVol.kt`, ou bien il
-      impose un compte (identifiants d'API). Dans ce cas, ne pas mettre
-      d'identifiants dans l'APK, où n'importe qui les extrairait : passer par
-      le relais (`-PrelaisVol=https://…`, `tools/relais_vol`), qui les garde
-      côté serveur ;
-- [ ] il fixe une **attribution** : l'app affiche déjà « Données
-      aéronautiques : OpenSky Network » (`vol_source_opensky`), à aligner sur
-      le libellé exigé s'il y en a un.
+- [x] les données sont demandées **par le relais**, avec le client OAuth2 du
+      compte, **et non par chaque téléphone** : l'accès anonyme que fait
+      `SuiviVol.OpenSkyAnonyme` n'est **pas** couvert ;
+- [x] les appareils d'une même zone partagent une réponse en cache,
+      temporaire, sans archive (le relais : grille de 0,5°, 15 s) ;
+- [x] pas de revente, de redistribution ni d'API (le relais ne rend que
+      l'avion demandé) ;
+- [ ] l'**attribution** « Données aéronautiques : OpenSky Network
+      (opensky-network.org) » dans l'application (`vol_source_opensky`, fait)
+      **et sur la fiche du magasin** (description complète, § 7.1).
+
+**Décision appliquée le 12/11 (audit, TPLAYDOCS-01, FVOL-02).** La
+construction Play (`-Pplay=true`) n'interroge jamais OpenSky depuis le
+téléphone (`BuildConfig.OPENSKY_DIRECT = false`). `play.yml` passe la
+variable de dépôt `RELAIS_VOL` en `-PrelaisVol` : tant que le relais n'est pas
+en ligne, l'AAB n'a **pas de suivi en direct** (le bouton disparaît, la route
+adsbdb reste, et l'écran d'accueil ne nomme plus OpenSky). Le jour où le relais
+est en ligne, corriger `confidentialite.html` (l'indicatif part vers le relais :
+« il n'a pas de serveur pour cette application » devient faux), la phrase
+`onboarding_private_body` (« sans envoyer l'indicatif ») et les § 6.1 et 6.2,
+avant d'envoyer l'AAB.
 
 Conserver l'écrit hors dépôt, avec ceux des ayants droit (§ 3.2) : Google ou
 OpenSky peuvent le demander.
@@ -333,7 +344,7 @@ dans le site (vérifié : la page sort identique dans `web/dist`, et le service
 worker la garde hors connexion). URL à saisir dans la Play Console, une fois
 la branche fusionnée sur `main` et le site remis en ligne par `web.yml` :
 
-**https://hil123.github.io/myhitbodedut-web/confidentialite.html**
+**https://myhitbo.github.io/myhitbodedut-web/confidentialite.html**
 
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de
@@ -413,7 +424,7 @@ types :
 | --- | --- | --- | --- |
 | `SessionService` | `specialUse` | Compte à rebours d'une séance de méditation lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Oui : lancer une séance, verrouiller l'écran, montrer la notification |
 | `SessionService` | `mediaPlayback` | Lecture du morceau choisi par l'utilisateur pendant sa séance, écran éteint. | Même vidéo |
-| `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour. | Oui : choisir une app, ouvrir l'app, voir l'écran, valider |
+| `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour, et pendant toute séance qu'il a lancée, jusqu'à sa fin. | Oui : choisir une app, ouvrir l'app, voir l'écran, valider |
 
 Les textes reprennent mot pour mot les `PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE`
 des manifestes : la cohérence entre manifeste et déclaration compte. Vidéos :
@@ -471,8 +482,8 @@ l'application garde ses trois langues.
 | Champ | Limite | Proposition |
 | --- | --- | --- |
 | Titre | 30 caractères, **un par langue** | he : `MyHitbodedut – התבודדות` (23) · en : `MyHitbodedut – Hitbodedut` (25) *(tranché le 29/10)* |
-| Description courte | 80 caractères | en : à rédiger, avec « התבודדות » · he : à rédiger |
-| Description complète | 4 000 caractères | Plan : la pratique · la séance · la barrière du matin (avec l'argument de 6.7) · textes · zmanim et calendrier · widgets · vie privée (aucune donnée ne sort) · crédits et licences |
+| Description courte | 80 caractères | **Rédigée le 12/11** : `play/fiche/en-US/short_description.txt` (77, avec « התבודדות ») · `play/fiche/iw-IL/short_description.txt` (75) |
+| Description complète | 4 000 caractères | **Rédigée le 12/11** : `play/fiche/<langue>/full_description.txt` (en : 2 110, he : 1 650). La pratique · la séance · le journal · la barrière du matin (argument de 6.7) · textes (avec « traduction automatique, non relue : l'hébreu fait foi ») · zmanim et calendrier · widgets · vie privée. Le jour où le suivi en direct passe par le relais : ajouter « Données aéronautiques : OpenSky Network (opensky-network.org) » (§ 3.1) |
 
 **Recherche en hébreu.** Play affiche la fiche dans la langue du téléphone
 et indexe titre, description courte et description longue ; une traduction
@@ -491,7 +502,7 @@ répétés, mots-clés empilés. *Vérifié (bonnes pratiques Play).*
 | Élément | Spécification | Source dans le dépôt |
 | --- | --- | --- |
 | Icône | 512 × 512, PNG 32 bits avec alpha, ≤ 1 Mo | **Prête** : `play/icone-512.png` (313 Ko), à envoyer telle quelle. Original en 1024 × 1024 : `play/icone-1024.png`. Même personnage que l'icône de l'appli, en plein cadre ; Google arrondit lui-même les coins |
-| Image de présentation | 1024 × 500, JPEG ou PNG 24 bits sans alpha | À créer : personnage + היכל הציון (`scene_ouverture_tombe.webp`) |
+| Image de présentation | 1024 × 500, JPEG ou PNG 24 bits sans alpha | **Faite le 12/11** : `play/fiche/<langue>/images/featureGraphic.png` (RGB, sans alpha) : personnage + היכל הציון (`scene_ouverture_tombe.webp`) |
 | Captures téléphone | 2 minimum, 8 maximum, 320–3 840 px, 16:9 ou 9:16 | `captures-calendrier/`, à compléter : accueil, séance, barrière, siddour, zmanim, widgets |
 | Captures tablette 7" et 10" | recommandées (l'app gère les grands écrans) | À produire |
 | Vidéo | facultative, YouTube | Peut réutiliser la vidéo de 6.6 |

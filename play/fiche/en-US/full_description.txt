@@ -1,0 +1,29 @@
+MyHitbodedut accompanies a daily practice of hitbodedut (התבודדות, also spelled hisbodedus): speaking to God alone, in your own words, every day, as Rabbi Nachman of Breslov taught.
+
+THE SESSION
+• A timer that keeps running while the phone is put down. You choose the length (60 minutes by default).
+• Guided hitbodedut, music or silence, and "Do not disturb" during the session if you wish.
+• The day counts by the time actually spent, not by a checkbox.
+
+THE JOURNAL
+• A free note, topics, your mood before and after, one gratitude and one thing to work on.
+• Your streak, the minutes of the month and trophies.
+• Export and import of a JSON file: your backup, in your hands.
+
+THE MORNING GATE (optional)
+A gate you install on your own phone, against your own habits, that you can turn off at any moment. During a morning window you choose (6:00–11:00 by default), opening an app you picked shows a full screen: "Did you do your hitbodedut?" Start now, say it is done, or snooze for a few minutes. Once the day is done, the gate stays silent until the next morning, and it pauses on Shabbat and festivals. Usage access and display over other apps serve only this, on the phone: nothing is sent anywhere.
+
+TEXTS
+• Siddur in three nuschaot (Edot HaMizrach, Sefard, Ashkenaz), with the additions of the day highlighted.
+• Tehillim, Tikkun HaKlali, Likutei Moharan, Likutei Etzot, Sefer HaMidot, Hishtapchut HaNefesh, Tefillah LeShlomo and more, with a text of chizuk every day.
+• Many texts show English and French next to the Hebrew. These translations are machine translations, not yet reviewed by a person: the Hebrew is authoritative.
+
+ZMANIM AND CALENDAR
+• The times of the day for 51 cities or your approximate location, candle lighting and the end of Shabbat, the Hebrew calendar, the Omer count and Kiddush Levana.
+• Zmanim in flight, along your route.
+• Home-screen widgets.
+
+PRIVACY
+No account, no ads, no tracking. What you write stays on your phone. The app connects to the Internet only if you turn on online services yourself, to look up a flight's route.
+
+Interface in English, Hebrew and French.

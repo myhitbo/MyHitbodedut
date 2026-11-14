@@ -122,6 +122,15 @@ test('prochaine : la règle de ZmanimWidget, mêmes cas que DixAmeliorationsTest
   assert.deepEqual(Vol.prochaine(horaires, t(23, 50)), ['arvit', null]);
 });
 
+test('au nord de 50° l’été, sans aube à 16,1° : pas de Cha’harit l’après-midi ni la nuit (FVOL-01)', () => {
+  const c = Vol.calculer(plan('LHR', 'TLV', '2027-06-20T16:00', '2027-06-20T23:00'));
+  assert.equal(Vol.priere(c, new Date('2027-06-20T16:00:00Z'))[0], 'minha');
+  assert.equal(Vol.priere(c, new Date('2027-06-20T21:00:00Z'))[0], 'arvit');
+  assert.equal(Vol.priere(c, new Date('2027-06-20T23:00:00Z'))[0], 'arvit');
+  const nuit = Vol.calculer(plan('LHR', 'TLV', '2027-07-08T22:30', '2027-07-09T05:30'));
+  assert.equal(Vol.priere(nuit, new Date('2027-07-09T00:30:00Z'))[0], 'arvit');
+});
+
 test('un vol court sans zman ; la ligne de date ; une route polaire', () => {
   const court = Vol.calculer(plan('TLV', 'ETM', '2026-11-10T09:50', '2026-11-10T10:40'));
   assert.equal(Vol.enVol(court).length, 0);
@@ -173,6 +182,12 @@ test('Melbourne – Los Angeles – Montréal, Sydney – Queenstown, Tel Aviv �
   assert.equal(Vol.calculer(plan('TLV', 'EZE', '2026-11-10T23:00', '2026-11-11T09:20')).lignesDate.length, 0);
 });
 
+
+test('fête un vendredi en vol : Chabbat entre à la chki\'a, allumage avant elle (FCALENDRIER-01)', () => {
+  const j = Vol.jalons(Vol.calculer(plan('CDG', 'TLV', '2027-06-11T15:00', '2027-06-11T21:00')), false, 18);
+  assert.deepEqual(j.map((x) => [x.type, x.date, x.chabbat]), [['entree', '2027-06-12', true]]);
+  assert.equal(+j[0].instant - +j[0].allumage, 18 * MIN);
+});
 
 test('un relevé GPS en vol recale la route ; hors du vol, il est ignoré', () => {
   const releve = { latitude: 56, longitude: -30, instant: new Date('2026-11-10T18:30:00Z') };

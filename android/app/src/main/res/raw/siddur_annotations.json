@@ -228,6 +228,16 @@
    {
     "sorte": "bloc",
     "s": 9,
+    "si": "jeune",
+    "b": 15,
+    "empreinte": "ברוך אתה יהוה העונה לעמו ישראל בעת צרה:",
+    "libelle": "ajout_anenou_officiant",
+    "g": 6,
+    "racine": "jeune"
+   },
+   {
+    "sorte": "bloc",
+    "s": 9,
     "si": "berakha",
     "b": 17,
     "empreinte": "בקיץ:",
@@ -1585,6 +1595,16 @@
    {
     "sorte": "bloc",
     "s": 1,
+    "si": "jeune",
+    "b": 14,
+    "empreinte": "ברוך אתה יהוה העונה לעמו ישראל בעת צרה:",
+    "libelle": "ajout_anenou_officiant",
+    "g": 2,
+    "racine": "jeune"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
     "si": "berakha",
     "b": 16,
     "empreinte": "בקיץ:",
@@ -1633,6 +1653,15 @@
     "si": "ticha_beav",
     "b": 25,
     "empreinte": "בתשעה באב אומרים: נחם יהוה אלהינו את אבל",
+    "g": 5,
+    "racine": "ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "ticha_beav",
+    "b": 26,
+    "empreinte": "ברוך אתה יהוה, מנחם ציון בבנין ירושלים: ",
     "g": 5,
     "racine": "ticha_beav"
    },
@@ -3477,15 +3506,6 @@
     "si": "hanouka",
     "b": 18,
     "empreinte": "בימי מתתיה בןיוחנן כהן גדול. חשמונאי ובנ",
-    "g": 2,
-    "racine": "hanouka"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "hanouka",
-    "b": 19,
-    "empreinte": "ועל כלם יתברך, ויתרומם, ויתנשא, תמיד, שמ",
     "g": 2,
     "racine": "hanouka"
    },
@@ -14071,33 +14091,6 @@
     "si": "hanouka",
     "b": 10,
     "empreinte": "ואחר כן באו בניך לדביר ביתך. ופנו את היכ",
-    "g": 4,
-    "racine": "hanouka"
-   },
-   {
-    "sorte": "bloc",
-    "s": 5,
-    "si": "hanouka",
-    "b": 11,
-    "empreinte": "ועל כלם יתברך ויתרומם שמך מלכנו תמיד לעו",
-    "g": 4,
-    "racine": "hanouka"
-   },
-   {
-    "sorte": "bloc",
-    "s": 5,
-    "si": "hanouka",
-    "b": 12,
-    "empreinte": "וכל החיים יודוך סלה. ויהללו את שמך באמת ",
-    "g": 4,
-    "racine": "hanouka"
-   },
-   {
-    "sorte": "bloc",
-    "s": 5,
-    "si": "hanouka",
-    "b": 13,
-    "empreinte": "ברוך אתה יהוה. הטוב שמך ולך נאה להודות:",
     "g": 4,
     "racine": "hanouka"
    },
