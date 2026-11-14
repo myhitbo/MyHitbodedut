@@ -359,12 +359,13 @@ def lit_chaines(xml):
     return {"chaines": chaines, "pluriels": pluriels, "tableaux": tableaux, "fixes": fixes}
 
 
-FORMAT = re.compile(r"%(\d+\$)?([sd])")
+# Position, puis largeur éventuelle (« %2$02d », des minutes sur deux chiffres), puis le type.
+FORMAT = re.compile(r"%(\d+\$)?(0?\d*)([sd])")
 
 
 def format_ios(valeur):
-    """%1$s → %1$@, %d → %lld ; %% reste tel quel."""
-    return FORMAT.sub(lambda m: "%" + (m.group(1) or "") + ("@" if m.group(2) == "s" else "lld"), valeur)
+    """%1$s → %1$@, %d → %lld, %2$02d → %2$02lld ; %% reste tel quel."""
+    return FORMAT.sub(lambda m: "%" + (m.group(1) or "") + m.group(2) + ("@" if m.group(3) == "s" else "lld"), valeur)
 
 
 def marqueurs(valeur):
