@@ -901,6 +901,119 @@ def main():
                 sh(f"settings put global {k} 0")
     etape("26 fluidité des passages", s26)
 
+    # 27 (13/11) : les captures brutes de la fiche Google Play, en anglais et en hebreu,
+    # prises sur l'application elle-meme et non sur le site (audit du 12/11, TPLAYDOCS-06).
+    # tools/visuels_play.mjs les compose ensuite avec les legendes de
+    # play/visuels/legendes.json. Huit ecrans par langue : play-<langue>-<cle>.png.
+    def s27():
+        import datetime
+        import json as _json
+
+        def sans_points(t):
+            return re.sub(r"[֑-ׇ]", "", t)
+
+        def nom_en_toutes_lettres():
+            # Pas de Tetragramme sur une image de fiche (demande du proprietaire, 04/11).
+            try:
+                return "יהוה" in sans_points(ecran_texte(dump()))
+            except Exception:
+                return False
+
+        def journal_de_demonstration():
+            # Quelques jours faits avant aujourd'hui : l'accueil et le journal montrent une
+            # pratique en cours, pas un compteur a zero. Application arretee.
+            jour = sh("date +%Y-%m-%d").strip()
+            try:
+                auj = datetime.date.fromisoformat(jour)
+            except ValueError:
+                auj = datetime.date.today()
+            jours = {(auj - datetime.timedelta(days=d)).isoformat(): {"minutes": m}
+                     for d, m in ((1, 20), (2, 15), (3, 30), (5, 15), (6, 20))}
+            brut = _json.dumps(jours).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
+            xml = ("<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<map>\n"
+                   f"    <string name=\"days\">{brut}</string>\n</map>\n")
+            adb("shell", f"run-as {PKG} sh -c 'cat > shared_prefs/myhitbodedut-journal.xml'", input=xml.encode("utf-8"))
+
+        presentes = [l.split(":", 1)[1].strip() for l in sh("pm list packages").splitlines() if ":" in l]
+        voulues = [a for a in ("com.android.chrome", "com.google.android.youtube", "com.google.android.apps.messaging",
+                               "com.google.android.gm", "com.google.android.apps.photos", "com.google.android.apps.maps")
+                   if a in presentes][:3] or ["com.android.settings"]
+        for op in ("SYSTEM_ALERT_WINDOW", "GET_USAGE_STATS"):
+            sh(f"appops set {PKG} {op} allow")
+
+        for code in ("en", "he"):
+            log(f"  --- fiche Play, {code}")
+            # Une seance laissee en cours par une etape precedente fausserait l'accueil.
+            if activite("SessionActivity") and toucher(rid="session_secondary", defilements=2, attente=1.0):
+                toucher(rid="button1", attente=1.5)
+            regler({"onboarded_version": ("int", 2), "langue_app": ("string", code),
+                    "enabled": ("boolean", "true"), "window_start": ("int", 360), "window_end": ("int", 660),
+                    "snooze_minutes": ("int", 15), "apparence_accent": ("string", "vert"),
+                    "lecture_sombre": ("boolean", "false")})
+            xml = re.sub(r'\s*<set name="blocked_apps">.*?</set>|\s*<set name="blocked_apps"\s*/>', "", lire_prefs(), flags=re.S)
+            ensemble = '    <set name="blocked_apps">' + "".join(f"<string>{a}</string>" for a in voulues) + "</set>"
+            ecrire_prefs(xml.replace("</map>", ensemble + "\n</map>"))
+            journal_de_demonstration()
+            langue(code)
+
+            lancer(attente=6)
+            defiler(False)
+            capture(f"play-{code}-accueil", attente=2.0)
+
+            ok = toucher(rid="nav_texts", attente=2.0)
+            defiler(False)
+            capture(f"play-{code}-textes", ok=ok)
+
+            ok = toucher(rid="nav_journal", attente=2.0)
+            capture(f"play-{code}-journal", ok=ok)
+
+            # L'ecran « Je suis avec Hachem », par son apercu des Reglages : sans effet, a toute heure.
+            ok = toucher(rid="nav_settings", attente=2.0)
+            ok = ok and trouver(rid="preview_gate", defilements=14) is not None
+            if not ok:
+                for _ in range(6):
+                    defiler(False)
+                    if trouver(rid="preview_gate") is not None:
+                        ok = True
+                        break
+            vu = False
+            for essai in range(8):
+                if not (ok and toucher(rid="preview_gate", attente=3.0) and trouver(rid="blocker_title") is not None):
+                    break
+                if not nom_en_toutes_lettres():
+                    vu = True
+                    break
+                log("  le Nom en toutes lettres dans la citation : autre tirage")
+                retour()
+                pause(1.0)
+            capture(f"play-{code}-barriere", ok=vu)
+            retour()
+
+            ok = activite("SiddurLectureActivity", "--es id chaharit")
+            capture(f"play-{code}-siddour", ok=ok, attente=3.0)
+            retour()
+
+            ok = activite("ZmanimActivity")
+            capture(f"play-{code}-zmanim", ok=ok, attente=3.0)
+            retour()
+
+            ok = activite("BoussoleActivity")
+            capture(f"play-{code}-boussole", ok=ok, attente=4.0)
+            retour()
+
+            # La seance en cours, saisie avant que la pratique calme n'efface l'ecran.
+            ok = activite("SessionActivity", "--ez start_now true")
+            capture(f"play-{code}-seance", ok=ok, attente=1.5)
+            sh("input tap 540 300")
+            if toucher(rid="session_secondary", attente=1.0):
+                toucher(rid="button1", attente=1.5)
+            retour()
+            arreter()
+
+        regler({"enabled": ("boolean", "false"), "langue_app": ("string", "fr")})
+        langue("fr")
+    etape("27 visuels Play", s27)
+
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
 
