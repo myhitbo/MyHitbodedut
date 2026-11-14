@@ -11,6 +11,20 @@
 > sans le téléphone ». Restent propres à Android : rappels et notifications, barrière du matin,
 > vignettes, humeur et gratitude dans la note, hitbodedout guidée, ajout de sa propre musique.
 
+> **Mise à jour du 13/11/2026 : refonte de la navigation.** Le plan ci-dessous décrit l'ancien
+> découpage en cinq onglets. Depuis la refonte, sur Android comme sur le web :
+>
+> - **trois lieux** en onglets : « Le Jour » (l'ancien « Aujourd'hui »), « Les Livres » (l'ancien
+>   « Textes », rangé en trois rayons de couvertures : Prier, Étudier, Se renforcer) et
+>   « Le Chemin » (série, meilleure série, total, minutes du mois, puis Journal, « Mon parcours »,
+>   trophées et paliers) ;
+> - **la barre de départ**, visible dans les trois lieux : « Sortir au champ · … » commence la
+>   séance, sa flèche ouvre le volet « Votre hitbodedout » (durée, sujet, musique ; sur Android
+>   aussi la concentration et les rappels) ;
+> - **Zmanim et Réglages** ne sont plus des onglets : la date hébraïque et la roue, en tête du Jour ;
+> - **la fin de séance tient sur l'écran du bravo** : l'humeur d'une touche, puis la gratitude,
+>   la chose à travailler et la note ; « Enregistrer » ou le retour inscrivent ce qui a changé.
+
 Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus dans les fichiers `strings.xml` d'Android (fr, en, he) et n'ont pas été retraduits. Le texte qui les relie est une rédaction, pas une traduction vérifiée : en hébreu, il reste à faire relire.
 
 - ✅ : construit et testé (tests Node, WebKit, Chromium, Safari sur Mac).

@@ -14,6 +14,23 @@ sont des décisions, pas des oublis.
 
 ---
 
+## Refonte de la navigation (13/11/2026)
+
+Demandée le 12/11 : « redesigner l'app en proposant des changements d'emplacement, de
+présentation et de plan ». Cinq étapes proposées ; les deux premières sont construites, sur
+Android et sur le web.
+
+1. **Fait** — trois lieux (Le Jour, Les Livres, Le Chemin), la barre de départ et son volet,
+   le rayonnage des Livres, Zmanim et Réglages en tête du Jour.
+2. **Fait** — la fin de séance sur un seul écran : bravo, humeur, gratitude, chose à
+   travailler, note.
+3. **Reste** — le fond du Jour selon l'heure, la semaine en lanternes.
+4. **Reste** — Le Chemin en sentier par mois hébraïque (aujourd'hui : chiffres, mois en
+   barres, et trois entrées).
+5. **Reste** — la séance sans chiffres (soleil ou bougie), le 'hizouk en tiroir.
+
+Maquettes : https://claude.ai/artifact/BnDFEae2dfup4mo4zj89Wu
+
 ## La clé de voûte : un thème de séance
 
 **Trois des propositions retenues — 2, 5 et 6 — reposent sur la même

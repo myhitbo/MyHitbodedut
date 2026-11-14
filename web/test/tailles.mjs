@@ -71,13 +71,14 @@ const finDeSeance = async (p) => {
 // nom, écran d'arrivée (#…), actions, onglets attendus, réglages et journal
 // propres, et le bouton principal qui doit se voir sans faire défiler.
 const ECRANS = [
-  { nom: 'accueil', onglets: true, bouton: '.accueil .principal' },
-  { nom: 'accueil-prenom', onglets: true, bouton: '.accueil .principal', prefs: { first_name: 'Hillel' } },
-  { nom: 'accueil-faite', onglets: true, bouton: '.accueil .principal', journal: { '2026-09-29': { minutes: 30, note: '' } } },
-  { nom: 'accueil-en-cours', ecran: 'seance', onglets: true, bouton: '.accueil .principal',
+  { nom: 'accueil', onglets: true, bouton: '.depart .principal' },
+  { nom: 'accueil-prenom', onglets: true, bouton: '.depart .principal', prefs: { first_name: 'Hillel' } },
+  { nom: 'accueil-faite', onglets: true, bouton: '.depart .principal', journal: { '2026-09-29': { minutes: 30, note: '' } } },
+  { nom: 'accueil-en-cours', ecran: 'seance', onglets: true, bouton: '.depart .principal',
     actions: async (p) => { await p.click('.duree'); await p.click('.retour'); await p.waitForSelector('.accueil'); } },
-  { nom: 'accueil-feuille', onglets: true, actions: clic('.pastille') },
+  { nom: 'accueil-feuille', onglets: true, actions: clic('.depart-regler') },
   { nom: 'textes', onglets: true, actions: clic('[data-onglet="textes"]') },
+  { nom: 'chemin', onglets: true, bouton: '.depart .principal', actions: clic('[data-onglet="chemin"]') },
   { nom: 'musique', ecran: 'musique' },
   { nom: 'reglages', ecran: 'reglages' },
   { nom: 'seance', ecran: 'seance', bouton: '.seance .principal', petitAussi: true },

@@ -521,17 +521,17 @@ function panneauAujourdhui() {
   const etat = store.anneaux();
   const nomJour = new Intl.DateTimeFormat(tr.langue, { weekday: 'short', timeZone: 'UTC' });
 
-  const bouton = store.isSessionRunning() ? tr.t('action_back_to_session')
-    : fait ? tr.t('action_another_session')
-      : tr.t('action_start_session', tr.duree(store.targetMinutes()));
-
-  const sujet = store.sessionTheme();
-  const morceau = store.musicEnabled() ? morceauChoisi() : null;
+  // En tête du Jour (13/11) : la date hébraïque ouvre le ciel (zmanim, calendrier, hilloulot,
+  // boussole), la roue les réglages. Les deux étaient des onglets.
+  const dateHebraique = jourJuif(isoLocal(new Date()), store.inIsrael(), mukafChoma()).dateHebraique;
 
   // Trois blocs : en-tête, anneaux, actions. Ils s'empilent ; sur un
   // téléphone couché, les anneaux passent à côté (app.css, « Téléphone couché »).
   return h('div', { class: 'contenu accueil' }, h('div', { class: 'accueil-tete' },
-    h('div', { class: 'marque' }, tr.t('app_name')),
+    h('div', { class: 'jour-entete' },
+      h('button', { type: 'button', class: 'puce-ciel', 'aria-label': tr.t('jour_ciel', dateHebraique), onclick: () => ouvrir('zmanim') },
+        h('span', { class: 'icone-ciel', 'aria-hidden': 'true' }), h('span', { lang: 'he', dir: 'rtl' }, dateHebraique), h('span', { class: 'chevron', 'aria-hidden': 'true' })),
+      h('button', { type: 'button', class: 'roue-reglages', 'aria-label': tr.t('settings_title'), onclick: () => ouvrir('reglages') })),
     prenom ? h('div', { class: 'salut' }, tr.t(Salutation.cle(new Date().getHours()), prenom)) : null,
     // Sans prénom, l'état du jour prend la place du titre.
     // Comme Android : en cours, faite, jour sans obligation, ou pas encore faite.
@@ -557,14 +557,8 @@ function panneauAujourdhui() {
     h('div', { class: `jauge-legende${anneauEnAvant ? ` legende-${anneauEnAvant}` : ''}` }, legendeAnneaux(etat, progression)),
     lignePaliers()),
 
-    h('div', { class: 'accueil-actions' }, h('button', { class: 'principal', onclick: () => ouvrir('seance') }, bouton),
-
-    h('div', { class: 'pastilles' },
-      pastille(tr.t('start_duration'), tr.duree(store.targetMinutes()), () => choisirDuree((m) => {
-        store.setTargetMinutes(m); rendre();
-      })),
-      pastille(tr.t('start_theme'), sujet ? tr.t(`theme_${sujet}`) : tr.t('session_theme_none_short'), choisirSujet),
-      pastille(tr.t('start_music'), morceau ? (store.musicShuffle() ? tr.t('music_shuffle_short') : titreMorceau(morceau)) : tr.t('start_music_off'), () => ouvrir('musique'))),
+    // « Commencer » et ses pastilles ont rejoint la barre de départ et son volet (13/11).
+    h('div', { class: 'accueil-actions' },
 
     h('div', { class: 'semaine' }, semaine.map((j) => {
       const repos = j.shabbat && j.exempt;
@@ -594,12 +588,62 @@ function panneauAujourdhui() {
     (!fait || hierOuvert()) && !store.isSessionRunning()
       ? h('button', { class: 'texte-bouton', onclick: declarerHorsTelephone }, tr.t('action_done_offline')) : null,
     // L'accueil selon l'heure (14/10) : la prière du moment, Birkat haLevana les soirs de la fenêtre.
-    ...momentAccueil(),
-    // Les trophées et les paliers, en bas de la page (11/10).
-    // Les trophées et « Mon parcours », côte à côte (19/10).
-    h('div', { class: 'boutons-bas' },
-      h('button', { class: 'bouton-trophees', onclick: () => ouvrir('paliers') }, tr.t('trophees_paliers')),
-      h('button', { class: 'bouton-trophees', onclick: () => ouvrir('parcours') }, tr.t('parcours_title')))));
+    // Les trophées et « Mon parcours » sont dans Le Chemin (13/11).
+    ...momentAccueil()));
+}
+
+/**
+ * La barre de départ (13/11) : visible dans les trois lieux, au-dessus des onglets. Le bouton
+ * ouvre la séance ; la flèche, le volet de ses réglages (MainActivity.montrerVolet).
+ */
+function barreDepart() {
+  const fait = store.record()?.faite === true;
+  const libelle = store.isSessionRunning() ? tr.t('action_back_to_session')
+    : fait ? tr.t('action_another_session')
+      : tr.t('action_start_session', tr.duree(store.targetMinutes()));
+  return h('div', { class: 'depart' },
+    h('button', { class: 'principal', onclick: () => ouvrir('seance') }, libelle),
+    h('button', { type: 'button', class: 'depart-regler', 'aria-label': tr.t('depart_regler'), 'aria-haspopup': 'dialog', onclick: voletDepart }));
+}
+
+/** Le volet de la séance : ce avec quoi on y entre — la durée, le sujet, la musique. Rien n'y est obligatoire. */
+function voletDepart() {
+  const sujet = store.sessionTheme();
+  feuille(tr.t('depart_titre'), (f, fermer) => {
+    f.classList.add('volet-depart');
+    f.append(
+      ligne({ nom: tr.t('start_duration'), etat: tr.duree(store.targetMinutes()),
+        onclick: () => { fermer(); choisirDuree((m) => { store.setTargetMinutes(m); rendre(); }); } }),
+      ligne({ nom: tr.t('start_theme'), etat: sujet ? tr.t(`theme_${sujet}`) : tr.t('session_theme_none_short'),
+        onclick: () => { fermer(); choisirSujet(); } }),
+      ligne({ nom: tr.t('music_title'), etat: etatMusique(), onclick: () => { fermer(); ouvrir('musique'); } }));
+  });
+}
+
+/**
+ * Le Chemin (13/11) : ce qui a été fait. La série, la meilleure, le total ; les minutes du
+ * mois en barres ; puis le journal, le parcours et les trophées (MainActivity.renderChemin).
+ */
+function panneauChemin() {
+  const faites = store.joursFaits().size;
+  const total = tr.duree(store.totalMinutes());
+  const chiffre = (valeur, legende) => h('div', { class: 'chemin-chiffre' },
+    h('div', { class: 'chemin-valeur' }, String(valeur)), h('div', { class: 'chemin-legende' }, tr.t(legende)));
+  const p = pratique();
+  const prochain = Trophees.prochain(p);
+  const nomMois = new Intl.DateTimeFormat(tr.langue, { month: 'long', year: 'numeric' }).format(new Date());
+  return h('div', { class: 'contenu chemin' },
+    h('h1', { class: 'titre-ecran' }, tr.t('nav_chemin')),
+    h('div', { class: 'carte carte-chemin' },
+      h('div', { class: 'chemin-chiffres' },
+        chiffre(store.streak(), 'chemin_stat_serie'), chiffre(store.meilleureSerie(), 'chemin_stat_meilleure'), chiffre(total, 'chemin_stat_total')),
+      h('p', { class: 'chemin-mois' }, nomMois.charAt(0).toLocaleUpperCase(tr.langue) + nomMois.slice(1)),
+      graphiqueDuMois().graphique),
+    h('div', { class: 'carte' },
+      ligne({ nom: tr.t('nav_journal'), etat: tr.p('journal_summary', faites, faites, total), onclick: () => ouvrir('journal') }),
+      ligne({ nom: tr.t('parcours_title'), etat: tr.t('chemin_parcours_hint'), onclick: () => ouvrir('parcours') }),
+      ligne({ nom: tr.t('chemin_trophees'), onclick: () => ouvrir('paliers'),
+        etat: prochain ? tr.t('accueil_prochain_trophee', descTrophee(prochain), prochain.seuil - Math.min(Trophees.valeur(p, prochain.f.cle), prochain.seuil)) : tr.t('trophees_tous') })));
 }
 
 /**
@@ -746,11 +790,6 @@ function momentAccueil() {
         h('button', { class: 'secondaire', onclick: () => { entreeBiblio = p.source.id; ouvrir('source'); } }, tr.t('source_du_jour_lire')))));
   }
   return cartes.length ? [h('div', { class: 'accueil-moment' }, ...cartes)] : [];
-}
-
-function pastille(libelle, valeur, onclick) {
-  return h('button', { class: 'pastille', onclick },
-    h('span', { class: 'libelle' }, libelle), h('span', { class: 'valeur' }, valeur));
 }
 
 function ligne({ nom, etat, onclick, aVenir = false, fin = null, class: classe = '' }) {
@@ -2266,45 +2305,55 @@ function ecranJournal() {
     h('div', { class: 'defile' }, h('div', { class: 'contenu' }, contenu)));
 }
 
+/**
+ * Les Livres (13/11) : trois rayons classés par geste — prier, étudier, se renforcer — au lieu
+ * d'une liste. Chaque couverture porte le titre du livre en hébreu, et son nom dans la langue
+ * de l'application en pied (sauf en hébreu, où ce serait deux fois le même mot).
+ */
+function couverture(couleur, he, nom, onclick) {
+  return h('button', { type: 'button', class: `couverture couv-${couleur}`, 'aria-label': nom, onclick },
+    h('span', { class: 'couv-titre', lang: 'he', dir: 'rtl', 'aria-hidden': 'true' }, tr.t(he)),
+    tr.langue === 'he' ? null : h('span', { class: 'couv-nom', 'aria-hidden': 'true' }, nom));
+}
+function rayon(titre, livres, etats = []) {
+  return [h('h2', { class: 'rayon-titre' }, tr.t(titre)),
+    h('div', { class: 'rayon' }, livres),
+    h('div', { class: 'etagere', 'aria-hidden': 'true' }),
+    ...etats.filter(Boolean).map((e) => h('p', { class: 'rayon-etat' }, e))];
+}
 function panneauTextes() {
-  return h('div', { class: 'contenu' },
+  const iso = isoLocal(new Date());
+  return h('div', { class: 'contenu rayonnage' },
     h('h1', { class: 'titre-ecran' }, tr.t('nav_texts')),
     // La recherche dans toute l'application (14/10), puis la reprise et les favoris.
     h('button', { class: 'secondaire bouton-recherche', onclick: () => { texteRecherche = ''; ouvrir('recherche'); } }, tr.t('recherche_indice')),
     repriseFavoris(),
-    h('div', { class: 'carte' },
-      ligne({ nom: tr.t('siddur_title'), etat: tr.t('siddur_hint'), onclick: () => ouvrir('siddur') }),
-      // Tehilim est le premier texte lisible sur le web (04/10).
-      ligne({ nom: tr.t('tehilim_title'), etat: tr.t('tehilim_today', libellePortion(portionDuMois().portion)), onclick: () => ouvrir('tehilim') }),
-      // Le Tikoun, lu d'un trait (04/10).
-      ligne({ nom: tr.t('tikkun_title'), etat: etatTikkun(), onclick: () => ouvrir('tikkun') }),
-      // Les textes arrivent à l'étape 4.
-      ligne({ nom: tr.t('tefilot_title'), etat: tr.t('tefilot_hint'), onclick: () => ouvrir('tefilot') }),
-      // Les livres entiers (13/10), puis les sources de la hitbodedout.
-      ligne({ nom: tr.t('livres_title'), etat: tr.t('livres_hint'), onclick: () => ouvrir('livres') }),
-      ligne({ nom: tr.t('library_title'), etat: tr.t('library_hint'), onclick: () => ouvrir('bibliotheque') }),
-      ligne({ nom: tr.t('chizuk_demande_title'), etat: tr.t('chizuk_demande_hint'), onclick: () => { hizouk = null; ouvrir('hizouk'); } }),
-      ligne({ nom: tr.t('tips_title'), etat: tr.t('tips_hint'), onclick: () => ouvrir('conseils') })),
-    h('h2', { class: 'section' }, tr.t('section_around')),
-    h('div', { class: 'carte' },
-      ligne({ nom: tr.t('music_title'), etat: etatMusique(), onclick: () => ouvrir('musique') }),
-      ligne({ nom: tr.t('settings_title'), onclick: () => ouvrir('reglages') })));
+    ...rayon('rayon_prier', [
+      couverture('vert', 'couv_siddur', tr.t('siddur_title'), () => ouvrir('siddur')),
+      couverture('bleu', 'couv_tehilim', tr.t('tehilim_title'), () => ouvrir('tehilim')),
+      couverture('clair', 'couv_tikkun', tr.t('tikkun_title'), () => ouvrir('tikkun')),
+      couverture('violet', 'couv_tefilot', tr.t('tefilot_title'), () => ouvrir('tefilot')),
+    ], [etatTikkun(), tr.t('tehilim_today', libellePortion(portionDuMois().portion))]),
+    ...rayon('rayon_etudier', [
+      couverture('brun', 'couv_sources', tr.t('library_title'), () => ouvrir('bibliotheque')),
+      couverture('parchemin', 'couv_livres', tr.t('livres_title'), () => ouvrir('livres')),
+      couverture('petrole', 'couv_halakha', tr.t('halakha_title'), () => { jourHalakha = iso; rechercheHalakhaTexte = ''; ouvrir('halakha'); }),
+    ]),
+    ...rayon('rayon_renforcer', [
+      couverture('menthe', 'couv_chizuk', tr.t('chizuk_demande_title'), () => { hizouk = null; ouvrir('hizouk'); }),
+      couverture('vert', 'couv_conseils', tr.t('tips_title'), () => ouvrir('conseils')),
+    ]));
 }
 
 function onglets() {
-  // Les cinq onglets d'Android (02/11) : le journal, longtemps masqué, a maintenant son écran.
-  const items = [
-    ['aujourdhui', 'nav_today'], ['textes', 'nav_texts'], ['zmanim', 'nav_zmanim'], ['journal', 'nav_journal'], ['reglages', 'settings_title'],
-  ];
+  // Trois lieux depuis la refonte du 13/11 : Le Jour, Les Livres, Le Chemin. Zmanim et Réglages
+  // sont en tête du Jour ; le journal, dans Le Chemin.
+  const items = [['aujourdhui', 'nav_today'], ['textes', 'nav_texts'], ['chemin', 'nav_chemin']];
   return h('nav', { class: 'onglets' }, items.map(([cle, nom]) => h('button', {
     class: 'onglet',
     'data-onglet': cle,
     'aria-current': cle === onglet ? 'page' : null,
-    onclick: () => {
-      // Journal et Réglages ouvrent leur écran ; l'onglet actif ne bouge pas (MainActivity.wireTabs).
-      if (cle === 'reglages' || cle === 'zmanim' || cle === 'journal') ouvrir(cle);
-      else { onglet = cle; rendre(); }
-    },
+    onclick: () => { onglet = cle; rendre(); },
   }, h('span', { class: 'icone', 'aria-hidden': 'true' }), tr.t(nom))));
 }
 
@@ -5199,6 +5248,31 @@ function ecranSeance() {
 // --- Le bravo (CelebrationActivity) -------------------------------------------------
 let danseEnCours = null;
 
+/**
+ * La page du carnet sous le bravo (13/11, CelebrationActivity.carnet) : l'humeur d'une touche,
+ * puis la gratitude, la chose à travailler et la note, qui s'ouvraient dans une feuille à part
+ * après « Continuer ». Gardée ici d'un rendu à l'autre : rien de ce qu'on écrit ne se perd.
+ */
+let carnetBravo = null;
+function ouvrirCarnet() {
+  if (carnetBravo) return carnetBravo;
+  const date = dateNote ?? store.today();
+  const plus = store.journalPlus(date);
+  const note = store.record(date)?.note ?? '';
+  carnetBravo = { date, avant: plus.avant, apres: plus.apres, gratitude: plus.gratitude, travail: plus.travail, note,
+    initial: JSON.stringify([plus.apres, plus.gratitude.trim(), plus.travail.trim(), note.trim()]), ouvert: false };
+  return carnetBravo;
+}
+const carnetChange = (c) => JSON.stringify([c.apres, c.gratitude.trim(), c.travail.trim(), c.note.trim()]) !== c.initial;
+/** N'écrit que ce qui a changé ; appelé par « Enregistrer » comme par le retour du navigateur. */
+function enregistrerCarnet() {
+  const c = carnetBravo;
+  carnetBravo = null;
+  if (!c || !carnetChange(c)) return;
+  store.setJournalPlus(c.date, { avant: c.avant, apres: c.apres, gratitude: c.gratitude.trim(), travail: c.travail.trim() });
+  store.setNote(c.date, c.note.trim());
+}
+
 function ecranBravo() {
   const annulee = !!bravo.annulee;
   const adresse = store.adresse();
@@ -5207,18 +5281,39 @@ function ecranBravo() {
     : tr.t(adresse === 'm' ? 'celebration_tsadik' : adresse === 'f' ? 'celebration_tsadeket' : 'celebration_neutral');
   const sousTitre = annulee ? tr.t('annulation_subtitle')
     : bravo.minutes > 0 ? tr.p('celebration_minutes', bravo.minutes) : null;
+  const c = annulee ? null : ouvrirCarnet();
   const continuer = () => {
+    enregistrerCarnet();
     bravo = null;
     chizukBravo = null;
+    noteApresBravo = false;
     retour();
-    if (noteApresBravo) {
-      noteApresBravo = false;
-      setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
-    }
   };
+  const principal = h('button', { class: 'principal', onclick: continuer }, tr.t(c && carnetChange(c) ? 'action_save' : 'celebration_continue'));
+  const majBouton = () => { principal.textContent = tr.t(carnetChange(c) ? 'action_save' : 'celebration_continue'); };
+  const champ = (cle, titreCle, indice, long = false) => {
+    const e = h(long ? 'textarea' : 'input', { id: `carnet-${cle}`, class: 'carnet-champ', placeholder: tr.t(indice),
+      ...(long ? { rows: 3 } : { type: 'text', maxlength: JournalPlus.GRATITUDE_MAX }) });
+    e.value = c[cle];
+    e.addEventListener('input', () => { c[cle] = e.value; majBouton(); });
+    return [h('label', { class: 'carnet-libelle', for: `carnet-${cle}` }, tr.t(titreCle)), e];
+  };
+  const carnet = !c ? null : h('section', { class: 'carnet' },
+    h('h2', { class: 'carnet-question' }, tr.t('celebration_humeur')),
+    h('div', { class: 'humeurs-rang carnet-humeurs', role: 'group', 'aria-label': tr.t('celebration_humeur') },
+      JournalPlus.HUMEURS.map((e, i) => h('button', {
+        type: 'button', class: 'humeur', 'aria-label': `${i + 1}/5`, 'aria-pressed': String(c.apres === i + 1),
+        // Retoucher l'humeur choisie la retire ; une humeur ouvre la suite du carnet.
+        onclick: () => { c.apres = c.apres === i + 1 ? 0 : i + 1; c.ouvert = true; rendre(); },
+      }, e))),
+    c.ouvert ? [...champ('gratitude', 'journal_gratitude', 'journal_gratitude_hint'),
+      ...champ('travail', 'journal_travail', 'journal_travail_hint'),
+      ...champ('note', 'note_title', 'note_hint', true),
+      h('p', { class: 'carnet-prive' }, tr.t('celebration_prive'))]
+      : h('button', { class: 'texte-bouton', onclick: () => { c.ouvert = true; rendre(); setTimeout(() => app.querySelector('#carnet-note')?.focus(), 0); } }, tr.t('action_write_note')));
   // Un jour la danse, le lendemain la guitare, le surlendemain le pouce levé (12-13/10).
   const seul = [null, 'char_guitar', 'char_thumbs_up'][Math.floor(Date.now() / 86400000) % 3];
-  return h('div', { class: 'ecran bravo' },
+  return h('div', { class: `ecran bravo${c?.ouvert ? ' carnet-ouvert' : ''}` },
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
       h('div', { class: 'scene danse' },
         h('div', { class: 'danseur' },
@@ -5228,9 +5323,10 @@ function ecranBravo() {
       h('h1', { class: 'bravo-titre' }, titre),
       sousTitre ? h('p', { class: 'bravo-sous-titre' }, sousTitre) : null,
       annulee && chizukBravo ? carteChizuk({ moment: 'relance', item: chizukBravo }, { compacte: true }) : null,
-      h('button', { class: 'principal', onclick: continuer }, tr.t('celebration_continue')),
+      carnet,
+      principal,
       // Partager la séance faite (12/10), avec le lien de la version web.
-      !annulee && bravo.minutes > 0 ? h('button', { class: 'lien-bouton bravo-partage', onclick: () => partagerSeance(bravo.minutes) }, tr.t('partage_action')) : null)));
+      !annulee && bravo.minutes > 0 && !c?.ouvert ? h('button', { class: 'lien-bouton bravo-partage', onclick: () => partagerSeance(bravo.minutes) }, tr.t('partage_action')) : null)));
 }
 
 const LIEN_WEB = 'https://hil123.github.io/myhitbodedut-web/';
@@ -5363,7 +5459,7 @@ function rendre() {
   // L'horloge tourne tant qu'une hitbodedout est en cours, quel que soit l'écran : sinon sa fin
   // n'était vue qu'au toucher suivant (audit du 16/10).
   if (ecran !== 'seance' && !store.isSessionRunning()) arreteTic();
-  if (ecran !== 'bravo') arreteDanse();
+  if (ecran !== 'bravo') { arreteDanse(); enregistrerCarnet(); }
   if (ecran !== 'boussole') arreteBoussole();
   queueMicrotask(majMini);
   const memeEcran = app.dataset.ecran === `${ecran}/${onglet}` && !app.querySelector('.ecran[data-attente]');
@@ -5403,7 +5499,9 @@ function rendre() {
   else if (ecran === 'source') app.append(ecranSource());
   else {
     app.append(h('div', { class: 'ecran avec-onglets' },
-      h('div', { class: 'defile' }, onglet === 'textes' ? panneauTextes() : panneauAujourdhui()),
+      h('div', { class: 'corps-onglets' },
+        h('div', { class: 'defile' }, onglet === 'textes' ? panneauTextes() : onglet === 'chemin' ? panneauChemin() : panneauAujourdhui()),
+        barreDepart()),
       onglets()));
   }
   app.dataset.ecran = `${ecran}/${onglet}`;

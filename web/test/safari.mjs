@@ -94,7 +94,7 @@ try {
     await wd('POST', `${S}/url`, { url: base });
     await attendre(1500);
     const m = await executer(`const n = document.querySelector('.onglets').getBoundingClientRect();
-      const b = document.querySelector('.accueil .principal').getBoundingClientRect();
+      const b = document.querySelector('.depart .principal').getBoundingClientRect();
       return { l: innerWidth, h: innerHeight, deborde: document.documentElement.scrollWidth > innerWidth,
         colonne: n.height > n.width && n.left < 1, bouton: b.bottom };`);
     const png = await wd('GET', `${S}/screenshot`);

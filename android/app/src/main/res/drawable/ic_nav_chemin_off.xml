@@ -7,7 +7,7 @@
     android:viewportHeight="24">
 
     <path
-        android:pathData="M8,21 C8,17 16,17 16,12 C16,7 8,7 8,3"
+        android:pathData="M7,21 C7,17.500 17,17.500 17,14 C17,10.500 7,10.500 7,7 C7,5 8.500,3 11,3"
         android:strokeColor="?attr/mhInk"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"

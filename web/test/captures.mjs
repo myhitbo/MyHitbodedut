@@ -147,7 +147,7 @@ async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'v
   // L'accueil, sans défiler : « Commencer » entier au-dessus des onglets (comme sur Android).
   if (nom.startsWith('accueil') && !actions) {
     const cache = await page.evaluate(() => {
-      const b = document.querySelector('.accueil-actions .principal')?.getBoundingClientRect();
+      const b = document.querySelector('.depart .principal')?.getBoundingClientRect();
       const o = document.querySelector('nav.onglets')?.getBoundingClientRect();
       return !b || b.bottom > (o ? o.top : window.innerHeight) - 2;
     });
@@ -169,6 +169,15 @@ await capture('accueil-fr-durees', { langue: 'fr', actions: async (p) => { const
 await capture('accueil-fr-ajout-temps', { langue: 'fr', actions: (p) => p.locator('button.jour:not(.fait)').first().click() });
 await capture('accueil-fr-sable-violet', { langue: 'fr', fond: 'sable', accent: 'violet', prenom: 'Hillel' });
 await capture('textes-he', { langue: 'he', onglet: 'textes' });
+// La refonte du 13/11 : les rayons des Livres, Le Chemin, et le volet de la barre de départ.
+await capture('textes-fr', { langue: 'fr', onglet: 'textes' });
+await capture('chemin-fr', { langue: 'fr', onglet: 'chemin' });
+await capture('chemin-he-sombre', { langue: 'he', mode: 'sombre', onglet: 'chemin' });
+await capture('volet-fr', { langue: 'fr', actions: async (p) => {
+  await p.click('.depart-regler');
+  const lignes = await p.locator('.volet-depart .ligne').count();
+  if (lignes !== 3) erreurs.push(`volet de la séance : ${lignes} lignes au lieu de 3`);
+} });
 await capture('musique-fr', { langue: 'fr', ecran: 'musique' });
 await capture('reglages-en', { langue: 'en', ecran: 'reglages' });
 
@@ -352,6 +361,25 @@ await capture('hazak-he', {
     await p.click('.seance .principal + .texte-clair');
     await p.click('.feuille .actions button:last-child');
     await p.waitForSelector('.bravo');
+  },
+});
+// La fin de séance sur un seul écran (13/11) : une humeur ouvre le carnet ; « Enregistrer » l'inscrit.
+await capture('bravo-carnet-fr', {
+  langue: 'fr', ecran: 'seance', calme: true,
+  actions: async (p) => {
+    await p.click('.duree');
+    await finDeSeance(p);
+    if (await p.locator('.carnet-champ').count()) erreurs.push('le carnet doit attendre une humeur pour s\'ouvrir');
+    await p.locator('.carnet .humeur').nth(3).click();
+    await p.fill('#carnet-gratitude', 'Le calme du matin');
+    await p.fill('#carnet-note', 'J\'ai parlé de la semaine qui vient.');
+    const libelle = await p.textContent('.bravo .principal');
+    if (libelle !== 'Enregistrer') erreurs.push(`bouton du carnet : « ${libelle} »`);
+    await p.screenshot({ path: join(SORTIE, `${moteur}-bravo-carnet-fr-ouvert.png`), animations: 'disabled' });
+    await p.click('.bravo .principal');
+    const s = await p.evaluate(() => ({ j: JSON.parse(localStorage.getItem('myhitbodedut-journal')), tout: JSON.stringify(localStorage) }));
+    if (s.j.days['2026-09-29']?.note !== 'J\'ai parlé de la semaine qui vient.') erreurs.push(`note du carnet non inscrite : ${JSON.stringify(s.j.days['2026-09-29'])}`);
+    if (!s.tout.includes('Le calme du matin')) erreurs.push('gratitude du carnet non inscrite');
   },
 });
 // Le journal a reçu la séance, et l'accueil la montre.

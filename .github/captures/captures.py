@@ -864,12 +864,17 @@ def main():
             sh("rm -f /sdcard/film.mp4")
             film = subprocess.Popen(["adb", "shell", "screenrecord", "--time-limit", "60", "/sdcard/film.mp4"])
             pause(1.5)
-            for onglet in ("nav_texts", "nav_zmanim", "nav_journal", "nav_settings", "nav_today"):
+            # Trois lieux depuis la refonte du 13/11 (Le Jour, Les Livres, Le Chemin) ; Zmanim et
+            # Réglages s'ouvrent en tête du Jour, sous les mêmes identifiants, sur leur propre écran.
+            for onglet in ("nav_texts", "nav_journal", "nav_today", "nav_zmanim", "nav_settings"):
                 toucher(rid=onglet, attente=1.6)
-                # Journal et Réglages ouvrent leur propre écran, sans la barre d'onglets.
-                if onglet in ("nav_journal", "nav_settings"):
+                if onglet in ("nav_zmanim", "nav_settings"):
                     retour(); pause(1.2)
-            toucher(rid="trophees_paliers", defilements=4, attente=2.0)
+            # Le volet de la séance, ouvert puis refermé par la flèche de la barre de départ.
+            toucher(rid="depart_regler", attente=1.2)
+            toucher(rid="depart_regler", attente=1.0)
+            toucher(rid="nav_journal", attente=1.2)
+            toucher(rid="trophees_paliers", defilements=2, attente=2.0)
             retour(); pause(1.5)
             onglet_textes()
             toucher(rid="siddur_button", defilements=2, attente=2.0)
