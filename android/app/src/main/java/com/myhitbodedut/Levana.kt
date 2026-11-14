@@ -54,7 +54,13 @@ object Levana {
     data class Fenetre(val molad: Instant, val debut: Instant, val fin: Instant, val restriction: Restriction? = null) {
         val prochainMolad: Instant get() = molad.plus(MOIS)
         fun premierSoir(zone: ZoneId): LocalDate = debut.atZone(zone).toLocalDate()
-        fun dernierSoir(zone: ZoneId): LocalDate = fin.minus(Duration.ofHours(12)).atZone(zone).toLocalDate()
+        /**
+         * Le dernier soir : le dernier jour dont le soir (20 h, [soir]) précède la fin. « Fin moins
+         * 12 h » désignait, quand la fenêtre se ferme l'après-midi, un jour où elle était déjà
+         * fermée avant la nuit (audit du 12/11, FCALENDRIER-03 : Kislev 5787, mi-mois le 24/11 à
+         * 15 h 28 à Paris, dernier soir le 23).
+         */
+        fun dernierSoir(zone: ZoneId): LocalDate = fin.minus(Duration.ofHours(20)).atZone(zone).toLocalDate()
     }
 
     sealed interface Etat {

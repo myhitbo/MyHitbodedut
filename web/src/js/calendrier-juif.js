@@ -258,7 +258,8 @@ export function levana(iso, zone, { usage = 'sept_mi_mois' } = {}) {
         }
       }
     }
-    return { ...f, premier: local(f.debut), dernier: local(f.fin - 12 * 3600000) };
+    // Le dernier soir : le dernier jour dont le soir (20 h) précède la fin (FCALENDRIER-03, Levana.dernierSoir).
+    return { ...f, premier: local(f.debut), dernier: local(f.fin - 20 * 3600000) };
   };
   let f = du(iso);
   if (iso > f.dernier) {

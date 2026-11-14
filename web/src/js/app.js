@@ -726,7 +726,7 @@ function momentAccueil() {
   const zone = store.lieu()?.fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   const l = levana(jourLieu(heure), zone, { usage: usageLevanaCourant() });
   const lv = siddur.textes.find((x) => x.id === 'birkat_halevana');
-  if (lv && typeof l.etat === 'string' && heureLieu(heure).heures >= 14) {
+  if (lv && typeof l.etat === 'string' && heureLieu(heure).heures >= 14 && +heure < l.finMs) {
     cartes.push(h('button', { class: 'maintenant', onclick: () => { priere = lv.id; ouvrir('priere'); } },
       plateau('char_praise', 'plateau-maintenant'),
       h('span', { class: 'maintenant-corps' },
