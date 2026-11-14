@@ -171,6 +171,10 @@ class MainActivity : AppCompatActivity() {
                     .putExtra(SessionActivity.EXTRA_START_NOW, !Store.isSessionRunning(this))
             )
         }
+        // L'écran de préparation sans EXTRA_START_NOW : durées, « Sans durée », Parler / Écrire / Prier / Une question.
+        findViewById<Button>(R.id.start_prepare).setOnClickListener {
+            startActivity(Intent(this, SessionActivity::class.java))
+        }
         findViewById<Button>(R.id.today_offline).setOnClickListener { declarerHorsTelephone() }
         findViewById<Button>(R.id.trophees_paliers).setOnClickListener { startActivity(Intent(this, PaliersActivity::class.java)) }
         findViewById<Button>(R.id.parcours_button).setOnClickListener { startActivity(Intent(this, ParcoursActivity::class.java)) }
@@ -254,16 +258,17 @@ class MainActivity : AppCompatActivity() {
         val aujourdhui = Store.today()
         val hier = Store.parse(aujourdhui).minusDays(1).toString()
         val hierOuvert = hierOuvert()
-        val aujourdhuiOuvert = !Store.isDone(this, aujourdhui)
-        when {
-            aujourdhuiOuvert && hierOuvert -> AlertDialog.Builder(this)
+        // Hier encore ouvert : toujours demander le jour, aujourd'hui fait ou non (TFRUX-07) ;
+        // sinon le temps d'une seconde séance de la journée partait sur hier, sans un mot.
+        if (hierOuvert) {
+            AlertDialog.Builder(this)
                 .setTitle(R.string.offline_which_day)
                 .setItems(arrayOf(getString(R.string.offline_today), getString(R.string.offline_yesterday))) { _, i ->
-                    choisirDureeHorsTelephone(if (i == 0) aujourdhui else hier)
+                    choisirDureeHorsTelephone(if (i == 0) aujourdhui else hier, aujourdhui)
                 }
                 .show()
-            hierOuvert -> choisirDureeHorsTelephone(hier)
-            else -> choisirDureeHorsTelephone(aujourdhui)
+        } else {
+            choisirDureeHorsTelephone(aujourdhui, aujourdhui)
         }
     }
 
@@ -273,13 +278,20 @@ class MainActivity : AppCompatActivity() {
         return !Store.isDone(this, hier.toString()) && !Store.isExempt(this, hier)
     }
 
-    private fun choisirDureeHorsTelephone(date: String) {
-        DureeSeance.choisir(this, R.string.offline_how_long) { minutes ->
+    private fun choisirDureeHorsTelephone(date: String, aujourdhui: String) {
+        val estAujourdhui = date == aujourdhui
+        DureeSeance.choisir(this, if (estAujourdhui) R.string.offline_how_long_today else R.string.offline_how_long_yesterday) { minutes ->
+            val dejaFait = Store.isDone(this, date)
             // Sans sujet : celui des puces est celui de la PROCHAINE séance.
             Store.addSession(this, minutes, theme = null, date = date)
+            // Le jour est nommé : hier ne reçoit plus le temps en silence.
+            android.widget.Toast.makeText(this,
+                getString(if (estAujourdhui) R.string.offline_added_today else R.string.offline_added_yesterday,
+                    Store.formatDuration(this, minutes)), android.widget.Toast.LENGTH_SHORT).show()
             // L'application est ouverte : la fête se fait à l'écran, pas par une notification (comme AjoutTemps).
             Celebrations.marquerNotifies(this)
-            if (date == Store.today()) Store.setPendingCelebration(this, minutes, date)
+            // Le bravo ne fête que la journée qui vient d'être faite, pas un temps ajouté à une journée déjà faite.
+            if (estAujourdhui && !dejaFait) Store.setPendingCelebration(this, minutes, date)
             refresh()
             StreakWidget.refresh(this)
             CelebrationActivity.showIfPending(this)
@@ -813,6 +825,9 @@ class MainActivity : AppCompatActivity() {
         // Tant qu'aujourd'hui ou hier peut encore être inscrit.
         findViewById<Button>(R.id.today_offline).visibility =
             if ((!done || hierOuvert()) && !Store.isSessionRunning(this)) View.VISIBLE else View.GONE
+
+        findViewById<Button>(R.id.start_prepare).visibility =
+            if (Store.isSessionRunning(this)) View.GONE else View.VISIBLE
 
         findViewById<Button>(R.id.start_session).text = when {
             Store.isSessionRunning(this) -> getString(R.string.action_back_to_session)

@@ -7,10 +7,15 @@
     <string name="status_streak_none">הרצף מחכה לחידוש</string>
     <string name="status_streak_first">עדיין אין רצף</string>
     <string name="action_done_offline">התבודדתי בלי הטלפון</string>
+    <string name="start_prepare">בלי זמן קבוע, או דרך אחרת להתחיל</string>
     <string name="offline_which_day">באיזה יום?</string>
     <string name="offline_today">היום</string>
     <string name="offline_yesterday">אתמול</string>
     <string name="offline_how_long">כמה זמן?</string>
+    <string name="offline_how_long_today">היום: כמה זמן?</string>
+    <string name="offline_how_long_yesterday">אתמול: כמה זמן?</string>
+    <string name="offline_added_today">נוסף להיום: %1$s.</string>
+    <string name="offline_added_yesterday">נוסף לאתמול: %1$s.</string>
     <string name="note_discard">לא לשמור</string>
     <string name="journal_note_only">הערה בלבד</string>
     <string name="status_total">%1$s בסך הכול</string>
@@ -1140,7 +1145,7 @@
     <string name="chizuk_garder">לשמור</string>
     <string name="chizuk_garde">נשמר ✓</string>
     <string name="chizuk_partager">לשתף</string>
-    <string name="chizuk_commencer">להתחיל התבודדות</string>
+    <string name="chizuk_commencer">להתכונן להתבודדות</string>
     <string name="chizuk_favoris">טקסטים שמורים</string>
     <string name="source_du_jour">מקור יומי</string>
     <string name="source_du_jour_commencer">להתחיל</string>
