@@ -3416,7 +3416,7 @@ function deuxHeures(plan, t) {
 function dureeEnMots(minutes) {
   if (minutes < 60) return minutes === 1 ? tr.t('vol_duree_une_minute') : tr.t('vol_duree_minutes', String(minutes));
   const h = Math.floor(minutes / 60), m = minutes % 60;
-  return m ? tr.t('vol_duree_heures_minutes', String(h), String(m)) : tr.t('vol_duree_heures', String(h));
+  return m ? tr.t('vol_duree_heures_minutes', String(h), String(m)) : tr.p('vol_duree_heures', h, String(h));
 }
 
 /** « mer. 28 19:20 TLV » : l'heure locale d'un aéroport (celle du billet). */

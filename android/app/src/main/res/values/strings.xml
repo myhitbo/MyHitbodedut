@@ -1251,7 +1251,10 @@
     <string name="vol_carte_sous">Saisissez un vol : les horaires sont calculés sur la route prévue, sur l’appareil.</string>
     <string name="vol_carte_vol">%1$s · %2$s → %3$s</string>
     <string name="vol_numero">Numéro de vol (facultatif)</string>
-    <string name="vol_duree_heures">%1$s h</string>
+    <plurals name="vol_duree_heures">
+        <item quantity="one">%1$s h</item>
+        <item quantity="other">%1$s h</item>
+    </plurals>
     <string name="vol_duree_heures_minutes">%1$s h %2$s min</string>
     <string name="vol_duree_une_minute">1 minute</string>
     <string name="vol_duree_minutes">%1$s minutes</string>
@@ -1358,7 +1361,7 @@
     <string name="vol_rappels_sans_permission">Les notifications de l’application sont désactivées : les rappels ne s’afficheront pas.</string>
     <string name="vol_rappels_note">Aux heures du billet : un décollage en retard ne décale pas les rappels. Android peut les retarder de quelques minutes.</string>
     <string name="vol_rappel_derekh_titre">Tefilat haDerekh</string>
-    <string name="vol_rappel_derekh_texte">Cinq minutes après le décollage prévu : le moment de dire Tefilat haDerekh.</string>
+    <string name="vol_rappel_derekh_texte">Décollage prévu il y a cinq minutes. Tefilat haDerekh, si vous ne l’avez pas déjà dite pour ce voyage.</string>
     <string name="vol_rappel_derekh_priere">Prière du moment : %1$s, jusqu’à %2$s.</string>
     <string name="vol_rappel_priere_titre">%1$s dans l’avion</string>
     <string name="vol_rappel_priere_texte">Le temps de %1$s commence sous l’avion. Jusqu’à %2$s.</string>

@@ -1187,7 +1187,10 @@
     <string name="vol_carte_sous">Enter a flight: times are computed along the planned route, on the device.</string>
     <string name="vol_carte_vol">%1$s · %2$s → %3$s</string>
     <string name="vol_numero">Flight number (optional)</string>
-    <string name="vol_duree_heures">%1$s h</string>
+    <plurals name="vol_duree_heures">
+        <item quantity="one">%1$s h</item>
+        <item quantity="other">%1$s h</item>
+    </plurals>
     <string name="vol_duree_heures_minutes">%1$s h %2$s min</string>
     <string name="vol_duree_une_minute">1 minute</string>
     <string name="vol_duree_minutes">%1$s minutes</string>
@@ -1294,7 +1297,7 @@
     <string name="vol_rappels_sans_permission">The app’s notifications are off: the reminders will not show.</string>
     <string name="vol_rappels_note">At the ticket times: a late takeoff does not move the reminders. Android may delay them by a few minutes.</string>
     <string name="vol_rappel_derekh_titre">Tefilat HaDerech</string>
-    <string name="vol_rappel_derekh_texte">Five minutes after the scheduled takeoff: time to say Tefilat HaDerech.</string>
+    <string name="vol_rappel_derekh_texte">Scheduled takeoff was five minutes ago. Tefilat HaDerech, if you have not already said it for this journey.</string>
     <string name="vol_rappel_derekh_priere">Prayer now: %1$s, until %2$s.</string>
     <string name="vol_rappel_priere_titre">%1$s on the plane</string>
     <string name="vol_rappel_priere_texte">The time of %1$s begins below the aircraft. Until %2$s.</string>

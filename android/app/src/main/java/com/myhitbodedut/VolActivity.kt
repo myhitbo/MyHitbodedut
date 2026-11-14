@@ -900,7 +900,7 @@ class VolActivity : AppCompatActivity() {
     private fun dureeEnMots(minutes: Int): String = when {
         minutes == 1 -> getString(R.string.vol_duree_une_minute)
         minutes < 60 -> getString(R.string.vol_duree_minutes, minutes.toString())
-        minutes % 60 == 0 -> getString(R.string.vol_duree_heures, (minutes / 60).toString())
+        minutes % 60 == 0 -> resources.getQuantityString(R.plurals.vol_duree_heures, minutes / 60, (minutes / 60).toString())
         else -> getString(R.string.vol_duree_heures_minutes, (minutes / 60).toString(), (minutes % 60).toString())
     }
 
