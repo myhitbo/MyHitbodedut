@@ -258,11 +258,13 @@ recomposait une liste unique, est suspendu.
 | Source (`res/raw/*.json`) | Licence déclarée | Action |
 | --- | --- | --- |
 | Tanakh, Likoutei Moharan, Sefer haMidot, Siddour Edot haMizra'h, Perek Chira | Domaine public (via Sefaria) | Aucune |
-| Kitsour Choul'han Aroukh Yalkout Yossef (Torat Emet) | **CC BY-NC-SA 2.5** + licence reçue | Application **gratuite, sans publicité ni achat** ; crédit affiché ; garder l'écrit de la licence |
+| Kitsour Choul'han Aroukh Yalkout Yossef (Torat Emet) | **CC BY-NC-SA 2.5** + licence reçue | Application **gratuite, sans publicité ni achat** ; crédit affiché (au pied de la liste des livres et dans Réglages › Sources et licences) ; garder l'écrit de la licence. La déclaration du 19/10 couvre le livre entier ; **à obtenir** : un écrit qui couvre aussi la diffusion sur le site et la traduction automatique, partielle (92 chapitres sur 1 048), sinon retirer la traduction |
 | Livres du Yanuka (מכון ים שלמה) | « כל הזכויות שמורות », autorisation déclarée | Écrit à conserver, comme 3.2 |
 | or-breslev.co.il | Accord déclaré le 13/10 | Écrit à conserver |
 | Villes (GeoNames) | CC BY 4.0, attribution dans les réglages | OK — vérifié |
 | Polices (6 × OFL) | `assets/licences/` | OK — vérifié |
+| KosherJava 2.5.0 (zmanim, Android) et kosher-zmanim (site) | **LGPL 2.1** | Texte dans `assets/licences/LGPL-2.1-KosherJava.txt`, affiché dans Réglages › Sources et licences ; source du code de l'application sur demande écrite (LGPL § 6) — à remplacer par l'adresse publique tant que le dépôt reste public |
+| ZXing core 3.5.3 ; AndroidX et Material Components | Apache 2.0 | Texte dans `assets/licences/Apache-2.0-ZXing.txt`, même écran |
 | Si'hot haRan, Chiv'hei haRan, Likoutei Etsot (rabenubook), Likoutei Tefilot (Maleh Vigadish 2021) — les 7 anciennes entrées `"unknown"` | Œuvres de Rabbi Natan (m. 1844), domaine public ; licence des éditions non déclarée par Sefaria (vérifié le 29/10) | **Tranché le 29/10** : livrées en texte seul, sans la vocalisation de l'éditeur ; licence réécrite « Public Domain (texte seul) » ; `LicencesEditionsTest` interdit tout retour d'un « unknown » ou de la vocalisation |
 
 ---

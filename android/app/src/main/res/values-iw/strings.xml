@@ -542,6 +542,19 @@
     <string name="track_niggoun_31">ניגון 31</string>
     <string name="track_niggoun_32">ניגון 32</string>
     <string name="track_niggoun_33">ניגון 33</string>
+    <string name="track_shpayer_ki_hine_kahomer">ניגון ״כי הנה כחומר״ — נועם שפייר</string>
+    <string name="track_ianir_baal_shem_tov">ניגון של הבעל שם טוב — יניר</string>
+    <string name="track_ianir_zemer_bishvahin">זמר בשבחין (השם אינו ודאי) — יניר</string>
+    <string name="track_ianir_berditchev">ניגון ברדיטשוב — יניר</string>
+    <string name="track_ianir_kol_bayaar">קול ביער (ניגון של השפולער זיידע) — יניר</string>
+    <string name="track_ianir_yohanan_hasandlar">ניגון של רבי יוחנן הסנדלר — יניר</string>
+    <string name="track_ianir_houppa">ניגון חופה — יניר</string>
+    <string name="track_ianir_kabbalat_chabbat">ניגון קבלת שבת (הקלטה חיה) — יניר</string>
+    <string name="track_ianir_bessarabie">ניגון בסרביה — יניר</string>
+    <string name="track_shpayer_eshet_hayil">אשת חיל — אור ונועם שפייר</string>
+    <string name="track_shpayer_afilou">אפילו — נועם שפייר</string>
+    <string name="track_shpayer_kenout">כנות — נועם שפייר</string>
+    <string name="track_shpayer_hithadshout">התחדשות — נועם שפייר</string>
 
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d דק׳</string>
@@ -993,6 +1006,7 @@
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">ספרים</string>
     <string name="livres_hint">ליקוטי מוהר״ן, השתפכות הנפש, כוכבי אור, מגילות, פרק שירה, נשמת כל חי…</string>
+    <string name="livres_pied">ילקוט יוסף – קיצור שולחן ערוך, מאת הרב יצחק יוסף. הטקסט: תורת אמת, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5). התרגומים לצרפתית ולאנגלית נעשו במחשב, הם חלקיים ולא נבדקו, ובאותו רישיון.\nשאר התרגומים לצרפתית ולאנגלית נעשו במחשב ולא נבדקו; הנוסח העברי הוא הקובע.</string>
     <!-- La halakha du jour : le Yalkut Yosef, puis le Ben Ish 'Haï (13/10) -->
     <string name="halakha_ben_ish_hai">בן איש חי, פרשת השבוע</string>
     <string name="halakha_yalkut_source">ילקוט יוסף – קיצור שולחן ערוך, מו״ר הרב יצחק יוסף (הוכן מתוכנת תורת אמת, CC BY-NC-SA 2.5): מבחר, לא הספר כולו.</string>

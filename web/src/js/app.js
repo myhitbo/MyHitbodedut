@@ -2111,7 +2111,9 @@ function ecranLivres() {
         h('div', { class: 'carte carte-sections' }, livres.textes.filter((x) => x.groupe === g.cle).map((x) =>
           ligneHebreu(x.titre.he, [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, tr.p('livre_chapitres', x.chapitres ?? x.sections?.length ?? 0)].filter(Boolean).join(' · '),
             () => { priere = `livre:${x.id}`; ouvrir('priere'); }))),
-      ]) : []))));
+      ]) : []),
+      // La licence du Yalkout Yossef et l'origine des traductions, au pied de la liste (TLIVRES-02, COUV-05).
+      ...tr.t('livres_pied').split('\n').map((l) => h('p', { class: 'indice', dir: 'auto' }, l)))));
 }
 
 /**
