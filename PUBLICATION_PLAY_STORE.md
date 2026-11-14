@@ -512,9 +512,10 @@ ce jour.*
 - **Applications de santé** : « aucune fonction de santé » — l'application est
   un outil de prière, sans conseil ni promesse de bien-être. Réserve : Google
   range la « méditation » sous *Stress management, relaxation, mental
-  acuity*, et le manifeste parle de « meditation session » (§ 6.6). Au
-  propriétaire de trancher (`play/CONSOLE.md` § 3.8) ; dans tous les cas, la
-  fiche ne promet aucun effet sur la santé.
+  acuity*. Depuis le 14/11 le manifeste dit « personal prayer session
+  (hitbodedut) » et non plus « meditation session » (§ 6.6) ; reste la note
+  d'humeur. Au propriétaire de trancher si Google conteste (`play/CONSOLE.md`
+  § 3.8) ; dans tous les cas, la fiche ne promet aucun effet sur la santé.
 
 ### 6.5 Accès à l'application
 
@@ -531,7 +532,7 @@ types :
 
 | Service | Type | Ce que dit la description (en anglais dans le manifeste et dans la console) | Vidéo |
 | --- | --- | --- | --- |
-| `SessionService` | `specialUse` | Compte à rebours d'une séance de méditation lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Oui : lancer une séance, verrouiller l'écran, montrer la notification |
+| `SessionService` | `specialUse` | Compte à rebours d'une séance de prière personnelle (hitbodedout) lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Oui : lancer une séance, verrouiller l'écran, montrer la notification |
 | `SessionService` | `mediaPlayback` | Lecture du morceau choisi par l'utilisateur pendant sa séance, écran éteint. | Même vidéo |
 | `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour, et pendant toute séance qu'il a lancée, jusqu'à sa fin. | Oui : choisir une app, ouvrir l'app, voir l'écran, valider |
 

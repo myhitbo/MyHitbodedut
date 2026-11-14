@@ -207,10 +207,12 @@ bibliothèque de publicité ni d'analyse ; le manifeste ne déclare pas `AD_ID`)
 
 **Réserve sur « Health apps » (décision du propriétaire).** L'application est
 un outil de prière : elle ne donne aucun conseil de santé et ne promet aucun
-bienfait. Mais Google range sous *Stress management, relaxation, mental
-acuity* les applications de « mindfulness, meditation », et l'application
-parle de « meditation session » dans sa déclaration de service (3.9) et note
-l'humeur avant et après. Deux réponses défendables :
+bienfait. Google range sous *Stress management, relaxation, mental
+acuity* les applications de « mindfulness, meditation » : depuis le 14/11 la
+déclaration de service (3.9) dit « personal prayer session (hitbodedut) » et
+non plus « meditation session », pour que rien ne la fasse prendre pour une
+application de bien-être. Elle note toutefois l'humeur avant et après. Deux
+réponses défendables :
 
 - *My app doesn't provide any health features* (recommandée), en gardant la
   fiche sans aucune promesse de bien-être et en évitant le tag « Meditation » ;
@@ -227,7 +229,7 @@ pour mot celles du manifeste : ne pas les reformuler.
 - *Use case* : **Other**, puis :
 
 ```
-Runs the countdown of a user-started meditation session and shows the remaining time, so the phone can be put down.
+Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down.
 ```
 
 - *User impact if the task is deferred or interrupted* :

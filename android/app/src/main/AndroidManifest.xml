@@ -368,7 +368,7 @@
             android:foregroundServiceType="specialUse|mediaPlayback">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE"
-                android:value="Runs the countdown of a user-started meditation session and shows the remaining time, so the phone can be put down." />
+                android:value="Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down." />
         </service>
 
         <receiver
