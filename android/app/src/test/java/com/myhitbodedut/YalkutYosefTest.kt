@@ -21,7 +21,7 @@ class YalkutYosefTest {
     @Test
     fun `une selection de halakhot courtes`() {
         assertEquals(
-            setOf("ordinaire", "chabbat", "roch_hodech", "pessah", "omer", "bein_hametsarim", "eloul", "kippour",
+            setOf("ordinaire", "chabbat", "roch_hodech", "pessah", "omer", "chavouot", "bein_hametsarim", "eloul", "kippour",
                 "soukkot", "hanouka", "tou_bichvat", "pourim"),
             livre.periodes.keys,
         )
@@ -50,7 +50,8 @@ class YalkutYosefTest {
         assertEquals("pourim", YalkutYosef.fenetre(JewishDate.ADAR_II, 14, true))
         assertNull(YalkutYosef.fenetre(JewishDate.ADAR, 14, true))
         assertEquals("pessah", YalkutYosef.fenetre(JewishDate.NISSAN, 15, false))
-        assertEquals("omer", YalkutYosef.fenetre(JewishDate.SIVAN, 6, false))
+        assertEquals("omer", YalkutYosef.fenetre(JewishDate.IYAR, 29, false))
+        assertEquals("chavouot", YalkutYosef.fenetre(JewishDate.SIVAN, 6, false))
         assertEquals("bein_hametsarim", YalkutYosef.fenetre(JewishDate.AV, 9, false))
         assertEquals("eloul", YalkutYosef.fenetre(JewishDate.TISHREI, 1, false))
         assertEquals("kippour", YalkutYosef.fenetre(JewishDate.TISHREI, 10, false))
@@ -64,5 +65,24 @@ class YalkutYosefTest {
         assertEquals("chabbat", YalkutYosef.periode(LocalDate.of(2026, 10, 23), false).first)
         assertEquals("ordinaire", YalkutYosef.periode(LocalDate.of(2026, 10, 21), false).first)
         assertTrue(YalkutYosef.recherche(livre, "ציצית").isNotEmpty())
+    }
+
+    @Test
+    fun `une fenetre est repartie sur toute sa liste, les lois de la fete a la fin`() {
+        val siman = { d: LocalDate -> YalkutYosef.pour(livre, d, false).map { it.siman } }
+        // Soukkot 5787 : 15 Tichri (26/09/2026), la soukka ; Hochaana Rabba (02/10), le loulav.
+        assertEquals(13, YalkutYosef.longueur(LocalDate.of(2026, 10, 2), false))
+        assertTrue(siman(LocalDate.of(2026, 9, 26)).all { it.contains("תרכט") })
+        assertTrue(siman(LocalDate.of(2026, 10, 2)).all { it.contains("תרנא") })
+        // 6 Sivan 5787 (11/06/2027) : Chavouot, plus la sefirat haomer.
+        assertTrue(siman(LocalDate.of(2027, 6, 11)).all { it.contains("תצד") })
+        // 22 Nissan 5787 (29/04/2027) : les quatre coupes, plus la bedikat 'hamets.
+        assertTrue(siman(LocalDate.of(2027, 4, 29)).all { it.contains("תעב") })
+        assertTrue(siman(LocalDate.of(2027, 3, 25)).all { it.contains("תלג") })
+        // Chaque se'if de chaque fenetre sort au moins une fois en trois ans, sauf si la liste depasse deux fois la fenetre.
+        val vus = HashSet<String>()
+        var d = LocalDate.of(2025, 9, 1)
+        while (d.isBefore(LocalDate.of(2028, 9, 1))) { YalkutYosef.pour(livre, d, false).forEach { vus.add("${it.siman}|${it.lettre}|${it.texte.take(20)}") }; d = d.plusDays(1) }
+        listOf("soukkot", "chavouot").forEach { p -> assertTrue(p, livre.periodes.getValue(p).count { "${it.siman}|${it.lettre}|${it.texte.take(20)}" in vus } >= 8) }
     }
 }
