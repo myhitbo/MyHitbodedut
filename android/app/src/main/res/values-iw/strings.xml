@@ -465,12 +465,24 @@
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">הרצף סופר את הימים ברציפות, והשבוע כולו נראה במבט אחד. אחרי כל התבודדות אפשר להשאיר הערה ביומן.</string>
     <string name="onboarding_private_body_web">מה שתכתבו נשאר בדפדפן הזה, במכשיר הזה. שום דבר לא נשלח, מלבד מספר טיסה אל adsbdb.com אם תפעילו את השירותים המקוונים של זמנים בטיסה.</string>
+    <string name="onboarding_private_body_web_relais">מה שתכתבו נשאר בדפדפן הזה, במכשיר הזה. שום דבר לא נשלח, אלא אם תפעילו את השירותים המקוונים של זמנים בטיסה: אז מספר טיסה נשלח אל adsbdb.com, ולמעקב בזמן אמת נשלחים אות הקריאה של הטיסה ומיקומה המשוער אל שרת הממסר של האפליקציה, שפונה ל־OpenSky Network.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">טוען את הספרים…</string>
     <string name="livres_echec_web">לא ניתן היה לטעון את הספרים. בדקו את החיבור ונסו שוב.</string>
     <string name="livres_reessayer_web">לנסות שוב</string>
     <!-- Pour la version web (02/11) : la ligne de version des réglages, avec l’empreinte de la construction (version.txt) au lieu du numéro Android. -->
     <string name="app_version_web">גרסת האתר %1$s</string>
+    <!-- Pour la version web (13/11, audit du 12/11) : la garde des données dans un navigateur (FWEBCODE-01), la liste des villes (FWEBCODE-05), la réinitialisation (FWEBCODE-07). -->
+    <string name="installer_ios_web">באייפון כדאי להתקין את האפליקציה: שיתוף ← ״הוסף למסך הבית״. בלי זה Safari עלול למחוק את היומן אחרי שבעה ימים בלי ביקור.</string>
+    <string name="import_installe_web">כבר השתמשתם ב־MyHitbodedut ב־Safari? האפליקציה המותקנת שומרת את הנתונים שלה בנפרד: ב־Safari ייצאו אותם (הגדרות ← הנתונים שלי), ואז ייבאו את הקובץ כאן.</string>
+    <string name="export_rappel_web">יותר משלושים יום בלי גיבוי. הנתונים שלכם נשמרים רק בדפדפן הזה: ייצאו אותם דרך ״הנתונים שלי״.</string>
+    <string name="stockage_memoire_web">הדפדפן הזה מסרב לשמור (גלישה פרטית או אחסון חסום): שום דבר ממה שתעשו כאן לא יישמר.</string>
+    <string name="stockage_echec_web">השמירה נכשלה: האחסון של הדפדפן הזה מלא או חסום.</string>
+    <string name="stockage_fragile_web">הדפדפן הזה אינו מתחייב לשמור את הנתונים: הוא עלול למחוק אותם מעצמו, למשל כשחסר מקום. כדאי לייצא באופן קבוע.</string>
+    <string name="villes_chargement_web">טוען את הערים…</string>
+    <string name="villes_echec_web">לא ניתן היה לטעון את רשימת הערים. בדקו את החיבור ונסו שוב.</string>
+    <string name="reset_hint_web">מוחק את מה שהאפליקציה שומרת בדפדפן הזה: יומן, התבודדויות, רצפים, גביעים, הגדרות וניגונים שהוספתם. כדאי לייצא את הנתונים לפני כן אם רוצים לשמור אותם.</string>
+    <string name="reset_confirm_text_web">היומן, ההתבודדויות, הרצפים, הגביעים, ההגדרות והניגונים שהוספתם יימחקו מהדפדפן הזה. אי אפשר לבטל זאת.</string>
     <string name="adresse_tsadik">צדיק</string>
     <string name="adresse_tsadeket">צדקת</string>
     <string name="adresse_none">לא נבחר</string>

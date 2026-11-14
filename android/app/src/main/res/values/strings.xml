@@ -548,12 +548,24 @@
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">La série compte les jours de pratique d’affilée, et la semaine se lit d’un coup d’œil. Après chaque hitbodedout, une note peut rejoindre votre journal.</string>
     <string name="onboarding_private_body_web">Ce que vous écrivez reste dans ce navigateur, sur cet appareil. Rien n’est envoyé, sauf le numéro d’un vol à adsbdb.com si vous activez les services en ligne des zmanim en vol.</string>
+    <string name="onboarding_private_body_web_relais">Ce que vous écrivez reste dans ce navigateur, sur cet appareil. Rien n’est envoyé, sauf si vous activez les services en ligne des zmanim en vol : le numéro d’un vol part alors vers adsbdb.com et, pour le suivi en direct, l’indicatif du vol et sa position estimée vers le relais de l’application, qui interroge OpenSky Network.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">Chargement des livres…</string>
     <string name="livres_echec_web">Les livres n’ont pas pu être chargés. Vérifiez la connexion, puis réessayez.</string>
     <string name="livres_reessayer_web">Réessayer</string>
     <!-- Pour la version web (02/11) : la ligne de version des réglages, avec l’empreinte de la construction (version.txt) au lieu du numéro Android. -->
     <string name="app_version_web">Version web %1$s</string>
+    <!-- Pour la version web (13/11, audit du 12/11) : la garde des données dans un navigateur (FWEBCODE-01), la liste des villes (FWEBCODE-05), la réinitialisation (FWEBCODE-07). -->
+    <string name="installer_ios_web">Sur iPhone, installez l’application : Partager → « Sur l’écran d’accueil ». Sans cela, Safari peut effacer votre journal après sept jours sans visite.</string>
+    <string name="import_installe_web">Vous utilisiez déjà MyHitbodedut dans Safari ? L’application installée garde ses données à part : dans Safari, exportez-les (Réglages → Mes données), puis importez le fichier ici.</string>
+    <string name="export_rappel_web">Plus de trente jours sans sauvegarde. Vos données ne sont gardées que dans ce navigateur : exportez-les dans « Mes données ».</string>
+    <string name="stockage_memoire_web">Ce navigateur refuse d’enregistrer (navigation privée ou stockage bloqué) : rien de ce que vous faites ici ne sera gardé.</string>
+    <string name="stockage_echec_web">Enregistrement impossible : le stockage de ce navigateur est plein ou refusé.</string>
+    <string name="stockage_fragile_web">Ce navigateur ne garantit pas de garder ces données : il peut les effacer de lui-même, par exemple s’il manque de place. Exportez régulièrement.</string>
+    <string name="villes_chargement_web">Chargement des villes…</string>
+    <string name="villes_echec_web">La liste des villes n’a pas pu être chargée. Vérifiez la connexion, puis réessayez.</string>
+    <string name="reset_hint_web">Efface ce que l’application garde dans ce navigateur : journal, hitbodedout, séries, trophées, réglages et morceaux ajoutés. Exportez d’abord vos données si vous voulez les garder.</string>
+    <string name="reset_confirm_text_web">Le journal, les hitbodedout, les séries, les trophées, les réglages et les morceaux ajoutés seront effacés de ce navigateur. Cela ne peut pas être annulé.</string>
     <string name="adresse_tsadik">Tsadik</string>
     <string name="adresse_tsadeket">Tsadeket</string>
     <string name="adresse_none">Pas choisi</string>

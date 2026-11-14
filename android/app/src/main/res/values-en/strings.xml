@@ -455,12 +455,24 @@
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">The streak counts your days in a row, and the week shows at a glance. After each hitbodedut, a note can go into your journal.</string>
     <string name="onboarding_private_body_web">What you write stays in this browser, on this device. Nothing is sent, except a flight number to adsbdb.com if you turn on the online services of in-flight zmanim.</string>
+    <string name="onboarding_private_body_web_relais">What you write stays in this browser, on this device. Nothing is sent unless you turn on the online services of in-flight zmanim: a flight number then goes to adsbdb.com and, for live tracking, the flight’s callsign and its estimated position go to the app’s relay, which queries OpenSky Network.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">Loading the books…</string>
     <string name="livres_echec_web">The books could not be loaded. Check your connection, then try again.</string>
     <string name="livres_reessayer_web">Try again</string>
     <!-- Pour la version web (02/11) : la ligne de version des réglages, avec l’empreinte de la construction (version.txt) au lieu du numéro Android. -->
     <string name="app_version_web">Web version %1$s</string>
+    <!-- Pour la version web (13/11, audit du 12/11) : la garde des données dans un navigateur (FWEBCODE-01), la liste des villes (FWEBCODE-05), la réinitialisation (FWEBCODE-07). -->
+    <string name="installer_ios_web">On iPhone, install the app: Share → “Add to Home Screen”. Otherwise Safari may erase your journal after seven days without a visit.</string>
+    <string name="import_installe_web">Were you already using MyHitbodedut in Safari? The installed app keeps its data separately: in Safari, export it (Settings → My data), then import the file here.</string>
+    <string name="export_rappel_web">More than thirty days without a backup. Your data is kept only in this browser: export it from “My data”.</string>
+    <string name="stockage_memoire_web">This browser refuses to save anything (private browsing or blocked storage): nothing you do here will be kept.</string>
+    <string name="stockage_echec_web">Could not save: this browser’s storage is full or refused.</string>
+    <string name="stockage_fragile_web">This browser does not guarantee to keep this data: it may erase it on its own, for example when space runs low. Export regularly.</string>
+    <string name="villes_chargement_web">Loading the cities…</string>
+    <string name="villes_echec_web">The list of cities could not be loaded. Check your connection, then try again.</string>
+    <string name="reset_hint_web">Erases what the app keeps in this browser: journal, hitbodedut days, streaks, trophies, settings and added tracks. Export your data first if you want to keep it.</string>
+    <string name="reset_confirm_text_web">The journal, hitbodedut days, streaks, trophies, settings and added tracks will be erased from this browser. This cannot be undone.</string>
     <string name="adresse_tsadik">Tsadik</string>
     <string name="adresse_tsadeket">Tsadeket</string>
     <string name="adresse_none">Not chosen</string>

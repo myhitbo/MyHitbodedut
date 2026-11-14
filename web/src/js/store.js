@@ -58,12 +58,14 @@ export function memoire() {
   };
 }
 
-export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = {}) {
+export function creeStore(stockage, { maintenant = () => new Date(), fuseau, surEchec = null } = {}) {
   const lit = (nom) => {
     try { return JSON.parse(stockage.getItem(nom) || '{}') || {}; } catch { return {}; }
   };
   const ecrit = (nom, valeur) => {
-    try { stockage.setItem(nom, JSON.stringify(valeur)); } catch { /* quota : rien à faire de mieux */ }
+    // Une écriture refusée (quota, stockage retiré) ne reste pas muette (13/11, FWEBCODE-01) :
+    // [surEchec] le dit à l'écran, sinon une hitbodedout se perdait derrière son bravo.
+    try { stockage.setItem(nom, JSON.stringify(valeur)); } catch { surEchec?.(nom); }
   };
   const prefs = () => lit(PREFS);
   const get = (cle, defaut) => { const v = prefs()[cle]; return v === undefined ? defaut : v; };
@@ -132,6 +134,15 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
     totalMinutes: () => Object.values(days()).reduce((s, r) => s + r.minutes, 0),
     /** Toutes les journées, pour « Mon parcours » (19/10). */
     jours: () => Object.values(days()),
+    // --- La garde des données (13/11, FWEBCODE-01 ; avis.js) : pour ce navigateur seulement, hors de l'export.
+    /** La plus ancienne date du journal, note seule comprise ; null s'il est vide. */
+    premierJour: () => Object.keys(days()).filter(dateValide).sort()[0] ?? null,
+    /** Le jour de la dernière sauvegarde connue (un export, ou l'import d'un fichier) ; null : jamais. */
+    derniereSauvegarde: () => { const d = get('derniere_sauvegarde', null); return typeof d === 'string' && dateValide(d) ? d : null; },
+    setDerniereSauvegarde: (iso) => set('derniere_sauvegarde', iso),
+    /** Les avis de l'accueil refermés, chacun avec son jour : { installer, importer, exporter }. */
+    avisReportes: () => { const a = get('avis_reportes', null); return a && typeof a === 'object' && !Array.isArray(a) ? a : {}; },
+    reporteAvis: (cle) => set('avis_reportes', { ...store.avisReportes(), [cle]: today() }),
     /** Les minutes des jours faits, par date (Store.bilan, paliers du 11/10). */
     minutesParJour: () => Object.fromEntries(Object.values(days()).filter((r) => r.faite).map((r) => [r.date, r.minutes])),
     /** null tant que les paliers n'ont jamais été regardés : le premier passage ne fête rien. */

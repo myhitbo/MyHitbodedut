@@ -11,6 +11,7 @@ import { MelangeMusique, estQuota, nomDonne, renomme, titreDeFichier } from './m
 import * as MorceauxPerso from './morceaux-perso.js';
 import { DanseMesure } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
+import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
 import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, dansIsrael, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
 import { conditionsPour, index as indexAjouts, libelleJour, vrai as ajoutVrai } from './siddur-jour.js';
@@ -33,6 +34,11 @@ import { chemin as cheminPersonnage } from './personnage.js';
 import { Hitbodedut, MOUVEMENTS, invitationSujet } from './hitbodedut.js';
 
 // --- Stockage ---------------------------------------------------------------
+// Ce que le navigateur fait de ce qu'on lui confie ne reste plus muet (13/11, audit du 12/11,
+// FWEBCODE-01) : le repli en mémoire a son bandeau, une écriture refusée son message, et la
+// réponse de persist() se lit dans « Mes données ».
+/** Vrai quand le navigateur refuse son stockage : tout reste en mémoire, perdu à la fermeture de la page. */
+let sansStockage = false;
 function stockageDuNavigateur() {
   try {
     const s = window.localStorage;
@@ -40,14 +46,23 @@ function stockageDuNavigateur() {
     s.removeItem('__essai');
     return s;
   } catch {
+    sansStockage = true;
     return memoire();
   }
 }
-const store = creeStore(stockageDuNavigateur());
+/** Une écriture refusée (quota) : dite à l'écran, au plus une fois toutes les dix secondes. */
+let dernierEchecEcriture = 0;
+const store = creeStore(stockageDuNavigateur(), { surEchec: () => {
+  if (!tr || Date.now() - dernierEchecEcriture < 10_000) return;
+  dernierEchecEcriture = Date.now();
+  signale(tr.t('stockage_echec_web'));
+} });
 
 // Safari peut effacer ce qu'un site garde ; une application de l'écran
 // d'accueil en est exemptée, et persist() le demande explicitement.
-navigator.storage?.persist?.().catch(() => {});
+/** La réponse du navigateur : true, il garde ; false, il peut effacer de lui-même ; null, pas encore dite. */
+let stockageDurable = null;
+navigator.storage?.persist?.().then((garde) => { stockageDurable = garde === true; if (!stockageDurable && app.dataset.ecran?.startsWith('reglages/')) rendre(); }).catch(() => {});
 
 // --- Petits outils de construction du DOM ---------------------------------------
 function h(tag, attrs = {}, ...enfants) {
@@ -593,6 +608,8 @@ function panneauAujourdhui() {
     // ou hier reste à inscrire, et hors séance en cours.
     (!fait || hierOuvert()) && !store.isSessionRunning()
       ? h('button', { class: 'texte-bouton', onclick: declarerHorsTelephone }, tr.t('action_done_offline')) : null,
+    // La garde des données (13/11, FWEBCODE-01) : installer, importer ou exporter, un avis à la fois.
+    avisDonnees(),
     // L'accueil selon l'heure (14/10) : la prière du moment, Birkat haLevana les soirs de la fenêtre.
     ...momentAccueil(),
     // Les trophées et les paliers, en bas de la page (11/10).
@@ -600,6 +617,35 @@ function panneauAujourdhui() {
     h('div', { class: 'boutons-bas' },
       h('button', { class: 'bouton-trophees', onclick: () => ouvrir('paliers') }, tr.t('trophees_paliers')),
       h('button', { class: 'bouton-trophees', onclick: () => ouvrir('parcours') }, tr.t('parcours_title')))));
+}
+
+// --- La garde des données (13/11, audit du 12/11, FWEBCODE-01) ---------------------------------
+/** Lancée depuis l'écran d'accueil du téléphone (iOS : navigator.standalone ; ailleurs : display-mode). */
+const installee = navigator.standalone === true || !!window.matchMedia?.('(display-mode: standalone)').matches;
+/** Hors de l'écran d'accueil, Safari efface ce qu'un site garde après sept jours sans visite. */
+const aInstaller = () => surIOS && !installee;
+/** Le texte de chaque avis (avis.js) ; importer et exporter mènent à « Mes données ». */
+const AVIS = { installer: ['installer_ios_web', false], importer: ['import_installe_web', true], exporter: ['export_rappel_web', true] };
+
+/** L'avis de l'accueil : un seul à la fois ; « Plus tard » le referme pour trente jours. */
+function avisDonnees() {
+  const cle = avisAccueil({
+    ios: surIOS, installee, aujourdhui: store.today(), premierJour: store.premierJour(),
+    derniereSauvegarde: store.derniereSauvegarde(), reports: store.avisReportes(),
+  });
+  if (!cle) return null;
+  const [texte, versDonnees] = AVIS[cle];
+  return h('div', { class: 'carte avis-donnees', role: 'note' },
+    h('p', { class: 'avis-texte' }, tr.t(texte)),
+    h('div', { class: 'avis-actions' },
+      versDonnees ? h('button', { type: 'button', class: 'secondaire', onclick: ouvrirMesDonnees }, tr.t('section_data')) : null,
+      h('button', { type: 'button', class: 'texte-bouton', onclick: () => { store.reporteAvis(cle); rendre(); } }, tr.t('action_later'))));
+}
+
+/** Les réglages, ouverts sur la carte « Mes données » (Exporter, Importer). */
+function ouvrirMesDonnees() {
+  ouvrir('reglages');
+  requestAnimationFrame(() => app.querySelector('.carte-donnees')?.scrollIntoView({ block: 'start' }));
 }
 
 /**
@@ -4471,7 +4517,7 @@ function carteMesDonnees() {
     if (navigator.standalone && navigator.canShare) {
       const fichier = new File([store.exportJson()], nom, { type: 'application/json' });
       if (navigator.canShare({ files: [fichier] })) {
-        try { await navigator.share({ files: [fichier] }); signale(tr.t('export_ok')); } catch (e) { if (e?.name !== 'AbortError') signale(tr.t('export_failed')); }
+        try { await navigator.share({ files: [fichier] }); store.setDerniereSauvegarde(store.today()); signale(tr.t('export_ok')); } catch (e) { if (e?.name !== 'AbortError') signale(tr.t('export_failed')); }
         return;
       }
     }
@@ -4482,6 +4528,7 @@ function carteMesDonnees() {
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      store.setDerniereSauvegarde(store.today());
       signale(tr.t('export_ok'));
     } catch { signale(tr.t('export_failed')); }
   };
@@ -4495,13 +4542,17 @@ function carteMesDonnees() {
     try { texte = await fichier.text(); } catch { signale(tr.t('import_failed')); return; }
     const n = store.importJson(texte);
     if (n === null || n === undefined) { signale(tr.t('import_invalid')); return; }
+    // Un fichier importé est une sauvegarde qui existe : le rappel d'export repart d'aujourd'hui (FWEBCODE-01).
+    store.setDerniereSauvegarde(store.today());
     appliqueApparence();
     rendre();
     signale(tr.p('import_ok', n));
   } });
-  return h('div', { class: 'carte' },
+  return h('div', { class: 'carte carte-donnees' },
     h('h3', {}, tr.t('section_data')),
     h('p', { class: 'indice' }, tr.t('section_data_hint_web')),
+    // Le navigateur n'a pas promis de garder (persist() refusé) : on le dit (FWEBCODE-01).
+    stockageDurable === false ? h('p', { class: 'indice' }, tr.t('stockage_fragile_web')) : null,
     h('div', { class: 'actions-donnees' },
       h('button', { type: 'button', class: 'secondaire', onclick: exporter }, tr.t('action_export')),
       h('button', { type: 'button', class: 'secondaire', onclick: () => champ.click() }, tr.t('action_import'))),
@@ -4523,7 +4574,10 @@ const PRESENTATION = [
   { cle: 'textes', titre: 'onboarding_texts', corps: 'onboarding_texts_body', image: 'char_tehilim' },
   { cle: 'reglages', titre: 'onboarding_yours', corps: 'onboarding_yours_body', image: 'char_pointing' },
   { cle: 'adresse', titre: 'onboarding_adresse', corps: 'onboarding_adresse_body', image: 'char_dancing', adresse: true },
-  { cle: 'prive', titre: 'onboarding_private', corps: 'onboarding_private_body_web', image: 'char_thumbs_up' },
+  // La promesse dit ce qui part vraiment (audit du 12/11, FPRODUIT-08) : sans relais, le seul numéro de vol
+  // vers adsbdb ; avec RELAIS_VOL (build.mjs), le suivi en direct en plus. Sur iPhone hors de l'écran
+  // d'accueil, « reste dans ce navigateur » ne vaut que sept jours : l'écran le dit (FWEBCODE-01).
+  { cle: 'prive', titre: 'onboarding_private', corps: RELAIS_VOL ? 'onboarding_private_body_web_relais' : 'onboarding_private_body_web', image: 'char_thumbs_up', installer: true },
 ];
 const DUREES_PRESENTATION = [5, 10, 15, 30];
 
@@ -4547,6 +4601,7 @@ function presentation() {
       h('div', { class: 'presentation-scene' }, h('img', { src: `img/${e.image}.webp`, alt: '' })),
       h('h1', { class: 'presentation-titre' }, tr.t(e.titre)),
       h('p', { class: 'presentation-corps' }, tr.t(e.corps)),
+      e.installer && aInstaller() ? h('p', { class: 'presentation-corps presentation-avis' }, tr.t('installer_ios_web')) : null,
       e.duree ? puces(DUREES_PRESENTATION, store.targetMinutes(), (m) => tr.duree(m), (m) => store.setTargetMinutes(m)) : null,
       e.adresse ? puces(['m', 'f'], store.adresse(), (a) => tr.t(a === 'm' ? 'adresse_tsadik' : 'adresse_tsadeket'), (a) => { store.setAdresse(a); appliqueApparence(); }) : null,
       h('button', { class: 'principal', onclick: () => { if (dernier) fermer(); else { i++; dessiner(); } } },
@@ -5383,6 +5438,8 @@ function rendre() {
   const champ = document.activeElement?.classList?.contains('champ-recherche') ? document.activeElement : null;
   const selection = champ ? [champ.selectionStart, champ.selectionEnd] : null;
   app.replaceChildren();
+  // Le stockage refusé (FWEBCODE-01) : un bandeau permanent, au-dessus de chaque écran.
+  if (sansStockage) app.append(h('p', { class: 'bandeau-stockage', role: 'note' }, tr.t('stockage_memoire_web')));
   if (ecran === 'musique') app.append(ecranMusique());
   else if (ecran === 'reglages') app.append(ecranReglages());
   else if (ecran === 'zmanim') app.append(ecranZmanim());
