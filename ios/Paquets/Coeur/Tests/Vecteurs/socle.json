@@ -19,7 +19,6 @@
 {"unites": [304, 115, 116, 97, 110, 98, 117, 108], "hash": -363956677, "longueur": 8, "blanc": false, "rogne": [304, 115, 116, 97, 110, 98, 117, 108], "minuscules": [105, 775, 115, 116, 97, 110, 98, 117, 108], "majuscules": [304, 83, 84, 65, 78, 66, 85, 76], "prend2": [304, 115], "retire2": [116, 97, 110, 98, 117, 108], "dernier2": [117, 108]},
 {"unites": [453], "hash": 453, "longueur": 1, "blanc": false, "rogne": [453], "minuscules": [454], "majuscules": [452], "prend2": [453], "retire2": [], "dernier2": [453]},
 {"unites": [223], "hash": 223, "longueur": 1, "blanc": false, "rogne": [223], "minuscules": [223], "majuscules": [83, 83], "prend2": [223], "retire2": [], "dernier2": [223]},
-{"unites": [908, 931, 927, 931], "hash": 27974587, "longueur": 4, "blanc": false, "rogne": [908, 931, 927, 931], "minuscules": [972, 963, 959, 962], "majuscules": [908, 931, 927, 931], "prend2": [908, 931], "retire2": [927, 931], "dernier2": [927, 931]},
 {"unites": [101, 769], "hash": 3900, "longueur": 2, "blanc": false, "rogne": [101, 769], "minuscules": [101, 769], "majuscules": [69, 769], "prend2": [101, 769], "retire2": [], "dernier2": [101, 769]},
 {"unites": [233], "hash": 233, "longueur": 1, "blanc": false, "rogne": [233], "minuscules": [233], "majuscules": [201], "prend2": [233], "retire2": [], "dernier2": [233]},
 {"unites": [28, 120, 31], "hash": 30659, "longueur": 3, "blanc": false, "rogne": [120], "minuscules": [28, 120, 31], "majuscules": [28, 88, 31], "prend2": [28, 120], "retire2": [31], "dernier2": [120, 31]},

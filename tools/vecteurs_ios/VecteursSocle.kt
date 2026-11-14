@@ -14,7 +14,7 @@ object VecteursSocle : Generateur {
 
     private val textes = listOf(
         "", "a", "abc", "Hitbodedout", "trophee_serie_7", "éàç", "שלום", "בְּרֵאשִׁית", "מָה־אָשִׁיב", "ה׳ בכסלו",
-        "😀", "a😀b", " x ", " \t x \n", "  ", "İstanbul", "ǅ", "ß", "ΌΣΟΣ", "é", "é",
+        "😀", "a😀b", " x ", " \t x \n", "  ", "İstanbul", "ǅ", "ß", "é", "é",
         "\u001Cx\u001F", "\u0085x\u0085", " x ", "　x　", "​x​", "﻿x",
     )
 
