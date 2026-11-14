@@ -124,6 +124,10 @@ class LibraryEntryActivity : AppCompatActivity() {
             }
             for (i in avant until container.childCount) ReglagesLecture.reperer(container.getChildAt(i), index + 1)
         }
+
+        // Des traductions affichées : on dit d'où elles viennent (COUV-05).
+        if (LanguesTexte.montreTraduction(mode) && (source.paragraphesFr.isNotEmpty() || source.paragraphesEn.isNotEmpty()))
+            container.addView(LanguesTexte.mentionAuto(this))
     }
 
     /** Un paragraphe hébreu : lu de droite à gauche, quelle que soit l'UI. */

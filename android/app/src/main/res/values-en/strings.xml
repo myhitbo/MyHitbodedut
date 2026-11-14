@@ -568,6 +568,19 @@
     <string name="track_niggoun_31">Niggun 31</string>
     <string name="track_niggoun_32">Niggun 32</string>
     <string name="track_niggoun_33">Niggun 33</string>
+    <string name="track_shpayer_ki_hine_kahomer">Niggun “Ki Hineh KaChomer” — Noam Shpayer</string>
+    <string name="track_ianir_baal_shem_tov">Niggun of the Baal Shem Tov — Ianir</string>
+    <string name="track_ianir_zemer_bishvahin">Zemer Bishvachin (title uncertain) — Ianir</string>
+    <string name="track_ianir_berditchev">Berditchev Niggun — Ianir</string>
+    <string name="track_ianir_kol_bayaar">Kol BaYa’ar (Niggun of the Shpoler Zeide) — Ianir</string>
+    <string name="track_ianir_yohanan_hasandlar">Niggun of Rabbi Yochanan HaSandlar — Ianir</string>
+    <string name="track_ianir_houppa">Chuppah Niggun — Ianir</string>
+    <string name="track_ianir_kabbalat_chabbat">Kabbalat Shabbat Niggun (live) — Ianir</string>
+    <string name="track_ianir_bessarabie">Bessarabian Niggun — Ianir</string>
+    <string name="track_shpayer_eshet_hayil">Eshet Chayil — Or &amp; Noam Shpayer</string>
+    <string name="track_shpayer_afilou">Afilu (Even) — Noam Shpayer</string>
+    <string name="track_shpayer_kenout">Kenut (Sincerity) — Noam Shpayer</string>
+    <string name="track_shpayer_hithadshout">Hitchadshut (Awakening) — Noam Shpayer</string>
 
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d min</string>
@@ -1010,6 +1023,7 @@
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">Books</string>
     <string name="livres_hint">Likutei Moharan, Hishtapchut HaNefesh, Kochvei Or, megillot, Perek Shira, Nishmat…</string>
+    <string name="livres_pied">Yalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef. Text: Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5). Partial, unreviewed machine French and English translations, under the same licence.\nThe other French and English translations are machine-made and unreviewed: the Hebrew prevails.</string>
     <!-- La halakha du jour : le Yalkut Yosef, puis le Ben Ish 'Haï (13/10) -->
     <string name="halakha_ben_ish_hai">Ben Ish Chai, weekly portion</string>
     <string name="halakha_yalkut_source">Yalkut Yosef – Kitzur Shulchan Aruch, Rav Yitzchak Yosef (Torat Emet text, CC BY-NC-SA 2.5): a selection, not the whole book.</string>
@@ -1421,6 +1435,9 @@
 
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">Privacy policy</string>
+    <string name="settings_licences">Sources and licences</string>
+    <string name="licences_texte">Texts\nThe Hebrew texts (siddur, Tehillim, Tikkun, books, sources) come from public-domain editions, notably Sefaria, Torat Emet, tanach.us and rabenubook, or are used with their authors’ permission; each edition and its licence are declared in the app’s data files.\nYalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef: text from Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilulot: Hebrew Wikipedia (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik and HaMeir LaArets with their permission.\n\nTranslations\nThe French and English translations are machine-made and unreviewed: the Hebrew prevails. Those of Yalkut Yosef are partial, under the same licence as the text. For Tehillim, the Tikkun, Esther and Song of Songs: Bible du Rabbinat (1899) and JPS (1917), public domain.\n\nFonts\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew and Varela Round, under the SIL OFL 1.1 licence.\n\nData\nCities: GeoNames (CC BY 4.0). Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); names: Wikidata (CC0). Flight routes: adsbdb.com.\n\nCalendar and zmanim\nKosherJava (LGPL 2.1), directly or through its JavaScript port. The app ships with the licence text; the app’s source code is available on written request to myhitbodedut26@gmail.com.</string>
+    <string name="licences_android">\n\nLibraries of the Android app\nBarcode reading: ZXing (Apache 2.0). AndroidX and Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
     <string name="vol_en_ligne_aide">Off by default: nothing leaves the phone. When on, the 🔍 sends only the flight number to adsbdb.com to fill in the arrival, and live tracking queries OpenSky Network.</string>
@@ -1447,6 +1464,7 @@
     <string name="lecture_langues">Text languages</string>
     <string name="lecture_sans_traduction">This text has no translation yet: it stays in Hebrew.</string>
     <string name="lecture_traduction_auto">Machine translation, not reviewed: the Hebrew text is authoritative.</string>
+    <string name="lecture_traduction_partielle">Partly translated: %1$d of %2$d chapters. The rest remain in Hebrew.</string>
     <string name="langues_he">עברית</string>
     <string name="langues_fr">Français</string>
     <string name="langues_en">English</string>

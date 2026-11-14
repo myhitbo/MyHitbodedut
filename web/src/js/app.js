@@ -790,9 +790,13 @@ function momentAccueil() {
   // La source du jour (SourceDuJour, 19/10) : la même toute la journée, distincte du ’hizouk.
   const p = chargeBibliotheque() ? SourceDuJour.choix(bibliotheque, store.today()) : null;
   if (p) {
+    // Dans les langues de lecture, comme la carte de ’hizouk : l'hébreu et sa traduction par défaut (COUV-08).
+    const textes = SourceDuJour.textes(p, languesLecture());
+    const avecHe = textes.some(([l]) => l === 'he');
     cartes.push(h('div', { class: 'carte source-du-jour' },
       h('span', { class: 'maintenant-libelle' }, tr.t('source_du_jour')),
-      h('p', { class: 'source-du-jour-texte', lang: 'he', dir: 'rtl' }, SourceDuJour.extrait(p.texte)),
+      ...textes.map(([l, t]) => (l === 'he' ? h('p', { class: 'source-du-jour-texte', lang: 'he', dir: 'rtl' }, t)
+        : h('p', { class: `source-du-jour-traduction${avecHe ? '' : ' seule'}`, lang: l, dir: 'ltr' }, t))),
       h('p', { class: 'source-du-jour-ref' }, Reference.localise(p.source.ref, tr.langue)),
       h('div', { class: 'source-du-jour-actions' },
         // Un seul « Commencer » sur l'accueil, celui du haut : la source invite à lire.
@@ -1524,7 +1528,11 @@ function ecranPriere() {
   };
   // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
   const traduitIci = x.sections.some((s) => s.blocs.some((b) => b.fr || b.en));
-  const sansTraduction = livre && LanguesTexte.manque(languesLecture(), traduitIci);
+  // Le siddour aussi : ses prières et ses consignes ne sont pas traduites, et il le dit (COUV-02).
+  const sansTraduction = LanguesTexte.manque(languesLecture(), traduitIci);
+  // Un livre traduit en partie (le Yalkout Yossef) : combien de chapitres, les autres restent en hébreu (COUV-01, TLIVRES-05).
+  const chapitresTraduits = x.sections.filter((s) => s.blocs.some((b) => !b.c && (b.fr || b.en))).length;
+  const traductionPartielle = livre && traduitIci && chapitresTraduits < x.sections.length && languesLecture() !== 'he';
   const traductionAuto = livre && traduitIci && !!x.traduction && languesLecture() !== 'he';
   // Une longue prière (Cha'harit, 04/11) se construit comme un livre, section par section à
   // l'approche de l'écran : construite et mise en page d'un coup, son ouverture gelait l'écran
@@ -1535,6 +1543,7 @@ function ecranPriere() {
   const contenu = h('div', { class: 'contenu lecture siddour' },
     sansTraduction ? h('p', { class: 'indice' }, tl('lecture_sans_traduction')) : null,
     // Une traduction automatique affichée : non relue, l'hébreu fait foi (COUV-05).
+    traductionPartielle ? h('p', { class: 'indice' }, tl('lecture_traduction_partielle', chapitresTraduits, x.sections.length)) : null,
     traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     annotations ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
@@ -2155,7 +2164,9 @@ function ecranLivres() {
         h('div', { class: 'carte carte-sections' }, livres.textes.filter((x) => x.groupe === g.cle).map((x) =>
           ligneHebreu(x.titre.he, [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, tr.p('livre_chapitres', x.chapitres ?? x.sections?.length ?? 0)].filter(Boolean).join(' · '),
             () => { priere = `livre:${x.id}`; ouvrir('priere'); }))),
-      ]) : []))));
+      ]) : []),
+      // La licence du Yalkout Yossef et l'origine des traductions, au pied de la liste (TLIVRES-02, COUV-05).
+      ...tr.t('livres_pied').split('\n').map((l) => h('p', { class: 'indice', dir: 'auto' }, l)))));
 }
 
 /**
@@ -2187,6 +2198,8 @@ function ecranHizouk() {
         h('button', { class: 'secondaire', 'aria-pressed': garde ? 'true' : 'false', onclick: () => { store.basculerChizukFavori(item.id); rendre(); } },
           tr.t(garde ? 'chizuk_garde' : 'chizuk_garder')),
         h('button', { class: 'secondaire', onclick: partager }, tr.t('chizuk_partager'))) : null,
+      // Une traduction affichée : on dit d'où elle vient (COUV-05).
+      item && languesLecture() !== 'he' ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
       h('button', { class: 'principal', onclick: () => ouvrir('seance') }, tr.t('chizuk_commencer')),
       gardes.length ? h('h2', { class: 'section' }, tr.t('chizuk_favoris')) : null,
       gardes.length ? h('div', { class: 'carte' }, gardes.map((x) =>
@@ -2226,6 +2239,8 @@ function ecranSource() {
         h('p', { class: 'source-ref' }, Reference.localise(e.ref, tr.langue)))),
     h('div', { class: 'carte carte-texte psaume', lang: 'he', dir: 'rtl' },
       paragraphesTraduits(LibraryRules.paragraphes(bibliotheque, e), e.paragraphes_fr, e.paragraphes_en, (p) => h('p', { class: 'verset paragraphe-source' }, p))),
+    // Des traductions affichées : on dit d'où elles viennent (COUV-05).
+    languesLecture() !== 'he' && (e.paragraphes_fr?.length || e.paragraphes_en?.length) ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     // Ni note ni édition sous le texte : l'attribution passe par le lien vers Sefaria.
     e.url ? h('a', { class: 'principal lien-sefaria', href: e.url, target: '_blank', rel: 'noopener noreferrer' }, tr.t('library_open_sefaria')) : null));
 }
@@ -4418,6 +4433,7 @@ function ecranReglages() {
             (j) => { store.setSourceHalakha(SOURCES_HALAKHA[j][0]); rendre(); }) })),
       carteDedicace(),
       carteMesDonnees(),
+      carteLicences(),
       h('div', { class: 'carte' }, ligne({ nom: tr.t('settings_onboarding'), onclick: presentation })),
       // Réinitialiser l'application (12/10) : en dernier, avec une confirmation.
       h('div', { class: 'carte carte-reinit' },
@@ -4539,6 +4555,14 @@ function dedicacer() {
         h('button', { type: 'button', onclick: fermer }, tr.t('action_back')),
         h('button', { type: 'button', class: 'fort', onclick: ecrire }, tr.t('dedicace_ecrire'))));
   });
+}
+
+/** Sources et licences (audit du 12/11, TLIVRES-09, TPLAYDOCS-13) : le texte d'Android, sans ses bibliothèques. */
+function carteLicences() {
+  return h('div', { class: 'carte' },
+    h('details', { class: 'licences' },
+      h('summary', {}, tr.t('settings_licences')),
+      ...tr.t('licences_texte').split('\n').filter(Boolean).map((l) => h('p', { class: 'indice', dir: 'auto' }, l))));
 }
 
 function carteMesDonnees() {

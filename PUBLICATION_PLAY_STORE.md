@@ -308,7 +308,7 @@ reproduction, **traduction**, diffusion dans l'application et sur le site.
 | Tanakh, Likoutei Moharan, Sefer haMidot, Siddour Edot haMizra'h, Perek Chira | Domaine public (via Sefaria) | Aucune |
 | Traductions du Rabbinat et de la JPS | Domaine public | Aucune |
 | Siddour, traduction Metsudah | CC-BY | Mention au pied du siddour |
-| Kitsour Choul'han Aroukh Yalkout Yossef (Torat Emet) | **CC BY-NC-SA 2.5** + licence reçue | Application **gratuite, sans publicité ni achat** ; crédit affiché ; garder l'écrit de la licence |
+| Kitsour Choul'han Aroukh Yalkout Yossef (Torat Emet) | **CC BY-NC-SA 2.5** + licence reçue | Application **gratuite, sans publicité ni achat** ; crédit affiché (au pied de la liste des livres et dans Réglages › Sources et licences) ; garder l'écrit de la licence. La déclaration du 19/10 couvre le livre entier ; **à obtenir** : un écrit qui couvre aussi la diffusion sur le site et la traduction automatique, partielle (92 chapitres sur 1 048), sinon retirer la traduction |
 | Torat Emet, Seder haDorot (hilloulot) | CC BY-NC-SA 2.5 | Crédit affiché ; mêmes conditions que le Yalkout Yossef |
 | Livres du Yanuka (מכון ים שלמה) | « כל הזכויות שמורות », autorisation déclarée | Écrit à conserver, comme 3.2 |
 | Bisdei Yaar, Rav Shalom Arush (breslev.co.il) : 86 des 171 textes de 'hizouk (`chizuk.json`) | Autorisation déclarée le 22/09 | **Écrit à conserver** ; portée à faire préciser : reproduction, traduction, site web |
@@ -320,8 +320,9 @@ reproduction, **traduction**, diffusion dans l'application et sur le site.
 | Hilloulot : החכם היומי, Hidabroot | Faits et liens seulement | Aucune |
 | Ben Ish 'Haï (Wikisource via Sefaria) | Domaine public | Aucune |
 | Villes (GeoNames) | CC BY 4.0, attribution au pied des écrans Zmanim, Calendrier et Boussole | OK — vérifié |
-| KosherJava (calcul des zmanim) | LGPL 2.1 | Bibliothèque non modifiée ; licence citée dans `ZMANIM.md` |
 | Polices (6 × OFL) | `assets/licences/` | OK — vérifié |
+| KosherJava 2.5.0 (zmanim, Android) et kosher-zmanim (site) | **LGPL 2.1** | Texte dans `assets/licences/LGPL-2.1-KosherJava.txt`, affiché dans Réglages › Sources et licences ; source du code de l'application sur demande écrite (LGPL § 6) — à remplacer par l'adresse publique tant que le dépôt reste public |
+| ZXing core 3.5.3 ; AndroidX et Material Components | Apache 2.0 | Texte dans `assets/licences/Apache-2.0-ZXing.txt`, même écran |
 | Si'hot haRan, Chiv'hei haRan, Likoutei Etsot (rabenubook), Likoutei Tefilot (Maleh Vigadish 2021) — les 7 anciennes entrées `"unknown"` | Œuvres de Rabbi Natan (m. 1844), domaine public ; licence des éditions non déclarée par Sefaria (vérifié le 29/10) | **Tranché le 29/10** : affichées en texte seul, licence réécrite « Public Domain (texte seul) » ; `LicencesEditionsTest` interdit le retour d'un « unknown ». L'audit du 12/11 (TLIVRES-03) a trouvé la vocalisation de l'éditeur encore présente dans des fichiers : tant que ce constat n'est pas clos, « texte seul » vaut pour l'affichage, pas pour les fichiers livrés |
 
 ## 4. Compte développeur

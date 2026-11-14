@@ -180,6 +180,7 @@ class SettingsActivity : AppCompatActivity() {
             importFile.launch(arrayOf("application/json", "text/plain", "*/*"))
         }
         findViewById<Button>(R.id.privacy_policy).setOnClickListener { ouvrirConfidentialite() }
+        findViewById<Button>(R.id.licences_button).setOnClickListener { montrerLicences() }
         findViewById<Button>(R.id.dedicace_button).setOnClickListener { Dedicace.ouvrir(this) }
         findViewById<Button>(R.id.reset_app).setOnClickListener { confirmerReinitialisation() }
     }
@@ -643,6 +644,30 @@ class SettingsActivity : AppCompatActivity() {
      * Les règles de confidentialité (31/10, Google Play), publiées avec le site web
      * (web/src/confidentialite.html), ouvertes dans le navigateur à la langue de l'interface.
      */
+    /**
+     * Sources et licences (audit du 12/11, TLIVRES-09, TPLAYDOCS-13) : d'où viennent les textes et les
+     * traductions, les polices, les données, puis le texte des licences livrées avec l'application
+     * (LGPL 2.1 de KosherJava, Apache 2.0 de ZXing, AndroidX et Material).
+     */
+    private fun montrerLicences() {
+        fun asset(nom: String) = runCatching { assets.open("licences/$nom").bufferedReader().use { it.readText() } }.getOrDefault("")
+        val texte = getString(R.string.licences_texte) + getString(R.string.licences_android) +
+            "\n\n— LGPL 2.1 —\n\n" + asset("LGPL-2.1-KosherJava.txt") +
+            "\n\n— Apache 2.0 —\n\n" + asset("Apache-2.0-ZXing.txt")
+        val vue = TextView(this).apply {
+            this.text = texte
+            textSize = 14f
+            setTextIsSelectable(true)
+            val d = resources.displayMetrics.density
+            setPadding((24 * d).toInt(), (8 * d).toInt(), (24 * d).toInt(), (8 * d).toInt())
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.settings_licences)
+            .setView(ScrollView(this).apply { addView(vue) })
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
     private fun ouvrirConfidentialite() {
         val ancre = when (ChizukCard.language(this)) {
             "he" -> "he"

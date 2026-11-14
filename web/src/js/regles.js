@@ -372,7 +372,16 @@ export const SourceDuJour = {
   PAS: 37,
   candidats(bibliotheque) {
     return LibraryRules.sources(bibliotheque).flatMap((section) => section.sous_sections.flatMap((sous) => sous.entrees.flatMap((e) =>
-      LibraryRules.paragraphes(bibliotheque, e).filter((p) => p.length >= SourceDuJour.MIN).map((texte) => ({ source: e, texte })))));
+      // Le rang d'abord, le filtre ensuite : un paragraphe court écarté ne décale pas les traductions.
+      LibraryRules.paragraphes(bibliotheque, e).map((texte, indice) => ({ source: e, texte, indice })).filter((p) => p.texte.length >= SourceDuJour.MIN))));
+  },
+  /**
+   * Ce que la carte donne à lire, dans l'ordre des langues choisies : [langue, extrait] (13/11,
+   * audit du 12/11, COUV-08, FWEBCODE-08 : la carte ne montrait que l'hébreu).
+   */
+  textes(p, mode) {
+    return LanguesTexte.textes(mode, p.texte, p.source.paragraphes_fr?.[p.indice], p.source.paragraphes_en?.[p.indice])
+      .map(([langue, texte]) => [langue, SourceDuJour.extrait(SourceDuJour.sansBalises(texte))]);
   },
   /** iso : « AAAA-MM-JJ ». */
   choix(bibliotheque, iso) {
@@ -381,6 +390,8 @@ export const SourceDuJour = {
     const jour = Math.round(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 86400000);
     return c[(((jour * SourceDuJour.PAS) % c.length) + c.length) % c.length];
   },
+  /** Les balises (<b>, <small>, <br>) ôtées avant la coupe : la carte est du texte nu (TLIVRES-01). */
+  sansBalises(texte) { return texte.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(); },
   extrait(texte, max = 320) {
     if (texte.length <= max) return texte;
     const coupe = texte.slice(0, max);

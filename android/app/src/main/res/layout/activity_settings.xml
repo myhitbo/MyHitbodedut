@@ -570,6 +570,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/settings_confidentialite" />
+
+            <!-- Sources et licences (audit du 12/11, TLIVRES-09, TPLAYDOCS-13) : provenance, traductions, polices, bibliothèques. -->
+            <Button
+                android:id="@+id/licences_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_licences" />
         </LinearLayout>
 
         <!-- Réinitialiser l'application (12/10) : en dernier, à l'écart, avec une confirmation. -->
