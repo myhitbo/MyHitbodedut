@@ -261,6 +261,15 @@ object SaisieVol {
         }.toList()
     }
 
+    /** Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas repris, l'heure se choisit (FVOL-03). */
+    fun dateSansHeure(p: Proposition) = p.date != null && p.heureDepart == null
+
+    /**
+     * Le vol ne se calcule et ne s'enregistre seul que si tout vient du texte ou du billet : ni une arrivée
+     * estimée d'après la distance, ni un jour repris de l'ancien vol (FVOL-03). Sinon on remplit les tuiles.
+     */
+    fun calculAutomatique(p: Proposition, arriveeEstimee: Boolean) = !arriveeEstimee && p.date != null
+
     /**
      * La durée de vol estimée quand le billet ne donne pas l'arrivée : la distance à 820 km/h,
      * plus 30 minutes de roulage et de montée. Une estimation, dite comme telle à l'écran.

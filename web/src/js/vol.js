@@ -579,6 +579,12 @@ function prochaineDate(aujourdhui, mois, jour) {
   return d < plusJours(aujourdhui, -7) ? iso(an + 1, mois, jour) : d;
 }
 
+/** Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas repris, l'heure se donne (SaisieVol.dateSansHeure, FVOL-03). */
+export const dateSansHeure = (p) => !!p.date && !p.heureDepart;
+
+/** Le vol ne se calcule seul que si tout vient du texte : ni arrivée estimée, ni jour repris de l'ancien vol (SaisieVol.calculAutomatique). */
+export const calculAutomatique = (p, arriveeEstimee) => !arriveeEstimee && !!p.date;
+
 /**
  * Les heures, dans l'ordre (SaisieVol.heures). Sont écartées (FVOL-04) : celles de l'embarquement ou
  * de la porte, sauf si « départ » est plus près que « gate » ; les durées (« Durée 4h25 », « 4h 25m ») ;

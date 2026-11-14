@@ -123,6 +123,7 @@ class VolActivity : AppCompatActivity() {
             arrivee = enregistre.arrivee
             decollage = Vol.zone(enregistre.depart.fuseau)?.let { LocalDateTime.ofInstant(enregistre.decollage, it) }
             atterrissage = Vol.zone(enregistre.arrivee.fuseau)?.let { LocalDateTime.ofInstant(enregistre.atterrissage, it) }
+            arriveeEstimee = Store.volArriveeEstimee(this)
         }
         afficherFormulaire()
         // Après une rotation aussi : le calcul n'est pas gardé, il se refait en un instant.
@@ -196,6 +197,7 @@ class VolActivity : AppCompatActivity() {
         val fleche = if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) "←" else "→"
         addView(VueJour.texte(this@VolActivity, "\u2068${heureAeroport(plan.depart, plan.decollage)}\u2069 $fleche " +
             "\u2068${heureAeroport(plan.arrivee, plan.atterrissage)}\u2069", 14f, R.color.muted, haut = 2).apply { fontFeatureSettings = "tnum" })
+        if (Store.volArriveeEstimee(this@VolActivity)) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_resume_estimee), 12f, R.color.muted, haut = 4))
     }
 
     /** « mer. 28 19:20 TLV » : l'heure locale d'un aéroport (celle du billet). */
@@ -396,9 +398,12 @@ class VolActivity : AppCompatActivity() {
         p.depart?.let { depart = it }
         p.arrivee?.let { arrivee = it }
         if (p.depart != null || p.arrivee != null) routeTexte = null
+        // Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas gardé, le sélecteur d'heure
+        // s'ouvre sur cette date (audit du 12/11, FVOL-03 : le vol se calculait sur l'ancienne date).
+        if (SaisieVol.dateSansHeure(p)) { decollage = null; atterrissage = null; dateSeule = p.date }
         val jour = p.date ?: decollage?.toLocalDate()
         if (jour != null && p.heureDepart != null) decollage = LocalDateTime.of(jour, p.heureDepart)
-        else if (jour != null) dateSeule = jour
+        else if (jour != null && decollage == null) dateSeule = jour
         arriveeEstimee = false
         val d = depart
         val a = arrivee
@@ -440,7 +445,9 @@ class VolActivity : AppCompatActivity() {
             depart != null && decollage == null -> choisirHeure(dateSeule?.atTime(12, 0)) {
                 appliquer(SaisieVol.Proposition(date = it.toLocalDate(), heureDepart = it.toLocalTime()), null)
             }
-            depart != null && arrivee != null && decollage != null && atterrissage != null -> calculer()
+            // Une arrivée estimée ou un jour repris de l'ancien vol ne s'enregistrent pas d'eux-mêmes : on remplit
+            // les tuiles, la personne vérifie et touche « Calculer » (FVOL-03).
+            SaisieVol.calculAutomatique(p, arriveeEstimee) && depart != null && arrivee != null && decollage != null && atterrissage != null -> calculer()
         }
     }
 
@@ -693,6 +700,7 @@ class VolActivity : AppCompatActivity() {
         val plan = Vol.Plan(numero, d, a, i1, i2, garde?.releve, garde?.sourceReleve ?: Vol.SourceReleve.GPS)
         Vol.verifier(plan)?.let { return message(getString(invalide(it))) }
         Store.setVol(this, plan)
+        Store.setVolArriveeEstimee(this, arriveeEstimee)
         modifier = false
         afficherFormulaire()
         lancer(plan)

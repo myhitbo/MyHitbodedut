@@ -1421,6 +1421,7 @@
     <string name="vol_rapide_heure">שעת ההמראה</string>
     <string name="vol_rapide_compris">הובן: %1$s</string>
     <string name="vol_rapide_estimee">הנחיתה הוערכה לפי המרחק: תקנו אותה לפי השעה שבכרטיס.</string>
+    <string name="vol_resume_estimee">הנחיתה הוערכה לפי המרחק: לחצו על ״עריכה״ כדי להזין את השעה שבכרטיס.</string>
     <string name="vol_rapide_estimee_court">הערכה לפי המרחק: יש לבדוק בכרטיס.</string>
     <string name="vol_rapide_manque">נותר למלא: %1$s.</string>
     <string name="vol_rapide_lecture">קורא את הכרטיס…</string>

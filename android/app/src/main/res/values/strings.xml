@@ -1448,6 +1448,7 @@
     <string name="vol_rapide_heure">l’heure de départ</string>
     <string name="vol_rapide_compris">Compris : %1$s</string>
     <string name="vol_rapide_estimee">Arrivée estimée d’après la distance : corrigez-la avec l’heure du billet.</string>
+    <string name="vol_resume_estimee">Arrivée estimée d’après la distance : touchez « Modifier » pour mettre l’heure du billet.</string>
     <string name="vol_rapide_estimee_court">Estimée d’après la distance : à vérifier sur le billet.</string>
     <string name="vol_rapide_manque">Reste à indiquer : %1$s.</string>
     <string name="vol_rapide_lecture">Lecture du billet…</string>

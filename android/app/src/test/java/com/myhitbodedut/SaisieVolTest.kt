@@ -107,6 +107,21 @@ class SaisieVolTest {
     }
 
     @Test
+    fun `le vol ne se calcule pas seul sur une arrivee estimee ou une date reprise (FVOL-03)`() {
+        // Audit du 12/11 : « Tel Aviv Paris le 20/11 » ne donne qu'une date : l'heure se choisit, l'ancien vol n'est pas repris.
+        val sansHeure = lire("Tel Aviv Paris le 20/11")
+        assertTrue(SaisieVol.dateSansHeure(sansHeure))
+        assertTrue(!SaisieVol.calculAutomatique(sansHeure, arriveeEstimee = true))
+        // Heure de départ seule : l'arrivée sera estimée, le vol ne s'enregistre pas.
+        val complet = lire("Tel Aviv Paris le 20/11 à 10h35")
+        assertTrue(!SaisieVol.dateSansHeure(complet))
+        assertTrue(!SaisieVol.calculAutomatique(complet, arriveeEstimee = true))
+        assertTrue(SaisieVol.calculAutomatique(complet, arriveeEstimee = false))
+        // Aucune date dans le texte : la date de l'ancien vol serait reprise, rien ne se calcule seul.
+        assertTrue(!SaisieVol.calculAutomatique(lire("à 10h35"), arriveeEstimee = false))
+    }
+
+    @Test
     fun `depuis et un jour de la semaine`() {
         val p = lire("aller à Marseille depuis Tel Aviv le 20 novembre à 8h")
         assertEquals("TLV", p.depart?.iata)

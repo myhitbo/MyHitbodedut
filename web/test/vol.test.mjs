@@ -311,6 +311,15 @@ test('saisie rapide : la durée n’est ni une heure ni un numéro, la porte non
   assert.deepEqual([d.numero, d.heureDepart, d.heureArrivee], ['6H123', '10:35', '13:00']);
   const e = lire('Porte fermée 5h45, départ 6h05 BUD TLV 15/11');
   assert.deepEqual([e.numero, e.heureDepart, e.heureArrivee], [null, '06:05', null]);
+  // FVOL-03 : le vol ne se calcule pas seul sur une date sans heure, une arrivée estimée ou un jour repris.
+  const sans = lire('Tel Aviv Paris le 20/11');
+  assert.ok(Vol.dateSansHeure(sans));
+  assert.ok(!Vol.calculAutomatique(sans, true));
+  const complet = lire('Tel Aviv Paris le 20/11 à 10h35');
+  assert.ok(!Vol.dateSansHeure(complet));
+  assert.ok(!Vol.calculAutomatique(complet, true));
+  assert.ok(Vol.calculAutomatique(complet, false));
+  assert.ok(!Vol.calculAutomatique(lire('à 10h35'), false));
   assert.deepEqual(Vol.heuresPhrase('boarding time 5:20'), []);
   assert.deepEqual(Vol.heuresPhrase('porte fermee 5h45'), []);
 });
