@@ -148,4 +148,16 @@ class ExamenConformiteTest {
             assertTrue(d, File("src/main/res/$d/strings.xml").readText().contains("name=\"fichiers_absents\""))
         }
     }
+
+    /** Constat 11 : la mémoire vidée par Android faisait réanalyser le livre ouvert sur le fil principal. */
+    @Test
+    fun `l ecran de lecture garde son livre`() {
+        val lecture = code("SiddurLectureActivity.kt")
+        val recueil = lecture.substringAfter("private fun recueil(): Siddur =").substringBefore("\n\n")
+        assertTrue("le livre gardé sert d'abord", recueil.contains("if (livre) livreOuvert ?: (Data.livre(this, id)"))
+        assertTrue("un livre vide (introuvable) n'est pas gardé", recueil.contains("if (it.textes.isNotEmpty()) livreOuvert = it"))
+        assertTrue("le siddour suit toujours le nusah choisi", recueil.contains("else Data.siddur(this)"))
+        assertEquals("Data.livre n'est lu qu'ici et dans le chargement hors du fil principal", 2,
+            Regex("""Data\.livre\(""").findAll(lecture).count())
+    }
 }
