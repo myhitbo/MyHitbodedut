@@ -117,6 +117,23 @@ struct TempsTests {
         }
     }
 
+    /// `ZonedDateTime` : un jour de plus garde l'heure civile, vingt-quatre heures de plus non, quand l'heure change.
+    @Test func unJourDePlusNEstPasVingtQuatreHeures() throws {
+        let paris = try #require(Fuseau("Europe/Paris"))
+        // Samedi 28 mars 2026 à 12 h ; l'heure d'été commence dans la nuit.
+        let samedi = DateHeureZonee(DateHeure(JourCivil.du("2026-03-28"), heure: 12), fuseau: paris)
+        let dimanche = samedi.plus(jours: 1)
+        #expect(dimanche.civile == DateHeure(JourCivil.du("2026-03-29"), heure: 12))
+        let ecart = dimanche.millis - samedi.millis
+        #expect(ecart == 23 * 3_600_000)
+        let vingtQuatre = samedi.plus(heures: 24)
+        #expect(vingtQuatre.civile == DateHeure(JourCivil.du("2026-03-29"), heure: 13))
+        #expect(samedi < dimanche)
+        #expect(dimanche < vingtQuatre)
+        #expect(samedi.jour == JourCivil.du("2026-03-28"))
+        #expect(samedi.minutesDuJour == 720)
+    }
+
     @Test func champsEtBornes() {
         let jour = JourCivil.du("2026-11-13")
         let soir = DateHeure(jour, heure: 23, minute: 59, seconde: 59, milli: 999)

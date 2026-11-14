@@ -114,3 +114,47 @@ public struct Fuseau: Hashable, Sendable {
         return local - avant
     }
 }
+
+/// Un instant vu d'un fuseau : `java.time.ZonedDateTime`, à la milliseconde.
+/// L'ordre est celui des instants (`isBefore`, `isAfter`).
+public struct DateHeureZonee: Hashable, Comparable, Sendable, CustomStringConvertible {
+    /// Millisecondes Unix : `toInstant().toEpochMilli()`.
+    public let millis: Int64
+    public let fuseau: Fuseau
+
+    /// `Instant.ofEpochMilli(millis).atZone(fuseau)`.
+    public init(millis: Int64, fuseau: Fuseau) {
+        self.millis = millis
+        self.fuseau = fuseau
+    }
+
+    /// `ZonedDateTime.of(civile, fuseau)`, avec les règles de `Fuseau.millis` aux changements d'heure.
+    public init(_ civile: DateHeure, fuseau: Fuseau) {
+        self.init(millis: fuseau.millis(civile), fuseau: fuseau)
+    }
+
+    /// `toLocalDateTime()`.
+    public var civile: DateHeure { fuseau.dateHeure(millis: millis) }
+
+    /// `toLocalDate()`.
+    public var jour: JourCivil { civile.jour }
+
+    /// `hour * 60 + minute` de l'heure civile.
+    public var minutesDuJour: Int { civile.minutesDuJour }
+
+    /// `plusSeconds`, `plusMinutes`, `plusHours` : du temps qui s'écoule, compté sur l'instant.
+    public func plus(heures: Int = 0, minutes: Int = 0, secondes: Int = 0) -> DateHeureZonee {
+        DateHeureZonee(millis: millis + Int64((heures * 60 + minutes) * 60 + secondes) * 1000, fuseau: fuseau)
+    }
+
+    /// `plusDays` : le même jour civil décalé, à la même heure civile (pas 24 heures d'horloge).
+    public func plus(jours: Int) -> DateHeureZonee {
+        DateHeureZonee(civile.plus(jours: jours), fuseau: fuseau)
+    }
+
+    public static func < (gauche: DateHeureZonee, droite: DateHeureZonee) -> Bool {
+        gauche.millis < droite.millis
+    }
+
+    public var description: String { "\(civile) [\(fuseau.identifiant)]" }
+}
