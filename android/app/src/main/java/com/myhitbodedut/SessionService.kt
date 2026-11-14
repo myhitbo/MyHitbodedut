@@ -79,6 +79,7 @@ class SessionService : Service() {
         // close par reconcilier() : il n'y a rien à suivre. Sans ce garde,
         // le tour suivant inscrivait une journée fantôme de 0 min.
         if (intent == null && !Store.hasSessionRecord(this)) {
+            NePasDeranger.retablir(this)
             stopSelf()
             return START_NOT_STICKY
         }
@@ -166,7 +167,12 @@ class SessionService : Service() {
 
     /** Renvoie vrai tant que la séance continue. */
     private fun refresh(): Boolean {
-        if (!Store.isSessionRunning(this)) {
+        // Une séance sans durée oubliée en marche se clôt ici au plafond, comme le fait
+        // reconcilier() : le mode « Ne pas déranger » ne reste pas posé indéfiniment.
+        val plafond = SessionRule.estEchue(
+            Store.sessionStartedAt(this), Store.sessionEndsAt(this), Store.sessionTarget(this), System.currentTimeMillis()
+        )
+        if (!Store.isSessionRunning(this) || plafond) {
             finishSession(early = false)
             return false
         }
@@ -418,7 +424,12 @@ class SessionService : Service() {
          * cours, le service est relancé, s'il peut l'être d'ici.
          */
         fun reconcilier(context: Context) {
-            if (enMarche || !Store.hasSessionRecord(context)) return
+            if (enMarche) return
+            if (!Store.hasSessionRecord(context)) {
+                // Rien n'est inscrit, mais un mode posé par une séance morte peut rester.
+                NePasDeranger.retablir(context)
+                return
+            }
             val maintenant = System.currentTimeMillis()
             val echue = SessionRule.estEchue(
                 Store.sessionStartedAt(context),
@@ -430,11 +441,12 @@ class SessionService : Service() {
                 val theme = Store.sessionTheme(context)
                 val close = Store.endSession(context)
                 if (close.minutes > 0) inscrire(context, close, theme)
+                NePasDeranger.retablir(context)
                 StreakWidget.refresh(context)
             } else {
                 runCatching {
                     context.startForegroundService(Intent(context, SessionService::class.java))
-                }
+                }.onFailure { NePasDeranger.retablir(context) }
             }
         }
         const val ACTION_CANCEL = "com.myhitbodedut.CANCEL_SESSION"
@@ -491,6 +503,7 @@ class SessionService : Service() {
             val theme = Store.sessionTheme(context)
             val close = Store.endSession(context)
             if (echue || close.minutes > 0) inscrire(context, close, theme)
+            NePasDeranger.retablir(context)
         }
 
         fun cancel(context: Context) {
