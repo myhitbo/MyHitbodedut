@@ -269,7 +269,16 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   assert.deepEqual(jour('2027-03-23', true).fetes, ['pourim']);
   assert.ok(jour('2027-03-23', true).conditions.has('al_hanissim'));
   assert.ok(!jour('2027-03-24', true).conditions.has('al_hanissim'));
-  const chaines = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'), 'utf8');
+  // Pourim triple (5785, 5805) : à Jérusalem, le dimanche 16 Adar sans Ta'hanoun ni למנצח ; ailleurs, avec.
+  for (const d of ['2025-03-16', '2045-03-05']) {
+    for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lamnatseah']) {
+      assert.ok(!jour(d, true, true).conditions.has(k), `${d} Jérusalem ${k}`);
+      assert.ok(jour(d, true).conditions.has(k) && jour(d, false).conditions.has(k), `${d} ailleurs ${k}`);
+    }
+  }
+  // Hors Pourim triple, le 16 Adar garde Ta'hanoun à Jérusalem (16 Adar II 5787, un jeudi).
+  assert.ok(jour('2027-03-25', true, true).conditions.has('tahanoun_chaharit'));
+  const chaines =readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'), 'utf8');
   for (const n of ['edot', 'sefard', 'ashkenaz']) {
     for (const k of [...A.ajouts(rc, n), ...A.ajouts(jeune, n), ...A.ajouts(ete, n), ...A.ajouts(av, n)]) assert.ok(chaines.includes(`name="${k}"`), k);
   }

@@ -86,6 +86,7 @@ change, sur la carte du jour et dans le siddour :
 | Anénou du particulier (Chomea téfila) | Cha'harit et Min'ha, jeûne d'Esther compris ; à Tich'a bèAv, Arvit aussi | Min'ha seulement | Min'ha seulement | OC 565:3 : « ובארבע צומות גם היחיד אומרו בכל תפלותיו » ; Rema : « ונהגו בכל הצומות שלא לאומרו כי אם במנחה » ; Tich'a bèAv : Peninei Halakha ([yeshiva.co 48403](https://www.yeshiva.co/midrash/48403)) |
 | Ta'hanoun du 22 Tichri à la fin du mois | pas dit (du 11 Tichri au 2 'Hechvan) | dit après Isrou 'hag | dit après Isrou 'hag | coutume séfarade ; ailleurs, réglage par défaut de `TefilaRules` (`isTachanunRecitedEndOfTishrei`) |
 | Ta'hanoun la veille de Roch Hachana, le matin | pas dit | pas dit | pas dit | OC 581:3 : « אין נופלים על פניהם בערב ראש השנה בתפלה » (`TefilaRules` 2.5.0 le fait dire : corrigé dans `CalendrierJuif`) |
+| Ta'hanoun et למנצח le dimanche 16 Adar, Pourim triple, à Jérusalem | pas dits | pas dits | pas dits | jour du repas de Pourim : Ta'hanoun, Piskei Techouvot 693:7 ([shulchanaruchharav.com](https://shulchanaruchharav.com/article/purim-meshulash-laws-for-jerusalem)) ; למנצח, Rav 'Haïm Sonnenfeld (relevé secondaire ; le Maharalna'h fait dire les deux). Ailleurs, dits : coutume répandue ; Rav Chlomo Zalman Auerbach omet Ta'hanoun partout (Halikhot Chlomo, [etzion.org.il](https://www.etzion.org.il/en/purim-meshulash-continued-part-2-3)) |
 
 Limites déclarées :
 
@@ -109,8 +110,9 @@ de Ta'hanoun jusqu'au 2 'Hechvan ; Hallel partiel sans bénédiction) ont été
 vérifiées auprès d'abrégés de halakha séfarade contemporains.
 
 **Les coutumes de Ta'hanoun** sont les réglages par défaut de `TefilaRules`,
-avec deux corrections (tableau ci-dessus) : la veille de Roch Hachana pour
-tous, la fin de Tichri pour les Edot. Les jours sans Ta'hanoun de la liste
+avec trois corrections (tableau ci-dessus) : la veille de Roch Hachana pour
+tous, la fin de Tichri pour les Edot, le dimanche du Pourim triple à
+Jérusalem. Les jours sans Ta'hanoun de la liste
 séfarade concordent avec ces réglages : tout Nissan, Pessa'h chéni,
 Lag baOmer, de Roch 'Hodech Sivan au 12 inclus, Tich'a bèAv, Tou bèAv, veilles
 de Roch Hachana et de Kippour, 'Hanouka, Tou biChvat, 14 et 15 des deux Adar,

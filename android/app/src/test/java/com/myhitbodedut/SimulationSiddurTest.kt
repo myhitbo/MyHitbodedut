@@ -277,6 +277,12 @@ class SimulationSiddurTest {
             assertTrue("${d.minusDays(1)} Jérusalem", C.AL_HANISSIM !in c(d.minusDays(1), true, true))
             assertTrue("${d.minusDays(1)} ailleurs", C.AL_HANISSIM in c(d.minusDays(1), true) && C.AL_HANISSIM in c(d.minusDays(1), false))
             assertTrue("${d.minusDays(1)} pas de Ta'hanoun", C.TAHANOUN_CHAHARIT !in c(d.minusDays(1), true, true))
+            // Le dimanche 16, jour du repas à Jérusalem : ni Ta'hanoun ni למנצח ; ailleurs, les deux.
+            val dimanche = d.plusDays(1)
+            listOf(C.TAHANOUN_CHAHARIT, C.TAHANOUN_MINHA, C.LAMNATSEAH).forEach { k ->
+                assertTrue("$dimanche Jérusalem $k", k !in c(dimanche, true, true))
+                assertTrue("$dimanche ailleurs $k", k in c(dimanche, true) && k in c(dimanche, false))
+            }
         }
 
         // 9 Av un Chabbat : le jeûne passe au dimanche, « נחם » et le reste avec lui.
