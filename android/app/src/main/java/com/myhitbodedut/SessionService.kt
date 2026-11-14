@@ -156,6 +156,7 @@ class SessionService : Service() {
         ambiance.stop()
         lecteur = null
         handler.removeCallbacks(tick)
+        handler.removeCallbacks(finDuSon)
         relacherEveil()
         enMarche = false
         super.onDestroy()
@@ -212,27 +213,45 @@ class SessionService : Service() {
             inscrire(this, close, theme = theme)
             notifyCompleted(close)
         }
+        StreakWidget.refresh(this)
         // Décompte masqué : rien n'a prévenu que le temps s'écoulait, il faut
         // donc que quelque chose dise qu'il est écoulé. Seulement quand la
         // séance arrive d'elle-même à son terme : celui qui l'arrête lui-même
         // n'a pas besoin qu'on le lui apprenne.
-        if (!early && Store.hideCountdown(this)) chime()
-        StreakWidget.refresh(this)
+        if (!early && Store.hideCountdown(this)) {
+            // « Ne pas déranger » rendu avant le son, qu'il ne fasse pas taire ; musique et
+            // ambiance coupées dessous. Le service reste au premier plan le temps du son :
+            // depuis Android 17, un son joué sans activité visible ni service de premier
+            // plan est rendu muet, sans exception ni message (examen du 14/11, constat 10).
+            NePasDeranger.retablir(this)
+            music.stop()
+            ambiance.stop()
+            if (chime()) {
+                handler.removeCallbacks(tick)
+                handler.postDelayed(finDuSon, DUREE_SON_MS)
+                return
+            }
+        }
         stopSelfAndClear()
+    }
+
+    /** Le son de fin a eu son temps : le service s'arrête, sauf si une séance neuve l'a repris. */
+    private val finDuSon = Runnable {
+        if (!Store.hasSessionRecord(this)) stopSelfAndClear()
     }
 
     /**
      * Le son de fin. La sonnerie de notification du téléphone, celle que son
      * propriétaire a déjà choisie et déjà réglée : rien de plus discret qu'un
      * son qu'on reconnaît. La référence est gardée le temps qu'il finisse.
+     * Rend vrai si le son est parti.
      */
-    private fun chime() {
-        runCatching {
-            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                ?: return
-            ringtone = RingtoneManager.getRingtone(applicationContext, uri)?.also { it.play() }
-        }
-    }
+    private fun chime(): Boolean = runCatching {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            ?: return false
+        ringtone = RingtoneManager.getRingtone(applicationContext, uri)?.also { it.play() }
+        ringtone != null
+    }.getOrDefault(false)
 
     /** Lance le morceau retenu, si la musique est active et rien ne joue déjà. */
     private fun ensureMusic() {
@@ -444,6 +463,9 @@ class SessionService : Service() {
     companion object {
         private const val TICK_MS = 5_000L
         private const val MARGE_EVEIL_MS = 2 * 60_000L
+
+        /** Le temps laissé au son de fin, service au premier plan (une sonnerie de notification dure moins). */
+        private const val DUREE_SON_MS = 4_000L
         private const val REQUETE_FIN = 30
 
         /**

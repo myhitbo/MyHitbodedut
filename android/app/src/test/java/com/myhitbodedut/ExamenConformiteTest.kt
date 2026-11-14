@@ -109,4 +109,23 @@ class ExamenConformiteTest {
         assertTrue(tache.indexOf("pret = true") > tache.indexOf("tikkun(app)"))
         assertTrue(tache.contains("Looper.getMainLooper()"))
     }
+
+    /** Constat 10 : sous Android 17, le son de fin partait au moment où le service quittait le premier plan. */
+    @Test
+    fun `le son de fin se joue service encore au premier plan`() {
+        val service = code("SessionService.kt")
+        val fin = service.substringAfter("private fun finishSession(early: Boolean) {").substringBefore("\n    }\n")
+        val masque = fin.substringAfter("if (!early && Store.hideCountdown(this)) {")
+        assertTrue("« Ne pas déranger » rendu avant le son", masque.indexOf("NePasDeranger.retablir(this)") in 0 until masque.indexOf("chime()"))
+        val son = masque.substringAfter("if (chime()) {").substringBefore("}")
+        assertTrue("le tour de 5 s ne clôt pas une seconde fois", son.contains("handler.removeCallbacks(tick)"))
+        assertTrue(son.contains("handler.postDelayed(finDuSon, DUREE_SON_MS)"))
+        assertTrue("l'arrêt attend la fin du son", son.contains("return") && !son.contains("stopSelfAndClear"))
+        assertTrue(Regex("""DUREE_SON_MS = \d_000L""").containsMatchIn(service))
+        // Le délai ne coupe pas une séance neuve, et ne survit pas au service.
+        val apres = service.substringAfter("private val finDuSon = Runnable {").substringBefore("}")
+        assertTrue(apres.contains("if (!Store.hasSessionRecord(this)) stopSelfAndClear()"))
+        assertTrue(service.substringAfter("override fun onDestroy()").substringBefore("super.onDestroy()").contains("handler.removeCallbacks(finDuSon)"))
+        assertTrue("chime() dit si le son est parti", service.contains("private fun chime(): Boolean"))
+    }
 }
