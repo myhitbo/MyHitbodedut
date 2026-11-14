@@ -1079,6 +1079,16 @@ object Store {
         prefs(context).edit().putBoolean(KEY_REMINDER_ON, enabled).apply()
     }
 
+    /**
+     * Les notifications ont été proposées au départ d'une séance (13/11, FACCUEIL-05) : une seule
+     * fois, pour ne pas reposer la question à qui a répondu « plus tard ».
+     */
+    fun notificationsProposees(context: Context): Boolean = prefs(context).getBoolean("notifications_proposees", false)
+
+    fun setNotificationsProposees(context: Context) {
+        prefs(context).edit().putBoolean("notifications_proposees", true).apply()
+    }
+
     fun reminderMinutes(context: Context): Int = prefs(context).getInt(KEY_REMINDER_MIN, DEFAULT_REMINDER)
 
     fun setReminderMinutes(context: Context, minutes: Int) {
@@ -1278,11 +1288,11 @@ object Store {
     fun adresse(context: Context): Adresse? =
         Adresse.parse(prefs(context).getString(KEY_ADRESSE, null))
 
+    /** L'icône de lancement suit ce choix, mais seulement quand l'application quitte l'écran (IconeLanceur, 13/11). */
     fun setAdresse(context: Context, adresse: Adresse?) {
         prefs(context).edit().apply {
             if (adresse == null) remove(KEY_ADRESSE) else putString(KEY_ADRESSE, adresse.cle)
         }.apply()
-        IconeLanceur.appliquer(context)
     }
 
     /** Copie du choix de langue d'AppCompat, pour les services (LangueApp). */
@@ -1319,9 +1329,9 @@ object Store {
     fun accent(context: Context): Apparence.Accent =
         Apparence.Accent.parse(prefs(context).getString(KEY_ACCENT, null))
 
+    /** Comme [setAdresse] : l'icône de lancement suit à la sortie de l'application. */
     fun setAccent(context: Context, accent: Apparence.Accent) {
         prefs(context).edit().putString(KEY_ACCENT, accent.cle).apply()
-        IconeLanceur.appliquer(context)
     }
 
     /** Le bravo en attente, et le jour de la note qu'il proposera ensuite. */
