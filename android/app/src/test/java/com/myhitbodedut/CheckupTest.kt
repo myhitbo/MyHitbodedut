@@ -45,7 +45,9 @@ class CheckupTest {
         val export = store.substringAfter("fun exportJson").substringBefore("fun importJson")
         assertTrue(export.contains("root.put(\"journal_plus\""))
         assertTrue(export.contains("root.put(\"tikkun_journal\""))
-        val import = store.substringAfter("fun importJson").substringBefore("// --- Format")
+        // Le journal enrichi et le Tikoun passent par importerAjouts, appelé par importJson (fusion du 15/11).
+        val import = store.substringAfter("private fun importerAjouts").substringBefore("// --- Format")
+        assertTrue(store.substringAfter("fun importJson").contains("importerAjouts(context, root,"))
         assertTrue(import.contains("optJSONObject(\"journal_plus\")"))
         assertTrue(import.contains("optJSONArray(\"tikkun_journal\")"))
         assertTrue(import.contains("jour.isBefore(PREMIER_JOUR_IMPORTABLE)"))

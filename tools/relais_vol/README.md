@@ -63,13 +63,15 @@ avec `-PrelaisVol=https://…`.
 
 ## Mettre en ligne (à faire par le propriétaire du compte)
 
-1. Facultatif : un compte OpenSky Network et un client API (identifiant et
-   secret), pour 4 000 crédits par jour au lieu de 400. Sans eux, le relais
-   utilise l'accès anonyme, dont les 400 crédits de l'adresse du Worker sont
-   partagés par tous les visiteurs du web (2 crédits par demande). Usage
-   **non commercial** seulement : une publication sur le Play Store ou
-   l'App Store est à revoir avec les conditions d'OpenSky.
+1. **Obligatoire** (conditions d'OpenSky, ci-dessus) : un compte OpenSky
+   Network et un client API OAuth2 (identifiant et secret, gardés dans les
+   secrets du Worker), pour 4 000 crédits par jour au lieu de 400. Le code
+   sait encore passer en anonyme sans eux, mais ce n'est pas l'usage accordé.
+   Usage **non commercial** seulement.
 2. Créer un compte Cloudflare (offre gratuite : 100 000 requêtes par jour).
+   Le relais limite déjà chaque adresse à 20 demandes par minute (`DEBIT_MAX`),
+   par instance ; pour une limite ferme, ajouter dans Cloudflare une règle de
+   limitation de débit (Security → WAF → Rate limiting rules) sur `/position`.
 3. Ici : `npx wrangler login`, puis, si l'on a un client API,
    `npx wrangler secret put OPENSKY_CLIENT_ID` et
    `npx wrangler secret put OPENSKY_CLIENT_SECRET` ; enfin `npx wrangler deploy`.

@@ -335,6 +335,16 @@ class SettingsActivity : AppCompatActivity() {
                 safeStart(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
             }
         }
+        // Le verrou du journal (audit du 12/11) : sans verrouillage d'écran, il n'y a rien à demander.
+        bindSwitch(R.id.journal_verrou_switch, Store.journalVerrou(this)) { checked ->
+            val sur = getSystemService(android.app.KeyguardManager::class.java)?.isDeviceSecure == true
+            if (checked && !sur) {
+                Toast.makeText(this, R.string.journal_verrou_sans_code, Toast.LENGTH_LONG).show()
+                findViewById<MaterialSwitch>(R.id.journal_verrou_switch).isChecked = false
+            } else {
+                Store.setJournalVerrou(this, checked)
+            }
+        }
         bindSwitch(R.id.hide_countdown_switch, Store.hideCountdown(this)) { checked ->
             Store.setHideCountdown(this, checked)
         }
@@ -588,17 +598,68 @@ class SettingsActivity : AppCompatActivity() {
         requestNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 
+    /** Un champ de mot de passe, masqué. */
+    private fun champMotDePasse(indice: Int) = EditText(this).apply {
+        setHint(indice)
+        inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+        filters = arrayOf(android.text.InputFilter.LengthFilter(MOT_DE_PASSE_MAX))
+    }
+
+    private fun boiteMotDePasse(vararg champs: EditText) = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        val marge = (20 * resources.displayMetrics.density).toInt()
+        setPadding(marge, marge / 2, marge, 0)
+        champs.forEach { addView(it) }
+    }
+
+    /**
+     * Le mot de passe de la sauvegarde (audit du 12/11) : le fichier part là
+     * où l'on veut, souvent un nuage, et il porte le journal. Vide, il reste
+     * en clair, et le texte de la fenêtre le dit.
+     */
     private fun writeBackup(uri: Uri) {
-        val ok = runCatching {
-            contentResolver.openOutputStream(uri)?.use { stream ->
-                stream.write(Store.exportJson(this).toByteArray())
-            } ?: error("flux indisponible")
-        }.isSuccess
-        Toast.makeText(
-            this,
-            if (ok) R.string.export_ok else R.string.export_failed,
-            Toast.LENGTH_LONG
-        ).show()
+        val premier = champMotDePasse(R.string.export_mdp_champ)
+        val second = champMotDePasse(R.string.export_mdp_confirmer)
+        // Le fichier existe déjà, vide, dès qu'on a choisi où l'écrire : renoncer l'efface.
+        val renoncer = { runCatching { android.provider.DocumentsContract.deleteDocument(contentResolver, uri) }; Unit }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.export_mdp_titre)
+            .setMessage(R.string.export_mdp_message)
+            .setView(boiteMotDePasse(premier, second))
+            .setNegativeButton(R.string.action_back) { _, _ -> renoncer() }
+            .setOnCancelListener { renoncer() }
+            .setPositiveButton(R.string.action_export) { _, _ ->
+                val mot = premier.text.toString()
+                if (mot != second.text.toString()) {
+                    Toast.makeText(this, R.string.export_mdp_different, Toast.LENGTH_LONG).show()
+                    writeBackup(uri)
+                } else {
+                    ecrireSauvegarde(uri, mot)
+                }
+            }
+            .show()
+    }
+
+    /** Écrit la sauvegarde, chiffrée si [motDePasse] n'est pas vide ; la dérivation de la clé prend une seconde, hors du fil de l'interface. */
+    private fun ecrireSauvegarde(uri: Uri, motDePasse: String) {
+        val clair = Store.exportJson(this)
+        Thread {
+            val ok = runCatching {
+                val texte = if (motDePasse.isEmpty()) clair else Coffre.chiffrer(clair, motDePasse)
+                contentResolver.openOutputStream(uri, "wt")?.use { stream ->
+                    stream.write(texte.toByteArray())
+                } ?: error("flux indisponible")
+            }.isSuccess
+            runOnUiThread {
+                if (!isDestroyed) {
+                    Toast.makeText(
+                        this,
+                        if (ok) R.string.export_ok else R.string.export_failed,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }.start()
     }
 
     private fun readBackup(uri: Uri) {
@@ -624,6 +685,35 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         val text = String(octets, Charsets.UTF_8)
+        if (Coffre.estChiffre(text)) demanderMotDePasse(text) else importer(text)
+    }
+
+    /** Une sauvegarde chiffrée (audit du 12/11) : le mot de passe, puis l'import ; un mot faux le redemande. */
+    private fun demanderMotDePasse(chiffre: String) {
+        val champ = champMotDePasse(R.string.export_mdp_champ)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.import_mdp_titre)
+            .setView(boiteMotDePasse(champ))
+            .setNegativeButton(R.string.action_back, null)
+            .setPositiveButton(R.string.action_import) { _, _ ->
+                val mot = champ.text.toString()
+                Thread {
+                    val clair = Coffre.dechiffrer(chiffre, mot)
+                    runOnUiThread {
+                        if (isDestroyed) return@runOnUiThread
+                        if (clair == null) {
+                            Toast.makeText(this, R.string.import_mdp_faux, Toast.LENGTH_LONG).show()
+                            demanderMotDePasse(chiffre)
+                        } else {
+                            importer(clair)
+                        }
+                    }
+                }.start()
+            }
+            .show()
+    }
+
+    private fun importer(text: String) {
         val imported = Store.importJson(this, text)
         if (imported == null) {
             Toast.makeText(this, R.string.import_invalid, Toast.LENGTH_LONG).show()
@@ -701,6 +791,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private companion object {
         const val ETAT_DEMANDE = "notifications_demandees"
+        const val MOT_DE_PASSE_MAX = 128
         /** La page publique des règles de confidentialité, sur GitHub Pages avec le site (web/build.mjs). */
         const val LIEN_CONFIDENTIALITE = CelebrationActivity.LIEN_WEB + "confidentialite.html"
         /** Au-delà, ce n'est pas une sauvegarde de cette application. */

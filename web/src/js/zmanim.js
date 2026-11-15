@@ -29,9 +29,24 @@ export const CLES = PROFIL.map(([cle]) => cle);
 export const ALLUMAGES = [18, 20, 22, 30, 40];
 export const ALLUMAGE_DEFAUT = 18;
 
+/**
+ * Le décalage au temps moyen local, comme KosherJava (audit du 12/11, FCALENDRIER-02) :
+ * kosher-zmanim 0.9.0 prend le décalage d'été pour le décalage standard dans les fuseaux à
+ * heure d'été de l'hémisphère sud (Sydney : 20,08 h au lieu de 0,08 h) et avance alors la
+ * date d'un jour (ajustement d'antiméridien). Le décalage standard est le plus petit de
+ * janvier et de juillet, au nord comme au sud.
+ */
+function geoLocation(lieu, year) {
+  const geo = new GeoLocation(lieu.nom, lieu.latitude, lieu.longitude, lieu.altitude ?? 0, lieu.fuseau);
+  const decalage = (month) => DateTime.fromObject({ year, month, day: 1, zone: lieu.fuseau }).offset;
+  const standard = Math.min(decalage(1), decalage(7)) * 60e3;
+  geo.getLocalMeanTimeOffset = () => lieu.longitude * 4 * 60e3 - standard;
+  return geo;
+}
+
 function calendrier(lieu, iso) {
   const [year, month, day] = iso.split('-').map(Number);
-  const c = new ComplexZmanimCalendar(new GeoLocation(lieu.nom, lieu.latitude, lieu.longitude, lieu.altitude ?? 0, lieu.fuseau));
+  const c = new ComplexZmanimCalendar(geoLocation(lieu, year));
   c.setDate(DateTime.fromObject({ year, month, day, hour: 12 }, { zone: lieu.fuseau }));
   // Explicite : le profil calcule au niveau de la mer.
   c.setUseElevation(false);

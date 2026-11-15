@@ -512,7 +512,8 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
     exportJson() {
       const root = {
         format: 'myhitbodedut',
-        version: 1,
+        // Version 2 (audit du 12/11, FDONNEES-01) : tout ce que l'utilisateur a noté ou gardé.
+        version: 2,
         exported_at: maintenant().toISOString(),
         days: Object.fromEntries(Object.values(days()).map((r) => [r.date, toJson(r)])),
         settings: {
@@ -535,6 +536,12 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           apparence_mode: store.modeApparence(),
           apparence_fond: store.fond(),
           apparence_accent: store.accent(),
+          siddur_nusah: store.siddurNusah(),
+          lecture_echelle: store.lectureEchelle(),
+          lecture_police: store.lecturePolice(),
+          lecture_sombre: store.lectureSombre(),
+          lecture_masquee: store.lectureMasquee(),
+          ...(store.lectureLangues() ? { lecture_langues: store.lectureLangues() } : {}),
           // Barrière et rappels (Android seul) : écrits seulement s'ils sont venus d'un import, sinon
           // des valeurs par défaut écraseraient sur Android ce que l'utilisateur y a réglé (02/11).
           ...Object.fromEntries([['window_start', 'window_start'], ['window_end', 'window_end'], ['snooze_minutes', 'snooze_minutes'],
@@ -543,8 +550,13 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
         },
         paused_dates: [...store.pausedDates()],
         blocked_apps: get('blocked_apps', []),
-        // Le journal enrichi (02/11) : une clé de plus, qu'Android ignore à l'import.
+        // Le journal enrichi (02/11), le journal du Tikoun, les favoris et les marque-pages :
+        // Android les écrit et les relit aussi depuis la version 2.
         journal_plus: journalPlusTout(),
+        tikkun_journal: store.tikkunJournal().sort(),
+        favoris: store.favoris(),
+        chizuk_favoris: store.chizukFavoris(),
+        marques_pages: store.marques(),
       };
       return JSON.stringify(root, null, 2);
     },
@@ -568,7 +580,8 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           date,
           minutes: Number.isInteger(e.minutes) ? Math.min(Math.max(e.minutes, 0), 24 * 60) : 0,
           note: typeof e.note === 'string' ? e.note.slice(0, NOTE_MAX) : '',
-          themes: Array.isArray(e.themes) ? e.themes.filter((t) => typeof t === 'string' && t !== '') : [],
+          // Bornés (audit du 12/11) : un fichier fabriqué ne remplit pas le stockage.
+          themes: Array.isArray(e.themes) ? e.themes.filter((t) => typeof t === 'string' && t !== '' && t.length <= 40).slice(0, 20) : [],
           noteSeule,
           faite: !noteSeule,
         };
@@ -579,7 +592,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           date,
           minutes: Math.max(existant.minutes, entrant.minutes),
           note: existant.note.trim() !== '' ? existant.note : entrant.note,
-          themes: [...new Set([...existant.themes, ...entrant.themes])],
+          themes: [...new Set([...existant.themes, ...entrant.themes])].slice(0, 20),
           noteSeule: seule,
           faite: !seule,
         } : entrant;
@@ -601,7 +614,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           if (Number.isInteger(s[cle]) && s[cle] >= min && s[cle] <= max) set(pref ?? cle, s[cle]);
         };
         const bool = (cle, pref) => { if (typeof s[cle] === 'boolean') set(pref ?? cle, s[cle]); };
-        const texteNonVide = (cle, pref) => { if (typeof s[cle] === 'string' && s[cle].trim() !== '') set(pref ?? cle, s[cle]); };
+        const texteNonVide = (cle, pref) => { if (typeof s[cle] === 'string' && s[cle].trim() !== '' && s[cle].length <= 100) set(pref ?? cle, s[cle]); };
         entier('window_start'); entier('window_end'); entier('snooze_minutes', null, 1, 240);
         entier('target_minutes', null, 1, 240); entier('daily_goal_minutes', null, 0, 240);
         bool('pause_shabbat'); bool('in_israel');
@@ -619,16 +632,38 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
         if (['auto', 'clair', 'sombre'].includes(s.apparence_mode)) set('apparence_mode', s.apparence_mode);
         if (['vert', 'blanc', 'sable', 'bleu', 'rose', 'contraste'].includes(s.apparence_fond)) set('apparence_fond', s.apparence_fond);
         if (['vert', 'bleu', 'violet', 'bordeaux', 'ambre', 'turquoise'].includes(s.apparence_accent)) set('apparence_accent', s.apparence_accent);
+        if (['edot', 'sefard', 'ashkenaz'].includes(s.siddur_nusah)) store.setSiddurNusah(s.siddur_nusah);
+        if (typeof s.lecture_echelle === 'number' && Number.isFinite(s.lecture_echelle)) store.setLectureEchelle(s.lecture_echelle);
+        if (['serif', 'sans', 'arrondie', 'frank', 'david', 'rachi', 'miriam'].includes(s.lecture_police)) store.setLecturePolice(s.lecture_police);
+        if (typeof s.lecture_langues === 'string' && ['he', 'fr', 'en', 'he+fr', 'he+en', 'fr+en'].includes(s.lecture_langues)) store.setLectureLangues(s.lecture_langues);
+        bool('lecture_sombre'); bool('lecture_masquee');
+      }
+      // Version 2 : réunis à ce que ce navigateur a déjà, sans rien retirer.
+      const chaines = (a) => (Array.isArray(a) ? [...new Set(a.filter((x) => typeof x === 'string' && x.trim() !== ''))] : []);
+      const tikkun = chaines(root.tikkun_journal).filter((d) => dateValide(d) && d < demain);
+      if (tikkun.length) set('tikkun_journal', [...new Set([...store.tikkunJournal(), ...tikkun])].sort().join(','));
+      const favoris = chaines(root.favoris).filter((c) => /^[sl]:/.test(c));
+      if (favoris.length) set('favoris', [...new Set([...store.favoris(), ...favoris])]);
+      const chizuk = chaines(root.chizuk_favoris);
+      if (chizuk.length) set('chizuk_favoris', [...new Set([...store.chizukFavoris(), ...chizuk])]);
+      if (Array.isArray(root.marques_pages)) {
+        const ici = store.marques();
+        const meme = (a, b) => a.cle === b.cle && a.nusah === b.nusah && a.section === b.section && a.bloc === b.bloc;
+        const entrantes = root.marques_pages.filter((m) => m && typeof m.cle === 'string' && m.cle !== '' && typeof m.nusah === 'string'
+          && Number.isInteger(m.section) && m.section >= 0 && Number.isInteger(m.bloc) && m.bloc >= 0)
+          .map((m) => ({ cle: m.cle, nusah: m.nusah, section: m.section, bloc: m.bloc, apercu: typeof m.apercu === 'string' ? m.apercu : '' }))
+          .filter((m) => !ici.some((x) => meme(x, m)));
+        if (entrantes.length) set('marques_pages', [...ici, ...entrantes].slice(0, 60));
       }
       if (Array.isArray(root.paused_dates)) {
         const dates = store.pausedDates();
         root.paused_dates.forEach((d) => { if (typeof d === 'string' && dateValide(d)) dates.add(d); });
-        set('paused_dates', [...dates]);
+        set('paused_dates', [...dates].slice(0, 4000));
       }
       if (Array.isArray(root.blocked_apps)) {
         const apps = new Set(get('blocked_apps', []));
-        root.blocked_apps.forEach((a) => { if (typeof a === 'string' && a.trim() !== '') apps.add(a); });
-        set('blocked_apps', [...apps]);
+        root.blocked_apps.forEach((a) => { if (typeof a === 'string' && a.trim() !== '' && a.length <= 255) apps.add(a); });
+        set('blocked_apps', [...apps].slice(0, 500));
       }
       return importees;
     },

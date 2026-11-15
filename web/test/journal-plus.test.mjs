@@ -77,3 +77,62 @@ test('la sauvegarde : exportée, réimportée, sans écraser ce qui est déjà n
   c.importJson(JSON.stringify({ format: 'myhitbodedut', journal_plus: { '2027-01-01': { avant: 2 }, '2026-02-30': { avant: 2 } } }));
   assert.deepEqual(JSON.parse(c.exportJson()).journal_plus, {});
 });
+
+test('la sauvegarde complète (audit du 12/11, FDONNEES-01) : tout ce qui est noté ou gardé fait l’aller-retour', () => {
+  const maintenant = () => new Date(2026, 10, 12, 12);
+  const a = creeStore(memoire(), { maintenant });
+  a.setJournalPlus('2026-11-10', plus(2, 4, 'merci', 'la patience'));
+  for (const n of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => i)) a.setTikkunDone(n, true);
+  a.basculerFavori('l:likoutei_etsot');
+  a.basculerFavori('s:minha');
+  a.basculerChizukFavori('c12');
+  a.basculerMarque({ cle: 'l:sefer_hamidot', nusah: '', section: 90, bloc: 3, apercu: 'קרי' });
+  a.setSiddurNusah('ashkenaz');
+  a.setLectureEchelle(1.4);
+  a.setLecturePolice('frank');
+  a.setLectureLangues('he+fr');
+  a.setLectureSombre(true);
+  const fichier = JSON.parse(a.exportJson());
+  assert.equal(fichier.version, 2);
+  for (const cle of ['journal_plus', 'tikkun_journal', 'favoris', 'chizuk_favoris', 'marques_pages']) assert.ok(cle in fichier, cle);
+
+  const b = creeStore(memoire(), { maintenant });
+  b.basculerFavori('l:nichmat');
+  b.importJson(JSON.stringify(fichier));
+  assert.deepEqual(b.journalPlus('2026-11-10'), plus(2, 4, 'merci', 'la patience'));
+  assert.deepEqual(b.tikkunJournal(), a.tikkunJournal());
+  // Réunis, sans perdre ce que b avait déjà.
+  assert.deepEqual(new Set(b.favoris()), new Set(['l:nichmat', 'l:likoutei_etsot', 's:minha']));
+  assert.deepEqual(b.chizukFavoris(), ['c12']);
+  assert.deepEqual(b.marques(), a.marques());
+  assert.equal(b.siddurNusah(), 'ashkenaz');
+  assert.equal(b.lectureEchelle(), 1.4);
+  assert.equal(b.lecturePolice(), 'frank');
+  assert.equal(b.lectureLangues(), 'he+fr');
+  assert.equal(b.lectureSombre(), true);
+  // Un second import du même fichier ne double rien.
+  b.importJson(JSON.stringify(fichier));
+  assert.equal(b.marques().length, 1);
+  assert.equal(b.favoris().length, 3);
+});
+
+test('la sauvegarde : Android et le site écrivent et relisent les mêmes clés (Store.kt / store.js)', async () => {
+  const { readFileSync } = await import('node:fs');
+  const kt = readFileSync(new URL('../../android/app/src/main/java/com/myhitbodedut/Store.kt', import.meta.url), 'utf8');
+  const exportKt = kt.slice(kt.indexOf('fun exportJson('), kt.indexOf('fun importJson('));
+  const importKt = kt.slice(kt.indexOf('private fun importerAjouts('), kt.indexOf('// --- Format'));
+  const champsMarque = ['cle', 'nusah', 'section', 'bloc', 'apercu'];
+  const clesKt = new Set([...exportKt.matchAll(/put\("([a-z_]+)"/g)].map((m) => m[1]).filter((c) => !champsMarque.includes(c)));
+  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 12, 12) });
+  const fichier = JSON.parse(s.exportJson());
+  // Les réglages de la barrière et des rappels n'existent que sur Android : le site ne les écrit qu'après un import.
+  // La typographie Souffle (apparence_police, 14/11) aussi : le site garde la sienne.
+  const androidSeul = new Set(['window_start', 'window_end', 'snooze_minutes', 'reminder_enabled', 'reminder_minutes', 'reminder_times', 'lecture_langues', 'apparence_police']);
+  const clesWeb = new Set([...Object.keys(fichier), ...Object.keys(fichier.settings)]);
+  for (const c of clesKt) if (!androidSeul.has(c)) assert.ok(clesWeb.has(c), `le site n'exporte pas « ${c} »`);
+  for (const c of clesWeb) assert.ok(clesKt.has(c), `Android n'exporte pas « ${c} »`);
+  // Ce qu'Android exporte, il le relit.
+  for (const c of [...clesKt].filter((x) => !['format', 'version', 'exported_at'].includes(x))) {
+    assert.ok(importKt.includes(`"${c}"`), `Android ne relit pas « ${c} »`);
+  }
+});

@@ -25,7 +25,8 @@
     <string name="section_permissions">Required permissions</string>
     <string name="section_permissions_hint">What the app asks for, and why.</string>
     <string name="section_data">My data</string>
-    <string name="section_data_hint">Everything is stored on this phone only. Export from time to time.</string>
+    <string name="section_data_hint">Your journal and notes stay on this phone. Settings (including the zmanim location) may be included in Android’s backup to your Google account, if it is turned on. Export from time to time.</string>
+    <string name="section_data_hint_web">Everything is kept in this browser, on this device. Export from time to time.</string>
     <!-- Dédicace (04/11) : la demande part à l’équipe, par la messagerie de l’utilisateur. -->
     <string name="section_dedicace">Dedication</string>
     <string name="section_dedicace_hint">To dedicate your hitbodedut or your study, the request goes through the MyHitbodedut team. It is written in your own mail app, addressed to myhitbodedut26@gmail.com: nothing is sent without you.</string>
@@ -61,7 +62,7 @@
     <string name="gate_no_apps_title">No app selected</string>
     <string name="gate_no_apps_detail">The mode has nothing to hold back. Choose at least one app.</string>
     <string name="gate_done_title">Day confirmed</string>
-    <string name="gate_done_detail">Nothing will be held back today. The mode returns tomorrow.</string>
+    <string name="gate_done_detail">Nothing will be held back today, except during a hitbodedut in progress. The mode returns tomorrow.</string>
     <string name="gate_exempt_title">Rest day</string>
     <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: the mode is silent and the streak stays intact.</string>
     <string name="gate_snoozed_title">Snoozed</string>
@@ -187,8 +188,9 @@
     <string name="onboarding_start">Start</string>
     <string name="onboarding_practice">Simply speaking</string>
     <string name="onboarding_practice_body">Hitbodedut means withdrawing alone for a while each day and speaking to Hashem in your own language, as you would to someone. No formula to recite, no level to reach.</string>
-    <string name="onboarding_private">Nothing leaves this phone</string>
+    <string name="onboarding_private">Your writing stays here</string>
     <string name="onboarding_private_body">The app only connects to the Internet when you ask it to: live flight tracking asks OpenSky Network for the aircraft in an approximate area, without sending the flight’s callsign; looking up a flight number sends only that number to adsbdb.com. What you write stays on this phone, and only you can take it out, through the export.</string>
+    <string name="onboarding_private_body_route">The app only connects to the Internet when you ask it to: looking up a flight number sends only that number to adsbdb.com. What you write stays on this phone, and only you can take it out, through the export.</string>
     <string name="blocker_session_open_subtitle">Open hitbodedut, %1$s so far. The phone can wait.</string>
     <string name="session_done_title">You spoke with Hashem today</string>
     <string name="session_done_text">%1$s of hitbodedut. Tap to leave a note.</string>
@@ -212,6 +214,17 @@
     <string name="export_failed">Export failed.</string>
     <string name="import_failed">The file could not be read.</string>
     <string name="import_invalid">This file is not a MyHitbodedut backup.</string>
+    <string name="export_mdp_titre">Protect the backup</string>
+    <string name="export_mdp_message">A password encrypts the file. Without it the backup cannot be read, and there is no way to recover it. Leave empty for a plain file, readable by anyone who opens it.</string>
+    <string name="export_mdp_champ">Password</string>
+    <string name="export_mdp_confirmer">The same one, once more</string>
+    <string name="export_mdp_different">The two passwords differ.</string>
+    <string name="import_mdp_titre">Encrypted backup</string>
+    <string name="import_mdp_faux">Wrong password, or damaged file.</string>
+    <string name="journal_verrou">Lock the journal</string>
+    <string name="journal_verrou_hint">The phone’s code or fingerprint is asked to open the journal.</string>
+    <string name="journal_verrou_titre">Open the journal</string>
+    <string name="journal_verrou_sans_code">Set a screen lock on this phone first.</string>
 
     <plurals name="status_streak">
         <item quantity="one">%d day in a row</item>
@@ -452,7 +465,7 @@
     <string name="music_remove_message_web">The track is erased from this browser; the original file stays on the device.</string>
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">The streak counts your days in a row, and the week shows at a glance. After each hitbodedut, a note can go into your journal.</string>
-    <string name="onboarding_private_body_web">What you write stays in this browser, on this device: nothing is sent anywhere, except a flight’s callsign and an approximate position if you turn on live tracking.</string>
+    <string name="onboarding_private_body_web">What you write stays in this browser, on this device. Nothing is sent, except a flight number to adsbdb.com if you turn on the online services of in-flight zmanim.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">Loading the books…</string>
     <string name="livres_echec_web">The books could not be loaded. Check your connection, then try again.</string>
@@ -1278,6 +1291,7 @@
     <string name="vol_direct_titre">Live tracking (Internet)</string>
     <string name="vol_direct_explication">Off by default. When on, it sends the app’s relay the flight’s callsign and the aircraft’s estimated position, nothing else; the relay asks OpenSky Network for the real position. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_direct_activer">Online services: flight route and live tracking</string>
+    <string name="vol_route_activer">Online services: flight route</string>
     <string name="vol_indicatif">Radio callsign (ICAO), for example ELY1</string>
     <string name="vol_indicatif_invalide">Expected callsign: three letters then the number, for example ELY1.</string>
     <string name="vol_direct_bouton">Live position</string>
@@ -1363,9 +1377,9 @@
 
     <!-- La divulgation avant les deux accès spéciaux de la barrière (31/10, Divulgation). -->
     <string name="divulgation_overlay_titre">Display over other apps</string>
-    <string name="divulgation_overlay_texte">What is used: showing a screen over other apps.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. When you open one of the apps you selected, during the time window you set, the “I am with Hashem” screen appears in front of it until the practice of the day is done.\n\nNothing is sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
+    <string name="divulgation_overlay_texte">What is used: showing a screen over other apps.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. When you open one of the apps you selected, during the time window you set, the “I am with Hashem” screen appears in front of it until the practice of the day is done. It also appears in front of these apps during any hitbodedut in progress, at any time of day, until it ends.\n\nNothing is sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
     <string name="divulgation_usage_titre">Usage access</string>
-    <string name="divulgation_usage_texte">What is read: which app is shown in the foreground. Only the last one opened is kept, in memory; no history is stored.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. During the time window you set, and until the practice of the day is done, the app checks whether the one just opened is among those you selected.\n\nNothing is recorded, sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
+    <string name="divulgation_usage_texte">What is read: which app is shown in the foreground. Only the last one opened is kept, in memory; no history is stored.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. During the time window you set, and until the practice of the day is done, the app checks whether the one just opened is among those you selected. It also checks during any hitbodedut in progress, at any time of day.\n\nNothing is recorded, sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
     <string name="divulgation_continuer">Continue</string>
     <string name="divulgation_pas_maintenant">Not now</string>
 
@@ -1374,6 +1388,7 @@
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
     <string name="vol_en_ligne_aide">Off by default: nothing leaves the phone. When on, the 🔍 sends only the flight number to adsbdb.com to fill in the arrival, and live tracking queries OpenSky Network.</string>
+    <string name="vol_en_ligne_aide_route">Off by default: nothing leaves the phone. When on, the 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
     <string name="vol_en_ligne_titre">Look up the route online?</string>
     <string name="vol_en_ligne_oui">Turn on and search</string>
     <string name="vol_rapide_titre">Describe your flight</string>
@@ -1395,6 +1410,7 @@
     <!-- Les langues d’un texte à lire (04/11), LanguesTexte. -->
     <string name="lecture_langues">Text languages</string>
     <string name="lecture_sans_traduction">This text has no translation yet: it stays in Hebrew.</string>
+    <string name="lecture_traduction_auto">Machine translation, not reviewed: the Hebrew text is authoritative.</string>
     <string name="langues_he">עברית</string>
     <string name="langues_fr">Français</string>
     <string name="langues_en">English</string>

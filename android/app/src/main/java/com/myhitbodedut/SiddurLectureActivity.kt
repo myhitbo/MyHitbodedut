@@ -252,7 +252,10 @@ class SiddurLectureActivity : AppCompatActivity() {
         langues = LanguesTexte.mode(this)
         val traduit = texte.sections.any { s -> s.blocs.any { it.fr != null || it.en != null } }
         val sansTraduction = if (livre && LanguesTexte.manque(langues, traduit)) listOf(Note(getString(R.string.lecture_sans_traduction))) else emptyList()
-        val lignes: List<Any> = sansTraduction + note + SiddurJour.lignes(texte, annotations, jour.conditions, ouverts,
+        // Une traduction automatique affichée : on dit qu'elle n'est pas relue, l'hébreu fait foi (COUV-05).
+        val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
+            listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
+        val lignes: List<Any> = sansTraduction + auto + note + SiddurJour.lignes(texte, annotations, jour.conditions, ouverts,
             Store.siddurNusah(this).cle, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this))
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager
@@ -513,7 +516,7 @@ class SiddurLectureActivity : AppCompatActivity() {
                             if (isNotEmpty()) append("\n")
                             if (l == "he") { append(hebreu); return@forEach }
                             val d = length
-                            append(t)
+                            append(LanguesTexte.riche(t))
                             setSpan(android.text.style.TypefaceSpan("serif"), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             if (avecHebreu) {
                                 setSpan(android.text.style.RelativeSizeSpan(0.84f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

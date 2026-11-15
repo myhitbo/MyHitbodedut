@@ -195,6 +195,17 @@ class VolTest {
     }
 
     @Test
+    fun `au nord de 50 degres l'ete, sans aube a 16,1 degres, pas de Chaharit l'apres-midi ni la nuit`() {
+        // Audit du 12/11, FVOL-01 : Londres → Tel-Aviv le 20/06/2027 à 16:00 (heure de Londres, UTC+1).
+        val c = Vol.calculer(plan("LHR", "TLV", "2027-06-20T16:00", "2027-06-20T23:00"))
+        assertEquals("minha", VolPriere.priere(c, Instant.parse("2027-06-20T16:00:00Z"))!!.first)
+        assertEquals("arvit", VolPriere.priere(c, Instant.parse("2027-06-20T21:00:00Z"))!!.first)
+        assertEquals("arvit", VolPriere.priere(c, Instant.parse("2027-06-20T23:00:00Z"))!!.first)
+        val nuit = Vol.calculer(plan("LHR", "TLV", "2027-07-08T22:30", "2027-07-09T05:30"))
+        assertEquals("arvit", VolPriere.priere(nuit, Instant.parse("2027-07-09T00:30:00Z"))!!.first)
+    }
+
+    @Test
     fun `un vol court sans zman reste calculable`() {
         val court = plan("TLV", "ETM", "2026-11-10T09:50", "2026-11-10T10:40")
         val c = Vol.calculer(court)
@@ -318,6 +329,11 @@ class VolTest {
         assertEquals(Duration.ofMinutes(18), Duration.between(entree.allumage, entree.instant))
         val sortie = VolCalendrier.jalons(Vol.calculer(plan("TLV", "JFK", "${vendredi.plusDays(1)}T12:30", "${vendredi.plusDays(1)}T17:45")), false, 18).single()
         assertEquals(VolCalendrier.Type.SORTIE, sortie.type)
+        // Chavouot un vendredi (11/06/2027) : Chabbat entre à la chki'a, allumage avant elle (FCALENDRIER-01).
+        val chavouot = VolCalendrier.jalons(Vol.calculer(plan("CDG", "TLV", "2027-06-11T15:00", "2027-06-11T21:00")), false, 18).single()
+        assertEquals(VolCalendrier.Type.ENTREE, chavouot.type)
+        assertTrue(chavouot.chabbat)
+        assertEquals(Duration.ofMinutes(18), Duration.between(chavouot.allumage, chavouot.instant))
         // Le Omer : le jour compté ce soir est celui du lendemain hébreu.
         val omer = premier("2027-01-01") { CalendrierJuif.jour(it.plusDays(1), false).omer == 4 }
         val j = VolCalendrier.jalons(Vol.calculer(plan("TLV", "JFK", "${omer}T17:00", "${omer}T22:15")), false, 18)

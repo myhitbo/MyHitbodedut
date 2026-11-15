@@ -25,7 +25,8 @@
     <string name="section_permissions">הרשאות נדרשות</string>
     <string name="section_permissions_hint">מה האפליקציה מבקשת, ולמה.</string>
     <string name="section_data">הנתונים שלי</string>
-    <string name="section_data_hint">הכול נשמר בטלפון הזה בלבד. כדאי לייצא מדי פעם.</string>
+    <string name="section_data_hint">היומן וההערות נשארים בטלפון הזה. ההגדרות (כולל המיקום לזמנים) עשויות להיכלל בגיבוי של Android לחשבון Google שלכם, אם הוא מופעל. כדאי לייצא מדי פעם.</string>
+    <string name="section_data_hint_web">הכול נשמר בדפדפן הזה, במכשיר הזה. כדאי לייצא מדי פעם.</string>
     <!-- Dédicace (04/11) : la demande part à l’équipe, par la messagerie de l’utilisateur. -->
     <string name="section_dedicace">הקדשה</string>
     <string name="section_dedicace_hint">כדי להקדיש את ההתבודדות או את הלימוד שלכם, הבקשה עוברת דרך צוות MyHitbodedut. היא נכתבת בתוכנת הדואר שלכם, אל myhitbodedut26@gmail.com: שום דבר לא נשלח בלעדיכם.</string>
@@ -62,7 +63,7 @@
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
     <string name="gate_no_apps_detail">אין מה לעכב. בחרו לפחות אפליקציה אחת.</string>
     <string name="gate_done_title">היום אושר</string>
-    <string name="gate_done_detail">היום כבר לא יעוכב דבר. המצב יחזור מחר.</string>
+    <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
     <string name="gate_exempt_title">יום ללא חובה</string>
     <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב שותק והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
@@ -188,8 +189,9 @@
     <string name="onboarding_start">להתחיל</string>
     <string name="onboarding_practice">פשוט לדבר</string>
     <string name="onboarding_practice_body">התבודדות היא להתייחד לבד זמן־מה בכל יום ולדבר אל השם בשפה שלכם, כמו שמדברים אל מישהו. בלי נוסח לדקלם, בלי דרגה להגיע אליה.</string>
-    <string name="onboarding_private">כלום לא יוצא מכאן</string>
+    <string name="onboarding_private">מה שכתבתם נשאר כאן</string>
     <string name="onboarding_private_body">האפליקציה מתחברת לאינטרנט רק כשתבקשו זאת בעצמכם: מעקב טיסה בזמן אמת מבקש מ־OpenSky Network את המטוסים באזור משוער, בלי לשלוח את אות הקריאה של הטיסה; חיפוש לפי מספר טיסה שולח ל־adsbdb.com את המספר בלבד. מה שתכתבו נשאר בטלפון הזה, ורק אתם יכולים להוציא אותו, דרך הייצוא.</string>
+    <string name="onboarding_private_body_route">האפליקציה מתחברת לאינטרנט רק כשתבקשו זאת בעצמכם: חיפוש לפי מספר טיסה שולח ל־adsbdb.com את המספר בלבד. מה שתכתבו נשאר בטלפון הזה, ורק אתם יכולים להוציא אותו, דרך הייצוא.</string>
     <string name="blocker_session_open_subtitle">התבודדות פתוחה, כבר %1$s. הטלפון יכול לחכות.</string>
     <string name="session_done_title">דיברתם היום עם השם</string>
     <string name="session_done_text">%1$s של התבודדות. הקישו כדי להוסיף הערה.</string>
@@ -213,6 +215,17 @@
     <string name="export_failed">הייצוא נכשל.</string>
     <string name="import_failed">לא ניתן לקרוא את הקובץ.</string>
     <string name="import_invalid">הקובץ אינו גיבוי של MyHitbodedut.</string>
+    <string name="export_mdp_titre">הגנה על הגיבוי</string>
+    <string name="export_mdp_message">סיסמה מצפינה את הקובץ. בלעדיה אי אפשר לקרוא את הגיבוי, ואין דרך לשחזר אותה. אפשר להשאיר ריק לקובץ גלוי, שכל מי שפותח אותו יכול לקרוא.</string>
+    <string name="export_mdp_champ">סיסמה</string>
+    <string name="export_mdp_confirmer">אותה סיסמה, פעם נוספת</string>
+    <string name="export_mdp_different">שתי הסיסמאות אינן זהות.</string>
+    <string name="import_mdp_titre">גיבוי מוצפן</string>
+    <string name="import_mdp_faux">סיסמה שגויה, או קובץ פגום.</string>
+    <string name="journal_verrou">נעילת היומן</string>
+    <string name="journal_verrou_hint">קוד הטלפון או טביעת האצבע נדרשים לפתיחת היומן.</string>
+    <string name="journal_verrou_titre">פתיחת היומן</string>
+    <string name="journal_verrou_sans_code">יש להגדיר תחילה נעילת מסך בטלפון הזה.</string>
 
     <plurals name="status_streak">
         <item quantity="one">יום אחד ברצף</item>
@@ -462,7 +475,7 @@
     <string name="music_remove_message_web">הניגון יימחק מהדפדפן הזה; הקובץ המקורי נשאר במכשיר.</string>
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">הרצף סופר את הימים ברציפות, והשבוע כולו נראה במבט אחד. אחרי כל התבודדות אפשר להשאיר הערה ביומן.</string>
-    <string name="onboarding_private_body_web">מה שתכתבו נשאר בדפדפן הזה, במכשיר הזה: שום דבר לא נשלח לשום מקום, מלבד אות הקריאה של טיסה ומיקום משוער אם תפעילו מעקב בזמן אמת.</string>
+    <string name="onboarding_private_body_web">מה שתכתבו נשאר בדפדפן הזה, במכשיר הזה. שום דבר לא נשלח, מלבד מספר טיסה אל adsbdb.com אם תפעילו את השירותים המקוונים של זמנים בטיסה.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">טוען את הספרים…</string>
     <string name="livres_echec_web">לא ניתן היה לטעון את הספרים. בדקו את החיבור ונסו שוב.</string>
@@ -1314,6 +1327,7 @@
     <string name="vol_direct_titre">מעקב בזמן אמת (אינטרנט)</string>
     <string name="vol_direct_explication">כבוי כברירת מחדל. כשהוא פעיל, הוא שולח לשרת הממסר של האפליקציה את אות הקריאה של הטיסה ואת המיקום המשוער של המטוס, ותו לא; הממסר מבקש את המיקום האמיתי מ־OpenSky Network. מעל אוקיינוסים המטוס לעיתים קרובות אינו נראה.</string>
     <string name="vol_direct_activer">שירותים מקוונים: מסלול הטיסה ומעקב בזמן אמת</string>
+    <string name="vol_route_activer">שירותים מקוונים: מסלול הטיסה</string>
     <string name="vol_indicatif">אות קריאה (ICAO), לדוגמה ELY1</string>
     <string name="vol_indicatif_invalide">אות קריאה צפוי: שלוש אותיות ואחריהן המספר, לדוגמה ELY1.</string>
     <string name="vol_direct_bouton">מיקום בזמן אמת</string>
@@ -1399,9 +1413,9 @@
 
     <!-- La divulgation avant les deux accès spéciaux de la barrière (31/10, Divulgation). -->
     <string name="divulgation_overlay_titre">הצגה מעל אפליקציות אחרות</string>
-    <string name="divulgation_overlay_texte">במה משתמשים: הצגת מסך מעל אפליקציות אחרות.\n\nלמה: בשביל מחסום הבוקר, מצב „אני עם השם”, שבחרתם. כשתפתחו אחת מהאפליקציות שבחרתם, בשעות שקבעתם, מסך „אני עם השם” יופיע לפניה, עד שההתבודדות של היום תיעשה.\n\nשום דבר לא נשלח ולא משותף: הכול נשאר בטלפון הזה.\n\nכדי לכבות את המחסום בכל רגע: הגדרות, המתג „אני עם השם”. אפשר גם לבטל את הגישה הזו בהגדרות של Android.</string>
+    <string name="divulgation_overlay_texte">במה משתמשים: הצגת מסך מעל אפליקציות אחרות.\n\nלמה: בשביל מחסום הבוקר, מצב „אני עם השם”, שבחרתם. כשתפתחו אחת מהאפליקציות שבחרתם, בשעות שקבעתם, מסך „אני עם השם” יופיע לפניה, עד שההתבודדות של היום תיעשה. הוא יופיע לפניהן גם במהלך כל התבודדות שהתחלתם, בכל שעה, עד שתסתיים.\n\nשום דבר לא נשלח ולא משותף: הכול נשאר בטלפון הזה.\n\nכדי לכבות את המחסום בכל רגע: הגדרות, המתג „אני עם השם”. אפשר גם לבטל את הגישה הזו בהגדרות של Android.</string>
     <string name="divulgation_usage_titre">גישה לנתוני שימוש</string>
-    <string name="divulgation_usage_texte">מה נקרא: איזו אפליקציה מוצגת בחזית. רק האחרונה שנפתחה נשמרת, בזיכרון; שום היסטוריה לא נשמרת.\n\nלמה: בשביל מחסום הבוקר, מצב „אני עם השם”, שבחרתם. בשעות שקבעתם, וכל עוד ההתבודדות של היום לא נעשתה, האפליקציה בודקת אם זו שנפתחה עכשיו היא אחת מאלה שבחרתם.\n\nשום דבר לא נרשם, לא נשלח ולא משותף: הכול נשאר בטלפון הזה.\n\nכדי לכבות את המחסום בכל רגע: הגדרות, המתג „אני עם השם”. אפשר גם לבטל את הגישה הזו בהגדרות של Android.</string>
+    <string name="divulgation_usage_texte">מה נקרא: איזו אפליקציה מוצגת בחזית. רק האחרונה שנפתחה נשמרת, בזיכרון; שום היסטוריה לא נשמרת.\n\nלמה: בשביל מחסום הבוקר, מצב „אני עם השם”, שבחרתם. בשעות שקבעתם, וכל עוד ההתבודדות של היום לא נעשתה, האפליקציה בודקת אם זו שנפתחה עכשיו היא אחת מאלה שבחרתם. היא בודקת זאת גם במהלך כל התבודדות שהתחלתם, בכל שעה.\n\nשום דבר לא נרשם, לא נשלח ולא משותף: הכול נשאר בטלפון הזה.\n\nכדי לכבות את המחסום בכל רגע: הגדרות, המתג „אני עם השם”. אפשר גם לבטל את הגישה הזו בהגדרות של Android.</string>
     <string name="divulgation_continuer">המשך</string>
     <string name="divulgation_pas_maintenant">לא עכשיו</string>
 
@@ -1410,6 +1424,7 @@
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
     <string name="vol_en_ligne_aide">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. כשהם פעילים, הזכוכית המגדלת 🔍 שולחת ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד, והמעקב בזמן אמת פונה ל־OpenSky Network.</string>
+    <string name="vol_en_ligne_aide_route">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. כשהם פעילים, הזכוכית המגדלת 🔍 שולחת ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד.</string>
     <string name="vol_en_ligne_titre">לחפש את המסלול ברשת?</string>
     <string name="vol_en_ligne_oui">להפעיל ולחפש</string>
     <string name="vol_rapide_titre">תארו את הטיסה</string>
@@ -1431,6 +1446,7 @@
     <!-- Les langues d’un texte à lire (04/11), LanguesTexte. -->
     <string name="lecture_langues">שפות הטקסט</string>
     <string name="lecture_sans_traduction">לטקסט הזה עדיין אין תרגום: הוא מוצג בעברית.</string>
+    <string name="lecture_traduction_auto">תרגום אוטומטי שלא נבדק: הנוסח העברי הוא הקובע.</string>
     <string name="langues_he">עברית</string>
     <string name="langues_fr">Français</string>
     <string name="langues_en">English</string>

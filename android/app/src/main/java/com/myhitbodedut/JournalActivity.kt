@@ -26,6 +26,7 @@ class JournalActivity : AppCompatActivity() {
             android.view.WindowManager.LayoutParams.FLAG_SECURE,
             android.view.WindowManager.LayoutParams.FLAG_SECURE
         )
+        verrouiller(savedInstanceState)
         adapter = Adapter()
         findViewById<RecyclerView>(R.id.journal_list).apply {
             layoutManager = LinearLayoutManager(this@JournalActivity)
@@ -33,9 +34,46 @@ class JournalActivity : AppCompatActivity() {
         }
     }
 
+    /** Vrai une fois le code ou l'empreinte donnés, ou si le verrou n'est pas demandé. */
+    private var ouvert = true
+
+    private val demandeCode =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { resultat ->
+            if (resultat.resultCode == RESULT_OK) {
+                ouvert = true
+                findViewById<View>(android.R.id.content).visibility = View.VISIBLE
+                reload()
+            } else {
+                finish()
+            }
+        }
+
+    /**
+     * Le verrou du journal (audit du 12/11) : rien ne s'affiche avant le code
+     * ou l'empreinte du téléphone. Un téléphone sans verrouillage d'écran n'a
+     * rien à demander : le journal s'ouvre, comme avant.
+     */
+    private fun verrouiller(etat: Bundle?) {
+        if (!Store.journalVerrou(this) || etat?.getBoolean(ETAT_OUVERT) == true) return
+        val garde = getSystemService(android.app.KeyguardManager::class.java) ?: return
+        if (!garde.isDeviceSecure) return
+        @Suppress("DEPRECATION")
+        val demande = garde.createConfirmDeviceCredentialIntent(getString(R.string.journal_verrou_titre), null) ?: return
+        ouvert = false
+        findViewById<View>(android.R.id.content).visibility = View.INVISIBLE
+        // Après une rotation, la demande est déjà à l'écran : on attend sa réponse.
+        if (etat?.getBoolean(ETAT_DEMANDE) != true) demandeCode.launch(demande)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(ETAT_OUVERT, ouvert)
+        outState.putBoolean(ETAT_DEMANDE, !ouvert)
+    }
+
     override fun onResume() {
         super.onResume()
-        reload()
+        if (ouvert) reload()
     }
 
     private fun reload() {
@@ -69,10 +107,6 @@ class JournalActivity : AppCompatActivity() {
             faites,
             Store.formatDuration(this, total)
         )
-    }
-
-    private companion object {
-        const val LIGNES_REPLIEES = 6
     }
 
     private inner class Adapter : RecyclerView.Adapter<Adapter.Holder>() {
@@ -138,5 +172,12 @@ class JournalActivity : AppCompatActivity() {
                 NoteDialog.show(this@JournalActivity, row.date, onSaved = { reload() })
             }
         }
+    }
+
+    private companion object {
+        const val ETAT_OUVERT = "journal_ouvert"
+        const val ETAT_DEMANDE = "journal_demande"
+        /** Une longue note se replie à six lignes (check-up du 11/11). */
+        const val LIGNES_REPLIEES = 6
     }
 }

@@ -20,6 +20,7 @@
 //   200 { trouve: true, latitude, longitude, altitude_baro, altitude_geo, instant, icao24 }
 //   200 { trouve: false }
 //   400 { erreur }        paramètres invalides
+//   429 { erreur }        « relais 429 » : trop de demandes de la même adresse
 //   502 { erreur }        OpenSky injoignable ou refus (crédits épuisés : 429)
 //
 // Secrets (wrangler secret put), facultatifs : OPENSKY_CLIENT_ID, OPENSKY_CLIENT_SECRET.
@@ -32,6 +33,23 @@ export const ETATS = 'https://opensky-network.org/api/states/all';
 export const DEMI_COTE = 5;
 export const GRILLE = 0.5;
 export const DUREE_CACHE = 15_000;
+
+// Le débit par adresse (audit du 12/11/2026) : DEBIT_MAX demandes par DEBIT_FENETRE ms. Le relais
+// est ouvert (le CORS n'arrête qu'un navigateur) : sans cela, un script épuisait les crédits
+// OpenSky de tous. Le compte est par instance du Worker, donc approximatif ; une règle de
+// limitation de débit dans Cloudflare (README.md) le double.
+export const DEBIT_MAX = 20;
+export const DEBIT_FENETRE = 60_000;
+const DEBITS = new Map();
+
+/** Vrai si [ip] dépasse son débit ; les fenêtres closes sont effacées au passage. */
+export function tropDemande(ip, maintenant, debits = DEBITS) {
+  if (!ip) return false;
+  if (debits.size > 5000) for (const [cle, d] of debits) if (d.fin <= maintenant) debits.delete(cle);
+  const d = debits.get(ip);
+  if (!d || d.fin <= maintenant) { debits.set(ip, { fin: maintenant + DEBIT_FENETRE, n: 1 }); return false; }
+  return ++d.n > DEBIT_MAX;
+}
 
 /** La réponse d'OpenSky par carré, le temps de DUREE_CACHE : { expire, etats }. */
 const CACHE = new Map();
@@ -76,7 +94,7 @@ const json = (corps, statut, origine) => new Response(JSON.stringify(corps), {
   headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...(origine ? { 'access-control-allow-origin': origine, vary: 'origin' } : {}) },
 });
 
-export async function traiter(requete, env, chercher = fetch, cache = CACHE, maintenant = Date.now()) {
+export async function traiter(requete, env, chercher = fetch, cache = CACHE, maintenant = Date.now(), debits = DEBITS) {
   const url = new URL(requete.url);
   const origine = env.ORIGINE_WEB && requete.headers.get('origin') === env.ORIGINE_WEB ? env.ORIGINE_WEB : null;
   if (requete.method !== 'GET' || url.pathname !== '/position') return json({ erreur: 'introuvable' }, 404, origine);
@@ -86,6 +104,7 @@ export async function traiter(requete, env, chercher = fetch, cache = CACHE, mai
   if (!/^[A-Z]{3}[0-9]{1,4}[A-Z]{0,2}$/.test(indicatif) || !Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
     return json({ erreur: 'paramètres invalides' }, 400, origine);
   }
+  if (tropDemande(requete.headers.get('cf-connecting-ip'), maintenant, debits)) return json({ erreur: 'relais 429' }, 429, origine);
   try {
     for (const [cle, attente] of cache) if (attente.expire <= maintenant) cache.delete(cle);
     const avecCle = env.OPENSKY_CLIENT_ID && env.OPENSKY_CLIENT_SECRET;

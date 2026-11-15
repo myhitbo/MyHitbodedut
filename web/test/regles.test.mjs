@@ -267,8 +267,10 @@ test('un fichier de sauvegarde Android se relit, et l’export garde le même fo
 
   const exporte = JSON.parse(s.exportJson());
   assert.equal(exporte.format, 'myhitbodedut');
-  assert.equal(exporte.version, 1);
-  assert.deepEqual(Object.keys(exporte.settings).sort(), Object.keys(android.settings).sort());
+  // Version 2 (audit du 12/11, FDONNEES-01) : le noussa'h et les réglages de lecture s'ajoutent aux réglages d'Android 1.
+  assert.equal(exporte.version, 2);
+  const v2 = ['siddur_nusah', 'lecture_echelle', 'lecture_police', 'lecture_sombre', 'lecture_masquee'];
+  assert.deepEqual(Object.keys(exporte.settings).sort(), [...Object.keys(android.settings), ...v2].sort());
   // Ce que l'iPhone ne sait pas régler repart tel qu'il est arrivé.
   assert.deepEqual([exporte.settings.window_start, exporte.settings.reminder_enabled], [360, true]);
   assert.deepEqual(exporte.settings.reminder_times, [420, 1260]);

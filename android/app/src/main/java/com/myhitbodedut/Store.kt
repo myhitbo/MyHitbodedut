@@ -134,6 +134,7 @@ object Store {
     private const val KEY_SESSION_START = "session_started_at"
     private const val KEY_SESSION_THEME = "session_theme"
     private const val KEY_HIDE_COUNTDOWN = "hide_countdown"
+    private const val KEY_JOURNAL_VERROU = "journal_verrou"
     private const val KEY_GUIDED = "guided_hitbodedut"
     private const val KEY_ONBOARDED = "onboarded_version"
     /** Le booléen de la v1.96, retiré au premier passage. */
@@ -1231,6 +1232,13 @@ object Store {
      * laisse qu'un son discret à la fin. Elle est éteinte par défaut : c'est
      * un choix, pas une opinion imposée.
      */
+    /** Le journal ne s'ouvre qu'après le code ou l'empreinte du téléphone (audit du 12/11) ; éteint par défaut. */
+    fun journalVerrou(context: Context): Boolean = prefs(context).getBoolean(KEY_JOURNAL_VERROU, false)
+
+    fun setJournalVerrou(context: Context, verrou: Boolean) {
+        prefs(context).edit().putBoolean(KEY_JOURNAL_VERROU, verrou).apply()
+    }
+
     fun hideCountdown(context: Context): Boolean =
         prefs(context).getBoolean(KEY_HIDE_COUNTDOWN, false)
 
@@ -1516,7 +1524,9 @@ object Store {
     fun exportJson(context: Context): String {
         val root = JSONObject()
         root.put("format", "myhitbodedut")
-        root.put("version", 1)
+        // Version 2 (audit du 12/11, FDONNEES-01) : le journal enrichi, le journal du Tikoun,
+        // les favoris, les 'hizouk gardés, les marque-pages, le noussa'h et les réglages de lecture.
+        root.put("version", 2)
         root.put("exported_at", java.time.Instant.now().toString())
 
         val daysJson = JSONObject()
@@ -1548,15 +1558,69 @@ object Store {
             .put("apparence_fond", fond(context).cle)
             .put("apparence_accent", accent(context).cle)
             .put("apparence_police", police(context).cle)
+            .put("siddur_nusah", siddurNusah(context).cle)
+            .put("lecture_echelle", lectureEchelle(context).toDouble())
+            .put("lecture_police", lecturePolice(context).cle)
+            .put("lecture_sombre", lectureSombre(context))
+            .put("lecture_masquee", lectureMasquee(context))
+        lectureLangues(context)?.let { settings.put("lecture_langues", it) }
         root.put("settings", settings)
         root.put("paused_dates", org.json.JSONArray(pausedDates(context).toList()))
         root.put("blocked_apps", org.json.JSONArray(blockedApps(context).toList()))
-        // Le journal enrichi (humeur, gratitude, « à travailler ») et les jours
-        // du Tikoun : un changement de téléphone les perdait (check-up du 11/11).
-        // Même clé que la version web, qui l'exportait déjà.
+        // Le journal enrichi : humeurs, gratitude, chose à travailler (même forme que le site).
         root.put("journal_plus", runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject()))
-        root.put("tikkun_journal", org.json.JSONArray(tikkunJournal(context).map { it.toString() }.sorted()))
+        root.put("tikkun_journal", org.json.JSONArray(tikkunJournal(context).sorted().map { it.toString() }))
+        root.put("favoris", org.json.JSONArray(favoris(context)))
+        root.put("chizuk_favoris", org.json.JSONArray(chizukFavoris(context)))
+        root.put("marques_pages", org.json.JSONArray(marques(context).map {
+            JSONObject().put("cle", it.cle).put("nusah", it.nusah).put("section", it.section).put("bloc", it.bloc).put("apercu", it.apercu)
+        }))
         return root.toString(2)
+    }
+
+    /** Les chaînes d'un tableau JSON, non vides, sans doublon. */
+    private fun chaines(a: org.json.JSONArray?): List<String> =
+        if (a == null) emptyList() else (0 until a.length()).mapNotNull { a.optString(it).takeIf(String::isNotBlank) }.distinct()
+
+    /**
+     * Ce que la version 2 a ajouté : réuni à ce que le téléphone a déjà, sans rien en retirer.
+     * Un jour du journal enrichi déjà noté ici garde ce qu'il a (store.js fait de même).
+     */
+    private fun importerAjouts(context: Context, root: JSONObject, demain: LocalDate) {
+        root.optJSONObject("journal_plus")?.let { entrant ->
+            val ici = runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject())
+            for (date in entrant.keys()) {
+                val jour = dateValide(date) ?: continue
+                if (!jour.isBefore(demain) || jour.isBefore(PREMIER_JOUR_IMPORTABLE)) continue
+                val e = entrant.optJSONObject(date) ?: continue
+                val plus = JournalPlus.Plus(e.optInt("avant", 0).coerceIn(0, 5), e.optInt("apres", 0).coerceIn(0, 5),
+                    e.optString("gratitude", "").take(JournalPlus.GRATITUDE_MAX), e.optString("travail", "").take(JournalPlus.GRATITUDE_MAX))
+                val dejaNote = ici.optJSONObject(date)?.let { o ->
+                    o.optInt("avant", 0) != 0 || o.optInt("apres", 0) != 0 || o.optString("gratitude").isNotBlank() || o.optString("travail").isNotBlank()
+                } ?: false
+                if (!plus.vide && !dejaNote) JournalPlus.ecrire(context, date, plus)
+            }
+        }
+        val tikkun = chaines(root.optJSONArray("tikkun_journal")).mapNotNull(::dateValide)
+            .filter { it.isBefore(demain) && !it.isBefore(PREMIER_JOUR_IMPORTABLE) }
+        if (tikkun.isNotEmpty()) {
+            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).sorted().joinToString(",")).apply()
+        }
+        val favoris = chaines(root.optJSONArray("favoris")).filter { it.startsWith("s:") || it.startsWith("l:") }
+        if (favoris.isNotEmpty()) prefs(context).edit().putString("favoris", (favoris(context) + favoris).distinct().joinToString("|")).apply()
+        val chizuk = chaines(root.optJSONArray("chizuk_favoris")).filter { '|' !in it }
+        if (chizuk.isNotEmpty()) prefs(context).edit().putString("chizuk_favoris", (chizukFavoris(context) + chizuk).distinct().joinToString("|")).apply()
+        root.optJSONArray("marques_pages")?.let { a ->
+            val entrantes = (0 until a.length()).mapNotNull { i ->
+                val o = a.optJSONObject(i) ?: return@mapNotNull null
+                val m = MarquesPages.Marque(o.optString("cle"), o.optString("nusah"), o.optInt("section", -1), o.optInt("bloc", -1),
+                    o.optString("apercu").replace('\t', ' ').replace('\n', ' '))
+                m.takeIf { it.cle.isNotBlank() && '\t' !in it.cle && '\t' !in it.nusah && it.section >= 0 && it.bloc >= 0 }
+            }
+            val ici = marques(context)
+            val reunies = (ici + entrantes.filter { e -> ici.none { it.memePlace(e) } }).take(MarquesPages.MAX)
+            prefs(context).edit().putString("marques_pages", MarquesPages.encoder(reunies)).apply()
+        }
     }
 
     /** Fusionne une sauvegarde. Renvoie le nombre de journées importées, ou null si le fichier est invalide. */
@@ -1603,35 +1667,7 @@ object Store {
             }
         }
         writeDays(context, merged)
-
-        // Le journal enrichi : un jour déjà rempli ici garde ce qu'il a, comme la note.
-        root.optJSONObject("journal_plus")?.let { plus ->
-            val demain = LocalDate.now().plusDays(1)
-            for (date in plus.keys()) {
-                val jour = dateValide(date) ?: continue
-                if (!jour.isBefore(demain) || jour.isBefore(PREMIER_JOUR_IMPORTABLE)) continue
-                val e = plus.optJSONObject(date) ?: continue
-                if (!JournalPlus.lire(context, date).vide) continue
-                JournalPlus.ecrire(
-                    context, date,
-                    JournalPlus.Plus(
-                        e.optInt("avant", 0).coerceIn(0, 5),
-                        e.optInt("apres", 0).coerceIn(0, 5),
-                        e.optString("gratitude", "").take(JournalPlus.GRATITUDE_MAX),
-                        e.optString("travail", "").take(JournalPlus.GRATITUDE_MAX)
-                    )
-                )
-            }
-        }
-        root.optJSONArray("tikkun_journal")?.let { array ->
-            val aujourdhui = LocalDate.now()
-            val jours = tikkunJournal(context).toMutableSet()
-            for (i in 0 until array.length()) {
-                val jour = dateValide(array.optString(i)) ?: continue
-                if (!jour.isAfter(aujourdhui) && !jour.isBefore(PREMIER_JOUR_IMPORTABLE)) jours += jour
-            }
-            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, jours.sorted().joinToString(",")).apply()
-        }
+        importerAjouts(context, root, LocalDate.now().plusDays(1))
 
         root.optJSONObject("settings")?.let { settings ->
             // Chaque valeur est ramenée dans ce que l'écran permet : un
@@ -1681,6 +1717,14 @@ object Store {
                 ?.let { setAccent(context, Apparence.Accent.parse(it)) }
             settings.optString("apparence_police").takeIf { it.isNotBlank() }
                 ?.let { setPolice(context, Apparence.Police.parse(it)) }
+            Nusah.entries.firstOrNull { it.cle == settings.optString("siddur_nusah") }?.let { setSiddurNusah(context, it) }
+            if (settings.has("lecture_echelle")) {
+                setLectureEchelle(context, settings.optDouble("lecture_echelle", 1.0).toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))
+            }
+            PoliceHebraique.Police.entries.firstOrNull { it.cle == settings.optString("lecture_police") }?.let { setLecturePolice(context, it) }
+            LanguesTexte.Mode.entries.firstOrNull { it.cle == settings.optString("lecture_langues") }?.let { setLectureLangues(context, it.cle) }
+            if (settings.has("lecture_sombre")) setLectureSombre(context, settings.optBoolean("lecture_sombre"))
+            if (settings.has("lecture_masquee")) setLectureMasquee(context, settings.optBoolean("lecture_masquee"))
         }
         root.optJSONArray("paused_dates")?.let { array ->
             val dates = pausedDates(context).toMutableSet()

@@ -186,8 +186,10 @@ class GateService : Service() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+            // Sans FLAG_KEEP_SCREEN_ON (audit du 12/11, FBARRIERE-02) : posé pour aller faire la
+            // hitbodedout, le téléphone doit pouvoir se mettre en veille, et non rester allumé et
+            // déverrouillé jusqu'à la fin de la fenêtre.
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.OPAQUE
         )

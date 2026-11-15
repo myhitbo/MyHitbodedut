@@ -49,15 +49,18 @@ const lendemain = (iso) => {
 export function horaires(lieu, iso, enIsrael, minutes) {
   const aujourdhui = jour(iso, enIsrael).chome;
   const demain = jour(lendemain(iso), enIsrael).chome;
+  // Fête un vendredi (FCALENDRIER-01) : les bougies de Chabbat avant la chki'a, jamais à tsét.
+  const [a, m, j] = iso.split('-').map(Number);
+  const veilleDeChabbat = new Date(Date.UTC(a, m - 1, j, 12)).getUTCDay() === 5;
   const base = Z.jour(lieu, iso);
   const tset = base.find((z) => z.cle === 'tset');
   const sortie = [];
   for (const z of base) {
-    if (z.cle === 'chkia' && demain && !aujourdhui) sortie.push(Z.allumage(lieu, iso, minutes));
+    if (z.cle === 'chkia' && demain && (!aujourdhui || veilleDeChabbat)) sortie.push(Z.allumage(lieu, iso, minutes));
     sortie.push(z);
     if (z.cle === 'tset') {
       if (aujourdhui && !demain) sortie.push({ ...tset, cle: 'sortie' });
-      if (aujourdhui && demain) sortie.push({ ...tset, cle: 'allumage', methode: 'apres_tset', parametres: '' });
+      if (aujourdhui && demain && !veilleDeChabbat) sortie.push({ ...tset, cle: 'allumage', methode: 'apres_tset', parametres: '' });
     }
   }
   return sortie;
