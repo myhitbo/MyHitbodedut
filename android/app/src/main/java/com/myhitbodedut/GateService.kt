@@ -173,6 +173,9 @@ class GateService : Service() {
             },
             onAlreadyDone = {
                 Store.addSession(this, 0)
+                // La vignette et le rappel suivent la journée validée (FDONNEES-15).
+                StreakWidget.refresh(this)
+                Reminder.reschedule(this)
                 hideOverlay()
                 goHome()
             },

@@ -272,7 +272,7 @@ object Store {
 
     /** La date si la clé est une vraie date ISO (2026-09-29), sinon null. */
     fun dateValide(cle: String): LocalDate? =
-        runCatching { LocalDate.parse(cle, FORMAT) }.getOrNull()
+        runCatching { LocalDate.parse(cle, FORMAT) }.getOrNull()?.takeIf { it.year in 2000..2100 }
             ?.takeIf { it.format(FORMAT) == cle }
 
     /** Le jour civil d'un instant, dans le fuseau du téléphone. */
@@ -324,18 +324,22 @@ object Store {
         if (credit > p.getLong(KEY_FAIT_A, 0L)) p.edit().putLong(KEY_FAIT_A, credit).apply()
         clearSnooze(context)
         // La journée est faite : le rappel « Il est temps… » ne reste pas dans le volet jusqu'au lendemain (02/11).
-        if (minutes > 0) runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancel(Notifications.ID_REMINDER) }
+        runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancel(Notifications.ID_REMINDER) }
     }
 
     /** La note d'un jour. Sur un jour sans hitbodedout, elle ne le valide pas. */
     fun setNote(context: Context, date: String, note: String) {
         val all = days(context).toMutableMap()
         val existing = all[date]
+        // Une humeur ou une gratitude gardée pour ce jour lui garde sa ligne : sans elle, le journal ne
+        // la montrerait plus et rien ne permettrait de la modifier (FDONNEES-14 ; même règle que le site).
+        val garde = !JournalPlus.lire(context, date).vide
         when {
+            existing?.noteSeule == true && note.isBlank() && garde -> all[date] = existing.copy(note = "")
             // Une note seule qu'on efface : la ligne n'a plus de raison d'être.
             existing?.noteSeule == true && note.isBlank() -> all.remove(date)
             existing != null -> all[date] = existing.copy(note = note.take(NOTE_MAX))
-            note.isNotBlank() -> all[date] = DayRecord(date, 0, note.take(NOTE_MAX), emptyList(), noteSeule = true)
+            note.isNotBlank() || garde -> all[date] = DayRecord(date, 0, note.take(NOTE_MAX), emptyList(), noteSeule = true)
             else -> return
         }
         writeDays(context, all)
@@ -1711,6 +1715,7 @@ object Store {
                     entry.optBoolean("note_seule", false)
                 )
                 val existing = merged[date]
+                val avant = existing
                 merged[date] = when {
                     existing == null -> incoming
                     // En cas de conflit on garde la séance la plus longue et la
@@ -1725,7 +1730,9 @@ object Store {
                         existing.noteSeule && incoming.noteSeule
                     )
                 }
-                imported++
+                // Seules les journées ajoutées ou modifiées comptent : réimporter le même fichier
+                // n'annonce plus tout le journal (FDONNEES-11).
+                if (merged[date] != avant) imported++
             }
         }
         writeDays(context, merged)
@@ -1763,7 +1770,8 @@ object Store {
                 (0 until a.length()).mapNotNull { i -> a.optInt(i, -1).takeIf { it in jour } }
             } ?: settings.optInt("reminder_minutes", -1).takeIf { it in jour }?.let { listOf(it) }
             if (!heures.isNullOrEmpty()) setReminderTimes(context, heures)
-            if (settings.has("first_name")) setFirstName(context, settings.optString("first_name"))
+            // Un prénom vide dans le fichier (export du site sans prénom) n'efface pas celui du téléphone (FDONNEES-11).
+            settings.optString("first_name").takeIf { it.isNotBlank() }?.let { setFirstName(context, it) }
             if (settings.has("hide_countdown")) setHideCountdown(context, settings.optBoolean("hide_countdown"))
             if (settings.has("guided_hitbodedut")) {
                 setGuidedHitbodedut(context, settings.optBoolean("guided_hitbodedut"))

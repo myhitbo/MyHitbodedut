@@ -318,7 +318,10 @@ class StreakWidget : AppWidgetProvider() {
             views.setTextColor(R.id.widget_chrono, teintes.encre)
             views.setContentDescription(
                 R.id.widget_badge,
-                if (etat.streak == 0) context.getString(R.string.status_streak_none)
+                if (etat.streak == 0) context.getString(
+                    // « à relancer » ne se dit qu'à qui a déjà pratiqué (FDONNEES-29, comme l'accueil).
+                    if (Store.aDejaPratique(context)) R.string.status_streak_none else R.string.status_streak_first
+                )
                 else context.resources.getQuantityString(R.plurals.status_streak, etat.streak, etat.streak)
             )
             compteur(context, views, etat, taille)
