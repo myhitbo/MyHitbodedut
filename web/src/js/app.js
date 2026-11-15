@@ -3106,7 +3106,7 @@ function ecranHilloulot() {
     const decale = (n) => { const [a, m, d] = iso.split('-').map(Number); jourHilloulot = new Date(Date.UTC(a, m - 1, d + n, 12)).toISOString().slice(0, 10); rendre(); };
     const liste = hilloulotPour(table, iso, israel, ashkenaz);
     chargeBiosHilloulot(clesHilloulotPour(iso, israel, ashkenaz));
-    const detaillees = liste.some((x) => x.t || x.w || x.i);
+    const detaillees = liste.some((x) => x.t || x.b?.length || x.w || x.i);
     corps = [
       h('div', { class: 'carte hilloulot-jour' },
         h('div', { class: 'mois-tete' },

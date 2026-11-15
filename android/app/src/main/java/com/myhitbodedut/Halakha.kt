@@ -78,6 +78,9 @@ object Halakha {
         return items.subList(jour * items.size / parts, (jour + 1) * items.size / parts)
     }
 
+    /** Début de la note de l'auteur qui remplace une section sans halakhot (Vayéchev, deuxième année). */
+    const val SANS_HALAKHOT = "בפרשה זו לא כתבתי"
+
     fun anneeDuLivre(anneeHebraique: Int): Int = if (anneeHebraique % 2 == 1) 1 else 2
 
     /**
@@ -93,7 +96,9 @@ object Halakha {
         for (a in listOf(premiere, 3 - premiere)) {
             val secs = sections(livre.annees[a.toString()].orEmpty(), parsha) ?: continue
             val toutes = secs.flatMap { (s, depart, l) -> l.mapIndexed { i, t -> Choisie(t, depart + i + 1, s.he, a) } }
-            if (toutes.isNotEmpty()) return part(toutes, jourSemaine, 7)
+            // Ni la note « je n'ai pas écrit de halakhot ici » (Vayéchev, année 2) : l'autre année.
+            val utiles = toutes.filterNot { it.texte.startsWith(SANS_HALAKHOT) }
+            if (utiles.isNotEmpty()) return part(utiles, jourSemaine, 7)
         }
         return emptyList()
     }
@@ -101,7 +106,11 @@ object Halakha {
     /** Pour une date : la paracha du Chabbat qui vient (le Chabbat même, la sienne), le jour de la semaine, 'Hanouka. */
     fun pour(livre: Livre, date: LocalDate, enIsrael: Boolean): List<Choisie> {
         val cal = JewishCalendar(date).apply { setInIsrael(enIsrael) }
-        val parsha = cal.parshah.takeIf { it != JewishCalendar.Parsha.NONE } ?: cal.upcomingParshah
+        // Du 15 au 23 Tichri (Soukkot, Hochaana Rabba, Sim'hat Torah) : la section de Vézot haBéra'kha,
+        // qui parle de Hochaana Rabba, et non la paracha qui vient (Béréchit).
+        val soukkot = cal.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.TISHREI && cal.jewishDayOfMonth in 15..23
+        val parsha = if (soukkot) JewishCalendar.Parsha.VZOS_HABERACHA
+            else cal.parshah.takeIf { it != JewishCalendar.Parsha.NONE } ?: cal.upcomingParshah
         val jour = if (date.dayOfWeek == DayOfWeek.SUNDAY) 0 else date.dayOfWeek.value
         return choix(livre, parsha.name, jour, cal.jewishYear, cal.dayOfChanukah.coerceAtLeast(0))
     }

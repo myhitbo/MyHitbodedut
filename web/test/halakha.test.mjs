@@ -25,3 +25,11 @@ test('jointes, séparées, Hanouka, part du jour', () => {
   assert.deepEqual(part([1, 2, 3], 3, 7), [1]);
   assert.ok(recherche(livre, 'ציצית').length > 10);
 });
+
+test('Vayéchev année 2 sans la note vide ; Hochaana Rabba : Vézot haBéra\'kha', () => {
+  for (let j = 19; j <= 24; j++) {
+    const h = pour(livre, `2027-12-${j}`, false);
+    assert.ok(h.length && h.every((x) => !x.texte.startsWith('בפרשה זו לא כתבתי')), `2027-12-${j}`);
+  }
+  assert.equal(pour(livre, '2026-10-02', false)[0].section, 'וזאת הברכה');
+});
