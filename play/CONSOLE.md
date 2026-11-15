@@ -35,7 +35,7 @@ l'AAB : voir « Si le relais arrive » à la fin.
 | Quoi | Où |
 | --- | --- |
 | AAB signé et `mapping.txt` | artefact `play-N` du flux `play.yml` (§ 5.2) |
-| Règles de confidentialité en ligne | https://myhitbodedut.pages.dev/confidentialite.html — **l'ouvrir depuis un téléphone**, dans un navigateur sans session, avant de la saisir |
+| Règles de confidentialité en ligne | https://myhitbodedut.pages.dev/confidentialite.html#en — **l'ouvrir depuis un téléphone**, dans un navigateur sans session, avant de la saisir |
 | Textes de la fiche | `play/fiche/en-US/` et `play/fiche/iw-IL/` (`title.txt`, `short_description.txt`, `full_description.txt`) |
 | Icône 512 × 512 | `play/icone-512.png` |
 | Image de présentation 1024 × 500 | `play/fiche/<langue>/images/featureGraphic.png` |
@@ -88,7 +88,7 @@ avant le premier envoi en test fermé.
 ### 3.1 Privacy policy
 
 ```
-https://myhitbodedut.pages.dev/confidentialite.html
+https://myhitbodedut.pages.dev/confidentialite.html#en
 ```
 
 ### 3.2 Sign-in details (ex-« App access »)

@@ -1135,8 +1135,7 @@ dans `plantages.txt` de la branche `claude/captures-android`).
 
 **Reste à faire** :
 
-- fusionner la PR #22 après CI verte, puis vérifier le site déployé
-  (confidentialite.html avec la nouvelle adresse) ;
+- ~~fusionner la PR #22, puis vérifier le site déployé (confidentialite.html avec la nouvelle adresse)~~ : fait (site sur Cloudflare Pages) ;
 - mettre aussi la nouvelle adresse sur la fiche Play Console (à la main) ;
 - appliquer le remplacement sur ccr-49d373f9 si cette session ne l'a pas fait ;
 - lire `plantages.txt` et revoir les captures (dont « Lire la suite » des

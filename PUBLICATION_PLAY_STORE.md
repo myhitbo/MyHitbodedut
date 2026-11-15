@@ -403,7 +403,7 @@ dans le site (vérifié : la page sort identique dans `web/dist`, et le service
 worker la garde hors connexion). URL à saisir dans la Play Console, une fois
 la branche fusionnée sur `main` et le site remis en ligne par `web.yml` (Cloudflare Pages depuis le 13/11, secrets `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`) :
 
-**https://myhitbodedut.pages.dev/confidentialite.html**
+**https://myhitbodedut.pages.dev/confidentialite.html#en** (la fiche n'existe qu'en anglais et en hébreu : l'ancre ouvre la section anglaise ; si la console la refuse, placer la section anglaise en tête de page et passer `<html lang="en">`)
 
 **Hébergement (tranché le 13/11) : Cloudflare Pages**, projet `myhitbodedut`,
 gratuit, public, adresse indépendante du nom du compte GitHub (l'ancienne
@@ -421,7 +421,7 @@ depuis le 13/11 : il ne livre que ceux de la version Play.
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de
 l'interface. Contenu au 14/11 (audit du 12/11, TWEBCONF-01 à 06), relu dans le
-code et tenu par `ConfidentialiteTest` :
+code et tenu en partie par `ConfidentialiteTest` (faits listés dans le test) :
 
 - ni compte, ni publicité, ni analyse d'audience, ni rapport d'erreur ; aucun
   serveur du développeur ; il ne reçoit que les e-mails que l'utilisateur
@@ -749,7 +749,7 @@ local) :
 | 1 | Décisions § 3 : vol en direct, écrits des ayants droit, 7 licences inconnues | propriétaire | — |
 | 2 | Compte développeur, paiement, vérifications | 1–3 jours | — |
 | 3 | `targetSdk 36`, flux `play.yml`, musique de la version Play — **fait le 29/10** ; clé d'envoi et secrets — propriétaire | 1 jour | 1 |
-| 4 | Règles de confidentialité en ligne — **rédigées le 31/10** ; en ligne après fusion sur `main` ; contact : myhitbodedut26@gmail.com (02/11) | 1 jour | 1 |
+| 4 | Règles de confidentialité en ligne — **rédigées le 31/10** ; en ligne (Cloudflare Pages, 13/11) ; contact : myhitbodedut26@gmail.com (02/11) | 1 jour | 1 |
 | 5 | Contenu de l'application (§ 6), fiche (§ 7), vidéos | 2–3 jours | 3, 4 |
 | 6 | Piste de test interne, recette § 8 | 3–5 jours | 3 |
 | 7 | **Test fermé : 12 testeurs, 14 jours sans interruption** | **14 jours minimum** | 5, 6 |
