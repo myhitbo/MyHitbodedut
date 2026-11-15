@@ -102,7 +102,8 @@ object SiddurLoader {
                             titreFr = s.optString("titre_fr", "").ifBlank { null },
                             titreEn = s.optString("titre_en", "").ifBlank { null },
                             blocs = Json.array(s.getJSONArray("blocs")) { b ->
-                                if (b.has("c")) SiddurBloc(b.getString("c"), true)
+                                // Une consigne a ses traductions à part, c_fr et c_en (TEFILA-02, Tefila LiChlomo).
+                                if (b.has("c")) SiddurBloc(b.getString("c"), true, b.optString("c_fr", "").ifBlank { null }, b.optString("c_en", "").ifBlank { null })
                                 else SiddurBloc(b.getString("t"), false, b.optString("fr", "").ifBlank { null }, b.optString("en", "").ifBlank { null })
                             },
                         )

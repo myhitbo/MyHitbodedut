@@ -12,6 +12,7 @@ françaises et anglaises, corrigés sur l'hébreu.
   `trad-yalkut-lekhatchila.py` (YALKUT-03), `trad-guide-citations.py`
   (BIBLIO-02, TLIVRES-07), `trad-HICHT-tiret.py` (partie sûre de TLIVRES-04).
 - `patchtrad` : l'outil qui vérifie (`check`) et applique (`apply`) les patchs.
+- `trad-TEFILA-consignes.py` (TEFILA-02, 15/11) : `c_fr` et `c_en` des seize consignes et crédits de Tefila LiChlomo, relus sur l'hébreu, éprouvés sur une copie (idempotent) ; il lance lui-même `livres_decoupe.py`.
 
 Ordre d'application : `patchtrad apply <racine> patchs-A.json patchs-B.json`,
 puis les trois scripts (argument : la racine du dépôt), puis

@@ -22,7 +22,8 @@ class BoussoleWidget : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
         val c = LangueApp.envelopper(context)
-        ids.forEach { manager.updateAppWidget(it, vues(c)) }
+        // L'image de la boussole se dessine hors du fil principal (15/11, EnFond).
+        EnFond.recevoir(this) { ids.forEach { manager.updateAppWidget(it, vues(c)) } }
     }
 
     companion object {

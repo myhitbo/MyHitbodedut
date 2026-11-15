@@ -118,4 +118,40 @@ class LivresTest {
         assertTrue(yanuka.sections.all { it.blocs.first().consigne && it.blocs.first().texte.contains("שליט״א") })
         assertTrue(yanuka.sections[2].blocs[1].texte.startsWith("אֱלֹהֵי אַבְרָהָם"))
     }
+
+    /**
+     * TEFILA-02 (audit du 12/11) : les seize consignes et crédits de Tefila LiChlomo ont leur
+     * français et leur anglais (c_fr, c_en ; tools/traductions_14-11/trad-TEFILA-consignes.py),
+     * et le lecteur les montre selon les langues de lecture, comme les autres traductions.
+     */
+    @Test
+    fun `les consignes du yanuka se lisent en francais et en anglais`() {
+        val yanuka = livres.texte("tefila_lishlomo")!!
+        val consignes = yanuka.sections.flatMap { it.blocs }.filter { it.consigne }
+        assertEquals(16, consignes.size)
+        consignes.forEach { c ->
+            assertTrue(c.texte, !c.fr.isNullOrBlank() && !c.en.isNullOrBlank())
+            // Le français a l'insécable avant le deux-points, comme le reste du livre.
+            assertTrue(c.fr!!, !c.fr.contains(" :") && !c.en!!.contains(" :"))
+        }
+        val septFois = consignes.single { it.texte.startsWith("יאמר 7 פעמים") }
+        assertTrue(septFois.fr!!.startsWith("On dit sept fois de suite") && septFois.fr.endsWith("amen :"))
+        assertTrue(septFois.en!!.startsWith("One says seven times in a row"))
+        assertTrue(consignes.single { it.texte.startsWith("יש לומר בכל יום ובערב שבת") }.fr!!.contains("veille de Chabbat"))
+        // Français seul : la consigne en français ; hébreu seul : l'hébreu.
+        assertEquals(listOf("fr" to septFois.fr), LanguesTexte.textes(LanguesTexte.Mode.FR, septFois.texte, septFois.fr, septFois.en))
+        assertEquals(listOf("he" to septFois.texte), LanguesTexte.textes(LanguesTexte.Mode.HE, septFois.texte, septFois.fr, septFois.en))
+        // Une consigne traduite ne compte pas pour un chapitre traduit.
+        assertEquals(yanuka.sections.size, yanuka.chapitresTraduits())
+        val consigneSeule = SiddurTexte("x", "g", LocalizedText("", "", ""), "",
+            listOf(SiddurSection("", listOf(SiddurBloc("לאיש", true, "Pour un homme", "For a man")))))
+        assertEquals(0, consigneSeule.chapitresTraduits())
+        val lecteur = File("src/main/java/com/myhitbodedut/SiddurLectureActivity.kt").readText()
+        assertTrue("le lecteur force l'hébreu des consignes", !lecteur.contains("if (consigne) emptyList()"))
+        assertTrue(lecteur.contains("LanguesTexte.textes(langues, ligne.bloc.texte, ligne.bloc.fr, ligne.bloc.en)"))
+        // Les consignes des autres livres, sans traduction, restent en hébreu.
+        assertTrue(livres.textes.filter { it.id != "tefila_lishlomo" }.all { t ->
+            t.sections.all { s -> s.blocs.all { !it.consigne || (it.fr == null && it.en == null) } }
+        })
+    }
 }

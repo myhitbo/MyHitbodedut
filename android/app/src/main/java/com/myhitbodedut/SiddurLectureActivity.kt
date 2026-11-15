@@ -302,7 +302,8 @@ class SiddurLectureActivity : AppCompatActivity() {
             jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora))))
         // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
         langues = LanguesTexte.mode(this)
-        val traduit = texte.sections.any { s -> s.blocs.any { it.fr != null || it.en != null } }
+        // Une consigne traduite (TEFILA-02) ne fait pas d'un texte un texte traduit.
+        val traduit = texte.sections.any { s -> s.blocs.any { !it.consigne && (it.fr != null || it.en != null) } }
         // Le siddour aussi : ses prières et ses consignes ne sont pas traduites, et il le dit (COUV-02).
         val sansTraduction = if (LanguesTexte.manque(langues, traduit)) listOf(Note(getString(R.string.lecture_sans_traduction))) else emptyList()
         // Un livre traduit en partie (le Yalkout Yossef) : combien de chapitres, les autres restent en hébreu (COUV-01, TLIVRES-05).
@@ -634,8 +635,9 @@ class SiddurLectureActivity : AppCompatActivity() {
                     val hebreu = if (consigne) Html.fromHtml(ligne.bloc.texte, Html.FROM_HTML_MODE_LEGACY)
                     else premierMotAgrandi(Html.fromHtml(Aeration.aerer(ligne.bloc.texte), Html.FROM_HTML_MODE_LEGACY))
                     // Un verset traduit (Esther, Chir HaChirim, 04/11) : l'hébreu et/ou la traduction, un
-                    // paragraphe chacun, chacun dans son sens (premier caractère fort).
-                    val textes = if (consigne) emptyList() else LanguesTexte.textes(langues, ligne.bloc.texte, ligne.bloc.fr, ligne.bloc.en)
+                    // paragraphe chacun, chacun dans son sens (premier caractère fort). Une consigne
+                    // traduite aussi (TEFILA-02 : « à dire sept fois de suite ») ; sans traduction, l'hébreu.
+                    val textes = LanguesTexte.textes(langues, ligne.bloc.texte, ligne.bloc.fr, ligne.bloc.en)
                     text = if (textes.none { it.first != "he" }) hebreu else android.text.SpannableStringBuilder().apply {
                         val avecHebreu = textes.any { it.first == "he" }
                         textes.forEach { (l, t) ->
@@ -645,7 +647,8 @@ class SiddurLectureActivity : AppCompatActivity() {
                             append(LanguesTexte.riche(t))
                             setSpan(android.text.style.TypefaceSpan("serif"), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             if (avecHebreu) {
-                                setSpan(android.text.style.RelativeSizeSpan(0.84f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                // Une consigne est déjà petite : sa traduction garde sa taille.
+                                if (!consigne) setSpan(android.text.style.RelativeSizeSpan(0.84f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                                 setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             }
                         }

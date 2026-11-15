@@ -105,34 +105,39 @@ object VolAlerte {
     }
 }
 
-/** Montre les rappels dus, puis programme le suivant. */
+/**
+ * Montre les rappels dus, puis programme le suivant. Hors du fil principal (15/11, EnFond) : les
+ * aéroports (550 ko de JSON) s'y analysaient quand le processus venait d'être relancé.
+ */
 class VolAlerteReceiver : BroadcastReceiver() {
     override fun onReceive(brut: Context, intent: Intent) {
         val context = LangueApp.envelopper(brut)
-        Notifications.ensureChannels(context)
-        val maintenant = System.currentTimeMillis()
-        val dus = if (Store.volRappelsActifs(context)) VolAlerte.dus(Store.volRappels(context), Store.volRappelVu(context), maintenant) else emptyList()
-        val plan = Store.vol(context, Data.aeroports(context))
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        dus.forEach { r ->
-            val (titre, texte) = VolAlerte.textes(context, r, plan)
-            val ouvrir = PendingIntent.getActivity(
-                context, 161 + r.type.ordinal, SiddurLectureActivity.intent(context, VolAlerte.texteSiddur(r)),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-            val n = Notification.Builder(context, Notifications.CHANNEL_REMINDER)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setLargeIcon(VolAlerte.icone(context, r))
-                .setContentTitle(titre)
-                .setContentText(texte)
-                .setStyle(Notification.BigTextStyle().bigText(texte))
-                .setContentIntent(ouvrir)
-                .setAutoCancel(true)
-                .build()
-            // Le Omer garde sa notification à part : il tombe à la même minute qu'Arvit.
-            runCatching { manager.notify(if (r.type == VolRappels.Type.OMER) Notifications.ID_VOL_OMER else Notifications.ID_VOL, n) }
+        EnFond.recevoir(this) {
+            Notifications.ensureChannels(context)
+            val maintenant = System.currentTimeMillis()
+            val dus = if (Store.volRappelsActifs(context)) VolAlerte.dus(Store.volRappels(context), Store.volRappelVu(context), maintenant) else emptyList()
+            val plan = Store.vol(context, Data.aeroports(context))
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            dus.forEach { r ->
+                val (titre, texte) = VolAlerte.textes(context, r, plan)
+                val ouvrir = PendingIntent.getActivity(
+                    context, 161 + r.type.ordinal, SiddurLectureActivity.intent(context, VolAlerte.texteSiddur(r)),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+                val n = Notification.Builder(context, Notifications.CHANNEL_REMINDER)
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setLargeIcon(VolAlerte.icone(context, r))
+                    .setContentTitle(titre)
+                    .setContentText(texte)
+                    .setStyle(Notification.BigTextStyle().bigText(texte))
+                    .setContentIntent(ouvrir)
+                    .setAutoCancel(true)
+                    .build()
+                // Le Omer garde sa notification à part : il tombe à la même minute qu'Arvit.
+                runCatching { manager.notify(if (r.type == VolRappels.Type.OMER) Notifications.ID_VOL_OMER else Notifications.ID_VOL, n) }
+            }
+            dus.maxOfOrNull { it.instant.toEpochMilli() }?.let { Store.setVolRappelVu(context, it) }
+            VolAlerte.programmer(context)
         }
-        dus.maxOfOrNull { it.instant.toEpochMilli() }?.let { Store.setVolRappelVu(context, it) }
-        VolAlerte.programmer(context)
     }
 }
