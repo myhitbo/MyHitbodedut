@@ -249,8 +249,8 @@
     </plurals>
 
     <plurals name="apps_selected">
-        <item quantity="one">%d app blocked</item>
-        <item quantity="other">%d apps blocked</item>
+        <item quantity="one">%d app selected</item>
+        <item quantity="other">%d apps selected</item>
     </plurals>
 
     <plurals name="import_ok">
@@ -383,7 +383,7 @@
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">Reminders</string>
-    <string name="reminders_hint">One or several times a day. Nothing rings on a rest day, on its eve in the evening (from candle lighting if a place is set, otherwise from noon), or once the hitbodedut is done.</string>
+    <string name="reminders_hint">One or several times a day. Nothing rings on a rest day, on its eve from candle lighting (from noon if no place is set), or once the hitbodedut is done.</string>
     <string name="reminders_open">Set the reminders</string>
     <string name="reminders_enable">Remind me to do hitbodedut</string>
     <string name="reminders_enable_hint">A reminder at the times you set, as long as today’s hitbodedut is not done.</string>

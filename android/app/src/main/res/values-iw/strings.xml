@@ -135,7 +135,7 @@
     <string name="permission_notifications_why">בלעדיהן התזכורת נקבעת ולעולם אינה מופיעה, וההתבודדות לא מציגה דבר כשהטלפון מונח.</string>
     <string name="session_notifications_pourquoi">כדי להציג את הזמן שנותר ולהודיע על סיום ההתבודדות כשהטלפון מונח, האפליקציה צריכה הרשאה להתראות.</string>
     <string name="permission_battery_why">בלעדיה אנדרואיד עלול לעכב את התזכורת בשעות. ברשימה שתיפתח, חפשו את MyHitbodedut ובחרו „ללא אופטימיזציה”.</string>
-    <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בבוקר.</string>
+    <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בשעות פעולת המצב.</string>
     <string name="permission_usage_why">כדי לדעת איזו אפליקציה נפתחה זה עתה. שום דבר אינו נשמר ואינו נשלח.</string>
     <string name="permission_granted">אושרה</string>
     <string name="permission_missing">לא ניתנה</string>
@@ -254,9 +254,9 @@
     </plurals>
 
     <plurals name="apps_selected">
-        <item quantity="one">אפליקציה אחת חסומה</item>
-        <item quantity="two">שתי אפליקציות חסומות</item>
-        <item quantity="other">%d אפליקציות חסומות</item>
+        <item quantity="one">אפליקציה אחת נבחרה</item>
+        <item quantity="two">שתי אפליקציות נבחרו</item>
+        <item quantity="other">%d אפליקציות נבחרו</item>
     </plurals>
 
     <plurals name="import_ok">
@@ -392,7 +392,7 @@
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">תזכורות</string>
-    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, לא בערב שלפניו (מהדלקת הנרות אם הוגדר מקום, אחרת מהצהריים), ולא אחרי שההתבודדות נעשתה.</string>
+    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, לא בערב שלפניו מהדלקת הנרות (מהצהריים אם לא הוגדר מקום), ולא אחרי שההתבודדות נעשתה.</string>
     <string name="reminders_open">הגדרת התזכורות</string>
     <string name="reminders_enable">להזכיר לי להתבודד</string>
     <string name="reminders_enable_hint">תזכורת בשעות שהוגדרו, כל עוד ההתבודדות של היום לא נעשתה.</string>
