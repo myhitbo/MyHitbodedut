@@ -326,7 +326,7 @@
     <string name="music_on_summary">%1$s, volume %2$d %%</string>
     <string name="session_music_line">Musique : %1$s</string>
     <!-- Morceaux livres. Titres non traduits : ce sont des noms propres. -->
-    <string name="track_hamelech_basade" translatable="false">המלך בשדה</string>
+    <string name="track_hamelech_basade">HaMélekh baSadé (המלך בשדה)</string>
     <string name="track_niggoun_01">Niggoun 01</string>
     <string name="track_niggoun_02">Niggoun 02</string>
     <string name="track_niggoun_03">Niggoun 03</string>
@@ -357,7 +357,7 @@
     <string name="track_niggoun_31">Niggoun 31</string>
     <string name="track_niggoun_32">Niggoun 32</string>
     <string name="track_niggoun_33">Niggoun 33</string>
-    <string name="track_yanuka_nigoun_3" translatable="false">ניגון — הינוקא (3)</string>
+    <string name="track_yanuka_nigoun_3">Niggoun du Yanouka (3)</string>
     <string name="track_shpayer_beyond" translatable="false">Beyond — Noam Shpayer</string>
     <string name="track_shpayer_eshet_hayil">Eshet \'Hayil — Or &amp; Noam Shpayer</string>
     <string name="track_shpayer_arba_bavot" translatable="false">Arba Bavot — Or &amp; Noam Shpayer</string>
@@ -845,7 +845,7 @@
     <string name="ajout_zimun">Zimoun (à trois convives ou plus)</string>
     <string name="ajout_facultatif">Usage, non obligatoire</string>
     <string name="ajout_facultatif_avant">Avant le Birkat : psaumes d’usage (non obligatoires)</string>
-    <string name="ajout_facultatif_apres">הרחמן et fin : d’usage (non obligatoires)</string>
+    <string name="ajout_facultatif_apres">HaRa’hamane et fin : d’usage (non obligatoires)</string>
     <string name="ajout_embolismique">Année embolismique (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">Maison endeuillée</string>
     <string name="siddur_seul">Si l’on prie seul</string>

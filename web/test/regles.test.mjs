@@ -189,6 +189,15 @@ test('chaque langue a toutes les chaînes et tous les pluriels du français', ()
   }
 });
 
+test('chaque clé écrite en toutes lettres dans app.js existe : plus de repli français muet (COUV-21)', () => {
+  const app = readFileSync(join(ICI, '..', 'src', 'js', 'app.js'), 'utf8');
+  const fr = litChaines(readFileSync(join(RES, 'values', 'strings.xml'), 'utf8'));
+  assert.doesNotMatch(app, /CHAINES_LECTURE/);
+  const cles = new Set([...app.matchAll(/\b(?:tl|tr\.t)\('([a-z_0-9]+)'/g)].map((m) => m[1]));
+  assert.ok(cles.has('lecture_masque_info') && cles.has('lecture_taille'), 'les clés de la barre de lecture sont lues');
+  assert.deepEqual([...cles].filter((c) => !(c in fr.chaines)), []);
+});
+
 test('le format et les pluriels suivent Android', () => {
   assert.equal(formate('%1$d h %2$02d', [1, 5]), '1 h 05');
   assert.equal(formate('%1$s, volume %2$d %%', ['Niggoun 01', 60]), 'Niggoun 01, volume 60 %');

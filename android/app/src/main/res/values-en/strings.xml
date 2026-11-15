@@ -510,11 +510,11 @@
     <string name="villes_echec_web">The list of cities could not be loaded. Check your connection, then try again.</string>
     <string name="reset_hint_web">Erases what the app keeps in this browser: journal, hitbodedut days, streaks, trophies, settings and added tracks. Export your data first if you want to keep it.</string>
     <string name="reset_confirm_text_web">The journal, hitbodedut days, streaks, trophies, settings and added tracks will be erased from this browser. This cannot be undone.</string>
-    <string name="adresse_tsadik">Tsadik</string>
-    <string name="adresse_tsadeket">Tsadeket</string>
+    <string name="adresse_tsadik">Tzaddik</string>
+    <string name="adresse_tsadeket">Tzadeket</string>
     <string name="adresse_none">Not chosen</string>
-    <string name="celebration_tsadik">Well done, Tsadik!</string>
-    <string name="celebration_tsadeket">Well done, Tsadeket!</string>
+    <string name="celebration_tsadik">Well done, Tzaddik!</string>
+    <string name="celebration_tsadeket">Well done, Tzadeket!</string>
     <string name="celebration_neutral">Well done!</string>
     <string name="celebration_continue">Continue</string>
     <string name="settings_adresse">Address me as</string>
@@ -589,6 +589,8 @@
     <string name="track_ianir_houppa">Chuppah Niggun — Ianir</string>
     <string name="track_ianir_kabbalat_chabbat">Kabbalat Shabbat Niggun (live) — Ianir</string>
     <string name="track_ianir_bessarabie">Bessarabian Niggun — Ianir</string>
+    <string name="track_hamelech_basade">HaMelech BaSadeh (המלך בשדה)</string>
+    <string name="track_yanuka_nigoun_3">Niggun of the Yanuka (3)</string>
     <string name="track_shpayer_eshet_hayil">Eshet Chayil — Or &amp; Noam Shpayer</string>
     <string name="track_shpayer_afilou">Afilu (Even) — Noam Shpayer</string>
     <string name="track_shpayer_kenout">Kenut (Sincerity) — Noam Shpayer</string>

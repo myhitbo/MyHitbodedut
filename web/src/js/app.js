@@ -3,7 +3,7 @@
 // écran de réglages. Les écrans suivants arrivent par étapes ; ce qui
 // n'existe pas encore est montré, mais inerte (classe « a-venir »).
 
-import { chargeTraduction, formate, langueInitiale, LANGUES } from './i18n.js';
+import { chargeTraduction, langueInitiale, LANGUES } from './i18n.js';
 import { Anneaux, CycleTehilim, LanguesTexte, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from './regles.js';
 import { ART_DU_MOMENT, ChizukBag, ChizukRules } from './chizuk.js';
 import { AMBIANCES, arreter as arreteAmbiance, jouer as joueAmbiance } from './ambiance.js';
@@ -1075,20 +1075,9 @@ const ECRANS_LUS = ['lecture', 'priere', 'tikkun', 'source'];
 // Les anciennes adresses du Tikoun découpé (02/11), qui mènent au texte entier (04/11).
 ECRANS_LUS.push('tikkun-trait', 'tikkun-psaume', 'tikkun-partie');
 
-/** Les chaînes nouvelles, tant qu'Android ne les a pas encore : le français. */
-const CHAINES_LECTURE = {
-  lecture_reglages: 'Réglages de lecture',
-  lecture_nuit: 'Lecture sur fond noir',
-  lecture_plus: 'Lettres plus grandes',
-  lecture_moins: 'Lettres plus petites',
-  lecture_masquer: 'Masquer le bouton',
-  lecture_masque_info: 'Bouton masqué. Touchez le texte pour le faire revenir.',
-  lecture_annuler_masque: 'Annuler',
-  lecture_replier: 'Replier',
-  lecture_taille: 'Taille du texte : %1$d %%',
-};
+/** Une clé absente doit lever une erreur, comme partout ailleurs : pas de repli français muet. */
 function tl(cle, ...args) {
-  try { return tr.t(cle, ...args); } catch { return formate(CHAINES_LECTURE[cle] ?? cle, args); }
+  return tr.t(cle, ...args);
 }
 
 // Au trait, bouts arrondis : le dessin des autres icônes de l'application.
