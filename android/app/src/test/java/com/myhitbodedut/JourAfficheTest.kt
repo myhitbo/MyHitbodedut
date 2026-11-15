@@ -145,6 +145,12 @@ class JourAfficheTest {
         assertEquals("arvit", JourAffiche.momentDuSiddour(jer, juste("tset", 60)))
         assertEquals("chema_coucher", JourAffiche.momentDuSiddour(jer, a("22:45:00")))
         assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, a("02:00:00")))
+        // Londres au solstice : pas d'aube, mais chki'a et tsét existent (FCALENDRIER-08) : la prière suit les zmanim.
+        val londres = Zmanim.Lieu("Londres", 51.5074, -0.1278, 0.0, "Europe/London")
+        fun lon(h: String) = java.time.ZonedDateTime.parse("2027-06-21T$h+01:00[Europe/London]").toInstant()
+        assertEquals("minha", JourAffiche.momentDuSiddour(londres, lon("18:45:00")))
+        assertEquals("chaharit", JourAffiche.momentDuSiddour(londres, lon("09:00:00")))
+        assertEquals("chema_coucher", JourAffiche.momentDuSiddour(londres, lon("00:30:00")))
         // Soleil de minuit à Tromsø : les heures fixes.
         val tromso = Zmanim.Lieu("Tromsø", 69.6492, 18.9553, 0.0, "Europe/Oslo")
         val juin = java.time.ZonedDateTime.parse("2026-06-21T14:00:00+02:00[Europe/Oslo]").toInstant()

@@ -79,6 +79,9 @@ export function momentDuSiddour(lieu, maintenant) {
   const minutes = Number(parties.hour) * 60 + Number(parties.minute);
   const instants = (d) => Object.fromEntries(Z.jour(lieu, d).map((x) => [x.cle, x.instant]));
   const z = instants(iso);
+  // Aube absente autour du solstice (Londres, Berlin, Moscou…) : michéyakir, puis le lever du soleil, en tiennent lieu.
+  if (!z.alot) z.alot = z.misheyakir || z.netz;
+  if (!z.misheyakir) z.misheyakir = z.netz;
   const [a, m, j] = iso.split('-').map(Number);
   const hier = instants(new Date(Date.UTC(a, m - 1, j - 1, 12)).toISOString().slice(0, 10));
   const cles = ['alot', 'misheyakir', 'chatsot', 'minha_gedola', 'chkia', 'tset', 'chatsot_layla'];

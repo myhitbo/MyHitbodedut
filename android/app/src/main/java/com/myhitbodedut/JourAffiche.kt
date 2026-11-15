@@ -116,7 +116,12 @@ object JourAffiche {
         val local = maintenant.atZone(zone)
         val date = local.toLocalDate()
         fun instants(d: LocalDate) = Zmanim.jour(lieu, d).associate { it.cle to it.instant }
-        val z = instants(date)
+        // Aube absente autour du solstice (Londres, Berlin, Moscou…, FCALENDRIER-08) : michéyakir, puis
+        // le lever du soleil, en tiennent lieu ; les heures fixes ne servent que si chki'a ou tsét manquent.
+        val z = instants(date).toMutableMap().also {
+            if (it["alot"] == null) it["alot"] = it["misheyakir"] ?: it["netz"]
+            if (it["misheyakir"] == null) it["misheyakir"] = it["netz"]
+        }
         val hier = instants(date.minusDays(1))
         val cles = listOf("alot", "misheyakir", "chatsot", "minha_gedola", "chkia", "tset", "chatsot_layla")
         if (cles.any { z[it] == null } || hier["chatsot_layla"] == null) return SiddurMoment.suggestion(local.toLocalTime())
