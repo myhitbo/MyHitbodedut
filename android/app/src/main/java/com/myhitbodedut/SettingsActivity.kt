@@ -612,6 +612,7 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.import_invalid, Toast.LENGTH_LONG).show()
             return
         }
+        Celebrations.apresImport(this)
         // Le clair ou le sombre de la sauvegarde, tout de suite (audit du 04/10).
         Apparence.appliquerMode(this)
         StreakWidget.refresh(this)

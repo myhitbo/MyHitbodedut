@@ -162,7 +162,9 @@ object Celebrations {
                 PaliersVue.libelle(c, palier.piste, bilan), PaliersVue.valeur(c, palier.piste, palier.atteint))
             else -> "" to ""
         }
-        return Neuf(icone, message, Paliers.marques(etats, bilan), gagnes.map { it.cle }.toSet())
+        // L'union, jamais le remplacement : un trophée qui disparaît puis revient
+        // (note effacée, interrupteur rallumé) n'est pas fêté une seconde fois (FDONNEES-10).
+        return Neuf(icone, message, Paliers.marques(etats, bilan), (tropheesVus ?: emptySet()) + gagnes.map { it.cle })
     }
 
     /**
@@ -183,6 +185,23 @@ object Celebrations {
         }
         Store.setPaliersVus(activity, r.marques)
         Store.setTropheesVus(activity, r.trophees)
+    }
+
+    /**
+     * Après un import : l'historique importé est du passé, pas une pluie de fiches
+     * (FDONNEES-10). Tout ce qui est gagné à cet instant est marqué vu et notifié.
+     */
+    fun apresImport(context: Context) {
+        val bilan = Store.bilan(context)
+        val marques = Paliers.marques(Paliers.etats(bilan), bilan)
+        val gagnes = Trophees.gagnes(Store.pratique(context)).map { it.cle }
+        Store.setPaliersVus(context, marques)
+        Store.setPaliersNotifies(context, marques)
+        Store.setTropheesVus(context, (Store.tropheesVus(context) ?: emptySet()) + gagnes)
+        Store.setTropheesNotifies(context, (Store.tropheesNotifies(context) ?: emptySet()) + gagnes)
+        val n = Trophees.chemin.count { Trophees.gagne(Store.pratique(context), it) }
+        val grade = Trophees.grade(n)
+        Store.setGradeVu(context, if (n == 0) 0 else grade.ordinal + 1)
     }
 
     /** Ce qui est neuf est su sans notification (ajout de temps, application ouverte ; 16/10). */
