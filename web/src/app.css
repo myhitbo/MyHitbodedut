@@ -1204,7 +1204,7 @@ button.corps { min-height: 44px; }
 .mois-tete .icone-bouton { width: 44px; height: 44px; }
 .ecouter, .jour-lien, .ligne-paliers, .lien-bouton, .puce-choix, .lecture-pastille, .interrupteur, .lecture-barre .icone-bouton { position: relative; }
 .ecouter::before, .jour-lien::before, .ligne-paliers::before, .lien-bouton::before, .puce-choix::before, .lecture-pastille::before, .lecture-barre .icone-bouton::before {
-  content: ""; position: absolute; inset: -8px 0;
+  content: ""; position: absolute; inset: -10px 0;
 }
 .interrupteur::before { content: ""; position: absolute; inset: -8px -4px; }
 /* Texte à 200 % (zoom du navigateur, audit du 16/10) : quatre onglets tiennent encore. */
@@ -1410,8 +1410,8 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
 .para + .para { margin-top: 0.7em; }
 
 /* « J'ai besoin de ’hizouk » (19/10) */
-.hizouk-actions { display: flex; gap: 8px; margin-top: 12px; }
-.hizouk-actions button { flex: 1; }
+.hizouk-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.hizouk-actions button { flex: 1 1 0; min-width: min-content; padding-inline: 10px; }
 .contenu.hizouk > .principal { width: 100%; margin-top: 8px; }
 .hizouk-garde { display: block; width: 100%; text-align: start; padding: 12px 4px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 15px; cursor: pointer; }
 .hizouk-garde-texte { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

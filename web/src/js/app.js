@@ -1388,7 +1388,8 @@ function tuileLivre(hebreu, traduction, dessin, onclick) {
  */
 function ecranSiddur() {
   const pret = chargeSiddur();
-  const nomNusah = pret ? titreTexte(siddur._meta.nusah) : tr.t(NUSAH.find(([c]) => c === store.siddurNusah())?.[1] ?? 'siddur_nusah');
+  // Le nom court dans la pastille, le complet reste dans la feuille de choix (FWEBLIVE-15).
+  const nomNusah = tr.t(NUSAH.find(([c]) => c === store.siddurNusah())?.[1] ?? 'siddur_nusah');
   const heure = new Date();
   // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
   const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
@@ -3657,7 +3658,7 @@ async function demanderDirect(indicatif) {
  * désactivé par défaut, pour la route d'un numéro (adsbdb) et le suivi en direct (OpenSky).
  */
 let formulaireVolOuvert = true;
-const interrupteurEnLigne = () => h('label', { class: 'ligne' }, h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('vol_direct_activer'))),
+const interrupteurEnLigne = () => h('label', { class: 'ligne' }, h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t(RELAIS_VOL ? 'vol_direct_activer' : 'vol_direct_activer_web'))),
   h('input', { type: 'checkbox', role: 'switch', class: 'interrupteur', checked: store.suiviDirect(), onchange: (e) => { store.setSuiviDirect(e.target.checked); rendre(); } }));
 
 /** Le suivi en direct : l'interrupteur des services en ligne, qui dit ce qui part ; l'indicatif ; le bouton. */
@@ -3667,7 +3668,8 @@ function suiviDirect() {
   // L'interrupteur n'est plus dans le formulaire (04/11) : il vit ici, sous « Préciser la position ».
   const bloc = [interrupteurEnLigne()];
   if (!actif) return bloc;
-  if (!RELAIS_VOL) return [...bloc, h('p', { class: 'indice' }, tr.t('vol_direct_inactif'))];
+  // Sans relais, l'interrupteur ne promet que la route du vol : rien à dire d'un suivi qui n'existe pas (FWEBLIVE-13).
+  if (!RELAIS_VOL) return bloc;
   const champ = h('input', { type: 'text', class: 'champ-recherche champ-vol', maxlength: 9, autocapitalize: 'characters', placeholder: tr.t('vol_indicatif'), value: store.volIndicatif() || null });
   return [...bloc, champ,
     h('button', { class: 'secondaire', disabled: directVol, onclick: () => {
@@ -4534,7 +4536,7 @@ function carteMaPratique() {
     ligneInterrupteur(tr.t('settings_hide_countdown'), null, store.hideCountdown(), (v) => store.setHideCountdown(v)),
     // La hitbodedout guidée (02/11, SettingsActivity.guided_switch) : éteinte par défaut.
     ligneInterrupteur(tr.t('settings_hitbodedut'), tr.t('settings_hitbodedut_hint'), store.guidedHitbodedut(), (v) => store.setGuidedHitbodedut(v)),
-    ligneInterrupteur(tr.t('settings_shabbat'), tr.t('settings_shabbat_hint'), store.shabbatMode(), (v) => store.setShabbatMode(v)),
+    ligneInterrupteur(tr.t('settings_shabbat'), tr.t('settings_shabbat_hint_web'), store.shabbatMode(), (v) => store.setShabbatMode(v)),
     ligneInterrupteur(tr.t('settings_exempt_today'), tr.t('settings_exempt_today_hint'), store.pausedDates().has(jourAffiche), () => store.togglePausedDate(jourAffiche)));
 }
 

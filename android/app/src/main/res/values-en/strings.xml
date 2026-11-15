@@ -116,6 +116,7 @@
     <string name="rings_description">Rings. Today: %1$s of %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">Shabbat and Yom Tov</string>
     <string name="settings_shabbat_hint">On those days: the mode is silent, no reminder, and the streak stays intact.</string>
+    <string name="settings_shabbat_hint_web">On those days, your streak stays intact.</string>
     <string name="settings_exempt_today">Rest day today</string>
     <string name="settings_exempt_today_hint">For a Yom Tov, a trip or illness: the day does not count against you.</string>
     <string name="settings_screen_missing">This settings screen does not exist on this phone.</string>
@@ -1349,6 +1350,7 @@
     <string name="vol_direct_titre">Live tracking (Internet)</string>
     <string name="vol_direct_explication">Off by default. When on, it sends the app’s relay the flight’s callsign and the aircraft’s estimated position, nothing else; the relay asks OpenSky Network for the real position. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_direct_activer">Online services: flight route and live tracking</string>
+    <string name="vol_direct_activer_web">Online services: flight route (adsbdb)</string>
     <string name="vol_route_activer">Online services: flight route</string>
     <string name="vol_indicatif">Radio callsign (ICAO), for example ELY1</string>
     <string name="vol_indicatif_invalide">Expected callsign: three letters then the number, for example ELY1.</string>
