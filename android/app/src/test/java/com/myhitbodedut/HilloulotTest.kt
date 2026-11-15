@@ -68,6 +68,8 @@ class HilloulotTest {
         assertTrue(Hilloulot.recherche(table, "Chelah").isNotEmpty())
         assertTrue(Hilloulot.recherche(table, "Shelah").isNotEmpty())
         assertEquals(Hilloulot.recherche(table, "Moché").size, Hilloulot.recherche(table, "moche").size)
+        // « Moïse » trouve Moché Rabbénou (THILLOULOT-10).
+        assertTrue(Hilloulot.recherche(table, "Moïse").any { (cle, h) -> cle == "adar-7" && h.he == "משה רבנו" })
     }
 
     @Test

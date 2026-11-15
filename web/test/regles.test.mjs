@@ -633,6 +633,7 @@ test('hilloulot : date lisible et recherche par nom', async () => {
   assert.ok(J.rechercheHilloula(table, 'Chelah').length > 0);
   assert.ok(J.rechercheHilloula(table, 'Shelah').length > 0);
   assert.equal(J.rechercheHilloula(table, 'Moché').length, J.rechercheHilloula(table, 'moche').length);
+  assert.ok(J.rechercheHilloula(table, 'Moïse').some(([cle, x]) => cle === 'adar-7' && x.he === 'משה רבנו'));
   // Réorganisé (04/11) : la recherche suit l'année, de Tichri à Eloul.
   const rangs = J.rechercheHilloula(table, 'רבי').map(([cle]) => J.rangDansLAnnee(cle));
   assert.ok(rangs.length > 100);

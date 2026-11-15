@@ -3008,7 +3008,11 @@ function blocHilloula(iso) {
   const versHilloulot = () => { jourHilloulot = iso; rechercheHilloulot = ''; ouvrir('hilloulot'); };
   return [
     h('h3', { class: 'jour-sous-titre' }, tr.t('hilloula_titre')),
-    h('div', { class: 'jour-hilloula', lang: 'he', dir: 'rtl' }, ...liste.slice(0, 5).map((x) => h('div', {}, x.he)),
+    // Le nom traduit après l'hébreu, isolé, quand il existe (VueJour.blocHilloula, THILLOULOT-10).
+    h('div', { class: 'jour-hilloula', lang: 'he', dir: 'rtl' }, ...liste.slice(0, 5).map((x) => {
+      const traduit = nomTraduitHilloula(x);
+      return h('div', {}, x.he, traduit ? [' (', h('bdi', { lang: tr.langue }, traduit), ')'] : null);
+    }),
       reste > 0 ? h('button', { class: 'jour-hilloula-reste lien-bouton', onclick: versHilloulot }, `${tr.p('hilloula_autres', reste)} ›`) : null),
     h('button', { class: 'jour-lien lien-bouton', onclick: versHilloulot }, tr.t('hilloulot_tout')),
   ];

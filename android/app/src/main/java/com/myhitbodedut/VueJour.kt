@@ -196,8 +196,15 @@ object VueJour {
         val ouvrirHilloulot = View.OnClickListener {
             c.startActivity(Intent(c, HilloulotActivity::class.java).putExtra(HilloulotActivity.EXTRA_DATE, date.toString()))
         }
+        // Le nom traduit, quand il existe, après l'hébreu et isolé (la vue est en RTL) : la règle de
+        // l'écran des hilloulot, repli FR → EN (THILLOULOT-10).
+        val langue = ChizukCard.language(c)
+        val nom = { h: Hilloulot.Hilloula ->
+            (if (langue.startsWith("en")) h.en else if (langue.startsWith("fr")) h.fr ?: h.en else null)
+                ?.takeIf { it.isNotBlank() }?.let { "${h.he} (\u2068$it\u2069)" } ?: h.he
+        }
         // Plus petit que le reste de la carte (14/10) : les noms sont souvent longs.
-        carte.addView(texte(c, hilloulot.take(5).joinToString("\n") { it.he }, 14f, R.color.ink, haut = 2).apply {
+        carte.addView(texte(c, hilloulot.take(5).joinToString("\n") { nom(it) }, 14f, R.color.ink, haut = 2).apply {
             textDirection = View.TEXT_DIRECTION_RTL
             PoliceHebraique.appliquer(this)
             setLineSpacing(0f, 1.25f)
