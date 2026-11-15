@@ -1546,6 +1546,9 @@ object Store {
     }
 
     /** Les chaînes d'un tableau JSON, non vides, sans doublon. */
+    /** Au plus autant de jours du Tikoun qu'il y en a en dix ans et plus (revue du 15/11). */
+    private const val IMPORT_DATES_MAX = 4000
+
     private fun chaines(a: org.json.JSONArray?): List<String> =
         if (a == null) emptyList() else (0 until a.length()).mapNotNull { a.optString(it).takeIf(String::isNotBlank) }.distinct()
 
@@ -1568,20 +1571,26 @@ object Store {
                 if (!plus.vide && !dejaNote) JournalPlus.ecrire(context, date, plus)
             }
         }
+        // Bornés (revue du 15/11) : un fichier fabriqué ne remplit plus les préférences, relues à chaque
+        // écran, et un « | » ne coupe plus un favori en deux entrées.
         val tikkun = chaines(root.optJSONArray("tikkun_journal")).mapNotNull(::dateValide).filter { it.isBefore(demain) }
         if (tikkun.isNotEmpty()) {
-            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).sorted().joinToString(",")).apply()
+            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).distinct().sorted().takeLast(IMPORT_DATES_MAX).joinToString(",")).apply()
         }
-        val favoris = chaines(root.optJSONArray("favoris")).filter { it.startsWith("s:") || it.startsWith("l:") }
-        if (favoris.isNotEmpty()) prefs(context).edit().putString("favoris", (favoris(context) + favoris).distinct().joinToString("|")).apply()
-        val chizuk = chaines(root.optJSONArray("chizuk_favoris")).filter { '|' !in it }
-        if (chizuk.isNotEmpty()) prefs(context).edit().putString("chizuk_favoris", (chizukFavoris(context) + chizuk).distinct().joinToString("|")).apply()
+        val favoris = chaines(root.optJSONArray("favoris")).filter { (it.startsWith("s:") || it.startsWith("l:")) && '|' !in it && it.length <= 100 }
+        if (favoris.isNotEmpty()) prefs(context).edit().putString("favoris", (favoris(context) + favoris).distinct().take(200).joinToString("|")).apply()
+        val chizuk = chaines(root.optJSONArray("chizuk_favoris")).filter { '|' !in it && it.length <= 40 }
+        if (chizuk.isNotEmpty()) prefs(context).edit().putString("chizuk_favoris", (chizukFavoris(context) + chizuk).distinct().take(500).joinToString("|")).apply()
         root.optJSONArray("marques_pages")?.let { a ->
             val entrantes = (0 until a.length()).mapNotNull { i ->
                 val o = a.optJSONObject(i) ?: return@mapNotNull null
                 val m = MarquesPages.Marque(o.optString("cle"), o.optString("nusah"), o.optInt("section", -1), o.optInt("bloc", -1),
-                    o.optString("apercu").replace('\t', ' ').replace('\n', ' '))
-                m.takeIf { it.cle.isNotBlank() && '\t' !in it.cle && '\t' !in it.nusah && it.section >= 0 && it.bloc >= 0 }
+                    o.optString("apercu").replace('\t', ' ').replace('\n', ' ').take(200))
+                m.takeIf {
+                    it.cle.isNotBlank() && it.cle.length <= 100 && it.nusah.length <= 20 &&
+                        it.cle.none { c -> c == '\t' || c == '\n' } && it.nusah.none { c -> c == '\t' || c == '\n' } &&
+                        it.section >= 0 && it.bloc >= 0
+                }
             }
             val ici = marques(context)
             val reunies = (ici + entrantes.filter { e -> ici.none { it.memePlace(e) } }).take(MarquesPages.MAX)

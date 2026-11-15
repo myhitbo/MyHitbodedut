@@ -27,6 +27,36 @@ object NoteDialog {
         onSaved: () -> Unit,
         onClosed: (() -> Unit)? = null
     ) {
+        // Le verrou du journal (revue du 15/11) : ouverte depuis l'accueil, la
+        // séance ou le bravo, la fenêtre montrait sans code la note et le
+        // journal enrichi déjà écrits ce jour-là. Le journal, lui, a déjà
+        // demandé le code ; une fenêtre vide n'a rien à cacher.
+        val composant = activity as? androidx.activity.ComponentActivity
+        if (activity !is JournalActivity && composant != null && VerrouJournal.actif(activity) && dejaEcrit(activity, date)) {
+            VerrouJournal.exiger(composant, onOk = { afficher(activity, date, onSaved, onClosed) }, onRefus = { onClosed?.invoke() })
+            return
+        }
+        afficher(activity, date, onSaved, onClosed)
+    }
+
+    private fun dejaEcrit(activity: Activity, date: String): Boolean {
+        val plus = JournalPlus.lire(activity, date)
+        return Store.record(activity, date)?.note.orEmpty().isNotBlank() ||
+            plus.gratitude.isNotBlank() || plus.travail.isNotBlank() || plus.avant != 0 || plus.apres != 0
+    }
+
+    /** Le clavier n'apprend pas les mots du journal quand il est verrouillé : il les reproposerait ailleurs. */
+    private fun sansApprentissage(champ: EditText, verrou: Boolean) {
+        if (verrou) champ.imeOptions = champ.imeOptions or android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
+    }
+
+    private fun afficher(
+        activity: Activity,
+        date: String,
+        onSaved: () -> Unit,
+        onClosed: (() -> Unit)?
+    ) {
+        val verrou = VerrouJournal.actif(activity)
         val density = activity.resources.displayMetrics.density
         val pad = (16 * density).toInt()
 
@@ -47,6 +77,7 @@ object NoteDialog {
             setHint(R.string.note_hint)
             setLines(4)
             gravity = Gravity.TOP or Gravity.START
+            sansApprentissage(this, verrou)
         }
 
         // Le journal enrichi (14/10) : l'humeur avant et après, une gratitude.
@@ -83,6 +114,7 @@ object NoteDialog {
             setText(plus.gratitude)
             setHint(R.string.journal_gratitude_hint)
             setSingleLine()
+            sansApprentissage(this, verrou)
         }
         // La seconde question de fin (19/10) : une chose à travailler.
         val travail = EditText(activity).apply {
@@ -90,6 +122,7 @@ object NoteDialog {
             setText(plus.travail)
             setHint(R.string.journal_travail_hint)
             setSingleLine()
+            sansApprentissage(this, verrou)
         }
 
         val layout = LinearLayout(activity).apply {

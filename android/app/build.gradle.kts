@@ -40,7 +40,8 @@ android {
             storeFile = file(env("KEYSTORE_PATH") ?: "../keystore/myhitbodedut-dev.jks")
             storePassword = env("KEYSTORE_PASSWORD") ?: "myhitbodedut"
             keyAlias = env("KEY_ALIAS") ?: "myhitbodedut"
-            keyPassword = env("KEY_PASSWORD") ?: "myhitbodedut"
+            // Sans mot de passe de clé, celui du trousseau : c'est le même dans un PKCS12 créé par keytool.
+            keyPassword = env("KEY_PASSWORD") ?: env("KEYSTORE_PASSWORD") ?: "myhitbodedut"
         }
     }
 

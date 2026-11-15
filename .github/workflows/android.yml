@@ -67,17 +67,29 @@ jobs:
       # publiés sont signés par une clé qui n'est nulle part dans le dépôt
       # (android/keystore/README.md). Sans eux, la clé de développement, et
       # un avertissement à chaque construction.
+      # Seulement pour main, jamais pour une PR (revue du 15/11) : GitHub donne les secrets aux PR
+      # ouvertes depuis une branche du dépôt, et du code non relu (build.gradle.kts, une
+      # dépendance) aurait pu lire la clé. Les PR sont signées par la clé de développement.
       - name: Release signing key
         id: cle
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         env:
           RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          if [ -n "$RELEASE_KEYSTORE_BASE64" ]; then
-            echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
-            echo "chemin=$RUNNER_TEMP/release.jks" >> "$GITHUB_OUTPUT"
-          else
+          if [ -z "$RELEASE_KEYSTORE_BASE64" ]; then
             echo "::warning::Secrets RELEASE_* absents : APK signés par la clé de développement, dont le mot de passe est public (android/keystore/README.md)."
+            exit 0
           fi
+          # Un secret oublié faisait échouer chaque construction sans dire lequel.
+          for nom in RELEASE_KEYSTORE_PASSWORD RELEASE_KEY_ALIAS; do
+            if [ -z "${!nom}" ]; then echo "::error::Secret $nom absent alors que RELEASE_KEYSTORE_BASE64 existe (android/keystore/README.md)."; exit 1; fi
+          done
+          [ -n "$RELEASE_KEY_PASSWORD" ] || echo "::notice::RELEASE_KEY_PASSWORD absent : celui du trousseau est utilisé (cas d'un PKCS12 créé par keytool)."
+          echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "chemin=$RUNNER_TEMP/release.jks" >> "$GITHUB_OUTPUT"
 
       - name: Build both signed editions
         working-directory: android

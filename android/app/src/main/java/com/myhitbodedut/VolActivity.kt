@@ -1072,6 +1072,7 @@ class VolActivity : AppCompatActivity() {
             SuiviVol.Raison.ILLISIBLE -> R.string.vol_erreur_illisible
             SuiviVol.Raison.POSITION_INVALIDE -> R.string.vol_erreur_position
             SuiviVol.Raison.RELAIS_ABSENT -> R.string.vol_erreur_relais_absent
+            SuiviVol.Raison.TROP_DE_DEMANDES -> R.string.vol_erreur_trop_de_demandes
             else -> R.string.vol_erreur_service
         })
 

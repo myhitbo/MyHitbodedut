@@ -3528,7 +3528,7 @@ function raisonVol(raison) {
   return tr.t({
     [Vol.Raison.HORS_LIGNE]: 'vol_erreur_hors_ligne', [Vol.Raison.QUOTA]: 'vol_erreur_quota',
     [Vol.Raison.ILLISIBLE]: 'vol_erreur_illisible', [Vol.Raison.POSITION_INVALIDE]: 'vol_erreur_position',
-    [Vol.Raison.RELAIS_ABSENT]: 'vol_erreur_relais_absent',
+    [Vol.Raison.RELAIS_ABSENT]: 'vol_erreur_relais_absent', [Vol.Raison.TROP_DE_DEMANDES]: 'vol_erreur_trop_de_demandes',
   }[raison] ?? 'vol_erreur_service');
 }
 
@@ -4464,6 +4464,9 @@ function dedicacer() {
   });
 }
 
+/** La borne du texte en clair d'une sauvegarde importée, comme SettingsActivity.CLAIR_MAX_OCTETS. */
+const CLAIR_MAX = 2 * 1024 * 1024;
+
 /** Un champ de mot de passe de la sauvegarde (Coffre, audit du 12/11). */
 const champMotDePasse = (indice) => h('input', { type: 'password', autocomplete: 'off', maxlength: '128', placeholder: tr.t(indice), 'aria-label': tr.t(indice) });
 
@@ -4510,11 +4513,14 @@ function carteMesDonnees() {
     const fichier = e.target.files?.[0];
     e.target.value = '';
     if (!fichier) return;
-    // Au plus 2 Mo, comme Android : une vraie sauvegarde pèse quelques dizaines de Ko.
-    if (fichier.size > 2 * 1024 * 1024) { signale(tr.t('import_failed')); return; }
+    // Comme Android (revue du 15/11) : le fichier jusqu'à 3 Mo, car une sauvegarde chiffrée passe en
+    // base64 et pèse un tiers de plus ; le texte en clair jusqu'à 2 Mo.
+    if (fichier.size > 3 * 1024 * 1024) { signale(tr.t('import_failed')); return; }
     let texte;
     try { texte = await fichier.text(); } catch { signale(tr.t('import_failed')); return; }
-    if (Coffre.estChiffre(texte)) demanderImport(texte); else importer(texte);
+    if (Coffre.estChiffre(texte)) demanderImport(texte);
+    else if (fichier.size > CLAIR_MAX) signale(tr.t('import_failed'));
+    else importer(texte);
   } });
   const importer = (texte) => {
     const n = store.importJson(texte);
@@ -4527,16 +4533,24 @@ function carteMesDonnees() {
   const demanderImport = (chiffre) => feuille(tr.t('import_mdp_titre'), (f, fermer) => {
     const champ = champMotDePasse('export_mdp_champ');
     const erreur = h('p', { class: 'indice', role: 'alert' });
+    // Un seul calcul à la fois, et rien n'est importé si la feuille a été fermée pendant ce temps
+    // (revue du 15/11) : « Retour » ou Échap pendant la dérivation n'importait pas moins.
     const valider = async () => {
+      if (bouton.disabled) return;
+      bouton.disabled = true;
       const clair = await Coffre.dechiffrer(chiffre, champ.value);
+      if (!f.isConnected) return;
+      bouton.disabled = false;
       if (clair === null) { erreur.textContent = tr.t('import_mdp_faux'); champ.select(); return; }
+      if (new TextEncoder().encode(clair).length > CLAIR_MAX) { fermer(); signale(tr.t('import_failed')); return; }
       fermer();
       importer(clair);
     };
+    const bouton = h('button', { type: 'button', class: 'fort', onclick: valider }, tr.t('action_import'));
     f.append(champ, erreur,
       h('div', { class: 'actions' },
         h('button', { type: 'button', onclick: fermer }, tr.t('action_back')),
-        h('button', { type: 'button', class: 'fort', onclick: valider }, tr.t('action_import'))));
+        bouton));
   });
   return h('div', { class: 'carte' },
     h('h3', {}, tr.t('section_data')),

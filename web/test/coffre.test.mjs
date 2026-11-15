@@ -73,3 +73,63 @@ test('le relais refuse une adresse qui demande trop, puis la laisse repasser', a
   assert.equal((await r.json()).erreur, 'relais 429');
   assert.equal(appels, 0);
 });
+
+test('le relais compte une adresse IPv6 pour son /64, et ne compte que les demandes à OpenSky (revue du 15/11)', async () => {
+  const { cleAdresse, budgetEpuise, BUDGET_JOUR, ETATS } = await import('../../tools/relais_vol/worker.js');
+  assert.equal(cleAdresse('2001:db8:1:2:aaaa::1'), '2001:db8:1:2::/64');
+  assert.equal(cleAdresse('2001:0db8:0001:0002:ffff:ffff:ffff:ffff'), '2001:db8:1:2::/64');
+  assert.equal(cleAdresse('2001:db8::5'), '2001:db8:0:0::/64');
+  assert.equal(cleAdresse('203.0.113.7'), '203.0.113.7');
+  assert.equal(cleAdresse(null), null);
+  // Le budget du jour : au-delà, plus aucune demande ; le lendemain, il repart.
+  const b = { jour: '', n: 0 };
+  const midi = Date.parse('2026-11-15T12:00:00Z');
+  for (let i = 0; i < BUDGET_JOUR.anonyme; i++) assert.equal(budgetEpuise(false, midi, b), false);
+  assert.equal(budgetEpuise(false, midi, b), true);
+  assert.equal(budgetEpuise(false, midi + 86_400_000, b), false);
+  // Une même adresse, servie depuis le cache : aucune demande à OpenSky, donc aucun compte.
+  let appels = 0;
+  const chercher = async (url) => { if (String(url).startsWith(ETATS)) appels++; return new Response(JSON.stringify({ states: [] }), { status: 200 }); };
+  const cache = new Map(); const debits = new Map(); const budget = { jour: '', n: 0 };
+  const req = () => new Request('https://relais.test/position?indicatif=ELY1&lat=50&lon=-20', { headers: { 'cf-connecting-ip': '2001:db8:1:2::9' } });
+  for (let i = 0; i < 30; i++) assert.equal((await traiter(req(), {}, chercher, cache, midi, debits, budget)).status, 200);
+  assert.equal(appels, 1);
+  assert.equal(budget.n, 1);
+});
+
+test('les clients distinguent le débit du relais du quota OpenSky, même en 5xx (revue du 15/11)', async () => {
+  const Vol = await import('../src/js/vol.js');
+  const maintenant = new Date('2026-11-10T18:31:00Z');
+  const reponse = (status, corps) => async () => new Response(corps === undefined ? '' : JSON.stringify(corps), { status });
+  const p = (f) => Vol.positionEnDirect('https://r.test', 'ELY1', { latitude: 0, longitude: 0 }, f, maintenant);
+  assert.equal((await p(reponse(429, { erreur: 'relais 429' }))).raison, 'trop_de_demandes');
+  assert.equal((await p(reponse(502, { erreur: 'opensky 429' }))).raison, 'quota');
+  assert.equal((await p(reponse(502, { erreur: 'opensky injoignable' }))).raison, 'service');
+  assert.equal((await p(reponse(503))).raison, 'serveur_503');
+  assert.equal((await p(reponse(200, { trouve: false }))).statut, 'introuvable');
+  const fr = readFileSync(new URL('../../android/app/src/main/res/values/strings.xml', import.meta.url), 'utf8');
+  assert.ok(fr.includes('name="vol_erreur_trop_de_demandes"'));
+});
+
+test('l’import borne aussi les clés de la version 2 (revue du 15/11)', () => {
+  const s = creeStore(memoire());
+  const long = 'x'.repeat(20_000);
+  s.importJson(JSON.stringify({
+    format: 'myhitbodedut', version: 2, days: {},
+    favoris: [...Array.from({ length: 1000 }, (_, i) => `s:${i}`), `s:${long}`, 's:a|l:b'],
+    chizuk_favoris: [...Array.from({ length: 2000 }, (_, i) => `c${i}`), long, 'a|b'],
+    marques_pages: [
+      { cle: 'siddur', nusah: 'edot', section: 1, bloc: 2, apercu: long },
+      { cle: long, nusah: 'edot', section: 1, bloc: 3, apercu: '' },
+      { cle: 'siddur', nusah: long, section: 1, bloc: 4, apercu: '' },
+    ],
+    tikkun_journal: Array.from({ length: 6000 }, (_, i) => new Date(Date.UTC(2000, 0, 1) + i * 86_400_000).toISOString().slice(0, 10)),
+  }));
+  const sortie = JSON.parse(s.exportJson());
+  assert.ok(sortie.favoris.length <= 200 && sortie.favoris.every((f) => f.length <= 100 && !f.includes('|')));
+  assert.ok(sortie.chizuk_favoris.length <= 500 && sortie.chizuk_favoris.every((c) => c.length <= 40 && !c.includes('|')));
+  assert.equal(sortie.marques_pages.length, 1);
+  assert.ok(sortie.marques_pages[0].apercu.length <= 200);
+  assert.ok(sortie.tikkun_journal.length <= 4000);
+  assert.ok(JSON.stringify(sortie).length < 120_000);
+});

@@ -37,8 +37,15 @@ class JournalActivity : AppCompatActivity() {
     /** Vrai une fois le code ou l'empreinte donnés, ou si le verrou n'est pas demandé. */
     private var ouvert = true
 
+    /** Vrai entre le lancement de la demande du code et sa réponse. */
+    private var demandeEnCours = false
+
+    /** Le journal a été caché en passant à l'arrière-plan : le code est redemandé au retour. */
+    private var aRedemander = false
+
     private val demandeCode =
         registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { resultat ->
+            demandeEnCours = false
             if (resultat.resultCode == RESULT_OK) {
                 ouvert = true
                 findViewById<View>(android.R.id.content).visibility = View.VISIBLE
@@ -54,21 +61,52 @@ class JournalActivity : AppCompatActivity() {
      * rien à demander : le journal s'ouvre, comme avant.
      */
     private fun verrouiller(etat: Bundle?) {
-        if (!Store.journalVerrou(this) || etat?.getBoolean(ETAT_OUVERT) == true) return
-        val garde = getSystemService(android.app.KeyguardManager::class.java) ?: return
-        if (!garde.isDeviceSecure) return
-        @Suppress("DEPRECATION")
-        val demande = garde.createConfirmDeviceCredentialIntent(getString(R.string.journal_verrou_titre), null) ?: return
+        if (!VerrouJournal.actif(this) || etat?.getBoolean(ETAT_OUVERT) == true) return
+        val demande = VerrouJournal.demande(this) ?: return
         ouvert = false
         findViewById<View>(android.R.id.content).visibility = View.INVISIBLE
-        // Après une rotation, la demande est déjà à l'écran : on attend sa réponse.
+        // Après une rotation ou la mort du processus pendant la demande, elle
+        // est encore à l'écran : on attend sa réponse au lieu d'en lancer une autre.
+        demandeEnCours = true
         if (etat?.getBoolean(ETAT_DEMANDE) != true) demandeCode.launch(demande)
+    }
+
+    /**
+     * Le journal se referme dès qu'on le quitte (revue du 15/11) : ouvert puis
+     * laissé à l'arrière-plan, il se montrait à quiconque revenait par les
+     * applications récentes, et même après la mort du processus, puisque
+     * l'état sauvegardé disait « ouvert ». Une rotation ne le referme pas.
+     */
+    override fun onStop() {
+        super.onStop()
+        if (ouvert && !isChangingConfigurations && VerrouJournal.actif(this)) {
+            ouvert = false
+            aRedemander = true
+            findViewById<View>(android.R.id.content).visibility = View.INVISIBLE
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (aRedemander && !demandeEnCours) {
+            aRedemander = false
+            val demande = VerrouJournal.demande(this)
+            if (demande == null) {
+                // Le verrouillage d'écran a été retiré entre-temps : rien à demander.
+                ouvert = true
+                findViewById<View>(android.R.id.content).visibility = View.VISIBLE
+            } else {
+                demandeEnCours = true
+                demandeCode.launch(demande)
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(ETAT_OUVERT, ouvert)
-        outState.putBoolean(ETAT_DEMANDE, !ouvert)
+        // « Ouvert » ne survit qu'à une rotation, jamais à la mort du processus.
+        outState.putBoolean(ETAT_OUVERT, ouvert && isChangingConfigurations)
+        outState.putBoolean(ETAT_DEMANDE, demandeEnCours)
     }
 
     override fun onResume() {

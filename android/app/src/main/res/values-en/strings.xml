@@ -1292,6 +1292,7 @@
     <string name="vol_erreur_position">invalid position</string>
     <string name="vol_erreur_relais_absent">relay not configured</string>
     <string name="vol_erreur_service">service unavailable</string>
+    <string name="vol_erreur_trop_de_demandes">too many requests: try again in a few minutes</string>
     <string name="vol_erreur_serveur">server error %1$d</string>
     <string name="vol_direct_inactif">The tracking relay is not in service yet in this version.</string>
     <string name="vol_fiabilite_direct">Route adjusted to the position received from OpenSky Network at %1$s (%2$s), then great circle to arrival, at constant speed. Zmanim of the point below the aircraft, at sea level, computed on the device.</string>

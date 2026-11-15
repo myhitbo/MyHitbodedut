@@ -69,9 +69,12 @@ avec `-PrelaisVol=https://…`.
    sait encore passer en anonyme sans eux, mais ce n'est pas l'usage accordé.
    Usage **non commercial** seulement.
 2. Créer un compte Cloudflare (offre gratuite : 100 000 requêtes par jour).
-   Le relais limite déjà chaque adresse à 20 demandes par minute (`DEBIT_MAX`),
-   par instance ; pour une limite ferme, ajouter dans Cloudflare une règle de
-   limitation de débit (Security → WAF → Rate limiting rules) sur `/position`.
+   **Obligatoire avant la mise en ligne** : une règle de limitation de débit dans
+   Cloudflare (Security → WAF → Rate limiting rules) sur `/position`, par
+   exemple 10 requêtes par 10 minutes et par adresse. Le relais compte aussi
+   lui-même les demandes faites à OpenSky (6 par 10 minutes et par adresse, un
+   /64 entier en IPv6 ; 1 800 par jour avec la clé, 180 sans), mais par
+   instance du Worker : ce compte-là n'est qu'un filet.
 3. Ici : `npx wrangler login`, puis, si l'on a un client API,
    `npx wrangler secret put OPENSKY_CLIENT_ID` et
    `npx wrangler secret put OPENSKY_CLIENT_SECRET` ; enfin `npx wrangler deploy`.

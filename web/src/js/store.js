@@ -637,18 +637,21 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
       }
       // Version 2 : réunis à ce que ce navigateur a déjà, sans rien retirer.
       const chaines = (a) => (Array.isArray(a) ? [...new Set(a.filter((x) => typeof x === 'string' && x.trim() !== ''))] : []);
+      // Bornés (revue du 15/11), comme Store.importJson : un fichier fabriqué ne remplit plus le
+      // stockage relu à chaque écran.
       const tikkun = chaines(root.tikkun_journal).filter((d) => dateValide(d) && d < demain);
-      if (tikkun.length) set('tikkun_journal', [...new Set([...store.tikkunJournal(), ...tikkun])].sort().join(','));
-      const favoris = chaines(root.favoris).filter((c) => /^[sl]:/.test(c));
-      if (favoris.length) set('favoris', [...new Set([...store.favoris(), ...favoris])]);
-      const chizuk = chaines(root.chizuk_favoris);
-      if (chizuk.length) set('chizuk_favoris', [...new Set([...store.chizukFavoris(), ...chizuk])]);
+      if (tikkun.length) set('tikkun_journal', [...new Set([...store.tikkunJournal(), ...tikkun])].sort().slice(-4000).join(','));
+      const favoris = chaines(root.favoris).filter((c) => /^[sl]:/.test(c) && !c.includes('|') && c.length <= 100);
+      if (favoris.length) set('favoris', [...new Set([...store.favoris(), ...favoris])].slice(0, 200));
+      const chizuk = chaines(root.chizuk_favoris).filter((x) => !x.includes('|') && x.length <= 40);
+      if (chizuk.length) set('chizuk_favoris', [...new Set([...store.chizukFavoris(), ...chizuk])].slice(0, 500));
       if (Array.isArray(root.marques_pages)) {
         const ici = store.marques();
         const meme = (a, b) => a.cle === b.cle && a.nusah === b.nusah && a.section === b.section && a.bloc === b.bloc;
-        const entrantes = root.marques_pages.filter((m) => m && typeof m.cle === 'string' && m.cle !== '' && typeof m.nusah === 'string'
+        const entrantes = root.marques_pages.filter((m) => m && typeof m.cle === 'string' && m.cle !== '' && m.cle.length <= 100
+          && typeof m.nusah === 'string' && m.nusah.length <= 20
           && Number.isInteger(m.section) && m.section >= 0 && Number.isInteger(m.bloc) && m.bloc >= 0)
-          .map((m) => ({ cle: m.cle, nusah: m.nusah, section: m.section, bloc: m.bloc, apercu: typeof m.apercu === 'string' ? m.apercu : '' }))
+          .map((m) => ({ cle: m.cle, nusah: m.nusah, section: m.section, bloc: m.bloc, apercu: typeof m.apercu === 'string' ? m.apercu.slice(0, 200) : '' }))
           .filter((m) => !ici.some((x) => meme(x, m)));
         if (entrantes.length) set('marques_pages', [...ici, ...entrantes].slice(0, 60));
       }
