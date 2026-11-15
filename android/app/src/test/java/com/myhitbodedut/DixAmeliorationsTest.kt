@@ -14,6 +14,17 @@ class DixAmeliorationsTest {
     private val zone = ZoneId.of("Asia/Jerusalem")
 
     @Test
+    fun `rappel Levana jamais avant l ouverture de la fenetre`() {
+        val paris = ZoneId.of("Europe/Paris")
+        // 12/11/2026, usage 3 jours : tsét à 18 h 04, mais la fenêtre ne s'ouvre qu'à 21 h 06.
+        val heure = { d: LocalDate -> d.atTime(18, 4).atZone(paris) }
+        val (q, s) = LevanaAlerte.prochain(ZonedDateTime.of(2026, 11, 12, 9, 0, 0, 0, paris), Levana.Usage.TROIS_MI_MOIS, heure)!!
+        assertEquals(LevanaAlerte.Soir.PREMIER, s)
+        assertEquals(Levana.fenetre(LocalDate.of(2026, 11, 12), paris, Levana.Usage.TROIS_MI_MOIS).debut, q.toInstant())
+        assertTrue(q.hour >= 21)
+    }
+
+    @Test
     fun `rappel Levana, premier soir puis motsae Chabbat puis dernier`() {
         val heure = { d: LocalDate -> d.atTime(19, 0).atZone(zone) }
         val (q1, s1) = LevanaAlerte.prochain(ZonedDateTime.of(2026, 10, 14, 9, 0, 0, 0, zone), Levana.Usage.TROIS_MI_MOIS, heure)!!
