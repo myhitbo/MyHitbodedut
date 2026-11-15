@@ -1324,6 +1324,7 @@
     <string name="vol_fiabilite">Estimate along the planned route (great circle, constant speed between the times entered), not the aircraft’s real position. Zmanim of the point below the aircraft, at sea level, computed on the device, without network: seen from the aircraft, around 11,000 m, the sun rises earlier and sets later, by a quarter of an hour or more at mid-latitudes. Seasonal hours follow the day at that point, not the day as lived on board.</string>
     <string name="vol_reserve_haute_latitude">The route goes beyond 60° latitude: the degree-based and minute-based methods give very different times there, and some zmanim are missing.</string>
     <string name="vol_reserve_absent">Some zmanim do not occur on part of the route: beyond about 50° of latitude in summer, the sun does not go low enough for dawn (16.1°) or nightfall (8.5°); closer to the poles, midnight sun or polar night.</string>
+    <string name="vol_reserve_absents">Missing on part of the route: %1$s.</string>
     <string name="vol_reserve_erreur">The calculation failed at a point on the route.</string>
     <string name="vol_reserve_a_rebours">The aircraft flies west faster than the sun: a zman occurs more than once.</string>
     <string name="vol_ligne_date">Date line (180th meridian) crossed around %1$s: the local date changes from %2$s to %3$s.</string>

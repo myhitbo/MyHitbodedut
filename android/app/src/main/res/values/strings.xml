@@ -1376,6 +1376,7 @@
     <string name="vol_fiabilite">Estimation sur la route prévue (grand cercle, vitesse constante entre les heures saisies), pas la position réelle de l’avion. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil, sans réseau : vu de l’avion, vers 11 000 m, le soleil se lève plus tôt et se couche plus tard, d’un quart d’heure ou plus aux latitudes moyennes. Les heures saisonnières sont celles de la journée de ce point, pas de la journée vécue à bord.</string>
     <string name="vol_reserve_haute_latitude">La route passe au-delà de 60° de latitude : les méthodes en degrés et en minutes y donnent des heures très différentes, et certains zmanim manquent.</string>
     <string name="vol_reserve_absent">Certains zmanim n’ont pas lieu sur une partie de la route : au-delà d’environ 50° de latitude en été, le soleil ne descend pas assez pour l’aube (16,1°) ou la sortie des étoiles (8,5°) ; plus près des pôles, soleil de minuit ou nuit polaire.</string>
+    <string name="vol_reserve_absents">Absents sur une partie de la route : %1$s.</string>
     <string name="vol_reserve_erreur">Le calcul a échoué en un point de la route.</string>
     <string name="vol_reserve_a_rebours">L’avion va plus vite que le soleil vers l’ouest : un zman se produit plus d’une fois.</string>
     <string name="vol_ligne_date">Ligne de changement de date (méridien de 180°) franchie vers %1$s : la date locale passe du %2$s au %3$s.</string>

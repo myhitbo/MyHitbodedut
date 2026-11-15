@@ -292,6 +292,20 @@ class VolTest {
         assertTrue(Vol.Reserve.ABSENT in c.reserves)
         assertFalse(Vol.Reserve.ERREUR in c.reserves)
         assertTrue(c.enVol.zipWithNext().all { (x, y) -> !y.instant.isBefore(x.instant) })
+        // Les zmanim absents sont nommés, dans l'ordre de la journée (FVOL-11).
+        assertTrue("alot" in c.absents)
+        assertEquals(Zmanim.PROFIL.map { it.first }.filter { it in c.absents }, c.absents)
+    }
+
+    @Test
+    fun `sous 60 degres en juin, seule l aube a 16,1 degres manque`() {
+        // Londres → Tel-Aviv au solstice : à 51,5° N le soleil ne descend pas à 16,1°, la sortie des étoiles (8,5°) a lieu.
+        val c = Vol.calculer(plan("LHR", "TLV", "2027-06-20T10:00", "2027-06-20T17:00"))
+        assertTrue(Vol.Reserve.ABSENT in c.reserves)
+        assertFalse(Vol.Reserve.HAUTE_LATITUDE in c.reserves)
+        assertEquals(listOf("alot"), c.absents)
+        val novembre = Vol.calculer(versOuest)
+        assertEquals(Vol.Reserve.ABSENT in novembre.reserves, novembre.absents.isNotEmpty())
     }
 
     /** web/test/vecteurs_vol.json (tools/vecteurs_vol) reste ce que Vol.kt répond : sinon, le régénérer. */

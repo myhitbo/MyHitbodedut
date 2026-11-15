@@ -3748,7 +3748,9 @@ function resultatsVol(c) {
       h('button', { class: 'secondaire', disabled: gpsVol, onclick: releverGps }, tr.t(gpsVol ? 'vol_gps_attente' : 'vol_gps')),
       c.plan.releve ? h('button', { class: 'lien-discret', onclick: () => { const g = store.vol(); delete g.releve; store.setVol(g); rendre(); } }, tr.t('vol_gps_oublier')) : null,
       ...suiviDirect(),
-      ...RESERVES.filter((r) => c.reserves.has(r)).map((r) => h('p', {}, tr.t(`vol_reserve_${r}`))),
+      ...RESERVES.filter((r) => c.reserves.has(r)).map((r) => h('p', {}, tr.t(`vol_reserve_${r}`),
+        // Les zmanim absents, nommés à la suite de la réserve (FVOL-11).
+        ...(r === 'absent' && c.absents?.length ? [h('br'), tr.t('vol_reserve_absents', c.absents.map((cle) => tr.t(`zman_${cle}`)).join(', '))] : []))),
       ...c.lignesDate.map((l) => h('p', {}, tr.t('vol_ligne_date', deuxHeures(c.plan, l.instant), date(l.avant), date(l.apres))))),
     friseVol(c, enVol, maintenant),
     carteJalons(c),

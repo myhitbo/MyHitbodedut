@@ -1193,7 +1193,10 @@ class VolActivity : AppCompatActivity() {
                 Vol.Reserve.ERREUR -> R.string.vol_reserve_erreur
                 Vol.Reserve.A_REBOURS -> R.string.vol_reserve_a_rebours
             }
-            addView(VueJour.texte(this@VolActivity, getString(texte), 14f, R.color.ink, haut = 8))
+            // Les zmanim absents, nommés à la suite de la réserve (FVOL-11).
+            val absents = if (r == Vol.Reserve.ABSENT && c.absents.isNotEmpty()) "\n" + getString(R.string.vol_reserve_absents,
+                c.absents.joinToString(", ") { Libelles.res("zman_$it")?.let(::getString) ?: it }) else ""
+            addView(VueJour.texte(this@VolActivity, getString(texte) + absents, 14f, R.color.ink, haut = 8))
         }
         val date = DateTimeFormatter.ofPattern("EEE d MMM", locale)
         c.lignesDate.forEach { l ->
