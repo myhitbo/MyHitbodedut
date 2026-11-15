@@ -54,6 +54,8 @@
     <string name="dedicace_mot">Un mot pour l’équipe (facultatif)</string>
     <string name="dedicace_ecrire">Écrire l’e-mail</string>
     <string name="dedicace_nom_manque">Indiquez le nom.</string>
+    <string name="dedicace_intention_manque">Précisez l’intention.</string>
+    <string name="dedicace_copie">Message copié : collez-le dans votre messagerie.</string>
     <string name="dedicace_sans_messagerie">Aucune messagerie trouvée : écrivez à myhitbodedut26@gmail.com.</string>
     <string name="dedicace_sujet">Dédicace – %1$s</string>
     <string name="dedicace_corps_intro">Bonjour,</string>
@@ -927,6 +929,7 @@
     <string name="hilloula_annee">Décès : %1$s</string>
     <string name="hilloulot_aucune">Aucune hilloula ce jour</string>
     <string name="hilloulot_resultats">Résultats : %1$d</string>
+    <string name="resultats_coupes">Résultats : %2$d (les %1$d premiers sont affichés)</string>
     <string name="hilloula_source_wiki">Wikipédia (CC BY-SA)</string>
     <string name="hilloula_source_hyomi">HaHakham HaYomi</string>
     <string name="hilloula_source_mytzadik">MyTzadik</string>
@@ -1153,6 +1156,9 @@
     <string name="marques_aucun">Aucun marque-page dans ce texte. Un appui long sur un paragraphe en pose un ; un autre le retire.</string>
     <string name="marque_posee">Marque-page posé</string>
     <string name="marque_retiree">Marque-page retiré</string>
+    <string name="marque_action_poser">Poser un marque-page</string>
+    <string name="marque_action_retirer">Retirer le marque-page</string>
+    <string name="marque_etat">Marqué</string>
     <string name="fond_contraste">Contraste élevé</string>
     <string name="settings_grand_texte">Grand texte de lecture</string>
     <string name="settings_ecran_allume">Garder l’écran allumé pendant la lecture</string>

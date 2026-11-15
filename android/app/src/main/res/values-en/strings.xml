@@ -49,6 +49,8 @@
     <string name="dedicace_mot">A word for the team (optional)</string>
     <string name="dedicace_ecrire">Write the email</string>
     <string name="dedicace_nom_manque">Enter the name.</string>
+    <string name="dedicace_intention_manque">Please specify the intention.</string>
+    <string name="dedicace_copie">Message copied: paste it into your mail app.</string>
     <string name="dedicace_sans_messagerie">No mail app found: write to myhitbodedut26@gmail.com.</string>
     <string name="dedicace_sujet">Dedication – %1$s</string>
     <string name="dedicace_corps_intro">Hello,</string>
@@ -875,6 +877,7 @@
     <string name="hilloula_annee">Passed away: %1$s</string>
     <string name="hilloulot_aucune">No hillula on this day</string>
     <string name="hilloulot_resultats">Results: %1$d</string>
+    <string name="resultats_coupes">Results: %2$d (showing the first %1$d)</string>
     <string name="hilloula_source_wiki">Wikipedia (CC BY-SA)</string>
     <string name="hilloula_source_hyomi">HaChacham HaYomi</string>
     <string name="hilloula_source_mytzadik">MyTzadik</string>
@@ -1101,6 +1104,9 @@
     <string name="marques_aucun">No bookmark in this text. Long-press a paragraph to add one; long-press again to remove it.</string>
     <string name="marque_posee">Bookmark added</string>
     <string name="marque_retiree">Bookmark removed</string>
+    <string name="marque_action_poser">Add a bookmark</string>
+    <string name="marque_action_retirer">Remove the bookmark</string>
+    <string name="marque_etat">Bookmarked</string>
     <string name="fond_contraste">High contrast</string>
     <string name="settings_grand_texte">Large reading text</string>
     <string name="settings_ecran_allume">Keep the screen on while reading</string>

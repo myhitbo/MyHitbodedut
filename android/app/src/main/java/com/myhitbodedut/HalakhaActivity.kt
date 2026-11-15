@@ -128,7 +128,11 @@ class HalakhaActivity : AppCompatActivity() {
             val cherches = source.pourRecherche(deuxLivres)
             val yy = if (cherches.yalkut) YalkutYosef.recherche(YalkutYosef.livre(this), recherche) else emptyList()
             val trouves = if (cherches.benIshHai) Halakha.recherche(livre, recherche) else emptyList()
-            liste.addView(VueJour.texte(this, getString(R.string.hilloulot_resultats, yy.size + trouves.size), 14f, R.color.muted, gras = true, haut = 14))
+            val total = yy.size + trouves.size
+            val montres = minOf(yy.size, 40) + minOf(trouves.size, 40)
+            // Le total est annoncé en entier, mais 40 cartes par livre au plus sont dessinées (FLECTURE-16).
+            val entete = if (montres < total) getString(R.string.resultats_coupes, montres, total) else getString(R.string.hilloulot_resultats, total)
+            liste.addView(VueJour.texte(this, entete, 14f, R.color.muted, gras = true, haut = 14))
             yy.take(40).forEach { liste.addView(carte(YalkutYosef.source(it), it.texte)) }
             trouves.take(40).forEach { liste.addView(carte(source(it), it.texte)) }
             return

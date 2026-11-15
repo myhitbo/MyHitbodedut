@@ -676,6 +676,12 @@ class SiddurLectureActivity : AppCompatActivity() {
                         }, null)
                     compoundDrawablePadding = dp(6)
                     setOnLongClickListener { basculerMarque(ligne.origine); true }
+                    // TalkBack (FLECTURE-21) : l'appui long annonce son effet, et le paragraphe marqué le dit.
+                    val marque = marquee(ligne.origine)
+                    androidx.core.view.ViewCompat.replaceAccessibilityAction(this,
+                        androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK,
+                        getString(if (marque) R.string.marque_action_retirer else R.string.marque_action_poser), null)
+                    androidx.core.view.ViewCompat.setStateDescription(this, if (marque) getString(R.string.marque_etat) else null)
                 }
                 is SiddurJour.Ligne.Etiquette -> vue.apply {
                     layoutDirection = View.LAYOUT_DIRECTION_LOCALE

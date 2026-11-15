@@ -113,6 +113,11 @@ object Dedicace {
                 }
                 val objet = Objet.values()[idsObjets.indexOf(objets.checkedRadioButtonId).coerceAtLeast(0)]
                 val intention = Intention.values()[idsIntentions.indexOf(intentions.checkedRadioButtonId).coerceAtLeast(0)]
+                // « Autre intention » n'a pas de formule : sans le mot, l'e-mail partirait sans intention (FLECTURE-18).
+                if (intention == Intention.AUTRE && mot.text.isBlank()) {
+                    mot.error = activite.getString(R.string.dedicace_intention_manque)
+                    return@setOnClickListener
+                }
                 val quoi = activite.getString(objet.libelle)
                 val texte = corps(
                     activite.getString(R.string.dedicace_corps_intro),
@@ -130,7 +135,16 @@ object Dedicace {
                         .putExtra(Intent.EXTRA_SUBJECT, sujet)
                         .putExtra(Intent.EXTRA_TEXT, texte))
                 }.isSuccess
-                if (!ouvert) Toast.makeText(activite, R.string.dedicace_sans_messagerie, Toast.LENGTH_LONG).show()
+                if (!ouvert) {
+                    // Sans messagerie : la boîte reste ouverte (le nom et le mot ne sont pas perdus) et le
+                    // message est copié pour être collé ailleurs.
+                    runCatching {
+                        val presse = activite.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        presse.setPrimaryClip(android.content.ClipData.newPlainText(sujet, texte))
+                    }.onSuccess { Toast.makeText(activite, R.string.dedicace_copie, Toast.LENGTH_SHORT).show() }
+                    Toast.makeText(activite, R.string.dedicace_sans_messagerie, Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
                 dialogue.dismiss()
             }
         }
