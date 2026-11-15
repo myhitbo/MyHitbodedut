@@ -30,6 +30,7 @@
     <color name="paper">#F4F7F2</color>
     <color name="card">#FFFFFF</color>
     <color name="line">#DCE7DF</color>
+    <color name="nav_pastille">#DCE7DF</color>
     <color name="white">#FFFFFF</color>
 
     <!-- Encre du bouton principal, qui se renverse la nuit. -->
@@ -50,6 +51,9 @@
          la semaine et la série ont les leurs, fixes de jour et de nuit. -->
     <color name="ring_week">#2E7DB3</color>
     <color name="ring_streak">#B8780F</color>
+    <!-- Le texte de la légende des anneaux (FACCUEIL-18) : plus sombre que le trait, 4,5:1 sur la carte. -->
+    <color name="ring_week_text">#256A9A</color>
+    <color name="ring_streak_text">#8A5A00</color>
     <!-- Les mêmes, sur le fond vert foncé de la vignette : plus clairs, et fixes. -->
     <color name="ring_week_on_dark">#8CCBF2</color>
     <color name="ring_streak_on_dark">#F0C46A</color>

@@ -111,6 +111,16 @@ export function nouveaux(g, vus) {
     .sort((a, b) => cout(b.famille, b.famille.seuils[b.rang - 1]) - cout(a.famille, a.famille.seuils[a.rang - 1]));
 }
 
+/**
+ * Une fête remise à plus tard (FWEBCODE-13) : les niveaux gagnés depuis vusAvant sont retirés de vus,
+ * pour que le prochain accueil les trouve encore neufs ; ce qui était déjà vu le reste.
+ */
+export function remisANeuf(vus, gagnes, vusAvant) {
+  const r = new Set(vus);
+  for (const k of gagnes) if (!vusAvant.has(k)) r.delete(k);
+  return r;
+}
+
 /** Le chemin (15/10, Trophees.chemin) : tous les niveaux en une liste, du plus facile au plus dur. */
 const COUTS = { premier_pas: (s) => s, jours: (s) => s, seance_longue: (s) => s / 2, serie: (s) => s * 1.5, heures: (s) => s * 4,
   semaines: (s) => s * 8, erev_chabbat: (s) => s * 7, retour: (s) => s * 30 + 10, plume: (s) => s * 1.3,

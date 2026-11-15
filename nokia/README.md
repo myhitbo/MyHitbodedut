@@ -2,7 +2,7 @@
 
 Un produit à part de l'application Android : construit et testé par `.github/workflows/nokia.yml`, puis publié dans son propre dépôt, [myhitbo/Nokia-my-hitbodedut-app](https://github.com/myhitbo/Nokia-my-hitbodedut-app) (fichier `depot/README.md`), comme le site iPhone l'est dans myhitbo/myhitbodedut-web.
 
-Une vraie application, en un seul fichier : `MyHitbodedut.jar` (environ 600 Ko, dont 510 Ko pour le niggoun d'essai), en français, sans Internet, dans les couleurs de l'application et avec son personnage. Elle s'installe sur les téléphones à touches qui acceptent les applications Java (Java ME : MIDP 2.0, CLDC 1.1), dont le Nokia 3310 3G de 2017.
+Une vraie application, en un seul fichier : `MyHitbodedut.jar` (environ 670 Ko, dont 510 Ko pour le niggoun d'essai), en français, sans Internet, dans les couleurs de l'application et avec son personnage. Elle s'installe sur les téléphones à touches qui acceptent les applications Java (Java ME : MIDP 2.0, CLDC 1.1), dont le Nokia 3310 3G de 2017.
 
 | Dans l'application Android | Dans MyHitbodedut.jar |
 | --- | --- |
@@ -21,7 +21,7 @@ Absents : l'hébreu (un téléphone à touches n'a pas toujours la police), le T
 
 ## La musique : un essai
 
-Les 124 Mo de musique de l'application ne tiennent pas dans un .jar. Le niggoun 33 (1 min 51) y est en deux versions, produites par `app/genere-musique.sh` et gardées dans `app/res/m` : MP3 mono 24 kb/s (334 Ko) et AMR-NB 12,2 kb/s (178 Ko). L'écran « Musique » essaie le MP3, puis l'AMR, et affiche celle qui joue, ou pourquoi aucune ne joue, avec la liste des formats audio que le téléphone déclare. Selon le résultat sur le 3310, on ajoute d'autres niggounim dans le format qui passe, ou on les laisse au lecteur de musique du téléphone.
+Les 146 Mo de musique de l'application ne tiennent pas dans un .jar. Le niggoun 33 (1 min 51) y est en deux versions, produites par `app/genere-musique.sh` et gardées dans `app/res/m` : MP3 mono 24 kb/s (334 Ko) et AMR-NB 12,2 kb/s (178 Ko). L'écran « Musique » essaie le MP3, puis l'AMR, et affiche celle qui joue, ou pourquoi aucune ne joue, avec la liste des formats audio que le téléphone déclare. Selon le résultat sur le 3310, on ajoute d'autres niggounim dans le format qui passe, ou on les laisse au lecteur de musique du téléphone.
 
 ## Téléphones
 

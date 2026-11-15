@@ -189,6 +189,15 @@ test('chaque langue a toutes les chaînes et tous les pluriels du français', ()
   }
 });
 
+test('chaque clé écrite en toutes lettres dans app.js existe : plus de repli français muet (COUV-21)', () => {
+  const app = readFileSync(join(ICI, '..', 'src', 'js', 'app.js'), 'utf8');
+  const fr = litChaines(readFileSync(join(RES, 'values', 'strings.xml'), 'utf8'));
+  assert.doesNotMatch(app, /CHAINES_LECTURE/);
+  const cles = new Set([...app.matchAll(/\b(?:tl|tr\.t)\('([a-z_0-9]+)'/g)].map((m) => m[1]));
+  assert.ok(cles.has('lecture_masque_info') && cles.has('lecture_taille'), 'les clés de la barre de lecture sont lues');
+  assert.deepEqual([...cles].filter((c) => !(c in fr.chaines)), []);
+});
+
 test('le format et les pluriels suivent Android', () => {
   assert.equal(formate('%1$d h %2$02d', [1, 5]), '1 h 05');
   assert.equal(formate('%1$s, volume %2$d %%', ['Niggoun 01', 60]), 'Niggoun 01, volume 60 %');
@@ -223,7 +232,7 @@ test('les compteurs s’accordent dans les trois langues (audit du 12/11, TFRLAN
   assert.equal(tr.en.p('grade_sous_max', 1), '1 trophy earned');
   assert.equal(tr.en.p('grade_sous_max', 0), '0 trophies earned');
   assert.equal(tr.en.p('trophees_autres', 1), '… and 1 more trophy further on');
-  assert.equal(tr.en.p('grade_partage_texte', 1, 'Bronze', 1), 'Bronze grade on MyHitbodedut: 1 trophy, day after day.');
+  assert.equal(tr.en.p('grade_partage_texte', 1, 'Bronze', 1), 'Bronze rank on MyHitbodedut: 1 trophy, day after day.');
   assert.equal(tr.en.p('journal_summary', 3, 3, '1 h 05'), '3 days of hitbodedut, 1 h 05 in total');
   assert.equal(tr.en.p('journal_summary', 1, 1, '20 min'), '1 day of hitbodedut, 20 min in total');
   assert.equal(tr.en.p('trophee_premier_pas_desc', 3), 'First 3 days of hitbodedut');
@@ -633,6 +642,7 @@ test('hilloulot : date lisible et recherche par nom', async () => {
   assert.ok(J.rechercheHilloula(table, 'Chelah').length > 0);
   assert.ok(J.rechercheHilloula(table, 'Shelah').length > 0);
   assert.equal(J.rechercheHilloula(table, 'Moché').length, J.rechercheHilloula(table, 'moche').length);
+  assert.ok(J.rechercheHilloula(table, 'Moïse').some(([cle, x]) => cle === 'adar-7' && x.he === 'משה רבנו'));
   // Réorganisé (04/11) : la recherche suit l'année, de Tichri à Eloul.
   const rangs = J.rechercheHilloula(table, 'רבי').map(([cle]) => J.rangDansLAnnee(cle));
   assert.ok(rangs.length > 100);
@@ -690,6 +700,20 @@ test('trophées à niveaux : mêmes règles que TropheesTest (12/10)', () => {
   const couts = n.map((x) => Trophees.cout(x.famille, x.famille.seuils[x.rang - 1]));
   assert.deepEqual(couts, [...couts].sort((a, b) => b - a));
   assert.equal(n[0].famille.cle, 'serie');
+});
+
+test('une fête de trophées remise à plus tard les laisse neufs pour le prochain accueil (FWEBCODE-13)', () => {
+  // La note qui suit le bravo est ouverte quand la fiche devait venir : rien n'est perdu.
+  const jours = (n) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`2026-10-${String(i + 1).padStart(2, '0')}`, 15]));
+  const avant = Trophees.gagnes({ minutes: jours(2), notes: 0, meilleureSerie: 2 });
+  const apres = Trophees.gagnes({ minutes: jours(3), notes: 0, meilleureSerie: 3 });
+  assert.ok(apres.size > avant.size);
+  const vus = Trophees.remisANeuf(new Set(apres), apres, avant);
+  assert.deepEqual([...vus].sort(), [...avant].sort());
+  assert.deepEqual(Trophees.nouveaux(apres, vus), Trophees.nouveaux(apres, avant));
+  assert.ok(Trophees.nouveaux(apres, vus).length > 0);
+  // Ce qui était vu avant reste vu, même absent des gagnés (ancienne clé gardée).
+  assert.ok(Trophees.remisANeuf(new Set(['x:1', ...apres]), apres, new Set(['x:1', ...avant])).has('x:1'));
 });
 
 // --- Dates de gain, trophées proches, bilan de la semaine (BilanTropheesTest, 16/10) ---
@@ -854,6 +878,10 @@ test('langues de lecture (04/11) : six modes, la règle d’avant par défaut, l
   assert.deepEqual(LanguesTexte.textes('fr+en', 'אחד', 'un', 'one'), [['fr', 'un'], ['en', 'one']]);
   assert.deepEqual(LanguesTexte.textes('fr', 'אחד', null, 'one'), [['he', 'אחד']]);
   assert.ok(LanguesTexte.manque('he+fr', false));
+  // Une consigne a ses traductions à part (TEFILA-02) ; un paragraphe, les siennes.
+  assert.deepEqual(LanguesTexte.bloc({ c: 'לאיש', c_fr: 'Pour un homme', c_en: 'For a man' }), { he: 'לאיש', fr: 'Pour un homme', en: 'For a man' });
+  assert.deepEqual(LanguesTexte.bloc({ c: 'לאיש' }), { he: 'לאיש', fr: undefined, en: undefined });
+  assert.deepEqual(LanguesTexte.bloc({ t: 'אחד', fr: 'un', en: 'one' }), { he: 'אחד', fr: 'un', en: 'one' });
   const teh = JSON.parse(readFileSync(new URL('../../android/app/src/main/res/raw/tehilim.json', import.meta.url), 'utf8'));
   assert.equal(teh.traductions.fr.psaumes.length, 150);
   assert.ok(teh.traductions.fr.psaumes[22][0].includes('L’Éternel est mon berger'));

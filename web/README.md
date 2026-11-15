@@ -40,6 +40,6 @@ de 2025 à 2030, la même réponse que l'application Android. Détail : `ZMANIM.
 
 ## Confidentialité
 
-- Aucune requête ne sort du site : pas de police en ligne, pas de mesure d'audience. La politique de sécurité de la page (`Content-Security-Policy`) l'interdit, et les tests échouent si une requête part ailleurs.
-- Les données restent dans le navigateur du téléphone, en `localStorage`, le lieu des zmanim compris. La position, si on la choisit, ne sert qu'au calcul local.
+- Une seule requête sort du site : le numéro de vol envoyé à `api.adsbdb.com` quand l'utilisateur active les services en ligne et lance la recherche ; la politique de sécurité de la page (`Content-Security-Policy`) n'autorise aucun autre hôte. Pas de police en ligne, pas de mesure d'audience.
+- Les données restent dans le navigateur : `localStorage` (réglages, journal, lieu des zmanim), IndexedDB (morceaux ajoutés) et cache hors connexion. La position, si on la choisit, ne sert qu'au calcul local.
 - La musique est gardée hors connexion morceau par morceau, à la première écoute.

@@ -74,6 +74,8 @@ export const LanguesTexte = {
     return tous.length ? tous : [['he', he]];
   },
   manque: (mode, aTraduction) => !aTraduction && mode.split('+').some((l) => l !== 'he'),
+  /** L'hébreu d'un bloc et ses traductions : une consigne (c) a les siennes à part, c_fr et c_en (TEFILA-02). */
+  bloc: (b) => (b.c !== undefined ? { he: b.c, fr: b.c_fr, en: b.c_en } : { he: b.t, fr: b.fr, en: b.en }),
 };
 
 export const Reference = {

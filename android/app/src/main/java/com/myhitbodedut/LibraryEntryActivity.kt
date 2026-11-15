@@ -83,12 +83,14 @@ class LibraryEntryActivity : AppCompatActivity() {
         // Le bouton de lecture, pour le texte hébreu : taille, lecture de nuit et langues. Le texte
         // se redessine sur place, au paragraphe où l'on était (audit du 12/11, FLECTURE-04).
         val defilement = findViewById<ScrollView>(R.id.entry_scroll)
+        // Toute la page noircit, pas seulement la carte du texte (FLECTURE-26).
+        ReglagesLecture.marquer(defilement, ReglagesLecture.Role.FOND)
         ReglagesLecture.marquer(container, ReglagesLecture.Role.FOND)
         ReglagesLecture.installer(this, defilement) {
             paragraphes(library, source, container)
-            ReglagesLecture.appliquer(container)
+            ReglagesLecture.appliquer(defilement)
         }
-        ReglagesLecture.appliquer(container)
+        ReglagesLecture.appliquer(defilement)
         ReglagesLecture.reprendreRepere(etatRecu, defilement)
         sauverDefilement = defilement
 
@@ -221,7 +223,7 @@ class LibraryEntryActivity : AppCompatActivity() {
             // Android 11 : on tente l'ouverture et on signale si elle échoue.
             runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                 .onFailure {
-                    Toast.makeText(this, R.string.settings_screen_missing, Toast.LENGTH_LONG)
+                    Toast.makeText(this, R.string.lien_impossible, Toast.LENGTH_LONG)
                         .show()
                 }
         }

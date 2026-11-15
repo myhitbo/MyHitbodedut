@@ -5,9 +5,9 @@ package com.myhitbodedut
  *
  * Le calendrier hébraïque raisonne en date civile, alors que la fête entre au
  * coucher du soleil la veille. Un rappel du soir tomberait donc en pleine
- * entrée de Shabbat ou de Yom Tov. Avec une ville réglée on utiliserait le
- * coucher du soleil ; l'application n'en demande aucune, pour ne pas réclamer
- * la localisation, et retient donc midi comme limite sûre.
+ * entrée de Shabbat ou de Yom Tov. Avec un lieu de zmanim réglé, le receveur
+ * passe l'heure d'allumage des bougies (FBARRIERE-12) ; sans lieu, midi reste
+ * la limite sûre.
  *
  * Fonction pure, sans Android, pour rester testable.
  */

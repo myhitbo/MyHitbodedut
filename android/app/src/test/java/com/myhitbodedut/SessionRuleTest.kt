@@ -88,6 +88,42 @@ class SessionRuleTest {
         assertTrue(xml.contains("""android:id="@+id/session_open""""))
         assertTrue(xml.contains("""android:text="@string/session_open""""))
     }
+
+    /**
+     * Le morceau touche dans l'ecran Musique remplace celui de la seance, mais un reglage
+     * touche sans changer de morceau ne relance rien : sans choix explicite, le morceau retenu
+     * est le premier de la bibliotheque, et l'identifiant enregistre reste vide.
+     */
+    @Test
+    fun `seul un autre morceau retenu remplace celui qui joue`() {
+        assertTrue(SessionRule.autreMorceau(aleatoire = false, charge = true, retenu = "b", joue = "a"))
+        assertFalse(SessionRule.autreMorceau(aleatoire = false, charge = true, retenu = "a", joue = "a"))
+        // Lecture aleatoire : le sac choisit, pas l'ecran Musique.
+        assertFalse(SessionRule.autreMorceau(aleatoire = true, charge = true, retenu = "b", joue = "a"))
+        // Rien de charge : le chemin ordinaire lance le morceau retenu.
+        assertFalse(SessionRule.autreMorceau(aleatoire = false, charge = false, retenu = "b", joue = "a"))
+        assertFalse(SessionRule.autreMorceau(aleatoire = false, charge = true, retenu = null, joue = "a"))
+    }
+
+    @Test
+    fun `le service compare au morceau retenu, pas a l identifiant enregistre`() {
+        val service = File("src/main/java/com/myhitbodedut/SessionService.kt").readText()
+        assertTrue(service.contains("MusicLibrary.selected(this)?.id, Store.musicNow(this)"))
+        assertFalse(service.contains("Store.musicTrackId(this) != Store.musicNow(this)"))
+    }
+
+    /** Un seul son a la fin, mais jamais aucun signal quand la seance arrive a son terme. */
+    @Test
+    fun `la fin ne se tait que si la sonnerie du decompte masque s entend`() {
+        // Terminee a la main : on le sait deja.
+        assertTrue(SessionRule.finSilencieuse(avantTerme = true, masque = false, sonnerieAudible = true))
+        // Decompte masque, sonnerie audible : elle suffit, la notification ne double pas le son.
+        assertTrue(SessionRule.finSilencieuse(avantTerme = false, masque = true, sonnerieAudible = true))
+        // Vibreur ou silencieux : la sonnerie est muette, la notification garde son canal.
+        assertFalse(SessionRule.finSilencieuse(avantTerme = false, masque = true, sonnerieAudible = false))
+        // Decompte visible, arrivee a son terme : la notification seule previent.
+        assertFalse(SessionRule.finSilencieuse(avantTerme = false, masque = false, sonnerieAudible = true))
+    }
 }
 
 /**

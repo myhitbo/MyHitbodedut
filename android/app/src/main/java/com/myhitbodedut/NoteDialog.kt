@@ -68,7 +68,7 @@ class NoteDialog : DialogFragment() {
                 textSize = 26f
                 gravity = Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(0, (44 * density).toInt(), 1f)
-                contentDescription = "${i + 1}/5"
+                contentDescription = activity.getString(R.string.journal_humeur_n, i + 1)
                 setOnClickListener {
                     poser(if (valeur == i + 1) 0 else i + 1)
                     suivre()
@@ -88,7 +88,10 @@ class NoteDialog : DialogFragment() {
 
         fun poser(n: Int) {
             valeur = n
-            boutons.forEachIndexed { j, b -> b.alpha = if (n == j + 1) 1f else 0.35f }
+            boutons.forEachIndexed { j, b ->
+                b.alpha = if (n == j + 1) 1f else 0.35f
+                b.isSelected = n == j + 1 // annoncé « sélectionné » par le lecteur d'écran
+            }
         }
     }
 
@@ -161,12 +164,10 @@ class NoteDialog : DialogFragment() {
             .setPositiveButton(R.string.action_save) { _, _ -> enregistrer() }
             .setNegativeButton(R.string.action_later) { _, _ -> abandonner() }
             .create()
-        // Ce qu'on écrit ici est aussi intime que le journal : ni capture, ni aperçu (audit du 12/11).
-        dialog.window?.setFlags(
-            android.view.WindowManager.LayoutParams.FLAG_SECURE,
-            android.view.WindowManager.LayoutParams.FLAG_SECURE
-        )
         dialog.setCanceledOnTouchOutside(false)
+        // La note est ce qu'il y a de plus intime : ni capture ni enregistrement d'écran, comme la liste
+        // du journal (JournalActivity) ; la fenêtre est à part et n'hérite pas du drapeau (FDONNEES-12).
+        dialog.window?.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
         return dialog
     }
 
@@ -230,8 +231,9 @@ class NoteDialog : DialogFragment() {
     private fun enregistrer() {
         val context = requireContext()
         val etat = courant()
-        Store.setNote(context, date, etat.note.trim())
+        // Le journal enrichi d'abord : setNote regarde s'il reste de quoi garder la ligne du jour (FDONNEES-14).
         JournalPlus.ecrire(context, date, JournalPlus.Plus(etat.avant, etat.apres, etat.gratitude.trim(), etat.travail.trim()))
+        Store.setNote(context, date, etat.note.trim())
         NoteBrouillon.garder(context, date, null)
         hote()?.noteEnregistree(date)
         hote()?.noteFermee(date)

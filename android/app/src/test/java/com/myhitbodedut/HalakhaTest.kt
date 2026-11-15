@@ -60,4 +60,20 @@ class HalakhaTest {
         assertTrue(Halakha.recherche(livre, "ציצית").size > 10)
         assertTrue(Halakha.recherche(livre, "צ").isEmpty())
     }
+
+    @Test
+    fun `Vayechev de la deuxieme annee n'affiche pas la note sans halakhot, Hochaana Rabba a sa section`() {
+        var d = LocalDate.of(2027, 12, 19)
+        while (!d.isAfter(LocalDate.of(2027, 12, 24))) {
+            val h = Halakha.pour(livre, d, false)
+            assertTrue("$d", h.isNotEmpty() && h.none { it.texte.startsWith(Halakha.SANS_HALAKHOT) })
+            d = d.plusDays(1)
+        }
+        // 21 Tichri 5787 : Vézot haBéra'kha, et non Béréchit.
+        assertEquals("וזאת הברכה", Halakha.pour(livre, LocalDate.of(2026, 10, 2), false).first().section)
+        // Du 15 au 23 Tichri (26 septembre … 4 octobre 2026) : ses 18 halakhot, chacune une fois, dans l'ordre.
+        val soukkot = (0L..8L).flatMap { Halakha.pour(livre, LocalDate.of(2026, 9, 26).plusDays(it), false) }
+        assertEquals((1..18).toList(), soukkot.map { it.numero })
+        assertTrue(soukkot.all { it.section == "וזאת הברכה" && it.annee == 1 })
+    }
 }

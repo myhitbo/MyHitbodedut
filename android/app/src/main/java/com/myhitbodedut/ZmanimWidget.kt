@@ -13,8 +13,8 @@ import java.time.ZonedDateTime
 class ZmanimWidget : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        // Toutes les tailles, et le prochain changement reprogrammé (02/11).
-        ZmanimVignette.rafraichir(context)
+        // Toutes les tailles, et le prochain changement reprogrammé (02/11) ; hors du fil principal (15/11).
+        EnFond.recevoir(this) { ZmanimVignette.rafraichir(context) }
     }
 
     /**
@@ -36,7 +36,7 @@ class ZmanimWidget : AppWidgetProvider() {
         fun prochaine(horaires: Map<String, ZonedDateTime?>, maintenant: ZonedDateTime): Moment {
             // Après minuit et avant l'aube, c'est encore la nuit d'Arvit (audit du 16/10) : jusqu'au
             // milieu de la nuit d'hier s'il n'est pas passé, sans limite affichée ensuite.
-            val alot = horaires["alot"]
+            val alot = horaires["alot"] ?: horaires["misheyakir"] ?: horaires["netz"]
             if (alot != null && maintenant.isBefore(alot)) {
                 return Moment("arvit", horaires["chatsot_layla"]?.minusDays(1)?.takeIf { maintenant.isBefore(it) })
             }

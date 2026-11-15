@@ -32,7 +32,7 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | Textes | Siddour, Tehilim, Tikoun haKlali, Likoutei Tefilot par sujet, 'hizouk, bibliothèque, livres, Halakha (Yalkout Yossef), hilloulot, recherche globale |
 | Calendrier | Zmanim (KosherJava), calendrier hébraïque, Birkat haLevana, alerte « Chabbat dans 3 h », boussole vers Jérusalem |
 | Vol | Zmanim et prières en vol, rappels (Tefilat haDerekh, Omer), **route d'un numéro de vol (adsbdb)** ; le suivi en direct (OpenSky) n'est pas dans la version Play tant qu'il n'y a pas de relais (§ 3.1) |
-| Système | 6 widgets, rappels quotidiens, « Ne pas déranger » pendant la séance, partage d'un jour en image, sauvegarde JSON, 3 langues (fr, en, he) |
+| Système | 5 widgets (zmanim ×3, boussole, série), rappels quotidiens, « Ne pas déranger » pendant la séance, partage d'un jour en image, sauvegarde JSON, 3 langues (fr, en, he) |
 
 **Hors périmètre** :
 
@@ -55,8 +55,8 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | `targetSdk` | **36** depuis le 29/10 (était 35) | **36** pour toute nouvelle app depuis le 31/08/2026 ; prolongation possible jusqu'au 01/11/2026 seulement | **Fait** — compilé et testé ; reste l'essai sur appareil (§ 2.1) |
 | `compileSdk` | 36, avec le plugin Android 8.11.1 (était 8.7.3) | ≥ `targetSdk` | **Fait** |
 | `minSdk` | 26 | aucune contrainte | OK |
-| Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB de 28,5 Mo construit le 29/10 |
-| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play bien moins lourde (2 morceaux) | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
+| Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB 1.0 signé par la clé d'envoi le 15/11 : 89,1 Mo avec les 26 morceaux de `MusiquePlay.kt` (28,5 Mo le 29/10 avec 3 morceaux) |
+| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play : 26 morceaux, environ 70 Mo d'audio (état du 03/11) ; version GitHub : 56 morceaux, environ 146 Mo ; le site ne livre que les 26 de la version Play (§ 3.2) | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
 | Bibliothèques natives | aucune `.so` | page mémoire 16 Ko exigée pour les `.so` ciblant API 35+ | Sans objet — vérifié |
 | Signature | clé de dev pour GitHub ; `play.yml` exige la clé d'envoi (secrets `PLAY_*`) et refuse un AAB signé par la clé de dev | clé d'envoi privée + Play App Signing | **Reste à faire par le propriétaire** : créer la clé et les secrets (§ 5.1, § 5.2) |
 | `versionCode` | `1 + github.run_number` | strictement croissant | OK, à garder |
@@ -220,7 +220,7 @@ confidentialité le décrivent (§ 6.1).
 
 ### 3.2 Droits sur la musique livrée **(bloquant à la revue)**
 
-33 morceaux sont embarqués, dont des enregistrements du Yanuka, d'Ishay Ribo,
+56 morceaux sont embarqués dans la version GitHub (146 Mo en tout ; 26 dans la version Play et le site, environ 70 Mo), dont des enregistrements du Yanuka, d'Ishay Ribo,
 Motty Steinmetz, MBD (feuille de route, lignes 242–243). Les autorisations
 sont **déclarées** par le propriétaire (« j'ai obtenu les autorisations
 légales des ayants droit »), mais aucun écrit n'est dans le dépôt.
@@ -248,7 +248,7 @@ droits ; l'autorisation d'Ishay Ribo et de MBD n'a pas été demandée. D'où, *
 | `yanuka_nigoun_3` — ניגון — הינוקא (3) | **Livré** (accord du Yanuka, à conserver par écrit) | Livré |
 | `niggoun_01` … `niggoun_33` (30 fichiers) | **Retirés** tant que la provenance n'est pas établie | Livrés |
 | `hamelech_basade` — המלך בשדה | **Livré** — déclaré libre de droits par le propriétaire (29/10) ; voir la réserve ci-dessous | Livré |
-| `ribo_sans_titre` — Ishay Ribo | **Retiré** — autorisation non demandée (29/10), comme pour MBD | Livré |
+| `ribo_sans_titre` — Ishay Ribo | **Retiré** — autorisation non demandée (29/10), comme pour MBD | Retiré partout le 29/10 (application et site) |
 | `shpayer_beyond` — Beyond — נעם שפייר | **Livré** (accord écrit, 29/10) | Livré |
 | `shpayer_*` (9 autres morceaux, dont 2 avec Or Shpayer) et `ianir_*` (14 morceaux) — **נעם שפייר** et **יניר קילינסקי** | **Livrés** le 03/11 (accord écrit du 29/10 couvrant toutes leurs musiques) | Livrés, ainsi que dans la version web |
 
@@ -267,19 +267,20 @@ ils entrent dans l'app, version Play comprise, et dans la version web.
 Hors de la version Play ; le propriétaire décide de leur place dans la
 version GitHub, qui est elle aussi une diffusion.
 
-Audio de la version Play : environ 16 Mo (Yanuka 6,7 + המלך בשדה 9,7) au
-lieu de 130 Mo. Un morceau
+Audio de la version Play : 26 morceaux, environ 70 Mo (Yanuka 1, המלך בשדה 1,
+Noam Shpayer 10, Ianir 14), contre 56 morceaux et environ 146 Mo pour GitHub (état du 03/11 ; `tools/inventaire_musique.py`) ; le site
+livre les mêmes 26 que Play (règle du 13/11 ci-dessous). Un morceau
 retiré revient par simple mise à jour dès que son écrit existe ; si un
 niggoun s'avère être du Yanuka, il rentre sous le même accord. Pour cela, il
 faut retrouver les titres hébreux d'origine (fichiers sources reçus le
 22/09).
 
 **Mise en œuvre — faite le 29/10.** `main/res/raw` ne contient plus que les
-morceaux livrés par Play, déclarés dans `MusiquePlay.kt`. Les 31 autres sont
+morceaux livrés par Play, déclarés dans `MusiquePlay.kt`. Les 30 autres (les niggounim sans titre) sont
 dans `src/musique_hors_play/` (fichiers et liste `MusiqueHorsPlay.kt`), que
 seule la construction GitHub ajoute ; avec `-Pplay=true`, Gradle prend
 `src/musique_play/`, où la même liste est vide. Vérifié sur l'AAB : il ne
-contenait que `hamelech_basade.m4a`, `yanuka_nigoun_3.m4a` et `shpayer_beyond.m4a` (AAC 96 kb/s depuis le 29/10) ; s'y ajoutent le 03/11 les 23 morceaux `shpayer_*` et `ianir_*`, soit environ 78 Mo d'audio pour la version Play. `MusicFilesTest`
+contenait que `hamelech_basade.m4a`, `yanuka_nigoun_3.m4a` et `shpayer_beyond.m4a` (AAC 96 kb/s depuis le 29/10) ; s'y ajoutent le 03/11 les 23 morceaux `shpayer_*` et `ianir_*`, soit environ 70 Mo d'audio pour la version Play (26 morceaux au total). `MusicFilesTest`
 tient la liste ; `play.yml` recontrôle l'AAB lui-même.
 
 **Règle (13/11, audit du 12/11, FPRODUIT-05).** Ce qui n'entre pas dans Play
@@ -403,7 +404,7 @@ dans le site (vérifié : la page sort identique dans `web/dist`, et le service
 worker la garde hors connexion). URL à saisir dans la Play Console, une fois
 la branche fusionnée sur `main` et le site remis en ligne par `web.yml` (Cloudflare Pages depuis le 13/11, secrets `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`) :
 
-**https://myhitbodedut.pages.dev/confidentialite.html**
+**https://myhitbodedut.pages.dev/confidentialite.html#en** (la fiche n'existe qu'en anglais et en hébreu : l'ancre ouvre la section anglaise ; si la console la refuse, placer la section anglaise en tête de page et passer `<html lang="en">`)
 
 **Hébergement (tranché le 13/11) : Cloudflare Pages**, projet `myhitbodedut`,
 gratuit, public, adresse indépendante du nom du compte GitHub (l'ancienne
@@ -421,7 +422,7 @@ depuis le 13/11 : il ne livre que ceux de la version Play.
 Lien dans l'application : Réglages → carte « Mes données » → « Règles de
 confidentialité » (trois langues), qui ouvre la page à la langue de
 l'interface. Contenu au 14/11 (audit du 12/11, TWEBCONF-01 à 06), relu dans le
-code et tenu par `ConfidentialiteTest` :
+code et tenu en partie par `ConfidentialiteTest` (faits listés dans le test) :
 
 - ni compte, ni publicité, ni analyse d'audience, ni rapport d'erreur ; aucun
   serveur du développeur ; il ne reçoit que les e-mails que l'utilisateur
@@ -534,11 +535,11 @@ déclarations : la console en demande une par **type**, pas par service, et le
 bloc `specialUse` porte à la fois la séance et la barrière (examen du 14/11,
 constat 1) :
 
-| Service | Type | Ce que dit la description (en anglais dans le manifeste et dans la console) | Vidéo |
+| Service | Type | Ce que dit la description (anglais, identique dans le manifeste et dans la console) | Vidéo |
 | --- | --- | --- | --- |
-| `SessionService` | `specialUse` | Compte à rebours d'une séance de prière personnelle (hitbodedout) lancée par l'utilisateur, avec le temps restant affiché, pour que le téléphone puisse être posé. | Bloc `specialUse`, vidéo unique : la séance (lancer, verrouiller l'écran, montrer la notification), puis la barrière |
+| `SessionService` | `specialUse` | Texte du manifeste, à coller tel quel : « Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down. » | Bloc `specialUse`, vidéo unique : la séance (lancer, verrouiller l'écran, montrer la notification), puis la barrière |
 | `SessionService` | `mediaPlayback` | Lecture du morceau ou de l'ambiance choisis par l'utilisateur pendant sa séance, écran éteint. Demandé par le code tant que la musique ou une ambiance est allumée, ajouté à `specialUse` ; refusé (relance au démarrage du téléphone, Android 15+), la séance reste sous `specialUse` seul (examen du 14/11). | Même vidéo |
-| `GateService` | `specialUse` | Affiche un écran de confirmation par-dessus les applications choisies par l'utilisateur, pendant la fenêtre horaire qu'il a définie, jusqu'à ce qu'il confirme sa pratique du jour, et pendant toute séance qu'il a lancée, jusqu'à sa fin. | Même bloc `specialUse`, même vidéo, seconde séquence : choisir une app, l'ouvrir, voir l'écran, valider |
+| `GateService` | `specialUse` | Texte du manifeste, à coller tel quel : « Interposes a confirmation screen over user-selected apps during a user-defined morning window, until the user confirms their daily practice, and during any user-started session until it ends. » | Même bloc `specialUse`, même vidéo, seconde séquence : choisir une app, l'ouvrir, voir l'écran, valider |
 
 Les textes à saisir sont en anglais et reprennent mot pour mot les
 `PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE` des manifestes : la cohérence
@@ -680,7 +681,7 @@ libellés exacts de `values-en/strings.xml` : elle est dans
 décrit, tel que l'application l'affiche :
 
 1. premier lancement : « Skip » ferme la présentation ;
-2. barre du bas → **Settings** → carte **Mode status** → bouton **Preview the
+2. barre du bas → **Settings** → carte **Where “I am with Hashem” stands** → bouton **Preview the
    “I am with Hashem” screen now** (`action_preview_gate`) ;
 3. la première fois, la fenêtre de divulgation **Display over other apps** →
    **Continue** → accorder l'accès dans Android → revenir et toucher le bouton
@@ -689,7 +690,7 @@ décrit, tel que l'application l'affiche :
    EFFECT** ;
 5. pour la voir agir : carte **Permissions** → **Grant** (deux
    accès) ; carte **I am with Hashem** → interrupteur, **Choose apps**,
-   **Mode hours** autour de l'heure courante ; puis ouvrir l'application
+   **“I am with Hashem” hours** autour de l'heure courante ; puis ouvrir l'application
    choisie. Chabbat et Yom Tov : la barrière se tait par défaut (carte
    **Rhythm**).
 
@@ -730,7 +731,7 @@ local) :
       maintenant » n'ouvre rien
 - [ ] Réglages → « Règles de confidentialité » ouvre la page publique dans
       les trois langues
-- [ ] Les 6 widgets posés et mis à jour
+- [ ] Les 5 widgets (zmanim ×3, boussole, série) posés et mis à jour
 - [ ] Export / import JSON entre l'édition GitHub et l'édition Play
 - [ ] Trois langues dans l'app, droite-à-gauche en hébreu
 - [ ] Tablette, fenêtre libre, Chromebook (écran tactile non requis)
@@ -749,7 +750,7 @@ local) :
 | 1 | Décisions § 3 : vol en direct, écrits des ayants droit, 7 licences inconnues | propriétaire | — |
 | 2 | Compte développeur, paiement, vérifications | 1–3 jours | — |
 | 3 | `targetSdk 36`, flux `play.yml`, musique de la version Play — **fait le 29/10** ; clé d'envoi et secrets — propriétaire | 1 jour | 1 |
-| 4 | Règles de confidentialité en ligne — **rédigées le 31/10** ; en ligne après fusion sur `main` ; contact : myhitbodedut26@gmail.com (02/11) | 1 jour | 1 |
+| 4 | Règles de confidentialité en ligne — **rédigées le 31/10** ; en ligne (Cloudflare Pages, 13/11) ; contact : myhitbodedut26@gmail.com (02/11) | 1 jour | 1 |
 | 5 | Contenu de l'application (§ 6), fiche (§ 7), vidéos | 2–3 jours | 3, 4 |
 | 6 | Piste de test interne, recette § 8 | 3–5 jours | 3 |
 | 7 | **Test fermé : 12 testeurs, 14 jours sans interruption** | **14 jours minimum** | 5, 6 |
@@ -792,8 +793,7 @@ et chacun doit rester inscrit les 14 jours.
    l'accord d'OpenSky exige un relais ; sans relais, la version Play n'a pas
    de suivi en direct (§ 3.1). Route adsbdb conservée.
 2. ~~**Musique**~~ — **tranché le 29/10** : la version Play livre le niggoun
-   du Yanuka et המלך בשדה ; les 30 niggounim sans titre et Ishay Ribo
-   restent hors de Play (§ 3.2).
+   du Yanuka et המלך בשדה (puis, le 03/11, 10 morceaux de Noam Shpayer et 14 d'Ianir : 26 en tout) ; les 30 niggounim sans titre restent hors de Play, Ishay Ribo est retiré partout (§ 3.2).
 3. ~~**7 textes de licence inconnue**~~ — **tranché le 29/10** : domaine
    public, texte seul sans vocalisation (§ 3.3).
 4. ~~**Compte personnel ou organisation**~~ — **tranché le 29/10** : compte

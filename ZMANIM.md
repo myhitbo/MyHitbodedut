@@ -66,8 +66,14 @@ Un jour est « chômé » selon `JewishCalendar.isAssurBemelacha`.
 ## Les ajouts de prière
 
 `CalendrierJuif.kt` et `web/src/js/calendrier-juif.js` calculent pour chaque
-jour un jeu de conditions. Chacune renvoie à une méthode de KosherJava, et
-aucune règle n'est écrite à la main :
+jour un jeu de conditions. La plupart renvoient à une méthode de KosherJava ;
+les conditions dérivées sont écrites à la main, à partir de ces méthodes et des
+usages cités dans le code (`CalendrierJuif.C.DERIVEES`, `SiddurJour.conditionsPour`) :
+Lamnatséa'h, Ledavid, lecture de la Torah, bascule de la pluie, année
+embolismique, veille de Kippour un vendredi, psaume du jour (`jour_1` à
+`jour_6`), Avinou malkénou (à Min'ha : `avinou_malkenou_minha`, si Ta'hanoun
+s'y dit, ou à Roch Hachana et Kippour, jamais le vendredi)… Elles sont les plus sujettes à erreur : à vérifier d'abord.
+Les autres :
 
 - Ya'alé véyavo, Al hanissim, Machiv haroua'h, Morid hatal, Tal oumatar,
   Hallel complet ou partiel, Ta'hanoun du matin et de Min'ha : `TefilaRules` ;
@@ -130,8 +136,10 @@ un lieu, la prière proposée suit ses zmanim. Tikoun 'hatsot de 'hatsot de la
 nuit à l'aube ; Birkot hacha'har de l'aube à michéyakir ; Cha'harit jusqu'à
 'hatsot ; Min'ha de min'ha guedola à la chki'a ; Arvit dès tsét, puis le
 Chema du coucher après 22 h 30 (repère d'usage, pas un zman). Rien n'est
-proposé de 'hatsot à min'ha guedola ni de la chki'a à tsét. Sans lieu, ou
-sans zmanim (soleil de minuit), les heures fixes d'avant.
+proposé de 'hatsot à min'ha guedola ni de la chki'a à tsét. Sans aube
+(autour du solstice à Londres, Berlin, Moscou…), michéyakir, puis le lever
+du soleil, en tiennent lieu. Sans lieu, sans zmanim (soleil de minuit), ou
+quand un autre manque (chki'a, tsét…), les heures fixes d'avant.
 
 **Réglages** : en noussa'h Sfard, Ta'hanoun de fin de Tichri au choix (dit
 après Isrou 'hag par défaut) ; à Jérusalem, l'allumage 40 minutes avant la
@@ -139,9 +147,10 @@ chki'a est proposé, sans être imposé.
 
 **Le soir** : Arvit et le Chema du coucher relèvent du jour hébreu suivant à
 partir de midi (`jourDeLaPriere`). Midi plutôt que la chki'a, qui demanderait
-un lieu ; aucun Arvit ne se dit le matin. Les bénédictions du repas suivent
-le jour civil : après la chki'a, la règle dépend de l'heure du début du
-repas, et les ajouts restent ouvrables.
+un lieu ; aucun Arvit ne se dit le matin. Les bénédictions du repas et les
+autres textes passent au jour hébreu suivant à la sortie des étoiles du lieu
+(tsét 8,5°) ; sans lieu, ils suivent le jour civil. Min'ha garde le jour
+civil ; les ajouts restent ouvrables à la main.
 
 ### Dans le siddour
 
@@ -156,13 +165,12 @@ eux-mêmes ne sont jamais modifiés.
 - **Ajout hors du jour** : replié en une ligne ; une flèche l'ouvre et le
   referme. Rien n'est retiré.
 - **Variante enchâssée dans un bloc** (« בעשרת ימי תשובה אומרים: המלך
-  הקדוש ») : un repère « Aujourd'hui : … » sous le bloc.
+  הקדוש ») : la variante hors du jour est retirée du bloc, et une ligne repliée
+  la rend d'un geste.
 
-Volontairement non annotés, donc toujours dépliés : Avinou malkénou dans les
-noussa'him Sfard et Ashkenaz (coutumes diverses), le Ta'hanoun du siddour
-ashkénaze (mêlé au Vidouï sans frontière nette), le Chir chel yom. Dans le
-siddour Edot, Avinou malkénou suit la consigne du texte (« בעשרת ימי תשובה
-אומרים »).
+Avinou malkénou (Sfard, Ashkenaz), le Ta'hanoun du siddour ashkénaze et le
+Chir chel yom sont annotés comme le reste. Dans le siddour Edot, Avinou malkénou
+suit la consigne du texte (« בעשרת ימי תשובה אומרים »).
 
 ## Les lieux
 
@@ -271,6 +279,16 @@ veille, le jour et le lendemain. La prière du moment est
 `ZmanimWidget.prochaine`, sans règle nouvelle, nourrie des zmanim de la
 route (`VolPriere`).
 
+**Saisie rapide et billet (04/11).** `SaisieVol` lit une phrase (« El Al Lyon →
+TLV demain à 11h », un texte de billet collé) ; `LecteurBillet` (ZXing,
+Apache 2.0, licence dans `assets/licences/`) cherche le code-barres d'une
+carte d'embarquement dans un PDF (quatre pages au plus, une à la fois) ou une
+photo. `CarteEmbarquement` lit le format BCBP : seul le **premier tronçon**
+(aéroports, compagnie, numéro, jour du vol) est retenu, ni le nom ni le numéro
+de réservation. Le code ne porte pas les heures : l'arrivée est estimée d'après
+la distance (820 km/h + 30 min), dite comme telle, à corriger avec le billet.
+Une correspondance se saisit un tronçon à la fois. Tout est lu sur le téléphone.
+
 **Ce que l'écran dit, sans conseil** : la fiabilité (« route prévue », jamais
 une position réelle) ; de combien chaque horaire bouge si le départ a
 30 minutes de retard ; la haute latitude (au-delà de 60°) ; un zman absent
@@ -312,7 +330,7 @@ méridien (Kiribati, Samoa…) : seul le méridien est calculé.
 
 **Le GPS** (au choix, en plus de la route prévue). Au toucher de « position
 réelle », l'application demande la localisation précise et un relevé du GPS
-seul, 90 s au plus ; le GPS marche en mode avion, sans réseau. Un relevé pris
+seul, 2 min 30 au plus sur Android (90 s sur le site) ; le GPS marche en mode avion, sans réseau. Un relevé pris
 entre le décollage et l'atterrissage prévus recale la route : grand cercle du
 départ au relevé, puis du relevé à l'arrivée, chaque tronçon à vitesse
 constante. L'écart affiché devient alors celui d'une arrivée retardée de
@@ -470,8 +488,8 @@ tourne »), widget 2 × 2 `BoussoleWidget`. Vers Har haBayit, 31,7781° N,
   (graduations aux 5°, degrés aux 30°, zone d'or de ±4°, aiguille d'or vers
   Jérusalem, anneau d'or face à elle), avec le pointillé bleu de la carte.
 - **Actualiser ma position** (ex-« Position exacte », 31/10). Le bouton relance
-  la localisation, approximative seulement depuis le 31/10 (`ChoixLieu.maPosition`,
-  web `localiserPosition`) : Google Play réserve la position exacte aux usages
+  la localisation, approximative seulement depuis le 31/10 sur Android
+  (`ChoixLieu.maPosition` ; le web demande la haute précision, `localiserPosition`) : Google Play réserve la position exacte aux usages
   qui l'exigent, ici le seul GPS en vol ; à l'ouverture, la position du
   téléphone se reprend sans bruit si elle est déjà permise.
   La boussole parallèle de `main` (`DirectionTefila`, même calcul) est

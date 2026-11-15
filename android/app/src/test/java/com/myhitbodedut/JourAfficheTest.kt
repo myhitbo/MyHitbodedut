@@ -62,6 +62,14 @@ class JourAfficheTest {
         assertTrue("ajout_berakha" in JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-12"), false).conditions, "ashkenaz"))
         val hanouka = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-12-07"), false).conditions)
         assertTrue("ajout_al_hanissim" in hanouka && "ajout_hallel_complet" in hanouka && "ajout_barekh_alenou" in hanouka)
+        // Un Yom Tov en semaine (15 Nissan 2027) et Kippour : pas de 9e bénédiction de semaine (FCALENDRIER-12).
+        for (iso in listOf("2027-04-22", "2026-09-21")) {
+            val yt = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse(iso), false).conditions)
+            assertTrue(iso, yt.none { it in listOf("ajout_barkhenou", "ajout_berakha", "ajout_barekh_alenou", "ajout_tal_oumatar") })
+            // Ni « Pas de Ta'hanoun », comme le Chabbat : la carte n'a pas d'Amida de semaine à décrire.
+            assertTrue(iso, yt.none { it.contains("tahanoun") })
+            assertTrue(iso, "ajout_yaale_veyavo" in yt || iso == "2026-09-21")
+        }
         val chabbat = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-10"), false).conditions)
         assertTrue(chabbat.none { it.contains("tahanoun") })
         // Chaque clé a son libellé dans la table.
@@ -140,6 +148,12 @@ class JourAfficheTest {
         assertEquals("arvit", JourAffiche.momentDuSiddour(jer, juste("tset", 60)))
         assertEquals("chema_coucher", JourAffiche.momentDuSiddour(jer, a("22:45:00")))
         assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, a("02:00:00")))
+        // Londres au solstice : pas d'aube, mais chki'a et tsét existent (FCALENDRIER-08) : la prière suit les zmanim.
+        val londres = Zmanim.Lieu("Londres", 51.5074, -0.1278, 0.0, "Europe/London")
+        fun lon(h: String) = java.time.ZonedDateTime.parse("2027-06-21T$h+01:00[Europe/London]").toInstant()
+        assertEquals("minha", JourAffiche.momentDuSiddour(londres, lon("18:45:00")))
+        assertEquals("chaharit", JourAffiche.momentDuSiddour(londres, lon("09:00:00")))
+        assertEquals("chema_coucher", JourAffiche.momentDuSiddour(londres, lon("00:30:00")))
         // Soleil de minuit à Tromsø : les heures fixes.
         val tromso = Zmanim.Lieu("Tromsø", 69.6492, 18.9553, 0.0, "Europe/Oslo")
         val juin = java.time.ZonedDateTime.parse("2026-06-21T14:00:00+02:00[Europe/Oslo]").toInstant()
