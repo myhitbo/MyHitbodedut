@@ -154,4 +154,32 @@ class HilloulotTest {
             .forEach { assertTrue(it, bios.contains(it)) }
         assertTrue("מספריו:", Regex("מספריו:").findAll(bios).count() > 1000)
     }
+
+    /** « ה'תר"ץ » → 5690 ; sans le millénaire, le sixième ; null pour une année civile ou glosée. */
+    private fun anneeHebraique(a: String): Int? {
+        val m = Regex("""(?:([א-ט])['׳])?([א-ת"״]+)""").matchEntire(a.trim()) ?: return null
+        val v = "אבגדהוזחטיכלמנסעפצקרשת".toList().zip(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400)).toMap() +
+            mapOf('ך' to 20, 'ם' to 40, 'ן' to 50, 'ף' to 80, 'ץ' to 90)
+        val n = m.groupValues[2].sumOf { v[it] ?: 0 }
+        val mille = m.groupValues[1].firstOrNull()?.let { v[it]!! } ?: 5
+        return if (n == 0) null else mille * 1000 + n
+    }
+
+    @Test
+    fun `les dates des hilloulot existent l annee de leur deces`() {
+        // THILLOULOT-12 : Adar I et Adar II, les années embolismiques seulement ; un 30, si le mois en a 30 cette année-là.
+        // Restent, faute d'autre source, cinq faits de החכם היומי seul (relevés par l'audit du 12/11), à vérifier.
+        val aVerifier = setOf("חכם עובדיה מזרחי הלוי", "חכם דוד כהן", "חכם יהושע יהודה אמאדו", "חכם יוסף בן אדהאן", "חכם משה חפץ")
+        val impossibles = table.flatMap { (cle, l) -> l.map { cle to it } }.filter { (cle, h) ->
+            val y = anneeHebraique(h.annee)?.takeIf { it >= 4000 } ?: return@filter false
+            val (m, j) = cle.split("-").let { it[0] to it[1].toInt() }
+            when (m) {
+                "adar1" -> !Hilloulot.embolismique(y)
+                "adar2" -> !Hilloulot.embolismique(y) || j == 30
+                "adar" -> j == 30 && !Hilloulot.embolismique(y)
+                else -> j > JewishCalendar(y, m.toInt(), 1).daysInJewishMonth
+            }
+        }
+        assertEquals(impossibles.joinToString { (cle, h) -> "$cle ${h.he} ${h.annee}" }, aVerifier.sorted(), impossibles.map { it.second.he }.sorted())
+    }
 }
