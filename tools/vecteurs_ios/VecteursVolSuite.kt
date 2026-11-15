@@ -491,7 +491,10 @@ object VecteursVolSuite : Generateur {
             listOf("codeServeur", it, SuiviVol.Raison.codeServeur(it))
         } +
         listOf("opensky 429", "opensky 503", " opensky 500 ", "opensky injoignable", "x", "", "opensky  429", "Opensky 429", "opensky 4290",
-            "opensky 99999999999", "opensky 4a").map { listOf("duRelais", it, SuiviVol.Raison.duRelais(it)) }
+            "opensky 99999999999", "opensky 2147483647", "opensky 2147483648", "opensky 4a", "opensky ٤٢٩").map {
+            // Un nombre qui déborde lève (toInt) : null ici ; SuiviVol.lire le rend « illisible ».
+            listOf("duRelais", it, runCatching { SuiviVol.Raison.duRelais(it) }.getOrNull())
+        }
 
     private fun resultatSuivi(r: SuiviVol.Resultat): List<Any?> = when (r) {
         is SuiviVol.Resultat.Trouve -> listOf("trouve", r.point.instant.toEpochMilli(), r.point.latitude, r.point.longitude, r.altitudeMetres)
@@ -507,7 +510,7 @@ object VecteursVolSuite : Generateur {
             """{"trouve":true,"latitude":50.5,"longitude":-21.2,"altitude_geo":11200,"instant":"2026-11-10T18:30:00Z"}""",
             """{"trouve":true,"latitude":50,"longitude":-21,"instant":"2026-11-10T18:00:00Z"}""",
             """{"trouve":false}""", """{"erreur":"x"}""", "pas du json", "",
-            """{"erreur":"opensky 429"}""", """{"erreur":"opensky 503","trouve":true}""", """{"erreur":null}""", """{"erreur":12}""",
+            """{"erreur":"opensky 429"}""", """{"erreur":"opensky 503","trouve":true}""", """{"erreur":"opensky 99999999999"}""", """{"erreur":null}""", """{"erreur":12}""",
             """{"trouve":"true","latitude":"50.5","longitude":"-21.2","instant":"2026-11-10T18:30:00Z"}""",
             """{"trouve":"oui","latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00Z"}""",
             """{"trouve":1,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00Z"}""",

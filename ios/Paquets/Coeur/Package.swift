@@ -12,6 +12,7 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
+    "Aeroports.swift",
     "Ambiance.swift",
     "Autorisation.swift",
     "BilanSemaine.swift",
@@ -29,6 +30,7 @@ let enChantierSources: [String] = [
     "Personnage.swift",
     "PoliceHebraique.swift",
     "RechercheGlobale.swift",
+    "SaisieVol.swift",
     "Sauvegarde.swift",
     "TerritoireIsrael.swift",
     "Tips.swift",
@@ -41,6 +43,8 @@ let enChantierSources: [String] = [
     "WidgetTaille.swift",
 ]
 let enChantierTests: [String] = [
+    "AmbianceTests.swift",
+    "AutorisationTests.swift",
     "BilanTropheesTests.swift",
     "BoussoleTests.swift",
     "CheminTropheesTests.swift",
@@ -53,19 +57,24 @@ let enChantierTests: [String] = [
     "LibellesTests.swift",
     "MagnetismeTests.swift",
     "MegilaTests.swift",
+    "MusicLibraryTests.swift",
+    "MusiquePlayTests.swift",
     "OnboardingTests.swift",
     "PaliersTests.swift",
     "PersonnageTests.swift",
     "PoliceHebraiqueTests.swift",
     "RechercheGlobaleTests.swift",
+    "RenameTrackTests.swift",
     "SauvegardeTests.swift",
     "SiddurJourTests.swift",
     "TerritoireIsraelTests.swift",
     "TipsTests.swift",
     "TropheesTests.swift",
     "TropheesTikkunTests.swift",
+    "VignetteDecorTests.swift",
     "VillePlusProcheTests.swift",
     "VolTests.swift",
+    "WidgetTailleTests.swift",
 ]
 
 let package = Package(
