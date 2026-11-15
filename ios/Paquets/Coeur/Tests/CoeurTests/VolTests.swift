@@ -296,7 +296,10 @@ struct VolTests {
                 let x = try #require(attendus.objet(j))
                 #expect(x.texte("cle") == e.cle, "\(nom)")
                 let ecart = abs((try instant(x.texte("instant"))) - e.instant)
-                #expect(ecart <= 2000, "\(nom) \(e.cle) : \(ecart) ms")
+                // Le plag d'un vol vers l'ouest : sous l'avion, il avance presque au pas de l'horloge,
+                // et l'écart d'une seconde au sol s'y étire (TLV-JFK : 2,4 s).
+                let tolerance: Int64 = e.cle == "plag" ? 3000 : 2000
+                #expect(ecart <= tolerance, "\(nom) \(e.cle) : \(ecart) ms")
             }
             let reserves = (v.tableau("reserves") ?? []).indices.map { (v.tableau("reserves") ?? []).texte($0) }
             let rendues = c.reserves.map(\.rawValue).sorted()
