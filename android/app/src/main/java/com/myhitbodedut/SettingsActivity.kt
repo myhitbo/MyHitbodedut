@@ -313,6 +313,8 @@ class SettingsActivity : AppCompatActivity() {
             }
             ligne.findViewById<Button>(R.id.permission_grant).apply {
                 isEnabled = !accordee
+                // « Accorder : Notifications » (FACCUEIL-12) : quatre « Accorder » de suite ne disaient rien.
+                contentDescription = getString(R.string.reglage_libelle_valeur, text, getString(autorisation.titre))
                 setOnClickListener { demander(autorisation) }
             }
             liste.addView(ligne)
@@ -421,6 +423,17 @@ class SettingsActivity : AppCompatActivity() {
         view.setOnCheckedChangeListener(null)
         view.isChecked = checked
         view.setOnCheckedChangeListener { _, value -> onChange(value) }
+    }
+
+    /** Le premier texte d'une ligne qui ne soit pas un bouton : l'intitulé d'un bouton de valeur. */
+    private fun intituleDe(g: ViewGroup): CharSequence? {
+        for (i in 0 until g.childCount) {
+            val v = g.getChildAt(i)
+            if (v is Button) continue
+            if (v is TextView && !v.text.isNullOrBlank()) return v.text
+            if (v is ViewGroup) intituleDe(v)?.let { return it }
+        }
+        return null
     }
 
     /** Le premier texte d'une ligne, hors l'interrupteur lui-même. */
@@ -715,12 +728,15 @@ class SettingsActivity : AppCompatActivity() {
             }
             // TalkBack (FACCUEIL-12) : un bouton de valeur ne disait que sa valeur (« 15 min ») ;
             // il dit « intitulé : valeur », lue au moment où le focus passe, la valeur ayant pu changer.
-            if (rangee && e is Button) {
+            // L'intitulé peut être posé dans une colonne (titre et aide : prénom, objectif quotidien) ;
+            // un autre bouton de la ligne n'est jamais pris pour intitulé.
+            if (v is android.widget.LinearLayout && v.orientation == android.widget.LinearLayout.HORIZONTAL &&
+                e is Button && e !is android.widget.CompoundButton && intituleDe(v) != null) {
                 androidx.core.view.ViewCompat.setAccessibilityDelegate(e, object : androidx.core.view.AccessibilityDelegateCompat() {
                     override fun onInitializeAccessibilityNodeInfo(host: View, info: androidx.core.view.accessibility.AccessibilityNodeInfoCompat) {
                         super.onInitializeAccessibilityNodeInfo(host, info)
                         val valeur = (host as? Button)?.text
-                        val libelle = (host.parent as? ViewGroup)?.let { libelleDe(it, host) }
+                        val libelle = (host.parent as? ViewGroup)?.let { intituleDe(it) }
                         if (!valeur.isNullOrBlank() && !libelle.isNullOrBlank() && libelle != valeur) info.text = getString(R.string.reglage_libelle_valeur, libelle, valeur)
                     }
                 })
