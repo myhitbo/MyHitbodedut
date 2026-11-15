@@ -31,6 +31,7 @@ let enChantierSources: [String] = [
     "WidgetTaille.swift",
 ]
 let enChantierTests: [String] = [
+    "AeroportsTests.swift",
     "AmbianceTests.swift",
     "AutorisationTests.swift",
     "CarteEmbarquementTests.swift",

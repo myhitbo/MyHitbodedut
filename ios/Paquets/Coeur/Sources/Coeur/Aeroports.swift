@@ -135,7 +135,13 @@ public enum Aeroports {
     private static let cache = Mutex<Index?>(nil)
 
     private static func index(_ aeroports: [Vol.Aeroport]) -> [Plie] {
-        if let deja = cache.withLock({ $0 }), deja.liste == aeroports { return deja.plies }
+        if let deja = cache.withLock({ $0 }), deja.liste == aeroports {
+            // La même liste dans un autre tableau : on garde celui-ci, que les appels suivants reconnaîtront d'emblée
+            // (l'égalité de deux tableaux qui partagent leur mémoire est immédiate).
+            let reconnu = Index(liste: aeroports, plies: deja.plies)
+            cache.withLock { $0 = reconnu }
+            return deja.plies
+        }
         let plies = aeroports.map { a in
             Plie(iata: Array(plier(a.iata).utf16), ville: Array(plier(a.ville).utf16), nom: Array(plier(a.nom).utf16),
                  alias: a.alias.map { Array(plier($0).utf16) })

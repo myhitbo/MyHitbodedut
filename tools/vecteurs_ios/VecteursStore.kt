@@ -62,7 +62,8 @@ object VecteursStore : Generateur {
 
     /** Ce que rendent les fonctions qui calculent, ici et maintenant. */
     private fun etat(c: Context): MutableMap<String, Any?> {
-        val aujourdhui = LocalDate.now()
+        // Le générateur n'est pas réécrit comme le code de l'app : l'heure figée se lit dans Horloge.
+        val aujourdhui = Horloge.aujourdhui()
         val semaine = Store.currentWeek(c)
         val bilan = Store.bilan(c)
         val pratique = Store.pratique(c)
