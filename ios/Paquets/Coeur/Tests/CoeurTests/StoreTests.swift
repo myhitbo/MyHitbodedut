@@ -361,10 +361,10 @@ struct StoreTests {
             default:
                 Issue.record("\(lieu) : opération inconnue")
             }
-            let instant = millis
-            #expect(instant == etape.millis, "\(lieu) : l'instant")
-            let zone = fuseau.identifiant
-            #expect(zone == etape.zone, "\(lieu) : le fuseau")
+            let instantCourant = millis
+            #expect(instantCourant == etape.millis, "\(lieu) : l'instant")
+            let fuseauCourant = fuseau.identifiant
+            #expect(fuseauCourant == etape.zone, "\(lieu) : le fuseau")
 
             // La lecture d'Android fige Israël ou diaspora au premier accès, que l'état fait quand le mode
             // Chabbat est actif (Store.isEveOfRestDay le demande alors toujours) ; l'app d'iOS, à l'ouverture.
@@ -514,8 +514,8 @@ struct StoreTests {
     private func verifie(_ texte: String, _ trace: Trace, _ lieu: String) {
         let longueur = texte.utf16.count
         #expect(longueur == trace.longueur, "\(lieu) : longueur")
-        let empreinte = Kotlin.hashCode(texte)
-        #expect(empreinte == trace.empreinte, "\(lieu) : empreinte")
+        let hache = Kotlin.hashCode(texte)
+        #expect(hache == trace.empreinte, "\(lieu) : empreinte")
         if let attendu = trace.texte {
             let conforme = texte.egalUnites(attendu)
             #expect(conforme, "\(lieu) : \(texte) au lieu de \(attendu)")
@@ -641,14 +641,20 @@ struct StoreTests {
 
     @Test func lesDureesSEcriventCommeSurAndroid() throws {
         let catalogue = try Catalogue.lire()
+        var simplesParLangue: [String: [String: String]] = [:]
+        var plurielsParLangue: [String: [String: String]] = [:]
+        for langue in Catalogue.langues {
+            simplesParLangue[langue] = catalogue.simples(langue)
+            plurielsParLangue[langue] = catalogue.pluriels(langue)
+        }
         let cas = try fichier().formats
         #expect(cas.count == 26)
         for c in cas {
             let heure = Store.formatMinutes(c.minutes)
             #expect(heure == c.formatMinutes, "formatMinutes(\(c.minutes))")
             for (langue, attendu) in [("fr", c.fr), ("en", c.en), ("he", c.he)] {
-                let simples = catalogue.simples(langue)
-                let pluriels = catalogue.pluriels(langue)
+                let simples = simplesParLangue[langue] ?? [:]
+                let pluriels = plurielsParLangue[langue] ?? [:]
                 let texte = Store.formatDuration(c.minutes).texte(langue: langue, chaine: { simples[$0] }, pluriel: { pluriels["\($0)[\($1)]"] })
                 let conforme = texte?.egalUnites(attendu) == true
                 #expect(conforme, "formatDuration(\(c.minutes)) en \(langue) : \(texte ?? "nil") au lieu de \(attendu)")

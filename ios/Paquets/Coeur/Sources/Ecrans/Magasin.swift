@@ -83,8 +83,8 @@ public final class Magasin {
 
     private let persistance: any Persistance
     /// La dernière écriture lancée de chaque fichier : la suivante l'attend.
-    @ObservationIgnored private var ecritureJournal: Task<Void, any Error>?
-    @ObservationIgnored private var ecritureReglages: Task<Void, any Error>?
+    @ObservationIgnored private var ecritureJournal: Task<Void, any Error>? = nil
+    @ObservationIgnored private var ecritureReglages: Task<Void, any Error>? = nil
 
     public init(persistance: any Persistance, enregistrement: Enregistrement = Enregistrement()) {
         self.persistance = persistance

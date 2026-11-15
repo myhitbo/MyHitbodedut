@@ -98,7 +98,10 @@ struct MagasinTests {
         let magasin = Magasin(persistance: persistance)
         var taches: [Task<Void, any Error>] = []
         for minutes in [10, 20, 30, 40, 50] {
-            taches.append(Task { try await magasin.modifierReglages { $0.setTargetMinutes(minutes) } })
+            let tache = Task<Void, any Error> {
+                try await magasin.modifierReglages { $0.setTargetMinutes(minutes) }
+            }
+            taches.append(tache)
         }
         for tache in taches {
             try await tache.value

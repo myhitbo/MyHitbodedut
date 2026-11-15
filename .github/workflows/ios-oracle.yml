@@ -9,6 +9,8 @@ name: iOS (oracle JVM)
 on:
   push:
     paths:
+      - 'tools/export_contenu/export.py'
+      - 'android/app/src/main/res/values*/palettes.xml'
       - 'tools/export_contenu/tables/**'
       - 'tools/vecteurs_ios/**'
       - 'ios/Paquets/Coeur/Tests/Vecteurs/**'
@@ -20,6 +22,8 @@ on:
       - 'android/app/src/main/res/raw/*.json'
   pull_request:
     paths:
+      - 'tools/export_contenu/export.py'
+      - 'android/app/src/main/res/values*/palettes.xml'
       - 'tools/export_contenu/tables/**'
       - 'tools/vecteurs_ios/**'
       - 'ios/Paquets/Coeur/Tests/Vecteurs/**'
@@ -56,6 +60,9 @@ jobs:
         with:
           path: tools/export_contenu/tables/build/android-36
           key: oracle-android-36-r02-${{ hashFiles('tools/export_contenu/tables/build.gradle.kts') }}
+      # Quelques générateurs lisent ce que l'export produit (Contenu/palettes.json, propre à l'app).
+      - name: Contenus exportés
+        run: python3 tools/export_contenu/export.py
       - name: Vecteurs refaits par le code d'Android
         run: tools/vecteurs_ios/lancer.sh
       - name: Garde de dérive
