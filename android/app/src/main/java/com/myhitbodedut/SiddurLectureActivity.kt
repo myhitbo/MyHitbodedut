@@ -160,8 +160,8 @@ class SiddurLectureActivity : AppCompatActivity() {
     /** Va au paragraphe ; replié aujourd'hui, au titre de sa section. */
     private fun allerA(si: Int, bi: Int) {
         val gestion = liste.layoutManager as LinearLayoutManager
-        val i = lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && places[it.bloc] == (si to bi) }
-        val repli = if (i >= 0) i else lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && (places[it.bloc]?.first ?: -1) >= si }
+        val i = lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && places[it.origine] == (si to bi) }
+        val repli = if (i >= 0) i else lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && (places[it.origine]?.first ?: -1) >= si }
         if (repli >= 0) { choisi = null; liste.stopScroll(); gestion.scrollToPositionWithOffset(repli, 0) }
     }
 
@@ -665,17 +665,17 @@ class SiddurLectureActivity : AppCompatActivity() {
                     if (position in dansPanneau) background = panneau(voile, haut = false, bas = false)
                     else if (ligne.style == SiddurJour.Style.HORS) alpha = 0.55f
                     // Le marque-page : un trait de la couleur des titres au début du paragraphe.
-                    if (marquee(ligne.bloc)) background = android.graphics.drawable.LayerDrawable(arrayOf(
+                    if (marquee(ligne.origine)) background = android.graphics.drawable.LayerDrawable(arrayOf(
                         background ?: android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT),
                         android.graphics.drawable.ColorDrawable(rendu.titre))).apply {
                         setLayerWidth(1, dp(4)); setLayerGravity(1, android.view.Gravity.START or android.view.Gravity.FILL_VERTICAL)
                     }
-                    if (marquee(ligne.bloc)) setCompoundDrawablesRelative(null, null,
+                    if (marquee(ligne.origine)) setCompoundDrawablesRelative(null, null,
                         ContextCompat.getDrawable(context, icone(livre))?.mutate()?.apply {
                             setTint(rendu.titre); setBounds(0, 0, dp(16), dp(16))
                         }, null)
                     compoundDrawablePadding = dp(6)
-                    setOnLongClickListener { basculerMarque(ligne.bloc); true }
+                    setOnLongClickListener { basculerMarque(ligne.origine); true }
                 }
                 is SiddurJour.Ligne.Etiquette -> vue.apply {
                     layoutDirection = View.LAYOUT_DIRECTION_LOCALE
