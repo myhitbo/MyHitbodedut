@@ -196,10 +196,12 @@ class MusicActivity : AppCompatActivity() {
         stopPreview()
         // En séance, la musique de la séance est seule à jouer : toucher un morceau le lui
         // donne, au lieu de lancer un second lecteur qui lui prendrait le focus (FSEANCE-07).
+        // C'est un choix comme un autre : l'interrupteur, la lecture aléatoire et la liste
+        // le montrent, sans quoi l'écran disait encore « coupée » ou « aléatoire ».
         if (Store.isSessionRunning(this)) {
-            Store.setMusicEnabled(this, true)
-            Store.setMusicTrackId(this, track.id)
-            SessionService.musicChanged(this)
+            // Coupée, la musique se rallume par son interrupteur, qui prévient le service.
+            findViewById<MaterialSwitch>(R.id.music_switch).isChecked = true
+            choisir(track)
             return
         }
         val player = MusicPlayer(this)
@@ -214,6 +216,19 @@ class MusicActivity : AppCompatActivity() {
         preview = player
         previewingId = track.id
         adapter.notifyDataSetChanged()
+    }
+
+    /** Le morceau de la séance ; en séance, le service le prend aussitôt. */
+    private fun choisir(track: Track) {
+        Store.setMusicTrackId(this, track.id)
+        SessionService.musicChanged(this)
+        // Choisir un morceau, c'est quitter la lecture aléatoire.
+        if (Store.musicShuffle(this)) {
+            Store.setMusicShuffle(this, false)
+            findViewById<MaterialSwitch>(R.id.music_shuffle).isChecked = false
+        }
+        adapter.notifyItemRangeChanged(0, tracks.size)
+        renderSummary()
     }
 
     private fun stopPreview() {
@@ -287,17 +302,7 @@ class MusicActivity : AppCompatActivity() {
                 else android.R.drawable.ic_media_play
             )
 
-            val select = {
-                Store.setMusicTrackId(this@MusicActivity, track.id)
-                SessionService.musicChanged(this@MusicActivity)
-                // Choisir un morceau, c'est quitter la lecture aléatoire.
-                if (Store.musicShuffle(this@MusicActivity)) {
-                    Store.setMusicShuffle(this@MusicActivity, false)
-                    findViewById<MaterialSwitch>(R.id.music_shuffle).isChecked = false
-                }
-                notifyItemRangeChanged(0, tracks.size)
-                renderSummary()
-            }
+            val select = { choisir(track) }
             holder.radio.setOnClickListener { select() }
             holder.itemView.setOnClickListener { select() }
             holder.rename.setOnClickListener { askRename(track) }

@@ -97,6 +97,17 @@ object SessionRule {
     fun joueDuSon(musique: Boolean, ambiance: Ambiance): Boolean =
         musique || ambiance != Ambiance.SILENCE
 
+    /**
+     * Un autre morceau a ete choisi dans l'ecran Musique pendant que celui de la seance est
+     * charge (qu'il joue ou soit en pause) : hors lecture aleatoire, il prend sa place.
+     * [retenu] est le morceau que la bibliotheque retient (MusicLibrary.selected), pas
+     * l'identifiant enregistre : sans choix explicite, ou quand le morceau choisi a ete retire,
+     * c'est le premier de la bibliotheque qui joue, et chaque reglage touche (volume, ambiance)
+     * relancait la musique a zero (relecture du lot « seance », FSEANCE-07).
+     */
+    fun autreMorceau(aleatoire: Boolean, charge: Boolean, retenu: String?, joue: String?): Boolean =
+        !aleatoire && charge && retenu != null && retenu != joue
+
     /** La plus longue seance qu'on puisse choisir ; une seance ouverte s'y arrete aussi. */
     const val PLAFOND_OUVERTE = 240
 

@@ -127,8 +127,11 @@ class SessionService : Service() {
                 // pendant la séance : on coupe, le chemin ordinaire relance.
                 if (modeAleatoire != null && modeAleatoire != Store.musicShuffle(this)) {
                     music.stop(fade = false)
-                } else if (!Store.musicShuffle(this) && music.isPlaying &&
-                    Store.musicTrackId(this) != Store.musicNow(this)) {
+                } else if (SessionRule.autreMorceau(
+                        Store.musicShuffle(this), music.charge,
+                        MusicLibrary.selected(this)?.id, Store.musicNow(this),
+                    )
+                ) {
                     // Un autre morceau a été touché dans l'écran Musique : il prend la place.
                     music.stop(fade = false)
                 }

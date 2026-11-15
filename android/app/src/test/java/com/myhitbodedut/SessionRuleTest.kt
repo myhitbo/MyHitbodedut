@@ -88,6 +88,29 @@ class SessionRuleTest {
         assertTrue(xml.contains("""android:id="@+id/session_open""""))
         assertTrue(xml.contains("""android:text="@string/session_open""""))
     }
+
+    /**
+     * Le morceau touche dans l'ecran Musique remplace celui de la seance, mais un reglage
+     * touche sans changer de morceau ne relance rien : sans choix explicite, le morceau retenu
+     * est le premier de la bibliotheque, et l'identifiant enregistre reste vide.
+     */
+    @Test
+    fun `seul un autre morceau retenu remplace celui qui joue`() {
+        assertTrue(SessionRule.autreMorceau(aleatoire = false, charge = true, retenu = "b", joue = "a"))
+        assertFalse(SessionRule.autreMorceau(aleatoire = false, charge = true, retenu = "a", joue = "a"))
+        // Lecture aleatoire : le sac choisit, pas l'ecran Musique.
+        assertFalse(SessionRule.autreMorceau(aleatoire = true, charge = true, retenu = "b", joue = "a"))
+        // Rien de charge : le chemin ordinaire lance le morceau retenu.
+        assertFalse(SessionRule.autreMorceau(aleatoire = false, charge = false, retenu = "b", joue = "a"))
+        assertFalse(SessionRule.autreMorceau(aleatoire = false, charge = true, retenu = null, joue = "a"))
+    }
+
+    @Test
+    fun `le service compare au morceau retenu, pas a l identifiant enregistre`() {
+        val service = File("src/main/java/com/myhitbodedut/SessionService.kt").readText()
+        assertTrue(service.contains("MusicLibrary.selected(this)?.id, Store.musicNow(this)"))
+        assertFalse(service.contains("Store.musicTrackId(this) != Store.musicNow(this)"))
+    }
 }
 
 /**

@@ -303,8 +303,11 @@ class SessionActivity : AppCompatActivity() {
         }
         wasRunning = running
         // L'écran ne reste allumé que pendant une séance, pas sur l'écran de départ (FSEANCE-19).
-        if (running) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        // Au seul changement : render() repasse chaque seconde, et chaque addFlags ou clearFlags
+        // renvoie les attributs de la fenêtre au gestionnaire de fenêtres.
+        val allume = (window.attributes.flags and WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) != 0
+        if (running && !allume) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        else if (!running && allume) window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         souffle.actif = running
         calme.suivre(running)
         // Chaque seconde, et pas au seul passage à « terminée » : c'est le
@@ -467,15 +470,19 @@ class SessionActivity : AppCompatActivity() {
         // En lecture aléatoire, le morceau qui joue réellement, pas le morceau choisi.
         val choisi = if (Store.musicEnabled(this)) MusicLibrary.selected(this) else null
         // Ce qui joue réellement, dans tous les modes : le morceau touché dans l'écran Musique
-        // peut ne pas encore avoir remplacé l'ancien (FSEANCE-07).
+        // peut ne pas encore avoir remplacé l'ancien (FSEANCE-07). Hors séance seulement le
+        // morceau choisi : « en cours » peut rester d'une séance morte avec le processus, que
+        // reconcilier() a close sans l'effacer.
+        val enSeance = Store.isSessionRunning(this)
+        val maintenant = if (enSeance) Store.musicNow(this) else null
         val track = if (choisi != null) {
-            MusicLibrary.byId(this, Store.musicNow(this)) ?: choisi
+            MusicLibrary.byId(this, maintenant) ?: choisi
         } else {
             choisi
         }
         musicLine.visibility = if (track == null) View.GONE else View.VISIBLE
         if (track != null) {
-            musicLine.text = if (Store.musicShuffle(this) && Store.musicNow(this) == null) {
+            musicLine.text = if (Store.musicShuffle(this) && maintenant == null) {
                 getString(R.string.session_music_line, getString(R.string.music_shuffle_short))
             } else {
                 getString(R.string.session_music_line, track.title)
