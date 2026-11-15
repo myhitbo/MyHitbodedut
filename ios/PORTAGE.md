@@ -62,7 +62,7 @@ Une ligne par écran, service, récepteur, widget, règle et réglage. Les fichi
 | Clair, sombre, 6 fonds × 6 accents | `Apparence.kt`, `res/values*/palettes.xml` | 13 jetons de couleur dans l'`Environment`, `preferredColorScheme` ; test de contraste porté de `PaletteTest` | ② |
 | Icône qui suit le personnage et l'accent (12 alias) | `IconeLanceur.kt`, manifeste | `setAlternateIconName`, 12 icônes ; **sur geste explicite seulement** : iOS affiche une alerte à chaque changement (§ 2.3) | ② |
 | צדיק / צדקת | `Adresse.kt` | énumération | ① |
-| Personnage féminin partout (21 correspondances) | `Personnage.kt` | une seule vue `Illustration(.pose)` qui choisit la variante | ① |
+| Personnage féminin partout (26 correspondances, dont 5 scènes à décor qui se replient) | `Personnage.kt` | une seule vue `Illustration(.pose)` qui choisit la variante | ① |
 | Pose du jour selon le moment | `Character.kt` | fonction pure (jour + sel) | ① |
 | Sujets de séance (10, facultatif) | `Theme.kt` | énumération, clés identiques | ① |
 | Libellés désignés par clé (`fete_*`, `ajout_*`, `zman_*`) | `Libelles.kt` (généré) | recherche par clé dans le catalogue de chaînes | ① |
@@ -271,7 +271,7 @@ Une ligne par écran, service, récepteur, widget, règle et réglage. Les fichi
 | Halakha du Ben Ich Haï par paracha et par jour | `Halakha.kt`, `raw/ben_ish_hai.json` | règle pure sur KosherSwift (`HalakhaTest`) ; les clés du JSON sont les noms de l'énumération `Parsha` de KosherJava | ② |
 | Deux se'ifim du Yalkout Yossef par jour, selon la période | `YalkutYosef.kt`, `raw/yalkut_yosef.json` | règle pure (`YalkutYosefTest`, `web/test/yalkut.test.mjs`) ; numérotation des mois de KosherJava | ② |
 | Écran « Halakha du jour » (jour précédent, suivant, recherche, livre au choix) | `HalakhaActivity.kt` | vue | ② |
-| Recherche globale : normalisation, un résultat par texte, 30 par sorte | `RechercheGlobale.kt`, `RechercheActivity.kt` | même normalisation `nu()` ; **index construit à l'export** plutôt que 28 Mo relus en mémoire (§ 2.2.10) | ③ |
+| Recherche globale : normalisation, le titre puis 5 paragraphes au plus par texte, 50 par recueil, 30 par sorte pour la halakha et les hilloulot | `RechercheGlobale.kt`, `RechercheActivity.kt` | même normalisation `nu()` ; **index construit à l'export** plutôt que 28 Mo relus en mémoire (§ 2.2.10) | ③ |
 | Références localisées, nombres en lettres hébraïques | `Reference.kt` | fonction pure (`TraductionAffichageTest`) | ① |
 | Règle d'affichage des langues, repli sur l'anglais | `Langue.kt` (`RegleLangue`, `LangueApp`) | règle pure ; le repli est natif (`CFBundleDevelopmentRegion = en`) | ① |
 | Choix de la langue de l'application | `Langues.kt`, `SettingsActivity.kt:432-448` | langue par app des Réglages d'iOS (§ 2.2.7) | ② |
@@ -603,7 +603,7 @@ Android : le nuage ne reçoit que les réglages ; le journal, les notes et le pr
 
 #### 2.2.10 La recherche
 
-Android relit et normalise tout à chaque frappe : 28 Mo de JSON analysés et gardés en mémoire à la première recherche. Sur un iPhone, cela coûte des secondes et plus de 100 Mo de mémoire. L'export (§ 4) construit donc un **index** : pour chaque bloc, le texte déjà passé par `nu()` (sans voyelles, sans te'amim, sans balises, minuscules), dans une base SQLite que l'app ouvre en lecture seule (SQLite fait partie d'iOS). Les règles de résultat ne changent pas : un résultat par prière ou par livre, 30 par sorte, même extrait. Ce que cela permet en plus, si on le veut : ouvrir au bloc trouvé.
+Android relit et normalise tout à chaque frappe : 28 Mo de JSON analysés et gardés en mémoire à la première recherche. Sur un iPhone, cela coûte des secondes et plus de 100 Mo de mémoire. L'export (§ 4) construit donc un **index** : pour chaque bloc, le texte déjà passé par `nu()` (sans voyelles, sans te'amim, sans balises, minuscules), dans une base SQLite que l'app ouvre en lecture seule (SQLite fait partie d'iOS). Les règles de résultat ne changent pas : le titre d'une prière ou d'un livre s'il contient la recherche, puis chaque paragraphe trouvé avec sa place et son chapitre, 5 au plus par texte et 50 par recueil (FLECTURE-02, depuis la version Play) ; 30 par sorte pour la halakha et les hilloulot ; même extrait. Le toucher ouvre au paragraphe trouvé, comme sur Android.
 
 ### 2.3 Petits écarts
 
@@ -885,7 +885,7 @@ Quatre endroits. Chemins relatifs à `android/app/src/main/`.
 | Phrases du guide par sujet | `guide_sujets.json` | 11 Ko | sans outil de création au dépôt | propre à l'app |
 | Halakha du jour, Yalkout Yossef (788 se'ifim choisis) | `yalkut_yosef.json` | 410 Ko | `yalkut_yosef_construction.py` | **droits réservés à l'auteur ; saisie Torat Emet CC BY-NC-SA 2.5 ; accord déclaré** |
 | Halakha du jour, Ben Ich Haï | `ben_ish_hai.json` | 2,0 Mo | `ben_ish_hai_construction.py` | Wikisource via Sefaria, domaine public |
-| Hilloulot, 4 049 entrées | `hilloulot.json` | 1,1 Mo | `hilloulot_construction.py` depuis `tools/hilloulot/*.json` | Wikipédia hébreu (CC BY-SA 4.0), faits de hyomi et de Hidabroot, Torat Emet (CC BY-NC-SA 2.5) |
+| Hilloulot, 3 966 entrées (82 doublons fusionnés dans la version Play) | `hilloulot.json` | 1,1 Mo | `hilloulot_construction.py` depuis `tools/hilloulot/*.json` | Wikipédia hébreu (CC BY-SA 4.0), faits de hyomi et de Hidabroot, Torat Emet (CC BY-NC-SA 2.5) |
 | Biographies, 2 346 | `hilloulot_bios.json` | 6,9 Mo | idem | **MyTzadik et המאיר לארץ, reprise avec mention, accord déclaré** |
 | Douze livres | `livre_<id>.json`, `livres_titres.json` | 28,5 Mo, dont Likoutei Moharan 10,4 et **Kitsour Yalkout Yossef entier 11,5** | `livres_decoupe.py` depuis `livres/livres.json` | voir § 6.3 |
 | Villes (51) | `villes.json` | 12 Ko | `villes_construction.py` | GeoNames, CC-BY 4.0, attribution affichée |
@@ -911,7 +911,7 @@ Quatre endroits. Chemins relatifs à `android/app/src/main/`.
 | 18 noms de livres en trois langues ; nombres en lettres | `Reference.kt` |
 | 59 compagnies, 57 villes, noms de mois (saisie d'un vol) | `SaisieVol.kt` |
 | Contour d'Israël (45 points) ; cible de la boussole | `TerritoireIsrael.kt`, `DirectionJerusalem.kt` |
-| Poses par moment ; 21 correspondances du personnage féminin | `Character.kt`, `Personnage.kt` |
+| Poses par moment ; 26 correspondances du personnage féminin | `Character.kt`, `Personnage.kt` |
 | Signes absents de chaque police | `PoliceHebraique.kt` |
 | Liste des morceaux livrés | `MusiquePlay.kt` |
 

@@ -63,6 +63,8 @@ fun vecteursRecherche(raw: File, cas: File, sortie: File, nomRaw: (Int) -> Strin
     val vecteurs = linkedMapOf(
         "normalisation" to entrees.map { listOf(it, RechercheGlobale.nu(it)) },
         "par_sorte" to RechercheGlobale.PAR_SORTE,
+        "par_texte" to RechercheGlobale.PAR_TEXTE,
+        "par_recueil" to RechercheGlobale.PAR_RECUEIL,
         "recherches" to recherches,
     )
     sortie.writeText(enJson(vecteurs) + "\n", Charsets.UTF_8)
@@ -70,4 +72,5 @@ fun vecteursRecherche(raw: File, cas: File, sortie: File, nomRaw: (Int) -> Strin
 
 private fun cas(q: String, langue: String, nusah: Nusah, portee: RechercheGlobale.Portee, r: List<RechercheGlobale.Resultat>) =
     linkedMapOf("q" to q, "langue" to langue, "rite" to nusah.cle, "portee" to portee.name.lowercase(),
-        "resultats" to r.map { listOf(it.sorte.name.lowercase(), it.id, it.titre, it.extrait) })
+        // La place d'un paragraphe (rang de section, rang de bloc) ; -1 pour un titre, la halakha, une hilloula.
+        "resultats" to r.map { listOf(it.sorte.name.lowercase(), it.id, it.titre, it.extrait, it.section.toString(), it.bloc.toString()) })

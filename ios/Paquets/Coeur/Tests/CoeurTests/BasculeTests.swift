@@ -42,6 +42,8 @@ struct BasculeTests {
         #expect(c("2026-10-19").contains(C.lamnatseah))
         #expect(!c("2026-10-11").contains(C.lamnatseah))
         #expect(!c("2027-04-21").contains(C.lamnatseah))
+        #expect(!c("2027-04-26").contains(C.lamnatseah), "'Hol hamoed (TSIDDUR-08)")
+        #expect(!c("2027-10-22").contains(C.lamnatseah), "Hochaana Rabba")
         #expect(c("2026-08-20").contains(C.ledavid) && c("2026-10-02").contains(C.ledavid))
         #expect(!c("2026-10-19").contains(C.ledavid))
         #expect(c("2026-10-02").contains(C.techouvaHochaana))

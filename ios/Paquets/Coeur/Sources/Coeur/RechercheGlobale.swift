@@ -11,9 +11,11 @@ import Foundation
 ///
 /// Android relit et normalise tout à chaque frappe ; iOS interroge un index (PORTAGE.md § 2.2.10),
 /// `Contenu/recherche.sqlite`, que l'export a construit avec la même normalisation
-/// (tools/export_contenu/recherche.py). Les règles de résultat ne changent pas : un résultat par
-/// prière ou par livre (le titre, sinon le premier bloc qui contient la recherche), 30 par sorte,
-/// le même extrait. Les vecteurs du Kotlin (`vecteurs_recherche.json`) jugent les deux côtés.
+/// (tools/export_contenu/recherche.py). Les règles de résultat sont celles d'Android : pour une prière
+/// ou un livre, le titre s'il contient la recherche, puis chaque paragraphe qui la contient, avec sa
+/// place et le titre de son chapitre, cinq au plus par texte et cinquante par recueil (FLECTURE-02) ;
+/// 30 par sorte pour la halakha et les hilloulot ; le même extrait. Les vecteurs du Kotlin
+/// (`vecteurs_recherche.json`) jugent les deux côtés.
 public enum RechercheGlobale {
 
     public enum Sorte: String, Sendable, CaseIterable {
@@ -26,18 +28,27 @@ public enum RechercheGlobale {
         public let id: String
         public let titre: String
         public let extrait: String
+        /// Le paragraphe trouvé (rang de section, rang de bloc, consignes comprises) : le toucher y
+        /// conduit. -1 pour un titre, la halakha et les hilloulot.
+        public let section: Int
+        public let bloc: Int
 
-        public init(sorte: Sorte, id: String, titre: String, extrait: String) {
+        public init(sorte: Sorte, id: String, titre: String, extrait: String, section: Int = -1, bloc: Int = -1) {
             self.sorte = sorte
             self.id = id
             self.titre = titre
             self.extrait = extrait
+            self.section = section
+            self.bloc = bloc
         }
 
-        public var description: String { "[\(sorte.rawValue), \(id), \(titre), \(extrait)]" }
+        public var description: String { "[\(sorte.rawValue), \(id), \(titre), \(extrait), \(section), \(bloc)]" }
     }
 
     public static let parSorte = 30
+    /// Les paragraphes rendus pour un même texte (un livre en compte des milliers), et au plus par recueil.
+    public static let parTexte = 5
+    public static let parRecueil = 50
 
     /// Où chercher : tout, ou seulement les prières, les halakhot, les livres ou les hilloulot.
     public enum Portee: String, Sendable, CaseIterable {
@@ -225,7 +236,7 @@ public final class IndexRecherche: @unchecked Sendable {
         }
         base = ouverte
         let version = try lignes("SELECT valeur FROM meta WHERE cle = 'version'", []) { $0.texte(0) }
-        guard version == ["1"] else { throw Erreur(description: "index de recherche : version \(version), 1 attendue") }
+        guard version == ["2"] else { throw Erreur(description: "index de recherche : version \(version), 2 attendue") }
     }
 
     deinit { sqlite3_close_v2(base) }
@@ -273,27 +284,48 @@ public final class IndexRecherche: @unchecked Sendable {
         return resultats
     }
 
-    /// RechercheGlobale.dansRecueil : le titre d'abord, puis le premier bloc qui contient la recherche.
+    /// RechercheGlobale.dansRecueil : pour chaque texte, dans l'ordre du recueil, le titre s'il contient
+    /// la recherche, puis chaque paragraphe qui la contient (« chapitre · extrait »), cinq au plus par
+    /// texte, titre compris ; cinquante au plus pour le recueil.
     private func recueil(_ recueil: String, _ q: String, _ sorte: RechercheGlobale.Sorte,
                          _ langue: String) throws -> [RechercheGlobale.Resultat] {
         typealias R = RechercheGlobale
+        struct Texte {
+            let rang: Int, id: String, he: String, fr: String, en: String, titre: Bool, debut: Int, fin: Int
+        }
         // La colonne du titre dans la langue : une des trois, jamais une valeur tapée.
         let colonne = langue == "fr" ? "nu_fr" : langue == "en" ? "nu_en" : "nu_he"
-        let titre = "(instr(t.nu_he, ?1) > 0 OR instr(t.\(colonne), ?1) > 0)"
-        let trouves = try lignes("""
-            SELECT t.id, t.titre_he, t.titre_fr, t.titre_en, \(titre),
-              CASE WHEN \(titre) THEN NULL ELSE (SELECT b.nu FROM blocs b
-                WHERE b.rowid BETWEEN t.debut AND t.fin AND instr(b.nu, ?1) > 0 ORDER BY b.rowid LIMIT 1) END
-            FROM textes t WHERE t.recueil = ?2 ORDER BY t.rang
-            """, [q, recueil], limite: R.parSorte) { l -> R.Resultat? in
-            let he = l.texte(1)
-            if l.entier(4) != 0 {
-                let traduit = R.pourLangue(he: he, fr: l.texte(2), en: l.texte(3), langue)
-                return R.Resultat(sorte: sorte, id: l.texte(0), titre: he, extrait: traduit != he ? traduit : "")
-            }
-            return l.texteOuNil(5).map { R.Resultat(sorte: sorte, id: l.texte(0), titre: he, extrait: R.extrait(nu: $0, q)) }
+        let textes = try lignes("""
+            SELECT rang, id, titre_he, titre_fr, titre_en, (instr(nu_he, ?1) > 0 OR instr(\(colonne), ?1) > 0), debut, fin
+            FROM textes WHERE recueil = ?2 ORDER BY rang
+            """, [q, recueil]) {
+            Texte(rang: $0.entier(0), id: $0.texte(1), he: $0.texte(2), fr: $0.texte(3), en: $0.texte(4),
+                  titre: $0.entier(5) != 0, debut: $0.entier(6), fin: $0.entier(7))
         }
-        return trouves
+        var resultats: [R.Resultat] = []
+        for t in textes {
+            if resultats.count >= R.parRecueil { break }
+            var trouves: [R.Resultat] = []
+            if t.titre {
+                let traduit = R.pourLangue(he: t.he, fr: t.fr, en: t.en, langue)
+                trouves.append(R.Resultat(sorte: sorte, id: t.id, titre: t.he, extrait: traduit != t.he ? traduit : ""))
+            }
+            // Un texte sans bloc à chercher a fin < debut. Les bornes sont des entiers lus dans l'index.
+            if t.fin >= t.debut {
+                trouves += try lignes("""
+                    SELECT b.nu, b.section, b.bloc, c.titre FROM blocs b
+                    LEFT JOIN chapitres c ON c.recueil = ?2 AND c.rang = \(t.rang) AND c.section = b.section
+                    WHERE b.rowid BETWEEN \(t.debut) AND \(t.fin) AND instr(b.nu, ?1) > 0
+                    ORDER BY b.rowid LIMIT \(R.parTexte - trouves.count)
+                    """, [q, recueil]) { (l: Ligne) -> R.Resultat? in
+                    let chapitre = l.texteOuNil(3).map { $0 + " · " } ?? ""
+                    return R.Resultat(sorte: sorte, id: t.id, titre: t.he, extrait: chapitre + R.extrait(nu: l.texte(0), q),
+                                      section: l.entier(1), bloc: l.entier(2))
+                }
+            }
+            resultats += trouves
+        }
+        return Array(resultats.prefix(R.parRecueil))
     }
 
     /// Une ligne de résultat, lue colonne par colonne.

@@ -11,17 +11,20 @@ struct VecteursRecherche: Decodable {
         let langue: String
         let rite: String
         let portee: String
-        /// [sorte, id, titre, extrait] ; le titre du Ben Ich Haï en « ben_ish_hai:<année>:<numéro>:<section> ».
+        /// [sorte, id, titre, extrait, section, bloc] ; le titre du Ben Ich Haï en
+        /// « ben_ish_hai:<année>:<numéro>:<section> » ; -1 pour la place d'un titre, de la halakha, d'une hilloula.
         let resultats: [[String]]
     }
 
     let normalisation: [[String]]
     let parSorte: Int
+    let parTexte: Int
+    let parRecueil: Int
     let recherches: [Cas]
 
     enum CodingKeys: String, CodingKey {
         case normalisation, recherches
-        case parSorte = "par_sorte"
+        case parSorte = "par_sorte", parTexte = "par_texte", parRecueil = "par_recueil"
     }
 
     static func lire() throws -> VecteursRecherche {
@@ -46,7 +49,8 @@ struct RechercheTests {
             titre = RechercheGlobale.sourceBenIshHai(annee: try #require(Int(champs[1])),
                                                      numero: try #require(Int(champs[2])), section: champs[3])
         }
-        return RechercheGlobale.Resultat(sorte: sorte, id: r[1], titre: titre, extrait: r[3])
+        return RechercheGlobale.Resultat(sorte: sorte, id: r[1], titre: titre, extrait: r[3],
+                                         section: try #require(Int(r[4])), bloc: try #require(Int(r[5])))
     }
 
     // MARK: La normalisation
@@ -88,6 +92,7 @@ struct RechercheTests {
     @Test func chaqueRechercheRendLesResultatsDuKotlin() throws {
         let v = try VecteursRecherche.lire()
         #expect(v.parSorte == RechercheGlobale.parSorte)
+        #expect(v.parTexte == RechercheGlobale.parTexte && v.parRecueil == RechercheGlobale.parRecueil)
         #expect(v.recherches.count == 159)
         let index = try index()
         for cas in v.recherches {
@@ -121,14 +126,22 @@ struct RechercheTests {
                 == i.chercher("moche", langue: "fr", rite: .edot, portee: .hilloulot).count)
     }
 
-    /// Trente par sorte ; la halakha en a deux, le Yalkout Yossef et le Ben Ich Haï, trente chacun.
-    @Test func unResultatParPriereEtTrenteParSorte() throws {
+    /// Cinq paragraphes au plus par texte et cinquante par recueil (FLECTURE-02) ; trente par sorte pour
+    /// les hilloulot, et la halakha en a deux, le Yalkout Yossef et le Ben Ich Haï, trente chacun.
+    @Test func cinqParTexteCinquanteParRecueilTrenteParSorte() throws {
         let r = try index().chercher("ברוך", langue: "fr", rite: .edot)
-        for sorte in RechercheGlobale.Sorte.allCases {
-            let plafond = RechercheGlobale.parSorte * (sorte == .halakha ? 2 : 1)
+        let plafonds: [RechercheGlobale.Sorte: Int] = [.siddour: RechercheGlobale.parRecueil, .livre: RechercheGlobale.parRecueil,
+                                                       .halakha: 2 * RechercheGlobale.parSorte, .hilloula: RechercheGlobale.parSorte]
+        for (sorte, plafond) in plafonds {
             #expect(r.filter { $0.sorte == sorte }.count <= plafond, "\(sorte)")
         }
-        let prieres = r.filter { $0.sorte == .siddour }.map(\.id)
-        #expect(!prieres.isEmpty && Set(prieres).count == prieres.count)
+        let prieres = r.filter { $0.sorte == .siddour }
+        #expect(prieres.count == RechercheGlobale.parRecueil)
+        for id in Set(prieres.map(\.id)) {
+            #expect(prieres.filter { $0.id == id }.count <= RechercheGlobale.parTexte, "\(id)")
+        }
+        // Un paragraphe porte sa place ; un titre, non.
+        #expect(prieres.allSatisfy { ($0.section >= 0) == ($0.bloc >= 0) })
+        #expect(prieres.contains { $0.section >= 0 })
     }
 }

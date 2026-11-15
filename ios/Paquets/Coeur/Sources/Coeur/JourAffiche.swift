@@ -60,20 +60,23 @@ public enum JourAffiche {
     /// Les horaires du jour, avec ceux de Chabbat et des fêtes (isAssurBemelacha) :
     /// - la veille d'un jour chômé : l'allumage, `minutes` avant la chki'a ;
     /// - un jour chômé suivi d'un autre : l'allumage, pas avant la sortie du jour, à tsét 8,5° ;
+    /// - sauf un vendredi de fête : les bougies de Chabbat s'allument avant la chki'a, d'une flamme
+    ///   existante, et jamais à tsét, qui est déjà Chabbat (FCALENDRIER-01) ;
     /// - le dernier jour chômé : la sortie, à tsét 8,5°.
     public static func horaires(lieu: Zmanim.Lieu, date: JourCivil, enIsrael: Bool, minutes: Int) -> [Zmanim.Zman] {
         let aujourdhui = CalendrierJuif.jour(date, enIsrael: enIsrael).chome
         let demain = CalendrierJuif.jour(date.plus(jours: 1), enIsrael: enIsrael).chome
+        let veilleDeChabbat = date.jourDeSemaine == 6
         let base = Zmanim.jour(lieu: lieu, date: date)
         var sortie: [Zmanim.Zman] = []
         for z in base {
-            if z.cle == "chkia" && demain && !aujourdhui { sortie.append(Zmanim.allumage(lieu: lieu, date: date, minutes: minutes)) }
+            if z.cle == "chkia" && demain && (!aujourdhui || veilleDeChabbat) { sortie.append(Zmanim.allumage(lieu: lieu, date: date, minutes: minutes)) }
             sortie.append(z)
             if z.cle == "tset" {
                 if aujourdhui && !demain {
                     sortie.append(Zmanim.Zman(cle: "sortie", methode: z.methode, statut: z.statut, instant: z.instant))
                 }
-                if aujourdhui && demain {
+                if aujourdhui && demain && !veilleDeChabbat {
                     sortie.append(Zmanim.Zman(cle: "allumage", methode: Zmanim.Methode("apres_tset", ""),
                                               statut: z.statut, instant: z.instant))
                 }

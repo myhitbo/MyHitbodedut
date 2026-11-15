@@ -109,7 +109,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 
 - **But** : `tools/export_contenu`, étapes 1, 2, 4 à 7, 9 et 10 du § 4.2.
 - **Livrable** : l'outil ; `ios/Ressources/MANIFESTE.json` ; la garde de dérive dans la CI ; dans `Coeur`, les types `Codable` des contenus et les tests de données portés (`DataLoadTest`, `SiddurTest`, `LivresTest`, `NomsDivinsTest`, `LicencesEditionsTest`, `TraductionTest`, `MusicFilesTest`, `VillesTest`).
-- **Critère de fin** : deux exports de suite donnent le même manifeste ; les JSON copiés sont identiques à `res/raw` octet pour octet ; les comptes tiennent : 38 textes × 3 rites, 150 psaumes et 2 527 versets, 10 psaumes du Tikoun, 171 textes de 'hizouk, 12 livres, 4 049 hilloulot, 51 villes, 3 226 aéroports, 26 morceaux ; mêmes clés de chaînes dans les trois langues, marqueurs de format concordants ; rien n'est écrit hors de `ios/`.
+- **Critère de fin** : deux exports de suite donnent le même manifeste ; les JSON copiés sont identiques à `res/raw` octet pour octet ; les comptes tiennent : 38 textes × 3 rites, 150 psaumes et 2 527 versets, 10 psaumes du Tikoun, 171 textes de 'hizouk, 12 livres, 3 966 hilloulot (4 049 avant la fusion de main), 51 villes, 3 226 aéroports, 26 morceaux ; mêmes clés de chaînes dans les trois langues, marqueurs de format concordants ; rien n'est écrit hors de `ios/`.
 - **Où** : Linux.
 
 ### 6. Tables du Kotlin, index de recherche
@@ -117,7 +117,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 - **But** : étapes 3 et 8 du § 4.2.
 - **Sources** : les fichiers du tableau C du § 4.1 ; `RechercheGlobale.kt`.
 - **Livrable** : `tools/export_contenu/tables/` (projet Gradle autonome, ses bouchons), `tables.json` ; `recherche.sqlite` ; `RechercheGlobale` en Swift (normalisation, extraits, portées).
-- **Critère de fin** : `tables.json` porte 6 échelles de paliers, 11 familles et 128 niveaux, 30 et 7 portions, 10 sujets, 5 temps, 21 correspondances de poses, 15 zmanim ; modifier un seuil dans une copie de `Trophees.kt` fait échouer la garde ; une liste de cas communs prouve que la normalisation Python et la normalisation Swift rendent la même chaîne ; les cas de recherche de `HalakhaTest` rendent les mêmes résultats.
+- **Critère de fin** : `tables.json` porte 6 échelles de paliers, 11 familles et 128 niveaux, 30 et 7 portions, 10 sujets, 5 temps, 26 correspondances de poses (21 avant la fusion de main), 15 zmanim ; modifier un seuil dans une copie de `Trophees.kt` fait échouer la garde ; une liste de cas communs prouve que la normalisation Python et la normalisation Swift rendent la même chaîne ; les cas de recherche de `HalakhaTest` rendent les mêmes résultats.
 - **Où** : Linux.
 
 ## B. Le cœur
@@ -220,7 +220,7 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 ### 23. Halakha, hilloulot, recherche
 
 - **Sources** : `HalakhaActivity.kt`, `HilloulotActivity.kt`, `RechercheActivity.kt` ; § 2.2.10.
-- **Critère de fin** : une recherche rend ses résultats groupés en moins de 300 ms sur simulateur, mesurés par le test ; un résultat par texte, 30 par sorte ; la hilloula du jour s'ouvre avec sa biographie et sa source ; l'écran de la halakha passe au lendemain sans écraser un jour choisi.
+- **Critère de fin** : une recherche rend ses résultats groupés en moins de 300 ms sur simulateur, mesurés par le test ; le titre puis 5 paragraphes au plus par texte, 50 par recueil, 30 par sorte pour la halakha et les hilloulot ; la hilloula du jour s'ouvre avec sa biographie et sa source ; l'écran de la halakha passe au lendemain sans écraser un jour choisi.
 
 ## E. Le ciel
 

@@ -12,8 +12,8 @@
   {
    "chemin": "Paquets/Coeur/Tests/Ressources/vecteurs_recherche.json",
    "source": "tools/export_contenu/tables/src/Recherche.kt, cas_normalisation.json",
-   "octets": 500291,
-   "sha256": "134ebf7cc2207e04474ed42e69a18b793d619b85a902e7200f093fbf353db5be",
+   "octets": 803092,
+   "sha256": "32ee762c7d244cdcb6071b338a108529b08ddaef0e34b3a108ad8e5c07d9bf8b",
    "licence": "données de test",
    "mention": "produites par le dépôt"
   },
@@ -52,8 +52,8 @@
   {
    "chemin": "Ressources/Chaines/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
-   "octets": 702031,
-   "sha256": "cd8f3a34fcb6391e6c5d82e7fe1785a6d6d804ab5ffec2761d7a15007642a1e7",
+   "octets": 762687,
+   "sha256": "b60d438ef33ad000dc4b94796a46f48026585fa0c7e4f65991aa05d034ad3688",
    "licence": "propre à l'app",
    "mention": ""
   },
@@ -92,16 +92,16 @@
   {
    "chemin": "Ressources/Contenu/bibliotheque.json",
    "source": "android/app/src/main/res/raw/bibliotheque.json",
-   "octets": 255865,
-   "sha256": "dfc78e6a0d91be71687c1b45aa5c0beec2e3abdc27110418a3b48e54e607312d",
+   "octets": 200596,
+   "sha256": "f10fc5d2b3a0357bfaf1aaf714fc397274eaaf6d5590e9b6eb7915c76519559a",
    "licence": "domaine public",
    "mention": "sources du domaine public ; articles en fiche seulement"
   },
   {
    "chemin": "Ressources/Contenu/chizuk.json",
    "source": "android/app/src/main/res/raw/chizuk.json",
-   "octets": 368046,
-   "sha256": "ca59b6f6e357595627760599ebe9ef4476cbf3a1f228968379143426d3f3b75a",
+   "octets": 306579,
+   "sha256": "b77fe75ddb7ebc4552b44e7097af5fb4930af7a98868cf5c6ecbd737fa99542d",
    "licence": "domaine public ; extraits sous droits",
    "mention": "éditions du domaine public via Sefaria ; extraits de « Bisdei Yaar » (Rav Shalom Arush), texte de l'éditeur"
   },
@@ -116,112 +116,112 @@
   {
    "chemin": "Ressources/Contenu/hilloulot.json",
    "source": "android/app/src/main/res/raw/hilloulot.json",
-   "octets": 1077387,
-   "sha256": "7c166f874063d27166d8f2f0bbcea20f20d2adbb7eb870f71cd7e7f16c6a62c0",
+   "octets": 1071889,
+   "sha256": "df8ba4ea2b90fc55eb28a9eaac8d128e825f3dd90c7b0d435d1e7fb2d1ffe46a",
    "licence": "CC BY-SA 4.0 ; CC BY-NC-SA 2.5",
    "mention": "Wikipédia hébreu (CC BY-SA 4.0), hyomi, Hidabroot, Torat Emet (CC BY-NC-SA 2.5)"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/1.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 402775,
-   "sha256": "d777133420b71f3fc700a946bef6af354fa27312a7f62f24b6c4719cd4ae1e4a",
+   "octets": 402761,
+   "sha256": "d2285eae59ef5887460b4871bd9cbc13b6122a9f34f8c2306db5eb9a32ccab45",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/10.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 664983,
-   "sha256": "a6566915825c0ff802141a1bfbb46aa421e66c12a61841d4e2a909da0c313272",
+   "octets": 664971,
+   "sha256": "2269146b2fb42041732862b9908218c7f8460de82bfa1a9c0decb678dea43894",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/11.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 658888,
-   "sha256": "f25b9630cebce658d7354019790d95f6df81d48e14d2a45fd007c044f83aa327",
+   "octets": 658876,
+   "sha256": "d50fd0c0f3c398b5e33ca476a903c9107d0a6f857d36db43cad1db68e169702b",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/2.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 420534,
-   "sha256": "bdc92a91f5e23c6c7830d743d9f76295495e90a2f8ec27f61fb4f3be62277908",
+   "octets": 420528,
+   "sha256": "7b0f7192b7087ff9e8ed377b9183fc5e7b6f58c36424672a67cfc8f9a5bb0cac",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/3.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 531108,
-   "sha256": "969a2515a9830d49e3508be27dfc4b5f995861f377b27fa849a0eb27447d4dc2",
+   "octets": 531100,
+   "sha256": "eccb7d32378fd915bac5757988d3ac52073e3ab9a95d814591a2a55e7414c3fa",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/4.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 529014,
-   "sha256": "d9ce81c58c9f32f6336bee17ec04066c1678be853dc7dcf1a1a19cdb5b5e5d0f",
+   "octets": 529000,
+   "sha256": "368015042862b7425d5afb6b59420a0af2e4b99b20f3a0d0723d1fe969ce1440",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/5.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 533620,
-   "sha256": "fa658994726e7137d9eb5942e9572a5b3b16dc2e1661d2a4c7e0e2e8cd1a8457",
+   "octets": 533596,
+   "sha256": "efdc893447541d803170e48a6f1b0003315afb16c4b020f4962f254c6b34e355",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/6.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 566025,
-   "sha256": "f7a5c7a99c8ae46c0e8e21e4821e63832ba3aa17c04d3db2d04e1d4b6e170eab",
+   "octets": 566017,
+   "sha256": "ba420d934b9f048da770f9113a1e12b5c8ceef688c912ca026cfbc876564236a",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/7.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 685700,
-   "sha256": "1984e768bebc9f64671bbac6f23a5c4a4ef00e7133a133b535ce37fd98552feb",
+   "octets": 685682,
+   "sha256": "edec22f9ec4a81db670eb0c775f3517e756ff4cac1e1298173cb877f4234a2e9",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/8.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 630574,
-   "sha256": "7e1b54f35a87c175b95307b173f496ea45060d574fbf558d7e0774b22da24af5",
+   "octets": 630556,
+   "sha256": "05badf7495b9951d6723c6c15ce7eb5d71be58fb36d4dca6b0cb9168c210698c",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/9.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 460537,
-   "sha256": "22c3b48a1ed31ef578c9523adee02528ba780206fd7e2dea0b5c9da479567d15",
+   "octets": 460523,
+   "sha256": "610ffd608b4256e89060206e9d1a76bc7efa6b3b52c95f3f0f3d8ffe026e6685",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/adar.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 404517,
-   "sha256": "4c2c020f032d15cda5e0e065394843831988427d0b2afd228b7c1dcbefac66e8",
+   "octets": 404503,
+   "sha256": "604beeebf75323745a1b589a385e8f326d1bdde8c5e03aeb184de9e0ed97a20d",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
   {
    "chemin": "Ressources/Contenu/hilloulot_bios/adar1.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
-   "octets": 195768,
-   "sha256": "8d9f370a0bbf7b6cd1d24cee7fa20ca85a9f05ea54f99c311f855ec7dbb3db03",
+   "octets": 195764,
+   "sha256": "0ad3b12dd819e5015cf481ee072fe23924c376e647b9e855fafd519868ce04b0",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
@@ -229,7 +229,7 @@
    "chemin": "Ressources/Contenu/hilloulot_bios/adar2.json",
    "source": "android/app/src/main/res/raw/hilloulot_bios.json",
    "octets": 217189,
-   "sha256": "8631e1640e4b96f9090eea6324fd222441f7e644e87859a7c7a858ba6c5acbd0",
+   "sha256": "b4be28f80af15f9a332fb7b141da315ec4beec48d9838113c76a78a6251fbd5a",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
   },
@@ -244,24 +244,24 @@
   {
    "chemin": "Ressources/Contenu/livre_guide_hitbodedut.json",
    "source": "android/app/src/main/res/raw/livre_guide_hitbodedut.json",
-   "octets": 61757,
-   "sha256": "e5ab42d92b412098204833b484941f200215e79b46ae8a62dad3ff41deb4f25e",
+   "octets": 62876,
+   "sha256": "6d426d67f5cb00274e65f5665e458f8391e8b8a66d3fa35fe838e90632d84cb5",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
   {
    "chemin": "Ressources/Contenu/livre_hichtapkhout.json",
    "source": "android/app/src/main/res/raw/livre_hichtapkhout.json",
-   "octets": 1601509,
-   "sha256": "f3a8a5528bc0fc655547af2606e9b26664a6e5df832e7d018c176b03de15958d",
+   "octets": 1601510,
+   "sha256": "b77f00ca751245cdaaa33cc2b340084b2bf689c5b3a864286545aa956cf4e4ae",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
   {
    "chemin": "Ressources/Contenu/livre_kokhvei_or.json",
    "source": "android/app/src/main/res/raw/livre_kokhvei_or.json",
-   "octets": 1279320,
-   "sha256": "f9803679177b217492ec65d8555bd34a7238691e4b77b2ce045c4dad1ba689cc",
+   "octets": 1279382,
+   "sha256": "6312b7977e4b65824b1304171f36246594301048317f4a9f7190f5f7c7e180a5",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -292,16 +292,16 @@
   {
    "chemin": "Ressources/Contenu/livre_sefer_hamidot.json",
    "source": "android/app/src/main/res/raw/livre_sefer_hamidot.json",
-   "octets": 1133150,
-   "sha256": "1050ca77ae56689235a0403e204d478cafb494736205da3ecf42e3246348b213",
+   "octets": 1133766,
+   "sha256": "9337676bbea7e748e888e3bcc4cc721d1f9912ee3a5947e7297ec402273162b1",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
   {
    "chemin": "Ressources/Contenu/livre_tefila_lishlomo.json",
    "source": "android/app/src/main/res/raw/livre_tefila_lishlomo.json",
-   "octets": 154454,
-   "sha256": "2c88212995b064191064b6e0e80cf229c1be804db0eebcb583fd770b3b21630b",
+   "octets": 154462,
+   "sha256": "880908f494c55fe1b5d2fec80140577f2698abece4bfae45d27beee70dece1f8",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -364,8 +364,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_etsot/00-0008.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_etsot.json",
-   "octets": 103606,
-   "sha256": "b953aacaf282d9709cf4b0672e7a0be447b511cee14065e2fb9352769bc3d662",
+   "octets": 103577,
+   "sha256": "0be2513126c921b55c291fa52bfe1d13b253f371d773670c8036508984c48b93",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -572,16 +572,16 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_etsot/00-0034.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_etsot.json",
-   "octets": 116490,
-   "sha256": "fceaf24dabfc30617c3bc5cb14c37377019f3fe48ff244c7bf5fd3ca1e014c5d",
+   "octets": 116449,
+   "sha256": "bdb959fd847aaeefb6a684276d7be03f6e831f7f4033b3316ca5fb3c44777cd3",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
   {
    "chemin": "Ressources/Contenu/livres/likoutei_etsot/00-0035.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_etsot.json",
-   "octets": 12580,
-   "sha256": "c51a4df8e2b989aa84c97088c0a35892d92f31af1399095569576b1946423ad7",
+   "octets": 12581,
+   "sha256": "be1eb68ab77c6fda9b2d7a754def75af1e2ede08e0d2baf79c721f0c4811a14b",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -700,8 +700,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_etsot/00-0050.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_etsot.json",
-   "octets": 175681,
-   "sha256": "b2a21a986f862ddaa69a4156e8982490369e459e6f43ee6879f3246229fd72bf",
+   "octets": 175704,
+   "sha256": "5fa2598b53bd9be813f28edac2e3323e30c6ebde7a28109e7a3339634af81f50",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -860,8 +860,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_moharan/00-0014.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_moharan.json",
-   "octets": 108760,
-   "sha256": "f1dbeb83aaf696e51b716a128cc803c76f3b66d21fcae7937b7a613019112f45",
+   "octets": 108806,
+   "sha256": "25c1820ba5211e10d6604f618cad4afded311efaf070b7fb581809b7f671eb54",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -948,8 +948,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_moharan/00-0025.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_moharan.json",
-   "octets": 65852,
-   "sha256": "9afc7d00980105beff7d578cd04e73c025735b8aaa3502e40170ff7f32533707",
+   "octets": 65894,
+   "sha256": "81459b9a57af0d8d5ad86124a8abdb5b5e5acf0e8144dd0ed8cb97527b8fc739",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -1060,8 +1060,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_moharan/00-0039.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_moharan.json",
-   "octets": 10527,
-   "sha256": "11c864736e557d3ee6ffc0f46eb5b0fa0dae37420c66978b869f27879beb1b30",
+   "octets": 10517,
+   "sha256": "fe35645421bb800ad3df1cc99fd5c8ffb9304a1e9fc9a08a81c05b1afcdfa400",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -2164,8 +2164,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_moharan/00-0177.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_moharan.json",
-   "octets": 17348,
-   "sha256": "6da4bfc528043a62163c2a818ceb94e2f6bd15ad0f30ffcc20e56e518e2149de",
+   "octets": 17363,
+   "sha256": "8ff01fa49c8df0c092d4c9568910418db391d6d119dbb938c1c1b1124dc0d6b9",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -3044,8 +3044,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_moharan/00-0287.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_moharan.json",
-   "octets": 141560,
-   "sha256": "43fff1a31762ab4bac5c3368689e1297e2c0d820e83c2f671e3bec9887fe87d6",
+   "octets": 141622,
+   "sha256": "73119acc47f50b5cf3c1b1d2daa114c31edad0fec5e79deca0bde438f5672911",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -3076,8 +3076,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_moharan/00-0291.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_moharan.json",
-   "octets": 284727,
-   "sha256": "0e44dd002bb019c2010c17ca24541bb502986fe262198c980b1dfa8906cc3a64",
+   "octets": 284789,
+   "sha256": "ce76a7495291d80fc14a030a8077e20120dd734a883f6ee2b7ff267731c97c8d",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -3100,8 +3100,8 @@
   {
    "chemin": "Ressources/Contenu/livres/likoutei_moharan/00-0294.json",
    "source": "android/app/src/main/res/raw/livre_likoutei_moharan.json",
-   "octets": 237083,
-   "sha256": "6f754223cd1e83a0e883fc03ebe8e54a0cf3d626d1ac06f6179ce03ff04e0db3",
+   "octets": 237187,
+   "sha256": "6c2ae011390c2d19cfe26a37eaaf6c14ef760f907fdc1b67d6a25fe89e4876b3",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -4244,8 +4244,8 @@
   {
    "chemin": "Ressources/Contenu/livres/yalkut_yosef_kitsour/00-0025.json",
    "source": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json",
-   "octets": 5432,
-   "sha256": "b95b8f68740a894ab738a7e23be135aca3df0ae34db7c1ef6c5de057496ac37a",
+   "octets": 5482,
+   "sha256": "558300671ab3c96f378b9cf34f3caffc02d80073e81eddf01d1f23902cdff681",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -4268,8 +4268,8 @@
   {
    "chemin": "Ressources/Contenu/livres/yalkut_yosef_kitsour/00-0028.json",
    "source": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json",
-   "octets": 218133,
-   "sha256": "4e47616bff90fa3205243a544710ed9bfa80ac05499c4063e9c084773240f5ed",
+   "octets": 218067,
+   "sha256": "0860373e84ee0684308607f191772a881afc09a9b1bac8fb53135747495fbbcf",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -4284,16 +4284,16 @@
   {
    "chemin": "Ressources/Contenu/livres/yalkut_yosef_kitsour/00-0030.json",
    "source": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json",
-   "octets": 52312,
-   "sha256": "6b7ef96fcd1eac1fc89c0aae6cdecdf229184d695fcf972247bf88f80a6259ad",
+   "octets": 52282,
+   "sha256": "a7577957b287eee756521358c148a1265c890fbce768ebafcb3760ebb7c5fcbe",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
   {
    "chemin": "Ressources/Contenu/livres/yalkut_yosef_kitsour/00-0031.json",
    "source": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json",
-   "octets": 40857,
-   "sha256": "ae8f21f43f0aa4391b5e6a693a3afc49251030b5fc5bf177b3be4c765c4c7958",
+   "octets": 40845,
+   "sha256": "8a71f4559d5c0f280d3d9da734280c21f856dc6ffb18e0612ef95cf16cd850fd",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -4308,8 +4308,8 @@
   {
    "chemin": "Ressources/Contenu/livres/yalkut_yosef_kitsour/00-0033.json",
    "source": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json",
-   "octets": 26041,
-   "sha256": "5abc613e87b252dbf402d639fce9984ac0de293f0067c079235d8fcfe105fb00",
+   "octets": 26011,
+   "sha256": "4ddad9fd2e3e81da2c12d6304347e2e4918fdcdb5949b0170beccc452519efe4",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -4532,8 +4532,8 @@
   {
    "chemin": "Ressources/Contenu/livres/yalkut_yosef_kitsour/00-0061.json",
    "source": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json",
-   "octets": 28763,
-   "sha256": "ecfa8b0d7721bd734fc46ddfb3a7180edcb3a802281c499fab38e15b9cc51184",
+   "octets": 28766,
+   "sha256": "3fb43c321495f1c3fbc973d5404507d13833f5ce28b8e33da9c849e701edd21d",
    "licence": "par livre (PORTAGE.md § 6.3)",
    "mention": "sources dans livres_titres.json, _meta.sources"
   },
@@ -12468,16 +12468,16 @@
   {
    "chemin": "Ressources/Contenu/recherche.sqlite",
    "source": "android/app/src/main/res/raw (siddur_*, livre_*, yalkut_yosef, ben_ish_hai, hilloulot)",
-   "octets_contenu": 11218084,
-   "sha256_contenu": "8e1e4e79baaa99c2285a27316d2bc65319567de8c30efa737bcac4c4fe6d0911",
+   "octets_contenu": 11538195,
+   "sha256_contenu": "ab359cf2c2cab15899d852d73be76016cfbc472c4cba3ed090ba888689e4ca71",
    "licence": "celles des textes indexés",
    "mention": "index des siddourim, des livres, du Yalkout Yossef, du Ben Ich Haï et des hilloulot : leurs mentions"
   },
   {
    "chemin": "Ressources/Contenu/siddur_annotations.json",
    "source": "android/app/src/main/res/raw/siddur_annotations.json",
-   "octets": 334376,
-   "sha256": "c79c01fb3bf04358c53df93fc054714cf696e1c1234a3c67e254fbf1a476229d",
+   "octets": 368467,
+   "sha256": "cce02be9e52d658bb6f6b0e28caa34a29c360580c739c6c6f1d801621abcf5c2",
    "licence": "dérivé des siddourim",
    "mention": "dérivé des trois siddourim"
   },
@@ -12500,16 +12500,16 @@
   {
    "chemin": "Ressources/Contenu/siddur_sefard.json",
    "source": "android/app/src/main/res/raw/siddur_sefard.json",
-   "octets": 777396,
-   "sha256": "630429efe9710bf04ff5de477902dc75001c59da223450e0abe4b928860f627b",
+   "octets": 777471,
+   "sha256": "f4905aacdc2e86dc56cc7c23a09da87c0b35f02eb08c756d99eff9a332217f90",
    "licence": "domaine public, CC0, CC-BY, CC BY-SA",
    "mention": "Torat Emet 357 et Daat (domaine public), Shaliehsaboo (CC0), Metsudah 1981 (CC-BY), Wikipédia hébreu (CC BY-SA)"
   },
   {
    "chemin": "Ressources/Contenu/tables.json",
    "source": "android/app/src/main/java/com/myhitbodedut/*.kt (tools/export_contenu/tables)",
-   "octets": 63014,
-   "sha256": "8f22a9a20ad01738bbd22a6ae31bb93f66e3405722fe87698459cc0614cdf7aa",
+   "octets": 60767,
+   "sha256": "e428c2201c6ed7cdbcf66604846ef5cef1db1a35e67a2be065bbb2985c2aa67b",
    "licence": "propre à l'app",
    "mention": ""
   },
@@ -12548,8 +12548,8 @@
   {
    "chemin": "Ressources/Contenu/yalkut_yosef.json",
    "source": "android/app/src/main/res/raw/yalkut_yosef.json",
-   "octets": 410010,
-   "sha256": "1530c0b2f1a4e21d49bf1f1c5ecbcd088eeca6ff5ac75a4a34ba72fc7b6db73f",
+   "octets": 410023,
+   "sha256": "714816022d34c1a3c1609fcdabbd5297d9b9908826bb3df5a63e8d1efb759dab",
    "licence": "droits réservés, accord déclaré ; CC BY-NC-SA 2.5",
    "mention": "Yalkout Yossef, droits réservés à l'auteur ; saisie Torat Emet (CC BY-NC-SA 2.5)"
   },

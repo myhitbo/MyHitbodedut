@@ -31,6 +31,18 @@ struct JourAfficheTests {
         #expect(mercredi["allumage"] == nil && mercredi["sortie"] == nil)
     }
 
+    /// Une fête un vendredi (FCALENDRIER-01) : 2e jour de Pessa'h (diaspora), Chavouot, 2e jour de Roch Hachana.
+    @Test func feteUnVendrediLesBougiesDeChabbatAvantLaChkiaJamaisATset() throws {
+        for (iso, israel) in [("2027-04-23", false), ("2027-06-11", false), ("2027-06-11", true), ("2028-09-22", false)] {
+            let h = horaires(israel ? Lieux.jerusalem : Lieux.paris, iso, israel: israel)
+            let allumage = try #require(h["allumage"], "\(iso)")
+            #expect(allumage.methode.cle == "avant_chkia", "\(iso)")
+            let instant = try #require(allumage.instant), chkia = try #require(h["chkia"]?.instant)
+            #expect(instant < chkia, "\(iso)")
+            #expect(h["sortie"] == nil, "\(iso)")
+        }
+    }
+
     /// Roch Hachana 5787, diaspora : samedi 12 et dimanche 13 septembre 2026.
     @Test func deuxiemeJourDeFeteAllumerPasAvantLaSortieDuPremier() {
         let premier = horaires(Lieux.paris, "2026-09-12", israel: false)
