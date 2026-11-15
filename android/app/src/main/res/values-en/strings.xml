@@ -83,7 +83,6 @@
     <string name="action_another_session">Another hitbodedut</string>
     <string name="action_back_to_session">Back to the hitbodedut in progress</string>
     <string name="action_write_note">Write a note</string>
-    <string name="action_journal">Open the journal</string>
     <string name="action_preview_gate">Preview the “I am with Hashem” screen now</string>
     <string name="action_pick_apps">Choose apps</string>
     <string name="action_grant">Grant</string>
@@ -99,9 +98,6 @@
     <string name="settings_daily_goal">Daily goal</string>
     <string name="settings_daily_goal_hint">What the day ring measures. Until you set it, it is the hitbodedut length.</string>
     <string name="rings_character_hint">Tap to see your numbers</string>
-    <string name="ring_day">Today</string>
-    <string name="ring_week">Week</string>
-    <string name="ring_streak">Streak</string>
     <string name="ring_day_detail">Today: %1$s of %2$s</string>
     <string name="ring_day_reached">Daily goal reached: %1$s of %2$s</string>
     <plurals name="ring_streak_detail">
@@ -117,7 +113,7 @@
     <string name="settings_shabbat">Shabbat and Yom Tov</string>
     <string name="settings_shabbat_hint">On those days: the mode is silent, no reminder, and the streak stays intact.</string>
     <string name="settings_exempt_today">Rest day today</string>
-    <string name="settings_exempt_today_hint">For a Yom Tov, a trip or illness: the day does not count against you.</string>
+    <string name="settings_exempt_today_hint">For a trip, illness or a day you cannot manage: the day does not count against you.</string>
     <string name="settings_screen_missing">This settings screen does not exist on this phone.</string>
     <string name="fichiers_absents">No app on this phone can open or save a file.</string>
 
@@ -183,7 +179,7 @@
     <string name="widget_description">The streak so far, and one tap to begin.</string>
     <string name="widget_done">Done today.</string>
     <string name="widget_todo">Not yet today.</string>
-    <string name="widget_rest">Not expected today.</string>
+    <string name="widget_rest">Rest day today.</string>
     <string name="widget_running">Hitbodedut in progress.</string>
     <string name="widget_start">Start</string>
     <string name="widget_resume">Back to the hitbodedut</string>
@@ -842,16 +838,12 @@
     <string name="halakha_yomit_titre">Halacha Yomit</string>
     <string name="halakha_yomit_lien">Today’s halacha on halachayomit.co.il</string>
     <!-- Les paliers d'objectifs (11/10) -->
-    <string name="paliers_title">My milestones</string>
-    <string name="paliers_sous_titre">Each milestone leads to the next</string>
     <string name="palier_serie">Days in a row</string>
     <string name="palier_jour">Today</string>
     <string name="palier_semaine">This week</string>
     <string name="palier_mois">This month · %1$s</string>
     <string name="palier_cumul">Total time</string>
     <string name="palier_jours">Days of practice</string>
-    <string name="palier_prochain">Next milestone: %1$s · %2$s to go</string>
-    <string name="palier_atteints">Milestones reached: %1$d</string>
     <string name="palier_nouveau">Milestone reached: %1$s — %2$s!</string>
     <string name="palier_une_serie">%1$s more for %2$s in a row</string>
     <string name="palier_une_jour">%1$s more for %2$s today</string>
@@ -901,7 +893,6 @@
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">Mazal tov!</string>
     <string name="trophees_paliers_titre">Trophies and milestones</string>
-    <string name="trophees_titre">Trophies</string>
     <string name="grade_titre">%1$s grade</string>
     <plurals name="grade_sous">
         <item quantity="one">%1$d trophy earned · %2$d more for %3$s</item>
@@ -922,12 +913,7 @@
     </plurals>
     <string name="grade_nouveau">New grade: %1$s</string>
     <string name="grade_prochain">Next grade: %1$s, at trophy %2$d.</string>
-    <string name="trophees_prochain">Next trophy</string>
-    <string name="trophees_gagnes">Earned · %1$d</string>
-    <string name="trophees_a_venir">Coming up · %1$d</string>
-    <string name="trophees_aucun_gagne">No trophy yet: the first comes with your first hitbodedut.</string>
     <string name="trophees_tous">Every trophy is earned!</string>
-    <string name="trophees_compte">%1$d of %2$d</string>
     <string name="trophees_paliers">🏆  Trophies</string>
     <string name="channel_celebration">Milestones and trophies</string>
     <string name="channel_celebration_description">A celebration when a milestone or trophy is reached</string>
@@ -1011,15 +997,8 @@
     <string name="metal_argent">Silver</string>
     <string name="metal_or">Gold</string>
     <string name="metal_platine">Platinum</string>
-    <string name="trophee_niveau">Level %1$d of %2$d · %3$s</string>
     <string name="trophee_niveau_court">Level %1$d of %2$d</string>
-    <string name="trophees_explication">Each trophy climbs level by level, from bronze to silver, gold and platinum. Under each one: your level, what the next one asks, and how far you are.</string>
-    <string name="trophee_a_venir">To win</string>
     <string name="trophee_niveau_gagne">“%1$s” trophy: level %2$d!</string>
-    <string name="trophee_prochain">Next level: %1$s</string>
-    <string name="trophee_sommet">Highest level reached</string>
-    <string name="trophee_vedette">Your finest trophy</string>
-    <string name="trophee_vedette_aucune">Your first trophy is waiting</string>
     <string name="chabbat_alerte_titre">Shabbat in 3 hours, get ready to enjoy!</string>
     <string name="chabbat_alerte_texte">Double neshama, double joy and double meals! Try a double hitbodedut.</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
@@ -1105,6 +1084,8 @@
     <string name="journal_humeur_avant">Before the hitbodedut</string>
     <string name="journal_humeur_apres">After</string>
     <string name="journal_gratitude">Gratitude</string>
+    <string name="journal_ligne">%1$s: %2$s</string>
+    <string name="journal_humeur_n">Mood %1$d of 5</string>
     <string name="journal_gratitude_hint">One thing I am thankful for today</string>
     <string name="journal_graphique">Minutes each day, %s</string>
     <string name="partage_jour">Share this day</string>
@@ -1114,7 +1095,6 @@
     </plurals>
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">Earned on %1$s</string>
-    <string name="trophee_a_gagner">To earn · %1$d / %2$d</string>
     <plurals name="trophee_detail_grade">
         <item quantity="one">In %1$s: it was your first trophy.</item>
         <item quantity="other">In %1$s: it was your trophy no. %2$d.</item>
@@ -1197,15 +1177,10 @@
     <string name="parcours_meilleure">Best streak</string>
     <string name="parcours_jours_faits">Days of hitbodedut</string>
     <string name="parcours_total">Total time</string>
-    <string name="parcours_moyenne">On average, per day</string>
     <string name="parcours_mois">This month</string>
     <string name="parcours_sujets">Your most frequent subjects</string>
     <string name="parcours_sujets_vide">Choose a subject when you start a hitbodedut: the most frequent will appear here.</string>
     <string name="parcours_humeur">Mood</string>
-    <plurals name="parcours_jours">
-        <item quantity="one">%d day</item>
-        <item quantity="other">%d days</item>
-    </plurals>
     <plurals name="parcours_fois">
         <item quantity="one">%d time</item>
         <item quantity="other">%d times</item>

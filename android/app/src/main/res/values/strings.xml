@@ -78,7 +78,7 @@
     <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
     <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
-    <string name="gate_exempt_title">Jour sans obligation</string>
+    <string name="gate_exempt_title">Jour de pause</string>
     <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
     <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
@@ -90,7 +90,6 @@
     <string name="action_another_session">Faire une hitbodedout de plus</string>
     <string name="action_back_to_session">Revenir à la hitbodedout en cours</string>
     <string name="action_write_note">Écrire une note</string>
-    <string name="action_journal">Voir le journal</string>
     <string name="action_preview_gate">Voir l’écran « Je suis avec Hachem » maintenant</string>
     <string name="action_pick_apps">Choisir les applications</string>
     <string name="action_grant">Accorder</string>
@@ -107,9 +106,6 @@
     <string name="settings_daily_goal">Objectif quotidien</string>
     <string name="settings_daily_goal_hint">Ce que l’anneau du jour mesure. Sans réglage, c’est la durée d’une hitbodedout.</string>
     <string name="rings_character_hint">Touchez pour voir vos chiffres</string>
-    <string name="ring_day">Aujourd’hui</string>
-    <string name="ring_week">Semaine</string>
-    <string name="ring_streak">Série</string>
     <string name="ring_day_detail">Aujourd’hui : %1$s sur %2$s</string>
     <string name="ring_day_reached">Objectif du jour atteint : %1$s sur %2$s</string>
     <plurals name="ring_streak_detail">
@@ -125,7 +121,7 @@
     <string name="settings_shabbat">Chabbat et Yom Tov</string>
     <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
     <string name="settings_exempt_today">Pause aujourd’hui</string>
-    <string name="settings_exempt_today_hint">Pour un Yom Tov, un voyage, une maladie : la journée ne compte pas contre vous.</string>
+    <string name="settings_exempt_today_hint">Pour un voyage, une maladie, un jour empêché : la journée ne compte pas contre vous.</string>
     <string name="settings_screen_missing">Cet écran de réglages n’existe pas sur ce téléphone.</string>
     <!-- Le sélecteur de fichiers d’Android est absent (examen du 14/11, constat 12). -->
     <string name="fichiers_absents">Aucune application de ce téléphone ne permet d’ouvrir ou d’enregistrer un fichier.</string>
@@ -196,7 +192,7 @@
     <string name="widget_description">La série en cours, et de quoi commencer d’un geste.</string>
     <string name="widget_done">Faite aujourd’hui.</string>
     <string name="widget_todo">Pas encore aujourd’hui.</string>
-    <string name="widget_rest">Repos aujourd’hui.</string>
+    <string name="widget_rest">Pause aujourd’hui.</string>
     <string name="widget_running">Hitbodedout en cours.</string>
     <string name="widget_start">Commencer</string>
     <string name="widget_resume">Revenir à la hitbodedout</string>
@@ -279,8 +275,8 @@
     </plurals>
 
     <plurals name="journal_summary">
-        <item quantity="one">%1$d hitbodedout, %2$s au total</item>
-        <item quantity="other">%1$d hitbodedout, %2$s au total</item>
+        <item quantity="one">%1$d jour de hitbodedout, %2$s au total</item>
+        <item quantity="other">%1$d jours de hitbodedout, %2$s au total</item>
     </plurals>
 
     <!-- Musique -->
@@ -894,16 +890,12 @@
     <string name="halakha_yomit_titre">Halakha yomit</string>
     <string name="halakha_yomit_lien">La halakha du jour sur halachayomit.co.il</string>
     <!-- Les paliers d'objectifs (11/10) -->
-    <string name="paliers_title">Mes paliers</string>
-    <string name="paliers_sous_titre">Après chaque palier, le suivant</string>
     <string name="palier_serie">Jours d’affilée</string>
     <string name="palier_jour">Aujourd’hui</string>
     <string name="palier_semaine">Cette semaine</string>
     <string name="palier_mois">Ce mois-ci · %1$s</string>
     <string name="palier_cumul">Temps cumulé</string>
     <string name="palier_jours">Jours de pratique</string>
-    <string name="palier_prochain">Prochain palier : %1$s · encore %2$s</string>
-    <string name="palier_atteints">Paliers atteints : %1$d</string>
     <string name="palier_nouveau">Palier atteint : %1$s — %2$s !</string>
     <string name="palier_une_serie">Encore %1$s pour %2$s d’affilée</string>
     <string name="palier_une_jour">Encore %1$s pour %2$s aujourd’hui</string>
@@ -953,7 +945,6 @@
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">Mazal tov !</string>
     <string name="trophees_paliers_titre">Trophées et paliers</string>
-    <string name="trophees_titre">Trophées</string>
     <string name="grade_titre">Grade %1$s</string>
     <plurals name="grade_sous">
         <item quantity="one">%1$d trophée gagné · encore %2$d pour %3$s</item>
@@ -974,12 +965,7 @@
     </plurals>
     <string name="grade_nouveau">Nouveau grade : %1$s</string>
     <string name="grade_prochain">Prochain grade : %1$s, au %2$dᵉ trophée.</string>
-    <string name="trophees_prochain">Prochain trophée</string>
-    <string name="trophees_gagnes">Gagnés · %1$d</string>
-    <string name="trophees_a_venir">À venir · %1$d</string>
-    <string name="trophees_aucun_gagne">Pas encore de trophée : le premier arrive avec votre première hitbodedout.</string>
     <string name="trophees_tous">Tous les trophées sont gagnés !</string>
-    <string name="trophees_compte">%1$d sur %2$d</string>
     <string name="trophees_paliers">🏆  Trophées</string>
     <string name="channel_celebration">Paliers et trophées</string>
     <string name="channel_celebration_description">Une fête quand un palier ou un trophée est atteint</string>
@@ -1014,7 +1000,7 @@
     <string name="trophee_plume">La plume</string>
     <plurals name="trophee_premier_pas_desc">
         <item quantity="one">Une première hitbodedout</item>
-        <item quantity="other">%1$d premières hitbodedout</item>
+        <item quantity="other">%1$d premiers jours de hitbodedout</item>
     </plurals>
     <plurals name="trophee_seance_longue_desc">
         <item quantity="one">%1$d minute en un jour</item>
@@ -1063,15 +1049,8 @@
     <string name="metal_argent">Argent</string>
     <string name="metal_or">Or</string>
     <string name="metal_platine">Platine</string>
-    <string name="trophee_niveau">Niveau %1$d sur %2$d · %3$s</string>
     <string name="trophee_niveau_court">Niveau %1$d sur %2$d</string>
-    <string name="trophees_explication">Chaque trophée monte de niveau en niveau, du bronze à l’argent, à l’or puis au platine. Sous chacun : votre niveau, ce que demande le suivant, et où vous en êtes.</string>
-    <string name="trophee_a_venir">À gagner</string>
     <string name="trophee_niveau_gagne">Trophée « %1$s » : niveau %2$d !</string>
-    <string name="trophee_prochain">Prochain niveau : %1$s</string>
-    <string name="trophee_sommet">Niveau le plus haut atteint</string>
-    <string name="trophee_vedette">Votre plus beau trophée</string>
-    <string name="trophee_vedette_aucune">Votre premier trophée vous attend</string>
     <string name="chabbat_alerte_titre">Chabbat dans 3 h : préparez-vous à en profiter !</string>
     <string name="chabbat_alerte_texte">Double neshama, double simha et double repas ! Tentez une double hitbodedout.</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
@@ -1157,6 +1136,8 @@
     <string name="journal_humeur_avant">Avant la hitbodedout</string>
     <string name="journal_humeur_apres">Après</string>
     <string name="journal_gratitude">Gratitude</string>
+    <string name="journal_ligne">%1$s : %2$s</string>
+    <string name="journal_humeur_n">Humeur %1$d sur 5</string>
     <string name="journal_gratitude_hint">Une chose pour laquelle je remercie aujourd’hui</string>
     <string name="journal_graphique">Les minutes de chaque jour, %s</string>
     <string name="partage_jour">Partager ce jour</string>
@@ -1166,7 +1147,6 @@
     </plurals>
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">Gagné le %1$s</string>
-    <string name="trophee_a_gagner">À gagner · %1$d / %2$d</string>
     <plurals name="trophee_detail_grade">
         <item quantity="one">En %1$s : c’était votre premier trophée.</item>
         <item quantity="other">En %1$s : c’était votre %2$dᵉ trophée.</item>
@@ -1249,15 +1229,10 @@
     <string name="parcours_meilleure">Meilleure série</string>
     <string name="parcours_jours_faits">Jours de hitbodedout</string>
     <string name="parcours_total">Temps total</string>
-    <string name="parcours_moyenne">En moyenne, par jour</string>
     <string name="parcours_mois">Ce mois-ci</string>
     <string name="parcours_sujets">Vos sujets les plus fréquents</string>
     <string name="parcours_sujets_vide">Choisissez un sujet au début d’une hitbodedout : les plus fréquents apparaîtront ici.</string>
     <string name="parcours_humeur">Humeur</string>
-    <plurals name="parcours_jours">
-        <item quantity="one">%d jour</item>
-        <item quantity="other">%d jours</item>
-    </plurals>
     <plurals name="parcours_fois">
         <item quantity="one">%d fois</item>
         <item quantity="other">%d fois</item>
