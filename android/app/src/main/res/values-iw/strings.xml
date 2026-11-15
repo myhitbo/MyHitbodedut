@@ -23,7 +23,7 @@
     <string name="today_declared">אושר בלי טיימר</string>
 
     <string name="section_practice">ההתבודדות שלי</string>
-    <string name="section_gate_state">מצב הפעולה</string>
+    <string name="section_gate_state">מצב „אני עם השם”</string>
     <string name="section_gate">אני עם השם</string>
     <string name="section_gate_hint">האפליקציות שתבחרו יישארו סגורות עד שתתבודדו, וגם במהלך התבודדות.</string>
     <string name="section_rhythm">קצב</string>
@@ -63,7 +63,7 @@
     </plurals>
     <string name="gate_permissions_title">חסרות הרשאות</string>
     <string name="gate_permissions_detail">כדי לפעול, „אני עם השם” צריך שתי גישות: הצגה מעל אפליקציות אחרות וגישה לנתוני שימוש.</string>
-    <string name="gate_disabled_title">המצב כבוי</string>
+    <string name="gate_disabled_title">„אני עם השם” כבוי</string>
     <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שהמצב יפעל.</string>
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
     <string name="gate_no_apps_detail">אין מה לעכב. בחרו לפחות אפליקציה אחת.</string>
@@ -94,7 +94,7 @@
     <string name="action_later">אחר כך</string>
     <string name="action_back">חזרה</string>
 
-    <string name="settings_window">שעות המצב</string>
+    <string name="settings_window">שעות „אני עם השם”</string>
     <string name="settings_snooze">משך הדחייה</string>
     <string name="settings_target">משך ההתבודדות</string>
     <string name="settings_daily_goal">יעד יומי</string>
@@ -298,7 +298,7 @@
     <string name="music_remove">הסרה</string>
     <string name="music_off_short">כבוי</string>
     <string name="music_off_summary">אין מוזיקה בזמן ההתבודדות.</string>
-    <string name="music_none_summary">אין ניגונים בספרייה.</string>
+    <string name="music_none_summary">אין עדיין ניגונים.</string>
     <string name="music_on_summary">%1$s, עוצמה %2$d%%</string>
     <string name="session_music_line">מוזיקה: %1$s</string>
     <string name="music_open_library">פתיחת ספריית המוזיקה</string>
@@ -444,10 +444,10 @@
     <string name="start_duration">משך</string>
     <string name="start_theme">נושא</string>
     <string name="start_music">מוזיקה</string>
-    <string name="start_focus">עם השם</string>
+    <string name="start_focus">אני עם השם</string>
     <string name="start_music_off">ללא</string>
-    <string name="start_focus_on">פעיל</string>
-    <string name="start_focus_off">כבוי</string>
+    <string name="start_focus_on">בבוקר</string>
+    <string name="start_focus_off">לא</string>
     <string name="start_focus_setup">נדרשת הגדרה</string>
     <string name="start_focus_stopped">הופסק</string>
     <string name="settings_name">שם פרטי</string>
@@ -476,7 +476,7 @@
     <string name="onboarding_days">יום אחרי יום</string>
     <string name="onboarding_days_body">הרצף סופר את הימים ברציפות, והשבוע כולו נראה במבט אחד. אחרי כל התבודדות אפשר להשאיר הערה ביומן. תזכורות מאותתות בשעה שבוחרים.</string>
     <string name="onboarding_texts">טקסטים לתפילה</string>
-    <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, ספרייה ועצות להתבודדות, זמינים מתי שרוצים.</string>
+    <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, מקורות על ההתבודדות ועצות להתבודדות, זמינים מתי שרוצים.</string>
     <string name="onboarding_yours">בדרך שלכם</string>
     <string name="onboarding_yours_body">בהגדרות: השפה (צרפתית, אנגלית או עברית), צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
     <string name="onboarding_gate">מחסום הבוקר</string>
@@ -906,7 +906,7 @@
         <item quantity="two">%1$d צדיקים ביום זה</item>
         <item quantity="other">%1$d צדיקים ביום זה</item>
     </plurals>
-    <string name="hilloulot_afficher_detail">בכרטיס היום, במסך הבית</string>
+    <string name="hilloulot_afficher_detail">מתחת לזמנים, במסך הזמנים</string>
     <string name="hilloulot_toucher">לחצו על שם כדי לקרוא את תולדותיו.</string>
     <string name="hilloulot_ouvrir_jour">לעבור ליום זה ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->

@@ -23,7 +23,7 @@
     <string name="today_declared">Confirmed without a timer</string>
 
     <string name="section_practice">My practice</string>
-    <string name="section_gate_state">Mode status</string>
+    <string name="section_gate_state">Where “I am with Hashem” stands</string>
     <string name="section_gate">I am with Hashem</string>
     <string name="section_gate_hint">The apps you choose stay closed until the practice is done, and during a hitbodedut in progress.</string>
     <string name="section_rhythm">Rhythm</string>
@@ -62,7 +62,7 @@
     </plurals>
     <string name="gate_permissions_title">Permissions missing</string>
     <string name="gate_permissions_detail">To work, “I am with Hashem” needs two accesses: display over other apps and usage access.</string>
-    <string name="gate_disabled_title">Mode switched off</string>
+    <string name="gate_disabled_title">“I am with Hashem” is off</string>
     <string name="gate_disabled_detail">Turn on the “I am with Hashem” switch for the mode to act.</string>
     <string name="gate_no_apps_title">No app selected</string>
     <string name="gate_no_apps_detail">The mode has nothing to hold back. Choose at least one app.</string>
@@ -93,7 +93,7 @@
     <string name="action_later">Later</string>
     <string name="action_back">Back</string>
 
-    <string name="settings_window">Mode hours</string>
+    <string name="settings_window">“I am with Hashem” hours</string>
     <string name="settings_snooze">Snooze length</string>
     <string name="settings_target">Hitbodedut length</string>
     <string name="settings_daily_goal">Daily goal</string>
@@ -208,7 +208,7 @@
     <string name="onboarding_back">Back</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_start">Start</string>
-    <string name="onboarding_practice">Simply speaking</string>
+    <string name="onboarding_practice">Just talk</string>
     <string name="onboarding_practice_body">Hitbodedut means withdrawing alone for a while each day and speaking to Hashem in your own language, as you would to someone. No formula to recite, no level to reach.</string>
     <string name="onboarding_private">Your writing stays here</string>
     <string name="onboarding_private_body">The app only connects to the Internet when you ask it to: live flight tracking asks OpenSky Network for the aircraft in an approximate area, without sending the flight’s callsign; looking up a flight number sends only that number to adsbdb.com. What you write stays on this phone, and only you can take it out, through the export.</string>
@@ -290,7 +290,7 @@
     <string name="music_remove">Remove</string>
     <string name="music_off_short">Off</string>
     <string name="music_off_summary">No music during hitbodedut.</string>
-    <string name="music_none_summary">No track in the library.</string>
+    <string name="music_none_summary">No track yet.</string>
     <string name="music_on_summary">%1$s, volume %2$d%%</string>
     <string name="session_music_line">Music: %1$s</string>
     <string name="music_open_library">Open the music library</string>
@@ -306,7 +306,7 @@
     <string name="region_diaspora">Diaspora</string>
 
     <!-- Tips for Hitbodedut -->
-    <string name="tips_title">Tips for Hitbodedut</string>
+    <string name="tips_title">Tips for hitbodedut</string>
     <string name="tips_hint">Ten pointers, to begin and to keep going.</string>
     <string name="tips_open">Read the tips</string>
     <string name="tip_1_title">Choose a quiet, separate place</string>
@@ -432,10 +432,10 @@
     <string name="start_duration">Length</string>
     <string name="start_theme">Subject</string>
     <string name="start_music">Music</string>
-    <string name="start_focus">With Hashem</string>
+    <string name="start_focus">I am with Hashem</string>
     <string name="start_music_off">none</string>
-    <string name="start_focus_on">on</string>
-    <string name="start_focus_off">off</string>
+    <string name="start_focus_on">mornings</string>
+    <string name="start_focus_off">no</string>
     <string name="start_focus_setup">needs setup</string>
     <string name="start_focus_stopped">stopped</string>
     <string name="settings_name">First name</string>
@@ -464,7 +464,7 @@
     <string name="onboarding_days">Day after day</string>
     <string name="onboarding_days_body">The streak counts your days in a row, and the week shows at a glance. After each hitbodedut, a note can go into your journal. Reminders nudge you at the time you choose.</string>
     <string name="onboarding_texts">Texts to pray with</string>
-    <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, a library and tips for hitbodedut, ready whenever you are.</string>
+    <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, sources on hitbodedut and tips for hitbodedut, ready whenever you are.</string>
     <string name="onboarding_yours">Your way</string>
     <string name="onboarding_yours_body">In Settings: the language (French, English or Hebrew), the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
     <string name="onboarding_gate">In the morning, before everything else</string>
@@ -887,7 +887,7 @@
         <item quantity="one">%1$d tzaddik on this day</item>
         <item quantity="other">%1$d tzaddikim on this day</item>
     </plurals>
-    <string name="hilloulot_afficher_detail">On the day card, on the home screen</string>
+    <string name="hilloulot_afficher_detail">Below the times, on the Zmanim screen</string>
     <string name="hilloulot_toucher">Tap a name to read the biography.</string>
     <string name="hilloulot_ouvrir_jour">See this day ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
