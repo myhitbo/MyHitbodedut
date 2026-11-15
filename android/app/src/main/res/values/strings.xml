@@ -123,7 +123,7 @@
     <string name="ring_streak_reached">Palier de %2$d jours atteint !</string>
     <string name="rings_description">Anneaux. Aujourd’hui : %1$s sur %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">Chabbat et Yom Tov</string>
-    <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
+    <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
     <string name="settings_shabbat_hint_web">Ces jours-là, la série reste intacte.</string>
     <string name="settings_exempt_today">Pause aujourd’hui</string>
     <string name="settings_exempt_today_hint">Pour un Yom Tov, un voyage, une maladie : la journée ne compte pas contre vous.</string>
@@ -1504,7 +1504,8 @@
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
     <string name="vol_en_ligne_aide">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com ; « Position en direct » envoie à OpenSky Network une zone d’environ 10° autour de la position estimée de l’avion. Ces services voient votre adresse IP.</string>
-    <string name="vol_en_ligne_aide_route">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com pour remplir l’arrivée. Ce service voit votre adresse IP.</string>
+    <string name="vol_en_ligne_aide_route">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com pour remplir l’arrivée. Ce service voit votre adresse IP.</string>
+    <string name="vol_en_ligne_aide_web">Éteint par défaut : rien ne quitte l’appareil. Une fois activé, il le reste jusqu’à ce que vous le coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com pour remplir l’arrivée. Ce service voit votre adresse IP.</string>
     <string name="vol_en_ligne_titre">Chercher la route en ligne ?</string>
     <string name="vol_en_ligne_oui">Activer et chercher</string>
     <string name="vol_rapide_titre">Décrivez votre vol</string>

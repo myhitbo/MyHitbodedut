@@ -1452,6 +1452,7 @@
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
     <string name="vol_en_ligne_aide">Off by default: nothing leaves the phone. Once turned on, they stay on until you switch them off. The 🔍 then sends only the flight number to adsbdb.com; “Live position” sends OpenSky Network an area of about 10° around the aircraft’s estimated position. These services see your IP address.</string>
     <string name="vol_en_ligne_aide_route">Off by default: nothing leaves the phone. Once turned on, they stay on until you switch them off. The 🔍 then sends only the flight number to adsbdb.com to fill in the arrival. This service sees your IP address.</string>
+    <string name="vol_en_ligne_aide_web">Off by default: nothing leaves the device. Once turned on, it stays on until you switch it off. The 🔍 then sends only the flight number to adsbdb.com to fill in the arrival. This service sees your IP address.</string>
     <string name="vol_en_ligne_titre">Look up the route online?</string>
     <string name="vol_en_ligne_oui">Turn on and search</string>
     <string name="vol_rapide_titre">Describe your flight</string>

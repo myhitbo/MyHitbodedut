@@ -3520,7 +3520,7 @@ let routeVol = { attente: false, texte: '' };
 function loupeVol(v) {
   if (store.suiviDirect()) return chercherRouteVol(v);
   feuille(tr.t('vol_en_ligne_titre'), (f, fermer) => f.append(
-    h('p', {}, tr.t(RELAIS_VOL ? 'vol_en_ligne_aide' : 'vol_en_ligne_aide_route')),
+    h('p', {}, tr.t(RELAIS_VOL ? 'vol_en_ligne_aide' : 'vol_en_ligne_aide_web')),
     h('button', { class: 'principal', onclick: () => { fermer(); store.setSuiviDirect(true); chercherRouteVol(v); } }, tr.t('vol_en_ligne_oui')),
     h('button', { class: 'lien-discret', onclick: fermer }, tr.t('vol_fermer'))));
 }

@@ -323,3 +323,14 @@ test('saisie rapide : la durée n’est ni une heure ni un numéro, la porte non
   assert.deepEqual(Vol.heuresPhrase('boarding time 5:20'), []);
   assert.deepEqual(Vol.heuresPhrase('porte fermee 5h45'), []);
 });
+
+test('sans relais, le site ne promet pas de suivi en direct (TWEBCONF-09, -16)', () => {
+  const app = readFileSync(new URL('../src/js/app.js', import.meta.url), 'utf8');
+  // L'accord de la loupe et le libellé de l'interrupteur : variantes _web, sans OpenSky.
+  assert.match(app, /tr\.t\(RELAIS_VOL \? 'vol_en_ligne_aide' : 'vol_en_ligne_aide_web'\)/);
+  assert.match(app, /tr\.t\(RELAIS_VOL \? 'vol_direct_activer' : 'vol_direct_activer_web'\)/);
+  assert.match(app, /tr\.t\('settings_shabbat_hint_web'\)/);
+  const fr = readFileSync(new URL('../../android/app/src/main/res/values/strings.xml', import.meta.url), 'utf8');
+  const web = fr.match(/<string name="vol_en_ligne_aide_web">([^<]*)</)[1];
+  assert.doesNotMatch(web, /OpenSky|téléphone/);
+});
