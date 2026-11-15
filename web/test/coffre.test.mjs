@@ -133,3 +133,39 @@ test('l’import borne aussi les clés de la version 2 (revue du 15/11)', () => 
   assert.ok(sortie.tikkun_journal.length <= 4000);
   assert.ok(JSON.stringify(sortie).length < 120_000);
 });
+
+test('l’import du journal enrichi écrit une seule fois, et un marque-page Tehilim reste dans 1–150 (revue du 15/11)', () => {
+  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 15, 12) });
+  const jp = {}; const days = {};
+  for (let i = 0; i < 9000; i++) {
+    const d = new Date(Date.UTC(2001, 0, 1) + i * 86_400_000).toISOString().slice(0, 10);
+    jp[d] = { avant: 2, apres: 4, gratitude: 'merci', travail: '' };
+    days[d] = { minutes: 5, note: 'n' };
+  }
+  jp['1999-01-01'] = { avant: 1, apres: 1, gratitude: 'trop tôt', travail: '' };
+  const t0 = performance.now();
+  s.importJson(JSON.stringify({ format: 'myhitbodedut', version: 2, days, journal_plus: jp,
+    marques_pages: [{ cle: 't:tehilim', nusah: '', section: 0, bloc: 1 }, { cle: 't:tehilim', nusah: '', section: 151, bloc: 1 }, { cle: 't:tehilim', nusah: '', section: 23, bloc: 1 }] }));
+  const ms = performance.now() - t0;
+  assert.ok(ms < 5000, `import en ${Math.round(ms)} ms`);
+  const tout = s.journalPlusTout();
+  assert.equal(Object.keys(tout).length, 9000);
+  assert.equal(tout['2001-01-01'].gratitude, 'merci');
+  assert.equal(tout['1999-01-01'], undefined);
+  assert.deepEqual(s.marques().map((m) => m.section), [23]);
+});
+
+test('la meilleure série ne relit plus les réglages pour chaque jour (revue du 15/11)', () => {
+  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 15, 12) });
+  // Des réglages gros, mais dans les bornes de l'import : 500 applications de 255 caractères.
+  s.importJson(JSON.stringify({ format: 'myhitbodedut', days: { '2000-01-03': { minutes: 5 } },
+    blocked_apps: Array.from({ length: 500 }, (_, i) => `app.${i}.${'x'.repeat(240)}`) }));
+  const t0 = performance.now();
+  const serie = s.meilleureSerie();
+  const ms = performance.now() - t0;
+  assert.ok(serie >= 1);
+  assert.ok(ms < 400, `meilleureSerie en ${Math.round(ms)} ms`);
+  // Le même résultat que jour par jour.
+  const parJour = (d) => s.isExempt(d);
+  for (const d of ['2026-11-14', '2026-11-13', '2026-10-03']) assert.equal(s.exempteur()(d), parJour(d));
+});

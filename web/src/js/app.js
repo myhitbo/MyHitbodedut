@@ -1865,7 +1865,8 @@ function ligneSignets(recueil = null) {
 /** Ouvre le texte d'un marque-page, à sa place : un paragraphe du siddour ou d'un livre, ou un verset des Tehilim. */
 function ouvrirSignet(m) {
   marqueAOuvrir = m;
-  if (m.cle === CLE_TEHILIM) { lire(CycleTehilim.portion(m.section, m.section)); return; }
+  // Borné comme TehilimLectureActivity : un marque-page déjà gardé hors de 1 à 150 n'ouvre plus un écran vide.
+  if (m.cle === CLE_TEHILIM) { const n = Math.min(150, Math.max(1, m.section)); lire(CycleTehilim.portion(n, n)); return; }
   ouvrirCle(m.cle);
 }
 
@@ -3928,7 +3929,7 @@ const medailleGrade = (m, taille) => h('span', { class: 'medaille-grade', 'aria-
 const moinsAnime = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 /** Le jour de gain de chaque trophée gagné (Trophees.datesGain) : l'historique rejoué. */
 function datesTrophees() {
-  return Trophees.datesGain(store.minutesParJour(), store.joursAvecNote(), (d) => store.isExempt(d), store.tikkunJournal());
+  return Trophees.datesGain(store.minutesParJour(), store.joursAvecNote(), store.exempteur(), store.tikkunJournal());
 }
 /** La date civile en toutes lettres, avec le jour (VueJour.dateCivile) : « mardi 29 septembre 2026 ». */
 const dateCivile = (iso) => new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
