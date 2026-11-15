@@ -104,7 +104,7 @@ class TraductionAffichageTest {
             val titres = Regex("""<string name="track_[a-z_0-9]+">[^<]*</string>""").findAll(en).map { it.value }
             assertFalse("« $mot » dans un titre anglais", titres.any { it.contains(mot) })
         }
-        listOf("track_ianir_bessarabie", "track_shpayer_kenout", "track_shpayer_ki_hine_kahomer").forEach { cle ->
+        listOf("track_ianir_bessarabie", "track_shpayer_kenout", "track_shpayer_ki_hine_kahomer", "track_hamelech_basade", "track_yanuka_nigoun_3").forEach { cle ->
             listOf("values", "values-en", "values-iw").forEach { d ->
                 assertTrue("$d $cle", lire("src/main/res/$d/strings.xml").contains("""<string name="$cle">"""))
             }

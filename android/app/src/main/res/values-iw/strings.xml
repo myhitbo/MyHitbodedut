@@ -591,6 +591,8 @@
     <string name="track_ianir_houppa">ניגון חופה — יניר</string>
     <string name="track_ianir_kabbalat_chabbat">ניגון קבלת שבת (הקלטה חיה) — יניר</string>
     <string name="track_ianir_bessarabie">ניגון בסרביה — יניר</string>
+    <string name="track_hamelech_basade">המלך בשדה</string>
+    <string name="track_yanuka_nigoun_3">ניגון — הינוקא (3)</string>
     <string name="track_shpayer_eshet_hayil">אשת חיל — אור ונועם שפייר</string>
     <string name="track_shpayer_afilou">אפילו — נועם שפייר</string>
     <string name="track_shpayer_kenout">כנות — נועם שפייר</string>
@@ -1096,7 +1098,7 @@
     <string name="levana_croissante">מתמלאת</string>
     <string name="levana_decroissante">מתמעטת</string>
     <string name="levana_motsae">מומלץ: מוצאי שבת %s (שו״ע תכ״ו, ב ורמ״א)</string>
-    <string name="levana_kippour">לא לפני מוצאי יום הכיפורים (שו״ע תכ״ו, ב ורמ״א)</string>
+    <string name="levana_kippour">לא לפני מוצאי יום הכיפורים (רמ״א תכ״ו, ב)</string>
     <string name="levana_tisha">לא לפני מוצאי תשעה באב (רמ״א תכ״ו ב; משנה ברורה תכ״ו יא)</string>
     <string name="levana_usage_titre">ברכת הלבנה: מנהג</string>
     <string name="levana_usage_auto">לפי הנוסח</string>
