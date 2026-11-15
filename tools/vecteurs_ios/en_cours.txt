@@ -3,7 +3,6 @@ VecteursAnneaux
 VecteursBoussole
 VecteursChizuk
 VecteursGeo
-VecteursGuidee
 VecteursHalakha
 VecteursInterfaceA
 VecteursJaugeSemaine
