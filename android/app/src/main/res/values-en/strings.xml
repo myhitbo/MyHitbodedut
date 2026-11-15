@@ -1465,6 +1465,7 @@
     <string name="vol_rapide_manque">Still needed: %1$s.</string>
     <string name="vol_rapide_lecture">Reading the ticket…</string>
     <string name="vol_rapide_billet_sans_code">No boarding-pass barcode found. Open the ticket, copy its text and paste it above.</string>
+    <string name="vol_rapide_billet_echec">The ticket could not be opened. Try a photo, or copy its text and paste it above.</string>
     <string name="vol_rapide_billet_illisible">A barcode was read, but it is not a boarding pass.</string>
     <string name="vol_rapide_billet_lu">Boarding pass read (the barcode does not carry the times).</string>
 

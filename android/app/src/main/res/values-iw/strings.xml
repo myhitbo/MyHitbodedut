@@ -1510,6 +1510,7 @@
     <string name="vol_rapide_manque">נותר למלא: %1$s.</string>
     <string name="vol_rapide_lecture">קורא את הכרטיס…</string>
     <string name="vol_rapide_billet_sans_code">לא נמצא ברקוד של כרטיס עלייה למטוס. פתחו את הכרטיס, העתיקו את הטקסט והדביקו אותו למעלה.</string>
+    <string name="vol_rapide_billet_echec">לא ניתן היה לפתוח את הכרטיס. נסו תמונה, או העתיקו את הטקסט והדביקו אותו למעלה.</string>
     <string name="vol_rapide_billet_illisible">נקרא ברקוד, אבל הוא אינו של כרטיס עלייה למטוס.</string>
     <string name="vol_rapide_billet_lu">כרטיס העלייה למטוס נקרא (הברקוד אינו כולל את השעות).</string>
 

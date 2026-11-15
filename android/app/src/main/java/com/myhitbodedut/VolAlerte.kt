@@ -48,6 +48,9 @@ object VolAlerte {
         runCatching { alarmes.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, prochain.coerceAtLeast(maintenant), pending) }
     }
 
+    /** L'étiquette de notification d'un rappel : son type et sa prière, pour que deux rappels dus d'un coup ne s'écrasent pas. */
+    fun etiquette(r: VolRappels.Rappel): String = "vol:${r.type.name}:${r.priere.orEmpty()}"
+
     /** Les rappels dus maintenant, pas encore montrés (plusieurs peuvent tomber à la même minute). */
     fun dus(rappels: List<VolRappels.Rappel>, vu: Long, maintenant: Long): List<VolRappels.Rappel> =
         rappels.filter { val t = it.instant.toEpochMilli(); t > vu && t <= maintenant + 60_000L && t > maintenant - TOLERANCE_MS }
@@ -129,8 +132,8 @@ class VolAlerteReceiver : BroadcastReceiver() {
                 .setContentIntent(ouvrir)
                 .setAutoCancel(true)
                 .build()
-            // Le Omer garde sa notification à part : il tombe à la même minute qu'Arvit.
-            runCatching { manager.notify(if (r.type == VolRappels.Type.OMER) Notifications.ID_VOL_OMER else Notifications.ID_VOL, n) }
+            // Chaque rappel garde sa notification (FVOL-16) : un lot de rappels dus d'un coup (Doze) ne s'écrase pas.
+            runCatching { manager.notify(VolAlerte.etiquette(r), if (r.type == VolRappels.Type.OMER) Notifications.ID_VOL_OMER else Notifications.ID_VOL, n) }
         }
         dus.maxOfOrNull { it.instant.toEpochMilli() }?.let { Store.setVolRappelVu(context, it) }
         VolAlerte.programmer(context)

@@ -8,7 +8,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
-import android.os.CancellationSignal
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import android.app.TimePickerDialog
@@ -463,12 +462,17 @@ class VolActivity : AppCompatActivity() {
         rapideTexte = getString(R.string.vol_rapide_lecture)
         afficherFormulaire()
         Thread {
-            val code = runCatching { LecteurBillet.code(this, uri) }.getOrNull()
+            val lecture = runCatching { LecteurBillet.code(this, uri) }
+            val code = lecture.getOrNull()
             val troncon = code?.let { CarteEmbarquement.lire(it, LocalDate.now()) }
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
                 if (troncon == null) {
-                    rapideTexte = getString(if (code == null) R.string.vol_rapide_billet_sans_code else R.string.vol_rapide_billet_illisible)
+                    rapideTexte = getString(when {
+                        lecture.isFailure -> R.string.vol_rapide_billet_echec
+                        code == null -> R.string.vol_rapide_billet_sans_code
+                        else -> R.string.vol_rapide_billet_illisible
+                    })
                     return@runOnUiThread afficherFormulaire()
                 }
                 appliquer(SaisieVol.Proposition(
@@ -932,7 +936,7 @@ class VolActivity : AppCompatActivity() {
     }
 
     /**
-     * Un relevé du GPS seul (pas le réseau : en vol, il n'y en a pas), 90 s au plus. Il recale la
+     * Un relevé du GPS seul (pas le réseau : en vol, il n'y en a pas), 2 min 30 au plus (écouteur continu : getCurrentLocation est coupé à moins d’une minute). Il recale la
      * route s'il tombe pendant le vol prévu ; sinon on le dit et la route prévue reste.
      */
     @SuppressLint("MissingPermission") // vérifiée par demanderGps
@@ -943,13 +947,11 @@ class VolActivity : AppCompatActivity() {
         afficherResultats()
         val delai = Handler(Looper.getMainLooper())
         var fini = false
-        val annulation = CancellationSignal()
         var ecouteur: LocationListener? = null
         fun conclure(l: Location?) {
             if (fini || isFinishing || isDestroyed) return
             fini = true
             delai.removeCallbacksAndMessages(null)
-            annulation.cancel()
             ecouteur?.let { runCatching { lm.removeUpdates(it) } }
             gpsEnCours = false
             if (l == null) {
@@ -960,22 +962,19 @@ class VolActivity : AppCompatActivity() {
         }
         delai.postDelayed({ conclure(null) }, GPS_MS)
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                lm.getCurrentLocation(LocationManager.GPS_PROVIDER, annulation, mainExecutor) { conclure(it) }
-            } else {
-                // Avant Android 11, les quatre méthodes de LocationListener sont abstraites (ChoixLieu).
-                val e = object : LocationListener {
-                    override fun onLocationChanged(location: Location) = conclure(location)
-                    override fun onProviderEnabled(provider: String) = Unit
-                    override fun onProviderDisabled(provider: String) = conclure(null)
+            // requestLocationUpdates sur toutes les versions (FVOL-15) : getCurrentLocation est plafonné
+            // par Android à moins d'une minute, trop court pour un premier relevé GPS en mode avion.
+            // Les quatre méthodes de LocationListener sont abstraites avant Android 11 (ChoixLieu).
+            val e = object : LocationListener {
+                override fun onLocationChanged(location: Location) = conclure(location)
+                override fun onProviderEnabled(provider: String) = Unit
+                override fun onProviderDisabled(provider: String) = conclure(null)
 
-                    @Deprecated("Android 10 et avant seulement")
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
-                }
-                ecouteur = e
-                @Suppress("DEPRECATION")
-                lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, e, Looper.getMainLooper())
+                @Deprecated("Android 10 et avant seulement")
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
             }
+            ecouteur = e
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 0f, e, Looper.getMainLooper())
         } catch (e: SecurityException) {
             conclure(null)
         } catch (e: IllegalArgumentException) {
@@ -1301,7 +1300,7 @@ class VolActivity : AppCompatActivity() {
         val CIEL = mapOf("chatsot_layla" to Ciel.NUIT, "tset" to Ciel.NUIT, "tset_rt" to Ciel.NUIT,
             "alot" to Ciel.AUBE, "misheyakir" to Ciel.AUBE, "netz" to Ciel.AUBE, "chkia" to Ciel.CREPUSCULE)
         const val RAFRAICHISSEMENT_MS = 30_000L
-        const val GPS_MS = 90_000L
+        const val GPS_MS = 150_000L
         const val ETAT_NUMERO = "vol_numero"
         const val ETAT_DEPART = "vol_depart"
         const val ETAT_ARRIVEE = "vol_arrivee"

@@ -1518,6 +1518,7 @@
     <string name="vol_rapide_manque">Reste à indiquer : %1$s.</string>
     <string name="vol_rapide_lecture">Lecture du billet…</string>
     <string name="vol_rapide_billet_sans_code">Aucun code-barres de carte d’embarquement trouvé. Ouvrez le billet, copiez son texte et collez-le ci-dessus.</string>
+    <string name="vol_rapide_billet_echec">Le billet n’a pas pu être ouvert. Essayez une photo, ou copiez son texte et collez-le ci-dessus.</string>
     <string name="vol_rapide_billet_illisible">Un code-barres a été lu, mais ce n’est pas celui d’une carte d’embarquement.</string>
     <string name="vol_rapide_billet_lu">Carte d’embarquement lue (le code-barres ne porte pas les heures).</string>
 

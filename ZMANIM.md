@@ -271,6 +271,16 @@ veille, le jour et le lendemain. La prière du moment est
 `ZmanimWidget.prochaine`, sans règle nouvelle, nourrie des zmanim de la
 route (`VolPriere`).
 
+**Saisie rapide et billet (04/11).** `SaisieVol` lit une phrase (« El Al Lyon →
+TLV demain à 11h », un texte de billet collé) ; `LecteurBillet` (ZXing,
+Apache 2.0, licence dans `assets/licences/`) cherche le code-barres d'une
+carte d'embarquement dans un PDF (quatre pages au plus, une à la fois) ou une
+photo. `CarteEmbarquement` lit le format BCBP : seuls le **premier tronçon**
+(aéroports, compagnie, numéro, jour du vol) est retenu, ni le nom ni le numéro
+de réservation. Le code ne porte pas les heures : l'arrivée est estimée d'après
+la distance (820 km/h + 30 min), dite comme telle, à corriger avec le billet.
+Une correspondance se saisit un tronçon à la fois. Tout est lu sur le téléphone.
+
 **Ce que l'écran dit, sans conseil** : la fiabilité (« route prévue », jamais
 une position réelle) ; de combien chaque horaire bouge si le départ a
 30 minutes de retard ; la haute latitude (au-delà de 60°) ; un zman absent
