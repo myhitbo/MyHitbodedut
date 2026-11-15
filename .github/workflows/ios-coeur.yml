@@ -6,7 +6,10 @@ name: iOS (cœur, Linux)
 # Budget (décision D5) : Linux seulement ici, aucune minute macOS.
 
 on:
+  # Les branches de travail passent par leur demande de fusion (pull_request) : un envoi n'y lance
+  # pas le flux deux fois, ce qui doublait les minutes.
   push:
+    branches: [main]
     paths:
       - 'ios/**'
       - 'tools/export_contenu/**'
@@ -62,7 +65,8 @@ jobs:
   # en nommant les fichiers, si ios/Ressources/MANIFESTE.json ne suit pas. Les tables du Kotlin
   # (étape 3) demandent la JVM : le projet Gradle tools/export_contenu/tables.
   export:
-    runs-on: ubuntu-24.04
+    # Une machine à vous si la variable du dépôt RUNNER_LINUX la nomme (.github/RUNNER.md), sinon celle de GitHub.
+    runs-on: ${{ vars.RUNNER_LINUX || 'ubuntu-24.04' }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -106,7 +110,8 @@ jobs:
 
   coeur:
     needs: export
-    runs-on: ubuntu-24.04
+    # Une machine à vous si la variable du dépôt RUNNER_LINUX la nomme (.github/RUNNER.md), sinon celle de GitHub.
+    runs-on: ${{ vars.RUNNER_LINUX || 'ubuntu-24.04' }}
     timeout-minutes: 20
     # Swift 6.2, celui de Xcode 26 (§ 7.7).
     container: swift:6.2-noble

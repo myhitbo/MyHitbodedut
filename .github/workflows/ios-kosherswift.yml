@@ -20,7 +20,8 @@ concurrency:
 
 jobs:
   bibliotheque:
-    runs-on: ubuntu-24.04
+    # Une machine à vous si la variable du dépôt RUNNER_LINUX la nomme (.github/RUNNER.md), sinon celle de GitHub.
+    runs-on: ${{ vars.RUNNER_LINUX || 'ubuntu-24.04' }}
     timeout-minutes: 30
     container: swift:6.2-noble
     strategy:
@@ -77,7 +78,8 @@ jobs:
           echo "- mode Swift 6, erreurs distinctes : $(grep -E '^/.*: error:' swift6.log 2>/dev/null | sort -u | wc -l)"
 
   ecarts-312:
-    runs-on: ubuntu-24.04
+    # Une machine à vous si la variable du dépôt RUNNER_LINUX la nomme (.github/RUNNER.md), sinon celle de GitHub.
+    runs-on: ${{ vars.RUNNER_LINUX || 'ubuntu-24.04' }}
     timeout-minutes: 20
     container: swift:6.2-noble
     defaults:
