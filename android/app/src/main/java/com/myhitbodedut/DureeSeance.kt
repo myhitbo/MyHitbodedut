@@ -48,13 +48,17 @@ object DureeSeance {
             setPadding(marge, marge / 2, marge, 0)
             addView(champ)
         }
-        AlertDialog.Builder(activity)
+        val boite = AlertDialog.Builder(activity)
             .setTitle(R.string.duration_custom_title)
             .setView(cadre)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                lire(champ.text.toString())?.let(onChoisi)
-            }
+            .setPositiveButton(android.R.string.ok, null)
             .setNegativeButton(R.string.action_back, null)
             .show()
+        // Une saisie vide ou illisible garde la boîte ouverte et le dit (FACCUEIL-15), au lieu de se taire.
+        boite.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val minutes = lire(champ.text.toString())
+            if (minutes == null) champ.error = activity.getString(R.string.duration_custom_hint)
+            else { boite.dismiss(); onChoisi(minutes) }
+        }
     }
 }

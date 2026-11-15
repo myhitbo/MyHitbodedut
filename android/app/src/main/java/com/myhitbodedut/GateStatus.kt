@@ -175,7 +175,7 @@ object GateStatus {
                 R.plurals.gate_armed_detail,
                 combien,
                 combien,
-                Store.formatMinutes(Store.windowEnd(context)),
+                Store.formatHeure(context, Store.windowEnd(context)),
             )
         }
         GateState.MISSING_PERMISSIONS -> context.getString(R.string.gate_permissions_detail)
@@ -188,8 +188,8 @@ object GateStatus {
         GateState.SNOOZED -> context.getString(R.string.gate_snoozed_detail)
         GateState.OUTSIDE_WINDOW -> context.getString(
             R.string.gate_window_detail,
-            Store.formatMinutes(Store.windowStart(context)),
-            Store.formatMinutes(Store.windowEnd(context))
+            Store.formatHeure(context, Store.windowStart(context)),
+            Store.formatHeure(context, Store.windowEnd(context))
         )
     }
 

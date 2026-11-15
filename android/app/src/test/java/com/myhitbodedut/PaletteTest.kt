@@ -18,7 +18,7 @@ class PaletteTest {
 
     private val ACCENT = listOf("mhBrand", "mhBrandDark", "mhMint", "mhOnBrand",
                                 "mhOnPlate", "mhStageSoft", "mhDayDone")
-    private val FOND = listOf("mhPaper", "mhCard", "mhLine", "mhInk", "mhMuted", "mhDayTodo")
+    private val FOND = listOf("mhPaper", "mhCard", "mhLine", "mhNavPastille", "mhInk", "mhMuted", "mhDayTodo")
 
     /** Plaques claires sous les illustrations, et l'encre qui s'y pose : jamais de bascule. */
     private val FIXES = listOf("mhBrandDark", "mhMint", "mhOnPlate", "mhStageSoft", "mhDayDone")
@@ -91,16 +91,21 @@ class PaletteTest {
                 exige("$an $moment, bandeau", a.getValue("mhMint"), a.getValue("mhBrandDark"), 4.5)
                 exige("$an $moment, blanc sur bandeau", "#FFFFFF", a.getValue("mhBrandDark"), 4.5)
                 exige("$an $moment, jour fait", "#FFFFFF", a.getValue("mhDayDone"), 4.5)
+                // Le départ du dégradé du bandeau (FACCUEIL-09) : blanc et menthe y restent lisibles.
+                exige("$an $moment, blanc sur départ du bandeau", "#FFFFFF", a.getValue("mhDayDone"), 4.5)
+                exige("$an $moment, menthe sur départ du bandeau", a.getValue("mhMint"), a.getValue("mhDayDone"), 4.5)
                 fonds(nuit).forEach { (fn, f) ->
                     exige("$an × $fn $moment, titre sur carte", a.getValue("mhBrand"), f.getValue("mhCard"), 4.5)
                     exige("$an × $fn $moment, titre sur fond", a.getValue("mhBrand"), f.getValue("mhPaper"), 4.5)
+                    // L'icône active de la barre d'onglets sur sa pastille (FACCUEIL-17).
+                    exige("$an × $fn $moment, icône d'onglet sur pastille", a.getValue("mhBrand"), f.getValue("mhNavPastille"), 3.0)
                 }
             }
             fonds(nuit).forEach { (fn, f) ->
                 listOf("mhCard", "mhPaper", "mhDayTodo").forEach {
                     exige("$fn $moment, encre sur $it", f.getValue("mhInk"), f.getValue(it), 7.0)
                 }
-                listOf("mhCard", "mhPaper").forEach {
+                listOf("mhCard", "mhPaper", "mhDayTodo").forEach {
                     // 4,5 : le seuil AA du texte courant. À 4,0, le gris
                     // de la palette verte passait à 4,03 (revue du 29/09).
                     exige("$fn $moment, texte secondaire sur $it", f.getValue("mhMuted"), f.getValue(it), 4.5)

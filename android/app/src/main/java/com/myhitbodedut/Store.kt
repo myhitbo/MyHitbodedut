@@ -1809,6 +1809,14 @@ object Store {
     fun formatMinutes(minutes: Int): String =
         String.format(Locale.US, "%02d:%02d", (minutes / 60) % 24, minutes % 60)
 
+    /** L'heure comme le téléphone l'écrit (24 h ou 12 h), pour l'affichage et pour les sélecteurs (FACCUEIL-26). */
+    fun formatHeure(context: Context, minutes: Int): String {
+        val c = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, (minutes / 60) % 24); set(java.util.Calendar.MINUTE, minutes % 60)
+        }
+        return android.text.format.DateFormat.getTimeFormat(context).format(c.time)
+    }
+
     /**
      * « 20 min », « 1 h 30 » : les unités viennent des chaînes, pour suivre
      * la langue de l'interface. Écrites en dur, elles restaient françaises en

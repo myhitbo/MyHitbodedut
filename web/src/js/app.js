@@ -3648,7 +3648,9 @@ async function demanderDirect(indicatif) {
  * désactivé par défaut, pour la route d'un numéro (adsbdb) et le suivi en direct (OpenSky).
  */
 let formulaireVolOuvert = true;
-const interrupteurEnLigne = () => h('label', { class: 'ligne' }, h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('vol_direct_activer'))),
+const interrupteurEnLigne = () => h('label', { class: 'ligne' }, h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t(RELAIS_VOL ? 'vol_direct_activer' : 'vol_direct_activer_web')),
+    // Sans relais, l'interrupteur ne commande que la route du vol (FPRODUIT-12) : il le dit.
+    RELAIS_VOL ? null : h('div', { class: 'etat' }, tr.t('vol_direct_activer_web_aide'))),
   h('input', { type: 'checkbox', role: 'switch', class: 'interrupteur', checked: store.suiviDirect(), onchange: (e) => { store.setSuiviDirect(e.target.checked); rendre(); } }));
 
 /** Le suivi en direct : l'interrupteur des services en ligne, qui dit ce qui part ; l'indicatif ; le bouton. */
@@ -3658,7 +3660,7 @@ function suiviDirect() {
   // L'interrupteur n'est plus dans le formulaire (04/11) : il vit ici, sous « Préciser la position ».
   const bloc = [interrupteurEnLigne()];
   if (!actif) return bloc;
-  if (!RELAIS_VOL) return [...bloc, h('p', { class: 'indice' }, tr.t('vol_direct_inactif'))];
+  if (!RELAIS_VOL) return bloc;
   const champ = h('input', { type: 'text', class: 'champ-recherche champ-vol', maxlength: 9, autocapitalize: 'characters', placeholder: tr.t('vol_indicatif'), value: store.volIndicatif() || null });
   return [...bloc, champ,
     h('button', { class: 'secondaire', disabled: directVol, onclick: () => {
@@ -4405,6 +4407,8 @@ function ecranReglages() {
         store.siddurNusah() === 'sefard' ? ligne({ nom: tr.t('reglage_tahanoun_tichri'), onclick: choisirTahanounTichri,
           etat: tr.t(store.sansTahanounFinTichri() ? 'reglage_tahanoun_tichri_sans' : 'reglage_tahanoun_tichri_dit') }) : null),
       carteMaPratique(),
+      // Ni barrière ni rappels sur le site (FPRODUIT-06) : le dire, plutôt que de laisser chercher.
+      h('p', { class: 'indice' }, tr.t('reglages_android_seulement')),
       // Personnalisation (14/10) : les couleurs d'Android (palettes.css), la police, l'écran d'ouverture.
       h('div', { class: 'carte' },
         h('h3', {}, tr.t('section_appearance')),

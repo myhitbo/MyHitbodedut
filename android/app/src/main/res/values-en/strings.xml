@@ -94,6 +94,7 @@
     <string name="action_back">Back</string>
 
     <string name="settings_window">“I am with Hashem” hours</string>
+    <string name="window_identique">The start and the end must differ.</string>
     <string name="settings_snooze">Snooze length</string>
     <string name="settings_target">Hitbodedut length</string>
     <string name="settings_daily_goal">Daily goal</string>
@@ -147,7 +148,7 @@
     <string name="blocker_subtitle">A moment alone before the rest of the day.</string>
     <string name="blocker_streak_none">First day of the streak.</string>
     <string name="blocker_start">Start now, %1$s</string>
-    <string name="blocker_already_done">I already did it</string>
+    <string name="blocker_already_done">Done without the phone</string>
     <string name="blocker_snooze">Later (%1$d min)</string>
     <string name="blocker_session_title">Hitbodedut in progress</string>
     <string name="blocker_session_subtitle">%1$s left. The phone can wait.</string>
@@ -470,7 +471,7 @@
     <string name="onboarding_gate">In the morning, before everything else</string>
     <string name="onboarding_gate_body">Choose the apps that will wait for your hitbodedut: when you open one of them, you will first see “Have you done your hitbodedut?”. This mode is set up in Settings and can be turned off whenever you like.</string>
     <string name="onboarding_adresse">What should we call you?</string>
-    <string name="onboarding_adresse_body">At the end of each hitbodedut, the app congratulates you. Pick the word that fits you; you can change it in Settings.</string>
+    <string name="onboarding_adresse_body">At the end of each hitbodedut, the app congratulates you. Pick the word that fits you: the character and the app icon will follow. You can change it in Settings.</string>
     <string name="onboarding_rappel">Remind me every day</string>
     <string name="onboarding_rappel_heure">at %1$s</string>
     <string name="onboarding_rappel_heure_desc">Reminder time: %1$s</string>
@@ -1364,6 +1365,9 @@
     <string name="vol_erreur_service">service unavailable</string>
     <string name="vol_erreur_serveur">server error %1$d</string>
     <string name="vol_direct_inactif">The tracking relay is not in service yet in this version.</string>
+    <string name="vol_direct_activer_web">Online services: flight route</string>
+    <string name="vol_direct_activer_web_aide">When on, the magnifier 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
+    <string name="reglages_android_seulement">The morning gate (“I am with Hashem”) and the reminders exist only in the Android app.</string>
     <string name="vol_fiabilite_direct">Route adjusted to the position received from OpenSky Network at %1$s (%2$s), then great circle to arrival, at constant speed. Zmanim of the point below the aircraft, at sea level, computed on the device.</string>
     <string name="vol_source_opensky">Aircraft data: OpenSky Network (opensky-network.org)</string>
     <string name="vol_rappels_titre">Reminders during the flight</string>
