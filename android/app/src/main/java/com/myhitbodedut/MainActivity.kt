@@ -1012,11 +1012,10 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     /**
      * L'écran d'ouverture (13/10, refait le 15/10) : le 'hassid debout, souriant, devant
-     * le tsiyoun de Rabbi Na'hman à Ouman, une seconde et demie au démarrage, puis un
+     * le היכל הציון de Rabbi Na'hman à Ouman, une seconde et demie au démarrage, puis un
      * fondu. Il se pose par-dessus l'accueil dès le premier dessin : plus d'écran vide
      * pendant que l'application attend (capture du 15/10, trois secondes de menthe).
-     * Photo : le tsiyoun, sous la matséva (Lord Mountbatten, Wikimedia Commons, domaine public),
-     * depuis le 29/10 : la précédente portait le filigrane d'une banque d'images (audit 1.390).
+     * Photo : la façade du היכל הציון, fournie par le porteur le 15/11 (tools/ouverture_tziyoun.py).
      */
     private fun ouverture(demarrage: Boolean) {
         // Le fond du thème (la palette choisie) remplace celui de l'ouverture.
@@ -1030,7 +1029,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             setBackgroundColor(getColor(R.color.ouverture_fond))
             isClickable = true
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-            // Le tsiyoun, centré : la plaque de la matséva reste entière (29/10).
+            // La façade, centrée : l'enseigne reste entière (15/11).
             addView(android.widget.ImageView(context).apply {
                 setImageResource(R.drawable.scene_ouverture_tombe)
                 scaleType = android.widget.ImageView.ScaleType.MATRIX

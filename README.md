@@ -113,13 +113,12 @@ liseré ne se voit pas.
 
 L'écran d'ouverture (15/10) pose le 'hassid debout (`char_debout.webp`, détouré
 par connexité depuis le bord, seuil 249 : la chemise plafonne à 245) devant le
-tsiyoun de Rabbi Na'hman à Ouman (`scene_ouverture_tombe.webp`) : la matséva,
-l'aron et le drap, photographiés par Lord Mountbatten en mai 2010
-(« Rabbi Nahman Tomb (Uman, Ukraine).JPG », Wikimedia Commons, domaine public :
-aucun crédit exigé), recadrés et fondus dans un fond uni (#1E3A30) par
-`tools/ouverture_tziyoun.py` depuis `tools/sources-images/tombe_rabbi_nahman_uman.jpg`.
-Elle remplace (29/10, audit 1.390) une photo de la façade retouchée qui portait
-le filigrane d'une banque d'images (retirée), choix du porteur.
+היכל הציון de Rabbi Na'hman à Ouman (`scene_ouverture_tombe.webp`) : la façade et
+son enseigne, photo fournie par le porteur le 15/11, recadrée, le ciel prolongé
+vers le haut et le bas fondu dans un fond uni (#1E3A30) par
+`tools/ouverture_tziyoun.py` depuis `tools/sources-images/heikhal_tziyoun_facade.jpg`.
+Elle remplace la photo du tsiyoun sous la matséva (Lord Mountbatten, Wikimedia
+Commons, domaine public), en place du 29/10 au 15/11.
 
 `Character.kt` répartit les images par moment : accueil, appel à la pratique,
 pendant la séance, après la séance. Le choix est stable sur une journée entière
