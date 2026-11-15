@@ -1628,7 +1628,7 @@ let texteRecherche = '';
 /** Où chercher (19/10) : tout, les prières, les halakhot, les livres ou les hilloulot (RechercheGlobale.Portee). */
 let porteeRecherche = 'tout';
 // Sans accents latins ni apostrophe typographique : « priere » trouve « Prières » (29/10).
-const nuRecherche = (t) => t.normalize('NFD').replace(/[\u0300-\u036F’‘]/g, '').replace(/<[^>]+>/g, ' ').replace(/[־׀]/g, ' ').replace(/[\u0591-\u05C7"'״׳]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+const nuRecherche = (t) => t.normalize('NFD').replace(/[\u0300-\u036F’‘\u200D]/g, '').replace(/<[^>]+>/g, ' ').replace(/[־׀]/g, ' ').replace(/[\u0591-\u05C7"'״׳]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
 function extraitRecherche(texte, q) {
   const t = nuRecherche(texte);
   const i = Math.max(0, t.indexOf(q));
@@ -2125,14 +2125,14 @@ function ecranTikkun() {
       b.formule ? h('p', { class: 'verset formule' }, b.formule) : null,
       ...paragraphesTraduits(b.paragraphes, b.paragraphes_fr, b.paragraphes_en, paragraphe));
   }
-  const fini = () => {
-    // Le bouton est visible dès la première ligne : on confirme avant de noter (FLECTURE-12).
-    if (!window.confirm(tr.t('tikkun_flow_confirm'))) return;
+  // Le bouton est visible dès la première ligne : on confirme avant de noter (FLECTURE-12), par la
+  // feuille du site et non window.confirm, muet dans une page encadrée ou certains navigateurs intégrés.
+  const fini = () => confirmer(tr.t('tikkun_title'), tr.t('tikkun_flow_confirm'), tr.t('tikkun_flow_done'), () => {
     // Tout dire d'un trait vaut les dix psaumes.
     for (const p of tikkun.psaumes) store.setTikkunDone(p.numero, true);
     retour();
     feterTikkun();
-  };
+  });
   // Pas d'image dans une prière (13/10).
   return ecranLu(tr.t('tikkun_title'), h('div', { class: 'contenu lecture tikkun' },
     h('div', { class: 'psaume', lang: 'he', dir: 'rtl' }, blocs)), {
