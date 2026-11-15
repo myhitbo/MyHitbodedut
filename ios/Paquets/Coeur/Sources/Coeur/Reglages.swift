@@ -12,9 +12,9 @@ import Foundation
 // tolérante, d'org.json (un nombre écrit en chaîne se lit, un booléen à la place d'un nombre ne se lit
 // pas et rend le défaut).
 //
-// Restent à d'autres tâches les accesseurs qui calculent (série, semaine, fenêtre, séance, vol,
-// trophées, Tikoun, rotation du 'hizouk) et ceux de la lecture (favoris, marque-pages, places), qui
-// iront dans lecture.json. Le journal, ses notes et le prénom sont dans Modele.swift.
+// Restent à d'autres tâches les accesseurs qui calculent (série, semaine, fenêtre, séance, plan du vol
+// et ses rappels, trophées, Tikoun, rotation du 'hizouk) et ceux de la lecture (favoris, marque-pages,
+// places), qui iront dans lecture.json. Le journal, ses notes et le prénom sont dans Modele.swift.
 // Jugé par `Tests/Vecteurs/reglages.json` (tools/vecteurs_ios/VecteursReglages.kt).
 
 /// Les réglages : les préférences « myhitbodedut » d'Android, sous leurs noms de clés.
@@ -227,6 +227,36 @@ public struct Reglages: Sendable, Equatable {
 
     public mutating func setBoussoleCarte(_ carte: Bool) {
         poseBooleen("boussole_carte", carte)
+    }
+
+    // MARK: Le vol
+
+    /// Les rappels en vol (VolRappels, VolAlerte) : actifs par défaut, un interrupteur sur l'écran du vol.
+    public var volRappelsActifs: Bool { booleen("vol_rappels_actifs", true) }
+
+    public mutating func setVolRappelsActifs(_ actifs: Bool) {
+        poseBooleen("vol_rappels_actifs", actifs)
+    }
+
+    /// Le suivi de vol en direct (SuiviVol) : désactivé tant que l'utilisateur ne l'active pas.
+    public var suiviDirect: Bool { booleen("vol_suivi_direct", false) }
+
+    public mutating func setSuiviDirect(_ actif: Bool) {
+        poseBooleen("vol_suivi_direct", actif)
+    }
+
+    /// L'indicatif radio du vol (« ELY1 »), pour le suivi en direct ; vide par défaut.
+    public var volIndicatif: String { chaine("vol_indicatif") ?? "" }
+
+    public mutating func setVolIndicatif(_ indicatif: String) {
+        poseChaine("vol_indicatif", indicatif)
+    }
+
+    /// L'instant du dernier rappel de vol montré (millisecondes Unix) : un rappel n'est pas montré deux fois.
+    public var volRappelVu: Int64 { long("vol_rappel_vu", 0) }
+
+    public mutating func setVolRappelVu(_ instant: Int64) {
+        poseLong("vol_rappel_vu", instant)
     }
 
     /// Les minutes d'allumage avant la chki'a ; 18 si la valeur n'est pas de celles proposées.

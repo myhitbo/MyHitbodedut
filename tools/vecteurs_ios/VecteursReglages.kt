@@ -110,6 +110,10 @@ object VecteursReglages : Generateur {
         l("allumage") { Store.allumage(it) }
         l("boussoleRose") { Store.boussoleRose(it) }
         l("boussoleCarte") { Store.boussoleCarte(it) }
+        l("volRappelsActifs") { Store.volRappelsActifs(it) }
+        l("suiviDirect") { Store.suiviDirect(it) }
+        l("volIndicatif") { Store.volIndicatif(it) }
+        l("volRappelVu") { Store.volRappelVu(it) }
         l("lieuZmanim") { Store.lieuZmanim(it) }
         l("lieuDepuis") { Store.lieuDepuis(it) }
         l("lieuVille") { Store.lieuVille(it) }
@@ -193,6 +197,10 @@ object VecteursReglages : Generateur {
         o("setAllumage") { c, a -> Store.setAllumage(c, a.getInt(0)) }
         o("setBoussoleRose") { c, a -> Store.setBoussoleRose(c, a.getBoolean(0)) }
         o("setBoussoleCarte") { c, a -> Store.setBoussoleCarte(c, a.getBoolean(0)) }
+        o("setVolRappelsActifs") { c, a -> Store.setVolRappelsActifs(c, a.getBoolean(0)) }
+        o("setSuiviDirect") { c, a -> Store.setSuiviDirect(c, a.getBoolean(0)) }
+        o("setVolIndicatif") { c, a -> Store.setVolIndicatif(c, a.getString(0)) }
+        o("setVolRappelVu") { c, a -> Store.setVolRappelVu(c, a.getLong(0)) }
         // [nom, latitude, longitude, altitude, fuseau, identifiant de la ville ou null, pays de la ville, instant].
         o("setLieuZmanim") { c, a ->
             val lieu = Zmanim.Lieu(a.getString(0), a.getDouble(1), a.getDouble(2), a.getDouble(3), a.getString(4))
@@ -328,6 +336,10 @@ object VecteursReglages : Generateur {
         addAll(chaque("setAllumage", listOf("allumage"), listOf(17, 18, 19, 20, 22, 30, 40, 41, 0, -18, 1000)))
         addAll(chaque("setBoussoleRose", listOf("boussoleRose"), booleens))
         addAll(chaque("setBoussoleCarte", listOf("boussoleCarte"), booleens))
+        addAll(chaque("setVolRappelsActifs", listOf("volRappelsActifs"), booleens))
+        addAll(chaque("setSuiviDirect", listOf("suiviDirect"), booleens))
+        addAll(chaque("setVolIndicatif", listOf("volIndicatif"), listOf("ELY1", "", " LY 315 ")))
+        addAll(chaque("setVolRappelVu", listOf("volRappelVu"), listOf(0L, 1_760_000_000_000L, -1L, Long.MAX_VALUE)))
         // [nom, latitude, longitude, altitude, fuseau, ville ou null, pays, instant].
         for (args in listOf(
             listOf("Jérusalem", 31.76904, 35.21633, 786.0, "Asia/Jerusalem", 281184L, "IL", 1_760_000_000_000L),

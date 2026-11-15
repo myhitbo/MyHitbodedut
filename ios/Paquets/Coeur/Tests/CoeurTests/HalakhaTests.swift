@@ -5,7 +5,8 @@ import Testing
 /// La halakha du jour hors ligne : le Ben Ish 'Haï, par paracha (HalakhaTest.kt, 11/10), tous ses cas
 /// portés ; rien ne reste à Android. Puis `Tests/Vecteurs/halakha.json`, écrit par le code d'Android
 /// (tools/vecteurs_ios/VecteursHalakha.kt) : chaque jour des années 5786 à 5788 en Israël et hors
-/// d'Israël, les sections de chaque paracha, part, anneeDuLivre, choix, la recherche et la source.
+/// d'Israël, les sections de chaque paracha, part, anneeDuLivre, choix (dans le livre et dans des livres
+/// d'essai), la recherche et la source.
 @Suite("Halakha")
 struct HalakhaTests {
 
@@ -167,6 +168,32 @@ struct HalakhaTests {
             let choix: [[Int]]
             let texte: Int32
         }
+        struct ChoisieLue: Decodable {
+            let texte: String
+            let numero: Int
+            let section: String
+            let annee: Int
+        }
+        struct ResultatDEssai: Decodable {
+            let parsha: String
+            let jour: Int
+            let annee: Int
+            let hanouka: Int
+            let choisies: [ChoisieLue]
+        }
+        struct AnneeDEssai: Decodable {
+            let annee: String
+            let sections: [SectionEssai]
+        }
+        struct HanoukaDEssai: Decodable {
+            let section: String
+            let halakhot: [String]
+        }
+        struct LivreDEssai: Decodable {
+            let annees: [AnneeDEssai]
+            let hanouka: HanoukaDEssai?
+            let resultats: [ResultatDEssai]
+        }
         struct Recherche: Decodable {
             let requete: String
             let nombre: Int
@@ -189,6 +216,7 @@ struct HalakhaTests {
         let part: [PartDuJour]
         let anneeDuLivre: [[Int]]
         let choix: [Choix]
+        let choixEssai: [LivreDEssai]
         let recherche: [Recherche]
         let source: [Source]
     }
@@ -330,6 +358,31 @@ struct HalakhaTests {
             let rendu = Halakha.choix(livre, parsha: c.parsha, jourSemaine: c.jour, anneeHebraique: c.annee,
                                       jourHanouka: c.hanouka)
             verifie(rendu, c.choix, c.texte, v.noms, "choix(« \(c.parsha) », jour \(c.jour), \(c.annee), 'Hanouka \(c.hanouka))")
+        }
+    }
+
+    /// `choix` dans des livres d'essai : la section de la première année vide, vide dans les deux, 'Hanouka
+    /// absent, vide ou court ; chaque halakha choisie comparée unité pour unité (« année|section|numéro|texte »).
+    @Test func leChoixDansDesLivresDEssaiCommeSurAndroid() throws {
+        let v = try vecteurs()
+        #expect(!v.choixEssai.isEmpty)
+        for essai in v.choixEssai {
+            var annees: [String: [String: Halakha.Section]] = [:]
+            for a in essai.annees {
+                var secs: [String: Halakha.Section] = [:]
+                for s in a.sections { secs[s.paracha] = Halakha.Section(he: s.section, halakhot: s.halakhot) }
+                annees[a.annee] = secs
+            }
+            let hanouka = essai.hanouka.map { Halakha.Section(he: $0.section, halakhot: $0.halakhot) }
+            let livre = Halakha.Livre(annees: annees, hanouka: hanouka)
+            for r in essai.resultats {
+                let rendu = Halakha.choix(livre, parsha: r.parsha, jourSemaine: r.jour, anneeHebraique: r.annee,
+                                          jourHanouka: r.hanouka)
+                let lues = rendu.map { "\($0.annee)|\($0.section)|\($0.numero)|\($0.texte)" }
+                let attendues = r.choisies.map { "\($0.annee)|\($0.section)|\($0.numero)|\($0.texte)" }
+                let memes = lues.count == attendues.count && zip(lues, attendues).allSatisfy { $0.egalUnites($1) }
+                #expect(memes, "essai, choix(« \(r.parsha) », jour \(r.jour), \(r.annee), 'Hanouka \(r.hanouka)) : \(lues), attendu \(attendues)")
+            }
         }
     }
 

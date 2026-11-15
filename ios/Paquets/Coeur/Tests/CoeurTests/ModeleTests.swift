@@ -7,9 +7,10 @@ import Testing
 /// DixAmeliorationsTest (Levana, widget, recherche) sont portés avec leurs règles. Puis
 /// `Tests/Vecteurs/modele.json` (tools/vecteurs_ios/VecteursModele.kt) : les journées que Store écrit
 /// dans la préférence « days », celles qu'il relit d'un texte posé à la main et le texte qu'il réécrit
-/// alors, le journal enrichi, le résumé, les minutes du mois et le prénom. Un texte long y est jugé par
-/// sa longueur en unités UTF-16 et son empreinte (String.hashCode de Java). Le graphique du mois
-/// (JournalPlus.Graphique, une vue) reste à Android.
+/// alors, ce qu'il en tire (jours faits, total des minutes, pratique), le journal enrichi, le résumé,
+/// les minutes du mois et le prénom. Un texte long y est jugé par sa longueur en unités UTF-16 et son
+/// empreinte (String.hashCode de Java). Le graphique du mois (JournalPlus.Graphique, une vue) reste à
+/// Android.
 @Suite("Modèle du journal")
 struct ModeleTests {
 
@@ -191,11 +192,19 @@ struct ModeleTests {
         }
     }
 
+    /// Ce que Store tire des journées : joursFaits, totalMinutes, aDejaPratique.
+    private struct Bilan: Decodable {
+        let faits: [String]
+        let total: Int
+        let pratique: Bool
+    }
+
     private struct Etape: Decodable {
         let op: String
         let args: [Arg]
         let days: Trace
         let journees: [JourneeV]?
+        let bilan: Bilan?
     }
 
     private struct Scenario: Decodable {
@@ -209,6 +218,7 @@ struct ModeleTests {
         let journees: [JourneeV]?
         let corrompu: Bool
         let reecrit: Trace
+        let bilan: Bilan
     }
 
     private struct PlusV: Decodable {
@@ -307,6 +317,12 @@ struct ModeleTests {
         return true
     }
 
+    /// Les jours qui comptent, le total des minutes (sur 32 bits) et la pratique d'iOS sont-ils ceux d'Android ?
+    private func memeBilan(_ journal: Journal, _ b: Bilan) -> Bool {
+        let faits = Set(journal.joursFaits.map { $0.iso })
+        return faits == Set(b.faits) && journal.totalMinutes == b.total && journal.aDejaPratique == b.pratique
+    }
+
     private func plus(_ v: PlusV) -> JournalPlus.Plus {
         JournalPlus.Plus(avant: v.avant, apres: v.apres, gratitude: v.gratitude, travail: v.travail)
     }
@@ -349,6 +365,10 @@ struct ModeleTests {
                     let memes = conformes(journal, attendues)
                     #expect(memes, "\(s.nom) : les journées relues")
                 }
+                if let attendu = e.bilan {
+                    let bilanConforme = memeBilan(journal, attendu)
+                    #expect(bilanConforme, "\(s.nom) : jours faits, total des minutes, pratique")
+                }
                 etapes += 1
             }
         }
@@ -376,6 +396,8 @@ struct ModeleTests {
                 let memes = conformes(journal, attendues)
                 #expect(memes, "relecture \(rang) : les journées lues")
             }
+            let bilanConforme = memeBilan(journal, r.bilan)
+            #expect(bilanConforme, "relecture \(rang) : jours faits, total des minutes, pratique")
             // Le journal réécrit se relit à l'identique.
             let relu = Journal(daysTexte: reecrit)
             let stable = relu.daysTexte == reecrit && relu.jours == journal.jours

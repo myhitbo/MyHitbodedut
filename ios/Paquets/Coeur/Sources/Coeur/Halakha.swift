@@ -225,9 +225,45 @@ public enum Halakha {
 
     /// « בן איש חי · שנה ראשונה · לך לך · אות א׳ » (HalakhaActivity.source).
     public static func source(_ h: Choisie) -> String {
-        ["בן איש חי", h.annee == 1 ? "שנה ראשונה" : "שנה שנייה", h.section, "אות \(Reference.lettres(h.numero))"]
+        ["בן איש חי", h.annee == 1 ? "שנה ראשונה" : "שנה שנייה", h.section, "אות \(lettres(h.numero))"]
             .joined(separator: " · ")
     }
+
+    /// `Reference.lettres` (Reference.kt), dont `source` a seul besoin ici : un nombre de 1 à 999 en
+    /// lettres hébraïques, « א׳ », « י״ד », 15 et 16 en « ט״ו », « ט״ז » ; les nombres de `inverses`
+    /// à l'envers, pour ne pas former un mot de mauvais augure ; hors de 1 … 999, ses chiffres. Chaque
+    /// lettre est une unité UTF-16 sans signe qui s'y joigne : compter des caractères compte des unités.
+    private static func lettres(_ n: Int) -> String {
+        if n <= 0 || n >= 1000 { return String(n) }
+        if let inverse = inverses[n] {
+            var l = Array(inverse)
+            l.insert("״", at: l.count - 1)
+            return String(l)
+        }
+        var b: [Character] = []
+        var reste = n
+        while reste >= 400 { b.append("ת"); reste -= 400 }
+        if reste >= 100 { b.append(lettresCentaines[reste / 100]); reste %= 100 }
+        switch reste {
+        case 15: b.append(contentsOf: "טו")
+        case 16: b.append(contentsOf: "טז")
+        default:
+            if reste >= 10 { b.append(lettresDizaines[reste / 10]) }
+            if reste % 10 > 0 { b.append(lettresUnites[reste % 10]) }
+        }
+        if b.count == 1 { return String(b) + "׳" }
+        b.insert("״", at: b.count - 1)
+        return String(b)
+    }
+
+    private static let lettresUnites = Array(" אבגדהוזחט")
+    private static let lettresDizaines = Array(" יכלמנסעפצ")
+    private static let lettresCentaines = Array(" קרש")
+
+    /// רע, רעב, רעד, רעה, רצח, שד, שמד : l'usage les écrit à l'envers.
+    private static let inverses: [Int: String] = [
+        270: "ער", 272: "ערב", 274: "ערד", 275: "ערה", 298: "רחצ", 304: "דש", 344: "שדמ",
+    ]
 
     // MARK: KosherSwift
 

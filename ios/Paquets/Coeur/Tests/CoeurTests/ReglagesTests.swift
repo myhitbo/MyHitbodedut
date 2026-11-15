@@ -233,6 +233,10 @@ struct ReglagesTests {
         case "allumage": return e(r.allumage)
         case "boussoleRose": return b(r.boussoleRose)
         case "boussoleCarte": return b(r.boussoleCarte)
+        case "volRappelsActifs": return b(r.volRappelsActifs)
+        case "suiviDirect": return b(r.suiviDirect)
+        case "volIndicatif": return t(r.volIndicatif)
+        case "volRappelVu": return l(r.volRappelVu)
         case "lieuZmanim": return lieu(r.lieuZmanim)
         case "lieuDepuis": return l(r.lieuDepuis)
         case "lieuVille": return l(r.lieuVille)
@@ -328,6 +332,10 @@ struct ReglagesTests {
         case "setAllumage": r.setAllumage(a.entier(0))
         case "setBoussoleRose": r.setBoussoleRose(a.booleen(0))
         case "setBoussoleCarte": r.setBoussoleCarte(a.booleen(0))
+        case "setVolRappelsActifs": r.setVolRappelsActifs(a.booleen(0))
+        case "setSuiviDirect": r.setSuiviDirect(a.booleen(0))
+        case "setVolIndicatif": r.setVolIndicatif(a.texte(0))
+        case "setVolRappelVu": r.setVolRappelVu(a.long(0))
         case "setLieuZmanim":
             // [nom, latitude, longitude, altitude, fuseau, ville ou null, pays, instant].
             let lieu = Zmanim.Lieu(nom: a.texte(0), latitude: a.double(1), longitude: a.double(2), altitude: a.double(3),
@@ -430,10 +438,12 @@ struct ReglagesTests {
             let relu = try Self.relus(lecture.relu, r)
             let identique = relu.egalUnites(lecture.relu)
             #expect(identique, "\(lecture.prefs) : \(relu) ≠ \(lecture.relu)")
-            // Le fichier relu et réécrit ne change pas.
+            // Le fichier relu et réécrit ne change pas, à une chose près : un Float −0 d'Android s'écrit « -0 »,
+            // qu'org.json relit, comme sur Android, en l'entier 0, et réécrit « 0 ».
             let reecrit = r.texte()
-            let stable = reecrit.egalUnites(lecture.prefs)
-            #expect(stable, "\(lecture.prefs) réécrit \(reecrit)")
+            let attendu = lecture.prefs.remplacantUnites(":-0,", par: ":0,").remplacantUnites(":-0}", par: ":0}")
+            let stable = reecrit.egalUnites(attendu)
+            #expect(stable, "\(lecture.prefs) réécrit \(reecrit) ≠ \(attendu)")
         }
     }
 }

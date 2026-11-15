@@ -132,6 +132,9 @@ public struct ArticleBibliotheque: Sendable, Equatable {
     /// Absent pour un article en fiche seulement.
     public let texteIntegral: String?
     public let sourcesCitees: [String]
+    /// Langue → erreurs relevées dans l'article (clés `erreurs_relevees_<langue>`), les listes vides
+    /// écartées (Library.kt, listesParLangue) ; lues par `LibraryRules.errors`.
+    public var erreursRelevees: [String: [String]] = [:]
 }
 
 /// Une entrée : une source (texte livré) ou un article (fiche).
@@ -163,7 +166,8 @@ public enum EntreeBibliotheque: Sendable, Equatable, Decodable {
                 date: c.texteOuNil("date"), url: c.texteOuNil("url"),
                 resumes: c.parLangue("resume_"), droits: c.parLangue("droits_"),
                 autorisation: c.texteOuNil("autorisation"), texteIntegral: c.texteOuNil("texte_integral"),
-                sourcesCitees: c.liste("sources_citees")))
+                sourcesCitees: c.liste("sources_citees"),
+                erreursRelevees: c.listesParLangue("erreurs_relevees_")))
         }
     }
 }
@@ -319,6 +323,19 @@ extension KeyedDecodingContainer where Key == Cle {
         for cle in allKeys where cle.stringValue.hasPrefix(prefixe) {
             if let valeur = texteOuNil(cle.stringValue) {
                 resultat[String(cle.stringValue.dropFirst(prefixe.count))] = valeur
+            }
+        }
+        return resultat
+    }
+
+    /// Comme `parLangue`, pour une liste : [langue: liste], les listes vides écartées (listesParLangue).
+    /// Une valeur qui n'est pas une liste de chaînes compte pour vide, comme `optJSONArray` qui rend null.
+    func listesParLangue(_ prefixe: String) -> [String: [String]] {
+        var resultat: [String: [String]] = [:]
+        for cle in allKeys where cle.stringValue.hasPrefix(prefixe) {
+            let valeurs = liste(cle.stringValue)
+            if !valeurs.isEmpty {
+                resultat[String(cle.stringValue.dropFirst(prefixe.count))] = valeurs
             }
         }
         return resultat

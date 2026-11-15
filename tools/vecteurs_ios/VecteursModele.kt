@@ -1,13 +1,15 @@
 // Le journal d'Android devant la JVM : les journées que Store écrit dans la préférence « days » du
 // fichier « myhitbodedut-journal » (addSession, setNote), celles qu'il relit d'un texte posé à la main
-// et le texte qu'il réécrit alors, le journal enrichi (JournalPlus.lire, ecrire), son résumé, les
-// minutes du mois, et le prénom. ModeleTests de Coeur les rejoue sur Journal et JournalPlus.
+// et le texte qu'il réécrit alors, ce qu'il en tire (joursFaits, totalMinutes, aDejaPratique), le journal
+// enrichi (JournalPlus.lire, ecrire), son résumé, les minutes du mois, et le prénom. ModeleTests de Coeur
+// les rejoue sur Journal et JournalPlus.
 //
 // Ce qu'on donne à Android est écrit en entier, pour être rejoué ; un texte long qu'il rend ne l'est
 // pas : sa longueur en unités UTF-16 et son empreinte (String.hashCode) suffisent à dire qu'iOS écrit
 // les mêmes octets. Les dates des journées sont passées en argument, et aucune opération ne regarde
 // le jour qu'il est.
 
+import android.content.Context
 import com.myhitbodedut.DayRecord
 import com.myhitbodedut.JournalPlus
 import com.myhitbodedut.Store
@@ -34,6 +36,11 @@ object VecteursModele : Generateur {
     )
 
     private fun brut(t: Theatre, cle: String): String? = t.prefs(JOURNAL).valeurs[cle] as String?
+
+    /** Ce que Store tire des journées : les jours qui comptent, le total des minutes (sur 32 bits), une pratique. */
+    private fun bilan(c: Context): Map<String, Any?> = linkedMapOf(
+        "faits" to Store.joursFaits(c).sorted(), "total" to Store.totalMinutes(c), "pratique" to Store.aDejaPratique(c),
+    )
 
     // --- Les journées écrites par Store ------------------------------------------------------------
 
@@ -82,7 +89,8 @@ object VecteursModele : Generateur {
             }
             // Les journées relues, à la dernière étape : le texte de chaque étape dit déjà tout, dans l'ordre.
             linkedMapOf("op" to op[0], "args" to op.drop(1), "days" to trace(brut(t, "days")),
-                "journees" to if (i == ops.size - 1) Store.days(c).values.map(::journee) else null)
+                "journees" to if (i == ops.size - 1) Store.days(c).values.map(::journee) else null,
+                "bilan" to if (i == ops.size - 1) bilan(c) else null)
         }
         return linkedMapOf("nom" to nom, "etapes" to etapes)
     }
@@ -147,10 +155,11 @@ object VecteursModele : Generateur {
         t.prefs(JOURNAL).valeurs["days"] = texte
         val journees = Store.days(c).values.map(::journee)
         val corrompu = brut(t, "days_corrompu")
+        val bilan = bilan(c)
         // Store réécrit le journal qu'il a lu : un import sans journée ni réglage ne fait que cela.
         check(Store.importJson(c, """{"format":"myhitbodedut"}""") == 0)
         return linkedMapOf("texte" to texte, "nombre" to journees.size, "journees" to journees.takeIf { it.size <= 60 },
-            "corrompu" to (corrompu != null), "reecrit" to trace(brut(t, "days")))
+            "corrompu" to (corrompu != null), "reecrit" to trace(brut(t, "days")), "bilan" to bilan)
     }
 
     // --- Le journal enrichi ---------------------------------------------------------------------------

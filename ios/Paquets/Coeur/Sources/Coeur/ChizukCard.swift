@@ -27,3 +27,18 @@ public enum ChizukCard {
         return tag.egalUnites("iw") ? "he" : tag
     }
 }
+
+/// Le texte partagé d'une carte (ChizukPartage, déclaré dans ChizukActivity.kt), vérifiable sans
+/// appareil : l'hébreu, la traduction s'il y en a une, la source, le lien, séparés d'une ligne vide.
+/// Les blancs rognés sont ceux de Kotlin (`trim`, `ifBlank`).
+public enum ChizukPartage {
+
+    public static func texte(_ hebreu: String, _ traduction: String, _ source: String, _ lien: String) -> String {
+        let traductionRognee = traduction.rogne
+        var parties = [hebreu.rogne]
+        if !traductionRognee.estBlanc { parties.append(traductionRognee) }
+        parties.append("— " + source)
+        parties.append(lien)
+        return parties.joined(separator: "\n\n")
+    }
+}

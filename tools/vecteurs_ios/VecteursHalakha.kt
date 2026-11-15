@@ -2,7 +2,7 @@
 // livre que lit Halakha.parse (une empreinte par section, pas le texte), les halakhot de chaque jour
 // des années hébraïques 5786 à 5788 hors d'Israël et en Israël, les sections de chaque paracha de
 // KosherJava (jointes et spéciales comprises) dans les deux années du livre et dans des livres
-// d'essai, part, anneeDuLivre, choix, la recherche et la source.
+// d'essai, part, anneeDuLivre, choix (dans le livre et dans des livres d'essai), la recherche et la source.
 
 import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar
 import com.kosherjava.zmanim.hebrewcalendar.JewishDate
@@ -97,6 +97,35 @@ object VecteursHalakha : Generateur {
         linkedMapOf<String, Any?>("parsha" to parsha, "jour" to jour, "annee" to annee, "hanouka" to hanouka)
             .apply { putAll(choisies(Halakha.choix(livre, parsha, jour, annee, hanouka))) }
 
+    /**
+     * Des livres d'essai pour Halakha.choix, les branches que le livre embarqué n'atteint pas : la section
+     * de la première année vide (l'autre année la donne), vide dans les deux années, 'Hanouka absent, vide ou court.
+     */
+    private val livresChoix: List<Halakha.Livre> = listOf(
+        Halakha.Livre(mapOf("1" to mapOf("BERESHIS" to section("b1", 0)), "2" to mapOf("BERESHIS" to section("b2", 3))), null),
+        Halakha.Livre(mapOf("1" to mapOf("BERESHIS" to section("b1", 0)), "2" to mapOf("BERESHIS" to section("b2", 0))), section("h", 0)),
+        Halakha.Livre(mapOf("2" to mapOf("TAZRIA_METZORA" to section("tm", 9))), section("h", 5)),
+    )
+
+    private fun choixEssai(essai: Halakha.Livre): Map<String, Any?> = linkedMapOf(
+        "annees" to essai.annees.map { (a, secs) ->
+            linkedMapOf("annee" to a, "sections" to secs.map { (p, s) -> linkedMapOf("paracha" to p, "section" to s.he, "halakhot" to s.halakhot) })
+        },
+        "hanouka" to essai.hanouka?.let { linkedMapOf("section" to it.he, "halakhot" to it.halakhot) },
+        "resultats" to listOf("BERESHIS", "TAZRIA", "METZORA", "NOACH").flatMap { p ->
+            listOf(5786, 5787).flatMap { a ->
+                listOf(0 to 0, 6 to 0, 0 to 1, 3 to 8, 0 to 9).map { (j, h) ->
+                    linkedMapOf(
+                        "parsha" to p, "jour" to j, "annee" to a, "hanouka" to h,
+                        "choisies" to Halakha.choix(essai, p, j, a, h).map {
+                            linkedMapOf("texte" to it.texte, "numero" to it.numero, "section" to it.section, "annee" to it.annee)
+                        },
+                    )
+                }
+            }
+        },
+    )
+
     // --- La recherche ------------------------------------------------------------------------------
 
     /**
@@ -128,7 +157,9 @@ object VecteursHalakha : Generateur {
 
     // --- La source ---------------------------------------------------------------------------------
 
-    private val numeros = listOf(1, 2, 9, 10, 11, 14, 15, 16, 17, 19, 20, 21, 30, 99, 100, 270, 275, 400, 999, 1000, 0, -1)
+    /** Les branches de Reference.lettres : unités, dizaines, 15 et 16 (seuls ou après les centaines), chaque nombre inversé, les tav, hors bornes. */
+    private val numeros = listOf(1, 2, 9, 10, 11, 14, 15, 16, 17, 19, 20, 21, 30, 99, 100, 115, 116, 270, 272, 274, 275, 298, 304, 344,
+        400, 415, 416, 500, 999, 1000, 0, -1)
 
     private val anneesSource = listOf(1 to "לך לך", 2 to "תזריע", 0 to "", 3 to "הלכות חנוכה")
 
@@ -170,6 +201,8 @@ object VecteursHalakha : Generateur {
         // une année impaire et une paire ; puis 'Hanouka, du jour −1 au jour 9.
         "choix" to parachiotChoix.flatMap { p -> listOf(5786, 5787).flatMap { a -> (0..6).map { j -> choix(p, j, a, 0) } } } +
             (-1..9).map { h -> choix("VAYESHEV", 0, 5787, h) },
+        // … et dans des livres d'essai.
+        "choixEssai" to livresChoix.map(::choixEssai),
         "recherche" to requetes.map(::recherche),
         // HalakhaActivity.source (recopiée mot pour mot dans les bouchons).
         "source" to anneesSource.flatMap { (a, s) ->
