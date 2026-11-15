@@ -131,7 +131,8 @@ nuit à l'aube ; Birkot hacha'har de l'aube à michéyakir ; Cha'harit jusqu'à
 'hatsot ; Min'ha de min'ha guedola à la chki'a ; Arvit dès tsét, puis le
 Chema du coucher après 22 h 30 (repère d'usage, pas un zman). Rien n'est
 proposé de 'hatsot à min'ha guedola ni de la chki'a à tsét. Sans lieu, ou
-sans zmanim (soleil de minuit), les heures fixes d'avant.
+sans zmanim, ou quand l'un d'eux manque (aube absente autour du solstice à
+Londres, Berlin, Moscou… ; soleil de minuit), les heures fixes d'avant.
 
 **Réglages** : en noussa'h Sfard, Ta'hanoun de fin de Tichri au choix (dit
 après Isrou 'hag par défaut) ; à Jérusalem, l'allumage 40 minutes avant la
@@ -139,9 +140,10 @@ chki'a est proposé, sans être imposé.
 
 **Le soir** : Arvit et le Chema du coucher relèvent du jour hébreu suivant à
 partir de midi (`jourDeLaPriere`). Midi plutôt que la chki'a, qui demanderait
-un lieu ; aucun Arvit ne se dit le matin. Les bénédictions du repas suivent
-le jour civil : après la chki'a, la règle dépend de l'heure du début du
-repas, et les ajouts restent ouvrables.
+un lieu ; aucun Arvit ne se dit le matin. Les bénédictions du repas et les
+autres textes passent au jour hébreu suivant à la sortie des étoiles du lieu
+(tsét 8,5°) ; sans lieu, ils suivent le jour civil. Min'ha garde le jour
+civil ; les ajouts restent ouvrables à la main.
 
 ### Dans le siddour
 
@@ -480,8 +482,8 @@ tourne »), widget 2 × 2 `BoussoleWidget`. Vers Har haBayit, 31,7781° N,
   (graduations aux 5°, degrés aux 30°, zone d'or de ±4°, aiguille d'or vers
   Jérusalem, anneau d'or face à elle), avec le pointillé bleu de la carte.
 - **Actualiser ma position** (ex-« Position exacte », 31/10). Le bouton relance
-  la localisation, approximative seulement depuis le 31/10 (`ChoixLieu.maPosition`,
-  web `localiserPosition`) : Google Play réserve la position exacte aux usages
+  la localisation, approximative seulement depuis le 31/10 sur Android
+  (`ChoixLieu.maPosition` ; le web demande la haute précision, `localiserPosition`) : Google Play réserve la position exacte aux usages
   qui l'exigent, ici le seul GPS en vol ; à l'ouverture, la position du
   téléphone se reprend sans bruit si elle est déjà permise.
   La boussole parallèle de `main` (`DirectionTefila`, même calcul) est

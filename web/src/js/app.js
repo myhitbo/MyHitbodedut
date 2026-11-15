@@ -2739,6 +2739,16 @@ function lienExterne(libelle, url) {
   return h('a', { class: 'jour-lien', href: url, target: '_blank', rel: 'noopener' }, `${libelle} ↗`);
 }
 
+/** Après la sortie des étoiles du lieu, la date hébraïque du jour qui commence (vignette Android, FCALENDRIER-13). */
+function jourDepuisSortie(iso) {
+  const lieu = store.lieu();
+  if (!lieu || iso !== jourLieu()) return null;
+  const tset = zmanimDuJour(lieu, iso).find((z) => z.cle === 'tset')?.instant;
+  if (!tset || new Date() < tset) return null;
+  const [a, m, d] = iso.split('-').map(Number);
+  return jourJuif(new Date(Date.UTC(a, m - 1, d + 1, 12)).toISOString().slice(0, 10), store.inIsrael(), mukafChoma()).dateHebraique;
+}
+
 function carteJour(iso, { complet = true } = {}) {
   const j = jourJuif(iso, store.inIsrael(), mukafChoma());
   // L'omer se compte le soir, pour le jour hébreu qui commence : celui de demain.
@@ -2756,6 +2766,7 @@ function carteJour(iso, { complet = true } = {}) {
     dessin ? h('img', { class: 'jour-illustration', src: `img/${dessin}.webp`, alt: '' }) : null,
     h('p', { class: 'jour-hebreu', lang: 'he', dir: 'rtl' }, j.dateHebraique),
     h('p', { class: 'jour-civil' }, civil),
+    (complet ? null : jourDepuisSortie(iso)) ? h('p', { class: 'jour-civil' }, tr.t('zmanim_depuis_tset', jourDepuisSortie(iso))) : null,
     marques.length ? h('div', { class: 'jour-marques' }, marques.map((m) => h('span', { class: 'marque' }, m))) : null,
     h('h3', { class: 'jour-sous-titre' }, tr.t('zmanim_ajouts_titre')),
     h('p', { class: 'jour-ajouts' }, ajoutsDuJour(j.conditions, store.siddurNusah(), store.inIsrael(), store.sansTahanounFinTichri(), hemisphereSud()).map((k) => tr.t(k)).join(' · ')),
@@ -2879,7 +2890,7 @@ function blocLevana(iso) {
       h('div', { class: 'levana-corps' },
         h('h3', { class: 'jour-sous-titre' }, tr.t('levana_titre')),
         h('p', { class: `levana-etat${typeof l.etat === 'string' ? ' ouvert' : ''}` }, etat),
-        h('p', { class: 'levana-lune' }, tr.t('levana_lune', `${Math.round(l.lune.eclairage * 100)} %`, tr.t(l.lune.croissante ? 'levana_croissante' : 'levana_decroissante'))))),
+        h('p', { class: 'levana-lune' }, tr.t('levana_lune', new Intl.NumberFormat(tr.langue, { style: 'percent' }).format(Math.round(l.lune.eclairage * 100) / 100), tr.t(l.lune.croissante ? 'levana_croissante' : 'levana_decroissante'))))),
     h('p', { class: 'levana-fenetre' }, tr.t('levana_fenetre', heure(l.debutMs), heure(l.finMs))),
     l.motsae ? h('p', { class: 'levana-conseil' }, tr.t('levana_motsae', court(l.motsae))) : null,
     l.restriction ? h('p', { class: 'levana-conseil' }, tr.t(l.restriction === 'kippour' ? 'levana_kippour' : 'levana_tisha')) : null,
@@ -4372,7 +4383,7 @@ function ecranCalendrier() {
             return h('button', {
               class: ['case', d === aujourdhui ? 'aujourdhui' : '', d === choisi ? 'choisi' : '', j.chome ? 'chome' : '', j.fetes.length ? 'fete' : ''].filter(Boolean).join(' '),
               'aria-pressed': String(d === choisi),
-              'aria-label': `${d} · ${j.dateHebraique}${j.fetes.length ? ` · ${j.fetes.map((f) => tr.t(`fete_${f}`)).join(', ')}` : ''}`,
+              'aria-label': `${new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`))} · ${j.dateHebraique}${j.fetes.length ? ` · ${j.fetes.map((f) => tr.t(`fete_${f}`)).join(', ')}` : ''}`,
               onclick: () => { jourCalendrier = d; rendre(); },
             }, ...(civil ? [civ, hebreu] : [hebreu, civ]));
           })),

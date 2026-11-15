@@ -948,6 +948,13 @@ object Store {
     /** Le lieu des zmanim est au sud de l'équateur (14/10) : Ilanot, Morid hatal des Edot. */
     fun hemisphereSud(context: Context): Boolean = (lieuZmanim(context)?.latitude ?: 0.0) < 0
 
+    /** L'alerte « Chabbat dans 3 h » (audit du 12/11, FCALENDRIER-07) : allumée d'origine. */
+    fun chabbatAlerte(context: Context): Boolean = prefs(context).getBoolean("chabbat_alerte", true)
+
+    fun setChabbatAlerte(context: Context, v: Boolean) {
+        prefs(context).edit().putBoolean("chabbat_alerte", v).apply()
+    }
+
     /** Le rappel de Birkat haLevana (14/10) : activé par défaut ; le soir annoncé par l'alarme posée. */
     fun levanaRappel(context: Context): Boolean = prefs(context).getBoolean("levana_rappel", true)
 

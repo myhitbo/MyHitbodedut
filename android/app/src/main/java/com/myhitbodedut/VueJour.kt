@@ -111,7 +111,7 @@ object VueJour {
                     Levana.Etat.CeSoir -> c.getString(R.string.levana_ce_soir)
                     Levana.Etat.DernierSoir -> c.getString(R.string.levana_dernier_soir)
                 }, 17f, if (etat is Levana.Etat.Dans) R.color.ink else R.color.brand, gras = true, haut = 2))
-                val pct = "${Math.round(lune.eclairage * 100)} %"
+                val pct = java.text.NumberFormat.getPercentInstance(locale(langue)).format(Math.round(lune.eclairage * 100) / 100.0)
                 addView(texte(c, c.getString(R.string.levana_lune, pct,
                     c.getString(if (lune.croissante) R.string.levana_croissante else R.string.levana_decroissante)), 13f, R.color.muted, haut = 2))
             })

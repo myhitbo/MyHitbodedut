@@ -249,6 +249,12 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   // Les Edot disent ברכנו / ברך עלינו ; les autres noussa'h ותן ברכה / ותן טל ומטר.
   assert.ok(A.ajouts(jour('2026-10-12', false).conditions, 'ashkenaz').includes('ajout_berakha'));
   assert.ok(A.ajouts(jour('2026-12-07', false).conditions).includes('ajout_barekh_alenou'));
+  // Un Yom Tov en semaine et Kippour : pas de 9e bénédiction de semaine (FCALENDRIER-12).
+  for (const iso of ['2027-04-22', '2026-09-21']) {
+    assert.ok(!A.ajouts(jour(iso, false).conditions).some((k) => ['ajout_barkhenou', 'ajout_berakha', 'ajout_barekh_alenou', 'ajout_tal_oumatar'].includes(k)), iso);
+    // Ni « Pas de Ta'hanoun », comme le Chabbat.
+    assert.ok(!A.ajouts(jour(iso, false).conditions).some((k) => k.includes('tahanoun')), iso);
+  }
   assert.ok(!A.ajouts(jour('2026-10-10', false).conditions).some((k) => ['ajout_barkhenou', 'ajout_berakha'].includes(k)));
   // Le nusah (JourAfficheTest) : bénédiction du Hallel partiel (OC 422:2),
   // Morid hatal ashkénaze hors d'Israël, Anénou du particulier (OC 565:3).
@@ -365,6 +371,11 @@ test('siddour : la suggestion suit les zmanim du lieu, rien dans les creux', asy
   assert.equal(A.momentDuSiddour(jer, d('tset', 60)), 'arvit');
   assert.equal(A.momentDuSiddour(jer, new Date('2026-10-16T22:45:00+03:00')), 'chema_coucher');
   assert.equal(A.momentDuSiddour(jer, new Date('2026-10-16T02:00:00+03:00')), 'tikoun_hatsot');
+  // Londres au solstice : pas d'aube, mais chki'a et tsét existent (FCALENDRIER-08).
+  const londres = { nom: 'L', latitude: 51.5074, longitude: -0.1278, altitude: 0, fuseau: 'Europe/London' };
+  assert.equal(A.momentDuSiddour(londres, new Date('2027-06-21T18:45:00+01:00')), 'minha');
+  assert.equal(A.momentDuSiddour(londres, new Date('2027-06-21T09:00:00+01:00')), 'chaharit');
+  assert.equal(A.momentDuSiddour(londres, new Date('2027-06-21T00:30:00+01:00')), 'chema_coucher');
   const tromso = { nom: 'T', latitude: 69.6492, longitude: 18.9553, altitude: 0, fuseau: 'Europe/Oslo' };
   assert.equal(A.momentDuSiddour(tromso, new Date('2026-06-21T14:00:00+02:00')), SiddurMoment.suggestion(14, 0));
 });

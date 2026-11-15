@@ -102,7 +102,7 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
         }
         contenu.addView(boussole)
         precision = VueJour.texte(this, getString(R.string.boussole_calibrer), 13f, R.color.warning, haut = 8)
-            .apply { visibility = android.view.View.GONE; setPadding(dp(16), 0, dp(16), 0) }
+            .apply { visibility = if (peuPrecise) android.view.View.VISIBLE else android.view.View.GONE; setPadding(dp(16), 0, dp(16), 0) }
         contenu.addView(precision)
         val avecCapteur = aBoussole()
         contenu.addView(VueJour.texte(this, getString(if (avecCapteur) R.string.boussole_a_plat else R.string.boussole_sans_capteur),
@@ -245,9 +245,13 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
         if (sensor.type != Sensor.TYPE_ROTATION_VECTOR && sensor.type != Sensor.TYPE_MAGNETIC_FIELD) return
+        // Retenue pour que le redessin de l'écran (afficher()) ne fasse pas disparaître l'avertissement.
+        peuPrecise = accuracy <= SensorManager.SENSOR_STATUS_ACCURACY_LOW
         if (!::precision.isInitialized) return
-        precision.visibility = if (accuracy <= SensorManager.SENSOR_STATUS_ACCURACY_LOW) android.view.View.VISIBLE else android.view.View.GONE
+        precision.visibility = if (peuPrecise) android.view.View.VISIBLE else android.view.View.GONE
     }
+
+    private var peuPrecise = false
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
