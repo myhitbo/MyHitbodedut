@@ -102,6 +102,7 @@
 
     <!-- Réglages -->
     <string name="settings_window">Plage horaire</string>
+    <string name="window_identique">Le début et la fin doivent être différents.</string>
     <string name="settings_snooze">Durée du report</string>
     <string name="settings_target">Durée d’une hitbodedout</string>
     <string name="settings_daily_goal">Objectif quotidien</string>
