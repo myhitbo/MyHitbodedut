@@ -182,6 +182,7 @@ object RepriseFavoris {
                     ?.let { setCompoundDrawablesRelative(null, null, it, null); compoundDrawablePadding = dp(c, 8) }
             }
         })
-        traduction?.let { addView(sousTitre(c, it, 13f)) }
+        // La traduction ouvre le texte, comme le titre : c'est elle que le lecteur reconnaît.
+        traduction?.let { addView(sousTitre(c, it, 13f).apply { setOnClickListener { action() } }) }
     }
 }
