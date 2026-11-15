@@ -1592,6 +1592,8 @@
     <string name="refonte_journal">Journal</string>
     <string name="refonte_journal_titre">Journal · %1$s</string>
     <string name="refonte_journal_verrouille">Journal verrouillé</string>
+    <string name="refonte_demain">%1$s demain</string>
+    <string name="refonte_journal_aucune">Pas encore de note</string>
     <string name="refonte_journal_vide">Pas encore de note. Touchez pour écrire.</string>
     <string name="refonte_aujourdhui">Aujourd’hui</string>
     <string name="refonte_hier">Hier</string>

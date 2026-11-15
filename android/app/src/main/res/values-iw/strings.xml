@@ -1584,6 +1584,8 @@
     <string name="refonte_journal">יומן</string>
     <string name="refonte_journal_titre">יומן · %1$s</string>
     <string name="refonte_journal_verrouille">היומן נעול</string>
+    <string name="refonte_demain">%1$s מחר</string>
+    <string name="refonte_journal_aucune">עדיין אין רשימה</string>
     <string name="refonte_journal_vide">עדיין אין רשימה. געו כדי לכתוב.</string>
     <string name="refonte_aujourdhui">היום</string>
     <string name="refonte_hier">אתמול</string>

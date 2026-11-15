@@ -111,7 +111,22 @@ class AccueilRefontes(private val a: MainActivity) {
         return Jour(zmanim, lieu, maintenant, zmanim?.let(CielDuJour::reperes) ?: CielDuJour.MOYENS)
     }
 
-    private fun prochain(j: Jour): Zmanim.Zman? = j.zmanim?.let { CielDuJour.prochain(it, j.maintenant) }
+    /** Le prochain zman, avec la journée qui le porte ; la nuit tombée, le premier de demain (le lever). */
+    private class Prochain(val zman: Zmanim.Zman, val journee: List<Zmanim.Zman>, val demain: Boolean)
+
+    private fun prochain(j: Jour): Prochain? {
+        val aujourdhui = j.zmanim ?: return null
+        CielDuJour.prochain(aujourdhui, j.maintenant)?.let { return Prochain(it, aujourdhui, false) }
+        val lieu = j.lieu ?: return null
+        val demain = runCatching { Zmanim.jour(lieu, j.maintenant.toLocalDate().plusDays(1)) }.getOrNull() ?: return null
+        return CielDuJour.prochain(demain, j.maintenant)?.let { Prochain(it, demain, true) }
+    }
+
+    /** « Lever du soleil (Nets) », ou « Lever du soleil (Nets) demain » une fois la nuit tombée. */
+    private fun nom(p: Prochain): String {
+        val nom = a.getString(CielDuJour.NOMS.getValue(p.zman.cle))
+        return if (p.demain) a.getString(R.string.refonte_demain, nom) else nom
+    }
 
     private fun dans(z: Zmanim.Zman, j: Jour): String {
         val minutes = ChronoUnit.MINUTES.between(j.maintenant, z.local!!).toInt().coerceAtLeast(1)
@@ -273,9 +288,8 @@ class AccueilRefontes(private val a: MainActivity) {
         texte(R.id.ciel_complet_moment, a.getString(periode.libelle), encre)
         texte(R.id.ciel_complet_prochain, when {
             j.zmanim == null -> a.getString(R.string.ciel_sans_lieu)
-            else -> prochain(j)?.let { z ->
-                a.getString(R.string.refonte_prochain, a.getString(CielDuJour.NOMS.getValue(z.cle)), dans(z, j))
-            } ?: a.getString(R.string.ciel_nuit)
+            // La nuit, le lever de demain : la phrase de Rabbi Na'hman est déjà dans la carte de verre.
+            else -> prochain(j)?.let { p -> a.getString(R.string.refonte_prochain, nom(p), dans(p.zman, j)) }.orEmpty()
         }, encre)
 
         a.findViewById<View>(R.id.ciel_complet_verre)?.background = GradientDrawable().apply {
@@ -342,24 +356,26 @@ class AccueilRefontes(private val a: MainActivity) {
         // Le prochain zman.
         val j = jour()
         val z = prochain(j)
-        val nom = a.findViewById<TextView>(R.id.bento_zman_nom)
+        val nomVue = a.findViewById<TextView>(R.id.bento_zman_nom)
         val reste = a.findViewById<TextView>(R.id.bento_zman_dans)
         val chkia = a.findViewById<TextView>(R.id.bento_zman_chkia)
         when {
             j.zmanim == null -> {
-                nom?.setText(R.string.refonte_choisir_ville); reste?.text = ""; chkia?.text = ""
+                nomVue?.setText(R.string.refonte_choisir_ville); reste?.text = ""; chkia?.text = ""
             }
             z == null -> {
-                nom?.setText(R.string.periode_nuit); reste?.text = ""; chkia?.text = ""
+                nomVue?.setText(R.string.periode_nuit); reste?.text = ""; chkia?.text = ""
             }
             else -> {
-                nom?.setText(CielDuJour.NOMS.getValue(z.cle))
-                reste?.text = dans(z, j)
-                chkia?.text = zman(j, "chkia")?.let { a.getString(R.string.refonte_zman_heure, a.getString(R.string.zman_chkia), it.local!!.format(heure)) }.orEmpty()
+                nomVue?.text = nom(z)
+                reste?.text = dans(z.zman, j)
+                // Le coucher du même jour que le prochain zman : celui de demain, la nuit tombée.
+                chkia?.text = z.journee.firstOrNull { it.cle == "chkia" && it.statut == Zmanim.Statut.OK && it.local != null }
+                    ?.let { a.getString(R.string.refonte_zman_heure, a.getString(R.string.zman_chkia), it.local!!.format(heure)) }.orEmpty()
             }
         }
         a.findViewById<View>(R.id.bento_zmanim)?.contentDescription =
-            listOf(nom?.text, reste?.text, chkia?.text).filterNot { it.isNullOrBlank() }.joinToString(". ")
+            listOf(nomVue?.text, reste?.text, chkia?.text).filterNot { it.isNullOrBlank() }.joinToString(". ")
 
         // Le ’hizouk du jour ; la tuile attend que les fichiers soient lus.
         val h = hizouk()
@@ -434,10 +450,10 @@ class AccueilRefontes(private val a: MainActivity) {
         a.findViewById<TextView>(R.id.pile_zmanim_prochain)?.text = when {
             j.zmanim == null -> a.getString(R.string.ciel_sans_lieu)
             z == null -> a.getString(R.string.ciel_nuit)
-            else -> a.getString(R.string.pile_prochain, a.getString(CielDuJour.NOMS.getValue(z.cle)))
+            else -> a.getString(R.string.pile_prochain, nom(z))
         }
         a.findViewById<TextView>(R.id.pile_zmanim_dans)?.apply {
-            text = z?.let { dans(it, j) }.orEmpty()
+            text = z?.let { dans(it.zman, j) }.orEmpty()
             visibility = if (z == null) View.GONE else View.VISIBLE
         }
         a.findViewById<LinearProgressIndicator>(R.id.pile_zmanim_jour)?.apply {
@@ -454,7 +470,8 @@ class AccueilRefontes(private val a: MainActivity) {
         val note = note()
         a.findViewById<TextView>(R.id.pile_journal_titre)?.text = when {
             Store.journalVerrou(a) -> a.getString(R.string.refonte_journal_verrouille)
-            note == null -> a.getString(R.string.refonte_journal_vide)
+            // Le bouton « Écrire la note du jour » est juste dessous : pas de « Touchez pour écrire ».
+            note == null -> a.getString(R.string.refonte_journal_aucune)
             else -> note.first
         }
         a.findViewById<TextView>(R.id.pile_journal_texte)?.apply {

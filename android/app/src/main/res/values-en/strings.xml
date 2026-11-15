@@ -1539,6 +1539,8 @@
     <string name="refonte_journal">Journal</string>
     <string name="refonte_journal_titre">Journal · %1$s</string>
     <string name="refonte_journal_verrouille">Journal locked</string>
+    <string name="refonte_demain">%1$s tomorrow</string>
+    <string name="refonte_journal_aucune">No note yet</string>
     <string name="refonte_journal_vide">No note yet. Tap to write.</string>
     <string name="refonte_aujourdhui">Today</string>
     <string name="refonte_hier">Yesterday</string>
