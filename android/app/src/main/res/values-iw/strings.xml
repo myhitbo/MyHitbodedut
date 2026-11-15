@@ -455,19 +455,19 @@
     <string name="settings_name_empty">לא הוזן</string>
 
     <!-- מסך תפילות: עשרה עניינים, שתי תפילות לכל אחד (ליקוטי תפילות). -->
-    <string name="tefilot_title">תפלות</string>
-    <string name="tefilot_hint">עשרה ענינים, עשרים ואחת תפלות. רבי נתן מברסלב.</string>
-    <string name="tefilot_count">%d תפלות</string>
-    <string name="tefilot_warning">התורה הנזכרת עוסקת בענין אחר; הבקשה בתוך התפלה.</string>
+    <string name="tefilot_title">תפילות</string>
+    <string name="tefilot_hint">עשרה עניינים, עשרים ואחת תפילות. רבי נתן מברסלב.</string>
+    <string name="tefilot_count">%d תפילות</string>
+    <string name="tefilot_warning">התורה הנזכרת עוסקת בעניין אחר; הבקשה בתוך התפילה.</string>
     <string name="tefila_hitbodedut">התבודדות</string>
     <string name="tefila_simcha">שמחה</string>
     <string name="tefila_uman">אומן, ראש השנה</string>
-    <string name="tefila_kdusha">קדשה</string>
-    <string name="tefila_zera">זרע של קימא</string>
+    <string name="tefila_kdusha">קדושה</string>
+    <string name="tefila_zera">זרע של קיימא</string>
     <string name="tefila_parnassa">פרנסה</string>
     <string name="tefila_brit">שמירת הברית</string>
-    <string name="tefila_geula">גאלה</string>
-    <string name="tefila_zivug">זווג</string>
+    <string name="tefila_geula">גאולה</string>
+    <string name="tefila_zivug">זיווג</string>
     <string name="tefila_refua">רפואה שלמה</string>
 
     <!-- Présentation détaillée, bravo de fin de séance, apparence (28/09). -->
