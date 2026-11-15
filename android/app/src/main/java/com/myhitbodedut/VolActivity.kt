@@ -503,7 +503,7 @@ class VolActivity : AppCompatActivity() {
         val detail = LinearLayout(this@VolActivity).apply {
             orientation = LinearLayout.VERTICAL
             visibility = View.GONE
-            addView(VueJour.texte(this@VolActivity, getString(R.string.zmanim_a_valider), 12f, R.color.muted))
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_methodes), 12f, R.color.muted))
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_source_aeroports), 12f, R.color.muted, haut = 6))
             if (BuildConfig.SUIVI_VOL) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_source_adsbdb), 12f, R.color.muted, haut = 4))
         }
@@ -1013,8 +1013,8 @@ class VolActivity : AppCompatActivity() {
 
     /**
      * L'interrupteur des services en ligne (02/11) : un seul, désactivé par défaut, pour la route
-     * d'un numéro (adsbdb) et le suivi en direct (OpenSky). Il figure dans le formulaire et sous
-     * les résultats ; le basculer redessine les deux, pour que la loupe suive.
+     * d'un numéro (adsbdb) et le suivi en direct (OpenSky). Il vit sous « Préciser la position », donc
+     * seulement après un calcul (04/11) ; le basculer redessine l'écran. Allumé, il redit ce qui part.
      */
     private fun ajouterInterrupteurEnLigne(carte: LinearLayout) {
         val actif = Store.suiviDirect(this)
@@ -1024,6 +1024,8 @@ class VolActivity : AppCompatActivity() {
             setOnCheckedChangeListener { _, v -> Store.setSuiviDirect(this@VolActivity, v); afficherFormulaire() }
         })
         if (!actif) carte.addView(VueJour.texte(this, getString(aideEnLigne), 12f, R.color.muted, haut = 2))
+        else if (fournisseurDirect != null) carte.addView(VueJour.texte(this, getString(
+            if (BuildConfig.RELAIS_VOL.startsWith("https://")) R.string.vol_direct_explication else R.string.vol_direct_explication_opensky), 12f, R.color.muted, haut = 2))
     }
 
     /** Le suivi en direct de cette construction ; null : pas de suivi en direct (construction Play sans relais). */
@@ -1047,7 +1049,7 @@ class VolActivity : AppCompatActivity() {
      * (et le départ s'il est vide) et l'indicatif du suivi en direct ; les heures restent à saisir.
      */
     private fun chercherRoute() {
-        // La loupe n'existe que services en ligne activés ; la garde tient même si elle réapparaissait.
+        // La loupe est toujours visible ; sans l'accord des services en ligne, la garde l'arrête ici.
         if (!BuildConfig.SUIVI_VOL || !Store.suiviDirect(this)) return
         if (RouteVol.normaliser(numero) == null) {
             routeTexte = getString(R.string.vol_route_invalide)

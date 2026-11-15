@@ -3661,6 +3661,7 @@ function suiviDirect() {
   const bloc = [interrupteurEnLigne()];
   if (!actif) return bloc;
   if (!RELAIS_VOL) return [...bloc, h('p', { class: 'indice' }, tr.t('vol_direct_inactif'))];
+  bloc.push(h('p', { class: 'indice' }, tr.t('vol_direct_explication')));
   const champ = h('input', { type: 'text', class: 'champ-recherche champ-vol', maxlength: 9, autocapitalize: 'characters', placeholder: tr.t('vol_indicatif'), value: store.volIndicatif() || null });
   return [...bloc, champ,
     h('button', { class: 'secondaire', disabled: directVol, onclick: () => {
@@ -3910,7 +3911,7 @@ function ecranVol() {
       ...(garde && calculVol ? resultatsVol(calculVol) : []),
       // La méthode, les aéroports, les routes : repliés sous « Sources ».
       h('details', { class: 'sources-vol' }, h('summary', {}, tr.t('vol_sources')),
-        ...piedZmanim().slice(0, 1),
+        h('p', { class: 'indice sources' }, tr.t('vol_methodes')),
         h('p', { class: 'indice sources' }, tr.t('vol_source_aeroports')),
         h('p', { class: 'indice sources' }, tr.t('vol_source_adsbdb'))))));
 }
