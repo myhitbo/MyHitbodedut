@@ -78,7 +78,8 @@ object FicheTrophee {
                     .withLocale(activite.resources.configuration.locales[0])))
             } ?: activite.getString(R.string.trophee_gagne)
             carte.addView(VueJour.texte(activite, le, 15f, R.color.brand, gras = true, haut = 10).apply { gravity = Gravity.CENTER })
-            carte.addView(VueJour.texte(activite, activite.getString(R.string.trophee_detail_grade, TropheesVue.metal(activite, m!!), rangGlobal),
+            // Le rang sert de quantité (13/11, TFRLANGUE-01) : « votre premier trophée » au rang 1, « votre 8ᵉ » ensuite.
+            carte.addView(VueJour.texte(activite, activite.resources.getQuantityString(R.plurals.trophee_detail_grade, rangGlobal, TropheesVue.metal(activite, m!!), rangGlobal),
                 13f, R.color.muted, haut = 4).apply { gravity = Gravity.CENTER })
         } else {
             val couleur = Apparence.couleur(activite, R.color.brand)

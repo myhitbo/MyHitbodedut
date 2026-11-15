@@ -257,4 +257,20 @@ class TraductionTest {
         }
         assertTrue("aucun titre lu : la lecture est cassée", vus >= 4)
     }
+
+    /**
+     * Audit du 12/11, FVOL-09 : en hébreu, le compte à rebours du vol disait « עד » (jusqu'à) au lieu
+     * de « עוד », et « 1 שעות » ; et FVOL-06 : le rappel de Tefilat haDerekh ne tranche pas.
+     */
+    @Test
+    fun `vol, l'hebreu du compte a rebours et le rappel de Tefilat haDerekh ne tranche pas`() {
+        val iw = File("src/main/res/values-iw/strings.xml").readText()
+        assertTrue(iw.contains("""<string name="vol_dans">עוד %1${'$'}s</string>"""))
+        assertEquals("שעתיים", lire("values-iw").pluriels["vol_duree_heures[two]"])
+        assertEquals("שעה אחת", lire("values-iw").pluriels["vol_duree_heures[one]"])
+        listOf("values", "values-en", "values-iw").forEach { d ->
+            val t = Regex("""name="vol_rappel_derekh_texte">([^<]*)<""").find(File("src/main/res/$d/strings.xml").readText())!!.groupValues[1]
+            assertTrue("$d : pas de « le moment de dire »", !t.contains("le moment de dire") && !t.contains("time to say") && !t.contains("הזמן לומר"))
+        }
+    }
 }

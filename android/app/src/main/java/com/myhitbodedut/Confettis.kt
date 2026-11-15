@@ -155,8 +155,9 @@ object Celebrations {
         val trophee = Trophees.nouveaux(gagnes, tropheesVus).firstOrNull()
         val palier = paliersVus?.let { vus -> Paliers.nouveaux(etats, bilan, vus).maxByOrNull { it.rang } }
         val (icone, message) = when {
+            // Sans métal (13/11, FDONNEES-06) : celui de la famille n'est plus celui que l'écran montre.
             trophee != null -> trophee.famille.icone to c.getString(R.string.trophee_niveau_gagne,
-                TropheesVue.nom(c, trophee.famille), trophee.rang, TropheesVue.metal(c, trophee.metal))
+                TropheesVue.nom(c, trophee.famille), trophee.rang)
             palier != null -> "🎉" to c.getString(R.string.palier_nouveau,
                 PaliersVue.libelle(c, palier.piste, bilan), PaliersVue.valeur(c, palier.piste, palier.atteint))
             else -> "" to ""

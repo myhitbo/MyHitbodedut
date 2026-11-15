@@ -1,0 +1,168 @@
+{
+ "format": "myhitbodedut",
+ "version": 2,
+ "exported_at": "2021-06-01T10:00:00.5Z",
+ "days": {
+  "2021-05-30": {
+   "minutes": 12,
+   "note": "Ligne séparée, \"guillemets\", \\barre, \t tab",
+   "themes": [
+    "avoda"
+   ]
+  },
+  "2021-05-31": {
+   "minutes": 30,
+   "note": ""
+  }
+ },
+ "settings": {
+  "window_start": 1260,
+  "window_end": 120,
+  "snooze_minutes": 5,
+  "target_minutes": 240,
+  "daily_goal_minutes": 0,
+  "pause_shabbat": false,
+  "in_israel": true,
+  "in_israel_manuel": true,
+  "reminder_enabled": false,
+  "reminder_minutes": 420,
+  "reminder_times": [
+   1260,
+   420,
+   420,
+   -3,
+   3000,
+   "600"
+  ],
+  "first_name": "Rivka",
+  "hide_countdown": false,
+  "guided_hitbodedut": false,
+  "music_enabled": true,
+  "music_volume": -4,
+  "music_shuffle": false,
+  "music_track": "hamelech_basade",
+  "adresse": "m",
+  "apparence_mode": "clair",
+  "apparence_fond": "contraste",
+  "apparence_accent": "turquoise",
+  "siddur_nusah": "ashkenaz",
+  "lecture_echelle": 5,
+  "lecture_police": "miriam",
+  "lecture_sombre": true,
+  "lecture_masquee": "true",
+  "lecture_ecran_allume": false,
+  "lecture_langues": "fr+en"
+ },
+ "paused_dates": [
+  "2021-05-29"
+ ],
+ "blocked_apps": [
+  "com.android.chrome"
+ ],
+ "journal_plus": {
+  "2021-05-30": {
+   "avant": 9,
+   "apres": -2,
+   "gratitude": "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+   "travail": 3
+  },
+  "2021-05-31": {
+   "avant": "3",
+   "apres": 2.7
+  },
+  "2021-05-29": {
+   "avant": 0,
+   "apres": 0,
+   "gratitude": "  ",
+   "travail": ""
+  },
+  "2099-01-01": {
+   "avant": 2
+  },
+  "2021-02-30": {
+   "avant": 2
+  },
+  "2021-05-28": "pas un objet"
+ },
+ "tikkun_journal": [
+  "2021-05-30",
+  "2021-05-30",
+  "2021-5-1",
+  "",
+  "2099-01-01",
+  20210529,
+  "2021-05-28"
+ ],
+ "favoris": [
+  "s:chaharit",
+  "l:likoutei_moharan",
+  "x:autre",
+  "",
+  "s:chaharit",
+  "s:a|l:b",
+  5
+ ],
+ "chizuk_favoris": [
+  "tehilim-145-18",
+  "a|b",
+  " ",
+  "by-47-1",
+  "tehilim-145-18"
+ ],
+ "marques_pages": [
+  {
+   "cle": "l:likoutei_moharan",
+   "nusah": "",
+   "section": 3,
+   "bloc": 12,
+   "apercu": "אשרי\tתמימי\nדרך"
+  },
+  {
+   "cle": "s:chaharit",
+   "nusah": "edot",
+   "section": "2",
+   "bloc": 4.9,
+   "apercu": "מודה"
+  },
+  {
+   "cle": "",
+   "nusah": "",
+   "section": 1,
+   "bloc": 1,
+   "apercu": "sans clé"
+  },
+  {
+   "cle": "s:a\tb",
+   "nusah": "",
+   "section": 1,
+   "bloc": 1,
+   "apercu": "tab dans la clé"
+  },
+  {
+   "cle": "s:minha",
+   "nusah": "ed\tot",
+   "section": 1,
+   "bloc": 1,
+   "apercu": "tab dans le noussa'h"
+  },
+  {
+   "cle": "s:minha",
+   "nusah": "",
+   "section": -1,
+   "bloc": 1,
+   "apercu": "section négative"
+  },
+  {
+   "cle": "s:minha",
+   "nusah": "",
+   "bloc": 1
+  },
+  {
+   "cle": "s:arvit",
+   "nusah": "sefard",
+   "section": 0,
+   "bloc": 0
+  },
+  "pas un objet"
+ ]
+}

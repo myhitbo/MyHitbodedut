@@ -62,10 +62,10 @@ private fun trophees() = mapOf(
     "familles" to Trophees.Famille.entries.map { f ->
         mapOf("cle" to f.cle, "icone" to f.icone, "forme" to f.forme.cle, "seuils" to f.seuils.toList())
     },
-    // Le chemin, du plus facile au plus dur : chaque niveau avec son coût et son métal.
+    // Le chemin, du plus facile au plus dur : chaque niveau avec son coût. Le métal n'est plus
+    // celui du niveau mais celui du grade, d'après le nombre de trophées gagnés (seuils_grades).
     "chemin" to Trophees.chemin.map { n ->
-        mapOf("famille" to n.famille.cle, "rang" to n.rang, "seuil" to n.seuil,
-            "cout" to Trophees.cout(n.famille, n.seuil), "metal" to n.metal.name.lowercase())
+        mapOf("famille" to n.famille.cle, "rang" to n.rang, "seuil" to n.seuil, "cout" to Trophees.cout(n.famille, n.seuil))
     },
     "seuils_grades" to Trophees.SEUILS_GRADES.toList(),
 )

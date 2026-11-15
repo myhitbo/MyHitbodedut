@@ -285,7 +285,7 @@ public enum CalendrierJuif {
         // Relevé du 19/10 : למנצח, « לדוד ה׳ אורי », les dix jours et Hochaana Rabba, fêtes et Chabbat.
         let adar1415 = (mois == Mois.adar || mois == Mois.adarII) && (14...15).contains(quantieme)
         if !(roshChodesh || regles.isChanukah() || adar1415 || regles.isTishaBav() || regles.isAssurBemelacha()
-             || index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR) { c.insert(C.lamnatseah) }
+             || regles.isCholHamoed() || index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR) { c.insert(C.lamnatseah) }
         if mois == Mois.eloul || (mois == Mois.tichri && quantieme <= 21) { c.insert(C.ledavid) }
         if regles.isAseresYemeiTeshuva() || (mois == Mois.tichri && quantieme == 21) { c.insert(C.techouvaHochaana) }
         let yomTov = regles.isYomTovAssurBemelacha()

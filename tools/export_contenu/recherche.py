@@ -2,8 +2,10 @@
 
 Android relit et normalise tout à chaque frappe (RechercheGlobale.kt). L'index garde, pour chaque
 bloc, le texte déjà passé par la même normalisation, et ce que les règles de résultat demandent :
-un résultat par prière ou par livre (le titre, sinon le premier bloc qui contient la recherche),
-30 par sorte, le même extrait. L'app l'ouvre en lecture seule (Coeur, RechercheGlobale.swift).
+pour une prière ou un livre, le titre s'il contient la recherche, puis chaque paragraphe qui la
+contient, avec sa place et le titre de son chapitre, cinq au plus par texte et cinquante par
+recueil (FLECTURE-02) ; 30 par sorte pour la halakha et les hilloulot ; le même extrait. L'app
+l'ouvre en lecture seule (Coeur, RechercheGlobale.swift).
 
 Les deux normalisations d'Android sont reprises ici à la lettre, telles que l'appareil les exécute
 (java.util.regex sur ICU) : nu() (RechercheGlobale.nu) et celle, plus courte, de la halakha
@@ -22,7 +24,7 @@ import sqlite3
 import unicodedata
 from pathlib import Path
 
-VERSION = 1
+VERSION = 2
 
 # --- Les normalisations d'Android -------------------------------------------------------------
 
@@ -129,14 +131,18 @@ def rang_dans_l_annee(cle: str) -> int:
 SCHEMA = """
 CREATE TABLE meta (cle TEXT PRIMARY KEY, valeur TEXT NOT NULL) WITHOUT ROWID;
 -- Une ligne par prière (recueil edot, sefard, ashkenaz) ou par livre (recueil livres), dans l'ordre
--- du recueil ; ses blocs à chercher (hors consignes) sont les lignes debut..fin de blocs.
+-- du recueil ; ses blocs à chercher (hors consignes) sont les lignes debut..fin de blocs, chacun
+-- avec sa place dans le texte (rang de section, rang de bloc consignes comprises).
 CREATE TABLE textes (
   recueil TEXT NOT NULL, rang INTEGER NOT NULL, id TEXT NOT NULL,
   titre_he TEXT NOT NULL, titre_fr TEXT NOT NULL, titre_en TEXT NOT NULL,
   nu_he TEXT NOT NULL, nu_fr TEXT NOT NULL, nu_en TEXT NOT NULL,
   debut INTEGER NOT NULL, fin INTEGER NOT NULL,
   PRIMARY KEY (recueil, rang)) WITHOUT ROWID;
-CREATE TABLE blocs (nu TEXT NOT NULL);
+CREATE TABLE blocs (nu TEXT NOT NULL, section INTEGER NOT NULL, bloc INTEGER NOT NULL);
+-- Le titre des sections qui en ont un (« chapitre · » devant l'extrait d'un paragraphe).
+CREATE TABLE chapitres (recueil TEXT NOT NULL, rang INTEGER NOT NULL, section INTEGER NOT NULL,
+  titre TEXT NOT NULL, PRIMARY KEY (recueil, rang, section)) WITHOUT ROWID;
 -- Le Yalkout Yossef et le Ben Ich Haï, dans l'ordre de leur recherche sur Android.
 CREATE TABLE yalkut (siman TEXT NOT NULL, lettre TEXT NOT NULL,
   nu2_texte TEXT NOT NULL, nu2_siman TEXT NOT NULL, nu_texte TEXT NOT NULL);
@@ -155,13 +161,18 @@ def _recueil(base, recueil: str, textes: list, rangs: list):
         titre = t["titre"]
         debut = None
         fin = 0
-        for section in t["sections"]:
-            for b in section["blocs"]:
+        for si, section in enumerate(t["sections"]):
+            # SiddurSection.titre (optString("titre", "")) : gardé s'il n'est pas blanc.
+            chapitre = opt_string(section, "titre")
+            if not vide(chapitre):
+                base.execute("INSERT INTO chapitres VALUES (?,?,?,?)", (recueil, rang, si, chapitre))
+            for bi, b in enumerate(section["blocs"]):
                 if "c" in b:
                     continue
                 if "t" not in b:
                     raise SystemExit(f"recherche : bloc sans texte dans {recueil}/{t['id']}")
-                fin = base.execute("INSERT INTO blocs (nu) VALUES (?)", (nu(opt_string(b, "t")),)).lastrowid
+                fin = base.execute("INSERT INTO blocs (nu, section, bloc) VALUES (?,?,?)",
+                                   (nu(opt_string(b, "t")), si, bi)).lastrowid
                 debut = debut or fin
         he, fr, en = (opt_string(titre, "he"), pour_langue(titre, "fr"), pour_langue(titre, "en"))
         base.execute("INSERT INTO textes VALUES (?,?,?,?,?,?,?,?,?,?,?)",
@@ -181,7 +192,7 @@ def construire(raw: Path, cible: Path) -> dict:
     comptes = {}
     with base:
         base.executemany("INSERT INTO meta VALUES (?, ?)", [
-            ("version", str(VERSION)), ("par_sorte", "30"),
+            ("version", str(VERSION)), ("par_sorte", "30"), ("par_texte", "5"), ("par_recueil", "50"),
             ("normalisation", "RechercheGlobale.nu (Android), tools/export_contenu/recherche.py"),
         ])
         for rite in ("edot", "sefard", "ashkenaz"):
@@ -243,7 +254,7 @@ def empreinte(chemin: Path) -> tuple:
     taille = 0
     for (nom, sql) in base.execute("SELECT name, sql FROM sqlite_master WHERE sql IS NOT NULL ORDER BY name"):
         h.update(f"{nom}\0{sql}\0".encode())
-        ordre = {"meta": "cle", "textes": "recueil, rang"}.get(nom, "rowid")
+        ordre = {"meta": "cle", "textes": "recueil, rang", "chapitres": "recueil, rang, section"}.get(nom, "rowid")
         if sql.upper().startswith("CREATE TABLE"):
             for ligne in base.execute(f'SELECT * FROM "{nom}" ORDER BY {ordre}'):
                 texte = json.dumps(ligne, ensure_ascii=False)

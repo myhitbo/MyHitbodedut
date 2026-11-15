@@ -46,7 +46,7 @@ EXCLUES = re.compile(r"^(divulgation_|permission_battery|permission_overlay)")
 # Ce que l'export doit trouver (critère de la tâche 5) : un écart arrête tout.
 COMPTES = {
     "textes par rite": 38, "psaumes": 150, "versets": 2527, "psaumes du Tikoun": 10,
-    "textes de 'hizouk": 171, "livres": 12, "hilloulot": 4049, "villes": 51,
+    "textes de 'hizouk": 171, "livres": 12, "hilloulot": 3966, "villes": 51,
     "aéroports": 3226, "morceaux": 26,
 }
 
@@ -60,7 +60,7 @@ COMPTES_TABLES = {
     "sujets de Tefilot": (10, lambda t: len(t["sujets_tefila"]["sujets"])),
     "sujets de séance": (10, lambda t: len(t["sujets_seance"])),
     "temps de la hitbodedout": (5, lambda t: len(t["hitbodedut"]["mouvements"])),
-    "correspondances de poses": (21, lambda t: len(t["poses_feminines"])),
+    "correspondances de poses": (26, lambda t: len(t["poses_feminines"])),
     "zmanim": (15, lambda t: len(t["zmanim"]["profil"])),
 }
 
@@ -272,7 +272,9 @@ class Export:
     def polices(self):
         for source in sorted((RES / "font").glob("*.ttf")):
             self.copier(source, SORTIE / "Polices" / source.name)
-        for source in sorted((ANDROID / "assets" / "licences").glob("*.txt")):
+        # Les licences des polices seules : assets/licences porte aussi celles de bibliothèques
+        # d'Android (ZXing, absente d'iOS ; KosherJava, dont KosherSwift reprend la LGPL, § 6.5).
+        for source in sorted((ANDROID / "assets" / "licences").glob("OFL-*.txt")):
             self.copier(source, SORTIE / "Polices" / "licences" / source.name)
 
     # --- 7. Musique ---------------------------------------------------------

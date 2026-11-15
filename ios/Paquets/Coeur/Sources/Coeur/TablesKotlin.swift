@@ -79,7 +79,6 @@ public struct TablesKotlin: Sendable, Decodable {
         public let rang: Int
         public let seuil: Int
         public let cout: Double
-        public let metal: String
     }
 
     // MARK: Textes

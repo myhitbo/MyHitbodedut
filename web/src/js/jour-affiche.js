@@ -49,15 +49,18 @@ const lendemain = (iso) => {
 export function horaires(lieu, iso, enIsrael, minutes) {
   const aujourdhui = jour(iso, enIsrael).chome;
   const demain = jour(lendemain(iso), enIsrael).chome;
+  // Fête un vendredi (FCALENDRIER-01) : les bougies de Chabbat avant la chki'a, jamais à tsét.
+  const [a, m, j] = iso.split('-').map(Number);
+  const veilleDeChabbat = new Date(Date.UTC(a, m - 1, j, 12)).getUTCDay() === 5;
   const base = Z.jour(lieu, iso);
   const tset = base.find((z) => z.cle === 'tset');
   const sortie = [];
   for (const z of base) {
-    if (z.cle === 'chkia' && demain && !aujourdhui) sortie.push(Z.allumage(lieu, iso, minutes));
+    if (z.cle === 'chkia' && demain && (!aujourdhui || veilleDeChabbat)) sortie.push(Z.allumage(lieu, iso, minutes));
     sortie.push(z);
     if (z.cle === 'tset') {
       if (aujourdhui && !demain) sortie.push({ ...tset, cle: 'sortie' });
-      if (aujourdhui && demain) sortie.push({ ...tset, cle: 'allumage', methode: 'apres_tset', parametres: '' });
+      if (aujourdhui && demain && !veilleDeChabbat) sortie.push({ ...tset, cle: 'allumage', methode: 'apres_tset', parametres: '' });
     }
   }
   return sortie;
@@ -170,12 +173,12 @@ export function clesHilloula(mois, jourH, emb, dernierJour, ashkenaz = false) {
 }
 
 /**
- * Hilloulot.duJour (04/11) : d'abord les mieux connus, ceux que le plus de sources donnent,
- * puis ceux qui ont une notice ; ceux dont la date est mise en doute en dernier. À égalité,
- * l'ordre du fichier.
+ * Hilloulot.duJour (04/11) : d'abord les mieux connus, ceux que le plus de sources donnent ;
+ * à nombre de sources égal, ceux dont rien n'est mis en doute, puis ceux qui ont une notice.
+ * À égalité, l'ordre du fichier.
  */
 export function hilloulotDuJour(table, cles) {
-  const cle = (h) => [h.d ? 1 : 0, -h.s.length, h.t ? 0 : 1];
+  const cle = (h) => [-h.s.length, h.d ? 1 : 0, h.t ? 0 : 1];
   const compare = (a, b) => { const x = cle(a); const y = cle(b); return x[0] - y[0] || x[1] - y[1] || x[2] - y[2]; };
   return cles.flatMap((k) => table[k] ?? []).map((h, i) => [h, i])
     .sort((x, y) => compare(x[0], y[0]) || x[1] - y[1]).map(([h]) => h);

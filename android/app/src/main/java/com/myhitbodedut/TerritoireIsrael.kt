@@ -38,6 +38,17 @@ object TerritoireIsrael {
         doubleArrayOf(31.22, 34.26),
     )
 
+    /**
+     * La région à enregistrer quand la position du téléphone sert de lieu des zmanim, ou null
+     * pour garder celle des réglages (audit du 12/11, FCALENDRIER-06). La région suit la
+     * position (16/10), sauf une région choisie à la main ([manuelle]) lors d'une simple
+     * [reprise] : ouverture de Zmanim ou de la boussole, retour sur l'accueil, changement de
+     * fuseau, « Actualiser ma position ». Choisir le lieu (« Ma position » dans la liste, ou la
+     * position à la place d'une ville) redéduit la région, et le choix manuel s'efface.
+     */
+    fun regionPourPosition(latitude: Double, longitude: Double, manuelle: Boolean, reprise: Boolean): Boolean? =
+        if (manuelle && reprise) null else contient(latitude, longitude)
+
     /** Le point est-il dans le contour (tracé de rayon) ? */
     fun contient(latitude: Double, longitude: Double): Boolean {
         var dedans = false

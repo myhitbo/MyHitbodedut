@@ -76,6 +76,9 @@ object JourAffiche {
      *  - la veille d'un jour chômé : l'allumage, [minutes] avant la chki'a ;
      *  - un jour chômé suivi d'un autre (deuxième jour de fête, Chabbat puis
      *    fête) : l'allumage, pas avant la sortie du jour, à tsét 8,5° ;
+     *  - sauf un vendredi de fête (audit du 12/11, FCALENDRIER-01) : les
+     *    bougies de Chabbat s'allument avant la chki'a, d'une flamme
+     *    existante, et jamais à tsét, qui est déjà Chabbat ;
      *  - le dernier jour chômé : la sortie, à tsét 8,5° (et Rabbénou Tam reste
      *    dans la liste).
      * Le profil et ses limites : ZMANIM.md.
@@ -83,15 +86,16 @@ object JourAffiche {
     fun horaires(lieu: Zmanim.Lieu, date: LocalDate, enIsrael: Boolean, minutes: Int): List<Zmanim.Zman> {
         val aujourdhui = CalendrierJuif.jour(date, enIsrael).chome
         val demain = CalendrierJuif.jour(date.plusDays(1), enIsrael).chome
+        val veilleDeChabbat = date.dayOfWeek == java.time.DayOfWeek.FRIDAY
         val base = Zmanim.jour(lieu, date)
         val tset = base.first { it.cle == "tset" }
         val sortie = mutableListOf<Zmanim.Zman>()
         base.forEach { z ->
-            if (z.cle == "chkia" && demain && !aujourdhui) sortie += Zmanim.allumage(lieu, date, minutes)
+            if (z.cle == "chkia" && demain && (!aujourdhui || veilleDeChabbat)) sortie += Zmanim.allumage(lieu, date, minutes)
             sortie += z
             if (z.cle == "tset") {
                 if (aujourdhui && !demain) sortie += tset.copy(cle = "sortie")
-                if (aujourdhui && demain) sortie += tset.copy(cle = "allumage", methode = Zmanim.Methode("apres_tset", ""))
+                if (aujourdhui && demain && !veilleDeChabbat) sortie += tset.copy(cle = "allumage", methode = Zmanim.Methode("apres_tset", ""))
             }
         }
         return sortie

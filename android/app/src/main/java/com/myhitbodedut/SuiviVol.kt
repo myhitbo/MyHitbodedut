@@ -56,7 +56,7 @@ object SuiviVol {
 
         /** Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… */
         fun duRelais(message: String): String =
-            Regex("opensky (\\d+)").matchEntire(message.trim())?.let { serveur(it.groupValues[1].toInt()) } ?: SERVICE
+            Regex("(?:opensky|relais) (\\d+)").matchEntire(message.trim())?.let { serveur(it.groupValues[1].toInt()) } ?: SERVICE
     }
 
     /** D'où vient la position : un relais, un autre service plus tard, un faux dans les tests. */
@@ -181,8 +181,15 @@ object SuiviVol {
         }
     }
 
-    /** Le fournisseur de l'édition : le relais s'il est configuré à la construction, sinon OpenSky anonyme. */
-    fun fournisseur(relais: String): FournisseurPosition = if (relais.startsWith("https://")) Relais(relais) else OpenSkyAnonyme
+    /**
+     * Le fournisseur de l'édition : le relais s'il est configuré à la construction ; sinon OpenSky
+     * anonyme si [directAutorise] (édition GitHub), sinon aucun (construction Play : pas de suivi en direct).
+     */
+    fun fournisseur(relais: String, directAutorise: Boolean = true): FournisseurPosition? = when {
+        relais.startsWith("https://") -> Relais(relais)
+        directAutorise -> OpenSkyAnonyme
+        else -> null
+    }
 
     /** Le relais OpenSky (tools/relais_vol), en HTTPS seulement ; à appeler hors du fil de l'interface. */
     class Relais(private val relais: String) : FournisseurPosition {

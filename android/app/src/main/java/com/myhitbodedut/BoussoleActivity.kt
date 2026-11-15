@@ -168,7 +168,7 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
     /** Sans lieu (29/10) : le hassid, une question, la position en un toucher, ou une ville. */
     private fun etatVide() = VueJour.carte(this).apply {
         gravity = android.view.Gravity.CENTER_HORIZONTAL
-        addView(android.widget.ImageView(this@BoussoleActivity).apply {
+        addView(PersonnageImageView(this@BoussoleActivity).apply {
             setImageResource(R.drawable.char_standing_back)
             setBackgroundResource(R.drawable.bg_stage)
             setPadding(dp(6), dp(6), dp(6), dp(6))

@@ -294,6 +294,36 @@ def sans_renvois(sections):
     return sections
 
 
+def minha_sefard(sections):
+    """
+    Min'ha Sfard (audit du 12/11, TSIDDUR-03) : l'export range sous « תחנון » toute la fin de
+    l'office (שומר ישראל, Kaddich, עלינו, לדוד ה׳ אורי), et « אבינו מלכנו » après elle, alors que
+    sa consigne dit « אומרים כאן אבינו מלכנו ». On remet l'ordre que ce même siddour suit à
+    Cha'harit : la chute sur la face (jusqu'à « ה׳ אל באפך »), Avinou malkénou, puis « שומר
+    ישראל » jusqu'au Kaddich, et « עלינו » dans une section à lui. Les paragraphes ne changent
+    pas, seules les sections sont recoupées. Idempotent : déjà recoupé, rien ne change.
+    """
+    nu = lambda b: re.sub(r"[\u0591-\u05C7]", "", re.sub(r"<[^>]+>", "", b.get("t", "")))
+    titres = [s["titre"] for s in sections]
+    if "תחנון" not in titres or "אבינו מלכנו" not in titres:
+        raise SystemExit("Min'ha Sfard : sections « תחנון » et « אבינו מלכנו » attendues")
+    i, a = titres.index("תחנון"), titres.index("אבינו מלכנו")
+    blocs = sections[i]["blocs"]
+    chomer = next((k for k, b in enumerate(blocs) if nu(b).startswith("שומר ישראל")), None)
+    if chomer is None:
+        return sections
+    alenou = next((k for k, b in enumerate(blocs) if nu(b).startswith("עלינו לשבח")), None)
+    if a != i + 1 or alenou is None or alenou < chomer or not nu(blocs[chomer - 1]).startswith("יהוה אל"):
+        raise SystemExit("Min'ha Sfard : l'ordre attendu (ה׳ אל באפך, שומר ישראל, עלינו) n'y est pas")
+    sections[i:a + 1] = [
+        {"titre": "תחנון", "blocs": blocs[:chomer]},
+        sections[a],
+        {"titre": "שומר ישראל", "blocs": blocs[chomer:alenou]},
+        {"titre": "עלינו", "blocs": blocs[alenou:]},
+    ]
+    return sections
+
+
 def jusqua(sections, debut_consigne):
     """La section coupée avant la consigne qui commence par [debut_consigne] (le Hallel, sans la lecture de la Torah)."""
     for s in sections:
@@ -389,7 +419,7 @@ def main(dossier):
     sefard = {
         "birkot_hachahar": (SM, SM.plusieurs([["Upon Arising", "Modeh Ani"], ["Weekday Shacharit", "Morning Blessings"], ["Weekday Shacharit", "Blessings on Torah"]])),
         "chaharit": (SM, SM.sections(["Weekday Shacharit"])),
-        "minha": (SM, SM.sections(["Weekday Mincha"])),
+        "minha": (SM, minha_sefard(SM.sections(["Weekday Mincha"]))),
         "arvit": (SM, SM.sections(["Weekday Maariv"])),
         "chema_coucher": (ST, ST.sections(["Bedtime Shema"])),
         "tikoun_hatsot": ("edot",) + edot["tikoun_hatsot"],

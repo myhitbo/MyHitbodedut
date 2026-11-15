@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""Patchs de texte dans les fichiers JSON de contenu, sans en changer la mise en forme.
+
+  patchtrad check <racine du dépôt> <patchs.json>      vérifie chaque patch, ne modifie rien
+  patchtrad apply <racine du dépôt> <patchs.json> …    applique (s'arrête au premier patch qui ne s'applique pas, sauf --continuer)
+
+patchs.json : une liste d'objets
+  {"id": "LM1-01", "fichier": "android/app/src/main/livres/livres.json", "langue": "fr",
+   "avant": "texte exact tel qu'on le lit une fois le JSON décodé", "apres": "texte corrigé",
+   "occurrences": 1, "raison": "une phrase"}
+« avant » doit tenir dans une seule valeur de chaîne du JSON et s'y trouver exactement « occurrences » fois
+dans tout le fichier (1 par défaut) : assez de contexte pour être unique, pas plus. Le remplacement se fait dans le
+texte brut du fichier (échappement JSON géré), puis le fichier est relu pour vérifier qu'il reste un JSON valide.
+"""
+import json, os, sys
+
+def formes(t):
+    a = json.dumps(t, ensure_ascii=False)[1:-1]
+    b = json.dumps(t, ensure_ascii=True)[1:-1]
+    return [a] if a == b else [a, b]
+
+def main():
+    if len(sys.argv) < 4 or sys.argv[1] not in ("check", "apply"):
+        print(__doc__); sys.exit(2)
+    mode, racine = sys.argv[1], sys.argv[2]
+    continuer = "--continuer" in sys.argv
+    fichiers = [f for f in sys.argv[3:] if not f.startswith("--")]
+    textes, erreurs, faits = {}, 0, 0
+    for pf in fichiers:
+        patchs = json.load(open(pf, encoding="utf-8"))
+        for n, p in enumerate(patchs):
+            nom = f"{os.path.basename(pf)}#{n} {p.get('id', '?')}"
+            for cle in ("fichier", "avant", "apres"):
+                if cle not in p:
+                    print("ERREUR", nom, ": champ manquant", cle); erreurs += 1; break
+            else:
+                chemin = os.path.join(racine, p["fichier"])
+                if chemin not in textes:
+                    textes[chemin] = open(chemin, encoding="utf-8").read()
+                brut = textes[chemin]
+                voulu = int(p.get("occurrences", 1))
+                if p["avant"] == p["apres"]:
+                    print("ERREUR", nom, ": avant et apres identiques"); erreurs += 1; continue
+                trouve = False
+                for fa, fp in zip(formes(p["avant"]), formes(p["apres"]) * 2):
+                    c = brut.count(fa)
+                    if c == voulu:
+                        textes[chemin] = brut.replace(fa, fp); trouve = True; faits += 1; break
+                if not trouve:
+                    compte = [brut.count(f) for f in formes(p["avant"])]
+                    print("ERREUR", nom, f": {compte} occurrence(s) de « {p['avant'][:70]} » dans {p['fichier']}, {voulu} attendue(s)")
+                    erreurs += 1
+                    if mode == "apply" and not continuer:
+                        sys.exit(1)
+    for chemin, t in textes.items():
+        try:
+            json.loads(t)
+        except Exception as e:
+            print("ERREUR : JSON invalide après patch", chemin, e); erreurs += 1; sys.exit(1)
+    if mode == "apply":
+        for chemin, t in textes.items():
+            if t != open(chemin, encoding="utf-8").read():
+                open(chemin, "w", encoding="utf-8").write(t)
+                print("écrit", chemin)
+    print(f"{faits} patch(s) valides, {erreurs} erreur(s)")
+    sys.exit(1 if erreurs else 0)
+
+main()

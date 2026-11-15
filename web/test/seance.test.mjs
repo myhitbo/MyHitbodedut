@@ -123,13 +123,19 @@ test('chaque moment tire dans son propre vivier, et n’a que des textes relus',
   }
 });
 
-test('l’hébreu sans nikkoud pour les éditions sans licence de vocalisation', () => {
+test('l’hébreu affiché est he, sans nikkoud pour les éditions sans licence de vocalisation', () => {
+  const vocalisation = /[\u0591-\u05BD\u05BF-\u05C2\u05C4-\u05C7]/;
+  let sansLicence = 0;
   for (const it of chizuk.items) {
-    const ok = chizuk._meta.editions[it.edition]?.nikkoud_ok ?? false;
     const he = ChizukRules.hebreu(chizuk, it);
-    if (ok) assert.equal(he, it.he);
-    else if (it.he_sans_nikkoud) assert.equal(he, it.he_sans_nikkoud);
+    assert.equal(he, it.he);
+    assert.ok(!('he_sans_nikkoud' in it), it.id);
+    if (!(chizuk._meta.editions[it.edition]?.nikkoud_ok ?? false)) {
+      sansLicence += 1;
+      assert.ok(!vocalisation.test(he), `${it.id} : vocalisation livrée`);
+    }
   }
+  assert.ok(sansLicence > 0, 'aucun texte sans licence de vocalisation : le test ne prouve rien');
 });
 
 test('la traduction suit la règle des langues', () => {
@@ -223,4 +229,20 @@ test('les ambiances calculées : audibles, douces, jamais saturées, le silence 
     else { assert.ok(Math.sqrt(r / s.length) > 0.02, a); assert.ok(crete <= 0.61, a); assert.equal(Math.abs(s[0]), 0, a); }
   }
   assert.deepEqual(generer('mer', 8000, 2), generer('mer', 8000, 2));
+});
+
+// La note après le bravo (audit FWEBLIVE-02) et la légende du décompte masqué (FWEBCODE-02) :
+// app.js ne s'importe pas hors du navigateur, on lit donc le source.
+const appSource = readFileSync(join(ICI, '..', 'src', 'js', 'app.js'), 'utf8');
+
+test('toute séance inscrite propose la note après le bravo, comme sur Android', () => {
+  const clore = appSource.slice(appSource.indexOf('function cloreSeance'), appSource.indexOf('function terminerMaintenant'));
+  assert.match(clore, /if \(inscrite\) \{[\s\S]*?dateNote = date;[\s\S]*?noteApresBravo = true;/s);
+  const hors = appSource.slice(appSource.indexOf('function declarerHorsTelephone'), appSource.indexOf('function ajoutTemps'));
+  assert.match(hors, /if \(date === aujourdhui\) \{[^}]*dateNote = date;[^}]*noteApresBravo = true;/s);
+});
+
+test('le site ne promet pas un son de fin qu’il ne joue pas', () => {
+  assert.doesNotMatch(appSource, /tr\.t\('session_hidden_caption'\)/);
+  assert.match(appSource, /tr\.t\('session_hidden_caption_web'\)/);
 });

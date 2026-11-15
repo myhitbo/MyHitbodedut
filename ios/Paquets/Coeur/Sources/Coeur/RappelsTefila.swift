@@ -56,7 +56,11 @@ public enum RappelsTefila {
         for k in 0...avance {
             let d = aujourdhui.plus(jours: k)
             let j = jour(d)
-            if j.conditions.contains(pluie) && !veille.conditions.contains(pluie) { res.append(Rappel(.pluieDebut, d)) }
+            // Premier jour un samedi : la Amida de Chabbat ne la demande pas, on commence à motsaé Chabbat,
+            // soit à Arvit du soir du samedi : le rappel est daté du dimanche (FCALENDRIER-04).
+            if j.conditions.contains(pluie) && !veille.conditions.contains(pluie) {
+                res.append(Rappel(.pluieDebut, d.jourDeSemaine == 7 ? d.plus(jours: 1) : d))
+            }
             if !j.conditions.contains(pluie) && veille.conditions.contains(pluie) { res.append(Rappel(.pluieFin, d)) }
             if !sansGuechem && j.moisHebreu == tichri && j.jourHebreu == 22 { res.append(Rappel(.guechemDebut, d)) }
             if !sansGuechem && j.moisHebreu == nissan && j.jourHebreu == 15 { res.append(Rappel(.guechemFin, d)) }

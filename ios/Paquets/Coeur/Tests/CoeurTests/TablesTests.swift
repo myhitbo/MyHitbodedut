@@ -20,7 +20,7 @@ struct TablesTests {
         #expect(t.sujetsTefila.sujets.count == 10)
         #expect(t.sujetsSeance.count == 10)
         #expect(t.hitbodedut.mouvements.count == 5)
-        #expect(t.posesFeminines.count == 21)
+        #expect(t.posesFeminines.count == 26)
         #expect(t.zmanim.profil.count == 15)
     }
 

@@ -22,6 +22,14 @@ on:
         description: "Avec captures : l'edition minifiee comme la version publiee (R8), au lieu de debug"
         type: boolean
         default: false
+      api:
+        description: "Avec captures : niveau d'API de l'emulateur (34 = Android 14, 36 = Android 16)"
+        type: string
+        default: "34"
+      play:
+        description: "Avec captures : la construction Play (-Pplay=true), celle de l'AAB envoye"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -29,7 +37,7 @@ permissions:
 # Une nouvelle poussée annule le run encore en cours de la même branche : seul le dernier
 # commit compte, et il passe sans attendre (16/10).
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ inputs.api || '34' }}
   cancel-in-progress: true
 
 jobs:
@@ -38,16 +46,16 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || !inputs.captures
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
       - name: Ensure Android platform 36
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" || true
@@ -60,10 +68,33 @@ jobs:
           python3 -m pip install --quiet pillow numpy scipy
           python3 tools/verifie_illustrations.py
 
+      # La clé de signature (audit de sécurité du 12/11/2026). Celle du dépôt
+      # (android/keystore) a un mot de passe public : quiconque lit le dépôt
+      # peut signer une mise à jour qu'Android acceptera par-dessus
+      # l'application installée. Avec les quatre secrets RELEASE_*, les APK
+      # publiés sont signés par une clé qui n'est nulle part dans le dépôt
+      # (android/keystore/README.md). Sans eux, la clé de développement, et
+      # un avertissement à chaque construction.
+      - name: Release signing key
+        id: cle
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$RELEASE_KEYSTORE_BASE64" ]; then
+            echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "chemin=$RUNNER_TEMP/release.jks" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Secrets RELEASE_* absents : APK signés par la clé de développement, dont le mot de passe est public (android/keystore/README.md)."
+          fi
+
       - name: Build both signed editions
         working-directory: android
         env:
           VERSION_CODE: ${{ github.run_number }}
+          KEYSTORE_PATH: ${{ steps.cle.outputs.chemin }}
+          KEYSTORE_PASSWORD: ${{ steps.cle.outputs.chemin && secrets.RELEASE_KEYSTORE_PASSWORD || '' }}
+          KEY_ALIAS: ${{ steps.cle.outputs.chemin && secrets.RELEASE_KEY_ALIAS || '' }}
+          KEY_PASSWORD: ${{ steps.cle.outputs.chemin && secrets.RELEASE_KEY_PASSWORD || '' }}
         run: ./gradlew --no-daemon assembleFullRelease assembleLightRelease
 
       # L'edition Relecture (test, identifiant .debug) n'est plus construite
@@ -127,7 +158,7 @@ jobs:
       - name: Upload lint report
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: lint-report
           path: android/app/build/reports/lint-results-*.html
@@ -143,7 +174,7 @@ jobs:
     # Le passage des six tailles (20) prend a lui seul pres d'une heure.
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # L'emulateur veut plus de 7 Go pour ses donnees ; le runner n'en
       # laissait que 6 (« Not enough space to create userdata partition »).
@@ -162,13 +193,13 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
       - name: Ensure Android platform 36
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" || true
@@ -177,16 +208,16 @@ jobs:
         working-directory: android
         env:
           VERSION_CODE: ${{ github.run_number }}
-        run: ./gradlew --no-daemon ${{ inputs.minifie && ':app:assembleFullVerifR8' || ':app:assembleFullDebug' }}
+        run: ./gradlew --no-daemon ${{ inputs.play && '-Pplay=true' || '' }} ${{ inputs.minifie && ':app:assembleFullVerifR8' || ':app:assembleFullDebug' }}
 
       - name: Capture the screens
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
         env:
           CAPTURES_TAILLES_SEULES: ${{ inputs.tailles_seules && '1' || '0' }}
           CAPTURES_ETAPES: ${{ inputs.etapes }}
           CAPTURES_VARIANTE: ${{ inputs.minifie && 'verifR8' || 'debug' }}
         with:
-          api-level: 34
+          api-level: ${{ inputs.api || '34' }}
           target: google_apis
           arch: x86_64
           profile: pixel_6
@@ -224,24 +255,28 @@ jobs:
                   print("@@ERREUR", f, e)
           PY
 
-      # Les captures aussi sur une branche à part (claude/captures-android) :
-      # lisibles avec git là où l'artefact ne se télécharge pas.
+      # Les captures aussi sur une branche à part (claude/captures-android, ou
+      # claude/captures-android-api36 pour un autre niveau d'API) : lisibles avec
+      # git là où l'artefact ne se télécharge pas.
       - name: Publish the captures to a branch
         if: always()
         env:
           JETON: ${{ secrets.GITHUB_TOKEN }}
+          API: ${{ inputs.api || '34' }}
         run: |
           ls out/*.png >/dev/null 2>&1 || exit 0
+          BRANCHE=claude/captures-android
+          [ "$API" = "34" ] || BRANCHE="$BRANCHE-api$API"
           rm -rf /tmp/pub && mkdir -p /tmp/pub && cp out/*.png /tmp/pub/ && cp out/*.txt out/*.mp4 /tmp/pub/ 2>/dev/null || true
           cd /tmp/pub
-          git init -q && git checkout -q -b claude/captures-android
+          git init -q && git checkout -q -b "$BRANCHE"
           git add .
-          git -c user.name="captures" -c user.email="actions@github.com" commit -q -m "Captures ${GITHUB_SHA::7}"
-          git push -q -f "https://x-access-token:${JETON}@github.com/${GITHUB_REPOSITORY}.git" claude/captures-android
+          git -c user.name="captures" -c user.email="actions@github.com" commit -q -m "Captures ${GITHUB_SHA::7} (API $API)"
+          git push -q -f "https://x-access-token:${JETON}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCHE"
 
       - name: Upload the captures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: captures-android
           path: |

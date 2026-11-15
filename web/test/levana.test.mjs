@@ -14,6 +14,21 @@ test('Birkat haLevana, Hechvan 5787', () => {
   assert.ok(levana('2026-10-26', 'Asia/Jerusalem').premier > '2026-11-01');
 });
 
+// Audit du 12/11, FCALENDRIER-03 : quand la fenêtre se ferme l'après-midi, le dernier soir est la veille (LevanaTest.kt).
+test('Birkat haLevana, Kislev 5787 : la mi-mois tombe l’après-midi du 24/11 à Paris, dernier soir le 23', () => {
+  const paris = 'Europe/Paris';
+  for (const usage of ['trois_mi_mois', 'sept_mi_mois']) {
+    const l = levana('2026-11-20', paris, { usage });
+    assert.equal(l.dernier, '2026-11-23');
+    assert.equal(levana('2026-11-23', paris, { usage }).etat, 'dernier');
+    assert.equal(levana('2026-11-22', paris, { usage }).etat, 'ce_soir');
+    assert.ok(l.finMs < Date.parse('2026-11-24T20:00:00+01:00'));
+    assert.equal(typeof levana('2026-11-24', paris, { usage }).etat, 'object', 'le 24, la fenêtre suivante');
+  }
+  assert.equal(levana('2026-11-20', paris, { usage: 'sept_quinze' }).dernier, '2026-11-24');
+  assert.equal(levana('2026-11-20', 'America/New_York', { usage: 'sept_quinze' }).dernier, '2026-11-23');
+});
+
 // Revue du 14/10 sur le texte (Choulhan Aroukh O.H. 426 ; Michna Beroura 426), mêmes valeurs que LevanaTest.kt.
 test('Birkat haLevana : usages, motsaé Chabbat, Kippour, Tich\'a beAv', () => {
   const z = 'Asia/Jerusalem';

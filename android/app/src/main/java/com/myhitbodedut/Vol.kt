@@ -346,20 +346,27 @@ object Vol {
         return lignes
     }
 
+    /** Les repères du début de la journée, du plus tôt au plus tard. */
+    private val REPERES_AUBE = setOf("alot", "misheyakir", "netz")
+
     /**
-     * Les horaires que ZmanimWidget.prochaine attend, pris sur la route : l'aube
-     * passée la plus récente, puis la première fin de Cha'harit, chki'a et
-     * minuit qui la suivent. Sans aube passée (route polaire), les prochains
-     * de chaque zman. La règle de prochaine n'est pas réécrite.
+     * Les horaires que ZmanimWidget.prochaine attend, pris sur la route : le
+     * repère d'aube passé le plus récent (alot, sinon michéyakir ou nets, l'été
+     * au nord d'environ 50° où le soleil ne descend pas à 16,1° : audit du
+     * 12/11, FVOL-01), puis la première fin de Cha'harit, chki'a et minuit qui
+     * le suivent. Sans aucun de ces repères (route polaire), les prochains de
+     * chaque zman. La règle de prochaine n'est pas réécrite. Min'ha guedola en
+     * fait partie (13/11, FVOL-05) : avant elle, Min'ha n'est pas ouverte.
      */
     fun horaires(calcul: Calcul, maintenant: Instant): Map<String, ZonedDateTime?> {
         val ev = calcul.evenements
-        val alot = ev.lastOrNull { it.cle == "alot" && !it.instant.isAfter(maintenant) }?.instant
+        val alot = ev.lastOrNull { it.cle in REPERES_AUBE && !it.instant.isAfter(maintenant) }?.instant
         val apres = alot ?: maintenant
         fun suivant(cle: String) = ev.firstOrNull { it.cle == cle && it.instant.isAfter(apres) }?.instant
         return mapOf(
             "alot" to alot,
             "szt_gra" to suivant("szt_gra"),
+            "minha_gedola" to suivant("minha_gedola"),
             "chkia" to suivant("chkia"),
             "chatsot_layla" to suivant("chatsot_layla"),
         ).mapValues { (_, v) -> v?.atZone(ZoneOffset.UTC) }

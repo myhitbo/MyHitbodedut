@@ -16,6 +16,11 @@ Trois sortes d'annotations :
                   n'est replié : quand la variante s'applique, un repère
                   « Aujourd'hui : המלך הקדוש » s'affiche sous le bloc.
 
+Un bloc dont le libellé est « ajout_autres_jours » (audit du 12/11, TSIDDUR-06) est le texte
+ordinaire qu'une formule du jour remplace (« האל הקדוש » pendant les dix jours, « בונה
+ירושלים » à Min'ha du 9 Av) : sa condition est niée ; quand il se dit, il s'affiche tel quel,
+sans étiquette ; le jour où il est remplacé, il est replié.
+
 Aucune règle de calendrier n'est écrite ici. Chaque annotation renvoie à une
 clé de condition (CalendrierJuif.C), calculée par KosherJava ; l'outil ne
 fait que reconnaître, dans le texte, la consigne du siddour qui dit quand
@@ -143,10 +148,19 @@ def annoter(texte_id, sections, nusah):
         titre = nu(sec["titre"])
         # --- Sections entières -------------------------------------------------
         cond = None
+        # Une section « תחנון » ou « וידוי » qui porte aussi la suite de l'office (Edot : Kaddich,
+        # psaumes ; audit du 12/11, TSIDDUR-03 et -07) n'est pas repliée d'un bloc, ce qui cachait
+        # la fin de Min'ha les jours sans Ta'hanoun : seul le Ta'hanoun l'est, jusqu'aux consignes
+        # qui précèdent le premier Kaddich ; le reste suit les règles des blocs. De même « לשני
+        # וחמישי » (Sfard), qui contient « שומר ישראל » des autres jours de Ta'hanoun.
+        fin_tahanoun = 0
         if titre in ("תחנון", "וידוי") and office:
-            cond = "tahanoun_" + office
-        elif titre == "לשני וחמישי":
-            cond = "lundi_jeudi"
+            fin_tahanoun = next((k for k, b in enumerate(sec["blocs"]) if "t" in b and commence(nu(b["t"]), "יתגדל")), None)
+            if fin_tahanoun is None:
+                cond, fin_tahanoun = "tahanoun_" + office, 0
+            else:
+                while fin_tahanoun > 0 and "c" in sec["blocs"][fin_tahanoun - 1]:
+                    fin_tahanoun -= 1
         elif "מוצאי שבת" in titre:
             cond = "motsae_chabbat"
         elif titre == "ספירת העומר":
@@ -191,6 +205,37 @@ def annoter(texte_id, sections, nusah):
                 pris.add(bi)
                 note("bloc", si, bi, c, {"libelle": libelle} if libelle else None)
 
+        def sceau(bi, c, motif, libelle=None):
+            """Le sceau d'un ajout, quand le siddour le met dans le bloc suivant (Edot : « ברוך אתה
+            יהוה מנחם ציון », « … העונה בעת צרה »), suit le sort de l'ajout : sans cela il restait
+            affiché tous les jours, avant le sceau ordinaire (audit du 12/11, TSIDDUR-01)."""
+            if bi + 1 < len(txt) and not cons[bi + 1] and re.match(motif, txt[bi + 1]):
+                prend(bi + 1, c, libelle)
+
+        def ordinaire(bi, du_jour):
+            """Le sceau ordinaire, dans le bloc juste avant celui des dix jours (Sfard, Ashkenaz :
+            « ברוך אתה יהוה האל הקדוש », puis « בעשי״ת מסיים: ברוך אתה יהוה המלך הקדוש »), ne se
+            dit pas ces jours-là : il est replié quand celui du jour, bénédiction entière, le
+            remplace (audit du 12/11, TSIDDUR-06). Là où le siddour ne donne que les deux mots
+            (« בעשי״ת יסיים: המלך המשפט »), rien n'est replié : il ne resterait pas de bénédiction."""
+            if bi > 0 and bi - 1 not in pris and not cons[bi - 1] and SCEAU_DIX_JOURS.search(du_jour) \
+                    and SCEAU_ORDINAIRE.fullmatch(txt[bi - 1]):
+                prend(bi - 1, "!asseret_yemei_techouva", AUTRES_JOURS)
+
+        def nahem(bi):
+            """Na'hem, le 9 Av : avec lui son sceau quand il est dans le bloc suivant (Edot), et le
+            renvoi « (את צמח וגו׳) » (Sfard). Le sceau ordinaire « בונה ירושלים », que celui de
+            Na'hem remplace ce jour-là, est alors replié (audit du 12/11, TSIDDUR-01 et -06)."""
+            prend(bi, "ticha_beav")
+            sceau(bi, "ticha_beav", r"ברוך אתה \S+,? מנחם ציון")
+            j = bi + 2 if bi + 1 in pris else bi + 1
+            if j < len(txt) and not cons[j] and re.fullmatch(r"\(את צמח[^()]*\)", txt[j]):
+                prend(j, "ticha_beav")
+                j += 1
+            if j < len(txt) and not cons[j] and j not in pris and "מנחם ציון" in " ".join(txt[bi:j]) \
+                    and re.fullmatch(r"ברוך אתה \S+,? בונה ירושלים:?", txt[j]):
+                prend(j, "!ticha_beav", AUTRES_JOURS)
+
         def en_tete(bi, c, *mots_cles, libelle=None):
             """La consigne juste avant un ajout, si elle l'annonce, en suit le sort."""
             if bi > 0 and cons[bi - 1] and all(m in txt[bi - 1] for m in mots_cles):
@@ -233,9 +278,73 @@ def annoter(texte_id, sections, nusah):
             return ("ticha_beav" if texte_id == "arvit" else "jeune"), "ajout_anenou_particulier"
 
         n = len(blocs)
-        bi = 0
+        for k in range(fin_tahanoun):
+            prend(k, "tahanoun_" + office)
+        bi = fin_tahanoun
         while bi < n:
             x = txt[bi]
+            # --- Audit du 12/11 (TSIDDUR-03, -05, -07) : la suite du Ta'hanoun, le Hallel Edot ---
+            # Lundi et jeudi (Sfard) : « בשני וחמישי יאמר והוא רחום. בשאר ימים שאומרים בהם תחנון
+            # יאמר שומר ישראל » ; la consigne vaut tous les jours de Ta'hanoun, « והוא רחום » et
+            # ce qui le suit les lundis et jeudis, jusqu'à « שומר ישראל ».
+            if office and cons[bi] and bi not in pris and x.startswith("בשני וחמישי יאמר והוא רחום"):
+                chomer = next((k for k in range(bi + 1, n) if not cons[k] and commence(txt[k], "שומר ישראל")), None)
+                if chomer is not None:
+                    prend(bi, "tahanoun_" + office)
+                    for k in range(bi + 1, chomer):
+                        prend(k, "lundi_jeudi")
+                    bi = chomer
+                    continue
+            # « שומר ישראל » jusqu'à « ואנחנו לא נדע » (Sfard) : tous les jours de Ta'hanoun.
+            if office and not cons[bi] and bi not in pris and commence(x, "שומר ישראל שמור שארית ישראל"):
+                fin = next((k for k in range(bi, n) if not cons[k] and commence(txt[k], "ואנחנו לא נדע")), None)
+                if fin is not None:
+                    for k in range(bi, fin + 1):
+                        prend(k, "tahanoun_" + office)
+                    bi = fin + 1
+                    continue
+            # Lundi et jeudi (Edot) : de « בימי שני וחמישי מוסיפים » au Kaddich qui clôt ces
+            # supplications ; un groupe à lui, replié les autres jours de Ta'hanoun.
+            if office and cons[bi] and re.fullmatch(r"בימי שני וחמישי מוסיפים:?", x):
+                j = bi
+                while j < n and (cons[j] or not commence(txt[j], "יתגדל")):
+                    prend(j, "lundi_jeudi")
+                    j += 1
+                bi = j
+                continue
+            # Le Kaddich d'après le Ta'hanoun, que sa consigne écarte les lundis et jeudis (Edot) :
+            # la consigne suit le Kaddich, replié avec lui (passe « minyan »).
+            if office and cons[bi] and x.startswith("בימים שני וחמישי אין אומרים את הקדיש הזה"):
+                prend(bi, "minyan")
+                bi += 1
+                continue
+            # Le renvoi aux supplications des jeûnes publics (Edot).
+            if office and cons[bi] and x.startswith("בתעניות ציבור אומרים כאן תחנונים"):
+                prend(bi, "jeune", JEUNE)
+                bi += 1
+                continue
+            # La veille de Chabbat à Min'ha (Edot) : le psaume 93 à la place du 67. Le psaume 67
+            # est le texte des autres jours ; sa consigne, qui parle aussi de 'Hol hamoèd, reste.
+            if office and cons[bi] and x.startswith("בערב שבת אין אומרים") and bi + 1 < n and not cons[bi + 1] \
+                    and "למנצח בנגינת" in txt[bi + 1][:40]:
+                prend(bi + 1, "!jour_6", AUTRES_JOURS)
+                bi += 2
+                continue
+            if office and cons[bi] and x.startswith("בערב שבת אומרים מזמור") and bi + 1 < n and not cons[bi + 1]:
+                prend(bi, "jour_6")
+                prend(bi + 1, "jour_6")
+                bi += 2
+                continue
+            # Le Hallel Edot : l'appel de l'officiant et la bénédiction « לגמור את ההלל », les jours
+            # de Hallel complet seulement. Le Hallel partiel de Roch 'Hodech se dit sans
+            # bénédiction (Choul'han Aroukh, OC 422:2 ; ZMANIM.md), comme « יהללוך » plus bas.
+            if texte_id == "hallel" and cons[bi] and x.startswith("בימים שגומרים את ההלל"):
+                fin = next((k for k in range(bi, n) if not cons[k] and "לגמור את ההלל" in txt[k]), None)
+                if fin is not None:
+                    for k in range(bi, fin + 1):
+                        prend(k, "hallel_complet")
+                    bi = fin + 1
+                    continue
             # --- Relevé du 19/10 : ce qui restait ouvert tous les jours ---------------------
             # Les bénédictions de qui a oublié רצה ou יעלה ויבא : jamais du jour, toujours repliées.
             # Ashkenaz, Sfard : « דיני שכחה: » jusqu'à la fin de la section ; Edot : « אם שכח לומר
@@ -409,6 +518,8 @@ def annoter(texte_id, sections, nusah):
                 c, libelle = anenou(bi)
                 en_tete(bi, c, "תענית", libelle=libelle)
                 prend(bi, c, libelle)
+                if libelle == "ajout_anenou_officiant":
+                    sceau(bi, c, r"ברוך אתה \S+,? העונה (לעמו ישראל )?בעת צרה", libelle)
             elif cons[bi] and re.fullmatch(r"\(?בתענית ציבור אומר כאן הש״ץ עננו ?\)?:?", x):
                 prend(bi, "jeune", "ajout_anenou_officiant")
             # Avinou malkénou des jeûnes et des dix jours (Ashkenaz, Sfard) : la consigne
@@ -459,6 +570,10 @@ def annoter(texte_id, sections, nusah):
                 # « יהוה זכרנו » et « מה אשיב » se disent tous les jours de Hallel ; de même,
                 # un « הרחמן » de fête n'annonce que sa ligne.
                 while j < n and not cons[j] and ((c != "hallel_complet" and c not in UNE_LIGNE) or j == bi + 1):
+                    # La suite de Modim (« ועל כלם יתברך… הטוב שמך ולך נאה להודות ») se dit tous
+                    # les jours : le groupe de 'Hanouka s'arrête avant elle (audit du 12/11, TSIDDUR-02).
+                    if j > bi + 1 and (commence(txt[j], "ועל כלם") or commence(txt[j], "ועל כולם")):
+                        break
                     prend(j, c, lib)
                     j += 1
                 bi = j
@@ -496,10 +611,10 @@ def annoter(texte_id, sections, nusah):
             # Na'hem, le 9 Av.
             elif not cons[bi] and commence(x, "נחם יהוה אלהינו"):
                 en_tete(bi, "ticha_beav", "באב")
-                prend(bi, "ticha_beav")
+                nahem(bi)
             # Na'hem annoncé dans son propre bloc (Edot, Min'ha : « בתשעה באב אומרים: נחם » ; relevé le 14/10).
             elif not cons[bi] and re.match(r"בתשעה באב (יש )?אומרים:? ?נחם", x):
-                prend(bi, "ticha_beav")
+                nahem(bi)
             # Avinou malkénou des jeûnes (Ashkenaz : « בתענית ציבור: אבינו מלכנו ברך עלינו » ; relevé le 14/10).
             elif not cons[bi] and (x.startswith("בתענית ציבור:") or x.startswith("לתענית ציבור:")):
                 prend(bi, "jeune", JEUNE)
@@ -544,6 +659,7 @@ def annoter(texte_id, sections, nusah):
                 prend(bi, "asseret_yemei_techouva")
                 j = bi + 1
                 prend(j, "asseret_yemei_techouva")
+                ordinaire(bi, txt[j])
                 # Avinou malkénou annoncé par la consigne (Edot) : toute la suite.
                 while commence(txt[j], "אבינו מלכנו") and j + 1 < n and not cons[j + 1] \
                         and commence(txt[j + 1], "אבינו מלכנו"):
@@ -553,6 +669,7 @@ def annoter(texte_id, sections, nusah):
                 continue
             elif not cons[bi] and re.match(r"בעשי״ת( (מסיים|יסיים))?:", x):
                 prend(bi, "asseret_yemei_techouva")
+                ordinaire(bi, x)
             # Retsé, le Chabbat (Birkat hamazone).
             elif not cons[bi] and commence(x, "רצה והחליצנו"):
                 en_tete(bi, "chabbat", "בשבת")
@@ -662,6 +779,12 @@ def minyan(txt, cons, pris, prend):
                     (cons[fin] and txt[fin] in CONSIGNES_MINYAN[:4])
                     or (not cons[fin] and any(colle(txt[fin], k) for k in KEDOUCHA))):
                 fin += 1
+            # Le sceau de l'officiant dans un bloc à part, après « לדור ודור » (Moussaf ashkénaze) :
+            # il suit la Kedoucha, pourvu que le particulier ait le sien après « אתה קדוש » ; sinon
+            # on replierait le seul sceau du texte (audit du 12/11, TSIDDUR-04).
+            if colle(txt[fin - 1], "לדור ודור נגיד") and fin + 1 < n and fin not in pris and not cons[fin] \
+                    and commence(txt[fin], "ברוך אתה יהוה האל") and not cons[fin + 1] and commence(txt[fin + 1], "אתה קדוש"):
+                fin += 1
         # Barekhou et sa réponse.
         elif not cons[bi] and BAREKHOU.match(x):
             fin = bi + 1
@@ -671,7 +794,9 @@ def minyan(txt, cons, pris, prend):
         # Le Kaddich : du « יתגדל » à sa dernière partie.
         elif not cons[bi] and (commence(x, "יתגדל") or commence(x, "קדיש יתום יתגדל")):
             fin = bi + 1
-            while fin < n and fin not in pris and not cons[fin] and any(commence(txt[fin], k) for k in KADDICH[1:]):
+            # Edot : « יפסע שלש פסיעות לאחור » ouvre le dernier paragraphe, « עושה שלום ».
+            while fin < n and fin not in pris and not cons[fin] and any(
+                    commence(re.sub(r"^יפסע שלש פסיעות לאחור ", "", txt[fin]), k) for k in KADDICH[1:]):
                 fin += 1
         # Modim derabanan, que l'assemblée dit pendant le « מודים » de l'officiant.
         elif (cons[bi] and (soude(x).startswith(("בחזרתהש״ץכשהחזןאומרמודים", "מודיםדרבנן")))) \
@@ -751,6 +876,12 @@ def seul(texte_id, sections, annotations):
 # public portent ce libellé-ci.
 JEUNE = "ajout_jeune_public"
 
+# Le texte ordinaire qu'une formule du jour remplace (audit du 12/11, TSIDDUR-06) : condition
+# niée ; SiddurJour (Kotlin, web) l'affiche tel quel quand il se dit, et le replie sinon.
+AUTRES_JOURS = "ajout_autres_jours"
+SCEAU_ORDINAIRE = re.compile(r"ברוך אתה \S+ (האל הקדוש|מלך או?הב צדקה ומשפט):?")
+SCEAU_DIX_JOURS = re.compile(r"ברוך אתה \S+ המלך (הקדוש|המשפט)")
+
 SOUS = {
     "yaale_veyavo": {"roch_hodech", "pessah", "soukkot", "chavouot", "roch_hachana", "chemini_atseret", "kippour"},
     "al_hanissim": {"hanouka", "pourim"},
@@ -765,7 +896,8 @@ JOURS_SEMAINE = {"ראשון": "jour_1", "שני": "jour_2", "שלישי": "jour
                  "שישי": "jour_6", "ששי": "jour_6"}
 
 # Les fragments du Kaddich, pour le replier avec le psaume qu'il clôt.
-KADDICH = ["יתגדל", "בעלמא", "יהא שמה", "יתברך", "לעלא", "יהא שלמא", "עושה שלום", "על ישראל", "קדיש יתום"]
+# « תתקבל » (13/11) : sans lui, la fin du Kaddich titkabal restait affichée sous son début replié.
+KADDICH = ["יתגדל", "בעלמא", "יהא שמה", "יתברך", "לעלא", "תתקבל", "יהא שלמא", "עושה שלום", "עשה שלום", "על ישראל", "קדיש יתום"]
 
 # Les consignes dont un seul bloc suit (les « הרחמן » et les bénédictions d'oubli des fêtes).
 UNE_LIGNE = {"yom_tov", "moed", "roch_hachana", "yom_tov_chabbat", "chabbat_roch_hodech", "roch_hachana_chabbat"}
@@ -793,7 +925,7 @@ CONSIGNES_COURTES = [
     (r"(בראש חודש|בראש חדש|בר״ח)( (אומרים|אומר|מוסיפים|מוסיפין))?:?", "roch_hodech"),
     (r"בשבת( (אומרים|אומר))?:?", "chabbat"),
     (r"בסוכות:?", "soukkot"),
-    (r"בתענית ציבור:?", "jeune"),
+    (r"בתענית ציבור( אומרים)?:?", "jeune"),
     # Le Hallel : les passages sautés les jours de Hallel partiel.
     (r"(בימים שאין גומרים את ההלל (מדלגים|אין אומרים)|בראש חודש מדלגים זה|בר״ח ובחוה״מ פסח .*מדלגין זה):?", "hallel_complet"),
 ]

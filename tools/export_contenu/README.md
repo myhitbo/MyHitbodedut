@@ -24,7 +24,7 @@ minute la première fois.
 | 5. Images | `Images/*.webp` tels quels ; `Icones/*.svg` depuis les `VectorDrawable` |
 | 6. Polices | `Polices/*.ttf`, `Polices/licences/` |
 | 7. Musique | `Musique/*.m4a` et `Contenu/musique.json`, dans l'ordre de `MusiquePlay.kt` ; jamais `src/musique_hors_play` |
-| 8. Recherche | `Contenu/recherche.sqlite` (`recherche.py`) : chaque bloc déjà passé par la normalisation de `RechercheGlobale.nu`, et ce que les règles de résultat demandent ; la normalisation Python doit rendre celle du Kotlin sur `cas_normalisation.json`, sinon arrêt |
+| 8. Recherche | `Contenu/recherche.sqlite` (`recherche.py`) : chaque bloc déjà passé par la normalisation de `RechercheGlobale.nu`, avec sa place (section, bloc) et le titre de son chapitre, ce que les règles de résultat demandent (version 2 de l'index) ; la normalisation Python doit rendre celle du Kotlin sur `cas_normalisation.json`, sinon arrêt |
 | 9. Vecteurs | `ios/Paquets/Coeur/Tests/Ressources/` |
 | 10. Manifeste | `MANIFESTE.json` : chemin, source, taille, SHA-256, licence et mention de chaque fichier ; pour l'index, la taille et l'empreinte de son **contenu** (`octets_contenu`, `sha256_contenu`) : deux versions de SQLite rangent les mêmes lignes dans des octets différents |
 
@@ -33,9 +33,9 @@ Versionnés : `MANIFESTE.json` seul (et, plus tard, `Chaines/ios.xcstrings`, éc
 manifeste suive, elle échoue et dit quel fichier a bougé.
 
 L'export s'arrête si un compte s'écarte (38 textes par rite, 150 psaumes et 2 527 versets, 10 psaumes
-du Tikoun, 171 textes de 'hizouk, 12 livres, 4 049 hilloulot, 51 villes, 3 226 aéroports, 26 morceaux ;
+du Tikoun, 171 textes de 'hizouk, 12 livres, 3 966 hilloulot, 51 villes, 3 226 aéroports, 26 morceaux ;
 dans les tables, 6 échelles de paliers, 11 familles et 128 niveaux de trophées, 30 et 7 portions,
-10 sujets de Tefilot et 10 de séance, 5 temps, 21 correspondances de poses, 15 zmanim) ou si un
+10 sujets de Tefilot et 10 de séance, 5 temps, 26 correspondances de poses, 15 zmanim) ou si un
 fichier produit n'a pas de licence.
 
 ## Le projet `tables/`
@@ -50,6 +50,7 @@ pour une table privée, par réflexion. Les fichiers de l'app sont compilés tel
 | `bouchons/Annotations.kt` | `@StringRes`, `@DrawableRes`, `@RawRes` |
 | `bouchons/Android.kt`, `Resources.kt`, `Os.kt` | `Context` (les `load(context)` des chargeurs), le fil principal de `Hilloulot` |
 | `bouchons/App.kt` | `RegleLangue`, `ChizukCard`, `HalakhaActivity` : nommés par des fichiers compilés, mais tenus à Android ; jamais appelés, sauf le titre du Ben Ich Haï, dont le bouchon rend les champs pour les vecteurs |
+| `bouchons/BuildConfig.kt` | les champs qu'`Onboarding.kt` lit, aux valeurs de la construction Play complète (barrière, route du vol sans suivi en direct) |
 
 `org.json` est celui d'Android (AOSP, republié par Apache Geode) : il garde l'ordre des clés du
 fichier, comme l'appareil, et cet ordre décide des trente premiers résultats d'une recherche.
