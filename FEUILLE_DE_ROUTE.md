@@ -1116,6 +1116,10 @@ Réponse du propriétaire aux sept questions du 05/10 : « oui tout ».
   supprimé (TikkunActivity, PsalmActivity, LiturgyActivity et leurs écrans ;
   web : les anciennes adresses mènent à la lecture entière), bouton final
   « J'ai dit le Tikoun en entier ».
+  La page héritée `tikkun_haklali.html` (racine) est retirée le 15/11
+  (TPLAYDOCS-20) ; elle reste le seul témoin de l'ouverture, de la clôture,
+  de la kavana et de la prière de Rabbi Natan (`res/raw/tikkun_haklali.json`,
+  « provenance ») : la relire avec `git show 238db1a:tikkun_haklali.html`.
 
 **Fait sur `ccr-314d6592-p0db3w`, PR #22 ouverte, pas encore fusionnée** :
 
