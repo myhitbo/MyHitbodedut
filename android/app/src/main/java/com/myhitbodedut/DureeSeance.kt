@@ -23,6 +23,12 @@ object DureeSeance {
     /** Le nombre saisi, ramené entre 1 et 240 minutes ; null si ce n'est pas un nombre. */
     fun lire(texte: String): Int? = texte.trim().toIntOrNull()?.coerceIn(MIN, MAX)
 
+    /**
+     * La saisie de la boîte « Durée réglable… » : le nombre s'il est entre 1 et 240 minutes, null
+     * sinon (FACCUEIL-15). 0 ou 999 ne sont plus ramenés en silence : la boîte reste ouverte et le dit.
+     */
+    fun valide(texte: String): Int? = texte.trim().toIntOrNull()?.takeIf { it in MIN..MAX }
+
     /** Les durées proposées, puis « Durée réglable… ». */
     fun choisir(activity: Activity, titre: Int, onChoisi: (Int) -> Unit) {
         val libelles = PROPOSEES.map { Store.formatDuration(activity, it) } +
@@ -54,9 +60,10 @@ object DureeSeance {
             .setPositiveButton(android.R.string.ok, null)
             .setNegativeButton(R.string.action_back, null)
             .show()
-        // Une saisie vide ou illisible garde la boîte ouverte et le dit (FACCUEIL-15), au lieu de se taire.
+        // Une saisie vide, illisible ou hors de 1 à 240 garde la boîte ouverte et le dit (FACCUEIL-15),
+        // au lieu de se taire ou de ramener la valeur sans prévenir.
         boite.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val minutes = lire(champ.text.toString())
+            val minutes = valide(champ.text.toString())
             if (minutes == null) champ.error = activity.getString(R.string.duration_custom_hint)
             else { boite.dismiss(); onChoisi(minutes) }
         }
