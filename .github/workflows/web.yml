@@ -37,6 +37,13 @@ jobs:
   web:
     runs-on: ubuntu-24.04
     steps:
+      # Les captures « toutes tailles » ont rempli le disque du runner le 14/11 (ENOSPC) : la mise
+      # en ligne a été sautée. On retire d'abord les SDK préinstallés dont ce flux ne se sert pas.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          df -h /
+
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
