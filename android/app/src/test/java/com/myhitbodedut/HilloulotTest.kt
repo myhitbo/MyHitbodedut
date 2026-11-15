@@ -130,4 +130,12 @@ class HilloulotTest {
         // Adar II n'existe que les années embolismiques : il se trouve quand même.
         assertTrue(Hilloulot.prochainJour("adar2-14", LocalDate.of(2026, 11, 4), false) != null)
     }
+
+    @Test
+    fun `les biographies ne portent ni coordonnees de tiers ni residus de source`() {
+        val bios = File("src/main/res/raw/hilloulot_bios.json").readText()
+        assertTrue("courriel", !bios.contains("@"))
+        assertTrue("telephone", !Regex("""\d{2,3}-\d{6,7}|\b0\d{8,9}\b""").containsMatchIn(bios))
+        listOf("WhatsApp", "דוא\\\"ל", "באדיבות", "(ק)", "[להאזנה]").forEach { assertTrue(it, !bios.contains(it)) }
+    }
 }

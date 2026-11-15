@@ -293,6 +293,31 @@ def espaces(texte):
     return PONCTUATION_COLLEE.sub(r"\1 ", texte)
 
 
+# Résidus des biographies MyTzadik / המאיר לארץ (audit du 12/11/2026, THILLOULOT-06, -08, -11) : marqueurs
+# de liens « (ק1/ק2) », « [להאזנה] », crédits de photos qui n'apparaissent pas dans l'application,
+# dédicaces, et coordonnées personnelles de tiers (courriel, téléphone, adresse) : on coupe du
+# marqueur à la fin de la ligne, au lieu de supprimer la ligne entière.
+LIENS_SOURCE = re.compile(r"\s*\(ק\d*(?:/ק\d*)*\)|\s*\[ל(?:האזנה|צפייה|קריאה)\]")
+CREDIT = re.compile(r"(?:ה?תמונות?|הצילומים?|המידע)[^\n]{0,80}?באדיבות|באדיבות|לעילוי נשמת")
+CONTACT = re.compile(r"(?:דוא\"ל|דוא״ל|טלפון|טל['׳]|טל/פקס)\s*:?\s*(?=[\d+@A-Za-z-])|WhatsApp|וואטסאפ|סלולאר|ת\. ?ד\. ?\d")
+COURRIEL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+TELEPHONE = re.compile(r"(?<![\d-])(?:\+?972|0\d{1,2})[- ]?\d[\d -]{5,}\d")
+COLLES = re.compile(r"(?<=ז\"ל)(?=[א-ת])")
+
+
+def nettoie_bio(texte):
+    texte = COLLES.sub(" ", LIENS_SOURCE.sub("", texte))
+    lignes = []
+    for ligne in texte.split("\n"):
+        for motif in (CREDIT, CONTACT):
+            m = motif.search(ligne)
+            if m:
+                ligne = ligne[:m.start()]
+        ligne = TELEPHONE.sub("", COURRIEL.sub("", ligne)).rstrip(" ,;:-–")
+        lignes.append(ligne.strip() if not ligne.strip() else ligne)
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(lignes)).strip()
+
+
 def sources_autorisees(jours):
     """MyTzadik et המאיר לארץ (12/10) : reprise autorisée avec mention, accord reçu par le
     propriétaire de l'app. Leur biographie, mot pour mot, s'ajoute au tsaddik du même jour
@@ -329,7 +354,7 @@ def sources_autorisees(jours):
             cle = cle_de(e.get("date") or "")
             if not cle:
                 continue
-            bio = sans_balisage(e.get("bio") or "")
+            bio = nettoie_bio(sans_balisage(e.get("bio") or ""))
             x, _ = apparier(e["nom"], cle)
             if x is None:
                 x = {"he": e["nom"].strip(), "a": "", "s": ""}
