@@ -102,53 +102,6 @@ public enum AjoutTemps {
     }
 }
 
-/// `ReminderRule.prochainDeclenchement` : le prochain rappel, recalculé à chaque fois à l'heure civile du fuseau,
-/// pour qu'un changement d'heure ne le décale pas (revue du 29/09). Le reste de `ReminderRule` vient avec le
-/// planificateur (tâche 12).
-public enum ReminderRule {
-
-    public static let minutesParJour = 24 * 60
-
-    /// Les heures (minutes depuis minuit) hors du jour sont ignorées, les doublons aussi ; aujourd'hui puis demain.
-    /// Une heure qui n'existe pas ce jour-là (passage à l'heure d'été) est avancée de la durée du trou.
-    public static func prochainDeclenchement(_ maintenant: DateHeureZonee, heures: [Int]) -> DateHeureZonee? {
-        var vues = Set<Int>()
-        let propres = heures.filter { (0..<minutesParJour).contains($0) && vues.insert($0).inserted }.sorted()
-        let jour = maintenant.jour
-        for decalage in 0...1 {
-            for h in propres {
-                let t = DateHeureZonee(DateHeure(jour.plus(jours: decalage), heure: h / 60, minute: h % 60),
-                                       fuseau: maintenant.fuseau)
-                if t > maintenant { return t }
-            }
-        }
-        return nil
-    }
-}
-
-/// Ce que `ZmanimVignette.kt` décide sans écran (02/11) ; les chronologies des widgets viennent à la tâche 12.
-public enum ZmanimVignette {
-
-    static let pasMaxMinutes = 10
-
-    /// Le prochain instant où la vignette change : le prochain horaire, minuit du lieu (la date en tête), minuit
-    /// du téléphone, et au plus tard dans dix minutes.
-    public static func prochainChangement(_ horaires: [DateHeureZonee?], maintenant: DateHeureZonee,
-                                          minuitTelephone: DateHeureZonee? = nil) -> DateHeureZonee {
-        let minuitLieu = DateHeureZonee(DateHeure(maintenant.jour.plus(jours: 1)), fuseau: maintenant.fuseau)
-        let auPlusTard = maintenant.plus(minutes: pasMaxMinutes)
-        let candidats = horaires.compactMap { $0 } + [minuitLieu, minuitTelephone, auPlusTard].compactMap { $0 }
-        return candidats.filter { $0 > maintenant }.min() ?? auPlusTard
-    }
-
-    /// La date civile dont la vignette montre le jour hébreu : celle du lieu, ou le lendemain une fois la sortie
-    /// des étoiles passée — le jour hébreu commence le soir.
-    public static func jourHebreuAffiche(_ maintenant: DateHeureZonee, tset: DateHeureZonee?) -> JourCivil {
-        if let tset, !(maintenant < tset) { return maintenant.jour.plus(jours: 1) }
-        return maintenant.jour
-    }
-}
-
 /// Ce que `BoussoleActivity.kt` calcule sans capteur (02/11) ; l'écran vient à la tâche 25.
 public enum Boussole {
 
