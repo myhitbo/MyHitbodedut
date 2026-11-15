@@ -4,10 +4,13 @@
 elle demande au relais la position d'un vol, et le relais interroge OpenSky
 Network.
 
-**Android n'en a pas besoin** (28/10) : l'édition complète interroge OpenSky
-directement, en accès anonyme et gratuit (sans compte ni clé, 400 crédits par
-jour et par adresse IP, positions à 10 s près), et cherche l'indicatif sur le
-téléphone : seule la zone part. **Le web en a besoin** : OpenSky n'autorise
+**Android, hors de Google Play** (28/10) : l'édition complète distribuée par
+GitHub interroge OpenSky directement, en accès anonyme et gratuit (sans compte
+ni clé, 400 crédits par jour et par adresse IP, positions à 10 s près), et
+cherche l'indicatif sur le téléphone : seule la zone part. **La construction
+Play (`-Pplay=true`) ne le fait jamais** (12/11, `OPENSKY_DIRECT = false`) :
+sans ce relais elle n'a pas de suivi en direct, avec lui elle passe par lui.
+**Le web en a besoin** : OpenSky n'autorise
 pas les appels d'un autre site depuis un navigateur (vérifié le 28/10 : en-tête
 `access-control-allow-origin: https://opensky-network.org` seulement).
 
@@ -33,9 +36,10 @@ gratuit enregistré, sans frais. À condition que :
 Publicité, abonnement, fonction payante ou gestion par une entreprise :
 licence commerciale (Startup, 99 $/mois selon ce courriel).
 
-L'édition Android complète construite **sans** relais interroge encore OpenSky
-depuis le téléphone, en anonyme : pour une diffusion publique, la construire
-avec `-PrelaisVol=https://…`.
+Une édition Android construite **sans** relais et hors de Play interroge
+encore OpenSky depuis le téléphone, en anonyme : ce n'est pas l'usage accordé.
+Pour toute diffusion publique, construire avec `-PrelaisVol=https://…` ; le
+flux `play.yml` le fait dès que la variable de dépôt `RELAIS_VOL` existe.
 
 ## Décisions du propriétaire (04/11/2026)
 
@@ -63,13 +67,15 @@ avec `-PrelaisVol=https://…`.
 
 ## Mettre en ligne (à faire par le propriétaire du compte)
 
-1. Facultatif : un compte OpenSky Network et un client API (identifiant et
-   secret), pour 4 000 crédits par jour au lieu de 400. Sans eux, le relais
-   utilise l'accès anonyme, dont les 400 crédits de l'adresse du Worker sont
-   partagés par tous les visiteurs du web (2 crédits par demande). Usage
-   **non commercial** seulement : une publication sur le Play Store ou
-   l'App Store est à revoir avec les conditions d'OpenSky.
+1. **Obligatoire** (conditions d'OpenSky, ci-dessus) : un compte OpenSky
+   Network et un client API OAuth2 (identifiant et secret, gardés dans les
+   secrets du Worker), pour 4 000 crédits par jour au lieu de 400. Le code
+   sait encore passer en anonyme sans eux, mais ce n'est pas l'usage accordé.
+   Usage **non commercial** seulement.
 2. Créer un compte Cloudflare (offre gratuite : 100 000 requêtes par jour).
+   Le relais limite déjà chaque adresse à 20 demandes par minute (`DEBIT_MAX`),
+   par instance ; pour une limite ferme, ajouter dans Cloudflare une règle de
+   limitation de débit (Security → WAF → Rate limiting rules) sur `/position`.
 3. Ici : `npx wrangler login`, puis, si l'on a un client API,
    `npx wrangler secret put OPENSKY_CLIENT_ID` et
    `npx wrangler secret put OPENSKY_CLIENT_SECRET` ; enfin `npx wrangler deploy`.
@@ -80,8 +86,25 @@ avec `-PrelaisVol=https://…`.
    - web : `RELAIS_VOL=https://… node build.mjs`, et `ORIGINE_WEB` dans
      `wrangler.toml` à l'origine du site.
 
+   - Google Play : la variable de dépôt `RELAIS_VOL` (Settings → Secrets and
+     variables → Actions → Variables), que lit `play.yml`.
+
 Sans adresse, l'option reste visible mais inactive sur le web, qui ne fait
 aucune requête.
+
+## Avant d'envoyer sur Google Play un AAB qui passe par le relais
+
+Le développeur reçoit alors l'indicatif du vol et la position estimée : ce
+qui est écrit pour la version sans suivi en direct devient faux. À reprendre
+le même jour, dans cet ordre (`PUBLICATION_PLAY_STORE.md` § 3.1, § 6.2, § 7.1 ;
+`play/CONSOLE.md`, « Si le relais arrive ») :
+
+1. `web/src/confidentialite.html`, trois langues : « En bref » et « Les
+   vols » (texte prêt au § 3.1) ;
+2. le formulaire Sécurité des données : position approximative ;
+3. la fiche, deux langues : l'attribution « Aircraft data: OpenSky Network
+   (opensky-network.org) », condition d'OpenSky ;
+4. la phrase de l'accueil de l'application (`onboarding_private_body`).
 
 ## Limites
 

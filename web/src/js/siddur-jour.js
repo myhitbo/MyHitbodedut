@@ -75,6 +75,14 @@ export function libelleJour(libelleAnnotation, condition, nusah, conditions) {
   return libelle(condition);
 }
 
+/**
+ * Le libellé du texte ordinaire qu'une formule du jour remplace (SiddurJour.AUTRES_JOURS ; audit
+ * du 12/11, TSIDDUR-06) : « האל הקדוש » pendant les dix jours, « בונה ירושלים » à Min'ha du 9 Av.
+ * Sa condition est niée : vraie, c'est le texte de tous les jours, affiché tel quel, sans
+ * étiquette ; le jour où il est remplacé, il se replie sous « Les autres jours ».
+ */
+export const AUTRES_JOURS = 'ajout_autres_jours';
+
 /** Comme tools/siddur_annotations.py : sans balises ni voyelles, quarante caractères. */
 export function empreinte(texte) {
   return texte.replace(/<[^>]+>/g, ' ').replace(/[֑-ׇ]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40);
@@ -101,4 +109,28 @@ export function index(annotations = []) {
     else indices.set(`${a.s}:${a.b}`, [...(indices.get(`${a.s}:${a.b}`) ?? []), a]);
   }
   return { sections, blocs, indices, renvois, seuls };
+}
+
+/**
+ * Le plan de lecture d'une section, le jour où valent [conditions] (SiddurJour.lignes) : dans
+ * l'ordre, la section entière si elle est annotée, sinon ses blocs libres (sans annotation) et
+ * ses groupes, variantes comprises. [etat] : « du_jour », mis en évidence sous son étiquette ;
+ * « replie », hors du jour, derrière sa flèche ; « ordinaire », le texte de tous les jours qu'une
+ * formule du jour remplace (AUTRES_JOURS), affiché tel quel quand il se dit.
+ */
+export function plan(section, si, idx, conditions) {
+  const entiere = idx.sections.get(si);
+  if (entiere) return [{ annotation: entiere, racine: entiere.si, blocs: section.blocs.map((_, i) => i), etat: vrai(entiere.si, conditions) ? 'du_jour' : 'replie' }];
+  const parties = [];
+  for (let i = 0; i < section.blocs.length; i++) {
+    const a = idx.blocs.get(`${si}:${i}`);
+    if (!a) { parties.push({ annotation: null, blocs: [i], etat: 'libre' }); continue; }
+    // Le groupe : les blocs suivants de même groupe.
+    const blocs = [];
+    while (i < section.blocs.length && idx.blocs.get(`${si}:${i}`)?.g === a.g) blocs.push(i++);
+    i--;
+    const racine = a.racine ?? a.si;
+    parties.push({ annotation: a, racine, blocs, etat: !vrai(racine, conditions) ? 'replie' : a.libelle === AUTRES_JOURS ? 'ordinaire' : 'du_jour' });
+  }
+  return parties;
 }

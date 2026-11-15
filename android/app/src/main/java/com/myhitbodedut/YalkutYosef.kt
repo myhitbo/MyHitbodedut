@@ -45,7 +45,8 @@ object YalkutYosef {
         return when {
             mois == adar && jour <= 15 -> "pourim"
             mois == adar || (mois == JewishDate.NISSAN && jour <= 22) -> "pessah"
-            mois == JewishDate.NISSAN || mois == JewishDate.IYAR || (mois == JewishDate.SIVAN && jour <= 7) -> "omer"
+            mois == JewishDate.NISSAN || mois == JewishDate.IYAR -> "omer"
+            mois == JewishDate.SIVAN && jour <= 7 -> "chavouot"
             (mois == JewishDate.TAMMUZ && jour >= 17) || (mois == JewishDate.AV && jour <= 9) -> "bein_hametsarim"
             mois == JewishDate.ELUL || (mois == JewishDate.TISHREI && jour <= 2) -> "eloul"
             mois == JewishDate.TISHREI && jour <= 10 -> "kippour"
@@ -77,16 +78,36 @@ object YalkutYosef {
         else "ordinaire" to date.toEpochDay().toInt()
     }
 
-    /** Les se'ifim d'un rang : [PAR_JOUR] à la suite, en boucle. */
-    fun du(seifs: List<Seif>, rang: Int): List<Seif> {
+    /**
+     * La durée, en jours, de la fenêtre de fête où tombe [date] (le jour du Roch 'Hodech compris), ou 0
+     * hors fenêtre et le jour du Roch 'Hodech, qui a son propre rang.
+     */
+    fun longueur(date: LocalDate, israel: Boolean): Int {
+        if (cal(date, israel).isRoshChodesh) return 0
+        val f = fenetreDu(date, israel) ?: return 0
+        var avant = 0
+        while (avant < 60 && fenetreDu(date.minusDays(avant + 1L), israel) == f) avant++
+        var apres = 0
+        while (apres < 60 && fenetreDu(date.plusDays(apres + 1L), israel) == f) apres++
+        return avant + 1 + apres
+    }
+
+    /**
+     * Les se'ifim d'un rang : [PAR_JOUR] à la suite, en boucle. Dans une fenêtre de [longueur] jours,
+     * le rang est réparti sur toute la liste (THILLOULOT-02, audit 12/11) : les lois de la veille au
+     * début, celles de la fête à la fin ; une liste plus courte que la fenêtre avance d'un se'if par jour.
+     */
+    fun du(seifs: List<Seif>, rang: Int, longueur: Int = 0): List<Seif> {
         if (seifs.isEmpty()) return emptyList()
-        val debut = Math.floorMod(rang.toLong() * PAR_JOUR, seifs.size.toLong()).toInt()
+        val debut = if (longueur > 0) {
+            (if (seifs.size >= longueur) rang.toLong() * seifs.size / longueur else rang.toLong()).mod(seifs.size.toLong()).toInt()
+        } else Math.floorMod(rang.toLong() * PAR_JOUR, seifs.size.toLong()).toInt()
         return (0 until minOf(PAR_JOUR, seifs.size)).map { seifs[(debut + it) % seifs.size] }
     }
 
     fun pour(livre: Livre, date: LocalDate, israel: Boolean): List<Seif> {
         val (p, rang) = periode(date, israel)
-        return du(livre.periodes[p].orEmpty(), rang)
+        return du(livre.periodes[p].orEmpty(), rang, longueur(date, israel))
     }
 
     fun recherche(livre: Livre, texte: String): List<Seif> {

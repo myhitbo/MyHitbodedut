@@ -12,7 +12,8 @@ class OnboardingTest {
     @Test
     fun `les ecrans sont distincts et complets`() {
         val ecrans = Onboarding.ECRANS
-        assertEquals(7, ecrans.size)
+        // Sept écrans, plus celui de la barrière du matin dans l'édition complète (FACCUEIL-04).
+        assertEquals(if (BuildConfig.HAS_GATE) 8 else 7, ecrans.size)
         assertEquals(ecrans.size, ecrans.map { it.cle }.toSet().size)
         assertEquals(ecrans.size, ecrans.map { it.titre }.toSet().size)
         assertEquals(ecrans.size, ecrans.map { it.corps }.toSet().size)
@@ -112,7 +113,7 @@ class OnboardingTest {
         val code = File("src/main/java/com/myhitbodedut/OnboardingActivity.kt").readText()
         val attendues = Regex("""R\.id\.(onboarding_[a-z0-9_]+)""").findAll(code)
             .map { it.groupValues[1] }.toSet()
-        assertEquals(18, attendues.size)
+        assertEquals(19, attendues.size)
         attendues.forEach {
             assertTrue("« $it » manque dans activity_onboarding.xml",
                 gabarit.contains("""android:id="@+id/$it""""))
@@ -128,6 +129,7 @@ class OnboardingTest {
             "onboarding_days", "onboarding_days_body",
             "onboarding_texts", "onboarding_texts_body",
             "onboarding_yours", "onboarding_yours_body",
+            "onboarding_gate", "onboarding_gate_body",
             "onboarding_adresse", "onboarding_adresse_body",
             "adresse_tsadik", "adresse_tsadeket",
             "onboarding_private", "onboarding_private_body",

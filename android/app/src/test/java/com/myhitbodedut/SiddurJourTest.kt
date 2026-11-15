@@ -122,6 +122,60 @@ class SiddurJourTest {
     }
 
     @Test
+    fun `les sceaux visibles - un seul pour Jerusalem, Modim garde le sien (audit du 12-11)`() {
+        fun nu(t: String) = t.replace(Regex("<[^>]+>"), " ").replace(Regex("[\u0591-\u05C7]"), "").replace(Regex("\\s+"), " ")
+        fun visibles(n: Nusah, id: String, date: String) = SiddurJour.lignes(DataFiles.siddur(n).texte(id)!!,
+            SiddurJour.parse(json, n.cle).getValue(id), CalendrierJuif.jour(java.time.LocalDate.parse(date), false).conditions, nusah = n.cle)
+            .filterIsInstance<SiddurJour.Ligne.Bloc>().map { nu(it.bloc.texte) }
+        // TSIDDUR-01 : Min'ha Edot, un jour ordinaire : « בונה ירושלים » seul, sans le sceau de Na'hem ni celui d'Anénou.
+        val minha = visibles(Nusah.EDOT, "minha", "2026-11-13")
+        assertEquals(1, minha.count { Regex("ברוך אתה \\S+,? (בונה ירושלים|מנחם ציון)").containsMatchIn(it) })
+        assertFalse(minha.any { "העונה לעמו ישראל בעת צרה" in it })
+        assertFalse(visibles(Nusah.EDOT, "chaharit", "2026-11-13").any { "העונה לעמו ישראל בעת צרה" in it })
+        // TSIDDUR-02 : Moussaf de Roch 'Hodech hors 'Hanouka (1er Kislev) : la fin de Modim et son sceau restent visibles.
+        listOf(Nusah.EDOT, Nusah.ASHKENAZ, Nusah.SEFARD).forEach { n ->
+            assertTrue(n.cle, visibles(n, "moussaf_rosh_hodech", "2026-11-11").any { "הטוב שמך ולך נאה להודות" in it })
+        }
+    }
+
+    @Test
+    fun `les sceaux visibles - fin d office, Hallel, dix jours, supplications (audit du 12-11)`() {
+        fun nu(t: String) = t.replace(Regex("<[^>]+>"), " ").replace(Regex("[\u0591-\u05C7]"), "").replace(Regex("\\s+"), " ").trim()
+        fun visibles(n: Nusah, id: String, date: String) = SiddurJour.lignes(DataFiles.siddur(n).texte(id)!!,
+            SiddurJour.parse(json, n.cle).getValue(id), CalendrierJuif.jour(java.time.LocalDate.parse(date), false).conditions, nusah = n.cle)
+            .filterIsInstance<SiddurJour.Ligne.Bloc>().map { nu(it.bloc.texte) }
+        fun nb(l: List<String>, motif: String) = l.count { Regex(motif).containsMatchIn(it) }
+        // TSIDDUR-03 : un vendredi (sans Ta'hanoun), la fin de Min'ha reste lue.
+        assertTrue(visibles(Nusah.SEFARD, "minha", "2026-11-13").any { it.startsWith("עלינו לשבח") })
+        assertTrue(visibles(Nusah.EDOT, "minha", "2026-11-13").any { "יהוה מלך גאות" in it })
+        // TSIDDUR-03 : « שומר ישראל » (Sfard, Cha'harit) un mardi de Ta'hanoun.
+        assertTrue(visibles(Nusah.SEFARD, "chaharit", "2026-11-17").any { it.startsWith("שומר ישראל") })
+        // TSIDDUR-04 : Moussaf ashkénaze, qui prie seul : un seul sceau de la Kedoucha.
+        assertEquals(1, nb(visibles(Nusah.ASHKENAZ, "moussaf_rosh_hodech", "2026-11-11"), "ברוך אתה \\S+ האל הקדוש"))
+        // TSIDDUR-05 : Hallel partiel (Roch 'Hodech), Edot : pas de bénédiction « לגמור את ההלל ».
+        assertFalse(visibles(Nusah.EDOT, "hallel", "2026-11-11").any { "לגמור את ההלל" in it })
+        assertTrue(visibles(Nusah.EDOT, "hallel", "2026-12-07").any { "לגמור את ההלל" in it })
+        // TSIDDUR-06 : dix jours (4 Tichri 5788), un seul sceau ; un jour ordinaire, celui de tous les jours.
+        listOf(Nusah.SEFARD, Nusah.ASHKENAZ).forEach { n ->
+            val dix = visibles(n, "chaharit", "2027-10-05")
+            assertEquals(n.cle, 0, nb(dix, "ברוך אתה \\S+ האל הקדוש"))
+            assertEquals(n.cle, 1, nb(dix, "ברוך אתה \\S+ המלך הקדוש"))
+            val ord = visibles(n, "chaharit", "2026-11-13")
+            assertEquals(n.cle, 1, nb(ord, "ברוך אתה \\S+ האל הקדוש"))
+            assertEquals(n.cle, 0, nb(ord, "ברוך אתה \\S+ המלך הקדוש"))
+        }
+        // TSIDDUR-06 : Min'ha du 9 Av, Na'hem seul avec son sceau.
+        listOf(Nusah.SEFARD, Nusah.ASHKENAZ, Nusah.EDOT).forEach { n ->
+            val ticha = visibles(n, "minha", "2027-08-12")
+            assertEquals(n.cle, 0, nb(ticha, "ברוך אתה \\S+,? בונה ירושלים"))
+            assertEquals(n.cle, 1, nb(ticha, "ברוך אתה \\S+,? מנחם ציון"))
+        }
+        // TSIDDUR-07 : supplications du lundi et du jeudi (Edot) : lues le lundi, absentes le mardi.
+        assertTrue(visibles(Nusah.EDOT, "chaharit", "2026-11-16").any { it.startsWith("אנשי אמונה") })
+        assertFalse(visibles(Nusah.EDOT, "chaharit", "2026-11-17").any { it.startsWith("אנשי אמונה") })
+    }
+
+    @Test
     fun `ashkenaz hors d israel - morid hatal replie l ete`() {
         val ete = CalendrierJuif.jour(java.time.LocalDate.parse("2027-06-01"), false).conditions
         fun etat(n: Nusah, israel: Boolean) = SiddurJour.lignes(DataFiles.siddur(n).texte("chaharit")!!,

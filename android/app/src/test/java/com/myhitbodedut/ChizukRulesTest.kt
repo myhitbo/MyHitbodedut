@@ -2,7 +2,6 @@ package com.myhitbodedut
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -60,33 +59,18 @@ class ChizukRulesTest {
     }
 
     @Test
-    fun `l hebreu suit le nikkoud de l edition`() {
+    fun `l hebreu affiche est he, sans vocalisation si l edition l interdit`() {
         chizuk.items.forEach { item ->
             val affiche = ChizukRules.hebrew(chizuk, item)
-            val edition = chizuk.editions.getValue(item.edition)
-            if (edition.nikkoudOk) {
-                assertEquals("${item.id} : devrait afficher he", item.he, affiche)
-            } else {
-                assertEquals(
-                    "${item.id} : devrait afficher he_sans_nikkoud",
-                    item.heSansNikkoud,
-                    affiche,
-                )
-            }
+            assertEquals("${item.id} : devrait afficher he", item.he, affiche)
             assertTrue("${item.id} : hébreu vide", affiche.isNotBlank())
-        }
-    }
-
-    @Test
-    fun `toute edition sans nikkoud fournit son texte sans nikkoud`() {
-        chizuk.items
-            .filterNot { chizuk.editions.getValue(it.edition).nikkoudOk }
-            .forEach {
-                assertNotNull(
-                    "${it.id} : édition « ${it.edition} » non vocalisable, he_sans_nikkoud manquant",
-                    it.heSansNikkoud,
+            if (!chizuk.editions.getValue(item.edition).nikkoudOk) {
+                assertFalse(
+                    "${item.id} : édition « ${item.edition} » non vocalisable, mais he est vocalisé",
+                    affiche.any { it.code in 0x0591..0x05BD || it.code in 0x05BF..0x05C2 || it.code in 0x05C4..0x05C7 },
                 )
             }
+        }
     }
 
     /**
@@ -144,7 +128,7 @@ class ChizukRulesTest {
 
     private fun gabarit(statut: String, relu: Boolean) = ChizukItem(
         id = "t", moments = listOf(Moment.OUVERTURE), theme = null, edition = "lm",
-        ref = "ref", refSefaria = null, url = null, he = "he", heSansNikkoud = null,
+        ref = "ref", refSefaria = null, url = null, he = "he",
         fr = "fr", en = "en", note = null, dureeLectureSec = 5,
         statutVerif = statut, relu = relu,
     )

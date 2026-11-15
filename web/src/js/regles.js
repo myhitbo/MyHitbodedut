@@ -334,15 +334,10 @@ export const SignetsSiddur = {
 // --- LibraryRules (LibraryRules.kt) ---------------------------------------------
 // Une « source » est du domaine public : ses paragraphes s'affichent. La
 // vocalisation d'une édition dont la licence n'est pas déclarée est un
-// travail éditorial qu'on ne reprend pas : le texte sans nikkoud, alors.
+// travail éditorial qu'on ne reprend pas : le fichier livre déjà ces
+// paragraphes sans nikkoud (LicencesEditionsTest).
 export const LibraryRules = {
-  paragraphes(bibliotheque, source) {
-    const nikkoudOk = bibliotheque?._meta?.editions?.[source.edition]?.nikkoud_ok === true;
-    const avec = source.paragraphes ?? [];
-    if (nikkoudOk) return avec;
-    const sans = source.paragraphes_sans_nikkoud ?? [];
-    return sans.length > 0 ? sans : avec;
-  },
+  paragraphes: (bibliotheque, source) => source.paragraphes ?? [],
   /** Les sources de la bibliothèque, par section et sous-section ; les articles restent sur Android. */
   sources(bibliotheque) {
     return (bibliotheque?.sections ?? []).map((section) => ({
@@ -372,7 +367,16 @@ export const SourceDuJour = {
   PAS: 37,
   candidats(bibliotheque) {
     return LibraryRules.sources(bibliotheque).flatMap((section) => section.sous_sections.flatMap((sous) => sous.entrees.flatMap((e) =>
-      LibraryRules.paragraphes(bibliotheque, e).filter((p) => p.length >= SourceDuJour.MIN).map((texte) => ({ source: e, texte })))));
+      // Le rang d'abord, le filtre ensuite : un paragraphe court écarté ne décale pas les traductions.
+      LibraryRules.paragraphes(bibliotheque, e).map((texte, indice) => ({ source: e, texte, indice })).filter((p) => p.texte.length >= SourceDuJour.MIN))));
+  },
+  /**
+   * Ce que la carte donne à lire, dans l'ordre des langues choisies : [langue, extrait] (13/11,
+   * audit du 12/11, COUV-08, FWEBCODE-08 : la carte ne montrait que l'hébreu).
+   */
+  textes(p, mode) {
+    return LanguesTexte.textes(mode, p.texte, p.source.paragraphes_fr?.[p.indice], p.source.paragraphes_en?.[p.indice])
+      .map(([langue, texte]) => [langue, SourceDuJour.extrait(SourceDuJour.sansBalises(texte))]);
   },
   /** iso : « AAAA-MM-JJ ». */
   choix(bibliotheque, iso) {
@@ -381,6 +385,8 @@ export const SourceDuJour = {
     const jour = Math.round(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 86400000);
     return c[(((jour * SourceDuJour.PAS) % c.length) + c.length) % c.length];
   },
+  /** Les balises (<b>, <small>, <br>) ôtées avant la coupe : la carte est du texte nu (TLIVRES-01). */
+  sansBalises(texte) { return texte.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(); },
   extrait(texte, max = 320) {
     if (texte.length <= max) return texte;
     const coupe = texte.slice(0, max);
@@ -410,6 +416,44 @@ export const Parcours = {
  * après (1 à 5, 0 = non notée), une gratitude et une chose à travailler, gardées à part des
  * journées sous « journal_plus », date → { avant, apres, gratitude, travail }, comme Android.
  */
+/**
+ * L'historique d'un réglage qui pèse sur le passé (HistoriqueReglage.kt, audit du 12/11,
+ * FDONNEES-05) : « 2000-01-01=0,2026-11-05=1 », la date d'effet puis 1 ou 0. Un jour se juge avec
+ * la valeur en vigueur ce jour-là ; vide : la valeur du moment vaut pour tous les jours.
+ */
+export const HistoriqueReglage = {
+  ORIGINE: '2000-01-01',
+  MAX: 200,
+  decoder(brut) {
+    if (typeof brut !== 'string' || brut.trim() === '') return [];
+    const parDate = new Map();
+    for (const morceau of brut.split(',')) {
+      const i = morceau.indexOf('=');
+      const date = (i < 0 ? morceau : morceau.slice(0, i)).trim();
+      const v = i < 0 ? '' : morceau.slice(i + 1).trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00Z`))) continue;
+      if (v === '1') parDate.set(date, true); else if (v === '0') parDate.set(date, false);
+    }
+    return [...parDate].sort(([a], [b]) => (a < b ? -1 : 1)).map(([depuis, valeur]) => ({ depuis, valeur }));
+  },
+  encoder(histoire) { return histoire.map((e) => `${e.depuis}=${e.valeur ? 1 : 0}`).join(','); },
+  valeurLe(histoire, jour, actuelle) {
+    if (histoire.length === 0 || jour >= histoire.at(-1).depuis) return actuelle;
+    const e = [...histoire].reverse().find((x) => x.depuis <= jour) ?? histoire[0];
+    return e.valeur;
+  },
+  apresChangement(histoire, aujourdhui, ancienne, nouvelle) {
+    if (ancienne === nouvelle) return histoire;
+    const base = histoire.length ? histoire : [{ depuis: this.ORIGINE, valeur: ancienne }];
+    let avant = base.filter((e) => e.depuis < aujourdhui);
+    if (avant.length === 0) avant = [{ depuis: this.ORIGINE, valeur: ancienne }];
+    const suite = avant.at(-1).valeur === nouvelle ? avant : [...avant, { depuis: aujourdhui, valeur: nouvelle }];
+    if (suite.length <= this.MAX) return suite;
+    const gardees = suite.slice(-this.MAX);
+    return [{ depuis: this.ORIGINE, valeur: gardees[0].valeur }, ...gardees.slice(1)];
+  },
+};
+
 export const JournalPlus = {
   /** Les cinq humeurs, de la plus lourde à la plus légère. */
   HUMEURS: ['😞', '🙁', '😐', '🙂', '😄'],

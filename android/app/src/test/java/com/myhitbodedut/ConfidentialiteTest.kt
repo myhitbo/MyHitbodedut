@@ -37,7 +37,7 @@ class ConfidentialiteTest {
         assertTrue("build.mjs ne copie plus web/src en entier", build.contains("cpSync(SRC, DIST, { recursive: true })"))
         val reglages = source("SettingsActivity.kt")
         assertTrue(reglages.contains("CelebrationActivity.LIEN_WEB + \"confidentialite.html\""))
-        assertTrue(source("CelebrationActivity.kt").contains("const val LIEN_WEB = \"https://hil123.github.io/myhitbodedut-web/\""))
+        assertTrue(source("CelebrationActivity.kt").contains("const val LIEN_WEB = \"https://myhitbodedut.pages.dev/\""))
         assertTrue(File("src/main/res/layout/activity_settings.xml").readText().contains("@string/settings_confidentialite"))
     }
 

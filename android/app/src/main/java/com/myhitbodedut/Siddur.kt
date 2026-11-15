@@ -23,7 +23,15 @@ data class SiddurTexte(
     val emprunt: LocalizedText? = null,
     /** Le nombre de chapitres : celui de [sections], ou celui de l'index des livres, qui n'a pas leur texte. */
     val chapitres: Int = sections.size,
-)
+    /** Ses traductions sont automatiques, pas encore relues (clé « traduction » de livres.json ; audit du 12/11, COUV-05). */
+    val traductionAuto: Boolean = false,
+) {
+    /**
+     * Les chapitres dont au moins un paragraphe est traduit (hors consignes) : le Yalkout Yossef n'en a que
+     * 92 sur 1 048 (audit du 12/11, COUV-01, TLIVRES-05) ; le lecteur le dit au lieu de passer sans prévenir à l'hébreu seul.
+     */
+    fun chapitresTraduits(): Int = sections.count { s -> s.blocs.any { !it.consigne && (it.fr != null || it.en != null) } }
+}
 
 data class SiddurGroupe(val cle: String, val titre: LocalizedText)
 
@@ -87,6 +95,7 @@ object SiddurLoader {
                     source = t.optString("source", ""),
                     emprunt = t.optJSONObject("nusah")?.let { LocalizedText.parse(it) },
                     chapitres = t.optInt("chapitres", t.getJSONArray("sections").length()),
+                    traductionAuto = t.has("traduction"),
                     sections = Json.array(t.getJSONArray("sections")) { s ->
                         SiddurSection(
                             titre = s.optString("titre", ""),

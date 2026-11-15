@@ -12,6 +12,7 @@ test('les conditions déduites du 19/10', () => {
   assert.ok(c('2026-10-19').has('lamnatseah')); // lundi 8 'Hechvan
   assert.ok(!c('2026-10-11').has('lamnatseah')); // Roch 'Hodech
   assert.ok(!c('2027-04-21').has('lamnatseah')); // veille de Pessa'h
+  assert.ok(!c('2027-04-26').has('lamnatseah') && !c('2027-10-22').has('lamnatseah')); // 'Hol hamoèd ; Hochaana Rabba (TSIDDUR-08)
   assert.ok(c('2026-08-20').has('ledavid') && c('2026-10-02').has('ledavid')); // Eloul ; Hochaana Rabba
   assert.ok(!c('2026-10-19').has('ledavid'));
   assert.ok(c('2026-10-02').has('techouva_hochaana') && !c('2026-10-19').has('techouva_hochaana'));

@@ -304,30 +304,42 @@ export function calculer(plan) {
 
 /**
  * La prière du moment et sa limite : ZmanimWidget.prochaine, ligne pour ligne.
- * horaires : { alot, szt_gra, chkia, chatsot_layla } en Date ou null.
+ * horaires : { alot, szt_gra, minha_gedola, chkia, chatsot_layla } en Date ou null.
+ * Rend [prière, limite, début]. Début null : la prière est ouverte, jusqu'à la limite. Début
+ * non null : aucune prière n'est ouverte, la prochaine commence à ce moment — de la fin de
+ * Cha'harit à min'ha guedola, Min'ha est annoncée, pas affichée comme ouverte (13/11, FVOL-05).
  */
 export function prochaine(horaires, maintenant) {
   const alot = horaires.alot;
   if (alot && +maintenant < +alot) {
     const veille = horaires.chatsot_layla ? new Date(+horaires.chatsot_layla - 24 * H) : null;
-    return ['arvit', veille && +maintenant < +veille ? veille : null];
+    return ['arvit', veille && +maintenant < +veille ? veille : null, null];
   }
-  for (const [priere, limite] of [['chaharit', horaires.szt_gra], ['minha', horaires.chkia], ['arvit', horaires.chatsot_layla]]) {
-    if (limite && +maintenant < +limite) return [priere, limite];
+  if (horaires.szt_gra && +maintenant < +horaires.szt_gra) return ['chaharit', horaires.szt_gra, null];
+  const chkia = horaires.chkia ?? null;
+  const guedola = horaires.minha_gedola;
+  // Une min'ha guedola d'après la chki'a est celle du lendemain (route sans repère d'aube) : Min'ha est ouverte.
+  if (guedola && +maintenant < +guedola && (!chkia || +guedola < +chkia)) return ['minha', chkia, guedola];
+  for (const [priere, limite] of [['minha', chkia], ['arvit', horaires.chatsot_layla]]) {
+    if (limite && +maintenant < +limite) return [priere, limite, null];
   }
-  return ['arvit', null];
+  return ['arvit', null, null];
 }
 
-/** Les horaires que prochaine attend, pris sur la route (Vol.horaires). */
+/**
+ * Les horaires que prochaine attend, pris sur la route (Vol.horaires) : le repère d'aube passé
+ * le plus récent, alot, sinon michéyakir ou nets (l'été au nord d'environ 50°, FVOL-01).
+ */
 export function horaires(calcul, maintenant) {
   const ev = calcul.evenements;
-  const alot = ev.filter((e) => e.cle === 'alot' && +e.instant <= +maintenant).at(-1)?.instant ?? null;
+  const aube = ['alot', 'misheyakir', 'netz'];
+  const alot = ev.filter((e) => aube.includes(e.cle) && +e.instant <= +maintenant).at(-1)?.instant ?? null;
   const apres = alot ?? maintenant;
   const suivant = (cle) => ev.find((e) => e.cle === cle && +e.instant > +apres)?.instant ?? null;
-  return { alot, szt_gra: suivant('szt_gra'), chkia: suivant('chkia'), chatsot_layla: suivant('chatsot_layla') };
+  return { alot, szt_gra: suivant('szt_gra'), minha_gedola: suivant('minha_gedola'), chkia: suivant('chkia'), chatsot_layla: suivant('chatsot_layla') };
 }
 
-/** La prière du moment en vol et sa limite ; null loin du vol (la fenêtre ne couvre plus). */
+/** La prière du moment en vol, sa limite et son début (prochaine) ; null loin du vol (la fenêtre ne couvre plus). */
 export function priere(calcul, maintenant) {
   if (+maintenant < +calcul.plan.decollage - COUVERT || +maintenant > +calcul.plan.atterrissage + COUVERT) return null;
   return prochaine(horaires(calcul, maintenant), maintenant);
@@ -349,10 +361,12 @@ export function jalons(calcul, enIsrael, minutes) {
       type, instant: e.instant, date: j.date, chabbat: new Date(`${j.date}T12:00:00Z`).getUTCDay() === 6, fetes: j.fetes, omer, allumage,
       latitude: e.latitude, longitude: e.longitude,
     });
-    if (e.cle === 'chkia' && demain.chome && !aujourdhui.chome) sortie.push(jalon('entree', demain, new Date(+e.instant - minutes * MIN)));
+    // Fête un vendredi (FCALENDRIER-01) : Chabbat entre à la chki'a, allumage avant elle.
+    const vendredi = new Date(`${iso}T12:00:00Z`).getUTCDay() === 5;
+    if (e.cle === 'chkia' && demain.chome && (!aujourdhui.chome || vendredi)) sortie.push(jalon('entree', demain, new Date(+e.instant - minutes * MIN)));
     if (e.cle === 'tset') {
       if (aujourdhui.chome && !demain.chome) sortie.push(jalon('sortie', aujourdhui));
-      if (aujourdhui.chome && demain.chome) sortie.push(jalon('enchainement', demain));
+      if (aujourdhui.chome && demain.chome && !vendredi) sortie.push(jalon('enchainement', demain));
       if (demain.omer > 0) sortie.push(jalon('omer', demain, null, demain.omer));
     }
   }
@@ -390,7 +404,7 @@ export const Raison = {
   codeServeur: (raison) => (/^serveur_\d+$/.test(raison) ? +raison.slice(8) : null),
   /** Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… */
   duRelais: (message) => {
-    const m = /^opensky (\d+)$/.exec(String(message).trim());
+    const m = /^(?:opensky|relais) (\d+)$/.exec(String(message).trim());
     return m ? Raison.serveur(+m[1]) : 'service';
   },
 };
@@ -565,13 +579,35 @@ function prochaineDate(aujourdhui, mois, jour) {
   return d < plusJours(aujourdhui, -7) ? iso(an + 1, mois, jour) : d;
 }
 
-/** Les heures, dans l'ordre ; celles de l'embarquement ou de la porte sont écartées (SaisieVol.heures). */
-export function heuresPhrase(leger) {
+/** Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas repris, l'heure se donne (SaisieVol.dateSansHeure, FVOL-03). */
+export const dateSansHeure = (p) => !!p.date && !p.heureDepart;
+
+/** Le vol ne se calcule seul que si tout vient du texte : ni arrivée estimée, ni jour repris de l'ancien vol (SaisieVol.calculAutomatique). */
+export const calculAutomatique = (p, arriveeEstimee) => !arriveeEstimee && !!p.date;
+
+/**
+ * Les heures, dans l'ordre (SaisieVol.heures). Sont écartées (FVOL-04) : celles de l'embarquement ou
+ * de la porte, sauf si « départ » est plus près que « gate » ; les durées (« Durée 4h25 », « 4h 25m ») ;
+ * les chiffres du numéro de vol déjà lu ; et, dès qu'une forme « HH:MM » figure dans le texte, les
+ * formes « 4h25 », qui sont alors des durées.
+ */
+export function heuresPhrase(leger, numero = null) {
   const r = /(?<![0-9])([01]?[0-9]|2[0-3])(?:\s?h\s?([0-5][0-9])?|:([0-5][0-9])(?:\s?(am|pm))?|\s?(am|pm))(?![0-9])|(?<![a-zא-ת])(?:בשעה|a|à|at|vers)\s([01]?[0-9]|2[0-3])(?![0-9/:.]|\s?h|\s?am|\s?pm)/g;
+  const texte = numero
+    ? leger.replace(new RegExp(`(?<![a-z0-9])${[...numero.toLowerCase()].map((c) => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s?')}(?![0-9])`, 'g'), ' ')
+    : leger;
+  const avecDeuxPoints = /(?<![0-9])[0-9]{1,2}:[0-5][0-9]/.test(texte);
+  const porte = /boarding|embarquement|gate|porte|עלייה|שער|fermeture|closes/g;
+  const depart = /depart[a-z]*|dep(?![a-z])|decollage|takeoff|המראה/g;
+  const duree = /(?:duree|duration|flight time|temps de vol|משך|זמן טיסה)\s*[:\-–]?\s*$/;
   const res = [];
-  for (const m of leger.matchAll(r)) {
-    const avant = leger.slice(Math.max(0, m.index - 24), m.index);
-    if (/boarding|embarquement|gate|porte|עלייה|שער|fermeture|closes/.test(avant)) continue;
+  for (const m of texte.matchAll(r)) {
+    const avant = texte.slice(Math.max(0, m.index - 24), m.index);
+    if (duree.test(avant)) continue;
+    if (/^\s?m(?:in|n)?(?![a-z])/.test(texte.slice(m.index + m[0].length))) continue;
+    if (avecDeuxPoints && !m[3] && !m[4] && !m[5] && !m[6]) continue;
+    const derniereP = [...avant.matchAll(porte)].at(-1);
+    if (derniereP && ([...avant.matchAll(depart)].at(-1)?.index ?? -1) < derniereP.index) continue;
     if (m[6]) { res.push(`${pad(Number(m[6]))}:00`); continue; }
     let h = Number(m[1]);
     const min = Number(m[2] || m[3] || 0);
@@ -597,6 +633,11 @@ export function lirePhrase(texte, liste, aujourdhui) {
   for (const m of pl.matchAll(reNum)) {
     const code = m[1];
     if (['a', 'le', 'la', 'de', 'du', 'au', 'et', 'on', 'at', 'the'].includes(code) || MOTS.has(code)) continue;
+    // « 4h 25m », « 5h45 » sont des durées ou des heures, pas des numéros (FVOL-04) : seul « 6H » (Israir)
+    // est un code « chiffre + h », suivi d'un vrai numéro, pas de deux chiffres de minutes.
+    if (/^[0-9]h$/.test(code) && (code !== '6h' || (m[2].length === 2 && Number(m[2]) < 60 && !m[3]))) continue;
+    // « gate B12 », « porte A3 » : la porte, pas le vol.
+    if (/(?:gate|porte|door|terminal|שער)\s*$/.test(pl.slice(0, m.index))) continue;
     const n = `${code}${m[2]}${m[3]}`.toUpperCase();
     if (normaliserNumero(n)) { numero = n; break; }
   }
@@ -667,7 +708,7 @@ export function lirePhrase(texte, liste, aujourdhui) {
     dates.push([i, plusJours(aujourdhui, (j - jourIso(aujourdhui) + 7) % 7)]);
   });
   const tri = [...new Set(dates.sort((x, y) => x[0] - y[0]).map((x) => x[1]))];
-  const heures = heuresPhrase(leger);
+  const heures = heuresPhrase(leger, numero);
   return {
     numero, compagnie, depart: dep?.a.iata ?? null, arrivee: arr?.a.iata ?? null,
     date: tri[0] ?? null, dateArrivee: tri[1] ?? null, heureDepart: heures[0] ?? null, heureArrivee: heures[1] ?? null,

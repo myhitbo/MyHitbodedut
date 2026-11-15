@@ -29,7 +29,7 @@ import kotlin.random.Random
  * (Likoutei Moharan II, 78 : אֵין שׁוּם יֵאוּשׁ בָּעוֹלָם כְּלָל). Demande du
  * propriétaire, 28/09.
  */
-class CelebrationActivity : AppCompatActivity() {
+class CelebrationActivity : AppCompatActivity(), NoteDialog.Hote {
 
     private var danse: ValueAnimator? = null
 
@@ -95,9 +95,14 @@ class CelebrationActivity : AppCompatActivity() {
             if (dateNote == null || annulee) {
                 finish()
             } else {
-                NoteDialog.show(this, dateNote, onSaved = {}, onClosed = { finish() })
+                NoteDialog.show(this, dateNote)
             }
         }
+    }
+
+    /** La note proposée après le bravo s'est fermée, enregistrée ou non : l'écran a fini (NoteDialog.Hote). */
+    override fun noteFermee(date: String) {
+        finish()
     }
 
     override fun onStart() {
@@ -200,7 +205,7 @@ class CelebrationActivity : AppCompatActivity() {
 
     companion object {
         /** La version web de l'application, jointe à chaque partage. */
-        const val LIEN_WEB = "https://hil123.github.io/myhitbodedut-web/"
+        const val LIEN_WEB = "https://myhitbodedut.pages.dev/"
 
         const val EXTRA_MINUTES = "minutes"
         const val EXTRA_ANNULEE = "annulee"
@@ -219,13 +224,17 @@ class CelebrationActivity : AppCompatActivity() {
          * Ouvre le bravo si une séance vient de se clore. La marque est
          * retirée avant l'ouverture, pas à la fermeture : deux écrans qui
          * reprennent la main l'un après l'autre ne l'ouvriraient pas deux fois.
+         *
+         * [sansNote] : la note vient d'être proposée (mode « Écrire », le
+         * bravo a attendu sa fermeture) ; « Continuer » ne la rouvre pas
+         * (13/11, audit FSEANCE-03).
          */
-        fun showIfPending(activity: Activity) {
+        fun showIfPending(activity: Activity, sansNote: Boolean = false) {
             val celebration = Store.takePendingCelebration(activity) ?: return
             activity.startActivity(
                 Intent(activity, CelebrationActivity::class.java)
                     .putExtra(EXTRA_MINUTES, celebration.minutes)
-                    .putExtra(EXTRA_NOTE_DATE, celebration.dateNote)
+                    .putExtra(EXTRA_NOTE_DATE, celebration.dateNote.takeUnless { sansNote })
             )
         }
     }
