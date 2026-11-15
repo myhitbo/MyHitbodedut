@@ -7,8 +7,8 @@ import Testing
 /// libellé est traduit (dans le catalogue d'iOS, pour les strings.xml d'Android), les ajouts
 /// principaux sont annotés, et les lignes du jour (renvois, étiquettes, replis, styles) sont celles
 /// d'Android. Rien n'y reste à Android. Puis les vecteurs de la JVM (siddur_jour.json) : parse, les
-/// lignes de chaque texte sur une trentaine de jours, vrai, libelle, libelleJour, empreinte, et
-/// l'illustration de SiddurMoment.
+/// lignes de chaque texte sur une trentaine de jours et celles d'un texte écrit à la main, vrai, libelle,
+/// libelleJour, empreinte, et l'illustration de SiddurMoment.
 @Suite("Siddour du jour")
 struct SiddurJourTests {
 
@@ -363,6 +363,28 @@ struct SiddurJourTests {
             let lignes: [String]
         }
 
+        /// Un texte et des annotations écrits à la main : les branches que les siddourim n'atteignent pas.
+        struct Ecrit: Decodable {
+            struct Lecture: Decodable {
+                let t: String
+                let c: Int
+                let nusah: String
+                let israel: Bool
+                let finTichri: Bool?
+                let sud: Bool
+                let ouverts: [String]
+                let h: Int32
+                let s: [Int]
+                /// La suite entière, pour quelques lectures.
+                let lignes: [String]?
+            }
+
+            let siddur: String
+            let annotations: String
+            let conditions: [[String]]
+            let lectures: [Lecture]
+        }
+
         struct Parse: Decodable {
             struct Fichier: Decodable {
                 let n: String
@@ -451,6 +473,7 @@ struct SiddurJourTests {
         let cas: [Cas]
         let lignes: [Releve]
         let details: [Detail]
+        let ecrit: Ecrit
         let parse: Parse
         let libelles: Libelles
         let empreinte: Empreinte
@@ -600,6 +623,32 @@ struct SiddurJourTests {
             let premiere = zip(l, detail.lignes).enumerated().first { $0.element.0 != $0.element.1 }
             if let p = premiere {
                 Issue.record("\(detail.n)/\(detail.t), ligne \(p.offset) : « \(p.element.0) » au lieu de « \(p.element.1) »")
+            }
+        }
+    }
+
+    /// Le texte écrit à la main, chaque jeu de conditions, sept réglages, replis fermés, tous ouverts (et des
+    /// clés sans repli), un sur deux.
+    @Test func lesLignesDUnTexteEcritSontCellesDAndroid() throws {
+        let e = try vecteurs().ecrit
+        let siddur = try JSONDecoder().decode(Siddur.self, from: Data(e.siddur.utf8))
+        let parTexte = try SiddurJour.parse(e.annotations, .edot)
+        #expect(e.lectures.count == 150)
+        for (rang, lecture) in e.lectures.enumerated() {
+            let n = try #require(Nusah(rawValue: lecture.nusah), "\(lecture.nusah)")
+            let texte = try #require(siddur.texte(lecture.t), "\(lecture.t)")
+            let l = SiddurJour.lignes(texte, parTexte[lecture.t] ?? [], Set(e.conditions[lecture.c]), ouverts: Set(lecture.ouverts),
+                                      nusah: n, enIsrael: lecture.israel, sansTahanounFinTichri: lecture.finTichri, sud: lecture.sud)
+            let signatures = l.map { signature($0) }
+            let compte = genres(l)
+            let egal = Kotlin.hashCode(signatures.joined(separator: "\n")) == lecture.h && compte == lecture.s
+            #expect(egal, "lecture \(rang) (\(lecture.t), \(n.rawValue), conditions \(lecture.c)) : \(compte) au lieu de \(lecture.s)")
+            if let attendues = lecture.lignes {
+                let premiere = zip(signatures, attendues).enumerated().first { $0.element.0 != $0.element.1 }
+                #expect(signatures.count == attendues.count, "lecture \(rang) : \(signatures.count) lignes au lieu de \(attendues.count)")
+                if let p = premiere {
+                    Issue.record("lecture \(rang), ligne \(p.offset) : « \(p.element.0) » au lieu de « \(p.element.1) »")
+                }
             }
         }
     }

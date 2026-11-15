@@ -115,9 +115,9 @@ struct LanguesTexteTests {
     /// `==` de Kotlin sur deux chaînes peut-être nulles : les mêmes unités UTF-16.
     private static func meme(_ a: String?, _ b: String?) -> Bool {
         switch (a, b) {
-        case (nil, nil): true
-        case (let x?, let y?): x.egalUnites(y)
-        default: false
+        case (nil, nil): return true
+        case (let x?, let y?): return x.egalUnites(y)
+        default: return false
         }
     }
 
@@ -211,7 +211,8 @@ struct LanguesTexteTests {
                     for en in c.anglais where k < t.resultats.count {
                         let rendues = LanguesTexte.textes(mode, he, fr, en)
                         let ok = LanguesTexteTests.memesPaires(rendues, t.resultats[k])
-                        #expect(ok, "textes(\(t.mode), « \(he) », « \(fr ?? "nil") », « \(en ?? "nil") ») = \(paires(rendues))")
+                        let vues = paires(rendues)
+                        #expect(ok, "textes(\(t.mode), « \(he) », « \(fr ?? "nil") », « \(en ?? "nil") ») = \(vues)")
                         k += 1
                     }
                 }

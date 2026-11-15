@@ -148,7 +148,7 @@ struct LibraryRulesTests {
         let sousSection = try #require(library.sousSection("hitbodedut-ma-velama"))
         let ordre = LibraryRules.ordered(sousSection.entrees)
         let dernierSource = ordre.lastIndex(where: LibraryRulesTests.estSource) ?? -1
-        let premierArticle = ordre.firstIndex { !LibraryRulesTests.estSource($0) } ?? -1
+        let premierArticle = ordre.firstIndex(where: { !LibraryRulesTests.estSource($0) }) ?? -1
         #expect(dernierSource < premierArticle, "les deux natures se mélangent")
         let taille = ordre.count
         #expect(taille == sousSection.entrees.count)
@@ -230,15 +230,23 @@ struct LibraryRulesTests {
     /// `==` de Kotlin sur deux chaînes peut-être nulles : les mêmes unités UTF-16.
     private static func meme(_ a: String?, _ b: String?) -> Bool {
         switch (a, b) {
-        case (nil, nil): true
-        case (let x?, let y?): x.egalUnites(y)
-        default: false
+        case (nil, nil): return true
+        case (let x?, let y?): return x.egalUnites(y)
+        default: return false
         }
     }
 
     private static func memes(_ a: [String?], _ b: [String?]) -> Bool {
         guard a.count == b.count else { return false }
         for (x, y) in zip(a, b) where !meme(x, y) {
+            return false
+        }
+        return true
+    }
+
+    private static func memesTextes(_ a: [String], _ b: [String]) -> Bool {
+        guard a.count == b.count else { return false }
+        for (x, y) in zip(a, b) where !x.egalUnites(y) {
             return false
         }
         return true
@@ -303,7 +311,8 @@ struct LibraryRulesTests {
         let c = v.libraryRules
         let langues = c.languesArticle
 
-        compare(try lireBibliotheque(), c.livre, langues, "livrée")
+        let livree = try lireBibliotheque()
+        compare(livree, c.livre, langues, "livrée")
 
         let manuelle = try JSONDecoder().decode(Bibliotheque.self, from: Data(c.document.utf8))
         compare(manuelle, c.manuelle, langues, "à la main")
@@ -316,7 +325,7 @@ struct LibraryRulesTests {
             case .source(let source):
                 let affiches = LibraryRules.paragraphs(manuelle, source)
                 let attendus = try #require(clair.affiches, "\(clair.id) : source sans « affiches »")
-                let ok = LibraryRulesTests.memes(affiches, attendus)
+                let ok = LibraryRulesTests.memesTextes(affiches, attendus)
                 #expect(ok, "paragraphs(\(clair.id)) = \(affiches)")
             case .article(let article):
                 let texte = LibraryRules.fullText(article)
@@ -333,7 +342,7 @@ struct LibraryRulesTests {
                     droits.append(LibraryRules.rights(article, langue))
                     if rang < erreursAttendues.count {
                         let erreurs = LibraryRules.errors(article, langue)
-                        if !LibraryRulesTests.memes(erreurs, erreursAttendues[rang]) { erreursOk = false }
+                        if !LibraryRulesTests.memesTextes(erreurs, erreursAttendues[rang]) { erreursOk = false }
                     }
                 }
                 let resumesOk = LibraryRulesTests.memes(resumes, resumesAttendus)

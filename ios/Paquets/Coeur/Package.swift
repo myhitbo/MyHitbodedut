@@ -7,8 +7,10 @@ import PackageDescription
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
+    "Aeration.swift",
     "BilanSemaine.swift",
     "Boussole.swift",
+    "DanseMesure.swift",
     "DirectionJerusalem.swift",
     "Hilloulot.swift",
     "Langues.swift",
@@ -16,10 +18,13 @@ let enChantierSources: [String] = [
     "Libelles.swift",
     "LibraryRules.swift",
     "Magnetisme.swift",
+    "MarquesPages.swift",
+    "MelangeMusique.swift",
     "Onboarding.swift",
     "Paliers.swift",
     "Personnage.swift",
     "PoliceHebraique.swift",
+    "RechercheGlobale.swift",
     "Reference.swift",
     "RegleLangue.swift",
     "TerritoireIsrael.swift",
@@ -47,6 +52,7 @@ let enChantierTests: [String] = [
     "SiddurJourTests.swift",
     "TerritoireIsraelTests.swift",
     "TipsTests.swift",
+    "TraductionAffichageTests.swift",
     "VillePlusProcheTests.swift",
     "VolTests.swift",
 ]

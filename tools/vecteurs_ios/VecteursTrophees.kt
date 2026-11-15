@@ -29,7 +29,8 @@ object VecteursTrophees : Generateur {
     /** Les bits d'un flottant : ils disent aussi le signe d'un zéro, que sa valeur écrite peut perdre. */
     private fun bits(f: Float): Int = java.lang.Float.floatToRawIntBits(f)
 
-    private fun bits(d: Double): Long = java.lang.Double.doubleToRawLongBits(d)
+    /** Les bits d'un double, en deux moitiés de 32 bits (haute, basse) : un entier de 64 bits ne passe pas sûrement par JSON. */
+    private fun bits(d: Double): List<Int> = java.lang.Double.doubleToRawLongBits(d).let { listOf((it ushr 32).toInt(), it.toInt()) }
 
     override fun produire(): Map<String, Any?> = linkedMapOf(
         "_meta" to mapOf("source" to "tools/vecteurs_ios/VecteursTrophees.kt"),
@@ -40,7 +41,7 @@ object VecteursTrophees : Generateur {
         },
         // [famille, rang, métal] : le rang de 1 au nombre de seuils, et au-delà (Kotlin calcule sur 32 bits).
         "metal" to metaux(),
-        // [famille, seuil, bits du coût]
+        // [famille, seuil, bits du coût : moitié haute, moitié basse]
         "couts" to couts(),
         "chemin" to Trophees.chemin.map { it.cle },
         "seuilsGrades" to Trophees.SEUILS_GRADES.toList(),
@@ -60,7 +61,7 @@ object VecteursTrophees : Generateur {
 
     private fun couts(): List<List<Any?>> = Famille.entries.flatMap { f ->
         (listOf(MIN, -1, 0, 1) + f.seuils.toList() + listOf(1000, 16_777_217, MAX)).distinct()
-            .map { s -> listOf(f.name, s, bits(Trophees.cout(f, s))) }
+            .map { s -> listOf(f.name, s) + bits(Trophees.cout(f, s)) }
     }
 
     private fun progres(): List<List<Int>> {

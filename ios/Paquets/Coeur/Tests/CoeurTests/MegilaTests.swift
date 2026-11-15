@@ -5,7 +5,8 @@ import Testing
 /// MegilaTest d'Android, porté : la Méguila d'Esther dans le siddour (13/10, SiddurMoment.megila),
 /// sous Arvit la nuit qui ouvre Pourim, sous Cha'harit le jour ; le 15 Adar dans une ville murée, le
 /// vendredi 14 quand le 15 est un Chabbat (Pourim mechoulach, 5785). Rien n'y reste à Android. Puis
-/// les vecteurs de la JVM (siddur_jour.json) : six années autour de Pourim, dont deux mechoulach.
+/// les vecteurs de la JVM (siddur_jour.json) : six années autour de Pourim, dont deux mechoulach, et le
+/// Pourim katan d'une année embolismique.
 @Suite("Méguila")
 struct MegilaTests {
 
@@ -53,7 +54,7 @@ struct MegilaTests {
 
     @Test func autourDePourimSixAnnees() throws {
         let v = try JSONDecoder().decode(Vecteurs.self, from: Depot.donnees("ios/Paquets/Coeur/Tests/Vecteurs/siddur_jour.json"))
-        #expect(v.moment.megila.count == 42)
+        #expect(v.moment.megila.count == 49)
         var ecarts: [String] = []
         for jour in v.moment.megila {
             var lues: [Bool] = []

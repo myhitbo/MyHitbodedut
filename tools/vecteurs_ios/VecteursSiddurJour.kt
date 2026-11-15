@@ -2,7 +2,8 @@
 // - parse sur le vrai fichier d'annotations (par noussa'h et par texte : le compte par sorte et une
 //   empreinte de chaque champ), puis sur des fichiers écrits à la main (tolérances et fautes d'org.json) ;
 // - lignes() de chaque texte des trois siddourim, une trentaine de jours choisis, replis fermés, tous
-//   ouverts, ou un sur deux : le compte par genre et une empreinte de la suite des lignes ;
+//   ouverts, ou un sur deux : le compte par genre et une empreinte de la suite des lignes ; puis sur un
+//   texte et des annotations écrits à la main, pour les branches que les siddourim n'atteignent pas ;
 // - vrai, libelle et libelleJour sur toutes les conditions, empreinte sur des textes écrits pour
 //   l'occasion et sur chaque titre et chaque bloc des siddourim ;
 // - SiddurMoment (Siddur.kt) : megila autour de Pourim, ilanot au nord et au sud, illustration.
@@ -147,6 +148,134 @@ object VecteursSiddurJour : Generateur {
         linkedMapOf("n" to n.cle, "t" to id, "c" to ci, "o" to "aucun", "lignes" to l.map(::signature))
     }
 
+    // MARK: lignes, sur un texte écrit à la main
+
+    // Ce que les siddourim n'atteignent pas : une variante du jour sans passage à retirer (Indice), un
+    // passage absent du bloc (aucun repli, sauf ouvert), plusieurs variantes d'un même bloc (l'ordre
+    // du retrait, la première nomme le repli), un passage répété (seul le premier part), un passage
+    // canoniquement égal mais d'autres unités (rien ne part), des blancs que trim() garde (U+0085) ou
+    // retire (U+2009), des annotations en double (la dernière l'emporte), des groupes voisins, un
+    // groupe sans racine, un groupe sans numéro en fin de section (« 1:null »), des renvois et des
+    // cartes « seul » qu'un groupe ou une section annotée tait, une section annotée suivie d'un renvoi,
+    // des annotations hors du texte, un titre blanc, un texte d'une seule section.
+
+    /** « שָׁלוֹם », le qamats avant le point du shin (l'ordre canonique), puis l'inverse. */
+    private val chalom = e(0x05E9) + e(0x05B8) + e(0x05C1) + "לוֹם"
+    private val chalomInverse = e(0x05E9) + e(0x05C1) + e(0x05B8) + "לוֹם"
+
+    private val siddurEcrit = """{"groupes": [{"cle": "essai", "titre": {"he": "ניסיון", "fr": "Essai", "en": "Test"}}],""" +
+        """ "textes": [{"id": "ecrit", "groupe": "essai", "titre": {"he": "כתוב", "fr": "Écrit", "en": "Written"}, "sections": [""" +
+        """{"titre": "שַׁחֲרִית", "titre_fr": "Matin", "titre_en": " ", "blocs": [""" +
+        """{"t": "בָּרוּךְ אַתָּה", "fr": "Béni sois-tu", "en": "Blessed"},""" +
+        """ {"t": "אַתָּה גִּבּוֹר מוֹרִיד הַטָּל מְחַיֶּה מֵתִים", "fr": "Tu es puissant"},""" +
+        """ {"t": "  הָאֵל הַקָּדוֹשׁ${e(0x2009)}"}, {"t": "$chalomInverse${e(0x85)}"}, {"c": "אומרים כאן"},""" +
+        """ {"t": "אָמֵן אָמֵן"}]},""" +
+        """ {"titre": "", "blocs": [{"t": "א0"}, {"t": "א1"}, {"t": "א2"}, {"t": "א3"}, {"t": "א4"}, {"t": "א5"},""" +
+        """ {"t": "א6"}, {"t": "א7"}, {"t": "א8"}]},""" +
+        """ {"titre": "מוּסָף", "titre_en": "Musaf", "blocs": [{"t": "תִּכַּנְתָּ שַׁבָּת"}, {"c": "ש״ץ"}]},""" +
+        """ {"titre": "   ", "blocs": [{"t": "עָלֵינוּ"}]}]},""" +
+        """ {"id": "unique", "groupe": "essai", "titre": {"he": "אחד"}, "sections": [""" +
+        """{"titre": "כותרת", "blocs": [{"t": "א"}, {"t": "ב"}]}]}]}"""
+
+    private val annotationsEcrites = """{"edot": {"ecrit": [""" +
+        // Section 0, bloc 1 : trois variantes à retirer, une à signaler.
+        """{"sorte": "indice", "s": 0, "b": 1, "si": "morid_hatal", "empreinte": "e", "retire": "מוֹרִיד הַטָּל "},""" +
+        """ {"sorte": "indice", "s": 0, "b": 1, "si": "machiv_harouah", "empreinte": "e", "texte": "מַשִּׁיב הָרוּחַ"},""" +
+        """ {"sorte": "indice", "s": 0, "b": 1, "si": "kippour", "empreinte": "e", "texte": "X", "retire": "מְחַיֶּה",""" +
+        """ "libelle": "ajout_propre"},""" +
+        """ {"sorte": "indice", "s": 0, "b": 1, "si": "!chabbat", "empreinte": "e", "retire": " מֵתִים"},""" +
+        """ {"sorte": "renvoi", "s": 0, "b": 1, "si": "!chabbat", "empreinte": "e", "cible": "x"},""" +
+        // Bloc 2 : le passage manque, mais trim() ôte les blancs ; bloc 3 : le passage n'a pas les mêmes unités.
+        """ {"sorte": "indice", "s": 0, "b": 2, "si": "asseret_yemei_techouva", "empreinte": "e", "retire": "הַמֶּלֶךְ"},""" +
+        """ {"sorte": "indice", "s": 0, "b": 3, "si": "chabbat", "empreinte": "e", "retire": "$chalom"},""" +
+        // Bloc 4 : les cartes « seul », dans l'ordre ; une sans texte, une hors du jour.
+        """ {"sorte": "seul", "s": 0, "b": 4, "si": "!minyan", "empreinte": "e", "texte": "בָּרְכוּ", "consigne": "אומרים"},""" +
+        """ {"sorte": "seul", "s": 0, "b": 4, "si": "chabbat", "empreinte": "e", "texte": "ב"},""" +
+        """ {"sorte": "seul", "s": 0, "b": 4, "si": "!minyan", "empreinte": "e", "texte": "  "},""" +
+        """ {"sorte": "seul", "s": 0, "b": 4, "si": "kippour", "empreinte": "e", "texte": "ק"},""" +
+        // Bloc 5 : un passage répété ; un renvoi du jour, un sans cible.
+        """ {"sorte": "indice", "s": 0, "b": 5, "si": "!roch_hodech", "empreinte": "e", "retire": "אָמֵן"},""" +
+        """ {"sorte": "renvoi", "s": 0, "b": 5, "si": "hallel", "empreinte": "e", "cible": "hallel"},""" +
+        """ {"sorte": "renvoi", "s": 0, "b": 5, "si": "hallel", "empreinte": "e", "cible": "  "},""" +
+        """ {"sorte": "renvoi", "s": 0, "si": "roch_hodech", "empreinte": "e", "cible": "moussaf_rosh_hodech"},""" +
+        // Section 1 : des groupes.
+        """ {"sorte": "bloc", "s": 1, "b": 0, "g": 1, "si": "yaale_veyavo", "racine": "yaale_veyavo", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 1, "g": 1, "si": "pessah", "racine": "zzz", "empreinte": "e"},""" +
+        """ {"sorte": "seul", "s": 1, "b": 0, "si": "!minyan", "empreinte": "e", "texte": "tu"},""" +
+        """ {"sorte": "seul", "s": 1, "b": 1, "si": "!minyan", "empreinte": "e", "texte": "dit"},""" +
+        """ {"sorte": "indice", "s": 1, "b": 0, "si": "!minyan", "empreinte": "e", "texte": "tu"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 2, "g": 2, "si": "!tahanoun_chaharit", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 3, "g": 2, "si": "tahanoun_chaharit", "racine": "jeune", "empreinte": "e"},""" +
+        """ {"sorte": "renvoi", "s": 1, "b": 3, "si": "!minyan", "empreinte": "e", "cible": "tu"},""" +
+        """ {"sorte": "indice", "s": 1, "b": 4, "si": "!chabbat", "empreinte": "e", "texte": "שבוע"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 5, "g": 3, "si": "kippour", "racine": "kippour", "libelle": "ajout_x", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 5, "g": 3, "si": "jeune", "racine": "jeune", "libelle": "ajout_anenou_officiant",""" +
+        """ "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 6, "g": 4, "si": "hallel", "racine": "hallel", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 7, "g": 5, "si": "tal_oumatar", "racine": "!tal_oumatar", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 8, "si": "berakha", "racine": "berakha", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 1, "b": 20, "g": 9, "si": "chabbat", "racine": "chabbat", "empreinte": "e"},""" +
+        // Section 2 : annotée deux fois, un renvoi après elle ; ce qui vise ses blocs se tait.
+        """ {"sorte": "section", "s": 2, "si": "chabbat", "empreinte": "e"},""" +
+        """ {"sorte": "section", "s": 2, "si": "roch_hodech", "empreinte": "e"},""" +
+        """ {"sorte": "renvoi", "s": 2, "si": "hallel", "empreinte": "e", "cible": "hallel"},""" +
+        """ {"sorte": "renvoi", "s": 2, "b": 0, "si": "!minyan", "empreinte": "e", "cible": "tu"},""" +
+        """ {"sorte": "seul", "s": 2, "b": 0, "si": "!minyan", "empreinte": "e", "texte": "tu"},""" +
+        // Section 3 et au-delà.
+        """ {"sorte": "renvoi", "s": 3, "si": "!kippour", "empreinte": "e", "cible": "fin"},""" +
+        """ {"sorte": "seul", "s": 3, "si": "!minyan", "empreinte": "e", "texte": "tu"},""" +
+        """ {"sorte": "section", "s": 9, "si": "!minyan", "empreinte": "e"},""" +
+        """ {"sorte": "indice", "s": 9, "b": 0, "si": "!minyan", "empreinte": "e", "texte": "tu"}],""" +
+        """ "unique": [{"sorte": "bloc", "s": 0, "b": 1, "g": 7, "si": "omer", "racine": "omer", "empreinte": "e"},""" +
+        """ {"sorte": "renvoi", "s": 0, "si": "omer", "empreinte": "e", "cible": "sefirat_haomer"}]}}"""
+
+    private val conditionsEcrites: List<Set<String>> = listOf(
+        emptySet(),
+        setOf("morid_hatal", "machiv_harouah", "yaale_veyavo", "roch_hodech", "hallel", "chabbat", "tahanoun_chaharit", "berakha"),
+        setOf("asseret_yemei_techouva", "jeune", "tal_oumatar", "hallel", "hallel_complet", "pessah", "yaale_veyavo", "kippour",
+            "minyan"),
+        setOf("bascule_pluie", "fin_tichri", "tahanoun_chaharit", "lundi_jeudi", "jeune", "omer"),
+        setOf("chabbat", "roch_hodech", "kippour", "asseret_yemei_techouva", "machiv_harouah"),
+    )
+
+    /** Noussa'h, Israël, coutume de la fin de Tichri (null : celle du noussa'h), hémisphère sud. */
+    private data class Reglage(val nusah: Nusah, val israel: Boolean, val finTichri: Boolean?, val sud: Boolean)
+
+    private val reglagesEcrits = listOf(
+        Reglage(Nusah.EDOT, false, null, false), Reglage(Nusah.SEFARD, false, null, false),
+        Reglage(Nusah.ASHKENAZ, false, null, false), Reglage(Nusah.ASHKENAZ, true, null, false),
+        Reglage(Nusah.EDOT, false, null, true), Reglage(Nusah.SEFARD, false, true, false), Reglage(Nusah.EDOT, false, false, false),
+    )
+
+    /** Des clés ouvertes sans repli à ouvrir : une variante qui ne se replie pas, un bloc sans variante, une clé hors du texte. */
+    private val ouvertsEnPlus = setOf("v0:3", "v0:0", "§3", "1:null", "9:9")
+
+    private fun ecrit(): Map<String, Any?> {
+        val siddur = SiddurLoader.parse(siddurEcrit)
+        val parTexte = SiddurJour.parse(annotationsEcrites, "edot")
+        val lectures = mutableListOf<Map<String, Any?>>()
+        fun lire(t: SiddurTexte, ci: Int, r: Reglage, ouverts: Set<String>, complet: Boolean): List<SiddurJour.Ligne> {
+            val l = SiddurJour.lignes(t, parTexte[t.id].orEmpty(), conditionsEcrites[ci], ouverts, r.nusah.cle, r.israel,
+                r.finTichri ?: (r.nusah == Nusah.EDOT), r.sud)
+            lectures += linkedMapOf("t" to t.id, "c" to ci, "nusah" to r.nusah.cle, "israel" to r.israel, "finTichri" to r.finTichri,
+                "sud" to r.sud, "ouverts" to ouverts.sorted(), "h" to l.joinToString("\n") { signature(it) }.hashCode(),
+                "s" to genres(l), "lignes" to if (complet) l.map(::signature) else null)
+            return l
+        }
+        siddur.textes.forEach { t ->
+            conditionsEcrites.indices.forEach { ci ->
+                reglagesEcrits.forEachIndexed { ri, r ->
+                    val fermees = lire(t, ci, r, emptySet(), ri == 0)
+                    val cles = fermees.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }
+                    lire(t, ci, r, cles.toSet() + ouvertsEnPlus, ri == 0)
+                    if (ri == 0) lire(t, ci, r, cles.filterIndexed { i, _ -> i % 2 == 0 }.toSet(), false)
+                }
+            }
+        }
+        return linkedMapOf("siddur" to siddurEcrit, "annotations" to annotationsEcrites, "conditions" to conditionsEcrites.map { it.sorted() },
+            "lectures" to lectures)
+    }
+
     // MARK: parse
 
     private fun decrit(a: SiddurJour.Annotation): String = listOf(
@@ -182,6 +311,16 @@ object VecteursSiddurJour : Generateur {
         """[]""",
         """{""",
         """{"edot": {"x": [{"s": 1, "si": "c", "empreinte": "e"}]}}""",
+        // getString d'une valeur null, d'un tableau, d'un objet ; un nombre écrit entre blancs ; une clé répétée.
+        """{"edot": {"x": [{"sorte": null, "s": "  7 ", "si": null, "empreinte": [1, "a"], "texte": {"k": "v"}, "b": 2.9,""" +
+            """ "g": -1.5, "racine": "r", "si": "dup"}]}}""",
+        // La sorte se lit à la lettre ; un décimal hors des 32 bits, un entier qui en déborde, NaN, un exposant.
+        """{"edot": {"x": [{"sorte": "SECTION", "s": 1e10, "si": "a", "empreinte": "e", "b": "NaN"},""" +
+            """ {"sorte": " section", "s": -2147483649, "si": "a", "empreinte": "e", "g": "1e2"}]}}""",
+        """{"edot": {"x": [{"sorte": "seul", "s": "", "si": "a", "empreinte": "e"}]}}""",
+        """{"edot": {"x": null}}""",
+        """{"edot": null, "sefard": "texte", "ashkenaz": {"x": [], "x": [{"sorte": "renvoi", "s": 0, "si": "a", "empreinte": "e"}]}}""",
+        """{"edot": {}} ]""",
     )
 
     private fun parse(): Map<String, Any?> = linkedMapOf(
@@ -275,8 +414,8 @@ object VecteursSiddurJour : Generateur {
 
     private val moments = listOf("chaharit", "arvit", "minha", null, "", "Chaharit")
 
-    /** Autour du 14 Adar de six années, dont deux de Pourim mechoulach (5781, 5785). */
-    private val autourDePourim = listOf("2021-02-23", "2025-03-11", "2026-03-01", "2027-03-20", "2028-03-09", "2029-02-26")
+    /** Autour du 14 Adar de six années, dont deux de Pourim mechoulach (5781, 5785), et du Pourim katan de 5787 (14 Adar I). */
+    private val autourDePourim = listOf("2021-02-23", "2025-03-11", "2026-03-01", "2027-02-18", "2027-03-20", "2028-03-09", "2029-02-26")
         .flatMap { debut -> (0L until 7L).map { LocalDate.parse(debut).plusDays(it) } }
 
     private fun moment(): Map<String, Any?> = linkedMapOf(
@@ -309,6 +448,7 @@ object VecteursSiddurJour : Generateur {
         },
         "lignes" to toutesLesLignes(),
         "details" to details(),
+        "ecrit" to ecrit(),
         "parse" to parse(),
         "libelles" to libelles(),
         "empreinte" to empreintes(),
