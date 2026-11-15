@@ -2,7 +2,12 @@
 // Paquet « Coeur » : Swift pur, Foundation et KosherSwift, compilable et testé sous Linux
 // (PORTAGE.md § 7.1 et § 7.2). Aucune dépendance à UIKit ni à SwiftUI.
 
+import Foundation
 import PackageDescription
+
+// COEUR_SANS_VUES : la CI construit et teste le cœur sans les vues (travail « coeur ») ; un second travail
+// (« vues ») construit les vues contre SwiftUI de papier. Sans la variable (Xcode), tout est là.
+let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
@@ -11,6 +16,7 @@ let enChantierSources: [String] = [
     "BilanSemaine.swift",
     "Boussole.swift",
     "DanseMesure.swift",
+    "Depot.swift",
     "DirectionJerusalem.swift",
     "Hilloulot.swift",
     "Langues.swift",
@@ -77,8 +83,6 @@ let package = Package(
         .library(name: "Coeur", targets: ["Coeur"]),
         // Les modèles d'écran de l'app : Observation et Coeur, sans SwiftUI, testés sous Linux.
         .library(name: "Ecrans", targets: ["Ecrans"]),
-        // Les vues SwiftUI de l'app. Sous Linux, elles se type-checkent contre SwiftUIDePapier (signatures seules).
-        .library(name: "Vues", targets: ["Vues"]),
     ],
     dependencies: [
         // KosherSwift 1.10.11 (LGPL 2.1) : la dernière étiquette à l'API et aux définitions de
@@ -103,11 +107,15 @@ let package = Package(
         .testTarget(
             name: "EcransTests",
             dependencies: ["Ecrans", "Coeur"]),
-        .target(
-            name: "SwiftUIDePapier"),
-        .target(
-            name: "Vues",
-            dependencies: ["Ecrans", "Coeur", .target(name: "SwiftUIDePapier", condition: .when(platforms: [.linux]))]),
     ],
     swiftLanguageModes: [.v6]
 )
+
+if avecVues {
+    // Les vues SwiftUI de l'app. Sous Linux, elles se type-checkent contre SwiftUIDePapier (signatures seules).
+    package.products.append(.library(name: "Vues", targets: ["Vues"]))
+    package.targets.append(.target(name: "SwiftUIDePapier"))
+    package.targets.append(.target(
+        name: "Vues",
+        dependencies: ["Ecrans", "Coeur", .target(name: "SwiftUIDePapier", condition: .when(platforms: [.linux]))]))
+}

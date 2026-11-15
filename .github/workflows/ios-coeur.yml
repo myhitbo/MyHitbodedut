@@ -73,6 +73,9 @@ jobs:
     timeout-minutes: 20
     # Swift 6.2, celui de Xcode 26 (§ 7.7).
     container: swift:6.2-noble
+    # Le cœur sans les vues : un papier en chantier ne bloque pas le jugement des règles.
+    env:
+      COEUR_SANS_VUES: "1"
     defaults:
       run:
         shell: bash
@@ -99,3 +102,24 @@ jobs:
           fi
       - name: Tests
         run: swift test --skip-build
+
+  # Les vues SwiftUI de l'app (cible Vues), type-checkées contre SwiftUI de papier : des signatures d'Apple
+  # sans rendu (tools/swiftui_papier). Sur iPhone, les mêmes fichiers importent le vrai SwiftUI.
+  vues:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container: swift:6.2-noble
+    defaults:
+      run:
+        shell: bash
+        working-directory: ios/Paquets/Coeur
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construction des vues (aucun avertissement dans Vues ni dans le papier)
+        run: |
+          swift build --target Vues 2>&1 | tee vues.log
+          test "${PIPESTATUS[0]}" -eq 0
+          if grep -E '/Sources/(Vues|SwiftUIDePapier)/[^:]+:[0-9]+:[0-9]+: warning:' vues.log; then
+            echo "::error::avertissements dans les vues"
+            exit 1
+          fi

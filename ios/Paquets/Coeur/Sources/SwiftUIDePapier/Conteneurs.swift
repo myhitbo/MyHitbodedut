@@ -63,11 +63,3 @@ nonisolated public struct Button<Label: View>: View {
 extension Button where Label == Text {
     public init(_ titleKey: LocalizedStringKey, action: @escaping @MainActor () -> Void) {}
 }
-
-extension View {
-    public func navigationTitle(_ title: Text) -> some View { self }
-    public func navigationTitle(_ titleKey: LocalizedStringKey) -> some View { self }
-    public func font(_ font: Font?) -> some View { self }
-    public func foregroundStyle<S: ShapeStyle>(_ style: S) -> some View { self }
-    public func padding(_ length: CGFloat? = nil) -> some View { self }
-}
