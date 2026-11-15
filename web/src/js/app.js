@@ -1457,8 +1457,10 @@ function ecranPriere() {
     const p = h('p', { class: `${b.c !== undefined ? 'consigne' : 'priere'}${marquee(si, i) ? ' marque-page' : ''}${livre ? ' marque-etude' : ''}`, lang: 'he', dir: 'rtl', 'data-place': `${si}:${i}` }, riche(b.c !== undefined ? (texte ?? b.c) : aerer(texte ?? b.t)));
     if (p.firstChild?.nodeName === 'B') p.firstChild.classList.add('premier-mot');
     // Un verset traduit (Esther, Chir HaChirim, 04/11) : la traduction sous l'hébreu, ou seule.
-    if (b.c === undefined && (b.fr || b.en)) {
-      const textes = LanguesTexte.textes(languesLecture(), b.t, b.fr, b.en);
+    // Une consigne traduite aussi (TEFILA-02 : « à dire sept fois de suite ») ; sans traduction, l'hébreu.
+    const langues = LanguesTexte.bloc(b);
+    if (langues.fr || langues.en) {
+      const textes = LanguesTexte.textes(languesLecture(), langues.he, langues.fr, langues.en);
       const avecHe = textes.some(([l]) => l === 'he');
       const traductions = textes.filter(([l]) => l !== 'he').map(([l, t]) => paraTraduction(l, t, !avecHe));
       if (traductions.length) {

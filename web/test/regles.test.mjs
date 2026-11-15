@@ -854,6 +854,10 @@ test('langues de lecture (04/11) : six modes, la règle d’avant par défaut, l
   assert.deepEqual(LanguesTexte.textes('fr+en', 'אחד', 'un', 'one'), [['fr', 'un'], ['en', 'one']]);
   assert.deepEqual(LanguesTexte.textes('fr', 'אחד', null, 'one'), [['he', 'אחד']]);
   assert.ok(LanguesTexte.manque('he+fr', false));
+  // Une consigne a ses traductions à part (TEFILA-02) ; un paragraphe, les siennes.
+  assert.deepEqual(LanguesTexte.bloc({ c: 'לאיש', c_fr: 'Pour un homme', c_en: 'For a man' }), { he: 'לאיש', fr: 'Pour un homme', en: 'For a man' });
+  assert.deepEqual(LanguesTexte.bloc({ c: 'לאיש' }), { he: 'לאיש', fr: undefined, en: undefined });
+  assert.deepEqual(LanguesTexte.bloc({ t: 'אחד', fr: 'un', en: 'one' }), { he: 'אחד', fr: 'un', en: 'one' });
   const teh = JSON.parse(readFileSync(new URL('../../android/app/src/main/res/raw/tehilim.json', import.meta.url), 'utf8'));
   assert.equal(teh.traductions.fr.psaumes.length, 150);
   assert.ok(teh.traductions.fr.psaumes[22][0].includes('L’Éternel est mon berger'));

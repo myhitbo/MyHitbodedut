@@ -1664,6 +1664,8 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
   font-size: calc(16px * var(--echelle, 1)); line-height: 1.6; margin: 4px 0 14px; }
 .lecture .traduction.seule { color: var(--ink); font-size: calc(18px * var(--echelle, 1)); margin-top: 10px; }
 .lecture .priere .traduction { margin: 8px 0 0; }
+/* Une consigne traduite (TEFILA-02) : petite et grise comme la consigne, seule ou sous l'hébreu. */
+.lecture .consigne .traduction { color: inherit; font-size: inherit; line-height: inherit; margin: 2px 0 0; }
 .ecran.lu.nuit .lecture .traduction:not(.seule) { color: var(--lecture-nuit-discret, #A3A8A5); }
 .chizuk-latin { font-family: Georgia, 'Times New Roman', serif; }
 .lecture-langues { font-weight: 700; }
