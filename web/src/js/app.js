@@ -3932,7 +3932,14 @@ function lignePaliers() {
   const message = neuf ? tr.t('palier_nouveau', libellePalier(neuf.piste, bilan), valeurPalier(neuf.piste, neuf.atteint)) : null;
   // Des étincelles du grade plutôt que des confettis multicolores (16/10, animation E).
   // Un trophée neuf ouvre sa fiche, avec la fête (19/10) ; un palier seul garde le message et les étincelles.
-  if (trophee) setTimeout(() => { if (app.dataset.ecran === 'accueil/aujourdhui' && !feuilleOuverte()) feterTrophees(tropheesNeufs); }, 600);
+  // Pas par-dessus un autre écran ni une feuille (FWEBCODE-13). Or la note qui suit le bravo est justement
+  // ouverte à ce moment-là : les trophées non montrés redeviennent neufs, fêtés au prochain accueil.
+  const vusAvant = store.tropheesVus();
+  if (trophee) setTimeout(() => {
+    if (app.dataset.ecran === 'accueil/aujourdhui' && !feuilleOuverte()) { feterTrophees(tropheesNeufs); return; }
+    const vusMaintenant = store.tropheesVus();
+    if (vusMaintenant && vusAvant) store.setTropheesVus(Trophees.remisANeuf(vusMaintenant, gagnes, vusAvant));
+  }, 600);
   else if (message) setTimeout(() => { signale(message); etincelles(app.querySelector('.ligne-grade .medaille-grade'), Trophees.grade(gagnes.size)); }, 600);
   store.setPaliersVus(Paliers.marques(etats, bilan));
   store.setTropheesVus(new Set(gagnes));
@@ -5362,11 +5369,14 @@ function ecranBravo() {
   const continuer = () => {
     bravo = null;
     chizukBravo = null;
+    const note = noteApresBravo ? () => setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50) : null;
+    noteApresBravo = false;
+    // Le retour ferme les feuilles (FWEBCODE-10) : la note attend qu'il ait eu lieu, sinon un retour
+    // plus lent que 50 ms la refermait aussitôt ouverte.
+    const parHistorique = !!history.state?.interne;
+    if (note && parHistorique) addEventListener('popstate', note, { once: true });
     retour();
-    if (noteApresBravo) {
-      noteApresBravo = false;
-      setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
-    }
+    if (note && !parHistorique) note();
   };
   // Un jour la danse, le lendemain la guitare, le surlendemain le pouce levé (12-13/10).
   const seul = [null, 'char_guitar', 'char_thumbs_up'][Math.floor(Date.now() / 86400000) % 3];

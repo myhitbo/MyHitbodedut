@@ -242,6 +242,24 @@ test('toute séance inscrite propose la note après le bravo, comme sur Android'
   assert.match(hors, /if \(date === aujourdhui\) \{[^}]*dateNote = date;[^}]*noteApresBravo = true;/s);
 });
 
+test('la fin de séance se lit dans le stockage, les feuilles périmées se ferment (FWEBCODE-10, FWEBCODE-11)', () => {
+  // Une page rechargée pendant la séance n'a plus le drapeau en mémoire : le tic lit le stockage.
+  const tic = appSource.slice(appSource.indexOf('function demarreTic'), appSource.indexOf('function arreteTic'));
+  assert.match(tic, /if \(store\.isSessionOver\(\)\) \{\s*cloreSeance\(\{ avantTerme: false \}\);/);
+  assert.doesNotMatch(tic, /etaitEnCours/);
+  const clore = appSource.slice(appSource.indexOf('function cloreSeance'), appSource.indexOf('function terminerMaintenant'));
+  assert.match(clore, /^function cloreSeance\(\{ avantTerme \}\) \{\s*fermeLesFeuilles\(\);/);
+  // « Abandonner ? » confirmé après le terme : la séance est déjà inscrite, le bravo reste.
+  for (const nom of ['function terminerMaintenant', 'function annulerSeance']) {
+    const i = appSource.indexOf(nom);
+    assert.match(appSource.slice(i, appSource.indexOf('\n}\n', i)), /if \(store\.sessionStartedAt\(\) === 0\) \{ rendre\(\); return; \}/, nom);
+  }
+  assert.match(appSource, /addEventListener\('popstate', \(\) => \{\s*fermeLesFeuilles\(\);/);
+  // Le retour ferme les feuilles : la note du bravo n'est ouverte qu'après lui.
+  const bravo = appSource.slice(appSource.indexOf('function ecranBravo'), appSource.indexOf('// Un jour la danse'));
+  assert.match(bravo, /if \(note && parHistorique\) addEventListener\('popstate', note, \{ once: true \}\);\s*retour\(\);/);
+});
+
 test('le site ne promet pas un son de fin qu’il ne joue pas', () => {
   assert.doesNotMatch(appSource, /tr\.t\('session_hidden_caption'\)/);
   assert.match(appSource, /tr\.t\('session_hidden_caption_web'\)/);
