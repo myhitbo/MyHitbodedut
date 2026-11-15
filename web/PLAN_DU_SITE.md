@@ -8,13 +8,13 @@
 > (dix sujets, vingt-et-une prières), et dans les réglages : prénom, « Comment vous appeler »,
 > région, objectif quotidien, masquer le décompte, Chabbat et Yom Tov, pause aujourd'hui,
 > **export et import de la sauvegarde** (même fichier qu'Android). À l'accueil : « Je l'ai faite
-> sans le téléphone ». Restent propres à Android : rappels et notifications, barrière du matin,
-> vignettes, « Ne pas déranger », lecture du code-barres d'un billet (l'humeur et la gratitude,
+> sans le téléphone ». Restent propres à Android : rappels et notifications (dont les alertes de Levana, de Chabbat et de vol), signal de fin de séance, barrière du matin,
+> vignettes, « Ne pas déranger », fiches des articles de la bibliothèque (le site ne montre que les sources), lecture du code-barres d'un billet (l'humeur et la gratitude,
 > la hitbodedout guidée, l'ajout de sa propre musique et le lien vers les règles de confidentialité
 > existent aussi sur le site). **Ce plan décrit l'état du 28/09** : il ignore l'onglet Zmanim (cinq
 > onglets aujourd'hui) et quatorze écrans (Tehilim, siddour et prière, zmanim, vol, boussole,
 > calendrier, trophées, hilloulot, halakha, recherche, 'hizouk, parcours, source du jour,
-> lecture) ; la liste à jour des écrans est `ecranCourant()` dans `js/app.js`, et les nombres
+> lecture) ; la liste à jour des écrans est `ecranCourant()` dans `src/js/app.js`, et les nombres
 > de morceaux ou de fonds sont ceux du code, pas ceux de ce plan.
 
 Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus dans les fichiers `strings.xml` d'Android (fr, en, he) et n'ont pas été retraduits. Le texte qui les relie est une rédaction, pas une traduction vérifiée : en hébreu, il reste à faire relire.
@@ -78,7 +78,7 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 
 ### Onglet « Réglages »
 - ✅ « Langue » : עברית, English, Français.
-- ⏳ Apparence (clair ou sombre, fonds, 6 accents), prénom, « Shabbat et Yom Tov », export et import de la sauvegarde (étape 2).
+- ✅ Apparence (clair ou sombre, fonds, 6 accents), prénom, « Shabbat et Yom Tov », export et import de la sauvegarde (étape 2).
 
 ---
 
@@ -136,7 +136,7 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 
 ### "Settings" tab
 - ✅ "Language": עברית, English, Français.
-- ⏳ Appearance (light or dark, backgrounds, 6 accents), first name, "Shabbat and Yom Tov", backup export and import (step 2).
+- ✅ Appearance (light or dark, backgrounds, 6 accents), first name, "Shabbat and Yom Tov", backup export and import (step 2).
 
 ---
 
@@ -196,7 +196,7 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 
 ### לשונית « הגדרות »
 - ✅ « שפה »: עברית, English, Français.
-- ⏳ מראה (בהיר או כהה, רקעים, 6 צבעים), שם, « שבת ויום טוב », ייצוא וייבוא של הגיבוי (שלב 2).
+- ✅ מראה (בהיר או כהה, רקעים, 6 צבעים), שם, « שבת ויום טוב », ייצוא וייבוא של הגיבוי (שלב 2).
 
 </div>
 

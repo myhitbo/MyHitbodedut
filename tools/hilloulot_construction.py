@@ -321,7 +321,8 @@ SUITE_CREDIT = re.compile(r"^\s*(?:מחבר הספר|הרב הראשי ל)")
 TETE_SEULE = re.compile(rf"^\s*{TETE_CREDIT}(?:\s+\S+){{0,4}}\s*$")
 CONTACT = re.compile(r"(?<![א-ת])(?:דוא\"ל|דוא״ל|טלפון|טל['׳]|טל/פקס|טל-פקס|סלולר|סלולאר)\s*[:.]?\s*(?=[\d+@A-Za-z-])"
                      r"|WhatsApp|וואטסאפ|סלולאר|להעברת שמות|חייגו|ת\. ?ד\. ?\d")
-COURRIEL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# TWEBCONF-17 (relecture du 15/11) : adresse en ASCII seulement ; \w prendrait les lettres hébraïques collées devant.
+COURRIEL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+")
 TELEPHONE = re.compile(r"(?<![\d-])(?:\+?972|0\d{1,2})[- ]?\d[\d -]{5,}\d")
 COLLES = re.compile(r"(?<=ז\"ל)(?=[א-ת])")
 

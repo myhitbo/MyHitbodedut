@@ -56,7 +56,7 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | `compileSdk` | 36, avec le plugin Android 8.11.1 (était 8.7.3) | ≥ `targetSdk` | **Fait** |
 | `minSdk` | 26 | aucune contrainte | OK |
 | Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB 1.0 signé par la clé d'envoi le 15/11 : 89,1 Mo avec les 26 morceaux de `MusiquePlay.kt` (28,5 Mo le 29/10 avec 3 morceaux) |
-| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play : 26 morceaux, environ 70 Mo d'audio (état du 03/11) ; version GitHub et site : 56 morceaux, environ 146 Mo | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
+| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play : 26 morceaux, environ 70 Mo d'audio (état du 03/11) ; version GitHub : 56 morceaux, environ 146 Mo ; le site ne livre que les 26 de la version Play (§ 3.2) | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
 | Bibliothèques natives | aucune `.so` | page mémoire 16 Ko exigée pour les `.so` ciblant API 35+ | Sans objet — vérifié |
 | Signature | clé de dev pour GitHub ; `play.yml` exige la clé d'envoi (secrets `PLAY_*`) et refuse un AAB signé par la clé de dev | clé d'envoi privée + Play App Signing | **Reste à faire par le propriétaire** : créer la clé et les secrets (§ 5.1, § 5.2) |
 | `versionCode` | `1 + github.run_number` | strictement croissant | OK, à garder |
@@ -220,7 +220,7 @@ confidentialité le décrivent (§ 6.1).
 
 ### 3.2 Droits sur la musique livrée **(bloquant à la revue)**
 
-56 morceaux sont embarqués dans la version GitHub et le site (26 dans la version Play, environ 70 Mo ; 146 Mo en tout), dont des enregistrements du Yanuka, d'Ishay Ribo,
+56 morceaux sont embarqués dans la version GitHub (146 Mo en tout ; 26 dans la version Play et le site, environ 70 Mo), dont des enregistrements du Yanuka, d'Ishay Ribo,
 Motty Steinmetz, MBD (feuille de route, lignes 242–243). Les autorisations
 sont **déclarées** par le propriétaire (« j'ai obtenu les autorisations
 légales des ayants droit »), mais aucun écrit n'est dans le dépôt.
@@ -268,8 +268,8 @@ Hors de la version Play ; le propriétaire décide de leur place dans la
 version GitHub, qui est elle aussi une diffusion.
 
 Audio de la version Play : 26 morceaux, environ 70 Mo (Yanuka 1, המלך בשדה 1,
-Noam Shpayer 10, Ianir 14), contre 56 morceaux et environ 146 Mo pour GitHub et le
-site (état du 03/11 ; `tools/inventaire_musique.py`). Un morceau
+Noam Shpayer 10, Ianir 14), contre 56 morceaux et environ 146 Mo pour GitHub (état du 03/11 ; `tools/inventaire_musique.py`) ; le site
+livre les mêmes 26 que Play (règle du 13/11 ci-dessous). Un morceau
 retiré revient par simple mise à jour dès que son écrit existe ; si un
 niggoun s'avère être du Yanuka, il rentre sous le même accord. Pour cela, il
 faut retrouver les titres hébreux d'origine (fichiers sources reçus le

@@ -136,9 +136,10 @@ un lieu, la prière proposée suit ses zmanim. Tikoun 'hatsot de 'hatsot de la
 nuit à l'aube ; Birkot hacha'har de l'aube à michéyakir ; Cha'harit jusqu'à
 'hatsot ; Min'ha de min'ha guedola à la chki'a ; Arvit dès tsét, puis le
 Chema du coucher après 22 h 30 (repère d'usage, pas un zman). Rien n'est
-proposé de 'hatsot à min'ha guedola ni de la chki'a à tsét. Sans lieu, ou
-sans zmanim, ou quand l'un d'eux manque (aube absente autour du solstice à
-Londres, Berlin, Moscou… ; soleil de minuit), les heures fixes d'avant.
+proposé de 'hatsot à min'ha guedola ni de la chki'a à tsét. Sans aube
+(autour du solstice à Londres, Berlin, Moscou…), michéyakir, puis le lever
+du soleil, en tiennent lieu. Sans lieu, sans zmanim (soleil de minuit), ou
+quand un autre manque (chki'a, tsét…), les heures fixes d'avant.
 
 **Réglages** : en noussa'h Sfard, Ta'hanoun de fin de Tichri au choix (dit
 après Isrou 'hag par défaut) ; à Jérusalem, l'allumage 40 minutes avant la
@@ -329,7 +330,7 @@ méridien (Kiribati, Samoa…) : seul le méridien est calculé.
 
 **Le GPS** (au choix, en plus de la route prévue). Au toucher de « position
 réelle », l'application demande la localisation précise et un relevé du GPS
-seul, 90 s au plus ; le GPS marche en mode avion, sans réseau. Un relevé pris
+seul, 2 min 30 au plus sur Android (90 s sur le site) ; le GPS marche en mode avion, sans réseau. Un relevé pris
 entre le décollage et l'atterrissage prévus recale la route : grand cercle du
 départ au relevé, puis du relevé à l'arrivée, chaque tronçon à vitesse
 constante. L'écart affiché devient alors celui d'une arrivée retardée de

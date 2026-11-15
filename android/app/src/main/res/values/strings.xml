@@ -16,10 +16,10 @@
     <string name="offline_today">Aujourd’hui</string>
     <string name="offline_yesterday">Hier</string>
     <string name="offline_how_long">Combien de temps ?</string>
-    <string name="offline_how_long_today">Aujourd’hui : combien de temps ?</string>
-    <string name="offline_how_long_yesterday">Hier : combien de temps ?</string>
-    <string name="offline_added_today">Ajouté à aujourd’hui : %1$s.</string>
-    <string name="offline_added_yesterday">Ajouté à hier : %1$s.</string>
+    <string name="offline_how_long_today">Aujourd’hui : combien de temps ?</string>
+    <string name="offline_how_long_yesterday">Hier : combien de temps ?</string>
+    <string name="offline_added_today">Ajouté à aujourd’hui : %1$s.</string>
+    <string name="offline_added_yesterday">Ajouté à hier : %1$s.</string>
     <string name="note_discard">Ne pas enregistrer</string>
     <string name="journal_note_only">Note seule</string>
     <string name="status_total">%1$s au total</string>
@@ -28,7 +28,7 @@
 
     <!-- Sections -->
     <string name="section_practice">Ma pratique</string>
-    <string name="section_gate_state">Où en est « Je suis avec Hachem »</string>
+    <string name="section_gate_state">Où en est « Je suis avec Hachem »</string>
     <string name="section_gate">Je suis avec Hachem</string>
     <string name="section_gate_hint">Les applications choisies restent bloquées tant que la pratique n’est pas faite, et pendant une hitbodedout en cours.</string>
     <string name="section_rhythm">Rythme</string>
@@ -39,9 +39,9 @@
     <string name="section_data_hint_web">Tout est gardé dans ce navigateur, sur cet appareil. Exportez de temps en temps.</string>
     <!-- Dédicace (04/11) : la demande part à l’équipe, par la messagerie de l’utilisateur. -->
     <string name="section_dedicace">Dédicace</string>
-    <string name="section_dedicace_hint">Pour dédier votre hitbodedout ou votre étude, la demande passe par l’équipe MyHitbodedut. Elle s’écrit dans votre messagerie, adressée à myhitbodedut26@gmail.com : rien ne part sans vous.</string>
+    <string name="section_dedicace_hint">Pour dédier votre hitbodedout ou votre étude, la demande passe par l’équipe MyHitbodedut. Elle s’écrit dans votre messagerie, adressée à myhitbodedut26@gmail.com : rien ne part sans vous.</string>
     <string name="dedicace_bouton">Dédicacer</string>
-    <string name="dedicace_quoi">Que dédiez-vous ?</string>
+    <string name="dedicace_quoi">Que dédiez-vous ?</string>
     <string name="dedicace_hitbodedut">Ma hitbodedout</string>
     <string name="dedicace_etude">Mon étude</string>
     <string name="dedicace_pour">Pour</string>
@@ -50,16 +50,16 @@
     <string name="dedicace_hatslaha">Hatsla’ha (להצלחה)</string>
     <string name="dedicace_zivoug">Zivoug hagoun (לזיווג הגון)</string>
     <string name="dedicace_autre">Autre intention</string>
-    <string name="dedicace_nom">Nom (ex. : Moché ben Sarah)</string>
+    <string name="dedicace_nom">Nom (ex. : Moché ben Sarah)</string>
     <string name="dedicace_mot">Un mot pour l’équipe (facultatif)</string>
     <string name="dedicace_ecrire">Écrire l’e-mail</string>
     <string name="dedicace_nom_manque">Indiquez le nom.</string>
     <string name="dedicace_intention_manque">Précisez l’intention.</string>
-    <string name="dedicace_copie">Message copié : collez-le dans votre messagerie.</string>
-    <string name="dedicace_sans_messagerie">Aucune messagerie trouvée : écrivez à myhitbodedut26@gmail.com.</string>
+    <string name="dedicace_copie">Message copié : collez-le dans votre messagerie.</string>
+    <string name="dedicace_sans_messagerie">Aucune messagerie trouvée : écrivez à myhitbodedut26@gmail.com.</string>
     <string name="dedicace_sujet">Dédicace – %1$s</string>
     <string name="dedicace_corps_intro">Bonjour,</string>
-    <string name="dedicace_corps_demande">Je souhaite dédier %1$s :</string>
+    <string name="dedicace_corps_demande">Je souhaite dédier %1$s :</string>
     <string name="dedicace_corps_fin">Envoyé depuis l’application MyHitbodedut.</string>
 
     <!-- Diagnostic -->
@@ -69,11 +69,11 @@
         <item quantity="other">%1$d applications sont bloquées jusqu’à %2$s ou jusqu’à votre hitbodedout.</item>
     </plurals>
     <string name="gate_permissions_title">Autorisations manquantes</string>
-    <string name="gate_permissions_detail">Pour fonctionner, « Je suis avec Hachem » a besoin de deux accès : l’affichage par-dessus les autres applications et l’accès aux données d’utilisation.</string>
-    <string name="gate_disabled_title">« Je suis avec Hachem » est éteint</string>
+    <string name="gate_permissions_detail">Pour fonctionner, « Je suis avec Hachem » a besoin de deux accès : l’affichage par-dessus les autres applications et l’accès aux données d’utilisation.</string>
+    <string name="gate_disabled_title">« Je suis avec Hachem » est éteint</string>
     <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour qu’il agisse.</string>
     <string name="gate_no_apps_title">Aucune application choisie</string>
-    <string name="gate_no_apps_detail">Le mode n’a rien à bloquer. Choisissez au moins une application.</string>
+    <string name="gate_no_apps_detail">Il n’a rien à bloquer. Choisissez au moins une application.</string>
     <string name="gate_stopped_title">Surveillance arrêtée</string>
     <string name="gate_stopped_detail">Tout est réglé, mais le service qui surveille ne tourne pas. Relancez-le, ou rouvrez l’application.</string>
     <string name="gate_stopped_action">Relancer le mode</string>
@@ -81,12 +81,12 @@
     <string name="gate_done_title">Journée validée</string>
     <string name="gate_done_detail">Plus rien ne sera bloqué d’ici la prochaine plage horaire, sauf pendant une hitbodedout en cours.</string>
     <string name="gate_exempt_title">Jour de pause</string>
-    <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
+    <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : il se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
-    <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
-    <string name="settings_window_same">Le début et la fin sont identiques : le mode n’agirait jamais.</string>
+    <string name="gate_snoozed_detail">Vous avez demandé un délai. Il reprend à la fin du report.</string>
+    <string name="settings_window_same">Le début et la fin sont identiques : le mode n’agirait jamais.</string>
     <string name="gate_window_title">Hors de la plage horaire</string>
-    <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est bloqué.</string>
+    <string name="gate_window_detail">Il agit entre %1$s et %2$s. En dehors, rien n’est bloqué.</string>
 
     <!-- Actions -->
     <string name="action_start_session">Commencer une hitbodedout de %1$s</string>
@@ -125,9 +125,9 @@
     <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
     <string name="settings_shabbat_hint_web">Ces jours-là, la série reste intacte.</string>
     <string name="settings_exempt_today">Pause aujourd’hui</string>
-    <string name="settings_exempt_today_hint">Pour un voyage, une maladie, un jour empêché : la journée ne compte pas contre vous.</string>
+    <string name="settings_exempt_today_hint">Pour un voyage, une maladie, un jour empêché : la journée ne compte pas contre vous.</string>
     <string name="settings_screen_missing">Cet écran de réglages n’existe pas sur ce téléphone.</string>
-    <string name="lien_impossible">Impossible d’ouvrir ce lien : aucun navigateur sur ce téléphone.</string>
+    <string name="lien_impossible">Impossible d’ouvrir ce lien : aucun navigateur sur ce téléphone.</string>
     <!-- Le sélecteur de fichiers d’Android est absent (examen du 14/11, constat 12). -->
     <string name="fichiers_absents">Aucune application de ce téléphone ne permet d’ouvrir ou d’enregistrer un fichier.</string>
 
@@ -141,7 +141,7 @@
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Sans elles, le rappel se programme et n’apparaît jamais, et la hitbodedout n’affiche rien quand le téléphone est posé.</string>
     <string name="session_notifications_pourquoi">Pour montrer le temps qui reste et annoncer la fin de la hitbodedout quand le téléphone est posé, l’application a besoin des notifications.</string>
-    <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures. Dans la liste qui s’ouvre, cherchez MyHitbodedut et choisissez « Ne pas optimiser ».</string>
+    <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures. Dans la liste qui s’ouvre, cherchez MyHitbodedut et choisissez « Ne pas optimiser ».</string>
     <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez pendant les heures du mode.</string>
     <string name="permission_usage_why">Pour savoir quelle application vient de s’ouvrir. Rien n’est enregistré ni envoyé.</string>
     <string name="permission_granted">Accordée</string>
@@ -178,7 +178,7 @@
     <string name="session_cancel">Arrêter sans enregistrer</string>
     <string name="session_finish_title">Terminer la hitbodedout ?</string>
     <string name="session_finish_message">Le temps déjà écoulé sera enregistré et la journée validée.</string>
-    <string name="session_finish_short">Moins d’une minute s’est écoulée : rien ne sera enregistré.</string>
+    <string name="session_finish_short">Moins d’une minute s’est écoulée : rien ne sera enregistré.</string>
     <string name="session_cancel_title">Arrêter sans enregistrer ?</string>
     <string name="session_cancel_message">Rien ne sera enregistré et la journée restera à faire.</string>
     <string name="session_cancel_message_done">Rien ne sera enregistré pour cette hitbodedout.</string>
@@ -191,9 +191,9 @@
     <string name="settings_hide_countdown">Masquer le décompte</string>
     <string name="settings_hide_countdown_hint">Rien à l’écran pendant la hitbodedout, un son discret à la fin.</string>
     <string name="session_hidden_caption">Le décompte est masqué. Un son vous préviendra.</string>
-    <string name="session_hidden_caption_web">Le décompte est masqué. À la fin, l’écran change ; la musique s’arrête si elle jouait.</string>
+    <string name="session_hidden_caption_web">Le décompte est masqué. À la fin, l’écran change ; la musique s’arrête si elle jouait.</string>
     <string name="session_running_hidden">Le décompte est masqué.</string>
-    <string name="session_open_hidden_caption">Sans durée, décompte masqué : vous terminez quand vous voulez.</string>
+    <string name="session_open_hidden_caption">Sans durée, décompte masqué : vous terminez quand vous voulez.</string>
     <string name="session_running_open_hidden">Sans durée, décompte masqué.</string>
     <string name="blocker_session_hidden_subtitle">Hitbodedout en cours. Le téléphone peut attendre.</string>
     <string name="widget_label">Série MyHitbodedut</string>
@@ -371,7 +371,7 @@
     <string name="track_shpayer_hithadshout">Hit’hadchout (Awakening) — Noam Shpayer</string>
     <string name="track_shpayer_pnima" translatable="false">Pnima (Inward) — Noam Shpayer</string>
     <string name="track_shpayer_tunnels_end" translatable="false">Tunnel’s End — Noam Shpayer</string>
-    <string name="track_shpayer_ki_hine_kahomer">Niggoun « Ki hiné ka’homer » — Noam Shpayer</string>
+    <string name="track_shpayer_ki_hine_kahomer">Niggoun « Ki hiné ka’homer » — Noam Shpayer</string>
     <string name="track_ianir_mirage" translatable="false">Mirage (Into the Moment) — Ianir</string>
     <string name="track_ianir_al_harega" translatable="false">Al haRega (Into the Moment) — Ianir</string>
     <string name="track_ianir_hello" translatable="false">Hello (Into the Moment) — Ianir</string>
@@ -578,16 +578,16 @@
     <string name="onboarding_yours">À votre façon</string>
     <string name="onboarding_yours_body">Dans les réglages : la langue (français, anglais ou hébreu), les couleurs de l’écran, votre prénom et la durée habituelle d’une hitbodedout. La musique a sa propre section.</string>
     <string name="onboarding_gate">Le matin, avant tout le reste</string>
-    <string name="onboarding_gate_body">Choisissez les applications qui attendront votre hitbodedout : en ouvrant l’une d’elles, vous verrez d’abord « Avez-vous fait votre hitbodedout ? ». Ce mode se règle dans les Réglages et se coupe quand vous voulez.</string>
+    <string name="onboarding_gate_body">Choisissez les applications qui attendront votre hitbodedout : en ouvrant l’une d’elles, vous verrez d’abord « Avez-vous fait votre hitbodedout ? ». Ce mode se règle dans les Réglages et se coupe quand vous voulez.</string>
     <string name="onboarding_adresse">Comment vous appeler ?</string>
-    <string name="onboarding_adresse_body">À la fin de chaque hitbodedout, l’application vous félicite. Choisissez le mot qui vous convient : le personnage et l’icône de l’application le suivront. Vous pourrez le changer dans les réglages.</string>
+    <string name="onboarding_adresse_body">À la fin de chaque hitbodedout, l’application vous félicite. Choisissez le mot qui vous convient : le personnage et l’icône de l’application le suivront. Vous pourrez le changer dans les réglages.</string>
     <string name="onboarding_rappel">Me le rappeler chaque jour</string>
     <string name="onboarding_rappel_heure">à %1$s</string>
     <string name="onboarding_rappel_heure_desc">Heure du rappel : %1$s</string>
     <!-- Pour la version web (02/11) : les morceaux ajoutés sont gardés dans le navigateur, qui peut manquer de place. -->
     <string name="music_add_quota_web">Plus assez de place dans ce navigateur pour garder ce morceau.</string>
-    <string name="music_remove_confirm_web">Retirer « %1$s » ?</string>
-    <string name="music_remove_message_web">Le morceau est effacé de ce navigateur ; le fichier d’origine reste sur l’appareil.</string>
+    <string name="music_remove_confirm_web">Retirer « %1$s » ?</string>
+    <string name="music_remove_message_web">Le morceau est effacé de ce navigateur ; le fichier d’origine reste sur l’appareil.</string>
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">La série compte les jours de pratique d’affilée, et la semaine se lit d’un coup d’œil. Après chaque hitbodedout, une note peut rejoindre votre journal.</string>
     <string name="onboarding_private_body_web">Ce que vous écrivez reste dans ce navigateur, sur cet appareil. Rien n’est envoyé, sauf le numéro d’un vol à adsbdb.com si vous activez les services en ligne des zmanim en vol.</string>
@@ -750,7 +750,7 @@
     <string name="zmanim_paracha">Paracha %1$s</string>
     <string name="zmanim_source_villes">Villes : GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
-    <string name="zmanim_depuis_tset">Depuis la sortie des étoiles : %1$s</string>
+    <string name="zmanim_depuis_tset">Depuis la sortie des étoiles : %1$s</string>
     <string name="calendrier_title">Calendrier</string>
     <string name="calendrier_precedent">Mois précédent</string>
     <string name="calendrier_suivant">Mois suivant</string>
@@ -850,8 +850,8 @@
     <string name="ajout_cheva_berakhot">Chéva berakhot (repas de noces)</string>
     <string name="ajout_zimun">Zimoun (à trois convives ou plus)</string>
     <string name="ajout_facultatif">Usage, non obligatoire</string>
-    <string name="ajout_facultatif_avant">Avant le Birkat : psaumes d’usage (non obligatoires)</string>
-    <string name="ajout_facultatif_apres">HaRa’hamane et fin : d’usage (non obligatoires)</string>
+    <string name="ajout_facultatif_avant">Avant le Birkat : psaumes d’usage (non obligatoires)</string>
+    <string name="ajout_facultatif_apres">HaRa’hamane et fin : d’usage (non obligatoires)</string>
     <string name="ajout_embolismique">Année embolismique (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">Maison endeuillée</string>
     <string name="siddur_seul">Si l’on prie seul</string>
@@ -1078,7 +1078,7 @@
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">Livres</string>
     <string name="livres_hint">Likoutei Moharan, Hichtapkhout HaNefech, Kokhvei Or, méguilot, Perek Chira, Nichmat…</string>
-    <string name="livres_pied">Yalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef. Texte : Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5). Traductions française et anglaise automatiques, partielles et non relues, sous la même licence.\nLes autres traductions, françaises et anglaises, sont faites par ordinateur et non relues : l’hébreu fait foi.</string>
+    <string name="livres_pied">Yalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef. Texte : Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5). Traductions française et anglaise automatiques, partielles et non relues, sous la même licence.\nLes autres traductions, françaises et anglaises, sont faites par ordinateur et non relues : l’hébreu fait foi.</string>
     <!-- La halakha du jour : le Yalkut Yosef, puis le Ben Ish 'Haï (13/10) -->
     <string name="halakha_ben_ish_hai">Ben Ich ’Haï, paracha de la semaine</string>
     <string name="halakha_yalkut_source">Yalkout Yossef — Kitsour Choul’han Aroukh, Rav Yits’hak Yossef (texte de Torat Emet, CC BY-NC-SA 2.5) : une sélection, non le livre entier.</string>
@@ -1127,7 +1127,7 @@
     <string name="levana_rappel_dernier">Birkat haLevana : dernier soir</string>
     <string name="levana_rappel_texte">Touchez pour ouvrir le texte.</string>
     <string name="levana_rappel_reglage">Rappel de Birkat haLevana</string>
-    <string name="chabbat_alerte_reglage">Alerte « Chabbat dans 3 h »</string>
+    <string name="chabbat_alerte_reglage">Alerte « Chabbat dans 3 h »</string>
     <string name="levana_lire">Lire Birkat haLevana ›</string>
     <string name="widget_zmanim_label">Zmanim MyHitbodedut</string>
     <string name="widget_zmanim_description">La date hébraïque, la prière du moment, les trois prochains zmanim et la série.</string>
@@ -1138,7 +1138,7 @@
     <string name="settings_ne_pas_deranger_hint">Le téléphone passe en mode « priorité » le temps de la hitbodedout, puis revient comme avant. Android demande une autorisation la première fois.</string>
     <string name="recherche_titre">Recherche</string>
     <string name="recherche_indice">Rechercher dans le siddour, les livres, la halakha, les hilloulot</string>
-    <string name="recherche_aucun_web">Aucun résultat. Les textes sont cherchés en hébreu ; en français, seuls les titres et les hilloulot le sont.</string>
+    <string name="recherche_aucun_web">Aucun résultat. Les textes sont cherchés en hébreu ; en français, seuls les titres et les hilloulot le sont.</string>
     <string name="recherche_tout">Tout</string>
     <string name="recherche_tefilot">Prières</string>
     <string name="recherche_halakhot">Halakhot</string>
@@ -1161,7 +1161,7 @@
     <string name="journal_humeur_avant">Avant la hitbodedout</string>
     <string name="journal_humeur_apres">Après</string>
     <string name="journal_gratitude">Gratitude</string>
-    <string name="journal_ligne">%1$s : %2$s</string>
+    <string name="journal_ligne">%1$s : %2$s</string>
     <string name="journal_gratitude_hint">Une chose pour laquelle je remercie aujourd’hui</string>
     <string name="journal_graphique">Les minutes de chaque jour, %s</string>
     <string name="partage_jour">Partager ce jour</string>
@@ -1200,9 +1200,9 @@
     <string name="jour_modifier">Modifier ce jour…</string>
     <string name="jour_corriger_duree">Corriger la durée</string>
     <string name="jour_retirer">Retirer cette journée</string>
-    <string name="jour_retirer_confirmation">Retirer ce jour (%1$s inscrites) ? Sa note reste.</string>
+    <string name="jour_retirer_confirmation">Retirer ce jour (%1$s inscrites) ? Sa note reste.</string>
     <string name="jour_retire">Journée retirée.</string>
-    <string name="jour_corrige">Durée corrigée : %1$s.</string>
+    <string name="jour_corrige">Durée corrigée : %1$s.</string>
     <!-- Les rappels de tefila (16/10) : un changement dans la prière, annoncé quelques jours avant. -->
     <string name="rappel_pluie_debut_titre">Bénédiction d’hiver dans la Amida</string>
     <string name="rappel_pluie_debut_edot">%1$s, à la Amida d’Arvit, on commence à dire la bénédiction d’hiver « בָּרֵךְ עָלֵינוּ ».</string>
@@ -1321,12 +1321,12 @@
     <string name="vol_duree_une_minute">1 minute</string>
     <string name="vol_duree_minutes">%1$s minutes</string>
     <string name="vol_sources">Méthode et sources</string>
-    <string name="vol_methodes">Méthodes : aube 16,1°, Michéyakir 11,5°, tsét 8,5° sous l’horizon ; Rabbénou Tam 72 min ; heures saisonnières du lever au coucher (Gra) ou de 72 min avant à 72 min après (Maguen Avraham). Calcul au niveau de la mer, sur l’appareil, sans réseau.</string>
+    <string name="vol_methodes">Méthodes : aube 16,1°, Michéyakir 11,5°, tsét 8,5° sous l’horizon ; Rabbénou Tam 72 min ; heures saisonnières du lever au coucher (Gra) ou de 72 min avant à 72 min après (Maguen Avraham). Calcul au niveau de la mer, sur l’appareil, sans réseau.</string>
     <string name="vol_frise_decollage">Décollage %1$s</string>
     <string name="vol_frise_atterrissage">Atterrissage %1$s</string>
     <string name="vol_frise_maintenant">Maintenant</string>
-    <string name="vol_frise_retard">Calculé pour les heures saisies. Avec 30 min de retard au départ, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure de décollage.</string>
-    <string name="vol_frise_retard_gps">Calculé pour les heures saisies. Avec 30 min de retard à l’arrivée, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure d’atterrissage, puis relevez de nouveau la position.</string>
+    <string name="vol_frise_retard">Calculé pour les heures saisies. Avec 30 min de retard au départ, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure de décollage.</string>
+    <string name="vol_frise_retard_gps">Calculé pour les heures saisies. Avec 30 min de retard à l’arrivée, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure d’atterrissage, puis relevez de nouveau la position.</string>
     <string name="vol_fiabilite_court">📍 Estimation sur la route prévue</string>
     <string name="vol_comment_calcule">Comment c’est calculé ?</string>
     <string name="vol_preciser_titre">Préciser la position</string>
@@ -1356,7 +1356,7 @@
     <string name="vol_invalide_arrivee_avant_depart">L’atterrissage doit suivre le décollage : vérifiez les dates, à l’heure de chaque aéroport.</string>
     <string name="vol_invalide_trop_long">Plus de 22 heures de vol : vérifiez la date d’arrivée.</string>
     <string name="vol_invalide_fuseau_inconnu">L’appareil ne connaît pas le fuseau horaire de cet aéroport.</string>
-    <string name="vol_invraisemblable">La durée ne correspond pas à la distance (%1$s km en %2$s) : vérifiez les dates et l’AM/PM, à l’heure de chaque aéroport. Touchez « Calculer » de nouveau si le vol est bien celui-là.</string>
+    <string name="vol_invraisemblable">La durée ne correspond pas à la distance (%1$s km en %2$s) : vérifiez les dates et l’AM/PM, à l’heure de chaque aéroport. Touchez « Calculer » de nouveau si le vol est bien celui-là.</string>
     <string name="vol_priere_titre">Prière du moment</string>
     <string name="vol_jusqua">jusqu’à %1$s</string>
     <string name="vol_sans_limite">jusqu’à l’aube, sans limite affichée</string>
@@ -1372,10 +1372,10 @@
     <string name="vol_lon_est">%1$s° E</string>
     <string name="vol_lon_ouest">%1$s° O</string>
     <string name="vol_ecart">%1$s min si le départ a 30 min de retard</string>
-    <string name="vol_fiabilite">Estimation sur la route prévue (grand cercle, vitesse constante entre les heures saisies), pas la position réelle de l’avion. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil, sans réseau : vu de l’avion, vers 11 000 m, le soleil se lève plus tôt et se couche plus tard, d’un quart d’heure ou plus aux latitudes moyennes. Les heures saisonnières sont celles de la journée de ce point, pas de la journée vécue à bord.</string>
+    <string name="vol_fiabilite">Estimation sur la route prévue (grand cercle, vitesse constante entre les heures saisies), pas la position réelle de l’avion. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil, sans réseau : vu de l’avion, vers 11 000 m, le soleil se lève plus tôt et se couche plus tard, d’un quart d’heure ou plus aux latitudes moyennes. Les heures saisonnières sont celles de la journée de ce point, pas de la journée vécue à bord.</string>
     <string name="vol_reserve_haute_latitude">La route passe au-delà de 60° de latitude : les méthodes en degrés et en minutes y donnent des heures très différentes, et certains zmanim manquent.</string>
-    <string name="vol_reserve_absent">Certains zmanim n’ont pas lieu sur une partie de la route : au-delà d’environ 50° de latitude en été, le soleil ne descend pas assez pour l’aube (16,1°) ou la sortie des étoiles (8,5°) ; plus près des pôles, soleil de minuit ou nuit polaire.</string>
-    <string name="vol_reserve_absents">Absents sur une partie de la route : %1$s.</string>
+    <string name="vol_reserve_absent">Certains zmanim n’ont pas lieu sur une partie de la route : au-delà d’environ 50° de latitude en été, le soleil ne descend pas assez pour l’aube (16,1°) ou la sortie des étoiles (8,5°) ; plus près des pôles, soleil de minuit ou nuit polaire.</string>
+    <string name="vol_reserve_absents">Absents sur une partie de la route : %1$s.</string>
     <string name="vol_reserve_erreur">Le calcul a échoué en un point de la route.</string>
     <string name="vol_reserve_a_rebours">L’avion va plus vite que le soleil vers l’ouest : un zman se produit plus d’une fois.</string>
     <string name="vol_ligne_date">Ligne de changement de date (méridien de 180°) franchie vers %1$s : la date locale passe du %2$s au %3$s.</string>
@@ -1399,8 +1399,8 @@
     <string name="vol_fiabilite_gps">Route recalée sur le relevé GPS de %1$s (%2$s), puis grand cercle jusqu’à l’arrivée, à vitesse constante. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil, sans réseau.</string>
     <string name="vol_ecart_gps">%1$s min si l’arrivée a 30 min de retard</string>
     <string name="vol_direct_explication">Désactivé par défaut. Activé, il envoie au relais de l’application l’indicatif du vol et la position estimée de l’avion, rien d’autre ; le relais demande la position réelle à OpenSky Network. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
-    <string name="vol_direct_activer">Services en ligne : route du vol et suivi en direct</string>
-    <string name="vol_direct_activer_web">Service en ligne : route du vol</string>
+    <string name="vol_direct_activer">Services en ligne : route du vol et suivi en direct</string>
+    <string name="vol_direct_activer_web">Service en ligne : route du vol</string>
     <string name="vol_route_activer">Services en ligne : route du vol</string>
     <string name="vol_indicatif">Indicatif radio (OACI), par exemple ELY1</string>
     <string name="vol_indicatif_invalide">Indicatif attendu : trois lettres puis le numéro, par exemple ELY1.</string>
@@ -1417,8 +1417,8 @@
     <string name="vol_erreur_serveur">erreur du serveur %1$d</string>
     <string name="vol_direct_inactif">Le relais du suivi n’est pas encore en service dans cette version.</string>
     <string name="vol_direct_activer_web_aide">Une fois activé, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée.</string>
-    <string name="reglages_android_seulement">La barrière du matin (« Je suis avec Hachem ») et les rappels n’existent que dans l’application Android.</string>
-    <string name="reglage_libelle_valeur">%1$s : %2$s</string>
+    <string name="reglages_android_seulement">La barrière du matin (« Je suis avec Hachem ») et les rappels n’existent que dans l’application Android.</string>
+    <string name="reglage_libelle_valeur">%1$s : %2$s</string>
     <string name="vol_fiabilite_direct">Route recalée sur la position reçue d’OpenSky Network à %1$s (%2$s), puis grand cercle jusqu’à l’arrivée, à vitesse constante. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil.</string>
     <string name="vol_source_opensky">Données aéronautiques : OpenSky Network (opensky-network.org)</string>
     <string name="vol_rappels_titre">Rappels pendant le vol</string>
@@ -1491,36 +1491,36 @@
 
     <!-- La divulgation avant les deux accès spéciaux de la barrière (31/10, Divulgation). -->
     <string name="divulgation_overlay_titre">Affichage par-dessus les autres applications</string>
-    <string name="divulgation_overlay_texte">Ce qui est utilisé : l’affichage d’un écran par-dessus les autres applications.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Quand vous ouvrez l’une des applications que vous avez sélectionnées, pendant la plage horaire que vous avez fixée, l’écran « Je suis avec Hachem » s’affiche devant elle, jusqu’à ce que la pratique du jour soit faite. Il s’affiche aussi devant ces applications pendant toute hitbodedout en cours, à n’importe quelle heure, jusqu’à ce qu’elle se termine.\n\nRien n’est envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
+    <string name="divulgation_overlay_texte">Ce qui est utilisé : l’affichage d’un écran par-dessus les autres applications.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Quand vous ouvrez l’une des applications que vous avez sélectionnées, pendant la plage horaire que vous avez fixée, l’écran « Je suis avec Hachem » s’affiche devant elle, jusqu’à ce que la pratique du jour soit faite. Il s’affiche aussi devant ces applications pendant toute hitbodedout en cours, à n’importe quelle heure, jusqu’à ce qu’elle se termine.\n\nRien n’est envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
     <string name="divulgation_usage_titre">Accès aux données d’utilisation</string>
-    <string name="divulgation_usage_texte">Ce qui est lu : quelle application est affichée au premier plan. Seule la dernière ouverte est retenue, en mémoire ; aucun historique n’est gardé.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Pendant la plage horaire que vous avez fixée, et tant que la pratique du jour n’est pas faite, l’application vérifie si celle qui vient de s’ouvrir fait partie de celles que vous avez sélectionnées. Elle le vérifie aussi pendant toute hitbodedout en cours, à n’importe quelle heure.\n\nRien n’est enregistré, envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
+    <string name="divulgation_usage_texte">Ce qui est lu : quelle application est affichée au premier plan. Seule la dernière ouverte est retenue, en mémoire ; aucun historique n’est gardé.\n\nPourquoi : pour la barrière du matin, le mode « Je suis avec Hachem », que vous avez choisi. Pendant la plage horaire que vous avez fixée, et tant que la pratique du jour n’est pas faite, l’application vérifie si celle qui vient de s’ouvrir fait partie de celles que vous avez sélectionnées. Elle le vérifie aussi pendant toute hitbodedout en cours, à n’importe quelle heure.\n\nRien n’est enregistré, envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les réglages d’Android.</string>
     <string name="divulgation_continuer">Continuer</string>
     <string name="divulgation_pas_maintenant">Pas maintenant</string>
 
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">Règles de confidentialité</string>
     <string name="settings_licences">Sources et licences</string>
-    <string name="licences_texte">Textes\nLes textes hébreux (siddour, Tehilim, Tikoun, livres, sources) viennent d’éditions du domaine public, notamment Sefaria, Torat Emet, tanach.us et rabenubook, ou sont repris avec l’accord de leurs auteurs ; l’édition et la licence de chacun sont déclarées dans les fichiers de l’application.\nYalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef : texte de Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilloulot : Wikipédia hébreu (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik et HaMéir LaArets avec leur accord.\n\nTraductions\nLes traductions françaises et anglaises sont faites par ordinateur et n’ont pas été relues : l’hébreu fait foi. Celles du Yalkout Yossef sont partielles, sous la même licence que le texte. Pour les Tehilim, le Tikoun, Esther et Chir HaChirim : Bible du Rabbinat (1899) et JPS (1917), domaine public.\n\nPolices\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew et Varela Round, sous licence SIL OFL 1.1.\n\nDonnées\nVilles : GeoNames (CC BY 4.0). Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms : Wikidata (CC0). Routes des vols : adsbdb.com.\n\nCalendrier et zmanim\nKosherJava (LGPL 2.1), directement ou par son portage JavaScript. L’application est livrée avec le texte de la licence ; le code source de l’application est disponible sur demande écrite à myhitbodedut26@gmail.com.</string>
-    <string name="licences_android">\n\nBibliothèques de l’application Android\nLecture des codes-barres : ZXing (Apache 2.0). AndroidX et Material Components (Apache 2.0).</string>
+    <string name="licences_texte">Textes\nLes textes hébreux (siddour, Tehilim, Tikoun, livres, sources) viennent d’éditions du domaine public, notamment Sefaria, Torat Emet, tanach.us et rabenubook, ou sont repris avec l’accord de leurs auteurs ; l’édition et la licence de chacun sont déclarées dans les fichiers de l’application.\nYalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef : texte de Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilloulot : Wikipédia hébreu (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik et HaMéir LaArets avec leur accord.\n\nTraductions\nLes traductions françaises et anglaises sont faites par ordinateur et n’ont pas été relues : l’hébreu fait foi. Celles du Yalkout Yossef sont partielles, sous la même licence que le texte. Pour les Tehilim, le Tikoun, Esther et Chir HaChirim : Bible du Rabbinat (1899) et JPS (1917), domaine public.\n\nPolices\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew et Varela Round, sous licence SIL OFL 1.1.\n\nDonnées\nVilles : GeoNames (CC BY 4.0). Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms : Wikidata (CC0). Routes des vols : adsbdb.com.\n\nCalendrier et zmanim\nKosherJava (LGPL 2.1), directement ou par son portage JavaScript. L’application est livrée avec le texte de la licence ; le code source de l’application est disponible sur demande écrite à myhitbodedut26@gmail.com.</string>
+    <string name="licences_android">\n\nBibliothèques de l’application Android\nLecture des codes-barres : ZXing (Apache 2.0). AndroidX et Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
-    <string name="vol_en_ligne_aide">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com ; « Position en direct » envoie à OpenSky Network une zone d’environ 10° autour de la position estimée de l’avion. Ces services voient votre adresse IP.</string>
+    <string name="vol_en_ligne_aide">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com ; « Position en direct » envoie à OpenSky Network une zone d’environ 10° autour de la position estimée de l’avion. Ces services voient votre adresse IP.</string>
     <string name="vol_en_ligne_aide_route">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com pour remplir l’arrivée. Ce service voit votre adresse IP.</string>
     <string name="vol_en_ligne_aide_web">Éteint par défaut : rien ne quitte l’appareil. Une fois activé, il le reste jusqu’à ce que vous le coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com pour remplir l’arrivée. Ce service voit votre adresse IP.</string>
-    <string name="vol_en_ligne_titre">Chercher la route en ligne ?</string>
+    <string name="vol_en_ligne_titre">Chercher la route en ligne ?</string>
     <string name="vol_en_ligne_oui">Activer et chercher</string>
     <string name="vol_rapide_titre">Décrivez votre vol</string>
-    <string name="vol_rapide_aide">Comme vous le diriez, ou collez le texte du billet. Tout est lu sur le téléphone. Un tronçon à la fois : pour une correspondance, saisissez le vol suivant à l’escale.</string>
-    <string name="vol_rapide_exemple">Ex. : El Al Lyon → TLV demain à 11h</string>
+    <string name="vol_rapide_aide">Comme vous le diriez, ou collez le texte du billet. Tout est lu sur le téléphone. Un tronçon à la fois : pour une correspondance, saisissez le vol suivant à l’escale.</string>
+    <string name="vol_rapide_exemple">Ex. : El Al Lyon → TLV demain à 11h</string>
     <string name="vol_rapide_remplir">Remplir le vol</string>
     <string name="vol_rapide_billet">Importer le billet (PDF ou photo)</string>
-    <string name="vol_rapide_rien">Rien de reconnu. Essayez par exemple : « LY 382 Paris Tel Aviv le 12/11 à 9h40 ».</string>
+    <string name="vol_rapide_rien">Rien de reconnu. Essayez par exemple : « LY 382 Paris Tel Aviv le 12/11 à 9h40 ».</string>
     <string name="vol_rapide_heure">l’heure de départ</string>
-    <string name="vol_rapide_compris">Compris : %1$s</string>
-    <string name="vol_rapide_estimee">Arrivée estimée d’après la distance : corrigez-la avec l’heure du billet.</string>
-    <string name="vol_resume_estimee">Arrivée estimée d’après la distance : touchez « Modifier » pour mettre l’heure du billet.</string>
-    <string name="vol_rapide_estimee_court">Estimée d’après la distance : à vérifier sur le billet.</string>
-    <string name="vol_rapide_manque">Reste à indiquer : %1$s.</string>
+    <string name="vol_rapide_compris">Compris : %1$s</string>
+    <string name="vol_rapide_estimee">Arrivée estimée d’après la distance : corrigez-la avec l’heure du billet.</string>
+    <string name="vol_resume_estimee">Arrivée estimée d’après la distance : touchez « Modifier » pour mettre l’heure du billet.</string>
+    <string name="vol_rapide_estimee_court">Estimée d’après la distance : à vérifier sur le billet.</string>
+    <string name="vol_rapide_manque">Reste à indiquer : %1$s.</string>
     <string name="vol_rapide_lecture">Lecture du billet…</string>
     <string name="vol_rapide_billet_sans_code">Aucun code-barres de carte d’embarquement trouvé. Ouvrez le billet, copiez son texte et collez-le ci-dessus.</string>
     <string name="vol_rapide_billet_echec">Le billet n’a pas pu être ouvert. Essayez une photo, ou copiez son texte et collez-le ci-dessus.</string>
@@ -1529,9 +1529,9 @@
 
     <!-- Les langues d’un texte à lire (04/11), LanguesTexte. -->
     <string name="lecture_langues">Langues du texte</string>
-    <string name="lecture_sans_traduction">Ce texte n’a pas encore de traduction : il reste en hébreu.</string>
+    <string name="lecture_sans_traduction">Ce texte n’a pas encore de traduction : il reste en hébreu.</string>
     <string name="lecture_traduction_auto">Traduction automatique, non relue : l’hébreu fait foi.</string>
-    <string name="lecture_traduction_partielle">Traduit en partie : %1$d chapitres sur %2$d. Les autres restent en hébreu.</string>
+    <string name="lecture_traduction_partielle">Traduit en partie : %1$d chapitres sur %2$d. Les autres restent en hébreu.</string>
     <string name="langues_he">עברית</string>
     <string name="langues_fr">Français</string>
     <string name="langues_en">English</string>

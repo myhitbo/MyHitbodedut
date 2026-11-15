@@ -319,7 +319,7 @@ configure lui-même, est la meilleure approche.
   avant ; ouvrir en dernier une application non bloquée dans l'autre moitié
   lève l'écran. Avancer l'horloge du téléphone au-delà de la fin de la
   fenêtre l'éteint. « Plus tard » se répète sans limite de nombre. Enfin la
-  pastille « Avec Hachem » de l'accueil coupe la barrière d'un toucher. Aucun
+  pastille « Je suis avec Hachem » de l'accueil coupe la barrière d'un toucher. Aucun
   n'est colmaté : un ralentisseur plus ferme (plafond de reports par fenêtre,
   écran partagé) est une décision du propriétaire.
 - **Détection à environ une seconde.** La surveillance interroge le système

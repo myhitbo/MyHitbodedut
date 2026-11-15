@@ -137,6 +137,8 @@ class HilloulotTest {
     fun `les biographies ne portent ni coordonnees de tiers ni residus de source`() {
         val bios = File("src/main/res/raw/hilloulot_bios.json").readText()
         assertTrue("courriel", !bios.contains("@"))
+        // Le retrait ne mord pas sur le texte hébreu collé devant l'adresse (TWEBCONF-17, relecture du 15/11).
+        assertTrue("nom", bios.contains("למשפחת רבני פצ'נובסקי"))
         assertTrue("telephone", !Regex("""\d{2,3}-\d{6,7}|\b0\d{8,9}\b|\d{3}-\d{3}-\d{4}|\(9722\)""").containsMatchIn(bios))
         listOf("WhatsApp", "דוא\\\"ל", "חייגו", "(ק)", "[להאזנה]", "איתן בן יצחק רפאל", "אביבה בת אסתר גיטל", "מסודי בת פרחה",
             "ישראל ינון בן דוד", "יוסף ליאור בן דליה")
