@@ -236,7 +236,9 @@ lecteur.addEventListener('ended', () => {
   const apercu = enEcoute !== null;
   enEcoute = null;
   // L'aperçu d'un morceau avait pris la place de la musique de la séance : elle repart (FWEBCODE-14).
-  if (apercu && store.isSessionRunning()) demarreMusique();
+  // Après les autres écouteurs de « ended » : celui de la lecture aléatoire, plus bas, verrait sinon
+  // lectureAuHasard que demarreMusique() vient de poser, et tirerait aussitôt un second morceau.
+  if (apercu && store.isSessionRunning()) setTimeout(() => { if (store.isSessionRunning() && enEcoute === null) demarreMusique(); }, 0);
   rendre();
 });
 lecteur.addEventListener('pause', () => { if (!lecteur.ended) { enEcoute = null; rendre(); } });

@@ -261,6 +261,9 @@ test('la fin de séance se lit dans le stockage, les feuilles périmées se ferm
 });
 
 test('lecture en échec, page rechargée, langue changée : rien ne reste dans l’état d’avant (FWEBLIVE-06, FWEBCODE-11, FWEBCODE-15)', () => {
+  // La fin d'un aperçu relance la musique de la séance après l'écouteur aléatoire, pas avant (FWEBCODE-14).
+  const fin = appSource.slice(appSource.indexOf("lecteur.addEventListener('ended', () => {\n  const apercu"), appSource.indexOf("lecteur.addEventListener('pause'"));
+  assert.match(fin, /setTimeout\(\(\) => \{ if \(store\.isSessionRunning\(\) && enEcoute === null\) demarreMusique\(\); \}, 0\)/);
   const echec = appSource.slice(appSource.indexOf('function echecLecture'), appSource.indexOf('function metadonnees'));
   assert.match(echec, /lecteur\.pause\(\);\s*lecteur\.removeAttribute\('src'\);\s*lecteur\.load\(\);\s*majMini\(\);/);
   const demarrer = appSource.slice(appSource.indexOf('async function demarrer'), appSource.indexOf('// Le premier lancement'));
