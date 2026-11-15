@@ -52,6 +52,17 @@ class ZmanimActivity : AppCompatActivity() {
         // Le jour seul, puis trois boutons, puis les horaires (14/10, « trop de choses avant les זמנים ») :
         // Levana, hilloula et halakha viennent après, chacune masquable dans les réglages.
         contenu.addView(VueJour.carteJour(this, aujourdhui, israel, complet = false))
+        // Après la sortie des étoiles du lieu, le jour hébreu a déjà changé (la vignette le dit) : la ligne aussi (FCALENDRIER-13).
+        if (lieu != null) {
+            val maintenantLieu = java.time.ZonedDateTime.now(runCatching { java.time.ZoneId.of(lieu.fuseau) }.getOrDefault(java.time.ZoneId.systemDefault()))
+            val tset = Zmanim.jour(lieu, maintenantLieu.toLocalDate()).firstOrNull { it.cle == "tset" }?.local
+            val affiche = ZmanimVignette.jourHebreuAffiche(maintenantLieu, tset)
+            if (affiche != maintenantLieu.toLocalDate()) {
+                val suivant = CalendrierJuif.jour(affiche, israel, Store.mukafChoma(this)).dateHebraique
+                contenu.addView(VueJour.texte(this, getString(R.string.zmanim_depuis_tset, suivant), 14f, R.color.brand, gras = true, haut = 8)
+                    .apply { setPadding(dp(16), 0, dp(16), 0) })
+            }
+        }
         contenu.addView(LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)

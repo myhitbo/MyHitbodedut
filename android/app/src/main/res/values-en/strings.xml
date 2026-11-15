@@ -682,6 +682,7 @@
     <string name="zmanim_paracha">Parasha %1$s</string>
     <string name="zmanim_source_villes">Cities: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
+    <string name="zmanim_depuis_tset">Since nightfall: %1$s</string>
     <string name="calendrier_title">Calendar</string>
     <string name="calendrier_precedent">Previous month</string>
     <string name="calendrier_suivant">Next month</string>

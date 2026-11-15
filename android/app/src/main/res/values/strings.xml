@@ -734,6 +734,7 @@
     <string name="zmanim_paracha">Paracha %1$s</string>
     <string name="zmanim_source_villes">Villes : GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
+    <string name="zmanim_depuis_tset">Depuis la sortie des étoiles : %1$s</string>
     <string name="calendrier_title">Calendrier</string>
     <string name="calendrier_precedent">Mois précédent</string>
     <string name="calendrier_suivant">Mois suivant</string>

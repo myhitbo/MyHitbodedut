@@ -698,6 +698,7 @@
     <string name="zmanim_paracha">פרשת %1$s</string>
     <string name="zmanim_source_villes">ערים: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
+    <string name="zmanim_depuis_tset">מצאת הכוכבים: %1$s</string>
     <string name="calendrier_title">לוח שנה</string>
     <string name="calendrier_precedent">החודש הקודם</string>
     <string name="calendrier_suivant">החודש הבא</string>
