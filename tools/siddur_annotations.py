@@ -275,6 +275,10 @@ def annoter(texte_id, sections, nusah):
             # Le particulier : Edot le dit à Cha'harit et à Min'ha, et le 9 Av à
             # Arvit (« בתשעה באב יש אומרים עננו ») ; Ashkenaz et Sfard, à Min'ha
             # seulement (Rema, OC 565:3), et leur siddour ne le donne qu'à Min'ha.
+            # Edot, Arvit : la version des trois autres jeûnes n'est pas celle du 9 Av ; elle ne
+            # se dit pas ce soir-là, elle reste repliée (TSIDDUR-17).
+            if texte_id == "arvit" and "בג׳ צומות" in txt[bi]:
+                return "facultatif", "ajout_anenou_particulier"
             return ("ticha_beav" if texte_id == "arvit" else "jeune"), "ajout_anenou_particulier"
 
         n = len(blocs)
@@ -631,6 +635,14 @@ def annoter(texte_id, sections, nusah):
                 prend(bi, "chabbat")
             elif not cons[bi] and re.match(r"בראש ?חודש וזכרנו", x):
                 prend(bi, "roch_hodech")
+            # Edot, Havdala : les lignes de 'Hol hamoèd, comme celle de Roch 'Hodech (TSIDDUR-17).
+            elif not cons[bi] and texte_id == "havdala" and re.match(r"חוה[\"'״׳]*מ פסח ושמחנו", x):
+                prend(bi, "pessah")
+            elif not cons[bi] and texte_id == "havdala" and re.match(r"חוה[\"'״׳]*מ סוכות ושמחנו", x):
+                prend(bi, "soukkot")
+            # Edot, Min'ha : la formule d'acceptation d'un jeûne individuel, qui n'est pas du jour (TSIDDUR-17).
+            elif not cons[bi] and re.match(r"הרוצה להתענות תענית יחיד", x):
+                prend(bi, "facultatif", "ajout_avant_jeune_individuel")
             # La prière de Rav Chéchèt, « ביום תענית יאמר רבון העולמים » (Edot, Min'ha ; relevé le 14/10).
             elif not cons[bi] and re.match(r"ביום תענית (יאמר|אומרים)", x):
                 prend(bi, "jeune", JEUNE)
