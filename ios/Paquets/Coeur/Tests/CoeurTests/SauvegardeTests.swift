@@ -414,7 +414,9 @@ struct SauvegardeTests {
         _ = try await depot.importer(Data(try fichier("android-v2-forge.json").utf8), aujourdhui: aujourdhui)
         try await depot.modifier { $0.reglages.autres["ambiance"] = .chaine("pluie") }
         let avant = await depot.tout
-        #expect(avant.lecture.marques.count == 5 && avant.reglages.tikkun.count == 4)
+        // Le site et le fichier forgé posent chacun une marque à Likoutei Moharan, section 3, bloc 12 : la
+        // même place n'est gardée qu'une fois (Store.importerAjouts, memePlace), 2 + 3 − 1 marques.
+        #expect(avant.lecture.marques.count == 4 && avant.reglages.tikkun.count == 4)
         let relu = Coeur.Depot(dossier: ici, enIsrael: false)
         let apres = await relu.tout
         #expect(apres == avant)
