@@ -1811,10 +1811,13 @@ object Store {
 
     /** L'heure comme le téléphone l'écrit (24 h ou 12 h), pour l'affichage et pour les sélecteurs (FACCUEIL-26). */
     fun formatHeure(context: Context, minutes: Int): String {
-        val c = java.util.Calendar.getInstance().apply {
-            set(java.util.Calendar.HOUR_OF_DAY, (minutes / 60) % 24); set(java.util.Calendar.MINUTE, minutes % 60)
+        // En UTC, sur un jour fixe : le jour du passage à l'heure d'été, 02:30 n'existe pas dans le
+        // fuseau du téléphone, et un calendrier du jour l'aurait affiché 03:30.
+        val utc = java.util.TimeZone.getTimeZone("UTC")
+        val c = java.util.Calendar.getInstance(utc).apply {
+            clear(); set(1970, java.util.Calendar.JANUARY, 1, (minutes / 60) % 24, minutes % 60)
         }
-        return android.text.format.DateFormat.getTimeFormat(context).format(c.time)
+        return android.text.format.DateFormat.getTimeFormat(context).apply { timeZone = utc }.format(c.time)
     }
 
     /**
