@@ -99,8 +99,8 @@ object VecteursInterfaceB : Generateur {
 
     // « content://é » composé (U+00E9) et décomposé (e, U+0301) : pour Kotlin deux adresses, que l'égalité
     // canonique de Swift confondrait (le cas des deux formes figure plus haut, parmi les morceaux ajoutés).
-    private val eCompose = "content://é"
-    private val eDecompose = "content://é"
+    private val eCompose = "content://\u00e9"
+    private val eDecompose = "content://e\u0301"
 
     private val renommages = listOf(
         "hamelech_basade" to "Nouveau", "hamelech_basade" to "", "hamelech_basade" to "  ", "shpayer_beyond" to "X/Y \"z\"",

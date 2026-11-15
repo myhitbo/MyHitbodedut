@@ -222,7 +222,7 @@ public enum SuiviVol {
             guard case .tableau(let e) = element else { return .erreur(raison: Raison.illisible) }
             if e.estNul(1) || e.estNul(3) || e.estNul(5) || e.estNul(6) || e.booleen(8, defaut: false) { continue }
             if !memeIndicatif(e[1].commeTexte, indicatif) { continue }
-            // Kotlin récrit l'état en réponse du relais : `getDouble` et `getLong` lèvent sur une valeur illisible,
+            // Kotlin réécrit l’état en réponse du relais : `getDouble` et `getLong` lèvent sur une valeur illisible,
             // `put` sur NaN et l'infini, et un zéro négatif s'y écrit « -0 », relu 0.
             guard let latitude = fini(e[6].commeDouble), let longitude = fini(e[5].commeDouble),
                   let secondes = e[3].commeLong else { return .erreur(raison: Raison.illisible) }
