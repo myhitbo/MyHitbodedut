@@ -232,7 +232,13 @@ function choisirSujet() {
 const lecteur = new Audio();
 lecteur.preload = 'none';
 let enEcoute = null;
-lecteur.addEventListener('ended', () => { enEcoute = null; rendre(); });
+lecteur.addEventListener('ended', () => {
+  const apercu = enEcoute !== null;
+  enEcoute = null;
+  // L'aperçu d'un morceau avait pris la place de la musique de la séance : elle repart (FWEBCODE-14).
+  if (apercu && store.isSessionRunning()) demarreMusique();
+  rendre();
+});
 lecteur.addEventListener('pause', () => { if (!lecteur.ended) { enEcoute = null; rendre(); } });
 
 /**
@@ -300,6 +306,9 @@ function montreToast(texte) {
  */
 function echecLecture(e) {
   if (e?.name === 'AbortError') return;
+  // Sans cela le mini-lecteur affichait « Pause » alors que rien ne jouait (FWEBLIVE-06).
+  lecteur.pause();
+  majMini();
   signale(tr.t('music_play_failed'));
 }
 
@@ -312,7 +321,7 @@ function metadonnees(m) {
 }
 
 function ecouter(m) {
-  if (enEcoute === m.id) { lecteur.pause(); enEcoute = null; rendre(); return; }
+  if (enEcoute === m.id) { lecteur.pause(); enEcoute = null; if (store.isSessionRunning()) demarreMusique(); rendre(); return; }
   lecteur.src = m.fichier;
   lecteur.loop = false;
   lectureAuHasard = false;
@@ -3936,7 +3945,7 @@ function lignePaliers() {
   const message = neuf ? tr.t('palier_nouveau', libellePalier(neuf.piste, bilan), valeurPalier(neuf.piste, neuf.atteint)) : null;
   // Des étincelles du grade plutôt que des confettis multicolores (16/10, animation E).
   // Un trophée neuf ouvre sa fiche, avec la fête (19/10) ; un palier seul garde le message et les étincelles.
-  if (trophee) setTimeout(() => feterTrophees(tropheesNeufs), 600);
+  if (trophee) setTimeout(() => { if (app.dataset.ecran === 'accueil/aujourdhui' && !feuilleOuverte()) feterTrophees(tropheesNeufs); }, 600);
   else if (message) setTimeout(() => { signale(message); etincelles(app.querySelector('.ligne-grade .medaille-grade'), Trophees.grade(gagnes.size)); }, 600);
   store.setPaliersVus(Paliers.marques(etats, bilan));
   store.setTropheesVus(new Set(gagnes));
@@ -4278,6 +4287,8 @@ function feteGrade(ancien, g, n, suivant) {
 function bilanDeLaSemaine() {
   // Pas par-dessus la présentation du premier lancement (revue du 16/10) : il attendra la prochaine ouverture.
   if (document.querySelector('.presentation')) return;
+  // Ni par-dessus un autre écran, une autre feuille ou une séance : le bilan attend la prochaine ouverture (FWEBCODE-13).
+  if (app.dataset.ecran !== 'accueil/aujourdhui' || feuilleOuverte() || store.isSessionRunning()) return;
   // Rien à calculer quand le bilan de cette semaine a déjà été montré.
   const debut = Trophees.debutSemaine(store.today());
   const semaineResumee = new Date(`${debut}T12:00:00Z`); semaineResumee.setUTCDate(semaineResumee.getUTCDate() - 7);
@@ -4390,6 +4401,8 @@ function ecranReglages() {
               store.setLangueApp(LANGUES[i].code);
               tr = await chargeTraduction(LANGUES[i].code);
               appliqueApparence();
+              // Le mini-lecteur pose ses libellés une fois : reconstruit dans la nouvelle langue (FWEBCODE-15).
+              mini?.remove(); mini = null;
               rendre();
             }),
         }),
@@ -4611,6 +4624,10 @@ function carteMesDonnees() {
     if (n === null || n === undefined) { signale(tr.t('import_invalid')); return; }
     // Un fichier importé est une sauvegarde qui existe : le rappel d'export repart d'aujourd'hui (FWEBCODE-01).
     store.setDerniereSauvegarde(store.today());
+    // Ce que la sauvegarde a déjà gagné n'est pas nouveau : pas de fiches de trophées en rafale (FWEBCODE-13).
+    const bilanImporte = bilanPaliers();
+    store.setPaliersVus(Paliers.marques(Paliers.etats(bilanImporte), bilanImporte));
+    store.setTropheesVus(new Set(Trophees.gagnes(pratique())));
     appliqueApparence();
     rendre();
     signale(tr.p('import_ok', n));
@@ -4844,6 +4861,12 @@ function ajusteLesTextes() {
   }
 }
 
+// La police hébraïque arrive après le premier rendu : l'ajustement est refait à son chargement
+// et à la rotation, sinon le texte est mesuré avec la police de secours (FWEBLIVE-04).
+document.fonts?.ready?.then(ajusteLesTextes);
+document.fonts?.addEventListener?.('loadingdone', ajusteLesTextes);
+window.addEventListener('resize', ajusteLesTextes);
+
 // --- La séance (SessionActivity, SessionService) ----------------------------------------
 let tic = null;
 let etaitEnCours = false;
@@ -4863,6 +4886,8 @@ function relacheEcran() {
 }
 
 function demarreMusique() {
+  // Un aperçu d'ambiance en cours ne doit pas couper celle de la séance après 5 s (FWEBCODE-14).
+  clearTimeout(apercuAmbiance);
   // L'ambiance (19/10) suit son réglage, que la musique soit là ou non.
   joueAmbiance(store.ambiance(), store.musicVolume());
   if (!store.musicEnabled()) return;
@@ -5058,6 +5083,7 @@ function commencer(minutes) {
 let dateNote = null;
 
 function cloreSeance({ avantTerme }) {
+  fermeLesFeuilles();
   const sujet = store.sessionTheme();
   const { minutes, date } = store.endSession({ avantTerme });
   const inscrite = minutes > 0 || !avantTerme;
@@ -5082,11 +5108,14 @@ function cloreSeance({ avantTerme }) {
 
 /** « Terminer maintenant » : la note est proposée après le bravo, ou tout de suite s'il n'y en a pas. */
 function terminerMaintenant() {
+  // Séance déjà inscrite (terme atteint pendant que la feuille était ouverte) : rien à terminer (FWEBCODE-10).
+  if (store.sessionStartedAt() === 0) { rendre(); return; }
   if (!cloreSeance({ avantTerme: true })) setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
   rendre();
 }
 
 function annulerSeance() {
+  if (store.sessionStartedAt() === 0) { rendre(); return; }
   store.endSession({ avantTerme: true });
   etaitEnCours = false;
   arreteMusique();
@@ -5167,7 +5196,8 @@ addEventListener('click', (ev) => {
 function demarreTic() {
   if (tic) return;
   tic = setInterval(() => {
-    if (etaitEnCours && !store.isSessionRunning()) {
+    // Sans le drapeau en mémoire : une page rechargée pendant la séance la clôt aussi à son terme (FWEBCODE-11).
+    if (store.isSessionOver()) {
       cloreSeance({ avantTerme: false });
       rendre();
       return;
@@ -5452,7 +5482,10 @@ function retour() {
   if (history.state?.interne) history.back();
   else { history.replaceState(null, '', location.pathname); rendre(); }
 }
+/** Ferme les feuilles ouvertes : elles sont posées sur le corps de la page, l'historique ne les connaît pas (FWEBCODE-10). */
+const fermeLesFeuilles = () => document.querySelectorAll('.voile').forEach((v) => v.remove());
 window.addEventListener('popstate', () => {
+  fermeLesFeuilles();
   // Le retour d'un renvoi (« Hallel › ») rouvre la prière d'où l'on venait.
   if (history.state?.priere) priere = history.state.priere;
   rendre();
@@ -5635,7 +5668,26 @@ if ('serviceWorker' in navigator) {
     if (document.hidden && nouvelleVersion && !store.isSessionRunning()) location.reload();
   });
 }
-demarrer();
+/**
+ * Un fichier du démarrage qui échoue (réseau instable avant la fin de l'installation hors connexion) :
+ * un message et « Réessayer » plutôt qu'un écran vide (FWEBCODE-06). Écrit en dur dans les trois langues :
+ * tr n'existe peut-être pas, le fichier de chaînes étant parfois celui qui a échoué.
+ */
+function echecDemarrage() {
+  const langue = (navigator.languages?.[0] ?? 'fr').slice(0, 2).toLowerCase();
+  const textes = {
+    fr: ['Le chargement a échoué. Vérifiez la connexion, puis réessayez.', 'Réessayer'],
+    en: ['Loading failed. Check your connection, then try again.', 'Try again'],
+    he: ['הטעינה נכשלה. בדקו את החיבור ונסו שוב.', 'לנסות שוב'],
+  };
+  const [message, bouton] = textes[langue === 'iw' ? 'he' : langue] ?? textes.fr;
+  document.getElementById('ouverture')?.remove();
+  const e = h('div', { class: 'ecran', role: 'alert', style: 'padding:32px 16px;text-align:center', dir: langue === 'he' || langue === 'iw' ? 'rtl' : 'ltr' },
+    h('p', {}, message),
+    h('button', { class: 'principal', onclick: () => location.reload() }, bouton));
+  app.replaceChildren(e);
+}
+demarrer().catch(echecDemarrage);
 
 // L'écran d'ouverture (15/10) : le 'hassid devant le tziyoun une seconde et demie, puis un fondu ;
 // une seule fois par session (un rechargement ne le rejoue pas).
