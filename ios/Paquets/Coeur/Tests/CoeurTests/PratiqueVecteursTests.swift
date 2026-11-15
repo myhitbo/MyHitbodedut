@@ -19,7 +19,8 @@ struct PratiqueVecteursTests {
     }
 
     private func textes(_ cle: String) throws -> [[String]] {
-        try vecteurs().textes(cle).map { $0.components(separatedBy: "|") }
+        let liste = try vecteurs().tableau(cle) ?? []
+        return liste.indices.map { liste.texte($0).components(separatedBy: "|") }
     }
 
     /// « 2026-11-02T00:30 » ou « 2026-11-02T23:59:59 », comme `LocalDateTime.toString()`.
