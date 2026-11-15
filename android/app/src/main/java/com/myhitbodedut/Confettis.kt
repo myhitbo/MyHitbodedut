@@ -144,8 +144,11 @@ object Confettis {
  */
 object Celebrations {
 
-    /** [icone] et [message] vides quand rien n'est neuf ; [marques] et [trophees] : l'état à retenir. */
-    private class Neuf(val icone: String, val message: String, val marques: Set<String>, val trophees: Set<String>)
+    /**
+     * [icone] et [message] vides quand rien n'est neuf ; [marques] et [trophees] : l'état à retenir ;
+     * [compte] : les trophées gagnés à cet instant (l'union retenue garde aussi ceux perdus depuis).
+     */
+    private class Neuf(val icone: String, val message: String, val marques: Set<String>, val trophees: Set<String>, val compte: Int)
 
     /** Un trophée neuf d'abord, sinon le plus haut palier neuf. */
     private fun neuf(c: Context, paliersVus: Set<String>?, tropheesVus: Set<String>?): Neuf {
@@ -164,7 +167,7 @@ object Celebrations {
         }
         // L'union, jamais le remplacement : un trophée qui disparaît puis revient
         // (note effacée, interrupteur rallumé) n'est pas fêté une seconde fois (FDONNEES-10).
-        return Neuf(icone, message, Paliers.marques(etats, bilan), (tropheesVus ?: emptySet()) + gagnes.map { it.cle })
+        return Neuf(icone, message, Paliers.marques(etats, bilan), Trophees.vusAvec(tropheesVus, gagnes), gagnes.size)
     }
 
     /**
@@ -180,7 +183,7 @@ object Celebrations {
         } else if (r.message.isNotEmpty()) {
             android.widget.Toast.makeText(activity, r.message, android.widget.Toast.LENGTH_LONG).show()
             val ligne = activity.findViewById<View>(R.id.paliers_line)
-            val grade = Trophees.grade(r.trophees.size)
+            val grade = Trophees.grade(r.compte)
             ligne?.postDelayed({ AnimationsTrophees.etincelles(activity, ligne, grade) }, 500)
         }
         Store.setPaliersVus(activity, r.marques)
@@ -194,12 +197,13 @@ object Celebrations {
     fun apresImport(context: Context) {
         val bilan = Store.bilan(context)
         val marques = Paliers.marques(Paliers.etats(bilan), bilan)
-        val gagnes = Trophees.gagnes(Store.pratique(context)).map { it.cle }
+        val pratique = Store.pratique(context)
+        val gagnes = Trophees.gagnes(pratique)
         Store.setPaliersVus(context, marques)
         Store.setPaliersNotifies(context, marques)
-        Store.setTropheesVus(context, (Store.tropheesVus(context) ?: emptySet()) + gagnes)
-        Store.setTropheesNotifies(context, (Store.tropheesNotifies(context) ?: emptySet()) + gagnes)
-        val n = Trophees.chemin.count { Trophees.gagne(Store.pratique(context), it) }
+        Store.setTropheesVus(context, Trophees.vusAvec(Store.tropheesVus(context), gagnes))
+        Store.setTropheesNotifies(context, Trophees.vusAvec(Store.tropheesNotifies(context), gagnes))
+        val n = Trophees.chemin.count { Trophees.gagne(pratique, it) }
         val grade = Trophees.grade(n)
         Store.setGradeVu(context, if (n == 0) 0 else grade.ordinal + 1)
     }

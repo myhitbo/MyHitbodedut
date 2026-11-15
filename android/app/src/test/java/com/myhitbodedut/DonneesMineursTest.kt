@@ -35,8 +35,18 @@ class DonneesMineursTest {
 
     @Test
     fun `les trophees fetes ne sont jamais remplaces mais completes (FDONNEES-10)`() {
-        assertTrue(lire("Confettis.kt").contains("(tropheesVus ?: emptySet()) + gagnes.map { it.cle }"))
-        assertTrue(lire("PaliersActivity.kt").contains("(vus ?: emptySet()) + Trophees.gagnes(pratique)"))
+        val plume = Trophees.Niveau(Trophees.Famille.PLUME, 1)
+        val pas = Trophees.Niveau(Trophees.Famille.PREMIER_PAS, 1)
+        // La plume perdue (note effacée) reste fêtée : regagnée, elle n'est pas neuve.
+        val vus = Trophees.vusAvec(setOf(plume.cle), setOf(pas))
+        assertEquals(setOf(plume.cle, pas.cle), vus)
+        assertTrue(Trophees.nouveaux(setOf(pas, plume), vus).isEmpty())
+        // Les clés de l'ancien format tombent : elles ne bloquent plus nouveaux() et ne comptent pas.
+        assertEquals(setOf(pas.cle), Trophees.vusAvec(setOf("chai", "premier_pas"), setOf(pas)))
+        assertEquals(emptySet<String>(), Trophees.vusAvec(null, emptySet()))
+        listOf("Confettis.kt", "PaliersActivity.kt").forEach { assertTrue(it, lire(it).contains("Trophees.vusAvec(")) }
+        // Les étincelles suivent le compte des trophées gagnés, pas la taille de l'union retenue.
+        assertTrue(lire("Confettis.kt").contains("Trophees.grade(r.compte)"))
         assertTrue(lire("SettingsActivity.kt").contains("Celebrations.apresImport(this)"))
     }
 

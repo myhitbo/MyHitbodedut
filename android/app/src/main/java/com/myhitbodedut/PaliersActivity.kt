@@ -186,7 +186,7 @@ class PaliersActivity : AppCompatActivity() {
         Store.setGradeVu(this, niveauGrade)
         // Ce qui est vu ici est acquis : l'accueil ne le refête pas.
         Store.setPaliersVus(this, Paliers.marques(Paliers.etats(bilan), bilan))
-        Store.setTropheesVus(this, (vus ?: emptySet()) + Trophees.gagnes(pratique).map { it.cle })
+        Store.setTropheesVus(this, Trophees.vusAvec(vus, Trophees.gagnes(pratique)))
     }
 
     private fun dateLongue(d: java.time.LocalDate): String =
