@@ -13,42 +13,30 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
     "Aeroports.swift",
-    "Ambiance.swift",
-    "Autorisation.swift",
     "CarteEmbarquement.swift",
     "Celebrations.swift",
-    "MusicLibrary.swift",
-    "MusiquePlay.swift",
     "Parcours.swift",
     "RouteVol.swift",
     "SaisieVol.swift",
     "SourceDuJour.swift",
     "Store.swift",
     "SuiviVol.swift",
-    "VignetteDecor.swift",
     "VolRappels.swift",
-    "WidgetTaille.swift",
 ]
 let enChantierTests: [String] = [
     "AeroportsTests.swift",
-    "AmbianceTests.swift",
-    "AutorisationTests.swift",
     "CarteEmbarquementTests.swift",
     "CelebrationsTests.swift",
-    "IconeLanceurTests.swift",
-    "MusicLibraryTests.swift",
-    "MusiquePlayTests.swift",
     "ParcoursTests.swift",
-    "RenameTrackTests.swift",
     "RouteVolTests.swift",
     "SaisieVolTests.swift",
     "SourceDuJourTests.swift",
     "SuiviVolTests.swift",
-    "VignetteDecorTests.swift",
     "VolRappelsTests.swift",
-    "WidgetTailleTests.swift",
 ]
 let enChantierEcrans: [String] = [
+    "Contenus.swift",
+    "Traducteur.swift",
 ]
 let enChantierEcransTests: [String] = [
 ]
