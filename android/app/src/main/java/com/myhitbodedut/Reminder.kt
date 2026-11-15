@@ -123,12 +123,20 @@ class ReminderReceiver : BroadcastReceiver() {
             doneToday = Store.isDone(context),
             todayIsRestDay = Store.isExempt(context, LocalDate.now()),
             tomorrowIsRestDay = Store.isEveOfRestDay(context, LocalDate.now()),
-            // Aucune ville n'est réglée : on s'en tient à la limite de midi.
-            sunsetMinutes = null
+            // Un lieu est réglé : la veille, le rappel se tait à l'allumage ; sans lieu, à midi (FBARRIERE-12).
+            sunsetMinutes = allumageDuJour(context)
         )
         if (allowed) manager.notify(Notifications.ID_REMINDER, build(context))
         Reminder.reschedule(context)
     }
+
+    /** L'heure d'allumage d'aujourd'hui (minutes depuis minuit, heure du téléphone), ou null sans lieu. */
+    private fun allumageDuJour(context: Context): Int? = runCatching {
+        val lieu = Store.lieuAlertes(context) ?: return@runCatching null
+        val h = Zmanim.allumage(lieu, LocalDate.now(), Store.allumage(context)).local
+            ?.withZoneSameInstant(java.time.ZoneId.systemDefault()) ?: return@runCatching null
+        h.hour * 60 + h.minute
+    }.getOrNull()
 
     /** La phrase du trophée tout proche, s'il y en a un pas encore signalé ; il est alors noté. */
     private fun tropheeProche(context: Context): String? {

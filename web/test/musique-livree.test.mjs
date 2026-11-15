@@ -46,13 +46,14 @@ test('Cloudflare Pages : la construction refuse tout fichier de plus de 25 Mio',
 });
 
 /** Un faux stockage de caches, et sw.js tel que build.mjs l'écrit, avec la liste [livres]. */
-function serviceWorker(livres, caches) {
+function serviceWorker(livres, caches, coquille = []) {
   const ecouteurs = {};
   const magasins = new Map(Object.entries(caches).map(([nom, adresses]) => [nom, new Map(adresses.map((a) => [a, new Response('x')]))]));
-  const source = lire('web/src/sw.js').replace('__VERSION__', 'essai').replace('__COQUILLE__', '[]').replace('__MUSIQUE__', JSON.stringify(livres));
+  const source = lire('web/src/sw.js').replace('__VERSION__', 'essai').replace('__COQUILLE__', JSON.stringify(coquille)).replace('__MUSIQUE__', JSON.stringify(livres));
   const demandes = [];
+  const ajoutes = [];
   vm.runInNewContext(source, {
-    URL, Response,
+    URL, Response, Request: class { constructor(url, o = {}) { this.url = url; this.cache = o.cache; } },
     fetch: async (r) => { demandes.push(typeof r === 'string' ? r : r.url); return new Response('reseau'); },
     self: {
       location: { origin: 'https://site.test' },
@@ -71,14 +72,23 @@ function serviceWorker(livres, caches) {
           delete: async (requete) => m.delete(requete.url),
           match: async (cle) => m.get(typeof cle === 'string' ? cle : cle.url),
           put: async (cle, reponse) => { m.set(cle, reponse); },
-          addAll: async () => {},
+          addAll: async (liste) => { ajoutes.push(...liste); },
         };
       },
       match: async () => undefined,
     },
   });
-  return { ecouteurs, magasins, demandes };
+  return { ecouteurs, magasins, demandes, ajoutes };
 }
+
+test('à l’installation, chaque fichier de la coquille est redemandé au serveur (FWEBCODE-03)', async () => {
+  // Sans cela, un fichier encore frais dans le cache HTTP (max-age=600) entrait périmé dans la coquille neuve.
+  const { ecouteurs, ajoutes } = serviceWorker([], {}, ['./', 'js/app.js', 'strings/strings.fr.json']);
+  let fin;
+  ecouteurs.install({ waitUntil: (p) => { fin = p; } });
+  await fin;
+  assert.deepEqual(ajoutes.map((r) => [r.url, r.cache]), [['./', 'no-cache'], ['js/app.js', 'no-cache'], ['strings/strings.fr.json', 'no-cache']]);
+});
 
 test('le service worker retire de son cache les morceaux que le site ne livre plus', async () => {
   const base = 'https://site.test/app/musique/';

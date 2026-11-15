@@ -2,7 +2,7 @@
 
 L'application MyHitbodedut pour les téléphones à touches qui acceptent les applications Java (Java ME : MIDP 2.0, CLDC 1.1), dont le **Nokia 3310 3G de 2017**. C'est une version à part de l'application Android : hitbodedout minutée, textes de ’hizouk en français, journal, un niggoun d'essai, un rappel quotidien. Dans « Vous appeler », choisir **Tsadeket** pour avoir le personnage au féminin. Sans Internet.
 
-Ce dépôt ne contient que le fichier à installer. Il est reconstruit automatiquement depuis [myhitbo/MyHitbodedut](https://github.com/myhitbo/MyHitbodedut) (dossier `nokia/`) à chaque modification ; ne pas le modifier à la main.
+Ce dépôt ne contient que le fichier à installer. Il est reconstruit automatiquement à chaque modification de l'application ; ne pas le modifier à la main.
 
 ## Installer
 

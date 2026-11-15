@@ -35,6 +35,16 @@ class JourCorrigeTest {
     }
 
     @Test
+    fun `retirer une journee garde la ligne de son humeur ou de sa gratitude (FDONNEES-14)`() {
+        val c = Store.jourCorrige(jour, "2026-11-10", 0, garde = true)!!
+        assertEquals("", c.note)
+        assertTrue(c.noteSeule)
+        assertFalse(c.faite)
+        assertTrue(File("src/main/java/com/myhitbodedut/Store.kt").readText()
+            .contains("jourCorrige(existant, date, minutes, garde = !JournalPlus.lire(context, date).vide)"))
+    }
+
+    @Test
     fun `le dialogue d un jour fait propose la correction et le retrait avec confirmation`() {
         val src = File("src/main/java/com/myhitbodedut/AjoutTemps.kt").readText()
         assertTrue(src.contains("jour_corriger_duree"))

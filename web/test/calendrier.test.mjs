@@ -249,6 +249,12 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   // Les Edot disent ברכנו / ברך עלינו ; les autres noussa'h ותן ברכה / ותן טל ומטר.
   assert.ok(A.ajouts(jour('2026-10-12', false).conditions, 'ashkenaz').includes('ajout_berakha'));
   assert.ok(A.ajouts(jour('2026-12-07', false).conditions).includes('ajout_barekh_alenou'));
+  // Un Yom Tov en semaine et Kippour : pas de 9e bénédiction de semaine (FCALENDRIER-12).
+  for (const iso of ['2027-04-22', '2026-09-21']) {
+    assert.ok(!A.ajouts(jour(iso, false).conditions).some((k) => ['ajout_barkhenou', 'ajout_berakha', 'ajout_barekh_alenou', 'ajout_tal_oumatar'].includes(k)), iso);
+    // Ni « Pas de Ta'hanoun », comme le Chabbat.
+    assert.ok(!A.ajouts(jour(iso, false).conditions).some((k) => k.includes('tahanoun')), iso);
+  }
   assert.ok(!A.ajouts(jour('2026-10-10', false).conditions).some((k) => ['ajout_barkhenou', 'ajout_berakha'].includes(k)));
   // Le nusah (JourAfficheTest) : bénédiction du Hallel partiel (OC 422:2),
   // Morid hatal ashkénaze hors d'Israël, Anénou du particulier (OC 565:3).
@@ -285,6 +291,13 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   for (const d of ['2026-12-20', '2026-09-15', '2026-09-13', '2026-09-14']) assert.ok(am(d), d);
   for (const d of ['2026-12-21', '2026-09-12', '2026-09-19', '2026-09-20', '2027-08-12']) assert.ok(!am(d), d);
   assert.ok(jour('2027-08-12', true).conditions.has('ticha_beav'));
+  // À Min'ha (TSIDDUR-09) : seulement si Ta'hanoun s'y dit.
+  const amm = (d) => conditionsPour('ashkenaz', true, jour(d, true).conditions).has('avinou_malkenou_minha');
+  for (const d of ['2026-12-20', '2026-09-15']) assert.ok(amm(d), d);
+  for (const d of ['2027-03-22', '2028-09-29', '2026-12-21']) assert.ok(!amm(d), d);
+  // Roch Hachana et Kippour, sans Ta'hanoun, gardent le leur ; jamais le vendredi (relecture du 15/11).
+  for (const d of ['2026-09-13', '2028-09-21', '2026-09-21']) assert.ok(amm(d), d);
+  for (const d of ['2028-09-22', '2026-09-18']) assert.ok(!amm(d), d);
   // Lecture de la Torah (15/10) : lundi, jeudi, Chabbat, Roch 'Hodech, jeûne, 'Hol hamoed ; pas un mardi ordinaire.
   for (const d of ['2026-10-19', '2026-10-15', '2026-10-17', '2026-11-11', '2026-12-20', '2026-09-29', '2026-04-16']) assert.ok(jour(d, true).conditions.has('kriat_hatorah'), d);
   for (const d of ['2026-10-20', '2026-10-21', '2026-10-23']) assert.ok(!jour(d, true).conditions.has('kriat_hatorah'), d);
@@ -365,6 +378,11 @@ test('siddour : la suggestion suit les zmanim du lieu, rien dans les creux', asy
   assert.equal(A.momentDuSiddour(jer, d('tset', 60)), 'arvit');
   assert.equal(A.momentDuSiddour(jer, new Date('2026-10-16T22:45:00+03:00')), 'chema_coucher');
   assert.equal(A.momentDuSiddour(jer, new Date('2026-10-16T02:00:00+03:00')), 'tikoun_hatsot');
+  // Londres au solstice : pas d'aube, mais chki'a et tsét existent (FCALENDRIER-08).
+  const londres = { nom: 'L', latitude: 51.5074, longitude: -0.1278, altitude: 0, fuseau: 'Europe/London' };
+  assert.equal(A.momentDuSiddour(londres, new Date('2027-06-21T18:45:00+01:00')), 'minha');
+  assert.equal(A.momentDuSiddour(londres, new Date('2027-06-21T09:00:00+01:00')), 'chaharit');
+  assert.equal(A.momentDuSiddour(londres, new Date('2027-06-21T00:30:00+01:00')), 'chema_coucher');
   const tromso = { nom: 'T', latitude: 69.6492, longitude: 18.9553, altitude: 0, fuseau: 'Europe/Oslo' };
   assert.equal(A.momentDuSiddour(tromso, new Date('2026-06-21T14:00:00+02:00')), SiddurMoment.suggestion(14, 0));
 });

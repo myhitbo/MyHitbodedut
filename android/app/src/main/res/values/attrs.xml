@@ -24,6 +24,7 @@
     <attr name="mhPaper" format="color" />
     <attr name="mhCard" format="color" />
     <attr name="mhLine" format="color" />
+    <attr name="mhNavPastille" format="color" />
     <attr name="mhInk" format="color" />
     <attr name="mhMuted" format="color" />
     <attr name="mhDayTodo" format="color" />

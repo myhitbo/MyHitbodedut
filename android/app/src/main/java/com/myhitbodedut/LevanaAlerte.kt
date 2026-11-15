@@ -41,7 +41,8 @@ object LevanaAlerte {
         repeat(3) {
             val f = Levana.fenetre(date, zone, usage)
             for ((d, soir) in soirs(f, maintenant.toLocalDate(), zone)) {
-                val quand = heure(d)
+                // Pas avant l'ouverture réelle de la fenêtre, qui peut tomber tard dans la nuit (FCALENDRIER-10).
+                val quand = heure(d).let { h -> if (h.toInstant().isBefore(f.debut)) f.debut.atZone(zone) else h }
                 if (quand.isAfter(maintenant) && !quand.toInstant().isAfter(f.fin)) return quand to soir
             }
             date = f.dernierSoir(zone).plusDays(1)

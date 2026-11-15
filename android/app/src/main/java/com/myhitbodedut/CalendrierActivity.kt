@@ -179,7 +179,7 @@ class CalendrierActivity : AppCompatActivity() {
                             setColor(if (j.chome) ColorUtils.setAlphaComponent(brand, 0x1A) else 0)
                             if (d == choisi) setStroke(dp(2), brand)
                         }, dp(2), 0, dp(2), 0)
-                        contentDescription = listOf(d.toString(), j.dateHebraique).plus(
+                        contentDescription = listOf(VueJour.dateCivile(this@CalendrierActivity, d), j.dateHebraique).plus(
                             j.fetes.mapNotNull { Libelles.res("fete_$it")?.let(::getString) }).joinToString(" · ")
                         setOnClickListener { choisi = d; afficher() }
                     })

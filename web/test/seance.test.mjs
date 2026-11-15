@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DanseMesure, SessionRule } from '../src/js/seance.js';
@@ -242,7 +242,64 @@ test('toute séance inscrite propose la note après le bravo, comme sur Android'
   assert.match(hors, /if \(date === aujourdhui\) \{[^}]*dateNote = date;[^}]*noteApresBravo = true;/s);
 });
 
+test('la fin de séance se lit dans le stockage, les feuilles périmées se ferment (FWEBCODE-10, FWEBCODE-11)', () => {
+  // Une page rechargée pendant la séance n'a plus le drapeau en mémoire : le tic lit le stockage.
+  const tic = appSource.slice(appSource.indexOf('function demarreTic'), appSource.indexOf('function arreteTic'));
+  assert.match(tic, /if \(store\.isSessionOver\(\)\) \{\s*cloreSeance\(\{ avantTerme: false \}\);/);
+  assert.doesNotMatch(tic, /etaitEnCours/);
+  const clore = appSource.slice(appSource.indexOf('function cloreSeance'), appSource.indexOf('function terminerMaintenant'));
+  assert.match(clore, /^function cloreSeance\(\{ avantTerme \}\) \{\s*fermeLesFeuilles\(\);/);
+  // « Abandonner ? » confirmé après le terme : la séance est déjà inscrite, le bravo reste.
+  for (const nom of ['function terminerMaintenant', 'function annulerSeance']) {
+    const i = appSource.indexOf(nom);
+    assert.match(appSource.slice(i, appSource.indexOf('\n}\n', i)), /if \(store\.sessionStartedAt\(\) === 0\) \{ rendre\(\); return; \}/, nom);
+  }
+  assert.match(appSource, /addEventListener\('popstate', \(\) => \{\s*fermeLesFeuilles\(\);/);
+  // Le retour ferme les feuilles : la note du bravo n'est ouverte qu'après lui.
+  const bravo = appSource.slice(appSource.indexOf('function ecranBravo'), appSource.indexOf('// Un jour la danse'));
+  assert.match(bravo, /if \(note && parHistorique\) addEventListener\('popstate', note, \{ once: true \}\);\s*retour\(\);/);
+});
+
+test('lecture en échec, page rechargée, langue changée : rien ne reste dans l’état d’avant (FWEBLIVE-06, FWEBCODE-11, FWEBCODE-15)', () => {
+  // La fin d'un aperçu relance la musique de la séance après l'écouteur aléatoire, pas avant (FWEBCODE-14).
+  const fin = appSource.slice(appSource.indexOf("lecteur.addEventListener('ended', () => {\n  const apercu"), appSource.indexOf("lecteur.addEventListener('pause'"));
+  assert.match(fin, /setTimeout\(\(\) => \{ if \(store\.isSessionRunning\(\) && enEcoute === null\) demarreMusique\(\); \}, 0\)/);
+  const echec = appSource.slice(appSource.indexOf('function echecLecture'), appSource.indexOf('function metadonnees'));
+  assert.match(echec, /lecteur\.pause\(\);\s*lecteur\.removeAttribute\('src'\);\s*lecteur\.load\(\);\s*majMini\(\);/);
+  const demarrer = appSource.slice(appSource.indexOf('async function demarrer'), appSource.indexOf('// Le premier lancement'));
+  assert.match(demarrer, /rendre\(\);[\s\S]*if \(store\.isSessionRunning\(\)\) gardeEcranAllume\(\);/);
+  const reglages = appSource.slice(appSource.indexOf('function ecranReglages'), appSource.indexOf("tr.t('reglage_lieu'), etat"));
+  assert.match(reglages, /mini\?\.remove\(\); mini = null;/);
+  // La région reste celle des réglages : troisième argument null.
+  assert.match(reglages, /store\.setLieu\(\{ \.\.\.lieu, nom: titreTexte\(ville\.nom\) \}, ville, null\);/);
+});
+
 test('le site ne promet pas un son de fin qu’il ne joue pas', () => {
   assert.doesNotMatch(appSource, /tr\.t\('session_hidden_caption'\)/);
   assert.match(appSource, /tr\.t\('session_hidden_caption_web'\)/);
+});
+
+// « Terminer » appelait SessionRule sans l'importer : ReferenceError au toucher, la séance
+// ne se terminait plus depuis le site (relecture du lot « séance », FSEANCE-12).
+test('app.js importe chaque objet de règles qu’il appelle', () => {
+  const dossier = join(ICI, '..', 'src', 'js');
+  const importes = new Set();
+  for (const m of appSource.matchAll(/^import\s*\{([^}]*)\}\s*from/gm)) {
+    for (const nom of m[1].split(',')) {
+      const t = nom.trim().split(/\s+as\s+/).pop();
+      if (t) importes.add(t);
+    }
+  }
+  for (const m of appSource.matchAll(/^import\s+\*\s+as\s+(\w+)/gm)) importes.add(m[1]);
+  const declares = new Set([...appSource.matchAll(/^\s*(?:const|let|var|function|class)\s+([A-Z]\w*)/gm)].map((m) => m[1]));
+  const manquants = [];
+  for (const fichier of readdirSync(dossier).filter((f) => f.endsWith('.js') && f !== 'app.js')) {
+    const source = readFileSync(join(dossier, fichier), 'utf8');
+    for (const m of source.matchAll(/^export\s+(?:const|class|function)\s+([A-Z]\w*)/gm)) {
+      const nom = m[1];
+      if (importes.has(nom) || declares.has(nom)) continue;
+      if (new RegExp(`(?<![.\\w$'"\`])${nom}\\.\\w`).test(appSource)) manquants.push(`${nom} (${fichier})`);
+    }
+  }
+  assert.deepEqual(manquants, []);
 });

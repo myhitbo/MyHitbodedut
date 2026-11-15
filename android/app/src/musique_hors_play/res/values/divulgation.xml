@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Construction hors Play seule : Android grise l'accès sur une application installée hors boutique (FBARRIERE-21). -->
+    <string name="divulgation_restreints">Interrupteur grisé ? Informations sur l’application → menu ⋮ → « Autoriser les paramètres restreints », puis revenez ici.</string>
+</resources>

@@ -126,8 +126,8 @@ class MusicFilesTest {
                 "sélection et de laisser le reste dans musique/, que " +
                 "MusicActivity sait déjà ouvrir depuis le téléphone — pas de " +
                 "relever une quatrième fois, et surtout pas de télécharger à " +
-                "la demande : l'application ne déclare aucune permission " +
-                "INTERNET, et c'est une propriété revendiquée.",
+                "la demande : l'édition complète ne déclare INTERNET que pour le " +
+                "vol en ligne, et c'est une propriété revendiquée.",
             mo < 150.0,
         )
     }
