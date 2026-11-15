@@ -55,9 +55,11 @@ def developpe(texte):
         compte += 1
         return _nom(m.group(1), v)
 
-    # יְיָ (vocalisé) ou יי (nu), mot entier, préfixes permis. Pas le yiddish « בַּיי שְׁטֵיין »
-    # (« se tenir auprès », tkhine de l'allumage, Sfard et Ashkenaz), devenu « בַּיהֹוָה » (relecture du 15/11).
-    t = re.sub(DEBUT + PREFIXE + "יְ?" + "י" + "ָ?" + SIGNES + FIN + rf"(?!\s+ש{SIGNES}ט{SIGNES}י{SIGNES}י{SIGNES}ן)", remplace, t)
+    # Le yiddish « בַּיי שְׁטֵיין » (« assister », tkhine de l'allumage, Sfard et Ashkenaz) n'est pas
+    # le Nom : écrit en un mot, comme en yiddish (בײַשטיין), il n'est plus pris pour יי (relecture du 15/11).
+    t = re.sub(f"(ב{SIGNES}יי)\\s+(ש{SIGNES}ט{SIGNES}י{SIGNES}י{SIGNES}ן)", r"\1\2", t)
+    # יְיָ (vocalisé) ou יי (nu), mot entier, préfixes permis.
+    t = re.sub(DEBUT + PREFIXE + "יְ?" + "י" + "ָ?" + SIGNES + FIN, remplace, t)
     # ה' / ה׳ : un hé seul suivi d'un geresh, qui n'est pas un sigle (ה״ / ה'' / ה"…).
     t = re.sub(DEBUT + PREFIXE + "ה['׳](?![\"'״])", remplace, t)
 
