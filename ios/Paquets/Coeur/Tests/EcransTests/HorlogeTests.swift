@@ -24,19 +24,21 @@ struct HorlogeTests {
     @Test func aujourdhuiEstLeJourDuFuseauDuTelephone() throws {
         let jour = try #require(JourCivil(iso: "2026-11-13"))
         let instant = Fuseau.utc.millis(DateHeure(jour, heure: 22, minute: 30))
+        let fuseau = try jerusalem()
         // À 22 h 30 UTC, il est 0 h 30 le lendemain à Jérusalem (UTC+2 en novembre).
-        let aJerusalem = HorlogeFixe(maintenant: instant, fuseau: try jerusalem()).aujourdhui
+        let aJerusalem = HorlogeFixe(maintenant: instant, fuseau: fuseau).aujourdhui
         #expect(aJerusalem.iso == "2026-11-14")
         let enUTC = HorlogeFixe(maintenant: instant).aujourdhui
         #expect(enUTC.iso == "2026-11-13")
-        let heure = HorlogeFixe(maintenant: instant, fuseau: try jerusalem()).dateHeure.description
+        let heure = HorlogeFixe(maintenant: instant, fuseau: fuseau).dateHeure.description
         #expect(heure == "2026-11-14T00:30:00")
     }
 
     @Test func uneHeureCivileDuFuseauDonneSonInstant() throws {
         let jour = try #require(JourCivil(iso: "2026-07-01"))
         let civile = DateHeure(jour, heure: 8, minute: 15)
-        let horloge = HorlogeFixe(civile, fuseau: try jerusalem())
+        let fuseau = try jerusalem()
+        let horloge = HorlogeFixe(civile, fuseau: fuseau)
         #expect(horloge.dateHeure == civile)
         // L'été, Jérusalem est à UTC+3.
         let utc = Fuseau.utc.dateHeure(millis: horloge.maintenant).description
@@ -57,7 +59,8 @@ struct HorlogeTests {
 
     @Test func uneHorlogeSInjecteParSonProtocole() throws {
         let jour = try #require(JourCivil(iso: "2027-03-26"))
-        let horloges: [any Horloge] = [HorlogeFixe(DateHeure(jour, heure: 12), fuseau: try jerusalem()), HorlogeSysteme()]
+        let fuseau = try jerusalem()
+        let horloges: [any Horloge] = [HorlogeFixe(DateHeure(jour, heure: 12), fuseau: fuseau), HorlogeSysteme()]
         let premier = horloges[0].aujourdhui
         #expect(premier == jour)
     }

@@ -51,6 +51,8 @@ let enChantierEcransTests: [String] = [
     "Fichiers.swift",
     "HorlogeTests.swift",
     "MagasinTests.swift",
+    "OngletsTests.swift",
+    "ServicesTests.swift",
     "TraducteurTests.swift",
 ]
 let enChantierVues: [String] = [

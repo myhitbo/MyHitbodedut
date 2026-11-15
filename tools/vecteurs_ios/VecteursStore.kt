@@ -500,6 +500,7 @@ object VecteursStore : Generateur {
             Triple(" s:x", t0, t0 + 10 * h), Triple("l:x", -1L, Long.MIN_VALUE), Triple("s:x", Long.MIN_VALUE, Long.MAX_VALUE),
             Triple("s:x", Long.MAX_VALUE, Long.MIN_VALUE), Triple("s:x", 1L, Long.MIN_VALUE), Triple("s:x", Long.MAX_VALUE - 5, Long.MAX_VALUE),
             Triple("s:\u05EA\u05E4\u05D9\u05DC\u05D4", t0, t0 + h), Triple("s:x", t0, t0 + 3 * h - 1), Triple("s:x", t0, t0 + 3 * h + 1),
+            Triple("s:chaharit", 0L, 60_000L), Triple("s:x", 0L, 0L),
         )
         return cas.map { (cle, quand, maintenant) ->
             linkedMapOf("cle" to cle, "quand" to quand, "maintenant" to maintenant, "valable" to Store.repriseValable(cle, quand, maintenant))

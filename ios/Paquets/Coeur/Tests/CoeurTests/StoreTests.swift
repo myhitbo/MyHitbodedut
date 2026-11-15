@@ -607,7 +607,7 @@ struct StoreTests {
 
     @Test func laRepriseDeLectureCommeAndroid() throws {
         let cas = try fichier().reprises
-        #expect(cas.count == 25)
+        #expect(cas.count == 27)
         for c in cas {
             let valable = Store.repriseValable(c.cle, quand: c.quand, maintenant: c.maintenant)
             #expect(valable == c.valable, "\(c.cle) \(c.quand) \(c.maintenant)")
