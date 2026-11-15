@@ -67,7 +67,7 @@ test('Birkat haMazon : psaumes d\'avant repliés ; bénédictions et הרחמן 
     blocs.forEach((b, i) => {
       if (!b.t || !nu(b.t).startsWith('הרחמן')) return;
       const e = notes.get(i);
-      assert.ok(!e || ['chabbat', 'roch_hodech', 'roch_hachana', 'soukkot', 'moed', 'yom_tov', 'cheva_berakhot', 'oubli'].includes(e.racine), `${nusah} : הרחמן ${i} sous ${e?.racine}`);
+      assert.ok(!e || ['chabbat', 'roch_hodech', 'roch_hachana', 'soukkot', 'moed', 'yom_tov', 'cheva_berakhot', 'oubli', 'pourim_triple_festin'].includes(e.racine), `${nusah} : הרחמן ${i} sous ${e?.racine}`);
     });
     const shabbat = blocs.findIndex((b) => b.t && /שכלו שבת/.test(nu(b.t)));
     if (shabbat >= 0) {

@@ -103,6 +103,7 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   const dimanchePourimTriple = semaine === 0 && regles.getJewishDayOfMonth() === 16
     && regles.getJewishMonth() === (regles.isJewishLeapYear() ? JewishDate.ADAR_II : JewishDate.ADAR);
   const festinJerusalem = mukafChoma && dimanchePourimTriple;
+  si(festinJerusalem, 'pourim_triple_festin');
   si(enIsrael && !mukafChoma && dimanchePourimTriple, 'pourim_triple_hors_jerusalem');
   const tahanoun = T.isTachanunRecitedShacharis(regles) && regles.getYomTovIndex() !== JewishCalendar.EREV_ROSH_HASHANA && !festinJerusalem;
   si(tahanoun, C.TAHANOUN_CHAHARIT);

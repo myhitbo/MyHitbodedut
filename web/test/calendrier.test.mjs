@@ -327,6 +327,9 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   for (const n of ['edot', 'sefard']) assert.ok(A.ajouts(triple, n, true).includes('ajout_tahanoun'), n);
   assert.ok(A.ajouts(jour('2025-03-16', false).conditions, 'ashkenaz', false).includes('ajout_tahanoun'));
   assert.ok(A.ajouts(jour('2025-03-16', true, true).conditions, 'ashkenaz', true).includes('ajout_sans_tahanoun'));
+  // Le festin du dimanche à Jérusalem : « על הנסים » dans un « הרחמן » (Edot, Yalkut Yosef 688:6, § 15) ; seulement là.
+  assert.ok(jour('2025-03-16', true, true).conditions.has('pourim_triple_festin') && !triple.has('pourim_triple_festin'));
+  assert.ok(!jour('2025-03-15', true, true).conditions.has('pourim_triple_festin') && !jour('2025-03-16', false).conditions.has('pourim_triple_festin'));
   const chaines = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'), 'utf8');
   for (const n of ['edot', 'sefard', 'ashkenaz']) {
     for (const k of [...A.ajouts(rc, n), ...A.ajouts(jeune, n), ...A.ajouts(ete, n), ...A.ajouts(av, n)]) assert.ok(chaines.includes(`name="${k}"`), k);

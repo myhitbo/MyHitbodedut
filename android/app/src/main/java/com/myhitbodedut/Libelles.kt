@@ -32,6 +32,7 @@ object Libelles {
         "ajout_embolismique" -> R.string.ajout_embolismique
         "ajout_embolismique_avant_nissan" -> R.string.ajout_embolismique
         "ajout_esther_pourim" -> R.string.ajout_esther_pourim
+        "ajout_pourim_triple_festin" -> R.string.ajout_pourim_triple_festin
         "ajout_facultatif" -> R.string.ajout_facultatif
         "ajout_facultatif_apres" -> R.string.ajout_facultatif_apres
         "ajout_facultatif_avant" -> R.string.ajout_facultatif_avant
