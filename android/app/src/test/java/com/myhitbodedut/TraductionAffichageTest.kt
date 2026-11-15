@@ -95,7 +95,13 @@ class TraductionAffichageTest {
     @Test
     fun `aucun titre de morceau ne reste en francais`() {
         listOf("values", "values-en", "values-iw").forEach { d ->
-            assertFalse("$d : « titre à préciser »", lire("src/main/res/$d/strings.xml").contains("titre à préciser"))
+            val xml = lire("src/main/res/$d/strings.xml")
+            assertFalse("$d : « titre à préciser »", xml.contains("titre à préciser"))
+            // Audit du 12/11 (TFRLANGUE-10, TFRLANGUE-13) : ni note d'atelier ni apostrophe droite dans un titre affiché.
+            Regex("""<string name="track_[a-z_0-9]+"[^>]*>[^<]*</string>""").findAll(xml).map { it.value }.forEach { t ->
+                assertFalse("$d : note d'atelier dans $t", t.contains("incertain"))
+                assertFalse("$d : apostrophe droite dans $t", t.contains("\\'"))
+            }
         }
         val en = lire("src/main/res/values-en/strings.xml")
         assertTrue(en.contains("""<string name="track_niggoun_01">Niggun 01</string>"""))
