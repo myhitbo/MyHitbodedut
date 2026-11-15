@@ -843,6 +843,8 @@ LIBELLES_CONSIGNE = {"jeune": JEUNE, "!chabbat": "ajout_chol"}
 CONSIGNES_COURTES = [
     # Le Birkat hamazone (relevé du 19/10) : les psaumes d'avant, les « הרחמן » des fêtes,
     # les bénédictions de qui a oublié רצה ou יעלה ויבא.
+    # Le festin du dimanche 16 Adar à Jérusalem, Pourim triple (14/11, tools/siddur_harahaman_pourim.py).
+    (r"בסעודת פורים ביום ראשון ט״ז באדר בירושלים.*", "pourim_triple_festin"),
     (r"בחול קודם ברכת המזון אומרים:?", "!chabbat"),
     (r"בשבת קודם ברכת המזון אומרים:?", "chabbat"),
     (r"(בראש חודש|בר״ח) שחל בשבת:?", "chabbat_roch_hodech"),

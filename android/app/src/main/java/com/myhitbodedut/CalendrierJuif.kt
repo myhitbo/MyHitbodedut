@@ -85,6 +85,8 @@ object CalendrierJuif {
          * Ta'hanoun (Halikhot Chlomo 22:8 ; SiddurJour.conditionsPour), Edot et Sfard le disent (Yalkut Yosef).
          */
         const val POURIM_TRIPLE_HORS_JERUSALEM = "pourim_triple_hors_jerusalem"
+        /** Le même dimanche à Jérusalem, jour du festin : « על הנסים » dans un « הרחמן » (Edot, Yalkut Yosef 688:6, § 15). */
+        const val POURIM_TRIPLE_FESTIN = "pourim_triple_festin"
         const val CHIVA_ASSAR_TAMOUZ = "chiva_assar_tamouz"
         /**
          * Les deux jours de bascule (audit du 16/10) : le 22 Tichri, Cha'harit dit מוריד הטל et
@@ -133,7 +135,7 @@ object CalendrierJuif {
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
-                POURIM_TRIPLE_HORS_JERUSALEM)
+                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN)
     }
 
     /**
@@ -272,6 +274,7 @@ object CalendrierJuif {
             val dimanchePourimTriple = semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
                 regles.jewishMonth == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)
             val festinJerusalem = mukafChoma && dimanchePourimTriple
+            if (festinJerusalem) add(C.POURIM_TRIPLE_FESTIN)
             if (enIsrael && !mukafChoma && dimanchePourimTriple) add(C.POURIM_TRIPLE_HORS_JERUSALEM)
             val tahanoun = tefila.isTachanunRecitedShacharis(regles) &&
                 regles.yomTovIndex != JewishCalendar.EREV_ROSH_HASHANA && !festinJerusalem

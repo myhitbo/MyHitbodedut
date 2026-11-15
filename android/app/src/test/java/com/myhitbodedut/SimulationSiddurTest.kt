@@ -76,7 +76,11 @@ class SimulationSiddurTest {
         // Les Amidot, et le Moussaf de Roch 'Hodech.
         Regle(AMIDOT, "יעלה ויבא", si(C.YAALE_VEYAVO)),
         Regle(AMIDOT + "moussaf_rosh_hodech" + "birkat_hamazon", "בימי מתתיהו בן יוחנן", { C.HANOUKA in it && C.AL_HANISSIM in it }),
-        Regle(AMIDOT + "birkat_hamazon", "בימי מרדכי ואסתר בשושן", { C.POURIM in it && C.AL_HANISSIM in it }),
+        Regle(AMIDOT, "בימי מרדכי ואסתר בשושן", { C.POURIM in it && C.AL_HANISSIM in it }),
+        Regle(setOf("birkat_hamazon"), "בימי מרדכי ואסתר בשושן", { C.POURIM in it && C.AL_HANISSIM in it }, setOf(Nusah.SEFARD, Nusah.ASHKENAZ)),
+        // Edot : aussi dans le « הרחמן » du festin du dimanche à Jérusalem, Pourim triple (Yalkut Yosef 688:6, § 15).
+        Regle(setOf("birkat_hamazon"), "בימי מרדכי ואסתר בשושן", { (C.POURIM in it && C.AL_HANISSIM in it) || C.POURIM_TRIPLE_FESTIN in it }, setOf(Nusah.EDOT)),
+        Regle(setOf("birkat_hamazon"), "הרחמן הוא יעשה לנו נסים ונפלאות", si(C.POURIM_TRIPLE_FESTIN), setOf(Nusah.EDOT)),
         Regle(AMIDOT + "moussaf_rosh_hodech", "ועל כלם", TOUJOURS),
         Regle(AMIDOT + "moussaf_rosh_hodech", "הטוב שמך ולך נאה להודות", TOUJOURS),
         Regle(AMIDOT, "המלך הקדוש", si(C.ASSERET_YEMEI_TECHOUVA)),
