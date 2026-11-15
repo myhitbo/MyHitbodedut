@@ -65,6 +65,39 @@ public enum Kotlin {
         Int(versInt32(x))
     }
 
+    /// `Long.toInt()` : les 32 bits du bas, comme la JVM (aucun arrêt au débordement).
+    public static func versInt(long x: Int64) -> Int {
+        Int(Int32(truncatingIfNeeded: x))
+    }
+
+    /// `String.toIntOrNull()` : un signe au plus, puis des chiffres décimaux de n'importe quelle écriture
+    /// (`Character.digit` de Java : « ٣ » et « ３ » valent 3), lus par unités UTF-16 ; nil hors de 32 bits.
+    /// `Int("٣")` de Swift rend nil.
+    public static func versIntOuNil(_ texte: String) -> Int? {
+        let unites = Array(texte.utf16)
+        guard let premiere = unites.first else { return nil }
+        var debut = 0
+        var negatif = false
+        if premiere < 0x30 {
+            guard unites.count > 1 else { return nil }
+            if premiere == 0x2D {
+                negatif = true
+            } else if premiere != 0x2B {
+                return nil
+            }
+            debut = 1
+        }
+        let limite: Int64 = negatif ? 2_147_483_648 : 2_147_483_647
+        var valeur: Int64 = 0
+        for unite in unites[debut...] {
+            guard let scalaire = Unicode.Scalar(unite), scalaire.properties.numericType == .decimal,
+                  let chiffre = scalaire.properties.numericValue else { return nil }
+            valeur = valeur * 10 + Int64(chiffre)
+            if valeur > limite { return nil }
+        }
+        return Int(negatif ? -valeur : valeur)
+    }
+
     /// `Double.toLong()` : vers zéro, borné à 64 bits, NaN donne 0.
     public static func versLong(_ x: Double) -> Int64 {
         if x.isNaN { return 0 }

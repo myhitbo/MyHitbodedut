@@ -134,6 +134,7 @@ Tout se vérifie sur Linux. Une tâche est finie quand les tests nommés, porté
 
 - **Sources** : `SessionRule.kt`, `DureeSeance.kt`, `Store.kt` (série, semaine, exemptions, fenêtre de nuit, jour du Tikoun), `Anneaux.kt`, `JaugeSemaine.kt`, `BilanSemaine.kt`, `Plaque.kt`, `Salutation.kt`, `Character.kt`, `Theme.kt`, `Adresse.kt`, `AjoutTemps.kt`.
 - **Critère de fin** : portés et verts : `SessionRuleTest`, `DureeSeanceTest`, `DureeCourteTest`, `FiabiliteTest`, `AnneauxTest`, `JaugeSemaineTest`, `PlaqueTest`, `SalutationTest`, `ThemeTest`, `AdresseTest`, `VoyageNuitTest`, `RepriseBoussoleTest` (bascule à 4 h).
+- **Fait ainsi** : `Seance.swift`, `Anneaux.swift`, `Accueil.swift`, `Sujets.swift`, `Pratique.swift` (les règles de `Store.kt`, le jour et l'heure en argument) ; `ReminderRule.prochainDeclenchement`, `ZmanimVignette` (prochain changement, jour hébreu) et `Boussole.capDevant`, que ces tests appellent, sont portés ici et seront complétés aux tâches 12 et 25. `VecteursPratique.kt` fait répondre Android sur des balayages larges (`pratique.json`). Les tests qui lisent le code, les layouts ou le manifeste d'Android y restent ; les libellés sont cherchés dans le catalogue exporté. `BilanSemaine` (il compte les trophées) et les images d'une entrée de bibliothèque ou d'un moment de 'hizouk passent à la tâche 9.
 
 ### 9. Paliers, trophées, 'hizouk, règles de texte
 
