@@ -52,7 +52,8 @@ object ZmanimVignette {
      * FVOL-05 : la fin de Cha'harit avant, quand Min'ha s'affichait dès ce moment), la chki'a.
      */
     fun debut(priere: String, horaires: Map<String, ZonedDateTime?>): ZonedDateTime? = when (priere) {
-        "chaharit" -> horaires["alot"]
+        // Sans aube (Londres, Berlin, Moscou autour du solstice, FCALENDRIER-08) : comme ZmanimWidget.prochaine.
+        "chaharit" -> horaires["alot"] ?: horaires["misheyakir"] ?: horaires["netz"]
         "minha" -> horaires["minha_gedola"] ?: horaires["szt_gra"]
         else -> horaires["chkia"]
     }

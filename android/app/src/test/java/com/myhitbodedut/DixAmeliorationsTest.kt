@@ -62,6 +62,13 @@ class DixAmeliorationsTest {
         assertEquals(ZmanimWidget.Moment("arvit", t(0, 50)), ZmanimWidget.prochaine(nuit, t(0, 20)))
         assertEquals(ZmanimWidget.Moment("arvit", null), ZmanimWidget.prochaine(nuit, t(2, 0)))
         assertEquals(ZmanimWidget.Moment("chaharit", t(10, 30)), ZmanimWidget.prochaine(nuit, t(6, 0)))
+        // Sans aube (Londres au solstice, FCALENDRIER-08) : michéyakir, puis le lever, bornent la nuit, et la jauge part de là.
+        val sansAube = nuit - "alot" + ("misheyakir" to t(5, 40)) + ("netz" to t(6, 10))
+        assertEquals(ZmanimWidget.Moment("arvit", t(0, 50)), ZmanimWidget.prochaine(sansAube, t(0, 20)))
+        assertEquals(ZmanimWidget.Moment("chaharit", t(10, 30)), ZmanimWidget.prochaine(sansAube, t(6, 0)))
+        assertEquals(t(5, 40), ZmanimVignette.debut("chaharit", sansAube))
+        assertEquals(ZmanimWidget.Moment("arvit", t(0, 50)), ZmanimWidget.prochaine(sansAube - "misheyakir", t(0, 20)))
+        assertEquals(t(6, 10), ZmanimVignette.debut("chaharit", sansAube - "misheyakir"))
     }
 
     @Test
