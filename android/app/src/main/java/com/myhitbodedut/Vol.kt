@@ -82,6 +82,17 @@ object Vol {
         else -> null
     }
 
+    /**
+     * Une durée que la distance ne permet pas (FVOL-12) : plus de 1 100 km/h de moyenne, ou plus de
+     * deux fois la durée estimée (820 km/h + 30 min) plus 2 h. Une erreur d'AM/PM ou de fuseau ;
+     * l'écran avertit mais laisse passer (escale technique).
+     */
+    fun invraisemblable(plan: Plan): Boolean {
+        val km = distanceKm(plan)
+        val heures = Duration.between(plan.decollage, plan.atterrissage).seconds / 3600.0
+        return km > 1100.0 * heures || heures > 2 * (km / 820.0 + 0.5) + 2
+    }
+
     /** Un fuseau que l'appareil ne connaît pas (base tz trop ancienne) rend null plutôt que d'échouer. */
     fun zone(fuseau: String): ZoneId? = try { ZoneId.of(fuseau) } catch (e: RuntimeException) { null }
 

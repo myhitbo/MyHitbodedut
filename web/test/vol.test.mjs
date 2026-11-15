@@ -65,6 +65,14 @@ test('une saisie impossible est refusée', () => {
   assert.equal(Vol.verifier({ ...versOuest, arrivee: { ...a('JFK'), fuseau: 'Mars/Olympus' } }), 'fuseau_inconnu');
 });
 
+test('une durée que la distance ne permet pas est signalée (FVOL-12)', () => {
+  assert.equal(Vol.invraisemblable(versOuest), false);
+  assert.equal(Vol.invraisemblable({ ...versOuest, atterrissage: new Date(+versOuest.decollage + 25 * 60000) }), true);
+  const court = { ...versOuest, arrivee: a('LCA'), atterrissage: new Date(+versOuest.decollage + 1.5 * H) };
+  assert.equal(Vol.invraisemblable(court), false);
+  assert.equal(Vol.invraisemblable({ ...court, atterrissage: new Date(+court.decollage + 6 * H) }), true);
+});
+
 test('le fuseau nautique suit la longitude, signe inversé', () => {
   assert.equal(Vol.fuseauNautique(35), 'Etc/GMT-2');
   assert.equal(Vol.fuseauNautique(-74), 'Etc/GMT+5');

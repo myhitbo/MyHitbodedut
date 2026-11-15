@@ -50,6 +50,8 @@ class VolActivity : AppCompatActivity() {
     private var numero = ""
     private var depart: Vol.Aeroport? = null
     private var arrivee: Vol.Aeroport? = null
+    /** Le plan jugé invraisemblable pour lequel l'avertissement a déjà été donné (FVOL-12). */
+    private var avertiPour: Vol.Plan? = null
     private var decollage: LocalDateTime? = null
     private var atterrissage: LocalDateTime? = null
     private var calcul: Vol.Calcul? = null
@@ -701,6 +703,12 @@ class VolActivity : AppCompatActivity() {
         val garde = Store.vol(this, aeroports)?.takeIf { it.depart == d && it.arrivee == a && it.decollage == i1 && it.atterrissage == i2 }
         val plan = Vol.Plan(numero, d, a, i1, i2, garde?.releve, garde?.sourceReleve ?: Vol.SourceReleve.GPS)
         Vol.verifier(plan)?.let { return message(getString(invalide(it))) }
+        // Une durée que la distance ne permet pas : on avertit une fois, un second toucher passe outre (FVOL-12).
+        if (Vol.invraisemblable(plan) && avertiPour != plan.copy(releve = null)) {
+            avertiPour = plan.copy(releve = null)
+            val minutes = Duration.between(i1, i2).toMinutes().toInt()
+            return message(getString(R.string.vol_invraisemblable, Math.round(Vol.distanceKm(plan)).toString(), dureeEnMots(minutes)))
+        }
         Store.setVol(this, plan)
         Store.setVolArriveeEstimee(this, arriveeEstimee)
         modifier = false
@@ -1191,7 +1199,11 @@ class VolActivity : AppCompatActivity() {
         }
         val ecarts = c.enVol.mapNotNull { it.ecartSiRetard }.sorted()
         val median = ecarts.getOrNull(ecarts.size / 2)
-        if (median != null) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_frise_retard), 13f, R.color.muted, haut = 2))
+        if (median != null) {
+            val gps = calcul?.fiabilite != null && calcul?.fiabilite != Vol.Fiabilite.ROUTE_PREVUE
+            val signe = (if (median.isNegative) "−" else "+") + abs(median.toMinutes())
+            addView(VueJour.texte(this@VolActivity, getString(if (gps) R.string.vol_frise_retard_gps else R.string.vol_frise_retard, signe), 13f, R.color.muted, haut = 2))
+        }
         val frise = LinearLayout(this@VolActivity).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) }

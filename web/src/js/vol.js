@@ -111,6 +111,16 @@ export function verifier(plan) {
   return null;
 }
 
+/**
+ * Une durée que la distance ne permet pas (Vol.invraisemblable, FVOL-12) : plus de 1 100 km/h de
+ * moyenne, ou plus de deux fois la durée estimée (820 km/h + 30 min) plus 2 h. Avertit, sans bloquer.
+ */
+export function invraisemblable(plan) {
+  const km = distanceKm(plan.depart.latitude, plan.depart.longitude, plan.arrivee.latitude, plan.arrivee.longitude);
+  const heures = (+plan.atterrissage - +plan.decollage) / H;
+  return km > 1100 * heures || heures > 2 * (km / 820 + 0.5) + 2;
+}
+
 const rad = (d) => (d * Math.PI) / 180;
 const deg = (r) => (r * 180) / Math.PI;
 const vecteur = (lat, lon) => [Math.cos(rad(lat)) * Math.cos(rad(lon)), Math.cos(rad(lat)) * Math.sin(rad(lon)), Math.sin(rad(lat))];

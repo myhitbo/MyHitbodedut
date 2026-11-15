@@ -3447,6 +3447,8 @@ let saisieVol = null;
 /** Le dernier calcul et la saisie qui l'a produit (deux passes de vol.js : on ne recalcule pas à chaque rendu). */
 let calculVol = null;
 let cleCalculVol = null;
+/** La saisie jugée invraisemblable dont l'avertissement a déjà été donné (FVOL-12). */
+let avertiVol = null;
 let minuterieVol = null;
 /** Le formulaire déplié pour modifier le vol calculé ; replié en résumé sinon (VolActivity.modifier). */
 let modifierVol = false;
@@ -3794,7 +3796,7 @@ function friseVol(c, enVol, maintenant) {
   }
   lignes.push(point('bout', tr.t('vol_frise_atterrissage', c.plan.arrivee.iata), c.plan.atterrissage));
   return h('div', { class: 'carte carte-texte carte-vol' }, h('p', { class: 'indice' }, tr.t('vol_en_vol_titre')),
-    median !== null ? h('p', { class: 'frise-retard' }, tr.t('vol_frise_retard')) : null,
+    median !== null ? h('p', { class: 'frise-retard' }, tr.t(calculVol && calculVol.fiabilite !== 'route_prevue' ? 'vol_frise_retard_gps' : 'vol_frise_retard', `${median < 0 ? '−' : '+'}${Math.abs(Math.round(median / 60000))}`)) : null,
     h('ol', { class: 'frise' }, ...lignes));
 }
 
@@ -3853,6 +3855,15 @@ function ecranVol() {
     if (!plan) return message('vol_invalide_fuseau_inconnu');
     const faute = Vol.verifier(plan);
     if (faute) return message(`vol_invalide_${faute}`);
+    // Une durée que la distance ne permet pas : on avertit une fois, un second toucher passe outre (FVOL-12).
+    if (Vol.invraisemblable(plan)) {
+      const cle = [v.depart, v.arrivee, v.decollage, v.atterrissage].join('|');
+      if (avertiVol !== cle) {
+        avertiVol = cle;
+        const km = Math.round(Vol.distanceKm(plan.depart.latitude, plan.depart.longitude, plan.arrivee.latitude, plan.arrivee.longitude));
+        return feuille(tr.t('vol_title'), (f, fermer) => f.append(h('p', {}, tr.t('vol_invraisemblable', String(km), dureeEnMots(Math.round((+plan.atterrissage - +plan.decollage) / 60000)))), h('button', { class: 'principal', onclick: fermer }, tr.t('vol_fermer'))));
+      }
+    }
     // Le même vol, calculé à nouveau, garde son relevé GPS ; un autre vol l'efface (Store.setVol).
     const memeVol = garde && ['depart', 'arrivee', 'decollage', 'atterrissage'].every((k) => garde[k] === v[k]);
     const { releve, ...saisie } = v;

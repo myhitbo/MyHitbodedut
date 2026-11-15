@@ -1273,7 +1273,8 @@
     <string name="vol_frise_decollage">Take-off %1$s</string>
     <string name="vol_frise_atterrissage">Landing %1$s</string>
     <string name="vol_frise_maintenant">Now</string>
-    <string name="vol_frise_retard">If the flight is delayed, the times will change accordingly.</string>
+    <string name="vol_frise_retard">Calculated for the times entered. With a 30-min late departure, most of these times move by about %1$s min; the screen does not adjust by itself: edit the takeoff time.</string>
+    <string name="vol_frise_retard_gps">Calculated for the times entered. With a 30-min late arrival, most of these times move by about %1$s min; the screen does not adjust by itself: take a new position reading.</string>
     <string name="vol_fiabilite_court">📍 Estimate along the planned route</string>
     <string name="vol_comment_calcule">How is it calculated?</string>
     <string name="vol_preciser_titre">Refine the position</string>
@@ -1305,6 +1306,7 @@
     <string name="vol_invalide_arrivee_avant_depart">Arrival must come after departure: check the dates, in each airport’s local time.</string>
     <string name="vol_invalide_trop_long">More than 22 hours of flight: check the arrival date.</string>
     <string name="vol_invalide_fuseau_inconnu">This device does not know this airport’s time zone.</string>
+    <string name="vol_invraisemblable">The duration does not match the distance (%1$s km in %2$s): check the dates and AM/PM, in each airport’s local time. Tap “Calculate” again if the flight is correct.</string>
     <string name="vol_priere_titre">Current prayer</string>
     <string name="vol_jusqua">until %1$s</string>
     <string name="vol_sans_limite">until dawn, no limit shown</string>
@@ -1321,9 +1323,9 @@
     <string name="vol_lon_ouest">%1$s° W</string>
     <string name="vol_ecart">%1$s min if departure is 30 min late</string>
     <string name="vol_fiabilite_titre">Reliability</string>
-    <string name="vol_fiabilite">Estimate along the planned route (great circle, constant speed between the times entered), not the aircraft’s real position. Zmanim of the point below the aircraft, at sea level, computed on the device, without network.</string>
+    <string name="vol_fiabilite">Estimate along the planned route (great circle, constant speed between the times entered), not the aircraft’s real position. Zmanim of the point below the aircraft, at sea level, computed on the device, without network: seen from the aircraft, around 11,000 m, the sun rises earlier and sets later, by a quarter of an hour or more at mid-latitudes. Seasonal hours follow the day at that point, not the day as lived on board.</string>
     <string name="vol_reserve_haute_latitude">The route goes beyond 60° latitude: the degree-based and minute-based methods give very different times there, and some zmanim are missing.</string>
-    <string name="vol_reserve_absent">Some zmanim do not occur on part of the route (midnight sun or polar night).</string>
+    <string name="vol_reserve_absent">Some zmanim do not occur on part of the route: beyond about 50° of latitude in summer, the sun does not go low enough for dawn (16.1°) or nightfall (8.5°); closer to the poles, midnight sun or polar night.</string>
     <string name="vol_reserve_erreur">The calculation failed at a point on the route.</string>
     <string name="vol_reserve_a_rebours">The aircraft flies west faster than the sun: a zman occurs more than once.</string>
     <string name="vol_ligne_date">Date line (180th meridian) crossed around %1$s: the local date changes from %2$s to %3$s.</string>

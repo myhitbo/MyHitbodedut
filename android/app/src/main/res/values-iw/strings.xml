@@ -1318,7 +1318,8 @@
     <string name="vol_frise_decollage">המראה %1$s</string>
     <string name="vol_frise_atterrissage">נחיתה %1$s</string>
     <string name="vol_frise_maintenant">עכשיו</string>
-    <string name="vol_frise_retard">אם הטיסה תתעכב הזמנים ישתנו בהתאם</string>
+    <string name="vol_frise_retard">מחושב לפי השעות שהוזנו. אם ההמראה מתעכבת ב־30 דק׳, רוב הזמנים האלה זזים בכ־⁦%1$s⁩ דק׳; המסך אינו מתעדכן מעצמו: ערכו את שעת ההמראה.</string>
+    <string name="vol_frise_retard_gps">מחושב לפי השעות שהוזנו. אם הנחיתה מתעכבת ב־30 דק׳, רוב הזמנים האלה זזים בכ־⁦%1$s⁩ דק׳; המסך אינו מתעדכן מעצמו: מדדו את המיקום שוב.</string>
     <string name="vol_fiabilite_court">📍 הערכה לאורך המסלול המתוכנן</string>
     <string name="vol_comment_calcule">איך זה מחושב?</string>
     <string name="vol_preciser_titre">דיוק המיקום</string>
@@ -1350,6 +1351,7 @@
     <string name="vol_invalide_arrivee_avant_depart">הנחיתה חייבת לבוא אחרי ההמראה: בדקו את התאריכים, לפי השעון המקומי של כל שדה.</string>
     <string name="vol_invalide_trop_long">יותר מ־22 שעות טיסה: בדקו את תאריך הנחיתה.</string>
     <string name="vol_invalide_fuseau_inconnu">המכשיר אינו מכיר את אזור הזמן של שדה התעופה הזה.</string>
+    <string name="vol_invraisemblable">משך הטיסה אינו מתאים למרחק (⁦%1$s⁩ ק״מ ב־%2$s): בדקו את התאריכים ואת AM/PM, לפי שעון כל נמל תעופה. אם הטיסה נכונה, לחצו שוב על ״חישוב״.</string>
     <string name="vol_priere_titre">התפילה כעת</string>
     <string name="vol_jusqua">עד %1$s</string>
     <string name="vol_sans_limite">עד עלות השחר, ללא שעה מוצגת</string>
@@ -1366,9 +1368,9 @@
     <string name="vol_lon_ouest">⁦%1$s°⁩ מערב</string>
     <string name="vol_ecart">⁦%1$s⁩ דק׳ אם ההמראה מתעכבת ב־30 דק׳</string>
     <string name="vol_fiabilite_titre">אמינות</string>
-    <string name="vol_fiabilite">הערכה לפי המסלול המתוכנן (מעגל גדול, מהירות קבועה בין השעות שהוזנו), ולא לפי מיקומו האמיתי של המטוס. זמני הנקודה שמתחת למטוס, בגובה פני הים, מחושבים במכשיר, ללא רשת.</string>
+    <string name="vol_fiabilite">הערכה לפי המסלול המתוכנן (מעגל גדול, מהירות קבועה בין השעות שהוזנו), ולא לפי מיקומו האמיתי של המטוס. זמני הנקודה שמתחת למטוס, בגובה פני הים, מחושבים במכשיר, ללא רשת: מהמטוס, בגובה כ־11,000 מ׳, השמש זורחת מוקדם יותר ושוקעת מאוחר יותר, ברבע שעה או יותר בקווי רוחב בינוניים. השעות הזמניות הן לפי היום בנקודה זו, ולא לפי היום שעובר על הנוסעים במטוס.</string>
     <string name="vol_reserve_haute_latitude">המסלול עובר מעבר לקו הרוחב ⁦60°⁩: השיטות במעלות ובדקות נותנות שם שעות שונות מאוד, וחלק מהזמנים חסרים.</string>
-    <string name="vol_reserve_absent">חלק מהזמנים אינם חלים בחלק מהמסלול (שמש חצות או לילה קוטבי).</string>
+    <string name="vol_reserve_absent">חלק מהזמנים אינם חלים בחלק מהמסלול: מעל קו רוחב 50° בקירוב בקיץ, השמש אינה יורדת מספיק לעלות השחר (16.1°) או לצאת הכוכבים (8.5°); קרוב יותר לקטבים, שמש חצות או לילה קוטבי.</string>
     <string name="vol_reserve_erreur">החישוב נכשל בנקודה במסלול.</string>
     <string name="vol_reserve_a_rebours">המטוס טס מערבה מהר יותר מהשמש: זמן מסוים חל יותר מפעם אחת.</string>
     <string name="vol_ligne_date">קו התאריך (קו האורך ⁦180°⁩) נחצה בסביבות %1$s: התאריך המקומי עובר מ־%2$s ל־%3$s.</string>

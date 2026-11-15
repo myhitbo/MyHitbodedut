@@ -86,6 +86,17 @@ class VolTest {
     }
 
     @Test
+    fun `une duree que la distance ne permet pas est signalee`() {
+        assertEquals(false, Vol.invraisemblable(versOuest))
+        // 25 minutes pour la traversée : bien plus de 1 100 km/h.
+        assertEquals(true, Vol.invraisemblable(versOuest.copy(atterrissage = versOuest.decollage + Duration.ofMinutes(25))))
+        // Un vol court de 6 h (AM/PM inversé) reste sous les 22 h mais dépasse deux fois l'estimation.
+        val court = plan("TLV", "LCA", "2026-11-10T12:30", "2026-11-10T14:00")
+        assertEquals(false, Vol.invraisemblable(court))
+        assertEquals(true, Vol.invraisemblable(court.copy(atterrissage = court.decollage + Duration.ofHours(6))))
+    }
+
+    @Test
     fun `la route va d un aeroport a l autre par le grand cercle`() {
         val debut = Vol.position(versOuest, versOuest.decollage - Duration.ofHours(3))
         assertEquals(a("TLV").latitude, debut.latitude, 1e-9)
