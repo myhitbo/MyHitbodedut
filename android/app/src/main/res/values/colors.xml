@@ -76,4 +76,6 @@
     <color name="icone_fond_bordeaux">#F8E1E5</color>
     <color name="icone_fond_ambre">#FBEFD6</color>
     <color name="icone_fond_turquoise">#D9F3F5</color>
+    <color name="icone_fond_grenat">#F5E3DF</color>
+    <color name="icone_fond_or">#F6EBCB</color>
 </resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    La typographie Souffle (14/11), choisie dans les réglages ou par un
+    habillage. Elle se pose sur le thème comme une palette, au moment où
+    chaque écran se crée (Apparence).
+
+    Le texte courant prend Open Sans par android:fontFamily au niveau du
+    thème : toute vue qui ne fixe pas sa police la reçoit. Les vues qui
+    fixent la leur (hébreu des textes saints, lignes d'état en Varela Round)
+    la gardent. Pas d'attribut fontFamily d'AppCompat ici : il passerait
+    devant les polices fixées par les vues.
+
+    Bellefair n'a pas de chiffres à chasse fixe : le minuteur de la séance
+    reste dans la police du texte, sans quoi il tremblerait chaque seconde.
+-->
+<resources>
+    <!-- Les grands titres, avec la police du téléphone : en gras, comme avant. -->
+    <style name="Titre.Systeme" parent="">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Les grands titres en Bellefair, qui n'a qu'une graisse : pas de gras simulé. -->
+    <style name="Titre.Souffle" parent="">
+        <item name="android:fontFamily">@font/bellefair</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Police.Souffle" parent="">
+        <item name="android:fontFamily">@font/open_sans</item>
+        <item name="mhPoliceBouton">@font/open_sans_semibold</item>
+        <item name="mhStyleTitre">@style/Titre.Souffle</item>
+    </style>
+</resources>

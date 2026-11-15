@@ -97,8 +97,10 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(this, OnboardingActivity::class.java))
         }
         findViewById<Button>(R.id.mode_button).setOnClickListener { askMode() }
+        findViewById<Button>(R.id.habillage_button).setOnClickListener { askHabillage() }
         findViewById<Button>(R.id.fond_button).setOnClickListener { askFond() }
         findViewById<Button>(R.id.accent_button).setOnClickListener { askAccent() }
+        findViewById<Button>(R.id.typo_button).setOnClickListener { askTypo() }
         // Personnalisation (14/10) : police hébraïque, écran d'ouverture, livre de la halakha.
         findViewById<Button>(R.id.police_button).setOnClickListener {
             val polices = PoliceHebraique.Police.values()
@@ -402,8 +404,13 @@ class SettingsActivity : AppCompatActivity() {
             Store.adresse(this)?.nom ?: R.string.adresse_none
         )
         findViewById<Button>(R.id.mode_button).setText(Store.modeApparence(this).nom)
+        findViewById<Button>(R.id.habillage_button).setText(
+            Apparence.Habillage.de(Store.fond(this), Store.accent(this), Store.police(this))?.nom
+                ?: R.string.habillage_perso
+        )
         findViewById<Button>(R.id.fond_button).setText(Store.fond(this).nom)
         findViewById<Button>(R.id.accent_button).setText(Store.accent(this).nom)
+        findViewById<Button>(R.id.typo_button).setText(Store.police(this).nom)
         findViewById<Button>(R.id.police_button).setText(Store.lecturePolice(this).libelle)
         findViewById<Button>(R.id.ouverture_button).setText(Store.ouverture(this).libelle)
         findViewById<Button>(R.id.halakha_source_button).setText(Store.sourceHalakha(this).libelle)
@@ -503,6 +510,38 @@ class SettingsActivity : AppCompatActivity() {
         choisirParmi(R.string.settings_accent, accents.map { it.nom }, accents.indexOf(Store.accent(this))) {
             Store.setAccent(this, accents[it])
             StreakWidget.refresh(this)
+            recreate()
+        }
+    }
+
+    /**
+     * Un habillage de la maquette (14/11) pose le fond, les boutons et les
+     * caractères ensemble, et le mode quand il en impose un. Si le mode
+     * change, AppCompat recrée déjà les écrans ; sinon celui-ci se recrée.
+     */
+    private fun askHabillage() {
+        val habillages = Apparence.Habillage.values()
+        val avant = Apparence.Habillage.de(Store.fond(this), Store.accent(this), Store.police(this))
+        choisirParmi(R.string.settings_habillage, habillages.map { it.nom }, habillages.indexOf(avant)) {
+            val choisi = habillages[it]
+            Store.setFond(this, choisi.fond)
+            Store.setAccent(this, choisi.accent)
+            Store.setPolice(this, choisi.police)
+            StreakWidget.refresh(this)
+            val mode = Apparence.Habillage.mode(avant, choisi, Store.modeApparence(this))
+            if (mode != Store.modeApparence(this)) {
+                Store.setModeApparence(this, mode)
+                Apparence.appliquerMode(this)
+            }
+            recreate()
+        }
+    }
+
+    /** Les caractères ne touchent pas la vignette : elle garde la police du téléphone. */
+    private fun askTypo() {
+        val polices = Apparence.Police.values()
+        choisirParmi(R.string.settings_typo, polices.map { it.nom }, polices.indexOf(Store.police(this))) {
+            Store.setPolice(this, polices[it])
             recreate()
         }
     }

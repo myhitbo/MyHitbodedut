@@ -44,13 +44,13 @@
                     android:textSize="13sp" />
 
                 <TextView
+                    style="?attr/mhStyleTitre"
                     android:id="@+id/hero_greeting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textColor="?attr/mhInk"
                     android:textSize="26sp"
-                    android:textStyle="bold"
                     android:visibility="gone" />
 
                 <!-- Sans prénom, cette ligne devient le titre (MainActivity.renderGreeting).
@@ -366,14 +366,14 @@
                 android:paddingBottom="24dp">
 
                 <TextView
+                    style="?attr/mhStyleTitre"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="@dimen/edge_inner"
                     android:paddingTop="16dp"
                     android:text="@string/nav_texts"
                     android:textColor="?attr/mhInk"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textSize="24sp" />
 
                 <!-- La recherche dans toute l'application (14/10). -->
                 <Button

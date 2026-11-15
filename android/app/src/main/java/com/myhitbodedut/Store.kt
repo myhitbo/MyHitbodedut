@@ -145,6 +145,7 @@ object Store {
     private const val KEY_MODE = "apparence_mode"
     private const val KEY_FOND = "apparence_fond"
     private const val KEY_ACCENT = "apparence_accent"
+    private const val KEY_POLICE_INTERFACE = "apparence_police"
     private const val KEY_LANGUE_APP = "langue_app"
     private const val KEY_LANGUE_REPLI = "langue_repli"
     private const val KEY_MUSIC_ON = "music_enabled"
@@ -1340,6 +1341,13 @@ object Store {
         prefs(context).edit().putString(KEY_FOND, fond.cle).apply()
     }
 
+    fun police(context: Context): Apparence.Police =
+        Apparence.Police.parse(prefs(context).getString(KEY_POLICE_INTERFACE, null))
+
+    fun setPolice(context: Context, police: Apparence.Police) {
+        prefs(context).edit().putString(KEY_POLICE_INTERFACE, police.cle).apply()
+    }
+
     fun accent(context: Context): Apparence.Accent =
         Apparence.Accent.parse(prefs(context).getString(KEY_ACCENT, null))
 
@@ -1539,6 +1547,7 @@ object Store {
             .put("apparence_mode", modeApparence(context).cle)
             .put("apparence_fond", fond(context).cle)
             .put("apparence_accent", accent(context).cle)
+            .put("apparence_police", police(context).cle)
         root.put("settings", settings)
         root.put("paused_dates", org.json.JSONArray(pausedDates(context).toList()))
         root.put("blocked_apps", org.json.JSONArray(blockedApps(context).toList()))
@@ -1670,6 +1679,8 @@ object Store {
                 ?.let { setFond(context, Apparence.Fond.parse(it)) }
             settings.optString("apparence_accent").takeIf { it.isNotBlank() }
                 ?.let { setAccent(context, Apparence.Accent.parse(it)) }
+            settings.optString("apparence_police").takeIf { it.isNotBlank() }
+                ?.let { setPolice(context, Apparence.Police.parse(it)) }
         }
         root.optJSONArray("paused_dates")?.let { array ->
             val dates = pausedDates(context).toMutableSet()

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    La typographie que l'on peut choisir dans les réglages (« Apparence »,
+    14/11) : celle du téléphone, ou Souffle, aimée sur la maquette (Bellefair
+    pour les grands titres, Open Sans pour le texte).
+
+    À part de values/attrs.xml, qui ne porte que les couleurs des palettes.
+    Le thème de base remplit ces attributs avec l'existant ; Police.Souffle
+    (values/typographie.xml) les recouvre, comme une palette.
+-->
+<resources>
+    <!-- Le style des grands titres : graisse et famille vont ensemble, Bellefair n'ayant qu'une graisse. -->
+    <attr name="mhStyleTitre" format="reference" />
+    <!-- La famille des boutons : un nom de police du système, ou une police de l'application. -->
+    <attr name="mhPoliceBouton" format="reference|string" />
+</resources>

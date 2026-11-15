@@ -160,4 +160,66 @@
         <item name="colorOnSurfaceVariant">#2B2B2B</item>
         <item name="colorOutline">#767676</item>
     </style>
+    <!-- Grenat (14/11) : le bordeaux brun de l’habillage Parchemin, l’encre rouge du sefer. -->
+    <style name="Accent.Grenat" parent="">
+        <item name="mhBrand">#7A2E2A</item>
+        <item name="mhBrandDark">#45191A</item>
+        <item name="mhMint">#F5E3DF</item>
+        <item name="mhOnBrand">#FFFFFF</item>
+        <item name="mhOnPlate">#7A2E2A</item>
+        <item name="mhStageSoft">#FCF4F1</item>
+        <item name="mhDayDone">#7A2E2A</item>
+        <item name="colorPrimary">#7A2E2A</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#45191A</item>
+        <item name="colorPrimaryContainer">#F5E3DF</item>
+        <item name="colorOnPrimaryContainer">#45191A</item>
+        <item name="android:statusBarColor">#45191A</item>
+    </style>
+    <!-- Or (14/11) : l’accent de Minuit doré ; de jour, un or sombre qui se lit sur l’ivoire. -->
+    <style name="Accent.Or" parent="">
+        <item name="mhBrand">#7A5C12</item>
+        <item name="mhBrandDark">#3D3014</item>
+        <item name="mhMint">#F6EBCB</item>
+        <item name="mhOnBrand">#FFFFFF</item>
+        <item name="mhOnPlate">#6E5410</item>
+        <item name="mhStageSoft">#FCF7EA</item>
+        <item name="mhDayDone">#6E5410</item>
+        <item name="colorPrimary">#7A5C12</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#3D3014</item>
+        <item name="colorPrimaryContainer">#F6EBCB</item>
+        <item name="colorOnPrimaryContainer">#3D3014</item>
+        <item name="android:statusBarColor">#000000</item>
+    </style>
+    <!-- Parchemin (14/11) : papier chaud, encre brune, filets marqués, comme un livre de prière. -->
+    <style name="Fond.Parchemin" parent="">
+        <item name="mhPaper">#F4EDE0</item>
+        <item name="mhCard">#FBF7EF</item>
+        <item name="mhLine">#CDBE9F</item>
+        <item name="mhInk">#2A2119</item>
+        <item name="mhMuted">#6B5D4D</item>
+        <item name="mhDayTodo">#EADFC9</item>
+        <item name="android:colorBackground">#F4EDE0</item>
+        <item name="colorSurface">#FBF7EF</item>
+        <item name="colorSurfaceContainerHigh">#FBF7EF</item>
+        <item name="colorOnSurface">#2A2119</item>
+        <item name="colorOnSurfaceVariant">#6B5D4D</item>
+        <item name="colorOutline">#CDBE9F</item>
+    </style>
+    <!-- Minuit (14/11) : de jour, l’ivoire de Minuit doré ; la nuit, le noir pur qui fait son nom. -->
+    <style name="Fond.Minuit" parent="">
+        <item name="mhPaper">#F6F3EC</item>
+        <item name="mhCard">#FFFFFF</item>
+        <item name="mhLine">#DED8CB</item>
+        <item name="mhInk">#17181B</item>
+        <item name="mhMuted">#5F5B53</item>
+        <item name="mhDayTodo">#ECE7DC</item>
+        <item name="android:colorBackground">#F6F3EC</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorSurfaceContainerHigh">#FFFFFF</item>
+        <item name="colorOnSurface">#17181B</item>
+        <item name="colorOnSurfaceVariant">#5F5B53</item>
+        <item name="colorOutline">#DED8CB</item>
+    </style>
 </resources>

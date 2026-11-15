@@ -94,6 +94,13 @@
 
             <LinearLayout style="@style/SettingRow">
 
+                <TextView style="@style/SettingLabel" android:text="@string/settings_habillage" />
+
+                <Button android:id="@+id/habillage_button" style="@style/SettingValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/SettingRow">
+
                 <TextView style="@style/SettingLabel" android:text="@string/settings_fond" />
 
                 <Button android:id="@+id/fond_button" style="@style/SettingValue" />
@@ -104,6 +111,13 @@
                 <TextView style="@style/SettingLabel" android:text="@string/settings_accent" />
 
                 <Button android:id="@+id/accent_button" style="@style/SettingValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/SettingRow">
+
+                <TextView style="@style/SettingLabel" android:text="@string/settings_typo" />
+
+                <Button android:id="@+id/typo_button" style="@style/SettingValue" />
             </LinearLayout>
 
             <LinearLayout style="@style/SettingRow">

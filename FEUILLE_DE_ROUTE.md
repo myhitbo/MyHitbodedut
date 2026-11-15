@@ -1157,7 +1157,14 @@ toucher. CI verte (Android, web, Nokia).
    fonctionnalités, repli des textes, fluidité), voir
    `CHECKUP_2026-11-11.md`. Reste à corriger les défauts confirmés.
    Design : 5 habillages et 5 refontes animées **retenus en option**,
-   même fichier, section 6.
+   même fichier, section 6. **14/11** : les habillages aimés sont dans
+   l'app (Réglages › Apparence › Habillage) : Parchemin (fond parchemin,
+   boutons grenat) et Minuit doré (noir pur, or, mode sombre), avec la
+   typographie Souffle (Bellefair pour les grands titres, Open Sans pour
+   le texte), aussi réglable seule. Reste à choisir la structure de
+   l'accueil : Ciel, Bento et Pile ont été aimés, mais leurs fusions ont
+   été écartées (« Ciel vivant » trop chargé, « Épurés » trop vides,
+   « Équilibrés »). Studio 2026 (S1 à S5) et N1 à N3 restent à évaluer.
 3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
    replie en rond tournant (pochette, ou hassid à la guitare).
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
