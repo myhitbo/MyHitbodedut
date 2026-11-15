@@ -1037,7 +1037,7 @@ Non vérifié : Eretz Hemdah (avis de Rav Ovadia sur le sud), le site ne répond
 
 **Versions**
 - Web : le journal, les Tefilot de Rabbi Natan et les conseils n'y sont pas
-  encore (« à venir »).
+  encore (« à venir »). *Fait depuis : les trois sont sur le site (audit du 12/11, FWEBCODE-22).*
 - Nokia : minuteur, journal, textes et musique seulement ; ni zmanim, ni
   siddour, ni halakha, ni livres.
 - Android : la barrière du matin jamais éprouvée sur un vrai téléphone ;
@@ -1091,8 +1091,8 @@ Réponse du propriétaire aux sept questions du 05/10 : « oui tout ».
 
 **Reste** :
 
-- web : le journal (donc 5 et l'humeur de 6), la carte de la hitbodedout
-  guidée (donc 2), les Tefilot ;
+- ~~web : le journal (donc 5 et l'humeur de 6), la carte de la hitbodedout
+  guidée (donc 2), les Tefilot ;~~ fait depuis (FWEBCODE-22) ;
 - iPhone : l'ambiance se tait écran verrouillé (Web Audio) ;
 - Android : « Je suis avec Hachem » jamais éprouvé sur un vrai téléphone ;
 - les textes du Rav Arush : toujours aucun fourni.
@@ -1143,7 +1143,7 @@ dans `plantages.txt` de la branche `claude/captures-android`).
   hilloulot sur Android, pas recapturé après la correction 1c72ebc) ;
 - relancer le test des boutons du web ;
 - ajouter le secret `NOKIA_DEPLOY_TOKEN` dans myhitbo/MyHitbodedut (utilisateur) ;
-- toujours valables : la liste « Reste » du 19/10 ci-dessus.
+- toujours valables : la liste « Reste » du 19/10 ci-dessus (sauf son point web, fait depuis).
 
 ## Sujets ouverts de la session ccr-a461212d (04/11)
 

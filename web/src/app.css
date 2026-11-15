@@ -231,7 +231,6 @@ button.corps { border: 0; background: none; padding: 0; text-align: start; curso
   mask: url(icones/ic_chevron.svg) center / contain no-repeat;
 }
 [dir="rtl"] .chevron { transform: scaleX(-1); }
-/* Ce que la version web ne sait pas encore faire : visible, mais inerte. */
 
 /* --- Interrupteur, curseur ------------------------------------------------------- */
 .interrupteur {
