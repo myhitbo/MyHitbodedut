@@ -383,7 +383,7 @@
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">Reminders</string>
-    <string name="reminders_hint">One or several times a day. Nothing rings on a rest day, or once the hitbodedut is done.</string>
+    <string name="reminders_hint">One or several times a day. Nothing rings on a rest day, on its eve in the evening (from candle lighting if a place is set, otherwise from noon), or once the hitbodedut is done.</string>
     <string name="reminders_open">Set the reminders</string>
     <string name="reminders_enable">Remind me to do hitbodedut</string>
     <string name="reminders_enable_hint">A reminder at the times you set, as long as today’s hitbodedut is not done.</string>

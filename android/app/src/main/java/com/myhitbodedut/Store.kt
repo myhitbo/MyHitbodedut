@@ -324,7 +324,8 @@ object Store {
         if (credit > p.getLong(KEY_FAIT_A, 0L)) p.edit().putLong(KEY_FAIT_A, credit).apply()
         clearSnooze(context)
         // La journée est faite : le rappel « Il est temps… » ne reste pas dans le volet jusqu'au lendemain (02/11).
-        if (minutes > 0) runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancel(Notifications.ID_REMINDER) }
+        // Même à 0 minute (« Je l'ai déjà faite », séance sans durée) : le jour est fait (FBARRIERE-11).
+        runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancel(Notifications.ID_REMINDER) }
     }
 
     /** La note d'un jour. Sur un jour sans hitbodedout, elle ne le valide pas. */

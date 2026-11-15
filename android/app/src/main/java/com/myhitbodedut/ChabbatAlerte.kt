@@ -66,6 +66,10 @@ class ChabbatAlerteReceiver : BroadcastReceiver() {
             context, 141, Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
+        if (!aAnnoncer(context)) {
+            ChabbatAlerte.programmer(context)
+            return
+        }
         val texte = context.getString(R.string.chabbat_alerte_texte)
         val notification = Notification.Builder(context, Notifications.CHANNEL_REMINDER)
             .setSmallIcon(R.drawable.ic_notification)
@@ -80,4 +84,18 @@ class ChabbatAlerteReceiver : BroadcastReceiver() {
         runCatching { manager.notify(Notifications.ID_CHABBAT, notification) }
         ChabbatAlerte.programmer(context)
     }
+
+    /**
+     * Rien à dire un jour exempté (Yom Tov un vendredi, pause), la veille de Yom Kippour
+     * (jeûne, pas de repas), ni une fois l'allumage passé : alarme retardée par Android
+     * (FBARRIERE-13).
+     */
+    private fun aAnnoncer(context: Context): Boolean = runCatching {
+        val aujourdhui = java.time.LocalDate.now()
+        if (Store.isExempt(context, aujourdhui)) return@runCatching false
+        if (Holidays.isYomKippur(aujourdhui.plusDays(1), Store.inIsrael(context))) return@runCatching false
+        val lieu = Store.lieuAlertes(context) ?: return@runCatching false
+        val allumage = Zmanim.allumage(lieu, aujourdhui, Store.allumage(context)).instant
+        allumage == null || allumage.isAfter(java.time.Instant.now())
+    }.getOrDefault(true)
 }

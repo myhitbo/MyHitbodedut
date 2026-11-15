@@ -173,6 +173,8 @@ class GateService : Service() {
             },
             onAlreadyDone = {
                 Store.addSession(this, 0)
+                // La vignette de série dit aussitôt la journée faite (FBARRIERE-11).
+                runCatching { StreakWidget.refresh(this) }
                 hideOverlay()
                 goHome()
             },

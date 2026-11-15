@@ -392,7 +392,7 @@
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">תזכורות</string>
-    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, ולא אחרי שההתבודדות נעשתה.</string>
+    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, לא בערב שלפניו (מהדלקת הנרות אם הוגדר מקום, אחרת מהצהריים), ולא אחרי שההתבודדות נעשתה.</string>
     <string name="reminders_open">הגדרת התזכורות</string>
     <string name="reminders_enable">להזכיר לי להתבודד</string>
     <string name="reminders_enable_hint">תזכורת בשעות שהוגדרו, כל עוד ההתבודדות של היום לא נעשתה.</string>

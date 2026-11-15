@@ -477,7 +477,7 @@
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">Rappels</string>
-    <string name="reminders_hint">Une ou plusieurs heures dans la journée. Rien ne sonne un jour de repos, ni une fois la hitbodedout faite.</string>
+    <string name="reminders_hint">Une ou plusieurs heures dans la journée. Rien ne sonne un jour de repos, ni la veille au soir (à partir de l’allumage si un lieu est réglé, sinon de midi), ni une fois la hitbodedout faite.</string>
     <string name="reminders_open">Régler les rappels</string>
     <string name="reminders_enable">Me rappeler la hitbodedout</string>
     <string name="reminders_enable_hint">Un rappel aux heures réglées, tant que la hitbodedout du jour n’est pas faite.</string>
