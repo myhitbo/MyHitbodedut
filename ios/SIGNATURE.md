@@ -48,8 +48,11 @@ Codemagic livre l'archive brute. Pour l'installer sur un iPhone sans Mac, il fau
 (décision D15), le lien sera envoyé en message privé à l'ami ; reste à choisir où l'archive sera servie,
 au moment de la recette R1.
 
-## Ce que je ne vois pas
+## Ce que je vois, et ce qui est à me transmettre
 
-Les constructions Codemagic ne sont pas lisibles depuis la session de travail : le résultat de
-`ios-verification` et de `ios-dev` (vert ou rouge, et en cas d'échec les dernières lignes du journal)
-est à me transmettre.
+Codemagic publie chaque construction déclenchée par un envoi comme vérification GitHub de la demande
+de fusion : le vert ou le rouge de `ios-verification` se lit donc depuis la session de travail.
+Le journal, lui, reste chez Codemagic : en cas d'échec, m'en transmettre les dernières lignes.
+`ios-dev`, lancé à la main, ne s'y affiche peut-être pas : son résultat est à me transmettre.
+
+Premier `ios-verification` : vert, le 15 novembre 2026 (les deux variantes).

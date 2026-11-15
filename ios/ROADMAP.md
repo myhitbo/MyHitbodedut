@@ -97,6 +97,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 - **Livrable** : `ios/project.yml` (l'app, les widgets, les trois extensions de la barrière, vides ; groupe d'apps ; entitlements) et `ios/project-sans-barriere.yml` (la construction `SANS_BARRIERE`) ; `codemagic.yaml` (`ios-verification` sur simulateur, `ios-dev` signée par la signature automatique de Codemagic, § 7.4) ; `ios/SIGNATURE.md`, les gestes du propriétaire ; les cinq identifiants créés. Ni fastlane, qui viendra avec la fiche et les captures (tâche 30), ni secours GitHub `macos-26` (décision D5).
 - **Critère de fin** : Codemagic produit une archive de développement signée qui contient les quatre extensions et l'entitlement Family Controls de développement ; **recette R1** réussie ; P3 déposé.
 - **Où** : macOS, iPhone.
+- **Fait à ce jour** : P5 (Codemagic relié au dépôt) ; `ios-verification` vert le 15 novembre 2026 sur `0586bfb` (les deux variantes compilent sur simulateur, Xcode 26.6). Restent P1, P2, P4, `ios-dev`, R1 et P3.
 
 ### 4. Prototype de barrière
 
