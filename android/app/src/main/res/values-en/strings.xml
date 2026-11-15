@@ -119,6 +119,7 @@
     <string name="settings_exempt_today">Rest day today</string>
     <string name="settings_exempt_today_hint">For a Yom Tov, a trip or illness: the day does not count against you.</string>
     <string name="settings_screen_missing">This settings screen does not exist on this phone.</string>
+    <string name="lien_impossible">This link can’t be opened: no browser on this phone.</string>
     <string name="fichiers_absents">No app on this phone can open or save a file.</string>
 
     <string name="permission_overlay">Display over other apps</string>

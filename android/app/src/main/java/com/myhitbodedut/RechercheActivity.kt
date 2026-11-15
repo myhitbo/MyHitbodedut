@@ -133,7 +133,7 @@ class RechercheActivity : AppCompatActivity() {
     }
 
     private fun ligne(r: RechercheGlobale.Resultat): View = VueJour.carte(this).apply {
-        addView(VueJour.texte(context, r.titre, 16f, R.color.ink, gras = true).apply { textDirection = View.TEXT_DIRECTION_ANY_RTL; PoliceHebraique.appliquer(this) })
+        addView(VueJour.texte(context, r.titre, 16f, R.color.ink, gras = true).apply { textDirection = View.TEXT_DIRECTION_ANY_RTL; if (r.titre.any { it in '\u0590'..'\u05FF' }) PoliceHebraique.appliquer(this) })
         if (r.extrait.isNotBlank()) addView(VueJour.texte(context, r.extrait, 13f, R.color.muted, haut = 4).apply { textDirection = View.TEXT_DIRECTION_ANY_RTL; maxLines = 2 })
         foreground = Apparence.effetToucher(this@RechercheActivity)
         setOnClickListener {

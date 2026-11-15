@@ -609,11 +609,13 @@ class SiddurLectureActivity : AppCompatActivity() {
                     setPadding(dp(16), dp(if (position == 0) 8 else 32), dp(16), dp(8))
                     // Le titre traduit (04/11), sous l'hébreu ou à sa place, selon les langues choisies.
                     val titres = LanguesTexte.textes(langues, ligne.texte, ligne.fr, ligne.en)
-                    text = if (titres.size == 1) titres[0].second else android.text.SpannableStringBuilder().apply {
-                        titres.forEachIndexed { k, (_, t) ->
+                    text = if (titres.size == 1 && titres[0].first == "he") titres[0].second else android.text.SpannableStringBuilder().apply {
+                        titres.forEachIndexed { k, (l, t) ->
                             if (k > 0) append("\n")
                             val d = length
                             append(t)
+                            // La police hébraïque réduite n'a pas les lettres accentuées (FLECTURE-24).
+                            if (l != "he") setSpan(android.text.style.TypefaceSpan("serif"), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             if (k > 0) setSpan(android.text.style.RelativeSizeSpan(0.72f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         }
                     }

@@ -78,7 +78,7 @@ class HalakhaActivity : AppCompatActivity() {
         contenu.addView(liste)
         // Taille et police des textes, comme dans les écrans de lecture (12/10).
         deuxLivres = intent.getStringExtra(RechercheActivity.EXTRA_RECHERCHE) != null
-        ReglagesLecture.installer(this, findViewById(R.id.halakha_defile)) { afficher() }
+        ReglagesLecture.installer(this, findViewById(R.id.halakha_defile), avecNuit = false, avecLangues = false) { afficher() }
         afficher()
         RechercheActivity.preremplir(this, contenu)
     }
@@ -193,6 +193,7 @@ class HalakhaActivity : AppCompatActivity() {
 
     private fun ouvrir(url: String) {
         runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            .onFailure { android.widget.Toast.makeText(this, R.string.lien_impossible, android.widget.Toast.LENGTH_LONG).show() }
     }
 
     companion object {

@@ -127,6 +127,7 @@
     <string name="settings_exempt_today">Pause aujourd’hui</string>
     <string name="settings_exempt_today_hint">Pour un Yom Tov, un voyage, une maladie : la journée ne compte pas contre vous.</string>
     <string name="settings_screen_missing">Cet écran de réglages n’existe pas sur ce téléphone.</string>
+    <string name="lien_impossible">Impossible d’ouvrir ce lien : aucun navigateur sur ce téléphone.</string>
     <!-- Le sélecteur de fichiers d’Android est absent (examen du 14/11, constat 12). -->
     <string name="fichiers_absents">Aucune application de ce téléphone ne permet d’ouvrir ou d’enregistrer un fichier.</string>
 
