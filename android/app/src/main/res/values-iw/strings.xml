@@ -1065,7 +1065,7 @@
     <string name="halakha_yalkut_source">ילקוט יוסף – קיצור שולחן ערוך, מו״ר הרב יצחק יוסף (הוכן מתוכנת תורת אמת, CC BY-NC-SA 2.5): מבחר, לא הספר כולו.</string>
     <!-- Birkat haLevana sur la carte du jour (13/10) -->
     <string name="levana_titre">ברכת הלבנה</string>
-    <string name="levana_fenetre">מ־%1$s עד %2$s</string>
+    <string name="levana_fenetre">מ%1$s עד %2$s</string>
     <string name="levana_ce_soir">אפשר לברך הלילה</string>
     <string name="levana_dernier_soir">הלילה האחרון</string>
     <plurals name="levana_dans">
