@@ -12458,6 +12458,13 @@
    "mention": ""
   },
   {
+   "chemin": "Ressources/Contenu/recherche.sqlite",
+   "source": "android/app/src/main/res/raw (siddourim, livres, halakha, hilloulot)",
+   "sha256": "528a99f5812e5eea5eee9e0f79df59702ba13bf7303dbc29d6e238c0044bcd42",
+   "licence": "dérivé des contenus indexés",
+   "mention": "voir siddourim, livres, halakha, hilloulot"
+  },
+  {
    "chemin": "Ressources/Contenu/siddur_annotations.json",
    "source": "android/app/src/main/res/raw/siddur_annotations.json",
    "octets": 334376,
@@ -12488,6 +12495,14 @@
    "sha256": "630429efe9710bf04ff5de477902dc75001c59da223450e0abe4b928860f627b",
    "licence": "domaine public, CC0, CC-BY, CC BY-SA",
    "mention": "Torat Emet 357 et Daat (domaine public), Shaliehsaboo (CC0), Metsudah 1981 (CC-BY), Wikipédia hébreu (CC BY-SA)"
+  },
+  {
+   "chemin": "Ressources/Contenu/tables.json",
+   "source": "ios/Paquets/Coeur/Tests/Vecteurs/tables.json",
+   "octets": 21018,
+   "sha256": "94415031d04a25d4b7b953ae85fc24aaa4ad96158a140dd00be1ed088a4dc83d",
+   "licence": "propre à l'app",
+   "mention": ""
   },
   {
    "chemin": "Ressources/Contenu/tehilim.json",

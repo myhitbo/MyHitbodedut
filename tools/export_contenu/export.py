@@ -3,9 +3,10 @@
 
 Android reste la source : l'outil lit android/, web/ et tools/, et n'écrit que sous ios/.
 Python 3, bibliothèque standard, hors ligne, déterministe : deux exports de suite donnent
-le même manifeste. Étapes faites ici : 1 (textes), 2 (chaînes), 4 (palettes), 5 (images et
-icônes), 6 (polices), 7 (musique), 9 (vecteurs de test), 10 (manifeste). Les étapes 3 (tables
-du Kotlin) et 8 (index de recherche) sont celles de la tâche 6.
+le même manifeste. Étapes : 1 (textes), 2 (chaînes), 3 (tables du Kotlin), 4 (palettes), 5 (images
+et icônes), 6 (polices), 7 (musique), 8 (index de recherche), 9 (vecteurs de test), 10 (manifeste).
+L'étape 3 recopie tables.json, écrit par le Kotlin d'Android sur la JVM (tools/vecteurs_ios/VecteursTables.kt,
+refait et comparé par ios-oracle.yml) : l'export reste en Python seul.
 
 Usage : python3 tools/export_contenu/export.py [--verifier]
   --verifier : exporte, puis échoue si ios/Ressources/MANIFESTE.json a changé (garde de dérive).
@@ -13,6 +14,8 @@ Usage : python3 tools/export_contenu/export.py [--verifier]
 
 import hashlib
 import json
+
+import recherche
 import re
 import shutil
 import sys
@@ -25,6 +28,7 @@ RAW = RES / "raw"
 IOS = RACINE / "ios"
 SORTIE = IOS / "Ressources"
 TESTS = IOS / "Paquets" / "Coeur" / "Tests" / "Ressources"
+VECTEURS = IOS / "Paquets" / "Coeur" / "Tests" / "Vecteurs"
 MANIFESTE = SORTIE / "MANIFESTE.json"
 
 SEUIL_DECOUPE = 2_000_000  # octets : au-delà, un livre est servi chapitre par chapitre
@@ -66,7 +70,8 @@ LICENCES = [
     (r"Contenu/villes\.json", "CC-BY 4.0", "GeoNames"),
     (r"Contenu/aeroports(_noms)?\.json", "domaine public ; ODbL ; CC0",
      "OurAirports, timezone-boundary-builder (ODbL), Wikidata"),
-    (r"Contenu/(trophees_formes|palettes)\.json", "propre à l'app", ""),
+    (r"Contenu/(trophees_formes|palettes|tables)\.json", "propre à l'app", ""),
+    (r"Contenu/recherche\.sqlite", "dérivé des contenus indexés", "voir siddourim, livres, halakha, hilloulot"),
     (r"Contenu/musique\.json", "accord écrit (PORTAGE.md § 6.1)", "voir chaque morceau"),
     (r"Chaines/(Localizable\.xcstrings|Tableaux\.json)", "propre à l'app", ""),
     (r"Images/[a-z0-9_]+\.webp", "fournies par le propriétaire", ""),
@@ -81,6 +86,7 @@ LICENCES = [
 class Export:
     def __init__(self):
         self.produits = {}  # chemin relatif à ios/ → source relative au dépôt
+        self.empreintes = {}  # chemin → empreinte du contenu, quand celle des octets ne dit rien (SQLite)
 
     # --- écriture, sous ios/ seulement --------------------------------------
     def _cible(self, chemin: Path) -> Path:
@@ -246,6 +252,17 @@ class Export:
         self.json(SORTIE / "Contenu" / "musique.json", morceaux, kt)
         return len(morceaux)
 
+    # --- 3. Tables du Kotlin -------------------------------------------------
+    def tables(self):
+        self.copier(VECTEURS / "tables.json", SORTIE / "Contenu" / "tables.json")
+
+    # --- 8. Index de recherche ----------------------------------------------
+    def recherche(self):
+        recherche.verifier(VECTEURS / "normalisation.json")
+        cible = self._cible(SORTIE / "Contenu" / "recherche.sqlite")
+        self.empreintes[cible.relative_to(IOS).as_posix()] = recherche.construire(RAW, cible)
+        self._note(cible, "android/app/src/main/res/raw (siddourim, livres, halakha, hilloulot)")
+
     # --- 9. Vecteurs de test ------------------------------------------------
     def vecteurs(self):
         sources = [RACINE / "web" / "test" / n for n in
@@ -263,10 +280,13 @@ class Export:
             if regle is None:
                 raise SystemExit(f"aucune licence pour {chemin}")
             donnees = (IOS / chemin).read_bytes()
-            fichiers.append({
-                "chemin": chemin, "source": self.produits[chemin], "octets": len(donnees),
-                "sha256": hashlib.sha256(donnees).hexdigest(), "licence": regle[1], "mention": regle[2],
-            })
+            entree = {"chemin": chemin, "source": self.produits[chemin], "octets": len(donnees),
+                      "sha256": hashlib.sha256(donnees).hexdigest(), "licence": regle[1], "mention": regle[2]}
+            if chemin in self.empreintes:
+                # SQLite n'écrit pas les mêmes octets d'une version à l'autre : l'empreinte des lignes, sans taille.
+                del entree["octets"]
+                entree["sha256"] = self.empreintes[chemin]
+            fichiers.append(entree)
         texte = json.dumps({"outil": "tools/export_contenu/export.py", "fichiers": fichiers},
                            ensure_ascii=False, indent=1) + "\n"
         self._cible(MANIFESTE).write_text(texte, encoding="utf-8")
@@ -441,10 +461,12 @@ def main():
     e = Export()
     e.textes()
     e.chaines()
+    e.tables()
     e.palettes()
     e.images()
     e.polices()
     compter(e.musique())
+    e.recherche()
     e.vecteurs()
     apres = e.manifeste()
     total = sum(f.stat().st_size for f in SORTIE.rglob("*") if f.is_file())

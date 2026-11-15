@@ -116,7 +116,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 
 - **But** : étapes 3 et 8 du § 4.2.
 - **Sources** : les fichiers du tableau C du § 4.1 ; `RechercheGlobale.kt`.
-- **Livrable** : `tools/export_contenu/tables/` (projet Gradle autonome, deux bouchons), `tables.json` ; `recherche.sqlite` ; `RechercheGlobale` en Swift (normalisation, extraits, portées).
+- **Livrable** : `tools/export_contenu/tables/` (projet Gradle autonome, deux bouchons), `tables.json` ; `recherche.sqlite` ; `RechercheGlobale` en Swift (normalisation, extraits, portées). Fait ainsi : `tables.json` est écrit par l'oracle JVM (`tools/vecteurs_ios/VecteursTables.kt`), versionné sous `Tests/Vecteurs` et refait par `ios-oracle.yml` (la garde), puis recopié par l'export, qui reste en Python seul ; `recherche.py` indexe les blocs des siddourim, les halakhot, les hilloulot et les titres des livres (5,3 Mo ; le texte des livres reste cherché en mémoire, comme sur Android) ; les cas communs de normalisation viennent de `VecteursNormalisation.kt`.
 - **Critère de fin** : `tables.json` porte 6 échelles de paliers, 11 familles et 128 niveaux, 30 et 7 portions, 10 sujets, 5 temps, 21 correspondances de poses, 15 zmanim ; modifier un seuil dans une copie de `Trophees.kt` fait échouer la garde ; une liste de cas communs prouve que la normalisation Python et la normalisation Swift rendent la même chaîne ; les cas de recherche de `HalakhaTest` rendent les mêmes résultats.
 - **Où** : Linux.
 

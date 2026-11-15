@@ -1,0 +1,31 @@
+{
+"_meta": {"source": "tools/vecteurs_ios/VecteursNormalisation.kt"},
+"cas": [
+["בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים", "בראשית ברא אלהים"],
+["שִׁיר־הַמַּעֲלוֹת", "שיר המעלות"],
+["וַיֹּ֣אמֶר ׀ ה׳", "ויאמר ה"],
+["רש\"י ורמב״ם", "רשי ורמבם"],
+["ר' נחמן מברסלב", "ר נחמן מברסלב"],
+["<b>אַשְׁרֵי</b> יוֹשְׁבֵי<br/>בֵיתֶךָ", "אשרי יושבי ביתך"],
+["Likoutei Moharan II, 25", "likoutei moharan ii, 25"],
+["Éléphant Ça Où Noël", "elephant ca ou noel"],
+["L’homme et l‘âme", "lhomme et lame"],
+["  plusieurs \t\n blancs  ", "plusieurs blancs"],
+[" insécable ", "insecable"],
+[" cadratin　", "cadratin"],
+["ŒUVRE Æther straße ẞ", "œuvre æther straße ß"],
+["ΟΔΟΣ Σοφία", "οδος σοφια"],
+["İstanbul IJssel", "istanbul ijssel"],
+["ﬁn ﬂeur", "ﬁn ﬂeur"],
+["x́ÿ", "xy"],
+["Tehilim 119:1-96", "tehilim 119:1-96"],
+["תְּהִלִּים קיט", "תהלים קיט"],
+["🙂 émoji", "🙂 emoji"],
+["", ""],
+["   ", ""],
+["שָׁלוֹםֽעֲלֵיכֶםׅׄ", "שלוםעליכם"],
+["a<b", "a<b"],
+["<i>fin</i>", "fin"],
+["Rabbi Na'hman 'Hizouk", "rabbi nahman hizouk"]
+]
+}

@@ -26,5 +26,9 @@ L'export s'arrête si un compte s'écarte (38 textes par rite, 150 psaumes et 2 
 du Tikoun, 171 textes de 'hizouk, 12 livres, 4 049 hilloulot, 51 villes, 3 226 aéroports, 26 morceaux)
 ou si un fichier produit n'a pas de licence.
 
-Pas encore faits : les tables du Kotlin (étape 3) et l'index de recherche (étape 8), tâche 6 ; les
-miniatures PNG des personnages pour le bouclier et les widgets, avec ces écrans (tâches 25 et 27).
+Étape 3 : `Contenu/tables.json` est recopié de `ios/Paquets/Coeur/Tests/Vecteurs/tables.json`, que le Kotlin
+d'Android écrit sur la JVM (`tools/vecteurs_ios/VecteursTables.kt`, refait et comparé par `ios-oracle.yml`).
+Étape 8 : `recherche.py` écrit `Contenu/recherche.sqlite` après avoir vérifié sa normalisation sur les cas
+communs d'Android (`Tests/Vecteurs/normalisation.json`) ; le manifeste en retient l'empreinte des lignes.
+
+Pas encore faits : les miniatures PNG des personnages pour le bouclier et les widgets, avec ces écrans (tâches 25 et 27).
