@@ -65,6 +65,14 @@ test('une saisie impossible est refusée', () => {
   assert.equal(Vol.verifier({ ...versOuest, arrivee: { ...a('JFK'), fuseau: 'Mars/Olympus' } }), 'fuseau_inconnu');
 });
 
+test('une durée que la distance ne permet pas est signalée (FVOL-12)', () => {
+  assert.equal(Vol.invraisemblable(versOuest), false);
+  assert.equal(Vol.invraisemblable({ ...versOuest, atterrissage: new Date(+versOuest.decollage + 25 * 60000) }), true);
+  const court = { ...versOuest, arrivee: a('LCA'), atterrissage: new Date(+versOuest.decollage + 1.5 * H) };
+  assert.equal(Vol.invraisemblable(court), false);
+  assert.equal(Vol.invraisemblable({ ...court, atterrissage: new Date(+court.decollage + 6 * H) }), true);
+});
+
 test('le fuseau nautique suit la longitude, signe inversé', () => {
   assert.equal(Vol.fuseauNautique(35), 'Etc/GMT-2');
   assert.equal(Vol.fuseauNautique(-74), 'Etc/GMT+5');
@@ -147,6 +155,15 @@ test('un vol court sans zman ; la ligne de date ; une route polaire', () => {
   assert.ok(est.lignesDate[0].apres < est.lignesDate[0].avant);
   const polaire = Vol.calculer(plan('JFK', 'HKG', '2026-06-20T11:00', '2026-06-21T15:00'));
   assert.ok(polaire.reserves.has('haute_latitude') && polaire.reserves.has('absent') && !polaire.reserves.has('erreur'));
+  // Les zmanim absents sont nommés, dans l'ordre de la journée (FVOL-11).
+  assert.ok(polaire.absents.includes('alot'));
+  assert.equal(court.absents.length, 0);
+});
+
+test('sous 60° en juin, seule l\'aube à 16,1° manque (FVOL-11)', () => {
+  const c = Vol.calculer(plan('LHR', 'TLV', '2027-06-20T10:00', '2027-06-20T17:00'));
+  assert.ok(c.reserves.has('absent') && !c.reserves.has('haute_latitude'));
+  assert.deepEqual(c.absents, ['alot']);
 });
 
 test('parité avec Android : chaque zman en vol, à deux secondes près (vecteurs_vol.json)', () => {

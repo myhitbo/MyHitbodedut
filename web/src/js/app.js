@@ -3443,6 +3443,8 @@ let saisieVol = null;
 /** Le dernier calcul et la saisie qui l'a produit (deux passes de vol.js : on ne recalcule pas à chaque rendu). */
 let calculVol = null;
 let cleCalculVol = null;
+/** La saisie jugée invraisemblable dont l'avertissement a déjà été donné (FVOL-12). */
+let avertiVol = null;
 let minuterieVol = null;
 /** Le formulaire déplié pour modifier le vol calculé ; replié en résumé sinon (VolActivity.modifier). */
 let modifierVol = false;
@@ -3657,7 +3659,8 @@ function suiviDirect() {
   // L'interrupteur n'est plus dans le formulaire (04/11) : il vit ici, sous « Préciser la position ».
   const bloc = [interrupteurEnLigne()];
   if (!actif) return bloc;
-  if (!RELAIS_VOL) return bloc;
+  if (!RELAIS_VOL) return [...bloc, h('p', { class: 'indice' }, tr.t('vol_direct_inactif'))];
+  bloc.push(h('p', { class: 'indice' }, tr.t('vol_direct_explication')));
   const champ = h('input', { type: 'text', class: 'champ-recherche champ-vol', maxlength: 9, autocapitalize: 'characters', placeholder: tr.t('vol_indicatif'), value: store.volIndicatif() || null });
   return [...bloc, champ,
     h('button', { class: 'secondaire', disabled: directVol, onclick: () => {
@@ -3744,7 +3747,9 @@ function resultatsVol(c) {
       h('button', { class: 'secondaire', disabled: gpsVol, onclick: releverGps }, tr.t(gpsVol ? 'vol_gps_attente' : 'vol_gps')),
       c.plan.releve ? h('button', { class: 'lien-discret', onclick: () => { const g = store.vol(); delete g.releve; store.setVol(g); rendre(); } }, tr.t('vol_gps_oublier')) : null,
       ...suiviDirect(),
-      ...RESERVES.filter((r) => c.reserves.has(r)).map((r) => h('p', {}, tr.t(`vol_reserve_${r}`))),
+      ...RESERVES.filter((r) => c.reserves.has(r)).map((r) => h('p', {}, tr.t(`vol_reserve_${r}`),
+        // Les zmanim absents, nommés à la suite de la réserve (FVOL-11).
+        ...(r === 'absent' && c.absents?.length ? [h('br'), tr.t('vol_reserve_absents', c.absents.map((cle) => tr.t(`zman_${cle}`)).join(', '))] : []))),
       ...c.lignesDate.map((l) => h('p', {}, tr.t('vol_ligne_date', deuxHeures(c.plan, l.instant), date(l.avant), date(l.apres))))),
     friseVol(c, enVol, maintenant),
     carteJalons(c),
@@ -3793,7 +3798,7 @@ function friseVol(c, enVol, maintenant) {
   }
   lignes.push(point('bout', tr.t('vol_frise_atterrissage', c.plan.arrivee.iata), c.plan.atterrissage));
   return h('div', { class: 'carte carte-texte carte-vol' }, h('p', { class: 'indice' }, tr.t('vol_en_vol_titre')),
-    median !== null ? h('p', { class: 'frise-retard' }, tr.t('vol_frise_retard')) : null,
+    median !== null ? h('p', { class: 'frise-retard' }, tr.t(calculVol && calculVol.fiabilite !== 'route_prevue' ? 'vol_frise_retard_gps' : 'vol_frise_retard', `${median < 0 ? '−' : '+'}${Math.abs(Math.round(median / 60000))}`)) : null,
     h('ol', { class: 'frise' }, ...lignes));
 }
 
@@ -3852,6 +3857,15 @@ function ecranVol() {
     if (!plan) return message('vol_invalide_fuseau_inconnu');
     const faute = Vol.verifier(plan);
     if (faute) return message(`vol_invalide_${faute}`);
+    // Une durée que la distance ne permet pas : on avertit une fois, un second toucher passe outre (FVOL-12).
+    if (Vol.invraisemblable(plan)) {
+      const cle = [v.depart, v.arrivee, v.decollage, v.atterrissage].join('|');
+      if (avertiVol !== cle) {
+        avertiVol = cle;
+        const km = Math.round(Vol.distanceKm(plan.depart.latitude, plan.depart.longitude, plan.arrivee.latitude, plan.arrivee.longitude));
+        return feuille(tr.t('vol_title'), (f, fermer) => f.append(h('p', {}, tr.t('vol_invraisemblable', String(km), dureeEnMots(Math.round((+plan.atterrissage - +plan.decollage) / 60000)))), h('button', { class: 'principal', onclick: fermer }, tr.t('vol_fermer'))));
+      }
+    }
     // Le même vol, calculé à nouveau, garde son relevé GPS ; un autre vol l'efface (Store.setVol).
     const memeVol = garde && ['depart', 'arrivee', 'decollage', 'atterrissage'].every((k) => garde[k] === v[k]);
     const { releve, ...saisie } = v;
@@ -3898,7 +3912,7 @@ function ecranVol() {
       ...(garde && calculVol ? resultatsVol(calculVol) : []),
       // La méthode, les aéroports, les routes : repliés sous « Sources ».
       h('details', { class: 'sources-vol' }, h('summary', {}, tr.t('vol_sources')),
-        ...piedZmanim().slice(0, 1),
+        h('p', { class: 'indice sources' }, tr.t('vol_methodes')),
         h('p', { class: 'indice sources' }, tr.t('vol_source_aeroports')),
         h('p', { class: 'indice sources' }, tr.t('vol_source_adsbdb'))))));
 }

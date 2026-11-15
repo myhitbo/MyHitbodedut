@@ -8,7 +8,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
-import android.os.CancellationSignal
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import android.app.TimePickerDialog
@@ -50,10 +49,14 @@ class VolActivity : AppCompatActivity() {
     private var numero = ""
     private var depart: Vol.Aeroport? = null
     private var arrivee: Vol.Aeroport? = null
+    /** Le plan jugé invraisemblable pour lequel l'avertissement a déjà été donné (FVOL-12). */
+    private var avertiPour: Vol.Plan? = null
     private var decollage: LocalDateTime? = null
     private var atterrissage: LocalDateTime? = null
     private var calcul: Vol.Calcul? = null
     private var gpsEnCours = false
+    /** Arrête le relevé GPS en cours (écouteur et délai) : l'écouteur continu ne survit pas à l'écran (FVOL-15). */
+    private var arreterGps: (() -> Unit)? = null
     private val autorisationGps = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { r ->
         if (r[Manifest.permission.ACCESS_FINE_LOCATION] == true) releverGps() else message(getString(R.string.vol_gps_refuse))
     }
@@ -152,6 +155,11 @@ class VolActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         minuterie.removeCallbacks(rafraichir)
+    }
+
+    override fun onDestroy() {
+        arreterGps?.invoke()
+        super.onDestroy()
     }
 
     private val contenu get() = findViewById<LinearLayout>(R.id.vol_contenu)
@@ -461,12 +469,17 @@ class VolActivity : AppCompatActivity() {
         rapideTexte = getString(R.string.vol_rapide_lecture)
         afficherFormulaire()
         Thread {
-            val code = runCatching { LecteurBillet.code(this, uri) }.getOrNull()
+            val lecture = runCatching { LecteurBillet.code(this, uri) }
+            val code = lecture.getOrNull()
             val troncon = code?.let { CarteEmbarquement.lire(it, LocalDate.now()) }
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
                 if (troncon == null) {
-                    rapideTexte = getString(if (code == null) R.string.vol_rapide_billet_sans_code else R.string.vol_rapide_billet_illisible)
+                    rapideTexte = getString(when {
+                        lecture.isFailure -> R.string.vol_rapide_billet_echec
+                        code == null -> R.string.vol_rapide_billet_sans_code
+                        else -> R.string.vol_rapide_billet_illisible
+                    })
                     return@runOnUiThread afficherFormulaire()
                 }
                 appliquer(SaisieVol.Proposition(
@@ -501,7 +514,7 @@ class VolActivity : AppCompatActivity() {
         val detail = LinearLayout(this@VolActivity).apply {
             orientation = LinearLayout.VERTICAL
             visibility = View.GONE
-            addView(VueJour.texte(this@VolActivity, getString(R.string.zmanim_a_valider), 12f, R.color.muted))
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_methodes), 12f, R.color.muted))
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_source_aeroports), 12f, R.color.muted, haut = 6))
             if (BuildConfig.SUIVI_VOL) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_source_adsbdb), 12f, R.color.muted, haut = 4))
         }
@@ -701,6 +714,12 @@ class VolActivity : AppCompatActivity() {
         val garde = Store.vol(this, aeroports)?.takeIf { it.depart == d && it.arrivee == a && it.decollage == i1 && it.atterrissage == i2 }
         val plan = Vol.Plan(numero, d, a, i1, i2, garde?.releve, garde?.sourceReleve ?: Vol.SourceReleve.GPS)
         Vol.verifier(plan)?.let { return message(getString(invalide(it))) }
+        // Une durée que la distance ne permet pas : on avertit une fois, un second toucher passe outre (FVOL-12).
+        if (Vol.invraisemblable(plan) && avertiPour != plan.copy(releve = null)) {
+            avertiPour = plan.copy(releve = null)
+            val minutes = Duration.between(i1, i2).toMinutes().toInt()
+            return message(getString(R.string.vol_invraisemblable, Math.round(Vol.distanceKm(plan)).toString(), dureeEnMots(minutes)))
+        }
         Store.setVol(this, plan)
         Store.setVolArriveeEstimee(this, arriveeEstimee)
         modifier = false
@@ -924,7 +943,7 @@ class VolActivity : AppCompatActivity() {
     }
 
     /**
-     * Un relevé du GPS seul (pas le réseau : en vol, il n'y en a pas), 90 s au plus. Il recale la
+     * Un relevé du GPS seul (pas le réseau : en vol, il n'y en a pas), 2 min 30 au plus (écouteur continu : getCurrentLocation est coupé à moins d’une minute). Il recale la
      * route s'il tombe pendant le vol prévu ; sinon on le dit et la route prévue reste.
      */
     @SuppressLint("MissingPermission") // vérifiée par demanderGps
@@ -935,14 +954,19 @@ class VolActivity : AppCompatActivity() {
         afficherResultats()
         val delai = Handler(Looper.getMainLooper())
         var fini = false
-        val annulation = CancellationSignal()
         var ecouteur: LocationListener? = null
-        fun conclure(l: Location?) {
-            if (fini || isFinishing || isDestroyed) return
+        // L'écouteur et le délai sont retirés dans tous les cas, écran fermé compris : sinon le GPS
+        // resterait allumé, l'écouteur continu ne s'arrêtant pas seul.
+        fun arreter() {
             fini = true
             delai.removeCallbacksAndMessages(null)
-            annulation.cancel()
             ecouteur?.let { runCatching { lm.removeUpdates(it) } }
+            arreterGps = null
+        }
+        fun conclure(l: Location?) {
+            if (fini) return
+            arreter()
+            if (isFinishing || isDestroyed) return
             gpsEnCours = false
             if (l == null) {
                 afficherResultats()
@@ -950,24 +974,22 @@ class VolActivity : AppCompatActivity() {
             }
             appliquerReleve(Vol.Point(Instant.ofEpochMilli(l.time), l.latitude, l.longitude))
         }
+        arreterGps = { arreter() }
         delai.postDelayed({ conclure(null) }, GPS_MS)
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                lm.getCurrentLocation(LocationManager.GPS_PROVIDER, annulation, mainExecutor) { conclure(it) }
-            } else {
-                // Avant Android 11, les quatre méthodes de LocationListener sont abstraites (ChoixLieu).
-                val e = object : LocationListener {
-                    override fun onLocationChanged(location: Location) = conclure(location)
-                    override fun onProviderEnabled(provider: String) = Unit
-                    override fun onProviderDisabled(provider: String) = conclure(null)
+            // requestLocationUpdates sur toutes les versions (FVOL-15) : getCurrentLocation est plafonné
+            // par Android à moins d'une minute, trop court pour un premier relevé GPS en mode avion.
+            // Les quatre méthodes de LocationListener sont abstraites avant Android 11 (ChoixLieu).
+            val e = object : LocationListener {
+                override fun onLocationChanged(location: Location) = conclure(location)
+                override fun onProviderEnabled(provider: String) = Unit
+                override fun onProviderDisabled(provider: String) = conclure(null)
 
-                    @Deprecated("Android 10 et avant seulement")
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
-                }
-                ecouteur = e
-                @Suppress("DEPRECATION")
-                lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, e, Looper.getMainLooper())
+                @Deprecated("Android 10 et avant seulement")
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
             }
+            ecouteur = e
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 0f, e, Looper.getMainLooper())
         } catch (e: SecurityException) {
             conclure(null)
         } catch (e: IllegalArgumentException) {
@@ -1005,8 +1027,8 @@ class VolActivity : AppCompatActivity() {
 
     /**
      * L'interrupteur des services en ligne (02/11) : un seul, désactivé par défaut, pour la route
-     * d'un numéro (adsbdb) et le suivi en direct (OpenSky). Il figure dans le formulaire et sous
-     * les résultats ; le basculer redessine les deux, pour que la loupe suive.
+     * d'un numéro (adsbdb) et le suivi en direct (OpenSky). Il vit sous « Préciser la position », donc
+     * seulement après un calcul (04/11) ; le basculer redessine l'écran. Allumé, il redit ce qui part.
      */
     private fun ajouterInterrupteurEnLigne(carte: LinearLayout) {
         val actif = Store.suiviDirect(this)
@@ -1016,6 +1038,8 @@ class VolActivity : AppCompatActivity() {
             setOnCheckedChangeListener { _, v -> Store.setSuiviDirect(this@VolActivity, v); afficherFormulaire() }
         })
         if (!actif) carte.addView(VueJour.texte(this, getString(aideEnLigne), 12f, R.color.muted, haut = 2))
+        else if (fournisseurDirect != null) carte.addView(VueJour.texte(this, getString(
+            if (BuildConfig.RELAIS_VOL.startsWith("https://")) R.string.vol_direct_explication else R.string.vol_direct_explication_opensky), 12f, R.color.muted, haut = 2))
     }
 
     /** Le suivi en direct de cette construction ; null : pas de suivi en direct (construction Play sans relais). */
@@ -1039,7 +1063,7 @@ class VolActivity : AppCompatActivity() {
      * (et le départ s'il est vide) et l'indicatif du suivi en direct ; les heures restent à saisir.
      */
     private fun chercherRoute() {
-        // La loupe n'existe que services en ligne activés ; la garde tient même si elle réapparaissait.
+        // La loupe est toujours visible ; sans l'accord des services en ligne, la garde l'arrête ici.
         if (!BuildConfig.SUIVI_VOL || !Store.suiviDirect(this)) return
         if (RouteVol.normaliser(numero) == null) {
             routeTexte = getString(R.string.vol_route_invalide)
@@ -1169,7 +1193,10 @@ class VolActivity : AppCompatActivity() {
                 Vol.Reserve.ERREUR -> R.string.vol_reserve_erreur
                 Vol.Reserve.A_REBOURS -> R.string.vol_reserve_a_rebours
             }
-            addView(VueJour.texte(this@VolActivity, getString(texte), 14f, R.color.ink, haut = 8))
+            // Les zmanim absents, nommés à la suite de la réserve (FVOL-11).
+            val absents = if (r == Vol.Reserve.ABSENT && c.absents.isNotEmpty()) "\n" + getString(R.string.vol_reserve_absents,
+                c.absents.joinToString(", ") { Libelles.res("zman_$it")?.let(::getString) ?: it }) else ""
+            addView(VueJour.texte(this@VolActivity, getString(texte) + absents, 14f, R.color.ink, haut = 8))
         }
         val date = DateTimeFormatter.ofPattern("EEE d MMM", locale)
         c.lignesDate.forEach { l ->
@@ -1191,7 +1218,11 @@ class VolActivity : AppCompatActivity() {
         }
         val ecarts = c.enVol.mapNotNull { it.ecartSiRetard }.sorted()
         val median = ecarts.getOrNull(ecarts.size / 2)
-        if (median != null) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_frise_retard), 13f, R.color.muted, haut = 2))
+        if (median != null) {
+            val gps = calcul?.fiabilite != null && calcul?.fiabilite != Vol.Fiabilite.ROUTE_PREVUE
+            val signe = (if (median.isNegative) "−" else "+") + abs(median.toMinutes())
+            addView(VueJour.texte(this@VolActivity, getString(if (gps) R.string.vol_frise_retard_gps else R.string.vol_frise_retard, signe), 13f, R.color.muted, haut = 2))
+        }
         val frise = LinearLayout(this@VolActivity).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) }
@@ -1287,7 +1318,7 @@ class VolActivity : AppCompatActivity() {
         val CIEL = mapOf("chatsot_layla" to Ciel.NUIT, "tset" to Ciel.NUIT, "tset_rt" to Ciel.NUIT,
             "alot" to Ciel.AUBE, "misheyakir" to Ciel.AUBE, "netz" to Ciel.AUBE, "chkia" to Ciel.CREPUSCULE)
         const val RAFRAICHISSEMENT_MS = 30_000L
-        const val GPS_MS = 90_000L
+        const val GPS_MS = 150_000L
         const val ETAT_NUMERO = "vol_numero"
         const val ETAT_DEPART = "vol_depart"
         const val ETAT_ARRIVEE = "vol_arrivee"

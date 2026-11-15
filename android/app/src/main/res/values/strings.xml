@@ -1319,18 +1319,18 @@
     <string name="vol_duree_une_minute">1 minute</string>
     <string name="vol_duree_minutes">%1$s minutes</string>
     <string name="vol_sources">Méthode et sources</string>
+    <string name="vol_methodes">Méthodes : aube 16,1°, Michéyakir 11,5°, tsét 8,5° sous l’horizon ; Rabbénou Tam 72 min ; heures saisonnières du lever au coucher (Gra) ou de 72 min avant à 72 min après (Maguen Avraham). Calcul au niveau de la mer, sur l’appareil, sans réseau.</string>
     <string name="vol_frise_decollage">Décollage %1$s</string>
     <string name="vol_frise_atterrissage">Atterrissage %1$s</string>
     <string name="vol_frise_maintenant">Maintenant</string>
-    <string name="vol_frise_retard">Si le vol est retardé, les horaires changeront en conséquence.</string>
+    <string name="vol_frise_retard">Calculé pour les heures saisies. Avec 30 min de retard au départ, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure de décollage.</string>
+    <string name="vol_frise_retard_gps">Calculé pour les heures saisies. Avec 30 min de retard à l’arrivée, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure d’atterrissage, puis relevez de nouveau la position.</string>
     <string name="vol_fiabilite_court">📍 Estimation sur la route prévue</string>
     <string name="vol_comment_calcule">Comment c’est calculé ?</string>
     <string name="vol_preciser_titre">Préciser la position</string>
-    <string name="vol_route_aide">La loupe 🔍 remplit l’arrivée : seul le numéro part vers adsbdb.com. Les heures restent à saisir, celles du billet.</string>
     <string name="vol_modifier">Modifier</string>
     <string name="vol_route_bouton">Trouver l’arrivée par le numéro</string>
     <string name="vol_route_attente">Recherche du vol…</string>
-    <string name="vol_route_explication">Au toucher, seul le numéro du vol est envoyé à adsbdb.com (gratuit, sans compte). Il rend les escales connues et l’indicatif radio, pas les heures : elles restent à saisir, celles du billet.</string>
     <string name="vol_route_trouvee">%1$s : %2$s. Départ %3$s, arrivée %4$s. Route connue d’adsbdb.com, parfois ancienne : vérifiez-la sur le billet.</string>
     <string name="vol_route_autre_depart">D’après adsbdb.com, %1$s fait %2$s et ne part pas de %3$s. Vérifiez le numéro ou l’aéroport de départ ; la route connue peut être ancienne.</string>
     <string name="vol_route_inconnue">L’aéroport %1$s, donné par adsbdb.com, n’est pas dans la liste de l’application : choisissez-le à la main.</string>
@@ -1354,6 +1354,7 @@
     <string name="vol_invalide_arrivee_avant_depart">L’atterrissage doit suivre le décollage : vérifiez les dates, à l’heure de chaque aéroport.</string>
     <string name="vol_invalide_trop_long">Plus de 22 heures de vol : vérifiez la date d’arrivée.</string>
     <string name="vol_invalide_fuseau_inconnu">L’appareil ne connaît pas le fuseau horaire de cet aéroport.</string>
+    <string name="vol_invraisemblable">La durée ne correspond pas à la distance (%1$s km en %2$s) : vérifiez les dates et l’AM/PM, à l’heure de chaque aéroport. Touchez « Calculer » de nouveau si le vol est bien celui-là.</string>
     <string name="vol_priere_titre">Prière du moment</string>
     <string name="vol_jusqua">jusqu’à %1$s</string>
     <string name="vol_sans_limite">jusqu’à l’aube, sans limite affichée</string>
@@ -1369,10 +1370,10 @@
     <string name="vol_lon_est">%1$s° E</string>
     <string name="vol_lon_ouest">%1$s° O</string>
     <string name="vol_ecart">%1$s min si le départ a 30 min de retard</string>
-    <string name="vol_fiabilite_titre">Fiabilité</string>
-    <string name="vol_fiabilite">Estimation sur la route prévue (grand cercle, vitesse constante entre les heures saisies), pas la position réelle de l’avion. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil, sans réseau.</string>
+    <string name="vol_fiabilite">Estimation sur la route prévue (grand cercle, vitesse constante entre les heures saisies), pas la position réelle de l’avion. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil, sans réseau : vu de l’avion, vers 11 000 m, le soleil se lève plus tôt et se couche plus tard, d’un quart d’heure ou plus aux latitudes moyennes. Les heures saisonnières sont celles de la journée de ce point, pas de la journée vécue à bord.</string>
     <string name="vol_reserve_haute_latitude">La route passe au-delà de 60° de latitude : les méthodes en degrés et en minutes y donnent des heures très différentes, et certains zmanim manquent.</string>
-    <string name="vol_reserve_absent">Certains zmanim n’ont pas lieu sur une partie de la route (soleil de minuit ou nuit polaire).</string>
+    <string name="vol_reserve_absent">Certains zmanim n’ont pas lieu sur une partie de la route : au-delà d’environ 50° de latitude en été, le soleil ne descend pas assez pour l’aube (16,1°) ou la sortie des étoiles (8,5°) ; plus près des pôles, soleil de minuit ou nuit polaire.</string>
+    <string name="vol_reserve_absents">Absents sur une partie de la route : %1$s.</string>
     <string name="vol_reserve_erreur">Le calcul a échoué en un point de la route.</string>
     <string name="vol_reserve_a_rebours">L’avion va plus vite que le soleil vers l’ouest : un zman se produit plus d’une fois.</string>
     <string name="vol_ligne_date">Ligne de changement de date (méridien de 180°) franchie vers %1$s : la date locale passe du %2$s au %3$s.</string>
@@ -1395,7 +1396,6 @@
     <string name="vol_gps_hors_vol">Le relevé GPS ne sert que pendant le vol, entre le décollage et l’atterrissage prévus.</string>
     <string name="vol_fiabilite_gps">Route recalée sur le relevé GPS de %1$s (%2$s), puis grand cercle jusqu’à l’arrivée, à vitesse constante. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil, sans réseau.</string>
     <string name="vol_ecart_gps">%1$s min si l’arrivée a 30 min de retard</string>
-    <string name="vol_direct_titre">Suivi en direct (Internet)</string>
     <string name="vol_direct_explication">Désactivé par défaut. Activé, il envoie au relais de l’application l’indicatif du vol et la position estimée de l’avion, rien d’autre ; le relais demande la position réelle à OpenSky Network. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_direct_activer">Services en ligne : route du vol et suivi en direct</string>
     <string name="vol_route_activer">Services en ligne : route du vol</string>
@@ -1507,7 +1507,7 @@
     <string name="vol_en_ligne_titre">Chercher la route en ligne ?</string>
     <string name="vol_en_ligne_oui">Activer et chercher</string>
     <string name="vol_rapide_titre">Décrivez votre vol</string>
-    <string name="vol_rapide_aide">Comme vous le diriez, ou collez le texte du billet. Tout est lu sur le téléphone.</string>
+    <string name="vol_rapide_aide">Comme vous le diriez, ou collez le texte du billet. Tout est lu sur le téléphone. Un tronçon à la fois : pour une correspondance, saisissez le vol suivant à l’escale.</string>
     <string name="vol_rapide_exemple">Ex. : El Al Lyon → TLV demain à 11h</string>
     <string name="vol_rapide_remplir">Remplir le vol</string>
     <string name="vol_rapide_billet">Importer le billet (PDF ou photo)</string>
@@ -1520,6 +1520,7 @@
     <string name="vol_rapide_manque">Reste à indiquer : %1$s.</string>
     <string name="vol_rapide_lecture">Lecture du billet…</string>
     <string name="vol_rapide_billet_sans_code">Aucun code-barres de carte d’embarquement trouvé. Ouvrez le billet, copiez son texte et collez-le ci-dessus.</string>
+    <string name="vol_rapide_billet_echec">Le billet n’a pas pu être ouvert. Essayez une photo, ou copiez son texte et collez-le ci-dessus.</string>
     <string name="vol_rapide_billet_illisible">Un code-barres a été lu, mais ce n’est pas celui d’une carte d’embarquement.</string>
     <string name="vol_rapide_billet_lu">Carte d’embarquement lue (le code-barres ne porte pas les heures).</string>
 

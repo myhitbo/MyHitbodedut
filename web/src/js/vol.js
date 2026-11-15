@@ -111,6 +111,16 @@ export function verifier(plan) {
   return null;
 }
 
+/**
+ * Une durée que la distance ne permet pas (Vol.invraisemblable, FVOL-12) : plus de 1 100 km/h de
+ * moyenne, ou plus de deux fois la durée estimée (820 km/h + 30 min) plus 2 h. Avertit, sans bloquer.
+ */
+export function invraisemblable(plan) {
+  const km = distanceKm(plan.depart.latitude, plan.depart.longitude, plan.arrivee.latitude, plan.arrivee.longitude);
+  const heures = (+plan.atterrissage - +plan.decollage) / H;
+  return km > 1100 * heures || heures > 2 * (km / 820 + 0.5) + 2;
+}
+
 const rad = (d) => (d * Math.PI) / 180;
 const deg = (r) => (r * 180) / Math.PI;
 const vecteur = (lat, lon) => [Math.cos(rad(lat)) * Math.cos(rad(lon)), Math.cos(rad(lat)) * Math.sin(rad(lon)), Math.sin(rad(lat))];
@@ -186,7 +196,7 @@ function occurrences(p, signaler = () => {}) {
   for (const d of [decale(iso, -1), iso, decale(iso, 1)]) {
     for (const z of jourEn(lieu, d)) {
       if (z.statut === 'ok') (parCle[z.cle] ??= []).push(+z.instant);
-      else signaler(z.statut === 'absent' ? 'absent' : 'erreur');
+      else signaler(z.statut === 'absent' ? 'absent' : 'erreur', z.cle);
     }
   }
   return parCle;
@@ -228,6 +238,7 @@ function racine(plan, cle, a, oa, b, ob) {
 
 function calculerSeul(plan) {
   const reserves = new Set();
+  const absents = new Set();
   const dec = +plan.decollage;
   const att = +plan.atterrissage;
   const instants = [];
@@ -238,7 +249,11 @@ function calculerSeul(plan) {
     const p = position(plan, t);
     const enVol = t >= dec && t <= att;
     if (enVol && Math.abs(p.latitude) > LATITUDE_HAUTE) reserves.add('haute_latitude');
-    return { t, p, occ: occurrences(p, (r) => { if (enVol) reserves.add(r); }) };
+    return { t, p, occ: occurrences(p, (r, cle) => {
+      if (!enVol) return;
+      reserves.add(r);
+      if (r === 'absent') absents.add(cle);
+    }) };
   });
   const trouves = [];
   for (let i = 0; i < echantillons.length - 1; i++) {
@@ -266,7 +281,9 @@ function calculerSeul(plan) {
   trouves.sort((x, y) => x.instant - y.instant);
   const evenements = [];
   for (const e of trouves) if (!evenements.some((x) => x.cle === e.cle && Math.abs(x.instant - e.instant) < MIN)) evenements.push(e);
-  return { plan, evenements, reserves, lignesDate: lignesDate(plan, echantillons), fiabilite: !releveUtilisable(plan) ? 'route_prevue' : plan.sourceReleve === 'direct' ? 'releve_direct' : 'releve_gps' };
+  return { plan, evenements, reserves, lignesDate: lignesDate(plan, echantillons), fiabilite: !releveUtilisable(plan) ? 'route_prevue' : plan.sourceReleve === 'direct' ? 'releve_direct' : 'releve_gps',
+    // Les zmanim absents en un point du vol, dans l'ordre du profil (Vol.Calcul.absents, FVOL-11).
+    absents: CLES.filter((cle) => absents.has(cle)) };
 }
 
 /** Le passage du méridien de 180° en vol, et la date locale (fuseau nautique) de part et d'autre. */
