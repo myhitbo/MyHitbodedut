@@ -9,8 +9,8 @@
 > région, objectif quotidien, masquer le décompte, Chabbat et Yom Tov, pause aujourd'hui,
 > **export et import de la sauvegarde** (même fichier qu'Android). À l'accueil : « Je l'ai faite
 > sans le téléphone ». Restent propres à Android : rappels et notifications, barrière du matin,
-> vignettes, « Ne pas déranger », lecture du code-barres d'un billet, lien vers les règles de
-> confidentialité (l'humeur et la gratitude, la hitbodedout guidée et l'ajout de sa propre musique
+> vignettes, « Ne pas déranger », lecture du code-barres d'un billet (l'humeur et la gratitude,
+> la hitbodedout guidée, l'ajout de sa propre musique et le lien vers les règles de confidentialité
 > existent aussi sur le site). **Ce plan décrit l'état du 28/09** : il ignore l'onglet Zmanim (cinq
 > onglets aujourd'hui) et quatorze écrans (Tehilim, siddour et prière, zmanim, vol, boussole,
 > calendrier, trophées, hilloulot, halakha, recherche, 'hizouk, parcours, source du jour,

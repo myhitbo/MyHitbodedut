@@ -21,7 +21,7 @@ jusqu'à confirmation de la mise des tefillin.
 
 **Le principe.** Pendant une fenêtre horaire que vous définissez, par défaut
 06:00 à 11:00, l'ouverture d'une application que vous avez désignée fait
-apparaître un écran plein : « Tu as fait ta hitbodedout ? ». Trois issues :
+apparaître un écran plein : « Avez-vous fait votre hitbodedout ? ». Trois issues :
 commencer la séance tout de suite, déclarer qu'elle est déjà faite, ou reporter
 de quelques minutes. Une fois la journée validée, la barrière se tait jusqu'au
 lendemain.
