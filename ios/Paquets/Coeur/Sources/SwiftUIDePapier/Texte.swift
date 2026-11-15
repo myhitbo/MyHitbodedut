@@ -56,6 +56,7 @@ public protocol ShapeStyle: Sendable {}
 
 nonisolated public struct Color: ShapeStyle, View, Hashable {
     let nom: String
+    init(nom: String) { self.nom = nom }
     public init(red: Double, green: Double, blue: Double, opacity: Double = 1) { nom = "rvb" }
     public static let primary = Color(nom: "primary")
     public static let secondary = Color(nom: "secondary")
