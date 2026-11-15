@@ -69,21 +69,21 @@
     <string name="gate_permissions_title">Autorisations manquantes</string>
     <string name="gate_permissions_detail">Pour fonctionner, « Je suis avec Hachem » a besoin de deux accès : l’affichage par-dessus les autres applications et l’accès aux données d’utilisation.</string>
     <string name="gate_disabled_title">« Je suis avec Hachem » est éteint</string>
-    <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour que le mode agisse.</string>
+    <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour qu’il agisse.</string>
     <string name="gate_no_apps_title">Aucune application choisie</string>
-    <string name="gate_no_apps_detail">Le mode n’a rien à retenir. Choisissez au moins une application.</string>
+    <string name="gate_no_apps_detail">Il n’a rien à retenir. Choisissez au moins une application.</string>
     <string name="gate_stopped_title">Surveillance arrêtée</string>
     <string name="gate_stopped_detail">Tout est réglé, mais le service qui surveille ne tourne pas. Relancez-le, ou rouvrez l’application.</string>
     <string name="gate_stopped_action">Relancer le mode</string>
     <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
-    <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
+    <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Il reprendra demain.</string>
     <string name="gate_exempt_title">Jour sans obligation</string>
-    <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
+    <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : il se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
-    <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
+    <string name="gate_snoozed_detail">Vous avez demandé un délai. Il reprend à la fin du report.</string>
     <string name="gate_window_title">Hors de la fenêtre</string>
-    <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est retenu.</string>
+    <string name="gate_window_detail">Il agit entre %1$s et %2$s. En dehors, rien n’est retenu.</string>
 
     <!-- Actions -->
     <string name="action_start_session">Commencer une hitbodedout de %1$s</string>
@@ -532,7 +532,7 @@
     <string name="start_focus_on">le matin</string>
     <string name="start_focus_off">non</string>
     <string name="start_focus_setup">à régler</string>
-    <string name="start_focus_stopped">arrêtée</string>
+    <string name="start_focus_stopped">arrêté</string>
     <string name="settings_name">Prénom</string>
     <string name="settings_name_hint">Pour que l’accueil vous salue. Il ne quitte pas le téléphone.</string>
     <string name="settings_name_empty">Non renseigné</string>

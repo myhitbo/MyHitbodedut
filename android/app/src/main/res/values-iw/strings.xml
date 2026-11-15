@@ -64,7 +64,7 @@
     <string name="gate_permissions_title">חסרות הרשאות</string>
     <string name="gate_permissions_detail">כדי לפעול, „אני עם השם” צריך שתי גישות: הצגה מעל אפליקציות אחרות וגישה לנתוני שימוש.</string>
     <string name="gate_disabled_title">„אני עם השם” כבוי</string>
-    <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שהמצב יפעל.</string>
+    <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שיפעל.</string>
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
     <string name="gate_no_apps_detail">אין מה לעכב. בחרו לפחות אפליקציה אחת.</string>
     <string name="gate_stopped_title">הניטור הופסק</string>
@@ -72,13 +72,13 @@
     <string name="gate_stopped_action">להפעיל את המצב מחדש</string>
     <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
     <string name="gate_done_title">היום אושר</string>
-    <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
+    <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. „אני עם השם” יחזור מחר.</string>
     <string name="gate_exempt_title">יום ללא חובה</string>
-    <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב שותק והרצף נשמר.</string>
+    <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: „אני עם השם” שותק והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
-    <string name="gate_snoozed_detail">התבקשה דחייה. המצב יחזור בסיומה.</string>
+    <string name="gate_snoozed_detail">התבקשה דחייה. „אני עם השם” יחזור בסיומה.</string>
     <string name="gate_window_title">מחוץ לחלון</string>
-    <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לזה דבר לא מעוכב.</string>
+    <string name="gate_window_detail">„אני עם השם” פועל בין %1$s ל־%2$s. מחוץ לזה דבר לא מעוכב.</string>
 
     <string name="action_start_session">להתחיל התבודדות של %1$s</string>
     <string name="action_another_session">עוד התבודדות</string>

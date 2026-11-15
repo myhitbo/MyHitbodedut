@@ -63,21 +63,21 @@
     <string name="gate_permissions_title">Permissions missing</string>
     <string name="gate_permissions_detail">To work, “I am with Hashem” needs two accesses: display over other apps and usage access.</string>
     <string name="gate_disabled_title">“I am with Hashem” is off</string>
-    <string name="gate_disabled_detail">Turn on the “I am with Hashem” switch for the mode to act.</string>
+    <string name="gate_disabled_detail">Turn on the “I am with Hashem” switch for it to act.</string>
     <string name="gate_no_apps_title">No app selected</string>
-    <string name="gate_no_apps_detail">The mode has nothing to hold back. Choose at least one app.</string>
+    <string name="gate_no_apps_detail">It has nothing to hold back. Choose at least one app.</string>
     <string name="gate_stopped_title">Monitoring stopped</string>
     <string name="gate_stopped_detail">Everything is set, but the service that watches is not running. Restart it, or reopen the app.</string>
     <string name="gate_stopped_action">Restart the mode</string>
     <string name="gate_session_detail">The apps you chose stay blocked until the hitbodedut ends.</string>
     <string name="gate_done_title">Day confirmed</string>
-    <string name="gate_done_detail">Nothing will be held back today, except during a hitbodedut in progress. The mode returns tomorrow.</string>
+    <string name="gate_done_detail">Nothing will be held back today, except during a hitbodedut in progress. It returns tomorrow.</string>
     <string name="gate_exempt_title">Rest day</string>
-    <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: the mode is silent and the streak stays intact.</string>
+    <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: it is silent and the streak stays intact.</string>
     <string name="gate_snoozed_title">Snoozed</string>
-    <string name="gate_snoozed_detail">You asked for a delay. The mode returns when it ends.</string>
+    <string name="gate_snoozed_detail">You asked for a delay. It returns when the delay ends.</string>
     <string name="gate_window_title">Outside the window</string>
-    <string name="gate_window_detail">The mode acts between %1$s and %2$s. Outside that, nothing is held back.</string>
+    <string name="gate_window_detail">It acts between %1$s and %2$s. Outside that, nothing is held back.</string>
 
     <string name="action_start_session">Start a %1$s hitbodedut</string>
     <string name="action_another_session">Another hitbodedut</string>
