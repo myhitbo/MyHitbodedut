@@ -50,6 +50,7 @@ object ChabbatAlerte {
         val alarmes = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pending = intent(context)
         alarmes.cancel(pending)
+        if (!Store.chabbatAlerte(context)) return
         val lieu = Store.lieuAlertes(context) ?: return
         val minutes = Store.allumage(context)
         val quand = prochaine(ZonedDateTime.now()) { d -> Zmanim.allumage(lieu, d, minutes).local } ?: return

@@ -378,6 +378,11 @@ class SettingsActivity : AppCompatActivity() {
             renderLevanaRappel()
         }
         renderLevanaRappel()
+        bindSwitch(R.id.chabbat_alerte_switch, Store.chabbatAlerte(this)) {
+            Store.setChabbatAlerte(this, it)
+            ChabbatAlerte.programmer(this)
+            if (it) askNotifications()
+        }
         bindSwitch(R.id.hilloulot_switch, Store.hilloulotAffichees(this)) { Store.setHilloulotAffichees(this, it) }
         bindSwitch(R.id.halakha_switch, Store.halakhaAffichee(this)) { Store.setHalakhaAffichee(this, it) }
         bindSwitch(R.id.exempt_today_switch, Store.pausedDates(this).contains(Store.today())) {

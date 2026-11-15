@@ -1073,6 +1073,7 @@
     <string name="levana_rappel_dernier">Birkat HaLevana: final night</string>
     <string name="levana_rappel_texte">Tap to open the text.</string>
     <string name="levana_rappel_reglage">Birkat HaLevana reminder</string>
+    <string name="chabbat_alerte_reglage">“Shabbat in 3 hours” alert</string>
     <string name="levana_lire">Read Birkat HaLevana ›</string>
     <string name="widget_zmanim_label">MyHitbodedut Zmanim</string>
     <string name="widget_zmanim_description">The Hebrew date, the prayer of the moment, the next three zmanim and the streak.</string>

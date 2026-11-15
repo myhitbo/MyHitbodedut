@@ -1125,6 +1125,7 @@
     <string name="levana_rappel_dernier">Birkat haLevana : dernier soir</string>
     <string name="levana_rappel_texte">Touchez pour ouvrir le texte.</string>
     <string name="levana_rappel_reglage">Rappel de Birkat haLevana</string>
+    <string name="chabbat_alerte_reglage">Alerte « Chabbat dans 3 h »</string>
     <string name="levana_lire">Lire Birkat haLevana ›</string>
     <string name="widget_zmanim_label">Zmanim MyHitbodedut</string>
     <string name="widget_zmanim_description">La date hébraïque, la prière du moment, les trois prochains zmanim et la série.</string>

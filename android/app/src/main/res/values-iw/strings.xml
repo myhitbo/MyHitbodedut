@@ -1108,6 +1108,7 @@
     <string name="levana_rappel_dernier">ברכת הלבנה: הלילה האחרון</string>
     <string name="levana_rappel_texte">לחצו לפתיחת הנוסח.</string>
     <string name="levana_rappel_reglage">תזכורת לברכת הלבנה</string>
+    <string name="chabbat_alerte_reglage">התראת „שבת בעוד 3 שעות”</string>
     <string name="levana_lire">לנוסח ברכת הלבנה ›</string>
     <string name="widget_zmanim_label">זמנים MyHitbodedut</string>
     <string name="widget_zmanim_description">התאריך העברי, התפילה של השעה, שלושת הזמנים הבאים והרצף.</string>
