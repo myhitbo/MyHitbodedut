@@ -196,24 +196,24 @@
     <string name="hitbodedut_sihah">Say what is on your heart</string>
     <string name="hitbodedut_sihah_invite">Speak in your own language, as you would to someone. Everything on your heart, unrehearsed.</string>
     <string name="hitbodedut_harata">Regret for the past</string>
-    <string name="hitbodedut_harata_invite">Say what you regret, and say it plainly. Regret before Him is not a trial.</string>
+    <string name="hitbodedut_harata_invite">Say what you regret, and say it plainly. Regret before Him is not putting yourself on trial.</string>
     <string name="hitbodedut_bakasha">Asking</string>
     <string name="hitbodedut_bakasha_invite">Ask for what you lack, and first of all to be brought close to Him. Even for what feels out of your reach.</string>
     <string name="hitbodedut_torah">Turn learning into prayer</string>
     <string name="hitbodedut_torah_invite">Take a teaching you heard today, and ask to reach it yourself.</string>
-    <string name="hitbodedut_hodaa">Thanksgiving</string>
+    <string name="hitbodedut_hodaa">Giving thanks</string>
     <string name="hitbodedut_hodaa_invite">Give thanks for what you have been given, each as far as you are able. This is how you take leave.</string>
     <string name="onboarding_step">%1$d / %2$d</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_back">Back</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_start">Start</string>
-    <string name="onboarding_practice">Simply speaking</string>
+    <string name="onboarding_practice">Just talk</string>
     <string name="onboarding_practice_body">Hitbodedut means withdrawing alone for a while each day and speaking to Hashem in your own language, as you would to someone. No formula to recite, no level to reach.</string>
     <string name="onboarding_private">Your writing stays here</string>
     <string name="onboarding_private_body">The app only connects to the Internet when you ask it to: live flight tracking asks OpenSky Network for the aircraft in an approximate area, without sending the flight’s callsign; looking up a flight number sends only that number to adsbdb.com. What you write stays on this phone, and only you can take it out, through the export.</string>
     <string name="onboarding_private_body_route">The app only connects to the Internet when you ask it to: looking up a flight number sends only that number to adsbdb.com. What you write stays on this phone, and only you can take it out, through the export.</string>
-    <string name="blocker_session_open_subtitle">Open hitbodedut, %1$s so far. The phone can wait.</string>
+    <string name="blocker_session_open_subtitle">Hitbodedut with no set length, %1$s so far. The phone can wait.</string>
     <string name="session_done_title">You spoke with Hashem today</string>
     <string name="session_done_text">%1$s of hitbodedut. Tap to leave a note.</string>
 
@@ -499,11 +499,11 @@
     <string name="villes_echec_web">The list of cities could not be loaded. Check your connection, then try again.</string>
     <string name="reset_hint_web">Erases what the app keeps in this browser: journal, hitbodedut days, streaks, trophies, settings and added tracks. Export your data first if you want to keep it.</string>
     <string name="reset_confirm_text_web">The journal, hitbodedut days, streaks, trophies, settings and added tracks will be erased from this browser. This cannot be undone.</string>
-    <string name="adresse_tsadik">Tsadik</string>
-    <string name="adresse_tsadeket">Tsadeket</string>
+    <string name="adresse_tsadik">Tzaddik</string>
+    <string name="adresse_tsadeket">Tzaddeket</string>
     <string name="adresse_none">Not chosen</string>
-    <string name="celebration_tsadik">Well done, Tsadik!</string>
-    <string name="celebration_tsadeket">Well done, Tsadeket!</string>
+    <string name="celebration_tsadik">Well done, Tzaddik!</string>
+    <string name="celebration_tsadeket">Well done, Tzaddeket!</string>
     <string name="celebration_neutral">Well done!</string>
     <string name="celebration_continue">Continue</string>
     <string name="settings_adresse">Address me as</string>
@@ -902,7 +902,7 @@
     <string name="celebration_titre">Mazal tov!</string>
     <string name="trophees_paliers_titre">Trophies and milestones</string>
     <string name="trophees_titre">Trophies</string>
-    <string name="grade_titre">%1$s grade</string>
+    <string name="grade_titre">%1$s rank</string>
     <plurals name="grade_sous">
         <item quantity="one">%1$d trophy earned · %2$d more for %3$s</item>
         <item quantity="other">%1$d trophies earned · %2$d more for %3$s</item>
@@ -911,7 +911,7 @@
         <item quantity="one">%1$d trophy earned</item>
         <item quantity="other">%1$d trophies earned</item>
     </plurals>
-    <string name="grade_atteint">%1$s grade reached</string>
+    <string name="grade_atteint">%1$s rank reached</string>
     <string name="grade_au">at trophy %1$d</string>
     <string name="trophee_gagne">Earned ✓</string>
     <string name="trophees_ici">YOU ARE HERE · NEXT GOAL</string>
@@ -920,8 +920,8 @@
         <item quantity="one">… and %1$d more trophy further on</item>
         <item quantity="other">… and %1$d more trophies further on</item>
     </plurals>
-    <string name="grade_nouveau">New grade: %1$s</string>
-    <string name="grade_prochain">Next grade: %1$s, at trophy %2$d.</string>
+    <string name="grade_nouveau">New rank: %1$s</string>
+    <string name="grade_prochain">Next rank: %1$s, at trophy %2$d.</string>
     <string name="trophees_prochain">Next trophy</string>
     <string name="trophees_gagnes">Earned · %1$d</string>
     <string name="trophees_a_venir">Coming up · %1$d</string>
@@ -1020,8 +1020,8 @@
     <string name="trophee_sommet">Highest level reached</string>
     <string name="trophee_vedette">Your finest trophy</string>
     <string name="trophee_vedette_aucune">Your first trophy is waiting</string>
-    <string name="chabbat_alerte_titre">Shabbat in 3 hours, get ready to enjoy!</string>
-    <string name="chabbat_alerte_texte">Double neshama, double joy and double meals! Try a double hitbodedut.</string>
+    <string name="chabbat_alerte_titre">Shabbat in 3 hours: get ready to enjoy it!</string>
+    <string name="chabbat_alerte_texte">A little time for hitbodedut before Shabbat. Shabbat shalom!</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">Books</string>
     <string name="livres_hint">Likutei Moharan, Hishtapchut HaNefesh, Kochvei Or, megillot, Perek Shira, Nishmat…</string>
@@ -1123,10 +1123,10 @@
     <string name="trophees_filtre_tous">All</string>
     <string name="trophees_filtre">Show trophies: %1$s</string>
     <string name="accueil_prochain_trophee">Next trophy: %1$s · %2$d to go</string>
-    <string name="grade_partager">Share my grade</string>
+    <string name="grade_partager">Share my rank</string>
     <plurals name="grade_partage_texte">
-        <item quantity="one">%1$s grade on MyHitbodedut: %2$d trophy, day after day.</item>
-        <item quantity="other">%1$s grade on MyHitbodedut: %2$d trophies, day after day.</item>
+        <item quantity="one">%1$s rank on MyHitbodedut: %2$d trophy, day after day.</item>
+        <item quantity="other">%1$s rank on MyHitbodedut: %2$d trophies, day after day.</item>
     </plurals>
     <string name="bilan_titre">Your week</string>
     <string name="bilan_minutes">%1$s of hitbodedut, over %2$s.</string>
@@ -1386,7 +1386,7 @@
 
     <!-- La boussole de Jérusalem (28/10, design C). -->
     <string name="boussole_title">Toward Jerusalem</string>
-    <string name="boussole_carte_sous">Choose a place: the chassid turns toward Jerusalem.</string>
+    <string name="boussole_carte_sous">Choose a place: the figure turns toward Jerusalem.</string>
     <string name="boussole_face">Facing Jerusalem</string>
     <string name="boussole_droite">Turn right %1$d°</string>
     <string name="boussole_gauche">Turn left %1$d°</string>
@@ -1400,9 +1400,9 @@
     <string name="boussole_calibrer">Compass not accurate: draw a figure 8 in the air with the phone.</string>
     <string name="boussole_sans_capteur">This phone has no compass: the direction is given relative to north, at the top.</string>
     <string name="boussole_note_titre">Two ways to calculate</string>
-    <string name="boussole_note">The direction of Jerusalem can be calculated in two ways. By the great circle, the real direction on the globe: the Shulchan Aruch HaRav (Orach Chaim 94:2), Rabbi Yaakov Emden’s Mor uKetziah (150) and others consider it preferable; from New York, about 54°. By the straight line on a Mercator map (constant heading), as read for example in the Levush (Orach Chaim 94): from New York, about 96°. The Equal Earth map, recommended by the UN since September 2026, is for comparing the size of continents; it does not give a direction. The chassid follows the one you choose under “Direction followed” (by default, the real direction); the other stays on screen for information. Calculated on the device, toward Har haBayit (31.7781° N, 35.2354° E), corrected for the local magnetic declination.</string>
+    <string name="boussole_note">The direction of Jerusalem can be calculated in two ways. By the great circle, the real direction on the globe: the Shulchan Aruch HaRav (Orach Chaim 94:2), Rabbi Yaakov Emden’s Mor uKetziah (150) and others consider it preferable; from New York, about 54°. By the straight line on a Mercator map (constant heading), as read for example in the Levush (Orach Chaim 94): from New York, about 96°. The figure follows the one you choose under “Direction followed” (by default, the real direction); the other stays on screen for information. Calculated on the device, toward Har haBayit (31.7781° N, 35.2354° E), corrected for the local magnetic declination.</string>
     <string name="boussole_widget_label">Direction of Jerusalem</string>
-    <string name="boussole_widget_description">The chassid and the direction of Jerusalem from your zmanim location, relative to north. Tap to open the compass.</string>
+    <string name="boussole_widget_description">The figure and the direction of Jerusalem from your zmanim location, relative to north. Tap to open the compass.</string>
     <string name="boussole_widget_lecture">Jerusalem from %1$s: %2$d° from north</string>
     <string name="boussole_source">Source: %1$s</string>
     <!-- Le web seulement : l’iPhone demande l’autorisation après un toucher. -->
@@ -1412,7 +1412,7 @@
     <string name="boussole_methode_carte">Along the Mercator map (constant heading)</string>
     <string name="boussole_legende_carte">The ירושלים label (on the rose, the gold needle) follows the direction on the map; the dashed blue mark shows the real direction, for information.</string>
     <string name="boussole_affichage">Compass display</string>
-    <string name="boussole_affichage_hassid">The chassid turns (default)</string>
+    <string name="boussole_affichage_hassid">The figure turns (default)</string>
     <string name="boussole_affichage_rose">Compass rose</string>
     <!-- Reprend la position, approximative (ChoixLieu.maPosition, 31/10). -->
     <string name="boussole_actualiser_position">Update my location</string>

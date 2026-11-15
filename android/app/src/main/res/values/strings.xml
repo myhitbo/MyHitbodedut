@@ -215,7 +215,7 @@
     <string name="hitbodedut_harata">Le regret du passé</string>
     <string name="hitbodedut_harata_invite">Dites ce que vous regrettez, et dites-le simplement. Le regret devant Lui n’est pas un procès.</string>
     <string name="hitbodedut_bakasha">La demande</string>
-    <string name="hitbodedut_bakasha_invite">Demandez ce qui vous manque, et d’abord d’être rapproché de Lui. Même ce dont vous vous croyez trop loin.</string>
+    <string name="hitbodedut_bakasha_invite">Demandez ce qui vous manque, et d’abord de vous rapprocher de Lui. Même ce dont vous vous croyez trop loin.</string>
     <string name="hitbodedut_torah">Faire de l’étude une prière</string>
     <string name="hitbodedut_torah_invite">Reprenez un enseignement entendu aujourd’hui, et demandez d’y parvenir vous aussi.</string>
     <string name="hitbodedut_hodaa">L’action de grâce</string>
@@ -348,25 +348,25 @@
     <string name="track_niggoun_33">Niggoun 33</string>
     <string name="track_yanuka_nigoun_3" translatable="false">ניגון — הינוקא (3)</string>
     <string name="track_shpayer_beyond" translatable="false">Beyond — Noam Shpayer</string>
-    <string name="track_shpayer_eshet_hayil">Eshet \'Hayil — Or &amp; Noam Shpayer</string>
+    <string name="track_shpayer_eshet_hayil">Eshet ’Hayil — Or &amp; Noam Shpayer</string>
     <string name="track_shpayer_arba_bavot" translatable="false">Arba Bavot — Or &amp; Noam Shpayer</string>
     <string name="track_shpayer_afilou">Afilou (Even) — Noam Shpayer</string>
     <string name="track_shpayer_kenout">Kenout (Sincerity) — Noam Shpayer</string>
     <string name="track_shpayer_esh_kamanche" translatable="false">Fire (kamanche) — Noam Shpayer</string>
     <string name="track_shpayer_hithadshout">Hit\'hadchout (Awakening) — Noam Shpayer</string>
     <string name="track_shpayer_pnima" translatable="false">Pnima (Inward) — Noam Shpayer</string>
-    <string name="track_shpayer_tunnels_end" translatable="false">Tunnel\'s End — Noam Shpayer</string>
+    <string name="track_shpayer_tunnels_end" translatable="false">Tunnel’s End — Noam Shpayer</string>
     <string name="track_shpayer_ki_hine_kahomer">Niggoun « Ki hiné ka\'homer » — Noam Shpayer</string>
     <string name="track_ianir_mirage" translatable="false">Mirage (Into the Moment) — Ianir</string>
     <string name="track_ianir_al_harega" translatable="false">Al haRega (Into the Moment) — Ianir</string>
     <string name="track_ianir_hello" translatable="false">Hello (Into the Moment) — Ianir</string>
     <string name="track_ianir_baal_shem_tov">Niggoun du Baal Chem Tov — Ianir</string>
-    <string name="track_ianir_zemer_bishvahin">Zemer bichva\'hin (titre incertain) — Ianir</string>
+    <string name="track_ianir_zemer_bishvahin">Zemer bichva’hin — Ianir</string>
     <string name="track_ianir_berditchev">Niggoun de Berditchev — Ianir</string>
-    <string name="track_ianir_kol_bayaar">Kol baYa\'ar (Niggoun du Saba de Chpola) — Ianir</string>
-    <string name="track_ianir_yohanan_hasandlar">Niggoun de Rabbi Yo\'hanan HaSandlar — Ianir</string>
+    <string name="track_ianir_kol_bayaar">Kol baYa’ar (Niggoun du Saba de Chpola) — Ianir</string>
+    <string name="track_ianir_yohanan_hasandlar">Niggoun de Rabbi Yo’hanan HaSandlar — Ianir</string>
     <string name="track_ianir_haleluhu" translatable="false">Haleluhu — Ianir</string>
-    <string name="track_ianir_houppa">Niggoun de \'Houppa — Ianir</string>
+    <string name="track_ianir_houppa">Niggoun de ’Houppa — Ianir</string>
     <string name="track_ianir_eden_el_salvador" translatable="false">Eden / El Salvador — Ianir</string>
     <string name="track_ianir_hakol_milfanekha" translatable="false">HaKol milfanekha — Ianir</string>
     <string name="track_ianir_kabbalat_chabbat">Niggoun de Kabbalat Chabbat (live) — Ianir</string>
@@ -404,13 +404,13 @@
     <string name="tips_hint">Dix repères pour commencer et pour tenir.</string>
     <string name="tips_open">Lire les conseils</string>
     <string name="tip_1_title">Choisissez un lieu calme et à l’écart</string>
-    <string name="tip_1_body">Le premier pas de la hitbodedout est de trouver un endroit calme, où vous pouvez être seul avec vous-même et avec Hachem. Il n’a pas besoin d’être totalement isolé, mais vous ne devez pas y être dérangé. Une pièce libre chez vous, une plage tranquille, un coin de nature. Si vous le pouvez, préférez un cadre naturel : la nature elle-même peut être une source de calme intérieur.</string>
+    <string name="tip_1_body">Le premier pas de la hitbodedout est de trouver un endroit calme, où vous pouvez rester en tête-à-tête avec vous-même et avec Hachem. Il n’a pas besoin d’être totalement isolé, mais rien ne doit vous y déranger. Une pièce libre chez vous, une plage tranquille, un coin de nature. Si vous le pouvez, préférez un cadre naturel : la nature elle-même peut être une source de calme intérieur.</string>
     <string name="tip_2_title">Fixez un temps chaque jour</string>
     <string name="tip_2_body">Si vous débutez, commencez court. Accordez quinze minutes par jour à la hitbodedout, puis allongez peu à peu, jusqu’à une heure si vous le pouvez. Ne sautez pas d’emblée à une longue hitbodedout. Avancez pas à pas, pour que cela devienne une habitude et non un fardeau. Fixez une heure régulière, afin que la pratique entre dans votre journée au lieu de rester un geste au hasard.</string>
     <string name="tip_3_title">Commencez par parler</string>
     <string name="tip_3_body">Commencez la hitbodedout en parlant à Hachem, avec vos mots, à voix basse s’il le faut. Ne vous inquiétez pas si au début vous ne savez pas quoi dire. Ouvrez simplement le cœur et lancez-vous. Ce peut être une demande de pardon, une prière toute simple sur ce que vous ressentez, ou un merci. La hitbodedout n’a pas à être ordonnée ni préparée d’avance. C’est un lieu où déposer ce qui est dans votre cœur et vous tourner vers Hachem.</string>
     <string name="tip_4_title">Écartez les appareils</string>
-    <string name="tip_4_body">Si vous voulez vraiment être seul avec vous-même, écartez complètement les appareils pendant la hitbodedout. Éteignez le téléphone, ou laissez-le dans une autre pièce. Plus vous êtes libre des distractions extérieures, mieux vous vous reliez à vous-même et à Hachem. Se couper du dehors aide à se concentrer et à rejoindre le calme intérieur.</string>
+    <string name="tip_4_body">Si vous voulez vraiment vous retrouver face à vous-même, écartez complètement les appareils pendant la hitbodedout. Éteignez le téléphone, ou laissez-le dans une autre pièce. Plus vous êtes libre des distractions extérieures, mieux vous vous reliez à vous-même et à Hachem. Se couper du dehors aide à se concentrer et à rejoindre le calme intérieur.</string>
     <string name="tip_5_title">Commencez par les Tehilim, ou vos propres mots</string>
     <string name="tip_5_body">Si vous ne savez pas par où commencer, ouvrez les Tehilim et lisez quelques chapitres. Les Psaumes sont une prière déjà formée, très directe, qui touche l’âme. Dans la hitbodedout, ils peuvent être un fil spirituel qui mène droit à Hachem. Et si les mots vous manquent, vous pouvez simplement parler à Hachem librement, Lui confier vos pensées et ce que vous ressentez.</string>
     <string name="tip_6_title">Posez-vous des questions intérieures</string>
@@ -513,7 +513,7 @@
     <string name="theme_croissance">Travail sur soi</string>
     <string name="theme_autre">Autre chose</string>
     <string name="hero_greeting_morning">Bonjour, %1$s</string>
-    <string name="hero_greeting_afternoon">Bon après-midi, %1$s</string>
+    <string name="hero_greeting_afternoon">Bonjour, %1$s</string>
     <string name="hero_greeting_evening">Bonsoir, %1$s</string>
     <string name="nav_today">Aujourd’hui</string>
     <string name="nav_texts">Bibliothèque</string>
@@ -706,7 +706,7 @@
     <string name="siddur_signets">Sections</string>
     <string name="siddur_nusah_edot">Séfarade (Edot HaMizra’h)</string>
     <string name="siddur_nusah_sefard">Sfard (Arizal)</string>
-    <string name="siddur_nusah_ashkenaz">Ashkenaz</string>
+    <string name="siddur_nusah_ashkenaz">Achkenaz</string>
     <string name="siddur_sources">Sources : %1$s</string>
     <string name="siddur_tehilim_he" translatable="false">סֵפֶר תְּהִלִּים</string>
     <string name="siddur_tikkun_he" translatable="false">הַתִּקּוּן הַכְּלָלִי</string>
@@ -926,7 +926,7 @@
     <string name="hilloulot_aucune">Aucune hilloula ce jour</string>
     <string name="hilloulot_resultats">Résultats : %1$d</string>
     <string name="hilloula_source_wiki">Wikipédia (CC BY-SA)</string>
-    <string name="hilloula_source_hyomi">HaHakham HaYomi</string>
+    <string name="hilloula_source_hyomi">Ha’Hakham HaYomi</string>
     <string name="hilloula_source_mytzadik">MyTzadik</string>
     <string name="hilloula_source_hameir">HaMéir LaArets</string>
     <string name="hilloula_source_hidabroot">Lire sur Hidabroot</string>
@@ -948,7 +948,7 @@
     <string name="halakha_recherche">Rechercher dans la halakha</string>
     <string name="halakha_aucune">Pas de halakha pour ce jour</string>
     <string name="halakha_tout">Toute la halakha du jour ›</string>
-    <string name="halakha_livre">Yalkut Yosef, Kitsour Choul’han Aroukh</string>
+    <string name="halakha_livre">Yalkout Yossef, Kitsour Choul’han Aroukh</string>
     <string name="halakha_note">Texte original en hébreu, verbatim.</string>
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">Mazal tov !</string>
@@ -980,7 +980,7 @@
     <string name="trophees_aucun_gagne">Pas encore de trophée : le premier arrive avec votre première hitbodedout.</string>
     <string name="trophees_tous">Tous les trophées sont gagnés !</string>
     <string name="trophees_compte">%1$d sur %2$d</string>
-    <string name="trophees_paliers">🏆  Trophées</string>
+    <string name="trophees_paliers">🏆 Trophées</string>
     <string name="channel_celebration">Paliers et trophées</string>
     <string name="channel_celebration_description">Une fête quand un palier ou un trophée est atteint</string>
     <string name="reset_title">Réinitialiser l’application</string>
@@ -991,7 +991,7 @@
     <string name="reset_confirm_yes">Tout effacer</string>
     <string name="reset_confirm_no">Annuler</string>
     <string name="partage_action">Partager ma hitbodedout</string>
-    <string name="partage_texte">Aujourd’hui, j’ai fait %1$s de hitbodedout, un moment seul à seul avec Hachem.</string>
+    <string name="partage_texte">Aujourd’hui, j’ai fait %1$s de hitbodedout, un moment en tête-à-tête avec Hachem.</string>
     <string name="partage_serie">Série : %1$d jours d’affilée.</string>
     <string name="partage_lien">Essayez, vous aussi, gratuitement : %1$s</string>
     <string name="partage_choix">Partager</string>
@@ -1073,14 +1073,14 @@
     <string name="trophee_vedette">Votre plus beau trophée</string>
     <string name="trophee_vedette_aucune">Votre premier trophée vous attend</string>
     <string name="chabbat_alerte_titre">Chabbat dans 3 h : préparez-vous à en profiter !</string>
-    <string name="chabbat_alerte_texte">Double neshama, double simha et double repas ! Tentez une double hitbodedout.</string>
+    <string name="chabbat_alerte_texte">Encore le temps d’une hitbodedout avant Chabbat. Chabbat chalom !</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">Livres</string>
     <string name="livres_hint">Likoutei Moharan, Hichtapkhout HaNefech, Kokhvei Or, méguilot, Perek Chira, Nichmat…</string>
     <string name="livres_pied">Yalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef. Texte : Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5). Traductions française et anglaise automatiques, partielles et non relues, sous la même licence.\nLes autres traductions, françaises et anglaises, sont faites par ordinateur et non relues : l’hébreu fait foi.</string>
     <!-- La halakha du jour : le Yalkut Yosef, puis le Ben Ish 'Haï (13/10) -->
-    <string name="halakha_ben_ish_hai">Ben Ish ’Haï, paracha de la semaine</string>
-    <string name="halakha_yalkut_source">Yalkut Yosef – Kitsour Choul’han Aroukh, Rav Yitzhak Yosef (texte de Torat Emet, CC BY-NC-SA 2.5) : une sélection, non le livre entier.</string>
+    <string name="halakha_ben_ish_hai">Ben Ich ’Haï, paracha de la semaine</string>
+    <string name="halakha_yalkut_source">Yalkout Yossef — Kitsour Choul’han Aroukh, Rav Yits’hak Yossef (texte de Torat Emet, CC BY-NC-SA 2.5) : une sélection, non le livre entier.</string>
     <!-- Birkat haLevana sur la carte du jour (13/10) -->
     <string name="levana_titre">Birkat haLevana</string>
     <string name="levana_fenetre">Du %1$s au %2$s</string>
@@ -1103,8 +1103,8 @@
     <string name="section_zmanim_ecran_hint">Ce qui s’affiche sous les horaires, et le livre de la halakha du jour.</string>
     <string name="reglage_levana">Afficher Birkat haLevana</string>
     <string name="halakha_source_titre">Livre de la halakha</string>
-    <string name="halakha_source_yalkut">Yalkut Yosef</string>
-    <string name="halakha_source_bih">Ben Ish ’Haï</string>
+    <string name="halakha_source_yalkut">Yalkout Yossef</string>
+    <string name="halakha_source_bih">Ben Ich ’Haï</string>
     <string name="halakha_source_deux">Les deux</string>
     <string name="zmanim_bouton_halakha">Halakha yomit</string>
     <string name="zmanim_bouton_hilloulot">Hilloulot</string>
@@ -1438,7 +1438,7 @@
 
     <!-- La boussole de Jérusalem (28/10, design C). -->
     <string name="boussole_title">Vers Jérusalem</string>
-    <string name="boussole_carte_sous">Choisissez un lieu : le hassid se tourne vers Jérusalem.</string>
+    <string name="boussole_carte_sous">Choisissez un lieu : le personnage se tourne vers Jérusalem.</string>
     <string name="boussole_face">Face à Jérusalem</string>
     <string name="boussole_droite">Tournez à droite de %1$d°</string>
     <string name="boussole_gauche">Tournez à gauche de %1$d°</string>
@@ -1452,9 +1452,9 @@
     <string name="boussole_calibrer">Boussole peu précise : dessinez un 8 dans l’air avec le téléphone.</string>
     <string name="boussole_sans_capteur">Ce téléphone n’a pas de boussole : la direction est donnée par rapport au nord, en haut.</string>
     <string name="boussole_note_titre">Deux façons de calculer</string>
-    <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ‘Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ‘Haïm 94) : de New York, environ 96°. La carte Equal Earth, que l’ONU recommande depuis septembre 2026, sert à comparer la surface des continents ; elle ne donne pas de direction. Le hassid suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
+    <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ’Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ’Haïm 94) : de New York, environ 96°. Le personnage suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
     <string name="boussole_widget_label">Direction de Jérusalem</string>
-    <string name="boussole_widget_description">Le hassid et la direction de Jérusalem depuis le lieu des zmanim, par rapport au nord. Le toucher ouvre la boussole.</string>
+    <string name="boussole_widget_description">Le personnage et la direction de Jérusalem depuis le lieu des zmanim, par rapport au nord. Le toucher ouvre la boussole.</string>
     <string name="boussole_widget_lecture">Jérusalem depuis %1$s : %2$d° depuis le nord</string>
     <string name="boussole_source">Source : %1$s</string>
     <string name="boussole_source_titre" translatable="false">Chabad.org, “Why Do We Face East When Praying? Or Do We?”</string>
@@ -1465,7 +1465,7 @@
     <string name="boussole_methode_carte">Selon la carte de Mercator (cap constant)</string>
     <string name="boussole_legende_carte">L’étiquette ירושלים (sur la rose, l’aiguille d’or) suit la direction sur la carte ; le pointillé bleu montre la direction réelle, pour information.</string>
     <string name="boussole_affichage">Affichage de la boussole</string>
-    <string name="boussole_affichage_hassid">Le hassid se tourne (par défaut)</string>
+    <string name="boussole_affichage_hassid">Le personnage se tourne (par défaut)</string>
     <string name="boussole_affichage_rose">Rose des vents</string>
     <!-- Reprend la position, approximative (ChoixLieu.maPosition, 31/10). -->
     <string name="boussole_actualiser_position">Actualiser ma position</string>
