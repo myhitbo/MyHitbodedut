@@ -275,7 +275,7 @@ route (`VolPriere`).
 TLV demain à 11h », un texte de billet collé) ; `LecteurBillet` (ZXing,
 Apache 2.0, licence dans `assets/licences/`) cherche le code-barres d'une
 carte d'embarquement dans un PDF (quatre pages au plus, une à la fois) ou une
-photo. `CarteEmbarquement` lit le format BCBP : seuls le **premier tronçon**
+photo. `CarteEmbarquement` lit le format BCBP : seul le **premier tronçon**
 (aéroports, compagnie, numéro, jour du vol) est retenu, ni le nom ni le numéro
 de réservation. Le code ne porte pas les heures : l'arrivée est estimée d'après
 la distance (820 km/h + 30 min), dite comme telle, à corriger avec le billet.

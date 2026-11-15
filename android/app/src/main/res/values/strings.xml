@@ -1327,7 +1327,7 @@
     <string name="vol_frise_atterrissage">Atterrissage %1$s</string>
     <string name="vol_frise_maintenant">Maintenant</string>
     <string name="vol_frise_retard">Calculé pour les heures saisies. Avec 30 min de retard au départ, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure de décollage.</string>
-    <string name="vol_frise_retard_gps">Calculé pour les heures saisies. Avec 30 min de retard à l’arrivée, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : relevez la position de nouveau.</string>
+    <string name="vol_frise_retard_gps">Calculé pour les heures saisies. Avec 30 min de retard à l’arrivée, la plupart de ces horaires bougent d’environ %1$s min ; l’écran ne se recale pas seul : modifiez l’heure d’atterrissage, puis relevez de nouveau la position.</string>
     <string name="vol_fiabilite_court">📍 Estimation sur la route prévue</string>
     <string name="vol_comment_calcule">Comment c’est calculé ?</string>
     <string name="vol_preciser_titre">Préciser la position</string>

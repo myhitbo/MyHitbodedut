@@ -1275,7 +1275,7 @@
     <string name="vol_frise_atterrissage">Landing %1$s</string>
     <string name="vol_frise_maintenant">Now</string>
     <string name="vol_frise_retard">Calculated for the times entered. With a 30-min late departure, most of these times move by about %1$s min; the screen does not adjust by itself: edit the takeoff time.</string>
-    <string name="vol_frise_retard_gps">Calculated for the times entered. With a 30-min late arrival, most of these times move by about %1$s min; the screen does not adjust by itself: take a new position reading.</string>
+    <string name="vol_frise_retard_gps">Calculated for the times entered. With a 30-min late arrival, most of these times move by about %1$s min; the screen does not adjust by itself: edit the landing time, then take a new position reading.</string>
     <string name="vol_fiabilite_court">📍 Estimate along the planned route</string>
     <string name="vol_comment_calcule">How is it calculated?</string>
     <string name="vol_preciser_titre">Refine the position</string>
