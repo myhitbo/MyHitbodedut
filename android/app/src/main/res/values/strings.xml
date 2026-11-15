@@ -101,7 +101,7 @@
     <string name="action_back">Retour</string>
 
     <!-- Réglages -->
-    <string name="settings_window">Heures du mode</string>
+    <string name="settings_window">Plage horaire</string>
     <string name="settings_snooze">Durée du report</string>
     <string name="settings_target">Durée d’une hitbodedout</string>
     <string name="settings_daily_goal">Objectif quotidien</string>
