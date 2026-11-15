@@ -1160,8 +1160,9 @@ toucher. CI verte (Android, web, Nokia).
 2. **Check complet de l'app** : six audits indépendants à effort maximal,
    puis corriger tous les défauts confirmés.
 3. **Mini-lecteur de musique pendant la hitbodedout** : livré (demande du
-   19/10, `MiniLecteur`, dans l'écran de séance). Ce qui manque : des tests,
-   la pause et la reprise, et il est absent hors de l'écran de séance.
+   19/10, `MiniLecteur`, dans l'écran de séance ; pause et reprise corrigées
+   le 13/11, FSEANCE-02). Ce qui manque : des tests sur appareil, et il est
+   absent hors de l'écran de séance.
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
    collés dans les biographies, ordre des Sheva Berakhot, trois widgets.
    Une partie a pu être traitée dans le lot « 28/10 bis » (boussole,
