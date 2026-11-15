@@ -138,7 +138,8 @@ class HilloulotTest {
         val bios = File("src/main/res/raw/hilloulot_bios.json").readText()
         assertTrue("courriel", !bios.contains("@"))
         assertTrue("telephone", !Regex("""\d{2,3}-\d{6,7}|\b0\d{8,9}\b|\d{3}-\d{3}-\d{4}|\(9722\)""").containsMatchIn(bios))
-        listOf("WhatsApp", "דוא\\\"ל", "חייגו", "(ק)", "[להאזנה]", "איתן בן יצחק רפאל", "אביבה בת אסתר גיטל", "מסודי בת פרחה")
+        listOf("WhatsApp", "דוא\\\"ל", "חייגו", "(ק)", "[להאזנה]", "איתן בן יצחק רפאל", "אביבה בת אסתר גיטל", "מסודי בת פרחה",
+            "ישראל ינון בן דוד", "יוסף ליאור בן דליה")
             .forEach { assertTrue(it, !bios.contains(it)) }
         // Un crédit « באדיבות … », pas la prose (« באדיבותו », « התייחס באדיבות ובמאור פנים »).
         assertTrue("credit", !Regex("""באדיבות(?!ו)(?!\s+וב)""").containsMatchIn(bios))
@@ -150,7 +151,8 @@ class HilloulotTest {
     fun `le nettoyage des biographies garde la prose`() {
         val bios = File("src/main/res/raw/hilloulot_bios.json").readText()
         // Relecture du 15/11 : « לעילוי נשמת » et « באדיבות » de la prose restent, comme le « : » des lignes non coupées.
-        listOf("לעילוי נשמת אביו וביקש מבורא עולם", "להדליק נר לעילוי נשמתו", "התייחס באדיבות ובמאור פנים", "באדיבותו ונדיבותו")
+        listOf("לעילוי נשמת אביו וביקש מבורא עולם", "להדליק נר לעילוי נשמתו", "התייחס באדיבות ובמאור פנים", "באדיבותו ונדיבותו",
+            "לזכותו של מרן")
             .forEach { assertTrue(it, bios.contains(it)) }
         assertTrue("מספריו:", Regex("מספריו:").findAll(bios).count() > 1000)
     }
