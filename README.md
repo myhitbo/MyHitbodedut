@@ -185,10 +185,14 @@ mais pas le journal (`web/src/confidentialite.html`).
 Le plus simple, sans rien installer : le workflow GitHub Actions `Android`
 compile à chaque envoi sur `main` et publie l'APK dans la release `latest`.
 
-Lien de téléchargement direct, dépôt privé donc connexion GitHub nécessaire :
+Lien de téléchargement direct (le dépôt est public depuis le 15/11/2026) :
 <https://github.com/myhitbo/MyHitbodedut/releases/latest/download/MyHitbodedut.apk>
 
-L'APK est signé par la clé stable de `android/keystore`, et n'est pas déboguable.
+L'APK est signé par la clé de `android/keystore` tant que les secrets `RELEASE_*`
+n'existent pas, et n'est pas déboguable. **Cette clé et son mot de passe sont
+publics** : n'installer que depuis ce lien, jamais un APK « MyHitbodedut » reçu
+d'ailleurs, que le téléphone accepterait comme une mise à jour
+(`android/keystore/README.md`).
 Android demandera d'autoriser l'installation depuis une source inconnue pour le
 navigateur utilisé.
 
@@ -235,9 +239,8 @@ pointer vers la dernière.
 
 **Automatiser, en pratique.** [Obtainium](https://github.com/ImranR98/Obtainium)
 surveille les pages de publication et installe les nouvelles versions. Il
-interroge la source toutes les six heures par défaut. Pour un dépôt privé, il
-faut lui donner un jeton GitHub à portée restreinte, dans ses réglages, section
-des sources externes.
+interroge la source toutes les six heures par défaut. Le dépôt étant public, aucun
+jeton GitHub n'est nécessaire.
 
 Marche à suivre : installer Obtainium, ajouter une application, coller
 `https://github.com/myhitbo/MyHitbodedut`, choisir l'archive voulue, complète ou
