@@ -3520,7 +3520,7 @@ let routeVol = { attente: false, texte: '' };
 function loupeVol(v) {
   if (store.suiviDirect()) return chercherRouteVol(v);
   feuille(tr.t('vol_en_ligne_titre'), (f, fermer) => f.append(
-    h('p', {}, tr.t('vol_en_ligne_aide')),
+    h('p', {}, tr.t(RELAIS_VOL ? 'vol_en_ligne_aide' : 'vol_en_ligne_aide_route')),
     h('button', { class: 'principal', onclick: () => { fermer(); store.setSuiviDirect(true); chercherRouteVol(v); } }, tr.t('vol_en_ligne_oui')),
     h('button', { class: 'lien-discret', onclick: fermer }, tr.t('vol_fermer'))));
 }
@@ -3648,7 +3648,7 @@ async function demanderDirect(indicatif) {
  * désactivé par défaut, pour la route d'un numéro (adsbdb) et le suivi en direct (OpenSky).
  */
 let formulaireVolOuvert = true;
-const interrupteurEnLigne = () => h('label', { class: 'ligne' }, h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('vol_direct_activer'))),
+const interrupteurEnLigne = () => h('label', { class: 'ligne' }, h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t(RELAIS_VOL ? 'vol_direct_activer' : 'vol_direct_activer_web'))),
   h('input', { type: 'checkbox', role: 'switch', class: 'interrupteur', checked: store.suiviDirect(), onchange: (e) => { store.setSuiviDirect(e.target.checked); rendre(); } }));
 
 /** Le suivi en direct : l'interrupteur des services en ligne, qui dit ce qui part ; l'indicatif ; le bouton. */
@@ -4521,7 +4521,7 @@ function carteMaPratique() {
     ligneInterrupteur(tr.t('settings_hide_countdown'), null, store.hideCountdown(), (v) => store.setHideCountdown(v)),
     // La hitbodedout guidée (02/11, SettingsActivity.guided_switch) : éteinte par défaut.
     ligneInterrupteur(tr.t('settings_hitbodedut'), tr.t('settings_hitbodedut_hint'), store.guidedHitbodedut(), (v) => store.setGuidedHitbodedut(v)),
-    ligneInterrupteur(tr.t('settings_shabbat'), tr.t('settings_shabbat_hint'), store.shabbatMode(), (v) => store.setShabbatMode(v)),
+    ligneInterrupteur(tr.t('settings_shabbat'), tr.t('settings_shabbat_hint_web'), store.shabbatMode(), (v) => store.setShabbatMode(v)),
     ligneInterrupteur(tr.t('settings_exempt_today'), tr.t('settings_exempt_today_hint'), store.pausedDates().has(jourAffiche), () => store.togglePausedDate(jourAffiche)));
 }
 

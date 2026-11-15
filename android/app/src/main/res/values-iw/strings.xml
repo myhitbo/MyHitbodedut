@@ -119,6 +119,7 @@
     <string name="rings_description">טבעות. היום: %1$s מתוך %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">שבת ויום טוב</string>
     <string name="settings_shabbat_hint">בימים אלה: המצב שותק, אין תזכורת, והרצף נשמר.</string>
+    <string name="settings_shabbat_hint_web">בימים אלה הרצף נשמר.</string>
     <string name="settings_exempt_today">הפסקה היום</string>
     <string name="settings_exempt_today_hint">ליום טוב, נסיעה או מחלה: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
@@ -1394,6 +1395,7 @@
     <string name="vol_direct_titre">מעקב בזמן אמת (אינטרנט)</string>
     <string name="vol_direct_explication">כבוי כברירת מחדל. כשהוא פעיל, הוא שולח לשרת הממסר של האפליקציה את אות הקריאה של הטיסה ואת המיקום המשוער של המטוס, ותו לא; הממסר מבקש את המיקום האמיתי מ־OpenSky Network. מעל אוקיינוסים המטוס לעיתים קרובות אינו נראה.</string>
     <string name="vol_direct_activer">שירותים מקוונים: מסלול הטיסה ומעקב בזמן אמת</string>
+    <string name="vol_direct_activer_web">שירות מקוון: מסלול הטיסה</string>
     <string name="vol_route_activer">שירותים מקוונים: מסלול הטיסה</string>
     <string name="vol_indicatif">אות קריאה (ICAO), לדוגמה ELY1</string>
     <string name="vol_indicatif_invalide">אות קריאה צפוי: שלוש אותיות ואחריהן המספר, לדוגמה ELY1.</string>
@@ -1493,8 +1495,8 @@
     <string name="licences_android">\n\nספריות של יישום האנדרואיד\nקריאת ברקודים: ZXing‏ (Apache 2.0). AndroidX ו־Material Components‏ (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
-    <string name="vol_en_ligne_aide">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. כשהם פעילים, הזכוכית המגדלת 🔍 שולחת ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד, והמעקב בזמן אמת פונה ל־OpenSky Network.</string>
-    <string name="vol_en_ligne_aide_route">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. כשהם פעילים, הזכוכית המגדלת 🔍 שולחת ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד.</string>
+    <string name="vol_en_ligne_aide">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. אחרי ההפעלה הם נשארים פעילים עד שתכבו אותם. הזכוכית המגדלת 🔍 שולחת אז ל־adsbdb.com את מספר הטיסה בלבד; „מיקום בזמן אמת” שולח ל־OpenSky Network אזור של כ־10 מעלות סביב המיקום המשוער של המטוס. השירותים האלה רואים את כתובת ה־IP שלכם.</string>
+    <string name="vol_en_ligne_aide_route">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. אחרי ההפעלה הם נשארים פעילים עד שתכבו אותם. הזכוכית המגדלת 🔍 שולחת אז ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד. השירות הזה רואה את כתובת ה־IP שלכם.</string>
     <string name="vol_en_ligne_titre">לחפש את המסלול ברשת?</string>
     <string name="vol_en_ligne_oui">להפעיל ולחפש</string>
     <string name="vol_rapide_titre">תארו את הטיסה</string>
