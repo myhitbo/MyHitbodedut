@@ -7,8 +7,9 @@ import java.time.LocalDate
  * Les trophées (demande du 11/10, à niveaux depuis le 12/10) : onze familles
  * qui regardent la forme de la pratique — la plus longue séance d'un jour,
  * les jours, la série, les heures, les semaines pleines, les vendredis, les
- * retours après une pause, le journal, le Tikoun HaKlali (04/11). Chacune monte par niveaux, et la
- * médaille change de métal en montant : bronze, argent, or, platine. Les
+ * retours après une pause, le journal, le Tikoun HaKlali (04/11). Chacune monte par niveaux. Le
+ * métal ne dépend plus de la famille (15/10) : c'est celui du grade, d'après le nombre de
+ * trophées gagnés en tout (grade) — bronze, argent, or, platine. Les
  * seuils reprennent des nombres qui parlent d'eux-mêmes (7, 18, 40, 70, 100,
  * 613), avec des paliers intermédiaires à chaque dizaine et quinzaine (12/10) ;
  * choix de l'application, sans source à citer.
@@ -17,7 +18,7 @@ import java.time.LocalDate
  */
 object Trophees {
 
-    /** Le métal de la médaille : où l'on en est dans la famille, à l'œil. */
+    /** Le métal du grade (grade) : le même pour tous les trophées gagnés à ce moment du chemin. */
     enum class Metal { BRONZE, ARGENT, OR, PLATINE }
 
     /** L'objet (12/10, d'après les planches envoyées) : pas que des pièces. Clé de res/raw/trophees_formes.json. */
@@ -43,27 +44,28 @@ object Trophees {
     data class Niveau(val famille: Famille, val rang: Int) {
         val cle: String get() = "${famille.cle}:$rang"
         val seuil: Int get() = famille.seuils[rang - 1]
-        val metal: Metal get() = metal(famille, rang)
-    }
-
-    /** Le métal d'un rang : un quart de la famille par métal ; une famille d'un seul niveau est de bronze. */
-    fun metal(f: Famille, rang: Int): Metal {
-        if (f.seuils.size == 1) return Metal.BRONZE
-        val i = ((rang - 1) * 4 / f.seuils.size).coerceIn(0, 3)
-        return Metal.entries[i]
     }
 
     /**
      * Ce que les trophées regardent : les minutes par jour fait, les notes écrites, la meilleure
      * série ; et les jours où le Tikoun HaKlali a été dit en entier (04/11).
      */
-    data class Pratique(val minutes: Map<LocalDate, Int>, val notes: Int, val meilleureSerie: Int, val tikkun: Set<LocalDate> = emptySet())
+    data class Pratique(val minutes: Map<LocalDate, Int>, val notes: Int, val meilleureSerie: Int, val tikkun: Set<LocalDate> = emptySet(),
+        /** Les jours exemptés : ils ne cassent pas la suite du Tikoun. */
+        val exempt: (LocalDate) -> Boolean = { false })
 
-    /** La plus longue suite de jours consécutifs. */
-    fun plusLongueSuite(jours: Set<LocalDate>): Int {
+    /** Tous les jours entre [avant] et [d] (exclus) sont-ils exemptés ? Alors la suite continue. */
+    private fun suiteContinue(avant: LocalDate, d: LocalDate, exempt: (LocalDate) -> Boolean): Boolean =
+        generateSequence(avant.plusDays(1)) { it.plusDays(1) }.takeWhile { it.isBefore(d) }.all(exempt)
+
+    /**
+     * La plus longue suite de jours de pratique. Un jour exempté (Chabbat, Yom Tov, pause) ne
+     * compte pas et ne casse pas la suite, comme la série de hitbodedout (FDONNEES-09).
+     */
+    fun plusLongueSuite(jours: Set<LocalDate>, exempt: (LocalDate) -> Boolean = { false }): Int {
         var meilleure = 0; var courante = 0; var avant: LocalDate? = null
         for (d in jours.sorted()) {
-            courante = if (avant != null && d.toEpochDay() - avant.toEpochDay() == 1L) courante + 1 else 1
+            courante = if (avant != null && suiteContinue(avant, d, exempt)) courante + 1 else 1
             meilleure = maxOf(meilleure, courante)
             avant = d
         }
@@ -93,7 +95,7 @@ object Trophees {
             Famille.RETOUR -> retours(jours)
             Famille.PLUME -> p.notes
             Famille.TIKKUN -> p.tikkun.size
-            Famille.TIKKUN_SERIE -> plusLongueSuite(p.tikkun)
+            Famille.TIKKUN_SERIE -> plusLongueSuite(p.tikkun, p.exempt)
         }
     }
 
@@ -192,7 +194,7 @@ object Trophees {
             if (d in tikkun) {
                 tikkunN++
                 val a = tikkunAvant
-                tikkunSuite = if (a != null && d.toEpochDay() - a.toEpochDay() == 1L) tikkunSuite + 1 else 1
+                tikkunSuite = if (a != null && suiteContinue(a, d, exempt)) tikkunSuite + 1 else 1
                 tikkunMeilleure = maxOf(tikkunMeilleure, tikkunSuite)
                 tikkunAvant = d
             }
@@ -247,14 +249,15 @@ object Trophees {
 
     /**
      * Les niveaux gagnés depuis la dernière fois, le plus haut de chaque
-     * famille d'abord ; rien la première fois ([vus] null), ni quand [vus]
+     * famille, le plus coûteux d'abord (cout) ; rien la première fois ([vus] null), ni quand [vus]
      * date d'avant les niveaux (des clés sans « : ») : pas de pluie de
-     * vieux trophées.
+     * vieux trophées. L'ordre suivait le métal par famille, que plus aucun écran ne montre
+     * (13/11, FDONNEES-06).
      */
     fun nouveaux(gagnes: Set<Niveau>, vus: Set<String>?): List<Niveau> {
         if (vus == null || (vus.isNotEmpty() && vus.none { ':' in it })) return emptyList()
         return gagnes.filter { it.cle !in vus }
             .groupBy { it.famille }.values.map { n -> n.maxBy { it.rang } }
-            .sortedByDescending { it.metal.ordinal * 100 + it.rang }
+            .sortedByDescending { cout(it.famille, it.seuil) }
     }
 }

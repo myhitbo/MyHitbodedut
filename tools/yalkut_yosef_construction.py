@@ -44,8 +44,9 @@ PERIODES = {
     "roch_hodech": [432, 434, 440],
     # Du 16 Adar au 22 Nissan.
     "pessah": [449, 466, 478, 482],
-    # Du 23 Nissan au 7 Sivan : l'omer et Chavouot.
-    "omer": [500, 503, 504],
+    # Du 23 Nissan au 29 Iyar : l'omer ; du 1er au 7 Sivan : Chavouot (siman תצד).
+    "omer": [500, 503],
+    "chavouot": [504],
     # Du 17 Tamouz au 9 Av.
     "bein_hametsarim": [544, 545, 550],
     # Du 1er Eloul au 2 Tichri.

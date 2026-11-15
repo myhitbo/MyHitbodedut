@@ -10,6 +10,8 @@
 
 const VERSION = '__VERSION__';
 const COQUILLE = __COQUILLE__;
+// Les morceaux que le site livre (« musique/<id>.m4a », build.mjs).
+const MUSIQUE = __MUSIQUE__;
 const CACHE_COQUILLE = `coquille-${VERSION}`;
 // musique-2 : les morceaux en AAC (.m4a, 29/10) ; les MP3 de musique-1 sont effacés.
 const CACHE_MUSIQUE = 'musique-2';
@@ -23,6 +25,13 @@ self.addEventListener('activate', (e) => {
     for (const nom of await caches.keys()) {
       if (nom.startsWith('coquille-') && nom !== CACHE_COQUILLE) await caches.delete(nom);
       if (nom.startsWith('musique-') && nom !== CACHE_MUSIQUE) await caches.delete(nom);
+    }
+    // Un morceau que le site ne livre plus (13/11, FPRODUIT-05 : les niggounim dont la diffusion
+    // publique n'est pas établie) ne reste pas non plus dans le téléphone.
+    const musique = await caches.open(CACHE_MUSIQUE);
+    for (const requete of await musique.keys()) {
+      const chemin = new URL(requete.url).pathname;
+      if (!MUSIQUE.some((f) => chemin.endsWith(`/${f}`))) await musique.delete(requete);
     }
     await self.clients.claim();
   })());
@@ -54,7 +63,8 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
 
-  if (url.pathname.includes('/musique/')) {
+  // Les morceaux livrés seulement : une adresse de /musique/ que le site ne sert plus n'est pas gardée.
+  if (MUSIQUE.some((f) => url.pathname.endsWith(`/${f}`))) {
     const cle = url.origin + url.pathname;
     e.respondWith((async () => {
       const cache = await caches.open(CACHE_MUSIQUE);

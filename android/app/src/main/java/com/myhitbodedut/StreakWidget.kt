@@ -432,7 +432,8 @@ class StreakWidget : AppWidgetProvider() {
             context.getString(
                 R.string.rings_description,
                 Store.formatDuration(context, etat.jour.fait), Store.formatDuration(context, etat.jour.objectif),
-                etat.semaine.fait, etat.semaine.objectif, etat.serie.fait, etat.serie.objectif
+                context.resources.getQuantityString(R.plurals.ring_week_detail, etat.semaine.fait, etat.semaine.fait, etat.semaine.objectif),
+                context.resources.getQuantityString(R.plurals.ring_streak_detail, etat.serie.fait, etat.serie.fait, etat.serie.objectif)
             )
 
         /**

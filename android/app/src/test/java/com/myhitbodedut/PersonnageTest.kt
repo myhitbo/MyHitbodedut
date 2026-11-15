@@ -58,5 +58,32 @@ class PersonnageTest {
         val jsTable = Regex("""(char_\w+): '(char_f_\w+)'""").findAll(web)
             .associate { it.groupValues[1] to it.groupValues[2] }
         assertEquals(table, jsTable)
+        val jsScenes = Regex("""(scene_\w+): '(char_f_\w+)'""").findAll(web)
+            .associate { it.groupValues[1] to it.groupValues[2] }
+        assertEquals(scenes, jsScenes)
+    }
+
+    private val scenes = Regex("""R\.drawable\.(scene_\w+) to R\.drawable\.(char_f_\w+)""")
+        .findAll(source).associate { it.groupValues[1] to it.groupValues[2] }
+
+    /** FACCUEIL-03 (13/11) : les cinq scènes à décor du hassid ont un repli féminin déclaré, et il existe. */
+    @Test
+    fun `les scenes a decor du hassid se replient sur une pose feminine`() {
+        assertEquals(setOf("scene_sleeping", "scene_nature", "scene_airport", "scene_hanukkah", "scene_sukkot"), scenes.keys)
+        assertTrue(scenes.values.all { it in dessins })
+        assertEquals(R.drawable.char_f_praying, Personnage.feminin(R.drawable.scene_sleeping))
+        assertEquals(R.drawable.scene_ouverture_tombe, Personnage.feminin(R.drawable.scene_ouverture_tombe))
+    }
+
+    /** Un service gonfle ces gabarits sans l'usine d'AppCompat : une <ImageView> y resterait au hassid. */
+    @Test
+    fun `les gabarits gonfles hors activite nomment PersonnageImageView`() {
+        listOf("view_blocker", "view_chizuk_compact").forEach {
+            val xml = File("src/main/res/layout/$it.xml").readText().replace(Regex("<!--.*?-->", RegexOption.DOT_MATCHES_ALL), "")
+            assertTrue(it, !Regex("<ImageView\\b").containsMatchIn(xml))
+            assertTrue(it, "com.myhitbodedut.PersonnageImageView" in xml)
+        }
+        val boussole = File("src/main/java/com/myhitbodedut/BoussoleActivity.kt").readText()
+        assertTrue(!boussole.contains("android.widget.ImageView(this@BoussoleActivity)"))
     }
 }

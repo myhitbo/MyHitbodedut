@@ -8,8 +8,9 @@
 // Le stockage est passé en paramètre : les tests donnent le leur.
 
 import { ajouteJours, estJourChome, isoLocal, israelParDefaut, jourSemaine } from './calendrier.js';
+import { regionPourPosition } from './calendrier-juif.js';
 import { SessionRule } from './seance.js';
-import { Anneaux, JaugeSemaine, Plaque } from './regles.js';
+import { Anneaux, HistoriqueReglage, JaugeSemaine, Plaque } from './regles.js';
 import { JournalPlus } from './regles.js';
 
 export const DEFAULT_START = 6 * 60;
@@ -58,12 +59,14 @@ export function memoire() {
   };
 }
 
-export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = {}) {
+export function creeStore(stockage, { maintenant = () => new Date(), fuseau, surEchec = null } = {}) {
   const lit = (nom) => {
     try { return JSON.parse(stockage.getItem(nom) || '{}') || {}; } catch { return {}; }
   };
   const ecrit = (nom, valeur) => {
-    try { stockage.setItem(nom, JSON.stringify(valeur)); } catch { /* quota : rien à faire de mieux */ }
+    // Une écriture refusée (quota, stockage retiré) ne reste pas muette (13/11, FWEBCODE-01) :
+    // [surEchec] le dit à l'écran, sinon une hitbodedout se perdait derrière son bravo.
+    try { stockage.setItem(nom, JSON.stringify(valeur)); } catch { surEchec?.(nom); }
   };
   const prefs = () => lit(PREFS);
   const get = (cle, defaut) => { const v = prefs()[cle]; return v === undefined ? defaut : v; };
@@ -76,6 +79,13 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
   // Les dix psaumes du Tikoun (Tikkun.ORDRE), pour le journal de ses lectures complètes (04/11).
   const TIKKUN_ORDRE = [16, 32, 41, 42, 59, 77, 90, 105, 137, 150];
   const today = () => isoLocal(maintenant());
+  /** Écrit un réglage booléen qui pèse sur le passé et date son changement (HistoriqueReglage). */
+  const changeDate = (cle, valeur) => {
+    const ancienne = cle === 'in_israel' ? store.inIsrael() : store.shabbatMode();
+    set(`${cle}_histoire`, HistoriqueReglage.encoder(HistoriqueReglage.apresChangement(
+      HistoriqueReglage.decoder(get(`${cle}_histoire`)), today(), ancienne, valeur)));
+    set(cle, valeur);
+  };
   // Le jour du Tikoun bascule à 4 h, pas à minuit : commencé à 23 h 45, il se finit après minuit (Store.jourTikkun, 02/11).
   // Quatre heures d'horloge, comme LocalDateTime.minusHours : la nuit du changement d'heure ne décale rien.
   const jourTikkun = () => { const n = maintenant(); return isoLocal(new Date(n.getFullYear(), n.getMonth(), n.getDate(), n.getHours() - 4, n.getMinutes())); };
@@ -132,6 +142,15 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
     totalMinutes: () => Object.values(days()).reduce((s, r) => s + r.minutes, 0),
     /** Toutes les journées, pour « Mon parcours » (19/10). */
     jours: () => Object.values(days()),
+    // --- La garde des données (13/11, FWEBCODE-01 ; avis.js) : pour ce navigateur seulement, hors de l'export.
+    /** La plus ancienne date du journal, note seule comprise ; null s'il est vide. */
+    premierJour: () => Object.keys(days()).filter(dateValide).sort()[0] ?? null,
+    /** Le jour de la dernière sauvegarde connue (un export, ou l'import d'un fichier) ; null : jamais. */
+    derniereSauvegarde: () => { const d = get('derniere_sauvegarde', null); return typeof d === 'string' && dateValide(d) ? d : null; },
+    setDerniereSauvegarde: (iso) => set('derniere_sauvegarde', iso),
+    /** Les avis de l'accueil refermés, chacun avec son jour : { installer, importer, exporter }. */
+    avisReportes: () => { const a = get('avis_reportes', null); return a && typeof a === 'object' && !Array.isArray(a) ? a : {}; },
+    reporteAvis: (cle) => set('avis_reportes', { ...store.avisReportes(), [cle]: today() }),
     /** Les minutes des jours faits, par date (Store.bilan, paliers du 11/10). */
     minutesParJour: () => Object.fromEntries(Object.values(days()).filter((r) => r.faite).map((r) => [r.date, r.minutes])),
     /** null tant que les paliers n'ont jamais été regardés : le premier passage ne fête rien. */
@@ -242,9 +261,15 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
 
     // --- Chabbat, fêtes, pauses ---------------------------------------------
     shabbatMode: () => get('pause_shabbat', true),
-    setShabbatMode: (v) => set('pause_shabbat', !!v),
+    setShabbatMode: (v) => { changeDate('pause_shabbat', !!v); },
     inIsrael: () => get('in_israel', israelParDefaut(fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone)),
-    setInIsrael: (v) => set('in_israel', !!v),
+    /**
+     * La région a été choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06,
+     * Store.inIsraelManuel) : une reprise de la position ne la réécrit plus. Choisir un lieu
+     * efface ce drapeau et redéduit la région.
+     */
+    inIsraelManuel: () => get('in_israel_manuel', false) === true,
+    setInIsrael: (v, manuel = false) => { changeDate('in_israel', !!v); set('in_israel_manuel', !!manuel); },
     /**
      * Le lieu des zmanim (10/10) : { nom, latitude, longitude, altitude,
      * fuseau, ville } ; null tant que rien n'est choisi. Il reste dans le
@@ -254,11 +279,23 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
       const l = get('lieu_zmanim', null);
       return l && Number.isFinite(l.latitude) && Number.isFinite(l.longitude) && l.fuseau ? l : null;
     },
-    setLieu(lieu, ville = null) {
+    setLieu(lieu, ville = null, enIsrael = ville ? ville.pays === 'IL' : israelParDefaut(lieu.fuseau)) {
       set('lieu_zmanim', { ...lieu, ville: ville?.id ?? null });
-      // Une ville dit Israël ou diaspora ; la position, elle, suit le fuseau du
-      // téléphone, comme la valeur par défaut (israelParDefaut).
-      set('in_israel', ville ? ville.pays === 'IL' : israelParDefaut(lieu.fuseau));
+      // Une ville dit Israël ou diaspora ; la position, le contour du territoire
+      // (regionPourPosition) ; à défaut, le fuseau (israelParDefaut). null : la région
+      // des réglages est gardée (choisie à la main, lors d'une reprise de la position).
+      if (enIsrael !== null) store.setInIsrael(enIsrael);
+    },
+    /**
+     * La position du téléphone comme lieu des zmanim (Store.setLieuPosition). Une reprise — le
+     * lieu était déjà la position, et on ne vient pas de la choisir dans la liste (choisie) —
+     * garde la région choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06) :
+     * avant, chaque ouverture de Zmanim ou de la boussole la réécrivait sans rien dire.
+     */
+    setLieuPosition(lieu, choisie = false) {
+      const avant = store.lieu();
+      const reprise = !choisie && !!avant && avant.ville == null;
+      store.setLieu(lieu, null, regionPourPosition(lieu.latitude, lieu.longitude, store.inIsraelManuel(), reprise));
     },
     /**
      * Le vol des zmanim en vol (28/10, Store.vol) : { numero, depart, arrivee
@@ -300,7 +337,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
     },
     isExempt(date) {
       if (store.pausedDates().has(date)) return true;
-      return store.shabbatMode() && estJourChome(date, store.inIsrael());
+      // Chaque jour se juge avec le réglage en vigueur ce jour-là (FDONNEES-05).
+      const valeur = (cle, actuelle) => HistoriqueReglage.valeurLe(HistoriqueReglage.decoder(get(`${cle}_histoire`)), date, actuelle);
+      return valeur('pause_shabbat', store.shabbatMode()) && estJourChome(date, valeur('in_israel', store.inIsrael()));
     },
 
     /** Jours consécutifs validés ; les jours exemptés ne comptent pas et ne cassent pas. */
@@ -521,6 +560,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           daily_goal_minutes: get('daily_goal_minutes', 0),
           pause_shabbat: store.shabbatMode(),
           in_israel: store.inIsrael(),
+          in_israel_manuel: store.inIsraelManuel(),
           // La hitbodedout guidée (02/11), sous la clé d'Android.
           guided_hitbodedut: store.guidedHitbodedut(),
           first_name: store.firstName(),
@@ -614,7 +654,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
         const texteNonVide = (cle, pref) => { if (typeof s[cle] === 'string' && s[cle].trim() !== '' && s[cle].length <= 100) set(pref ?? cle, s[cle]); };
         entier('window_start'); entier('window_end'); entier('snooze_minutes', null, 1, 240);
         entier('target_minutes', null, 1, 240); entier('daily_goal_minutes', null, 0, 240);
-        bool('pause_shabbat'); bool('in_israel');
+        if (typeof s.pause_shabbat === 'boolean') store.setShabbatMode(s.pause_shabbat);
+        if (typeof s.in_israel === 'boolean') store.setInIsrael(s.in_israel);
+        bool('in_israel_manuel');
         bool('guided_hitbodedut');
         bool('reminder_enabled', 'reminder_on'); entier('reminder_minutes');
         if (Array.isArray(s.reminder_times)) {

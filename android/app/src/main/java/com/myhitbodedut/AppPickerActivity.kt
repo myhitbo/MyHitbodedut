@@ -28,7 +28,8 @@ class AppPickerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_apps)
 
-        selected.addAll(Store.blockedApps(this))
+        // Une liste importée ou choisie avant le 13/11 peut les contenir : retirées à l'ouverture.
+        selected.addAll(Store.blockedApps(this) - AppsProtegees.de(this))
         adapter = Adapter()
 
         findViewById<RecyclerView>(R.id.apps_list).apply {
@@ -66,11 +67,14 @@ class AppPickerActivity : AppCompatActivity() {
         Thread {
             val manager = packageManager
             val launcher = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+            // Ni le Téléphone, ni l'écran d'accueil, ni les Réglages ne sont proposés, donc
+            // « Tout sélectionner » ne les coche pas (13/11, FBARRIERE-05).
+            val protegees = AppsProtegees.de(this)
             val found = runCatching {
                 manager.queryIntentActivities(launcher, 0)
                     .asSequence()
                     .map { it.activityInfo.applicationInfo }
-                    .filter { it.packageName != packageName }
+                    .filter { GateRule.proposable(it.packageName, packageName, protegees) }
                     .distinctBy { it.packageName }
                     .map { info: ApplicationInfo ->
                         Entry(

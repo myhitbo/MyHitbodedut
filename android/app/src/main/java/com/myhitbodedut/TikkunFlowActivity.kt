@@ -32,25 +32,66 @@ class TikkunFlowActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tikkun_flow)
 
         tikkun = Data.tikkun(this)
+        defilement = findViewById(R.id.flow_scroll)
 
         // Pas de « sans interruption » en tête (12/10) : le texte dit lui-même où s'arrêter
         // un peu, après « אַתָּה סֵתֶר לִי », comme il le dit à cet endroit.
         findViewById<TextView>(R.id.flow_subtitle).visibility = View.GONE
 
+        // Le bouton de lecture : taille des lettres, lecture de nuit et langues. Le texte se redessine
+        // sur place, au verset où l'on était (audit du 12/11, FLECTURE-04).
+        ReglagesLecture.marquer(defilement, Role.FOND)
+        val fin = findViewById<Button>(R.id.flow_done)
+        ReglagesLecture.installer(this, defilement, auDessusDe = fin) { construire() }
+        construire()
+        ReglagesLecture.reprendreRepere(savedInstanceState, defilement)
+
+        fin.apply {
+            setText(R.string.tikkun_flow_done)
+            setOnClickListener {
+                // Tout dire d'un trait vaut les dix psaumes.
+                tikkun.psaumes.forEach { Store.setTikkunDone(this@TikkunFlowActivity, it.numero, true) }
+                finish()
+            }
+        }
+    }
+
+    private lateinit var defilement: ScrollView
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        ReglagesLecture.sauverRepere(outState, defilement)
+    }
+
+    /** Le rang du passage en cours de construction : le même dans toutes les langues. */
+    private var rang = 0
+
+    /** Les vues ajoutées par [ajout] portent le repère de leur passage. */
+    private fun passage(contenu: LinearLayout, ajout: () -> Unit) {
+        val avant = contenu.childCount
+        ajout()
+        rang++
+        for (i in avant until contenu.childCount) ReglagesLecture.reperer(contenu.getChildAt(i), rang)
+    }
+
+    /** Bâtit tout le texte, dans les langues choisies. */
+    private fun construire() {
         val contenu = findViewById<LinearLayout>(R.id.flow_content)
+        contenu.removeAllViews()
+        rang = 0
         var premier = true
 
         val mode = LanguesTexte.mode(this)
         tikkun.avant.forEach { bloc ->
-            contenu.addView(titre(bloc.titre.he, premier))
+            passage(contenu) { contenu.addView(titre(bloc.titre.he, premier)) }
             premier = false
             paragraphesTraduits(bloc, contenu, mode)
         }
 
         tikkun.psaumes.forEach { psaume ->
-            contenu.addView(titre(getString(R.string.tikkun_psalm_he, Reference.lettres(psaume.numero)), premier))
+            passage(contenu) { contenu.addView(titre(getString(R.string.tikkun_psalm_he, Reference.lettres(psaume.numero)), premier)) }
             premier = false
-            psaume.versets.forEach { verset ->
+            psaume.versets.forEach { verset -> passage(contenu) {
                 // Les langues choisies (04/11) : l'hébreu, la traduction, ou les deux.
                 val textes = LanguesTexte.textes(mode, verset.he, verset.fr, verset.en)
                 val avecHebreu = textes.any { it.first == "he" }
@@ -71,41 +112,47 @@ class TikkunFlowActivity : AppCompatActivity() {
                         layoutParams = ligneParams().apply { topMargin = if (avecHebreu || k > 0) dp(4) else dp(12) }
                     })
                 }
-            }
+            } }
         }
 
         tikkun.bloc(Tikkun.CLOTURE)?.let { bloc ->
-            contenu.addView(titre(bloc.titre.he, false))
+            passage(contenu) { contenu.addView(titre(bloc.titre.he, false)) }
             paragraphesTraduits(bloc, contenu, mode)
         }
 
         // Après le Tikoun (04/11, la liste retirée) : la kavana, puis la prière de Rabbi Natan.
         val langue = ChizukCard.language(this)
         listOfNotNull(tikkun.bloc(Tikkun.KAVANA), tikkun.bloc(Tikkun.PRIERE)).forEach { bloc ->
-            contenu.addView(titre(bloc.titre.he, false))
-            (bloc.note?.forLanguage(langue)?.ifBlank { null }
-                ?: bloc.titre.forLanguage(langue).takeIf { it != bloc.titre.he })
-                ?.let { contenu.addView(note(it)) }
-            // La formule de la kavana est centrée : c'est un tableau de lettres, pas une phrase.
-            bloc.formule?.let { contenu.addView(paragraphe(it).apply { (this as TextView).textAlignment = View.TEXT_ALIGNMENT_CENTER }) }
+            passage(contenu) {
+                contenu.addView(titre(bloc.titre.he, false))
+                (bloc.note?.forLanguage(langue)?.ifBlank { null }
+                    ?: bloc.titre.forLanguage(langue).takeIf { it != bloc.titre.he })
+                    ?.let { contenu.addView(note(it)) }
+                // La formule de la kavana est centrée : c'est un tableau de lettres, pas une phrase.
+                bloc.formule?.let { contenu.addView(paragraphe(it).apply { (this as TextView).textAlignment = View.TEXT_ALIGNMENT_CENTER }) }
+            }
             paragraphesTraduits(bloc, contenu, mode)
         }
 
-        // Le bouton de lecture : taille des lettres et lecture de nuit.
-        val defilement = findViewById<ScrollView>(R.id.flow_scroll)
-        ReglagesLecture.marquer(defilement, Role.FOND)
-        val fin = findViewById<Button>(R.id.flow_done)
-        ReglagesLecture.installer(this, defilement, auDessusDe = fin) { ReglagesLecture.appliquer(defilement) }
         ReglagesLecture.appliquer(defilement)
+    }
 
-        fin.apply {
-            setText(R.string.tikkun_flow_done)
-            setOnClickListener {
-                // Tout dire d'un trait vaut les dix psaumes.
-                tikkun.psaumes.forEach { Store.setTikkunDone(this@TikkunFlowActivity, it.numero, true) }
-                finish()
-            }
-        }
+    /** L'écran reste allumé tant qu'on lit (FLECTURE-01) : le Tikoun se dit d'un trait. */
+    private val veille by lazy { VeilleLecture(this) }
+
+    override fun onResume() {
+        super.onResume()
+        veille.toucher()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        veille.toucher()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        veille.arreter()
     }
 
     /** Le nom d'un psaume ou d'une partie, sur un filet, sans rien a toucher. */
@@ -141,7 +188,7 @@ class TikkunFlowActivity : AppCompatActivity() {
 
     /** Les paragraphes d'une partie liturgique, dans les langues choisies (04/11). */
     private fun paragraphesTraduits(bloc: LiturgyBlock, contenu: LinearLayout, mode: LanguesTexte.Mode) {
-        bloc.paragraphes.forEachIndexed { i, p ->
+        bloc.paragraphes.forEachIndexed { i, p -> passage(contenu) {
             val textes = LanguesTexte.textes(mode, p, bloc.paragraphesFr.getOrNull(i), bloc.paragraphesEn.getOrNull(i))
             val avecHebreu = textes.any { it.first == "he" }
             if (avecHebreu) contenu.addView(paragraphe(p))
@@ -150,7 +197,7 @@ class TikkunFlowActivity : AppCompatActivity() {
                     layoutParams = ligneParams().apply { topMargin = if (avecHebreu || k > 0) dp(4) else dp(12) }
                 })
             }
-        }
+        } }
     }
 
     private fun paragraphe(texte: String): View = ReglagesLecture.marquer(TextView(this).apply {

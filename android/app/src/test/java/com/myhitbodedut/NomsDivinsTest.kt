@@ -67,6 +67,23 @@ class NomsDivinsTest {
         }
     }
 
+    /** THE-02 : dans le 'hizouk, le Nom entier n'est permis que dans les versets cités (liste blanche). */
+    @Test
+    fun `chizuk nom entier seulement dans les versets cites`() {
+        val versets = setOf(
+            "tehilim-145-18", "tehilim-34-19", "lm1-112-une-parole-vraie", "tehilim-139-4", "tehilim-5-2",
+            "tehilim-19-15", "tehilim-55-23", "tehilim-27-14", "tehilim-130-1", "tehilim-121-1-2",
+            "tehilim-116-1", "tehilim-102-1", "by-47-1",
+        )
+        val nom = Regex("י\\p{M}*ה\\p{M}*ו\\p{M}*ה")
+        val items = JSONObject(DataFiles.chizukJson).getJSONArray("items")
+        val fautifs = (0 until items.length()).map { items.getJSONObject(it) }.filter { o ->
+            o.getString("id") !in versets &&
+                nom.containsMatchIn(java.text.Normalizer.normalize(o.toString(), java.text.Normalizer.Form.NFC))
+        }.map { it.getString("id") }
+        assertTrue("Nom entier hors d'un verset cité : $fautifs", fautifs.isEmpty())
+    }
+
     @Test
     fun `tehilim et tikkun en toutes lettres`() {
         verifie("tehilim", DataFiles.tehilimJson)
