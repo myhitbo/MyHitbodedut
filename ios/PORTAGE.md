@@ -818,7 +818,7 @@ Portage de `Store.importJson` (`Store.kt:1525-1624`). C'est une **fusion**, jama
 | `blocked_apps` | **gardés tels quels dans `reglages.json`, sans effet sur iOS** (§ 3.7) | adaptation iOS |
 | `journal_plus` | pour chaque date valide et passée : pris seulement si le jour n'a rien ici | `store.js:587-592` |
 
-Tolérance de type : Android lit avec `optInt`, `optBoolean`, `optString`. Le décodeur iOS accepte donc ce qu'ils acceptent : un nombre écrit en chaîne (`"20"`), un nombre décimal (tronqué), un booléen écrit `"true"`. Le site est plus strict (`Number.isInteger`) ; iOS suit Android, le plus tolérant des deux.
+Tolérance de type : Android lit avec `optInt`, `optBoolean`, `optString`. Le décodeur iOS accepte donc ce qu'ils acceptent : un nombre écrit en chaîne (`"20"`), un nombre décimal (tronqué), un booléen écrit `"true"`. Le site est plus strict (`Number.isInteger`) ; iOS suit Android, le plus tolérant des deux. La syntaxe, elle, reste celle du JSON : le `org.json` d'Android admet aussi les apostrophes, les clés nues et les commentaires, qu'aucun des trois programmes n'écrit ; iOS refuse un tel fichier (« fichier invalide »). Ce qui suit l'objet et une marque d'ordre des octets en tête sont passés des deux côtés.
 
 Après l'import, comme sur Android (`SettingsActivity.kt:582-591`) : appliquer le clair ou le sombre, recharger les widgets, replanifier les notifications, recalculer la barrière.
 
@@ -864,7 +864,7 @@ Le même chemin sert à quitter la version web installée sur l'iPhone (elle éc
 | fusion | les cas d'import et d'export du site, portés tels quels : `web/test/regles.test.mjs`, `journal-plus.test.mjs`, `musique.test.mjs`, `hitbodedut.test.mjs` (Android n'a pas de test d'exécution de `importJson` : il demande un `Context`) |
 | ordre et forme | la sortie d'iOS, relue par un `JSONObject` de référence, rend les mêmes valeurs ; clés dans l'ordre d'Android |
 
-Tous tournent sur Linux (paquet `Coeur`), sans simulateur.
+Tous tournent sur Linux (paquet `Coeur`), sans simulateur. Les fichiers d'or sont dans `ios/Paquets/Coeur/Tests/Sauvegardes` ; ce qu'Android en fait est écrit par le vrai `Store.importJson` et `Store.exportJson`, exécutés sur la JVM (`tools/vecteurs_ios`, `Tests/Vecteurs/sauvegarde.json`), et le flux « iOS (oracle JVM) » échoue si une règle d'Android change sans qu'iOS suive. La sauvegarde réelle reste hors du dépôt : son test la lit par `MYHITBODEDUT_SAUVEGARDE_REELLE`.
 
 ## 4. Contenus
 

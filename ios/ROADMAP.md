@@ -127,7 +127,7 @@ Tout se vérifie sur Linux. Une tâche est finie quand les tests nommés, porté
 ### 7. Modèle et sauvegarde JSON
 
 - **Sources** : `Store.kt` (journées, `exportJson`, `importJson`), `JournalPlus.kt`, `web/src/js/store.js:509-631`.
-- **Livrable** : `Journee`, `Journal`, `Reglages` (clés d'Android), `actor Depot`, `Sauvegarde` (décodage tolérant, sérialiseur ordonné), la fusion (§ 3.5).
+- **Livrable** : `Journee`, `Journal`, `Reglages` (clés d'Android), `actor Depot`, `Sauvegarde` (décodage tolérant, sérialiseur ordonné), la fusion (§ 3.5) ; les fichiers d'or (`ios/Paquets/Coeur/Tests/Sauvegardes`) ; l'oracle JVM `tools/vecteurs_ios` (repris de la demande #29), qui fait importer et exporter ces fichiers par `Store.importJson` et `Store.exportJson`, et sa garde de dérive.
 - **Critère de fin** : les six lignes du § 3.9 ; un fichier illisible est mis de côté et non écrasé (l'équivalent de `days_corrompu`) ; la sauvegarde réelle du propriétaire se lit sans perte.
 
 ### 8. Règles de la pratique

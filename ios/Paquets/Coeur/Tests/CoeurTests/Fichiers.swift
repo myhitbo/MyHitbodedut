@@ -20,6 +20,16 @@ enum Depot {
         try donnees("ios/Ressources/Contenu/" + nom)
     }
 
+    /// Un fichier de vecteurs écrit par le code d'Android (tools/vecteurs_ios, Tests/Vecteurs).
+    static func vecteurs(_ nom: String) throws -> ObjetJSON {
+        try ObjetJSON(texte: String(decoding: donnees("ios/Paquets/Coeur/Tests/Vecteurs/" + nom), as: UTF8.self))
+    }
+
+    /// Un fichier d'or de la sauvegarde (Tests/Sauvegardes, PORTAGE.md § 3.9), en texte.
+    static func sauvegarde(_ nom: String) throws -> String {
+        String(decoding: try donnees("ios/Paquets/Coeur/Tests/Sauvegardes/" + nom), as: UTF8.self)
+    }
+
     /// Le lecteur des contenus exportés (`LecteurContenu`) : nil pour un fichier absent.
     static func lire(_ chemin: String) throws -> Data? {
         let url = racine.appendingPathComponent("ios/Ressources/Contenu/" + chemin)

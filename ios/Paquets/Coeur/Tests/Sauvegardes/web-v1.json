@@ -1,0 +1,46 @@
+{
+  "format": "myhitbodedut",
+  "version": 1,
+  "exported_at": "2022-02-02T10:00:00.123Z",
+  "days": {
+    "2022-02-01": {
+      "minutes": 15,
+      "note": "Du site.",
+      "themes": [
+        "gratitude"
+      ]
+    },
+    "2022-02-02": {
+      "minutes": 0,
+      "note": "Une pensée.",
+      "note_seule": true
+    }
+  },
+  "settings": {
+    "target_minutes": 20,
+    "daily_goal_minutes": 0,
+    "pause_shabbat": true,
+    "in_israel": false,
+    "guided_hitbodedut": false,
+    "first_name": "",
+    "hide_countdown": false,
+    "music_enabled": true,
+    "music_volume": 40,
+    "music_shuffle": false,
+    "music_track": "hamelech_basade",
+    "adresse": "m",
+    "apparence_mode": "clair",
+    "apparence_fond": "bleu",
+    "apparence_accent": "turquoise"
+  },
+  "paused_dates": [],
+  "blocked_apps": [],
+  "journal_plus": {
+    "2022-02-01": {
+      "avant": 2,
+      "apres": 4,
+      "gratitude": "La santé.",
+      "travail": "La patience."
+    }
+  }
+}
