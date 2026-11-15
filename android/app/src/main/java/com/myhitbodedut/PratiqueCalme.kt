@@ -59,8 +59,10 @@ class PratiqueCalme(
     }
 
     private fun surUneVueEffacee(e: MotionEvent): Boolean {
-        val x = e.rawX.toInt()
-        val y = e.rawY.toInt()
+        // Les coordonnées de la fenêtre, celles de getGlobalVisibleRect : rawX et rawY sont
+        // celles de l'écran, décalées en écran partagé ou en fenêtre libre.
+        val x = e.x.toInt()
+        val y = e.y.toInt()
         val zone = android.graphics.Rect()
         return effaces().any { v ->
             v.visibility == View.VISIBLE && v.getGlobalVisibleRect(zone) && zone.contains(x, y)
