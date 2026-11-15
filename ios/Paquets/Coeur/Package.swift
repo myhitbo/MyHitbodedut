@@ -22,6 +22,7 @@ let enChantierSources: [String] = [
     "Langues.swift",
     "Libelles.swift",
     "Magnetisme.swift",
+    "MusicLibrary.swift",
     "MusiquePlay.swift",
     "Onboarding.swift",
     "Paliers.swift",
