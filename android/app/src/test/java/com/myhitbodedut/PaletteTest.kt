@@ -101,7 +101,14 @@ class PaletteTest {
                     exige("$an × $fn $moment, icône d'onglet sur pastille", a.getValue("mhBrand"), f.getValue("mhNavPastille"), 3.0)
                 }
             }
+            // La légende des anneaux (FACCUEIL-18) : couleurs fixes, posées sur la carte comme sur le fond.
+            val fixes = if (nuit) couleurs("values") + couleurs("values-night") else couleurs("values")
             fonds(nuit).forEach { (fn, f) ->
+                listOf("ring_week_text", "ring_streak_text").forEach { anneau ->
+                    listOf("mhCard", "mhPaper").forEach {
+                        exige("$fn $moment, légende $anneau sur $it", fixes.getValue(anneau), f.getValue(it), 4.5)
+                    }
+                }
                 listOf("mhCard", "mhPaper", "mhDayTodo").forEach {
                     exige("$fn $moment, encre sur $it", f.getValue("mhInk"), f.getValue(it), 7.0)
                 }
