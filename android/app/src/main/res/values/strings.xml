@@ -731,7 +731,6 @@
     <string name="zmanim_a_valider">La méthode est écrite sous chaque horaire. Calcul au niveau de la mer, sur l’appareil, sans réseau.</string>
     <string name="zmanim_ajouts_titre">Dans les prières</string>
     <string name="zmanim_aucun_ajout">Rien de particulier</string>
-    <string name="zmanim_omer">Omer : jour %1$d</string>
     <string name="zmanim_paracha">Paracha %1$s</string>
     <string name="zmanim_source_villes">Villes : GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
@@ -776,9 +775,9 @@
     <string name="zman_methode_gra">heures saisonnières du lever au coucher</string>
     <string name="zman_methode_meridien">passage du soleil au méridien</string>
     <string name="zman_methode_minutes">%1$s min après le coucher</string>
-    <string name="zman_methode_milieu_chatsot">milieu entre deux ’hatsot du jour</string>
+    <string name="zman_methode_milieu_chatsot">milieu entre le ’hatsot du jour et celui du lendemain</string>
     <string name="zman_methode_avant_chkia">%1$s min avant le coucher</string>
-    <string name="zman_methode_apres_tset">pas avant la sortie de la veille (8,5°)</string>
+    <string name="zman_methode_apres_tset">pas avant la sortie des étoiles de ce jour (8,5°)</string>
     <string name="ajout_yaale_veyavo">Ya’alé véyavo</string>
     <string name="ajout_al_hanissim">Al hanissim</string>
     <string name="ajout_machiv_harouah">Machiv haroua’h</string>
@@ -1128,12 +1127,10 @@
     <string name="levana_rappel_reglage">Rappel de Birkat haLevana</string>
     <string name="levana_lire">Lire Birkat haLevana ›</string>
     <string name="widget_zmanim_label">Zmanim MyHitbodedut</string>
-    <string name="widget_zmanim_description">La date hébraïque, la prière du moment, la chki’a et la série.</string>
+    <string name="widget_zmanim_description">La date hébraïque, la prière du moment, les trois prochains zmanim et la série.</string>
     <string name="widget_zmanim_chaharit">Cha’harit</string>
     <string name="widget_zmanim_minha">Min’ha</string>
     <string name="widget_zmanim_arvit">Arvit</string>
-    <string name="widget_zmanim_jusqua">%1$s jusqu’à %2$s</string>
-    <string name="widget_zmanim_chkia">Chki’a %s</string>
     <string name="settings_ne_pas_deranger">Ne pas déranger pendant la hitbodedout</string>
     <string name="settings_ne_pas_deranger_hint">Le téléphone passe en mode « priorité » le temps de la hitbodedout, puis revient comme avant. Android demande une autorisation la première fois.</string>
     <string name="recherche_titre">Recherche</string>
@@ -1452,7 +1449,7 @@
     <string name="boussole_calibrer">Boussole peu précise : dessinez un 8 dans l’air avec le téléphone.</string>
     <string name="boussole_sans_capteur">Ce téléphone n’a pas de boussole : la direction est donnée par rapport au nord, en haut.</string>
     <string name="boussole_note_titre">Deux façons de calculer</string>
-    <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ‘Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ‘Haïm 94) : de New York, environ 96°. La carte Equal Earth, que l’ONU recommande depuis septembre 2026, sert à comparer la surface des continents ; elle ne donne pas de direction. Le hassid suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
+    <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ’Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ’Haïm 94) : de New York, environ 96°. La carte Equal Earth, que l’ONU recommande depuis septembre 2026, sert à comparer la surface des continents ; elle ne donne pas de direction. Le hassid suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
     <string name="boussole_widget_label">Direction de Jérusalem</string>
     <string name="boussole_widget_description">Le hassid et la direction de Jérusalem depuis le lieu des zmanim, par rapport au nord. Le toucher ouvre la boussole.</string>
     <string name="boussole_widget_lecture">Jérusalem depuis %1$s : %2$d° depuis le nord</string>
