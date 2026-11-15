@@ -258,7 +258,11 @@ class ReglagesLecture private constructor(
         }
     }
 
-    /** Les six façons de lire (LanguesTexte) ; le choix redessine l'écran entier. */
+    /**
+     * Les six façons de lire (LanguesTexte). Le texte se redessine sur place (audit du 12/11,
+     * FLECTURE-04) : recréer l'écran ramenait les Tehilim au psaume d'ouverture, le siddour à son
+     * marque-page, et les autres textes à un nombre de pixels qui n'était plus le même passage.
+     */
     private fun choisirLangues(ancre: View) {
         PopupMenu(contexte, ancre).apply {
             val actuel = LanguesTexte.mode(contexte)
@@ -268,8 +272,7 @@ class ReglagesLecture private constructor(
             menu.setGroupCheckable(0, true, true)
             setOnMenuItemClickListener { item ->
                 Store.setLectureLangues(contexte, LanguesTexte.Mode.entries[item.itemId].cle)
-                // Le texte lui-même change : l'écran se refait (il garde sa place de défilement).
-                (contexte as? Activity)?.recreate()
+                surChangement()
                 true
             }
             show()
@@ -401,23 +404,28 @@ class ReglagesLecture private constructor(
         /**
          * Pose le bouton sur l'écran. [defilement] est la vue qui défile
          * (ScrollView ou RecyclerView) ; [auDessusDe], le bouton du bas que
-         * la pastille ne doit pas couvrir.
+         * la pastille ne doit pas couvrir ; [gardeSaPlace], pour un écran qui
+         * retrouve lui-même son passage dans surChangement (les Tehilim, au verset).
          */
         fun installer(
             activite: Activity,
             defilement: View,
             avecNusah: Boolean = false,
             auDessusDe: View? = null,
+            gardeSaPlace: Boolean = false,
             surChangement: () -> Unit,
         ): ReglagesLecture {
-            // Une vue qui défile garde sa place quand les lettres grandissent :
-            // la même proportion du texte reste en haut de l'écran.
-            val garderPlace: () -> Unit = if (defilement is RecyclerView) surChangement else {
+            // Une vue qui défile garde sa place quand les lettres grandissent ou que les langues
+            // changent : le paragraphe repéré ([reperer], FLECTURE-04) qui était en haut de l'écran
+            // y revient ; sans repère, la même proportion du texte.
+            val garderPlace: () -> Unit = if (defilement is RecyclerView || gardeSaPlace) surChangement else {
                 {
+                    val repere = repereDuHaut(defilement)
                     val portee = ((defilement as? ViewGroup)?.getChildAt(0)?.height ?: 0) - defilement.height
                     val part = if (portee > 0) defilement.scrollY.toFloat() / portee else 0f
                     surChangement()
                     defilement.post {
+                        if (repere != null && allerAuRepere(defilement, repere)) return@post
                         val nouvelle = ((defilement as? ViewGroup)?.getChildAt(0)?.height ?: 0) - defilement.height
                         if (nouvelle > 0) defilement.scrollTo(0, (part * nouvelle).toInt())
                     }
@@ -475,6 +483,71 @@ class ReglagesLecture private constructor(
                 vue.setTag(R.id.lecture_interligne, vue.lineSpacingExtra)
             }
             return vue
+        }
+
+        /**
+         * Donne son repère à une vue du texte (audit du 12/11, FLECTURE-04) : le rang de son verset
+         * ou de son paragraphe, le même dans toutes les langues. Quand le texte se redessine
+         * (taille, langues) ou que l'écran se recrée (rotation, thème), on retrouve ce passage, et
+         * non un nombre de pixels qui n'est plus au même endroit du texte.
+         */
+        fun <V : View> reperer(vue: V, repere: Int): V {
+            vue.setTag(R.id.lecture_repere, repere)
+            return vue
+        }
+
+        /** Les vues repérées sous [defilement] : (repère, haut, bas) dans le texte qui défile. */
+        private fun bords(defilement: View): List<Triple<Int, Int, Int>> {
+            val sortie = ArrayList<Triple<Int, Int, Int>>()
+            fun parcourir(v: View, haut: Int) {
+                (v.getTag(R.id.lecture_repere) as? Int)?.let { sortie += Triple(it, haut, haut + v.height) }
+                if (v is ViewGroup) for (i in 0 until v.childCount) v.getChildAt(i).let { parcourir(it, haut + it.top) }
+            }
+            (defilement as? ViewGroup)?.let { g -> for (i in 0 until g.childCount) g.getChildAt(i).let { parcourir(it, it.top) } }
+            return sortie
+        }
+
+        /**
+         * Le passage en haut de l'écran : le repère de la première vue qui dépasse encore sous
+         * [y], et la part de cette vue déjà passée (négative dans la marge qui la précède).
+         * Rien tout en haut du texte, ni sans vue repérée.
+         */
+        fun premierRepere(bords: List<Triple<Int, Int, Int>>, y: Int): Pair<Int, Float>? {
+            if (y <= 0) return null
+            val (repere, haut, bas) = bords.firstOrNull { it.third > y } ?: return null
+            return repere to (y - haut).toFloat() / (bas - haut).coerceAtLeast(1)
+        }
+
+        /** Où défiler pour retrouver [repere] : la première vue qui le porte, à la même part. */
+        fun placeDuRepere(bords: List<Triple<Int, Int, Int>>, repere: Pair<Int, Float>): Int? {
+            val (_, haut, bas) = bords.firstOrNull { it.first == repere.first } ?: return null
+            return (haut + repere.second * (bas - haut)).toInt().coerceAtLeast(0)
+        }
+
+        fun repereDuHaut(defilement: View): Pair<Int, Float>? = premierRepere(bords(defilement), defilement.scrollY)
+
+        /** Ramène [repere] en haut de l'écran ; faux si aucune vue ne le porte. */
+        fun allerAuRepere(defilement: View, repere: Pair<Int, Float>): Boolean {
+            val y = placeDuRepere(bords(defilement), repere) ?: return false
+            defilement.scrollTo(0, y)
+            return true
+        }
+
+        private const val ETAT_REPERE = "lecture_repere"
+        private const val ETAT_REPERE_PART = "lecture_repere_part"
+
+        /** Le passage en haut de l'écran, gardé pour l'écran recréé (onSaveInstanceState). */
+        fun sauverRepere(etat: android.os.Bundle, defilement: View) {
+            val (repere, part) = repereDuHaut(defilement) ?: return
+            etat.putInt(ETAT_REPERE, repere)
+            etat.putFloat(ETAT_REPERE_PART, part)
+        }
+
+        /** L'écran recréé revient au passage gardé, une fois sa mise en page faite. */
+        fun reprendreRepere(etat: android.os.Bundle?, defilement: View) {
+            if (etat == null || !etat.containsKey(ETAT_REPERE)) return
+            val repere = etat.getInt(ETAT_REPERE) to etat.getFloat(ETAT_REPERE_PART)
+            defilement.post { allerAuRepere(defilement, repere) }
         }
 
         /**

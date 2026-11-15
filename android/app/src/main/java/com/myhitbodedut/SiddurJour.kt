@@ -69,6 +69,15 @@ object SiddurJour {
 
     enum class Style { NORMAL, DU_JOUR, HORS }
 
+    /**
+     * Le libellé du texte ordinaire qu'une formule du jour remplace (audit du 12/11, TSIDDUR-06) :
+     * « האל הקדוש » pendant les dix jours, « בונה ירושלים » à Min'ha du 9 Av. Sa condition est
+     * niée (« !asseret_yemei_techouva ») : quand elle est vraie, c'est le texte de tous les
+     * jours, affiché tel quel, sans étiquette ni surbrillance ; le jour où il est remplacé, il
+     * se replie sous « Les autres jours ».
+     */
+    const val AUTRES_JOURS = "ajout_autres_jours"
+
     /** Une ligne de la lecture, le jour donné. */
     sealed class Ligne {
         data class Titre(val texte: String, val fr: String? = null, val en: String? = null) : Ligne()
@@ -95,7 +104,8 @@ object SiddurJour {
      * est précédé de son étiquette ; un ajout hors du jour tient en une ligne
      * repliée, et ses blocs suivent si sa clé est dans [ouverts]. Dans un ajout
      * du jour, une variante d'un autre jour (« בחוה״מ פסח » un Roch 'Hodech)
-     * reste lisible, estompée.
+     * reste lisible, estompée. Le texte ordinaire qu'une formule du jour
+     * remplace ([AUTRES_JOURS]) reste tel quel, et se replie ce jour-là.
      */
     fun lignes(
         texte: SiddurTexte,
@@ -171,7 +181,9 @@ object SiddurJour {
                     i++
                 }
                 val racine = a.racine ?: a.condition
-                if (vrai(racine, conditions)) {
+                if (vrai(racine, conditions) && a.libelle == AUTRES_JOURS) {
+                    membres.forEach { (b, _) -> sortie += Ligne.Bloc(b, Style.NORMAL) }
+                } else if (vrai(racine, conditions)) {
                     sortie += Ligne.Etiquette(racine, nom(a, racine))
                     membres.forEach { (b, m) -> sortie += Ligne.Bloc(b, if (vrai(m.condition, conditions)) Style.DU_JOUR else Style.HORS) }
                 } else {

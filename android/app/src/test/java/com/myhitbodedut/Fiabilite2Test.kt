@@ -92,6 +92,24 @@ class Fiabilite2Test {
         assertTrue(accueil.contains("(!done || hierOuvert())"))
     }
 
+    /** TFRUX-07 (14/11) : le jour est toujours nommé, et « Aujourd'hui » reste proposé aujourd'hui fait. */
+    @Test
+    fun `hors telephone nomme toujours le jour`() {
+        val accueil = lire("MainActivity.kt")
+        val bloc = accueil.substringAfter("private fun declarerHorsTelephone").substringBefore("private fun hierOuvert")
+        assertTrue(bloc.contains("if (hierOuvert) {"))
+        assertFalse(bloc.contains("aujourdhuiOuvert"))
+        val duree = accueil.substringAfter("private fun choisirDureeHorsTelephone").substringBefore("private fun pickDuration")
+        assertTrue(duree.contains("R.string.offline_how_long_today") && duree.contains("R.string.offline_how_long_yesterday"))
+        assertTrue(duree.contains("R.string.offline_added_yesterday"))
+        assertTrue(duree.contains("estAujourdhui && !dejaFait"))
+        listOf("values", "values-en", "values-iw").forEach {
+            val xml = File("src/main/res/$it/strings.xml").readText()
+            listOf("offline_how_long_today", "offline_how_long_yesterday", "offline_added_today", "offline_added_yesterday")
+                .forEach { n -> assertTrue("$it $n", xml.contains("name=\"$n\"")) }
+        }
+    }
+
     @Test
     fun `le bravo survit a une rotation`() {
         val manifeste = File("src/main/AndroidManifest.xml").readText()

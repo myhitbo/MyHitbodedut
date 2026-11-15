@@ -88,6 +88,15 @@ object SessionRule {
         return finMillis <= maintenant
     }
 
+    /**
+     * La seance joue-t-elle du son ? Le morceau choisi, ou une ambiance sous lui. Le service
+     * de seance se declare alors aussi en lecture multimedia (mediaPlayback) : la regle Play
+     * reserve le type « usage special » a ce qu'aucun autre type ne couvre, et la lecture
+     * audio a le sien (examen du 14/11, constat 2, FBARRIERE-16).
+     */
+    fun joueDuSon(musique: Boolean, ambiance: Ambiance): Boolean =
+        musique || ambiance != Ambiance.SILENCE
+
     /** La plus longue seance qu'on puisse choisir ; une seance ouverte s'y arrete aussi. */
     const val PLAFOND_OUVERTE = 240
 

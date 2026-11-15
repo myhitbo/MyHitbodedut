@@ -17,13 +17,19 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import java.time.format.DateTimeFormatter
 
 /** Écran principal : état du jour, diagnostic de la barrière, réglages. */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     /** Les cartes du moment n'entrent en cascade qu'une fois par ouverture de l'accueil (19/10). */
     private var momentAnime = false
 
 
     /** Le texte de relance a déjà été tiré pour la rupture en cours. */
     private var relanceTiree = false
+
+    /**
+     * La présentation vient d'être lancée depuis onCreate : le onResume qui suit ne dessine
+     * pas l'accueil qu'elle va couvrir, son retour repasse par onResume (examen du 14/11, constat 8).
+     */
+    private var presentationLancee = false
 
     /** La position du téléphone reprise au retour sur l'accueil, après un voyage (02/11). */
     private val choixLieu = ChoixLieu(this) {
@@ -60,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         // rotation ne la rouvre pas.
         if (savedInstanceState == null) {
             intent?.getStringExtra(EXTRA_ASK_NOTE)?.let { date ->
-                if (!Store.hasPendingCelebration(this)) NoteDialog.show(this, date, onSaved = { refresh() })
+                if (!Store.hasPendingCelebration(this)) NoteDialog.show(this, date)
             }
             intent?.removeExtra(EXTRA_ASK_NOTE)
         }
@@ -131,6 +137,15 @@ class MainActivity : AppCompatActivity() {
         // close ou relancée avant d'afficher quoi que ce soit.
         SessionService.reconcilier(this)
         applyServiceState()
+        // Les fichiers de l'accueil se lisent hors du fil principal ; lus, l'accueil se redessine,
+        // s'il est encore à l'écran (sinon le prochain onResume le fait).
+        Data.prechauffer(this) {
+            if (!isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)) refresh()
+        }
+        if (presentationLancee) {
+            presentationLancee = false
+            return
+        }
         refresh()
         renderPaliers()
         // Chaque retour sur l'accueil : le hassid au centre, les anneaux se
@@ -141,8 +156,9 @@ class MainActivity : AppCompatActivity() {
         }
         montrerFace(Plaque.Face.HASSID)
         findViewById<AnneauxView>(R.id.week_gauge).rejouer()
-        // La séance s'est close téléphone posé : le bravo attendait ici.
-        CelebrationActivity.showIfPending(this)
+        // La séance s'est close téléphone posé : le bravo attendait ici. Sauf par-dessus
+        // une note en cours de frappe : il attend alors sa fermeture (13/11, audit FSEANCE-03).
+        if (!NoteDialog.ouverte(this)) CelebrationActivity.showIfPending(this)
         // La vignette d'accueil suit ce que l'écran vient de montrer.
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
@@ -156,6 +172,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun showOnboardingOnce() {
         if (Store.hasOnboarded(this)) return
+        presentationLancee = true
         startActivity(Intent(this, OnboardingActivity::class.java))
     }
 
@@ -171,6 +188,10 @@ class MainActivity : AppCompatActivity() {
                     .putExtra(SessionActivity.EXTRA_START_NOW, !Store.isSessionRunning(this))
             )
         }
+        // L'écran de préparation sans EXTRA_START_NOW : durées, « Sans durée », Parler / Écrire / Prier / Une question.
+        findViewById<Button>(R.id.start_prepare).setOnClickListener {
+            startActivity(Intent(this, SessionActivity::class.java))
+        }
         findViewById<Button>(R.id.today_offline).setOnClickListener { declarerHorsTelephone() }
         findViewById<Button>(R.id.trophees_paliers).setOnClickListener { startActivity(Intent(this, PaliersActivity::class.java)) }
         findViewById<Button>(R.id.parcours_button).setOnClickListener { startActivity(Intent(this, ParcoursActivity::class.java)) }
@@ -185,10 +206,23 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.start_focus).setOnClickListener {
             // La barrière du matin. En édition légère elle n'existe pas,
-            // et la ligne est retirée plutôt que rendue inopérante.
-            Store.setEnabled(this, !Store.isEnabled(this))
-            applyServiceState()
-            refresh()
+            // et la ligne est retirée plutôt que rendue inopérante. Elle ne bascule que si le
+            // mode peut agir (13/11, FBARRIERE-08) : sinon elle mène à la carte d'état.
+            when (GateRule.geste(GateStatus.faits(this))) {
+                GesteBarriere.REGLER -> startActivity(
+                    Intent(this, SettingsActivity::class.java)
+                        .putExtra(SettingsActivity.EXTRA_CARTE_BARRIERE, true)
+                )
+                GesteBarriere.RELANCER -> {
+                    GateService.start(this)
+                    refresh()
+                }
+                GesteBarriere.BASCULER -> {
+                    Store.setEnabled(this, !Store.isEnabled(this))
+                    applyServiceState()
+                    refresh()
+                }
+            }
         }
         findViewById<View>(R.id.music_button).setOnClickListener {
             startActivity(Intent(this, MusicActivity::class.java))
@@ -226,9 +260,11 @@ class MainActivity : AppCompatActivity() {
 
         // L'écran de relecture n'existe que pour lever les relu=false des
         // données : il n'a rien à faire dans une version publiée. Sa classe
-        // n'est compilée qu'en debug (src/debug) : on la nomme par son nom.
+        // n'est compilée qu'en debug (src/debug) : on la nomme par son nom. Pas dans verifR8
+        // (14/11) : débogable mais sans src/debug, le bouton y menait à une classe absente, et il
+        // se voyait sur les captures de la fiche Play.
         findViewById<View>(R.id.proofread_button).apply {
-            visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
+            visibility = if (BuildConfig.DEBUG && BuildConfig.BUILD_TYPE == "debug") View.VISIBLE else View.GONE
             setOnClickListener {
                 startActivity(Intent().setClassName(this@MainActivity, "com.myhitbodedut.ProofreadActivity"))
             }
@@ -239,8 +275,18 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener { toucherPlaque() }
         }
         findViewById<Button>(R.id.today_note).setOnClickListener {
-            NoteDialog.show(this, Store.today(), onSaved = { refresh() })
+            NoteDialog.show(this, Store.today())
         }
+    }
+
+    /** La note enregistrée se lit aussitôt sur l'accueil (NoteDialog.Hote). */
+    override fun noteEnregistree(date: String) {
+        refresh()
+    }
+
+    /** Le bravo qui attendait la fermeture de la note s'ouvre, sans la reproposer. */
+    override fun noteFermee(date: String) {
+        CelebrationActivity.showIfPending(this, sansNote = true)
     }
 
     /**
@@ -254,16 +300,17 @@ class MainActivity : AppCompatActivity() {
         val aujourdhui = Store.today()
         val hier = Store.parse(aujourdhui).minusDays(1).toString()
         val hierOuvert = hierOuvert()
-        val aujourdhuiOuvert = !Store.isDone(this, aujourdhui)
-        when {
-            aujourdhuiOuvert && hierOuvert -> AlertDialog.Builder(this)
+        // Hier encore ouvert : toujours demander le jour, aujourd'hui fait ou non (TFRUX-07) ;
+        // sinon le temps d'une seconde séance de la journée partait sur hier, sans un mot.
+        if (hierOuvert) {
+            AlertDialog.Builder(this)
                 .setTitle(R.string.offline_which_day)
                 .setItems(arrayOf(getString(R.string.offline_today), getString(R.string.offline_yesterday))) { _, i ->
-                    choisirDureeHorsTelephone(if (i == 0) aujourdhui else hier)
+                    choisirDureeHorsTelephone(if (i == 0) aujourdhui else hier, aujourdhui)
                 }
                 .show()
-            hierOuvert -> choisirDureeHorsTelephone(hier)
-            else -> choisirDureeHorsTelephone(aujourdhui)
+        } else {
+            choisirDureeHorsTelephone(aujourdhui, aujourdhui)
         }
     }
 
@@ -273,13 +320,20 @@ class MainActivity : AppCompatActivity() {
         return !Store.isDone(this, hier.toString()) && !Store.isExempt(this, hier)
     }
 
-    private fun choisirDureeHorsTelephone(date: String) {
-        DureeSeance.choisir(this, R.string.offline_how_long) { minutes ->
+    private fun choisirDureeHorsTelephone(date: String, aujourdhui: String) {
+        val estAujourdhui = date == aujourdhui
+        DureeSeance.choisir(this, if (estAujourdhui) R.string.offline_how_long_today else R.string.offline_how_long_yesterday) { minutes ->
+            val dejaFait = Store.isDone(this, date)
             // Sans sujet : celui des puces est celui de la PROCHAINE séance.
             Store.addSession(this, minutes, theme = null, date = date)
+            // Le jour est nommé : hier ne reçoit plus le temps en silence.
+            android.widget.Toast.makeText(this,
+                getString(if (estAujourdhui) R.string.offline_added_today else R.string.offline_added_yesterday,
+                    Store.formatDuration(this, minutes)), android.widget.Toast.LENGTH_SHORT).show()
             // L'application est ouverte : la fête se fait à l'écran, pas par une notification (comme AjoutTemps).
             Celebrations.marquerNotifies(this)
-            if (date == Store.today()) Store.setPendingCelebration(this, minutes, date)
+            // Le bravo ne fête que la journée qui vient d'être faite, pas un temps ajouté à une journée déjà faite.
+            if (estAujourdhui && !dejaFait) Store.setPendingCelebration(this, minutes, date)
             refresh()
             StreakWidget.refresh(this)
             CelebrationActivity.showIfPending(this)
@@ -316,6 +370,21 @@ class MainActivity : AppCompatActivity() {
     private fun refresh() {
         renderToday()
         renderWeek()
+        // Ce qui suit lit le siddour, la bibliothèque et le Tikoun : seulement une fois lus hors
+        // du fil principal (Data.prechauffer, examen du 14/11, constat 8), qui rappelle refresh().
+        if (Data.pret) renderDonnees()
+        renderGauge()
+        renderSwitches()
+        renderMusic()
+        renderRelance()
+        renderTehilim()
+        renderReminders()
+        renderSettingsEntry()
+        renderStartCard()
+    }
+
+    /** Les cartes de l'accueil qui lisent les fichiers de données. */
+    private fun renderDonnees() {
         // Reprendre la lecture et les favoris (14/10), en tête de la Bibliothèque.
         findViewById<LinearLayout>(R.id.reprise_favoris).apply {
             removeAllViews()
@@ -332,15 +401,7 @@ class MainActivity : AppCompatActivity() {
             // Les effets (19/10) : à la première apparition de l'accueil, les cartes entrent en cascade.
             if (!momentAnime) { momentAnime = true; Effets.enfants(this, depart = 450) }
         }
-        renderGauge()
-        renderSwitches()
-        renderMusic()
-        renderRelance()
         renderTikkun()
-        renderTehilim()
-        renderReminders()
-        renderSettingsEntry()
-        renderStartCard()
     }
 
     /**
@@ -369,7 +430,7 @@ class MainActivity : AppCompatActivity() {
         focus.visibility = if (BuildConfig.HAS_GATE) View.VISIBLE else View.GONE
         if (BuildConfig.HAS_GATE) {
             findViewById<TextView>(R.id.start_focus_value).setText(
-                if (Store.isEnabled(this)) R.string.start_focus_on else R.string.start_focus_off
+                GateStatus.pastilleDe(GateStatus.evaluate(this))
             )
         }
     }
@@ -407,10 +468,12 @@ class MainActivity : AppCompatActivity() {
         val etat = Store.anneaux(this)
         val anneaux = findViewById<AnneauxView>(R.id.week_gauge)
         anneaux.montrer(etat)
+        // La semaine et la série s'accordent au nombre (13/11, TFRLANGUE-01) : « 1 jour sur 7 ».
         anneaux.contentDescription = getString(
             R.string.rings_description,
             Store.formatDuration(this, etat.jour.fait), Store.formatDuration(this, etat.jour.objectif),
-            semaine.faits, semaine.dus, etat.serie.fait, etat.serie.objectif
+            resources.getQuantityString(R.plurals.ring_week_detail, semaine.faits, semaine.faits, semaine.dus),
+            resources.getQuantityString(R.plurals.ring_streak_detail, etat.serie.fait, etat.serie.fait, etat.serie.objectif)
         )
         anneaux.surChoix = { quel ->
             renderLegende(quel)
@@ -537,10 +600,11 @@ class MainActivity : AppCompatActivity() {
         }
         legende.text = legendeTexte
         valeur.setTextColor(Apparence.couleur(this, when (vers.anneau) {
-            Anneaux.Quel.JOUR -> R.color.brand
-            Anneaux.Quel.SEMAINE -> R.color.ring_week
-            Anneaux.Quel.SERIE -> R.color.ring_streak
-            null -> R.color.ink
+            // La plaque reste claire la nuit : des encres fixes, pas celles qui s'éclaircissent (FACCUEIL-02).
+            Anneaux.Quel.JOUR -> R.color.on_plate
+            Anneaux.Quel.SEMAINE -> R.color.ring_week_on_plate
+            Anneaux.Quel.SERIE -> R.color.ring_streak_on_plate
+            null -> R.color.on_plate_ink
         }))
         findViewById<View>(R.id.hero_plate).contentDescription = listOf(texte(cible), legendeTexte).joinToString(" ")
         compteurFace?.cancel()
@@ -634,10 +698,8 @@ class MainActivity : AppCompatActivity() {
                 if (etat.jour.atteint) R.string.ring_day_reached else R.string.ring_day_detail,
                 Store.formatDuration(this, etat.jour.fait), Store.formatDuration(this, etat.jour.objectif)
             )
-            Anneaux.Quel.SERIE -> getString(
-                if (etat.serie.atteint) R.string.ring_streak_reached else R.string.ring_streak_detail,
-                etat.serie.fait, etat.serie.objectif
-            )
+            Anneaux.Quel.SERIE -> if (etat.serie.atteint) getString(R.string.ring_streak_reached, etat.serie.fait, etat.serie.objectif)
+                else resources.getQuantityString(R.plurals.ring_streak_detail, etat.serie.fait, etat.serie.fait, etat.serie.objectif)
             else -> resources.getQuantityString(R.plurals.week_gauge, semaine.fait, semaine.fait, semaine.objectif)
         }
         legende.setTextColor(
@@ -812,6 +874,9 @@ class MainActivity : AppCompatActivity() {
         // Tant qu'aujourd'hui ou hier peut encore être inscrit.
         findViewById<Button>(R.id.today_offline).visibility =
             if ((!done || hierOuvert()) && !Store.isSessionRunning(this)) View.VISIBLE else View.GONE
+
+        findViewById<Button>(R.id.start_prepare).visibility =
+            if (Store.isSessionRunning(this)) View.GONE else View.VISIBLE
 
         findViewById<Button>(R.id.start_session).text = when {
             Store.isSessionRunning(this) -> getString(R.string.action_back_to_session)

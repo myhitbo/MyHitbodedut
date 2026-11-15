@@ -29,7 +29,7 @@ class VerrouJournalTest {
     fun `la fenetre de note deja remplie demande le code hors du journal`() {
         val note = lire("NoteDialog.kt")
         assertTrue(note.contains("activity !is JournalActivity"))
-        assertTrue(note.contains("VerrouJournal.exiger(composant"))
+        assertTrue(note.contains("VerrouJournal.exiger(activity, onOk = { ouvrir(activity, date) }"))
         assertTrue(note.contains("IME_FLAG_NO_PERSONALIZED_LEARNING"))
     }
 

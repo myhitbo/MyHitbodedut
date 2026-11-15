@@ -1,0 +1,569 @@
+[
+ {
+  "id": "LM1-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "dont on couvre l’homme, vient de là : de l’aspect de la faim.",
+  "apres": "dont on couvre l’homme, fait venir l’aspect de la faim.",
+  "occurrences": 1,
+  "raison": "בָּא עַל־יְדֵי־זֶה בְּחִינַת רָעָב : la discorde fait venir la faim (עַל־יְדֵי־זֶה adverbial, sujet בְּחִינַת רָעָב), et non l'inverse."
+ },
+ {
+  "id": "LM1-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "heaped on a person, comes through this aspect of hunger.",
+  "apres": "heaped on a person, brings about the aspect of hunger.",
+  "occurrences": 1,
+  "raison": "בָּא עַל־יְדֵי־זֶה בְּחִינַת רָעָב : la discorde fait venir la faim (עַל־יְדֵי־זֶה adverbial, sujet בְּחִינַת רָעָב), et non l'inverse."
+ },
+ {
+  "id": "LM1-03",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "dirent : « Montre-nous un objet qui ne vaut pas qu’on le détruise",
+  "apres": "dirent : « Montre-nous un objet qui ne vaut pas le dégât qu’il cause",
+  "occurrences": 1,
+  "raison": "מָנָא דְּלָא שָׁוְיָא לְחַבָּלָא : un objet qui ne vaut pas le dégât qu'il cause (Rachi), non « qu'on le détruise »."
+ },
+ {
+  "id": "LM1-03",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "C’est là un objet qui ne vaut pas qu’on le détruise",
+  "apres": "C’est là un objet qui ne vaut pas le dégât qu’il cause",
+  "occurrences": 1,
+  "raison": "מָנָא דְּלָא שָׁוְיָא לְחַבָּלָא : un objet qui ne vaut pas le dégât qu'il cause (Rachi), non « qu'on le détruise »."
+ },
+ {
+  "id": "LM1-03",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« Montre-nous un objet qui ne vaut pas qu’on le détruise. » Il apporta une natte, ils",
+  "apres": "« Montre-nous un objet qui ne vaut pas le dégât qu’il cause. » Il apporta une natte, ils",
+  "occurrences": 1,
+  "raison": "מָנָא דְּלָא שָׁוְיָא לְחַבָּלָא : un objet qui ne vaut pas le dégât qu'il cause (Rachi), non « qu'on le détruise »."
+ },
+ {
+  "id": "LM1-03",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "to him: “Show us an object that is not worth destroying",
+  "apres": "to him: “Show us an object that is not worth the damage it causes",
+  "occurrences": 1,
+  "raison": "מָנָא דְּלָא שָׁוְיָא לְחַבָּלָא : un objet qui ne vaut pas le dégât qu'il cause (Rachi), non « qu'on le détruise »."
+ },
+ {
+  "id": "LM1-03",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "This is an object that is not worth destroying",
+  "apres": "This is an object that is not worth the damage it causes",
+  "occurrences": 1,
+  "raison": "מָנָא דְּלָא שָׁוְיָא לְחַבָּלָא : un objet qui ne vaut pas le dégât qu'il cause (Rachi), non « qu'on le détruise »."
+ },
+ {
+  "id": "LM1-03",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“Show us an object that is not worth destroying.” He brought a mat, and",
+  "apres": "“Show us an object that is not worth the damage it causes.” He brought a mat, and",
+  "occurrences": 1,
+  "raison": "מָנָא דְּלָא שָׁוְיָא לְחַבָּלָא : un objet qui ne vaut pas le dégât qu'il cause (Rachi), non « qu'on le détruise »."
+ },
+ {
+  "id": "LM2-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "que la foi (haumanout) devient muette (ilem), qu’elle n’a pas de parole pour se glorifier. Car il faut faire une parole pour la foi, afin qu’elle puisse",
+  "apres": "c’est que le métier (haumanout) devient muet (ilem) : il n’a pas de parole pour se glorifier. Car il faut faire une parole pour le métier, afin qu’il puisse",
+  "raison": "הָאֻמָּנוּת = le métier (cf. 'Houlin 89a), non la foi (אמונה).",
+  "occurrences": 1
+ },
+ {
+  "id": "LM2-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "that faith (ha’umanut) becomes mute (ilem), having no speech with which to glory. For one must make speech for faith, so",
+  "apres": "that the craft (ha’umanut) becomes mute (ilem), having no speech with which to glory. For one must make speech for the craft, so",
+  "raison": "הָאֻמָּנוּת = craft/trade, not faith.",
+  "occurrences": 1
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "à la pleine lune (bakessé), etc.",
+  "apres": "au jour où la lune est couverte (bakessé), etc.",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Blow the shofar at the new moon, at the full moon (bakeseh), etc.",
+  "apres": "Blow the shofar at the new moon, when [the moon] is covered (bakeseh), etc.",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« À la pleine lune (bakessé) » — c’est l’aspect de la crainte",
+  "apres": "« Quand [la lune] est couverte (bakessé) » — c’est l’aspect de la crainte",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“At the full moon (bakeseh)” — this is the aspect of fear",
+  "apres": "“When [the moon] is covered (bakeseh)” — this is the aspect of fear",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Sonnez du chofar à la nouvelle lune, au temps fixé (bakessé) pour",
+  "apres": "Sonnez du chofar à la nouvelle lune, au jour où la lune est couverte (bakessé), pour",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Blow the horn at the new moon, at the full moon (bakeseh) for our feast-day”:",
+  "apres": "Blow the shofar at the new moon, when [the moon] is covered (bakeseh), for our feast-day”:",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« au temps fixé (bakessé) pour le jour de notre fête », c’est-à-dire Roch Hachana",
+  "apres": "« au jour où la lune est couverte (bakessé), pour le jour de notre fête », c’est-à-dire Roch Hachana",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“at the full moon (bakeseh) for our feast-day,” that is",
+  "apres": "“when [the moon] is covered (bakeseh), for our feast-day,” that is",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Sonnez du chofar à la néoménie, au temps fixé (ba-kessé) pour le jour de notre fête",
+  "apres": "Sonnez du chofar à la néoménie, au jour où la lune est couverte (ba-kessé), pour le jour de notre fête",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Blow the horn at the new moon, at the full moon (ba-keseh) for our feast-day.",
+  "apres": "Blow the shofar at the new moon, when [the moon] is covered (ba-keseh), for our feast-day.",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« Au temps fixé (ba-kessé) pour le jour de notre fête ». Ba-kessé",
+  "apres": "« Au jour où la lune est couverte (ba-kessé), pour le jour de notre fête ». Ba-kessé",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune » ; garde le jeu avec « recouvrent »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“At the full moon (ba-keseh) for our feast-day.” Ba-keseh",
+  "apres": "“When [the moon] is covered (ba-keseh), for our feast-day.” Ba-keseh",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“Blow the shofar at the New Moon, at the appointed time for our feast day; for it is",
+  "apres": "“Blow the shofar at the New Moon, when [the moon] is covered, for our feast day; for it is",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune » ; cohérence"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« Sonnez du chofar à la néoménie, au temps fixé pour le jour de notre fête ; car c’est une loi pour Israël, une règle du Dieu de Jacob » (Tehilim 81)",
+  "apres": "« Sonnez du chofar à la néoménie, au jour où la lune est couverte, pour le jour de notre fête ; car c’est une loi pour Israël, une ordonnance du Dieu de Jacob » (Tehilim 81)",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune » ; cohérence"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« Au temps fixé (ba-kessé) pour le jour de notre fête.",
+  "apres": "« Au jour où la lune est couverte (ba-kessé), pour le jour de notre fête.",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“At the appointed time (ba-keseh) for our feast day.”",
+  "apres": "“When [the moon] is covered (ba-keseh), for our feast day.”",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« Au temps fixé (ba-kessé) pour le jour de notre fête » – car l’essentiel",
+  "apres": "« Au jour où la lune est couverte (ba-kessé), pour le jour de notre fête » – car l’essentiel",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "aspect de « Au temps fixé pour le jour de notre fête », on mérite",
+  "apres": "aspect de « Au jour où la lune est couverte, pour le jour de notre fête », on mérite",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“At the appointed time (ba-keseh) for our feast day” – for the essence",
+  "apres": "“When [the moon] is covered (ba-keseh), for our feast day” – for the essence",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "LMTITRES-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "“At the appointed time for our feast day,” one merits",
+  "apres": "“When [the moon] is covered, for our feast day,” one merits",
+  "occurrences": 1,
+  "raison": "bakessé/bakeseh (Ps 81:4) : lu par le texte comme la lune couverte (Roch Hachana), non « pleine lune »"
+ },
+ {
+  "id": "ETSOT-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "il élève les âmes tombées dans l’hérésie, pour laquelle il n’y a pas de techouva. (Likouté Moharan I, 64:5)",
+  "apres": "celui-ci élève les âmes tombées dans l’hérésie à laquelle il n’y a pas de réponse. (Likouté Moharan I, 64:5)",
+  "occurrences": 1,
+  "raison": "תשובה = réponse (objection sans réponse), non repentir"
+ },
+ {
+  "id": "ETSOT-01",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "he raises up the souls that have fallen into the heresy for which there is no teshuvah. (Likutei Moharan I, 64:5)",
+  "apres": "he raises up the souls that have fallen into the heresy for which there is no answer. (Likutei Moharan I, 64:5)",
+  "occurrences": 1,
+  "raison": "תשובה = answer, not repentance"
+ },
+ {
+  "id": "ETSOT-02",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "6. Celui qui va en déclinant, en se dispersant et en tombant, et dont le monde se moque, de sorte qu’il en a honte, tout cela lui arrive",
+  "apres": "6. Celui qui, en marchant, glisse et tombe, et dont les gens se moquent au point qu’il en a honte : tout cela lui arrive",
+  "occurrences": 1,
+  "raison": "הולך ונחלק ונופל = marche, glisse et tombe (cf. LM I, 235)"
+ },
+ {
+  "id": "ETSOT-02",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "6. One who keeps diminishing, becoming divided and falling, and whom the world laughs at so that he is put to shame by it, all this comes upon him",
+  "apres": "6. One who is walking and slips and falls, so that people laugh at him and he is put to shame — all this comes upon him",
+  "occurrences": 1,
+  "raison": "הולך ונחלק ונופל = walks, slips and falls (cf. LM I, 235)"
+ },
+ {
+  "id": "HICHT-03a-H72-fr",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "il est dans l’aspect d’« espèce amère », etc.",
+  "apres": "il est dans l’aspect des « eaux amères » (mayin meririn), etc.",
+  "raison": "מין = מַיִן (araméen) : « eaux », pas « espèce » (Likouté Moharan I, 50).",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03a-H72-en",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "he is in the aspect of “a bitter species,” etc.",
+  "apres": "he is in the aspect of “bitter waters” (mayin meririn), etc.",
+  "raison": "מַיִן : « eaux » (araméen), pas « species ».",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03a-ET7-fr",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "est dans l’aspect de « l’espèce amère, l’espèce impure, la semence impure »",
+  "apres": "est dans l’aspect des « eaux amères, eaux impures, semence impure »",
+  "raison": "מין מרירין, מין מסאבין : eaux amères, eaux impures.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03a-ET7-fr2",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "est dans l’aspect de « l’espèce douce, l’espèce pure, la semence sainte »",
+  "apres": "est dans l’aspect des « eaux douces, eaux pures, semence sainte »",
+  "raison": "מין מתיקין, מין דדכין : eaux douces, eaux pures.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03a-ET7-en",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "in the aspect of “a bitter kind, an impure kind, impure seed.”",
+  "apres": "in the aspect of “bitter waters, impure waters, impure seed.”",
+  "raison": "מין = מַיִן : waters.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03a-ET7-en2",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "in the aspect of “a sweet kind, a pure kind, holy seed”",
+  "apres": "in the aspect of “sweet waters, pure waters, holy seed”",
+  "raison": "מין = מַיִן : waters.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03a-ET49-fr",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "il est dans l’aspect d’une espèce amère, etc.",
+  "apres": "il est dans l’aspect des eaux amères (mayin meririn), etc.",
+  "raison": "מין מרירין : eaux amères.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03a-ET49-en",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "he is in the aspect of a bitter species, etc.",
+  "apres": "he is in the aspect of bitter waters (mayin meririn), etc.",
+  "raison": "מין מרירין : bitter waters.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03b-K536-fr",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "au moment de l’accueil de la Royauté, sa lumière merveilleuse, elle qui est alors appelée « le champ des pommiers »",
+  "apres": "moment où la Malkhout (Royauté) reçoit de la lumière merveilleuse de celle-ci [la Mère, Bina] et prend de ce fait le nom de « champ des pommiers »",
+  "raison": "מֵאוֹרָהּ = « de sa lumière » : la Malkhout reçoit de la lumière de Bina ; pas d'apposition.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03b-K536-en",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "at the time of receiving the Kingship, her wondrous light, she being called thereby “the field of apples”",
+  "apres": "when Malkhut (Kingship) receives from her [the Mother’s, Binah’s] wondrous light and is thereby called “the field of apples”",
+  "raison": "מֵאוֹרָהּ : receives from her light.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03c-K40-fr",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "les têtes des monstres marins sur lesquels se trouvent ceux qui souillent et rendent abominables les huiles du savoir et de l’intelligence de toutes les âmes d’Israël (plus quelqu’un devient sage, plus elles s’attachent à lui)",
+  "apres": "les têtes des monstres marins qui s’y trouvent [sur ces eaux], eux qui souillent et rendent abominables les huiles du savoir et de l’intelligence de toutes les âmes d’Israël (plus quelqu’un devient sage, plus ils s’enroulent autour de lui)",
+  "raison": "שעליהם : les monstres sont sur les eaux (Tehilim 74:13) et ce sont eux qui souillent et s'enroulent (נכרכים).",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03c-K40-en",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "the heads of the sea-monsters upon which are those who defile and make abominable the oils of knowledge and understanding of all the souls of Israel (the wiser a person becomes, the more they wrap themselves around him)",
+  "apres": "the heads of the sea-monsters that are upon them [the waters], who defile and make abominable the oils of knowledge and understanding of all the souls of Israel (the wiser a person becomes, the more they coil around him)",
+  "raison": "Les monstres marins sont sur les eaux et ce sont eux qui souillent.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03d-H102-fr",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "lettre « Yechoua » [salut], § 3",
+  "apres": "à l’entrée « Yechoua » [salut], n° 3",
+  "raison": "אות = rubrique du Sefer HaMidot (entrée), pas « lettre ».",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03d-H102-fr2",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Et aussi lettre « Hitbodedout »",
+  "apres": "Et aussi à l’entrée « Hitbodedout »",
+  "raison": "אות = entrée.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03d-H102-en",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "the letter “Yeshuah” [salvation], § 3",
+  "apres": "under the entry “Yeshuah” [salvation], no. 3",
+  "raison": "אות = entrée du Sefer HaMidot.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03d-H102-en2",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "And also the letter “Hitbodedut”",
+  "apres": "And also under the entry “Hitbodedut”",
+  "raison": "אות = entrée.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-03e-K54-fr",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "« Noun Chin Mem Alef-Hé »",
+  "apres": "« Noun Chin Mem Hé »",
+  "raison": "נון שין מם הא : la dernière lettre est « Hé » (Alef est le nom épelé de ה dans הא).",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-04-H054-a",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "et s’y isolait beaucoup. Une fois",
+  "apres": "et y pratiquait beaucoup la hitbodedout. Une fois",
+  "raison": "להתבודד : « pratiquer la hitbodedout » (terme technique, comme l'anglais « practice hitbodedut »).",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-04-H054-b",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "c’est-à-dire qu’il allait s’isoler dans tous ces endroits",
+  "apres": "c’est-à-dire qu’il allait pratiquer la hitbodedout dans tous ces endroits",
+  "raison": "idem.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-04-H054-c",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "il aimait beaucoup s’isoler, bien des fois",
+  "apres": "il aimait beaucoup pratiquer la hitbodedout, bien des fois",
+  "raison": "idem.",
+  "occurrences": 1
+ },
+ {
+  "id": "HICHT-04-H054-d",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "il s’isolait beaucoup chaque jour, et bien des fois il s’isolait la journée entière",
+  "apres": "il pratiquait beaucoup la hitbodedout chaque jour, et bien des fois il la pratiquait la journée entière",
+  "raison": "idem.",
+  "occurrences": 1
+ },
+ {
+  "id": "CHIZUK-01",
+  "fichier": "android/app/src/main/res/raw/chizuk.json",
+  "langue": "he",
+  "avant": "ה, כי בזאת יתוקן הכל – נפשו, רוחו ונשמתו",
+  "apres": "ה, כי בזאת יתוקן הכל – נפשו, רוחו ונשמתו…",
+  "raison": "Extrait coupé en pleine phrase dans la source (la phrase continue : וכל העולמות התלויים בו…) : ajout de « … ».",
+  "occurrences": 2
+ },
+ {
+  "id": "CHIZUK-01",
+  "fichier": "android/app/src/main/res/raw/chizuk.json",
+  "langue": "fr",
+  "avant": "réparé : son nefech, son roua’h et sa nechama",
+  "apres": "réparé : son nefech, son roua’h et sa nechama…",
+  "raison": "Extrait coupé en pleine phrase dans la source (la phrase continue : וכל העולמות התלויים בו…) : ajout de « … ».",
+  "occurrences": 1
+ },
+ {
+  "id": "CHIZUK-01",
+  "fichier": "android/app/src/main/res/raw/chizuk.json",
+  "langue": "en",
+  "avant": "ectified: his nefesh, ruach and neshamah",
+  "apres": "ectified: his nefesh, ruach and neshamah…",
+  "raison": "Extrait coupé en pleine phrase dans la source (la phrase continue : וכל העולמות התלויים בו…) : ajout de « … ».",
+  "occurrences": 1
+ },
+ {
+  "id": "TEFILA-03",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "seul le débordement des grandes eaux ne l’atteindra pas",
+  "apres": "assurément, le débordement des grandes eaux ne l’atteindra pas",
+  "occurrences": 1,
+  "raison": "Tehilim 32:6 : « רַק לְשֵׁטֶף מַיִם רַבִּים אֵלָיו לֹא יַגִּיעוּ » — « רַק » est un adverbe (assurément), non un adjectif du sujet ; l’anglais du bloc dit « surely ». [2.35]"
+ },
+ {
+  "id": "COUV-06",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "mais après « ’Hé haolamim », car",
+  "apres": "mais après « ’Haï haolamim », car",
+  "occurrences": 1,
+  "raison": "Yalkout Yossef siman 54 : l'hébreu prescrit חי avec pata'h, donc 'Haï, et non 'Hé (tséré)."
+ },
+ {
+  "id": "COUV-06",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "dire « ’Hé haolamim », ’hé avec un pata’h",
+  "apres": "dire « ’Haï haolamim », ’haï avec un pata’h",
+  "occurrences": 1,
+  "raison": "La translittération contredisait la règle énoncée (pata'h : 'haï)."
+ },
+ {
+  "id": "COUV-06",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "but after “Chei ha’olamim,” for that",
+  "apres": "but after “Chai ha’olamim,” for that",
+  "occurrences": 1,
+  "raison": "Yalkut Yosef siman 54 : pata'h sous le het, donc Chai et non Chei."
+ },
+ {
+  "id": "COUV-06",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "say “Chei ha’olamim,” chei with a patach",
+  "apres": "say “Chai ha’olamim,” chai with a patach",
+  "occurrences": 1,
+  "raison": "La translittération contredisait la règle énoncée (patach : chai)."
+ }
+]

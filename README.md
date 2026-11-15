@@ -1,11 +1,18 @@
 # MyHitbodedut
 
-Deux applications autour d'une même pratique quotidienne.
+Une même pratique quotidienne, la hitbodedout, sur plusieurs supports.
 
 | Dossier | Ce que c'est |
 | --- | --- |
-| `android/` | Application Android native : barrière du matin qui bloque les applications choisies tant que la hitbodedout n'est pas validée |
-| `index.html` | Version web autonome : suivi d'habitudes dans le navigateur, sans installation |
+| `android/` | L'application Android native, en deux éditions : **complète** (barrière du matin, zmanim en vol) et **Light** (sans barrière ni Internet). C'est l'édition complète qui va sur Google Play |
+| `web/` | Le site jumeau, pour iPhone et navigateur : JavaScript sans framework, construit par `web/build.mjs` à partir des ressources Android, publié sur Cloudflare Pages (<https://myhitbodedut.pages.dev/>) avec les règles de confidentialité |
+| `nokia/` | `MyHitbodedut.jar`, la version pour téléphone à touches (Java ME), un produit à part : `nokia/README.md` |
+| `play/` | La publication sur Google Play : textes de la fiche (`play/fiche/`), icône, légendes des visuels, et `play/CONSOLE.md`, le pas-à-pas de la saisie |
+| `tools/` | Les outils de construction des données (textes, hilloulot, aéroports, musique, images) et le relais du suivi de vol (`tools/relais_vol`) |
+| `index.html` | Un ancien prototype sans lien avec l'application : voir la fin de ce fichier |
+
+Documents : `PUBLICATION_PLAY_STORE.md` (cahier de la publication), `ZMANIM.md`
+(calculs, méthodes et sources), `FEUILLE_DE_ROUTE.md`.
 
 ## L'application Android
 
@@ -20,26 +27,28 @@ de quelques minutes. Une fois la journée validée, la barrière se tait jusqu'a
 lendemain.
 
 **La séance.** Un minuteur tourne dans un service d'arrière-plan, pour que le
-téléphone puisse être posé. La durée est réglable, par défaut soixante minutes.
-La journée est validée par le temps réellement passé, pas par une simple
-déclaration. Si une application bloquée est ouverte pendant la séance, l'écran
-rappelle le temps restant et ne propose que d'y retourner.
+téléphone puisse être posé. La durée est réglable, par défaut quinze minutes.
+La journée est validée à la fin de la séance ; on peut aussi la déclarer faite
+(« Je l’ai déjà faite » sur l’écran de garde, « Je l’ai faite sans le
+téléphone » à l’accueil). Si une application bloquée est ouverte pendant la
+séance, à n'importe quelle heure, l'écran rappelle le temps restant et ne
+propose que d'y retourner.
 
 **Le journal.** Chaque séance peut recevoir une note libre. L'historique garde
 la durée et la note, jour par jour.
 
-**Pourquoi la barrière n'agit pas.** L'écran principal affiche en permanence
+**Pourquoi la barrière n'agit pas.** L'écran des réglages affiche en permanence
 l'état de la barrière et, si elle n'agit pas, la raison exacte : autorisation
 manquante, blocage éteint, aucune application choisie, journée déjà validée,
 jour sans obligation, report en cours, ou heure hors de la fenêtre. Un bouton
 affiche l'écran de blocage à la demande, à n'importe quelle heure et sans
 aucun effet, pour vérifier qu'il fonctionne.
 
-**Shabbat et fêtes.** Le samedi, la barrière se met en pause et la série n'est
-pas cassée. Un interrupteur permet de déclarer le jour courant comme jour de
-fête. La détection se fait par le jour de la semaine, ce qui est exact pour une
-fenêtre située le matin ; une fenêtre qui traverserait le coucher du soleil
-demanderait un calcul de zmanim, donc la localisation.
+**Chabbat et fêtes.** Chabbat et Yom Tov, reconnus d'après le calendrier
+hébraïque, par date civile : la barrière se met en pause et la série n'est pas
+cassée. Un interrupteur permet de déclarer le jour courant comme jour de
+pause. La date civile est exacte pour une fenêtre située le matin ; une
+fenêtre qui traverserait le coucher du soleil demanderait un calcul de zmanim.
 
 **Rappel quotidien.** Une notification à l'heure choisie, tant que la pratique
 du jour n'est pas faite. L'alarme est volontairement inexacte : elle se
@@ -149,17 +158,27 @@ une flèche, jamais retirés.
 
 Moteurs, méthodes, sources, limites, tests et maintenance : **ZMANIM.md**.
 
-### Aucune donnée ne sort de l'appareil
+### Ce qui sort de l'appareil
 
-Tout est dans les `SharedPreferences` locales. Pas de compte, pas d'analytique.
-L'édition **Light** ne déclare aucune permission Internet. L'édition complète
-déclare INTERNET pour une seule fonction, désactivée par défaut : le suivi d'un
-vol en direct (28/10, `SuiviVol.kt`). Activé par l'utilisateur, il demande à
-OpenSky Network, en accès anonyme et gratuit, les avions d'une zone approchée,
-en HTTPS seulement ; l'indicatif du vol reste sur le téléphone. Le web, lui,
-passe par un relais (`tools/relais_vol`) qui reçoit l'indicatif et la position
-approchée ; sans relais configuré à la construction, il ne fait aucune requête. `OnboardingTest` tient la phrase de l'accueil de chaque
-édition à son manifeste.
+Rien par défaut. Tout est dans les `SharedPreferences` locales ; pas de
+compte, pas d'analytique. L'édition **Light** ne déclare aucune permission
+Internet. L'édition complète déclare INTERNET pour deux services de vol,
+derrière un seul interrupteur désactivé par défaut : le suivi en direct
+(OpenSky : une zone d'environ 10°, l'indicatif reste sur le téléphone) et la
+route d'un numéro de vol (adsbdb : le numéro saisi est envoyé).
+
+La construction Play (`-Pplay=true`) n'a que la route adsbdb : les conditions
+d'OpenSky excluent l'interrogation depuis chaque téléphone, et le relais qui
+la remplacerait (`tools/relais_vol`) n'est pas en ligne
+(`PUBLICATION_PLAY_STORE.md` § 3.1). Le site, sans relais configuré à la
+construction, ne fait lui aussi que la requête adsbdb. `OnboardingTest` tient
+la phrase de l'accueil de chaque édition à son manifeste, et
+`ConfidentialiteTest` les règles de confidentialité au code.
+
+Ce que l'utilisateur fait sortir lui-même : le fichier d'export, le partage
+d'une journée en image, et l'e-mail de dédicace écrit dans sa propre
+messagerie. La sauvegarde d'Android, si elle est activée, emporte les réglages
+mais pas le journal (`web/src/confidentialite.html`).
 
 ### Construire
 
@@ -225,10 +244,9 @@ Marche à suivre : installer Obtainium, ajouter une application, coller
 Light, et laisser la vérification automatique active.
 
 **Les autres voies.** Un mécanisme de mise à jour intégré à l'application
-exigerait la permission Internet et celle d'installer des paquets. Ce serait
-renoncer à une propriété que l'application tient aujourd'hui, ne demander aucun
-accès réseau, et aggraver sa ressemblance avec un logiciel de surveillance aux
-yeux de Play Protect. Une publication sur le Play Store donnerait de vraies
+exigerait la permission d'installer des paquets et des connexions que
+l'utilisateur n'a pas demandées. Ce serait aggraver la ressemblance de
+l'application avec un logiciel de surveillance aux yeux de Play Protect. Une publication sur le Play Store donnerait de vraies
 mises à jour automatiques, mais demande un compte développeur et le passage en
 revue.
 
@@ -268,9 +286,18 @@ Ce que le dépôt fournit et ce qui reste à faire :
 - [ ] Clé d'envoi Play et ses quatre secrets `PLAY_*` (voir
       `PUBLICATION_PLAY_STORE.md`, § 5)
 - [ ] Politique de confidentialité en ligne, obligatoire dès qu'une
-      autorisation sensible est demandée
-- [ ] Formulaire Sécurité des données, à remplir « aucune donnée collectée »
-- [ ] Justification de l'usage du service au premier plan de type `specialUse`
+      autorisation sensible est demandée :
+      <https://myhitbodedut.pages.dev/confidentialite.html> (Cloudflare Pages,
+      déployée par le flux `Web` ; secrets `CLOUDFLARE_API_TOKEN` et
+      `CLOUDFLARE_ACCOUNT_ID`, voir `PUBLICATION_PLAY_STORE.md` § 6.1)
+- [ ] Formulaire Sécurité des données : une seule donnée, le numéro de vol
+      recherché, facultative (`PUBLICATION_PLAY_STORE.md` § 6.2)
+- [ ] Déclaration des services au premier plan (`specialUse`,
+      `mediaPlayback`) et de la position exacte (§ 6.6, § 6.7)
+- [x] Textes de la fiche en anglais et en hébreu (`play/fiche/`), et
+      pas-à-pas de la saisie dans la Play Console : `play/CONSOLE.md`
+- [ ] Visuels de la fiche, à refaire sur la construction Play
+      (`play/visuels/legendes.json`, § 7.2)
 
 À savoir avant de soumettre : l'affichage par-dessus les autres applications et
 l'accès aux données d'utilisation attirent l'attention de la revue. Décrire
@@ -290,12 +317,16 @@ configure lui-même, est la meilleure approche.
   intégration continue, mais le comportement de l'overlay varie selon les
   surcouches constructeur, en particulier Xiaomi, Huawei et Samsung, qui
   ajoutent leurs propres restrictions d'arrière-plan.
-- **Android uniquement.** iOS n'autorise pas ce type de blocage par une
-  application tierce.
+- **La barrière n'existe que sur Android.** iOS n'autorise pas ce type de
+  blocage par une application tierce ; le site et la version Nokia ont le
+  reste (minuteur, journal, textes), pas la barrière.
 
-## La version web
+## `index.html` à la racine
 
-`index.html` est autonome, à ouvrir dans un navigateur ou à servir :
+Ce fichier n'est pas la version web de l'application (elle est dans `web/`).
+C'est un ancien prototype autonome, sans lien avec le reste du dépôt ; s'il
+n'a plus d'usage, il peut être supprimé avec cette section : au propriétaire
+d'en décider. Pour l'ouvrir :
 
 ```bash
 python3 -m http.server 8080

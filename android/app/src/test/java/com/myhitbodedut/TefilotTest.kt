@@ -1,10 +1,12 @@
 package com.myhitbodedut
 
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 
 /**
  * Les dix prières de Likoutei Tefilot, une par sujet demandé.
@@ -123,21 +125,12 @@ class TefilotTest {
         )
         assertTrue("rien à vérifier : la sous-section est vide", tefilot.size >= sujets.size * 2)
         tefilot.forEach { t ->
-            assertEquals(
-                "${t.id} : il faut autant de paragraphes dans les deux formes",
-                t.paragraphes.size,
-                t.paragraphesSansNikkoud.size,
-            )
             val affiches = LibraryRules.paragraphs(library, t)
-            assertEquals(
-                "${t.id} : c'est la forme sans nikkoud qui doit sortir",
-                t.paragraphesSansNikkoud,
-                affiches,
-            )
+            assertEquals("${t.id} : c'est le texte livré qui doit sortir", t.paragraphes, affiches)
             affiches.forEach { p ->
                 assertFalse(
                     "${t.id} : un signe de vocalisation a survécu dans « ${p.take(40)} »",
-                    p.any { it.code in 0x0591..0x05BD || it.code in 0x05BF..0x05C7 },
+                    p.any { it.code in 0x0591..0x05BD || it.code in 0x05BF..0x05C2 || it.code in 0x05C4..0x05C7 },
                 )
             }
         }
@@ -150,8 +143,14 @@ class TefilotTest {
      */
     @Test
     fun `le maqqef survit au retrait du nikkoud`() {
-        val avec = tefilot.sumOf { t -> t.paragraphes.sumOf { p -> p.count { it == '־' } } }
-        val sans = tefilot.sumOf { t -> t.paragraphesSansNikkoud.sumOf { p -> p.count { it == '־' } } }
+        // Le relevé vocalisé d'origine vit hors de res/raw (livres/editions_vocalisees.json).
+        val releves = JSONObject(File("src/main/livres/editions_vocalisees.json").readText()).getJSONObject("bibliotheque")
+        var avec = 0
+        tefilot.forEach { t ->
+            val origine = releves.optJSONObject(t.id)?.optJSONArray("paragraphes") ?: return@forEach
+            for (i in 0 until origine.length()) avec += origine.getString(i).count { it == '־' }
+        }
+        val sans = tefilot.sumOf { t -> t.paragraphes.sumOf { p -> p.count { it == '־' } } }
         assertTrue("aucun maqqef dans le corpus : le test ne prouve rien", avec > 0)
         assertEquals("des maqqef ont été perdus en retirant le nikkoud", avec, sans)
     }

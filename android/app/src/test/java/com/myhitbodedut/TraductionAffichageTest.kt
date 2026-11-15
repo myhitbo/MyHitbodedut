@@ -99,6 +99,16 @@ class TraductionAffichageTest {
         }
         val en = lire("src/main/res/values-en/strings.xml")
         assertTrue(en.contains("""<string name="track_niggoun_01">Niggun 01</string>"""))
+        // Audit du 12/11 (TEN-03) : les titres des morceaux d'Ianir et de Shpayer ne restent pas en français en anglais.
+        listOf("Niggoun", "Chpola", "titre incertain", "«", "Kenout", "Afilou").forEach { mot ->
+            val titres = Regex("""<string name="track_[a-z_0-9]+">[^<]*</string>""").findAll(en).map { it.value }
+            assertFalse("« $mot » dans un titre anglais", titres.any { it.contains(mot) })
+        }
+        listOf("track_ianir_bessarabie", "track_shpayer_kenout", "track_shpayer_ki_hine_kahomer").forEach { cle ->
+            listOf("values", "values-en", "values-iw").forEach { d ->
+                assertTrue("$d $cle", lire("src/main/res/$d/strings.xml").contains("""<string name="$cle">"""))
+            }
+        }
     }
 
     @Test

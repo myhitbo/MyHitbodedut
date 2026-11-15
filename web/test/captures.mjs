@@ -361,6 +361,12 @@ await capture('accueil-apres-seance-fr', {
     await p.click('.duree');
     await finDeSeance(p);
     await p.click('.bravo .principal');
+    // Après une séance arrivée à son terme, la note est proposée (14/11, FWEBLIVE-02) :
+    // elle doit s'ouvrir, puis se refermer par Échap sans rien inscrire.
+    await p.waitForSelector('.voile .feuille textarea, .voile .feuille input', { timeout: 5000 })
+      .catch(() => erreurs.push('la note n\'est pas proposée après la séance'));
+    await p.keyboard.press('Escape');
+    await p.waitForSelector('.voile', { state: 'detached', timeout: 5000 });
     await p.click('.retour');
     const jour = await p.evaluate(() => JSON.parse(localStorage.getItem('myhitbodedut-journal')).days['2026-09-29']);
     if (!jour || jour.minutes !== 5) erreurs.push(`séance non inscrite : ${JSON.stringify(jour)}`);

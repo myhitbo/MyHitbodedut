@@ -1,29 +1,34 @@
-MyHitbodedut accompanies a daily practice of hitbodedut (התבודדות, also spelled hisbodedus): speaking to God alone, in your own words, every day, as Rabbi Nachman of Breslov taught.
+MyHitbodedut accompanies a daily practice of hitbodedut (התבודדות, also spelled hisbodedus): time alone each day to speak to Hashem in your own words, as Rabbi Nachman of Breslov taught.
 
-THE SESSION
-• A timer that keeps running while the phone is put down. You choose the length (60 minutes by default).
-• Guided hitbodedut, music or silence, and "Do not disturb" during the session if you wish.
-• The day counts by the time actually spent, not by a checkbox.
+YOUR HITBODEDUT
+• Pick a length, from 5 minutes to 1 h 30 min, or leave it open, and put the phone down: the timer keeps running with the screen off.
+• A subject if you like, a guided hitbodedut, a niggun or silence, and “Do not disturb” until it ends.
+• If the words won’t come, a button offers advice and questions to help you begin.
+• Every minute counts toward your day and your path.
 
 THE JOURNAL
-• A free note, topics, your mood before and after, one gratitude and one thing to work on.
-• Your streak, the minutes of the month and trophies.
-• Export and import of a JSON file: your backup, in your hands.
+• After each hitbodedut: a free note, the subjects, your mood before and after, one gratitude and one thing to work on.
+• Your streak, the week at a glance, milestones and trophies.
+• Export and import as a JSON file: your backup stays in your hands.
 
 THE MORNING GATE (optional)
-A gate you install on your own phone, against your own habits, that you can turn off at any moment. During a morning window you choose (6:00–11:00 by default), opening an app you picked shows a full screen: "Did you do your hitbodedut?" Start now, say it is done, or snooze for a few minutes. Once the day is done, the gate stays silent until the next morning, and it pauses on Shabbat and festivals. Usage access and display over other apps serve only this, on the phone: nothing is sent anywhere.
+A gate you set up on your own phone, against your own habits, and can switch off at any moment. During the morning hours you choose (6:00 to 11:00 by default), opening one of the apps you picked shows a full screen first: “Did you do your hitbodedut?” You can start now, say you already did it, or snooze for a few minutes. Once the day is confirmed, the gate stays silent until the next morning. By default it is silent on Shabbat and Yom Tov. The same screen keeps those apps closed while a hitbodedut you started is in progress, until it ends. The two Android accesses it needs (usage access and display over other apps) serve only this, on the phone: nothing is recorded or sent.
 
 TEXTS
-• Siddur in three nuschaot (Edot HaMizrach, Sefard, Ashkenaz), with the additions of the day highlighted.
-• Tehillim, Tikkun HaKlali, Likutei Moharan, Likutei Etzot, Sefer HaMidot, Hishtapchut HaNefesh, Tefillah LeShlomo and more, with a text of chizuk every day.
-• Many texts show English and French next to the Hebrew. These translations are machine translations, not yet reviewed by a person: the Hebrew is authoritative.
+• Siddur in three nuschaot (Edot HaMizrach, Sefard, Ashkenaz), with the prayers for this hour one tap away.
+• Tehillim, Tikkun HaKlali, Likutei Moharan, Likutei Etzot, Sefer HaMidot, Hishtapchut HaNefesh and more, with a word of chizuk every day.
+• A halacha for each day (Kitzur Shulchan Aruch Yalkut Yosef) and the hillula of the day.
+• Many texts show English and French next to the Hebrew. These are machine translations, not yet reviewed by a person: the Hebrew is the authoritative text.
 
 ZMANIM AND CALENDAR
-• The times of the day for 51 cities or your approximate location, candle lighting and the end of Shabbat, the Hebrew calendar, the Omer count and Kiddush Levana.
-• Zmanim in flight, along your route.
+• The times of the day for 51 cities or for your approximate location, candle lighting and the end of Shabbat, the Hebrew calendar, the Omer and Birkat HaLevana.
+• A compass toward Jerusalem.
+• Zmanim in flight, along the route of your flight.
 • Home-screen widgets.
 
 PRIVACY
-No account, no ads, no tracking. What you write stays on your phone. The app connects to the Internet only if you turn on online services yourself, to look up a flight's route.
+No account, no ads, no analytics. Your journal stays on your phone. The app connects to the Internet only if you ask it to look up the route of a flight number; that number is then sent to adsbdb.com, and nothing else.
 
-Interface in English, Hebrew and French.
+Free, with no purchases. Interface in English, Hebrew and French.
+
+Flight routes: adsbdb.com (data by David J. Taylor and Jim Mason).

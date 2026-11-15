@@ -58,6 +58,22 @@ object LanguesTexte {
     fun riche(t: CharSequence): CharSequence =
         if (t is String && '<' in t) android.text.Html.fromHtml(t, android.text.Html.FROM_HTML_MODE_LEGACY).trimEnd() else t
 
+    /** Le mode montre une traduction (et non l'hébreu seul) : la réserve sur son origine s'impose. */
+    fun montreTraduction(mode: Mode): Boolean = mode.langues.any { it != "he" }
+
+    /**
+     * La réserve sur les traductions automatiques, au pied du texte ou de la carte, comme en tête des livres
+     * (audit du 12/11, COUV-05) : « Traduction automatique, non relue : l'hébreu fait foi ».
+     */
+    fun mentionAuto(c: Context): TextView = TextView(c).apply {
+        setText(R.string.lecture_traduction_auto)
+        textSize = 12f
+        textDirection = View.TEXT_DIRECTION_LOCALE
+        setTextColor(Apparence.couleur(c, R.color.muted))
+        val d = c.resources.displayMetrics.density
+        setPadding(0, (12 * d).toInt(), 0, (4 * d).toInt())
+    }
+
     /** Le mode veut une traduction que ce texte n'a pas. */
     fun manque(mode: Mode, aTraduction: Boolean): Boolean = !aTraduction && mode.langues.any { it != "he" }
 

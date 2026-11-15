@@ -1,18 +1,13 @@
 package com.myhitbodedut
 
-import android.Manifest
 import android.app.TimePickerDialog
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -29,8 +24,8 @@ import com.google.android.material.materialswitch.MaterialSwitch
  */
 class RemindersActivity : AppCompatActivity() {
 
-    private val demandeNotifications =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { render() }
+    /** La demande partagée (13/11) : après deux refus, elle mène à l'écran système au lieu de rester sans effet. */
+    private val notifications = DemandeNotifications(this) { render() }
 
     private lateinit var heures: MutableList<Int>
     private lateinit var adapter: Adapter
@@ -50,7 +45,7 @@ class RemindersActivity : AppCompatActivity() {
             isChecked = Store.reminderEnabled(this@RemindersActivity)
             setOnCheckedChangeListener { _, coche ->
                 Store.setReminderEnabled(this@RemindersActivity, coche)
-                if (coche) demandeNotificationsSiBesoin()
+                if (coche) notifications.lancer()
                 Reminder.reschedule(this@RemindersActivity)
                 render()
             }
@@ -63,9 +58,7 @@ class RemindersActivity : AppCompatActivity() {
             setOnCheckedChangeListener { _, coche -> Store.setRappelTropheeProche(this@RemindersActivity, coche) }
         }
 
-        findViewById<TextView>(R.id.reminders_permission).setOnClickListener {
-            demandeNotificationsSiBesoin()
-        }
+        findViewById<TextView>(R.id.reminders_permission).setOnClickListener { notifications.lancer() }
     }
 
     override fun onResume() {
@@ -85,25 +78,12 @@ class RemindersActivity : AppCompatActivity() {
 
         // Sans la permission, le rappel se programme et ne s'affiche jamais :
         // il faut le dire, pas laisser croire qu'il est actif.
-        val manque = actif && !notificationsAutorisees()
+        val manque = PermissionRules.rappelMuet(actif, Permissions.hasNotifications(this), notifications.enCours)
         findViewById<TextView>(R.id.reminders_permission).apply {
             visibility = if (manque) View.VISIBLE else View.GONE
             setText(R.string.reminders_permission_missing)
         }
         adapter.notifyDataSetChanged()
-    }
-
-    private fun notificationsAutorisees(): Boolean = Permissions.hasNotifications(this)
-
-    private fun demandeNotificationsSiBesoin() {
-        if (notificationsAutorisees()) return
-        // Coupées dans les réglages du téléphone, ou refusées pour de bon : l'écran système.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-            runCatching { startActivity(Permissions.notificationSettingsIntent(this)) }
-            return
-        }
-        demandeNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 
     private fun ajoute() {

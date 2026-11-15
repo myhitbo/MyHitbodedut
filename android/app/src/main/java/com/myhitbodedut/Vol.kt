@@ -355,7 +355,8 @@ object Vol {
      * au nord d'environ 50° où le soleil ne descend pas à 16,1° : audit du
      * 12/11, FVOL-01), puis la première fin de Cha'harit, chki'a et minuit qui
      * le suivent. Sans aucun de ces repères (route polaire), les prochains de
-     * chaque zman. La règle de prochaine n'est pas réécrite.
+     * chaque zman. La règle de prochaine n'est pas réécrite. Min'ha guedola en
+     * fait partie (13/11, FVOL-05) : avant elle, Min'ha n'est pas ouverte.
      */
     fun horaires(calcul: Calcul, maintenant: Instant): Map<String, ZonedDateTime?> {
         val ev = calcul.evenements
@@ -365,6 +366,7 @@ object Vol {
         return mapOf(
             "alot" to alot,
             "szt_gra" to suivant("szt_gra"),
+            "minha_gedola" to suivant("minha_gedola"),
             "chkia" to suivant("chkia"),
             "chatsot_layla" to suivant("chatsot_layla"),
         ).mapValues { (_, v) -> v?.atZone(ZoneOffset.UTC) }

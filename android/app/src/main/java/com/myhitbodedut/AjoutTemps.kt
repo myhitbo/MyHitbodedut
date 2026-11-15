@@ -38,7 +38,38 @@ object AjoutTemps {
                     apres()
                 }
             }
-            .apply { if (montrer != null && minutes != null) setNeutralButton(R.string.jour_montrer_duree) { _, _ -> montrer() } }
+            // Une durée mal saisie se corrige ou se retire (FDONNEES-04) ; « Montrer la durée » y passe aussi.
+            .apply { if (minutes != null) setNeutralButton(R.string.jour_modifier) { _, _ -> modifier(activity, iso, minutes, montrer, apres) } }
+            .setNegativeButton(R.string.action_back, null)
+            .show()
+    }
+
+    private fun modifier(activity: Activity, iso: String, minutes: Int, montrer: (() -> Unit)?, apres: () -> Unit) {
+        val actions = mutableListOf<Pair<Int, () -> Unit>>()
+        if (montrer != null) actions += R.string.jour_montrer_duree to montrer
+        actions += R.string.jour_corriger_duree to {
+            DureeSeance.choisir(activity, R.string.jour_corriger_duree) { m ->
+                Store.corrigerJour(activity, iso, m)
+                StreakWidget.refresh(activity)
+                android.widget.Toast.makeText(activity, activity.getString(R.string.jour_corrige, Store.formatDuration(activity, m)),
+                    android.widget.Toast.LENGTH_SHORT).show()
+                apres()
+            }
+        }
+        actions += R.string.jour_retirer to {
+            AlertDialog.Builder(activity)
+                .setMessage(activity.getString(R.string.jour_retirer_confirmation, Store.formatDuration(activity, minutes)))
+                .setPositiveButton(R.string.jour_retirer) { _, _ ->
+                    Store.corrigerJour(activity, iso, 0)
+                    StreakWidget.refresh(activity)
+                    android.widget.Toast.makeText(activity, R.string.jour_retire, android.widget.Toast.LENGTH_SHORT).show()
+                    apres()
+                }
+                .setNegativeButton(R.string.action_back, null)
+                .show()
+        }
+        AlertDialog.Builder(activity)
+            .setItems(actions.map { activity.getString(it.first) }.toTypedArray()) { _, i -> actions[i].second() }
             .setNegativeButton(R.string.action_back, null)
             .show()
     }

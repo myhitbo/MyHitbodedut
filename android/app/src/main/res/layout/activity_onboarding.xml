@@ -171,6 +171,19 @@
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
+        <!-- Rappel allumé sans les notifications (13/11) : le dire, et mener à l'autorisation d'un toucher. -->
+        <TextView
+            android:id="@+id/onboarding_rappel_permission"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:minHeight="48dp"
+            android:text="@string/reminders_permission_missing"
+            android:textColor="@color/warning"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
         <Button
             android:id="@+id/onboarding_next"
             android:layout_width="match_parent"

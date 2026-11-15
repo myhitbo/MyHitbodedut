@@ -11,9 +11,10 @@ import { MelangeMusique, estQuota, nomDonne, renomme, titreDeFichier } from './m
 import * as MorceauxPerso from './morceaux-perso.js';
 import { DanseMesure } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
+import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, dansIsrael, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
-import { conditionsPour, index as indexAjouts, libelleJour, vrai as ajoutVrai } from './siddur-jour.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
+import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
 import { distanceKm } from './direction.js';
@@ -34,6 +35,11 @@ import { chemin as cheminPersonnage } from './personnage.js';
 import { Hitbodedut, MOUVEMENTS, invitationSujet } from './hitbodedut.js';
 
 // --- Stockage ---------------------------------------------------------------
+// Ce que le navigateur fait de ce qu'on lui confie ne reste plus muet (13/11, audit du 12/11,
+// FWEBCODE-01) : le repli en mémoire a son bandeau, une écriture refusée son message, et la
+// réponse de persist() se lit dans « Mes données ».
+/** Vrai quand le navigateur refuse son stockage : tout reste en mémoire, perdu à la fermeture de la page. */
+let sansStockage = false;
 function stockageDuNavigateur() {
   try {
     const s = window.localStorage;
@@ -41,14 +47,23 @@ function stockageDuNavigateur() {
     s.removeItem('__essai');
     return s;
   } catch {
+    sansStockage = true;
     return memoire();
   }
 }
-const store = creeStore(stockageDuNavigateur());
+/** Une écriture refusée (quota) : dite à l'écran, au plus une fois toutes les dix secondes. */
+let dernierEchecEcriture = 0;
+const store = creeStore(stockageDuNavigateur(), { surEchec: () => {
+  if (!tr || Date.now() - dernierEchecEcriture < 10_000) return;
+  dernierEchecEcriture = Date.now();
+  signale(tr.t('stockage_echec_web'));
+} });
 
 // Safari peut effacer ce qu'un site garde ; une application de l'écran
 // d'accueil en est exemptée, et persist() le demande explicitement.
-navigator.storage?.persist?.().catch(() => {});
+/** La réponse du navigateur : true, il garde ; false, il peut effacer de lui-même ; null, pas encore dite. */
+let stockageDurable = null;
+navigator.storage?.persist?.().then((garde) => { stockageDurable = garde === true; if (!stockageDurable && app.dataset.ecran?.startsWith('reglages/')) rendre(); }).catch(() => {});
 
 // --- Petits outils de construction du DOM ---------------------------------------
 function h(tag, attrs = {}, ...enfants) {
@@ -363,7 +378,9 @@ function legendeAnneaux(etat, progression) {
     return tr.t(etat.jour.atteint ? 'ring_day_reached' : 'ring_day_detail', tr.duree(etat.jour.fait), tr.duree(etat.jour.objectif));
   }
   if (anneauEnAvant === 'serie') {
-    return tr.t(etat.serie.atteint ? 'ring_streak_reached' : 'ring_streak_detail', etat.serie.fait, etat.serie.objectif);
+    // Accordé au nombre (13/11, TFRLANGUE-01) : « Série : 1 jour sur 7 ».
+    return etat.serie.atteint ? tr.t('ring_streak_reached', etat.serie.fait, etat.serie.objectif)
+      : tr.p('ring_streak_detail', etat.serie.fait, etat.serie.fait, etat.serie.objectif);
   }
   return tr.p('week_gauge', progression.faits, progression.faits, progression.dus);
 }
@@ -553,12 +570,15 @@ function panneauAujourdhui() {
     h('div', { class: 'accueil-jauge' }, h('div', { class: 'jauge' },
     // L'image des anneaux porte la description ; la plaque, touchable, reste à part (audit du 16/10).
     decrire(anneaux(etat), tr.t('rings_description',
-      tr.duree(etat.jour.fait), tr.duree(etat.jour.objectif), etat.semaine.fait, etat.semaine.objectif, etat.serie.fait, etat.serie.objectif)),
+      tr.duree(etat.jour.fait), tr.duree(etat.jour.objectif),
+      tr.p('ring_week_detail', etat.semaine.fait, etat.semaine.fait, etat.semaine.objectif),
+      tr.p('ring_streak_detail', etat.serie.fait, etat.serie.fait, etat.serie.objectif))),
     plaqueAccueil()),
     h('div', { class: `jauge-legende${anneauEnAvant ? ` legende-${anneauEnAvant}` : ''}` }, legendeAnneaux(etat, progression)),
     lignePaliers()),
 
-    h('div', { class: 'accueil-actions' }, h('button', { class: 'principal', onclick: () => ouvrir('seance') }, bouton),
+    // Un toucher démarre, comme sur Android (FPRODUIT-04) ; l'écran de préparation reste à « Autrement » sous le bouton.
+    h('div', { class: 'accueil-actions' }, h('button', { class: 'principal', onclick: () => (store.isSessionRunning() ? ouvrir('seance') : commencer(store.targetMinutes())) }, bouton),
 
     h('div', { class: 'pastilles' },
       pastille(tr.t('start_duration'), tr.duree(store.targetMinutes()), () => choisirDuree((m) => {
@@ -590,10 +610,14 @@ function panneauAujourdhui() {
     })),
 
     fait ? h('button', { class: 'texte-bouton', onclick: () => ecrireNote(store.today(), rendre) }, tr.t('action_write_note')) : null,
+    !store.isSessionRunning()
+      ? h('button', { class: 'texte-bouton', onclick: () => ouvrir('seance') }, tr.t('start_prepare')) : null,
     // « Je l'ai faite sans le téléphone » (MainActivity.today_offline, 02/11) : tant qu'aujourd'hui
     // ou hier reste à inscrire, et hors séance en cours.
     (!fait || hierOuvert()) && !store.isSessionRunning()
       ? h('button', { class: 'texte-bouton', onclick: declarerHorsTelephone }, tr.t('action_done_offline')) : null,
+    // La garde des données (13/11, FWEBCODE-01) : installer, importer ou exporter, un avis à la fois.
+    avisDonnees(),
     // L'accueil selon l'heure (14/10) : la prière du moment, Birkat haLevana les soirs de la fenêtre.
     ...momentAccueil(),
     // Les trophées et les paliers, en bas de la page (11/10).
@@ -601,6 +625,35 @@ function panneauAujourdhui() {
     h('div', { class: 'boutons-bas' },
       h('button', { class: 'bouton-trophees', onclick: () => ouvrir('paliers') }, tr.t('trophees_paliers')),
       h('button', { class: 'bouton-trophees', onclick: () => ouvrir('parcours') }, tr.t('parcours_title')))));
+}
+
+// --- La garde des données (13/11, audit du 12/11, FWEBCODE-01) ---------------------------------
+/** Lancée depuis l'écran d'accueil du téléphone (iOS : navigator.standalone ; ailleurs : display-mode). */
+const installee = navigator.standalone === true || !!window.matchMedia?.('(display-mode: standalone)').matches;
+/** Hors de l'écran d'accueil, Safari efface ce qu'un site garde après sept jours sans visite. */
+const aInstaller = () => surIOS && !installee;
+/** Le texte de chaque avis (avis.js) ; importer et exporter mènent à « Mes données ». */
+const AVIS = { installer: ['installer_ios_web', false], importer: ['import_installe_web', true], exporter: ['export_rappel_web', true] };
+
+/** L'avis de l'accueil : un seul à la fois ; « Plus tard » le referme pour trente jours. */
+function avisDonnees() {
+  const cle = avisAccueil({
+    ios: surIOS, installee, aujourdhui: store.today(), premierJour: store.premierJour(),
+    derniereSauvegarde: store.derniereSauvegarde(), reports: store.avisReportes(),
+  });
+  if (!cle) return null;
+  const [texte, versDonnees] = AVIS[cle];
+  return h('div', { class: 'carte avis-donnees', role: 'note' },
+    h('p', { class: 'avis-texte' }, tr.t(texte)),
+    h('div', { class: 'avis-actions' },
+      versDonnees ? h('button', { type: 'button', class: 'secondaire', onclick: ouvrirMesDonnees }, tr.t('section_data')) : null,
+      h('button', { type: 'button', class: 'texte-bouton', onclick: () => { store.reporteAvis(cle); rendre(); } }, tr.t('action_later'))));
+}
+
+/** Les réglages, ouverts sur la carte « Mes données » (Exporter, Importer). */
+function ouvrirMesDonnees() {
+  ouvrir('reglages');
+  requestAnimationFrame(() => app.querySelector('.carte-donnees')?.scrollIntoView({ block: 'start' }));
 }
 
 /**
@@ -727,7 +780,7 @@ function momentAccueil() {
   const zone = store.lieu()?.fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   const l = levana(jourLieu(heure), zone, { usage: usageLevanaCourant() });
   const lv = siddur.textes.find((x) => x.id === 'birkat_halevana');
-  if (lv && typeof l.etat === 'string' && heureLieu(heure).heures >= 14) {
+  if (lv && typeof l.etat === 'string' && heureLieu(heure).heures >= 14 && +heure < l.finMs) {
     cartes.push(h('button', { class: 'maintenant', onclick: () => { priere = lv.id; ouvrir('priere'); } },
       plateau('char_praise', 'plateau-maintenant'),
       h('span', { class: 'maintenant-corps' },
@@ -738,9 +791,13 @@ function momentAccueil() {
   // La source du jour (SourceDuJour, 19/10) : la même toute la journée, distincte du ’hizouk.
   const p = chargeBibliotheque() ? SourceDuJour.choix(bibliotheque, store.today()) : null;
   if (p) {
+    // Dans les langues de lecture, comme la carte de ’hizouk : l'hébreu et sa traduction par défaut (COUV-08).
+    const textes = SourceDuJour.textes(p, languesLecture());
+    const avecHe = textes.some(([l]) => l === 'he');
     cartes.push(h('div', { class: 'carte source-du-jour' },
       h('span', { class: 'maintenant-libelle' }, tr.t('source_du_jour')),
-      h('p', { class: 'source-du-jour-texte', lang: 'he', dir: 'rtl' }, SourceDuJour.extrait(p.texte)),
+      ...textes.map(([l, t]) => (l === 'he' ? h('p', { class: 'source-du-jour-texte', lang: 'he', dir: 'rtl' }, t)
+        : h('p', { class: `source-du-jour-traduction${avecHe ? '' : ' seule'}`, lang: l, dir: 'ltr' }, t))),
       h('p', { class: 'source-du-jour-ref' }, Reference.localise(p.source.ref, tr.langue)),
       h('div', { class: 'source-du-jour-actions' },
         // Un seul « Commencer » sur l'accueil, celui du haut : la source invite à lire.
@@ -1449,30 +1506,32 @@ function ecranPriere() {
   };
   // Le corps d'une section, sans son titre : construit d'un coup pour une prière, à la demande pour un livre.
   const corpsDe = (s, si) => {
-      const section = idx.sections.get(si);
-      if (section) return [ajout(nom(section, section.si), ajoutVrai(section.si, c), s.blocs.map((_, i) => paragraphe(s, i)), section.si), ...renvois(si)];
-      const corps = [];
-      for (let i = 0; i < s.blocs.length; i++) {
-        const a = idx.blocs.get(`${si}:${i}`);
-        if (!a) { corps.push(...avecIndices(s, si, i).filter(Boolean), ...seuls(si, i)); continue; }
-        // Le groupe : les blocs suivants de même groupe, variantes comprises.
-        const membres = [];
-        while (i < s.blocs.length && idx.blocs.get(`${si}:${i}`)?.g === a.g) {
-          const m = idx.blocs.get(`${si}:${i}`);
-          const p = paragraphe(s, i);
-          if (!ajoutVrai(m.si, c)) p.classList.add('hors-jour');
-          membres.push(p);
-          i++;
-        }
-        i--;
-        corps.push(ajout(nom(a, a.racine ?? a.si), ajoutVrai(a.racine ?? a.si, c), membres, a.racine ?? a.si));
-        corps.push(...seuls(si, i));
-      }
+    const corps = [];
+    for (const partie of planSection(s, si, idx, c)) {
+      const a = partie.annotation;
+      const dernier = partie.blocs[partie.blocs.length - 1];
+      if (!a) { corps.push(...avecIndices(s, si, dernier).filter(Boolean), ...seuls(si, dernier)); continue; }
+      // Une section entière, ou un groupe : dans un groupe du jour, la variante d'un autre jour reste lisible, estompée.
+      const groupe = a.sorte === 'bloc';
+      const membres = partie.blocs.map((i) => {
+        const p = paragraphe(s, i);
+        if (groupe && !ajoutVrai(idx.blocs.get(`${si}:${i}`).si, c)) p.classList.add('hors-jour');
+        return p;
+      });
+      // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06) : tel quel quand il se dit, sans étiquette.
+      if (partie.etat === 'ordinaire') corps.push(...membres);
+      else corps.push(ajout(nom(a, partie.racine), partie.etat === 'du_jour', membres, partie.racine));
+      if (groupe) corps.push(...seuls(si, dernier));
+    }
     return [...corps, ...renvois(si)];
   };
   // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
   const traduitIci = x.sections.some((s) => s.blocs.some((b) => b.fr || b.en));
-  const sansTraduction = livre && LanguesTexte.manque(languesLecture(), traduitIci);
+  // Le siddour aussi : ses prières et ses consignes ne sont pas traduites, et il le dit (COUV-02).
+  const sansTraduction = LanguesTexte.manque(languesLecture(), traduitIci);
+  // Un livre traduit en partie (le Yalkout Yossef) : combien de chapitres, les autres restent en hébreu (COUV-01, TLIVRES-05).
+  const chapitresTraduits = x.sections.filter((s) => s.blocs.some((b) => !b.c && (b.fr || b.en))).length;
+  const traductionPartielle = livre && traduitIci && chapitresTraduits < x.sections.length && languesLecture() !== 'he';
   const traductionAuto = livre && traduitIci && !!x.traduction && languesLecture() !== 'he';
   // Une longue prière (Cha'harit, 04/11) se construit comme un livre, section par section à
   // l'approche de l'écran : construite et mise en page d'un coup, son ouverture gelait l'écran
@@ -1483,6 +1542,7 @@ function ecranPriere() {
   const contenu = h('div', { class: 'contenu lecture siddour' },
     sansTraduction ? h('p', { class: 'indice' }, tl('lecture_sans_traduction')) : null,
     // Une traduction automatique affichée : non relue, l'hébreu fait foi (COUV-05).
+    traductionPartielle ? h('p', { class: 'indice' }, tl('lecture_traduction_partielle', chapitresTraduits, x.sections.length)) : null,
     traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     annotations ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
@@ -2104,7 +2164,9 @@ function ecranLivres() {
         h('div', { class: 'carte carte-sections' }, livres.textes.filter((x) => x.groupe === g.cle).map((x) =>
           ligneHebreu(x.titre.he, [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, tr.p('livre_chapitres', x.chapitres ?? x.sections?.length ?? 0)].filter(Boolean).join(' · '),
             () => { priere = `livre:${x.id}`; ouvrir('priere'); }))),
-      ]) : []))));
+      ]) : []),
+      // La licence du Yalkout Yossef et l'origine des traductions, au pied de la liste (TLIVRES-02, COUV-05).
+      ...tr.t('livres_pied').split('\n').map((l) => h('p', { class: 'indice', dir: 'auto' }, l)))));
 }
 
 /**
@@ -2136,6 +2198,8 @@ function ecranHizouk() {
         h('button', { class: 'secondaire', 'aria-pressed': garde ? 'true' : 'false', onclick: () => { store.basculerChizukFavori(item.id); rendre(); } },
           tr.t(garde ? 'chizuk_garde' : 'chizuk_garder')),
         h('button', { class: 'secondaire', onclick: partager }, tr.t('chizuk_partager'))) : null,
+      // Une traduction affichée : on dit d'où elle vient (COUV-05).
+      item && languesLecture() !== 'he' ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
       h('button', { class: 'principal', onclick: () => ouvrir('seance') }, tr.t('chizuk_commencer')),
       gardes.length ? h('h2', { class: 'section' }, tr.t('chizuk_favoris')) : null,
       gardes.length ? h('div', { class: 'carte' }, gardes.map((x) =>
@@ -2175,6 +2239,8 @@ function ecranSource() {
         h('p', { class: 'source-ref' }, Reference.localise(e.ref, tr.langue)))),
     h('div', { class: 'carte carte-texte psaume', lang: 'he', dir: 'rtl' },
       paragraphesTraduits(LibraryRules.paragraphes(bibliotheque, e), e.paragraphes_fr, e.paragraphes_en, (p) => h('p', { class: 'verset paragraphe-source' }, p))),
+    // Des traductions affichées : on dit d'où elles viennent (COUV-05).
+    languesLecture() !== 'he' && (e.paragraphes_fr?.length || e.paragraphes_en?.length) ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     // Ni note ni édition sous le texte : l'attribution passe par le lien vers Sefaria.
     e.url ? h('a', { class: 'principal lien-sefaria', href: e.url, target: '_blank', rel: 'noopener noreferrer' }, tr.t('library_open_sefaria')) : null));
 }
@@ -2480,13 +2546,17 @@ function confirmerRetrait(m) {
 // --- Zmanim et calendrier (ZmanimActivity, CalendrierActivity, 10/10) ----------------
 let villes = null;
 let villesDemandees = false;
+/** Rend la promesse du chargement de villes.json (vrai si la liste est là, faux si le fichier a échoué) ; un échec peut être retenté. */
+let villesPromesse = null;
 function chargeVilles() {
-  if (villes) return true;
-  if (!villesDemandees) {
+  if (villes) return Promise.resolve(true);
+  if (!villesPromesse) {
     villesDemandees = true;
-    fetch('data/villes.json').then((r) => r.json()).then((d) => { villes = d.villes; rendre(); }).catch(() => {});
+    villesPromesse = fetch('data/villes.json').then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then((d) => { villes = d.villes; rendre(); return true; })
+      .catch(() => { villesPromesse = null; return false; });
   }
-  return false;
+  return villesPromesse;
 }
 let jourCalendrier = null;
 let moisCalendrier = null;
@@ -2501,20 +2571,22 @@ const parametre = (p) => (p !== '' && !Number.isNaN(Number(p)) ? Number(p).toLoc
  * La position du téléphone (16/10 ; précise depuis le 28/10, « en fonction de la position exacte ») :
  * haute précision, un point de moins d'une minute ; sans réponse, la dernière connue, même
  * ancienne. La ville la plus proche nomme le lieu. Silencieux : aucun message, aucune demande.
+ * Choisie : « Ma position » vient d'être prise dans la liste des lieux, la région est redéduite ;
+ * sinon une reprise (le lieu était déjà la position) garde la région choisie à la main dans les
+ * réglages (audit du 12/11, FCALENDRIER-06, store.setLieuPosition).
  */
-function localiserPosition({ etat = null, apres = rendre, silencieux = false } = {}) {
+function localiserPosition({ etat = null, apres = rendre, silencieux = false, choisie = false } = {}) {
   const dire = (cle) => { if (etat && !silencieux) etat.textContent = tr.t(cle); };
   if (!navigator.geolocation) { dire('zmanim_position_refusee'); return; }
   dire('zmanim_position_attente');
   const poser = (p, ancienne) => {
     const proche = villePlusProche(villes ?? [], p.coords.latitude, p.coords.longitude);
-    store.setLieu({
+    store.setLieuPosition({
       nom: proche ? tr.t('zmanim_position_pres', titreTexte(proche.nom)) : tr.t('zmanim_position'),
       latitude: p.coords.latitude, longitude: p.coords.longitude,
       // Le fuseau du téléphone ; Israël ou diaspora d'après le territoire (TerritoireIsrael, 16/10).
       altitude: proche?.altitude ?? 0, fuseau: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
-    store.setInIsrael(dansIsrael(p.coords.latitude, p.coords.longitude));
+    }, choisie);
     if (ancienne && !silencieux) signale(tr.t('zmanim_position_ancienne'));
     apres();
   };
@@ -2550,20 +2622,34 @@ function choisirLieu() {
     const etat = h('p', { class: 'message', 'aria-live': 'polite' });
     f.append(h('button', {
       class: 'choix',
-      onclick: () => localiserPosition({ etat, apres: () => { fermer(); rendre(); } }),
+      onclick: () => localiserPosition({ etat, choisie: true, apres: () => { fermer(); rendre(); } }),
     }, tr.t('zmanim_position')), etat);
-    const courant = store.lieu()?.ville;
-    for (const v of villes ?? []) {
-      f.append(h('button', {
+    // La liste se remplit à l'arrivée de villes.json (FWEBCODE-05) : « Chargement… » en attendant,
+    // un message et « Réessayer » si le fichier échoue.
+    const liste = h('div', {});
+    f.append(liste, h('p', { class: 'indice sources' }, tr.t('zmanim_source_villes')));
+    const remplir = () => {
+      if (!villes) {
+        liste.replaceChildren(h('p', { class: 'indice', 'aria-live': 'polite' }, tr.t('villes_chargement_web')));
+        chargeVilles().then((ok) => {
+          if (!liste.isConnected) return;
+          if (ok) remplir();
+          else liste.replaceChildren(h('p', { class: 'indice' }, tr.t('villes_echec_web')),
+            h('button', { class: 'choix', onclick: remplir }, tr.t('livres_reessayer_web')));
+        });
+        return;
+      }
+      const courant = store.lieu()?.ville;
+      liste.replaceChildren(...villes.map((v) => h('button', {
         class: 'choix', role: 'menuitemradio', 'aria-checked': String(v.id === courant),
         onclick: () => {
           store.setLieu({ nom: titreTexte(v.nom), latitude: v.latitude, longitude: v.longitude, altitude: v.altitude, fuseau: v.fuseau }, v);
           fermer();
           rendre();
         },
-      }, titreTexte(v.nom)));
-    }
-    f.append(h('p', { class: 'indice sources' }, tr.t('zmanim_source_villes')));
+      }, titreTexte(v.nom))));
+    };
+    remplir();
   });
 }
 
@@ -3418,7 +3504,7 @@ function deuxHeures(plan, t) {
 function dureeEnMots(minutes) {
   if (minutes < 60) return minutes === 1 ? tr.t('vol_duree_une_minute') : tr.t('vol_duree_minutes', String(minutes));
   const h = Math.floor(minutes / 60), m = minutes % 60;
-  return m ? tr.t('vol_duree_heures_minutes', String(h), String(m)) : tr.t('vol_duree_heures', String(h));
+  return m ? tr.t('vol_duree_heures_minutes', String(h), String(m)) : tr.p('vol_duree_heures', h, String(h));
 }
 
 /** « mer. 28 19:20 TLV » : l'heure locale d'un aéroport (celle du billet). */
@@ -3455,6 +3541,8 @@ function carteRapideVol(v, pret, calculer) {
     if (p.numero) v.numero = p.numero;
     if (p.depart) v.depart = p.depart;
     if (p.arrivee) v.arrivee = p.arrivee;
+    // Une date sans heure : l'ancien vol n'est pas repris, l'heure reste à donner (FVOL-03, SaisieVol.dateSansHeure).
+    if (Vol.dateSansHeure(p)) { v.decollage = ''; v.atterrissage = ''; }
     const jour = p.date ?? v.decollage?.slice(0, 10);
     if (jour && p.heureDepart) v.decollage = `${jour}T${p.heureDepart}`;
     let estimee = false;
@@ -3479,13 +3567,15 @@ function carteRapideVol(v, pret, calculer) {
         estimee = true;
       }
     }
+    v.arriveeEstimee = estimee;
     const compris = [p.numero ?? p.compagnie, v.depart || v.arrivee ? `${v.depart ?? '?'} → ${v.arrivee ?? '?'}` : null,
       v.decollage ? v.decollage.replace('T', ' · ') : p.date].filter(Boolean).join(' · ');
     const manque = [!v.depart && tr.t('vol_depart'), !v.arrivee && tr.t('vol_arrivee'), !v.decollage && tr.t('vol_rapide_heure')].filter(Boolean);
     rapideVol = [tr.t('vol_rapide_compris', compris), estimee ? tr.t('vol_rapide_estimee') : null,
       manque.length ? tr.t('vol_rapide_manque', manque.join(', ')) : null].filter(Boolean).join('\n');
     if (v.numero && (!v.depart || !v.arrivee)) { rendre(); return loupeVol(v); }
-    if (v.depart && v.arrivee && v.decollage && v.atterrissage) return calculer();
+    // Ni une arrivée estimée ni un jour repris de l'ancien vol ne s'enregistrent d'eux-mêmes (FVOL-03).
+    if (Vol.calculAutomatique(p, estimee) && v.depart && v.arrivee && v.decollage && v.atterrissage) return calculer();
     rendre();
   };
   return h('div', { class: 'carte carte-texte carte-rapide' },
@@ -3612,12 +3702,14 @@ function signatureVol(c = calculVol, maintenant = new Date()) {
   if (!c) return null;
   const p = Vol.priere(c, maintenant);
   const place = Vol.enVol(c).findIndex((e) => maintenant < e.instant);
-  return `${p?.[0]}|${p?.[1] ? +p[1] : ''}|${place}`;
+  return `${p?.[0]}|${p?.[1] ? +p[1] : ''}|${p?.[2] ? +p[2] : ''}|${place}`;
 }
 let signatureVolAffichee = null;
 
 function texteCompteVol(c = calculVol, maintenant = new Date()) {
-  const limite = c ? Vol.priere(c, maintenant)?.[1] : null;
+  const p = c ? Vol.priere(c, maintenant) : null;
+  // Pas de compte à rebours tant que la prière n'est pas ouverte (FVOL-05).
+  const limite = p && !p[2] ? p[1] : null;
   return limite ? tr.t('vol_dans', dureeEnMots(Math.max(0, Math.floor((limite - maintenant) / 60000)))) : null;
 }
 
@@ -3629,6 +3721,9 @@ function resultatsVol(c) {
   const enVol = Vol.enVol(c);
   let priere;
   if (!p) priere = [h('p', { class: 'message' }, tr.t('vol_hors_fenetre'))];
+  // Entre deux prières (13/11, FVOL-05 : de la fin de Cha'harit à min'ha guedola), aucune n'est
+  // donnée pour ouverte : la prochaine et l'heure où elle commence.
+  else if (p[2]) priere = [h('p', { class: 'vol-compte' }, tr.t('vol_prochaine', tr.t(NOMS[p[0]]))), h('p', {}, tr.t('vol_des', deuxHeures(c.plan, p[2])))];
   else {
     const [nom, limite] = p;
     const minutes = limite ? Math.max(0, Math.floor((limite - maintenant) / 60000)) : 0;
@@ -3642,7 +3737,7 @@ function resultatsVol(c) {
   const date = (iso) => new Intl.DateTimeFormat(tr.langue, { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(`${iso}T12:00:00Z`));
   return [
     // La carte prend le ciel de son heure (04/11) : aube, après-midi, nuit.
-    h('div', { class: `carte carte-texte carte-vol carte-heros ciel-${p ? p[0] : 'hors'}` }, h('p', { class: 'indice' }, tr.t('vol_priere_titre')), ...priere),
+    h('div', { class: `carte carte-texte carte-vol carte-heros ciel-${p && !p[2] ? p[0] : 'hors'}` }, h('p', { class: 'indice' }, tr.t('vol_priere_titre')), ...priere),
     h('div', { class: 'carte carte-texte carte-vol' },
       // La route prévue tient en une étiquette ; le détail du calcul se déplie.
       c.fiabilite === 'route_prevue' ? h('p', { class: 'vol-etiquette' }, tr.t('vol_fiabilite_court'))
@@ -3771,7 +3866,7 @@ function ecranVol() {
     h('span', { class: 'corps' }, h('div', { class: 'etat' }, etiquette), h('div', { class: 'nom' }, valeur)), h('span', { class: 'chevron', 'aria-hidden': 'true' }));
   const heure = (cle, etiquette) => h('label', { class: 'ligne' },
     h('span', { class: 'corps' }, h('div', { class: 'etat' }, etiquette),
-      h('input', { type: 'datetime-local', class: 'champ-recherche champ-vol', value: v[cle] || null, onchange: (e) => { v[cle] = e.target.value; } })));
+      h('input', { type: 'datetime-local', class: 'champ-recherche champ-vol', value: v[cle] || null, onchange: (e) => { v[cle] = e.target.value; if (cle === 'atterrissage') v.arriveeEstimee = false; } })));
   const champNumero = h('input', { type: 'text', class: 'champ-recherche champ-vol', maxlength: 12, autocapitalize: 'characters', value: v.numero || null, onchange: (e) => { v.numero = e.target.value.trim(); } });
   // La loupe au bout du champ cherche la route du numéro (adsbdb) ; une ligne dit ce qui part.
   const loupe = h('button', { class: 'loupe-vol', type: 'button', disabled: routeVol.attente, 'aria-label': tr.t('vol_route_bouton'), title: tr.t('vol_route_bouton'),
@@ -3795,7 +3890,8 @@ function ecranVol() {
     h('div', { class: 'vol-resume-tete' }, h('span', { class: 'vol-resume-titre' }, libelleVol(garde)),
       h('button', { class: 'lien-bouton', onclick: () => { modifierVol = true; rendre(); } }, tr.t('vol_modifier'))),
     // Chaque heure isolée, la flèche dans le sens de lecture (← en hébreu).
-    h('p', { class: 'vol-resume-heures' }, `\u2068${heureAeroport(planGarde.depart, planGarde.decollage)}\u2069 ${tr.rtl ? '←' : '→'} \u2068${heureAeroport(planGarde.arrivee, planGarde.atterrissage)}\u2069`)) : null;
+    h('p', { class: 'vol-resume-heures' }, `\u2068${heureAeroport(planGarde.depart, planGarde.decollage)}\u2069 ${tr.rtl ? '←' : '→'} \u2068${heureAeroport(planGarde.arrivee, planGarde.atterrissage)}\u2069`),
+    garde.arriveeEstimee ? h('p', { class: 'indice' }, tr.t('vol_resume_estimee')) : null) : null;
   formulaireVolOuvert = !resume;
   const puce = h('span', { class: 'puce-bandeau' }, garde ? libelleVol(garde) : tr.t('vol_carte_sous'));
   return h('div', { class: 'ecran avec-bandeau' }, bandeau(tr.t('vol_title'), { puce, dessin: 'scene_airport' }),
@@ -3838,8 +3934,8 @@ function lignePaliers() {
   const tropheesNeufs = Trophees.nouveaux(gagnes, store.tropheesVus());
   const trophee = tropheesNeufs[0];
   const neuf = vus ? Paliers.nouveaux(etats, bilan, vus).sort((a, b) => b.rang - a.rang)[0] : null;
-  const message = trophee ? tr.t('trophee_niveau_gagne', tr.t(`trophee_${trophee.famille.cle}`), trophee.rang, tr.t(`metal_${trophee.metal}`))
-    : neuf ? tr.t('palier_nouveau', libellePalier(neuf.piste, bilan), valeurPalier(neuf.piste, neuf.atteint)) : null;
+  // Un trophée neuf ouvre sa fiche : seul le palier a un message (13/11, FDONNEES-06).
+  const message = neuf ? tr.t('palier_nouveau', libellePalier(neuf.piste, bilan), valeurPalier(neuf.piste, neuf.atteint)) : null;
   // Des étincelles du grade plutôt que des confettis multicolores (16/10, animation E).
   // Un trophée neuf ouvre sa fiche, avec la fête (19/10) ; un palier seul garde le message et les étincelles.
   if (trophee) setTimeout(() => feterTrophees(tropheesNeufs), 600);
@@ -3858,7 +3954,7 @@ function lignePaliers() {
     medailleGrade(g, 26), h('span', {}, `${texte}  ›`));
 }
 
-const pratique = () => ({ minutes: store.minutesParJour(), notes: store.nombreNotes(), meilleureSerie: store.meilleureSerie(), tikkun: store.tikkunJournal() });
+const pratique = () => ({ minutes: store.minutesParJour(), notes: store.nombreNotes(), meilleureSerie: store.meilleureSerie(), tikkun: store.tikkunJournal(), exempt: (d) => store.isExempt(d) });
 
 /** Des confettis par-dessus l'écran, 2,8 s ; rien si l'on a demandé moins d'animations. */
 function confettis() {
@@ -3952,7 +4048,7 @@ function detailTrophee(e, p, dates, rangGlobal, apres = null) {
         ? h('p', { class: 'detail-date' }, dates[e.cle] ? tr.t('trophee_gagne_le', dateLongue(dates[e.cle])) : tr.t('trophee_gagne'))
         : h('div', {}, h('div', { class: 'trophee-barre grande', 'aria-hidden': 'true' }, h('span', { style: `width:${Math.round(Trophees.fraction(p, e) * 100)}%` })),
           h('p', { class: 'trophee-compte' }, tr.t('trophee_encore', v, e.seuil, e.seuil - v))),
-      gagne ? h('p', { class: 'indice' }, tr.t('trophee_detail_grade', nomMetal(m), rangGlobal)) : '',
+      gagne ? h('p', { class: 'indice' }, tr.p('trophee_detail_grade', rangGlobal, nomMetal(m), rangGlobal)) : '',
       h('div', { class: 'actions' }, h('button', { type: 'button', onclick: fermer }, tr.t('celebration_continue'))));
   }, apres);
 }
@@ -4006,10 +4102,10 @@ async function partagerGrade(g, n) {
   x.font = '700 76px system-ui, sans-serif';
   x.fillText(tr.t('grade_titre', nomMetal(g)), 540, 790);
   x.font = '400 46px system-ui, sans-serif';
-  x.fillText(tr.t('grade_sous_max', n), 540, 860);
+  x.fillText(tr.p('grade_sous_max', n), 540, 860);
   x.globalAlpha = 0.7; x.font = '600 38px system-ui, sans-serif';
   x.fillText('MyHitbodedut', 540, 990);
-  const texte = `${tr.t('grade_partage_texte', nomMetal(g), n)}\n${tr.t('partage_lien', LIEN_WEB)}`;
+  const texte = `${tr.p('grade_partage_texte', n, nomMetal(g), n)}\n${tr.t('partage_lien', LIEN_WEB)}`;
   const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
   const fichier = blob ? new File([blob], 'grade.png', { type: 'image/png' }) : null;
   try {
@@ -4086,7 +4182,7 @@ function ecranPaliers() {
   const tete = h('div', { class: 'carte grade-tete' },
     h('div', { class: 'grade-ligne' }, medailleGrade(g, 48), h('div', { class: 'trophee-texte' },
       h('p', { class: 'grade-nom' }, tr.t('grade_titre', nomMetal(g))),
-      h('p', { class: 'grade-sous' }, suivant ? tr.t('grade_sous', n, suivant - n, nomMetal(Trophees.grade(suivant))) : tr.t('grade_sous_max', n)),
+      h('p', { class: 'grade-sous' }, suivant ? tr.p('grade_sous', n, n, suivant - n, nomMetal(Trophees.grade(suivant))) : tr.p('grade_sous_max', n)),
       suivant ? h('div', { class: `grade-barre ${g}`, 'aria-hidden': 'true' }, h('span', { 'data-largeur': `${Math.round(((n - de) / (suivant - de)) * 100)}%` })) : null)),
     proches.length ? h('div', { class: 'grade-proches' }, h('p', { class: 'grade-proches-titre' }, tr.t('trophees_proches_titre')),
       ...proches.map((e) => h('button', { type: 'button', class: 'proche', onclick: () => ouvrirDetail(e) },
@@ -4133,7 +4229,7 @@ function ecranPaliers() {
     const v = Trophees.valeur(p, e.f.cle);
     ligne.push(etape(e, null, v > 0 ? tr.t('trophee_progres', Math.min(v, e.seuil), e.seuil) : null, false));
   });
-  if (futurs.length > 15) ligne.push(h('p', { class: 'indice ligne-fin' }, tr.t('trophees_autres', futurs.length - 15)));
+  if (futurs.length > 15) ligne.push(h('p', { class: 'indice ligne-fin' }, tr.p('trophees_autres', futurs.length - 15)));
 
   // Un nouveau grade : la fête, une fois (pas la première ouverture, pas le bronze).
   const niveau = n === 0 ? 0 : Trophees.METAUX.indexOf(g) + 1;
@@ -4151,7 +4247,8 @@ function ecranPaliers() {
 
   requestAnimationFrame(() => {
     const d = ecran.querySelector('.defile');
-    if (d && ici) d.scrollTop = Math.max(0, ici.offsetTop - d.clientHeight / 3);
+    // Le défilement posé par l'écran n'est pas celui de la main : il ne cache pas la banderole (FWEBLIVE-03).
+    if (d && ici) { const cible = Math.max(0, ici.offsetTop - d.clientHeight / 3); if (Math.abs(cible - d.scrollTop) > 1) d.dataset.defilementAuto = '1'; d.scrollTop = cible; }
     // B : la ligne se remplit jusqu'à « Tu es ici », les dernières étapes une à une.
     const gagnes = [...ecran.querySelectorAll('.ligne-etape.gagne')];
     if (!moinsAnime()) gagnes.forEach((el, i) => { el.style.setProperty('--retard', `${Math.max(0, i - (gagnes.length - 6)) * 90}ms`); el.classList.add('pousse'); });
@@ -4172,7 +4269,7 @@ function feteGrade(ancien, g, n, suivant) {
     h('div', { class: 'grade-fete-carte' },
       h('div', { class: 'grade-morph' }, h('span', { class: 'rayons', 'aria-hidden': 'true' }),
         h('span', { class: 'morph-ancien' }, medailleGrade(ancien, 140)), h('span', { class: 'morph-nouveau' }, medailleGrade(g, 140))),
-      h('h2', {}, tr.t('grade_nouveau', nomMetal(g))), h('p', {}, tr.t('grade_sous_max', n)),
+      h('h2', {}, tr.t('grade_nouveau', nomMetal(g))), h('p', {}, tr.p('grade_sous_max', n)),
       suivant ? h('p', { class: 'indice' }, tr.t('grade_prochain', nomMetal(Trophees.grade(suivant)), suivant)) : null,
       h('button', { type: 'button', class: 'principal', onclick: () => voile.remove() }, tr.t('celebration_continue'))));
   setTimeout(() => etincelles(voile.querySelector('.grade-morph'), g), 1200);
@@ -4283,6 +4380,7 @@ const ACCENTS = ['vert', 'bleu', 'violet', 'bordeaux', 'ambre', 'turquoise'];
 const OUVERTURES = [['aujourdhui', 'nav_today'], ['textes', 'nav_texts'], ['zmanim', 'nav_zmanim']];
 
 function ecranReglages() {
+  chargeVilles();
   const courante = LANGUES.find((l) => l.code === tr.langue);
   return h('div', { class: 'ecran' }, barre(tr.t('settings_title')),
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
@@ -4298,10 +4396,11 @@ function ecranReglages() {
             }),
         }),
         ligne({ nom: tr.t('reglage_lieu'), etat: store.lieu()?.nom ?? tr.t('reglage_lieu_aucun'), onclick: choisirLieu }),
-        // La région (02/11, SettingsActivity.region_button) : déduite du lieu, et corrigeable à la main.
+        // La région (02/11, SettingsActivity.region_button) : déduite du lieu, et corrigeable à la main ;
+        // choisie à la main, une reprise de la position ne la réécrit plus (FCALENDRIER-06).
         ligne({ nom: tr.t('settings_region'), etat: tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'),
           onclick: () => choisirDans(tr.t('settings_region'), [tr.t('region_israel'), tr.t('region_diaspora')], store.inIsrael() ? 0 : 1,
-            (j) => { store.setInIsrael(j === 0); rendre(); }) }),
+            (j) => { store.setInIsrael(j === 0, true); rendre(); }) }),
         // À Jérusalem, l'usage des 40 minutes est proposé, jamais imposé.
         ligne({ nom: tr.t('reglage_allumage'), onclick: choisirAllumage,
           etat: [libelleAllumage(store.allumage()), mukafChoma() && store.allumage() !== 40 ? tr.t('reglage_allumage_proposition') : null].filter(Boolean).join(' · ') }),
@@ -4347,13 +4446,19 @@ function ecranReglages() {
             (j) => { store.setSourceHalakha(SOURCES_HALAKHA[j][0]); rendre(); }) })),
       carteDedicace(),
       carteMesDonnees(),
+      carteLicences(),
       h('div', { class: 'carte' }, ligne({ nom: tr.t('settings_onboarding'), onclick: presentation })),
       // Réinitialiser l'application (12/10) : en dernier, avec une confirmation.
       h('div', { class: 'carte carte-reinit' },
         h('h3', {}, tr.t('reset_title')),
-        h('p', { class: 'indice' }, tr.t('reset_hint')),
-        h('button', { class: 'bouton-danger', onclick: () => confirmer(tr.t('reset_confirm_title'), tr.t('reset_confirm_text'), tr.t('reset_confirm_yes'), () => {
+        h('p', { class: 'indice' }, tr.t('reset_hint_web')),
+        h('button', { class: 'bouton-danger', onclick: () => confirmer(tr.t('reset_confirm_title'), tr.t('reset_confirm_text_web'), tr.t('reset_confirm_yes'), async () => {
+          // Tout ce que le site garde (FWEBCODE-07) : les morceaux ajoutés (IndexedDB, vidés par une
+          // transaction : deleteDatabase serait bloquée par la connexion ouverte), le calibrage des livres.
           store.reinitialiser();
+          try { await MorceauxPerso.vide(); } catch { /* base indisponible : rien à effacer de plus */ }
+          clearTimeout(calibrageAEcrire);
+          try { localStorage.removeItem(CLE_CALIBRAGE); sessionStorage.clear(); } catch { /* stockage refusé */ }
           location.replace(location.pathname);
         }) }, tr.t('reset_action'))),
       ligneVersion())));
@@ -4468,6 +4573,14 @@ function dedicacer() {
 /** La borne du texte en clair d'une sauvegarde importée, comme SettingsActivity.CLAIR_MAX_OCTETS. */
 const CLAIR_MAX = 2 * 1024 * 1024;
 
+/** Sources et licences (audit du 12/11, TLIVRES-09, TPLAYDOCS-13) : le texte d'Android, sans ses bibliothèques. */
+function carteLicences() {
+  return h('div', { class: 'carte' },
+    h('details', { class: 'licences' },
+      h('summary', {}, tr.t('settings_licences')),
+      ...tr.t('licences_texte').split('\n').filter(Boolean).map((l) => h('p', { class: 'indice', dir: 'auto' }, l))));
+}
+
 /** Un champ de mot de passe de la sauvegarde (Coffre, audit du 12/11). */
 const champMotDePasse = (indice) => h('input', { type: 'password', autocomplete: 'off', maxlength: '128', placeholder: tr.t(indice), 'aria-label': tr.t(indice) });
 
@@ -4496,7 +4609,7 @@ function carteMesDonnees() {
     if (navigator.standalone && navigator.canShare) {
       const fichier = new File([contenu], nom, { type: 'application/json' });
       if (navigator.canShare({ files: [fichier] })) {
-        try { await navigator.share({ files: [fichier] }); signale(tr.t('export_ok')); } catch (e) { if (e?.name !== 'AbortError') signale(tr.t('export_failed')); }
+        try { await navigator.share({ files: [fichier] }); store.setDerniereSauvegarde(store.today()); signale(tr.t('export_ok')); } catch (e) { if (e?.name !== 'AbortError') signale(tr.t('export_failed')); }
         return;
       }
     }
@@ -4507,6 +4620,7 @@ function carteMesDonnees() {
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      store.setDerniereSauvegarde(store.today());
       signale(tr.t('export_ok'));
     } catch { signale(tr.t('export_failed')); }
   };
@@ -4526,6 +4640,8 @@ function carteMesDonnees() {
   const importer = (texte) => {
     const n = store.importJson(texte);
     if (n === null || n === undefined) { signale(tr.t('import_invalid')); return; }
+    // Un fichier importé est une sauvegarde qui existe : le rappel d'export repart d'aujourd'hui (FWEBCODE-01).
+    store.setDerniereSauvegarde(store.today());
     appliqueApparence();
     rendre();
     signale(tr.p('import_ok', n));
@@ -4553,9 +4669,11 @@ function carteMesDonnees() {
         h('button', { type: 'button', onclick: fermer }, tr.t('action_back')),
         bouton));
   });
-  return h('div', { class: 'carte' },
+  return h('div', { class: 'carte carte-donnees' },
     h('h3', {}, tr.t('section_data')),
     h('p', { class: 'indice' }, tr.t('section_data_hint_web')),
+    // Le navigateur n'a pas promis de garder (persist() refusé) : on le dit (FWEBCODE-01).
+    stockageDurable === false ? h('p', { class: 'indice' }, tr.t('stockage_fragile_web')) : null,
     h('div', { class: 'actions-donnees' },
       h('button', { type: 'button', class: 'secondaire', onclick: demanderExport }, tr.t('action_export')),
       h('button', { type: 'button', class: 'secondaire', onclick: () => champ.click() }, tr.t('action_import'))),
@@ -4577,7 +4695,10 @@ const PRESENTATION = [
   { cle: 'textes', titre: 'onboarding_texts', corps: 'onboarding_texts_body', image: 'char_tehilim' },
   { cle: 'reglages', titre: 'onboarding_yours', corps: 'onboarding_yours_body', image: 'char_pointing' },
   { cle: 'adresse', titre: 'onboarding_adresse', corps: 'onboarding_adresse_body', image: 'char_dancing', adresse: true },
-  { cle: 'prive', titre: 'onboarding_private', corps: 'onboarding_private_body_web', image: 'char_thumbs_up' },
+  // La promesse dit ce qui part vraiment (audit du 12/11, FPRODUIT-08) : sans relais, le seul numéro de vol
+  // vers adsbdb ; avec RELAIS_VOL (build.mjs), le suivi en direct en plus. Sur iPhone hors de l'écran
+  // d'accueil, « reste dans ce navigateur » ne vaut que sept jours : l'écran le dit (FWEBCODE-01).
+  { cle: 'prive', titre: 'onboarding_private', corps: RELAIS_VOL ? 'onboarding_private_body_web_relais' : 'onboarding_private_body_web', image: 'char_thumbs_up', installer: true },
 ];
 const DUREES_PRESENTATION = [5, 10, 15, 30];
 
@@ -4601,6 +4722,7 @@ function presentation() {
       h('div', { class: 'presentation-scene' }, h('img', { src: `img/${e.image}.webp`, alt: '' })),
       h('h1', { class: 'presentation-titre' }, tr.t(e.titre)),
       h('p', { class: 'presentation-corps' }, tr.t(e.corps)),
+      e.installer && aInstaller() ? h('p', { class: 'presentation-corps presentation-avis' }, tr.t('installer_ios_web')) : null,
       e.duree ? puces(DUREES_PRESENTATION, store.targetMinutes(), (m) => tr.duree(m), (m) => store.setTargetMinutes(m)) : null,
       e.adresse ? puces(['m', 'f'], store.adresse(), (a) => tr.t(a === 'm' ? 'adresse_tsadik' : 'adresse_tsadeket'), (a) => { store.setAdresse(a); appliqueApparence(); }) : null,
       h('button', { class: 'principal', onclick: () => { if (dernier) fermer(); else { i++; dessiner(); } } },
@@ -4633,7 +4755,12 @@ function declarerHorsTelephone() {
   const hier = ajouteJours(aujourdhui, -1);
   const inscrire = (date) => choisirDuree((m) => {
     store.addSession(m, { date });
-    if (date === aujourdhui) store.setPendingCelebration(m);
+    if (date === aujourdhui) {
+      store.setPendingCelebration(m);
+      // La note de ce jour-là, proposée après le bravo comme sur Android (MainActivity.declarerHorsTelephone).
+      dateNote = date;
+      noteApresBravo = true;
+    }
     rendre();
   }, tr.t('offline_how_long'));
   const ouvertAujourdhui = !store.isDone(aujourdhui);
@@ -4775,7 +4902,7 @@ function ajusteLesTextes() {
 let tic = null;
 let etaitEnCours = false;
 let verrouEcran = null;
-/** Après « Terminer maintenant », la note est proposée au retour du bravo. */
+/** Après toute séance inscrite ou journée déclarée sans le téléphone, la note est proposée au retour du bravo. */
 let noteApresBravo = false;
 /** { minutes } après une séance close, { annulee: true } après un abandon. */
 let bravo = null;
@@ -4991,10 +5118,13 @@ function cloreSeance({ avantTerme }) {
   // Une séance non inscrite n'a pas de jour : sa note va à aujourd'hui, pas au jour
   // d'une séance d'avant (bug du 02/11).
   dateNote = null;
+  noteApresBravo = false;
   if (inscrite) {
     store.addSession(minutes, { theme: sujet, date });
     store.setPendingCelebration(minutes);
     dateNote = date;
+    // Comme sur Android : la note suit le bravo après toute séance inscrite, pas seulement « Terminer maintenant ».
+    noteApresBravo = true;
   }
   etaitEnCours = false;
   arreteMusique();
@@ -5006,8 +5136,7 @@ function cloreSeance({ avantTerme }) {
 
 /** « Terminer maintenant » : la note est proposée après le bravo, ou tout de suite s'il n'y en a pas. */
 function terminerMaintenant() {
-  if (cloreSeance({ avantTerme: true })) noteApresBravo = true;
-  else setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
+  if (!cloreSeance({ avantTerme: true })) setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
   rendre();
 }
 
@@ -5027,7 +5156,7 @@ const deuxChiffres = (n) => String(n).padStart(2, '0');
 function compteur() {
   const mode = store.sessionCounter();
   const t = Date.now();
-  if (mode === 'masque') return { texte: '', legende: tr.t('session_hidden_caption') };
+  if (mode === 'masque') return { texte: '', legende: tr.t('session_hidden_caption_web') };
   const ms = mode === 'ecoule'
     ? Math.max(0, t - store.sessionStartedAt())
     : Math.max(0, store.sessionEndsAt() - t);
@@ -5294,7 +5423,7 @@ function ecranBravo() {
       !annulee && bravo.minutes > 0 ? h('button', { class: 'lien-bouton bravo-partage', onclick: () => partagerSeance(bravo.minutes) }, tr.t('partage_action')) : null)));
 }
 
-const LIEN_WEB = 'https://myhitbo.github.io/myhitbodedut-web/';
+const LIEN_WEB = 'https://myhitbodedut.pages.dev/';
 /** Le texte d'une séance faite et le lien de la version web : le partage du téléphone, sinon le presse-papiers. */
 async function partagerSeance(minutes) {
   const serie = store.streak?.() ?? 0;
@@ -5437,6 +5566,8 @@ function rendre() {
   const champ = document.activeElement?.classList?.contains('champ-recherche') ? document.activeElement : null;
   const selection = champ ? [champ.selectionStart, champ.selectionEnd] : null;
   app.replaceChildren();
+  // Le stockage refusé (FWEBCODE-01) : un bandeau permanent, au-dessus de chaque écran.
+  if (sansStockage) app.append(h('p', { class: 'bandeau-stockage', role: 'note' }, tr.t('stockage_memoire_web')));
   if (ecran === 'musique') app.append(ecranMusique());
   else if (ecran === 'reglages') app.append(ecranReglages());
   else if (ecran === 'zmanim') app.append(ecranZmanim());
@@ -5580,6 +5711,11 @@ document.addEventListener('scroll', (e) => {
   const ecran = d.closest('.avec-bandeau');
   const bandeau = ecran?.querySelector('.bandeau');
   if (!bandeau) return;
+  if (d.dataset.defilementAuto) { delete d.dataset.defilementAuto; return; }
   if (d.scrollTop > 8 && d.scrollHeight - d.clientHeight > bandeau.offsetHeight) ecran.classList.add('bandeau-cache');
   else if (d.scrollTop <= 0) ecran.classList.remove('bandeau-cache');
 }, true);
+// Dès que la main prend le défilement, celui de l'écran ne compte plus (FWEBLIVE-03).
+for (const evt of ['touchstart', 'wheel']) {
+  document.addEventListener(evt, (e) => { const d = e.target instanceof Element ? e.target.closest('.defile') : null; if (d) delete d.dataset.defilementAuto; }, { capture: true, passive: true });
+}
