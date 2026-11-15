@@ -1817,6 +1817,17 @@ object Store {
     fun formatMinutes(minutes: Int): String =
         String.format(Locale.US, "%02d:%02d", (minutes / 60) % 24, minutes % 60)
 
+    /** L'heure comme le téléphone l'écrit (24 h ou 12 h), pour l'affichage et pour les sélecteurs (FACCUEIL-26). */
+    fun formatHeure(context: Context, minutes: Int): String {
+        // En UTC, sur un jour fixe : le jour du passage à l'heure d'été, 02:30 n'existe pas dans le
+        // fuseau du téléphone, et un calendrier du jour l'aurait affiché 03:30.
+        val utc = java.util.TimeZone.getTimeZone("UTC")
+        val c = java.util.Calendar.getInstance(utc).apply {
+            clear(); set(1970, java.util.Calendar.JANUARY, 1, (minutes / 60) % 24, minutes % 60)
+        }
+        return android.text.format.DateFormat.getTimeFormat(context).apply { timeZone = utc }.format(c.time)
+    }
+
     /**
      * « 20 min », « 1 h 30 » : les unités viennent des chaînes, pour suivre
      * la langue de l'interface. Écrites en dur, elles restaient françaises en

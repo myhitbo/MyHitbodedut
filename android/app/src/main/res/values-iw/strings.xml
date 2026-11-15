@@ -23,7 +23,7 @@
     <string name="today_declared">נעשתה בלי טיימר</string>
 
     <string name="section_practice">ההתבודדות שלי</string>
-    <string name="section_gate_state">מצב הפעולה</string>
+    <string name="section_gate_state">מצב „אני עם השם”</string>
     <string name="section_gate">אני עם השם</string>
     <string name="section_gate_hint">האפליקציות שתבחרו יישארו סגורות עד שתתבודדו, וגם במהלך התבודדות.</string>
     <string name="section_rhythm">קצב</string>
@@ -63,8 +63,8 @@
     </plurals>
     <string name="gate_permissions_title">חסרות הרשאות</string>
     <string name="gate_permissions_detail">כדי לפעול, „אני עם השם” צריך שתי גישות: הצגה מעל אפליקציות אחרות וגישה לנתוני שימוש.</string>
-    <string name="gate_disabled_title">המצב כבוי</string>
-    <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שהמצב יפעל.</string>
+    <string name="gate_disabled_title">„אני עם השם” כבוי</string>
+    <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שיפעל.</string>
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
     <string name="gate_no_apps_detail">אין מה לחסום. בחרו לפחות אפליקציה אחת.</string>
     <string name="gate_stopped_title">הניטור הופסק</string>
@@ -76,7 +76,7 @@
     <string name="gate_exempt_title">יום ללא חובה</string>
     <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב מושבת והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
-    <string name="gate_snoozed_detail">התבקשה דחייה. המצב יחזור בסיומה.</string>
+    <string name="gate_snoozed_detail">התבקשה דחייה. „אני עם השם” יחזור בסיומה.</string>
     <string name="gate_window_title">מחוץ לחלון</string>
     <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לשעות האלה דבר אינו נחסם.</string>
 
@@ -94,7 +94,8 @@
     <string name="action_later">אחר כך</string>
     <string name="action_back">חזרה</string>
 
-    <string name="settings_window">שעות המצב</string>
+    <string name="settings_window">שעות „אני עם השם”</string>
+    <string name="window_identique">ההתחלה והסיום חייבים להיות שונים.</string>
     <string name="settings_snooze">משך הדחייה</string>
     <string name="settings_target">משך ההתבודדות</string>
     <string name="settings_daily_goal">יעד יומי</string>
@@ -150,7 +151,7 @@
     <string name="blocker_subtitle">רגע של התבודדות לפני כל השאר.</string>
     <string name="blocker_streak_none">היום הראשון ברצף.</string>
     <string name="blocker_start">להתחיל עכשיו, %1$s</string>
-    <string name="blocker_already_done">כבר התבודדתי</string>
+    <string name="blocker_already_done">התבודדתי בלי הטלפון</string>
     <string name="blocker_snooze">אחר כך (%1$d דק׳)</string>
     <string name="blocker_session_title">התבודדות בעיצומה</string>
     <string name="blocker_session_subtitle">נותרו %1$s. הטלפון יכול לחכות.</string>
@@ -455,10 +456,10 @@
     <string name="start_duration">משך</string>
     <string name="start_theme">נושא</string>
     <string name="start_music">מוזיקה</string>
-    <string name="start_focus">עם השם</string>
+    <string name="start_focus">אני עם השם</string>
     <string name="start_music_off">ללא</string>
-    <string name="start_focus_on">פעיל</string>
-    <string name="start_focus_off">כבוי</string>
+    <string name="start_focus_on">בבוקר</string>
+    <string name="start_focus_off">לא</string>
     <string name="start_focus_setup">נדרשת הגדרה</string>
     <string name="start_focus_stopped">הופסק</string>
     <string name="settings_name">שם פרטי</string>
@@ -487,13 +488,13 @@
     <string name="onboarding_days">יום אחרי יום</string>
     <string name="onboarding_days_body">הרצף סופר את הימים ברציפות, והשבוע כולו נראה במבט אחד. אחרי כל התבודדות אפשר להשאיר הערה ביומן. תזכורות מאותתות בשעה שבוחרים.</string>
     <string name="onboarding_texts">טקסטים לתפילה</string>
-    <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, ספרייה ועצות להתבודדות, זמינים מתי שרוצים.</string>
+    <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, מקורות על ההתבודדות ועצות להתבודדות, זמינים מתי שרוצים.</string>
     <string name="onboarding_yours">בדרך שלכם</string>
     <string name="onboarding_yours_body">בהגדרות: השפה (צרפתית, אנגלית או עברית), צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
     <string name="onboarding_gate">מחסום הבוקר</string>
     <string name="onboarding_gate_body">אם תרצו, האפליקציות שתבחרו ימתינו להתבודדות שלכם: בשעות שתקבעו, מסך ישאל קודם אם היא כבר נעשתה. מפעילים בהגדרות, ואפשר לכבות בכל רגע.</string>
     <string name="onboarding_adresse">איך לפנות אליכם?</string>
-    <string name="onboarding_adresse_body">בסוף כל התבודדות האפליקציה מברכת אתכם. בחרו את המילה שמתאימה לכם; אפשר לשנות אותה בהגדרות.</string>
+    <string name="onboarding_adresse_body">בסוף כל התבודדות האפליקציה מברכת אתכם. בחרו את המילה שמתאימה לכם: הדמות וסמל האפליקציה ישתנו בהתאם. אפשר לשנות זאת בהגדרות.</string>
     <string name="onboarding_rappel">להזכיר לי כל יום</string>
     <string name="onboarding_rappel_heure">ב־%1$s</string>
     <string name="onboarding_rappel_heure_desc">שעת התזכורת: %1$s</string>
@@ -919,7 +920,7 @@
         <item quantity="two">%1$d צדיקים ביום זה</item>
         <item quantity="other">%1$d צדיקים ביום זה</item>
     </plurals>
-    <string name="hilloulot_afficher_detail">בכרטיס היום, במסך הבית</string>
+    <string name="hilloulot_afficher_detail">מתחת לזמנים, במסך הזמנים</string>
     <string name="hilloulot_toucher">לחצו על שם כדי לקרוא את תולדותיו.</string>
     <string name="hilloulot_ouvrir_jour">לעבור ליום זה ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
@@ -1422,6 +1423,10 @@
     <string name="vol_erreur_service">השירות אינו זמין</string>
     <string name="vol_erreur_serveur">שגיאת שרת %1$d</string>
     <string name="vol_direct_inactif">שרת הממסר של המעקב עדיין אינו פעיל בגרסה זו.</string>
+    <string name="vol_direct_activer_web">שירותים מקוונים: מסלול הטיסה</string>
+    <string name="vol_direct_activer_web_aide">כשהם פעילים, הזכוכית המגדלת 🔍 שולחת אל adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד.</string>
+    <string name="reglages_android_seulement">מחסום הבוקר („אני עם השם”) והתזכורות קיימים רק באפליקציה לאנדרואיד.</string>
+    <string name="reglage_libelle_valeur">%1$s: %2$s</string>
     <string name="vol_fiabilite_direct">המסלול תוקן לפי המיקום שהתקבל מ־OpenSky Network ב־%1$s (%2$s), ומשם מעגל גדול עד הנחיתה, במהירות קבועה. זמני הנקודה שמתחת למטוס, בגובה פני הים, מחושבים במכשיר.</string>
     <string name="vol_source_opensky">נתוני כלי טיס: OpenSky Network ‏(opensky-network.org)</string>
     <string name="vol_rappels_titre">תזכורות בטיסה</string>

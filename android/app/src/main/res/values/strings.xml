@@ -28,7 +28,7 @@
 
     <!-- Sections -->
     <string name="section_practice">Ma pratique</string>
-    <string name="section_gate_state">État du mode</string>
+    <string name="section_gate_state">Où en est « Je suis avec Hachem »</string>
     <string name="section_gate">Je suis avec Hachem</string>
     <string name="section_gate_hint">Les applications choisies restent bloquées tant que la pratique n’est pas faite, et pendant une hitbodedout en cours.</string>
     <string name="section_rhythm">Rythme</string>
@@ -68,8 +68,8 @@
     </plurals>
     <string name="gate_permissions_title">Autorisations manquantes</string>
     <string name="gate_permissions_detail">Pour fonctionner, « Je suis avec Hachem » a besoin de deux accès : l’affichage par-dessus les autres applications et l’accès aux données d’utilisation.</string>
-    <string name="gate_disabled_title">Mode désactivé</string>
-    <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour que le mode agisse.</string>
+    <string name="gate_disabled_title">« Je suis avec Hachem » est éteint</string>
+    <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour qu’il agisse.</string>
     <string name="gate_no_apps_title">Aucune application choisie</string>
     <string name="gate_no_apps_detail">Le mode n’a rien à bloquer. Choisissez au moins une application.</string>
     <string name="gate_stopped_title">Surveillance arrêtée</string>
@@ -159,7 +159,7 @@
     <string name="blocker_subtitle">Un moment à l’écart avant le reste de la journée.</string>
     <string name="blocker_streak_none">Première journée de la série.</string>
     <string name="blocker_start">Commencer maintenant, %1$s</string>
-    <string name="blocker_already_done">Je l’ai déjà faite</string>
+    <string name="blocker_already_done">Je l’ai faite sans le téléphone</string>
     <string name="blocker_snooze">Plus tard (%1$d min)</string>
     <string name="blocker_session_title">Hitbodedout en cours</string>
     <string name="blocker_session_subtitle">Il reste %1$s. Le téléphone peut attendre.</string>
@@ -322,7 +322,7 @@
     <string name="music_remove">Retirer</string>
     <string name="music_off_short">Désactivée</string>
     <string name="music_off_summary">Aucune musique pendant les hitbodedout.</string>
-    <string name="music_none_summary">Aucun morceau dans la bibliothèque.</string>
+    <string name="music_none_summary">Aucun morceau pour l’instant.</string>
     <string name="music_on_summary">%1$s, volume %2$d %%</string>
     <string name="session_music_line">Musique : %1$s</string>
     <!-- Morceaux livres. Titres non traduits : ce sont des noms propres. -->
@@ -537,12 +537,12 @@
     <string name="start_duration">Durée</string>
     <string name="start_theme">Sujet</string>
     <string name="start_music">Musique</string>
-    <string name="start_focus">Avec Hachem</string>
+    <string name="start_focus">Je suis avec Hachem</string>
     <string name="start_music_off">aucune</string>
-    <string name="start_focus_on">activée</string>
-    <string name="start_focus_off">désactivée</string>
+    <string name="start_focus_on">le matin</string>
+    <string name="start_focus_off">non</string>
     <string name="start_focus_setup">à régler</string>
-    <string name="start_focus_stopped">arrêtée</string>
+    <string name="start_focus_stopped">arrêté</string>
     <string name="settings_name">Prénom</string>
     <string name="settings_name_hint">Pour que l’accueil vous salue. Il ne quitte pas le téléphone.</string>
     <string name="settings_name_empty">Non renseigné</string>
@@ -569,13 +569,13 @@
     <string name="onboarding_days">Jour après jour</string>
     <string name="onboarding_days_body">La série compte les jours de pratique d’affilée, et la semaine se lit d’un coup d’œil. Après chaque hitbodedout, une note peut rejoindre votre journal. Des rappels vous font signe à l’heure que vous choisissez.</string>
     <string name="onboarding_texts">Des textes pour prier</string>
-    <string name="onboarding_texts_body">Le Tikoun HaKlali, les Tehilim, le siddour, les Tefilot classées par sujet, une bibliothèque et des conseils pour la hitbodedout, à ouvrir quand vous voulez.</string>
+    <string name="onboarding_texts_body">Le Tikoun HaKlali, les Tehilim, le siddour, les Tefilot classées par sujet, des sources sur la hitbodedout et des conseils pour la hitbodedout, à ouvrir quand vous voulez.</string>
     <string name="onboarding_yours">À votre façon</string>
     <string name="onboarding_yours_body">Dans les réglages : la langue (français, anglais ou hébreu), les couleurs de l’écran, votre prénom et la durée habituelle d’une hitbodedout. La musique a sa propre section.</string>
     <string name="onboarding_gate">Le matin, avant tout le reste</string>
     <string name="onboarding_gate_body">Choisissez les applications qui attendront votre hitbodedout : en ouvrant l’une d’elles, vous verrez d’abord « Avez-vous fait votre hitbodedout ? ». Ce mode se règle dans les Réglages et se coupe quand vous voulez.</string>
     <string name="onboarding_adresse">Comment vous appeler ?</string>
-    <string name="onboarding_adresse_body">À la fin de chaque hitbodedout, l’application vous félicite. Choisissez le mot qui vous convient ; vous pourrez le changer dans les réglages.</string>
+    <string name="onboarding_adresse_body">À la fin de chaque hitbodedout, l’application vous félicite. Choisissez le mot qui vous convient : le personnage et l’icône de l’application le suivront. Vous pourrez le changer dans les réglages.</string>
     <string name="onboarding_rappel">Me le rappeler chaque jour</string>
     <string name="onboarding_rappel_heure">à %1$s</string>
     <string name="onboarding_rappel_heure_desc">Heure du rappel : %1$s</string>
@@ -950,7 +950,7 @@
         <item quantity="one">%1$d tsadik ce jour</item>
         <item quantity="other">%1$d tsadikim ce jour</item>
     </plurals>
-    <string name="hilloulot_afficher_detail">Sur la carte du jour, à l’accueil</string>
+    <string name="hilloulot_afficher_detail">Sous les horaires, à l’écran Zmanim</string>
     <string name="hilloulot_toucher">Touchez un nom pour lire sa biographie.</string>
     <string name="hilloulot_ouvrir_jour">Voir ce jour ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
@@ -1427,6 +1427,10 @@
     <string name="vol_erreur_service">service indisponible</string>
     <string name="vol_erreur_serveur">erreur du serveur %1$d</string>
     <string name="vol_direct_inactif">Le relais du suivi n’est pas encore en service dans cette version.</string>
+    <string name="vol_direct_activer_web">Services en ligne : route du vol</string>
+    <string name="vol_direct_activer_web_aide">Activés, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée.</string>
+    <string name="reglages_android_seulement">La barrière du matin (« Je suis avec Hachem ») et les rappels n’existent que dans l’application Android.</string>
+    <string name="reglage_libelle_valeur">%1$s : %2$s</string>
     <string name="vol_fiabilite_direct">Route recalée sur la position reçue d’OpenSky Network à %1$s (%2$s), puis grand cercle jusqu’à l’arrivée, à vitesse constante. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil.</string>
     <string name="vol_source_opensky">Données aéronautiques : OpenSky Network (opensky-network.org)</string>
     <string name="vol_rappels_titre">Rappels pendant le vol</string>

@@ -24,6 +24,21 @@ class DureeSeanceTest {
         assertNull(DureeSeance.lire("vingt"))
     }
 
+    /** La boîte « Durée réglable… » refuse ce qui sort de 1 à 240 au lieu de le ramener en silence (FACCUEIL-15). */
+    @Test
+    fun `la saisie hors bornes est refusee et non ramenee`() {
+        assertEquals(25, DureeSeance.valide(" 25 "))
+        assertEquals(1, DureeSeance.valide("1"))
+        assertEquals(240, DureeSeance.valide("240"))
+        assertNull(DureeSeance.valide("0"))
+        assertNull(DureeSeance.valide("241"))
+        assertNull(DureeSeance.valide("-5"))
+        assertNull(DureeSeance.valide(""))
+        assertNull(DureeSeance.valide("vingt"))
+        assertTrue("la boîte doit lire la saisie par valide()",
+            File("src/main/java/com/myhitbodedut/DureeSeance.kt").readText().contains("val minutes = valide(champ.text.toString())"))
+    }
+
     /** La même liste partout : accueil, réglages, et la durée réglable sur l'écran de séance. */
     @Test
     fun `chaque choix de duree passe par la meme liste`() {

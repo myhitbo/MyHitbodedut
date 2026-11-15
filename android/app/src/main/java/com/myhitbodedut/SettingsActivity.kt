@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.core.os.LocaleListCompat
@@ -146,12 +147,14 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.window_start).setOnClickListener {
             pickTime(Store.windowStart(this)) {
+                if (it == Store.windowEnd(this)) { Toast.makeText(this, R.string.window_identique, Toast.LENGTH_LONG).show(); return@pickTime }
                 Store.setWindow(this, it, Store.windowEnd(this))
                 refresh()
             }
         }
         findViewById<Button>(R.id.window_end).setOnClickListener {
             pickTime(Store.windowEnd(this)) {
+                if (it == Store.windowStart(this)) { Toast.makeText(this, R.string.window_identique, Toast.LENGTH_LONG).show(); return@pickTime }
                 Store.setWindow(this, Store.windowStart(this), it)
                 refresh()
             }
@@ -204,6 +207,14 @@ class SettingsActivity : AppCompatActivity() {
                 (getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager).cancelAll()
                 Store.reinitialiser(this)
                 StreakWidget.refresh(this)
+                ZmanimWidget.refresh(this)
+                // Les réglages effacés, mais le mode sombre et la langue de l'application vivent
+                // hors des préférences : sans ces deux lignes ils survivraient à « Tout effacer ».
+                // L'icône, elle, se remet d'elle-même à la prochaine sortie de l'application.
+                Apparence.appliquerMode(this)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    getSystemService(android.app.LocaleManager::class.java).applicationLocales = android.os.LocaleList.getEmptyLocaleList()
+                else AppCompatDelegate.setApplicationLocales(androidx.core.os.LocaleListCompat.getEmptyLocaleList())
                 startActivity(Intent(this, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
                 finish()
@@ -302,6 +313,8 @@ class SettingsActivity : AppCompatActivity() {
             }
             ligne.findViewById<Button>(R.id.permission_grant).apply {
                 isEnabled = !accordee
+                // « Accorder : Notifications » (FACCUEIL-12) : quatre « Accorder » de suite ne disaient rien.
+                contentDescription = getString(R.string.reglage_libelle_valeur, text, getString(autorisation.titre))
                 setOnClickListener { demander(autorisation) }
             }
             liste.addView(ligne)
@@ -422,6 +435,17 @@ class SettingsActivity : AppCompatActivity() {
         view.setOnCheckedChangeListener { _, value -> onChange(value) }
     }
 
+    /** Le premier texte d'une ligne qui ne soit pas un bouton : l'intitulé d'un bouton de valeur. */
+    private fun intituleDe(g: ViewGroup): CharSequence? {
+        for (i in 0 until g.childCount) {
+            val v = g.getChildAt(i)
+            if (v is Button) continue
+            if (v is TextView && !v.text.isNullOrBlank()) return v.text
+            if (v is ViewGroup) intituleDe(v)?.let { return it }
+        }
+        return null
+    }
+
     /** Le premier texte d'une ligne, hors l'interrupteur lui-même. */
     private fun libelleDe(g: ViewGroup, sauf: View): CharSequence? {
         for (i in 0 until g.childCount) {
@@ -434,8 +458,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun renderValues() {
-        findViewById<Button>(R.id.window_start).text = Store.formatMinutes(Store.windowStart(this))
-        findViewById<Button>(R.id.window_end).text = Store.formatMinutes(Store.windowEnd(this))
+        findViewById<Button>(R.id.window_start).text = Store.formatHeure(this, Store.windowStart(this))
+        findViewById<Button>(R.id.window_end).text = Store.formatHeure(this, Store.windowEnd(this))
         findViewById<Button>(R.id.snooze_length).text =
             Store.formatDuration(this, Store.snoozeMinutes(this))
         findViewById<Button>(R.id.target_length).text =
@@ -722,7 +746,7 @@ class SettingsActivity : AppCompatActivity() {
             { _, hour, minute -> onPicked(hour * 60 + minute) },
             (currentMinutes / 60) % 24,
             currentMinutes % 60,
-            true
+            android.text.format.DateFormat.is24HourFormat(this)
         ).show()
     }
 
@@ -791,6 +815,21 @@ class SettingsActivity : AppCompatActivity() {
             val e = v.getChildAt(i)
             if (rangee && e is Button && e.layoutParams.width == android.view.ViewGroup.LayoutParams.WRAP_CONTENT) {
                 e.maxWidth = (resources.displayMetrics.widthPixels * 0.45).toInt()
+            }
+            // TalkBack (FACCUEIL-12) : un bouton de valeur ne disait que sa valeur (« 15 min ») ;
+            // il dit « intitulé : valeur », lue au moment où le focus passe, la valeur ayant pu changer.
+            // L'intitulé peut être posé dans une colonne (titre et aide : prénom, objectif quotidien) ;
+            // un autre bouton de la ligne n'est jamais pris pour intitulé.
+            if (v is android.widget.LinearLayout && v.orientation == android.widget.LinearLayout.HORIZONTAL &&
+                e is Button && e !is android.widget.CompoundButton && intituleDe(v) != null) {
+                androidx.core.view.ViewCompat.setAccessibilityDelegate(e, object : androidx.core.view.AccessibilityDelegateCompat() {
+                    override fun onInitializeAccessibilityNodeInfo(host: View, info: androidx.core.view.accessibility.AccessibilityNodeInfoCompat) {
+                        super.onInitializeAccessibilityNodeInfo(host, info)
+                        val valeur = (host as? Button)?.text
+                        val libelle = (host.parent as? ViewGroup)?.let { intituleDe(it) }
+                        if (!valeur.isNullOrBlank() && !libelle.isNullOrBlank() && libelle != valeur) info.text = getString(R.string.reglage_libelle_valeur, libelle, valeur)
+                    }
+                })
             }
             bornerValeurs(e)
         }

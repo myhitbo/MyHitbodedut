@@ -23,7 +23,7 @@
     <string name="today_declared">Confirmed without a timer</string>
 
     <string name="section_practice">My practice</string>
-    <string name="section_gate_state">Mode status</string>
+    <string name="section_gate_state">Where “I am with Hashem” stands</string>
     <string name="section_gate">I am with Hashem</string>
     <string name="section_gate_hint">The apps you choose stay closed until the practice is done, and during a hitbodedut in progress.</string>
     <string name="section_rhythm">Rhythm</string>
@@ -71,13 +71,13 @@
     <string name="gate_stopped_action">Restart the mode</string>
     <string name="gate_session_detail">The apps you chose stay blocked until the hitbodedut ends.</string>
     <string name="gate_done_title">Day confirmed</string>
-    <string name="gate_done_detail">Nothing will be held back today, except during a hitbodedut in progress. The mode returns tomorrow.</string>
+    <string name="gate_done_detail">Nothing will be held back today, except during a hitbodedut in progress. It returns tomorrow.</string>
     <string name="gate_exempt_title">Rest day</string>
-    <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: the mode is silent and the streak stays intact.</string>
+    <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: it is silent and the streak stays intact.</string>
     <string name="gate_snoozed_title">Snoozed</string>
-    <string name="gate_snoozed_detail">You asked for a delay. The mode returns when it ends.</string>
+    <string name="gate_snoozed_detail">You asked for a delay. It returns when the delay ends.</string>
     <string name="gate_window_title">Outside the window</string>
-    <string name="gate_window_detail">The mode acts between %1$s and %2$s. Outside that, nothing is held back.</string>
+    <string name="gate_window_detail">It acts between %1$s and %2$s. Outside that, nothing is held back.</string>
 
     <string name="action_start_session">Start a %1$s hitbodedut</string>
     <string name="action_another_session">Another hitbodedut</string>
@@ -93,7 +93,8 @@
     <string name="action_later">Later</string>
     <string name="action_back">Back</string>
 
-    <string name="settings_window">Mode hours</string>
+    <string name="settings_window">“I am with Hashem” hours</string>
+    <string name="window_identique">The start and the end must differ.</string>
     <string name="settings_snooze">Snooze length</string>
     <string name="settings_target">Hitbodedut length</string>
     <string name="settings_daily_goal">Daily goal</string>
@@ -147,7 +148,7 @@
     <string name="blocker_subtitle">A moment alone before the rest of the day.</string>
     <string name="blocker_streak_none">First day of the streak.</string>
     <string name="blocker_start">Start now, %1$s</string>
-    <string name="blocker_already_done">I already did it</string>
+    <string name="blocker_already_done">Done without the phone</string>
     <string name="blocker_snooze">Later (%1$d min)</string>
     <string name="blocker_session_title">Hitbodedut in progress</string>
     <string name="blocker_session_subtitle">%1$s left. The phone can wait.</string>
@@ -301,7 +302,7 @@
     <string name="music_remove">Remove</string>
     <string name="music_off_short">Off</string>
     <string name="music_off_summary">No music during hitbodedut.</string>
-    <string name="music_none_summary">No track in the library.</string>
+    <string name="music_none_summary">No track yet.</string>
     <string name="music_on_summary">%1$s, volume %2$d%%</string>
     <string name="session_music_line">Music: %1$s</string>
     <string name="music_open_library">Open the music library</string>
@@ -317,7 +318,7 @@
     <string name="region_diaspora">Diaspora</string>
 
     <!-- Tips for Hitbodedut -->
-    <string name="tips_title">Tips for Hitbodedut</string>
+    <string name="tips_title">Tips for hitbodedut</string>
     <string name="tips_hint">Ten pointers, to begin and to keep going.</string>
     <string name="tips_open">Read the tips</string>
     <string name="tip_1_title">Choose a quiet, separate place</string>
@@ -443,10 +444,10 @@
     <string name="start_duration">Length</string>
     <string name="start_theme">Subject</string>
     <string name="start_music">Music</string>
-    <string name="start_focus">With Hashem</string>
+    <string name="start_focus">I am with Hashem</string>
     <string name="start_music_off">none</string>
-    <string name="start_focus_on">on</string>
-    <string name="start_focus_off">off</string>
+    <string name="start_focus_on">mornings</string>
+    <string name="start_focus_off">no</string>
     <string name="start_focus_setup">needs setup</string>
     <string name="start_focus_stopped">stopped</string>
     <string name="settings_name">First name</string>
@@ -475,13 +476,13 @@
     <string name="onboarding_days">Day after day</string>
     <string name="onboarding_days_body">The streak counts your days in a row, and the week shows at a glance. After each hitbodedut, a note can go into your journal. Reminders nudge you at the time you choose.</string>
     <string name="onboarding_texts">Texts to pray with</string>
-    <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, a library and tips for hitbodedut, ready whenever you are.</string>
+    <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, sources on hitbodedut and tips for hitbodedut, ready whenever you are.</string>
     <string name="onboarding_yours">Your way</string>
     <string name="onboarding_yours_body">In Settings: the language (French, English or Hebrew), the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
     <string name="onboarding_gate">In the morning, before everything else</string>
     <string name="onboarding_gate_body">Choose the apps that will wait for your hitbodedut: when you open one of them, you will first see “Have you done your hitbodedut?”. This mode is set up in Settings and can be turned off whenever you like.</string>
     <string name="onboarding_adresse">What should we call you?</string>
-    <string name="onboarding_adresse_body">At the end of each hitbodedut, the app congratulates you. Pick the word that fits you; you can change it in Settings.</string>
+    <string name="onboarding_adresse_body">At the end of each hitbodedut, the app congratulates you. Pick the word that fits you: the character and the app icon will follow. You can change it in Settings.</string>
     <string name="onboarding_rappel">Remind me every day</string>
     <string name="onboarding_rappel_heure">at %1$s</string>
     <string name="onboarding_rappel_heure_desc">Reminder time: %1$s</string>
@@ -900,7 +901,7 @@
         <item quantity="one">%1$d tzaddik on this day</item>
         <item quantity="other">%1$d tzaddikim on this day</item>
     </plurals>
-    <string name="hilloulot_afficher_detail">On the day card, on the home screen</string>
+    <string name="hilloulot_afficher_detail">Below the times, on the Zmanim screen</string>
     <string name="hilloulot_toucher">Tap a name to read the biography.</string>
     <string name="hilloulot_ouvrir_jour">See this day ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
@@ -1377,6 +1378,10 @@
     <string name="vol_erreur_service">service unavailable</string>
     <string name="vol_erreur_serveur">server error %1$d</string>
     <string name="vol_direct_inactif">The tracking relay is not in service yet in this version.</string>
+    <string name="vol_direct_activer_web">Online services: flight route</string>
+    <string name="vol_direct_activer_web_aide">When on, the magnifier 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
+    <string name="reglages_android_seulement">The morning gate (“I am with Hashem”) and the reminders exist only in the Android app.</string>
+    <string name="reglage_libelle_valeur">%1$s: %2$s</string>
     <string name="vol_fiabilite_direct">Route adjusted to the position received from OpenSky Network at %1$s (%2$s), then great circle to arrival, at constant speed. Zmanim of the point below the aircraft, at sea level, computed on the device.</string>
     <string name="vol_source_opensky">Aircraft data: OpenSky Network (opensky-network.org)</string>
     <string name="vol_rappels_titre">Reminders during the flight</string>

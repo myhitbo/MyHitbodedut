@@ -32,7 +32,7 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | Textes | Siddour, Tehilim, Tikoun haKlali, Likoutei Tefilot par sujet, 'hizouk, bibliothèque, livres, Halakha (Yalkout Yossef), hilloulot, recherche globale |
 | Calendrier | Zmanim (KosherJava), calendrier hébraïque, Birkat haLevana, alerte « Chabbat dans 3 h », boussole vers Jérusalem |
 | Vol | Zmanim et prières en vol, rappels (Tefilat haDerekh, Omer), **route d'un numéro de vol (adsbdb)** ; le suivi en direct (OpenSky) n'est pas dans la version Play tant qu'il n'y a pas de relais (§ 3.1) |
-| Système | 6 widgets, rappels quotidiens, « Ne pas déranger » pendant la séance, partage d'un jour en image, sauvegarde JSON, 3 langues (fr, en, he) |
+| Système | 5 widgets, rappels quotidiens, « Ne pas déranger » pendant la séance, partage d'un jour en image, sauvegarde JSON, 3 langues (fr, en, he) |
 
 **Hors périmètre** :
 
@@ -55,8 +55,8 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | `targetSdk` | **36** depuis le 29/10 (était 35) | **36** pour toute nouvelle app depuis le 31/08/2026 ; prolongation possible jusqu'au 01/11/2026 seulement | **Fait** — compilé et testé ; reste l'essai sur appareil (§ 2.1) |
 | `compileSdk` | 36, avec le plugin Android 8.11.1 (était 8.7.3) | ≥ `targetSdk` | **Fait** |
 | `minSdk` | 26 | aucune contrainte | OK |
-| Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB de 28,5 Mo construit le 29/10 |
-| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play bien moins lourde (2 morceaux) | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
+| Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB de 28,5 Mo construit le 29/10, avant l'ajout des 23 morceaux du 03/11 : la taille actuelle est celle de l'AAB que produit `play.yml` (FPRODUIT-10) |
+| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play bien moins lourde (26 morceaux, voir § 3.2 ; taille réelle : celle de l'AAB construit) | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
 | Bibliothèques natives | aucune `.so` | page mémoire 16 Ko exigée pour les `.so` ciblant API 35+ | Sans objet — vérifié |
 | Signature | clé de dev pour GitHub ; `play.yml` exige la clé d'envoi (secrets `PLAY_*`) et refuse un AAB signé par la clé de dev | clé d'envoi privée + Play App Signing | **Reste à faire par le propriétaire** : créer la clé et les secrets (§ 5.1, § 5.2) |
 | `versionCode` | `1 + github.run_number` | strictement croissant | OK, à garder |
@@ -220,7 +220,7 @@ confidentialité le décrivent (§ 6.1).
 
 ### 3.2 Droits sur la musique livrée **(bloquant à la revue)**
 
-33 morceaux sont embarqués, dont des enregistrements du Yanuka, d'Ishay Ribo,
+26 morceaux sont embarqués dans la version Play (56 dans l'APK GitHub), dont des enregistrements du Yanuka, d'Ishay Ribo,
 Motty Steinmetz, MBD (feuille de route, lignes 242–243). Les autorisations
 sont **déclarées** par le propriétaire (« j'ai obtenu les autorisations
 légales des ayants droit »), mais aucun écrit n'est dans le dépôt.
@@ -267,15 +267,16 @@ ils entrent dans l'app, version Play comprise, et dans la version web.
 Hors de la version Play ; le propriétaire décide de leur place dans la
 version GitHub, qui est elle aussi une diffusion.
 
-Audio de la version Play : environ 16 Mo (Yanuka 6,7 + המלך בשדה 9,7) au
-lieu de 130 Mo. Un morceau
+Audio de la version Play : 26 morceaux, 73,7 Mo (relevé par `web/build.mjs`, qui
+lit la même liste `MusiquePlay.kt`) ; les 16 Mo du 29/10 (Yanuka 6,7 + המלך בשדה
+9,7) sont dépassés depuis l'ajout du 03/11 (FPRODUIT-10). Un morceau
 retiré revient par simple mise à jour dès que son écrit existe ; si un
 niggoun s'avère être du Yanuka, il rentre sous le même accord. Pour cela, il
 faut retrouver les titres hébreux d'origine (fichiers sources reçus le
 22/09).
 
 **Mise en œuvre — faite le 29/10.** `main/res/raw` ne contient plus que les
-morceaux livrés par Play, déclarés dans `MusiquePlay.kt`. Les 31 autres sont
+morceaux livrés par Play, déclarés dans `MusiquePlay.kt`. Les 30 autres sont
 dans `src/musique_hors_play/` (fichiers et liste `MusiqueHorsPlay.kt`), que
 seule la construction GitHub ajoute ; avec `-Pplay=true`, Gradle prend
 `src/musique_play/`, où la même liste est vide. Vérifié sur l'AAB : il ne
@@ -680,7 +681,7 @@ libellés exacts de `values-en/strings.xml` : elle est dans
 décrit, tel que l'application l'affiche :
 
 1. premier lancement : « Skip » ferme la présentation ;
-2. barre du bas → **Settings** → carte **Mode status** → bouton **Preview the
+2. barre du bas → **Settings** → carte **Where “I am with Hashem” stands** → bouton **Preview the
    “I am with Hashem” screen now** (`action_preview_gate`) ;
 3. la première fois, la fenêtre de divulgation **Display over other apps** →
    **Continue** → accorder l'accès dans Android → revenir et toucher le bouton
@@ -689,7 +690,7 @@ décrit, tel que l'application l'affiche :
    EFFECT** ;
 5. pour la voir agir : carte **Permissions** → **Grant** (deux
    accès) ; carte **I am with Hashem** → interrupteur, **Choose apps**,
-   **Mode hours** autour de l'heure courante ; puis ouvrir l'application
+   **“I am with Hashem” hours** autour de l'heure courante ; puis ouvrir l'application
    choisie. Chabbat et Yom Tov : la barrière se tait par défaut (carte
    **Rhythm**).
 
@@ -730,7 +731,7 @@ local) :
       maintenant » n'ouvre rien
 - [ ] Réglages → « Règles de confidentialité » ouvre la page publique dans
       les trois langues
-- [ ] Les 6 widgets posés et mis à jour
+- [ ] Les 5 widgets posés et mis à jour
 - [ ] Export / import JSON entre l'édition GitHub et l'édition Play
 - [ ] Trois langues dans l'app, droite-à-gauche en hébreu
 - [ ] Tablette, fenêtre libre, Chromebook (écran tactile non requis)
@@ -793,7 +794,9 @@ et chacun doit rester inscrit les 14 jours.
    de suivi en direct (§ 3.1). Route adsbdb conservée.
 2. ~~**Musique**~~ — **tranché le 29/10** : la version Play livre le niggoun
    du Yanuka et המלך בשדה ; les 30 niggounim sans titre et Ishay Ribo
-   restent hors de Play (§ 3.2).
+   restent hors de Play (§ 3.2). Complété le 03/11 : Beyond (accord du 29/10)
+   et les 23 morceaux de נעם שפייר et יניר קילינסקי, soit les 26 de
+   `MusiquePlay.kt`.
 3. ~~**7 textes de licence inconnue**~~ — **tranché le 29/10** : domaine
    public, texte seul sans vocalisation (§ 3.3).
 4. ~~**Compte personnel ou organisation**~~ — **tranché le 29/10** : compte

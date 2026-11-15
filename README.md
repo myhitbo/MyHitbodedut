@@ -29,8 +29,8 @@ lendemain.
 **La séance.** Un minuteur tourne dans un service d'arrière-plan, pour que le
 téléphone puisse être posé. La durée est réglable, par défaut quinze minutes.
 La journée est validée à la fin de la séance ; on peut aussi la déclarer faite
-(« Je l’ai déjà faite » sur l’écran de garde, « Je l’ai faite sans le
-téléphone » à l’accueil). Si une application bloquée est ouverte pendant la
+(« Je l’ai faite sans le téléphone », sur l’écran de garde comme à l’accueil ;
+sur l’écran de garde, sans durée : la journée est validée à 0 minute). Si une application bloquée est ouverte pendant la
 séance, à n'importe quelle heure, l'écran rappelle le temps restant et ne
 propose que d'y retourner.
 
@@ -206,7 +206,7 @@ Pré-requis : JDK 17 et le SDK Android, plateforme 35.
 | Édition | Contenu | Permissions sensibles |
 | --- | --- | --- |
 | `MyHitbodedut.apk` | Tout, barrière du matin comprise | Affichage par-dessus les autres applications, accès aux données d'utilisation |
-| `MyHitbodedut-Light.apk` | Minuteur, journal, série, rappel, Shabbat, sauvegarde | Aucune |
+| `MyHitbodedut-Light.apk` | Tout sauf la barrière et le vol en ligne | Position (zmanim, GPS en vol), Ne pas déranger |
 
 L'édition légère existe pour une raison précise. Le couple affichage par-dessus
 les autres applications et accès aux données d'utilisation est exactement celui
