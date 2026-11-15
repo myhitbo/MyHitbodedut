@@ -3031,7 +3031,11 @@ function blocHilloula(iso) {
   const versHilloulot = () => { jourHilloulot = iso; rechercheHilloulot = ''; ouvrir('hilloulot'); };
   return [
     h('h3', { class: 'jour-sous-titre' }, tr.t('hilloula_titre')),
-    h('div', { class: 'jour-hilloula', lang: 'he', dir: 'rtl' }, ...liste.slice(0, 5).map((x) => h('div', {}, x.he)),
+    // Le nom traduit après l'hébreu, isolé, quand il existe (VueJour.blocHilloula, THILLOULOT-10).
+    h('div', { class: 'jour-hilloula', lang: 'he', dir: 'rtl' }, ...liste.slice(0, 5).map((x) => {
+      const traduit = nomTraduitHilloula(x);
+      return h('div', {}, x.he, traduit ? [' (', h('bdi', { lang: tr.langue }, traduit), ')'] : null);
+    }),
       reste > 0 ? h('button', { class: 'jour-hilloula-reste lien-bouton', onclick: versHilloulot }, `${tr.p('hilloula_autres', reste)} ›`) : null),
     h('button', { class: 'jour-lien lien-bouton', onclick: versHilloulot }, tr.t('hilloulot_tout')),
   ];
@@ -3129,7 +3133,7 @@ function ecranHilloulot() {
     const decale = (n) => { const [a, m, d] = iso.split('-').map(Number); jourHilloulot = new Date(Date.UTC(a, m - 1, d + n, 12)).toISOString().slice(0, 10); rendre(); };
     const liste = hilloulotPour(table, iso, israel, ashkenaz);
     chargeBiosHilloulot(clesHilloulotPour(iso, israel, ashkenaz));
-    const detaillees = liste.some((x) => x.t || x.w || x.i);
+    const detaillees = liste.some((x) => x.t || x.b?.length || x.w || x.i);
     corps = [
       h('div', { class: 'carte hilloulot-jour' },
         h('div', { class: 'mois-tete' },

@@ -40,6 +40,10 @@ CLES = {
     "Ha'Azinu": "HAAZINU", "V'Zot HaBerachah": "VZOS_HABERACHA", "Chanukah": "HANOUKA",
 }
 
+# Titres de sections fautifs dans l'export, affichés dans la ligne de source de chaque halakha
+# (audit du 12/11/2026, THILLOULOT-17) : « תזריע » précédé d'une espace, « בא"ח שנה שניה  בהר ».
+TITRES = {("1", "TAZRIA_METZORA"): "תזריע־מצורע", ("2", "BEHAR_BECHUKOSAI"): "בהר־בחוקותי"}
+
 
 def propre(s):
     s = " ".join(s) if isinstance(s, list) else s
@@ -63,7 +67,7 @@ def construit(export):
             if not h:
                 continue
             total += len(h)
-            sec = {"he": noms[annee][p], "h": h}
+            sec = {"he": TITRES.get((str(i), CLES[p]), noms[annee][p]), "h": h}
             if CLES[p] == "HANOUKA":
                 sortie["hanouka"] = sec
             else:

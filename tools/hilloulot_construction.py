@@ -63,6 +63,9 @@ CORRECTIONS = [
     ("4-20", "חכם אברהם חיים נאה", None, 'ה\'תשי"ד'),
     ("adar-25", "רבי בצלאל יאיר דנציגר", None, 'ה\'תרצ"ד'),
     ("3-30", "רבי יחיאל יעקב הופשטיין", None, 'ה\'תרכ"ו'),
+    # THILLOULOT-12 : 5690 n'est pas embolismique (la notice dit « י״ג באדר ») ; un 30 Adar n'existe qu'en Adar I.
+    ("adar1-13", "הרב חיים יעקב נפתלי זילברברג", "adar-13", None),
+    ("adar-30", "חכם ד\"ר דוד פראטו", "adar1-30", None),
 ]
 # Gardé tel quel, avec raison : « רבי יחיאל מיכל מנמירוב » (20 Sivan), date traditionnellement liée au massacre.
 
@@ -293,6 +296,69 @@ def espaces(texte):
     return PONCTUATION_COLLEE.sub(r"\1 ", texte)
 
 
+# Résidus des biographies MyTzadik / המאיר לארץ (audit du 12/11/2026, THILLOULOT-06, -08, -11) : marqueurs
+# de liens « (ק1/ק2) », « [להאזנה] », crédits de photos qui n'apparaissent pas dans l'application,
+# dédicaces, et coordonnées personnelles de tiers (courriel, téléphone, adresse) : on coupe du
+# marqueur à la fin de la ligne, au lieu de supprimer la ligne entière.
+# Relecture du 15/11 : la prose reste. « באדיבות » seul n'est pas un crédit dans « באדיבותו » ni dans
+# « התייחס באדיבות ובמאור פנים » ; « לעילוי נשמת » n'est une dédicace qu'en tête de ligne, après
+# « תמונת הציון מפורסמת », ou suivi de près d'un « ז"ל » (« להדליק נר לעילוי נשמתו » reste) ; la tête
+# du crédit (« תמונת הציון », « התמונה »), seule sur la ligne d'avant, et la suite d'une dédicace sur
+# plusieurs lignes partent avec lui ; seules les lignes coupées perdent leur ponctuation finale.
+LIENS_SOURCE = re.compile(r"\s*\(ק\d*(?:/ק\d*)*\)|\s*\[ל(?:האזנה|צפייה|קריאה)\]")
+TETE_CREDIT = r"(?:ה?תמונ(?:ה|ות|ת)|הצילומ(?:ים)?|צילום|המידע)"
+ADIVOUT = r"באדיבות(?!ו)(?!\s+וב)"
+CREDIT = re.compile(rf"{TETE_CREDIT}[^\n.!?]{{0,80}}?{ADIVOUT}|{ADIVOUT}")
+TNTSBH = r"ת\. ?נ\. ?צ\. ?ב\. ?ה"
+# « לזכות » : seul sur sa ligne (« לזכות ולהצלחת »), ou collé au nom (« לזכותישראל ינון בן דוד ») ;
+# « לזכותו של מרן », « לזכותי » restent.
+DEDICACE = re.compile(rf"{TETE_CREDIT}[^\n.]{{0,40}}?לעילוי נשמת|^\s*לעילוי נשמת"
+                      rf"|לעילוי נשמת(?=[^\n.]{{0,50}}?(?:ז\"ל|ע\"ה|{TNTSBH}))"
+                      r"|^\s*לזכות(?:\s+ול[א-ת]+)?\s*$|לזכות(?=[א-ת][^\n.]{0,30}?\s(?:בן|בת)[\s-])")
+SUITE_DEDICACE = re.compile(rf"^\s*(?:ש?נפטר|שיום|ו?נטמנ|באדיבות|{TNTSBH}|[^\n]{{0,40}}ז\"ל"
+                            r"|ובני ביתו|לשפע|להצלחת|[^\n]{0,40}\s(?:בן|בת)[\s-])")
+SUITE_CREDIT = re.compile(r"^\s*(?:מחבר הספר|הרב הראשי ל)")
+TETE_SEULE = re.compile(rf"^\s*{TETE_CREDIT}(?:\s+\S+){{0,4}}\s*$")
+CONTACT = re.compile(r"(?<![א-ת])(?:דוא\"ל|דוא״ל|טלפון|טל['׳]|טל/פקס|טל-פקס|סלולר|סלולאר)\s*[:.]?\s*(?=[\d+@A-Za-z-])"
+                     r"|WhatsApp|וואטסאפ|סלולאר|להעברת שמות|חייגו|ת\. ?ד\. ?\d")
+COURRIEL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+TELEPHONE = re.compile(r"(?<![\d-])(?:\+?972|0\d{1,2})[- ]?\d[\d -]{5,}\d")
+COLLES = re.compile(r"(?<=ז\"ל)(?=[א-ת])")
+
+
+def nettoie_bio(texte):
+    sortie, suite = [], None
+    for ligne in COLLES.sub(" ", LIENS_SOURCE.sub("", texte)).split("\n"):
+        if suite is not None and suite.match(ligne):
+            continue
+        suite, coupe, avant = None, None, ligne
+        for motif in (CREDIT, DEDICACE, CONTACT):
+            m = motif.search(ligne)
+            if m and (coupe is None or m.start() < coupe[0]):
+                coupe = (m.start(), motif)
+        if coupe:
+            suite = SUITE_DEDICACE if coupe[1] is DEDICACE else SUITE_CREDIT
+            ligne = ligne[:coupe[0]]
+            if not ligne.strip() and sortie and TETE_SEULE.match(sortie[-1]):
+                sortie.pop()
+        ligne = TELEPHONE.sub("", COURRIEL.sub("", ligne))
+        if ligne != avant:
+            ligne = ligne.rstrip(" ,;:-–")
+        sortie.append(ligne if ligne.strip() else "")
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(sortie)).strip()
+
+
+def annee_normalisee(a):
+    """Formes fautives des années hébraïques (audit du 12/11/2026, THILLOULOT-18) : « התר"ץ » → « ה'תר"ץ »,
+    « הש"ס » → « ה'ש"ס », « תרח"ץ » → « תרצ"ח ». Les autres formes sont laissées telles quelles."""
+    a = a.strip()
+    if a == 'תרח"ץ':
+        return 'תרצ"ח'
+    if a == 'הש"ס':
+        return "ה'ש\"ס"
+    return re.sub(r"^ה(ת[א-ת]*\"[א-ת])$", r"ה'\1", a)
+
+
 def sources_autorisees(jours):
     """MyTzadik et המאיר לארץ (12/10) : reprise autorisée avec mention, accord reçu par le
     propriétaire de l'app. Leur biographie, mot pour mot, s'ajoute au tsaddik du même jour
@@ -329,7 +395,7 @@ def sources_autorisees(jours):
             cle = cle_de(e.get("date") or "")
             if not cle:
                 continue
-            bio = sans_balisage(e.get("bio") or "")
+            bio = nettoie_bio(sans_balisage(e.get("bio") or ""))
             x, _ = apparier(e["nom"], cle)
             if x is None:
                 x = {"he": e["nom"].strip(), "a": "", "s": ""}
@@ -481,6 +547,9 @@ def main():
     # entrée par hilloula, dans le même ordre : ses biographies, ou 0.
     bios = {}
     for cle, liste in sortie["jours"].items():
+        for x in liste:
+            if x.get("a"):
+                x["a"] = annee_normalisee(x["a"])
         ligne = [x.pop("b", 0) for x in liste]
         if any(ligne):
             bios[cle] = ligne

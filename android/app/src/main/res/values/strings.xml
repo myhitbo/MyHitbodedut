@@ -954,7 +954,7 @@
         <item quantity="other">%1$d tsadikim ce jour</item>
     </plurals>
     <string name="hilloulot_afficher_detail">Sous les horaires, à l’écran Zmanim</string>
-    <string name="hilloulot_toucher">Touchez un nom pour lire sa biographie.</string>
+    <string name="hilloulot_toucher">Touchez un nom pour lire sa biographie (en hébreu).</string>
     <string name="hilloulot_ouvrir_jour">Voir ce jour ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
     <string name="halakha_title">Halakha du jour</string>
@@ -962,7 +962,7 @@
     <string name="halakha_recherche">Rechercher dans la halakha</string>
     <string name="halakha_aucune">Pas de halakha pour ce jour</string>
     <string name="halakha_tout">Toute la halakha du jour ›</string>
-    <string name="halakha_livre">Yalkout Yossef, Kitsour Choul’han Aroukh</string>
+    <string name="halakha_livre">Yalkout Yossef, Kitsour Choul’han Aroukh (coutume séfarade)</string>
     <string name="halakha_note">Texte original en hébreu, verbatim.</string>
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">Mazal tov !</string>

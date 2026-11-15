@@ -904,7 +904,7 @@
         <item quantity="other">%1$d tzaddikim on this day</item>
     </plurals>
     <string name="hilloulot_afficher_detail">Below the times, on the Zmanim screen</string>
-    <string name="hilloulot_toucher">Tap a name to read the biography.</string>
+    <string name="hilloulot_toucher">Tap a name to read the biography (in Hebrew).</string>
     <string name="hilloulot_ouvrir_jour">See this day ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
     <string name="halakha_title">Halacha of the day</string>
@@ -912,7 +912,7 @@
     <string name="halakha_recherche">Search the halacha</string>
     <string name="halakha_aucune">No halacha for this day</string>
     <string name="halakha_tout">The whole halacha of the day ›</string>
-    <string name="halakha_livre">Yalkut Yosef, Kitzur Shulchan Aruch</string>
+    <string name="halakha_livre">Yalkut Yosef, Kitzur Shulchan Aruch (Sephardic custom)</string>
     <string name="halakha_note">Original Hebrew text, verbatim.</string>
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">Mazal tov!</string>
