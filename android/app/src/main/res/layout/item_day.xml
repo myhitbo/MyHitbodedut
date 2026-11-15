@@ -11,7 +11,7 @@
     android:layout_marginHorizontal="0dp"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingVertical="6dp">
+    android:paddingVertical="2dp">
 
     <TextView
         android:id="@+id/day_label"
@@ -22,8 +22,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginTop="2dp">
+        android:layout_height="38dp">
 
         <View
             android:layout_width="match_parent"
@@ -45,7 +44,7 @@
         android:id="@+id/day_mark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="1dp"
         android:fontFeatureSettings="tnum"
         android:textColor="?attr/mhInk"
         android:textSize="14sp"

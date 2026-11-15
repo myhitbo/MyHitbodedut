@@ -24,6 +24,13 @@
 > - **Zmanim et Réglages** ne sont plus des onglets : la date hébraïque et la roue, en tête du Jour ;
 > - **la fin de séance tient sur l'écran du bravo** : l'humeur d'une touche, puis la gratitude,
 >   la chose à travailler et la note ; « Enregistrer » ou le retour inscrivent ce qui a changé.
+>
+> **Mise à jour du 14/11/2026 : le Jour suit le ciel.** Au creux des anneaux, le hassid se tient
+> dans le ciel du moment (aube, plein jour, coucher, nuit), d'après les zmanim du lieu ou, sans
+> lieu, l'heure ; le haut du Jour en prend la teinte, l'icône de la date aussi. La semaine
+> devient sept lanternes : allumée quand la hitbodedout est faite, cerclée de la marque
+> aujourd'hui, éteinte sinon ; les bougies de Chabbat le samedi. Le numéro du jour reste sous
+> chaque lanterne.
 
 Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus dans les fichiers `strings.xml` d'Android (fr, en, he) et n'ont pas été retraduits. Le texte qui les relie est une rédaction, pas une traduction vérifiée : en hébreu, il reste à faire relire.
 

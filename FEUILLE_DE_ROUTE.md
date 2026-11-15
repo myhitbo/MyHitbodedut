@@ -17,14 +17,18 @@ sont des décisions, pas des oublis.
 ## Refonte de la navigation (13/11/2026)
 
 Demandée le 12/11 : « redesigner l'app en proposant des changements d'emplacement, de
-présentation et de plan ». Cinq étapes proposées ; les deux premières sont construites, sur
+présentation et de plan ». Cinq étapes proposées ; les trois premières sont construites, sur
 Android et sur le web.
 
 1. **Fait** — trois lieux (Le Jour, Les Livres, Le Chemin), la barre de départ et son volet,
    le rayonnage des Livres, Zmanim et Réglages en tête du Jour.
 2. **Fait** — la fin de séance sur un seul écran : bravo, humeur, gratitude, chose à
    travailler, note.
-3. **Reste** — le fond du Jour selon l'heure, la semaine en lanternes.
+3. **Fait (14/11)** — le Jour suit le ciel : la plaque au creux des anneaux devient une
+   fenêtre sur l'aube, le plein jour, le coucher ou la nuit, d'après les zmanim du lieu (sans
+   lieu : l'heure) ; le haut de l'écran en prend la teinte, l'icône de la date suit ; la nuit,
+   le 'hassid se tient dans le rond de lumière d'une lanterne. La semaine devient sept
+   lanternes sur l'horizon, et les bougies de Chabbat le samedi.
 4. **Reste** — Le Chemin en sentier par mois hébraïque (aujourd'hui : chiffres, mois en
    barres, et trois entrées).
 5. **Reste** — la séance sans chiffres (soleil ou bougie), le 'hizouk en tiroir.

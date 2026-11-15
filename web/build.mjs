@@ -76,7 +76,7 @@ mkdirSync(join(DIST, 'icones'), { recursive: true });
 // Trois onglets depuis la refonte du 13/11 (Le Jour, Les Livres, Le Chemin) ; la roue des
 // réglages, le croissant de la date et la flèche de la barre de départ sont en tête du Jour.
 const onglets = ['ic_nav_today', 'ic_nav_texts', 'ic_nav_chemin'];
-for (const nom of [...onglets.flatMap((n) => [`${n}_off`, `${n}_on`]), 'ic_chevron', 'ic_nav_settings_off', 'ic_ciel', 'ic_chevron_haut']) {
+for (const nom of [...onglets.flatMap((n) => [`${n}_off`, `${n}_on`]), 'ic_chevron', 'ic_nav_settings_off', 'ic_ciel', 'ic_ciel_aube', 'ic_ciel_jour', 'ic_ciel_coucher', 'ic_chevron_haut']) {
   const xml = readFileSync(join(RES, 'drawable', `${nom}.xml`), 'utf8');
   const vue = xml.match(/android:viewportWidth="([\d.]+)"[\s\S]*?android:viewportHeight="([\d.]+)"/);
   const chemins = [...xml.matchAll(/<path\b([\s\S]*?)\/>/g)].map(([, attrs]) => {

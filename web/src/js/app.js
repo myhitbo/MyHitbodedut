@@ -24,6 +24,7 @@ import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHa
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
 import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
+import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
 import * as Boussole from './boussole.js';
 import * as Tikkun from './tikkun.js';
@@ -420,9 +421,12 @@ function compter(el, cible, texte) {
 function remplirPlaque(btn) {
   if (facePlaque === 'hassid') {
     btn.setAttribute('aria-label', tr.t('rings_character_hint'));
-    btn.replaceChildren(h('img', { src: `img/${salutation(store.record()?.faite === true)}.webp`, alt: '' }));
+    // Le hassid se tient dans le ciel du moment (14/11) ; les chiffres gardent le disque clair.
+    btn.classList.add('avec-ciel');
+    btn.replaceChildren(fenetreCiel(cielMaintenant()), h('img', { src: `img/${salutation(store.record()?.faite === true)}.webp`, alt: '' }));
     return;
   }
+  btn.classList.remove('avec-ciel');
   const c = contenuFace(facePlaque);
   const anneau = Plaque.anneau(facePlaque);
   const valeur = h('div', { class: `face-valeur${anneau ? ` valeur-${anneau}` : ''}` }, c.texte(c.cible));
@@ -464,6 +468,91 @@ function tournerPlaque(vers) {
   btn.classList.remove('entree');
   btn.classList.add('sortie');
   apresAnimation(btn, 'plaque-sortie', changer);
+}
+
+// --- Le ciel du Jour (étape 3 de la refonte, 14/11 ; CielDuJour.kt, CielDessin.kt) -------
+
+/** Le ciel du moment : à l'heure du lieu des zmanim s'il est réglé, sinon à celle du téléphone. */
+function cielMaintenant() {
+  const maintenant = new Date();
+  const lieu = store.lieu();
+  if (!lieu) return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
+  try {
+    const z = Object.fromEntries(zmanimDuJour(lieu, jourLieu(maintenant)).map((x) => [x.cle, x.instant]));
+    return Ciel.phase(maintenant, z, heureLieu(maintenant));
+  } catch {
+    return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
+  }
+}
+
+/**
+ * La fenêtre ronde au creux des anneaux : le ciel du moment, l'astre, la colline du champ où
+ * l'on sort, et la nuit le rond de lumière de la lanterne où se tient le hassid (la lueur
+ * cache aussi le liseré clair du détourage sur le sombre).
+ */
+let numeroCiel = 0;
+function fenetreCiel(phase) {
+  const c = Ciel.PALETTES[phase];
+  // Des identifiants propres à chaque dessin : la plaque se redessine, l'ancien peut traîner.
+  const n = ++numeroCiel;
+  const svg = s('svg', { class: 'ciel', viewBox: '0 0 188 188', preserveAspectRatio: 'xMidYMid slice', 'aria-hidden': 'true' });
+  const defs = s('defs');
+  const degrade = s('linearGradient', { id: `ciel-${n}`, x1: 0, y1: 0, x2: 0, y2: 1 });
+  [[0, c.haut], [0.55, c.milieu], [1, c.horizon]].forEach(([o, couleur]) => degrade.append(s('stop', { offset: o, 'stop-color': couleur })));
+  defs.append(degrade);
+  svg.append(defs, s('rect', { width: 188, height: 188, fill: `url(#ciel-${n})` }));
+  if (phase === 'nuit') {
+    const etoiles = s('g', { fill: '#FFFDF0' });
+    Ciel.ETOILES.forEach(([x, y, r]) => etoiles.append(s('circle', { cx: x, cy: y, r })));
+    const masque = s('mask', { id: `croissant-${n}` });
+    masque.append(s('rect', { width: 188, height: 188, fill: '#FFFFFF' }), s('circle', { cx: 146.7, cy: 34.5, r: 14, fill: '#000000' }));
+    defs.append(masque);
+    svg.append(etoiles, s('circle', { cx: 139, cy: 38, r: 14, fill: c.astre, mask: `url(#croissant-${n})` }));
+  } else {
+    const [x, y, r, lueur] = Ciel.ASTRES[phase];
+    const halo = s('radialGradient', { id: `astre-${n}` });
+    halo.append(s('stop', { offset: 0, 'stop-color': c.lueur, 'stop-opacity': 0.85 }), s('stop', { offset: 1, 'stop-color': c.lueur, 'stop-opacity': 0 }));
+    defs.append(halo);
+    svg.append(s('circle', { cx: x, cy: y, r: lueur, fill: `url(#astre-${n})` }), s('circle', { cx: x, cy: y, r, fill: c.astre }));
+    if (phase === 'jour') {
+      const nuages = s('g', { fill: '#FFFFFF', 'fill-opacity': 0.85 });
+      Ciel.NUAGES.forEach(([cx, cy, rx, ry]) => nuages.append(s('ellipse', { cx, cy, rx, ry })));
+      svg.append(nuages);
+    }
+  }
+  svg.append(s('path', { d: Ciel.COLLINE, fill: c.colline }));
+  if (phase === 'nuit') {
+    const lanterne = s('radialGradient', { id: `lanterne-${n}` });
+    [[0, 1], [0.5, 0.8], [1, 0]].forEach(([o, a]) => lanterne.append(s('stop', { offset: o, 'stop-color': '#FFECBA', 'stop-opacity': a })));
+    defs.append(lanterne);
+    svg.append(s('circle', { cx: 94, cy: 94, r: 117, fill: `url(#lanterne-${n})` }));
+  }
+  return svg;
+}
+
+/**
+ * Une lanterne de la semaine (14/11) : allumée quand la hitbodedout est faite, qui attend
+ * aujourd'hui, éteinte sinon ; le samedi chômé, les deux bougies de Chabbat. Les couleurs
+ * viennent de la feuille de style (app.css, « La semaine en lanternes »).
+ */
+function lanterne(etat) {
+  const svg = s('svg', { class: 'lanterne', viewBox: '0 0 28 36', width: 28, height: 36, 'aria-hidden': 'true' });
+  if (etat === 'chabbat') {
+    svg.append(
+      s('path', { class: 'flamme', d: 'M10 6.5C11.8 8.6 11.6 10.8 10 12C8.4 10.8 8.2 8.6 10 6.5ZM18 6.5C19.8 8.6 19.6 10.8 18 12C16.4 10.8 16.2 8.6 18 6.5Z' }),
+      s('path', { class: 'cire', d: 'M8.5 13h3a.5.5 0 0 1 .5.5V30H8V13.5a.5.5 0 0 1 .5-.5ZM16.5 13h3a.5.5 0 0 1 .5.5V30h-4V13.5a.5.5 0 0 1 .5-.5Z' }),
+      s('path', { class: 'socle', d: 'M7 30h14a2 2 0 0 1 0 4H7a2 2 0 0 1 0-4Z' }));
+    return svg;
+  }
+  svg.append(...[
+    s('path', { class: 'anse', d: 'M10 7a4 4 0 0 1 8 0' }),
+    s('path', { class: 'toit', d: 'M6.5 12L14 6.5L21.5 12Z' }),
+    s('path', { class: 'verre', d: 'M11 12h6a3.5 3.5 0 0 1 3.5 3.5v11a3.5 3.5 0 0 1-3.5 3.5h-6a3.5 3.5 0 0 1-3.5-3.5v-11A3.5 3.5 0 0 1 11 12Z' }),
+    etat === 'allumee' ? s('path', { class: 'flamme', d: 'M14 15.5C16.8 18.8 16.3 22.4 14 24.4C11.7 22.4 11.2 18.8 14 15.5Z' }) : null,
+    etat === 'aujourdhui' ? s('path', { class: 'meche', d: 'M14 21.5v3' }) : null,
+    s('path', { class: 'socle', d: 'M8 30h12a2 2 0 0 1 0 4H8a2 2 0 0 1 0-4Z' }),
+  ].filter(Boolean));
+  return svg;
 }
 
 function plaqueAccueil() {
@@ -524,12 +613,13 @@ function panneauAujourdhui() {
   // En tête du Jour (13/11) : la date hébraïque ouvre le ciel (zmanim, calendrier, hilloulot,
   // boussole), la roue les réglages. Les deux étaient des onglets.
   const dateHebraique = jourJuif(isoLocal(new Date()), store.inIsrael(), mukafChoma()).dateHebraique;
+  const ciel = cielMaintenant();
 
   // Trois blocs : en-tête, anneaux, actions. Ils s'empilent ; sur un
   // téléphone couché, les anneaux passent à côté (app.css, « Téléphone couché »).
   return h('div', { class: 'contenu accueil' }, h('div', { class: 'accueil-tete' },
     h('div', { class: 'jour-entete' },
-      h('button', { type: 'button', class: 'puce-ciel', 'aria-label': tr.t('jour_ciel', dateHebraique), onclick: () => ouvrir('zmanim') },
+      h('button', { type: 'button', class: 'puce-ciel', 'data-ciel': ciel, 'aria-label': tr.t('jour_ciel', dateHebraique), onclick: () => ouvrir('zmanim') },
         h('span', { class: 'icone-ciel', 'aria-hidden': 'true' }), h('span', { lang: 'he', dir: 'rtl' }, dateHebraique), h('span', { class: 'chevron', 'aria-hidden': 'true' })),
       h('button', { type: 'button', class: 'roue-reglages', 'aria-label': tr.t('settings_title'), onclick: () => ouvrir('reglages') })),
     prenom ? h('div', { class: 'salut' }, tr.t(Salutation.cle(new Date().getHours()), prenom)) : null,
@@ -566,7 +656,9 @@ function panneauAujourdhui() {
       // Un jour fait touché montre sa durée à la place du ✓ (14/10) ; touché encore, le ✓ revient.
       const minutes = store.record(j.date)?.minutes ?? 0;
       const montre = j.done && joursMontres.has(j.date);
-      const marque = montre ? JaugeSemaine.dureeCourte(minutes) : j.done ? '✓' : repos ? tr.t('week_shabbat_mark') : j.exempt ? '—' : String(Number(j.date.slice(8)));
+      // La semaine en lanternes (14/11) : la lanterne dit si c'est fait ; le numéro reste dessous.
+      const marque = montre ? JaugeSemaine.dureeCourte(minutes) : j.exempt && !j.done && !repos ? '—' : String(Number(j.date.slice(8)));
+      const etat = j.done ? 'allumee' : repos ? 'chabbat' : !j.exempt && j.date === store.today() ? 'aujourdhui' : 'eteinte';
       const etiquette = j.done ? `${tr.t('week_done')} · ${tr.duree(minutes)}` : repos ? tr.t('settings_shabbat')
         : j.exempt ? tr.t('gate_exempt_title') : tr.t('week_todo');
       const classe = ['jour', j.done ? 'fait' : j.exempt ? 'exempte' : '', repos && !j.done ? 'repos' : '',
@@ -579,6 +671,7 @@ function panneauAujourdhui() {
       return h(ouvrable ? 'button' : 'div', { class: `${classe}${montre ? ' montre-duree' : ''}`,
         ...(ouvrable ? { type: 'button', onclick: () => ajoutTemps(j.date, j.done ? bascule : null) } : { role: 'img' }), 'aria-label': nom },
         h('span', { class: 'nom', 'aria-hidden': 'true' }, nomJour.format(new Date(`${j.date}T12:00:00Z`))),
+        h('span', { class: `lanterne-pied ${etat}`, 'aria-hidden': 'true' }, lanterne(etat)),
         h('span', { class: 'marque-jour', 'aria-hidden': 'true' }, marque));
     })),
 
@@ -5498,7 +5591,7 @@ function rendre() {
   else if (ecran === 'livres') app.append(ecranLivres());
   else if (ecran === 'source') app.append(ecranSource());
   else {
-    app.append(h('div', { class: 'ecran avec-onglets' },
+    app.append(h('div', { class: 'ecran avec-onglets', 'data-ciel': onglet === 'aujourdhui' ? cielMaintenant() : null },
       h('div', { class: 'corps-onglets' },
         h('div', { class: 'defile' }, onglet === 'textes' ? panneauTextes() : onglet === 'chemin' ? panneauChemin() : panneauAujourdhui()),
         barreDepart()),
@@ -5558,6 +5651,13 @@ async function demarrer() {
   rendre();
   // Le premier lancement, ou une présentation qui a changé depuis (Onboarding.VERSION).
   if (store.onboardedVersion() < PRESENTATION_VERSION) presentation();
+  // Le Jour resté ouvert passe de l'aube au jour, du coucher à la nuit (14/11), sans attendre
+  // un retour sur l'application ; pas sous une feuille ouverte.
+  setInterval(() => {
+    const jour = app.querySelector('.ecran[data-ciel]');
+    if (!jour || document.hidden || document.querySelector('.voile')) return;
+    if (jour.dataset.ciel !== cielMaintenant()) rendre();
+  }, 60000);
   // Revenir à l'application redessine l'écran : un autre jour, une séance
   // arrivée à son terme, le décompte qui a continué pendant le sommeil.
   let cacheA = 0;

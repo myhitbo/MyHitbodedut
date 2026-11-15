@@ -24,7 +24,7 @@
     <path
         android:fillColor="#FFF4EEDF"
         android:pathData="M8.5,13h3a0.5,0.5 0,0 1,0.5 0.5v16.5h-4v-16.5a0.5,0.5 0,0 1,0.5 -0.5ZM16.5,13h3a0.5,0.5 0,0 1,0.5 0.5v16.5h-4v-16.5a0.5,0.5 0,0 1,0.5 -0.5Z"
-        android:strokeColor="?attr/mhLine"
+        android:strokeColor="?attr/mhMuted"
         android:strokeWidth="1" />
     <path
         android:fillColor="?attr/mhBrand"

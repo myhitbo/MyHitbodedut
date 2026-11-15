@@ -36,7 +36,7 @@ const DONNEES = {
 };
 const MAINTENANT = new Date('2026-09-29T09:00:00').getTime();
 
-async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'vert', prenom = '', ecran = '', onglet = null, adresse = null, actions = null, calme = false, extra = {} }) {
+async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'vert', prenom = '', ecran = '', onglet = null, adresse = null, actions = null, calme = false, extra = {}, heure = null }) {
   if (process.env.SEUL && !nom.startsWith(process.env.SEUL)) return;
   const contexte = await navigateur.newContext({
     viewport: { width: LARGEUR, height: HAUTEUR }, deviceScaleFactor: 2, colorScheme: mode === 'sombre' ? 'dark' : 'light',
@@ -73,7 +73,7 @@ async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'v
     const d = new Date(); d.setDate(d.getDate() - d.getDay() - 7);
     const vu = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     localStorage.setItem('myhitbodedut', JSON.stringify({ bilan_vu: vu, ...JSON.parse(prefs) }));
-  }, { donnees: DONNEES, prefs, maintenant: MAINTENANT });
+  }, { donnees: DONNEES, prefs, maintenant: heure ? new Date(`2026-09-29T${heure}:00`).getTime() : MAINTENANT });
   if (moteur === 'webkit') {
     // WebKit sous Linux lit l'audio par GStreamer, que ni Safari ni l'iPhone
     // n'emploient, et la page s'y fige par moments à l'arrêt d'un morceau.
@@ -169,6 +169,15 @@ await capture('accueil-fr-durees', { langue: 'fr', actions: async (p) => { const
 await capture('accueil-fr-ajout-temps', { langue: 'fr', actions: (p) => p.locator('button.jour:not(.fait)').first().click() });
 await capture('accueil-fr-sable-violet', { langue: 'fr', fond: 'sable', accent: 'violet', prenom: 'Hillel' });
 await capture('textes-he', { langue: 'he', onglet: 'textes' });
+// Le Jour suit le ciel (14/11) : sans lieu, l'heure du téléphone choisit l'aube, le jour, le coucher ou la nuit.
+for (const [nom, heure, ciel, options] of [['accueil-aube-fr', '06:40', 'aube', {}], ['accueil-coucher-he', '18:30', 'coucher', { langue: 'he' }],
+  ['accueil-nuit-fr-sombre', '21:30', 'nuit', { mode: 'sombre' }], ['accueil-nuit-en', '23:10', 'nuit', { langue: 'en' }]]) {
+  await capture(nom, { langue: 'fr', heure, ...options, actions: async (p) => {
+    const vu = await p.evaluate(() => ({ ecran: document.querySelector('.ecran[data-ciel]')?.dataset.ciel,
+      plaque: document.querySelector('.plaque.avec-ciel svg.ciel') !== null, lanternes: document.querySelectorAll('.semaine .lanterne').length }));
+    if (vu.ecran !== ciel || !vu.plaque || vu.lanternes !== 7) erreurs.push(`${nom} : ${JSON.stringify(vu)}, attendu ${ciel}`);
+  } });
+}
 // La refonte du 13/11 : les rayons des Livres, Le Chemin, et le volet de la barre de départ.
 await capture('textes-fr', { langue: 'fr', onglet: 'textes' });
 await capture('chemin-fr', { langue: 'fr', onglet: 'chemin' });
