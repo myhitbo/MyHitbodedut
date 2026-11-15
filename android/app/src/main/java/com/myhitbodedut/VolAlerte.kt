@@ -119,8 +119,13 @@ class VolAlerteReceiver : BroadcastReceiver() {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         dus.forEach { r ->
             val (titre, texte) = VolAlerte.textes(context, r, plan)
+            // Une intention par texte ouvert : les extras ne distinguent pas deux PendingIntent, et
+            // FLAG_UPDATE_CURRENT ferait ouvrir à la notification de Min'ha, restée affichée, le texte
+            // d'Arvit (même type, même code) maintenant que chaque rappel garde la sienne (FVOL-16).
             val ouvrir = PendingIntent.getActivity(
-                context, 161 + r.type.ordinal, SiddurLectureActivity.intent(context, VolAlerte.texteSiddur(r)),
+                context, 161 + r.type.ordinal,
+                SiddurLectureActivity.intent(context, VolAlerte.texteSiddur(r))
+                    .setData(android.net.Uri.fromParts("vol-rappel", VolAlerte.texteSiddur(r), null)),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
             val n = Notification.Builder(context, Notifications.CHANNEL_REMINDER)
