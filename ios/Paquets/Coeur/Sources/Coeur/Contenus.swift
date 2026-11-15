@@ -234,6 +234,17 @@ public struct Ville: Sendable, Equatable, Decodable {
 
     public var enIsrael: Bool { pays == "IL" }
 
+    public init(id: Int64, nom: TexteLocalise, pays: String, latitude: Double, longitude: Double, altitude: Double = 0,
+                fuseau: String) {
+        self.id = id
+        self.nom = nom
+        self.pays = pays
+        self.latitude = latitude
+        self.longitude = longitude
+        self.altitude = altitude
+        self.fuseau = fuseau
+    }
+
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: Cle.self)
         id = try c.decode(Int64.self, forKey: Cle("id"))
