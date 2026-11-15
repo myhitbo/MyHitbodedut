@@ -102,6 +102,13 @@ object GateRule {
         else minutes >= debut || minutes < fin
 
     /**
+     * Après minuit, dans la fin d'une fenêtre de nuit (21:00–02:00 à 00:30) : la fenêtre
+     * appartient au soir où elle a commencé (FBARRIERE-07, comme Store.fenetreFaite).
+     */
+    fun finDeFenetreDeNuit(minutes: Int, debut: Int, fin: Int): Boolean =
+        debut > fin && minutes < fin
+
+    /**
      * Une application peut-elle être choisie, et retenue ? Jamais MyHitbodedut elle-même,
      * ni celles qu'on ne retient jamais (AppsProtegees) : le Téléphone, l'écran d'accueil
      * et les Réglages d'Android (13/11, FBARRIERE-05).
@@ -142,10 +149,21 @@ object GateStatus {
         serviceVivant = GateService.vivant,
         seanceEnCours = Store.isSessionRunning(context),
         faite = Store.fenetreFaite(context),
-        exempte = Store.isExempt(context, LocalDate.now()),
+        exempte = Store.isExempt(context, LocalDate.now()) || pauseDeLaVeilleEncore(context),
         reportee = Store.isSnoozed(context),
         dansLaFenetre = Store.inWindow(context),
     )
+
+    /**
+     * « Pause aujourd'hui » cochée le soir couvre la fenêtre de nuit en cours jusqu'à sa fin,
+     * au lieu de cesser à minuit (FBARRIERE-07). Chabbat et Yom Tov gardent la date civile :
+     * ce serait armer ou exempter toute la nuit sans connaître l'allumage.
+     */
+    private fun pauseDeLaVeilleEncore(context: Context): Boolean {
+        val now = java.time.LocalTime.now()
+        if (!GateRule.finDeFenetreDeNuit(now.hour * 60 + now.minute, Store.windowStart(context), Store.windowEnd(context))) return false
+        return Store.pausedDates(context).contains(LocalDate.now().minusDays(1).format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE))
+    }
 
     fun evaluate(context: Context): GateState = GateRule.etat(faits(context))
 

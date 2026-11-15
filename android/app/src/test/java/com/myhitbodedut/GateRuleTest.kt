@@ -75,6 +75,14 @@ class GateRuleTest {
     }
 
     @Test
+    fun `apres minuit, la fin d une fenetre de nuit reste celle de la veille`() {
+        assertTrue(GateRule.finDeFenetreDeNuit(30, 21 * 60, 2 * 60))
+        assertFalse(GateRule.finDeFenetreDeNuit(23 * 60, 21 * 60, 2 * 60))
+        assertFalse(GateRule.finDeFenetreDeNuit(3 * 60, 21 * 60, 2 * 60))
+        assertFalse(GateRule.finDeFenetreDeNuit(30, 6 * 60, 10 * 60))
+    }
+
+    @Test
     fun `le service doit tourner des que les reglages sont bons`() {
         assertTrue(GateRule.doitTourner(avecBarriere = true, active = true, accesAccordes = true))
         assertFalse(GateRule.doitTourner(avecBarriere = false, active = true, accesAccordes = true))
