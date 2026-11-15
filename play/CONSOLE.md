@@ -113,13 +113,13 @@ No account or login is needed, and nothing is restricted. On first launch a shor
 
 To see the morning gate at any time of day:
 1. Bottom bar: [Settings].
-2. Card [Mode status]: tap [Preview the “I am with Hashem” screen now].
+2. Card [Where “I am with Hashem” stands]: tap [Preview the “I am with Hashem” screen now].
 3. The first time, a dialog titled [Display over other apps] explains the access. Tap [Continue], allow MyHitbodedut in the Android screen that opens, go back, and tap the button again.
 4. The gate appears over the home screen with the badge [PREVIEW, NO EFFECT]. [Close the preview] dismisses it.
 
 To see it act for real:
 1. [Settings], card [Permissions]: tap [Grant] for [Display over other apps] and for [Usage access]. Each shows an in-app disclosure first.
-2. Card [I am with Hashem]: turn the switch on, tap [Choose apps] and pick one app, and set [Mode hours] around the current time.
+2. Card [I am with Hashem]: turn the switch on, tap [Choose apps] and pick one app, and set [“I am with Hashem” hours] around the current time.
 3. Open the app you picked: the gate appears in front of it.
 On Saturdays and Jewish festivals the gate is silent by default (card [Rhythm], [Shabbat and Yom Tov]).
 

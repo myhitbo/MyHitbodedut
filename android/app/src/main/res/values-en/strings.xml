@@ -1368,6 +1368,7 @@
     <string name="vol_direct_activer_web">Online services: flight route</string>
     <string name="vol_direct_activer_web_aide">When on, the magnifier 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
     <string name="reglages_android_seulement">The morning gate (“I am with Hashem”) and the reminders exist only in the Android app.</string>
+    <string name="reglage_libelle_valeur">%1$s: %2$s</string>
     <string name="vol_fiabilite_direct">Route adjusted to the position received from OpenSky Network at %1$s (%2$s), then great circle to arrival, at constant speed. Zmanim of the point below the aircraft, at sea level, computed on the device.</string>
     <string name="vol_source_opensky">Aircraft data: OpenSky Network (opensky-network.org)</string>
     <string name="vol_rappels_titre">Reminders during the flight</string>

@@ -721,7 +721,7 @@ class SettingsActivity : AppCompatActivity() {
                         super.onInitializeAccessibilityNodeInfo(host, info)
                         val valeur = (host as? Button)?.text
                         val libelle = (host.parent as? ViewGroup)?.let { libelleDe(it, host) }
-                        if (!valeur.isNullOrBlank() && !libelle.isNullOrBlank() && libelle != valeur) info.text = "$libelle : $valeur"
+                        if (!valeur.isNullOrBlank() && !libelle.isNullOrBlank() && libelle != valeur) info.text = getString(R.string.reglage_libelle_valeur, libelle, valeur)
                     }
                 })
             }

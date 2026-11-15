@@ -680,7 +680,7 @@ libellés exacts de `values-en/strings.xml` : elle est dans
 décrit, tel que l'application l'affiche :
 
 1. premier lancement : « Skip » ferme la présentation ;
-2. barre du bas → **Settings** → carte **Mode status** → bouton **Preview the
+2. barre du bas → **Settings** → carte **Where “I am with Hashem” stands** → bouton **Preview the
    “I am with Hashem” screen now** (`action_preview_gate`) ;
 3. la première fois, la fenêtre de divulgation **Display over other apps** →
    **Continue** → accorder l'accès dans Android → revenir et toucher le bouton
@@ -689,7 +689,7 @@ décrit, tel que l'application l'affiche :
    EFFECT** ;
 5. pour la voir agir : carte **Permissions** → **Grant** (deux
    accès) ; carte **I am with Hashem** → interrupteur, **Choose apps**,
-   **Mode hours** autour de l'heure courante ; puis ouvrir l'application
+   **“I am with Hashem” hours** autour de l'heure courante ; puis ouvrir l'application
    choisie. Chabbat et Yom Tov : la barrière se tait par défaut (carte
    **Rhythm**).
 

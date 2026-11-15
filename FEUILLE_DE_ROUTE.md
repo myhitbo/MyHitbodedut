@@ -595,9 +595,11 @@ sans changement. **Confirmé fonctionnel par le propriétaire le 23/09.**
 
 ## Ce qui reste vrai quoi qu'on ajoute
 
-L'application ne déclare **aucune permission Internet**. Rien ne peut en
-sortir, et l'écran d'accueil le promet — un test tient cette phrase au
-manifeste. Toute proposition qui demanderait un serveur, un compte ou une
+Le manifeste commun et l'édition légère ne déclarent **aucune permission
+Internet** (ConfidentialiteTest). L'édition complète déclare INTERNET (depuis le
+28/10, maintenu le 29/10) pour les seuls services en ligne du vol, route adsbdb
+et suivi OpenSky, éteints par défaut ; hors de ces deux services rien ne peut en
+sortir, et l'écran d'accueil le promet. Toute proposition qui demanderait un serveur, un compte ou une
 synchronisation romprait cela, et devrait être décidée comme telle.
 
 ## Mise à jour (23/09, suite)
@@ -1143,7 +1145,10 @@ dans `plantages.txt` de la branche `claude/captures-android`).
   hilloulot sur Android, pas recapturé après la correction 1c72ebc) ;
 - relancer le test des boutons du web ;
 - ajouter le secret `NOKIA_DEPLOY_TOKEN` dans myhitbo/MyHitbodedut (utilisateur) ;
-- toujours valables : la liste « Reste » du 19/10 ci-dessus.
+- toujours valables, parmi la liste « Reste » du 19/10 : seulement les points
+  encore ouverts (ambiance muette écran verrouillé sur iPhone, barrière jamais
+  éprouvée sur un téléphone réel, textes du Rav Arush) ; le reste est fait
+  (journal daté : se référer aux sections plus récentes, FPRODUIT-09).
 
 ## Sujets ouverts de la session ccr-a461212d (04/11)
 
