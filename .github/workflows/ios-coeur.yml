@@ -93,7 +93,7 @@ jobs:
       - name: Construction (aucun avertissement dans Coeur, Barriere ni Ecrans)
         run: |
           swift build --build-tests 2>&1 | tee construction.log
-          if grep -E '/(Sources/(Coeur|Barriere|Ecrans)|Tests/(CoeurTests|BarriereTests|EcransTests))/[^:]+:[0-9]+:[0-9]+: warning:' construction.log; then
+          if grep -E '/(Sources/(Coeur|Barriere|Ecrans|Vues|SwiftUIDePapier)|Tests/(CoeurTests|BarriereTests|EcransTests))/[^:]+:[0-9]+:[0-9]+: warning:' construction.log; then
             echo "::error::avertissements dans le paquet Coeur"
             exit 1
           fi

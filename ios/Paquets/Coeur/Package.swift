@@ -27,6 +27,7 @@ let enChantierSources: [String] = [
     "RechercheGlobale.swift",
     "Reference.swift",
     "RegleLangue.swift",
+    "Sauvegarde.swift",
     "TerritoireIsrael.swift",
     "Tips.swift",
     "Trophees.swift",
@@ -36,23 +37,35 @@ let enChantierSources: [String] = [
     "VolPriere.swift",
 ]
 let enChantierTests: [String] = [
+    "AerationTests.swift",
+    "BilanTropheesTests.swift",
     "BoussoleTests.swift",
+    "CheminTropheesTests.swift",
+    "DanseMesureTests.swift",
     "DirectionJerusalemTests.swift",
+    "HilloulotTests.swift",
+    "IconesTropheesTests.swift",
     "IlanotTests.swift",
     "LanguesTests.swift",
     "LanguesTexteTests.swift",
     "LibellesTests.swift",
     "LibraryRulesTests.swift",
     "MagnetismeTests.swift",
+    "MarquesPagesTests.swift",
     "MegilaTests.swift",
+    "MelangeMusiqueTests.swift",
     "OnboardingTests.swift",
+    "PaliersTests.swift",
     "PersonnageTests.swift",
     "PoliceHebraiqueTests.swift",
+    "RechercheGlobaleTests.swift",
     "RegleLangueTests.swift",
     "SiddurJourTests.swift",
     "TerritoireIsraelTests.swift",
     "TipsTests.swift",
     "TraductionAffichageTests.swift",
+    "TropheesTests.swift",
+    "TropheesTikkunTests.swift",
     "VillePlusProcheTests.swift",
     "VolTests.swift",
 ]
@@ -64,6 +77,8 @@ let package = Package(
         .library(name: "Coeur", targets: ["Coeur"]),
         // Les modèles d'écran de l'app : Observation et Coeur, sans SwiftUI, testés sous Linux.
         .library(name: "Ecrans", targets: ["Ecrans"]),
+        // Les vues SwiftUI de l'app. Sous Linux, elles se type-checkent contre SwiftUIDePapier (signatures seules).
+        .library(name: "Vues", targets: ["Vues"]),
     ],
     dependencies: [
         // KosherSwift 1.10.11 (LGPL 2.1) : la dernière étiquette à l'API et aux définitions de
@@ -88,6 +103,11 @@ let package = Package(
         .testTarget(
             name: "EcransTests",
             dependencies: ["Ecrans", "Coeur"]),
+        .target(
+            name: "SwiftUIDePapier"),
+        .target(
+            name: "Vues",
+            dependencies: ["Ecrans", "Coeur", .target(name: "SwiftUIDePapier", condition: .when(platforms: [.linux]))]),
     ],
     swiftLanguageModes: [.v6]
 )

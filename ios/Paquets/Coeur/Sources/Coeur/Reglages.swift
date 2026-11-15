@@ -157,6 +157,12 @@ public struct Reglages: Sendable, Equatable {
         poseEnsemble("paused_dates", dates)
     }
 
+    /// Toutes les dates d'un coup, telles quelles : ce que l'import de la sauvegarde écrit
+    /// (Store.importJson, `putStringSet(KEY_PAUSED_DATES, …)`).
+    public mutating func setPausedDates(_ dates: Set<String>) {
+        poseEnsemble("paused_dates", dates)
+    }
+
     // MARK: Le lieu des zmanim
 
     /// Une ville de la liste ou la position du téléphone ; nil tant que rien n'est choisi. Les nombres

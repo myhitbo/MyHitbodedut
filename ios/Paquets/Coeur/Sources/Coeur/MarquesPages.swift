@@ -90,7 +90,7 @@ public enum MarquesPages {
         }
         var nouvelles = [m]
         nouvelles.append(contentsOf: l)
-        return Array(nouvelles.prefix(max))
+        return Array(nouvelles.prefix(Self.max))
     }
 
     /// Celles d'un texte, dans l'ordre du texte (section, puis paragraphe ; à égalité, l'ordre de la liste).

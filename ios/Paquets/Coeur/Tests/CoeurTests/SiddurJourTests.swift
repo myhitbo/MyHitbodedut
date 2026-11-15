@@ -364,7 +364,7 @@ struct SiddurJourTests {
         }
 
         /// Un texte et des annotations écrits à la main : les branches que les siddourim n'atteignent pas.
-        struct Ecrit: Decodable {
+        struct TexteEcrit: Decodable {
             struct Lecture: Decodable {
                 let t: String
                 let c: Int
@@ -473,7 +473,7 @@ struct SiddurJourTests {
         let cas: [Cas]
         let lignes: [Releve]
         let details: [Detail]
-        let ecrit: Ecrit
+        let ecrit: TexteEcrit
         let parse: Parse
         let libelles: Libelles
         let empreinte: Empreinte

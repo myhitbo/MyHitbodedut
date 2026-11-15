@@ -178,12 +178,14 @@ object VecteursSiddurJour : Generateur {
         """{"titre": "כותרת", "blocs": [{"t": "א"}, {"t": "ב"}]}]}]}"""
 
     private val annotationsEcrites = """{"edot": {"ecrit": [""" +
-        // Section 0, bloc 1 : trois variantes à retirer, une à signaler.
+        // Section 0, bloc 1 : quatre variantes à retirer, une à signaler.
         """{"sorte": "indice", "s": 0, "b": 1, "si": "morid_hatal", "empreinte": "e", "retire": "מוֹרִיד הַטָּל "},""" +
         """ {"sorte": "indice", "s": 0, "b": 1, "si": "machiv_harouah", "empreinte": "e", "texte": "מַשִּׁיב הָרוּחַ"},""" +
         """ {"sorte": "indice", "s": 0, "b": 1, "si": "kippour", "empreinte": "e", "texte": "X", "retire": "מְחַיֶּה",""" +
         """ "libelle": "ajout_propre"},""" +
         """ {"sorte": "indice", "s": 0, "b": 1, "si": "!chabbat", "empreinte": "e", "retire": " מֵתִים"},""" +
+        // Ce passage chevauche le premier : l'ordre du retrait décide de ce qui reste.
+        """ {"sorte": "indice", "s": 0, "b": 1, "si": "!kippour", "empreinte": "e", "retire": "גִּבּוֹר מוֹרִיד"},""" +
         """ {"sorte": "renvoi", "s": 0, "b": 1, "si": "!chabbat", "empreinte": "e", "cible": "x"},""" +
         // Bloc 2 : le passage manque, mais trim() ôte les blancs ; bloc 3 : le passage n'a pas les mêmes unités.
         """ {"sorte": "indice", "s": 0, "b": 2, "si": "asseret_yemei_techouva", "empreinte": "e", "retire": "הַמֶּלֶךְ"},""" +

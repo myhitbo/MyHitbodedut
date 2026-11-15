@@ -109,7 +109,7 @@ object VecteursSauvegarde : Generateur {
         Store.setInIsrael(c, true)
         Store.setReminderEnabled(c, true)
         Store.setReminderTimes(c, listOf(900, 300))
-        Store.setFirstName(c, "  יֹאֵל  ")
+        Store.setFirstName(c, "  \u05D9\u05B9\u05D0\u05B5\u05DC  ")
         Store.setHideCountdown(c, true)
         Store.setGuidedHitbodedut(c, true)
         Store.setMusicEnabled(c, false)
@@ -144,7 +144,7 @@ object VecteursSauvegarde : Generateur {
         """"music_shuffle":true,"music_track":"hamelech_basade","adresse":"f","apparence_mode":"sombre","apparence_fond":"sable",""" +
         """"apparence_accent":"violet"},"paused_dates":["2025-09-30"],"blocked_apps":["com.exemple"]}"""
 
-    private val hebreu = "רִבּוֹנוֹ שֶׁל עוֹלָם"
+    private val hebreu = "\u05E8\u05B4\u05D1\u05BC\u05D5\u05B9\u05E0\u05D5\u05B9 \u05E9\u05B6\u05C1\u05DC \u05E2\u05D5\u05B9\u05DC\u05B8\u05DD"
 
     /** Un grand fichier : 80 journées dans le désordre, dont certaines déjà présentes ici. */
     private val grand: String = run {
@@ -221,7 +221,7 @@ object VecteursSauvegarde : Generateur {
         // Les fichiers acceptés à la marge.
         Scenario("format seul", """{"format":"myhitbodedut"}""", ordinaire),
         Scenario("suivi de texte", """{"format":"myhitbodedut","days":{"2025-01-01":{"minutes":5}}} poubelle""", ordinaire),
-        Scenario("marque d'ordre des octets", "﻿{\"format\":\"myhitbodedut\",\"days\":{\"2025-01-02\":{\"minutes\":6}}}", ordinaire),
+        Scenario("marque d'ordre des octets", "\uFEFF{\"format\":\"myhitbodedut\",\"days\":{\"2025-01-02\":{\"minutes\":6}}}", ordinaire),
         Scenario("blancs autour", " \n\t{ \"format\" : \"myhitbodedut\" , \"days\" : { \"2025-01-03\" : { \"minutes\" : 7 } } } \n", ordinaire),
         Scenario("format répété, le dernier compte", """{"format":"autre","format":"myhitbodedut","days":{"2025-01-04":{"minutes":8}}}"""),
         Scenario("fichier Android vide", """{$F,"exported_at":"2026-09-28T10:00:00Z","days":{},"settings":{},"paused_dates":[],"blocked_apps":[]}"""),
@@ -230,7 +230,7 @@ object VecteursSauvegarde : Generateur {
         Scenario("clés de date mal formées",
             """{$F,"days":{"2025-1-01":{"minutes":1},"2025-02-29":{"minutes":2},"2024-02-29":{"minutes":3}," 2025-10-02":{"minutes":4},""" +
                 """"2025-10-03 ":{"minutes":5},"+2025-10-04":{"minutes":6},"20251005":{"minutes":7},"2025-10-06T00:00":{"minutes":8},""" +
-                """"":{"minutes":9},"２０２５-10-07":{"minutes":10},"2025-10-00":{"minutes":11},"2025-04-31":{"minutes":12},""" +
+                """"":{"minutes":9},"\uFF12\uFF10\uFF12\uFF15-10-07":{"minutes":10},"2025-10-00":{"minutes":11},"2025-04-31":{"minutes":12},""" +
                 """"0000-02-29":{"minutes":13},"0001-01-01":{"minutes":14},"-0001-01-01":{"minutes":15},"+10000-01-01":{"minutes":16},""" +
                 """"9999-12-31":{"minutes":17},"2999-12-31":{"minutes":18},"1999-12-31":{"minutes":19},"2025-12-31":{"minutes":20},"x":{"minutes":21}}}"""),
         Scenario("journées qui ne sont pas des objets",
@@ -248,7 +248,7 @@ object VecteursSauvegarde : Generateur {
         Scenario("notes de toutes sortes",
             """{$F,"days":{"2025-02-01":{"minutes":1,"note":null},"2025-02-02":{"minutes":1,"note":5},"2025-02-03":{"minutes":1,"note":true},""" +
                 """"2025-02-04":{"minutes":1,"note":{"a":1}},"2025-02-05":{"minutes":1,"note":[1,"b"]},"2025-02-06":{"minutes":1,"note":1.50},""" +
-                """"2025-02-07":{"minutes":1,"note":1e2},"2025-02-08":{"minutes":1,"note":"été \/ \"cité\" \\ \u0001   \t 😀"},""" +
+                """"2025-02-07":{"minutes":1,"note":1e2},"2025-02-08":{"minutes":1,"note":"\u00E9t\u00E9 \/ \"cit\u00E9\" \\ \u0001 \u2028 \t \uD83D\uDE00"},""" +
                 """"2025-02-09":{"minutes":1,"note":"$hebreu"},"2025-02-10":{"minutes":1,"note":-0},"2025-02-11":{"minutes":1,"note":12345678901234567890},""" +
                 """"2025-02-12":{"minutes":1,"note":"${"\\u05D0\\u05B8".repeat(300)}"},"2025-02-13":{"minutes":1,"note":"${"b".repeat(3999)}é"},""" +
                 """"2025-02-14":{"minutes":1,"note":"   "},"2025-02-15":{"minutes":1}}}"""),
@@ -256,7 +256,7 @@ object VecteursSauvegarde : Generateur {
             """{$F,"days":{"2025-02-20":{"minutes":1,"themes":[]},"2025-02-21":{"minutes":1,"themes":["gratitude"]},"2025-02-22":{"minutes":1,"themes":["","  ","x"]},""" +
                 """"2025-02-23":{"minutes":1,"themes":[null]},"2025-02-24":{"minutes":1,"themes":[1,true,{"a":1},2.5]},"2025-02-25":{"minutes":1,"themes":"gratitude"},""" +
                 """"2025-02-26":{"minutes":1,"themes":[["a"]]},"2025-02-27":{"minutes":1,"themes":["famille","famille"," famille"]},""" +
-                """"2025-02-28":{"minutes":1,"themes":["é","é"," ","​"]},"2025-03-01":{"minutes":1,"themes":{"0":"x"}}}}"""),
+                """"2025-02-28":{"minutes":1,"themes":["\u00E9","e\u0301","\u00A0","\u200B"]},"2025-03-01":{"minutes":1,"themes":{"0":"x"}}}}"""),
         Scenario("note seule de toutes sortes",
             """{$F,"days":{"2025-01-10":{"note_seule":true},"2025-01-11":{"note_seule":false},"2025-01-12":{"note_seule":"true"},"2025-01-13":{"note_seule":"TRUE"},""" +
                 """"2025-01-14":{"note_seule":"yes"},"2025-01-15":{"note_seule":1},"2025-01-16":{"note_seule":null},"2025-01-17":{"note_seule":"False"}}}"""),
@@ -268,7 +268,7 @@ object VecteursSauvegarde : Generateur {
                 """"2025-05-31":{"minutes":2,"note":"avant"},"2025-06-07":{"minutes":1,"note":"","themes":["é"]}}}""") { t ->
             jours(t, """{"2025-06-01":{"minutes":20,"note":"ici","themes":["gratitude"]},"2025-06-02":{"minutes":0,"note":"seule ici","note_seule":true},""" +
                 """"2025-06-03":{"minutes":10,"note":" \t ","themes":["famille"]},"2025-06-04":{"minutes":5,"note":""},""" +
-                """"2025-06-05":{"minutes":0,"note":"x","note_seule":true},"2025-06-07":{"minutes":30,"note":"","themes":["é"]}}""")
+                """"2025-06-05":{"minutes":0,"note":"x","note_seule":true},"2025-06-07":{"minutes":30,"note":"","themes":["e\u0301"]}}""")
         },
         Scenario("fusion : la séance la plus longue reste", """{$F,"days":{"2025-04-01":{"minutes":5,"note":"autre","themes":["gratitude","emotions"]}}}""", ordinaire),
         Scenario("le journal d'ici est illisible", """{$F,"days":{"2025-07-01":{"minutes":9,"note":"repris"}}}""") { t -> jours(t, "{pas du json") },
@@ -328,7 +328,7 @@ object VecteursSauvegarde : Generateur {
         Scenario("prénom nombre", """{$F,"settings":{"first_name":5}}""", ordinaire),
         Scenario("prénom vide", """{$F,"settings":{"first_name":""}}""", ordinaire),
         Scenario("prénom absent", """{$F,"settings":{"target_minutes":25}}""", ordinaire),
-        Scenario("prénom hébreu vocalisé", """{$F,"settings":{"first_name":"מֹשֶׁה בֶּן יִשְׁרָאֵל הַכֹּהֵן מִיְּרוּשָׁלַיִם"}}"""),
+        Scenario("pr\u00E9nom h\u00E9breu vocalis\u00E9", """{$F,"settings":{"first_name":"\u05DE\u05B9\u05E9\u05B6\u05C1\u05D4 \u05D1\u05BC\u05B6\u05DF \u05D9\u05B4\u05E9\u05B0\u05C1\u05E8\u05B8\u05D0\u05B5\u05DC \u05D4\u05B7\u05DB\u05BC\u05B9\u05D4\u05B5\u05DF \u05DE\u05B4\u05D9\u05B0\u05BC\u05E8\u05D5\u05BC\u05E9\u05B8\u05C1\u05DC\u05B7\u05D9\u05B4\u05DD"}}"""),
         Scenario("adresse et apparence connues",
             """{$F,"settings":{"adresse":"m","apparence_mode":"clair","apparence_fond":"bleu","apparence_accent":"turquoise"}}""", reglagesPoses),
         Scenario("adresse inconnue, apparence vide",
