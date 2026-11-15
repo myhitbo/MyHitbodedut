@@ -16,21 +16,26 @@ let enChantierSources: [String] = [
     "Ambiance.swift",
     "Autorisation.swift",
     "CarteEmbarquement.swift",
+    "Celebrations.swift",
     "Depot.swift",
     "Hilloulot.swift",
     "MusicLibrary.swift",
     "MusiquePlay.swift",
     "Parcours.swift",
     "RechercheGlobale.swift",
+    "RouteVol.swift",
     "SaisieVol.swift",
     "Sauvegarde.swift",
     "SourceDuJour.swift",
+    "SuiviVol.swift",
     "VignetteDecor.swift",
+    "VolRappels.swift",
     "WidgetTaille.swift",
 ]
 let enChantierTests: [String] = [
     "AmbianceTests.swift",
     "AutorisationTests.swift",
+    "CelebrationsTests.swift",
     "DepotTests.swift",
     "HilloulotTests.swift",
     "IconeLanceurTests.swift",
@@ -41,8 +46,15 @@ let enChantierTests: [String] = [
     "RenameTrackTests.swift",
     "SauvegardeTests.swift",
     "SourceDuJourTests.swift",
+    "SuiviVolTests.swift",
     "VignetteDecorTests.swift",
     "WidgetTailleTests.swift",
+]
+let enChantierEcrans: [String] = [
+]
+let enChantierEcransTests: [String] = [
+]
+let enChantierVues: [String] = [
 ]
 
 let package = Package(
@@ -72,10 +84,12 @@ let package = Package(
             exclude: enChantierTests),
         .target(
             name: "Ecrans",
-            dependencies: ["Coeur"]),
+            dependencies: ["Coeur"],
+            exclude: enChantierEcrans),
         .testTarget(
             name: "EcransTests",
-            dependencies: ["Ecrans", "Coeur"]),
+            dependencies: ["Ecrans", "Coeur"],
+            exclude: enChantierEcransTests),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -83,5 +97,5 @@ let package = Package(
 if avecVues {
     // Les vues SwiftUI de l'app : elles lisent les modèles d'écran d'Ecrans.
     package.products.append(.library(name: "Vues", targets: ["Vues"]))
-    package.targets.append(.target(name: "Vues", dependencies: ["Ecrans", "Coeur"]))
+    package.targets.append(.target(name: "Vues", dependencies: ["Ecrans", "Coeur"], exclude: enChantierVues))
 }

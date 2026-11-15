@@ -152,7 +152,8 @@ public enum SaisieVol {
             compagnie = compagniesTriees.first { $0.motif.presente(dans: plie) }?.code
         }
 
-        let (depart, arrivee) = aeroports(mots, aeroports, num)
+        // Qualifié : le paramètre `aeroports` cache la fonction du même nom.
+        let (depart, arrivee) = SaisieVol.aeroports(mots, aeroports, num)
         let leger = marques.remplace(texte.formeNFD, par: "").lowercased()
         let (date, dateArrivee) = dates(plie, leger, mots, aujourdhui)
         let h = heures(leger)

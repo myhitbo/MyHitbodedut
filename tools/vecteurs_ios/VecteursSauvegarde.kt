@@ -6,11 +6,12 @@
 // prénom. SauvegardeTests de Coeur les rejoue sur Sauvegarde.importer et Sauvegarde.exporter.
 //
 // importJson lit la date du jour (LocalDate.now(), figée par bouchons/Horloge.kt au 1er janvier 2026) :
-// les journées des fichiers sont loin dans le passé (acceptées) ou en 2999 (refusées) ; la frontière
-// d'aujourd'hui à demain se juge en Swift, à la main. Les adaptations d'iOS (PORTAGE.md § 3.5) n'y
-// figurent pas : un morceau qui n'est pas livré sur iOS, une valeur d'apparence inconnue, journal_plus,
-// le JSON relâché (apostrophes, clés nues) qu'org.json accepte et que Coeur refuse. Les morceaux nommés
-// ici sont livrés sur iOS (ios/Ressources/Contenu/musique.json).
+// les journées des fichiers sont loin dans le passé (acceptées), en 2999 (refusées), ou à la frontière,
+// aujourd'hui (accepté) et demain (refusé). Le fuseau du téléphone, qui fige in_israel (Store.inIsrael),
+// est celui du scénario (« fuseau » : UTC, ou Asia/Jerusalem), à midi le même jour. Les adaptations
+// d'iOS (PORTAGE.md § 3.5) n'y figurent pas : un morceau qui n'est pas livré sur iOS, une valeur
+// d'apparence inconnue, journal_plus, le JSON relâché (apostrophes, clés nues) qu'org.json accepte et
+// que Coeur refuse. Les morceaux nommés ici sont livrés sur iOS (ios/Ressources/Contenu/musique.json).
 
 import android.content.Context
 import com.myhitbodedut.Adresse
@@ -20,6 +21,7 @@ import com.myhitbodedut.Store
 import com.myhitbodedut.Theme
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 
 object VecteursSauvegarde : Generateur {
@@ -31,7 +33,17 @@ object VecteursSauvegarde : Generateur {
     /** Les morceaux livrés sur iOS que les scénarios nomment. */
     private val morceauxLivres = listOf("hamelech_basade", "yanuka_nigoun_3", "shpayer_beyond")
 
-    private class Scenario(val nom: String, val fichier: String, val depart: (Theatre) -> Unit = {})
+    private class Scenario(val nom: String, val fichier: String, val depart: (Theatre) -> Unit = {}) {
+        /** Le fuseau du téléphone. */
+        var zone: ZoneId = ZoneOffset.UTC
+
+        fun dans(z: ZoneId): Scenario {
+            zone = z
+            return this
+        }
+    }
+
+    private val jerusalem: ZoneId = ZoneId.of("Asia/Jerusalem")
 
     // --- Les états ---------------------------------------------------------------------------------
 
@@ -68,6 +80,9 @@ object VecteursSauvegarde : Generateur {
     }
 
     private fun rejoue(s: Scenario): Map<String, Any?> {
+        // Le même jour, à midi, dans le fuseau du scénario : aujourd'hui reste le 1er janvier 2026.
+        Horloge.regler(LocalDateTime.of(2026, 1, 1, 12, 0), s.zone)
+        val fuseau = Horloge.fuseau().id
         val t = Theatre()
         val c = t.contexte
         s.depart(t)
@@ -76,7 +91,7 @@ object VecteursSauvegarde : Generateur {
         // L'état d'abord : exportJson fige in_israel s'il ne l'est pas encore.
         val apres = etat(t)
         val texte = export(c)
-        return linkedMapOf("nom" to s.nom, "avant" to avant, "fichier" to s.fichier, "importe" to importe, "apres" to apres,
+        return linkedMapOf("nom" to s.nom, "fuseau" to fuseau, "avant" to avant, "fichier" to s.fichier, "importe" to importe, "apres" to apres,
             "export" to texte, "pausedDates" to Store.pausedDates(c).sorted(), "blockedApps" to Store.blockedApps(c).sorted(),
             "firstName" to Store.firstName(c))
     }
@@ -225,6 +240,8 @@ object VecteursSauvegarde : Generateur {
         Scenario("blancs autour", " \n\t{ \"format\" : \"myhitbodedut\" , \"days\" : { \"2025-01-03\" : { \"minutes\" : 7 } } } \n", ordinaire),
         Scenario("format répété, le dernier compte", """{"format":"autre","format":"myhitbodedut","days":{"2025-01-04":{"minutes":8}}}"""),
         Scenario("fichier Android vide", """{$F,"exported_at":"2026-09-28T10:00:00Z","days":{},"settings":{},"paused_dates":[],"blocked_apps":[]}"""),
+        Scenario("la veille et aujourd'hui acceptés, demain non",
+            """{$F,"days":{"2026-01-02":{"minutes":3},"2026-01-01":{"minutes":2},"2025-12-31":{"minutes":1}}}"""),
 
         // Les journées.
         Scenario("clés de date mal formées",
@@ -304,6 +321,11 @@ object VecteursSauvegarde : Generateur {
         Scenario("in_israel absent des deux côtés", """{$F,"settings":{"target_minutes":20}}"""),
         Scenario("in_israel absent du fichier, posé ici", """{$F,"settings":{"target_minutes":20}}""") { t -> Store.setInIsrael(t.contexte, true) },
         Scenario("sans settings, in_israel reste à figer", """{$F,"days":{"2025-01-05":{"minutes":5}}}"""),
+        Scenario("Jérusalem : in_israel absent des deux côtés", """{$F,"settings":{"target_minutes":20}}""").dans(jerusalem),
+        Scenario("Jérusalem : in_israel déjà posé à faux", """{$F,"settings":{"target_minutes":20}}""") { t ->
+            Store.setInIsrael(t.contexte, false)
+        }.dans(jerusalem),
+        Scenario("Jérusalem : sans settings, in_israel reste à figer", """{$F,"days":{"2025-01-05":{"minutes":5}}}""").dans(jerusalem),
         Scenario("rappels : reminder_minutes sans reminder_times", """{$F,"settings":{"reminder_minutes":480}}""") { t ->
             Store.setReminderTimes(t.contexte, listOf(300, 900))
         },

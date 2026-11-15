@@ -99,8 +99,8 @@ object VecteursCelebrations : Generateur {
         // marquerNotifies et notification retiennent, comme notifié, ce que neuf rend. notification n'est
         // appelée que s'il n'y a rien à annoncer : le Context du théâtre ne rend pas le NotificationManager
         // par son nom (Theatre.getSystemService lève), et Confettis.notifier le demande avant tout.
-        val appels: List<(Context) -> Unit> = listOf({ x -> Celebrations.marquerNotifies(x) }) +
-            if (r.message.isEmpty()) listOf({ x -> Celebrations.notification(x) }) else emptyList()
+        val appels = mutableListOf<(Context) -> Unit>({ x: Context -> Celebrations.marquerNotifies(x) })
+        if (r.message.isEmpty()) appels.add { x: Context -> Celebrations.notification(x) }
         for (appel in appels) {
             val c2 = theatre(m).contexte
             paliersVus?.let { Store.setPaliersNotifies(c2, it) }
@@ -193,15 +193,16 @@ object VecteursCelebrations : Generateur {
         val chabbat = Monde("2026-10-17", jours("2026-10-16", 6) { 15 })
         liste += cas("un samedi sans séance", chabbat, emptySet(), emptySet())
         // Le Tikoun HaKlali et les notes : la harpe et la plume.
-        val tikkun = Monde("2026-12-31", listOf("2026-12-31" to 5), tikkun = (0 until 8).map { LocalDate.parse("2026-12-31").minusDays(it.toLong()).toString() },
+        val tikkun = Monde("2026-12-31", listOf("2026-12-31" to 5), tikkun = (0 until 10).map { LocalDate.parse("2026-12-31").minusDays(it.toLong()).toString() },
             notes = (0 until 12).map { LocalDate.parse("2026-12-31").minusDays(it.toLong()).toString() to "note $it" })
         val (mT, tT) = vus(tikkun.copy(tikkun = tikkun.tikkun.drop(1)))
         liste += cas("Tikoun et notes", tikkun, mT, tT)
         liste += cas("Tikoun et notes, rien de vu", tikkun, emptySet(), emptySet())
         // Le mois hébreu qui change : Adar II d'une année embolismique, et Tichri.
-        val adar = Monde("2027-03-10", jours("2027-03-10", 10) { 30 })
+        val adar = Monde("2027-03-15", jours("2027-03-15", 10) { 30 })
         val (mA, tA) = vus(adar.avantAujourdhui())
-        liste += cas("en Adar II", adar, mA.filterNot { it.startsWith("mois:") }.toSet(), tA)
+        liste += cas("en Adar II, vu plus tôt", adar, mA, tA)
+        liste += cas("en Adar II", adar, vus(adar).first.filterNot { it.startsWith("mois:") }.toSet(), vus(adar).second)
         val tichri = Monde("2026-09-14", jours("2026-09-14", 4) { 70 })
         liste += cas("en Tichri", tichri, vus(tichri).first.filterNot { it.startsWith("mois:") }.toSet(), vus(tichri).second)
         return liste

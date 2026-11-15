@@ -8,8 +8,10 @@ import Testing
 /// répondent, scénario par scénario ; puis les cas d'import et d'export des tests du site
 /// (web/test/regles.test.mjs, journal-plus.test.mjs, musique.test.mjs, hitbodedut.test.mjs), portés tels
 /// quels — là où le site s'écarte d'Android (bornes, années avant 2000, clés de la barrière), iOS suit
-/// Android et le test le dit ; enfin les lignes du § 3.9. La sauvegarde réelle du propriétaire
-/// (`android-v1-reel.json`) n'est pas dans le dépôt : sa ligne reste à faire.
+/// Android et le test le dit ; enfin les lignes du § 3.9. `streak` et `isExempt` du site ne sont pas
+/// encore portés (tâche 8) : la série nulle d'une note seule n'est pas vérifiée, et un jour de pause se lit
+/// dans `pausedDates`. La sauvegarde réelle du propriétaire (`android-v1-reel.json`) n'est pas dans le
+/// dépôt : sa ligne reste à faire.
 @Suite("Sauvegarde")
 struct SauvegardeTests {
 
@@ -84,6 +86,8 @@ struct SauvegardeTests {
 
     private struct Scenario: Decodable {
         let nom: String
+        /// Le fuseau du téléphone, qui fige in_israel.
+        let fuseau: String
         let avant: Etat
         let fichier: String
         let importe: Int?
@@ -96,7 +100,6 @@ struct SauvegardeTests {
 
     private struct Meta: Decodable {
         let aujourdhui: String
-        let fuseau: String
         let morceauxLivres: [String]
     }
 
@@ -160,7 +163,7 @@ struct SauvegardeTests {
                                   prenom: s.avant.journal.firstName ?? "", corrompu: s.avant.journal.daysCorrompu)
             var reglages = Reglages(brut: SauvegardeTests.objet(s.avant.prefs))
             let importe = Sauvegarde.importer(texte: s.fichier, journal: &journal, reglages: &reglages, aujourdhui: aujourdhui,
-                                              morceauxLivres: livres, fuseauTelephone: v.meta.fuseau)
+                                              morceauxLivres: livres, fuseauTelephone: s.fuseau)
             #expect(importe == s.importe, "\(s.nom) : le nombre importé")
 
             // Le journal : la préférence days réécrite à l'identique, le prénom, la copie d'un journal illisible.
@@ -194,7 +197,7 @@ struct SauvegardeTests {
             let reecrit = android.texte(indentation: 2)
             let reecritConforme = reecrit.egalUnites(s.export)
             #expect(reecritConforme, "\(s.nom) : l'export d'Android réécrit\n\(reecrit)")
-            var ios = Sauvegarde.objet(journal: journal, reglages: reglages, maintenant: 0, fuseauTelephone: v.meta.fuseau)
+            var ios = Sauvegarde.objet(journal: journal, reglages: reglages, maintenant: 0, fuseauTelephone: s.fuseau)
             ios["exported_at"] = nil
             ios["journal_plus"] = nil
             let texteIos = ios.texte(indentation: 2)

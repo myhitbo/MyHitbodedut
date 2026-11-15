@@ -579,6 +579,20 @@ object VecteursVolSuite : Generateur {
             """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"\u0662026-11-10T18:30:00Z"}""",
             """{"trouve":true,"latitude":-0.0,"longitude":-0.0,"instant":"2026-11-10T18:30:00Z","altitude_geo":-0.0}""",
             """{"trouve":true,"latitude":"50.5d","longitude":" -21.2 ","instant":"2026-11-10T18:30:00Z"}""",
+            // L'année d'ISO_LOCAL_DATE : quatre chiffres, « + » au-delà, « - » pour les années négatives.
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"+12026-11-10T18:30:00Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"+2026-11-10T18:30:00Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"20260-11-10T18:30:00Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"-0001-01-01T00:00:00Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"-0000-01-01T00:00:00Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"0000-01-01T00:00:00Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"1969-12-31T23:59:59.999999999Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"+999999-12-31T23:59:59Z"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"9999-12-31T23:59:59.5+18:00"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"2026-11-10T18:30:00+23:59:59"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"2026-11-10T18:30:00+01:00:"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"2026-11-10T18:30:00+01:00:60"}""",
+            """{"trouve":true,"latitude":1,"longitude":2,"instant":"2026-11-10T18:30:00+0100"}""",
         )
         return corps.map { c -> listOf(c, m, resultatSuivi(SuiviVol.lire(c, maintenant))) }
     }
