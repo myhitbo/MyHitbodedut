@@ -527,7 +527,10 @@ def annoter(texte_id, sections, nusah):
             # propres à un seul des deux en sont des variantes, estompées l'autre jour
             # (SOUS ; relevé du 14/10).
             elif cons[bi] and "אומרים כאן אבינו מלכנו" in x:
-                prend(bi, "avinou_malkenou")
+                # À Min'ha, seulement si Ta'hanoun s'y dit (audit du 12/11, TSIDDUR-09) : pas la veille de Pourim,
+                # le vendredi, ni à Min'ha de la veille de Kippour un vendredi.
+                am = "avinou_malkenou_minha" if office == "minha" else "avinou_malkenou"
+                prend(bi, am)
                 j = bi + 1
                 sous = None
                 souche = None
@@ -554,7 +557,7 @@ def annoter(texte_id, sections, nusah):
                             sous = None
                         if sous and souche is None:
                             souche = mots
-                        prend(j, sous or "avinou_malkenou")
+                        prend(j, sous or am)
                     else:
                         break
                     j += 1
@@ -887,6 +890,7 @@ SOUS = {
     "al_hanissim": {"hanouka", "pourim"},
     "moed": {"pessah", "chavouot", "soukkot", "chemini_atseret"},
     "avinou_malkenou": {"jeune", "asseret_yemei_techouva"},
+    "avinou_malkenou_minha": {"jeune", "asseret_yemei_techouva"},
 }
 
 # Une consigne courte annonce les blocs de prière qui la suivent, jusqu'à la
