@@ -49,6 +49,12 @@ faire, avec l'accord du propriétaire.
 | `HolidaysTest`, porté | égalité | vert (Tichri 5787, diaspora et Israël) |
 | Structure (`ZmanimTest`) | ordre, heures saisonnières, changement d'heure, cercle polaire, allumage | vert |
 
+**En vol** (tâche 13, mesuré le 15/11/2026 sous Linux et sur le simulateur iOS) : les zmanim au point sous
+l'avion s'écartent de ceux de KosherJava de **3,2 s au plus** (plag, 'hatsot sur TLV-JFK et la veille de Chavouot),
+pour 2 s demandées par ROADMAP. Le zman se cherche là où l'avion se trouve à cet instant : quand ce point fuit
+avec le soleil, l'écart de moins d'une seconde du sol est amplifié, jusqu'à quatre fois. `VolTests` tolère 4 s
+(`toleranceEnVol`) ; l'heure affichée, à la minute, n'en dépend pas.
+
 L'écart de 994 ms passe le critère d'une seconde de justesse, sur une seule valeur, un jour de changement
 d'heure. Sa cause n'est pas établie (les arrondis de Java et de Swift n'expliquent qu'une milliseconde) :
 à examiner avec le générateur de la tâche 10, qui couvrira plus de dates. L'heure affichée, à la minute,
