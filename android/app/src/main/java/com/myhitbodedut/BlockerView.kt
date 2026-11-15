@@ -68,13 +68,16 @@ class BlockerView(
         isClickable = true
         // Fenêtre posée par un service : Barres.kt ne la voit pas. Les barres du système et la
         // découpe deviennent des marges, sinon « Plus tard » passe sous la barre de navigation
-        // (FBARRIERE-15).
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        // (FBARRIERE-15). Les marges vont au ScrollView, qui porte le fond : posées sur ce
+        // FrameLayout sans fond, la bande sous la barre d'état ne serait peinte par personne
+        // (fenêtre opaque, sans arrière-plan de fenêtre).
+        val contenu = getChildAt(0)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             val b = insets.getInsets(
                 androidx.core.view.WindowInsetsCompat.Type.systemBars() or
                     androidx.core.view.WindowInsetsCompat.Type.displayCutout()
             )
-            v.setPadding(b.left, b.top, b.right, b.bottom)
+            contenu?.setPadding(b.left, b.top, b.right, b.bottom)
             insets
         }
         isFocusable = true
