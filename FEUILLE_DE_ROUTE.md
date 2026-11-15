@@ -1157,8 +1157,26 @@ toucher. CI verte (Android, web, Nokia).
 1. **Musique de Noam Shpayer** : en attente des fichiers que l'utilisateur
    doit fournir (les 10 morceaux `shpayer_*` déjà livrés le 03/11 sont
    dans PUBLICATION_PLAY_STORE.md).
-2. **Check complet de l'app** : six audits indépendants à effort maximal,
-   puis corriger tous les défauts confirmés.
+2. **Check complet de l'app** : audit fait le 11/11 (design, traductions,
+   fonctionnalités, repli des textes, fluidité), voir
+   `CHECKUP_2026-11-11.md`. Reste à corriger les défauts confirmés.
+   Design : 5 habillages et 5 refontes animées **retenus en option**,
+   même fichier, section 6. **14/11** : les habillages aimés sont dans
+   l'app (Réglages › Apparence › Habillage) : Parchemin (fond parchemin,
+   boutons grenat) et Minuit doré (noir pur, or, mode sombre), avec la
+   typographie Souffle (Bellefair pour les grands titres, Open Sans pour
+   le texte), aussi réglable seule. **15/11** : la refonte Ciel entre en
+   bandeau en haut de l'accueil (le ciel du lieu suit les zmanim, le
+   prochain zman dessous). Le même jour, les trois refontes aimées sont
+   dans l'app, au choix (Réglages › Apparence › Disposition de l'accueil) :
+   Ciel complet (le ciel en plein écran, l'heure, le moment du jour, la
+   séance dans une carte de verre), Bento (six tuiles qui ouvrent leur
+   écran, recherche dessous) et Pile (quatre cartes qu'on fait glisser, le
+   'hizouk qui se retourne). Classique par défaut ; couché, l'accueil reste
+   classique. Reste à les voir sur téléphone (captures : étape 28) et à
+   choisir celle qui devient l'accueil par défaut. Leurs fusions restent
+   écartées (« Ciel vivant » trop chargé, « Épurés » trop vides,
+   « Équilibrés »). Studio 2026 (S1 à S5) et N1 à N3 restent à évaluer.
 3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
    replie en rond tournant (pochette, ou hassid à la guitare).
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots

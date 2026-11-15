@@ -83,4 +83,8 @@
     <dimen name="hero_title">21sp</dimen>
     <!-- Les intitulés des onglets : sur 320dp, cinq onglets de 64dp coupaient « Aujourd'hui » et « Bibliothèque » (15/10). -->
     <dimen name="nav_label">10sp</dimen>
+    <!-- Le bandeau « Ciel » de l’accueil (15/11), selon la hauteur de l’écran. -->
+    <dimen name="ciel_hauteur">104dp</dimen>
+    <!-- La pile de cartes de l'accueil « Pile » (15/11). -->
+    <dimen name="pile_hauteur">430dp</dimen>
 </resources>

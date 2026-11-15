@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    L'accueil « Pile » (refonte C aimée, 15/11) : la journée en quatre cartes empilées,
+    la hitbodedout, le ’hizouk, les zmanim et le journal. On les fait glisser du doigt
+    (ou des flèches) ; le ’hizouk se retourne pour sa traduction, la note se déplie.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pile"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/pile_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/mhMuted"
+                android:textSize="14sp" />
+
+            <TextView
+                style="?attr/mhStyleTitre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/pile_titre"
+                android:textColor="?attr/mhInk"
+                android:textSize="28sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pile_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFeatureSettings="tnum"
+            android:textColor="?attr/mhMuted"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Les cartes, l'une sur l'autre : celle du dessus suit le doigt. -->
+    <com.myhitbodedut.PileCartes
+        android:id="@+id/pile_cartes"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pile_hauteur"
+        android:layout_marginTop="16dp"
+        android:clipChildren="false">
+
+        <!-- 1. La hitbodedout du jour. -->
+        <LinearLayout
+            android:id="@+id/pile_hitbo"
+            style="@style/PileCarte"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/pile_hitbo_image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                style="@style/PileEtiquette"
+                android:layout_marginTop="12dp"
+                android:text="@string/pile_hitbo" />
+
+            <TextView
+                android:id="@+id/pile_hitbo_titre"
+                style="?attr/mhStyleTitre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="?attr/mhInk"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/pile_hitbo_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:lineSpacingMultiplier="1.2"
+                android:textColor="?attr/mhMuted"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pile_hitbo_commencer"
+                style="@style/StartButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp" />
+        </LinearLayout>
+
+        <!-- 2. Le ’hizouk : l'hébreu au recto, la traduction au verso. -->
+        <FrameLayout
+            android:id="@+id/pile_hizouk"
+            style="@style/PileCarte">
+
+            <LinearLayout
+                android:id="@+id/pile_hizouk_recto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/PileEtiquette"
+                    android:text="@string/refonte_hizouk" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="true"
+                    android:scrollbars="none">
+
+                    <TextView
+                        android:id="@+id/pile_hizouk_hebreu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingMultiplier="1.3"
+                        android:textColor="?attr/mhInk"
+                        android:textDirection="rtl"
+                        android:textSize="21sp" />
+                </ScrollView>
+
+                <TextView
+                    android:id="@+id/pile_hizouk_ref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="?attr/mhMuted"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/pile_hizouk_traduire"
+                    style="@style/Bouton.Contour"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/pile_voir_traduction" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pile_hizouk_verso"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/PileEtiquette"
+                    android:text="@string/pile_traduction" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="true"
+                    android:scrollbars="none">
+
+                    <TextView
+                        android:id="@+id/pile_hizouk_traduction"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingMultiplier="1.25"
+                        android:textColor="?attr/mhInk"
+                        android:textSize="16sp" />
+                </ScrollView>
+
+                <Button
+                    android:id="@+id/pile_hizouk_hebreu_retour"
+                    style="@style/Bouton.Contour"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/pile_revoir_hebreu" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- 3. Les zmanim du lieu : le prochain, la journée qui avance, quatre repères. -->
+        <LinearLayout
+            android:id="@+id/pile_zmanim"
+            style="@style/PileCarte"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/pile_zmanim_lieu"
+                style="@style/PileEtiquette"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/pile_zmanim_prochain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="?attr/mhMuted"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/pile_zmanim_dans"
+                style="?attr/mhStyleTitre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFeatureSettings="tnum"
+                android:textColor="?attr/mhInk"
+                android:textSize="34sp" />
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/pile_zmanim_jour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:importantForAccessibility="no"
+                app:indicatorColor="?attr/mhBrand"
+                app:trackColor="?attr/mhLine"
+                app:trackCornerRadius="4dp"
+                app:trackThickness="8dp" />
+
+            <LinearLayout
+                android:id="@+id/pile_zmanim_liste"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/pile_zmanim_tous"
+                style="@style/Bouton.Contour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pile_tous_zmanim" />
+        </LinearLayout>
+
+        <!-- 4. Le journal : la dernière note, qui se déplie, et celle du jour à écrire. -->
+        <LinearLayout
+            android:id="@+id/pile_journal"
+            style="@style/PileCarte"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/PileEtiquette"
+                android:text="@string/refonte_journal" />
+
+            <TextView
+                android:id="@+id/pile_journal_titre"
+                style="?attr/mhStyleTitre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="?attr/mhInk"
+                android:textSize="24sp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:nestedScrollingEnabled="true"
+                android:scrollbars="none">
+
+                <TextView
+                    android:id="@+id/pile_journal_texte"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lineSpacingMultiplier="1.25"
+                    android:maxLines="5"
+                    android:textColor="?attr/mhInk"
+                    android:textSize="15sp" />
+            </ScrollView>
+
+            <Button
+                android:id="@+id/pile_journal_deplier"
+                style="@style/Bouton.Texte"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pile_lire_suite" />
+
+            <Button
+                android:id="@+id/pile_journal_ecrire"
+                style="@style/Bouton.Plein"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/pile_ecrire_note" />
+        </LinearLayout>
+    </com.myhitbodedut.PileCartes>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/pile_precedente"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/pile_precedente"
+            android:rotationY="180"
+            android:src="@drawable/ic_chevron"
+            app:tint="?attr/mhInk" />
+
+        <LinearLayout
+            android:id="@+id/pile_points"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:importantForAccessibility="noHideDescendants"
+            android:orientation="horizontal" />
+
+        <ImageButton
+            android:id="@+id/pile_suivante"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/pile_suivante"
+            android:src="@drawable/ic_chevron"
+            app:tint="?attr/mhInk" />
+    </LinearLayout>
+</LinearLayout>

@@ -99,13 +99,22 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(this, OnboardingActivity::class.java))
         }
         findViewById<Button>(R.id.mode_button).setOnClickListener { askMode() }
+        findViewById<Button>(R.id.habillage_button).setOnClickListener { askHabillage() }
         findViewById<Button>(R.id.fond_button).setOnClickListener { askFond() }
         findViewById<Button>(R.id.accent_button).setOnClickListener { askAccent() }
+        findViewById<Button>(R.id.typo_button).setOnClickListener { askTypo() }
         // Personnalisation (14/10) : police hébraïque, écran d'ouverture, livre de la halakha.
         findViewById<Button>(R.id.police_button).setOnClickListener {
             val polices = PoliceHebraique.Police.values()
             choisirParmi(R.string.settings_police, polices.map { it.libelle }, polices.indexOf(Store.lecturePolice(this))) {
                 Store.setLecturePolice(this, polices[it]); renderValues()
+            }
+        }
+        // La disposition de l'accueil (15/11) : le classique, ou l'une des trois refontes aimées.
+        findViewById<Button>(R.id.disposition_button).setOnClickListener {
+            val choix = Store.Disposition.values()
+            choisirParmi(R.string.settings_disposition, choix.map { it.libelle }, choix.indexOf(Store.accueilDisposition(this))) {
+                Store.setAccueilDisposition(this, choix[it]); renderValues()
             }
         }
         findViewById<Button>(R.id.ouverture_button).setOnClickListener {
@@ -146,12 +155,16 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.window_start).setOnClickListener {
             pickTime(Store.windowStart(this)) {
+                // Début = fin : la fenêtre serait vide et la barrière ne
+                // s'armerait jamais (check-up du 11/11).
+                if (it == Store.windowEnd(this)) { fenetreVide(); return@pickTime }
                 Store.setWindow(this, it, Store.windowEnd(this))
                 refresh()
             }
         }
         findViewById<Button>(R.id.window_end).setOnClickListener {
             pickTime(Store.windowEnd(this)) {
+                if (it == Store.windowStart(this)) { fenetreVide(); return@pickTime }
                 Store.setWindow(this, Store.windowStart(this), it)
                 refresh()
             }
@@ -189,6 +202,10 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<Button>(R.id.reset_app).setOnClickListener { confirmerReinitialisation() }
     }
 
+    private fun fenetreVide() {
+        android.widget.Toast.makeText(this, R.string.window_same_error, android.widget.Toast.LENGTH_LONG).show()
+    }
+
     /** Tout effacer, après confirmation : séance, barrière, rappels, notifications, puis les données ; on repart de la présentation. */
     private fun confirmerReinitialisation() {
         MaterialAlertDialogBuilder(this)
@@ -196,6 +213,9 @@ class SettingsActivity : AppCompatActivity() {
             .setMessage(R.string.reset_confirm_text)
             .setNegativeButton(R.string.reset_confirm_no, null)
             .setPositiveButton(R.string.reset_confirm_yes) { _, _ ->
+                // Avant d'effacer les préférences, qui gardent le mode d'avant
+                // la séance (check-up du 11/11).
+                NePasDeranger.retablir(this)
                 stopService(Intent(this, SessionService::class.java))
                 // Avant l'effacement : il emporte le témoin du mode posé, sans retour possible.
                 NePasDeranger.retablir(this)
@@ -376,6 +396,7 @@ class SettingsActivity : AppCompatActivity() {
             refresh()
         }
         // Grand texte (14/10) : les textes de lecture à 140 % ; la barre « Aa » règle toujours finement.
+        bindSwitch(R.id.ciel_switch, Store.accueilCiel(this)) { Store.setAccueilCiel(this, it) }
         bindSwitch(R.id.grand_texte_switch, Store.lectureEchelle(this) >= GRAND_TEXTE) { Store.setLectureEchelle(this, if (it) GRAND_TEXTE else 1f) }
         // L'écran gardé allumé pendant la lecture (audit du 12/11, FLECTURE-01), par défaut.
         bindSwitch(R.id.ecran_allume_switch, Store.lectureEcranAllume(this)) { Store.setLectureEcranAllume(this, it) }
@@ -455,10 +476,16 @@ class SettingsActivity : AppCompatActivity() {
             Store.adresse(this)?.nom ?: R.string.adresse_none
         )
         findViewById<Button>(R.id.mode_button).setText(Store.modeApparence(this).nom)
+        findViewById<Button>(R.id.habillage_button).setText(
+            Apparence.Habillage.de(Store.fond(this), Store.accent(this), Store.police(this))?.nom
+                ?: R.string.habillage_perso
+        )
         findViewById<Button>(R.id.fond_button).setText(Store.fond(this).nom)
         findViewById<Button>(R.id.accent_button).setText(Store.accent(this).nom)
+        findViewById<Button>(R.id.typo_button).setText(Store.police(this).nom)
         findViewById<Button>(R.id.police_button).setText(Store.lecturePolice(this).libelle)
         findViewById<Button>(R.id.ouverture_button).setText(Store.ouverture(this).libelle)
+        findViewById<Button>(R.id.disposition_button).setText(Store.accueilDisposition(this).libelle)
         findViewById<Button>(R.id.halakha_source_button).setText(Store.sourceHalakha(this).libelle)
         findViewById<Button>(R.id.levana_usage_button).text = Store.levanaUsage(this)?.let { getString(it.libelle) }
             ?: getString(R.string.levana_usage_auto) + " · " + getString(VueJour.usageLevana(this).libelle)
@@ -556,6 +583,38 @@ class SettingsActivity : AppCompatActivity() {
         choisirParmi(R.string.settings_accent, accents.map { it.nom }, accents.indexOf(Store.accent(this))) {
             Store.setAccent(this, accents[it])
             StreakWidget.refresh(this)
+            recreate()
+        }
+    }
+
+    /**
+     * Un habillage de la maquette (14/11) pose le fond, les boutons et les
+     * caractères ensemble, et le mode quand il en impose un. Si le mode
+     * change, AppCompat recrée déjà les écrans ; sinon celui-ci se recrée.
+     */
+    private fun askHabillage() {
+        val habillages = Apparence.Habillage.values()
+        val avant = Apparence.Habillage.de(Store.fond(this), Store.accent(this), Store.police(this))
+        choisirParmi(R.string.settings_habillage, habillages.map { it.nom }, habillages.indexOf(avant)) {
+            val choisi = habillages[it]
+            Store.setFond(this, choisi.fond)
+            Store.setAccent(this, choisi.accent)
+            Store.setPolice(this, choisi.police)
+            StreakWidget.refresh(this)
+            val mode = Apparence.Habillage.mode(avant, choisi, Store.modeApparence(this))
+            if (mode != Store.modeApparence(this)) {
+                Store.setModeApparence(this, mode)
+                Apparence.appliquerMode(this)
+            }
+            recreate()
+        }
+    }
+
+    /** Les caractères ne touchent pas la vignette : elle garde la police du téléphone. */
+    private fun askTypo() {
+        val polices = Apparence.Police.values()
+        choisirParmi(R.string.settings_typo, polices.map { it.nom }, polices.indexOf(Store.police(this))) {
+            Store.setPolice(this, polices[it])
             recreate()
         }
     }

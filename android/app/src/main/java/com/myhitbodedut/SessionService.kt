@@ -116,6 +116,9 @@ class SessionService : Service() {
                 }
                 // L'ambiance suit son réglage, que la musique soit là ou non (19/10).
                 ambiance.start(AmbiancePlayer.choisie(this), Store.musicVolume(this))
+                // Le volume réglé pendant la séance s'applique tout de suite
+                // (check-up du 11/11 : il n'était qu'enregistré).
+                music.setVolume(Store.musicVolume(this))
                 if (!Store.musicEnabled(this)) {
                     music.stop()
                     // Service déjà en marche : rien d'autre à faire. Sinon
@@ -153,6 +156,11 @@ class SessionService : Service() {
     }
 
     override fun onDestroy() {
+        // Arrêté de l'extérieur (Réinitialiser) : rien ne doit continuer à
+        // jouer sans personne pour l'arrêter (check-up du 11/11). Sans effet
+        // après stopSelfAndClear, qui a déjà tout coupé.
+        music.stop(fade = false)
+        NePasDeranger.retablir(this)
         ambiance.stop()
         lecteur = null
         handler.removeCallbacks(tick)
@@ -368,6 +376,9 @@ class SessionService : Service() {
         val notification = Notification.Builder(this, Notifications.CHANNEL_REMINDER)
             .setContentTitle(getString(R.string.session_done_title))
             .setContentText(getString(R.string.session_done_text, Store.formatDuration(this, minutes)))
+            // Le texte entier, « Touchez pour laisser une note » compris : il
+            // était coupé sur une ligne (check-up du 11/11).
+            .setStyle(Notification.BigTextStyle().bigText(getString(R.string.session_done_text, Store.formatDuration(this, minutes))))
             .setSmallIcon(R.drawable.ic_notification)
             // Les anneaux tels que la séance les laisse.
             .setLargeIcon(AnneauxImage.notification(this))

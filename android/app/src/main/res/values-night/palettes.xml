@@ -151,4 +151,66 @@
         <item name="colorOnSurfaceVariant">#DADADA</item>
         <item name="colorOutline">#8C8C8C</item>
     </style>
+    <!-- Grenat (14/11), la nuit : un rose brique, lisible sur les cartes sombres. -->
+    <style name="Accent.Grenat" parent="">
+        <item name="mhBrand">#E8A79C</item>
+        <item name="mhBrandDark">#45191A</item>
+        <item name="mhMint">#F5E3DF</item>
+        <item name="mhOnBrand">#2A0D0B</item>
+        <item name="mhOnPlate">#7A2E2A</item>
+        <item name="mhStageSoft">#FCF4F1</item>
+        <item name="mhDayDone">#7A2E2A</item>
+        <item name="colorPrimary">#E8A79C</item>
+        <item name="colorOnPrimary">#2A0D0B</item>
+        <item name="colorSecondary">#45191A</item>
+        <item name="colorPrimaryContainer">#F5E3DF</item>
+        <item name="colorOnPrimaryContainer">#45191A</item>
+        <item name="android:statusBarColor">#45191A</item>
+    </style>
+    <!-- Or (14/11), la nuit : l’or de Minuit doré, réservé aux actions. -->
+    <style name="Accent.Or" parent="">
+        <item name="mhBrand">#D8B65E</item>
+        <item name="mhBrandDark">#3D3014</item>
+        <item name="mhMint">#F6EBCB</item>
+        <item name="mhOnBrand">#17181B</item>
+        <item name="mhOnPlate">#6E5410</item>
+        <item name="mhStageSoft">#FCF7EA</item>
+        <item name="mhDayDone">#6E5410</item>
+        <item name="colorPrimary">#D8B65E</item>
+        <item name="colorOnPrimary">#17181B</item>
+        <item name="colorSecondary">#3D3014</item>
+        <item name="colorPrimaryContainer">#F6EBCB</item>
+        <item name="colorOnPrimaryContainer">#3D3014</item>
+        <item name="android:statusBarColor">#000000</item>
+    </style>
+    <!-- Parchemin (14/11), la nuit : papier #1B1712, encre #EDE3D0, comme la maquette. -->
+    <style name="Fond.Parchemin" parent="">
+        <item name="mhPaper">#1B1712</item>
+        <item name="mhCard">#26201A</item>
+        <item name="mhLine">#3E3529</item>
+        <item name="mhInk">#EDE3D0</item>
+        <item name="mhMuted">#B5A891</item>
+        <item name="mhDayTodo">#2E271F</item>
+        <item name="android:colorBackground">#1B1712</item>
+        <item name="colorSurface">#26201A</item>
+        <item name="colorSurfaceContainerHigh">#26201A</item>
+        <item name="colorOnSurface">#EDE3D0</item>
+        <item name="colorOnSurfaceVariant">#B5A891</item>
+        <item name="colorOutline">#3E3529</item>
+    </style>
+    <!-- Minuit (14/11), la nuit : noir pur, économe sur OLED, encre ivoire. -->
+    <style name="Fond.Minuit" parent="">
+        <item name="mhPaper">#000000</item>
+        <item name="mhCard">#17181B</item>
+        <item name="mhLine">#26272B</item>
+        <item name="mhInk">#EDE8DC</item>
+        <item name="mhMuted">#9C978C</item>
+        <item name="mhDayTodo">#1C1D21</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#17181B</item>
+        <item name="colorSurfaceContainerHigh">#17181B</item>
+        <item name="colorOnSurface">#EDE8DC</item>
+        <item name="colorOnSurfaceVariant">#9C978C</item>
+        <item name="colorOutline">#26272B</item>
+    </style>
 </resources>

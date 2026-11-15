@@ -60,6 +60,11 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         if (savedInstanceState == null && ouverture == Store.Ouverture.ZMANIM && intent?.getStringExtra(EXTRA_ASK_NOTE) == null) {
             startActivity(Intent(this, ZmanimActivity::class.java))
         }
+        // Le ciel de l'accueil (15/11) : touché, il ouvre les zmanim ; il se redessine chaque minute.
+        findViewById<CielView>(R.id.ciel)?.apply {
+            setOnClickListener { startActivity(Intent(this@MainActivity, ZmanimActivity::class.java)) }
+            aChaqueMinute = { renderCiel() }
+        }
         // Venu de la notification de fin : la note du jour de la séance, pas
         // du jour où l'on touche la notification. Si le bravo attend encore,
         // c'est lui qui la proposera, après. Lue une seule fois : une
@@ -367,7 +372,11 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     // --- Rendu --------------------------------------------------------------
 
+    /** Les trois accueils refondus (15/11), choisis dans Réglages › Apparence. */
+    private val refontes by lazy { AccueilRefontes(this) }
+
     private fun refresh() {
+        renderCiel()
         renderToday()
         renderWeek()
         // Ce qui suit lit le siddour, la bibliothèque et le Tikoun : seulement une fois lus hors
@@ -381,6 +390,8 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         renderReminders()
         renderSettingsEntry()
         renderStartCard()
+        // En dernier : une refonte cache le haut de l'accueil classique que ce qui précède vient de régler.
+        refontes.rendre()
     }
 
     /** Les cartes de l'accueil qui lisent les fichiers de données. */
@@ -439,6 +450,35 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
      * « שלום Avraham » : l'accueil se tait s'il n'a personne à nommer, et
      * l'état du jour prend alors la place du titre.
      */
+    /**
+     * Le bandeau « Ciel » (15/11) : le ciel du lieu choisi, à son heure, et le
+     * prochain zman dessous. Sans lieu, un ciel aux heures moyennes qui le dit.
+     * Caché sur l'accueil couché, où la hauteur manque, et si on l'a éteint dans les réglages.
+     */
+    private fun renderCiel() {
+        val vue = findViewById<CielView>(R.id.ciel) ?: return
+        val legende = findViewById<TextView>(R.id.ciel_legende)
+        // Sous une refonte, le bandeau n'a pas sa place (il se redessine chaque minute : sans ce
+        // test, il revenait par-dessus le Bento ou la Pile).
+        val montre = Store.accueilCiel(this) && refontes.disposition() == Store.Disposition.CLASSIQUE &&
+            resources.configuration.orientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE
+        vue.visibility = if (montre) View.VISIBLE else View.GONE
+        legende.visibility = vue.visibility
+        if (!montre) return
+        val lieu = Store.lieuZmanim(this)
+        val zone = lieu?.let { runCatching { java.time.ZoneId.of(it.fuseau) }.getOrNull() } ?: java.time.ZoneId.systemDefault()
+        val maintenant = java.time.ZonedDateTime.now(zone)
+        val zmanim = lieu?.let { runCatching { Zmanim.jour(it, maintenant.toLocalDate()) }.getOrNull() }
+        val reperes = zmanim?.let(CielDuJour::reperes) ?: CielDuJour.MOYENS
+        vue.montrer(CielDuJour.ciel(maintenant.hour * 60 + maintenant.minute, reperes))
+        legende.text = when {
+            zmanim == null -> getString(R.string.ciel_sans_lieu)
+            else -> CielDuJour.prochain(zmanim, maintenant)?.let { z ->
+                getString(R.string.ciel_prochain, getString(CielDuJour.NOMS.getValue(z.cle)), z.local!!.format(HEURE_CIEL))
+            } ?: getString(R.string.ciel_nuit)
+        }
+    }
+
     private fun renderGreeting() {
         val prenom = Store.firstName(this)
         findViewById<TextView>(R.id.hero_greeting).apply {
@@ -494,6 +534,8 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         val aujourdhui = java.time.LocalDate.now()
         val nouveaux = Anneaux.aFeter(etat, aujourdhui, Store.anneauxFetes(this))
         Store.setAnneauxFetes(this, Anneaux.marques(etat, aujourdhui))
+        // Sous une refonte, les anneaux sont cachés : rien à fêter à l'écran, ni à faire vibrer.
+        if (!refontes.anneauxMontres) return
         if (nouveaux.isEmpty()) {
             if (face == Plaque.Face.HASSID) sautiller(1)
         } else {
@@ -1072,6 +1114,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     }
 
     companion object {
+        private val HEURE_CIEL: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         /** La durée de l'écran d'ouverture (15/10 : une seconde et demie). */
         const val OUVERTURE_MS = 1500L
 

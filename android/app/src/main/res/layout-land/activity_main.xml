@@ -49,6 +49,7 @@
 
                     <!-- Les trois anneaux (jour, semaine, série), et le hassid qui accueille en leur creux. -->
                     <FrameLayout
+                        android:id="@+id/hero_anneaux"
                         android:layout_width="@dimen/gauge_size_side"
                         android:layout_height="@dimen/gauge_size_side"
                         android:layout_gravity="center_horizontal">
@@ -94,11 +95,12 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="44dp"
                                     android:autoSizeMaxTextSize="34sp"
-                                    android:autoSizeMinTextSize="16sp"
+                                    android:autoSizeMinTextSize="10sp"
                                     android:autoSizeTextType="uniform"
                                     android:fontFeatureSettings="tnum"
                                     android:gravity="center"
                                     android:maxLines="1"
+                                android:ellipsize="end"
                                     android:textStyle="bold" />
 
                                 <TextView
@@ -107,7 +109,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="0dp"
                                     android:gravity="center"
-                                    android:maxLines="3"
+                                    android:maxLines="2"
+                                    android:ellipsize="end"
                                     android:textColor="@color/on_plate_muted"
                                     android:textSize="12sp" />
                             </LinearLayout>
@@ -147,16 +150,35 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <!-- Couché, sans la ligne « MyHitbodedut » : la hauteur manque pour « Commencer ». -->
+                    <!-- Le ciel de l'accueil (15/11) reste caché couché : la hauteur manque pour « Commencer ».
+                         Présent pour garder les identifiants de la version debout (LayoutPaysageTest). -->
+                    <com.myhitbodedut.CielView
+                        android:id="@+id/ciel"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/ciel_hauteur"
+                        android:visibility="gone" />
 
                     <TextView
+                        android:id="@+id/ciel_legende"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <!-- Couché, sans la ligne « MyHitbodedut » : la hauteur manque pour « Commencer ». -->
+                    <TextView
+                        android:id="@+id/accueil_marque"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <TextView
+                        style="?attr/mhStyleTitre"
                         android:id="@+id/hero_greeting"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textColor="?attr/mhInk"
                         android:textSize="26sp"
-                        android:textStyle="bold"
                         android:visibility="gone" />
 
                     <!-- Sans prénom, cette ligne devient le titre (MainActivity.renderGreeting).
@@ -172,6 +194,7 @@
                         android:textSize="17sp" />
 
                     <LinearLayout
+                        android:id="@+id/status_ligne"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -234,6 +257,7 @@
                         obligatoire, et la rangée défile si elle déborde.
                     -->
                     <HorizontalScrollView
+                        android:id="@+id/start_puces"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
@@ -386,14 +410,14 @@
                 android:paddingBottom="24dp">
 
                 <TextView
+                    style="?attr/mhStyleTitre"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="@dimen/edge_inner"
                     android:paddingTop="16dp"
                     android:text="@string/nav_texts"
                     android:textColor="?attr/mhInk"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textSize="24sp" />
 
                 <!-- La recherche dans toute l'application (14/10). -->
                 <Button

@@ -152,6 +152,9 @@ object Store {
     private const val KEY_MODE = "apparence_mode"
     private const val KEY_FOND = "apparence_fond"
     private const val KEY_ACCENT = "apparence_accent"
+    private const val KEY_POLICE_INTERFACE = "apparence_police"
+    private const val KEY_ACCUEIL_CIEL = "accueil_ciel"
+    private const val KEY_ACCUEIL_DISPOSITION = "accueil_disposition"
     private const val KEY_LANGUE_APP = "langue_app"
     private const val KEY_LANGUE_REPLI = "langue_repli"
     private const val KEY_MUSIC_ON = "music_enabled"
@@ -164,6 +167,9 @@ object Store {
     private const val KEY_TIKKUN_DONE = "tikkun_done"
     /** Les jours où le Tikoun a été dit en entier (04/11), « 2026-11-04,… » : pour ses trophées. */
     private const val KEY_TIKKUN_JOURNAL = "tikkun_journal"
+
+    /** Rien d'importé avant cette date : l'application n'existait pas, c'est une coquille. */
+    private val PREMIER_JOUR_IMPORTABLE: LocalDate = LocalDate.of(2000, 1, 1)
 
     /** Le jour du Tikoun bascule à 4 h, pas à minuit : commencé à 23 h 45, il se finit après minuit (bug du 02/11). */
     fun jourTikkun(maintenant: java.time.LocalDateTime = java.time.LocalDateTime.now()): String =
@@ -206,12 +212,34 @@ object Store {
 
     // --- Journées -----------------------------------------------------------
 
+    /*
+     * La dernière lecture du journal, gardée tant que son texte ne change pas.
+     * L'accueil appelait days() 30 à 40 fois à chaque retour, et chaque appel
+     * réanalysait tout l'historique : l'application ralentissait à mesure
+     * qu'on s'en servait (check-up du 11/11). La clé est le texte lui-même,
+     * que SharedPreferences rend tel quel tant que rien ne l'a réécrit.
+     */
+    @Volatile private var joursBrut: String? = null
+    @Volatile private var joursAnciens: Set<String>? = null
+    @Volatile private var joursLus: Map<String, DayRecord>? = null
+
     /** Lit la carte des journées, en reprenant l'ancien format s'il existe encore. */
     fun days(context: Context): Map<String, DayRecord> {
-        val result = linkedMapOf<String, DayRecord>()
         // Fichier du journal d'abord, puis reprise de l'ancien emplacement.
         val raw = journalPrefs(context).getString(KEY_DAYS, null)
             ?: prefs(context).getString(KEY_DAYS, null)
+        val anciens = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
+        val memoire = joursLus
+        if (memoire != null && raw == joursBrut && anciens == joursAnciens) return memoire
+        val lus = lireJours(context, raw, anciens)
+        joursBrut = raw
+        joursAnciens = HashSet(anciens)
+        joursLus = lus
+        return lus
+    }
+
+    private fun lireJours(context: Context, raw: String?, legacy: Set<String>): Map<String, DayRecord> {
+        val result = linkedMapOf<String, DayRecord>()
         if (raw != null) {
             runCatching {
                 val root = JSONObject(raw)
@@ -237,11 +265,10 @@ object Store {
             }
         }
         // Reprise des jours validés par les versions précédentes.
-        val legacy = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
         legacy.forEach { date ->
             if (!result.containsKey(date)) result[date] = DayRecord(date, 0, "")
         }
-        return result
+        return java.util.Collections.unmodifiableMap(result)
     }
 
     private fun writeDays(context: Context, days: Map<String, DayRecord>) {
@@ -1429,6 +1456,42 @@ object Store {
         prefs(context).edit().putString(KEY_FOND, fond.cle).apply()
     }
 
+    fun police(context: Context): Apparence.Police =
+        Apparence.Police.parse(prefs(context).getString(KEY_POLICE_INTERFACE, null))
+
+    fun setPolice(context: Context, police: Apparence.Police) {
+        prefs(context).edit().putString(KEY_POLICE_INTERFACE, police.cle).apply()
+    }
+
+    /** Le bandeau « Ciel » en haut de l'accueil (15/11), montré par défaut. */
+    fun accueilCiel(context: Context): Boolean = prefs(context).getBoolean(KEY_ACCUEIL_CIEL, true)
+
+    fun setAccueilCiel(context: Context, oui: Boolean) {
+        prefs(context).edit().putBoolean(KEY_ACCUEIL_CIEL, oui).apply()
+    }
+
+    /**
+     * La disposition de l'accueil (15/11) : l'accueil d'avant, ou l'une des trois refontes
+     * aimées sur les maquettes. Un choix inconnu (sauvegarde plus récente) revient au classique.
+     */
+    enum class Disposition(val cle: String, val libelle: Int) {
+        CLASSIQUE("classique", R.string.disposition_classique),
+        CIEL("ciel", R.string.disposition_ciel),
+        BENTO("bento", R.string.disposition_bento),
+        PILE("pile", R.string.disposition_pile);
+
+        companion object {
+            fun parse(cle: String?): Disposition = values().firstOrNull { it.cle == cle } ?: CLASSIQUE
+        }
+    }
+
+    fun accueilDisposition(context: Context): Disposition =
+        Disposition.parse(prefs(context).getString(KEY_ACCUEIL_DISPOSITION, null))
+
+    fun setAccueilDisposition(context: Context, d: Disposition) {
+        prefs(context).edit().putString(KEY_ACCUEIL_DISPOSITION, d.cle).apply()
+    }
+
     fun accent(context: Context): Apparence.Accent =
         Apparence.Accent.parse(prefs(context).getString(KEY_ACCENT, null))
 
@@ -1631,6 +1694,9 @@ object Store {
             .put("apparence_mode", modeApparence(context).cle)
             .put("apparence_fond", fond(context).cle)
             .put("apparence_accent", accent(context).cle)
+            .put("apparence_police", police(context).cle)
+            .put("accueil_ciel", accueilCiel(context))
+            .put("accueil_disposition", accueilDisposition(context).cle)
             .put("siddur_nusah", siddurNusah(context).cle)
             .put("lecture_echelle", lectureEchelle(context).toDouble())
             .put("lecture_police", lecturePolice(context).cle)
@@ -1665,7 +1731,7 @@ object Store {
             val ici = runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject())
             for (date in entrant.keys()) {
                 val jour = dateValide(date) ?: continue
-                if (!jour.isBefore(demain)) continue
+                if (!jour.isBefore(demain) || jour.isBefore(PREMIER_JOUR_IMPORTABLE)) continue
                 val e = entrant.optJSONObject(date) ?: continue
                 val plus = JournalPlus.Plus(e.optInt("avant", 0).coerceIn(0, 5), e.optInt("apres", 0).coerceIn(0, 5),
                     e.optString("gratitude", "").take(JournalPlus.GRATITUDE_MAX), e.optString("travail", "").take(JournalPlus.GRATITUDE_MAX))
@@ -1675,7 +1741,8 @@ object Store {
                 if (!plus.vide && !dejaNote) JournalPlus.ecrire(context, date, plus)
             }
         }
-        val tikkun = chaines(root.optJSONArray("tikkun_journal")).mapNotNull(::dateValide).filter { it.isBefore(demain) }
+        val tikkun = chaines(root.optJSONArray("tikkun_journal")).mapNotNull(::dateValide)
+            .filter { it.isBefore(demain) && !it.isBefore(PREMIER_JOUR_IMPORTABLE) }
         if (tikkun.isNotEmpty()) {
             prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).sorted().joinToString(",")).apply()
         }
@@ -1711,6 +1778,9 @@ object Store {
                 // ouverture ; une date à venir n'a rien à faire dans un journal.
                 val jour = dateValide(date) ?: continue
                 if (!jour.isBefore(demain)) continue
+                // Une coquille (« 0026-11-04 ») faisait compter la série jour
+                // par jour depuis l'an 26 : blocage à chaque ouverture (check-up du 11/11).
+                if (jour.isBefore(PREMIER_JOUR_IMPORTABLE)) continue
                 val incoming = DayRecord(
                     date,
                     entry.optInt("minutes", 0).coerceIn(0, 24 * 60),
@@ -1789,6 +1859,10 @@ object Store {
                 ?.let { setFond(context, Apparence.Fond.parse(it)) }
             settings.optString("apparence_accent").takeIf { it.isNotBlank() }
                 ?.let { setAccent(context, Apparence.Accent.parse(it)) }
+            settings.optString("apparence_police").takeIf { it.isNotBlank() }
+                ?.let { setPolice(context, Apparence.Police.parse(it)) }
+            if (settings.has("accueil_ciel")) setAccueilCiel(context, settings.optBoolean("accueil_ciel", true))
+            if (settings.has("accueil_disposition")) setAccueilDisposition(context, Disposition.parse(settings.optString("accueil_disposition")))
             Nusah.entries.firstOrNull { it.cle == settings.optString("siddur_nusah") }?.let { setSiddurNusah(context, it) }
             if (settings.has("lecture_echelle")) {
                 setLectureEchelle(context, settings.optDouble("lecture_echelle", 1.0).toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))

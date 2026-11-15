@@ -286,6 +286,8 @@ object Data {
                 siddur(app)
                 library(app)
                 tikkun(app)
+                // Le ’hizouk du jour des tuiles et des cartes (15/11) : lu ici plutôt qu'au premier dessin.
+                if (Store.accueilDisposition(app).let { it == Store.Disposition.BENTO || it == Store.Disposition.PILE }) chizuk(app)
             }
             pret = true
             apres?.let { android.os.Handler(android.os.Looper.getMainLooper()).post(it) }

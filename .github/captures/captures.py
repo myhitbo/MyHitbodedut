@@ -1059,6 +1059,42 @@ def main():
         sh("settings put global auto_time 1")
     etape("27 visuels Play", s27)
 
+    def s28():
+        # Les trois accueils refondus (15/11) : Ciel complet, Bento, Pile, à Paris, puis en
+        # Minuit doré et en Parchemin. La pile glisse d'une carte, puis revient.
+        lieu = {
+            "lieu_nom": ("string", "Paris"), "lieu_latitude": ("string", "48.85341"),
+            "lieu_longitude": ("string", "2.3488"), "lieu_altitude": ("string", "0.0"),
+            "lieu_fuseau": ("string", "Europe/Paris"), "lieu_ville": ("long", "2988507"),
+            "in_israel": ("boolean", "false"), "langue_app": ("string", "fr"),
+        }
+        langue("fr")
+        for habillage, reglages in [
+            ("", {"apparence_mode": ("string", "auto"), "apparence_fond": ("string", "vert")}),
+            ("-minuit", {"apparence_mode": ("string", "sombre"), "apparence_fond": ("string", "minuit"),
+                         "apparence_accent": ("string", "or"), "apparence_police": ("string", "souffle")}),
+            ("-parchemin", {"apparence_mode": ("string", "clair"), "apparence_fond": ("string", "parchemin"),
+                            "apparence_accent": ("string", "grenat"), "apparence_police": ("string", "souffle")}),
+        ]:
+            for disposition in ["ciel", "bento", "pile"]:
+                regler({**lieu, **reglages, "accueil_disposition": ("string", disposition)})
+                lancer()
+                capture(f"28-{disposition}{habillage}", attente=2.0)
+                defiler(True)
+                capture(f"28-{disposition}{habillage}-suite", attente=1.0)
+                if disposition == "pile" and not habillage:
+                    defiler(False)
+                    for carte in range(1, 4):
+                        ok = toucher(desc="Carte suivante", attente=1.2)
+                        capture(f"28-pile-carte{carte + 1}", ok=ok)
+                    toucher(desc="Carte suivante", attente=1.0)
+                    ok = toucher(text="Voir la traduction", attente=1.5) if toucher(desc="Carte suivante", attente=1.0) else False
+                    capture("28-pile-hizouk-traduction", ok=ok)
+        regler({"accueil_disposition": ("string", "classique"), "apparence_mode": ("string", "auto"),
+                "apparence_fond": ("string", "vert"), "apparence_accent": ("string", "vert"),
+                "apparence_police": ("string", "systeme")})
+    etape("28 accueils refondus", s28)
+
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
 

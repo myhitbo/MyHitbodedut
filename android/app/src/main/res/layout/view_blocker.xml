@@ -45,14 +45,14 @@
         </FrameLayout>
 
         <TextView
+            style="?attr/mhStyleTitre"
             android:id="@+id/blocker_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="27sp"
-            android:textStyle="bold" />
+            android:textSize="27sp" />
 
         <TextView
             android:id="@+id/blocker_subtitle"

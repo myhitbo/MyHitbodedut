@@ -122,8 +122,8 @@ object ZmanimVignette {
         v.setTextViewText(R.id.wv_priere, context.getString(when (priere) {
             "chaharit" -> R.string.widget_zmanim_chaharit; "minha" -> R.string.widget_zmanim_minha; else -> R.string.widget_zmanim_arvit
         }))
-        v.setTextViewText(R.id.wv_limite, moment.debut?.let { context.getString(R.string.widget_des, it.format(HEURE)) }
-            ?: limite?.let { context.getString(R.string.widget_jusqua, it.format(HEURE)) } ?: "")
+        v.setTextViewText(R.id.wv_limite, moment.debut?.let { heureEnAvant(context.getString(R.string.widget_des, it.format(HEURE)), it.format(HEURE)) }
+            ?: limite?.let { heureEnAvant(context.getString(R.string.widget_jusqua, it.format(HEURE)), it.format(HEURE)) } ?: "")
         v.setViewVisibility(R.id.wv_jauge, if (limite != null) View.VISIBLE else View.GONE)
         v.setProgressBar(R.id.wv_jauge, 1000, ecoule(debut(priere, horaires), limite, maintenant), false)
         v.setTextViewText(R.id.wv_reste, limite?.let {
@@ -219,6 +219,21 @@ object ZmanimVignette {
         val minuitTelephone = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault())
         val quand = prochainChangement(horaires, maintenant, minuitTelephone)
         runCatching { alarmes.setWindow(android.app.AlarmManager.RTC, quand.toInstant().toEpochMilli(), 60_000L, pending) }
+    }
+
+    /**
+     * « jusqu'à 10:23 » : l'heure garde la grande taille, les mots autour
+     * passent à moitié. En fr et en, la phrase entière en 30 sp ne tenait pas
+     * dans la vignette et l'heure était rognée (check-up du 11/11).
+     */
+    private fun heureEnAvant(texte: String, heure: String): CharSequence {
+        val i = texte.indexOf(heure)
+        if (i < 0) return texte
+        return android.text.SpannableString(texte).apply {
+            val petit = android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            if (i > 0) setSpan(android.text.style.RelativeSizeSpan(0.5f), 0, i, petit)
+            if (i + heure.length < texte.length) setSpan(android.text.style.RelativeSizeSpan(0.5f), i + heure.length, texte.length, petit)
+        }
     }
 }
 

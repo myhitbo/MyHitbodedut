@@ -422,6 +422,8 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .chizuk-ref { margin: 8px 0 0; color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chizuk.compacte .chizuk-he { --corps-max: 17; height: 96px; }
 .chizuk.compacte .chizuk-trad { --corps-max: 14; height: 72px; }
+/* Au plancher de 12 px, un texte trop long allonge la carte plutôt que d'être rogné (11/11). */
+.chizuk-he.allonge, .chizuk-trad.allonge { height: auto; }
 
 /* --- La hitbodedout guidée (view_hitbodedut.xml, 02/11) ------------------------------
    La carte de ’hizouk, en plus petit : un repère, pas un programme. Elle reste visible
@@ -1412,7 +1414,7 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
 
 /* « J'ai besoin de ’hizouk » (19/10) */
 .hizouk-actions { display: flex; gap: 8px; margin-top: 12px; }
-.hizouk-actions button { flex: 1; }
+.hizouk-actions button { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .contenu.hizouk > .principal { width: 100%; margin-top: 8px; }
 .hizouk-garde { display: block; width: 100%; text-align: start; padding: 12px 4px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 15px; cursor: pointer; }
 .hizouk-garde-texte { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

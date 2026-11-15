@@ -203,6 +203,13 @@ class SessionActivity : AppCompatActivity() {
      */
     private fun lireDemande(intent: Intent?) {
         intent ?: return
+        // Rouvert depuis les Récents : Android rejoue l'intention d'origine,
+        // extras compris. Une séance repartait seule (check-up du 11/11).
+        if (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) {
+            intent.removeExtra(EXTRA_START_NOW)
+            intent.removeExtra(EXTRA_DEPUIS_RAPPEL)
+            return
+        }
         if (intent.getBooleanExtra(EXTRA_DEPUIS_RAPPEL, false)) {
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
                 .cancel(Notifications.ID_REMINDER)

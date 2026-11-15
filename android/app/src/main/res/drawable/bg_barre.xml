@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Une barre de la semaine ou de l'égaliseur (Bento, 15/11) ; teintée par le code. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="?attr/mhBrand" />
+    <corners android:radius="3dp" />
+</shape>

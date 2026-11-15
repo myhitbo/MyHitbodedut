@@ -46,7 +46,9 @@ object Apparence {
         SABLE("sable", R.string.fond_sable, R.style.Fond_Sable),
         BLEU("bleu", R.string.fond_bleu, R.style.Fond_Bleu),
         ROSE("rose", R.string.fond_rose, R.style.Fond_Rose),
-        CONTRASTE("contraste", R.string.fond_contraste, R.style.Fond_Contraste);
+        CONTRASTE("contraste", R.string.fond_contraste, R.style.Fond_Contraste),
+        PARCHEMIN("parchemin", R.string.fond_parchemin, R.style.Fond_Parchemin),
+        MINUIT("minuit", R.string.fond_minuit, R.style.Fond_Minuit);
 
         companion object {
             fun parse(cle: String?): Fond = values().firstOrNull { it.cle == cle } ?: VERT
@@ -60,10 +62,61 @@ object Apparence {
         VIOLET("violet", R.string.accent_violet, R.style.Accent_Violet),
         BORDEAUX("bordeaux", R.string.accent_bordeaux, R.style.Accent_Bordeaux),
         AMBRE("ambre", R.string.accent_ambre, R.style.Accent_Ambre),
-        TURQUOISE("turquoise", R.string.accent_turquoise, R.style.Accent_Turquoise);
+        TURQUOISE("turquoise", R.string.accent_turquoise, R.style.Accent_Turquoise),
+        GRENAT("grenat", R.string.accent_grenat, R.style.Accent_Grenat),
+        OR("or", R.string.accent_or, R.style.Accent_Or);
 
         companion object {
             fun parse(cle: String?): Accent = values().firstOrNull { it.cle == cle } ?: VERT
+        }
+    }
+
+    /**
+     * Les caractères de l'interface (14/11) : ceux du téléphone, ou Souffle,
+     * la typographie aimée sur la maquette (Bellefair pour les grands titres,
+     * Open Sans pour le texte). `style` vaut 0 pour celle du téléphone.
+     */
+    enum class Police(val cle: String, @StringRes val nom: Int, @StyleRes val style: Int) {
+        SYSTEME("systeme", R.string.typo_systeme, 0),
+        SOUFFLE("souffle", R.string.typo_souffle, R.style.Police_Souffle);
+
+        companion object {
+            fun parse(cle: String?): Police = values().firstOrNull { it.cle == cle } ?: SYSTEME
+        }
+    }
+
+    /**
+     * Les habillages retenus sur la maquette (14/11) : le fond, les boutons et
+     * les caractères d'un seul geste. Minuit doré se porte dans le noir ; les
+     * autres laissent le mode tel qu'il est. Les trois réglages restent
+     * modifiables un à un : l'habillage n'est alors plus que « personnalisé ».
+     */
+    enum class Habillage(
+        @StringRes val nom: Int,
+        val fond: Fond,
+        val accent: Accent,
+        val police: Police,
+        val mode: Mode?,
+    ) {
+        FORET(R.string.habillage_foret, Fond.VERT, Accent.VERT, Police.SYSTEME, null),
+        PARCHEMIN(R.string.habillage_parchemin, Fond.PARCHEMIN, Accent.GRENAT, Police.SOUFFLE, null),
+        MINUIT(R.string.habillage_minuit, Fond.MINUIT, Accent.OR, Police.SOUFFLE, Mode.SOMBRE);
+
+        companion object {
+            /** L'habillage que forment ces trois réglages ; null s'ils ont été composés à la main. */
+            fun de(fond: Fond, accent: Accent, police: Police): Habillage? =
+                values().firstOrNull { it.fond == fond && it.accent == accent && it.police == police }
+
+            /**
+             * Le mode après le passage de [avant] à [apres] : celui qu'impose
+             * [apres], sinon le mode présent ; quitter un habillage qui imposait
+             * le mode présent rend la main au téléphone.
+             */
+            fun mode(avant: Habillage?, apres: Habillage, actuel: Mode): Mode = when {
+                apres.mode != null -> apres.mode
+                avant?.mode != null && avant.mode == actuel -> Mode.AUTO
+                else -> actuel
+            }
         }
     }
 
@@ -101,11 +154,12 @@ object Apparence {
 
     /** Ce qui distingue deux thèmes appliqués ; le mode sombre, lui, est suivi par AppCompat. */
     private fun signature(context: Context): String =
-        "${Store.fond(context).cle}/${Store.accent(context).cle}"
+        "${Store.fond(context).cle}/${Store.accent(context).cle}/${Store.police(context).cle}"
 
     private fun appliquer(activity: Activity) {
         Store.fond(activity).style.takeIf { it != 0 }?.let { activity.theme.applyStyle(it, true) }
         Store.accent(activity).style.takeIf { it != 0 }?.let { activity.theme.applyStyle(it, true) }
+        Store.police(activity).style.takeIf { it != 0 }?.let { activity.theme.applyStyle(it, true) }
     }
 
     /**
@@ -135,6 +189,7 @@ object Apparence {
         return ContextThemeWrapper(configure, R.style.Theme_MyHitbodedut).apply {
             Store.fond(base).style.takeIf { it != 0 }?.let { theme.applyStyle(it, true) }
             Store.accent(base).style.takeIf { it != 0 }?.let { theme.applyStyle(it, true) }
+            Store.police(base).style.takeIf { it != 0 }?.let { theme.applyStyle(it, true) }
         }
     }
 

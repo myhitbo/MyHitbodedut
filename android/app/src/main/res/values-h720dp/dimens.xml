@@ -3,4 +3,6 @@
 <resources>
     <dimen name="gauge_size">292dp</dimen>
     <dimen name="gauge_size_side">268dp</dimen>
+    <dimen name="ciel_hauteur">148dp</dimen>
+    <dimen name="pile_hauteur">500dp</dimen>
 </resources>

@@ -49,6 +49,9 @@
         <item name="mhInk">@color/ink</item>
         <item name="mhMuted">@color/muted</item>
         <item name="mhDayTodo">@color/day_todo</item>
+        <!-- La typographie réglable (values/attrs_typographie.xml), à sa valeur d’origine. -->
+        <item name="mhStyleTitre">@style/Titre.Systeme</item>
+        <item name="mhPoliceBouton">sans-serif-medium</item>
     </style>
 
     <!-- Carte blanche arrondie, l'unité de base des écrans. -->
@@ -67,6 +70,25 @@
         <item name="android:background">@drawable/bg_card</item>
         <item name="android:orientation">vertical</item>
         <item name="android:padding">18dp</item>
+    </style>
+
+    <!-- Une carte de la pile (accueil « Pile », 15/11) : toutes au même endroit, l'une sur l'autre. -->
+    <style name="PileCarte">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/bg_tuile</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">20dp</item>
+    </style>
+
+    <style name="PileEtiquette">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:textColor">?attr/mhMuted</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="CardTitle">
@@ -133,7 +155,7 @@
         <item name="android:insetBottom">0dp</item>
         <item name="android:paddingHorizontal">22dp</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">?attr/mhPoliceBouton</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:stateListAnimator">@null</item>
@@ -146,7 +168,7 @@
         <item name="android:insetBottom">0dp</item>
         <item name="android:paddingHorizontal">22dp</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">?attr/mhPoliceBouton</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textAllCaps">false</item>
         <item name="cornerRadius">24dp</item>
@@ -157,7 +179,7 @@
     <style name="Bouton.Texte" parent="Widget.Material3.Button.TextButton">
         <item name="android:minHeight">48dp</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">?attr/mhPoliceBouton</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textAllCaps">false</item>
     </style>
@@ -170,7 +192,7 @@
         <item name="android:paddingVertical">14dp</item>
         <item name="cornerRadius">30dp</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">?attr/mhPoliceBouton</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textAllCaps">false</item>
         <!-- Sur deux lignes (« Commencer une hitbodedout de 15 min »), deux moitiés égales plutôt qu'un « min » seul. -->
@@ -184,10 +206,18 @@
         <item name="android:elevation">3dp</item>
     </style>
 
+    <!--
+        Une valeur longue (usage de Birkat haLevana, police Rachi) prenait
+        toute la ligne et réduisait le libellé à rien sur 320dp : elle est
+        bornée à 180dp et 3 lignes (check-up du 11/11).
+    -->
     <style name="SettingValue" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minWidth">88dp</item>
+        <item name="android:maxWidth">180dp</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <!--
@@ -208,6 +238,7 @@
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetRight">0dp</item>
         <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">?attr/mhMint</item>
     </style>
