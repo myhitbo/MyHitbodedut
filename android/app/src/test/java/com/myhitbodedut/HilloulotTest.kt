@@ -130,4 +130,10 @@ class HilloulotTest {
         // Adar II n'existe que les années embolismiques : il se trouve quand même.
         assertTrue(Hilloulot.prochainJour("adar2-14", LocalDate.of(2026, 11, 4), false) != null)
     }
+
+    /** TWEBCONF-17 : aucune adresse e-mail personnelle de contributeur dans les biographies livrées. */
+    @Test
+    fun `les biographies ne portent aucune adresse e-mail`() {
+        assertTrue(!File("src/main/res/raw/hilloulot_bios.json").readText().contains("@"))
+    }
 }
