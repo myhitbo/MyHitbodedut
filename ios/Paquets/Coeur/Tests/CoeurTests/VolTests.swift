@@ -8,7 +8,7 @@ import Testing
 ///   zmanim en vol, dans le même ordre, à deux secondes près ; les mêmes réserves ; les mêmes dates de part et
 ///   d'autre de la ligne ; les mêmes jalons) ;
 /// - `Tests/Vecteurs/vol.json` (tools/vecteurs_ios/VecteursVol.kt) : les fonctions simples, les positions, et
-///   35 vols entiers (chaque événement de la fenêtre, l'écart si retard, les jalons, la prière du moment).
+///   36 vols entiers (chaque événement de la fenêtre, l'écart si retard, les jalons, la prière du moment).
 ///
 /// Ces tests vérifient le calcul (le point fixe, les fuseaux, minuit, la ligne de date, les routes polaires) ;
 /// ils ne valident aucune règle halakhique : le choix de calculer au point sous l'avion, au niveau de la mer,

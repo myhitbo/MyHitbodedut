@@ -65,10 +65,13 @@ struct RegleLangueTests {
     /// reste, a sa chaîne. Ce que LibraryEntryActivity.kt affiche reste à Android.
     @Test func niNoteNiEditionNeSAffichentSousUnTexte() throws {
         let catalogue = try Catalogue.lire()
+        // `name="…"` de strings.xml nomme aussi un <string-array>, exporté dans Tableaux.json.
+        let tableaux = try JSONDecoder().decode([String: [String: [String]]].self,
+                                                from: Depot.donnees("ios/Ressources/Chaines/Tableaux.json"))
         for langue in Catalogue.langues {
             let simples = catalogue.simples(langue)
             for cle in ["library_note", "library_edition"] {
-                let presente = simples[cle] != nil
+                let presente = simples[cle] != nil || tableaux[langue]?[cle] != nil
                 #expect(!presente, "\(langue) porte encore la chaîne « \(cle) », que plus rien n'affiche")
             }
             let sefaria = simples["library_open_sefaria"] != nil
@@ -82,10 +85,13 @@ struct RegleLangueTests {
         // Retirer l'affichage n'est pas effacer ce qui a été vérifié.
         let racine = try JSON.lire(String(decoding: Depot.contenu("bibliotheque.json"), as: UTF8.self))
         var avecNote = 0
+        // Le test d'Android tourne sur le org.json de json.org (testImplementation) : son `optString`
+        // rend "" pour `"note": null`, non « null » comme sur un téléphone (trois sources en ont un).
+        func note(_ o: ObjetJSON) -> String { o.estNul("note") ? "" : o.texte("note") }
         func marche(_ n: JSON) {
             switch n {
             case .objet(let o):
-                if o.texte("type").egalUnites("source") && !o.texte("note").estBlanc { avecNote += 1 }
+                if o.texte("type").egalUnites("source") && !note(o).estBlanc { avecNote += 1 }
                 for paire in o.paires { marche(paire.valeur) }
             case .tableau(let t):
                 for element in t { marche(element) }
@@ -103,7 +109,9 @@ struct RegleLangueTests {
     /// Ce que pointent les layouts reste à Android.
     @Test func leTitreDuTikounSuitLaLangueDeLInterfacePasFigeEnHebreu() throws {
         let catalogue = try Catalogue.lire()
-        let morte = catalogue.strings["tikkun_title_he"] != nil
+        let tableaux = try JSONDecoder().decode([String: [String: [String]]].self,
+                                                from: Depot.donnees("ios/Ressources/Chaines/Tableaux.json"))
+        let morte = catalogue.strings["tikkun_title_he"] != nil || tableaux["fr"]?["tikkun_title_he"] != nil
         #expect(!morte, "tikkun_title_he traîne encore dans les ressources : la chaîne morte devrait disparaître")
         for langue in Catalogue.langues {
             let titre = catalogue.simples(langue)["tikkun_title"] ?? ""

@@ -47,8 +47,12 @@ public enum RechercheGlobale {
     /// guershayim ; chaque suite de blancs `\s+` en une espace (`\s` de la JVM : espace, U+0009 à U+000D) ;
     /// rogné (`trim`) ; en minuscules.
     public static func nu(_ t: String) -> String {
-        // NFD, sans les diacritiques latins ni les apostrophes typographiques.
-        let decompose = t.formeNFD
+        // NFD, sans les diacritiques latins ni les apostrophes typographiques. NFD ne change rien à un texte
+        // fait d'unités avant U+00C0 et de l'hébreu (U+0590 à U+05FF) : aucune n'a de décomposition canonique,
+        // et il n'y range que les points hébreux entre eux, qui tombent tous ensuite. Le siddour et les
+        // livres s'épargnent ainsi la normalisation de Foundation.
+        let simple = t.utf16.allSatisfy { $0 < 0x00C0 || ($0 >= 0x0590 && $0 <= 0x05FF) }
+        let decompose = simple ? t : t.formeNFD
         var a: [UInt16] = []
         a.reserveCapacity(decompose.utf16.count)
         for u in decompose.utf16 {
@@ -108,7 +112,9 @@ public enum RechercheGlobale {
         let debut = max(i - 30, 0)
         let fin = min(i + motif.count + 50, t.count)
         let milieu = Unites.texte(t[debut..<fin]).rogne
-        return (debut > 0 ? "…" : "") + milieu + (i + motif.count + 50 < t.count ? "…" : "")
+        let avant = debut > 0 ? "…" : ""
+        let apres = i + motif.count + 50 < t.count ? "…" : ""
+        return avant + milieu + apres
     }
 
     // MARK: Les sources
@@ -173,7 +179,7 @@ public enum RechercheGlobale {
         } else {
             nom = nil
         }
-        let traduit = nom.flatMap { $0.estBlanc ? nil : $0 }
+        let traduit = nom.flatMap { n -> String? in n.estBlanc ? nil : n }
         var parties: [String] = []
         if traduit != nil { parties.append("\u{2068}\(x.he)\u{2069}") }
         if !x.annee.estBlanc { parties.append(x.annee) }

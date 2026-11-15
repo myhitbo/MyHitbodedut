@@ -437,7 +437,7 @@ private enum ErreurDeTest: Error {
 
 // MARK: Le fichier de vecteurs
 
-private struct Vecteurs: Decodable {
+private struct Vecteurs: Decodable, Sendable {
     let table: TableReelle
     let lectures: [Lecture]
     let cles: [CasCles]

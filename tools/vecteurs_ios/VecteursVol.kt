@@ -9,7 +9,8 @@
 //    les lignes de date (instant et dates), les jalons (diaspora à 18 minutes, Israël à 40), la prière du
 //    moment et les horaires qu'elle reçoit. Les vols de VolTest, puis des routes polaires l'été et l'hiver,
 //    la ligne de date près de l'équateur dans les deux sens, une route presque antipodale, un très long
-//    courrier, le Svalbard, une route australe, des veilles et des jours de fête.
+//    courrier, le Svalbard, une route australe, des veilles et des jours de fête, un horaire en vol sans
+//    correspondant si le vol part 30 minutes plus tard.
 //
 // Les instants sont des millisecondes Unix. iOS calcule sur KosherSwift, qui rend les zmanim d'un lieu à une
 // seconde près de KosherJava : la prière et les horaires ne sont demandés qu'à plus de cinq secondes de tout
@@ -235,6 +236,9 @@ object VecteursVol : Generateur {
             "veilleTichri" to plan("TLV", "JFK", "${tichri}T17:00", "${tichri}T22:15"),
             // Le Omer de l'autre côté de la ligne de date.
             "omerPacifique" to plan("LAX", "MEL", "2027-05-04T22:30", "2027-05-06T08:45"),
+            // Vers l'ouest presque à la vitesse du soleil : un horaire en vol sans correspondant à moins de 3 h quand
+            // le vol part 30 minutes plus tard (ecartSiRetard null ; le plus proche est à plus de 5 h).
+            "sansCorrespondant" to plan("CDG", "LAX", "2026-01-20T10:00", "2026-01-20T12:30"),
         )
     }
 

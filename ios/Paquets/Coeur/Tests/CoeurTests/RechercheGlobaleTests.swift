@@ -154,16 +154,19 @@ struct RechercheGlobaleTests {
     }
 
     @Test func lesPorteesEtLeursSortes() {
-        let tout = RechercheGlobale.Portee.tout.sortes
-        #expect(tout == Set(RechercheGlobale.Sorte.allCases))
-        let tefilot = RechercheGlobale.Portee.tefilot.sortes
-        #expect(tefilot == [.siddour])
-        let halakhot = RechercheGlobale.Portee.halakhot.sortes
-        #expect(halakhot == [.halakha])
-        let sefarim = RechercheGlobale.Portee.sefarim.sortes
-        #expect(sefarim == [.livre])
-        let hilloulot = RechercheGlobale.Portee.hilloulot.sortes
-        #expect(hilloulot == [.hilloula])
+        typealias Sortes = Set<RechercheGlobale.Sorte>
+        let attendues: [(RechercheGlobale.Portee, Sortes)] = [
+            (.tout, Set(RechercheGlobale.Sorte.allCases)), (.tefilot, [.siddour]), (.halakhot, [.halakha]),
+            (.sefarim, [.livre]), (.hilloulot, [.hilloula]),
+        ]
+        for (portee, sortes) in attendues {
+            let lues = portee.sortes
+            #expect(lues == sortes, "\(portee.rawValue)")
+        }
+        let toutes = RechercheGlobale.Portee.allCases.map { $0.rawValue }
+        #expect(toutes == ["TOUT", "TEFILOT", "HALAKHOT", "SEFARIM", "HILLOULOT"])
+        let noms = RechercheGlobale.Sorte.allCases.map { $0.rawValue }
+        #expect(noms == ["SIDDOUR", "LIVRE", "HALAKHA", "HILLOULA"])
     }
 
     // MARK: Aides
@@ -181,7 +184,7 @@ struct RechercheGlobaleTests {
 
 // MARK: Le fichier de vecteurs
 
-private struct Vecteurs: Decodable {
+private struct Vecteurs: Decodable, Sendable {
     let parSorte: Int
     let nu: [[String]]
     let corpus: Corpus

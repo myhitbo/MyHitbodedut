@@ -111,9 +111,15 @@ struct TraductionAffichageTests {
 
     @Test func aucunTitreDeMorceauNeResteEnFrancais() throws {
         let catalogue = try Catalogue.lire()
+        // strings.xml porte aussi les <string-array>, exportés dans Tableaux.json.
+        let tableaux = try JSONDecoder().decode([String: [String: [String]]].self,
+                                                from: Depot.donnees("ios/Ressources/Chaines/Tableaux.json"))
         for langue in Catalogue.langues {
             var textes = Array(catalogue.simples(langue).values)
             textes.append(contentsOf: catalogue.pluriels(langue).values)
+            for (_, elements) in tableaux[langue] ?? [:] {
+                textes.append(contentsOf: elements)
+            }
             var restes = 0
             for texte in textes where texte.contientUnites("titre à préciser") {
                 restes += 1
