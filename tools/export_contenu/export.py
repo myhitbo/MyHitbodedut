@@ -206,27 +206,11 @@ class Export:
         self.json(SORTIE / "Chaines" / "Tableaux.json", tableaux, source)
 
     # --- 3. Tables du Kotlin -------------------------------------------------
-    def tables(self, reprise, java):
-        """tables.json et les vecteurs de la recherche : par le Kotlin d'Android, sur la JVM (tables.py),
-        ou repris d'un export précédent ([reprise]). Les comptes du critère sont vérifiés ici."""
+    def tables(self, valeur, vecteurs):
+        """tables.json et les vecteurs de la recherche, que lire_tables() a obtenus."""
         cible = SORTIE / "Contenu" / "tables.json"
         cible_vecteurs = TESTS / "vecteurs_recherche.json"
         source = "android/app/src/main/java/com/myhitbodedut/*.kt (tools/export_contenu/tables)"
-        if reprise:
-            valeur = json.loads((reprise / "tables.json").read_text(encoding="utf-8"))
-            vecteurs = json.loads((reprise / "vecteurs_recherche.json").read_text(encoding="utf-8"))
-        else:
-            with tempfile.TemporaryDirectory() as tmp:
-                brut, brut_vecteurs = Path(tmp) / "tables.json", Path(tmp) / "vecteurs.json"
-                tables.executer(java, RES, brut, brut_vecteurs, CAS)
-                valeur = json.loads(brut.read_text(encoding="utf-8"))
-                vecteurs = json.loads(brut_vecteurs.read_text(encoding="utf-8"))
-            # Les deux tables prises dans des fichiers liés à Android, par expression régulière.
-            valeur["poses_feminines"] = tables.poses_feminines((java / "Personnage.kt").read_text(encoding="utf-8"))
-            valeur["polices"] = tables.signes_absents((java / "PoliceHebraique.kt").read_text(encoding="utf-8"), RES / "font")
-        ecarts = {k: (a, f(valeur)) for k, (a, f) in COMPTES_TABLES.items() if f(valeur) != a}
-        if ecarts:
-            raise SystemExit("tables : " + ", ".join(f"{k} attendu {a}, trouvé {t}" for k, (a, t) in ecarts.items()))
         self.json(cible, valeur, source, indent=1)
         self.json(cible_vecteurs, vecteurs, "tools/export_contenu/tables/src/Recherche.kt, cas_normalisation.json")
         return vecteurs
@@ -337,6 +321,29 @@ class Export:
                            ensure_ascii=False, indent=1) + "\n"
         self._cible(MANIFESTE).write_text(texte, encoding="utf-8")
         return texte
+
+
+# --- 3. Tables du Kotlin, avant tout effacement ------------------------------
+def lire_tables(reprise, java):
+    """Les tables et les vecteurs de la recherche : par le Kotlin d'Android, sur la JVM (tables.py), ou
+    repris d'un export précédent ([reprise]). Lancé avant d'effacer les sorties : un JDK ou un Gradle
+    qui manque ne laisse pas ios/Ressources à moitié vide. Les comptes du critère sont vérifiés ici."""
+    if reprise:
+        valeur = json.loads((reprise / "tables.json").read_text(encoding="utf-8"))
+        vecteurs = json.loads((reprise / "vecteurs_recherche.json").read_text(encoding="utf-8"))
+    else:
+        with tempfile.TemporaryDirectory() as tmp:
+            brut, brut_vecteurs = Path(tmp) / "tables.json", Path(tmp) / "vecteurs.json"
+            tables.executer(java, RES, brut, brut_vecteurs, CAS)
+            valeur = json.loads(brut.read_text(encoding="utf-8"))
+            vecteurs = json.loads(brut_vecteurs.read_text(encoding="utf-8"))
+        # Les deux tables prises dans des fichiers liés à Android, par expression régulière.
+        valeur["poses_feminines"] = tables.poses_feminines((java / "Personnage.kt").read_text(encoding="utf-8"))
+        valeur["polices"] = tables.signes_absents((java / "PoliceHebraique.kt").read_text(encoding="utf-8"), RES / "font")
+    ecarts = {k: (a, f(valeur)) for k, (a, f) in COMPTES_TABLES.items() if f(valeur) != a}
+    if ecarts:
+        raise SystemExit("tables : " + ", ".join(f"{k} attendu {a}, trouvé {t}" for k, (a, t) in ecarts.items()))
+    return valeur, vecteurs
 
 
 # --- Comptes ----------------------------------------------------------------
@@ -510,6 +517,7 @@ def main():
     verifier = "--verifier" in sys.argv[1:]
     reprise, java = option("--tables"), option("--java") or JAVA
     avant = MANIFESTE.read_text(encoding="utf-8") if MANIFESTE.exists() else None
+    valeur_tables, vecteurs = lire_tables(reprise, java)
     for dossier in ("Contenu", "Images", "Icones", "Polices", "Musique"):
         shutil.rmtree(SORTIE / dossier, ignore_errors=True)
     for fichier in ("Localizable.xcstrings", "Tableaux.json"):
@@ -517,7 +525,7 @@ def main():
     shutil.rmtree(TESTS, ignore_errors=True)
 
     e = Export()
-    vecteurs = e.tables(reprise, java)
+    e.tables(valeur_tables, vecteurs)
     e.textes()
     e.chaines()
     e.palettes()

@@ -9,9 +9,11 @@ Android reste la source ; l'outil n'écrit que sous `ios/`. Python 3, bibliothè
     python3 tools/export_contenu/export.py --tables D   # sans JVM : reprend D/tables.json et D/vecteurs_recherche.json
     python3 tools/export_contenu/export.py --java D     # lit le Kotlin de l'app dans D (la preuve de la garde)
 
-L'étape 3 demande un JDK (17 ou plus) et Gradle 8.14.3 (celui du PATH, `$GRADLE`, sinon
-`android/gradlew`) ; sa construction va dans `~/.cache/myhitbodedut-export` (`$EXPORT_CONSTRUCTION`),
-hors du dépôt. Comptez une minute la première fois.
+L'étape 3 demande un JDK 17 à 24 (Gradle 8.14.3 ne tourne pas sur Java 25 et plus ; `JAVA_HOME`
+choisit le JDK) et Gradle 8.14.3 (celui du PATH, `$GRADLE`, sinon `android/gradlew`) ; sa
+construction va dans `~/.cache/myhitbodedut-export` (`$EXPORT_CONSTRUCTION`), hors du dépôt. Elle
+tourne avant que l'export n'efface ses sorties : un échec ne laisse rien à moitié. Comptez une
+minute la première fois.
 
 | Étape | Sortie |
 | --- | --- |

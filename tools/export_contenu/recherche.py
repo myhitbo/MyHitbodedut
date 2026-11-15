@@ -237,7 +237,8 @@ def construire(raw: Path, cible: Path) -> dict:
 def empreinte(chemin: Path) -> tuple:
     """L'empreinte du contenu de l'index (schéma et lignes, dans l'ordre) et sa taille : la même
     quelle que soit la version de SQLite qui l'a écrit, contrairement aux octets du fichier."""
-    base = sqlite3.connect(f"file:{chemin}?mode=ro", uri=True)
+    # as_uri() encode « # », « ? » et « % » : un chemin brut dans l'URI ouvrirait un autre fichier.
+    base = sqlite3.connect(Path(chemin).resolve().as_uri() + "?mode=ro", uri=True)
     h = hashlib.sha256()
     taille = 0
     for (nom, sql) in base.execute("SELECT name, sql FROM sqlite_master WHERE sql IS NOT NULL ORDER BY name"):

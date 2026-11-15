@@ -86,7 +86,8 @@ jobs:
         with:
           name: tables
           path: ${{ runner.temp }}/tables
-          retention-days: 1
+          # Trente jours : « relancer les travaux échoués » ne relance pas l'export, il faut l'artefact.
+          retention-days: 30
       # Critère de la tâche 6 : un seuil changé dans une copie de Trophees.kt fait échouer la garde.
       # En dernier : cet export réécrit ios/Ressources.
       - name: La garde voit un seuil changé dans Trophees.kt

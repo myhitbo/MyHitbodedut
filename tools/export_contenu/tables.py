@@ -86,7 +86,10 @@ def executer(java: Path, res: Path, sortie: Path, vecteurs: Path, cas: Path) -> 
         f"-Pgenere={genere}",
         f"-Pjava={java}",
         f"-Pkotlin.project.persistent.dir={dossier / 'kotlin'}",
-        "run", "--args=" + " ".join(f"'{p}'" for p in (sortie, vecteurs, cas, res / "raw")),
+        # Les chemins en propriétés, une par argument : --args les découperait (une apostrophe,
+        # « Projets d'été », y ferme une citation).
+        f"-PsortieTables={sortie}", f"-PsortieVecteurs={vecteurs}", f"-Pcas={cas}", f"-Praw={res / 'raw'}",
+        "run",
     ]
     try:
         subprocess.run(commande, check=True)

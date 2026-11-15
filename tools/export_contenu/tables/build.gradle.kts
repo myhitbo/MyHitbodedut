@@ -75,3 +75,9 @@ application {
     mainClass.set("com.myhitbodedut.TablesKt")
     applicationDefaultJvmArgs = listOf("-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8")
 }
+
+// Les quatre chemins, passés par tables.py en propriétés (-PsortieTables=…) : tels quels, sans découpage.
+tasks.named<JavaExec>("run") {
+    val chemins = listOf("sortieTables", "sortieVecteurs", "cas", "raw").map { providers.gradleProperty(it) }
+    if (chemins.all { it.isPresent }) args(chemins.map { it.get() })
+}
