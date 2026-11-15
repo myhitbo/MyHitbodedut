@@ -276,7 +276,7 @@ faut retrouver les titres hébreux d'origine (fichiers sources reçus le
 22/09).
 
 **Mise en œuvre — faite le 29/10.** `main/res/raw` ne contient plus que les
-morceaux livrés par Play, déclarés dans `MusiquePlay.kt`. Les autres (30 niggounim sans titre et d'autres) sont
+morceaux livrés par Play, déclarés dans `MusiquePlay.kt`. Les 30 autres (les niggounim sans titre) sont
 dans `src/musique_hors_play/` (fichiers et liste `MusiqueHorsPlay.kt`), que
 seule la construction GitHub ajoute ; avec `-Pplay=true`, Gradle prend
 `src/musique_play/`, où la même liste est vide. Vérifié sur l'AAB : il ne
