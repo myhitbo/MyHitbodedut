@@ -87,6 +87,18 @@ object Dedicace {
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             minLines = 2
         }
+        // « Autre intention » : le mot devient l'intention elle-même, et l'indice le dit (FLECTURE-18).
+        intentions.setOnCheckedChangeListener { _, id ->
+            val autre = id == idsIntentions[Intention.AUTRE.ordinal]
+            mot.setHint(if (autre) R.string.dedicace_intention_manque else R.string.dedicace_mot)
+            if (!autre) mot.error = null
+        }
+        // Sans messagerie : l'adresse reste lisible (et sélectionnable) dans la boîte même.
+        val avis = TextView(activite).apply {
+            setPadding(0, px(12), 0, px(8))
+            setTextIsSelectable(true)
+            visibility = View.GONE
+        }
         val contenu = LinearLayout(activite).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(px(24), px(8), px(24), 0)
@@ -97,10 +109,12 @@ object Dedicace {
             addView(intentions)
             addView(nom, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(12) })
             addView(mot, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+            addView(avis)
         }
+        val defilement = android.widget.ScrollView(activite).apply { addView(contenu) }
         val dialogue = AlertDialog.Builder(activite)
             .setTitle(R.string.section_dedicace)
-            .setView(android.widget.ScrollView(activite).apply { addView(contenu) })
+            .setView(defilement)
             .setPositiveButton(R.string.dedicace_ecrire, null)
             .setNegativeButton(R.string.action_back, null)
             .create()
@@ -136,12 +150,16 @@ object Dedicace {
                         .putExtra(Intent.EXTRA_TEXT, texte))
                 }.isSuccess
                 if (!ouvert) {
-                    // Sans messagerie : la boîte reste ouverte (le nom et le mot ne sont pas perdus) et le
-                    // message est copié pour être collé ailleurs.
-                    runCatching {
+                    // Sans messagerie : la boîte reste ouverte (le nom et le mot ne sont pas perdus), le
+                    // message est copié pour être collé ailleurs, et l'adresse s'affiche dans la boîte.
+                    val copie = runCatching {
                         val presse = activite.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                         presse.setPrimaryClip(android.content.ClipData.newPlainText(sujet, texte))
-                    }.onSuccess { Toast.makeText(activite, R.string.dedicace_copie, Toast.LENGTH_SHORT).show() }
+                    }.isSuccess
+                    avis.text = listOfNotNull(activite.getString(R.string.dedicace_sans_messagerie),
+                        if (copie) activite.getString(R.string.dedicace_copie) else null).joinToString("\n")
+                    avis.visibility = View.VISIBLE
+                    defilement.post { defilement.smoothScrollTo(0, contenu.height) }
                     Toast.makeText(activite, R.string.dedicace_sans_messagerie, Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
