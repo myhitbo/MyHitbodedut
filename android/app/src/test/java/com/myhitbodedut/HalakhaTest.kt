@@ -71,5 +71,9 @@ class HalakhaTest {
         }
         // 21 Tichri 5787 : Vézot haBéra'kha, et non Béréchit.
         assertEquals("וזאת הברכה", Halakha.pour(livre, LocalDate.of(2026, 10, 2), false).first().section)
+        // Du 15 au 23 Tichri (26 septembre … 4 octobre 2026) : ses 18 halakhot, chacune une fois, dans l'ordre.
+        val soukkot = (0L..8L).flatMap { Halakha.pour(livre, LocalDate.of(2026, 9, 26).plusDays(it), false) }
+        assertEquals((1..18).toList(), soukkot.map { it.numero })
+        assertTrue(soukkot.all { it.section == "וזאת הברכה" && it.annee == 1 })
     }
 }
