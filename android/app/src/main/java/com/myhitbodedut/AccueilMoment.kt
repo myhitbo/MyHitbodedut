@@ -32,7 +32,8 @@ object AccueilMoment {
         val zone = lieu?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
         val aujourdhui = LocalDate.now(zone)
         val f = Levana.fenetre(aujourdhui, zone, VueJour.usageLevana(c))
-        if (Levana.etat(f, aujourdhui, zone) !is Levana.Etat.Dans && LocalTime.now(zone).hour >= 14) {
+        if (Levana.etat(f, aujourdhui, zone) !is Levana.Etat.Dans && LocalTime.now(zone).hour >= 14 &&
+            java.time.Instant.now().isBefore(f.fin)) {
             siddur.texte("birkat_halevana")?.let { t ->
                 vues += carte(c, c.getString(R.string.levana_ce_soir), t.titre.he, R.drawable.char_praise) { SiddurLectureActivity.ouvrir(c, t.id) }
             }

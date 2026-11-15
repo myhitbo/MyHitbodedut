@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /** Historique des séances, avec les notes laissées après chacune. */
-class JournalActivity : AppCompatActivity() {
+class JournalActivity : AppCompatActivity(), NoteDialog.Hote {
 
     private val rows = mutableListOf<DayRecord>()
     private lateinit var adapter: Adapter
@@ -74,6 +74,11 @@ class JournalActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (ouvert) reload()
+    }
+
+    /** La note enregistrée se lit aussitôt dans la liste (NoteDialog.Hote). */
+    override fun noteEnregistree(date: String) {
+        reload()
     }
 
     private fun reload() {
@@ -169,7 +174,7 @@ class JournalActivity : AppCompatActivity() {
                 if (p != RecyclerView.NO_POSITION) notifyItemChanged(p)
             }
             holder.itemView.setOnClickListener {
-                NoteDialog.show(this@JournalActivity, row.date, onSaved = { reload() })
+                NoteDialog.show(this@JournalActivity, row.date)
             }
         }
     }

@@ -16,6 +16,12 @@ import com.google.android.material.theme.MaterialComponentsViewInflater
  * proche : la prière, la lecture (la Haggada), le livre contre soi (la
  * Meguila) ; l'ouverture, debout, la prière de dos bras levés. La même table
  * vit côté site (web/src/js/personnage.js).
+ *
+ * Les cinq scènes à décor (le lit, le paysage, l'aéroport, 'Hanouka, Soukkot)
+ * montrent le hassid barbu et n'ont pas encore leur planche féminine : elles
+ * se replient sur la pose la plus proche (13/11, FACCUEIL-03) — la prière
+ * pour le Chema du coucher, de dos face au paysage, le sac au dos pour le
+ * voyage, la louange pour 'Hanouka, la joie pour Soukkot.
  */
 object Personnage {
 
@@ -40,7 +46,12 @@ object Personnage {
         R.drawable.char_matsa to R.drawable.char_f_reading,
         R.drawable.char_offering to R.drawable.char_f_offering,
         R.drawable.char_torah to R.drawable.char_f_kneel_reading,
-        R.drawable.char_standing_back to R.drawable.char_f_standing_back
+        R.drawable.char_standing_back to R.drawable.char_f_standing_back,
+        R.drawable.scene_sleeping to R.drawable.char_f_praying,
+        R.drawable.scene_nature to R.drawable.char_f_standing_back,
+        R.drawable.scene_airport to R.drawable.char_f_walking,
+        R.drawable.scene_hanukkah to R.drawable.char_f_praise,
+        R.drawable.scene_sukkot to R.drawable.char_f_joy
     )
 
     @DrawableRes
@@ -56,6 +67,8 @@ object Personnage {
  * (android:src) comme celles posées ensuite par setImageResource. Toutes les
  * ImageView des mises en page en sont une (PersonnageViewInflater) ; celles
  * construites dans le code le deviennent quand elles montrent le personnage.
+ * L'écran « Je suis avec Hachem » est gonflé par un service, sans l'usine
+ * d'AppCompat : ses gabarits nomment cette classe en toutes lettres (13/11).
  */
 open class PersonnageImageView @JvmOverloads constructor(
     context: Context,

@@ -40,11 +40,19 @@ NOM = re.compile(
 )
 
 
+# אדני n'est le Nom que vocalisé אֲדֹנָי : sous le noun, un ḥiriq (אֲדֹנִי, « mon seigneur »), un tséré
+# (אַדְנֵי, « les socles de ») ou un pataḥ (אֲדֹנַי, « mes seigneurs ») en font un mot profane (13/11, THE-02).
+ADNI_PROFANE = re.compile("\u05E0[\u0591-\u05C7]*?[\u05B4\u05B5\u05B7]")
+
+
 def squelette(mot):
-    """Un mot sans voyelles, ponctuation ni lettres de prolongation ; le Nom et אדני deviennent « @ »."""
+    """Un mot sans voyelles, ponctuation ni lettres de prolongation ; le Nom et אֲדֹנָי deviennent « @ »."""
     m = re.sub("[֑-ׇ]", "", mot)
     m = re.sub("[^א-ת]", "", m).translate(FINALES)
-    if re.fullmatch("[ובלמשכה]{0,2}(יהוה|אדני)", m):
+    if re.fullmatch("[ובלמשכה]{0,2}יהוה", m):
+        return "@"
+    # Sans voyelles (texte non vocalisé), on ne peut pas trancher : אדני compte pour le Nom.
+    if re.fullmatch("[ובלמשכה]{0,2}אדני", m) and not ADNI_PROFANE.search(NFC(mot)):
         return "@"
     if not m:
         return ""
@@ -73,8 +81,9 @@ def index_tanakh(dossier):
     return quatre
 
 
-# Ce qui annonce un verset : « שֶׁכָּתוּב », « שֶׁנֶּאֱמַר », « כְּתִיב », un guillemet ouvrant.
-ANNONCE = re.compile("(?:כתוב|כתב|נאמר|כתיב|פסוק|[\"״“])\\W{0,3}(?:[^\\s\"״“]+\\s*){0,2}$")
+# Ce qui annonce un verset : « שֶׁכָּתוּב », « שֶׁנֶּאֱמַר », « כְּתִיב », un guillemet ouvrant ; ou une parole
+# rapportée, « וְיֹאמְרוּ הַכֹּל » (« et tous diront : … », 1 Rois 18:39).
+ANNONCE = re.compile("(?:כתוב|כתב|נאמר|כתיב|פסוק|יאמרו|[\"״“])\\W{0,3}(?:[^\\s\"״“]+\\s*){0,2}$")
 
 
 def abrege_forme(prefixe):
@@ -111,15 +120,6 @@ def abrege(texte, quatre):
                 if tuple(suite[debut:debut + 4]) in quatre:
                     verset = True
                     break
-            # Une citation annoncée (« כמו שכתוב », un guillemet) peut être courte, ou finir le
-            # texte : trois mots suffisent alors, à partir du Nom ou juste avant lui.
-            # Au bord du paragraphe (une citation qui le finit ou l'ouvre), trois mots suffisent.
-            if not verset and (len(apres) < 3 or len(avant) < 3):
-                for debut in (j - 2, j - 1, j):
-                    if 0 <= debut and debut + 3 <= len(suite) and (debut + 3 == len(suite) or debut == 0) \
-                            and tuple(suite[debut:debut + 3]) in quatre:
-                        verset = True
-                        break
             # Une courte citation entre guillemets (« "ה' הוֹשִׁיעָה" ») : toute la citation est dans un verset.
             if not verset:
                 avant_brut = t[max(0, m.start() - 3):m.start()]
@@ -128,6 +128,11 @@ def abrege(texte, quatre):
                     cite = mots(t[m.start():m.end() + fin.start()])
                     if 2 <= len(cite) <= 4 and tuple(cite) in quatre:
                         verset = True
+            # Une citation annoncée (« כמו שכתוב », un guillemet) peut être courte, ou finir le
+            # texte : trois mots suffisent alors, à partir du Nom ou juste avant lui. Sans annonce,
+            # jamais (13/11, THE-02) : au bord d'un paragraphe, trois mots se retrouvent trop
+            # facilement dans le Tanakh. « …וְיִכְסֹף לְדַבֵּר עִם » puis le Nom, d'un auteur d'aujourd'hui,
+            # passait pour Daniel 10:17 ; « אָנָּא », le Nom, « אֱלֹהֵי… », en tête d'une prière, pour Néhémie 1:5.
             if not verset:
                 annonce = ANNONCE.search(re.sub("[\u0591-\u05C7]", "", t[max(0, m.start() - 40):m.start()]).strip()) or \
                     ANNONCE.search(re.sub("[\u0591-\u05C7]", "", " ".join(t[a:b] for a, b in morceaux[max(0, k - 2):k])))

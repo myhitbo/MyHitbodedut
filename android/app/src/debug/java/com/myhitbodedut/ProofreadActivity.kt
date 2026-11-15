@@ -105,7 +105,7 @@ class ProofreadActivity : AppCompatActivity() {
                 R.string.proofread_meta,
                 item.moments.joinToString(", ") { it.key },
                 edition?.titre ?: item.edition,
-                if (edition?.nikkoudOk == true) "he" else "he_sans_nikkoud",
+                "he",
                 item.statutVerif,
                 item.dureeLectureSec,
             )

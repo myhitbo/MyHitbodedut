@@ -33,7 +33,9 @@
             android:background="@drawable/bg_stage"
             android:padding="8dp">
 
-            <ImageView
+            <!-- PersonnageImageView en toutes lettres (13/11), comme les boutons plus bas : gonflée
+                 par un service, une <ImageView> restait ordinaire et montrait le hassid à qui a choisi צדקת. -->
+            <com.myhitbodedut.PersonnageImageView
                 android:id="@+id/blocker_character"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/art_height"

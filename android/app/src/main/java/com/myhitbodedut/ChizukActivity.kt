@@ -28,6 +28,11 @@ class ChizukActivity : AppCompatActivity() {
         if (courant == null) courant = ChizukCard.show(carte, Moment.DEMANDE)
         else ChizukCard.bind(carte, Data.chizuk(this), courant, Moment.DEMANDE)
 
+        // Une traduction affichée : on dit d'où elle vient (COUV-05).
+        if (LanguesTexte.montreTraduction(LanguesTexte.mode(this))) (carte.parent as? android.view.ViewGroup)?.let { p ->
+            p.addView(LanguesTexte.mentionAuto(this), p.indexOfChild(carte) + 1)
+        }
+
         findViewById<MaterialButton>(R.id.chizuk_autre).setOnClickListener {
             courant = ChizukCard.show(carte, Moment.DEMANDE)
             Effets.fondu(carte)

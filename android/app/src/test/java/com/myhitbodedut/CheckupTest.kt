@@ -22,7 +22,7 @@ class CheckupTest {
         assertTrue(SessionRule.estEchue(debut, 0L, SessionRule.OUVERTE, debut + plafond))
         val refresh = lire("SessionService.kt").substringAfter("private fun refresh()").substringBefore("startForegroundNow()")
         assertTrue("le tour du service doit clore une séance échue", refresh.contains("SessionRule.estEchue("))
-        assertTrue(refresh.contains("!Store.isSessionRunning(this) || echue"))
+        assertTrue(refresh.contains("!Store.isSessionRunning(this) || plafond"))
     }
 
     @Test
@@ -35,8 +35,9 @@ class CheckupTest {
 
     @Test
     fun `les services ne plantent pas s ils ne peuvent passer au premier plan`() {
-        assertTrue(lire("SessionService.kt").contains("runCatching { premierPlan() }.isSuccess"))
-        assertTrue(lire("GateService.kt").contains("runCatching { startInForeground() }.isFailure"))
+        // Les gardes de main (fusion du 15/11) : le passage au premier plan rend vrai ou faux.
+        assertTrue(lire("SessionService.kt").contains("private fun startForegroundNow(): Boolean = runCatching {"))
+        assertTrue(lire("GateService.kt").contains("if (!startInForeground())"))
     }
 
     @Test
@@ -66,9 +67,9 @@ class CheckupTest {
 
     @Test
     fun `l ecran de garde ne couvre jamais le telephone`() {
-        val gate = lire("GateService.kt")
-        assertTrue(gate.contains("current !in jamaisBloquees"))
-        assertTrue(gate.contains("defaultDialerPackage"))
+        // La règle de main (FBARRIERE-05, fusion du 15/11) : GateRule et AppsProtegees.
+        assertTrue(lire("GateService.kt").contains("GateRule.retenue(readForegroundPackage(), packageName, Store.blockedApps(this), ::protegees)"))
+        assertTrue(lire("AppsProtegees.kt").contains("defaultDialerPackage"))
     }
 
     @Test

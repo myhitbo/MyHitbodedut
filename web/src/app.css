@@ -480,6 +480,22 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
   background: var(--ink); color: var(--paper); font-size: 14px; text-align: center;
 }
 
+/* --- La garde des données (13/11, audit du 12/11, FWEBCODE-01) ----------------------------
+   Le stockage refusé par le navigateur : un bandeau permanent, au-dessus de chaque écran.
+   Sur l'accueil, l'avis du moment (installer sur l'iPhone, importer, exporter) : une carte,
+   son texte, puis « Mes données » et « Plus tard » côte à côte. */
+.bandeau-stockage {
+  flex: none; margin: 0; padding: calc(6px + env(safe-area-inset-top, 0px)) 16px 6px;
+  background: #B3261E; color: #fff; font-size: 13px; line-height: 1.35; text-align: center;
+}
+.avis-donnees { padding: 12px 16px; border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+.avis-texte { margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink); text-wrap: pretty; }
+.avis-actions { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.avis-actions button { flex: 1 1 0; margin: 0; }
+.avis-actions .secondaire { min-height: 44px; padding: 10px 16px; font-size: 15px; }
+.avis-actions .texte-bouton { min-height: 44px; }
+.presentation-avis { color: var(--ink); font-weight: 600; }
+
 /* --- Tehilim (TehilimActivity, TehilimLectureActivity) --------------------------------- */
 .grille-psaumes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 8px; }
 .case-psaume {
@@ -1408,6 +1424,9 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
 /* La source du jour (19/10) */
 .source-du-jour { padding: 12px 16px 10px; }
 .source-du-jour-texte { margin: 8px 0 4px; font-family: var(--police-texte); font-size: 19px; line-height: 1.6; color: var(--ink); text-align: start; }
+/* La traduction (13/11) : sous l'hébreu, plus discrète, comme celle du ’hizouk ; seule, à l'encre. */
+.source-du-jour-traduction { margin: 2px 0 4px; font-size: 15px; line-height: 1.5; color: var(--muted); text-align: start; }
+.source-du-jour-traduction.seule { margin-top: 8px; font-size: 17px; color: var(--ink); }
 .source-du-jour-ref { margin: 0; color: var(--muted); font-size: 13px; font-style: italic; }
 .source-du-jour-actions { display: flex; gap: 8px; margin-top: 10px; }
 

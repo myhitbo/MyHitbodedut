@@ -110,6 +110,12 @@ object SaisieVol {
                 val code = m.groupValues[1]
                 // « à 11 », « le 12 » ne sont pas des numéros de vol.
                 if (code in setOf("a", "le", "la", "de", "du", "au", "et", "on", "at", "le", "ב", "the") || code in MOTS) null
+                // « 4h 25m », « 5h45 » sont des durées ou des heures, pas des numéros (audit du 12/11, FVOL-04) :
+                // seul « 6H » (Israir) est un code « chiffre + h », suivi d'un vrai numéro, pas de deux chiffres de minutes.
+                else if (code.length == 2 && code[1] == 'h' && code[0].isDigit() &&
+                    !(code == "6h" && !(m.groupValues[2].length == 2 && m.groupValues[2].toInt() < 60 && m.groupValues[3].isEmpty()))) null
+                // « gate B12 », « porte A3 » : la porte, pas le vol.
+                else if (Regex("(?:gate|porte|door|terminal|שער)\\s*$").containsMatchIn(plie.substring(0, m.range.first))) null
                 else RouteVol.normaliser(code + m.groupValues[2] + m.groupValues[3])?.let { (code + m.groupValues[2] + m.groupValues[3]).uppercase() }
             }.firstOrNull()
 
@@ -119,7 +125,7 @@ object SaisieVol {
         val (depart, arrivee) = aeroports(mots, aeroports, num)
         val leger = java.text.Normalizer.normalize(texte, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}"), "").lowercase()
         val (date, dateArrivee) = dates(plie, leger, mots, aujourdhui)
-        val heures = heures(leger)
+        val heures = heures(leger, num)
         return Proposition(num, compagnie, depart, arrivee, date, heures.getOrNull(0), heures.getOrNull(1), dateArrivee)
     }
 
@@ -221,16 +227,30 @@ object SaisieVol {
 
     /**
      * Les heures, dans l'ordre : « 11h », « 11h30 », « 11:30 », « 11 am », « 11pm », « à 11 »,
-     * « בשעה 11 ». Celles de l'embarquement ou de la fermeture de la porte, qu'un billet donne
-     * avant le départ, sont écartées.
+     * « בשעה 11 ». Sont écartées (audit du 12/11, FVOL-04) : celles de l'embarquement ou de la
+     * fermeture de la porte, qu'un billet donne avant le départ, sauf si « départ » est plus près
+     * que « gate » (« Boarding 5:20 gate B12 Departure 6:05 ») ; les durées (« Durée 4h25 »,
+     * « 4h 25m ») ; les chiffres du numéro de vol déjà lu ([numero], « 6H 123 ») ; et, dès qu'une
+     * forme « HH:MM » figure dans le texte, les formes « 4h25 », qui sont alors des durées.
      */
-    fun heures(leger: String): List<LocalTime> {
+    fun heures(leger: String, numero: String? = null): List<LocalTime> {
         val r = Regex("(?<![0-9])([01]?[0-9]|2[0-3])(?:\\s?h\\s?([0-5][0-9])?|:([0-5][0-9])(?:\\s?(am|pm))?|\\s?(am|pm))(?![0-9])" +
             "|(?<![a-z\\u05D0-\\u05EA])(?:בשעה|a|à|at|vers)\\s([01]?[0-9]|2[0-3])(?![0-9/:.]|\\s?h|\\s?am|\\s?pm)")
-        return r.findAll(leger).mapNotNull { m ->
-            val avant = leger.substring(maxOf(0, m.range.first - 24), m.range.first)
-            if (Regex("boarding|embarquement|gate|porte|עלייה|שער|fermeture|closes").containsMatchIn(avant)) return@mapNotNull null
+        val texte = numero?.let { n ->
+            Regex("(?<![a-z0-9])" + n.lowercase().map { Regex.escape(it.toString()) }.joinToString("\\s?") + "(?![0-9])").replace(leger, " ")
+        } ?: leger
+        val avecDeuxPoints = Regex("(?<![0-9])[0-9]{1,2}:[0-5][0-9]").containsMatchIn(texte)
+        val porte = Regex("boarding|embarquement|gate|porte|עלייה|שער|fermeture|closes")
+        val depart = Regex("depart[a-z]*|dep(?![a-z])|decollage|takeoff|המראה")
+        val duree = Regex("(?:duree|duration|flight time|temps de vol|משך|זמן טיסה)\\s*[:\\-–]?\\s*$")
+        return r.findAll(texte).mapNotNull { m ->
+            val avant = texte.substring(maxOf(0, m.range.first - 24), m.range.first)
             val g = m.groupValues
+            if (duree.containsMatchIn(avant)) return@mapNotNull null
+            if (Regex("^\\s?m(?:in|n)?(?![a-z])").containsMatchIn(texte.substring(m.range.last + 1))) return@mapNotNull null
+            if (avecDeuxPoints && g[3].isEmpty() && g[4].isEmpty() && g[5].isEmpty() && g[6].isEmpty()) return@mapNotNull null
+            val derniereP = porte.findAll(avant).lastOrNull()
+            if (derniereP != null && (depart.findAll(avant).lastOrNull()?.range?.first ?: -1) < derniereP.range.first) return@mapNotNull null
             if (g[6].isNotEmpty()) return@mapNotNull LocalTime.of(g[6].toInt(), 0)
             var h = g[1].toInt()
             val min = (g[2].ifEmpty { g[3] }).ifEmpty { "0" }.toInt()
@@ -240,6 +260,15 @@ object SaisieVol {
             LocalTime.of(h, min)
         }.toList()
     }
+
+    /** Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas repris, l'heure se choisit (FVOL-03). */
+    fun dateSansHeure(p: Proposition) = p.date != null && p.heureDepart == null
+
+    /**
+     * Le vol ne se calcule et ne s'enregistre seul que si tout vient du texte ou du billet : ni une arrivée
+     * estimée d'après la distance, ni un jour repris de l'ancien vol (FVOL-03). Sinon on remplit les tuiles.
+     */
+    fun calculAutomatique(p: Proposition, arriveeEstimee: Boolean) = !arriveeEstimee && p.date != null
 
     /**
      * La durée de vol estimée quand le billet ne donne pas l'arrivée : la distance à 820 km/h,

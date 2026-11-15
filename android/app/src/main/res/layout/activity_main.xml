@@ -202,7 +202,7 @@
                                 android:gravity="center"
                                 android:maxLines="2"
                                 android:ellipsize="end"
-                                android:textColor="?attr/mhMuted"
+                                android:textColor="@color/on_plate_muted"
                                 android:textSize="12sp" />
                         </LinearLayout>
                     </FrameLayout>
@@ -316,6 +316,15 @@
                     android:layout_marginTop="4dp"
                     android:text="@string/action_write_note"
                     android:visibility="gone" />
+
+                <!-- L'écran de préparation (FPRODUIT-04) : « Sans durée » et « Commencer simplement » y vivent, le bouton principal démarre d'un toucher. -->
+                <Button
+                    android:id="@+id/start_prepare"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/start_prepare" />
 
                 <!--
                     Une hitbodedout faite loin du téléphone, comme le conseil
