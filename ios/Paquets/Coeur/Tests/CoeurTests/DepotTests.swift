@@ -24,7 +24,8 @@ struct DepotTests {
     }
 
     private static func lis(_ nom: String, dans dossier: URL) throws -> String {
-        String(decoding: try Data(contentsOf: dossier.appendingPathComponent(nom)), as: UTF8.self)
+        let donnees = try Data(contentsOf: dossier.appendingPathComponent(nom))
+        return String(decoding: donnees, as: UTF8.self)
     }
 
     private static func existe(_ nom: String, dans dossier: URL) -> Bool {
@@ -73,7 +74,7 @@ struct DepotTests {
         #expect(prenom == "Hillel")
         let duree = reglages.targetMinutes, applis = reglages.blockedApps
         #expect(duree == 30)
-        #expect(applis == ["com.whatsapp"])
+        #expect(applis == Set(["com.whatsapp"]))
 
         // journal.json garde les préférences d'Android sous leurs noms ; reglages.json, les réglages tels quels.
         let objet = try ObjetJSON(texte: DepotTests.lis(Coeur.Depot.fichierJournal, dans: dossier))
@@ -212,7 +213,7 @@ struct DepotTests {
         let duree = reglages.targetMinutes, morceau = reglages.musicTrackId, applis = reglages.blockedApps
         #expect(duree == 25)
         #expect(morceau == "hamelech_basade")
-        #expect(applis == ["com.whatsapp"])
+        #expect(applis == Set(["com.whatsapp"]))
 
         // L'export du dépôt se relit, et porte ce qui a été importé.
         let donnees = try await relu.exporter(maintenant: 1_794_578_000_000)

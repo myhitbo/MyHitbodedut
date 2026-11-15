@@ -72,8 +72,9 @@ public enum Sauvegarde {
     /// (« 2026-11-13T08:15:30.123Z »). Les années hors de 0000…9999 portent leur signe, comme java.time.
     public static func horodatage(_ millis: Int64) -> String {
         let civile = Fuseau.utc.dateHeure(millis: millis)
-        return civile.jour.iso + "T" + chiffres(civile.heure, 2) + ":" + chiffres(civile.minute, 2) + ":"
-            + chiffres(civile.seconde, 2) + "." + chiffres(civile.milli, 3) + "Z"
+        let heure = chiffres(civile.heure, 2), minute = chiffres(civile.minute, 2)
+        let seconde = chiffres(civile.seconde, 2), milli = chiffres(civile.milli, 3)
+        return "\(civile.jour.iso)T\(heure):\(minute):\(seconde).\(milli)Z"
     }
 
     // MARK: L'import
@@ -236,7 +237,7 @@ public enum Sauvegarde {
         o["reminder_enabled"] = .booleen(reglages.reminderEnabled)
         o["reminder_minutes"] = entier(reglages.reminderMinutes)
         // Toutes les heures : l'ancienne clé n'en porte qu'une.
-        o["reminder_times"] = .tableau(reglages.reminderTimes.map { entier($0) })
+        o["reminder_times"] = .tableau(reglages.reminderTimes.map { JSON.entier(Int64($0)) })
         o["first_name"] = .chaine(journal.firstName)
         o["hide_countdown"] = .booleen(reglages.hideCountdown)
         o["guided_hitbodedut"] = .booleen(reglages.guidedHitbodedut)
