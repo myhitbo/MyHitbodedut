@@ -3,7 +3,16 @@ name: Android
 on:
   push:
     branches: [main]
+  # Une demande qui ne touche que l'iOS ou le Nokia ne reconstruit pas Android (minutes comptées,
+  # 15/11). Les tests d'Android lisent web/, tools/vecteurs_kosherjava et musique/ : ceux-là restent.
   pull_request:
+    paths-ignore:
+      - 'ios/**'
+      - 'tools/export_contenu/**'
+      - 'tools/vecteurs_ios/**'
+      - 'nokia/**'
+      - '.github/workflows/ios-*.yml'
+      - '.github/RUNNER.md'
   workflow_dispatch:
     inputs:
       captures:
@@ -44,7 +53,10 @@ jobs:
   build:
     # Une demande de captures ne reconstruit pas les releases.
     if: github.event_name != 'workflow_dispatch' || !inputs.captures
-    runs-on: ubuntu-24.04
+    # Une machine à vous si la variable du dépôt RUNNER_LINUX la nomme (.github/RUNNER.md), sinon celle de GitHub.
+    runs-on: ${{ vars.RUNNER_LINUX || 'ubuntu-24.04' }}
+    # Une construction dure une douzaine de minutes ; bloquée, elle s'arrête là, pas au bout de six heures.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 

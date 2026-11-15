@@ -14,6 +14,8 @@ on:
       - 'android/app/src/main/java/com/myhitbodedut/Zmanim.kt'
       - '.github/workflows/web.yml'
   pull_request:
+    # ready_for_review : une demande sortie du brouillon passe aussi les tailles d'écran (plus bas).
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'web/**'
       - 'android/app/src/main/res/**'
@@ -30,15 +32,20 @@ permissions:
 # rien n'avait été déployé de la journée.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
-  cancel-in-progress: false
+  # Une demande de fusion n'attend que son dernier envoi ; main, qui met en ligne, va jusqu'au bout.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   web:
-    runs-on: ubuntu-24.04
+    # Une machine à vous si la variable du dépôt RUNNER_LINUX la nomme (.github/RUNNER.md), sinon celle de GitHub.
+    runs-on: ${{ vars.RUNNER_LINUX || 'ubuntu-24.04' }}
+    timeout-minutes: 90
     steps:
       # Les captures « toutes tailles » ont rempli le disque du runner le 14/11 (ENOSPC) : la mise
       # en ligne a été sautée. On retire d'abord les SDK préinstallés dont ce flux ne se sert pas.
       - name: Free disk space
+        # Sur la machine de GitHub seulement : sur une machine à vous, rien n'est effacé.
+        if: runner.environment == 'github-hosted'
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
           df -h /
@@ -92,6 +99,8 @@ jobs:
       # aucun débordement, et les onglets en bas ou sur le côté selon la largeur.
       # WebKit pour Safari (iPhone, iPad), Chromium pour Android et l'ordinateur.
       - name: Every screen at every size (WebKit, Chromium)
+        # L'étape la plus longue (une demi-heure) : pas pour un brouillon, dès qu'il en sort, et sur main.
+        if: github.event_name != 'pull_request' || !github.event.pull_request.draft
         working-directory: web
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/web/node_modules/playwright

@@ -31,7 +31,8 @@ concurrency:
 
 jobs:
   nokia:
-    runs-on: ubuntu-24.04
+    # Une machine à vous si la variable du dépôt RUNNER_LINUX la nomme (.github/RUNNER.md), sinon celle de GitHub.
+    runs-on: ${{ vars.RUNNER_LINUX || 'ubuntu-24.04' }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

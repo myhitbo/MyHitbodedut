@@ -12,11 +12,7 @@ on:
         description: "Adresse du site à tester (vide : le site construit depuis cette branche)"
         required: false
         default: ''
-  push:
-    branches: [claude/version-web]
-    paths:
-      - 'web/**'
-      - '.github/workflows/web-mac.yml'
+  # Plus de lancement à chaque envoi : une minute macOS en compte dix sur le quota (15/11).
 
 permissions:
   # Écriture : pour la branche des captures seulement.
