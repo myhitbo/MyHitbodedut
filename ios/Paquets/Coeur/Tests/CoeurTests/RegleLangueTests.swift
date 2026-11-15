@@ -44,7 +44,9 @@ struct RegleLangueTests {
         func marche(_ n: JSON) {
             switch n {
             case .objet(let o):
-                if o.texte("type") == "source" && !o.texte("note").estBlanc { avecNote += 1 }
+                // Une vraie chaîne seulement : trois sources portent `"note": null`, que le org.json des tests
+                // d'Android (json.org) lit comme vide, et celui d'un téléphone (`texte`) comme « null ».
+                if o.texte("type") == "source", case .chaine(let note) = o["note"] ?? .nul, !note.estBlanc { avecNote += 1 }
                 for (_, v) in o.paires { marche(v) }
             case .tableau(let t):
                 for v in t { marche(v) }
