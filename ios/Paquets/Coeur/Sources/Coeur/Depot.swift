@@ -156,7 +156,9 @@ public actor Depot {
         let cible = dossier.appendingPathComponent(nom)
         guard FileManager.default.fileExists(atPath: cible.path) else { return nil }
         let donnees = try Data(contentsOf: cible)
-        if let texte = String(data: donnees, encoding: .utf8), let objet = try? ObjetJSON(texte: texte) {
+        // De l'UTF-8 valable : relu, le texte rend les mêmes octets (une suite fautive deviendrait U+FFFD).
+        let texte = String(decoding: donnees, as: UTF8.self)
+        if texte.utf8.elementsEqual(donnees), let objet = try? ObjetJSON(texte: texte) {
             return objet
         }
         try mettreDeCote(nom)
