@@ -286,7 +286,7 @@ deux séquences à la suite :
    temps restant et la musique continue.
 2. *Morning gate* — le parcours « To see it act for real » de 3.2, en montrant
    les deux fenêtres de divulgation, l'écran de garde devant l'application
-   choisie, puis [I already did it] et l'interrupteur qui coupe la barrière.
+   choisie, puis [Done without the phone] et l'interrupteur qui coupe la barrière.
 
 ### 3.10 Position exacte (`ACCESS_FINE_LOCATION`)
 
