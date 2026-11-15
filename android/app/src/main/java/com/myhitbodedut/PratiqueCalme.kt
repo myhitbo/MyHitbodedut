@@ -25,6 +25,8 @@ class PratiqueCalme(
     private val activite: Activity,
     private val fond: View,
     private val couleurFond: Int,
+    /** Ce qui reste visible par-dessus ce qui s'efface (le mini-lecteur) : son toucher passe. */
+    private val restes: () -> List<View> = { emptyList() },
     private val effaces: () -> List<View>,
 ) {
     private val handler = Handler(Looper.getMainLooper())
@@ -64,9 +66,12 @@ class PratiqueCalme(
         val x = e.x.toInt()
         val y = e.y.toInt()
         val zone = android.graphics.Rect()
-        return effaces().any { v ->
-            v.visibility == View.VISIBLE && v.getGlobalVisibleRect(zone) && zone.contains(x, y)
-        }
+        // isShown, pas la seule visibilité de la vue : getGlobalVisibleRect ne regarde pas
+        // si un parent est masqué. Le mini-lecteur flotte au-dessus du bas de l'écran, où
+        // tombent souvent le 'hizouk ou « Je n'arrive pas à parler » : il passe en premier.
+        fun dedans(v: View) = v.isShown && v.getGlobalVisibleRect(zone) && zone.contains(x, y)
+        if (restes().any(::dedans)) return false
+        return effaces().any(::dedans)
     }
 
     fun liberer() {

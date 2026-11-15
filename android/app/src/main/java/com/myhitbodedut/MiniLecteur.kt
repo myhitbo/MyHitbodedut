@@ -239,6 +239,9 @@ class MiniLecteur(private val activite: Activity) {
         }
     }
 
+    /** Ce qui se touche du lecteur, replié ou déplié : la pratique calme le laisse passer. */
+    val vues: List<View> get() = listOf(disque, panneau)
+
     /** L'écran s'éteint ou passe derrière : la barre n'avance plus pour personne (FSEANCE-19). */
     fun suspendre() = handler.removeCallbacks(suivi)
 

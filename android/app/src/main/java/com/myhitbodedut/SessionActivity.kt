@@ -101,7 +101,10 @@ class SessionActivity : AppCompatActivity() {
         souffle.cible = countdown
         souffle.couleur = Apparence.couleur(this, R.color.mint)
         val fond = findViewById<View>(R.id.session_fond)
-        calme = PratiqueCalme(this, fond, Apparence.couleur(this, R.color.brand_dark)) {
+        calme = PratiqueCalme(
+            this, fond, Apparence.couleur(this, R.color.brand_dark),
+            restes = { if (::miniLecteur.isInitialized) miniLecteur.vues else emptyList() },
+        ) {
             listOf(R.id.session_titre, R.id.session_scene, R.id.session_caption, R.id.session_music,
                 R.id.session_secondary, R.id.session_theme, R.id.session_chizuk, R.id.session_stuck)
                 .map { findViewById(it) }
