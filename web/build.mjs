@@ -114,7 +114,7 @@ for (const nom of ['chizuk.json', 'bibliotheque.json', 'tikkun_haklali.json', 't
 }
 
 // --- Les livres, un fichier chacun (02/11) --------------------------------------
-// livres.json pèse 16 Mo : le lire en entier pour ouvrir Likoutei Etsot (400 Ko) faisait
+// livres.json pèse 28,4 Mo : le lire en entier pour ouvrir Likoutei Etsot (400 Ko) faisait
 // tomber Safari sur iPhone. Le site lit la table (titres, groupes, nombre de chapitres), puis
 // le seul livre ouvert. Les textes restent ceux d'Android, octet pour octet dans leur contenu.
 {

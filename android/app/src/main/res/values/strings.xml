@@ -123,6 +123,7 @@
     <string name="rings_description">Anneaux. Aujourd’hui : %1$s sur %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">Chabbat et Yom Tov</string>
     <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
+    <string name="settings_shabbat_hint_web">Ces jours-là, la série reste intacte.</string>
     <string name="settings_exempt_today">Pause aujourd’hui</string>
     <string name="settings_exempt_today_hint">Pour un voyage, une maladie, un jour empêché : la journée ne compte pas contre vous.</string>
     <string name="settings_screen_missing">Cet écran de réglages n’existe pas sur ce téléphone.</string>
@@ -1137,6 +1138,7 @@
     <string name="settings_ne_pas_deranger_hint">Le téléphone passe en mode « priorité » le temps de la hitbodedout, puis revient comme avant. Android demande une autorisation la première fois.</string>
     <string name="recherche_titre">Recherche</string>
     <string name="recherche_indice">Rechercher dans le siddour, les livres, la halakha, les hilloulot</string>
+    <string name="recherche_aucun_web">Aucun résultat. Les textes sont cherchés en hébreu ; en français, seuls les titres et les hilloulot le sont.</string>
     <string name="recherche_tout">Tout</string>
     <string name="recherche_tefilot">Prières</string>
     <string name="recherche_halakhot">Halakhot</string>
@@ -1398,6 +1400,7 @@
     <string name="vol_ecart_gps">%1$s min si l’arrivée a 30 min de retard</string>
     <string name="vol_direct_explication">Désactivé par défaut. Activé, il envoie au relais de l’application l’indicatif du vol et la position estimée de l’avion, rien d’autre ; le relais demande la position réelle à OpenSky Network. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_direct_activer">Services en ligne : route du vol et suivi en direct</string>
+    <string name="vol_direct_activer_web">Services en ligne : route du vol (adsbdb)</string>
     <string name="vol_route_activer">Services en ligne : route du vol</string>
     <string name="vol_indicatif">Indicatif radio (OACI), par exemple ELY1</string>
     <string name="vol_indicatif_invalide">Indicatif attendu : trois lettres puis le numéro, par exemple ELY1.</string>

@@ -118,6 +118,7 @@
     <string name="rings_description">טבעות. היום: %1$s מתוך %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">שבת ויום טוב</string>
     <string name="settings_shabbat_hint">בימים אלה: המצב מושבת, אין תזכורת, והרצף נשמר.</string>
+    <string name="settings_shabbat_hint_web">בימים אלה הרצף נשמר.</string>
     <string name="settings_exempt_today">הפסקה היום</string>
     <string name="settings_exempt_today_hint">לנסיעה, למחלה או ליום שבו נבצר מכם: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
@@ -1122,6 +1123,7 @@
     <string name="settings_ne_pas_deranger_hint">הטלפון עובר למצב „עדיפות” בזמן ההתבודדות וחוזר אחר כך כפי שהיה. אנדרואיד מבקש הרשאה בפעם הראשונה.</string>
     <string name="recherche_titre">חיפוש</string>
     <string name="recherche_indice">חיפוש בסידור, בספרים, בהלכה ובהילולות</string>
+    <string name="recherche_aucun_web">אין תוצאות. את הטקסטים מחפשים בעברית; בצרפתית ובאנגלית מחפשים רק בכותרות ובהילולות.</string>
     <string name="recherche_tout">הכול</string>
     <string name="recherche_tefilot">תפילות</string>
     <string name="recherche_halakhot">הלכות</string>
@@ -1392,6 +1394,7 @@
     <string name="vol_ecart_gps">⁦%1$s⁩ דק׳ אם הנחיתה מתעכבת ב־30 דק׳</string>
     <string name="vol_direct_explication">כבוי כברירת מחדל. כשהוא פעיל, הוא שולח לשרת הממסר של האפליקציה את אות הקריאה של הטיסה ואת המיקום המשוער של המטוס, ותו לא; הממסר מבקש את המיקום האמיתי מ־OpenSky Network. מעל אוקיינוסים המטוס לעיתים קרובות אינו נראה.</string>
     <string name="vol_direct_activer">שירותים מקוונים: מסלול הטיסה ומעקב בזמן אמת</string>
+    <string name="vol_direct_activer_web">שירותים מקוונים: מסלול הטיסה (adsbdb)</string>
     <string name="vol_route_activer">שירותים מקוונים: מסלול הטיסה</string>
     <string name="vol_indicatif">אות קריאה (ICAO), לדוגמה ELY1</string>
     <string name="vol_indicatif_invalide">אות קריאה צפוי: שלוש אותיות ואחריהן המספר, לדוגמה ELY1.</string>

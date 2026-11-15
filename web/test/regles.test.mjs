@@ -701,6 +701,20 @@ test('trophées à niveaux : mêmes règles que TropheesTest (12/10)', () => {
   assert.equal(n[0].famille.cle, 'serie');
 });
 
+test('une fête de trophées remise à plus tard les laisse neufs pour le prochain accueil (FWEBCODE-13)', () => {
+  // La note qui suit le bravo est ouverte quand la fiche devait venir : rien n'est perdu.
+  const jours = (n) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`2026-10-${String(i + 1).padStart(2, '0')}`, 15]));
+  const avant = Trophees.gagnes({ minutes: jours(2), notes: 0, meilleureSerie: 2 });
+  const apres = Trophees.gagnes({ minutes: jours(3), notes: 0, meilleureSerie: 3 });
+  assert.ok(apres.size > avant.size);
+  const vus = Trophees.remisANeuf(new Set(apres), apres, avant);
+  assert.deepEqual([...vus].sort(), [...avant].sort());
+  assert.deepEqual(Trophees.nouveaux(apres, vus), Trophees.nouveaux(apres, avant));
+  assert.ok(Trophees.nouveaux(apres, vus).length > 0);
+  // Ce qui était vu avant reste vu, même absent des gagnés (ancienne clé gardée).
+  assert.ok(Trophees.remisANeuf(new Set(['x:1', ...apres]), apres, new Set(['x:1', ...avant])).has('x:1'));
+});
+
 // --- Dates de gain, trophées proches, bilan de la semaine (BilanTropheesTest, 16/10) ---
 import { Plaque as PlaqueB } from '../src/js/regles.js';
 test('dates de gain, proches et bilan de la semaine : mêmes cas que BilanTropheesTest', () => {

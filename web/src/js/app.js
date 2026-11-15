@@ -1,7 +1,7 @@
 // L'application : l'accueil (MainActivity), la séance (SessionActivity),
-// le bravo (CelebrationActivity), la musique (MusicActivity) et un premier
-// écran de réglages. Les écrans suivants arrivent par étapes ; ce qui
-// n'existe pas encore est montré, mais inerte (classe « a-venir »).
+// le bravo (CelebrationActivity), la musique (MusicActivity), les réglages, la
+// bibliothèque, les prières, les zmanim et le calendrier : les écrans que
+// ecranCourant() sait ouvrir.
 
 import { chargeTraduction, langueInitiale, LANGUES } from './i18n.js';
 import { Anneaux, CycleTehilim, LanguesTexte, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from './regles.js';
@@ -233,7 +233,15 @@ function choisirSujet() {
 const lecteur = new Audio();
 lecteur.preload = 'none';
 let enEcoute = null;
-lecteur.addEventListener('ended', () => { enEcoute = null; rendre(); });
+lecteur.addEventListener('ended', () => {
+  const apercu = enEcoute !== null;
+  enEcoute = null;
+  // L'aperçu d'un morceau avait pris la place de la musique de la séance : elle repart (FWEBCODE-14).
+  // Après les autres écouteurs de « ended » : celui de la lecture aléatoire, plus bas, verrait sinon
+  // lectureAuHasard que demarreMusique() vient de poser, et tirerait aussitôt un second morceau.
+  if (apercu && store.isSessionRunning()) setTimeout(() => { if (store.isSessionRunning() && enEcoute === null) demarreMusique(); }, 0);
+  rendre();
+});
 lecteur.addEventListener('pause', () => { if (!lecteur.ended) { enEcoute = null; rendre(); } });
 
 /**
@@ -301,6 +309,12 @@ function montreToast(texte) {
  */
 function echecLecture(e) {
   if (e?.name === 'AbortError') return;
+  // Sans cela le mini-lecteur affichait « Pause » alors que rien ne jouait (FWEBLIVE-06). La source est
+  // retirée : « Lecture » repart alors de demarreMusique() au lieu de rejouer un élément en erreur.
+  lecteur.pause();
+  lecteur.removeAttribute('src');
+  lecteur.load();
+  majMini();
   signale(tr.t('music_play_failed'));
 }
 
@@ -313,7 +327,7 @@ function metadonnees(m) {
 }
 
 function ecouter(m) {
-  if (enEcoute === m.id) { lecteur.pause(); enEcoute = null; rendre(); return; }
+  if (enEcoute === m.id) { lecteur.pause(); enEcoute = null; if (store.isSessionRunning()) demarreMusique(); rendre(); return; }
   lecteur.src = m.fichier;
   lecteur.loop = false;
   lectureAuHasard = false;
@@ -401,7 +415,7 @@ function sauter(fois) {
 // --- Le centre des anneaux (Plaque.kt) : le hassid, puis vos chiffres ---------
 let facePlaque = 'hassid';
 let minuteurPlaque = null;
-const sansMouvement = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sansMouvement = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 /** Le chiffre d'une face, la façon de l'écrire, et ce qu'il compte. */
 function contenuFace(face) {
@@ -662,9 +676,8 @@ function ouvrirMesDonnees() {
  * parcours », les chiffres montent jusqu'à leur valeur. Rien de cela quand le
  * téléphone demande moins de mouvement.
  */
-const moinsDeMouvement = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 function effetsEntree(ecran) {
-  if (moinsDeMouvement()) return;
+  if (sansMouvement()) return;
   const racine = app.firstElementChild;
   if (!racine) return;
   racine.classList.add('entree');
@@ -811,8 +824,8 @@ function pastille(libelle, valeur, onclick) {
     h('span', { class: 'libelle' }, libelle), h('span', { class: 'valeur' }, valeur));
 }
 
-function ligne({ nom, etat, onclick, aVenir = false, fin = null, class: classe = '' }) {
-  return h('button', { class: `ligne${aVenir ? ' a-venir' : ''}${classe ? ` ${classe}` : ''}`, onclick, 'aria-disabled': aVenir ? 'true' : null },
+function ligne({ nom, etat, onclick, fin = null, class: classe = '' }) {
+  return h('button', { class: `ligne${classe ? ` ${classe}` : ''}`, onclick },
     h('span', { class: 'corps' }, h('div', { class: 'nom' }, nom), etat ? h('div', { class: 'etat' }, etat) : null),
     fin, h('span', { class: 'chevron', 'aria-hidden': 'true' }));
 }
@@ -1369,7 +1382,8 @@ function tuileLivre(hebreu, traduction, dessin, onclick) {
  */
 function ecranSiddur() {
   const pret = chargeSiddur();
-  const nomNusah = pret ? titreTexte(siddur._meta.nusah) : tr.t(NUSAH.find(([c]) => c === store.siddurNusah())?.[1] ?? 'siddur_nusah');
+  // Le nom court dans la pastille, le complet reste dans la feuille de choix (FWEBLIVE-15).
+  const nomNusah = tr.t(NUSAH.find(([c]) => c === store.siddurNusah())?.[1] ?? 'siddur_nusah');
   const heure = new Date();
   // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
   const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
@@ -1660,6 +1674,8 @@ function ecranRecherche() {
     yalkutDuJour(); livreDuJour();
     const total = sid.length + liv.length + yy.length + bih.length + hil.length;
     groupes.push(h('p', { class: 'jour-sous-titre' }, tr.t('hilloulot_resultats', total)));
+    // Rien trouvé : on dit où l'on cherche, pour qu'un mot français ne passe pas pour une absence (FWEBLIVE-11).
+    if (total === 0 && !/[\u0590-\u05FF]/.test(q)) groupes.push(h('p', { class: 'indice', 'aria-live': 'polite' }, tr.t('recherche_aucun_web')));
     const groupe = (nom, l) => (l.length ? [h('h2', { class: 'section' }, tr.t(nom)), ...l] : []);
     // Les titres des groupes reprennent les noms des filtres (audit 1.390).
     groupes.push(...groupe('recherche_tefilot', sid.map((r) => resultat(r.t.titre.he, r.extrait, () => { priere = r.t.id; ouvrir('priere'); }))));
@@ -2186,7 +2202,7 @@ function ecranHizouk() {
   return h('div', { class: 'ecran avec-bandeau' },
     bandeau(tr.t('chizuk_demande_title'), { puce: h('p', { class: 'bandeau-sous-titre' }, tr.t('chizuk_demande_hint')), dessin: 'char_open_arms' }),
     h('div', { class: 'defile' }, h('div', { class: 'contenu hizouk' },
-      item ? (() => { const c = carteChizuk({ moment: 'demande', item }); if (change && !moinsDeMouvement()) c.classList.add('fondu-neuf'); return c; })() : null,
+      item ? (() => { const c = carteChizuk({ moment: 'demande', item }); if (change && !sansMouvement()) c.classList.add('fondu-neuf'); return c; })() : null,
       item ? h('div', { class: 'hizouk-actions' },
         h('button', { class: 'secondaire', onclick: () => { hizouk = ChizukBag.tirer(store, chizuk, 'demande'); hizoukChange = true; rendre(); } }, tr.t('chizuk_autre')),
         h('button', { class: 'secondaire', 'aria-pressed': garde ? 'true' : 'false', onclick: () => { store.basculerChizukFavori(item.id); rendre(); } },
@@ -2197,7 +2213,7 @@ function ecranHizouk() {
       h('button', { class: 'principal', onclick: () => ouvrir('seance') }, tr.t('chizuk_commencer')),
       gardes.length ? h('h2', { class: 'section' }, tr.t('chizuk_favoris')) : null,
       gardes.length ? h('div', { class: 'carte' }, gardes.map((x) =>
-        h('button', { class: 'hizouk-garde', onclick: () => { hizouk = x; hizoukChange = true; rendre(); document.querySelector('.defile')?.scrollTo({ top: 0, behavior: moinsDeMouvement() ? 'auto' : 'smooth' }); } },
+        h('button', { class: 'hizouk-garde', onclick: () => { hizouk = x; hizoukChange = true; rendre(); document.querySelector('.defile')?.scrollTo({ top: 0, behavior: sansMouvement() ? 'auto' : 'smooth' }); } },
           h('span', { class: 'hizouk-garde-texte' }, ChizukRules.traduction(x, tr.langue) || ChizukRules.hebreu(chizuk, x)),
           h('span', { class: 'hizouk-ref' }, Reference.localise(x.ref, tr.langue))))) : null)));
 }
@@ -3211,14 +3227,6 @@ function directionsBoussole(lieu) {
   return store.boussoleCarte() ? [rh, gc] : [gc, rh];
 }
 
-function carteBoussole() {
-  const lieu = store.lieu();
-  return h('div', { class: 'carte' }, h('button', { class: 'ligne', onclick: () => ouvrir('boussole') },
-    h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('boussole_title')),
-      h('div', { class: 'etat' }, lieu ? tr.t('boussole_par_rapport_nord', Boussole.degres(directionsBoussole(lieu)[0])) : tr.t('boussole_carte_sous'))),
-    h('span', { class: 'chevron', 'aria-hidden': 'true' })));
-}
-
 function consigneBoussole(gc, cap) {
   if (cap == null) return tr.t('boussole_par_rapport_nord', Boussole.degres(gc));
   const e = Boussole.ecart(gc, cap);
@@ -3462,14 +3470,6 @@ let modifierVol = false;
 
 const libelleVol = (v) => tr.t('vol_carte_vol', v.numero || '✈', v.depart, v.arrivee);
 
-/** L'accès depuis l'onglet Zmanim : le dernier vol saisi, ou l'invitation à en saisir un. */
-function carteVol() {
-  const v = store.vol();
-  return h('div', { class: 'carte' }, h('button', { class: 'ligne', onclick: () => ouvrir('vol') },
-    h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('vol_title')),
-      h('div', { class: 'etat' }, v ? libelleVol(v) : tr.t('vol_carte_sous'))),
-    h('span', { class: 'chevron', 'aria-hidden': 'true' })));
-}
 
 function planDe(v) {
   const depart = aeroportsVol.find((a) => a.iata === v.depart);
@@ -3670,7 +3670,8 @@ function suiviDirect() {
   // L'interrupteur n'est plus dans le formulaire (04/11) : il vit ici, sous « Préciser la position ».
   const bloc = [interrupteurEnLigne()];
   if (!actif) return bloc;
-  if (!RELAIS_VOL) return [...bloc, h('p', { class: 'indice' }, tr.t('vol_direct_inactif'))];
+  // Sans relais, l'interrupteur ne promet que la route du vol : rien à dire d'un suivi qui n'existe pas (FWEBLIVE-13).
+  if (!RELAIS_VOL) return bloc;
   bloc.push(h('p', { class: 'indice' }, tr.t('vol_direct_explication')));
   const champ = h('input', { type: 'text', class: 'champ-recherche champ-vol', maxlength: 9, autocapitalize: 'characters', placeholder: tr.t('vol_indicatif'), value: store.volIndicatif() || null });
   return [...bloc, champ,
@@ -3960,7 +3961,14 @@ function lignePaliers() {
   const message = neuf ? tr.t('palier_nouveau', libellePalier(neuf.piste, bilan), valeurPalier(neuf.piste, neuf.atteint)) : null;
   // Des étincelles du grade plutôt que des confettis multicolores (16/10, animation E).
   // Un trophée neuf ouvre sa fiche, avec la fête (19/10) ; un palier seul garde le message et les étincelles.
-  if (trophee) setTimeout(() => feterTrophees(tropheesNeufs), 600);
+  // Pas par-dessus un autre écran ni une feuille (FWEBCODE-13). Or la note qui suit le bravo est justement
+  // ouverte à ce moment-là : les trophées non montrés redeviennent neufs, fêtés au prochain accueil.
+  const vusAvant = store.tropheesVus();
+  if (trophee) setTimeout(() => {
+    if (app.dataset.ecran === 'accueil/aujourdhui' && !feuilleOuverte()) { feterTrophees(tropheesNeufs); return; }
+    const vusMaintenant = store.tropheesVus();
+    if (vusMaintenant && vusAvant) store.setTropheesVus(Trophees.remisANeuf(vusMaintenant, gagnes, vusAvant));
+  }, 600);
   else if (message) setTimeout(() => { signale(message); etincelles(app.querySelector('.ligne-grade .medaille-grade'), Trophees.grade(gagnes.size)); }, 600);
   store.setPaliersVus(Paliers.marques(etats, bilan));
   store.setTropheesVus(new Set(gagnes));
@@ -4044,7 +4052,6 @@ const dessinTrophee = (e, m, taille) => objetTrophee(e.f.forme, m, e.f.icone, ta
 const descTrophee = (e) => tr.p(`trophee_${e.f.cle}_desc`, e.seuil);
 const nomMetal = (m) => tr.t(`metal_${m}`);
 const medailleGrade = (m, taille) => h('span', { class: 'medaille-grade', 'aria-hidden': 'true' }, objetTrophee('medaille', m, '★', taille));
-const moinsAnime = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 /** Le jour de gain de chaque trophée gagné (Trophees.datesGain) : l'historique rejoué. */
 function datesTrophees() {
   return Trophees.datesGain(store.minutesParJour(), store.joursAvecNote(), (d) => store.isExempt(d), store.tikkunJournal());
@@ -4142,7 +4149,7 @@ async function partagerGrade(g, n) {
 
 /** Des étincelles de la couleur du grade autour d'un élément (16/10, animation E). */
 function etincelles(el, m) {
-  if (!el || moinsAnime()) return;
+  if (!el || sansMouvement()) return;
   const [clair, fonce] = TEINTES[m ?? 'or'];
   for (let k = 0; k < 10; k++) {
     const a = (k / 10) * 2 * Math.PI + Math.random() * 0.4;
@@ -4159,7 +4166,7 @@ function etincelles(el, m) {
 
 /** Un nombre qui monte de 0 à sa valeur (16/10, animation D). */
 function monteNombre(el, fin, texte) {
-  if (moinsAnime()) { el.textContent = texte(fin); return; }
+  if (sansMouvement()) { el.textContent = texte(fin); return; }
   const debut = performance.now();
   const pas = (t) => { const u = Math.min(1, (t - debut) / 700); el.textContent = texte(Math.round(fin * (1 - (1 - u) ** 3))); if (u < 1) requestAnimationFrame(pas); };
   el.textContent = texte(0);
@@ -4273,7 +4280,7 @@ function ecranPaliers() {
     if (d && ici) { const cible = Math.max(0, ici.offsetTop - d.clientHeight / 3); if (Math.abs(cible - d.scrollTop) > 1) d.dataset.defilementAuto = '1'; d.scrollTop = cible; }
     // B : la ligne se remplit jusqu'à « Tu es ici », les dernières étapes une à une.
     const gagnes = [...ecran.querySelectorAll('.ligne-etape.gagne')];
-    if (!moinsAnime()) gagnes.forEach((el, i) => { el.style.setProperty('--retard', `${Math.max(0, i - (gagnes.length - 6)) * 90}ms`); el.classList.add('pousse'); });
+    if (!sansMouvement()) gagnes.forEach((el, i) => { el.style.setProperty('--retard', `${Math.max(0, i - (gagnes.length - 6)) * 90}ms`); el.classList.add('pousse'); });
     // D : les barres partent de zéro, le compte monte, le presque-atteint pulse.
     requestAnimationFrame(() => ecran.querySelectorAll('[data-largeur]').forEach((b) => { b.style.width = b.dataset.largeur; }));
     const cpt = ecran.querySelector('.ligne-ici .trophee-compte');
@@ -4302,6 +4309,8 @@ function feteGrade(ancien, g, n, suivant) {
 function bilanDeLaSemaine() {
   // Pas par-dessus la présentation du premier lancement (revue du 16/10) : il attendra la prochaine ouverture.
   if (document.querySelector('.presentation')) return;
+  // Ni par-dessus un autre écran, une autre feuille ou une séance : le bilan attend la prochaine ouverture (FWEBCODE-13).
+  if (app.dataset.ecran !== 'accueil/aujourdhui' || feuilleOuverte() || store.isSessionRunning()) return;
   // Rien à calculer quand le bilan de cette semaine a déjà été montré.
   const debut = Trophees.debutSemaine(store.today());
   const semaineResumee = new Date(`${debut}T12:00:00Z`); semaineResumee.setUTCDate(semaineResumee.getUTCDate() - 7);
@@ -4414,6 +4423,13 @@ function ecranReglages() {
               store.setLangueApp(LANGUES[i].code);
               tr = await chargeTraduction(LANGUES[i].code);
               appliqueApparence();
+              // Le mini-lecteur pose ses libellés une fois : reconstruit dans la nouvelle langue (FWEBCODE-15).
+              mini?.remove(); mini = null;
+              // Le nom d'une ville est gardé traduit au moment du choix : relu dans la nouvelle langue (FWEBCODE-15).
+              // La région n'est pas touchée (null) : elle a pu être corrigée à la main.
+              const lieu = store.lieu();
+              const ville = lieu?.ville != null ? villes?.find((v) => v.id === lieu.ville) : null;
+              if (ville) store.setLieu({ ...lieu, nom: titreTexte(ville.nom) }, ville, null);
               rendre();
             }),
         }),
@@ -4547,7 +4563,7 @@ function carteMaPratique() {
     ligneInterrupteur(tr.t('settings_hide_countdown'), null, store.hideCountdown(), (v) => store.setHideCountdown(v)),
     // La hitbodedout guidée (02/11, SettingsActivity.guided_switch) : éteinte par défaut.
     ligneInterrupteur(tr.t('settings_hitbodedut'), tr.t('settings_hitbodedut_hint'), store.guidedHitbodedut(), (v) => store.setGuidedHitbodedut(v)),
-    ligneInterrupteur(tr.t('settings_shabbat'), tr.t('settings_shabbat_hint'), store.shabbatMode(), (v) => store.setShabbatMode(v)),
+    ligneInterrupteur(tr.t('settings_shabbat'), tr.t('settings_shabbat_hint_web'), store.shabbatMode(), (v) => store.setShabbatMode(v)),
     ligneInterrupteur(tr.t('settings_exempt_today'), tr.t('settings_exempt_today_hint'), store.pausedDates().has(jourAffiche), () => store.togglePausedDate(jourAffiche)));
 }
 
@@ -4660,6 +4676,10 @@ function carteMesDonnees() {
     if (n === null || n === undefined) { signale(tr.t('import_invalid')); return; }
     // Un fichier importé est une sauvegarde qui existe : le rappel d'export repart d'aujourd'hui (FWEBCODE-01).
     store.setDerniereSauvegarde(store.today());
+    // Ce que la sauvegarde a déjà gagné n'est pas nouveau : pas de fiches de trophées en rafale (FWEBCODE-13).
+    const bilanImporte = bilanPaliers();
+    store.setPaliersVus(Paliers.marques(Paliers.etats(bilanImporte), bilanImporte));
+    store.setTropheesVus(new Set(Trophees.gagnes(pratique())));
     appliqueApparence();
     rendre();
     signale(tr.p('import_ok', n));
@@ -4908,6 +4928,12 @@ function ajusteLesTextes() {
   }
 }
 
+// La police hébraïque arrive après le premier rendu : l'ajustement est refait à son chargement
+// et à la rotation, sinon le texte est mesuré avec la police de secours (FWEBLIVE-04).
+document.fonts?.ready?.then(ajusteLesTextes);
+document.fonts?.addEventListener?.('loadingdone', ajusteLesTextes);
+window.addEventListener('resize', ajusteLesTextes);
+
 // --- La séance (SessionActivity, SessionService) ----------------------------------------
 let tic = null;
 let etaitEnCours = false;
@@ -4927,6 +4953,8 @@ function relacheEcran() {
 }
 
 function demarreMusique() {
+  // Un aperçu d'ambiance en cours ne doit pas couper celle de la séance après 5 s (FWEBCODE-14).
+  clearTimeout(apercuAmbiance);
   // L'ambiance (19/10) suit son réglage, que la musique soit là ou non.
   joueAmbiance(store.ambiance(), store.musicVolume());
   if (!store.musicEnabled()) return;
@@ -5122,6 +5150,7 @@ function commencer(minutes) {
 let dateNote = null;
 
 function cloreSeance({ avantTerme }) {
+  fermeLesFeuilles();
   const sujet = store.sessionTheme();
   const { minutes, date } = store.endSession({ avantTerme });
   const inscrite = minutes > 0 || !avantTerme;
@@ -5146,11 +5175,14 @@ function cloreSeance({ avantTerme }) {
 
 /** « Terminer maintenant » : la note est proposée après le bravo, ou tout de suite s'il n'y en a pas. */
 function terminerMaintenant() {
+  // Séance déjà inscrite (terme atteint pendant que la feuille était ouverte) : rien à terminer (FWEBCODE-10).
+  if (store.sessionStartedAt() === 0) { rendre(); return; }
   if (!cloreSeance({ avantTerme: true })) setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
   rendre();
 }
 
 function annulerSeance() {
+  if (store.sessionStartedAt() === 0) { rendre(); return; }
   store.endSession({ avantTerme: true });
   etaitEnCours = false;
   arreteMusique();
@@ -5231,7 +5263,8 @@ addEventListener('click', (ev) => {
 function demarreTic() {
   if (tic) return;
   tic = setInterval(() => {
-    if (etaitEnCours && !store.isSessionRunning()) {
+    // Sans le drapeau en mémoire : une page rechargée pendant la séance la clôt aussi à son terme (FWEBCODE-11).
+    if (store.isSessionOver()) {
       cloreSeance({ avantTerme: false });
       rendre();
       return;
@@ -5350,7 +5383,7 @@ function ecranSeance() {
     // La hitbodedout guidée (02/11) : sous le ’hizouk, avant « je n'arrive pas à parler », comme Android.
     enCours ? carteGuide() : null,
     enCours && aBlocage ? h('button', { class: 'texte-clair blocage', onclick: () => { tireChizuk('blocage'); if (questionSeance < 0) questionSeance = 0; rendre(); } }, tr.t('chizuk_stuck')) : null,
-    enCours && questionSeance >= 0 ? h('div', { class: `question-seance${questionChange && !moinsDeMouvement() ? ' fondu-neuf' : ''}` },
+    enCours && questionSeance >= 0 ? h('div', { class: `question-seance${questionChange && !sansMouvement() ? ' fondu-neuf' : ''}` },
       h('p', { class: 'question-rang' }, tr.t('question_rang', questionSeance + 1, QUESTIONS_BLOCAGE.length)),
       h('div', { class: 'question-jauge', 'aria-hidden': 'true' }, h('span', { style: `width:${((questionSeance + 1) / QUESTIONS_BLOCAGE.length) * 100}%` })),
       h('p', { class: 'question-texte' }, tr.t(QUESTIONS_BLOCAGE[questionSeance])),
@@ -5411,11 +5444,14 @@ function ecranBravo() {
   const continuer = () => {
     bravo = null;
     chizukBravo = null;
+    const note = noteApresBravo ? () => setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50) : null;
+    noteApresBravo = false;
+    // Le retour ferme les feuilles (FWEBCODE-10) : la note attend qu'il ait eu lieu, sinon un retour
+    // plus lent que 50 ms la refermait aussitôt ouverte.
+    const parHistorique = !!history.state?.interne;
+    if (note && parHistorique) addEventListener('popstate', note, { once: true });
     retour();
-    if (noteApresBravo) {
-      noteApresBravo = false;
-      setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50);
-    }
+    if (note && !parHistorique) note();
   };
   // Un jour la danse, le lendemain la guitare, le surlendemain le pouce levé (12-13/10).
   const seul = [null, 'char_guitar', 'char_thumbs_up'][Math.floor(Date.now() / 86400000) % 3];
@@ -5517,7 +5553,10 @@ function retour() {
   if (history.state?.interne) history.back();
   else { history.replaceState(null, '', location.pathname); rendre(); }
 }
+/** Ferme les feuilles ouvertes : elles sont posées sur le corps de la page, l'historique ne les connaît pas (FWEBCODE-10). */
+const fermeLesFeuilles = () => document.querySelectorAll('.voile').forEach((v) => v.remove());
 window.addEventListener('popstate', () => {
+  fermeLesFeuilles();
   // Le retour d'un renvoi (« Hallel › ») rouvre la prière d'où l'on venait.
   if (history.state?.priere) priere = history.state.priere;
   rendre();
@@ -5661,6 +5700,8 @@ async function demarrer() {
   if (ecranCourant() === 'seance') tireChizuk('ouverture');
   if (store.ouverture() === 'zmanim' && ecranCourant() === 'accueil') history.pushState({ interne: true }, '', '#zmanim');
   rendre();
+  // Une page rechargée pendant la séance : l'écran reste allumé, comme au lancement (FWEBCODE-11).
+  if (store.isSessionRunning()) gardeEcranAllume();
   // Le premier lancement, ou une présentation qui a changé depuis (Onboarding.VERSION).
   if (store.onboardedVersion() < PRESENTATION_VERSION) presentation();
   // Revenir à l'application redessine l'écran : un autre jour, une séance
@@ -5700,7 +5741,26 @@ if ('serviceWorker' in navigator) {
     if (document.hidden && nouvelleVersion && !store.isSessionRunning()) location.reload();
   });
 }
-demarrer();
+/**
+ * Un fichier du démarrage qui échoue (réseau instable avant la fin de l'installation hors connexion) :
+ * un message et « Réessayer » plutôt qu'un écran vide (FWEBCODE-06). Écrit en dur dans les trois langues :
+ * tr n'existe peut-être pas, le fichier de chaînes étant parfois celui qui a échoué.
+ */
+function echecDemarrage() {
+  const langue = (navigator.languages?.[0] ?? 'fr').slice(0, 2).toLowerCase();
+  const textes = {
+    fr: ['Le chargement a échoué. Vérifiez la connexion, puis réessayez.', 'Réessayer'],
+    en: ['Loading failed. Check your connection, then try again.', 'Try again'],
+    he: ['הטעינה נכשלה. בדקו את החיבור ונסו שוב.', 'לנסות שוב'],
+  };
+  const [message, bouton] = textes[langue === 'iw' ? 'he' : langue] ?? textes.fr;
+  document.getElementById('ouverture')?.remove();
+  const e = h('div', { class: 'ecran', role: 'alert', style: 'padding:32px 16px;text-align:center', dir: langue === 'he' || langue === 'iw' ? 'rtl' : 'ltr' },
+    h('p', {}, message),
+    h('button', { class: 'principal', onclick: () => location.reload() }, bouton));
+  app.replaceChildren(e);
+}
+demarrer().catch(echecDemarrage);
 
 // L'écran d'ouverture (15/10) : le 'hassid devant le tziyoun une seconde et demie, puis un fondu ;
 // une seule fois par session (un rechargement ne le rejoue pas).
