@@ -71,11 +71,12 @@
     <string name="gate_stopped_action">Restart the mode</string>
     <string name="gate_session_detail">The apps you chose stay blocked until the hitbodedut ends.</string>
     <string name="gate_done_title">Day confirmed</string>
-    <string name="gate_done_detail">Nothing will be held back today, except during a hitbodedut in progress. The mode returns tomorrow.</string>
-    <string name="gate_exempt_title">Rest day</string>
+    <string name="gate_done_detail">Nothing will be held back until the next window, except during a hitbodedut in progress.</string>
+    <string name="gate_exempt_title">No obligation today</string>
     <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: the mode is silent and the streak stays intact.</string>
     <string name="gate_snoozed_title">Snoozed</string>
     <string name="gate_snoozed_detail">You asked for a delay. The mode returns when it ends.</string>
+    <string name="settings_window_same">Start and end are the same: the mode would never act.</string>
     <string name="gate_window_title">Outside the window</string>
     <string name="gate_window_detail">The mode acts between %1$s and %2$s. Outside that, nothing is held back.</string>
 
@@ -116,7 +117,7 @@
     <string name="rings_description">Rings. Today: %1$s of %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">Shabbat and Yom Tov</string>
     <string name="settings_shabbat_hint">On those days: the mode is silent, no reminder, and the streak stays intact.</string>
-    <string name="settings_exempt_today">Rest day today</string>
+    <string name="settings_exempt_today">Pause today</string>
     <string name="settings_exempt_today_hint">For a Yom Tov, a trip or illness: the day does not count against you.</string>
     <string name="settings_screen_missing">This settings screen does not exist on this phone.</string>
     <string name="fichiers_absents">No app on this phone can open or save a file.</string>
@@ -131,7 +132,7 @@
     <string name="permission_notifications_why">Without them the reminder is scheduled and never appears, and the hitbodedut shows nothing once the phone is down.</string>
     <string name="session_notifications_pourquoi">To show the time left and tell you when the hitbodedut ends once the phone is down, the app needs notifications.</string>
     <string name="permission_battery_why">Without it, Android may hold the reminder back for hours. In the list that opens, find MyHitbodedut and choose “Don’t optimize”.</string>
-    <string name="permission_overlay_why">To show the “I am with Hashem” screen over the app you open in the morning.</string>
+    <string name="permission_overlay_why">To show the “I am with Hashem” screen over the app you open during the mode hours.</string>
     <string name="permission_usage_why">To know which app has just opened. Nothing is recorded or sent.</string>
     <string name="permission_granted">Granted</string>
     <string name="permission_missing">Not granted</string>
@@ -144,7 +145,7 @@
     <string name="apps_none_warning">No app selected: nothing will be blocked.</string>
 
     <string name="blocker_question">Did you do your hitbodedut?</string>
-    <string name="blocker_subtitle">A moment alone before the rest of the day.</string>
+    <string name="blocker_subtitle">A moment alone before everything else.</string>
     <string name="blocker_streak_none">First day of the streak.</string>
     <string name="blocker_start">Start now, %1$s</string>
     <string name="blocker_already_done">I already did it</string>
@@ -1020,7 +1021,7 @@
     <string name="trophee_sommet">Highest level reached</string>
     <string name="trophee_vedette">Your finest trophy</string>
     <string name="trophee_vedette_aucune">Your first trophy is waiting</string>
-    <string name="chabbat_alerte_titre">Shabbat in 3 hours, get ready to enjoy!</string>
+    <string name="chabbat_alerte_titre">Shabbat in 3 hours: get ready to enjoy it!</string>
     <string name="chabbat_alerte_texte">Double neshama, double joy and double meals! Try a double hitbodedut.</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">Books</string>

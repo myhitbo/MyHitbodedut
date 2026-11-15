@@ -66,7 +66,7 @@ object GateRule {
      * L'état, dans l'ordre de ce qu'il faut dire d'abord. Le mode éteint passe avant les
      * accès manquants (13/11, FACCUEIL-06) : on ne réclame pas deux accès sensibles pour
      * une fonction que personne n'a allumée. Une hitbodedout en cours passe avant la
-     * journée faite, le jour exempté, le report et l'heure : l'écran se pose alors à
+     * journée faite, le jour exempté, l'heure et le report : l'écran se pose alors à
      * toute heure, et la carte comme la notification doivent le dire (TFRUX-02).
      */
     fun etat(f: GateFaits): GateState = when {
@@ -77,8 +77,8 @@ object GateRule {
         f.seanceEnCours -> GateState.SESSION_RUNNING
         f.faite -> GateState.ALREADY_DONE
         f.exempte -> GateState.EXEMPT_DAY
-        f.reportee -> GateState.SNOOZED
         !f.dansLaFenetre -> GateState.OUTSIDE_WINDOW
+        f.reportee -> GateState.SNOOZED
         else -> GateState.ARMED
     }
 

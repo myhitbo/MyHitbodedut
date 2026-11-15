@@ -72,11 +72,12 @@
     <string name="gate_stopped_action">להפעיל את המצב מחדש</string>
     <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
     <string name="gate_done_title">היום אושר</string>
-    <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
+    <string name="gate_done_detail">עד החלון הבא דבר לא יעוכב, מלבד במהלך התבודדות שהתחלתם.</string>
     <string name="gate_exempt_title">יום ללא חובה</string>
     <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב שותק והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
     <string name="gate_snoozed_detail">התבקשה דחייה. המצב יחזור בסיומה.</string>
+    <string name="settings_window_same">ההתחלה והסיום זהים: המצב לא יפעל לעולם.</string>
     <string name="gate_window_title">מחוץ לחלון</string>
     <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לזה דבר לא מעוכב.</string>
 

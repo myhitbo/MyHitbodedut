@@ -60,6 +60,8 @@ class GateRuleTest {
         assertEquals(GateState.EXEMPT_DAY, GateRule.etat(arme.copy(exempte = true)))
         assertEquals(GateState.SNOOZED, GateRule.etat(arme.copy(reportee = true)))
         assertEquals(GateState.OUTSIDE_WINDOW, GateRule.etat(arme.copy(dansLaFenetre = false)))
+        // Un report qui survit à la fenêtre ne se dit plus « en cours » (FBARRIERE-24).
+        assertEquals(GateState.OUTSIDE_WINDOW, GateRule.etat(arme.copy(dansLaFenetre = false, reportee = true)))
     }
 
     @Test

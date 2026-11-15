@@ -77,11 +77,12 @@
     <string name="gate_stopped_action">Relancer le mode</string>
     <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
-    <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
+    <string name="gate_done_detail">Plus rien ne sera retenu d’ici la prochaine fenêtre, sauf pendant une hitbodedout en cours.</string>
     <string name="gate_exempt_title">Jour sans obligation</string>
     <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
     <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
+    <string name="settings_window_same">Le début et la fin sont identiques : le mode n’agirait jamais.</string>
     <string name="gate_window_title">Hors de la fenêtre</string>
     <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est retenu.</string>
 
@@ -141,7 +142,7 @@
     <string name="permission_notifications_why">Sans elles, le rappel se programme et n’apparaît jamais, et la hitbodedout n’affiche rien quand le téléphone est posé.</string>
     <string name="session_notifications_pourquoi">Pour montrer le temps qui reste et annoncer la fin de la hitbodedout quand le téléphone est posé, l’application a besoin des notifications.</string>
     <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures. Dans la liste qui s’ouvre, cherchez MyHitbodedut et choisissez « Ne pas optimiser ».</string>
-    <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez le matin.</string>
+    <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez pendant les heures du mode.</string>
     <string name="permission_usage_why">Pour savoir quelle application vient de s’ouvrir. Rien n’est enregistré ni envoyé.</string>
     <string name="permission_granted">Accordée</string>
     <string name="permission_missing">Non accordée</string>
@@ -156,7 +157,7 @@
 
     <!-- Écran de garde -->
     <string name="blocker_question">Avez-vous fait votre hitbodedout ?</string>
-    <string name="blocker_subtitle">Un moment à l’écart avant le reste de la journée.</string>
+    <string name="blocker_subtitle">Un moment à l’écart avant le reste.</string>
     <string name="blocker_streak_none">Première journée de la série.</string>
     <string name="blocker_start">Commencer maintenant, %1$s</string>
     <string name="blocker_already_done">Je l’ai déjà faite</string>
@@ -528,10 +529,10 @@
     <string name="start_music">Musique</string>
     <string name="start_focus">Avec Hachem</string>
     <string name="start_music_off">aucune</string>
-    <string name="start_focus_on">activée</string>
-    <string name="start_focus_off">désactivée</string>
+    <string name="start_focus_on">activé</string>
+    <string name="start_focus_off">désactivé</string>
     <string name="start_focus_setup">à régler</string>
-    <string name="start_focus_stopped">arrêtée</string>
+    <string name="start_focus_stopped">arrêté</string>
     <string name="settings_name">Prénom</string>
     <string name="settings_name_hint">Pour que l’accueil vous salue. Il ne quitte pas le téléphone.</string>
     <string name="settings_name_empty">Non renseigné</string>
