@@ -32,12 +32,12 @@ object Divulgation {
     /**
      * Hors Play seulement (src/musique_hors_play), la ligne sur les paramètres restreints d'Android
      * y est ajoutée : le système grise l'accès d'une application installée hors boutique
-     * (FBARRIERE-21). La construction Play n'a pas la chaîne.
+     * (FBARRIERE-21). La construction Play n'a pas la chaîne (HorsPlay en rend null).
      */
     private fun corps(activite: AppCompatActivity, texte: Texte): String {
         val base = activite.getString(texte.corps)
-        val id = activite.resources.getIdentifier("divulgation_restreints", "string", activite.packageName)
-        return if (id == 0) base else base + "\n\n" + activite.getString(id)
+        val id = HorsPlay.DIVULGATION_RESTREINTS ?: return base
+        return base + "\n\n" + activite.getString(id)
     }
 
     /**
