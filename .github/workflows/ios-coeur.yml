@@ -11,6 +11,7 @@ on:
       - 'ios/**'
       - 'tools/export_contenu/**'
       - 'web/test/vecteurs_*'
+      - 'web/test/vecteur_coffre.json'
       - '.github/workflows/ios-coeur.yml'
       # Les contenus d'Android que l'export lit (tâche 5) : un changement doit suivre dans le manifeste.
       - 'android/app/src/main/res/raw/**'
@@ -32,6 +33,7 @@ on:
       - 'ios/**'
       - 'tools/export_contenu/**'
       - 'web/test/vecteurs_*'
+      - 'web/test/vecteur_coffre.json'
       - '.github/workflows/ios-coeur.yml'
       # Les contenus d'Android que l'export lit (tâche 5) : un changement doit suivre dans le manifeste.
       - 'android/app/src/main/res/raw/**'
@@ -139,5 +141,12 @@ jobs:
             echo "::error::avertissements dans le paquet Coeur"
             exit 1
           fi
+      # La sauvegarde réelle du propriétaire (P7), si elle est déposée chiffrée à cet endroit et son mot
+      # de passe posé en secret du dépôt : SauvegardeTests la lit alors aussi (§ 3.9). Sinon, ce test se tait.
       - name: Tests
-        run: swift test --skip-build
+        env:
+          SAUVEGARDE_REELLE_MDP: ${{ secrets.SAUVEGARDE_REELLE_MDP }}
+        run: |
+          reelle="$PWD/Tests/Vecteurs/sauvegarde/android-reelle.chiffre.json"
+          if [ -f "$reelle" ] && [ -n "$SAUVEGARDE_REELLE_MDP" ]; then export SAUVEGARDE_REELLE="$reelle"; fi
+          swift test --skip-build

@@ -22,8 +22,8 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 | P4 | Relever le modèle, la version d'iOS (26.5 au moins) et l'identifiant de l'iPhone de l'ami ; convenir de quatre rendez-vous | tâches 3, 4, 19, 28 | D15 |
 | P5 | Ouvrir un compte Codemagic personnel relié au dépôt | tâche 3 | D5 |
 | P6 | Faire préciser « App Store » dans les accords des ayants droit (musique, textes) | tâche 30 | D9, D11 |
-| P7 | Fournir une vraie sauvegarde exportée d'Android (hors dépôt si elle porte des notes) | tâche 7 | — |
-| P8 | Étendre l'export d'Android (demande séparée ; décidé le 13/11/2026) | annonce de la migration | D8 |
+| P7 | Fournir une vraie sauvegarde exportée d'Android, de la version Play (hors dépôt si elle porte des notes ; chiffrée, elle peut y entrer : `tools/vecteurs_ios/README.md`) | tâche 7 | — |
+| P8 | ~~Étendre l'export d'Android~~ : fait dans `main` (audit du 12/11, FDONNEES-01, sauvegarde « version 2 ») | annonce de la migration | D8 |
 
 ## Vue d'ensemble
 
@@ -126,8 +126,8 @@ Tout se vérifie sur Linux. Une tâche est finie quand les tests nommés, porté
 
 ### 7. Modèle et sauvegarde JSON
 
-- **Sources** : `Store.kt` (journées, `exportJson`, `importJson`), `JournalPlus.kt`, `web/src/js/store.js:509-631`.
-- **Livrable** : `Journee`, `Journal`, `Reglages` (clés d'Android), `actor Depot`, `Sauvegarde` (décodage tolérant, sérialiseur ordonné), la fusion (§ 3.5).
+- **Sources** : `Store.kt` (journées, `exportJson`, `importJson`, `importerAjouts`), `JournalPlus.kt`, `MarquesPages.kt`, `HistoriqueReglage.kt`, `Coffre.kt`, `web/src/js/store.js` et `coffre.js` (ceux de la version Play, après la fusion de `main`).
+- **Livrable** : `Journee`, `Journal`, `Reglages` (clés d'Android), `Lecture`, `actor Depot`, `Sauvegarde` (versions 1 et 2 à la lecture, 2 à l'écriture ; décodage tolérant, sérialiseur ordonné), la fusion (§ 3.5), `Coffre` (sauvegarde chiffrée) ; l'oracle JVM `tools/vecteurs_ios` (le vrai `Store.importJson` dans un téléphone neuf) et les fichiers d'or de `Tests/Vecteurs/sauvegarde`.
 - **Critère de fin** : les six lignes du § 3.9 ; un fichier illisible est mis de côté et non écrasé (l'équivalent de `days_corrompu`) ; la sauvegarde réelle du propriétaire se lit sans perte.
 
 ### 8. Règles de la pratique

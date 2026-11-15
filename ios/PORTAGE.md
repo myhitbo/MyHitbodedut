@@ -749,6 +749,10 @@ Les énumérations gardent les clés d'Android comme valeurs brutes, et c'est ce
 
 ### 3.4 Le format JSON, version 1
 
+**Depuis la version Play (audit du 12/11, FDONNEES-01), Android et le site écrivent la version 2** : la même chose, plus, à la racine, `journal_plus`, `tikkun_journal` (dates triées), `favoris`, `chizuk_favoris` et `marques_pages` (`{cle, nusah, section, bloc, apercu}`), et, dans `settings`, `in_israel_manuel`, `siddur_nusah`, `lecture_echelle`, `lecture_police`, `lecture_sombre`, `lecture_masquee`, `lecture_ecran_allume` et `lecture_langues` (s'il est choisi). iOS lit les deux versions et écrit la 2, octet pour octet comme Android (fichier d'or `android-v2-forge.json`). Le fichier peut aussi être **chiffré** (`Coffre.kt`, `coffre.js`) : `{format: "myhitbodedut-chiffre", version: 1, kdf: "PBKDF2-HMAC-SHA256", iterations, salt, iv, data}`, clé tirée du mot de passe (NFC) en 600 000 tours, AES-256-GCM ; iOS lit et écrit ce format (`Coffre.swift`, en Swift seul : ni CryptoKit ni CommonCrypto sous Linux). L'import date aussi `pause_shabbat` et `in_israel` (`HistoriqueReglage`, FDONNEES-05), comme Android.
+
+Ce qui suit décrit la version 1, que la 2 prolonge.
+
 Trois programmes l'écrivent aujourd'hui : Android (`Store.exportJson`, `Store.kt:1484-1522`), le site (`web/src/js/store.js:509-547`) et, demain, iOS. iOS doit **lire les trois** et **écrire un fichier qu'Android et le site relisent sans perte**.
 
 ```json
@@ -834,6 +838,8 @@ Après l'import, comme sur Android (`SettingsActivity.kt:582-591`) : appliquer l
 
 ### 3.7 Ce que la sauvegarde ne transporte pas
 
+**Dépassé par la version 2** : la réponse 3 ci-dessous a été faite dans `main` (FDONNEES-01). Ne voyagent toujours pas : le lieu des zmanim, les noms donnés aux morceaux, l'ambiance, les réglages de Levana, d'allumage, de halakha et d'écran d'ouverture, les places de lecture ; ni, par nature, les applications bloquées.
+
 **Constat (vérifié dans `Store.exportJson`)** : l'export d'Android ne contient ni le journal enrichi (`journal_plus` : humeur, gratitude, « à travailler »), ni le journal du Tikoun (`tikkun_journal`, dont dépendent ses trophées), ni le noussa'h, ni le lieu des zmanim, ni les favoris, marque-pages et places de lecture, ni les noms donnés aux morceaux, ni les réglages de lecture, de Levana, d'allumage, de halakha, d'écran d'ouverture. Une migration Android → iPhone faite aujourd'hui garde donc les journées, les notes, les sujets, la série et les réglages principaux, et **perd le reste**.
 
 Trois réponses possibles (décision D8) :
@@ -864,7 +870,7 @@ Le même chemin sert à quitter la version web installée sur l'iPhone (elle éc
 | fusion | les cas d'import et d'export du site, portés tels quels : `web/test/regles.test.mjs`, `journal-plus.test.mjs`, `musique.test.mjs`, `hitbodedut.test.mjs` (Android n'a pas de test d'exécution de `importJson` : il demande un `Context`) |
 | ordre et forme | la sortie d'iOS, relue par un `JSONObject` de référence, rend les mêmes valeurs ; clés dans l'ordre d'Android |
 
-Tous tournent sur Linux (paquet `Coeur`), sans simulateur.
+Tous tournent sur Linux (paquet `Coeur`), sans simulateur. Ils sont dans `Tests/Vecteurs/sauvegarde/` (`android-v1-forge.json`, `android-v2-forge.json`, `fusion-1.json` et `fusion-2.json`, `web-v2.json` écrit par le vrai `store.js`) ; `Tests/Vecteurs/sauvegarde.json` dit ce que le vrai `Store.importJson` en fait (`tools/vecteurs_ios`), et la sauvegarde chiffrée du site (`web/test/vecteur_coffre.json`) est relue, et réécrite octet pour octet au même sel. La sauvegarde réelle reste hors du dépôt : `SAUVEGARDE_REELLE` (§ 3.9, `tools/vecteurs_ios/README.md`).
 
 ## 4. Contenus
 
@@ -1250,7 +1256,7 @@ Chacune dit ce qu'elle bloque. Les recommandations sont celles que la feuille de
 | D5 | **gratuit strict** : Codemagic (500 min par mois) et Linux sur GitHub, plafond GitHub à 0 $ | pas de secours macOS payant ; un mois à court de minutes Codemagic suspend les tâches 14 à 30 jusqu'au mois suivant |
 | D6 | journal **exclu** de la sauvegarde iCloud par défaut, **interrupteur** pour l'inclure | tâche 7 |
 | D7 | **aucune** synchronisation en v1 | tâche 29 sans CloudKit |
-| D8 | **étendre d'abord l'export d'Android**, par une demande séparée | P8 levée ; annonce de la migration après cette extension |
+| D8 | **étendre d'abord l'export d'Android**, par une demande séparée | **fait dans `main`** (version 2, audit du 12/11) ; iOS la lit et l'écrit (tâche 7) |
 | D9 | les **26 morceaux**, après la mention « App Store » dans les accords ; origine de המלך בשדה consignée | P6 |
 | D10 | vol en direct **après la v1** | tâche 26 limitée au vol hors ligne |
 | D11 | **écrits nommant l'App Store**, sinon iOS part sans le texte concerné | P6 |

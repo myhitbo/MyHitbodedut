@@ -1,0 +1,87 @@
+{
+  "format": "myhitbodedut",
+  "version": 2,
+  "exported_at": "2022-02-01T08:00:00.000Z",
+  "days": {
+    "2022-01-30": {
+      "minutes": 25,
+      "note": "",
+      "themes": [
+        "gratitude",
+        "famille"
+      ]
+    },
+    "2022-01-31": {
+      "minutes": 20,
+      "note": "Dehors, avant le lever du jour / sous la pluie."
+    },
+    "2022-02-01": {
+      "minutes": 0,
+      "note": "Pas pu : une pensée seulement.",
+      "note_seule": true
+    }
+  },
+  "settings": {
+    "target_minutes": 20,
+    "daily_goal_minutes": 30,
+    "pause_shabbat": true,
+    "in_israel": false,
+    "in_israel_manuel": true,
+    "guided_hitbodedut": true,
+    "first_name": "Sarah",
+    "hide_countdown": false,
+    "music_enabled": true,
+    "music_volume": 40,
+    "music_shuffle": true,
+    "music_track": "ianir_hello",
+    "adresse": "f",
+    "apparence_mode": "sombre",
+    "apparence_fond": "sable",
+    "apparence_accent": "bordeaux",
+    "siddur_nusah": "sefard",
+    "lecture_echelle": 1.3,
+    "lecture_police": "frank",
+    "lecture_sombre": true,
+    "lecture_masquee": false,
+    "lecture_langues": "he+fr"
+  },
+  "paused_dates": [
+    "2022-01-28"
+  ],
+  "blocked_apps": [],
+  "journal_plus": {
+    "2022-01-30": {
+      "avant": 2,
+      "apres": 4,
+      "gratitude": "La santé des enfants.",
+      "travail": "La patience."
+    }
+  },
+  "tikkun_journal": [
+    "2022-01-31",
+    "2022-02-01"
+  ],
+  "favoris": [
+    "l:likoutei_moharan",
+    "s:chaharit"
+  ],
+  "chizuk_favoris": [
+    "tehilim-145-18"
+  ],
+  "marques_pages": [
+    {
+      "cle": "s:chaharit",
+      "nusah": "sefard",
+      "section": 0,
+      "bloc": 4,
+      "apercu": "מודה אני"
+    },
+    {
+      "cle": "l:likoutei_moharan",
+      "nusah": "",
+      "section": 3,
+      "bloc": 12,
+      "apercu": "אשרי תמימי דרך"
+    }
+  ]
+}
