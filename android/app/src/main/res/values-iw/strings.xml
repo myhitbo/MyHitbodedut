@@ -1095,7 +1095,7 @@
     <string name="levana_lune">הלבנה הערב: %1$s מוארת, %2$s</string>
     <string name="levana_croissante">מתמלאת</string>
     <string name="levana_decroissante">מתמעטת</string>
-    <string name="levana_motsae">מומלץ: מוצאי שבת %s (רמ״א תכ״ו, ב)</string>
+    <string name="levana_motsae">מומלץ: מוצאי שבת %s (שו״ע תכ״ו, ב ורמ״א)</string>
     <string name="levana_kippour">לא לפני מוצאי יום הכיפורים (רמ״א תכ״ו, ב)</string>
     <string name="levana_tisha">לא לפני מוצאי תשעה באב (רמ״א תכ״ו ב; משנה ברורה תכ״ו יא)</string>
     <string name="levana_usage_titre">ברכת הלבנה: מנהג</string>
