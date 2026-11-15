@@ -65,7 +65,7 @@ object CalendrierJuif {
 
         /** Avinou malkénou (SiddurJour.conditionsPour) : déduite des conditions du jour, hors des vecteurs KosherJava. */
         const val AVINOU_MALKENOU = "avinou_malkenou"
-        /** Avinou malkénou à Min'ha : le même jour, et seulement si Ta'hanoun s'y dit (TSIDDUR-09). */
+        /** Avinou malkénou à Min'ha : le même jour, si Ta'hanoun s'y dit ou à Roch Hachana et Kippour, jamais le vendredi (TSIDDUR-09). */
         const val AVINOU_MALKENOU_MINHA = "avinou_malkenou_minha"
         /** Jour de lecture de la Torah (15/10) : déduite, hors des vecteurs KosherJava comme Avinou malkénou. */
         const val KRIAT_HATORAH = "kriat_hatorah"

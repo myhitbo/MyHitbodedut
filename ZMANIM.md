@@ -71,8 +71,8 @@ les conditions dérivées sont écrites à la main, à partir de ces méthodes e
 usages cités dans le code (`CalendrierJuif.C.DERIVEES`, `SiddurJour.conditionsPour`) :
 Lamnatséa'h, Ledavid, lecture de la Torah, bascule de la pluie, année
 embolismique, veille de Kippour un vendredi, psaume du jour (`jour_1` à
-`jour_6`), Avinou malkénou (à Min'ha : `avinou_malkenou_minha`, seulement si
-Ta'hanoun s'y dit)… Elles sont les plus sujettes à erreur : à vérifier d'abord.
+`jour_6`), Avinou malkénou (à Min'ha : `avinou_malkenou_minha`, si Ta'hanoun
+s'y dit, ou à Roch Hachana et Kippour, jamais le vendredi)… Elles sont les plus sujettes à erreur : à vérifier d'abord.
 Les autres :
 
 - Ya'alé véyavo, Al hanissim, Machiv haroua'h, Morid hatal, Tal oumatar,

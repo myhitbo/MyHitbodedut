@@ -74,6 +74,9 @@ test('TSIDDUR-09 : Avinou malkénou à Min\'ha seulement si Ta\'hanoun s\'y dit 
   for (const n of ['sefard', 'ashkenaz']) {
     assert.equal(nb(visibles(n, 'minha', '2027-03-22'), /^אבינו מלכנו חטאנו לפניך/), 0, n);
     assert.ok(nb(visibles(n, 'chaharit', '2026-12-20'), /^אבינו מלכנו חטאנו לפניך/) > 0, n);
+    // Lu à Min'ha du 10 Tévet et de Roch Hachana un dimanche ; replié le vendredi des dix jours (relecture du 15/11).
+    for (const d of ['2026-12-20', '2026-09-13']) assert.ok(nb(visibles(n, 'minha', d), /^אבינו מלכנו חטאנו לפניך/) > 0, `${n} ${d}`);
+    assert.equal(nb(visibles(n, 'minha', '2026-09-18'), /^אבינו מלכנו חטאנו לפניך/), 0, n);
   }
 });
 

@@ -37,8 +37,11 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   // Pas de Ta'hanoun du lendemain de Kippour jusqu'au 2 'Hechvan : Edot, et Sfard au choix.
   if (sansTahanounFinTichri && c.has('fin_tichri')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
   if (avinouMalkenou(conditions)) c.add('avinou_malkenou');
-  // À Min'ha : seulement si Ta'hanoun s'y dit (TSIDDUR-09).
-  if (avinouMalkenou(conditions) && new Set(conditions).has('tahanoun_minha') && !new Set(conditions).has('erev_kippour_vendredi')) c.add('avinou_malkenou_minha');
+  // À Min'ha : seulement si Ta'hanoun s'y dit (TSIDDUR-09) ; Roch Hachana et Kippour gardent le leur, sauf un vendredi (relecture du 15/11).
+  const c0 = new Set(conditions);
+  const minha = c0.has('tahanoun_minha') || c0.has('roch_hachana') || c0.has('kippour');
+  const vendredi = c0.has('jour_6') || c0.has('erev_kippour_vendredi');
+  if (avinouMalkenou(conditions) && minha && !vendredi) c.add('avinou_malkenou_minha');
   return c;
 }
 

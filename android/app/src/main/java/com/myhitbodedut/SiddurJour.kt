@@ -228,8 +228,12 @@ object SiddurJour {
         }
         if (avinouMalkenou(conditions)) c = c + CalendrierJuif.C.AVINOU_MALKENOU
         // À Min'ha, il ne se dit que si Ta'hanoun s'y dit : pas le 13 Adar (veille de Pourim), pas le
-        // vendredi après-midi, pas à Min'ha de la veille de Kippour un vendredi (TSIDDUR-09).
-        if (avinouMalkenou(conditions) && CalendrierJuif.C.TAHANOUN_MINHA in conditions && CalendrierJuif.C.EREV_KIPPOUR_VENDREDI !in conditions) {
+        // vendredi après-midi, pas à Min'ha de la veille de Kippour un vendredi (TSIDDUR-09). Roch Hachana
+        // et Kippour, sans Ta'hanoun, gardent leur Avinou malkénou de Min'ha, sauf un vendredi (relecture du 15/11).
+        val minha = CalendrierJuif.C.TAHANOUN_MINHA in conditions ||
+            CalendrierJuif.C.ROCH_HACHANA in conditions || CalendrierJuif.C.KIPPOUR in conditions
+        val vendredi = CalendrierJuif.C.JOURS_SEMAINE[5] in conditions || CalendrierJuif.C.EREV_KIPPOUR_VENDREDI in conditions
+        if (avinouMalkenou(conditions) && minha && !vendredi) {
             c = c + CalendrierJuif.C.AVINOU_MALKENOU_MINHA
         }
         return c

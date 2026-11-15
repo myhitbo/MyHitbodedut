@@ -532,7 +532,8 @@ def annoter(texte_id, sections, nusah):
             # (SOUS ; relevé du 14/10).
             elif cons[bi] and "אומרים כאן אבינו מלכנו" in x:
                 # À Min'ha, seulement si Ta'hanoun s'y dit (audit du 12/11, TSIDDUR-09) : pas la veille de Pourim,
-                # le vendredi, ni à Min'ha de la veille de Kippour un vendredi.
+                # le vendredi, ni à Min'ha de la veille de Kippour un vendredi ; Roch Hachana et Kippour gardent
+                # le leur (SiddurJour.conditionsPour).
                 am = "avinou_malkenou_minha" if office == "minha" else "avinou_malkenou"
                 prend(bi, am)
                 j = bi + 1
