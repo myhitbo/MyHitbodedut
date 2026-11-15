@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.drawable.Icon
+import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
@@ -224,7 +225,10 @@ class SessionService : Service() {
             inscrire(this, close, theme = theme)
             // Un seul son à la fin : celui du décompte masqué (chime) ou celui de la notification.
             // Celui qui termine lui-même n'a pas besoin qu'on le prévienne par un son.
-            notifyCompleted(close, silencieuse = early || Store.hideCountdown(this))
+            notifyCompleted(
+                close,
+                silencieuse = SessionRule.finSilencieuse(early, Store.hideCountdown(this), sonnerieAudible()),
+            )
         }
         StreakWidget.refresh(this)
         // Décompte masqué : rien n'a prévenu que le temps s'écoulait, il faut
@@ -265,6 +269,11 @@ class SessionService : Service() {
         ringtone = RingtoneManager.getRingtone(applicationContext, uri)?.also { it.play() }
         ringtone != null
     }.getOrDefault(false)
+
+    /** La sonnerie de fin s'entend : en vibreur ou en silencieux, Ringtone ne joue rien. */
+    private fun sonnerieAudible(): Boolean = runCatching {
+        (getSystemService(Context.AUDIO_SERVICE) as AudioManager).ringerMode == AudioManager.RINGER_MODE_NORMAL
+    }.getOrDefault(true)
 
     /** Lance le morceau retenu, si la musique est active et rien ne joue déjà. */
     private fun ensureMusic() {

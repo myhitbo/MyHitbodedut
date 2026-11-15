@@ -111,6 +111,19 @@ class SessionRuleTest {
         assertTrue(service.contains("MusicLibrary.selected(this)?.id, Store.musicNow(this)"))
         assertFalse(service.contains("Store.musicTrackId(this) != Store.musicNow(this)"))
     }
+
+    /** Un seul son a la fin, mais jamais aucun signal quand la seance arrive a son terme. */
+    @Test
+    fun `la fin ne se tait que si la sonnerie du decompte masque s entend`() {
+        // Terminee a la main : on le sait deja.
+        assertTrue(SessionRule.finSilencieuse(avantTerme = true, masque = false, sonnerieAudible = true))
+        // Decompte masque, sonnerie audible : elle suffit, la notification ne double pas le son.
+        assertTrue(SessionRule.finSilencieuse(avantTerme = false, masque = true, sonnerieAudible = true))
+        // Vibreur ou silencieux : la sonnerie est muette, la notification garde son canal.
+        assertFalse(SessionRule.finSilencieuse(avantTerme = false, masque = true, sonnerieAudible = false))
+        // Decompte visible, arrivee a son terme : la notification seule previent.
+        assertFalse(SessionRule.finSilencieuse(avantTerme = false, masque = false, sonnerieAudible = true))
+    }
 }
 
 /**

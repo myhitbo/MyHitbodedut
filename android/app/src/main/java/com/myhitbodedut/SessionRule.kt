@@ -108,6 +108,16 @@ object SessionRule {
     fun autreMorceau(aleatoire: Boolean, charge: Boolean, retenu: String?, joue: String?): Boolean =
         !aleatoire && charge && retenu != null && retenu != joue
 
+    /**
+     * La notification de fin part-elle sans son ni vibration ? Quand on termine soi-meme (on
+     * le sait deja), et quand le decompte masque joue sa sonnerie, pour ne pas sonner deux fois.
+     * Mais en vibreur ou en silencieux la sonnerie est muette : la notification garde alors son
+     * canal ordinaire, qui vibre en vibreur, sans quoi la fin ne se signalait plus du tout
+     * (relecture du lot « seance », FSEANCE-06).
+     */
+    fun finSilencieuse(avantTerme: Boolean, masque: Boolean, sonnerieAudible: Boolean): Boolean =
+        avantTerme || (masque && sonnerieAudible)
+
     /** La plus longue seance qu'on puisse choisir ; une seance ouverte s'y arrete aussi. */
     const val PLAFOND_OUVERTE = 240
 
