@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--
         La base du thème, redéfinie dans values-v35 pour Android 15 : les
@@ -76,7 +76,8 @@
         <item name="android:textColor">?attr/mhInk</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:accessibilityHeading">true</item>
+        <!-- Titre pour TalkBack (FACCUEIL-12) : ignoré avant Android 9 / API 28. -->
+        <item name="android:accessibilityHeading" tools:targetApi="28">true</item>
     </style>
 
     <style name="CardHint">

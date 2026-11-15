@@ -80,7 +80,7 @@
     <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
     <string name="gate_done_detail">Plus rien ne sera bloqué d’ici la prochaine plage horaire, sauf pendant une hitbodedout en cours.</string>
-    <string name="gate_exempt_title">Jour sans obligation</string>
+    <string name="gate_exempt_title">Jour de pause</string>
     <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
     <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
@@ -182,7 +182,7 @@
     <string name="session_cancel_title">Arrêter sans enregistrer ?</string>
     <string name="session_cancel_message">Rien ne sera enregistré et la journée restera à faire.</string>
     <string name="session_cancel_message_done">Rien ne sera enregistré pour cette hitbodedout.</string>
-    <string name="note_humeur_description">Humeur %1$d sur 5</string>
+    <string name="journal_humeur_n">Humeur %1$d sur 5</string>
     <string name="session_running_title">Hitbodedout en cours</string>
     <string name="session_remaining">Il reste %1$s</string>
     <string name="session_open">Sans durée</string>

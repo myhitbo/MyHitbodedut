@@ -75,7 +75,7 @@
     <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
     <string name="gate_done_title">היום הושלם</string>
     <string name="gate_done_detail">עד החלון הבא דבר לא ייחסם, מלבד במהלך התבודדות שהתחלתם.</string>
-    <string name="gate_exempt_title">יום ללא חובה</string>
+    <string name="gate_exempt_title">יום הפסקה</string>
     <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב מושבת והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
     <string name="gate_snoozed_detail">התבקשה דחייה. המצב יחזור בסיומה.</string>
@@ -172,7 +172,7 @@
     <string name="session_cancel_title">לוותר על ההתבודדות?</string>
     <string name="session_cancel_message">דבר לא יישמר והיום יישאר פתוח.</string>
     <string name="session_cancel_message_done">דבר לא יישמר מההתבודדות הזאת.</string>
-    <string name="note_humeur_description">מצב רוח %1$d מתוך 5</string>
+    <string name="journal_humeur_n">מצב רוח %1$d מתוך 5</string>
     <string name="session_running_title">התבודדות בעיצומה</string>
     <string name="session_remaining">נותרו %1$s</string>
     <string name="session_open">בלי זמן קצוב</string>

@@ -68,7 +68,7 @@ class NoteDialog : DialogFragment() {
                 textSize = 26f
                 gravity = Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(0, (44 * density).toInt(), 1f)
-                contentDescription = activity.getString(R.string.note_humeur_description, i + 1)
+                contentDescription = activity.getString(R.string.journal_humeur_n, i + 1)
                 setOnClickListener {
                     poser(if (valeur == i + 1) 0 else i + 1)
                     suivre()

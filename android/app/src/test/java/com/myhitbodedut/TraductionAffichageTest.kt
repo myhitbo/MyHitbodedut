@@ -133,7 +133,8 @@ class TraductionAffichageTest {
         assertFalse(guide.contains("honest, sufficient"))
         // Le libellé français ne commence pas par un mot hébreu ; la source de Kippour est la même partout.
         assertTrue(fr.contains("""<string name="ajout_facultatif_apres">HaRa’hamane"""))
-        assertTrue(fr.contains("""<string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426:2)</string>"""))
+        // En français, la référence s'écrit « 426, 2 » (TFRLANGUE-12), comme le reste des renvois.
+        assertTrue(fr.contains("""<string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426, 2)</string>"""))
         assertTrue(en.contains("""<string name="levana_kippour">Not before Yom Kippur ends (Rema 426:2)</string>"""))
         assertTrue(he.contains("""<string name="levana_kippour">לא לפני מוצאי יום הכיפורים (רמ״א תכ״ו, ב)</string>"""))
     }

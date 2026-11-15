@@ -74,7 +74,7 @@
     <string name="gate_session_detail">The apps you chose stay blocked until the hitbodedut ends.</string>
     <string name="gate_done_title">Day confirmed</string>
     <string name="gate_done_detail">Nothing will be held back until the next window, except during a hitbodedut in progress.</string>
-    <string name="gate_exempt_title">No obligation today</string>
+    <string name="gate_exempt_title">Rest day</string>
     <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: the mode is silent and the streak stays intact.</string>
     <string name="gate_snoozed_title">Snoozed</string>
     <string name="gate_snoozed_detail">You asked for a delay. The mode returns when it ends.</string>
@@ -116,7 +116,7 @@
     <string name="settings_shabbat">Shabbat and Yom Tov</string>
     <string name="settings_shabbat_hint">On those days: the mode is silent, no reminder, and the streak stays intact.</string>
     <string name="settings_shabbat_hint_web">On those days, your streak stays intact.</string>
-    <string name="settings_exempt_today">Pause today</string>
+    <string name="settings_exempt_today">Rest day today</string>
     <string name="settings_exempt_today_hint">For a trip, illness or a day you cannot manage: the day does not count against you.</string>
     <string name="settings_screen_missing">This settings screen does not exist on this phone.</string>
     <string name="lien_impossible">This link can’t be opened: no browser on this phone.</string>
@@ -169,7 +169,7 @@
     <string name="session_cancel_title">Discard this hitbodedut?</string>
     <string name="session_cancel_message">Nothing will be recorded and the day stays open.</string>
     <string name="session_cancel_message_done">Nothing will be recorded for this hitbodedut.</string>
-    <string name="note_humeur_description">Mood %1$d of 5</string>
+    <string name="journal_humeur_n">Mood %1$d of 5</string>
     <string name="session_running_title">Hitbodedut in progress</string>
     <string name="session_remaining">%1$s left</string>
     <string name="session_open">No set length</string>
