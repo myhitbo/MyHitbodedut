@@ -35,8 +35,8 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
   if (c.has(C.AL_HANISSIM)) l.push('ajout_al_hanissim');
   const hallel = libelleHallel(nusah, c);
   if (hallel) l.push(hallel);
-  // Le Chabbat, il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
-  if (!c.has(C.CHABBAT)) l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun' : 'ajout_sans_tahanoun');
+  // Le Chabbat et un Yom Tov (Kippour compris), il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
+  if (!c.has(C.CHABBAT) && !c.has('yom_tov')) l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun' : 'ajout_sans_tahanoun');
   return l;
 }
 

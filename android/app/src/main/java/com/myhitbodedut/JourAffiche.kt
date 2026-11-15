@@ -66,8 +66,9 @@ object JourAffiche {
         if (C.YAALE_VEYAVO in c) add("ajout_yaale_veyavo")
         if (C.AL_HANISSIM in c) add("ajout_al_hanissim")
         SiddurJour.libelleHallel(nusah, c)?.let { add(it) }
-        // Le Chabbat, il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
-        if (C.CHABBAT !in c) add(if (C.TAHANOUN_CHAHARIT in c) "ajout_tahanoun" else "ajout_sans_tahanoun")
+        // Le Chabbat et un Yom Tov (Kippour compris), il n'y a pas d'Amida de semaine où dire ou taire
+        // Ta'hanoun (audit du 12/11, FCALENDRIER-12).
+        if (C.CHABBAT !in c && C.YOM_TOV !in c) add(if (C.TAHANOUN_CHAHARIT in c) "ajout_tahanoun" else "ajout_sans_tahanoun")
     }
 
     /**

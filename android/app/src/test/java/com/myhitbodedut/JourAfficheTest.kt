@@ -66,6 +66,9 @@ class JourAfficheTest {
         for (iso in listOf("2027-04-22", "2026-09-21")) {
             val yt = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse(iso), false).conditions)
             assertTrue(iso, yt.none { it in listOf("ajout_barkhenou", "ajout_berakha", "ajout_barekh_alenou", "ajout_tal_oumatar") })
+            // Ni « Pas de Ta'hanoun », comme le Chabbat : la carte n'a pas d'Amida de semaine à décrire.
+            assertTrue(iso, yt.none { it.contains("tahanoun") })
+            assertTrue(iso, "ajout_yaale_veyavo" in yt || iso == "2026-09-21")
         }
         val chabbat = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-10"), false).conditions)
         assertTrue(chabbat.none { it.contains("tahanoun") })

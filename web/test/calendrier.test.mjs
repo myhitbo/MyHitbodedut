@@ -252,6 +252,8 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   // Un Yom Tov en semaine et Kippour : pas de 9e bénédiction de semaine (FCALENDRIER-12).
   for (const iso of ['2027-04-22', '2026-09-21']) {
     assert.ok(!A.ajouts(jour(iso, false).conditions).some((k) => ['ajout_barkhenou', 'ajout_berakha', 'ajout_barekh_alenou', 'ajout_tal_oumatar'].includes(k)), iso);
+    // Ni « Pas de Ta'hanoun », comme le Chabbat.
+    assert.ok(!A.ajouts(jour(iso, false).conditions).some((k) => k.includes('tahanoun')), iso);
   }
   assert.ok(!A.ajouts(jour('2026-10-10', false).conditions).some((k) => ['ajout_barkhenou', 'ajout_berakha'].includes(k)));
   // Le nusah (JourAfficheTest) : bénédiction du Hallel partiel (OC 422:2),
