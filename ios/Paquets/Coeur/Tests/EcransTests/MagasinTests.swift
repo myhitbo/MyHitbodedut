@@ -67,7 +67,7 @@ struct MagasinTests {
         let persistance = PersistanceEnMemoire()
         let magasin = Magasin(persistance: persistance)
         // Store.inIsrael : le premier accès fige la valeur du fuseau, un voyage ne la change plus.
-        let fige = try await magasin.modifierReglages { $0.figeInIsrael(fuseauTelephone: "Asia/Jerusalem") }
+        let fige: Bool = try await magasin.modifierReglages { $0.figeInIsrael(fuseauTelephone: "Asia/Jerusalem") }
         #expect(fige)
         let enVoyage = magasin.reglages.inIsrael(fuseauTelephone: "Europe/Paris")
         #expect(enVoyage)
@@ -84,7 +84,7 @@ struct MagasinTests {
         let magasin = Magasin(persistance: persistance)
         try await magasin.modifierReglages { $0.setTargetMinutes(20) }
         try await magasin.modifierReglages { $0.setTargetMinutes(20) }
-        let israel = try await magasin.modifierReglages { $0.figeInIsrael(fuseauTelephone: "Europe/Paris") }
+        let israel: Bool = try await magasin.modifierReglages { $0.figeInIsrael(fuseauTelephone: "Europe/Paris") }
         #expect(!israel)
         // Figée, la valeur ne s'écrit plus.
         try await magasin.modifierReglages { $0.figeInIsrael(fuseauTelephone: "Asia/Jerusalem") }
