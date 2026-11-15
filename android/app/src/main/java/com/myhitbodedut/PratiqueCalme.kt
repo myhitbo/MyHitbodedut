@@ -59,10 +59,14 @@ class PratiqueCalme(
         return garde
     }
 
+    /**
+     * L'événement vient d'Activity.dispatchTouchEvent : ses x et y sont ceux de la fenêtre, comme
+     * getGlobalVisibleRect. rawX et rawY, eux, sont ceux de l'écran, décalés en écran partagé.
+     */
     private fun surUneVueRestee(e: MotionEvent): Boolean {
         val zone = android.graphics.Rect()
         return restent().any {
-            it.visibility == View.VISIBLE && it.getGlobalVisibleRect(zone) && zone.contains(e.rawX.toInt(), e.rawY.toInt())
+            it.visibility == View.VISIBLE && it.getGlobalVisibleRect(zone) && zone.contains(e.x.toInt(), e.y.toInt())
         }
     }
 

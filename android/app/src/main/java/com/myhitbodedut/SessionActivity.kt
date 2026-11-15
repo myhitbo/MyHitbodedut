@@ -107,7 +107,8 @@ class SessionActivity : AppCompatActivity() {
                 R.id.session_secondary, R.id.session_theme, R.id.session_chizuk, R.id.session_stuck)
                 .map { findViewById(it) }
         }
-        calme.restent = { listOf(primary) }
+        // « Terminer » et, si elle est montrée, la hitbodedout guidée et ses boutons de pas.
+        calme.restent = { listOf(primary, guide) }
 
         // Une rotation, un passage en écran partagé ou le redimensionnement
         // d'une fenêtre recréent l'écran. Sans cela, le guide repartirait au
