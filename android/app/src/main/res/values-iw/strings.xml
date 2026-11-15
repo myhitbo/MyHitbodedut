@@ -87,7 +87,6 @@
     <string name="action_another_session">עוד התבודדות</string>
     <string name="action_back_to_session">חזרה להתבודדות</string>
     <string name="action_write_note">לכתוב הערה</string>
-    <string name="action_journal">לפתוח את היומן</string>
     <string name="action_preview_gate">להציג את מסך „אני עם השם” עכשיו</string>
     <string name="action_pick_apps">בחירת אפליקציות</string>
     <string name="action_grant">אישור</string>
@@ -103,9 +102,6 @@
     <string name="settings_daily_goal">יעד יומי</string>
     <string name="settings_daily_goal_hint">מה שטבעת היום מודדת. כל עוד לא נקבע, זהו משך ההתבודדות.</string>
     <string name="rings_character_hint">הקישו כדי לראות את המספרים שלכם</string>
-    <string name="ring_day">היום</string>
-    <string name="ring_week">השבוע</string>
-    <string name="ring_streak">רצף</string>
     <string name="ring_day_detail">היום: %1$s מתוך %2$s</string>
     <string name="ring_day_reached">היעד היומי הושג: %1$s מתוך %2$s</string>
     <plurals name="ring_streak_detail">
@@ -123,7 +119,7 @@
     <string name="settings_shabbat">שבת ויום טוב</string>
     <string name="settings_shabbat_hint">בימים אלה: המצב מושבת, אין תזכורת, והרצף נשמר.</string>
     <string name="settings_exempt_today">הפסקה היום</string>
-    <string name="settings_exempt_today_hint">ליום טוב, נסיעה או מחלה: היום לא נספר לרעתכם.</string>
+    <string name="settings_exempt_today_hint">לנסיעה, למחלה או ליום שבו נבצר מכם: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
     <string name="lien_impossible">אי אפשר לפתוח את הקישור: אין דפדפן בטלפון הזה.</string>
     <string name="fichiers_absents">אין בטלפון אפליקציה שמאפשרת לפתוח או לשמור קובץ.</string>
@@ -193,7 +189,7 @@
     <string name="widget_description">הרצף הנוכחי, ולחיצה אחת כדי להתחיל.</string>
     <string name="widget_done">נעשתה היום.</string>
     <string name="widget_todo">עדיין לא היום.</string>
-    <string name="widget_rest">לא נדרשת היום.</string>
+    <string name="widget_rest">הפסקה היום.</string>
     <string name="widget_running">התבודדות בעיצומה.</string>
     <string name="widget_start">להתחיל</string>
     <string name="widget_resume">חזרה להתבודדות</string>
@@ -283,9 +279,9 @@
     </plurals>
 
     <plurals name="journal_summary">
-        <item quantity="one">התבודדות אחת, %2$s בסך הכול</item>
-        <item quantity="two">שתי התבודדויות, %2$s בסך הכול</item>
-        <item quantity="other">%1$d התבודדויות, %2$s בסך הכול</item>
+        <item quantity="one">יום התבודדות אחד, %2$s בסך הכול</item>
+        <item quantity="two">יומיים של התבודדות, %2$s בסך הכול</item>
+        <item quantity="other">%1$d ימי התבודדות, %2$s בסך הכול</item>
     </plurals>
 
     <!-- מוזיקה -->
@@ -880,16 +876,12 @@
     <string name="halakha_yomit_titre">הלכה יומית</string>
     <string name="halakha_yomit_lien">ההלכה היומית באתר „הלכה יומית”</string>
     <!-- Les paliers d'objectifs (11/10) -->
-    <string name="paliers_title">היעדים שלי</string>
-    <string name="paliers_sous_titre">אחרי כל יעד – היעד הבא</string>
     <string name="palier_serie">ימים ברצף</string>
     <string name="palier_jour">היום</string>
     <string name="palier_semaine">השבוע</string>
     <string name="palier_mois">החודש · %1$s</string>
     <string name="palier_cumul">זמן מצטבר</string>
     <string name="palier_jours">ימי התבודדות</string>
-    <string name="palier_prochain">היעד הבא: %1$s · עוד %2$s</string>
-    <string name="palier_atteints">יעדים שהושגו: %1$d</string>
     <string name="palier_nouveau">הושג יעד: %1$s – %2$s!</string>
     <string name="palier_une_serie">עוד %1$s ל־%2$s ברצף</string>
     <string name="palier_une_jour">עוד %1$s ל־%2$s היום</string>
@@ -942,7 +934,6 @@
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">מזל טוב!</string>
     <string name="trophees_paliers_titre">גביעים ויעדים</string>
-    <string name="trophees_titre">גביעים</string>
     <string name="grade_titre">דרגת %1$s</string>
     <plurals name="grade_sous">
         <item quantity="one">גביע אחד הושג · עוד %2$d ל%3$s</item>
@@ -966,12 +957,7 @@
     </plurals>
     <string name="grade_nouveau">דרגה חדשה: %1$s</string>
     <string name="grade_prochain">הדרגה הבאה: %1$s, בגביע ה־%2$d.</string>
-    <string name="trophees_prochain">הגביע הבא</string>
-    <string name="trophees_gagnes">שהושגו · %1$d</string>
-    <string name="trophees_a_venir">בהמשך · %1$d</string>
-    <string name="trophees_aucun_gagne">עוד אין גביע: הראשון יגיע עם ההתבודדות הראשונה.</string>
     <string name="trophees_tous">כל הגביעים הושגו!</string>
-    <string name="trophees_compte">%1$d מתוך %2$d</string>
     <string name="trophees_paliers">🏆  גביעים</string>
     <string name="channel_celebration">יעדים וגביעים</string>
     <string name="channel_celebration_description">חגיגה כשמגיעים ליעד או לגביע</string>
@@ -1007,8 +993,8 @@
     <string name="trophee_plume">העט</string>
     <plurals name="trophee_premier_pas_desc">
         <item quantity="one">התבודדות ראשונה</item>
-        <item quantity="two">%1$d התבודדויות ראשונות</item>
-        <item quantity="other">%1$d התבודדויות ראשונות</item>
+        <item quantity="two">%1$d ימי התבודדות ראשונים</item>
+        <item quantity="other">%1$d ימי התבודדות ראשונים</item>
     </plurals>
     <plurals name="trophee_seance_longue_desc">
         <item quantity="one">דקה אחת ביום אחד</item>
@@ -1067,15 +1053,8 @@
     <string name="metal_argent">כסף</string>
     <string name="metal_or">זהב</string>
     <string name="metal_platine">פלטינה</string>
-    <string name="trophee_niveau">דרגה %1$d מתוך %2$d · %3$s</string>
     <string name="trophee_niveau_court">דרגה %1$d מתוך %2$d</string>
-    <string name="trophees_explication">כל גביע עולה מדרגה לדרגה: ארד, כסף, זהב ופלטינה. מתחת לכל אחד: הדרגה שלכם, מה דורשת הבאה, וכמה כבר עשיתם.</string>
-    <string name="trophee_a_venir">עוד לא הושג</string>
     <string name="trophee_niveau_gagne">גביע „%1$s”: דרגה %2$d!</string>
-    <string name="trophee_prochain">הדרגה הבאה: %1$s</string>
-    <string name="trophee_sommet">הדרגה הגבוהה ביותר הושגה</string>
-    <string name="trophee_vedette">הגביע הכי יפה שלכם</string>
-    <string name="trophee_vedette_aucune">הגביע הראשון שלכם מחכה</string>
     <string name="chabbat_alerte_titre">שבת בעוד 3 שעות: התכוננו ליהנות ממנה!</string>
     <string name="chabbat_alerte_texte">עוד יש זמן להתבודדות לפני שבת. שבת שלום!</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
@@ -1165,6 +1144,7 @@
     <string name="journal_humeur_avant">לפני ההתבודדות</string>
     <string name="journal_humeur_apres">אחרי</string>
     <string name="journal_gratitude">הודיה</string>
+    <string name="journal_ligne">%1$s: %2$s</string>
     <string name="journal_gratitude_hint">דבר אחד שאני מודה עליו היום</string>
     <string name="journal_graphique">הדקות בכל יום, %s</string>
     <string name="partage_jour">שיתוף היום</string>
@@ -1175,7 +1155,6 @@
     </plurals>
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">הושג ב־%1$s</string>
-    <string name="trophee_a_gagner">להשגה · %1$d מתוך %2$d</string>
     <plurals name="trophee_detail_grade">
         <item quantity="one">ב%1$s: זה היה הגביע הראשון שלכם.</item>
         <item quantity="two">ב%1$s: זה היה הגביע ה־%2$d שלכם.</item>
@@ -1260,16 +1239,10 @@
     <string name="parcours_meilleure">הרצף הארוך ביותר</string>
     <string name="parcours_jours_faits">ימי התבודדות</string>
     <string name="parcours_total">זמן כולל</string>
-    <string name="parcours_moyenne">בממוצע, ליום</string>
     <string name="parcours_mois">החודש</string>
     <string name="parcours_sujets">הנושאים השכיחים שלכם</string>
     <string name="parcours_sujets_vide">בחרו נושא בתחילת התבודדות: השכיחים יופיעו כאן.</string>
     <string name="parcours_humeur">מצב רוח</string>
-    <plurals name="parcours_jours">
-        <item quantity="one">יום אחד</item>
-        <item quantity="two">יומיים</item>
-        <item quantity="other">%d ימים</item>
-    </plurals>
     <plurals name="parcours_fois">
         <item quantity="one">פעם אחת</item>
         <item quantity="two">פעמיים</item>

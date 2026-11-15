@@ -150,6 +150,7 @@ class JournalActivity : AppCompatActivity(), NoteDialog.Hote {
             val plus = JournalPlus.resume(
                 JournalPlus.lire(holder.itemView.context, row.date), getString(R.string.journal_gratitude),
                 getString(R.string.journal_travail), if (sujets.isBlank()) "" else getString(R.string.journal_sujets, sujets),
+                ligne = { libelle, texte -> getString(R.string.journal_ligne, libelle, texte) },
             )
             val texte = listOf(row.note, plus).filter { it.isNotBlank() }.joinToString("\n")
             holder.note.visibility = if (texte.isBlank()) View.GONE else View.VISIBLE

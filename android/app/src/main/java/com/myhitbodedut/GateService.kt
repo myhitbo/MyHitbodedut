@@ -176,8 +176,9 @@ class GateService : Service() {
             },
             onAlreadyDone = {
                 Store.addSession(this, 0)
-                // La vignette de série dit aussitôt la journée faite (FBARRIERE-11).
+                // La vignette de série et le rappel suivent aussitôt la journée faite (FBARRIERE-11, FDONNEES-15).
                 runCatching { StreakWidget.refresh(this) }
+                runCatching { Reminder.reschedule(this) }
                 hideOverlay()
                 goHome()
             },

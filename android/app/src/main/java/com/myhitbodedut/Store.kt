@@ -273,7 +273,7 @@ object Store {
 
     /** La date si la clé est une vraie date ISO (2026-09-29), sinon null. */
     fun dateValide(cle: String): LocalDate? =
-        runCatching { LocalDate.parse(cle, FORMAT) }.getOrNull()
+        runCatching { LocalDate.parse(cle, FORMAT) }.getOrNull()?.takeIf { it.year in 2000..2100 }
             ?.takeIf { it.format(FORMAT) == cle }
 
     /** Le jour civil d'un instant, dans le fuseau du téléphone. */
@@ -333,11 +333,15 @@ object Store {
     fun setNote(context: Context, date: String, note: String) {
         val all = days(context).toMutableMap()
         val existing = all[date]
+        // Une humeur ou une gratitude gardée pour ce jour lui garde sa ligne : sans elle, le journal ne
+        // la montrerait plus et rien ne permettrait de la modifier (FDONNEES-14 ; même règle que le site).
+        val garde = !JournalPlus.lire(context, date).vide
         when {
+            existing?.noteSeule == true && note.isBlank() && garde -> all[date] = existing.copy(note = "")
             // Une note seule qu'on efface : la ligne n'a plus de raison d'être.
             existing?.noteSeule == true && note.isBlank() -> all.remove(date)
             existing != null -> all[date] = existing.copy(note = note.take(NOTE_MAX))
-            note.isNotBlank() -> all[date] = DayRecord(date, 0, note.take(NOTE_MAX), emptyList(), noteSeule = true)
+            note.isNotBlank() || garde -> all[date] = DayRecord(date, 0, note.take(NOTE_MAX), emptyList(), noteSeule = true)
             else -> return
         }
         writeDays(context, all)
@@ -346,19 +350,20 @@ object Store {
     /**
      * Ce que devient un jour quand on corrige sa durée (FDONNEES-04) : [minutes] remplace les
      * minutes inscrites ; 0 retire la journée (sa note, si elle en a une, reste, sans valider
-     * le jour). Null : rien à garder, la ligne disparaît.
+     * le jour). Null : rien à garder, la ligne disparaît. [garde] : une humeur ou une gratitude
+     * de ce jour lui garde sa ligne, sans valider le jour (même règle que setNote, FDONNEES-14).
      */
-    fun jourCorrige(existant: DayRecord?, date: String, minutes: Int): DayRecord? {
+    fun jourCorrige(existant: DayRecord?, date: String, minutes: Int, garde: Boolean = false): DayRecord? {
         if (existant == null) return null
         if (minutes > 0) return existant.copy(minutes = minutes.coerceAtMost(24 * 60), noteSeule = false)
-        return if (existant.note.isBlank()) null else DayRecord(date, 0, existant.note, emptyList(), noteSeule = true)
+        return if (existant.note.isBlank() && !garde) null else DayRecord(date, 0, existant.note, emptyList(), noteSeule = true)
     }
 
     /** Remplace la durée d'un jour (0 : retire la journée). Sans effet sur un jour sans durée. */
     fun corrigerJour(context: Context, date: String, minutes: Int) {
         val all = days(context).toMutableMap()
         val existant = all[date]?.takeIf { it.faite } ?: return
-        val nouveau = jourCorrige(existant, date, minutes)
+        val nouveau = jourCorrige(existant, date, minutes, garde = !JournalPlus.lire(context, date).vide)
         if (nouveau == null) all.remove(date) else all[date] = nouveau
         writeDays(context, all)
         // Aujourd'hui retiré : l'instant de la dernière séance ne doit plus honorer la barrière.
@@ -1720,6 +1725,7 @@ object Store {
                     entry.optBoolean("note_seule", false)
                 )
                 val existing = merged[date]
+                val avant = existing
                 merged[date] = when {
                     existing == null -> incoming
                     // En cas de conflit on garde la séance la plus longue et la
@@ -1734,7 +1740,9 @@ object Store {
                         existing.noteSeule && incoming.noteSeule
                     )
                 }
-                imported++
+                // Seules les journées ajoutées ou modifiées comptent : réimporter le même fichier
+                // n'annonce plus tout le journal (FDONNEES-11).
+                if (merged[date] != avant) imported++
             }
         }
         writeDays(context, merged)
@@ -1772,7 +1780,8 @@ object Store {
                 (0 until a.length()).mapNotNull { i -> a.optInt(i, -1).takeIf { it in jour } }
             } ?: settings.optInt("reminder_minutes", -1).takeIf { it in jour }?.let { listOf(it) }
             if (!heures.isNullOrEmpty()) setReminderTimes(context, heures)
-            if (settings.has("first_name")) setFirstName(context, settings.optString("first_name"))
+            // Un prénom vide dans le fichier (export du site sans prénom) n'efface pas celui du téléphone (FDONNEES-11).
+            settings.optString("first_name").takeIf { it.isNotBlank() }?.let { setFirstName(context, it) }
             if (settings.has("hide_countdown")) setHideCountdown(context, settings.optBoolean("hide_countdown"))
             if (settings.has("guided_hitbodedut")) {
                 setGuidedHitbodedut(context, settings.optBoolean("guided_hitbodedut"))
