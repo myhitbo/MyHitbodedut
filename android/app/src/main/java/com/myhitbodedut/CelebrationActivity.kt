@@ -167,6 +167,8 @@ class CelebrationActivity : AppCompatActivity(), NoteDialog.Hote {
         val dp = resources.displayMetrics.density
         val note = TextView(this).apply {
             text = SIGNES[Random.nextInt(SIGNES.size)]
+            // Décor : le lecteur d'écran ne lit pas des « ♪ » qui montent.
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             textSize = 18f + Random.nextInt(8)
             // La scène est une plaque claire de jour comme de nuit.
             setTextColor(Apparence.couleur(this@CelebrationActivity, R.color.on_plate))

@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DanseMesure, SessionRule } from '../src/js/seance.js';
@@ -245,4 +245,29 @@ test('toute séance inscrite propose la note après le bravo, comme sur Android'
 test('le site ne promet pas un son de fin qu’il ne joue pas', () => {
   assert.doesNotMatch(appSource, /tr\.t\('session_hidden_caption'\)/);
   assert.match(appSource, /tr\.t\('session_hidden_caption_web'\)/);
+});
+
+// « Terminer » appelait SessionRule sans l'importer : ReferenceError au toucher, la séance
+// ne se terminait plus depuis le site (relecture du lot « séance », FSEANCE-12).
+test('app.js importe chaque objet de règles qu’il appelle', () => {
+  const dossier = join(ICI, '..', 'src', 'js');
+  const importes = new Set();
+  for (const m of appSource.matchAll(/^import\s*\{([^}]*)\}\s*from/gm)) {
+    for (const nom of m[1].split(',')) {
+      const t = nom.trim().split(/\s+as\s+/).pop();
+      if (t) importes.add(t);
+    }
+  }
+  for (const m of appSource.matchAll(/^import\s+\*\s+as\s+(\w+)/gm)) importes.add(m[1]);
+  const declares = new Set([...appSource.matchAll(/^\s*(?:const|let|var|function|class)\s+([A-Z]\w*)/gm)].map((m) => m[1]));
+  const manquants = [];
+  for (const fichier of readdirSync(dossier).filter((f) => f.endsWith('.js') && f !== 'app.js')) {
+    const source = readFileSync(join(dossier, fichier), 'utf8');
+    for (const m of source.matchAll(/^export\s+(?:const|class|function)\s+([A-Z]\w*)/gm)) {
+      const nom = m[1];
+      if (importes.has(nom) || declares.has(nom)) continue;
+      if (new RegExp(`(?<![.\\w$'"\`])${nom}\\.\\w`).test(appSource)) manquants.push(`${nom} (${fichier})`);
+    }
+  }
+  assert.deepEqual(manquants, []);
 });

@@ -9,7 +9,7 @@ import { ART_DU_MOMENT, ChizukBag, ChizukRules } from './chizuk.js';
 import { AMBIANCES, arreter as arreteAmbiance, jouer as joueAmbiance } from './ambiance.js';
 import { MelangeMusique, estQuota, nomDonne, renomme, titreDeFichier } from './musique.js';
 import * as MorceauxPerso from './morceaux-perso.js';
-import { DanseMesure } from './seance.js';
+import { DanseMesure, SessionRule } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
@@ -5333,11 +5333,12 @@ function ecranSeance() {
   if (enCours) {
     corps.push(
       h('button', {
-        class: 'principal', onclick: () => confirmer(tr.t('session_finish_title'), tr.t('session_finish_message'),
+        class: 'principal', onclick: () => confirmer(tr.t('session_finish_title'),
+          tr.t(SessionRule.minutesEcoulees(store.sessionStartedAt(), Date.now()) < 1 ? 'session_finish_short' : 'session_finish_message'),
           tr.t('session_finish_now'), terminerMaintenant),
       }, tr.t('session_finish_now')),
       h('button', {
-        class: 'texte-clair', onclick: () => confirmer(tr.t('session_cancel_title'), tr.t('session_cancel_message'),
+        class: 'texte-clair', onclick: () => confirmer(tr.t('session_cancel_title'), tr.t(fait ? 'session_cancel_message_done' : 'session_cancel_message'),
           tr.t('session_cancel'), annulerSeance),
       }, tr.t('session_cancel')));
   } else {

@@ -168,8 +168,11 @@
     <string name="session_cancel">לוותר</string>
     <string name="session_finish_title">לסיים את ההתבודדות?</string>
     <string name="session_finish_message">הזמן שכבר עבר יישמר והיום ייחשב.</string>
+    <string name="session_finish_short">עברה פחות מדקה: דבר לא יישמר.</string>
     <string name="session_cancel_title">לוותר על ההתבודדות?</string>
     <string name="session_cancel_message">דבר לא יישמר והיום יישאר פתוח.</string>
+    <string name="session_cancel_message_done">דבר לא יישמר מההתבודדות הזאת.</string>
+    <string name="note_humeur_description">מצב רוח %1$d מתוך 5</string>
     <string name="session_running_title">התבודדות בעיצומה</string>
     <string name="session_remaining">נותרו %1$s</string>
     <string name="session_open">בלי זמן קצוב</string>
@@ -217,7 +220,7 @@
     <string name="onboarding_private">מה שכתבתם נשאר כאן</string>
     <string name="onboarding_private_body">האפליקציה מתחברת לאינטרנט רק כשתבקשו זאת בעצמכם: מעקב טיסה בזמן אמת מבקש מ־OpenSky Network את המטוסים באזור משוער, בלי לשלוח את אות הקריאה של הטיסה; חיפוש לפי מספר טיסה שולח ל־adsbdb.com את המספר בלבד. מה שתכתבו נשאר בטלפון הזה, ורק אתם יכולים להוציא אותו, דרך הייצוא.</string>
     <string name="onboarding_private_body_route">האפליקציה מתחברת לאינטרנט רק כשתבקשו זאת בעצמכם: חיפוש לפי מספר טיסה שולח ל־adsbdb.com את המספר בלבד. מה שתכתבו נשאר בטלפון הזה, ורק אתם יכולים להוציא אותו, דרך הייצוא.</string>
-    <string name="blocker_session_open_subtitle">התבודדות פתוחה, כבר %1$s. הטלפון יכול לחכות.</string>
+    <string name="blocker_session_open_subtitle">התבודדות בלי זמן קצוב, כבר %1$s. הטלפון יכול לחכות.</string>
     <string name="session_done_title">דיברתם היום עם השם</string>
     <string name="session_done_text">%1$s של התבודדות. הקישו כדי להוסיף הערה.</string>
 
@@ -297,10 +300,10 @@
     <string name="lecteur_replier">מזעור הנגן</string>
     <string name="lecteur_lecture">הפעלה</string>
     <string name="lecteur_pause">השהיה</string>
-    <string name="lecteur_suivant">השיר הבא</string>
-    <string name="lecteur_precedent">השיר הקודם</string>
+    <string name="lecteur_suivant">הניגון הבא</string>
+    <string name="lecteur_precedent">הניגון הקודם</string>
     <string name="lecteur_aleatoire">השמעה אקראית</string>
-    <string name="lecteur_position">מיקום בשיר</string>
+    <string name="lecteur_position">מיקום בניגון</string>
     <string name="music_unnamed">ללא שם</string>
     <string name="music_origin_bundled">מגיע עם האפליקציה</string>
     <string name="music_origin_device">מהטלפון</string>
@@ -484,7 +487,7 @@
 
     <!-- Présentation détaillée, bravo de fin de séance, apparence (28/09). -->
     <string name="onboarding_session">ההתבודדות</string>
-    <string name="onboarding_session_body">בוחרים משך, או התבודדות בלי הגבלת זמן, ואם רוצים גם נושא. ניגון יכול ללוות אתכם. מילת חיזוק פותחת וסוגרת את ההתבודדות, ואם המילים לא באות, יש כפתור שעוזר.</string>
+    <string name="onboarding_session_body">בוחרים משך, או התבודדות בלי זמן קצוב, ואם רוצים גם נושא. ניגון יכול ללוות אתכם. מילת חיזוק פותחת וסוגרת את ההתבודדות, ואם המילים לא באות, יש כפתור שעוזר.</string>
     <string name="onboarding_days">יום אחרי יום</string>
     <string name="onboarding_days_body">הרצף סופר את הימים ברציפות, והשבוע כולו נראה במבט אחד. אחרי כל התבודדות אפשר להשאיר הערה ביומן. תזכורות מאותתות בשעה שבוחרים.</string>
     <string name="onboarding_texts">טקסטים לתפילה</string>
