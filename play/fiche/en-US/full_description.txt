@@ -1,0 +1,34 @@
+MyHitbodedut accompanies a daily practice of hitbodedut (התבודדות, also spelled hisbodedus): time alone each day to speak to Hashem in your own words, as Rabbi Nachman of Breslov taught.
+
+YOUR HITBODEDUT
+• Pick a length, from 5 minutes to 1 h 30 min, or leave it open, and put the phone down: the timer keeps running with the screen off.
+• A subject if you like, a guided hitbodedut, a niggun or silence, and “Do not disturb” until it ends.
+• If the words won’t come, a button offers advice and questions to help you begin.
+• Every minute counts toward your day and your path.
+
+THE JOURNAL
+• After each hitbodedut: a free note, the subjects, your mood before and after, one gratitude and one thing to work on.
+• Your streak, the week at a glance, milestones and trophies.
+• Export and import as a JSON file: your backup stays in your hands.
+
+THE MORNING GATE (optional)
+A gate you set up on your own phone, against your own habits, and can switch off at any moment. During the morning hours you choose (6:00 to 11:00 by default), opening one of the apps you picked shows a full screen first: “Did you do your hitbodedut?” You can start now, say you already did it, or snooze for a few minutes. Once the day is confirmed, the gate stays silent until the next morning. By default it is silent on Shabbat and Yom Tov. The same screen keeps those apps closed while a hitbodedut you started is in progress, until it ends. The two Android accesses it needs (usage access and display over other apps) serve only this, on the phone: nothing is recorded or sent.
+
+TEXTS
+• Siddur in three nuschaot (Edot HaMizrach, Sefard, Ashkenaz), with the prayers for this hour one tap away.
+• Tehillim, Tikkun HaKlali, Likutei Moharan, Likutei Etzot, Sefer HaMidot, Hishtapchut HaNefesh and more, with a word of chizuk every day.
+• A halacha for each day (Kitzur Shulchan Aruch Yalkut Yosef) and the hillula of the day.
+• Many texts show English and French next to the Hebrew. These are machine translations, not yet reviewed by a person: the Hebrew is the authoritative text.
+
+ZMANIM AND CALENDAR
+• The times of the day for 51 cities or for your approximate location, candle lighting and the end of Shabbat, the Hebrew calendar, the Omer and Birkat HaLevana.
+• A compass toward Jerusalem.
+• Zmanim in flight, along the route of your flight.
+• Home-screen widgets.
+
+PRIVACY
+No account, no ads, no analytics. Your journal stays on your phone. The app connects to the Internet only if you ask it to look up the route of a flight number; that number is then sent to adsbdb.com, and nothing else.
+
+Free, with no purchases. Interface in English, Hebrew and French.
+
+Flight routes: adsbdb.com (data by David J. Taylor and Jim Mason).

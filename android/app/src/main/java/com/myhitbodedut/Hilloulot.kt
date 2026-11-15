@@ -72,12 +72,12 @@ object Hilloulot {
 
     /**
      * L'ordre d'un jour (04/11, « très mal organisé ») : d'abord les mieux connus, ceux que le
-     * plus de sources donnent, puis ceux qui ont une notice ; ceux dont la date est mise en
-     * doute en dernier. À égalité, l'ordre du fichier. La carte du jour en montre les cinq premiers.
+     * plus de sources donnent ; à nombre de sources égal, ceux dont rien n'est mis en doute, puis
+     * ceux qui ont une notice. À égalité, l'ordre du fichier. La carte du jour en montre les cinq premiers.
      */
     fun duJour(table: Map<String, List<Hilloula>>, cles: List<String>): List<Hilloula> =
         cles.flatMap { table[it].orEmpty() }
-            .sortedWith(compareBy<Hilloula>({ it.doute != null }, { -it.sources.length }, { it.description == null }))
+            .sortedWith(compareBy<Hilloula>({ -it.sources.length }, { it.doute != null }, { it.description == null }))
 
     /** Le rang d'une clé « mois-jour » dans l'année, de Tichri à Eloul (Adar I, puis Adar, puis Adar II). */
     fun rangDansLAnnee(cle: String): Int {

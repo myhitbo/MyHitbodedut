@@ -109,6 +109,26 @@ const LIEUX = [
   { nom: 'Melbourne', latitude: -37.814, longitude: 144.96332, altitude: 0, fuseau: 'Australia/Melbourne' },
 ];
 
+test('chaque zman tombe le jour civil demandé, dans les 51 villes (FCALENDRIER-02, Sydney)', async () => {
+  const { villes } = JSON.parse(readFileSync(join(ICI, '../../android/app/src/main/res/raw/villes.json'), 'utf8'));
+  const lieu = (v) => ({ nom: v.nom.fr, latitude: v.latitude, longitude: v.longitude, altitude: v.altitude, fuseau: v.fuseau });
+  const jourCivil = (t, fuseau) => new Intl.DateTimeFormat('en-CA', { timeZone: fuseau }).format(t);
+  const auckland = { nom: 'Auckland', latitude: -36.85, longitude: 174.76, altitude: 0, fuseau: 'Pacific/Auckland' };
+  for (const l of [...villes.map(lieu), auckland]) {
+    for (const iso of ['2026-01-15', '2026-04-05', '2026-06-21', '2026-10-04', '2026-12-21', '2027-04-03']) {
+      for (const z of Z.jour(l, iso)) {
+        if (z.instant && z.cle !== 'chatsot_layla') assert.equal(jourCivil(z.instant, l.fuseau), iso, `${l.nom} ${iso} ${z.cle}`);
+      }
+    }
+  }
+  // KosherJava 2.5.0 : Sydney, netz du 21/06/2026 à 06:59:57 ; sortie de Chabbat du 03/04/2027 à 19:25:21.
+  const sydney = lieu(villes.find((v) => v.nom.fr === 'Sydney'));
+  const { horaires } = await import('../src/js/jour-affiche.js');
+  const heure = (t) => new Intl.DateTimeFormat('fr-FR', { timeZone: sydney.fuseau, timeStyle: 'medium' }).format(t);
+  assert.equal(heure(Z.jour(sydney, '2026-06-21').find((z) => z.cle === 'netz').instant), '06:59:57');
+  assert.equal(heure(horaires(sydney, '2027-04-03', false, 18).find((z) => z.cle === 'sortie').instant), '19:25:21');
+});
+
 test('Hebcal : les zmanim de même méthode s’accordent à 5 secondes près', () => {
   // [clé du profil, méthode Hebcal réellement équivalente]
   const paires = [
@@ -217,6 +237,13 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   const rh1 = parIndex(A.horaires(paris, '2026-09-12', false, 18));
   assert.equal(rh1.allumage.methode, 'apres_tset');
   assert.ok('sortie' in parIndex(A.horaires(paris, '2026-09-13', false, 18)));
+  // Fête un vendredi (FCALENDRIER-01) : allumage de Chabbat avant la chki'a, jamais à tsét.
+  for (const [iso, israel] of [['2027-04-23', false], ['2027-06-11', false], ['2027-06-11', true], ['2028-09-22', false]]) {
+    const h = parIndex(A.horaires(israel ? jer : paris, iso, israel, 18));
+    assert.equal(h.allumage.methode, 'avant_chkia', iso);
+    assert.ok(+h.allumage.instant < +h.chkia.instant, iso);
+    assert.ok(!('sortie' in h), iso);
+  }
   assert.deepEqual(A.ajouts(jour('2026-10-12', false).conditions),
     ['ajout_machiv_harouah', 'ajout_barkhenou', 'ajout_yaale_veyavo', 'ajout_hallel_partiel_sans_berakha', 'ajout_sans_tahanoun']);
   // Les Edot disent ברכנו / ברך עלינו ; les autres noussa'h ותן ברכה / ותן טל ומטר.
@@ -347,7 +374,12 @@ import { rappelsTefila } from '../src/js/calendrier-juif.js';
 test('rappels de tefila : mêmes cas que RappelsTefilaTest', () => {
   assert.deepEqual(rappelsTefila('2026-10-16', true), [{ type: 'pluie_debut', date: '2026-10-18' }]);
   assert.ok(!rappelsTefila('2026-10-16', false).some((r) => r.type === 'pluie_debut'));
-  assert.deepEqual(rappelsTefila('2026-12-02', false, 6).filter((r) => r.type === 'pluie_debut').map((r) => r.date), ['2026-12-05']);
+  // Premier jour le samedi 5/12/2026 : on commence à motsaé Chabbat, rappel daté du dimanche 6 (FCALENDRIER-04).
+  const pluie = (iso, n = 3) => rappelsTefila(iso, false, n).filter((r) => r.type === 'pluie_debut').map((r) => r.date);
+  assert.deepEqual(rappelsTefila('2026-12-02', false, 6).filter((r) => r.type === 'pluie_debut').map((r) => r.date), ['2026-12-06']);
+  for (const iso of ['2026-12-02', '2026-12-04', '2026-12-05']) assert.deepEqual(pluie(iso), ['2026-12-06'], iso);
+  assert.deepEqual(pluie('2026-12-06'), []);
+  assert.deepEqual(pluie('2031-12-05'), ['2031-12-07']);
   const p = rappelsTefila('2027-04-20', true).map((r) => `${r.type}@${r.date}`);
   for (const x of ['pluie_fin@2027-04-22', 'guechem_fin@2027-04-22', 'omer@2027-04-23']) assert.ok(p.includes(x), x);
   assert.ok(rappelsTefila('2027-09-30', false).some((r) => r.type === 'dix_jours' && r.date === '2027-10-02'));
@@ -359,6 +391,62 @@ import { dansIsrael } from '../src/js/calendrier-juif.js';
 test('territoire d’Israël : mêmes villes que TerritoireIsraelTest', () => {
   for (const [lat, lon] of [[31.7769, 35.2224], [32.0853, 34.7818], [29.5577, 34.9519], [33.2073, 35.57], [32.993, 35.69], [32.106, 35.171], [29.895, 35.06], [33.106, 35.806], [33.27, 35.77]]) assert.ok(dansIsrael(lat, lon), `${lat},${lon}`);
   for (const [lat, lon] of [[31.9539, 35.9106], [29.5321, 35.0063], [33.2705, 35.2038], [31.1316, 33.7984], [29.49, 34.876], [48.8566, 2.3522], [33.1256, 35.8244]]) assert.ok(!dansIsrael(lat, lon), `${lat},${lon}`);
+});
+
+// Audit du 12/11, FCALENDRIER-06 : la région choisie à la main survit aux reprises de la position.
+test('Israël / diaspora : une reprise de la position garde la région choisie à la main', async () => {
+  const { regionPourPosition } = await import('../src/js/calendrier-juif.js');
+  const { creeStore, memoire } = await import('../src/js/store.js');
+  const jerusalem = { nom: 'Ma position', latitude: 31.7769, longitude: 35.2224, altitude: 750, fuseau: 'Asia/Jerusalem' };
+  const paris = { nom: 'Ma position', latitude: 48.8566, longitude: 2.3522, altitude: 35, fuseau: 'Europe/Paris' };
+  assert.equal(regionPourPosition(31.7769, 35.2224, true, true), null);
+  assert.equal(regionPourPosition(31.7769, 35.2224, false, true), true);
+  assert.equal(regionPourPosition(48.8566, 2.3522, true, false), false);
+
+  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12) });
+  // « Ma position » choisie dans la liste, à Jérusalem : la région suit la position (16/10).
+  s.setLieuPosition(jerusalem, true);
+  assert.equal(s.inIsrael(), true);
+  assert.equal(s.inIsraelManuel(), false);
+  // Bascule manuelle dans les réglages, puis reprises silencieuses : la région ne bouge pas.
+  s.setInIsrael(false, true);
+  s.setLieuPosition(jerusalem);
+  s.setLieuPosition({ ...jerusalem, latitude: 32.0853, longitude: 34.7818 });
+  assert.equal(s.inIsrael(), false);
+  assert.equal(s.inIsraelManuel(), true);
+  assert.equal(s.lieu().latitude, 32.0853, 'la position, elle, est bien reprise');
+  // Le drapeau voyage avec la sauvegarde.
+  const fichier = JSON.parse(s.exportJson());
+  assert.equal(fichier.settings.in_israel, false);
+  assert.equal(fichier.settings.in_israel_manuel, true);
+  const autre = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12) });
+  autre.setLieuPosition(jerusalem, true);
+  autre.importJson(JSON.stringify(fichier));
+  autre.setLieuPosition(jerusalem);
+  assert.equal(autre.inIsrael(), false);
+  assert.equal(autre.inIsraelManuel(), true);
+  // Choisir de nouveau le lieu redéduit la région et efface le choix manuel : « Ma position » dans la liste…
+  s.setLieuPosition(jerusalem, true);
+  assert.equal(s.inIsrael(), true);
+  assert.equal(s.inIsraelManuel(), false);
+  // … une ville…
+  s.setInIsrael(true, true);
+  s.setLieu({ nom: 'Paris', latitude: 48.8566, longitude: 2.3522, altitude: 35, fuseau: 'Europe/Paris' }, { id: 2988507, pays: 'FR' });
+  assert.equal(s.inIsrael(), false);
+  assert.equal(s.inIsraelManuel(), false);
+  // … ou la position à la place d'une ville (« Actualiser ma position » de la boussole).
+  s.setInIsrael(true, true);
+  s.setLieuPosition(paris);
+  assert.equal(s.inIsrael(), false);
+  assert.equal(s.inIsraelManuel(), false);
+  // Sans choix manuel, la région suit toujours la position, reprise ou non (voyage, 16/10).
+  s.setLieuPosition(jerusalem);
+  assert.equal(s.inIsrael(), true);
+  // L'écran : la bascule des réglages est manuelle, la liste des lieux choisit, la reprise passe par le store.
+  const app = readFileSync(join(ICI, '../src/js/app.js'), 'utf8');
+  assert.ok(app.includes('store.setInIsrael(j === 0, true)'));
+  assert.ok(app.includes('localiserPosition({ etat, choisie: true,'));
+  assert.ok(!/store\.setInIsrael\(dansIsrael/.test(app), 'la position ne réécrit plus la région sans passer par setLieuPosition');
 });
 
 test('rappels de tefila : nord et sud, Israël et diaspora', () => {

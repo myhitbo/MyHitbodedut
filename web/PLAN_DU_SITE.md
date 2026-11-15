@@ -86,7 +86,7 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 
 ### Musique ✅
 - « Jouer pendant la séance » (interrupteur), « Volume ».
-- « Bibliothèque » : 33 niggounim, avec « Écouter » et le choix du morceau.
+- « Bibliothèque » : les morceaux de la version Play (26 au 13/11, `MusiquePlay.kt`), avec « Écouter » et le choix du morceau.
 
 ### Onglet « Journal »
 - ⏳ Liste des jours et des notes (étape 4).

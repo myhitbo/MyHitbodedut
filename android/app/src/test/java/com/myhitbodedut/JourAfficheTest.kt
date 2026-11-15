@@ -41,6 +41,19 @@ class JourAfficheTest {
     }
 
     @Test
+    fun `fete un vendredi - les bougies de Chabbat avant la chkia, jamais a tset`() {
+        // Audit du 12/11, FCALENDRIER-01 : 2e jour de Pessa'h (diaspora), Chavouot, 2e jour de Roch Hachana.
+        for ((date, israel) in listOf("2027-04-23" to false, "2027-06-11" to false, "2027-06-11" to true, "2028-09-22" to false)) {
+            val lieu = if (israel) jerusalem else paris
+            val h = horaires(lieu, date, israel)
+            val allumage = h.getValue("allumage")
+            assertEquals(date, "avant_chkia", allumage.methode.cle)
+            assertTrue(date, allumage.instant!! < h.getValue("chkia").instant!!)
+            assertFalse(date, "sortie" in h)
+        }
+    }
+
+    @Test
     fun `les ajouts nommes suivent les conditions`() {
         val rc = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-12"), false).conditions)
         assertEquals(listOf("ajout_machiv_harouah", "ajout_barkhenou", "ajout_yaale_veyavo", "ajout_hallel_partiel_sans_berakha",

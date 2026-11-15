@@ -52,6 +52,9 @@ class CelebrationActivity : AppCompatActivity() {
     private var initiale = JournalPlus.Plus()
     private var noteInitiale = ""
 
+    /** Vrai pendant que l'écran remplit lui-même ses champs : ce n'est pas une frappe à garder. */
+    private var remplissage = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_celebration)
@@ -134,7 +137,10 @@ class CelebrationActivity : AppCompatActivity() {
         findViewById<View>(R.id.celebration_carnet).visibility = View.VISIBLE
         initiale = JournalPlus.lire(this, date)
         noteInitiale = Store.record(this, date)?.note.orEmpty()
-        apres = etat?.getInt(ETAT_APRES, initiale.apres) ?: initiale.apres
+        // Ce qui a été tapé puis perdu (processus tué, écran recréé) revient du brouillon,
+        // comme dans la fenêtre de note (NoteBrouillon, audit FSEANCE-04, FDONNEES-02 et 03).
+        val brouillon = NoteBrouillon.lire(this, date)
+        apres = etat?.getInt(ETAT_APRES, brouillon?.apres ?: initiale.apres) ?: (brouillon?.apres ?: initiale.apres)
         val gratitude = findViewById<android.widget.EditText>(R.id.celebration_gratitude)
         val travail = findViewById<android.widget.EditText>(R.id.celebration_travail)
         val note = findViewById<android.widget.EditText>(R.id.celebration_note)
@@ -143,9 +149,11 @@ class CelebrationActivity : AppCompatActivity() {
         note.filters = arrayOf(android.text.InputFilter.LengthFilter(Store.NOTE_MAX))
         // À la première création seulement : une rotation garde ce qui est en cours de saisie.
         if (etat == null) {
-            gratitude.setText(initiale.gratitude)
-            travail.setText(initiale.travail)
-            note.setText(noteInitiale)
+            remplissage = true
+            gratitude.setText(brouillon?.gratitude ?: initiale.gratitude)
+            travail.setText(brouillon?.travail ?: initiale.travail)
+            note.setText(brouillon?.note ?: noteInitiale)
+            remplissage = false
         }
         val d = resources.displayMetrics.density
         val rang = findViewById<LinearLayout>(R.id.celebration_humeurs)
@@ -168,7 +176,7 @@ class CelebrationActivity : AppCompatActivity() {
                 apres = if (apres == i + 1) 0 else i + 1
                 cases.forEachIndexed { j, c -> c.isSelected = apres == j + 1 }
                 ouvrirSuite(anime = true)
-                majBouton()
+                suivre()
             }
             rang.addView(case)
         }
@@ -179,10 +187,13 @@ class CelebrationActivity : AppCompatActivity() {
         val suit = object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-            override fun afterTextChanged(s: android.text.Editable?) = majBouton()
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (!remplissage) suivre()
+            }
         }
         listOf(gratitude, travail, note).forEach { it.addTextChangedListener(suit) }
-        if (etat?.getBoolean(ETAT_SUITE, false) == true) ouvrirSuite(anime = false)
+        // Un brouillon en attente rouvre la page du carnet, là où on l'avait laissée.
+        if (etat?.getBoolean(ETAT_SUITE, false) == true || brouillon != null) ouvrirSuite(anime = false)
         majBouton()
     }
 
@@ -219,6 +230,20 @@ class CelebrationActivity : AppCompatActivity() {
         findViewById<android.widget.EditText>(R.id.celebration_note).text.toString().trim(),
     )
 
+    /** La page, dans la forme du brouillon de note : ce qui est enregistré, puis ce qui est à l'écran. */
+    private fun etatEnregistre() = NoteBrouillon.Etat(noteInitiale, initiale.avant, initiale.apres, initiale.gratitude, initiale.travail)
+    private fun etatCourant(): NoteBrouillon.Etat {
+        val (plus, note) = saisie()
+        return NoteBrouillon.Etat(note, plus.avant, plus.apres, plus.gratitude, plus.travail)
+    }
+
+    /** Chaque frappe et chaque humeur : le bouton suit, et le brouillon garde ce qui n'est pas encore enregistré. */
+    private fun suivre() {
+        val date = dateNote ?: return
+        NoteBrouillon.garder(this, date, NoteBrouillon.aGarder(etatEnregistre(), etatCourant()))
+        majBouton()
+    }
+
     /** « Enregistrer » dès que la page porte quelque chose de neuf ; « Continuer » sinon. */
     private fun majBouton() {
         if (dateNote == null) return
@@ -236,6 +261,8 @@ class CelebrationActivity : AppCompatActivity() {
         if (plus != initiale) JournalPlus.ecrire(this, date, plus)
         initiale = plus
         noteInitiale = note
+        // Enregistré : le brouillon n'a plus rien à garder.
+        NoteBrouillon.garder(this, date, null)
     }
 
     override fun onStart() {
@@ -338,7 +365,7 @@ class CelebrationActivity : AppCompatActivity() {
 
     companion object {
         /** La version web de l'application, jointe à chaque partage. */
-        const val LIEN_WEB = "https://hil123.github.io/myhitbodedut-web/"
+        const val LIEN_WEB = "https://myhitbodedut.pages.dev/"
 
         const val EXTRA_MINUTES = "minutes"
         const val EXTRA_ANNULEE = "annulee"
@@ -363,13 +390,17 @@ class CelebrationActivity : AppCompatActivity() {
          * Ouvre le bravo si une séance vient de se clore. La marque est
          * retirée avant l'ouverture, pas à la fermeture : deux écrans qui
          * reprennent la main l'un après l'autre ne l'ouvriraient pas deux fois.
+         *
+         * [sansNote] : la note vient d'être proposée (mode « Écrire », le
+         * bravo a attendu sa fermeture) ; « Continuer » ne la rouvre pas
+         * (13/11, audit FSEANCE-03).
          */
-        fun showIfPending(activity: Activity) {
+        fun showIfPending(activity: Activity, sansNote: Boolean = false) {
             val celebration = Store.takePendingCelebration(activity) ?: return
             activity.startActivity(
                 Intent(activity, CelebrationActivity::class.java)
                     .putExtra(EXTRA_MINUTES, celebration.minutes)
-                    .putExtra(EXTRA_NOTE_DATE, celebration.dateNote)
+                    .putExtra(EXTRA_NOTE_DATE, celebration.dateNote.takeUnless { sansNote })
             )
         }
     }

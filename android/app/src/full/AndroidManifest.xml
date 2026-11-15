@@ -41,7 +41,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE"
-                android:value="Interposes a confirmation screen over user-selected apps during a user-defined morning window, until the user confirms their daily practice." />
+                android:value="Interposes a confirmation screen over user-selected apps during a user-defined morning window, until the user confirms their daily practice, and during any user-started session until it ends." />
         </service>
     </application>
 </manifest>

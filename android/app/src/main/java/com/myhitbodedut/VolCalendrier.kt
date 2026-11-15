@@ -15,6 +15,8 @@ import java.time.ZoneId
  *    [minutes] avant cette chki'a) ;
  *  - tsét d'un jour chômé suivi d'un jour ouvré : sortie ;
  *  - tsét d'un jour chômé suivi d'un autre : le jour suivant commence ;
+ *    sauf une fête un vendredi (audit du 12/11, FCALENDRIER-01) : Chabbat
+ *    entre à la chki'a, avec l'allumage avant elle, comme une veille ;
  *  - tsét pendant le Omer : le jour qui se compte ce soir.
  *
  * Le jour civil est celui du point sous l'avion (fuseau nautique, comme
@@ -49,11 +51,12 @@ object VolCalendrier {
         val demain = CalendrierJuif.jour(jour.plusDays(1), enIsrael)
         fun jalon(type: Type, j: CalendrierJuif.Jour, allumage: Instant? = null, omer: Int = 0) =
             Jalon(type, e.instant, j.date, j.date.dayOfWeek == DayOfWeek.SATURDAY, j.fetes, omer, allumage, e.latitude, e.longitude)
+        val vendredi = jour.dayOfWeek == DayOfWeek.FRIDAY
         buildList {
-            if (e.cle == "chkia" && demain.chome && !aujourdhui.chome) add(jalon(Type.ENTREE, demain, e.instant - Duration.ofMinutes(minutes.toLong())))
+            if (e.cle == "chkia" && demain.chome && (!aujourdhui.chome || vendredi)) add(jalon(Type.ENTREE, demain, e.instant - Duration.ofMinutes(minutes.toLong())))
             if (e.cle == "tset") {
                 if (aujourdhui.chome && !demain.chome) add(jalon(Type.SORTIE, aujourdhui))
-                if (aujourdhui.chome && demain.chome) add(jalon(Type.ENCHAINEMENT, demain))
+                if (aujourdhui.chome && demain.chome && !vendredi) add(jalon(Type.ENCHAINEMENT, demain))
                 if (demain.omer > 0) add(jalon(Type.OMER, demain, omer = demain.omer))
             }
         }

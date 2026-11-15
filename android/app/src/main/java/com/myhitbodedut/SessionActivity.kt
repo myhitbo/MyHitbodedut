@@ -60,6 +60,15 @@ class SessionActivity : AppCompatActivity() {
     /** Une séance abandonnée n'est pas une séance close : pas de mot de fin. */
     private var cancelling = false
 
+    /**
+     * Le bravo a attendu la fermeture de la note d'« Écrire » : il s'ouvre
+     * ensuite sans la reproposer (13/11, audit FSEANCE-03).
+     */
+    private var bravoApresNote = false
+
+    /** La demande des notifications, proposée une fois au premier départ (13/11, FACCUEIL-05). */
+    private val notifications = DemandeNotifications(this) { render() }
+
     private val tick = object : Runnable {
         override fun run() {
             render()
@@ -107,6 +116,7 @@ class SessionActivity : AppCompatActivity() {
             question = it.getInt(ETAT_QUESTION, -1)
             wasRunning = it.getBoolean(ETAT_EN_COURS, false)
             cancelling = it.getBoolean(ETAT_ABANDON, false)
+            bravoApresNote = it.getBoolean(ETAT_BRAVO_APRES_NOTE, false)
         }
 
         // Le mini-lecteur (19/10) : changer de morceau sans quitter la pratique.
@@ -127,16 +137,17 @@ class SessionActivity : AppCompatActivity() {
 
         // « Commencer simplement » (proposition 15) : parler, écrire, prier ou
         // recevoir une question ; chacun démarre la séance aussitôt.
-        fun demarrer(ensuite: () -> Unit = {}) {
+        fun demarrer(ensuite: (() -> Unit)? = null) {
             SessionService.start(this, Store.targetMinutes(this))
             guideStep = 0
             drawOpening()
             render()
-            ensuite()
+            // Écrire, prier ou une question ouvrent aussitôt autre chose : la proposition attendra un départ simple.
+            if (ensuite == null) proposerNotifications() else ensuite()
         }
         findViewById<View>(R.id.simplement_parler).setOnClickListener { demarrer() }
         findViewById<View>(R.id.simplement_ecrire).setOnClickListener {
-            demarrer { NoteDialog.show(this, Store.today(), onSaved = {}) }
+            demarrer { NoteDialog.show(this, Store.today()) }
         }
         findViewById<View>(R.id.simplement_prier).setOnClickListener {
             demarrer { startActivity(android.content.Intent(this, TefilotActivity::class.java)) }
@@ -160,6 +171,7 @@ class SessionActivity : AppCompatActivity() {
             guideStep = 0
             drawOpening()
             render()
+            proposerNotifications()
         }
 
         intArrayOf(
@@ -200,6 +212,7 @@ class SessionActivity : AppCompatActivity() {
             SessionService.start(this, Store.targetMinutes(this))
             guideStep = 0
             drawOpening()
+            proposerNotifications()
         }
         intent.removeExtra(EXTRA_START_NOW)
         intent.removeExtra(EXTRA_DEPUIS_RAPPEL)
@@ -212,6 +225,25 @@ class SessionActivity : AppCompatActivity() {
         guideStep = 0
         drawOpening()
         render()
+        proposerNotifications()
+    }
+
+    /**
+     * Au premier départ, si les notifications manquent (Android 13 ne les accorde plus d'office) :
+     * sans elles ni le temps qui reste ni la fin de la séance ne s'affichent téléphone posé. Une
+     * phrase le dit, puis Android pose sa question. La séance est déjà partie et n'attend pas la
+     * réponse ; accordées, la notification de séance apparaît au tour suivant du service. Une
+     * seule fois : « Plus tard » est une réponse, et la carte des autorisations reste dans les réglages.
+     */
+    private fun proposerNotifications() {
+        if (Permissions.hasNotifications(this) || Store.notificationsProposees(this)) return
+        Store.setNotificationsProposees(this)
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.permission_notifications)
+            .setMessage(R.string.session_notifications_pourquoi)
+            .setNegativeButton(R.string.action_later, null)
+            .setPositiveButton(R.string.action_grant) { _, _ -> notifications.lancer() }
+            .show()
     }
 
     override fun onResume() {
@@ -227,6 +259,7 @@ class SessionActivity : AppCompatActivity() {
         outState.putInt(ETAT_QUESTION, question)
         outState.putBoolean(ETAT_EN_COURS, wasRunning)
         outState.putBoolean(ETAT_ABANDON, cancelling)
+        outState.putBoolean(ETAT_BRAVO_APRES_NOTE, bravoApresNote)
     }
 
     override fun onPause() {
@@ -268,7 +301,17 @@ class SessionActivity : AppCompatActivity() {
         // Chaque seconde, et pas au seul passage à « terminée » : c'est le
         // service qui clôt la séance, et il peut le faire quelques secondes
         // après que le décompte a touché zéro ici.
-        if (!running) CelebrationActivity.showIfPending(this)
+        // Mode « Écrire » : une fenêtre ne met pas l'écran en pause, et le
+        // bravo s'ouvrait par-dessus la note en cours de frappe, puis en
+        // proposait une seconde. Il attend qu'elle se ferme (13/11).
+        if (!running) {
+            if (NoteDialog.ouverte(this)) {
+                if (Store.hasPendingCelebration(this)) bravoApresNote = true
+            } else {
+                CelebrationActivity.showIfPending(this, sansNote = bravoApresNote)
+                bravoApresNote = false
+            }
+        }
 
         if (running) {
             art.setImageResource(Character.during())
@@ -289,7 +332,11 @@ class SessionActivity : AppCompatActivity() {
                 )
             }
             caption.text = when (counter) {
-                SessionRule.Compteur.MASQUE -> getString(R.string.session_hidden_caption)
+                // Sans durée, aucun son ne viendra : la légende ne le promet pas (13/11, audit FSEANCE-05).
+                SessionRule.Compteur.MASQUE -> getString(
+                    if (Store.isSessionOpen(this)) R.string.session_open_hidden_caption
+                    else R.string.session_hidden_caption
+                )
                 SessionRule.Compteur.ECOULE -> getString(R.string.session_open_caption)
                 SessionRule.Compteur.RESTE -> getString(
                     R.string.session_target,
@@ -341,6 +388,7 @@ class SessionActivity : AppCompatActivity() {
                 guideStep = 0
                 drawOpening()
                 render()
+                proposerNotifications()
             }
             secondary.visibility = View.GONE
         }
@@ -470,5 +518,6 @@ class SessionActivity : AppCompatActivity() {
         private const val ETAT_QUESTION = "question"
         private const val ETAT_EN_COURS = "was_running"
         private const val ETAT_ABANDON = "cancelling"
+        private const val ETAT_BRAVO_APRES_NOTE = "bravo_apres_note"
     }
 }

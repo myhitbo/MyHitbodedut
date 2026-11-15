@@ -148,4 +148,30 @@ class SettingsTest {
         }
         assertTrue(cles.isNotEmpty())
     }
+
+    /** FACCUEIL-05 (13/11) : après deux refus Android ne montre plus rien, et le toucher mène à l'écran système. */
+    @Test
+    fun `un refus revenu sans question mene aux reglages, un refus donne a l instant non`() {
+        // Accordée : rien. Refus définitif (ni avant ni après d'explication) : réglages.
+        assertEquals(false, PermissionRules.refusSansQuestion(accordee = true, expliquaitAvant = false, expliqueApres = false))
+        assertEquals(true, PermissionRules.refusSansQuestion(false, expliquaitAvant = false, expliqueApres = false))
+        // Premier refus : Android propose désormais d'expliquer.
+        assertEquals(false, PermissionRules.refusSansQuestion(false, expliquaitAvant = false, expliqueApres = true))
+        // Deuxième refus donné à l'instant, question vue : on n'envoie pas la personne aux réglages.
+        assertEquals(false, PermissionRules.refusSansQuestion(false, expliquaitAvant = true, expliqueApres = false))
+    }
+
+    @Test
+    fun `un rappel allume sans les notifications est signale, sauf pendant la question`() {
+        assertEquals(true, PermissionRules.rappelMuet(actif = true, notifications = false, demandeEnCours = false))
+        assertEquals(false, PermissionRules.rappelMuet(true, true, false))
+        assertEquals(false, PermissionRules.rappelMuet(false, false, false))
+        assertEquals(false, PermissionRules.rappelMuet(true, false, demandeEnCours = true))
+        // Les quatre écrans partagent la demande et le Levana prévient comme Rappels.
+        val src = { f: String -> File("src/main/java/com/myhitbodedut/$f.kt").readText() }
+        listOf("OnboardingActivity", "RemindersActivity", "SettingsActivity", "SessionActivity").forEach {
+            assertTrue(it, "DemandeNotifications(this)" in src(it))
+        }
+        assertTrue("PermissionRules.rappelMuet(Store.levanaRappel" in src("SettingsActivity"))
+    }
 }

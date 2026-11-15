@@ -114,4 +114,40 @@ class PositionApprocheeTest {
             }
         }
     }
+
+    // --- La position gardée au sol, arrondie (examen du 14/11, constat 3) ------------
+
+    /**
+     * Accordée pour le GPS en vol, la position exacte peut répondre au sol : ce qui est gardé
+     * est arrondi au centième de degré, moins d'un kilomètre, ce que donnerait l'approximative.
+     */
+    @Test
+    fun `au sol la position gardee est arrondie au kilometre`() {
+        assertEquals(31.77, PositionSol.arrondie(31.76904), 1e-9)
+        assertEquals(-74.01, PositionSol.arrondie(-74.00597), 1e-9)
+        assertEquals(2.35, PositionSol.arrondie(2.3488), 1e-9)
+        val choix = code(File(dossier, "ChoixLieu.kt"))
+        val enregistre = choix.substringAfter("fun enregistrerPosition(").substringBefore("Store.setLieuPosition")
+        assertTrue(enregistre.contains("PositionSol.arrondie(position.latitude)"))
+        assertTrue(enregistre.contains("PositionSol.arrondie(position.longitude)"))
+        assertTrue("rien de plus précis n'est gardé", enregistre.contains("Zmanim.Lieu(nom, latitude, longitude,"))
+        assertFalse("le sol n'attend plus 100 m", choix.contains("PRECIS_M"))
+        assertTrue(choix.contains("val seuil = APPROCHE_M"))
+    }
+
+    @Test
+    fun `l arrondi ne deplace ni les zmanim ni la direction de Jerusalem`() {
+        // Au pire, un demi-centième de degré dans chaque sens.
+        val pire = listOf(31.765 to 35.215, 48.855 to 2.345, 40.715 to -74.005, 32.085 to 34.785)
+        pire.forEach { (lat, lon) ->
+            val dLat = abs(PositionSol.arrondie(lat) - lat) * 111.2
+            val dLon = abs(PositionSol.arrondie(lon) - lon) * 111.2 * cos(Math.toRadians(lat))
+            assertTrue("$lat, $lon : ${Math.hypot(dLat, dLon)} km", Math.hypot(dLat, dLon) < 0.8)
+        }
+        // Moins de 0,8 km : la boussole tient au-delà de 15 km de Har haBayit.
+        listOf(31.7470 to 34.9881, 31.5326 to 35.0998, 31.8969 to 35.0095, 32.0853 to 34.7818, 48.8534 to 2.3488).forEach { (lat, lon) ->
+            assertTrue(DirectionJerusalem.distanceKm(lat, lon) >= 15)
+            assertTrue("$lat, $lon", ecartMax(lat, lon, 0.8) < DirectionJerusalem.TOLERANCE)
+        }
+    }
 }

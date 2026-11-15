@@ -15,9 +15,11 @@ vérifiés ; la mention « profil à valider par un Rav » est retirée de l'éc
 | Règles de prière | `TefilaRules` de KosherJava | `web/src/js/tefila.js`, portage ligne à ligne de `TefilaRules.java` (absent de kosher-zmanim) | LGPL 2.1 |
 | Comparaison | — | Hebcal (`@hebcal/core` 6.14.1), **dans les tests seulement**, jamais servi | GPL 2.0+ |
 
-Tout se calcule sur l'appareil, sans réseau. Le site garde sa politique de
-sécurité (`connect-src 'self'`) ; l'application Android ne déclare toujours
-aucune permission Internet.
+Tout se calcule sur l'appareil, sans réseau. L'édition Light ne déclare
+aucune permission Internet ; l'édition complète ne la déclare que pour les
+services de vol, désactivés par défaut (« Zmanim en vol », plus bas). Le site
+n'autorise qu'une connexion extérieure (`connect-src 'self'
+https://api.adsbdb.com`), pour la route d'un numéro de vol.
 
 Hebcal n'est pas embarqué : sa licence GPL obligerait à publier toute
 l'application sous GPL. Il sert de second avis dans les tests.
@@ -52,6 +54,10 @@ celles de la documentation de KosherJava 2.5.0 (`zmanim-2.5.0-sources.jar`).
   18 minutes par défaut, réglable à 18, 20, 22, 30 ou 40 ;
 - un jour chômé suivi d'un autre (deuxième jour de fête, Chabbat puis fête) :
   allumage pas avant tsét à 8,5° ;
+- sauf une fête un vendredi (2e jour de Pessa'h le 23/04/2027 en diaspora,
+  Chavouot le 11/06/2027…) : l'allumage de Chabbat se fait avant la chki'a,
+  d'une flamme existante, comme une veille ordinaire (audit du 12/11,
+  FCALENDRIER-01). En vol, Chabbat entre alors à la chki'a ;
 - le dernier jour chômé, la sortie : tsét à 8,5°. Rabbénou Tam reste dans la
   liste.
 
@@ -171,6 +177,14 @@ siddour Edot, Avinou malkénou suit la consigne du texte (« בעשרת ימי �
   approximative, demandée seulement à ce moment-là ; sur le web,
   `navigator.geolocation`. Depuis le 16/10, la région suit la position
   (contour du territoire, `TerritoireIsrael`) ; le fuseau reste celui du téléphone.
+- **La région choisie à la main** (réglages, « Région ») est mémorisée comme
+  telle (`in_israel_manuel`, sauvegarde comprise) : les reprises de la
+  position — ouverture de Zmanim ou de la boussole, retour sur l'accueil,
+  changement de fuseau, « Actualiser ma position » — ne la réécrivent plus
+  (audit du 12/11, FCALENDRIER-06). Choisir un lieu (une ville, « Ma
+  position » dans la liste, la position à la place d'une ville) redéduit la
+  région et efface ce choix. Sans choix manuel, la région suit toujours la
+  position, voyage compris (décision du 16/10).
 
 Le lieu reste sur l'appareil. Choisir une ville revient sur la décision du
 21/09 (« sans ville ni coucher du soleil »), à la demande du propriétaire.
@@ -347,7 +361,7 @@ même en mode avion, aux heures calculées sur la route :
   vol jusqu'à la descente, avis rapporté dans les sources consultées sans
   être unanime (shulchanaruchharav.com, « When traveling on an airplane, when
   is Tefilas Haderech to be recited? » ; OU Torah, « Airplane Travel »).
-  L'application ne tranche pas entre ces cas.
+  L'application ne tranche pas entre ces cas : la notification dit « décollage prévu il y a cinq minutes, Tefilat haDerekh si vous ne l'avez pas déjà dite pour ce voyage ».
 - **Le début de chaque prière dans l'avion**, aux bornes de l'application
   (HorairePriere, ZmanimWidget) : Min'ha à min'ha guedola, Arvit à la sortie
   des étoiles. Cha'harit n'avait pas de début dans l'application : le rappel

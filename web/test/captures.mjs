@@ -397,7 +397,14 @@ await capture('accueil-apres-seance-fr', {
   actions: async (p) => {
     await p.click('.duree');
     await finDeSeance(p);
+    // Après une séance arrivée à son terme, la note est proposée (14/11, FWEBLIVE-02) : depuis la
+    // refonte du 13/11, sur l'écran du bravo lui-même (le carnet : humeurs et « Écrire une note »).
+    // « Continuer » sans rien remplir n'inscrit rien de plus que la séance.
+    if (!(await p.locator('.bravo .carnet .humeur').count()) || !(await p.locator('.bravo .carnet .texte-bouton').count())) {
+      erreurs.push('la note n\'est pas proposée après la séance');
+    }
     await p.click('.bravo .principal');
+    if (await p.locator('.voile').count()) erreurs.push('une fenêtre s\'ouvre encore après « Continuer »');
     await p.click('.retour');
     const jour = await p.evaluate(() => JSON.parse(localStorage.getItem('myhitbodedut-journal')).days['2026-09-29']);
     if (!jour || jour.minutes !== 5) erreurs.push(`séance non inscrite : ${JSON.stringify(jour)}`);

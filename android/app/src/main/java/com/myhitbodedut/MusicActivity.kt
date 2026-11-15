@@ -45,7 +45,9 @@ class MusicActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.music_add).setOnClickListener {
-            pickAudio.launch(arrayOf("audio/*"))
+            // Sans sélecteur de fichiers, un message plutôt qu'un plantage (examen du 14/11, constat 12).
+            runCatching { pickAudio.launch(arrayOf("audio/*")) }
+                .onFailure { Toast.makeText(this, R.string.fichiers_absents, Toast.LENGTH_LONG).show() }
         }
 
         findViewById<MaterialSwitch>(R.id.music_switch).apply {

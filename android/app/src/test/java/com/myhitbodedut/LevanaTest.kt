@@ -26,6 +26,26 @@ class LevanaTest {
         assertTrue(Levana.part(f, f.debut) < Levana.part(f, f.fin))
     }
 
+    // Audit du 12/11, FCALENDRIER-03 : quand la fenêtre se ferme l'après-midi, le dernier soir est la veille.
+    @Test
+    fun `Kislev 5787, la mi-mois tombe l apres-midi du 24 novembre a Paris, dernier soir le 23`() {
+        val paris = ZoneId.of("Europe/Paris")
+        for (usage in listOf(Levana.Usage.TROIS_MI_MOIS, Levana.Usage.SEPT_MI_MOIS)) {
+            val f = Levana.fenetre(LocalDate.of(2026, 11, 20), paris, usage)
+            assertEquals(LocalDate.of(2026, 11, 23), f.dernierSoir(paris))
+            // Le soir du 24 (tsét à 17 h 53) la fenêtre est fermée (15 h 28) : plus de « dernier soir ».
+            assertTrue(f.fin.isBefore(Levana.soir(LocalDate.of(2026, 11, 24), paris)))
+            assertEquals(Levana.Etat.DernierSoir, Levana.etat(f, LocalDate.of(2026, 11, 23), paris))
+            assertEquals(Levana.Etat.CeSoir, Levana.etat(f, LocalDate.of(2026, 11, 22), paris))
+            // Le 24, c'est déjà la fenêtre suivante.
+            assertTrue(Levana.etat(Levana.fenetre(LocalDate.of(2026, 11, 24), paris, usage), LocalDate.of(2026, 11, 24), paris) is Levana.Etat.Dans)
+        }
+        // Quinze jours : la fin est à 21 h 06 à Paris, le dernier soir reste le 24 ; à New York (15 h 06), le 23.
+        assertEquals(LocalDate.of(2026, 11, 24), Levana.fenetre(LocalDate.of(2026, 11, 20), paris, Levana.Usage.SEPT_QUINZE).dernierSoir(paris))
+        val ny = ZoneId.of("America/New_York")
+        assertEquals(LocalDate.of(2026, 11, 23), Levana.fenetre(LocalDate.of(2026, 11, 20), ny, Levana.Usage.SEPT_QUINZE).dernierSoir(ny))
+    }
+
     @Test
     fun `la fenetre passee, celle du mois suivant`() {
         val f = Levana.fenetre(LocalDate.of(2026, 10, 26), zone)

@@ -131,5 +131,10 @@ class VolRappelsTest {
         assertTrue(SuiviVol.fournisseur("") === SuiviVol.OpenSkyAnonyme)
         assertTrue(SuiviVol.fournisseur("https://r.test") is SuiviVol.Relais)
         assertNull((SuiviVol.fournisseur("http://r.test") as? SuiviVol.Relais))
+        // La construction Play (audit du 12/11, TPLAYDOCS-01) : sans relais, aucun suivi en direct, jamais OpenSky anonyme.
+        assertNull(SuiviVol.fournisseur("", directAutorise = false))
+        assertTrue(SuiviVol.fournisseur("https://r.test", directAutorise = false) is SuiviVol.Relais)
+        val gradle = java.io.File("build.gradle.kts").readText()
+        assertTrue(gradle.contains("?: ((project.findProperty(\"play\") as String?) != \"true\")"))
     }
 }

@@ -33,15 +33,37 @@ class TropheesTest {
     }
 
     @Test
-    fun `les metaux montent de bronze a platine, sans sauter`() {
-        Trophees.Famille.entries.filter { it.seuils.size > 1 }.forEach { f ->
-            val m = (1..f.seuils.size).map { Trophees.metal(f, it) }
-            assertEquals(f.name, Trophees.Metal.BRONZE, m.first())
-            assertEquals(f.name, Trophees.Metal.PLATINE, m.last())
-            assertTrue(f.name, m.zipWithNext().all { (a, b) -> b.ordinal - a.ordinal in 0..1 })
+    fun `les seuils montent, et le metal est celui du grade, pas de la famille`() {
+        Trophees.Famille.entries.forEach { f ->
             assertTrue(f.name, f.seuils.toList().zipWithNext().all { (a, b) -> b > a })
         }
-        assertEquals(Trophees.Metal.BRONZE, Trophees.metal(Trophees.Famille.PREMIER_PAS, 1))
+        // Le grade : bronze jusqu'au 9ᵉ trophée, argent dès le 10ᵉ, or dès le 25ᵉ, platine dès le 50ᵉ.
+        assertEquals(Trophees.Metal.BRONZE, Trophees.grade(0))
+        assertEquals(Trophees.Metal.BRONZE, Trophees.grade(9))
+        assertEquals(Trophees.Metal.ARGENT, Trophees.grade(10))
+        assertEquals(Trophees.Metal.OR, Trophees.grade(25))
+        assertEquals(Trophees.Metal.PLATINE, Trophees.grade(50))
+    }
+
+    /**
+     * Audit du 12/11, FDONNEES-06 : la notification annonçait « niveau 5, Platine » pour un
+     * trophée que l'écran montre en bronze (le métal y est celui du grade). Le message ne
+     * nomme plus de métal, dans les trois langues.
+     */
+    @Test
+    fun `la notification d un trophee ne nomme plus de metal`() {
+        listOf("values", "values-en", "values-iw").forEach { d ->
+            val xml = java.io.File("src/main/res/$d/strings.xml").readText()
+            val message = Regex("""<string name="trophee_niveau_gagne">([^<]*)</string>""").find(xml)!!.groupValues[1]
+            assertEquals("$d : $message", listOf("%1\$s", "%2\$d"), Regex("""%\d\$[sd]""").findAll(message).map { it.value }.toList())
+        }
+        val confettis = java.io.File("src/main/java/com/myhitbodedut/Confettis.kt").readText()
+        val appel = confettis.substringAfter("R.string.trophee_niveau_gagne").substringBefore("palier != null")
+        assertTrue(appel, "metal" !in appel)
+        // Le métal par famille n'existe plus : rien ne peut le réafficher.
+        val regles = java.io.File("src/main/java/com/myhitbodedut/Trophees.kt").readText()
+        assertTrue("fun metal(" !in regles)
+        assertTrue("val metal" !in regles)
     }
 
     @Test
@@ -69,5 +91,9 @@ class TropheesTest {
         val n = Trophees.nouveaux(g, setOf("premier_pas:1"))
         assertEquals(n.map { it.famille }.toSet().size, n.size)
         assertTrue(n.any { it.famille == Trophees.Famille.JOURS && it.rang == 5 })
+        // Le plus coûteux d'abord (13/11) : c'est lui que la notification annonce.
+        val couts = n.map { Trophees.cout(it.famille, it.seuil) }
+        assertEquals(couts.sortedDescending(), couts)
+        assertEquals(Trophees.Famille.SERIE, n.first().famille) // 20 jours d'affilée : 30, devant 20 jours (20)
     }
 }

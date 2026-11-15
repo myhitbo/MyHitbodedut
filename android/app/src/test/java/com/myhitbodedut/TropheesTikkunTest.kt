@@ -33,4 +33,15 @@ class TropheesTikkunTest {
         assertEquals(d0.plusDays(2), dates["tikkun:2"])
         assertEquals(d0.plusDays(2), dates["tikkun_serie:1"])
     }
+
+    @Test
+    fun `un jour exempte ne casse pas la suite du Tikoun (FDONNEES-09)`() {
+        // Le 4 et le 5 (Chabbat et fete) sont sautes : la suite continue ; le 8 manque et casse.
+        val exempts = jours(3, 4)
+        val p = Trophees.Pratique(emptyMap(), 0, 0, jours(0, 1, 2, 5, 6, 8)) { it in exempts }
+        assertEquals(5, Trophees.valeur(p, Trophees.Famille.TIKKUN_SERIE))
+        assertEquals(3, Trophees.plusLongueSuite(jours(0, 1, 2, 5, 6, 8)))
+        val dates = Trophees.datesGain(emptyMap(), emptySet(), jours(0, 1, 2, 5, 6)) { it in exempts }
+        assertEquals(d0.plusDays(2), dates["tikkun_serie:1"])
+    }
 }

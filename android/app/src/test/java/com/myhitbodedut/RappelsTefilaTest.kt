@@ -23,8 +23,17 @@ class RappelsTefilaTest {
     fun `en diaspora, rien en octobre, et le debut en decembre`() {
         assertTrue(rappels(LocalDate.of(2026, 10, 16), israel = false).none { it.type == RappelsTefila.Type.PLUIE_DEBUT })
         val dec = rappels(LocalDate.of(2026, 12, 2), israel = false, avance = 6).filter { it.type == RappelsTefila.Type.PLUIE_DEBUT }
-        // Premier jour le 5 décembre : on commence à Arvit du 4 au soir.
-        assertEquals(listOf(LocalDate.of(2026, 12, 5)), dec.map { it.date })
+        // Premier jour le samedi 5 décembre : pas d'Arvit de vendredi soir, on commence à motsaé Chabbat
+        // (rappel daté du dimanche 6, FCALENDRIER-04) ; il reste affiché le samedi.
+        assertEquals(listOf(LocalDate.of(2026, 12, 6)), dec.map { it.date })
+        for (jour in listOf(2, 4, 5)) {
+            val r = rappels(LocalDate.of(2026, 12, jour), israel = false).filter { it.type == RappelsTefila.Type.PLUIE_DEBUT }
+            assertEquals("5/12/2026 vu le $jour", listOf(LocalDate.of(2026, 12, 6)), r.map { it.date })
+        }
+        assertTrue(rappels(LocalDate.of(2026, 12, 6), israel = false).none { it.type == RappelsTefila.Type.PLUIE_DEBUT })
+        // 2031 : le premier jour est le samedi 6 décembre, rappel au 7.
+        val r2031 = rappels(LocalDate.of(2031, 12, 5), israel = false).filter { it.type == RappelsTefila.Type.PLUIE_DEBUT }
+        assertEquals(listOf(LocalDate.of(2031, 12, 7)), r2031.map { it.date })
     }
 
     @Test

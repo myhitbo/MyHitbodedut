@@ -53,6 +53,12 @@
     <!-- Les mêmes, sur le fond vert foncé de la vignette : plus clairs, et fixes. -->
     <color name="ring_week_on_dark">#8CCBF2</color>
     <color name="ring_streak_on_dark">#F0C46A</color>
+    <!-- Les chiffres de la plaque centrale (FACCUEIL-02, 14/11) : la plaque reste claire la nuit,
+         leurs encres aussi. Fixes, jamais redéfinies la nuit ; 4,5:1 au moins sur les six plaques. -->
+    <color name="ring_week_on_plate">#2A74A6</color>
+    <color name="ring_streak_on_plate">#8A5A00</color>
+    <color name="on_plate_ink">#172B27</color>
+    <color name="on_plate_muted">#5E706A</color>
     <!-- Fond très dilué du badge d'avertissement. -->
     <color name="warning_wash">#1FC66B2D</color>
     <!-- La lecture de nuit des textes saints (ReglagesLecture) ; le bouton, lui, prend l'accent choisi. -->

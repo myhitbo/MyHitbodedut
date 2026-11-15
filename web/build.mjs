@@ -5,17 +5,18 @@
 //   - les chaînes (values, values-en, values-iw) ;
 //   - les textes vérifiés (res/raw/*.json), copiés octet pour octet ;
 //   - les illustrations (drawable-nodpi/char_*.webp) ;
-//   - la musique livrée, dans l'ordre de MusicLibrary.kt.
+//   - la musique de la version Play, dans l'ordre de MusiquePlay.kt.
 //
 // Le service worker reçoit la liste de ce qu'il garde hors connexion et un
 // numéro de version tiré du contenu : un site modifié s'installe à neuf, un
 // site inchangé ne retélécharge rien.
 
 import { createHash } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { litChaines } from './tools/chaines.mjs';
+import { TAILLE_MAX, morceauxLivres } from './tools/musique.mjs';
 import { palettesCss } from './tools/palettes.mjs';
 
 const ICI = dirname(fileURLToPath(import.meta.url));
@@ -139,34 +140,22 @@ for (const nom of readdirSync(join(RES, 'drawable-nodpi'))) {
 }
 
 // --- La musique ---------------------------------------------------------------
-// L'ordre et les titres sont ceux de l'application Android, lus dans son
-// source. Depuis le 29/10 la liste y est en deux (PUBLICATION_PLAY_STORE.md
-// § 3.2) : MusiquePlay.kt, fichiers dans main/res/raw, puis MusiqueHorsPlay.kt
-// de src/musique_hors_play, fichiers dans son propre res/raw. Le site garde
-// les deux, comme avant.
-const HORS_PLAY = join(ANDROID, '..', 'musique_hors_play');
-const listes = [
-  { kt: join(ANDROID, 'java', 'com', 'myhitbodedut', 'MusiquePlay.kt'), raw: join(RES, 'raw') },
-  { kt: join(HORS_PLAY, 'java', 'com', 'myhitbodedut', 'MusiqueHorsPlay.kt'), raw: join(HORS_PLAY, 'res', 'raw') },
-];
-const morceaux = listes.flatMap(({ kt, raw }) =>
-  [...readFileSync(kt, 'utf8').matchAll(/Bundled\("([a-z0-9_]+)", R\.raw\.\1, R\.string\.(track_[a-z0-9_]+)\)/g)]
-    .map(([, id, titre]) => ({ id, titre, fichier: `musique/${id}.m4a`, raw })));
-if (morceaux.length === 0) throw new Error('Aucun morceau trouvé dans MusiquePlay.kt ni MusiqueHorsPlay.kt');
+// Les morceaux de la version Play, et eux seuls (13/11, FPRODUIT-05) : un site public
+// est une diffusion, il ne sert que ce dont la diffusion publique est établie
+// (tools/musique.mjs, PUBLICATION_PLAY_STORE.md § 3.2). L'ordre et les titres sont
+// ceux de l'application Android, lus dans MusiquePlay.kt.
 mkdirSync(join(DIST, 'musique'), { recursive: true });
-for (const m of morceaux) {
-  const source = join(m.raw, `${m.id}.m4a`);
-  delete m.raw;
-  if (!existsSync(source)) throw new Error(`Morceau manquant : ${source}`);
+const morceaux = morceauxLivres(ANDROID).map(({ source, ...m }) => {
   cpSync(source, join(DIST, m.fichier));
-  m.octets = statSync(source).size;
-}
+  return m;
+});
 writeFileSync(join(DIST, 'data', 'musique.json'), JSON.stringify(morceaux));
 
 // --- Le service worker ----------------------------------------------------
-// La musique n'est pas dans la liste : ~120 Mo téléchargés d'office à
-// l'installation, c'est trop. Chaque morceau est gardé la première fois
-// qu'on l'écoute (voir sw.js).
+// La musique n'est pas dans la coquille : des dizaines de Mo téléchargés
+// d'office à l'installation, c'est trop. Chaque morceau est gardé la première
+// fois qu'on l'écoute (voir sw.js), et le service worker reçoit la liste des
+// morceaux livrés : un morceau retiré du site ne reste pas dans son cache.
 function fichiers(dossier) {
   return readdirSync(dossier).flatMap((nom) => {
     const chemin = join(dossier, nom);
@@ -183,9 +172,15 @@ const version = empreinte.digest('hex').slice(0, 12);
 
 const sw = readFileSync(join(DIST, 'sw.js'), 'utf8')
   .replace('__VERSION__', version)
-  .replace('__COQUILLE__', JSON.stringify(['./', ...coquille.filter((f) => f !== 'index.html')]));
+  .replace('__COQUILLE__', JSON.stringify(['./', ...coquille.filter((f) => f !== 'index.html')]))
+  .replace('__MUSIQUE__', JSON.stringify(morceaux.map((m) => m.fichier)));
 writeFileSync(join(DIST, 'sw.js'), sw);
 writeFileSync(join(DIST, 'version.txt'), `${version}\n`);
+
+// Cloudflare Pages refuse tout fichier de plus de 25 Mio (13/11) : le dire ici plutôt qu'à l'envoi.
+for (const f of fichiers(DIST)) {
+  if (statSync(f).size > TAILLE_MAX) throw new Error(`Fichier de plus de 25 Mio, refusé par Cloudflare Pages : ${relative(DIST, f)}`);
+}
 
 const taille = (liste) => liste.reduce((s, f) => s + statSync(join(DIST, f)).size, 0);
 const mo = (o) => `${(o / 1e6).toFixed(2)} Mo`;

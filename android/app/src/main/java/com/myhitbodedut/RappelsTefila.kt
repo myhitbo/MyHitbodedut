@@ -52,7 +52,11 @@ object RappelsTefila {
             val d = aujourdhui.plusDays(k.toLong())
             val j = jour(d)
             val pluie = CalendrierJuif.C.TAL_OUMATAR
-            if (pluie in j.conditions && pluie !in veille.conditions) res += Rappel(Type.PLUIE_DEBUT, d)
+            // Premier jour un samedi : la Amida de Chabbat ne la demande pas, on commence à motsaé Chabbat,
+            // soit à Arvit du soir du samedi (KosherJava : isVeseinTalUmatarStartDate le dimanche) : FCALENDRIER-04.
+            if (pluie in j.conditions && pluie !in veille.conditions) {
+                res += Rappel(Type.PLUIE_DEBUT, if (d.dayOfWeek == java.time.DayOfWeek.SATURDAY) d.plusDays(1) else d)
+            }
             if (pluie !in j.conditions && pluie in veille.conditions) res += Rappel(Type.PLUIE_FIN, d)
             if (!sansGuechem && j.moisHebreu == TICHREI && j.jourHebreu == 22) res += Rappel(Type.GUECHEM_DEBUT, d)
             if (!sansGuechem && j.moisHebreu == NISSAN && j.jourHebreu == 15) res += Rappel(Type.GUECHEM_FIN, d)
