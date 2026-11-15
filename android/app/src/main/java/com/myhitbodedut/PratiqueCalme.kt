@@ -27,6 +27,9 @@ class PratiqueCalme(
     private val couleurFond: Int,
     private val effaces: () -> List<View>,
 ) {
+    /** Ce qui reste visible pendant le calme : un toucher dessus n'est pas avalé (FBARRIERE-25). */
+    var restent: () -> List<View> = { emptyList() }
+
     private val handler = Handler(Looper.getMainLooper())
     private val sombre = ColorUtils.blendARGB(couleurFond, 0xFF000000.toInt(), 0.55f)
     private var enCours = false
@@ -47,13 +50,20 @@ class PratiqueCalme(
     /** À appeler depuis dispatchTouchEvent : true si le geste est avalé. */
     fun toucher(e: MotionEvent): Boolean {
         if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-            avale = calme
+            avale = calme && !surUneVueRestee(e)
             if (calme) sortir(anime = true)
             if (enCours) attendre()
         }
         val garde = avale
         if (e.actionMasked == MotionEvent.ACTION_UP || e.actionMasked == MotionEvent.ACTION_CANCEL) avale = false
         return garde
+    }
+
+    private fun surUneVueRestee(e: MotionEvent): Boolean {
+        val zone = android.graphics.Rect()
+        return restent().any {
+            it.visibility == View.VISIBLE && it.getGlobalVisibleRect(zone) && zone.contains(e.rawX.toInt(), e.rawY.toInt())
+        }
     }
 
     fun liberer() {

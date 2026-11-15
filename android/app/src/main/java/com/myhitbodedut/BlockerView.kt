@@ -33,11 +33,50 @@ class BlockerView(
     private val onDismiss: () -> Unit
 ) : FrameLayout(context) {
 
+    /** Le temps dit pendant une séance (FBARRIERE-25 : rafraîchi à chaque tour du service). */
+    private fun sousTitreSeance(): String = when (Store.sessionCounter(context)) {
+        SessionRule.Compteur.MASQUE ->
+            context.getString(R.string.blocker_session_hidden_subtitle)
+
+        SessionRule.Compteur.ECOULE -> context.getString(
+            R.string.blocker_session_open_subtitle,
+            Store.formatDuration(context, Store.sessionElapsedMinutes(context))
+        )
+
+        SessionRule.Compteur.RESTE -> context.getString(
+            R.string.blocker_session_subtitle,
+            Store.formatDuration(context,
+                SessionRule.minutesRestantes(
+                    Store.sessionEndsAt(context), System.currentTimeMillis()
+                )
+            )
+        )
+    }
+
+    /** Remet à jour ce qui change pendant que l'écran reste posé : le temps de la séance. */
+    fun actualiser() {
+        if (mode != BlockerMode.SESSION_RUNNING) return
+        val texte = sousTitreSeance()
+        val sous = findViewById<TextView>(R.id.blocker_subtitle)
+        if (sous.text.toString() != texte) sous.text = texte
+    }
+
     init {
         // Le service qui pose cet écran n'a pas le thème de l'application : sans
         // lui, les couleurs réglables (?attr/mh…) ne se résoudraient pas.
         LayoutInflater.from(Apparence.contexte(context)).inflate(R.layout.view_blocker, this, true)
         isClickable = true
+        // Fenêtre posée par un service : Barres.kt ne la voit pas. Les barres du système et la
+        // découpe deviennent des marges, sinon « Plus tard » passe sous la barre de navigation
+        // (FBARRIERE-15).
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+            val b = insets.getInsets(
+                androidx.core.view.WindowInsetsCompat.Type.systemBars() or
+                    androidx.core.view.WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(b.left, b.top, b.right, b.bottom)
+            insets
+        }
         isFocusable = true
         isFocusableInTouchMode = true
 
@@ -94,24 +133,7 @@ class BlockerView(
                 title.setText(R.string.blocker_session_title)
                 // Une séance ouverte n'a pas de reste à annoncer, et un
                 // décompte masqué n'a rien à annoncer du tout.
-                subtitle.text = when (Store.sessionCounter(context)) {
-                    SessionRule.Compteur.MASQUE ->
-                        context.getString(R.string.blocker_session_hidden_subtitle)
-
-                    SessionRule.Compteur.ECOULE -> context.getString(
-                        R.string.blocker_session_open_subtitle,
-                        Store.formatDuration(context, Store.sessionElapsedMinutes(context))
-                    )
-
-                    SessionRule.Compteur.RESTE -> context.getString(
-                        R.string.blocker_session_subtitle,
-                        Store.formatDuration(context, 
-                            SessionRule.minutesRestantes(
-                                Store.sessionEndsAt(context), System.currentTimeMillis()
-                            )
-                        )
-                    )
-                }
+                subtitle.text = sousTitreSeance()
                 primary.setText(R.string.blocker_back_to_session)
                 primary.setOnClickListener { onStartSession() }
                 secondary.visibility = View.GONE
