@@ -34,7 +34,8 @@ struct MelangeMusiqueTests {
         for _ in 0..<5 {
             var tour: [String] = []
             for _ in 0..<ids.count {
-                let morceau = try #require(melange.suivant(ids))
+                let rendu = melange.suivant(ids)
+                let morceau = try #require(rendu)
                 tour.append(morceau)
             }
             let joues = Set(tour)
@@ -48,7 +49,8 @@ struct MelangeMusiqueTests {
             var melange = MelangeMusique(hasard: HasardKotlin(graine: graine))
             var suite: [String] = []
             for _ in 0..<(ids.count * 6) {
-                let morceau = try #require(melange.suivant(ids))
+                let rendu = melange.suivant(ids)
+                let morceau = try #require(rendu)
                 suite.append(morceau)
             }
             for k in 1..<suite.count {
@@ -63,12 +65,14 @@ struct MelangeMusiqueTests {
         var melange = MelangeMusique(hasard: HasardKotlin(graine: 3))
         var premier: [String] = []
         for _ in 0..<ids.count {
-            let morceau = try #require(melange.suivant(ids))
+            let rendu = melange.suivant(ids)
+            let morceau = try #require(rendu)
             premier.append(morceau)
         }
         var second: [String] = []
         for _ in 0..<ids.count {
-            let morceau = try #require(melange.suivant(ids))
+            let rendu = melange.suivant(ids)
+            let morceau = try #require(rendu)
             second.append(morceau)
         }
         #expect(premier != second)
@@ -169,7 +173,8 @@ struct MelangeMusiqueTests {
             var melange = MelangeMusique(hasard: HasardKotlin(graine: c.graine))
             var suite: [Int] = []
             for _ in 0..<c.suite.count {
-                let morceau = try #require(melange.suivant(ids))
+                let rendu = melange.suivant(ids)
+                let morceau = try #require(rendu)
                 let rang = try #require(ids.firstIndex(of: morceau))
                 suite.append(rang)
             }
