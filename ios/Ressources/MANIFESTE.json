@@ -12,8 +12,8 @@
   {
    "chemin": "Paquets/Coeur/Tests/Ressources/vecteurs_recherche.json",
    "source": "tools/export_contenu/tables/src/Recherche.kt, cas_normalisation.json",
-   "octets": 489674,
-   "sha256": "a569f7ba322e7feaa1248a73c70ccf64316d567c330a333e74b45b352dcb3b73",
+   "octets": 500291,
+   "sha256": "134ebf7cc2207e04474ed42e69a18b793d619b85a902e7200f093fbf353db5be",
    "licence": "données de test",
    "mention": "produites par le dépôt"
   },
@@ -12468,8 +12468,8 @@
   {
    "chemin": "Ressources/Contenu/recherche.sqlite",
    "source": "android/app/src/main/res/raw (siddur_*, livre_*, yalkut_yosef, ben_ish_hai, hilloulot)",
-   "octets_contenu": 11218446,
-   "sha256_contenu": "207d1bb6d84d7d90c900437109204e0cef22b88f46ec425ded1b15129db93582",
+   "octets_contenu": 11218084,
+   "sha256_contenu": "8e1e4e79baaa99c2285a27316d2bc65319567de8c30efa737bcac4c4fe6d0911",
    "licence": "celles des textes indexés",
    "mention": "index des siddourim, des livres, du Yalkout Yossef, du Ben Ich Haï et des hilloulot : leurs mentions"
   },
@@ -12508,8 +12508,8 @@
   {
    "chemin": "Ressources/Contenu/tables.json",
    "source": "android/app/src/main/java/com/myhitbodedut/*.kt (tools/export_contenu/tables)",
-   "octets": 62923,
-   "sha256": "86b83a2a0fbe9472f0d70e7edb7026c16b393f063c721004c315ddf2415a055b",
+   "octets": 63014,
+   "sha256": "8f22a9a20ad01738bbd22a6ae31bb93f66e3405722fe87698459cc0614cdf7aa",
    "licence": "propre à l'app",
    "mention": ""
   },

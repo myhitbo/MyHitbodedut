@@ -200,7 +200,7 @@ public enum CalendrierJuif {
     private static let verrou = Mutex(())
 
     /// Les noms de Pourim dans une ville murée (libellés « fete_<clé> »).
-    private static let muree = ["pourim": "pourim_ailleurs", "chouchan_pourim": "pourim_jerusalem"]
+    static let muree = ["pourim": "pourim_ailleurs", "chouchan_pourim": "pourim_jerusalem"]
 
     /// Le jour civil à midi UTC, lu en UTC : aucun fuseau ne peut le déplacer (comme Holidays).
     private static func calendrier(_ date: JourCivil, enIsrael: Bool, modernes: Bool, mukafChoma: Bool = false) -> JewishCalendar {

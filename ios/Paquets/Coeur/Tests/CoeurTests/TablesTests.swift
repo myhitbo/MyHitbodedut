@@ -64,6 +64,7 @@ struct TablesTests {
     @Test func lesFetesEtLesConditionsSontCellesDuKotlin() throws {
         let c = try tables().calendrier
         #expect(CalendrierJuif.fetes == Dictionary(uniqueKeysWithValues: c.fetes.map { ($0.index, $0.cle) }))
+        #expect(CalendrierJuif.muree == c.muree)
         #expect(CalendrierJuif.C.toutes == c.conditions)
         #expect(CalendrierJuif.C.derivees == c.derivees)
     }

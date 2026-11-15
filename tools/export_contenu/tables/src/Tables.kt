@@ -129,6 +129,8 @@ private fun yalkutYosef(): Map<String, Any?> {
 
 private fun calendrier() = mapOf(
     "fetes" to CalendrierJuif.FETES.entries.map { (index, cle) -> mapOf("index" to index, "cle" to cle) },
+    // Dans une ville murée (Jérusalem), Pourim et Chouchan Pourim prennent ces clés (CalendrierJuif.jour).
+    "muree" to prive<Map<String, String>>(CalendrierJuif, "MUREE"),
     "conditions" to CalendrierJuif.C.TOUTES,
     "derivees" to CalendrierJuif.C.DERIVEES,
 )

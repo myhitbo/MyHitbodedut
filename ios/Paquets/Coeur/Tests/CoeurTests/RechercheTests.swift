@@ -3,7 +3,8 @@ import Testing
 @testable import Coeur
 
 /// Ce que la recherche d'Android répond (tools/export_contenu/tables/src/Recherche.kt, sur le
-/// Kotlin de l'app) : la normalisation des cas communs, et 144 recherches sur l'index.
+/// Kotlin de l'app, avec le `\s` d'ICU comme sur l'appareil) : la normalisation des cas communs, et
+/// 159 recherches sur l'index.
 struct VecteursRecherche: Decodable {
     struct Cas: Decodable {
         let q: String
@@ -87,7 +88,7 @@ struct RechercheTests {
     @Test func chaqueRechercheRendLesResultatsDuKotlin() throws {
         let v = try VecteursRecherche.lire()
         #expect(v.parSorte == RechercheGlobale.parSorte)
-        #expect(v.recherches.count == 144)
+        #expect(v.recherches.count == 159)
         let index = try index()
         for cas in v.recherches {
             let attendus = try cas.resultats.map(attendu)

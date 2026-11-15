@@ -29,12 +29,22 @@ val FICHIERS = listOf(
     "Json", "Chizuk", "Library", "Vol", "Aeroports", "RouteVol", "SuiviVol",
 )
 
+// Android exécute java.util.regex sur ICU, où `\s` est la propriété White_Space (insécable, espace
+// fine…) ; sur la JVM, `\s` n'est que l'ASCII. Parmi les expressions que les tables et la recherche
+// exécutent ici, une seule change de sens : le `\s+` de RechercheGlobale.nu. La copie compilée ici
+// lui donne `(?U)` (UNICODE_CHARACTER_CLASS : `\s` = \p{IsWhite_Space}), pour répondre comme l'appareil.
+val ESPACES_ANDROID = "Regex(\"\\\\s+\")" to "Regex(\"(?U)\\\\s+\")"
+
 val sourcesApp = tasks.register<Sync>("sourcesApp") {
     from(java) { include(FICHIERS.map { "$it.kt" }) }
     into(layout.buildDirectory.dir("sources/app"))
+    filesMatching("RechercheGlobale.kt") { filter { it.replace(ESPACES_ANDROID.first, ESPACES_ANDROID.second) } }
     doLast {
         val manquants = FICHIERS.filter { !File(java, "$it.kt").exists() }
         if (manquants.isNotEmpty()) throw GradleException("fichiers de l'app introuvables : $manquants")
+        val copie = destinationDir.resolve("RechercheGlobale.kt").readText()
+        if (copie.split(ESPACES_ANDROID.second).size != 2 || "\\\\s" in copie.replace(ESPACES_ANDROID.second, ""))
+            throw GradleException("RechercheGlobale.kt : le \\s+ de nu() n'est plus celui que l'oracle sait traduire")
     }
 }
 

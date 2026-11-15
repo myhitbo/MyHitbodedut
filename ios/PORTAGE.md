@@ -941,7 +941,8 @@ tools/export_contenu/
 et `Reference.kt`, `Hilloulot.kt`, `RechercheGlobale.kt` nomment `RegleLangue`, `ChizukCard`,
 `HalakhaActivity`, dont les fichiers tiennent à Android. Leurs bouchons ne sont jamais appelés
 (`tools/export_contenu/README.md`). `org.json` est celui d'AOSP, qui garde l'ordre des clés comme
-l'appareil.
+l'appareil, et le `\s+` de `RechercheGlobale.nu` prend le sens d'ICU (White_Space), celui des
+expressions régulières d'Android : la JVM seule ne rendrait pas ce que rend le téléphone.
 
 | Étape | Entrée | Sortie sous `ios/Ressources/` | Méthode |
 | --- | --- | --- | --- |

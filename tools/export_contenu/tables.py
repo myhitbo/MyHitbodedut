@@ -97,12 +97,30 @@ def executer(java: Path, res: Path, sortie: Path, vecteurs: Path, cas: Path) -> 
 
 
 # --- Les deux tables prises dans des fichiers liés à Android -----------------
+def entrees(bloc: str, motif: str, quoi: str) -> list:
+    """Les entrées d'une table Kotlin, une par ligne : toute autre ligne qu'un commentaire ou une
+    ligne vide arrête l'export, plutôt que de laisser tomber une entrée sans le dire (une dernière
+    entrée sans virgule, deux entrées sur une ligne…)."""
+    trouvees = []
+    for ligne in bloc.split("\n"):
+        ligne = ligne.strip()
+        if not ligne or ligne.startswith("//"):
+            continue
+        m = re.fullmatch(motif + r"\s*,?", ligne)
+        if not m:
+            raise SystemExit(f"tables : ligne inattendue dans {quoi} : {ligne}")
+        trouvees.append(m.groups())
+    if not trouvees:
+        raise SystemExit(f"tables : {quoi} est vide")
+    return trouvees
+
+
 def poses_feminines(kt: str) -> list:
     """Personnage.FEMININ : l'illustration masculine → la féminine."""
     bloc = re.search(r"FEMININ: Map<Int, Int> = mapOf\((.*?)\n    \)", kt, flags=re.S)
-    paires = re.findall(r"R\.drawable\.([a-z0-9_]+) to R\.drawable\.([a-z0-9_]+)", bloc.group(1)) if bloc else []
-    if not paires:
-        raise SystemExit("tables : aucune correspondance trouvée dans Personnage.kt (FEMININ)")
+    if not bloc:
+        raise SystemExit("tables : la table FEMININ est introuvable dans Personnage.kt")
+    paires = entrees(bloc.group(1), r"R\.drawable\.([a-z0-9_]+) to R\.drawable\.([a-z0-9_]+)", "FEMININ (Personnage.kt)")
     return [{"masculin": m, "feminin": f} for m, f in paires]
 
 
@@ -121,7 +139,7 @@ def signes_absents(kt: str, polices_res: Path) -> list:
     teamim = list(range(int(de, 16), int(a, 16) + 1))
     bloc, = lire(r"ABSENTS: Map<Police, Masque> = mapOf\((.*?)\n    \)", "la table ABSENTS", re.S)
     absents = {}
-    for police, expression in lire(r"Police\.([A-Z]+) to Masque\((.*?)\),", "une entrée d'ABSENTS"):
+    for police, expression in entrees(bloc, r"Police\.([A-Z]+) to Masque\(([^()]*)\)", "ABSENTS (PoliceHebraique.kt)"):
         points = []
         for terme in (t.strip() for t in expression.split("+")):
             if terme == "TEAMIM":
@@ -130,6 +148,8 @@ def signes_absents(kt: str, polices_res: Path) -> list:
                 points += [int(h, 16) for h in re.findall(r"\\u([0-9A-Fa-f]{4})", terme)]
             else:
                 raise SystemExit(f"tables : terme inattendu dans ABSENTS ({police}) : {terme}")
+        if police in absents:
+            raise SystemExit(f"tables : {police} paraît deux fois dans ABSENTS")
         absents[police] = points
     if set(absents) - {p for p, _, _ in polices}:
         raise SystemExit("tables : ABSENTS nomme une police inconnue")

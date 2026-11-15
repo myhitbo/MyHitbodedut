@@ -8,7 +8,8 @@
 //    quelques autres, dans les trois langues et les trois rites.
 //
 // Les contenus sont lus par les chargeurs de l'app (SiddurLoader, YalkutYosef.parse…), avec
-// l'org.json d'Android (build.gradle.kts) : l'ordre est celui du fichier, comme sur l'appareil. HalakhaActivity ne se compile pas hors d'Android : son bouchon rend les champs du
+// l'org.json d'Android (build.gradle.kts) : l'ordre est celui du fichier, comme sur l'appareil ; et
+// le \s+ de nu() a le sens d'ICU, celui de l'appareil (build.gradle.kts aussi). HalakhaActivity ne se compile pas hors d'Android : son bouchon rend les champs du
 // titre du Ben Ich Haï (bouchons/App.kt), que le test Swift met en forme.
 package com.myhitbodedut
 
@@ -25,6 +26,8 @@ private val REQUETES = listOf(
     // Titres, extraits, sortes, guillemets, balises, majuscules, espaces.
     "Birkot hacha’har", "priere", "שמע ישראל", "  נִשְׁמַת  ", "ה׳", "רמב\"ם", "התבודדות", "Tikoun", "Nahman",
     "BRESLOV", "תהילים", "Pessa'h", "<b>", "ab", "x",
+    // Un bloc du Kitsour qui finit par U+0000 ; les espaces fines du siddour, les insécables du Ben Ich Haï.
+    "שהיבם יתחרט", "יאר יהוה פניו", "ששה זוגות",
 )
 
 /** Les combinaisons (langue, rite) : le français dans les trois rites, puis l'anglais et l'hébreu. */

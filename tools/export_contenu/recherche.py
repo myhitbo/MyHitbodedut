@@ -5,10 +5,10 @@ bloc, le texte déjà passé par la même normalisation, et ce que les règles d
 un résultat par prière ou par livre (le titre, sinon le premier bloc qui contient la recherche),
 30 par sorte, le même extrait. L'app l'ouvre en lecture seule (Coeur, RechercheGlobale.swift).
 
-Les deux normalisations d'Android sont reprises ici à la lettre : nu() (RechercheGlobale.nu) et
-celle, plus courte, de la halakha (YalkutYosef.recherche, Halakha.recherche). Une liste de cas
-communs (cas_normalisation.json), passée par le Kotlin dans tables/, les tient ensemble : un écart
-arrête l'export.
+Les deux normalisations d'Android sont reprises ici à la lettre, telles que l'appareil les exécute
+(java.util.regex sur ICU) : nu() (RechercheGlobale.nu) et celle, plus courte, de la halakha
+(YalkutYosef.recherche, Halakha.recherche). Une liste de cas communs (cas_normalisation.json),
+passée par le Kotlin dans tables/, les tient ensemble : un écart arrête l'export.
 
 Le fichier est déterministe à version de SQLite égale ; deux versions peuvent ranger les pages
 autrement. Son empreinte au manifeste est donc celle de son contenu (empreinte()), pas de ses
@@ -53,7 +53,9 @@ _ACCENTS = re.compile("[̀-ͯ’‘]")
 _BALISES = re.compile(r"<[^>]+>")
 _MAQAF = re.compile("[־׀]")
 _POINTS = re.compile("[֑-ׇ\"'״׳]")
-_ESPACES = re.compile("[ \t\n\x0b\x0c\r]+")  # \s de Java : l'ASCII seulement
+# \s d'Android : java.util.regex y tourne sur ICU, où \s est la propriété White_Space (l'insécable,
+# l'espace fine… ; pas U+001C à U+001F). Pas le \s de la JVM (l'ASCII), ni celui de Python (isspace).
+_ESPACES = re.compile("[\t\n\x0b\x0c\r \x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+")
 
 
 def nu(t: str) -> str:

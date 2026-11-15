@@ -221,6 +221,8 @@ public struct TablesKotlin: Sendable, Decodable {
 
     public struct Calendrier: Sendable, Equatable, Decodable {
         public let fetes: [Fete]
+        /// La clé d'une fête dans une ville murée (Pourim, Chouchan Pourim).
+        public let muree: [String: String]
         public let conditions: [String]
         public let derivees: [String]
     }

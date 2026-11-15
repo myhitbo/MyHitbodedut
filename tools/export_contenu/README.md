@@ -53,6 +53,12 @@ pour une table privée, par réflexion. Les fichiers de l'app sont compilés tel
 fichier, comme l'appareil, et cet ordre décide des trente premiers résultats d'une recherche.
 `org.json:json`, celui des tests d'Android sur la JVM, les mélange.
 
+Les expressions régulières d'Android tournent sur ICU : `\s` y est la propriété White_Space
+(l'insécable, les espaces fines du siddour), quand celui de la JVM n'est que l'ASCII. La seule
+expression exécutée ici dont le sens change est le `\s+` de `RechercheGlobale.nu` : la copie
+compilée lui donne `(?U)`, et la construction s'arrête si cette expression change. `recherche.py`
+et `RechercheGlobale.swift` suivent l'appareil.
+
 La garde : un seuil changé dans une copie de `Trophees.kt` change `tables.json`, donc le manifeste ;
 la CI le vérifie à chaque passage (`--java` sur une copie modifiée, `--verifier` doit échouer).
 

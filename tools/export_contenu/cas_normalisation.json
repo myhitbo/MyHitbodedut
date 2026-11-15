@@ -1,5 +1,5 @@
 {
- "_meta": "Cas communs de la normalisation de la recherche (RechercheGlobale.nu) : Tables.kt les passe par le Kotlin d'Android, recherche.py et le test Swift doivent rendre la même chaîne (ios/ROADMAP.md tâche 6). Entrées seulement : les sorties viennent du Kotlin.",
+ "_meta": "Cas communs de la normalisation de la recherche (RechercheGlobale.nu) : Tables.kt les passe par le Kotlin d'Android, avec le \\s d'ICU comme sur l'appareil ; recherche.py et le test Swift doivent rendre la même chaîne (ios/ROADMAP.md tâche 6). Entrées seulement : les sorties viennent du Kotlin.",
  "cas": [
   "<b>בָּרוּךְ</b> אַתָּה",
   "Birkot hacha’har Prières",
@@ -34,6 +34,13 @@
   "‏סימן‎ ב׳",
   "😀 émoji",
   "",
-  "   "
+  "   ",
+  "יְהֹוָ֧ה ׀ פָּנָ֛יו",
+  "◯   ◯  ◯",
+  "finde ligne et　ideo",
+  "sep\u001cfichier\u001f",
+  "\u001cbords\u001f",
+  "mongol᠎voyelle",
+  "nul\u0000dedans"
  ]
 }

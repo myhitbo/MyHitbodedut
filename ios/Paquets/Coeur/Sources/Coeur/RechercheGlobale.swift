@@ -88,8 +88,9 @@ public enum RechercheGlobale {
     private static func estPoint(_ v: UInt32) -> Bool {
         (0x0591...0x05C7).contains(v) || v == 0x22 || v == 0x27 || v == 0x05F4 || v == 0x05F3
     }
-    /// `\s` de java.util.regex : l'ASCII seulement.
-    private static func estEspaceJava(_ v: UInt32) -> Bool { v == 0x20 || (0x09...0x0D).contains(v) }
+    /// `\s` de java.util.regex sur Android, qui tourne sur ICU : la propriété White_Space (l'insécable,
+    /// l'espace fine… ; pas U+001C à U+001F, que `trim` ôte pourtant aux bords).
+    private static func estEspaceAndroid(_ s: Unicode.Scalar) -> Bool { s.properties.isWhitespace }
 
     private static func chaine(_ s: [Unicode.Scalar]) -> String {
         var v = String.UnicodeScalarView()
@@ -99,7 +100,7 @@ public enum RechercheGlobale {
 
     /// RechercheGlobale.nu, étape par étape et dans le même ordre : décomposition (NFD), accents et
     /// apostrophes typographiques ôtés, balises `<…>` en espace, maqaf et paseq en espace, voyelles
-    /// et guillemets ôtés, espaces (ceux de Java) ramenés à un seul, bords ôtés, minuscules.
+    /// et guillemets ôtés, espaces (ceux d'Android) ramenés à un seul, bords ôtés, minuscules.
     public static func nu(_ t: String) -> String {
         let a = Array(t.decomposedStringWithCanonicalMapping.unicodeScalars).filter { !estAccent($0.value) }
         // <[^>]+> : de chaque « < », jusqu'au premier « > » qui suit, s'il y a au moins un signe entre eux.
@@ -123,12 +124,11 @@ public enum RechercheGlobale {
         c.reserveCapacity(b.count)
         var dansEspace = false
         for s in b {
-            let v = estMaqaf(s.value) ? 0x20 : s.value
-            if estPoint(v) { continue }
-            if estEspaceJava(v) {
+            // Le maqaf et le paseq d'abord : ils sont dans la plage des points, mais valent une espace.
+            if estMaqaf(s.value) || estEspaceAndroid(s) {
                 if !dansEspace { c.append(" ") }
                 dansEspace = true
-            } else {
+            } else if !estPoint(s.value) {
                 c.append(s)
                 dansEspace = false
             }
@@ -302,8 +302,12 @@ public final class IndexRecherche: @unchecked Sendable {
 
         func texte(_ i: Int32) -> String { texteOuNil(i) ?? "" }
 
+        /// Sur toute sa longueur : un texte peut porter U+0000 (un bloc du Kitsour en finit un),
+        /// que `String(cString:)` prendrait pour la fin.
         func texteOuNil(_ i: Int32) -> String? {
-            sqlite3_column_text(instruction, i).map { String(cString: $0) }
+            guard let debut = sqlite3_column_text(instruction, i) else { return nil }
+            let longueur = Int(sqlite3_column_bytes(instruction, i))
+            return String(decoding: UnsafeBufferPointer(start: debut, count: longueur), as: UTF8.self)
         }
 
         func entier(_ i: Int32) -> Int { Int(sqlite3_column_int64(instruction, i)) }
