@@ -33,10 +33,10 @@ struct SuiviVolTests {
         #expect(vieux == SuiviVol.Resultat.introuvable)
         let absent = SuiviVol.lire("{\"trouve\":false}", maintenant)
         #expect(absent == SuiviVol.Resultat.introuvable)
-        let erreur = SuiviVol.lire("{\"erreur\":\"x\"}", maintenant)
-        #expect(estErreur(erreur))
-        let illisible = SuiviVol.lire("pas du json", maintenant)
-        #expect(estErreur(illisible))
+        let erreur = estErreur(SuiviVol.lire("{\"erreur\":\"x\"}", maintenant))
+        #expect(erreur)
+        let illisible = estErreur(SuiviVol.lire("pas du json", maintenant))
+        #expect(illisible)
         let adresse = SuiviVol.adresse("https://r.test/", "ELY1", Vol.Point(instant: maintenant, latitude: 50.123, longitude: -20.36))
         #expect(adresse == "https://r.test/position?indicatif=ELY1&lat=50.1&lon=-20.4")
     }
@@ -51,9 +51,9 @@ struct SuiviVolTests {
     private struct Fichier: Decodable {
         let indicatifs: [Indicatif]
         let memes: [Meme]
-        let raisons: [Raison]
+        let raisons: [RaisonEcrite]
         let releves: [Releve]
-        let adresses: [Adresse]
+        let adresses: [AdresseEcrite]
         let carres: [Carre]
         let etats: [Etat]
     }
@@ -107,7 +107,7 @@ struct SuiviVolTests {
 
     /// ["constantes", [...]], ["serveur", code, raison], ["codeServeur", raison, code ou null],
     /// ["duRelais", message, raison ou null].
-    private struct Raison: Decodable {
+    private struct RaisonEcrite: Decodable {
         let genre: String
         let constantes: [String]
         let code: Int?
@@ -155,7 +155,7 @@ struct SuiviVolTests {
         }
     }
 
-    private struct Adresse: Decodable {
+    private struct AdresseEcrite: Decodable {
         let relais: String
         let indicatif: String
         let latitude: Double
