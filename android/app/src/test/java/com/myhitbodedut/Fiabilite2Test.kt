@@ -64,6 +64,43 @@ class Fiabilite2Test {
         assertTrue(lire("JournalActivity.kt").contains("FLAG_SECURE"))
     }
 
+    /** La note d'après séance s'écrit dans le carnet du bravo : il protège comme NoteDialog (audit du 12/11). */
+    @Test
+    fun `le carnet du bravo refuse la capture d ecran`() {
+        val carnet = lire("CelebrationActivity.kt").substringAfter("private fun carnet(").substringBefore("private fun ouvrirSuite(")
+        assertTrue(carnet.contains("FLAG_SECURE"))
+        // Après la garde du jour : un bravo sans page (séance annulée, sansNote) reste capturable.
+        assertTrue(carnet.indexOf("dateNote ?: return") < carnet.indexOf("FLAG_SECURE"))
+    }
+
+    /** Le brouillon partagé avec NoteDialog porte l'humeur d'avant : le carnet ne la jette pas. */
+    @Test
+    fun `le carnet garde l humeur d avant du brouillon`() {
+        val source = lire("CelebrationActivity.kt")
+        assertTrue(source.contains("avant = brouillon?.avant ?: initiale.avant"))
+        val saisie = source.substringAfter("private fun saisie()").substringBefore("private fun etatEnregistre")
+        assertTrue(saisie.contains("avant = avant"))
+    }
+
+    /** Au retour, le carnet repart de ce qui est gardé, comme NoteDialog.onStart (FDONNEES-02). */
+    @Test
+    fun `le carnet repart de ce qui est garde au retour`() {
+        val source = lire("CelebrationActivity.kt")
+        val retour = source.substringAfter("override fun onRestart()").substringBefore("}")
+        assertTrue(retour.contains("repartir()"))
+        val repartir = source.substringAfter("private fun repartir()").substringBefore("override fun onRestart()")
+        assertTrue(repartir.contains("initiale = JournalPlus.lire("))
+        assertTrue(repartir.contains("noteInitiale = Store.record("))
+        assertTrue(repartir.contains("NoteBrouillon.modifie("))
+    }
+
+    /** Le carnet qui s'ouvre de lui-même cache « Partager » : le bouton est posé avant lui. */
+    @Test
+    fun `partager est pose avant le carnet`() {
+        val creation = lire("CelebrationActivity.kt").substringAfter("override fun onCreate(").substringBefore("override fun onSaveInstanceState(")
+        assertTrue(creation.indexOf("R.id.celebration_share") in 0 until creation.indexOf("carnet(savedInstanceState)"))
+    }
+
     @Test
     fun `la vignette se met a jour apres minuit et apres un import`() {
         assertTrue(lire("StreakWidget.kt").contains("private fun programmerMinuit"))

@@ -4884,9 +4884,8 @@ function declarerHorsTelephone() {
     store.addSession(m, { date });
     if (date === aujourdhui) {
       store.setPendingCelebration(m);
-      // La note de ce jour-là, proposée après le bravo comme sur Android (MainActivity.declarerHorsTelephone).
+      // La note de ce jour-là s'écrit dans le carnet du bravo, comme sur Android (MainActivity.declarerHorsTelephone).
       dateNote = date;
-      noteApresBravo = true;
     }
     rendre();
   }, tr.t('offline_how_long'));
@@ -4944,7 +4943,10 @@ function confirmer(titre, message, action, onConfirme) {
  * enrichi (NoteDialog.kt, porté le 02/11) : l'humeur avant et après, une gratitude, une chose à travailler.
  */
 function ecrireNote(date, apres = () => {}) {
+  // Tous les moyens de fermer la feuille (boutons, Échap, toucher à côté) rappellent [apres] :
+  // un bravo qui attendait sa fermeture s'ouvre alors (rendre).
   feuille(tr.t('note_title'), (f, fermer) => {
+    f.classList.add('feuille-note');
     const champ = h('textarea', { rows: 4, placeholder: tr.t('note_hint'), 'aria-label': tr.t('note_title') });
     champ.value = store.record(date)?.note ?? '';
     const plus = store.journalPlus(date);
@@ -4970,13 +4972,16 @@ function ecrireNote(date, apres = () => {}) {
     f.append(h('img', { class: 'note-art', src: `img/${joie()}.webp`, alt: '' }), champ,
       humeurs('journal_humeur_avant', 'avant'), humeurs('journal_humeur_apres', 'apres'), gratitude, travail,
       h('div', { class: 'actions' },
-        h('button', { onclick: () => { fermer(); apres(); } }, tr.t('action_later')),
+        h('button', { onclick: fermer }, tr.t('action_later')),
         h('button', { onclick: () => {
           store.setJournalPlus(date, { avant: plus.avant, apres: plus.apres, gratitude: gratitude.value.trim(), travail: travail.value.trim() });
           store.setNote(date, champ.value.trim());
-          fermer(); apres();
+          // Un carnet du bravo pris sous la feuille et pas touché relit ce qui vient d'être enregistré :
+          // sinon il réécrirait par-dessus ce qu'il avait copié avant.
+          if (carnetBravo && !carnetChange(carnetBravo)) carnetBravo = null;
+          fermer();
         } }, tr.t('action_save'))));
-  });
+  }, apres);
 }
 
 // --- La carte de ’hizouk (view_chizuk.xml) -------------------------------------------
@@ -5029,8 +5034,11 @@ function ajusteLesTextes() {
 let tic = null;
 let etaitEnCours = false;
 let verrouEcran = null;
-/** Après toute séance inscrite ou journée déclarée sans le téléphone, la note est proposée au retour du bravo. */
-let noteApresBravo = false;
+/**
+ * Vrai quand le bravo a attendu que la feuille de note se ferme (mode « Écrire ») : il s'ouvre
+ * alors sans carnet, la note vient d'être proposée (CelebrationActivity sansNote, FSEANCE-03).
+ */
+let bravoApresNote = false;
 /** { minutes } après une séance close, { annulee: true } après un abandon. */
 let bravo = null;
 
@@ -5245,13 +5253,11 @@ function cloreSeance({ avantTerme }) {
   // Une séance non inscrite n'a pas de jour : sa note va à aujourd'hui, pas au jour
   // d'une séance d'avant (bug du 02/11).
   dateNote = null;
-  noteApresBravo = false;
   if (inscrite) {
     store.addSession(minutes, { theme: sujet, date });
     store.setPendingCelebration(minutes);
+    // Comme sur Android : après toute séance inscrite, la note de ce jour s'écrit dans le carnet du bravo.
     dateNote = date;
-    // Comme sur Android : la note suit le bravo après toute séance inscrite, pas seulement « Terminer maintenant ».
-    noteApresBravo = true;
   }
   etaitEnCours = false;
   arreteMusique();
@@ -5549,12 +5555,11 @@ function ecranBravo() {
     : tr.t(adresse === 'm' ? 'celebration_tsadik' : adresse === 'f' ? 'celebration_tsadeket' : 'celebration_neutral');
   const sousTitre = annulee ? tr.t('annulation_subtitle')
     : bravo.minutes > 0 ? tr.p('celebration_minutes', bravo.minutes) : null;
-  const c = annulee ? null : ouvrirCarnet();
+  const c = annulee || bravo.sansCarnet ? null : ouvrirCarnet();
   const continuer = () => {
     enregistrerCarnet();
     bravo = null;
     chizukBravo = null;
-    noteApresBravo = false;
     retour();
   };
   const principal = h('button', { class: 'principal', onclick: continuer }, tr.t(c && carnetChange(c) ? 'action_save' : 'celebration_continue'));
@@ -5715,8 +5720,14 @@ function rendre() {
   // Le bravo d'une séance close attend le prochain écran ouvert.
   if (['accueil', 'seance'].includes(ecranCourant())) {
     const minutes = store.takePendingCelebration();
-    if (minutes !== null) {
-      bravo = { minutes };
+    if (minutes !== null && document.querySelector('.feuille-note')) {
+      // La feuille de note est ouverte (mode « Écrire ») : le bravo attend qu'elle se ferme,
+      // puis s'ouvre sans carnet, comme sur Android (NoteDialog.ouverte, FSEANCE-03).
+      store.setPendingCelebration(minutes);
+      bravoApresNote = true;
+    } else if (minutes !== null) {
+      bravo = { minutes, sansCarnet: bravoApresNote };
+      bravoApresNote = false;
       history.pushState({ interne: true }, '', '#bravo');
     }
   }

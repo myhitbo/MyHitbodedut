@@ -959,6 +959,11 @@ def main():
             # L'apercu passe l'application a l'arriere-plan : on la rouvre avant chaque essai.
             lancer(attente=3)
             fermer_trophees(code)
+            # Depuis la refonte, la roue est en tete du Jour : apres la capture des Livres,
+            # l'accueil y est encore. Aux essais suivants, c'est Reglages qui revient devant
+            # (pas de nav_today) : la recherche de preview_gate plus bas s'en charge.
+            if trouver(rid="nav_today") is not None:
+                toucher(rid="nav_today", attente=1.0)
             ok = toucher(rid="nav_settings", attente=2.0)
             ok = ok and trouver(rid="preview_gate", defilements=14) is not None
             if not ok:

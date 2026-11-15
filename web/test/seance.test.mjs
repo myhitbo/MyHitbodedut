@@ -236,10 +236,27 @@ test('les ambiances calculées : audibles, douces, jamais saturées, le silence 
 const appSource = readFileSync(join(ICI, '..', 'src', 'js', 'app.js'), 'utf8');
 
 test('toute séance inscrite propose la note après le bravo, comme sur Android', () => {
+  // Le bravo porte la page du carnet, pour le jour de la séance ou de la journée déclarée.
   const clore = appSource.slice(appSource.indexOf('function cloreSeance'), appSource.indexOf('function terminerMaintenant'));
-  assert.match(clore, /if \(inscrite\) \{[\s\S]*?dateNote = date;[\s\S]*?noteApresBravo = true;/s);
+  assert.match(clore, /if \(inscrite\) \{[\s\S]*?store\.setPendingCelebration\(minutes\);[\s\S]*?dateNote = date;/);
   const hors = appSource.slice(appSource.indexOf('function declarerHorsTelephone'), appSource.indexOf('function ajoutTemps'));
-  assert.match(hors, /if \(date === aujourdhui\) \{[^}]*dateNote = date;[^}]*noteApresBravo = true;/s);
+  assert.match(hors, /if \(date === aujourdhui\) \{[^}]*setPendingCelebration\(m\);[^}]*dateNote = date;/);
+  assert.ok(appSource.includes('const c = annulee || bravo.sansCarnet ? null : ouvrirCarnet();'));
+  assert.ok(appSource.includes('const date = dateNote ?? store.today();'));
+  // L'ancien drapeau, écrit mais plus lu depuis le carnet du bravo, ne revient pas.
+  assert.doesNotMatch(appSource, /noteApresBravo/);
+});
+
+test('le bravo attend la feuille de note ouverte, puis s’ouvre sans carnet (FSEANCE-03)', () => {
+  const rendreSrc = appSource.slice(appSource.indexOf('function rendre()'));
+  assert.match(rendreSrc, /if \(minutes !== null && document\.querySelector\('\.feuille-note'\)\) \{[^}]*store\.setPendingCelebration\(minutes\);[^}]*bravoApresNote = true;/);
+  assert.match(rendreSrc, /bravo = \{ minutes, sansCarnet: bravoApresNote \};\s*bravoApresNote = false;/);
+  const note = appSource.slice(appSource.indexOf('function ecrireNote'), appSource.indexOf('let chizukSeance'));
+  assert.match(note, /f\.classList\.add\('feuille-note'\)/);
+  // Échap ou un toucher à côté rendent aussi la main : feuille() rappelle [apres].
+  assert.match(note, /\}, apres\);\n\}\n/);
+  // Un carnet pris sous la feuille relit ce qui vient d'être enregistré, au lieu de l'écraser.
+  assert.match(note, /store\.setNote\(date, champ\.value\.trim\(\)\);\s*\/\/[^\n]*\n\s*\/\/[^\n]*\n\s*if \(carnetBravo && !carnetChange\(carnetBravo\)\) carnetBravo = null;\s*fermer\(\);/);
 });
 
 test('le site ne promet pas un son de fin qu’il ne joue pas', () => {

@@ -48,6 +48,15 @@ class CelebrationActivity : AppCompatActivity() {
     /** L'humeur choisie après la séance, de 1 à 5 ; 0, aucune. */
     private var apres = 0
 
+    /**
+     * L'humeur d'avant : la fenêtre de note la choisit, le carnet la garde.
+     * Elle vient du brouillon quand il y en a un, sinon de ce qui est enregistré.
+     */
+    private var avant = 0
+
+    /** Les cinq cases d'humeur du carnet, pour les remettre d'accord après un retour. */
+    private var cases: List<TextView> = emptyList()
+
     /** La page du carnet telle qu'elle était à l'ouverture : on n'écrit que ce qui a changé. */
     private var initiale = JournalPlus.Plus()
     private var noteInitiale = ""
@@ -101,12 +110,13 @@ class CelebrationActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.celebration_title).setText(
             if (annulee) Adresse.hazak(adresse) else Adresse.bravo(adresse)
         )
-        carnet(savedInstanceState)
         // Partager la séance faite (12/10) : un texte et le lien de la version web, par le choix du téléphone.
+        // Avant le carnet : quand il s'ouvre de lui-même (brouillon, écran recréé), il cache ce bouton.
         findViewById<Button>(R.id.celebration_share).apply {
             visibility = if (!annulee && minutes > 0) View.VISIBLE else View.GONE
             setOnClickListener { partager(minutes) }
         }
+        carnet(savedInstanceState)
         findViewById<Button>(R.id.celebration_continue).setOnClickListener {
             enregistrer()
             finish()
@@ -134,6 +144,12 @@ class CelebrationActivity : AppCompatActivity() {
      */
     private fun carnet(etat: Bundle?) {
         val date = dateNote ?: return
+        // Ce qu'on écrit ici est aussi intime que le journal : ni capture, ni aperçu
+        // (audit du 12/11, comme NoteDialog). Posé avant que la fenêtre ne se montre.
+        window.setFlags(
+            android.view.WindowManager.LayoutParams.FLAG_SECURE,
+            android.view.WindowManager.LayoutParams.FLAG_SECURE
+        )
         findViewById<View>(R.id.celebration_carnet).visibility = View.VISIBLE
         initiale = JournalPlus.lire(this, date)
         noteInitiale = Store.record(this, date)?.note.orEmpty()
@@ -141,6 +157,9 @@ class CelebrationActivity : AppCompatActivity() {
         // comme dans la fenêtre de note (NoteBrouillon, audit FSEANCE-04, FDONNEES-02 et 03).
         val brouillon = NoteBrouillon.lire(this, date)
         apres = etat?.getInt(ETAT_APRES, brouillon?.apres ?: initiale.apres) ?: (brouillon?.apres ?: initiale.apres)
+        // Le carnet ne touche pas à l'humeur d'avant : le brouillon (que chaque frappe tient à jour)
+        // la porte, même après une recréation.
+        avant = brouillon?.avant ?: initiale.avant
         val gratitude = findViewById<android.widget.EditText>(R.id.celebration_gratitude)
         val travail = findViewById<android.widget.EditText>(R.id.celebration_travail)
         val note = findViewById<android.widget.EditText>(R.id.celebration_note)
@@ -157,7 +176,7 @@ class CelebrationActivity : AppCompatActivity() {
         }
         val d = resources.displayMetrics.density
         val rang = findViewById<LinearLayout>(R.id.celebration_humeurs)
-        val cases = JournalPlus.HUMEURS.mapIndexed { i, emoji ->
+        cases = JournalPlus.HUMEURS.mapIndexed { i, emoji ->
             TextView(this).apply {
                 text = emoji
                 textSize = 26f
@@ -223,6 +242,7 @@ class CelebrationActivity : AppCompatActivity() {
     /** Ce que la page porte maintenant. */
     private fun saisie(): Pair<JournalPlus.Plus, String> = Pair(
         initiale.copy(
+            avant = avant,
             apres = apres,
             gratitude = findViewById<android.widget.EditText>(R.id.celebration_gratitude).text.toString().trim(),
             travail = findViewById<android.widget.EditText>(R.id.celebration_travail).text.toString().trim(),
@@ -263,6 +283,42 @@ class CelebrationActivity : AppCompatActivity() {
         noteInitiale = note
         // Enregistré : le brouillon n'a plus rien à garder.
         NoteBrouillon.garder(this, date, null)
+    }
+
+    /**
+     * Au retour sur l'écran, la page repart de ce qui est gardé, comme la
+     * fenêtre de note (NoteDialog.onStart, FDONNEES-02) : une autre fenêtre
+     * du même jour a pu enregistrer pendant que le bravo attendait derrière.
+     * Le carnet garde son brouillon à chaque frappe : ce qui est gardé n'est
+     * jamais plus vieux que l'écran.
+     *
+     * Dans onRestart, pas onStart : il ne vient qu'après un arrêt, et ne se
+     * bat pas avec l'état des champs qu'Android rend après onStart quand
+     * l'écran est recréé (ce cas-là, carnet() le prend au brouillon).
+     */
+    private fun repartir() {
+        val date = dateNote ?: return
+        initiale = JournalPlus.lire(this, date)
+        noteInitiale = Store.record(this, date)?.note.orEmpty()
+        val brouillon = NoteBrouillon.lire(this, date)
+        val garde = brouillon ?: etatEnregistre()
+        if (NoteBrouillon.modifie(garde, etatCourant())) {
+            remplissage = true
+            avant = garde.avant
+            apres = garde.apres
+            findViewById<android.widget.EditText>(R.id.celebration_gratitude).setText(garde.gratitude)
+            findViewById<android.widget.EditText>(R.id.celebration_travail).setText(garde.travail)
+            findViewById<android.widget.EditText>(R.id.celebration_note).setText(garde.note)
+            cases.forEachIndexed { j, c -> c.isSelected = apres == j + 1 }
+            remplissage = false
+        }
+        if (brouillon != null) ouvrirSuite(anime = false)
+        majBouton()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        repartir()
     }
 
     override fun onStart() {
