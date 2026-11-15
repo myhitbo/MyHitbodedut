@@ -75,6 +75,18 @@ class ConfidentialiteTest {
         listOf("n’apparaît que", "only appears", "מופיעה רק").forEach { assertFalse("« $it »", html.contains(it)) }
     }
 
+    /**
+     * TWEBCONF-18 : une construction avec relais (-PrelaisVol=https://…) envoie l'indicatif et la
+     * position au relais du développeur ; la page doit alors le dire dans les trois langues.
+     */
+    @Test
+    fun `avec un relais la page parle du relais`() {
+        if (BuildConfig.RELAIS_VOL.isEmpty()) return
+        mapOf("fr" to "relais", "en" to "relay", "he" to "ממסר").forEach { (langue, mot) ->
+            assertTrue("$langue : « $mot » manque alors que RELAIS_VOL est configuré", section(langue).contains(mot))
+        }
+    }
+
     // --- Ce que la page affirme, relu dans le code ----------------------------------
 
     @Test
