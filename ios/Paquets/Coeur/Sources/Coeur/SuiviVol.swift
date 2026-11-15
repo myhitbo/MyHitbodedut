@@ -38,7 +38,7 @@ public enum SuiviVol {
         /// Le code HTTP d'une raison `serveur`, sinon nil.
         public static func codeServeur(_ raison: String) -> Int? {
             guard raison.commenceParUnites(prefixeServeur) else { return nil }
-            return entierKotlin(raison.sansPremieresUnites(prefixeServeur.utf16.count))
+            return SuiviVol.entierKotlin(raison.sansPremieresUnites(prefixeServeur.utf16.count))
         }
 
         /// Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… nil là où Kotlin
