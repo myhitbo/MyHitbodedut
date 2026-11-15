@@ -49,6 +49,8 @@
     <string name="dedicace_mot">מילה לצוות (לא חובה)</string>
     <string name="dedicace_ecrire">לכתוב את המייל</string>
     <string name="dedicace_nom_manque">נא לכתוב את השם.</string>
+    <string name="dedicace_intention_manque">נא לפרט את הכוונה.</string>
+    <string name="dedicace_copie">ההודעה הועתקה: הדביקו אותה בתוכנת הדואר.</string>
     <string name="dedicace_sans_messagerie">לא נמצאה תוכנת דואר: כתבו אל myhitbodedut26@gmail.com.</string>
     <string name="dedicace_sujet">הקדשה – %1$s</string>
     <string name="dedicace_corps_intro">שלום,</string>
@@ -123,6 +125,7 @@
     <string name="settings_exempt_today">הפסקה היום</string>
     <string name="settings_exempt_today_hint">ליום טוב, נסיעה או מחלה: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
+    <string name="lien_impossible">אי אפשר לפתוח את הקישור: אין דפדפן בטלפון הזה.</string>
     <string name="fichiers_absents">אין בטלפון אפליקציה שמאפשרת לפתוח או לשמור קובץ.</string>
 
     <string name="permission_overlay">הצגה מעל אפליקציות אחרות</string>
@@ -403,6 +406,7 @@
     <string name="tikkun_progress">%1$d מתוך %2$d מזמורים נאמרו היום</string>
     <string name="tikkun_progress_all">נאמר במלואו היום.</string>
     <string name="tikkun_flow_done">אמרתי את התיקון כולו</string>
+    <string name="tikkun_flow_confirm">לסמן את תיקון היום כנאמר במלואו?</string>
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">תזכורות</string>
@@ -908,6 +912,7 @@
     <string name="hilloula_annee">פטירה: %1$s</string>
     <string name="hilloulot_aucune">אין הילולה ביום זה</string>
     <string name="hilloulot_resultats">תוצאות: %1$d</string>
+    <string name="resultats_coupes">תוצאות: %2$d (מוצגות %1$d הראשונות)</string>
     <string name="hilloula_source_wiki">ויקיפדיה (CC BY-SA)</string>
     <string name="hilloula_source_hyomi">החכם היומי</string>
     <string name="hilloula_source_mytzadik">MyTzadik</string>
@@ -1151,6 +1156,9 @@
     <string name="marques_aucun">אין סימניות בטקסט הזה. לחיצה ארוכה על פסקה מוסיפה סימנייה, ולחיצה ארוכה נוספת מסירה אותה.</string>
     <string name="marque_posee">הסימנייה נוספה</string>
     <string name="marque_retiree">הסימנייה הוסרה</string>
+    <string name="marque_action_poser">הוספת סימנייה</string>
+    <string name="marque_action_retirer">הסרת הסימנייה</string>
+    <string name="marque_etat">מסומן</string>
     <string name="fond_contraste">ניגודיות גבוהה</string>
     <string name="settings_grand_texte">טקסט קריאה גדול</string>
     <string name="settings_ecran_allume">השארת המסך דולק בזמן הקריאה</string>

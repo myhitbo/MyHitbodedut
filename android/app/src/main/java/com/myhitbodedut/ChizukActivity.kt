@@ -77,15 +77,16 @@ class ChizukActivity : AppCompatActivity() {
         val visible = if (gardes.isEmpty()) View.GONE else View.VISIBLE
         liste.visibility = visible
         findViewById<View>(R.id.chizuk_favoris_titre).visibility = visible
-        val langue = ChizukCard.language(this)
         gardes.forEachIndexed { i, item ->
             if (i > 0) liste.addView(View(this).apply {
                 layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
                 setBackgroundColor(Apparence.couleur(this@ChizukActivity, R.color.line))
             })
             liste.addView(TextView(this).apply {
-                val traduction = ChizukCard.translationOf(item, langue)
-                text = (traduction.ifBlank { ChizukRules.hebrew(chizuk, item) }) + "\n" + Reference.localise(this@ChizukActivity, item.ref)
+                val hebreuGarde = ChizukRules.hebrew(chizuk, item)
+                val traduction = LanguesTexte.textes(LanguesTexte.mode(this@ChizukActivity), hebreuGarde, item.fr.ifBlank { null }, item.en.ifBlank { null })
+                    .let { l -> l.firstOrNull { it.first != "he" }?.second }.orEmpty()
+                text = (traduction.ifBlank { hebreuGarde }) + "\n" + Reference.localise(this@ChizukActivity, item.ref)
                 maxLines = 3
                 ellipsize = android.text.TextUtils.TruncateAt.END
                 textSize = 15f
@@ -105,9 +106,14 @@ class ChizukActivity : AppCompatActivity() {
     }
 
     private fun partager(item: ChizukItem) {
+        // Ce qui part est ce qui est à l'écran : les langues de lecture choisies (FLECTURE-22) ;
+        // l'hébreu, la source, reste toujours joint.
+        val hebreu = ChizukRules.hebrew(Data.chizuk(this), item)
+        val traduction = LanguesTexte.textes(LanguesTexte.mode(this), hebreu, item.fr.ifBlank { null }, item.en.ifBlank { null })
+            .filter { it.first != "he" }.joinToString("\n\n") { it.second }
         val texte = ChizukPartage.texte(
-            ChizukRules.hebrew(Data.chizuk(this), item),
-            ChizukCard.translationOf(item, ChizukCard.language(this)),
+            hebreu,
+            traduction,
             Reference.localise(this, item.ref),
             getString(R.string.partage_lien, CelebrationActivity.LIEN_WEB),
         )

@@ -81,7 +81,11 @@ object SiddurJour {
     /** Une ligne de la lecture, le jour donné. */
     sealed class Ligne {
         data class Titre(val texte: String, val fr: String? = null, val en: String? = null) : Ligne()
-        data class Bloc(val bloc: SiddurBloc, val style: Style) : Ligne()
+        /**
+         * [origine] : le paragraphe du texte, dont la place (section, paragraphe) sert aux marque-pages ;
+         * [bloc] en est une copie quand une variante hors du jour en a été retirée (FLECTURE-08).
+         */
+        data class Bloc(val bloc: SiddurBloc, val style: Style, val origine: SiddurBloc = bloc) : Ligne()
 
         /** « Aujourd'hui · Ya'alé véyavo », au-dessus d'un ajout mis en évidence ; [libelle] : la clé de chaîne. */
         data class Etiquette(val condition: String, val libelle: String) : Ligne()
@@ -161,7 +165,7 @@ object SiddurJour {
                         val reduit = horsJour.fold(bloc.texte) { t, v -> t.replaceFirst(v.retire!!, "") }.trim()
                         if (reduit != bloc.texte) bloc = bloc.copy(texte = reduit)
                     }
-                    sortie += Ligne.Bloc(bloc, Style.NORMAL)
+                    sortie += Ligne.Bloc(bloc, Style.NORMAL, s.blocs[i])
                     // Le texte du jour se lit dans le bloc même ; l'ancien « Aujourd'hui : … » ne
                     // reste que pour les variantes qu'on ne sait pas replier.
                     ind.filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }

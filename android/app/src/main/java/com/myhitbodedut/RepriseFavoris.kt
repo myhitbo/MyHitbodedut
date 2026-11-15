@@ -39,7 +39,13 @@ object RepriseFavoris {
 
     /** La ligne « סימניות · n » (28/10) : tous les marque-pages, ou ceux d'un recueil (« s », « l »). */
     fun ligneSignets(c: Context, recueil: String? = null): View? {
-        val marques = Store.marques(c).filter { (recueil == null || it.cle.startsWith("$recueil:")) && titre(c, it.cle) != null }
+        // Un marque-page du siddour est lié à son noussa'h (les paragraphes diffèrent) : seuls ceux du
+        // noussa'h courant sont listés, sinon la ligne ouvrirait un autre paragraphe (FLECTURE-09).
+        val nusah = Store.siddurNusah(c).cle
+        val marques = Store.marques(c).filter {
+            (recueil == null || it.cle.startsWith("$recueil:")) && titre(c, it.cle) != null &&
+                (it.nusah.isEmpty() || it.nusah == nusah)
+        }
         if (marques.isEmpty()) return null
         return ligne(c, null, "${c.getString(R.string.marques_titre)} · ${marques.size}", "",
             icone = SiddurLectureActivity.icone(recueil == "l")) { listeSignets(c, marques) }
@@ -148,9 +154,12 @@ object RepriseFavoris {
             })
         }
         addView(TextView(c).apply {
+            // Le chevron reste « › » pour un titre hébreu ; sinon (« Marque-pages · 3 ») il se retournerait
+            // en « ‹ » sous le sens droite-à-gauche (FLECTURE-25) : on suit alors le premier caractère fort.
+            val hebreu = titre.any { it in '\u0590'..'\u05FF' }
             text = "$titre  ›"
             textSize = if (discret) 14f else 19f
-            textDirection = View.TEXT_DIRECTION_RTL
+            textDirection = if (hebreu) View.TEXT_DIRECTION_RTL else View.TEXT_DIRECTION_FIRST_STRONG_LTR
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
             setTextColor(Apparence.couleur(c, if (discret) R.color.muted else R.color.ink))
             if (discret) { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END }

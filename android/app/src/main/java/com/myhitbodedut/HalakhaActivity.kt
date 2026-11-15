@@ -78,7 +78,7 @@ class HalakhaActivity : AppCompatActivity() {
         contenu.addView(liste)
         // Taille et police des textes, comme dans les écrans de lecture (12/10).
         deuxLivres = intent.getStringExtra(RechercheActivity.EXTRA_RECHERCHE) != null
-        ReglagesLecture.installer(this, findViewById(R.id.halakha_defile)) { afficher() }
+        ReglagesLecture.installer(this, findViewById(R.id.halakha_defile), avecNuit = false, avecLangues = false) { afficher() }
         afficher()
         RechercheActivity.preremplir(this, contenu)
     }
@@ -128,7 +128,11 @@ class HalakhaActivity : AppCompatActivity() {
             val cherches = source.pourRecherche(deuxLivres)
             val yy = if (cherches.yalkut) YalkutYosef.recherche(YalkutYosef.livre(this), recherche) else emptyList()
             val trouves = if (cherches.benIshHai) Halakha.recherche(livre, recherche) else emptyList()
-            liste.addView(VueJour.texte(this, getString(R.string.hilloulot_resultats, yy.size + trouves.size), 14f, R.color.muted, gras = true, haut = 14))
+            val total = yy.size + trouves.size
+            val montres = minOf(yy.size, 40) + minOf(trouves.size, 40)
+            // Le total est annoncé en entier, mais 40 cartes par livre au plus sont dessinées (FLECTURE-16).
+            val entete = if (montres < total) getString(R.string.resultats_coupes, montres, total) else getString(R.string.hilloulot_resultats, total)
+            liste.addView(VueJour.texte(this, entete, 14f, R.color.muted, gras = true, haut = 14))
             yy.take(40).forEach { liste.addView(carte(YalkutYosef.source(it), it.texte)) }
             trouves.take(40).forEach { liste.addView(carte(source(it), it.texte)) }
             return
@@ -193,6 +197,7 @@ class HalakhaActivity : AppCompatActivity() {
 
     private fun ouvrir(url: String) {
         runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            .onFailure { android.widget.Toast.makeText(this, R.string.lien_impossible, android.widget.Toast.LENGTH_LONG).show() }
     }
 
     companion object {

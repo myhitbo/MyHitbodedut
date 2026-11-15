@@ -185,6 +185,23 @@ class SiddurJourTest {
         assertTrue(SiddurJour.Ligne.Etiquette("morid_hatal", "ajout_morid_hatal") in etat(Nusah.SEFARD, false))
     }
 
+    /** FLECTURE-08 : un paragraphe réduit de sa variante garde sa place d'origine (marque-pages). */
+    @Test
+    fun `chaque ligne garde le paragraphe d origine meme reduit`() {
+        val ete = CalendrierJuif.jour(java.time.LocalDate.parse("2027-06-01"), false).conditions
+        var reduits = 0
+        for (n in Nusah.values()) {
+            val texte = DataFiles.siddur(n).texte("chaharit")!!
+            val tous = texte.sections.flatMap { it.blocs }
+            SiddurJour.lignes(texte, SiddurJour.parse(json, n.cle).getValue("chaharit"), ete, nusah = n.cle, enIsrael = true)
+                .filterIsInstance<SiddurJour.Ligne.Bloc>().forEach { l ->
+                    assertTrue(n.cle, tous.any { it === l.origine })
+                    if (l.bloc !== l.origine) reduits++
+                }
+        }
+        assertTrue("au moins un paragraphe réduit", reduits > 0)
+    }
+
     /** Avinou malkénou (14/10) : replié un jour ordinaire, ouvert le 10 Tévèt et pendant les dix jours. */
     @Test
     fun `avinou malkenou - jeunes et dix jours seulement`() {

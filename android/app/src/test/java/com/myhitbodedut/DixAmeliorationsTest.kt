@@ -63,6 +63,7 @@ class DixAmeliorationsTest {
         // Sans accents ni apostrophe typographique (29/10) : « alenou », « hachahar ».
         assertEquals("t", RechercheGlobale.dansRecueil(s, RechercheGlobale.nu("Alenou"), RechercheGlobale.Sorte.SIDDOUR, "fr").single().id)
         assertEquals("birkot hachahar prieres", RechercheGlobale.nu("Birkot hacha’har Prières"))
+        assertEquals("ירושלם", RechercheGlobale.nu("יְרוּשָׁלַ\u200Dִם"))  // FLECTURE-17 : U+200D ne coupe plus le mot
         assertTrue(RechercheGlobale.dansRecueil(s, "שבת", RechercheGlobale.Sorte.SIDDOUR, "fr").isEmpty())
     }
 
