@@ -21,6 +21,6 @@ public enum RechercheGlobale {
         s = separateurs.remplace(s, par: " ")
         s = voyelles.remplace(s, par: "")
         s = blancs.remplace(s, par: " ")
-        return s.rogne.lowercased()
+        return s.rogne.minusculesJava
     }
 }

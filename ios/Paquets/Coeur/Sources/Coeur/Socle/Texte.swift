@@ -181,6 +181,30 @@ extension String {
         utf16.allSatisfy { Kotlin.estEspace($0) }
     }
 
+    /// `lowercase()` de Kotlin (`toLowerCase(Locale.ROOT)`) : comme `lowercased()`, plus la règle du sigma
+    /// final que Java applique et Swift non (« ΟΔΟΣ » → « οδος ») : Σ devient ς quand une lettre à casse le
+    /// précède et qu'aucune ne le suit, les signes sans casse (accents) mis à part.
+    public var minusculesJava: String {
+        let scalaires = Array(unicodeScalars)
+        guard scalaires.contains("\u{03A3}") else { return lowercased() }
+        func casse(_ x: Unicode.Scalar) -> Bool { x.properties.isCased }
+        func ignore(_ x: Unicode.Scalar) -> Bool { x.properties.isCaseIgnorable }
+        var sortie = ""
+        for (i, x) in scalaires.enumerated() {
+            guard x == "\u{03A3}" else {
+                sortie += String(x).lowercased()
+                continue
+            }
+            var avant = i - 1
+            while avant >= 0 && ignore(scalaires[avant]) { avant -= 1 }
+            var apres = i + 1
+            while apres < scalaires.count && ignore(scalaires[apres]) { apres += 1 }
+            let final = avant >= 0 && casse(scalaires[avant]) && !(apres < scalaires.count && casse(scalaires[apres]))
+            sortie += final ? "\u{03C2}" : "\u{03C3}"
+        }
+        return sortie
+    }
+
     /// `trim()` de Kotlin : sans les blancs de `Kotlin.estEspace` aux deux bouts.
     public var rogne: String {
         let toutes = Array(utf16)
