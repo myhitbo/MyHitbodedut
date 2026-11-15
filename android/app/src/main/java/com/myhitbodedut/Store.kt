@@ -134,6 +134,7 @@ object Store {
     private const val KEY_SESSION_START = "session_started_at"
     private const val KEY_SESSION_THEME = "session_theme"
     private const val KEY_HIDE_COUNTDOWN = "hide_countdown"
+    private const val KEY_JOURNAL_VERROU = "journal_verrou"
     private const val KEY_GUIDED = "guided_hitbodedut"
     private const val KEY_ONBOARDED = "onboarded_version"
     /** Le booléen de la v1.96, retiré au premier passage. */
@@ -1206,6 +1207,13 @@ object Store {
      * laisse qu'un son discret à la fin. Elle est éteinte par défaut : c'est
      * un choix, pas une opinion imposée.
      */
+    /** Le journal ne s'ouvre qu'après le code ou l'empreinte du téléphone (audit du 12/11) ; éteint par défaut. */
+    fun journalVerrou(context: Context): Boolean = prefs(context).getBoolean(KEY_JOURNAL_VERROU, false)
+
+    fun setJournalVerrou(context: Context, verrou: Boolean) {
+        prefs(context).edit().putBoolean(KEY_JOURNAL_VERROU, verrou).apply()
+    }
+
     fun hideCountdown(context: Context): Boolean =
         prefs(context).getBoolean(KEY_HIDE_COUNTDOWN, false)
 

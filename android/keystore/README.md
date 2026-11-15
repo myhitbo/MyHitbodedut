@@ -34,3 +34,24 @@ En intégration continue, passer ces valeurs par des secrets GitHub.
 
 Une clé de publication est définitive : la perdre interdit toute mise à jour de
 l'application sur le Play Store.
+
+## Signer les APK des releases GitHub par une clé privée (audit du 12/11/2026)
+
+Tant que les APK publiés sont signés par la clé de ce dossier, quiconque lit le
+dépôt peut signer une « mise à jour » qu'Android installera par-dessus
+l'application, avec accès au journal. `android.yml` prend une clé privée dès
+que ces quatre secrets existent (Settings → Secrets and variables → Actions) :
+
+```bash
+keytool -genkeypair -v -keystore release-myhitbodedut.jks -alias myhitbodedut \
+  -keyalg RSA -keysize 4096 -validity 10000
+base64 -w0 release-myhitbodedut.jks   # → RELEASE_KEYSTORE_BASE64
+```
+
+`RELEASE_KEYSTORE_BASE64`, `RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`,
+`RELEASE_KEY_PASSWORD`. Garder le fichier et ses mots de passe hors du dépôt,
+avec une copie de secours : la perdre interdit toute mise à jour.
+
+Android refuse une mise à jour signée par une autre clé. Le passage se fait
+donc une fois, sur chaque téléphone : exporter (Réglages → Mes données),
+désinstaller, installer le nouvel APK, importer.

@@ -577,7 +577,8 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           date,
           minutes: Number.isInteger(e.minutes) ? Math.min(Math.max(e.minutes, 0), 24 * 60) : 0,
           note: typeof e.note === 'string' ? e.note.slice(0, NOTE_MAX) : '',
-          themes: Array.isArray(e.themes) ? e.themes.filter((t) => typeof t === 'string' && t !== '') : [],
+          // Bornés (audit du 12/11) : un fichier fabriqué ne remplit pas le stockage.
+          themes: Array.isArray(e.themes) ? e.themes.filter((t) => typeof t === 'string' && t !== '' && t.length <= 40).slice(0, 20) : [],
           noteSeule,
           faite: !noteSeule,
         };
@@ -588,7 +589,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           date,
           minutes: Math.max(existant.minutes, entrant.minutes),
           note: existant.note.trim() !== '' ? existant.note : entrant.note,
-          themes: [...new Set([...existant.themes, ...entrant.themes])],
+          themes: [...new Set([...existant.themes, ...entrant.themes])].slice(0, 20),
           noteSeule: seule,
           faite: !seule,
         } : entrant;
@@ -610,7 +611,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
           if (Number.isInteger(s[cle]) && s[cle] >= min && s[cle] <= max) set(pref ?? cle, s[cle]);
         };
         const bool = (cle, pref) => { if (typeof s[cle] === 'boolean') set(pref ?? cle, s[cle]); };
-        const texteNonVide = (cle, pref) => { if (typeof s[cle] === 'string' && s[cle].trim() !== '') set(pref ?? cle, s[cle]); };
+        const texteNonVide = (cle, pref) => { if (typeof s[cle] === 'string' && s[cle].trim() !== '' && s[cle].length <= 100) set(pref ?? cle, s[cle]); };
         entier('window_start'); entier('window_end'); entier('snooze_minutes', null, 1, 240);
         entier('target_minutes', null, 1, 240); entier('daily_goal_minutes', null, 0, 240);
         bool('pause_shabbat'); bool('in_israel');
@@ -654,12 +655,12 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau } = 
       if (Array.isArray(root.paused_dates)) {
         const dates = store.pausedDates();
         root.paused_dates.forEach((d) => { if (typeof d === 'string' && dateValide(d)) dates.add(d); });
-        set('paused_dates', [...dates]);
+        set('paused_dates', [...dates].slice(0, 4000));
       }
       if (Array.isArray(root.blocked_apps)) {
         const apps = new Set(get('blocked_apps', []));
-        root.blocked_apps.forEach((a) => { if (typeof a === 'string' && a.trim() !== '') apps.add(a); });
-        set('blocked_apps', [...apps]);
+        root.blocked_apps.forEach((a) => { if (typeof a === 'string' && a.trim() !== '' && a.length <= 255) apps.add(a); });
+        set('blocked_apps', [...apps].slice(0, 500));
       }
       return importees;
     },

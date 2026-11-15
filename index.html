@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Audit de sécurité du 12/11/2026 : les scripts viennent de deux CDN ; aucun ne peut envoyer
+       ailleurs ce que la page garde (connect-src), ni charger un cadre ou un module. -->
+  <meta http-equiv="Content-Security-Policy" content="connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
+  <meta name="referrer" content="no-referrer">
   <title>Suivi d’habitudes intelligent</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>

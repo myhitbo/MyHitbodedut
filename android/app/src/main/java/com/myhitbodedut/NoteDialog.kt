@@ -115,6 +115,11 @@ object NoteDialog {
             .setNegativeButton(R.string.action_later, null)
             .setOnDismissListener { onClosed?.invoke() }
             .create()
+        // Ce qu'on écrit ici est aussi intime que le journal : ni capture, ni aperçu (audit du 12/11).
+        dialog.window?.setFlags(
+            android.view.WindowManager.LayoutParams.FLAG_SECURE,
+            android.view.WindowManager.LayoutParams.FLAG_SECURE
+        )
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
         input.addTextChangedListener(object : TextWatcher {

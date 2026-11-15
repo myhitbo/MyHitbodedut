@@ -33,12 +33,14 @@ android {
      * est public. Pour une publication sur le Play Store, générer une autre clé
      * gardée hors du dépôt et la fournir par les variables ci-dessous.
      */
+    // Une variable vide vaut absente : en intégration continue, un secret qui n'existe pas arrive vide.
+    fun env(nom: String): String? = System.getenv(nom)?.takeIf { it.isNotEmpty() }
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "../keystore/myhitbodedut-dev.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "myhitbodedut"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "myhitbodedut"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "myhitbodedut"
+            storeFile = file(env("KEYSTORE_PATH") ?: "../keystore/myhitbodedut-dev.jks")
+            storePassword = env("KEYSTORE_PASSWORD") ?: "myhitbodedut"
+            keyAlias = env("KEY_ALIAS") ?: "myhitbodedut"
+            keyPassword = env("KEY_PASSWORD") ?: "myhitbodedut"
         }
     }
 
