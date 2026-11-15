@@ -35,6 +35,28 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="24dp">
 
+                <!-- Le ciel du lieu, qui suit les zmanim (refonte « Ciel », 15/11) ; touché, il
+                     ouvre les zmanim. Couché, l'accueil n'a pas la hauteur : le bandeau n'y est pas. -->
+                <com.myhitbodedut.CielView
+                    android:id="@+id/ciel"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/ciel_hauteur"
+                    android:clickable="true"
+                    android:contentDescription="@string/ciel_description"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground" />
+
+                <TextView
+                    android:id="@+id/ciel_legende"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="12dp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textColor="?attr/mhMuted"
+                    android:textSize="13sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

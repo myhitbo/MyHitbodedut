@@ -356,6 +356,7 @@ class SettingsActivity : AppCompatActivity() {
             refresh()
         }
         // Grand texte (14/10) : les textes de lecture à 140 % ; la barre « Aa » règle toujours finement.
+        bindSwitch(R.id.ciel_switch, Store.accueilCiel(this)) { Store.setAccueilCiel(this, it) }
         bindSwitch(R.id.grand_texte_switch, Store.lectureEchelle(this) >= GRAND_TEXTE) { Store.setLectureEchelle(this, if (it) GRAND_TEXTE else 1f) }
         bindSwitch(R.id.levana_switch, Store.levanaAffichee(this)) { Store.setLevanaAffichee(this, it) }
         bindSwitch(R.id.levana_rappel_switch, Store.levanaRappel(this)) { Store.setLevanaRappel(this, it); LevanaAlerte.programmer(this) }

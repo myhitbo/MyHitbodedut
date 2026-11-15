@@ -1125,6 +1125,11 @@
     <string name="settings_typo">Typographie</string>
     <string name="typo_systeme">Système (d’origine)</string>
     <string name="typo_souffle">Souffle (Bellefair, Open Sans)</string>
+    <string name="settings_ciel">Ciel sur l’accueil</string>
+    <string name="ciel_description">Le ciel du jour : ouvrir les zmanim</string>
+    <string name="ciel_prochain">Prochain : %1$s à %2$s</string>
+    <string name="ciel_sans_lieu">Ciel approximatif : choisissez une ville pour les zmanim du lieu.</string>
+    <string name="ciel_nuit">Rabbi Na’hman recommande la nuit, quand le monde se tait.</string>
     <string name="settings_grand_texte">Grand texte de lecture</string>
     <string name="journal_humeur_avant">Avant la hitbodedout</string>
     <string name="journal_humeur_apres">Après</string>

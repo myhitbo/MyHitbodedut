@@ -16,4 +16,5 @@
     <dimen name="hero_art_w">64dp</dimen>
     <dimen name="hero_art_h">78dp</dimen>
     <dimen name="hero_title">24sp</dimen>
+    <dimen name="ciel_hauteur">128dp</dimen>
 </resources>

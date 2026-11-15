@@ -1091,6 +1091,11 @@
     <string name="settings_typo">טיפוגרפיה</string>
     <string name="typo_systeme">מערכת (המקורית)</string>
     <string name="typo_souffle">נשימה (Bellefair, Open Sans)</string>
+    <string name="settings_ciel">שמיים במסך הבית</string>
+    <string name="ciel_description">שמי היום: פתיחת הזמנים</string>
+    <string name="ciel_prochain">הבא: %1$s ב־%2$s</string>
+    <string name="ciel_sans_lieu">שמיים משוערים: בחרו עיר לזמני המקום.</string>
+    <string name="ciel_nuit">רבי נחמן ממליץ על הלילה, כשהעולם שקט.</string>
     <string name="settings_grand_texte">טקסט קריאה גדול</string>
     <string name="journal_humeur_avant">לפני ההתבודדות</string>
     <string name="journal_humeur_apres">אחרי</string>

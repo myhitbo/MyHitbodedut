@@ -147,6 +147,7 @@ object Store {
     private const val KEY_FOND = "apparence_fond"
     private const val KEY_ACCENT = "apparence_accent"
     private const val KEY_POLICE_INTERFACE = "apparence_police"
+    private const val KEY_ACCUEIL_CIEL = "accueil_ciel"
     private const val KEY_LANGUE_APP = "langue_app"
     private const val KEY_LANGUE_REPLI = "langue_repli"
     private const val KEY_MUSIC_ON = "music_enabled"
@@ -1356,6 +1357,13 @@ object Store {
         prefs(context).edit().putString(KEY_POLICE_INTERFACE, police.cle).apply()
     }
 
+    /** Le bandeau « Ciel » en haut de l'accueil (15/11), montré par défaut. */
+    fun accueilCiel(context: Context): Boolean = prefs(context).getBoolean(KEY_ACCUEIL_CIEL, true)
+
+    fun setAccueilCiel(context: Context, oui: Boolean) {
+        prefs(context).edit().putBoolean(KEY_ACCUEIL_CIEL, oui).apply()
+    }
+
     fun accent(context: Context): Apparence.Accent =
         Apparence.Accent.parse(prefs(context).getString(KEY_ACCENT, null))
 
@@ -1558,6 +1566,7 @@ object Store {
             .put("apparence_fond", fond(context).cle)
             .put("apparence_accent", accent(context).cle)
             .put("apparence_police", police(context).cle)
+            .put("accueil_ciel", accueilCiel(context))
             .put("siddur_nusah", siddurNusah(context).cle)
             .put("lecture_echelle", lectureEchelle(context).toDouble())
             .put("lecture_police", lecturePolice(context).cle)
@@ -1717,6 +1726,7 @@ object Store {
                 ?.let { setAccent(context, Apparence.Accent.parse(it)) }
             settings.optString("apparence_police").takeIf { it.isNotBlank() }
                 ?.let { setPolice(context, Apparence.Police.parse(it)) }
+            if (settings.has("accueil_ciel")) setAccueilCiel(context, settings.optBoolean("accueil_ciel", true))
             Nusah.entries.firstOrNull { it.cle == settings.optString("siddur_nusah") }?.let { setSiddurNusah(context, it) }
             if (settings.has("lecture_echelle")) {
                 setLectureEchelle(context, settings.optDouble("lecture_echelle", 1.0).toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))

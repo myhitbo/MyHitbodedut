@@ -1061,6 +1061,11 @@
     <string name="settings_typo">Typography</string>
     <string name="typo_systeme">System (original)</string>
     <string name="typo_souffle">Souffle (Bellefair, Open Sans)</string>
+    <string name="settings_ciel">Sky on the home screen</string>
+    <string name="ciel_description">Today’s sky: open the zmanim</string>
+    <string name="ciel_prochain">Next: %1$s at %2$s</string>
+    <string name="ciel_sans_lieu">Approximate sky: choose a city for local zmanim.</string>
+    <string name="ciel_nuit">Rabbi Nachman recommends the night, when the world is quiet.</string>
     <string name="settings_grand_texte">Large reading text</string>
     <string name="journal_humeur_avant">Before the hitbodedut</string>
     <string name="journal_humeur_apres">After</string>

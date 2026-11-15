@@ -149,6 +149,20 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
+                    <!-- Le ciel de l'accueil (15/11) reste caché couché : la hauteur manque pour « Commencer ».
+                         Présent pour garder les identifiants de la version debout (LayoutPaysageTest). -->
+                    <com.myhitbodedut.CielView
+                        android:id="@+id/ciel"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/ciel_hauteur"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/ciel_legende"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
                     <!-- Couché, sans la ligne « MyHitbodedut » : la hauteur manque pour « Commencer ». -->
 
                     <TextView
