@@ -408,10 +408,12 @@ def fusionner(jours):
 
 def sans_courriels(x):
     """TWEBCONF-17 : les crédits des biographies portent l'adresse e-mail personnelle de contributeurs
-    (« דוא"ל : … ») ; elle n'est d'aucune utilité au lecteur et n'est pas publiée. Le crédit reste."""
+    (« דוא"ל : … ») ; elle n'est d'aucune utilité au lecteur et n'est pas publiée. Le crédit reste.
+    Adresse en ASCII seulement : \\w prendrait aussi les lettres hébraïques collées devant
+    (« פצ'נובסקיnitzan62@… » perdait la fin du nom, relecture du 15/11)."""
     if isinstance(x, str):
-        x = re.sub(r'(?:כתובת\s+)?דוא"ל:?\s*[\w.+-]+@[\w.-]+', "", x)
-        return re.sub(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}", "", x)
+        x = re.sub(r'(?:כתובת\s+)?דוא"ל:?\s*[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', "", x)
+        return re.sub(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", "", x)
     if isinstance(x, list):
         return [sans_courriels(y) for y in x]
     if isinstance(x, dict):

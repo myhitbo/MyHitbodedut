@@ -134,6 +134,9 @@ class HilloulotTest {
     /** TWEBCONF-17 : aucune adresse e-mail personnelle de contributeur dans les biographies livrées. */
     @Test
     fun `les biographies ne portent aucune adresse e-mail`() {
-        assertTrue(!File("src/main/res/raw/hilloulot_bios.json").readText().contains("@"))
+        val bios = File("src/main/res/raw/hilloulot_bios.json").readText()
+        assertTrue(!bios.contains("@"))
+        // Le retrait ne mord pas sur le texte hébreu collé devant l'adresse (relecture du 15/11).
+        assertTrue(bios.contains("למשפחת רבני פצ'נובסקי"))
     }
 }
