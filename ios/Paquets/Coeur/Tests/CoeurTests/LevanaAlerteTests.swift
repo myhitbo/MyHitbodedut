@@ -5,9 +5,9 @@ import Testing
 /// Le rappel de Birkat haLevana : le cas « rappel Levana, premier soir puis motsae Chabbat puis dernier » de
 /// DixAmeliorationsTest d'Android, porté (les autres cas de ce fichier relèvent d'autres règles), puis
 /// `Tests/Vecteurs/levana.json` (tools/vecteurs_ios/VecteursLevana.kt) : les soirs du rappel de chaque mois
-/// hébreu de 5784 à 5790, la suite des rappels sur deux ans et le prochain rappel vu de chaque jour, l'heure
-/// du soir à 20 h. L'heure réelle (la sortie des étoiles au lieu choisi), l'alarme et la notification restent
-/// à Android.
+/// hébreu de 5784 à 5790, puis depuis chaque jour autour des bornes de 5787, la suite des rappels sur deux ans
+/// et le prochain rappel vu de chaque jour, l'heure du soir à 20 h. L'heure réelle (la sortie des étoiles au
+/// lieu choisi), l'alarme et la notification restent à Android.
 @Suite("Rappel de Birkat haLevana")
 struct LevanaAlerteTests {
 
@@ -72,6 +72,14 @@ struct LevanaAlerteTests {
             let date: String
             let vues: [[[String]]]
         }
+        /// Les noms des soirs du rappel depuis chaque jour, à partir de `depart` (voir LevanaTests pour le reste).
+        struct Bornes: Decodable {
+            let date: String
+            let fuseau: String
+            let usage: String
+            let depart: String
+            let soirs: [String]
+        }
         struct SuiteDeRappels: Decodable {
             let fuseau: String
             let usage: String
@@ -88,6 +96,7 @@ struct LevanaAlerteTests {
         let soirsAlerte: [SoirAndroid]
         let fuseaux: [String]
         let fenetres: [MoisHebreu]
+        let bornes: [Bornes]
         let suites: [SuiteDeRappels]
         let prochains: [Prochains]
     }
@@ -148,6 +157,26 @@ struct LevanaAlerteTests {
             }
         }
         #expect(rappelsMotsae > 0, "des motsaé Chabbat rappelés")
+    }
+
+    /// LevanaAlerte.soirs depuis chaque jour, du troisième avant le premier soir au deuxième après le dernier :
+    /// le soir de `depuis` est gardé, ceux d'avant non, et la liste est vide après le dernier soir.
+    @Test func lesSoirsDuRappelDepuisChaqueJour() throws {
+        let v = try Self.vecteurs()
+        var vides = 0
+        for b in v.bornes {
+            let zone = try #require(Fuseau(b.fuseau), "fuseau « \(b.fuseau) » inconnu")
+            let usage = try #require(Levana.Usage(rawValue: b.usage), "usage « \(b.usage) » inconnu")
+            let f = Levana.fenetre(.du(b.date), fuseau: zone, usage: usage)
+            let depart = JourCivil.du(b.depart)
+            for (k, attendus) in b.soirs.enumerated() {
+                let depuis = depart.plus(jours: k)
+                let noms = LevanaAlerte.soirs(f, depuis: depuis, fuseau: zone).map { $0.soir.rawValue }.joined(separator: " ")
+                #expect(noms == attendus, "\(b.date), \(b.fuseau), \(b.usage) : les soirs depuis le \(depuis.iso)")
+                if attendus.isEmpty { vides += 1 }
+            }
+        }
+        #expect(vides > 0, "des listes vides après le dernier soir")
     }
 
     /// Chaque rappel trouvé depuis le 1er janvier 2026, puis le suivant cherché une minute après, jusqu'en 2028.

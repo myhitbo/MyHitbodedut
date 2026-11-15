@@ -22,8 +22,8 @@ public enum Reminder {
         let prochain = ReminderRule.prochainDeclenchement(maintenant: maintenant, heures: reminderTimes)?.millis
         let reporte = reminderSnoozedUntil
         if reporte > maintenant.millis {
-            guard let prochain else { return reporte }
-            return reporte < prochain ? reporte : prochain
+            guard let regle = prochain else { return reporte }
+            return reporte < regle ? reporte : regle
         }
         return prochain
     }

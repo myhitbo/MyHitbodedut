@@ -82,7 +82,9 @@ object VecteursLevana : Generateur {
                 })
         },
         // Autour des bornes, à Jérusalem et à New York, de Tichri à Eloul 5787 : Levana.etat du
-        // troisième jour avant le premier soir au deuxième après le dernier, et Levana.part à des instants voisins.
+        // troisième jour avant le premier soir au deuxième après le dernier, les noms des soirs de
+        // LevanaAlerte.soirs depuis chacun de ces jours (la borne comprise, la liste vide après le
+        // dernier soir), et Levana.part à des instants voisins.
         "bornes" to premiersJours.filter { JewishCalendar(it).jewishYear == 5787 }.flatMap { date ->
             listOf("Asia/Jerusalem", "America/New_York").flatMap { id ->
                 val zone = ZoneId.of(id)
@@ -97,6 +99,7 @@ object VecteursLevana : Generateur {
                         p - 1, p, p + 1)
                     linkedMapOf("date" to date.toString(), "fuseau" to id, "usage" to u.cle, "depart" to depart.toString(),
                         "etats" to jours.map { etat(Levana.etat(f, it, zone)) },
+                        "soirs" to jours.map { d -> LevanaAlerte.soirs(f, d, zone).joinToString(" ") { it.second.name } },
                         "instants" to instants,
                         "parts" to instants.map { Levana.part(f, Instant.ofEpochMilli(it)) })
                 }

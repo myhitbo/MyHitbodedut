@@ -8,7 +8,8 @@ import Testing
 /// `Tests/Vecteurs/modele.json` (tools/vecteurs_ios/VecteursModele.kt) : les journées que Store écrit
 /// dans la préférence « days », celles qu'il relit d'un texte posé à la main et le texte qu'il réécrit
 /// alors, le journal enrichi, le résumé, les minutes du mois et le prénom. Un texte long y est jugé par
-/// sa longueur en unités UTF-16 et son empreinte (String.hashCode de Java).
+/// sa longueur en unités UTF-16 et son empreinte (String.hashCode de Java). Le graphique du mois
+/// (JournalPlus.Graphique, une vue) reste à Android.
 @Suite("Modèle du journal")
 struct ModeleTests {
 
@@ -175,7 +176,7 @@ struct ModeleTests {
             } else if let n = try? c.decode(Int.self) {
                 self = .entier(n)
             } else {
-                self = .texte(try c.decode(String.self))
+                self = try .texte(c.decode(String.self))
             }
         }
 

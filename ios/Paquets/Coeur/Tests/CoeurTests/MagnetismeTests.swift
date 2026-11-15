@@ -17,7 +17,7 @@ struct MagnetismeTests {
         for ligne in texte.split(separator: "\n") where !ligne.hasPrefix("#") {
             let morceaux = ligne.split(whereSeparator: { $0 == " " || $0 == "\t" || $0 == "\r" })
             if morceaux.isEmpty { continue }
-            let nombres = morceaux.compactMap { Double($0) }
+            let nombres: [Double] = morceaux.compactMap { Double($0) }
             // Année, altitude (km), latitude, longitude, D, I, H, X, Y, Z, F, puis les variations annuelles.
             try #require(nombres.count == 18 && morceaux.count == 18, "ligne illisible : \(ligne)")
             lignes += 1
@@ -38,7 +38,7 @@ struct MagnetismeTests {
         let donnees = try Depot.donnees("web/src/js/magnetisme.js")
         let js = String(decoding: donnees, as: UTF8.self)
         let rang = ExpressionReguliere("\\[(\\d+),(\\d+),(-?[0-9.]+),(-?[0-9.]+),(-?[0-9.]+),(-?[0-9.]+)\\]")
-        let lus = rang.toutes(js).map { c in c.groupes.dropFirst().map { Double($0) ?? .nan } }
+        let lus: [[Double]] = rang.toutes(js).map { c in c.groupes.dropFirst().map { Double($0) ?? .nan } }
         #expect(lus.count == 90)
         let identiques = lus == Magnetisme.coefficients
         #expect(identiques)

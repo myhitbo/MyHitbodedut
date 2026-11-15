@@ -134,7 +134,8 @@ struct ZmanimWidgetTests {
                 let limite = reponse.limite?.millis
                 let memeFuseau = reponse.limite.map { $0.fuseau == fuseau } ?? true
                 if reponse.priere != priere || limite != limiteAttendue || !memeFuseau {
-                    fautes.append("\(maintenant) : \(reponse.priere) jusqu'à \(Self.ecrit(limite)) au lieu de \(priere) jusqu'à \(Self.ecrit(limiteAttendue))")
+                    let rendue = "\(reponse.priere) jusqu'à \(Self.ecrit(limite))"
+                    fautes.append("\(maintenant) : \(rendue) au lieu de \(priere) jusqu'à \(Self.ecrit(limiteAttendue))")
                 }
             }
         }

@@ -3,9 +3,10 @@
 // et le texte qu'il réécrit alors, le journal enrichi (JournalPlus.lire, ecrire), son résumé, les
 // minutes du mois, et le prénom. ModeleTests de Coeur les rejoue sur Journal et JournalPlus.
 //
-// Un texte long n'est pas recopié : sa longueur en unités UTF-16 et son empreinte (String.hashCode)
-// suffisent à dire qu'iOS écrit les mêmes octets. Les dates des journées sont passées en argument,
-// toutes avant 2026 : rien ne dépend du jour qu'il est.
+// Ce qu'on donne à Android est écrit en entier, pour être rejoué ; un texte long qu'il rend ne l'est
+// pas : sa longueur en unités UTF-16 et son empreinte (String.hashCode) suffisent à dire qu'iOS écrit
+// les mêmes octets. Les dates des journées sont passées en argument, et aucune opération ne regarde
+// le jour qu'il est.
 
 import com.myhitbodedut.DayRecord
 import com.myhitbodedut.JournalPlus

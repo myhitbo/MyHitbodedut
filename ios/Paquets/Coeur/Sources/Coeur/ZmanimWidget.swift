@@ -16,7 +16,8 @@ public enum ZmanimWidget {
         if let alot = horaires["alot"], maintenant < alot {
             guard let milieu = horaires["chatsot_layla"] else { return ("arvit", nil) }
             let hier = veille(milieu)
-            return ("arvit", maintenant < hier ? hier : nil)
+            if maintenant < hier { return ("arvit", hier) }
+            return ("arvit", nil)
         }
         let limites: [(String, DateHeureZonee?)] = [
             ("chaharit", horaires["szt_gra"]), ("minha", horaires["chkia"]), ("arvit", horaires["chatsot_layla"]),

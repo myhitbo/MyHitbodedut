@@ -4,8 +4,8 @@ import Testing
 
 /// Les poses du personnage (Character.kt d'Android, qui n'a pas de test sur Android) :
 /// `Tests/Vecteurs/guidee.json` rejoué. Android choisit la pose du jour d'après `LocalDate.now()` ;
-/// ici le jour est un argument, et les vecteurs portent des jours fixes, le générateur ayant d'abord
-/// vérifié sa règle sur le vrai code pour les jours du lancement (trois fuseaux).
+/// ici le jour est un argument, et les vecteurs portent des jours fixes : le générateur règle l'horloge
+/// figée de l'oracle (tools/export_contenu/tables/bouchons/Horloge.kt) sur chacun, et le vrai code répond.
 @Suite("Poses")
 struct PosesTests {
 
@@ -30,6 +30,10 @@ struct PosesTests {
             let call: String
             let during: String
             let joy: String
+            /// `greeting(true)`.
+            let greeting: String
+            /// `greeting(false)`.
+            let accueil: String
         }
 
         let poses: Fixes
@@ -99,8 +103,8 @@ struct PosesTests {
             #expect(call == p.call, "\(p.jour) : call")
             #expect(during == p.during, "\(p.jour) : during")
             #expect(joy == p.joy, "\(p.jour) : joy")
-            #expect(faite == p.joy, "\(p.jour) : greeting(true)")
-            #expect(aFaire == v.poses.accueil, "\(p.jour) : greeting(false)")
+            #expect(faite == p.greeting, "\(p.jour) : greeting(true)")
+            #expect(aFaire == p.accueil, "\(p.jour) : greeting(false)")
         }
     }
 
@@ -129,6 +133,8 @@ struct PosesTests {
             noms.insert(p.call)
             noms.insert(p.during)
             noms.insert(p.joy)
+            noms.insert(p.greeting)
+            noms.insert(p.accueil)
         }
         for nom in noms.sorted() {
             let chemin = Depot.racine.appendingPathComponent("ios/Ressources/Images/\(nom).webp").path

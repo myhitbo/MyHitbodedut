@@ -133,7 +133,8 @@ extension SiddurJour {
                 guard case .objet(let a) = element else {
                     throw ErreurJSON(position: 0, raison: "« \(cle) » : une annotation n'est pas un objet")
                 }
-                annotations.append(try annotation(a))
+                let lue = try annotation(a)
+                annotations.append(lue)
             }
             sortie[cle] = annotations
         }

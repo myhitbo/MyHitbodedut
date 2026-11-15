@@ -252,7 +252,8 @@ struct ZmanimVignetteTests {
         for c in try Self.vecteurs().debut {
             let horaires = c.horaires.mapValues { DateHeureZonee(millis: $0, fuseau: Self.paris) }
             let debut = ZmanimVignette.debut(priere: c.priere, horaires: horaires)?.millis
-            #expect(debut == c.resultat, "« \(c.priere) », horaires \(c.horaires.keys.sorted())")
+            let ou = "« \(c.priere) », horaires \(c.horaires.keys.sorted())"
+            #expect(debut == c.resultat, "\(ou)")
         }
     }
 

@@ -20,7 +20,8 @@ struct SiddurJourTests {
     }
 
     private static let charges: Result<Donnees, any Error> = Result {
-        let json = String(decoding: try Depot.contenu("siddur_annotations.json"), as: UTF8.self)
+        let brut = try Depot.contenu("siddur_annotations.json")
+        let json = String(decoding: brut, as: UTF8.self)
         var siddourim: [Nusah: Siddur] = [:]
         var annotations: [Nusah: [String: [SiddurJour.Annotation]]] = [:]
         for n in Nusah.allCases {
@@ -330,7 +331,7 @@ struct SiddurJourTests {
 
     // MARK: Les vecteurs de la JVM (tools/vecteurs_ios/VecteursSiddurJour.kt)
 
-    private struct Vecteurs: Decodable, Sendable {
+    private struct Vecteurs: Decodable {
         struct Cas: Decodable {
             let nom: String
             let date: String
@@ -456,11 +457,9 @@ struct SiddurJourTests {
         let moment: Moment
     }
 
-    private static let vecteursLus: Result<Vecteurs, any Error> = Result {
+    private func vecteurs() throws -> Vecteurs {
         try JSONDecoder().decode(Vecteurs.self, from: Depot.donnees("ios/Paquets/Coeur/Tests/Vecteurs/siddur_jour.json"))
     }
-
-    private func vecteurs() throws -> Vecteurs { try Self.vecteursLus.get() }
 
     /// Les noms de Kotlin, pour lire les vecteurs.
     private func nom(_ style: SiddurJour.Style) -> String {
@@ -530,8 +529,14 @@ struct SiddurJourTests {
         }
     }
 
+    /// Les conditions de chaque cas selon CalendrierJuif d'iOS.
     private func conditionsDesCas(_ v: Vecteurs) -> [Set<String>] {
         v.cas.map { c in CalendrierJuif.jour(.du(c.date), enIsrael: c.israel, mukafChoma: c.muree).conditions }
+    }
+
+    /// Les conditions de chaque cas selon Android : les lignes se jugent à part du calendrier.
+    private func conditionsLues(_ v: Vecteurs) -> [Set<String>] {
+        v.cas.map { Set($0.conditions) }
     }
 
     private func lignesDuReleve(_ v: Vecteurs, _ jours: [Set<String>], _ d: Donnees, n: Nusah, t: String, c: Int,
@@ -552,11 +557,13 @@ struct SiddurJourTests {
         let jours = conditionsDesCas(v)
         for (ci, c) in v.cas.enumerated() {
             let lues = Set(c.conditions)
-            #expect(jours[ci] == lues, "\(c.nom) : en trop \(jours[ci].subtracting(lues).sorted()), manque \(lues.subtracting(jours[ci]).sorted())")
+            let enTrop = jours[ci].subtracting(lues).sorted(), manque = lues.subtracting(jours[ci]).sorted()
+            #expect(jours[ci] == lues, "\(c.nom) : en trop \(enTrop), manque \(manque)")
             for (rang, n) in Nusah.allCases.enumerated() {
                 let pour = SiddurJour.conditionsPour(n, enIsrael: c.israel, jours[ci], sansTahanounFinTichri: c.finTichri, sud: c.sud)
                 let attendu = Set(c.pour[rang])
-                #expect(pour == attendu, "\(c.nom), \(n.rawValue) : en trop \(pour.subtracting(attendu).sorted()), manque \(attendu.subtracting(pour).sorted())")
+                let plus = pour.subtracting(attendu).sorted(), moins = attendu.subtracting(pour).sorted()
+                #expect(pour == attendu, "\(c.nom), \(n.rawValue) : en trop \(plus), manque \(moins)")
             }
         }
     }
@@ -565,7 +572,7 @@ struct SiddurJourTests {
     @Test func lesLignesDeChaqueTexteSontCellesDAndroid() throws {
         let v = try vecteurs()
         let d = try donnees()
-        let jours = conditionsDesCas(v)
+        let jours = conditionsLues(v)
         #expect(v.lignes.count == 1456)
         var ecarts: [String] = []
         for r in v.lignes {
@@ -585,7 +592,7 @@ struct SiddurJourTests {
     @Test func troisLecturesLigneALigne() throws {
         let v = try vecteurs()
         let d = try donnees()
-        let jours = conditionsDesCas(v)
+        let jours = conditionsLues(v)
         for detail in v.details {
             let n = try #require(Nusah(rawValue: detail.n), "\(detail.n)")
             let l = try lignesDuReleve(v, jours, d, n: n, t: detail.t, c: detail.c, o: detail.o).map { signature($0) }
