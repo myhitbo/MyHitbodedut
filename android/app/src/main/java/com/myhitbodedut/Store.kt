@@ -154,6 +154,7 @@ object Store {
     private const val KEY_ACCENT = "apparence_accent"
     private const val KEY_POLICE_INTERFACE = "apparence_police"
     private const val KEY_ACCUEIL_CIEL = "accueil_ciel"
+    private const val KEY_ACCUEIL_DISPOSITION = "accueil_disposition"
     private const val KEY_LANGUE_APP = "langue_app"
     private const val KEY_LANGUE_REPLI = "langue_repli"
     private const val KEY_MUSIC_ON = "music_enabled"
@@ -1469,6 +1470,28 @@ object Store {
         prefs(context).edit().putBoolean(KEY_ACCUEIL_CIEL, oui).apply()
     }
 
+    /**
+     * La disposition de l'accueil (15/11) : l'accueil d'avant, ou l'une des trois refontes
+     * aimées sur les maquettes. Un choix inconnu (sauvegarde plus récente) revient au classique.
+     */
+    enum class Disposition(val cle: String, val libelle: Int) {
+        CLASSIQUE("classique", R.string.disposition_classique),
+        CIEL("ciel", R.string.disposition_ciel),
+        BENTO("bento", R.string.disposition_bento),
+        PILE("pile", R.string.disposition_pile);
+
+        companion object {
+            fun parse(cle: String?): Disposition = values().firstOrNull { it.cle == cle } ?: CLASSIQUE
+        }
+    }
+
+    fun accueilDisposition(context: Context): Disposition =
+        Disposition.parse(prefs(context).getString(KEY_ACCUEIL_DISPOSITION, null))
+
+    fun setAccueilDisposition(context: Context, d: Disposition) {
+        prefs(context).edit().putString(KEY_ACCUEIL_DISPOSITION, d.cle).apply()
+    }
+
     fun accent(context: Context): Apparence.Accent =
         Apparence.Accent.parse(prefs(context).getString(KEY_ACCENT, null))
 
@@ -1673,6 +1696,7 @@ object Store {
             .put("apparence_accent", accent(context).cle)
             .put("apparence_police", police(context).cle)
             .put("accueil_ciel", accueilCiel(context))
+            .put("accueil_disposition", accueilDisposition(context).cle)
             .put("siddur_nusah", siddurNusah(context).cle)
             .put("lecture_echelle", lectureEchelle(context).toDouble())
             .put("lecture_police", lecturePolice(context).cle)
@@ -1838,6 +1862,7 @@ object Store {
             settings.optString("apparence_police").takeIf { it.isNotBlank() }
                 ?.let { setPolice(context, Apparence.Police.parse(it)) }
             if (settings.has("accueil_ciel")) setAccueilCiel(context, settings.optBoolean("accueil_ciel", true))
+            if (settings.has("accueil_disposition")) setAccueilDisposition(context, Disposition.parse(settings.optString("accueil_disposition")))
             Nusah.entries.firstOrNull { it.cle == settings.optString("siddur_nusah") }?.let { setSiddurNusah(context, it) }
             if (settings.has("lecture_echelle")) {
                 setLectureEchelle(context, settings.optDouble("lecture_echelle", 1.0).toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))

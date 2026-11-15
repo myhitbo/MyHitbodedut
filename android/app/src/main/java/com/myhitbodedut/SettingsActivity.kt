@@ -110,6 +110,13 @@ class SettingsActivity : AppCompatActivity() {
                 Store.setLecturePolice(this, polices[it]); renderValues()
             }
         }
+        // La disposition de l'accueil (15/11) : le classique, ou l'une des trois refontes aimées.
+        findViewById<Button>(R.id.disposition_button).setOnClickListener {
+            val choix = Store.Disposition.values()
+            choisirParmi(R.string.settings_disposition, choix.map { it.libelle }, choix.indexOf(Store.accueilDisposition(this))) {
+                Store.setAccueilDisposition(this, choix[it]); renderValues()
+            }
+        }
         findViewById<Button>(R.id.ouverture_button).setOnClickListener {
             val choix = Store.Ouverture.values()
             choisirParmi(R.string.settings_ouverture, choix.map { it.libelle }, choix.indexOf(Store.ouverture(this))) {
@@ -478,6 +485,7 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<Button>(R.id.typo_button).setText(Store.police(this).nom)
         findViewById<Button>(R.id.police_button).setText(Store.lecturePolice(this).libelle)
         findViewById<Button>(R.id.ouverture_button).setText(Store.ouverture(this).libelle)
+        findViewById<Button>(R.id.disposition_button).setText(Store.accueilDisposition(this).libelle)
         findViewById<Button>(R.id.halakha_source_button).setText(Store.sourceHalakha(this).libelle)
         findViewById<Button>(R.id.levana_usage_button).text = Store.levanaUsage(this)?.let { getString(it.libelle) }
             ?: getString(R.string.levana_usage_auto) + " · " + getString(VueJour.usageLevana(this).libelle)

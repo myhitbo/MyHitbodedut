@@ -35,6 +35,20 @@ class CielView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     /** Appelé chaque minute tant que le bandeau est visible : l'écran recalcule le ciel. */
     var aChaqueMinute: (() -> Unit)? = null
 
+    /**
+     * L'accueil « Ciel complet » (15/11) : le ciel prend tout l'écran, sans coins arrondis ;
+     * l'arc et les collines remontent au milieu, la carte de séance se pose dessous, et le
+     * hassid garde une taille de personnage plutôt que la moitié de la hauteur.
+     */
+    var pleinEcran: Boolean = false
+        set(v) {
+            if (field == v) return
+            field = v
+            invalidateOutline()
+            if (width > 0) onSizeChanged(width, height, width, height)
+            invalidate()
+        }
+
     private var ciel: CielDuJour.Ciel? = null
     private val densite = resources.displayMetrics.density
     private fun dp(v: Float) = v * densite
@@ -65,7 +79,7 @@ class CielView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     init {
         outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
-                outline.setRoundRect(0, 0, view.width, view.height, dp(20f))
+                outline.setRoundRect(0, 0, view.width, view.height, if (pleinEcran) 0f else dp(20f))
             }
         }
         clipToOutline = true
@@ -95,21 +109,24 @@ class CielView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         super.onSizeChanged(w, h, oldw, oldh)
         val l = w.toFloat()
         val t = h.toFloat()
+        // Plein écran, tout remonte : les collines vers 60 % de la hauteur, l'arc au-dessus.
+        val k = if (pleinEcran) 0.74f else 1f
         colline1.reset()
-        colline1.moveTo(0f, t * 0.78f)
-        colline1.cubicTo(l * 0.18f, t * 0.70f, l * 0.38f, t * 0.72f, l * 0.54f, t * 0.77f)
-        colline1.cubicTo(l * 0.70f, t * 0.82f, l * 0.85f, t * 0.74f, l, t * 0.71f)
+        colline1.moveTo(0f, t * 0.78f * k)
+        colline1.cubicTo(l * 0.18f, t * 0.70f * k, l * 0.38f, t * 0.72f * k, l * 0.54f, t * 0.77f * k)
+        colline1.cubicTo(l * 0.70f, t * 0.82f * k, l * 0.85f, t * 0.74f * k, l, t * 0.71f * k)
         colline1.lineTo(l, t); colline1.lineTo(0f, t); colline1.close()
         colline2.reset()
-        colline2.moveTo(0f, t * 0.90f)
-        colline2.cubicTo(l * 0.23f, t * 0.83f, l * 0.46f, t * 0.85f, l * 0.64f, t * 0.88f)
-        colline2.cubicTo(l * 0.80f, t * 0.91f, l * 0.90f, t * 0.87f, l, t * 0.85f)
+        colline2.moveTo(0f, t * 0.90f * k)
+        colline2.cubicTo(l * 0.23f, t * 0.83f * k, l * 0.46f, t * 0.85f * k, l * 0.64f, t * 0.88f * k)
+        colline2.cubicTo(l * 0.80f, t * 0.91f * k, l * 0.90f, t * 0.87f * k, l, t * 0.85f * k)
         colline2.lineTo(l, t); colline2.lineTo(0f, t); colline2.close()
         // L'arc du soleil, du lever (à gauche) au coucher (à droite), sous les collines à ses bouts.
-        arc.set(l * 0.08f, t * 0.20f, l * 0.92f, t * 1.40f)
+        if (pleinEcran) arc.set(l * 0.08f, t * 0.30f, l * 0.92f, t * 0.90f)
+        else arc.set(l * 0.08f, t * 0.20f, l * 0.92f, t * 1.40f)
         // Le croissant : un disque moins un disque décalé.
         val cx = l * 0.82f
-        val cy = t * 0.24f
+        val cy = t * (if (pleinEcran) 0.30f else 0.24f)
         val r = dp(9f)
         lune.reset()
         lune.addCircle(cx, cy, r, Path.Direction.CW)
@@ -134,9 +151,11 @@ class CielView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
         // Les étoiles, puis la lune : seulement quand la nuit tombe.
         if (c.nuit > 0.02f) {
             plein.color = CielDuJour.BLANC
-            for (i in 0 until 18) {
+            val etoiles = if (pleinEcran) 30 else 18
+            val etendue = if (pleinEcran) 0.50f else 0.58f
+            for (i in 0 until etoiles) {
                 plein.alpha = (c.nuit * (140 + (i % 4) * 38)).roundToInt().coerceIn(0, 255)
-                canvas.drawCircle(((i * 97) % 100) / 100f * l, (0.06f + ((i * 53) % 58) / 100f) * t, dp(1f + (i % 3) * 0.4f), plein)
+                canvas.drawCircle(((i * 97) % 100) / 100f * l, (0.06f + ((i * 53) % 58) / 100f * etendue / 0.58f) * t, dp(1f + (i % 3) * 0.4f), plein)
             }
             plein.color = CielDuJour.LUNE
             plein.alpha = (c.nuit * 255).roundToInt().coerceIn(0, 255)
@@ -169,9 +188,9 @@ class CielView @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
 
         // Le hassid sur la colline, un peu dans l'ombre la nuit.
         personnage?.let { d ->
-            val hauteur = t * 0.46f
+            val hauteur = if (pleinEcran) minOf(t * 0.17f, dp(132f)) else t * 0.46f
             val largeur = if (d.intrinsicHeight > 0) hauteur * d.intrinsicWidth / d.intrinsicHeight else hauteur * 0.6f
-            val bas = t * 0.90f
+            val bas = t * 0.90f * (if (pleinEcran) 0.74f else 1f)
             val gauche = l * 0.80f - largeur / 2f
             d.setBounds(gauche.roundToInt(), (bas - hauteur).roundToInt(), (gauche + largeur).roundToInt(), bas.roundToInt())
             val lumiere = (255 * (1f - c.nuit * 0.45f)).roundToInt().coerceIn(0, 255)

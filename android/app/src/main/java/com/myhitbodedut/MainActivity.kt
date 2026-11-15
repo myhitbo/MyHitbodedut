@@ -372,6 +372,9 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     // --- Rendu --------------------------------------------------------------
 
+    /** Les trois accueils refondus (15/11), choisis dans Réglages › Apparence. */
+    private val refontes by lazy { AccueilRefontes(this) }
+
     private fun refresh() {
         renderCiel()
         renderToday()
@@ -387,6 +390,8 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         renderReminders()
         renderSettingsEntry()
         renderStartCard()
+        // En dernier : une refonte cache le haut de l'accueil classique que ce qui précède vient de régler.
+        refontes.rendre()
     }
 
     /** Les cartes de l'accueil qui lisent les fichiers de données. */
@@ -453,7 +458,9 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     private fun renderCiel() {
         val vue = findViewById<CielView>(R.id.ciel) ?: return
         val legende = findViewById<TextView>(R.id.ciel_legende)
-        val montre = Store.accueilCiel(this) &&
+        // Sous une refonte, le bandeau n'a pas sa place (il se redessine chaque minute : sans ce
+        // test, il revenait par-dessus le Bento ou la Pile).
+        val montre = Store.accueilCiel(this) && refontes.disposition() == Store.Disposition.CLASSIQUE &&
             resources.configuration.orientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE
         vue.visibility = if (montre) View.VISIBLE else View.GONE
         legende.visibility = vue.visibility
@@ -527,6 +534,8 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         val aujourdhui = java.time.LocalDate.now()
         val nouveaux = Anneaux.aFeter(etat, aujourdhui, Store.anneauxFetes(this))
         Store.setAnneauxFetes(this, Anneaux.marques(etat, aujourdhui))
+        // Sous une refonte, les anneaux sont cachés : rien à fêter à l'écran, ni à faire vibrer.
+        if (!refontes.anneauxMontres) return
         if (nouveaux.isEmpty()) {
             if (face == Plaque.Face.HASSID) sautiller(1)
         } else {

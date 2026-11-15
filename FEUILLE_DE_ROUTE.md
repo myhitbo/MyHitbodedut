@@ -1167,10 +1167,16 @@ toucher. CI verte (Android, web, Nokia).
    typographie Souffle (Bellefair pour les grands titres, Open Sans pour
    le texte), aussi réglable seule. **15/11** : la refonte Ciel entre en
    bandeau en haut de l'accueil (le ciel du lieu suit les zmanim, le
-   prochain zman dessous). Reste à décider si l'accueil va plus loin :
-   Ciel complet, Bento ou Pile (leurs fusions ont été écartées : « Ciel
-   vivant » trop chargé, « Épurés » trop vides, « Équilibrés »).
-   Studio 2026 (S1 à S5) et N1 à N3 restent à évaluer.
+   prochain zman dessous). Le même jour, les trois refontes aimées sont
+   dans l'app, au choix (Réglages › Apparence › Disposition de l'accueil) :
+   Ciel complet (le ciel en plein écran, l'heure, le moment du jour, la
+   séance dans une carte de verre), Bento (six tuiles qui ouvrent leur
+   écran, recherche dessous) et Pile (quatre cartes qu'on fait glisser, le
+   'hizouk qui se retourne). Classique par défaut ; couché, l'accueil reste
+   classique. Reste à les voir sur téléphone (captures : étape 28) et à
+   choisir celle qui devient l'accueil par défaut. Leurs fusions restent
+   écartées (« Ciel vivant » trop chargé, « Épurés » trop vides,
+   « Équilibrés »). Studio 2026 (S1 à S5) et N1 à N3 restent à évaluer.
 3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
    replie en rond tournant (pochette, ou hassid à la guitare).
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots

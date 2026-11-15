@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    L'accueil « Bento » (refonte E aimée, 15/11) : la journée en tuiles. Chacune est un
+    aperçu (la semaine, la série, le prochain zman, le ’hizouk, l'ambiance, le journal)
+    et ouvre son écran ; la grande tuile lance la séance. La recherche reste dessous.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bento"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/bento_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/mhMuted"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/bento_bonjour"
+                style="?attr/mhStyleTitre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="?attr/mhInk"
+                android:textSize="28sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/bento_avatar"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/bg_tuile"
+            android:importantForAccessibility="no"
+            android:padding="6dp"
+            android:scaleType="fitCenter" />
+    </LinearLayout>
+
+    <!-- La séance : la semaine en anneau, l'état du jour, et ce qu'un toucher fait. -->
+    <LinearLayout
+        android:id="@+id/bento_hitbo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_tuile_marque"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:minHeight="128dp"
+        android:orientation="horizontal"
+        android:padding="18dp">
+
+        <FrameLayout
+            android:layout_width="76dp"
+            android:layout_height="76dp">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/bento_anneau"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:importantForAccessibility="no"
+                app:indicatorColor="?attr/mhMint"
+                app:indicatorSize="76dp"
+                app:trackCornerRadius="4dp"
+                app:trackThickness="7dp" />
+
+            <TextView
+                android:id="@+id/bento_anneau_texte"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFeatureSettings="tnum"
+                android:gravity="center"
+                android:importantForAccessibility="no"
+                android:textColor="?attr/mhOnBrand"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/bento_hitbo_titre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/mhOnBrand"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bento_hitbo_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:alpha="0.9"
+                android:drawableEnd="@drawable/ic_chevron"
+                android:drawablePadding="4dp"
+                android:drawableTint="?attr/mhOnBrand"
+                android:gravity="center_vertical"
+                android:textColor="?attr/mhOnBrand"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <!-- La série, et la semaine en sept barres. -->
+        <LinearLayout
+            android:id="@+id/bento_serie"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_tuile"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:minHeight="150dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/bento_serie_nombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFeatureSettings="tnum"
+                android:includeFontPadding="false"
+                android:textColor="?attr/mhInk"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bento_serie_texte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/mhMuted"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:id="@+id/bento_barres"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:layout_marginTop="12dp"
+                android:gravity="bottom"
+                android:importantForAccessibility="noHideDescendants"
+                android:orientation="horizontal" />
+        </LinearLayout>
+
+        <!-- Le prochain zman et le temps qui reste. -->
+        <LinearLayout
+            android:id="@+id/bento_zmanim"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_tuile"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:minHeight="150dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/bento_zman_nom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="?attr/mhMuted"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/bento_zman_dans"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1"
+                android:fontFeatureSettings="tnum"
+                android:textColor="?attr/mhInk"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/bento_zman_chkia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="?attr/mhMuted"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Le ’hizouk du jour, en hébreu. -->
+    <LinearLayout
+        android:id="@+id/bento_hizouk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_tuile"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.12"
+            android:text="@string/refonte_hizouk"
+            android:textColor="?attr/mhMuted"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/bento_hizouk_texte"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:lineSpacingMultiplier="1.2"
+            android:maxLines="3"
+            android:textColor="?attr/mhInk"
+            android:textDirection="rtl"
+            android:textSize="19sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <!-- L'ambiance ou la musique de la prochaine séance. -->
+        <LinearLayout
+            android:id="@+id/bento_ambiance"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_tuile"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:minHeight="120dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/refonte_ambiance"
+                android:textColor="?attr/mhMuted"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/bento_ambiance_nom"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/mhInk"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/bento_egaliseur"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom"
+                android:importantForAccessibility="noHideDescendants"
+                android:orientation="horizontal" />
+        </LinearLayout>
+
+        <!-- La dernière note du journal, sauf journal verrouillé. -->
+        <LinearLayout
+            android:id="@+id/bento_journal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_tuile"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:minHeight="120dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/bento_journal_titre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="?attr/mhMuted"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/bento_journal_texte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.15"
+                android:maxLines="4"
+                android:textColor="?attr/mhInk"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bento_recherche"
+        style="@style/Bouton.Contour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical|start"
+        android:text="@string/refonte_recherche"
+        android:textColor="?attr/mhMuted"
+        app:icon="@drawable/ic_loupe"
+        app:iconTint="?attr/mhMuted" />
+</LinearLayout>

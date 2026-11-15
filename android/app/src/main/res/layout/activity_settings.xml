@@ -122,6 +122,13 @@
 
             <LinearLayout style="@style/SettingRow">
 
+                <TextView style="@style/SettingLabel" android:text="@string/settings_disposition" />
+
+                <Button android:id="@+id/disposition_button" style="@style/SettingValue" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/SettingRow">
+
                 <TextView
                     style="@style/SettingLabel"
                     android:layout_width="0dp"

@@ -57,7 +57,17 @@
                     android:textColor="?attr/mhMuted"
                     android:textSize="13sp" />
 
+                <!-- Les trois refontes aimées (15/11), choisies dans Réglages › Apparence ; cachées
+                     sur l'accueil classique. Elles prennent la place du haut de l'accueil, les cartes
+                     du moment, de la relance et des paliers restent dessous. -->
+                <include layout="@layout/accueil_ciel_complet" />
+
+                <include layout="@layout/accueil_bento" />
+
+                <include layout="@layout/accueil_pile" />
+
                 <TextView
+                    android:id="@+id/accueil_marque"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
@@ -89,6 +99,7 @@
                     android:textSize="15sp" />
 
                 <LinearLayout
+                    android:id="@+id/status_ligne"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -140,6 +151,7 @@
 
                 <!-- Les trois anneaux (jour, semaine, série), et le hassid qui accueille en leur creux. -->
                 <FrameLayout
+                    android:id="@+id/hero_anneaux"
                     android:layout_width="@dimen/gauge_size"
                     android:layout_height="@dimen/gauge_size"
                     android:layout_gravity="center_horizontal"
@@ -246,6 +258,7 @@
                     obligatoire, et la rangée défile si elle déborde.
                 -->
                 <HorizontalScrollView
+                    android:id="@+id/start_puces"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"

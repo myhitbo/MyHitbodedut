@@ -49,6 +49,7 @@
 
                     <!-- Les trois anneaux (jour, semaine, série), et le hassid qui accueille en leur creux. -->
                     <FrameLayout
+                        android:id="@+id/hero_anneaux"
                         android:layout_width="@dimen/gauge_size_side"
                         android:layout_height="@dimen/gauge_size_side"
                         android:layout_gravity="center_horizontal">
@@ -164,6 +165,11 @@
                         android:visibility="gone" />
 
                     <!-- Couché, sans la ligne « MyHitbodedut » : la hauteur manque pour « Commencer ». -->
+                    <TextView
+                        android:id="@+id/accueil_marque"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
 
                     <TextView
                         style="?attr/mhStyleTitre"
@@ -188,6 +194,7 @@
                         android:textSize="17sp" />
 
                     <LinearLayout
+                        android:id="@+id/status_ligne"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -250,6 +257,7 @@
                         obligatoire, et la rangée défile si elle déborde.
                     -->
                     <HorizontalScrollView
+                        android:id="@+id/start_puces"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
