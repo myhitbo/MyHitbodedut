@@ -25,7 +25,7 @@ class PratiqueCalme(
     private val activite: Activity,
     private val fond: View,
     private val couleurFond: Int,
-    /** Ce qui reste visible par-dessus ce qui s'efface (le mini-lecteur) : son toucher passe. */
+    /** Ce qui reste visible (« Terminer », le guide, le mini-lecteur) : son toucher passe (FSEANCE-08, FBARRIERE-25). */
     private val restes: () -> List<View> = { emptyList() },
     private val effaces: () -> List<View>,
 ) {

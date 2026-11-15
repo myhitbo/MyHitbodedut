@@ -310,6 +310,14 @@ configure lui-même, est la meilleure approche.
   verrou. Passer par les applications récentes, redémarrer, ou désactiver
   l'application dans les Réglages permet de l'éviter. Comme pour l'app de
   référence, l'objectif est de rompre l'automatisme du matin, pas d'enfermer.
+- **D'autres contournements, plus simples encore.** En écran partagé, une
+  seule application est tenue pour « au premier plan » : la dernière passée en
+  avant ; ouvrir en dernier une application non bloquée dans l'autre moitié
+  lève l'écran. Avancer l'horloge du téléphone au-delà de la fin de la
+  fenêtre l'éteint. « Plus tard » se répète sans limite de nombre. Enfin la
+  pastille « Avec Hachem » de l'accueil coupe la barrière d'un toucher. Aucun
+  n'est colmaté : un ralentisseur plus ferme (plafond de reports par fenêtre,
+  écran partagé) est une décision du propriétaire.
 - **Détection à environ une seconde.** La surveillance interroge le système
   toutes les 900 ms. L'application bloquée peut donc rester visible un instant
   avant que l'écran n'apparaisse.

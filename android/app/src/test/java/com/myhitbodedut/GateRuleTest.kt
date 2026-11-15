@@ -60,6 +60,8 @@ class GateRuleTest {
         assertEquals(GateState.EXEMPT_DAY, GateRule.etat(arme.copy(exempte = true)))
         assertEquals(GateState.SNOOZED, GateRule.etat(arme.copy(reportee = true)))
         assertEquals(GateState.OUTSIDE_WINDOW, GateRule.etat(arme.copy(dansLaFenetre = false)))
+        // Un report qui survit à la fenêtre ne se dit plus « en cours » (FBARRIERE-24).
+        assertEquals(GateState.OUTSIDE_WINDOW, GateRule.etat(arme.copy(dansLaFenetre = false, reportee = true)))
     }
 
     @Test
@@ -70,6 +72,14 @@ class GateRuleTest {
         assertTrue(GateRule.dansLaFenetre(23 * 60, 21 * 60, 2 * 60))
         assertTrue(GateRule.dansLaFenetre(60, 21 * 60, 2 * 60))
         assertFalse(GateRule.dansLaFenetre(12 * 60, 21 * 60, 2 * 60))
+    }
+
+    @Test
+    fun `apres minuit, la fin d une fenetre de nuit reste celle de la veille`() {
+        assertTrue(GateRule.finDeFenetreDeNuit(30, 21 * 60, 2 * 60))
+        assertFalse(GateRule.finDeFenetreDeNuit(23 * 60, 21 * 60, 2 * 60))
+        assertFalse(GateRule.finDeFenetreDeNuit(3 * 60, 21 * 60, 2 * 60))
+        assertFalse(GateRule.finDeFenetreDeNuit(30, 6 * 60, 10 * 60))
     }
 
     @Test

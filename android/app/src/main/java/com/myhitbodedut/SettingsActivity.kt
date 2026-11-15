@@ -147,15 +147,13 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.window_start).setOnClickListener {
             pickTime(Store.windowStart(this)) {
-                if (it == Store.windowEnd(this)) { Toast.makeText(this, R.string.window_identique, Toast.LENGTH_LONG).show(); return@pickTime }
-                Store.setWindow(this, it, Store.windowEnd(this))
+                if (it == Store.windowEnd(this)) fenetreVide() else Store.setWindow(this, it, Store.windowEnd(this))
                 refresh()
             }
         }
         findViewById<Button>(R.id.window_end).setOnClickListener {
             pickTime(Store.windowEnd(this)) {
-                if (it == Store.windowStart(this)) { Toast.makeText(this, R.string.window_identique, Toast.LENGTH_LONG).show(); return@pickTime }
-                Store.setWindow(this, Store.windowStart(this), it)
+                if (it == Store.windowStart(this)) fenetreVide() else Store.setWindow(this, Store.windowStart(this), it)
                 refresh()
             }
         }
@@ -739,6 +737,11 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     // --- Sélecteurs ---------------------------------------------------------
+
+    /** Début = fin : la plage serait vide, le mode n'agirait jamais (FBARRIERE-17). */
+    private fun fenetreVide() {
+        Toast.makeText(this, R.string.settings_window_same, Toast.LENGTH_LONG).show()
+    }
 
     private fun pickTime(currentMinutes: Int, onPicked: (Int) -> Unit) {
         TimePickerDialog(

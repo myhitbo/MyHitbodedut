@@ -77,11 +77,12 @@
     <string name="gate_stopped_action">Relancer le mode</string>
     <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
-    <string name="gate_done_detail">Plus rien ne sera bloqué aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
-    <string name="gate_exempt_title">Jour de pause</string>
+    <string name="gate_done_detail">Plus rien ne sera bloqué d’ici la prochaine plage horaire, sauf pendant une hitbodedout en cours.</string>
+    <string name="gate_exempt_title">Jour sans obligation</string>
     <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
     <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
+    <string name="settings_window_same">Le début et la fin sont identiques : le mode n’agirait jamais.</string>
     <string name="gate_window_title">Hors de la plage horaire</string>
     <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est bloqué.</string>
 
@@ -102,7 +103,6 @@
 
     <!-- Réglages -->
     <string name="settings_window">Plage horaire</string>
-    <string name="window_identique">Le début et la fin doivent être différents.</string>
     <string name="settings_snooze">Durée du report</string>
     <string name="settings_target">Durée d’une hitbodedout</string>
     <string name="settings_daily_goal">Objectif quotidien</string>
@@ -142,7 +142,7 @@
     <string name="permission_notifications_why">Sans elles, le rappel se programme et n’apparaît jamais, et la hitbodedout n’affiche rien quand le téléphone est posé.</string>
     <string name="session_notifications_pourquoi">Pour montrer le temps qui reste et annoncer la fin de la hitbodedout quand le téléphone est posé, l’application a besoin des notifications.</string>
     <string name="permission_battery_why">Sans elle, Android peut retarder le rappel de plusieurs heures. Dans la liste qui s’ouvre, cherchez MyHitbodedut et choisissez « Ne pas optimiser ».</string>
-    <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez le matin.</string>
+    <string name="permission_overlay_why">Pour afficher l’écran « Je suis avec Hachem » par-dessus l’application que vous ouvrez pendant les heures du mode.</string>
     <string name="permission_usage_why">Pour savoir quelle application vient de s’ouvrir. Rien n’est enregistré ni envoyé.</string>
     <string name="permission_granted">Accordée</string>
     <string name="permission_missing">Non accordée</string>
@@ -157,7 +157,7 @@
 
     <!-- Écran de garde -->
     <string name="blocker_question">Avez-vous fait votre hitbodedout ?</string>
-    <string name="blocker_subtitle">Un moment à l’écart avant le reste de la journée.</string>
+    <string name="blocker_subtitle">Un moment à l’écart avant le reste.</string>
     <string name="blocker_streak_none">Première journée de la série.</string>
     <string name="blocker_start">Commencer maintenant, %1$s</string>
     <string name="blocker_already_done">Je l’ai faite sans le téléphone</string>
@@ -284,8 +284,8 @@
     </plurals>
 
     <plurals name="apps_selected">
-        <item quantity="one">%d application bloquée</item>
-        <item quantity="other">%d applications bloquées</item>
+        <item quantity="one">%d application choisie</item>
+        <item quantity="other">%d applications choisies</item>
     </plurals>
 
     <plurals name="import_ok">
@@ -491,7 +491,7 @@
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">Rappels</string>
-    <string name="reminders_hint">Une ou plusieurs heures dans la journée. Rien ne sonne un jour de repos, ni une fois la hitbodedout faite.</string>
+    <string name="reminders_hint">Une ou plusieurs heures dans la journée. Rien ne sonne un jour de repos, ni la veille à partir de l’allumage des bougies (de midi si aucun lieu n’est réglé), ni une fois la hitbodedout faite.</string>
     <string name="reminders_open">Régler les rappels</string>
     <string name="reminders_enable">Me rappeler la hitbodedout</string>
     <string name="reminders_enable_hint">Un rappel aux heures réglées, tant que la hitbodedout du jour n’est pas faite.</string>

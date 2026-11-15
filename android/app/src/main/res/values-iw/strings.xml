@@ -72,11 +72,12 @@
     <string name="gate_stopped_action">להפעיל את המצב מחדש</string>
     <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
     <string name="gate_done_title">היום הושלם</string>
-    <string name="gate_done_detail">היום כבר לא ייחסם דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
+    <string name="gate_done_detail">עד החלון הבא דבר לא ייחסם, מלבד במהלך התבודדות שהתחלתם.</string>
     <string name="gate_exempt_title">יום ללא חובה</string>
     <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב מושבת והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
-    <string name="gate_snoozed_detail">התבקשה דחייה. „אני עם השם” יחזור בסיומה.</string>
+    <string name="gate_snoozed_detail">התבקשה דחייה. המצב יחזור בסיומה.</string>
+    <string name="settings_window_same">ההתחלה והסיום זהים: המצב לא יפעל לעולם.</string>
     <string name="gate_window_title">מחוץ לחלון</string>
     <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לשעות האלה דבר אינו נחסם.</string>
 
@@ -95,7 +96,6 @@
     <string name="action_back">חזרה</string>
 
     <string name="settings_window">שעות „אני עם השם”</string>
-    <string name="window_identique">ההתחלה והסיום חייבים להיות שונים.</string>
     <string name="settings_snooze">משך הדחייה</string>
     <string name="settings_target">משך ההתבודדות</string>
     <string name="settings_daily_goal">יעד יומי</string>
@@ -135,7 +135,7 @@
     <string name="permission_notifications_why">בלעדיהן התזכורת נקבעת ולעולם אינה מופיעה, וההתבודדות לא מציגה דבר כשהטלפון מונח.</string>
     <string name="session_notifications_pourquoi">כדי להציג את הזמן שנותר ולהודיע על סיום ההתבודדות כשהטלפון מונח, האפליקציה צריכה הרשאה להתראות.</string>
     <string name="permission_battery_why">בלעדיה אנדרואיד עלול לעכב את התזכורת בשעות. ברשימה שתיפתח, חפשו את MyHitbodedut ובחרו „ללא אופטימיזציה”.</string>
-    <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בבוקר.</string>
+    <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בשעות פעולת המצב.</string>
     <string name="permission_usage_why">כדי לדעת איזו אפליקציה נפתחה זה עתה. שום דבר אינו נשמר ואינו נשלח.</string>
     <string name="permission_granted">אושרה</string>
     <string name="permission_missing">לא ניתנה</string>
@@ -268,9 +268,9 @@
     </plurals>
 
     <plurals name="apps_selected">
-        <item quantity="one">אפליקציה אחת חסומה</item>
-        <item quantity="two">שתי אפליקציות חסומות</item>
-        <item quantity="other">%d אפליקציות חסומות</item>
+        <item quantity="one">אפליקציה אחת נבחרה</item>
+        <item quantity="two">שתי אפליקציות נבחרו</item>
+        <item quantity="other">%d אפליקציות נבחרו</item>
     </plurals>
 
     <plurals name="import_ok">
@@ -406,7 +406,7 @@
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">תזכורות</string>
-    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, ולא אחרי שההתבודדות נעשתה.</string>
+    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, לא בערב שלפניו מהדלקת הנרות (מהצהריים אם לא הוגדר מקום), ולא אחרי שההתבודדות נעשתה.</string>
     <string name="reminders_open">הגדרת התזכורות</string>
     <string name="reminders_enable">להזכיר לי להתבודד</string>
     <string name="reminders_enable_hint">תזכורת בשעות שהוגדרו, כל עוד ההתבודדות של היום לא נעשתה.</string>
