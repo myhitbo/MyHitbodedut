@@ -40,8 +40,14 @@ class MiniLecteur(private val activite: Activity) {
     private val d = activite.resources.displayMetrics.density
     private fun dp(v: Int) = (v * d).toInt()
 
-    /** Les pochettes déjà lues, par morceau ; null : pas de photo dans le fichier. */
-    private val pochettes = HashMap<String, Bitmap?>()
+    /**
+     * Les pochettes déjà lues, par morceau ; null : pas de photo dans le fichier. Quelques-unes
+     * seulement, les plus récentes : en lecture aléatoire, la table grandissait sans fin.
+     */
+    private val pochettes = object : LinkedHashMap<String, Bitmap?>(8, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Bitmap?>?): Boolean =
+            size > Pochette.GARDEES
+    }
     private var morceau: String? = null
     private var deplie = false
     private var glisse = false
@@ -280,7 +286,16 @@ class MiniLecteur(private val activite: Activity) {
                 MediaMetadataRetriever().run {
                     try {
                         setDataSource(activite, track.uri)
-                        embeddedPicture?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
+                        embeddedPicture?.let { octets ->
+                            // Décodée à la taille du disque, pas en pleine taille : une pochette de
+                            // 3000 × 3000 pesait 36 Mo en mémoire pour 64 dp (FSEANCE-22).
+                            val bornes = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                            BitmapFactory.decodeByteArray(octets, 0, octets.size, bornes)
+                            val options = BitmapFactory.Options().apply {
+                                inSampleSize = Pochette.echantillon(bornes.outWidth, bornes.outHeight, dp(64))
+                            }
+                            BitmapFactory.decodeByteArray(octets, 0, octets.size, options)
+                        }
                     } finally {
                         release()
                     }
@@ -335,5 +350,23 @@ class MiniLecteur(private val activite: Activity) {
     private fun temps(ms: Int): String {
         val s = (ms / 1000).coerceAtLeast(0)
         return String.format(Locale.US, "%d:%02d", s / 60, s % 60)
+    }
+}
+
+/** Le décodage des pochettes du mini-lecteur, à l'écart d'Android pour être mis à l'épreuve. */
+object Pochette {
+
+    /** Les pochettes gardées en mémoire. */
+    const val GARDEES = 8
+
+    /**
+     * Le facteur de réduction (une puissance de deux, comme le veut BitmapFactory) qui garde le
+     * petit côté de l'image au moins à [cible] pixels ; 1 pour une image déjà petite ou illisible.
+     */
+    fun echantillon(largeur: Int, hauteur: Int, cible: Int): Int {
+        if (largeur <= 0 || hauteur <= 0 || cible <= 0) return 1
+        var facteur = 1
+        while (minOf(largeur, hauteur) / (facteur * 2) >= cible) facteur *= 2
+        return facteur
     }
 }
