@@ -84,8 +84,9 @@ class MusicPlayer(private val context: Context) {
         enPause = false
         // Les attributs audio se posent avant prepare(), sans quoi certains
         // appareils lèvent une exception d'état.
+        val brut = MediaPlayer()
         val created = runCatching {
-            MediaPlayer().apply {
+            brut.apply {
                 setAudioAttributes(attributes())
                 if (track.isBundled) {
                     context.resources.openRawResourceFd(track.rawRes).use { fd ->
@@ -96,8 +97,11 @@ class MusicPlayer(private val context: Context) {
                 }
                 prepare()
             }
-        }.onFailure { Log.w(TAG, "lecture impossible : ${track.id}", it) }
-            .getOrNull() ?: return false
+        }.onFailure {
+            // Le lecteur créé avant l'échec est libéré, sinon il restait en mémoire (FSEANCE-22).
+            runCatching { brut.release() }
+            Log.w(TAG, "lecture impossible : ${track.id}", it)
+        }.getOrNull() ?: return false
 
         created.isLooping = loop && onEnd == null
         if (onEnd != null) {

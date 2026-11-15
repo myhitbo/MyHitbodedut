@@ -98,7 +98,7 @@ class MusicActivity : AppCompatActivity() {
                 }
 
                 override fun onStartTrackingTouch(bar: SeekBar?) = Unit
-                override fun onStopTrackingTouch(bar: SeekBar?) = Unit
+                override fun onStopTrackingTouch(bar: SeekBar?) = SessionService.musicChanged(this@MusicActivity)
             })
         }
     }
@@ -194,8 +194,19 @@ class MusicActivity : AppCompatActivity() {
             return
         }
         stopPreview()
+        // En séance, la musique de la séance est seule à jouer : toucher un morceau le lui
+        // donne, au lieu de lancer un second lecteur qui lui prendrait le focus (FSEANCE-07).
+        if (Store.isSessionRunning(this)) {
+            Store.setMusicEnabled(this, true)
+            Store.setMusicTrackId(this, track.id)
+            SessionService.musicChanged(this)
+            return
+        }
         val player = MusicPlayer(this)
-        val started = player.start(track, Store.musicVolume(this), loop = false)
+        // Le morceau fini, l'aperçu se range : le bouton repasse sur « lecture » (FSEANCE-22).
+        val started = player.start(track, Store.musicVolume(this), loop = false) {
+            if (preview === player) stopPreview()
+        }
         if (!started) {
             Toast.makeText(this, R.string.music_play_failed, Toast.LENGTH_LONG).show()
             return
@@ -278,6 +289,7 @@ class MusicActivity : AppCompatActivity() {
 
             val select = {
                 Store.setMusicTrackId(this@MusicActivity, track.id)
+                SessionService.musicChanged(this@MusicActivity)
                 // Choisir un morceau, c'est quitter la lecture aléatoire.
                 if (Store.musicShuffle(this@MusicActivity)) {
                     Store.setMusicShuffle(this@MusicActivity, false)

@@ -79,7 +79,6 @@ class SessionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_session)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         countdown = findViewById(R.id.session_countdown)
         caption = findViewById(R.id.session_caption)
@@ -252,6 +251,7 @@ class SessionActivity : AppCompatActivity() {
         SessionService.reconcilier(this)
         handler.removeCallbacks(tick)
         handler.post(tick)
+        if (::miniLecteur.isInitialized) miniLecteur.reprendre()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -269,6 +269,7 @@ class SessionActivity : AppCompatActivity() {
 
     override fun onPause() {
         handler.removeCallbacks(tick)
+        miniLecteur.suspendre()
         // La lueur s'arrête avec l'écran ; render() la relance au retour.
         souffle.actif = false
         super.onPause()
@@ -301,6 +302,9 @@ class SessionActivity : AppCompatActivity() {
             if (cancelling) cancelling = false else afficherChizuk(Moment.CLOTURE)
         }
         wasRunning = running
+        // L'écran ne reste allumé que pendant une séance, pas sur l'écran de départ (FSEANCE-19).
+        if (running) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         souffle.actif = running
         calme.suivre(running)
         // Chaque seconde, et pas au seul passage à « terminée » : c'est le
@@ -462,7 +466,9 @@ class SessionActivity : AppCompatActivity() {
     private fun renderMusicLine() {
         // En lecture aléatoire, le morceau qui joue réellement, pas le morceau choisi.
         val choisi = if (Store.musicEnabled(this)) MusicLibrary.selected(this) else null
-        val track = if (choisi != null && Store.musicShuffle(this)) {
+        // Ce qui joue réellement, dans tous les modes : le morceau touché dans l'écran Musique
+        // peut ne pas encore avoir remplacé l'ancien (FSEANCE-07).
+        val track = if (choisi != null) {
             MusicLibrary.byId(this, Store.musicNow(this)) ?: choisi
         } else {
             choisi

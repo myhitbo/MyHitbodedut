@@ -68,7 +68,7 @@ class NoteDialog : DialogFragment() {
                 textSize = 26f
                 gravity = Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(0, (44 * density).toInt(), 1f)
-                contentDescription = "${i + 1}/5"
+                contentDescription = activity.getString(R.string.note_humeur_description, i + 1)
                 setOnClickListener {
                     poser(if (valeur == i + 1) 0 else i + 1)
                     suivre()
@@ -88,7 +88,10 @@ class NoteDialog : DialogFragment() {
 
         fun poser(n: Int) {
             valeur = n
-            boutons.forEachIndexed { j, b -> b.alpha = if (n == j + 1) 1f else 0.35f }
+            boutons.forEachIndexed { j, b ->
+                b.alpha = if (n == j + 1) 1f else 0.35f
+                b.isSelected = n == j + 1 // annoncé « sélectionné » par le lecteur d'écran
+            }
         }
     }
 

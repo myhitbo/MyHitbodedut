@@ -233,6 +233,15 @@ class MiniLecteur(private val activite: Activity) {
         }
     }
 
+    /** L'écran s'éteint ou passe derrière : la barre n'avance plus pour personne (FSEANCE-19). */
+    fun suspendre() = handler.removeCallbacks(suivi)
+
+    /** Retour à l'écran : la barre reprend si le lecteur est déplié. */
+    fun reprendre() {
+        handler.removeCallbacks(suivi)
+        if (deplie) handler.post(suivi)
+    }
+
     fun fermer() {
         handler.removeCallbacksAndMessages(null)
         tours.forEach { it.cancel() }

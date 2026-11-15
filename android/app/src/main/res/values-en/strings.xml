@@ -168,6 +168,7 @@
     <string name="session_cancel_title">Discard this hitbodedut?</string>
     <string name="session_cancel_message">Nothing will be recorded and the day stays open.</string>
     <string name="session_cancel_message_done">Nothing will be recorded for this hitbodedut.</string>
+    <string name="note_humeur_description">Mood %1$d of 5</string>
     <string name="session_running_title">Hitbodedut in progress</string>
     <string name="session_remaining">%1$s left</string>
     <string name="session_open">No set length</string>
@@ -588,7 +589,7 @@
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d min</string>
     <string name="duration_hours">%1$d h</string>
-    <string name="duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="duration_hours_minutes">%1$d h %2$02d min</string>
     <string name="duration_custom">Custom length…</string>
     <string name="duration_custom_title">Hitbodedut length, in minutes</string>
     <string name="duration_custom_hint">1 to 240 minutes</string>

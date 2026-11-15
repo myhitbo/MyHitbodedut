@@ -15,8 +15,8 @@ import androidx.core.view.WindowInsetsControllerCompat
  * L'écran pendant la pratique (16/10, point 2) : six secondes sans toucher,
  * et tout s'efface sauf le minuteur, sa lueur et « Terminer » ; les barres du
  * téléphone se cachent, le fond s'assombrit. Un toucher n'importe où ramène
- * tout pour six secondes, sans déclencher ce qu'il y avait dessous : on ne
- * touche pas un bouton qu'on ne voyait pas.
+ * tout pour six secondes, sans déclencher ce qu'il y avait dessous, quand le toucher
+ * tombe sur ce qui s'était effacé : on ne touche pas un bouton qu'on ne voyait pas.
  *
  * Ce qui s'efface ne change que d'opacité : render(), qui repasse chaque
  * seconde, garde la main sur ce qui est visible ou non.
@@ -47,13 +47,24 @@ class PratiqueCalme(
     /** À appeler depuis dispatchTouchEvent : true si le geste est avalé. */
     fun toucher(e: MotionEvent): Boolean {
         if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-            avale = calme
+            // Seul un geste tombé sur une vue effacée est avalé : « Terminer », le guide ou le
+            // mini-lecteur, restés visibles, reçoivent leur toucher (FSEANCE-08).
+            avale = calme && surUneVueEffacee(e)
             if (calme) sortir(anime = true)
             if (enCours) attendre()
         }
         val garde = avale
         if (e.actionMasked == MotionEvent.ACTION_UP || e.actionMasked == MotionEvent.ACTION_CANCEL) avale = false
         return garde
+    }
+
+    private fun surUneVueEffacee(e: MotionEvent): Boolean {
+        val x = e.rawX.toInt()
+        val y = e.rawY.toInt()
+        val zone = android.graphics.Rect()
+        return effaces().any { v ->
+            v.visibility == View.VISIBLE && v.getGlobalVisibleRect(zone) && zone.contains(x, y)
+        }
     }
 
     fun liberer() {
