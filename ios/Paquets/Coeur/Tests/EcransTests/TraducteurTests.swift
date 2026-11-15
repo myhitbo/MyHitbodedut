@@ -1,0 +1,181 @@
+import Foundation
+import Testing
+import Coeur
+@testable import Ecrans
+
+/// Le Traducteur résout un `Libelle` comme Android résout ses ressources : la langue de l'app, le repli sur le
+/// français, la forme du pluriel et sa forme « other », la clé elle-même quand rien ne se résout. Sur le
+/// catalogue exporté du dépôt, puis sur un catalogue écrit ici pour les cas que le vrai n'a pas (il traduit
+/// tout dans les trois langues). La mise en forme elle-même est jugée par LibelleTests (Coeur).
+@Suite("Traducteur")
+struct TraducteurTests {
+
+    private static let catalogue: Result<Data, any Error> = Result { try Fichiers.catalogue() }
+
+    private func traducteur(_ langue: String) throws -> Traducteur {
+        try Traducteur(catalogue: Self.catalogue.get(), langue: langue)
+    }
+
+    // MARK: Le catalogue exporté
+
+    @Test func desClesSimplesDansLesTroisLangues() throws {
+        let francais = try traducteur("fr").texte(cle: "nav_today")
+        #expect(francais == "Aujourd\u{2019}hui")
+        let anglais = try traducteur("en").texte(cle: "nav_today")
+        #expect(anglais == "Today")
+        let hebreu = try traducteur("he").texte(cle: "nav_today")
+        #expect(hebreu == "היום")
+        let diaspora = try traducteur("he").texte(Libelle("region_diaspora"))
+        #expect(diaspora == "חו״ל")
+    }
+
+    @Test func lesArgumentsSeGlissentDansLeGabarit() throws {
+        let allumage = Libelle("reglage_allumage_valeur", .entier(18))
+        let francais = try traducteur("fr").texte(allumage)
+        #expect(francais == "18 min avant la chki\u{2019}a")
+        let anglais = try traducteur("en").texte(allumage)
+        #expect(anglais == "18 min before sunset")
+        let hebreu = try traducteur("he").texte(allumage)
+        #expect(hebreu == "18 דקות לפני השקיעה")
+        // Un libellé dans un autre se résout dans la même langue.
+        let lieu = Libelle("zmanim_lieu_detail", .texte("Paris"), .libelle(Libelle("region_diaspora")))
+        let enFrancais = try traducteur("fr").texte(lieu)
+        #expect(enFrancais == "Paris \u{B7} Diaspora")
+        let enHebreu = try traducteur("he").texte(lieu)
+        #expect(enHebreu == "Paris \u{B7} חו״ל")
+    }
+
+    @Test func lesPlurielsDansLesTroisLangues() throws {
+        func bloquees(_ n: Int, _ langue: String) throws -> String {
+            try traducteur(langue).texte(Libelle.pluriel("apps_selected", quantite: n, .entier(n)))
+        }
+        // Français : 0 et 1 prennent « one ».
+        let francais = try [0, 1, 2].map { try bloquees($0, "fr") }
+        #expect(francais == ["0 application bloquée", "1 application bloquée", "2 applications bloquées"])
+        // Anglais : 0 prend « other ».
+        let anglais = try [0, 1, 5].map { try bloquees($0, "en") }
+        #expect(anglais == ["0 apps blocked", "1 app blocked", "5 apps blocked"])
+        // Hébreu : « one », « two », « other » ; les deux premières formes n'écrivent pas le nombre.
+        let hebreu = try [1, 2, 5].map { try bloquees($0, "he") }
+        #expect(hebreu == ["אפליקציה אחת חסומה", "שתי אפליקציות חסומות", "5 אפליקציות חסומות"])
+        // Deux arguments, la quantité choisit la forme.
+        let resume = try traducteur("fr").texte(Libelle.pluriel("journal_summary", quantite: 3, .entier(3), .texte("1 h")))
+        #expect(resume == "3 hitbodedout, 1 h au total")
+    }
+
+    @Test func uneCleIntrouvableSeRendTelleQuelle() throws {
+        let fr = try traducteur("fr")
+        let absente = fr.texte(cle: "cle_qui_n_existe_pas")
+        #expect(absente == "cle_qui_n_existe_pas")
+        // Un argument manque au gabarit (%2$@) : rien de faux ne s'affiche, la clé non plus n'est pas vide.
+        let incomplet = fr.texte(Libelle("zmanim_lieu_detail", .texte("Paris")))
+        #expect(incomplet == "zmanim_lieu_detail")
+        // Un pluriel demandé comme une chaîne simple, et l'inverse.
+        let pluriel = fr.texte(cle: "apps_selected")
+        #expect(pluriel == "apps_selected")
+        let simple = fr.texte(Libelle.pluriel("nav_today", quantite: 2))
+        #expect(simple == "nav_today")
+    }
+
+    @Test func chaqueChaineSimpleDuCatalogueSeResoutDansSaLangue() throws {
+        let brut = try CatalogueBrut.lire()
+        #expect(brut.sourceLanguage == Traducteur.repli)
+        var comparees = 0
+        for langue in Traducteur.langues {
+            let resolveur = try traducteur(langue)
+            for cle in brut.strings.keys.sorted() {
+                guard let attendue = brut.valeur(cle, langue: langue) else { continue }
+                // Sans argument, le gabarit tel qu'il est écrit (`getString(id)`).
+                let obtenue = resolveur.texte(cle: cle)
+                #expect(obtenue == attendue, "\(cle) en \(langue)")
+                comparees += 1
+            }
+        }
+        #expect(comparees > 3000, "trop peu de chaînes : \(comparees)")
+    }
+
+    // MARK: La langue de l'app
+
+    @Test func laLangueDeLApp() throws {
+        let codes: [String?] = ["fr", "en", "he", "iw", "he-IL", "fr-CA", "FR", "en_GB", "de", "", nil]
+        let langues = codes.map { Traducteur.langueApp($0) }
+        #expect(langues == ["fr", "en", "he", "he", "he", "fr", "fr", "en", "en", "en", "en"])
+        let iw = try traducteur("iw")
+        #expect(iw.langue == "he")
+        let hebreu = iw.texte(cle: "nav_journal")
+        #expect(hebreu == "יומן")
+    }
+
+    // MARK: Un catalogue écrit ici
+
+    private static let petit = Data("""
+    {
+      "sourceLanguage" : "fr",
+      "strings" : {
+        "seulement_fr" : { "localizations" : {
+          "fr" : { "stringUnit" : { "state" : "translated", "value" : "Seulement en français" } } } },
+        "bonjour" : { "localizations" : {
+          "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bonjour" } },
+          "en" : { "stringUnit" : { "state" : "translated", "value" : "Hello" } },
+          "iw" : { "stringUnit" : { "state" : "translated", "value" : "שלום" } } } },
+        "jours" : { "localizations" : {
+          "fr" : { "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%lld jour" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%lld jours" } } } } },
+          "he" : { "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "יום אחד" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%lld ימים" } } } } } } },
+        "sans_traduction" : { }
+      },
+      "version" : "1.0"
+    }
+    """.utf8)
+
+    @Test func ceQuiNEstPasTraduitRetombeSurLeFrancais() throws {
+        let anglais = try Traducteur(catalogue: Self.petit, langue: "en")
+        let seul = anglais.texte(cle: "seulement_fr")
+        #expect(seul == "Seulement en français")
+        let bonjour = anglais.texte(cle: "bonjour")
+        #expect(bonjour == "Hello")
+        // Un pluriel que l'anglais ne traduit pas : les formes du français, choisies par la règle de l'anglais.
+        let un = anglais.texte(Libelle.pluriel("jours", quantite: 1, .entier(1)))
+        #expect(un == "1 jour")
+        let zero = anglais.texte(Libelle.pluriel("jours", quantite: 0, .entier(0)))
+        #expect(zero == "0 jours")
+        // Une entrée sans aucune traduction : sa clé.
+        let rien = anglais.texte(cle: "sans_traduction")
+        #expect(rien == "sans_traduction")
+    }
+
+    @Test func unPlurielTraduitGardeSesFormesEtSaFormeOther() throws {
+        let hebreu = try Traducteur(catalogue: Self.petit, langue: "he")
+        let un = hebreu.texte(Libelle.pluriel("jours", quantite: 1, .entier(1)))
+        #expect(un == "יום אחד")
+        // « two » manque à l'hébreu de ce catalogue : sa forme « other », pas celle du français.
+        let deux = hebreu.texte(Libelle.pluriel("jours", quantite: 2, .entier(2)))
+        #expect(deux == "2 ימים")
+        // « iw » dans le catalogue se lit « he ».
+        let bonjour = hebreu.texte(cle: "bonjour")
+        #expect(bonjour == "שלום")
+    }
+
+    @Test func desOctetsQuiNeSontPasUnCatalogueSontRefuses() {
+        var refuse = false
+        do {
+            _ = try Traducteur(catalogue: Data("[1, 2]".utf8), langue: "fr")
+        } catch {
+            refuse = true
+        }
+        #expect(refuse)
+    }
+
+    @Test func desGabaritsDonnesPourUnApercu() {
+        let apercu = Traducteur(langue: "he", simples: ["fr": ["titre": "Titre"], "he": ["titre": "כותרת"]])
+        let titre = apercu.texte(cle: "titre")
+        #expect(titre == "כותרת")
+        let francais = Traducteur(langue: "fr-FR", simples: ["fr": ["titre": "Titre"]])
+        #expect(francais.langue == "fr")
+        let repli = Traducteur(langue: "en", simples: ["fr": ["titre": "Titre"]]).texte(cle: "titre")
+        #expect(repli == "Titre")
+    }
+}

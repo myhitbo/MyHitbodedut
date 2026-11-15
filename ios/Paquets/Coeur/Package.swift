@@ -27,18 +27,31 @@ let enChantierTests: [String] = [
     "AeroportsTests.swift",
     "CarteEmbarquementTests.swift",
     "CelebrationsTests.swift",
+    "FiabiliteTests.swift",
     "ParcoursTests.swift",
+    "RepriseBoussoleTests.swift",
     "RouteVolTests.swift",
     "SaisieVolTests.swift",
     "SourceDuJourTests.swift",
+    "StoreTests.swift",
     "SuiviVolTests.swift",
     "VolRappelsTests.swift",
+    "VoyageNuitTests.swift",
 ]
 let enChantierEcrans: [String] = [
     "Contenus.swift",
+    "Horloge.swift",
+    "Magasin.swift",
+    "Onglets.swift",
+    "Services.swift",
     "Traducteur.swift",
 ]
 let enChantierEcransTests: [String] = [
+    "ContenusAppTests.swift",
+    "Fichiers.swift",
+    "HorlogeTests.swift",
+    "MagasinTests.swift",
+    "TraducteurTests.swift",
 ]
 let enChantierVues: [String] = [
 ]
