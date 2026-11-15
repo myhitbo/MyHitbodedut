@@ -47,8 +47,8 @@ object JourAffiche {
         if (C.MACHIV_HAROUAH in c) add("ajout_machiv_harouah")
         if (C.MORID_HATAL in c && (C.MACHIV_HAROUAH !in c || C.BASCULE_PLUIE in c)) add("ajout_morid_hatal")
         // La 9ᵉ bénédiction (audit du 16/10) : les Edot changent de texte (ברך עלינו / ברכנו) ;
-        // rien le Chabbat, où elle n'est pas dite.
-        if (C.CHABBAT !in c) add(
+        // rien le Chabbat ni un Yom Tov, Kippour compris, où l'Amida n'a pas de bénédiction de semaine.
+        if (C.CHABBAT !in c && C.YOM_TOV !in c) add(
             if (nusah == "edot") (if (C.TAL_OUMATAR in c) "ajout_barekh_alenou" else "ajout_barkhenou")
             else if (C.TAL_OUMATAR in c) "ajout_tal_oumatar" else "ajout_berakha"
         )

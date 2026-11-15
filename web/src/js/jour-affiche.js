@@ -19,8 +19,8 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
   // Les jours de bascule, les deux formules (bascule_pluie) ; sinon l'une ou l'autre.
   if (c.has(C.MACHIV_HAROUAH)) l.push('ajout_machiv_harouah');
   if (c.has(C.MORID_HATAL) && (!c.has(C.MACHIV_HAROUAH) || c.has('bascule_pluie'))) l.push('ajout_morid_hatal');
-  // La 9ᵉ bénédiction (JourAffiche.ajouts) : texte des Edot ; rien le Chabbat.
-  if (!c.has(C.CHABBAT)) {
+  // La 9ᵉ bénédiction (JourAffiche.ajouts) : texte des Edot ; rien le Chabbat ni un Yom Tov (Kippour compris).
+  if (!c.has(C.CHABBAT) && !c.has('yom_tov')) {
     if (nusah === 'edot') l.push(c.has(C.TAL_OUMATAR) ? 'ajout_barekh_alenou' : 'ajout_barkhenou');
     else l.push(c.has(C.TAL_OUMATAR) ? 'ajout_tal_oumatar' : 'ajout_berakha');
   }

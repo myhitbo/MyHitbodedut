@@ -62,6 +62,11 @@ class JourAfficheTest {
         assertTrue("ajout_berakha" in JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-12"), false).conditions, "ashkenaz"))
         val hanouka = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-12-07"), false).conditions)
         assertTrue("ajout_al_hanissim" in hanouka && "ajout_hallel_complet" in hanouka && "ajout_barekh_alenou" in hanouka)
+        // Un Yom Tov en semaine (15 Nissan 2027) et Kippour : pas de 9e bénédiction de semaine (FCALENDRIER-12).
+        for (iso in listOf("2027-04-22", "2026-09-21")) {
+            val yt = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse(iso), false).conditions)
+            assertTrue(iso, yt.none { it in listOf("ajout_barkhenou", "ajout_berakha", "ajout_barekh_alenou", "ajout_tal_oumatar") })
+        }
         val chabbat = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-10"), false).conditions)
         assertTrue(chabbat.none { it.contains("tahanoun") })
         // Chaque clé a son libellé dans la table.
