@@ -73,8 +73,8 @@ jobs:
       # peut signer une mise à jour qu'Android acceptera par-dessus
       # l'application installée. Avec les quatre secrets RELEASE_*, les APK
       # publiés sont signés par une clé qui n'est nulle part dans le dépôt
-      # (android/keystore/README.md). Sans eux, la clé de développement, et
-      # un avertissement à chaque construction.
+      # (android/keystore/README.md). Sans eux, la clé de développement pour
+      # construire et tester, mais aucune release publiée.
       # Seulement pour main, jamais pour une PR (revue du 15/11) : GitHub donne les secrets aux PR
       # ouvertes depuis une branche du dépôt, et du code non relu (build.gradle.kts, une
       # dépendance) aurait pu lire la clé. Les PR sont signées par la clé de développement.
@@ -88,7 +88,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           if [ -z "$RELEASE_KEYSTORE_BASE64" ]; then
-            echo "::warning::Secrets RELEASE_* absents : APK signés par la clé de développement, dont le mot de passe est public (android/keystore/README.md)."
+            echo "::warning::Secrets RELEASE_* absents : APK signés par la clé de développement, publique ; la release ne sera pas publiée (android/keystore/README.md)."
             exit 0
           fi
           # Un secret oublié faisait échouer chaque construction sans dire lequel.
@@ -147,12 +147,20 @@ jobs:
 
       # Publie l'APK dans une release au nom fixe « latest », ce qui donne un
       # lien de téléchargement direct et stable, au lieu du zip d'artefact.
+      # Depuis que le dépôt est public (15/11), la clé de développement l'est
+      # aussi : plus aucune release n'est publiée avec elle. Sans les secrets
+      # RELEASE_*, la construction et les tests passent, la publication échoue.
       - name: Publish latest release
         if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
+          CLE: ${{ steps.cle.outputs.chemin }}
         working-directory: android
         run: |
+          if [ -z "$CLE" ]; then
+            echo "::error::Release non publiée : secrets RELEASE_* absents, les APK seraient signés par la clé de développement, publique (android/keystore/README.md)."
+            exit 1
+          fi
           cp app/build/outputs/apk/full/release/app-full-release.apk MyHitbodedut.apk
           cp app/build/outputs/apk/light/release/app-light-release.apk MyHitbodedut-Light.apk
           # Sans cette table, une trace d'execution de la release est

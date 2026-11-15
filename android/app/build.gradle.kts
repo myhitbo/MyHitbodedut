@@ -170,7 +170,7 @@ android {
             require(relais.isEmpty() || relais.startsWith("https://")) { "relaisVol doit être en https://" }
             buildConfigField("String", "RELAIS_VOL", "\"$relais\"")
             // Sans relais, OpenSky en accès anonyme depuis le téléphone : les conditions écrites
-            // d'OpenSky (ticket 837455) l'excluent pour une diffusion publique. La construction Play
+            // d'OpenSky l'excluent pour une diffusion publique. La construction Play
             // (-Pplay=true) ne l'a donc jamais : sans relais, pas de suivi en direct, la route adsbdb
             // reste (audit du 12/11, TPLAYDOCS-01, FVOL-02). -PsuiviDirect=false le coupe ailleurs aussi.
             val directAutorise = (project.findProperty("suiviDirect") as String?)?.let { it == "true" }

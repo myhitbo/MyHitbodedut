@@ -14,7 +14,7 @@ sans ce relais elle n'a pas de suivi en direct, avec lui elle passe par lui.
 pas les appels d'un autre site depuis un navigateur (vérifié le 28/10 : en-tête
 `access-control-allow-origin: https://opensky-network.org` seulement).
 
-## Les conditions d'OpenSky (courriel du 28/10/2026, ticket 837455)
+## Les conditions d'OpenSky (courriel du 28/10/2026)
 
 Application gratuite, sans publicité, abonnement ni fonction payante, dons
 éventuels reversés à une association : usage **non commercial**, compte OpenSky
@@ -43,7 +43,7 @@ flux `play.yml` le fait dès que la variable de dépôt `RELAIS_VOL` existe.
 
 ## Décisions du propriétaire (04/11/2026)
 
-- **Réponse à OpenSky** (ticket 837455) : envoyée.
+- **Réponse à OpenSky** : envoyée.
 - **Fournisseur payant d'horaires de vol** (AeroDataBox, Aviationstack…) :
   non. Les heures restent saisies à la main ; la route d'un numéro de vol
   vient d'adsbdb.

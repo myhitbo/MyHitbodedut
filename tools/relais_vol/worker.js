@@ -8,7 +8,7 @@
 // du Worker : elle n'est jamais dans l'application. Rien n'est journalisé
 // par ce code ; Cloudflare garde ses propres journaux (README.md).
 //
-// Ce que demande OpenSky (courriel du 28/10/2026, ticket 837455) : les données
+// Ce que demande OpenSky (courriel du 28/10/2026) : les données
 // sont demandées par ce serveur, avec le client OAuth2 du compte, pas par chaque
 // téléphone ; les appareils d'une même zone partagent une seule réponse mise en
 // cache ; la mise en cache est temporaire, sans archive des données brutes.

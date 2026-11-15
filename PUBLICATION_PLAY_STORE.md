@@ -125,7 +125,7 @@ d'utilisation d'OpenSky (vérifié, page citée) :
 Une application publiée sur Google Play est un produit en service : il faut
 l'accord écrit d'OpenSky.
 
-**Réponse d'OpenSky (courriel du 28/10, ticket 837455)**, consignée dans
+**Réponse d'OpenSky (courriel du 28/10)**, consignée dans
 `tools/relais_vol/README.md` : usage gratuit et non commercial accordé, à
 quatre conditions :
 
