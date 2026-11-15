@@ -1,8 +1,8 @@
 name: iOS (cœur, Linux)
 
 # Le paquet Swift « Coeur » de la version iOS, compilé et testé sous Linux, sans Mac
-# (ios/PORTAGE.md § 7.2, ios/ROADMAP.md tâches 1 et 5). Un envoi qui ne touche que le code
-# d'Android ne le déclenche pas ; ses contenus, que l'export lit, si.
+# (ios/PORTAGE.md § 7.2, ios/ROADMAP.md tâches 1, 5 et 6). Un envoi qui ne touche que la
+# construction d'Android ne le déclenche pas ; ses contenus et son Kotlin, que l'export lit, si.
 # Budget (décision D5) : Linux seulement ici, aucune minute macOS.
 
 on:
@@ -20,7 +20,8 @@ on:
       - 'android/app/src/main/res/drawable*/**'
       - 'android/app/src/main/res/font/**'
       - 'android/app/src/main/assets/licences/**'
-      - 'android/app/src/main/java/com/myhitbodedut/MusiquePlay.kt'
+      # Les tables du Kotlin (tâche 6) : Tables.kt compile les fichiers de l'app.
+      - 'android/app/src/main/java/com/myhitbodedut/**'
       - 'android/app/src/test/resources/zmanim_reference_*'
       # Ce que les tests de données lisent en place : la source des livres, la musique hors des apps.
       - 'android/app/src/main/livres/**'
@@ -40,7 +41,8 @@ on:
       - 'android/app/src/main/res/drawable*/**'
       - 'android/app/src/main/res/font/**'
       - 'android/app/src/main/assets/licences/**'
-      - 'android/app/src/main/java/com/myhitbodedut/MusiquePlay.kt'
+      # Les tables du Kotlin (tâche 6) : Tables.kt compile les fichiers de l'app.
+      - 'android/app/src/main/java/com/myhitbodedut/**'
       - 'android/app/src/test/resources/zmanim_reference_*'
       # Ce que les tests de données lisent en place : la source des livres, la musique hors des apps.
       - 'android/app/src/main/livres/**'
@@ -57,18 +59,52 @@ concurrency:
 
 jobs:
   # La garde de dérive (PORTAGE.md § 4.2) : l'export relit les contenus d'Android et échoue,
-  # en nommant les fichiers, si ios/Ressources/MANIFESTE.json ne suit pas.
+  # en nommant les fichiers, si ios/Ressources/MANIFESTE.json ne suit pas. Les tables du Kotlin
+  # (étape 3) demandent la JVM : le projet Gradle tools/export_contenu/tables.
   export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
       - name: Export des contenus et garde de dérive
         run: python3 tools/export_contenu/export.py --verifier
       - name: Un second export donne le même manifeste
         run: python3 tools/export_contenu/export.py --verifier
+      # Le conteneur Swift n'a pas de JVM : il reprend ce que le Kotlin a écrit.
+      - name: Tables et vecteurs pour le travail Swift
+        run: |
+          mkdir -p "$RUNNER_TEMP/tables"
+          cp ios/Ressources/Contenu/tables.json ios/Paquets/Coeur/Tests/Ressources/vecteurs_recherche.json "$RUNNER_TEMP/tables/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tables
+          path: ${{ runner.temp }}/tables
+          retention-days: 1
+      # Critère de la tâche 6 : un seuil changé dans une copie de Trophees.kt fait échouer la garde.
+      # En dernier : cet export réécrit ios/Ressources.
+      - name: La garde voit un seuil changé dans Trophees.kt
+        run: |
+          copie="$RUNNER_TEMP/kotlin"
+          cp -r android/app/src/main/java/com/myhitbodedut "$copie"
+          sed -i 's/intArrayOf(1, 2, 3, 4, 5), Forme.ROSETTE/intArrayOf(1, 2, 3, 4, 6), Forme.ROSETTE/' "$copie/Trophees.kt"
+          if cmp -s android/app/src/main/java/com/myhitbodedut/Trophees.kt "$copie/Trophees.kt"; then
+            echo "::error::la copie de Trophees.kt n'a pas changé"; exit 1
+          fi
+          if python3 tools/export_contenu/export.py --verifier --java "$copie" > garde.log 2>&1; then
+            cat garde.log; echo "::error::la garde n'a pas vu le seuil changé"; exit 1
+          fi
+          cat garde.log
+          grep -q "modifié : Ressources/Contenu/tables.json" garde.log
 
   coeur:
+    needs: export
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     # Swift 6.2, celui de Xcode 26 (§ 7.7).
@@ -81,12 +117,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Version
         run: swift --version
-      # Les tests de données lisent ios/Ressources/Contenu : l'export d'abord.
+      # SQLite pour l'index de la recherche (CSQLite) ; Python pour l'export.
+      - name: Paquets
+        run: apt-get update -qq && apt-get install -y -qq python3 libsqlite3-dev >/dev/null
+      - uses: actions/download-artifact@v4
+        with:
+          name: tables
+          path: ${{ runner.temp }}/tables
+      # Les tests de données lisent ios/Ressources/Contenu : l'export d'abord, avec les tables du Kotlin.
       - name: Contenus exportés
         working-directory: ${{ github.workspace }}
-        run: |
-          command -v python3 >/dev/null || { apt-get update -qq && apt-get install -y -qq python3 >/dev/null; }
-          python3 tools/export_contenu/export.py
+        run: python3 tools/export_contenu/export.py --tables "$RUNNER_TEMP/tables"
       # -warnings-as-errors n'est pas passé à swiftc : SwiftPM le donnerait aussi à KosherSwift,
       # dont il tait les avertissements (-suppress-warnings), et les deux options se contredisent.
       # Les avertissements de Coeur et de ses tests sont donc cherchés dans le journal.

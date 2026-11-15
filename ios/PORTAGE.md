@@ -925,27 +925,34 @@ S'y ajoute, hors d'Android : le modèle magnétique WMM2025 du site (`web/src/js
 
 ```
 tools/export_contenu/
-  export.py            # chef d'orchestre, Python 3, bibliothèque standard
-  chaines.py           # strings.xml → Localizable.xcstrings
-  recherche.py         # index de recherche (sqlite3)
+  export.py            # chef d'orchestre, Python 3, bibliothèque standard (chaînes comprises)
+  tables.py            # étape 3 : génère le bouchon R, lance Gradle, lit Personnage.kt et PoliceHebraique.kt
+  recherche.py         # étape 8 : index de recherche (sqlite3)
+  cas_normalisation.json  # les cas communs de la normalisation (entrées seulement)
   tables/              # petit projet Gradle autonome, hors de android/
-    build.gradle.kts   #   compile des fichiers Kotlin purs de l'app, sans SDK Android
-    Tables.kt          #   main() : écrit tables.json
-    stubs/R.kt         #   généré : R.string.*, R.drawable.*, R.raw.* en entiers
-    stubs/Annotations.kt  # androidx.annotation.StringRes, etc.
+    build.gradle.kts   #   compile des fichiers Kotlin de l'app, sans SDK Android
+    src/Tables.kt      #   main() : écrit tables.json
+    src/Recherche.kt   #   les vecteurs de la recherche, par RechercheGlobale.chercher
+    bouchons/          #   annotations, Context, Handler, et trois symboles de l'app tenus à Android
   README.md
 ```
+
+*Réalisé (tâche 6).* Deux bouchons ne suffisaient pas : les chargeurs de l'app prennent un `Context`,
+et `Reference.kt`, `Hilloulot.kt`, `RechercheGlobale.kt` nomment `RegleLangue`, `ChizukCard`,
+`HalakhaActivity`, dont les fichiers tiennent à Android. Leurs bouchons ne sont jamais appelés
+(`tools/export_contenu/README.md`). `org.json` est celui d'AOSP, qui garde l'ordre des clés comme
+l'appareil.
 
 | Étape | Entrée | Sortie sous `ios/Ressources/` | Méthode |
 | --- | --- | --- | --- |
 | 1. Textes | `res/raw/*.json` | `Contenu/*.json`, **octet pour octet** ; `hilloulot_bios/<mois>.json` ; les livres de plus de 2 Mo découpés en `livres/<id>/index.json` et un fichier par chapitre | copie, découpe |
 | 2. Chaînes | `res/values/`, `values-en/`, `values-iw/strings.xml` | `Localizable.xcstrings` (clés = noms Android), `Tableaux.json` | `%1$s` → `%1$@`, `%d` → `%lld` ; pluriels (`one`, `two`, `other` en hébreu) ; échappements ; liste d'exclusion des chaînes propres à Android (divulgations, batterie, overlay) |
-| 3. Tables du Kotlin | les fichiers du tableau C | `Contenu/tables.json` | **exécuter le Kotlin sur la JVM**, comme `tools/vecteurs_kosherjava` le fait déjà : le projet `tables/` compile les fichiers purs avec deux bouchons (`R`, annotations) et écrit les tables. Les identifiants de ressources redeviennent des noms de clés. Pour les deux tables prises dans des fichiers liés à Android (`Personnage.kt`, `PoliceHebraique.kt`) : expression régulière, **avec arrêt si rien n'est trouvé** |
+| 3. Tables du Kotlin | les fichiers du tableau C | `Contenu/tables.json` | **exécuter le Kotlin sur la JVM**, comme `tools/vecteurs_kosherjava` le fait déjà : le projet `tables/` compile les fichiers de l'app avec leurs bouchons (`R`, annotations, `Context`…) et écrit les tables. Les identifiants de ressources redeviennent des noms de clés. Pour les deux tables prises dans des fichiers liés à Android (`Personnage.kt`, `PoliceHebraique.kt`) : expression régulière, **avec arrêt si rien n'est trouvé** |
 | 4. Palettes | `colors.xml`, `palettes.xml`, jour et nuit | `Contenu/palettes.json` (13 jetons × 6 accents × 6 fonds × 2 modes) | lecture XML |
 | 5. Images | `drawable-nodpi/*.webp`, `drawable/*.xml` | `Images/*.webp` tels quels (iOS lit le WebP) ; miniatures PNG des personnages pour le bouclier et les widgets ; icônes vectorielles en SVG | copie ; réduction ; conversion `VectorDrawable` → SVG (déjà écrite dans `web/build.mjs:71-92`) |
 | 6. Polices | `res/font/*.ttf`, `assets/licences/` | `Polices/` | copie |
 | 7. Musique | `MusiquePlay.kt`, `res/raw/*.m4a` | `Musique/*.m4a`, `Contenu/musique.json` | liste lue dans le source ; **jamais** `src/musique_hors_play` |
-| 8. Recherche | siddourim, livres, halakha, hilloulot | `Contenu/recherche.sqlite` | texte passé par la même normalisation que `RechercheGlobale.nu` ; une liste de cas communs tient les deux écritures ensemble |
+| 8. Recherche | siddourim, livres, halakha, hilloulot | `Contenu/recherche.sqlite` | texte passé par la même normalisation que `RechercheGlobale.nu` ; une liste de cas communs, passée par le Kotlin, tient les trois écritures ensemble (Kotlin, Python, Swift) ; au manifeste, l'empreinte du contenu, les octets dépendant de la version de SQLite |
 | 9. Vecteurs de test | `web/test/vecteurs_kosherjava.json`, `vecteurs_vol.json`, `vecteurs_wmm2025.txt`, `android/app/src/test/resources/zmanim_reference_*.json` | `ios/Paquets/Coeur/Tests/Ressources/` | copie |
 | 10. Manifeste | tout ce qui précède | `ios/Ressources/MANIFESTE.json` : pour chaque fichier, sa source, sa taille, son empreinte SHA-256, sa licence et la mention à afficher | calcul |
 
@@ -961,10 +968,12 @@ tools/export_contenu/
 | --- | --- |
 | Textes (JSON) | 43,5 Mo |
 | Musique (26 morceaux) | 73,7 Mo |
-| Images, polices, index de recherche | environ 5 Mo |
-| **Total des ressources** | **environ 120 Mo** |
+| Images, polices | environ 3 Mo |
+| Index de recherche (mesuré, tâche 6) | 22,4 Mo, dont 8,7 pour le Kitsour Yalkout Yossef entier |
+| **Total des ressources** | **environ 143 Mo** |
 
-L'app installée resterait sous 200 Mo, le seuil au-delà duquel iOS demande confirmation hors Wi-Fi. Tout embarquer garde la promesse du hors ligne dès la première ouverture. Si la musique grossit, Apple héberge des lots de ressources téléchargeables (Background Assets) sans serveur du développeur ; ce n'est pas nécessaire en v1.
+L'index pèse plus que prévu : il garde le texte normalisé de chaque bloc des douze livres, et la
+recherche dans un livre doit lire tout le livre. L'app installée resterait sous 200 Mo, le seuil au-delà duquel iOS demande confirmation hors Wi-Fi. Tout embarquer garde la promesse du hors ligne dès la première ouverture. Si la musique grossit, Apple héberge des lots de ressources téléchargeables (Background Assets) sans serveur du développeur ; ce n'est pas nécessaire en v1.
 
 ## 5. Dépendances
 

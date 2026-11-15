@@ -1,5 +1,5 @@
 // swift-tools-version: 6.0
-// Paquet « Coeur » : Swift pur, Foundation et KosherSwift, compilable et testé sous Linux
+// Paquet « Coeur » : Swift pur, Foundation, KosherSwift et SQLite, compilable et testé sous Linux
 // (PORTAGE.md § 7.1 et § 7.2). Aucune dépendance à UIKit ni à SwiftUI.
 
 import PackageDescription
@@ -19,9 +19,18 @@ let package = Package(
                  revision: "97551b47c3682fbf97ec95adae891d5c3e7dd076"),
     ],
     targets: [
+        // L'index de la recherche (RechercheGlobale.swift) : SQLite fait partie d'iOS (module SQLite3) ;
+        // sous Linux, celui de la machine (paquet libsqlite3-dev).
+        .systemLibrary(
+            name: "CSQLite",
+            pkgConfig: "sqlite3",
+            providers: [.apt(["libsqlite3-dev"])]),
         .target(
             name: "Coeur",
-            dependencies: [.product(name: "KosherSwift", package: "KosherSwift")]),
+            dependencies: [
+                .product(name: "KosherSwift", package: "KosherSwift"),
+                .target(name: "CSQLite", condition: .when(platforms: [.linux])),
+            ]),
         .testTarget(
             name: "CoeurTests",
             dependencies: ["Coeur", .product(name: "KosherSwift", package: "KosherSwift")]),

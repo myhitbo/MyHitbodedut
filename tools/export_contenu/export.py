@@ -3,12 +3,16 @@
 
 Android reste la source : l'outil lit android/, web/ et tools/, et n'écrit que sous ios/.
 Python 3, bibliothèque standard, hors ligne, déterministe : deux exports de suite donnent
-le même manifeste. Étapes faites ici : 1 (textes), 2 (chaînes), 4 (palettes), 5 (images et
-icônes), 6 (polices), 7 (musique), 9 (vecteurs de test), 10 (manifeste). Les étapes 3 (tables
-du Kotlin) et 8 (index de recherche) sont celles de la tâche 6.
+le même manifeste. Les dix étapes du § 4.2 : 1 (textes), 2 (chaînes), 3 (tables du Kotlin,
+tables.py et le projet Gradle tables/), 4 (palettes), 5 (images et icônes), 6 (polices), 7 (musique),
+8 (index de recherche, recherche.py), 9 (vecteurs de test), 10 (manifeste).
 
-Usage : python3 tools/export_contenu/export.py [--verifier]
-  --verifier : exporte, puis échoue si ios/Ressources/MANIFESTE.json a changé (garde de dérive).
+Usage : python3 tools/export_contenu/export.py [--verifier] [--tables <dossier>] [--java <dossier>]
+  --verifier          exporte, puis échoue si ios/Ressources/MANIFESTE.json a changé (garde de dérive) ;
+  --tables <dossier>  reprend tables.json et vecteurs_recherche.json d'un export précédent (une
+                      machine sans JVM, comme le conteneur Swift de la CI) au lieu de lancer Gradle ;
+  --java <dossier>    lit les sources Kotlin de l'app ailleurs que dans android/ (la preuve de la
+                      garde, dans la CI : une copie de Trophees.kt au seuil changé doit la faire échouer).
 """
 
 import hashlib
@@ -16,7 +20,12 @@ import json
 import re
 import shutil
 import sys
+import tempfile
 from pathlib import Path
+
+sys.dont_write_bytecode = True  # rien sous tools/ : l'export n'écrit que sous ios/
+import recherche  # noqa: E402
+import tables  # noqa: E402
 
 RACINE = Path(__file__).resolve().parents[2]
 ANDROID = RACINE / "android" / "app" / "src" / "main"
@@ -26,6 +35,8 @@ IOS = RACINE / "ios"
 SORTIE = IOS / "Ressources"
 TESTS = IOS / "Paquets" / "Coeur" / "Tests" / "Ressources"
 MANIFESTE = SORTIE / "MANIFESTE.json"
+JAVA = ANDROID / "java" / "com" / "myhitbodedut"
+CAS = Path(__file__).resolve().parent / "cas_normalisation.json"
 
 SEUIL_DECOUPE = 2_000_000  # octets : au-delà, un livre est servi chapitre par chapitre
 LANGUES = [("fr", "values"), ("en", "values-en"), ("he", "values-iw")]
@@ -37,6 +48,20 @@ COMPTES = {
     "textes par rite": 38, "psaumes": 150, "versets": 2527, "psaumes du Tikoun": 10,
     "textes de 'hizouk": 171, "livres": 12, "hilloulot": 4049, "villes": 51,
     "aéroports": 3226, "morceaux": 26,
+}
+
+# Les tables du Kotlin (critère de la tâche 6) : un écart arrête tout.
+COMPTES_TABLES = {
+    "échelles de paliers": (6, lambda t: len(t["paliers"])),
+    "familles de trophées": (11, lambda t: len(t["trophees"]["familles"])),
+    "niveaux de trophées": (128, lambda t: len(t["trophees"]["chemin"])),
+    "portions du mois": (30, lambda t: len(t["tehilim"]["mois"])),
+    "portions de la semaine": (7, lambda t: len(t["tehilim"]["semaine"])),
+    "sujets de Tefilot": (10, lambda t: len(t["sujets_tefila"]["sujets"])),
+    "sujets de séance": (10, lambda t: len(t["sujets_seance"])),
+    "temps de la hitbodedout": (5, lambda t: len(t["hitbodedut"]["mouvements"])),
+    "correspondances de poses": (21, lambda t: len(t["poses_feminines"])),
+    "zmanim": (15, lambda t: len(t["zmanim"]["profil"])),
 }
 
 # Licence et mention de chaque fichier produit (PORTAGE.md § 4.1 et § 6) : un fichier sans
@@ -66,7 +91,9 @@ LICENCES = [
     (r"Contenu/villes\.json", "CC-BY 4.0", "GeoNames"),
     (r"Contenu/aeroports(_noms)?\.json", "domaine public ; ODbL ; CC0",
      "OurAirports, timezone-boundary-builder (ODbL), Wikidata"),
-    (r"Contenu/(trophees_formes|palettes)\.json", "propre à l'app", ""),
+    (r"Contenu/(trophees_formes|palettes|tables)\.json", "propre à l'app", ""),
+    (r"Contenu/recherche\.sqlite", "celles des textes indexés",
+     "index des siddourim, des livres, du Yalkout Yossef, du Ben Ich Haï et des hilloulot : leurs mentions"),
     (r"Contenu/musique\.json", "accord écrit (PORTAGE.md § 6.1)", "voir chaque morceau"),
     (r"Chaines/(Localizable\.xcstrings|Tableaux\.json)", "propre à l'app", ""),
     (r"Images/[a-z0-9_]+\.webp", "fournies par le propriétaire", ""),
@@ -81,6 +108,7 @@ LICENCES = [
 class Export:
     def __init__(self):
         self.produits = {}  # chemin relatif à ios/ → source relative au dépôt
+        self.contenus = {}  # chemin relatif à ios/ → (empreinte, taille) du contenu, pour l'index
 
     # --- écriture, sous ios/ seulement --------------------------------------
     def _cible(self, chemin: Path) -> Path:
@@ -177,6 +205,40 @@ class Export:
         tableaux = {langue: {**fr["tableaux"], **brutes[langue]["tableaux"]} for langue, _ in LANGUES}
         self.json(SORTIE / "Chaines" / "Tableaux.json", tableaux, source)
 
+    # --- 3. Tables du Kotlin -------------------------------------------------
+    def tables(self, reprise, java):
+        """tables.json et les vecteurs de la recherche : par le Kotlin d'Android, sur la JVM (tables.py),
+        ou repris d'un export précédent ([reprise]). Les comptes du critère sont vérifiés ici."""
+        cible = SORTIE / "Contenu" / "tables.json"
+        cible_vecteurs = TESTS / "vecteurs_recherche.json"
+        source = "android/app/src/main/java/com/myhitbodedut/*.kt (tools/export_contenu/tables)"
+        if reprise:
+            valeur = json.loads((reprise / "tables.json").read_text(encoding="utf-8"))
+            vecteurs = json.loads((reprise / "vecteurs_recherche.json").read_text(encoding="utf-8"))
+        else:
+            with tempfile.TemporaryDirectory() as tmp:
+                brut, brut_vecteurs = Path(tmp) / "tables.json", Path(tmp) / "vecteurs.json"
+                tables.executer(java, RES, brut, brut_vecteurs, CAS)
+                valeur = json.loads(brut.read_text(encoding="utf-8"))
+                vecteurs = json.loads(brut_vecteurs.read_text(encoding="utf-8"))
+            # Les deux tables prises dans des fichiers liés à Android, par expression régulière.
+            valeur["poses_feminines"] = tables.poses_feminines((java / "Personnage.kt").read_text(encoding="utf-8"))
+            valeur["polices"] = tables.signes_absents((java / "PoliceHebraique.kt").read_text(encoding="utf-8"), RES / "font")
+        ecarts = {k: (a, f(valeur)) for k, (a, f) in COMPTES_TABLES.items() if f(valeur) != a}
+        if ecarts:
+            raise SystemExit("tables : " + ", ".join(f"{k} attendu {a}, trouvé {t}" for k, (a, t) in ecarts.items()))
+        self.json(cible, valeur, source, indent=1)
+        self.json(cible_vecteurs, vecteurs, "tools/export_contenu/tables/src/Recherche.kt, cas_normalisation.json")
+        return vecteurs
+
+    # --- 8. Index de recherche ----------------------------------------------
+    def recherche(self, vecteurs):
+        recherche.verifier_cas(vecteurs)
+        cible = self._cible(SORTIE / "Contenu" / "recherche.sqlite")
+        recherche.construire(RAW, cible)
+        self._note(cible, "android/app/src/main/res/raw (siddur_*, livre_*, yalkut_yosef, ben_ish_hai, hilloulot)")
+        self.contenus[cible.relative_to(IOS.resolve()).as_posix()] = recherche.empreinte(cible)
+
     # --- 4. Palettes --------------------------------------------------------
     def palettes(self):
         jetons = ["brand", "brand_dark", "mint", "on_brand", "on_plate", "stage_soft", "day_done",
@@ -262,11 +324,15 @@ class Export:
             regle = next((r for r in LICENCES if re.fullmatch(r[0], relatif)), None)
             if regle is None:
                 raise SystemExit(f"aucune licence pour {chemin}")
-            donnees = (IOS / chemin).read_bytes()
-            fichiers.append({
-                "chemin": chemin, "source": self.produits[chemin], "octets": len(donnees),
-                "sha256": hashlib.sha256(donnees).hexdigest(), "licence": regle[1], "mention": regle[2],
-            })
+            entree = {"chemin": chemin, "source": self.produits[chemin]}
+            if chemin in self.contenus:
+                # L'index : ses octets dépendent de la version de SQLite, pas son contenu (recherche.py).
+                empreinte, taille = self.contenus[chemin]
+                entree.update({"octets_contenu": taille, "sha256_contenu": empreinte})
+            else:
+                donnees = (IOS / chemin).read_bytes()
+                entree.update({"octets": len(donnees), "sha256": hashlib.sha256(donnees).hexdigest()})
+            fichiers.append({**entree, "licence": regle[1], "mention": regle[2]})
         texte = json.dumps({"outil": "tools/export_contenu/export.py", "fichiers": fichiers},
                            ensure_ascii=False, indent=1) + "\n"
         self._cible(MANIFESTE).write_text(texte, encoding="utf-8")
@@ -429,8 +495,20 @@ def vecteur_en_svg(xml, nom):
             + "".join(chemins) + "</svg>\n")
 
 
+def option(nom):
+    """La valeur de --nom dans la ligne de commande, en chemin ; None si l'option manque."""
+    arguments = sys.argv[1:]
+    if nom not in arguments:
+        return None
+    i = arguments.index(nom)
+    if i + 1 >= len(arguments):
+        raise SystemExit(f"{nom} : un dossier est attendu")
+    return Path(arguments[i + 1]).resolve()
+
+
 def main():
     verifier = "--verifier" in sys.argv[1:]
+    reprise, java = option("--tables"), option("--java") or JAVA
     avant = MANIFESTE.read_text(encoding="utf-8") if MANIFESTE.exists() else None
     for dossier in ("Contenu", "Images", "Icones", "Polices", "Musique"):
         shutil.rmtree(SORTIE / dossier, ignore_errors=True)
@@ -439,6 +517,7 @@ def main():
     shutil.rmtree(TESTS, ignore_errors=True)
 
     e = Export()
+    vecteurs = e.tables(reprise, java)
     e.textes()
     e.chaines()
     e.palettes()
@@ -446,13 +525,15 @@ def main():
     e.polices()
     compter(e.musique())
     e.vecteurs()
+    e.recherche(vecteurs)
     apres = e.manifeste()
     total = sum(f.stat().st_size for f in SORTIE.rglob("*") if f.is_file())
     print(f"{len(e.produits)} fichiers, {total / 1e6:.1f} Mo sous ios/Ressources ; comptes conformes")
 
     if verifier and apres != avant:
-        anciens = {f["chemin"]: f["sha256"] for f in json.loads(avant)["fichiers"]} if avant else {}
-        nouveaux = {f["chemin"]: f["sha256"] for f in json.loads(apres)["fichiers"]}
+        empreinte = lambda f: f.get("sha256") or f.get("sha256_contenu")
+        anciens = {f["chemin"]: empreinte(f) for f in json.loads(avant)["fichiers"]} if avant else {}
+        nouveaux = {f["chemin"]: empreinte(f) for f in json.loads(apres)["fichiers"]}
         for chemin in sorted(set(anciens) | set(nouveaux)):
             if anciens.get(chemin) != nouveaux.get(chemin):
                 etat = "nouveau" if chemin not in anciens else "disparu" if chemin not in nouveaux else "modifié"

@@ -1,0 +1,6 @@
+// SQLite de la machine, pour Linux seulement (la CI) : iOS et macOS ont le module SQLite3.
+module CSQLite [system] {
+    header "shim.h"
+    link "sqlite3"
+    export *
+}
