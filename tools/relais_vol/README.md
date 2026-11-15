@@ -73,6 +73,9 @@ flux `play.yml` le fait dès que la variable de dépôt `RELAIS_VOL` existe.
    sait encore passer en anonyme sans eux, mais ce n'est pas l'usage accordé.
    Usage **non commercial** seulement.
 2. Créer un compte Cloudflare (offre gratuite : 100 000 requêtes par jour).
+   Le relais limite déjà chaque adresse à 20 demandes par minute (`DEBIT_MAX`),
+   par instance ; pour une limite ferme, ajouter dans Cloudflare une règle de
+   limitation de débit (Security → WAF → Rate limiting rules) sur `/position`.
 3. Ici : `npx wrangler login`, puis, si l'on a un client API,
    `npx wrangler secret put OPENSKY_CLIENT_ID` et
    `npx wrangler secret put OPENSKY_CLIENT_SECRET` ; enfin `npx wrangler deploy`.

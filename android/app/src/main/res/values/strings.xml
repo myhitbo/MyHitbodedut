@@ -256,6 +256,17 @@
     <string name="export_failed">L’export a échoué.</string>
     <string name="import_failed">Le fichier n’a pas pu être lu.</string>
     <string name="import_invalid">Ce fichier n’est pas une sauvegarde MyHitbodedut.</string>
+    <string name="export_mdp_titre">Protéger la sauvegarde</string>
+    <string name="export_mdp_message">Un mot de passe chiffre le fichier. Sans lui, la sauvegarde est illisible, et rien ne permet de le retrouver. Laisser vide pour un fichier en clair, lisible par quiconque l’ouvre.</string>
+    <string name="export_mdp_champ">Mot de passe</string>
+    <string name="export_mdp_confirmer">Le même, une seconde fois</string>
+    <string name="export_mdp_different">Les deux mots de passe diffèrent.</string>
+    <string name="import_mdp_titre">Sauvegarde chiffrée</string>
+    <string name="import_mdp_faux">Mot de passe incorrect, ou fichier abîmé.</string>
+    <string name="journal_verrou">Verrouiller le journal</string>
+    <string name="journal_verrou_hint">Le code ou l’empreinte du téléphone est demandé pour ouvrir le journal.</string>
+    <string name="journal_verrou_titre">Ouvrir le journal</string>
+    <string name="journal_verrou_sans_code">Réglez d’abord un verrouillage d’écran sur ce téléphone.</string>
 
     <!-- Pluriels -->
     <plurals name="status_streak">

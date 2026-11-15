@@ -18,10 +18,12 @@ jobs:
           done
           ls -la | tail -5; du -sh .
       - name: Pousser sur claude/source-yalkut
+        env:
+          JETON: ${{ github.token }}
         run: |
           cd source
           git init -q -b claude/source-yalkut
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add -A && git commit -qm "source: Yalkut Yosef Kitsour (Torat Emet, CC BY-NC-SA 2.5)"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" claude/source-yalkut
+          git push -f "https://x-access-token:${JETON}@github.com/${GITHUB_REPOSITORY}.git" claude/source-yalkut

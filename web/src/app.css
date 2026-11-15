@@ -265,7 +265,8 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 }
 .renommer svg { width: 20px; height: 20px; }
 .ajouter-morceau { width: 100%; margin-top: 12px; }
-.feuille input[type="text"] {
+.feuille input[type="password"] { margin-top: 8px; }
+.feuille input[type="text"], .feuille input[type="password"] {
   width: 100%; font: inherit; font-size: 18px; padding: 12px; border-radius: 12px;
   border: 1px solid var(--line); background: var(--paper); color: var(--ink);
 }

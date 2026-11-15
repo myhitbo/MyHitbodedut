@@ -404,7 +404,7 @@ export const Raison = {
   codeServeur: (raison) => (/^serveur_\d+$/.test(raison) ? +raison.slice(8) : null),
   /** Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… */
   duRelais: (message) => {
-    const m = /^opensky (\d+)$/.exec(String(message).trim());
+    const m = /^(?:opensky|relais) (\d+)$/.exec(String(message).trim());
     return m ? Raison.serveur(+m[1]) : 'service';
   },
 };

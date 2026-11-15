@@ -239,6 +239,17 @@
     <string name="export_failed">הייצוא נכשל.</string>
     <string name="import_failed">לא ניתן לקרוא את הקובץ.</string>
     <string name="import_invalid">הקובץ אינו גיבוי של MyHitbodedut.</string>
+    <string name="export_mdp_titre">הגנה על הגיבוי</string>
+    <string name="export_mdp_message">סיסמה מצפינה את הקובץ. בלעדיה אי אפשר לקרוא את הגיבוי, ואין דרך לשחזר אותה. אפשר להשאיר ריק לקובץ גלוי, שכל מי שפותח אותו יכול לקרוא.</string>
+    <string name="export_mdp_champ">סיסמה</string>
+    <string name="export_mdp_confirmer">אותה סיסמה, פעם נוספת</string>
+    <string name="export_mdp_different">שתי הסיסמאות אינן זהות.</string>
+    <string name="import_mdp_titre">גיבוי מוצפן</string>
+    <string name="import_mdp_faux">סיסמה שגויה, או קובץ פגום.</string>
+    <string name="journal_verrou">נעילת היומן</string>
+    <string name="journal_verrou_hint">קוד הטלפון או טביעת האצבע נדרשים לפתיחת היומן.</string>
+    <string name="journal_verrou_titre">פתיחת היומן</string>
+    <string name="journal_verrou_sans_code">יש להגדיר תחילה נעילת מסך בטלפון הזה.</string>
 
     <plurals name="status_streak">
         <item quantity="one">יום אחד ברצף</item>

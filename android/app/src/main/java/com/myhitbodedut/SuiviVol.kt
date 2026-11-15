@@ -56,7 +56,7 @@ object SuiviVol {
 
         /** Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… */
         fun duRelais(message: String): String =
-            Regex("opensky (\\d+)").matchEntire(message.trim())?.let { serveur(it.groupValues[1].toInt()) } ?: SERVICE
+            Regex("(?:opensky|relais) (\\d+)").matchEntire(message.trim())?.let { serveur(it.groupValues[1].toInt()) } ?: SERVICE
     }
 
     /** D'où vient la position : un relais, un autre service plus tard, un faux dans les tests. */

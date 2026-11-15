@@ -562,6 +562,26 @@
                     android:text="@string/action_import" />
             </LinearLayout>
 
+            <!-- Le verrou du journal (audit du 12/11) : le code ou l'empreinte du téléphone. -->
+            <LinearLayout style="@style/SettingRow">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView style="@style/SettingLabelStacked" android:text="@string/journal_verrou" />
+
+                    <TextView style="@style/CardHint" android:text="@string/journal_verrou_hint" />
+                </LinearLayout>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/journal_verrou_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
             <!-- Les règles de confidentialité (31/10, Google Play) : la page publique, dans le navigateur. -->
             <Button
                 android:id="@+id/privacy_policy"

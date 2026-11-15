@@ -29,6 +29,7 @@ import * as Vol from './vol.js';
 import * as Boussole from './boussole.js';
 import * as Tikkun from './tikkun.js';
 import { RELAIS_VOL } from './relais.js';
+import * as Coffre from './coffre.js';
 import { chemin as cheminPersonnage } from './personnage.js';
 // La hitbodedout guidée (02/11, Hitbodedut.kt, GuideSujets.kt).
 import { Hitbodedut, MOUVEMENTS, invitationSujet } from './hitbodedut.js';
@@ -4576,20 +4577,40 @@ function carteLicences() {
       ...tr.t('licences_texte').split('\n').filter(Boolean).map((l) => h('p', { class: 'indice', dir: 'auto' }, l))));
 }
 
+/** Un champ de mot de passe de la sauvegarde (Coffre, audit du 12/11). */
+const champMotDePasse = (indice) => h('input', { type: 'password', autocomplete: 'off', maxlength: '128', placeholder: tr.t(indice), 'aria-label': tr.t(indice) });
+
 function carteMesDonnees() {
-  const exporter = async () => {
+  // Le mot de passe de la sauvegarde (SettingsActivity.writeBackup) : vide, le fichier reste en clair.
+  const demanderExport = () => feuille(tr.t('export_mdp_titre'), (f, fermer) => {
+    const premier = champMotDePasse('export_mdp_champ'), second = champMotDePasse('export_mdp_confirmer');
+    const erreur = h('p', { class: 'indice', role: 'alert' });
+    const valider = async () => {
+      if (premier.value !== second.value) { erreur.textContent = tr.t('export_mdp_different'); second.focus(); return; }
+      const mot = premier.value;
+      fermer();
+      let texte;
+      try { texte = mot === '' ? store.exportJson() : await Coffre.chiffrer(store.exportJson(), mot); } catch { signale(tr.t('export_failed')); return; }
+      exporter(texte);
+    };
+    f.append(h('p', { class: 'indice' }, tr.t('export_mdp_message')), premier, second, erreur,
+      h('div', { class: 'actions' },
+        h('button', { type: 'button', onclick: fermer }, tr.t('action_back')),
+        h('button', { type: 'button', class: 'fort', onclick: valider }, tr.t('action_export'))));
+  });
+  const exporter = async (contenu) => {
     const nom = `myhitbodedut-${store.today()}.json`;
     // Installé sur l'écran d'accueil de l'iPhone, un téléchargement n'a nulle part où aller :
     // la feuille de partage propose « Enregistrer dans Fichiers ».
     if (navigator.standalone && navigator.canShare) {
-      const fichier = new File([store.exportJson()], nom, { type: 'application/json' });
+      const fichier = new File([contenu], nom, { type: 'application/json' });
       if (navigator.canShare({ files: [fichier] })) {
         try { await navigator.share({ files: [fichier] }); store.setDerniereSauvegarde(store.today()); signale(tr.t('export_ok')); } catch (e) { if (e?.name !== 'AbortError') signale(tr.t('export_failed')); }
         return;
       }
     }
     try {
-      const blob = new Blob([store.exportJson()], { type: 'application/json' });
+      const blob = new Blob([contenu], { type: 'application/json' });
       const a = h('a', { href: URL.createObjectURL(blob), download: nom });
       document.body.append(a);
       a.click();
@@ -4607,6 +4628,9 @@ function carteMesDonnees() {
     if (fichier.size > 2 * 1024 * 1024) { signale(tr.t('import_failed')); return; }
     let texte;
     try { texte = await fichier.text(); } catch { signale(tr.t('import_failed')); return; }
+    if (Coffre.estChiffre(texte)) demanderImport(texte); else importer(texte);
+  } });
+  const importer = (texte) => {
     const n = store.importJson(texte);
     if (n === null || n === undefined) { signale(tr.t('import_invalid')); return; }
     // Un fichier importé est une sauvegarde qui existe : le rappel d'export repart d'aujourd'hui (FWEBCODE-01).
@@ -4614,14 +4638,29 @@ function carteMesDonnees() {
     appliqueApparence();
     rendre();
     signale(tr.p('import_ok', n));
-  } });
+  };
+  // Une sauvegarde chiffrée : le mot de passe, puis l'import ; un mot faux le redemande.
+  const demanderImport = (chiffre) => feuille(tr.t('import_mdp_titre'), (f, fermer) => {
+    const champ = champMotDePasse('export_mdp_champ');
+    const erreur = h('p', { class: 'indice', role: 'alert' });
+    const valider = async () => {
+      const clair = await Coffre.dechiffrer(chiffre, champ.value);
+      if (clair === null) { erreur.textContent = tr.t('import_mdp_faux'); champ.select(); return; }
+      fermer();
+      importer(clair);
+    };
+    f.append(champ, erreur,
+      h('div', { class: 'actions' },
+        h('button', { type: 'button', onclick: fermer }, tr.t('action_back')),
+        h('button', { type: 'button', class: 'fort', onclick: valider }, tr.t('action_import'))));
+  });
   return h('div', { class: 'carte carte-donnees' },
     h('h3', {}, tr.t('section_data')),
     h('p', { class: 'indice' }, tr.t('section_data_hint_web')),
     // Le navigateur n'a pas promis de garder (persist() refusé) : on le dit (FWEBCODE-01).
     stockageDurable === false ? h('p', { class: 'indice' }, tr.t('stockage_fragile_web')) : null,
     h('div', { class: 'actions-donnees' },
-      h('button', { type: 'button', class: 'secondaire', onclick: exporter }, tr.t('action_export')),
+      h('button', { type: 'button', class: 'secondaire', onclick: demanderExport }, tr.t('action_export')),
       h('button', { type: 'button', class: 'secondaire', onclick: () => champ.click() }, tr.t('action_import'))),
     // Les règles de confidentialité, dans la langue de l'interface (audit du 12/11, TWEBCONF-08).
     h('p', {}, h('a', { href: `confidentialite.html#${['fr', 'en', 'he'].includes(tr.langue) ? tr.langue : 'en'}`, target: '_blank', rel: 'noopener' },
