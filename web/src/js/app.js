@@ -306,8 +306,11 @@ function montreToast(texte) {
  */
 function echecLecture(e) {
   if (e?.name === 'AbortError') return;
-  // Sans cela le mini-lecteur affichait « Pause » alors que rien ne jouait (FWEBLIVE-06).
+  // Sans cela le mini-lecteur affichait « Pause » alors que rien ne jouait (FWEBLIVE-06). La source est
+  // retirée : « Lecture » repart alors de demarreMusique() au lieu de rejouer un élément en erreur.
   lecteur.pause();
+  lecteur.removeAttribute('src');
+  lecteur.load();
   majMini();
   signale(tr.t('music_play_failed'));
 }
@@ -4396,6 +4399,11 @@ function ecranReglages() {
               appliqueApparence();
               // Le mini-lecteur pose ses libellés une fois : reconstruit dans la nouvelle langue (FWEBCODE-15).
               mini?.remove(); mini = null;
+              // Le nom d'une ville est gardé traduit au moment du choix : relu dans la nouvelle langue (FWEBCODE-15).
+              // La région n'est pas touchée (null) : elle a pu être corrigée à la main.
+              const lieu = store.lieu();
+              const ville = lieu?.ville != null ? villes?.find((v) => v.id === lieu.ville) : null;
+              if (ville) store.setLieu({ ...lieu, nom: titreTexte(ville.nom) }, ville, null);
               rendre();
             }),
         }),
@@ -5625,6 +5633,8 @@ async function demarrer() {
   if (ecranCourant() === 'seance') tireChizuk('ouverture');
   if (store.ouverture() === 'zmanim' && ecranCourant() === 'accueil') history.pushState({ interne: true }, '', '#zmanim');
   rendre();
+  // Une page rechargée pendant la séance : l'écran reste allumé, comme au lancement (FWEBCODE-11).
+  if (store.isSessionRunning()) gardeEcranAllume();
   // Le premier lancement, ou une présentation qui a changé depuis (Onboarding.VERSION).
   if (store.onboardedVersion() < PRESENTATION_VERSION) presentation();
   // Revenir à l'application redessine l'écran : un autre jour, une séance

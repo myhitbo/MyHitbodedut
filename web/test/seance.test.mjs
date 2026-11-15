@@ -260,6 +260,17 @@ test('la fin de séance se lit dans le stockage, les feuilles périmées se ferm
   assert.match(bravo, /if \(note && parHistorique\) addEventListener\('popstate', note, \{ once: true \}\);\s*retour\(\);/);
 });
 
+test('lecture en échec, page rechargée, langue changée : rien ne reste dans l’état d’avant (FWEBLIVE-06, FWEBCODE-11, FWEBCODE-15)', () => {
+  const echec = appSource.slice(appSource.indexOf('function echecLecture'), appSource.indexOf('function metadonnees'));
+  assert.match(echec, /lecteur\.pause\(\);\s*lecteur\.removeAttribute\('src'\);\s*lecteur\.load\(\);\s*majMini\(\);/);
+  const demarrer = appSource.slice(appSource.indexOf('async function demarrer'), appSource.indexOf('// Le premier lancement'));
+  assert.match(demarrer, /rendre\(\);[\s\S]*if \(store\.isSessionRunning\(\)\) gardeEcranAllume\(\);/);
+  const reglages = appSource.slice(appSource.indexOf('function ecranReglages'), appSource.indexOf("tr.t('reglage_lieu'), etat"));
+  assert.match(reglages, /mini\?\.remove\(\); mini = null;/);
+  // La région reste celle des réglages : troisième argument null.
+  assert.match(reglages, /store\.setLieu\(\{ \.\.\.lieu, nom: titreTexte\(ville\.nom\) \}, ville, null\);/);
+});
+
 test('le site ne promet pas un son de fin qu’il ne joue pas', () => {
   assert.doesNotMatch(appSource, /tr\.t\('session_hidden_caption'\)/);
   assert.match(appSource, /tr\.t\('session_hidden_caption_web'\)/);
