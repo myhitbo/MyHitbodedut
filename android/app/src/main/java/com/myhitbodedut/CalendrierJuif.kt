@@ -260,8 +260,10 @@ object CalendrierJuif {
             // Pourim triple (le 15 Adar un Chabbat) : à Jérusalem, le dimanche 16 est le jour du
             // festin et des michloa'h manot, sans Ta'hanoun ni למנצח, Min'ha comprise (Kaf
             // ha'Haïm 690:118 ; Michna beroura 690:61 ; Luah Erets Israël), que TefilaRules
-            // 2.5.0 fait dire. Ailleurs, l'usage commun le dit.
-            val pourimTriple = mukafChoma && semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
+            // 2.5.0 fait dire. Dans le reste d'Israël, on ne le dit pas non plus (Rav Shlomo
+            // Zalman Auerbach, Halikhot Shlomo ; Rav Mordekhaï Eliyahou), certains calendriers le
+            // gardent (Rav Eliyahou Mani) : dans le doute, on ne le dit pas. En diaspora, si.
+            val pourimTriple = (enIsrael || mukafChoma) && semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
                 (regles.jewishMonth == JewishDate.ADAR_II || (regles.jewishMonth == JewishDate.ADAR && !regles.isJewishLeapYear))
             // La veille de Roch Hachana, pas de Ta'hanoun à la prière (Choul'han
             // Aroukh, OC 581:3), que TefilaRules 2.5.0 fait dire.

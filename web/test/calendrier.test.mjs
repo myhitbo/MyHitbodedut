@@ -269,10 +269,13 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   assert.deepEqual(jour('2027-03-23', true).fetes, ['pourim']);
   assert.ok(jour('2027-03-23', true).conditions.has('al_hanissim'));
   assert.ok(!jour('2027-03-24', true).conditions.has('al_hanissim'));
-  // Pourim triple 5785 : le dimanche 16 Adar (16/03/2025), ni Ta'hanoun ni למנצח à Jérusalem ; ailleurs, si.
-  const triple = jour('2025-03-16', true, true).conditions;
-  for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lamnatseah']) assert.ok(!triple.has(k), k);
-  assert.ok(jour('2025-03-16', true).conditions.has('tahanoun_chaharit'));
+  // Pourim triple 5785 : le dimanche 16 Adar (16/03/2025), ni Ta'hanoun ni למנצח en Israël, Jérusalem comprise ; en diaspora, si.
+  for (const muree of [true, false]) {
+    const triple = jour('2025-03-16', true, muree).conditions;
+    for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lamnatseah']) assert.ok(!triple.has(k), `${k} ${muree}`);
+  }
+  for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lamnatseah']) assert.ok(jour('2025-03-16', false).conditions.has(k), k);
+  assert.ok(jour('2025-03-17', true).conditions.has('tahanoun_chaharit'));
   assert.ok(jour('2025-03-17', true, true).conditions.has('tahanoun_chaharit'));
   const chaines = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'), 'utf8');
   for (const n of ['edot', 'sefard', 'ashkenaz']) {

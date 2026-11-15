@@ -277,11 +277,15 @@ class SimulationSiddurTest {
             assertTrue("${d.minusDays(1)} Jérusalem", C.AL_HANISSIM !in c(d.minusDays(1), true, true))
             assertTrue("${d.minusDays(1)} ailleurs", C.AL_HANISSIM in c(d.minusDays(1), true) && C.AL_HANISSIM in c(d.minusDays(1), false))
             assertTrue("${d.minusDays(1)} pas de Ta'hanoun", C.TAHANOUN_CHAHARIT !in c(d.minusDays(1), true, true))
-            // Le dimanche 16, jour du festin à Jérusalem : ni Ta'hanoun ni למנצח, Min'ha comprise ; repris le lundi.
+            // Le dimanche 16, jour du festin à Jérusalem : ni Ta'hanoun ni למנצח en Israël, Min'ha comprise ;
+            // en diaspora, si ; repris le lundi.
             val dimanche = d.plusDays(1)
-            assertTrue("$dimanche Jérusalem", listOf(C.TAHANOUN_CHAHARIT, C.TAHANOUN_MINHA, C.LAMNATSEAH).none { it in c(dimanche, true, true) })
-            assertTrue("$dimanche ailleurs", C.TAHANOUN_CHAHARIT in c(dimanche, true) && C.TAHANOUN_CHAHARIT in c(dimanche))
+            val sans = listOf(C.TAHANOUN_CHAHARIT, C.TAHANOUN_MINHA, C.LAMNATSEAH)
+            assertTrue("$dimanche Jérusalem", sans.none { it in c(dimanche, true, true) })
+            assertTrue("$dimanche Israël", sans.none { it in c(dimanche, true) })
+            assertTrue("$dimanche diaspora", sans.all { it in c(dimanche) })
             assertTrue("${d.plusDays(2)} Jérusalem", C.TAHANOUN_CHAHARIT in c(d.plusDays(2), true, true))
+            assertTrue("${d.plusDays(2)} Israël", C.TAHANOUN_CHAHARIT in c(d.plusDays(2), true))
         }
 
         // 9 Av un Chabbat : le jeûne passe au dimanche, « נחם » et le reste avec lui.

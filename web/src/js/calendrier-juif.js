@@ -97,8 +97,8 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(T.isVeseinBerachaRecited(regles), C.BERAKHA);
   si(T.isHallelRecited(regles), C.HALLEL);
   si(T.isHallelShalemRecited(regles), C.HALLEL_COMPLET);
-  // Pourim triple à Jérusalem : le dimanche 16 Adar, ni Ta'hanoun ni למנצח (CalendrierJuif.kt).
-  const pourimTriple = mukafChoma && semaine === 0 && regles.getJewishDayOfMonth() === 16 &&
+  // Pourim triple : le dimanche 16 Adar, ni Ta'hanoun ni למנצח en Israël, Jérusalem comprise (CalendrierJuif.kt).
+  const pourimTriple = (enIsrael || mukafChoma) && semaine === 0 && regles.getJewishDayOfMonth() === 16 &&
     (regles.getJewishMonth() === JewishDate.ADAR_II || (regles.getJewishMonth() === JewishDate.ADAR && !regles.isJewishLeapYear()));
   // La veille de Roch Hachana, pas de Ta'hanoun à la prière (OC 581:3).
   const tahanoun = T.isTachanunRecitedShacharis(regles) && regles.getYomTovIndex() !== JewishCalendar.EREV_ROSH_HASHANA && !pourimTriple;
