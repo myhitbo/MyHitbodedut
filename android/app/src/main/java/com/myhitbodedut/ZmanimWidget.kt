@@ -13,8 +13,8 @@ import java.time.ZonedDateTime
 class ZmanimWidget : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        // Toutes les tailles, et le prochain changement reprogrammé (02/11).
-        ZmanimVignette.rafraichir(context)
+        // Toutes les tailles, et le prochain changement reprogrammé (02/11) ; hors du fil principal (15/11).
+        EnFond.recevoir(this) { ZmanimVignette.rafraichir(context) }
     }
 
     /**

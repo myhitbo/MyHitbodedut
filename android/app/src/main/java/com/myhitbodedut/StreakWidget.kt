@@ -62,9 +62,13 @@ class StreakWidget : AppWidgetProvider() {
         appWidgetIds: IntArray
     ) {
         val traduit = LangueApp.envelopper(context)
-        appWidgetIds.forEach { draw(traduit, manager, it) }
-        // L'alarme de minuit déclenche onUpdate : on reprogramme la suivante, sinon elle ne sert qu'une nuit (02/11).
-        if (appWidgetIds.isNotEmpty()) programmerMinuit(context, appWidgetIds)
+        // Hors du fil principal (15/11, EnFond) : les textes de 'hizouk (300 ko de JSON) s'analysent
+        // au premier dessin après la relance du processus, et chaque taille dessine son fond.
+        EnFond.recevoir(this) {
+            appWidgetIds.forEach { draw(traduit, manager, it) }
+            // L'alarme de minuit déclenche onUpdate : on reprogramme la suivante, sinon elle ne sert qu'une nuit (02/11).
+            if (appWidgetIds.isNotEmpty()) programmerMinuit(context, appWidgetIds)
+        }
     }
 
     /**
@@ -78,7 +82,8 @@ class StreakWidget : AppWidgetProvider() {
         appWidgetId: Int,
         newOptions: Bundle
     ) {
-        draw(LangueApp.envelopper(context), manager, appWidgetId)
+        val traduit = LangueApp.envelopper(context)
+        EnFond.recevoir(this) { draw(traduit, manager, appWidgetId) }
     }
 
     companion object {
