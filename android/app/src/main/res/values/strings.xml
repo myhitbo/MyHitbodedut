@@ -182,14 +182,14 @@
     <string name="session_running_title">Hitbodedout en cours</string>
     <string name="session_remaining">Il reste %1$s</string>
     <string name="session_open">Sans durée</string>
-    <string name="session_open_caption">Sans durée : vous arrêtez quand vous arrêtez.</string>
+    <string name="session_open_caption">Sans durée : vous terminez quand vous voulez.</string>
     <string name="session_elapsed">Depuis %1$s</string>
     <string name="settings_hide_countdown">Masquer le décompte</string>
     <string name="settings_hide_countdown_hint">Rien à l’écran pendant la hitbodedout, un son discret à la fin.</string>
     <string name="session_hidden_caption">Le décompte est masqué. Un son vous préviendra.</string>
     <string name="session_hidden_caption_web">Le décompte est masqué. À la fin, l’écran change ; la musique s’arrête si elle jouait.</string>
     <string name="session_running_hidden">Le décompte est masqué.</string>
-    <string name="session_open_hidden_caption">Sans durée, décompte masqué : vous arrêtez quand vous arrêtez.</string>
+    <string name="session_open_hidden_caption">Sans durée, décompte masqué : vous terminez quand vous voulez.</string>
     <string name="session_running_open_hidden">Sans durée, décompte masqué.</string>
     <string name="blocker_session_hidden_subtitle">Hitbodedout en cours. Le téléphone peut attendre.</string>
     <string name="widget_label">Série MyHitbodedut</string>
@@ -635,8 +635,8 @@
     <string name="duration_minutes">%1$d min</string>
     <string name="duration_hours">%1$d h</string>
     <string name="duration_hours_minutes">%1$d h %2$02d</string>
-    <string name="duration_custom">Durée réglable…</string>
-    <string name="duration_custom_title">Durée de la hitbodedout, en minutes</string>
+    <string name="duration_custom">Autre durée…</string>
+    <string name="duration_custom_title">Durée, en minutes (de 1 à 240)</string>
     <string name="duration_custom_hint">De 1 à 240 minutes</string>
     <string name="music_shuffle">Lecture aléatoire</string>
     <string name="music_shuffle_hint">Un morceau au hasard, puis un autre ; aucun ne revient avant que tous aient été joués.</string>

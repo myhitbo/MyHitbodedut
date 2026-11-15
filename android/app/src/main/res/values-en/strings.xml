@@ -169,14 +169,14 @@
     <string name="session_running_title">Hitbodedut in progress</string>
     <string name="session_remaining">%1$s left</string>
     <string name="session_open">No set length</string>
-    <string name="session_open_caption">No set length: you stop when you stop.</string>
+    <string name="session_open_caption">No set length: you stop whenever you like.</string>
     <string name="session_elapsed">%1$s so far</string>
     <string name="settings_hide_countdown">Hide the countdown</string>
     <string name="settings_hide_countdown_hint">Nothing on screen during the hitbodedut, a quiet sound at the end.</string>
     <string name="session_hidden_caption">The countdown is hidden. A sound will tell you.</string>
     <string name="session_hidden_caption_web">The countdown is hidden. At the end the screen changes, and the music stops if it was playing.</string>
     <string name="session_running_hidden">The countdown is hidden.</string>
-    <string name="session_open_hidden_caption">No set length, countdown hidden: you stop when you stop.</string>
+    <string name="session_open_hidden_caption">No set length, countdown hidden: you stop whenever you like.</string>
     <string name="session_running_open_hidden">No set length, countdown hidden.</string>
     <string name="blocker_session_hidden_subtitle">Hitbodedut in progress. The phone can wait.</string>
     <string name="widget_label">MyHitbodedut streak</string>
@@ -587,8 +587,8 @@
     <string name="duration_minutes">%1$d min</string>
     <string name="duration_hours">%1$d h</string>
     <string name="duration_hours_minutes">%1$d h %2$d min</string>
-    <string name="duration_custom">Custom length…</string>
-    <string name="duration_custom_title">Hitbodedut length, in minutes</string>
+    <string name="duration_custom">Other length…</string>
+    <string name="duration_custom_title">Length, in minutes (1 to 240)</string>
     <string name="duration_custom_hint">1 to 240 minutes</string>
     <string name="music_shuffle">Shuffle</string>
     <string name="music_shuffle_hint">A random track, then another; none comes back until all have played.</string>
