@@ -64,7 +64,7 @@
     <string name="gate_permissions_detail">To work, “I am with Hashem” needs two accesses: display over other apps and usage access.</string>
     <string name="gate_disabled_title">Mode switched off</string>
     <string name="gate_disabled_detail">Turn on the “I am with Hashem” switch for the mode to act.</string>
-    <string name="gate_no_apps_title">No app selected</string>
+    <string name="gate_no_apps_title">No apps selected</string>
     <string name="gate_no_apps_detail">The mode has nothing to hold back. Choose at least one app.</string>
     <string name="gate_stopped_title">Monitoring stopped</string>
     <string name="gate_stopped_detail">Everything is set, but the service that watches is not running. Restart it, or reopen the app.</string>
@@ -141,7 +141,7 @@
     <string name="apps_loading">Loading apps…</string>
     <string name="apps_select_all">Select all</string>
     <string name="apps_clear">Clear all</string>
-    <string name="apps_none_warning">No app selected: nothing will be blocked.</string>
+    <string name="apps_none_warning">No apps selected, so nothing will be blocked.</string>
 
     <string name="blocker_question">Did you do your hitbodedut?</string>
     <string name="blocker_subtitle">A moment alone before the rest of the day.</string>
@@ -392,13 +392,13 @@
     <string name="reminders_remove">Remove</string>
     <string name="reminders_off">Off.</string>
     <string name="reminders_none">No time set.</string>
-    <string name="reminders_permission_missing">Notifications are denied: the reminder will not appear. Tap here to allow them.</string>
+    <string name="reminders_permission_missing">Notifications are blocked, so the reminder will not appear. Tap here to allow them.</string>
     <string name="reminder_action_start">Start</string>
     <string name="reminder_action_later">Later</string>
 
     <plurals name="reminders_count">
-        <item quantity="one">%1$d time set.</item>
-        <item quantity="other">%1$d times set.</item>
+        <item quantity="one">%1$d reminder time set.</item>
+        <item quantity="other">%1$d reminder times set.</item>
     </plurals>
     <plurals name="permissions_missing">
         <item quantity="one">%1$d useful permission not granted.</item>
@@ -586,7 +586,7 @@
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d min</string>
     <string name="duration_hours">%1$d h</string>
-    <string name="duration_hours_minutes">%1$d h %2$02d min</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
     <string name="duration_custom">Custom length…</string>
     <string name="duration_custom_title">Hitbodedut length, in minutes</string>
     <string name="duration_custom_hint">1 to 240 minutes</string>
@@ -665,7 +665,7 @@
     <string name="zmanim_choisir_lieu">Choose location</string>
     <string name="zmanim_position">My location</string>
     <string name="zmanim_position_attente">Finding your location…</string>
-    <string name="zmanim_position_refusee">Location unavailable: choose a city.</string>
+    <string name="zmanim_position_refusee">Location unavailable. Choose a city.</string>
     <string name="zmanim_position_pres">My location · near %1$s</string>
     <string name="zmanim_position_ancienne">No fresh location: the last known one is used.</string>
     <string name="zmanim_calendrier">Calendar</string>
@@ -948,7 +948,7 @@
         <item quantity="other">%1$d minutes</item>
     </plurals>
     <!-- Web : le partage sans feuille de partage du navigateur, par le presse-papiers. -->
-    <string name="partage_copie">Text copied: paste it wherever you like.</string>
+    <string name="partage_copie">Text copied. Paste it wherever you like.</string>
     <string name="trophee_progres">%1$d / %2$d</string>
     <!-- Les trophées à niveaux (12/10). -->
     <string name="trophee_premier_pas">First step</string>
@@ -1471,7 +1471,7 @@
 
     <!-- Les langues d’un texte à lire (04/11), LanguesTexte. -->
     <string name="lecture_langues">Text languages</string>
-    <string name="lecture_sans_traduction">This text has no translation yet: it stays in Hebrew.</string>
+    <string name="lecture_sans_traduction">This text has no translation yet, so it stays in Hebrew.</string>
     <string name="lecture_traduction_auto">Machine translation, not reviewed: the Hebrew text is authoritative.</string>
     <string name="lecture_traduction_partielle">Partly translated: %1$d of %2$d chapters. The rest remain in Hebrew.</string>
     <string name="langues_he">עברית</string>

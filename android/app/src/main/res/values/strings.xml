@@ -30,7 +30,7 @@
     <string name="section_practice">Ma pratique</string>
     <string name="section_gate_state">État du mode</string>
     <string name="section_gate">Je suis avec Hachem</string>
-    <string name="section_gate_hint">Les applications choisies restent fermées tant que la pratique n’est pas faite, et pendant une hitbodedout en cours.</string>
+    <string name="section_gate_hint">Les applications choisies restent bloquées tant que la pratique n’est pas faite, et pendant une hitbodedout en cours.</string>
     <string name="section_rhythm">Rythme</string>
     <string name="section_permissions">Autorisations</string>
     <string name="section_permissions_hint">Aucune n’est obligatoire. Chacune sert une fonction précise, et se retire à tout moment dans les réglages d’Android.</string>
@@ -46,7 +46,7 @@
     <string name="dedicace_etude">Mon étude</string>
     <string name="dedicace_pour">Pour</string>
     <string name="dedicace_leilouy">Léïlouy nichmat (לעילוי נשמת)</string>
-    <string name="dedicace_refoua">Refoua chéléma (לרפואה שלמה)</string>
+    <string name="dedicace_refoua">Refoua chelema (לרפואה שלמה)</string>
     <string name="dedicace_hatslaha">Hatsla’ha (להצלחה)</string>
     <string name="dedicace_zivoug">Zivoug hagoun (לזיווג הגון)</string>
     <string name="dedicace_autre">Autre intention</string>
@@ -71,19 +71,19 @@
     <string name="gate_disabled_title">Mode désactivé</string>
     <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour que le mode agisse.</string>
     <string name="gate_no_apps_title">Aucune application choisie</string>
-    <string name="gate_no_apps_detail">Le mode n’a rien à retenir. Choisissez au moins une application.</string>
+    <string name="gate_no_apps_detail">Le mode n’a rien à bloquer. Choisissez au moins une application.</string>
     <string name="gate_stopped_title">Surveillance arrêtée</string>
     <string name="gate_stopped_detail">Tout est réglé, mais le service qui surveille ne tourne pas. Relancez-le, ou rouvrez l’application.</string>
     <string name="gate_stopped_action">Relancer le mode</string>
     <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
-    <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
-    <string name="gate_exempt_title">Jour sans obligation</string>
+    <string name="gate_done_detail">Plus rien ne sera bloqué aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
+    <string name="gate_exempt_title">Jour de pause</string>
     <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
     <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
-    <string name="gate_window_title">Hors de la fenêtre</string>
-    <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est retenu.</string>
+    <string name="gate_window_title">Hors de la plage horaire</string>
+    <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est bloqué.</string>
 
     <!-- Actions -->
     <string name="action_start_session">Commencer une hitbodedout de %1$s</string>
@@ -125,7 +125,7 @@
     <string name="settings_shabbat">Chabbat et Yom Tov</string>
     <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
     <string name="settings_exempt_today">Pause aujourd’hui</string>
-    <string name="settings_exempt_today_hint">Pour un Yom Tov, un voyage, une maladie : la journée ne compte pas contre vous.</string>
+    <string name="settings_exempt_today_hint">Pour un Yom Tov, un voyage, une maladie : aujourd’hui n’est pas compté et votre série est préservée.</string>
     <string name="settings_screen_missing">Cet écran de réglages n’existe pas sur ce téléphone.</string>
     <!-- Le sélecteur de fichiers d’Android est absent (examen du 14/11, constat 12). -->
     <string name="fichiers_absents">Aucune application de ce téléphone ne permet d’ouvrir ou d’enregistrer un fichier.</string>
@@ -174,10 +174,10 @@
     <string name="session_start">Commencer, %1$s</string>
     <string name="session_target">Hitbodedout de %1$s</string>
     <string name="session_finish_now">Terminer maintenant</string>
-    <string name="session_cancel">Abandonner</string>
+    <string name="session_cancel">Arrêter sans enregistrer</string>
     <string name="session_finish_title">Terminer la hitbodedout ?</string>
     <string name="session_finish_message">Le temps déjà écoulé sera enregistré et la journée validée.</string>
-    <string name="session_cancel_title">Abandonner la hitbodedout ?</string>
+    <string name="session_cancel_title">Arrêter sans enregistrer ?</string>
     <string name="session_cancel_message">Rien ne sera enregistré et la journée restera à faire.</string>
     <string name="session_running_title">Hitbodedout en cours</string>
     <string name="session_remaining">Il reste %1$s</string>
@@ -629,7 +629,7 @@
     <string name="annulation_hazak">’Hazak !</string>
     <string name="annulation_hizki">’Hizki !</string>
     <string name="annulation_neutral">Courage !</string>
-    <string name="annulation_subtitle">Pour tout ce que vous avez fait jusqu’ici. La prochaine fois sera meilleure.</string>
+    <string name="annulation_subtitle">Ce que vous avez fait jusqu’ici reste acquis. Vous reprendrez quand vous voudrez.</string>
 
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d min</string>
@@ -824,13 +824,13 @@
     <string name="ajout_lamnatseah">Lamnatséa’h</string>
     <string name="ajout_ledavid">D’Eloul à Hochaana Rabba</string>
     <string name="ajout_techouva_hochaana">Dix jours de techouva et Hochaana Rabba</string>
-    <string name="ajout_yom_tov">Yom tov</string>
+    <string name="ajout_yom_tov">Yom Tov</string>
     <string name="ajout_moed">Fêtes</string>
     <string name="ajout_chabbat_roch_hodech">Roch ’Hodech un Chabbat</string>
-    <string name="ajout_yom_tov_chabbat">Yom tov un Chabbat</string>
+    <string name="ajout_yom_tov_chabbat">Yom Tov un Chabbat</string>
     <string name="ajout_roch_hachana_chabbat">Roch Hachana un Chabbat</string>
-    <string name="ajout_motsae_chabbat_yt">Motsaé Chabbat et Yom tov</string>
-    <string name="ajout_cheva_berakhot">Chéva bérakhot (repas de noces)</string>
+    <string name="ajout_motsae_chabbat_yt">Motsaé Chabbat et Yom Tov</string>
+    <string name="ajout_cheva_berakhot">Chéva berakhot (repas de noces)</string>
     <string name="ajout_zimun">Zimoun (à trois convives ou plus)</string>
     <string name="ajout_facultatif">Usage, non obligatoire</string>
     <string name="ajout_facultatif_avant">Avant le Birkat : psaumes d’usage (non obligatoires)</string>
@@ -864,8 +864,8 @@
     <string name="fete_erev_soukkot">Veille de Souccot</string>
     <string name="fete_soukkot">Souccot</string>
     <string name="fete_hol_hamoed_soukkot">’Hol hamoèd Souccot</string>
-    <string name="fete_hochaana_rabba">Hochaana rabba</string>
-    <string name="fete_chemini_atseret">Chemini atsérèt</string>
+    <string name="fete_hochaana_rabba">Hochaana Rabba</string>
+    <string name="fete_chemini_atseret">Chemini Atsérèt</string>
     <string name="fete_simhat_torah">Sim’hat Torah</string>
     <string name="fete_hanouka">’Hanouka</string>
     <string name="fete_tevet_10">Jeûne du 10 Tévet</string>
@@ -1112,9 +1112,9 @@
     <string name="levana_lune">Lune ce soir : %1$s éclairée, %2$s</string>
     <string name="levana_croissante">croissante</string>
     <string name="levana_decroissante">décroissante</string>
-    <string name="levana_motsae">Conseillé : motsaé Chabbat %s (Choul’han Aroukh 426:2 et Rema)</string>
-    <string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426:2)</string>
-    <string name="levana_tisha">Pas avant la sortie de Ticha bèAv (Rema 426:2 ; Michna Beroura 426:11)</string>
+    <string name="levana_motsae">Conseillé : motsaé Chabbat %s (Choul’han Aroukh 426, 2 et Rema)</string>
+    <string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426, 2)</string>
+    <string name="levana_tisha">Pas avant la sortie de Ticha bèAv (Rema 426, 2 ; Michna Beroura 426, 11)</string>
     <string name="levana_usage_titre">Birkat haLevana : usage</string>
     <string name="levana_usage_auto">Selon le noussa’h</string>
     <string name="levana_usage_trois_mi_mois">Dès 3 jours, jusqu’à la mi-mois (Michna Beroura, Rema)</string>
@@ -1386,7 +1386,7 @@
     <string name="vol_jalon_allumage">Allumage, %1$s min avant la chki’a : %2$s</string>
     <string name="vol_jalon_sortie">Sortie de %1$s : tsét (8,5°) %2$s</string>
     <string name="vol_jalon_enchainement">%1$s commence à tsét (8,5°) : %2$s</string>
-    <string name="vol_jalon_omer">Compte du Omer, jour %1$s, dès tsét (8,5°) : %2$s</string>
+    <string name="vol_jalon_omer">Compte de l’Omer, jour %1$s, dès tsét (8,5°) : %2$s</string>
     <string name="vol_jalons_note">Jour civil du point sous l’avion ; %1$s, d’après le réglage de l’application.</string>
     <string name="vol_jalons_israel">calendrier d’Israël</string>
     <string name="vol_jalons_diaspora">calendrier de diaspora</string>
@@ -1431,8 +1431,8 @@
     <string name="vol_rappel_priere_sans_limite">Le temps de %1$s commence sous l’avion.</string>
     <string name="vol_rappel_fin_titre">Plus que 30 min pour %1$s</string>
     <string name="vol_rappel_fin_texte">Limite : %1$s.</string>
-    <string name="vol_rappel_omer_titre">Sefirat haOmer</string>
-    <string name="vol_rappel_omer_texte">Les étoiles sortent sous l’avion : ce soir, on compte le jour %1$s du Omer.</string>
+    <string name="vol_rappel_omer_titre">Compte de l’Omer</string>
+    <string name="vol_rappel_omer_texte">Les étoiles sortent sous l’avion : ce soir, on compte le jour %1$s de l’Omer.</string>
     <string name="vol_direct_explication_opensky">Désactivé par défaut. Activé, il demande à OpenSky Network, gratuitement et sans compte, les avions vus dans un carré de 10° autour de la position estimée ; l’indicatif reste sur le téléphone, qui y cherche l’avion. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_source_aeroports">Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms en hébreu et en français : Wikidata (CC0)</string>
 
