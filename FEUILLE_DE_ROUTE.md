@@ -1169,6 +1169,6 @@ toucher. CI verte (Android, web, Nokia).
    le 13/11, FSEANCE-02). Ce qui manque : des tests sur appareil, et il est
    absent hors de l'écran de séance.
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
-   collés dans les biographies, ordre des Sheva Berakhot, trois widgets.
+   collés dans les biographies, trois widgets (l'ordre des Sheva Berakhot est fait).
    Une partie a pu être traitée dans le lot « 28/10 bis » (boussole,
    position exacte, Roch 'Hodech) : vérifier chaque point avant de coder.

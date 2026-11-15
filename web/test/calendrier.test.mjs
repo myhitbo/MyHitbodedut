@@ -291,6 +291,13 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   for (const d of ['2026-12-20', '2026-09-15', '2026-09-13', '2026-09-14']) assert.ok(am(d), d);
   for (const d of ['2026-12-21', '2026-09-12', '2026-09-19', '2026-09-20', '2027-08-12']) assert.ok(!am(d), d);
   assert.ok(jour('2027-08-12', true).conditions.has('ticha_beav'));
+  // À Min'ha (TSIDDUR-09) : seulement si Ta'hanoun s'y dit.
+  const amm = (d) => conditionsPour('ashkenaz', true, jour(d, true).conditions).has('avinou_malkenou_minha');
+  for (const d of ['2026-12-20', '2026-09-15']) assert.ok(amm(d), d);
+  for (const d of ['2027-03-22', '2028-09-29', '2026-12-21']) assert.ok(!amm(d), d);
+  // Roch Hachana et Kippour, sans Ta'hanoun, gardent le leur ; jamais le vendredi (relecture du 15/11).
+  for (const d of ['2026-09-13', '2028-09-21', '2026-09-21']) assert.ok(amm(d), d);
+  for (const d of ['2028-09-22', '2026-09-18']) assert.ok(!amm(d), d);
   // Lecture de la Torah (15/10) : lundi, jeudi, Chabbat, Roch 'Hodech, jeûne, 'Hol hamoed ; pas un mardi ordinaire.
   for (const d of ['2026-10-19', '2026-10-15', '2026-10-17', '2026-11-11', '2026-12-20', '2026-09-29', '2026-04-16']) assert.ok(jour(d, true).conditions.has('kriat_hatorah'), d);
   for (const d of ['2026-10-20', '2026-10-21', '2026-10-23']) assert.ok(!jour(d, true).conditions.has('kriat_hatorah'), d);

@@ -218,6 +218,20 @@ class SiddurJourTest {
         }
     }
 
+    /** Avinou malkénou à Min'ha (TSIDDUR-09) : seulement si Ta'hanoun s'y dit (pas le 13 Adar II, pas la veille de Kippour un vendredi). */
+    @Test
+    fun `avinou malkenou a minha - pas sans tahanoun`() {
+        fun am(d: String) = CalendrierJuif.C.AVINOU_MALKENOU_MINHA in
+            SiddurJour.conditionsPour("ashkenaz", true, CalendrierJuif.jour(java.time.LocalDate.parse(d), true).conditions)
+        assertTrue(am("2026-12-20"))
+        assertTrue(am("2026-09-15"))
+        listOf("2027-03-22", "2028-09-29", "2026-12-21").forEach { assertFalse(it, am(it)) }
+        // Roch Hachana (dimanche, jeudi) et Kippour (lundi), sans Ta'hanoun : Avinou malkénou à Min'ha ;
+        // pas le vendredi (Roch Hachana 2028, 2ᵉ jour), ni un vendredi des dix jours (relecture du 15/11).
+        listOf("2026-09-13", "2028-09-21", "2026-09-21").forEach { assertTrue(it, am(it)) }
+        listOf("2028-09-22", "2026-09-18").forEach { assertFalse(it, am(it)) }
+    }
+
     /** La lecture de la Torah (15/10) : ouverte les jours de lecture, repliée un mardi ordinaire. */
     @Test
     fun `kriat hatorah - repliee les jours sans lecture`() {

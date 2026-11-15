@@ -14,6 +14,7 @@ export function libelle(condition) {
   if (condition.startsWith('!tahanoun')) return 'ajout_sans_tahanoun';
   if (c.startsWith('tahanoun')) return 'ajout_tahanoun';
   if (c === 'kippour') return 'fete_yom_kippour';
+  if (c === 'avinou_malkenou_minha') return 'ajout_avinou_malkenou';
   if (c === 'hallel') return 'ajout_hallel_annonce';
   if (c.startsWith('embolismique')) return 'ajout_embolismique';
   if (['pessah', 'soukkot', 'chavouot', 'roch_hachana', 'chemini_atseret', 'hanouka', 'pourim'].includes(c)) return `fete_${c}`;
@@ -36,11 +37,16 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   // Pas de Ta'hanoun du lendemain de Kippour jusqu'au 2 'Hechvan : Edot, et Sfard au choix.
   if (sansTahanounFinTichri && c.has('fin_tichri')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
   if (avinouMalkenou(conditions)) c.add('avinou_malkenou');
+  // À Min'ha : seulement si Ta'hanoun s'y dit (TSIDDUR-09) ; Roch Hachana et Kippour gardent le leur, sauf un vendredi (relecture du 15/11).
+  const c0 = new Set(conditions);
+  const minha = c0.has('tahanoun_minha') || c0.has('roch_hachana') || c0.has('kippour');
+  const vendredi = c0.has('jour_6') || c0.has('erev_kippour_vendredi');
+  if (avinouMalkenou(conditions) && minha && !vendredi) c.add('avinou_malkenou_minha');
   return c;
 }
 
 /** Les conditions déduites (SiddurJour, CalendrierJuif.C.DERIVEES), hors des vecteurs KosherJava. */
-export const DERIVEES = ['avinou_malkenou', 'kriat_hatorah', 'jour_1', 'jour_2', 'jour_3', 'jour_4', 'jour_5', 'jour_6',
+export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hatorah', 'jour_1', 'jour_2', 'jour_3', 'jour_4', 'jour_5', 'jour_6',
   'tsom_guedalia_tevet', 'lendemain_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
   'lamnatseah', 'ledavid', 'techouva_hochaana', 'yom_tov', 'moed', 'chabbat_roch_hodech', 'yom_tov_chabbat', 'roch_hachana_chabbat',
   'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan'];

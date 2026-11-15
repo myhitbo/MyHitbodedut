@@ -119,7 +119,7 @@ def main(dossier):
         for id_, (titre, nom_source, sections, emprunt) in table.items():
             t = {"id": id_, "groupe": GROUPE["cle"], "titre": titre, "source": nom_source, "sections": sections}
             if emprunt:
-                t["nusah"] = sc.NUSAH[emprunt]
+                t["nusah"] = sc.EMPRUNT[emprunt]
             d["textes"].append(t)
             if nom_source not in d["_meta"]["sources"]:
                 d["_meta"]["sources"] = sorted(d["_meta"]["sources"] + [nom_source])
