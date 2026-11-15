@@ -45,7 +45,8 @@ struct GuideSujetsTests {
     /// Le sujet d'une clé des vecteurs ; nil : pas de sujet.
     private func themeDe(_ cle: String?) throws -> Theme? {
         guard let cle else { return nil }
-        return try #require(Theme(rawValue: cle), "sujet inconnu : \(cle)")
+        let theme: Theme = try #require(Theme(rawValue: cle), "sujet inconnu : \(cle)")
+        return theme
     }
 
     @Test func chaqueSujetSaufAutreAUneInvitationParTempsDansLesTroisLangues() throws {

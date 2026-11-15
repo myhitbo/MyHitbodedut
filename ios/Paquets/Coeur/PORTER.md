@@ -71,7 +71,8 @@ normalise (`Normalizer`), le test Swift normalise aussi (`formeNFC`).
 - **`#expect`.** Le macro décompose l'expression qu'on lui donne. Lui passer deux valeurs déjà
   calculées (`let n = liste.count` puis `#expect(n == 3)`), jamais un appel qui prend une fermeture
   ou un chemin de clé (`#expect(x.allSatisfy(\.vide))` ne compile pas). `try #require(…)` pour un
-  optionnel dont la suite dépend.
+  optionnel dont la suite dépend. Dans une fonction qui rend un optionnel, `return try #require(x)` prend
+  `T?` pour `T` et avertit (« never equals nil ») : lier d'abord, `let v: T = try #require(x)`.
 - **Foundation sous Linux.** Pas de `%@` avec une `String` dans `String(format:)` ; pas de
   `DateComponentsFormatter` ; `NSRegularExpression`, `NSRange`, `precomposedStringWithCanonicalMapping`,
   `TimeZone(identifier:)`, `Calendar(identifier: .gregorian)` existent. Dans le doute, s'en passer.
