@@ -37,8 +37,7 @@ public enum Salutation {
 
 /// `Character.kt` : les illustrations du personnage, par moment de la journée, sous leur nom d'image
 /// (`ios/Ressources/Images`). Le choix est stable sur une journée et change le lendemain ; le jour est passé
-/// en argument. Celles d'une entrée de la bibliothèque et d'un moment de 'hizouk viendront avec ces types
-/// (tâche 9).
+/// en argument.
 public enum ImagesDuPersonnage {
 
     /// Appel à la pratique, sur l'écran de garde.
@@ -67,6 +66,28 @@ public enum ImagesDuPersonnage {
     public static func pendant(_ jour: JourCivil) -> String { duJour(pendants, 2, jour) }
 
     public static func joie(_ jour: JourCivil) -> String { duJour(joies, 3, jour) }
+
+    /// Les deux natures d'entrée de la bibliothèque : une source se tient devant le livre, un article est un texte
+    /// qu'on a écrit.
+    public static func entree(_ e: EntreeBibliotheque) -> String {
+        switch e {
+        case .source: "char_torah"
+        case .article: "char_writing"
+        }
+    }
+
+    /// L'illustration d'une carte de 'hizouk, choisie par le moment plutôt que par le jour.
+    public static func moment(_ m: Moment) -> String {
+        switch m {
+        case .ouverture: "char_open_arms"
+        case .blocage: "char_praying"
+        case .porte: "char_pointing"
+        case .relance: "char_thinking"
+        case .cloture: "char_praise"
+        case .lieu: "scene_nature"
+        case .demande: "char_open_arms"
+        }
+    }
 
     /// `ofDay` : le jour depuis 1970, décalé d'une semaine par sel.
     static func duJour(_ images: [String], _ sel: Int, _ jour: JourCivil) -> String {

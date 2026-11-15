@@ -64,6 +64,24 @@ public struct ChizukItem: Sendable, Equatable, Decodable {
     public let statutVerif: String
     public let relu: Bool
 
+    public init(id: String, moments: [Moment], theme: String?, edition: String, ref: String, he: String,
+                heSansNikkoud: String?, fr: String, en: String, note: String?, dureeLectureSec: Int,
+                statutVerif: String, relu: Bool) {
+        self.id = id
+        self.moments = moments
+        self.theme = theme
+        self.edition = edition
+        self.ref = ref
+        self.he = he
+        self.heSansNikkoud = heSansNikkoud
+        self.fr = fr
+        self.en = en
+        self.note = note
+        self.dureeLectureSec = dureeLectureSec
+        self.statutVerif = statutVerif
+        self.relu = relu
+    }
+
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: Cle.self)
         id = try c.decode(String.self, forKey: Cle("id"))
@@ -87,6 +105,12 @@ public struct Chizuk: Sendable, Decodable {
     public let version: String
     public let editions: [String: Edition]
     public let items: [ChizukItem]
+
+    public init(version: String, editions: [String: Edition], items: [ChizukItem]) {
+        self.version = version
+        self.editions = editions
+        self.items = items
+    }
 
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: Cle.self)
@@ -132,6 +156,8 @@ public struct ArticleBibliotheque: Sendable, Equatable {
     /// Absent pour un article en fiche seulement.
     public let texteIntegral: String?
     public let sourcesCitees: [String]
+    /// Langue → erreurs relevées (clés `erreurs_relevees_<langue>`), les listes vides écartées.
+    public let erreursRelevees: [String: [String]]
 }
 
 /// Une entrée : une source (texte livré) ou un article (fiche).
@@ -163,7 +189,7 @@ public enum EntreeBibliotheque: Sendable, Equatable, Decodable {
                 date: c.texteOuNil("date"), url: c.texteOuNil("url"),
                 resumes: c.parLangue("resume_"), droits: c.parLangue("droits_"),
                 autorisation: c.texteOuNil("autorisation"), texteIntegral: c.texteOuNil("texte_integral"),
-                sourcesCitees: c.liste("sources_citees")))
+                sourcesCitees: c.liste("sources_citees"), erreursRelevees: c.listesParLangue("erreurs_relevees_")))
         }
     }
 }
@@ -331,6 +357,16 @@ extension KeyedDecodingContainer where Key == Cle {
             if let valeur = texteOuNil(cle.stringValue) {
                 resultat[String(cle.stringValue.dropFirst(prefixe.count))] = valeur
             }
+        }
+        return resultat
+    }
+
+    /// Comme `parLangue`, pour des listes : les listes vides écartées (`Library.listesParLangue`).
+    func listesParLangue(_ prefixe: String) -> [String: [String]] {
+        var resultat: [String: [String]] = [:]
+        for cle in allKeys where cle.stringValue.hasPrefix(prefixe) {
+            let valeurs = liste(cle.stringValue)
+            if !valeurs.isEmpty { resultat[String(cle.stringValue.dropFirst(prefixe.count))] = valeurs }
         }
         return resultat
     }
