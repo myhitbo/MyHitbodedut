@@ -3534,7 +3534,7 @@ function loupeVol(v) {
   if (store.suiviDirect()) return chercherRouteVol(v);
   feuille(tr.t('vol_en_ligne_titre'), (f, fermer) => f.append(
     // Sans relais, pas de suivi en direct sur le site (FPRODUIT-12) : l'aide ne promet que la route du vol.
-    h('p', {}, tr.t(RELAIS_VOL ? 'vol_en_ligne_aide' : 'vol_direct_activer_web_aide')),
+    h('p', {}, tr.t(RELAIS_VOL ? 'vol_en_ligne_aide' : 'vol_en_ligne_aide_web')),
     h('button', { class: 'principal', onclick: () => { fermer(); store.setSuiviDirect(true); chercherRouteVol(v); } }, tr.t('vol_en_ligne_oui')),
     h('button', { class: 'lien-discret', onclick: fermer }, tr.t('vol_fermer'))));
 }

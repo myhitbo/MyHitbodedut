@@ -472,6 +472,21 @@ def fusionner(jours):
     return len(DOUBLONS)
 
 
+def sans_courriels(x):
+    """TWEBCONF-17 : les crédits des biographies portent l'adresse e-mail personnelle de contributeurs
+    (« דוא"ל : … ») ; elle n'est d'aucune utilité au lecteur et n'est pas publiée. Le crédit reste.
+    Adresse en ASCII seulement : \\w prendrait aussi les lettres hébraïques collées devant
+    (« פצ'נובסקיnitzan62@… » perdait la fin du nom, relecture du 15/11)."""
+    if isinstance(x, str):
+        x = re.sub(r'(?:כתובת\s+)?דוא"ל:?\s*[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', "", x)
+        return re.sub(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", "", x)
+    if isinstance(x, list):
+        return [sans_courriels(y) for y in x]
+    if isinstance(x, dict):
+        return {k: sans_courriels(v) for k, v in x.items()}
+    return x
+
+
 def main():
     jours, total, retires = {}, 0, 0
     for lot in (1, 2, 3, 4):
@@ -552,7 +567,7 @@ def main():
                 x["a"] = annee_normalisee(x["a"])
         ligne = [x.pop("b", 0) for x in liste]
         if any(ligne):
-            bios[cle] = ligne
+            bios[cle] = sans_courriels(ligne)
     raw = os.path.join(ICI, "..", "android", "app", "src", "main", "res", "raw")
     json.dump(bios, open(os.path.join(raw, "hilloulot_bios.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     chemin = os.path.join(raw, "hilloulot.json")

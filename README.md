@@ -21,7 +21,7 @@ jusqu'à confirmation de la mise des tefillin.
 
 **Le principe.** Pendant une fenêtre horaire que vous définissez, par défaut
 06:00 à 11:00, l'ouverture d'une application que vous avez désignée fait
-apparaître un écran plein : « Tu as fait ta hitbodedout ? ». Trois issues :
+apparaître un écran plein : « Avez-vous fait votre hitbodedout ? ». Trois issues :
 commencer la séance tout de suite, déclarer qu'elle est déjà faite, ou reporter
 de quelques minutes. Une fois la journée validée, la barrière se tait jusqu'au
 lendemain.
@@ -50,7 +50,7 @@ cassée. Un interrupteur permet de déclarer le jour courant comme jour de
 pause. La date civile est exacte pour une fenêtre située le matin ; une
 fenêtre qui traverserait le coucher du soleil demanderait un calcul de zmanim.
 
-**Rappel quotidien.** Une notification à l'heure choisie, tant que la pratique
+**Rappels quotidiens.** Une notification aux heures choisies, tant que la pratique
 du jour n'est pas faite. L'alarme est volontairement inexacte : elle se
 déclenche même en veille profonde sans exiger la permission d'alarme exacte,
 que Google Play restreint.
@@ -79,7 +79,7 @@ d'accessibilité, et s'en servir pour autre chose expose à un retrait.
 ### La musique
 
 Une séance peut se dérouler en musique. La section Musique rassemble la
-bibliothèque : des morceaux livrés avec l'application (26 dans la version Play), plus ceux que l'on ajoute
+bibliothèque : les morceaux livrés avec l'application (leur nombre dépend de l'édition : `tools/inventaire_musique.py`), plus ceux que l'on ajoute
 depuis le téléphone. On choisit celui qui accompagnera les séances, on règle le
 volume, et on peut écouter chaque morceau avant de décider. Appui long pour
 renommer, ou retirer un morceau ajouté.
@@ -92,14 +92,15 @@ Les morceaux ajoutés passent par le sélecteur de fichiers du système, avec un
 permission d'accès persistante : aucune permission de stockage n'est demandée,
 et le fichier reste à sa place.
 
-Le morceau livré, המלך בשדה, pèse 9,3 Mo en 320 kbps, ce qui explique la taille
-de l'APK. Il n'a pas été réencodé, pour ne pas dégrader l'original.
+Les morceaux livrés sont en AAC et pèsent plusieurs mégaoctets chacun, ce qui
+explique la taille de l'APK ; leur nombre et leur poids sont donnés par
+`tools/inventaire_musique.py`, pas recopiés ici.
 
 ### Les illustrations
 
 Le personnage vient d'une planche de seize portraits et de quatre rendus pleins.
 La planche est découpée en une grille de 4 par 4, chaque vignette est détourée,
-puis exportée en WebP dans `res/drawable-nodpi`. Vingt images, 492 Ko au total.
+puis exportée en WebP dans `res/drawable-nodpi`. Le nombre d'images et leur poids se lisent dans ce dossier.
 
 Le détourage mérite une note. Le fond des rendus est mesuré entre 254 et 255,
 et la chemise blanche du personnage atteint elle aussi 255 : un seuil de
@@ -135,9 +136,12 @@ et change le lendemain.
 | Batterie sans restriction | Éviter que le système suspende la surveillance |
 | Démarrage automatique | Reprendre après un redémarrage |
 | Localisation approximative | Seulement si l'on choisit « Ma position » comme lieu des zmanim, et demandée à ce moment-là ; une ville de la liste n'en a pas besoin |
+| Localisation exacte | Seulement pour le relevé GPS des zmanim en vol ; une fois accordée, « Ma position » s'en sert aussi |
+| « Ne pas déranger » (accès à la politique de notification) | Demandé à l'activation du réglage correspondant |
+| Internet | Édition complète seulement : route d'un numéro de vol et suivi en direct, derrière un interrupteur éteint par défaut (voir plus bas) |
 
 Les deux premières se donnent à la main dans les Réglages, Android ne permet pas
-de les accorder par une simple boîte de dialogue. L'écran principal contient la
+de les accorder par une simple boîte de dialogue. Les Réglages contiennent la
 liste et un bouton vers chaque écran système.
 
 La visibilité des autres applications passe par un élément `<queries>` limité
@@ -199,14 +203,14 @@ cd android && ./gradlew assembleDebug
 # → app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Pré-requis : JDK 17 et le SDK Android, plateforme 35.
+Pré-requis : JDK 17 et le SDK Android, plateforme 36.
 
 ### Deux éditions
 
 | Édition | Contenu | Permissions sensibles |
 | --- | --- | --- |
 | `MyHitbodedut.apk` | Tout, barrière du matin comprise | Affichage par-dessus les autres applications, accès aux données d'utilisation |
-| `MyHitbodedut-Light.apk` | Tout sauf la barrière et le vol en ligne | Position (zmanim, GPS en vol), Ne pas déranger |
+| `MyHitbodedut-Light.apk` | Tout sauf la barrière et le vol en ligne (pas d'accès à Internet) | Localisation approximative et exacte (zmanim, boussole, GPS en vol), Ne pas déranger |
 
 L'édition légère existe pour une raison précise. Le couple affichage par-dessus
 les autres applications et accès aux données d'utilisation est exactement celui
@@ -285,7 +289,7 @@ Ce que le dépôt fournit et ce qui reste à faire :
       ou le flux GitHub Actions `Play` (29/10)
 - [ ] Clé d'envoi Play et ses quatre secrets `PLAY_*` (voir
       `PUBLICATION_PLAY_STORE.md`, § 5)
-- [ ] Politique de confidentialité en ligne, obligatoire dès qu'une
+- [x] Politique de confidentialité en ligne, obligatoire dès qu'une
       autorisation sensible est demandée :
       <https://myhitbodedut.pages.dev/confidentialite.html> (Cloudflare Pages,
       déployée par le flux `Web` ; secrets `CLOUDFLARE_API_TOKEN` et

@@ -1118,6 +1118,10 @@ Réponse du propriétaire aux sept questions du 05/10 : « oui tout ».
   supprimé (TikkunActivity, PsalmActivity, LiturgyActivity et leurs écrans ;
   web : les anciennes adresses mènent à la lecture entière), bouton final
   « J'ai dit le Tikoun en entier ».
+  La page héritée `tikkun_haklali.html` (racine) est retirée le 15/11
+  (TPLAYDOCS-20) ; elle reste le seul témoin de l'ouverture, de la clôture,
+  de la kavana et de la prière de Rabbi Natan (`res/raw/tikkun_haklali.json`,
+  « provenance ») : la relire avec `git show 238db1a:tikkun_haklali.html`.
 
 **Fait sur `ccr-314d6592-p0db3w`, PR #22 ouverte, pas encore fusionnée** :
 
@@ -1137,8 +1141,7 @@ dans `plantages.txt` de la branche `claude/captures-android`).
 
 **Reste à faire** :
 
-- fusionner la PR #22 après CI verte, puis vérifier le site déployé
-  (confidentialite.html avec la nouvelle adresse) ;
+- ~~fusionner la PR #22, puis vérifier le site déployé (confidentialite.html avec la nouvelle adresse)~~ : fait (site sur Cloudflare Pages) ;
 - mettre aussi la nouvelle adresse sur la fiche Play Console (à la main) ;
 - appliquer le remplacement sur ccr-49d373f9 si cette session ne l'a pas fait ;
 - lire `plantages.txt` et revoir les captures (dont « Lire la suite » des

@@ -1400,7 +1400,7 @@
     <string name="vol_ecart_gps">%1$s min si l’arrivée a 30 min de retard</string>
     <string name="vol_direct_explication">Désactivé par défaut. Activé, il envoie au relais de l’application l’indicatif du vol et la position estimée de l’avion, rien d’autre ; le relais demande la position réelle à OpenSky Network. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_direct_activer">Services en ligne : route du vol et suivi en direct</string>
-    <string name="vol_direct_activer_web">Services en ligne : route du vol (adsbdb)</string>
+    <string name="vol_direct_activer_web">Service en ligne : route du vol</string>
     <string name="vol_route_activer">Services en ligne : route du vol</string>
     <string name="vol_indicatif">Indicatif radio (OACI), par exemple ELY1</string>
     <string name="vol_indicatif_invalide">Indicatif attendu : trois lettres puis le numéro, par exemple ELY1.</string>
@@ -1416,8 +1416,7 @@
     <string name="vol_erreur_service">service indisponible</string>
     <string name="vol_erreur_serveur">erreur du serveur %1$d</string>
     <string name="vol_direct_inactif">Le relais du suivi n’est pas encore en service dans cette version.</string>
-    <string name="vol_direct_activer_web">Services en ligne : route du vol</string>
-    <string name="vol_direct_activer_web_aide">Activés, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée.</string>
+    <string name="vol_direct_activer_web_aide">Une fois activé, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée.</string>
     <string name="reglages_android_seulement">La barrière du matin (« Je suis avec Hachem ») et les rappels n’existent que dans l’application Android.</string>
     <string name="reglage_libelle_valeur">%1$s : %2$s</string>
     <string name="vol_fiabilite_direct">Route recalée sur la position reçue d’OpenSky Network à %1$s (%2$s), puis grand cercle jusqu’à l’arrivée, à vitesse constante. Zmanim du point sous l’avion, au niveau de la mer, calculés sur l’appareil.</string>
@@ -1505,8 +1504,9 @@
     <string name="licences_android">\n\nBibliothèques de l’application Android\nLecture des codes-barres : ZXing (Apache 2.0). AndroidX et Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
-    <string name="vol_en_ligne_aide">Désactivés par défaut : rien ne quitte le téléphone. Activés, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée, et le suivi en direct interroge OpenSky Network.</string>
-    <string name="vol_en_ligne_aide_route">Désactivés par défaut : rien ne quitte le téléphone. Activés, la loupe 🔍 envoie le seul numéro de vol à adsbdb.com pour remplir l’arrivée.</string>
+    <string name="vol_en_ligne_aide">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com ; « Position en direct » envoie à OpenSky Network une zone d’environ 10° autour de la position estimée de l’avion. Ces services voient votre adresse IP.</string>
+    <string name="vol_en_ligne_aide_route">Éteints par défaut : rien ne quitte le téléphone. Une fois activés, ils le restent jusqu’à ce que vous les coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com pour remplir l’arrivée. Ce service voit votre adresse IP.</string>
+    <string name="vol_en_ligne_aide_web">Éteint par défaut : rien ne quitte l’appareil. Une fois activé, il le reste jusqu’à ce que vous le coupiez. La loupe 🔍 envoie alors le seul numéro de vol à adsbdb.com pour remplir l’arrivée. Ce service voit votre adresse IP.</string>
     <string name="vol_en_ligne_titre">Chercher la route en ligne ?</string>
     <string name="vol_en_ligne_oui">Activer et chercher</string>
     <string name="vol_rapide_titre">Décrivez votre vol</string>

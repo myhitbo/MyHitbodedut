@@ -1350,7 +1350,7 @@
     <string name="vol_ecart_gps">%1$s min if arrival is 30 min late</string>
     <string name="vol_direct_explication">Off by default. When on, it sends the app’s relay the flight’s callsign and the aircraft’s estimated position, nothing else; the relay asks OpenSky Network for the real position. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_direct_activer">Online services: flight route and live tracking</string>
-    <string name="vol_direct_activer_web">Online services: flight route (adsbdb)</string>
+    <string name="vol_direct_activer_web">Online service: flight route</string>
     <string name="vol_route_activer">Online services: flight route</string>
     <string name="vol_indicatif">Radio callsign (ICAO), for example ELY1</string>
     <string name="vol_indicatif_invalide">Expected callsign: three letters then the number, for example ELY1.</string>
@@ -1366,7 +1366,6 @@
     <string name="vol_erreur_service">service unavailable</string>
     <string name="vol_erreur_serveur">server error %1$d</string>
     <string name="vol_direct_inactif">The tracking relay is not in service yet in this version.</string>
-    <string name="vol_direct_activer_web">Online services: flight route</string>
     <string name="vol_direct_activer_web_aide">When on, the magnifier 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
     <string name="reglages_android_seulement">The morning gate (“I am with Hashem”) and the reminders exist only in the Android app.</string>
     <string name="reglage_libelle_valeur">%1$s: %2$s</string>
@@ -1454,8 +1453,9 @@
     <string name="licences_android">\n\nLibraries of the Android app\nBarcode reading: ZXing (Apache 2.0). AndroidX and Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
-    <string name="vol_en_ligne_aide">Off by default: nothing leaves the phone. When on, the 🔍 sends only the flight number to adsbdb.com to fill in the arrival, and live tracking queries OpenSky Network.</string>
-    <string name="vol_en_ligne_aide_route">Off by default: nothing leaves the phone. When on, the 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
+    <string name="vol_en_ligne_aide">Off by default: nothing leaves the phone. Once turned on, they stay on until you switch them off. The 🔍 then sends only the flight number to adsbdb.com; “Live position” sends OpenSky Network an area of about 10° around the aircraft’s estimated position. These services see your IP address.</string>
+    <string name="vol_en_ligne_aide_route">Off by default: nothing leaves the phone. Once turned on, they stay on until you switch them off. The 🔍 then sends only the flight number to adsbdb.com to fill in the arrival. This service sees your IP address.</string>
+    <string name="vol_en_ligne_aide_web">Off by default: nothing leaves the device. Once turned on, it stays on until you switch it off. The 🔍 then sends only the flight number to adsbdb.com to fill in the arrival. This service sees your IP address.</string>
     <string name="vol_en_ligne_titre">Look up the route online?</string>
     <string name="vol_en_ligne_oui">Turn on and search</string>
     <string name="vol_rapide_titre">Describe your flight</string>
