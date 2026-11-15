@@ -1249,6 +1249,8 @@ Chacune dit ce qu'elle bloque. Les recommandations sont celles que la feuille de
 | D14 | fiche en **anglais, hébreu et français** ; Style de vie ; `com.myhitbodedut` ; **non-commerçant** au sens du DSA | une fiche française de plus à rédiger (tâche 30) ; aucune coordonnée publiée dans l'UE |
 | D15 | lien TestFlight envoyé **en message privé** à l'ami | modèle, version d'iOS, identifiant et rendez-vous restent à relever (P4) |
 
+**Mise à jour du 15/11/2026.** Le propriétaire a rendu les dépôts **publics**. Les runners macOS standard de GitHub sont gratuits pour un dépôt public : D5 reste « gratuit strict », mais la compilation de l'app par le vrai Xcode et les tests du paquet sur simulateur passent sur GitHub (`.github/workflows/ios-app.yml`, `macos-26`, Xcode 26.6, SDK iOS 26.5), sans attendre Codemagic. La signature, TestFlight et l'App Store restent soumis à P1 et P2. D12 (« `ios/` reste privé ») est caduque.
+
 ## 9. Sources lues le 13/11/2026
 
 **Dans le dépôt** (à `0274b05`) : `README.md`, `FEUILLE_DE_ROUTE.md`, `PUBLICATION_PLAY_STORE.md`, `ZMANIM.md` ; `android/app/build.gradle.kts` ; les quatre manifestes ; les 152 fichiers Kotlin de `src/main`, les deux de `src/debug`, `src/musique_play` et `src/musique_hors_play` ; les ressources (`res/`, formes des fichiers de `res/raw`) ; les 48 scripts de `tools/` et ses sous-dossiers ; les flux de `.github/workflows` ; `web/build.mjs`, `web/src/js/store.js` et la liste des tests du site ; la liste et les en-têtes des 108 fichiers de tests Android.

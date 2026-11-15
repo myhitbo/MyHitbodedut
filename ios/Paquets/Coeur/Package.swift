@@ -5,8 +5,8 @@
 import Foundation
 import PackageDescription
 
-// COEUR_SANS_VUES : la CI construit et teste le cœur sans les vues (travail « coeur ») ; un second travail
-// (« vues ») construit les vues contre SwiftUI de papier. Sans la variable (Xcode), tout est là.
+// COEUR_SANS_VUES : la CI Linux construit et teste le cœur sans les vues SwiftUI, qui n'existent pas sous
+// Linux ; Xcode (ios-app.yml, sur macOS) construit tout.
 let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
@@ -75,10 +75,7 @@ let package = Package(
 )
 
 if avecVues {
-    // Les vues SwiftUI de l'app. Sous Linux, elles se type-checkent contre SwiftUIDePapier (signatures seules).
+    // Les vues SwiftUI de l'app : elles lisent les modèles d'écran d'Ecrans.
     package.products.append(.library(name: "Vues", targets: ["Vues"]))
-    package.targets.append(.target(name: "SwiftUIDePapier"))
-    package.targets.append(.target(
-        name: "Vues",
-        dependencies: ["Ecrans", "Coeur", .target(name: "SwiftUIDePapier", condition: .when(platforms: [.linux]))]))
+    package.targets.append(.target(name: "Vues", dependencies: ["Ecrans", "Coeur"]))
 }

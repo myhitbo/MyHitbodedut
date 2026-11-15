@@ -1,0 +1,78 @@
+name: iOS (app, macOS)
+
+# L'app iOS compilée par le vrai Xcode, et le paquet Coeur testé sur un simulateur iOS (Foundation de Darwin).
+# Le dépôt est public : les runners macOS standard de GitHub sont gratuits (PORTAGE.md § 8.1, D5 revue le 15/11/2026).
+# La signature et l'envoi à TestFlight restent soumis aux préalables P1 et P2 (compte Apple, clé d'API).
+
+on:
+  push:
+    paths:
+      - 'ios/**'
+      - 'tools/export_contenu/**'
+      - '.github/workflows/ios-app.yml'
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'tools/export_contenu/**'
+      - '.github/workflows/ios-app.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode 26.6
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.6.app
+          xcodebuild -version
+      - name: Contenus exportés
+        run: python3 tools/export_contenu/export.py
+      - name: Projet Xcode (XcodeGen)
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate --spec project.yml
+      - name: Simulateur iPhone (iOS 26.5)
+        run: |
+          id=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          d = json.load(sys.stdin)["devices"]
+          for runtime, appareils in sorted(d.items()):
+              if "iOS-26-5" in runtime:
+                  for a in appareils:
+                      if a["name"].startswith("iPhone"):
+                          print(a["udid"]); sys.exit()
+          ')
+          test -n "$id"
+          echo "SIMULATEUR=$id" >> "$GITHUB_ENV"
+          echo "simulateur : $id"
+      - name: Compilation de l'app (simulateur, sans signature)
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
+            -destination "generic/platform=iOS Simulator" CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
+          grep -q "BUILD SUCCEEDED" app.log
+      - name: Tests de Coeur sur le simulateur
+        working-directory: ios/Paquets/Coeur
+        run: |
+          set -o pipefail
+          xcodebuild test -scheme Coeur-Package -destination "id=$SIMULATEUR" 2>&1 | tee tests.log | grep -E "error:|✘|failed|Test run with|TEST (SUCCEEDED|FAILED)" || true
+          grep -q "TEST SUCCEEDED" tests.log
+      - name: Journaux
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: journaux-ios
+          path: |
+            app.log
+            ios/Paquets/Coeur/tests.log
+          if-no-files-found: ignore

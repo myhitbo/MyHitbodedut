@@ -1,9 +1,5 @@
-#if canImport(SwiftUI)
-import SwiftUI
-#else
-import SwiftUIDePapier
-#endif
 import Foundation
+import SwiftUI
 import Coeur
 import Ecrans
 
