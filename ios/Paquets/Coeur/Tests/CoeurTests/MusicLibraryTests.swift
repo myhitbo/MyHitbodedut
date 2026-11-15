@@ -80,6 +80,18 @@ struct MusicLibraryTests {
         MusicLibrary.Etat(names: c.names, userTracks: c.userTracks, trackId: c.trackId)
     }
 
+    /// L'égalité de Kotlin, unité UTF-16 par unité : le `==` de Swift tiendrait « é » pour « e » et son
+    /// accent, et laisserait passer une adresse ou un JSON rendus sous une autre forme que celle d'Android.
+    private func pareil(_ a: String?, _ b: String?) -> Bool {
+        a.map { Array($0.utf16) } == b.map { Array($0.utf16) }
+    }
+
+    /// Le nom écrit d'un titre, nil pour un titre livré.
+    private func nomEcrit(_ titre: MusicLibrary.Titre) -> String? {
+        if case .nom(let nom) = titre { return nom }
+        return nil
+    }
+
     /// Le titre d'un morceau tel qu'Android l'écrit, résolu en français pour un titre livré.
     private func texte(_ titre: MusicLibrary.Titre, _ catalogue: Catalogue) -> String? {
         let simples = catalogue.simples("fr")
@@ -94,11 +106,11 @@ struct MusicLibraryTests {
         #expect(tous.count == b.titresLivres.count)
         for (rang, ligne) in b.titresLivres.enumerated() where rang < tous.count {
             let m = tous[rang]
-            #expect(m.id == ligne[0], "rang \(rang)")
+            #expect(pareil(m.id, ligne[0]), "rang \(rang) : \(m.id)")
             let attendu = MusicLibrary.Titre.libelle(Libelle(MusiquePlay.morceaux[rang].titleRes))
             #expect(m.title == attendu, "\(m.id)")
             let t = texte(m.title, catalogue)
-            #expect(t == ligne[1], "\(m.id)")
+            #expect(pareil(t, ligne[1]), "\(m.id) : \(t ?? "nil")")
         }
     }
 
@@ -113,7 +125,7 @@ struct MusicLibraryTests {
             #expect(tous.count == c.tous.count, "cas \(n) : \(tous.count) morceaux")
             for (rang, attendu) in c.tous.enumerated() where rang < tous.count {
                 let m = tous[rang]
-                #expect(m.id == attendu.id, "cas \(n), rang \(rang)")
+                #expect(pareil(m.id, attendu.id), "cas \(n), rang \(rang) : \(m.id)")
                 #expect(m.isBundled == attendu.livre, "cas \(n), \(attendu.id)")
                 let titreAttendu: MusicLibrary.Titre
                 if let titre = attendu.titre {
@@ -123,6 +135,7 @@ struct MusicLibraryTests {
                     titreAttendu = .libelle(Libelle(livre?.titleRes ?? "?"))
                 }
                 #expect(m.title == titreAttendu, "cas \(n), \(attendu.id)")
+                #expect(pareil(nomEcrit(m.title), attendu.titre), "cas \(n), \(attendu.id) : titre")
                 if m.isBundled {
                     #expect(m.rawRes == m.id && m.uri == nil, "cas \(n), \(m.id)")
                 } else {
@@ -130,11 +143,11 @@ struct MusicLibraryTests {
                 }
             }
             let choisi = MusicLibrary.selected(e)?.id
-            #expect(choisi == c.selected, "cas \(n) : selected")
+            #expect(pareil(choisi, c.selected), "cas \(n) : selected \(choisi ?? "nil")")
             for ligne in c.byId {
                 let trouve = MusicLibrary.byId(e, ligne[0])
                 let idTrouve = trouve?.id
-                #expect(idTrouve == ligne[1], "cas \(n) : byId(\(ligne[0] ?? "null"))")
+                #expect(pareil(idTrouve, ligne[1]), "cas \(n) : byId(\(ligne[0] ?? "null")) : \(idTrouve ?? "nil")")
                 // Le titre tel qu'Android l'écrit : le nom donné, ou le titre livré résolu en français.
                 let titre: String?
                 if let trouve {
@@ -142,29 +155,29 @@ struct MusicLibraryTests {
                 } else {
                     titre = nil
                 }
-                #expect(titre == ligne[2], "cas \(n) : titre de byId(\(ligne[0] ?? "null"))")
+                #expect(pareil(titre, ligne[2]), "cas \(n) : titre de byId(\(ligne[0] ?? "null")) : \(titre ?? "nil")")
             }
             for ligne in c.customName {
                 let nom = MusicLibrary.customName(e, id: ligne[0] ?? "")
-                #expect(nom == ligne[1], "cas \(n) : customName(\(ligne[0] ?? ""))")
+                #expect(pareil(nom, ligne[1]), "cas \(n) : customName(\(ligne[0] ?? "")) : \(nom ?? "nil")")
             }
             for ligne in c.rename {
                 var apres = e
                 MusicLibrary.rename(&apres, id: ligne[0] ?? "", title: ligne[1] ?? "")
-                #expect(apres.names == ligne[2], "cas \(n) : rename(\(ligne[0] ?? ""), « \(ligne[1] ?? "") »)")
+                #expect(pareil(apres.names, ligne[2]), "cas \(n) : rename(\(ligne[0] ?? ""), « \(ligne[1] ?? "") ») : \(apres.names)")
                 #expect(apres.userTracks == e.userTracks && apres.trackId == e.trackId, "cas \(n) : rename")
             }
             for ligne in c.addUserTrack {
                 var apres = e
                 MusicLibrary.addUserTrack(&apres, uri: ligne[0] ?? "", title: ligne[1] ?? "")
-                #expect(apres.userTracks == ligne[2], "cas \(n) : addUserTrack(\(ligne[0] ?? ""))")
+                #expect(pareil(apres.userTracks, ligne[2]), "cas \(n) : addUserTrack(\(ligne[0] ?? "")) : \(apres.userTracks)")
                 #expect(apres.names == e.names && apres.trackId == e.trackId, "cas \(n) : addUserTrack")
             }
             for ligne in c.removeUserTrack {
                 var apres = e
                 MusicLibrary.removeUserTrack(&apres, id: ligne[0] ?? "")
-                #expect(apres.userTracks == ligne[1], "cas \(n) : removeUserTrack(\(ligne[0] ?? ""))")
-                #expect(apres.trackId == ligne[2], "cas \(n) : removeUserTrack(\(ligne[0] ?? "")), trackId")
+                #expect(pareil(apres.userTracks, ligne[1]), "cas \(n) : removeUserTrack(\(ligne[0] ?? "")) : \(apres.userTracks)")
+                #expect(pareil(apres.trackId, ligne[2]), "cas \(n) : removeUserTrack(\(ligne[0] ?? "")), trackId \(apres.trackId ?? "nil")")
                 #expect(apres.names == e.names, "cas \(n) : removeUserTrack")
             }
         }
