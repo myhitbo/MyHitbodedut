@@ -88,8 +88,13 @@ struct AnneauxTests {
         let catalogue = try Catalogue.lire()
         for langue in Catalogue.langues {
             let chaines = catalogue.simples(langue)
-            for cle in ["settings_daily_goal", "ring_day_detail", "ring_streak_detail", "rings_description"] {
+            for cle in ["settings_daily_goal", "ring_day_detail", "rings_description"] {
                 #expect(chaines[cle] != nil, "\(langue) : \(cle)")
+            }
+            // Pluriels sur main : « %d jour » / « %d jours ».
+            let pluriels = catalogue.pluriels(langue)
+            for cle in ["ring_streak_detail", "ring_week_detail"] {
+                #expect(pluriels[cle + "[other]"] != nil, "\(langue) : \(cle)")
             }
         }
     }
