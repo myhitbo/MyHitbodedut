@@ -66,8 +66,9 @@ struct RouteVolTests {
         let panne = RouteVol.chercher("LY81", nil) { _ in RouteVol.Reponse(code: 503, corps: "") }
         #expect(panne == RouteVol.Resultat.erreur(raison: SuiviVol.Raison.serveur(503)))
         // Seul le numéro part : ni position, ni aéroport de départ dans l'adresse.
-        #expect(!faux.demandes.isEmpty)
-        for adresse in faux.demandes {
+        let demandes = faux.demandes
+        #expect(!demandes.isEmpty)
+        for adresse in demandes {
             let propre = adresse.commenceParUnites(RouteVol.adsbdb + "/") && !adresse.contientUnites("?")
             #expect(propre, "\(adresse)")
         }

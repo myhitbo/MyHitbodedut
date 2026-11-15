@@ -181,7 +181,8 @@ struct AeroportsTests {
         #expect(f.plier.count >= 50)
         for p in f.plier where p.count == 2 {
             let plie = Aeroports.plier(p[0])
-            #expect(plie.egalUnites(p[1]), "plier « \(p[0]) » : « \(plie) », attendu « \(p[1]) »")
+            let egal = plie.egalUnites(p[1])
+            #expect(egal, "plier « \(p[0]) » : « \(plie) », attendu « \(p[1]) »")
         }
         #expect(f.chercher.count >= 90)
         for r in f.chercher {
@@ -199,7 +200,8 @@ struct AeroportsTests {
         }
         for n in f.nomLocal where n.count == 3 {
             let nom = Aeroports.nomLocal(try a(n[0]), n[1])
-            #expect(nom.egalUnites(n[2]), "nomLocal \(n[0]) « \(n[1]) »")
+            let egal = nom.egalUnites(n[2])
+            #expect(egal, "nomLocal \(n[0]) « \(n[1]) »")
         }
         for p in f.parIata {
             let code = Aeroports.parIata(aeroports, p.texte)?.iata

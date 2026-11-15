@@ -93,7 +93,14 @@ object VecteursInterfaceB : Generateur {
             userTracks = """[{"uri":"content://מוזיקה/1","title":"ניגון"},{"uri":"content://é","title":"é décomposé"}]"""),
         Etat(names = "{}", userTracks = "  [ ]  ", trackId = "ianir_bessarabie"),
         Etat(userTracks = """[{"uri":"null","title":"Le mot null"}]""", trackId = "null"),
+        // Une liste illisible : un retrait n'y touche pas, et le morceau choisi le reste.
+        Etat(userTracks = "garbage", trackId = "content://a"),
     )
+
+    // « content://é » composé (U+00E9) et décomposé (e, U+0301) : pour Kotlin deux adresses, que l'égalité
+    // canonique de Swift confondrait (le cas des deux formes figure plus haut, parmi les morceaux ajoutés).
+    private val eCompose = "content://é"
+    private val eDecompose = "content://é"
 
     private val renommages = listOf(
         "hamelech_basade" to "Nouveau", "hamelech_basade" to "", "hamelech_basade" to "  ", "shpayer_beyond" to "X/Y \"z\"",
@@ -101,10 +108,12 @@ object VecteursInterfaceB : Generateur {
     )
     private val ajouts = listOf(
         "content://media/1" to "Encore", "content://new" to "Nouveau", "content://new" to "", "null" to "n", "7" to "sept",
-        "content://b" to "B3",
+        "content://b" to "B3", eCompose to "composé", eDecompose to "décomposé",
     )
-    private val retraits = listOf("content://media/1", "content://a", "absent", "null", "content://b", "hamelech_basade", "7", "")
-    private val recherches = listOf(null, "", "hamelech_basade", "content://a", "content://media/3", "inconnu", "null", "7")
+    private val retraits = listOf("content://media/1", "content://a", "absent", "null", "content://b", "hamelech_basade", "7", "",
+        eCompose, eDecompose)
+    private val recherches = listOf(null, "", "hamelech_basade", "content://a", "content://media/3", "inconnu", "null", "7",
+        eCompose, eDecompose)
     private val noms = listOf("hamelech_basade", "shpayer_beyond", "ianir_hello", "shpayer_pnima", "content://media/1", "content://a", "inconnu")
 
     private fun theatre(e: Etat): Theatre {

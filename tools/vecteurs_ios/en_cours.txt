@@ -1,9 +1,7 @@
 # Générateurs en chantier : versionnés, ni compilés ni lancés par « lancer.sh » sans argument (build.gradle.kts).
 VecteursCelebrations
-VecteursHilloulot
 VecteursInterfaceB
 VecteursParcours
-VecteursRecherche
 VecteursSourceDuJour
 VecteursStore
 VecteursVolSuite
