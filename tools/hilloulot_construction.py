@@ -300,25 +300,48 @@ def espaces(texte):
 # de liens « (ק1/ק2) », « [להאזנה] », crédits de photos qui n'apparaissent pas dans l'application,
 # dédicaces, et coordonnées personnelles de tiers (courriel, téléphone, adresse) : on coupe du
 # marqueur à la fin de la ligne, au lieu de supprimer la ligne entière.
+# Relecture du 15/11 : la prose reste. « באדיבות » seul n'est pas un crédit dans « באדיבותו » ni dans
+# « התייחס באדיבות ובמאור פנים » ; « לעילוי נשמת » n'est une dédicace qu'en tête de ligne, après
+# « תמונת הציון מפורסמת », ou suivi de près d'un « ז"ל » (« להדליק נר לעילוי נשמתו » reste) ; la tête
+# du crédit (« תמונת הציון », « התמונה »), seule sur la ligne d'avant, et la suite d'une dédicace sur
+# plusieurs lignes partent avec lui ; seules les lignes coupées perdent leur ponctuation finale.
 LIENS_SOURCE = re.compile(r"\s*\(ק\d*(?:/ק\d*)*\)|\s*\[ל(?:האזנה|צפייה|קריאה)\]")
-CREDIT = re.compile(r"(?:ה?תמונות?|הצילומים?|המידע)[^\n]{0,80}?באדיבות|באדיבות|לעילוי נשמת")
-CONTACT = re.compile(r"(?:דוא\"ל|דוא״ל|טלפון|טל['׳]|טל/פקס)\s*:?\s*(?=[\d+@A-Za-z-])|WhatsApp|וואטסאפ|סלולאר|ת\. ?ד\. ?\d")
+TETE_CREDIT = r"(?:ה?תמונ(?:ה|ות|ת)|הצילומ(?:ים)?|צילום|המידע)"
+ADIVOUT = r"באדיבות(?!ו)(?!\s+וב)"
+CREDIT = re.compile(rf"{TETE_CREDIT}[^\n.!?]{{0,80}}?{ADIVOUT}|{ADIVOUT}")
+TNTSBH = r"ת\. ?נ\. ?צ\. ?ב\. ?ה"
+DEDICACE = re.compile(rf"{TETE_CREDIT}[^\n.]{{0,40}}?לעילוי נשמת|^\s*לעילוי נשמת"
+                      rf"|לעילוי נשמת(?=[^\n.]{{0,50}}?(?:ז\"ל|ע\"ה|{TNTSBH}))")
+SUITE_DEDICACE = re.compile(rf"^\s*(?:ש?נפטר|שיום|ו?נטמנ|באדיבות|{TNTSBH}|[^\n]{{0,40}}ז\"ל)")
+SUITE_CREDIT = re.compile(r"^\s*(?:מחבר הספר|הרב הראשי ל)")
+TETE_SEULE = re.compile(rf"^\s*{TETE_CREDIT}(?:\s+\S+){{0,4}}\s*$")
+CONTACT = re.compile(r"(?<![א-ת])(?:דוא\"ל|דוא״ל|טלפון|טל['׳]|טל/פקס|טל-פקס|סלולר|סלולאר)\s*[:.]?\s*(?=[\d+@A-Za-z-])"
+                     r"|WhatsApp|וואטסאפ|סלולאר|להעברת שמות|חייגו|ת\. ?ד\. ?\d")
 COURRIEL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 TELEPHONE = re.compile(r"(?<![\d-])(?:\+?972|0\d{1,2})[- ]?\d[\d -]{5,}\d")
 COLLES = re.compile(r"(?<=ז\"ל)(?=[א-ת])")
 
 
 def nettoie_bio(texte):
-    texte = COLLES.sub(" ", LIENS_SOURCE.sub("", texte))
-    lignes = []
-    for ligne in texte.split("\n"):
-        for motif in (CREDIT, CONTACT):
+    sortie, suite = [], None
+    for ligne in COLLES.sub(" ", LIENS_SOURCE.sub("", texte)).split("\n"):
+        if suite is not None and suite.match(ligne):
+            continue
+        suite, coupe, avant = None, None, ligne
+        for motif in (CREDIT, DEDICACE, CONTACT):
             m = motif.search(ligne)
-            if m:
-                ligne = ligne[:m.start()]
-        ligne = TELEPHONE.sub("", COURRIEL.sub("", ligne)).rstrip(" ,;:-–")
-        lignes.append(ligne.strip() if not ligne.strip() else ligne)
-    return re.sub(r"\n{3,}", "\n\n", "\n".join(lignes)).strip()
+            if m and (coupe is None or m.start() < coupe[0]):
+                coupe = (m.start(), motif)
+        if coupe:
+            suite = SUITE_DEDICACE if coupe[1] is DEDICACE else SUITE_CREDIT
+            ligne = ligne[:coupe[0]]
+            if not ligne.strip() and sortie and TETE_SEULE.match(sortie[-1]):
+                sortie.pop()
+        ligne = TELEPHONE.sub("", COURRIEL.sub("", ligne))
+        if ligne != avant:
+            ligne = ligne.rstrip(" ,;:-–")
+        sortie.append(ligne if ligne.strip() else "")
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(sortie)).strip()
 
 
 def annee_normalisee(a):
