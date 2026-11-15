@@ -474,6 +474,7 @@
     <string name="tikkun_progress">Tehilim dits aujourd’hui : %1$d sur %2$d</string>
     <string name="tikkun_progress_all">Dit en entier aujourd’hui.</string>
     <string name="tikkun_flow_done">J’ai dit le Tikoun en entier</string>
+    <string name="tikkun_flow_confirm">Noter le Tikoun d’aujourd’hui comme dit en entier ?</string>
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">Rappels</string>

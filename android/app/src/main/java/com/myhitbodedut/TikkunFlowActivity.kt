@@ -49,9 +49,16 @@ class TikkunFlowActivity : AppCompatActivity() {
         fin.apply {
             setText(R.string.tikkun_flow_done)
             setOnClickListener {
-                // Tout dire d'un trait vaut les dix psaumes.
-                tikkun.psaumes.forEach { Store.setTikkunDone(this@TikkunFlowActivity, it.numero, true) }
-                finish()
+                // Le bouton est sous le pouce dès la première ligne : on confirme avant de noter (FLECTURE-12).
+                androidx.appcompat.app.AlertDialog.Builder(this@TikkunFlowActivity)
+                    .setMessage(R.string.tikkun_flow_confirm)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        // Tout dire d'un trait vaut les dix psaumes.
+                        tikkun.psaumes.forEach { Store.setTikkunDone(this@TikkunFlowActivity, it.numero, true) }
+                        finish()
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
             }
         }
     }

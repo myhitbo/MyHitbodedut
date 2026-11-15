@@ -389,6 +389,7 @@
     <string name="tikkun_progress">%1$d מתוך %2$d מזמורים נאמרו היום</string>
     <string name="tikkun_progress_all">נאמר במלואו היום.</string>
     <string name="tikkun_flow_done">אמרתי את התיקון כולו</string>
+    <string name="tikkun_flow_confirm">לסמן את תיקון היום כנאמר במלואו?</string>
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">תזכורות</string>

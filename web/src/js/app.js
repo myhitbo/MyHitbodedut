@@ -1916,7 +1916,9 @@ const ouvrirCle = (cle) => { priere = cle.startsWith('l:') ? `livre:${cle.slice(
 
 /** La ligne « סימניות · n » (28/10) : tous les marque-pages, ou ceux d'un recueil (« s », « l »). */
 function ligneSignets(recueil = null) {
-  const marques = store.marques().filter((m) => (!recueil || m.cle.startsWith(`${recueil}:`)) && titreCle(m.cle));
+  // Un marque-page du siddour est lié à son noussa'h (FLECTURE-09) ; livres et Tehilim n'en ont pas.
+  const nusah = store.siddurNusah();
+  const marques = store.marques().filter((m) => (!recueil || m.cle.startsWith(`${recueil}:`)) && titreCle(m.cle) && (!m.nusah || m.nusah === nusah));
   return marques.length ? ligne({ nom: h('span', { class: 'nom-marque' }, iconeMarque(recueil === 'l', 18), tr.t('marques_titre')), etat: String(marques.length),
     onclick: () => listeSignets(marques, titreCle, ouvrirSignet) }) : null;
 }
@@ -2124,6 +2126,8 @@ function ecranTikkun() {
       ...paragraphesTraduits(b.paragraphes, b.paragraphes_fr, b.paragraphes_en, paragraphe));
   }
   const fini = () => {
+    // Le bouton est visible dès la première ligne : on confirme avant de noter (FLECTURE-12).
+    if (!window.confirm(tr.t('tikkun_flow_confirm'))) return;
     // Tout dire d'un trait vaut les dix psaumes.
     for (const p of tikkun.psaumes) store.setTikkunDone(p.numero, true);
     retour();

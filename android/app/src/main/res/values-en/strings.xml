@@ -380,6 +380,7 @@
     <string name="tikkun_progress">%1$d of %2$d Tehillim said today</string>
     <string name="tikkun_progress_all">Said in full today.</string>
     <string name="tikkun_flow_done">I have said the whole Tikkun</string>
+    <string name="tikkun_flow_confirm">Mark today’s Tikkun as said in full?</string>
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">Reminders</string>

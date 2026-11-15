@@ -39,7 +39,13 @@ object RepriseFavoris {
 
     /** La ligne « סימניות · n » (28/10) : tous les marque-pages, ou ceux d'un recueil (« s », « l »). */
     fun ligneSignets(c: Context, recueil: String? = null): View? {
-        val marques = Store.marques(c).filter { (recueil == null || it.cle.startsWith("$recueil:")) && titre(c, it.cle) != null }
+        // Un marque-page du siddour est lié à son noussa'h (les paragraphes diffèrent) : seuls ceux du
+        // noussa'h courant sont listés, sinon la ligne ouvrirait un autre paragraphe (FLECTURE-09).
+        val nusah = Store.siddurNusah(c).cle
+        val marques = Store.marques(c).filter {
+            (recueil == null || it.cle.startsWith("$recueil:")) && titre(c, it.cle) != null &&
+                (it.nusah.isEmpty() || it.nusah == nusah)
+        }
         if (marques.isEmpty()) return null
         return ligne(c, null, "${c.getString(R.string.marques_titre)} · ${marques.size}", "",
             icone = SiddurLectureActivity.icone(recueil == "l")) { listeSignets(c, marques) }
