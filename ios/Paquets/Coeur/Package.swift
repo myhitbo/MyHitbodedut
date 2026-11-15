@@ -37,6 +37,7 @@ let enChantierTests: [String] = [
     "LanguesTests.swift",
     "LanguesTexteTests.swift",
     "LibellesTests.swift",
+    "LibraryRulesTests.swift",
     "MagnetismeTests.swift",
     "MegilaTests.swift",
     "OnboardingTests.swift",
