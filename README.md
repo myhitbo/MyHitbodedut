@@ -79,7 +79,7 @@ d'accessibilité, et s'en servir pour autre chose expose à un retrait.
 ### La musique
 
 Une séance peut se dérouler en musique. La section Musique rassemble la
-bibliothèque : un morceau livré avec l'application, plus ceux que l'on ajoute
+bibliothèque : des morceaux livrés avec l'application (26 dans la version Play), plus ceux que l'on ajoute
 depuis le téléphone. On choisit celui qui accompagnera les séances, on règle le
 volume, et on peut écouter chaque morceau avant de décider. Appui long pour
 renommer, ou retirer un morceau ajouté.

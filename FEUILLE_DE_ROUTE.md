@@ -1152,15 +1152,16 @@ Fait et poussé sur `main` (b76d154) : paragraphes coupés avec espace réduit,
 תהילים, signets de versets de Tehilim), retour du bandeau masqué par double
 toucher. CI verte (Android, web, Nokia).
 
-**Reste à faire, demandé par l'utilisateur, non commencé** :
+**Reste à faire, demandé par l'utilisateur** (le point 3 est livré, voir plus bas) :
 
 1. **Musique de Noam Shpayer** : en attente des fichiers que l'utilisateur
    doit fournir (les 10 morceaux `shpayer_*` déjà livrés le 03/11 sont
    dans PUBLICATION_PLAY_STORE.md).
 2. **Check complet de l'app** : six audits indépendants à effort maximal,
    puis corriger tous les défauts confirmés.
-3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
-   replie en rond tournant (pochette, ou hassid à la guitare).
+3. **Mini-lecteur de musique pendant la hitbodedout** : livré (demande du
+   19/10, `MiniLecteur`, dans l'écran de séance). Ce qui manque : des tests,
+   la pause et la reprise, et il est absent hors de l'écran de séance.
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
    collés dans les biographies, ordre des Sheva Berakhot, trois widgets.
    Une partie a pu être traitée dans le lot « 28/10 bis » (boussole,

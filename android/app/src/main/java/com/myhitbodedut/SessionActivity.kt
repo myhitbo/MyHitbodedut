@@ -125,7 +125,7 @@ class SessionActivity : AppCompatActivity() {
         // « Je n'arrive pas à parler » : le moment « blocage ».
         // Puis, sous le texte, une question à la fois (propositions 3 et 15, 19/10).
         stuck.setOnClickListener {
-            ChizukCard.show(chizuk, Moment.BLOCAGE)
+            afficherChizuk(Moment.BLOCAGE)
             if (question < 0) question = 0
             renderQuestion()
         }
@@ -156,8 +156,9 @@ class SessionActivity : AppCompatActivity() {
             demarrer { question = 0; renderQuestion() }
         }
 
-        // « ouverture » : le mot du début de séance.
-        drawOpening()
+        // « ouverture » : le mot du début de séance. Après une rotation, le texte
+        // qu'on lisait est reposé, pas remplacé par un nouveau tirage (FSEANCE-10).
+        if (savedInstanceState == null) drawOpening() else restaurerChizuk(savedInstanceState)
 
         // Une recréation (rotation, thème, langue) rejoue onCreate avec la
         // même intention : la demande de départ n'est lue qu'une fois, sinon
@@ -257,6 +258,10 @@ class SessionActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putInt(ETAT_GUIDE, guideStep)
         outState.putInt(ETAT_QUESTION, question)
+        chizukAffiche?.let { (moment, id) ->
+            outState.putString(ETAT_CHIZUK_MOMENT, moment.name)
+            outState.putString(ETAT_CHIZUK_ID, id)
+        }
         outState.putBoolean(ETAT_EN_COURS, wasRunning)
         outState.putBoolean(ETAT_ABANDON, cancelling)
         outState.putBoolean(ETAT_BRAVO_APRES_NOTE, bravoApresNote)
@@ -293,7 +298,7 @@ class SessionActivity : AppCompatActivity() {
         // séance se soit achevée d'elle-même ou par le bouton.
         val running = Store.isSessionRunning(this)
         if (wasRunning && !running) {
-            if (cancelling) cancelling = false else ChizukCard.show(chizuk, Moment.CLOTURE)
+            if (cancelling) cancelling = false else afficherChizuk(Moment.CLOTURE)
         }
         wasRunning = running
         souffle.actif = running
@@ -475,7 +480,14 @@ class SessionActivity : AppCompatActivity() {
     private fun confirmFinish() {
         AlertDialog.Builder(this)
             .setTitle(R.string.session_finish_title)
-            .setMessage(R.string.session_finish_message)
+            .setMessage(
+                // Avant une minute pleine, rien n'est inscrit (FSEANCE-12).
+                if (SessionRule.minutesEcoulees(Store.sessionStartedAt(this), System.currentTimeMillis()) < 1) {
+                    R.string.session_finish_short
+                } else {
+                    R.string.session_finish_message
+                },
+            )
             .setPositiveButton(R.string.session_finish_now) { _, _ ->
                 // La note est proposée par le bravo, après lui : ouverte ici,
                 // elle se retrouvait sous l'écran du bravo (revue du 29/09).
@@ -488,7 +500,9 @@ class SessionActivity : AppCompatActivity() {
     private fun confirmCancel() {
         AlertDialog.Builder(this)
             .setTitle(R.string.session_cancel_title)
-            .setMessage(R.string.session_cancel_message)
+            .setMessage(
+                if (Store.isDone(this)) R.string.session_cancel_message_done else R.string.session_cancel_message,
+            )
             .setPositiveButton(R.string.session_cancel) { _, _ ->
                 cancelling = true
                 SessionService.cancel(this)
@@ -504,7 +518,29 @@ class SessionActivity : AppCompatActivity() {
      * de chaque séance, jamais depuis render(), qui repasse chaque seconde.
      */
     private fun drawOpening() {
-        ChizukCard.show(chizuk, Moment.OUVERTURE)
+        afficherChizuk(Moment.OUVERTURE)
+    }
+
+    /** Le texte de 'hizouk à l'écran : (moment, identifiant), gardé pour la recréation (rotation). */
+    private var chizukAffiche: Pair<Moment, String>? = null
+
+    private fun afficherChizuk(moment: Moment) {
+        val item = ChizukCard.show(chizuk, moment)
+        chizukAffiche = item?.let { moment to it.id }
+    }
+
+    /** Repose le texte lu avant une rotation, sans rien tirer (FSEANCE-10). */
+    private fun restaurerChizuk(etat: Bundle) {
+        val moment = etat.getString(ETAT_CHIZUK_MOMENT)?.let { nom -> Moment.values().firstOrNull { it.name == nom } }
+        val id = etat.getString(ETAT_CHIZUK_ID)
+        val data = Data.chizuk(this)
+        val item = if (moment != null && id != null) data.byId(id) else null
+        if (moment != null && item != null) {
+            ChizukCard.bind(chizuk, data, item, moment)
+            chizukAffiche = moment to item.id
+        } else {
+            chizuk.visibility = View.GONE
+        }
     }
 
     companion object {
@@ -516,6 +552,8 @@ class SessionActivity : AppCompatActivity() {
 
         private const val ETAT_GUIDE = "guide_step"
         private const val ETAT_QUESTION = "question"
+        private const val ETAT_CHIZUK_MOMENT = "chizuk_moment"
+        private const val ETAT_CHIZUK_ID = "chizuk_id"
         private const val ETAT_EN_COURS = "was_running"
         private const val ETAT_ABANDON = "cancelling"
         private const val ETAT_BRAVO_APRES_NOTE = "bravo_apres_note"
