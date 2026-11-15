@@ -264,7 +264,7 @@ public struct Lecture: Sendable, Equatable {
     public init(_ o: ObjetJSON) {
         let f = o.tableau("favoris") ?? [], c = o.tableau("chizuk_favoris") ?? [], m = o.tableau("marques_pages") ?? []
         self.init(favoris: f.indices.map { f.texte($0) }, chizukFavoris: c.indices.map { c.texte($0) },
-                  marques: m.indices.compactMap { m.objet($0).map(MarquePage.init) })
+                  marques: m.indices.compactMap { m.objet($0).map { MarquePage($0) } })
     }
 }
 

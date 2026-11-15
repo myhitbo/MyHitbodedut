@@ -142,8 +142,9 @@ struct CoffreTests {
             faux["iterations"] = .entier(Int64(n))
             #expect(Coffre.dechiffrer(faux.texte(), motDePasse: v.motDePasse) == nil, "\(n)")
         }
-        for (cle, valeur) in [("version", JSON.entier(2)), ("kdf", .chaine("PBKDF2-HMAC-SHA1")), ("iv", .chaine("AAAA")),
-                              ("salt", .chaine("AAAA")), ("data", .chaine("pas du base64 !"))] {
+        let alterations: [(String, JSON)] = [("version", .entier(2)), ("kdf", .chaine("PBKDF2-HMAC-SHA1")), ("iv", .chaine("AAAA")),
+                                             ("salt", .chaine("AAAA")), ("data", .chaine("pas du base64 !"))]
+        for (cle, valeur) in alterations {
             var faux = v.chiffre
             faux[cle] = valeur
             #expect(Coffre.dechiffrer(faux.texte(), motDePasse: v.motDePasse) == nil, "\(cle)")
