@@ -20,7 +20,7 @@
     <string name="journal_note_only">הערה בלבד</string>
     <string name="status_total">%1$s בסך הכול</string>
     <string name="today_minutes">היום: %1$s של התבודדות</string>
-    <string name="today_declared">אושר בלי טיימר</string>
+    <string name="today_declared">נעשתה בלי טיימר</string>
 
     <string name="section_practice">ההתבודדות שלי</string>
     <string name="section_gate_state">מצב הפעולה</string>
@@ -66,19 +66,19 @@
     <string name="gate_disabled_title">המצב כבוי</string>
     <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שהמצב יפעל.</string>
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
-    <string name="gate_no_apps_detail">אין מה לעכב. בחרו לפחות אפליקציה אחת.</string>
+    <string name="gate_no_apps_detail">אין מה לחסום. בחרו לפחות אפליקציה אחת.</string>
     <string name="gate_stopped_title">הניטור הופסק</string>
     <string name="gate_stopped_detail">הכול מוגדר, אבל השירות שמשגיח אינו פועל. הפעילו אותו מחדש, או פתחו את האפליקציה שוב.</string>
     <string name="gate_stopped_action">להפעיל את המצב מחדש</string>
     <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
-    <string name="gate_done_title">היום אושר</string>
-    <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
+    <string name="gate_done_title">היום הושלם</string>
+    <string name="gate_done_detail">היום כבר לא ייחסם דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
     <string name="gate_exempt_title">יום ללא חובה</string>
-    <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב שותק והרצף נשמר.</string>
+    <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב מושבת והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
     <string name="gate_snoozed_detail">התבקשה דחייה. המצב יחזור בסיומה.</string>
     <string name="gate_window_title">מחוץ לחלון</string>
-    <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לזה דבר לא מעוכב.</string>
+    <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לשעות האלה דבר אינו נחסם.</string>
 
     <string name="action_start_session">להתחיל התבודדות של %1$s</string>
     <string name="action_another_session">עוד התבודדות</string>
@@ -118,7 +118,7 @@
     <string name="ring_streak_reached">הגעתם ליעד של %2$d ימים!</string>
     <string name="rings_description">טבעות. היום: %1$s מתוך %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">שבת ויום טוב</string>
-    <string name="settings_shabbat_hint">בימים אלה: המצב שותק, אין תזכורת, והרצף נשמר.</string>
+    <string name="settings_shabbat_hint">בימים אלה: המצב מושבת, אין תזכורת, והרצף נשמר.</string>
     <string name="settings_exempt_today">הפסקה היום</string>
     <string name="settings_exempt_today_hint">ליום טוב, נסיעה או מחלה: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
@@ -166,7 +166,7 @@
     <string name="session_finish_now">לסיים עכשיו</string>
     <string name="session_cancel">לוותר</string>
     <string name="session_finish_title">לסיים את ההתבודדות?</string>
-    <string name="session_finish_message">הזמן שכבר עבר יישמר והיום יאושר.</string>
+    <string name="session_finish_message">הזמן שכבר עבר יישמר והיום ייחשב.</string>
     <string name="session_cancel_title">לוותר על ההתבודדות?</string>
     <string name="session_cancel_message">דבר לא יישמר והיום יישאר פתוח.</string>
     <string name="session_running_title">התבודדות בעיצומה</string>
@@ -307,16 +307,16 @@
     <string name="music_rename">שינוי שם</string>
     <string name="music_rename_reset">השם המקורי</string>
     <string name="music_remove">הסרה</string>
-    <string name="music_off_short">כבוי</string>
+    <string name="music_off_short">כבויה</string>
     <string name="music_off_summary">אין מוזיקה בזמן ההתבודדות.</string>
     <string name="music_none_summary">אין ניגונים בספרייה.</string>
-    <string name="music_on_summary">%1$s, עוצמה %2$d%%</string>
+    <string name="music_on_summary">‏%1$s, עוצמה %2$d%%</string>
     <string name="session_music_line">מוזיקה: %1$s</string>
     <string name="music_open_library">פתיחת ספריית המוזיקה</string>
     <string name="app_version">גרסה %1$s (%2$d) · %3$s</string>
     <string name="edition_full">מהדורה מלאה</string>
     <string name="edition_light">מהדורת Light</string>
-    <string name="week_done">בוצע</string>
+    <string name="week_done">נעשתה</string>
     <string name="week_todo">לביצוע</string>
     <string name="gate_permissions_action">לראות את שתי הגישות</string>
     <string name="settings_language">שפה</string>
@@ -466,20 +466,20 @@
     <string name="settings_name_empty">לא הוזן</string>
 
     <!-- מסך תפילות: עשרה עניינים, שתי תפילות לכל אחד (ליקוטי תפילות). -->
-    <string name="tefilot_title">תְּפִלּוֹת</string>
-    <string name="tefilot_hint">עֲשָׂרָה עִנְיָנִים, עֶשְׂרִים וְאַחַת תְּפִלּוֹת. רַבִּי נָתָן מִבְּרֶסְלֶב.</string>
-    <string name="tefilot_count">%d תְּפִלּוֹת</string>
-    <string name="tefilot_warning">הַתּוֹרָה הַנִּזְכֶּרֶת עוֹסֶקֶת בְּעִנְיָן אַחֵר; הַבַּקָּשָׁה בְּתוֹךְ הַתְּפִלָּה.</string>
-    <string name="tefila_hitbodedut">הִתְבּוֹדְדוּת</string>
-    <string name="tefila_simcha">שִׂמְחָה</string>
-    <string name="tefila_uman">אוּמַן, רֹאשׁ הַשָּׁנָה</string>
-    <string name="tefila_kdusha">קְדֻשָּׁה</string>
-    <string name="tefila_zera">זֶרַע שֶׁל קַיָּמָא</string>
-    <string name="tefila_parnassa">פַּרְנָסָה</string>
-    <string name="tefila_brit">שְׁמִירַת הַבְּרִית</string>
-    <string name="tefila_geula">גְּאֻלָּה</string>
-    <string name="tefila_zivug">זִוּוּג</string>
-    <string name="tefila_refua">רְפוּאָה שְׁלֵמָה</string>
+    <string name="tefilot_title">תפילות</string>
+    <string name="tefilot_hint">עשרה עניינים, עשרים ואחת תפילות. רבי נתן מברסלב.</string>
+    <string name="tefilot_count">%d תפילות</string>
+    <string name="tefilot_warning">התורה הנזכרת עוסקת בעניין אחר; הבקשה בתוך התפילה.</string>
+    <string name="tefila_hitbodedut">התבודדות</string>
+    <string name="tefila_simcha">שמחה</string>
+    <string name="tefila_uman">אומן, ראש השנה</string>
+    <string name="tefila_kdusha">קדושה</string>
+    <string name="tefila_zera">זרע של קיימא</string>
+    <string name="tefila_parnassa">פרנסה</string>
+    <string name="tefila_brit">שמירת הברית</string>
+    <string name="tefila_geula">גאולה</string>
+    <string name="tefila_zivug">זיווג</string>
+    <string name="tefila_refua">רפואה שלמה</string>
 
     <!-- Présentation détaillée, bravo de fin de séance, apparence (28/09). -->
     <string name="onboarding_session">ההתבודדות</string>
@@ -612,7 +612,7 @@
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d דק׳</string>
     <string name="duration_hours">%1$d שע׳</string>
-    <string name="duration_hours_minutes">%1$d שע׳ %2$02d דק׳</string>
+    <string name="duration_hours_minutes">%1$d שע׳ %2$d דק׳</string>
     <string name="duration_custom">משך לבחירה…</string>
     <string name="duration_custom_title">משך ההתבודדות, בדקות</string>
     <string name="duration_custom_hint">בין 1 ל־240 דקות</string>
@@ -703,7 +703,7 @@
     <string name="boussole_vide_titre">איפה אתם?</string>
     <string name="boussole_vide_position">שימוש במיקום שלי</string>
     <string name="boussole_vide_ville">או בחירת עיר</string>
-    <string name="zmanim_absent">אינו מתרחש היום</string>
+    <string name="zmanim_absent">אין היום</string>
     <string name="zmanim_erreur">החישוב נכשל</string>
     <string name="zmanim_a_valider">השיטה כתובה מתחת לכל זמן. החישוב בגובה פני הים, במכשיר, ללא רשת.</string>
     <string name="zmanim_ajouts_titre">בתפילות</string>
@@ -976,7 +976,7 @@
     <string name="partage_action">לשתף את ההתבודדות שלי</string>
     <string name="partage_texte">היום הקדשתי %1$s להתבודדות, זמן לבד עם השם.</string>
     <string name="partage_serie">רצף: %1$d ימים ברציפות.</string>
-    <string name="partage_lien">נסו גם אתם, בחינם: %1$s</string>
+    <string name="partage_lien">נסו גם אתם, בחינם:\n%1$s</string>
     <string name="partage_choix">שיתוף</string>
     <plurals name="partage_minutes">
         <item quantity="one">דקה אחת</item>
@@ -1067,8 +1067,8 @@
     <string name="trophee_sommet">הדרגה הגבוהה ביותר הושגה</string>
     <string name="trophee_vedette">הגביע הכי יפה שלכם</string>
     <string name="trophee_vedette_aucune">הגביע הראשון שלכם מחכה</string>
-    <string name="chabbat_alerte_titre">שבת בעוד 3 שעות, תתכוננו לכיף!</string>
-    <string name="chabbat_alerte_texte">נשמה כפולה, שמחה כפולה וסעודה כפולה! נסו התבודדות כפולה.</string>
+    <string name="chabbat_alerte_titre">שבת בעוד 3 שעות: התכוננו ליהנות ממנה!</string>
+    <string name="chabbat_alerte_texte">עוד יש זמן להתבודדות לפני שבת. שבת שלום!</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">ספרים</string>
     <string name="livres_hint">ליקוטי מוהר״ן, השתפכות הנפש, כוכבי אור, מגילות, פרק שירה, נשמת כל חי…</string>
@@ -1078,7 +1078,7 @@
     <string name="halakha_yalkut_source">ילקוט יוסף – קיצור שולחן ערוך, מו״ר הרב יצחק יוסף (הוכן מתוכנת תורת אמת, CC BY-NC-SA 2.5): מבחר, לא הספר כולו.</string>
     <!-- Birkat haLevana sur la carte du jour (13/10) -->
     <string name="levana_titre">ברכת הלבנה</string>
-    <string name="levana_fenetre">מ־%1$s עד %2$s</string>
+    <string name="levana_fenetre">מ%1$s עד %2$s</string>
     <string name="levana_ce_soir">אפשר לברך הלילה</string>
     <string name="levana_dernier_soir">הלילה האחרון</string>
     <plurals name="levana_dans">
@@ -1108,9 +1108,9 @@
     <string name="levana_lune">הלבנה הערב: %1$s מוארת, %2$s</string>
     <string name="levana_croissante">מתמלאת</string>
     <string name="levana_decroissante">מתמעטת</string>
-    <string name="levana_motsae">מומלץ: מוצאי שבת %s (שו״ע תכ״ו, ב ורמ״א)</string>
+    <string name="levana_motsae">מומלץ: במוצאי %s (שו״ע תכ״ו, ב ורמ״א)</string>
     <string name="levana_kippour">לא לפני מוצאי יום הכיפורים (רמ״א תכ״ו, ב)</string>
-    <string name="levana_tisha">לא לפני מוצאי תשעה באב (רמ״א תכ״ו ב; משנה ברורה תכ״ו יא)</string>
+    <string name="levana_tisha">לא לפני מוצאי תשעה באב (רמ״א תכ״ו, ב; משנה ברורה תכ״ו, י״א)</string>
     <string name="levana_usage_titre">ברכת הלבנה: מנהג</string>
     <string name="levana_usage_auto">לפי הנוסח</string>
     <string name="levana_usage_trois_mi_mois">מ־3 ימים עד חצי החודש (משנה ברורה, רמ״א)</string>
@@ -1175,12 +1175,12 @@
     <string name="accueil_prochain_trophee">הגביע הבא: %1$s · עוד %2$d</string>
     <string name="grade_partager">לשתף את הדרגה שלי</string>
     <plurals name="grade_partage_texte">
-        <item quantity="one">דרגת %1$s ב־MyHitbodedut: גביע אחד, יום אחר יום.</item>
-        <item quantity="two">דרגת %1$s ב־MyHitbodedut: שני גביעים, יום אחר יום.</item>
-        <item quantity="other">דרגת %1$s ב־MyHitbodedut: %2$d גביעים, יום אחר יום.</item>
+        <item quantity="one">גביע אחד ודרגת %1$s ב־MyHitbodedut, יום אחר יום.</item>
+        <item quantity="two">שני גביעים ודרגת %1$s ב־MyHitbodedut, יום אחר יום.</item>
+        <item quantity="other">%2$d גביעים ודרגת %1$s ב־MyHitbodedut, יום אחר יום.</item>
     </plurals>
     <string name="bilan_titre">השבוע שלכם</string>
-    <string name="bilan_minutes">%1$s של התבודדות, ב־%2$s.</string>
+    <string name="bilan_minutes">%1$s של התבודדות במשך %2$s.</string>
     <string name="bilan_plus">%1$s יותר מהשבוע הקודם.</string>
     <string name="bilan_record">השבוע הטוב ביותר שלכם עד עכשיו.</string>
     <string name="bilan_trophees">גביעים שהושגו השבוע:</string>
@@ -1228,7 +1228,7 @@
     <string name="moment_mot_journee">באמצע היום, רגע של התבודדות עם השם.</string>
     <string name="moment_mot_soir">לעת ערב, ספרו להשם על היום שעבר.</string>
     <string name="moment_mot_nuit">בלילה, כשהכול שקט, דברו עם השם.</string>
-    <string name="chizuk_demande_title">צריך חיזוק</string>
+    <string name="chizuk_demande_title">אני רוצה חיזוק</string>
     <string name="chizuk_demande_hint">טקסט שמחזק, מתי שתרצו.</string>
     <string name="chizuk_autre">עוד אחד</string>
     <string name="chizuk_garder">לשמור</string>
@@ -1340,7 +1340,7 @@
     <string name="vol_route_bouton">מציאת היעד לפי מספר הטיסה</string>
     <string name="vol_route_attente">מחפש את הטיסה…</string>
     <string name="vol_route_explication">בלחיצה נשלח ל־adsbdb.com (חינם, בלי חשבון) רק מספר הטיסה. הוא מחזיר את התחנות הידועות ואת אות הקריאה, לא את השעות: יש להזין אותן מהכרטיס.</string>
-    <string name="vol_route_trouvee">%1$s: %2$s. המראה %3$s, נחיתה %4$s. המסלול ידוע ל־adsbdb.com ולפעמים אינו מעודכן: יש לבדוק מול הכרטיס.</string>
+    <string name="vol_route_trouvee">טיסה %1$s של %2$s: המראה %3$s, נחיתה %4$s. המסלול ידוע ל־adsbdb.com ולפעמים אינו מעודכן: יש לבדוק מול הכרטיס.</string>
     <string name="vol_route_autre_depart">לפי adsbdb.com, %1$s טסה %2$s ואינה ממריאה מ־%3$s. יש לבדוק את המספר או את שדה ההמראה; המסלול הידוע עשוי להיות ישן.</string>
     <string name="vol_route_inconnue">שדה התעופה %1$s, שנמסר על ידי adsbdb.com, אינו ברשימת האפליקציה: יש לבחור אותו ידנית.</string>
     <string name="vol_route_introuvable">מספר הטיסה אינו מוכר ל־adsbdb.com: יש לבחור את שדות התעופה ידנית.</string>
@@ -1391,7 +1391,7 @@
     <string name="vol_jalon_entree">כניסת %1$s: שקיעה %2$s</string>
     <string name="vol_jalon_allumage">הדלקת נרות, %1$s דק׳ לפני השקיעה: %2$s</string>
     <string name="vol_jalon_sortie">צאת %1$s: צאת הכוכבים (⁦8.5°⁩) %2$s</string>
-    <string name="vol_jalon_enchainement">%1$s מתחיל בצאת הכוכבים (⁦8.5°⁩): %2$s</string>
+    <string name="vol_jalon_enchainement">תחילת %1$s בצאת הכוכבים (⁦8.5°⁩): %2$s</string>
     <string name="vol_jalon_omer">ספירת העומר, יום %1$s, מצאת הכוכבים (⁦8.5°⁩): %2$s</string>
     <string name="vol_jalons_note">היום האזרחי של הנקודה שמתחת למטוס; %1$s, לפי הגדרת האפליקציה.</string>
     <string name="vol_jalons_israel">לוח ארץ ישראל</string>
@@ -1444,7 +1444,7 @@
 
     <!-- La boussole de Jérusalem (28/10, design C). -->
     <string name="boussole_title">לכיוון ירושלים</string>
-    <string name="boussole_carte_sous">בחרו מקום: החסיד מסתובב לעבר ירושלים.</string>
+    <string name="boussole_carte_sous">בחרו מקום: הדמות מסתובבת לעבר ירושלים.</string>
     <string name="boussole_face">מול ירושלים</string>
     <string name="boussole_droite">הסתובבו ימינה ⁦%1$d°⁩</string>
     <string name="boussole_gauche">הסתובבו שמאלה ⁦%1$d°⁩</string>
@@ -1458,9 +1458,9 @@
     <string name="boussole_calibrer">המצפן אינו מדויק: ציירו באוויר את הספרה 8 עם הטלפון.</string>
     <string name="boussole_sans_capteur">בטלפון זה אין מצפן: הכיוון מוצג ביחס לצפון, למעלה.</string>
     <string name="boussole_note_titre">שתי דרכים לחשב</string>
-    <string name="boussole_note">את כיוון ירושלים אפשר לחשב בשתי דרכים. לפי המעגל הגדול, הכיוון האמיתי על פני כדור הארץ: שולחן ערוך הרב (אורח חיים צד, ב), המור וקציעה לרבי יעקב עמדן (קנ) ועוד סוברים שזו הדרך העדיפה; מניו יורק, כ־⁦54°⁩. לפי הקו הישר על מפת מרקטור (כיוון קבוע), כפי שנראה למשל מדברי הלבוש (אורח חיים צד): מניו יורק, כ־⁦96°⁩. מפת ⁦Equal Earth⁩, שהאו״ם ממליץ עליה מאז ספטמבר 2026, נועדה להשוות את שטחי היבשות; היא אינה מראה כיוון. החסיד עוקב אחרי הכיוון שבחרתם ב„הכיוון שהמצפן עוקב אחריו” (כברירת מחדל, הכיוון האמיתי); הכיוון השני מוצג לידיעה בלבד. החישוב נעשה במכשיר, לעבר הר הבית (⁦31.7781°⁩ צפון, ⁦35.2354°⁩ מזרח), בתיקון הסטייה המגנטית של המקום.</string>
+    <string name="boussole_note">את כיוון ירושלים אפשר לחשב בשתי דרכים. לפי המעגל הגדול, הכיוון האמיתי על פני כדור הארץ: שולחן ערוך הרב (אורח חיים צד, ב), המור וקציעה לרבי יעקב עמדן (קנ) ועוד סוברים שזו הדרך העדיפה; מניו יורק, כ־⁦54°⁩. לפי הקו הישר על מפת מרקטור (כיוון קבוע), כפי שנראה למשל מדברי הלבוש (אורח חיים צד): מניו יורק, כ־⁦96°⁩. הדמות עוקבת אחרי הכיוון שבחרתם ב„הכיוון שהמצפן עוקב אחריו” (כברירת מחדל, הכיוון האמיתי); הכיוון השני מוצג לידיעה בלבד. החישוב נעשה במכשיר, לעבר הר הבית (⁦31.7781°⁩ צפון, ⁦35.2354°⁩ מזרח), בתיקון הסטייה המגנטית של המקום.</string>
     <string name="boussole_widget_label">כיוון ירושלים</string>
-    <string name="boussole_widget_description">החסיד וכיוון ירושלים ממקום הזמנים, ביחס לצפון. נגיעה פותחת את המצפן.</string>
+    <string name="boussole_widget_description">הדמות וכיוון ירושלים ממקום הזמנים, ביחס לצפון. נגיעה פותחת את המצפן.</string>
     <string name="boussole_widget_lecture">ירושלים מ%1$s: ⁦%2$d°⁩ מהצפון</string>
     <string name="boussole_source">מקור: %1$s</string>
     <!-- Le web seulement : l’iPhone demande l’autorisation après un toucher. -->
@@ -1470,7 +1470,7 @@
     <string name="boussole_methode_carte">לפי מפת מרקטור (כיוון קבוע)</string>
     <string name="boussole_legende_carte">התווית „ירושלים” (בשושנה, המחוג הזהוב) עוקבת אחרי הכיוון על המפה; הסימון הכחול המקווקו מראה את הכיוון האמיתי, לידיעה בלבד.</string>
     <string name="boussole_affichage">תצוגת המצפן</string>
-    <string name="boussole_affichage_hassid">החסיד מסתובב (ברירת מחדל)</string>
+    <string name="boussole_affichage_hassid">הדמות מסתובבת (ברירת מחדל)</string>
     <string name="boussole_affichage_rose">שושנת רוחות</string>
     <!-- Reprend la position, approximative (ChoixLieu.maPosition, 31/10). -->
     <string name="boussole_actualiser_position">עדכון המיקום שלי</string>
@@ -1515,7 +1515,7 @@
     <string name="vol_rapide_exemple">למשל: אל על מליון לתל אביב מחר בשעה 11</string>
     <string name="vol_rapide_remplir">מילוי הטיסה</string>
     <string name="vol_rapide_billet">ייבוא הכרטיס (PDF או תמונה)</string>
-    <string name="vol_rapide_rien">לא זוהה דבר. נסו למשל: ‎«LY 382 פריז תל אביב 12.11 בשעה 9:40»‎.</string>
+    <string name="vol_rapide_rien">לא זוהה דבר. נסו למשל: „LY 382 פריז תל אביב 12.11 בשעה 9:40”.</string>
     <string name="vol_rapide_heure">שעת ההמראה</string>
     <string name="vol_rapide_compris">הובן: %1$s</string>
     <string name="vol_rapide_estimee">הנחיתה הוערכה לפי המרחק: תקנו אותה לפי השעה שבכרטיס.</string>

@@ -30,7 +30,7 @@
     <string name="section_practice">Ma pratique</string>
     <string name="section_gate_state">État du mode</string>
     <string name="section_gate">Je suis avec Hachem</string>
-    <string name="section_gate_hint">Les applications choisies restent fermées tant que la pratique n’est pas faite, et pendant une hitbodedout en cours.</string>
+    <string name="section_gate_hint">Les applications choisies restent bloquées tant que la pratique n’est pas faite, et pendant une hitbodedout en cours.</string>
     <string name="section_rhythm">Rythme</string>
     <string name="section_permissions">Autorisations</string>
     <string name="section_permissions_hint">Aucune n’est obligatoire. Chacune sert une fonction précise, et se retire à tout moment dans les réglages d’Android.</string>
@@ -46,7 +46,7 @@
     <string name="dedicace_etude">Mon étude</string>
     <string name="dedicace_pour">Pour</string>
     <string name="dedicace_leilouy">Léïlouy nichmat (לעילוי נשמת)</string>
-    <string name="dedicace_refoua">Refoua chéléma (לרפואה שלמה)</string>
+    <string name="dedicace_refoua">Refoua chelema (לרפואה שלמה)</string>
     <string name="dedicace_hatslaha">Hatsla’ha (להצלחה)</string>
     <string name="dedicace_zivoug">Zivoug hagoun (לזיווג הגון)</string>
     <string name="dedicace_autre">Autre intention</string>
@@ -71,19 +71,19 @@
     <string name="gate_disabled_title">Mode désactivé</string>
     <string name="gate_disabled_detail">Activez l’interrupteur « Je suis avec Hachem » pour que le mode agisse.</string>
     <string name="gate_no_apps_title">Aucune application choisie</string>
-    <string name="gate_no_apps_detail">Le mode n’a rien à retenir. Choisissez au moins une application.</string>
+    <string name="gate_no_apps_detail">Le mode n’a rien à bloquer. Choisissez au moins une application.</string>
     <string name="gate_stopped_title">Surveillance arrêtée</string>
     <string name="gate_stopped_detail">Tout est réglé, mais le service qui surveille ne tourne pas. Relancez-le, ou rouvrez l’application.</string>
     <string name="gate_stopped_action">Relancer le mode</string>
     <string name="gate_session_detail">Les applications choisies restent bloquées jusqu’à la fin de la hitbodedout.</string>
     <string name="gate_done_title">Journée validée</string>
-    <string name="gate_done_detail">Plus rien ne sera retenu aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
-    <string name="gate_exempt_title">Jour sans obligation</string>
+    <string name="gate_done_detail">Plus rien ne sera bloqué aujourd’hui, sauf pendant une hitbodedout en cours. Le mode reprendra demain.</string>
+    <string name="gate_exempt_title">Jour de pause</string>
     <string name="gate_exempt_detail">Chabbat, Yom Tov ou pause : le mode se tait et la série reste intacte.</string>
     <string name="gate_snoozed_title">Report en cours</string>
     <string name="gate_snoozed_detail">Vous avez demandé un délai. Le mode reprend à la fin du report.</string>
-    <string name="gate_window_title">Hors de la fenêtre</string>
-    <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est retenu.</string>
+    <string name="gate_window_title">Hors de la plage horaire</string>
+    <string name="gate_window_detail">Le mode agit entre %1$s et %2$s. En dehors, rien n’est bloqué.</string>
 
     <!-- Actions -->
     <string name="action_start_session">Commencer une hitbodedout de %1$s</string>
@@ -101,7 +101,7 @@
     <string name="action_back">Retour</string>
 
     <!-- Réglages -->
-    <string name="settings_window">Heures du mode</string>
+    <string name="settings_window">Plage horaire</string>
     <string name="settings_snooze">Durée du report</string>
     <string name="settings_target">Durée d’une hitbodedout</string>
     <string name="settings_daily_goal">Objectif quotidien</string>
@@ -125,7 +125,7 @@
     <string name="settings_shabbat">Chabbat et Yom Tov</string>
     <string name="settings_shabbat_hint">Ces jours-là : le mode se tait, pas de rappel, et la série reste intacte.</string>
     <string name="settings_exempt_today">Pause aujourd’hui</string>
-    <string name="settings_exempt_today_hint">Pour un Yom Tov, un voyage, une maladie : la journée ne compte pas contre vous.</string>
+    <string name="settings_exempt_today_hint">Pour un Yom Tov, un voyage, une maladie : aujourd’hui n’est pas compté et votre série est préservée.</string>
     <string name="settings_screen_missing">Cet écran de réglages n’existe pas sur ce téléphone.</string>
     <!-- Le sélecteur de fichiers d’Android est absent (examen du 14/11, constat 12). -->
     <string name="fichiers_absents">Aucune application de ce téléphone ne permet d’ouvrir ou d’enregistrer un fichier.</string>
@@ -174,22 +174,22 @@
     <string name="session_start">Commencer, %1$s</string>
     <string name="session_target">Hitbodedout de %1$s</string>
     <string name="session_finish_now">Terminer maintenant</string>
-    <string name="session_cancel">Abandonner</string>
+    <string name="session_cancel">Arrêter sans enregistrer</string>
     <string name="session_finish_title">Terminer la hitbodedout ?</string>
     <string name="session_finish_message">Le temps déjà écoulé sera enregistré et la journée validée.</string>
-    <string name="session_cancel_title">Abandonner la hitbodedout ?</string>
+    <string name="session_cancel_title">Arrêter sans enregistrer ?</string>
     <string name="session_cancel_message">Rien ne sera enregistré et la journée restera à faire.</string>
     <string name="session_running_title">Hitbodedout en cours</string>
     <string name="session_remaining">Il reste %1$s</string>
     <string name="session_open">Sans durée</string>
-    <string name="session_open_caption">Sans durée : vous arrêtez quand vous arrêtez.</string>
+    <string name="session_open_caption">Sans durée : vous terminez quand vous voulez.</string>
     <string name="session_elapsed">Depuis %1$s</string>
     <string name="settings_hide_countdown">Masquer le décompte</string>
     <string name="settings_hide_countdown_hint">Rien à l’écran pendant la hitbodedout, un son discret à la fin.</string>
     <string name="session_hidden_caption">Le décompte est masqué. Un son vous préviendra.</string>
     <string name="session_hidden_caption_web">Le décompte est masqué. À la fin, l’écran change ; la musique s’arrête si elle jouait.</string>
     <string name="session_running_hidden">Le décompte est masqué.</string>
-    <string name="session_open_hidden_caption">Sans durée, décompte masqué : vous arrêtez quand vous arrêtez.</string>
+    <string name="session_open_hidden_caption">Sans durée, décompte masqué : vous terminez quand vous voulez.</string>
     <string name="session_running_open_hidden">Sans durée, décompte masqué.</string>
     <string name="blocker_session_hidden_subtitle">Hitbodedout en cours. Le téléphone peut attendre.</string>
     <string name="widget_label">Série MyHitbodedut</string>
@@ -215,7 +215,7 @@
     <string name="hitbodedut_harata">Le regret du passé</string>
     <string name="hitbodedut_harata_invite">Dites ce que vous regrettez, et dites-le simplement. Le regret devant Lui n’est pas un procès.</string>
     <string name="hitbodedut_bakasha">La demande</string>
-    <string name="hitbodedut_bakasha_invite">Demandez ce qui vous manque, et d’abord d’être rapproché de Lui. Même ce dont vous vous croyez trop loin.</string>
+    <string name="hitbodedut_bakasha_invite">Demandez ce qui vous manque, et d’abord de vous rapprocher de Lui. Même ce dont vous vous croyez trop loin.</string>
     <string name="hitbodedut_torah">Faire de l’étude une prière</string>
     <string name="hitbodedut_torah_invite">Reprenez un enseignement entendu aujourd’hui, et demandez d’y parvenir vous aussi.</string>
     <string name="hitbodedut_hodaa">L’action de grâce</string>
@@ -359,25 +359,25 @@
     <string name="track_niggoun_33">Niggoun 33</string>
     <string name="track_yanuka_nigoun_3">Niggoun du Yanouka (3)</string>
     <string name="track_shpayer_beyond" translatable="false">Beyond — Noam Shpayer</string>
-    <string name="track_shpayer_eshet_hayil">Eshet \'Hayil — Or &amp; Noam Shpayer</string>
+    <string name="track_shpayer_eshet_hayil">Eshet ’Hayil — Or &amp; Noam Shpayer</string>
     <string name="track_shpayer_arba_bavot" translatable="false">Arba Bavot — Or &amp; Noam Shpayer</string>
     <string name="track_shpayer_afilou">Afilou (Even) — Noam Shpayer</string>
     <string name="track_shpayer_kenout">Kenout (Sincerity) — Noam Shpayer</string>
     <string name="track_shpayer_esh_kamanche" translatable="false">Fire (kamanche) — Noam Shpayer</string>
-    <string name="track_shpayer_hithadshout">Hit\'hadchout (Awakening) — Noam Shpayer</string>
+    <string name="track_shpayer_hithadshout">Hit’hadchout (Awakening) — Noam Shpayer</string>
     <string name="track_shpayer_pnima" translatable="false">Pnima (Inward) — Noam Shpayer</string>
-    <string name="track_shpayer_tunnels_end" translatable="false">Tunnel\'s End — Noam Shpayer</string>
-    <string name="track_shpayer_ki_hine_kahomer">Niggoun « Ki hiné ka\'homer » — Noam Shpayer</string>
+    <string name="track_shpayer_tunnels_end" translatable="false">Tunnel’s End — Noam Shpayer</string>
+    <string name="track_shpayer_ki_hine_kahomer">Niggoun « Ki hiné ka’homer » — Noam Shpayer</string>
     <string name="track_ianir_mirage" translatable="false">Mirage (Into the Moment) — Ianir</string>
     <string name="track_ianir_al_harega" translatable="false">Al haRega (Into the Moment) — Ianir</string>
     <string name="track_ianir_hello" translatable="false">Hello (Into the Moment) — Ianir</string>
     <string name="track_ianir_baal_shem_tov">Niggoun du Baal Chem Tov — Ianir</string>
-    <string name="track_ianir_zemer_bishvahin">Zemer bichva\'hin (titre incertain) — Ianir</string>
+    <string name="track_ianir_zemer_bishvahin">Zemer bichva’hin — Ianir</string>
     <string name="track_ianir_berditchev">Niggoun de Berditchev — Ianir</string>
-    <string name="track_ianir_kol_bayaar">Kol baYa\'ar (Niggoun du Saba de Chpola) — Ianir</string>
-    <string name="track_ianir_yohanan_hasandlar">Niggoun de Rabbi Yo\'hanan HaSandlar — Ianir</string>
+    <string name="track_ianir_kol_bayaar">Kol baYa’ar (Niggoun du Saba de Chpola) — Ianir</string>
+    <string name="track_ianir_yohanan_hasandlar">Niggoun de Rabbi Yo’hanan HaSandlar — Ianir</string>
     <string name="track_ianir_haleluhu" translatable="false">Haleluhu — Ianir</string>
-    <string name="track_ianir_houppa">Niggoun de \'Houppa — Ianir</string>
+    <string name="track_ianir_houppa">Niggoun de ’Houppa — Ianir</string>
     <string name="track_ianir_eden_el_salvador" translatable="false">Eden / El Salvador — Ianir</string>
     <string name="track_ianir_hakol_milfanekha" translatable="false">HaKol milfanekha — Ianir</string>
     <string name="track_ianir_kabbalat_chabbat">Niggoun de Kabbalat Chabbat (live) — Ianir</string>
@@ -415,13 +415,13 @@
     <string name="tips_hint">Dix repères pour commencer et pour tenir.</string>
     <string name="tips_open">Lire les conseils</string>
     <string name="tip_1_title">Choisissez un lieu calme et à l’écart</string>
-    <string name="tip_1_body">Le premier pas de la hitbodedout est de trouver un endroit calme, où vous pouvez être seul avec vous-même et avec Hachem. Il n’a pas besoin d’être totalement isolé, mais vous ne devez pas y être dérangé. Une pièce libre chez vous, une plage tranquille, un coin de nature. Si vous le pouvez, préférez un cadre naturel : la nature elle-même peut être une source de calme intérieur.</string>
+    <string name="tip_1_body">Le premier pas de la hitbodedout est de trouver un endroit calme, où vous pouvez rester en tête-à-tête avec vous-même et avec Hachem. Il n’a pas besoin d’être totalement isolé, mais rien ne doit vous y déranger. Une pièce libre chez vous, une plage tranquille, un coin de nature. Si vous le pouvez, préférez un cadre naturel : la nature elle-même peut être une source de calme intérieur.</string>
     <string name="tip_2_title">Fixez un temps chaque jour</string>
     <string name="tip_2_body">Si vous débutez, commencez court. Accordez quinze minutes par jour à la hitbodedout, puis allongez peu à peu, jusqu’à une heure si vous le pouvez. Ne sautez pas d’emblée à une longue hitbodedout. Avancez pas à pas, pour que cela devienne une habitude et non un fardeau. Fixez une heure régulière, afin que la pratique entre dans votre journée au lieu de rester un geste au hasard.</string>
     <string name="tip_3_title">Commencez par parler</string>
     <string name="tip_3_body">Commencez la hitbodedout en parlant à Hachem, avec vos mots, à voix basse s’il le faut. Ne vous inquiétez pas si au début vous ne savez pas quoi dire. Ouvrez simplement le cœur et lancez-vous. Ce peut être une demande de pardon, une prière toute simple sur ce que vous ressentez, ou un merci. La hitbodedout n’a pas à être ordonnée ni préparée d’avance. C’est un lieu où déposer ce qui est dans votre cœur et vous tourner vers Hachem.</string>
     <string name="tip_4_title">Écartez les appareils</string>
-    <string name="tip_4_body">Si vous voulez vraiment être seul avec vous-même, écartez complètement les appareils pendant la hitbodedout. Éteignez le téléphone, ou laissez-le dans une autre pièce. Plus vous êtes libre des distractions extérieures, mieux vous vous reliez à vous-même et à Hachem. Se couper du dehors aide à se concentrer et à rejoindre le calme intérieur.</string>
+    <string name="tip_4_body">Si vous voulez vraiment vous retrouver face à vous-même, écartez complètement les appareils pendant la hitbodedout. Éteignez le téléphone, ou laissez-le dans une autre pièce. Plus vous êtes libre des distractions extérieures, mieux vous vous reliez à vous-même et à Hachem. Se couper du dehors aide à se concentrer et à rejoindre le calme intérieur.</string>
     <string name="tip_5_title">Commencez par les Tehilim, ou vos propres mots</string>
     <string name="tip_5_body">Si vous ne savez pas par où commencer, ouvrez les Tehilim et lisez quelques chapitres. Les Psaumes sont une prière déjà formée, très directe, qui touche l’âme. Dans la hitbodedout, ils peuvent être un fil spirituel qui mène droit à Hachem. Et si les mots vous manquent, vous pouvez simplement parler à Hachem librement, Lui confier vos pensées et ce que vous ressentez.</string>
     <string name="tip_6_title">Posez-vous des questions intérieures</string>
@@ -524,7 +524,7 @@
     <string name="theme_croissance">Travail sur soi</string>
     <string name="theme_autre">Autre chose</string>
     <string name="hero_greeting_morning">Bonjour, %1$s</string>
-    <string name="hero_greeting_afternoon">Bon après-midi, %1$s</string>
+    <string name="hero_greeting_afternoon">Bonjour, %1$s</string>
     <string name="hero_greeting_evening">Bonsoir, %1$s</string>
     <string name="nav_today">Aujourd’hui</string>
     <string name="nav_texts">Bibliothèque</string>
@@ -640,14 +640,14 @@
     <string name="annulation_hazak">’Hazak !</string>
     <string name="annulation_hizki">’Hizki !</string>
     <string name="annulation_neutral">Courage !</string>
-    <string name="annulation_subtitle">Pour tout ce que vous avez fait jusqu’ici. La prochaine fois sera meilleure.</string>
+    <string name="annulation_subtitle">Ce que vous avez fait jusqu’ici reste acquis. Vous reprendrez quand vous voudrez.</string>
 
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d min</string>
     <string name="duration_hours">%1$d h</string>
     <string name="duration_hours_minutes">%1$d h %2$02d</string>
-    <string name="duration_custom">Durée réglable…</string>
-    <string name="duration_custom_title">Durée de la hitbodedout, en minutes</string>
+    <string name="duration_custom">Autre durée…</string>
+    <string name="duration_custom_title">Durée, en minutes (de 1 à 240)</string>
     <string name="duration_custom_hint">De 1 à 240 minutes</string>
     <string name="music_shuffle">Lecture aléatoire</string>
     <string name="music_shuffle_hint">Un morceau au hasard, puis un autre ; aucun ne revient avant que tous aient été joués.</string>
@@ -717,7 +717,7 @@
     <string name="siddur_signets">Sections</string>
     <string name="siddur_nusah_edot">Séfarade (Edot HaMizra’h)</string>
     <string name="siddur_nusah_sefard">Sfard (Arizal)</string>
-    <string name="siddur_nusah_ashkenaz">Ashkenaz</string>
+    <string name="siddur_nusah_ashkenaz">Achkenaz</string>
     <string name="siddur_sources">Sources : %1$s</string>
     <string name="siddur_tehilim_he" translatable="false">סֵפֶר תְּהִלִּים</string>
     <string name="siddur_tikkun_he" translatable="false">הַתִּקּוּן הַכְּלָלִי</string>
@@ -835,13 +835,13 @@
     <string name="ajout_lamnatseah">Lamnatséa’h</string>
     <string name="ajout_ledavid">D’Eloul à Hochaana Rabba</string>
     <string name="ajout_techouva_hochaana">Dix jours de techouva et Hochaana Rabba</string>
-    <string name="ajout_yom_tov">Yom tov</string>
+    <string name="ajout_yom_tov">Yom Tov</string>
     <string name="ajout_moed">Fêtes</string>
     <string name="ajout_chabbat_roch_hodech">Roch ’Hodech un Chabbat</string>
-    <string name="ajout_yom_tov_chabbat">Yom tov un Chabbat</string>
+    <string name="ajout_yom_tov_chabbat">Yom Tov un Chabbat</string>
     <string name="ajout_roch_hachana_chabbat">Roch Hachana un Chabbat</string>
-    <string name="ajout_motsae_chabbat_yt">Motsaé Chabbat et Yom tov</string>
-    <string name="ajout_cheva_berakhot">Chéva bérakhot (repas de noces)</string>
+    <string name="ajout_motsae_chabbat_yt">Motsaé Chabbat et Yom Tov</string>
+    <string name="ajout_cheva_berakhot">Chéva berakhot (repas de noces)</string>
     <string name="ajout_zimun">Zimoun (à trois convives ou plus)</string>
     <string name="ajout_facultatif">Usage, non obligatoire</string>
     <string name="ajout_facultatif_avant">Avant le Birkat : psaumes d’usage (non obligatoires)</string>
@@ -875,8 +875,8 @@
     <string name="fete_erev_soukkot">Veille de Souccot</string>
     <string name="fete_soukkot">Souccot</string>
     <string name="fete_hol_hamoed_soukkot">’Hol hamoèd Souccot</string>
-    <string name="fete_hochaana_rabba">Hochaana rabba</string>
-    <string name="fete_chemini_atseret">Chemini atsérèt</string>
+    <string name="fete_hochaana_rabba">Hochaana Rabba</string>
+    <string name="fete_chemini_atseret">Chemini Atsérèt</string>
     <string name="fete_simhat_torah">Sim’hat Torah</string>
     <string name="fete_hanouka">’Hanouka</string>
     <string name="fete_tevet_10">Jeûne du 10 Tévet</string>
@@ -937,7 +937,7 @@
     <string name="hilloulot_aucune">Aucune hilloula ce jour</string>
     <string name="hilloulot_resultats">Résultats : %1$d</string>
     <string name="hilloula_source_wiki">Wikipédia (CC BY-SA)</string>
-    <string name="hilloula_source_hyomi">HaHakham HaYomi</string>
+    <string name="hilloula_source_hyomi">Ha’Hakham HaYomi</string>
     <string name="hilloula_source_mytzadik">MyTzadik</string>
     <string name="hilloula_source_hameir">HaMéir LaArets</string>
     <string name="hilloula_source_hidabroot">Lire sur Hidabroot</string>
@@ -959,7 +959,7 @@
     <string name="halakha_recherche">Rechercher dans la halakha</string>
     <string name="halakha_aucune">Pas de halakha pour ce jour</string>
     <string name="halakha_tout">Toute la halakha du jour ›</string>
-    <string name="halakha_livre">Yalkut Yosef, Kitsour Choul’han Aroukh</string>
+    <string name="halakha_livre">Yalkout Yossef, Kitsour Choul’han Aroukh</string>
     <string name="halakha_note">Texte original en hébreu, verbatim.</string>
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">Mazal tov !</string>
@@ -991,7 +991,7 @@
     <string name="trophees_aucun_gagne">Pas encore de trophée : le premier arrive avec votre première hitbodedout.</string>
     <string name="trophees_tous">Tous les trophées sont gagnés !</string>
     <string name="trophees_compte">%1$d sur %2$d</string>
-    <string name="trophees_paliers">🏆  Trophées</string>
+    <string name="trophees_paliers">🏆 Trophées</string>
     <string name="channel_celebration">Paliers et trophées</string>
     <string name="channel_celebration_description">Une fête quand un palier ou un trophée est atteint</string>
     <string name="reset_title">Réinitialiser l’application</string>
@@ -1002,7 +1002,7 @@
     <string name="reset_confirm_yes">Tout effacer</string>
     <string name="reset_confirm_no">Annuler</string>
     <string name="partage_action">Partager ma hitbodedout</string>
-    <string name="partage_texte">Aujourd’hui, j’ai fait %1$s de hitbodedout, un moment seul à seul avec Hachem.</string>
+    <string name="partage_texte">Aujourd’hui, j’ai fait %1$s de hitbodedout, un moment en tête-à-tête avec Hachem.</string>
     <string name="partage_serie">Série : %1$d jours d’affilée.</string>
     <string name="partage_lien">Essayez, vous aussi, gratuitement : %1$s</string>
     <string name="partage_choix">Partager</string>
@@ -1084,14 +1084,14 @@
     <string name="trophee_vedette">Votre plus beau trophée</string>
     <string name="trophee_vedette_aucune">Votre premier trophée vous attend</string>
     <string name="chabbat_alerte_titre">Chabbat dans 3 h : préparez-vous à en profiter !</string>
-    <string name="chabbat_alerte_texte">Double neshama, double simha et double repas ! Tentez une double hitbodedout.</string>
+    <string name="chabbat_alerte_texte">Encore le temps d’une hitbodedout avant Chabbat. Chabbat chalom !</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">Livres</string>
     <string name="livres_hint">Likoutei Moharan, Hichtapkhout HaNefech, Kokhvei Or, méguilot, Perek Chira, Nichmat…</string>
     <string name="livres_pied">Yalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef. Texte : Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5). Traductions française et anglaise automatiques, partielles et non relues, sous la même licence.\nLes autres traductions, françaises et anglaises, sont faites par ordinateur et non relues : l’hébreu fait foi.</string>
     <!-- La halakha du jour : le Yalkut Yosef, puis le Ben Ish 'Haï (13/10) -->
-    <string name="halakha_ben_ish_hai">Ben Ish ’Haï, paracha de la semaine</string>
-    <string name="halakha_yalkut_source">Yalkut Yosef – Kitsour Choul’han Aroukh, Rav Yitzhak Yosef (texte de Torat Emet, CC BY-NC-SA 2.5) : une sélection, non le livre entier.</string>
+    <string name="halakha_ben_ish_hai">Ben Ich ’Haï, paracha de la semaine</string>
+    <string name="halakha_yalkut_source">Yalkout Yossef — Kitsour Choul’han Aroukh, Rav Yits’hak Yossef (texte de Torat Emet, CC BY-NC-SA 2.5) : une sélection, non le livre entier.</string>
     <!-- Birkat haLevana sur la carte du jour (13/10) -->
     <string name="levana_titre">Birkat haLevana</string>
     <string name="levana_fenetre">Du %1$s au %2$s</string>
@@ -1114,8 +1114,8 @@
     <string name="section_zmanim_ecran_hint">Ce qui s’affiche sous les horaires, et le livre de la halakha du jour.</string>
     <string name="reglage_levana">Afficher Birkat haLevana</string>
     <string name="halakha_source_titre">Livre de la halakha</string>
-    <string name="halakha_source_yalkut">Yalkut Yosef</string>
-    <string name="halakha_source_bih">Ben Ish ’Haï</string>
+    <string name="halakha_source_yalkut">Yalkout Yossef</string>
+    <string name="halakha_source_bih">Ben Ich ’Haï</string>
     <string name="halakha_source_deux">Les deux</string>
     <string name="zmanim_bouton_halakha">Halakha yomit</string>
     <string name="zmanim_bouton_hilloulot">Hilloulot</string>
@@ -1123,9 +1123,9 @@
     <string name="levana_lune">Lune ce soir : %1$s éclairée, %2$s</string>
     <string name="levana_croissante">croissante</string>
     <string name="levana_decroissante">décroissante</string>
-    <string name="levana_motsae">Conseillé : motsaé Chabbat %s (Choul’han Aroukh 426:2 et Rema)</string>
-    <string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426:2)</string>
-    <string name="levana_tisha">Pas avant la sortie de Ticha bèAv (Rema 426:2 ; Michna Beroura 426:11)</string>
+    <string name="levana_motsae">Conseillé : motsaé Chabbat %s (Choul’han Aroukh 426, 2 et Rema)</string>
+    <string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426, 2)</string>
+    <string name="levana_tisha">Pas avant la sortie de Ticha bèAv (Rema 426, 2 ; Michna Beroura 426, 11)</string>
     <string name="levana_usage_titre">Birkat haLevana : usage</string>
     <string name="levana_usage_auto">Selon le noussa’h</string>
     <string name="levana_usage_trois_mi_mois">Dès 3 jours, jusqu’à la mi-mois (Michna Beroura, Rema)</string>
@@ -1397,7 +1397,7 @@
     <string name="vol_jalon_allumage">Allumage, %1$s min avant la chki’a : %2$s</string>
     <string name="vol_jalon_sortie">Sortie de %1$s : tsét (8,5°) %2$s</string>
     <string name="vol_jalon_enchainement">%1$s commence à tsét (8,5°) : %2$s</string>
-    <string name="vol_jalon_omer">Compte du Omer, jour %1$s, dès tsét (8,5°) : %2$s</string>
+    <string name="vol_jalon_omer">Compte de l’Omer, jour %1$s, dès tsét (8,5°) : %2$s</string>
     <string name="vol_jalons_note">Jour civil du point sous l’avion ; %1$s, d’après le réglage de l’application.</string>
     <string name="vol_jalons_israel">calendrier d’Israël</string>
     <string name="vol_jalons_diaspora">calendrier de diaspora</string>
@@ -1442,14 +1442,14 @@
     <string name="vol_rappel_priere_sans_limite">Le temps de %1$s commence sous l’avion.</string>
     <string name="vol_rappel_fin_titre">Plus que 30 min pour %1$s</string>
     <string name="vol_rappel_fin_texte">Limite : %1$s.</string>
-    <string name="vol_rappel_omer_titre">Sefirat haOmer</string>
-    <string name="vol_rappel_omer_texte">Les étoiles sortent sous l’avion : ce soir, on compte le jour %1$s du Omer.</string>
+    <string name="vol_rappel_omer_titre">Compte de l’Omer</string>
+    <string name="vol_rappel_omer_texte">Les étoiles sortent sous l’avion : ce soir, on compte le jour %1$s de l’Omer.</string>
     <string name="vol_direct_explication_opensky">Désactivé par défaut. Activé, il demande à OpenSky Network, gratuitement et sans compte, les avions vus dans un carré de 10° autour de la position estimée ; l’indicatif reste sur le téléphone, qui y cherche l’avion. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_source_aeroports">Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms en hébreu et en français : Wikidata (CC0)</string>
 
     <!-- La boussole de Jérusalem (28/10, design C). -->
     <string name="boussole_title">Vers Jérusalem</string>
-    <string name="boussole_carte_sous">Choisissez un lieu : le hassid se tourne vers Jérusalem.</string>
+    <string name="boussole_carte_sous">Choisissez un lieu : le personnage se tourne vers Jérusalem.</string>
     <string name="boussole_face">Face à Jérusalem</string>
     <string name="boussole_droite">Tournez à droite de %1$d°</string>
     <string name="boussole_gauche">Tournez à gauche de %1$d°</string>
@@ -1463,9 +1463,9 @@
     <string name="boussole_calibrer">Boussole peu précise : dessinez un 8 dans l’air avec le téléphone.</string>
     <string name="boussole_sans_capteur">Ce téléphone n’a pas de boussole : la direction est donnée par rapport au nord, en haut.</string>
     <string name="boussole_note_titre">Deux façons de calculer</string>
-    <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ‘Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ‘Haïm 94) : de New York, environ 96°. La carte Equal Earth, que l’ONU recommande depuis septembre 2026, sert à comparer la surface des continents ; elle ne donne pas de direction. Le hassid suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
+    <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ’Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ’Haïm 94) : de New York, environ 96°. Le personnage suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
     <string name="boussole_widget_label">Direction de Jérusalem</string>
-    <string name="boussole_widget_description">Le hassid et la direction de Jérusalem depuis le lieu des zmanim, par rapport au nord. Le toucher ouvre la boussole.</string>
+    <string name="boussole_widget_description">Le personnage et la direction de Jérusalem depuis le lieu des zmanim, par rapport au nord. Le toucher ouvre la boussole.</string>
     <string name="boussole_widget_lecture">Jérusalem depuis %1$s : %2$d° depuis le nord</string>
     <string name="boussole_source">Source : %1$s</string>
     <string name="boussole_source_titre" translatable="false">Chabad.org, “Why Do We Face East When Praying? Or Do We?”</string>
@@ -1476,7 +1476,7 @@
     <string name="boussole_methode_carte">Selon la carte de Mercator (cap constant)</string>
     <string name="boussole_legende_carte">L’étiquette ירושלים (sur la rose, l’aiguille d’or) suit la direction sur la carte ; le pointillé bleu montre la direction réelle, pour information.</string>
     <string name="boussole_affichage">Affichage de la boussole</string>
-    <string name="boussole_affichage_hassid">Le hassid se tourne (par défaut)</string>
+    <string name="boussole_affichage_hassid">Le personnage se tourne (par défaut)</string>
     <string name="boussole_affichage_rose">Rose des vents</string>
     <!-- Reprend la position, approximative (ChoixLieu.maPosition, 31/10). -->
     <string name="boussole_actualiser_position">Actualiser ma position</string>

@@ -193,6 +193,28 @@ class TefilotScreenTest {
         }
     }
 
+    /**
+     * Audit du 12/11 (THE-16) : sans nikoud, l'hébreu s'écrit en ktiv malé.
+     * Le ktiv 'haser sans points se lit autrement : « תפלות » (tiflout,
+     * sottise), « קדשה » (qdecha), « גאלה ».
+     */
+    @Test
+    fun `les chaines hebraiques des tefilot sont en ktiv male`() {
+        val xml = lire("src/main/res/values-iw/strings.xml")
+        fun chaine(cle: String) = Regex("""<string name="$cle">([^<]*)</string>""")
+            .find(xml)?.groupValues?.get(1).orEmpty()
+        assertEquals("תפילות", chaine("tefilot_title"))
+        assertEquals("קדושה", chaine("tefila_kdusha"))
+        assertEquals("גאולה", chaine("tefila_geula"))
+        assertEquals("זיווג", chaine("tefila_zivug"))
+        assertEquals("זרע של קיימא", chaine("tefila_zera"))
+        val toutes = (listOf("tefilot_title", "tefilot_hint", "tefilot_count", "tefilot_warning") +
+            SujetTefila.values().map { "tefila_${it.cle}" }).joinToString(" ") { chaine(it) }
+        listOf("תפלות", "תפלה", "ענין", "קדשה", "גאלה", "קימא", "זווג").forEach { haser ->
+            assertFalse("« $haser » sans nikoud dans l'écran Tefilot", toutes.contains(haser))
+        }
+    }
+
     /** Le gabarit du titre de sujet doit porter les deux vues que l'écran remplit. */
     @Test
     fun `le gabarit du titre de sujet a ses deux vues`() {

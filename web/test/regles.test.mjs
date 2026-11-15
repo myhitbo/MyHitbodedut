@@ -232,7 +232,7 @@ test('les compteurs s’accordent dans les trois langues (audit du 12/11, TFRLAN
   assert.equal(tr.en.p('grade_sous_max', 1), '1 trophy earned');
   assert.equal(tr.en.p('grade_sous_max', 0), '0 trophies earned');
   assert.equal(tr.en.p('trophees_autres', 1), '… and 1 more trophy further on');
-  assert.equal(tr.en.p('grade_partage_texte', 1, 'Bronze', 1), 'Bronze grade on MyHitbodedut: 1 trophy, day after day.');
+  assert.equal(tr.en.p('grade_partage_texte', 1, 'Bronze', 1), 'Bronze rank on MyHitbodedut: 1 trophy, day after day.');
   assert.equal(tr.en.p('journal_summary', 3, 3, '1 h 05'), '3 days of hitbodedut, 1 h 05 in total');
   assert.equal(tr.en.p('journal_summary', 1, 1, '20 min'), '1 day of hitbodedut, 20 min in total');
   assert.equal(tr.en.p('trophee_premier_pas_desc', 3), 'First 3 days of hitbodedut');
