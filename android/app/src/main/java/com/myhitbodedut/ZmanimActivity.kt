@@ -57,7 +57,8 @@ class ZmanimActivity : AppCompatActivity() {
             val maintenantLieu = java.time.ZonedDateTime.now(runCatching { java.time.ZoneId.of(lieu.fuseau) }.getOrDefault(java.time.ZoneId.systemDefault()))
             val tset = Zmanim.jour(lieu, maintenantLieu.toLocalDate()).firstOrNull { it.cle == "tset" }?.local
             val affiche = ZmanimVignette.jourHebreuAffiche(maintenantLieu, tset)
-            if (affiche != maintenantLieu.toLocalDate()) {
+            // Comparée au jour de la carte (celui du téléphone) : rien quand la carte dit déjà ce jour-là.
+            if (affiche.isAfter(aujourdhui)) {
                 val suivant = CalendrierJuif.jour(affiche, israel, Store.mukafChoma(this)).dateHebraique
                 contenu.addView(VueJour.texte(this, getString(R.string.zmanim_depuis_tset, suivant), 14f, R.color.brand, gras = true, haut = 8)
                     .apply { setPadding(dp(16), 0, dp(16), 0) })
