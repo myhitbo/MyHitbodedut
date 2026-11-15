@@ -288,6 +288,8 @@ object VecteursVolSuite : Generateur {
         "AF1234",
         "af 1234 et LY382",
         "jan 5", "5 jan", "fev 2", "2 fevrier", "mai 1", "1 mai", "juin 10", "10 juin", "aout 15", "15 août", "dec 31", "31 decembre",
+        // Les blancs de la JVM ne sont pas ceux d'ICU : l'espace insécable n'en est pas un, la tabulation si.
+        "LY\u00A0382 Paris\u00A0Tel Aviv 12/11 à\u00A09h", "LY\t382\tParis\tTel Aviv\t12/11\tà\t9h", "vol\u2009LY81 TLV–BKK 12\u202Fnov",
     )
 
     private fun saisie(): List<List<Any?>> {
@@ -312,6 +314,7 @@ object VecteursVolSuite : Generateur {
         "porte 12 a 14h", "שער 3 בשעה 14", "עלייה 10:20 המראה 11:00", "123:45", "1:23:45", "7h7", "7h07", "07h07", "7 h", "7h ", "h7",
         "1h2", "19h45 et 21h", "du 10:00 au 12:00", "10:00-12:00", "10:00am", "10:00 am", "10 :00", "a  11", "à\t11",
         "boardingxxxxxxxxxxxxxxxxxxxxxx 10:00", "boardingxxxxxxxxxxxxxxxxxxx 10:00", "", "vol",
+        "a\u00A011", "11\u00A0h", "11\u00A0pm", "11\th30", "11\u000Bam",
     ).map { t ->
         val leger = java.text.Normalizer.normalize(t, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}"), "").lowercase()
         listOf(t, SaisieVol.heures(leger).map { it.toString() })
@@ -357,6 +360,14 @@ object VecteursVolSuite : Generateur {
             "M1DUPONT/JEAN         EABC123 LYSTLVL  0382 316Y012A0001 100",
             "M1DUPONT/JEAN         EABC123 LYSTLV L 0382 316Y012A0001 100",
             "M1DUPONT/JEAN         EABC123 LYSTLVLY 03 2 316Y012A0001 100",
+            "M\uFF11DUPONT/JEAN         EABC123 LYSTLVLY 0382 316Y012A0001 100",
+            "M1DUPONT/JE\uD83D\uDE00N        EABC123 LYSTLVLY 0382 316Y012A0001 100",
+            "M1DUPONT/JEAN         EABC123 LYSTLVLY 0382 \uFF13\uFF11\uFF16Y012A0001 100",
+            "M1DUPONT/JEAN         EABC123 LYSTLVLY 0382 +  Y012A0001 100",
+            "M1DUPONT/JEAN         EABC123 LYSTLVLY 0382 0  Y012A0001 100",
+            "M1DUPONT/JEAN         EABC123 LYSTLVLY 0382  60Y012A0001 100",
+            "M1DUPONT/JEAN         EABC123 LYSTLVLY 0382\t60Y012A0001 100",
+            "M1DUPONT/JEAN         EABC123 LYSTLVLY 0382 366Y012A0001 100",
         )
         val jours = listOf("2026-11-04", "2026-01-02", "2026-12-30", "2024-07-01", "2025-07-02", "2027-12-31")
         return codes.flatMap { code ->
@@ -371,7 +382,7 @@ object VecteursVolSuite : Generateur {
 
     private fun numeros(): List<List<Any?>> = listOf(
         "ly 81", "ELY081", "U22148", "bonjour", "LY81", "ly81a", "LY 0", "LY0000", "LY00001", "ELY", "E", "", "  ", "QF9", "qf 9",
-        "2X1234", "X21234", "221234", "AFR 1234", "af\t12", "af 12", "LY81AB", "LY12345", "Ly 8 1", "ÉLY81", "ly-81",
+        "2X1234", "X21234", "221234", "AFR 1234", "af\t12", "af 12", "LY81AB", "LY12345", "Ly 8 1", "ÉLY81", "ly-81", "LY\u00A081", "LY\u000B81", "LY\r\n81",
     ).map { t -> listOf(t, RouteVol.normaliser(t)?.let { listOf(it.code, it.chiffres, it.suffixe) }) }
 
     private fun resultatRoute(r: RouteVol.Resultat): List<Any?> = when (r) {
@@ -474,7 +485,7 @@ object VecteursVolSuite : Generateur {
 
     private fun indicatifs(): List<List<Any?>> = listOf(
         "ely 001", "LY001", "ELY1", "ELY12345", "ELY1AB", "ELY1ABC", "ely1a", " ELY1 ", "E LY 1", "ELY\t1", "AFR", "AFR0", "", "ELY001  ",
-        "123", "élY1", "ELY1", "QFA9",
+        "123", "élY1", "ELY1", "QFA9", "ELY\u00A01", "ﬀY1",
     ).map { listOf(it, SuiviVol.normaliser(it)) }
 
     private fun memes(): List<List<Any?>> = listOf(
@@ -487,7 +498,9 @@ object VecteursVolSuite : Generateur {
         listOf("constantes", listOf(SuiviVol.Raison.HORS_LIGNE, SuiviVol.Raison.QUOTA, SuiviVol.Raison.ILLISIBLE, SuiviVol.Raison.POSITION_INVALIDE,
             SuiviVol.Raison.RELAIS_ABSENT, SuiviVol.Raison.SERVICE)),
     ) + listOf(429, 503, 500, 400, 404, 0, -1, 200).map { listOf("serveur", it, SuiviVol.Raison.serveur(it)) } +
-        listOf("serveur_503", "serveur_429", "quota", "serveur_", "serveur_x", "serveur_-5", "hors_ligne", "", "serveur_12345678901").map {
+        listOf("serveur_503", "serveur_429", "quota", "serveur_", "serveur_x", "serveur_-5", "hors_ligne", "", "serveur_12345678901",
+            "serveur_\u0665\u0660\u0663", "serveur_+5", "serveur_-", "serveur_+", "serveur_ 5", "serveur_5 ", "serveur_2147483647",
+            "serveur_-2147483648", "serveur_-2147483649", "serveur_2147483648", "serveur_0503", "SERVEUR_503").map {
             listOf("codeServeur", it, SuiviVol.Raison.codeServeur(it))
         } +
         listOf("opensky 429", "opensky 503", " opensky 500 ", "opensky injoignable", "x", "", "opensky  429", "Opensky 429", "opensky 4290",
@@ -547,6 +560,25 @@ object VecteursVolSuite : Generateur {
             """{"trouve":true,"latitude":50.5,"longitude":-21.2,"altitude_geo":"NaN","altitude_baro":12,"instant":"2026-11-10T18:30:00Z"}""",
             """{"trouve":true,"latitude":50.5,"longitude":-21.2,"altitude_geo":-0.5,"instant":"2026-11-10T18:30:00Z"}""",
             """[1,2]""", """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00Z"} reste""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00.1234567890Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T23:59:60Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T24:00:01Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00+01"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T19:30:30+01:00:30"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00+24:00"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00+00:60"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00-00:00"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00Zx"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":" 2026-11-10T18:30:00Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-1-10T18:30:00Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T8:30:00Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2024-02-29T18:30:00Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-02-29T18:30:00Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00.Z","altitude_geo":1e3}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"2026-11-10T18:30:00\u0660Z"}""",
+            """{"trouve":true,"latitude":50.5,"longitude":-21.2,"instant":"\u0662026-11-10T18:30:00Z"}""",
+            """{"trouve":true,"latitude":-0.0,"longitude":-0.0,"instant":"2026-11-10T18:30:00Z","altitude_geo":-0.0}""",
+            """{"trouve":true,"latitude":"50.5d","longitude":" -21.2 ","instant":"2026-11-10T18:30:00Z"}""",
         )
         return corps.map { c -> listOf(c, m, resultatSuivi(SuiviVol.lire(c, maintenant))) }
     }
@@ -601,6 +633,15 @@ object VecteursVolSuite : Generateur {
             """{"states":[["def","ELY2","Israel",$t,$t,-21.2,50.5,10900,false,0,0,0,null,11000],["def","ELY01","Israel",$t,$t,-22.2,51.5,null,false,0,0,0,null,null]]}""",
             """{"states":[["def","ELY1","Israel",$t,$t,-21.2,50.5,10900,false,0,0,0,null,11000],["def","ELY1","Israel",$t,$t,-22.2,51.5,null,false,0,0,0,null,null]]}""",
             """{"states":{"a":1}}""", """{"states":"x"}""",
+            """{"states":[["def","ELY1","Israel",$t,$t,"NaN",50.5,10900,false,0,0,0,null,11000]]}""",
+            """{"states":[["def","ELY1","Israel",$t,$t,-21.2,50.5,10900,false,0,0,0,null,"Infinity"]]}""",
+            """{"states":[["def","ELY1","Israel",$t,$t,-0.0,-0.0,-0.0,false,0,0,0,null,-0.0]]}""",
+            """{"states":[["def","ELY1","Israel",9999999999999,$t,-21.2,50.5,10900,false,0,0,0,null,11000]]}""",
+            """{"states":[["def","ELY1","Israel",-99999999999,$t,-21.2,50.5,10900,false,0,0,0,null,11000]]}""",
+            """{"states":[["def","ELY1","Israel",99999999999999999,$t,-21.2,50.5,10900,false,0,0,0,null,11000]]}""",
+            """{"states":[["def","ELY1","Israel",${t + 1},$t,-21.2,50.5,10900,false,0,0,0,null,11000]]}""",
+            """{"states":[["def","ELY1","Israel",${t - 600},$t,-21.2,50.5,10900,false,0,0,0,null,11000]]}""",
+            """{"states":[["def","ELY1","Israel",${t - 601},$t,-21.2,50.5,10900,false,0,0,0,null,11000]]}""",
         )
         return corps.flatMap { c -> listOf("ELY1", "AFR12", "ELY001", "XXX1").map { ind -> listOf(c, ind, maintenant.toEpochMilli(), resultatSuivi(SuiviVol.lireEtats(c, ind, maintenant))) } }
     }

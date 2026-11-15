@@ -104,6 +104,7 @@ struct MusicLibraryTests {
 
     @Test func laBibliothequeRepondCommeAndroid() throws {
         let b = try bibliotheque()
+        let catalogue = try Catalogue.lire()
         #expect(b.cas.count > 20)
         for (n, c) in b.cas.enumerated() {
             let e = etat(c)
@@ -134,10 +135,14 @@ struct MusicLibraryTests {
                 let trouve = MusicLibrary.byId(e, ligne[0])
                 let idTrouve = trouve?.id
                 #expect(idTrouve == ligne[1], "cas \(n) : byId(\(ligne[0] ?? "null"))")
-                if let titre = ligne[2], let trouve, !trouve.isBundled || MusicLibrary.customName(e, id: trouve.id) != nil {
-                    let titreAttendu = MusicLibrary.Titre.nom(titre)
-                    #expect(trouve.title == titreAttendu, "cas \(n) : titre de \(trouve.id)")
+                // Le titre tel qu'Android l'écrit : le nom donné, ou le titre livré résolu en français.
+                let titre: String?
+                if let trouve {
+                    titre = texte(trouve.title, catalogue)
+                } else {
+                    titre = nil
                 }
+                #expect(titre == ligne[2], "cas \(n) : titre de byId(\(ligne[0] ?? "null"))")
             }
             for ligne in c.customName {
                 let nom = MusicLibrary.customName(e, id: ligne[0] ?? "")
