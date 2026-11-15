@@ -1,0 +1,3 @@
+# Le cache de Gradle laissé par export.py ; la construction elle-même va hors du dépôt.
+.gradle/
+.kotlin/

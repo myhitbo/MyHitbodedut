@@ -1,2 +1,4 @@
 .build/
 .swiftpm/
+# Écrit par SwiftPM : la dépendance est déjà épinglée par sa révision dans Package.swift.
+Package.resolved
