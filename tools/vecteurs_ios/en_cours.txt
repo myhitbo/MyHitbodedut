@@ -4,6 +4,6 @@ VecteursHilloulot
 VecteursInterfaceB
 VecteursParcours
 VecteursRecherche
-VecteursSauvegarde
 VecteursSourceDuJour
+VecteursStore
 VecteursVolSuite

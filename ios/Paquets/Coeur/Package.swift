@@ -17,7 +17,6 @@ let enChantierSources: [String] = [
     "Autorisation.swift",
     "CarteEmbarquement.swift",
     "Celebrations.swift",
-    "Depot.swift",
     "Hilloulot.swift",
     "MusicLibrary.swift",
     "MusiquePlay.swift",
@@ -25,7 +24,6 @@ let enChantierSources: [String] = [
     "RechercheGlobale.swift",
     "RouteVol.swift",
     "SaisieVol.swift",
-    "Sauvegarde.swift",
     "SourceDuJour.swift",
     "SuiviVol.swift",
     "VignetteDecor.swift",
@@ -35,8 +33,8 @@ let enChantierSources: [String] = [
 let enChantierTests: [String] = [
     "AmbianceTests.swift",
     "AutorisationTests.swift",
+    "CarteEmbarquementTests.swift",
     "CelebrationsTests.swift",
-    "DepotTests.swift",
     "HilloulotTests.swift",
     "IconeLanceurTests.swift",
     "MusicLibraryTests.swift",
@@ -44,10 +42,11 @@ let enChantierTests: [String] = [
     "ParcoursTests.swift",
     "RechercheGlobaleTests.swift",
     "RenameTrackTests.swift",
-    "SauvegardeTests.swift",
+    "RouteVolTests.swift",
     "SourceDuJourTests.swift",
     "SuiviVolTests.swift",
     "VignetteDecorTests.swift",
+    "VolRappelsTests.swift",
     "WidgetTailleTests.swift",
 ]
 let enChantierEcrans: [String] = [

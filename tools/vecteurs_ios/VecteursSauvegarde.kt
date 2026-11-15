@@ -91,9 +91,9 @@ object VecteursSauvegarde : Generateur {
         // L'état d'abord : exportJson fige in_israel s'il ne l'est pas encore.
         val apres = etat(t)
         val texte = export(c)
-        return linkedMapOf("nom" to s.nom, "fuseau" to fuseau, "avant" to avant, "fichier" to s.fichier, "importe" to importe, "apres" to apres,
-            "export" to texte, "pausedDates" to Store.pausedDates(c).sorted(), "blockedApps" to Store.blockedApps(c).sorted(),
-            "firstName" to Store.firstName(c))
+        return linkedMapOf("nom" to s.nom, "fuseau" to fuseau, "avant" to avant, "fichier" to s.fichier, "importe" to importe,
+            "apres" to apres, "export" to texte, "pausedDates" to Store.pausedDates(c).sorted(),
+            "blockedApps" to Store.blockedApps(c).sorted(), "firstName" to Store.firstName(c))
     }
 
     // --- Les états de départ -----------------------------------------------------------------------
