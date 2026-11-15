@@ -66,8 +66,14 @@ Un jour est « chômé » selon `JewishCalendar.isAssurBemelacha`.
 ## Les ajouts de prière
 
 `CalendrierJuif.kt` et `web/src/js/calendrier-juif.js` calculent pour chaque
-jour un jeu de conditions. Chacune renvoie à une méthode de KosherJava, et
-aucune règle n'est écrite à la main :
+jour un jeu de conditions. La plupart renvoient à une méthode de KosherJava ;
+les conditions dérivées sont écrites à la main, à partir de ces méthodes et des
+usages cités dans le code (`CalendrierJuif.C.DERIVEES`, `SiddurJour.conditionsPour`) :
+Lamnatséa'h, Ledavid, lecture de la Torah, bascule de la pluie, année
+embolismique, veille de Kippour un vendredi, psaume du jour (`jour_1` à
+`jour_6`), Avinou malkénou (à Min'ha : `avinou_malkenou_minha`, seulement si
+Ta'hanoun s'y dit)… Elles sont les plus sujettes à erreur : à vérifier d'abord.
+Les autres :
 
 - Ya'alé véyavo, Al hanissim, Machiv haroua'h, Morid hatal, Tal oumatar,
   Hallel complet ou partiel, Ta'hanoun du matin et de Min'ha : `TefilaRules` ;
@@ -156,13 +162,12 @@ eux-mêmes ne sont jamais modifiés.
 - **Ajout hors du jour** : replié en une ligne ; une flèche l'ouvre et le
   referme. Rien n'est retiré.
 - **Variante enchâssée dans un bloc** (« בעשרת ימי תשובה אומרים: המלך
-  הקדוש ») : un repère « Aujourd'hui : … » sous le bloc.
+  הקדוש ») : la variante hors du jour est retirée du bloc, et une ligne repliée
+  la rend d'un geste.
 
-Volontairement non annotés, donc toujours dépliés : Avinou malkénou dans les
-noussa'him Sfard et Ashkenaz (coutumes diverses), le Ta'hanoun du siddour
-ashkénaze (mêlé au Vidouï sans frontière nette), le Chir chel yom. Dans le
-siddour Edot, Avinou malkénou suit la consigne du texte (« בעשרת ימי תשובה
-אומרים »).
+Avinou malkénou (Sfard, Ashkenaz), le Ta'hanoun du siddour ashkénaze et le
+Chir chel yom sont annotés comme le reste. Dans le siddour Edot, Avinou malkénou
+suit la consigne du texte (« בעשרת ימי תשובה אומרים »).
 
 ## Les lieux
 

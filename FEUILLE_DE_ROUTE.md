@@ -1162,6 +1162,6 @@ toucher. CI verte (Android, web, Nokia).
 3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
    replie en rond tournant (pochette, ou hassid à la guitare).
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
-   collés dans les biographies, ordre des Sheva Berakhot, trois widgets.
+   collés dans les biographies, trois widgets (l'ordre des Sheva Berakhot est fait).
    Une partie a pu être traitée dans le lot « 28/10 bis » (boussole,
    position exacte, Roch 'Hodech) : vérifier chaque point avant de coder.
