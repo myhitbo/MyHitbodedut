@@ -63,6 +63,9 @@ CORRECTIONS = [
     ("4-20", "חכם אברהם חיים נאה", None, 'ה\'תשי"ד'),
     ("adar-25", "רבי בצלאל יאיר דנציגר", None, 'ה\'תרצ"ד'),
     ("3-30", "רבי יחיאל יעקב הופשטיין", None, 'ה\'תרכ"ו'),
+    # THILLOULOT-12 : 5690 n'est pas embolismique (la notice dit « י״ג באדר ») ; un 30 Adar n'existe qu'en Adar I.
+    ("adar1-13", "הרב חיים יעקב נפתלי זילברברג", "adar-13", None),
+    ("adar-30", "חכם ד\"ר דוד פראטו", "adar1-30", None),
 ]
 # Gardé tel quel, avec raison : « רבי יחיאל מיכל מנמירוב » (20 Sivan), date traditionnellement liée au massacre.
 
@@ -318,6 +321,17 @@ def nettoie_bio(texte):
     return re.sub(r"\n{3,}", "\n\n", "\n".join(lignes)).strip()
 
 
+def annee_normalisee(a):
+    """Formes fautives des années hébraïques (audit du 12/11/2026, THILLOULOT-18) : « התר"ץ » → « ה'תר"ץ »,
+    « הש"ס » → « ה'ש"ס », « תרח"ץ » → « תרצ"ח ». Les autres formes sont laissées telles quelles."""
+    a = a.strip()
+    if a == 'תרח"ץ':
+        return 'תרצ"ח'
+    if a == 'הש"ס':
+        return "ה'ש\"ס"
+    return re.sub(r"^ה(ת[א-ת]*\"[א-ת])$", r"ה'\1", a)
+
+
 def sources_autorisees(jours):
     """MyTzadik et המאיר לארץ (12/10) : reprise autorisée avec mention, accord reçu par le
     propriétaire de l'app. Leur biographie, mot pour mot, s'ajoute au tsaddik du même jour
@@ -506,6 +520,9 @@ def main():
     # entrée par hilloula, dans le même ordre : ses biographies, ou 0.
     bios = {}
     for cle, liste in sortie["jours"].items():
+        for x in liste:
+            if x.get("a"):
+                x["a"] = annee_normalisee(x["a"])
         ligne = [x.pop("b", 0) for x in liste]
         if any(ligne):
             bios[cle] = ligne
