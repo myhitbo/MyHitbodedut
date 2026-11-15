@@ -1677,6 +1677,8 @@ function ecranRecherche() {
     yalkutDuJour(); livreDuJour();
     const total = sid.length + liv.length + yy.length + bih.length + hil.length;
     groupes.push(h('p', { class: 'jour-sous-titre' }, tr.t('hilloulot_resultats', total)));
+    // Rien trouvé : on dit où l'on cherche, pour qu'un mot français ne passe pas pour une absence (FWEBLIVE-11).
+    if (total === 0 && !/[\u0590-\u05FF]/.test(q)) groupes.push(h('p', { class: 'indice', 'aria-live': 'polite' }, tr.t('recherche_aucun_web')));
     const groupe = (nom, l) => (l.length ? [h('h2', { class: 'section' }, tr.t(nom)), ...l] : []);
     // Les titres des groupes reprennent les noms des filtres (audit 1.390).
     groupes.push(...groupe('recherche_tefilot', sid.map((r) => resultat(r.t.titre.he, r.extrait, () => { priere = r.t.id; ouvrir('priere'); }))));

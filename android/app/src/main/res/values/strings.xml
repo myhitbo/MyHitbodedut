@@ -1139,6 +1139,7 @@
     <string name="settings_ne_pas_deranger_hint">Le téléphone passe en mode « priorité » le temps de la hitbodedout, puis revient comme avant. Android demande une autorisation la première fois.</string>
     <string name="recherche_titre">Recherche</string>
     <string name="recherche_indice">Rechercher dans le siddour, les livres, la halakha, les hilloulot</string>
+    <string name="recherche_aucun_web">Aucun résultat. Les textes se cherchent en hébreu ; en français, seuls les titres et les hilloulot le sont.</string>
     <string name="recherche_tout">Tout</string>
     <string name="recherche_tefilot">Prières</string>
     <string name="recherche_halakhot">Halakhot</string>

@@ -1122,6 +1122,7 @@
     <string name="settings_ne_pas_deranger_hint">הטלפון עובר למצב „עדיפות” בזמן ההתבודדות וחוזר אחר כך כפי שהיה. אנדרואיד מבקש הרשאה בפעם הראשונה.</string>
     <string name="recherche_titre">חיפוש</string>
     <string name="recherche_indice">חיפוש בסידור, בספרים, בהלכה ובהילולות</string>
+    <string name="recherche_aucun_web">אין תוצאות. את הטקסטים מחפשים בעברית; בצרפתית ובאנגלית מחפשים רק בכותרות ובהילולות.</string>
     <string name="recherche_tout">הכול</string>
     <string name="recherche_tefilot">תפילות</string>
     <string name="recherche_halakhot">הלכות</string>

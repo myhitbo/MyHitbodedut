@@ -1087,6 +1087,7 @@
     <string name="settings_ne_pas_deranger_hint">The phone switches to priority mode for the hitbodedut, then returns to how it was. Android asks for permission the first time.</string>
     <string name="recherche_titre">Search</string>
     <string name="recherche_indice">Search the siddur, books, halacha, hillulot</string>
+    <string name="recherche_aucun_web">No results. Texts are searched in Hebrew; in English, only titles and hilloulot are searched.</string>
     <string name="recherche_tout">All</string>
     <string name="recherche_tefilot">Prayers</string>
     <string name="recherche_halakhot">Halachot</string>
