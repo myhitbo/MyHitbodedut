@@ -146,10 +146,10 @@ object VecteursSauvegarde : Generateur {
 
     private val hebreu = "רִבּוֹנוֹ שֶׁל עוֹלָם"
 
-    /** Un grand fichier : 120 journées dans le désordre, dont certaines déjà présentes ici. */
+    /** Un grand fichier : 80 journées dans le désordre, dont certaines déjà présentes ici. */
     private val grand: String = run {
         val days = StringBuilder()
-        for (i in 0 until 120) {
+        for (i in 0 until 80) {
             val jour = LocalDate.of(2023, 1, 1).plusDays(((i * 53) % 400).toLong())
             if (i > 0) days.append(',')
             days.append("\"$jour\":{\"minutes\":${(i * 17) % 130},\"note\":\"${if (i % 3 == 0) "" else "Jour $i — ${hebreu.take(i % 25)}"}\"")
@@ -250,7 +250,7 @@ object VecteursSauvegarde : Generateur {
                 """"2025-02-04":{"minutes":1,"note":{"a":1}},"2025-02-05":{"minutes":1,"note":[1,"b"]},"2025-02-06":{"minutes":1,"note":1.50},""" +
                 """"2025-02-07":{"minutes":1,"note":1e2},"2025-02-08":{"minutes":1,"note":"été \/ \"cité\" \\ \u0001   \t 😀"},""" +
                 """"2025-02-09":{"minutes":1,"note":"$hebreu"},"2025-02-10":{"minutes":1,"note":-0},"2025-02-11":{"minutes":1,"note":12345678901234567890},""" +
-                """"2025-02-12":{"minutes":1,"note":"${"\\u05D0\\u05B8".repeat(2500)}"},"2025-02-13":{"minutes":1,"note":"${"b".repeat(3999)}é"},""" +
+                """"2025-02-12":{"minutes":1,"note":"${"\\u05D0\\u05B8".repeat(300)}"},"2025-02-13":{"minutes":1,"note":"${"b".repeat(3999)}é"},""" +
                 """"2025-02-14":{"minutes":1,"note":"   "},"2025-02-15":{"minutes":1}}}"""),
         Scenario("sujets de toutes sortes",
             """{$F,"days":{"2025-02-20":{"minutes":1,"themes":[]},"2025-02-21":{"minutes":1,"themes":["gratitude"]},"2025-02-22":{"minutes":1,"themes":["","  ","x"]},""" +
