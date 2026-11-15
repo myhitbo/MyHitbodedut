@@ -1161,10 +1161,12 @@ toucher. CI verte (Android, web, Nokia).
    l'app (Réglages › Apparence › Habillage) : Parchemin (fond parchemin,
    boutons grenat) et Minuit doré (noir pur, or, mode sombre), avec la
    typographie Souffle (Bellefair pour les grands titres, Open Sans pour
-   le texte), aussi réglable seule. Reste à choisir la structure de
-   l'accueil : Ciel, Bento et Pile ont été aimés, mais leurs fusions ont
-   été écartées (« Ciel vivant » trop chargé, « Épurés » trop vides,
-   « Équilibrés »). Studio 2026 (S1 à S5) et N1 à N3 restent à évaluer.
+   le texte), aussi réglable seule. **15/11** : la refonte Ciel entre en
+   bandeau en haut de l'accueil (le ciel du lieu suit les zmanim, le
+   prochain zman dessous). Reste à décider si l'accueil va plus loin :
+   Ciel complet, Bento ou Pile (leurs fusions ont été écartées : « Ciel
+   vivant » trop chargé, « Épurés » trop vides, « Équilibrés »).
+   Studio 2026 (S1 à S5) et N1 à N3 restent à évaluer.
 3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
    replie en rond tournant (pochette, ou hassid à la guitare).
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
