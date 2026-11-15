@@ -51,3 +51,8 @@ VolCalendrier
 VolRappels
 Zmanim
 Halakha
+Salutation
+ReminderRule
+ZmanimVignette
+Libelles
+ZmanimWidget

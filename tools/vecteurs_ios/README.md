@@ -15,6 +15,8 @@ les expressions régulières tout à fait de même), Gradle 8.14.3 et node 22.
 | Générateur | Fichier | Ce qu'il juge |
 | --- | --- | --- |
 | `VecteursSocle` | `socle.json` | `Sources/Coeur/Socle` : chaînes en unités UTF-16, blancs de Kotlin, hasard, arrondis, nombres de Java, lecture et écriture du JSON d'Android |
+| `VecteursTemps` | `temps.json` | `Socle/Temps.swift` : heures civiles et fuseaux comme java.time (changements d'heure compris) |
+| `VecteursPratique` | `pratique.json` | la tâche 8 : séance, durées, série, semaine, anneaux, plaque, salutation, sujets, fenêtre de nuit, reprise, rappel suivant, vignette, boussole |
 | `VecteursSauvegarde` | `sauvegarde.json` | la tâche 7 : les fichiers d'or de `Vecteurs/sauvegarde/` importés par `Store.importJson` dans un téléphone neuf, puis exportés ; `Coffre` sur la sauvegarde chiffrée du site |
 | `site/sauvegarde-site.mjs` | `sauvegarde/web-v2.json` | le fichier d'or du site, écrit par le vrai `web/src/js/store.js` sur une horloge fixe |
 

@@ -133,7 +133,7 @@ Tout se vérifie sur Linux. Une tâche est finie quand les tests nommés, porté
 ### 8. Règles de la pratique
 
 - **Sources** : `SessionRule.kt`, `DureeSeance.kt`, `Store.kt` (série, semaine, exemptions, fenêtre de nuit, jour du Tikoun), `Anneaux.kt`, `JaugeSemaine.kt`, `BilanSemaine.kt`, `Plaque.kt`, `Salutation.kt`, `Character.kt`, `Theme.kt`, `Adresse.kt`, `AjoutTemps.kt`.
-- **Critère de fin** : portés et verts : `SessionRuleTest`, `DureeSeanceTest`, `DureeCourteTest`, `FiabiliteTest`, `AnneauxTest`, `JaugeSemaineTest`, `PlaqueTest`, `SalutationTest`, `ThemeTest`, `AdresseTest`, `VoyageNuitTest`, `RepriseBoussoleTest` (bascule à 4 h).
+- **Critère de fin** : portés et verts : `SessionRuleTest`, `DureeSeanceTest`, `DureeCourteTest`, `FiabiliteTest`, `AnneauxTest`, `JaugeSemaineTest`, `PlaqueTest`, `SalutationTest`, `ThemeTest`, `AdresseTest`, `VoyageNuitTest`, `RepriseBoussoleTest` (bascule à 4 h) ; et, depuis la version Play, `JourCorrigeTest` (FDONNEES-04) et les exemptions jugées avec l'historique daté des réglages (FDONNEES-05). L'oracle `tools/vecteurs_ios/generateurs/VecteursPratique.kt` rend `pratique.json`.
 
 ### 9. Paliers, trophées, 'hizouk, règles de texte
 
