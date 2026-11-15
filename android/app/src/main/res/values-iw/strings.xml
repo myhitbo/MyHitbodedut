@@ -116,7 +116,7 @@
     <string name="settings_shabbat">שבת ויום טוב</string>
     <string name="settings_shabbat_hint">בימים אלה: המצב שותק, אין תזכורת, והרצף נשמר.</string>
     <string name="settings_exempt_today">הפסקה היום</string>
-    <string name="settings_exempt_today_hint">לנסיעה, למחלה או ליום שבו אי אפשר: היום לא נספר לרעתכם.</string>
+    <string name="settings_exempt_today_hint">לנסיעה, למחלה או ליום שבו נבצר מכם: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
     <string name="fichiers_absents">אין בטלפון אפליקציה שמאפשרת לפתוח או לשמור קובץ.</string>
 
@@ -261,9 +261,9 @@
     </plurals>
 
     <plurals name="journal_summary">
-        <item quantity="one">התבודדות אחת, %2$s בסך הכול</item>
-        <item quantity="two">שתי התבודדויות, %2$s בסך הכול</item>
-        <item quantity="other">%1$d התבודדויות, %2$s בסך הכול</item>
+        <item quantity="one">יום התבודדות אחד, %2$s בסך הכול</item>
+        <item quantity="two">יומיים של התבודדות, %2$s בסך הכול</item>
+        <item quantity="other">%1$d ימי התבודדות, %2$s בסך הכול</item>
     </plurals>
 
     <!-- מוזיקה -->
@@ -971,8 +971,8 @@
     <string name="trophee_plume">העט</string>
     <plurals name="trophee_premier_pas_desc">
         <item quantity="one">התבודדות ראשונה</item>
-        <item quantity="two">%1$d התבודדויות ראשונות</item>
-        <item quantity="other">%1$d התבודדויות ראשונות</item>
+        <item quantity="two">%1$d ימי התבודדות ראשונים</item>
+        <item quantity="other">%1$d ימי התבודדות ראשונים</item>
     </plurals>
     <plurals name="trophee_seance_longue_desc">
         <item quantity="one">דקה אחת ביום אחד</item>
