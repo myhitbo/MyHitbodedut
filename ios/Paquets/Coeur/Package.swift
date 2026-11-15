@@ -39,19 +39,30 @@ let enChantierTests: [String] = [
     "VoyageNuitTests.swift",
 ]
 let enChantierEcrans: [String] = [
+    "BibliothequeModele.swift",
+    "BoussoleModele.swift",
+    "BoussoleScene.swift",
+    "BoussoleServices.swift",
+    "ChizukModele.swift",
+    "ConseilsModele.swift",
     "Contenus.swift",
     "Horloge.swift",
     "Magasin.swift",
+    "MusiqueAmbianceSynth.swift",
     "Onglets.swift",
+    "PresentationModele.swift",
     "Services.swift",
     "Traducteur.swift",
 ]
 let enChantierEcransTests: [String] = [
+    "ConseilsModeleTests.swift",
     "ContenusAppTests.swift",
     "Fichiers.swift",
     "HorlogeTests.swift",
     "MagasinTests.swift",
+    "MusiqueAmbianceSynthTests.swift",
     "OngletsTests.swift",
+    "PresentationModeleTests.swift",
     "ServicesTests.swift",
     "TraducteurTests.swift",
 ]

@@ -186,7 +186,7 @@ struct ContenusAppTests {
         } catch let erreur as ErreurContenu {
             absent = erreur
         }
-        #expect(absent == .absent("villes.json"))
+        #expect(absent == ErreurContenu.absent("villes.json"))
         // Les lecteurs de Coeur (TehilimLoader, Livres) disent aussi ce qui manque.
         var tehilim: ErreurContenu?
         do {
@@ -194,14 +194,14 @@ struct ContenusAppTests {
         } catch let erreur as ErreurContenu {
             tehilim = erreur
         }
-        #expect(tehilim == .absent("tehilim.json"))
+        #expect(tehilim == ErreurContenu.absent("tehilim.json"))
         var livres: ErreurContenu?
         do {
             _ = try await contenus.livre("nichmat")
         } catch let erreur as ErreurContenu {
             livres = erreur
         }
-        #expect(livres == .absent("livres/nichmat/index.json"))
+        #expect(livres == ErreurContenu.absent("livres/nichmat/index.json"))
     }
 
     @Test func unContenuIlisibleSeRendEnErreurEtSeraRelu() async throws {

@@ -201,7 +201,7 @@ public actor FausseActiviteEnDirect: ActiviteEnDirect {
     public init() {}
 
     public func commencer(debut: Int64, fin: Int64) {
-        seance = (debut, fin)
+        seance = (debut: debut, fin: fin)
     }
 
     public func terminer() {
