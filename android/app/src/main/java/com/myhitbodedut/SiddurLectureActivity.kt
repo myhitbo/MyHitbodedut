@@ -582,6 +582,11 @@ class SiddurLectureActivity : AppCompatActivity() {
                 setCompoundDrawablesRelative(null, null, null, null)
                 alpha = 1f
                 contentDescription = null
+                // L'action « marque-page » et l'état « marqué » d'un paragraphe (FLECTURE-21) ne
+                // doivent pas suivre la vue recyclée sur un titre ou un repli.
+                androidx.core.view.ViewCompat.removeAccessibilityAction(this,
+                    androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_LONG_CLICK)
+                androidx.core.view.ViewCompat.setStateDescription(this, null)
                 setOnClickListener(null)
                 setOnLongClickListener(null)
                 isClickable = false
@@ -665,19 +670,19 @@ class SiddurLectureActivity : AppCompatActivity() {
                     if (position in dansPanneau) background = panneau(voile, haut = false, bas = false)
                     else if (ligne.style == SiddurJour.Style.HORS) alpha = 0.55f
                     // Le marque-page : un trait de la couleur des titres au début du paragraphe.
-                    if (marquee(ligne.origine)) background = android.graphics.drawable.LayerDrawable(arrayOf(
+                    val marque = marquee(ligne.origine)
+                    if (marque) background = android.graphics.drawable.LayerDrawable(arrayOf(
                         background ?: android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT),
                         android.graphics.drawable.ColorDrawable(rendu.titre))).apply {
                         setLayerWidth(1, dp(4)); setLayerGravity(1, android.view.Gravity.START or android.view.Gravity.FILL_VERTICAL)
                     }
-                    if (marquee(ligne.origine)) setCompoundDrawablesRelative(null, null,
+                    if (marque) setCompoundDrawablesRelative(null, null,
                         ContextCompat.getDrawable(context, icone(livre))?.mutate()?.apply {
                             setTint(rendu.titre); setBounds(0, 0, dp(16), dp(16))
                         }, null)
                     compoundDrawablePadding = dp(6)
                     setOnLongClickListener { basculerMarque(ligne.origine); true }
                     // TalkBack (FLECTURE-21) : l'appui long annonce son effet, et le paragraphe marqué le dit.
-                    val marque = marquee(ligne.origine)
                     androidx.core.view.ViewCompat.replaceAccessibilityAction(this,
                         androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK,
                         getString(if (marque) R.string.marque_action_retirer else R.string.marque_action_poser), null)
