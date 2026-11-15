@@ -66,13 +66,13 @@
     <string name="gate_disabled_title">המצב כבוי</string>
     <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שהמצב יפעל.</string>
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
-    <string name="gate_no_apps_detail">אין מה לעכב. בחרו לפחות אפליקציה אחת.</string>
+    <string name="gate_no_apps_detail">אין מה לחסום. בחרו לפחות אפליקציה אחת.</string>
     <string name="gate_stopped_title">הניטור הופסק</string>
     <string name="gate_stopped_detail">הכול מוגדר, אבל השירות שמשגיח אינו פועל. הפעילו אותו מחדש, או פתחו את האפליקציה שוב.</string>
     <string name="gate_stopped_action">להפעיל את המצב מחדש</string>
     <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
     <string name="gate_done_title">היום הושלם</string>
-    <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
+    <string name="gate_done_detail">היום כבר לא ייחסם דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
     <string name="gate_exempt_title">יום ללא חובה</string>
     <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב מושבת והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
