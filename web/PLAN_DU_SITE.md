@@ -8,13 +8,16 @@
 > (dix sujets, vingt-et-une prières), et dans les réglages : prénom, « Comment vous appeler »,
 > région, objectif quotidien, masquer le décompte, Chabbat et Yom Tov, pause aujourd'hui,
 > **export et import de la sauvegarde** (même fichier qu'Android). À l'accueil : « Je l'ai faite
-> sans le téléphone ». Restent propres à Android : rappels et notifications, barrière du matin,
-> vignettes, humeur et gratitude dans la note, hitbodedout guidée, ajout de sa propre musique.
+> sans le téléphone ». L'humeur et la gratitude dans la note, la hitbodedout guidée et
+> l'ajout de sa propre musique sont aussi sur le site depuis. Restent propres à Android : rappels
+> et notifications, signal de fin de séance, barrière du matin, vignettes, fiches des articles de
+> la bibliothèque (le site ne montre que les sources), alertes de Levana, de Chabbat et de vol, lecture
+> d'un billet. Pour les écrans réels, la référence est `ecranCourant()` dans `src/js/app.js`.
 
 Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus dans les fichiers `strings.xml` d'Android (fr, en, he) et n'ont pas été retraduits. Le texte qui les relie est une rédaction, pas une traduction vérifiée : en hébreu, il reste à faire relire.
 
 - ✅ : construit et testé (tests Node, WebKit, Chromium, Safari sur Mac).
-- ⏳ : visible mais inactif (grisé), prévu à l'étape indiquée.
+- ⏳ : visible mais inactif (grisé), prévu à l'étape indiquée. Plus aucun ne l'est (voir la mise à jour ci-dessus).
 
 ---
 

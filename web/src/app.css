@@ -232,7 +232,6 @@ button.corps { border: 0; background: none; padding: 0; text-align: start; curso
 }
 [dir="rtl"] .chevron { transform: scaleX(-1); }
 /* Ce que la version web ne sait pas encore faire : visible, mais inerte. */
-.a-venir { opacity: 0.45; pointer-events: none; }
 
 /* --- Interrupteur, curseur ------------------------------------------------------- */
 .interrupteur {

@@ -1,7 +1,7 @@
 // L'application : l'accueil (MainActivity), la séance (SessionActivity),
-// le bravo (CelebrationActivity), la musique (MusicActivity) et un premier
-// écran de réglages. Les écrans suivants arrivent par étapes ; ce qui
-// n'existe pas encore est montré, mais inerte (classe « a-venir »).
+// le bravo (CelebrationActivity), la musique (MusicActivity), les réglages, la
+// bibliothèque, les prières, les zmanim et le calendrier : les écrans que
+// ecranCourant() sait ouvrir.
 
 import { chargeTraduction, formate, langueInitiale, LANGUES } from './i18n.js';
 import { Anneaux, CycleTehilim, LanguesTexte, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from './regles.js';
@@ -409,7 +409,7 @@ function sauter(fois) {
 // --- Le centre des anneaux (Plaque.kt) : le hassid, puis vos chiffres ---------
 let facePlaque = 'hassid';
 let minuteurPlaque = null;
-const sansMouvement = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sansMouvement = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 /** Le chiffre d'une face, la façon de l'écrire, et ce qu'il compte. */
 function contenuFace(face) {
@@ -670,9 +670,8 @@ function ouvrirMesDonnees() {
  * parcours », les chiffres montent jusqu'à leur valeur. Rien de cela quand le
  * téléphone demande moins de mouvement.
  */
-const moinsDeMouvement = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 function effetsEntree(ecran) {
-  if (moinsDeMouvement()) return;
+  if (sansMouvement()) return;
   const racine = app.firstElementChild;
   if (!racine) return;
   racine.classList.add('entree');
@@ -819,8 +818,8 @@ function pastille(libelle, valeur, onclick) {
     h('span', { class: 'libelle' }, libelle), h('span', { class: 'valeur' }, valeur));
 }
 
-function ligne({ nom, etat, onclick, aVenir = false, fin = null, class: classe = '' }) {
-  return h('button', { class: `ligne${aVenir ? ' a-venir' : ''}${classe ? ` ${classe}` : ''}`, onclick, 'aria-disabled': aVenir ? 'true' : null },
+function ligne({ nom, etat, onclick, fin = null, class: classe = '' }) {
+  return h('button', { class: `ligne${classe ? ` ${classe}` : ''}`, onclick },
     h('span', { class: 'corps' }, h('div', { class: 'nom' }, nom), etat ? h('div', { class: 'etat' }, etat) : null),
     fin, h('span', { class: 'chevron', 'aria-hidden': 'true' }));
 }
@@ -2200,7 +2199,7 @@ function ecranHizouk() {
   return h('div', { class: 'ecran avec-bandeau' },
     bandeau(tr.t('chizuk_demande_title'), { puce: h('p', { class: 'bandeau-sous-titre' }, tr.t('chizuk_demande_hint')), dessin: 'char_open_arms' }),
     h('div', { class: 'defile' }, h('div', { class: 'contenu hizouk' },
-      item ? (() => { const c = carteChizuk({ moment: 'demande', item }); if (change && !moinsDeMouvement()) c.classList.add('fondu-neuf'); return c; })() : null,
+      item ? (() => { const c = carteChizuk({ moment: 'demande', item }); if (change && !sansMouvement()) c.classList.add('fondu-neuf'); return c; })() : null,
       item ? h('div', { class: 'hizouk-actions' },
         h('button', { class: 'secondaire', onclick: () => { hizouk = ChizukBag.tirer(store, chizuk, 'demande'); hizoukChange = true; rendre(); } }, tr.t('chizuk_autre')),
         h('button', { class: 'secondaire', 'aria-pressed': garde ? 'true' : 'false', onclick: () => { store.basculerChizukFavori(item.id); rendre(); } },
@@ -2211,7 +2210,7 @@ function ecranHizouk() {
       h('button', { class: 'principal', onclick: () => ouvrir('seance') }, tr.t('chizuk_commencer')),
       gardes.length ? h('h2', { class: 'section' }, tr.t('chizuk_favoris')) : null,
       gardes.length ? h('div', { class: 'carte' }, gardes.map((x) =>
-        h('button', { class: 'hizouk-garde', onclick: () => { hizouk = x; hizoukChange = true; rendre(); document.querySelector('.defile')?.scrollTo({ top: 0, behavior: moinsDeMouvement() ? 'auto' : 'smooth' }); } },
+        h('button', { class: 'hizouk-garde', onclick: () => { hizouk = x; hizoukChange = true; rendre(); document.querySelector('.defile')?.scrollTo({ top: 0, behavior: sansMouvement() ? 'auto' : 'smooth' }); } },
           h('span', { class: 'hizouk-garde-texte' }, ChizukRules.traduction(x, tr.langue) || ChizukRules.hebreu(chizuk, x)),
           h('span', { class: 'hizouk-ref' }, Reference.localise(x.ref, tr.langue))))) : null)));
 }
@@ -3214,14 +3213,6 @@ function directionsBoussole(lieu) {
   return store.boussoleCarte() ? [rh, gc] : [gc, rh];
 }
 
-function carteBoussole() {
-  const lieu = store.lieu();
-  return h('div', { class: 'carte' }, h('button', { class: 'ligne', onclick: () => ouvrir('boussole') },
-    h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('boussole_title')),
-      h('div', { class: 'etat' }, lieu ? tr.t('boussole_par_rapport_nord', Boussole.degres(directionsBoussole(lieu)[0])) : tr.t('boussole_carte_sous'))),
-    h('span', { class: 'chevron', 'aria-hidden': 'true' })));
-}
-
 function consigneBoussole(gc, cap) {
   if (cap == null) return tr.t('boussole_par_rapport_nord', Boussole.degres(gc));
   const e = Boussole.ecart(gc, cap);
@@ -3463,14 +3454,6 @@ let modifierVol = false;
 
 const libelleVol = (v) => tr.t('vol_carte_vol', v.numero || '✈', v.depart, v.arrivee);
 
-/** L'accès depuis l'onglet Zmanim : le dernier vol saisi, ou l'invitation à en saisir un. */
-function carteVol() {
-  const v = store.vol();
-  return h('div', { class: 'carte' }, h('button', { class: 'ligne', onclick: () => ouvrir('vol') },
-    h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('vol_title')),
-      h('div', { class: 'etat' }, v ? libelleVol(v) : tr.t('vol_carte_sous'))),
-    h('span', { class: 'chevron', 'aria-hidden': 'true' })));
-}
 
 function planDe(v) {
   const depart = aeroportsVol.find((a) => a.iata === v.depart);
@@ -4031,7 +4014,6 @@ const dessinTrophee = (e, m, taille) => objetTrophee(e.f.forme, m, e.f.icone, ta
 const descTrophee = (e) => tr.p(`trophee_${e.f.cle}_desc`, e.seuil);
 const nomMetal = (m) => tr.t(`metal_${m}`);
 const medailleGrade = (m, taille) => h('span', { class: 'medaille-grade', 'aria-hidden': 'true' }, objetTrophee('medaille', m, '★', taille));
-const moinsAnime = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 /** Le jour de gain de chaque trophée gagné (Trophees.datesGain) : l'historique rejoué. */
 function datesTrophees() {
   return Trophees.datesGain(store.minutesParJour(), store.joursAvecNote(), (d) => store.isExempt(d), store.tikkunJournal());
@@ -4129,7 +4111,7 @@ async function partagerGrade(g, n) {
 
 /** Des étincelles de la couleur du grade autour d'un élément (16/10, animation E). */
 function etincelles(el, m) {
-  if (!el || moinsAnime()) return;
+  if (!el || sansMouvement()) return;
   const [clair, fonce] = TEINTES[m ?? 'or'];
   for (let k = 0; k < 10; k++) {
     const a = (k / 10) * 2 * Math.PI + Math.random() * 0.4;
@@ -4146,7 +4128,7 @@ function etincelles(el, m) {
 
 /** Un nombre qui monte de 0 à sa valeur (16/10, animation D). */
 function monteNombre(el, fin, texte) {
-  if (moinsAnime()) { el.textContent = texte(fin); return; }
+  if (sansMouvement()) { el.textContent = texte(fin); return; }
   const debut = performance.now();
   const pas = (t) => { const u = Math.min(1, (t - debut) / 700); el.textContent = texte(Math.round(fin * (1 - (1 - u) ** 3))); if (u < 1) requestAnimationFrame(pas); };
   el.textContent = texte(0);
@@ -4260,7 +4242,7 @@ function ecranPaliers() {
     if (d && ici) { const cible = Math.max(0, ici.offsetTop - d.clientHeight / 3); if (Math.abs(cible - d.scrollTop) > 1) d.dataset.defilementAuto = '1'; d.scrollTop = cible; }
     // B : la ligne se remplit jusqu'à « Tu es ici », les dernières étapes une à une.
     const gagnes = [...ecran.querySelectorAll('.ligne-etape.gagne')];
-    if (!moinsAnime()) gagnes.forEach((el, i) => { el.style.setProperty('--retard', `${Math.max(0, i - (gagnes.length - 6)) * 90}ms`); el.classList.add('pousse'); });
+    if (!sansMouvement()) gagnes.forEach((el, i) => { el.style.setProperty('--retard', `${Math.max(0, i - (gagnes.length - 6)) * 90}ms`); el.classList.add('pousse'); });
     // D : les barres partent de zéro, le compte monte, le presque-atteint pulse.
     requestAnimationFrame(() => ecran.querySelectorAll('[data-largeur]').forEach((b) => { b.style.width = b.dataset.largeur; }));
     const cpt = ecran.querySelector('.ligne-ici .trophee-compte');
@@ -5318,7 +5300,7 @@ function ecranSeance() {
     // La hitbodedout guidée (02/11) : sous le ’hizouk, avant « je n'arrive pas à parler », comme Android.
     enCours ? carteGuide() : null,
     enCours && aBlocage ? h('button', { class: 'texte-clair blocage', onclick: () => { tireChizuk('blocage'); if (questionSeance < 0) questionSeance = 0; rendre(); } }, tr.t('chizuk_stuck')) : null,
-    enCours && questionSeance >= 0 ? h('div', { class: `question-seance${questionChange && !moinsDeMouvement() ? ' fondu-neuf' : ''}` },
+    enCours && questionSeance >= 0 ? h('div', { class: `question-seance${questionChange && !sansMouvement() ? ' fondu-neuf' : ''}` },
       h('p', { class: 'question-rang' }, tr.t('question_rang', questionSeance + 1, QUESTIONS_BLOCAGE.length)),
       h('div', { class: 'question-jauge', 'aria-hidden': 'true' }, h('span', { style: `width:${((questionSeance + 1) / QUESTIONS_BLOCAGE.length) * 100}%` })),
       h('p', { class: 'question-texte' }, tr.t(QUESTIONS_BLOCAGE[questionSeance])),

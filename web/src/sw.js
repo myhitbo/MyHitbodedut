@@ -1,6 +1,6 @@
 // Hors connexion.
 //
-// La coquille (code, chaînes, textes, illustrations, livres et biographies : ~24 Mo) est gardée à
+// La coquille (code, chaînes, textes, illustrations, livres et biographies : environ 48 Mo gardés, 15 Mo transférés) est gardée à
 // l'installation, pour que tout se lise hors connexion. La musique ne l'est pas d'office : chaque morceau est
 // gardé la première fois qu'on l'écoute, puis servi depuis le téléphone.
 //
