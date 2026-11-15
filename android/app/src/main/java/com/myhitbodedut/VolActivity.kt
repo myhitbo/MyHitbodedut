@@ -55,6 +55,8 @@ class VolActivity : AppCompatActivity() {
     private var atterrissage: LocalDateTime? = null
     private var calcul: Vol.Calcul? = null
     private var gpsEnCours = false
+    /** Arrête le relevé GPS en cours (écouteur et délai) : l'écouteur continu ne survit pas à l'écran (FVOL-15). */
+    private var arreterGps: (() -> Unit)? = null
     private val autorisationGps = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { r ->
         if (r[Manifest.permission.ACCESS_FINE_LOCATION] == true) releverGps() else message(getString(R.string.vol_gps_refuse))
     }
@@ -153,6 +155,11 @@ class VolActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         minuterie.removeCallbacks(rafraichir)
+    }
+
+    override fun onDestroy() {
+        arreterGps?.invoke()
+        super.onDestroy()
     }
 
     private val contenu get() = findViewById<LinearLayout>(R.id.vol_contenu)
@@ -948,11 +955,18 @@ class VolActivity : AppCompatActivity() {
         val delai = Handler(Looper.getMainLooper())
         var fini = false
         var ecouteur: LocationListener? = null
-        fun conclure(l: Location?) {
-            if (fini || isFinishing || isDestroyed) return
+        // L'écouteur et le délai sont retirés dans tous les cas, écran fermé compris : sinon le GPS
+        // resterait allumé, l'écouteur continu ne s'arrêtant pas seul.
+        fun arreter() {
             fini = true
             delai.removeCallbacksAndMessages(null)
             ecouteur?.let { runCatching { lm.removeUpdates(it) } }
+            arreterGps = null
+        }
+        fun conclure(l: Location?) {
+            if (fini) return
+            arreter()
+            if (isFinishing || isDestroyed) return
             gpsEnCours = false
             if (l == null) {
                 afficherResultats()
@@ -960,6 +974,7 @@ class VolActivity : AppCompatActivity() {
             }
             appliquerReleve(Vol.Point(Instant.ofEpochMilli(l.time), l.latitude, l.longitude))
         }
+        arreterGps = { arreter() }
         delai.postDelayed({ conclure(null) }, GPS_MS)
         try {
             // requestLocationUpdates sur toutes les versions (FVOL-15) : getCurrentLocation est plafonné
