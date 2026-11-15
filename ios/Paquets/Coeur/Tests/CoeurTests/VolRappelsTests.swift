@@ -4,7 +4,7 @@ import Testing
 
 /// VolRappelsTest d'Android, porté : les rappels de huit trajets vérifiés tombent dans le vol, aux bornes
 /// de l'application ; le Omer ; un vol trop court ; OpenSky anonyme. Puis les rappels et la prière du
-/// moment de neuf trajets devant la JVM (Tests/Vecteurs/geographie_vol.json), à une seconde près.
+/// moment de neuf trajets devant la JVM (Tests/Vecteurs/geographie_vol.json), à deux secondes près.
 @Suite("Rappels en vol")
 struct VolRappelsTests {
 
@@ -44,8 +44,8 @@ struct VolRappelsTests {
         }
         for x in r where x.type == .priereFin {
             #expect(x.priere != "arvit")
-            let avance = x.limite.map { $0 - x.instant }
-            #expect(avance == 30 * 60_000)
+            let limite = try #require(x.limite)
+            #expect(limite - x.instant == Int64(30 * 60_000))
             let o = VolRappels.ouverte(c, x.instant)
             #expect(o?.priere == x.priere && o?.limite == x.limite)
         }
@@ -140,14 +140,15 @@ struct VolRappelsTests {
     // MARK: Devant la JVM
 
     /// « type|instant|prière|limite|omer » et « instant|prière|limite » : les noms à l'identique, les instants
-    /// à une seconde (la racine est cherchée à la demi-seconde des deux côtés).
+    /// à deux secondes (KosherSwift et KosherJava s'écartent d'une seconde, la racine est cherchée à la
+    /// demi-seconde des deux côtés).
     private func proches(_ rendu: [String], _ attendu: [String]) -> Bool {
         guard rendu.count == attendu.count else { return false }
         for (x, y) in zip(rendu, attendu) {
             let a = x.components(separatedBy: "|"), b = y.components(separatedBy: "|")
             guard a.count == b.count else { return false }
             for (u, v) in zip(a, b) where u != v {
-                guard let i = Int64(u), let j = Int64(v), abs(i - j) <= 1000 else { return false }
+                guard let i = Int64(u), let j = Int64(v), abs(i - j) <= 2000 else { return false }
             }
         }
         return true

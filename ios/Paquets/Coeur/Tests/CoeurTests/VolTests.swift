@@ -56,7 +56,8 @@ enum Trajets {
 
 /// VolTest d'Android, porté : le calcul (le point fixe, les fuseaux, minuit, la ligne de date, les routes
 /// polaires) ; aucune règle halakhique n'y est validée (ZMANIM.md, « En vol »). Les 26 vols de
-/// web/test/vecteurs_vol.json (tools/vecteurs_vol), copiés par l'export, à une seconde.
+/// web/test/vecteurs_vol.json (tools/vecteurs_vol), copiés par l'export, à deux secondes (ROADMAP, tâche 13) :
+/// KosherSwift et KosherJava s'écartent d'une seconde au sol, et chaque racine est cherchée à la demi-seconde.
 @Suite("Vol")
 struct VolTests {
 
@@ -78,7 +79,12 @@ struct VolTests {
         let codes = Set(tous.map(\.iata))
         #expect(codes.count == tous.count)
         let forme = ExpressionReguliere("[A-Z0-9]{3}")
-        let fautifs = tous.filter { !forme.couvre($0.iata) || abs($0.latitude) > 90 || abs($0.longitude) > 180 || Vol.zone($0.fuseau) == nil }
+        // Un fuseau plus récent que la base de la machine (America/Coyhaique, tzdata 2025b) : Vol.zone rend nil,
+        // comme Android sur un téléphone ancien ; iOS 26.5 le connaît. Tout autre fuseau inconnu est une faute.
+        let recents: Set<String> = ["America/Coyhaique"]
+        let fautifs = tous.filter {
+            !forme.couvre($0.iata) || abs($0.latitude) > 90 || abs($0.longitude) > 180 || (Vol.zone($0.fuseau) == nil && !recents.contains($0.fuseau))
+        }
         let nomsFautifs = fautifs.map(\.iata)
         #expect(nomsFautifs.isEmpty, "\(nomsFautifs)")
         #expect(try a("TLV").fuseau == "Asia/Jerusalem")
@@ -289,7 +295,8 @@ struct VolTests {
             for (j, e) in c.enVol.enumerated() where j < attendus.count {
                 let x = try #require(attendus.objet(j))
                 #expect(x.texte("cle") == e.cle, "\(nom)")
-                #expect(abs((try instant(x.texte("instant"))) - e.instant) <= 1000, "\(nom) \(e.cle)")
+                let ecart = abs((try instant(x.texte("instant"))) - e.instant)
+                #expect(ecart <= 2000, "\(nom) \(e.cle) : \(ecart) ms")
             }
             let reserves = (v.tableau("reserves") ?? []).indices.map { (v.tableau("reserves") ?? []).texte($0) }
             let rendues = c.reserves.map(\.rawValue).sorted()
