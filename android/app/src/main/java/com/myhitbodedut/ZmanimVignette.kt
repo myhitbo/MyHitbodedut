@@ -52,7 +52,8 @@ object ZmanimVignette {
      * FVOL-05 : la fin de Cha'harit avant, quand Min'ha s'affichait dès ce moment), la chki'a.
      */
     fun debut(priere: String, horaires: Map<String, ZonedDateTime?>): ZonedDateTime? = when (priere) {
-        "chaharit" -> horaires["alot"]
+        // Sans aube (Londres, Berlin, Moscou autour du solstice, FCALENDRIER-08) : comme ZmanimWidget.prochaine.
+        "chaharit" -> horaires["alot"] ?: horaires["misheyakir"] ?: horaires["netz"]
         "minha" -> horaires["minha_gedola"] ?: horaires["szt_gra"]
         else -> horaires["chkia"]
     }
@@ -222,21 +223,25 @@ object ZmanimVignette {
     }
 }
 
-/** Le prochain changement des vignettes des zmanim est arrivé (ZmanimVignette.programmer). */
+/**
+ * Le prochain changement des vignettes des zmanim est arrivé (ZmanimVignette.programmer). Toutes
+ * les dix minutes au plus : les zmanim de deux jours et l'image de la boussole se calculent hors
+ * du fil principal (15/11, EnFond), pour ne pas retarder l'écran ouvert.
+ */
 class ZmanimTic : android.content.BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) = ZmanimWidget.refresh(context)
+    override fun onReceive(context: Context, intent: Intent) = EnFond.recevoir(this) { ZmanimWidget.refresh(context) }
 }
 
 class ZmanimPetitWidget : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        // Toutes les tailles, et le prochain changement reprogrammé (02/11).
-        ZmanimVignette.rafraichir(context)
+        // Toutes les tailles, et le prochain changement reprogrammé (02/11) ; hors du fil principal (15/11).
+        EnFond.recevoir(this) { ZmanimVignette.rafraichir(context) }
     }
 }
 
 class ZmanimGrandWidget : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        // Toutes les tailles, et le prochain changement reprogrammé (02/11).
-        ZmanimVignette.rafraichir(context)
+        // Toutes les tailles, et le prochain changement reprogrammé (02/11) ; hors du fil principal (15/11).
+        EnFond.recevoir(this) { ZmanimVignette.rafraichir(context) }
     }
 }

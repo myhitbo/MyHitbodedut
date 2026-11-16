@@ -47,8 +47,8 @@ object JourAffiche {
         if (C.MACHIV_HAROUAH in c) add("ajout_machiv_harouah")
         if (C.MORID_HATAL in c && (C.MACHIV_HAROUAH !in c || C.BASCULE_PLUIE in c)) add("ajout_morid_hatal")
         // La 9ᵉ bénédiction (audit du 16/10) : les Edot changent de texte (ברך עלינו / ברכנו) ;
-        // rien le Chabbat, où elle n'est pas dite.
-        if (C.CHABBAT !in c) add(
+        // rien le Chabbat ni un Yom Tov, Kippour compris, où l'Amida n'a pas de bénédiction de semaine.
+        if (C.CHABBAT !in c && C.YOM_TOV !in c) add(
             if (nusah == "edot") (if (C.TAL_OUMATAR in c) "ajout_barekh_alenou" else "ajout_barkhenou")
             else if (C.TAL_OUMATAR in c) "ajout_tal_oumatar" else "ajout_berakha"
         )
@@ -66,8 +66,9 @@ object JourAffiche {
         if (C.YAALE_VEYAVO in c) add("ajout_yaale_veyavo")
         if (C.AL_HANISSIM in c) add("ajout_al_hanissim")
         SiddurJour.libelleHallel(nusah, c)?.let { add(it) }
-        // Le Chabbat, il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
-        if (C.CHABBAT !in c) add(if (C.TAHANOUN_CHAHARIT in c) "ajout_tahanoun" else "ajout_sans_tahanoun")
+        // Le Chabbat et un Yom Tov (Kippour compris), il n'y a pas d'Amida de semaine où dire ou taire
+        // Ta'hanoun (audit du 12/11, FCALENDRIER-12).
+        if (C.CHABBAT !in c && C.YOM_TOV !in c) add(if (C.TAHANOUN_CHAHARIT in c) "ajout_tahanoun" else "ajout_sans_tahanoun")
     }
 
     /**
@@ -116,7 +117,12 @@ object JourAffiche {
         val local = maintenant.atZone(zone)
         val date = local.toLocalDate()
         fun instants(d: LocalDate) = Zmanim.jour(lieu, d).associate { it.cle to it.instant }
-        val z = instants(date)
+        // Aube absente autour du solstice (Londres, Berlin, Moscou…, FCALENDRIER-08) : michéyakir, puis
+        // le lever du soleil, en tiennent lieu ; les heures fixes ne servent que si chki'a ou tsét manquent.
+        val z = instants(date).toMutableMap().also {
+            if (it["alot"] == null) it["alot"] = it["misheyakir"] ?: it["netz"]
+            if (it["misheyakir"] == null) it["misheyakir"] = it["netz"]
+        }
         val hier = instants(date.minusDays(1))
         val cles = listOf("alot", "misheyakir", "chatsot", "minha_gedola", "chkia", "tset", "chatsot_layla")
         if (cles.any { z[it] == null } || hier["chatsot_layla"] == null) return SiddurMoment.suggestion(local.toLocalTime())

@@ -341,35 +341,46 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
       const valeur = (cle, actuelle) => HistoriqueReglage.valeurLe(HistoriqueReglage.decoder(get(`${cle}_histoire`)), date, actuelle);
       return valeur('pause_shabbat', store.shabbatMode()) && estJourChome(date, valeur('in_israel', store.inIsrael()));
     },
+    /**
+     * isExempt pour un parcours de nombreux jours (revue du 15/11) : les réglages lus une seule
+     * fois, au lieu de trois relectures complètes par jour. Sur dix ans de jours, l'accueil se
+     * figeait d'autant plus que les réglages étaient gros.
+     */
+    exempteur() {
+      const pauses = store.pausedDates(), chabbat = store.shabbatMode(), israel = store.inIsrael();
+      return (date) => pauses.has(date) || (chabbat && estJourChome(date, israel));
+    },
 
     /** Jours consécutifs validés ; les jours exemptés ne comptent pas et ne cassent pas. */
     streak() {
       const faits = store.joursFaits();
+      const exempt = store.exempteur();
       let jour = today();
-      if (!faits.has(jour) && !store.isExempt(jour)) jour = ajouteJours(jour, -1);
+      if (!faits.has(jour) && !exempt(jour)) jour = ajouteJours(jour, -1);
       let compte = 0;
       for (let garde = 0; garde < 3650; garde++) {
         if (faits.has(jour)) compte++;
-        else if (!store.isExempt(jour)) return compte;
+        else if (!exempt(jour)) return compte;
         jour = ajouteJours(jour, -1);
       }
       return compte;
     },
 
     /** La plus longue série jamais tenue (Plaque.meilleureSerie), au moins la série en cours. */
-    meilleureSerie: () => Math.max(Plaque.meilleureSerie(store.joursFaits(), (d) => store.isExempt(d)), store.streak()),
+    meilleureSerie: () => Math.max(Plaque.meilleureSerie(store.joursFaits(), store.exempteur()), store.streak()),
 
     /** La semaine en cours, du dimanche au samedi. */
     currentWeek() {
       const faits = store.joursFaits();
       const auj = today();
       const dimanche = ajouteJours(auj, -jourSemaine(auj));
+      const exempt = store.exempteur();
       return Array.from({ length: 7 }, (_, i) => {
         const date = ajouteJours(dimanche, i);
         return {
           date,
           done: faits.has(date),
-          exempt: store.isExempt(date),
+          exempt: exempt(date),
           shabbat: i === 6,
           future: date > auj,
         };
@@ -637,11 +648,19 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
       }
       writeDays(merged);
       // Le journal enrichi (02/11) : un jour déjà noté ici garde ce qu'il a, comme la note.
+      // Une seule lecture et une seule écriture (revue du 15/11) : une par jour relisait tout le
+      // journal à chaque fois, et 10 000 jours figeaient l'onglet plus de deux minutes.
       if (root.journal_plus && typeof root.journal_plus === 'object' && !Array.isArray(root.journal_plus)) {
+        const j = lit(PREFS_JOURNAL);
+        const t = j.journal_plus && typeof j.journal_plus === 'object' && !Array.isArray(j.journal_plus) ? j.journal_plus : {};
+        let change = false;
         for (const [date, e] of Object.entries(root.journal_plus)) {
           if (!dateValide(date) || date >= demain) continue;
-          if (JournalPlus.vide(store.journalPlus(date))) store.setJournalPlus(date, JournalPlus.lire(e));
+          if (!JournalPlus.vide(JournalPlus.lire(t[date]))) continue;
+          const v = JournalPlus.versJson(JournalPlus.lire(e));
+          if (v) { t[date] = v; change = true; }
         }
+        if (change) { j.journal_plus = t; ecrit(PREFS_JOURNAL, j); }
       }
 
       const s = root.settings && typeof root.settings === 'object' ? root.settings : null;
@@ -679,18 +698,23 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
       }
       // Version 2 : réunis à ce que ce navigateur a déjà, sans rien retirer.
       const chaines = (a) => (Array.isArray(a) ? [...new Set(a.filter((x) => typeof x === 'string' && x.trim() !== ''))] : []);
+      // Bornés (revue du 15/11), comme Store.importJson : un fichier fabriqué ne remplit plus le
+      // stockage relu à chaque écran.
       const tikkun = chaines(root.tikkun_journal).filter((d) => dateValide(d) && d < demain);
-      if (tikkun.length) set('tikkun_journal', [...new Set([...store.tikkunJournal(), ...tikkun])].sort().join(','));
-      const favoris = chaines(root.favoris).filter((c) => /^[sl]:/.test(c));
-      if (favoris.length) set('favoris', [...new Set([...store.favoris(), ...favoris])]);
-      const chizuk = chaines(root.chizuk_favoris);
-      if (chizuk.length) set('chizuk_favoris', [...new Set([...store.chizukFavoris(), ...chizuk])]);
+      if (tikkun.length) set('tikkun_journal', [...new Set([...store.tikkunJournal(), ...tikkun])].sort().slice(-4000).join(','));
+      const favoris = chaines(root.favoris).filter((c) => /^[sl]:/.test(c) && !c.includes('|') && c.length <= 100);
+      if (favoris.length) set('favoris', [...new Set([...store.favoris(), ...favoris])].slice(0, 200));
+      const chizuk = chaines(root.chizuk_favoris).filter((x) => !x.includes('|') && x.length <= 40);
+      if (chizuk.length) set('chizuk_favoris', [...new Set([...store.chizukFavoris(), ...chizuk])].slice(0, 500));
       if (Array.isArray(root.marques_pages)) {
         const ici = store.marques();
         const meme = (a, b) => a.cle === b.cle && a.nusah === b.nusah && a.section === b.section && a.bloc === b.bloc;
-        const entrantes = root.marques_pages.filter((m) => m && typeof m.cle === 'string' && m.cle !== '' && typeof m.nusah === 'string'
-          && Number.isInteger(m.section) && m.section >= 0 && Number.isInteger(m.bloc) && m.bloc >= 0)
-          .map((m) => ({ cle: m.cle, nusah: m.nusah, section: m.section, bloc: m.bloc, apercu: typeof m.apercu === 'string' ? m.apercu : '' }))
+        const entrantes = root.marques_pages.filter((m) => m && typeof m.cle === 'string' && m.cle !== '' && m.cle.length <= 100
+          && typeof m.nusah === 'string' && m.nusah.length <= 20
+          && Number.isInteger(m.section) && m.section >= 0 && Number.isInteger(m.bloc) && m.bloc >= 0
+          // Un psaume hors de 1 à 150 donnait un écran vide au toucher (revue du 15/11).
+          && (m.cle !== 't:tehilim' || (m.section >= 1 && m.section <= 150 && m.bloc >= 1)))
+          .map((m) => ({ cle: m.cle, nusah: m.nusah, section: m.section, bloc: m.bloc, apercu: typeof m.apercu === 'string' ? m.apercu.slice(0, 200) : '' }))
           .filter((m) => !ici.some((x) => meme(x, m)));
         if (entrantes.length) set('marques_pages', [...ici, ...entrantes].slice(0, 60));
       }

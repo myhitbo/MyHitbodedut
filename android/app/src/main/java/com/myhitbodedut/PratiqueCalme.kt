@@ -15,8 +15,8 @@ import androidx.core.view.WindowInsetsControllerCompat
  * L'écran pendant la pratique (16/10, point 2) : six secondes sans toucher,
  * et tout s'efface sauf le minuteur, sa lueur et « Terminer » ; les barres du
  * téléphone se cachent, le fond s'assombrit. Un toucher n'importe où ramène
- * tout pour six secondes, sans déclencher ce qu'il y avait dessous : on ne
- * touche pas un bouton qu'on ne voyait pas.
+ * tout pour six secondes, sans déclencher ce qu'il y avait dessous, quand le toucher
+ * tombe sur ce qui s'était effacé : on ne touche pas un bouton qu'on ne voyait pas.
  *
  * Ce qui s'efface ne change que d'opacité : render(), qui repasse chaque
  * seconde, garde la main sur ce qui est visible ou non.
@@ -25,6 +25,8 @@ class PratiqueCalme(
     private val activite: Activity,
     private val fond: View,
     private val couleurFond: Int,
+    /** Ce qui reste visible (« Terminer », le guide, le mini-lecteur) : son toucher passe (FSEANCE-08, FBARRIERE-25). */
+    private val restes: () -> List<View> = { emptyList() },
     private val effaces: () -> List<View>,
 ) {
     private val handler = Handler(Looper.getMainLooper())
@@ -47,13 +49,29 @@ class PratiqueCalme(
     /** À appeler depuis dispatchTouchEvent : true si le geste est avalé. */
     fun toucher(e: MotionEvent): Boolean {
         if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-            avale = calme
+            // Seul un geste tombé sur une vue effacée est avalé : « Terminer », le guide ou le
+            // mini-lecteur, restés visibles, reçoivent leur toucher (FSEANCE-08).
+            avale = calme && surUneVueEffacee(e)
             if (calme) sortir(anime = true)
             if (enCours) attendre()
         }
         val garde = avale
         if (e.actionMasked == MotionEvent.ACTION_UP || e.actionMasked == MotionEvent.ACTION_CANCEL) avale = false
         return garde
+    }
+
+    private fun surUneVueEffacee(e: MotionEvent): Boolean {
+        // Les coordonnées de la fenêtre, celles de getGlobalVisibleRect : rawX et rawY sont
+        // celles de l'écran, décalées en écran partagé ou en fenêtre libre.
+        val x = e.x.toInt()
+        val y = e.y.toInt()
+        val zone = android.graphics.Rect()
+        // isShown, pas la seule visibilité de la vue : getGlobalVisibleRect ne regarde pas
+        // si un parent est masqué. Le mini-lecteur flotte au-dessus du bas de l'écran, où
+        // tombent souvent le 'hizouk ou « Je n'arrive pas à parler » : il passe en premier.
+        fun dedans(v: View) = v.isShown && v.getGlobalVisibleRect(zone) && zone.contains(x, y)
+        if (restes().any(::dedans)) return false
+        return effaces().any(::dedans)
     }
 
     fun liberer() {

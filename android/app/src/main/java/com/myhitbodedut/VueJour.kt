@@ -111,7 +111,7 @@ object VueJour {
                     Levana.Etat.CeSoir -> c.getString(R.string.levana_ce_soir)
                     Levana.Etat.DernierSoir -> c.getString(R.string.levana_dernier_soir)
                 }, 17f, if (etat is Levana.Etat.Dans) R.color.ink else R.color.brand, gras = true, haut = 2))
-                val pct = "${Math.round(lune.eclairage * 100)} %"
+                val pct = java.text.NumberFormat.getPercentInstance(locale(langue)).format(Math.round(lune.eclairage * 100) / 100.0)
                 addView(texte(c, c.getString(R.string.levana_lune, pct,
                     c.getString(if (lune.croissante) R.string.levana_croissante else R.string.levana_decroissante)), 13f, R.color.muted, haut = 2))
             })
@@ -196,8 +196,15 @@ object VueJour {
         val ouvrirHilloulot = View.OnClickListener {
             c.startActivity(Intent(c, HilloulotActivity::class.java).putExtra(HilloulotActivity.EXTRA_DATE, date.toString()))
         }
+        // Le nom traduit, quand il existe, après l'hébreu et isolé (la vue est en RTL) : la règle de
+        // l'écran des hilloulot, repli FR → EN (THILLOULOT-10).
+        val langue = ChizukCard.language(c)
+        val nom = { h: Hilloulot.Hilloula ->
+            (if (langue.startsWith("en")) h.en else if (langue.startsWith("fr")) h.fr ?: h.en else null)
+                ?.takeIf { it.isNotBlank() }?.let { "${h.he} (\u2068$it\u2069)" } ?: h.he
+        }
         // Plus petit que le reste de la carte (14/10) : les noms sont souvent longs.
-        carte.addView(texte(c, hilloulot.take(5).joinToString("\n") { it.he }, 14f, R.color.ink, haut = 2).apply {
+        carte.addView(texte(c, hilloulot.take(5).joinToString("\n") { nom(it) }, 14f, R.color.ink, haut = 2).apply {
             textDirection = View.TEXT_DIRECTION_RTL
             PoliceHebraique.appliquer(this)
             setLineSpacing(0f, 1.25f)

@@ -95,20 +95,48 @@ class TraductionAffichageTest {
     @Test
     fun `aucun titre de morceau ne reste en francais`() {
         listOf("values", "values-en", "values-iw").forEach { d ->
-            assertFalse("$d : « titre à préciser »", lire("src/main/res/$d/strings.xml").contains("titre à préciser"))
+            val xml = lire("src/main/res/$d/strings.xml")
+            assertFalse("$d : « titre à préciser »", xml.contains("titre à préciser"))
+            // Audit du 12/11 (TFRLANGUE-10, TFRLANGUE-13) : ni note d'atelier ni apostrophe droite dans un titre affiché.
+            Regex("""<string name="track_[a-z_0-9]+"[^>]*>[^<]*</string>""").findAll(xml).map { it.value }.forEach { t ->
+                assertFalse("$d : note d'atelier dans $t", t.contains("incertain"))
+                assertFalse("$d : apostrophe droite dans $t", t.contains("\\'"))
+            }
         }
         val en = lire("src/main/res/values-en/strings.xml")
         assertTrue(en.contains("""<string name="track_niggoun_01">Niggun 01</string>"""))
         // Audit du 12/11 (TEN-03) : les titres des morceaux d'Ianir et de Shpayer ne restent pas en français en anglais.
-        listOf("Niggoun", "Chpola", "titre incertain", "«", "Kenout", "Afilou").forEach { mot ->
+        // COUV-13 : ni « du », ni « de », ni « titre » dans un titre anglais.
+        listOf("Niggoun", "Chpola", "titre incertain", "«", "Kenout", "Afilou", " du ", " de ", "titre", "Yanouka", "Mélekh").forEach { mot ->
             val titres = Regex("""<string name="track_[a-z_0-9]+">[^<]*</string>""").findAll(en).map { it.value }
             assertFalse("« $mot » dans un titre anglais", titres.any { it.contains(mot) })
         }
-        listOf("track_ianir_bessarabie", "track_shpayer_kenout", "track_shpayer_ki_hine_kahomer").forEach { cle ->
+        listOf("track_ianir_bessarabie", "track_shpayer_kenout", "track_shpayer_ki_hine_kahomer", "track_hamelech_basade", "track_yanuka_nigoun_3").forEach { cle ->
             listOf("values", "values-en", "values-iw").forEach { d ->
                 assertTrue("$d $cle", lire("src/main/res/$d/strings.xml").contains("""<string name="$cle">"""))
             }
         }
+    }
+
+    @Test
+    fun `les trois langues disent la meme chose (COUV-16)`() {
+        val fr = lire("src/main/res/values/strings.xml")
+        val en = lire("src/main/res/values-en/strings.xml")
+        val he = lire("src/main/res/values-iw/strings.xml")
+        val guide = lire("src/main/res/raw/guide_sujets.json")
+        // Graphie anglaise « tz », comme Motzaei et Atzeret ; « mitzvah » en anglais.
+        listOf("Tsadik", "Tsadeket").forEach { assertFalse("« $it » en anglais", en.contains(it)) }
+        assertFalse("« mitsva » en anglais", Regex(""""en": "[^"]*mitsva""").containsMatchIn(guide))
+        // La parnassa : la dignité et l'abondance, comme l'hébreu.
+        assertTrue(guide.contains("בקשו פרנסה בכבוד ובשפע"))
+        assertFalse(guide.contains("honnête et suffisante"))
+        assertFalse(guide.contains("honest, sufficient"))
+        // Le libellé français ne commence pas par un mot hébreu ; la source de Kippour est la même partout.
+        assertTrue(fr.contains("""<string name="ajout_facultatif_apres">HaRa’hamane"""))
+        // En français, la référence s'écrit « 426, 2 » (TFRLANGUE-12), comme le reste des renvois.
+        assertTrue(fr.contains("""<string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426, 2)</string>"""))
+        assertTrue(en.contains("""<string name="levana_kippour">Not before Yom Kippur ends (Rema 426:2)</string>"""))
+        assertTrue(he.contains("""<string name="levana_kippour">לא לפני מוצאי יום הכיפורים (רמ״א תכ״ו, ב)</string>"""))
     }
 
     @Test

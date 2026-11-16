@@ -190,6 +190,12 @@ NUSAH = {
     "sefard": T("נוסח ספרד (האר״י)", "Noussa’h Sfard (Arizal)", "Nusach Sfard (Arizal)"),
     "ashkenaz": T("נוסח אשכנז", "Noussa’h Ashkenaz", "Nusach Ashkenaz"),
 }
+# L'étiquette d'un texte emprunté à un autre nusah, en clair (audit du 12/11, TSIDDUR-14).
+EMPRUNT = {
+    "edot": T("נוסח שאול מנוסח עדות המזרח", "Texte emprunté au noussa’h séfarade (Edot HaMizra’h)", "Text borrowed from the Sephardi nusach (Edot HaMizrach)"),
+    "sefard": T("נוסח שאול מנוסח ספרד (האר״י)", "Texte emprunté au noussa’h Sfard (Arizal)", "Text borrowed from Nusach Sfard (Arizal)"),
+    "ashkenaz": T("נוסח שאול מנוסח אשכנז", "Texte emprunté au noussa’h Ashkenaz", "Text borrowed from Nusach Ashkenaz"),
+}
 GROUPES = [
     {"cle": "jour", "titre": T("תְּפִלּוֹת הַיּוֹם", "Prières du jour", "Daily prayers")},
     {"cle": "brakhot", "titre": T("בְּרָכוֹת", "Bénédictions", "Blessings")},
@@ -473,7 +479,7 @@ def main(dossier):
             t = {"id": id_, "groupe": groupe, "titre": titre, "source": nom_source, "sections": sections}
             if emprunt:
                 # Absent des sources libres de ce nusah : repris d'un autre, et dit.
-                t["nusah"] = NUSAH[emprunt]
+                t["nusah"] = EMPRUNT[emprunt]
             textes.append(t)
         sortie = {
             "_meta": {

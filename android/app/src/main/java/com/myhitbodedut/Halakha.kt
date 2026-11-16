@@ -18,7 +18,8 @@ import java.time.LocalDate
  * partagée en sept, du dimanche au Chabbat ; la première année du livre les
  * années hébraïques impaires (5787 …), la deuxième les paires, l'autre année
  * quand la section manque ; les huit jours de 'Hanouka, la section de
- * 'Hanouka partagée en huit.
+ * 'Hanouka partagée en huit ; du 15 au 23 Tichri, celle de Vézot haBéra'kha
+ * (Hochaana Rabba, Chemini Atséret), partagée en neuf, dans l'ordre.
  */
 object Halakha {
 
@@ -78,13 +79,16 @@ object Halakha {
         return items.subList(jour * items.size / parts, (jour + 1) * items.size / parts)
     }
 
+    /** Début de la note de l'auteur qui remplace une section sans halakhot (Vayéchev, deuxième année). */
+    const val SANS_HALAKHOT = "בפרשה זו לא כתבתי"
+
     fun anneeDuLivre(anneeHebraique: Int): Int = if (anneeHebraique % 2 == 1) 1 else 2
 
     /**
      * Les halakhot du jour : [parsha] du Chabbat qui vient (nom de KosherJava),
-     * [jourSemaine] 0 le dimanche … 6 le Chabbat, [jourHanouka] 1 … 8 ou 0.
+     * [jourSemaine] 0 le dimanche … 6 le Chabbat (sur [parts] jours : 0 … parts - 1), [jourHanouka] 1 … 8 ou 0.
      */
-    fun choix(livre: Livre, parsha: String, jourSemaine: Int, anneeHebraique: Int, jourHanouka: Int = 0): List<Choisie> {
+    fun choix(livre: Livre, parsha: String, jourSemaine: Int, anneeHebraique: Int, jourHanouka: Int = 0, parts: Int = 7): List<Choisie> {
         if (jourHanouka in 1..8 && livre.hanouka != null) {
             val h = livre.hanouka
             return part(h.halakhot.indices.toList(), jourHanouka - 1, 8).map { Choisie(h.halakhot[it], it + 1, h.he, 1) }
@@ -93,7 +97,9 @@ object Halakha {
         for (a in listOf(premiere, 3 - premiere)) {
             val secs = sections(livre.annees[a.toString()].orEmpty(), parsha) ?: continue
             val toutes = secs.flatMap { (s, depart, l) -> l.mapIndexed { i, t -> Choisie(t, depart + i + 1, s.he, a) } }
-            if (toutes.isNotEmpty()) return part(toutes, jourSemaine, 7)
+            // Ni la note « je n'ai pas écrit de halakhot ici » (Vayéchev, année 2) : l'autre année.
+            val utiles = toutes.filterNot { it.texte.startsWith(SANS_HALAKHOT) }
+            if (utiles.isNotEmpty()) return part(utiles, jourSemaine, parts)
         }
         return emptyList()
     }
@@ -101,6 +107,11 @@ object Halakha {
     /** Pour une date : la paracha du Chabbat qui vient (le Chabbat même, la sienne), le jour de la semaine, 'Hanouka. */
     fun pour(livre: Livre, date: LocalDate, enIsrael: Boolean): List<Choisie> {
         val cal = JewishCalendar(date).apply { setInIsrael(enIsrael) }
+        // Du 15 au 23 Tichri (Soukkot, Hochaana Rabba, Sim'hat Torah) : la section de Vézot haBéra'kha,
+        // qui parle de Hochaana Rabba, et non la paracha qui vient (Béréchit) ; partagée sur ces neuf jours.
+        if (cal.jewishMonth == JewishCalendar.TISHREI && cal.jewishDayOfMonth in 15..23) {
+            return choix(livre, JewishCalendar.Parsha.VZOS_HABERACHA.name, cal.jewishDayOfMonth - 15, cal.jewishYear, parts = 9)
+        }
         val parsha = cal.parshah.takeIf { it != JewishCalendar.Parsha.NONE } ?: cal.upcomingParshah
         val jour = if (date.dayOfWeek == DayOfWeek.SUNDAY) 0 else date.dayOfWeek.value
         return choix(livre, parsha.name, jour, cal.jewishYear, cal.dayOfChanukah.coerceAtLeast(0))

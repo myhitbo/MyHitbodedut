@@ -44,6 +44,8 @@ import kotlin.math.roundToInt
 class ReglagesLecture private constructor(
     activite: Activity,
     private val avecNusah: Boolean,
+    private val avecNuit: Boolean,
+    private val avecLangues: Boolean,
     private val auDessusDe: View?,
     private val surChangement: () -> Unit,
 ) {
@@ -53,14 +55,14 @@ class ReglagesLecture private constructor(
     private fun dp(v: Int) = (v * densite).roundToInt()
 
     /**
-     * La taille d'un bouton de la barre : 44 dp, moins sur un écran étroit
+     * La taille d'un bouton de la barre : 48 dp, moins sur un écran étroit
      * (320 dp, ou un affichage agrandi) pour que la barre tienne toujours
      * entière, « Replier » compris (audit du 04/10).
      */
     private val bouton: Int = run {
         val largeur = contexte.resources.displayMetrics.widthPixels / densite
-        val nombre = if (avecNusah) 9 else 8
-        (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(30, 44)
+        val nombre = 5 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0)
+        (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(30, 48)
     }
 
     private val accent = Apparence.couleur(contexte, R.color.brand)
@@ -102,7 +104,7 @@ class ReglagesLecture private constructor(
     init {
         barre.addView(lettre(plus = false))
         barre.addView(pourcent.apply {
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(44))
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48))
             gravity = Gravity.CENTER
             minWidth = dp(48)
             textSize = 14f
@@ -113,8 +115,8 @@ class ReglagesLecture private constructor(
         })
         barre.addView(lettre(plus = true))
         barre.addView(filet())
-        barre.addView(lune.apply {
-            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+        if (avecNuit) barre.addView(lune.apply {
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
             setImageResource(R.drawable.ic_lecture_lune)
             imageTintList = ColorStateList.valueOf(surAccent)
             scaleType = ImageView.ScaleType.CENTER
@@ -127,7 +129,7 @@ class ReglagesLecture private constructor(
         })
         barre.addView(TextView(contexte).apply {
             // « אב » : le choix de la police (12/10), en lettres hébraïques puisque c'est elles qu'il change.
-            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
             gravity = Gravity.CENTER
             text = "אב"
             textSize = 17f
@@ -136,9 +138,9 @@ class ReglagesLecture private constructor(
             touchable(this)
             setOnClickListener { choisirPolice(it) }
         })
-        barre.addView(TextView(contexte).apply {
+        if (avecLangues) barre.addView(TextView(contexte).apply {
             // « אA » : les langues du texte (04/11) — hébreu, français, anglais, ou deux à la fois.
-            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
             gravity = Gravity.CENTER
             text = "אA"
             textSize = 15f
@@ -197,7 +199,7 @@ class ReglagesLecture private constructor(
     }
 
     private fun icone(res: Int, description: Int, action: (View) -> Unit): View = ImageView(contexte).apply {
-        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
         setImageResource(res)
         imageTintList = ColorStateList.valueOf(surAccent)
         scaleType = ImageView.ScaleType.CENTER
@@ -208,7 +210,7 @@ class ReglagesLecture private constructor(
 
     /** « A− » et « A+ » : la lettre latine, comme partout pour la taille du texte. */
     private fun lettre(plus: Boolean): View = TextView(contexte).apply {
-        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
         gravity = Gravity.CENTER
         text = if (plus) "A+" else "A−"
         textSize = if (plus) 18f else 14f
@@ -411,6 +413,9 @@ class ReglagesLecture private constructor(
             activite: Activity,
             defilement: View,
             avecNusah: Boolean = false,
+            // Coupés tant que l'écran n'applique ni le fond noir ni les traductions (FLECTURE-11).
+            avecNuit: Boolean = true,
+            avecLangues: Boolean = true,
             auDessusDe: View? = null,
             gardeSaPlace: Boolean = false,
             surChangement: () -> Unit,
@@ -431,7 +436,7 @@ class ReglagesLecture private constructor(
                     }
                 }
             }
-            val reglages = ReglagesLecture(activite, avecNusah, auDessusDe, garderPlace)
+            val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, garderPlace)
             reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement)
             if (defilement is RecyclerView) reglages.suivreListe(defilement) else reglages.suivreDefilement(defilement)
             // De quoi lire la fin du texte au-dessus de la barre ouverte.

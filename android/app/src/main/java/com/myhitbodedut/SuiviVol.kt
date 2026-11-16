@@ -45,6 +45,8 @@ object SuiviVol {
         const val ILLISIBLE = "illisible"
         const val POSITION_INVALIDE = "position_invalide"
         const val RELAIS_ABSENT = "relais_absent"
+        /** Le relais limite les demandes (« relais 429 ») : quelques minutes d'attente, pas une journée. */
+        const val TROP_DE_DEMANDES = "trop_de_demandes"
         /** Le relais a répondu une erreur qu'on ne sait pas nommer. */
         const val SERVICE = "service"
         private const val SERVEUR = "serveur_"
@@ -54,9 +56,12 @@ object SuiviVol {
         /** Le code HTTP d'une raison [serveur], sinon null. */
         fun codeServeur(raison: String): Int? = raison.removePrefix(SERVEUR).takeIf { raison.startsWith(SERVEUR) }?.toIntOrNull()
 
-        /** Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… */
-        fun duRelais(message: String): String =
-            Regex("(?:opensky|relais) (\\d+)").matchEntire(message.trim())?.let { serveur(it.groupValues[1].toInt()) } ?: SERVICE
+        /** Le message du relais (tools/relais_vol) : « opensky 429 » (quota du jour), « relais 429 » (débit), « opensky injoignable »… */
+        fun duRelais(message: String): String {
+            val m = message.trim()
+            if (m == "relais 429") return TROP_DE_DEMANDES
+            return Regex("opensky (\\d+)").matchEntire(m)?.let { serveur(it.groupValues[1].toInt()) } ?: SERVICE
+        }
     }
 
     /** D'où vient la position : un relais, un autre service plus tard, un faux dans les tests. */
@@ -201,8 +206,16 @@ object SuiviVol {
                 c.readTimeout = 20_000
                 c.instanceFollowRedirects = false
                 try {
-                    val flux = if (c.responseCode in 200..499) (c.errorStream ?: c.inputStream) else return Resultat.Erreur(Raison.serveur(c.responseCode))
-                    lire(flux.bufferedReader().use { it.readText() }, Instant.now())
+                    val code = c.responseCode
+                    // Le corps se lit aussi en 5xx (revue du 15/11) : le relais y dit « opensky 429 »
+                    // quand le quota du jour est épuisé, que l'écran affichait en « erreur 502 ».
+                    val corps = runCatching { (c.errorStream ?: c.inputStream)?.bufferedReader()?.use { it.readText() } }.getOrNull()
+                    val r = corps?.let { lire(it, Instant.now()) }
+                    when {
+                        code < 500 -> r ?: Resultat.Erreur(Raison.ILLISIBLE)
+                        r is Resultat.Erreur && r.raison != Raison.ILLISIBLE -> r
+                        else -> Resultat.Erreur(Raison.serveur(code))
+                    }
                 } finally {
                     c.disconnect()
                 }

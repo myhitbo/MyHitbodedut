@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.core.os.LocaleListCompat
@@ -44,9 +45,19 @@ class SettingsActivity : AppCompatActivity() {
      */
     private val notifications = DemandeNotifications(this) { refresh() }
 
+    /**
+     * Le mot de passe choisi avant le sélecteur de fichier (revue du 15/11).
+     * Perdu si l'écran est recréé pendant le choix : la fenêtre est alors
+     * reposée une fois le fichier choisi.
+     */
+    private var motEnAttente: String? = null
+
     private val exportFile =
         registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-            if (uri != null) writeBackup(uri)
+            val mot = motEnAttente
+            motEnAttente = null
+            if (uri == null) return@registerForActivityResult
+            if (mot != null) ecrireSauvegarde(uri, mot) else writeBackup(uri)
         }
 
     private val importFile =
@@ -146,13 +157,13 @@ class SettingsActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.window_start).setOnClickListener {
             pickTime(Store.windowStart(this)) {
-                Store.setWindow(this, it, Store.windowEnd(this))
+                if (it == Store.windowEnd(this)) fenetreVide() else Store.setWindow(this, it, Store.windowEnd(this))
                 refresh()
             }
         }
         findViewById<Button>(R.id.window_end).setOnClickListener {
             pickTime(Store.windowEnd(this)) {
-                Store.setWindow(this, Store.windowStart(this), it)
+                if (it == Store.windowStart(this)) fenetreVide() else Store.setWindow(this, Store.windowStart(this), it)
                 refresh()
             }
         }
@@ -174,10 +185,9 @@ class SettingsActivity : AppCompatActivity() {
                 refresh()
             }
         }
+        // L'export emporte tout le journal : le verrou le garde aussi (revue du 15/11).
         findViewById<Button>(R.id.export_data).setOnClickListener {
-            // Sans sélecteur de fichiers, un message plutôt qu'un plantage (examen du 14/11, constat 12).
-            runCatching { exportFile.launch("myhitbodedut-${Store.today()}.json") }
-                .onFailure { Toast.makeText(this, R.string.fichiers_absents, Toast.LENGTH_LONG).show() }
+            VerrouJournal.exiger(this, onOk = { demanderMotDePasseExport() })
         }
         findViewById<Button>(R.id.import_data).setOnClickListener {
             runCatching { importFile.launch(arrayOf("application/json", "text/plain", "*/*")) }
@@ -204,6 +214,14 @@ class SettingsActivity : AppCompatActivity() {
                 (getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager).cancelAll()
                 Store.reinitialiser(this)
                 StreakWidget.refresh(this)
+                ZmanimWidget.refresh(this)
+                // Les réglages effacés, mais le mode sombre et la langue de l'application vivent
+                // hors des préférences : sans ces deux lignes ils survivraient à « Tout effacer ».
+                // L'icône, elle, se remet d'elle-même à la prochaine sortie de l'application.
+                Apparence.appliquerMode(this)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    getSystemService(android.app.LocaleManager::class.java).applicationLocales = android.os.LocaleList.getEmptyLocaleList()
+                else AppCompatDelegate.setApplicationLocales(androidx.core.os.LocaleListCompat.getEmptyLocaleList())
                 startActivity(Intent(this, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
                 finish()
@@ -302,6 +320,8 @@ class SettingsActivity : AppCompatActivity() {
             }
             ligne.findViewById<Button>(R.id.permission_grant).apply {
                 isEnabled = !accordee
+                // « Accorder : Notifications » (FACCUEIL-12) : quatre « Accorder » de suite ne disaient rien.
+                contentDescription = getString(R.string.reglage_libelle_valeur, text, getString(autorisation.titre))
                 setOnClickListener { demander(autorisation) }
             }
             liste.addView(ligne)
@@ -355,16 +375,7 @@ class SettingsActivity : AppCompatActivity() {
                 safeStart(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
             }
         }
-        // Le verrou du journal (audit du 12/11) : sans verrouillage d'écran, il n'y a rien à demander.
-        bindSwitch(R.id.journal_verrou_switch, Store.journalVerrou(this)) { checked ->
-            val sur = getSystemService(android.app.KeyguardManager::class.java)?.isDeviceSecure == true
-            if (checked && !sur) {
-                Toast.makeText(this, R.string.journal_verrou_sans_code, Toast.LENGTH_LONG).show()
-                findViewById<MaterialSwitch>(R.id.journal_verrou_switch).isChecked = false
-            } else {
-                Store.setJournalVerrou(this, checked)
-            }
-        }
+        renderVerrou()
         bindSwitch(R.id.hide_countdown_switch, Store.hideCountdown(this)) { checked ->
             Store.setHideCountdown(this, checked)
         }
@@ -388,12 +399,43 @@ class SettingsActivity : AppCompatActivity() {
             renderLevanaRappel()
         }
         renderLevanaRappel()
+        bindSwitch(R.id.chabbat_alerte_switch, Store.chabbatAlerte(this)) {
+            Store.setChabbatAlerte(this, it)
+            ChabbatAlerte.programmer(this)
+            if (it) askNotifications()
+        }
         bindSwitch(R.id.hilloulot_switch, Store.hilloulotAffichees(this)) { Store.setHilloulotAffichees(this, it) }
         bindSwitch(R.id.halakha_switch, Store.halakhaAffichee(this)) { Store.setHalakhaAffichee(this, it) }
         bindSwitch(R.id.exempt_today_switch, Store.pausedDates(this).contains(Store.today())) {
             Store.togglePausedDate(this, Store.today())
             StreakWidget.refresh(this)
             refresh()
+        }
+    }
+
+    /**
+     * Le verrou du journal (audit du 12/11, revue du 15/11). L'interrupteur
+     * montre ce qui protège vraiment : sans verrouillage d'écran, il est
+     * éteint. Le couper demande le code, sinon quiconque tient le téléphone
+     * déverrouillé l'éteignait avant d'ouvrir le journal.
+     */
+    private fun renderVerrou() {
+        bindSwitch(R.id.journal_verrou_switch, VerrouJournal.actif(this)) { checked ->
+            when {
+                checked && !VerrouJournal.ecranProtege(this) -> {
+                    Toast.makeText(this, R.string.journal_verrou_sans_code, Toast.LENGTH_LONG).show()
+                    renderVerrou()
+                }
+                checked -> Store.setJournalVerrou(this, true)
+                VerrouJournal.actif(this) -> {
+                    renderVerrou()
+                    VerrouJournal.exiger(this, onOk = {
+                        Store.setJournalVerrou(this, false)
+                        renderVerrou()
+                    })
+                }
+                else -> Store.setJournalVerrou(this, false)
+            }
         }
     }
 
@@ -422,6 +464,17 @@ class SettingsActivity : AppCompatActivity() {
         view.setOnCheckedChangeListener { _, value -> onChange(value) }
     }
 
+    /** Le premier texte d'une ligne qui ne soit pas un bouton : l'intitulé d'un bouton de valeur. */
+    private fun intituleDe(g: ViewGroup): CharSequence? {
+        for (i in 0 until g.childCount) {
+            val v = g.getChildAt(i)
+            if (v is Button) continue
+            if (v is TextView && !v.text.isNullOrBlank()) return v.text
+            if (v is ViewGroup) intituleDe(v)?.let { return it }
+        }
+        return null
+    }
+
     /** Le premier texte d'une ligne, hors l'interrupteur lui-même. */
     private fun libelleDe(g: ViewGroup, sauf: View): CharSequence? {
         for (i in 0 until g.childCount) {
@@ -434,8 +487,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun renderValues() {
-        findViewById<Button>(R.id.window_start).text = Store.formatMinutes(Store.windowStart(this))
-        findViewById<Button>(R.id.window_end).text = Store.formatMinutes(Store.windowEnd(this))
+        findViewById<Button>(R.id.window_start).text = Store.formatHeure(this, Store.windowStart(this))
+        findViewById<Button>(R.id.window_end).text = Store.formatHeure(this, Store.windowEnd(this))
         findViewById<Button>(R.id.snooze_length).text =
             Store.formatDuration(this, Store.snoozeMinutes(this))
         findViewById<Button>(R.id.target_length).text =
@@ -480,11 +533,11 @@ class SettingsActivity : AppCompatActivity() {
 
     // --- Service, autorisations, sauvegarde ---------------------------------
 
-    private fun applyServiceState() {
+    private fun applyServiceState(context: android.content.Context = this) {
         if (BuildConfig.HAS_GATE) {
-            if (GateStatus.shouldRunService(this)) GateService.start(this) else GateService.stop(this)
+            if (GateStatus.shouldRunService(context)) GateService.start(context) else GateService.stop(context)
         }
-        Reminder.reschedule(this)
+        Reminder.reschedule(context)
     }
 
     /**
@@ -598,30 +651,62 @@ class SettingsActivity : AppCompatActivity() {
     /**
      * Le mot de passe de la sauvegarde (audit du 12/11) : le fichier part là
      * où l'on veut, souvent un nuage, et il porte le journal. Vide, il reste
-     * en clair, et le texte de la fenêtre le dit.
+     * en clair, et le texte de la fenêtre le dit. [choisi] reçoit le mot de
+     * passe ; renoncer appelle [renonce].
      */
-    private fun writeBackup(uri: Uri) {
+    private fun fenetreMotDePasseExport(choisi: (String) -> Unit, renonce: () -> Unit) {
         val premier = champMotDePasse(R.string.export_mdp_champ)
         val second = champMotDePasse(R.string.export_mdp_confirmer)
-        // Le fichier existe déjà, vide, dès qu'on a choisi où l'écrire : renoncer l'efface.
-        val renoncer = { runCatching { android.provider.DocumentsContract.deleteDocument(contentResolver, uri) }; Unit }
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.export_mdp_titre)
             .setMessage(R.string.export_mdp_message)
             .setView(boiteMotDePasse(premier, second))
-            .setNegativeButton(R.string.action_back) { _, _ -> renoncer() }
-            .setOnCancelListener { renoncer() }
+            .setNegativeButton(R.string.action_back) { _, _ -> renonce() }
+            .setOnCancelListener { renonce() }
             .setPositiveButton(R.string.action_export) { _, _ ->
                 val mot = premier.text.toString()
                 if (mot != second.text.toString()) {
                     Toast.makeText(this, R.string.export_mdp_different, Toast.LENGTH_LONG).show()
-                    writeBackup(uri)
+                    fenetreMotDePasseExport(choisi, renonce)
                 } else {
-                    ecrireSauvegarde(uri, mot)
+                    choisi(mot)
                 }
             }
             .show()
     }
+
+    /**
+     * Le mot de passe avant le choix du fichier (revue du 15/11). Après, renoncer
+     * devait effacer le fichier tout juste créé, et effaçait aussi une ancienne
+     * sauvegarde choisie pour être remplacée.
+     */
+    private fun demanderMotDePasseExport() {
+        fenetreMotDePasseExport(choisi = { mot ->
+            motEnAttente = mot
+            // Sans sélecteur de fichiers, un message plutôt qu'un plantage (examen du 14/11, constat 12).
+            runCatching { exportFile.launch("myhitbodedut-${Store.today()}.json") }
+                .onFailure {
+                    motEnAttente = null
+                    Toast.makeText(this, R.string.fichiers_absents, Toast.LENGTH_LONG).show()
+                }
+        }, renonce = {})
+    }
+
+    /** Le fichier est choisi mais le mot de passe a été perdu (écran recréé entre-temps) : on le redemande. */
+    private fun writeBackup(uri: Uri) {
+        // Renoncer n'efface que le fichier vide que le sélecteur vient de créer, jamais un fichier existant.
+        val renoncer = {
+            if (tailleDocument(uri) == 0L) runCatching { android.provider.DocumentsContract.deleteDocument(contentResolver, uri) }
+            Unit
+        }
+        fenetreMotDePasseExport(choisi = { mot -> ecrireSauvegarde(uri, mot) }, renonce = renoncer)
+    }
+
+    private fun tailleDocument(uri: Uri): Long? = runCatching {
+        contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { c ->
+            if (c.moveToFirst() && !c.isNull(0)) c.getLong(0) else null
+        }
+    }.getOrNull()
 
     /** Écrit la sauvegarde, chiffrée si [motDePasse] n'est pas vide ; la dérivation de la clé prend une seconde, hors du fil de l'interface. */
     private fun ecrireSauvegarde(uri: Uri, motDePasse: String) {
@@ -634,19 +719,18 @@ class SettingsActivity : AppCompatActivity() {
                 } ?: error("flux indisponible")
             }.isSuccess
             runOnUiThread {
-                if (!isDestroyed) {
-                    Toast.makeText(
-                        this,
-                        if (ok) R.string.export_ok else R.string.export_failed,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                // L'écran a pu être recréé pendant la dérivation : le message passe quand même.
+                Toast.makeText(
+                    applicationContext,
+                    if (ok) R.string.export_ok else R.string.export_failed,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }.start()
     }
 
     private fun readBackup(uri: Uri) {
-        // Au plus 2 Mo : une sauvegarde réelle pèse quelques dizaines de Ko,
+        // Au plus 3 Mo lus, 2 Mo de texte en clair : une sauvegarde réelle pèse quelques dizaines de Ko,
         // et un fichier énorme restait ensuite relu à chaque ouverture.
         val octets = runCatching {
             contentResolver.openInputStream(uri)?.use { flux ->
@@ -668,7 +752,12 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         val text = String(octets, Charsets.UTF_8)
-        if (Coffre.estChiffre(text)) demanderMotDePasse(text) else importer(text)
+        when {
+            Coffre.estChiffre(text) -> demanderMotDePasse(text)
+            // En clair, la borne reste celle du texte : 2 Mo (revue du 15/11).
+            octets.size > CLAIR_MAX_OCTETS -> Toast.makeText(this, R.string.import_failed, Toast.LENGTH_LONG).show()
+            else -> importer(text)
+        }
     }
 
     /** Une sauvegarde chiffrée (audit du 12/11) : le mot de passe, puis l'import ; un mot faux le redemande. */
@@ -683,12 +772,17 @@ class SettingsActivity : AppCompatActivity() {
                 Thread {
                     val clair = Coffre.dechiffrer(chiffre, mot)
                     runOnUiThread {
-                        if (isDestroyed) return@runOnUiThread
-                        if (clair == null) {
-                            Toast.makeText(this, R.string.import_mdp_faux, Toast.LENGTH_LONG).show()
-                            demanderMotDePasse(chiffre)
-                        } else {
-                            importer(clair)
+                        when {
+                            clair == null && isDestroyed ->
+                                Toast.makeText(applicationContext, R.string.import_mdp_faux, Toast.LENGTH_LONG).show()
+                            clair == null -> {
+                                Toast.makeText(this, R.string.import_mdp_faux, Toast.LENGTH_LONG).show()
+                                demanderMotDePasse(chiffre)
+                            }
+                            clair.toByteArray(Charsets.UTF_8).size > CLAIR_MAX_OCTETS ->
+                                Toast.makeText(applicationContext, R.string.import_failed, Toast.LENGTH_LONG).show()
+                            // Même si l'écran a été recréé entre-temps : l'import ne se perd plus en silence.
+                            else -> importer(clair)
                         }
                     }
                 }.start()
@@ -696,25 +790,34 @@ class SettingsActivity : AppCompatActivity() {
             .show()
     }
 
+    /** L'import ; il aboutit aussi quand l'écran a été recréé pendant la dérivation de la clé. */
     private fun importer(text: String) {
-        val imported = Store.importJson(this, text)
+        val app = applicationContext
+        val textes = if (isDestroyed) app else this
+        val imported = Store.importJson(app, text)
         if (imported == null) {
-            Toast.makeText(this, R.string.import_invalid, Toast.LENGTH_LONG).show()
+            Toast.makeText(app, R.string.import_invalid, Toast.LENGTH_LONG).show()
             return
         }
+        Celebrations.apresImport(this)
         // Le clair ou le sombre de la sauvegarde, tout de suite (audit du 04/10).
-        Apparence.appliquerMode(this)
-        StreakWidget.refresh(this)
+        Apparence.appliquerMode(app)
+        StreakWidget.refresh(app)
         Toast.makeText(
-            this,
-            resources.getQuantityString(R.plurals.import_ok, imported, imported),
+            app,
+            textes.resources.getQuantityString(R.plurals.import_ok, imported, imported),
             Toast.LENGTH_LONG
         ).show()
-        applyServiceState()
-        refresh()
+        applyServiceState(app)
+        if (!isDestroyed) refresh()
     }
 
     // --- Sélecteurs ---------------------------------------------------------
+
+    /** Début = fin : la plage serait vide, le mode n'agirait jamais (FBARRIERE-17). */
+    private fun fenetreVide() {
+        Toast.makeText(this, R.string.settings_window_same, Toast.LENGTH_LONG).show()
+    }
 
     private fun pickTime(currentMinutes: Int, onPicked: (Int) -> Unit) {
         TimePickerDialog(
@@ -722,7 +825,7 @@ class SettingsActivity : AppCompatActivity() {
             { _, hour, minute -> onPicked(hour * 60 + minute) },
             (currentMinutes / 60) % 24,
             currentMinutes % 60,
-            true
+            android.text.format.DateFormat.is24HourFormat(this)
         ).show()
     }
 
@@ -792,6 +895,21 @@ class SettingsActivity : AppCompatActivity() {
             if (rangee && e is Button && e.layoutParams.width == android.view.ViewGroup.LayoutParams.WRAP_CONTENT) {
                 e.maxWidth = (resources.displayMetrics.widthPixels * 0.45).toInt()
             }
+            // TalkBack (FACCUEIL-12) : un bouton de valeur ne disait que sa valeur (« 15 min ») ;
+            // il dit « intitulé : valeur », lue au moment où le focus passe, la valeur ayant pu changer.
+            // L'intitulé peut être posé dans une colonne (titre et aide : prénom, objectif quotidien) ;
+            // un autre bouton de la ligne n'est jamais pris pour intitulé.
+            if (v is android.widget.LinearLayout && v.orientation == android.widget.LinearLayout.HORIZONTAL &&
+                e is Button && e !is android.widget.CompoundButton && intituleDe(v) != null) {
+                androidx.core.view.ViewCompat.setAccessibilityDelegate(e, object : androidx.core.view.AccessibilityDelegateCompat() {
+                    override fun onInitializeAccessibilityNodeInfo(host: View, info: androidx.core.view.accessibility.AccessibilityNodeInfoCompat) {
+                        super.onInitializeAccessibilityNodeInfo(host, info)
+                        val valeur = (host as? Button)?.text
+                        val libelle = (host.parent as? ViewGroup)?.let { intituleDe(it) }
+                        if (!valeur.isNullOrBlank() && !libelle.isNullOrBlank() && libelle != valeur) info.text = getString(R.string.reglage_libelle_valeur, libelle, valeur)
+                    }
+                })
+            }
             bornerValeurs(e)
         }
     }
@@ -803,7 +921,13 @@ class SettingsActivity : AppCompatActivity() {
         /** La page publique des règles de confidentialité, sur GitHub Pages avec le site (web/build.mjs). */
         private const val LIEN_CONFIDENTIALITE = CelebrationActivity.LIEN_WEB + "confidentialite.html"
         /** Au-delà, ce n'est pas une sauvegarde de cette application. */
-        private const val IMPORT_MAX_OCTETS = 2 * 1024 * 1024
+        private const val IMPORT_MAX_OCTETS = 3 * 1024 * 1024
+        /**
+         * La borne du texte en clair. Le fichier lu peut aller jusqu'à 3 Mo : une
+         * sauvegarde chiffrée passe en base64, un tiers plus grosse, et celle de
+         * 2 Mo de données ne se réimportait plus (revue du 15/11).
+         */
+        private const val CLAIR_MAX_OCTETS = 2 * 1024 * 1024
         /** Grand texte (14/10) : l'échelle des textes de lecture. */
         private const val GRAND_TEXTE = 1.4f
     }

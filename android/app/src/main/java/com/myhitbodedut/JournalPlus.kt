@@ -37,10 +37,13 @@ object JournalPlus {
             o.optString("travail", "").take(GRATITUDE_MAX))
     }
 
+    /** L'entrée enregistrée d'un jour, bornée ; aussi pour l'import, qui écrit tout d'un coup. */
+    fun versJson(plus: Plus): JSONObject = JSONObject().put("avant", plus.avant).put("apres", plus.apres)
+        .put("gratitude", plus.gratitude.take(GRATITUDE_MAX)).put("travail", plus.travail.take(GRATITUDE_MAX))
+
     fun ecrire(context: Context, date: String, plus: Plus) {
         val t = tout(context)
-        if (plus.vide) t.remove(date) else t.put(date, JSONObject().put("avant", plus.avant).put("apres", plus.apres)
-            .put("gratitude", plus.gratitude.take(GRATITUDE_MAX)).put("travail", plus.travail.take(GRATITUDE_MAX)))
+        if (plus.vide) t.remove(date) else t.put(date, versJson(plus))
         Store.setJournalPlusBrut(context, t.toString())
     }
 
@@ -48,11 +51,14 @@ object JournalPlus {
      * « 🙁 → 🙂 · Gratitude » pour la ligne du journal ; vide s'il n'y a rien. L'humeur est isolée
      * de gauche à droite (U+2066…U+2069) : en hébreu, la flèche pointait d'après vers avant (02/11).
      */
-    fun resume(plus: Plus, gratitude: String, travail: String = "", sujets: String = ""): String = listOfNotNull(
+    fun resume(
+        plus: Plus, gratitude: String, travail: String = "", sujets: String = "",
+        ligne: (String, String) -> String = { libelle, texte -> "$libelle : $texte" },
+    ): String = listOfNotNull(
         sujets.takeIf { it.isNotBlank() },
         if (plus.avant > 0 || plus.apres > 0) "\u2066${HUMEURS.getOrNull(plus.avant - 1) ?: "·"} → ${HUMEURS.getOrNull(plus.apres - 1) ?: "·"}\u2069" else null,
-        plus.gratitude.takeIf { it.isNotBlank() }?.let { "$gratitude : $it" },
-        plus.travail.takeIf { it.isNotBlank() }?.let { "$travail : $it" },
+        plus.gratitude.takeIf { it.isNotBlank() }?.let { ligne(gratitude, it) },
+        plus.travail.takeIf { it.isNotBlank() }?.let { ligne(travail, it) },
     ).joinToString("\n")
 
     /** Les minutes de chaque jour du mois, du 1er au dernier (0 sans hitbodedout). */

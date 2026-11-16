@@ -616,9 +616,11 @@ sans changement. **Confirmé fonctionnel par le propriétaire le 23/09.**
 
 ## Ce qui reste vrai quoi qu'on ajoute
 
-L'application ne déclare **aucune permission Internet**. Rien ne peut en
-sortir, et l'écran d'accueil le promet — un test tient cette phrase au
-manifeste. Toute proposition qui demanderait un serveur, un compte ou une
+Le manifeste commun et l'édition légère ne déclarent **aucune permission
+Internet** (ConfidentialiteTest). L'édition complète déclare INTERNET (depuis le
+28/10, maintenu le 29/10) pour les seuls services en ligne du vol, route adsbdb
+et suivi OpenSky, éteints par défaut ; hors de ces deux services rien ne peut en
+sortir, et l'écran d'accueil le promet. Toute proposition qui demanderait un serveur, un compte ou une
 synchronisation romprait cela, et devrait être décidée comme telle.
 
 ## Mise à jour (23/09, suite)
@@ -1058,7 +1060,7 @@ Non vérifié : Eretz Hemdah (avis de Rav Ovadia sur le sud), le site ne répond
 
 **Versions**
 - Web : le journal, les Tefilot de Rabbi Natan et les conseils n'y sont pas
-  encore (« à venir »).
+  encore (« à venir »). *Fait depuis : les trois sont sur le site (audit du 12/11, FWEBCODE-22).*
 - Nokia : minuteur, journal, textes et musique seulement ; ni zmanim, ni
   siddour, ni halakha, ni livres.
 - Android : la barrière du matin jamais éprouvée sur un vrai téléphone ;
@@ -1112,8 +1114,8 @@ Réponse du propriétaire aux sept questions du 05/10 : « oui tout ».
 
 **Reste** :
 
-- web : le journal (donc 5 et l'humeur de 6), la carte de la hitbodedout
-  guidée (donc 2), les Tefilot ;
+- ~~web : le journal (donc 5 et l'humeur de 6), la carte de la hitbodedout
+  guidée (donc 2), les Tefilot ;~~ fait depuis (FWEBCODE-22) ;
 - iPhone : l'ambiance se tait écran verrouillé (Web Audio) ;
 - Android : « Je suis avec Hachem » jamais éprouvé sur un vrai téléphone ;
 - les textes du Rav Arush : toujours aucun fourni.
@@ -1137,6 +1139,10 @@ Réponse du propriétaire aux sept questions du 05/10 : « oui tout ».
   supprimé (TikkunActivity, PsalmActivity, LiturgyActivity et leurs écrans ;
   web : les anciennes adresses mènent à la lecture entière), bouton final
   « J'ai dit le Tikoun en entier ».
+  La page héritée `tikkun_haklali.html` (racine) est retirée le 15/11
+  (TPLAYDOCS-20) ; elle reste le seul témoin de l'ouverture, de la clôture,
+  de la kavana et de la prière de Rabbi Natan (`res/raw/tikkun_haklali.json`,
+  « provenance ») : la relire avec `git show 238db1a:tikkun_haklali.html`.
 
 **Fait sur `ccr-314d6592-p0db3w`, PR #22 ouverte, pas encore fusionnée** :
 
@@ -1156,15 +1162,17 @@ dans `plantages.txt` de la branche `claude/captures-android`).
 
 **Reste à faire** :
 
-- fusionner la PR #22 après CI verte, puis vérifier le site déployé
-  (confidentialite.html avec la nouvelle adresse) ;
+- ~~fusionner la PR #22, puis vérifier le site déployé (confidentialite.html avec la nouvelle adresse)~~ : fait (site sur Cloudflare Pages) ;
 - mettre aussi la nouvelle adresse sur la fiche Play Console (à la main) ;
 - appliquer le remplacement sur ccr-49d373f9 si cette session ne l'a pas fait ;
 - lire `plantages.txt` et revoir les captures (dont « Lire la suite » des
   hilloulot sur Android, pas recapturé après la correction 1c72ebc) ;
 - relancer le test des boutons du web ;
 - ajouter le secret `NOKIA_DEPLOY_TOKEN` dans myhitbo/MyHitbodedut (utilisateur) ;
-- toujours valables : la liste « Reste » du 19/10 ci-dessus.
+- toujours valables, parmi la liste « Reste » du 19/10 : seulement les points
+  encore ouverts (ambiance muette écran verrouillé sur iPhone, barrière jamais
+  éprouvée sur un téléphone réel, textes du Rav Arush) ; le reste est fait
+  (journal daté : se référer aux sections plus récentes, FPRODUIT-09).
 
 ## Sujets ouverts de la session ccr-a461212d (04/11)
 
@@ -1173,16 +1181,18 @@ Fait et poussé sur `main` (b76d154) : paragraphes coupés avec espace réduit,
 תהילים, signets de versets de Tehilim), retour du bandeau masqué par double
 toucher. CI verte (Android, web, Nokia).
 
-**Reste à faire, demandé par l'utilisateur, non commencé** :
+**Reste à faire, demandé par l'utilisateur** (le point 3 est livré, voir plus bas) :
 
 1. **Musique de Noam Shpayer** : en attente des fichiers que l'utilisateur
    doit fournir (les 10 morceaux `shpayer_*` déjà livrés le 03/11 sont
    dans PUBLICATION_PLAY_STORE.md).
 2. **Check complet de l'app** : six audits indépendants à effort maximal,
    puis corriger tous les défauts confirmés.
-3. **Mini-lecteur de musique pendant la hitbodedout** : lecteur qui se
-   replie en rond tournant (pochette, ou hassid à la guitare).
+3. **Mini-lecteur de musique pendant la hitbodedout** : livré (demande du
+   19/10, `MiniLecteur`, dans l'écran de séance ; pause et reprise corrigées
+   le 13/11, FSEANCE-02). Ce qui manque : des tests sur appareil, et il est
+   absent hors de l'écran de séance.
 4. **Lot du 28/10** : boutons « question », police (signes absents), mots
-   collés dans les biographies, ordre des Sheva Berakhot, trois widgets.
+   collés dans les biographies, trois widgets (l'ordre des Sheva Berakhot est fait).
    Une partie a pu être traitée dans le lot « 28/10 bis » (boussole,
    position exacte, Roch 'Hodech) : vérifier chaque point avant de coder.

@@ -91,7 +91,7 @@ class RemindersActivity : AppCompatActivity() {
         TimePickerDialog(
             this,
             { _, h, m -> enregistre(heures + (h * 60 + m)) },
-            (depart / 60) % 24, depart % 60, true,
+            (depart / 60) % 24, depart % 60, android.text.format.DateFormat.is24HourFormat(this),
         ).show()
     }
 
@@ -117,14 +117,14 @@ class RemindersActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
             val minutes = heures[position]
-            holder.heure.text = Store.formatMinutes(minutes)
+            holder.heure.text = Store.formatHeure(this@RemindersActivity, minutes)
             holder.itemView.setOnClickListener {
                 TimePickerDialog(
                     this@RemindersActivity,
                     { _, h, m ->
                         enregistre(heures.filterIndexed { i, _ -> i != position } + (h * 60 + m))
                     },
-                    (minutes / 60) % 24, minutes % 60, true,
+                    (minutes / 60) % 24, minutes % 60, android.text.format.DateFormat.is24HourFormat(this@RemindersActivity),
                 ).show()
             }
             holder.retirer.setOnClickListener {

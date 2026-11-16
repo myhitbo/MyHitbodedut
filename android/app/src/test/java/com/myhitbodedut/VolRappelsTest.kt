@@ -97,6 +97,15 @@ class VolRappelsTest {
     }
 
     @Test
+    fun `deux rappels dus d un coup n ont pas la meme etiquette de notification`() {
+        val t = Instant.parse("2026-11-10T08:00:00Z")
+        val derekh = VolRappels.Rappel(VolRappels.Type.TEFILAT_HADEREKH, t)
+        val minha = VolRappels.Rappel(VolRappels.Type.PRIERE, t, "minha")
+        val arvit = VolRappels.Rappel(VolRappels.Type.PRIERE, t, "arvit")
+        assertEquals(3, setOf(derekh, minha, arvit).map(VolAlerte::etiquette).toSet().size)
+    }
+
+    @Test
     fun `un vol de moins de cinq minutes n a pas de rappel, un rappel n est montre qu une fois`() {
         val court = Vol.Plan("T", a("TLV"), a("ETM"), Instant.parse("2026-11-10T08:00:00Z"), Instant.parse("2026-11-10T08:04:00Z"))
         assertTrue(VolRappels.rappels(Vol.calculer(court), false).isEmpty())

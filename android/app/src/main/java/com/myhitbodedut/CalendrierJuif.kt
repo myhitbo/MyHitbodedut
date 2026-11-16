@@ -65,6 +65,8 @@ object CalendrierJuif {
 
         /** Avinou malkénou (SiddurJour.conditionsPour) : déduite des conditions du jour, hors des vecteurs KosherJava. */
         const val AVINOU_MALKENOU = "avinou_malkenou"
+        /** Avinou malkénou à Min'ha : le même jour, si Ta'hanoun s'y dit ou à Roch Hachana et Kippour, jamais le vendredi (TSIDDUR-09). */
+        const val AVINOU_MALKENOU_MINHA = "avinou_malkenou_minha"
         /** Jour de lecture de la Torah (15/10) : déduite, hors des vecteurs KosherJava comme Avinou malkénou. */
         const val KRIAT_HATORAH = "kriat_hatorah"
         /**
@@ -120,7 +122,7 @@ object CalendrierJuif {
 
         /** Ce qui ne se dit qu'avec un minyan (Kaddich, Barekhou, Kedoucha…) : jamais du jour, replié. */
         const val MINYAN = "minyan"
-        val DERIVEES = listOf(AVINOU_MALKENOU, KRIAT_HATORAH) + JOURS_SEMAINE +
+        val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN)

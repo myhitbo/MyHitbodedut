@@ -152,7 +152,10 @@ class GateService : Service() {
     // --- Écran de garde -----------------------------------------------------
 
     private fun showOverlay(mode: BlockerMode) {
-        if (overlay != null && overlayMode == mode) return
+        if (overlay != null && overlayMode == mode) {
+            (overlay as? BlockerView)?.actualiser()
+            return
+        }
         hideOverlay()
         if (!Permissions.canDrawOverlays(this)) return
 
@@ -173,6 +176,9 @@ class GateService : Service() {
             },
             onAlreadyDone = {
                 Store.addSession(this, 0)
+                // La vignette de série et le rappel suivent aussitôt la journée faite (FBARRIERE-11, FDONNEES-15).
+                runCatching { StreakWidget.refresh(this) }
+                runCatching { Reminder.reschedule(this) }
                 hideOverlay()
                 goHome()
             },
@@ -195,8 +201,7 @@ class GateService : Service() {
             // Sans FLAG_KEEP_SCREEN_ON (audit du 12/11, FBARRIERE-02) : posé pour aller faire la
             // hitbodedout, le téléphone doit pouvoir se mettre en veille, et non rester allumé et
             // déverrouillé jusqu'à la fin de la fenêtre.
-            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.OPAQUE
         )
         params.gravity = Gravity.TOP or Gravity.START

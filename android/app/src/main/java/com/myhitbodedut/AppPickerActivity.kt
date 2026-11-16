@@ -90,6 +90,9 @@ class AppPickerActivity : AppCompatActivity() {
             runOnUiThread {
                 entries.clear()
                 entries.addAll(found)
+                // Désinstallées, ou venues d'un import : ni comptées ni impossibles à décocher
+                // (FBARRIERE-18). Une lecture vide (échec) ne vide pas la sélection.
+                if (found.isNotEmpty()) selected.retainAll(found.map { it.packageName }.toSet())
                 loading.visibility = View.GONE
                 adapter.notifyItemRangeInserted(0, entries.size)
                 renderCount()

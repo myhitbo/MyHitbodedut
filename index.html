@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Audit de sécurité du 12/11/2026 : les scripts viennent de deux CDN ; aucun ne peut envoyer
-       ailleurs ce que la page garde (connect-src), ni charger un cadre ou un module. -->
-  <meta http-equiv="Content-Security-Policy" content="connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'">
+  <!-- Audit de sécurité du 12/11/2026, resserré le 15/11 : chaque ressource vient d'une liste fermée.
+       Un script compromis ne peut rien envoyer ailleurs de ce que la page garde : ni requête
+       (connect-src), ni image, ni feuille de style, ni police, ni autre script portant les données
+       dans son adresse. lucide est en plus vérifié par son empreinte (integrity). 'unsafe-eval' :
+       le compilateur de Tailwind dans le navigateur peut en avoir besoin ; il n'ouvre aucune sortie. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net/npm/lucide@0.469.0/; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data:; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>Suivi d’habitudes intelligent</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js" integrity="sha384-hJnF5AwidE18GSWTAGHv3ByzzvfNZ1Tcx5y1UUV3WkauuMCEzBJBMSwSt/PUPXnM" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <style>
     :root { --ink:#172b27; --muted:#6b7d76; --paper:#f4f7f2; --line:#dce7df; --green:#16775a; --mint:#dff5e8; --coral:#e9674d; }

@@ -27,7 +27,7 @@ object RechercheGlobale {
     fun nu(t: String): String = java.text.Normalizer.normalize(t, java.text.Normalizer.Form.NFD).replace(ACCENTS, "").replace(BALISES, " ").replace(TIRETS, " ").replace(VOYELLES, "").replace(BLANCS, " ").trim().lowercase()
 
     // Compilées une fois (FLECTURE-07) : nu() passe sur des dizaines de milliers de paragraphes par requête.
-    private val ACCENTS = Regex("[\u0300-\u036F’‘]")
+    private val ACCENTS = Regex("[\u0300-\u036F’‘\u200D]")
     private val BALISES = Regex("<[^>]+>")
     private val TIRETS = Regex("[־׀]")
     private val VOYELLES = Regex("[֑-ׇ\"'״׳]")

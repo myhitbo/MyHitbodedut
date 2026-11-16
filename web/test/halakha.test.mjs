@@ -25,3 +25,16 @@ test('jointes, séparées, Hanouka, part du jour', () => {
   assert.deepEqual(part([1, 2, 3], 3, 7), [1]);
   assert.ok(recherche(livre, 'ציצית').length > 10);
 });
+
+test('Vayéchev année 2 sans la note vide ; Hochaana Rabba : Vézot haBéra\'kha', () => {
+  for (let j = 19; j <= 24; j++) {
+    const h = pour(livre, `2027-12-${j}`, false);
+    assert.ok(h.length && h.every((x) => !x.texte.startsWith('בפרשה זו לא כתבתי')), `2027-12-${j}`);
+  }
+  assert.equal(pour(livre, '2026-10-02', false)[0].section, 'וזאת הברכה');
+  // Du 15 au 23 Tichri : ses 18 halakhot, chacune une fois, dans l'ordre.
+  const soukkot = [26, 27, 28, 29, 30].map((j) => `2026-09-${j}`).concat([1, 2, 3, 4].map((j) => `2026-10-0${j}`))
+    .flatMap((iso) => pour(livre, iso, false));
+  assert.deepEqual(soukkot.map((x) => x.numero), Array.from({ length: 18 }, (_, i) => i + 1));
+  assert.ok(soukkot.every((x) => x.section === 'וזאת הברכה' && x.annee === 1));
+});

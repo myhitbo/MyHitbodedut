@@ -19,8 +19,8 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
   // Les jours de bascule, les deux formules (bascule_pluie) ; sinon l'une ou l'autre.
   if (c.has(C.MACHIV_HAROUAH)) l.push('ajout_machiv_harouah');
   if (c.has(C.MORID_HATAL) && (!c.has(C.MACHIV_HAROUAH) || c.has('bascule_pluie'))) l.push('ajout_morid_hatal');
-  // La 9ᵉ bénédiction (JourAffiche.ajouts) : texte des Edot ; rien le Chabbat.
-  if (!c.has(C.CHABBAT)) {
+  // La 9ᵉ bénédiction (JourAffiche.ajouts) : texte des Edot ; rien le Chabbat ni un Yom Tov (Kippour compris).
+  if (!c.has(C.CHABBAT) && !c.has('yom_tov')) {
     if (nusah === 'edot') l.push(c.has(C.TAL_OUMATAR) ? 'ajout_barekh_alenou' : 'ajout_barkhenou');
     else l.push(c.has(C.TAL_OUMATAR) ? 'ajout_tal_oumatar' : 'ajout_berakha');
   }
@@ -35,8 +35,8 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
   if (c.has(C.AL_HANISSIM)) l.push('ajout_al_hanissim');
   const hallel = libelleHallel(nusah, c);
   if (hallel) l.push(hallel);
-  // Le Chabbat, il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
-  if (!c.has(C.CHABBAT)) l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun' : 'ajout_sans_tahanoun');
+  // Le Chabbat et un Yom Tov (Kippour compris), il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
+  if (!c.has(C.CHABBAT) && !c.has('yom_tov')) l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun' : 'ajout_sans_tahanoun');
   return l;
 }
 
@@ -79,6 +79,9 @@ export function momentDuSiddour(lieu, maintenant) {
   const minutes = Number(parties.hour) * 60 + Number(parties.minute);
   const instants = (d) => Object.fromEntries(Z.jour(lieu, d).map((x) => [x.cle, x.instant]));
   const z = instants(iso);
+  // Aube absente autour du solstice (Londres, Berlin, Moscou…) : michéyakir, puis le lever du soleil, en tiennent lieu.
+  if (!z.alot) z.alot = z.misheyakir || z.netz;
+  if (!z.misheyakir) z.misheyakir = z.netz;
   const [a, m, j] = iso.split('-').map(Number);
   const hier = instants(new Date(Date.UTC(a, m - 1, j - 1, 12)).toISOString().slice(0, 10));
   const cles = ['alot', 'misheyakir', 'chatsot', 'minha_gedola', 'chkia', 'tset', 'chatsot_layla'];
