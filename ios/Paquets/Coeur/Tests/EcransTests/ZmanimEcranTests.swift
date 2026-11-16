@@ -374,7 +374,9 @@ struct ZmanimEcranTests {
         var reglages = ZmanimEssais.reglages(ville)
         let (modele, magasin) = try await fabriquer(reglages, "2026-10-12", fuseau: "Asia/Jerusalem")
         let yalkut = try await ZmanimEssais.contenus.yalkutYosef()
-        let attendu = YalkutYosef.pour(yalkut, date: modele.jour, israel: true).first?.texte
+        let texte = YalkutYosef.pour(yalkut, date: modele.jour, israel: true).first?.texte
+        // Dans la police de lecture (serif par défaut), ses signes absents masqués (PoliceHebraique.appliquer).
+        let attendu = texte.map { PoliceHebraique.masque($0, police: .serif) }
         let halakha = try #require(modele.halakha)
         #expect(halakha.debut == attendu)
         #expect(halakha.livre == Libelle("halakha_livre"))
@@ -383,12 +385,18 @@ struct ZmanimEcranTests {
         // Le Ben Ish 'Haï seul.
         try await magasin.modifierReglages { $0.setSourceHalakha(.benIshHai) }
         let bih = try await ZmanimEssais.contenus.benIshHai()
-        let attenduBih = Halakha.pour(bih, date: modele.jour, enIsrael: true).first?.texte
+        let texteBih = Halakha.pour(bih, date: modele.jour, enIsrael: true).first?.texte
+        let attenduBih = texteBih.map { PoliceHebraique.masque($0, police: .serif) }
         let autre = modele.halakha
         #expect(autre?.debut == attenduBih)
         if attenduBih != nil {
             #expect(autre?.livre == Libelle("halakha_ben_ish_hai"))
         }
+        // Une autre police de lecture : ses propres signes absents.
+        try await magasin.modifierReglages { $0.setLecturePolice("david") }
+        let david = texteBih.map { PoliceHebraique.masque($0, police: .david) }
+        let enDavid = modele.halakha?.debut
+        #expect(enDavid == david)
         // Masquée dans les réglages : la carte ne paraît pas.
         reglages.setHalakhaAffichee(false)
         let (masquee, _) = try await fabriquer(reglages, "2026-10-12", fuseau: "Asia/Jerusalem")
@@ -414,7 +422,7 @@ struct ZmanimEcranTests {
         let (jour, liste) = try #require(trouve)
         modele.jour = jour
         let hilloula = try #require(modele.hilloula)
-        let cinq = liste.prefix(5).map { $0.he }
+        let cinq = liste.prefix(5).map { PoliceHebraique.masque($0.he, police: .serif) }
         #expect(hilloula.noms == cinq)
         #expect(hilloula.autres == Libelle.pluriel("hilloula_autres", quantite: liste.count - 5, .entier(liste.count - 5)))
         #expect(hilloula.route == .hilloulot(jour))
@@ -497,17 +505,33 @@ struct ZmanimEcranTests {
         await modele.apparaitre()
         #expect(modele.jour.iso == "2026-10-13")
         #expect(modele.estAujourdhui)
-        // Un autre jour choisi exprès reste affiché.
+        // Un autre jour choisi exprès reste affiché : le 15, quand aujourd'hui est devenu le 14.
+        modele.jourSuivant()
         modele.jourSuivant()
         modele.disparaitre()
         horloge.avancer(heures: 24)
         await modele.apparaitre()
-        #expect(modele.jour.iso == "2026-10-14")
+        #expect(modele.jour.iso == "2026-10-15")
+        #expect(!modele.estAujourdhui)
         // Sans contenus ni traducteur : ni halakha, ni hilloula, ni choix du lieu.
         #expect(modele.halakha == nil)
         #expect(modele.hilloula == nil)
         let sansChoix = modele.choixLieu == nil
         #expect(sansChoix)
         #expect(modele.langue == "fr")
+    }
+
+    /// L'app crée l'onglet à son lancement : ouvert pour la première fois le lendemain, il montre aujourd'hui
+    /// (Android : `LocalDate.now()` à chaque onResume).
+    @Test func lOngletOuvertLeLendemainDeSaCreationMontreAujourdhui() async throws {
+        let jour = try #require(JourCivil(iso: "2026-10-12"))
+        let fuseau = try #require(Fuseau("Asia/Jerusalem"))
+        let horloge = ZmanimHorlogeMobile(DateHeure(jour, heure: 22), fuseau: fuseau)
+        let modele = ZmanimModele(magasin: .enMemoire(), horloge: horloge)
+        #expect(modele.jour.iso == "2026-10-12")
+        horloge.avancer(heures: 3)
+        await modele.apparaitre()
+        #expect(modele.jour.iso == "2026-10-13")
+        #expect(modele.estAujourdhui)
     }
 }

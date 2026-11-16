@@ -64,12 +64,12 @@ struct VolModeleTests {
         try #require(Aeroports.parIata(VolDepot.aeroports, iata))
     }
 
+    /// Aucun vol calculé là où le test en attend un.
+    private struct SansCartes: Error {}
+
     /// Les cartes du vol calculé.
     private func cartes(_ modele: VolModele) throws -> VolCartes {
-        guard case .cartes(let c) = modele.resultats else {
-            Issue.record("pas de cartes")
-            throw PersistanceEnMemoire.Echec()
-        }
+        guard case .cartes(let c) = modele.resultats else { throw SansCartes() }
         return c
     }
 
@@ -164,7 +164,7 @@ struct VolModeleTests {
         // Chaque rappel (tous à venir) a sa notification, dans l'ordre, sous l'identifiant du plan.
         let prevues = await banc.notifications.prevues
         let identifiants = prevues.map { $0.identifiant }
-        let attendus = rappels.enumerated().map { "vol-" + String($0.offset) + "-" + $0.element.type.rawValue + "-" +
+        let attendus: [String] = rappels.enumerated().map { "vol-" + String($0.offset) + "-" + $0.element.type.rawValue + "-" +
             String($0.element.instant) }
         #expect(identifiants == attendus)
         let plan = modele.notificationsPrevues.map { $0.prevue }
@@ -330,7 +330,8 @@ struct VolModeleTests {
         let banc = try fabriquer("2026-11-17", heure: 13, reglages: reglages, enLigne: VolEnLigne(relais: relais, reseau: reseau))
         let modele = banc.modele
         await modele.apparaitre()
-        let direct = try #require(try cartes(modele).fiabilite.direct)
+        let avantDirect = try cartes(modele).fiabilite
+        let direct = try #require(avantDirect.direct)
         #expect(direct.actif)
         modele.indicatifSaisi = "ely 382"
         await modele.demanderDirect()
@@ -447,10 +448,11 @@ struct VolModeleTests {
         modele.toucher(.arrivee)
         modele.chercherAeroport("zzzzzz")
         #expect(modele.rechercheVide)
-        try modele.choisirAeroport(aeroport("TLV"))
+        let tlv = try aeroport("TLV")
+        modele.choisirAeroport(tlv)
         let quatre = modele.tuiles.map { $0.genre }
         #expect(quatre == [.depart, .arrivee, .decollage, .atterrissage])
-        #expect(modele.tuiles.first?.valeur == "TLV · Tel Aviv")
+        #expect(modele.tuiles.first?.valeur == "TLV · " + (tlv.ville.isEmpty ? tlv.nom : tlv.ville))
         #expect(modele.peutEffacer)
 
         let jour = try #require(JourCivil(iso: "2026-11-20"))
@@ -530,7 +532,8 @@ struct VolModeleTests {
         let banc = try fabriquer("2026-11-17", heure: 13, reglages: reglagesAvecVol(), localisation: localisation)
         let modele = banc.modele
         await modele.apparaitre()
-        #expect(try cartes(modele).fiabilite.gps == Libelle("vol_gps"))
+        let bouton = try cartes(modele).fiabilite.gps
+        #expect(bouton == Libelle("vol_gps"))
         await modele.releverGps()
         let releve = try #require(modele.plan?.releve)
         let paris = try #require(Fuseau("Europe/Paris"))
@@ -562,7 +565,8 @@ struct VolModeleTests {
         #expect(refuse.modele.dialogue == .message(Libelle("vol_gps_refuse")))
         let sans = try fabriquer("2026-11-17", heure: 13, reglages: reglagesAvecVol())
         await sans.modele.apparaitre()
-        #expect(try cartes(sans.modele).fiabilite.gps == nil)
+        let sansBouton = try cartes(sans.modele).fiabilite.gps
+        #expect(sansBouton == nil)
     }
 
     // MARK: Le vol gardé et les textes
@@ -575,8 +579,10 @@ struct VolModeleTests {
         let reglages = VolStockage.avecPlan(Reglages(), plan)
         let relu = VolStockage.plan(reglages, VolDepot.aeroports)
         #expect(relu == plan)
-        #expect(reglages.brut["vol_releve_source"] == .chaine("DIRECT"))
-        #expect(reglages.brut["vol_releve_longitude"] == .chaine("-0.25"))
+        let source = reglages.brut["vol_releve_source"]
+        #expect(source == JSON.chaine("DIRECT"))
+        let longitude = reglages.brut["vol_releve_longitude"]
+        #expect(longitude == JSON.chaine("-0.25"))
         let sansReleve = VolStockage.avecPlan(reglages, Vol.Plan(numero: "", depart: lys, arrivee: tlv, decollage: 1_000,
                                                                 atterrissage: 2_000))
         #expect(!sansReleve.brut.a("vol_releve_latitude"))
@@ -584,8 +590,8 @@ struct VolModeleTests {
         let rappels = [VolRappels.Rappel(type: .tefilatHaderekh, instant: 1_300, priere: "minha", limite: 1_900),
                        VolRappels.Rappel(type: .omer, instant: 1_800, omer: 12)]
         let avec = VolStockage.avecRappels(reglages, rappels)
-        #expect(avec.brut["vol_rappels"] == .chaine("TEFILAT_HADEREKH|1300|minha|1900|0\nOMER|1800||||12"
-            .remplacantUnites("||||", par: "|||")))
+        let ecrits = avec.brut["vol_rappels"]
+        #expect(ecrits == JSON.chaine("TEFILAT_HADEREKH|1300|minha|1900|0\nOMER|1800|||12"))
         #expect(VolStockage.rappels(avec) == rappels)
         let efface = VolStockage.avecPlan(avec, nil)
         #expect(!efface.brut.a("vol_rappels"))

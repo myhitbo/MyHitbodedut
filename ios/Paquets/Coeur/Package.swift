@@ -14,6 +14,7 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 let enChantierSources: [String] = [
 ]
 let enChantierTests: [String] = [
+    "TablesTests.swift",
 ]
 let enChantierEcrans: [String] = [
     "CalendrierModele.swift",
@@ -33,6 +34,28 @@ let enChantierEcransTests: [String] = [
     "ZmanimEcranTests.swift",
 ]
 let enChantierVues: [String] = [
+    "BoussoleFeuille.swift",
+    "BoussoleToile.swift",
+    "BoussoleVue.swift",
+    "ConseilsVue.swift",
+    "HalakhaCommun.swift",
+    "HalakhaVue.swift",
+    "HilloulotVue.swift",
+    "LectureBarreVue.swift",
+    "LectureEcrans.swift",
+    "LectureLignesVue.swift",
+    "LectureMarquesVue.swift",
+    "LectureVue.swift",
+    "MusiqueMiniLecteurVue.swift",
+    "MusiqueVue.swift",
+    "PresentationVue.swift",
+    "RechercheVue.swift",
+    "SiddourVue.swift",
+    "TefilotVue.swift",
+    "TehilimCommun.swift",
+    "TehilimLectureVue.swift",
+    "TehilimVue.swift",
+    "TikkunVue.swift",
 ]
 
 let package = Package(

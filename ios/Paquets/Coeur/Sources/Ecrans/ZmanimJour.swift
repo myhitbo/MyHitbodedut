@@ -117,6 +117,12 @@ public struct ZmanimContexte: Sendable {
     public var enIsrael: Bool {
         reglages.inIsrael(fuseauTelephone: fuseauTelephone.identifiant)
     }
+
+    /// La police hébraïque des réglages de lecture (PoliceHebraique.appliquer) : les noms de la hilloula et le
+    /// début de la halakha s'y écrivent, leurs signes absents de la police masqués (le Masque d'Android).
+    public var police: PoliceHebraique.Police {
+        PoliceHebraique.Police(rawValue: reglages.lecturePolice) ?? .serif
+    }
 }
 
 // MARK: Ce qui s'affiche
@@ -219,7 +225,8 @@ public struct ZmanimLevana: Sendable, Equatable {
 public struct ZmanimHilloula: Sendable, Equatable {
     /// « Hilloula du jour » : 12 pt, gras, atténué.
     public let titre: Libelle
-    /// Les noms hébreux, un par ligne : 14 pt, de droite à gauche, police hébraïque, interligne 1,25.
+    /// Les noms hébreux, un par ligne : 14 pt, de droite à gauche, police hébraïque, interligne 1,25 ; les signes
+    /// absents de la police déjà masqués (`PoliceHebraique.masque`).
     public let noms: [String]
     /// « ועוד אחד », suivi dans la vue de « › » : 12 pt, atténué, de droite à gauche, touchable (48 pt), ouvre
     /// `route` ; nil s'il n'y en a pas plus de cinq.
@@ -241,7 +248,8 @@ public struct ZmanimHalakha: Sendable, Equatable {
     /// « Halakha yomit », suivi dans la vue de « · » et du livre : 12 pt, gras, atténué.
     public let titre: Libelle
     public let livre: Libelle
-    /// Le début : 16 pt, de droite à gauche, police hébraïque, quatre lignes au plus, « … » au bout.
+    /// Le début : 16 pt, de droite à gauche, police hébraïque, quatre lignes au plus, « … » au bout ; les signes
+    /// absents de la police déjà masqués (`PoliceHebraique.masque`).
     public let debut: String
     /// « Toute la halakha du jour › » : un lien, qui ouvre `route`.
     public let tout: Libelle
@@ -258,7 +266,7 @@ public enum ZmanimVueJour {
     public static let separateurAjouts = " · "
 
     /// Le pied (VueJour.pied) : la méthode est écrite sous chaque horaire ; la source des villes, comme CC-BY le
-    /// demande. 12 pt, atténués, 6 pt entre les deux.
+    /// demande. 12 pt, atténués, 4 pt entre les deux (`haut = 6`, que l'échelle des espaces ramène à 4).
     public static let pied: [Libelle] = [Libelle("zmanim_a_valider"), Libelle("zmanim_source_villes")]
 
     /// La carte d'un jour (VueJour.carteJour), sans Levana, hilloula ni halakha : l'onglet Zmanim les pose sous
@@ -383,8 +391,9 @@ public enum ZmanimVueJour {
         let liste = Hilloulot.pour(table, date: date, enIsrael: c.enIsrael, ashkenaz: c.reglages.siddurNusah == .ashkenaz)
         if liste.isEmpty { return nil }
         let reste = liste.count - 5
+        let police = c.police
         return ZmanimHilloula(titre: Libelle("hilloula_titre"),
-                              noms: liste.prefix(5).map { $0.he },
+                              noms: liste.prefix(5).map { PoliceHebraique.masque($0.he, police: police) },
                               autres: reste > 0 ? Libelle.pluriel("hilloula_autres", quantite: reste, .entier(reste)) : nil,
                               tout: Libelle("hilloulot_tout"),
                               route: .hilloulot(date))
@@ -410,7 +419,8 @@ public enum ZmanimVueJour {
         guard c.reglages.halakhaAffichee,
               let apercu = apercuHalakha(date, enIsrael: c.enIsrael, source: c.reglages.sourceHalakha,
                                          sources: c.sources) else { return nil }
-        return ZmanimHalakha(titre: Libelle("halakha_yomit_titre"), livre: apercu.livre, debut: apercu.texte,
+        return ZmanimHalakha(titre: Libelle("halakha_yomit_titre"), livre: apercu.livre,
+                             debut: PoliceHebraique.masque(apercu.texte, police: c.police),
                              tout: Libelle("halakha_tout"), route: .halakha(date))
     }
 

@@ -213,6 +213,9 @@ public struct VolCarteRappels: Sendable, Hashable {
     public let aucun: Bool
     /// Vide si les rappels sont éteints.
     public let lignes: [VolRappelLigne]
+    /// La note en pied (rappels actifs seulement), 12 pt, pâle. Celle d'Android nomme Android : une clé propre à
+    /// iOS est demandée (voir le rapport de la tâche 26) ; d'ici là, la phrase d'Android.
+    public let note: Libelle?
 }
 
 /// Le suivi en direct, sous « Préciser la position » ; seulement avec un relais.
@@ -661,14 +664,16 @@ public final class VolModele {
 
     private func carteRappels(_ c: Vol.Calcul) -> VolCarteRappels {
         let actifs = magasin.reglages.volRappelsActifs
-        guard actifs else { return VolCarteRappels(actifs: false, sansPermission: false, aucun: false, lignes: []) }
+        guard actifs else {
+            return VolCarteRappels(actifs: false, sansPermission: false, aucun: false, lignes: [], note: nil)
+        }
         let aVenir = VolRappels.rappels(c, enIsrael: enIsrael).filter { $0.instant > maintenant }
         let lignes = aVenir.enumerated().map { rang, r in
             VolRappelLigne(id: rang, titre: VolMiseEnPage.titreRappel(r),
                            heure: VolMiseEnPage.texteDeuxHeures(c.plan, r.instant, formats))
         }
         return VolCarteRappels(actifs: true, sansPermission: !notificationsAutorisees, aucun: aVenir.isEmpty,
-                               lignes: lignes)
+                               lignes: lignes, note: Libelle("vol_rappels_note"))
     }
 
     private func carteFiabilite(_ c: Vol.Calcul) -> VolCarteFiabilite {

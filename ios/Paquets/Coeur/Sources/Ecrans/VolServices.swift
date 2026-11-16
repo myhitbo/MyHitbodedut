@@ -430,7 +430,7 @@ public struct VolFormats: Sendable {
     /// Des chiffres seulement : « 2026-11-17 ⁦11:00 LYS⁩ », « 2026-11-17 · 11:00 », « 48.9 ».
     public static let neutre = VolFormats(
         heure: { civile, iata, avecJour in
-            (avecJour ? civile.jour.iso + " " : "") + "\u{2066}" + VolFormats.hm(civile) + " " + iata + "\u{2069}"
+            VolFormats.ecrire(avecJour ? civile.jour.iso : nil, civile, iata)
         },
         jour: { $0.iso },
         saisie: { $0.jour.iso + " · " + VolFormats.hm($0) },
@@ -441,8 +441,7 @@ public struct VolFormats: Sendable {
     public static func langue(_ langue: String) -> VolFormats {
         VolFormats(
             heure: { civile, iata, avecJour in
-                (avecJour ? VolFormats.motif("EEE d", langue, civile) + " " : "") + "\u{2066}" + VolFormats.hm(civile) + " " + iata
-                    + "\u{2069}"
+                VolFormats.ecrire(avecJour ? VolFormats.motif("EEE d", langue, civile) : nil, civile, iata)
             },
             jour: { VolFormats.motif("EEE d MMM", langue, DateHeure($0)) },
             saisie: { VolFormats.motif("EEE d MMM yyyy · HH:mm", langue, $0) },
@@ -450,6 +449,13 @@ public struct VolFormats: Sendable {
                 let texte = Java.format(x, decimales: 1)
                 return langue == "fr" ? texte.remplacantUnites(".", par: ",") : texte
             })
+    }
+
+    /// « mar. 10 ⁦18:42 TLV⁩ » : le jour s'il est donné, puis l'heure et le code isolés de gauche à droite.
+    static func ecrire(_ jour: String?, _ civile: DateHeure, _ iata: String) -> String {
+        let isole: String = "\u{2066}" + hm(civile) + " " + iata + "\u{2069}"
+        guard let jour else { return isole }
+        return jour + " " + isole
     }
 
     /// « 09:05 ».
