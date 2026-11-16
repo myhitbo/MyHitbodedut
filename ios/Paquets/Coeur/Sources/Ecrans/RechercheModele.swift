@@ -183,6 +183,11 @@ public final class RechercheModele {
         Libelle("recherche_indice")
     }
 
+    /// La police hébraïque des réglages de lecture, celle du titre de chaque résultat (PoliceHebraique.appliquer).
+    public var police: PoliceHebraique.Police {
+        PoliceHebraique.Police(rawValue: magasin.reglages.lecturePolice) ?? .serif
+    }
+
     /// Les cinq puces, dans l'ordre de RechercheGlobale.Portee.
     public var portees: [RecherchePortee] {
         let choisie = portee
@@ -195,11 +200,13 @@ public final class RechercheModele {
     /// vide), ou qu'aucune recherche n'a encore fini.
     public var resultats: RechercheResultats? {
         guard let trouves, RechercheModele.assezLong(trouves.texte) else { return nil }
+        let police = self.police
         var groupes: [RechercheGroupe] = []
         for sorte in RechercheGlobale.Sorte.allCases {
             var lignes: [RechercheLigne] = []
             for (i, r) in trouves.resultats.enumerated() where r.sorte == sorte {
-                lignes.append(RechercheLigne(id: "\(sorte.rawValue)#\(i)", titre: r.titre,
+                // Le titre, en police hébraïque : ses signes absents masqués, comme PoliceHebraique.appliquer.
+                lignes.append(RechercheLigne(id: "\(sorte.rawValue)#\(i)", titre: PoliceHebraique.masque(r.titre, police: police),
                                              extrait: r.extrait.estBlanc ? nil : r.extrait,
                                              route: RechercheModele.route(r)))
             }

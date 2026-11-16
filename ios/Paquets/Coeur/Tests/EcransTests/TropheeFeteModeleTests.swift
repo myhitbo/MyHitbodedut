@@ -155,7 +155,14 @@ struct TropheeFeteModeleTests {
         try await fete.passer()
         try await seanceAujourdhui(magasin, minutes: 10)
         await persistance.faireEchouer(true)
-        await #expect(throws: PersistanceEnMemoire.Echec()) { try await fete.passer() }
+        // Comme MagasinTests : un do/catch plutôt que `#expect(throws:)` sur une fermeture qui capture le modèle.
+        var refuse = false
+        do {
+            try await fete.passer()
+        } catch is PersistanceEnMemoire.Echec {
+            refuse = true
+        }
+        #expect(refuse)
         #expect(fete.fiches.count == 1)
     }
 }

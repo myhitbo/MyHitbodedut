@@ -314,6 +314,22 @@ struct HalakhaModeleTests {
         #expect(r.nombre == Libelle("hilloulot_resultats", .entier(n)))
     }
 
+    @Test func lesSignesAbsentsDeLaPoliceSontMasques() async throws {
+        // PoliceHebraique.appliquer d'Android : le meteg (U+05BD), absent de la police par défaut, devient U+034F ;
+        // la recherche, elle, le trouve sans voyelles.
+        let json = "{\"periodes\":{\"ordinaire\":[{\"s\":\"סימן א\",\"l\":\"א\",\"t\":\"שבת\u{05BD} קודש\"}]}}"
+        let lecteur: ContenusApp.Lecteur = { chemin in chemin == "yalkut_yosef.json" ? Data(json.utf8) : nil }
+        let (modele, _, _, _) = try Self.fabriquer(recherche: "שבת", contenus: ContenusApp(lecteur: lecteur))
+        await modele.charger()
+        await modele.attendre()
+        #expect(modele.etat == .pret)
+        let r = try Self.resultats(modele)
+        #expect(r.nombre == Libelle("hilloulot_resultats", .entier(1)))
+        let carte = try #require(r.cartes.first)
+        #expect(carte.titre == "ילקוט יוסף · סימן א · סעיף א")
+        #expect(carte.paragraphes == ["שבת\u{034F} קודש"])
+    }
+
     // MARK: Les paragraphes (VueJour.paragraphes)
 
     @Test func lesParagraphesSeCoupentAuxRetoursALaLigne() {

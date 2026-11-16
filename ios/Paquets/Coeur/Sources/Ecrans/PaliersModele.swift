@@ -279,9 +279,9 @@ public final class PaliersModele {
     /// Les clés des trophées gagnés depuis la dernière visite (rien la toute première fois).
     public private(set) var neufs: Set<String> = []
     /// La fête d'un nouveau grade à montrer (un dialogue) ; nil sinon.
-    public private(set) var feteGrade: PaliersFeteGrade?
+    public private(set) var feteGrade: PaliersFeteGrade? = nil
     /// La fiche ouverte ; nil sinon.
-    public private(set) var fiche: TropheeFiche?
+    public private(set) var fiche: TropheeFiche? = nil
 
     public init(magasin: Magasin, horloge: any Horloge, filtre: Trophees.Famille? = nil) {
         self.magasin = magasin
@@ -291,7 +291,7 @@ public final class PaliersModele {
     }
 
     /// La famille d'une clé gardée (`Famille.cle`) ; nil pour toutes ou une clé inconnue.
-    public static func famille(cle: String?) -> Trophees.Famille? {
+    nonisolated public static func famille(cle: String?) -> Trophees.Famille? {
         guard let cle else { return nil }
         return Trophees.Famille.allCases.first { $0.cle == cle }
     }

@@ -231,19 +231,20 @@ public final class HalakhaModele {
     private func duJour() -> HalakhaDuJour {
         let israel = enIsrael
         let choisie = source
+        let police = self.police
         var carteYalkut: HalakhaCarte?
         if choisie.montreYalkut, let yalkut {
             let seifs = YalkutYosef.pour(yalkut, date: jour, israel: israel)
             if !seifs.isEmpty {
-                carteYalkut = HalakhaCarte(id: "jour|yalkut", titre: YalkutYosef.titreCarte(seifs),
-                                           paragraphes: HalakhaTexte.paragraphes(YalkutYosef.texteCarte(seifs)))
+                carteYalkut = HalakhaModele.carte(id: "jour|yalkut", titre: YalkutYosef.titreCarte(seifs),
+                                                  texte: YalkutYosef.texteCarte(seifs), police: police)
             }
         }
         var cartes: [HalakhaCarte] = []
         if choisie.montreBenIshHai, let benIshHai {
             for (i, h) in Halakha.pour(benIshHai, date: jour, enIsrael: israel).enumerated() {
-                cartes.append(HalakhaCarte(id: "jour|bih#\(i)", titre: Halakha.source(h),
-                                           paragraphes: HalakhaTexte.paragraphes(h.texte)))
+                cartes.append(HalakhaModele.carte(id: "jour|bih#\(i)", titre: Halakha.source(h), texte: h.texte,
+                                                  police: police))
             }
         }
         return HalakhaDuJour(jour: jour,
@@ -259,17 +260,25 @@ public final class HalakhaModele {
 
     /// Le nombre de toutes les trouvailles, puis quarante cartes au plus de chaque livre.
     private func resultats(_ t: HalakhaTrouvees) -> HalakhaResultats {
+        let police = self.police
         var cartes: [HalakhaCarte] = []
         for (i, s) in t.yalkut.prefix(HalakhaModele.resultatsMontres).enumerated() {
-            cartes.append(HalakhaCarte(id: "r|yalkut#\(i)", titre: YalkutYosef.source(s),
-                                       paragraphes: HalakhaTexte.paragraphes(s.texte)))
+            cartes.append(HalakhaModele.carte(id: "r|yalkut#\(i)", titre: YalkutYosef.source(s), texte: s.texte,
+                                              police: police))
         }
         for (i, h) in t.benIshHai.prefix(HalakhaModele.resultatsMontres).enumerated() {
-            cartes.append(HalakhaCarte(id: "r|bih#\(i)", titre: Halakha.source(h),
-                                       paragraphes: HalakhaTexte.paragraphes(h.texte)))
+            cartes.append(HalakhaModele.carte(id: "r|bih#\(i)", titre: Halakha.source(h), texte: h.texte, police: police))
         }
         return HalakhaResultats(nombre: Libelle("hilloulot_resultats", .entier(t.yalkut.count + t.benIshHai.count)),
                                 cartes: cartes)
+    }
+
+    /// Une carte (HalakhaActivity.carte) : le titre et le texte en police hébraïque, leurs signes absents de la
+    /// police masqués (PoliceHebraique.appliquer d'Android).
+    private nonisolated static func carte(id: String, titre: String, texte: String,
+                                          police: PoliceHebraique.Police) -> HalakhaCarte {
+        HalakhaCarte(id: id, titre: PoliceHebraique.masque(titre, police: police),
+                     paragraphes: HalakhaTexte.paragraphes(PoliceHebraique.masque(texte, police: police)))
     }
 
     // MARK: Les actions

@@ -29,9 +29,9 @@ public final class TropheeFeteModele {
     /// Les fiches à montrer, dans l'ordre : la première est ouverte, les autres attendent qu'elle se ferme.
     public private(set) var fiches: [TropheeFiche] = []
     /// La phrase d'un palier neuf, montrée brièvement (un `Toast` long sur Android, 3,5 s) ; nil sinon.
-    public private(set) var palier: Libelle?
+    public private(set) var palier: Libelle? = nil
     /// Les étincelles d'un palier neuf, du métal du grade, autour de la ligne du grade de l'accueil.
-    public private(set) var etincelles: Trophees.Metal?
+    public private(set) var etincelles: Trophees.Metal? = nil
     /// Monte à chaque fête de palier : la vue relance ses étincelles même si le grade n'a pas changé.
     public private(set) var fetesPalier = 0
 

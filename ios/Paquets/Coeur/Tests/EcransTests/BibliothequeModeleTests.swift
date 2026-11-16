@@ -292,6 +292,8 @@ struct BibliothequeModeleTests {
     @Test func unSeulLivreMarquePasDePuceParLivre() async {
         let marques = Self.marquesDeuxLivres.filter { $0.cle != "l:nichmat" }
         let modele = await Self.livres(marques, police: "frank")
+        // La vue habille la ligne, les puces et la feuille de cette police.
+        #expect(modele.police == .frank)
         let ids = modele.filtresSignets.map { $0.id }
         #expect(ids == ["*", "l"])
         // Les aperçus dans la police de lecture.

@@ -454,6 +454,22 @@ struct LectureModeleTests {
         #expect(ouvert.ligneDeTete?.id == cible.id)
         // Sans marque-page ni place gardée, rien ne bouge.
         #expect(m.defilement == nil)
+        // Revenu d'un renvoi, la vue rappelle charger() (.task) : Android ne refait pas onCreate, on ne retourne
+        // pas au marque-page.
+        ouvert.allerAuSignet(1)
+        let ailleurs = ouvert.defilement
+        await ouvert.charger()
+        #expect(ouvert.defilement == ailleurs)
+    }
+
+    /// Pas d'image à l'écran de lecture (on ne prie pas devant une image) : le modèle ne rend que des icônes.
+    @Test func leLecteurNeRendQueDesIcones() async throws {
+        for cible in [LectureCible.siddour("chaharit"), LectureCible.livre("nichmat")] {
+            let (m, _) = try fabriquer(cible, reglages: reglages(.edot))
+            await m.charger()
+            #expect(m.etat == .pret)
+            #expect(m.iconeMarques.hasPrefix("ic_"), "\(cible.id)")
+        }
     }
 
     @Test func unMarquePageReplieMeneAuPremierParagrapheMontreDeSaSection() async throws {

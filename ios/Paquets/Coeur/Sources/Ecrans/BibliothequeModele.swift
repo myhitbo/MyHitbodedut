@@ -117,8 +117,8 @@ public final class BibliothequeModele {
     public private(set) var feuilleSignetsOuverte = false
     /// La puce choisie dans la feuille : « * » à chaque ouverture.
     public private(set) var filtreSignets = "*"
-    private var bibliotheque: Bibliotheque?
-    private var indexLivres: Siddur?
+    private var bibliotheque: Bibliotheque? = nil
+    private var indexLivres: Siddur? = nil
 
     public init(magasin: Magasin, contenus: ContenusApp, langue: String, livresSeuls: Bool) {
         self.magasin = magasin
@@ -319,8 +319,10 @@ public final class BibliothequeModele {
         return 10_000 + (index.textes.firstIndex { $0.id == id } ?? -1)
     }
 
-    /// La police hébraïque des réglages de lecture, pour les titres et les aperçus de la feuille.
-    private var police: PoliceHebraique.Police {
+    /// La police hébraïque des réglages de lecture : la vue en habille la ligne des marque-pages, les puces des
+    /// livres, les titres et les aperçus de la feuille (PoliceHebraique.appliquer d'Android) ; les textes rendus
+    /// ici en ont déjà les signes absents masqués.
+    public var police: PoliceHebraique.Police {
         PoliceHebraique.Police(rawValue: magasin.reglages.lecturePolice) ?? .serif
     }
 
@@ -360,7 +362,7 @@ public final class BibliothequeSousSectionModele {
     public let id: String
 
     public private(set) var etat: BibliothequeEtat = .chargement
-    private var sousSection: SousSection?
+    private var sousSection: SousSection? = nil
 
     public init(magasin: Magasin, contenus: ContenusApp, langue: String, id: String) {
         self.magasin = magasin
@@ -486,9 +488,9 @@ public final class BibliothequeEntreeModele {
 
     public private(set) var etat: BibliothequeEtat = .chargement
     /// Le message à montrer quand l'adresse n'a pu s'ouvrir (le Toast d'Android) ; nil sinon.
-    public private(set) var alerte: Libelle?
-    private var bibliotheque: Bibliotheque?
-    private var entree: EntreeBibliotheque?
+    public private(set) var alerte: Libelle? = nil
+    private var bibliotheque: Bibliotheque? = nil
+    private var entree: EntreeBibliotheque? = nil
 
     public init(magasin: Magasin, contenus: ContenusApp, langue: String, id: String) {
         self.magasin = magasin
@@ -619,18 +621,19 @@ public final class BibliothequeEntreeModele {
     /// Le bouton vers Sefaria (une source) ou vers le site (un article) ; nil sans adresse.
     public var lien: BibliothequeLien? {
         let titre: String
-        let adresse: String?
+        let brute: String?
         switch entree {
         case .source(let source)?:
             titre = "library_open_sefaria"
-            adresse = source.url
+            brute = source.url
         case .article(let article)?:
             titre = "library_read_on_site"
-            adresse = article.url
+            brute = article.url
         case nil:
             return nil
         }
-        guard let adresse, !adresse.estBlanc else { return nil }
+        // Un autre nom que `adresse` : `guard let` dans la même portée qu'une constante du même nom ne compile pas.
+        guard let adresse = brute, !adresse.estBlanc else { return nil }
         return BibliothequeLien(titre: Libelle(titre), adresse: adresse, url: URL(string: adresse))
     }
 
@@ -693,7 +696,7 @@ public final class BibliothequeBarreLecture {
     /// Vrai : la barre est dépliée ; faux : la pastille « Aa ». Replié à l'ouverture de l'écran.
     public private(set) var deplie = false
     /// Le message du masquage (le Snackbar d'Android, « Bouton masqué… », avec « Annuler ») ; nil sinon.
-    public private(set) var messageMasque: Libelle?
+    public private(set) var messageMasque: Libelle? = nil
 
     public init(magasin: Magasin, langue: String) {
         self.magasin = magasin
@@ -871,9 +874,6 @@ enum BibliothequeLecture {
 
     /// `Store.marques` : les marque-pages gardés sous « marques_pages » (MarquesPages.encoder).
     static func marques(_ reglages: Reglages) -> [MarquesPages.Marque] {
-        if case .chaine(let texte)? = reglages.brut["marques_pages"] {
-            return MarquesPages.decoder(texte)
-        }
-        return []
+        Store.marques(reglages: reglages)
     }
 }

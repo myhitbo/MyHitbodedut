@@ -70,7 +70,8 @@ struct HilloulotModeleTests {
 
         #expect(du.lignes.count == 1)
         let ligne = try #require(du.lignes.first)
-        #expect(ligne.nom == h.he)
+        // La police par défaut (« serif ») : ses signes absents masqués, comme PoliceHebraique.appliquer d'Android.
+        #expect(ligne.nom == PoliceHebraique.masque(h.he, police: .serif))
         #expect(ligne.premiere)
         #expect(ligne.depliable)
         // Seule ce jour-là : dépliée d'office.
@@ -83,7 +84,7 @@ struct HilloulotModeleTests {
         #expect(du.aucune == nil)
 
         let fiche = try #require(ligne.fiche)
-        let notice = h.description.map { HalakhaTexte.paragraphes($0) }
+        let notice = h.description.map { HalakhaTexte.paragraphes(PoliceHebraique.masque($0, police: .serif)) }
         #expect(fiche.description == notice)
         #expect(notice != nil)
         // La source de la notice : Wikipédia, avec le lien de l'article.
@@ -96,7 +97,7 @@ struct HilloulotModeleTests {
         // La biographie, mot pour mot, suivie de sa source et de son lien.
         #expect(fiche.bios.count == h.bios.count)
         let premiere = try #require(fiche.bios.first)
-        #expect(premiere.paragraphes == HalakhaTexte.paragraphes(bio.texte))
+        #expect(premiere.paragraphes == HalakhaTexte.paragraphes(PoliceHebraique.masque(bio.texte, police: .serif)))
         #expect(premiere.source.nom == Libelle("hilloula_source_mytzadik"))
         #expect(premiere.source.lien == bio.lien)
         #expect(premiere.longue)
@@ -122,6 +123,25 @@ struct HilloulotModeleTests {
         #expect(!fermee.ouverte)
         #expect(fermee.fiche == nil)
         #expect(fermee.action == Libelle("hilloula_lire_plus"))
+    }
+
+    @Test func lesSignesAbsentsDeLaPoliceSontMasques() async throws {
+        // PoliceHebraique.appliquer d'Android : le meteg (U+05BD), absent de la police par défaut, devient U+034F dans
+        // le nom et la notice ; la clé du dépliage garde le nom tel quel.
+        let json = "{\"jours\":{\"7-1\":[{\"he\":\"רבי\u{05BD} א\",\"a\":\"\",\"s\":\"w\",\"t\":\"נוסח\u{05BD}\"}]}}"
+        let contenus = HilloulotContenus(lecteur: { chemin in chemin == "hilloulot.json" ? Data(json.utf8) : nil })
+        let depuis = try #require(JourCivil(iso: "2026-11-16"))
+        let date = try #require(Hilloulot.prochainJour("7-1", depuis: depuis, enIsrael: true))
+        let (modele, _, _, _) = try Self.fabriquer(date: date, contenus: contenus)
+        await modele.charger()
+        await modele.attendre()
+        let du = try Self.duJour(modele)
+        let ligne = try #require(du.lignes.first)
+        #expect(ligne.nom == "רבי\u{034F} א")
+        #expect(ligne.cle == "\(date.iso)|רבי\u{05BD} א")
+        #expect(ligne.ouverte)
+        let fiche = try #require(ligne.fiche)
+        #expect(fiche.description == ["נוסח\u{034F}"])
     }
 
     @Test func plusieursTsadikimRestentFermesDansLOrdreDeCoeur() async throws {

@@ -7,8 +7,7 @@ import Coeur
 // les textes gardés, sur l'appareil ; « Partager » le fait sortir de l'appareil, d'un geste de l'utilisateur.
 //
 // Le sac du tirage et les textes gardés vivent dans les réglages, sous les clés d'Android (`chizuk_bag_demande`,
-// `chizuk_last_demande`, `chizuk_favoris`) : `ChizukSac` les lit et les écrit comme Store.kt, en attendant que
-// Store.swift de Coeur (en chantier) soit construit.
+// `chizuk_last_demande`, `chizuk_favoris`) : `ChizukSac` les lit et les écrit par `Store` de Coeur (Store.kt).
 
 /// Où en est l'écran.
 public enum ChizukEtat: Sendable, Equatable {
@@ -95,49 +94,33 @@ public struct ChizukGarde: Sendable, Equatable, Identifiable {
 }
 
 /// Le sac du tirage et les textes gardés, dans les réglages (Store.kt : chizukBag, chizukLast, setChizukBag,
-/// chizukFavoris, basculerChizukFavori), et le tirage qui les relie (`ChizukBag.draw`). Les autres écrans qui
-/// tirent un texte (ouverture, blocage, porte…) s'en servent de même.
+/// chizukFavoris, basculerChizukFavori, portés dans `Store` de Coeur), et le tirage qui les relie
+/// (`ChizukBag.draw`). Les autres écrans qui tirent un texte (ouverture, blocage, porte…) s'en servent de même.
 public enum ChizukSac {
 
     /// Le sac d'un moment : les identifiants qui n'ont pas encore servi dans le cycle, un par ligne.
     public static func sac(_ reglages: Reglages, moment: Moment) -> [String] {
-        morceaux(chaine(reglages, "chizuk_bag_" + moment.rawValue) ?? "", 0x0A).filter { !$0.estBlanc }
+        Store.chizukBag(reglages: reglages, moment: moment)
     }
 
     /// Le dernier texte sorti pour ce moment ; nil s'il est blanc.
     public static func dernier(_ reglages: Reglages, moment: Moment) -> String? {
-        guard let dernier = chaine(reglages, "chizuk_last_" + moment.rawValue), !dernier.estBlanc else { return nil }
-        return dernier
+        Store.chizukLast(reglages: reglages, moment: moment)
     }
 
     /// Le sac tel qu'il reste, et le dernier sorti ; nil retire la clé (`putString(clé, null)`).
     public static func poser(_ reglages: inout Reglages, moment: Moment, sac: [String], dernier: String?) {
-        var brut = reglages.brut
-        brut["chizuk_bag_" + moment.rawValue] = .chaine(sac.joined(separator: "\n"))
-        if let dernier {
-            brut["chizuk_last_" + moment.rawValue] = .chaine(dernier)
-        } else {
-            brut["chizuk_last_" + moment.rawValue] = nil
-        }
-        reglages = Reglages(brut: brut)
+        Store.setChizukBag(reglages: &reglages, moment: moment, bag: sac, last: dernier)
     }
 
     /// Les textes gardés, le plus récent en tête.
     public static func favoris(_ reglages: Reglages) -> [String] {
-        morceaux(chaine(reglages, cleFavoris) ?? "", 0x7C).filter { !$0.estBlanc }
+        Store.chizukFavoris(reglages: reglages)
     }
 
     /// Retire le texte s'il est gardé, sinon le garde en tête.
     public static func basculerFavori(_ reglages: inout Reglages, id: String) {
-        var liste = favoris(reglages)
-        if let rang = liste.firstIndex(where: { $0.egalUnites(id) }) {
-            liste.remove(at: rang)
-        } else {
-            liste.insert(id, at: 0)
-        }
-        var brut = reglages.brut
-        brut[cleFavoris] = .chaine(liste.joined(separator: "|"))
-        reglages = Reglages(brut: brut)
+        Store.basculerChizukFavori(reglages: &reglages, id: id)
     }
 
     /// `ChizukBag.draw` : tire un texte pour ce moment dans ce qu'il a le droit de montrer (ChizukRules), et
@@ -150,30 +133,6 @@ public enum ChizukSac {
                                     last: dernier(reglages, moment: moment), shuffle: melange)
         poser(&reglages, moment: moment, sac: tirage.remaining, dernier: tirage.id)
         return tirage.id
-    }
-
-    private static let cleFavoris = "chizuk_favoris"
-
-    /// `getString(clé, null)` : seule une chaîne se lit.
-    private static func chaine(_ reglages: Reglages, _ cle: String) -> String? {
-        if case .chaine(let texte)? = reglages.brut[cle] { return texte }
-        return nil
-    }
-
-    /// `split(c)` de Kotlin sur une unité UTF-16 : les morceaux entre deux séparateurs, vides compris.
-    private static func morceaux(_ texte: String, _ separateur: UInt16) -> [String] {
-        var resultat: [String] = []
-        var courant: [UInt16] = []
-        for unite in texte.utf16 {
-            if unite == separateur {
-                resultat.append(Unites.texte(courant))
-                courant = []
-            } else {
-                courant.append(unite)
-            }
-        }
-        resultat.append(Unites.texte(courant))
-        return resultat
     }
 }
 
@@ -198,11 +157,11 @@ public final class ChizukModele {
     public private(set) var etat: ChizukEtat = .chargement
     /// Le texte sur la carte ; nil quand rien n'est affichable. À garder pour le rendre au retour
     /// (`onSaveInstanceState`, `@SceneStorage` dans la vue) et à repasser à `charger(restaurer:)`.
-    public private(set) var courantId: String?
+    public private(set) var courantId: String? = nil
     /// Monte à chaque fois que la carte change sous le doigt (« Un autre », un texte gardé touché) : la vue
     /// fond la carte et remonte en haut.
     public private(set) var changements = 0
-    private var chizuk: Chizuk?
+    private var chizuk: Chizuk? = nil
     private var lance = false
 
     /// `melange` : le mélange du vivier quand le sac se remplit ; un mélange fixe dans les tests.

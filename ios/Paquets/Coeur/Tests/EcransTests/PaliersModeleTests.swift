@@ -338,6 +338,32 @@ struct PaliersModeleTests {
         #expect(modele.filtreCle == nil)
     }
 
+    @Test func uneFamilleCompleteDitQueTousSontGagnes() throws {
+        // Cinq jours : les cinq « premiers pas », toute la famille.
+        let j = try Self.journal([("2026-11-02", 5), ("2026-11-03", 5), ("2026-11-04", 5), ("2026-11-05", 5),
+                                  ("2026-11-06", 5)])
+        let (modele, _, _) = try fabriquer(j)
+        modele.choisirFiltre(.premierPas)
+        let lignes = modele.lignes
+        let niveaux = etapes(lignes).map { $0.niveau.cle }
+        #expect(niveaux == ["premier_pas:1", "premier_pas:2", "premier_pas:3", "premier_pas:4", "premier_pas:5"])
+        #expect(ici(lignes) == nil)
+        #expect(lignes.last == .tousGagnes(Libelle("trophees_tous")))
+        #expect(lignes.count == 6)
+    }
+
+    @Test func laBarrePresquePleinePulse() throws {
+        // Neuf jours : 9 sur 10 vers « 10 jours de pratique » (à 90 % : la barre pulse).
+        let j = try Self.journal((1...9).map { n in ("2026-10-0" + String(n), 30) })
+        let (modele, _, _) = try fabriquer(j)
+        modele.choisirFiltre(.jours)
+        let objectif = try #require(ici(modele.lignes))
+        #expect(objectif.niveau == Trophees.Niveau(famille: .jours, rang: 2))
+        #expect(objectif.fraction == 0.9)
+        #expect(objectif.pulser)
+        #expect(objectif.encore == Libelle("trophee_encore", .entier(9), .entier(10), .entier(1)))
+    }
+
     @Test func leFiltreGardeSeRetrouve() throws {
         #expect(PaliersModele.famille(cle: "jours") == .jours)
         #expect(PaliersModele.famille(cle: "tikkun_serie") == .tikkunSerie)

@@ -88,6 +88,9 @@ public final class LectureModele {
     private var jeton = 0
     /// Quand la lecture a été quittée (onPause), pour `revenir()`.
     private var pauseA: Int64 = 0
+    /// Le texte a été lu une fois (onCreate) : `.task` revient à chaque apparition de la vue (au retour d'un
+    /// renvoi), où Android ne fait que onRestart (`revenir()`), sans relire ni retourner au marque-page.
+    @ObservationIgnored private var lance = false
 
     // MARK: Le bouton de lecture et les messages
 
@@ -114,8 +117,10 @@ public final class LectureModele {
     // MARK: Le chargement
 
     /// Lit le texte et se place : au marque-page reçu, sinon à la place gardée (Store.positionLecture). À appeler
-    /// à l'apparition de l'écran.
+    /// à l'apparition de l'écran ; une seule fois (onCreate) : les appels suivants ne font rien.
     public func charger() async {
+        guard !lance else { return }
+        lance = true
         await lire(nusah: magasin.reglages.siddurNusah)
         guard etat == .pret else { return }
         if let marque = cible.marque {

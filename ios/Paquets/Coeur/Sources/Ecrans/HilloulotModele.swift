@@ -118,7 +118,7 @@ public struct HilloulotLigne: Sendable, Equatable, Identifiable {
     public let id: String
     /// « 2026-11-15|<nom> » au jour, « r|<clé>|<nom> » dans la recherche : ce que retient le dépliage.
     public let cle: String
-    /// Le nom hébreu, 17 sp, gras.
+    /// Le nom hébreu, 17 sp, gras ; les signes absents de la police masqués (U+034F).
     public let nom: String
     /// Le nom dans la langue de l'app (en anglais à défaut du français) ; nil en hébreu ou sans traduction.
     public let traduit: String?
