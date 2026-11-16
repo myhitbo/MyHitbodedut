@@ -684,6 +684,11 @@
     <string name="siddur_maintenant">לשעה זו</string>
     <string name="lecture_plus">אותיות גדולות יותר</string>
     <string name="lecture_moins">אותיות קטנות יותר</string>
+    <string name="lecture_defiler">גלילה אוטומטית</string>
+    <string name="lecture_defiler_pause">עצירת הגלילה</string>
+    <string name="lecture_vitesse">מהירות %1$d מתוך 10</string>
+    <string name="lecture_plus_vite">מהר יותר</string>
+    <string name="lecture_moins_vite">לאט יותר</string>
     <string name="siddur_choose">נוסח</string>
     <string name="siddur_signets">חלקי התפילה</string>
     <string name="siddur_nusah_edot">ספרדי (עדות המזרח)</string>

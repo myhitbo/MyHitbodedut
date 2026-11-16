@@ -34,6 +34,7 @@ import * as Coffre from './coffre.js';
 import { chemin as cheminPersonnage } from './personnage.js';
 // La hitbodedout guidée (02/11, Hitbodedut.kt, GuideSujets.kt).
 import { Hitbodedut, MOUVEMENTS, invitationSujet } from './hitbodedut.js';
+import { pas as pasDefilement, vitesse as vitesseDefilement, NIVEAU_MAX, NIVEAU_MIN } from './defilement.js';
 
 // --- Stockage ---------------------------------------------------------------
 // Ce que le navigateur fait de ce qu'on lui confie ne reste plus muet (13/11, audit du 12/11,
@@ -1231,6 +1232,9 @@ const ICONES_LECTURE = {
   masquer: ['M3,12 C5,8 8.2,6 12,6 C15.8,6 19,8 21,12 C19,16 15.8,18 12,18 C8.2,18 5,16 3,12 Z', 'M9.2,12 a2.8,2.8 0 1,0 5.6,0 a2.8,2.8 0 1,0 -5.6,0', 'M4,4 L20,20'],
   replier: ['M6.5,9.5 L12,15 L17.5,9.5'],
   coche: ['M5,12.5 L10,17 L19,7.5'],
+  // Le défilement automatique (16/11) : lancer, arrêter.
+  lecture: ['M8.5,5.5 L18.5,12 L8.5,18.5 Z'],
+  pause: ['M9,6 L9,18', 'M15,6 L15,18'],
 };
 function icone(nom) {
   const svg = s('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
@@ -1309,6 +1313,9 @@ function ramenerLecture() {
 }
 
 function reglagesLecture({ avecNusah, sansNuit = false }) {
+  optionsLecture = { avecNusah, sansNuit };
+  // Pendant le défilement automatique, sa commande remplace la barre (et la pastille).
+  if (defilAuto) return commandeDefilement();
   if (store.lectureMasquee()) return null;
   if (!reglagesOuverts) {
     return h('div', { class: 'lecture-ctrl' },
@@ -1350,10 +1357,125 @@ function reglagesLecture({ avecNusah, sansNuit = false }) {
         class: 'lecture-nusah-bouton', 'aria-haspopup': 'menu', 'aria-expanded': String(choixNusahOuvert),
         onclick: () => { choixNusahOuvert = !choixNusahOuvert; rendreEtViser(choixNusahOuvert ? '.lecture-nusah [aria-checked="true"]' : '.lecture-nusah-bouton'); },
       }, tr.t('siddur_choose')) : null,
+      // Le défilement automatique (16/11) : il part sans rien fermer ; sa commande prend la place de la barre.
+      bouton({ class: 'icone-bouton lecture-defiler', 'aria-label': tl('lecture_defiler'), 'aria-pressed': 'false', onclick: demarreDefilement }, icone('lecture')),
       separateur(),
       bouton({ class: 'icone-bouton', 'aria-label': tl('lecture_masquer'), onclick: masquerLecture }, icone('masquer')),
       bouton({ class: 'icone-bouton', 'aria-label': tl('lecture_replier'), 'aria-expanded': 'true', onclick: () => { reglagesOuverts = false; choixNusahOuvert = false; rendreEtViser('.lecture-pastille'); } }, icone('replier'))));
 }
+
+// --- Le défilement automatique des textes (16/11) -------------------------------------
+// Commun à tous les écrans de lecture, comme sur Android, Nokia et iOS : dix vitesses
+// (defilement.js), le niveau gardé dans le store. Il survit à un nouveau rendu du même écran ;
+// quitter l'écran, toucher le texte, ou arriver au bout l'arrête. (À ne pas confondre avec
+// dataset.defilementAuto, le défilement posé par un écran, plus bas.)
+let defilAuto = null; // { ecran, reste, dernier, image, vitesse, verrou }
+let optionsLecture = { avecNusah: false, sansNuit: false };
+
+/** Le texte qui défile : celui de l'écran de lecture affiché. */
+function defileLu() {
+  return app.querySelector('.lu-zone > .defile');
+}
+
+/** La commande de lecture redessinée seule : sans nouveau rendu, le geste en cours sur le texte continue. */
+function remplaceCommandeLecture(viser = null) {
+  const ancien = app.querySelector('.lu-zone > .lecture-ctrl');
+  const neuf = reglagesLecture(optionsLecture);
+  if (ancien && neuf) ancien.replaceWith(neuf);
+  else if (ancien) ancien.remove();
+  else if (neuf) app.querySelector('.lu-zone')?.append(neuf);
+  if (viser) app.querySelector(viser)?.focus({ preventScroll: true });
+}
+
+function vitesseCourante() {
+  return vitesseDefilement(store.lectureDefilementVitesse(), store.lectureEchelle());
+}
+
+function demarreDefilement() {
+  const d = defileLu();
+  if (!d || defilAuto) return;
+  defilAuto = { ecran: ecranCourant(), reste: 0, dernier: null, image: 0, vitesse: vitesseCourante(), verrou: null };
+  garderEcranAllume();
+  defilAuto.image = requestAnimationFrame(avanceDefilement);
+  remplaceCommandeLecture('.lecture-defil .defil-pause');
+}
+
+/** Une image : le temps écoulé fois la vitesse, les fractions de pixel gardées pour la suivante. */
+function avanceDefilement(t) {
+  const etat = defilAuto;
+  if (!etat) return;
+  const d = defileLu();
+  if (!d) { arreteDefilement(false); return; }
+  if (etat.dernier !== null) {
+    const p = pasDefilement(etat.reste, t - etat.dernier, etat.vitesse);
+    etat.reste = p.reste;
+    if (p.pixels) d.scrollTop += p.pixels;
+  }
+  etat.dernier = t;
+  // Au bout du texte, il s'arrête seul.
+  if (d.scrollTop + d.clientHeight >= d.scrollHeight - 1) { arreteDefilement(true, '.lecture-defiler'); return; }
+  etat.image = requestAnimationFrame(avanceDefilement);
+}
+
+function arreteDefilement(redessiner = true, viser = null) {
+  const etat = defilAuto;
+  if (!etat) return;
+  defilAuto = null;
+  cancelAnimationFrame(etat.image);
+  etat.verrou?.release().catch(() => {});
+  if (redessiner) remplaceCommandeLecture(viser);
+}
+
+/** L'écran reste allumé pendant le défilement (Wake Lock, s'il existe) ; un refus ne gêne rien. */
+function garderEcranAllume() {
+  const etat = defilAuto;
+  if (!etat || etat.verrou || !navigator.wakeLock?.request) return;
+  navigator.wakeLock.request('screen')
+    .then((v) => { if (defilAuto === etat && !etat.verrou) etat.verrou = v; else v.release().catch(() => {}); })
+    .catch(() => {});
+}
+// Le verrou tombe quand la page est cachée : on le reprend au retour.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && defilAuto) { defilAuto.verrou = null; garderEcranAllume(); }
+});
+
+function changeVitesseDefilement(delta) {
+  const n = Math.min(NIVEAU_MAX, Math.max(NIVEAU_MIN, store.lectureDefilementVitesse() + delta));
+  store.setLectureDefilementVitesse(n);
+  if (defilAuto) defilAuto.vitesse = vitesseCourante();
+  // Sur place, sans nouveau rendu : le défilement ne marque pas d'à-coup.
+  const c = app.querySelector('.lecture-defil');
+  if (!c) return;
+  const niveau = c.querySelector('.defil-niveau');
+  niveau.textContent = new Intl.NumberFormat(tr.langue).format(n);
+  niveau.setAttribute('aria-label', tl('lecture_vitesse', n));
+  c.querySelector('.defil-moins').disabled = n <= NIVEAU_MIN;
+  c.querySelector('.defil-plus').disabled = n >= NIVEAU_MAX;
+}
+
+/** La commande flottante pendant le défilement : [−] [niveau] [+] [pause]. */
+function commandeDefilement() {
+  const n = store.lectureDefilementVitesse();
+  const bouton = (attrs, ...enfants) => h('button', { type: 'button', ...attrs }, ...enfants);
+  return h('div', { class: 'lecture-ctrl' },
+    h('div', { class: 'lecture-barre lecture-defil', role: 'toolbar', 'aria-label': tl('lecture_defiler') },
+      bouton({ class: 'lettres defil-moins', lang: 'en', dir: 'ltr', 'aria-label': tl('lecture_moins_vite'), disabled: n <= NIVEAU_MIN, onclick: () => changeVitesseDefilement(-1) }, '−'),
+      h('span', { class: 'defil-niveau', role: 'status', 'aria-label': tl('lecture_vitesse', n) }, new Intl.NumberFormat(tr.langue).format(n)),
+      bouton({ class: 'lettres defil-plus', lang: 'en', dir: 'ltr', 'aria-label': tl('lecture_plus_vite'), disabled: n >= NIVEAU_MAX, onclick: () => changeVitesseDefilement(1) }, '+'),
+      h('span', { class: 'lecture-sep', 'aria-hidden': 'true' }),
+      bouton({ class: 'icone-bouton defil-pause', 'aria-label': tl('lecture_defiler_pause'), onclick: () => arreteDefilement(true, '.lecture-defiler') }, icone('pause'))));
+}
+
+// La main sur le texte (toucher, molette, glisser, clavier) arrête le défilement ; le bouton le relance.
+function mainSurLeTexte(e) {
+  if (!defilAuto || !(e.target instanceof Element)) return;
+  if (e.type === 'keydown') {
+    if (!['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) return;
+    if (e.target.closest('button, input, textarea, select, [contenteditable="true"]')) return;
+  } else if (!e.target.closest('.lu-zone > .defile')) return;
+  arreteDefilement();
+}
+for (const evt of ['touchstart', 'wheel', 'pointerdown', 'keydown']) document.addEventListener(evt, mainSurLeTexte, { capture: true, passive: true });
 
 
 /**
@@ -1382,7 +1504,7 @@ function ecranLu(titre, contenu, { avecNusah = false, pied = null, bande = null,
   defile.addEventListener('scroll', reveiller, { passive: true });
   let avant = 0;
   defile.addEventListener('scroll', () => {
-    const p = ctrl?.querySelector('.lecture-pastille');
+    const p = defile.parentElement?.querySelector('.lecture-pastille');
     const y = defile.scrollTop;
     if (p) {
       // En bas du texte, la pastille revient : on n'a plus à remonter pour la trouver.
@@ -1392,7 +1514,7 @@ function ecranLu(titre, contenu, { avecNusah = false, pied = null, bande = null,
     }
     avant = y;
   }, { passive: true });
-  doubleToucherPourRamener(defile, () => ctrl?.querySelector('.lecture-pastille')?.classList.remove('cachee'));
+  doubleToucherPourRamener(defile, () => defile.parentElement?.querySelector('.lecture-pastille')?.classList.remove('cachee'));
   return h('div', { class: `ecran lu${store.lectureSombre() ? ' nuit' : ''}`, style: `--echelle: ${store.lectureEchelle()}` },
     entete ?? barre(titre),
     bande,
@@ -5818,6 +5940,8 @@ function rendre() {
   // La position de défilement survit à un nouveau rendu du même écran.
   const avant = app.querySelector('.defile')?.scrollTop ?? 0;
   const ecran = ecranCourant();
+  // Le défilement automatique ne suit pas l'utilisateur sur un autre écran (16/11).
+  if (defilAuto && defilAuto.ecran !== ecran) arreteDefilement(false);
   // L'horloge tourne tant qu'une hitbodedout est en cours, quel que soit l'écran : sinon sa fin
   // n'était vue qu'au toucher suivant (audit du 16/10).
   if (ecran !== 'seance' && !store.isSessionRunning()) arreteTic();
@@ -5869,6 +5993,7 @@ function rendre() {
       onglets()));
   }
   app.dataset.ecran = `${ecran}/${onglet}`;
+  if (defilAuto && !defileLu()) arreteDefilement(false);
   if (memeEcran && hautLivre && app.querySelector('.defile.defile-livre')) {
     const ecranLivre = app.querySelector('.ecran');
     app.querySelector('.defile').scrollTop = avant;

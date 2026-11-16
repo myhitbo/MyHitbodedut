@@ -65,6 +65,32 @@ public final class TestsRegles {
         egal(new Integer(Journal.PAS_CHOISI), new Integer(v1.adresse), "journal version 1 : pas choisi");
         egal(new Integer(12), new Integer(v1.minutesDu(Journal.aujourdhui())), "journal version 1 : minutes relues");
 
+        // Le défilement automatique : 10 crans, 3 par défaut, gardé dans le journal (version 3).
+        egal(new Integer(Defilement.DEFAUT), new Integer(v1.vitesseDefilement), "journal version 1 : défilement au cran 3");
+        egal(new Integer(3), new Integer(new Journal().vitesseDefilement), "défilement : cran 3 par défaut");
+        j.vitesseDefilement = 7;
+        egal(new Integer(7), new Integer(Journal.depuisOctets(j.versOctets()).vitesseDefilement), "défilement : cran 7 relu");
+        egal(new Integer(Journal.TSADEKET), new Integer(Journal.depuisOctets(j.versOctets()).adresse), "version 3 : adresse toujours relue");
+        String table = "";
+        for (int n = 0; n <= 11; n++) table += Defilement.pixelsParSeconde(n) + " ";
+        egal("6 6 8 12 16 23 32 45 63 88 124 124 ", table, "défilement : 6 × 1,4^(n-1) px/s, borné à 1..10");
+        for (int n = 1; n <= 10; n++) {
+            double attendu = 6 * Math.pow(1.4, n - 1);
+            if (Math.abs(Defilement.pixelsParSeconde(n) - attendu) > 0.6) egal("" + Math.round(attendu), "" + Defilement.pixelsParSeconde(n), "cran " + n);
+        }
+        Defilement d = new Defilement();
+        int px = 0;
+        for (int i = 0; i < 20; i++) px += d.avance(1, 50); // une seconde au cran 1, par pas de 50 ms
+        egal(new Integer(6), new Integer(px), "défilement lent : les fractions de pixel s'additionnent");
+        egal(new Integer(124), new Integer(d.avance(10, 1000)), "cran 10 : 124 px en une seconde");
+        egal(new Integer(6), new Integer(d.avance(1, 60000)), "téléphone endormi : pas plus d'une seconde d'un coup");
+        Defilement.relit(null);
+        egal(new Integer(3), new Integer(Defilement.vitesse()), "sans journal : cran 3");
+        for (int i = 0; i < 12; i++) Defilement.change(1);
+        egal(new Integer(10), new Integer(Defilement.vitesse()), "pas plus vite que le cran 10");
+        for (int i = 0; i < 12; i++) Defilement.change(-1);
+        egal(new Integer(1), new Integer(Defilement.vitesse()), "pas plus lent que le cran 1");
+
         Journal hier = new Journal();
         hier.ajoute(Journal.ilYa(1), 10);
         hier.ajoute(Journal.ilYa(2), 10);

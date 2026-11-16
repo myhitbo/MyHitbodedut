@@ -716,6 +716,11 @@
     <string name="siddur_maintenant">Pour cette heure</string>
     <string name="lecture_plus">Lettres plus grandes</string>
     <string name="lecture_moins">Lettres plus petites</string>
+    <string name="lecture_defiler">Défilement automatique</string>
+    <string name="lecture_defiler_pause">Arrêter le défilement</string>
+    <string name="lecture_vitesse">Vitesse %1$d sur 10</string>
+    <string name="lecture_plus_vite">Plus vite</string>
+    <string name="lecture_moins_vite">Moins vite</string>
     <string name="siddur_choose">Noussa’h</string>
     <string name="siddur_signets">Sections</string>
     <string name="siddur_nusah_edot">Séfarade (Edot HaMizra’h)</string>

@@ -12,6 +12,7 @@ import { regionPourPosition } from './calendrier-juif.js';
 import { SessionRule } from './seance.js';
 import { Anneaux, HistoriqueReglage, JaugeSemaine, Plaque } from './regles.js';
 import { JournalPlus } from './regles.js';
+import { NIVEAU_DEFAUT, borneNiveau } from './defilement.js';
 
 export const DEFAULT_START = 6 * 60;
 export const DEFAULT_END = 11 * 60;
@@ -401,6 +402,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
     /** La lecture (ReglagesLecture.kt) : taille des lettres de 0,8 à 2, fond noir. */
     lectureEchelle: () => Math.min(2, Math.max(0.8, Number(get('lecture_echelle', 1)) || 1)),
     setLectureEchelle: (e) => set('lecture_echelle', Math.round(Math.min(2, Math.max(0.8, e)) * 10) / 10),
+    /** La vitesse du défilement automatique (16/11), commune à tous les écrans de lecture : niveau 1 à 10, 3 par défaut. */
+    lectureDefilementVitesse: () => borneNiveau(get('lecture_defilement_vitesse', NIVEAU_DEFAUT)),
+    setLectureDefilementVitesse: (n) => set('lecture_defilement_vitesse', borneNiveau(n)),
     // La police des textes (12/10) : 'serif' (par défaut), 'sans', 'arrondie' ; 'frank', 'david', 'rachi', 'miriam' (14/10).
     lecturePolice: () => (['serif', 'sans', 'arrondie', 'frank', 'david', 'rachi', 'miriam'].includes(get('lecture_police', 'serif')) ? get('lecture_police', 'serif') : 'serif'),
     setLecturePolice: (p) => set('lecture_police', p),
