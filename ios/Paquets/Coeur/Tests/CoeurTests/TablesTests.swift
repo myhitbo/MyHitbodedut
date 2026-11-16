@@ -354,15 +354,19 @@ struct TablesTests {
         for a in p.jours {
             let jour = try #require(JourCivil(iso: a.jour))
             let numero = jour.jourJulien - 2_440_588
+            // Character.ofDay : le jour depuis 1970, plus sept fois le sel (1, 2, 3), modulo la réserve.
+            let appel = p.appel[Kotlin.floorMod(numero + 7, p.appel.count)]
+            let pendant = p.pendant[Kotlin.floorMod(numero + 14, p.pendant.count)]
+            let joie = p.joie[Kotlin.floorMod(numero + 21, p.joie.count)]
             let call = Poses.call(jour)
             #expect(call == a.call, "\(a.jour)")
-            #expect(call == p.appel[Kotlin.floorMod(numero + 7, p.appel.count)], "\(a.jour) : la réserve d'appel")
+            #expect(call == appel, "\(a.jour) : la réserve d'appel")
             let during = Poses.during(jour)
             #expect(during == a.during, "\(a.jour)")
-            #expect(during == p.pendant[Kotlin.floorMod(numero + 14, p.pendant.count)], "\(a.jour) : la réserve de séance")
+            #expect(during == pendant, "\(a.jour) : la réserve de séance")
             let joy = Poses.joy(jour)
             #expect(joy == a.joy, "\(a.jour)")
-            #expect(joy == p.joie[Kotlin.floorMod(numero + 21, p.joie.count)], "\(a.jour) : la réserve de joie")
+            #expect(joy == joie, "\(a.jour) : la réserve de joie")
             let fait = Poses.greeting(true, jour: jour)
             #expect(fait == a.greetingFait, "\(a.jour)")
             let accueil = Poses.greeting(false, jour: jour)
@@ -695,7 +699,6 @@ struct TablesTests {
     }
 
     private struct MorceauV: Decodable {
-        let nom: String?
         let id: String
         let rawRes: String
         let titleRes: String
