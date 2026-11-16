@@ -174,6 +174,10 @@ def trouver(text=None, desc=None, rid=None, contains=False, defilements=0, index
 
 def toucher(text=None, desc=None, rid=None, contains=False, defilements=0, index=0, attente=1.5):
     quoi = " ".join(f"{k}={v!r}" for k, v in (("text", text), ("desc", desc), ("id", rid)) if v is not None)
+    # Depuis la refonte du 13/11, Reglages (la roue) et Zmanim (la date hebraique) sont en tete du
+    # Jour, plus dans les onglets : depuis Les Livres ou Le Chemin, on revient d'abord au Jour.
+    if rid in ("nav_settings", "nav_zmanim") and trouver(rid=rid) is None and trouver(rid="nav_today") is not None:
+        toucher(rid="nav_today", attente=1.0)
     b = trouver(text, desc, rid, contains, defilements, index)
     if b is None:
         log(f"  INTROUVABLE : {quoi}")
