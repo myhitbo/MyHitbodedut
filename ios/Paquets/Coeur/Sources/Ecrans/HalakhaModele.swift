@@ -357,7 +357,7 @@ public final class HalakhaModele {
         tacheRecherche = Task {
             let trouvees = await Task.detached(priority: .userInitiated) {
                 HalakhaTrouvees(yalkut: livreYalkut.map { YalkutYosef.recherche($0, texte: texte) } ?? [],
-                         benIshHai: livreBenIshHai.map { Halakha.recherche($0, texte: texte) } ?? [])
+                                benIshHai: livreBenIshHai.map { Halakha.recherche($0, texte: texte) } ?? [])
             }.value
             guard numero == self.demande else { return }
             self.trouvees = trouvees

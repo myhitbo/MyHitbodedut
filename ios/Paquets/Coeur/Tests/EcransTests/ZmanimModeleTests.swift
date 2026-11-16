@@ -42,4 +42,98 @@ struct ZmanimModeleTests {
         let hebreu = modele.jourHebreu
         #expect(hebreu.date == modele.jour)
     }
+
+    // MARK: Du Magasin et de l'horloge
+
+    private let paris = Zmanim.Lieu(nom: "Paris", latitude: 48.85341, longitude: 2.3488, fuseau: "Europe/Paris")
+
+    /// Un magasin en mémoire, sa persistance, et un modèle dont l'horloge est arrêtée à `heure` du jour `iso`.
+    private func fabriquer(_ reglages: Reglages, _ iso: String, heure: Int, fuseau: String)
+        throws -> (ZmanimModele, Magasin, PersistanceEnMemoire) {
+        let jour = try #require(JourCivil(iso: iso))
+        let fuseauLu = try #require(Fuseau(fuseau))
+        let persistance = PersistanceEnMemoire(Enregistrement(reglages: reglages))
+        let magasin = Magasin(persistance: persistance, enregistrement: Enregistrement(reglages: reglages))
+        let horloge = HorlogeFixe(DateHeure(jour, heure: heure), fuseau: fuseauLu)
+        return (ZmanimModele(magasin: magasin, horloge: horloge), magasin, persistance)
+    }
+
+    @Test func leLieuLeJourEtLesReglagesViennentDuMagasinEtDeLHorloge() throws {
+        var reglages = Reglages()
+        reglages.setLieuZmanim(paris, ville: nil, maintenant: 0)
+        reglages.setAllumage(30)
+        let (modele, _, _) = try fabriquer(reglages, "2026-11-13", heure: 9, fuseau: "Europe/Paris")
+        #expect(modele.jour.iso == "2026-11-13")
+        #expect(modele.estAujourdhui)
+        let lieu = modele.lieu
+        #expect(lieu == paris)
+        // Un lieu hors d'Israël règle la diaspora (Store.setLieuZmanim).
+        #expect(!modele.enIsrael)
+        #expect(modele.allumage == 30)
+        let vendredi = modele.jour
+        let obtenus = modele.horaires
+        let attendus = JourAffiche.horaires(lieu: paris, date: vendredi, enIsrael: false, minutes: 30)
+        #expect(obtenus == attendus)
+    }
+
+    @Test func aujourdhuiEstLeJourDuFuseauDuTelephone() throws {
+        // 23 h à Paris le jeudi 12 : déjà vendredi à Jérusalem, le fuseau du téléphone.
+        let jour = try #require(JourCivil(iso: "2026-11-12"))
+        let parisien = try #require(Fuseau("Europe/Paris"))
+        let instant = parisien.millis(DateHeure(jour, heure: 23))
+        let telephone = try #require(Fuseau("Asia/Jerusalem"))
+        let modele = ZmanimModele(magasin: .enMemoire(), horloge: HorlogeFixe(maintenant: instant, fuseau: telephone))
+        #expect(modele.jour.iso == "2026-11-13")
+        // Sans réglage, Israël ou diaspora suit le fuseau du téléphone ; sans lieu, aucun horaire.
+        #expect(modele.enIsrael)
+        let horaires = modele.horaires
+        #expect(horaires.isEmpty)
+    }
+
+    @Test func revenirAAujourdhui() throws {
+        let (modele, _, _) = try fabriquer(Reglages(), "2026-11-13", heure: 12, fuseau: "Asia/Jerusalem")
+        modele.jourSuivant()
+        modele.jourSuivant()
+        #expect(!modele.estAujourdhui)
+        modele.revenirAujourdhui()
+        #expect(modele.jour.iso == "2026-11-13")
+        #expect(modele.estAujourdhui)
+    }
+
+    @Test func choisirLAllumageLEcritDansLeMagasin() async throws {
+        let (modele, magasin, persistance) = try fabriquer(Reglages(), "2026-11-13", heure: 12, fuseau: "Asia/Jerusalem")
+        #expect(modele.allumage == Zmanim.allumageDefaut)
+        try await modele.choisirAllumage(40)
+        #expect(modele.allumage == 40)
+        #expect(magasin.reglages.allumage == 40)
+        let ecrit = await persistance.enregistrement.reglages.allumage
+        #expect(ecrit == 40)
+    }
+
+    @Test func choisirLeLieuRegleIsraelEtRetientLInstant() async throws {
+        var reglages = Reglages()
+        reglages.setLieuZmanim(paris, ville: nil, maintenant: 0)
+        let (modele, magasin, persistance) = try fabriquer(reglages, "2026-11-13", heure: 12, fuseau: "Europe/Paris")
+        #expect(!modele.enIsrael)
+        try await modele.choisirLieu(jerusalem, ville: nil)
+        let nom = modele.lieu?.nom
+        #expect(nom == "Jérusalem")
+        // Une position à Jérusalem : son fuseau dit Israël.
+        #expect(modele.enIsrael)
+        let fuseau = try #require(Fuseau("Europe/Paris"))
+        let midi = fuseau.millis(DateHeure(modele.jour, heure: 12))
+        #expect(magasin.reglages.lieuDepuis == midi)
+        let ecrit = await persistance.enregistrement.reglages
+        #expect(ecrit == magasin.reglages)
+    }
+
+    @Test func unLieuChoisiAilleursSeVoitIci() async throws {
+        let (modele, magasin, _) = try fabriquer(Reglages(), "2026-11-13", heure: 12, fuseau: "Europe/Paris")
+        #expect(modele.lieu == nil)
+        try await magasin.modifierReglages { $0.setLieuZmanim(paris, ville: nil, maintenant: 0) }
+        let nom = modele.lieu?.nom
+        #expect(nom == "Paris")
+        let horaires = modele.horaires
+        #expect(!horaires.isEmpty)
+    }
 }

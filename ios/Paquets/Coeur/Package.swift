@@ -70,6 +70,7 @@ let enChantierEcransTests: [String] = [
     "MagasinTests.swift",
     "MusiqueAmbianceSynthTests.swift",
     "MusiqueLecteurTests.swift",
+    "MusiqueMiniLecteurModeleTests.swift",
     "MusiqueModeleTests.swift",
     "OngletsTests.swift",
     "PresentationModeleTests.swift",
