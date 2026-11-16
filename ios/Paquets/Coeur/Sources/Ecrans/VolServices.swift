@@ -375,9 +375,10 @@ public enum VolStockage {
     /// Les réglages avec ces rappels (Store.setVolRappels).
     public static func avecRappels(_ reglages: Reglages, _ rappels: [VolRappels.Rappel]) -> Reglages {
         var brut = reglages.brut
-        let lignes = rappels.map { r in
-            nomKotlin(r.type) + "|" + String(r.instant) + "|" + (r.priere ?? "") + "|" +
-                (r.limite.map { String($0) } ?? "") + "|" + String(r.omer)
+        let lignes = rappels.map { (r: VolRappels.Rappel) -> String in
+            let limite: String = r.limite.map { String($0) } ?? ""
+            let champs: [String] = [nomKotlin(r.type), String(r.instant), r.priere ?? "", limite, String(r.omer)]
+            return champs.joined(separator: "|")
         }
         brut[rappelsCle] = .chaine(lignes.joined(separator: "\n"))
         return Reglages(brut: brut)
