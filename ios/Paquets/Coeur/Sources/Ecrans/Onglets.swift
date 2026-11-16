@@ -22,8 +22,10 @@ public enum Onglet: String, Sendable, CaseIterable, Identifiable {
         }
     }
 
-    /// Le symbole SF de l'icône, au trait : la barre d'onglets d'iOS le remplit quand l'onglet est choisi,
-    /// comme les icônes d'Android (`ic_nav_*_off` au repos, `ic_nav_*_on` actif).
+    /// Le symbole SF de l'icône, nommé au trait : la barre d'onglets d'iOS en montre d'elle-même la variante
+    /// pleine (`.fill`), choisi ou non, là où Android change d'icône (`ic_nav_*_off` au repos, `ic_nav_*_on`
+    /// actif) ; l'onglet choisi se distingue par la couleur. Rendre le trait au repos, comme Android, est
+    /// l'affaire de la vue des onglets.
     public var symbole: String {
         switch self {
         // ic_nav_today : la maison, porte ouverte.

@@ -16,7 +16,8 @@ import Coeur
 /// sans bruit si elle est déjà permise (ChoixLieu.rafraichir).
 ///
 /// La vue appelle `suivreCapteur()` dans sa `.task` (le capteur s'arrête quand la tâche est annulée) et
-/// `reprendre()` à l'apparition et au retour au premier plan (onResume).
+/// `reprendre()` à l'apparition et au retour au premier plan (onResume), `suspendre()` à la disparition et au
+/// passage en arrière-plan (onPause).
 @MainActor
 @Observable
 public final class BoussoleModele {
@@ -372,6 +373,13 @@ public final class BoussoleModele {
         if case .position(let position) = await localisation.positionApprochee() {
             try await enregistrer(position)
         }
+    }
+
+    /// L'écran passe à l'arrière-plan ou s'en va (onPause) : le widget de la boussole se redessine, pour qu'il
+    /// suive un lieu repris sans bruit pendant la visite (BoussoleWidget.refresh). Le capteur, lui, s'arrête
+    /// avec la tâche de `suivreCapteur()`.
+    public func suspendre() async {
+        await rafraichissement?.rafraichir()
     }
 
     /// Écoute le capteur tant que la tâche qui l'appelle n'est pas annulée (la `.task` de la vue : onResume

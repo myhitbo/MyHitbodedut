@@ -65,7 +65,7 @@ struct ChizukModeleTests {
         private let appels = Mutex(0)
 
         func melanger(_ ids: [String]) -> [String] {
-            let rang = appels.withLock { (valeur: inout Int) -> Int in
+            let rang: Int = appels.withLock { valeur in
                 valeur += 1
                 return valeur
             }
@@ -212,7 +212,11 @@ struct ChizukModeleTests {
         let partage = modele.textePartage { $0.cle }
         #expect(partage == nil)
         // « Garder » ne fait rien sans texte.
-        try? await modele.garder()
+        do {
+            try await modele.garder()
+        } catch {
+            Issue.record("garder a levé : \(error)")
+        }
         #expect(ChizukSac.favoris(magasin.reglages).isEmpty)
     }
 

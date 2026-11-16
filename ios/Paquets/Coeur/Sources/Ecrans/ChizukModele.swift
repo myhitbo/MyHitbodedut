@@ -294,6 +294,7 @@ public final class ChizukModele {
     /// « Un autre » : un nouveau tirage dans le sac, jamais le texte qui vient de sortir (ChizukBag). Une
     /// écriture refusée rend son erreur, le texte tiré est montré quand même.
     public func unAutre() async throws {
+        guard chizuk != nil else { return }
         defer { changements += 1 }
         try await tirer()
     }

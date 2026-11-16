@@ -183,6 +183,25 @@ struct PresentationModeleTests {
         #expect(ecritures == 0)
     }
 
+    /// « Passer », puis la feuille qui se retire et rappelle la fin (son `onDismiss`) : une seule écriture.
+    @Test func terminerDeuxFoisNEcritQuUneFois() async throws {
+        let banc = PresentationBanc(index: 3)
+        try await banc.modele.passer()
+        try await banc.modele.terminer()
+        #expect(banc.modele.termine)
+        let ecritures = await banc.persistance.ecrituresReglages
+        #expect(ecritures == 1)
+    }
+
+    /// Une rotation (ou une restauration d'état) reprend à la page où l'on était, ses choix compris.
+    @Test func laPageRepriseGardeSesChoix() {
+        let modele = PresentationModele.apercu(index: 2)
+        #expect(modele.ecran.cle == "jours")
+        #expect(modele.montreRappel)
+        let etape = Libelle("onboarding_step", .entier(3), .entier(7))
+        #expect(modele.etape == etape)
+    }
+
     @Test func uneEcritureRefuseeFermeQuandMemeLaPresentation() async throws {
         let banc = PresentationBanc()
         await banc.persistance.faireEchouer(true)
@@ -427,6 +446,17 @@ struct PresentationModeleTests {
         #expect(ecrites == [1260, 1290])
     }
 
+    @Test func choisirLHeureAvecLAutorisationDejaAccordeeNeRedemandeRien() async throws {
+        let banc = PresentationBanc(index: 2, accordee: true)
+        try await banc.modele.choisirHeureRappel(heure: 7, minute: 45)
+        let demandes = await banc.notificateur.demandes
+        #expect(demandes == 0)
+        #expect(!banc.modele.notificationsRefusees)
+        #expect(banc.modele.rappelActif)
+        let replanifications = await banc.rappels.replanifications
+        #expect(replanifications.count == 1)
+    }
+
     @Test func choisirLHeureSansListeReglee() async throws {
         let banc = PresentationBanc(index: 2)
         try await banc.modele.choisirHeureRappel(heure: 6, minute: 5)
@@ -470,6 +500,13 @@ struct PresentationModeleTests {
         let trouvee = modele.durees.first { $0.minutes == 15 }
         let quinze = try #require(trouvee)
         #expect(francais.texte(quinze.libelle) == "15 min")
+        // L'hébreu dit « 3 sur 7 » ; la vue le pose de droite à gauche.
+        let hebreu = try Traducteur(catalogue: donnees, langue: "he")
+        #expect(hebreu.texte(modele.etape) == "3 מתוך 7")
+        let trente = PresentationModele.apercu(index: 1).durees.last
+        let derniere = try #require(trente)
+        #expect(derniere.minutes == 30)
+        #expect(anglais.texte(derniere.libelle) == "30 min")
     }
 
     /// Chaque image de la présentation, et sa pose féminine, est livrée (ios/Ressources/Images).

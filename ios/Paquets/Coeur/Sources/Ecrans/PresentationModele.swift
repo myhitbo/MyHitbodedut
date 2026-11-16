@@ -272,6 +272,12 @@ public final class PresentationModele {
         index = Onboarding.precedent(index)
     }
 
+    /// La page amenée par un glissement du doigt (le `TabView` paginé de PORTAGE.md, que la vue lie à `index`),
+    /// ramenée dans les bornes. Android n'a que ses boutons : glisser ne termine rien et n'écrit rien.
+    public func afficher(page: Int) {
+        index = min(max(page, 0), Onboarding.dernier)
+    }
+
     /// « Passer » : la présentation finit d'un geste, depuis n'importe quelle page.
     public func passer() async throws {
         try await terminer()

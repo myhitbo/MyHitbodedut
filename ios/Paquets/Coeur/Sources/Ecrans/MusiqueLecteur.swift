@@ -89,6 +89,7 @@ public enum MusiqueRegles {
 /// principal, et une boucle calculée trop tard pour une ambiance déjà changée est jetée. La séance en a une,
 /// l'aperçu de l'écran Musique une autre.
 @MainActor
+@Observable
 public final class MusiqueAmbiances {
 
     /// L'ambiance qui joue, ou va jouer dès sa boucle calculée ; le silence à l'arrêt.
@@ -98,7 +99,7 @@ public final class MusiqueAmbiances {
     private let taux: Int
     private let secondes: Int
     /// Chaque demande a son numéro.
-    private var demande = 0
+    @ObservationIgnored private var demande = 0
 
     /// `taux` et `secondes` : ceux de la boucle (un test les réduit).
     public init(sortie: any MusiqueSortieAmbiance, taux: Int = MusiqueAmbianceSynth.taux,
@@ -443,8 +444,12 @@ public final class MusiqueLecteur {
         charge = false
         enPause = false
         joue = false
-        guard let fichier = await fichier(de: morceau) else { return false }
-        let lance = await sortie.jouer(fichier, gain: MusiqueRegles.gainMusique(reglages.musicVolume),
+        // MusicPlayer.start arrête d'abord ce qui joue : un morceau introuvable ne laisse pas jouer l'ancien.
+        guard let chemin = await fichier(de: morceau) else {
+            await sortie.arreter(fondu: false)
+            return false
+        }
+        let lance = await sortie.jouer(chemin, gain: MusiqueRegles.gainMusique(reglages.musicVolume),
                                        enBoucle: !enchainer, numero: ici)
         // Une autre commande est passée pendant l'attente : c'est elle qui décide.
         guard ici == numero else { return lance }

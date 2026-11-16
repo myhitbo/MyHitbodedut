@@ -33,10 +33,11 @@ public enum BibliothequeRoute: Sendable, Hashable {
     case sousSection(String)
     /// LibraryEntryActivity, `EXTRA_ID` : l'identifiant de l'entrée.
     case entree(String)
-    /// `SiddurLectureActivity.ouvrirLivre(id)` : le lecteur, sur un livre entier (`LIVRE` vrai).
+    /// `SiddurLectureActivity.ouvrirLivre(id)` : le lecteur, sur un livre entier (`ID` = id, `LIVRE` vrai).
     case livre(String)
-    /// La feuille des marque-pages des livres (`RepriseFavoris.listeSignets`, recueil « l »).
-    case marquesPagesLivres
+    /// `SiddurLectureActivity.ouvrirMarque(m)` pour un marque-page de livre : le lecteur sur le livre `id`
+    /// (`LIVRE` vrai), à sa place (`MARQUE` = « section:bloc »).
+    case marque(livre: String, section: Int, bloc: Int)
 }
 
 /// Une ligne de la liste (LibraryActivity.Row).
@@ -64,13 +65,39 @@ public struct BibliothequeLigne: Sendable, Equatable, Identifiable {
     public let route: BibliothequeRoute?
 }
 
-/// La ligne « סימניות · n » au-dessus de la liste des livres (RepriseFavoris.ligneSignets(c, "l")).
+/// La ligne « סימניות · n  › » au-dessus de la liste des livres (RepriseFavoris.ligneSignets(c, "l")) : la
+/// toucher ouvre la feuille des marque-pages (`BibliothequeModele.ouvrirSignets`).
 public struct BibliothequeSignets: Sendable, Equatable {
-    /// « Marque-pages », suivi dans la vue de « · » et du nombre.
+    /// « Marque-pages », suivi dans la vue de « · », du nombre, puis de deux espaces et « › ».
     public let titre: Libelle
     public let nombre: Int
-    /// L'icône des livres (`SiddurLectureActivity.icone(true)`), teinte de la couleur de marque.
+    /// L'icône des livres (`SiddurLectureActivity.icone(true)`), teinte de la couleur de marque, 18 pt, en fin
+    /// de ligne.
     public let icone: String
+}
+
+/// Une puce de la feuille des marque-pages (RepriseFavoris.listeSignets) : tous, les livres, ou un livre.
+public struct BibliothequeFiltreSignets: Sendable, Equatable, Identifiable {
+    /// « * » (tous), « l » (les livres) ou « l:<id> » (un livre).
+    public let id: String
+    /// Le nom d'une puce générale (« Tout », « Livres ») ; nil pour la puce d'un livre.
+    public let libelle: Libelle?
+    /// Le titre hébreu d'un livre, dans la police de lecture (ses signes absents masqués) ; nil pour une puce
+    /// générale.
+    public let titre: String?
+}
+
+/// Un marque-page dans la feuille : le livre en petit, les premiers mots du paragraphe dessous.
+public struct BibliothequeSignetLigne: Sendable, Equatable, Identifiable {
+    /// Son rang parmi les marque-pages des livres (`BibliothequeModele.signets`) : unique.
+    public let id: Int
+    /// Le titre hébreu du livre (13 pt, discret, de droite à gauche, police de lecture), signes absents masqués.
+    public let titre: String
+    /// Les premiers mots suivis de « … » (17 pt, encre, une ligne, de droite à gauche, police de lecture).
+    public let apercu: String
+    /// L'icône des livres, 14 pt, teinte de la couleur de marque, après le titre.
+    public let icone: String
+    /// Le lecteur, à la place du marque-page.
     public let route: BibliothequeRoute
 }
 
@@ -86,6 +113,10 @@ public final class BibliothequeModele {
     public let livresSeuls: Bool
 
     public private(set) var etat: BibliothequeEtat = .chargement
+    /// La feuille des marque-pages est ouverte (le dialogue d'Android).
+    public private(set) var feuilleSignetsOuverte = false
+    /// La puce choisie dans la feuille : « * » à chaque ouverture.
+    public private(set) var filtreSignets = "*"
     private var bibliotheque: Bibliotheque?
     private var indexLivres: Siddur?
 
@@ -181,8 +212,116 @@ public final class BibliothequeModele {
     public var ligneSignets: BibliothequeSignets? {
         let nombre = signets.count
         guard nombre > 0 else { return nil }
-        return BibliothequeSignets(titre: Libelle("marques_titre"), nombre: nombre, icone: "ic_marque_etude",
-                                   route: .marquesPagesLivres)
+        return BibliothequeSignets(titre: Libelle("marques_titre"), nombre: nombre,
+                                   icone: BibliothequeModele.iconeLivres)
+    }
+
+    // MARK: La feuille des marque-pages (RepriseFavoris.listeSignets, recueil « l »)
+
+    /// L'icône des marque-pages d'étude (`SiddurLectureActivity.icone(true)`).
+    public static let iconeLivres = "ic_marque_etude"
+
+    /// Le titre de la feuille, « Marque-pages » ; un bouton OK la ferme.
+    public var titreFeuilleSignets: Libelle { Libelle("marques_titre") }
+
+    /// Toucher la ligne des marque-pages : la feuille s'ouvre sur « Tout ». Rien sans marque-page.
+    public func ouvrirSignets() {
+        guard ligneSignets != nil else { return }
+        filtreSignets = "*"
+        feuilleSignetsOuverte = true
+    }
+
+    public func fermerSignets() {
+        feuilleSignetsOuverte = false
+    }
+
+    /// Les puces, une seule cochée (`filtreSignets`) : « Tout », « Livres », puis un livre par puce dans
+    /// l'ordre de l'index quand les marque-pages sont dans plus d'un livre. Vide sans marque-page.
+    public var filtresSignets: [BibliothequeFiltreSignets] {
+        let marques = signets
+        guard !marques.isEmpty, let index = indexLivres else { return [] }
+        var filtres = [
+            BibliothequeFiltreSignets(id: "*", libelle: Libelle("recherche_tout"), titre: nil),
+            BibliothequeFiltreSignets(id: "l", libelle: Libelle("livres_title"), titre: nil),
+        ]
+        // `distinct()` puis `sortedBy { ordre }` : chaque livre une fois, dans l'ordre de l'index.
+        var cles: [String] = []
+        for marque in marques where !cles.contains(where: { $0.egalUnites(marque.cle) }) {
+            cles.append(marque.cle)
+        }
+        cles.sort { BibliothequeModele.position($0, index) < BibliothequeModele.position($1, index) }
+        if cles.count > 1 {
+            let police = self.police
+            for cle in cles {
+                let titre = index.texte(cle.apresUnites(":"))?.titre.he ?? cle
+                filtres.append(BibliothequeFiltreSignets(id: cle, libelle: nil,
+                                                         titre: PoliceHebraique.masque(titre, police: police)))
+            }
+        }
+        return filtres
+    }
+
+    /// Choisit une puce ; une puce qui n'existe pas ne change rien.
+    public func choisirFiltreSignets(_ id: String) {
+        guard filtresSignets.contains(where: { $0.id == id }) else { return }
+        filtreSignets = id
+    }
+
+    /// Les marque-pages de la puce choisie, dans l'ordre des livres de l'index, puis de la section et du
+    /// paragraphe (à égalité, l'ordre où ils sont gardés).
+    public var lignesSignets: [BibliothequeSignetLigne] {
+        guard let index = indexLivres else { return [] }
+        let filtre = filtreSignets
+        let police = self.police
+        var retenues: [(rang: Int, position: Int, marque: MarquesPages.Marque)] = []
+        for (rang, marque) in signets.enumerated() {
+            let garde: Bool
+            if filtre == "*" {
+                garde = true
+            } else if filtre.contientUnites(":") {
+                garde = marque.cle.egalUnites(filtre)
+            } else {
+                garde = marque.cle.commenceParUnites(filtre + ":")
+            }
+            if garde {
+                retenues.append((rang: rang, position: BibliothequeModele.position(marque.cle, index), marque: marque))
+            }
+        }
+        retenues.sort { a, b in
+            if a.position != b.position { return a.position < b.position }
+            if a.marque.section != b.marque.section { return a.marque.section < b.marque.section }
+            if a.marque.bloc != b.marque.bloc { return a.marque.bloc < b.marque.bloc }
+            return a.rang < b.rang
+        }
+        var lignes: [BibliothequeSignetLigne] = []
+        for retenue in retenues {
+            let id = retenue.marque.cle.apresUnites(":")
+            let titre = index.texte(id)?.titre.he ?? ""
+            lignes.append(BibliothequeSignetLigne(
+                id: retenue.rang, titre: PoliceHebraique.masque(titre, police: police),
+                apercu: PoliceHebraique.masque(retenue.marque.apercu + "…", police: police),
+                icone: BibliothequeModele.iconeLivres,
+                route: .marque(livre: id, section: retenue.marque.section, bloc: retenue.marque.bloc)))
+        }
+        return lignes
+    }
+
+    /// Toucher un marque-page : la feuille se ferme, et la vue ouvre ce que la ligne désigne.
+    @discardableResult
+    public func choisirSignet(_ ligne: BibliothequeSignetLigne) -> BibliothequeRoute {
+        feuilleSignetsOuverte = false
+        return ligne.route
+    }
+
+    /// `ordre(c, cle)` d'Android pour un livre : 10 000 plus son rang dans l'index (−1 s'il n'y est plus).
+    private static func position(_ cle: String, _ index: Siddur) -> Int {
+        let id = cle.apresUnites(":")
+        return 10_000 + (index.textes.firstIndex { $0.id == id } ?? -1)
+    }
+
+    /// La police hébraïque des réglages de lecture, pour les titres et les aperçus de la feuille.
+    private var police: PoliceHebraique.Police {
+        PoliceHebraique.Police(rawValue: magasin.reglages.lecturePolice) ?? .serif
     }
 
     private var adresse: Adresse? {
@@ -341,6 +480,10 @@ public final class BibliothequeEntreeModele {
     /// L'identifiant de l'entrée (`EXTRA_ID`).
     public let id: String
 
+    /// Le bouton de lecture (taille, fond noir, police, langues), posé sur la page d'une source seulement
+    /// (`barreLectureVisible`).
+    public let barre: BibliothequeBarreLecture
+
     public private(set) var etat: BibliothequeEtat = .chargement
     /// Le message à montrer quand l'adresse n'a pu s'ouvrir (le Toast d'Android) ; nil sinon.
     public private(set) var alerte: Libelle?
@@ -352,6 +495,7 @@ public final class BibliothequeEntreeModele {
         self.contenus = contenus
         self.langue = ChizukCard.language(langue)
         self.id = id
+        barre = BibliothequeBarreLecture(magasin: magasin, langue: langue)
     }
 
     public func charger() async {
@@ -416,9 +560,13 @@ public final class BibliothequeEntreeModele {
 
     // MARK: Le texte d'une source
 
-    /// Vrai pour une source : la carte des paragraphes est montrée, et le bouton de lecture (taille, fond noir,
-    /// police, langues) est posé sur la page.
+    /// Vrai pour une source : la carte des paragraphes est montrée.
     public var paragraphesVisibles: Bool {
+        estSource
+    }
+
+    /// Vrai pour une source : le bouton de lecture (`barre`) est posé sur la page. Un article n'en a pas.
+    public var barreLectureVisible: Bool {
         estSource
     }
 
@@ -516,6 +664,178 @@ public final class BibliothequeEntreeModele {
     /// Les langues de lecture : le choix enregistré, sinon celles de la langue de l'app.
     public var modeLangues: LanguesTexte.Mode {
         BibliothequeLecture.mode(magasin.reglages, langue: langue)
+    }
+}
+
+// MARK: - Le bouton de lecture
+
+/// Le bouton de lecture des textes saints (ReglagesLecture.kt), tel que l'entrée d'une source le pose : la taille
+/// des lettres, la lecture sur fond noir, la police hébraïque, les langues du texte, et le bouton qu'on masque.
+///
+/// Replié, une pastille « Aa » au milieu du bas de l'écran ; déplié, une barre : A−, la taille en pour cent (un
+/// toucher la remet à 100 %), A+, la lune, « אב » (la police), « אA » (les langues), masquer, replier. Masqué,
+/// plus rien : deux touchers sur le texte le font revenir, déplié.
+///
+/// Les réglages valent pour tous les écrans de lecture : ils vivent dans le `Magasin`, sous les clés d'Android
+/// (`lecture_echelle`, `lecture_sombre`, `lecture_police`, `lecture_langues`, `lecture_masquee`). Le pli de la
+/// barre et l'effacement de la pastille au défilement sont l'état de la vue, non gardé.
+@MainActor
+@Observable
+public final class BibliothequeBarreLecture {
+
+    /// Un toucher sur A− ou A+ (ReglagesLecture.PAS).
+    public static let pas: Float = 0.1
+
+    private let magasin: Magasin
+    /// « fr », « en » ou « he » : les langues de lecture par défaut en dépendent.
+    public let langue: String
+
+    /// Vrai : la barre est dépliée ; faux : la pastille « Aa ». Replié à l'ouverture de l'écran.
+    public private(set) var deplie = false
+    /// Le message du masquage (le Snackbar d'Android, « Bouton masqué… », avec « Annuler ») ; nil sinon.
+    public private(set) var messageMasque: Libelle?
+
+    public init(magasin: Magasin, langue: String) {
+        self.magasin = magasin
+        self.langue = ChizukCard.language(langue)
+    }
+
+    // MARK: Ce que la barre montre
+
+    /// La taille des lettres, de 0,8 à 2 : les textes marqués la multiplient (ReglagesLecture.appliquer).
+    public var echelle: Float {
+        magasin.reglages.lectureEchelle
+    }
+
+    /// La taille en pour cent, arrondie comme Android (`roundToInt` d'un Float).
+    public var pourcent: Int {
+        Kotlin.arrondiFlottant(echelle * 100)
+    }
+
+    /// « 110 % », au milieu de la barre.
+    public var libellePourcent: Libelle {
+        Libelle("lecture_pourcent", .entier(pourcent))
+    }
+
+    /// « Taille du texte : 110 % », pour VoiceOver.
+    public var descriptionTaille: Libelle {
+        Libelle("lecture_taille", .entier(pourcent))
+    }
+
+    /// La lecture sur fond noir (la lune, cerclée quand elle est active).
+    public var sombre: Bool {
+        magasin.reglages.lectureSombre
+    }
+
+    /// L'état de la lune pour VoiceOver : « activée » ou « désactivée ».
+    public var etatSombre: Libelle {
+        Libelle(sombre ? "lecture_nuit_oui" : "lecture_nuit_non")
+    }
+
+    /// La police hébraïque choisie (le menu « אב »).
+    public var police: PoliceHebraique.Police {
+        PoliceHebraique.Police(rawValue: magasin.reglages.lecturePolice) ?? .serif
+    }
+
+    /// Les polices du menu, dans l'ordre d'Android ; chacune se nomme par `Police.libelle` (police_…).
+    public var polices: [PoliceHebraique.Police] {
+        PoliceHebraique.Police.allCases
+    }
+
+    /// Les langues du texte (le menu « אA ») : le choix enregistré, sinon celles de la langue de l'app.
+    public var mode: LanguesTexte.Mode {
+        BibliothequeLecture.mode(magasin.reglages, langue: langue)
+    }
+
+    /// Les six façons de lire, dans l'ordre d'Android ; chacune se nomme par `Mode.libelle` (langues_…).
+    public var modes: [LanguesTexte.Mode] {
+        LanguesTexte.Mode.allCases
+    }
+
+    /// Le bouton a été masqué : ni pastille ni barre.
+    public var masquee: Bool {
+        magasin.reglages.lectureMasquee
+    }
+
+    /// La pastille « Aa » se voit (repliée, non masquée).
+    public var pastilleVisible: Bool {
+        !masquee && !deplie
+    }
+
+    /// La barre se voit (dépliée, non masquée).
+    public var barreVisible: Bool {
+        !masquee && deplie
+    }
+
+    // MARK: Les actions
+
+    /// Toucher la pastille déplie la barre ; « Replier » la replie.
+    public func deplier(_ ouvert: Bool) {
+        deplie = ouvert
+    }
+
+    /// A+ : dix pour cent de plus, au plus 200 %.
+    public func agrandir() async throws {
+        try await changerTaille(echelle + BibliothequeBarreLecture.pas)
+    }
+
+    /// A− : dix pour cent de moins, au moins 80 %.
+    public func rapetisser() async throws {
+        try await changerTaille(echelle - BibliothequeBarreLecture.pas)
+    }
+
+    /// Toucher le pour cent : 100 %.
+    public func tailleNormale() async throws {
+        try await changerTaille(1)
+    }
+
+    /// La lune.
+    public func basculerSombre() async throws {
+        let sombre = !self.sombre
+        try await magasin.modifierReglages { $0.setLectureSombre(sombre) }
+    }
+
+    public func choisirPolice(_ police: PoliceHebraique.Police) async throws {
+        try await magasin.modifierReglages { $0.setLecturePolice(police.cle) }
+    }
+
+    /// Le texte lui-même change : la vue se refait, en gardant sa place.
+    public func choisirLangues(_ mode: LanguesTexte.Mode) async throws {
+        try await magasin.modifierReglages { $0.setLectureLangues(mode.cle) }
+    }
+
+    /// « Masquer le bouton » : plus rien à l'écran, et le message dit comment le retrouver.
+    public func masquer() async throws {
+        deplie = false
+        messageMasque = Libelle("lecture_masque_info")
+        try await magasin.modifierReglages { $0.setLectureMasquee(true) }
+    }
+
+    /// Le bouton du message, « Annuler ».
+    public var libelleAnnulerMasque: Libelle {
+        Libelle("lecture_annuler_masque")
+    }
+
+    /// Le message s'est effacé.
+    public func fermerMessage() {
+        messageMasque = nil
+    }
+
+    /// Deux touchers sur le texte, ou « Annuler » : le bouton revient, déplié. Rien s'il n'était pas masqué.
+    public func retrouver() async throws {
+        guard masquee else { return }
+        deplie = true
+        messageMasque = nil
+        try await magasin.modifierReglages { $0.setLectureMasquee(false) }
+    }
+
+    /// `changerTaille` : au dixième près (dix touchers de +10 % ne donnent pas 199,99 %), entre 80 % et 200 % ;
+    /// une taille qui ne change pas n'écrit rien.
+    private func changerTaille(_ voulue: Float) async throws {
+        let arrondie = Float(Kotlin.arrondiFlottant(voulue * 10)) / 10
+        let nouvelle = min(max(arrondie, Reglages.echelleMin), Reglages.echelleMax)
+        guard nouvelle != echelle else { return }
+        try await magasin.modifierReglages { $0.setLectureEchelle(nouvelle) }
     }
 }
 

@@ -213,7 +213,105 @@ struct BibliothequeModeleTests {
         #expect(ligne.nombre == 2)
         #expect(ligne.titre == Libelle("marques_titre"))
         #expect(ligne.icone == "ic_marque_etude")
-        #expect(ligne.route == .marquesPagesLivres)
+    }
+
+    /// Des marque-pages dans deux livres, gardés dans le désordre (le plus récent en tête).
+    private static let marquesDeuxLivres = [
+        MarquesPages.Marque(cle: "l:nichmat", nusah: "edot", section: 0, bloc: 4, apercu: "נשמת"),
+        MarquesPages.Marque(cle: "l:likoutei_moharan", nusah: "edot", section: 3, bloc: 2, apercu: "ב"),
+        MarquesPages.Marque(cle: "s:birkot_hachahar", nusah: "edot", section: 0, bloc: 2, apercu: "ברוך"),
+        MarquesPages.Marque(cle: "l:likoutei_moharan", nusah: "edot", section: 3, bloc: 0, apercu: "א"),
+        MarquesPages.Marque(cle: "l:likoutei_moharan", nusah: "edot", section: 1, bloc: 9, apercu: "ג"),
+    ]
+
+    private static func livres(_ marques: [MarquesPages.Marque], police: String? = nil) async -> BibliothequeModele {
+        var reglages = Reglages(brut: ObjetJSON([("marques_pages", JSON.chaine(MarquesPages.encoder(marques)))]))
+        if let police { reglages.setLecturePolice(police) }
+        let modele = BibliothequeModele(magasin: Self.magasin(reglages), contenus: Self.contenus, langue: "fr",
+                                        livresSeuls: true)
+        await modele.charger()
+        return modele
+    }
+
+    @Test func laFeuilleDesMarquePagesSuitLOrdreDesLivres() async throws {
+        let modele = await Self.livres(Self.marquesDeuxLivres)
+        #expect(!modele.feuilleSignetsOuverte)
+        modele.ouvrirSignets()
+        #expect(modele.feuilleSignetsOuverte)
+        #expect(modele.filtreSignets == "*")
+        #expect(modele.titreFeuilleSignets == Libelle("marques_titre"))
+        let index = try await Self.contenus.livres()
+        let moharan = try #require(index.texte("likoutei_moharan"))
+        let nichmat = try #require(index.texte("nichmat"))
+
+        // Tout, Livres, puis un livre par puce dans l'ordre de l'index (Likoutei Moharan avant Nichmat).
+        let filtres = modele.filtresSignets
+        let ids = filtres.map { $0.id }
+        #expect(ids == ["*", "l", "l:likoutei_moharan", "l:nichmat"])
+        #expect(filtres[0].libelle == Libelle("recherche_tout"))
+        #expect(filtres[1].libelle == Libelle("livres_title"))
+        #expect(filtres[2].libelle == nil)
+        #expect(filtres[2].titre == PoliceHebraique.masque(moharan.titre.he, police: .serif))
+
+        // Le livre de l'index, puis la section, puis le paragraphe ; le siddour n'est pas de cette feuille.
+        let lignes = modele.lignesSignets
+        let apercus = lignes.map { $0.apercu }
+        #expect(apercus == ["ג…", "א…", "ב…", "נשמת…"])
+        let routes = lignes.map { $0.route }
+        #expect(routes == [.marque(livre: "likoutei_moharan", section: 1, bloc: 9),
+                           .marque(livre: "likoutei_moharan", section: 3, bloc: 0),
+                           .marque(livre: "likoutei_moharan", section: 3, bloc: 2),
+                           .marque(livre: "nichmat", section: 0, bloc: 4)])
+        #expect(lignes[0].titre == moharan.titre.he)
+        #expect(lignes[3].titre == nichmat.titre.he)
+        #expect(lignes[0].icone == "ic_marque_etude")
+        let rangs = lignes.map { $0.id }
+        #expect(rangs == [3, 2, 1, 0])
+
+        // Une puce de livre ne garde que lui.
+        modele.choisirFiltreSignets("l:nichmat")
+        #expect(modele.filtreSignets == "l:nichmat")
+        let seul = modele.lignesSignets.map { $0.route }
+        #expect(seul == [.marque(livre: "nichmat", section: 0, bloc: 4)])
+        // « Livres » les garde tous ; une puce inconnue ne change rien.
+        modele.choisirFiltreSignets("l")
+        #expect(modele.lignesSignets.count == 4)
+        modele.choisirFiltreSignets("s")
+        #expect(modele.filtreSignets == "l")
+
+        // Toucher un marque-page ferme la feuille et rend sa place ; la rouvrir revient à « Tout ».
+        let route = modele.choisirSignet(lignes[1])
+        #expect(route == .marque(livre: "likoutei_moharan", section: 3, bloc: 0))
+        #expect(!modele.feuilleSignetsOuverte)
+        modele.ouvrirSignets()
+        #expect(modele.filtreSignets == "*")
+        modele.fermerSignets()
+        #expect(!modele.feuilleSignetsOuverte)
+    }
+
+    @Test func unSeulLivreMarquePasDePuceParLivre() async {
+        let marques = Self.marquesDeuxLivres.filter { $0.cle != "l:nichmat" }
+        let modele = await Self.livres(marques, police: "frank")
+        let ids = modele.filtresSignets.map { $0.id }
+        #expect(ids == ["*", "l"])
+        // Les aperçus dans la police de lecture.
+        let apercus = modele.lignesSignets.map { $0.apercu }
+        let attendus = ["ג…", "א…", "ב…"].map { PoliceHebraique.masque($0, police: .frank) }
+        #expect(apercus == attendus)
+    }
+
+    @Test func sansMarquePageLaFeuilleNeSOuvrePas() async {
+        let modele = await Self.livres([])
+        modele.ouvrirSignets()
+        #expect(!modele.feuilleSignetsOuverte)
+        #expect(modele.filtresSignets.isEmpty)
+        #expect(modele.lignesSignets.isEmpty)
+        // Hors des livres non plus.
+        let sources = BibliothequeModele(magasin: Self.magasin(), contenus: Self.contenus, langue: "fr",
+                                         livresSeuls: false)
+        await sources.charger()
+        sources.ouvrirSignets()
+        #expect(!sources.feuilleSignetsOuverte)
     }
 
     @Test func unMarquePagePoseAilleursSeCompteAuRetour() async throws {
@@ -477,6 +575,85 @@ struct BibliothequeModeleTests {
         #expect(modele.lien == nil)
     }
 
+    // MARK: Le bouton de lecture
+
+    @Test func leBoutonDeLectureNeSePoseQueSurUneSource() async {
+        let source = await Self.entree("s1")
+        #expect(source.barreLectureVisible)
+        let article = await Self.entree("a1")
+        #expect(!article.barreLectureVisible)
+    }
+
+    @Test func laTailleDesLettresAuDixiemePresEntre80Et200() async throws {
+        let modele = await Self.entree("s1")
+        let barre = modele.barre
+        #expect(barre.pastilleVisible)
+        #expect(!barre.barreVisible)
+        barre.deplier(true)
+        #expect(barre.barreVisible)
+        #expect(barre.pourcent == 100)
+        #expect(barre.libellePourcent == Libelle("lecture_pourcent", .entier(100)))
+        try await barre.agrandir()
+        #expect(barre.pourcent == 110)
+        #expect(modele.echelle == barre.echelle)
+        #expect(barre.descriptionTaille == Libelle("lecture_taille", .entier(110)))
+        for _ in 0..<15 {
+            try await barre.agrandir()
+        }
+        #expect(barre.pourcent == 200)
+        #expect(barre.echelle == Reglages.echelleMax)
+        try await barre.tailleNormale()
+        #expect(barre.pourcent == 100)
+        for _ in 0..<5 {
+            try await barre.rapetisser()
+        }
+        #expect(barre.pourcent == 80)
+        #expect(barre.echelle == Reglages.echelleMin)
+    }
+
+    @Test func laLuneLaPoliceEtLesLangues() async throws {
+        let modele = await Self.entree("s1")
+        let barre = modele.barre
+        #expect(!barre.sombre)
+        #expect(barre.etatSombre == Libelle("lecture_nuit_non"))
+        try await barre.basculerSombre()
+        #expect(barre.sombre)
+        #expect(modele.lectureSombre)
+        #expect(barre.etatSombre == Libelle("lecture_nuit_oui"))
+
+        #expect(barre.polices == PoliceHebraique.Police.allCases)
+        try await barre.choisirPolice(.frank)
+        #expect(modele.police == .frank)
+        #expect(modele.titre == PoliceHebraique.masque("מקור", police: .frank))
+
+        #expect(barre.mode == .heFr)
+        #expect(barre.modes == LanguesTexte.Mode.allCases)
+        try await barre.choisirLangues(.fr)
+        #expect(modele.modeLangues == .fr)
+        let sortes = modele.blocs.map { $0.sorte }
+        #expect(sortes == [.traduction(langue: "fr", seule: true), .hebreu])
+    }
+
+    @Test func masquerPuisRetrouverLeBouton() async throws {
+        let modele = await Self.entree("s1")
+        let barre = modele.barre
+        barre.deplier(true)
+        try await barre.masquer()
+        #expect(barre.masquee)
+        #expect(!barre.pastilleVisible)
+        #expect(!barre.barreVisible)
+        #expect(barre.messageMasque == Libelle("lecture_masque_info"))
+        #expect(barre.libelleAnnulerMasque == Libelle("lecture_annuler_masque"))
+        try await barre.retrouver()
+        #expect(!barre.masquee)
+        #expect(barre.barreVisible)
+        #expect(barre.messageMasque == nil)
+        // Non masqué, retrouver ne change rien.
+        barre.deplier(false)
+        try await barre.retrouver()
+        #expect(barre.pastilleVisible)
+    }
+
     @Test func uneAdresseQuiNeSOuvrePasLeDit() async {
         let modele = await Self.entree("s1")
         #expect(modele.alerte == nil)
@@ -493,8 +670,11 @@ struct BibliothequeModeleTests {
         let simples = [
             "library_title", "library_hint", "livres_title", "livres_hint", "library_entries_count", "marques_titre",
             "library_kind_source", "library_kind_article", "library_open_sefaria", "library_read_on_site",
-            "library_summary", "library_full_text", "settings_screen_missing",
-        ]
+            "library_summary", "library_full_text", "settings_screen_missing", "recherche_tout",
+            "lecture_reglages", "lecture_plus", "lecture_moins", "lecture_pourcent", "lecture_taille", "lecture_nuit",
+            "lecture_nuit_oui", "lecture_nuit_non", "lecture_police", "lecture_langues", "lecture_masquer",
+            "lecture_replier", "lecture_masque_info", "lecture_annuler_masque",
+        ] + PoliceHebraique.Police.allCases.map { $0.libelle } + LanguesTexte.Mode.allCases.map { $0.libelle }
         for cle in simples {
             for langue in Traducteur.langues {
                 let valeur = catalogue.valeur(cle, langue: langue)

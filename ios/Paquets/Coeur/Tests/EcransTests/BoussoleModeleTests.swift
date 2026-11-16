@@ -194,7 +194,8 @@ struct BoussoleModeleTests {
         #expect(he.cardinaux == hebreu.cardinaux)
         #expect(he.distance == Libelle("boussole_distance", .texte("9,169")))
         let b = try banc(paris, langue: "en")
-        #expect(b.modele.directionSuivie == Libelle("boussole_grand_cercle", .entier(112), .texte("SE")))
+        // 112,48° / 45 = 2,4996 : le point le plus proche est l'est, pas le sud-est (DirectionJerusalem.point).
+        #expect(b.modele.directionSuivie == Libelle("boussole_grand_cercle", .entier(112), .texte("E")))
         #expect(b.modele.directionAutre == Libelle("boussole_cap_constant", .entier(124), .texte("SE")))
         #expect(b.modele.cardinaux == ["N", "E", "S", "W"])
         let distance = b.traducteur.texte(try #require(b.modele.distance))
@@ -279,8 +280,13 @@ struct BoussoleModeleTests {
 
     /// RepriseBoussoleTest.droitLeDosDuTelephone : tenu droit, le cap ne s'affole pas (bug du 02/11).
     @Test func droitLeDosDuTelephone() throws {
-        let cas: [(alpha: Double, beta: Double, cap: Double)] = [(0, 90, 0), (180, 90, 180)]
-            + [30.0, 45.0, 60.0, 80.0, 89.0, 89.9, 90.0].map { (alpha: 270, beta: $0, cap: 90) }
+        var cas: [(alpha: Double, beta: Double, cap: Double)] = [
+            (alpha: 0, beta: 90, cap: 0), (alpha: 180, beta: 90, cap: 180),
+        ]
+        // De 30° à la verticale : toujours l'est, sans saut.
+        for beta in [30.0, 45.0, 60.0, 80.0, 89.0, 89.9, 90.0] {
+            cas.append((alpha: 270, beta: beta, cap: 90))
+        }
         for c in cas {
             let modele = try banc(newYork).modele
             let d = try #require(modele.declinaison)
@@ -421,6 +427,53 @@ struct BoussoleModeleTests {
         #expect(modele.etat == .orientee)
     }
 
+    /// Les six caps des captures de la feuille de route (0°, 60°… 300° depuis le nord vrai, de New York) : la
+    /// consigne, et où le hassid voit Jérusalem et l'autre direction sur l'horizon. La capture elle-même reste
+    /// au test d'interface.
+    @Test func sixCaps() throws {
+        struct Cas {
+            let cap: Double
+            let consigne: Libelle
+            let xJerusalem: Double
+            let xEtiquette: Double
+            let xAutre: Double
+        }
+        let cas = [
+            Cas(cap: 0, consigne: Libelle("boussole_droite", .entier(54)), xJerusalem: 118.925, xEtiquette: 118.925,
+                xAutre: 150),
+            Cas(cap: 60, consigne: Libelle("boussole_gauche", .entier(6)), xJerusalem: -13.075, xEtiquette: -13.075,
+                xAutre: 78.769),
+            Cas(cap: 120, consigne: Libelle("boussole_gauche", .entier(66)), xJerusalem: -145.075, xEtiquette: -124,
+                xAutre: -53.231),
+            Cas(cap: 180, consigne: Libelle("boussole_gauche", .entier(126)), xJerusalem: -150, xEtiquette: -124,
+                xAutre: -150),
+            Cas(cap: 240, consigne: Libelle("boussole_droite", .entier(174)), xJerusalem: 150, xEtiquette: 124,
+                xAutre: -150),
+            Cas(cap: 300, consigne: Libelle("boussole_droite", .entier(114)), xJerusalem: 150, xEtiquette: 124,
+                xAutre: 150),
+        ]
+        for c in cas {
+            let modele = try banc(newYork).modele
+            let d = try #require(modele.declinaison)
+            modele.recevoir(.cap(c.cap - d))
+            #expect(modele.etat == .orientee)
+            #expect(!modele.alignee)
+            #expect(modele.consigne == c.consigne, "cap \(c.cap)")
+            guard case .hassid(let hassid) = modele.scene else {
+                Issue.record("la scène du hassid était attendue, cap \(c.cap)")
+                continue
+            }
+            let x = abs(hassid.xJerusalem - c.xJerusalem) < 0.01
+            #expect(x, "cap \(c.cap) : \(hassid.xJerusalem)")
+            let etiquette = abs(hassid.xEtiquette - c.xEtiquette) < 0.01
+            #expect(etiquette, "cap \(c.cap) : \(hassid.xEtiquette)")
+            let autre = abs(hassid.xAutre - c.xAutre) < 0.01
+            #expect(autre, "cap \(c.cap) : \(hassid.xAutre)")
+            #expect(hassid.yHassid == -62)
+            #expect(hassid.consigne == c.consigne)
+        }
+    }
+
     @Test func lHorizonEtLEtiquetteRestentDansLeCadre() {
         #expect(BoussoleScene.xHorizon(0) == 0)
         #expect(BoussoleScene.xHorizon(10) == Double(Float(10) * Float(2.2)))
@@ -485,13 +538,14 @@ struct BoussoleModeleTests {
         #expect(recu)
         #expect(modele.alignee)
         #expect(modele.alignements == 1)
+        let capRecu = try #require(modele.cap)
 
         // L'écran s'en va : le flux se ferme, plus rien n'arrive.
         ecoute.cancel()
         await ecoute.value
         let recues = await capteur.envoyer(.cap(p + 90 - d))
         #expect(recues == 0)
-        #expect(modele.cap == p)
+        #expect(modele.cap == capRecu)
 
         // L'écran revient (onResume) : le cap lissé reste, l'avertissement repart caché, l'arrivée face à
         // Jérusalem se signale de nouveau.
@@ -499,13 +553,28 @@ struct BoussoleModeleTests {
         let reabonne = await attendre { await capteur.abonnements == 2 }
         #expect(reabonne)
         #expect(!modele.montrerCalibrage)
-        #expect(modele.cap == p)
+        #expect(modele.cap == capRecu)
         #expect(modele.alignements == 2)
         await capteur.envoyer(.precision(.nonFiable))
         let calibrer = await attendre { modele.montrerCalibrage }
         #expect(calibrer)
         reprise.cancel()
         await reprise.value
+    }
+
+    @Test func enPartantLeWidgetSeRedessine() async throws {
+        let b = try banc(newYork)
+        await b.modele.suspendre()
+        let rafraichi = await b.rafraichissement.rafraichissements
+        #expect(rafraichi == 1)
+        // Sans widget (un aperçu), rien ne se passe.
+        let tableaux = try BoussoleTableaux(donnees: Self.tableaux.get(), langue: "fr")
+        let sansWidget = BoussoleModele(magasin: b.magasin, contenus: Self.contenus, horloge: b.horloge,
+                                        traducteur: b.traducteur, tableaux: tableaux, capteur: b.capteur,
+                                        localisation: b.localisation, autorisationLieu: b.autorisation)
+        await sansWidget.suspendre()
+        let toujours = await b.rafraichissement.rafraichissements
+        #expect(toujours == 1)
     }
 
     @Test func laRepriseReprendSansBruitLaPosition() async throws {

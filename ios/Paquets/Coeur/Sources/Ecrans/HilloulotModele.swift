@@ -259,9 +259,13 @@ public final class HilloulotModele {
     }
 
     /// La taille des lettres des écrans de lecture (0,8 à 2), qui multiplie celle de chaque texte de la liste
-    /// (ReglagesLecture.retailler), et la police hébraïque.
+    /// (ReglagesLecture.retailler), hors champ de recherche.
     public var echelle: Float { magasin.reglages.lectureEchelle }
-    public var police: String { magasin.reglages.lecturePolice }
+
+    /// La police hébraïque des réglages de lecture : la date hébraïque, les noms, les notices et les biographies.
+    public var police: PoliceHebraique.Police {
+        PoliceHebraique.Police(rawValue: magasin.reglages.lecturePolice) ?? .serif
+    }
 
     // MARK: Ce qui s'affiche
 
@@ -494,8 +498,8 @@ public final class HilloulotModele {
         while true {
             let recherche = tacheRecherche
             let bios = tacheBios
-            await recherche?.value
-            await bios?.value
+            if let recherche { await recherche.value }
+            if let bios { await bios.value }
             if recherche == tacheRecherche && bios == tacheBios { return }
         }
     }
@@ -541,7 +545,7 @@ public final class HilloulotModele {
         let contenus = self.contenus
         let precedente = tacheBios
         tacheBios = Task {
-            await precedente?.value
+            if let precedente { await precedente.value }
             guard let complete = try? await contenus.avecBios(pour: cles) else { return }
             self.table = complete
             if self.enRecherche { self.lancerRecherche() }
