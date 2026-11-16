@@ -351,7 +351,7 @@ position estimée arrondie au dixième de degré, et interroge OpenSky en
 anonyme, ou avec un client API s'il en a un. Une position de plus de 10 minutes est écartée. La position reçue
 devient un relevé, comme celui du GPS, et la fiabilité le dit. OpenSky ne voit
 les avions que près de ses antennes au sol : au-dessus des océans, souvent
-rien. Conditions d'OpenSky (courriel du 28/10, ticket 837455) : application
+rien. Conditions d'OpenSky (courriel du 28/10) : application
 gratuite sans publicité ni fonction payante = usage non commercial, compte
 gratuit ; données demandées par le relais avec le client OAuth2 du compte, pas
 par chaque téléphone ; une réponse partagée en cache temporaire par zone (relais :

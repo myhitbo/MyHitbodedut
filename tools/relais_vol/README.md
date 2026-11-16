@@ -14,7 +14,7 @@ sans ce relais elle n'a pas de suivi en direct, avec lui elle passe par lui.
 pas les appels d'un autre site depuis un navigateur (vérifié le 28/10 : en-tête
 `access-control-allow-origin: https://opensky-network.org` seulement).
 
-## Les conditions d'OpenSky (courriel du 28/10/2026, ticket 837455)
+## Les conditions d'OpenSky (courriel du 28/10/2026)
 
 Application gratuite, sans publicité, abonnement ni fonction payante, dons
 éventuels reversés à une association : usage **non commercial**, compte OpenSky
@@ -43,7 +43,7 @@ flux `play.yml` le fait dès que la variable de dépôt `RELAIS_VOL` existe.
 
 ## Décisions du propriétaire (04/11/2026)
 
-- **Réponse à OpenSky** (ticket 837455) : envoyée.
+- **Réponse à OpenSky** : envoyée.
 - **Fournisseur payant d'horaires de vol** (AeroDataBox, Aviationstack…) :
   non. Les heures restent saisies à la main ; la route d'un numéro de vol
   vient d'adsbdb.
@@ -73,9 +73,12 @@ flux `play.yml` le fait dès que la variable de dépôt `RELAIS_VOL` existe.
    sait encore passer en anonyme sans eux, mais ce n'est pas l'usage accordé.
    Usage **non commercial** seulement.
 2. Créer un compte Cloudflare (offre gratuite : 100 000 requêtes par jour).
-   Le relais limite déjà chaque adresse à 20 demandes par minute (`DEBIT_MAX`),
-   par instance ; pour une limite ferme, ajouter dans Cloudflare une règle de
-   limitation de débit (Security → WAF → Rate limiting rules) sur `/position`.
+   **Obligatoire avant la mise en ligne** : une règle de limitation de débit dans
+   Cloudflare (Security → WAF → Rate limiting rules) sur `/position`, par
+   exemple 10 requêtes par 10 minutes et par adresse. Le relais compte aussi
+   lui-même les demandes faites à OpenSky (6 par 10 minutes et par adresse, un
+   /64 entier en IPv6 ; 1 800 par jour avec la clé, 180 sans), mais par
+   instance du Worker : ce compte-là n'est qu'un filet.
 3. Ici : `npx wrangler login`, puis, si l'on a un client API,
    `npx wrangler secret put OPENSKY_CLIENT_ID` et
    `npx wrangler secret put OPENSKY_CLIENT_SECRET` ; enfin `npx wrangler deploy`.

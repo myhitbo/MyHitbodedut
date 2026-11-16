@@ -48,7 +48,11 @@ class Fiabilite2Test {
     @Test
     fun `l import a un plafond et les notes une longueur`() {
         val reglages = lire("SettingsActivity.kt")
-        assertTrue(reglages.contains("IMPORT_MAX_OCTETS = 2 * 1024 * 1024"))
+        // Le fichier lu jusqu'à 3 Mo (une sauvegarde chiffrée est un tiers plus grosse), le texte en clair jusqu'à 2 Mo.
+        assertTrue(reglages.contains("IMPORT_MAX_OCTETS = 3 * 1024 * 1024"))
+        assertTrue(reglages.contains("CLAIR_MAX_OCTETS = 2 * 1024 * 1024"))
+        assertTrue(reglages.contains("octets.size > CLAIR_MAX_OCTETS"))
+        assertTrue(reglages.contains("clair.toByteArray(Charsets.UTF_8).size > CLAIR_MAX_OCTETS"))
         assertTrue(reglages.contains("if (total > IMPORT_MAX_OCTETS) return@use null"))
         assertTrue(lire("NoteDialog.kt").contains("LengthFilter(Store.NOTE_MAX)"))
         assertTrue(lire("Store.kt").contains("const val NOTE_MAX = 4000"))

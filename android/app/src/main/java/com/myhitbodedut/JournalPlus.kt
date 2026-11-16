@@ -37,10 +37,13 @@ object JournalPlus {
             o.optString("travail", "").take(GRATITUDE_MAX))
     }
 
+    /** L'entrée enregistrée d'un jour, bornée ; aussi pour l'import, qui écrit tout d'un coup. */
+    fun versJson(plus: Plus): JSONObject = JSONObject().put("avant", plus.avant).put("apres", plus.apres)
+        .put("gratitude", plus.gratitude.take(GRATITUDE_MAX)).put("travail", plus.travail.take(GRATITUDE_MAX))
+
     fun ecrire(context: Context, date: String, plus: Plus) {
         val t = tout(context)
-        if (plus.vide) t.remove(date) else t.put(date, JSONObject().put("avant", plus.avant).put("apres", plus.apres)
-            .put("gratitude", plus.gratitude.take(GRATITUDE_MAX)).put("travail", plus.travail.take(GRATITUDE_MAX)))
+        if (plus.vide) t.remove(date) else t.put(date, versJson(plus))
         Store.setJournalPlusBrut(context, t.toString())
     }
 

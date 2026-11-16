@@ -415,13 +415,15 @@ export function memeIndicatif(a, b) {
  */
 export const Raison = {
   HORS_LIGNE: 'hors_ligne', QUOTA: 'quota', ILLISIBLE: 'illisible', POSITION_INVALIDE: 'position_invalide',
-  RELAIS_ABSENT: 'relais_absent', SERVICE: 'service',
+  RELAIS_ABSENT: 'relais_absent', SERVICE: 'service', TROP_DE_DEMANDES: 'trop_de_demandes',
   serveur: (code) => (code === 429 ? 'quota' : `serveur_${code}`),
   /** Le code HTTP d'une raison serveur(), sinon null. */
   codeServeur: (raison) => (/^serveur_\d+$/.test(raison) ? +raison.slice(8) : null),
-  /** Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… */
+  /** Le message du relais (tools/relais_vol) : « opensky 429 » (quota du jour), « relais 429 » (débit), « opensky injoignable »… */
   duRelais: (message) => {
-    const m = /^(?:opensky|relais) (\d+)$/.exec(String(message).trim());
+    const texte = String(message).trim();
+    if (texte === 'relais 429') return 'trop_de_demandes';
+    const m = /^opensky (\d+)$/.exec(texte);
     return m ? Raison.serveur(+m[1]) : 'service';
   },
 };
@@ -448,9 +450,14 @@ export async function positionEnDirect(relais, indicatif, estime, chercher = fet
   if (!relais || !relais.startsWith('https://')) return { statut: 'erreur', raison: Raison.RELAIS_ABSENT };
   try {
     const r = await chercher(adresseRelais(relais, indicatif, estime), { credentials: 'omit', redirect: 'error' });
-    if (r.status >= 500) return { statut: 'erreur', raison: Raison.serveur(r.status) };
     let o;
-    try { o = await r.json(); } catch { return { statut: 'erreur', raison: Raison.ILLISIBLE }; }
+    try { o = await r.json(); } catch { o = undefined; }
+    // Le corps se lit aussi en 5xx (revue du 15/11) : « opensky 429 » y dit le quota du jour épuisé.
+    if (r.status >= 500) {
+      const lu = o?.erreur ? lireReponse(o, maintenant) : null;
+      return lu && lu.raison !== Raison.ILLISIBLE ? lu : { statut: 'erreur', raison: Raison.serveur(r.status) };
+    }
+    if (o === undefined) return { statut: 'erreur', raison: Raison.ILLISIBLE };
     return lireReponse(o, maintenant);
   } catch {
     return { statut: 'erreur', raison: Raison.HORS_LIGNE };

@@ -98,6 +98,7 @@ class NoteDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val activity = requireActivity()
         date = requireArguments().getString(ARG_DATE).orEmpty()
+        val verrou = VerrouJournal.actif(activity)
         val density = activity.resources.displayMetrics.density
         val pad = (16 * density).toInt()
 
@@ -116,6 +117,7 @@ class NoteDialog : DialogFragment() {
             setHint(R.string.note_hint)
             setLines(4)
             gravity = Gravity.TOP or Gravity.START
+            sansApprentissage(this, verrou)
         }
 
         // Le journal enrichi (14/10) : l'humeur avant et après, une gratitude.
@@ -125,12 +127,14 @@ class NoteDialog : DialogFragment() {
             filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
             setHint(R.string.journal_gratitude_hint)
             setSingleLine()
+            sansApprentissage(this, verrou)
         }
         // La seconde question de fin (19/10) : une chose à travailler.
         champTravail = EditText(activity).apply {
             filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
             setHint(R.string.journal_travail_hint)
             setSingleLine()
+            sansApprentissage(this, verrou)
         }
 
         // Le brouillon s'il y en a un (fenêtre recréée, processus tué), sinon ce qui est enregistré.
@@ -257,12 +261,40 @@ class NoteDialog : DialogFragment() {
         private const val ETIQUETTE = "note"
         private const val ARG_DATE = "date"
 
-        /** Ouvre la note du jour [date] sur cet écran ; une seule à la fois. */
+        /**
+         * Ouvre la note du jour [date] sur cet écran ; une seule à la fois.
+         *
+         * Le verrou du journal (revue du 15/11) : ouverte depuis l'accueil, la
+         * séance ou le bravo, la fenêtre montrait sans code la note et le
+         * journal enrichi déjà écrits ce jour-là. Le journal, lui, a déjà
+         * demandé le code ; une fenêtre vide n'a rien à cacher. Refuser le code
+         * ferme la note comme « Plus tard ».
+         */
         fun show(activity: FragmentActivity, date: String) {
+            if (activity !is JournalActivity && VerrouJournal.actif(activity) && dejaEcrit(activity, date)) {
+                VerrouJournal.exiger(activity, onOk = { ouvrir(activity, date) }, onRefus = { (activity as? Hote)?.noteFermee(date) })
+                return
+            }
+            ouvrir(activity, date)
+        }
+
+        private fun ouvrir(activity: FragmentActivity, date: String) {
             val fragments = activity.supportFragmentManager
             if (fragments.isStateSaved || fragments.findFragmentByTag(ETIQUETTE) != null) return
             NoteDialog().apply { arguments = Bundle().apply { putString(ARG_DATE, date) } }
                 .show(fragments, ETIQUETTE)
+        }
+
+        /** Le jour a déjà du texte, enregistré ou en brouillon : c'est lui que le verrou garde. */
+        private fun dejaEcrit(activity: FragmentActivity, date: String): Boolean {
+            val plus = JournalPlus.lire(activity, date)
+            return Store.record(activity, date)?.note.orEmpty().isNotBlank() || NoteBrouillon.lire(activity, date) != null ||
+                plus.gratitude.isNotBlank() || plus.travail.isNotBlank() || plus.avant != 0 || plus.apres != 0
+        }
+
+        /** Le clavier n'apprend pas les mots du journal quand il est verrouillé : il les reproposerait ailleurs. */
+        private fun sansApprentissage(champ: EditText, verrou: Boolean) {
+            if (verrou) champ.imeOptions = champ.imeOptions or android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
         }
 
         /** Une note est ouverte sur cet écran : le bravo attend qu'elle se ferme (FSEANCE-03). */

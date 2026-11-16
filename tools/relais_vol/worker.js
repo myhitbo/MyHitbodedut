@@ -8,7 +8,7 @@
 // du Worker : elle n'est jamais dans l'application. Rien n'est journalisé
 // par ce code ; Cloudflare garde ses propres journaux (README.md).
 //
-// Ce que demande OpenSky (courriel du 28/10/2026, ticket 837455) : les données
+// Ce que demande OpenSky (courriel du 28/10/2026) : les données
 // sont demandées par ce serveur, avec le client OAuth2 du compte, pas par chaque
 // téléphone ; les appareils d'une même zone partagent une seule réponse mise en
 // cache ; la mise en cache est temporaire, sans archive des données brutes.
@@ -20,7 +20,7 @@
 //   200 { trouve: true, latitude, longitude, altitude_baro, altitude_geo, instant, icao24 }
 //   200 { trouve: false }
 //   400 { erreur }        paramètres invalides
-//   429 { erreur }        « relais 429 » : trop de demandes de la même adresse
+//   429 { erreur }        « relais 429 » : trop de demandes (de cette adresse, ou du jour)
 //   502 { erreur }        OpenSky injoignable ou refus (crédits épuisés : 429)
 //
 // Secrets (wrangler secret put), facultatifs : OPENSKY_CLIENT_ID, OPENSKY_CLIENT_SECRET.
@@ -34,21 +34,48 @@ export const DEMI_COTE = 5;
 export const GRILLE = 0.5;
 export const DUREE_CACHE = 15_000;
 
-// Le débit par adresse (audit du 12/11/2026) : DEBIT_MAX demandes par DEBIT_FENETRE ms. Le relais
-// est ouvert (le CORS n'arrête qu'un navigateur) : sans cela, un script épuisait les crédits
-// OpenSky de tous. Le compte est par instance du Worker, donc approximatif ; une règle de
-// limitation de débit dans Cloudflare (README.md) le double.
-export const DEBIT_MAX = 20;
-export const DEBIT_FENETRE = 60_000;
+// Les crédits OpenSky (audit du 12/11/2026, revue du 15/11). Le relais est ouvert (le CORS
+// n'arrête qu'un navigateur) : un script pouvait épuiser les crédits de tous. Deux bornes, comptées
+// sur les seules demandes faites à OpenSky (une réponse servie du cache ne coûte rien) :
+// - par adresse : DEBIT_MAX demandes par DEBIT_FENETRE ms ; une adresse IPv6 compte pour son /64
+//   entier, sans quoi un hôte en changeait à chaque demande. La position en direct ne part qu'au
+//   toucher d'un bouton : 6 en 10 minutes laissent largement passer un vrai voyageur ;
+// - en tout : BUDGET_JOUR demandes par jour UTC, sous les crédits du compte (2 par demande).
+// Les deux sont comptées par instance du Worker, donc approximatives : la règle de limitation de
+// débit de Cloudflare (README.md) est la seule borne ferme, et elle est à poser avant la mise en ligne.
+export const DEBIT_MAX = 6;
+export const DEBIT_FENETRE = 10 * 60_000;
+export const BUDGET_JOUR = { avecCle: 1800, anonyme: 180 };
 const DEBITS = new Map();
+const BUDGET = { jour: '', n: 0 };
 
-/** Vrai si [ip] dépasse son débit ; les fenêtres closes sont effacées au passage. */
-export function tropDemande(ip, maintenant, debits = DEBITS) {
-  if (!ip) return false;
-  if (debits.size > 5000) for (const [cle, d] of debits) if (d.fin <= maintenant) debits.delete(cle);
-  const d = debits.get(ip);
-  if (!d || d.fin <= maintenant) { debits.set(ip, { fin: maintenant + DEBIT_FENETRE, n: 1 }); return false; }
+/** La clé d'une adresse : elle-même en IPv4, son préfixe /64 en IPv6 ; null sans adresse. */
+export function cleAdresse(ip) {
+  if (!ip) return null;
+  if (!ip.includes(':')) return ip;
+  const [tete, queue] = ip.toLowerCase().split('::');
+  const a = tete ? tete.split(':') : [];
+  const b = queue !== undefined && queue !== '' ? queue.split(':') : [];
+  const groupes = queue === undefined ? a : [...a, ...Array(Math.max(0, 8 - a.length - b.length)).fill('0'), ...b];
+  return `${groupes.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, '')).join(':')}::/64`;
+}
+
+/** Vrai si [cle] dépasse son débit ; les fenêtres closes sont effacées au passage. */
+export function tropDemande(cle, maintenant, debits = DEBITS) {
+  if (!cle) return false;
+  if (debits.size > 5000) for (const [c, d] of debits) if (d.fin <= maintenant) debits.delete(c);
+  const d = debits.get(cle);
+  if (!d || d.fin <= maintenant) { debits.set(cle, { fin: maintenant + DEBIT_FENETRE, n: 1 }); return false; }
   return ++d.n > DEBIT_MAX;
+}
+
+/** Vrai si le budget du jour est dépensé ; sinon compte une demande de plus. */
+export function budgetEpuise(avecCle, maintenant, budget = BUDGET) {
+  const jour = new Date(maintenant).toISOString().slice(0, 10);
+  if (budget.jour !== jour) { budget.jour = jour; budget.n = 0; }
+  if (budget.n >= (avecCle ? BUDGET_JOUR.avecCle : BUDGET_JOUR.anonyme)) return true;
+  budget.n++;
+  return false;
 }
 
 /** La réponse d'OpenSky par carré, le temps de DUREE_CACHE : { expire, etats }. */
@@ -94,7 +121,7 @@ const json = (corps, statut, origine) => new Response(JSON.stringify(corps), {
   headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...(origine ? { 'access-control-allow-origin': origine, vary: 'origin' } : {}) },
 });
 
-export async function traiter(requete, env, chercher = fetch, cache = CACHE, maintenant = Date.now(), debits = DEBITS) {
+export async function traiter(requete, env, chercher = fetch, cache = CACHE, maintenant = Date.now(), debits = DEBITS, budget = BUDGET) {
   const url = new URL(requete.url);
   const origine = env.ORIGINE_WEB && requete.headers.get('origin') === env.ORIGINE_WEB ? env.ORIGINE_WEB : null;
   if (requete.method !== 'GET' || url.pathname !== '/position') return json({ erreur: 'introuvable' }, 404, origine);
@@ -104,7 +131,6 @@ export async function traiter(requete, env, chercher = fetch, cache = CACHE, mai
   if (!/^[A-Z]{3}[0-9]{1,4}[A-Z]{0,2}$/.test(indicatif) || !Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
     return json({ erreur: 'paramètres invalides' }, 400, origine);
   }
-  if (tropDemande(requete.headers.get('cf-connecting-ip'), maintenant, debits)) return json({ erreur: 'relais 429' }, 429, origine);
   try {
     for (const [cle, attente] of cache) if (attente.expire <= maintenant) cache.delete(cle);
     const avecCle = env.OPENSKY_CLIENT_ID && env.OPENSKY_CLIENT_SECRET;
@@ -112,6 +138,10 @@ export async function traiter(requete, env, chercher = fetch, cache = CACHE, mai
       const adresse = `${ETATS}?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`;
       let etats = cache.get(adresse)?.etats;
       if (!etats) {
+        // Une demande à OpenSky : c'est elle qui coûte, c'est elle qui est comptée.
+        if (tropDemande(cleAdresse(requete.headers.get('cf-connecting-ip')), maintenant, debits) || budgetEpuise(avecCle, maintenant, budget)) {
+          return json({ erreur: 'relais 429' }, 429, origine);
+        }
         const t = avecCle ? await jetonOpenSky(env, chercher) : null;
         const r = await chercher(adresse, t ? { headers: { authorization: `Bearer ${t}` } } : {});
         if (r.status === 401) jeton = null;

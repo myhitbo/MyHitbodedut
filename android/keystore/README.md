@@ -3,8 +3,14 @@
 `myhitbodedut-dev.jks` signe les APK produits par l'intégration continue.
 
 **Ce n'est pas un secret.** Le mot de passe du trousseau et de la clé est
-`myhitbodedut`, et il est écrit ici exprès. Cette clé sert uniquement aux
-installations directes depuis ce dépôt privé.
+`myhitbodedut`, et il est écrit ici exprès.
+
+> **Le dépôt est public depuis le 15/11/2026 : cette clé l'est donc pour tout le
+> monde.** N'importe qui peut signer avec elle un APK qu'Android installera
+> par-dessus une MyHitbodedut signée par elle, avec accès au journal. Elle ne
+> doit plus signer aucune version distribuée : créer la clé privée et les
+> secrets `RELEASE_*` décrits plus bas, puis réinstaller une fois sur chaque
+> téléphone (exporter, désinstaller, installer, importer).
 
 ## Pourquoi elle est versionnée
 

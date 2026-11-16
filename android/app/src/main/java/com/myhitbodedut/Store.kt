@@ -257,7 +257,8 @@ object Store {
     /** Les sujets d'une journée, absents des journaux d'avant cette version. */
     private fun readThemes(entry: JSONObject): List<String> {
         val array = entry.optJSONArray("themes") ?: return emptyList()
-        return (0 until array.length()).mapNotNull { array.optString(it).ifBlank { null } }
+        // Bornés comme le web (revue du 15/11) : 20 sujets de 40 caractères au plus.
+        return (0 until array.length()).mapNotNull { array.optString(it).ifBlank { null }?.takeIf { s -> s.length <= 40 } }.take(20)
     }
 
     private fun toJson(record: DayRecord): JSONObject {
@@ -271,10 +272,14 @@ object Store {
         return entry
     }
 
-    /** La date si la clé est une vraie date ISO (2026-09-29), sinon null. */
+    /**
+     * La date si la clé est une vraie date ISO (2026-09-29), sinon null. Ni avant 2000 ni après
+     * 2100, comme le web (revue du 15/11) : « 0000-01-01 » importé faisait planter l'accueil à chaque
+     * lancement (JewishCalendar refuse l'ère avant J.-C.), et « -999999999-01-01 » le bloquait.
+     */
     fun dateValide(cle: String): LocalDate? =
-        runCatching { LocalDate.parse(cle, FORMAT) }.getOrNull()?.takeIf { it.year in 2000..2100 }
-            ?.takeIf { it.format(FORMAT) == cle }
+        runCatching { LocalDate.parse(cle, FORMAT) }.getOrNull()
+            ?.takeIf { it.format(FORMAT) == cle && it.year in 2000..2100 }
 
     /** Le jour civil d'un instant, dans le fuseau du téléphone. */
     fun dateOf(millis: Long): String =
@@ -829,7 +834,8 @@ object Store {
 
     /** La taille des lettres dans les écrans de lecture, de 0,8 à 2 fois la taille de base. */
     fun lectureEchelle(context: Context): Float =
-        prefs(context).getFloat(KEY_LECTURE_ECHELLE, 1f).coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX)
+        // NaN passe coerceIn : il faisait planter chaque écran de lecture et l'export (revue du 15/11).
+        prefs(context).getFloat(KEY_LECTURE_ECHELLE, 1f).takeIf { it.isFinite() }?.coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX) ?: 1f
 
     fun setLectureEchelle(context: Context, echelle: Float) {
         prefs(context).edit().putFloat(KEY_LECTURE_ECHELLE, echelle).apply()
@@ -1665,6 +1671,9 @@ object Store {
         return root.toString(2)
     }
 
+    /** Au plus autant de jours du Tikoun qu'il y en a en dix ans et plus (revue du 15/11). */
+    private const val IMPORT_DATES_MAX = 4000
+
     /** Les chaînes d'un tableau JSON, non vides, sans doublon. */
     private fun chaines(a: org.json.JSONArray?): List<String> =
         if (a == null) emptyList() else (0 until a.length()).mapNotNull { a.optString(it).takeIf(String::isNotBlank) }.distinct()
@@ -1676,6 +1685,7 @@ object Store {
     private fun importerAjouts(context: Context, root: JSONObject, demain: LocalDate) {
         root.optJSONObject("journal_plus")?.let { entrant ->
             val ici = runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject())
+            var change = false
             for (date in entrant.keys()) {
                 val jour = dateValide(date) ?: continue
                 if (!jour.isBefore(demain)) continue
@@ -1685,23 +1695,35 @@ object Store {
                 val dejaNote = ici.optJSONObject(date)?.let { o ->
                     o.optInt("avant", 0) != 0 || o.optInt("apres", 0) != 0 || o.optString("gratitude").isNotBlank() || o.optString("travail").isNotBlank()
                 } ?: false
-                if (!plus.vide && !dejaNote) JournalPlus.ecrire(context, date, plus)
+                if (!plus.vide && !dejaNote) {
+                    ici.put(date, JournalPlus.versJson(plus))
+                    change = true
+                }
             }
+            // Une seule écriture (revue du 15/11) : une par jour relisait tout le journal à chaque fois,
+            // sur le fil de l'interface.
+            if (change) setJournalPlusBrut(context, ici.toString())
         }
+        // Bornés (revue du 15/11) : un fichier fabriqué ne remplit plus les préférences, relues à chaque
+        // écran, et un « | » ne coupe plus un favori en deux entrées.
         val tikkun = chaines(root.optJSONArray("tikkun_journal")).mapNotNull(::dateValide).filter { it.isBefore(demain) }
         if (tikkun.isNotEmpty()) {
-            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).sorted().joinToString(",")).apply()
+            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).distinct().sorted().takeLast(IMPORT_DATES_MAX).joinToString(",")).apply()
         }
-        val favoris = chaines(root.optJSONArray("favoris")).filter { it.startsWith("s:") || it.startsWith("l:") }
-        if (favoris.isNotEmpty()) prefs(context).edit().putString("favoris", (favoris(context) + favoris).distinct().joinToString("|")).apply()
-        val chizuk = chaines(root.optJSONArray("chizuk_favoris")).filter { '|' !in it }
-        if (chizuk.isNotEmpty()) prefs(context).edit().putString("chizuk_favoris", (chizukFavoris(context) + chizuk).distinct().joinToString("|")).apply()
+        val favoris = chaines(root.optJSONArray("favoris")).filter { (it.startsWith("s:") || it.startsWith("l:")) && '|' !in it && it.length <= 100 }
+        if (favoris.isNotEmpty()) prefs(context).edit().putString("favoris", (favoris(context) + favoris).distinct().take(200).joinToString("|")).apply()
+        val chizuk = chaines(root.optJSONArray("chizuk_favoris")).filter { '|' !in it && it.length <= 40 }
+        if (chizuk.isNotEmpty()) prefs(context).edit().putString("chizuk_favoris", (chizukFavoris(context) + chizuk).distinct().take(500).joinToString("|")).apply()
         root.optJSONArray("marques_pages")?.let { a ->
             val entrantes = (0 until a.length()).mapNotNull { i ->
                 val o = a.optJSONObject(i) ?: return@mapNotNull null
                 val m = MarquesPages.Marque(o.optString("cle"), o.optString("nusah"), o.optInt("section", -1), o.optInt("bloc", -1),
-                    o.optString("apercu").replace('\t', ' ').replace('\n', ' '))
-                m.takeIf { it.cle.isNotBlank() && '\t' !in it.cle && '\t' !in it.nusah && it.section >= 0 && it.bloc >= 0 }
+                    o.optString("apercu").replace('\t', ' ').replace('\n', ' ').take(200))
+                m.takeIf {
+                    it.cle.isNotBlank() && it.cle.length <= 100 && it.nusah.length <= 20 &&
+                        it.cle.none { c -> c == '\t' || c == '\n' } && it.nusah.none { c -> c == '\t' || c == '\n' } &&
+                        it.section >= 0 && it.bloc >= 0
+                }
             }
             val ici = marques(context)
             val reunies = (ici + entrantes.filter { e -> ici.none { it.memePlace(e) } }).take(MarquesPages.MAX)
@@ -1786,7 +1808,8 @@ object Store {
             val heures = settings.optJSONArray("reminder_times")?.let { a ->
                 (0 until a.length()).mapNotNull { i -> a.optInt(i, -1).takeIf { it in jour } }
             } ?: settings.optInt("reminder_minutes", -1).takeIf { it in jour }?.let { listOf(it) }
-            if (!heures.isNullOrEmpty()) setReminderTimes(context, heures)
+            // Douze heures au plus, comme le web (revue du 15/11) : 1 440 heures donnaient un rappel par minute.
+            if (!heures.isNullOrEmpty()) setReminderTimes(context, heures.distinct().take(12))
             // Un prénom vide dans le fichier (export du site sans prénom) n'efface pas celui du téléphone (FDONNEES-11).
             settings.optString("first_name").takeIf { it.isNotBlank() }?.let { setFirstName(context, it) }
             if (settings.has("hide_countdown")) setHideCountdown(context, settings.optBoolean("hide_countdown"))
@@ -1796,7 +1819,7 @@ object Store {
             setMusicEnabled(context, settings.optBoolean("music_enabled", musicEnabled(context)))
             setMusicVolume(context, settings.optInt("music_volume", musicVolume(context)))
             setMusicShuffle(context, settings.optBoolean("music_shuffle", musicShuffle(context)))
-            settings.optString("music_track").takeIf { it.isNotBlank() }
+            settings.optString("music_track").takeIf { it.isNotBlank() && it.length <= 100 }
                 ?.let { setMusicTrackId(context, it) }
             Adresse.parse(settings.optString("adresse"))?.let { setAdresse(context, it) }
             // Une clé absente garde le choix présent ; parse() seul le ramènerait au vert.
@@ -1807,8 +1830,9 @@ object Store {
             settings.optString("apparence_accent").takeIf { it.isNotBlank() }
                 ?.let { setAccent(context, Apparence.Accent.parse(it)) }
             Nusah.entries.firstOrNull { it.cle == settings.optString("siddur_nusah") }?.let { setSiddurNusah(context, it) }
-            if (settings.has("lecture_echelle")) {
-                setLectureEchelle(context, settings.optDouble("lecture_echelle", 1.0).toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))
+            // « NaN » se lit comme un nombre dans org.json : écarté (revue du 15/11).
+            settings.optDouble("lecture_echelle", Double.NaN).takeIf { it.isFinite() }?.let {
+                setLectureEchelle(context, it.toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))
             }
             PoliceHebraique.Police.entries.firstOrNull { it.cle == settings.optString("lecture_police") }?.let { setLecturePolice(context, it) }
             LanguesTexte.Mode.entries.firstOrNull { it.cle == settings.optString("lecture_langues") }?.let { setLectureLangues(context, it.cle) }
@@ -1819,12 +1843,12 @@ object Store {
         root.optJSONArray("paused_dates")?.let { array ->
             val dates = pausedDates(context).toMutableSet()
             for (i in 0 until array.length()) dates.add(array.optString(i))
-            prefs(context).edit().putStringSet(KEY_PAUSED_DATES, HashSet(dates.filter { dateValide(it) != null })).apply()
+            prefs(context).edit().putStringSet(KEY_PAUSED_DATES, HashSet(dates.filter { dateValide(it) != null }.take(4000))).apply()
         }
         root.optJSONArray("blocked_apps")?.let { array ->
             val apps = blockedApps(context).toMutableSet()
             for (i in 0 until array.length()) apps.add(array.optString(i))
-            setBlockedApps(context, apps.filter { it.isNotBlank() }.toSet())
+            setBlockedApps(context, apps.filter { it.isNotBlank() && it.length <= 255 }.take(500).toSet())
         }
         return imported
     }

@@ -1364,6 +1364,7 @@
     <string name="vol_erreur_position">invalid position</string>
     <string name="vol_erreur_relais_absent">relay not configured</string>
     <string name="vol_erreur_service">service unavailable</string>
+    <string name="vol_erreur_trop_de_demandes">too many requests: try again in a few minutes</string>
     <string name="vol_erreur_serveur">server error %1$d</string>
     <string name="vol_direct_inactif">The tracking relay is not in service yet in this version.</string>
     <string name="vol_direct_activer_web_aide">When on, the magnifier 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
