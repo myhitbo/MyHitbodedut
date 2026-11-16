@@ -800,6 +800,41 @@ struct AccueilModeleTests {
         #expect(m.routes == [.siddour("chaharit")])
     }
 
+    @Test func lesCartesDuSoir() async throws {
+        let b = try banc(heure: 20)
+        let m = b.modele
+        await m.apparaitre()
+        let ids = m.cartes.map { $0.id }
+        // Sans lieu, 20 h : Arvit, et le mot du soir.
+        let arvit = try #require(ids.firstIndex(of: "priere:arvit"))
+        guard case .priere(let p) = m.cartes[arvit] else {
+            Issue.record("la carte d'Arvit n'est pas une prière")
+            return
+        }
+        #expect(p.mot == Libelle("moment_mot_soir"))
+        #expect(p.image == SiddurMoment.illustration("arvit"))
+        // Birkat haLevana, après 14 h, quand la fenêtre est ouverte ce soir (AccueilMoment.cartes), juste après
+        // la prière de l'heure.
+        let r = b.magasin.reglages
+        let usage = Levana.Usage.duNusah(r.siddurNusah)
+        let fenetre = Levana.fenetre(b.aujourdhui, fuseau: .utc, usage: usage)
+        var ouverte = true
+        if case .dans = Levana.etat(fenetre, b.aujourdhui, fuseau: .utc) { ouverte = false }
+        let levana = ids.firstIndex(of: "priere:birkat_halevana")
+        #expect((levana != nil) == ouverte)
+        if let levana {
+            #expect(levana == arvit + 1)
+            guard case .priere(let l) = m.cartes[levana] else {
+                Issue.record("la carte de Birkat haLevana n'est pas une prière")
+                return
+            }
+            #expect(l.etiquette == Libelle("levana_ce_soir"))
+            #expect(l.image == "char_praise")
+            #expect(l.mot == nil)
+            #expect(l.route == .siddour("birkat_halevana"))
+        }
+    }
+
     @Test func lesRappelsDeTefila() throws {
         let b = try banc()
         let jour = b.aujourdhui

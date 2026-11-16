@@ -235,10 +235,8 @@ public enum ReglagesDialogue: Sendable, Hashable, Identifiable {
     }
 }
 
-/// Les interrupteurs de l'écran (`bindSwitch`), chacun sur sa clé d'Android.
+/// Les interrupteurs de l'écran (`bindSwitch`), chacun sur sa clé d'Android, dans l'ordre du layout.
 public enum ReglagesInterrupteur: String, Sendable, Hashable, CaseIterable {
-    /// « Je suis avec Hachem » (`enabled`) ; seulement avec la barrière.
-    case barriere
     /// Grand texte de lecture (`lecture_echelle` à 1,4).
     case grandTexte
     /// Afficher Birkat haLevana (`levana_affichee`).
@@ -249,6 +247,8 @@ public enum ReglagesInterrupteur: String, Sendable, Hashable, CaseIterable {
     case hilloulot
     /// Afficher la halakha du jour (`halakha_affichee`).
     case halakha
+    /// « Je suis avec Hachem » (`enabled`) ; seulement avec la barrière.
+    case barriere
     /// Chabbat et Yom Tov (`pause_shabbat`).
     case chabbat
     /// Masquer le décompte (`hide_countdown`).
@@ -392,6 +392,8 @@ public final class ReglagesModele {
     /// La demande de notification a déjà été présentée (`notificationsDemandees` d'Android) : la suivante passe
     /// par les Réglages d'iOS, qui ne reposent jamais la question.
     private var notificationsDemandees = false
+    /// La divulgation a été ouverte par l'interrupteur de la barrière : l'accès accordé, le mode s'allume.
+    private var allumerApresAutorisation = false
 
     public init(magasin: Magasin, contenus: ContenusApp, horloge: any Horloge, notificateur: any Notificateur,
                 tempsEcran: any TempsEcran, activite: any ActiviteEnDirect, barriere: any ReglagesBarriereSysteme,
@@ -504,6 +506,7 @@ public final class ReglagesModele {
             return await accorderNotifications()
         case .tempsEcran:
             // Les accès spéciaux passent par la divulgation, jamais directement (Divulgation.kt).
+            allumerApresAutorisation = false
             dialogue = .divulgationTempsEcran
             return nil
         }
@@ -521,17 +524,27 @@ public final class ReglagesModele {
         return nil
     }
 
-    /// « Continuer » de la divulgation : la feuille de Temps d'écran, puis l'état relu.
-    public func continuerDivulgation() async {
+    /// « Continuer » de la divulgation : la feuille de Temps d'écran, puis l'état relu. Venue de l'interrupteur,
+    /// l'accès accordé allume le mode, qui demande alors les notifications : rend l'écran à ouvrir s'il y en a un.
+    /// Ne lève que si la persistance refuse d'écrire.
+    @discardableResult
+    public func continuerDivulgation() async throws -> ReglagesRoute? {
         dialogue = nil
+        let allumer = allumerApresAutorisation
+        allumerApresAutorisation = false
         _ = await tempsEcran.demanderAutorisation()
         await rafraichir()
-        await repercuter(.barriere)
+        guard allumer, constat.autorise else {
+            await repercuter(.barriere)
+            return nil
+        }
+        return try await basculer(.barriere, true)
     }
 
     /// « Pas maintenant », « Retour », un toucher hors de la fenêtre : rien ne change.
     public func fermerDialogue() {
         dialogue = nil
+        allumerApresAutorisation = false
     }
 
     /// « Autorisations manquantes, les accorder » : la carte des autorisations sous les yeux (scrollToPermissions).
@@ -775,6 +788,13 @@ public final class ReglagesModele {
         switch interrupteur {
         case .barriere:
             guard avecBarriere else { return nil }
+            // Sur iOS le mode ne s'allume qu'avec l'accès à Temps d'écran (PORTAGE.md § 2.1.13) : allumé sans lui,
+            // la carte dirait « Accès retiré par iOS » (Evaluation.evaluate). La divulgation d'abord.
+            if actif && !reglages.isEnabled && !constat.autorise {
+                allumerApresAutorisation = true
+                dialogue = .divulgationTempsEcran
+                return nil
+            }
             try await modifier([.barriere, .rappels]) { $0.setEnabled(actif) }
             if actif {
                 return await accorderNotifications()

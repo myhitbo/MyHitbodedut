@@ -441,10 +441,11 @@ public struct VolFormats: Sendable {
     public static func langue(_ langue: String) -> VolFormats {
         VolFormats(
             heure: { civile, iata, avecJour in
-                (avecJour ? motif("EEE d", langue, civile) + " " : "") + "\u{2066}" + hm(civile) + " " + iata + "\u{2069}"
+                (avecJour ? VolFormats.motif("EEE d", langue, civile) + " " : "") + "\u{2066}" + VolFormats.hm(civile) + " " + iata
+                    + "\u{2069}"
             },
-            jour: { motif("EEE d MMM", langue, DateHeure($0)) },
-            saisie: { motif("EEE d MMM yyyy · HH:mm", langue, $0) },
+            jour: { VolFormats.motif("EEE d MMM", langue, DateHeure($0)) },
+            saisie: { VolFormats.motif("EEE d MMM yyyy · HH:mm", langue, $0) },
             decimal: { x in
                 let texte = Java.format(x, decimales: 1)
                 return langue == "fr" ? texte.remplacantUnites(".", par: ",") : texte
