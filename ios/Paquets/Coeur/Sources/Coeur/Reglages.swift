@@ -55,6 +55,12 @@ public struct Reglages: Sendable, Equatable {
     public static let echelleMin: Float = 0.8
     public static let echelleMax: Float = 2.0
 
+    /// La vitesse du défilement automatique des écrans de lecture : un niveau de 1 à 10, 3 par défaut
+    /// (ReglagesLecture.kt, 16/11).
+    public static let defilementMin = 1
+    public static let defilementMax = 10
+    public static let defilementDefaut = 3
+
     /// La version de la présentation (Onboarding.VERSION).
     public static let versionPresentation = 2
 
@@ -599,6 +605,17 @@ public struct Reglages: Sendable, Equatable {
 
     public mutating func setLectureSombre(_ sombre: Bool) {
         poseBooleen("lecture_sombre", sombre)
+    }
+
+    /// Le niveau de vitesse du défilement automatique, ramené de 1 à 10 à la lecture.
+    public var lectureDefilementVitesse: Int {
+        min(max(entier("lecture_defilement_vitesse", Reglages.defilementDefaut), Reglages.defilementMin),
+            Reglages.defilementMax)
+    }
+
+    /// Écrit ramené de 1 à 10.
+    public mutating func setLectureDefilementVitesse(_ niveau: Int) {
+        poseEntier("lecture_defilement_vitesse", min(max(niveau, Reglages.defilementMin), Reglages.defilementMax))
     }
 
     /// Le bouton de lecture masqué tout à fait.

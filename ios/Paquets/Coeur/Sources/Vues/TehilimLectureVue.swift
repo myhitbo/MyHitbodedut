@@ -67,6 +67,7 @@ public struct TehilimLectureVue: View {
                 .padding(.bottom, 160)
         }
         .scrollPosition($position, anchor: .top)
+        .defilementAutomatique(modele.barre.defilementAuto, position: $position)
         .scrollIndicators(.visible)
         .background(rendu.fond)
         .onScrollTargetVisibilityChange(idType: String.self) { visibles in

@@ -221,8 +221,9 @@ extension View {
 
 // MARK: Le bouton de lecture
 
-/// La pastille « Aa » et, dépliée, la barre de lecture (ReglagesLecture.kt), centrées en bas de la zone de texte. La
-/// barre se lit toujours de gauche à droite : A− à gauche, A+ à droite, quelle que soit la langue.
+/// La pastille « Aa » et, dépliée, la barre de lecture (ReglagesLecture.kt), centrées en bas de la zone de texte ;
+/// au-dessus, la commande du défilement automatique tant qu'il défile. La barre se lit toujours de gauche à
+/// droite : A− à gauche, A+ à droite, quelle que soit la langue.
 struct TehilimBarreVue: View {
     let barre: TehilimBarreLecture
     @Environment(\.traducteur) private var traducteur
@@ -233,14 +234,22 @@ struct TehilimBarreVue: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            if barre.pastilleVisible {
-                pastille
+        VStack(spacing: 12) {
+            // Tant que le texte défile tout seul : [−] [N] [+] [❚❚] (DefilementAutoVue.swift).
+            if barre.defilementAuto.commandeVisible {
+                DefilementCommande(defilement: barre.defilementAuto)
+                    .transition(.opacity)
             }
-            if barre.barreVisible {
-                barreDepliee
+            ZStack(alignment: .bottom) {
+                if barre.pastilleVisible {
+                    pastille
+                }
+                if barre.barreVisible {
+                    barreDepliee
+                }
             }
         }
+        .animation(reduireAnimations ? nil : .easeOut(duration: 0.18), value: barre.defilementAuto.commandeVisible)
     }
 
     // MARK: La pastille
@@ -279,6 +288,7 @@ struct TehilimBarreVue: View {
             boutonNuit
             menuPolice
             menuLangues
+            DefilementBouton(defilement: barre.defilementAuto, cote: nil)
             filet
             boutonMasquer
             boutonReplier

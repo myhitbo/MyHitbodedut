@@ -67,6 +67,7 @@ public struct TikkunVue: View {
                 .padding(.bottom, 88)
         }
         .scrollPosition($position, anchor: .top)
+        .defilementAutomatique(modele.barre.defilementAuto, position: $position)
         .scrollIndicators(.visible)
         .background(rendu.fond)
         .onScrollTargetVisibilityChange(idType: String.self) { visibles in

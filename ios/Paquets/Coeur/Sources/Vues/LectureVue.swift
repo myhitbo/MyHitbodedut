@@ -97,6 +97,7 @@ public struct LectureVue: View {
             .padding(.bottom, 88)
         }
         .scrollPosition($position, anchor: .top)
+        .defilementAutomatique(modele.defilementAuto, position: $position)
         .background(rendu.fond)
         .onScrollTargetVisibilityChange(idType: String.self, threshold: 0.01) { ids in
             vus = ids

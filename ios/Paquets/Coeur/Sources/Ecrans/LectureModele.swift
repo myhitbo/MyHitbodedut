@@ -105,6 +105,8 @@ public final class LectureModele {
     public private(set) var annonceMasque = false
     /// La feuille des marque-pages de ce texte est ouverte (le bouton du bandeau).
     public var feuilleMarques = false
+    /// Le défilement automatique : le bouton de la barre, et la commande flottante tant qu'il défile.
+    public let defilementAuto: DefilementAuto
 
     public init(magasin: Magasin, contenus: ContenusApp, horloge: any Horloge, langue: String, cible: LectureCible) {
         self.magasin = magasin
@@ -112,6 +114,7 @@ public final class LectureModele {
         self.horloge = horloge
         self.langue = ChizukCard.language(langue)
         self.cible = cible
+        defilementAuto = DefilementAuto(magasin: magasin)
     }
 
     // MARK: Le chargement
@@ -458,6 +461,8 @@ public final class LectureModele {
 
     /// L'écran passe en arrière (onPause) : la place est gardée, avec l'instant.
     public func quitter() async throws {
+        // L'écran quitté, le texte ne défile plus tout seul (ni l'écran ne reste allumé).
+        defilementAuto.arreter()
         let maintenant = horloge.maintenant
         pauseA = maintenant
         // Rien encore de signalé par la vue : la première ligne (findFirstVisibleItemPosition, 0 en haut), qui

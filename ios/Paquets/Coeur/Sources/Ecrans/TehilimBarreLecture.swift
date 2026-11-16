@@ -4,8 +4,9 @@ import Coeur
 
 // Le bouton de lecture (ReglagesLecture.kt) de la lecture des Tehilim (TehilimLectureActivity.kt) et du Tikoun
 // (TikkunFlowActivity.kt) : la pastille « Aa », et dépliée, la barre A−, %, A+, lune, police (« אב »), langues
-// (« אA »), masquer, replier. Ni nusah ici (`avecNusah` faux sur Android). Les réglages valent pour tous les
-// écrans de lecture : ils vivent dans le `Magasin`, sous les clés d'Android (Reglages.lecture…).
+// (« אA »), défilement automatique (DefilementAuto.swift), masquer, replier. Ni nusah ici (`avecNusah` faux sur
+// Android). Les réglages valent pour tous les écrans de lecture : ils vivent dans le `Magasin`, sous les clés
+// d'Android (Reglages.lecture…).
 //
 // Le lecteur du siddour a les mêmes règles dans LectureModele.swift ; celles-ci en sont une copie pour ne
 // dépendre que des fondations et de Coeur. Les deux s'écrivent dans les mêmes clés : un choix fait dans l'un se
@@ -38,10 +39,13 @@ public final class TehilimBarreLecture {
     /// Ce que l'écran fait quand la taille, la nuit, la police ou les langues changent : garder sa place
     /// (`surChangement` d'Android). Posé par le modèle de l'écran.
     @ObservationIgnored var surChangement: (@MainActor () -> Void)? = nil
+    /// Le défilement automatique : le bouton de la barre, et la commande flottante tant qu'il défile.
+    public let defilementAuto: DefilementAuto
 
     public init(magasin: Magasin, langue: String) {
         self.magasin = magasin
         self.langue = ChizukCard.language(langue)
+        defilementAuto = DefilementAuto(magasin: magasin)
     }
 
     // MARK: Les réglages

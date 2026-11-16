@@ -4,7 +4,8 @@ import Coeur
 import Ecrans
 
 // Le bouton de lecture (ReglagesLecture.kt) : la pastille « Aa », ou la barre dépliée (A−, %, A+, lune, police,
-// langues, nusah, masquer, replier), en bas au centre, par-dessus le texte. Ce qui se montre et ce que fait
+// langues, nusah, défilement automatique, masquer, replier), en bas au centre, par-dessus le texte ; au-dessus,
+// tant que le texte défile tout seul, la commande de vitesse (DefilementAutoVue.swift). Ce qui se montre et ce que fait
 // chaque toucher est dans LectureModele ; la vue pose les boutons, toujours de gauche à droite (A− à gauche).
 
 /// La pastille ou la barre ; rien quand le bouton est masqué.
@@ -17,20 +18,27 @@ struct LectureBouton: View {
     @Environment(\.accessibilityReduceMotion) private var sansAnimation
 
     var body: some View {
-        ZStack {
-            if modele.barreVisible {
-                LectureBarre(modele: modele, cote: cote)
+        VStack(spacing: 12) {
+            if modele.defilementAuto.commandeVisible {
+                DefilementCommande(defilement: modele.defilementAuto)
+                    .transition(.opacity)
             }
-            if modele.pastilleVisible {
-                pastille
+            ZStack {
+                if modele.barreVisible {
+                    LectureBarre(modele: modele, cote: cote)
+                }
+                if modele.pastilleVisible {
+                    pastille
+                }
             }
         }
         .animation(sansAnimation ? nil : .easeOut(duration: 0.18), value: modele.pastilleEffacee)
+        .animation(sansAnimation ? nil : .easeOut(duration: 0.18), value: modele.defilementAuto.commandeVisible)
     }
 
     /// `(largeur − 24 − 48 − 18 − 12) / n`, borné de 30 à 44 ; n : les boutons de taille fixe de la barre.
     private var cote: CGFloat {
-        let nombre: CGFloat = modele.avecNusah ? 9 : 8
+        let nombre: CGFloat = modele.avecNusah ? 10 : 9
         return min(44, max(30, ((largeur - 102) / nombre).rounded(.down)))
     }
 
@@ -71,6 +79,7 @@ private struct LectureBarre: View {
             lettres
             filet
             reglages
+            DefilementBouton(defilement: modele.defilementAuto, cote: cote)
             filet
             bouton(icone: "ic_lecture_masquer", libelle: "lecture_masquer") {
                 let modele = self.modele

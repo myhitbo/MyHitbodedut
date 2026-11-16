@@ -28,6 +28,7 @@ let enChantierVues: [String] = [
     "BoussoleVue.swift",
     "ChizukVue.swift",
     "ConseilsVue.swift",
+    "DefilementAutoVue.swift",
     "HalakhaCommun.swift",
     "HalakhaVue.swift",
     "HilloulotVue.swift",
