@@ -48,7 +48,7 @@ public struct Evenement: Codable, Sendable, Equatable {
     }
 
     /// Un instant et un genre sont exigés ; le détail est facultatif.
-    public init(from decoder: Decoder) throws {
+    public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         quand = try c.decode(Horodatage.self, forKey: .quand)
         genre = try c.decode(String.self, forKey: .genre)

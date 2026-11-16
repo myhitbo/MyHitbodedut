@@ -66,7 +66,7 @@ public struct Etat: Codable, Sendable, Equatable {
             case faitA = "fait_a"
         }
 
-        public init(from decoder: Decoder) throws {
+        public init(from decoder: any Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
             jours = (try? c.decodeIfPresent([String].self, forKey: .jours)) ?? []
             faitA = try? c.decodeIfPresent(Horodatage.self, forKey: .faitA)
@@ -90,7 +90,7 @@ public struct Etat: Codable, Sendable, Equatable {
             case debut, fin, minutes
         }
 
-        public init(from decoder: Decoder) throws {
+        public init(from decoder: any Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
             debut = (try? c.decodeIfPresent(Int64.self, forKey: .debut)) ?? 0
             fin = (try? c.decodeIfPresent(Int64.self, forKey: .fin)) ?? 0
@@ -133,7 +133,7 @@ public struct Etat: Codable, Sendable, Equatable {
             case notificationCommencer = "notification_commencer"
         }
 
-        public init(from decoder: Decoder) throws {
+        public init(from decoder: any Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
             func texte(_ cle: CodingKeys) -> String { (try? c.decodeIfPresent(String.self, forKey: cle)) ?? "" }
             question = texte(.question)
@@ -210,7 +210,7 @@ public struct Etat: Codable, Sendable, Equatable {
         case nombreDeJetons = "nombre_de_jetons"
     }
 
-    public init(from decoder: Decoder) throws {
+    public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         let defaut = Etat()
         version = (try? c.decodeIfPresent(Int.self, forKey: .version)) ?? defaut.version
