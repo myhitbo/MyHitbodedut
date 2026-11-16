@@ -357,13 +357,17 @@ public final class HilloulotModele {
         let ouverte = details && (deplies.contains(cle) || (ouvertParDefaut && !replies.contains(cle)))
         // Isolée (FSI … PDI) : l'année hébraïque ne renverse pas la ligne.
         let deces: Libelle? = h.annee.estBlanc ? nil : Libelle("hilloula_annee", .texte("\u{2068}\(h.annee)\u{2069}"))
-        return HilloulotLigne(id: id, cle: cle, nom: h.he, traduit: traduction(h), deces: deces, premiere: premiere,
+        // Les signes absents de la police choisie masqués (PoliceHebraique.appliquer d'Android) : le nom, la notice et
+        // les biographies ; la clé garde le nom tel quel.
+        return HilloulotLigne(id: id, cle: cle, nom: PoliceHebraique.masque(h.he, police: police), traduit: traduction(h),
+                              deces: deces, premiere: premiere,
                               depliable: details, ouverte: ouverte,
                               action: details ? Libelle(ouverte ? "hilloula_reduire" : "hilloula_lire_plus") : nil,
                               fiche: ouverte ? fiche(h, id: id) : nil)
     }
 
     private func fiche(_ h: Hilloulot.Hilloula, id: String) -> HilloulotFiche {
+        let police = self.police
         // La source : Wikipédia (l'article s'il existe), החכם היומי, תורת אמת.
         var sources: [HilloulotSource] = []
         if h.sources.contientUnites("w") {
@@ -382,13 +386,15 @@ public final class HilloulotModele {
             let longue = bio.texte.utf16.count > HilloulotModele.bioLongue
             let ouverte = biosOuvertes.contains(idBio)
             let nom = bio.source.egalUnites("m") ? "hilloula_source_mytzadik" : "hilloula_source_hameir"
-            bios.append(HilloulotBio(id: idBio, paragraphes: HalakhaTexte.paragraphes(bio.texte), longue: longue,
+            bios.append(HilloulotBio(id: idBio, paragraphes: HalakhaTexte.paragraphes(PoliceHebraique.masque(bio.texte, police: police)),
+                                     longue: longue,
                                      repliee: longue && !ouverte,
                                      bouton: longue ? Libelle(ouverte ? "hilloula_reduire" : "hilloula_lire_plus") : nil,
                                      source: HilloulotSource(id: "\(idBio)#source", nom: Libelle(nom), lien: bio.lien)))
         }
         let hidabroot = h.hidabroot.map { HilloulotSource(id: "\(id)#i", nom: Libelle("hilloula_source_hidabroot"), lien: $0) }
-        return HilloulotFiche(description: h.description.map { HalakhaTexte.paragraphes($0) }, sources: sources, bios: bios,
+        return HilloulotFiche(description: h.description.map { HalakhaTexte.paragraphes(PoliceHebraique.masque($0, police: police)) },
+                              sources: sources, bios: bios,
                               hidabroot: hidabroot)
     }
 
@@ -445,8 +451,9 @@ public final class HilloulotModele {
         guard let d = Hilloulot.prochainJour(groupe.cle, depuis: horloge.aujourdhui, enIsrael: enIsrael,
                                              ashkenaz: ashkenaz) else { return }
         jour = d
-        for l in groupe.lignes {
-            deplies.insert("\(d.iso)|\(l.nom)")
+        // Les tsadikim de cette date parmi les soixante montrés (les `noms` d'Android), sous leur nom tel quel.
+        for (cle, h) in trouvees?.liste.prefix(HilloulotModele.resultatsMontres) ?? [] where cle.egalUnites(groupe.cle) {
+            deplies.insert("\(d.iso)|\(h.he)")
         }
         chercher("")
         retourEnHaut += 1
