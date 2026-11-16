@@ -3,7 +3,9 @@ package com.myhitbodedut
 /**
  * Les morceaux que seule la version GitHub livre (29/10) : les niggounim dont
  * la provenance n'est pas établie (Ishay Ribo, sans accord, a quitté
- * l'application et le site le 29/10). Leurs fichiers sont dans
+ * l'application et le site le 29/10), et depuis le 16/11 trois morceaux sans
+ * accord écrit complet (deux duos avec Or Shpayer, « Zemer bichva'hin »).
+ * Leurs fichiers sont dans
  * src/musique_hors_play/res/raw, que la construction Play (-Pplay=true)
  * n'inclut pas ; elle prend à la place
  * src/musique_play, où cette liste est vide. PUBLICATION_PLAY_STORE.md § 3.2.
@@ -40,5 +42,8 @@ internal object MusiqueHorsPlay {
         Bundled("niggoun_31", R.raw.niggoun_31, R.string.track_niggoun_31),
         Bundled("niggoun_32", R.raw.niggoun_32, R.string.track_niggoun_32),
         Bundled("niggoun_33", R.raw.niggoun_33, R.string.track_niggoun_33),
+        Bundled("shpayer_eshet_hayil", R.raw.shpayer_eshet_hayil, R.string.track_shpayer_eshet_hayil),
+        Bundled("shpayer_arba_bavot", R.raw.shpayer_arba_bavot, R.string.track_shpayer_arba_bavot),
+        Bundled("ianir_zemer_bishvahin", R.raw.ianir_zemer_bishvahin, R.string.track_ianir_zemer_bishvahin),
     )
 }

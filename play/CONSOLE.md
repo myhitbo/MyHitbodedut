@@ -42,27 +42,35 @@ l'AAB : voir « Si le relais arrive » à la fin.
 | Captures (8 par langue) | prises sur la construction Play, puis composées avec les légendes de `play/visuels/legendes.json` (dossiers `en-US` et `iw-IL`) |
 | Une vidéo YouTube « non répertoriée », en deux séquences | à tourner : voir 3.9 |
 | Adresse de contact | `myhitbodedut26@gmail.com` |
-| 12 testeurs (adresses Gmail) | pour le test fermé de 14 jours (§ 4, § 9) |
+| Testeurs (adresses Gmail), facultatif | piste de test interne ou fermée ; **pas** de test fermé obligatoire : le compte est une organisation (§ 4) |
 
 ---
 
 ## 1. Compte développeur
 
-Création, frais, vérifications : § 4. Deux saisies demandent une décision.
+Compte **organisation** au nom de l'association **HACHIVEINOU LÉTORATEKHA** (France), créé le
+16/11 (n° 8221232760929604341). Création, frais, vérifications : § 4. Deux
+saisies demandent une décision.
+
+À vérifier dans *Settings → Developer account → About you* : nom légal et
+adresse de l'association identiques à la fiche D-U-N-S, téléphone et e-mail
+de contact vérifiés, site web de l'organisation. Sur un compte organisation,
+Google affiche sur la fiche (« À propos du développeur ») des informations de
+l'organisation : relire l'aperçu de la console avant la publication.
 
 **Nom du développeur** (public) : `MyHitbodedut Team` — c'est le nom que citent
-les règles de confidentialité.
+les règles de confidentialité, qui nomment aussi l'association HACHIVEINOU LÉTORATEKHA.
 
 **Statut de commerçant** (*Trader status*, exigé à la création du compte depuis
 novembre 2026 ; *Manage account → Account details → About you*). Google demande
 si le compte agit comme commerçant au sens du droit européen. C'est une
 déclaration juridique du propriétaire, pas un choix technique :
 
-- application gratuite, sans publicité ni achat, publiée à titre non
-  professionnel : **Non-trader** ;
-- si le propriétaire publie dans le cadre d'une activité professionnelle :
-  **Trader** — sur un compte personnel, l'adresse et un numéro de téléphone
-  deviennent alors publics sur la fiche.
+- association qui publie une application gratuite, sans publicité ni achat,
+  hors de toute activité commerciale : **Non-trader** ;
+- si l'association vend des biens ou services en lien avec l'application :
+  **Trader** — son adresse, son téléphone et son e-mail deviennent publics
+  sur la fiche dans l'Union européenne.
 
 ---
 
@@ -380,14 +388,15 @@ fonction absents de la version Play (pas de suivi de vol en direct).
 
 2. *App bundle explorer* : envoyer `mapping-N.txt` avec le même numéro (§ 5.4).
 3. Passer la recette du § 8 sur l'application **installée depuis Play**.
-4. *Closed testing* : créer la piste, y inscrire les 12 testeurs, choisir les
-   pays, envoyer la même version. Les 14 jours comptent à partir du moment où
-   les 12 sont inscrits ; aucun ne doit se désinscrire.
-5. Après 14 jours : *Dashboard → Apply for production access*. Le
-   questionnaire porte sur le test (qui a testé, ce qui a été corrigé) : y
-   répondre avec ce qui s'est réellement passé.
-6. *Production → Countries/regions* : tous les pays, puis déploiement
-   progressif (§ 9).
+4. *(Facultatif)* *Closed testing* : quelques testeurs de plus, sur d'autres
+   téléphones (Samsung, Xiaomi). Le compte est une **organisation** : ni
+   minimum de 12 testeurs, ni 14 jours, ni « Apply for production access ».
+5. *Production → Countries/regions* : tous les pays. *Production → Create new
+   release* → *Add from library* : reprendre la version testée, déploiement
+   progressif 20 % (§ 9), puis *Publishing overview → Send changes for
+   review*.
+6. Revue Google (quelques jours) ; une fois acceptée, augmenter le
+   pourcentage du déploiement.
 
 ---
 

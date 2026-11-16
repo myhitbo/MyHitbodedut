@@ -18,7 +18,7 @@ Google exige une page publique avant tout envoi.
    publie le site.
 4. Depuis un téléphone, ouvrir
    https://myhitbodedut.pages.dev/confidentialite.html#en et vérifier la date
-   « Last updated: 14 November 2026 » et la phrase « never queries OpenSky
+   « Last updated: 16 November 2026 » et la phrase « never queries OpenSky
    Network ». Si le nom `myhitbodedut` est déjà pris sur pages.dev : voir
    `PUBLICATION_PLAY_STORE.md` § 6.1.
 
@@ -40,11 +40,12 @@ Google ; la clé de signature finale reste chez Google.
 
 ## 3. Compte développeur (1 à 3 jours, côté Google)
 
-`play/CONSOLE.md` § 1 : compte **personnel**, 25 USD, pièce d'identité,
-vérification d'un appareil Android, statut de commerçant (*Non-trader* pour
-une publication gratuite à titre non professionnel : c'est une déclaration
-juridique, à faire en connaissance de cause). Nom public du développeur :
-« MyHitbodedut Team ».
+**Fait le 16/11** : compte **organisation** au nom de l'association
+HACHIVEINOU LÉTORATEKHA (n° 8221232760929604341). Reste, `play/CONSOLE.md`
+§ 1 : finir les vérifications que la console demande (D-U-N-S, téléphone,
+site), statut de commerçant (*Non-trader* pour une association qui publie
+gratuitement : déclaration juridique de l'association). Nom public du
+développeur : « MyHitbodedut Team ».
 
 ## 4. Créer l'application et envoyer la première version (≈ 2 h)
 
@@ -60,7 +61,7 @@ Vidéo à tourner pour la déclaration des services de premier plan
 notification ; puis l'écran « Je suis avec Hachem » sur une application
 choisie.
 
-## 5. Avant le test fermé : les écrits sur la musique
+## 5. Les écrits sur la musique — **réglé le 16/11**
 
 `PUBLICATION_PLAY_STORE.md` § 3.2. Trois morceaux livrés n'ont pas
 d'accord écrit complet au dossier : « Eshet 'Hayil » et « Arba Bavot » (duos
@@ -69,13 +70,17 @@ signée (titres, compositeurs, autorisation « distribution publique gratuite
 dans une application mobile, via Google Play, monde entier »), soit les
 retirer de la version Play (`MusiquePlay.kt` → `MusiqueHorsPlay.kt`).
 
-## 6. Test fermé puis production (14 jours au minimum)
+**Fait le 16/11 : retirés de la version Play** (et donc du site). La version
+Play livre 23 morceaux. Un écrit signé les fera revenir : remettre le fichier
+dans `main/res/raw`, la ligne dans `MusiquePlay.kt` et le nom dans
+`MusicFilesTest`.
 
-Compte personnel neuf : **12 testeurs inscrits sans interruption pendant
-14 jours** avant de pouvoir demander l'accès à la production
-(`play/CONSOLE.md` § 6). Recruter les testeurs (adresses Gmail) dès la
-création du compte.
+## 6. Test interne puis production
 
-Pendant ce test, passer la recette sur de vrais téléphones
+Compte **organisation** : pas de test fermé obligatoire (ni 12 testeurs, ni
+14 jours). Piste de test interne, recette, puis production directement
+(`play/CONSOLE.md` § 6).
+
+Sur la piste interne, passer la recette sur de vrais téléphones
 (`PUBLICATION_PLAY_STORE.md` § 8), en particulier la barrière du matin sur un
 Samsung et un Xiaomi.

@@ -56,13 +56,15 @@ class ConfidentialiteTest {
             mots.forEach { assertTrue("$langue : « $it » manque", texte.contains(it)) }
             assertTrue("$langue : le contact", texte.contains("<a href=\"mailto:myhitbodedut26@gmail.com\">"))
             assertTrue("$langue : l'éditeur", texte.contains("MyHitbodedut Team"))
+            // Compte Play « organisation » (16/11) : la page nomme l'association, titulaire du compte.
+            assertTrue("$langue : l'association", texte.contains("HACHIVEINOU LÉTORATEKHA"))
         }
     }
 
     /** TWEBCONF-10/18 : la date des règles est la même dans les trois langues ; à changer avec le texte. */
     @Test
     fun `la date des regles est la meme dans les trois langues`() {
-        val dateRegles = mapOf("fr" to "Mise à jour : 15 novembre 2026", "en" to "Last updated: 15 November 2026", "he" to "עודכן: 15 בנובמבר 2026")
+        val dateRegles = mapOf("fr" to "Mise à jour : 16 novembre 2026", "en" to "Last updated: 16 November 2026", "he" to "עודכן: 16 בנובמבר 2026")
         dateRegles.forEach { (langue, date) ->
             val datee = Regex("""<p class="date">([^.]*)\.""").find(section(langue))?.groupValues?.get(1)
             assertTrue("$langue : date « $date » attendue, trouvé « $datee »", datee == date)
