@@ -24,13 +24,9 @@ Google exige une page publique avant tout envoi.
 
 ## 2. Ranger la clé d'envoi (≈ 10 min)
 
-La clé d'envoi `upload-myhitbodedut.jks` (alias `upload`, PKCS12, RSA 4096,
-valable 30 ans) et son mot de passe ont été remis à part, hors du dépôt. La
-première, remise le 14/11, a été perdue avant tout envoi à Google ; celle-ci
-la remplace (16/11). Empreinte SHA-256 du certificat :
-`49:14:47:70:F0:3B:35:A6:E2:5E:86:EC:EC:3A:89:13:AD:FB:92:B2:C1:F8:24:01:A1:AA:EB:EC:01:38:19:FC`.
-L'AAB `MyHitbodedut-1.0-play.aab` signé par l'ancienne clé n'est plus à
-envoyer : la première version vient du flux *Play*.
+La clé d'envoi `upload-myhitbodedut.jks` (alias `upload`) et son mot de passe
+ont été remis à part, hors du dépôt. Empreinte SHA-256 du certificat :
+`E8:61:C4:49:2C:AE:8D:A3:59:6A:27:1E:C1:AB:DD:45:3D:2B:67:EA:9F:4B:30:58:60:BE:56:90:30:77:67:B3`.
 
 1. Les copier à deux endroits hors ligne (clé USB, gestionnaire de mots de
    passe). Ne jamais les mettre dans le dépôt.
@@ -56,8 +52,9 @@ développeur : « MyHitbodedut Team ».
 Suivre `play/CONSOLE.md` § 2 à § 5 : contenu de l'application, fiche en-US et
 iw-IL, visuels de `play/visuels/en-US` et `play/visuels/iw-IL`.
 
-Première version : l'AAB du flux *Play* (artefact `play-N`, avec son
-`mapping.txt`), signé par la nouvelle clé d'envoi.
+Première version : `MyHitbodedut-1.0-play.aab` (versionCode 1, versionName
+1.0), remise avec `mapping-1.0.txt`. Le flux *Play* produira ensuite le
+versionCode 2, 3, … sans collision.
 
 Vidéo à tourner pour la déclaration des services de premier plan
 (`play/CONSOLE.md` § 3.9) : une séance lancée, écran verrouillé, la
