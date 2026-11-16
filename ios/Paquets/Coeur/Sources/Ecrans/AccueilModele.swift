@@ -92,7 +92,8 @@ public final class AccueilModele {
     public private(set) var saut: AccueilSaut? = nil
     private var numeroEvenement = 0
 
-    /// Les cartes du moment entrent en cascade : à la première apparition seulement (momentAnime).
+    /// Les cartes du moment entrent en cascade : à la première apparition seulement (momentAnime), et jamais avec
+    /// les animations réduites.
     public private(set) var cascade = false
 
     /// La boîte ouverte ; nil : aucune.

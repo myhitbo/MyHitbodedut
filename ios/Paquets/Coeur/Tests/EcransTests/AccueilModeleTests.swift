@@ -281,6 +281,9 @@ struct AccueilModeleTests {
         // Hier : pas de bravo.
         #expect(!b.magasin.reglages.hasPendingCelebration)
         #expect(m.routes.isEmpty)
+        // Des minutes inscrites retirent le rappel du jour déjà paru (Store.addSession).
+        let retires = await b.systeme.rappelsRetires
+        #expect(retires == 1)
         // Ce qui est neuf est su sans notification.
         #expect(b.magasin.reglages.tropheesNotifies != nil)
     }
