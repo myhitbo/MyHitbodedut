@@ -33,11 +33,11 @@ public enum CarteEmbarquement {
     public static func lire(_ code: String, _ aujourdhui: JourCivil) -> Troncon? {
         let unites = Array(code.utf16)
         if unites.count < 47 || unites[0] != 0x4D || chiffre(unites[1]) == nil { return nil }
-        let de = code.unites(30, 33).rogne
-        let vers = code.unites(33, 36).rogne
-        let cie = code.unites(36, 39).rogne
-        let numero = sansZerosDeTete(code.unites(39, 44).rogne)
-        let jour = entierKotlin(code.unites(44, 47).rogne)
+        // Un champ qui coupe une paire de substitution garde chez Kotlin la moitié seule, qu'aucun motif n'accepte.
+        guard let de = champ(unites, 30, 33), let vers = champ(unites, 33, 36), let cie = champ(unites, 36, 39),
+              let brut = champ(unites, 39, 44) else { return nil }
+        let numero = sansZerosDeTete(brut)
+        let jour = champ(unites, 44, 47).flatMap { entierKotlin($0) }
         if !aeroport.couvre(de) || !aeroport.couvre(vers) { return nil }
         if !compagnie.couvre(cie) || !vol.couvre(numero) { return nil }
         var date: JourCivil?
@@ -66,6 +66,13 @@ public enum CarteEmbarquement {
         let longueur = JourCivil.estBissextile(an) ? 366 : 365
         guard n >= 1 && n <= longueur, let premier = JourCivil(annee: an, mois: 1, jour: 1) else { return nil }
         return premier.plus(jours: n - 1)
+    }
+
+    /// `substring(debut, fin).trim()` de Kotlin ; nil si le champ coupe une paire de substitution (`Unites.texte`
+    /// en retirerait la moitié seule, que Kotlin garde : ni `matches` ni `toIntOrNull` ne l'acceptent).
+    private static func champ(_ unites: [UInt16], _ debut: Int, _ fin: Int) -> String? {
+        if UTF16.isTrailSurrogate(unites[debut]) || UTF16.isLeadSurrogate(unites[fin - 1]) { return nil }
+        return Unites.texte(unites[debut..<fin]).rogne
     }
 
     /// `trimStart('0')`.

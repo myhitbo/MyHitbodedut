@@ -254,7 +254,7 @@ public enum SuiviVol {
     /// `Instant.parse` (ISO_INSTANT, sans égard à la casse) : « 2026-11-10T18:30:00Z », une fraction de 0 à 9
     /// chiffres, un décalage « Z » ou ±HH:MM[:ss] ; 24:00:00 est minuit du lendemain, 23:59:60 vaut 23:59:59.
     /// L'année : quatre chiffres, ou un signe (« + » au-delà de quatre chiffres, « - » pour les années négatives),
-    /// dans les bornes de `JourCivil`.
+    /// dans les bornes d'`Instant` (an −1 000 000 000 à 1 000 000 000).
     private static func instantISO(_ texte: String) -> InstantLu? {
         let u = Array(texte.utf16)
         var i = 0
@@ -323,10 +323,13 @@ public enum SuiviVol {
         } else if heure == 23 && minute == 59 && seconde == 60 {
             seconde = 59
         }
+        // Comme `InstantPrinterParser` : l'année ramenée sous dix mille (le calendrier se répète tous les dix mille
+        // ans), les blocs de dix mille ans ajoutés ensuite, puis les bornes d'`Instant`.
         guard heure <= 23, minute <= 59, seconde <= 59,
-              let jour = JourCivil(annee: annee, mois: mois, jour: jourDuMois) else { return nil }
-        let depuis1970 = Int64(jour.jourJulien - 2_440_588 + jours)
+              let jour = JourCivil(annee: annee % 10_000, mois: mois, jour: jourDuMois) else { return nil }
+        let depuis1970 = Int64(jour.jourJulien - 2_440_588 + jours) + Int64(annee / 10_000) * 3_652_425
         let secondes = depuis1970 * 86_400 + Int64(heure * 3600 + minute * 60 + seconde - decalage)
+        if secondes < -31_557_014_167_219_200 || secondes > 31_556_889_864_403_199 { return nil }
         return InstantLu(secondes: secondes, nanos: Int64(nanos))
     }
 
