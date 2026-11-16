@@ -103,7 +103,7 @@ struct MusiqueLecteurTests {
         let demandes = await b.sortie.demandes
         #expect(demandes.isEmpty)
         let ambiances = await b.ambiance.jouees
-        #expect(ambiances == [.pluie])
+        #expect(ambiances == [Ambiance.pluie])
         let gain = await b.ambiance.gain
         #expect(gain == MusiqueRegles.gainAmbiance(Reglages.defaultVolume))
         let boucle = await b.ambiance.enCours
@@ -304,9 +304,12 @@ struct MusiqueLecteurTests {
             await b.lecteur.recevoir(fin)
         }
         let joues = await b.sortie.joues
-        #expect(!joues.contains(.ajoute("Musique/Disparu.m4a")))
+        let disparu = MusiqueFichierAudio.ajoute("Musique/Disparu.m4a")
+        let joueDisparu = joues.contains(disparu)
+        #expect(!joueDisparu)
         let demandes = await b.sortie.demandes
-        #expect(demandes.contains(.ajoute("Musique/Disparu.m4a")))
+        let demandeDisparu = demandes.contains(disparu)
+        #expect(demandeDisparu)
         #expect(b.lecteur.message == nil)
     }
 
@@ -443,12 +446,12 @@ struct MusiqueLecteurTests {
         try await b.magasin.modifierReglages { $0.setAmbiance("mer") }
         await b.lecteur.musiqueChangee()
         let jouees = await b.ambiance.jouees
-        #expect(jouees == [.mer])
+        #expect(jouees == [Ambiance.mer])
         // La même ambiance ne change que de volume.
         try await b.magasin.modifierReglages { $0.setMusicVolume(100) }
         await b.lecteur.musiqueChangee()
         let encore = await b.ambiance.jouees
-        #expect(encore == [.mer])
+        #expect(encore == [Ambiance.mer])
         let gain = await b.ambiance.gain
         #expect(gain == MusiqueRegles.gainAmbiance(100))
         // Le silence la fait taire.
@@ -487,7 +490,7 @@ struct MusiqueLecteurTests {
         }
         let ajoute = MusicLibrary.Track(id: "Musique/Nigoun.m4a", title: .nom("Nigoun"), uri: "Musique/Nigoun.m4a")
         let chemin = await b.lecteur.fichier(de: ajoute)
-        #expect(chemin == .ajoute("Musique/Nigoun.m4a"))
+        #expect(chemin == MusiqueFichierAudio.ajoute("Musique/Nigoun.m4a"))
         let inconnu = MusicLibrary.Track(id: "inconnu", title: .nom("?"), rawRes: "inconnu")
         let absent = await b.lecteur.fichier(de: inconnu)
         #expect(absent == nil)

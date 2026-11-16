@@ -5,7 +5,7 @@ import Testing
 /// Les règles de Store.kt qui calculent (Store.swift). D'abord `Tests/Vecteurs/store.json`
 /// (tools/vecteurs_ios/VecteursStore.kt) : des scénarios faits par le vrai Store sur la JVM, l'horloge figée
 /// réglée pas à pas (Chabbat et Yom Tov en Israël et en diaspora, nuits des changements d'heure, fenêtre de
-/// nuit un vendredi, minuit, 4 h pour le Tikoun), rejoués ici opération par opération sur Journal et
+/// nuit un vendredi, minuit, 4 h pour le Tikoun, une note seule), rejoués ici opération par opération sur Journal et
 /// Reglages, et comparés après chacune : série, semaine, exemptions, fenêtre, report, séance, Tikoun,
 /// lecture, 'hizouk, bravo, lieu, paliers, trophées, anneaux, la préférence « days » et les réglages
 /// écrits. Puis fenetreFaite, repriseValable, jourTikkun (et ceux de horloge.json), formatMinutes et
@@ -229,7 +229,7 @@ struct StoreTests {
 
     @Test func lesScenariosDeStoreSeRejouent() throws {
         let f = try fichier()
-        #expect(f.scenarios.count == 7)
+        #expect(f.scenarios.count == 8)
         for scenario in f.scenarios {
             try rejoue(scenario, clesLecture: f.constantes.clesLecture)
         }

@@ -1,7 +1,7 @@
 // Store devant la JVM : les règles qui calculent sur le journal et les réglages, l'heure figée réglée pas à
 // pas (bouchons/Horloge.kt). D'abord des scénarios : des suites d'opérations faites par le vrai Store sur un
 // Theatre, à des instants choisis (Chabbat et Yom Tov en Israël et en diaspora, nuits des changements
-// d'heure, fenêtre de nuit 21:00–02:00 un vendredi, minuit, 4 h pour le Tikoun), et après chaque opération
+// d'heure, fenêtre de nuit 21:00–02:00 un vendredi, minuit, 4 h pour le Tikoun, une note seule), et après chaque opération
 // ce que rendent les fonctions qui calculent, la préférence « days » et les réglages écrits (« prefs »,
 // clés triées, en texte d'org.json). Puis les règles pures : fenetreFaite, repriseValable, jourTikkun,
 // formatMinutes et formatDuration dans les trois langues. StoreTests de Coeur rejoue tout sur Journal et

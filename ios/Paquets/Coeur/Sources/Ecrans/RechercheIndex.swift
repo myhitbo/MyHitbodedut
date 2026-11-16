@@ -4,7 +4,7 @@ import Coeur
 // L'index de la recherche globale (PORTAGE.md § 2.2.10). Android relit et remet à nu tout le corpus à chaque
 // frappe (RechercheGlobale.chercher, 28 Mo) ; ici chaque texte n'est mis à nu qu'une fois, à la préparation, et
 // une recherche ne fait plus que parcourir des octets. Les règles de résultat sont celles de Coeur, à l'identique
-// (RechercheIndexTests le vérifie contre `RechercheGlobale.chercher`, requête par requête) : un résultat par
+// (RechercheModeleTests le vérifie contre `RechercheGlobale.chercher`, requête par requête) : un résultat par
 // prière ou par livre, trente par source, le même titre, le même extrait, le même ordre.
 //
 // En attendant l'index construit à l'export (une base SQLite lue en place, § 2.2.10), celui-ci se construit en

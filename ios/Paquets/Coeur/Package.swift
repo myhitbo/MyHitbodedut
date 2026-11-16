@@ -16,21 +16,16 @@ let enChantierSources: [String] = [
     "CarteEmbarquement.swift",
     "RouteVol.swift",
     "SaisieVol.swift",
-    "Store.swift",
     "SuiviVol.swift",
     "VolRappels.swift",
 ]
 let enChantierTests: [String] = [
     "AeroportsTests.swift",
     "CarteEmbarquementTests.swift",
-    "FiabiliteTests.swift",
-    "RepriseBoussoleTests.swift",
     "RouteVolTests.swift",
     "SaisieVolTests.swift",
-    "StoreTests.swift",
     "SuiviVolTests.swift",
     "VolRappelsTests.swift",
-    "VoyageNuitTests.swift",
 ]
 let enChantierEcrans: [String] = [
     "BibliothequeModele.swift",
@@ -45,6 +40,8 @@ let enChantierEcrans: [String] = [
     "Horloge.swift",
     "LectureBalisage.swift",
     "LectureLignes.swift",
+    "LectureMarques.swift",
+    "LectureModele.swift",
     "LecturePreferences.swift",
     "Magasin.swift",
     "MusiqueAmbianceSynth.swift",
@@ -57,6 +54,7 @@ let enChantierEcrans: [String] = [
     "RechercheIndex.swift",
     "RechercheModele.swift",
     "Services.swift",
+    "SiddourModele.swift",
     "Traducteur.swift",
 ]
 let enChantierEcransTests: [String] = [
@@ -67,12 +65,15 @@ let enChantierEcransTests: [String] = [
     "ContenusAppTests.swift",
     "Fichiers.swift",
     "HalakhaModeleTests.swift",
+    "HilloulotModeleTests.swift",
     "HorlogeTests.swift",
     "MagasinTests.swift",
     "MusiqueAmbianceSynthTests.swift",
     "MusiqueLecteurTests.swift",
+    "MusiqueModeleTests.swift",
     "OngletsTests.swift",
     "PresentationModeleTests.swift",
+    "RechercheModeleTests.swift",
     "ServicesTests.swift",
     "TraducteurTests.swift",
 ]

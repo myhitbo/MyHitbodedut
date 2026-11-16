@@ -43,7 +43,7 @@ public actor RecherchePreparateur {
         let contenus = self.contenus
         let hilloulot = self.hilloulot
         let langue = self.langue
-        let nouvelle = Task.detached(priority: .userInitiated) { () -> RechercheIndex? in
+        let nouvelle = Task.detached(priority: .userInitiated) { () async -> RechercheIndex? in
             if let precedent {
                 guard let siddur = try? await contenus.siddur(nusah) else { return nil }
                 return precedent.avec(siddur: siddur, nusah: nusah)
