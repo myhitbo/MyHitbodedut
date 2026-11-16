@@ -101,6 +101,7 @@ public struct TehilimVue: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(Text(verbatim: traducteur.texte(ligne.titre) + ", " + String(ligne.nombre)))
             .padding(.horizontal, 16)
             .padding(.top, 4)
         }

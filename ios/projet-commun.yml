@@ -42,8 +42,11 @@ targetTemplates:
       - path: Ressources/Musique
         type: folder
       # Les catalogues de chaînes, compilés pour Text("clé") ; XcodeGen y lit les langues du projet.
-      - path: Ressources/Chaines
+      # Catalogue/Localizable.xcstrings est la copie du catalogue d'Android acceptée par Xcode (export.py).
+      - path: Ressources/Catalogue
         includes: ["*.xcstrings"]
+      - path: Ressources/Chaines
+        includes: ["ios.xcstrings"]
       # Les mêmes fichiers tels quels, sous Chaines/ : le Traducteur d'Ecrans lit le JSON du catalogue, les
       # écrans les tableaux de chaînes (Tableaux.json).
       - path: Ressources/Chaines

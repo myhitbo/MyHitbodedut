@@ -61,7 +61,7 @@ public struct TehilimLectureVue: View {
 
     private var texte: some View {
         ScrollView {
-            psaumes
+            contenu
                 .padding(.top, 12)
                 // 88 sous le texte, et 72 pour lire au-dessus de la barre de lecture.
                 .padding(.bottom, 160)
@@ -90,6 +90,20 @@ public struct TehilimLectureVue: View {
         .overlay(alignment: .bottom) {
             TehilimBarreVue(barre: modele.barre)
                 .padding(.bottom, 16)
+        }
+    }
+
+    @ViewBuilder
+    private var contenu: some View {
+        switch modele.etat {
+        case .erreur:
+            Text("contenu_illisible", tableName: "ios")
+                .font(.subheadline)
+                .foregroundStyle(rendu.discret)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+        case .chargement, .pret:
+            psaumes
         }
     }
 

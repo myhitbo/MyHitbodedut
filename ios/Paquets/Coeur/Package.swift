@@ -34,9 +34,13 @@ let enChantierEcransTests: [String] = [
     "ZmanimEcranTests.swift",
 ]
 let enChantierVues: [String] = [
+    "BibliothequeCommun.swift",
+    "BibliothequeEntreeVue.swift",
+    "BibliothequeVue.swift",
     "BoussoleFeuille.swift",
     "BoussoleToile.swift",
     "BoussoleVue.swift",
+    "ChizukVue.swift",
     "ConseilsVue.swift",
     "HalakhaCommun.swift",
     "HalakhaVue.swift",
@@ -56,6 +60,7 @@ let enChantierVues: [String] = [
     "TehilimLectureVue.swift",
     "TehilimVue.swift",
     "TikkunVue.swift",
+    "TropheeObjet.swift",
 ]
 
 let package = Package(

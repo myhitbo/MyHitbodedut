@@ -69,6 +69,7 @@ LICENCES = [
     (r"Contenu/(trophees_formes|palettes)\.json", "propre à l'app", ""),
     (r"Contenu/musique\.json", "accord écrit (PORTAGE.md § 6.1)", "voir chaque morceau"),
     (r"Chaines/(Localizable\.xcstrings|Tableaux\.json)", "propre à l'app", ""),
+    (r"Catalogue/Localizable\.xcstrings", "propre à l'app", ""),
     (r"Images/[a-z0-9_]+\.webp", "fournies par le propriétaire", ""),
     (r"Icones/[a-z0-9_]+\.svg", "propre à l'app", ""),
     (r"Polices/[a-z0-9_]+\.ttf", "SIL OFL 1.1", "voir Polices/licences"),
@@ -174,6 +175,17 @@ class Export:
             doc["strings"][cle] = {"localizations": loc}
         source = "android/app/src/main/res/values*/strings.xml"
         self.json(SORTIE / "Chaines" / "Localizable.xcstrings", doc, source, indent=2)
+        # La copie que compile Xcode (Catalogue/, pour Text("clé")) : son compilateur refuse un pluriel dont
+        # aucune forme ne cite le nombre (« jour » / « jours ») ; un tel pluriel y devient une chaîne simple,
+        # sa forme « other ». Le Traducteur lit Chaines/Localizable.xcstrings, fidèle à Android.
+        compile = json.loads(json.dumps(doc))
+        for cle, entree in compile["strings"].items():
+            locs = entree["localizations"]
+            pluriels = [l["variations"]["plural"] for l in locs.values() if "variations" in l]
+            if pluriels and not any("%" in f["stringUnit"]["value"] for pl in pluriels for f in pl.values()):
+                entree["localizations"] = {lg: {"stringUnit": l["variations"]["plural"]["other"]["stringUnit"]}
+                                           for lg, l in locs.items()}
+        self.json(SORTIE / "Catalogue" / "Localizable.xcstrings", compile, source, indent=2)
         tableaux = {langue: {**fr["tableaux"], **brutes[langue]["tableaux"]} for langue, _ in LANGUES}
         self.json(SORTIE / "Chaines" / "Tableaux.json", tableaux, source)
 
@@ -432,7 +444,7 @@ def vecteur_en_svg(xml, nom):
 def main():
     verifier = "--verifier" in sys.argv[1:]
     avant = MANIFESTE.read_text(encoding="utf-8") if MANIFESTE.exists() else None
-    for dossier in ("Contenu", "Images", "Icones", "Polices", "Musique"):
+    for dossier in ("Contenu", "Images", "Icones", "Polices", "Musique", "Catalogue"):
         shutil.rmtree(SORTIE / dossier, ignore_errors=True)
     for fichier in ("Localizable.xcstrings", "Tableaux.json"):
         (SORTIE / "Chaines" / fichier).unlink(missing_ok=True)

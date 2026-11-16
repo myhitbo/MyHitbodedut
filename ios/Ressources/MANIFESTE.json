@@ -42,6 +42,14 @@
    "mention": "produites par le dépôt"
   },
   {
+   "chemin": "Ressources/Catalogue/Localizable.xcstrings",
+   "source": "android/app/src/main/res/values*/strings.xml",
+   "octets": 699789,
+   "sha256": "f5d94493bc0c499f1c5f5d31954c65e0f81ecfcc41c12cc8e94e251aae1a8d14",
+   "licence": "propre à l'app",
+   "mention": ""
+  },
+  {
    "chemin": "Ressources/Chaines/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
    "octets": 702031,

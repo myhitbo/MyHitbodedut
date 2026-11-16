@@ -183,9 +183,10 @@ public struct PresentationVue: View {
         .frame(maxWidth: .infinity)
     }
 
-    /// Les quatre durées, de même largeur, une seule cochée (MaterialButtonToggleGroup).
+    /// Les quatre durées, de même largeur, une seule cochée (MaterialButtonToggleGroup) : les boutons se
+    /// touchent, leurs filets se confondent, et le groupe entier a la forme d'une pilule.
     private var rangeeDurees: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: -1) {
             ForEach(modele.durees) { duree in
                 Button {
                     Task { try? await modele.choisirDuree(duree.minutes) }
@@ -195,9 +196,13 @@ public struct PresentationVue: View {
                         .minimumScaleFactor(0.7)
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(PresentationBoutonContour(coche: duree.choisie, marge: 6))
+                .buttonStyle(PresentationBoutonSegment(coche: duree.choisie))
                 .accessibilityAddTraits(duree.choisie ? .isSelected : [])
             }
+        }
+        .clipShape(Capsule())
+        .overlay {
+            Capsule().strokeBorder(Teinte(.line), lineWidth: 1)
         }
     }
 
@@ -228,6 +233,7 @@ public struct PresentationVue: View {
             Task { try? await modele.suivant() }
         } label: {
             Text(modele.libelleSuivant, traducteur: traducteur)
+                .font(Font.callout.weight(.medium))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, m.margeSuivant)
         }
@@ -306,16 +312,15 @@ public struct PresentationVue: View {
     private var heureMiseEnForme: String {
         let heure = modele.heureRappelHeure
         let minute = modele.heureRappelMinute
-        let minutes = (minute < 10 ? "0" : "") + String(minute)
         switch Locale.autoupdatingCurrent.hourCycle {
         case .zeroToTwentyThree, .oneToTwentyFour:
-            return (heure < 10 ? "0" : "") + String(heure) + ":" + minutes
+            return String(format: "%02d:%02d", heure, minute)
         default:
             var calendrier = Calendar(identifier: .gregorian)
             calendrier.locale = locale
             let douze = heure % 12 == 0 ? 12 : heure % 12
             let moment = heure < 12 ? calendrier.amSymbol : calendrier.pmSymbol
-            return String(douze) + ":" + minutes + " " + moment
+            return String(format: "%d:%02d", douze, minute) + " " + moment
         }
     }
 }
@@ -399,6 +404,32 @@ private struct PresentationBoutonContour: ButtonStyle {
                 Capsule().strokeBorder(Teinte(.line), lineWidth: 1)
             }
             .contentShape(Capsule())
+            .opacity(configuration.isPressed ? 0.75 : 1)
+    }
+}
+
+/// Un bouton du groupe des durées (MaterialButtonToggleGroup de Material 1.12) : un segment droit cerclé du
+/// filet `line`, que le groupe arrondit à ses deux bouts ; coché, fond menthe et encre `onPlate`.
+private struct PresentationBoutonSegment: ButtonStyle {
+    let coche: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(Font.subheadline.weight(.medium))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(Teinte(coche ? .onPlate : .brand))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 8)
+            .frame(minHeight: 48)
+            .background {
+                if coche {
+                    Rectangle().fill(Teinte(.mint))
+                }
+            }
+            .overlay {
+                Rectangle().strokeBorder(Teinte(.line), lineWidth: 1)
+            }
+            .contentShape(Rectangle())
             .opacity(configuration.isPressed ? 0.75 : 1)
     }
 }

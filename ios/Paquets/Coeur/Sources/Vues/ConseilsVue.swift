@@ -48,6 +48,12 @@ private struct ConseilsCarte: View {
     /// bg_tip_number : 34 de diamètre, qui grandit avec la taille du texte.
     @ScaledMetric(relativeTo: .subheadline) private var diametre: CGFloat = 34
 
+    // Écrit : la propriété privée `diametre` rendrait privé l'initialiseur par membres, hors de portée de
+    // ConseilsVue.
+    init(ligne: ConseilsLigne) {
+        self.ligne = ligne
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             entete
