@@ -28,9 +28,7 @@ Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Li
 - `@MainActor @Observable public final class <Écran>Modele` : ses propriétés stockées sont l'état de l'écran ;
   ses propriétés calculées, ce qu'il affiche ; ses méthodes, ses actions. Toute la logique y est, la vue n'en a
   aucune : un `if` qui décide quoi montrer appartient au modèle.
-- Il reçoit ce dont il dépend : le `Magasin` (journal et réglages), les contenus (`ContenusApp`), l'horloge
-  (`Horloge`), les services (`Services.swift`). Ces modèles communs sont dans `Ecrans`, avec un double pour les
-  tests et les aperçus : `PersistanceEnMemoire`, `HorlogeFixe`, `FauxNotificateur`…
+- Il reçoit ce dont il dépend : le `Magasin` (journal et réglages), les `Contenus`, l'horloge, les services.
   Jamais `Date()`, `Calendar.current`, `TimeZone.current` ni `Bundle.main` en direct : l'heure, le fuseau et les
   fichiers passent par ce qui est injecté, pour que le test les fixe.
 - Les textes sont des `Libelle` (clé du catalogue, arguments) : le modèle ne met rien en forme.
@@ -42,8 +40,7 @@ Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Li
 - `public struct <Écran>Vue: View`, qui lit le modèle et appelle ses actions. Mise en page, couleurs (jetons de
   la `Palette`), polices, accessibilité. SwiftUI d'iOS 26.5 ; aucune dépendance.
 - Les chaînes : `Text("cle")` pour une clé simple du catalogue (les clés sont celles d'Android), et pour un
-  `Libelle` l'aide commune de `Vues` (`Text(libelle)`), qui le résout dans la langue de l'app par le
-  `Traducteur` d'`Ecrans`.
+  `Libelle` l'aide commune de `Vues` (`Text(libelle)`), qui le résout dans la langue de l'app.
 - L'hébreu de droite à gauche vient de l'environnement (`layoutDirection`) ; une image ou un sens qui doivent se
   retourner le disent explicitement.
 - Pas d'image pendant la prière (règle d'Android) ; « Réduire les animations » respecté.

@@ -388,9 +388,7 @@
 {"cle": "s:x", "quand": 9223372036854775802, "maintenant": 9223372036854775807, "valable": true},
 {"cle": "s:תפילה", "quand": 1793000000000, "maintenant": 1793003600000, "valable": true},
 {"cle": "s:x", "quand": 1793000000000, "maintenant": 1793010799999, "valable": true},
-{"cle": "s:x", "quand": 1793000000000, "maintenant": 1793010800001, "valable": false},
-{"cle": "s:chaharit", "quand": 0, "maintenant": 60000, "valable": false},
-{"cle": "s:x", "quand": 0, "maintenant": 0, "valable": false}
+{"cle": "s:x", "quand": 1793000000000, "maintenant": 1793010800001, "valable": false}
 ],
 "jourTikkun": [
 {"civile": "2026-11-01T23:45:00", "milli": 0, "jour": "2026-11-01"},
