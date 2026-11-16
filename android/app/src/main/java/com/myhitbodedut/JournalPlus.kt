@@ -65,11 +65,14 @@ object JournalPlus {
     fun minutesDuMois(jours: Map<String, DayRecord>, mois: YearMonth): List<Int> =
         (1..mois.lengthOfMonth()).map { j -> jours[mois.atDay(j).toString()]?.takeIf { it.faite }?.minutes ?: 0 }
 
-    /** Les barres du mois : une par jour, à l'échelle du plus long ; le jour d'aujourd'hui marqué. */
-    class Graphique(c: Context, private val minutes: List<Int>, private val aujourdhui: Int) : View(c) {
+    /**
+     * Les barres du mois : une par jour, à l'échelle du plus long ; le jour d'aujourd'hui marqué.
+     * [encre] : blanche sur le bandeau du journal ; celle de l'accent sur la carte du Chemin (13/11).
+     */
+    class Graphique(c: Context, private val minutes: List<Int>, private val aujourdhui: Int, encre: Int = 0xFFFFFFFF.toInt()) : View(c) {
         private val d = c.resources.displayMetrics.density
-        private val barre = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFFFFF.toInt() }
-        private val vide = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x40FFFFFF }
+        private val barre = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = encre }
+        private val vide = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = (encre and 0x00FFFFFF) or 0x40000000 }
 
         override fun onMeasure(w: Int, h: Int) = setMeasuredDimension(MeasureSpec.getSize(w), (64 * d).toInt())
 

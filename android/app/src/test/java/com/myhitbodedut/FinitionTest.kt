@@ -23,8 +23,9 @@ class FinitionTest {
     fun `la semaine se lit comme un calendrier`() {
         val accueil = lire("java/com/myhitbodedut/MainActivity.kt")
         assertTrue(accueil.contains("else -> day.date.dayOfMonth.toString()"))
-        assertTrue(accueil.contains("R.drawable.bg_day_today"))
-        assertTrue(lire("res/drawable/bg_day_today.xml").contains("<stroke"))
+        // La semaine en lanternes (14/11) : aujourd'hui, la lanterne qui attend, cerclée de la marque.
+        assertTrue(accueil.contains("R.drawable.lanterne_aujourdhui"))
+        assertTrue(lire("res/drawable/lanterne_aujourdhui.xml").contains("?attr/mhBrand"))
         // Le violet des jours de pause jurait avec le vert.
         assertTrue(!lire("res/values/colors.xml").contains("#EDE9F7"))
     }
@@ -37,9 +38,9 @@ class FinitionTest {
     }
 
     @Test
-    fun `les pastilles s estompent au bord et les chiffres ne dansent pas`() {
+    fun `les chiffres ne dansent pas`() {
+        // Les pastilles qui s'estompaient au bord sont devenues les lignes du volet de la séance (13/11).
         val gabarit = lire("res/layout/activity_main.xml")
-        assertTrue(gabarit.contains("android:requiresFadingEdge=\"horizontal\""))
         assertTrue(Regex("fontFeatureSettings=\"tnum\"").findAll(gabarit).count() >= 3)
     }
 
@@ -52,7 +53,8 @@ class FinitionTest {
 
     @Test
     fun `chaque onglet a un dessin au repos et un dessin plein`() {
-        listOf("today", "texts", "zmanim", "journal", "settings").forEach { nom ->
+        // Trois onglets depuis la refonte du 13/11 : Le Jour, Les Livres, Le Chemin.
+        listOf("today", "texts", "chemin").forEach { nom ->
             val selecteur = lire("res/drawable/ic_nav_$nom.xml")
             assertTrue("$nom : pas de sélecteur", selecteur.contains("<selector"))
             assertTrue(selecteur.contains("@drawable/ic_nav_${nom}_on\" android:state_checked=\"true\""))

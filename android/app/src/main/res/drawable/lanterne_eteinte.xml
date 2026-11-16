@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Un jour sans hitbodedout, passé ou à venir (14/11) : la lanterne éteinte, aux couleurs du thème. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="36dp"
+    android:viewportWidth="28"
+    android:viewportHeight="36">
+    <path
+        android:pathData="M10,7a4,4 0,0 1,8 0"
+        android:strokeColor="?attr/mhMuted"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.8" />
+    <path
+        android:fillColor="?attr/mhMuted"
+        android:pathData="M6.5,12L14,6.5L21.5,12Z" />
+    <path
+        android:fillColor="?attr/mhDayTodo"
+        android:pathData="M11,12h6a3.5,3.5 0,0 1,3.5 3.5v11a3.5,3.5 0,0 1,-3.5 3.5h-6a3.5,3.5 0,0 1,-3.5 -3.5v-11a3.5,3.5 0,0 1,3.5 -3.5Z"
+        android:strokeColor="?attr/mhMuted"
+        android:strokeWidth="1.8" />
+    <path
+        android:fillColor="?attr/mhMuted"
+        android:pathData="M8,30h12a2,2 0,0 1,0 4h-12a2,2 0,0 1,0 -4Z" />
+</vector>

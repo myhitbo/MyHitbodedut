@@ -185,21 +185,41 @@ button { font: inherit; color: inherit; }
 }
 
 .semaine { display: flex; margin-top: 16px; }
+/* La semaine en lanternes (14/11) : le nom du jour, sa lanterne posée sur l'horizon, son
+   numéro dessous. Les cases se touchent : leurs bouts d'horizon font une seule ligne. */
 .jour {
-  flex: 1; margin: 0 2px; padding: 8px 0; border-radius: 12px; background: var(--day-todo);
-  display: flex; flex-direction: column; align-items: center;
+  flex: 1; margin: 0; padding: 2px 0; border-radius: 12px; background: none;
+  display: flex; flex-direction: column; align-items: center; color: var(--ink);
 }
 .jour .nom { color: var(--muted); font-size: 11px; }
-.jour .marque-jour { margin-top: 0px; color: var(--ink); font-size: 16px; font-weight: 700; min-height: 22px; font-variant-numeric: tabular-nums; }
-.jour.avenir .marque-jour { color: var(--muted); }
-.jour.aujourdhui { box-shadow: inset 0 0 0 1.5px var(--brand); }
-.jour.fait { background: var(--day-done); }
-.jour.fait .nom, .jour.fait .marque-jour { color: var(--white); }
-/* Un jour fait se touche : sa durée remplace le ✓ (14/10). */
+.jour .marque-jour { margin-top: 1px; color: var(--ink); font-size: 14px; font-weight: 700; min-height: 20px; font-variant-numeric: tabular-nums; }
+.jour.avenir .marque-jour, .jour.exempte:not(.fait):not(.repos) .marque-jour { color: var(--muted); }
+.jour.aujourdhui .nom, .jour.aujourdhui .marque-jour { color: var(--brand); font-weight: 700; }
+/* Un jour fait se touche : sa durée remplace son numéro (14/10). */
 button.jour { font: inherit; border: 0; cursor: pointer; }
-.jour.montre-duree .marque-jour { font-size: 13px; white-space: nowrap; }
-.jour.exempte { background: var(--day-exempt); }
+.jour.montre-duree .marque-jour { font-size: 12px; white-space: nowrap; }
 .jour.repos .marque-jour { color: var(--brand); }
+.lanterne-pied {
+  --cadre: var(--muted); --verre: var(--day-todo);
+  position: relative; width: 100%; height: 38px; display: flex; align-items: flex-end; justify-content: center;
+}
+.lanterne-pied::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; background: var(--line); }
+.lanterne { position: relative; z-index: 1; margin-bottom: 1px; overflow: visible; }
+.lanterne .anse { fill: none; stroke: var(--cadre); stroke-width: 1.8; stroke-linecap: round; }
+.lanterne .toit, .lanterne .socle { fill: var(--cadre); }
+.lanterne .verre { fill: var(--verre); stroke: var(--cadre); stroke-width: 1.8; }
+.lanterne .flamme { fill: #FFF6D8; }
+.lanterne .meche { fill: none; stroke: var(--brand); stroke-width: 1.6; stroke-linecap: round; }
+.lanterne .cire { fill: #F4EEDF; stroke: var(--muted); stroke-width: 1; }
+/* Allumée : les couleurs d'une lanterne, de jour comme de nuit, et sa lueur. */
+.lanterne-pied.allumee { --cadre: #C08A2E; --verre: #FFC75A; }
+.lanterne-pied.allumee .lanterne { filter: drop-shadow(0 0 6px rgba(255, 183, 67, .65)); }
+.lanterne-pied.aujourdhui { --cadre: var(--brand); }
+.lanterne-pied.aujourdhui .verre { stroke-width: 2.2; }
+.lanterne-pied.chabbat .flamme { fill: #FFC24D; }
+.lanterne-pied.chabbat .socle { fill: var(--brand); }
+.lanterne-pied.chabbat .lanterne { filter: drop-shadow(0 0 4px rgba(255, 194, 77, .6)); }
+.jour.avenir .lanterne, .jour.exempte:not(.fait):not(.repos) .lanterne { opacity: .5; }
 
 .texte-bouton {
   display: block; width: 100%; margin-top: 4px; padding: 12px; border: 0; background: none;
@@ -294,14 +314,11 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .onglet[aria-current="page"] .icone { background: var(--line); }
 .onglet[data-onglet="aujourdhui"] { --icone: url(icones/ic_nav_today_off.svg); }
 .onglet[data-onglet="textes"] { --icone: url(icones/ic_nav_texts_off.svg); }
-.onglet[data-onglet="journal"] { --icone: url(icones/ic_nav_journal_off.svg); }
-.onglet[data-onglet="reglages"] { --icone: url(icones/ic_nav_settings_off.svg); }
-.onglet[data-onglet="zmanim"] { --icone: url(icones/ic_nav_zmanim_off.svg); }
+.onglet[data-onglet="chemin"] { --icone: url(icones/ic_nav_chemin_off.svg); }
 /* L'onglet actif : le dessin plein (ic_nav_*_on), comme sur Android. */
 .onglet[aria-current="page"][data-onglet="aujourdhui"] { --icone: url(icones/ic_nav_today_on.svg); }
 .onglet[aria-current="page"][data-onglet="textes"] { --icone: url(icones/ic_nav_texts_on.svg); }
-.onglet[aria-current="page"][data-onglet="journal"] { --icone: url(icones/ic_nav_journal_on.svg); }
-.onglet[aria-current="page"][data-onglet="reglages"] { --icone: url(icones/ic_nav_settings_on.svg); }
+.onglet[aria-current="page"][data-onglet="chemin"] { --icone: url(icones/ic_nav_chemin_on.svg); }
 
 /* Grand écran (tablette couchée, ordinateur) : les onglets passent en colonne
    sur le côté, au début de la ligne (à droite en hébreu), et l'accueil
@@ -1696,3 +1713,122 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
 .feuille .message + .dedicace-choix { margin-top: 4px; }
 .feuille p.dedicace-legende { margin-top: 16px; margin-bottom: 6px; font-weight: 600; }
 .dedicace-erreur:not(:empty) { color: var(--brand); font-weight: 600; }
+
+/* --- Refonte du 13/11 : trois lieux, barre de départ, rayonnage, carnet ------------------- */
+/* Le panneau et la barre de départ s'empilent ; les onglets restent dessous (ou sur le côté). */
+.corps-onglets { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+
+/* En tête du Jour : la date hébraïque (le ciel) et la roue des réglages. */
+.jour-entete { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.puce-ciel {
+  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; min-width: 0;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink); font-size: 14px; cursor: pointer;
+}
+.puce-ciel > span[lang] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.icone-ciel, .roue-reglages::before, .depart-regler::before {
+  content: ""; flex: none; display: block; background: currentColor;
+  -webkit-mask: var(--icone) center / contain no-repeat; mask: var(--icone) center / contain no-repeat;
+}
+.icone-ciel { width: 18px; height: 18px; color: var(--brand); --icone: url(icones/ic_ciel.svg); }
+.puce-ciel .chevron { flex: none; }
+.roue-reglages {
+  flex: none; width: 48px; height: 48px; display: grid; place-items: center; border: 0; border-radius: 50%;
+  background: none; color: var(--ink); cursor: pointer;
+}
+.roue-reglages::before { width: 24px; height: 24px; --icone: url(icones/ic_nav_settings_off.svg); }
+
+/* La barre de départ : le bouton, et sa flèche posée sur son bord de fin. */
+.depart { position: relative; flex: none; padding: 6px 16px 8px; background: var(--paper); }
+.depart .principal { margin-top: 0; padding-inline: 24px 68px; min-height: 56px; box-shadow: 0 3px 10px rgba(0, 0, 0, .18); }
+.depart-regler {
+  position: absolute; inset-block: 6px 8px; inset-inline-end: 16px; width: 60px; display: grid; place-items: center;
+  border: 0; border-inline-start: 1px solid color-mix(in srgb, var(--on-brand) 30%, transparent);
+  border-start-end-radius: 999px; border-end-end-radius: 999px; background: none; color: var(--on-brand); cursor: pointer;
+}
+.depart-regler::before { width: 24px; height: 24px; --icone: url(icones/ic_chevron_haut.svg); }
+.depart-regler:focus-visible, .roue-reglages:focus-visible, .puce-ciel:focus-visible, .couverture:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.depart-regler:focus-visible { outline-color: var(--on-brand); outline-offset: -6px; }
+@media (min-width: 900px) { .depart { display: flex; justify-content: center; } .depart .principal { max-width: 688px; } .depart-regler { inset-inline-end: calc(50% - 344px); } }
+@media (orientation: landscape) and (max-height: 500px) { .depart { padding-block: 4px 6px; } .depart .principal { min-height: 44px; padding-block: 8px; } .depart-regler { inset-block: 4px 6px; } }
+
+/* Le rayonnage des Livres : un titre, quatre couvertures de même largeur, la planche. */
+.rayon-titre { margin: 20px 0 0; font-size: 18px; font-weight: 700; color: var(--ink); }
+.rayon { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 10px; padding: 0 4px; }
+.couverture {
+  --plat: #1B7A5C; --dos: #0F5440; --encre: #FFFFFF;
+  display: flex; flex-direction: column; align-items: center; height: 124px; padding: 8px 4px; padding-inline-start: 10px;
+  border: 0; border-radius: 8px; background: var(--plat); color: var(--encre); cursor: pointer;
+  box-shadow: inset 6px 0 0 var(--dos); transition: transform 120ms ease-out;
+}
+[dir="rtl"] .couverture { box-shadow: inset -6px 0 0 var(--dos); }
+.couverture:active { transform: scale(.97); }
+.couv-titre { flex: 1; display: grid; place-items: center; font-family: "Frank Ruhl Libre", var(--police-texte); font-size: 19px; font-weight: 700; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+.couv-nom { font-size: 11px; line-height: 1.2; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.couv-bleu { --plat: #2D5F9A; --dos: #1D4270; }
+.couv-clair { --plat: #EEF8F3; --dos: #B9D9CB; --encre: #12241E; }
+.couv-violet { --plat: #4B3F8F; --dos: #33296B; }
+.couv-brun { --plat: #8A4B1F; --dos: #5F3212; }
+.couv-parchemin { --plat: #EFE3C8; --dos: #CDBB8F; --encre: #12241E; }
+.couv-petrole { --plat: #1D4A57; --dos: #12333D; }
+.couv-menthe { --plat: #6AD1A7; --dos: #3FA57C; --encre: #12241E; }
+.etagere { height: 6px; border-radius: 3px; background: var(--line); }
+.rayon-etat { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.etagere + .rayon-etat { margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { .couverture { transition: none; } .couverture:active { transform: none; } }
+
+/* Le Chemin : trois chiffres, le mois en barres. */
+.chemin-chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.chemin-valeur { font-size: 20px; line-height: 1.2; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.chemin-legende { font-size: 12px; color: var(--muted); }
+.chemin-mois { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+.carte-chemin .journal-graphique { margin-top: 8px; height: 64px; color: var(--brand); }
+
+/* La page du carnet, sous le bravo. */
+.carnet { margin-top: 20px; }
+.carnet-question { margin: 0; font-size: 17px; font-weight: 700; text-align: center; color: var(--ink); }
+.carnet-humeurs { gap: 8px; margin-top: 10px; }
+.carnet-humeurs .humeur { height: 56px; opacity: 1; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.carnet-humeurs .humeur[aria-pressed="true"] { border: 2px solid var(--brand); background: var(--mint); }
+.carnet-libelle { display: block; margin-top: 14px; font-size: 13px; color: var(--muted); text-align: start; }
+.carnet-champ, .carnet-prive { text-align: start; }
+.carnet-champ {
+  display: block; width: 100%; box-sizing: border-box; margin-top: 6px; min-height: 52px; padding: 12px 16px;
+  border: 1px solid var(--line); border-radius: 16px; background: var(--card); color: var(--ink); font: inherit; font-size: 16px;
+}
+textarea.carnet-champ { resize: none; line-height: 1.4; }
+.carnet-champ::placeholder { color: var(--muted); }
+.carnet-champ:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+.carnet-prive { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+.bravo .carnet + .principal { margin-top: 16px; }
+/* Le carnet ouvert : la scène se réduit, le hassid continue de danser en tête de la page. */
+.bravo.carnet-ouvert .scene.danse { flex: none; min-height: 0; height: 132px; }
+.bravo.carnet-ouvert .bravo-titre { margin-top: 12px; font-size: 22px; }
+/* Téléphone couché : la scène à côté, le bravo, l'humeur et le bouton dans la colonne de fin,
+   pour que « Continuer » se voie sans faire défiler. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .bravo .contenu { display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr); column-gap: 24px; align-content: start; padding-top: calc(12px + env(safe-area-inset-top)); }
+  .bravo .contenu > * { grid-column: 2; }
+  .bravo .scene.danse, .bravo.carnet-ouvert .scene.danse { grid-column: 1; grid-row: 1 / span 8; align-self: start; flex: none; min-height: 0; height: min(260px, calc(100vh - 40px)); }
+  .bravo-titre, .bravo.carnet-ouvert .bravo-titre { margin-top: 0; font-size: 24px; }
+  .carnet { margin-top: 8px; }
+  .carnet-humeurs .humeur { height: 44px; }
+  .bravo .principal, .bravo .carnet + .principal { margin-top: 8px; }
+}
+
+/* --- Le ciel du Jour (étape 3, 14/11 ; CielDuJour.kt) ---------------------------------- */
+/* La plaque devient une fenêtre sur le ciel du moment ; le hassid passe devant. */
+.plaque.avec-ciel { background: transparent; }
+.plaque .ciel { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.plaque img { position: relative; }
+/* Le haut du Jour prend un voile de la couleur du ciel, qui s'efface vers le bas et défile avec la page. */
+.ecran[data-ciel] .defile {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--ciel) 30%, transparent), transparent) top / 100% 420px no-repeat local;
+}
+.ecran[data-ciel="aube"] { --ciel: #E8A0B4; }
+.ecran[data-ciel="jour"] { --ciel: #6FB8EA; }
+.ecran[data-ciel="coucher"] { --ciel: #F08A5D; }
+.ecran[data-ciel="nuit"] { --ciel: #2C3E7A; }
+/* L'icône devant la date hébraïque suit la phase. */
+.puce-ciel[data-ciel="aube"] .icone-ciel { --icone: url(icones/ic_ciel_aube.svg); }
+.puce-ciel[data-ciel="jour"] .icone-ciel { --icone: url(icones/ic_ciel_jour.svg); }
+.puce-ciel[data-ciel="coucher"] .icone-ciel { --icone: url(icones/ic_ciel_coucher.svg); }

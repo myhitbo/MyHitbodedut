@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Onglet Zmanim, au repos : une horloge au trait arrondi. La teinte vient de l'onglet (color/nav_item.xml). -->
+<!-- Onglet Le Chemin, au repos : un sentier au trait arrondi. La teinte vient de l'onglet (color/nav_item.xml). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -7,13 +7,7 @@
     android:viewportHeight="24">
 
     <path
-        android:pathData="M12,3 A9,9 0 1,1 11.99,3 Z"
-        android:strokeColor="?attr/mhInk"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:strokeWidth="2" />
-    <path
-        android:pathData="M12,7.5 L12,12 L15.5,13.8"
+        android:pathData="M7,21 C7,17.500 17,17.500 17,14 C17,10.500 7,10.500 7,7 C7,5 8.500,3 11,3"
         android:strokeColor="?attr/mhInk"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"

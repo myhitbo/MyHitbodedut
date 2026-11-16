@@ -174,6 +174,10 @@ def trouver(text=None, desc=None, rid=None, contains=False, defilements=0, index
 
 def toucher(text=None, desc=None, rid=None, contains=False, defilements=0, index=0, attente=1.5):
     quoi = " ".join(f"{k}={v!r}" for k, v in (("text", text), ("desc", desc), ("id", rid)) if v is not None)
+    # Depuis la refonte du 13/11, Reglages (la roue) et Zmanim (la date hebraique) sont en tete du
+    # Jour, plus dans les onglets : depuis Les Livres ou Le Chemin, on revient d'abord au Jour.
+    if rid in ("nav_settings", "nav_zmanim") and trouver(rid=rid) is None and trouver(rid="nav_today") is not None:
+        toucher(rid="nav_today", attente=1.0)
     b = trouver(text, desc, rid, contains, defilements, index)
     if b is None:
         log(f"  INTROUVABLE : {quoi}")
@@ -259,7 +263,9 @@ def arreter():
 
 
 def lancer(attente=4.0):
-    sh(f"am start -W -n {PKG}/com.myhitbodedut.MainActivity", timeout=60)
+    # --activity-clear-top : l'accueil lui-meme, pas l'ecran reste devant (une priere, la vitrine
+    # des vignettes...). Depuis la refonte, Reglages et Zmanim ne s'atteignent que depuis le Jour.
+    sh(f"am start -W --activity-clear-top -n {PKG}/com.myhitbodedut.MainActivity", timeout=60)
     pause(attente)
     # Si la presentation est la malgre la preference, on la passe.
     if trouver(rid="onboarding_skip"):
@@ -871,12 +877,17 @@ def main():
             sh("rm -f /sdcard/film.mp4")
             film = subprocess.Popen(["adb", "shell", "screenrecord", "--time-limit", "60", "/sdcard/film.mp4"])
             pause(1.5)
-            for onglet in ("nav_texts", "nav_zmanim", "nav_journal", "nav_settings", "nav_today"):
+            # Trois lieux depuis la refonte du 13/11 (Le Jour, Les Livres, Le Chemin) ; Zmanim et
+            # Réglages s'ouvrent en tête du Jour, sous les mêmes identifiants, sur leur propre écran.
+            for onglet in ("nav_texts", "nav_journal", "nav_today", "nav_zmanim", "nav_settings"):
                 toucher(rid=onglet, attente=1.6)
-                # Journal et Réglages ouvrent leur propre écran, sans la barre d'onglets.
-                if onglet in ("nav_journal", "nav_settings"):
+                if onglet in ("nav_zmanim", "nav_settings"):
                     retour(); pause(1.2)
-            toucher(rid="trophees_paliers", defilements=4, attente=2.0)
+            # Le volet de la séance, ouvert puis refermé par la flèche de la barre de départ.
+            toucher(rid="depart_regler", attente=1.2)
+            toucher(rid="depart_regler", attente=1.0)
+            toucher(rid="nav_journal", attente=1.2)
+            toucher(rid="trophees_paliers", defilements=2, attente=2.0)
             retour(); pause(1.5)
             onglet_textes()
             toucher(rid="siddur_button", defilements=2, attente=2.0)
@@ -954,6 +965,11 @@ def main():
             # L'apercu passe l'application a l'arriere-plan : on la rouvre avant chaque essai.
             lancer(attente=3)
             fermer_trophees(code)
+            # Depuis la refonte, la roue est en tete du Jour : apres la capture des Livres,
+            # l'accueil y est encore. Aux essais suivants, c'est Reglages qui revient devant
+            # (pas de nav_today) : la recherche de preview_gate plus bas s'en charge.
+            if trouver(rid="nav_today") is not None:
+                toucher(rid="nav_today", attente=1.0)
             ok = toucher(rid="nav_settings", attente=2.0)
             ok = ok and trouver(rid="preview_gate", defilements=14) is not None
             if not ok:

@@ -25,6 +25,7 @@ import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHa
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
 import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
+import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
 import * as Boussole from './boussole.js';
 import * as Tikkun from './tikkun.js';
@@ -452,9 +453,12 @@ function compter(el, cible, texte) {
 function remplirPlaque(btn) {
   if (facePlaque === 'hassid') {
     btn.setAttribute('aria-label', tr.t('rings_character_hint'));
-    btn.replaceChildren(h('img', { src: `img/${salutation(store.record()?.faite === true)}.webp`, alt: '' }));
+    // Le hassid se tient dans le ciel du moment (14/11) ; les chiffres gardent le disque clair.
+    btn.classList.add('avec-ciel');
+    btn.replaceChildren(fenetreCiel(cielMaintenant()), h('img', { src: `img/${salutation(store.record()?.faite === true)}.webp`, alt: '' }));
     return;
   }
+  btn.classList.remove('avec-ciel');
   const c = contenuFace(facePlaque);
   const anneau = Plaque.anneau(facePlaque);
   const valeur = h('div', { class: `face-valeur${anneau ? ` valeur-${anneau}` : ''}` }, c.texte(c.cible));
@@ -496,6 +500,91 @@ function tournerPlaque(vers) {
   btn.classList.remove('entree');
   btn.classList.add('sortie');
   apresAnimation(btn, 'plaque-sortie', changer);
+}
+
+// --- Le ciel du Jour (étape 3 de la refonte, 14/11 ; CielDuJour.kt, CielDessin.kt) -------
+
+/** Le ciel du moment : à l'heure du lieu des zmanim s'il est réglé, sinon à celle du téléphone. */
+function cielMaintenant() {
+  const maintenant = new Date();
+  const lieu = store.lieu();
+  if (!lieu) return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
+  try {
+    const z = Object.fromEntries(zmanimDuJour(lieu, jourLieu(maintenant)).map((x) => [x.cle, x.instant]));
+    return Ciel.phase(maintenant, z, heureLieu(maintenant));
+  } catch {
+    return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
+  }
+}
+
+/**
+ * La fenêtre ronde au creux des anneaux : le ciel du moment, l'astre, la colline du champ où
+ * l'on sort, et la nuit le rond de lumière de la lanterne où se tient le hassid (la lueur
+ * cache aussi le liseré clair du détourage sur le sombre).
+ */
+let numeroCiel = 0;
+function fenetreCiel(phase) {
+  const c = Ciel.PALETTES[phase];
+  // Des identifiants propres à chaque dessin : la plaque se redessine, l'ancien peut traîner.
+  const n = ++numeroCiel;
+  const svg = s('svg', { class: 'ciel', viewBox: '0 0 188 188', preserveAspectRatio: 'xMidYMid slice', 'aria-hidden': 'true' });
+  const defs = s('defs');
+  const degrade = s('linearGradient', { id: `ciel-${n}`, x1: 0, y1: 0, x2: 0, y2: 1 });
+  [[0, c.haut], [0.55, c.milieu], [1, c.horizon]].forEach(([o, couleur]) => degrade.append(s('stop', { offset: o, 'stop-color': couleur })));
+  defs.append(degrade);
+  svg.append(defs, s('rect', { width: 188, height: 188, fill: `url(#ciel-${n})` }));
+  if (phase === 'nuit') {
+    const etoiles = s('g', { fill: '#FFFDF0' });
+    Ciel.ETOILES.forEach(([x, y, r]) => etoiles.append(s('circle', { cx: x, cy: y, r })));
+    const masque = s('mask', { id: `croissant-${n}` });
+    masque.append(s('rect', { width: 188, height: 188, fill: '#FFFFFF' }), s('circle', { cx: 146.7, cy: 34.5, r: 14, fill: '#000000' }));
+    defs.append(masque);
+    svg.append(etoiles, s('circle', { cx: 139, cy: 38, r: 14, fill: c.astre, mask: `url(#croissant-${n})` }));
+  } else {
+    const [x, y, r, lueur] = Ciel.ASTRES[phase];
+    const halo = s('radialGradient', { id: `astre-${n}` });
+    halo.append(s('stop', { offset: 0, 'stop-color': c.lueur, 'stop-opacity': 0.85 }), s('stop', { offset: 1, 'stop-color': c.lueur, 'stop-opacity': 0 }));
+    defs.append(halo);
+    svg.append(s('circle', { cx: x, cy: y, r: lueur, fill: `url(#astre-${n})` }), s('circle', { cx: x, cy: y, r, fill: c.astre }));
+    if (phase === 'jour') {
+      const nuages = s('g', { fill: '#FFFFFF', 'fill-opacity': 0.85 });
+      Ciel.NUAGES.forEach(([cx, cy, rx, ry]) => nuages.append(s('ellipse', { cx, cy, rx, ry })));
+      svg.append(nuages);
+    }
+  }
+  svg.append(s('path', { d: Ciel.COLLINE, fill: c.colline }));
+  if (phase === 'nuit') {
+    const lanterne = s('radialGradient', { id: `lanterne-${n}` });
+    [[0, 1], [0.5, 0.8], [1, 0]].forEach(([o, a]) => lanterne.append(s('stop', { offset: o, 'stop-color': '#FFECBA', 'stop-opacity': a })));
+    defs.append(lanterne);
+    svg.append(s('circle', { cx: 94, cy: 94, r: 117, fill: `url(#lanterne-${n})` }));
+  }
+  return svg;
+}
+
+/**
+ * Une lanterne de la semaine (14/11) : allumée quand la hitbodedout est faite, qui attend
+ * aujourd'hui, éteinte sinon ; le samedi chômé, les deux bougies de Chabbat. Les couleurs
+ * viennent de la feuille de style (app.css, « La semaine en lanternes »).
+ */
+function lanterne(etat) {
+  const svg = s('svg', { class: 'lanterne', viewBox: '0 0 28 36', width: 28, height: 36, 'aria-hidden': 'true' });
+  if (etat === 'chabbat') {
+    svg.append(
+      s('path', { class: 'flamme', d: 'M10 6.5C11.8 8.6 11.6 10.8 10 12C8.4 10.8 8.2 8.6 10 6.5ZM18 6.5C19.8 8.6 19.6 10.8 18 12C16.4 10.8 16.2 8.6 18 6.5Z' }),
+      s('path', { class: 'cire', d: 'M8.5 13h3a.5.5 0 0 1 .5.5V30H8V13.5a.5.5 0 0 1 .5-.5ZM16.5 13h3a.5.5 0 0 1 .5.5V30h-4V13.5a.5.5 0 0 1 .5-.5Z' }),
+      s('path', { class: 'socle', d: 'M7 30h14a2 2 0 0 1 0 4H7a2 2 0 0 1 0-4Z' }));
+    return svg;
+  }
+  svg.append(...[
+    s('path', { class: 'anse', d: 'M10 7a4 4 0 0 1 8 0' }),
+    s('path', { class: 'toit', d: 'M6.5 12L14 6.5L21.5 12Z' }),
+    s('path', { class: 'verre', d: 'M11 12h6a3.5 3.5 0 0 1 3.5 3.5v11a3.5 3.5 0 0 1-3.5 3.5h-6a3.5 3.5 0 0 1-3.5-3.5v-11A3.5 3.5 0 0 1 11 12Z' }),
+    etat === 'allumee' ? s('path', { class: 'flamme', d: 'M14 15.5C16.8 18.8 16.3 22.4 14 24.4C11.7 22.4 11.2 18.8 14 15.5Z' }) : null,
+    etat === 'aujourdhui' ? s('path', { class: 'meche', d: 'M14 21.5v3' }) : null,
+    s('path', { class: 'socle', d: 'M8 30h12a2 2 0 0 1 0 4H8a2 2 0 0 1 0-4Z' }),
+  ].filter(Boolean));
+  return svg;
 }
 
 function plaqueAccueil() {
@@ -553,17 +642,18 @@ function panneauAujourdhui() {
   const etat = store.anneaux();
   const nomJour = new Intl.DateTimeFormat(tr.langue, { weekday: 'short', timeZone: 'UTC' });
 
-  const bouton = store.isSessionRunning() ? tr.t('action_back_to_session')
-    : fait ? tr.t('action_another_session')
-      : tr.t('action_start_session', tr.duree(store.targetMinutes()));
-
-  const sujet = store.sessionTheme();
-  const morceau = store.musicEnabled() ? morceauChoisi() : null;
+  // En tête du Jour (13/11) : la date hébraïque ouvre le ciel (zmanim, calendrier, hilloulot,
+  // boussole), la roue les réglages. Les deux étaient des onglets.
+  const dateHebraique = jourJuif(isoLocal(new Date()), store.inIsrael(), mukafChoma()).dateHebraique;
+  const ciel = cielMaintenant();
 
   // Trois blocs : en-tête, anneaux, actions. Ils s'empilent ; sur un
   // téléphone couché, les anneaux passent à côté (app.css, « Téléphone couché »).
   return h('div', { class: 'contenu accueil' }, h('div', { class: 'accueil-tete' },
-    h('div', { class: 'marque' }, tr.t('app_name')),
+    h('div', { class: 'jour-entete' },
+      h('button', { type: 'button', class: 'puce-ciel', 'data-ciel': ciel, 'aria-label': tr.t('jour_ciel', dateHebraique), onclick: () => ouvrir('zmanim') },
+        h('span', { class: 'icone-ciel', 'aria-hidden': 'true' }), h('span', { lang: 'he', dir: 'rtl' }, dateHebraique), h('span', { class: 'chevron', 'aria-hidden': 'true' })),
+      h('button', { type: 'button', class: 'roue-reglages', 'aria-label': tr.t('settings_title'), onclick: () => ouvrir('reglages') })),
     prenom ? h('div', { class: 'salut' }, tr.t(Salutation.cle(new Date().getHours()), prenom)) : null,
     // Sans prénom, l'état du jour prend la place du titre.
     // Comme Android : en cours, faite, jour sans obligation, ou pas encore faite.
@@ -591,15 +681,8 @@ function panneauAujourdhui() {
     h('div', { class: `jauge-legende${anneauEnAvant ? ` legende-${anneauEnAvant}` : ''}` }, legendeAnneaux(etat, progression)),
     lignePaliers()),
 
-    // Un toucher démarre, comme sur Android (FPRODUIT-04) ; l'écran de préparation reste à « Autrement » sous le bouton.
-    h('div', { class: 'accueil-actions' }, h('button', { class: 'principal', onclick: () => (store.isSessionRunning() ? ouvrir('seance') : commencer(store.targetMinutes())) }, bouton),
-
-    h('div', { class: 'pastilles' },
-      pastille(tr.t('start_duration'), tr.duree(store.targetMinutes()), () => choisirDuree((m) => {
-        store.setTargetMinutes(m); rendre();
-      })),
-      pastille(tr.t('start_theme'), sujet ? tr.t(`theme_${sujet}`) : tr.t('session_theme_none_short'), choisirSujet),
-      pastille(tr.t('start_music'), morceau ? (store.musicShuffle() ? tr.t('music_shuffle_short') : titreMorceau(morceau)) : tr.t('start_music_off'), () => ouvrir('musique'))),
+    // « Commencer » et ses pastilles ont rejoint la barre de départ et son volet (13/11).
+    h('div', { class: 'accueil-actions' },
 
     h('div', { class: 'semaine' }, semaine.map((j) => {
       const repos = j.shabbat && j.exempt;
@@ -607,7 +690,9 @@ function panneauAujourdhui() {
       // Un jour fait touché montre sa durée à la place du ✓ (14/10) ; touché encore, le ✓ revient.
       const minutes = store.record(j.date)?.minutes ?? 0;
       const montre = j.done && joursMontres.has(j.date);
-      const marque = montre ? JaugeSemaine.dureeCourte(minutes) : j.done ? '✓' : repos ? tr.t('week_shabbat_mark') : j.exempt ? '—' : String(Number(j.date.slice(8)));
+      // La semaine en lanternes (14/11) : la lanterne dit si c'est fait ; le numéro reste dessous.
+      const marque = montre ? JaugeSemaine.dureeCourte(minutes) : j.exempt && !j.done && !repos ? '—' : String(Number(j.date.slice(8)));
+      const etat = j.done ? 'allumee' : repos ? 'chabbat' : !j.exempt && j.date === store.today() ? 'aujourdhui' : 'eteinte';
       const etiquette = j.done ? `${tr.t('week_done')} · ${tr.duree(minutes)}` : repos ? tr.t('settings_shabbat')
         : j.exempt ? tr.t('gate_exempt_title') : tr.t('week_todo');
       const classe = ['jour', j.done ? 'fait' : j.exempt ? 'exempte' : '', repos && !j.done ? 'repos' : '',
@@ -620,6 +705,7 @@ function panneauAujourdhui() {
       return h(ouvrable ? 'button' : 'div', { class: `${classe}${montre ? ' montre-duree' : ''}`,
         ...(ouvrable ? { type: 'button', onclick: () => ajoutTemps(j.date, j.done ? bascule : null) } : { role: 'img' }), 'aria-label': nom },
         h('span', { class: 'nom', 'aria-hidden': 'true' }, nomJour.format(new Date(`${j.date}T12:00:00Z`))),
+        h('span', { class: `lanterne-pied ${etat}`, 'aria-hidden': 'true' }, lanterne(etat)),
         h('span', { class: 'marque-jour', 'aria-hidden': 'true' }, marque));
     })),
 
@@ -633,12 +719,63 @@ function panneauAujourdhui() {
     // La garde des données (13/11, FWEBCODE-01) : installer, importer ou exporter, un avis à la fois.
     avisDonnees(),
     // L'accueil selon l'heure (14/10) : la prière du moment, Birkat haLevana les soirs de la fenêtre.
-    ...momentAccueil(),
-    // Les trophées et les paliers, en bas de la page (11/10).
-    // Les trophées et « Mon parcours », côte à côte (19/10).
-    h('div', { class: 'boutons-bas' },
-      h('button', { class: 'bouton-trophees', onclick: () => ouvrir('paliers') }, tr.t('trophees_paliers')),
-      h('button', { class: 'bouton-trophees', onclick: () => ouvrir('parcours') }, tr.t('parcours_title')))));
+    // Les trophées et « Mon parcours » sont dans Le Chemin (13/11).
+    ...momentAccueil()));
+}
+
+/**
+ * La barre de départ (13/11) : visible dans les trois lieux, au-dessus des onglets. Le bouton
+ * ouvre la séance ; la flèche, le volet de ses réglages (MainActivity.montrerVolet).
+ */
+function barreDepart() {
+  const fait = store.record()?.faite === true;
+  const libelle = store.isSessionRunning() ? tr.t('action_back_to_session')
+    : fait ? tr.t('action_another_session')
+      : tr.t('action_start_session', tr.duree(store.targetMinutes()));
+  return h('div', { class: 'depart' },
+    // Un toucher démarre, comme sur Android (FPRODUIT-04) ; l'écran de préparation reste à « Autrement » sous la semaine.
+    h('button', { class: 'principal', onclick: () => (store.isSessionRunning() ? ouvrir('seance') : commencer(store.targetMinutes())) }, libelle),
+    h('button', { type: 'button', class: 'depart-regler', 'aria-label': tr.t('depart_regler'), 'aria-haspopup': 'dialog', onclick: voletDepart }));
+}
+
+/** Le volet de la séance : ce avec quoi on y entre — la durée, le sujet, la musique. Rien n'y est obligatoire. */
+function voletDepart() {
+  const sujet = store.sessionTheme();
+  feuille(tr.t('depart_titre'), (f, fermer) => {
+    f.classList.add('volet-depart');
+    f.append(
+      ligne({ nom: tr.t('start_duration'), etat: tr.duree(store.targetMinutes()),
+        onclick: () => { fermer(); choisirDuree((m) => { store.setTargetMinutes(m); rendre(); }); } }),
+      ligne({ nom: tr.t('start_theme'), etat: sujet ? tr.t(`theme_${sujet}`) : tr.t('session_theme_none_short'),
+        onclick: () => { fermer(); choisirSujet(); } }),
+      ligne({ nom: tr.t('music_title'), etat: etatMusique(), onclick: () => { fermer(); ouvrir('musique'); } }));
+  });
+}
+
+/**
+ * Le Chemin (13/11) : ce qui a été fait. La série, la meilleure, le total ; les minutes du
+ * mois en barres ; puis le journal, le parcours et les trophées (MainActivity.renderChemin).
+ */
+function panneauChemin() {
+  const faites = store.joursFaits().size;
+  const total = tr.duree(store.totalMinutes());
+  const chiffre = (valeur, legende) => h('div', { class: 'chemin-chiffre' },
+    h('div', { class: 'chemin-valeur' }, String(valeur)), h('div', { class: 'chemin-legende' }, tr.t(legende)));
+  const p = pratique();
+  const prochain = Trophees.prochain(p);
+  const nomMois = new Intl.DateTimeFormat(tr.langue, { month: 'long', year: 'numeric' }).format(new Date());
+  return h('div', { class: 'contenu chemin' },
+    h('h1', { class: 'titre-ecran' }, tr.t('nav_chemin')),
+    h('div', { class: 'carte carte-chemin' },
+      h('div', { class: 'chemin-chiffres' },
+        chiffre(store.streak(), 'chemin_stat_serie'), chiffre(store.meilleureSerie(), 'chemin_stat_meilleure'), chiffre(total, 'chemin_stat_total')),
+      h('p', { class: 'chemin-mois' }, nomMois.charAt(0).toLocaleUpperCase(tr.langue) + nomMois.slice(1)),
+      graphiqueDuMois().graphique),
+    h('div', { class: 'carte' },
+      ligne({ nom: tr.t('nav_journal'), etat: tr.p('journal_summary', faites, faites, total), onclick: () => ouvrir('journal') }),
+      ligne({ nom: tr.t('parcours_title'), etat: tr.t('chemin_parcours_hint'), onclick: () => ouvrir('parcours') }),
+      ligne({ nom: tr.t('chemin_trophees'), onclick: () => ouvrir('paliers'),
+        etat: prochain ? tr.t('accueil_prochain_trophee', descTrophee(prochain), prochain.seuil - Math.min(Trophees.valeur(p, prochain.f.cle), prochain.seuil)) : tr.t('trophees_tous') })));
 }
 
 // --- La garde des données (13/11, audit du 12/11, FWEBCODE-01) ---------------------------------
@@ -817,11 +954,6 @@ function momentAccueil() {
         h('button', { class: 'secondaire', onclick: () => { entreeBiblio = p.source.id; ouvrir('source'); } }, tr.t('source_du_jour_lire')))));
   }
   return cartes.length ? [h('div', { class: 'accueil-moment' }, ...cartes)] : [];
-}
-
-function pastille(libelle, valeur, onclick) {
-  return h('button', { class: 'pastille', onclick },
-    h('span', { class: 'libelle' }, libelle), h('span', { class: 'valeur' }, valeur));
 }
 
 function ligne({ nom, etat, onclick, fin = null, class: classe = '' }) {
@@ -2349,45 +2481,55 @@ function ecranJournal() {
     h('div', { class: 'defile' }, h('div', { class: 'contenu' }, contenu)));
 }
 
+/**
+ * Les Livres (13/11) : trois rayons classés par geste — prier, étudier, se renforcer — au lieu
+ * d'une liste. Chaque couverture porte le titre du livre en hébreu, et son nom dans la langue
+ * de l'application en pied (sauf en hébreu, où ce serait deux fois le même mot).
+ */
+function couverture(couleur, he, nom, onclick) {
+  return h('button', { type: 'button', class: `couverture couv-${couleur}`, 'aria-label': nom, onclick },
+    h('span', { class: 'couv-titre', lang: 'he', dir: 'rtl', 'aria-hidden': 'true' }, tr.t(he)),
+    tr.langue === 'he' ? null : h('span', { class: 'couv-nom', 'aria-hidden': 'true' }, nom));
+}
+function rayon(titre, livres, etats = []) {
+  return [h('h2', { class: 'rayon-titre' }, tr.t(titre)),
+    h('div', { class: 'rayon' }, livres),
+    h('div', { class: 'etagere', 'aria-hidden': 'true' }),
+    ...etats.filter(Boolean).map((e) => h('p', { class: 'rayon-etat' }, e))];
+}
 function panneauTextes() {
-  return h('div', { class: 'contenu' },
+  const iso = isoLocal(new Date());
+  return h('div', { class: 'contenu rayonnage' },
     h('h1', { class: 'titre-ecran' }, tr.t('nav_texts')),
     // La recherche dans toute l'application (14/10), puis la reprise et les favoris.
     h('button', { class: 'secondaire bouton-recherche', onclick: () => { texteRecherche = ''; ouvrir('recherche'); } }, tr.t('recherche_indice')),
     repriseFavoris(),
-    h('div', { class: 'carte' },
-      ligne({ nom: tr.t('siddur_title'), etat: tr.t('siddur_hint'), onclick: () => ouvrir('siddur') }),
-      // Tehilim est le premier texte lisible sur le web (04/10).
-      ligne({ nom: tr.t('tehilim_title'), etat: tr.t('tehilim_today', libellePortion(portionDuMois().portion)), onclick: () => ouvrir('tehilim') }),
-      // Le Tikoun, lu d'un trait (04/10).
-      ligne({ nom: tr.t('tikkun_title'), etat: etatTikkun(), onclick: () => ouvrir('tikkun') }),
-      // Les textes arrivent à l'étape 4.
-      ligne({ nom: tr.t('tefilot_title'), etat: tr.t('tefilot_hint'), onclick: () => ouvrir('tefilot') }),
-      // Les livres entiers (13/10), puis les sources de la hitbodedout.
-      ligne({ nom: tr.t('livres_title'), etat: tr.t('livres_hint'), onclick: () => ouvrir('livres') }),
-      ligne({ nom: tr.t('library_title'), etat: tr.t('library_hint'), onclick: () => ouvrir('bibliotheque') }),
-      ligne({ nom: tr.t('chizuk_demande_title'), etat: tr.t('chizuk_demande_hint'), onclick: () => { hizouk = null; ouvrir('hizouk'); } }),
-      ligne({ nom: tr.t('tips_title'), etat: tr.t('tips_hint'), onclick: () => ouvrir('conseils') })),
-    h('h2', { class: 'section' }, tr.t('section_around')),
-    h('div', { class: 'carte' },
-      ligne({ nom: tr.t('music_title'), etat: etatMusique(), onclick: () => ouvrir('musique') }),
-      ligne({ nom: tr.t('settings_title'), onclick: () => ouvrir('reglages') })));
+    ...rayon('rayon_prier', [
+      couverture('vert', 'couv_siddur', tr.t('siddur_title'), () => ouvrir('siddur')),
+      couverture('bleu', 'couv_tehilim', tr.t('tehilim_title'), () => ouvrir('tehilim')),
+      couverture('clair', 'couv_tikkun', tr.t('tikkun_title'), () => ouvrir('tikkun')),
+      couverture('violet', 'couv_tefilot', tr.t('tefilot_title'), () => ouvrir('tefilot')),
+    ], [etatTikkun(), tr.t('tehilim_today', libellePortion(portionDuMois().portion))]),
+    ...rayon('rayon_etudier', [
+      couverture('brun', 'couv_sources', tr.t('library_title'), () => ouvrir('bibliotheque')),
+      couverture('parchemin', 'couv_livres', tr.t('livres_title'), () => ouvrir('livres')),
+      couverture('petrole', 'couv_halakha', tr.t('halakha_title'), () => { jourHalakha = iso; rechercheHalakhaTexte = ''; ouvrir('halakha'); }),
+    ]),
+    ...rayon('rayon_renforcer', [
+      couverture('menthe', 'couv_chizuk', tr.t('chizuk_demande_title'), () => { hizouk = null; ouvrir('hizouk'); }),
+      couverture('vert', 'couv_conseils', tr.t('tips_title'), () => ouvrir('conseils')),
+    ]));
 }
 
 function onglets() {
-  // Les cinq onglets d'Android (02/11) : le journal, longtemps masqué, a maintenant son écran.
-  const items = [
-    ['aujourdhui', 'nav_today'], ['textes', 'nav_texts'], ['zmanim', 'nav_zmanim'], ['journal', 'nav_journal'], ['reglages', 'settings_title'],
-  ];
+  // Trois lieux depuis la refonte du 13/11 : Le Jour, Les Livres, Le Chemin. Zmanim et Réglages
+  // sont en tête du Jour ; le journal, dans Le Chemin.
+  const items = [['aujourdhui', 'nav_today'], ['textes', 'nav_texts'], ['chemin', 'nav_chemin']];
   return h('nav', { class: 'onglets' }, items.map(([cle, nom]) => h('button', {
     class: 'onglet',
     'data-onglet': cle,
     'aria-current': cle === onglet ? 'page' : null,
-    onclick: () => {
-      // Journal et Réglages ouvrent leur écran ; l'onglet actif ne bouge pas (MainActivity.wireTabs).
-      if (cle === 'reglages' || cle === 'zmanim' || cle === 'journal') ouvrir(cle);
-      else { onglet = cle; rendre(); }
-    },
+    onclick: () => { onglet = cle; rendre(); },
   }, h('span', { class: 'icone', 'aria-hidden': 'true' }), tr.t(nom))));
 }
 
@@ -4806,9 +4948,8 @@ function declarerHorsTelephone() {
     store.addSession(m, { date });
     if (date === aujourdhui) {
       store.setPendingCelebration(m);
-      // La note de ce jour-là, proposée après le bravo comme sur Android (MainActivity.declarerHorsTelephone).
+      // La note de ce jour-là s'écrit dans le carnet du bravo, comme sur Android (MainActivity.declarerHorsTelephone).
       dateNote = date;
-      noteApresBravo = true;
     }
     rendre();
   }, tr.t('offline_how_long'));
@@ -4866,7 +5007,10 @@ function confirmer(titre, message, action, onConfirme) {
  * enrichi (NoteDialog.kt, porté le 02/11) : l'humeur avant et après, une gratitude, une chose à travailler.
  */
 function ecrireNote(date, apres = () => {}) {
+  // Tous les moyens de fermer la feuille (boutons, Échap, toucher à côté) rappellent [apres] :
+  // un bravo qui attendait sa fermeture s'ouvre alors (rendre).
   feuille(tr.t('note_title'), (f, fermer) => {
+    f.classList.add('feuille-note');
     const champ = h('textarea', { rows: 4, placeholder: tr.t('note_hint'), 'aria-label': tr.t('note_title') });
     champ.value = store.record(date)?.note ?? '';
     const plus = store.journalPlus(date);
@@ -4892,13 +5036,16 @@ function ecrireNote(date, apres = () => {}) {
     f.append(h('img', { class: 'note-art', src: `img/${joie()}.webp`, alt: '' }), champ,
       humeurs('journal_humeur_avant', 'avant'), humeurs('journal_humeur_apres', 'apres'), gratitude, travail,
       h('div', { class: 'actions' },
-        h('button', { onclick: () => { fermer(); apres(); } }, tr.t('action_later')),
+        h('button', { onclick: fermer }, tr.t('action_later')),
         h('button', { onclick: () => {
           store.setJournalPlus(date, { avant: plus.avant, apres: plus.apres, gratitude: gratitude.value.trim(), travail: travail.value.trim() });
           store.setNote(date, champ.value.trim());
-          fermer(); apres();
+          // Un carnet du bravo pris sous la feuille et pas touché relit ce qui vient d'être enregistré :
+          // sinon il réécrirait par-dessus ce qu'il avait copié avant.
+          if (carnetBravo && !carnetChange(carnetBravo)) carnetBravo = null;
+          fermer();
         } }, tr.t('action_save'))));
-  });
+  }, apres);
 }
 
 // --- La carte de ’hizouk (view_chizuk.xml) -------------------------------------------
@@ -4957,8 +5104,11 @@ window.addEventListener('resize', ajusteLesTextes);
 let tic = null;
 let etaitEnCours = false;
 let verrouEcran = null;
-/** Après toute séance inscrite ou journée déclarée sans le téléphone, la note est proposée au retour du bravo. */
-let noteApresBravo = false;
+/**
+ * Vrai quand le bravo a attendu que la feuille de note se ferme (mode « Écrire ») : il s'ouvre
+ * alors sans carnet, la note vient d'être proposée (CelebrationActivity sansNote, FSEANCE-03).
+ */
+let bravoApresNote = false;
 /** { minutes } après une séance close, { annulee: true } après un abandon. */
 let bravo = null;
 
@@ -5176,13 +5326,11 @@ function cloreSeance({ avantTerme }) {
   // Une séance non inscrite n'a pas de jour : sa note va à aujourd'hui, pas au jour
   // d'une séance d'avant (bug du 02/11).
   dateNote = null;
-  noteApresBravo = false;
   if (inscrite) {
     store.addSession(minutes, { theme: sujet, date });
     store.setPendingCelebration(minutes);
+    // Comme sur Android : après toute séance inscrite, la note de ce jour s'écrit dans le carnet du bravo.
     dateNote = date;
-    // Comme sur Android : la note suit le bravo après toute séance inscrite, pas seulement « Terminer maintenant ».
-    noteApresBravo = true;
   }
   etaitEnCours = false;
   arreteMusique();
@@ -5452,6 +5600,31 @@ function ecranSeance() {
 // --- Le bravo (CelebrationActivity) -------------------------------------------------
 let danseEnCours = null;
 
+/**
+ * La page du carnet sous le bravo (13/11, CelebrationActivity.carnet) : l'humeur d'une touche,
+ * puis la gratitude, la chose à travailler et la note, qui s'ouvraient dans une feuille à part
+ * après « Continuer ». Gardée ici d'un rendu à l'autre : rien de ce qu'on écrit ne se perd.
+ */
+let carnetBravo = null;
+function ouvrirCarnet() {
+  if (carnetBravo) return carnetBravo;
+  const date = dateNote ?? store.today();
+  const plus = store.journalPlus(date);
+  const note = store.record(date)?.note ?? '';
+  carnetBravo = { date, avant: plus.avant, apres: plus.apres, gratitude: plus.gratitude, travail: plus.travail, note,
+    initial: JSON.stringify([plus.apres, plus.gratitude.trim(), plus.travail.trim(), note.trim()]), ouvert: false };
+  return carnetBravo;
+}
+const carnetChange = (c) => JSON.stringify([c.apres, c.gratitude.trim(), c.travail.trim(), c.note.trim()]) !== c.initial;
+/** N'écrit que ce qui a changé ; appelé par « Enregistrer » comme par le retour du navigateur. */
+function enregistrerCarnet() {
+  const c = carnetBravo;
+  carnetBravo = null;
+  if (!c || !carnetChange(c)) return;
+  store.setJournalPlus(c.date, { avant: c.avant, apres: c.apres, gratitude: c.gratitude.trim(), travail: c.travail.trim() });
+  store.setNote(c.date, c.note.trim());
+}
+
 function ecranBravo() {
   const annulee = !!bravo.annulee;
   const adresse = store.adresse();
@@ -5460,21 +5633,40 @@ function ecranBravo() {
     : tr.t(adresse === 'm' ? 'celebration_tsadik' : adresse === 'f' ? 'celebration_tsadeket' : 'celebration_neutral');
   const sousTitre = annulee ? tr.t('annulation_subtitle')
     : bravo.minutes > 0 ? tr.p('celebration_minutes', bravo.minutes) : null;
+  const c = annulee || bravo.sansCarnet ? null : ouvrirCarnet();
   const continuer = () => {
+    enregistrerCarnet();
     bravo = null;
     chizukBravo = null;
-    const note = noteApresBravo ? () => setTimeout(() => ecrireNote(dateNote ?? store.today(), rendre), 50) : null;
-    noteApresBravo = false;
-    // Le retour ferme les feuilles (FWEBCODE-10) : la note attend qu'il ait eu lieu, sinon un retour
-    // plus lent que 50 ms la refermait aussitôt ouverte.
-    const parHistorique = !!history.state?.interne;
-    if (note && parHistorique) addEventListener('popstate', note, { once: true });
+    // La note se tape dans le carnet du bravo (refonte du 13/11) : plus de feuille de note à rouvrir
+    // après le retour, donc rien à attendre de lui (FWEBCODE-10 ne s'applique plus ici).
     retour();
-    if (note && !parHistorique) note();
   };
+  const principal = h('button', { class: 'principal', onclick: continuer }, tr.t(c && carnetChange(c) ? 'action_save' : 'celebration_continue'));
+  const majBouton = () => { principal.textContent = tr.t(carnetChange(c) ? 'action_save' : 'celebration_continue'); };
+  const champ = (cle, titreCle, indice, long = false) => {
+    const e = h(long ? 'textarea' : 'input', { id: `carnet-${cle}`, class: 'carnet-champ', placeholder: tr.t(indice),
+      ...(long ? { rows: 3 } : { type: 'text', maxlength: JournalPlus.GRATITUDE_MAX }) });
+    e.value = c[cle];
+    e.addEventListener('input', () => { c[cle] = e.value; majBouton(); });
+    return [h('label', { class: 'carnet-libelle', for: `carnet-${cle}` }, tr.t(titreCle)), e];
+  };
+  const carnet = !c ? null : h('section', { class: 'carnet' },
+    h('h2', { class: 'carnet-question' }, tr.t('celebration_humeur')),
+    h('div', { class: 'humeurs-rang carnet-humeurs', role: 'group', 'aria-label': tr.t('celebration_humeur') },
+      JournalPlus.HUMEURS.map((e, i) => h('button', {
+        type: 'button', class: 'humeur', 'aria-label': `${i + 1}/5`, 'aria-pressed': String(c.apres === i + 1),
+        // Retoucher l'humeur choisie la retire ; une humeur ouvre la suite du carnet.
+        onclick: () => { c.apres = c.apres === i + 1 ? 0 : i + 1; c.ouvert = true; rendre(); },
+      }, e))),
+    c.ouvert ? [...champ('gratitude', 'journal_gratitude', 'journal_gratitude_hint'),
+      ...champ('travail', 'journal_travail', 'journal_travail_hint'),
+      ...champ('note', 'note_title', 'note_hint', true),
+      h('p', { class: 'carnet-prive' }, tr.t('celebration_prive'))]
+      : h('button', { class: 'texte-bouton', onclick: () => { c.ouvert = true; rendre(); setTimeout(() => app.querySelector('#carnet-note')?.focus(), 0); } }, tr.t('action_write_note')));
   // Un jour la danse, le lendemain la guitare, le surlendemain le pouce levé (12-13/10).
   const seul = [null, 'char_guitar', 'char_thumbs_up'][Math.floor(Date.now() / 86400000) % 3];
-  return h('div', { class: 'ecran bravo' },
+  return h('div', { class: `ecran bravo${c?.ouvert ? ' carnet-ouvert' : ''}` },
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
       h('div', { class: 'scene danse' },
         h('div', { class: 'danseur' },
@@ -5484,9 +5676,10 @@ function ecranBravo() {
       h('h1', { class: 'bravo-titre' }, titre),
       sousTitre ? h('p', { class: 'bravo-sous-titre' }, sousTitre) : null,
       annulee && chizukBravo ? carteChizuk({ moment: 'relance', item: chizukBravo }, { compacte: true }) : null,
-      h('button', { class: 'principal', onclick: continuer }, tr.t('celebration_continue')),
+      carnet,
+      principal,
       // Partager la séance faite (12/10), avec le lien de la version web.
-      !annulee && bravo.minutes > 0 ? h('button', { class: 'lien-bouton bravo-partage', onclick: () => partagerSeance(bravo.minutes) }, tr.t('partage_action')) : null)));
+      !annulee && bravo.minutes > 0 && !c?.ouvert ? h('button', { class: 'lien-bouton bravo-partage', onclick: () => partagerSeance(bravo.minutes) }, tr.t('partage_action')) : null)));
 }
 
 const LIEN_WEB = 'https://myhitbodedut.pages.dev/';
@@ -5610,8 +5803,14 @@ function rendre() {
   // Le bravo d'une séance close attend le prochain écran ouvert.
   if (['accueil', 'seance'].includes(ecranCourant())) {
     const minutes = store.takePendingCelebration();
-    if (minutes !== null) {
-      bravo = { minutes };
+    if (minutes !== null && document.querySelector('.feuille-note')) {
+      // La feuille de note est ouverte (mode « Écrire ») : le bravo attend qu'elle se ferme,
+      // puis s'ouvre sans carnet, comme sur Android (NoteDialog.ouverte, FSEANCE-03).
+      store.setPendingCelebration(minutes);
+      bravoApresNote = true;
+    } else if (minutes !== null) {
+      bravo = { minutes, sansCarnet: bravoApresNote };
+      bravoApresNote = false;
       history.pushState({ interne: true }, '', '#bravo');
     }
   }
@@ -5622,7 +5821,7 @@ function rendre() {
   // L'horloge tourne tant qu'une hitbodedout est en cours, quel que soit l'écran : sinon sa fin
   // n'était vue qu'au toucher suivant (audit du 16/10).
   if (ecran !== 'seance' && !store.isSessionRunning()) arreteTic();
-  if (ecran !== 'bravo') arreteDanse();
+  if (ecran !== 'bravo') { arreteDanse(); enregistrerCarnet(); }
   if (ecran !== 'boussole') arreteBoussole();
   queueMicrotask(majMini);
   const memeEcran = app.dataset.ecran === `${ecran}/${onglet}` && !app.querySelector('.ecran[data-attente]');
@@ -5663,8 +5862,10 @@ function rendre() {
   else if (ecran === 'livres') app.append(ecranLivres());
   else if (ecran === 'source') app.append(ecranSource());
   else {
-    app.append(h('div', { class: 'ecran avec-onglets' },
-      h('div', { class: 'defile' }, onglet === 'textes' ? panneauTextes() : panneauAujourdhui()),
+    app.append(h('div', { class: 'ecran avec-onglets', 'data-ciel': onglet === 'aujourdhui' ? cielMaintenant() : null },
+      h('div', { class: 'corps-onglets' },
+        h('div', { class: 'defile' }, onglet === 'textes' ? panneauTextes() : onglet === 'chemin' ? panneauChemin() : panneauAujourdhui()),
+        barreDepart()),
       onglets()));
   }
   app.dataset.ecran = `${ecran}/${onglet}`;
@@ -5723,6 +5924,13 @@ async function demarrer() {
   if (store.isSessionRunning()) gardeEcranAllume();
   // Le premier lancement, ou une présentation qui a changé depuis (Onboarding.VERSION).
   if (store.onboardedVersion() < PRESENTATION_VERSION) presentation();
+  // Le Jour resté ouvert passe de l'aube au jour, du coucher à la nuit (14/11), sans attendre
+  // un retour sur l'application ; pas sous une feuille ouverte.
+  setInterval(() => {
+    const jour = app.querySelector('.ecran[data-ciel]');
+    if (!jour || document.hidden || document.querySelector('.voile')) return;
+    if (jour.dataset.ciel !== cielMaintenant()) rendre();
+  }, 60000);
   // Revenir à l'application redessine l'écran : un autre jour, une séance
   // arrivée à son terme, le décompte qui a continué pendant le sommeil.
   let cacheA = 0;

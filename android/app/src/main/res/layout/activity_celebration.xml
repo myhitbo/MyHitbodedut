@@ -84,11 +84,108 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp" />
 
+        <!--
+            La page du carnet (13/11) : la fin de séance tient sur un seul écran.
+            L'humeur d'abord, d'une touche ; elle fait apparaître la gratitude,
+            la chose à travailler et la note, qui étaient dans une fenêtre à part
+            après « Continuer ». Rien n'est obligatoire.
+        -->
+        <LinearLayout
+            android:id="@+id/celebration_carnet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/celebration_humeur"
+                android:textColor="?attr/mhInk"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/celebration_humeurs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal" />
+
+            <LinearLayout
+                android:id="@+id/celebration_suite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/CarnetLibelle"
+                    android:labelFor="@+id/celebration_gratitude"
+                    android:text="@string/journal_gratitude" />
+
+                <EditText
+                    android:id="@+id/celebration_gratitude"
+                    style="@style/CarnetChamp"
+                    android:hint="@string/journal_gratitude_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="textCapSentences"
+                    android:maxLines="1" />
+
+                <TextView
+                    style="@style/CarnetLibelle"
+                    android:labelFor="@+id/celebration_travail"
+                    android:text="@string/journal_travail" />
+
+                <EditText
+                    android:id="@+id/celebration_travail"
+                    style="@style/CarnetChamp"
+                    android:hint="@string/journal_travail_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="textCapSentences"
+                    android:maxLines="1" />
+
+                <TextView
+                    style="@style/CarnetLibelle"
+                    android:labelFor="@+id/celebration_note"
+                    android:text="@string/note_title" />
+
+                <EditText
+                    android:id="@+id/celebration_note"
+                    style="@style/CarnetChamp"
+                    android:gravity="top|start"
+                    android:hint="@string/note_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:minLines="3" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/celebration_prive"
+                    android:textColor="?attr/mhMuted"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Écrire sans donner d'humeur : le même carnet, ouvert d'une touche. -->
+            <Button
+                android:id="@+id/celebration_ecrire"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/action_write_note" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/celebration_continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:paddingVertical="12dp"
             android:text="@string/celebration_continue"
             android:textSize="16sp" />

@@ -86,4 +86,27 @@
     <color name="icone_fond_bordeaux">#F8E1E5</color>
     <color name="icone_fond_ambre">#FBEFD6</color>
     <color name="icone_fond_turquoise">#D9F3F5</color>
+
+    <!-- Le voile derrière le volet de la séance (13/11). -->
+    <color name="voile">#99000000</color>
+
+    <!-- Les couvertures du rayonnage des Livres (13/11) : le plat et le dos. Fixes : ce sont les couleurs des livres, pas celles du thème. -->
+    <color name="couv_vert">#1B7A5C</color>
+    <color name="couv_vert_dos">#0F5440</color>
+    <color name="couv_bleu">#2D5F9A</color>
+    <color name="couv_bleu_dos">#1D4270</color>
+    <color name="couv_clair">#EEF8F3</color>
+    <color name="couv_clair_dos">#B9D9CB</color>
+    <color name="couv_violet">#4B3F8F</color>
+    <color name="couv_violet_dos">#33296B</color>
+    <color name="couv_brun">#8A4B1F</color>
+    <color name="couv_brun_dos">#5F3212</color>
+    <color name="couv_parchemin">#EFE3C8</color>
+    <color name="couv_parchemin_dos">#CDBB8F</color>
+    <color name="couv_petrole">#1D4A57</color>
+    <color name="couv_petrole_dos">#12333D</color>
+    <color name="couv_menthe">#6AD1A7</color>
+    <color name="couv_menthe_dos">#3FA57C</color>
+    <color name="couv_encre_claire">#FFFFFF</color>
+    <color name="couv_encre_sombre">#12241E</color>
 </resources>

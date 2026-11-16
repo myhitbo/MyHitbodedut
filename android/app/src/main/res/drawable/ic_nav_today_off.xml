@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Onglet Aujourd'hui, au repos : une maison au trait arrondi. La teinte vient de l'onglet (color/nav_item.xml). -->
+<!-- Onglet Le Jour, au repos (14/11) : le soleil sur l'horizon, au trait arrondi. La teinte vient de l'onglet (color/nav_item.xml). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -7,13 +7,7 @@
     android:viewportHeight="24">
 
     <path
-        android:pathData="M4,10.2 L12,4 L20,10.2 L20,19 A2,2 0 0,1 18,21 L6,21 A2,2 0 0,1 4,19 Z"
-        android:strokeColor="?attr/mhInk"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:strokeWidth="2" />
-    <path
-        android:pathData="M9.5,21 L9.5,16 A1.5,1.5 0 0,1 11,14.5 L13,14.5 A1.5,1.5 0 0,1 14.5,16 L14.5,21"
+        android:pathData="M3,18h18M6,18a6,6 0,0 1,12 0M12,5v3M4.5,9.5l2,2M19.5,9.5l-2,2"
         android:strokeColor="?attr/mhInk"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"

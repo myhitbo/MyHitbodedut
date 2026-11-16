@@ -16,7 +16,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.materialswitch.MaterialSwitch
 import java.time.format.DateTimeFormatter
 
-/** Écran principal : état du jour, diagnostic de la barrière, réglages. */
+/**
+ * Écran principal (refonte du 13/11) : trois lieux en onglets — Le Jour, Les Livres,
+ * Le Chemin — et la barre de départ, visible dans les trois, avec le volet de la séance.
+ */
 class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     /** Les cartes du moment n'entrent en cascade qu'une fois par ouverture de l'accueil (19/10). */
     private var momentAnime = false
@@ -80,55 +83,94 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     // --- Onglets ------------------------------------------------------------
 
-    /** Revenir d'« Textes » ramène à « Aujourd'hui » avant de quitter l'application. */
+    /** Revenir des Livres ou du Chemin ramène au Jour avant de quitter l'application. */
     private val retourAujourdhui = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
             findViewById<BottomNavigationView>(R.id.bottom_nav).selectedItemId = R.id.nav_today
         }
     }
 
+    /** Le retour referme d'abord le volet de la séance, s'il est ouvert. */
+    private val retourVolet = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = montrerVolet(false)
+    }
+
     /**
-     * Aujourd'hui et Textes changent de panneau sur place. Journal et
-     * Réglages ouvrent leurs écrans sans devenir l'onglet actif : au retour,
-     * on retrouve le panneau qu'on avait quitté.
+     * Les trois lieux changent de panneau sur place : Le Jour, Les Livres,
+     * Le Chemin (13/11). Zmanim et Réglages ne sont plus des onglets : la date
+     * hébraïque et la roue, en tête du Jour, portent leurs identifiants.
      */
     private fun wireTabs(onglet: Int) {
         onBackPressedDispatcher.addCallback(this, retourAujourdhui)
+        // Ajouté après : c'est lui qui répond le premier quand le volet est ouvert.
+        onBackPressedDispatcher.addCallback(this, retourVolet)
         val nav = findViewById<BottomNavigationView>(R.id.bottom_nav)
         nav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_today, R.id.nav_texts -> {
+                R.id.nav_today, R.id.nav_texts, R.id.nav_journal -> {
                     montrerPanneau(item.itemId)
-                    // Revenir sur l'accueil rejoue les anneaux, comme à l'ouverture.
+                    // Revenir sur le Jour rejoue les anneaux, comme à l'ouverture.
                     if (item.itemId == R.id.nav_today) {
                         findViewById<AnneauxView>(R.id.week_gauge).rejouer()
                     }
                     true
                 }
-                R.id.nav_zmanim -> {
-                    startActivity(Intent(this, ZmanimActivity::class.java))
-                    false
-                }
-                R.id.nav_journal -> {
-                    startActivity(Intent(this, JournalActivity::class.java))
-                    false
-                }
-                R.id.nav_settings -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
-                    false
-                }
                 else -> false
             }
         }
-        nav.selectedItemId = onglet
-        montrerPanneau(onglet)
+        // Un onglet retenu par une version d'avant la refonte (Zmanim, Réglages) n'existe plus.
+        val connu = onglet.takeIf { nav.menu.findItem(it) != null } ?: R.id.nav_today
+        nav.selectedItemId = connu
+        montrerPanneau(connu)
     }
 
     private fun montrerPanneau(onglet: Int) {
-        val textes = onglet == R.id.nav_texts
-        findViewById<View>(R.id.main_scroll).visibility = if (textes) View.GONE else View.VISIBLE
-        findViewById<View>(R.id.texts_scroll).visibility = if (textes) View.VISIBLE else View.GONE
-        retourAujourdhui.isEnabled = textes
+        montrerVolet(false)
+        findViewById<View>(R.id.main_scroll).visibility = if (onglet == R.id.nav_today) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.texts_scroll).visibility = if (onglet == R.id.nav_texts) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.chemin_scroll).visibility = if (onglet == R.id.nav_journal) View.VISIBLE else View.GONE
+        retourAujourdhui.isEnabled = onglet != R.id.nav_today
+    }
+
+    // --- Le volet de la séance ------------------------------------------------
+
+    /**
+     * Le volet monte au-dessus de la barre de départ, le voile s'assombrit
+     * derrière lui ; refermé, il redescend. Sans animations dans le téléphone,
+     * il apparaît et disparaît d'un coup.
+     */
+    private fun montrerVolet(ouvert: Boolean) {
+        val volet = findViewById<View>(R.id.depart_volet)
+        val voile = findViewById<View>(R.id.depart_voile)
+        if (ouvert == (volet.visibility == View.VISIBLE) && ouvert == retourVolet.isEnabled) return
+        retourVolet.isEnabled = ouvert
+        findViewById<View>(R.id.depart_regler).animate().rotation(if (ouvert) 180f else 0f).setDuration(180L).start()
+        volet.animate().cancel()
+        voile.animate().cancel()
+        if (!android.animation.ValueAnimator.areAnimatorsEnabled()) {
+            volet.visibility = if (ouvert) View.VISIBLE else View.GONE
+            voile.visibility = volet.visibility
+            volet.translationY = 0f
+            voile.alpha = 1f
+            return
+        }
+        if (ouvert) {
+            voile.alpha = 0f
+            voile.visibility = View.VISIBLE
+            voile.animate().alpha(1f).setDuration(180L).start()
+            volet.visibility = View.VISIBLE
+            // La hauteur n'est connue qu'après la première mesure.
+            volet.post {
+                volet.translationY = volet.height.toFloat()
+                volet.animate().translationY(0f).setDuration(220L)
+                    .setInterpolator(android.view.animation.DecelerateInterpolator()).start()
+            }
+        } else {
+            voile.animate().alpha(0f).setDuration(160L).withEndAction { voile.visibility = View.GONE }.start()
+            volet.animate().translationY(volet.height.toFloat()).setDuration(160L)
+                .setInterpolator(android.view.animation.AccelerateInterpolator())
+                .withEndAction { volet.visibility = View.GONE; volet.translationY = 0f }.start()
+        }
     }
 
     override fun onResume() {
@@ -163,6 +205,45 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
+        findViewById<View>(R.id.hero_plate).postDelayed(veilleCiel, CIEL_MS)
+    }
+
+    override fun onPause() {
+        findViewById<View>(R.id.hero_plate).removeCallbacks(veilleCiel)
+        super.onPause()
+    }
+
+    // --- Le ciel du Jour (étape 3, 14/11) ---------------------------------------
+
+    /** La fenêtre au creux des anneaux : le ciel du moment, quand la plaque montre le hassid. */
+    private val cielDessin by lazy { CielDessin(CielDuJour.maintenant(this)) }
+
+    /** L'accueil resté ouvert passe de l'aube au jour, du coucher à la nuit, sans attendre un retour. */
+    private val veilleCiel = object : Runnable {
+        override fun run() {
+            renderCiel()
+            findViewById<View>(R.id.hero_plate).postDelayed(this, CIEL_MS)
+        }
+    }
+
+    /**
+     * Le ciel du moment (CielDuJour) : dans la plaque, sur le haut du Jour (un voile de sa
+     * couleur, qui s'efface vers le bas et défile avec la page), et devant la date hébraïque.
+     */
+    private fun renderCiel() {
+        val phase = CielDuJour.maintenant(this)
+        cielDessin.phase = phase
+        if (face == Plaque.Face.HASSID) findViewById<View>(R.id.hero_plate).background = cielDessin
+        val d = resources.displayMetrics.density
+        val voile = android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(androidx.core.graphics.ColorUtils.setAlphaComponent(CielDuJour.PALETTES.getValue(phase).voile, VOILE_ALPHA), android.graphics.Color.TRANSPARENT))
+        findViewById<android.view.ViewGroup>(R.id.main_scroll).getChildAt(0).background =
+            android.graphics.drawable.LayerDrawable(arrayOf(voile)).apply {
+                setLayerGravity(0, android.view.Gravity.TOP or android.view.Gravity.FILL_HORIZONTAL)
+                setLayerHeight(0, (VOILE_DP * d).toInt())
+            }
+        findViewById<TextView>(R.id.nav_zmanim).setCompoundDrawablesRelativeWithIntrinsicBounds(CielDuJour.icone(phase), 0, R.drawable.ic_chevron, 0)
     }
 
     /**
@@ -183,6 +264,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         // et la musique. L'écran de séance redemandait la durée, et il
         // fallait toucher « Commencer » une seconde fois (revue du 29/09).
         findViewById<Button>(R.id.start_session).setOnClickListener {
+            montrerVolet(false)
             startActivity(
                 Intent(this, SessionActivity::class.java)
                     .putExtra(SessionActivity.EXTRA_START_NOW, !Store.isSessionRunning(this))
@@ -193,16 +275,23 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             startActivity(Intent(this, SessionActivity::class.java))
         }
         findViewById<Button>(R.id.today_offline).setOnClickListener { declarerHorsTelephone() }
-        findViewById<Button>(R.id.trophees_paliers).setOnClickListener { startActivity(Intent(this, PaliersActivity::class.java)) }
-        findViewById<Button>(R.id.parcours_button).setOnClickListener { startActivity(Intent(this, ParcoursActivity::class.java)) }
+        // La barre de départ : sa flèche ouvre et referme le volet ; le voile le referme.
+        findViewById<View>(R.id.depart_regler).setOnClickListener {
+            montrerVolet(findViewById<View>(R.id.depart_volet).visibility != View.VISIBLE)
+        }
+        findViewById<View>(R.id.depart_voile).setOnClickListener { montrerVolet(false) }
+        // En tête du Jour : la date hébraïque ouvre le ciel (zmanim, calendrier, hilloulot, boussole), la roue les réglages.
+        findViewById<View>(R.id.nav_zmanim).setOnClickListener { startActivity(Intent(this, ZmanimActivity::class.java)) }
+        findViewById<View>(R.id.nav_settings).setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
+        // Le Chemin : le journal, le parcours, les trophées.
+        findViewById<View>(R.id.journal_button).setOnClickListener { startActivity(Intent(this, JournalActivity::class.java)) }
+        findViewById<View>(R.id.trophees_paliers).setOnClickListener { startActivity(Intent(this, PaliersActivity::class.java)) }
+        findViewById<View>(R.id.parcours_button).setOnClickListener { startActivity(Intent(this, ParcoursActivity::class.java)) }
         findViewById<View>(R.id.start_duration).setOnClickListener {
             pickDuration()
         }
         findViewById<View>(R.id.start_theme).setOnClickListener {
             pickTheme()
-        }
-        findViewById<View>(R.id.start_music).setOnClickListener {
-            startActivity(Intent(this, MusicActivity::class.java))
         }
         findViewById<View>(R.id.start_focus).setOnClickListener {
             // La barrière du matin. En édition légère elle n'existe pas,
@@ -256,6 +345,9 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         }
         findViewById<View>(R.id.library_button).setOnClickListener {
             startActivity(Intent(this, LibraryActivity::class.java))
+        }
+        findViewById<View>(R.id.halakha_button).setOnClickListener {
+            startActivity(Intent(this, HalakhaActivity::class.java))
         }
 
         // L'écran de relecture n'existe que pour lever les relu=false des
@@ -379,8 +471,10 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         renderRelance()
         renderTehilim()
         renderReminders()
-        renderSettingsEntry()
         renderStartCard()
+        renderEntete()
+        renderCiel()
+        renderChemin()
     }
 
     /** Les cartes de l'accueil qui lisent les fichiers de données. */
@@ -405,6 +499,57 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     }
 
     /**
+     * En tête du Jour : la date hébraïque, qui change à la sortie des étoiles
+     * du lieu comme sur la vignette des zmanim (minuit, sans lieu).
+     */
+    private fun renderEntete() {
+        val date = runCatching {
+            val lieu = Store.lieuZmanim(this)
+            val fuseau = lieu?.fuseau?.let { runCatching { java.time.ZoneId.of(it) }.getOrNull() } ?: java.time.ZoneId.systemDefault()
+            val maintenant = java.time.ZonedDateTime.now(fuseau)
+            val tset = lieu?.let { l -> Zmanim.jour(l, maintenant.toLocalDate()).firstOrNull { it.cle == "tset" }?.local }
+            CalendrierJuif.jour(ZmanimVignette.jourHebreuAffiche(maintenant, tset), Store.inIsrael(this)).dateHebraique
+        }.getOrNull()
+        findViewById<TextView>(R.id.nav_zmanim).apply {
+            text = date ?: getString(R.string.nav_zmanim)
+            contentDescription = getString(R.string.jour_ciel, date ?: getString(R.string.nav_zmanim))
+        }
+    }
+
+    /**
+     * Le Chemin : la série, la meilleure, le total ; les minutes du mois en
+     * barres, comme en tête du journal ; et l'état du journal et des trophées.
+     */
+    private fun renderChemin() {
+        val total = Store.totalMinutes(this)
+        val faites = Store.joursFaits(this).size
+        val langue = resources.configuration.locales[0]
+        findViewById<TextView>(R.id.chemin_serie).text = String.format(langue, "%d", Store.streak(this))
+        findViewById<TextView>(R.id.chemin_meilleure).text = String.format(langue, "%d", Store.meilleureSerie(this))
+        findViewById<TextView>(R.id.chemin_total).text = Store.formatDuration(this, total)
+        findViewById<TextView>(R.id.journal_state).text =
+            resources.getQuantityString(R.plurals.journal_summary, faites, faites, Store.formatDuration(this, total))
+        val pratique = Store.pratique(this)
+        val prochain = Trophees.prochain(pratique)
+        findViewById<TextView>(R.id.trophees_state).text =
+            if (prochain == null) getString(R.string.trophees_tous) else getString(R.string.accueil_prochain_trophee,
+                TropheesVue.description(this, prochain.famille, prochain.seuil),
+                prochain.seuil - Trophees.valeur(pratique, prochain.famille).coerceAtMost(prochain.seuil))
+        val mois = java.time.YearMonth.now()
+        findViewById<LinearLayout>(R.id.chemin_mois).apply {
+            removeAllViews()
+            val nom = mois.format(DateTimeFormatter.ofPattern("LLLL yyyy", langue))
+            addView(VueJour.texte(context, nom.replaceFirstChar { it.titlecase(langue) }, 13f, R.color.muted))
+            addView(JournalPlus.Graphique(context, JournalPlus.minutesDuMois(Store.days(context), mois), java.time.LocalDate.now().dayOfMonth,
+                Apparence.couleur(context, R.color.brand)).apply {
+                contentDescription = getString(R.string.journal_graphique, nom)
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    .apply { topMargin = (8 * resources.displayMetrics.density).toInt() }
+            })
+        }
+    }
+
+    /**
      * La carte de départ : ce avec quoi on entre dans la séance. Rien n'y
      * est obligatoire — la durée a sa valeur habituelle, le sujet peut
      * rester « aucun », la musique et la concentration peuvent être
@@ -418,13 +563,6 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         findViewById<TextView>(R.id.start_theme_value).setText(
             sujet?.titre ?: R.string.session_theme_none_short
         )
-
-        val track = if (Store.musicEnabled(this)) MusicLibrary.selected(this) else null
-        findViewById<TextView>(R.id.start_music_value).text = when {
-            track == null -> getString(R.string.start_music_off)
-            Store.musicShuffle(this) -> getString(R.string.music_shuffle_short)
-            else -> track.title
-        }
 
         val focus = findViewById<View>(R.id.start_focus)
         focus.visibility = if (BuildConfig.HAS_GATE) View.VISIBLE else View.GONE
@@ -563,9 +701,13 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             hassid.visibility = View.VISIBLE
             chiffres.visibility = View.GONE
             plaque.contentDescription = getString(R.string.rings_character_hint)
+            // Le hassid se tient dans le ciel du moment (14/11).
+            plaque.background = cielDessin
         } else {
             hassid.visibility = View.INVISIBLE
             chiffres.visibility = View.VISIBLE
+            // Les chiffres gardent le disque clair : ils s'y lisent mieux que sur un ciel.
+            plaque.setBackgroundResource(R.drawable.bg_gauge_plate)
             remplirFace(vers)
         }
         findViewById<AnneauxView>(R.id.week_gauge).mettreEnAvant(vers.anneau)
@@ -746,17 +888,6 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             .start()
     }
 
-    /**
-     * L'onglet « Réglages » ne porte plus de pastille (demande du 10/10) :
-     * les autorisations manquantes se lisent dans les Réglages eux-mêmes, et
-     * le chiffre rouge sur l'accueil était de trop. removeBadge reste, pour
-     * effacer celle qu'une version précédente aurait posée pendant que
-     * l'application tournait.
-     */
-    private fun renderSettingsEntry() {
-        findViewById<BottomNavigationView>(R.id.bottom_nav).removeBadge(R.id.nav_settings)
-    }
-
     /** L'état de la musique, sur la carte qui lui est consacrée. */
     private fun renderMusic() {
         val track = MusicLibrary.selected(this)
@@ -902,21 +1033,30 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             val mark = cell.findViewById<TextView>(R.id.day_mark)
             label.text = day.date.format(formatter)
 
-            // Le samedi chômé ne porte pas de point à cocher : il porte sa marque.
+            // Le samedi chômé porte les bougies de Chabbat, pas une lanterne.
             val restDay = day.shabbat && day.exempt
-            // Le numéro du jour remplit les cases encore ouvertes : la bande
-            // se lit comme un calendrier, pas comme des cases vides.
-            // Un jour fait touché montre sa durée à la place du ✓ (14/10) ; touché encore, le ✓ revient.
+            val aujourdhui = day.date == java.time.LocalDate.now()
+            // La semaine en lanternes (14/11) : allumée quand la hitbodedout est faite, qui attend
+            // aujourd'hui, éteinte sinon. Le numéro du jour reste dessous : la bande se lit comme
+            // un calendrier. Un jour fait touché montre sa durée à la place du numéro (14/10).
             val minutes = Store.record(this, day.date.toString())?.minutes ?: 0
             val montre = day.done && day.date in joursMontres
             mark.text = when {
                 montre -> JaugeSemaine.dureeCourte(minutes)
-                day.done -> "✓"
-                restDay -> getString(R.string.week_shabbat_mark)
-                day.exempt -> "—"
+                day.exempt && !day.done && !restDay -> "—"
                 else -> day.date.dayOfMonth.toString()
             }
-            if (day.done) mark.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, mark.textSize * if (montre) 0.75f else 1f)
+            if (montre) mark.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, mark.textSize * 0.8f)
+            cell.findViewById<ImageView>(R.id.day_lanterne).apply {
+                setImageResource(when {
+                    day.done -> R.drawable.lanterne_allumee
+                    restDay -> R.drawable.bougies_chabbat
+                    aujourdhui && !day.exempt -> R.drawable.lanterne_aujourdhui
+                    else -> R.drawable.lanterne_eteinte
+                })
+                // Les jours à venir et les jours de pause, en retrait.
+                alpha = if (!day.done && !restDay && (day.future || day.exempt)) 0.5f else 1f
+            }
             // Tout jour jusqu'à aujourd'hui s'ouvre (16/10) : y ajouter du temps fait hors du
             // téléphone ; un jour fait peut aussi montrer sa durée sur la bande (14/10).
             if (AjoutTemps.possible(day.date)) {
@@ -938,26 +1078,19 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
                 else -> getString(R.string.week_todo)
             }
 
-            // La case du jour fait est vert foncé : un texte sombre y disparaît.
-            label.setTextColor(Apparence.couleur(this, if (day.done) R.color.white else R.color.muted))
+            // Aujourd'hui, à la couleur de la marque, comme le cadre de sa lanterne.
+            val enAvant = aujourdhui && !day.done && !day.exempt
+            label.setTextColor(Apparence.couleur(this, if (enAvant) R.color.brand else R.color.muted))
+            if (enAvant) label.setTypeface(label.typeface, Typeface.BOLD)
             mark.setTextColor(
                 Apparence.couleur(
                     this,
                     when {
-                        day.done -> R.color.white
-                        restDay -> R.color.brand
-                        day.future -> R.color.muted
+                        enAvant || restDay -> R.color.brand
+                        day.future || day.exempt -> R.color.muted
                         else -> R.color.ink
                     }
                 )
-            )
-            cell.setBackgroundResource(
-                when {
-                    day.done -> R.drawable.bg_day_done
-                    day.exempt -> R.drawable.bg_day_exempt
-                    day.date == java.time.LocalDate.now() -> R.drawable.bg_day_today
-                    else -> R.drawable.bg_day_todo
-                }
             )
             strip.addView(cell)
         }
@@ -1089,6 +1222,13 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
         /** Survit à une rotation ou au redimensionnement d'une fenêtre. */
         private const val ETAT_RELANCE = "relance_tiree"
+
+        /** Le ciel du Jour se revoit chaque minute tant que l'accueil est devant. */
+        private const val CIEL_MS = 60_000L
+
+        /** Le voile du ciel sur le haut du Jour : sa hauteur, et son opacité au plus haut (30 %). */
+        private const val VOILE_DP = 420
+        private const val VOILE_ALPHA = 0x4D
 
         /** L'onglet affiché, pour qu'une rotation ne ramène pas à « Aujourd'hui ». */
         private const val ETAT_ONGLET = "onglet"
