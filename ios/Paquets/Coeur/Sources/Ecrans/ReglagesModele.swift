@@ -371,11 +371,11 @@ public final class ReglagesModele {
     public let version: ReglagesVersion
 
     /// La fenêtre ouverte par-dessus l'écran ; nil sans fenêtre.
-    public var dialogue: ReglagesDialogue?
+    public var dialogue: ReglagesDialogue? = nil
     /// Le message bref à montrer (les Toast d'Android) ; `messageVu()` l'efface.
-    public private(set) var message: Libelle?
+    public private(set) var message: Libelle? = nil
     /// La carte vers laquelle faire défiler l'écran ; `defilementFait()` l'efface.
-    public private(set) var cibleDefilement: ReglagesSection?
+    public private(set) var cibleDefilement: ReglagesSection? = nil
 
     /// Le système a été lu une fois au moins : avant, ni résumé ni carte d'état (le TextView vide d'Android).
     public private(set) var systemeLu = false
@@ -384,10 +384,10 @@ public final class ReglagesModele {
     /// Les applications retenues : les jetons de la sélection de Temps d'écran.
     public private(set) var nombreDeJetons = 0
     /// L'icône posée (nil : la principale), lue par `rafraichir()`.
-    public private(set) var iconeActuelle: String?
+    public private(set) var iconeActuelle: String? = nil
     /// La carte d'état de la barrière, recalculée à chaque rafraîchissement et après chaque changement (elle
     /// compte deux ans de jours chômés : pas à chaque dessin) ; nil sans barrière ou avant la première lecture.
-    public private(set) var carteBarriere: ReglagesCarteBarriere?
+    public private(set) var carteBarriere: ReglagesCarteBarriere? = nil
 
     /// La demande de notification a déjà été présentée (`notificationsDemandees` d'Android) : la suivante passe
     /// par les Réglages d'iOS, qui ne reposent jamais la question.
@@ -513,13 +513,11 @@ public final class ReglagesModele {
     private func accorderNotifications() async -> ReglagesRoute? {
         if await notificateur.autorisation() {
             notificationsAccordees = true
-            recalculer()
             return nil
         }
         if notificationsDemandees { return .reglagesNotifications }
         notificationsDemandees = true
         notificationsAccordees = await notificateur.demanderAutorisation()
-        recalculer()
         return nil
     }
 
@@ -1025,11 +1023,13 @@ public final class ReglagesModele {
 
     // MARK: Écrire
 
-    /// Écrit un changement des réglages, puis ce qu'il touche ; la carte d'état suit, même si l'écriture échoue
-    /// (le changement reste en mémoire, Magasin).
+    /// Écrit un changement des réglages, puis ce qu'il touche ; un changement qui ne change rien ne fait rien
+    /// réécrire. La carte d'état suit, même si l'écriture échoue (le changement reste en mémoire, Magasin).
     private func modifier(_ quoi: ReglagesRepercussions, _ changement: (inout Reglages) -> Void) async throws {
         defer { recalculer() }
+        let avant = magasin.reglages
         try await magasin.modifierReglages(changement)
+        guard magasin.reglages != avant else { return }
         await repercuter(quoi)
     }
 

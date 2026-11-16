@@ -41,8 +41,8 @@ struct PlanNotificationsTests {
                                     heureVol: PlanNotifications.instantTexte)
     }
 
-    private static func a(_ jour: String, _ heure: Int, _ minute: Int = 0, _ f: Fuseau = paris) -> Int64 {
-        f.millis(DateHeure(JourCivil.du(jour), heure: heure, minute: minute))
+    private static func a(_ jour: String, _ heure: Int, _ minute: Int = 0) -> Int64 {
+        paris.millis(DateHeure(JourCivil.du(jour), heure: heure, minute: minute))
     }
 
     private static func rappelsSeuls(_ plan: [NotificationPrevue]) -> [NotificationPrevue] {
@@ -76,10 +76,11 @@ struct PlanNotificationsTests {
         let maintenant = f.millis(DateHeure(jour, heure: n(24), minute: n(60)))
         var r = Reglages()
         r.setReminderEnabled(n(6) != 0)
-        let nombreHeures = n(9) == 0 ? 1440 : n(9)
+        // Parfois une heure tous les quarts d'heure, qui remplit la part des rappels en moins d'un jour.
+        let nombreHeures = n(12) == 0 ? 96 : n(9)
         var heures: [Int] = []
         for k in 0..<nombreHeures {
-            heures.append(nombreHeures == 1440 ? k : n(1440))
+            heures.append(nombreHeures == 96 ? k * 15 : n(1440))
         }
         r.setReminderTimes(heures)
         if n(4) == 0 { r.setShabbatMode(false) }
@@ -425,6 +426,7 @@ struct PlanNotificationsTests {
         let maintenant: Int64
         let prefs: String
         let days: String
+        let jours: [String: String]
         let volRappels: [[Brut]]
         let rappels: [[Brut]]
         let trophee: Trophee?
@@ -473,6 +475,15 @@ struct PlanNotificationsTests {
             let f = Self.fuseau(c.fuseau)
             let reglages = try Reglages(texte: c.prefs)
             let journal = Journal(daysTexte: c.days)
+            // Ce que Store dit des dix jours : exempté, veille d'un jour chômé, fait.
+            for (iso, drapeaux) in c.jours {
+                let jour = JourCivil.du(iso)
+                let exempt = Store.isExempt(reglages: reglages, date: jour, fuseauTelephone: c.fuseau)
+                let veille = Store.isEveOfRestDay(reglages: reglages, date: jour, fuseauTelephone: c.fuseau)
+                let fait = Store.isDone(journal: journal, date: jour)
+                let rendu = (exempt ? "1" : "0") + (veille ? "1" : "0") + (fait ? "1" : "0")
+                #expect(rendu == drapeaux, "\(c.nom) : \(iso)")
+            }
             let rendus = PlanNotifications.rappels(reglages: reglages, journal: journal, maintenant: c.maintenant, fuseau: f)
             let instants = rendus.map { $0.instant }
             let attendus = c.rappels.compactMap { $0.first?.nombre }

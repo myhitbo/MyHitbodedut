@@ -149,9 +149,10 @@ struct TextesModeleTests {
         var reglages = Reglages()
         Store.setPositionLecture(reglages: &reglages, cle: "s:chaharit", position: 3, maintenant: 0)
         Store.basculerFavori(reglages: &reglages, cle: "l:likoutei_etsot")
-        Store.basculerFavori(reglages: &reglages, cle: "s:inconnu")
         Store.basculerFavori(reglages: &reglages, cle: "s:minha")
-        // Le plus récent en tête : minha, inconnu (passé sous silence), likoutei_etsot.
+        Store.basculerFavori(reglages: &reglages, cle: "s:inconnu")
+        // Le plus récent en tête : inconnu (passé sous silence), minha, likoutei_etsot. L'en-tête va au premier
+        // favori qui existe (minha), pas au premier de la liste (le `forEachIndexed` après `mapNotNull`).
         let (modele, _, _) = try fabriquer(reglages)
         await modele.actualiser()
         let lignes = modele.reprise
@@ -216,27 +217,61 @@ struct TextesModeleTests {
         #expect(ligne.route == .tehilim)
     }
 
+    /// Les contenus du dépôt, dont le titre hébreu de chaharit (siddour edot) commence par un ta'am (U+0591) :
+    /// aucun titre livré n'a de signe qu'une police masque, il en faut un pour voir le masque à l'œuvre.
+    private func contenusAvecTaam() -> ContenusApp {
+        let base = ContenusApp.lecteur(dossier: Fichiers.contenu)
+        return ContenusApp(lecteur: { chemin in
+            guard var donnees = try base(chemin) else { return nil }
+            if chemin == Nusah.edot.fichier {
+                let repere = Data("\"id\":\"chaharit\",\"groupe\":\"jour\",\"titre\":{\"he\":\"".utf8)
+                if let place = donnees.range(of: repere) {
+                    donnees.insert(contentsOf: Data("\u{0591}".utf8), at: place.upperBound)
+                }
+            }
+            return donnees
+        })
+    }
+
     @Test func laPoliceChoisieMasqueLesTitres() async throws {
+        let avecTaam = contenusAvecTaam()
+        let edot = try await avecTaam.siddur(.edot)
+        let chaharit = try #require(edot.texte("chaharit"))
+        let brut = chaharit.titre.he
+        let premier = brut.utf16.first
+        #expect(premier == 0x0591)
         var reglages = Reglages()
         reglages.setLecturePolice("frank")
         Store.setPositionLecture(reglages: &reglages, cle: "s:chaharit", position: 3, maintenant: 0)
-        let (modele, _, _) = try fabriquer(reglages)
+        let (modele, _, _) = try fabriquer(reglages, contenus: avecTaam)
         await modele.actualiser()
         #expect(modele.police == .frank)
         let ligne = try #require(modele.reprise.first)
-        let attendu = try await titreHebreu("chaharit", livre: false, police: .frank)
-        #expect(ligne.titre == .hebreu(attendu))
+        let masque = PoliceHebraique.masque(brut, police: .frank)
+        // Frank Ruhl n'a pas les טעמים : le signe devient U+034F.
+        #expect(!masque.egalUnites(brut))
+        #expect(ligne.titre == .hebreu(masque))
+        // La police par défaut (serif) les a : le titre reste tel quel.
+        var serif = Reglages()
+        Store.setPositionLecture(reglages: &serif, cle: "s:chaharit", position: 3, maintenant: 0)
+        let (parDefaut, _, _) = try fabriquer(serif, contenus: avecTaam)
+        await parDefaut.actualiser()
+        let ligneSerif = try #require(parDefaut.reprise.first)
+        #expect(ligneSerif.titre == .hebreu(brut))
     }
 
     @Test func leSiddourEstCeluiDuNusahChoisi() async throws {
+        // « hachkavot » n'a pas le même titre dans les deux nusah : la ligne dit lequel a été lu.
         var reglages = Reglages()
         reglages.setSiddurNusah(.ashkenaz)
-        Store.setPositionLecture(reglages: &reglages, cle: "s:arvit", position: 3, maintenant: 0)
+        Store.setPositionLecture(reglages: &reglages, cle: "s:hachkavot", position: 3, maintenant: 0)
         let (modele, _, _) = try fabriquer(reglages)
         await modele.actualiser()
         let ligne = try #require(modele.reprise.first)
         let ashkenaz = try await Self.contenus.siddur(.ashkenaz)
-        let texte = try #require(ashkenaz.texte("arvit"))
+        let texte = try #require(ashkenaz.texte("hachkavot"))
+        let edot = try await titreHebreu("hachkavot", livre: false)
+        #expect(!edot.egalUnites(texte.titre.he))
         #expect(ligne.titre == .hebreu(PoliceHebraique.masque(texte.titre.he, police: .serif)))
     }
 

@@ -144,6 +144,12 @@ public final class CalendrierModele {
         magasin.reglages.inIsrael(fuseauTelephone: horloge.fuseau.identifiant)
     }
 
+    /// La police hébraïque des réglages de lecture (PoliceHebraique.appliquer) : les quantièmes hébreux, le titre
+    /// du mois hébreu, la date hébraïque de la carte, les noms de la hilloula, le début de la halakha.
+    public var police: PoliceHebraique.Police {
+        PoliceHebraique.Police(rawValue: magasin.reglages.lecturePolice) ?? .serif
+    }
+
     /// La vue civile (Store.calendrierCivil) ; hébraïque par défaut.
     public var civil: Bool {
         magasin.reglages.calendrierCivil

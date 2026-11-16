@@ -137,7 +137,8 @@ public enum PlanNotifications {
     public static func planifier(reglages: Reglages, journal: Journal, volRappels: [VolRappels.Rappel],
                                  maintenant: Int64, fuseau: Fuseau, horaires: Horaires, allumage: Allumage,
                                  heureVol: (Int64) -> String) -> [NotificationPrevue] {
-        let chaine = rappels(reglages: reglages, journal: journal, maintenant: maintenant, fuseau: fuseau)
+        let chaine = rappels(reglages: reglages, journal: journal, maintenant: maintenant, fuseau: fuseau,
+                             nombre: NotificationPrevue.Categorie.rappel.part)
         var liste: [NotificationPrevue] = []
         liste.append(contentsOf: chaine.filter { $0.categorie == .rappel }.prefix(NotificationPrevue.Categorie.rappel.part))
         var seance = chaine.filter { $0.categorie == .seance }
@@ -160,10 +161,12 @@ public enum PlanNotifications {
     /// report (un report qui tombe après le prochain rappel réglé se perd, comme sur Android). Le rappel ne
     /// s'affiche que si aucune séance ne court à cet instant et que `ReminderRule.shouldNotify` le permet ce
     /// jour-là à cette heure : la journée faite, un jour de repos, la veille après midi le taisent. Un rappel
-    /// reporté est de la catégorie `seance`. La phrase du trophée tout proche va sous le premier, une fois.
-    public static func rappels(reglages: Reglages, journal: Journal, maintenant: Int64,
-                               fuseau: Fuseau) -> [NotificationPrevue] {
-        guard reglages.reminderEnabled else { return [] }
+    /// reporté est de la catégorie `seance`. La phrase du trophée tout proche va sous le premier, une fois. La
+    /// suite s'arrête une fois `nombre` rappels (hors report) trouvés. Une séance ouverte court tant qu'on ne l'a
+    /// pas close (`SessionRule.enCours`) : elle tait tous les rappels, et la suite n'est pas parcourue.
+    public static func rappels(reglages: Reglages, journal: Journal, maintenant: Int64, fuseau: Fuseau,
+                               nombre: Int = Int.max) -> [NotificationPrevue] {
+        guard reglages.reminderEnabled, !Store.isSessionOpen(reglages: reglages) else { return [] }
         let fuseauTelephone = fuseau.identifiant
         let heures = reglages.reminderTimes
         let aujourdhui = fuseau.jour(millis: maintenant)
@@ -173,10 +176,12 @@ public enum PlanNotifications {
         let proche = tropheeProche(reglages: reglages, journal: journal, aujourdhui: aujourdhui,
                                    fuseauTelephone: fuseauTelephone)
         var res: [NotificationPrevue] = []
+        var trouves = 0
         var t = maintenant
         var report = reglages.reminderSnoozedUntil
-        // Chaque tour avance d'au moins une milliseconde vers le dernier jour : la garde ne sert qu'au cas insensé.
-        for _ in 0..<5000 {
+        // Chaque tour avance jusqu'à l'heure réglée suivante : 1 440 heures par jour sur dix jours, et le report.
+        for _ in 0..<(joursRappels * ReminderRule.minutesParJour + 2) {
+            if trouves >= nombre { break }
             let regle = ReminderRule.prochainDeclenchement(maintenant: DateHeureZonee(millis: t, fuseau: fuseau),
                                                            heures: heures)?.millis
             var quand = regle
@@ -212,6 +217,7 @@ public enum PlanNotifications {
                     categorie: reporte ? .seance : .rappel,
                     actions: [.commencer, .plusTard],
                     trophee: premier ? proche?.cle : nil))
+                if !reporte { trouves += 1 }
             }
             t = q
         }
@@ -382,7 +388,7 @@ public enum PlanNotifications {
 
     /// VolAlerte.nomPriere : le nom de la prière, Arvit par défaut.
     private static func nomPriere(_ priere: String?) -> Libelle {
-        switch priere {
+        switch priere ?? "" {
         case "chaharit": return Libelle("widget_zmanim_chaharit")
         case "minha": return Libelle("widget_zmanim_minha")
         default: return Libelle("widget_zmanim_arvit")

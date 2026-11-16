@@ -128,7 +128,8 @@ public final class AccueilModele {
             dejaApparu = true
             // La présentation, une fois par version d'elle-même (showOnboardingOnce).
             if !reglages.hasOnboarded { routes.append(.presentation) }
-            cascade = true
+            // Animations réduites : les cartes sont à leur place d'emblée (Effets.cascade, `actifs`).
+            cascade = !reduireAnimations
         } else {
             cascade = false
         }
@@ -146,13 +147,16 @@ public final class AccueilModele {
         await systeme?.rafraichirVignettes()
     }
 
-    /// L'onglet Aujourd'hui touché alors qu'il était déjà là, ou de retour de Textes : les anneaux se rejouent.
+    /// Retour sur l'onglet Aujourd'hui depuis l'onglet Textes (sur Android, un panneau de la même activité :
+    /// `rejouer()` seul, sans onResume) : les anneaux se rejouent, rien d'autre. Re-toucher l'onglet déjà actif ne
+    /// fait rien sur Android (OnItemSelectedListener ne voit pas une resélection).
     public func ongletChoisi() {
         montrerAnneaux(depuisZero: true)
     }
 
     /// Ouvert depuis la notification de fin de séance (EXTRA_ASK_NOTE) : la note du jour de la séance, sauf si le
-    /// bravo attend encore (c'est lui qui la proposera).
+    /// bravo attend encore (c'est lui qui la proposera). À appeler avant `apparaitre()`, comme onCreate précède
+    /// onResume : après, le bravo serait déjà pris.
     public func demanderNote(_ date: JourCivil) {
         if !reglages.hasPendingCelebration { routes.append(.note(date)) }
     }
@@ -643,6 +647,10 @@ public final class AccueilModele {
 
     public var indicationDureeLibre: Libelle { Libelle("duration_custom_hint") }
 
+    /// « OK » de la durée réglable : `android.R.string.ok` sur Android, une chaîne du système ; clé neuve, la même
+    /// qu'AjoutTempsModele et SeanceModele (fr « OK », en « OK », he « אישור »).
+    public var libelleValider: Libelle { Libelle("action_ok") }
+
     /// « Aujourd'hui », « Hier ».
     public var optionsJourHorsTelephone: [Libelle] {
         [Libelle("offline_today"), Libelle("offline_yesterday")]
@@ -873,7 +881,8 @@ public final class AccueilModele {
         Adresse.parse(reglages.adresse)
     }
 
-    private var police: PoliceHebraique.Police {
+    /// La police des textes hébreux des cartes (prière, source du jour) : `.policeHebraique(police, taille:)`.
+    public var police: PoliceHebraique.Police {
         PoliceHebraique.Police(rawValue: reglages.lecturePolice) ?? .serif
     }
 
@@ -976,10 +985,12 @@ public final class AccueilModele {
             try await magasin.modifierReglages { $0.setTargetMinutes(minutes) }
         case .horsTelephone(let date):
             try await inscrire(minutes, date: date, bravo: date == aujourdhui)
+            if minutes > 0 { await systeme?.retirerRappelDuJour() }
             await systeme?.rafraichirVignettes()
             await celebrationEnAttente()
         case .ajout(let date):
             try await inscrire(minutes, date: date, bravo: false)
+            if minutes > 0 { await systeme?.retirerRappelDuJour() }
             await systeme?.rafraichirVignettes()
             message = Libelle("jour_ajoute", .libelle(Store.formatDuration(minutes)))
             try? await fete.passer()

@@ -226,6 +226,13 @@ object VecteursPlan : Generateur {
         val lv = levana(c, debut, zone, tsets)
         val vo = vol(c, debut)
         Horloge.regler(debut, zone)
+        // Ce que Store dit des jours de rappels : exempté, veille d'un jour chômé, fait (« 1 » ou « 0 » chacun).
+        val drapeaux = { b: Boolean -> if (b) "1" else "0" }
+        val jours = linkedMapOf<String, String>()
+        for (k in 0 until JOURS) {
+            val d = aujourdhui.plusDays(k.toLong())
+            jours[d.toString()] = drapeaux(Store.isExempt(c, d)) + drapeaux(Store.isEveOfRestDay(c, d)) + drapeaux(Store.isDone(c, d.toString()))
+        }
         return linkedMapOf(
             "nom" to cfg.nom,
             "fuseau" to zone.id,
@@ -233,6 +240,7 @@ object VecteursPlan : Generateur {
             "prefs" to prefs,
             "days" to days.toString(),
             "volRappels" to volEcrits,
+            "jours" to jours,
             "rappels" to r,
             "trophee" to tr,
             "allumages" to allumages,

@@ -171,12 +171,27 @@ struct AjoutTempsModeleTests {
         #expect(paliers != nil)
         let trophees = banc.magasin.reglages.tropheesNotifies
         #expect(trophees != nil)
+        // Ce sont les marques et les trophées du journal après l'ajout (Celebrations.marquerNotifies).
+        let horloge = try Self.horloge()
+        let journalFinal = banc.magasin.journal
+        let reglagesFinals = banc.magasin.reglages
+        let telephone = horloge.fuseau.identifiant
+        let attendu = Celebrations.marquerNotifies(
+            Store.bilan(journal: journalFinal, reglages: reglagesFinals, aujourdhui: horloge.aujourdhui,
+                        fuseauTelephone: telephone),
+            Store.pratique(journal: journalFinal, reglages: reglagesFinals, aujourdhui: horloge.aujourdhui,
+                           fuseauTelephone: telephone),
+            paliersNotifies: nil, tropheesNotifies: nil)
+        #expect(paliers == attendu.marques)
+        #expect(trophees == attendu.trophees)
         let widgets = await banc.systeme.widgetsRafraichis
         #expect(widgets == 1)
         let rappels = await banc.systeme.rappelsRetires
         #expect(rappels == 1)
         let ecritures = await banc.persistance.ecrituresJournal
         #expect(ecritures == 1)
+        let ecrituresReglages = await banc.persistance.ecrituresReglages
+        #expect(ecrituresReglages == 1)
     }
 
     @Test func unJourPasseSansRienDevientFait() async throws {
@@ -246,7 +261,8 @@ struct AjoutTempsModeleTests {
         #expect(banc.magasin.journal.jours.isEmpty)
     }
 
-    @Test func uneEcritureRefuseeLaisseLaFenetreOuverte() async throws {
+    @Test func uneEcritureRefuseeNInscritLeTempsQuUneFois() async throws {
+        let date = try Self.jour("2026-11-10")
         let banc = try fabriquer("2026-11-10")
         let modele = try #require(banc.modele)
         await banc.persistance.faireEchouer(true)
@@ -258,8 +274,18 @@ struct AjoutTempsModeleTests {
         } catch {
             refuse = true
         }
+        // L'erreur remonte, mais le changement reste dans le Magasin : les fenêtres se ferment, pour qu'on ne
+        // choisisse pas une seconde fois les mêmes minutes.
         #expect(refuse)
-        #expect(modele.etape == .durees)
-        #expect(modele.issue == nil)
+        #expect(modele.etape == nil)
+        #expect(modele.issue == .ajoute(minutes: 5))
+        let minutes = banc.magasin.journal.record(date)?.minutes
+        #expect(minutes == 5)
+        // Choisir encore ne fait rien : les fenêtres sont fermées.
+        try await modele.choisir(cinq)
+        let encore = banc.magasin.journal.record(date)?.minutes
+        #expect(encore == 5)
+        let widgets = await banc.systeme.widgetsRafraichis
+        #expect(widgets == 1)
     }
 }

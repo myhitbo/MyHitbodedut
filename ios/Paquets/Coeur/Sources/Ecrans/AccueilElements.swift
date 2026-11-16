@@ -489,12 +489,16 @@ public protocol AccueilSysteme: Sendable {
     func appliquerEtat() async
     /// Les vignettes (série, zmanim) suivent ce que l'accueil vient de montrer.
     func rafraichirVignettes() async
+    /// Des minutes viennent d'être inscrites : le rappel « Il est temps… » déjà paru ne reste pas dans le centre
+    /// de notifications (Store.addSession, `cancel(Notifications.ID_REMINDER)` quand minutes > 0, 02/11).
+    func retirerRappelDuJour() async
 }
 
 /// Un système qui compte ce qu'on lui demande.
 public actor FauxAccueilSysteme: AccueilSysteme {
     public private(set) var etatsAppliques = 0
     public private(set) var vignettesRafraichies = 0
+    public private(set) var rappelsRetires = 0
 
     public init() {}
 
@@ -504,5 +508,9 @@ public actor FauxAccueilSysteme: AccueilSysteme {
 
     public func rafraichirVignettes() {
         vignettesRafraichies += 1
+    }
+
+    public func retirerRappelDuJour() {
+        rappelsRetires += 1
     }
 }

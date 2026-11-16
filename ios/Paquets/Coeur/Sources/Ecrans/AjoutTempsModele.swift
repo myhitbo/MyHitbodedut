@@ -202,8 +202,10 @@ public final class AjoutTempsModele {
     // MARK: L'inscription
 
     /// Store.addSession au jour choisi (sans sujet), puis ce qui est neuf retenu comme fêté (paliers et
-    /// trophées notifiés), le widget, le rappel du jour, et le message. Si l'écriture échoue, l'erreur remonte et
-    /// la fenêtre reste ouverte.
+    /// trophées notifiés), le widget, le rappel du jour, et le message. Une écriture qui échoue laisse le
+    /// changement dans le Magasin (la prochaine écriture l'emportera) : les minutes sont inscrites, les fenêtres
+    /// se ferment quand même, et l'erreur remonte ensuite. Laisser la liste ouverte inviterait à choisir encore,
+    /// et les minutes s'ajouteraient deux fois.
     private func inscrire(_ minutes: Int) async throws {
         var journal = magasin.journal
         var reglages = magasin.reglages
@@ -222,14 +224,28 @@ public final class AjoutTempsModele {
         reglages.setTropheesNotifies(neuf.trophees)
         let journalFinal = journal
         let reglagesFinals = reglages
-        try await magasin.modifierJournal { $0 = journalFinal }
-        try await magasin.modifierReglages { $0 = reglagesFinals }
+        var echec: (any Error)? = nil
+        do {
+            try await magasin.modifierJournal { $0 = journalFinal }
+        } catch {
+            echec = error
+        }
+        do {
+            try await magasin.modifierReglages { $0 = reglagesFinals }
+        } catch {
+            if echec == nil {
+                echec = error
+            }
+        }
         await systeme.rafraichirWidgets()
         if minutes > 0 {
             await systeme.retirerRappelDuJour()
         }
         confirmation = Libelle("jour_ajoute", .libelle(Store.formatDuration(minutes)))
         fermer(.ajoute(minutes: minutes))
+        if let echec {
+            throw echec
+        }
     }
 
     private func fermer(_ comment: AjoutTempsIssue) {
