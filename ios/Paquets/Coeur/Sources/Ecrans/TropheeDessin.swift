@@ -254,7 +254,7 @@ public enum TropheeEmblemeDessin: Sendable, Hashable {
     /// `taille` dans la boîte de 100 ; l'épaisseur se calcule par `TropheeDessin.epaisseurIcone(cote:)`.
     case trait(chemin: TropheeChemin, centre: TropheePoint, taille: Double, couleur: TropheeCouleur)
     /// Un caractère (« ★ »), centré en `centre` (horizontalement, et la hauteur de ses lettres centrée sur
-    /// y), en corps `taille` dans la boîte de 100, gras non : la police par défaut.
+    /// y), en corps `taille` dans la boîte de 100, dans la police par défaut (maigre).
     case texte(String, centre: TropheePoint, taille: Double, couleur: TropheeCouleur)
 }
 

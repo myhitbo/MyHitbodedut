@@ -295,19 +295,19 @@
       "localizations": {
         "fr": {
           "stringUnit": {
-            "state": "translated",
+            "state": "needs_review",
             "value": "Bientôt"
           }
         },
         "en": {
           "stringUnit": {
-            "state": "translated",
+            "state": "needs_review",
             "value": "Coming soon"
           }
         },
         "he": {
           "stringUnit": {
-            "state": "translated",
+            "state": "needs_review",
             "value": "בקרוב"
           }
         }

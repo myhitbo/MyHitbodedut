@@ -15,6 +15,7 @@ let enChantierSources: [String] = [
     "EtatBarriere.swift",
 ]
 let enChantierTests: [String] = [
+    "EtatBarriereTests.swift",
 ]
 let enChantierEcrans: [String] = [
     "ApparenceChoisie.swift",

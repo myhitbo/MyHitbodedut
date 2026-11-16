@@ -6,8 +6,8 @@ import Vues
 
 /// Le point d'entrée de l'app (MyHitbodedutApp.kt, PORTAGE.md § 1.1) : il construit ce que les écrans reçoivent
 /// (le magasin du journal et des réglages, l'horloge, le traducteur, les contenus, la palette) et montre les cinq
-/// onglets (Racine.swift). Seul ce point d'entrée lit le paquet de l'app (`Bundle.main`) : les modèles d'écran
-/// reçoivent ce qu'il en tire.
+/// onglets (Racine.swift). Ce point d'entrée lit le paquet de l'app (`Bundle.main`), et seule `Illustration` de
+/// Vues y prend encore ses images : les modèles d'écran reçoivent ce qu'il en tire.
 @main
 struct MyHitbodedutApp: App {
     @State private var magasin: Magasin
