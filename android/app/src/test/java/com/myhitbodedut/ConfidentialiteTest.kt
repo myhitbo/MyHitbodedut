@@ -57,7 +57,7 @@ class ConfidentialiteTest {
             assertTrue("$langue : le contact", texte.contains("<a href=\"mailto:myhitbodedut26@gmail.com\">"))
             assertTrue("$langue : l'éditeur", texte.contains("MyHitbodedut Team"))
             // Compte Play « organisation » (16/11) : la page nomme l'association, titulaire du compte.
-            assertTrue("$langue : l'association", texte.contains("Hachiveinou letoratekha"))
+            assertTrue("$langue : l'association", texte.contains("HACHIVEINOU LÉTORATEKHA"))
         }
     }
 

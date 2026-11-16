@@ -41,7 +41,7 @@ Google ; la clé de signature finale reste chez Google.
 ## 3. Compte développeur (1 à 3 jours, côté Google)
 
 **Fait le 16/11** : compte **organisation** au nom de l'association
-Hachiveinou letoratekha (n° 8221232760929604341). Reste, `play/CONSOLE.md`
+HACHIVEINOU LÉTORATEKHA (n° 8221232760929604341). Reste, `play/CONSOLE.md`
 § 1 : finir les vérifications que la console demande (D-U-N-S, téléphone,
 site), statut de commerçant (*Non-trader* pour une association qui publie
 gratuitement : déclaration juridique de l'association). Nom public du

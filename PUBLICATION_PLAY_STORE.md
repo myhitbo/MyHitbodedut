@@ -332,7 +332,7 @@ reproduction, **traduction**, diffusion dans l'application et sur le site.
 | --- | --- | --- |
 | Créer le compte | play.google.com/console, compte Google dédié recommandé | **Fait (16/11)** : compte n° 8221232760929604341 |
 | Frais d'inscription | **25 USD, une fois**, carte non prépayée | Vérifié |
-| Type de compte | **Personnel** (nom réel affiché) ou **Organisation** (exige un numéro D-U-N-S, mais dispense du test fermé ci-dessous) | **Organisation**, au nom de l'association **Hachiveinou letoratekha** (16/11 ; remplace la décision « personnel » du 29/10) |
+| Type de compte | **Personnel** (nom réel affiché) ou **Organisation** (exige un numéro D-U-N-S, mais dispense du test fermé ci-dessous) | **Organisation**, au nom de l'association **HACHIVEINOU LÉTORATEKHA** (16/11 ; remplace la décision « personnel » du 29/10) |
 | Vérification de l'organisation | numéro D-U-N-S, nom légal et adresse de l'association (identiques à la fiche D-U-N-S), site web, téléphone et e-mail de contact vérifiés ; nom public du développeur | Vérifié ; à terminer dans la console si un bandeau le demande |
 | Vérification d'appareil | accès à un appareil Android via l'appli Play Console | Vérifié |
 | ~~Test fermé obligatoire~~ | Exigé des seuls comptes **personnels** créés après le 13/11/2023 (12 testeurs, 14 jours). **Ne s'applique pas** au compte organisation : la production est ouverte dès que l'application est prête | Vérifié (answer/14151465) |
@@ -456,7 +456,7 @@ code et tenu en partie par `ConfidentialiteTest` (faits listés dans le test) :
   temps, et comment en demander l'effacement.
 
 **Contact (02/11)** : éditeur « MyHitbodedut Team », nom public de
-l'association **Hachiveinou letoratekha** (titulaire du compte Play depuis le 16/11 ;
+l'association **HACHIVEINOU LÉTORATEKHA** (titulaire du compte Play depuis le 16/11 ;
 la page la nomme dans les trois langues, tenu par `ConfidentialiteTest`), adresse
 **myhitbodedut26@gmail.com**, dans la page (trois langues). La même adresse
 est à saisir comme e-mail de contact de la fiche (Play Console → Grow →
@@ -799,7 +799,7 @@ test interne à la production dès que la recette du § 8 est passée.
 3. ~~**7 textes de licence inconnue**~~ — **tranché le 29/10** : domaine
    public, texte seul sans vocalisation (§ 3.3).
 4. ~~**Compte personnel ou organisation**~~ — **tranché le 16/11** : compte
-   **organisation**, au nom de l'association Hachiveinou letoratekha (le choix
+   **organisation**, au nom de l'association HACHIVEINOU LÉTORATEKHA (le choix
    « personnel » du 29/10 est abandonné). Plus de test fermé obligatoire
    (§ 4, § 9). Les règles de confidentialité nomment l'association (§ 6.1).
 5. ~~**Titre, catégorie, tranche d'âge**~~ — **tranchés le

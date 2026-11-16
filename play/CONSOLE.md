@@ -48,7 +48,7 @@ l'AAB : voir « Si le relais arrive » à la fin.
 
 ## 1. Compte développeur
 
-Compte **organisation** au nom de l'association **Hachiveinou letoratekha**, créé le
+Compte **organisation** au nom de l'association **HACHIVEINOU LÉTORATEKHA**, créé le
 16/11 (n° 8221232760929604341). Création, frais, vérifications : § 4. Deux
 saisies demandent une décision.
 
@@ -59,7 +59,7 @@ Google affiche sur la fiche (« À propos du développeur ») des informations d
 l'organisation : relire l'aperçu de la console avant la publication.
 
 **Nom du développeur** (public) : `MyHitbodedut Team` — c'est le nom que citent
-les règles de confidentialité, qui nomment aussi l'association Hachiveinou letoratekha.
+les règles de confidentialité, qui nomment aussi l'association HACHIVEINOU LÉTORATEKHA.
 
 **Statut de commerçant** (*Trader status*, exigé à la création du compte depuis
 novembre 2026 ; *Manage account → Account details → About you*). Google demande
