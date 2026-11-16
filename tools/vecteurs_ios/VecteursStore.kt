@@ -452,6 +452,20 @@ object VecteursStore : Generateur {
             horloge("2026-11-23", 12, 0, NEW_YORK),
             seance(5, date = "2026-11-22"),
         ),
+        // Une note seule : gardée, elle ne fait pas la journée (ni série ni pratique), mais compte pour la
+        // plume ; une note blanche sur un jour vide n'écrit rien ; une note trop longue est coupée ; une
+        // séance valide ensuite le jour en gardant sa note.
+        "Une note seule" to listOf(
+            horloge("2026-06-10", 9, 0, PARIS),
+            reglage("setInIsrael", false),
+            note("2026-06-09", " "),
+            note("2026-06-09", "Une pensée"),
+            note("2026-06-09", "Une autre pensée"),
+            note("2026-06-08", "א".repeat(2050) + "y".repeat(2000)),
+            seance(0, date = "2026-06-09"),
+            note("2026-06-09", ""),
+            note("2026-06-08", " "),
+        ),
     )
 
     // --- Les règles pures --------------------------------------------------------------------------

@@ -194,12 +194,33 @@ struct PresentationModeleTests {
     }
 
     /// Une rotation (ou une restauration d'état) reprend à la page où l'on était, ses choix compris.
-    @Test func laPageRepriseGardeSesChoix() {
-        let modele = PresentationModele.apercu(index: 2)
-        #expect(modele.ecran.cle == "jours")
-        #expect(modele.montreRappel)
-        let etape = Libelle("onboarding_step", .entier(3), .entier(7))
-        #expect(modele.etape == etape)
+    @Test func laPageRepriseGardeSesChoix() async throws {
+        let banc = PresentationBanc(index: 1)
+        try await banc.modele.choisirDuree(30)
+        // L'écran recréé (rotation, restauration d'état) sur le même magasin, à la même page.
+        let reprise = PresentationModele(magasin: banc.magasin, notificateur: banc.notificateur,
+                                         rappels: banc.rappels, index: banc.modele.index)
+        #expect(reprise.ecran.cle == "seance")
+        #expect(reprise.montreDurees)
+        let cochees = reprise.durees.filter { $0.choisie }.map { $0.minutes }
+        #expect(cochees == [30])
+        let etape = Libelle("onboarding_step", .entier(2), .entier(7))
+        #expect(reprise.etape == etape)
+        #expect(!reprise.termine)
+    }
+
+    /// Le glissement du `TabView` paginé : la page dite, ramenée dans les bornes, sans rien finir ni écrire.
+    @Test func glisserAmeneLaPageSansRienFinir() async {
+        let banc = PresentationBanc()
+        banc.modele.afficher(page: 4)
+        #expect(banc.modele.ecran.cle == "reglages")
+        banc.modele.afficher(page: 99)
+        #expect(banc.modele.index == Onboarding.dernier)
+        banc.modele.afficher(page: -1)
+        #expect(banc.modele.index == 0)
+        #expect(!banc.modele.termine)
+        let ecritures = await banc.persistance.ecrituresReglages
+        #expect(ecritures == 0)
     }
 
     @Test func uneEcritureRefuseeFermeQuandMemeLaPresentation() async throws {
@@ -245,6 +266,16 @@ struct PresentationModeleTests {
         let banc = PresentationBanc(index: 1)
         try await banc.modele.choisirDuree(20)
         #expect(banc.magasin.reglages.targetMinutes == Reglages.defaultTarget)
+        let ecritures = await banc.persistance.ecrituresReglages
+        #expect(ecritures == 0)
+    }
+
+    /// selectionRequired d'Android : toucher la durée déjà cochée la laisse cochée, sans rien écrire.
+    @Test func retoucherLaDureeCocheeNEcritRien() async throws {
+        let banc = PresentationBanc(index: 1)
+        try await banc.modele.choisirDuree(Reglages.defaultTarget)
+        let cochees = banc.modele.durees.filter { $0.choisie }.map { $0.minutes }
+        #expect(cochees == [Reglages.defaultTarget])
         let ecritures = await banc.persistance.ecrituresReglages
         #expect(ecritures == 0)
     }
