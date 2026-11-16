@@ -541,12 +541,17 @@ public final class HilloulotModele {
         }
         let fichiers = Set(cles.map { Hilloulot.fichierDesBios($0) })
         guard !fichiers.isSubset(of: fichiersBios) else { return }
+        let nouveaux = fichiers.subtracting(fichiersBios)
         fichiersBios.formUnion(fichiers)
         let contenus = self.contenus
         let precedente = tacheBios
         tacheBios = Task {
             if let precedente { await precedente.value }
-            guard let complete = try? await contenus.avecBios(pour: cles) else { return }
+            guard let complete = try? await contenus.avecBios(pour: cles) else {
+                // Un fichier illisible : la prochaine demande de ces mois le relira (HilloulotContenus).
+                self.fichiersBios.subtract(nouveaux)
+                return
+            }
             self.table = complete
             if self.enRecherche { self.lancerRecherche() }
         }

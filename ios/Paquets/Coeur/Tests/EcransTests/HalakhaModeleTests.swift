@@ -260,12 +260,14 @@ struct HalakhaModeleTests {
         let benIshHai = try await Self.contenus.benIshHai()
         let yy = YalkutYosef.recherche(yalkut, texte: "שבת")
         let bih = Halakha.recherche(benIshHai, texte: "שבת")
-        #expect(!yy.isEmpty)
-        #expect(!bih.isEmpty)
+        // Plus de quarante trouvailles dans chaque livre : le plafond des cartes est bien éprouvé.
+        #expect(yy.count > HalakhaModele.resultatsMontres)
+        #expect(bih.count > HalakhaModele.resultatsMontres)
 
         // Le Yalkut Yosef seul, par défaut : quarante cartes au plus, toutes les trouvailles comptées.
         let seul = try Self.resultats(modele)
         #expect(seul.nombre == Libelle("hilloulot_resultats", .entier(yy.count)))
+        #expect(seul.cartes.count == HalakhaModele.resultatsMontres)
         let titres = seul.cartes.map { $0.titre }
         let titresAttendus = yy.prefix(HalakhaModele.resultatsMontres).map { YalkutYosef.source($0) }
         #expect(titres == titresAttendus)

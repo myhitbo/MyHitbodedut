@@ -45,14 +45,21 @@ struct RechercheModeleTests {
         await modele.charger()
         #expect(modele.etat == .pret)
 
+        // La meilleure de cinq mesures : les autres suites tournent en même temps, sur le même acteur principal,
+        // et une seule mesure jugerait leur charge plutôt que la recherche.
         let horloge = ContinuousClock()
-        let debut = horloge.now
-        modele.chercher("שלום")
-        #expect(modele.enCours)
-        await modele.attendre()
-        let duree = horloge.now - debut
-        #expect(duree < .milliseconds(300), "\(duree)")
-        #expect(!modele.enCours)
+        var meilleure = Duration.seconds(3600)
+        for _ in 0..<5 {
+            modele.chercher("")
+            let debut = horloge.now
+            modele.chercher("שלום")
+            #expect(modele.enCours)
+            await modele.attendre()
+            let duree = horloge.now - debut
+            if duree < meilleure { meilleure = duree }
+            #expect(!modele.enCours)
+        }
+        #expect(meilleure < .milliseconds(300), "\(meilleure)")
 
         let r = try Self.resultats(modele)
         #expect(r.texte == "שלום")
@@ -93,6 +100,14 @@ struct RechercheModeleTests {
             let plafond = g.sorte == .halakha ? 2 * RechercheGlobale.parSorte : RechercheGlobale.parSorte
             #expect(g.lignes.count <= plafond, "\(g.sorte)")
         }
+        // La halakha bute vraiment sur ses plafonds : trente du Yalkut Yosef au plus, trente du Ben Ish 'Haï au plus.
+        let yalkut = try await Self.contenus.yalkutYosef()
+        let benIshHai = try await Self.contenus.benIshHai()
+        let yy = YalkutYosef.recherche(yalkut, texte: "הה").count
+        let bih = Halakha.recherche(benIshHai, texte: "הה").count
+        #expect(bih > RechercheGlobale.parSorte)
+        let halakha = r.groupes.first(where: { $0.sorte == .halakha })?.lignes.count ?? 0
+        #expect(halakha == min(yy, RechercheGlobale.parSorte) + min(bih, RechercheGlobale.parSorte))
     }
 
     // MARK: L'index rend ce que rend Android
@@ -216,6 +231,11 @@ struct RechercheModeleTests {
         }
         #expect(!ids.isEmpty)
         #expect(Set(ids).isSubset(of: ashkenaz))
+        // Les prières trouvées sont celles du siddour ashkénaze, dans son ordre (bien des ids sont communs aux
+        // noussa'him : l'inclusion seule ne le prouverait pas).
+        let attendus = RechercheGlobale.dansRecueil(siddurAshkenaz, RechercheGlobale.nu("שלום"), .siddour, langue: "fr")
+            .map { $0.id }
+        #expect(ids == attendus)
         // Le préparateur rend l'index de ce noussa'h ; revenir à l'edot réindexe le seul siddour.
         let index = try await Self.index(.ashkenaz)
         #expect(index.nusah == .ashkenaz)

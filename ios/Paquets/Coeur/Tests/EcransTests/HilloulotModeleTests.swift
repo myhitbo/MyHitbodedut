@@ -152,7 +152,8 @@ struct HilloulotModeleTests {
     }
 
     @Test func unNomToucheSeDeplie() async throws {
-        // Le 27 Adar 5787 (Adar II) : douze tsadikim, dont plusieurs à notice.
+        // Le 27 Adar II 5787 : les clés « adar-27 » et « adar2-27 » (hors noussa'h ashkénaze), quatorze tsadikim, dont
+        // plusieurs à notice.
         let depuis = try #require(JourCivil(iso: "2026-11-16"))
         let date = try #require(Hilloulot.prochainJour("adar-27", depuis: depuis, enIsrael: true))
         let (modele, _, _, _) = try Self.fabriquer(date: date)

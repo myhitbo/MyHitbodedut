@@ -15,7 +15,7 @@ public enum EtatBarriere {
     /// `jours` jours qui commencent à `depuis` ; aucun si « Chabbat et Yom Tov » est éteint. Les dates en
     /// pause n'y sont pas : elles vont à part (`Etat.joursEnPause`), l'écran les change d'un geste.
     public static func joursExemptes(reglages: Reglages, depuis: JourCivil, fuseauTelephone: String,
-                                     jours: Int = horizon) -> [JourCivil] {
+                                     jours: Int = EtatBarriere.horizon) -> [JourCivil] {
         guard reglages.shabbatMode, jours > 0 else { return [] }
         let israel = reglages.inIsrael(fuseauTelephone: fuseauTelephone)
         var resultat: [JourCivil] = []

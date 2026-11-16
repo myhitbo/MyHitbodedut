@@ -104,7 +104,7 @@
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Les heures du mode ne sont plus inscrites auprès d’iOS. L’app les inscrit de nouveau ; si ce message reste, éteignez puis rallumez le mode."
+            "value": "Les heures du mode ne sont plus inscrites auprès d’iOS. L’app les inscrit de nouveau ; si ce message reste, éteignez puis rallumez le mode."
           }
         },
         "en": {
@@ -248,7 +248,7 @@
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "iOS a retiré l’accès à Temps d’écran : plus rien n’est retenu. Le rendre ?"
+            "value": "iOS a retiré l’accès à Temps d’écran : plus rien n’est retenu. Le rendre ?"
           }
         },
         "en": {
