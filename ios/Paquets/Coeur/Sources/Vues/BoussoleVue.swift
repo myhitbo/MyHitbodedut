@@ -381,6 +381,8 @@ public struct BoussoleVue: View {
                 .background(Teinte(.ink).opacity(0.92), in: Capsule())
                 .padding(.horizontal, 32)
                 .padding(.bottom, 24)
+                // Un Toast ne prend pas les touchers : ce qui est dessous reste touchable.
+                .allowsHitTesting(false)
         }
     }
 
