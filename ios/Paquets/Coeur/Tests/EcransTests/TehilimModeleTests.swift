@@ -213,7 +213,7 @@ struct TehilimModeleTests {
         #expect(vingtCinq.id == 25)
         #expect(vingtCinq.numero == "25")
         #expect(vingtCinq.description == Libelle("tehilim_single", .texte("25")))
-        #expect(vingtCinq.route == .lecture(.portion(Portion(25, 25))))
+        #expect(vingtCinq.route == .lecture(.de(Portion(25, 25))))
         #expect(vingtCinq.route == .lecture(TehilimLectureCible(debut: 25, fin: 25)))
     }
 

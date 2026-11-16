@@ -205,7 +205,7 @@ struct PaliersModeleTests {
             #expect(!e.neuf && e.retardRetournement == nil, "\(e.niveau.cle)")
         }
         // La ligne se remplit : les six dernières étapes une à une, 90 ms d'écart.
-        let pousses = gagnees.map { $0.retardPousse }
+        let pousses = gagnees.map { $0.retardPousse ?? -1 }
         let n = gagnees.count
         #expect(pousses.first == 0)
         #expect(pousses.last == 450)
@@ -298,7 +298,8 @@ struct PaliersModeleTests {
         let septieme = try Self.jour("2026-10-07")
         let dixieme = try Self.jour("2026-10-10")
         let sous = gagnees.map { $0.sous }
-        #expect(sous == [.gagneLe(septieme), .gagneLe(dixieme)])
+        let sousAttendus: [TropheeSous?] = [.gagneLe(septieme), .gagneLe(dixieme)]
+        #expect(sous == sousAttendus)
         for e in toutes {
             #expect(e.retardPousse == nil && e.retardRetournement == nil, "\(e.niveau.cle)")
             #expect(e.niveau.famille == .jours)

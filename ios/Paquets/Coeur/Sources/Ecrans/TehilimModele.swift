@@ -95,7 +95,7 @@ public struct TehilimLectureCible: Sendable, Hashable {
     }
 
     /// `TehilimLectureActivity.ouvrir(context, p)`.
-    public static func portion(_ p: Portion) -> TehilimLectureCible {
+    public static func de(_ p: Portion) -> TehilimLectureCible {
         TehilimLectureCible(debut: p.debut, fin: p.fin, debutVerset: p.debutVerset, finVerset: p.finVerset ?? 0)
     }
 
@@ -285,7 +285,7 @@ public final class TehilimModele {
 
     /// La ligne « Selon le jour du mois » ouvre sa portion.
     public var routeMois: TehilimRoute {
-        .lecture(.portion(portionDuMois))
+        .lecture(.de(portionDuMois))
     }
 
     /// La portion du jour selon la semaine, du dimanche au Chabbat.
@@ -301,7 +301,7 @@ public final class TehilimModele {
 
     /// La ligne « Selon le jour de la semaine » ouvre sa portion.
     public var routeSemaine: TehilimRoute {
-        .lecture(.portion(portionDeLaSemaine))
+        .lecture(.de(portionDeLaSemaine))
     }
 
     // MARK: La grille
@@ -317,7 +317,7 @@ public final class TehilimModele {
             let seul = Portion(n, n)
             cases.append(TehilimCase(id: n, numero: TehilimTexte.nombre(n, langue: langue),
                                      description: TehilimTexte.portion(seul, langue: langue),
-                                     route: .lecture(.portion(seul))))
+                                     route: .lecture(.de(seul))))
             if cases.count == TehilimModele.parLigne {
                 rangees.append(TehilimRangee(id: rangees.count, cases: cases))
                 cases = []

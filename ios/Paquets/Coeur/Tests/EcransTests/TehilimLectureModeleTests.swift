@@ -41,14 +41,14 @@ struct TehilimLectureModeleTests {
         #expect(jusquAuBout == Portion(119, 119, 97, nil))
         let marque = TehilimLectureCible.marque(psaume: 23, verset: 4)
         #expect(marque == TehilimLectureCible(debut: 23, fin: 23, debutVerset: 1, finVerset: 0, marqueVerset: 4))
-        let portion = TehilimLectureCible.portion(Portion(119, 119, 1, 96))
+        let portion = TehilimLectureCible.de(Portion(119, 119, 1, 96))
         #expect(portion == TehilimLectureCible(debut: 119, fin: 119, debutVerset: 1, finVerset: 96))
     }
 
     // MARK: Un psaume seul
 
     @Test func unPsaumeSeulSeLitAvecSaTraductionEtSesDeuxBoutons() async throws {
-        let modele = await Self.lecture(.portion(Portion(23, 23)))
+        let modele = await Self.lecture(.de(Portion(23, 23)))
         #expect(modele.etat == .pret)
         #expect(modele.titre == Libelle("tehilim_single", .texte("23")))
         #expect(modele.sousTitre == Libelle.pluriel("tehilim_verses", quantite: 6, .entier(6)))
@@ -83,7 +83,7 @@ struct TehilimLectureModeleTests {
     }
 
     @Test func enHebreuUnSeulBlocSansTraduction() async throws {
-        let modele = await Self.lecture(.portion(Portion(23, 23)), langue: "he")
+        let modele = await Self.lecture(.de(Portion(23, 23)), langue: "he")
         #expect(modele.hebreuSeul)
         let versets = try #require(modele.psaumes.first).versets
         let traduits = versets.filter { !$0.traductions.isEmpty }.count
@@ -98,7 +98,7 @@ struct TehilimLectureModeleTests {
     @Test func sansLHebreuLeNumeroEnChiffresVaDevantLaPremiereTraduction() async throws {
         var reglages = Reglages()
         reglages.setLectureLangues("fr+en")
-        let modele = await Self.lecture(.portion(Portion(23, 23)),
+        let modele = await Self.lecture(.de(Portion(23, 23)),
                                         magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)))
         #expect(!modele.hebreuSeul)
         let troisieme = try #require(modele.psaumes.first?.versets[2])
@@ -111,7 +111,7 @@ struct TehilimLectureModeleTests {
     @Test func laPoliceMasqueSesSignesAbsents() async throws {
         var reglages = Reglages()
         reglages.setLecturePolice("frank")
-        let modele = await Self.lecture(.portion(Portion(23, 23)), langue: "he",
+        let modele = await Self.lecture(.de(Portion(23, 23)), langue: "he",
                                         magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)))
         let livre = try await Self.contenus.tehilim()
         let premier = try #require(modele.psaumes.first?.versets.first)
@@ -143,7 +143,7 @@ struct TehilimLectureModeleTests {
     }
 
     @Test func lePsaumeCentDixNeufCoupeNeMontreQueSesVersets() async throws {
-        let modele = await Self.lecture(.portion(Portion(119, 119, 97, 176)))
+        let modele = await Self.lecture(.de(Portion(119, 119, 97, 176)))
         #expect(modele.titre == Libelle("tehilim_range_verses", .texte("119"), .texte("97"), .texte("176")))
         #expect(!modele.navigationVisible)
         #expect(modele.nombreVersets == 80)
@@ -156,7 +156,7 @@ struct TehilimLectureModeleTests {
     // MARK: Précédent, suivant
 
     @Test func precedentEtSuivantMenentAuPsaumeVoisinDepuisLeHaut() async throws {
-        let modele = await Self.lecture(.portion(Portion(1, 1)))
+        let modele = await Self.lecture(.de(Portion(1, 1)))
         #expect(!modele.precedentVisible)
         #expect(modele.suivantVisible)
         modele.precedent()
@@ -175,7 +175,7 @@ struct TehilimLectureModeleTests {
         modele.precedent()
         #expect(modele.portion == Portion(2, 2))
 
-        let dernier = await Self.lecture(.portion(Portion(150, 150)))
+        let dernier = await Self.lecture(.de(Portion(150, 150)))
         #expect(dernier.precedentVisible)
         #expect(!dernier.suivantVisible)
         dernier.suivant()
@@ -183,7 +183,7 @@ struct TehilimLectureModeleTests {
     }
 
     @Test func uneLecturePartielleNAPasDeBoutons() async {
-        let modele = await Self.lecture(.portion(Portion(119, 119, 1, 96)))
+        let modele = await Self.lecture(.de(Portion(119, 119, 1, 96)))
         modele.suivant()
         #expect(modele.portion == Portion(119, 119, 1, 96))
     }
@@ -193,7 +193,7 @@ struct TehilimLectureModeleTests {
     @Test func unAppuiLongMarqueEtDemarqueLeVerset() async throws {
         let persistance = PersistanceEnMemoire()
         let magasin = Magasin(persistance: persistance)
-        let modele = await Self.lecture(.portion(Portion(23, 23)), magasin: magasin)
+        let modele = await Self.lecture(.de(Portion(23, 23)), magasin: magasin)
         let livre = try await Self.contenus.tehilim()
 
         let pose = try await modele.basculerMarque(psaume: 23, verset: 3)
@@ -231,7 +231,7 @@ struct TehilimLectureModeleTests {
         var reglages = Reglages()
         TehilimMarques.basculer(&reglages, MarquesPages.Marque(cle: "s:chaharit", nusah: "", section: 23, bloc: 1,
                                                                apercu: "x"))
-        let modele = await Self.lecture(.portion(Portion(23, 23)),
+        let modele = await Self.lecture(.de(Portion(23, 23)),
                                         magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)))
         let marques = try #require(modele.psaumes.first).versets.filter { $0.marque }.count
         #expect(marques == 0)
@@ -281,7 +281,7 @@ struct TehilimLectureModeleTests {
     // MARK: Le bouton de lecture
 
     @Test func laTailleSeRegleParDixiemesEntreQuatreVingtsEtDeuxCents() async throws {
-        let modele = await Self.lecture(.portion(Portion(23, 23)))
+        let modele = await Self.lecture(.de(Portion(23, 23)))
         let barre = modele.barre
         #expect(barre.pastilleVisible)
         #expect(!barre.barreVisible)
@@ -305,7 +305,7 @@ struct TehilimLectureModeleTests {
 
     @Test func laNuitLaPoliceEtLesLanguesSEcriventEtGardentLaPlace() async throws {
         let magasin = Magasin.enMemoire()
-        let modele = await Self.lecture(.portion(Portion(23, 23)), magasin: magasin)
+        let modele = await Self.lecture(.de(Portion(23, 23)), magasin: magasin)
         let barre = modele.barre
         #expect(!barre.sombre)
         #expect(barre.etatNuit == Libelle("lecture_nuit_non"))
@@ -336,7 +336,7 @@ struct TehilimLectureModeleTests {
     }
 
     @Test func masquerPuisRetrouverLeBouton() async throws {
-        let modele = await Self.lecture(.portion(Portion(23, 23)))
+        let modele = await Self.lecture(.de(Portion(23, 23)))
         let barre = modele.barre
         barre.deplierBarre(true)
         try await barre.masquer()
@@ -353,7 +353,7 @@ struct TehilimLectureModeleTests {
     }
 
     @Test func laPastilleSEffaceEnDescendantEtRevientEnRemontant() async {
-        let modele = await Self.lecture(.portion(Portion(23, 23)))
+        let modele = await Self.lecture(.de(Portion(23, 23)))
         let barre = modele.barre
         barre.defilementVertical(10)
         #expect(!barre.pastilleEffacee)
@@ -371,7 +371,7 @@ struct TehilimLectureModeleTests {
 
     @Test func unLivreIllisibleNeMontreRien() async {
         let modele = TehilimLectureModele(magasin: Magasin.enMemoire(), contenus: ContenusApp(lecteur: { _ in nil }),
-                                          langue: "fr", cible: .portion(Portion(23, 23)))
+                                          langue: "fr", cible: .de(Portion(23, 23)))
         await modele.charger()
         #expect(modele.etat == .erreur)
         #expect(modele.psaumes.isEmpty)
