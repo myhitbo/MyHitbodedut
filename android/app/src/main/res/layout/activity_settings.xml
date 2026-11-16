@@ -233,6 +233,20 @@
 
             <LinearLayout style="@style/SettingRow">
 
+                <TextView
+                    style="@style/SettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/chabbat_alerte_reglage" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/chabbat_alerte_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/SettingRow">
+
                 <TextView style="@style/SettingLabel" android:text="@string/levana_usage_titre" />
 
                 <Button android:id="@+id/levana_usage_button" style="@style/SettingValue" />

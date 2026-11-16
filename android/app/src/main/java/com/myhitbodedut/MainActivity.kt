@@ -749,8 +749,8 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
                 this,
                 when (quel) {
                     Anneaux.Quel.JOUR -> R.color.brand
-                    Anneaux.Quel.SEMAINE -> R.color.ring_week
-                    Anneaux.Quel.SERIE -> R.color.ring_streak
+                    Anneaux.Quel.SEMAINE -> R.color.ring_week_text
+                    Anneaux.Quel.SERIE -> R.color.ring_streak_text
                     null -> R.color.muted
                 }
             )
@@ -971,7 +971,9 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
                     }) { refresh(); renderPaliers() }
                 }
             }
-            cell.contentDescription = when {
+            // Le jour en toutes lettres avant l'état (FACCUEIL-12) : sept « à faire » de suite ne disaient rien.
+            val jourLu = day.date.format(java.time.format.DateTimeFormatter.ofPattern("EEEE d", resources.configuration.locales[0]))
+            cell.contentDescription = jourLu + ", " + when {
                 day.done -> getString(R.string.week_done) + " · " + Store.formatDuration(this, minutes)
                 restDay -> getString(R.string.settings_shabbat)
                 day.exempt -> getString(R.string.gate_exempt_title)
@@ -1105,9 +1107,16 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         voile.viewTreeObserver.addOnPreDrawListener(object : android.view.ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 voile.viewTreeObserver.removeOnPreDrawListener(this)
-                voile.postDelayed({
+                // « Supprimer les animations » (FACCUEIL-24) : pas d'attente imposée ; et un toucher
+                // referme le voile sans attendre la fin du délai.
+                var parti = false
+                val effacer = Runnable {
+                    if (parti) return@Runnable
+                    parti = true
                     voile.animate().alpha(0f).setDuration(350).withEndAction { decor.removeView(voile) }.start()
-                }, OUVERTURE_MS)
+                }
+                voile.setOnClickListener { voile.removeCallbacks(effacer); effacer.run() }
+                voile.postDelayed(effacer, if (android.animation.ValueAnimator.areAnimatorsEnabled()) OUVERTURE_MS else 0L)
                 return true
             }
         })

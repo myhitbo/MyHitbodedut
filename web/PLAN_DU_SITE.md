@@ -2,26 +2,32 @@
 
 État au 28/09/2026, commit `5fcc114` de la branche `claude/version-web`.
 
-> **Mise à jour du 02/11/2026.** Les ⏳ ci-dessous sont dépassés : présentation, Tikoun,
+> **Mise à jour du 02/11/2026.** Les anciens ⏳ (devenus ✅ le 15/11) étaient dépassés : présentation, Tikoun,
 > bibliothèque et livres étaient déjà en ligne ; s'y ajoutent maintenant l'onglet **Journal**
 > (résumé, minutes du mois, notes modifiables), **Conseils pour la hitbodedout**, **Tfilot**
 > (dix sujets, vingt-et-une prières), et dans les réglages : prénom, « Comment vous appeler »,
 > région, objectif quotidien, masquer le décompte, Chabbat et Yom Tov, pause aujourd'hui,
 > **export et import de la sauvegarde** (même fichier qu'Android). À l'accueil : « Je l'ai faite
-> sans le téléphone ». Restent propres à Android : rappels et notifications, barrière du matin,
-> vignettes, humeur et gratitude dans la note, hitbodedout guidée, ajout de sa propre musique.
+> sans le téléphone ». Restent propres à Android : rappels et notifications (dont les alertes de Levana, de Chabbat et de vol), signal de fin de séance, barrière du matin,
+> vignettes, « Ne pas déranger », fiches des articles de la bibliothèque (le site ne montre que les sources), lecture du code-barres d'un billet (l'humeur et la gratitude,
+> la hitbodedout guidée, l'ajout de sa propre musique et le lien vers les règles de confidentialité
+> existent aussi sur le site). **Ce plan décrit l'état du 28/09** : il ignore l'onglet Zmanim (cinq
+> onglets aujourd'hui) et quatorze écrans (Tehilim, siddour et prière, zmanim, vol, boussole,
+> calendrier, trophées, hilloulot, halakha, recherche, 'hizouk, parcours, source du jour,
+> lecture) ; la liste à jour des écrans est `ecranCourant()` dans `src/js/app.js`, et les nombres
+> de morceaux ou de fonds sont ceux du code, pas ceux de ce plan.
 
 Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus dans les fichiers `strings.xml` d'Android (fr, en, he) et n'ont pas été retraduits. Le texte qui les relie est une rédaction, pas une traduction vérifiée : en hébreu, il reste à faire relire.
 
 - ✅ : construit et testé (tests Node, WebKit, Chromium, Safari sur Mac).
-- ⏳ : visible mais inactif (grisé), prévu à l'étape indiquée.
+- ✅ : marquait ce qui était visible mais inactif (grisé) au 28/09. Plus aucun ne l'est : ces lignes portent maintenant ✅.
 
 ---
 
 ## Version française
 
 ### Au premier lancement
-- ⏳ Présentation : 7 écrans, avec le choix Tsadik / Tsadeket (étape 2).
+- ✅ Présentation : 7 écrans, avec le choix Tsadik / Tsadeket (étape 2).
 
 ### Onglet « Aujourd’hui » (accueil) ✅
 - « MyHitbodedut », puis « Bonjour [prénom] » si un prénom est enregistré.
@@ -60,7 +66,7 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 - Texte libre, « Plus tard » ou « Enregistrer ».
 
 ### Onglet « Textes »
-- ⏳ « Tikoun HaKlali », « Tfilot », « Bibliothèque », « Conseils pour la hitbodedout » (étape 4).
+- ✅ « Tikoun HaKlali », « Tfilot », « Bibliothèque », « Conseils pour la hitbodedout » (étape 4).
 - « Autour de la séance » : « Musique » ✅, « Réglages » ✅.
 
 ### Musique ✅
@@ -68,18 +74,18 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 - « Bibliothèque » : les morceaux de la version Play (26 au 13/11, `MusiquePlay.kt`), avec « Écouter » et le choix du morceau.
 
 ### Onglet « Journal »
-- ⏳ Liste des jours et des notes (étape 4).
+- ✅ Liste des jours et des notes (étape 4).
 
 ### Onglet « Réglages »
 - ✅ « Langue » : עברית, English, Français.
-- ⏳ Apparence (clair ou sombre, 5 fonds, 6 accents), prénom, « Shabbat et Yom Tov », export et import de la sauvegarde (étape 2).
+- ✅ Apparence (clair ou sombre, fonds, 6 accents), prénom, « Shabbat et Yom Tov », export et import de la sauvegarde (étape 2).
 
 ---
 
 ## English version
 
 ### First launch
-- ⏳ Onboarding: 7 screens, with the Tsadik / Tsadeket choice (step 2).
+- ✅ Onboarding: 7 screens, with the Tsadik / Tsadeket choice (step 2).
 
 ### "Today" tab (home) ✅
 - "MyHitbodedut", then "Hello [first name]" if a first name is saved.
@@ -118,19 +124,19 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 - Free text, then "Later" or "Save".
 
 ### "Texts" tab
-- ⏳ "Tikkun HaKlali", "Tfilot", "Library", "Tips for Hitbodedut" (step 4).
+- ✅ "Tikkun HaKlali", "Tfilot", "Library", "Tips for Hitbodedut" (step 4).
 - "Around the session": "Music" ✅, "Settings" ✅.
 
 ### Music ✅
 - "Play during the session" (switch), "Volume".
-- "Library": 33 niggunim, with "Listen" and track choice.
+- "Library": niggunim, with "Listen" and track choice.
 
 ### "Journal" tab
-- ⏳ List of days and notes (step 4).
+- ✅ List of days and notes (step 4).
 
 ### "Settings" tab
 - ✅ "Language": עברית, English, Français.
-- ⏳ Appearance (light or dark, 5 backgrounds, 6 accents), first name, "Shabbat and Yom Tov", backup export and import (step 2).
+- ✅ Appearance (light or dark, backgrounds, 6 accents), first name, "Shabbat and Yom Tov", backup export and import (step 2).
 
 ---
 
@@ -139,7 +145,7 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 ## גרסה עברית
 
 ### בפתיחה הראשונה
-- ⏳ היכרות: 7 מסכים, עם הבחירה צדיק / צדקת (שלב 2).
+- ✅ היכרות: 7 מסכים, עם הבחירה צדיק / צדקת (שלב 2).
 
 ### לשונית « היום » (מסך הבית) ✅
 - « MyHitbodedut », ואחריו « שלום [שם] » אם נשמר שם.
@@ -178,19 +184,19 @@ Les libellés entre guillemets sont ceux que l'application affiche. Ils sont lus
 - טקסט חופשי, ואחר כך שמירה או דחייה.
 
 ### לשונית « טקסטים »
-- ⏳ « תיקון הכללי », « תְּפִלּוֹת », « ספרייה », « עצות להתבודדות » (שלב 4).
+- ✅ « תיקון הכללי », « תְּפִלּוֹת », « ספרייה », « עצות להתבודדות » (שלב 4).
 - « סביב ההתבודדות »: « מוזיקה » ✅, « הגדרות » ✅.
 
 ### מוזיקה ✅
 - « לנגן בזמן ההתבודדות » (מתג), « עוצמה ».
-- « ספרייה »: 33 ניגונים, עם « האזנה » ובחירת ניגון.
+- « ספרייה »: ניגונים, עם « האזנה » ובחירת ניגון.
 
 ### לשונית « יומן »
-- ⏳ רשימת הימים וההערות (שלב 4).
+- ✅ רשימת הימים וההערות (שלב 4).
 
 ### לשונית « הגדרות »
 - ✅ « שפה »: עברית, English, Français.
-- ⏳ מראה (בהיר או כהה, 5 רקעים, 6 צבעים), שם, « שבת ויום טוב », ייצוא וייבוא של הגיבוי (שלב 2).
+- ✅ מראה (בהיר או כהה, רקעים, 6 צבעים), שם, « שבת ויום טוב », ייצוא וייבוא של הגיבוי (שלב 2).
 
 </div>
 

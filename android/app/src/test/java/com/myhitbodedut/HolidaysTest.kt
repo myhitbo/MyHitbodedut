@@ -72,4 +72,12 @@ class HolidaysTest {
         assertEquals(false, Holidays.defaultInIsrael("Europe/Paris"))
         assertEquals(false, Holidays.defaultInIsrael("America/New_York"))
     }
+
+    @Test
+    fun `yom kippour se reconnait, y compris tombant un chabbat (FBARRIERE-13)`() {
+        assertTrue(Holidays.isYomKippur(d(9, 21), inIsrael = false))
+        assertFalse(Holidays.isYomKippur(d(9, 20), inIsrael = false))
+        assertTrue(Holidays.isYomKippur(LocalDate.of(2028, 9, 30), inIsrael = true))
+        assertFalse(Holidays.isYomKippur(LocalDate.of(2028, 9, 29), inIsrael = true))
+    }
 }

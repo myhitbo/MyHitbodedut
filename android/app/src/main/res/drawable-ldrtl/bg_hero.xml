@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Le bandeau (16/10, « améliore le design de toutes les bannières ») : un dégradé
+    profond plutôt qu'un aplat — la couleur de marque en halo, en haut du côté de
+    l'illustration, qui se fond dans le vert sombre — et un filet de lumière en bas.
+    Les couleurs restent celles de la palette choisie (mhBrand, mhBrandDark).
+
+    Variante de droite à gauche (FACCUEIL-09) : l'illustration passe à gauche, le halo la suit.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:centerColor="?attr/mhBrandDark"
+                android:centerX="0.55"
+                android:endColor="?attr/mhBrandDark"
+                android:startColor="?attr/mhDayDone"
+                android:type="linear" />
+            <corners android:bottomLeftRadius="20dp" android:bottomRightRadius="20dp" />
+        </shape>
+    </item>
+    <item
+        android:bottom="0dp"
+        android:gravity="bottom|fill_horizontal"
+        android:height="1dp"
+        android:left="36dp"
+        android:right="36dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="0"
+                android:centerColor="#40FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:startColor="#00FFFFFF" />
+        </shape>
+    </item>
+</layer-list>

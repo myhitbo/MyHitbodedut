@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.drawable.Icon
+import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
@@ -130,7 +131,15 @@ class SessionService : Service() {
                 // pendant la séance : on coupe, le chemin ordinaire relance.
                 if (modeAleatoire != null && modeAleatoire != Store.musicShuffle(this)) {
                     music.stop(fade = false)
+                } else if (SessionRule.autreMorceau(
+                        Store.musicShuffle(this), music.charge,
+                        MusicLibrary.selected(this)?.id, Store.musicNow(this),
+                    )
+                ) {
+                    // Un autre morceau a été touché dans l'écran Musique : il prend la place.
+                    music.stop(fade = false)
                 }
+                music.setVolume(Store.musicVolume(this))
                 // Réactivée : le chemin ordinaire ci-dessous relance le morceau.
             }
         }
@@ -217,9 +226,17 @@ class SessionService : Service() {
         // Le sujet se lit AVANT la clôture : endSession efface la séance.
         val theme = Store.sessionTheme(this)
         val close = Store.endSession(this)
+        // Le mode d'avant se rétablit d'abord : la notification et le son de fin partent
+        // ensuite, et ne sont plus à la merci de « Ne pas déranger » (FSEANCE-06).
+        NePasDeranger.retablir(this)
         if (close.minutes > 0 || !early) {
             inscrire(this, close, theme = theme)
-            notifyCompleted(close)
+            // Un seul son à la fin : celui du décompte masqué (chime) ou celui de la notification.
+            // Celui qui termine lui-même n'a pas besoin qu'on le prévienne par un son.
+            notifyCompleted(
+                close,
+                silencieuse = SessionRule.finSilencieuse(early, Store.hideCountdown(this), sonnerieAudible()),
+            )
         }
         StreakWidget.refresh(this)
         // Décompte masqué : rien n'a prévenu que le temps s'écoulait, il faut
@@ -260,6 +277,11 @@ class SessionService : Service() {
         ringtone = RingtoneManager.getRingtone(applicationContext, uri)?.also { it.play() }
         ringtone != null
     }.getOrDefault(false)
+
+    /** La sonnerie de fin s'entend : en vibreur ou en silencieux, Ringtone ne joue rien. */
+    private fun sonnerieAudible(): Boolean = runCatching {
+        (getSystemService(Context.AUDIO_SERVICE) as AudioManager).ringerMode == AudioManager.RINGER_MODE_NORMAL
+    }.getOrDefault(true)
 
     /** Lance le morceau retenu, si la musique est active et rien ne joue déjà. */
     private fun ensureMusic() {
@@ -362,7 +384,7 @@ class SessionService : Service() {
         stopSelf()
     }
 
-    private fun notifyCompleted(close: SeanceClose) {
+    private fun notifyCompleted(close: SeanceClose, silencieuse: Boolean = false) {
         val minutes = close.minutes
         // Code de requête propre et FLAG_UPDATE_CURRENT : les autres
         // notifications ouvrent aussi l'accueil, et Android rendait la même
@@ -373,7 +395,10 @@ class SessionService : Service() {
             Intent(this, MainActivity::class.java).putExtra(MainActivity.EXTRA_ASK_NOTE, close.date),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val notification = Notification.Builder(this, Notifications.CHANNEL_REMINDER)
+        // Le canal « séance » est de faible importance : sans son ni vibration.
+        val notification = Notification.Builder(
+            this, if (silencieuse) Notifications.CHANNEL_SESSION else Notifications.CHANNEL_REMINDER
+        )
             .setContentTitle(getString(R.string.session_done_title))
             .setContentText(getString(R.string.session_done_text, Store.formatDuration(this, minutes)))
             // Le texte entier, « Touchez pour laisser une note » compris : il

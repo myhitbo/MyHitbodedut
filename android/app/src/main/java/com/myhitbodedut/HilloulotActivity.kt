@@ -85,7 +85,7 @@ class HilloulotActivity : AppCompatActivity() {
             })
         })
         // Taille et police des textes, comme dans les écrans de lecture (12/10).
-        ReglagesLecture.installer(this, findViewById(R.id.hilloulot_defile)) { afficher() }
+        ReglagesLecture.installer(this, findViewById(R.id.hilloulot_defile), avecNuit = false, avecLangues = false) { afficher() }
         afficher()
         RechercheActivity.preremplir(this, contenu)
     }

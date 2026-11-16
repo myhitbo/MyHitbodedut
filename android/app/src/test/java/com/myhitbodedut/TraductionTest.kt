@@ -54,8 +54,16 @@ class TraductionTest {
 
     private val tout by lazy { LANGUES.associateWith { lire(it) } }
 
+    /**
+     * Les marqueurs d'une chaîne, ramenés à leur position et à leur type : la
+     * largeur et les drapeaux (« %2$02d ») relèvent de la typographie de chaque
+     * langue (audit du 12/11, TMECA-12 : « 1 h 05 » en français, « 1 h 5 min »
+     * en anglais) ; un marqueur avec largeur n'échappe plus pour autant au test.
+     */
     private fun marqueurs(s: String): List<String> =
-        Regex("""%\d+\$[sd]|%[sd]|%%""").findAll(s).map { it.value }.sorted().toList()
+        Regex("""%(\d+\$)?[-#+0,(]*\d*([sd])|%%""").findAll(s)
+            .map { m -> if (m.value == "%%") "%%" else "%" + m.groupValues[1] + m.groupValues[2] }
+            .sorted().toList()
 
     @Test
     fun `les quatre langues portent le meme jeu de cles`() {

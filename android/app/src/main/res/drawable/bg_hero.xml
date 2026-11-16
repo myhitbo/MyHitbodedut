@@ -13,7 +13,7 @@
                 android:centerColor="?attr/mhBrandDark"
                 android:centerX="0.55"
                 android:endColor="?attr/mhBrandDark"
-                android:startColor="?attr/mhBrand"
+                android:startColor="?attr/mhDayDone"
                 android:type="linear" />
             <corners android:bottomLeftRadius="20dp" android:bottomRightRadius="20dp" />
         </shape>

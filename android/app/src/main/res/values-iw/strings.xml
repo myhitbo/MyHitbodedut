@@ -20,10 +20,10 @@
     <string name="journal_note_only">הערה בלבד</string>
     <string name="status_total">%1$s בסך הכול</string>
     <string name="today_minutes">היום: %1$s של התבודדות</string>
-    <string name="today_declared">אושר בלי טיימר</string>
+    <string name="today_declared">נעשתה בלי טיימר</string>
 
     <string name="section_practice">ההתבודדות שלי</string>
-    <string name="section_gate_state">מצב הפעולה</string>
+    <string name="section_gate_state">מצב „אני עם השם”</string>
     <string name="section_gate">אני עם השם</string>
     <string name="section_gate_hint">האפליקציות שתבחרו יישארו סגורות עד שתתבודדו, וגם במהלך התבודדות.</string>
     <string name="section_rhythm">קצב</string>
@@ -49,6 +49,8 @@
     <string name="dedicace_mot">מילה לצוות (לא חובה)</string>
     <string name="dedicace_ecrire">לכתוב את המייל</string>
     <string name="dedicace_nom_manque">נא לכתוב את השם.</string>
+    <string name="dedicace_intention_manque">נא לפרט את הכוונה.</string>
+    <string name="dedicace_copie">ההודעה הועתקה: הדביקו אותה בתוכנת הדואר.</string>
     <string name="dedicace_sans_messagerie">לא נמצאה תוכנת דואר: כתבו אל myhitbodedut26@gmail.com.</string>
     <string name="dedicace_sujet">הקדשה – %1$s</string>
     <string name="dedicace_corps_intro">שלום,</string>
@@ -63,28 +65,28 @@
     </plurals>
     <string name="gate_permissions_title">חסרות הרשאות</string>
     <string name="gate_permissions_detail">כדי לפעול, „אני עם השם” צריך שתי גישות: הצגה מעל אפליקציות אחרות וגישה לנתוני שימוש.</string>
-    <string name="gate_disabled_title">המצב כבוי</string>
-    <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שהמצב יפעל.</string>
+    <string name="gate_disabled_title">„אני עם השם” כבוי</string>
+    <string name="gate_disabled_detail">הפעילו את המתג „אני עם השם” כדי שיפעל.</string>
     <string name="gate_no_apps_title">לא נבחרה אפליקציה</string>
-    <string name="gate_no_apps_detail">אין מה לעכב. בחרו לפחות אפליקציה אחת.</string>
+    <string name="gate_no_apps_detail">אין מה לחסום. בחרו לפחות אפליקציה אחת.</string>
     <string name="gate_stopped_title">הניטור הופסק</string>
     <string name="gate_stopped_detail">הכול מוגדר, אבל השירות שמשגיח אינו פועל. הפעילו אותו מחדש, או פתחו את האפליקציה שוב.</string>
     <string name="gate_stopped_action">להפעיל את המצב מחדש</string>
     <string name="gate_session_detail">האפליקציות שבחרתם יישארו חסומות עד שההתבודדות תסתיים.</string>
-    <string name="gate_done_title">היום אושר</string>
-    <string name="gate_done_detail">היום כבר לא יעוכב דבר, מלבד במהלך התבודדות שהתחלתם. המצב יחזור מחר.</string>
-    <string name="gate_exempt_title">יום ללא חובה</string>
-    <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: המצב שותק והרצף נשמר.</string>
+    <string name="gate_done_title">היום הושלם</string>
+    <string name="gate_done_detail">עד החלון הבא דבר לא ייחסם, מלבד במהלך התבודדות שהתחלתם.</string>
+    <string name="gate_exempt_title">יום הפסקה</string>
+    <string name="gate_exempt_detail">שבת, יום טוב או הפסקה: „אני עם השם” מושבת והרצף נשמר.</string>
     <string name="gate_snoozed_title">נדחה</string>
-    <string name="gate_snoozed_detail">התבקשה דחייה. המצב יחזור בסיומה.</string>
+    <string name="gate_snoozed_detail">התבקשה דחייה. „אני עם השם” יחזור בסיומה.</string>
+    <string name="settings_window_same">ההתחלה והסיום זהים: המצב לא יפעל לעולם.</string>
     <string name="gate_window_title">מחוץ לחלון</string>
-    <string name="gate_window_detail">המצב פועל בין %1$s ל־%2$s. מחוץ לזה דבר לא מעוכב.</string>
+    <string name="gate_window_detail">„אני עם השם” פועל בין %1$s ל־%2$s. מחוץ לשעות האלה דבר אינו נחסם.</string>
 
     <string name="action_start_session">להתחיל התבודדות של %1$s</string>
     <string name="action_another_session">עוד התבודדות</string>
     <string name="action_back_to_session">חזרה להתבודדות</string>
     <string name="action_write_note">לכתוב הערה</string>
-    <string name="action_journal">לפתוח את היומן</string>
     <string name="action_preview_gate">להציג את מסך „אני עם השם” עכשיו</string>
     <string name="action_pick_apps">בחירת אפליקציות</string>
     <string name="action_grant">אישור</string>
@@ -94,15 +96,12 @@
     <string name="action_later">אחר כך</string>
     <string name="action_back">חזרה</string>
 
-    <string name="settings_window">שעות המצב</string>
+    <string name="settings_window">שעות „אני עם השם”</string>
     <string name="settings_snooze">משך הדחייה</string>
     <string name="settings_target">משך ההתבודדות</string>
     <string name="settings_daily_goal">יעד יומי</string>
     <string name="settings_daily_goal_hint">מה שטבעת היום מודדת. כל עוד לא נקבע, זהו משך ההתבודדות.</string>
     <string name="rings_character_hint">הקישו כדי לראות את המספרים שלכם</string>
-    <string name="ring_day">היום</string>
-    <string name="ring_week">השבוע</string>
-    <string name="ring_streak">רצף</string>
     <string name="ring_day_detail">היום: %1$s מתוך %2$s</string>
     <string name="ring_day_reached">היעד היומי הושג: %1$s מתוך %2$s</string>
     <plurals name="ring_streak_detail">
@@ -118,10 +117,12 @@
     <string name="ring_streak_reached">הגעתם ליעד של %2$d ימים!</string>
     <string name="rings_description">טבעות. היום: %1$s מתוך %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">שבת ויום טוב</string>
-    <string name="settings_shabbat_hint">בימים אלה: המצב שותק, אין תזכורת, והרצף נשמר.</string>
+    <string name="settings_shabbat_hint">בימים אלה: המצב מושבת, אין תזכורת, והרצף נשמר.</string>
+    <string name="settings_shabbat_hint_web">בימים אלה הרצף נשמר.</string>
     <string name="settings_exempt_today">הפסקה היום</string>
-    <string name="settings_exempt_today_hint">ליום טוב, נסיעה או מחלה: היום לא נספר לרעתכם.</string>
+    <string name="settings_exempt_today_hint">לנסיעה, למחלה או ליום שבו נבצר מכם: היום לא נספר לרעתכם.</string>
     <string name="settings_screen_missing">מסך ההגדרות הזה לא קיים בטלפון.</string>
+    <string name="lien_impossible">אי אפשר לפתוח את הקישור: אין דפדפן בטלפון הזה.</string>
     <string name="fichiers_absents">אין בטלפון אפליקציה שמאפשרת לפתוח או לשמור קובץ.</string>
 
     <string name="permission_overlay">הצגה מעל אפליקציות אחרות</string>
@@ -134,7 +135,7 @@
     <string name="permission_notifications_why">בלעדיהן התזכורת נקבעת ולעולם אינה מופיעה, וההתבודדות לא מציגה דבר כשהטלפון מונח.</string>
     <string name="session_notifications_pourquoi">כדי להציג את הזמן שנותר ולהודיע על סיום ההתבודדות כשהטלפון מונח, האפליקציה צריכה הרשאה להתראות.</string>
     <string name="permission_battery_why">בלעדיה אנדרואיד עלול לעכב את התזכורת בשעות. ברשימה שתיפתח, חפשו את MyHitbodedut ובחרו „ללא אופטימיזציה”.</string>
-    <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בבוקר.</string>
+    <string name="permission_overlay_why">כדי להציג את מסך „אני עם השם” מעל האפליקציה שנפתחת בשעות פעולת המצב.</string>
     <string name="permission_usage_why">כדי לדעת איזו אפליקציה נפתחה זה עתה. שום דבר אינו נשמר ואינו נשלח.</string>
     <string name="permission_granted">אושרה</string>
     <string name="permission_missing">לא ניתנה</string>
@@ -150,7 +151,7 @@
     <string name="blocker_subtitle">רגע של התבודדות לפני כל השאר.</string>
     <string name="blocker_streak_none">היום הראשון ברצף.</string>
     <string name="blocker_start">להתחיל עכשיו, %1$s</string>
-    <string name="blocker_already_done">כבר התבודדתי</string>
+    <string name="blocker_already_done">התבודדתי בלי הטלפון</string>
     <string name="blocker_snooze">אחר כך (%1$d דק׳)</string>
     <string name="blocker_session_title">התבודדות בעיצומה</string>
     <string name="blocker_session_subtitle">נותרו %1$s. הטלפון יכול לחכות.</string>
@@ -166,9 +167,12 @@
     <string name="session_finish_now">לסיים עכשיו</string>
     <string name="session_cancel">לוותר</string>
     <string name="session_finish_title">לסיים את ההתבודדות?</string>
-    <string name="session_finish_message">הזמן שכבר עבר יישמר והיום יאושר.</string>
+    <string name="session_finish_message">הזמן שכבר עבר יישמר והיום ייחשב.</string>
+    <string name="session_finish_short">עברה פחות מדקה: דבר לא יישמר.</string>
     <string name="session_cancel_title">לוותר על ההתבודדות?</string>
     <string name="session_cancel_message">דבר לא יישמר והיום יישאר פתוח.</string>
+    <string name="session_cancel_message_done">דבר לא יישמר מההתבודדות הזאת.</string>
+    <string name="journal_humeur_n">מצב רוח %1$d מתוך 5</string>
     <string name="session_running_title">התבודדות בעיצומה</string>
     <string name="session_remaining">נותרו %1$s</string>
     <string name="session_open">בלי זמן קצוב</string>
@@ -186,7 +190,7 @@
     <string name="widget_description">הרצף הנוכחי, ולחיצה אחת כדי להתחיל.</string>
     <string name="widget_done">נעשתה היום.</string>
     <string name="widget_todo">עדיין לא היום.</string>
-    <string name="widget_rest">לא נדרשת היום.</string>
+    <string name="widget_rest">הפסקה היום.</string>
     <string name="widget_running">התבודדות בעיצומה.</string>
     <string name="widget_start">להתחיל</string>
     <string name="widget_resume">חזרה להתבודדות</string>
@@ -216,7 +220,7 @@
     <string name="onboarding_private">מה שכתבתם נשאר כאן</string>
     <string name="onboarding_private_body">האפליקציה מתחברת לאינטרנט רק כשתבקשו זאת בעצמכם: מעקב טיסה בזמן אמת מבקש מ־OpenSky Network את המטוסים באזור משוער, בלי לשלוח את אות הקריאה של הטיסה; חיפוש לפי מספר טיסה שולח ל־adsbdb.com את המספר בלבד. מה שתכתבו נשאר בטלפון הזה, ורק אתם יכולים להוציא אותו, דרך הייצוא.</string>
     <string name="onboarding_private_body_route">האפליקציה מתחברת לאינטרנט רק כשתבקשו זאת בעצמכם: חיפוש לפי מספר טיסה שולח ל־adsbdb.com את המספר בלבד. מה שתכתבו נשאר בטלפון הזה, ורק אתם יכולים להוציא אותו, דרך הייצוא.</string>
-    <string name="blocker_session_open_subtitle">התבודדות פתוחה, כבר %1$s. הטלפון יכול לחכות.</string>
+    <string name="blocker_session_open_subtitle">התבודדות בלי זמן קצוב, כבר %1$s. הטלפון יכול לחכות.</string>
     <string name="session_done_title">דיברתם היום עם השם</string>
     <string name="session_done_text">%1$s של התבודדות. הקישו כדי להוסיף הערה.</string>
 
@@ -264,9 +268,9 @@
     </plurals>
 
     <plurals name="apps_selected">
-        <item quantity="one">אפליקציה אחת חסומה</item>
-        <item quantity="two">שתי אפליקציות חסומות</item>
-        <item quantity="other">%d אפליקציות חסומות</item>
+        <item quantity="one">אפליקציה אחת נבחרה</item>
+        <item quantity="two">שתי אפליקציות נבחרו</item>
+        <item quantity="other">%d אפליקציות נבחרו</item>
     </plurals>
 
     <plurals name="import_ok">
@@ -276,9 +280,9 @@
     </plurals>
 
     <plurals name="journal_summary">
-        <item quantity="one">התבודדות אחת, %2$s בסך הכול</item>
-        <item quantity="two">שתי התבודדויות, %2$s בסך הכול</item>
-        <item quantity="other">%1$d התבודדויות, %2$s בסך הכול</item>
+        <item quantity="one">יום התבודדות אחד, %2$s בסך הכול</item>
+        <item quantity="two">יומיים של התבודדות, %2$s בסך הכול</item>
+        <item quantity="other">%1$d ימי התבודדות, %2$s בסך הכול</item>
     </plurals>
 
     <!-- מוזיקה -->
@@ -296,10 +300,10 @@
     <string name="lecteur_replier">מזעור הנגן</string>
     <string name="lecteur_lecture">הפעלה</string>
     <string name="lecteur_pause">השהיה</string>
-    <string name="lecteur_suivant">השיר הבא</string>
-    <string name="lecteur_precedent">השיר הקודם</string>
+    <string name="lecteur_suivant">הניגון הבא</string>
+    <string name="lecteur_precedent">הניגון הקודם</string>
     <string name="lecteur_aleatoire">השמעה אקראית</string>
-    <string name="lecteur_position">מיקום בשיר</string>
+    <string name="lecteur_position">מיקום בניגון</string>
     <string name="music_unnamed">ללא שם</string>
     <string name="music_origin_bundled">מגיע עם האפליקציה</string>
     <string name="music_origin_device">מהטלפון</string>
@@ -307,16 +311,16 @@
     <string name="music_rename">שינוי שם</string>
     <string name="music_rename_reset">השם המקורי</string>
     <string name="music_remove">הסרה</string>
-    <string name="music_off_short">כבוי</string>
+    <string name="music_off_short">כבויה</string>
     <string name="music_off_summary">אין מוזיקה בזמן ההתבודדות.</string>
-    <string name="music_none_summary">אין ניגונים בספרייה.</string>
-    <string name="music_on_summary">%1$s, עוצמה %2$d%%</string>
+    <string name="music_none_summary">אין עדיין ניגונים.</string>
+    <string name="music_on_summary">‏%1$s, עוצמה %2$d%%</string>
     <string name="session_music_line">מוזיקה: %1$s</string>
     <string name="music_open_library">פתיחת ספריית המוזיקה</string>
     <string name="app_version">גרסה %1$s (%2$d) · %3$s</string>
     <string name="edition_full">מהדורה מלאה</string>
     <string name="edition_light">מהדורת Light</string>
-    <string name="week_done">בוצע</string>
+    <string name="week_done">נעשתה</string>
     <string name="week_todo">לביצוע</string>
     <string name="gate_permissions_action">לראות את שתי הגישות</string>
     <string name="settings_language">שפה</string>
@@ -399,10 +403,11 @@
     <string name="tikkun_progress">%1$d מתוך %2$d מזמורים נאמרו היום</string>
     <string name="tikkun_progress_all">נאמר במלואו היום.</string>
     <string name="tikkun_flow_done">אמרתי את התיקון כולו</string>
+    <string name="tikkun_flow_confirm">לסמן את תיקון היום כנאמר במלואו?</string>
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">תזכורות</string>
-    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, ולא אחרי שההתבודדות נעשתה.</string>
+    <string name="reminders_hint">שעה אחת או כמה ביום. אין תזכורת ביום מנוחה, לא בערב שלפניו מהדלקת הנרות (מהצהריים אם לא הוגדר מקום), ולא אחרי שההתבודדות נעשתה.</string>
     <string name="reminders_open">הגדרת התזכורות</string>
     <string name="reminders_enable">להזכיר לי להתבודד</string>
     <string name="reminders_enable_hint">תזכורת בשעות שהוגדרו, כל עוד ההתבודדות של היום לא נעשתה.</string>
@@ -455,10 +460,10 @@
     <string name="start_duration">משך</string>
     <string name="start_theme">נושא</string>
     <string name="start_music">מוזיקה</string>
-    <string name="start_focus">עם השם</string>
+    <string name="start_focus">אני עם השם</string>
     <string name="start_music_off">ללא</string>
-    <string name="start_focus_on">פעיל</string>
-    <string name="start_focus_off">כבוי</string>
+    <string name="start_focus_on">בבוקר</string>
+    <string name="start_focus_off">לא</string>
     <string name="start_focus_setup">נדרשת הגדרה</string>
     <string name="start_focus_stopped">הופסק</string>
     <string name="settings_name">שם פרטי</string>
@@ -466,34 +471,34 @@
     <string name="settings_name_empty">לא הוזן</string>
 
     <!-- מסך תפילות: עשרה עניינים, שתי תפילות לכל אחד (ליקוטי תפילות). -->
-    <string name="tefilot_title">תְּפִלּוֹת</string>
-    <string name="tefilot_hint">עֲשָׂרָה עִנְיָנִים, עֶשְׂרִים וְאַחַת תְּפִלּוֹת. רַבִּי נָתָן מִבְּרֶסְלֶב.</string>
-    <string name="tefilot_count">%d תְּפִלּוֹת</string>
-    <string name="tefilot_warning">הַתּוֹרָה הַנִּזְכֶּרֶת עוֹסֶקֶת בְּעִנְיָן אַחֵר; הַבַּקָּשָׁה בְּתוֹךְ הַתְּפִלָּה.</string>
-    <string name="tefila_hitbodedut">הִתְבּוֹדְדוּת</string>
-    <string name="tefila_simcha">שִׂמְחָה</string>
-    <string name="tefila_uman">אוּמַן, רֹאשׁ הַשָּׁנָה</string>
-    <string name="tefila_kdusha">קְדֻשָּׁה</string>
-    <string name="tefila_zera">זֶרַע שֶׁל קַיָּמָא</string>
-    <string name="tefila_parnassa">פַּרְנָסָה</string>
-    <string name="tefila_brit">שְׁמִירַת הַבְּרִית</string>
-    <string name="tefila_geula">גְּאֻלָּה</string>
-    <string name="tefila_zivug">זִוּוּג</string>
-    <string name="tefila_refua">רְפוּאָה שְׁלֵמָה</string>
+    <string name="tefilot_title">תפילות</string>
+    <string name="tefilot_hint">עשרה עניינים, עשרים ואחת תפילות. רבי נתן מברסלב.</string>
+    <string name="tefilot_count">%d תפילות</string>
+    <string name="tefilot_warning">התורה הנזכרת עוסקת בעניין אחר; הבקשה בתוך התפילה.</string>
+    <string name="tefila_hitbodedut">התבודדות</string>
+    <string name="tefila_simcha">שמחה</string>
+    <string name="tefila_uman">אומן, ראש השנה</string>
+    <string name="tefila_kdusha">קדושה</string>
+    <string name="tefila_zera">זרע של קיימא</string>
+    <string name="tefila_parnassa">פרנסה</string>
+    <string name="tefila_brit">שמירת הברית</string>
+    <string name="tefila_geula">גאולה</string>
+    <string name="tefila_zivug">זיווג</string>
+    <string name="tefila_refua">רפואה שלמה</string>
 
     <!-- Présentation détaillée, bravo de fin de séance, apparence (28/09). -->
     <string name="onboarding_session">ההתבודדות</string>
-    <string name="onboarding_session_body">בוחרים משך, או התבודדות בלי הגבלת זמן, ואם רוצים גם נושא. ניגון יכול ללוות אתכם. מילת חיזוק פותחת וסוגרת את ההתבודדות, ואם המילים לא באות, יש כפתור שעוזר.</string>
+    <string name="onboarding_session_body">בוחרים משך, או התבודדות בלי זמן קצוב, ואם רוצים גם נושא. ניגון יכול ללוות אתכם. מילת חיזוק פותחת וסוגרת את ההתבודדות, ואם המילים לא באות, יש כפתור שעוזר.</string>
     <string name="onboarding_days">יום אחרי יום</string>
     <string name="onboarding_days_body">הרצף סופר את הימים ברציפות, והשבוע כולו נראה במבט אחד. אחרי כל התבודדות אפשר להשאיר הערה ביומן. תזכורות מאותתות בשעה שבוחרים.</string>
     <string name="onboarding_texts">טקסטים לתפילה</string>
-    <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, ספרייה ועצות להתבודדות, זמינים מתי שרוצים.</string>
+    <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, מקורות על ההתבודדות ועצות להתבודדות, זמינים מתי שרוצים.</string>
     <string name="onboarding_yours">בדרך שלכם</string>
     <string name="onboarding_yours_body">בהגדרות: השפה (צרפתית, אנגלית או עברית), צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
     <string name="onboarding_gate">מחסום הבוקר</string>
     <string name="onboarding_gate_body">אם תרצו, האפליקציות שתבחרו ימתינו להתבודדות שלכם: בשעות שתקבעו, מסך ישאל קודם אם היא כבר נעשתה. מפעילים בהגדרות, ואפשר לכבות בכל רגע.</string>
     <string name="onboarding_adresse">איך לפנות אליכם?</string>
-    <string name="onboarding_adresse_body">בסוף כל התבודדות האפליקציה מברכת אתכם. בחרו את המילה שמתאימה לכם; אפשר לשנות אותה בהגדרות.</string>
+    <string name="onboarding_adresse_body">בסוף כל התבודדות האפליקציה מברכת אתכם. בחרו את המילה שמתאימה לכם: הדמות וסמל האפליקציה ישתנו בהתאם. אפשר לשנות זאת בהגדרות.</string>
     <string name="onboarding_rappel">להזכיר לי כל יום</string>
     <string name="onboarding_rappel_heure">ב־%1$s</string>
     <string name="onboarding_rappel_heure_desc">שעת התזכורת: %1$s</string>
@@ -602,6 +607,8 @@
     <string name="track_ianir_houppa">ניגון חופה — יניר</string>
     <string name="track_ianir_kabbalat_chabbat">ניגון קבלת שבת (הקלטה חיה) — יניר</string>
     <string name="track_ianir_bessarabie">ניגון בסרביה — יניר</string>
+    <string name="track_hamelech_basade">המלך בשדה</string>
+    <string name="track_yanuka_nigoun_3">ניגון — הינוקא (3)</string>
     <string name="track_shpayer_eshet_hayil">אשת חיל — אור ונועם שפייר</string>
     <string name="track_shpayer_afilou">אפילו — נועם שפייר</string>
     <string name="track_shpayer_kenout">כנות — נועם שפייר</string>
@@ -610,7 +617,7 @@
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d דק׳</string>
     <string name="duration_hours">%1$d שע׳</string>
-    <string name="duration_hours_minutes">%1$d שע׳ %2$02d דק׳</string>
+    <string name="duration_hours_minutes">%1$d שע׳ %2$d דק׳</string>
     <string name="duration_custom">משך לבחירה…</string>
     <string name="duration_custom_title">משך ההתבודדות, בדקות</string>
     <string name="duration_custom_hint">בין 1 ל־240 דקות</string>
@@ -701,15 +708,15 @@
     <string name="boussole_vide_titre">איפה אתם?</string>
     <string name="boussole_vide_position">שימוש במיקום שלי</string>
     <string name="boussole_vide_ville">או בחירת עיר</string>
-    <string name="zmanim_absent">אינו מתרחש היום</string>
+    <string name="zmanim_absent">אין ביום זה</string>
     <string name="zmanim_erreur">החישוב נכשל</string>
     <string name="zmanim_a_valider">השיטה כתובה מתחת לכל זמן. החישוב בגובה פני הים, במכשיר, ללא רשת.</string>
     <string name="zmanim_ajouts_titre">בתפילות</string>
     <string name="zmanim_aucun_ajout">אין תוספות</string>
-    <string name="zmanim_omer">%1$d לעומר</string>
     <string name="zmanim_paracha">פרשת %1$s</string>
     <string name="zmanim_source_villes">ערים: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
+    <string name="zmanim_depuis_tset">מצאת הכוכבים: %1$s</string>
     <string name="calendrier_title">לוח שנה</string>
     <string name="calendrier_precedent">החודש הקודם</string>
     <string name="calendrier_suivant">החודש הבא</string>
@@ -753,7 +760,7 @@
     <string name="zman_methode_minutes">%1$s דקות אחרי השקיעה</string>
     <string name="zman_methode_milieu_chatsot">אמצע בין חצות היום לחצות של מחר</string>
     <string name="zman_methode_avant_chkia">%1$s דקות לפני השקיעה</string>
-    <string name="zman_methode_apres_tset">לא לפני צאת היום הקודם (⁦8.5°⁩)</string>
+    <string name="zman_methode_apres_tset">לא לפני צאת הכוכבים של היום (⁦8.5°⁩)</string>
     <string name="ajout_yaale_veyavo">יעלה ויבוא</string>
     <string name="ajout_al_hanissim">על הניסים</string>
     <string name="ajout_machiv_harouah">משיב הרוח</string>
@@ -769,6 +776,7 @@
     <string name="ajout_asseret_yemei_techouva">עשרת ימי תשובה</string>
     <string name="ajout_jeune">עננו</string>
     <string name="ajout_jeune_public">תענית ציבור</string>
+    <string name="ajout_avant_jeune_individuel">לפני תענית יחיד</string>
     <string name="ajout_avinou_malkenou">אבינו מלכנו</string>
     <string name="ajout_kriat_hatorah">קריאת התורה</string>
     <string name="ajout_jour_1">שיר של יום ראשון</string>
@@ -870,16 +878,12 @@
     <string name="halakha_yomit_titre">הלכה יומית</string>
     <string name="halakha_yomit_lien">ההלכה היומית באתר „הלכה יומית”</string>
     <!-- Les paliers d'objectifs (11/10) -->
-    <string name="paliers_title">היעדים שלי</string>
-    <string name="paliers_sous_titre">אחרי כל יעד – היעד הבא</string>
     <string name="palier_serie">ימים ברצף</string>
     <string name="palier_jour">היום</string>
     <string name="palier_semaine">השבוע</string>
     <string name="palier_mois">החודש · %1$s</string>
     <string name="palier_cumul">זמן מצטבר</string>
     <string name="palier_jours">ימי התבודדות</string>
-    <string name="palier_prochain">היעד הבא: %1$s · עוד %2$s</string>
-    <string name="palier_atteints">יעדים שהושגו: %1$d</string>
     <string name="palier_nouveau">הושג יעד: %1$s – %2$s!</string>
     <string name="palier_une_serie">עוד %1$s ל־%2$s ברצף</string>
     <string name="palier_une_jour">עוד %1$s ל־%2$s היום</string>
@@ -902,6 +906,7 @@
     <string name="hilloula_annee">פטירה: %1$s</string>
     <string name="hilloulot_aucune">אין הילולה ביום זה</string>
     <string name="hilloulot_resultats">תוצאות: %1$d</string>
+    <string name="resultats_coupes">תוצאות: %2$d (מוצגות %1$d הראשונות)</string>
     <string name="hilloula_source_wiki">ויקיפדיה (CC BY-SA)</string>
     <string name="hilloula_source_hyomi">החכם היומי</string>
     <string name="hilloula_source_mytzadik">MyTzadik</string>
@@ -917,7 +922,7 @@
         <item quantity="two">%1$d צדיקים ביום זה</item>
         <item quantity="other">%1$d צדיקים ביום זה</item>
     </plurals>
-    <string name="hilloulot_afficher_detail">בכרטיס היום, במסך הבית</string>
+    <string name="hilloulot_afficher_detail">מתחת לזמנים, במסך הזמנים</string>
     <string name="hilloulot_toucher">לחצו על שם כדי לקרוא את תולדותיו.</string>
     <string name="hilloulot_ouvrir_jour">לעבור ליום זה ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
@@ -926,12 +931,11 @@
     <string name="halakha_recherche">חיפוש בהלכה</string>
     <string name="halakha_aucune">אין הלכה ליום זה</string>
     <string name="halakha_tout">כל ההלכה היומית ›</string>
-    <string name="halakha_livre">ילקוט יוסף, קיצור שולחן ערוך</string>
+    <string name="halakha_livre">ילקוט יוסף, קיצור שולחן ערוך (מנהג הספרדים)</string>
     <string name="halakha_note">לשון המקור.</string>
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">מזל טוב!</string>
     <string name="trophees_paliers_titre">גביעים ויעדים</string>
-    <string name="trophees_titre">גביעים</string>
     <string name="grade_titre">דרגת %1$s</string>
     <plurals name="grade_sous">
         <item quantity="one">גביע אחד הושג · עוד %2$d ל%3$s</item>
@@ -955,12 +959,7 @@
     </plurals>
     <string name="grade_nouveau">דרגה חדשה: %1$s</string>
     <string name="grade_prochain">הדרגה הבאה: %1$s, בגביע ה־%2$d.</string>
-    <string name="trophees_prochain">הגביע הבא</string>
-    <string name="trophees_gagnes">שהושגו · %1$d</string>
-    <string name="trophees_a_venir">בהמשך · %1$d</string>
-    <string name="trophees_aucun_gagne">עוד אין גביע: הראשון יגיע עם ההתבודדות הראשונה.</string>
     <string name="trophees_tous">כל הגביעים הושגו!</string>
-    <string name="trophees_compte">%1$d מתוך %2$d</string>
     <string name="trophees_paliers">🏆  גביעים</string>
     <string name="channel_celebration">יעדים וגביעים</string>
     <string name="channel_celebration_description">חגיגה כשמגיעים ליעד או לגביע</string>
@@ -974,7 +973,7 @@
     <string name="partage_action">לשתף את ההתבודדות שלי</string>
     <string name="partage_texte">היום הקדשתי %1$s להתבודדות, זמן לבד עם השם.</string>
     <string name="partage_serie">רצף: %1$d ימים ברציפות.</string>
-    <string name="partage_lien">נסו גם אתם, בחינם: %1$s</string>
+    <string name="partage_lien">נסו גם אתם, בחינם:\n%1$s</string>
     <string name="partage_choix">שיתוף</string>
     <plurals name="partage_minutes">
         <item quantity="one">דקה אחת</item>
@@ -996,8 +995,8 @@
     <string name="trophee_plume">העט</string>
     <plurals name="trophee_premier_pas_desc">
         <item quantity="one">התבודדות ראשונה</item>
-        <item quantity="two">%1$d התבודדויות ראשונות</item>
-        <item quantity="other">%1$d התבודדויות ראשונות</item>
+        <item quantity="two">%1$d ימי התבודדות ראשונים</item>
+        <item quantity="other">%1$d ימי התבודדות ראשונים</item>
     </plurals>
     <plurals name="trophee_seance_longue_desc">
         <item quantity="one">דקה אחת ביום אחד</item>
@@ -1056,17 +1055,10 @@
     <string name="metal_argent">כסף</string>
     <string name="metal_or">זהב</string>
     <string name="metal_platine">פלטינה</string>
-    <string name="trophee_niveau">דרגה %1$d מתוך %2$d · %3$s</string>
     <string name="trophee_niveau_court">דרגה %1$d מתוך %2$d</string>
-    <string name="trophees_explication">כל גביע עולה מדרגה לדרגה: ארד, כסף, זהב ופלטינה. מתחת לכל אחד: הדרגה שלכם, מה דורשת הבאה, וכמה כבר עשיתם.</string>
-    <string name="trophee_a_venir">עוד לא הושג</string>
     <string name="trophee_niveau_gagne">גביע „%1$s”: דרגה %2$d!</string>
-    <string name="trophee_prochain">הדרגה הבאה: %1$s</string>
-    <string name="trophee_sommet">הדרגה הגבוהה ביותר הושגה</string>
-    <string name="trophee_vedette">הגביע הכי יפה שלכם</string>
-    <string name="trophee_vedette_aucune">הגביע הראשון שלכם מחכה</string>
-    <string name="chabbat_alerte_titre">שבת בעוד 3 שעות, תתכוננו לכיף!</string>
-    <string name="chabbat_alerte_texte">נשמה כפולה, שמחה כפולה וסעודה כפולה! נסו התבודדות כפולה.</string>
+    <string name="chabbat_alerte_titre">שבת בעוד 3 שעות: התכוננו ליהנות ממנה!</string>
+    <string name="chabbat_alerte_texte">עוד יש זמן להתבודדות לפני שבת. שבת שלום!</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">ספרים</string>
     <string name="livres_hint">ליקוטי מוהר״ן, השתפכות הנפש, כוכבי אור, מגילות, פרק שירה, נשמת כל חי…</string>
@@ -1076,7 +1068,7 @@
     <string name="halakha_yalkut_source">ילקוט יוסף – קיצור שולחן ערוך, מו״ר הרב יצחק יוסף (הוכן מתוכנת תורת אמת, CC BY-NC-SA 2.5): מבחר, לא הספר כולו.</string>
     <!-- Birkat haLevana sur la carte du jour (13/10) -->
     <string name="levana_titre">ברכת הלבנה</string>
-    <string name="levana_fenetre">מ־%1$s עד %2$s</string>
+    <string name="levana_fenetre">מ%1$s עד %2$s</string>
     <string name="levana_ce_soir">אפשר לברך הלילה</string>
     <string name="levana_dernier_soir">הלילה האחרון</string>
     <plurals name="levana_dans">
@@ -1106,9 +1098,9 @@
     <string name="levana_lune">הלבנה הערב: %1$s מוארת, %2$s</string>
     <string name="levana_croissante">מתמלאת</string>
     <string name="levana_decroissante">מתמעטת</string>
-    <string name="levana_motsae">מומלץ: מוצאי שבת %s (שו״ע תכ״ו, ב ורמ״א)</string>
-    <string name="levana_kippour">לא לפני מוצאי יום הכיפורים (שו״ע תכ״ו, ב ורמ״א)</string>
-    <string name="levana_tisha">לא לפני מוצאי תשעה באב (רמ״א תכ״ו ב; משנה ברורה תכ״ו יא)</string>
+    <string name="levana_motsae">מומלץ: במוצאי %s (שו״ע תכ״ו, ב ורמ״א)</string>
+    <string name="levana_kippour">לא לפני מוצאי יום הכיפורים (רמ״א תכ״ו, ב)</string>
+    <string name="levana_tisha">לא לפני מוצאי תשעה באב (רמ״א תכ״ו, ב; משנה ברורה תכ״ו, י״א)</string>
     <string name="levana_usage_titre">ברכת הלבנה: מנהג</string>
     <string name="levana_usage_auto">לפי הנוסח</string>
     <string name="levana_usage_trois_mi_mois">מ־3 ימים עד חצי החודש (משנה ברורה, רמ״א)</string>
@@ -1120,18 +1112,18 @@
     <string name="levana_rappel_dernier">ברכת הלבנה: הלילה האחרון</string>
     <string name="levana_rappel_texte">לחצו לפתיחת הנוסח.</string>
     <string name="levana_rappel_reglage">תזכורת לברכת הלבנה</string>
+    <string name="chabbat_alerte_reglage">התראת „שבת בעוד 3 שעות”</string>
     <string name="levana_lire">לנוסח ברכת הלבנה ›</string>
     <string name="widget_zmanim_label">זמנים MyHitbodedut</string>
-    <string name="widget_zmanim_description">התאריך העברי, התפילה של השעה, השקיעה והרצף.</string>
+    <string name="widget_zmanim_description">התאריך העברי, התפילה של השעה, שלושת הזמנים הבאים והרצף.</string>
     <string name="widget_zmanim_chaharit">שחרית</string>
     <string name="widget_zmanim_minha">מנחה</string>
     <string name="widget_zmanim_arvit">ערבית</string>
-    <string name="widget_zmanim_jusqua">%1$s עד %2$s</string>
-    <string name="widget_zmanim_chkia">שקיעה %s</string>
     <string name="settings_ne_pas_deranger">נא לא להפריע בזמן ההתבודדות</string>
     <string name="settings_ne_pas_deranger_hint">הטלפון עובר למצב „עדיפות” בזמן ההתבודדות וחוזר אחר כך כפי שהיה. אנדרואיד מבקש הרשאה בפעם הראשונה.</string>
     <string name="recherche_titre">חיפוש</string>
     <string name="recherche_indice">חיפוש בסידור, בספרים, בהלכה ובהילולות</string>
+    <string name="recherche_aucun_web">אין תוצאות. את הטקסטים מחפשים בעברית; בצרפתית ובאנגלית מחפשים רק בכותרות ובהילולות.</string>
     <string name="recherche_tout">הכול</string>
     <string name="recherche_tefilot">תפילות</string>
     <string name="recherche_halakhot">הלכות</string>
@@ -1145,6 +1137,9 @@
     <string name="marques_aucun">אין סימניות בטקסט הזה. לחיצה ארוכה על פסקה מוסיפה סימנייה, ולחיצה ארוכה נוספת מסירה אותה.</string>
     <string name="marque_posee">הסימנייה נוספה</string>
     <string name="marque_retiree">הסימנייה הוסרה</string>
+    <string name="marque_action_poser">הוספת סימנייה</string>
+    <string name="marque_action_retirer">הסרת הסימנייה</string>
+    <string name="marque_etat">מסומן</string>
     <string name="fond_contraste">ניגודיות גבוהה</string>
     <string name="accent_grenat">גרנט</string>
     <string name="accent_or">זהב</string>
@@ -1168,6 +1163,7 @@
     <string name="journal_humeur_avant">לפני ההתבודדות</string>
     <string name="journal_humeur_apres">אחרי</string>
     <string name="journal_gratitude">הודיה</string>
+    <string name="journal_ligne">%1$s: %2$s</string>
     <string name="journal_gratitude_hint">דבר אחד שאני מודה עליו היום</string>
     <string name="journal_graphique">הדקות בכל יום, %s</string>
     <string name="partage_jour">שיתוף היום</string>
@@ -1178,7 +1174,6 @@
     </plurals>
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">הושג ב־%1$s</string>
-    <string name="trophee_a_gagner">להשגה · %1$d מתוך %2$d</string>
     <plurals name="trophee_detail_grade">
         <item quantity="one">ב%1$s: זה היה הגביע הראשון שלכם.</item>
         <item quantity="two">ב%1$s: זה היה הגביע ה־%2$d שלכם.</item>
@@ -1190,12 +1185,12 @@
     <string name="accueil_prochain_trophee">הגביע הבא: %1$s · עוד %2$d</string>
     <string name="grade_partager">לשתף את הדרגה שלי</string>
     <plurals name="grade_partage_texte">
-        <item quantity="one">דרגת %1$s ב־MyHitbodedut: גביע אחד, יום אחר יום.</item>
-        <item quantity="two">דרגת %1$s ב־MyHitbodedut: שני גביעים, יום אחר יום.</item>
-        <item quantity="other">דרגת %1$s ב־MyHitbodedut: %2$d גביעים, יום אחר יום.</item>
+        <item quantity="one">גביע אחד ודרגת %1$s ב־MyHitbodedut, יום אחר יום.</item>
+        <item quantity="two">שני גביעים ודרגת %1$s ב־MyHitbodedut, יום אחר יום.</item>
+        <item quantity="other">%2$d גביעים ודרגת %1$s ב־MyHitbodedut, יום אחר יום.</item>
     </plurals>
     <string name="bilan_titre">השבוע שלכם</string>
-    <string name="bilan_minutes">%1$s של התבודדות, ב־%2$s.</string>
+    <string name="bilan_minutes">%1$s של התבודדות במשך %2$s.</string>
     <string name="bilan_plus">%1$s יותר מהשבוע הקודם.</string>
     <string name="bilan_record">השבוע הטוב ביותר שלכם עד עכשיו.</string>
     <string name="bilan_trophees">גביעים שהושגו השבוע:</string>
@@ -1243,7 +1238,7 @@
     <string name="moment_mot_journee">באמצע היום, רגע של התבודדות עם השם.</string>
     <string name="moment_mot_soir">לעת ערב, ספרו להשם על היום שעבר.</string>
     <string name="moment_mot_nuit">בלילה, כשהכול שקט, דברו עם השם.</string>
-    <string name="chizuk_demande_title">צריך חיזוק</string>
+    <string name="chizuk_demande_title">אני רוצה חיזוק</string>
     <string name="chizuk_demande_hint">טקסט שמחזק, מתי שתרצו.</string>
     <string name="chizuk_autre">עוד אחד</string>
     <string name="chizuk_garder">לשמור</string>
@@ -1263,16 +1258,10 @@
     <string name="parcours_meilleure">הרצף הארוך ביותר</string>
     <string name="parcours_jours_faits">ימי התבודדות</string>
     <string name="parcours_total">זמן כולל</string>
-    <string name="parcours_moyenne">בממוצע, ליום</string>
     <string name="parcours_mois">החודש</string>
     <string name="parcours_sujets">הנושאים השכיחים שלכם</string>
     <string name="parcours_sujets_vide">בחרו נושא בתחילת התבודדות: השכיחים יופיעו כאן.</string>
     <string name="parcours_humeur">מצב רוח</string>
-    <plurals name="parcours_jours">
-        <item quantity="one">יום אחד</item>
-        <item quantity="two">יומיים</item>
-        <item quantity="other">%d ימים</item>
-    </plurals>
     <plurals name="parcours_fois">
         <item quantity="one">פעם אחת</item>
         <item quantity="two">פעמיים</item>
@@ -1343,19 +1332,19 @@
     <string name="vol_duree_une_minute">דקה אחת</string>
     <string name="vol_duree_minutes">%1$s דקות</string>
     <string name="vol_sources">שיטה ומקורות</string>
+    <string name="vol_methodes">שיטות: עלות השחר ⁦16.1°⁩, משיכיר ⁦11.5°⁩, צאת הכוכבים ⁦8.5°⁩ מתחת לאופק; רבנו תם 72 דקות; שעות זמניות מהנץ עד השקיעה (גר״א) או מ־72 דקות לפני עד 72 דקות אחרי (מג״א). החישוב בגובה פני הים, במכשיר, ללא רשת.</string>
     <string name="vol_frise_decollage">המראה %1$s</string>
     <string name="vol_frise_atterrissage">נחיתה %1$s</string>
     <string name="vol_frise_maintenant">עכשיו</string>
-    <string name="vol_frise_retard">אם הטיסה תתעכב הזמנים ישתנו בהתאם</string>
+    <string name="vol_frise_retard">מחושב לפי השעות שהוזנו. אם ההמראה מתעכבת ב־30 דק׳, רוב הזמנים האלה זזים בכ־⁦%1$s⁩ דק׳; המסך אינו מתעדכן מעצמו: ערכו את שעת ההמראה.</string>
+    <string name="vol_frise_retard_gps">מחושב לפי השעות שהוזנו. אם הנחיתה מתעכבת ב־30 דק׳, רוב הזמנים האלה זזים בכ־⁦%1$s⁩ דק׳; המסך אינו מתעדכן מעצמו: ערכו את שעת הנחיתה, ואז מדדו שוב את המיקום.</string>
     <string name="vol_fiabilite_court">📍 הערכה לאורך המסלול המתוכנן</string>
     <string name="vol_comment_calcule">איך זה מחושב?</string>
     <string name="vol_preciser_titre">דיוק המיקום</string>
-    <string name="vol_route_aide">הזכוכית המגדלת 🔍 ממלאת את היעד: רק המספר נשלח ל־adsbdb.com. את השעות יש להזין מהכרטיס.</string>
     <string name="vol_modifier">עריכה</string>
     <string name="vol_route_bouton">מציאת היעד לפי מספר הטיסה</string>
     <string name="vol_route_attente">מחפש את הטיסה…</string>
-    <string name="vol_route_explication">בלחיצה נשלח ל־adsbdb.com (חינם, בלי חשבון) רק מספר הטיסה. הוא מחזיר את התחנות הידועות ואת אות הקריאה, לא את השעות: יש להזין אותן מהכרטיס.</string>
-    <string name="vol_route_trouvee">%1$s: %2$s. המראה %3$s, נחיתה %4$s. המסלול ידוע ל־adsbdb.com ולפעמים אינו מעודכן: יש לבדוק מול הכרטיס.</string>
+    <string name="vol_route_trouvee">טיסה %1$s של %2$s: המראה %3$s, נחיתה %4$s. המסלול ידוע ל־adsbdb.com ולפעמים אינו מעודכן: יש לבדוק מול הכרטיס.</string>
     <string name="vol_route_autre_depart">לפי adsbdb.com, %1$s טסה %2$s ואינה ממריאה מ־%3$s. יש לבדוק את המספר או את שדה ההמראה; המסלול הידוע עשוי להיות ישן.</string>
     <string name="vol_route_inconnue">שדה התעופה %1$s, שנמסר על ידי adsbdb.com, אינו ברשימת האפליקציה: יש לבחור אותו ידנית.</string>
     <string name="vol_route_introuvable">מספר הטיסה אינו מוכר ל־adsbdb.com: יש לבחור את שדות התעופה ידנית.</string>
@@ -1378,6 +1367,7 @@
     <string name="vol_invalide_arrivee_avant_depart">הנחיתה חייבת לבוא אחרי ההמראה: בדקו את התאריכים, לפי השעון המקומי של כל שדה.</string>
     <string name="vol_invalide_trop_long">יותר מ־22 שעות טיסה: בדקו את תאריך הנחיתה.</string>
     <string name="vol_invalide_fuseau_inconnu">המכשיר אינו מכיר את אזור הזמן של שדה התעופה הזה.</string>
+    <string name="vol_invraisemblable">משך הטיסה אינו מתאים למרחק (⁦%1$s⁩ ק״מ ב־%2$s): בדקו את התאריכים ואת AM/PM, לפי השעון המקומי של כל שדה. אם הטיסה נכונה, לחצו שוב על ״חישוב״.</string>
     <string name="vol_priere_titre">התפילה כעת</string>
     <string name="vol_jusqua">עד %1$s</string>
     <string name="vol_sans_limite">עד עלות השחר, ללא שעה מוצגת</string>
@@ -1393,10 +1383,10 @@
     <string name="vol_lon_est">⁦%1$s°⁩ מזרח</string>
     <string name="vol_lon_ouest">⁦%1$s°⁩ מערב</string>
     <string name="vol_ecart">⁦%1$s⁩ דק׳ אם ההמראה מתעכבת ב־30 דק׳</string>
-    <string name="vol_fiabilite_titre">אמינות</string>
-    <string name="vol_fiabilite">הערכה לפי המסלול המתוכנן (מעגל גדול, מהירות קבועה בין השעות שהוזנו), ולא לפי מיקומו האמיתי של המטוס. זמני הנקודה שמתחת למטוס, בגובה פני הים, מחושבים במכשיר, ללא רשת.</string>
+    <string name="vol_fiabilite">הערכה לפי המסלול המתוכנן (מעגל גדול, מהירות קבועה בין השעות שהוזנו), ולא לפי מיקומו האמיתי של המטוס. זמני הנקודה שמתחת למטוס, בגובה פני הים, מחושבים במכשיר, ללא רשת: מהמטוס, בגובה כ־11,000 מ׳, השמש זורחת מוקדם יותר ושוקעת מאוחר יותר, ברבע שעה או יותר בקווי רוחב בינוניים. השעות הזמניות הן לפי היום בנקודה זו, ולא לפי היום שעובר על הנוסעים במטוס.</string>
     <string name="vol_reserve_haute_latitude">המסלול עובר מעבר לקו הרוחב ⁦60°⁩: השיטות במעלות ובדקות נותנות שם שעות שונות מאוד, וחלק מהזמנים חסרים.</string>
-    <string name="vol_reserve_absent">חלק מהזמנים אינם חלים בחלק מהמסלול (שמש חצות או לילה קוטבי).</string>
+    <string name="vol_reserve_absent">חלק מהזמנים אינם חלים בחלק מהמסלול: בקיץ, מעבר לקו הרוחב ⁦50°⁩ בקירוב, השמש אינה יורדת מספיק לעלות השחר (⁦16.1°⁩) או לצאת הכוכבים (⁦8.5°⁩); קרוב יותר לקטבים, שמש חצות או לילה קוטבי.</string>
+    <string name="vol_reserve_absents">חסרים בחלק מהמסלול: %1$s.</string>
     <string name="vol_reserve_erreur">החישוב נכשל בנקודה במסלול.</string>
     <string name="vol_reserve_a_rebours">המטוס טס מערבה מהר יותר מהשמש: זמן מסוים חל יותר מפעם אחת.</string>
     <string name="vol_ligne_date">קו התאריך (קו האורך ⁦180°⁩) נחצה בסביבות %1$s: התאריך המקומי עובר מ־%2$s ל־%3$s.</string>
@@ -1406,7 +1396,7 @@
     <string name="vol_jalon_entree">כניסת %1$s: שקיעה %2$s</string>
     <string name="vol_jalon_allumage">הדלקת נרות, %1$s דק׳ לפני השקיעה: %2$s</string>
     <string name="vol_jalon_sortie">צאת %1$s: צאת הכוכבים (⁦8.5°⁩) %2$s</string>
-    <string name="vol_jalon_enchainement">%1$s מתחיל בצאת הכוכבים (⁦8.5°⁩): %2$s</string>
+    <string name="vol_jalon_enchainement">תחילת %1$s בצאת הכוכבים (⁦8.5°⁩): %2$s</string>
     <string name="vol_jalon_omer">ספירת העומר, יום %1$s, מצאת הכוכבים (⁦8.5°⁩): %2$s</string>
     <string name="vol_jalons_note">היום האזרחי של הנקודה שמתחת למטוס; %1$s, לפי הגדרת האפליקציה.</string>
     <string name="vol_jalons_israel">לוח ארץ ישראל</string>
@@ -1419,9 +1409,9 @@
     <string name="vol_gps_hors_vol">מיקום ה־GPS משמש רק במהלך הטיסה, בין ההמראה לנחיתה המתוכננות.</string>
     <string name="vol_fiabilite_gps">המסלול תוקן לפי מיקום ה־GPS של %1$s (%2$s), ומשם מעגל גדול עד הנחיתה, במהירות קבועה. זמני הנקודה שמתחת למטוס, בגובה פני הים, מחושבים במכשיר, ללא רשת.</string>
     <string name="vol_ecart_gps">⁦%1$s⁩ דק׳ אם הנחיתה מתעכבת ב־30 דק׳</string>
-    <string name="vol_direct_titre">מעקב בזמן אמת (אינטרנט)</string>
     <string name="vol_direct_explication">כבוי כברירת מחדל. כשהוא פעיל, הוא שולח לשרת הממסר של האפליקציה את אות הקריאה של הטיסה ואת המיקום המשוער של המטוס, ותו לא; הממסר מבקש את המיקום האמיתי מ־OpenSky Network. מעל אוקיינוסים המטוס לעיתים קרובות אינו נראה.</string>
     <string name="vol_direct_activer">שירותים מקוונים: מסלול הטיסה ומעקב בזמן אמת</string>
+    <string name="vol_direct_activer_web">שירות מקוון: מסלול הטיסה</string>
     <string name="vol_route_activer">שירותים מקוונים: מסלול הטיסה</string>
     <string name="vol_indicatif">אות קריאה (ICAO), לדוגמה ELY1</string>
     <string name="vol_indicatif_invalide">אות קריאה צפוי: שלוש אותיות ואחריהן המספר, לדוגמה ELY1.</string>
@@ -1437,6 +1427,9 @@
     <string name="vol_erreur_service">השירות אינו זמין</string>
     <string name="vol_erreur_serveur">שגיאת שרת %1$d</string>
     <string name="vol_direct_inactif">שרת הממסר של המעקב עדיין אינו פעיל בגרסה זו.</string>
+    <string name="vol_direct_activer_web_aide">כשהוא פעיל, הזכוכית המגדלת 🔍 שולחת אל adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד.</string>
+    <string name="reglages_android_seulement">מחסום הבוקר („אני עם השם”) והתזכורות קיימים רק באפליקציה לאנדרואיד.</string>
+    <string name="reglage_libelle_valeur">%1$s: %2$s</string>
     <string name="vol_fiabilite_direct">המסלול תוקן לפי המיקום שהתקבל מ־OpenSky Network ב־%1$s (%2$s), ומשם מעגל גדול עד הנחיתה, במהירות קבועה. זמני הנקודה שמתחת למטוס, בגובה פני הים, מחושבים במכשיר.</string>
     <string name="vol_source_opensky">נתוני כלי טיס: OpenSky Network ‏(opensky-network.org)</string>
     <string name="vol_rappels_titre">תזכורות בטיסה</string>
@@ -1459,7 +1452,7 @@
 
     <!-- La boussole de Jérusalem (28/10, design C). -->
     <string name="boussole_title">לכיוון ירושלים</string>
-    <string name="boussole_carte_sous">בחרו מקום: החסיד מסתובב לעבר ירושלים.</string>
+    <string name="boussole_carte_sous">בחרו מקום: הדמות מסתובבת לעבר ירושלים.</string>
     <string name="boussole_face">מול ירושלים</string>
     <string name="boussole_droite">הסתובבו ימינה ⁦%1$d°⁩</string>
     <string name="boussole_gauche">הסתובבו שמאלה ⁦%1$d°⁩</string>
@@ -1473,9 +1466,9 @@
     <string name="boussole_calibrer">המצפן אינו מדויק: ציירו באוויר את הספרה 8 עם הטלפון.</string>
     <string name="boussole_sans_capteur">בטלפון זה אין מצפן: הכיוון מוצג ביחס לצפון, למעלה.</string>
     <string name="boussole_note_titre">שתי דרכים לחשב</string>
-    <string name="boussole_note">את כיוון ירושלים אפשר לחשב בשתי דרכים. לפי המעגל הגדול, הכיוון האמיתי על פני כדור הארץ: שולחן ערוך הרב (אורח חיים צד, ב), המור וקציעה לרבי יעקב עמדן (קנ) ועוד סוברים שזו הדרך העדיפה; מניו יורק, כ־⁦54°⁩. לפי הקו הישר על מפת מרקטור (כיוון קבוע), כפי שנראה למשל מדברי הלבוש (אורח חיים צד): מניו יורק, כ־⁦96°⁩. מפת ⁦Equal Earth⁩, שהאו״ם ממליץ עליה מאז ספטמבר 2026, נועדה להשוות את שטחי היבשות; היא אינה מראה כיוון. החסיד עוקב אחרי הכיוון שבחרתם ב„הכיוון שהמצפן עוקב אחריו” (כברירת מחדל, הכיוון האמיתי); הכיוון השני מוצג לידיעה בלבד. החישוב נעשה במכשיר, לעבר הר הבית (⁦31.7781°⁩ צפון, ⁦35.2354°⁩ מזרח), בתיקון הסטייה המגנטית של המקום.</string>
+    <string name="boussole_note">את כיוון ירושלים אפשר לחשב בשתי דרכים. לפי המעגל הגדול, הכיוון האמיתי על פני כדור הארץ: שולחן ערוך הרב (אורח חיים צד, ב), המור וקציעה לרבי יעקב עמדן (קנ) ועוד סוברים שזו הדרך העדיפה; מניו יורק, כ־⁦54°⁩. לפי הקו הישר על מפת מרקטור (כיוון קבוע), כפי שנראה למשל מדברי הלבוש (אורח חיים צד): מניו יורק, כ־⁦96°⁩. הדמות עוקבת אחרי הכיוון שבחרתם ב„הכיוון שהמצפן עוקב אחריו” (כברירת מחדל, הכיוון האמיתי); הכיוון השני מוצג לידיעה בלבד. החישוב נעשה במכשיר, לעבר הר הבית (⁦31.7781°⁩ צפון, ⁦35.2354°⁩ מזרח), בתיקון הסטייה המגנטית של המקום.</string>
     <string name="boussole_widget_label">כיוון ירושלים</string>
-    <string name="boussole_widget_description">החסיד וכיוון ירושלים ממקום הזמנים, ביחס לצפון. נגיעה פותחת את המצפן.</string>
+    <string name="boussole_widget_description">הדמות וכיוון ירושלים ממקום הזמנים, ביחס לצפון. נגיעה פותחת את המצפן.</string>
     <string name="boussole_widget_lecture">ירושלים מ%1$s: ⁦%2$d°⁩ מהצפון</string>
     <string name="boussole_source">מקור: %1$s</string>
     <!-- Le web seulement : l’iPhone demande l’autorisation après un toucher. -->
@@ -1485,7 +1478,7 @@
     <string name="boussole_methode_carte">לפי מפת מרקטור (כיוון קבוע)</string>
     <string name="boussole_legende_carte">התווית „ירושלים” (בשושנה, המחוג הזהוב) עוקבת אחרי הכיוון על המפה; הסימון הכחול המקווקו מראה את הכיוון האמיתי, לידיעה בלבד.</string>
     <string name="boussole_affichage">תצוגת המצפן</string>
-    <string name="boussole_affichage_hassid">החסיד מסתובב (ברירת מחדל)</string>
+    <string name="boussole_affichage_hassid">הדמות מסתובבת (ברירת מחדל)</string>
     <string name="boussole_affichage_rose">שושנת רוחות</string>
     <!-- Reprend la position, approximative (ChoixLieu.maPosition, 31/10). -->
     <string name="boussole_actualiser_position">עדכון המיקום שלי</string>
@@ -1521,16 +1514,17 @@
     <string name="licences_android">\n\nספריות של יישום האנדרואיד\nקריאת ברקודים: ZXing‏ (Apache 2.0). AndroidX ו־Material Components‏ (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
-    <string name="vol_en_ligne_aide">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. כשהם פעילים, הזכוכית המגדלת 🔍 שולחת ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד, והמעקב בזמן אמת פונה ל־OpenSky Network.</string>
-    <string name="vol_en_ligne_aide_route">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. כשהם פעילים, הזכוכית המגדלת 🔍 שולחת ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד.</string>
+    <string name="vol_en_ligne_aide">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. אחרי ההפעלה הם נשארים פעילים עד שתכבו אותם. הזכוכית המגדלת 🔍 שולחת אז ל־adsbdb.com את מספר הטיסה בלבד; „מיקום בזמן אמת” שולח ל־OpenSky Network אזור של כ־10 מעלות סביב המיקום המשוער של המטוס. השירותים האלה רואים את כתובת ה־IP שלכם.</string>
+    <string name="vol_en_ligne_aide_route">כבויים כברירת מחדל: שום דבר לא יוצא מהטלפון. אחרי ההפעלה הם נשארים פעילים עד שתכבו אותם. הזכוכית המגדלת 🔍 שולחת אז ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד. השירות הזה רואה את כתובת ה־IP שלכם.</string>
+    <string name="vol_en_ligne_aide_web">כבוי כברירת מחדל: שום דבר לא יוצא מהמכשיר. אחרי ההפעלה הוא נשאר פעיל עד שתכבו אותו. הזכוכית המגדלת 🔍 שולחת אז ל־adsbdb.com את מספר הטיסה בלבד כדי למלא את היעד. השירות הזה רואה את כתובת ה־IP שלכם.</string>
     <string name="vol_en_ligne_titre">לחפש את המסלול ברשת?</string>
     <string name="vol_en_ligne_oui">להפעיל ולחפש</string>
     <string name="vol_rapide_titre">תארו את הטיסה</string>
-    <string name="vol_rapide_aide">כמו שהייתם אומרים, או הדביקו את טקסט הכרטיס. הכול נקרא בטלפון.</string>
+    <string name="vol_rapide_aide">כמו שהייתם אומרים, או הדביקו את טקסט הכרטיס. הכול נקרא בטלפון. קטע אחד בכל פעם: בטיסת המשך, הזינו את הטיסה הבאה בתחנת הביניים.</string>
     <string name="vol_rapide_exemple">למשל: אל על מליון לתל אביב מחר בשעה 11</string>
     <string name="vol_rapide_remplir">מילוי הטיסה</string>
     <string name="vol_rapide_billet">ייבוא הכרטיס (PDF או תמונה)</string>
-    <string name="vol_rapide_rien">לא זוהה דבר. נסו למשל: ‎«LY 382 פריז תל אביב 12.11 בשעה 9:40»‎.</string>
+    <string name="vol_rapide_rien">לא זוהה דבר. נסו למשל: „LY 382 פריז תל אביב 12.11 בשעה 9:40”.</string>
     <string name="vol_rapide_heure">שעת ההמראה</string>
     <string name="vol_rapide_compris">הובן: %1$s</string>
     <string name="vol_rapide_estimee">הנחיתה הוערכה לפי המרחק: תקנו אותה לפי השעה שבכרטיס.</string>
@@ -1539,6 +1533,7 @@
     <string name="vol_rapide_manque">נותר למלא: %1$s.</string>
     <string name="vol_rapide_lecture">קורא את הכרטיס…</string>
     <string name="vol_rapide_billet_sans_code">לא נמצא ברקוד של כרטיס עלייה למטוס. פתחו את הכרטיס, העתיקו את הטקסט והדביקו אותו למעלה.</string>
+    <string name="vol_rapide_billet_echec">לא ניתן היה לפתוח את הכרטיס. נסו תמונה, או העתיקו את הטקסט והדביקו אותו למעלה.</string>
     <string name="vol_rapide_billet_illisible">נקרא ברקוד, אבל הוא אינו של כרטיס עלייה למטוס.</string>
     <string name="vol_rapide_billet_lu">כרטיס העלייה למטוס נקרא (הברקוד אינו כולל את השעות).</string>
 
@@ -1553,8 +1548,6 @@
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
-    <!-- Fenêtre vide refusée (check-up du 11/11) -->
-    <string name="window_same_error">שעת ההתחלה ושעת הסיום צריכות להיות שונות.</string>
     <string name="lecture_chargement">טוען…</string>
     <string name="recherche_en_cours">מחפש…</string>
     <string name="siddur_chapitres">פרקים</string>

@@ -14,6 +14,17 @@ class DixAmeliorationsTest {
     private val zone = ZoneId.of("Asia/Jerusalem")
 
     @Test
+    fun `rappel Levana jamais avant l ouverture de la fenetre`() {
+        val paris = ZoneId.of("Europe/Paris")
+        // 12/11/2026, usage 3 jours : tsét à 18 h 04, mais la fenêtre ne s'ouvre qu'à 21 h 06.
+        val heure = { d: LocalDate -> d.atTime(18, 4).atZone(paris) }
+        val (q, s) = LevanaAlerte.prochain(ZonedDateTime.of(2026, 11, 12, 9, 0, 0, 0, paris), Levana.Usage.TROIS_MI_MOIS, heure)!!
+        assertEquals(LevanaAlerte.Soir.PREMIER, s)
+        assertEquals(Levana.fenetre(LocalDate.of(2026, 11, 12), paris, Levana.Usage.TROIS_MI_MOIS).debut, q.toInstant())
+        assertTrue(q.hour >= 21)
+    }
+
+    @Test
     fun `rappel Levana, premier soir puis motsae Chabbat puis dernier`() {
         val heure = { d: LocalDate -> d.atTime(19, 0).atZone(zone) }
         val (q1, s1) = LevanaAlerte.prochain(ZonedDateTime.of(2026, 10, 14, 9, 0, 0, 0, zone), Levana.Usage.TROIS_MI_MOIS, heure)!!
@@ -51,6 +62,13 @@ class DixAmeliorationsTest {
         assertEquals(ZmanimWidget.Moment("arvit", t(0, 50)), ZmanimWidget.prochaine(nuit, t(0, 20)))
         assertEquals(ZmanimWidget.Moment("arvit", null), ZmanimWidget.prochaine(nuit, t(2, 0)))
         assertEquals(ZmanimWidget.Moment("chaharit", t(10, 30)), ZmanimWidget.prochaine(nuit, t(6, 0)))
+        // Sans aube (Londres au solstice, FCALENDRIER-08) : michéyakir, puis le lever, bornent la nuit, et la jauge part de là.
+        val sansAube = nuit - "alot" + ("misheyakir" to t(5, 40)) + ("netz" to t(6, 10))
+        assertEquals(ZmanimWidget.Moment("arvit", t(0, 50)), ZmanimWidget.prochaine(sansAube, t(0, 20)))
+        assertEquals(ZmanimWidget.Moment("chaharit", t(10, 30)), ZmanimWidget.prochaine(sansAube, t(6, 0)))
+        assertEquals(t(5, 40), ZmanimVignette.debut("chaharit", sansAube))
+        assertEquals(ZmanimWidget.Moment("arvit", t(0, 50)), ZmanimWidget.prochaine(sansAube - "misheyakir", t(0, 20)))
+        assertEquals(t(6, 10), ZmanimVignette.debut("chaharit", sansAube - "misheyakir"))
     }
 
     @Test
@@ -63,6 +81,7 @@ class DixAmeliorationsTest {
         // Sans accents ni apostrophe typographique (29/10) : « alenou », « hachahar ».
         assertEquals("t", RechercheGlobale.dansRecueil(s, RechercheGlobale.nu("Alenou"), RechercheGlobale.Sorte.SIDDOUR, "fr").single().id)
         assertEquals("birkot hachahar prieres", RechercheGlobale.nu("Birkot hacha’har Prières"))
+        assertEquals("ירושלם", RechercheGlobale.nu("יְרוּשָׁלַ\u200Dִם"))  // FLECTURE-17 : U+200D ne coupe plus le mot
         assertTrue(RechercheGlobale.dansRecueil(s, "שבת", RechercheGlobale.Sorte.SIDDOUR, "fr").isEmpty())
     }
 

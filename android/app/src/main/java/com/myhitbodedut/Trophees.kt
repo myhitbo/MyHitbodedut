@@ -260,4 +260,12 @@ object Trophees {
             .groupBy { it.famille }.values.map { n -> n.maxBy { it.rang } }
             .sortedByDescending { cout(it.famille, it.seuil) }
     }
+
+    /**
+     * Ce qui est fêté, à retenir : l'union de [vus] et de [gagnes], jamais le remplacement
+     * (FDONNEES-10) ; un niveau perdu puis regagné n'est pas refêté. Les clés d'avant les
+     * niveaux (sans « : ») tombent : gardées, elles empêcheraient la migration de finir.
+     */
+    fun vusAvec(vus: Set<String>?, gagnes: Collection<Niveau>): Set<String> =
+        vus.orEmpty().filterTo(mutableSetOf()) { ':' in it } + gagnes.map { it.cle }
 }

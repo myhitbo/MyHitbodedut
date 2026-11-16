@@ -81,7 +81,11 @@ object SiddurJour {
     /** Une ligne de la lecture, le jour donné. */
     sealed class Ligne {
         data class Titre(val texte: String, val fr: String? = null, val en: String? = null) : Ligne()
-        data class Bloc(val bloc: SiddurBloc, val style: Style) : Ligne()
+        /**
+         * [origine] : le paragraphe du texte, dont la place (section, paragraphe) sert aux marque-pages ;
+         * [bloc] en est une copie quand une variante hors du jour en a été retirée (FLECTURE-08).
+         */
+        data class Bloc(val bloc: SiddurBloc, val style: Style, val origine: SiddurBloc = bloc) : Ligne()
 
         /** « Aujourd'hui · Ya'alé véyavo », au-dessus d'un ajout mis en évidence ; [libelle] : la clé de chaîne. */
         data class Etiquette(val condition: String, val libelle: String) : Ligne()
@@ -161,7 +165,7 @@ object SiddurJour {
                         val reduit = horsJour.fold(bloc.texte) { t, v -> t.replaceFirst(v.retire!!, "") }.trim()
                         if (reduit != bloc.texte) bloc = bloc.copy(texte = reduit)
                     }
-                    sortie += Ligne.Bloc(bloc, Style.NORMAL)
+                    sortie += Ligne.Bloc(bloc, Style.NORMAL, s.blocs[i])
                     // Le texte du jour se lit dans le bloc même ; l'ancien « Aujourd'hui : … » ne
                     // reste que pour les variantes qu'on ne sait pas replier.
                     ind.filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
@@ -227,6 +231,15 @@ object SiddurJour {
             c = c - setOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
         }
         if (avinouMalkenou(conditions)) c = c + CalendrierJuif.C.AVINOU_MALKENOU
+        // À Min'ha, il ne se dit que si Ta'hanoun s'y dit : pas le 13 Adar (veille de Pourim), pas le
+        // vendredi après-midi, pas à Min'ha de la veille de Kippour un vendredi (TSIDDUR-09). Roch Hachana
+        // et Kippour, sans Ta'hanoun, gardent leur Avinou malkénou de Min'ha, sauf un vendredi (relecture du 15/11).
+        val minha = CalendrierJuif.C.TAHANOUN_MINHA in conditions ||
+            CalendrierJuif.C.ROCH_HACHANA in conditions || CalendrierJuif.C.KIPPOUR in conditions
+        val vendredi = CalendrierJuif.C.JOURS_SEMAINE[5] in conditions || CalendrierJuif.C.EREV_KIPPOUR_VENDREDI in conditions
+        if (avinouMalkenou(conditions) && minha && !vendredi) {
+            c = c + CalendrierJuif.C.AVINOU_MALKENOU_MINHA
+        }
         return c
     }
 
@@ -234,8 +247,7 @@ object SiddurJour {
      * Avinou malkénou (Ashkenaz, Sfard ; 14/10) : les jeûnes publics sauf le 9 Av
      * et les dix jours de pénitence, Roch
      * Hachana et Kippour compris, jamais le Chabbat. Déduit, non vérifié ligne à
-     * ligne : la veille de Kippour, sans Ta'hanoun, en est exclue ; les nuances de
-     * Min'ha (veille de Chabbat) ne sont pas codées.
+     * ligne : la veille de Kippour, sans Ta'hanoun, en est exclue ; à Min'ha, voir AVINOU_MALKENOU_MINHA.
      */
     fun avinouMalkenou(conditions: Set<String>): Boolean {
         val c = CalendrierJuif.C
@@ -279,6 +291,7 @@ object SiddurJour {
             condition.startsWith("!tahanoun") -> "ajout_sans_tahanoun"
             c.startsWith("tahanoun") -> "ajout_tahanoun"
             c == "kippour" -> "fete_yom_kippour"
+            c == "avinou_malkenou_minha" -> "ajout_avinou_malkenou"
             // « אומרים כאן הלל » : le Hallel, complet ou non selon le jour.
             c == "hallel" -> "ajout_hallel_annonce"
             c.startsWith("embolismique") -> "ajout_embolismique"

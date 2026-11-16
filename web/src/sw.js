@@ -1,6 +1,6 @@
 // Hors connexion.
 //
-// La coquille (code, chaînes, textes, illustrations, livres et biographies : ~24 Mo) est gardée à
+// La coquille (code, chaînes, textes, illustrations, livres et biographies : environ 48 Mo gardés, 15 Mo transférés) est gardée à
 // l'installation, pour que tout se lise hors connexion. La musique ne l'est pas d'office : chaque morceau est
 // gardé la première fois qu'on l'écoute, puis servi depuis le téléphone.
 //
@@ -16,8 +16,12 @@ const CACHE_COQUILLE = `coquille-${VERSION}`;
 // musique-2 : les morceaux en AAC (.m4a, 29/10) ; les MP3 de musique-1 sont effacés.
 const CACHE_MUSIQUE = 'musique-2';
 
+// Chaque fichier est redemandé au serveur (cache: 'no-cache', FWEBCODE-03) : avec max-age=600, un fichier
+// changé moins de dix minutes après une visite entrait périmé dans la nouvelle coquille, sans requête,
+// à côté du code neuf. Un fichier inchangé revient en 304, sans être retéléchargé.
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_COQUILLE).then((c) => c.addAll(COQUILLE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE_COQUILLE).then((c) => c.addAll(COQUILLE.map((u) => new Request(u, { cache: 'no-cache' }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {

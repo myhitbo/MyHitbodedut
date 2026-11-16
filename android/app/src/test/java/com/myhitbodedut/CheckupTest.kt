@@ -74,9 +74,9 @@ class CheckupTest {
 
     @Test
     fun `une fenetre vide est refusee`() {
-        assertTrue(lire("SettingsActivity.kt").contains("if (it == Store.windowEnd(this)) { fenetreVide()"))
+        assertTrue(lire("SettingsActivity.kt").contains("if (it == Store.windowEnd(this)) fenetreVide() else"))
         for (l in listOf("values", "values-en", "values-iw")) {
-            assertTrue(l, res("$l/strings.xml").contains("name=\"window_same_error\""))
+            assertTrue(l, res("$l/strings.xml").contains("name=\"settings_window_same\""))
         }
     }
 

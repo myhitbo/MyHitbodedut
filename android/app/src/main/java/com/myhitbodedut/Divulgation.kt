@@ -30,6 +30,17 @@ object Divulgation {
     }
 
     /**
+     * Hors Play seulement (src/musique_hors_play), la ligne sur les paramètres restreints d'Android
+     * y est ajoutée : le système grise l'accès d'une application installée hors boutique
+     * (FBARRIERE-21). La construction Play n'a pas la chaîne (HorsPlay en rend null).
+     */
+    private fun corps(activite: AppCompatActivity, texte: Texte): String {
+        val base = activite.getString(texte.corps)
+        val id = HorsPlay.DIVULGATION_RESTREINTS ?: return base
+        return base + "\n\n" + activite.getString(id)
+    }
+
+    /**
      * Montre la fenêtre ; « Continuer » ouvre l'écran système par [ouvrir]
      * (qui sait quoi faire si l'écran manque), « Pas maintenant » ne fait rien.
      */
@@ -37,7 +48,7 @@ object Divulgation {
         val texte = texte(autorisation) ?: return
         MaterialAlertDialogBuilder(activite)
             .setTitle(texte.titre)
-            .setMessage(texte.corps)
+            .setMessage(corps(activite, texte))
             .setPositiveButton(R.string.divulgation_continuer) { _, _ ->
                 ouvrir(
                     when (autorisation) {

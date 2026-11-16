@@ -66,7 +66,7 @@ object GateRule {
      * L'état, dans l'ordre de ce qu'il faut dire d'abord. Le mode éteint passe avant les
      * accès manquants (13/11, FACCUEIL-06) : on ne réclame pas deux accès sensibles pour
      * une fonction que personne n'a allumée. Une hitbodedout en cours passe avant la
-     * journée faite, le jour exempté, le report et l'heure : l'écran se pose alors à
+     * journée faite, le jour exempté, l'heure et le report : l'écran se pose alors à
      * toute heure, et la carte comme la notification doivent le dire (TFRUX-02).
      */
     fun etat(f: GateFaits): GateState = when {
@@ -77,8 +77,8 @@ object GateRule {
         f.seanceEnCours -> GateState.SESSION_RUNNING
         f.faite -> GateState.ALREADY_DONE
         f.exempte -> GateState.EXEMPT_DAY
-        f.reportee -> GateState.SNOOZED
         !f.dansLaFenetre -> GateState.OUTSIDE_WINDOW
+        f.reportee -> GateState.SNOOZED
         else -> GateState.ARMED
     }
 
@@ -100,6 +100,13 @@ object GateRule {
     fun dansLaFenetre(minutes: Int, debut: Int, fin: Int): Boolean =
         if (debut <= fin) minutes >= debut && minutes < fin
         else minutes >= debut || minutes < fin
+
+    /**
+     * Après minuit, dans la fin d'une fenêtre de nuit (21:00–02:00 à 00:30) : la fenêtre
+     * appartient au soir où elle a commencé (FBARRIERE-07, comme Store.fenetreFaite).
+     */
+    fun finDeFenetreDeNuit(minutes: Int, debut: Int, fin: Int): Boolean =
+        debut > fin && minutes < fin
 
     /**
      * Une application peut-elle être choisie, et retenue ? Jamais MyHitbodedut elle-même,
@@ -142,10 +149,21 @@ object GateStatus {
         serviceVivant = GateService.vivant,
         seanceEnCours = Store.isSessionRunning(context),
         faite = Store.fenetreFaite(context),
-        exempte = Store.isExempt(context, LocalDate.now()),
+        exempte = Store.isExempt(context, LocalDate.now()) || pauseDeLaVeilleEncore(context),
         reportee = Store.isSnoozed(context),
         dansLaFenetre = Store.inWindow(context),
     )
+
+    /**
+     * « Pause aujourd'hui » cochée le soir couvre la fenêtre de nuit en cours jusqu'à sa fin,
+     * au lieu de cesser à minuit (FBARRIERE-07). Chabbat et Yom Tov gardent la date civile :
+     * ce serait armer ou exempter toute la nuit sans connaître l'allumage.
+     */
+    private fun pauseDeLaVeilleEncore(context: Context): Boolean {
+        val now = java.time.LocalTime.now()
+        if (!GateRule.finDeFenetreDeNuit(now.hour * 60 + now.minute, Store.windowStart(context), Store.windowEnd(context))) return false
+        return Store.pausedDates(context).contains(LocalDate.now().minusDays(1).format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE))
+    }
 
     fun evaluate(context: Context): GateState = GateRule.etat(faits(context))
 
@@ -175,7 +193,7 @@ object GateStatus {
                 R.plurals.gate_armed_detail,
                 combien,
                 combien,
-                Store.formatMinutes(Store.windowEnd(context)),
+                Store.formatHeure(context, Store.windowEnd(context)),
             )
         }
         GateState.MISSING_PERMISSIONS -> context.getString(R.string.gate_permissions_detail)
@@ -188,8 +206,8 @@ object GateStatus {
         GateState.SNOOZED -> context.getString(R.string.gate_snoozed_detail)
         GateState.OUTSIDE_WINDOW -> context.getString(
             R.string.gate_window_detail,
-            Store.formatMinutes(Store.windowStart(context)),
-            Store.formatMinutes(Store.windowEnd(context))
+            Store.formatHeure(context, Store.windowStart(context)),
+            Store.formatHeure(context, Store.windowEnd(context))
         )
     }
 

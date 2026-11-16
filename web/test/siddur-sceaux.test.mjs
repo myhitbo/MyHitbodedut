@@ -69,3 +69,17 @@ test('TSIDDUR-07 : supplications du lundi et du jeudi (Edot) : lues le lundi, ab
   assert.ok(nb(visibles('edot', 'chaharit', '2026-11-16'), /^אנשי אמונה/) > 0);
   assert.equal(nb(visibles('edot', 'chaharit', '2026-11-17'), /^אנשי אמונה/), 0);
 });
+
+test('TSIDDUR-09 : Avinou malkénou à Min\'ha seulement si Ta\'hanoun s\'y dit (pas le jeûne d\'Esther)', () => {
+  for (const n of ['sefard', 'ashkenaz']) {
+    assert.equal(nb(visibles(n, 'minha', '2027-03-22'), /^אבינו מלכנו חטאנו לפניך/), 0, n);
+    assert.ok(nb(visibles(n, 'chaharit', '2026-12-20'), /^אבינו מלכנו חטאנו לפניך/) > 0, n);
+    // Lu à Min'ha du 10 Tévet et de Roch Hachana un dimanche ; replié le vendredi des dix jours (relecture du 15/11).
+    for (const d of ['2026-12-20', '2026-09-13']) assert.ok(nb(visibles(n, 'minha', d), /^אבינו מלכנו חטאנו לפניך/) > 0, `${n} ${d}`);
+    assert.equal(nb(visibles(n, 'minha', '2026-09-18'), /^אבינו מלכנו חטאנו לפניך/), 0, n);
+  }
+});
+
+test('TSIDDUR-17 : Havdala Edot, la ligne de \'Hol hamoèd de Pessa\'h ne se lit pas un samedi soir ordinaire', () => {
+  assert.equal(nb(visibles('edot', 'havdala', '2026-11-14'), /חוה.{0,3}מ פסח ושמחנו/), 0);
+});
