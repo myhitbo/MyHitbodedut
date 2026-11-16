@@ -263,7 +263,9 @@ def arreter():
 
 
 def lancer(attente=4.0):
-    sh(f"am start -W -n {PKG}/com.myhitbodedut.MainActivity", timeout=60)
+    # --activity-clear-top : l'accueil lui-meme, pas l'ecran reste devant (une priere, la vitrine
+    # des vignettes...). Depuis la refonte, Reglages et Zmanim ne s'atteignent que depuis le Jour.
+    sh(f"am start -W --activity-clear-top -n {PKG}/com.myhitbodedut.MainActivity", timeout=60)
     pause(attente)
     # Si la presentation est la malgre la preference, on la passe.
     if trouver(rid="onboarding_skip"):
