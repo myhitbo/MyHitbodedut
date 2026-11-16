@@ -232,6 +232,8 @@ struct AccueilModeleTests {
         #expect(m.dialogue == .dureeLibre(.prochaine))
         #expect(m.titreDialogue == Libelle("duration_custom_title"))
         #expect(m.texteDureeLibre == "15")
+        #expect(m.indicationDureeLibre == Libelle("duration_custom_hint"))
+        #expect(m.libelleValider == Libelle("action_ok"))
         // Ramenée entre 1 et 240 minutes.
         try await m.validerDureeLibre(" 500 ")
         #expect(m.dialogue == nil)
@@ -377,6 +379,8 @@ struct AccueilModeleTests {
         #expect(b.magasin.journal.record(dimanche)?.minutes == 25)
         #expect(m.message == Libelle("jour_ajoute", .libelle(Store.formatDuration(25))))
         #expect(m.routes.isEmpty)
+        let retires = await b.systeme.rappelsRetires
+        #expect(retires == 1)
         m.messageMontre()
         #expect(m.message == nil)
     }
@@ -541,6 +545,21 @@ struct AccueilModeleTests {
         try await m.remplissageFini(1)
         #expect(m.feteAnneau == nil)
         #expect(b.magasin.reglages.anneauxFetes.isEmpty)
+        // Les cartes du moment n'entrent pas en cascade (Effets.cascade).
+        #expect(!m.cascade)
+    }
+
+    @Test func revenirDeTextesNeRejoueQueLesAnneaux() async throws {
+        let b = try banc(Self.journal([(Self.lundi, 10)]))
+        let m = b.modele
+        await m.apparaitre()
+        m.toucherPlaque()
+        let avant = try #require(m.remplissage)
+        m.ongletChoisi()
+        let apres = try #require(m.remplissage)
+        #expect(apres != avant)
+        // Le panneau change sur place : la face montrée reste (pas d'onResume).
+        #expect(m.face == .jour)
     }
 
     @Test func unAnneauFermeEstFeteUneFois() async throws {

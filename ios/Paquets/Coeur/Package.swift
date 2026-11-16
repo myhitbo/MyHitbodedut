@@ -36,6 +36,7 @@ let enChantierEcrans: [String] = [
     "SeanceEnCours.swift",
     "SeanceModele.swift",
     "TextesModele.swift",
+    "VolServices.swift",
     "ZmanimJour.swift",
 ]
 let enChantierEcransTests: [String] = [
