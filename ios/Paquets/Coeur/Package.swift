@@ -60,6 +60,7 @@ let enChantierVues: [String] = [
     "TehilimLectureVue.swift",
     "TehilimVue.swift",
     "TikkunVue.swift",
+    "TropheeEffets.swift",
     "TropheeObjet.swift",
 ]
 
