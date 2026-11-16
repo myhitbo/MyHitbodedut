@@ -444,8 +444,12 @@ public final class MusiqueLecteur {
         charge = false
         enPause = false
         joue = false
+        let trouve = await fichier(de: morceau)
+        // Une autre commande (un arrêt, la fin de la séance, un autre morceau) est passée pendant la recherche du
+        // fichier : c'est elle qui décide, rien ne part, et rien n'est à signaler.
+        guard ici == numero else { return true }
         // MusicPlayer.start arrête d'abord ce qui joue : un morceau introuvable ne laisse pas jouer l'ancien.
-        guard let chemin = await fichier(de: morceau) else {
+        guard let chemin = trouve else {
             await sortie.arreter(fondu: false)
             return false
         }

@@ -14,6 +14,7 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 let enChantierSources: [String] = [
     "Aeroports.swift",
     "CarteEmbarquement.swift",
+    "EtatBarriere.swift",
     "RouteVol.swift",
     "SaisieVol.swift",
     "SuiviVol.swift",
@@ -51,15 +52,22 @@ let enChantierEcrans: [String] = [
     "MusiqueModele.swift",
     "MusiqueServices.swift",
     "Onglets.swift",
+    "PaliersModele.swift",
     "PresentationModele.swift",
     "RechercheIndex.swift",
     "RechercheModele.swift",
     "Services.swift",
     "SiddourModele.swift",
+    "TefilotModele.swift",
     "TehilimBarreLecture.swift",
+    "TehilimLectureModele.swift",
+    "TehilimModele.swift",
+    "TikkunModele.swift",
     "Traducteur.swift",
     "TropheeChemin.swift",
     "TropheeDessin.swift",
+    "TropheeFete.swift",
+    "TropheeFiche.swift",
 ]
 let enChantierEcransTests: [String] = [
     "ApparenceChoisieTests.swift",
@@ -73,6 +81,7 @@ let enChantierEcransTests: [String] = [
     "HilloulotModeleTests.swift",
     "HorlogeTests.swift",
     "LectureBalisageTests.swift",
+    "LectureMarquesTests.swift",
     "LectureModeleTests.swift",
     "MagasinTests.swift",
     "MusiqueAmbianceSynthTests.swift",
@@ -80,14 +89,22 @@ let enChantierEcransTests: [String] = [
     "MusiqueMiniLecteurModeleTests.swift",
     "MusiqueModeleTests.swift",
     "OngletsTests.swift",
+    "PaliersModeleTests.swift",
     "PresentationModeleTests.swift",
     "RechercheModeleTests.swift",
     "ServicesTests.swift",
+    "SiddourModeleTests.swift",
+    "TehilimLectureModeleTests.swift",
+    "TehilimModeleTests.swift",
     "TraducteurTests.swift",
+    "TropheeCheminTests.swift",
 ]
 let enChantierVues: [String] = [
     "Apparence.swift",
+    "Composants.swift",
+    "Illustration.swift",
     "Libelle+Text.swift",
+    "Polices.swift",
 ]
 
 let package = Package(
@@ -97,6 +114,8 @@ let package = Package(
         .library(name: "Coeur", targets: ["Coeur"]),
         // Les modèles d'écran de l'app : Observation et Coeur, sans SwiftUI, testés sous Linux.
         .library(name: "Ecrans", targets: ["Ecrans"]),
+        // La barrière pour les trois extensions de Temps d'écran : Foundation seule (PORTAGE.md § 2.1.9).
+        .library(name: "Barriere", targets: ["Barriere"]),
     ],
     dependencies: [
         // KosherSwift 1.10.11 (LGPL 2.1) : la dernière étiquette à l'API et aux définitions de
@@ -109,7 +128,7 @@ let package = Package(
     targets: [
         .target(
             name: "Coeur",
-            dependencies: [.product(name: "KosherSwift", package: "KosherSwift")],
+            dependencies: ["Barriere", .product(name: "KosherSwift", package: "KosherSwift")],
             exclude: enChantierSources),
         .testTarget(
             name: "CoeurTests",
@@ -123,6 +142,8 @@ let package = Package(
             name: "EcransTests",
             dependencies: ["Ecrans", "Coeur"],
             exclude: enChantierEcransTests),
+        .target(name: "Barriere"),
+        .testTarget(name: "BarriereTests", dependencies: ["Barriere"]),
     ],
     swiftLanguageModes: [.v6]
 )

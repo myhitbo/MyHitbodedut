@@ -344,7 +344,7 @@ public typealias MusiqueAttente = @Sendable (_ millisecondes: Int) async -> Void
 public enum MusiqueAttentes {
     /// L'attente réelle ; une tâche annulée cesse d'attendre.
     public static let systeme: MusiqueAttente = { millisecondes in
-        try? await Task.sleep(nanoseconds: UInt64(max(millisecondes, 0)) * 1_000_000)
+        _ = try? await Task.sleep(nanoseconds: UInt64(max(millisecondes, 0)) * 1_000_000)
     }
 
     /// Aucune attente : ce qui suit l'attente a lieu aussitôt.

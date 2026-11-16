@@ -36,8 +36,8 @@ public final class LectureMarquesModele {
     /// « s », « l », ou nil pour tous.
     public let recueil: String?
 
-    private var siddur: Siddur?
-    private var livres: Siddur?
+    private var siddur: Siddur? = nil
+    private var livres: Siddur? = nil
     /// Le filtre choisi : « * » d'abord.
     public private(set) var filtre = "*"
 

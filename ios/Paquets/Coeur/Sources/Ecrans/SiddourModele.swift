@@ -86,9 +86,9 @@ public final class SiddourModele {
     public let langue: String
 
     public private(set) var etat: SiddourEtat = .chargement
-    private var siddur: Siddur?
+    private var siddur: Siddur? = nil
     /// L'index des livres, lu seulement quand la Méguila se propose.
-    private var livresIndex: Siddur?
+    private var livresIndex: Siddur? = nil
     /// L'instant de l'affichage (onResume) : la suggestion de l'heure en dépend.
     private var instant: Int64
     /// Le choix du nusah est ouvert (le dialogue du bandeau).

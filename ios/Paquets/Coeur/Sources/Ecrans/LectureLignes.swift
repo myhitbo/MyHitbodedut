@@ -197,7 +197,7 @@ enum LectureLignes {
                        notes: [(id: String, libelle: Libelle)], marques: Set<LecturePlace>,
                        langues: LanguesTexte.Mode, police: PoliceHebraique.Police,
                        titreDe: (String) -> String?) -> [LectureLigne] {
-        let places = places(texte, annotations, jour)
+        let lesPlaces = LectureLignes.places(texte, annotations, jour)
         let plusieurs = texte.sections.count > 1
         var sectionsTitrees: [Int] = []
         for (si, s) in texte.sections.enumerated() where plusieurs && !s.titre.estBlanc {
@@ -240,7 +240,7 @@ enum LectureLignes {
                     paragraphes: LectureBalisage.titre(he, fr: fr, en: en, langues: langues, police: police),
                     hebreu: PoliceHebraique.masque(he, police: police), section: section)))
             case .bloc(let bloc, let style):
-                let place = places[k] ?? LecturePlace(section: 0, bloc: 0)
+                let place = lesPlaces[k] ?? LecturePlace(section: 0, bloc: 0)
                 ancre = "bloc:" + String(place.section) + ":" + String(place.bloc)
                 ajouter(ancre, .bloc(LectureBloc(place: place, bloc: bloc, style: style, dansPanneau: panneau,
                                                  marque: marques.contains(place), langues: langues, police: police)))

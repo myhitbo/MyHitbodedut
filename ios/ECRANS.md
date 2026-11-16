@@ -41,9 +41,15 @@ Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Li
 
 - `public struct <Écran>Vue: View`, qui lit le modèle et appelle ses actions. Mise en page, couleurs (jetons de
   la `Palette`), polices, accessibilité. SwiftUI d'iOS 26.5 ; aucune dépendance.
+- Les couleurs : un jeton, jamais une couleur écrite (`Vues/Apparence.swift`) : `.foregroundStyle(Teinte(.ink))`,
+  `.background(Teinte(.paper))`, résolus d'après la palette et le mode de l'écran. Les composants communs
+  (`Vues/Composants.swift`) : `Carte`, `.buttonStyle(.principal)` et `.secondaire`, `Pastille`, `Etiquette`,
+  `LigneSection`, `LigneHoraire` ; une illustration d'Android : `Illustration("char_welcome", libelle:)` ou
+  `Illustration(decorative:)` ; une police des textes saints : `.policeHebraique(police, taille:)`.
 - Les chaînes : `Text("cle")` pour une clé simple du catalogue (les clés sont celles d'Android), et pour un
-  `Libelle` l'aide commune de `Vues` (`Text(libelle)`), qui le résout dans la langue de l'app par le
-  `Traducteur` d'`Ecrans`.
+  `Libelle` l'aide commune de `Vues` (`TexteLibelle(libelle)`, ou `Text(libelle, traducteur:)` avec
+  `@Environment(\.traducteur)`), qui le résout dans la langue de l'app par le `Traducteur` d'`Ecrans`. Une
+  chaîne propre à iOS : `Text("cle", tableName: "ios")` (`Ressources/Chaines/ios.xcstrings`).
 - L'hébreu de droite à gauche vient de l'environnement (`layoutDirection`) ; une image ou un sens qui doivent se
   retourner le disent explicitement.
 - Pas d'image pendant la prière (règle d'Android) ; « Réduire les animations » respecté.

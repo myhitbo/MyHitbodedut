@@ -17,8 +17,10 @@ import Coeur
 struct BoussoleModeleTests {
 
     private static let contenus = ContenusApp(dossier: Fichiers.contenu)
-    private static let catalogue = Result { try Fichiers.catalogue() }
-    private static let tableaux = Result { try Fichiers.donnees("ios/Ressources/Chaines/Tableaux.json") }
+    private static let catalogue: Result<Data, any Error> = Result { try Fichiers.catalogue() }
+    private static let tableaux: Result<Data, any Error> = Result {
+        try Fichiers.donnees("ios/Ressources/Chaines/Tableaux.json")
+    }
 
     private let newYork = Zmanim.Lieu(nom: "New York", latitude: 40.71427, longitude: -74.00597, fuseau: "America/New_York")
     private let paris = Zmanim.Lieu(nom: "Paris", latitude: 48.85341, longitude: 2.3488, fuseau: "Europe/Paris")
@@ -93,8 +95,10 @@ struct BoussoleModeleTests {
         abs(DirectionJerusalem.ecart(attendu, mesure)) <= 0.01
     }
 
-    /// Attend qu'une condition se vérifie, en laissant tourner les autres tâches de l'acteur principal.
-    private func attendre(_ condition: () async -> Bool) async -> Bool {
+    /// Attend qu'une condition se vérifie, en laissant tourner les autres tâches de l'acteur principal. La
+    /// condition est isolée à l'acteur principal : une fermeture non `Sendable` appelée d'ici sans cela partirait
+    /// vers un appelé non isolé (« sending 'condition' risks causing data races » en Swift 6).
+    private func attendre(_ condition: @MainActor () async -> Bool) async -> Bool {
         for _ in 0..<10_000 {
             if await condition() { return true }
             await Task.yield()
@@ -646,6 +650,27 @@ struct BoussoleModeleTests {
         #expect(!b.modele.rechercheEnCours)
         b.modele.effacerMessage()
         #expect(b.modele.message == nil)
+        // Aucune position en un temps raisonnable : le même Toast (ChoixLieu.echec).
+        let indisponible = try banc(nil, reponse: .indisponible)
+        await indisponible.modele.ouvrirChoixLieu()
+        try await indisponible.modele.utiliserMaPosition()
+        #expect(indisponible.modele.dialogue == nil)
+        #expect(indisponible.modele.lieu == nil)
+        #expect(indisponible.modele.message == BoussoleMessage(libelle: Libelle("zmanim_position_refusee"), long: true))
+        let rafraichi = await indisponible.rafraichissement.rafraichissements
+        #expect(rafraichi == 0)
+    }
+
+    @Test func fermerUnDialogueSansChoisir() async throws {
+        let b = try banc(newYork)
+        b.modele.ouvrirAffichage()
+        #expect(b.modele.dialogue == .affichage)
+        #expect(b.modele.dialogue?.titre == Libelle("boussole_affichage"))
+        b.modele.fermerDialogue()
+        #expect(b.modele.dialogue == nil)
+        #expect(!b.magasin.reglages.boussoleRose)
+        let ecritures = await b.rafraichissement.rafraichissements
+        #expect(ecritures == 0)
     }
 
     @Test func maPositionAJerusalem() async throws {

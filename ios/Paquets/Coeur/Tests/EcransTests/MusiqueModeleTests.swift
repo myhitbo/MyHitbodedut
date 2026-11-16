@@ -233,6 +233,36 @@ struct MusiqueModeleTests {
         #expect(choisies == ["shpayer_pnima"])
     }
 
+    /// Pendant une séance en lecture aléatoire, toucher une ligne éteint l'aléatoire et la séance suit (l'écouteur
+    /// de l'interrupteur d'Android appelle SessionService.musicChanged) : le morceau choisi part, en boucle.
+    @Test func choisirUnMorceauPendantUneSeanceAleatoireLeFaitJouer() async throws {
+        var reglages = Reglages()
+        reglages.setMusicShuffle(true)
+        let b = try await banc(reglages)
+        await b.lecteur.commencerSeance()
+        let avant = await b.seance.enBoucle
+        #expect(!avant)
+        await b.modele.choisir("shpayer_pnima")
+        let enCours = await b.seance.enCours
+        #expect(enCours == livre("shpayer_pnima"))
+        let enBoucle = await b.seance.enBoucle
+        #expect(enBoucle)
+        #expect(b.magasin.reglages.musicNow == "shpayer_pnima")
+        let arrets = await b.seance.arrets
+        #expect(arrets == [false])
+    }
+
+    /// Hors lecture aléatoire, la séance n'est pas avertie (MusicActivity.select) : elle garde son morceau.
+    @Test func choisirUnMorceauPendantUneSeanceNeChangePasCeQuiJoue() async throws {
+        let b = try await banc()
+        await b.lecteur.commencerSeance()
+        await b.modele.choisir("shpayer_pnima")
+        #expect(b.magasin.reglages.musicTrackId == "shpayer_pnima")
+        let joues = await b.seance.joues
+        #expect(joues == [livre("hamelech_basade")])
+        #expect(b.magasin.reglages.musicNow == "hamelech_basade")
+    }
+
     @Test func lEcouteDEssaiSeBasculeEtNeBouclePas() async throws {
         let b = try await banc()
         await b.modele.basculerApercu("ianir_hello")
@@ -300,7 +330,7 @@ struct MusiqueModeleTests {
         // Le dialogue rouvert propose le titre d'origine, le champ rempli du nom donné.
         b.modele.ouvrirRenommage("shpayer_kenout")
         let second = try #require(b.modele.renommage)
-        #expect(second.neutre == .titreOrigine)
+        #expect(second.neutre == MusiqueRenommage.Neutre.titreOrigine)
         #expect(second.libelleNeutre == Libelle("music_rename_reset"))
         #expect(b.modele.texteRenommage == "Kenout")
         await b.modele.actionNeutreRenommage()
@@ -402,7 +432,7 @@ struct MusiqueModeleTests {
         #expect(essai == copie)
         b.modele.ouvrirRenommage(reference)
         let dialogue = try #require(b.modele.renommage)
-        #expect(dialogue.neutre == .retirer)
+        #expect(dialogue.neutre == MusiqueRenommage.Neutre.retirer)
         #expect(dialogue.libelleNeutre == Libelle("music_remove"))
         #expect(dialogue.indication == MusicLibrary.Titre.nom("Nigoun"))
         await b.modele.actionNeutreRenommage()

@@ -60,13 +60,13 @@ public final class LectureModele {
     /// Les lignes du texte, dans l'ordre ; vide tant que rien n'est lu.
     public private(set) var lignes: [LectureLigne] = []
 
-    private var texte: SiddurTexte?
+    private var texte: SiddurTexte? = nil
     /// Le siddour du nusah affiché (pour les renvois) ; nil pour un livre.
-    private var siddur: Siddur?
+    private var siddur: Siddur? = nil
     /// Le nom du recueil : le nusah du siddour, « Livres » pour un livre.
     private var nomRecueil: TexteLocalise = .vide
     /// Le nusah du texte affiché (nil pour un livre) : un autre nusah n'a pas les mêmes paragraphes.
-    private var nusahAffiche: Nusah?
+    private var nusahAffiche: Nusah? = nil
     private var annotations: [SiddurJour.Annotation] = []
     /// Les ajouts repliés que l'on a ouverts, pour ce texte.
     private var ouverts: Set<String> = []
@@ -78,13 +78,13 @@ public final class LectureModele {
     // MARK: Ce qui est à l'écran
 
     /// Le rang de la première ligne visible ; nil tant que rien n'est montré.
-    public private(set) var premiere: Int?
+    public private(set) var premiere: Int? = nil
     private var derniere = 0
     private var enBas = false
     /// Le signet touché : il reste marqué tant que le doigt ne reprend pas la page.
-    private var choisi: Int?
+    private var choisi: Int? = nil
     /// La dernière demande de défilement ; la vue la suit (`onChange`).
-    public private(set) var defilement: LectureDefilement?
+    public private(set) var defilement: LectureDefilement? = nil
     private var jeton = 0
     /// Quand la lecture a été quittée (onPause), pour `revenir()`.
     private var pauseA: Int64 = 0
@@ -97,7 +97,7 @@ public final class LectureModele {
     public private(set) var pastilleEffacee = false
     private var parcouru: Double = 0
     /// Un message bref (le Toast d'Android) : « Marque-page posé », « Marque-page retiré ». La vue l'efface.
-    public private(set) var message: Libelle?
+    public private(set) var message: Libelle? = nil
     /// La barre du bas qui suit le masquage (Snackbar) : `lecture_masque_info`, action `lecture_annuler_masque`.
     public private(set) var annonceMasque = false
     /// La feuille des marque-pages de ce texte est ouverte (le bouton du bandeau).
@@ -455,7 +455,10 @@ public final class LectureModele {
     public func quitter() async throws {
         let maintenant = horloge.maintenant
         pauseA = maintenant
-        guard etat == .pret, let position = premiere else { return }
+        // Rien encore de signalé par la vue : la première ligne (findFirstVisibleItemPosition, 0 en haut), qui
+        // fait au moins de ce texte la dernière lecture.
+        guard etat == .pret, !lignes.isEmpty else { return }
+        let position = premiere ?? 0
         let cle = self.cle
         try await magasin.modifierReglages {
             LecturePreferences.setPositionLecture(&$0, cle: cle, position: position, maintenant: maintenant)

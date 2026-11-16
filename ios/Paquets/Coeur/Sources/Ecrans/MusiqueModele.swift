@@ -246,11 +246,17 @@ public final class MusiqueModele {
     // MARK: Actions de la bibliothèque
 
     /// Toucher une ligne ou son bouton radio : ce morceau devient celui des séances, et la lecture aléatoire
-    /// s'éteint. Comme sur Android, la séance en cours n'en est pas avertie : elle le jouera au prochain départ.
+    /// s'éteint. Hors lecture aléatoire, comme sur Android, la séance en cours n'en est pas avertie : elle le
+    /// jouera au prochain départ. En lecture aléatoire, si : sur Android, `isChecked = false` déclenche l'écouteur
+    /// de l'interrupteur, donc `SessionService.musicChanged`, et la séance passe au morceau choisi.
     public func choisir(_ id: String) async {
+        let quitteAleatoire = reglages.musicShuffle
         await ecrire { r in
             r.setMusicTrackId(id)
             if r.musicShuffle { r.setMusicShuffle(false) }
+        }
+        if quitteAleatoire {
+            await lecteur.musiqueChangee()
         }
     }
 
@@ -267,6 +273,8 @@ public final class MusiqueModele {
         let ici = numeroApercu
         var lance = false
         if let chemin = await lecteur.fichier(de: morceau) {
+            // L'écran a été quitté (ou un autre essai demandé) pendant la recherche du fichier : rien ne part.
+            guard ici == numeroApercu else { return }
             lance = await apercu.jouer(chemin, gain: MusiqueRegles.gainMusique(reglages.musicVolume),
                                        enBoucle: false, numero: ici)
         }
@@ -388,10 +396,10 @@ public final class MusiqueModele {
         }
     }
 
-    /// L'arrêt prévu d'un aperçu, s'il est encore le dernier demandé.
+    /// L'arrêt prévu d'un aperçu, s'il est encore le dernier demandé. La tâche reste nommée jusqu'au prochain
+    /// aperçu ou au départ de l'écran : un test peut l'attendre même si elle a déjà fini.
     private func finirApercuAmbiance(_ numero: Int) async {
         guard numero == numeroAmbiance else { return }
-        finApercuAmbiance = nil
         await ambianceApercu.arreter()
     }
 

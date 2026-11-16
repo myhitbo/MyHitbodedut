@@ -1,0 +1,318 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "bouclier_autre_reponse": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Autre réponse"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Other answer"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "תשובה אחרת"
+          }
+        }
+      }
+    },
+    "bouclier_notification_commencer": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touchez pour commencer votre hitbodedout"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tap to start your hitbodedut"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "געו כדי להתחיל את ההתבודדות"
+          }
+        }
+      }
+    },
+    "gate_mismatch_detail": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le bouclier ne suivait pas la règle du moment. L’app l’a remis d’accord et l’a noté au journal."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The shield was not following the current rule. The app has put it right and noted it in the log."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המגן לא פעל לפי הכלל הנוכחי. האפליקציה תיקנה אותו ורשמה זאת ביומן."
+          }
+        }
+      }
+    },
+    "gate_mismatch_title": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bouclier désaccordé"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Shield out of step"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המגן אינו מתואם"
+          }
+        }
+      }
+    },
+    "gate_monitor_missing_detail": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les heures du mode ne sont plus inscrites auprès d’iOS. L’app les inscrit de nouveau ; si ce message reste, éteignez puis rallumez le mode."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The mode’s hours are no longer registered with iOS. The app registers them again; if this message stays, switch the mode off and on."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "שעות המצב אינן רשומות עוד ב־iOS. האפליקציה רושמת אותן מחדש; אם ההודעה נשארת, כבו והדליקו את המצב."
+          }
+        }
+      }
+    },
+    "gate_monitor_missing_title": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Surveillance absente"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schedule missing"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המעקב חסר"
+          }
+        }
+      }
+    },
+    "gate_monitor_silent_detail": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS n’a pas réveillé la surveillance depuis hier. Ouvrir l’app le matin la relance."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS has not woken the schedule since yesterday. Opening the app in the morning restarts it."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS לא העירה את המעקב מאתמול. פתיחת האפליקציה בבוקר מפעילה אותו מחדש."
+          }
+        }
+      }
+    },
+    "gate_monitor_silent_title": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Surveillance muette"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schedule silent"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המעקב שותק"
+          }
+        }
+      }
+    },
+    "gate_reselect_detail": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les applications choisies ne sont plus reconnues sur cet iPhone. Choisissez-les de nouveau."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The chosen apps are no longer recognised on this iPhone. Choose them again."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "האפליקציות שנבחרו אינן מזוהות עוד במכשיר הזה. בחרו אותן מחדש."
+          }
+        }
+      }
+    },
+    "gate_reselect_title": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sélection à refaire"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choose the apps again"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "יש לבחור מחדש"
+          }
+        }
+      }
+    },
+    "gate_revoked_detail": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS a retiré l’accès à Temps d’écran : plus rien n’est retenu. Le rendre ?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS removed Screen Time access: nothing is held back any more. Give it back?"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS הסירה את הגישה לזמן מסך: דבר כבר לא מעוכב. להחזיר אותה?"
+          }
+        }
+      }
+    },
+    "gate_revoked_title": {
+      "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Accès retiré par iOS"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Access removed by iOS"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הגישה הוסרה על ידי iOS"
+          }
+        }
+      }
+    },
+    "ios_bientot": {
+      "comment": "Propre à iOS (PORTAGE.md § 4.2), à relire par le propriétaire : sous le titre d'un onglet dont l'écran n'est pas encore porté.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bientôt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coming soon"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "בקרוב"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

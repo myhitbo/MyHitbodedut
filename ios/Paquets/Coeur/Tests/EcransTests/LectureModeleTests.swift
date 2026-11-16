@@ -44,7 +44,12 @@ struct LectureModeleTests {
     /// Un lecteur sur `cible`, l'horloge arrêtée à `heure` du jour `iso` à Jérusalem.
     private func fabriquer(_ cible: LectureCible, reglages: Reglages = Reglages(), jour: JourCivil? = nil,
                            heure: Int = 8, langue: String = "fr") throws -> (LectureModele, Magasin) {
-        let date = try jour ?? #require(JourCivil(iso: "2026-11-17"))
+        let date: JourCivil
+        if let jour {
+            date = jour
+        } else {
+            date = try #require(JourCivil(iso: "2026-11-17"))
+        }
         let magasin = Magasin.enMemoire(Enregistrement(reglages: reglages))
         let horloge = HorlogeFixe(DateHeure(date, heure: heure), fuseau: try fuseau())
         return (LectureModele(magasin: magasin, contenus: Self.contenus, horloge: horloge, langue: langue, cible: cible),
@@ -141,7 +146,8 @@ struct LectureModeleTests {
         #expect(!lues.contains("ajout_yaale_veyavo"))
         let yaale = replis(m).filter { $0.nom.cle == "ajout_yaale_veyavo" }
         #expect(!yaale.isEmpty)
-        #expect(yaale.allSatisfy { $0.etat.cle == "siddur_pas_aujourdhui" && !$0.ouvert })
+        let tousReplies = yaale.allSatisfy { $0.etat.cle == "siddur_pas_aujourdhui" && !$0.ouvert }
+        #expect(tousReplies)
         // Ce qui ne se dit qu'avec un minyan n'est jamais « du jour » : « toucher pour lire ».
         let toucher = replis(m).contains { $0.etat.cle == "siddur_toucher_lire" }
         #expect(toucher)
@@ -263,7 +269,8 @@ struct LectureModeleTests {
         #expect(m.signetActif == 300)
 
         // La vue montre le titre et les paragraphes qui le suivent.
-        let rang = try #require(m.lignes.firstIndex { $0.id == signets[300].ligne })
+        let rangTrouve = m.lignes.firstIndex { $0.id == signets[300].ligne }
+        let rang = try #require(rangTrouve)
         m.visibles(m.lignes[rang..<(rang + 6)].map { $0.id }, enBas: false)
         let tete = try #require(m.ligneDeTete?.id)
         #expect(tete == signets[300].ligne)
@@ -403,7 +410,8 @@ struct LectureModeleTests {
     @Test func unAppuiLongPosePuisRetireLeMarquePage() async throws {
         let (m, magasin) = try fabriquer(.siddour("chaharit"), reglages: reglages(.sefard))
         await m.charger()
-        let premier = try #require(blocs(m).first { !$0.bloc.consigne })
+        let premierTrouve = blocs(m).first { !$0.bloc.consigne }
+        let premier = try #require(premierTrouve)
         #expect(m.marquesDuTexte.isEmpty)
         try await m.basculerMarque(premier.bloc)
         #expect(m.message == Libelle("marque_posee"))
@@ -423,7 +431,8 @@ struct LectureModeleTests {
         try await m.choisirNusah(.sefard)
         let retrouvee = m.marquesDuTexte.count
         #expect(retrouvee == 1)
-        let reprise = try #require(blocs(m).first { $0.id == premier.id })
+        let repriseTrouvee = blocs(m).first { $0.id == premier.id }
+        let reprise = try #require(repriseTrouvee)
         try await m.basculerMarque(reprise.bloc)
         #expect(m.message == Libelle("marque_retiree"))
         #expect(LecturePreferences.marques(magasin.reglages).isEmpty)
@@ -436,23 +445,26 @@ struct LectureModeleTests {
         await m.charger()
         let cible = try #require(blocs(m).dropFirst(40).first)
         let place = cible.bloc.place
-        let (rouvert, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire())
         let ouvert = LectureModele(magasin: Magasin.enMemoire(Enregistrement(reglages: reglages(.edot))),
                                    contenus: Self.contenus,
                                    horloge: HorlogeFixe(DateHeure(try jourOrdinaire(), heure: 8), fuseau: try fuseau()),
                                    langue: "fr", cible: LectureCible(id: "chaharit", marque: place))
         await ouvert.charger()
         #expect(ouvert.defilement?.ligne == cible.id)
-        #expect(rouvert.defilement == nil)
+        #expect(ouvert.ligneDeTete?.id == cible.id)
+        // Sans marque-page ni place gardée, rien ne bouge.
+        #expect(m.defilement == nil)
     }
 
-    @Test func unMarquePageRepliéMeneAuPremierParagrapheMontreDeSaSection() async throws {
+    @Test func unMarquePageReplieMeneAuPremierParagrapheMontreDeSaSection() async throws {
         let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire())
         await m.charger()
         // Un groupe replié aujourd'hui : on le déplie pour connaître la place de son premier bloc.
-        let repli = try #require(replis(m).first { !$0.cle.hasPrefix("v") && !$0.cle.hasPrefix("\u{00A7}") })
+        let groupe = replis(m).first { !$0.cle.hasPrefix("v") && !$0.cle.hasPrefix("\u{00A7}") }
+        let repli = try #require(groupe)
         m.basculer(repli.cle)
-        let rangRepli = try #require(m.lignes.firstIndex { $0.id == "replie:" + repli.cle })
+        let rangTrouve = m.lignes.firstIndex { $0.id == "replie:" + repli.cle }
+        let rangRepli = try #require(rangTrouve)
         guard case .bloc(let cache) = m.lignes[rangRepli + 1].contenu else {
             Issue.record("le repli ouvert n'est pas suivi de ses blocs")
             return
@@ -484,17 +496,20 @@ struct LectureModeleTests {
         let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire())
         await m.charger()
         let avant = m.lignes.count
-        let repli = try #require(replis(m).first { !$0.ouvert && !$0.cle.hasPrefix("v") })
+        let ferme = replis(m).first { !$0.ouvert && !$0.cle.hasPrefix("v") }
+        let repli = try #require(ferme)
         m.basculer(repli.cle)
         #expect(m.lignes.count > avant)
-        let rang = try #require(m.lignes.firstIndex { $0.id == "replie:" + repli.cle })
+        let rangTrouve = m.lignes.firstIndex { $0.id == "replie:" + repli.cle }
+        let rang = try #require(rangTrouve)
         guard case .replie(let ouvert) = m.lignes[rang].contenu else {
             Issue.record("le bandeau a disparu")
             return
         }
         #expect(ouvert.ouvert)
         #expect(ouvert.etat.cle == "siddur_replier")
-        let pied = try #require(m.lignes.firstIndex { $0.id == "pied:" + repli.cle })
+        let piedTrouve = m.lignes.firstIndex { $0.id == "pied:" + repli.cle }
+        let pied = try #require(piedTrouve)
         #expect(pied > rang + 1)
         for ligne in m.lignes[(rang + 1)..<pied] {
             guard case .bloc(let b) = ligne.contenu else {
@@ -593,17 +608,20 @@ struct LectureModeleTests {
     @Test func lesChoixDeLaBarre() async throws {
         let (m, magasin) = try fabriquer(.siddour("minha"), reglages: reglages(.ashkenaz), langue: "en")
         await m.charger()
-        let polices = m.optionsPolice
-        #expect(polices.map { $0.valeur } == PoliceHebraique.Police.allCases)
-        #expect(polices.filter { $0.choisi }.map { $0.valeur } == [.serif])
-        let langues = m.optionsLangues
-        #expect(langues.filter { $0.choisi }.map { $0.valeur } == [.heEn])
-        let nusah = m.optionsNusah
-        #expect(nusah.map { $0.nom.cle } == ["siddur_nusah_edot", "siddur_nusah_sefard", "siddur_nusah_ashkenaz"])
-        #expect(nusah.filter { $0.choisi }.map { $0.valeur } == [.ashkenaz])
+        let polices = m.optionsPolice.map { $0.valeur }
+        #expect(polices == PoliceHebraique.Police.allCases)
+        let policeChoisie = m.optionsPolice.filter { $0.choisi }.map { $0.valeur }
+        #expect(policeChoisie == [.serif])
+        let languesChoisies = m.optionsLangues.filter { $0.choisi }.map { $0.valeur }
+        #expect(languesChoisies == [.heEn])
+        let noms = m.optionsNusah.map { $0.nom.cle }
+        #expect(noms == ["siddur_nusah_edot", "siddur_nusah_sefard", "siddur_nusah_ashkenaz"])
+        let nusahChoisi = m.optionsNusah.filter { $0.choisi }.map { $0.valeur }
+        #expect(nusahChoisi == [.ashkenaz])
         try await m.choisirLangues(.fr)
         #expect(magasin.reglages.lectureLangues == "fr")
-        #expect(m.optionsLangues.filter { $0.choisi }.map { $0.valeur } == [.fr])
+        let francais = m.optionsLangues.filter { $0.choisi }.map { $0.valeur }
+        #expect(francais == [.fr])
         try await m.choisirPolice(.rachi)
         #expect(magasin.reglages.lecturePolice == "rachi")
         // Un autre nusah : on repart du début.
@@ -672,7 +690,8 @@ struct LectureModeleTests {
         let signets = m.signets
         try #require(signets.count > 3)
         #expect(m.signetActif == 0)
-        let rang2 = try #require(m.lignes.firstIndex { $0.id == signets[2].ligne })
+        let rangTrouve = m.lignes.firstIndex { $0.id == signets[2].ligne }
+        let rang2 = try #require(rangTrouve)
         m.visibles([m.lignes[rang2 + 1].id, m.lignes[rang2 + 2].id], enBas: false)
         #expect(m.signetActif == 2)
         m.allerAuSignet(1)
@@ -683,7 +702,8 @@ struct LectureModeleTests {
         m.debutGlisse()
         #expect(m.signetActif == 2)
         // Tout en bas, la dernière section commencée à l'écran.
-        let dernier = try #require(m.lignes.firstIndex { $0.id == signets[signets.count - 1].ligne })
+        let dernierTrouve = m.lignes.firstIndex { $0.id == signets[signets.count - 1].ligne }
+        let dernier = try #require(dernierTrouve)
         m.visibles([m.lignes[dernier - 1].id, m.lignes[dernier].id], enBas: true)
         #expect(m.signetActif == signets.count - 1)
     }
