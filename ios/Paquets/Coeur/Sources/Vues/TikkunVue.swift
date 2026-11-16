@@ -15,8 +15,8 @@ public struct TikkunVue: View {
     @Environment(\.dismiss) private var fermer
     @ScaledMetric(relativeTo: .body) private var dynamique: CGFloat = 1
 
-    /// L'ancre du haut du texte.
-    private static let haut = "tikkun:haut"
+    /// La place dans le texte : les demandes de défilement du modèle y passent.
+    @State private var position = ScrollPosition(idType: String.self)
 
     public init(modele: TikkunModele) {
         self.modele = modele
@@ -60,40 +60,36 @@ public struct TikkunVue: View {
     // MARK: Le texte
 
     private var texte: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    Color.clear
-                        .frame(height: 0)
-                        .id(TikkunVue.haut)
-                    contenu
-                }
+        ScrollView {
+            contenu
                 .padding(.top, 12)
                 // 16 sous le texte, et 72 pour lire au-dessus de la barre de lecture.
                 .padding(.bottom, 88)
+        }
+        .scrollPosition($position, anchor: .top)
+        .scrollIndicators(.visible)
+        .background(rendu.fond)
+        .onScrollTargetVisibilityChange(idType: String.self) { visibles in
+            if let premier = visibles.first {
+                modele.teteVisible(premier)
             }
-            .scrollIndicators(.visible)
-            .background(rendu.fond)
-            .onScrollTargetVisibilityChange(idType: String.self) { visibles in
-                if let premier = visibles.first {
-                    modele.teteVisible(premier)
-                }
+        }
+        .onScrollGeometryChange(for: Double.self, of: { geometrie in
+            Double(geometrie.contentOffset.y)
+        }, action: { ancien, nouveau in
+            modele.barre.defilementVertical(nouveau - ancien)
+        })
+        .onChange(of: modele.defilement) { _, demande in
+            guard let demande else { return }
+            if let cible = demande.cible {
+                position.scrollTo(id: cible, anchor: .top)
+            } else {
+                position.scrollTo(edge: .top)
             }
-            .onScrollGeometryChange(for: CGFloat.self, of: { geometrie in
-                geometrie.contentOffset.y
-            }, action: { ancien, nouveau in
-                modele.barre.defilementVertical(Double(nouveau - ancien))
-            })
-            .onChange(of: modele.defilement) { _, demande in
-                guard let demande else { return }
-                let cible = demande.cible ?? TikkunVue.haut
-                // Au tour suivant : le texte refait est alors en place.
-                Task { proxy.scrollTo(cible, anchor: .top) }
-            }
-            .overlay(alignment: .bottom) {
-                TehilimBarreVue(barre: modele.barre)
-                    .padding(.bottom, 16)
-            }
+        }
+        .overlay(alignment: .bottom) {
+            TehilimBarreVue(barre: modele.barre)
+                .padding(.bottom, 16)
         }
     }
 
