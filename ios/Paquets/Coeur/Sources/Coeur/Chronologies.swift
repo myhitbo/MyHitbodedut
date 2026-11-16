@@ -88,19 +88,24 @@ public enum Chronologies {
         public let recharge: Int64
     }
 
+    /// Les zmanim d'un jour au lieu donné, par clé (`Zmanim.Zman.cle`), en millisecondes Unix ; un zman absent
+    /// manque. Le type est propre à ce fichier : PlanNotifications.swift, qui a le même, n'est pas encore construit
+    /// (Package.swift, `enChantierSources`).
+    public typealias Horaires = (_ lieu: Zmanim.Lieu, _ jour: JourCivil) -> [String: Int64]
+
     // MARK: La chronologie
 
     /// La chronologie du reste de la journée, avec les zmanim de `Zmanim`.
     public static func chronologie(famille: Famille, lieu: Zmanim.Lieu?, maintenant: Int64, fuseauTelephone: Fuseau,
                                    enIsrael: Bool) -> Chronologie {
         chronologie(famille: famille, lieu: lieu, maintenant: maintenant, fuseauTelephone: fuseauTelephone,
-                    enIsrael: enIsrael, horaires: { l, jour in PlanNotifications.horairesCalcules(l, jour) })
+                    enIsrael: enIsrael, horaires: { l, jour in horairesCalcules(l, jour) })
     }
 
     /// La chronologie du reste de la journée du lieu : une entrée à `maintenant`, puis une à chaque zman du jour et au
     /// milieu de la nuit d'hier, jusqu'au minuit suivant, exclu.
     public static func chronologie(famille: Famille, lieu: Zmanim.Lieu?, maintenant: Int64, fuseauTelephone: Fuseau,
-                                   enIsrael: Bool, horaires: PlanNotifications.Horaires) -> Chronologie {
+                                   enIsrael: Bool, horaires: Horaires) -> Chronologie {
         let zone = zoneDe(lieu, fuseauTelephone)
         let ici = DateHeureZonee(millis: maintenant, fuseau: zone)
         let minuit = DateHeureZonee(DateHeure(ici.jour.plus(jours: 1)), fuseau: zone).millis
@@ -127,12 +132,12 @@ public enum Chronologies {
     public static func affichage(famille: Famille, lieu: Zmanim.Lieu?, maintenant: Int64, fuseauTelephone: Fuseau,
                                  enIsrael: Bool) -> Affichage {
         affichage(famille: famille, lieu: lieu, maintenant: maintenant, fuseauTelephone: fuseauTelephone,
-                  enIsrael: enIsrael, horaires: { l, jour in PlanNotifications.horairesCalcules(l, jour) })
+                  enIsrael: enIsrael, horaires: { l, jour in horairesCalcules(l, jour) })
     }
 
     /// Ce que la vignette montre à `maintenant` (ZmanimVignette.vues).
     public static func affichage(famille: Famille, lieu: Zmanim.Lieu?, maintenant: Int64, fuseauTelephone: Fuseau,
-                                 enIsrael: Bool, horaires: PlanNotifications.Horaires) -> Affichage {
+                                 enIsrael: Bool, horaires: Horaires) -> Affichage {
         let zone = zoneDe(lieu, fuseauTelephone)
         let jour = DateHeureZonee(millis: maintenant, fuseau: zone).jour
         var duJour: [String: Int64] = [:]
@@ -146,6 +151,17 @@ public enum Chronologies {
     }
 
     // MARK: Aides
+
+    /// Les zmanim de `Zmanim.jour`, en millisecondes Unix (comme `PlanNotifications.horairesCalcules`).
+    private static func horairesCalcules(_ lieu: Zmanim.Lieu, _ jour: JourCivil) -> [String: Int64] {
+        var res: [String: Int64] = [:]
+        for z in Zmanim.jour(lieu: lieu, date: jour) {
+            if let instant = z.instant {
+                res[z.cle] = Kotlin.versLong((instant.timeIntervalSince1970 * 1000).rounded())
+            }
+        }
+        return res
+    }
 
     /// Le fuseau du lieu, sinon celui du téléphone (un fuseau inconnu compte comme absent, comme `runCatching`).
     private static func zoneDe(_ lieu: Zmanim.Lieu?, _ fuseauTelephone: Fuseau) -> Fuseau {

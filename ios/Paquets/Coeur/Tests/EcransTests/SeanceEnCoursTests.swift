@@ -112,8 +112,9 @@ struct SeanceEnCoursTests {
         #expect(b.seance.inscriptions == 1)
         #expect(!b.musique.seanceEnCours)
         #expect(b.musique.terminees == 1)
-        let retiree = await b.activite.seance
-        #expect(retiree == nil)
+        // Un tuple n'est pas Equatable : la comparaison à nil se fait hors de #expect (comme ServicesTests).
+        let retiree = await b.activite.seance == nil
+        #expect(retiree)
 
         // Écrit sur le disque.
         let ecrit = await b.persistance.enregistrement
@@ -322,8 +323,9 @@ struct SeanceEnCoursTests {
         #expect(b.magasin.journal.record(jour) == nil)
         #expect(!b.magasin.reglages.hasPendingCelebration)
         #expect(!b.musique.seanceEnCours)
-        let retiree = await b.activite.seance
-        #expect(retiree == nil)
+        // Un tuple n'est pas Equatable : la comparaison à nil se fait hors de #expect (comme ServicesTests).
+        let retiree = await b.activite.seance == nil
+        #expect(retiree)
         let ecrit = await b.persistance.enregistrement
         #expect(ecrit.journal.record(jour) == nil)
     }
@@ -473,6 +475,35 @@ struct SeanceEnCoursTests {
         try await b.seance.actualiser()
         #expect(b.magasin.reglages.paliersNotifies != nil)
         #expect(b.magasin.reglages.tropheesNotifies != nil)
+    }
+
+    /// Celebrations.notification : la toute première fois rien n'est fêté ; une fois les trophées regardés, le
+    /// premier pas d'une séance inscrite programme « Mazal tov ! ».
+    @Test func unTropheeNeufProgrammeMazalTov() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        let horloge = SeanceHorlogeReglable(DateHeure(jour, heure: 10))
+
+        let jamais = FauxNotificateur()
+        let premiere = SeanceEnCours(magasin: Magasin.enMemoire(), horloge: horloge, notificateur: jamais)
+        try await premiere.commencer(minutes: 1)
+        horloge.avancer(minutes: 1)
+        try await premiere.actualiser()
+        let rien = await jamais.prevues
+        #expect(rien.isEmpty)
+
+        var reglages = Reglages()
+        reglages.setTropheesNotifies([])
+        let notificateur = FauxNotificateur()
+        let seance = SeanceEnCours(magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)), horloge: horloge,
+                                   notificateur: notificateur)
+        try await seance.commencer(minutes: 1)
+        horloge.avancer(minutes: 1)
+        try await seance.actualiser()
+        let prevues = await notificateur.prevues
+        let identifiants = prevues.map { $0.identifiant }
+        #expect(identifiants == [SeanceEnCours.identifiantFete])
+        #expect(prevues.first?.titre == Libelle("celebration_titre"))
+        #expect(prevues.first?.instant == horloge.maintenant)
     }
 
     // MARK: Une écriture refusée

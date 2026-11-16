@@ -35,7 +35,7 @@ struct PlanNotificationsTests {
     }
 
     private static func plan(_ reglages: Reglages, _ journal: Journal, _ maintenant: Int64, _ fuseau: Fuseau,
-                             vol: [VolRappels.Rappel] = []) -> [NotificationPrevue] {
+                             vol: [VolRappels.Rappel] = []) -> [NotificationPlanifiee] {
         PlanNotifications.planifier(reglages: reglages, journal: journal, volRappels: vol, maintenant: maintenant,
                                     fuseau: fuseau, horaires: horairesFactices, allumage: allumageFactice,
                                     heureVol: PlanNotifications.instantTexte)
@@ -45,7 +45,7 @@ struct PlanNotificationsTests {
         paris.millis(DateHeure(JourCivil.du(jour), heure: heure, minute: minute))
     }
 
-    private static func rappelsSeuls(_ plan: [NotificationPrevue]) -> [NotificationPrevue] {
+    private static func rappelsSeuls(_ plan: [NotificationPlanifiee]) -> [NotificationPlanifiee] {
         plan.filter { $0.categorie == .rappel }
     }
 
@@ -119,9 +119,9 @@ struct PlanNotificationsTests {
 
     @Test func lesPartsEtLaMargeFontLeBudget() {
         var somme = PlanNotifications.marge
-        for c in NotificationPrevue.Categorie.allCases { somme += c.part }
+        for c in NotificationPlanifiee.Categorie.allCases { somme += c.part }
         #expect(somme == PlanNotifications.limite)
-        let parts = NotificationPrevue.Categorie.allCases.map { $0.part }
+        let parts = NotificationPlanifiee.Categorie.allCases.map { $0.part }
         #expect(parts == [30, 4, 6, 14, 2])
     }
 
@@ -132,7 +132,7 @@ struct PlanNotificationsTests {
             let total = plan.count
             #expect(total <= PlanNotifications.limite, "graine \(graine)")
             #expect(total <= PlanNotifications.limite - PlanNotifications.marge, "graine \(graine)")
-            for c in NotificationPrevue.Categorie.allCases {
+            for c in NotificationPlanifiee.Categorie.allCases {
                 let n = plan.filter { $0.categorie == c }.count
                 #expect(n <= c.part, "graine \(graine), \(c.rawValue)")
             }
@@ -353,7 +353,17 @@ struct PlanNotificationsTests {
         vol.append(VolRappels.Rappel(type: .priere, instant: maintenant + 7 * 3_600_000, priere: nil))
         let plan = Self.plan(r, Journal(), maintenant, Self.paris, vol: vol)
         let categories = Set(plan.map { $0.categorie })
-        #expect(categories == Set(NotificationPrevue.Categorie.allCases))
+        #expect(categories == Set(NotificationPlanifiee.Categorie.allCases))
+        // Ce que la notification ouvre : Birkat haLevana (LevanaAlerteReceiver), VolAlerte.texteSiddur, sinon l'accueil.
+        let ouverts = plan.map { $0.categorie.rawValue + ":" + ($0.texteSiddur ?? "-") }
+        for o in ouverts where o.hasPrefix("levana:") {
+            #expect(o == "levana:birkat_halevana")
+        }
+        let vols = ouverts.filter { $0.hasPrefix("vol:") }
+        #expect(vols == ["vol:tefilat_haderekh", "vol:minha", "vol:minha", "vol:sefirat_haomer", "vol:arvit"])
+        let autres = ouverts.filter { !$0.hasPrefix("levana:") && !$0.hasPrefix("vol:") && !$0.hasSuffix(":-") }
+        let aucunAutre = autres.isEmpty
+        #expect(aucunAutre, "\(autres)")
         for langue in Catalogue.langues {
             for p in plan {
                 var libelles = [p.titre, p.texte]

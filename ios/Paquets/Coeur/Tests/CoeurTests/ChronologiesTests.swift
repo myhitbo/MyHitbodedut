@@ -87,7 +87,7 @@ struct ChronologiesTests {
     }
 
     /// Les zmanim que la JVM a écrits pour ce jour et le lendemain ; rien pour une autre date.
-    private static func horaires(_ j: Jour) -> PlanNotifications.Horaires {
+    private static func horaires(_ j: Jour) -> Chronologies.Horaires {
         let jour = JourCivil.du(j.jour)
         let lendemain = jour.plus(jours: 1)
         let duJour = j.horaires
@@ -138,7 +138,7 @@ struct ChronologiesTests {
                 let pastille = Self.pastille(hebreu)
                 #expect(grande.pastille == pastille, "\(contexte)")
                 // La journée de la grande vignette : d'aujourd'hui, ou de demain une fois la nuit tombée.
-                let demain = try #require(r[4].booleen)
+                let demain = try #require(r[4].booleen as Bool?)
                 let source = demain ? j.demain : j.horaires
                 var journee: [Chronologies.ZmanAffiche] = []
                 for cle in ZmanimVignette.journee {

@@ -5,7 +5,7 @@ import Foundation
 /// Le titre et le texte sont des `Libelle` : l'app les résout dans sa langue au moment de poser la notification.
 /// `suite` est une seconde ligne, jointe au texte par un retour à la ligne comme sur Android (la phrase du trophée
 /// tout proche sous le rappel, la prière du moment sous Tefilat haDerekh).
-public struct NotificationPrevue: Sendable, Hashable {
+public struct NotificationPlanifiee: Sendable, Hashable {
 
     /// Les parts du budget de 64 notifications en attente (PORTAGE.md § 2.2.2), dans l'ordre où elles se
     /// départagent à instant égal.
@@ -72,9 +72,12 @@ public struct NotificationPrevue: Sendable, Hashable {
     /// La clé du trophée tout proche qu'annonce la notification (« famille:rang ») : l'app le note parmi les
     /// trophées signalés (`trophees_proches_signales`) quand elle s'affiche, comme le fait ReminderReceiver.
     public let trophee: String?
+    /// Le texte du siddour que la notification ouvre quand on la touche (LevanaAlerteReceiver : Birkat haLevana ;
+    /// VolAlerte.texteSiddur pour le vol) ; nil : l'accueil de l'app.
+    public let texteSiddur: String?
 
     public init(identifiant: String, instant: Int64, titre: Libelle, texte: Libelle, suite: Libelle? = nil,
-                categorie: Categorie, actions: [Action] = [], trophee: String? = nil) {
+                categorie: Categorie, actions: [Action] = [], trophee: String? = nil, texteSiddur: String? = nil) {
         self.identifiant = identifiant
         self.instant = instant
         self.titre = titre
@@ -83,6 +86,7 @@ public struct NotificationPrevue: Sendable, Hashable {
         self.categorie = categorie
         self.actions = actions
         self.trophee = trophee
+        self.texteSiddur = texteSiddur
     }
 }
 
@@ -125,7 +129,7 @@ public enum PlanNotifications {
 
     /// Le plan, avec les zmanim de `Zmanim` et les heures du vol écrites comme `Instant.toString()`.
     public static func planifier(reglages: Reglages, journal: Journal, volRappels: [VolRappels.Rappel],
-                                 maintenant: Int64, fuseau: Fuseau) -> [NotificationPrevue] {
+                                 maintenant: Int64, fuseau: Fuseau) -> [NotificationPlanifiee] {
         planifier(reglages: reglages, journal: journal, volRappels: volRappels, maintenant: maintenant, fuseau: fuseau,
                   horaires: { lieu, jour in horairesCalcules(lieu, jour) },
                   allumage: { lieu, jour, minutes in allumageCalcule(lieu, jour, minutes) },
@@ -136,20 +140,20 @@ public enum PlanNotifications {
     /// (puis catégorie, puis identifiant). `heureVol` écrit une heure du vol dans un texte (VolAlerte.deuxHeures).
     public static func planifier(reglages: Reglages, journal: Journal, volRappels: [VolRappels.Rappel],
                                  maintenant: Int64, fuseau: Fuseau, horaires: Horaires, allumage: Allumage,
-                                 heureVol: (Int64) -> String) -> [NotificationPrevue] {
+                                 heureVol: (Int64) -> String) -> [NotificationPlanifiee] {
         let chaine = rappels(reglages: reglages, journal: journal, maintenant: maintenant, fuseau: fuseau,
-                             nombre: NotificationPrevue.Categorie.rappel.part)
-        var liste: [NotificationPrevue] = []
-        liste.append(contentsOf: chaine.filter { $0.categorie == .rappel }.prefix(NotificationPrevue.Categorie.rappel.part))
+                             nombre: NotificationPlanifiee.Categorie.rappel.part)
+        var liste: [NotificationPlanifiee] = []
+        liste.append(contentsOf: chaine.filter { $0.categorie == .rappel }.prefix(NotificationPlanifiee.Categorie.rappel.part))
         var seance = chaine.filter { $0.categorie == .seance }
         if let fin = finDeSeance(reglages: reglages, maintenant: maintenant) {
             seance.append(fin)
         }
-        liste.append(contentsOf: trie(seance).prefix(NotificationPrevue.Categorie.seance.part))
+        liste.append(contentsOf: trie(seance).prefix(NotificationPlanifiee.Categorie.seance.part))
         liste.append(contentsOf: chabbat(reglages: reglages, maintenant: maintenant, fuseau: fuseau, allumage: allumage))
         liste.append(contentsOf: levana(reglages: reglages, maintenant: maintenant, fuseau: fuseau, horaires: horaires))
         let vols = vol(reglages: reglages, rappels: volRappels, maintenant: maintenant, heure: heureVol)
-        liste.append(contentsOf: vols.prefix(NotificationPrevue.Categorie.vol.part))
+        liste.append(contentsOf: vols.prefix(NotificationPlanifiee.Categorie.vol.part))
         return trie(liste)
     }
 
@@ -165,7 +169,7 @@ public enum PlanNotifications {
     /// suite s'arrête une fois `nombre` rappels (hors report) trouvés. Une séance ouverte court tant qu'on ne l'a
     /// pas close (`SessionRule.enCours`) : elle tait tous les rappels, et la suite n'est pas parcourue.
     public static func rappels(reglages: Reglages, journal: Journal, maintenant: Int64, fuseau: Fuseau,
-                               nombre: Int = Int.max) -> [NotificationPrevue] {
+                               nombre: Int = Int.max) -> [NotificationPlanifiee] {
         guard reglages.reminderEnabled, !Store.isSessionOpen(reglages: reglages) else { return [] }
         let fuseauTelephone = fuseau.identifiant
         let heures = reglages.reminderTimes
@@ -175,7 +179,7 @@ public enum PlanNotifications {
         let texte = Libelle("reminder_text", .libelle(Store.formatDuration(reglages.targetMinutes)))
         let proche = tropheeProche(reglages: reglages, journal: journal, aujourdhui: aujourdhui,
                                    fuseauTelephone: fuseauTelephone)
-        var res: [NotificationPrevue] = []
+        var res: [NotificationPlanifiee] = []
         var trouves = 0
         var t = maintenant
         var report = reglages.reminderSnoozedUntil
@@ -210,7 +214,7 @@ public enum PlanNotifications {
                 sunsetMinutes: nil)
             if permis {
                 let premier = res.isEmpty
-                res.append(NotificationPrevue(
+                res.append(NotificationPlanifiee(
                     identifiant: (reporte ? "rappel-reporte-" : "rappel-") + String(q),
                     instant: q, titre: titre, texte: texte,
                     suite: premier ? proche?.phrase : nil,
@@ -244,12 +248,12 @@ public enum PlanNotifications {
 
     /// Le signal de fin d'une séance minutée en cours, à l'heure de sa fin (PORTAGE.md § 2.2.1) ; nil pour une
     /// séance ouverte, close ou sans séance.
-    public static func finDeSeance(reglages: Reglages, maintenant: Int64) -> NotificationPrevue? {
+    public static func finDeSeance(reglages: Reglages, maintenant: Int64) -> NotificationPlanifiee? {
         let debut = Store.sessionStartedAt(reglages: reglages)
         let fin = Store.sessionEndsAt(reglages: reglages)
         let duree = Store.sessionTarget(reglages: reglages)
         guard debut > 0, duree > 0, fin > maintenant else { return nil }
-        return NotificationPrevue(identifiant: "fin-seance-" + String(fin), instant: fin,
+        return NotificationPlanifiee(identifiant: "fin-seance-" + String(fin), instant: fin,
                                   titre: Libelle("session_done_title"),
                                   texte: Libelle("session_done_text", .libelle(Store.formatDuration(duree))),
                                   categorie: .seance)
@@ -261,12 +265,12 @@ public enum PlanNotifications {
     /// les enchaîne ; au lieu des alertes (`lieuAlertes`), avec les minutes d'allumage des réglages. Sans lieu,
     /// rien. Une chaîne s'arrête quand deux vendredis de suite n'ont pas d'allumage (nuit ou jour polaire).
     public static func chabbat(reglages: Reglages, maintenant: Int64, fuseau: Fuseau,
-                               nombre: Int = NotificationPrevue.Categorie.chabbat.part,
-                               allumage: Allumage) -> [NotificationPrevue] {
+                               nombre: Int = NotificationPlanifiee.Categorie.chabbat.part,
+                               allumage: Allumage) -> [NotificationPlanifiee] {
         guard let lieu = reglages.lieuAlertes(fuseauTelephone: fuseau.identifiant),
               let fuseauLieu = Fuseau(lieu.fuseau) else { return [] }
         let minutes = reglages.allumage
-        var res: [NotificationPrevue] = []
+        var res: [NotificationPlanifiee] = []
         var t = maintenant
         for _ in 0..<max(nombre, 0) {
             let alerte = ChabbatAlerte.prochaine(
@@ -276,7 +280,7 @@ public enum PlanNotifications {
                     return DateHeureZonee(millis: instant, fuseau: fuseauLieu)
                 })
             guard let alerte else { break }
-            res.append(NotificationPrevue(identifiant: "chabbat-" + alerte.jour.iso, instant: alerte.millis,
+            res.append(NotificationPlanifiee(identifiant: "chabbat-" + alerte.jour.iso, instant: alerte.millis,
                                           titre: Libelle("chabbat_alerte_titre"), texte: Libelle("chabbat_alerte_texte"),
                                           categorie: .chabbat))
             t = alerte.millis
@@ -290,13 +294,13 @@ public enum PlanNotifications {
     /// des alertes (sinon celui du téléphone), selon l'usage choisi ou celui du noussa'h (VueJour.usageLevana),
     /// à la sortie des étoiles du lieu, sinon à 20 h (LevanaAlerte.heure). Rien si le rappel est éteint.
     public static func levana(reglages: Reglages, maintenant: Int64, fuseau: Fuseau,
-                              nombre: Int = NotificationPrevue.Categorie.levana.part,
-                              horaires: Horaires) -> [NotificationPrevue] {
+                              nombre: Int = NotificationPlanifiee.Categorie.levana.part,
+                              horaires: Horaires) -> [NotificationPlanifiee] {
         guard reglages.levanaRappel else { return [] }
         let lieu = reglages.lieuAlertes(fuseauTelephone: fuseau.identifiant)
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? fuseau
         let usage = reglages.levanaUsage.flatMap { Levana.Usage(rawValue: $0) } ?? Levana.Usage.duNusah(reglages.siddurNusah)
-        var res: [NotificationPrevue] = []
+        var res: [NotificationPlanifiee] = []
         var t = maintenant
         for _ in 0..<max(nombre, 0) {
             let rappel = LevanaAlerte.prochain(
@@ -308,10 +312,10 @@ public enum PlanNotifications {
                     return DateHeureZonee(DateHeure(jour, heure: 20), fuseau: zone)
                 })
             guard let rappel else { break }
-            res.append(NotificationPrevue(
+            res.append(NotificationPlanifiee(
                 identifiant: "levana-" + rappel.quand.jour.iso + "-" + rappel.soir.rawValue.lowercased(),
                 instant: rappel.quand.millis, titre: Libelle(rappel.soir.titre), texte: Libelle("levana_rappel_texte"),
-                categorie: .levana))
+                categorie: .levana, texteSiddur: "birkat_halevana"))
             t = rappel.quand.millis
         }
         return res
@@ -325,12 +329,12 @@ public enum PlanNotifications {
     /// Rien si les rappels du vol sont éteints. S'arrête une fois `nombre` atteint ou dépassé (un déclenchement
     /// peut en montrer plusieurs). `heure` écrit l'heure d'une limite dans le texte.
     public static func vol(reglages: Reglages, rappels: [VolRappels.Rappel], maintenant: Int64,
-                           nombre: Int = NotificationPrevue.Categorie.vol.part,
-                           heure: (Int64) -> String) -> [NotificationPrevue] {
+                           nombre: Int = NotificationPlanifiee.Categorie.vol.part,
+                           heure: (Int64) -> String) -> [NotificationPlanifiee] {
         guard reglages.volRappelsActifs else { return [] }
         var vu = reglages.volRappelVu
         var t = maintenant
-        var res: [NotificationPrevue] = []
+        var res: [NotificationPlanifiee] = []
         while res.count < nombre {
             var prochain: Int64?
             for r in rappels where r.instant > vu && r.instant > t - toleranceVol {
@@ -356,7 +360,7 @@ public enum PlanNotifications {
 
     /// Le titre et le texte d'un rappel du vol (VolAlerte.textes).
     private static func notificationVol(_ r: VolRappels.Rappel, rang: Int, a instant: Int64,
-                                        heure: (Int64) -> String) -> NotificationPrevue {
+                                        heure: (Int64) -> String) -> NotificationPlanifiee {
         let nom = nomPriere(r.priere)
         let titre: Libelle
         let texte: Libelle
@@ -382,8 +386,18 @@ public enum PlanNotifications {
             titre = Libelle("vol_rappel_omer_titre")
             texte = Libelle("vol_rappel_omer_texte", .texte(String(r.omer)))
         }
-        return NotificationPrevue(identifiant: "vol-" + String(rang) + "-" + r.type.rawValue + "-" + String(r.instant),
-                                  instant: instant, titre: titre, texte: texte, suite: suite, categorie: .vol)
+        return NotificationPlanifiee(identifiant: "vol-" + String(rang) + "-" + r.type.rawValue + "-" + String(r.instant),
+                                  instant: instant, titre: titre, texte: texte, suite: suite, categorie: .vol,
+                                  texteSiddur: texteSiddur(r))
+    }
+
+    /// VolAlerte.texteSiddur : le texte du siddour qu'ouvre un rappel du vol.
+    static func texteSiddur(_ r: VolRappels.Rappel) -> String {
+        switch r.type {
+        case .tefilatHaderekh: return "tefilat_haderekh"
+        case .omer: return "sefirat_haomer"
+        case .priere, .priereFin: return r.priere ?? "arvit"
+        }
     }
 
     /// VolAlerte.nomPriere : le nom de la prière, Arvit par défaut.
@@ -427,7 +441,7 @@ public enum PlanNotifications {
     // MARK: Aides
 
     /// Trié par instant, puis catégorie, puis identifiant : deux programmations du même état donnent la même liste.
-    private static func trie(_ liste: [NotificationPrevue]) -> [NotificationPrevue] {
+    private static func trie(_ liste: [NotificationPlanifiee]) -> [NotificationPlanifiee] {
         liste.sorted { a, b in
             (a.instant, a.categorie.rang, a.identifiant) < (b.instant, b.categorie.rang, b.identifiant)
         }

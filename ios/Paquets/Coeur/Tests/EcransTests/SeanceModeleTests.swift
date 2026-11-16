@@ -575,6 +575,30 @@ struct SeanceModeleTests {
         #expect(b.seance.duree == 1)
     }
 
+    /// Android écrit la durée habituelle puis lance la séance, quoi qu'il arrive : un disque qui refuse ne la
+    /// retient pas.
+    @Test func uneDureeRefuseeParLeDisqueLanceQuandMemeLaSeance() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        let persistance = PersistanceEnMemoire()
+        let magasin = Magasin(persistance: persistance)
+        let horloge = SeanceHorlogeReglable(DateHeure(jour, heure: 10))
+        let seance = SeanceEnCours(magasin: magasin, horloge: horloge)
+        let modele = SeanceModele(seance: seance, contenus: Self.contenus(), langue: "fr", debug: false,
+                                  melange: { $0 })
+        await modele.ouvrir()
+        await persistance.faireEchouer(true)
+        var refuse = false
+        do {
+            try await modele.commencer(minutes: 30)
+        } catch is PersistanceEnMemoire.Echec {
+            refuse = true
+        }
+        #expect(refuse)
+        #expect(modele.enCours)
+        #expect(seance.duree == 30)
+        #expect(magasin.reglages.targetMinutes == 30)
+    }
+
     // MARK: Commencer simplement, et la demande de départ
 
     @Test func ecrireOuvreLaNoteDuJourEtPrierLesPrieres() async throws {

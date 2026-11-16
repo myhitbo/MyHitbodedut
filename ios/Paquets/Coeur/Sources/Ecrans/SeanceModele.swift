@@ -396,14 +396,17 @@ public final class SeanceModele {
             // Le changement reste en mémoire ; la prochaine écriture l'emportera.
         }
         let enCours = seance.enCours
-        if etaitEnCours && !enCours {
+        let finie = etaitEnCours && !enCours
+        // Retenu avant de tirer : un autre tour (la boucle d'une seconde, « Terminer ») qui passerait pendant
+        // l'écriture du sac ne tirerait pas un second mot de clôture.
+        etaitEnCours = enCours
+        if finie {
             if abandon {
                 abandon = false
             } else {
                 await tirer(.cloture)
             }
         }
-        etaitEnCours = enCours
         suivreCalme(enCours)
         if !enCours {
             questionRang = -1
@@ -670,10 +673,17 @@ public final class SeanceModele {
         if let erreur { throw erreur }
     }
 
-    /// Une durée proposée : elle lance la séance et devient la durée habituelle.
+    /// Une durée proposée : elle lance la séance et devient la durée habituelle. Une écriture refusée de la durée
+    /// n'empêche pas la séance de partir (Android l'écrit puis lance, quoi qu'il arrive) ; l'erreur est rendue après.
     public func commencer(minutes: Int) async throws {
-        try await magasin.modifierReglages { $0.setTargetMinutes(minutes) }
+        var erreur: (any Error)? = nil
+        do {
+            try await magasin.modifierReglages { $0.setTargetMinutes(minutes) }
+        } catch {
+            erreur = error
+        }
         try await lancer(minutes)
+        if let erreur { throw erreur }
     }
 
     /// « Durée réglable… » ouvre le champ.

@@ -304,7 +304,8 @@ public final class PresentationModele {
     /// La durée habituelle, parmi les quatre de la page (Onboarding.durees) ; une autre est ignorée. C'est celle
     /// du bouton « Commencer » de l'accueil.
     public func choisirDuree(_ minutes: Int) async throws {
-        guard Onboarding.durees.contains(minutes) else { return }
+        // La durée déjà cochée : rien à écrire (écrire la valeur par défaut ajouterait sa clé aux réglages).
+        guard Onboarding.durees.contains(minutes), minutes != magasin.reglages.targetMinutes else { return }
         try await magasin.modifierReglages { $0.setTargetMinutes(minutes) }
     }
 

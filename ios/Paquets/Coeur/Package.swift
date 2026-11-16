@@ -12,47 +12,24 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
-    "Chronologies.swift",
-    "PlanNotifications.swift",
 ]
 let enChantierTests: [String] = [
-    "ChronologiesTests.swift",
-    "PlanNotificationsTests.swift",
 ]
 let enChantierEcrans: [String] = [
-    "AccueilElements.swift",
-    "AccueilModele.swift",
-    "AjoutTempsModele.swift",
     "CalendrierModele.swift",
-    "CelebrationModele.swift",
-    "JournalGraphique.swift",
-    "JournalModele.swift",
-    "JournalNoteModele.swift",
     "LieuModele.swift",
-    "NoteModele.swift",
-    "ParcoursModele.swift",
     "PartageJour.swift",
     "ReglagesModele.swift",
-    "SeanceEnCours.swift",
-    "SeanceModele.swift",
-    "TextesModele.swift",
+    "VolModele.swift",
     "VolServices.swift",
     "ZmanimJour.swift",
 ]
 let enChantierEcransTests: [String] = [
-    "AccueilModeleTests.swift",
-    "AjoutTempsModeleTests.swift",
     "CalendrierModeleTests.swift",
-    "CelebrationModeleTests.swift",
-    "JournalModeleTests.swift",
     "LieuModeleTests.swift",
-    "NoteModeleTests.swift",
-    "ParcoursModeleTests.swift",
     "PartageJourTests.swift",
     "ReglagesModeleTests.swift",
-    "SeanceEnCoursTests.swift",
-    "SeanceModeleTests.swift",
-    "TextesModeleTests.swift",
+    "VolModeleTests.swift",
     "ZmanimEcranTests.swift",
 ]
 let enChantierVues: [String] = [
