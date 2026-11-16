@@ -12,10 +12,8 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
-    "EtatBarriere.swift",
 ]
 let enChantierTests: [String] = [
-    "EtatBarriereTests.swift",
 ]
 let enChantierEcrans: [String] = [
     "BibliothequeModele.swift",

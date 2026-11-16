@@ -188,7 +188,10 @@ struct TikkunModeleTests {
         let magasin = Magasin(persistance: persistance)
         let modele = try await Self.modele(magasin: magasin)
         let premier = Trophees.Niveau(famille: .tikkun, rang: 1)
-        let avant = Trophees.gagnes(Trophees.Pratique(minutes: [:], notes: 0, meilleureSerie: 0, tikkun: modele.joursDits))
+        let jour = try #require(JourCivil(iso: "2026-11-16"))
+        // Ce que l'accueil regarde pour ses trophées (Store.pratique), lu dans le magasin de l'app.
+        let avant = Trophees.gagnes(Store.pratique(journal: magasin.journal, reglages: magasin.reglages, aujourdhui: jour,
+                                                   fuseauTelephone: "UTC"))
         #expect(!avant.contains(premier))
         #expect(modele.finPossible)
         #expect(modele.psaumesDits.isEmpty)
@@ -197,9 +200,9 @@ struct TikkunModeleTests {
         #expect(modele.termine)
         #expect(!modele.finPossible)
         #expect(modele.psaumesDits == Set(Tikkun.ordre))
-        let jour = try #require(JourCivil(iso: "2026-11-16"))
         #expect(modele.joursDits == [jour])
-        let apres = Trophees.gagnes(Trophees.Pratique(minutes: [:], notes: 0, meilleureSerie: 0, tikkun: modele.joursDits))
+        let apres = Trophees.gagnes(Store.pratique(journal: magasin.journal, reglages: magasin.reglages, aujourdhui: jour,
+                                                   fuseauTelephone: "UTC"))
         #expect(apres.contains(premier))
         let tikkun = apres.filter { $0.famille == .tikkun }
         #expect(tikkun == [premier])
@@ -225,7 +228,7 @@ struct TikkunModeleTests {
         let veille = try #require(JourCivil(iso: "2026-11-16"))
         #expect(modele.joursDits == [veille])
         let quatreHeures = try #require(JourCivil(iso: "2026-11-17"))
-        let jour = TikkunJournal.jour(DateHeure(quatreHeures, heure: 4))
+        let jour = Store.jourTikkun(DateHeure(quatreHeures, heure: 4))
         #expect(jour == quatreHeures)
     }
 
@@ -233,21 +236,21 @@ struct TikkunModeleTests {
         let lundi = try #require(JourCivil(iso: "2026-11-16"))
         var reglages = Reglages()
         for numero in Tikkun.ordre {
-            TikkunJournal.marquer(&reglages, numero: numero, dit: true, maintenant: DateHeure(lundi, heure: 21))
+            Store.setTikkunDone(reglages: &reglages, numero: numero, done: true, maintenant: DateHeure(lundi, heure: 21))
         }
-        #expect(TikkunJournal.journal(reglages) == [lundi])
+        #expect(Store.tikkunJournal(reglages: reglages) == [lundi])
 
         // Le lendemain : aucun psaume dit, le jour d'avant reste au journal.
         let mardi = lundi.plus(jours: 1)
-        let faits = TikkunJournal.faits(reglages, maintenant: DateHeure(mardi, heure: 9))
+        let faits = Store.tikkunDone(reglages: reglages, maintenant: DateHeure(mardi, heure: 9))
         #expect(faits.isEmpty)
-        TikkunJournal.marquer(&reglages, numero: 16, dit: true, maintenant: DateHeure(mardi, heure: 9))
-        #expect(TikkunJournal.faits(reglages, maintenant: DateHeure(mardi, heure: 9)) == [16])
-        #expect(TikkunJournal.journal(reglages) == [lundi])
+        Store.setTikkunDone(reglages: &reglages, numero: 16, done: true, maintenant: DateHeure(mardi, heure: 9))
+        #expect(Store.tikkunDone(reglages: reglages, maintenant: DateHeure(mardi, heure: 9)) == [16])
+        #expect(Store.tikkunJournal(reglages: reglages) == [lundi])
 
         // Un psaume décoché le jour même retire ce jour du journal.
-        TikkunJournal.marquer(&reglages, numero: 32, dit: false, maintenant: DateHeure(lundi, heure: 22))
-        #expect(TikkunJournal.journal(reglages) == [])
+        Store.setTikkunDone(reglages: &reglages, numero: 32, done: false, maintenant: DateHeure(lundi, heure: 22))
+        #expect(Store.tikkunJournal(reglages: reglages) == [])
     }
 
     @Test func leJournalSeLitCommeAndroidLeLit() throws {
@@ -257,14 +260,14 @@ struct TikkunModeleTests {
         brut["tikkun_done"] = .chaine(" 16, 32,x,,99999999999,-3")
         brut["tikkun_journal"] = .chaine("2026-11-02, n'importe quoi,2026-11-16,")
         let reglages = Reglages(brut: brut)
-        let faits = TikkunJournal.faits(reglages, maintenant: DateHeure(lundi, heure: 12))
+        let faits = Store.tikkunDone(reglages: reglages, maintenant: DateHeure(lundi, heure: 12))
         #expect(faits == [16, 32, -3])
         let novembre = try #require(JourCivil(iso: "2026-11-02"))
-        #expect(TikkunJournal.journal(reglages) == [novembre, lundi])
+        #expect(Store.tikkunJournal(reglages: reglages) == [novembre, lundi])
         // Un jour gardé qui n'est pas une chaîne : rien n'est dit ce jour.
         var autre = brut
         autre["tikkun_day"] = .entier(3)
-        let rien = TikkunJournal.faits(Reglages(brut: autre), maintenant: DateHeure(lundi, heure: 12))
+        let rien = Store.tikkunDone(reglages: Reglages(brut: autre), maintenant: DateHeure(lundi, heure: 12))
         #expect(rien.isEmpty)
     }
 

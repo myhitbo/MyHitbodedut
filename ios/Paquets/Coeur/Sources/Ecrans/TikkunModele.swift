@@ -9,99 +9,10 @@ import Coeur
 // avec sa note. En bas, « J'ai dit le Tikoun en entier » : les dix psaumes comptent pour le jour du Tikoun, le jour
 // entre au journal du Tikoun (ses trophées), et l'écran se ferme.
 //
-// Le journal du Tikoun vit dans les réglages, sous les clés d'Android (tikkun_day, tikkun_done, tikkun_journal) ;
-// Store.swift de Coeur, qui en porte les règles, n'est pas encore construit (`enChantierSources`) : elles sont
-// reprises ici, à l'identique (`TikkunJournal`).
+// Le journal du Tikoun vit dans les réglages, sous les clés d'Android (tikkun_day, tikkun_done, tikkun_journal),
+// par les règles de Store.swift de Coeur (`jourTikkun`, `tikkunDone`, `setTikkunDone`, `tikkunJournal`).
 //
 // Pas d'image pendant une prière (13/10) ; pas de sous-titre en tête (12/10) : le texte dit lui-même où s'arrêter.
-
-/// Le Tikoun dit, jour par jour (Store.tikkunDone, setTikkunDone, tikkunJournal de Store.kt).
-public enum TikkunJournal {
-    private static let cleJour = "tikkun_day"
-    private static let cleFaits = "tikkun_done"
-    private static let cleJournal = "tikkun_journal"
-
-    /// Le jour du Tikoun bascule à 4 h, pas à minuit : commencé à 23 h 45, il se finit après minuit (bug du 02/11).
-    public static func jour(_ maintenant: DateHeure) -> JourCivil {
-        maintenant.plus(heures: -4).jour
-    }
-
-    /// Les psaumes déjà dits ce jour du Tikoun ; rien un autre jour : c'est une pratique quotidienne.
-    public static func faits(_ reglages: Reglages, maintenant: DateHeure) -> Set<Int> {
-        guard case .chaine(let jourGarde)? = reglages.brut[cleJour],
-              jourGarde.egalUnites(jour(maintenant).iso) else { return [] }
-        var numeros = Set<Int>()
-        for morceau in morceaux(chaine(reglages, cleFaits)) {
-            if let numero = entier(morceau.rogne) {
-                numeros.insert(numero)
-            }
-        }
-        return numeros
-    }
-
-    /// Coche ou décoche un psaume. Les dix psaumes dits : le jour entre au journal du Tikoun ; un psaume décoché
-    /// l'en retire.
-    public static func marquer(_ reglages: inout Reglages, numero: Int, dit: Bool, maintenant: DateHeure) {
-        var courant = faits(reglages, maintenant: maintenant)
-        if dit {
-            courant.insert(numero)
-        } else {
-            courant.remove(numero)
-        }
-        let leJour = jour(maintenant)
-        var jours = journal(reglages)
-        if courant.isSuperset(of: Tikkun.ordre) {
-            jours.insert(leJour)
-        } else {
-            jours.remove(leJour)
-        }
-        var brut = reglages.brut
-        brut[cleJour] = .chaine(leJour.iso)
-        brut[cleFaits] = .chaine(courant.sorted().map { String($0) }.joined(separator: ","))
-        brut[cleJournal] = .chaine(jours.sorted().map { $0.iso }.joined(separator: ","))
-        reglages = Reglages(brut: brut)
-    }
-
-    /// Les jours (du Tikoun, bascule à 4 h) où les dix psaumes ont été dits ; ce qui n'est pas une date est ignoré.
-    public static func journal(_ reglages: Reglages) -> Set<JourCivil> {
-        var jours = Set<JourCivil>()
-        for morceau in morceaux(chaine(reglages, cleJournal)) {
-            if let date = Journal.dateValide(morceau.rogne) {
-                jours.insert(date)
-            }
-        }
-        return jours
-    }
-
-    /// `getString(clé, "")`.
-    private static func chaine(_ reglages: Reglages, _ cle: String) -> String {
-        if case .chaine(let texte)? = reglages.brut[cle] { return texte }
-        return ""
-    }
-
-    /// `split(',')` de Kotlin : les morceaux entre deux virgules, vides compris.
-    private static func morceaux(_ texte: String) -> [String] {
-        var resultat: [String] = []
-        var courant: [UInt16] = []
-        for unite in texte.utf16 {
-            if unite == 0x2C {
-                resultat.append(Unites.texte(courant))
-                courant = []
-            } else {
-                courant.append(unite)
-            }
-        }
-        resultat.append(Unites.texte(courant))
-        return resultat
-    }
-
-    /// `toIntOrNull()` de Kotlin, pour les chiffres ASCII : un signe facultatif, des chiffres, dans un `Int` de
-    /// 32 bits.
-    private static func entier(_ texte: String) -> Int? {
-        guard let n = Int(texte), n >= Int(Int32.min), n <= Int(Int32.max) else { return nil }
-        return n
-    }
-}
 
 /// Un texte de titre : de l'hébreu tel quel (le titre d'une partie), ou une chaîne de l'interface (« תהילים ט״ז »).
 public enum TikkunTexte: Sendable, Hashable {
@@ -152,14 +63,14 @@ public final class TikkunModele {
     public let barre: TehilimBarreLecture
 
     public private(set) var etat: TehilimEtat = .chargement
-    private var tikkun: Tikkun?
+    private var tikkun: Tikkun? = nil
     /// « J'ai dit le Tikoun en entier » touché : l'écran se ferme (`finish()`).
     public private(set) var termine = false
 
     /// La dernière demande de défilement (garder sa place quand la taille ou les langues changent).
-    public private(set) var defilement: TehilimDefilement?
+    public private(set) var defilement: TehilimDefilement? = nil
     private var jeton = 0
-    @ObservationIgnored private var tete: String?
+    @ObservationIgnored private var tete: String? = nil
 
     public init(magasin: Magasin, contenus: ContenusApp, horloge: any Horloge, langue: String) {
         self.magasin = magasin
@@ -201,12 +112,12 @@ public final class TikkunModele {
 
     /// Les psaumes dits ce jour du Tikoun (le jour bascule à 4 h).
     public var psaumesDits: Set<Int> {
-        TikkunJournal.faits(magasin.reglages, maintenant: horloge.dateHeure)
+        Store.tikkunDone(reglages: magasin.reglages, maintenant: horloge.dateHeure)
     }
 
     /// Les jours où le Tikoun a été dit en entier : ce que regardent ses trophées (Trophees.Pratique.tikkun).
     public var joursDits: Set<JourCivil> {
-        TikkunJournal.journal(magasin.reglages)
+        Store.tikkunJournal(reglages: magasin.reglages)
     }
 
     /// « J'ai dit le Tikoun en entier » : tout dire d'un trait vaut les dix psaumes ; le jour entre au journal du
@@ -222,7 +133,7 @@ public final class TikkunModele {
         defer { termine = true }
         try await magasin.modifierReglages { reglages in
             for numero in numeros {
-                TikkunJournal.marquer(&reglages, numero: numero, dit: true, maintenant: maintenant)
+                Store.setTikkunDone(reglages: &reglages, numero: numero, done: true, maintenant: maintenant)
             }
         }
     }

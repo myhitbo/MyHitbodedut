@@ -1,7 +1,8 @@
 // GateStatus.evaluate (GateStatus.kt) pour iOS : les huit états d'Android, dans le même ordre de priorité,
 // et les cinq pannes propres à iOS (PORTAGE.md § 2.1.8), qui sont silencieuses et qu'il faut donc dire.
 // Les sous-règles (Store.fenetreFaite, isExempt, isSnoozed, inWindow) sont reprises ici sur l'instantané
-// `Etat`, parce que les extensions n'ont pas Coeur ; les tests les rejouent sur les vecteurs de store.json.
+// `Etat`, parce que les extensions n'ont pas Coeur ; fenetreFaite rejoue les vecteurs de store.json
+// (EvaluationTests), et toute la chaîne est confrontée aux règles de Store de Coeur (EtatBarriereTests).
 
 /// Pourquoi la barrière est active, ou pourquoi elle ne l'est pas. Les noms bruts sont ceux de Kotlin
 /// pour les huit états d'Android.

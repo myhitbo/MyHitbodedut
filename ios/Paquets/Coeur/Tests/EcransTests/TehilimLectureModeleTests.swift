@@ -202,10 +202,10 @@ struct TehilimLectureModeleTests {
         let attendue = MarquesPages.Marque(cle: "t:tehilim", nusah: "", section: 23, bloc: 3,
                                            apercu: Reference.lettres(23) + ", " + Reference.lettres(3) + " · "
                                                + MarquesPages.apercu(livre.versets(23)[2], mots: 5))
-        let gardees = TehilimMarques.toutes(magasin.reglages)
+        let gardees = Store.marques(reglages: magasin.reglages)
         #expect(gardees == [attendue])
         let ecrites = await persistance.enregistrement.reglages
-        #expect(TehilimMarques.toutes(ecrites) == [attendue])
+        #expect(Store.marques(reglages: ecrites) == [attendue])
         let marques = try #require(modele.psaumes.first).versets.filter { $0.marque }.map { $0.id }
         #expect(marques == ["v:23:3"])
         // La place reste : aucun défilement.
@@ -216,7 +216,7 @@ struct TehilimLectureModeleTests {
         let retire = try await modele.basculerMarque(psaume: 23, verset: 3)
         #expect(!retire)
         #expect(modele.message == Libelle("marque_retiree"))
-        let restantes = TehilimMarques.toutes(magasin.reglages)
+        let restantes = Store.marques(reglages: magasin.reglages)
         #expect(restantes.isEmpty)
         let ecritures = await persistance.ecrituresReglages
         #expect(ecritures == 2)
@@ -229,8 +229,8 @@ struct TehilimLectureModeleTests {
 
     @Test func unMarquePageDUnAutreTexteNeMarqueRien() async throws {
         var reglages = Reglages()
-        TehilimMarques.basculer(&reglages, MarquesPages.Marque(cle: "s:chaharit", nusah: "", section: 23, bloc: 1,
-                                                               apercu: "x"))
+        Store.basculerMarque(reglages: &reglages, MarquesPages.Marque(cle: "s:chaharit", nusah: "", section: 23, bloc: 1,
+                                                                      apercu: "x"))
         let modele = await Self.lecture(.de(Portion(23, 23)),
                                         magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)))
         let marques = try #require(modele.psaumes.first).versets.filter { $0.marque }.count

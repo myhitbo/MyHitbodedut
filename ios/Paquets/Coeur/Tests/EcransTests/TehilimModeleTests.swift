@@ -246,10 +246,10 @@ struct TehilimModeleTests {
     @Test func laLigneEtLaFeuilleNeMontrentQueLesTehilim() throws {
         var reglages = Reglages()
         // Posés dans le désordre ; un marque-page du siddour n'est pas des Tehilim.
-        TehilimMarques.basculer(&reglages, Self.marque(23, 4))
-        TehilimMarques.basculer(&reglages, Self.marque(1, 2, cle: "s:chaharit"))
-        TehilimMarques.basculer(&reglages, Self.marque(3, 1))
-        TehilimMarques.basculer(&reglages, Self.marque(23, 2))
+        Store.basculerMarque(reglages: &reglages, Self.marque(23, 4))
+        Store.basculerMarque(reglages: &reglages, Self.marque(1, 2, cle: "s:chaharit"))
+        Store.basculerMarque(reglages: &reglages, Self.marque(3, 1))
+        Store.basculerMarque(reglages: &reglages, Self.marque(23, 2))
         let modele = try Self.modele("2026-09-12", reglages: reglages)
 
         let ligne = try #require(modele.ligneSignets)
@@ -297,8 +297,8 @@ struct TehilimModeleTests {
     @Test func lApercuSuitLaPoliceDeLecture() throws {
         var reglages = Reglages()
         // Un meteg (U+05BD), absent de la police à empattements : masqué dans la feuille.
-        TehilimMarques.basculer(&reglages, MarquesPages.Marque(cle: TehilimLectureModele.cleMarques, nusah: "",
-                                                               section: 1, bloc: 1, apercu: "\u{05D0}\u{05BD}"))
+        Store.basculerMarque(reglages: &reglages, MarquesPages.Marque(cle: TehilimLectureModele.cleMarques, nusah: "",
+                                                                      section: 1, bloc: 1, apercu: "\u{05D0}\u{05BD}"))
         let modele = try Self.modele("2026-09-12", reglages: reglages)
         let ligne = try #require(modele.lignesSignets.first)
         let apercu = ligne.apercu

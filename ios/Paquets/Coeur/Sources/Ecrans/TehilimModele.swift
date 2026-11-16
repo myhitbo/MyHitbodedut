@@ -9,10 +9,8 @@ import Coeur
 //
 // Les numéros suivent la langue de l'app (TehilimTexte) : lettres en hébreu, chiffres sinon. Le jour montré est
 // celui du téléphone (`LocalDate.now()`), relu à chaque retour sur l'écran (onResume : `actualiser()`). Les
-// marque-pages sont lus dans le `Magasin` à chaque fois : un marque-page posé dans la lecture se voit au retour.
-//
-// Store.swift de Coeur n'est pas encore construit (`enChantierSources`) : la lecture et l'écriture des marque-pages
-// (« marques_pages ») sont reprises ici (`TehilimMarques`), à l'identique, sur `Reglages.brut`.
+// marque-pages sont lus dans le `Magasin` à chaque fois (Store.marques de Coeur, clé « marques_pages ») : un
+// marque-page posé dans la lecture se voit au retour.
 
 /// Où en est un écran des Tehilim, du Tikoun ou des Tfilot.
 public enum TehilimEtat: Sendable, Equatable {
@@ -178,29 +176,6 @@ public struct TehilimSignetLigne: Sendable, Equatable, Identifiable {
     public let route: TehilimRoute
 }
 
-/// Les marque-pages de Store.kt (`Store.marques`, `Store.basculerMarque`), sous la clé « marques_pages ».
-enum TehilimMarques {
-    private static let cle = "marques_pages"
-
-    /// Toutes les marques gardées, dans leur ordre (la plus récente en tête).
-    static func toutes(_ reglages: Reglages) -> [MarquesPages.Marque] {
-        if case .chaine(let texte)? = reglages.brut[cle] {
-            return MarquesPages.decoder(texte)
-        }
-        return []
-    }
-
-    /// Pose ou retire ; vrai si la marque est maintenant posée.
-    @discardableResult
-    static func basculer(_ reglages: inout Reglages, _ m: MarquesPages.Marque) -> Bool {
-        let l = MarquesPages.basculer(toutes(reglages), m)
-        var brut = reglages.brut
-        brut[cle] = .chaine(MarquesPages.encoder(l))
-        reglages = Reglages(brut: brut)
-        return l.contains { $0.memePlace(m) }
-    }
-}
-
 /// Le livre de Tehilim : la portion du jour, la grille des psaumes, les marque-pages.
 @MainActor
 @Observable
@@ -215,7 +190,7 @@ public final class TehilimModele {
     public private(set) var etat: TehilimEtat = .chargement
     /// Le jour dont on montre les portions : aujourd'hui, relu par `actualiser()`.
     public private(set) var jour: JourCivil
-    private var versetsTotal: Int?
+    private var versetsTotal: Int? = nil
 
     /// La feuille des marque-pages est ouverte (le dialogue d'Android).
     public private(set) var feuilleSignetsOuverte = false
@@ -336,7 +311,7 @@ public final class TehilimModele {
 
     /// Les marque-pages des Tehilim (clé « t:tehilim »), dans l'ordre où ils sont gardés.
     public var signets: [MarquesPages.Marque] {
-        TehilimMarques.toutes(magasin.reglages).filter { $0.cle.egalUnites(TehilimLectureModele.cleMarques) }
+        Store.marques(reglages: magasin.reglages).filter { $0.cle.egalUnites(TehilimLectureModele.cleMarques) }
     }
 
     /// La ligne des marque-pages ; nil sans marque-page (Android ne la pose pas).

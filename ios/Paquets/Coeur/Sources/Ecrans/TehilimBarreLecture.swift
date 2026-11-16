@@ -37,7 +37,7 @@ public final class TehilimBarreLecture {
     @ObservationIgnored private var parcouru: Double = 0
     /// Ce que l'écran fait quand la taille, la nuit, la police ou les langues changent : garder sa place
     /// (`surChangement` d'Android). Posé par le modèle de l'écran.
-    @ObservationIgnored var surChangement: (@MainActor () -> Void)?
+    @ObservationIgnored var surChangement: (@MainActor () -> Void)? = nil
 
     public init(magasin: Magasin, langue: String) {
         self.magasin = magasin

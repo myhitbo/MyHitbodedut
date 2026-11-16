@@ -54,7 +54,7 @@ public final class TefilotModele {
     public let langue: String
 
     public private(set) var etat: TehilimEtat = .chargement
-    private var bibliotheque: Bibliotheque?
+    private var bibliotheque: Bibliotheque? = nil
 
     public init(magasin: Magasin, contenus: ContenusApp, langue: String) {
         self.magasin = magasin

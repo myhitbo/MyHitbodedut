@@ -4,8 +4,9 @@ import Testing
 
 // GateStatus.evaluate n'a pas de test d'Android : les cas viennent de PORTAGE.md § 2.1.5 à 2.1.8 et des
 // critères de la tâche 12 de ROADMAP.md (les treize états, le report de 5 et de 15 minutes, la fenêtre de
-// nuit un vendredi soir, la liste des jours exemptés, le repli du samedi). Les sous-règles reprises de
-// Store.kt rejouent les vecteurs de store.json (VecteursStore.kt).
+// nuit un vendredi soir, la liste des jours exemptés, le repli du samedi). fenetreFaite rejoue les vecteurs
+// de store.json (VecteursStore.kt) ; isExempt, isSnoozed et inWindow sont confrontés aux règles de Store de
+// Coeur dans EtatBarriereTests (laBarriereSuitLesReglesDuStore).
 
 /// Un instant en temps universel, donné par son jour, son heure et sa minute.
 private func a(_ jour: String, _ heure: Int, _ minute: Int, secondes: Int64 = 0) -> Horodatage {

@@ -79,17 +79,17 @@ public final class TehilimLectureModele {
     public private(set) var etat: TehilimEtat = .chargement
     /// Ce qu'on lit : la portion reçue, puis le psaume voisin choisi par précédent ou suivant.
     public private(set) var portion: Portion
-    private var livre: Tehilim?
+    private var livre: Tehilim? = nil
     /// MARQUE_VERSET : le verset où se placer à l'ouverture ; 0 sans marque-page.
     private let marqueVerset: Int
 
     /// La dernière demande de défilement ; la vue la suit (`onChange`).
-    public private(set) var defilement: TehilimDefilement?
+    public private(set) var defilement: TehilimDefilement? = nil
     private var jeton = 0
     /// L'élément en haut de l'écran, que la vue signale : on y revient quand la taille ou les langues changent.
-    @ObservationIgnored private var tete: String?
+    @ObservationIgnored private var tete: String? = nil
     /// Un message bref (le Toast d'Android) : « Marque-page posé », « Marque-page retiré ». La vue l'efface.
-    public private(set) var message: Libelle?
+    public private(set) var message: Libelle? = nil
 
     public init(magasin: Magasin, contenus: ContenusApp, langue: String, cible: TehilimLectureCible) {
         self.magasin = magasin
@@ -155,7 +155,7 @@ public final class TehilimLectureModele {
         let mode = barre.langues
         let police = barre.police
         var marques = Set<String>()
-        for m in MarquesPages.duTexte(TehilimMarques.toutes(magasin.reglages), cle: TehilimLectureModele.cleMarques,
+        for m in MarquesPages.duTexte(Store.marques(reglages: magasin.reglages), cle: TehilimLectureModele.cleMarques,
                                       nusah: "") {
             marques.insert(TehilimLectureModele.idVerset(m.section, m.bloc))
         }
@@ -248,9 +248,9 @@ public final class TehilimLectureModele {
         let apercu = Reference.lettres(n) + ", " + Reference.lettres(v) + " · " + MarquesPages.apercu(tous[v - 1], mots: 5)
         let marque = MarquesPages.Marque(cle: TehilimLectureModele.cleMarques, nusah: "", section: n, bloc: v,
                                          apercu: apercu)
-        let pose = !TehilimMarques.toutes(magasin.reglages).contains { $0.memePlace(marque) }
+        let pose = !Store.marques(reglages: magasin.reglages).contains { $0.memePlace(marque) }
         message = Libelle(pose ? "marque_posee" : "marque_retiree")
-        try await magasin.modifierReglages { TehilimMarques.basculer(&$0, marque) }
+        try await magasin.modifierReglages { Store.basculerMarque(reglages: &$0, marque) }
         return pose
     }
 
