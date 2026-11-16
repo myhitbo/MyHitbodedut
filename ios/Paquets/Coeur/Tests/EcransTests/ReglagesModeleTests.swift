@@ -399,11 +399,47 @@ struct ReglagesModeleTests {
         // « Continuer » demande, puis relit l'état.
         await m.accorder(.tempsEcran)
         await banc.barriere.regler(constat: Constat(), jetons: 3)
-        await m.continuerDivulgation()
+        let route = try await m.continuerDivulgation()
+        #expect(route == nil)
         #expect(m.dialogue == nil)
         let apres = await banc.tempsEcran.demandes
         #expect(apres == 1)
         #expect(m.autorisations.last?.accordee == true)
+        // Venue de la carte des autorisations, la divulgation n'allume pas le mode.
+        #expect(m.estActif(.barriere) == false)
+    }
+
+    /// Sur iOS, le mode ne s'allume qu'avec l'accès à Temps d'écran (PORTAGE.md § 2.1.13) : allumé sans lui, la
+    /// carte dirait « Accès retiré par iOS ».
+    @Test func lInterrupteurDeLaBarrierePasseParLaDivulgationSansAcces() async throws {
+        let banc = try fabriquer(notificationsAccordees: false, constat: Constat(autorise: false))
+        let m = banc.modele
+        await m.rafraichir()
+        let refus = try await m.basculer(.barriere, true)
+        #expect(refus == nil)
+        #expect(m.dialogue == .divulgationTempsEcran)
+        #expect(m.estActif(.barriere) == false)
+        let rien = await ecrit(banc, "enabled")
+        #expect(rien == nil)
+        // « Pas maintenant » : rien ne change, et un « Continuer » venu de la carte n'allumerait rien.
+        m.fermerDialogue()
+        #expect(m.estActif(.barriere) == false)
+
+        // L'accès accordé après « Continuer » allume le mode, qui demande alors les notifications.
+        try await m.basculer(.barriere, true)
+        await banc.barriere.regler(constat: Constat(), jetons: 3)
+        let route = try await m.continuerDivulgation()
+        #expect(route == nil)
+        let demandesTempsEcran = await banc.tempsEcran.demandes
+        #expect(demandesTempsEcran == 1)
+        let notifications = await banc.notificateur.demandes
+        #expect(notifications == 1)
+        let enabled = await ecrit(banc, "enabled")
+        #expect(enabled == .booleen(true))
+        #expect(m.carteBarriere?.etat == .armed)
+        let effets = await banc.effets.demandes
+        let attendus: [ReglagesRepercussions] = [[.barriere, .rappels]]
+        #expect(effets == attendus)
     }
 
     // MARK: La carte d'état de la barrière
