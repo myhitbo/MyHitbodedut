@@ -12,21 +12,9 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
-    "Aeroports.swift",
-    "CarteEmbarquement.swift",
     "EtatBarriere.swift",
-    "RouteVol.swift",
-    "SaisieVol.swift",
-    "SuiviVol.swift",
-    "VolRappels.swift",
 ]
 let enChantierTests: [String] = [
-    "AeroportsTests.swift",
-    "CarteEmbarquementTests.swift",
-    "RouteVolTests.swift",
-    "SaisieVolTests.swift",
-    "SuiviVolTests.swift",
-    "VolRappelsTests.swift",
 ]
 let enChantierEcrans: [String] = [
     "ApparenceChoisie.swift",
@@ -94,10 +82,13 @@ let enChantierEcransTests: [String] = [
     "RechercheModeleTests.swift",
     "ServicesTests.swift",
     "SiddourModeleTests.swift",
+    "TefilotModeleTests.swift",
     "TehilimLectureModeleTests.swift",
     "TehilimModeleTests.swift",
+    "TikkunModeleTests.swift",
     "TraducteurTests.swift",
     "TropheeCheminTests.swift",
+    "TropheeFeteModeleTests.swift",
 ]
 let enChantierVues: [String] = [
     "Apparence.swift",

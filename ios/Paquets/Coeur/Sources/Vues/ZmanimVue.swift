@@ -4,8 +4,7 @@ import Coeur
 import Ecrans
 
 /// L'onglet Zmanim : la date hébraïque du jour montré et ses horaires. La vue ne calcule rien :
-/// elle lit ZmanimModele (cible Ecrans), qui se teste sous Linux. Sa pile de navigation est celle de son
-/// onglet (ios/App) : la vue n'en ouvre pas une seconde.
+/// elle lit ZmanimModele (cible Ecrans), qui se teste sous Linux.
 public struct ZmanimVue: View {
     let modele: ZmanimModele
 
@@ -14,28 +13,30 @@ public struct ZmanimVue: View {
     }
 
     public var body: some View {
-        List {
-            Section {
-                ForEach(modele.horaires, id: \.cle) { zman in
+        NavigationStack {
+            List {
+                Section {
+                    ForEach(modele.horaires, id: \.cle) { zman in
+                        HStack {
+                            Text(LocalizedStringKey("zman_" + zman.cle))
+                            Spacer()
+                            Text(verbatim: heure(zman))
+                                .monospacedDigit()
+                        }
+                    }
+                } header: {
+                    Text(verbatim: modele.jourHebreu.dateHebraique)
+                }
+                Section {
                     HStack {
-                        Text(LocalizedStringKey("zman_" + zman.cle))
+                        Button("jour_precedent") { modele.jourPrecedent() }
                         Spacer()
-                        Text(verbatim: heure(zman))
-                            .monospacedDigit()
+                        Button("jour_suivant") { modele.jourSuivant() }
                     }
                 }
-            } header: {
-                Text(verbatim: modele.jourHebreu.dateHebraique)
             }
-            Section {
-                HStack {
-                    Button("jour_precedent") { modele.jourPrecedent() }
-                    Spacer()
-                    Button("jour_suivant") { modele.jourSuivant() }
-                }
-            }
+            .navigationTitle(Text("nav_zmanim"))
         }
-        .navigationTitle(Text("nav_zmanim"))
     }
 
     /// « 05:42 » à l'heure du lieu ; « — » pour un zman absent ce jour-là.

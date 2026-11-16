@@ -75,9 +75,8 @@ struct TropheeCheminTests {
             let forme = try #require(lues.forme(f), "forme \(f.cle) absente")
             #expect(forme.parties.count == parties[f], "\(f.cle)")
             for (i, partie) in forme.parties.enumerated() {
-                let premiere = partie.chemin.commandes.first
-                let commenceParDeplacer: Bool
-                if case .deplacer = premiere { commenceParDeplacer = true } else { commenceParDeplacer = false }
+                var commenceParDeplacer = false
+                if let premiere = partie.chemin.commandes.first, case .deplacer = premiere { commenceParDeplacer = true }
                 #expect(commenceParDeplacer, "\(f.cle)[\(i)]")
                 // Tout se tient dans la boîte de 100.
                 let boite = try #require(partie.chemin.boite)
@@ -290,12 +289,12 @@ struct TropheeCheminTests {
     }
 
     @Test func lesMatieresPrennentLesTeintesDuMetal() {
-        let or = TropheeTeintes.de(.or)
-        #expect(or == TropheeTeintes(clair: TropheeCouleur(0xFF, 0xE4, 0x8A), fonce: TropheeCouleur(0xC9, 0x96, 0x1A),
+        let teintesOr = TropheeTeintes.de(.or)
+        #expect(teintesOr == TropheeTeintes(clair: TropheeCouleur(0xFF, 0xE4, 0x8A), fonce: TropheeCouleur(0xC9, 0x96, 0x1A),
                                      sombre: TropheeCouleur(0x8A, 0x62, 0x06)))
-        #expect(TropheeMatiere.metal.peinture(.or) == .diagonale(de: or.clair, a: or.fonce))
-        #expect(TropheeMatiere.metalSombre.peinture(.or) == .unie(or.sombre))
-        #expect(TropheeMatiere.metalBombe.peinture(.or) == .bombee(couleurs: [.blanc, or.clair, or.fonce],
+        #expect(TropheeMatiere.metal.peinture(.or) == .diagonale(de: teintesOr.clair, a: teintesOr.fonce))
+        #expect(TropheeMatiere.metalSombre.peinture(.or) == .unie(teintesOr.sombre))
+        #expect(TropheeMatiere.metalBombe.peinture(.or) == .bombee(couleurs: [.blanc, teintesOr.clair, teintesOr.fonce],
                                                                   arrets: [0, 0.35, 1], centre: TropheePoint(35, 30),
                                                                   rayon: 75))
         // Le ruban est rouge sur un objet de métal, gris sur un objet à venir.

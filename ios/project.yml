@@ -9,10 +9,6 @@ targets:
     templates: [App]
     dependencies:
       - package: Coeur
-        products:
-          - Coeur
-          - Ecrans
-          - Vues
       - target: Widgets
       - target: Surveillance
       - target: Bouclier
@@ -27,9 +23,6 @@ targets:
     type: app-extension
     platform: iOS
     sources: [Surveillance]
-    dependencies:
-      - package: Coeur
-        product: Barriere
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.surveillance
@@ -51,9 +44,6 @@ targets:
     type: app-extension
     platform: iOS
     sources: [Bouclier]
-    dependencies:
-      - package: Coeur
-        product: Barriere
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.bouclier
@@ -75,9 +65,6 @@ targets:
     type: app-extension
     platform: iOS
     sources: [BouclierAction]
-    dependencies:
-      - package: Coeur
-        product: Barriere
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.bouclier-action

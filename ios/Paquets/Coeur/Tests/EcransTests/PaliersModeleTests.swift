@@ -55,7 +55,8 @@ struct PaliersModeleTests {
         let enregistrement = Enregistrement(journal: journal, reglages: reglages)
         let persistance = PersistanceEnMemoire(enregistrement)
         let magasin = Magasin(persistance: persistance, enregistrement: enregistrement)
-        return (PaliersModele(magasin: magasin, horloge: try Self.horloge()), magasin, persistance)
+        let horloge = try Self.horloge()
+        return (PaliersModele(magasin: magasin, horloge: horloge), magasin, persistance)
     }
 
     private func etapes(_ lignes: [PaliersLigne]) -> [PaliersEtape] {
@@ -167,8 +168,8 @@ struct PaliersModeleTests {
         // La bannière de l'argent précède le 10ᵉ ; celle de l'or attend plus bas.
         let argent = try #require(lignes.firstIndex(of: .banniere(PaliersBanniere(grade: .argent, rang: 10, atteint: true))))
         #expect(lignes[argent + 1] == .etape(gagnees[9]))
-        let or = lignes.contains(.banniere(PaliersBanniere(grade: .or, rang: 25, atteint: false)))
-        #expect(or)
+        let orAVenir = lignes.contains(.banniere(PaliersBanniere(grade: .or, rang: 25, atteint: false)))
+        #expect(orAVenir)
         let titreArgent = PaliersBanniere(grade: .argent, rang: 10, atteint: true)
         #expect(titreArgent.titre == Libelle("grade_atteint", .libelle(Libelle("metal_argent"))))
         #expect(titreArgent.sous == Libelle("grade_au", .entier(10)))
@@ -263,7 +264,8 @@ struct PaliersModeleTests {
         // Une autre ouverture ne refête ni le grade ni les trophées.
         let enregistrement = await persistance.enregistrement
         let magasin = Magasin(persistance: persistance, enregistrement: enregistrement)
-        let encore = PaliersModele(magasin: magasin, horloge: try Self.horloge())
+        let horloge = try Self.horloge()
+        let encore = PaliersModele(magasin: magasin, horloge: horloge)
         try await encore.ouvrir()
         #expect(encore.feteGrade == nil)
         #expect(encore.neufs.isEmpty)
@@ -341,7 +343,8 @@ struct PaliersModeleTests {
         #expect(PaliersModele.famille(cle: "inconnue") == nil)
         #expect(PaliersModele.famille(cle: nil) == nil)
         let magasin = Magasin.enMemoire()
-        let modele = PaliersModele(magasin: magasin, horloge: try Self.horloge(), filtre: .serie)
+        let horloge = try Self.horloge()
+        let modele = PaliersModele(magasin: magasin, horloge: horloge, filtre: .serie)
         #expect(modele.filtreCle == "serie")
         let choisis = modele.filtres.filter { $0.choisi }.map { $0.id }
         #expect(choisis == ["serie"])
@@ -359,7 +362,8 @@ struct PaliersModeleTests {
             Libelle("record_semaine", .libelle(Libelle("duration_hours_minutes", .entier(1), .entier(10)))),
             Libelle("record_mois", .libelle(Libelle("duration_hours_minutes", .entier(2), .entier(15)))),
         ])
-        let n = Self.cles(try Self.pratique(j)).count
+        let pratique = try Self.pratique(j)
+        let n = Self.cles(pratique).count
         try #require(n > 0)
         let partage = try #require(modele.partage)
         #expect(partage == PaliersPartage(grade: Trophees.grade(n), compte: n))

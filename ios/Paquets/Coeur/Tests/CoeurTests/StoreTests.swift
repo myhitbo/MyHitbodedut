@@ -326,7 +326,7 @@ struct StoreTests {
                 let m = MarquesPages.Marque(cle: o.cle ?? "", nusah: o.nusah ?? "", section: o.section ?? 0, bloc: o.bloc ?? 0,
                                             apercu: o.apercu ?? "")
                 let posee = Store.basculerMarque(reglages: &reglages, m)
-                let attendue: Bool = try #require(etape.pose, "\(lieu) : marque")
+                let attendue: Bool = try #require(etape.pose as Bool?, "\(lieu) : marque")
                 #expect(posee == attendue, "\(lieu) : marque posée")
             case "setChizukBag":
                 let moment: Moment = try #require(Moment(rawValue: o.moment ?? ""), "\(lieu) : moment")

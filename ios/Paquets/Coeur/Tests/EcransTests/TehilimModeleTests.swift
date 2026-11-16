@@ -229,7 +229,7 @@ struct TehilimModeleTests {
 
     // MARK: Les marque-pages
 
-    private static func marque(_ psaume: Int, _ verset: Int, cle: String = TehilimLectureModele.cleMarques)
+    private static func marque(_ psaume: Int, _ verset: Int, cle: String = "t:tehilim")
         -> MarquesPages.Marque {
         MarquesPages.Marque(cle: cle, nusah: cle.commenceParUnites("s:") ? "edot" : "", section: psaume, bloc: verset,
                             apercu: Reference.lettres(psaume) + ", " + Reference.lettres(verset) + " · אשרי")

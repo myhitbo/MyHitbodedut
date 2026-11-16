@@ -10,10 +10,6 @@ targets:
     templates: [App]
     dependencies:
       - package: Coeur
-        products:
-          - Coeur
-          - Ecrans
-          - Vues
       - target: Widgets
     settings:
       base:

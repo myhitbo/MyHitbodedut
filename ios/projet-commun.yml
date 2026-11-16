@@ -29,25 +29,7 @@ targetTemplates:
   App:
     type: application
     platform: iOS
-    sources:
-      - App
-      # Les ressources exportées par tools/export_contenu (PORTAGE.md § 4.2), en dossiers : le paquet de l'app
-      # garde leur arborescence (Contenu/livres/<id>/…, Images/<nom>.webp, Polices/licences/…).
-      - path: Ressources/Contenu
-        type: folder
-      - path: Ressources/Images
-        type: folder
-      - path: Ressources/Polices
-        type: folder
-      - path: Ressources/Musique
-        type: folder
-      # Les catalogues de chaînes, compilés pour Text("clé") ; XcodeGen y lit les langues du projet.
-      - path: Ressources/Chaines
-        includes: ["*.xcstrings"]
-      # Les mêmes fichiers tels quels, sous Chaines/ : le Traducteur d'Ecrans lit le JSON du catalogue, les
-      # écrans les tableaux de chaînes (Tableaux.json).
-      - path: Ressources/Chaines
-        type: folder
+    sources: [App]
     scheme: {}
     settings:
       base:
@@ -60,18 +42,6 @@ targetTemplates:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
-        # Trois langues ; un téléphone dans une autre langue a l'anglais (LangueApp, PORTAGE.md § 2.2.7).
-        CFBundleDevelopmentRegion: en
-        CFBundleLocalizations: [fr, en, he]
-        # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).
-        UIAppFonts:
-          - Polices/hebreu_serif_regular.ttf
-          - Polices/hebreu_serif_bold.ttf
-          - Polices/varela_round.ttf
-          - Polices/frank_ruhl.ttf
-          - Polices/david_libre.ttf
-          - Polices/noto_rashi.ttf
-          - Polices/miriam_libre.ttf
 
 targets:
   Widgets:

@@ -73,6 +73,7 @@ normalise (`Normalizer`), le test Swift normalise aussi (`formeNFC`).
   ou un chemin de clé (`#expect(x.allSatisfy(\.vide))` ne compile pas). `try #require(…)` pour un
   optionnel dont la suite dépend. Dans une fonction qui rend un optionnel, `return try #require(x)` prend
   `T?` pour `T` et avertit (« never equals nil ») : lier d'abord, `let v: T = try #require(x)`.
+  Sur un `Bool?`, `#require(x)` est ambigu (« is ambiguous ») : `try #require(x as Bool?)` pour déballer.
 - **Foundation sous Linux.** Pas de `%@` avec une `String` dans `String(format:)` ; pas de
   `DateComponentsFormatter` ; `NSRegularExpression`, `NSRange`, `precomposedStringWithCanonicalMapping`,
   `TimeZone(identifier:)`, `Calendar(identifier: .gregorian)` existent. Dans le doute, s'en passer.
