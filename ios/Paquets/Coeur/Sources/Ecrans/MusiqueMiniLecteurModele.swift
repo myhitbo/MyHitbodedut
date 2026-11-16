@@ -87,8 +87,10 @@ public final class MusiqueMiniLecteurModele {
     /// Le disque tourne (un tour en 12 s) pendant la lecture, et s'arrête où il est en pause.
     public var disqueTourne: Bool { visible && joue }
 
-    /// L'image du disque sans pochette.
-    public var imageParDefaut: String { "char_guitar" }
+    /// L'image du disque sans pochette : le hassid à la guitare, ou sa pose féminine pour צדקת (PersonnageImageView).
+    public var imageParDefaut: String {
+        Personnage.pour(Adresse.parse(magasin.reglages.adresse), "char_guitar")
+    }
 
     /// Le temps entre deux relectures de l'état : une seconde replié, un quart de seconde déplié.
     public var intervalle: Int { deplie ? 250 : 1_000 }

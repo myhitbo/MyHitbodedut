@@ -73,7 +73,9 @@ struct MusiqueAmbianceSynthTests {
             let s = MusiqueAmbianceSynth.generer(attendu.ambiance, taux: taux, secondes: MusiqueAmbianceSynth.secondes)
             let pcm = MusiqueAmbianceSynth.pcm(s)
             let rms = MusiqueAmbianceSynth.rms(s)
-            #expect(abs(rms - attendu.rms) <= 1e-9, "\(attendu.ambiance.cle) : rms \(rms)")
+            // Un sinus d'Apple qui différerait d'une unité au dernier chiffre peut changer la crête, donc le gain
+            // de toute la boucle, d'un dix-millionième au plus : la tolérance de la moyenne en tient compte.
+            #expect(abs(rms - attendu.rms) <= 1e-7, "\(attendu.ambiance.cle) : rms \(rms)")
             let indices = Array(stride(from: 0, to: s.count, by: pas))
             #expect(indices.count == attendu.valeurs.count, "\(attendu.ambiance.cle)")
             #expect(indices.count == attendu.pcm.count, "\(attendu.ambiance.cle)")

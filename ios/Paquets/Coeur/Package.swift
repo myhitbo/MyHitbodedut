@@ -28,6 +28,7 @@ let enChantierTests: [String] = [
     "VolRappelsTests.swift",
 ]
 let enChantierEcrans: [String] = [
+    "ApparenceChoisie.swift",
     "BibliothequeModele.swift",
     "BoussoleModele.swift",
     "BoussoleScene.swift",
@@ -55,9 +56,13 @@ let enChantierEcrans: [String] = [
     "RechercheModele.swift",
     "Services.swift",
     "SiddourModele.swift",
+    "TehilimBarreLecture.swift",
     "Traducteur.swift",
+    "TropheeChemin.swift",
+    "TropheeDessin.swift",
 ]
 let enChantierEcransTests: [String] = [
+    "ApparenceChoisieTests.swift",
     "BibliothequeModeleTests.swift",
     "BoussoleModeleTests.swift",
     "ChizukModeleTests.swift",
@@ -67,6 +72,8 @@ let enChantierEcransTests: [String] = [
     "HalakhaModeleTests.swift",
     "HilloulotModeleTests.swift",
     "HorlogeTests.swift",
+    "LectureBalisageTests.swift",
+    "LectureModeleTests.swift",
     "MagasinTests.swift",
     "MusiqueAmbianceSynthTests.swift",
     "MusiqueLecteurTests.swift",
@@ -79,6 +86,8 @@ let enChantierEcransTests: [String] = [
     "TraducteurTests.swift",
 ]
 let enChantierVues: [String] = [
+    "Apparence.swift",
+    "Libelle+Text.swift",
 ]
 
 let package = Package(

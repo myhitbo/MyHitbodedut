@@ -190,7 +190,8 @@ struct VolRappelsTests {
         let relais = SuiviVol.fournisseur("https://r.test")
         #expect(relais == SuiviVol.Fournisseur.relais("https://r.test"))
         let http = SuiviVol.fournisseur("http://r.test")
-        #expect(http != SuiviVol.Fournisseur.relais("http://r.test"))
+        // `fournisseur(…) as? Relais` vaut null : ce n'est un relais d'aucune adresse.
+        #expect(http == SuiviVol.Fournisseur.openSkyAnonyme)
     }
 
     // MARK: Les vecteurs de la JVM

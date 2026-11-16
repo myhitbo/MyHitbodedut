@@ -188,7 +188,7 @@ struct MusiqueMiniLecteurModeleTests {
         #expect(b.mini.morceau?.id == "Musique/Sans.m4a")
         #expect(b.mini.pochette == nil)
         #expect(b.mini.imageParDefaut == "char_guitar")
-        // Retour au premier (après le dernier, le premier livré, puis précédent deux fois) : la pochette gardée.
+        // Retour au morceau d'avant : sa pochette gardée, sans relire le fichier.
         await b.mini.precedent()
         #expect(b.mini.morceau?.id == "Musique/Avec.m4a")
         #expect(b.mini.pochette == image)
@@ -196,6 +196,16 @@ struct MusiqueMiniLecteurModeleTests {
         let demandes = await b.pochettes.demandes
         let attendues: [MusiqueFichierAudio] = [.ajoute("Musique/Avec.m4a"), .ajoute("Musique/Sans.m4a")]
         #expect(demandes == attendues)
+    }
+
+    @Test func leDisqueSansPochetteSuitLAdresse() {
+        #expect(banc().mini.imageParDefaut == "char_guitar")
+        var tsadik = Reglages()
+        tsadik.setAdresse(Adresse.homme.cle)
+        #expect(banc(tsadik).mini.imageParDefaut == "char_guitar")
+        var tsadeket = Reglages()
+        tsadeket.setAdresse(Adresse.femme.cle)
+        #expect(banc(tsadeket).mini.imageParDefaut == "char_f_guitar")
     }
 
     @Test func unMorceauLivreMontreLeHassid() async {

@@ -1,0 +1,765 @@
+import Foundation
+import Synchronization
+import Testing
+import Coeur
+@testable import Ecrans
+
+/// Une horloge qu'on avance : pour l'écran resté ouvert jusqu'au lendemain (onRestart).
+final class LectureHorlogeReglable: Horloge, Sendable {
+    private let temps: Mutex<Int64>
+    let fuseau: Fuseau
+
+    init(_ maintenant: Int64, fuseau: Fuseau) {
+        temps = Mutex(maintenant)
+        self.fuseau = fuseau
+    }
+
+    var maintenant: Int64 {
+        temps.withLock { $0 }
+    }
+
+    func avancer(_ millis: Int64) {
+        temps.withLock { $0 += millis }
+    }
+}
+
+/// Le lecteur (SiddurLectureActivity, ReglagesLecture) sur les contenus exportés du dépôt : les lignes du jour de
+/// Cha'harit dans les trois rites (un jour ordinaire, un Roch 'Hodech, un jeûne), la place de chaque paragraphe,
+/// les signets, la taille qui garde le même bloc en tête (Likoutei Moharan, signet 300), la reprise, les
+/// favoris, les marque-pages, les replis et le bouton de lecture.
+///
+/// Restent au test d'interface : les captures de Cha'harit, le défilement réel jusqu'au signet 300 et la ligne
+/// qui reste en tête à l'écran après le changement de taille, l'animation des replis (et « Réduire les
+/// animations »), l'appui long, le double toucher, la barre du bas, l'absence d'image à l'écran.
+@Suite("Modèle du lecteur")
+@MainActor
+struct LectureModeleTests {
+
+    private static let contenus = ContenusApp(dossier: Fichiers.contenu)
+
+    private func fuseau() throws -> Fuseau {
+        try #require(Fuseau("Asia/Jerusalem"))
+    }
+
+    /// Un lecteur sur `cible`, l'horloge arrêtée à `heure` du jour `iso` à Jérusalem.
+    private func fabriquer(_ cible: LectureCible, reglages: Reglages = Reglages(), jour: JourCivil? = nil,
+                           heure: Int = 8, langue: String = "fr") throws -> (LectureModele, Magasin) {
+        let date = try jour ?? #require(JourCivil(iso: "2026-11-17"))
+        let magasin = Magasin.enMemoire(Enregistrement(reglages: reglages))
+        let horloge = HorlogeFixe(DateHeure(date, heure: heure), fuseau: try fuseau())
+        return (LectureModele(magasin: magasin, contenus: Self.contenus, horloge: horloge, langue: langue, cible: cible),
+                magasin)
+    }
+
+    private func reglages(_ nusah: Nusah, israel: Bool = true) -> Reglages {
+        var r = Reglages()
+        r.setSiddurNusah(nusah)
+        r.setInIsrael(israel)
+        return r
+    }
+
+    /// Le premier jour à partir de `iso` qui remplit `condition` (en Israël).
+    private func premierJour(depuis iso: String, _ condition: (CalendrierJuif.Jour) -> Bool) throws -> JourCivil {
+        var d = try #require(JourCivil(iso: iso))
+        for _ in 0..<400 {
+            if condition(CalendrierJuif.jour(d, enIsrael: true)) { return d }
+            d = d.plus(jours: 1)
+        }
+        Issue.record("aucun jour depuis \(iso)")
+        return d
+    }
+
+    private typealias C = CalendrierJuif.C
+
+    private func jourOrdinaire() throws -> JourCivil {
+        let exclues = [C.rochHodech, C.jeune, C.hanouka, C.chabbat, C.asseretYemeiTechouva, C.yaaleVeyavo, C.hallel,
+                       C.finTichri, C.pourim]
+        return try premierJour(depuis: "2026-11-17") { j in
+            j.conditions.contains(C.tahanounChaharit) && !exclues.contains { j.conditions.contains($0) }
+                && (j.date.jourDeSemaine == 3 || j.date.jourDeSemaine == 4)
+        }
+    }
+
+    private func rochHodech() throws -> JourCivil {
+        try premierJour(depuis: "2027-01-01") { j in
+            j.conditions.contains(C.rochHodech) && !j.conditions.contains(C.chabbat) && !j.conditions.contains(C.hanouka)
+        }
+    }
+
+    private func jeune() throws -> JourCivil {
+        try premierJour(depuis: "2026-11-17") { j in
+            j.conditions.contains(C.jeune) && !j.conditions.contains(C.tichaBeav) && !j.conditions.contains(C.chabbat)
+        }
+    }
+
+    // MARK: Ce que les lignes contiennent
+
+    private func etiquettes(_ m: LectureModele) -> [String] {
+        m.lignes.compactMap { ligne -> String? in
+            if case .etiquette(let l) = ligne.contenu { return l.cle }
+            return nil
+        }
+    }
+
+    private func replis(_ m: LectureModele) -> [LectureRepli] {
+        m.lignes.compactMap { ligne -> LectureRepli? in
+            if case .replie(let r) = ligne.contenu { return r }
+            return nil
+        }
+    }
+
+    private func renvois(_ m: LectureModele) -> [LectureRenvoi] {
+        m.lignes.compactMap { ligne -> LectureRenvoi? in
+            if case .renvoi(let r) = ligne.contenu { return r }
+            return nil
+        }
+    }
+
+    private func blocs(_ m: LectureModele) -> [(id: String, bloc: LectureBloc)] {
+        m.lignes.compactMap { ligne -> (id: String, bloc: LectureBloc)? in
+            if case .bloc(let b) = ligne.contenu { return (id: ligne.id, bloc: b) }
+            return nil
+        }
+    }
+
+    // MARK: Cha'harit dans les trois rites (critère de la feuille de route)
+
+    @Test(arguments: Nusah.allCases)
+    func chaharitUnJourOrdinaire(_ nusah: Nusah) async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(nusah), jour: jourOrdinaire())
+        await m.charger()
+        #expect(m.etat == .pret)
+        // En tête, la note du jour : la date hébraïque qui décide des ajouts, et la région.
+        guard case .note(let note)? = m.lignes.first?.contenu else {
+            Issue.record("pas de note en tête")
+            return
+        }
+        #expect(note.cle == "siddur_jour_ajouts")
+        #expect(note.arguments.count == 2)
+        #expect(note.arguments.last == .libelle(Libelle("region_israel")))
+        let lues = etiquettes(m)
+        #expect(!lues.contains("ajout_yaale_veyavo"))
+        let yaale = replis(m).filter { $0.nom.cle == "ajout_yaale_veyavo" }
+        #expect(!yaale.isEmpty)
+        #expect(yaale.allSatisfy { $0.etat.cle == "siddur_pas_aujourdhui" && !$0.ouvert })
+        // Ce qui ne se dit qu'avec un minyan n'est jamais « du jour » : « toucher pour lire ».
+        let toucher = replis(m).contains { $0.etat.cle == "siddur_toucher_lire" }
+        #expect(toucher)
+        let aucunRenvoi = renvois(m).isEmpty
+        #expect(aucunRenvoi)
+        // Des sections titrées : la bande de signets.
+        let signets = m.signets.count
+        #expect(signets > 1)
+    }
+
+    @Test(arguments: Nusah.allCases)
+    func chaharitUnRochHodech(_ nusah: Nusah) async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(nusah), jour: rochHodech())
+        await m.charger()
+        #expect(m.etat == .pret)
+        let lues = etiquettes(m)
+        #expect(lues.contains("ajout_yaale_veyavo"), "\(nusah.rawValue) : \(lues)")
+        let yaaleReplie = replis(m).contains { $0.nom.cle == "ajout_yaale_veyavo" }
+        #expect(!yaaleReplie)
+        // Le Hallel du jour, ouvert d'un geste.
+        let hallel = renvois(m).contains { $0.route == .lecture(.siddour("hallel")) }
+        #expect(hallel, "\(nusah.rawValue)")
+        // Un ajout du jour est mis en évidence.
+        let duJour = blocs(m).contains { $0.bloc.duJour }
+        #expect(duJour)
+    }
+
+    @Test(arguments: Nusah.allCases)
+    func chaharitUnJourDeJeune(_ nusah: Nusah) async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(nusah), jour: jeune())
+        await m.charger()
+        #expect(m.etat == .pret)
+        let lues = etiquettes(m)
+        #expect(lues.contains("ajout_anenou_officiant"), "\(nusah.rawValue) : \(lues)")
+        if nusah != .edot {
+            // Avinou malkénou, les jeûnes publics (Ashkenaz, Sfard).
+            #expect(lues.contains("ajout_avinou_malkenou"), "\(nusah.rawValue) : \(lues)")
+        }
+    }
+
+    // MARK: La place de chaque paragraphe
+
+    /// Sur tous les textes des trois siddourim, trois jours, tout replié puis tout déplié : chaque bloc montré a
+    /// la place du bloc du texte qu'il montre (le même, ou le même sans sa variante hors du jour), les places
+    /// croissent, et tout déplié, chaque bloc du texte est montré une fois.
+    @Test func chaqueBlocMontreASaPlace() async throws {
+        let jours = try [jourOrdinaire(), rochHodech(), jeune()]
+        var echecs: [String] = []
+        for nusah in Nusah.allCases {
+            let siddur = try await Self.contenus.siddur(nusah)
+            let toutes = try await Self.contenus.annotations(nusah)
+            for texte in siddur.textes {
+                let annotations = toutes[texte.id] ?? []
+                for date in jours {
+                    let conditions = CalendrierJuif.jour(date, enIsrael: true).conditions
+                    let fermes = SiddurJour.lignes(texte, annotations, conditions, nusah: nusah, enIsrael: true)
+                    var cles = Set<String>()
+                    for ligne in fermes {
+                        if case .replie(let cle, _, _, _) = ligne { cles.insert(cle) }
+                    }
+                    let ouverts = SiddurJour.lignes(texte, annotations, conditions, ouverts: cles, nusah: nusah,
+                                                    enIsrael: true)
+                    for (tout, lignes) in [(false, fermes), (true, ouverts)] {
+                        let nom = "\(nusah.rawValue)/\(texte.id)/\(date.iso)/\(tout ? "ouvert" : "fermé")"
+                        if let faute = verifier(texte, lignes, LectureLignes.places(texte, annotations, lignes), tout: tout) {
+                            echecs.append(nom + " : " + faute)
+                        }
+                    }
+                }
+            }
+        }
+        #expect(echecs.isEmpty, "\(echecs.prefix(10))")
+    }
+
+    private func verifier(_ texte: SiddurTexte, _ lignes: [SiddurJour.Ligne], _ places: [LecturePlace?],
+                          tout: Bool) -> String? {
+        guard places.count == lignes.count else { return "nombre" }
+        var precedente: LecturePlace?
+        var vues = Set<LecturePlace>()
+        for (k, ligne) in lignes.enumerated() {
+            guard case .bloc(let bloc, let style) = ligne else {
+                if places[k] != nil { return "place hors d'un bloc à \(k)" }
+                continue
+            }
+            guard let p = places[k] else { return "bloc sans place à \(k)" }
+            guard p.section < texte.sections.count, p.bloc < texte.sections[p.section].blocs.count else {
+                return "place hors du texte \(p) à \(k)"
+            }
+            let original = texte.sections[p.section].blocs[p.bloc]
+            let reduit = style == .normal && original.consigne == bloc.consigne && original.fr == bloc.fr
+                && original.en == bloc.en && original.texte.utf16.count > bloc.texte.utf16.count
+            if original != bloc && !reduit { return "bloc différent à \(p)" }
+            if let q = precedente, (q.section, q.bloc) >= (p.section, p.bloc) { return "ordre à \(p)" }
+            precedente = p
+            vues.insert(p)
+        }
+        if tout {
+            let total = texte.sections.reduce(0) { $0 + $1.blocs.count }
+            if vues.count != total { return "déplié : \(vues.count) blocs sur \(total)" }
+        }
+        return nil
+    }
+
+    // MARK: Likoutei Moharan : le signet 300, la taille, la reprise (critère de la feuille de route)
+
+    @Test func likouteiMoharanAuSignet300LaTailleGardeLeMemeBloc() async throws {
+        let (m, magasin) = try fabriquer(.livre("likoutei_moharan"))
+        await m.charger()
+        #expect(m.etat == .pret)
+        let signets = m.signets
+        #expect(signets.count == 411)
+        try #require(signets.count > 300)
+        #expect(signets[300].texte == "תנינא תורה טו")
+
+        m.allerAuSignet(300)
+        let demande = try #require(m.defilement)
+        #expect(demande.ligne == signets[300].ligne)
+        #expect(!demande.anime)
+        #expect(m.signetActif == 300)
+
+        // La vue montre le titre et les paragraphes qui le suivent.
+        let rang = try #require(m.lignes.firstIndex { $0.id == signets[300].ligne })
+        m.visibles(m.lignes[rang..<(rang + 6)].map { $0.id }, enBas: false)
+        let tete = try #require(m.ligneDeTete?.id)
+        #expect(tete == signets[300].ligne)
+        #expect(m.signetActif == 300)
+
+        try await m.changerTaille(plus: true)
+        #expect(m.pourcent == 110)
+        let apres = try #require(m.defilement)
+        #expect(apres.ligne == tete)
+        #expect(apres.jeton > demande.jeton)
+        #expect(m.ligneDeTete?.id == tete)
+
+        // La police, les langues et la nuit gardent aussi le même bloc en tête.
+        try await m.choisirPolice(.david)
+        #expect(m.ligneDeTete?.id == tete)
+        try await m.choisirLangues(.he)
+        #expect(m.ligneDeTete?.id == tete)
+        try await m.basculerNuit()
+        #expect(m.ligneDeTete?.id == tete)
+        #expect(m.sombre)
+
+        // La reprise : la ligne de tête est gardée, et un livre reprend toujours, même le lendemain.
+        try await m.quitter()
+        let gardee = LecturePreferences.positionLecture(magasin.reglages, cle: "l:likoutei_moharan",
+                                                        maintenant: Int64.max / 2)
+        #expect(gardee == rang)
+        #expect(LecturePreferences.derniereLecture(magasin.reglages) == "l:likoutei_moharan")
+        let lendemain = HorlogeFixe(DateHeure(try #require(JourCivil(iso: "2026-11-18")), heure: 9), fuseau: try fuseau())
+        let rouvert = LectureModele(magasin: magasin, contenus: Self.contenus, horloge: lendemain, langue: "fr",
+                                    cible: .livre("likoutei_moharan"))
+        await rouvert.charger()
+        #expect(rouvert.defilement?.ligne == tete)
+        #expect(rouvert.ligneDeTete?.id == tete)
+    }
+
+    @Test func unLivreNAPasDeNusahNiDAjouts() async throws {
+        let (m, _) = try fabriquer(.livre("meguilat_esther"))
+        await m.charger()
+        #expect(m.etat == .pret)
+        #expect(!m.avecNusah)
+        let options = m.optionsNusah
+        #expect(options.isEmpty)
+        #expect(m.horaire == nil)
+        #expect(m.iconeMarques == "ic_marque_etude")
+        let notes = m.lignes.filter { if case .note = $0.contenu { return true } else { return false } }
+        #expect(notes.isEmpty)
+        // Les étiquettes : le nom traduit, puis « Livres ».
+        let etiquettes = m.etiquettes
+        #expect(etiquettes.last == "Livres")
+    }
+
+    @Test func unLivreSansTraductionLeDitQuandOnEnDemandeUne() async throws {
+        let livre = """
+        {"groupes": [], "textes": [{"id": "essai", "groupe": "g", "titre": {"he": "ספר", "fr": "Livre", "en": "Book"},
+         "sections": [{"titre": "א", "blocs": [{"t": "שלום עולם"}]}, {"titre": "ב", "blocs": [{"t": "ברוך"}]}]}]}
+        """
+        let donnees = Data(livre.utf8)
+        let contenus = ContenusApp(lecteur: { chemin in chemin == "livre_essai.json" ? donnees : nil })
+        let horloge = HorlogeFixe(maintenant: 0, fuseau: try fuseau())
+        let francais = LectureModele(magasin: .enMemoire(), contenus: contenus, horloge: horloge, langue: "fr",
+                                     cible: .livre("essai"))
+        await francais.charger()
+        #expect(francais.etat == .pret)
+        #expect(francais.lignes.first?.contenu == .note(Libelle("lecture_sans_traduction")))
+        // Sans nom de recueil (pas d'index des livres), aucune étiquette vide.
+        #expect(francais.etiquettes == ["Livre"])
+        let hebreu = LectureModele(magasin: .enMemoire(), contenus: contenus, horloge: horloge, langue: "he",
+                                   cible: .livre("essai"))
+        await hebreu.charger()
+        let premiere = hebreu.lignes.first?.id
+        #expect(premiere == "titre:0")
+        #expect(hebreu.signets.count == 2)
+    }
+
+    @Test func unTexteAbsentFermeLEcran() async throws {
+        let (siddour, _) = try fabriquer(.siddour("inexistant"))
+        await siddour.charger()
+        #expect(siddour.etat == .introuvable)
+        let (livre, _) = try fabriquer(.livre("inexistant"))
+        await livre.charger()
+        #expect(livre.etat == .introuvable)
+    }
+
+    // MARK: Le bandeau
+
+    @Test func leBandeauDeChaharit() async throws {
+        var r = reglages(.edot)
+        r.setLieuZmanim(Zmanim.Lieu(nom: "Jérusalem", latitude: 31.76904, longitude: 35.21633, fuseau: "Asia/Jerusalem"),
+                        ville: nil, maintenant: 0)
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: r)
+        await m.charger()
+        let siddur = try await Self.contenus.siddur(.edot)
+        let texte = try #require(siddur.texte("chaharit"))
+        #expect(m.titre == PoliceHebraique.masque(texte.titre.he, police: .serif))
+        #expect(m.etiquettes == [texte.titre.fr, siddur.nusah.fr])
+        #expect(m.etiquettesDescription == texte.titre.fr + ", " + siddur.nusah.fr)
+        let horaire = try #require(m.horaire)
+        #expect(horaire.cle == "banniere_chaharit")
+        #expect(horaire.arguments.count == 1)
+        #expect(m.iconeMarques == "ic_marque_priere")
+        #expect(m.symboleFavori == "\u{2606}")
+    }
+
+    @Test func lHoraireDeMinhaASesDeuxBornesEtRienSansLieu() async throws {
+        var r = reglages(.edot)
+        r.setLieuZmanim(Zmanim.Lieu(nom: "Jérusalem", latitude: 31.76904, longitude: 35.21633, fuseau: "Asia/Jerusalem"),
+                        ville: nil, maintenant: 0)
+        let (minha, _) = try fabriquer(.siddour("minha"), reglages: r, heure: 14)
+        await minha.charger()
+        let h = try #require(minha.horaire)
+        #expect(h.cle == "banniere_minha")
+        #expect(h.arguments.count == 2)
+        let (sansLieu, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot))
+        await sansLieu.charger()
+        #expect(sansLieu.horaire == nil)
+        let (autre, _) = try fabriquer(.siddour("birkot_hachahar"), reglages: r)
+        await autre.charger()
+        #expect(autre.horaire == nil)
+    }
+
+    // MARK: Favoris et marque-pages
+
+    @Test func lEtoileAjouteEtRetireLeFavori() async throws {
+        let (m, magasin) = try fabriquer(.siddour("minha"), reglages: reglages(.edot))
+        await m.charger()
+        #expect(!m.estFavori)
+        #expect(m.descriptionFavori.cle == "favori_ajouter")
+        try await m.basculerFavori()
+        #expect(m.estFavori)
+        #expect(m.symboleFavori == "\u{2605}")
+        #expect(m.descriptionFavori.cle == "favori_retirer")
+        #expect(LecturePreferences.favoris(magasin.reglages) == ["s:minha"])
+        try await m.basculerFavori()
+        #expect(!m.estFavori)
+    }
+
+    @Test func unAppuiLongPosePuisRetireLeMarquePage() async throws {
+        let (m, magasin) = try fabriquer(.siddour("chaharit"), reglages: reglages(.sefard))
+        await m.charger()
+        let premier = try #require(blocs(m).first { !$0.bloc.consigne })
+        #expect(m.marquesDuTexte.isEmpty)
+        try await m.basculerMarque(premier.bloc)
+        #expect(m.message == Libelle("marque_posee"))
+        let marques = m.marquesDuTexte
+        #expect(marques.count == 1)
+        #expect(marques.first?.cle == "s:chaharit")
+        #expect(marques.first?.nusah == "sefard")
+        #expect(marques.first?.section == premier.bloc.place.section)
+        #expect(marques.first?.bloc == premier.bloc.place.bloc)
+        #expect(marques.first?.apercu == premier.bloc.apercu)
+        // La ligne marquée le montre.
+        let marquee = blocs(m).first { $0.id == premier.id }?.bloc.marque
+        #expect(marquee == true)
+        // Les marque-pages d'un nusah ne sont pas ceux d'un autre.
+        try await m.choisirNusah(.edot)
+        #expect(m.marquesDuTexte.isEmpty)
+        try await m.choisirNusah(.sefard)
+        let retrouvee = m.marquesDuTexte.count
+        #expect(retrouvee == 1)
+        let reprise = try #require(blocs(m).first { $0.id == premier.id })
+        try await m.basculerMarque(reprise.bloc)
+        #expect(m.message == Libelle("marque_retiree"))
+        #expect(LecturePreferences.marques(magasin.reglages).isEmpty)
+        m.effacerMessage()
+        #expect(m.message == nil)
+    }
+
+    @Test func ouvertDepuisUnMarquePageOnYVa() async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire())
+        await m.charger()
+        let cible = try #require(blocs(m).dropFirst(40).first)
+        let place = cible.bloc.place
+        let (rouvert, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire())
+        let ouvert = LectureModele(magasin: Magasin.enMemoire(Enregistrement(reglages: reglages(.edot))),
+                                   contenus: Self.contenus,
+                                   horloge: HorlogeFixe(DateHeure(try jourOrdinaire(), heure: 8), fuseau: try fuseau()),
+                                   langue: "fr", cible: LectureCible(id: "chaharit", marque: place))
+        await ouvert.charger()
+        #expect(ouvert.defilement?.ligne == cible.id)
+        #expect(rouvert.defilement == nil)
+    }
+
+    @Test func unMarquePageRepliéMeneAuPremierParagrapheMontreDeSaSection() async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire())
+        await m.charger()
+        // Un groupe replié aujourd'hui : on le déplie pour connaître la place de son premier bloc.
+        let repli = try #require(replis(m).first { !$0.cle.hasPrefix("v") && !$0.cle.hasPrefix("\u{00A7}") })
+        m.basculer(repli.cle)
+        let rangRepli = try #require(m.lignes.firstIndex { $0.id == "replie:" + repli.cle })
+        guard case .bloc(let cache) = m.lignes[rangRepli + 1].contenu else {
+            Issue.record("le repli ouvert n'est pas suivi de ses blocs")
+            return
+        }
+        #expect(cache.dansPanneau)
+        #expect(!cache.estompe)
+        m.basculer(repli.cle)
+        m.allerA(cache.place)
+        let attendu = blocs(m).first { $0.bloc.place.section >= cache.place.section && $0.bloc.place != cache.place }
+        #expect(m.defilement?.ligne == attendu?.id)
+    }
+
+    @Test func laFeuilleDesMarquesVaALaPlace() async throws {
+        let (m, _) = try fabriquer(.livre("chir_hachirim"))
+        await m.charger()
+        let b = try #require(blocs(m).last)
+        try await m.basculerMarque(b.bloc)
+        m.feuilleMarques = true
+        let marque = try #require(m.marquesDuTexte.first)
+        #expect(marque.nusah == "")
+        m.allerALaMarque(marque)
+        #expect(!m.feuilleMarques)
+        #expect(m.defilement?.ligne == b.id)
+    }
+
+    // MARK: Les replis
+
+    @Test func unAjoutDeplieSeLitDansSonPanneauEtSePlieDepuisSonPied() async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire())
+        await m.charger()
+        let avant = m.lignes.count
+        let repli = try #require(replis(m).first { !$0.ouvert && !$0.cle.hasPrefix("v") })
+        m.basculer(repli.cle)
+        #expect(m.lignes.count > avant)
+        let rang = try #require(m.lignes.firstIndex { $0.id == "replie:" + repli.cle })
+        guard case .replie(let ouvert) = m.lignes[rang].contenu else {
+            Issue.record("le bandeau a disparu")
+            return
+        }
+        #expect(ouvert.ouvert)
+        #expect(ouvert.etat.cle == "siddur_replier")
+        let pied = try #require(m.lignes.firstIndex { $0.id == "pied:" + repli.cle })
+        #expect(pied > rang + 1)
+        for ligne in m.lignes[(rang + 1)..<pied] {
+            guard case .bloc(let b) = ligne.contenu else {
+                Issue.record("une ligne qui n'est pas un bloc dans le panneau")
+                continue
+            }
+            #expect(b.dansPanneau)
+        }
+        // Replié depuis le pied, le bandeau étant passé au-dessus de l'écran : on y revient, en douceur.
+        m.visibles([m.lignes[pied].id], enBas: false)
+        m.replierDepuisLePied(repli.cle)
+        #expect(m.lignes.count == avant)
+        let retour = try #require(m.defilement)
+        #expect(retour.ligne == "replie:" + repli.cle)
+        #expect(retour.anime)
+    }
+
+    // MARK: La reprise d'une prière
+
+    @Test func unePriereNeReprendQueDansLesTroisHeures() async throws {
+        let date = try #require(JourCivil(iso: "2026-11-17"))
+        let horloge = LectureHorlogeReglable(try fuseau().millis(DateHeure(date, heure: 7)), fuseau: try fuseau())
+        let magasin = Magasin.enMemoire(Enregistrement(reglages: reglages(.edot)))
+        let m = LectureModele(magasin: magasin, contenus: Self.contenus, horloge: horloge, langue: "fr",
+                              cible: .siddour("chaharit"))
+        await m.charger()
+        let loin = try #require(m.lignes.dropFirst(30).first)
+        m.visibles([loin.id], enBas: false)
+        try await m.quitter()
+
+        horloge.avancer(60 * 60 * 1000)
+        let uneHeure = LectureModele(magasin: magasin, contenus: Self.contenus, horloge: horloge, langue: "fr",
+                                     cible: .siddour("chaharit"))
+        await uneHeure.charger()
+        #expect(uneHeure.defilement?.ligne == loin.id)
+
+        horloge.avancer(3 * 60 * 60 * 1000)
+        let quatreHeures = LectureModele(magasin: magasin, contenus: Self.contenus, horloge: horloge, langue: "fr",
+                                         cible: .siddour("chaharit"))
+        await quatreHeures.charger()
+        #expect(quatreHeures.defilement == nil)
+
+        // Resté ouvert derrière d'autres applications au-delà de trois heures : il repart du début.
+        m.revenir()
+        #expect(m.defilement?.ligne == m.lignes.first?.id)
+    }
+
+    @Test func revenirAvantTroisHeuresNeBougeRien() async throws {
+        let horloge = LectureHorlogeReglable(1_800_000_000_000, fuseau: try fuseau())
+        let m = LectureModele(magasin: .enMemoire(Enregistrement(reglages: reglages(.edot))), contenus: Self.contenus,
+                              horloge: horloge, langue: "fr", cible: .siddour("arvit"))
+        await m.charger()
+        let loin = try #require(m.lignes.dropFirst(10).first)
+        m.visibles([loin.id], enBas: false)
+        try await m.quitter()
+        horloge.avancer(10 * 60 * 1000)
+        let avant = m.defilement
+        m.revenir()
+        #expect(m.defilement == avant)
+    }
+
+    // MARK: Le bouton de lecture
+
+    @Test func laTailleVaDeQuatreVingtsADeuxCentsPourCent() async throws {
+        let (m, magasin) = try fabriquer(.livre("nichmat"))
+        await m.charger()
+        #expect(m.pourcent == 100)
+        #expect(m.libellePourcent == Libelle("lecture_pourcent", .entier(100)))
+        var vus: [Int] = []
+        for _ in 0..<12 {
+            try await m.changerTaille(plus: true)
+            vus.append(m.pourcent)
+        }
+        #expect(vus == [110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 200, 200])
+        #expect(m.descriptionPourcent == Libelle("lecture_taille", .entier(200)))
+        try await m.tailleNormale()
+        #expect(m.pourcent == 100)
+        try await m.changerTaille(plus: false)
+        try await m.changerTaille(plus: false)
+        try await m.changerTaille(plus: false)
+        #expect(m.pourcent == 80)
+        #expect(magasin.reglages.lectureEchelle == 0.8)
+    }
+
+    @Test func laLuneEtSonEtat() async throws {
+        let (m, magasin) = try fabriquer(.livre("nichmat"))
+        await m.charger()
+        #expect(!m.sombre)
+        #expect(m.etatNuit.cle == "lecture_nuit_non")
+        try await m.basculerNuit()
+        #expect(m.sombre)
+        #expect(m.etatNuit.cle == "lecture_nuit_oui")
+        #expect(magasin.reglages.lectureSombre)
+    }
+
+    @Test func lesChoixDeLaBarre() async throws {
+        let (m, magasin) = try fabriquer(.siddour("minha"), reglages: reglages(.ashkenaz), langue: "en")
+        await m.charger()
+        let polices = m.optionsPolice
+        #expect(polices.map { $0.valeur } == PoliceHebraique.Police.allCases)
+        #expect(polices.filter { $0.choisi }.map { $0.valeur } == [.serif])
+        let langues = m.optionsLangues
+        #expect(langues.filter { $0.choisi }.map { $0.valeur } == [.heEn])
+        let nusah = m.optionsNusah
+        #expect(nusah.map { $0.nom.cle } == ["siddur_nusah_edot", "siddur_nusah_sefard", "siddur_nusah_ashkenaz"])
+        #expect(nusah.filter { $0.choisi }.map { $0.valeur } == [.ashkenaz])
+        try await m.choisirLangues(.fr)
+        #expect(magasin.reglages.lectureLangues == "fr")
+        #expect(m.optionsLangues.filter { $0.choisi }.map { $0.valeur } == [.fr])
+        try await m.choisirPolice(.rachi)
+        #expect(magasin.reglages.lecturePolice == "rachi")
+        // Un autre nusah : on repart du début.
+        try await m.choisirNusah(.edot)
+        #expect(magasin.reglages.siddurNusah == .edot)
+        #expect(m.etat == .pret)
+        #expect(m.defilement?.ligne == m.lignes.first?.id)
+    }
+
+    @Test func laPastilleLaBarreEtLeMasque() async throws {
+        let (m, magasin) = try fabriquer(.livre("nichmat"))
+        await m.charger()
+        #expect(m.pastilleVisible)
+        #expect(!m.barreVisible)
+        // Descendre efface la pastille, même lentement ; remonter la rend.
+        m.defilementVertical(10)
+        m.defilementVertical(10)
+        #expect(!m.pastilleEffacee)
+        m.defilementVertical(10)
+        #expect(m.pastilleEffacee)
+        m.defilementVertical(-30)
+        #expect(!m.pastilleEffacee)
+        m.defilementVertical(30)
+        #expect(m.pastilleEffacee)
+        m.toucherTexte()
+        #expect(!m.pastilleEffacee)
+
+        m.deplierBarre(true)
+        #expect(m.barreVisible)
+        #expect(!m.pastilleVisible)
+        // La barre dépliée ne s'efface pas en défilant.
+        m.defilementVertical(100)
+        #expect(m.barreVisible)
+
+        try await m.masquer()
+        #expect(m.masquee)
+        #expect(magasin.reglages.lectureMasquee)
+        #expect(!m.barreVisible)
+        #expect(!m.pastilleVisible)
+        #expect(m.annonceMasque)
+        m.toucherTexte()
+        #expect(!m.pastilleVisible)
+
+        try await m.retrouver()
+        #expect(!m.masquee)
+        #expect(m.barreVisible)
+        #expect(!m.annonceMasque)
+        m.deplierBarre(false)
+        #expect(m.pastilleVisible)
+    }
+
+    @Test func leBoutonMasqueLeResteALaReouverture() async throws {
+        var r = Reglages()
+        r.setLectureMasquee(true)
+        let (m, _) = try fabriquer(.livre("nichmat"), reglages: r)
+        await m.charger()
+        #expect(!m.pastilleVisible)
+        #expect(!m.barreVisible)
+    }
+
+    // MARK: Les signets
+
+    @Test func leSignetSuitLaLectureSaufLeSignetTouche() async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot))
+        await m.charger()
+        let signets = m.signets
+        try #require(signets.count > 3)
+        #expect(m.signetActif == 0)
+        let rang2 = try #require(m.lignes.firstIndex { $0.id == signets[2].ligne })
+        m.visibles([m.lignes[rang2 + 1].id, m.lignes[rang2 + 2].id], enBas: false)
+        #expect(m.signetActif == 2)
+        m.allerAuSignet(1)
+        #expect(m.signetActif == 1)
+        // Le doigt reprend la page : la section lue l'emporte de nouveau.
+        m.visibles([m.lignes[rang2 + 1].id], enBas: false)
+        #expect(m.signetActif == 1)
+        m.debutGlisse()
+        #expect(m.signetActif == 2)
+        // Tout en bas, la dernière section commencée à l'écran.
+        let dernier = try #require(m.lignes.firstIndex { $0.id == signets[signets.count - 1].ligne })
+        m.visibles([m.lignes[dernier - 1].id, m.lignes[dernier].id], enBas: true)
+        #expect(m.signetActif == signets.count - 1)
+    }
+
+    @Test func unTexteDUneSectionNaPasDeBande() async throws {
+        let (m, _) = try fabriquer(.livre("nichmat"))
+        await m.charger()
+        let signets = m.signets
+        #expect(signets.isEmpty)
+        #expect(m.signetActif == nil)
+    }
+
+    // MARK: Les préférences d'Android
+
+    @Test func lesFavorisSontUneListeSepareeParDesBarres() {
+        var r = Reglages(brut: ObjetJSON([("favoris", .chaine("s:a||l:b| "))]))
+        #expect(LecturePreferences.favoris(r) == ["s:a", "l:b"])
+        LecturePreferences.basculerFavori(&r, "s:c")
+        #expect(LecturePreferences.favoris(r) == ["s:c", "s:a", "l:b"])
+        LecturePreferences.basculerFavori(&r, "s:a")
+        #expect(r.brut["favoris"] == .chaine("s:c|l:b"))
+    }
+
+    @Test func laRepriseSuitLesReglesDeStore() {
+        var r = Reglages()
+        LecturePreferences.setPositionLecture(&r, cle: "s:arvit", position: 12, maintenant: 1_000)
+        #expect(LecturePreferences.positionLecture(r, cle: "s:arvit", maintenant: 1_000 + 60_000) == 12)
+        #expect(LecturePreferences.positionLecture(r, cle: "s:arvit", maintenant: 1_000 + LecturePreferences.priereRepriseMs) == nil)
+        #expect(LecturePreferences.positionLecture(r, cle: "s:arvit", maintenant: 999) == nil)
+        LecturePreferences.setPositionLecture(&r, cle: "l:x", position: 3, maintenant: 1_000)
+        #expect(LecturePreferences.positionLecture(r, cle: "l:x", maintenant: Int64.max) == 3)
+        LecturePreferences.setPositionLecture(&r, cle: "l:x", position: 0, maintenant: 1_000)
+        #expect(LecturePreferences.positionLecture(r, cle: "l:x", maintenant: 2_000) == nil)
+        #expect(LecturePreferences.derniereLecture(r) == "l:x")
+        #expect(r.brut["position:s:arvit"] == .entier(12))
+        #expect(r.brut["position_t:s:arvit"] == .entier(1_000))
+    }
+
+    @Test func uneRouteDeMarquePage() {
+        let tehilim = MarquesPages.Marque(cle: "t:tehilim", nusah: "", section: 23, bloc: 4, apercu: "")
+        #expect(LectureRoute.marque(tehilim) == .tehilimMarque(psaume: 23, verset: 4))
+        let livre = MarquesPages.Marque(cle: "l:likoutei_etsot", nusah: "", section: 2, bloc: 5, apercu: "")
+        #expect(LectureRoute.marque(livre) == .lecture(LectureCible(id: "likoutei_etsot", livre: true,
+                                                                    marque: LecturePlace(section: 2, bloc: 5))))
+        let priere = MarquesPages.Marque(cle: "s:minha", nusah: "edot", section: 0, bloc: 1, apercu: "")
+        #expect(LectureRoute.marque(priere) == .lecture(LectureCible(id: "minha", marque: LecturePlace(section: 0, bloc: 1))))
+        #expect(LectureCible.livre("a").cle == "l:a")
+        #expect(LectureCible.siddour("a").cle == "s:a")
+    }
+
+    // MARK: Les chaînes
+
+    /// Chaque clé que le siddour et le lecteur rendent existe dans le catalogue, en français, en anglais et en
+    /// hébreu.
+    @Test func lesClesSontAuCatalogue() throws {
+        let catalogue = try CatalogueBrut.lire()
+        var cles = [
+            "siddur_jour_ajouts", "region_israel", "region_diaspora", "lecture_sans_traduction", "siddur_aujourdhui",
+            "siddur_replier", "siddur_toucher_lire", "siddur_pas_aujourdhui", "siddur_seul", "banniere_chaharit",
+            "banniere_minha", "banniere_arvit", "favori_retirer", "favori_ajouter", "marque_posee", "marque_retiree",
+            "marques_titre", "marques_aucun", "siddur_signets", "lecture_reglages", "lecture_nuit", "lecture_police",
+            "lecture_langues", "lecture_masquer", "lecture_replier", "lecture_plus", "lecture_moins",
+            "lecture_pourcent", "lecture_taille", "lecture_nuit_oui", "lecture_nuit_non", "lecture_masque_info",
+            "lecture_annuler_masque", "siddur_choose", "siddur_title", "siddur_maintenant", "siddur_books",
+            "siddur_tehilim_he", "tehilim_title", "siddur_tikkun_he", "tikkun_title", "siddur_sources",
+            "recherche_tout", "livres_title",
+        ]
+        cles += Nusah.allCases.map { "siddur_nusah_" + $0.rawValue }
+        cles += PoliceHebraique.Police.allCases.map { $0.libelle }
+        cles += LanguesTexte.Mode.allCases.map { $0.libelle }
+        var manquantes: [String] = []
+        for cle in cles {
+            for langue in ["fr", "en", "he"] where catalogue.valeur(cle, langue: langue) == nil {
+                manquantes.append(cle + "/" + langue)
+            }
+        }
+        #expect(manquantes.isEmpty, "\(manquantes)")
+    }
+}
