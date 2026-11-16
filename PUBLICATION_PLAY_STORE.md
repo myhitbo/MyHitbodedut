@@ -330,13 +330,13 @@ reproduction, **traduction**, diffusion dans l'application et sur le site.
 
 | Étape | Détail | Statut |
 | --- | --- | --- |
-| Créer le compte | play.google.com/console, compte Google dédié recommandé | — |
+| Créer le compte | play.google.com/console, compte Google dédié recommandé | **Fait (16/11)** : compte n° 8221232760929604341 |
 | Frais d'inscription | **25 USD, une fois**, carte non prépayée | Vérifié |
-| Type de compte | **Personnel** (nom réel affiché) ou **Organisation** (exige un numéro D-U-N-S, mais dispense du test fermé ci-dessous) | **Tranché le 29/10 : personnel, nouveau** |
-| Vérification d'identité | pièce d'identité, adresse ; nom public du développeur | Vérifié |
+| Type de compte | **Personnel** (nom réel affiché) ou **Organisation** (exige un numéro D-U-N-S, mais dispense du test fermé ci-dessous) | **Organisation**, au nom de l'association **Hachiveinou letoratekha** (16/11 ; remplace la décision « personnel » du 29/10) |
+| Vérification de l'organisation | numéro D-U-N-S, nom légal et adresse de l'association (identiques à la fiche D-U-N-S), site web, téléphone et e-mail de contact vérifiés ; nom public du développeur | Vérifié ; à terminer dans la console si un bandeau le demande |
 | Vérification d'appareil | accès à un appareil Android via l'appli Play Console | Vérifié |
-| **Test fermé obligatoire** (compte personnel créé après le 13/11/2023) | **12 testeurs inscrits sans interruption pendant 14 jours**, puis demande d'accès à la production | Vérifié |
-| **Statut de commerçant** (*trader status*) | à déclarer dans la Play Console, à la création du compte (exigé depuis novembre 2026 ; les comptes existants ont jusqu'au 01/02/2027). Commerçant ou non au sens du droit européen : déclaration juridique du propriétaire ; sur un compte personnel, « commerçant » rend l'adresse et un téléphone publics | Vérifié ; **à trancher par le propriétaire** (`play/CONSOLE.md` § 1) |
+| ~~Test fermé obligatoire~~ | Exigé des seuls comptes **personnels** créés après le 13/11/2023 (12 testeurs, 14 jours). **Ne s'applique pas** au compte organisation : la production est ouverte dès que l'application est prête | Vérifié (answer/14151465) |
+| **Statut de commerçant** (*trader status*) | à déclarer dans la Play Console, à la création du compte (exigé depuis novembre 2026 ; les comptes existants ont jusqu'au 01/02/2027). Commerçant ou non au sens du droit européen : déclaration juridique de l'association (une association qui publie gratuitement, sans publicité ni achat, se déclare en général *non-trader* ; à confirmer par son bureau) | Vérifié ; **à trancher par le propriétaire** (`play/CONSOLE.md` § 1) |
 | Vérification développeur Android | enregistrer le nom de paquet `com.myhitbodedut` (obligatoire depuis le 30/09/2026 au Brésil, en Indonésie, à Singapour et en Thaïlande, puis élargi) | Vérifié pour la date ; extension mondiale à suivre |
 
 L'enregistrement du nom de paquet sert aussi la distribution hors boutique :
@@ -455,7 +455,9 @@ code et tenu en partie par `ConfidentialiteTest` (faits listés dans le test) :
 - dédicace : ce que l'équipe reçoit par e-mail, pour quoi faire, combien de
   temps, et comment en demander l'effacement.
 
-**Contact (02/11)** : éditeur « MyHitbodedut Team », adresse
+**Contact (02/11)** : éditeur « MyHitbodedut Team », nom public de
+l'association **Hachiveinou letoratekha** (titulaire du compte Play depuis le 16/11 ;
+la page la nomme dans les trois langues, tenu par `ConfidentialiteTest`), adresse
 **myhitbodedut26@gmail.com**, dans la page (trois langues). La même adresse
 est à saisir comme e-mail de contact de la fiche (Play Console → Grow →
 Store presence → Store settings), où elle est publique ; le nom de
@@ -748,19 +750,19 @@ local) :
 | # | Étape | Durée | Dépend de |
 | --- | --- | --- | --- |
 | 1 | Décisions § 3 : vol en direct, écrits des ayants droit, 7 licences inconnues | propriétaire | — |
-| 2 | Compte développeur, paiement, vérifications | 1–3 jours | — |
+| 2 | Compte développeur (organisation), paiement, vérifications — **compte créé le 16/11** | 1–3 jours | — |
 | 3 | `targetSdk 36`, flux `play.yml`, musique de la version Play — **fait le 29/10** ; clé d'envoi et secrets — propriétaire | 1 jour | 1 |
 | 4 | Règles de confidentialité en ligne — **rédigées le 31/10** ; en ligne (Cloudflare Pages, 13/11) ; contact : myhitbodedut26@gmail.com (02/11) | 1 jour | 1 |
 | 5 | Contenu de l'application (§ 6), fiche (§ 7), vidéos | 2–3 jours | 3, 4 |
 | 6 | Piste de test interne, recette § 8 | 3–5 jours | 3 |
-| 7 | **Test fermé : 12 testeurs, 14 jours sans interruption** | **14 jours minimum** | 5, 6 |
-| 8 | Demande d'accès à la production | quelques jours *(supposé)* | 7 |
-| 9 | Revue de la version de production | de quelques jours à plus d'une semaine *(supposé)* | 8 |
+| 7 | Test fermé **facultatif** (compte organisation) : quelques proches, quelques jours, pour la recette sur leurs téléphones | 0–7 jours | 5, 6 |
+| 8 | ~~Demande d'accès à la production~~ — sans objet pour un compte organisation | — | — |
+| 9 | Revue de la version de production | de quelques jours à plus d'une semaine *(supposé)* | 6 (ou 7) |
 | 10 | Déploiement progressif : 20 % → 50 % → 100 % | 1–2 semaines | 9 |
 
-**Délai réaliste : 5 à 7 semaines**, dont deux incompressibles pour le test
-fermé. Recruter les 12 testeurs dès l'étape 2 : il faut leurs adresses Gmail,
-et chacun doit rester inscrit les 14 jours.
+**Délai réaliste : 2 à 4 semaines.** Le compte organisation (16/11) supprime
+les 14 jours incompressibles du test fermé : on peut passer de la piste de
+test interne à la production dès que la recette du § 8 est passée.
 
 ### Plan de repli si la revue refuse la barrière
 
@@ -769,8 +771,8 @@ et chacun doit rester inscrit les 14 jours.
 2. En cas de refus maintenu : publier l'édition **`light`**
    (`com.myhitbodedut.light`) — sans overlay ni données d'utilisation —
    comme application Play, et garder l'édition complète en distribution
-   GitHub. La `light` est une **nouvelle application** : nouveau test fermé
-   de 14 jours. *Déduit — l'exigence s'applique par application.*
+   GitHub. La `light` est une **nouvelle application** : nouvelle fiche et
+   nouvelle revue (pas de test fermé obligatoire sur le compte organisation).
 
 ---
 
@@ -796,9 +798,10 @@ et chacun doit rester inscrit les 14 jours.
    du Yanuka et המלך בשדה (puis, le 03/11, 10 morceaux de Noam Shpayer et 14 d'Ianir : 26 en tout) ; les 30 niggounim sans titre restent hors de Play, Ishay Ribo est retiré partout (§ 3.2).
 3. ~~**7 textes de licence inconnue**~~ — **tranché le 29/10** : domaine
    public, texte seul sans vocalisation (§ 3.3).
-4. ~~**Compte personnel ou organisation**~~ — **tranché le 29/10** : compte
-   **personnel, nouveau**. Test fermé obligatoire : 12 testeurs, 14 jours
-   (§ 4, § 9 étape 7). Recruter les testeurs dès la création du compte.
+4. ~~**Compte personnel ou organisation**~~ — **tranché le 16/11** : compte
+   **organisation**, au nom de l'association Hachiveinou letoratekha (le choix
+   « personnel » du 29/10 est abandonné). Plus de test fermé obligatoire
+   (§ 4, § 9). Les règles de confidentialité nomment l'association (§ 6.1).
 5. ~~**Titre, catégorie, tranche d'âge**~~ — **tranchés le
    29/10** : Style de vie, 18 ans et plus, un titre par langue (§ 7.1).
 6. ~~**Édition `light` sur Play**~~ — **tranché le 29/10** : non, gardée
