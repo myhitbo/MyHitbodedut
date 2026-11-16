@@ -250,7 +250,8 @@ droits ; l'autorisation d'Ishay Ribo et de MBD n'a pas été demandée. D'où, *
 | `hamelech_basade` — המלך בשדה | **Livré** — déclaré libre de droits par le propriétaire (29/10) ; voir la réserve ci-dessous | Livré |
 | `ribo_sans_titre` — Ishay Ribo | **Retiré** — autorisation non demandée (29/10), comme pour MBD | Retiré partout le 29/10 (application et site) |
 | `shpayer_beyond` — Beyond — נעם שפייר | **Livré** (accord écrit, 29/10) | Livré |
-| `shpayer_*` (9 autres morceaux, dont 2 avec Or Shpayer) et `ianir_*` (14 morceaux) — **נעם שפייר** et **יניר קילינסקי** | **Livrés** le 03/11 (accord écrit du 29/10 couvrant toutes leurs musiques) | Livrés, ainsi que dans la version web |
+| `shpayer_*` (9 autres morceaux, dont 2 avec Or Shpayer) et `ianir_*` (14 morceaux) — **נעם שפייר** et **יניר קילינסקי** | **Livrés** le 03/11 (accord écrit du 29/10 couvrant toutes leurs musiques), **sauf trois, retirés le 16/11** (ligne suivante) | Livrés, ainsi que dans la version web |
+| `shpayer_eshet_hayil`, `shpayer_arba_bavot` (duos avec Or Shpayer), `ianir_zemer_bishvahin` (titre incertain) | **Retirés le 16/11** : pas d'accord écrit complet (Or Shpayer n'est pas couvert ; titre à confirmer). Passés dans `src/musique_hors_play` | Livrés (version GitHub) ; retirés du site, qui suit Play |
 
 **Réserve sur המלך בשדה.** Une mélodie traditionnelle peut être libre alors
 que son **enregistrement** ne l'est pas : l'interprète et le producteur ont
@@ -267,8 +268,9 @@ ils entrent dans l'app, version Play comprise, et dans la version web.
 Hors de la version Play ; le propriétaire décide de leur place dans la
 version GitHub, qui est elle aussi une diffusion.
 
-Audio de la version Play : 26 morceaux, environ 70 Mo (Yanuka 1, המלך בשדה 1,
-Noam Shpayer 10, Ianir 14), contre 56 morceaux et environ 146 Mo pour GitHub (état du 03/11 ; `tools/inventaire_musique.py`) ; le site
+Audio de la version Play : 23 morceaux depuis le 16/11 (Yanuka 1, המלך בשדה 1,
+Noam Shpayer 8, Ianir 13 ; 26 et environ 70 Mo avant le retrait de trois
+morceaux), contre 56 morceaux et environ 146 Mo pour GitHub (état du 03/11 ; `tools/inventaire_musique.py`) ; le site
 livre les mêmes 26 que Play (règle du 13/11 ci-dessous). Un morceau
 retiré revient par simple mise à jour dès que son écrit existe ; si un
 niggoun s'avère être du Yanuka, il rentre sous le même accord. Pour cela, il
@@ -332,7 +334,7 @@ reproduction, **traduction**, diffusion dans l'application et sur le site.
 | --- | --- | --- |
 | Créer le compte | play.google.com/console, compte Google dédié recommandé | **Fait (16/11)** : compte n° 8221232760929604341 |
 | Frais d'inscription | **25 USD, une fois**, carte non prépayée | Vérifié |
-| Type de compte | **Personnel** (nom réel affiché) ou **Organisation** (exige un numéro D-U-N-S, mais dispense du test fermé ci-dessous) | **Organisation**, au nom de l'association **HACHIVEINOU LÉTORATEKHA** (16/11 ; remplace la décision « personnel » du 29/10) |
+| Type de compte | **Personnel** (nom réel affiché) ou **Organisation** (exige un numéro D-U-N-S, mais dispense du test fermé ci-dessous) | **Organisation**, au nom de l'association **HACHIVEINOU LÉTORATEKHA**, France (16/11 ; remplace la décision « personnel » du 29/10) |
 | Vérification de l'organisation | numéro D-U-N-S, nom légal et adresse de l'association (identiques à la fiche D-U-N-S), site web, téléphone et e-mail de contact vérifiés ; nom public du développeur | Vérifié ; à terminer dans la console si un bandeau le demande |
 | Vérification d'appareil | accès à un appareil Android via l'appli Play Console | Vérifié |
 | ~~Test fermé obligatoire~~ | Exigé des seuls comptes **personnels** créés après le 13/11/2023 (12 testeurs, 14 jours). **Ne s'applique pas** au compte organisation : la production est ouverte dès que l'application est prête | Vérifié (answer/14151465) |

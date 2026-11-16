@@ -61,7 +61,7 @@ Vidéo à tourner pour la déclaration des services de premier plan
 notification ; puis l'écran « Je suis avec Hachem » sur une application
 choisie.
 
-## 5. Avant le test fermé : les écrits sur la musique
+## 5. Les écrits sur la musique — **réglé le 16/11**
 
 `PUBLICATION_PLAY_STORE.md` § 3.2. Trois morceaux livrés n'ont pas
 d'accord écrit complet au dossier : « Eshet 'Hayil » et « Arba Bavot » (duos
@@ -69,6 +69,11 @@ avec Or Shpayer) et « Zemer bichva'hin (titre incertain) ». Soit une annexe
 signée (titres, compositeurs, autorisation « distribution publique gratuite
 dans une application mobile, via Google Play, monde entier »), soit les
 retirer de la version Play (`MusiquePlay.kt` → `MusiqueHorsPlay.kt`).
+
+**Fait le 16/11 : retirés de la version Play** (et donc du site). La version
+Play livre 23 morceaux. Un écrit signé les fera revenir : remettre le fichier
+dans `main/res/raw`, la ligne dans `MusiquePlay.kt` et le nom dans
+`MusicFilesTest`.
 
 ## 6. Test interne puis production
 

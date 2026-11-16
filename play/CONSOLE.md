@@ -48,7 +48,7 @@ l'AAB : voir « Si le relais arrive » à la fin.
 
 ## 1. Compte développeur
 
-Compte **organisation** au nom de l'association **HACHIVEINOU LÉTORATEKHA**, créé le
+Compte **organisation** au nom de l'association **HACHIVEINOU LÉTORATEKHA** (France), créé le
 16/11 (n° 8221232760929604341). Création, frais, vérifications : § 4. Deux
 saisies demandent une décision.
 

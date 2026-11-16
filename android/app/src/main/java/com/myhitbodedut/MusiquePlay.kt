@@ -9,14 +9,15 @@ internal data class Bundled(val id: String, val rawRes: Int, val titleRes: Int)
  * המלך בשדה (déclaré libre de droits), et les morceaux de נעם שפייר et de
  * יניר קילינסקי (Ianir), accord écrit du 29/10. PUBLICATION_PLAY_STORE.md § 3.2.
  * Les nouveaux vont en fin de liste : le morceau par défaut ne change pas.
+ * Retirés le 16/11, faute d'accord écrit complet : « Eshet 'Hayil » et
+ * « Arba Bavot » (duos avec Or Shpayer), « Zemer bichva'hin » (titre
+ * incertain) — passés dans MusiqueHorsPlay (version GitHub seulement).
  */
 internal object MusiquePlay {
     val MORCEAUX = listOf(
         Bundled("hamelech_basade", R.raw.hamelech_basade, R.string.track_hamelech_basade),
         Bundled("yanuka_nigoun_3", R.raw.yanuka_nigoun_3, R.string.track_yanuka_nigoun_3),
         Bundled("shpayer_beyond", R.raw.shpayer_beyond, R.string.track_shpayer_beyond),
-        Bundled("shpayer_eshet_hayil", R.raw.shpayer_eshet_hayil, R.string.track_shpayer_eshet_hayil),
-        Bundled("shpayer_arba_bavot", R.raw.shpayer_arba_bavot, R.string.track_shpayer_arba_bavot),
         Bundled("shpayer_afilou", R.raw.shpayer_afilou, R.string.track_shpayer_afilou),
         Bundled("shpayer_kenout", R.raw.shpayer_kenout, R.string.track_shpayer_kenout),
         Bundled("shpayer_esh_kamanche", R.raw.shpayer_esh_kamanche, R.string.track_shpayer_esh_kamanche),
@@ -28,7 +29,6 @@ internal object MusiquePlay {
         Bundled("ianir_al_harega", R.raw.ianir_al_harega, R.string.track_ianir_al_harega),
         Bundled("ianir_hello", R.raw.ianir_hello, R.string.track_ianir_hello),
         Bundled("ianir_baal_shem_tov", R.raw.ianir_baal_shem_tov, R.string.track_ianir_baal_shem_tov),
-        Bundled("ianir_zemer_bishvahin", R.raw.ianir_zemer_bishvahin, R.string.track_ianir_zemer_bishvahin),
         Bundled("ianir_berditchev", R.raw.ianir_berditchev, R.string.track_ianir_berditchev),
         Bundled("ianir_kol_bayaar", R.raw.ianir_kol_bayaar, R.string.track_ianir_kol_bayaar),
         Bundled("ianir_yohanan_hasandlar", R.raw.ianir_yohanan_hasandlar, R.string.track_ianir_yohanan_hasandlar),
