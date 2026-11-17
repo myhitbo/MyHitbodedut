@@ -15,7 +15,6 @@ import javax.microedition.media.Player;
  * commencer la hitbodedout.
  */
 final class Musique extends Ecran {
-    static final String TITRE = "Niggoun 33";
     private static final String[][] ESSAIS = {
         {"/m/niggoun.mp3", "audio/mpeg", "MP3"},
         {"/m/niggoun.mp3", "audio/mp3", "MP3"},
@@ -35,9 +34,9 @@ final class Musique extends Ecran {
             for (int i = 0; i < t.length; i++) {
                 if (t[i].startsWith("audio/")) b.append(b.length() == 0 ? "" : ", ").append(t[i].substring(6));
             }
-            formats = b.length() == 0 ? "aucun format audio déclaré" : b.toString();
+            formats = b.length() == 0 ? null : b.toString();
         } catch (Throwable e) {
-            formats = "inconnus";
+            formats = "?";
         }
     }
 
@@ -52,7 +51,7 @@ final class Musique extends Ecran {
             else if (joue()) lecteur.stop();
             else lecteur.start();
         } catch (Throwable e) {
-            erreur = "Lecture impossible : " + e.toString();
+            erreur = Mots.m(Mots.LECTURE_IMPOSSIBLE, e.toString());
         }
         suit();
         repaint();
@@ -80,9 +79,9 @@ final class Musique extends Ecran {
                     erreur = null;
                     return;
                 }
-                raisons.append(ESSAIS[i][2]).append(" : accepté mais muet. ");
+                raisons.append(Mots.m(Mots.MUET, ESSAIS[i][2]));
             } catch (Throwable e) {
-                raisons.append(ESSAIS[i][2]).append(" : ").append(e.toString()).append(". ");
+                raisons.append(ESSAIS[i][2]).append(Mots.langue == Mots.FR ? " : " : ": ").append(e.toString()).append(". ");
             }
             if (p != null) {
                 try {
@@ -92,7 +91,7 @@ final class Musique extends Ecran {
                 }
             }
         }
-        erreur = "Ce téléphone ne joue ni le MP3 ni l'AMR depuis une application. " + raisons.toString();
+        erreur = Mots.m(Mots.NI_MP3_NI_AMR) + raisons.toString();
     }
 
     void arrete() {
@@ -132,12 +131,12 @@ final class Musique extends Ecran {
         int h = getHeight();
         g.setColor(PAPER);
         g.fillRect(0, 0, w, h);
-        int y = bandeau(g, w, "Musique", format) + 8;
+        int y = bandeau(g, w, Mots.m(Mots.MUSIQUE), format) + 8;
         y += plaque(g, "guitar", w / 2, y, 84) + 6;
 
         g.setColor(INK);
         g.setFont(GRANDE);
-        g.drawString(TITRE, w / 2, y, Graphics.TOP | Graphics.HCENTER);
+        g.drawString(Mots.m(Mots.NIGGOUN), w / 2, y, Graphics.TOP | Graphics.HCENTER);
         y += GRANDE.getHeight() + 4;
 
         // La barre : où en est le morceau.
@@ -162,13 +161,13 @@ final class Musique extends Ecran {
 
         String etat;
         if (erreur != null) etat = erreur;
-        else if (lecteur == null) etat = "Touche centrale : écouter";
-        else if (joue()) etat = "Lecture (" + format + "). Touche centrale : pause";
-        else etat = "En pause. Touche centrale : reprendre";
+        else if (lecteur == null) etat = Mots.m(Mots.CENTRALE_ECOUTER);
+        else if (joue()) etat = Mots.m(Mots.JOUE, format);
+        else etat = Mots.m(Mots.EN_PAUSE_REPRENDRE);
         g.setColor(erreur != null ? WARNING : BRAND);
         y = centre(g, etat, MARGE, y, w - 2 * MARGE, erreur != null ? PETITE : MOYENNE) + 4;
 
         g.setColor(MUTED);
-        centre(g, "Formats du téléphone : " + formats, MARGE, y, w - 2 * MARGE, PETITE);
+        centre(g, Mots.m(Mots.FORMATS, formats == null ? Mots.m(Mots.AUCUN_FORMAT) : "?".equals(formats) ? Mots.m(Mots.INCONNUS) : formats), MARGE, y, w - 2 * MARGE, PETITE);
     }
 }

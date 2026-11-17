@@ -7,6 +7,9 @@ import javax.microedition.lcdui.Graphics;
  * Un texte à lire : le personnage du moment, une phrase mise en avant
  * (le bilan d'une hitbodedout), le texte et sa référence. Haut et bas
  * font défiler ; la touche centrale fait l'action principale de l'écran.
+ *
+ * Le texte est l'hébreu, aligné à droite, puis sa traduction dans la
+ * langue de l'interface (aucune en hébreu : RegleLangue).
  */
 final class Lecture extends Ecran {
     interface Action {
@@ -16,16 +19,18 @@ final class Lecture extends Ecran {
     final String titre;
     final String personnage;
     final String accroche;
+    final String hebreu;
     final String texte;
     final String reference;
     Action action;
     private int decalage;
     private int hauteurTotale;
 
-    Lecture(String titre, String personnage, String accroche, String texte, String reference) {
+    Lecture(String titre, String personnage, String accroche, String hebreu, String texte, String reference) {
         this.titre = titre;
         this.personnage = personnage;
         this.accroche = accroche;
+        this.hebreu = hebreu;
         this.texte = texte;
         this.reference = reference;
     }
@@ -57,25 +62,38 @@ final class Lecture extends Ecran {
             g.setColor(BRAND);
             y = centre(g, accroche, MARGE, y, large, GRANDE) + 6;
         }
-        if (texte != null) {
-            // Le texte sur une carte blanche, la référence en dessous.
-            Vector lignes = coupe(texte, large - 16, MOYENNE);
-            int hCarte = lignes.size() * MOYENNE.getHeight() + 16 + (reference != null ? PETITE.getHeight() + 8 : 0);
+        if (hebreu != null || texte != null) {
+            // Le texte sur une carte blanche, la référence en dessous. La barre verte
+            // est au début de la ligne : à gauche, ou à droite en hébreu.
+            boolean r = rtl();
+            int lt = large - 16;
+            Vector lh = hebreu == null ? null : coupe(hebreu, lt, MOYENNE);
+            Vector lt2 = texte == null ? null : coupe(texte, lt, MOYENNE);
+            int hTextes = (lh == null ? 0 : lh.size()) * MOYENNE.getHeight() + (lt2 == null ? 0 : lt2.size()) * MOYENNE.getHeight()
+                + (lh != null && lt2 != null ? 9 : 0);
+            int hCarte = hTextes + 16 + (reference != null ? PETITE.getHeight() + 8 : 0);
             g.setColor(CARD);
             g.fillRoundRect(MARGE, y, large, hCarte, 12, 12);
             g.setColor(BRAND);
-            g.fillRect(MARGE, y + 8, 3, hCarte - 16);
-            g.setColor(INK);
-            g.setFont(MOYENNE);
+            g.fillRect(r ? MARGE + large - 3 : MARGE, y + 8, 3, hCarte - 16);
             int ty = y + 8;
-            for (int i = 0; i < lignes.size(); i++) {
-                g.drawString((String) lignes.elementAt(i), MARGE + 10, ty, Graphics.TOP | Graphics.LEFT);
-                ty += MOYENNE.getHeight();
+            int tx = r ? MARGE + 6 : MARGE + 10;
+            g.setColor(INK);
+            // L'hébreu se lit de droite à gauche, quelle que soit la langue de l'interface.
+            if (lh != null) ty = lignes(g, lh, tx, ty, lt, MOYENNE, true);
+            if (lh != null && lt2 != null) {
+                g.setColor(LINE);
+                g.drawLine(tx, ty + 4, tx + lt, ty + 4);
+                g.setColor(INK);
+                ty += 9;
             }
+            if (lt2 != null) ty = lignes(g, lt2, tx, ty, lt, MOYENNE, false);
             if (reference != null) {
                 g.setColor(BRAND);
                 g.setFont(PETITE);
-                g.drawString(tronque(reference, large - 20, PETITE), MARGE + large - 8, ty + 6, Graphics.TOP | Graphics.RIGHT);
+                // À la fin de la ligne : à droite, ou à gauche en hébreu.
+                if (r) g.drawString(tronque(reference, large - 20, PETITE), MARGE + 8, ty + 6, Graphics.TOP | Graphics.LEFT);
+                else g.drawString(tronque(reference, large - 20, PETITE), MARGE + large - 8, ty + 6, Graphics.TOP | Graphics.RIGHT);
             }
             y += hCarte + 8;
         }
@@ -88,10 +106,11 @@ final class Lecture extends Ecran {
             int zone = h - hb - 8;
             int taille = Math.max(12, zone * (h - hb) / (hauteurTotale - hb));
             int pos = hb + 4 + (zone - taille) * decalage / Math.max(1, hauteurTotale - h + 8);
+            int ax = rtl() ? 1 : w - 4;
             g.setColor(LINE);
-            g.fillRect(w - 4, hb + 4, 3, zone);
+            g.fillRect(ax, hb + 4, 3, zone);
             g.setColor(BRAND);
-            g.fillRect(w - 4, pos, 3, taille);
+            g.fillRect(ax, pos, 3, taille);
         }
     }
 }

@@ -122,24 +122,26 @@ final class Menu extends Ecran {
             g.setColor(LINE);
             g.drawRoundRect(x, y, large - 1, haute - 1, 10, 10);
         }
-        // Le chiffre de la carte : la touche qui la choisit directement.
+        // Le chiffre de la carte : la touche qui la choisit directement. En hébreu, à droite.
+        boolean r = rtl();
         int d = GRASSE.getHeight();
         if (i < 9) {
+            int cx = r ? x + large - 5 - d : x + 5;
             g.setColor(choisie ? BRAND_DARK : MINT);
-            g.fillArc(x + 5, y + (haute - d) / 2, d, d, 0, 360);
+            g.fillArc(cx, y + (haute - d) / 2, d, d, 0, 360);
             g.setColor(choisie ? 0xFFFFFF : BRAND);
             g.setFont(PETITE);
-            g.drawString(String.valueOf(i + 1), x + 5 + d / 2, y + (haute - PETITE.getHeight()) / 2, Graphics.TOP | Graphics.HCENTER);
+            g.drawString(String.valueOf(i + 1), cx + d / 2, y + (haute - PETITE.getHeight()) / 2, Graphics.TOP | Graphics.HCENTER);
         }
-        int tx = x + d + 12;
-        int place = large - (tx - x) - 6;
+        int place = large - d - 18;
+        int tx = r ? x + large - d - 12 : x + d + 12;
         g.setColor(choisie ? 0xFFFFFF : INK);
         g.setFont(GRASSE);
-        g.drawString(tronque(items[i], place, GRASSE), tx, y + 5, Graphics.TOP | Graphics.LEFT);
+        g.drawString(tronque(items[i], place, GRASSE), tx, y + 5, Graphics.TOP | debut());
         if (details != null && details[i] != null) {
             g.setColor(choisie ? MINT : MUTED);
             g.setFont(PETITE);
-            g.drawString(tronque(details[i], place, PETITE), tx, y + 5 + GRASSE.getHeight(), Graphics.TOP | Graphics.LEFT);
+            g.drawString(tronque(details[i], place, PETITE), tx, y + 5 + GRASSE.getHeight(), Graphics.TOP | debut());
         }
     }
 }

@@ -12,17 +12,28 @@ final class Regles {
     private Regles() {
     }
 
-    /** 5 min, 1 h, 1 h 30 (Store.formatDuration). */
+    /**
+     * Dans la langue de l'interface (Store.formatDuration, duration_* de strings.xml) :
+     * 5 min, 1 h, 1 h 30 ; 1 h 30 min ; 5 דק', 1 שע' 30 דק'.
+     */
     static String duree(int minutes) {
-        if (minutes < 60) return minutes + " min";
         int h = minutes / 60;
         int m = minutes % 60;
+        if (Mots.langue == Mots.HE) {
+            if (h == 0) return m + " דק'";
+            return h + " שע'" + (m == 0 ? "" : " " + m + " דק'");
+        }
+        if (minutes < 60) return minutes + " min";
+        if (Mots.langue == Mots.EN) return h + " h" + (m == 0 ? "" : " " + m + " min");
         return h + " h" + (m == 0 ? "" : " " + (m < 10 ? "0" : "") + m);
     }
 
+    /** 20 h 05 en français, 20:05 en anglais et en hébreu. */
     static String heure(int minutesApresMinuit) {
         int m = minutesApresMinuit % 60;
-        return (minutesApresMinuit / 60) + " h " + (m < 10 ? "0" : "") + m;
+        String mm = (m < 10 ? "0" : "") + m;
+        if (Mots.langue != Mots.FR) return (minutesApresMinuit / 60) + ":" + mm;
+        return (minutesApresMinuit / 60) + " h " + mm;
     }
 
     /** Le temps restant : 4:57, ou 1:00:05 au-delà d'une heure. */
