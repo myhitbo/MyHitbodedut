@@ -415,7 +415,7 @@ struct AccueilModeleTests {
         #expect(m.retourHassidPrevu == nil)
         m.toucherAnneau(.serie)
         #expect(m.face == .serie)
-        #expect(m.legende == Libelle("ring_streak_detail", .entier(1), .entier(7)))
+        #expect(m.legende == Libelle.pluriel("ring_streak_detail", quantite: 1, .entier(1), .entier(7)))
         #expect(m.couleurLegende == .ringStreak)
     }
 

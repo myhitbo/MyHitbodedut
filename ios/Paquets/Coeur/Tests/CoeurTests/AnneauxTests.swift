@@ -121,8 +121,10 @@ struct AnneauxTests {
         let catalogue = try Catalogue.lire()
         for langue in Catalogue.langues {
             let chaines = catalogue.simples(langue)
+            // « ring_streak_detail » est un pluriel depuis le 13/11 sur Android.
+            let pluriels = catalogue.pluriels(langue)
             for cle in ["settings_daily_goal", "ring_day_detail", "ring_streak_detail", "rings_description"] {
-                let presente = chaines[cle] != nil
+                let presente = chaines[cle] != nil || pluriels["\(cle)[other]"] != nil
                 #expect(presente, "\(langue) : \(cle)")
             }
         }

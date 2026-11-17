@@ -18,13 +18,21 @@ struct ZmanimTests {
         let fichier = try JSONDecoder().decode(
             FichierVecteurs.self, from: Depot.donnees("web/test/vecteurs_kosherjava.json"))
         #expect(fichier.moteur == "KosherJava 2.5.0, NOAACalculator")
-        #expect(fichier.zmanim.count == 35)
+        #expect(fichier.zmanim.count == 56)
         var comparees = 0, absents = 0
         var pire = (ecart: 0.0, ou: "")
         for ligne in fichier.zmanim {
             let lieu = Zmanim.Lieu(nom: ligne.lieu, latitude: ligne.lat, longitude: ligne.lon, fuseau: ligne.fuseau)
             let date = try #require(JourCivil(iso: ligne.date))
-            let calcules = Zmanim.jour(lieu: lieu, date: date) + [Zmanim.allumage(lieu: lieu, date: date, minutes: 18)]
+            // Le profil des Edot (« edot_<clé> ») et les heures du 'hamets (« hamets_<n>_<noussa'h> »), audit du 16/11.
+            func renomme(_ z: Zmanim.Zman, _ cle: String) -> Zmanim.Zman {
+                Zmanim.Zman(cle: cle, methode: z.methode, statut: z.statut, instant: z.instant)
+            }
+            let edot = Zmanim.jour(lieu: lieu, date: date, nusah: .edot).filter { Zmanim.profilEdot[$0.cle] != nil }
+                .map { renomme($0, "edot_" + $0.cle) }
+            let hamets = Zmanim.hamets(lieu: lieu, date: date, nusah: .edot).enumerated().map { renomme($0.element, "hamets_\($0.offset)_edot") }
+                + Zmanim.hamets(lieu: lieu, date: date).enumerated().map { renomme($0.element, "hamets_\($0.offset)_commun") }
+            let calcules = Zmanim.jour(lieu: lieu, date: date) + [Zmanim.allumage(lieu: lieu, date: date, minutes: 18)] + edot + hamets
             #expect(Set(calcules.map(\.cle)) == Set(ligne.valeurs.keys), "\(ligne.lieu) \(ligne.date)")
             for z in calcules {
                 let ou = "\(ligne.lieu) \(ligne.date) \(z.cle)"
@@ -45,7 +53,7 @@ struct ZmanimTests {
                 comparees += 1
             }
         }
-        #expect(comparees + absents == 35 * 16)
+        #expect(comparees + absents == 56 * 31)
         print("VecteursZmanim : \(comparees) instants et \(absents) ABSENT ; écart maximal "
               + "\(Int((pire.ecart * 1000).rounded())) ms (\(pire.ou))")
     }

@@ -268,8 +268,12 @@ public final class AccueilModele {
             return Libelle(etat.jour.atteint ? "ring_day_reached" : "ring_day_detail",
                            .libelle(Store.formatDuration(etat.jour.fait)), .libelle(Store.formatDuration(etat.jour.objectif)))
         case .serie:
-            return Libelle(etat.serie.atteint ? "ring_streak_reached" : "ring_streak_detail",
-                           .entier(etat.serie.fait), .entier(etat.serie.objectif))
+            // « ring_streak_detail » est un pluriel depuis le 13/11 sur Android (MainActivity, StreakWidget).
+            if etat.serie.atteint {
+                return Libelle("ring_streak_reached", .entier(etat.serie.fait), .entier(etat.serie.objectif))
+            }
+            return Libelle.pluriel("ring_streak_detail", quantite: etat.serie.fait, .entier(etat.serie.fait),
+                                   .entier(etat.serie.objectif))
         case .semaine, nil:
             return Libelle.pluriel("week_gauge", quantite: etat.semaine.fait, .entier(etat.semaine.fait),
                                    .entier(etat.semaine.objectif))
@@ -809,12 +813,19 @@ public final class AccueilModele {
 
     /// La prière que suggère l'heure : avec un lieu, d'après ses zmanim (nil dans les creux) ; sans lieu, les heures
     /// fixes de SiddurMoment.
+    /// La nuit de Chabbat, de fête ou de 'Hol hamoed Pessa'h, pas de Tikoun 'hatsot ; pas d'office de semaine proposé
+    /// un Chabbat ou un Yom tov (audit du 16/11, AccueilMoment.kt).
     private var momentDuSiddour: String? {
-        if let lieu = reglages.lieuZmanim {
-            return JourAffiche.momentDuSiddour(lieu: lieu, maintenant: Date(timeIntervalSince1970: Double(horloge.maintenant) / 1000))
-        }
         let heure = horloge.dateHeure
-        return SiddurMoment.suggestion(heure: heure.heure, minute: heure.minute)
+        let brut: String?
+        if let lieu = reglages.lieuZmanim {
+            brut = JourAffiche.momentDuSiddour(lieu: lieu, maintenant: Date(timeIntervalSince1970: Double(horloge.maintenant) / 1000),
+                                               enIsrael: enIsrael, nusah: reglages.siddurNusah)
+        } else {
+            brut = SiddurMoment.suggestion(heure: heure.heure, minute: heure.minute,
+                                           sansTikoun: JourAffiche.sansTikounHatsot(aujourdhui, enIsrael: enIsrael))
+        }
+        return JourAffiche.momentOuvrable(brut, date: aujourdhui, heure: heure.heure, enIsrael: enIsrael)
     }
 
     /// Birkat haLevana se dit ce soir : dans la fenêtre de l'usage suivi, à partir de 14 h, dans le fuseau du lieu
@@ -823,9 +834,14 @@ public final class AccueilModele {
         let zone = reglages.lieuZmanim.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
         let maintenant = zone.dateHeure(millis: horloge.maintenant)
         let usage = reglages.levanaUsage.flatMap { Levana.Usage(rawValue: $0) } ?? Levana.Usage.duNusah(reglages.siddurNusah)
-        let fenetre = Levana.fenetre(maintenant.jour, fuseau: zone, usage: usage)
-        if case .dans = Levana.etat(fenetre, maintenant.jour, fuseau: zone) { return false }
-        return maintenant.heure >= 14
+        let fenetre = Levana.fenetre(maintenant.jour, fuseau: zone, usage: usage,
+                                     horaires: Levana.Horaires.du(reglages.lieuZmanim, fuseau: zone))
+        // Ni un soir de Chabbat ou de Yom tov qui n'est pas le dernier (audit du 16/11, MB 426:12 ; YY 426:33), ni
+        // après la fermeture de la fenêtre.
+        switch Levana.etat(fenetre, maintenant.jour, fuseau: zone, enIsrael: enIsrael) {
+        case .ceSoir, .dernierSoir: return maintenant.heure >= 14 && horloge.maintenant < fenetre.fin
+        default: return false
+        }
     }
 
     // MARK: Ce qui se lit

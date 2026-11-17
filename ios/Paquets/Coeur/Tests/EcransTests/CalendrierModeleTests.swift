@@ -294,8 +294,10 @@ struct CalendrierModeleTests {
         var heures: [String: String] = [:]
         for ligne in modele.lignes { heures[ligne.cle] = ligne.heureTexte }
         // Les heures loin d'une minute ronde (à plus de deux secondes) ; Michéyakir (04:48:00) et Min'ha ketana (15:19:59) en sont trop près.
-        let attendues = ["netz": "05:38", "szt_mga": "09:19", "szt_gra": "09:43", "minha_gedola": "12:16",
-                         "plag": "16:36", "tset": "18:29"]
+        // Le profil des Edot (noussa'h par défaut) depuis l'audit du 16/11 d'Android : Maguen Avraham, plag et
+        // tsét en heures zmaniyot.
+        let attendues = ["netz": "05:38", "szt_mga": "09:18", "szt_gra": "09:43", "minha_gedola": "12:16",
+                         "plag": "16:50", "tset": "18:06"]
         for (cle, heure) in attendues {
             #expect(heures[cle] == heure, "\(cle)")
         }

@@ -132,6 +132,8 @@ struct ChronologiesTests {
                 case let cle?: limiteAttendue = j.horaires[cle]
                 }
                 #expect(grande.limite == limiteAttendue, "\(contexte)")
+                // Une Min'ha pas encore ouverte : l'instant où elle commence (FVOL-05).
+                #expect(r.count == 7 && grande.ouverture == r[6].nombre, "\(contexte) : ouverture")
                 #expect(grande.jourHebreu.iso == r[3].texte, "\(contexte)")
                 let hebreu = j.hebreu[grande.jourHebreu.iso]
                 #expect(grande.dateHebraique == hebreu?.date, "\(contexte)")

@@ -99,9 +99,11 @@ struct ZmanimEcranTests {
                            "ajout_hallel_partiel_sans_berakha", "ajout_sans_tahanoun"])
         #expect(carte.aucunAjout == nil)
         #expect(carte.illustration == nil)
-        let attendues = ["alot": "05:28", "misheyakir": "05:49", "netz": "06:40", "szks_mga": "08:56", "szks_gra": "09:32",
-                         "szt_mga": "10:06", "szt_gra": "10:30", "minha_gedola": "12:54", "minha_ketana": "15:46",
-                         "plag": "16:58", "chkia": "18:10", "tset": "18:46", "tset_rt": "19:22"]
+        // Le profil des Edot depuis l'audit du 16/11 d'Android (Zmanim.PROFIL_EDOT, jugé par les vecteurs KosherJava) :
+        // aube, michéyakir, Maguen Avraham, plag, tsét et Rabbénou Tam en heures zmaniyot.
+        let attendues = ["alot": "05:31", "misheyakir": "05:36", "netz": "06:40", "szks_mga": "08:58", "szks_gra": "09:32",
+                         "szt_mga": "10:07", "szt_gra": "10:30", "minha_gedola": "12:54", "minha_ketana": "15:46",
+                         "plag": "17:11", "chkia": "18:10", "tset": "18:23", "tset_rt": "19:19"]
         let obtenues = heures(modele)
         for (cle, heure) in attendues {
             #expect(obtenues[cle] == heure, "\(cle)")
@@ -157,11 +159,13 @@ struct ZmanimEcranTests {
         let marques = ZmanimEssais.cles(carte.marques)
         #expect(marques.contains("fete_ticha_beav"))
         let ajouts = ZmanimEssais.cles(carte.ajouts)
+        // Na'hem aux trois offices chez les Edot (audit du 16/11 d'Android).
         #expect(ajouts == ["ajout_morid_hatal", "ajout_barkhenou", "ajout_anenou_officiant",
-                           "ajout_anenou_particulier_trois", "ajout_ticha_beav", "ajout_sans_tahanoun"])
-        let attendues = ["alot": "04:43", "misheyakir": "05:07", "netz": "06:01", "szks_mga": "08:46", "szks_gra": "09:22",
-                         "szt_mga": "10:05", "szt_gra": "10:29", "minha_gedola": "13:17", "minha_ketana": "16:38",
-                         "plag": "18:02", "chkia": "19:26", "tset": "20:04", "tset_rt": "20:38"]
+                           "ajout_anenou_particulier_trois", "ajout_ticha_beav_trois", "ajout_sans_tahanoun"])
+        // Le profil des Edot (audit du 16/11), comme pour Roch 'Hodech.
+        let attendues = ["alot": "04:41", "misheyakir": "04:48", "netz": "06:01", "szks_mga": "08:42", "szks_gra": "09:22",
+                         "szt_mga": "10:03", "szt_gra": "10:29", "minha_gedola": "13:17", "minha_ketana": "16:38",
+                         "plag": "18:17", "chkia": "19:26", "tset": "19:41", "tset_rt": "20:46"]
         let obtenues = heures(modele)
         for (cle, heure) in attendues {
             #expect(obtenues[cle] == heure, "\(cle)")
@@ -171,9 +175,16 @@ struct ZmanimEcranTests {
     // MARK: Les lignes des horaires
 
     /// La méthode sous chaque horaire, dans la langue de l'app : la virgule décimale en français.
+    /// Le profil commun (Ashkenaz) ; celui des Edot ensuite (audit du 16/11).
     @Test func laMethodeSousChaqueHoraire() async throws {
         let ville = try await ZmanimEssais.ville(ZmanimEssais.jerusalem)
-        let (modele, _) = try await fabriquer(ZmanimEssais.reglages(ville), "2026-10-12", fuseau: "Asia/Jerusalem")
+        let (edot, _) = try await fabriquer(ZmanimEssais.reglages(ville), "2026-10-12", fuseau: "Asia/Jerusalem")
+        let francais = try ZmanimEssais.traducteur()
+        var methodesEdot: [String: String] = [:]
+        for ligne in edot.lignes { methodesEdot[ligne.cle] = ligne.methode.map { francais.texte($0) } }
+        #expect(methodesEdot["alot"] == "72 min zmaniyot avant le lever (Yalkut Yosef)")
+        #expect(methodesEdot["szks_mga"] == "journée de 72 min zmaniyot avant le lever à 72 min zmaniyot après le coucher (Yalkut Yosef)")
+        let (modele, _) = try await fabriquer(ZmanimEssais.reglages(ville, nusah: .ashkenaz), "2026-10-12", fuseau: "Asia/Jerusalem")
         let fr = try ZmanimEssais.traducteur()
         var methodes: [String: String] = [:]
         var noms: [String: String] = [:]
@@ -185,8 +196,9 @@ struct ZmanimEcranTests {
         #expect(methodes["alot"] == "soleil à 16,1° sous l’horizon")
         #expect(methodes["misheyakir"] == "soleil à 11,5° sous l’horizon")
         #expect(methodes["netz"] == "au niveau de la mer")
-        #expect(methodes["szks_mga"] == "journée de 72 min avant le lever à 72 min après le coucher")
-        #expect(methodes["szks_gra"] == "heures saisonnières du lever au coucher")
+        // Les libellés précisés par l'audit du 16/11 d'Android.
+        #expect(methodes["szks_mga"] == "journée de 72 min avant le lever à 72 min après le coucher (et non depuis l’aube à 16,1°)")
+        #expect(methodes["szks_gra"] == "heures saisonnières du lever au coucher, selon le Gra")
         let enAnglais = try ZmanimEssais.traducteur("en")
         let alot = modele.lignes.first { $0.cle == "alot" }
         let methode = try #require(alot?.methode)

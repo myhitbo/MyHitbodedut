@@ -72,7 +72,8 @@ struct ZmanimModeleTests {
         #expect(modele.allumage == 30)
         let vendredi = modele.jour
         let obtenus = modele.horaires
-        let attendus = JourAffiche.horaires(lieu: paris, date: vendredi, enIsrael: false, minutes: 30)
+        // Le profil du noussa'h des réglages (Edot par défaut ; audit du 16/11).
+        let attendus = JourAffiche.horaires(lieu: paris, date: vendredi, enIsrael: false, minutes: 30, nusah: .edot)
         #expect(obtenus == attendus)
     }
 

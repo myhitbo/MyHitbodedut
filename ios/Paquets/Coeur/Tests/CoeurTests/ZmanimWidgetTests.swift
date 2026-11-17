@@ -68,7 +68,8 @@ struct ZmanimWidgetTests {
             let veille: Int64?
         }
         /// Des « maintenant » de `debut` en `nombre` pas de `pas` minutes ; chaque réponse est
-        /// [prière, clé de la limite] : « szt_gra », « chkia », « chatsot_layla », « veille » ou nil.
+        /// [prière, clé de la limite, clé du début] : la limite « szt_gra », « chkia », « chatsot_layla », « veille »
+        /// ou nil ; le début d'une Min'ha pas encore ouverte, « minha_gedola » ou nil (FVOL-05).
         struct Balayage: Decodable {
             let fuseau: String
             let debut: Int64
@@ -86,6 +87,8 @@ struct ZmanimWidgetTests {
             let limite: Int64?
             let fuseauLimite: String?
             let civile: String?
+            /// Le début d'une prière pas encore ouverte (FVOL-05).
+            let debut: Int64?
         }
         let prochaine: [Balayage]
         let prochaineCas: [Cas]
@@ -118,7 +121,7 @@ struct ZmanimWidgetTests {
                     continue
                 }
                 let attendue = b.reponses[k]
-                guard attendue.count == 2, let priere = attendue[0] else {
+                guard attendue.count == 3, let priere = attendue[0] else {
                     fautes.append("\(maintenant) : réponse illisible")
                     continue
                 }
@@ -133,7 +136,8 @@ struct ZmanimWidgetTests {
                 cas += 1
                 let limite = reponse.limite?.millis
                 let memeFuseau = reponse.limite.map { $0.fuseau == fuseau } ?? true
-                if reponse.priere != priere || limite != limiteAttendue || !memeFuseau {
+                let debutAttendu = attendue[2].flatMap { jour.horaires[$0] }
+                if reponse.priere != priere || limite != limiteAttendue || !memeFuseau || reponse.debut?.millis != debutAttendu {
                     let rendue = "\(reponse.priere) jusqu'à \(Self.ecrit(limite))"
                     fautes.append("\(maintenant) : \(rendue) au lieu de \(priere) jusqu'à \(Self.ecrit(limiteAttendue))")
                 }
@@ -162,6 +166,7 @@ struct ZmanimWidgetTests {
             #expect(fuseauLimite == c.fuseauLimite, "\(ou) : le fuseau de la limite")
             let civile = reponse.limite?.civile.description
             #expect(civile == c.civile, "\(ou) : l'heure civile de la limite")
+            #expect(reponse.debut?.millis == c.debut, "\(ou) : le début d'une prière pas encore ouverte")
         }
     }
 }

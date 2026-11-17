@@ -308,7 +308,9 @@ public enum ZmanimVueJour {
         guard let lieu = c.reglages.lieuZmanim else { return [] }
         let fuseau = Fuseau(lieu.fuseau)
         var lignes: [ZmanimLigne] = []
-        for z in JourAffiche.horaires(lieu: lieu, date: date, enIsrael: c.enIsrael, minutes: c.reglages.allumage) {
+        // Le profil suit le noussa'h (audit du 16/11, Zmanim.PROFIL_EDOT).
+        for z in JourAffiche.horaires(lieu: lieu, date: date, enIsrael: c.enIsrael, minutes: c.reglages.allumage,
+                                      nusah: c.reglages.siddurNusah) {
             var heure: DateHeure?
             if z.statut == .ok, let instant = z.instant, let fuseau {
                 heure = fuseau.dateHeure(millis: millis(instant))
@@ -330,7 +332,7 @@ public enum ZmanimVueJour {
                                       nom: Libelle(Libelles.res("zman_" + z.cle) ?? z.cle),
                                       heure: heure,
                                       methode: methode,
-                                      misEnAvant: z.cle == "allumage" || z.cle == "sortie"))
+                                      misEnAvant: z.cle == "allumage" || z.cle.hasPrefix("sortie")))
         }
         return lignes
     }

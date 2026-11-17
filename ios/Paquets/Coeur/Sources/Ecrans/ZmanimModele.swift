@@ -165,7 +165,8 @@ public final class ZmanimModele {
     /// Les horaires du jour montré (JourAffiche.horaires), allumage et sortie compris ; vide sans lieu.
     public var horaires: [Zmanim.Zman] {
         guard let lieu else { return [] }
-        return JourAffiche.horaires(lieu: lieu, date: jour, enIsrael: enIsrael, minutes: allumage)
+        return JourAffiche.horaires(lieu: lieu, date: jour, enIsrael: enIsrael, minutes: allumage,
+                                    nusah: magasin.reglages.siddurNusah)
     }
 
     /// Les lignes de la carte des horaires : nom, heure, méthode ; vide sans lieu.

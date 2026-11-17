@@ -85,6 +85,28 @@ public enum Zmanim {
         Entree(cle: "chatsot_layla", methode: Methode("milieu_chatsot", "")), // getSolarMidnight
     ]
 
+    /// Le profil des Edot (audit du 16/11) : les zmanim du Yalkut Yosef à la place de ceux de `profil` ; les autres
+    /// lignes restent communes. L'heure zmanit est celle du Gra (du lever au coucher au niveau de la mer) :
+    /// aube à 72 min zmaniyot avant le lever (Kitsour YY 89:12), michéyakir 6 min zmaniyot après, Maguen Avraham
+    /// sur 72 min zmaniyot (58:3), tsét à 13,5 min zmaniyot (233:5), plag 1¼ heure zmanit avant ce tsét (263:45),
+    /// Rabbénou Tam à 72 min zmaniyot (293:3, 7).
+    public static let profilEdot: [String: Methode] = [
+        "alot": Methode("zmaniyot_avant_netz", "72"),       // getAlos72Zmanis
+        "misheyakir": Methode("zmaniyot_avant_netz", "66"), // lever − 1,1 heure zmanit
+        "szks_mga": Methode("mga_72_zmaniyot", "72"),       // getSofZmanShmaMGA72MinutesZmanis
+        "szt_mga": Methode("mga_72_zmaniyot", "72"),        // getSofZmanTfilaMGA72MinutesZmanis
+        "plag": Methode("plag_yalkut_yosef", ""),           // coucher − 1,025 heure zmanit
+        "tset": Methode("zmaniyot_apres_chkia", "13.5"),    // coucher + 0,225 heure zmanit
+        "tset_rt": Methode("zmaniyot_apres_chkia", "72"),   // getTzais72Zmanis
+    ]
+
+    /// Le profil d'un noussa'h : `profil`, où les Edot prennent les lignes de `profilEdot` ; nil, le profil commun
+    /// (Sfard, Ashkenaz, et tout appel sans noussa'h).
+    public static func profil(nusah: Nusah?) -> [Entree] {
+        guard nusah == .edot else { return profil }
+        return profil.map { e in Entree(cle: e.cle, methode: profilEdot[e.cle] ?? e.methode) }
+    }
+
     /// L'allumage : coucher au niveau de la mer moins `minutes` (getCandleLighting).
     public static func methodeAllumage(minutes: Int) -> Methode { Methode("avant_chkia", String(minutes)) }
 
@@ -92,19 +114,59 @@ public enum Zmanim {
     public static let allumages = [18, 20, 22, 30, 40]
     public static let allumageDefaut = 18
 
-    /// Les quinze zmanim du profil pour `date` au `lieu`.
-    public static func jour(lieu: Lieu, date: JourCivil) -> [Zman] {
-        verrou.withLock { _ in
+    /// Les quinze zmanim du profil de `nusah` pour `date` au `lieu` (nil : le profil commun).
+    public static func jour(lieu: Lieu, date: JourCivil, nusah: Nusah? = nil) -> [Zman] {
+        let lignes = profil(nusah: nusah)
+        let edot = nusah == .edot
+        return verrou.withLock { _ in
             guard let c = calendrier(lieu, date) else {
-                return profil.map { Zman(cle: $0.cle, methode: $0.methode, statut: .erreur, instant: nil) }
+                return lignes.map { Zman(cle: $0.cle, methode: $0.methode, statut: .erreur, instant: nil) }
             }
             // getSolarMidnight prend le milieu entre 'hatsot d'aujourd'hui et de demain ; si l'un
             // manque, l'événement est absent, comme dans Zmanim.kt.
             let nuitCalculable = c.getChatzos() != nil && calendrier(lieu, date.plus(jours: 1))?.getChatzos() != nil
-            return profil.map { entree in
-                let instant = entree.cle == "chatsot_layla" && !nuitCalculable ? nil : valeur(c, entree.cle)
+            return lignes.map { entree in
+                let instant: Date?
+                if entree.cle == "chatsot_layla" && !nuitCalculable {
+                    instant = nil
+                } else if edot && profilEdot[entree.cle] != nil {
+                    instant = valeurEdot(c, entree.cle)
+                } else {
+                    instant = valeur(c, entree.cle)
+                }
                 return Zman(cle: entree.cle, methode: entree.methode,
                             statut: instant == nil ? .absent : .ok, instant: instant)
+            }
+        }
+    }
+
+    /// Les heures du 'hamets la veille de Pessa'h (audit du 16/11) : fin de la consommation (fin de la 4e heure)
+    /// et fin du bi'our (fin de la 5e heure), selon le Maguen Avraham puis selon le Gra. Edot : heures zmaniyot
+    /// de l'aube à tsét, à 72 min zmaniyot (Kitsour Yalkut Yosef 443:1) ; les autres : la journée de 72 min fixes.
+    public static func hamets(lieu: Lieu, date: JourCivil, nusah: Nusah? = nil) -> [Zman] {
+        let edot = nusah == .edot
+        let mga = edot ? Methode("mga_72_zmaniyot", "72") : Methode("mga_72", "72")
+        let gra = Methode("gra", "")
+        let cles: [(String, Methode, Int)] = [("hamets_achila", mga, 4), ("hamets_achila", gra, 4),
+                                              ("hamets_biour", mga, 5), ("hamets_biour", gra, 5)]
+        return verrou.withLock { _ in
+            guard let c = calendrier(lieu, date) else {
+                return cles.map { Zman(cle: $0.0, methode: $0.1, statut: .erreur, instant: nil) }
+            }
+            func heures(_ debut: Date?, _ heure: Int64, _ n: Int) -> Date? {
+                guard let debut, heure != Int64.min else { return nil }
+                return Date(timeIntervalSince1970: debut.timeIntervalSince1970 + Double(Int64(n) * heure) / 1000)
+            }
+            return cles.map { (cle, methode, n) in
+                let instant: Date?
+                if methode == gra {
+                    instant = heures(c.getSeaLevelSunrise(), c.getShaahZmanisGra(), n)
+                } else if edot {
+                    instant = heures(c.getAlos72Zmanis(), c.getShaahZmanis72MinutesZmanis(), n)
+                } else {
+                    instant = heures(c.getAlos72(), c.getShaahZmanisMGA(), n)
+                }
+                return Zman(cle: cle, methode: methode, statut: instant == nil ? .absent : .ok, instant: instant)
             }
         }
     }
@@ -147,6 +209,27 @@ public enum Zmanim {
         var gregorien = Calendar(identifier: .gregorian)
         gregorien.timeZone = fuseau
         return gregorien.date(from: DateComponents(year: date.annee, month: date.mois, day: date.jour, hour: 12))
+    }
+
+    /// Les lignes de `profilEdot`, en heures zmaniyot du Gra (lever et coucher au niveau de la mer).
+    private static func valeurEdot(_ c: ComplexZmanimCalendar, _ cle: String) -> Date? {
+        let heure = c.getShaahZmanisGra()
+        func decale(_ d: Date?, _ heures: Double) -> Date? {
+            guard let d, heure != Int64.min else { return nil }
+            // Math.round de Java : au plus proche, la moitié vers le haut.
+            let ms = (heures * Double(heure) + 0.5).rounded(.down)
+            return Date(timeIntervalSince1970: d.timeIntervalSince1970 + ms / 1000)
+        }
+        switch cle {
+        case "alot": return c.getAlos72Zmanis()
+        case "misheyakir": return decale(c.getSeaLevelSunrise(), -1.1)
+        case "szks_mga": return c.getSofZmanShmaMGA72MinutesZmanis()
+        case "szt_mga": return c.getSofZmanTfilaMGA72MinutesZmanis()
+        case "plag": return decale(c.getSeaLevelSunset(), -1.025)
+        case "tset": return decale(c.getSeaLevelSunset(), 0.225)
+        case "tset_rt": return c.getTzais72Zmanis()
+        default: return nil
+        }
     }
 
     private static func valeur(_ c: ComplexZmanimCalendar, _ cle: String) -> Date? {

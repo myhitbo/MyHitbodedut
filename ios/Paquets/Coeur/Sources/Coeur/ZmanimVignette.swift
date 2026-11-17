@@ -18,8 +18,10 @@ public enum ZmanimVignette {
     /// Où commence la fenêtre de la prière du moment, pour la jauge : l'aube, la fin de Cha'harit, la chki'a.
     public static func debut(priere: String, horaires: [String: DateHeureZonee]) -> DateHeureZonee? {
         switch priere {
-        case "chaharit": horaires["alot"]
-        case "minha": horaires["szt_gra"]
+        // Sans aube (FCALENDRIER-08) : comme ZmanimWidget.prochaine.
+        case "chaharit": horaires["alot"] ?? horaires["misheyakir"] ?? horaires["netz"]
+        // Min'ha guedola (13/11, FVOL-05) : la fin de Cha'harit avant, quand Min'ha s'affichait dès ce moment.
+        case "minha": horaires["minha_gedola"] ?? horaires["szt_gra"]
         default: horaires["chkia"]
         }
     }

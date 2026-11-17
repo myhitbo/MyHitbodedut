@@ -5,15 +5,17 @@ public enum VolPriere {
     /// Ce qui reste couvert par la fenêtre de calcul autour du vol (`Vol.marge`, moins un jour) : 6 heures, en millisecondes.
     public static let couvert: Int64 = 6 * 3_600_000
 
-    /// La prière du moment (« chaharit », « minha », « arvit ») et sa limite (millisecondes Unix), nil sans limite :
-    /// la paire de Kotlin.
+    /// La prière du moment (« chaharit », « minha », « arvit ») et sa limite (millisecondes Unix), nil sans limite ;
+    /// `debut` non nil : pas encore ouverte, elle commence alors (13/11, FVOL-05).
     public struct Moment: Sendable, Hashable {
         public var priere: String
         public var limite: Int64?
+        public var debut: Int64?
 
-        public init(priere: String, limite: Int64?) {
+        public init(priere: String, limite: Int64?, debut: Int64? = nil) {
             self.priere = priere
             self.limite = limite
+            self.debut = debut
         }
     }
 
@@ -23,6 +25,6 @@ public enum VolPriere {
         let utc = Fuseau.utc
         let horaires = Vol.horaires(calcul, maintenant).mapValues { DateHeureZonee(millis: $0, fuseau: utc) }
         let r = ZmanimWidget.prochaine(horaires: horaires, maintenant: DateHeureZonee(millis: maintenant, fuseau: utc))
-        return Moment(priere: r.priere, limite: r.limite?.millis)
+        return Moment(priere: r.priere, limite: r.limite?.millis, debut: r.debut?.millis)
     }
 }

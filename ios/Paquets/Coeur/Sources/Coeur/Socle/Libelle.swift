@@ -58,12 +58,27 @@ public struct Libelle: Sendable, Hashable, CustomStringConvertible {
 
 extension Libelle {
 
-    /// La forme d'un pluriel pour une quantité entière, selon les règles de CLDR des trois langues de
-    /// l'app : « one » (0 et 1 en français, 1 ailleurs), « two » (2 en hébreu), sinon « other ».
+    /// La forme d'un pluriel pour une quantité entière, selon les règles de CLDR des langues de l'app :
+    /// « one » (0 et 1 en français, 1 ailleurs), « two » (2 en hébreu), sinon « other » ; en espagnol « many »
+    /// pour les millions ronds ; en arabe « zero », « one », « two », « few » (3 à 10 sur cent), « many » (11 à 99).
     public static func forme(_ quantite: Int, langue: String) -> String {
         switch langue {
         case "fr": quantite == 0 || quantite == 1 ? "one" : "other"
         case "he", "iw": quantite == 1 ? "one" : (quantite == 2 ? "two" : "other")
+        // L'espagnol et l'arabe (17/11), les règles de CLDR sur des entiers.
+        case "es": quantite == 1 ? "one" : (quantite != 0 && quantite % 1_000_000 == 0 ? "many" : "other")
+        case "ar":
+            switch quantite {
+            case 0: "zero"
+            case 1: "one"
+            case 2: "two"
+            default:
+                switch ((quantite % 100) + 100) % 100 {
+                case 3...10: "few"
+                case 11...99: "many"
+                default: "other"
+                }
+            }
         default: quantite == 1 ? "one" : "other"
         }
     }

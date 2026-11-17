@@ -57,6 +57,9 @@ public enum Chronologies {
         public let limite: Int64?
         /// Où commence la fenêtre de la jauge (ZmanimVignette.debut).
         public let debut: Int64?
+        /// La prière pas encore ouverte commence alors (« dès 12:05 », sans jauge ni temps restant ; FVOL-05) ; nil
+        /// quand elle est ouverte.
+        public var ouverture: Int64? = nil
         /// La moyenne : les trois zmanim à venir (une case vide est nil). Vide pour les autres.
         public let prochains: [ZmanAffiche?]
         /// La grande : la journée d'aujourd'hui, ou de demain une fois la nuit tombée. Vide pour les autres.
@@ -223,7 +226,7 @@ public enum Chronologies {
         }
         return Affichage(jourHebreu: jourHebreu, dateHebraique: jour.dateHebraique, pastille: pastille,
                          priere: moment.priere, limite: moment.limite?.millis, debut: debut?.millis,
-                         prochains: prochains, journee: montree, prochain: indice)
+                         ouverture: moment.debut?.millis, prochains: prochains, journee: montree, prochain: indice)
     }
 
     /// Les zmanim de la journée de la grande vignette, dans l'ordre (ZmanimVignette.journee), ceux qui existent.
