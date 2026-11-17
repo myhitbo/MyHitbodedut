@@ -1783,4 +1783,21 @@
     <string name="serenite_lire">إقرا</string>
     <string name="serenite_tout_voir">شوف الكل</string>
     <string name="serenite_cette_semaine">النهارات اللي فاتو</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_commencer_court">ابدا</string>
+    <string name="version_instant">لحظة</string>
+    <string name="version_instant_desc">لوحة غامقة: السما متاع اللحظة والزمانيم صغار، عدّاد الجمعة، والدقايق متاعك في أعمدة.</string>
+    <string name="instant_titre">الهتبوديدوت متاعك اليوم</string>
+    <string name="instant_z_netz">نتس</string>
+    <string name="instant_z_chatsot">حتسوت</string>
+    <string name="instant_z_minha">منحا</string>
+    <string name="instant_z_chkia">شكيعا</string>
+    <string name="instant_z_tset">تسيت</string>
+    <string name="instant_semaine">الجمعة</string>
+    <string name="instant_cette_semaine">نهارات تعملو</string>
+    <string name="instant_serie">الرصيد</string>
+    <string name="instant_total">%1$s في المجموع</string>
+    <string name="instant_minutes">آخر 7 أيّام متاعك</string>
+    <string name="instant_moyenne">المعدّل في النهارات اللي تعملو: %1$s</string>
 </resources>

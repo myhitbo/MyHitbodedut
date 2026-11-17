@@ -1648,4 +1648,21 @@
     <string name="serenite_lire">Leer</string>
     <string name="serenite_tout_voir">Ver todo</string>
     <string name="serenite_cette_semaine">Tus últimos días</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_commencer_court">Empezar</string>
+    <string name="version_instant">Instante</string>
+    <string name="version_instant_desc">Un panel oscuro: el cielo real del momento con los zmanim en pequeño, un indicador de la semana, tus minutos en barras.</string>
+    <string name="instant_titre">Tu hitbodedut del día</string>
+    <string name="instant_z_netz">Netz</string>
+    <string name="instant_z_chatsot">Jatzot</string>
+    <string name="instant_z_minha">Minjá</string>
+    <string name="instant_z_chkia">Shkiá</string>
+    <string name="instant_z_tset">Tzet</string>
+    <string name="instant_semaine">Semana</string>
+    <string name="instant_cette_semaine">días hechos</string>
+    <string name="instant_serie">Racha</string>
+    <string name="instant_total">%1$s en total</string>
+    <string name="instant_minutes">Tus últimos 7 días</string>
+    <string name="instant_moyenne">Media de los días hechos: %1$s</string>
 </resources>
