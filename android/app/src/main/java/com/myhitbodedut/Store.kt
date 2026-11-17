@@ -152,6 +152,8 @@ object Store {
     private const val KEY_MODE = "apparence_mode"
     private const val KEY_FOND = "apparence_fond"
     private const val KEY_ACCENT = "apparence_accent"
+    /** La version de l'application (17/11) : Classique, Sérénité, Bento ou Pile. Absente tant qu'on n'a pas choisi. */
+    private const val KEY_VERSION_APP = "version_app"
     private const val KEY_LANGUE_APP = "langue_app"
     private const val KEY_LANGUE_REPLI = "langue_repli"
     private const val KEY_MUSIC_ON = "music_enabled"
@@ -1446,6 +1448,13 @@ object Store {
 
     fun setFond(context: Context, fond: Apparence.Fond) {
         prefs(context).edit().putString(KEY_FOND, fond.cle).apply()
+    }
+
+    /** La version choisie, ou null tant que l'écran de choix n'a pas été passé. */
+    fun versionApp(context: Context): VersionApp? = VersionApp.parse(prefs(context).getString(KEY_VERSION_APP, null))
+
+    fun setVersionApp(context: Context, version: VersionApp) {
+        prefs(context).edit().putString(KEY_VERSION_APP, version.cle).apply()
     }
 
     fun accent(context: Context): Apparence.Accent =

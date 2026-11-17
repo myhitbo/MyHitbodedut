@@ -1448,7 +1448,7 @@
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">Privacy policy</string>
     <string name="settings_licences">Sources and licences</string>
-    <string name="licences_texte">Texts\nThe Hebrew texts (siddur, Tehillim, Tikkun, books, sources) come from public-domain editions, notably Sefaria, Torat Emet, tanach.us and rabenubook, or are used with their authors’ permission; each edition and its licence are declared in the app’s data files.\nYalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef: text from Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilulot: Hebrew Wikipedia (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik and HaMeir LaArets with their permission.\n\nTranslations\nThe French and English translations are machine-made and unreviewed: the Hebrew prevails. Those of Yalkut Yosef are partial, under the same licence as the text. For Tehillim, the Tikkun, Esther and Song of Songs: Bible du Rabbinat (1899) and JPS (1917), public domain.\n\nFonts\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew and Varela Round, under the SIL OFL 1.1 licence.\n\nData\nCities: GeoNames (CC BY 4.0). Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); names: Wikidata (CC0). Flight routes: adsbdb.com.\n\nCalendar and zmanim\nKosherJava (LGPL 2.1), directly or through its JavaScript port. The app ships with the licence text; the app’s source code is available on written request to myhitbodedut26@gmail.com.</string>
+    <string name="licences_texte">Texts\nThe Hebrew texts (siddur, Tehillim, Tikkun, books, sources) come from public-domain editions, notably Sefaria, Torat Emet, tanach.us and rabenubook, or are used with their authors’ permission; each edition and its licence are declared in the app’s data files.\nYalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef: text from Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilulot: Hebrew Wikipedia (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik and HaMeir LaArets with their permission.\n\nTranslations\nThe French and English translations are machine-made and unreviewed: the Hebrew prevails. Those of Yalkut Yosef are partial, under the same licence as the text. For Tehillim, the Tikkun, Esther and Song of Songs: Bible du Rabbinat (1899) and JPS (1917), public domain.\n\nFonts\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew and Varela Round, Secular One, Rubik, Heebo and Bellefair (app versions), under the SIL OFL 1.1 licence.\n\nData\nCities: GeoNames (CC BY 4.0). Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); names: Wikidata (CC0). Flight routes: adsbdb.com.\n\nCalendar and zmanim\nKosherJava (LGPL 2.1), directly or through its JavaScript port. The app ships with the licence text; the app’s source code is available on written request to myhitbodedut26@gmail.com.</string>
     <string name="licences_android">\n\nLibraries of the Android app\nBarcode reading: ZXing (Apache 2.0). AndroidX and Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
@@ -1508,4 +1508,56 @@
     <!-- La fin de séance sur un seul écran (13/11). -->
     <string name="celebration_humeur">How do you feel now?</string>
     <string name="celebration_prive">Everything stays on this phone.</string>
+
+    <!-- Les versions de l’application (VersionApp, 17/11). -->
+    <string name="settings_version">App version</string>
+    <string name="version_classique">Classic</string>
+    <string name="version_classique_desc">The original home: the hassid, the rings, the Today and Texts tabs.</string>
+    <string name="version_pile">Stack</string>
+    <string name="version_pile_desc">Your day as four cards you swipe through: hitbodedut, chizuk, zmanim, journal.</string>
+    <string name="version_choix_titre">Choose your version</string>
+    <string name="version_choix_detail">The same journal, streak and settings: only the way they are presented changes.</string>
+    <string name="version_choix_pied">You can change at any time: Settings › App version.</string>
+    <string name="version_choisie">current version</string>
+    <string name="version_textes">Texts</string>
+    <string name="version_reglages">Settings</string>
+    <string name="version_dans_min">in %1$d min</string>
+    <string name="version_dans_h">in %1$d h %2$02d</string>
+    <string name="version_duree_min">%1$d min</string>
+    <string name="version_duree_h">%1$d h %2$02d</string>
+    <string name="version_aujourdhui">Today</string>
+    <string name="version_hier">Yesterday</string>
+    <string name="version_semaine">%1$d of %2$d this week</string>
+    <string name="version_reprendre">Back to the hitbodedut</string>
+    <string name="version_encore">Another hitbodedut</string>
+    <string name="version_commencer">Start · %1$s</string>
+    <string name="version_preparer">Length, topic, music</string>
+    <string name="version_chargement">Loading today’s text…</string>
+    <string name="version_plus_de_textes">More chizuk</string>
+    <string name="version_sans_lieu">Choose a place to see today’s zmanim.</string>
+    <string name="version_choisir_lieu">Choose a place</string>
+    <string name="version_prochain">Next: %1$s</string>
+    <string name="version_tous_zmanim">All zmanim</string>
+    <string name="version_journal_vide">Nothing written yet. After a hitbodedut, one line is enough.</string>
+    <string name="version_note_sans_texte">No note.</string>
+    <string name="version_ecrire_note">Write today’s note</string>
+    <string name="version_tout_journal">The whole journal</string>
+    <string name="version_parcours">My journey</string>
+    <string name="pile_titre">Your day</string>
+    <string name="pile_position">%1$d / %2$d</string>
+    <string name="pile_hitbodedout">Hitbodedut</string>
+    <string name="pile_hitbo_titre">A moment alone with Hashem</string>
+    <string name="pile_hitbo_titre_prenom">%1$s, a moment alone with Hashem</string>
+    <string name="pile_hitbo_faite">Done today · %1$s</string>
+    <string name="pile_hizouk">Today’s chizuk</string>
+    <string name="pile_traduction">Translation</string>
+    <string name="pile_voir_traduction">See the translation</string>
+    <string name="pile_revoir_hebreu">Back to the Hebrew</string>
+    <string name="pile_zmanim">Zmanim</string>
+    <string name="pile_zmanim_lieu">Zmanim · %1$s</string>
+    <string name="pile_journal">Journal</string>
+    <plurals name="version_serie">
+        <item quantity="one">%1$d day in a row</item>
+        <item quantity="other">%1$d days in a row</item>
+    </plurals>
 </resources>

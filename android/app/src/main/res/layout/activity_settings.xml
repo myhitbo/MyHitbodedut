@@ -85,6 +85,14 @@
 
             <TextView style="@style/CardHint" android:text="@string/section_appearance_hint" />
 
+            <!-- La version de l'application (VersionApp, 17/11) : Classique, Sérénité, Bento ou Pile. -->
+            <LinearLayout style="@style/SettingRow">
+
+                <TextView style="@style/SettingLabel" android:text="@string/settings_version" />
+
+                <Button android:id="@+id/version_button" style="@style/SettingValue" />
+            </LinearLayout>
+
             <LinearLayout style="@style/SettingRow">
 
                 <TextView style="@style/SettingLabel" android:text="@string/settings_mode" />
