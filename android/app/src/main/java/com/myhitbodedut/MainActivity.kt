@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Une autre version que Classique est choisie (VersionApp, 17/11) : son accueil prend la place.
+        if (VersionApp.rediriger(this)) return
         setContentView(R.layout.activity_main)
         ouverture(savedInstanceState == null)
         jaugeCompacte()
@@ -186,6 +188,11 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         }
         if (presentationLancee) {
             presentationLancee = false
+            return
+        }
+        // Au retour de la présentation, ou à la première ouverture après la mise à jour : le choix de la version.
+        if (Store.hasOnboarded(this) && Store.versionApp(this) == null) {
+            startActivity(Intent(this, ChoixVersionActivity::class.java))
             return
         }
         refresh()

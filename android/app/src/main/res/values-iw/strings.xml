@@ -1492,7 +1492,7 @@
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">מדיניות פרטיות</string>
     <string name="settings_licences">מקורות ורישיונות</string>
-    <string name="licences_texte">טקסטים\nהטקסטים העבריים (סידור, תהילים, התיקון, ספרים ומקורות) לקוחים ממהדורות שהן נחלת הכלל, ובהן ספריא, תורת אמת, tanach.us ו־rabenubook, או מובאים ברשות מחבריהם; המהדורה והרישיון של כל טקסט מצוינים בקובצי היישום.\nילקוט יוסף – קיצור שולחן ערוך, מאת הרב יצחק יוסף: הטקסט מאתר תורת אמת, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nהילולות: ויקיפדיה העברית (CC BY-SA 4.0), תורת אמת (CC BY-NC-SA 2.5), MyTzadik ו״המאיר לארץ״ ברשותם.\n\nתרגומים\nהתרגומים לצרפתית ולאנגלית נעשו במחשב ולא נבדקו; הנוסח העברי הוא הקובע. תרגומי ילקוט יוסף חלקיים, ובאותו רישיון כמו הטקסט. בתהילים, בתיקון, במגילת אסתר ובשיר השירים: תרגום הרבנות (1899) ו־JPS (1917), נחלת הכלל.\n\nגופנים\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew ו־Varela Round, ברישיון SIL OFL 1.1.\n\nנתונים\nערים: GeoNames‏ (CC BY 4.0). שדות תעופה: OurAirports (נחלת הכלל); אזורי זמן: timezone-boundary-builder (ODbL,‏ © תורמי OpenStreetMap); שמות: Wikidata‏ (CC0). מסלולי טיסה: adsbdb.com.\n\nלוח שנה וזמנים\nKosherJava‏ (LGPL 2.1), במישרין או דרך הגרסה שלה ב־JavaScript. נוסח הרישיון מצורף ליישום; קוד המקור של היישום זמין בבקשה בכתב אל myhitbodedut26@gmail.com.</string>
+    <string name="licences_texte">טקסטים\nהטקסטים העבריים (סידור, תהילים, התיקון, ספרים ומקורות) לקוחים ממהדורות שהן נחלת הכלל, ובהן ספריא, תורת אמת, tanach.us ו־rabenubook, או מובאים ברשות מחבריהם; המהדורה והרישיון של כל טקסט מצוינים בקובצי היישום.\nילקוט יוסף – קיצור שולחן ערוך, מאת הרב יצחק יוסף: הטקסט מאתר תורת אמת, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nהילולות: ויקיפדיה העברית (CC BY-SA 4.0), תורת אמת (CC BY-NC-SA 2.5), MyTzadik ו״המאיר לארץ״ ברשותם.\n\nתרגומים\nהתרגומים לצרפתית ולאנגלית נעשו במחשב ולא נבדקו; הנוסח העברי הוא הקובע. תרגומי ילקוט יוסף חלקיים, ובאותו רישיון כמו הטקסט. בתהילים, בתיקון, במגילת אסתר ובשיר השירים: תרגום הרבנות (1899) ו־JPS (1917), נחלת הכלל.\n\nגופנים\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew ו־Varela Round, Secular One, Rubik, Heebo ו־Bellefair (גרסאות האפליקציה), ברישיון SIL OFL 1.1.\n\nנתונים\nערים: GeoNames‏ (CC BY 4.0). שדות תעופה: OurAirports (נחלת הכלל); אזורי זמן: timezone-boundary-builder (ODbL,‏ © תורמי OpenStreetMap); שמות: Wikidata‏ (CC0). מסלולי טיסה: adsbdb.com.\n\nלוח שנה וזמנים\nKosherJava‏ (LGPL 2.1), במישרין או דרך הגרסה שלה ב־JavaScript. נוסח הרישיון מצורף ליישום; קוד המקור של היישום זמין בבקשה בכתב אל myhitbodedut26@gmail.com.</string>
     <string name="licences_android">\n\nספריות של יישום האנדרואיד\nקריאת ברקודים: ZXing‏ (Apache 2.0). AndroidX ו־Material Components‏ (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
@@ -1552,4 +1552,88 @@
     <!-- La fin de séance sur un seul écran (13/11). -->
     <string name="celebration_humeur">איך אתם מרגישים עכשיו?</string>
     <string name="celebration_prive">הכול נשאר בטלפון הזה.</string>
+
+    <!-- Les versions de l’application (VersionApp, 17/11). -->
+    <string name="settings_version">גרסת האפליקציה</string>
+    <string name="version_classique">קלאסית</string>
+    <string name="version_classique_desc">המסך המקורי: החסיד, הטבעות, הלשוניות היום וטקסטים.</string>
+    <string name="version_pile">ערימה</string>
+    <string name="version_pile_desc">היום שלך בארבעה כרטיסים שמחליקים: התבודדות, חיזוק, זמנים, יומן.</string>
+    <string name="version_choix_titre">בחרו את הגרסה שלכם</string>
+    <string name="version_choix_detail">אותו יומן, אותו רצף, אותן הגדרות: רק אופן ההצגה משתנה.</string>
+    <string name="version_choix_pied">אפשר להחליף בכל עת: הגדרות › גרסת האפליקציה.</string>
+    <string name="version_choisie">הגרסה הנוכחית</string>
+    <string name="version_textes">טקסטים</string>
+    <string name="version_reglages">הגדרות</string>
+    <string name="version_dans_min">בעוד %1$d דק׳</string>
+    <string name="version_dans_h">בעוד %1$d:%2$02d ש׳</string>
+    <string name="version_duree_min">%1$d דק׳</string>
+    <string name="version_duree_h">%1$d:%2$02d ש׳</string>
+    <string name="version_aujourdhui">היום</string>
+    <string name="version_hier">אתמול</string>
+    <string name="version_semaine">%1$d מתוך %2$d השבוע</string>
+    <string name="version_reprendre">חזרה להתבודדות</string>
+    <string name="version_encore">עוד התבודדות</string>
+    <string name="version_commencer">להתחיל · %1$s</string>
+    <string name="version_preparer">משך, נושא, מוזיקה</string>
+    <string name="version_chargement">טוען את הטקסט היומי…</string>
+    <string name="version_plus_de_textes">עוד חיזוק</string>
+    <string name="version_sans_lieu">בחרו מקום כדי לראות את זמני היום.</string>
+    <string name="version_choisir_lieu">בחירת מקום</string>
+    <string name="version_prochain">הבא: %1$s</string>
+    <string name="version_tous_zmanim">כל הזמנים</string>
+    <string name="version_journal_vide">עדיין לא נכתב דבר. אחרי התבודדות, שורה אחת מספיקה.</string>
+    <string name="version_note_sans_texte">ללא הערה.</string>
+    <string name="version_ecrire_note">לכתוב את הערת היום</string>
+    <string name="version_tout_journal">כל היומן</string>
+    <string name="version_parcours">המסלול שלי</string>
+    <string name="pile_titre">היום שלך</string>
+    <string name="pile_position">%1$d / %2$d</string>
+    <string name="pile_hitbodedout">התבודדות</string>
+    <string name="pile_hitbo_titre">ההתבודדות של היום</string>
+    <string name="pile_hitbo_titre_prenom">%1$s, ההתבודדות של היום</string>
+    <string name="pile_hitbo_faite">נעשתה היום · %1$s</string>
+    <string name="pile_hizouk">חיזוק יומי</string>
+    <string name="pile_traduction">תרגום</string>
+    <string name="pile_voir_traduction">לראות את התרגום</string>
+    <string name="pile_revoir_hebreu">חזרה לעברית</string>
+    <string name="pile_zmanim">זמנים</string>
+    <string name="pile_zmanim_lieu">זמנים · %1$s</string>
+    <string name="pile_journal">יומן</string>
+    <plurals name="version_serie">
+        <item quantity="one">יום אחד ברצף</item>
+        <item quantity="two">%1$d ימים ברצף</item>
+        <item quantity="other">%1$d ימים ברצף</item>
+    </plurals>
+
+    <!-- Version Bento (VersionApp, 17/11). -->
+    <string name="version_bento">בנטו</string>
+    <string name="version_bento_desc">לוח של אריחים חיים שנפתחים למסך מלא, והחיפוש תחת האגודל.</string>
+    <string name="bento_siddour">סידור</string>
+    <string name="bento_tehilim">תהילים</string>
+    <string name="bento_recherche">סידור, תהילים, ספרים…</string>
+    <string name="bento_hitbo_titre">ההתבודדות של היום</string>
+    <string name="bento_faite">נעשתה היום · %1$s</string>
+    <string name="bento_ambiance">אווירה</string>
+    <string name="bento_musique">מוזיקה</string>
+    <string name="bento_journal_quand">יומן · %1$s, %2$s</string>
+    <plurals name="bento_jours">
+        <item quantity="one">יום ברצף</item>
+        <item quantity="two">ימים ברצף</item>
+        <item quantity="other">ימים ברצף</item>
+    </plurals>
+
+    <!-- Version Sérénité (VersionApp, 17/11). -->
+    <string name="version_serenite">שלווה</string>
+    <string name="version_serenite_desc">כרטיס נוף גדול שעוקב אחרי השמיים של הרגע, כותרות אלגנטיות, ארבע לשוניות.</string>
+    <string name="serenite_titre">התבודדות · %1$s</string>
+    <string name="serenite_ouvrir">להתחיל: %1$s</string>
+    <string name="serenite_en_cours">מתקיימת עכשיו</string>
+    <string name="serenite_faite">נעשתה היום</string>
+    <string name="serenite_ce_soir">הערב</string>
+    <string name="serenite_aujourdhui">היום</string>
+    <string name="serenite_modifier">עריכה</string>
+    <string name="serenite_lire">לקרוא</string>
+    <string name="serenite_tout_voir">הכול</string>
+    <string name="serenite_cette_semaine">הימים האחרונים שלכם</string>
 </resources>

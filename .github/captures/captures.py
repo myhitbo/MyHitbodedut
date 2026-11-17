@@ -373,7 +373,8 @@ def main():
     for perm in ("android.permission.POST_NOTIFICATIONS",):
         sh(f"pm grant {PKG} {perm}")
     # Pas de presentation au premier lancement (Store.KEY_ONBOARDED, Onboarding.VERSION = 2).
-    regler({"onboarded_version": ("int", 2), "langue_app": ("string", "fr")})
+    # La version Classique (VersionApp, 17/11) : sans elle, l'ecran du choix de la version couvre l'accueil.
+    regler({"onboarded_version": ("int", 2), "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
     # Un premier lancement, puis la langue : posee avant, elle n'etait pas
     # gardee et l'application s'ouvrait en anglais.
     lancer()
@@ -1074,6 +1075,41 @@ def main():
         langue("fr")
         sh("settings put global auto_time 1")
     etape("27 visuels Play", s27)
+
+    # Les versions de l'application (VersionApp, 17/11) : l'ecran du choix, puis chaque accueil,
+    # en faisant glisser ses cartes ; on revient a Classique pour la suite.
+    def balayer():
+        pause(1.0)
+        sh(f"input swipe {int(W * 0.88)} {int(H * 0.45)} {int(W * 0.08)} {int(H * 0.45)} 450")
+        pause(1.5)
+
+    def s28():
+        activite("ChoixVersionActivity")
+        capture("28-choix-version")
+        retour()
+        regler({"version_app": ("string", "pile")})
+        lancer(attente=6)
+        capture("28-pile-1-hitbodedout")
+        balayer()
+        capture("28-pile-2-hizouk")
+        if toucher(text="Voir la traduction", defilements=1, attente=1.5):
+            capture("28-pile-2b-traduction")
+        balayer()
+        capture("28-pile-3-zmanim")
+        balayer()
+        capture("28-pile-4-journal")
+        regler({"version_app": ("string", "bento")})
+        lancer(attente=6)
+        capture("28-bento-1")
+        defiler(True)
+        capture("28-bento-2-bas")
+        regler({"version_app": ("string", "serenite")})
+        lancer(attente=6)
+        capture("28-serenite-1")
+        defiler(True)
+        capture("28-serenite-2-bas")
+        regler({"version_app": ("string", "classique")})
+    etape("28 versions de l'app", s28)
 
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
