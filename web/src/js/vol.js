@@ -367,27 +367,47 @@ export function priere(calcul, maintenant) {
  * ligne) : la règle de JourAffiche.horaires appliquée aux chki'a et tsét de la
  * route. Le jour civil est celui du point sous l'avion (fuseau nautique).
  */
+/** Une ligne de date franchie pendant le Omer (VolCalendrier.ligneDateOmer, audit du 16/11). */
+export const ligneDateOmer = (calcul, enIsrael) => calcul.lignesDate.some((l) =>
+  [l.avant, l.apres, decale(l.avant, 1), decale(l.apres, 1)].some((iso) => jourJuif(iso, enIsrael).omer > 0));
+
+/** Après la chki'a e, le prochain repère de la nuit ou du matin n'est pas un tsét (VolCalendrier.tsetManque, audit du 16/11). */
+export function tsetManque(calcul, e) {
+  const suivant = calcul.evenements.find((x) => +x.instant > +e.instant && ['tset', 'alot', 'misheyakir', 'netz', 'chkia'].includes(x.cle));
+  return suivant?.cle !== 'tset';
+}
+
 export function jalons(calcul, enIsrael, minutes) {
   const sortie = [];
-  for (const e of enVol(calcul)) {
+  const vol = enVol(calcul);
+  for (const e of vol) {
     if (e.cle !== 'chkia' && e.cle !== 'tset') continue;
     const iso = isoDans(e.instant, fuseauNautique(e.longitude));
     const aujourdhui = jourJuif(iso, enIsrael);
     const demain = jourJuif(decale(iso, 1), enIsrael);
-    const jalon = (type, j, allumage = null, omer = 0) => ({
-      type, instant: e.instant, date: j.date, chabbat: new Date(`${j.date}T12:00:00Z`).getUTCDay() === 6, fetes: j.fetes, omer, allumage,
-      latitude: e.latitude, longitude: e.longitude,
+    const jalon = (type, j, allumage = null, omer = 0, ev = e, repli = false) => ({
+      type, instant: ev.instant, date: j.date, chabbat: new Date(`${j.date}T12:00:00Z`).getUTCDay() === 6, fetes: j.fetes, omer, allumage,
+      latitude: ev.latitude, longitude: ev.longitude, repli,
     });
     // Fête un vendredi (FCALENDRIER-01) : Chabbat entre à la chki'a, allumage avant elle.
     const vendredi = new Date(`${iso}T12:00:00Z`).getUTCDay() === 5;
+    // Vol polaire sans tsét (audit du 16/11) : Omer à la chki'a ; sortie et enchaînement à Rabbénou Tam.
+    const repli = e.cle === 'chkia' && tsetManque(calcul, e);
+    const rt = repli ? vol.find((x) => x.cle === 'tset_rt' && +x.instant > +e.instant) ?? null : null;
     if (e.cle === 'chkia' && demain.chome && (!aujourdhui.chome || vendredi)) sortie.push(jalon('entree', demain, new Date(+e.instant - minutes * MIN)));
     if (e.cle === 'tset') {
       if (aujourdhui.chome && !demain.chome) sortie.push(jalon('sortie', aujourdhui));
       if (aujourdhui.chome && demain.chome && !vendredi) sortie.push(jalon('enchainement', demain));
       if (demain.omer > 0) sortie.push(jalon('omer', demain, null, demain.omer));
     }
+    if (repli) {
+      if (rt && aujourdhui.chome && !demain.chome) sortie.push(jalon('sortie', aujourdhui, null, 0, rt, true));
+      if (rt && aujourdhui.chome && demain.chome && !vendredi) sortie.push(jalon('enchainement', demain, null, 0, rt, true));
+      if (demain.omer > 0) sortie.push(jalon('omer', demain, null, demain.omer, e, true));
+    }
   }
-  return sortie;
+  // Stable : à instant égal, l'ordre de la route (VolCalendrier.jalons).
+  return sortie.map((j, i) => [j, i]).sort((a, b) => +a[0].instant - +b[0].instant || a[1] - b[1]).map(([j]) => j);
 }
 
 // --- Le suivi en direct (SuiviVol.kt, 28/10) : option désactivée par défaut ---------------

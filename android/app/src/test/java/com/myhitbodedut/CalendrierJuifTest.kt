@@ -185,4 +185,50 @@ class CalendrierJuifTest {
         assertFalse(C.EMBOLISMIQUE in jour("2026-01-19").conditions)
         assertFalse(C.EMBOLISMIQUE in jour("2026-11-12").conditions)
     }
+
+    /** Audit du 16/11 : les repères du jour et les Chabbatot spéciaux, mêmes dates que web/test/calendrier.test.mjs. */
+    @Test
+    fun `audit du 16-11, reperes du jour et Chabbatot speciaux`() {
+        fun r(iso: String, il: Boolean, n: String) = CalendrierJuif.reperes(LocalDate.parse(iso), il, n)
+        for (iso in listOf("2025-10-27", "2025-10-30", "2025-11-03", "2026-10-19", "2026-10-22", "2026-10-26")) {
+            assertTrue(iso, "repere_behab" in r(iso, false, "ashkenaz"))
+            assertTrue(iso, "repere_behab" in r(iso, false, "sefard"))
+            assertFalse(iso, "repere_behab" in r(iso, false, "edot"))
+        }
+        assertEquals(listOf("repere_behab_mi_cheberakh"), r("2025-10-25", false, "ashkenaz"))
+        assertTrue("repere_behab" in r("2026-04-27", true, "ashkenaz"))
+        assertEquals(emptyList<String>(), r("2026-08-15", false, "edot"))
+        assertEquals(listOf("repere_selihot"), r("2026-08-16", false, "edot"))
+        assertEquals(listOf("repere_chofar"), r("2026-08-17", false, "ashkenaz"))
+        assertEquals(emptyList<String>(), r("2026-09-05", false, "ashkenaz"))
+        assertEquals(listOf("repere_selihot", "repere_chofar"), r("2026-09-06", false, "ashkenaz"))
+        assertTrue("repere_selihot" in r("2025-09-14", false, "ashkenaz"))
+        assertFalse("repere_selihot" in r("2025-09-12", false, "ashkenaz"))
+        assertEquals(listOf("repere_selihot", "repere_pas_de_chofar"), r("2026-09-11", false, "edot"))
+        assertEquals(listOf("repere_selihot"), r("2026-09-20", false, "ashkenaz"))
+        assertEquals(emptyList<String>(), r("2026-09-21", false, "ashkenaz"))
+        for (iso in listOf("2025-11-20", "2026-11-09", "2024-11-28")) assertEquals(iso, listOf("repere_yom_kippour_katan"), r(iso, false, "edot"))
+        assertEquals(listOf("repere_erouv_tavchilin"), r("2026-05-21", true, "edot"))
+        assertEquals(listOf("repere_erouv_tavchilin"), r("2024-10-16", false, "edot"))
+        assertEquals(emptyList<String>(), r("2024-10-16", true, "edot"))
+        assertEquals(emptyList<String>(), r("2026-11-19", false, "ashkenaz"))
+        assertEquals("זכור", jour("2026-02-28").parachaSpeciale)
+        assertEquals("שקלים", jour("2027-03-06").parachaSpeciale)
+        assertEquals("מפטיר ויבא עמלק", CalendrierJuif.jour(LocalDate.parse("2025-03-15"), true, true).parachaSpeciale)
+        assertEquals(null, CalendrierJuif.jour(LocalDate.parse("2025-03-15"), true, false).parachaSpeciale)
+        assertEquals(null, jour("2026-11-21").parachaSpeciale)
+    }
+
+    /** Audit du 16/11 (« Autres ») : le rappel de l'écran Musique (YY 493:8, 551:6), comme le web. */
+    @Test
+    fun `audit du 16-11, musique pendant l omer et Bein hametsarim`() {
+        fun p(iso: String) = CalendrierJuif.periodeSansMusique(LocalDate.parse(iso))
+        assertEquals("bein_hametsarim", p("2026-07-23"))
+        assertEquals("bein_hametsarim", p("2026-07-02"))
+        assertEquals("bein_hametsarim", p("2029-07-22"))
+        assertEquals(null, p("2026-07-24"))
+        assertEquals("omer", p("2026-04-20"))
+        assertEquals(null, p("2026-05-05"))
+        assertEquals(null, p("2026-11-19"))
+    }
 }

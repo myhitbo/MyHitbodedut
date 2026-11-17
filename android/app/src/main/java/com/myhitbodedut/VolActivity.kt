@@ -90,7 +90,7 @@ class VolActivity : AppCompatActivity() {
     private fun signature(c: Vol.Calcul, maintenant: Instant): String {
         val p = VolPriere.priere(c, maintenant)
         val place = c.enVol.indexOfFirst { maintenant.isBefore(it.instant) }
-        val rappels = VolRappels.rappels(c, Store.inIsrael(this)).count { it.instant.isAfter(maintenant) }
+        val rappels = VolRappels.rappels(c, Store.inIsrael(this), Store.siddurNusah(this).cle).count { it.instant.isAfter(maintenant) }
         return "${p?.priere}|${p?.limite}|${p?.debut}|$place|$rappels|${maintenant.isAfter(c.plan.atterrissage)}"
     }
 
@@ -747,7 +747,7 @@ class VolActivity : AppCompatActivity() {
                 enCours = false
                 calcul = c
                 // Les rappels suivent le dernier calcul (un relevé GPS les recale aussi).
-                if (c != null) VolAlerte.enregistrer(this, VolRappels.rappels(c, Store.inIsrael(this)))
+                if (c != null) VolAlerte.enregistrer(this, VolRappels.rappels(c, Store.inIsrael(this), Store.siddurNusah(this).cle))
                 if (c == null) message(getString(R.string.vol_reserve_erreur)) else afficherResultats()
             }
         }.start()
@@ -807,8 +807,11 @@ class VolActivity : AppCompatActivity() {
         val israel = Store.inIsrael(this)
         val minutes = Store.allumage(this)
         val jalons = VolCalendrier.jalons(c, israel, minutes)
-        if (jalons.isEmpty()) return null
+        if (jalons.isEmpty() && c.lignesDate.isEmpty()) return null
         return VueJour.carte(this).apply {
+            // Ligne de date (audit du 16/11) : le choix de la ligne est discuté ; pendant le Omer, deux comptes.
+            if (c.lignesDate.isNotEmpty()) addView(VueJour.texte(this@VolActivity, getString(R.string.ligne_date_discutee), 13f, R.color.ink, haut = 4))
+            if (VolCalendrier.ligneDateOmer(c, israel)) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_omer_ligne_date), 13f, R.color.brand, haut = 4))
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_jalons_titre), 13f, R.color.muted))
             jalons.forEach { j ->
                 val nom = (listOfNotNull(if (j.chabbat) getString(R.string.vol_chabbat) else null) +
@@ -821,6 +824,8 @@ class VolActivity : AppCompatActivity() {
                     VolCalendrier.Type.OMER -> getString(R.string.vol_jalon_omer, j.omer.toString(), heure)
                 }
                 addView(VueJour.texte(this@VolActivity, texte, 15f, R.color.ink, gras = true, haut = 10))
+                // Vol polaire sans tsét : le repère de repli est dit (audit du 16/11).
+                if (j.repli) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_jalon_repli), 13f, R.color.ink, haut = 2))
                 j.allumage?.let { addView(VueJour.texte(this@VolActivity, getString(R.string.vol_jalon_allumage, minutes.toString(), deuxHeures(c.plan, it)), 13f, R.color.ink, haut = 2)) }
                 addView(VueJour.texte(this@VolActivity, position(Vol.Evenement("", j.instant, j.latitude, j.longitude)), 12f, R.color.muted, haut = 1))
             }
@@ -858,7 +863,7 @@ class VolActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this@VolActivity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_rappels_sans_permission), 13f, R.color.ink, haut = 4))
         }
-        val aVenir = VolRappels.rappels(c, Store.inIsrael(this@VolActivity)).filter { it.instant.isAfter(maintenant) }
+        val aVenir = VolRappels.rappels(c, Store.inIsrael(this@VolActivity), Store.siddurNusah(this@VolActivity).cle).filter { it.instant.isAfter(maintenant) }
         if (aVenir.isEmpty()) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_rappels_aucun), 14f, R.color.ink, haut = 4))
         aVenir.forEach { r ->
             addView(VueJour.texte(this@VolActivity, VolAlerte.textes(this@VolActivity, r, c.plan).first, 15f, R.color.ink, gras = true, haut = 10))

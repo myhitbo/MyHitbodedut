@@ -93,6 +93,7 @@ object Store {
     private const val KEY_OUVERTURE = "ecran_ouverture"
     private const val KEY_SIDDUR_NUSAH = "siddur_nusah"
     private const val KEY_TAHANOUN_TICHRI_SFARD = "sans_tahanoun_fin_tichri_sfard"
+    private const val KEY_SANS_TAHANOUN_JOUR = "sans_tahanoun_jour"
     private const val KEY_CALENDRIER_CIVIL = "calendrier_civil"
     private const val KEY_LECTURE_ECHELLE = "lecture_echelle"
     private const val KEY_LECTURE_SOMBRE = "lecture_sombre"
@@ -105,6 +106,7 @@ object Store {
     private const val KEY_PAUSE_SHABBAT = "pause_shabbat"
     private const val KEY_IN_ISRAEL = "in_israel"
     private const val KEY_IN_ISRAEL_MANUEL = "in_israel_manuel"
+    private const val KEY_REGION_PROPOSEE = "region_proposee"
     private const val KEY_LIEU_NOM = "lieu_nom"
     private const val KEY_LIEU_LAT = "lieu_latitude"
     private const val KEY_LIEU_LON = "lieu_longitude"
@@ -443,11 +445,12 @@ object Store {
         HistoriqueReglage.encoder(HistoriqueReglage.apresChangement(histoire(context, cle), LocalDate.now(), ancienne, nouvelle))
 
     /**
-     * Israël ou diaspora : décide du deuxième jour de fête. Le premier accès
-     * fige la valeur déduite du fuseau (revue du 01/10). Ensuite la région suit
-     * le lieu des zmanim — une ville, ou la position du téléphone d'après le
-     * contour du territoire (décision du 16/10, ZMANIM.md) — sauf si elle a
-     * été choisie à la main dans les réglages ([inIsraelManuel]).
+     * Israël ou diaspora : le statut pour le deuxième jour de fête, qui suit la
+     * résidence et non l'endroit où l'on est (audit du 16/11, Choul'han Aroukh
+     * 496:3). Le premier accès fige la valeur déduite du fuseau (revue du
+     * 01/10), le premier lieu la remplace ; ensuite, seuls les réglages ou la
+     * réponse à la question d'un lieu de l'autre région ([regionProposee]) la
+     * changent (ZMANIM.md).
      */
     fun inIsrael(context: Context): Boolean {
         val p = prefs(context)
@@ -470,6 +473,8 @@ object Store {
         val ancienne = inIsrael(context)
         prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value).putBoolean(KEY_IN_ISRAEL_MANUEL, manuel)
             .putString(KEY_HISTO_ISRAEL, datee(context, KEY_HISTO_ISRAEL, ancienne, value)).apply()
+        // Un statut choisi répond à la question en attente (audit du 16/11).
+        if (manuel) setRegionProposee(context, null)
     }
 
     /**
@@ -522,17 +527,18 @@ object Store {
             (lieuVille(context) == -1L && lieuZmanim(context)?.let { CalendrierJuif.aJerusalem(it.latitude, it.longitude) } == true)
 
     /**
-     * Choisir le lieu règle aussi Israël ou diaspora : le deuxième jour de
-     * fête suit le lieu des zmanim. Une ville le dit ; une position, le
-     * contour du territoire (TerritoireIsrael, 16/10). Sans lieu, le fuseau
-     * du téléphone (Holidays.defaultInIsrael). [enIsrael] null : la région
-     * des réglages est gardée (une région choisie à la main, lors d'une
-     * reprise de la position : FCALENDRIER-06).
+     * Le lieu des zmanim. La région qu'il indique ([impliquee] : une ville le
+     * dit, une position se lit sur le contour du territoire) ne règle le statut
+     * Israël ou diaspora que pour le tout premier lieu ; ensuite, si elle
+     * diffère, elle devient une question (audit du 16/11, TerritoireIsrael.decisionRegion).
      */
     fun setLieuZmanim(
         context: Context, lieu: Zmanim.Lieu, ville: Ville?,
-        enIsrael: Boolean? = ville?.enIsrael ?: Holidays.defaultInIsrael(lieu.fuseau),
+        impliquee: Boolean = ville?.enIsrael ?: TerritoireIsrael.contient(lieu.latitude, lieu.longitude),
     ) {
+        // Audit du 16/11 : le statut pour le Yom tov chéni suit la résidence, pas le lieu
+        // (TerritoireIsrael.decisionRegion) ; un lieu de l'autre région pose la question.
+        val decision = TerritoireIsrael.decisionRegion(impliquee, inIsrael(context), lieuZmanim(context) == null, inIsraelManuel(context))
         prefs(context).edit()
             .putString(KEY_LIEU_NOM, lieu.nom)
             .putString(KEY_LIEU_LAT, lieu.latitude.toString())
@@ -542,19 +548,34 @@ object Store {
             .putLong(KEY_LIEU_VILLE, ville?.id ?: -1L)
             .putLong(KEY_LIEU_T, System.currentTimeMillis())
             .apply()
-        if (enIsrael != null) setInIsrael(context, enIsrael)
+        decision.region?.let { setInIsrael(context, it) }
+        setRegionProposee(context, decision.proposition)
     }
 
     /**
-     * La position du téléphone comme lieu des zmanim. Une reprise — le lieu était déjà la
-     * position, et on ne vient pas de la choisir dans la liste ([choisie]) — garde la région
-     * choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06) : avant, chaque
-     * ouverture de Zmanim ou de la boussole la réécrivait sans rien dire.
+     * La position du téléphone comme lieu des zmanim : Israël ou diaspora se lit sur le
+     * territoire (TerritoireIsrael, 16/10), et ne fait que poser la question (audit du 16/11),
+     * que la position soit choisie dans la liste ([choisie]) ou seulement reprise.
      */
+    @Suppress("UNUSED_PARAMETER")
     fun setLieuPosition(context: Context, lieu: Zmanim.Lieu, choisie: Boolean) {
-        val reprise = !choisie && lieuZmanim(context) != null && lieuVille(context) == -1L
-        setLieuZmanim(context, lieu, null,
-            TerritoireIsrael.regionPourPosition(lieu.latitude, lieu.longitude, inIsraelManuel(context), reprise))
+        setLieuZmanim(context, lieu, null)
+    }
+
+    /**
+     * Le statut que le lieu suggère quand il diffère du statut enregistré (audit du 16/11) :
+     * true, Israël ; false, diaspora ; null, aucune question en attente.
+     */
+    fun regionProposee(context: Context): Boolean? = when (prefs(context).getString(KEY_REGION_PROPOSEE, null)) {
+        "israel" -> true
+        "diaspora" -> false
+        else -> null
+    }
+
+    fun setRegionProposee(context: Context, valeur: Boolean?) {
+        prefs(context).edit().apply {
+            if (valeur == null) remove(KEY_REGION_PROPOSEE) else putString(KEY_REGION_PROPOSEE, if (valeur) "israel" else "diaspora")
+        }.apply()
     }
 
     /**
@@ -698,6 +719,21 @@ object Store {
     fun setSansTahanounFinTichriSfard(context: Context, sans: Boolean) {
         prefs(context).edit().putBoolean(KEY_TAHANOUN_TICHRI_SFARD, sans).apply()
     }
+
+    /**
+     * « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; Choul'han Aroukh O.H. 131:4) : maison en deuil,
+     * brit mila, 'hatan. Un réglage ponctuel : on garde le jour choisi, il ne vaut que pour ce jour-là.
+     */
+    fun sansTahanounLe(context: Context, date: LocalDate): Boolean =
+        prefs(context).getString(KEY_SANS_TAHANOUN_JOUR, null) == date.toString()
+
+    fun setSansTahanounLe(context: Context, date: LocalDate, sans: Boolean) {
+        prefs(context).edit().apply { if (sans) putString(KEY_SANS_TAHANOUN_JOUR, date.toString()) else remove(KEY_SANS_TAHANOUN_JOUR) }.apply()
+    }
+
+    /** Les conditions d'un jour, avec « Pas de Ta'hanoun aujourd'hui » si on l'a choisi pour ce jour-là. */
+    fun conditionsDuJour(context: Context, jour: CalendrierJuif.Jour): Set<String> =
+        SiddurJour.avecSansTahanoun(jour.conditions, sansTahanounLe(context, jour.date))
 
     /** Le calendrier s'ouvre sur le mois hébreu ; le mois civil est au choix. */
     fun calendrierCivil(context: Context): Boolean = prefs(context).getBoolean(KEY_CALENDRIER_CIVIL, false)

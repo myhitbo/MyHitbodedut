@@ -590,6 +590,16 @@ test('carte du jour : illustration, hilloula et liens', async () => {
   assert.deepEqual(J.clesHilloula(12, 7, true, false, true), ['adar-7', 'adar1-7']);
   assert.deepEqual(J.clesHilloula(13, 7, true, false, true), ['adar2-7']);
   assert.deepEqual(J.clesHilloula(8, 29, false, true), ['8-29', '8-30']);
+  // Audit du 16/11 : le 30 Adar n'existe qu'en Adar I (Kitsour YY 40:22 ; MB 568:42), comme HilloulotTest.
+  assert.ok(J.clesHilloulotPour('2027-03-09', false).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2027-04-07', false).includes('adar-30'));
+  assert.ok(J.clesHilloulotPour('2030-03-05', false, true).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2030-04-03', false).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2026-03-18', false, true).includes('adar-30'));
+  assert.ok(J.clesHilloulotPour('2026-02-17', false, true).includes('adar-30'));
+  assert.ok(J.clesHilloulotPour('2026-02-17', false, true).includes('adar1-30'));
+  assert.ok(J.clesHilloulotPour('2026-03-18', false).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2026-02-17', false).includes('adar-30'));
   const table = JSON.parse(readFileSync(join(RES, 'raw', 'hilloulot.json'), 'utf8')).jours;
   // Chaque jour d'une année simple (5786) a au moins une hilloula ; en année
   // embolismique, Adar I n'a que les hilloulot dites « Adar I ».

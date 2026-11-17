@@ -293,13 +293,23 @@ class SiddurLectureActivity : AppCompatActivity() {
         val israel = Store.inIsrael(this)
         // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
         val apresSortie = Store.lieuZmanim(this)?.let { lieu ->
-            Zmanim.jour(lieu, LocalDate.now()).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
+            Zmanim.jour(lieu, LocalDate.now(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
         } ?: false
         val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
-            Store.mukafChoma(this))
+            Store.mukafChoma(this)).let { j ->
+            // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
+            val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now(), Store.siddurNusah(this).cle) }
+            val maintenant = java.time.Instant.now()
+            val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
+            val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }
+            if (CalendrierJuif.nuit(LocalTime.now(), sortie, aube)) j.copy(conditions = j.conditions + CalendrierJuif.C.NUIT) else j
+        }
         val annotations = if (livre) emptyList() else Data.ajouts(this)[id].orEmpty()
-        val note = if (annotations.isEmpty()) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
-            jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora))))
+        // Un texte qui n'a que des notes de l'application (audit du 16/11) n'a pas d'ajouts du jour.
+        val note = (if (annotations.all { it.sorte == SiddurJour.Sorte.NOTE }) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
+            jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora))))) +
+            // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
+            (if (id in JourAffiche.OFFICES && jour.chome) listOf(Note(getString(R.string.siddur_semaine_chabbat))) else emptyList())
         // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
         langues = LanguesTexte.mode(this)
         // Une consigne traduite (TEFILA-02) ne fait pas d'un texte un texte traduit.
@@ -313,7 +323,7 @@ class SiddurLectureActivity : AppCompatActivity() {
         // Une traduction automatique affichée : on dit qu'elle n'est pas relue, l'hébreu fait foi (COUV-05).
         val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
             listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
-        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, jour.conditions, ouverts,
+        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, Store.conditionsDuJour(this, jour), ouverts,
             Store.siddurNusah(this).cle, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this))
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager
@@ -323,18 +333,10 @@ class SiddurLectureActivity : AppCompatActivity() {
         places = java.util.IdentityHashMap<SiddurBloc, Pair<Int, Int>>().apply {
             texte.sections.forEachIndexed { si, s -> s.blocs.forEachIndexed { bi, b -> put(b, si to bi) } }
         }
-        // Un ajout déplié se lit dans un panneau, fermé par un pied « Replier » (19/10).
-        val avecPieds = ArrayList<Any>(lignes.size + 4)
-        val panneau = HashSet<Int>()
-        var ouvert: String? = null
-        for (l in lignes) {
-            val dedans = l is SiddurJour.Ligne.Bloc && l.style == SiddurJour.Style.HORS
-            if (ouvert != null && !dedans) { avecPieds += Pied(ouvert); ouvert = null }
-            if (ouvert != null) panneau += avecPieds.size
-            avecPieds += l
-            if (l is SiddurJour.Ligne.Replie && l.ouvert) ouvert = l.cle
-        }
-        ouvert?.let { avecPieds += Pied(it) }
+        // Un ajout déplié se lit dans un panneau, fermé par un pied « Replier » (19/10) : à la fin du repli
+        // (SiddurJour.Ligne.Fin), après tous ses membres, même quand un repli s'ouvre dedans (audit du 16/11).
+        val avecPieds: List<Any> = lignes.map { if (it is SiddurJour.Ligne.Fin) Pied(it.cle) else it }
+        val panneau = SiddurJour.panneaux(lignes)
         lignesAffichees = avecPieds
         liste.setBackgroundColor(rendu.fond)
         // Déplier, replier : les paragraphes glissent en place au lieu d'apparaître d'un coup.
@@ -704,9 +706,19 @@ class SiddurLectureActivity : AppCompatActivity() {
                 is SiddurJour.Ligne.Indice -> vue.apply {
                     PoliceHebraique.appliquer(this)
                     setPadding(dp(16), dp(0), dp(16), dp(8))
-                    text = getString(R.string.siddur_aujourdhui) + " : " + ligne.texte
+                    text = if (ligne.fixe) ligne.texte else getString(R.string.siddur_aujourdhui) + " : " + ligne.texte
                     textSize = 12f * e
                     setTextColor(rendu.titre)
+                }
+                // Ce que le jour change ici sans texte dans le siddour (audit du 16/11).
+                is SiddurJour.Ligne.Rappel -> vue.apply {
+                    layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                    textDirection = View.TEXT_DIRECTION_LOCALE
+                    setPadding(dp(16), dp(8), dp(16), dp(8))
+                    text = getString(R.string.siddur_aujourdhui) + " · " + nom(ligne.libelle)
+                    textSize = 13f * e
+                    setTextColor(rendu.titre)
+                    setBackgroundColor(teinte)
                 }
                 is SiddurJour.Ligne.Renvoi -> vue.apply {
                     // « Aujourd'hui · הַלֵּל › » : le texte de ce jour, à cet endroit, ouvert d'un geste.
@@ -767,7 +779,8 @@ class SiddurLectureActivity : AppCompatActivity() {
                 is SiddurJour.Ligne.Seul -> vue.apply {
                     // Qui prie seul (19/10) : une carte à part, jamais repliée ; la consigne petite, la braïta en grand.
                     PoliceHebraique.appliquer(this)
-                    val etiquette = getString(R.string.siddur_seul)
+                    // Une note de l'application (audit du 16/11) : même carte, son étiquette propre.
+                    val etiquette = getString(if (ligne.note) R.string.siddur_note else R.string.siddur_seul)
                     text = android.text.SpannableStringBuilder(etiquette).apply {
                         setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         setSpan(android.text.style.ForegroundColorSpan(rendu.titre), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

@@ -20,6 +20,11 @@ Clé des jours : « <mois>-<jour> », mois de KosherJava (1 Nissan … 6 Eloul,
 « adar » sans précision se dit en Adar II les années embolismiques
 (Choul'han Aroukh OH 568:7, usage séfarade, celui de החכם היומי).
 
+Un 30 absent cette année-là (מרחשוון ou כסלו courts) se dit le 29 : l'avis du
+Maguen Avraham, que le monde suit (Michna Beroura 568:42 ; certains A'haronim
+fixent toujours Roch 'Hodech) ; le Yalkut Yosef n'a pas été trouvé sur ce point.
+Le 30 Adar n'existe qu'en Adar I (Hilloulot.cles, audit du 16/11).
+
   python3 tools/hilloulot_construction.py
 """
 import collections, json, os, re
@@ -40,6 +45,11 @@ ANNEES = {("תשרי", 20, "רבי אליעזר פאפו"): 'תקפ"ח', ("אל�
 
 
 G = {c: i for i, c in enumerate("אבגדהוזחט", 1)} | {"י": 10, "כ": 20, "ל": 30}
+
+# Doutes ajoutés à la note (audit du 16/11) : (mois, jour, début du nom) -> raison.
+DOUTES = {
+    ("אדר", 30, "חכם עובדיה מזרחי הלוי"): "la date « ל אדר תקמ״ז » est impossible : 5547 n'est pas une année embolismique",
+}
 
 
 # Dates et années démenties par la notice de Wikipédia affichée juste en dessous (audit du 12/11/2026,
@@ -499,6 +509,9 @@ def main():
                 if e["mois"] == m and e["jour"] == j and e["he"].startswith(n):
                     e["doute"] = (e.get("doute") or "") + f" ; année de החכם היומי retenue ({a}) au lieu de {e['annee']}"
                     e["annee"] = a
+            for (m, j, n), d in DOUTES.items():
+                if e["mois"] == m and e["jour"] == j and e["he"].startswith(n):
+                    e["doute"] = (e.get("doute") or "") + " ; " + d
             cle = f"{MOIS[e['mois'].strip()]}-{int(e['jour'])}"
             sources = sorted({"w" if "wikipedia" in s else "h" for s in e["sources"]})
             item = {"he": e["he"].strip(), "a": e.get("annee") or "", "s": "".join(sources)}

@@ -269,4 +269,153 @@ class SiddurJourTest {
         assertEquals("ajout_sans_tahanoun", SiddurJour.libelle("!tahanoun_chaharit"))
         assertEquals("fete_yom_kippour", SiddurJour.libelle("kippour"))
     }
+
+    // --- Audit du 16/11, « Ta'hanoun et ce qui en dépend » (les mêmes cas : web/test/tahanoun.test.mjs) ---------------
+
+    private fun c(date: String) = CalendrierJuif.jour(java.time.LocalDate.parse(date), false).conditions
+
+    /** Le style d'un bloc ce jour-là ; null quand il est replié. */
+    private fun styleDe(n: Nusah, id: String, si: Int, bi: Int, date: String): SiddurJour.Style? {
+        val texte = DataFiles.siddur(n).texte(id)!!
+        val lignes = SiddurJour.lignes(texte, SiddurJour.parse(json, n.cle).getValue(id), c(date), nusah = n.cle)
+        return lignes.filterIsInstance<SiddurJour.Ligne.Bloc>().firstOrNull { it.origine === texte.sections[si].blocs[bi] }?.style
+    }
+
+    @Test
+    fun `al erekh apayim suit lamnatseah, pas le tahanoun (MB 131-35)`() {
+        listOf(Nusah.SEFARD to 12, Nusah.ASHKENAZ to 5).forEach { (n, s) ->
+            assertEquals(n.cle, SiddurJour.Style.DU_JOUR, styleDe(n, "chaharit", s, 1, "2026-02-02")) // lundi, Tou biChvat
+            assertEquals(n.cle, SiddurJour.Style.HORS, styleDe(n, "chaharit", s, 1, "2026-08-13")) // jeudi, Roch 'Hodech
+            assertEquals(n.cle, SiddurJour.Style.HORS, styleDe(n, "chaharit", s, 1, "2025-12-30")) // mardi, 10 Tévèt (ShA haRav 429:12)
+        }
+    }
+
+    @Test
+    fun `ashkenaz - vidoui et piyout du lundi et du jeudi seulement (MB 134-1)`() {
+        listOf(2, 73, 83).forEach { b ->
+            assertEquals("$b", SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, b, "2025-11-17"))
+            assertEquals("$b", null, styleDe(Nusah.ASHKENAZ, "chaharit", 4, b, "2025-11-18"))
+        }
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 84, "2025-11-18")) // שומר ישראל
+    }
+
+    @Test
+    fun `tsom guedalia - avinou malkenou sans les lignes des jeunes`() {
+        assertEquals(SiddurJour.Style.HORS, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 14, "2025-09-25")) // ברך עלינו
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 13, "2025-09-25")) // חדש עלינו
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 14, "2025-12-30")) // 10 Tévèt
+    }
+
+    @Test
+    fun `edot - avinou malkenou du chabbat sans les lignes de faute`() {
+        // Blocs 83-84 de l'Amida Edot depuis les insertions de la Amida du 16/11 (Na'hem, consignes d'oubli).
+        assertEquals(SiddurJour.Style.HORS, styleDe(Nusah.EDOT, "chaharit", 9, 83, "2025-09-27"))
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 84, "2025-09-27"))
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 83, "2025-09-29"))
+    }
+
+    @Test
+    fun `edot - pas de vidoui a minha la veille de pessah cheni, kaddich du hallel les jours de moussaf`() {
+        assertFalse(CalendrierJuif.C.TAHANOUN_MINHA in SiddurJour.conditionsPour("edot", false, c("2026-04-30")))
+        assertTrue(CalendrierJuif.C.TAHANOUN_MINHA in SiddurJour.conditionsPour("sefard", false, c("2026-04-30")))
+        assertTrue(CalendrierJuif.C.KADDICH_COMPLET_HALLEL in c("2025-12-21")) // Roch 'Hodech Tévèt
+        assertTrue(CalendrierJuif.C.KADDICH_COMPLET_HALLEL in c("2025-12-20")) // Chabbat 'Hanouka
+        assertFalse(CalendrierJuif.C.KADDICH_COMPLET_HALLEL in c("2025-12-16")) // 'Hanouka, mardi
+    }
+
+    @Test
+    fun `pas de tahanoun aujourd hui - le reglage ponctuel retire le tahanoun, pas lamnatseah`() {
+        val jour = SiddurJour.avecSansTahanoun(c("2025-11-17"), true)
+        listOf("edot", "sefard", "ashkenaz").forEach { n ->
+            val cc = SiddurJour.conditionsPour(n, false, jour)
+            listOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
+                .forEach { assertFalse("$n $it", it in cc) }
+            assertTrue(n, CalendrierJuif.C.LAMNATSEAH in cc)
+            assertTrue(n, "ajout_sans_tahanoun_ponctuel" in JourAffiche.ajouts(jour, n))
+        }
+        assertTrue(CalendrierJuif.C.TAHANOUN_CHAHARIT in SiddurJour.conditionsPour("sefard", false, SiddurJour.avecSansTahanoun(c("2025-11-17"), false)))
+        assertTrue("ajout_vidoui_erev_kippour" in JourAffiche.ajouts(c("2025-10-01"), "ashkenaz"))
+        assertTrue("ajout_sans_tahanoun_pessah_cheni" in JourAffiche.ajouts(c("2026-05-01"), "ashkenaz"))
+    }
+
+    /**
+     * Audit du 16/11 : Tikoun 'hatsot. Tikoun Ra'hel replié à Roch 'Hodech, de Roch Hachana à Chemini
+     * Atseret, en Nissan, pendant l'omer (Kitsour Yalkut Yosef, דיני תיקון חצות §נה) ; Tikoun Léa la nuit
+     * du 9 Av (§נו) ; יענך et עד אנה les jours sans Ta'hanoun (consigne du siddour). Les trois noussa'h.
+     */
+    @Test
+    fun `audit du 16-11, Tikoun hatsot selon le jour`() {
+        fun lignes(iso: String, n: Nusah): List<SiddurJour.Ligne> {
+            val texte = DataFiles.siddur(n).texte("tikoun_hatsot")!!
+            val a = SiddurJour.parse(json, n.cle).getValue("tikoun_hatsot")
+            val c = CalendrierJuif.jour(java.time.LocalDate.parse(iso), false).conditions
+            return SiddurJour.lignes(texte, a, c, nusah = n.cle)
+        }
+        fun replies(iso: String, n: Nusah) = lignes(iso, n).filterIsInstance<SiddurJour.Ligne.Replie>().map { it.libelle }.toSet()
+        val rahel = "ajout_tikoun_rahel"
+        val lea = "ajout_tikoun_lea"
+        val tahanoun = "ajout_tahanoun"
+        Nusah.entries.forEach { n ->
+            assertEquals(n.cle, emptySet<String>(), replies("2026-11-19", n))
+            assertEquals(n.cle, setOf(rahel, tahanoun), replies("2027-03-09", n)) // Roch 'Hodech
+            assertEquals(n.cle, setOf(rahel, tahanoun), replies("2026-04-08", n)) // Nissan
+            assertEquals(n.cle, setOf(rahel), replies("2026-09-15", n)) // dix jours de pénitence
+            assertEquals(n.cle, setOf(rahel), replies("2027-05-12", n)) // omer, avec Ta'hanoun
+            assertEquals(n.cle, setOf(lea, tahanoun), replies("2026-07-23", n)) // 9 Av : Tikoun Ra'hel seul
+        }
+        // Les indications fixes (YY §נא et §נח), en Edot seulement, sans « Aujourd'hui ».
+        val fixes = lignes("2026-11-19", Nusah.EDOT).filterIsInstance<SiddurJour.Ligne.Indice>()
+        assertEquals(2, fixes.size)
+        assertTrue(fixes.all { it.fixe })
+        assertTrue(lignes("2026-11-19", Nusah.ASHKENAZ).none { it is SiddurJour.Ligne.Indice })
+        // Le jour hébreu de la nuit : avant minuit, le lendemain.
+        assertEquals(java.time.LocalDate.parse("2026-11-21"),
+            CalendrierJuif.jourDeLaPriere("tikoun_hatsot", java.time.LocalDate.parse("2026-11-20"), java.time.LocalTime.of(23, 50)))
+        assertEquals(java.time.LocalDate.parse("2026-07-05"),
+            CalendrierJuif.jourDeLaPriere("tikoun_hatsot", java.time.LocalDate.parse("2026-07-05"), java.time.LocalTime.of(12, 50)))
+    }
+
+    /** Audit du 16/11 : le Chema du coucher Sfard signale l'usage 'Habad, sans rien replier. */
+    @Test
+    fun `audit du 16-11, Chema du coucher Sfard, usage Habad`() {
+        val texte = DataFiles.siddur(Nusah.SEFARD).texte("chema_coucher")!!
+        val a = SiddurJour.parse(json, "sefard").getValue("chema_coucher")
+        val c = CalendrierJuif.jour(java.time.LocalDate.parse("2026-11-19"), false).conditions
+        val l = SiddurJour.lignes(texte, a, c, nusah = "sefard")
+        // Avec le repère « המפיל après l'aube » de l'audit des offices (Biour Halakha 239), qui n'est pas fixe.
+        assertEquals(2, l.filterIsInstance<SiddurJour.Ligne.Indice>().size)
+        val ind = l.filterIsInstance<SiddurJour.Ligne.Indice>().filter { it.fixe }
+        assertEquals(1, ind.size)
+        assertTrue(ind.single().fixe && ind.single().texte.contains("חב״ד"))
+        assertTrue(l.none { it is SiddurJour.Ligne.Replie })
+    }
+
+    /**
+     * Un repli ouvert dans un groupe replié qu'on a ouvert (double annotation, audit du 16/11) : le pied
+     * « Replier » du groupe vient après tous ses membres, pas au premier repli imbriqué. Edot, Arvit d'un
+     * mercredi : ויהי נועם (groupe 2:20, du motsaé Chabbat) replié, son Kaddich (bloc 62) sous le minyan.
+     */
+    @Test
+    fun `un repli ouvert dans un groupe ouvert - le panneau du groupe va jusqu a son dernier membre`() {
+        val texte = DataFiles.siddur(Nusah.EDOT).texte("arvit")!!
+        val a = SiddurJour.parse(json, "edot").getValue("arvit")
+        val c = CalendrierJuif.jour(java.time.LocalDate.parse("2026-11-18"), false).conditions
+        val ferme = SiddurJour.lignes(texte, a, c, nusah = "edot")
+        val groupe = ferme.filterIsInstance<SiddurJour.Ligne.Replie>().single { it.condition == CalendrierJuif.C.VIHI_NOAM }.cle
+        val un = SiddurJour.lignes(texte, a, c, setOf(groupe), nusah = "edot")
+        val minyan = un.filterIsInstance<SiddurJour.Ligne.Replie>().single { it.cle.startsWith("$groupe:") }.cle
+        val l = SiddurJour.lignes(texte, a, c, setOf(groupe, minyan), nusah = "edot")
+        val bloc = { bi: Int -> l.indexOfFirst { it is SiddurJour.Ligne.Bloc && it.origine === texte.sections[2].blocs[bi] } }
+        val debut = l.indexOfFirst { it is SiddurJour.Ligne.Replie && it.cle == groupe }
+        val fin = l.indexOf(SiddurJour.Ligne.Fin(groupe))
+        val finMinyan = l.indexOf(SiddurJour.Ligne.Fin(minyan))
+        // Dans l'ordre : le groupe, son premier membre, le repli du minyan et sa fin, les autres membres, la fin du groupe.
+        assertTrue(debut < bloc(61) && bloc(61) < bloc(62) && bloc(62) < finMinyan && finMinyan < bloc(63))
+        assertTrue(bloc(67) in 0 until fin)
+        val panneau = SiddurJour.panneaux(l)
+        (61..67).forEach { assertTrue("$it", bloc(it) in panneau) }
+        assertFalse(debut in panneau || fin in panneau || fin + 1 in panneau)
+        // Sans repli ouvert, pas de fin ni de panneau.
+        assertTrue(ferme.none { it is SiddurJour.Ligne.Fin } && SiddurJour.panneaux(ferme).isEmpty())
+    }
 }

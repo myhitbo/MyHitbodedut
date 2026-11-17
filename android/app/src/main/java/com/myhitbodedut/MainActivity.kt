@@ -514,7 +514,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             val lieu = Store.lieuZmanim(this)
             val fuseau = lieu?.fuseau?.let { runCatching { java.time.ZoneId.of(it) }.getOrNull() } ?: java.time.ZoneId.systemDefault()
             val maintenant = java.time.ZonedDateTime.now(fuseau)
-            val tset = lieu?.let { l -> Zmanim.jour(l, maintenant.toLocalDate()).firstOrNull { it.cle == "tset" }?.local }
+            val tset = lieu?.let { l -> Zmanim.jour(l, maintenant.toLocalDate(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.local }
             CalendrierJuif.jour(ZmanimVignette.jourHebreuAffiche(maintenant, tset), Store.inIsrael(this)).dateHebraique
         }.getOrNull()
         findViewById<TextView>(R.id.nav_zmanim).apply {

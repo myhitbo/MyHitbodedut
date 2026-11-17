@@ -88,7 +88,7 @@ object ZmanimVignette {
         // soir, la vignette dit déjà Chabbat. Sans lieu, pas de tsét connu : minuit.
         val lieuDate = Store.lieuZmanim(context)
         val maintenantLieu = ZonedDateTime.now(lieuDate?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault())
-        val tset = lieuDate?.let { l -> Zmanim.jour(l, maintenantLieu.toLocalDate()).firstOrNull { it.cle == "tset" }?.local }
+        val tset = lieuDate?.let { l -> Zmanim.jour(l, maintenantLieu.toLocalDate(), Store.siddurNusah(context).cle).firstOrNull { it.cle == "tset" }?.local }
         val aujourdhui = jourHebreuAffiche(maintenantLieu, tset)
         // À Jérusalem, Pourim est le 15 Adar : la pastille nomme la fête comme le calendrier (13/11).
         val jour = CalendrierJuif.jour(aujourdhui, israel, Store.mukafChoma(context))
@@ -115,7 +115,7 @@ object ZmanimVignette {
         }
         val zone = runCatching { ZoneId.of(lieu.fuseau) }.getOrDefault(ZoneId.systemDefault())
         val maintenant = ZonedDateTime.now(zone)
-        val horaires = Zmanim.jour(lieu, maintenant.toLocalDate()).associate { it.cle to it.local }
+        val horaires = Zmanim.jour(lieu, maintenant.toLocalDate(), Store.siddurNusah(context).cle).associate { it.cle to it.local }
         val moment = ZmanimWidget.prochaine(horaires, maintenant)
         val priere = moment.priere
         // Pas encore ouverte (13/11, FVOL-05) : « dès 12:05 », sans jauge ni temps restant.
@@ -135,7 +135,7 @@ object ZmanimVignette {
         // La journée : aujourd'hui, ou demain une fois la nuit tombée.
         var journee = JOURNEE.mapNotNull { k -> horaires[k]?.let { k to it } }
         if (journee.none { it.second.isAfter(maintenant) }) {
-            val demain = Zmanim.jour(lieu, maintenant.toLocalDate().plusDays(1)).associate { it.cle to it.local }
+            val demain = Zmanim.jour(lieu, maintenant.toLocalDate().plusDays(1), Store.siddurNusah(context).cle).associate { it.cle to it.local }
             journee = JOURNEE.mapNotNull { k -> demain[k]?.let { k to it } }
         }
         val prochain = journee.indexOfFirst { it.second.isAfter(maintenant) }
@@ -215,7 +215,7 @@ object ZmanimVignette {
         val zone = lieu?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
         val maintenant = ZonedDateTime.now(zone)
         val horaires = lieu?.let { l ->
-            (Zmanim.jour(l, maintenant.toLocalDate()) + Zmanim.jour(l, maintenant.toLocalDate().plusDays(1))).map { it.local }
+            (Zmanim.jour(l, maintenant.toLocalDate(), Store.siddurNusah(context).cle) + Zmanim.jour(l, maintenant.toLocalDate().plusDays(1), Store.siddurNusah(context).cle)).map { it.local }
         }.orEmpty()
         val minuitTelephone = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault())
         val quand = prochainChangement(horaires, maintenant, minuitTelephone)

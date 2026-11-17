@@ -143,10 +143,11 @@ object SignetsSiddur {
  */
 object SiddurMoment {
 
-    fun suggestion(heure: java.time.LocalTime): String {
+    /** [sansTikoun] : une nuit de Chabbat, de Yom tov ou de 'Hol hamoed Pessa'h (JourAffiche.sansTikounHatsot, audit du 16/11). */
+    fun suggestion(heure: java.time.LocalTime, sansTikoun: Boolean = false): String {
         val minutes = heure.hour * 60 + heure.minute
         return when {
-            minutes < 5 * 60 -> "tikoun_hatsot"
+            minutes < 5 * 60 -> if (sansTikoun) "chema_coucher" else "tikoun_hatsot"
             minutes < 6 * 60 + 30 -> "birkot_hachahar"
             minutes < 12 * 60 + 30 -> "chaharit"
             minutes < 18 * 60 + 30 -> "minha"
@@ -176,11 +177,16 @@ object SiddurMoment {
      * Birkat haIlanot (14/10) : on la dit une fois l'an, en voyant des arbres
      * fruitiers en fleur — en Nissan dans l'hémisphère nord (Choulhan Aroukh
      * O.H. 226). [latitude] : celle du lieu des zmanim, ou null.
+     * Audit du 16/11 : en Edot et en Ashkenaz, encore en Iyar pour qui n'a pas béni en Nissan, tant que
+     * les arbres sont en fleur (Kitsour Yalkut Yosef 226:10, a posteriori ; Michna Beroura 226:5) ; le
+     * texte le dit (note de l'application). Le Sfard s'en tient à Nissan (Kaf ha'Haïm 226:1 : après
+     * Nissan, sans Chem ni Malkhout).
      */
-    fun ilanot(date: java.time.LocalDate, latitude: Double?): Boolean {
+    fun ilanot(date: java.time.LocalDate, latitude: Double?, nusah: String? = null): Boolean {
         val c = com.kosherjava.zmanim.hebrewcalendar.JewishCalendar(date)
         return if (latitude != null && latitude < 0) moisIlanotSud(c.jewishMonth)
-        else c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.NISSAN
+        else c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.NISSAN ||
+            (c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.IYAR && nusah in setOf("edot", "ashkenaz"))
     }
 
     /**
