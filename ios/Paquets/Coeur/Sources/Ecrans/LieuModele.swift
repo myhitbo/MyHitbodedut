@@ -173,8 +173,10 @@ public final class LieuModele {
     public func choisirVille(_ ville: Ville) async throws {
         let lieu = Zmanim.Lieu(nom: ville.nom.pour(langue), latitude: ville.latitude, longitude: ville.longitude,
                                altitude: ville.altitude, fuseau: ville.fuseau)
-        let maintenant = horloge.maintenant
-        try await magasin.modifierReglages { $0.setLieuZmanim(lieu, ville: ville, maintenant: maintenant) }
+        let maintenant = horloge.maintenant, aujourdhui = horloge.aujourdhui, fuseau = horloge.fuseau.identifiant
+        try await magasin.modifierReglages {
+            $0.setLieuZmanim(lieu, ville: ville, maintenant: maintenant, aujourdhui: aujourdhui, fuseauTelephone: fuseau)
+        }
     }
 
     // MARK: La position
@@ -229,15 +231,14 @@ public final class LieuModele {
     }
 
     /// ChoixLieu.enregistrerPosition : la ville la plus proche nomme la position et donne son altitude ; le fuseau
-    /// est celui du téléphone ; Israël ou diaspora, le territoire.
+    /// est celui du téléphone. Israël ou diaspora se lit sur le territoire, et ne fait que poser la question
+    /// (audit du 16/11, Store.setLieuPosition) : le statut suit la résidence, pas le lieu.
     public func enregistrer(_ position: PositionApprochee) async throws {
         await charger()
         let lieu = LieuModele.lieu(position, villes: villes, fuseauTelephone: horloge.fuseau, traducteur: traducteur)
-        let enIsrael = TerritoireIsrael.contient(position.latitude, position.longitude)
-        let maintenant = horloge.maintenant
+        let maintenant = horloge.maintenant, aujourdhui = horloge.aujourdhui, fuseau = horloge.fuseau.identifiant
         try await magasin.modifierReglages { (reglages: inout Reglages) -> Void in
-            reglages.setLieuZmanim(lieu, ville: nil, maintenant: maintenant)
-            reglages.setInIsrael(enIsrael)
+            reglages.setLieuZmanim(lieu, ville: nil, maintenant: maintenant, aujourdhui: aujourdhui, fuseauTelephone: fuseau)
         }
     }
 

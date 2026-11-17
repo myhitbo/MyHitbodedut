@@ -66,10 +66,10 @@ public enum Store {
     private static let cleDuree = "session_target"
     private static let cleTikkunJour = "tikkun_day"
     private static let cleTikkunFaits = "tikkun_done"
-    private static let cleTikkunJournal = "tikkun_journal"
-    private static let cleFavoris = "favoris"
-    private static let cleChizukFavoris = "chizuk_favoris"
-    private static let cleMarques = "marques_pages"
+    static let cleTikkunJournal = "tikkun_journal"
+    static let cleFavoris = "favoris"
+    static let cleChizukFavoris = "chizuk_favoris"
+    static let cleMarques = "marques_pages"
     private static let cleDerniereLecture = "derniere_lecture"
 
     // MARK: Les jours
@@ -354,7 +354,9 @@ public enum Store {
         return Trophees.Pratique(minutes: minutesDesJoursFaits(journal), notes: notes,
                                  meilleureSerie: meilleureSerie(journal: journal, reglages: reglages, aujourdhui: aujourdhui,
                                                                 fuseauTelephone: fuseauTelephone),
-                                 tikkun: tikkunJournal(reglages: reglages))
+                                 tikkun: tikkunJournal(reglages: reglages),
+                                 // Les jours exemptés ne cassent pas la suite du Tikoun (FDONNEES-09).
+                                 exempt: exemption(reglages, fuseauTelephone))
     }
 
     /// Le jour où chaque trophée gagné l'a été (16/10) : l'historique rejoué (Trophees.datesGain), les
@@ -568,13 +570,18 @@ public enum Store {
 
     /// `isExempt` pour des réglages donnés : les dates en pause, puis Chabbat et Yom Tov si l'option est
     /// active. Les réglages sont lus une fois pour toute la série.
-    private static func exemption(_ reglages: Reglages, _ fuseauTelephone: String) -> (JourCivil) -> Bool {
+    /// Chaque jour se juge avec le réglage en vigueur ce jour-là (FDONNEES-05, `HistoriqueReglage`) : un voyage
+    /// ou un interrupteur changé après coup ne réécrit pas le passé.
+    private static func exemption(_ reglages: Reglages, _ fuseauTelephone: String) -> @Sendable (JourCivil) -> Bool {
         let pauses = reglages.pausedDates
         let chabbat = reglages.shabbatMode
         let israel = reglages.inIsrael(fuseauTelephone: fuseauTelephone)
+        let histoireChabbat = reglages.histoireShabbat
+        let histoireIsrael = reglages.histoireIsrael
         return { date in
             if pauses.contains(date.iso) { return true }
-            return chabbat && Holidays.isRestDay(date, inIsrael: israel)
+            guard HistoriqueReglage.valeurLe(histoireChabbat, date, actuelle: chabbat) else { return false }
+            return Holidays.isRestDay(date, inIsrael: HistoriqueReglage.valeurLe(histoireIsrael, date, actuelle: israel))
         }
     }
 
@@ -609,7 +616,7 @@ public enum Store {
     }
 
     /// `split('|').filter { it.isNotBlank() }`.
-    private static func liste(_ reglages: Reglages, _ cle: String) -> [String] {
+    static func liste(_ reglages: Reglages, _ cle: String) -> [String] {
         morceaux(chaine(reglages, cle) ?? "", 0x7C).filter { !$0.estBlanc }
     }
 
@@ -650,7 +657,7 @@ public enum Store {
     }
 
     /// `putLong`, `putInt`, `putString` ; nil retire la clé.
-    private static func pose(_ reglages: inout Reglages, _ cle: String, _ valeur: JSON?) {
+    static func pose(_ reglages: inout Reglages, _ cle: String, _ valeur: JSON?) {
         var brut = reglages.brut
         brut[cle] = valeur
         reglages = Reglages(brut: brut)

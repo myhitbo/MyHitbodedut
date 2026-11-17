@@ -73,7 +73,7 @@ public struct Reglages: Sendable, Equatable {
     /// PoliceHebraique.Police, la première par défaut.
     public static let polices = ["serif", "sans", "arrondie", "frank", "david", "rachi", "miriam"]
     /// Levana.Usage ; aucune : celui du noussa'h.
-    public static let usagesLevana = ["trois_mi_mois", "sept_mi_mois", "sept_quinze"]
+    public static let usagesLevana = ["trois_mi_mois", "sept_mi_mois", "sept_quinze", "sept_nuit_quinze"]
 
     /// Le livre de la halakha du jour (Store.SourceHalakha, 14/10) : le Yalkut Yosef par défaut, le Ben
     /// Ish 'Haï de la paracha, ou les deux. Les clés sont celles du web.
@@ -127,8 +127,24 @@ public struct Reglages: Sendable, Equatable {
     /// Shabbat et Yom Tov : un seul réglage, la clé d'origine est conservée.
     public var shabbatMode: Bool { booleen("pause_shabbat", true) }
 
-    public mutating func setShabbatMode(_ value: Bool) {
+    /// `aujourdhui` : le jour du changement, daté dans l'historique (FDONNEES-05, `HistoriqueReglage`).
+    public mutating func setShabbatMode(_ value: Bool, aujourdhui: JourCivil) {
+        let ancienne = shabbatMode
         poseBooleen("pause_shabbat", value)
+        poseChaine(Reglages.histoShabbat, datee(Reglages.histoShabbat, aujourdhui, ancienne, value))
+    }
+
+    /// Les historiques datés des deux réglages qui pèsent sur le passé (FDONNEES-05) : chaque jour se juge
+    /// avec la valeur en vigueur ce jour-là (Store.isExempt).
+    static let histoShabbat = "pause_shabbat_histoire"
+    static let histoIsrael = "in_israel_histoire"
+
+    public var histoireShabbat: [HistoriqueReglage.Entree] { HistoriqueReglage.decoder(chaine(Reglages.histoShabbat)) }
+    public var histoireIsrael: [HistoriqueReglage.Entree] { HistoriqueReglage.decoder(chaine(Reglages.histoIsrael)) }
+
+    private func datee(_ cle: String, _ aujourdhui: JourCivil, _ ancienne: Bool, _ nouvelle: Bool) -> String {
+        HistoriqueReglage.encoder(HistoriqueReglage.apresChangement(HistoriqueReglage.decoder(chaine(cle)),
+                                                                   aujourdhui: aujourdhui, ancienne: ancienne, nouvelle: nouvelle))
     }
 
     /// Israël ou diaspora : la valeur enregistrée, sinon celle que le fuseau du téléphone donne et que
@@ -148,8 +164,33 @@ public struct Reglages: Sendable, Equatable {
         return booleen("in_israel", false)
     }
 
-    public mutating func setInIsrael(_ value: Bool) {
+    /// La région a été choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06) : une reprise de la
+    /// position du téléphone ne la réécrit plus. Choisir un lieu efface ce drapeau et redéduit la région.
+    public var inIsraelManuel: Bool { booleen("in_israel_manuel", false) }
+
+    /// `manuel` : choisie à la main dans les réglages, et non déduite du lieu ; `aujourdhui` : le jour du
+    /// changement, daté dans l'historique (FDONNEES-05). Comme sur Android, lire l'ancienne valeur la fige.
+    public mutating func setInIsrael(_ value: Bool, manuel: Bool = false, aujourdhui: JourCivil, fuseauTelephone: String) {
+        let ancienne = figeInIsrael(fuseauTelephone: fuseauTelephone)
         poseBooleen("in_israel", value)
+        poseBooleen("in_israel_manuel", manuel)
+        poseChaine(Reglages.histoIsrael, datee(Reglages.histoIsrael, aujourdhui, ancienne, value))
+        // Un statut choisi répond à la question en attente (audit du 16/11).
+        if manuel { setRegionProposee(nil) }
+    }
+
+    /// Le statut que le lieu suggère quand il diffère du statut enregistré (audit du 16/11) : true, Israël ;
+    /// false, diaspora ; nil, aucune question en attente.
+    public var regionProposee: Bool? {
+        switch chaine("region_proposee") {
+        case "israel": true
+        case "diaspora": false
+        default: nil
+        }
+    }
+
+    public mutating func setRegionProposee(_ valeur: Bool?) {
+        poseChaine("region_proposee", valeur.map { $0 ? "israel" : "diaspora" })
     }
 
     /// Les dates mises en pause à la main, telles qu'écrites (une date mal formée y reste).
@@ -211,10 +252,15 @@ public struct Reglages: Sendable, Equatable {
     /// Le lieu des zmanim est au sud de l'équateur (Ilanot, Morid hatal des Edot).
     public var hemisphereSud: Bool { (lieuZmanim?.latitude ?? 0) < 0 }
 
-    /// Choisir le lieu règle aussi Israël ou diaspora : une ville le dit, une position son fuseau
-    /// (Holidays.defaultInIsrael ; le contour du territoire est l'affaire de l'écran qui la prend).
-    /// `maintenant` : l'instant de l'enregistrement, en millisecondes Unix.
-    public mutating func setLieuZmanim(_ lieu: Zmanim.Lieu, ville: Ville?, maintenant: Int64) {
+    /// Le lieu des zmanim. La région qu'il indique (`impliquee` : une ville le dit, une position se lit sur le
+    /// contour du territoire) ne règle le statut Israël ou diaspora que pour le tout premier lieu ; ensuite, si
+    /// elle diffère, elle devient une question (audit du 16/11, TerritoireIsrael.decisionRegion).
+    /// `maintenant` : l'instant de l'enregistrement, en millisecondes Unix ; `aujourdhui` : son jour.
+    public mutating func setLieuZmanim(_ lieu: Zmanim.Lieu, ville: Ville?, maintenant: Int64, impliquee: Bool? = nil,
+                                       aujourdhui: JourCivil, fuseauTelephone: String) {
+        let region = impliquee ?? ville?.enIsrael ?? TerritoireIsrael.contient(lieu.latitude, lieu.longitude)
+        let decision = TerritoireIsrael.decisionRegion(impliquee: region, actuelle: figeInIsrael(fuseauTelephone: fuseauTelephone),
+                                                       premierLieu: lieuZmanim == nil, declare: inIsraelManuel)
         poseChaine("lieu_nom", lieu.nom)
         poseChaine("lieu_latitude", Java.texte(lieu.latitude))
         poseChaine("lieu_longitude", Java.texte(lieu.longitude))
@@ -222,7 +268,8 @@ public struct Reglages: Sendable, Equatable {
         poseChaine("lieu_fuseau", lieu.fuseau)
         poseLong("lieu_ville", ville?.id ?? -1)
         poseLong("lieu_t", maintenant)
-        setInIsrael(ville?.enIsrael ?? Holidays.defaultInIsrael(timeZoneId: lieu.fuseau))
+        if let r = decision.region { setInIsrael(r, aujourdhui: aujourdhui, fuseauTelephone: fuseauTelephone) }
+        setRegionProposee(decision.proposition)
     }
 
     // MARK: Zmanim, boussole, calendrier
@@ -573,6 +620,8 @@ public struct Reglages: Sendable, Equatable {
     /// La taille des lettres, ramenée de 0,8 à 2 à la lecture ; écrite telle quelle.
     public var lectureEchelle: Float {
         let echelle = flottant("lecture_echelle", 1)
+        // NaN passerait les bornes : il faisait planter chaque écran de lecture d'Android (revue du 15/11).
+        if !echelle.isFinite { return 1 }
         if echelle < Reglages.echelleMin { return Reglages.echelleMin }
         if echelle > Reglages.echelleMax { return Reglages.echelleMax }
         return echelle
@@ -618,11 +667,42 @@ public struct Reglages: Sendable, Equatable {
         poseEntier("lecture_defilement_vitesse", min(max(niveau, Reglages.defilementMin), Reglages.defilementMax))
     }
 
+    /// L'écran gardé allumé pendant la lecture (audit du 12/11, FLECTURE-01), par défaut.
+    public var lectureEcranAllume: Bool { booleen("lecture_ecran_allume", true) }
+
+    public mutating func setLectureEcranAllume(_ allume: Bool) {
+        poseBooleen("lecture_ecran_allume", allume)
+    }
+
     /// Le bouton de lecture masqué tout à fait.
     public var lectureMasquee: Bool { booleen("lecture_masquee", false) }
 
     public mutating func setLectureMasquee(_ masquee: Bool) {
         poseBooleen("lecture_masquee", masquee)
+    }
+
+    /// « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; O.H. 131:4) : maison en deuil, brit mila, 'hatan. Un
+    /// réglage ponctuel : on garde le jour choisi, il ne vaut que pour ce jour-là.
+    public func sansTahanounLe(_ date: JourCivil) -> Bool {
+        chaine("sans_tahanoun_jour") == date.iso
+    }
+
+    public mutating func setSansTahanounLe(_ date: JourCivil, sans: Bool) {
+        poseChaine("sans_tahanoun_jour", sans ? date.iso : nil)
+    }
+
+    /// L'alerte « Chabbat dans 3 h » (audit du 12/11, FCALENDRIER-07) : allumée d'origine.
+    public var chabbatAlerte: Bool { booleen("chabbat_alerte", true) }
+
+    public mutating func setChabbatAlerte(_ v: Bool) {
+        poseBooleen("chabbat_alerte", v)
+    }
+
+    /// L'arrivée du vol enregistré est une estimation d'après la distance, pas l'heure du billet (FVOL-03).
+    public var volArriveeEstimee: Bool { booleen("vol_arrivee_estimee", false) }
+
+    public mutating func setVolArriveeEstimee(_ estimee: Bool) {
+        poseBooleen("vol_arrivee_estimee", estimee)
     }
 
     /// Le noussa'h du siddour : Edot HaMizra'h par défaut.

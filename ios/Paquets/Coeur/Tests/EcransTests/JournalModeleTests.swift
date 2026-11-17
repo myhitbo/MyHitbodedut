@@ -96,7 +96,7 @@ struct JournalModeleTests {
         #expect(ligne.note == "Merci Hachem")
         #expect(!ligne.noteSeule)
         let resume = try Self.traducteur().texte(modele.resume)
-        #expect(resume == "1 hitbodedout, 1 min au total")
+        #expect(resume == "1 jour de hitbodedout, 1 min au total")
         let ecritures = await persistance.ecrituresJournal
         #expect(ecritures == 2)
     }
@@ -182,7 +182,7 @@ struct JournalModeleTests {
         #expect(modele.resume == Libelle.pluriel("journal_summary", quantite: 2, .entier(2),
                                                  .libelle(Libelle("duration_hours_minutes", .entier(1), .entier(15)))))
         let texte = try Self.traducteur().texte(modele.resume)
-        #expect(texte == "2 hitbodedout, 1 h 15 au total")
+        #expect(texte == "2 jours de hitbodedout, 1 h 15 au total")
     }
 
     @Test func leGraphiqueMontreLeMoisEnCours() throws {

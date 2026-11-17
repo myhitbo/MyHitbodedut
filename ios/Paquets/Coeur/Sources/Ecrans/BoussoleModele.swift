@@ -337,8 +337,10 @@ public final class BoussoleModele {
         guard let ville = liste.first(where: { $0.id == id }) else { return }
         let lieu = Zmanim.Lieu(nom: ville.nom.pour(langue), latitude: ville.latitude, longitude: ville.longitude,
                                altitude: ville.altitude, fuseau: ville.fuseau)
-        let maintenant = horloge.maintenant
-        try await magasin.modifierReglages { $0.setLieuZmanim(lieu, ville: ville, maintenant: maintenant) }
+        let maintenant = horloge.maintenant, aujourdhui = horloge.aujourdhui, fuseau = horloge.fuseau.identifiant
+        try await magasin.modifierReglages {
+            $0.setLieuZmanim(lieu, ville: ville, maintenant: maintenant, aujourdhui: aujourdhui, fuseauTelephone: fuseau)
+        }
         reinitialiserScene()
         await rafraichissement?.rafraichir()
     }
@@ -480,11 +482,10 @@ public final class BoussoleModele {
         }
         let lieu = Zmanim.Lieu(nom: nom, latitude: position.latitude, longitude: position.longitude,
                                altitude: proche?.altitude ?? 0, fuseau: horloge.fuseau.identifiant)
-        let enIsrael = TerritoireIsrael.contient(position.latitude, position.longitude)
-        let maintenant = horloge.maintenant
+        // Israël ou diaspora se lit sur le territoire, et ne fait que poser la question (audit du 16/11).
+        let maintenant = horloge.maintenant, aujourdhui = horloge.aujourdhui, fuseau = horloge.fuseau.identifiant
         try await magasin.modifierReglages { reglages in
-            reglages.setLieuZmanim(lieu, ville: nil, maintenant: maintenant)
-            reglages.setInIsrael(enIsrael)
+            reglages.setLieuZmanim(lieu, ville: nil, maintenant: maintenant, aujourdhui: aujourdhui, fuseauTelephone: fuseau)
         }
         reinitialiserScene()
         await rafraichissement?.rafraichir()

@@ -246,6 +246,8 @@ struct LieuModeleTests {
         await modele.apparaitre()
         let nom = modele.lieu?.nom
         #expect(nom == "Ma position · près de Jérusalem")
-        #expect(modele.enIsrael)
+        // Le statut suit la résidence (audit du 16/11) : une reprise en Israël pose la question, sans le changer.
+        #expect(!modele.enIsrael)
+        #expect(magasin.reglages.regionProposee == true)
     }
 }

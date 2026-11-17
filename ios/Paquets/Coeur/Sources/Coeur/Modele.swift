@@ -284,8 +284,8 @@ public struct Journal: Sendable, Equatable {
     }
 
     /// `Store.dateValide` : la date si la clé est une vraie date ISO (2026-09-29) qui se réécrit à
-    /// l'identique, sinon nil. Comme `java.time`, les années hors de 0000…9999 portent leur signe
-    /// (« -0001-01-01 », « +10000-01-01 ») ; au-delà des années de JourCivil, nil.
+    /// l'identique, de 2000 à 2100, sinon nil. Comme `java.time`, les années hors de 0000…9999 portent leur
+    /// signe (« -0001-01-01 », « +10000-01-01 ») ; elles sont hors des bornes.
     public static func dateValide(_ cle: String) -> JourCivil? {
         let octets = Array(cle.utf8)
         var i = 0
@@ -305,7 +305,10 @@ public struct Journal: Sendable, Equatable {
               let mois = deuxChiffres(octets[i + 1], octets[i + 2]),
               let jour = deuxChiffres(octets[i + 4], octets[i + 5]),
               let date = JourCivil(annee: negatif ? -annee : annee, mois: mois, jour: jour),
-              date.iso.egalUnites(cle) else { return nil }
+              date.iso.egalUnites(cle),
+              // Ni avant 2000 ni après 2100, comme le web (revue du 15/11) : « 0000-01-01 » importé faisait
+              // planter l'accueil d'Android (JewishCalendar refuse l'ère avant J.-C.).
+              (2000...2100).contains(date.annee) else { return nil }
         return date
     }
 
@@ -330,6 +333,11 @@ public struct Journal: Sendable, Equatable {
     /// `JournalPlus.ecrire` : un jour vide est retiré, les autres jours restent tels quels.
     public mutating func ecrirePlus(_ jour: JournalPlus.Plus, pour date: JourCivil) {
         JournalPlus.ecrire(&plusBrut, date: date.iso, plus: jour)
+    }
+
+    /// Remplace l'objet de la préférence « journal_plus » d'un coup (l'import, qui écrit tout ensemble).
+    public mutating func setPlusBrut(_ objet: ObjetJSON) {
+        plusBrut = objet
     }
 
     /// Le texte de la préférence « journal_plus ».
@@ -361,13 +369,14 @@ public struct Journal: Sendable, Equatable {
         }
     }
 
-    /// `Store.readThemes` : chaque élément lu comme `optString`, les blancs retirés ; rien sans tableau.
-    private static func lireThemes(_ entree: ObjetJSON) -> [String] {
+    /// `Store.readThemes` : chaque élément lu comme `optString`, les blancs retirés ; rien sans tableau. Bornés
+    /// comme le web (revue du 15/11) : 20 sujets de 40 unités UTF-16 au plus.
+    static func lireThemes(_ entree: ObjetJSON) -> [String] {
         guard let elements = entree.tableau("themes") else { return [] }
         var themes: [String] = []
-        for rang in elements.indices {
+        for rang in elements.indices where themes.count < 20 {
             let theme = elements.texte(rang)
-            if !theme.estBlanc {
+            if !theme.estBlanc && theme.utf16.count <= 40 {
                 themes.append(theme)
             }
         }

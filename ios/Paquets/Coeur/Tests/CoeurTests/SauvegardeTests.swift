@@ -191,15 +191,15 @@ struct SauvegardeTests {
             let prenomLuConforme = prenomLu.egalUnites(s.firstName)
             #expect(prenomLuConforme, "\(s.nom) : firstName « \(prenomLu) »")
 
-            // L'export : celui d'Android se relit et se réécrit à l'octet ; celui d'iOS, sans exported_at
-            // ni journal_plus, est le même, aux ordres près des journées et des ensembles.
+            // L'export : celui d'Android se relit et se réécrit à l'octet ; celui d'iOS, sans exported_at, est le
+            // même, aux ordres près des journées et des ensembles. Depuis la version 2 (FDONNEES-01), Android écrit
+            // aussi journal_plus, tel qu'il est gardé : il est comparé.
             let android = try ObjetJSON(texte: s.export)
             let reecrit = android.texte(indentation: 2)
             let reecritConforme = reecrit.egalUnites(s.export)
             #expect(reecritConforme, "\(s.nom) : l'export d'Android réécrit\n\(reecrit)")
             var ios = Sauvegarde.objet(journal: journal, reglages: reglages, maintenant: 0, fuseauTelephone: s.fuseau)
             ios["exported_at"] = nil
-            ios["journal_plus"] = nil
             let texteIos = ios.texte(indentation: 2)
             let texteAndroid = SauvegardeTests.normalise(android).texte(indentation: 2)
             let exportConforme = texteIos.egalUnites(texteAndroid)
@@ -243,11 +243,13 @@ struct SauvegardeTests {
         let exporte = try SauvegardeTests.exporte(journal, reglages)
         let format = exporte.texte("format"), version = exporte.entier("version")
         #expect(format == "myhitbodedut")
-        #expect(version == 1)
+        #expect(version == 2)
         let settings = try #require(exporte.objet("settings"))
         let fichier = try ObjetJSON(texte: SauvegardeTests.android)
         let attendues = try #require(fichier.objet("settings"))
-        let cles = settings.cles.sorted(), clesAttendues = attendues.cles.sorted()
+        // La sauvegarde de la version 1 a 21 réglages ; la version 2 en ajoute 7 (FDONNEES-01, FCALENDRIER-06).
+        let cles = settings.cles.sorted(), clesAttendues = (attendues.cles + ["in_israel_manuel", "siddur_nusah",
+            "lecture_echelle", "lecture_police", "lecture_sombre", "lecture_masquee", "lecture_ecran_allume"]).sorted()
         #expect(cles == clesAttendues)
         // Ce que l'iPhone ne sait pas régler repart tel qu'il est arrivé.
         let debut = settings.entier("window_start"), rappel = settings.booleen("reminder_enabled")
@@ -354,13 +356,14 @@ struct SauvegardeTests {
                                     &journal, &reglages)
         let fond = reglages.fond
         #expect(fond == .contraste)
-        // Le site refuse une année d'avant 2000 ; Android l'accepte, et iOS avec lui.
+        // Une année d'avant 2000 : le site la refuse, et Android avec lui depuis la revue du 15/11 (« 0000-01-01 »
+        // importé faisait planter son accueil) ; iOS suit.
         let lointaine = SauvegardeTests.importe(#"{"format":"myhitbodedut","version":1,"days":{"0202-01-01":{"minutes":5}}}"#,
                                                 &journal, &reglages)
-        #expect(lointaine == 1)
+        #expect(lointaine == 0)
         let avant2000 = Journal.dateValide("1999-12-31"), pasBissextile = Journal.dateValide("2026-02-29")
         let bissextile = Journal.dateValide("2028-02-29")
-        #expect(avant2000 != nil)
+        #expect(avant2000 == nil)
         #expect(pasBissextile == nil)
         #expect(bissextile != nil)
     }
@@ -575,8 +578,10 @@ struct SauvegardeTests {
         let attendus = try #require(fichier.objet("settings"))
         let settings = try #require(exporte.objet("settings"))
         let nombre = settings.count
-        #expect(nombre == 21)
-        for cle in Sauvegarde.clesReglages {
+        #expect(nombre == 28)
+        // Les 21 réglages du fichier d'Android (version 1) repartent tels quels ; les 7 de la version 2 prennent
+        // la valeur du téléphone.
+        for cle in attendus.cles {
             let valeur = settings[cle], attendue = attendus[cle]
             #expect(valeur == attendue, "\(cle)")
         }
@@ -589,16 +594,18 @@ struct SauvegardeTests {
         let texte = Sauvegarde.exporter(journal: x, reglages: r, maintenant: SauvegardeTests.maintenant, fuseauTelephone: "UTC")
         let racine = try ObjetJSON(texte: texte)
         let cles = racine.cles
-        #expect(cles == ["format", "version", "exported_at", "days", "settings", "paused_dates", "blocked_apps", "journal_plus"])
+        // La version 2 (FDONNEES-01) : le journal du Tikoun, les favoris, les 'hizouk gardés et les marque-pages.
+        #expect(cles == ["format", "version", "exported_at", "days", "settings", "paused_dates", "blocked_apps", "journal_plus",
+                         "tikkun_journal", "favoris", "chizuk_favoris", "marques_pages"])
         let settings = try #require(racine.objet("settings"))
         let clesReglages = settings.cles, nombre = Sauvegarde.clesReglages.count
         #expect(clesReglages == Sauvegarde.clesReglages)
-        #expect(nombre == 21)
+        #expect(nombre == 28)
         // Relue puis réécrite, la sauvegarde d'iOS rend les mêmes octets : l'indentation est celle d'Android.
         let reecrit = racine.texte(indentation: 2)
         let memesOctets = reecrit.egalUnites(texte)
         #expect(memesOctets)
-        let debut = texte.commenceParUnites("{\n  \"format\": \"myhitbodedut\",\n  \"version\": 1,\n  \"exported_at\": \"2026-11-13T13:53:20.000Z\",\n")
+        let debut = texte.commenceParUnites("{\n  \"format\": \"myhitbodedut\",\n  \"version\": 2,\n  \"exported_at\": \"2026-11-13T13:53:20.000Z\",\n")
         #expect(debut, "\(texte)")
         // Les journées dans l'ordre des dates, même ajoutées dans le désordre.
         let days = try #require(racine.objet("days"))

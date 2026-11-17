@@ -751,7 +751,9 @@ public final class ReglagesModele {
     /// Israël ↔ diaspora (region_button).
     public func basculerRegion() async throws {
         let israel = reglages.inIsrael(fuseauTelephone: fuseauTelephone)
-        try await modifier(.tout) { $0.setInIsrael(!israel) }
+        let aujourdhui = horloge.aujourdhui, fuseau = fuseauTelephone
+        // Choisie à la main (FCALENDRIER-06) : une reprise de la position ne la réécrit plus.
+        try await modifier(.tout) { $0.setInIsrael(!israel, manuel: true, aujourdhui: aujourdhui, fuseauTelephone: fuseau) }
     }
 
     /// « Ne pas déranger » n'existe pas sur iOS : la ligne mène à l'aide (§ 2.2.6).
@@ -811,7 +813,8 @@ public final class ReglagesModele {
         case .halakha:
             try await modifier([]) { $0.setHalakhaAffichee(actif) }
         case .chabbat:
-            try await modifier(.tout) { $0.setShabbatMode(actif) }
+            let aujourdhui = horloge.aujourdhui
+            try await modifier(.tout) { $0.setShabbatMode(actif, aujourdhui: aujourdhui) }
         case .masquerDecompte:
             try await modifier([]) { $0.setHideCountdown(actif) }
         case .guidee:

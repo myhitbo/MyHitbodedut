@@ -135,12 +135,14 @@ struct ModeleTests {
     }
 
     @Test func uneDateValideSeReecritALIdentique() {
-        let valides = ["2026-09-29", "2024-02-29", "0000-02-29", "9999-12-31", "-0001-01-01", "+10000-01-01"]
+        // De 2000 à 2100 depuis la revue du 15/11 d'Android (« 0000-01-01 » importé faisait planter son accueil).
+        let valides = ["2026-09-29", "2024-02-29", "2000-01-01", "2100-12-31"]
         for cle in valides {
             let iso = Journal.dateValide(cle)?.iso
             #expect(iso == cle, "\(cle)")
         }
         let refusees = ["2026-9-29", "2026-02-30", "2025-02-29", "+2026-09-29", "10000-01-01", "-0000-01-01", " 2026-09-29",
+                        "0000-02-29", "9999-12-31", "-0001-01-01", "+10000-01-01", "1999-12-31", "2101-01-01",
                         "2026-09-29 ", "2026-09-29T00:00", "", "2026/09/29", "\u{FF12}026-09-29"]
         for cle in refusees {
             let date = Journal.dateValide(cle)

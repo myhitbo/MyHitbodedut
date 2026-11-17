@@ -118,8 +118,10 @@ struct ZmanimModeleTests {
         try await modele.choisirLieu(jerusalem, ville: nil)
         let nom = modele.lieu?.nom
         #expect(nom == "Jérusalem")
-        // Une position à Jérusalem : son fuseau dit Israël.
-        #expect(modele.enIsrael)
+        // Une position à Jérusalem, après un premier lieu : le statut suit la résidence et ne change pas ; le lieu
+        // pose la question (audit du 16/11, TerritoireIsrael.decisionRegion).
+        #expect(!modele.enIsrael)
+        #expect(magasin.reglages.regionProposee == true)
         let fuseau = try #require(Fuseau("Europe/Paris"))
         let midi = fuseau.millis(DateHeure(modele.jour, heure: 12))
         #expect(magasin.reglages.lieuDepuis == midi)

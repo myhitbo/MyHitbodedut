@@ -76,9 +76,10 @@ struct ReglagesModeleTests {
         #expect(m.police == Libelle("police_serif"))
         #expect(m.ouverture == Libelle("nav_today"))
         #expect(m.sourceHalakha == Libelle("halakha_source_yalkut"))
-        // Sans usage choisi : « Selon le noussa'h · » et celui d'Edot haMizra'h, le noussa'h par défaut.
+        // Sans usage choisi : « Selon le noussa'h · » et celui d'Edot haMizra'h, le noussa'h par défaut : le Yalkut
+        // Yosef depuis l'audit du 16/11 d'Android (la nuit du 15 incluse ; le Choul'han Aroukh avant).
         #expect(m.usageLevana == Libelle("zmanim_lieu_detail", .libelle(Libelle("levana_usage_auto")),
-                                         .libelle(Libelle("levana_usage_sept_quinze"))))
+                                         .libelle(Libelle("levana_usage_sept_nuit_quinze"))))
         #expect(m.prenom == .libelle(Libelle("settings_name_empty")))
         #expect(m.texteHeure(.debut) == .brut("06:00"))
         #expect(m.texteHeure(.fin) == .brut("11:00"))
@@ -243,7 +244,8 @@ struct ReglagesModeleTests {
         // Sans usage choisi, « Selon le noussa'h » est coché ; le noussa'h ashkénaze donne la Michna Beroura.
         let usage = m.choix(.usageLevana)
         #expect(usage.options.map { $0.libelle.cle } == ["levana_usage_auto", "levana_usage_trois_mi_mois",
-                                                         "levana_usage_sept_mi_mois", "levana_usage_sept_quinze"])
+                                                         "levana_usage_sept_mi_mois", "levana_usage_sept_quinze",
+                                                         "levana_usage_sept_nuit_quinze"])
         #expect(usage.options.filter { $0.cochee }.map { $0.rang } == [0])
         #expect(m.usageLevana == Libelle("zmanim_lieu_detail", .libelle(Libelle("levana_usage_auto")),
                                          .libelle(Libelle("levana_usage_trois_mi_mois"))))
@@ -551,7 +553,7 @@ struct ReglagesModeleTests {
         // Les clés d'Android, dans son ordre, et exported_at à l'heure de l'horloge.
         let objet = try ObjetJSON(texte: String(decoding: export.donnees, as: UTF8.self))
         #expect(objet.cles == ["format", "version", "exported_at", "days", "settings", "paused_dates", "blocked_apps",
-                               "journal_plus"])
+                               "journal_plus", "tikkun_journal", "favoris", "chizuk_favoris", "marques_pages"])
         #expect(objet.texte("exported_at") == "2026-11-16T09:00:00.000Z")
         let settings = try #require(objet.objet("settings"))
         #expect(settings.cles == Sauvegarde.clesReglages)
@@ -791,10 +793,10 @@ struct ReglagesModeleTests {
             let reglagesConformes = enregistre.reglages.brut == attendus
             #expect(reglagesConformes, "\(s.nom) : les réglages\n\(enregistre.reglages.texte())\n\(attendus.texte())")
 
-            // L'export de l'écran, sans exported_at ni journal_plus (que l'export d'Android n'a pas).
+            // L'export de l'écran, sans exported_at ; journal_plus compris, que l'export d'Android a depuis la
+            // version 2 (FDONNEES-01).
             var ios = try ObjetJSON(texte: String(decoding: m.preparerExport().donnees, as: UTF8.self))
             ios["exported_at"] = nil
-            ios["journal_plus"] = nil
             let texteIos = ios.texte(indentation: 2)
             let android = try ObjetJSON(texte: s.export)
             let texteAndroid = ReglagesModeleTests.normalise(android).texte(indentation: 2)

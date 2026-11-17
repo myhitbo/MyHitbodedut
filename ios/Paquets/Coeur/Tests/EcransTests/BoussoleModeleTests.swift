@@ -591,9 +591,11 @@ struct BoussoleModeleTests {
         #expect(lieu.latitude == jerusalem.latitude)
         #expect(lieu.longitude == jerusalem.longitude)
         #expect(lieu.altitude == 0)
-        // Le fuseau reste celui du téléphone ; Israël se lit sur le territoire.
+        // Le fuseau reste celui du téléphone ; Israël se lit sur le territoire, et ne fait que poser la question
+        // (audit du 16/11 : le statut suit la résidence).
         #expect(lieu.fuseau == b.horloge.fuseau.identifiant)
-        #expect(b.magasin.reglages.inIsrael(fuseauTelephone: "Europe/Paris"))
+        #expect(!b.magasin.reglages.inIsrael(fuseauTelephone: "Europe/Paris"))
+        #expect(b.magasin.reglages.regionProposee == true)
         #expect(b.magasin.reglages.lieuVille == -1)
         #expect(b.magasin.reglages.lieuDepuis == b.horloge.maintenant)
         #expect(modele.message == nil)

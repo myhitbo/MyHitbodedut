@@ -71,10 +71,11 @@ public final class ZmanimModele {
     /// de ce jour : pour les tests et les aperçus.
     public convenience init(lieu: Zmanim.Lieu?, jour: JourCivil, enIsrael: Bool, allumage: Int = Zmanim.allumageDefaut) {
         var reglages = Reglages()
+        let fuseauTelephone = lieu?.fuseau ?? "UTC"
         if let lieu {
-            reglages.setLieuZmanim(lieu, ville: nil, maintenant: 0)
+            reglages.setLieuZmanim(lieu, ville: nil, maintenant: 0, aujourdhui: jour, fuseauTelephone: fuseauTelephone)
         }
-        reglages.setInIsrael(enIsrael)
+        reglages.setInIsrael(enIsrael, aujourdhui: jour, fuseauTelephone: fuseauTelephone)
         reglages.setAllumage(allumage)
         let fuseau = lieu.flatMap { Fuseau($0.fuseau) } ?? .utc
         self.init(magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)),
@@ -306,8 +307,10 @@ public final class ZmanimModele {
     /// Le lieu choisi, une ville ou une position (ChoixLieu.kt) : il règle aussi Israël ou diaspora, et retient
     /// l'instant du choix.
     public func choisirLieu(_ lieu: Zmanim.Lieu, ville: Ville?) async throws {
-        let maintenant = horloge.maintenant
-        try await magasin.modifierReglages { $0.setLieuZmanim(lieu, ville: ville, maintenant: maintenant) }
+        let maintenant = horloge.maintenant, aujourdhui = horloge.aujourdhui, fuseau = horloge.fuseau.identifiant
+        try await magasin.modifierReglages {
+            $0.setLieuZmanim(lieu, ville: ville, maintenant: maintenant, aujourdhui: aujourdhui, fuseauTelephone: fuseau)
+        }
     }
 
     // MARK: Les règles

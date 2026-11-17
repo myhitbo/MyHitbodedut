@@ -298,9 +298,10 @@ struct StoreTests {
             case "togglePausedDate":
                 reglages.togglePausedDate(o.date ?? "")
             case "setShabbatMode":
-                reglages.setShabbatMode(o.valeur ?? false)
+                reglages.setShabbatMode(o.valeur ?? false, aujourdhui: Store.today(millis: millis, fuseau: fuseau))
             case "setInIsrael":
-                reglages.setInIsrael(o.valeur ?? false)
+                reglages.setInIsrael(o.valeur ?? false, aujourdhui: Store.today(millis: millis, fuseau: fuseau),
+                                     fuseauTelephone: fuseau.identifiant)
             case "setWindow":
                 reglages.setWindow(startMinutes: o.debut ?? 0, endMinutes: o.fin ?? 0)
             case "setTargetMinutes":
@@ -357,7 +358,9 @@ struct StoreTests {
                 if let id = o.ville {
                     ville = try villeDe(id: id, pays: o.pays ?? "", lieu: lieuZmanim)
                 }
-                reglages.setLieuZmanim(lieuZmanim, ville: ville, maintenant: millis)
+                reglages.setLieuZmanim(lieuZmanim, ville: ville, maintenant: millis,
+                                       aujourdhui: Store.today(millis: millis, fuseau: fuseau),
+                                       fuseauTelephone: fuseau.identifiant)
             default:
                 Issue.record("\(lieu) : opération inconnue")
             }

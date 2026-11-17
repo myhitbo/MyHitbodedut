@@ -9,7 +9,8 @@ import Foundation
 /// mètres d'une frontière ; le réglage « Israël / diaspora » reste là pour ça. La question
 /// halakhique des limites de la Terre d'Israël n'est pas tranchée ici. La bande de Gaza est dans le
 /// contour, qui suit la côte depuis Rafia'h : choix géographique, sans prise de position sur son
-/// statut pour le deuxième jour de fête.
+/// statut pour le deuxième jour de fête. Eilat et la Arava : un seul jour de fête (Kitsour Yalkut Yosef,
+/// Chevi'it 1:5 ; audit du 16/11) ; Taba reste hors du contour.
 ///
 /// Le tracé de rayon n'est que de l'arithmétique : `geo.json` (VecteursGeo.kt) le vérifie à
 /// l'identique sur une grille autour d'Israël et sur le bord.
@@ -38,6 +39,23 @@ public enum TerritoireIsrael {
         [29.80, 34.76], [30.20, 34.60], [30.60, 34.50], [30.95, 34.37],
         [31.22, 34.26],
     ]
+
+    /// Ce que fait un nouveau lieu au statut : `region` à enregistrer, `proposition` à poser en question ; nil, rien.
+    public struct Decision: Hashable, Sendable {
+        public let region: Bool?
+        public let proposition: Bool?
+    }
+
+    /// Le statut Israël ou diaspora pour le Yom tov chéni (audit du 16/11) dépend de la résidence, pas de
+    /// l'endroit où l'on est (Choul'han Aroukh 496:3 ; Michna Beroura 496:13 ; Kitsour Yalkut Yosef 496). Un lieu
+    /// ne réécrit donc jamais le statut : quand il dit l'autre région (`impliquee`), l'application pose la
+    /// question. Seule exception, le tout premier lieu (`premierLieu`) d'un statut jamais choisi (`declare`) :
+    /// il remplace la déduction faite du fuseau du téléphone.
+    public static func decisionRegion(impliquee: Bool, actuelle: Bool, premierLieu: Bool, declare: Bool) -> Decision {
+        if premierLieu && !declare { return Decision(region: impliquee, proposition: nil) }
+        if impliquee == actuelle { return Decision(region: nil, proposition: nil) }
+        return Decision(region: nil, proposition: impliquee)
+    }
 
     /// Le point est-il dans le contour (tracé de rayon) ?
     public static func contient(_ latitude: Double, _ longitude: Double) -> Bool {

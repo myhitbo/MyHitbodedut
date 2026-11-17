@@ -49,10 +49,11 @@ struct ReglagesTests {
         var r = try Reglages(texte: "{\"x\":{\"a\":[1,2.5,null]},\"window_start\":400,\"y\":null,\"vol_numero\":\"LY315\"}")
         r.setWindow(startMinutes: 300, endMinutes: 800)
         r.setMusicTrackId(nil)
-        r.setShabbatMode(false)
+        // Le changement est daté (FDONNEES-05) : l'historique suit la valeur.
+        r.setShabbatMode(false, aujourdhui: JourCivil.du("2026-11-05"))
         let texte = r.texte()
         let attendu = "{\"x\":{\"a\":[1,2.5,null]},\"window_start\":300,\"y\":null,\"vol_numero\":\"LY315\","
-            + "\"window_end\":800,\"pause_shabbat\":false}"
+            + "\"window_end\":800,\"pause_shabbat\":false,\"pause_shabbat_histoire\":\"2000-01-01=1,2026-11-05=0\"}"
         #expect(texte == attendu)
         let relu = try Reglages(texte: texte)
         #expect(relu == r)
@@ -290,8 +291,9 @@ struct ReglagesTests {
         case "clearSnooze": r.clearSnooze()
         case "setTargetMinutes": r.setTargetMinutes(a.entier(0))
         case "setDailyGoal": r.setDailyGoal(a.entier(0))
-        case "setShabbatMode": r.setShabbatMode(a.booleen(0))
-        case "setInIsrael": r.setInIsrael(a.booleen(0))
+        // L'horloge de l'oracle : le 1er janvier 2026, en UTC (bouchons/Horloge.kt).
+        case "setShabbatMode": r.setShabbatMode(a.booleen(0), aujourdhui: JourCivil.du("2026-01-01"))
+        case "setInIsrael": r.setInIsrael(a.booleen(0), aujourdhui: JourCivil.du("2026-01-01"), fuseauTelephone: "UTC")
         case "figeInIsrael:UTC": return b(r.figeInIsrael(fuseauTelephone: "UTC"))
         case "togglePausedDate": r.togglePausedDate(a.texte(0))
         case "setBlockedApps": r.setBlockedApps(chaines(a, 0))
@@ -346,7 +348,8 @@ struct ReglagesTests {
             } else {
                 ville = try villeDe(id: a.long(5), pays: a.texte(6), lieu)
             }
-            r.setLieuZmanim(lieu, ville: ville, maintenant: a.long(7))
+            r.setLieuZmanim(lieu, ville: ville, maintenant: a.long(7), aujourdhui: JourCivil.du("2026-01-01"),
+                            fuseauTelephone: "UTC")
         case "setHilloulotAffichees": r.setHilloulotAffichees(a.booleen(0))
         case "setHalakhaAffichee": r.setHalakhaAffichee(a.booleen(0))
         case "setSourceHalakha":
