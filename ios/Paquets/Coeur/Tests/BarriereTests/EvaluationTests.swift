@@ -50,7 +50,9 @@ private func veille() -> Etat {
         cas.append(("autorisation retirée, mode allumé", base, matin, Constat(autorise: false), .autorisationRetiree))
         var eteint = base
         eteint.enabled = false
-        cas.append(("autorisation manquante, mode éteint", eteint, matin, Constat(autorise: false), .missingPermissions))
+        // Le mode éteint passe avant les accès depuis le 13/11 (GateRule, FACCUEIL-06) : sans autorisation, éteint,
+        // c'est « désactivé » ; MISSING_PERMISSIONS ne vient plus que de GateRule (iOS : allumé, l'accès est retiré).
+        cas.append(("autorisation manquante, mode éteint", eteint, matin, Constat(autorise: false), .disabled))
         cas.append(("mode éteint", eteint, matin, Constat(), .disabled))
         var sansJeton = base
         sansJeton.nombreDeJetons = 0
@@ -59,6 +61,17 @@ private func veille() -> Etat {
         cas.append(("surveillance absente", base, matin, Constat(surveillanceInscrite: false), .surveillanceAbsente))
         cas.append(("surveillance muette", base, matin,
                     Constat(dernierReveil: matin.millis - Evaluation.silenceMaximum - 1), .surveillanceMuette))
+        // Une hitbodedout en cours (13/11, TFRUX-02), même la journée validée et hors de la fenêtre.
+        var enSeance = base
+        enSeance.journee = Etat.JourneeValidee(jours: [lundi])
+        enSeance.seance = Etat.Seance(debut: matin.millis - 60_000, fin: matin.millis + 60_000, minutes: 2)
+        cas.append(("séance en cours", enSeance, a(lundi, 7, 0), Constat(magasinActif: false), .sessionRunning))
+        var ouverte = base
+        ouverte.seance = Etat.Seance(debut: matin.millis - 60_000, fin: 0, minutes: 0)
+        cas.append(("séance sans durée", ouverte, a(lundi, 12, 0), Constat(), .sessionRunning))
+        var finie = base
+        finie.seance = Etat.Seance(debut: matin.millis - 120_000, fin: matin.millis, minutes: 2)
+        cas.append(("séance finie", finie, matin, Constat(), .armed))
         var faite = base
         faite.journee = Etat.JourneeValidee(jours: [lundi])
         cas.append(("journée validée", faite, matin, Constat(), .alreadyDone))
@@ -77,16 +90,18 @@ private func veille() -> Etat {
             #expect(etat == c.attendu, "\(c.nom)")
             vus.insert(etat)
         }
-        let tous = Set(GateState.allCases)
+        // MISSING_PERMISSIONS et SERVICE_STOPPED ne viennent que de GateRule : l'iOS dit l'accès retiré, et n'a pas de
+        // service (les pannes de la surveillance en tiennent lieu).
+        let tous = Set(GateState.allCases).subtracting([.missingPermissions, .serviceStopped])
         #expect(vus == tous)
         let nombre = GateState.allCases.count
-        #expect(nombre == 13)
+        #expect(nombre == 15)
         var android: [String] = []
         for etat in GateState.allCases where etat.android {
             android.append(etat.rawValue)
         }
-        let attendu = ["MISSING_PERMISSIONS", "DISABLED", "NO_APPS_SELECTED", "ALREADY_DONE", "EXEMPT_DAY", "SNOOZED",
-                       "OUTSIDE_WINDOW", "ARMED"]
+        let attendu = ["DISABLED", "MISSING_PERMISSIONS", "NO_APPS_SELECTED", "SERVICE_STOPPED", "SESSION_RUNNING",
+                       "ALREADY_DONE", "EXEMPT_DAY", "SNOOZED", "OUTSIDE_WINDOW", "ARMED"]
         #expect(android == attendu)
     }
 
@@ -105,17 +120,21 @@ private func veille() -> Etat {
         e.enabled = true
         vus.append(Evaluation.evaluate(e, maintenant: midi))
         e.nombreDeJetons = 2
+        e.seance = Etat.Seance(debut: midi.millis - 60_000, fin: 0, minutes: 0)
+        vus.append(Evaluation.evaluate(e, maintenant: midi))
+        e.seance = nil
         vus.append(Evaluation.evaluate(e, maintenant: midi))
         e.journee = Etat.JourneeValidee()
         vus.append(Evaluation.evaluate(e, maintenant: midi))
         e.joursEnPause = []
         vus.append(Evaluation.evaluate(e, maintenant: midi))
-        e.snoozedUntil = 0
-        vus.append(Evaluation.evaluate(e, maintenant: midi))
         e.windowEnd = 13 * 60
         vus.append(Evaluation.evaluate(e, maintenant: midi))
-        let attendu: [GateState] = [.missingPermissions, .disabled, .noAppsSelected, .alreadyDone, .exemptDay, .snoozed,
-                                    .outsideWindow, .armed]
+        e.snoozedUntil = 0
+        vus.append(Evaluation.evaluate(e, maintenant: midi))
+        // GateRule (13/11) : le mode éteint avant les accès, la séance avant la journée, hors fenêtre avant le report.
+        let attendu: [GateState] = [.disabled, .disabled, .noAppsSelected, .sessionRunning, .alreadyDone, .exemptDay,
+                                    .outsideWindow, .snoozed, .armed]
         #expect(vus == attendu)
     }
 

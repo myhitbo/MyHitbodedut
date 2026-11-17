@@ -59,6 +59,39 @@ private struct LangueBarriere {
             let etat: String
             let titre: String
             let couleur: String
+            let pastille: String
+        }
+        /// [active, accès, applications, service, séance, faite, exempte, reportée, dans la fenêtre, état, geste].
+        struct Regle: Decodable {
+            let faits: GateFaits
+            let etat: String
+            let geste: String
+
+            init(from decoder: any Decoder) throws {
+                var c = try decoder.unkeyedContainer()
+                var b: [Bool] = []
+                for _ in 0..<2 { b.append(try c.decode(Bool.self)) }
+                let applications = try c.decode(Int.self)
+                for _ in 0..<6 { b.append(try c.decode(Bool.self)) }
+                faits = GateFaits(active: b[0], accesAccordes: b[1], applications: applications, serviceVivant: b[2],
+                                  seanceEnCours: b[3], faite: b[4], exempte: b[5], reportee: b[6], dansLaFenetre: b[7])
+                etat = try c.decode(String.self)
+                geste = try c.decode(String.self)
+            }
+        }
+        /// [minutes, début, fin, dans la fenêtre, fin d'une fenêtre de nuit].
+        struct Fenetre: Decodable {
+            let minutes, debut, fin: Int
+            let dedans, finDeNuit: Bool
+
+            init(from decoder: any Decoder) throws {
+                var c = try decoder.unkeyedContainer()
+                minutes = try c.decode(Int.self)
+                debut = try c.decode(Int.self)
+                fin = try c.decode(Int.self)
+                dedans = try c.decode(Bool.self)
+                finDeNuit = try c.decode(Bool.self)
+            }
         }
         struct Detail: Decodable {
             let langue: String
@@ -68,17 +101,20 @@ private struct LangueBarriere {
             let textes: [String]
         }
         let etats: [Ligne]
+        let regle: [Regle]
+        let fenetre: [Fenetre]
+        let service: [[Bool]]
         let details: [Detail]
     }
 
     // MARK: GateStatus : la carte d'état
 
-    /// Tout barriere.json : le titre et la couleur des huit états d'Android, puis le détail résolu sur le
-    /// catalogue exporté, langue par langue.
+    /// Tout barriere.json : le titre, la couleur et la pastille des dix états d'Android (huit avant le 13/11 :
+    /// SERVICE_STOPPED et SESSION_RUNNING), puis le détail résolu sur le catalogue exporté, langue par langue.
     @Test func rejoueLesVecteursDeGateStatus() throws {
         let v = try JSONDecoder().decode(Vecteurs.self, from: Depot.donnees("ios/Paquets/Coeur/Tests/Vecteurs/barriere.json"))
         let nombreDEtats = v.etats.count
-        #expect(nombreDEtats == 8)
+        #expect(nombreDEtats == 10)
         var etats: [GateState] = []
         for ligne in v.etats {
             let etat = try #require(GateState(rawValue: ligne.etat), "\(ligne.etat)")
@@ -87,6 +123,8 @@ private struct LangueBarriere {
             #expect(titre == ligne.titre, "\(ligne.etat)")
             let couleur = GateStatus.colorOf(etat)
             #expect(couleur == ligne.couleur, "\(ligne.etat)")
+            let pastille = GateStatus.pastilleDe(etat).cle
+            #expect(pastille == ligne.pastille, "\(ligne.etat)")
             #expect(etat.android, "\(ligne.etat)")
         }
 
@@ -110,6 +148,34 @@ private struct LangueBarriere {
         }
     }
 
+    /// GateRule (13/11, FPRODUIT-01) : l'état et le geste de la pastille pour chaque combinaison de faits, la
+    /// fenêtre (début compris, fin exclue, fenêtres de nuit) et le service.
+    @Test func rejoueLesVecteursDeGateRule() throws {
+        let v = try JSONDecoder().decode(Vecteurs.self, from: Depot.donnees("ios/Paquets/Coeur/Tests/Vecteurs/barriere.json"))
+        #expect(v.regle.count == 512)
+        for r in v.regle {
+            let etat = GateRule.etat(r.faits).rawValue
+            #expect(etat == r.etat, "\(r.faits)")
+            let geste = GateRule.geste(r.faits).rawValue
+            #expect(geste == r.geste, "\(r.faits)")
+        }
+        #expect(v.fenetre.count >= 70)
+        for f in v.fenetre {
+            let dedans = GateRule.dansLaFenetre(minutes: f.minutes, debut: f.debut, fin: f.fin)
+            #expect(dedans == f.dedans, "\(f.minutes) dans \(f.debut)–\(f.fin)")
+            let finDeNuit = GateRule.finDeFenetreDeNuit(minutes: f.minutes, debut: f.debut, fin: f.fin)
+            #expect(finDeNuit == f.finDeNuit, "\(f.minutes) dans \(f.debut)–\(f.fin)")
+            // La sous-règle de Store.kt dit la même chose.
+            let store = Evaluation.inWindow(start: f.debut, end: f.fin, minutes: f.minutes)
+            #expect(store == f.dedans)
+        }
+        #expect(v.service.count == 8)
+        for s in v.service {
+            let doit = GateRule.doitTourner(avecBarriere: s[0], active: s[1], accesAccordes: s[2])
+            #expect(doit == s[3], "\(s)")
+        }
+    }
+
     /// Sur iOS, « N applications » compte les jetons de la sélection (une catégorie vaut un).
     @Test func leDetailDeLInstantaneCompteLesJetons() throws {
         var etat = Etat()
@@ -120,7 +186,8 @@ private struct LangueBarriere {
         let veille = langue.texte(GateStatus.detailOf(.armed, etat: etat))
         #expect(veille == "51 applications sont bloquées jusqu’à 02:00 ou jusqu’à votre hitbodedout.")
         let dehors = langue.texte(GateStatus.detailOf(.outsideWindow, etat: etat))
-        #expect(dehors == "Le mode agit entre 21:00 et 02:00. En dehors, rien n’est retenu.")
+        // La phrase d'Android depuis main (strings.xml, gate_window_detail).
+        #expect(dehors == "Il agit entre 21:00 et 02:00. En dehors, rien n’est bloqué.")
     }
 
     /// Les treize états ont chacun leur titre et leur détail ; ceux d'iOS sont dans ios.xcstrings, dans les
@@ -141,9 +208,9 @@ private struct LangueBarriere {
             cles.append((detail, etat.android))
         }
         let nombreDeTitres = titres.count
-        #expect(nombreDeTitres == 13)
+        #expect(nombreDeTitres == 15)
         let nombreDeDetails = details.count
-        #expect(nombreDeDetails == 13)
+        #expect(nombreDeDetails == 15)
         cles.append(("bouclier_autre_reponse", false))
         cles.append(("bouclier_notification_commencer", false))
         for code in Catalogue.langues {
@@ -270,7 +337,8 @@ private struct LangueBarriere {
         #expect(etat.bouclier.serie == "Série en cours\u{00A0}: 2 jours")
         #expect(etat.bouclier.commencer == "Commencer maintenant, 20 min")
         #expect(etat.bouclier.plusTard == "Plus tard (5 min)")
-        #expect(etat.bouclier.dejaFaite == "Je l’ai déjà faite")
+        // La réponse d'Android depuis main (blocker_already_done).
+        #expect(etat.bouclier.dejaFaite == "Je l’ai faite sans le téléphone")
         #expect(etat.bouclier.autreReponse == "Autre réponse")
         #expect(etat.bouclier.apercu == "APERÇU, AUCUN EFFET")
         #expect(etat.bouclier.notificationCommencer == "Touchez pour commencer votre hitbodedout")

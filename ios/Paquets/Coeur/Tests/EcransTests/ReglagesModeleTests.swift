@@ -450,13 +450,14 @@ struct ReglagesModeleTests {
         let banc = try fabriquer(constat: Constat(autorise: false), jetons: 0)
         let m = banc.modele
         await m.rafraichir()
-        // Sans Temps d'écran, le titre cède la place au bouton qui mène aux autorisations.
-        let manque = try #require(m.carteBarriere)
-        #expect(manque.etat == .missingPermissions)
-        #expect(manque.titreVisible == false)
-        #expect(manque.boutonAutorisations)
-        #expect(manque.titre == GateStatus.titleOf(.missingPermissions))
-        #expect(manque.couleurTitre == "warning")
+        // Sans Temps d'écran et le mode éteint : « désactivé » d'abord (GateRule du 13/11, FACCUEIL-06 : on ne
+        // réclame pas un accès pour une fonction que personne n'a allumée ; l'allumer demande l'accès).
+        let eteinte = try #require(m.carteBarriere)
+        #expect(eteinte.etat == .disabled)
+        #expect(eteinte.titreVisible)
+        #expect(eteinte.boutonAutorisations == false)
+        #expect(eteinte.titre == GateStatus.titleOf(.disabled))
+        #expect(eteinte.couleurTitre == "muted")
         m.montrerAutorisations()
         #expect(m.cibleDefilement == .autorisations)
         m.defilementFait()

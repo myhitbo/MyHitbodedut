@@ -158,6 +158,8 @@ public enum GateStatus {
         case .missingPermissions: Libelle("gate_permissions_title")
         case .disabled: Libelle("gate_disabled_title")
         case .noAppsSelected: Libelle("gate_no_apps_title")
+        case .serviceStopped: Libelle("gate_stopped_title")
+        case .sessionRunning: Libelle("blocker_session_title")
         case .alreadyDone: Libelle("gate_done_title")
         case .exemptDay: Libelle("gate_exempt_title")
         case .snoozed: Libelle("gate_snoozed_title")
@@ -181,6 +183,8 @@ public enum GateStatus {
         case .missingPermissions: Libelle("gate_permissions_detail")
         case .disabled: Libelle("gate_disabled_detail")
         case .noAppsSelected: Libelle("gate_no_apps_detail")
+        case .serviceStopped: Libelle("gate_stopped_detail")
+        case .sessionRunning: Libelle("gate_session_detail")
         case .alreadyDone: Libelle("gate_done_detail")
         case .exemptDay: Libelle("gate_exempt_detail")
         case .snoozed: Libelle("gate_snoozed_detail")
@@ -204,10 +208,27 @@ public enum GateStatus {
     /// corrige d'elle-même.
     public static func colorOf(_ state: GateState) -> String {
         switch state {
-        case .armed, .alreadyDone: "brand"
-        case .missingPermissions, .noAppsSelected, .autorisationRetiree, .selectionARefaire, .surveillanceAbsente,
-             .surveillanceMuette: "warning"
+        case .armed, .sessionRunning, .alreadyDone: "brand"
+        case .missingPermissions, .noAppsSelected, .serviceStopped, .autorisationRetiree, .selectionARefaire,
+             .surveillanceAbsente, .surveillanceMuette: "warning"
         case .disabled, .exemptDay, .snoozed, .outsideWindow, .bouclierDesaccorde: "muted"
+        }
+    }
+
+    /// Le mot de la pastille « Avec Hachem » de l'accueil (13/11, FPRODUIT-02) : l'état réel, en court. Les
+    /// titres de la carte sont repris quand ils tiennent sur une puce. Les pannes d'iOS demandent un réglage
+    /// (« À régler ») ; le bouclier désaccordé, que l'app corrige d'elle-même, se dit comme la veille.
+    public static func pastilleDe(_ state: GateState) -> Libelle {
+        switch state {
+        case .armed, .bouclierDesaccorde: Libelle("start_focus_on")
+        case .disabled: Libelle("start_focus_off")
+        case .missingPermissions, .noAppsSelected, .autorisationRetiree, .selectionARefaire: Libelle("start_focus_setup")
+        case .serviceStopped, .surveillanceAbsente, .surveillanceMuette: Libelle("start_focus_stopped")
+        case .sessionRunning: Libelle("blocker_session_title")
+        case .alreadyDone: Libelle("gate_done_title")
+        case .exemptDay: Libelle("gate_exempt_title")
+        case .snoozed: Libelle("gate_snoozed_title")
+        case .outsideWindow: Libelle("gate_window_title")
         }
     }
 }
