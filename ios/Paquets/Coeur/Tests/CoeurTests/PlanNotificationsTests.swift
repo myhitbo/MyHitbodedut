@@ -347,8 +347,10 @@ struct PlanNotificationsTests {
         Store.beginSession(reglages: &r, minutes: 90, millis: maintenant - 60_000)
         var vol: [VolRappels.Rappel] = []
         for (k, type) in VolRappels.Genre.allCases.enumerated() {
+            // Le Chema (audit du 16/11) : la suite de Cha'harit et le texte de CHEMA_FIN, l'autre avis absent (« — »).
             vol.append(VolRappels.Rappel(type: type, instant: maintenant + Int64(k + 1) * 3_600_000, priere: "minha",
-                                         limite: maintenant + 9_000_000, omer: 12))
+                                         limite: maintenant + 9_000_000, omer: 12, chema: maintenant + 8_000_000,
+                                         chemaCle: k % 2 == 0 ? "szks_mga" : "szks_gra"))
         }
         vol.append(VolRappels.Rappel(type: .priere, instant: maintenant + 7 * 3_600_000, priere: nil))
         let plan = Self.plan(r, Journal(), maintenant, Self.paris, vol: vol)
@@ -360,7 +362,9 @@ struct PlanNotificationsTests {
             #expect(o == "levana:birkat_halevana")
         }
         let vols = ouverts.filter { $0.hasPrefix("vol:") }
-        #expect(vols == ["vol:tefilat_haderekh", "vol:minha", "vol:minha", "vol:sefirat_haomer", "vol:arvit"])
+        // HAGOMEL ouvre « hagomel », CHEMA_FIN sa prière (audit du 16/11).
+        #expect(vols == ["vol:tefilat_haderekh", "vol:minha", "vol:minha", "vol:sefirat_haomer", "vol:hagomel", "vol:minha",
+                         "vol:arvit"])
         let autres = ouverts.filter { !$0.hasPrefix("levana:") && !$0.hasPrefix("vol:") && !$0.hasSuffix(":-") }
         let aucunAutre = autres.isEmpty
         #expect(aucunAutre, "\(autres)")

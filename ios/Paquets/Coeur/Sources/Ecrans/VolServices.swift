@@ -94,8 +94,9 @@ enum VolRequetes {
     }
 
     /// La position en direct par le relais (`SuiviVol.Relais.position`) : seulement l'indicatif et la position
-    /// estimée partent. Un code de 200 à 499 se lit (`SuiviVol.lire`, à l'heure de la réponse), un autre est une
-    /// erreur du serveur, une connexion absente « hors ligne ».
+    /// estimée partent. Un code sous 500 se lit (`SuiviVol.lire`, à l'heure de la réponse) ; en 5xx aussi le corps
+    /// se lit (revue du 15/11) : le relais y dit « opensky 429 » quand le quota du jour est épuisé, une erreur
+    /// nommée l'emporte alors sur « erreur 502 ». Une connexion absente : « hors ligne ».
     static func position(relais: String, indicatif: String, estime: Vol.Point, reseau: any VolReseau,
                          horloge: any Horloge) async -> SuiviVol.Resultat {
         guard case .relais(let adresseRelais) = SuiviVol.fournisseur(relais) else {
@@ -103,10 +104,10 @@ enum VolRequetes {
         }
         do {
             let reponse = try await reseau.lire(SuiviVol.adresse(adresseRelais, indicatif, estime))
-            guard reponse.code >= 200 && reponse.code <= 499 else {
-                return .erreur(raison: SuiviVol.Raison.serveur(reponse.code))
-            }
-            return SuiviVol.lire(reponse.corps, horloge.maintenant)
+            let r = SuiviVol.lire(reponse.corps, horloge.maintenant)
+            if reponse.code < 500 { return r }
+            if case .erreur(let raison) = r, raison != SuiviVol.Raison.illisible { return r }
+            return .erreur(raison: SuiviVol.Raison.serveur(reponse.code))
         } catch {
             return .erreur(raison: SuiviVol.Raison.horsLigne)
         }
@@ -243,7 +244,7 @@ public enum VolNotifications {
             var montres = 0
             for (rang, r) in rappels.enumerated()
             where r.instant > vu && r.instant <= declenchement + groupement && r.instant > declenchement - tolerance {
-                res.append(notification(r, rang: rang, a: declenchement, heure: heure))
+                res.append(notification(r, rang: rang, a: declenchement, nusah: reglages.siddurNusah, heure: heure))
                 dernierVu = max(dernierVu, r.instant)
                 montres += 1
             }
@@ -255,7 +256,7 @@ public enum VolNotifications {
     }
 
     /// Le titre et le texte d'un rappel (VolAlerte.textes).
-    static func notification(_ r: VolRappels.Rappel, rang: Int, a instant: Int64,
+    static func notification(_ r: VolRappels.Rappel, rang: Int, a instant: Int64, nusah: Nusah,
                              heure: (Int64) -> String) -> VolNotification {
         let nom = VolMiseEnPage.nomPriere(r.priere)
         let texte: Libelle
@@ -272,14 +273,28 @@ public enum VolNotifications {
             } else {
                 texte = Libelle("vol_rappel_priere_sans_limite", .libelle(nom))
             }
+            // Cha'harit : le Chema d'abord (audit du 16/11).
+            if r.chema != nil { suite = texteChema(r, heure) }
         case .priereFin:
             texte = Libelle("vol_rappel_fin_texte", .texte(heure(r.limite ?? r.instant)))
         case .omer:
             texte = Libelle("vol_rappel_omer_texte", .texte(String(r.omer)))
+        case .hagomel:
+            // Audit du 16/11 : obligation en Edot (Kitsour Yalkut Yosef 219:20) ; selon l'usage ailleurs.
+            texte = Libelle(nusah == .edot ? "vol_rappel_gomel_texte_edot" : "vol_rappel_gomel_texte")
+        case .chemaFin:
+            texte = texteChema(r, heure)
         }
         return VolNotification(identifiant: prefixe + String(rang) + "-" + r.type.rawValue + "-" + String(r.instant),
                                instant: instant, titre: VolMiseEnPage.titreRappel(r), texte: texte, suite: suite,
                                rappel: r)
+    }
+
+    /// « Fin du Chema (Maguen Avraham) : … ; au besoin, selon le Gra : … » (VolAlerte.texteChema, audit du 16/11).
+    static func texteChema(_ r: VolRappels.Rappel, _ heure: (Int64) -> String) -> Libelle {
+        let chema = heure(r.chema ?? r.instant)
+        let autre = r.chemaAutre.map(heure) ?? "\u{2014}"
+        return Libelle(r.chemaCle == "szks_mga" ? "vol_rappel_chema_mga" : "vol_rappel_chema_gra", .texte(chema), .texte(autre))
     }
 
     /// Le texte du siddour qu'ouvre le rappel touché (VolAlerte.texteSiddur).
@@ -287,7 +302,8 @@ public enum VolNotifications {
         switch r.type {
         case .tefilatHaderekh: return "tefilat_haderekh"
         case .omer: return "sefirat_haomer"
-        case .priere, .priereFin: return r.priere ?? "arvit"
+        case .hagomel: return "hagomel"
+        case .priere, .priereFin, .chemaFin: return r.priere ?? "arvit"
         }
     }
 }
@@ -538,6 +554,8 @@ public enum VolMiseEnPage {
         case .priere: return Libelle("vol_rappel_priere_titre", .libelle(nomPriere(r.priere)))
         case .priereFin: return Libelle("vol_rappel_fin_titre", .libelle(nomPriere(r.priere)))
         case .omer: return Libelle("vol_rappel_omer_titre")
+        case .hagomel: return Libelle("vol_rappel_gomel_titre")
+        case .chemaFin: return Libelle("vol_rappel_chema_titre")
         }
     }
 
@@ -582,6 +600,7 @@ public enum VolMiseEnPage {
         case SuiviVol.Raison.illisible: return Libelle("vol_erreur_illisible")
         case SuiviVol.Raison.positionInvalide: return Libelle("vol_erreur_position")
         case SuiviVol.Raison.relaisAbsent: return Libelle("vol_erreur_relais_absent")
+        case SuiviVol.Raison.tropDeDemandes: return Libelle("vol_erreur_trop_de_demandes")
         default: return Libelle("vol_erreur_service")
         }
     }

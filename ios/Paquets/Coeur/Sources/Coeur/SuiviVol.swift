@@ -27,6 +27,8 @@ public enum SuiviVol {
         public static let illisible = "illisible"
         public static let positionInvalide = "position_invalide"
         public static let relaisAbsent = "relais_absent"
+        /// Le relais limite les demandes (« relais 429 ») : quelques minutes d'attente, pas une journée.
+        public static let tropDeDemandes = "trop_de_demandes"
         /// Le relais a répondu une erreur qu'on ne sait pas nommer.
         public static let service = "service"
         private static let prefixeServeur = "serveur_"
@@ -41,10 +43,13 @@ public enum SuiviVol {
             return SuiviVol.entierKotlin(raison.sansPremieresUnites(prefixeServeur.utf16.count))
         }
 
-        /// Le message du relais (tools/relais_vol) : « opensky 429 », « opensky injoignable »… nil là où Kotlin
-        /// lève (un code qui ne tient pas sur 32 bits) : `lire` en fait alors une réponse illisible.
+        /// Le message du relais (tools/relais_vol) : « opensky 429 » (quota du jour), « relais 429 » (débit),
+        /// « opensky injoignable »… nil là où Kotlin lève (un code qui ne tient pas sur 32 bits) : `lire` en fait
+        /// alors une réponse illisible.
         public static func duRelais(_ message: String) -> String? {
-            guard let m = motifRelais.entiere(message.rogne) else { return service }
+            let rogne = message.rogne
+            if rogne == "relais 429" { return tropDeDemandes }
+            guard let m = motifRelais.entiere(rogne) else { return service }
             guard let code = Int32(m.groupes[1]) else { return nil }
             return serveur(Int(code))
         }
@@ -53,15 +58,17 @@ public enum SuiviVol {
         private static let motifRelais = ExpressionReguliere("opensky ([0-9]+)")
     }
 
-    /// D'où vient la position : le relais s'il est configuré à la construction (en HTTPS seulement), sinon OpenSky
-    /// en accès anonyme. Le `fournisseur` de Kotlin, sans le réseau.
+    /// D'où vient la position : le relais s'il est configuré à la construction (en HTTPS seulement) ; sinon OpenSky
+    /// en accès anonyme si `directAutorise` (édition GitHub), sinon aucun (construction Play : pas de suivi en
+    /// direct). Le `fournisseur` de Kotlin, sans le réseau.
     public enum Fournisseur: Sendable, Hashable {
         case openSkyAnonyme
         case relais(String)
     }
 
-    public static func fournisseur(_ relais: String) -> Fournisseur {
-        relais.commenceParUnites("https://") ? .relais(relais) : .openSkyAnonyme
+    public static func fournisseur(_ relais: String, directAutorise: Bool = true) -> Fournisseur? {
+        if relais.commenceParUnites("https://") { return .relais(relais) }
+        return directAutorise ? .openSkyAnonyme : nil
     }
 
     /// Une position plus vieille ne recale plus la route : l'avion a fait 150 km depuis. 10 minutes, en millisecondes

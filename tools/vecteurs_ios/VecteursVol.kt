@@ -64,9 +64,9 @@ object VecteursVol : Generateur {
             "source" to "tools/vecteurs_ios/VecteursVol.kt",
             "unites" to "instants et écarts en millisecondes Unix ; latitudes et longitudes en degrés ; distances en km",
             "evenement" to listOf("cle", "instant", "latitude", "longitude", "ecartSiRetard"),
-            "jalon" to listOf("type", "instant", "date", "chabbat", "fetes", "omer", "allumage", "latitude", "longitude"),
-            "priere" to listOf("maintenant", "priere", "limite"),
-            "horaires" to listOf("maintenant", "alot", "szt_gra", "chkia", "chatsot_layla"),
+            "jalon" to listOf("type", "instant", "date", "chabbat", "fetes", "omer", "allumage", "latitude", "longitude", "repli"),
+            "priere" to listOf("maintenant", "priere", "limite", "debut"),
+            "horaires" to listOf("maintenant", "alot", "szt_gra", "minha_gedola", "chkia", "chatsot_layla"),
         ),
         "constantes" to linkedMapOf(
             "dureeMax" to Vol.DUREE_MAX.toMillis(), "marge" to Vol.MARGE.toMillis(), "retard" to Vol.RETARD.toMillis(),
@@ -267,7 +267,7 @@ object VecteursVol : Generateur {
             "lignesDate" to c.lignesDate.map { listOf(it.instant.toEpochMilli(), it.avant.toString(), it.apres.toString()) },
             "jalons" to listOf(false to 18, true to 40).map { (israel, minutes) ->
                 linkedMapOf("enIsrael" to israel, "minutes" to minutes, "liste" to VolCalendrier.jalons(c, israel, minutes).map { j ->
-                    listOf(j.type.name.lowercase(), j.instant.toEpochMilli(), j.date.toString(), j.chabbat, j.fetes, j.omer, j.allumage?.toEpochMilli(), j.latitude, j.longitude)
+                    listOf(j.type.name.lowercase(), j.instant.toEpochMilli(), j.date.toString(), j.chabbat, j.fetes, j.omer, j.allumage?.toEpochMilli(), j.latitude, j.longitude, j.repli)
                 })
             },
             // [instant, prière, limite, début] ; le début d'une Min'ha pas encore ouverte (FVOL-05).

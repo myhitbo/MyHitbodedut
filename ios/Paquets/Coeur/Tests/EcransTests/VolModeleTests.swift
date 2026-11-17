@@ -295,6 +295,27 @@ struct VolModeleTests {
         #expect(tentatives.count == 1)
     }
 
+    @Test func leRelaisSeLitAussiEn5xx() async throws {
+        // Revue du 15/11 (SuiviVol.Relais) : en 5xx, une erreur nommée du corps l'emporte sur « erreur 502 » ;
+        // « relais 429 » est un débit, pas le quota du jour.
+        let estime = Vol.Point(instant: 0, latitude: 48.9, longitude: 2.4)
+        let adresse = SuiviVol.adresse("https://r.test", "ELY81", estime)
+        let horloge = HorlogeFixe(DateHeure(try #require(JourCivil(iso: "2026-11-16")), heure: 12, minute: 0),
+                                  fuseau: try #require(Fuseau("Europe/Paris")))
+        func lire(_ code: Int, _ corps: String) async -> SuiviVol.Resultat {
+            await VolRequetes.position(relais: "https://r.test", indicatif: "ELY81", estime: estime,
+                                       reseau: FauxVolReseau([adresse: RouteVol.Reponse(code: code, corps: corps)]),
+                                       horloge: horloge)
+        }
+        let quota = await lire(502, "{\"erreur\":\"opensky 429\"}")
+        #expect(quota == .erreur(raison: SuiviVol.Raison.quota))
+        let debit = await lire(429, "{\"erreur\":\"relais 429\"}")
+        #expect(debit == .erreur(raison: SuiviVol.Raison.tropDeDemandes))
+        let muet = await lire(502, "<html>")
+        #expect(muet == .erreur(raison: "serveur_502"))
+        #expect(VolMiseEnPage.raison(SuiviVol.Raison.tropDeDemandes) == Libelle("vol_erreur_trop_de_demandes"))
+    }
+
     @Test func uneRouteHorsLigneLeDit() async throws {
         var reglages = Reglages()
         reglages.setSuiviDirect(true)

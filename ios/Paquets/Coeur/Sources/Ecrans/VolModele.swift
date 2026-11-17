@@ -667,7 +667,7 @@ public final class VolModele {
         guard actifs else {
             return VolCarteRappels(actifs: false, sansPermission: false, aucun: false, lignes: [], note: nil)
         }
-        let aVenir = VolRappels.rappels(c, enIsrael: enIsrael).filter { $0.instant > maintenant }
+        let aVenir = VolRappels.rappels(c, enIsrael: enIsrael, nusah: magasin.reglages.siddurNusah).filter { $0.instant > maintenant }
         let lignes = aVenir.enumerated().map { rang, r in
             VolRappelLigne(id: rang, titre: VolMiseEnPage.titreRappel(r),
                            heure: VolMiseEnPage.texteDeuxHeures(c.plan, r.instant, formats))
@@ -946,7 +946,7 @@ public final class VolModele {
         calcul = c
         maintenant = horloge.maintenant
         // Les rappels suivent le dernier calcul (un relevé les recale aussi).
-        let rappels = VolRappels.rappels(c, enIsrael: enIsrael)
+        let rappels = VolRappels.rappels(c, enIsrael: enIsrael, nusah: magasin.reglages.siddurNusah)
         await ecrireReglages { r in
             r = VolStockage.avecRappels(r, rappels)
         }

@@ -156,7 +156,7 @@ public enum SaisieVol {
         let (depart, arrivee) = SaisieVol.aeroports(mots, aeroports, num)
         let leger = marques.remplace(texte.formeNFD, par: "").lowercased()
         let (date, dateArrivee) = dates(plie, leger, mots, aujourdhui)
-        let h = heures(leger)
+        let h = heures(leger, numero: num)
         return Proposition(numero: num, compagnie: compagnie, depart: depart, arrivee: arrivee, date: date,
                            heureDepart: h.count > 0 ? h[0] : nil, heureArrivee: h.count > 1 ? h[1] : nil,
                            dateArrivee: dateArrivee)
@@ -188,10 +188,22 @@ public enum SaisieVol {
     /// « à 11 », « le 12 » ne sont pas des numéros de vol.
     private static let pasNumero: Set<String> = ["a", "le", "la", "de", "du", "au", "et", "on", "at", "\u{05D1}", "the"]
 
+    /// « gate B12 », « porte A3 » : la porte, pas le vol.
+    private static let avantPorte = ExpressionReguliere("(?:gate|porte|door|terminal|\u{05E9}\u{05E2}\u{05E8})" + blanc + "*$")
+
     private static func numero(_ plie: String) -> String? {
         for m in motifNumero.toutes(plie) {
             let code = m.groupes[1]
             if pasNumero.contains(code) || motsCourants.contains(code) { continue }
+            // « 4h 25m », « 5h45 » sont des durées ou des heures, pas des numéros (audit du 12/11, FVOL-04) : seul
+            // « 6H » (Israir) est un code « chiffre + h », suivi d'un vrai numéro, pas de deux chiffres de minutes.
+            let u = Array(code.utf16)
+            if u.count == 2 && u[1] == 0x68 && u[0] >= 0x30 && u[0] <= 0x39 {
+                let chiffres = m.groupes[2]
+                let minutes = chiffres.utf16.count == 2 && entier(chiffres) < 60 && m.groupes[3].isEmpty
+                if !(code == "6h" && !minutes) { continue }
+            }
+            if avantPorte.presente(dans: plie.unites(0, m.plage.lowerBound)) { continue }
             let brut = code + m.groupes[2] + m.groupes[3]
             if RouteVol.normaliser(brut) != nil { return brut.uppercased() }
         }
@@ -374,16 +386,40 @@ public enum SaisieVol {
     private static let avantHeure = ExpressionReguliere("boarding|embarquement|gate|porte|\u{05E2}\u{05DC}\u{05D9}\u{05D9}\u{05D4}|" +
         "\u{05E9}\u{05E2}\u{05E8}|fermeture|closes")
 
+    private static let departAvant = ExpressionReguliere("depart[a-z]*|dep(?![a-z])|decollage|takeoff|" +
+        "\u{05D4}\u{05DE}\u{05E8}\u{05D0}\u{05D4}")
+    private static let dureeAvant = ExpressionReguliere("(?:duree|duration|flight time|temps de vol|\u{05DE}\u{05E9}\u{05DA}|" +
+        "\u{05D6}\u{05DE}\u{05DF} \u{05D8}\u{05D9}\u{05E1}\u{05D4})" + blanc + "*[:\\-\u{2013}]?" + blanc + "*$")
+    private static let minutesApres = ExpressionReguliere("^" + blanc + "?m(?:in|n)?(?![a-z])")
+    private static let deuxPoints = ExpressionReguliere("(?<![0-9])[0-9]{1,2}:[0-5][0-9]")
+
     /// Les heures, dans l'ordre : « 11h », « 11h30 », « 11:30 », « 11 am », « 11pm », « à 11 », « בשעה 11 ».
-    /// Celles de l'embarquement ou de la fermeture de la porte, qu'un billet donne avant le départ, sont
-    /// écartées. `leger` : le texte sans marques (NFD), en minuscules.
-    public static func heures(_ leger: String) -> [Heure] {
+    /// Sont écartées (audit du 12/11, FVOL-04) : celles de l'embarquement ou de la fermeture de la porte, qu'un
+    /// billet donne avant le départ, sauf si « départ » est plus près que « gate » (« Boarding 5:20 gate B12
+    /// Departure 6:05 ») ; les durées (« Durée 4h25 », « 4h 25m ») ; les chiffres du numéro de vol déjà lu
+    /// (`numero`, « 6H 123 ») ; et, dès qu'une forme « HH:MM » figure dans le texte, les formes « 4h25 », qui sont
+    /// alors des durées. `leger` : le texte sans marques (NFD), en minuscules.
+    public static func heures(_ leger: String, numero: String? = nil) -> [Heure] {
+        var texte = leger
+        if let numero {
+            let motif = numero.lowercased().map { NSRegularExpression.escapedPattern(for: String($0)) }
+                .joined(separator: blanc + "?")
+            texte = ExpressionReguliere("(?<![a-z0-9])" + motif + "(?![0-9])").remplace(leger, par: " ")
+        }
+        let avecDeuxPoints = deuxPoints.presente(dans: texte)
+        let longueur = texte.utf16.count
         var res: [Heure] = []
-        for m in motifHeure.toutes(leger) {
+        for m in motifHeure.toutes(texte) {
             let debut = m.plage.lowerBound
-            let avant = leger.unites(debut - 24, debut)
-            if avantHeure.presente(dans: avant) { continue }
+            let avant = texte.unites(debut - 24, debut)
             let g = m.groupes
+            if dureeAvant.presente(dans: avant) { continue }
+            if minutesApres.presente(dans: texte.unites(m.plage.upperBound, longueur)) { continue }
+            if avecDeuxPoints && g[3].isEmpty && g[4].isEmpty && g[5].isEmpty && g[6].isEmpty { continue }
+            if let porte = avantHeure.toutes(avant).last {
+                let depart = departAvant.toutes(avant).last?.plage.lowerBound ?? -1
+                if depart < porte.plage.lowerBound { continue }
+            }
             if !g[6].isEmpty {
                 res.append(Heure(entier(g[6]), 0))
                 continue
@@ -396,6 +432,17 @@ public enum SaisieVol {
             res.append(Heure(h, min))
         }
         return res
+    }
+
+    /// Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas repris, l'heure se choisit (FVOL-03).
+    public static func dateSansHeure(_ p: Proposition) -> Bool {
+        p.date != nil && p.heureDepart == nil
+    }
+
+    /// Le vol ne se calcule et ne s'enregistre seul que si tout vient du texte ou du billet : ni une arrivée
+    /// estimée d'après la distance, ni un jour repris de l'ancien vol (FVOL-03). Sinon on remplit les tuiles.
+    public static func calculAutomatique(_ p: Proposition, arriveeEstimee: Bool) -> Bool {
+        !arriveeEstimee && p.date != nil
     }
 
     /// La durée de vol estimée quand le billet ne donne pas l'arrivée, en millisecondes : la distance à

@@ -166,6 +166,15 @@ public enum Vol {
         distanceKm(plan.depart.latitude, plan.depart.longitude, plan.arrivee.latitude, plan.arrivee.longitude)
     }
 
+    /// Une durée que la distance ne permet pas (FVOL-12) : plus de 1 100 km/h de moyenne, ou plus de deux fois la
+    /// durée estimée (820 km/h + 30 min) plus 2 h. Une erreur d'AM/PM ou de fuseau ; l'écran avertit mais laisse
+    /// passer (escale technique).
+    public static func invraisemblable(_ plan: Plan) -> Bool {
+        let km = distanceKm(plan)
+        let heures = Double(secondesEntieres(plan.decollage, plan.atterrissage)) / 3600.0
+        return km > 1100.0 * heures || heures > 2 * (km / 820.0 + 0.5) + 2
+    }
+
     public static func distanceKm(_ lat1: Double, _ lon1: Double, _ lat2: Double, _ lon2: Double) -> Double {
         let dLat = radians(lat2 - lat1)
         let dLon = radians(lon2 - lon1)
@@ -262,10 +271,14 @@ public enum Vol {
         public var reserves: Set<Reserve>
         public var lignesDate: [LigneDate]
         public var fiabilite: Fiabilite
+        /// Les zmanim qui n'ont pas lieu en un point du vol (`Reserve.absent`), dans l'ordre de `Zmanim.profil`
+        /// (FVOL-11).
+        public var absents: [String]
 
         /// Sans `fiabilite`, celle du plan : la route prévue, sauf un relevé utilisable (la valeur par défaut de Kotlin).
         public init(plan: Plan, evenements: [Evenement], reserves: Set<Reserve>, lignesDate: [LigneDate],
-                    fiabilite: Fiabilite? = nil) {
+                    fiabilite: Fiabilite? = nil, absents: [String] = []) {
+            self.absents = absents
             self.plan = plan
             self.evenements = evenements
             self.reserves = reserves
@@ -343,6 +356,7 @@ public enum Vol {
 
     private static func calculerSeul(_ plan: Plan, _ memoire: inout Memoire) -> Calcul {
         var reserves = Set<Reserve>()
+        var absents = Set<String>()
         var instants: [Int64] = []
         var t = plan.decollage - marge
         while t < plan.decollage {
@@ -366,7 +380,10 @@ public enum Vol {
             let enVol = instant >= plan.decollage && instant <= plan.atterrissage
             if enVol && abs(p.latitude) > latitudeHaute { reserves.insert(.hauteLatitude) }
             let o = occurrences(p, &memoire)
-            if enVol { reserves.formUnion(o.signaux) }
+            if enVol {
+                reserves.formUnion(o.signaux)
+                absents.formUnion(o.absents)
+            }
             echantillons.append(Echantillon(t: instant, p: p, occurrences: o.parCle))
         }
         var trouves: [Evenement] = []
@@ -409,25 +426,29 @@ public enum Vol {
             }
             if !double { evenements.append(e) }
         }
-        return Calcul(plan: plan, evenements: evenements, reserves: reserves, lignesDate: lignesDate(plan, echantillons))
+        return Calcul(plan: plan, evenements: evenements, reserves: reserves, lignesDate: lignesDate(plan, echantillons),
+                      absents: Zmanim.profil.map(\.cle).filter { absents.contains($0) })
     }
 
     /// Les zmanim du point pour la veille, le jour et le lendemain (jour du fuseau nautique), dans cet ordre, et ce
     /// que le moteur a signalé : un zman absent, une erreur.
-    private static func occurrences(_ p: Point, _ memoire: inout Memoire) -> (parCle: [String: [Int64]], signaux: Set<Reserve>) {
+    private static func occurrences(_ p: Point, _ memoire: inout Memoire)
+        -> (parCle: [String: [Int64]], signaux: Set<Reserve>, absents: Set<String>) {
         let lieu = lieuSous(p)
         let jour = jourNautique(p.instant, p.longitude)
         var parCle: [String: [Int64]] = [:]
         var signaux = Set<Reserve>()
+        var absents = Set<String>()
         for d in [jour.plus(jours: -1), jour, jour.plus(jours: 1)] {
             let z = memoire.jour(lieu, d)
             for (cle, millis) in z.instants {
                 parCle[cle, default: []].append(millis)
             }
-            if z.absent { signaux.insert(.absent) }
+            if !z.absents.isEmpty { signaux.insert(.absent) }
             if z.erreur { signaux.insert(.erreur) }
+            absents.formUnion(z.absents)
         }
-        return (parCle, signaux)
+        return (parCle, signaux, absents)
     }
 
     /// Les zmanim déjà demandés au moteur pendant un calcul. `Zmanim.jour` rend toujours la même chose pour un même
@@ -444,7 +465,8 @@ public enum Vol {
         /// Les zmanim calculés du jour, dans l'ordre du profil, et ce que le moteur a signalé.
         struct Jour {
             let instants: [(cle: String, millis: Int64)]
-            let absent: Bool
+            /// Les clés des zmanim absents ce jour-là.
+            let absents: [String]
             let erreur: Bool
         }
 
@@ -454,19 +476,19 @@ public enum Vol {
             let cle = Cle(latitude: lieu.latitude.bitPattern, longitude: lieu.longitude.bitPattern, jour: date)
             if let connu = jours[cle] { return connu }
             var instants: [(cle: String, millis: Int64)] = []
-            var absent = false
+            var absents: [String] = []
             var erreur = false
             for z in Zmanim.jour(lieu: lieu, date: date) {
                 switch z.statut {
                 case .ok:
                     if let d = z.instant { instants.append((cle: z.cle, millis: Vol.millis(d))) }
                 case .absent:
-                    absent = true
+                    absents.append(z.cle)
                 case .erreur:
                     erreur = true
                 }
             }
-            let calcule = Jour(instants: instants, absent: absent, erreur: erreur)
+            let calcule = Jour(instants: instants, absents: absents, erreur: erreur)
             jours[cle] = calcule
             return calcule
         }
@@ -521,13 +543,18 @@ public enum Vol {
         return lignes
     }
 
-    /// Les horaires que ZmanimWidget.prochaine attend, pris sur la route : l'aube passée la plus récente, puis la
-    /// première fin de Cha'harit, chki'a et minuit qui la suivent. Sans aube passée (route polaire), les prochains
-    /// de chaque zman. Les clés : « alot », « szt_gra », « chkia », « chatsot_layla » ; une clé manque là où
-    /// Kotlin rend null.
+    /// Les repères du début de la journée, du plus tôt au plus tard.
+    private static let reperesAube: Set<String> = ["alot", "misheyakir", "netz"]
+
+    /// Les horaires que ZmanimWidget.prochaine attend, pris sur la route : le repère d'aube passé le plus récent
+    /// (alot, sinon michéyakir ou nets, l'été au nord d'environ 50° où le soleil ne descend pas à 16,1° : audit
+    /// du 12/11, FVOL-01), puis la première fin de Cha'harit, Min'ha guedola (13/11, FVOL-05 : avant elle, Min'ha
+    /// n'est pas ouverte), chki'a et minuit qui le suivent. Sans aucun de ces repères (route polaire), les
+    /// prochains de chaque zman. Les clés : « alot », « szt_gra », « minha_gedola », « chkia », « chatsot_layla » ;
+    /// une clé manque là où Kotlin rend null.
     public static func horaires(_ calcul: Calcul, _ maintenant: Int64) -> [String: Int64] {
         let ev = calcul.evenements
-        let alot = ev.last { $0.cle == "alot" && $0.instant <= maintenant }?.instant
+        let alot = ev.last { reperesAube.contains($0.cle) && $0.instant <= maintenant }?.instant
         let apres = alot ?? maintenant
         func suivant(_ cle: String) -> Int64? {
             ev.first { $0.cle == cle && $0.instant > apres }?.instant
@@ -535,6 +562,7 @@ public enum Vol {
         var h: [String: Int64] = [:]
         h["alot"] = alot
         h["szt_gra"] = suivant("szt_gra")
+        h["minha_gedola"] = suivant("minha_gedola")
         h["chkia"] = suivant("chkia")
         h["chatsot_layla"] = suivant("chatsot_layla")
         return h

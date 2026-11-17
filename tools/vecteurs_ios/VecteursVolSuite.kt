@@ -48,7 +48,7 @@ object VecteursVolSuite : Generateur {
             "empreinte" to "String.hashCode de « iata|nom|ville|pays|latitude|longitude|fuseau|nom he|nom fr|alias joints par ; » (latitude et longitude par Double.toString, un nom absent : « null »)",
             "proposition" to listOf("numero", "compagnie", "depart", "arrivee", "date", "heureDepart", "heureArrivee", "dateArrivee", "vide"),
             "evenement" to listOf("cle", "instant", "latitude", "longitude"),
-            "rappel" to listOf("type", "instant", "priere", "limite", "omer"),
+            "rappel" to listOf("type", "instant", "priere", "limite", "omer", "chema", "chemaCle", "chemaAutre"),
         ),
         "aeroports" to aeroportsLus(),
         "plier" to plier().map { listOf(it, Aeroports.plier(it)) },
@@ -496,7 +496,7 @@ object VecteursVolSuite : Generateur {
 
     private fun raisons(): List<List<Any?>> = listOf(
         listOf("constantes", listOf(SuiviVol.Raison.HORS_LIGNE, SuiviVol.Raison.QUOTA, SuiviVol.Raison.ILLISIBLE, SuiviVol.Raison.POSITION_INVALIDE,
-            SuiviVol.Raison.RELAIS_ABSENT, SuiviVol.Raison.SERVICE)),
+            SuiviVol.Raison.RELAIS_ABSENT, SuiviVol.Raison.SERVICE, SuiviVol.Raison.TROP_DE_DEMANDES)),
     ) + listOf(429, 503, 500, 400, 404, 0, -1, 200).map { listOf("serveur", it, SuiviVol.Raison.serveur(it)) } +
         listOf("serveur_503", "serveur_429", "quota", "serveur_", "serveur_x", "serveur_-5", "hors_ligne", "", "serveur_12345678901",
             "serveur_\u0665\u0660\u0663", "serveur_+5", "serveur_-", "serveur_+", "serveur_ 5", "serveur_5 ", "serveur_2147483647",
@@ -504,7 +504,8 @@ object VecteursVolSuite : Generateur {
             listOf("codeServeur", it, SuiviVol.Raison.codeServeur(it))
         } +
         listOf("opensky 429", "opensky 503", " opensky 500 ", "opensky injoignable", "x", "", "opensky  429", "Opensky 429", "opensky 4290",
-            "opensky 99999999999", "opensky 2147483647", "opensky 2147483648", "opensky 4a", "opensky ٤٢٩").map {
+            "opensky 99999999999", "opensky 2147483647", "opensky 2147483648", "opensky 4a", "opensky ٤٢٩",
+            "relais 429", " relais 429 ", "relais 503", "Relais 429").map {
             // Un nombre qui déborde lève (toInt) : null ici ; SuiviVol.lire le rend « illisible ».
             listOf("duRelais", it, runCatching { SuiviVol.Raison.duRelais(it) }.getOrNull())
         }
@@ -663,7 +664,13 @@ object VecteursVolSuite : Generateur {
     // --- Rappels en vol ------------------------------------------------------------------------------
 
     /** Les zmanim que lisent VolRappels (les bornes des prières) et VolCalendrier (chki'a et tsét). */
-    private val clesLues = VolRappels.BORNES.flatMap { listOf(it.second, it.third) }.toSet() + setOf("chkia", "tset")
+    // Depuis le 16/11 : l'aube (le Chema du matin), les deux fins du Chema, et les repères qui disent si la tsét
+    // manque après une chki'a (VolCalendrier.tsetManque).
+    private val clesLues = VolRappels.BORNES.flatMap { listOf(it.second, it.third) }.toSet() +
+        setOf("chkia", "tset", "alot", "misheyakir", "netz", "szks_mga", "szks_gra", "tset_rt")
+
+    private fun rappel(r: VolRappels.Rappel): List<Any?> = listOf(r.type.name, r.instant.toEpochMilli(), r.priere,
+        r.limite?.toEpochMilli(), r.omer, r.chema?.toEpochMilli(), r.chemaCle, r.chemaAutre?.toEpochMilli())
 
     private fun plan(de: String, vers: String, decollage: String, atterrissage: String): Vol.Plan {
         val d = a(de)
@@ -709,7 +716,9 @@ object VecteursVolSuite : Generateur {
                 "enIsrael" to israel,
                 "evenements" to c.evenements.filter { it.cle in clesLues }.map { listOf(it.cle, it.instant.toEpochMilli(), it.latitude, it.longitude) },
                 "ouvertes" to sondes.distinct().sorted().map { t -> VolRappels.ouverte(c, t).let { o -> listOf(t.toEpochMilli(), o?.first, o?.second?.toEpochMilli()) } },
-                "rappels" to r.map { listOf(it.type.name, it.instant.toEpochMilli(), it.priere, it.limite?.toEpochMilli(), it.omer) },
+                "rappels" to r.map(::rappel),
+                // Le Chema du Maguen Avraham pour les Edot (audit du 16/11).
+                "rappelsEdot" to VolRappels.rappels(c, israel, "edot").map(::rappel),
             )
         }
     }

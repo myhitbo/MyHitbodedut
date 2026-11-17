@@ -658,6 +658,8 @@ struct VolTests {
             #expect(nEnVol == x.enVol, "\(nom)")
             let reserves = c.reserves.map { $0.rawValue }.sorted()
             #expect(reserves == x.reserves, "\(nom)")
+            #expect(c.absents == x.absents, "\(nom)")
+            #expect(Vol.invraisemblable(c.plan) == x.invraisemblable, "\(nom)")
             let nLignes = c.lignesDate.count
             #expect(nLignes == x.lignesDate.count, "\(nom)")
             for (l, y) in zip(c.lignesDate, x.lignesDate) {
@@ -677,6 +679,7 @@ struct VolTests {
                     #expect(j.chabbat == y.chabbat, "\(quoi)")
                     #expect(j.fetes == y.fetes, "\(quoi)")
                     #expect(j.omer == y.omer, "\(quoi)")
+                    #expect(j.repli == y.repli, "\(quoi)")
                     let ecart = abs(j.instant - y.instant)
                     #expect(ecart <= 2000, "\(quoi) : \(ecart) ms")
                     if let s = j.allumage, let k = y.allumage {
@@ -702,11 +705,18 @@ struct VolTests {
                     let memes = (m?.limite == nil) == (y.limite == nil)
                     #expect(memes, "\(nom) à \(y.maintenant) : limite présente d'un seul côté")
                 }
+                if let s = m?.debut, let k = y.debut {
+                    let d = abs(s - k)
+                    #expect(d <= 2000, "\(nom) à \(y.maintenant) : début \(s) contre \(k)")
+                } else {
+                    let memes = (m?.debut == nil) == (y.debut == nil)
+                    #expect(memes, "\(nom) à \(y.maintenant) : début présent d'un seul côté")
+                }
                 prieres += 1
             }
             for y in x.horaires {
                 let h = Vol.horaires(c, y.maintenant)
-                for (k, cle) in ["alot", "szt_gra", "chkia", "chatsot_layla"].enumerated() {
+                for (k, cle) in ["alot", "szt_gra", "minha_gedola", "chkia", "chatsot_layla"].enumerated() {
                     let s = h[cle]
                     let attendu = y.valeurs[k]
                     if let s, let attendu {
@@ -1000,7 +1010,7 @@ extension VolTests {
             }
         }
 
-        /// [type, instant, date, chabbat, fetes, omer, allumage ou null, latitude, longitude].
+        /// [type, instant, date, chabbat, fetes, omer, allumage ou null, latitude, longitude, repli].
         struct JalonJVM: Decodable {
             let type: String
             let instant: Int64
@@ -1011,6 +1021,7 @@ extension VolTests {
             let allumage: Int64?
             let latitude: Double
             let longitude: Double
+            let repli: Bool
 
             init(from decoder: any Decoder) throws {
                 var c = try decoder.unkeyedContainer()
@@ -1023,6 +1034,7 @@ extension VolTests {
                 allumage = try c.decodeIfPresent(Int64.self)
                 latitude = try c.decode(Double.self)
                 longitude = try c.decode(Double.self)
+                repli = try c.decode(Bool.self)
             }
         }
 
@@ -1032,21 +1044,23 @@ extension VolTests {
             let liste: [JalonJVM]
         }
 
-        /// [maintenant, prière ou null, limite ou null].
+        /// [maintenant, prière ou null, limite ou null, début ou null].
         struct PriereJVM: Decodable {
             let maintenant: Int64
             let priere: String?
             let limite: Int64?
+            let debut: Int64?
 
             init(from decoder: any Decoder) throws {
                 var c = try decoder.unkeyedContainer()
                 maintenant = try c.decode(Int64.self)
                 priere = try c.decodeIfPresent(String.self)
                 limite = try c.decodeIfPresent(Int64.self)
+                debut = try c.decodeIfPresent(Int64.self)
             }
         }
 
-        /// [maintenant, alot, szt_gra, chkia, chatsot_layla], chacun ou null.
+        /// [maintenant, alot, szt_gra, minha_gedola, chkia, chatsot_layla], chacun ou null.
         struct HorairesJVM: Decodable {
             let maintenant: Int64
             let valeurs: [Int64?]
@@ -1055,7 +1069,7 @@ extension VolTests {
                 var c = try decoder.unkeyedContainer()
                 maintenant = try c.decode(Int64.self)
                 var valeurs: [Int64?] = []
-                for _ in 0..<4 { valeurs.append(try c.decodeIfPresent(Int64.self)) }
+                for _ in 0..<5 { valeurs.append(try c.decodeIfPresent(Int64.self)) }
                 self.valeurs = valeurs
             }
         }
@@ -1067,6 +1081,8 @@ extension VolTests {
             let evenements: [EvenementJVM]
             let enVol: Int
             let reserves: [String]
+            let absents: [String]
+            let invraisemblable: Bool
             let lignesDate: [LigneJVM]
             let jalons: [Jalons]
             let priere: [PriereJVM]

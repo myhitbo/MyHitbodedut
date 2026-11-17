@@ -218,7 +218,8 @@ struct SuiviVolTests {
             #expect(obtenu == x.attendu, "memeIndicatif « \(x.a) », « \(x.b) »")
         }
         let constantes = [SuiviVol.Raison.horsLigne, SuiviVol.Raison.quota, SuiviVol.Raison.illisible,
-                          SuiviVol.Raison.positionInvalide, SuiviVol.Raison.relaisAbsent, SuiviVol.Raison.service]
+                          SuiviVol.Raison.positionInvalide, SuiviVol.Raison.relaisAbsent, SuiviVol.Raison.service,
+                          SuiviVol.Raison.tropDeDemandes]
         var vus = 0
         for x in f.raisons {
             switch x.genre {
@@ -281,5 +282,10 @@ struct SuiviVolTests {
         #expect(https == SuiviVol.Fournisseur.relais("https://r.test"))
         let http = SuiviVol.fournisseur("http://r.test")
         #expect(http == SuiviVol.Fournisseur.openSkyAnonyme)
+        // La construction Play (BuildConfig.OPENSKY_DIRECT faux) : le relais seul, sinon pas de suivi en direct.
+        let sansDirect = SuiviVol.fournisseur("", directAutorise: false)
+        #expect(sansDirect == nil)
+        let relaisSansDirect = SuiviVol.fournisseur("https://r.test", directAutorise: false)
+        #expect(relaisSansDirect == SuiviVol.Fournisseur.relais("https://r.test"))
     }
 }

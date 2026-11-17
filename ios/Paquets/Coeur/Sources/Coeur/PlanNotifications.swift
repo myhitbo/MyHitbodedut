@@ -356,7 +356,7 @@ public enum PlanNotifications {
             var montres = 0
             for (rang, r) in rappels.enumerated()
             where r.instant > vu && r.instant <= declenchement + groupementVol && r.instant > declenchement - toleranceVol {
-                res.append(notificationVol(r, rang: rang, a: declenchement, heure: heure))
+                res.append(notificationVol(r, rang: rang, a: declenchement, nusah: reglages.siddurNusah, heure: heure))
                 dernierVu = max(dernierVu, r.instant)
                 montres += 1
             }
@@ -368,7 +368,7 @@ public enum PlanNotifications {
     }
 
     /// Le titre et le texte d'un rappel du vol (VolAlerte.textes).
-    private static func notificationVol(_ r: VolRappels.Rappel, rang: Int, a instant: Int64,
+    private static func notificationVol(_ r: VolRappels.Rappel, rang: Int, a instant: Int64, nusah: Nusah,
                                         heure: (Int64) -> String) -> NotificationPlanifiee {
         let nom = nomPriere(r.priere)
         let titre: Libelle
@@ -388,16 +388,32 @@ public enum PlanNotifications {
             } else {
                 texte = Libelle("vol_rappel_priere_sans_limite", .libelle(nom))
             }
+            // Cha'harit : le Chema d'abord (audit du 16/11).
+            if r.chema != nil { suite = texteChema(r, heure) }
         case .priereFin:
             titre = Libelle("vol_rappel_fin_titre", .libelle(nom))
             texte = Libelle("vol_rappel_fin_texte", .texte(heure(r.limite ?? r.instant)))
         case .omer:
             titre = Libelle("vol_rappel_omer_titre")
             texte = Libelle("vol_rappel_omer_texte", .texte(String(r.omer)))
+        case .hagomel:
+            // Audit du 16/11 : obligation en Edot (Kitsour Yalkut Yosef 219:20) ; selon l'usage ailleurs.
+            titre = Libelle("vol_rappel_gomel_titre")
+            texte = Libelle(nusah == .edot ? "vol_rappel_gomel_texte_edot" : "vol_rappel_gomel_texte")
+        case .chemaFin:
+            titre = Libelle("vol_rappel_chema_titre")
+            texte = texteChema(r, heure)
         }
         return NotificationPlanifiee(identifiant: "vol-" + String(rang) + "-" + r.type.rawValue + "-" + String(r.instant),
                                   instant: instant, titre: titre, texte: texte, suite: suite, categorie: .vol,
                                   texteSiddur: texteSiddur(r))
+    }
+
+    /// « Fin du Chema (Maguen Avraham) : … ; au besoin, selon le Gra : … » (VolAlerte.texteChema, audit du 16/11).
+    private static func texteChema(_ r: VolRappels.Rappel, _ heure: (Int64) -> String) -> Libelle {
+        let chema = heure(r.chema ?? r.instant)
+        let autre = r.chemaAutre.map(heure) ?? "\u{2014}"
+        return Libelle(r.chemaCle == "szks_mga" ? "vol_rappel_chema_mga" : "vol_rappel_chema_gra", .texte(chema), .texte(autre))
     }
 
     /// VolAlerte.texteSiddur : le texte du siddour qu'ouvre un rappel du vol.
@@ -405,7 +421,8 @@ public enum PlanNotifications {
         switch r.type {
         case .tefilatHaderekh: return "tefilat_haderekh"
         case .omer: return "sefirat_haomer"
-        case .priere, .priereFin: return r.priere ?? "arvit"
+        case .hagomel: return "hagomel"
+        case .priere, .priereFin, .chemaFin: return r.priere ?? "arvit"
         }
     }
 

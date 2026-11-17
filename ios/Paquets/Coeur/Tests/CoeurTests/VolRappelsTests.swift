@@ -206,6 +206,7 @@ struct VolRappelsTests {
         let evenements: [EvenementEcrit]
         let ouvertes: [OuverteEcrite]
         let rappels: [RappelEcrit]
+        let rappelsEdot: [RappelEcrit]
     }
 
     /// [départ, arrivée, décollage, atterrissage].
@@ -256,7 +257,8 @@ struct VolRappelsTests {
         }
     }
 
-    /// [TYPE, instant, prière ou null, limite ou null, omer] ; le type est le nom de Kotlin.
+    /// [TYPE, instant, prière ou null, limite ou null, omer, chema ou null, chemaCle ou null, chemaAutre ou null] ;
+    /// le type est le nom de Kotlin.
     private struct RappelEcrit: Decodable {
         let rappel: VolRappels.Rappel?
         let nom: String
@@ -268,8 +270,12 @@ struct VolRappelsTests {
             let priere = try c.decodeIfPresent(String.self)
             let limite = try c.decodeIfPresent(Int64.self)
             let omer = try c.decode(Int.self)
+            let chema = try c.decodeIfPresent(Int64.self)
+            let chemaCle = try c.decodeIfPresent(String.self)
+            let chemaAutre = try c.decodeIfPresent(Int64.self)
             rappel = VolRappels.Genre(rawValue: nom.lowercased()).map {
-                VolRappels.Rappel(type: $0, instant: instant, priere: priere, limite: limite, omer: omer)
+                VolRappels.Rappel(type: $0, instant: instant, priere: priere, limite: limite, omer: omer, chema: chema,
+                                  chemaCle: chemaCle, chemaAutre: chemaAutre)
             }
         }
     }
@@ -294,6 +300,11 @@ struct VolRappelsTests {
             let obtenus = VolRappels.rappels(calcul, enIsrael: v.enIsrael)
             #expect(obtenus == attendus, "\(nom) : rappels")
             rappels += attendus.count
+            // Le Chema du Maguen Avraham pour les Edot (audit du 16/11).
+            let attendusEdot = v.rappelsEdot.compactMap { $0.rappel }
+            #expect(attendusEdot.count == v.rappelsEdot.count, "\(nom) : types de rappel connus (edot)")
+            let obtenusEdot = VolRappels.rappels(calcul, enIsrael: v.enIsrael, nusah: .edot)
+            #expect(obtenusEdot == attendusEdot, "\(nom) : rappels (edot)")
         }
         #expect(sondes >= 1000)
         #expect(rappels >= 50)
