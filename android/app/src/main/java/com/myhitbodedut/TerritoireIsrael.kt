@@ -38,16 +38,24 @@ object TerritoireIsrael {
         doubleArrayOf(31.22, 34.26),
     )
 
+    /** Ce que fait un nouveau lieu au statut : [region] à enregistrer, [proposition] à poser en question ; null, rien. */
+    data class Decision(val region: Boolean?, val proposition: Boolean?)
+
     /**
-     * La région à enregistrer quand la position du téléphone sert de lieu des zmanim, ou null
-     * pour garder celle des réglages (audit du 12/11, FCALENDRIER-06). La région suit la
-     * position (16/10), sauf une région choisie à la main ([manuelle]) lors d'une simple
-     * [reprise] : ouverture de Zmanim ou de la boussole, retour sur l'accueil, changement de
-     * fuseau, « Actualiser ma position ». Choisir le lieu (« Ma position » dans la liste, ou la
-     * position à la place d'une ville) redéduit la région, et le choix manuel s'efface.
+     * Le statut Israël ou diaspora pour le Yom tov chéni (audit du 16/11) dépend de la
+     * résidence, pas de l'endroit où l'on est : « בני ארץ ישראל שבאו לחוצה לארץ אסורים לעשות
+     * מלאכה ביו"ט שני ביישוב אפילו דעתו לחזור » (Choul'han Aroukh 496:3) ; « ובן חו"ל שבא לא"י אם
+     * דעתו לחזור למקומו צריך לעשות שני ימים יו"ט » (Michna Beroura 496:13) ; Kitsour Yalkut Yosef
+     * 496 : « כמו המקום שיצא משם ». Un lieu (ville ou position du téléphone) ne réécrit donc jamais
+     * le statut : quand il dit l'autre région ([impliquee]), l'application pose la question.
+     * Seule exception, le tout premier lieu ([premierLieu]) d'un statut jamais choisi
+     * ([declare]) : il remplace la déduction faite du fuseau du téléphone.
      */
-    fun regionPourPosition(latitude: Double, longitude: Double, manuelle: Boolean, reprise: Boolean): Boolean? =
-        if (manuelle && reprise) null else contient(latitude, longitude)
+    fun decisionRegion(impliquee: Boolean, actuelle: Boolean, premierLieu: Boolean, declare: Boolean): Decision = when {
+        premierLieu && !declare -> Decision(impliquee, null)
+        impliquee == actuelle -> Decision(null, null)
+        else -> Decision(null, impliquee)
+    }
 
     /** Le point est-il dans le contour (tracé de rayon) ? */
     fun contient(latitude: Double, longitude: Double): Boolean {

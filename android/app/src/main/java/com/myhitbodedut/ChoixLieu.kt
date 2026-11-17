@@ -45,8 +45,8 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
     private var silencieux = false
 
     /**
-     * « Ma position » vient d'être choisie dans la liste des lieux : la région est redéduite,
-     * même réglée à la main (audit du 12/11, FCALENDRIER-06). Sinon, Store.setLieuPosition juge.
+     * « Ma position » vient d'être choisie dans la liste des lieux. Depuis l'audit du 16/11, ni
+     * ce choix ni une reprise ne changent le statut Israël ou diaspora : Store.setLieuZmanim pose la question.
      */
     private var choisie = false
 
@@ -222,7 +222,7 @@ class ChoixLieu(private val activite: AppCompatActivity, private val apres: () -
          * La ville la plus proche ne fait que nommer la position et donner l'altitude. Le fuseau
          * reste celui du téléphone (celui d'une ville voisine fausserait les zmanim près d'une
          * frontière), et Israël ou diaspora se lit sur le territoire, pas sur la ville (16/10).
-         * Une simple reprise garde la région choisie à la main (Store.setLieuPosition) ; [choisie] :
+         * Le statut Israël ou diaspora n'en est jamais réécrit (audit du 16/11, Store.setLieuZmanim) ; [choisie] :
          * « Ma position » vient d'être prise dans la liste des lieux.
          */
         fun enregistrerPosition(context: Context, position: Location, choisie: Boolean = false) {

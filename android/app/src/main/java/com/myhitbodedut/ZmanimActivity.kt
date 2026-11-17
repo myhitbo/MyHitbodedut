@@ -52,6 +52,14 @@ class ZmanimActivity : AppCompatActivity() {
         // Le jour seul, puis trois boutons, puis les horaires (14/10, « trop de choses avant les זמנים ») :
         // Levana, hilloula et halakha viennent après, chacune masquable dans les réglages.
         contenu.addView(VueJour.carteJour(this, aujourdhui, israel, complet = false))
+        // Audit du 16/11 : le statut Israël ou diaspora suit la résidence. Un lieu de l'autre région
+        // ne le change pas : il pose la question, et le Yom tov chéni d'un voyageur a sa note.
+        Store.regionProposee(this)?.let { proposee -> contenu.addView(questionRegion(proposee)) }
+        if (lieu != null) {
+            JourAffiche.noteYomTovCheni(aujourdhui, israel, TerritoireIsrael.contient(lieu.latitude, lieu.longitude), Store.siddurNusah(this).cle)
+                ?.let { noteYtc(it) }
+                ?.let { contenu.addView(VueJour.texte(this, getString(it), 13f, R.color.brand, haut = 8).apply { setPadding(dp(16), 0, dp(16), 0) }) }
+        }
         // Après la sortie des étoiles du lieu, le jour hébreu a déjà changé (la vignette le dit) : la ligne aussi (FCALENDRIER-13).
         if (lieu != null) {
             val maintenantLieu = java.time.ZonedDateTime.now(runCatching { java.time.ZoneId.of(lieu.fuseau) }.getOrDefault(java.time.ZoneId.systemDefault()))
@@ -156,6 +164,31 @@ class ZmanimActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(marge) }
             setOnClickListener { action() }
         }
+
+    private fun noteYtc(cle: String): Int = when (cle) {
+        "note_ytc_ben_israel" -> R.string.note_ytc_ben_israel
+        "note_ytc_ben_houl_ashkenaz" -> R.string.note_ytc_ben_houl_ashkenaz
+        else -> R.string.note_ytc_ben_houl
+    }
+
+    /** La question du statut (audit du 16/11) : le lieu dit l'autre région ; seule la réponse change le statut. */
+    private fun questionRegion(proposee: Boolean): View = VueJour.carte(this).apply {
+        addView(VueJour.texte(this@ZmanimActivity, getString(if (proposee) R.string.region_proposee_israel else R.string.region_proposee_diaspora),
+            14f, R.color.ink))
+        addView(LinearLayout(this@ZmanimActivity).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                .apply { topMargin = dp(8) }
+            addView(bouton(if (proposee) R.string.region_proposee_israel_oui else R.string.region_proposee_diaspora_oui, 0) {
+                Store.setInIsrael(this@ZmanimActivity, proposee, manuel = true)
+                afficher()
+            })
+            addView(bouton(R.string.region_proposee_garder, 8) {
+                Store.setInIsrael(this@ZmanimActivity, Store.inIsrael(this@ZmanimActivity), manuel = true)
+                afficher()
+            })
+        })
+    }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 }

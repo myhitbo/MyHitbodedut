@@ -699,6 +699,14 @@
     <string name="zmanim_source_villes">Cities: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
     <string name="zmanim_depuis_tset">Since nightfall: %1$s</string>
+    <string name="region_proposee_israel">This place is in Israel. Your status for Yom Tov Sheni stays “diaspora”: it follows where you live, not where you are (Shulchan Aruch 496:3).</string>
+    <string name="region_proposee_diaspora">This place is outside Israel. Your status for Yom Tov Sheni stays “Israel”: it follows where you live, not where you are (Shulchan Aruch 496:3).</string>
+    <string name="region_proposee_israel_oui">I live in Israel</string>
+    <string name="region_proposee_diaspora_oui">I live outside Israel</string>
+    <string name="region_proposee_garder">Keep my status</string>
+    <string name="note_ytc_ben_israel">Diaspora Yom Tov Sheni: for a resident of Israel it is a weekday. Weekday prayers, tefillin in private, and no melacha in public (Shulchan Aruch 496:3).</string>
+    <string name="note_ytc_ben_houl">Yom Tov Sheni: for a diaspora resident who intends to return, it is still a holiday, even in Israel (Mishna Berura 496:13).</string>
+    <string name="note_ytc_ben_houl_ashkenaz">Yom Tov Sheni: for a diaspora resident who intends to return, it is still a holiday, even in Israel (Mishna Berura 496:13). The Chacham Tzvi holds that one day suffices for a visitor; the app follows the Mishna Berura.</string>
     <string name="calendrier_title">Calendar</string>
     <string name="calendrier_precedent">Previous month</string>
     <string name="calendrier_suivant">Next month</string>

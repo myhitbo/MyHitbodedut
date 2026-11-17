@@ -89,6 +89,19 @@ export function horaires(lieu, iso, enIsrael, minutes, nusah = '') {
   return sortie;
 }
 
+/**
+ * La note du Yom tov chéni pour un voyageur (JourAffiche.noteYomTovCheni, audit du 16/11) : le
+ * calendrier suit le statut (la résidence) ; un jour chômé seulement en diaspora, quand le lieu est
+ * de l'autre région, la note dit ce qui change (Choul'han Aroukh 496:3 ; Michna Beroura 496:13 ;
+ * en Ashkenaz, l'avis du 'Hakham Tsvi). Une clé de chaîne, ou null.
+ */
+export function noteYomTovCheni(iso, statutIsrael, lieuEnIsrael, nusah) {
+  if (statutIsrael === lieuEnIsrael) return null;
+  if (!jour(iso, false).chome || jour(iso, true).chome) return null;
+  if (statutIsrael) return 'note_ytc_ben_israel';
+  return nusah === 'ashkenaz' ? 'note_ytc_ben_houl_ashkenaz' : 'note_ytc_ben_houl';
+}
+
 export const ALLUMAGE_JERUSALEM = 40;
 export const ALLUMAGE_EDOT = 20;
 

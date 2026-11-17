@@ -13,7 +13,7 @@ import { DanseMesure, SessionRule } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, dansIsrael, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
 import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
@@ -23,7 +23,7 @@ import * as Trophees from './trophees.js';
 import { FORMES, ICONES } from './trophees-formes.js';
 import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHalakha } from './halakha.js';
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
-import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, propositionAllumage, coutumeJerusalem, semaines, semainesHebreu } from './jour-affiche.js';
+import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, noteYomTovCheni, propositionAllumage, coutumeJerusalem, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
 import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
@@ -2726,11 +2726,11 @@ const parametre = (p) => (p !== '' && !Number.isNaN(Number(p)) ? Number(p).toLoc
  * La position du téléphone (16/10 ; précise depuis le 28/10, « en fonction de la position exacte ») :
  * haute précision, un point de moins d'une minute ; sans réponse, la dernière connue, même
  * ancienne. La ville la plus proche nomme le lieu. Silencieux : aucun message, aucune demande.
- * Choisie : « Ma position » vient d'être prise dans la liste des lieux, la région est redéduite ;
- * sinon une reprise (le lieu était déjà la position) garde la région choisie à la main dans les
- * réglages (audit du 12/11, FCALENDRIER-06, store.setLieuPosition).
+ * Choisie : « Ma position » vient d'être prise dans la liste des lieux. Ni ce choix ni une reprise
+ * ne réécrivent le statut Israël ou diaspora : un lieu de l'autre région pose la question
+ * (audit du 16/11, store.setLieu).
  */
-function localiserPosition({ etat = null, apres = rendre, silencieux = false, choisie = false } = {}) {
+function localiserPosition({ etat = null, apres = rendre, silencieux = false } = {}) {
   const dire = (cle) => { if (etat && !silencieux) etat.textContent = tr.t(cle); };
   if (!navigator.geolocation) { dire('zmanim_position_refusee'); return; }
   dire('zmanim_position_attente');
@@ -2741,7 +2741,7 @@ function localiserPosition({ etat = null, apres = rendre, silencieux = false, ch
       latitude: p.coords.latitude, longitude: p.coords.longitude,
       // Le fuseau du téléphone ; Israël ou diaspora d'après le territoire (TerritoireIsrael, 16/10).
       altitude: proche?.altitude ?? 0, fuseau: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    }, choisie);
+    });
     if (ancienne && !silencieux) signale(tr.t('zmanim_position_ancienne'));
     apres();
   };
@@ -2777,7 +2777,7 @@ function choisirLieu() {
     const etat = h('p', { class: 'message', 'aria-live': 'polite' });
     f.append(h('button', {
       class: 'choix',
-      onclick: () => localiserPosition({ etat, choisie: true, apres: () => { fermer(); rendre(); } }),
+      onclick: () => localiserPosition({ etat, apres: () => { fermer(); rendre(); } }),
     }, tr.t('zmanim_position')), etat);
     // La liste se remplit à l'arrivée de villes.json (FWEBCODE-05) : « Chargement… » en attendant,
     // un message et « Réessayer » si le fichier échoue.
@@ -3341,6 +3341,11 @@ function ecranZmanim() {
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
       // Le jour seul, trois boutons, puis les horaires (14/10, « trop de choses avant les זמנים »).
       carteJour(iso, { complet: false }),
+      // Audit du 16/11 : le statut Israël ou diaspora suit la résidence ; un lieu de l'autre région
+      // pose la question, et le Yom tov chéni d'un voyageur a sa note.
+      questionRegion(),
+      lieu && noteYomTovCheni(iso, store.inIsrael(), dansIsrael(lieu.latitude, lieu.longitude), store.siddurNusah())
+        ? h('p', { class: 'indice' }, tr.t(noteYomTovCheni(iso, store.inIsrael(), dansIsrael(lieu.latitude, lieu.longitude), store.siddurNusah()))) : null,
       h('div', { class: 'boutons-jour' },
         h('button', { class: 'secondaire', onclick: () => { jourHalakha = iso; rechercheHalakhaTexte = ''; ouvrir('halakha'); } }, tr.t('zmanim_bouton_halakha')),
         h('button', { class: 'secondaire', onclick: () => { jourHilloulot = iso; rechercheHilloulot = ''; ouvrir('hilloulot'); } }, tr.t('zmanim_bouton_hilloulot')),
@@ -3352,6 +3357,18 @@ function ecranZmanim() {
       listeZmanim(iso),
       ...sousHoraires(iso),
       ...piedZmanim())));
+}
+
+/** La question du statut (ZmanimActivity.questionRegion, audit du 16/11) : seule la réponse le change. */
+function questionRegion() {
+  const proposee = store.regionProposee();
+  if (proposee === null) return null;
+  return h('div', { class: 'carte carte-texte' },
+    h('p', {}, tr.t(proposee ? 'region_proposee_israel' : 'region_proposee_diaspora')),
+    h('div', { class: 'boutons-jour' },
+      h('button', { class: 'secondaire', onclick: () => { store.setInIsrael(proposee, true); rendre(); } },
+        tr.t(proposee ? 'region_proposee_israel_oui' : 'region_proposee_diaspora_oui')),
+      h('button', { class: 'secondaire', onclick: () => { store.setInIsrael(store.inIsrael(), true); rendre(); } }, tr.t('region_proposee_garder'))));
 }
 
 // --- La boussole de Jérusalem (BoussoleActivity, 28/10) : boussole.js ------------------------

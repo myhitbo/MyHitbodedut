@@ -520,60 +520,60 @@ test('territoire d’Israël : mêmes villes que TerritoireIsraelTest', () => {
   for (const [lat, lon] of [[31.9539, 35.9106], [29.5321, 35.0063], [33.2705, 35.2038], [31.1316, 33.7984], [29.49, 34.876], [48.8566, 2.3522], [33.1256, 35.8244]]) assert.ok(!dansIsrael(lat, lon), `${lat},${lon}`);
 });
 
-// Audit du 12/11, FCALENDRIER-06 : la région choisie à la main survit aux reprises de la position.
-test('Israël / diaspora : une reprise de la position garde la région choisie à la main', async () => {
-  const { regionPourPosition } = await import('../src/js/calendrier-juif.js');
+// Audit du 16/11 (gravité haute) : le statut pour le Yom tov chéni suit la résidence (Choul'han Aroukh
+// 496:3, Michna Beroura 496:13) ; un lieu de l'autre région pose la question sans rien changer. Remplace
+// la règle du 12/11 (FCALENDRIER-06), où choisir un lieu redéduisait la région.
+test('Israël / diaspora : un lieu ne change jamais le statut, il pose la question', async () => {
+  const { decisionRegion } = await import('../src/js/calendrier-juif.js');
   const { creeStore, memoire } = await import('../src/js/store.js');
-  const jerusalem = { nom: 'Ma position', latitude: 31.7769, longitude: 35.2224, altitude: 750, fuseau: 'Asia/Jerusalem' };
-  const paris = { nom: 'Ma position', latitude: 48.8566, longitude: 2.3522, altitude: 35, fuseau: 'Europe/Paris' };
-  assert.equal(regionPourPosition(31.7769, 35.2224, true, true), null);
-  assert.equal(regionPourPosition(31.7769, 35.2224, false, true), true);
-  assert.equal(regionPourPosition(48.8566, 2.3522, true, false), false);
+  const A = await import('../src/js/jour-affiche.js');
+  // Mêmes cas que TerritoireIsraelTest.
+  assert.deepEqual(decisionRegion(false, true, false, false), { region: null, proposition: false });
+  assert.deepEqual(decisionRegion(true, false, false, true), { region: null, proposition: true });
+  assert.deepEqual(decisionRegion(true, true, false, false), { region: null, proposition: null });
+  assert.deepEqual(decisionRegion(true, false, true, false), { region: true, proposition: null });
+  assert.deepEqual(decisionRegion(true, false, true, true), { region: null, proposition: true });
 
-  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12) });
-  // « Ma position » choisie dans la liste, à Jérusalem : la région suit la position (16/10).
-  s.setLieuPosition(jerusalem, true);
-  assert.equal(s.inIsrael(), true);
-  assert.equal(s.inIsraelManuel(), false);
-  // Bascule manuelle dans les réglages, puis reprises silencieuses : la région ne bouge pas.
-  s.setInIsrael(false, true);
+  const jerusalem = { nom: 'Ma position', latitude: 31.7769, longitude: 35.2224, altitude: 750, fuseau: 'Asia/Jerusalem' };
+  const newYork = { nom: 'Ma position', latitude: 40.7128, longitude: -74.006, altitude: 10, fuseau: 'America/New_York' };
+  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12), fuseau: 'Asia/Jerusalem' });
+  // Le premier lieu fixe le statut.
   s.setLieuPosition(jerusalem);
-  s.setLieuPosition({ ...jerusalem, latitude: 32.0853, longitude: 34.7818 });
+  assert.equal(s.inIsrael(), true);
+  assert.equal(s.regionProposee(), null);
+  // Un Israélien à New York (position ou ville) : le statut reste Israël, la question est posée.
+  s.setLieuPosition(newYork);
+  assert.equal(s.inIsrael(), true);
+  assert.equal(s.regionProposee(), false);
+  assert.equal(s.lieu().latitude, 40.7128, 'la position, elle, est bien reprise');
+  s.setLieu({ nom: 'New York', latitude: 40.7128, longitude: -74.006, altitude: 10, fuseau: 'America/New_York' }, { id: 5128581, pays: 'US' });
+  assert.equal(s.inIsrael(), true);
+  // « Garder » : le statut est déclaré, la question tombe ; les reprises ne la reposent pas en Israël.
+  s.setInIsrael(true, true);
+  assert.equal(s.regionProposee(), null);
+  s.setLieuPosition(jerusalem);
+  assert.equal(s.regionProposee(), null);
+  // Revenu à New York, la question revient ; « J'habite hors d'Israël » change le statut.
+  s.setLieuPosition(newYork);
+  assert.equal(s.regionProposee(), false);
+  s.setInIsrael(false, true);
   assert.equal(s.inIsrael(), false);
-  assert.equal(s.inIsraelManuel(), true);
-  assert.equal(s.lieu().latitude, 32.0853, 'la position, elle, est bien reprise');
+  assert.equal(s.regionProposee(), null);
   // Le drapeau voyage avec la sauvegarde.
   const fichier = JSON.parse(s.exportJson());
   assert.equal(fichier.settings.in_israel, false);
   assert.equal(fichier.settings.in_israel_manuel, true);
-  const autre = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12) });
-  autre.setLieuPosition(jerusalem, true);
-  autre.importJson(JSON.stringify(fichier));
-  autre.setLieuPosition(jerusalem);
-  assert.equal(autre.inIsrael(), false);
-  assert.equal(autre.inIsraelManuel(), true);
-  // Choisir de nouveau le lieu redéduit la région et efface le choix manuel : « Ma position » dans la liste…
-  s.setLieuPosition(jerusalem, true);
-  assert.equal(s.inIsrael(), true);
-  assert.equal(s.inIsraelManuel(), false);
-  // … une ville…
-  s.setInIsrael(true, true);
-  s.setLieu({ nom: 'Paris', latitude: 48.8566, longitude: 2.3522, altitude: 35, fuseau: 'Europe/Paris' }, { id: 2988507, pays: 'FR' });
-  assert.equal(s.inIsrael(), false);
-  assert.equal(s.inIsraelManuel(), false);
-  // … ou la position à la place d'une ville (« Actualiser ma position » de la boussole).
-  s.setInIsrael(true, true);
-  s.setLieuPosition(paris);
-  assert.equal(s.inIsrael(), false);
-  assert.equal(s.inIsraelManuel(), false);
-  // Sans choix manuel, la région suit toujours la position, reprise ou non (voyage, 16/10).
-  s.setLieuPosition(jerusalem);
-  assert.equal(s.inIsrael(), true);
-  // L'écran : la bascule des réglages est manuelle, la liste des lieux choisit, la reprise passe par le store.
+  // La note du Yom tov chéni (2026-10-04, Sim'hat Torah en diaspora).
+  assert.equal(A.noteYomTovCheni('2026-10-04', true, false, 'edot'), 'note_ytc_ben_israel');
+  assert.equal(A.noteYomTovCheni('2026-10-04', false, true, 'sefard'), 'note_ytc_ben_houl');
+  assert.equal(A.noteYomTovCheni('2026-10-04', false, true, 'ashkenaz'), 'note_ytc_ben_houl_ashkenaz');
+  assert.equal(A.noteYomTovCheni('2026-10-04', true, true, 'edot'), null);
+  assert.equal(A.noteYomTovCheni('2026-10-14', true, false, 'edot'), null);
+  // L'écran : la bascule des réglages est manuelle, la question aussi ; la position ne réécrit pas le statut.
   const app = readFileSync(join(ICI, '../src/js/app.js'), 'utf8');
   assert.ok(app.includes('store.setInIsrael(j === 0, true)'));
-  assert.ok(app.includes('localiserPosition({ etat, choisie: true,'));
-  assert.ok(!/store\.setInIsrael\(dansIsrael/.test(app), 'la position ne réécrit plus la région sans passer par setLieuPosition');
+  assert.ok(app.includes('store.setInIsrael(proposee, true)'));
+  assert.ok(!/store\.setInIsrael\(dansIsrael/.test(app));
 });
 
 test('rappels de tefila : nord et sud, Israël et diaspora', () => {

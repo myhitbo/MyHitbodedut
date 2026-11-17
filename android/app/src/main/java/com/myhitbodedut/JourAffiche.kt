@@ -137,6 +137,25 @@ object JourAffiche {
         return sortie
     }
 
+    /**
+     * La note du Yom tov chéni pour un voyageur (audit du 16/11) : une clé de chaîne, ou null.
+     * Le calendrier suit le statut ([statutIsrael], la résidence) ; la note dit ce qui change
+     * quand le lieu ([lieuEnIsrael]) est de l'autre région un jour qui n'est chômé qu'en diaspora :
+     *  - résident d'Israël en diaspora : jour de semaine pour lui, sans mélakha en public, tefillin
+     *    en privé (Choul'han Aroukh 496:3 ; Kitsour Yalkut Yosef 31:3, « ויניח תפילין בביתו בצינעא ») ;
+     *  - résident de diaspora en Israël : jour de fête pour lui (Michna Beroura 496:13) ; en
+     *    Ashkenaz, la note rappelle l'avis du 'Hakham Tsvi (un seul jour), que l'application ne suit pas.
+     */
+    fun noteYomTovCheni(date: LocalDate, statutIsrael: Boolean, lieuEnIsrael: Boolean, nusah: String): String? {
+        if (statutIsrael == lieuEnIsrael) return null
+        if (!CalendrierJuif.jour(date, false).chome || CalendrierJuif.jour(date, true).chome) return null
+        return when {
+            statutIsrael -> "note_ytc_ben_israel"
+            nusah == "ashkenaz" -> "note_ytc_ben_houl_ashkenaz"
+            else -> "note_ytc_ben_houl"
+        }
+    }
+
     /** Les minutes d'allumage d'usage à Jérusalem, hors Edot (calendrier de Rav Toukatchinsky). */
     const val ALLUMAGE_JERUSALEM = 40
 

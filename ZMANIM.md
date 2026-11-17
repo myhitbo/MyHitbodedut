@@ -216,20 +216,26 @@ suit la consigne du texte (« בעשרת ימי תשובה אומרים »).
   (`tools/villes_construction.py`). Chacune est désignée par son identifiant
   GeoNames ; ses coordonnées et son fuseau sont repris tels quels. Le nom
   hébreu est vérifié contre les noms alternatifs de GeoNames, sauf Lakewood
-  (New Jersey), déclaré dans l'outil. Choisir une ville règle aussi Israël ou
-  diaspora.
+  (New Jersey), déclaré dans l'outil.
 - **La position du téléphone** : sur Android, l'autorisation de localisation
   approximative, demandée seulement à ce moment-là ; sur le web,
-  `navigator.geolocation`. Depuis le 16/10, la région suit la position
-  (contour du territoire, `TerritoireIsrael`) ; le fuseau reste celui du téléphone.
-- **La région choisie à la main** (réglages, « Région ») est mémorisée comme
-  telle (`in_israel_manuel`, sauvegarde comprise) : les reprises de la
-  position — ouverture de Zmanim ou de la boussole, retour sur l'accueil,
-  changement de fuseau, « Actualiser ma position » — ne la réécrivent plus
-  (audit du 12/11, FCALENDRIER-06). Choisir un lieu (une ville, « Ma
-  position » dans la liste, la position à la place d'une ville) redéduit la
-  région et efface ce choix. Sans choix manuel, la région suit toujours la
-  position, voyage compris (décision du 16/10).
+  `navigator.geolocation`. Le fuseau reste celui du téléphone ; Israël ou
+  diaspora se lit sur le contour du territoire (`TerritoireIsrael`).
+- **Le statut Israël ou diaspora** (réglages, « Région ») décide du Yom tov
+  chéni. Il suit la résidence, pas l'endroit où l'on est (audit du 16/11 ;
+  Choul'han Aroukh 496:3, Michna Beroura 496:13, Kitsour YY 496) : un lieu
+  — ville ou position, choisie ou reprise — ne le réécrit jamais
+  (`TerritoireIsrael.decisionRegion`). Seul le tout premier lieu d'un statut
+  jamais choisi remplace la déduction faite du fuseau. Ensuite, un lieu de
+  l'autre région pose une question sur l'écran Zmanim (« J'habite en
+  Israël » / « Garder mon statut ») ; la réponse, comme le réglage, est un
+  choix (`in_israel_manuel`, sauvegarde comprise). L'émissaire installé à
+  l'étranger ou le ben 'houts laarets qui a un logement en Israël règlent
+  leur statut à la main. Un jour chômé seulement en diaspora, quand le lieu
+  est de l'autre région, une note dit ce qui change pour le voyageur
+  (`JourAffiche.noteYomTovCheni`) ; en Ashkenaz, elle rappelle l'avis du
+  'Hakham Tsvi, que l'application ne suit pas. Cette règle remplace celle du
+  16/10 et du 12/11 (FCALENDRIER-06), où le lieu redéduisait la région.
 
 Le lieu reste sur l'appareil. Choisir une ville revient sur la décision du
 21/09 (« sans ville ni coucher du soleil »), à la demande du propriétaire.

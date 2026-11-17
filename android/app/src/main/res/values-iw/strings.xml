@@ -715,6 +715,14 @@
     <string name="zmanim_source_villes">ערים: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
     <string name="zmanim_depuis_tset">מצאת הכוכבים: %1$s</string>
+    <string name="region_proposee_israel">המקום הזה בארץ ישראל. מעמדך לעניין יום טוב שני נשאר „חוץ לארץ”: הוא תלוי במקום מגוריך, לא במקום שבו אתה נמצא (שולחן ערוך תצו, ג).</string>
+    <string name="region_proposee_diaspora">המקום הזה בחוץ לארץ. מעמדך לעניין יום טוב שני נשאר „ארץ ישראל”: הוא תלוי במקום מגוריך, לא במקום שבו אתה נמצא (שולחן ערוך תצו, ג).</string>
+    <string name="region_proposee_israel_oui">אני גר בארץ ישראל</string>
+    <string name="region_proposee_diaspora_oui">אני גר בחוץ לארץ</string>
+    <string name="region_proposee_garder">להשאיר את המעמד</string>
+    <string name="note_ytc_ben_israel">יום טוב שני של גלויות: לבן ארץ ישראל זהו יום חול. תפילת חול, תפילין בצנעה, ואין לעשות מלאכה בפרהסיה (שולחן ערוך תצו, ג).</string>
+    <string name="note_ytc_ben_houl">יום טוב שני: לבן חוץ לארץ שדעתו לחזור, זהו עדיין יום טוב, גם בארץ ישראל (משנה ברורה תצו, יג).</string>
+    <string name="note_ytc_ben_houl_ashkenaz">יום טוב שני: לבן חוץ לארץ שדעתו לחזור, זהו עדיין יום טוב, גם בארץ ישראל (משנה ברורה תצו, יג). החכם צבי סובר שדי למבקר ביום אחד; האפליקציה הולכת לפי המשנה ברורה.</string>
     <string name="calendrier_title">לוח שנה</string>
     <string name="calendrier_precedent">החודש הקודם</string>
     <string name="calendrier_suivant">החודש הבא</string>

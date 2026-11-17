@@ -749,6 +749,14 @@
     <string name="zmanim_source_villes">Villes : GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
     <string name="zmanim_depuis_tset">Depuis la sortie des étoiles : %1$s</string>
+    <string name="region_proposee_israel">Ce lieu est en Israël. Votre statut pour le Yom tov chéni reste « diaspora » : il suit votre résidence, pas l’endroit où vous êtes (Choul’han Aroukh 496:3).</string>
+    <string name="region_proposee_diaspora">Ce lieu est hors d’Israël. Votre statut pour le Yom tov chéni reste « Israël » : il suit votre résidence, pas l’endroit où vous êtes (Choul’han Aroukh 496:3).</string>
+    <string name="region_proposee_israel_oui">J’habite en Israël</string>
+    <string name="region_proposee_diaspora_oui">J’habite hors d’Israël</string>
+    <string name="region_proposee_garder">Garder mon statut</string>
+    <string name="note_ytc_ben_israel">Yom tov chéni de la diaspora : pour un résident d’Israël, c’est un jour de semaine. Office de semaine, tefillin en privé, et pas de mélakha en public (Choul’han Aroukh 496:3).</string>
+    <string name="note_ytc_ben_houl">Yom tov chéni : pour un résident de la diaspora qui compte rentrer, c’est encore jour de fête, même en Israël (Michna Beroura 496:13).</string>
+    <string name="note_ytc_ben_houl_ashkenaz">Yom tov chéni : pour un résident de la diaspora qui compte rentrer, c’est encore jour de fête, même en Israël (Michna Beroura 496:13). Le ’Hakham Tsvi tient qu’un seul jour suffit au visiteur ; l’application suit le Michna Beroura.</string>
     <string name="calendrier_title">Calendrier</string>
     <string name="calendrier_precedent">Mois précédent</string>
     <string name="calendrier_suivant">Mois suivant</string>
