@@ -203,7 +203,15 @@ export function clesHilloula(mois, jourH, emb, dernierJour, ashkenaz = false) {
   const m = mois === 12 && !emb ? ['adar', 'adar1', 'adar2'] : mois === 12 ? (ashkenaz ? ['adar', 'adar1'] : ['adar1'])
     : mois === 13 ? (ashkenaz ? ['adar2'] : ['adar', 'adar2']) : [String(mois)];
   const jours = jourH === 29 && dernierJour ? [29, 30] : [jourH];
-  return m.flatMap((k) => jours.map((j) => `${k}-${j}`));
+  const base = m.flatMap((k) => jours.map((j) => `${k}-${j}`));
+  // Le 30 Adar n'existe qu'en Adar I (audit du 16/11, Hilloulot.cles) : une année embolismique, le 30 Adar I
+  // pour tous (Kitsour Yalkut Yosef 40:22) ; une année simple, en Ashkenaz, le 30 Chevat (Michna Beroura 568:42).
+  const trente = ['adar-30', 'adar1-30'];
+  if (emb && mois === 13) return base.filter((k) => k !== 'adar-30');
+  if (emb && mois === 12 && jourH === 30 && !base.includes('adar-30')) return [...base, 'adar-30'];
+  if (!emb && ashkenaz && mois === 12) return base.filter((k) => !trente.includes(k));
+  if (!emb && ashkenaz && mois === 11 && jourH === 30) return [...base, ...trente];
+  return base;
 }
 
 /**

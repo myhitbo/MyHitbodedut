@@ -185,6 +185,10 @@ suit la consigne du texte (« בעשרת ימי תשובה אומרים »).
   approximative, demandée seulement à ce moment-là ; sur le web,
   `navigator.geolocation`. Depuis le 16/10, la région suit la position
   (contour du territoire, `TerritoireIsrael`) ; le fuseau reste celui du téléphone.
+  Eilat et la Arava (Yotvata, Ketoura, Sapir) sont en Israël, avec un seul jour
+  de fête (Kitsour Yalkout Yossef, Chevi'it 1:5 ; Peninei Halakha, Moadim 9:4,
+  note 3) ; certains en doutent, selon l'avis qui place Na'hal Mitsrayim à
+  el-Arich (audit du 16/11). Taba est hors du contour.
 - **La région choisie à la main** (réglages, « Région ») est mémorisée comme
   telle (`in_israel_manuel`, sauvegarde comprise) : les reprises de la
   position — ouverture de Zmanim ou de la boussole, retour sur l'accueil,

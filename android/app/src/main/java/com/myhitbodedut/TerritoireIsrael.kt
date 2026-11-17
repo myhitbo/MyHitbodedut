@@ -12,6 +12,11 @@ package com.myhitbodedut
  * de Gaza est dans le contour, qui suit la côte depuis Rafia'h : choix géographique, sans
  * prise de position sur son statut pour le deuxième jour de fête.
  *
+ * Eilat et la Arava (Yotvata, Ketoura, Sapir) : un seul jour de fête (Kitsour Yalkut Yosef,
+ * Chevi'it 1:5 : « אך אין צריך לעשות שם ב' ימים טובים של גלויות » ; Peninei Halakha, Moadim 9:4,
+ * note 3) ; certains en doutent, selon l'avis qui place Na'hal Mitsrayim à el-Arich (audit du
+ * 16/11). Taba reste hors du contour.
+ *
  * Rien d'Android ici.
  */
 object TerritoireIsrael {
