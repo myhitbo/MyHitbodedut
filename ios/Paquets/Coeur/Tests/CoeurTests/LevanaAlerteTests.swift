@@ -139,7 +139,8 @@ struct LevanaAlerteTests {
                     try #require(attendu.count == 8)
                     let ou = "\(ligne.date), \(id), \(usage.cle)"
                     let f = Levana.fenetre(date, fuseau: zone, usage: usage)
-                    let soirs = LevanaAlerte.soirs(f, depuis: date, fuseau: zone)
+                    // Les vecteurs : Israël à Jérusalem seule (VecteursLevana.israel), le Yom tov chéni ailleurs.
+                    let soirs = LevanaAlerte.soirs(f, depuis: date, fuseau: zone, enIsrael: id == "Asia/Jerusalem")
                     let noms = soirs.map { $0.soir.rawValue }.joined(separator: " ")
                     #expect(noms == attendu[6], "\(ou) : les soirs du rappel")
                     for rappel in soirs {
@@ -173,7 +174,7 @@ struct LevanaAlerteTests {
             let depart = JourCivil.du(b.depart)
             for (k, attendus) in b.soirs.enumerated() {
                 let depuis = depart.plus(jours: k)
-                let noms = LevanaAlerte.soirs(f, depuis: depuis, fuseau: zone).map { $0.soir.rawValue }.joined(separator: " ")
+                let noms = LevanaAlerte.soirs(f, depuis: depuis, fuseau: zone, enIsrael: b.fuseau == "Asia/Jerusalem").map { $0.soir.rawValue }.joined(separator: " ")
                 #expect(noms == attendus, "\(b.date), \(b.fuseau), \(b.usage) : les soirs depuis le \(depuis.iso)")
                 if attendus.isEmpty { vides += 1 }
             }
