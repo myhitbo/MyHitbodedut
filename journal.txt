@@ -1,0 +1,40 @@
+paquets installes : ['com.myhitbodedut.debug']
+paquet : com.myhitbodedut.debug
+ecran : 1080 2400
+adb root : 
+root : True
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut.debug for user 0 are [fr]
+
+=== 29 versions sur petit ecran ===
+  ecran : 480x854, densite Physical density: 420
+Override density: 240
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-choix-version.png (69868 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app"></string>     <string name="version_app">serenite</string> </map> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-serenite.png (75242 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">bento</string> </map> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-bento.png (77986 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">instant</string> </map> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-instant.png (63611 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">pile</string> </map> 
+  FAUTE : petit pile : texte ecrase (18px) « ’HIZOUK DU JOUR »
+  FAUTE : petit pile : texte ecrase (18px) « וּבִלְשׁוֹן אַשְׁכְּנַז יָכוֹל »
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-pile.png (73523 octets)
+  ecran : 480x854, densite Physical density: 420
+Override density: 240
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-gros-texte-choix-version.png (70286 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">serenite</string> </map> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-gros-texte-serenite.png (81544 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">bento</string> </map> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-gros-texte-bento.png (77836 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">instant</string> </map> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-gros-texte-instant.png (68359 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">pile</string> </map> 
+  FAUTE : petit-gros-texte pile : texte ecrase (18px) « ’HIZOUK DU JOUR »
+  FAUTE : petit-gros-texte pile : texte ecrase (18px) « וּבִלְשׁוֹן אַשְׁכְּנַז יָכוֹל »
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/29-petit-gros-texte-pile.png (75211 octets)
+  ecran : 1080x2400, densite Physical density: 420
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  fautes des petits ecrans : ['petit pile : texte ecrase (18px) « ’HIZOUK DU JOUR »', 'petit pile : texte ecrase (18px) « וּבִלְשׁוֹן אַשְׁכְּנַז יָכוֹל »', 'petit-gros-texte pile : texte ecrase (18px) « ’HIZOUK DU JOUR »', 'petit-gros-texte pile : texte ecrase (18px) « וּבִלְשׁוֹן אַשְׁכְּנַז יָכוֹל »']
+
+captures : ['29-petit-bento.png', '29-petit-choix-version.png', '29-petit-gros-texte-bento.png', '29-petit-gros-texte-choix-version.png', '29-petit-gros-texte-instant.png', '29-petit-gros-texte-pile.png', '29-petit-gros-texte-serenite.png', '29-petit-instant.png', '29-petit-pile.png', '29-petit-serenite.png', 'accessibilite.txt', 'journal.txt']

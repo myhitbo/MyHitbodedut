@@ -1,0 +1,19 @@
+== 29-petit-choix-version
+== 29-petit-serenite
+PETIT 85x44dp TextView  «Modifier»
+== 29-petit-bento
+== 29-petit-instant
+PETIT 172x44dp TextView  «Commencer · 15 min»
+PETIT 288x34dp LinearLayout  «Choisissez un lieu pour voir l»
+== 29-petit-pile
+== 29-petit-gros-texte-choix-version
+== 29-petit-gros-texte-serenite
+PETIT 103x44dp TextView  «Modifier»
+== 29-petit-gros-texte-bento
+PETIT 139x13dp FrameLayout  «0 jour d’affilée»
+PETIT 139x13dp FrameLayout  «Zmanim»
+== 29-petit-gros-texte-instant
+PETIT 217x44dp TextView  «Commencer · 15 min»
+PETIT 288x39dp LinearLayout  «Choisissez un lieu pour voir l»
+== 29-petit-gros-texte-pile
+PETIT 200x34dp TextView  «Commencer · 15 min»
