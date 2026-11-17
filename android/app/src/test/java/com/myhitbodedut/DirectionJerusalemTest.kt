@@ -39,6 +39,14 @@ class DirectionJerusalemTest {
     }
 
     @Test
+    fun `conseil du minyan quand les deux methodes different de plus de 20 degres (audit du 16-11)`() {
+        // Los Angeles : 23,8° contre 91,0° ; Paris : quelques degrés seulement.
+        assertTrue(DirectionJerusalem.conseilMinyan(34.0522, -118.2437))
+        assertTrue(!DirectionJerusalem.conseilMinyan(48.8566, 2.3522))
+        assertTrue(!DirectionJerusalem.conseilMinyan(31.7769, 35.2224))
+    }
+
+    @Test
     fun `par le plus court cote du meridien de 180 degres`() {
         // De Honolulu, la loxodromie passe par l'ouest (cap 270° et plus), pas par l'est.
         val rh = DirectionJerusalem.carte(21.3069, -157.8583)

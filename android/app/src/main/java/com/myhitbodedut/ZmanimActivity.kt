@@ -59,6 +59,10 @@ class ZmanimActivity : AppCompatActivity() {
             JourAffiche.noteYomTovCheni(aujourdhui, israel, TerritoireIsrael.contient(lieu.latitude, lieu.longitude), Store.siddurNusah(this).cle)
                 ?.let { noteYtc(it) }
                 ?.let { contenu.addView(VueJour.texte(this, getString(it), 13f, R.color.brand, haut = 8).apply { setPadding(dp(16), 0, dp(16), 0) }) }
+            // Japon, Nouvelle-Zélande, Australie orientale, Hawaï… : la ligne de date halakhique est discutée.
+            if (JourAffiche.ligneDateDiscutee(lieu.longitude)) {
+                contenu.addView(VueJour.texte(this, getString(R.string.ligne_date_discutee), 13f, R.color.muted, haut = 8).apply { setPadding(dp(16), 0, dp(16), 0) })
+            }
         }
         // Après la sortie des étoiles du lieu, le jour hébreu a déjà changé (la vignette le dit) : la ligne aussi (FCALENDRIER-13).
         if (lieu != null) {

@@ -23,7 +23,7 @@ import * as Trophees from './trophees.js';
 import { FORMES, ICONES } from './trophees-formes.js';
 import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHalakha } from './halakha.js';
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
-import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, noteYomTovCheni, propositionAllumage, coutumeJerusalem, semaines, semainesHebreu } from './jour-affiche.js';
+import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, ligneDateDiscutee, noteYomTovCheni, propositionAllumage, coutumeJerusalem, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
 import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
@@ -3346,6 +3346,8 @@ function ecranZmanim() {
       questionRegion(),
       lieu && noteYomTovCheni(iso, store.inIsrael(), dansIsrael(lieu.latitude, lieu.longitude), store.siddurNusah())
         ? h('p', { class: 'indice' }, tr.t(noteYomTovCheni(iso, store.inIsrael(), dansIsrael(lieu.latitude, lieu.longitude), store.siddurNusah()))) : null,
+      // Japon, Nouvelle-Zélande, Australie orientale, Hawaï… : la ligne de date halakhique est discutée.
+      lieu && ligneDateDiscutee(lieu.longitude) ? h('p', { class: 'indice' }, tr.t('ligne_date_discutee')) : null,
       h('div', { class: 'boutons-jour' },
         h('button', { class: 'secondaire', onclick: () => { jourHalakha = iso; rechercheHalakhaTexte = ''; ouvrir('halakha'); } }, tr.t('zmanim_bouton_halakha')),
         h('button', { class: 'secondaire', onclick: () => { jourHilloulot = iso; rechercheHilloulot = ''; ouvrir('hilloulot'); } }, tr.t('zmanim_bouton_hilloulot')),
@@ -3579,6 +3581,8 @@ function ecranBoussole() {
     contenu.push(h('div', { class: 'carte carte-texte' },
       h('p', { class: 'nom' }, tr.t('boussole_note_titre')),
       h('p', { class: 'indice' }, tr.t('boussole_note')),
+      // Audit du 16/11 : plus de 20° entre les deux méthodes, le conseil du minyan (MB 94:10).
+      Boussole.conseilMinyan(lieu.latitude, lieu.longitude) ? h('p', { class: 'indice' }, tr.t('boussole_minyan')) : null,
       h('p', {}, source[0], h('a', { href: SOURCE_BOUSSOLE, target: '_blank', rel: 'noopener', dir: 'ltr' }, tr.t('boussole_source_titre')), source[1] ?? '')));
   }
   return h('div', { class: 'ecran avec-bandeau' }, bandeau(tr.t('boussole_title'), { puce: lieu ? puce : null, dessin: 'char_standing_back' }),
@@ -3984,14 +3988,19 @@ function friseVol(c, enVol, maintenant) {
 function carteJalons(c) {
   const minutes = store.allumage();
   const jalons = Vol.jalons(c, store.inIsrael(), minutes);
-  if (!jalons.length) return null;
+  if (!jalons.length && !c.lignesDate.length) return null;
   const libelle = (f) => { try { return tr.t(`fete_${f}`); } catch { return null; } };
   return h('div', { class: 'carte carte-texte carte-vol' }, h('p', { class: 'indice' }, tr.t('vol_jalons_titre')),
+    // Ligne de date (audit du 16/11) : le choix de la ligne est discuté ; pendant le Omer, deux comptes.
+    c.lignesDate.length ? h('p', {}, tr.t('ligne_date_discutee')) : null,
+    Vol.ligneDateOmer(c, store.inIsrael()) ? h('p', { class: 'vol-jalon' }, tr.t('vol_omer_ligne_date')) : null,
     ...jalons.flatMap((j) => {
       const nom = [j.chabbat ? tr.t('vol_chabbat') : null, ...j.fetes.map(libelle)].filter(Boolean).join(' · ');
       const heure = deuxHeures(c.plan, j.instant);
       const texte = j.type === 'omer' ? tr.t('vol_jalon_omer', String(j.omer), heure) : tr.t(`vol_jalon_${j.type}`, nom, heure);
       return [h('p', { class: 'vol-jalon' }, texte),
+        // Vol polaire sans tsét : le repère de repli est dit (audit du 16/11).
+        j.repli ? h('p', {}, tr.t('vol_jalon_repli')) : null,
         j.allumage ? h('p', {}, tr.t('vol_jalon_allumage', String(minutes), deuxHeures(c.plan, j.allumage))) : null,
         h('p', { class: 'indice' }, positionVol(j))];
     }),

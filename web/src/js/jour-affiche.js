@@ -102,6 +102,12 @@ export function noteYomTovCheni(iso, statutIsrael, lieuEnIsrael, nusah) {
   return nusah === 'ashkenaz' ? 'note_ytc_ben_houl_ashkenaz' : 'note_ytc_ben_houl';
 }
 
+/**
+ * Un lieu où la ligne de date halakhique est discutée (JourAffiche.ligneDateDiscutee, audit du 16/11) :
+ * à l'est de 125,2° E (90° de Jérusalem, la ligne du 'Hazon Ich) ou à l'ouest de 150° O.
+ */
+export const ligneDateDiscutee = (longitude) => longitude >= 125.2 || longitude <= -150;
+
 export const ALLUMAGE_JERUSALEM = 40;
 export const ALLUMAGE_EDOT = 20;
 

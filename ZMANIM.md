@@ -340,6 +340,24 @@ soleil vers l'ouest) ; le passage du méridien de 180°, avec la date locale de
 part et d'autre. La vraie ligne de changement de date s'écarte de ce
 méridien (Kiribati, Samoa…) : seul le méridien est calculé.
 
+**Audit du 16/11.**
+
+- Vol polaire sans tsét (SFO–LHR au Omer) : après une chki'a sans tsét,
+  `VolCalendrier.tsetManque` pose un repère de repli, dit comme un choix de
+  calcul : le Omer et Arvit à la chki'a (Kitsour YY 489:18, MB 489:14), la
+  sortie et l'enchaînement à Rabbénou Tam (72 min), jamais à la chki'a.
+- Cha'harit : le rappel nomme la fin du Chema (Edot : Maguen Avraham,
+  Kitsour YY 89:4 ; les autres : Gra), avec l'autre avis, et l'annonce
+  30 minutes avant (`VolRappels.Type.CHEMA_FIN`). En vol, le profil reste le
+  profil commun : la fin MGA y est en 72 min fixes.
+- Ligne de date : la carte des jalons dit que la ligne halakhique est
+  discutée ('Hazon Ich, Rav Toukatchinsky, Rav Frank) ; pendant le Omer,
+  elle avertit que les deux comptes divergent, avec les avis, sans trancher.
+  L'écran Zmanim le dit aussi à l'est de 125,2° E et à l'ouest de 150° O.
+  Le jour civil en vol reste celui du fuseau nautique (méridien 180°) : le
+  fuseau réel du point n'est pas calculé (non fait, faute de carte des fuseaux
+  hors ligne).
+
 **Ce qui est vérifié, estimé, supposé.**
 
 - Vérifié par les tests (`VolTest`, `vol.test.mjs`) : chaque zman trouvé en

@@ -156,6 +156,13 @@ object JourAffiche {
         }
     }
 
+    /**
+     * Un lieu où la ligne de date halakhique est discutée (audit du 16/11) : à l'est de 125,2° E
+     * (90° de Jérusalem, la ligne du 'Hazon Ich) ou à l'ouest de 150° O (Hawaï, Samoa, Tonga).
+     * L'application suit le jour civil (Rav Frank) ; l'écran le dit, sans trancher.
+     */
+    fun ligneDateDiscutee(longitude: Double): Boolean = longitude >= 125.2 || longitude <= -150.0
+
     /** Les minutes d'allumage d'usage à Jérusalem, hors Edot (calendrier de Rav Toukatchinsky). */
     const val ALLUMAGE_JERUSALEM = 40
 

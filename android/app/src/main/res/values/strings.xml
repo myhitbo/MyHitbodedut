@@ -1411,6 +1411,9 @@
     <string name="vol_jalons_note">Jour civil du point sous l’avion ; %1$s, d’après le réglage de l’application.</string>
     <string name="vol_jalons_israel">calendrier d’Israël</string>
     <string name="vol_jalons_diaspora">calendrier de diaspora</string>
+    <string name="vol_jalon_repli">Pas de tsét sous l’avion : repère de repli, choix de calcul (le Omer et Arvit à la chki’a, la sortie à Rabbénou Tam).</string>
+    <string name="vol_omer_ligne_date">Ligne de date pendant le Omer : votre compte personnel (les nuits vécues) et celui du lieu sous l’avion ne coïncident plus. Selon Rav Chlomo Zalman Auerbach, qui a perdu un jour continue sans bénédiction ; selon le Rabbi de Loubavitch, on suit son compte personnel. Mieux vaut éviter de traverser la ligne pendant le Omer ; demandez à votre rav.</string>
+    <string name="ligne_date_discutee">Ligne de date : l’application suit la ligne internationale (le jour civil du lieu). Pour le Japon, la Nouvelle-Zélande, l’Australie orientale, Hawaï, Tonga ou Samoa, les poskim divergent sur la ligne halakhique (’Hazon Ich, Rav Toukatchinsky, Rav Frank) : demandez à votre rav.</string>
     <string name="vol_gps">Position réelle (GPS)</string>
     <string name="vol_gps_oublier">Revenir à la route prévue</string>
     <string name="vol_gps_attente">Recherche du signal GPS… Près d’un hublot, la réception est meilleure.</string>
@@ -1458,6 +1461,9 @@
     <string name="vol_rappel_fin_texte">Limite : %1$s.</string>
     <string name="vol_rappel_omer_titre">Compte de l’Omer</string>
     <string name="vol_rappel_omer_texte">Les étoiles sortent sous l’avion : ce soir, on compte le jour %1$s de l’Omer.</string>
+    <string name="vol_rappel_chema_titre">Plus que 30 min pour le Chema</string>
+    <string name="vol_rappel_chema_mga">Fin du Chema (Maguen Avraham) : %1$s. Au besoin, selon le Gra : %2$s.</string>
+    <string name="vol_rappel_chema_gra">Fin du Chema (Gra) : %1$s. Selon le Maguen Avraham : %2$s.</string>
     <string name="vol_direct_explication_opensky">Désactivé par défaut. Activé, il demande à OpenSky Network, gratuitement et sans compte, les avions vus dans un carré de 10° autour de la position estimée ; l’indicatif reste sur le téléphone, qui y cherche l’avion. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_source_aeroports">Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms en hébreu et en français : Wikidata (CC0)</string>
 
@@ -1478,6 +1484,7 @@
     <string name="boussole_sans_capteur">Ce téléphone n’a pas de boussole : la direction est donnée par rapport au nord, en haut.</string>
     <string name="boussole_note_titre">Deux façons de calculer</string>
     <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ’Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ’Haïm 94) : de New York, environ 96°. Le personnage suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
+    <string name="boussole_minyan">Ici, les deux méthodes diffèrent de plus de 20°. Au minyan, priez dans la direction de la communauté et tournez seulement le visage vers Jérusalem (Michna Beroura 94:10).</string>
     <string name="boussole_widget_label">Direction de Jérusalem</string>
     <string name="boussole_widget_description">Le personnage et la direction de Jérusalem depuis le lieu des zmanim, par rapport au nord. Le toucher ouvre la boussole.</string>
     <string name="boussole_widget_lecture">Jérusalem depuis %1$s : %2$d° depuis le nord</string>

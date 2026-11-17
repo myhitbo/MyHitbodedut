@@ -1405,6 +1405,9 @@
     <string name="vol_jalons_note">היום האזרחי של הנקודה שמתחת למטוס; %1$s, לפי הגדרת האפליקציה.</string>
     <string name="vol_jalons_israel">לוח ארץ ישראל</string>
     <string name="vol_jalons_diaspora">לוח חוץ לארץ</string>
+    <string name="vol_jalon_repli">אין צאת הכוכבים מתחת למטוס: נקודת גיבוי, בחירה בחישוב (ספירת העומר וערבית בשקיעה, צאת השבת לפי רבנו תם).</string>
+    <string name="vol_omer_ligne_date">קו התאריך בימי הספירה: הספירה האישית שלך (הלילות שעברו עליך) וספירת המקום שמתחת למטוס כבר אינן שוות. לדעת הרב שלמה זלמן אויערבך, מי שדילג על יום ימשיך לספור בלי ברכה; לדעת הרבי מליובאוויטש, הולכים אחר הספירה האישית. ראוי להימנע מלעבור את קו התאריך בימי הספירה; שאל את רבך.</string>
+    <string name="ligne_date_discutee">קו התאריך: האפליקציה הולכת לפי הקו הבינלאומי (היום האזרחי של המקום). ביפן, בניו זילנד, במזרח אוסטרליה, בהוואי, בטונגה או בסמואה נחלקו הפוסקים בקו התאריך ההלכתי (החזון איש, הרב טוקצינסקי, הרב פרנק): שאל את רבך.</string>
     <string name="vol_gps">מיקום אמיתי (GPS)</string>
     <string name="vol_gps_oublier">חזרה למסלול המתוכנן</string>
     <string name="vol_gps_attente">מחפש אות GPS… ליד חלון הקליטה טובה יותר.</string>
@@ -1452,6 +1455,9 @@
     <string name="vol_rappel_fin_texte">סוף הזמן: %1$s.</string>
     <string name="vol_rappel_omer_titre">ספירת העומר</string>
     <string name="vol_rappel_omer_texte">צאת הכוכבים מתחת למטוס: הלילה סופרים יום %1$s לעומר.</string>
+    <string name="vol_rappel_chema_titre">עוד 30 דקות לסוף זמן קריאת שמע</string>
+    <string name="vol_rappel_chema_mga">סוף זמן קריאת שמע (מגן אברהם): %1$s. בשעת הצורך, לפי הגר״א: %2$s.</string>
+    <string name="vol_rappel_chema_gra">סוף זמן קריאת שמע (גר״א): %1$s. לפי המגן אברהם: %2$s.</string>
     <string name="vol_direct_explication_opensky">כבוי כברירת מחדל. כשהוא פעיל, הוא מבקש מ־OpenSky Network, בחינם וללא חשבון, את המטוסים שנראים בריבוע של ⁦10°⁩ סביב המיקום המשוער; אות הקריאה נשאר בטלפון, שמחפש בו את הטיסה. מעל אוקיינוסים המטוס לעיתים קרובות אינו נראה.</string>
     <string name="vol_source_aeroports">שדות תעופה: OurAirports (נחלת הכלל); אזורי זמן: timezone-boundary-builder ‏(ODbL, © תורמי OpenStreetMap); שמות בעברית ובצרפתית: Wikidata (CC0)</string>
 
@@ -1472,6 +1478,7 @@
     <string name="boussole_sans_capteur">בטלפון זה אין מצפן: הכיוון מוצג ביחס לצפון, למעלה.</string>
     <string name="boussole_note_titre">שתי דרכים לחשב</string>
     <string name="boussole_note">את כיוון ירושלים אפשר לחשב בשתי דרכים. לפי המעגל הגדול, הכיוון האמיתי על פני כדור הארץ: שולחן ערוך הרב (אורח חיים צד, ב), המור וקציעה לרבי יעקב עמדן (קנ) ועוד סוברים שזו הדרך העדיפה; מניו יורק, כ־⁦54°⁩. לפי הקו הישר על מפת מרקטור (כיוון קבוע), כפי שנראה למשל מדברי הלבוש (אורח חיים צד): מניו יורק, כ־⁦96°⁩. הדמות עוקבת אחרי הכיוון שבחרתם ב„הכיוון שהמצפן עוקב אחריו” (כברירת מחדל, הכיוון האמיתי); הכיוון השני מוצג לידיעה בלבד. החישוב נעשה במכשיר, לעבר הר הבית (⁦31.7781°⁩ צפון, ⁦35.2354°⁩ מזרח), בתיקון הסטייה המגנטית של המקום.</string>
+    <string name="boussole_minyan">כאן שתי השיטות שונות ביותר מ־⁦20°⁩. במניין, יתפלל לצד שהציבור מתפללים ויצדד פניו לירושלים (משנה ברורה צד, י).</string>
     <string name="boussole_widget_label">כיוון ירושלים</string>
     <string name="boussole_widget_description">הדמות וכיוון ירושלים ממקום הזמנים, ביחס לצפון. נגיעה פותחת את המצפן.</string>
     <string name="boussole_widget_lecture">ירושלים מ%1$s: ⁦%2$d°⁩ מהצפון</string>
