@@ -257,7 +257,39 @@ object SiddurJour {
         if (avinouMalkenou(conditions) && minha && !vendredi) {
             c = c + CalendrierJuif.C.AVINOU_MALKENOU_MINHA
         }
-        return c
+        return c + ajoutsOffices(nusah, enIsrael, c)
+    }
+
+    /**
+     * Audit du 16/11 (structure des offices) : ce qui dépend du noussa'h et de sa source.
+     *  - ויהי נועם au motsaé Chabbat ([CalendrierJuif.C.VIHI_NOAM]) : pas le soir du 9 Av (Choul'han Aroukh
+     *    O.H. 559:2 ; Kitsour Yalkut Yosef 556:3), ni un samedi soir qui est Yom tov ; en Sfard et en
+     *    Ashkenaz, pas non plus quand un Yom tov ou 'Hol hamoed tombe dans la semaine (Rema O.H. 295:1 ;
+     *    Michna Beroura 295:3 ; Choul'han Aroukh haRav 295:3) ; les Edot le disent (Kitsour Yalkut Yosef 294:7).
+     *  - « ואתה קדוש » ([CalendrierJuif.C.VEATA_KADOCH]) : les mêmes soirs, et le soir du 9 Av après Ekha
+     *    (Choul'han Aroukh O.H. 559:2).
+     *  - Les téfilin ([CalendrierJuif.C.TEFILIN]) : pas le Chabbat ni le Yom tov ; pas à 'Hol hamoed chez les
+     *    Edot (Kitsour Yalkut Yosef 31:6) ni en Israël (Choul'han Aroukh O.H. 31:2) ; pas le matin du 9 Av en
+     *    Ashkenaz et en Sfard (Choul'han Aroukh O.H. 555:1). À 'Hol hamoed en diaspora, l'Ashkenaz les met
+     *    sans bénédiction (Michna Beroura 31:8 : [CalendrierJuif.C.TEFILIN_SANS_BERAKHA]).
+     *  - Le Vidouï du Chema du coucher ([CalendrierJuif.C.VIDUI_COUCHER]) : les nuits dont le jour a Ta'hanoun,
+     *    hors motsaé Chabbat ou Yom tov et lendemain de Roch 'Hodech (consigne du siddour Edot ; Kitsour Yalkut
+     *    Yosef, ק״ש שעל המטה בליל שבת §ב). Le motsaé Chabbat, il se dit après 'hatsot : l'app ne le sait pas.
+     *  - « לדוד ה׳ אורי » ([CalendrierJuif.C.LEDAVID]) : en Ashkenaz hors d'Israël, jusqu'à Chemini Atséret
+     *    inclus (Michna Beroura 581:2, « עד שמע״צ ועד בכלל »).
+     */
+    private fun ajoutsOffices(nusah: String, enIsrael: Boolean, c: Set<String>): Set<String> = buildSet {
+        val k = CalendrierJuif.C
+        val edot = nusah == "edot"
+        val vihiNoam = k.MOTSAE_CHABBAT in c && k.TICHA_BEAV !in c && k.CHOME !in c && (edot || k.YOM_TOV_SEMAINE !in c)
+        if (vihiNoam) add(k.VIHI_NOAM)
+        if (vihiNoam || k.TICHA_BEAV in c) add(k.VEATA_KADOCH)
+        val sansTefilin = k.CHABBAT in c || k.YOM_TOV in c || (k.HOL_HAMOED in c && (edot || enIsrael)) ||
+            (k.TICHA_BEAV in c && !edot)
+        if (!sansTefilin) add(k.TEFILIN)
+        if (nusah == "ashkenaz" && !enIsrael && k.HOL_HAMOED in c) add(k.TEFILIN_SANS_BERAKHA)
+        if (k.TAHANOUN_CHAHARIT in c && k.MOTSAE_CHABBAT_YT !in c && k.LENDEMAIN_ROCH_HODECH !in c) add(k.VIDUI_COUCHER)
+        if (nusah == "ashkenaz" && !enIsrael && k.CHEMINI_ATSERET in c && k.BASCULE_PLUIE in c) add(k.LEDAVID)
     }
 
     /**

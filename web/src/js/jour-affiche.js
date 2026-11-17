@@ -2,7 +2,7 @@
 // 10/10) : les ajouts à nommer, les horaires avec l'entrée et la sortie de
 // Chabbat ou de fête, la grille d'un mois. Mêmes règles, mêmes cas de test.
 
-import { C, jour } from './calendrier-juif.js';
+import { C, jour, jourDeLaPriere } from './calendrier-juif.js';
 import { conditionsPour, libelleHallel } from './siddur-jour.js';
 import * as Z from './zmanim.js';
 import { SiddurMoment } from './regles.js';
@@ -68,6 +68,17 @@ export function horaires(lieu, iso, enIsrael, minutes) {
     }
   }
   return sortie;
+}
+
+/** Les offices de semaine du siddour (audit du 16/11, JourAffiche.OFFICES). */
+export const OFFICES = ['chaharit', 'minha', 'arvit'];
+
+/**
+ * Audit du 16/11 (JourAffiche.momentOuvrable) : pas d'office de semaine proposé quand la prière relève
+ * d'un Chabbat ou d'un Yom tov ; [moment] sinon. [heures] : l'heure locale (0-23).
+ */
+export function momentOuvrable(moment, iso, heures, enIsrael) {
+  return moment && OFFICES.includes(moment) && jour(jourDeLaPriere(moment, iso, heures), enIsrael).chome ? null : moment;
 }
 
 /**

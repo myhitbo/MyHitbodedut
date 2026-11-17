@@ -13,7 +13,7 @@ import { DanseMesure, SessionRule } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, nuit as nuitDuLieu, rappelsTefila, usageLevana } from './calendrier-juif.js';
 import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
@@ -23,7 +23,7 @@ import * as Trophees from './trophees.js';
 import { FORMES, ICONES } from './trophees-formes.js';
 import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHalakha } from './halakha.js';
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
-import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, semaines, semainesHebreu } from './jour-affiche.js';
+import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, momentOuvrable, OFFICES, moisHebreuVoisin, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
 import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
@@ -923,7 +923,9 @@ function momentAccueil() {
   const rappels = rappelsDeTefila();
   if (!chargeSiddur()) return rappels;
   const heure = new Date();
-  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
+  // Pas d'office de semaine proposé un Chabbat ou un Yom tov (audit du 16/11, JourAffiche.momentOuvrable).
+  const moment = momentOuvrable(store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes()),
+    jourLieu(heure), heureLieu(heure).heures, store.inIsrael());
   const cartes = [...rappels];
   const t = moment ? siddur.textes.find((x) => x.id === moment) : null;
   if (t) cartes.push(carteMaintenant(t, undefined, undefined, tr.t(Salutation.mot(heureLieu(heure).heures))));
@@ -1519,7 +1521,8 @@ function ecranSiddur() {
   const heure = new Date();
   // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
   const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
-  const suggere = pret && moment ? siddur.textes.find((x) => x.id === moment) : null;
+  const ouvrable = momentOuvrable(moment, jourLieu(heure), heureLieu(heure).heures, store.inIsrael());
+  const suggere = pret && ouvrable ? siddur.textes.find((x) => x.id === ouvrable) : null;
   // 'Hanouka (13/10) : le Hallel du jour, avec la scène de 'Hanouka, sous la prière du matin.
   const isoHeure = jourLieu(heure);
   const hallelHanouka = pret && moment === 'chaharit' && jourJuif(isoHeure, store.inIsrael()).fetes.includes('hanouka')
@@ -1539,6 +1542,8 @@ function ecranSiddur() {
       suggere ? carteMaintenant(suggere) : null,
       hallelHanouka ? carteMaintenant(hallelHanouka, 'scene_hanukkah') : null,
       ilanot ? carteMaintenant(ilanot, 'scene_nature') : null,
+      // Les bénédictions de la Méguila, du siddour, avant le livre (audit du 16/11).
+      esther && siddur.textes.some((y) => y.id === 'megila') ? carteMaintenant(siddur.textes.find((y) => y.id === 'megila'), 'char_purim') : null,
       esther ? carteMaintenant(esther, 'char_purim', () => { priere = `livre:${esther.id}`; ouvrir('priere'); }) : null,
       enteteGroupe(tr.t('siddur_books'), null),
       h('div', { class: 'livres' },
@@ -1577,6 +1582,9 @@ function ecranPriere() {
   const isoMaintenant = jourLieu(maintenant);
   const tset = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant).find((z) => z.cle === 'tset')?.instant : null;
   const jourDuTexte = jourJuif(jourDeLaPriere(x.id, isoMaintenant, heureLieu(maintenant).heures, !!tset && maintenant >= tset), store.inIsrael(), mukafChoma());
+  // La nuit (audit du 16/11, CalendrierJuif.nuit) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
+  const alot = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant).find((z) => z.cle === 'alot')?.instant : null;
+  if (nuitDuLieu(heureLieu(maintenant).heures, tset ? maintenant >= tset : null, alot ? maintenant < alot : null)) jourDuTexte.conditions.add('nuit');
   const nusah = store.siddurNusah();
   const c = conditionsPour(nusah, store.inIsrael(), jourDuTexte.conditions, store.sansTahanounFinTichri(), hemisphereSud());
   const nom = (a, condition) => tr.t(libelleJour(a.libelle, condition, nusah, c));
@@ -1685,6 +1693,8 @@ function ecranPriere() {
     traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     annotations ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
+    // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
+    !livre && OFFICES.includes(x.id) && jourDuTexte.chome ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_semaine_chabbat')) : null,
     ...x.sections.flatMap((s, si) => {
       // Le titre traduit (04/11), sous l'hébreu ou à sa place.
       const titres = s.titre ? LanguesTexte.textes(languesLecture(), s.titre, s.titre_fr, s.titre_en) : [];

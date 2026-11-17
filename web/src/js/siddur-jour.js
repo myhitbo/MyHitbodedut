@@ -45,7 +45,27 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   const minha = c0.has('tahanoun_minha') || c0.has('roch_hachana') || c0.has('kippour');
   const vendredi = c0.has('jour_6') || c0.has('erev_kippour_vendredi');
   if (avinouMalkenou(conditions) && minha && !vendredi) c.add('avinou_malkenou_minha');
+  for (const k of ajoutsOffices(nusah, enIsrael, c)) c.add(k);
   return c;
+}
+
+/**
+ * Audit du 16/11 (SiddurJour.ajoutsOffices, qui cite les sources) : ויהי נועם et « ואתה קדוש » au motsaé
+ * Chabbat et le soir du 9 Av, les téfilin, le Vidouï du Chema du coucher, לדוד ה׳ אורי à Chemini Atséret
+ * (Ashkenaz hors d'Israël).
+ */
+function ajoutsOffices(nusah, enIsrael, c) {
+  const r = [];
+  const edot = nusah === 'edot';
+  const vihiNoam = c.has('motsae_chabbat') && !c.has('ticha_beav') && !c.has('chome') && (edot || !c.has('yom_tov_semaine'));
+  if (vihiNoam) r.push('vihi_noam');
+  if (vihiNoam || c.has('ticha_beav')) r.push('veata_kadoch');
+  const sansTefilin = c.has('chabbat') || c.has('yom_tov') || (c.has('hol_hamoed') && (edot || enIsrael)) || (c.has('ticha_beav') && !edot);
+  if (!sansTefilin) r.push('tefilin');
+  if (nusah === 'ashkenaz' && !enIsrael && c.has('hol_hamoed')) r.push('tefilin_sans_berakha');
+  if (c.has('tahanoun_chaharit') && !c.has('motsae_chabbat_yt') && !c.has('lendemain_roch_hodech')) r.push('vidui_coucher');
+  if (nusah === 'ashkenaz' && !enIsrael && c.has('chemini_atseret') && c.has('bascule_pluie')) r.push('ledavid');
+  return r;
 }
 
 /** Les conditions déduites (SiddurJour, CalendrierJuif.C.DERIVEES), hors des vecteurs KosherJava. */
@@ -53,7 +73,10 @@ export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hato
   'tsom_guedalia_tevet', 'lendemain_kippour', 'ticha_beav_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
   'lamnatseah', 'ledavid', 'techouva_hochaana', 'yom_tov', 'moed', 'chabbat_roch_hodech', 'yom_tov_chabbat', 'roch_hachana_chabbat',
   'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan',
-  'pourim_triple_hors_jerusalem', 'pourim_triple_festin'];
+  'pourim_triple_hors_jerusalem', 'pourim_triple_festin',
+  // Audit du 16/11 (structure des offices).
+  'mizmor_letoda', 'hol_hamoed', 'yom_tov_semaine', 'leil_haseder', 'lendemain_roch_hodech', 'chome',
+  'vihi_noam', 'veata_kadoch', 'tefilin', 'tefilin_sans_berakha', 'vidui_coucher', 'nuit'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix
