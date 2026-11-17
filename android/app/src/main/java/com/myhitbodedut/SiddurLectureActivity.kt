@@ -313,7 +313,7 @@ class SiddurLectureActivity : AppCompatActivity() {
         // Une traduction automatique affichée : on dit qu'elle n'est pas relue, l'hébreu fait foi (COUV-05).
         val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
             listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
-        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, jour.conditions, ouverts,
+        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, Store.conditionsDuJour(this, jour), ouverts,
             Store.siddurNusah(this).cle, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this))
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager

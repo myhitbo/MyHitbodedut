@@ -14,7 +14,7 @@ import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
 import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
-import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
+import { avecSansTahanoun, conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
 import { distanceKm } from './direction.js';
@@ -1578,7 +1578,8 @@ function ecranPriere() {
   const tset = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant).find((z) => z.cle === 'tset')?.instant : null;
   const jourDuTexte = jourJuif(jourDeLaPriere(x.id, isoMaintenant, heureLieu(maintenant).heures, !!tset && maintenant >= tset), store.inIsrael(), mukafChoma());
   const nusah = store.siddurNusah();
-  const c = conditionsPour(nusah, store.inIsrael(), jourDuTexte.conditions, store.sansTahanounFinTichri(), hemisphereSud());
+  const c = conditionsPour(nusah, store.inIsrael(), avecSansTahanoun(jourDuTexte.conditions, store.sansTahanounLe(jourDuTexte.date)),
+    store.sansTahanounFinTichri(), hemisphereSud());
   const nom = (a, condition) => tr.t(libelleJour(a.libelle, condition, nusah, c));
   // Marque-pages (15/10, SiddurLectureActivity) : un appui long sur un paragraphe le marque ou le démarque.
   const cleMarque = `${livre ? 'l' : 's'}:${x.id}`;
@@ -2930,7 +2931,7 @@ function carteJour(iso, { complet = true } = {}) {
     (complet ? null : jourDepuisSortie(iso)) ? h('p', { class: 'jour-civil' }, tr.t('zmanim_depuis_tset', jourDepuisSortie(iso))) : null,
     marques.length ? h('div', { class: 'jour-marques' }, marques.map((m) => h('span', { class: 'marque' }, m))) : null,
     h('h3', { class: 'jour-sous-titre' }, tr.t('zmanim_ajouts_titre')),
-    h('p', { class: 'jour-ajouts' }, ajoutsDuJour(j.conditions, store.siddurNusah(), store.inIsrael(), store.sansTahanounFinTichri(), hemisphereSud()).map((k) => tr.t(k)).join(' · ')),
+    h('p', { class: 'jour-ajouts' }, ajoutsDuJour(avecSansTahanoun(j.conditions, store.sansTahanounLe(iso)), store.siddurNusah(), store.inIsrael(), store.sansTahanounFinTichri(), hemisphereSud()).map((k) => tr.t(k)).join(' · ')),
     // Partager le jour en image (14/10, PartageJour.kt).
     h('button', { class: 'jour-lien lien-bouton', onclick: () => partagerJour(iso) }, `${tr.t('partage_jour')} ↗`),
     // Le calendrier montre tout ; l'écran Zmanim (14/10) n'y garde que le jour (sousHoraires).
@@ -4592,7 +4593,11 @@ function ecranReglages() {
         ligne({ nom: tr.t('reglage_allumage'), onclick: choisirAllumage,
           etat: [libelleAllumage(store.allumage()), mukafChoma() && store.allumage() !== 40 ? tr.t('reglage_allumage_proposition') : null].filter(Boolean).join(' · ') }),
         store.siddurNusah() === 'sefard' ? ligne({ nom: tr.t('reglage_tahanoun_tichri'), onclick: choisirTahanounTichri,
-          etat: tr.t(store.sansTahanounFinTichri() ? 'reglage_tahanoun_tichri_sans' : 'reglage_tahanoun_tichri_dit') }) : null),
+          etat: tr.t(store.sansTahanounFinTichri() ? 'reglage_tahanoun_tichri_sans' : 'reglage_tahanoun_tichri_dit') }) : null,
+        // « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; Choul'han Aroukh O.H. 131:4) : deuil, brit, 'hatan ; ce jour seulement.
+        ligne({ nom: tr.t('reglage_sans_tahanoun_jour'),
+          etat: tr.t(store.sansTahanounLe(jourLieu()) ? 'reglage_sans_tahanoun_jour_oui' : 'reglage_sans_tahanoun_jour_non'),
+          onclick: () => { store.setSansTahanounLe(jourLieu(), !store.sansTahanounLe(jourLieu())); rendre(); } })),
       carteMaPratique(),
       // Ni barrière ni rappels sur le site (FPRODUIT-06) : le dire, plutôt que de laisser chercher.
       h('p', { class: 'indice' }, tr.t('reglages_android_seulement')),

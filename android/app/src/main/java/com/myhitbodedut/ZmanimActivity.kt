@@ -105,6 +105,19 @@ class ZmanimActivity : AppCompatActivity() {
                 setOnClickListener { choisirTahanounTichri() }
             })
         }
+        // « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; Choul'han Aroukh O.H. 131:4) : maison en deuil, brit
+        // mila, 'hatan. Un interrupteur pour ce jour seulement ; le lendemain, il est de nouveau éteint.
+        contenu.addView(VueJour.carte(this).apply {
+            val sans = Store.sansTahanounLe(this@ZmanimActivity, aujourdhui)
+            addView(VueJour.texte(this@ZmanimActivity, getString(R.string.reglage_sans_tahanoun_jour), 15f, R.color.ink))
+            addView(VueJour.texte(this@ZmanimActivity, getString(if (sans) R.string.reglage_sans_tahanoun_jour_oui
+                else R.string.reglage_sans_tahanoun_jour_non), 13f, R.color.muted, haut = 2))
+            foreground = Apparence.effetToucher(this@ZmanimActivity)
+            setOnClickListener {
+                Store.setSansTahanounLe(this@ZmanimActivity, aujourdhui, !sans)
+                afficher()
+            }
+        })
         contenu.addView(VueJour.pied(this))
     }
 
