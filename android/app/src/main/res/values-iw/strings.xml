@@ -774,6 +774,7 @@
     <string name="ajout_hallel_complet">הלל שלם</string>
     <string name="ajout_tahanoun">תחנון</string>
     <string name="ajout_sans_tahanoun">אין תחנון</string>
+    <string name="ajout_sans_tahanoun_pessah_cheni">אין תחנון (מנהג; השולחן ערוך והמשנה ברורה אינם מזכירים, ומנהג אשכנז הקדום היה לומר)</string>
     <string name="ajout_sans_tahanoun_ponctuel">אין תחנון (הגדרת היום)</string>
     <string name="ajout_vidoui_erev_kippour">מנחה: וידוי ו״על חטא״ אחר העמידה (במחזור)</string>
     <string name="ajout_sans_tahanoun_halikhot_chlomo">אין תחנון (הליכות שלמה); לפי המשנה ברורה אומרים</string>

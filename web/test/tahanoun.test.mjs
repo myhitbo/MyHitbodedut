@@ -23,6 +23,8 @@ test('אל ארך אפים suit למנצח : dit le lundi de Tou biChvat, pas à
     assert.equal(etat(nusah, 'chaharit', s, 1, '2026-02-02'), 'du_jour', nusah); // lundi 15 Chvat
     assert.equal(etat(nusah, 'chaharit', s, 1, '2025-11-17'), 'du_jour', nusah); // lundi ordinaire
     assert.equal(etat(nusah, 'chaharit', s, 1, '2026-08-13'), 'hors', nusah); // jeudi 30 Av, Roch 'Hodech
+    // Un jeûne qui n'est ni lundi ni jeudi : pas d'אל ארך אפים (ShA haRav 429:12).
+    assert.equal(etat(nusah, 'chaharit', s, 1, '2025-12-30'), 'hors', nusah); // mardi 10 Tévèt
   }
   // Edot : lié au Ta'hanoun (Yalkout Yossef), inchangé.
   assert.equal(etat('edot', 'chaharit', 11, 1, '2026-02-02'), 'hors');
@@ -84,6 +86,11 @@ test('« Pas de Ta\'hanoun aujourd\'hui » : le réglage ponctuel retire le Ta\'
     assert.ok(conditionsPour(nusah, false, avecSansTahanoun(c0, false)).has('tahanoun_chaharit'), nusah);
     assert.ok(ajouts(avecSansTahanoun(c0, true), nusah).includes('ajout_sans_tahanoun_ponctuel'), nusah);
   }
+});
+
+test('Pessa\'h chéni (Ashkenaz) : l\'absence de Ta\'hanoun dite comme un usage', () => {
+  assert.ok(ajouts(jour('2026-05-01', false).conditions, 'ashkenaz').includes('ajout_sans_tahanoun_pessah_cheni'));
+  assert.ok(ajouts(jour('2026-05-01', false).conditions, 'sefard').includes('ajout_sans_tahanoun'));
 });
 
 test('Veille de Kippour : Vidouï et על חטא à Min\'ha signalés (Choul\'han Aroukh O.H. 607:1)', () => {

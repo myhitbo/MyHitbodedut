@@ -184,8 +184,10 @@ def annoter(texte_id, sections, nusah):
                     # דינם שוה » (Michna Beroura 131:35 ; consigne Sfard d'Achré, Dérekh ha'Haïm ; Choul'han
                     # Aroukh haRav 429:12). Il se dit donc les lundis et jeudis sans Ta'hanoun (Nissan, Tou
                     # biChvat…) ; « ויש נוהגים » qui le lient au Ta'hanoun restent un usage cité (audit du 16/11).
+                    # Le lundi et le jeudi seulement, pas un jeûne d'un autre jour : « ובשני וחמישי אומרים אל ארך
+                    # אפים » (Choul'han Aroukh haRav 429:12 ; Matté Efraïm 602:12) : clé el_erekh_apayim.
                     if x.startswith("אין אומרים אא״א") and nusah != "edot":
-                        mode, reste = "lamnatseah", None
+                        mode, reste = "el_erekh_apayim", None
                     elif "ביום שיש בו תחנון" in x or x.startswith("אין אומרים אא״א"):
                         mode, reste = "tahanoun_chaharit", None
                     elif "ביום שאין בו תחנון" in x:

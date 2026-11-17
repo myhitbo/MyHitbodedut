@@ -41,7 +41,9 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
     // Le réglage ponctuel (deuil, brit, 'hatan ; audit du 16/11) : on dit d'où vient l'absence.
     l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun'
       : c.has('sans_tahanoun_ponctuel') ? 'ajout_sans_tahanoun_ponctuel'
-      : nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem') ? 'ajout_sans_tahanoun_halikhot_chlomo' : 'ajout_sans_tahanoun');
+      : nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem') ? 'ajout_sans_tahanoun_halikhot_chlomo'
+      // Pessa'h chéni (Ashkenaz) : un usage que ni le Choul'han Aroukh ni le Michna Beroura ne citent (JourAffiche.ajouts).
+      : nusah === 'ashkenaz' && c.has('jour_pessah_cheni') ? 'ajout_sans_tahanoun_pessah_cheni' : 'ajout_sans_tahanoun');
   }
   // La veille de Kippour : Vidouï et « על חטא » après l'Amida de Min'ha, dans le ma'hzor (Choul'han Aroukh O.H. 607:1 ;
   // Kitsour Yalkout Yossef 607:1 ; audit du 16/11).

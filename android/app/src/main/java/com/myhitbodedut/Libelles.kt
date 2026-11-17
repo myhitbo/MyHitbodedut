@@ -68,6 +68,7 @@ object Libelles {
         "ajout_roch_hodech" -> R.string.ajout_roch_hodech
         "ajout_sans_tahanoun" -> R.string.ajout_sans_tahanoun
         "ajout_sans_tahanoun_halikhot_chlomo" -> R.string.ajout_sans_tahanoun_halikhot_chlomo
+        "ajout_sans_tahanoun_pessah_cheni" -> R.string.ajout_sans_tahanoun_pessah_cheni
         "ajout_sans_tahanoun_ponctuel" -> R.string.ajout_sans_tahanoun_ponctuel
         "ajout_sauf_hanouka" -> R.string.ajout_sauf_hanouka
         "ajout_sauf_ticha_beav_kippour" -> R.string.ajout_sauf_ticha_beav_kippour

@@ -74,6 +74,9 @@ object JourAffiche {
             // Le réglage ponctuel (deuil, brit, 'hatan ; audit du 16/11) : on dit d'où vient l'absence.
             C.SANS_TAHANOUN_PONCTUEL in c -> "ajout_sans_tahanoun_ponctuel"
             nusah == "ashkenaz" && C.POURIM_TRIPLE_HORS_JERUSALEM in c -> "ajout_sans_tahanoun_halikhot_chlomo"
+            // Pessa'h chéni : ni le Choul'han Aroukh ni le Michna Beroura n'en parlent ; l'ancien usage ashkénaze
+            // disait Ta'hanoun (Chaarei Techouva 131:19 ; audit du 16/11).
+            nusah == "ashkenaz" && C.JOUR_PESSAH_CHENI in c -> "ajout_sans_tahanoun_pessah_cheni"
             else -> "ajout_sans_tahanoun"
         })
         // La veille de Kippour : Vidouï et « על חטא » après l'Amida de Min'ha, que l'app n'a pas (ma'hzor) ;

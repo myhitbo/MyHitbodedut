@@ -158,6 +158,9 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(c.has('jeune') && !c.has('asseret_yemei_techouva'), 'avinou_malkenou_jeune');
   si(!regles.isChanukah() || regles.isRoshChodesh() || c.has('chabbat'), 'kaddich_complet_hallel');
   si(mois === JewishDate.IYAR && quantieme === 13, 'veille_pessah_cheni');
+  si(mois === JewishDate.IYAR && quantieme === 14, 'jour_pessah_cheni');
+  // אל ארך אפים : les jours de למנצח, lundi et jeudi seulement (ShA haRav 429:12 ; CalendrierJuif.C.EL_EREKH_APAYIM).
+  si(c.has('lamnatseah') && (semaine === 1 || semaine === 4), 'el_erekh_apayim');
   si(index === JewishCalendar.EREV_YOM_KIPPUR, 'erev_kippour');
   const hier = new Date(`${iso}T12:00:00Z`);
   hier.setUTCDate(hier.getUTCDate() - 1);

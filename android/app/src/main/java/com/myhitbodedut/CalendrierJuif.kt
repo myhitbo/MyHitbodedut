@@ -144,6 +144,13 @@ object CalendrierJuif {
         const val AVINOU_MALKENOU_JEUNE = "avinou_malkenou_jeune"
         const val KADDICH_COMPLET_HALLEL = "kaddich_complet_hallel"
         const val VEILLE_PESSAH_CHENI = "veille_pessah_cheni"
+        /** Le 14 Iyar : sans Ta'hanoun, usage que ni le Choul'han Aroukh ni le Michna Beroura ne citent (JourAffiche le dit en Ashkenaz). */
+        const val JOUR_PESSAH_CHENI = "jour_pessah_cheni"
+        /**
+         * אל ארך אפים (Ashkenaz, Sfard) : les jours de למנצח, le lundi et le jeudi seulement (Michna Beroura 131:35 ;
+         * Choul'han Aroukh haRav 429:12 ; Matté Efraïm 602:12), pas un jeûne d'un autre jour.
+         */
+        const val EL_EREKH_APAYIM = "el_erekh_apayim"
         const val EREV_KIPPOUR = "erev_kippour"
 
         /**
@@ -157,7 +164,7 @@ object CalendrierJuif {
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
                 POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN, AVINOU_MALKENOU_JEUNE, KADDICH_COMPLET_HALLEL,
-                VEILLE_PESSAH_CHENI, EREV_KIPPOUR, SANS_TAHANOUN_PONCTUEL)
+                VEILLE_PESSAH_CHENI, EREV_KIPPOUR, SANS_TAHANOUN_PONCTUEL, JOUR_PESSAH_CHENI, EL_EREKH_APAYIM)
     }
 
     /**
@@ -358,6 +365,8 @@ object CalendrierJuif {
             if (C.JEUNE in this && C.ASSERET_YEMEI_TECHOUVA !in this) add(C.AVINOU_MALKENOU_JEUNE)
             if (!regles.isChanukah || regles.isRoshChodesh || C.CHABBAT in this) add(C.KADDICH_COMPLET_HALLEL)
             if (mois == JewishDate.IYAR && quantieme == 13) add(C.VEILLE_PESSAH_CHENI)
+            if (mois == JewishDate.IYAR && quantieme == 14) add(C.JOUR_PESSAH_CHENI)
+            if (C.LAMNATSEAH in this && (semaine == DayOfWeek.MONDAY || semaine == DayOfWeek.THURSDAY)) add(C.EL_EREKH_APAYIM)
             if (index == JewishCalendar.EREV_YOM_KIPPUR) add(C.EREV_KIPPOUR)
             val hierYomTov = calendrier(date.minusDays(1), enIsrael, modernes = false).isYomTovAssurBemelacha
             if (C.MOTSAE_CHABBAT in this || (hierYomTov && !regles.isAssurBemelacha)) add(C.MOTSAE_CHABBAT_YT)

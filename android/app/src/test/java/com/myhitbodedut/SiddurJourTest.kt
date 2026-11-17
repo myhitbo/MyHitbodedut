@@ -286,6 +286,7 @@ class SiddurJourTest {
         listOf(Nusah.SEFARD to 12, Nusah.ASHKENAZ to 5).forEach { (n, s) ->
             assertEquals(n.cle, SiddurJour.Style.DU_JOUR, styleDe(n, "chaharit", s, 1, "2026-02-02")) // lundi, Tou biChvat
             assertEquals(n.cle, SiddurJour.Style.HORS, styleDe(n, "chaharit", s, 1, "2026-08-13")) // jeudi, Roch 'Hodech
+            assertEquals(n.cle, SiddurJour.Style.HORS, styleDe(n, "chaharit", s, 1, "2025-12-30")) // mardi, 10 Tévèt (ShA haRav 429:12)
         }
     }
 
@@ -333,5 +334,6 @@ class SiddurJourTest {
         }
         assertTrue(CalendrierJuif.C.TAHANOUN_CHAHARIT in SiddurJour.conditionsPour("sefard", false, SiddurJour.avecSansTahanoun(c("2025-11-17"), false)))
         assertTrue("ajout_vidoui_erev_kippour" in JourAffiche.ajouts(c("2025-10-01"), "ashkenaz"))
+        assertTrue("ajout_sans_tahanoun_pessah_cheni" in JourAffiche.ajouts(c("2026-05-01"), "ashkenaz"))
     }
 }

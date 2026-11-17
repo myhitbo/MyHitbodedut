@@ -324,6 +324,7 @@ object SiddurJour {
             // Audit du 16/11 : des variantes, nommées comme ce qu'elles sont.
             c == CalendrierJuif.C.AVINOU_MALKENOU_JEUNE -> "ajout_jeune_public"
             c == CalendrierJuif.C.KADDICH_COMPLET_HALLEL -> "ajout_sauf_hanouka"
+            c == CalendrierJuif.C.EL_EREKH_APAYIM -> "ajout_lundi_jeudi"
             // « אומרים כאן הלל » : le Hallel, complet ou non selon le jour.
             c == "hallel" -> "ajout_hallel_annonce"
             c.startsWith("embolismique") -> "ajout_embolismique"

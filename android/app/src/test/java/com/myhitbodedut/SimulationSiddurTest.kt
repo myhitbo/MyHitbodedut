@@ -104,9 +104,9 @@ class SimulationSiddurTest {
         // Audit du 16/11 (Ta'hanoun et ce qui en dépend).
         // עלינו suit chacun des trois offices, sans lien avec le Ta'hanoun (Michna Beroura 132:7).
         Regle(setOf("minha"), "עלינו לשבח לאדון הכל", TOUJOURS),
-        // אל ארך אפים suit למנצח (Michna Beroura 131:35 ; consigne Sfard, Dérekh ha'Haïm).
-        Regle(setOf("chaharit"), "אל ארך אפים ומלא רחמים אל תסתר פניך ממנו", { C.KRIAT_HATORAH in it && C.LAMNATSEAH in it }, setOf(Nusah.SEFARD)),
-        Regle(setOf("chaharit"), "אל ארך אפים ורב חסד ואמת אל באפך תוכיחנו", { C.KRIAT_HATORAH in it && C.LAMNATSEAH in it }, setOf(Nusah.ASHKENAZ)),
+        // אל ארך אפים suit למנצח (Michna Beroura 131:35 ; consigne Sfard, Dérekh ha'Haïm), le lundi et le jeudi (ShA haRav 429:12).
+        Regle(setOf("chaharit"), "אל ארך אפים ומלא רחמים אל תסתר פניך ממנו", { C.LAMNATSEAH in it && (C.JOURS_SEMAINE[1] in it || C.JOURS_SEMAINE[4] in it) }, setOf(Nusah.SEFARD)),
+        Regle(setOf("chaharit"), "אל ארך אפים ורב חסד ואמת אל באפך תוכיחנו", { C.LAMNATSEAH in it && (C.JOURS_SEMAINE[1] in it || C.JOURS_SEMAINE[4] in it) }, setOf(Nusah.ASHKENAZ)),
         // Le piyout du lundi et du jeudi (Aroukh haChoul'han 134:1-2), le Vidouï ashkénaze (Michna Beroura 134:1).
         Regle(setOf("chaharit"), "זרים אומרים אין תוחלת ותקוה", si(C.LUNDI_JEUDI), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
         Regle(setOf("chaharit"), "אשמנו בגדנו גזלנו", si(C.LUNDI_JEUDI), setOf(Nusah.ASHKENAZ)),

@@ -758,6 +758,7 @@
     <string name="ajout_hallel_complet">Full Hallel</string>
     <string name="ajout_tahanoun">Tachanun</string>
     <string name="ajout_sans_tahanoun">No Tachanun</string>
+    <string name="ajout_sans_tahanoun_pessah_cheni">No Tachanun (custom; neither the Shulchan Aruch nor the Mishna Berura mention it, the old Ashkenazi custom said it)</string>
     <string name="ajout_sans_tahanoun_ponctuel">No Tachanun (today’s setting)</string>
     <string name="ajout_vidoui_erev_kippour">Mincha: Viduy and « על חטא » after the Amida (in the machzor)</string>
     <string name="ajout_sans_tahanoun_halikhot_chlomo">No Tachanun (Halichos Shlomo); per the Mishna Berura, it is said</string>

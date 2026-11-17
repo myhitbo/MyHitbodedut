@@ -808,6 +808,7 @@
     <string name="ajout_hallel_complet">Hallel complet</string>
     <string name="ajout_tahanoun">Ta’hanoun</string>
     <string name="ajout_sans_tahanoun">Pas de Ta’hanoun</string>
+    <string name="ajout_sans_tahanoun_pessah_cheni">Pas de Ta’hanoun (usage ; ni le Choul’han Aroukh ni le Michna Beroura n’en parlent, l’ancien usage ashkénaze le disait)</string>
     <string name="ajout_sans_tahanoun_ponctuel">Pas de Ta’hanoun (réglage du jour)</string>
     <string name="ajout_vidoui_erev_kippour">Min’ha : Vidouï et « על חטא » après l’Amida (dans le ma’hzor)</string>
     <string name="ajout_sans_tahanoun_halikhot_chlomo">Pas de Ta’hanoun (Halikhot Chlomo) ; selon le Michna Beroura, on le dit</string>
