@@ -9,8 +9,6 @@ import javax.microedition.lcdui.Graphics;
  * jours en barres, et le total.
  */
 final class JournalEcran extends Ecran {
-    static final String[] INITIALES = {"D", "L", "M", "M", "J", "V", "S"};
-
     private final Journal journal;
     private final String vide;
 
@@ -24,27 +22,28 @@ final class JournalEcran extends Ecran {
         int h = getHeight();
         g.setColor(PAPER);
         g.fillRect(0, 0, w, h);
-        int y = bandeau(g, w, "Journal", null) + 8;
+        int y = bandeau(g, w, Mots.m(Mots.JOURNAL), null) + 8;
 
-        // Le personnage qui écrit, et les deux chiffres qui comptent.
+        // Le personnage qui écrit, et les deux chiffres qui comptent ; en hébreu, le personnage à droite.
         int d = 76;
-        plaque(g, "writing", MARGE + d / 2, y, d);
-        int x = MARGE + d + 10;
+        plaque(g, "writing", mx(MARGE, d, w) + d / 2, y, d);
+        int x = rtl() ? w - MARGE - d - 10 : MARGE + d + 10;
+        int a = Graphics.TOP | debut();
         int auj = journal.minutesDu(Journal.aujourdhui());
         g.setFont(PETITE);
         g.setColor(MUTED);
-        g.drawString("Aujourd'hui", x, y + 4, Graphics.TOP | Graphics.LEFT);
+        g.drawString(Mots.m(Mots.AUJOURDHUI), x, y + 4, a);
         g.setFont(GRANDE);
         g.setColor(auj > 0 ? BRAND : WARNING);
-        g.drawString(auj > 0 ? Regles.duree(auj) : "à faire", x, y + 4 + PETITE.getHeight(), Graphics.TOP | Graphics.LEFT);
+        g.drawString(auj > 0 ? Regles.duree(auj) : Mots.m(Mots.A_FAIRE_MIN), x, y + 4 + PETITE.getHeight(), a);
         int s = journal.serie();
         int ys = y + 8 + PETITE.getHeight() + GRANDE.getHeight();
         g.setFont(PETITE);
         g.setColor(MUTED);
-        g.drawString("Série", x, ys, Graphics.TOP | Graphics.LEFT);
+        g.drawString(Mots.m(Mots.SERIE), x, ys, a);
         g.setFont(GRASSE);
         g.setColor(INK);
-        g.drawString(s + (s > 1 ? " jours" : " jour"), x, ys + PETITE.getHeight(), Graphics.TOP | Graphics.LEFT);
+        g.drawString(Mots.jours(s), x, ys + PETITE.getHeight(), a);
         y += d + 10;
 
         if (journal.joursFaits() == 0) {
@@ -53,7 +52,7 @@ final class JournalEcran extends Ecran {
             return;
         }
 
-        // Les sept derniers jours, du plus ancien à aujourd'hui.
+        // Les sept derniers jours, du plus ancien à aujourd'hui (de droite à gauche en hébreu).
         int hauteurBarres = Math.max(30, h - y - 2 * PETITE.getHeight() - 20);
         int[] minutes = new int[7];
         int[] jourSemaine = new int[7];
@@ -74,6 +73,7 @@ final class JournalEcran extends Ecran {
         for (int k = 0; k < 7; k++) {
             int bx = MARGE + 6 + k * colonne + colonne / 4;
             int bl = colonne / 2;
+            bx = mx(bx, bl, w);
             int bh = minutes[k] == 0 ? 3 : Math.max(6, (hauteurBarres - PETITE.getHeight()) * minutes[k] / max);
             g.setColor(minutes[k] > 0 ? BRAND : DAY_TODO);
             g.fillRect(bx, base - bh, bl, bh);
@@ -84,14 +84,14 @@ final class JournalEcran extends Ecran {
             }
             g.setColor(k == 6 ? BRAND : MUTED);
             g.setFont(k == 6 ? GRASSE : PETITE);
-            g.drawString(INITIALES[jourSemaine[k]], bx + bl / 2, base + 3, Graphics.TOP | Graphics.HCENTER);
+            g.drawString(Mots.initiale(jourSemaine[k]), bx + bl / 2, base + 3, Graphics.TOP | Graphics.HCENTER);
         }
         y = base + PETITE.getHeight() + 12;
 
         int jours = journal.joursFaits();
         g.setColor(MUTED);
         g.setFont(PETITE);
-        g.drawString("En tout : " + jours + (jours > 1 ? " jours, " : " jour, ") + Regles.duree(journal.totalMinutes()),
+        g.drawString(Mots.m(Mots.EN_TOUT, Mots.jours(jours), Regles.duree(journal.totalMinutes())),
             w / 2, Math.min(y, h - PETITE.getHeight() - 2), Graphics.TOP | Graphics.HCENTER);
     }
 }

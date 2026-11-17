@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- L'édition légère ne déclare aucun accès Internet (pas de suivi de vol en direct) : sa promesse reste entière. -->
+<resources>
+    <string name="onboarding_private_body">La app no pide ningún acceso a Internet. Lo que escribes se queda en este teléfono, y solo sale de él si tú mismo lo exportas.</string>
+</resources>

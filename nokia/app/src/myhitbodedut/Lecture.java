@@ -10,6 +10,9 @@ import javax.microedition.lcdui.Graphics;
  * La touche 0 lance ou arrête le défilement automatique ; en marche,
  * * (ou gauche) le ralentit, # (ou droite) l'accélère ; haut ou bas le
  * suspend, et il s'arrête seul au bout du texte.
+ *
+ * Le texte est l'hébreu, aligné à droite, puis sa traduction dans la
+ * langue de l'interface (aucune en hébreu : RegleLangue).
  */
 final class Lecture extends Ecran {
     interface Action {
@@ -19,16 +22,18 @@ final class Lecture extends Ecran {
     final String titre;
     final String personnage;
     final String accroche;
+    final String hebreu;
     final String texte;
     final String reference;
     Action action;
     private int decalage;
     private int hauteurTotale;
 
-    Lecture(String titre, String personnage, String accroche, String texte, String reference) {
+    Lecture(String titre, String personnage, String accroche, String hebreu, String texte, String reference) {
         this.titre = titre;
         this.personnage = personnage;
         this.accroche = accroche;
+        this.hebreu = hebreu;
         this.texte = texte;
         this.reference = reference;
     }
@@ -134,6 +139,7 @@ final class Lecture extends Ecran {
     // --- Mise en page, gardée tant que l'écran garde sa taille (le minuteur redessine 20 fois par seconde) ---
     private int miseLargeur = -1, miseHauteur = -1;
     private Vector lignesAccroche;
+    private Vector lignesHebreu;
     private Vector lignesTexte;
     private int hCarte;
     private boolean aide;
@@ -144,15 +150,19 @@ final class Lecture extends Ecran {
         miseHauteur = h;
         int large = w - 2 * MARGE;
         lignesAccroche = accroche == null ? null : coupe(accroche, large, GRANDE);
+        lignesHebreu = hebreu == null ? null : coupe(hebreu, large - 16, MOYENNE);
         lignesTexte = texte == null ? null : coupe(texte, large - 16, MOYENNE);
-        hCarte = lignesTexte == null ? 0
-            : lignesTexte.size() * MOYENNE.getHeight() + 16 + (reference != null ? PETITE.getHeight() + 8 : 0);
+        boolean carte = lignesHebreu != null || lignesTexte != null;
+        int hTextes = (lignesHebreu == null ? 0 : lignesHebreu.size()) * MOYENNE.getHeight()
+            + (lignesTexte == null ? 0 : lignesTexte.size()) * MOYENNE.getHeight()
+            + (lignesHebreu != null && lignesTexte != null ? 9 : 0);
+        hCarte = !carte ? 0 : hTextes + 16 + (reference != null ? PETITE.getHeight() + 8 : 0);
         int y = GRASSE.getHeight() + 10 + 8; // sous le bandeau
         if (personnage != null) y += 84 + 6;
         if (lignesAccroche != null) y += lignesAccroche.size() * GRANDE.getHeight() + 6;
-        if (lignesTexte != null) y += hCarte + 8;
+        if (carte) y += hCarte + 8;
         // L'aide (« 0 : défilement auto... ») seulement quand le texte dépasse l'écran.
-        aide = lignesTexte != null && y > h;
+        aide = carte && y > h;
         if (aide) y += PETITE.getHeight() + 6;
         hauteurTotale = y; // en coordonnées du contenu, sans le défilement
         if (decalage > maximum()) decalage = maximum();
@@ -170,8 +180,8 @@ final class Lecture extends Ecran {
         }
         g.setColor(PAPER);
         g.fillRect(0, 0, w, h);
-        // En marche, le cran du défilement dans le bandeau.
-        int hb = bandeau(g, w, titre, auto ? "Défil. " + Defilement.vitesse() + "/" + Defilement.MAX : null);
+        // En marche, le cran du défilement dans le bandeau (à droite, ou à gauche en hébreu).
+        int hb = bandeau(g, w, titre, auto ? Mots.m(Mots.DEFIL_CRAN, String.valueOf(Defilement.vitesse()), String.valueOf(Defilement.MAX)) : null);
         g.setClip(0, hb, w, h - hb);
         g.translate(0, -decalage);
 
@@ -190,31 +200,36 @@ final class Lecture extends Ecran {
         if (aide) {
             g.setColor(MUTED);
             g.setFont(PETITE);
-            g.drawString(tronque(Defilement.AIDE, large, PETITE), MARGE + large / 2, y, Graphics.TOP | Graphics.HCENTER);
+            g.drawString(tronque(Mots.m(Mots.DEFIL_AIDE), large, PETITE), MARGE + large / 2, y, Graphics.TOP | Graphics.HCENTER);
             y += PETITE.getHeight() + 6;
         }
-        if (lignesTexte != null) {
-            // Le texte sur une carte blanche, la référence en dessous.
-            Vector lignes = lignesTexte;
+        if (lignesHebreu != null || lignesTexte != null) {
+            // Le texte sur une carte blanche, la référence en dessous. La barre verte
+            // est au début de la ligne : à gauche, ou à droite en hébreu.
+            boolean r = rtl();
+            int lt = large - 16;
             g.setColor(CARD);
             g.fillRoundRect(MARGE, y, large, hCarte, 12, 12);
             g.setColor(BRAND);
-            g.fillRect(MARGE, y + 8, 3, hCarte - 16);
-            g.setColor(INK);
-            g.setFont(MOYENNE);
+            g.fillRect(r ? MARGE + large - 3 : MARGE, y + 8, 3, hCarte - 16);
             int ty = y + 8;
-            // Seules les lignes visibles sont écrites : le défilement redessine souvent.
-            int lh = MOYENNE.getHeight();
-            for (int i = 0; i < lignes.size(); i++) {
-                if (ty + lh > decalage + hb && ty < decalage + h) {
-                    g.drawString((String) lignes.elementAt(i), MARGE + 10, ty, Graphics.TOP | Graphics.LEFT);
-                }
-                ty += lh;
+            int tx = r ? MARGE + 6 : MARGE + 10;
+            g.setColor(INK);
+            // L'hébreu se lit de droite à gauche, quelle que soit la langue de l'interface.
+            if (lignesHebreu != null) ty = visibles(g, lignesHebreu, tx, ty, lt, true, decalage + hb, decalage + h);
+            if (lignesHebreu != null && lignesTexte != null) {
+                g.setColor(LINE);
+                g.drawLine(tx, ty + 4, tx + lt, ty + 4);
+                g.setColor(INK);
+                ty += 9;
             }
+            if (lignesTexte != null) ty = visibles(g, lignesTexte, tx, ty, lt, false, decalage + hb, decalage + h);
             if (reference != null) {
                 g.setColor(BRAND);
                 g.setFont(PETITE);
-                g.drawString(tronque(reference, large - 20, PETITE), MARGE + large - 8, ty + 6, Graphics.TOP | Graphics.RIGHT);
+                // À la fin de la ligne : à droite, ou à gauche en hébreu.
+                if (r) g.drawString(tronque(reference, large - 20, PETITE), MARGE + 8, ty + 6, Graphics.TOP | Graphics.LEFT);
+                else g.drawString(tronque(reference, large - 20, PETITE), MARGE + large - 8, ty + 6, Graphics.TOP | Graphics.RIGHT);
             }
         }
         g.translate(0, decalage);
@@ -225,10 +240,30 @@ final class Lecture extends Ecran {
             int zone = h - hb - 8;
             int taille = Math.max(12, zone * (h - hb) / (hauteurTotale - hb));
             int pos = hb + 4 + (zone - taille) * decalage / Math.max(1, hauteurTotale - h + 8);
+            int ax = rtl() ? 1 : w - 4;
             g.setColor(LINE);
-            g.fillRect(w - 4, hb + 4, 3, zone);
+            g.fillRect(ax, hb + 4, 3, zone);
             g.setColor(BRAND);
-            g.fillRect(w - 4, pos, 3, taille);
+            g.fillRect(ax, pos, 3, taille);
         }
+    }
+
+    /**
+     * Comme Ecran.lignes (à gauche, ou à droite pour l'hébreu), mais n'écrit
+     * que les lignes entre haut et bas : le défilement redessine souvent.
+     * Renvoie le y suivant.
+     */
+    private static int visibles(Graphics g, Vector lignes, int x, int y, int largeur, boolean droite, int haut, int bas) {
+        g.setFont(MOYENNE);
+        int lh = MOYENNE.getHeight();
+        for (int i = 0; i < lignes.size(); i++) {
+            if (y + lh > haut && y < bas) {
+                String l = (String) lignes.elementAt(i);
+                if (droite) g.drawString(l, x + largeur, y, Graphics.TOP | Graphics.RIGHT);
+                else g.drawString(l, x, y, Graphics.TOP | Graphics.LEFT);
+            }
+            y += lh;
+        }
+        return y;
     }
 }

@@ -162,6 +162,13 @@ await capture('presentation-fr', { langue: 'fr', extra: { onboarded_version: 0 }
 await capture('presentation-he-duree', { langue: 'he', extra: { onboarded_version: 0 }, actions: (p) => p.click('.presentation .principal') });
 await capture('accueil-he', { langue: 'he', prenom: 'אברהם' });
 await capture('accueil-en-sombre', { langue: 'en', mode: 'sombre' });
+// L'espagnol et l'arabe tunisien (17/11) : l'interface traduite, l'arabe de droite à gauche.
+await capture('accueil-es', { langue: 'es', prenom: 'Abraham' });
+await capture('accueil-ar', { langue: 'ar' });
+await capture('reglages-es', { langue: 'es', ecran: 'reglages' });
+await capture('reglages-ar', { langue: 'ar', ecran: 'reglages' });
+await capture('textes-ar', { langue: 'ar', onglet: 'textes' });
+await capture('chemin-es', { langue: 'es', onglet: 'chemin' });
 // Un jour fait touché : sa durée à la place du ✓ (14/10).
 // Un jour fait touché ouvre sa feuille (16/10) ; « Montrer la durée » la met sur la bande.
 await capture('accueil-fr-durees', { langue: 'fr', actions: async (p) => { const n = await p.locator('button.jour.fait').count(); for (let i = 0; i < n; i++) { await p.locator('button.jour.fait').nth(i).click(); await p.locator('.feuille .actions button').first().click(); } } });

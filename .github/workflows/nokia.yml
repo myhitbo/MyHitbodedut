@@ -12,6 +12,8 @@ on:
       # Les textes et les règles qu'elle relit à chaque construction.
       - 'android/app/src/main/res/raw/chizuk.json'
       - 'android/app/src/main/res/values/strings.xml'
+      - 'android/app/src/main/res/values-en/strings.xml'
+      - 'android/app/src/main/res/values-iw/strings.xml'
       - 'web/src/js/**'
       - '.github/workflows/nokia.yml'
   pull_request:
@@ -58,7 +60,7 @@ jobs:
       - name: Build MyHitbodedut.jar
         run: JDK8="$JAVA_HOME_8_X64" JAVA_RECENT="$JAVA_HOME_21_X64/bin/java" bash nokia/app/build.sh
 
-      - name: Test (rules, texts, 22 screens at 240x320)
+      - name: Test (rules, texts, 29 screens at 240x320 in French, English, Hebrew)
         run: JDK8="$JAVA_HOME_8_X64" bash nokia/app/test.sh
 
       - name: Prepare the published folder

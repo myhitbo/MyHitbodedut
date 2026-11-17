@@ -159,7 +159,8 @@ object Hilloulot {
     /** La halakha du jour, dans la langue de l'application (le site a he, fr, en). */
     fun lienHalakha(langue: String): String {
         val l = langue.lowercase()
-        val code = if (l.startsWith("he") || l.startsWith("iw")) "he" else if (l.startsWith("en")) "en" else "fr"
+        // Le site n'a ni l'espagnol ni l'arabe : l'anglais pour l'un, le français, lu en Tunisie, pour l'autre.
+        val code = if (l.startsWith("he") || l.startsWith("iw")) "he" else if (l.startsWith("en") || l.startsWith("es")) "en" else "fr"
         return "https://halachayomit.co.il/$code/default.aspx"
     }
 

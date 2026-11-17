@@ -99,7 +99,7 @@ final class Minuteur extends Ecran {
         int h = getHeight();
         g.setColor(PAPER);
         g.fillRect(0, 0, w, h);
-        int y = bandeau(g, w, "Hitbodedout", Regles.duree((int) (duree / 60000L))) + 8;
+        int y = bandeau(g, w, Mots.m(Mots.HITBODEDOUT), Regles.duree((int) (duree / 60000L))) + 8;
 
         // Le personnage, seul, tourné vers le haut.
         int d = Math.min(84, Math.max(48, h - y - GRANDE.getHeight() - 3 * MOYENNE.getHeight() - PETITE.getHeight() - 30));
@@ -121,10 +121,10 @@ final class Minuteur extends Ecran {
         y += 16;
 
         g.setColor(enPause() ? WARNING : INK);
-        centre(g, enPause() ? "En pause" : "Parle à Hachem, dans ta langue, comme à quelqu'un.", MARGE, y, w - 2 * MARGE, MOYENNE);
+        centre(g, Mots.m(enPause() ? Mots.EN_PAUSE : Mots.PARLE), MARGE, y, w - 2 * MARGE, MOYENNE);
 
         g.setFont(PETITE);
         g.setColor(MUTED);
-        g.drawString(enPause() ? "Touche centrale : reprendre" : "Touche centrale : pause", w / 2, h - 3, Graphics.BOTTOM | Graphics.HCENTER);
+        g.drawString(Mots.m(enPause() ? Mots.CENTRALE_REPRENDRE : Mots.CENTRALE_PAUSE), w / 2, h - 3, Graphics.BOTTOM | Graphics.HCENTER);
     }
 }

@@ -19,9 +19,6 @@ final class Defilement {
     /** Le pas du minuteur, en millisecondes. */
     static final int TIC = 50;
 
-    /** Le texte d'aide, là où l'écran le montre. */
-    static final String AIDE = "0 : défilement auto, * et # : vitesse";
-
     private static final Object VERROU = new Object();
 
     /** Le cran choisi, commun à tous les textes ; relu du journal au démarrage. */

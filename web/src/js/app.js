@@ -148,7 +148,7 @@ function appliqueApparence() {
   racine.dataset.mode = store.modeApparence();
   racine.dataset.fond = store.fond();
   racine.dataset.accent = store.accent();
-  racine.lang = tr.langue;
+  racine.lang = tr.locale;
   racine.dir = tr.rtl ? 'rtl' : 'ltr';
   // L'icône suit צדיק / צדקת et la couleur des boutons, comme sur Android (IconeLanceur) ;
   // iOS la lit au moment de « Sur l'écran d'accueil » (web/tools/icones.mjs).
@@ -641,7 +641,7 @@ function panneauAujourdhui() {
   const semaine = store.currentWeek();
   const progression = JaugeSemaine.progression(semaine);
   const etat = store.anneaux();
-  const nomJour = new Intl.DateTimeFormat(tr.langue, { weekday: 'short', timeZone: 'UTC' });
+  const nomJour = new Intl.DateTimeFormat(tr.locale, { weekday: 'short', timeZone: 'UTC' });
 
   // En tête du Jour (13/11) : la date hébraïque ouvre le ciel (zmanim, calendrier, hilloulot,
   // boussole), la roue les réglages. Les deux étaient des onglets.
@@ -764,13 +764,13 @@ function panneauChemin() {
     h('div', { class: 'chemin-valeur' }, String(valeur)), h('div', { class: 'chemin-legende' }, tr.t(legende)));
   const p = pratique();
   const prochain = Trophees.prochain(p);
-  const nomMois = new Intl.DateTimeFormat(tr.langue, { month: 'long', year: 'numeric' }).format(new Date());
+  const nomMois = new Intl.DateTimeFormat(tr.locale, { month: 'long', year: 'numeric' }).format(new Date());
   return h('div', { class: 'contenu chemin' },
     h('h1', { class: 'titre-ecran' }, tr.t('nav_chemin')),
     h('div', { class: 'carte carte-chemin' },
       h('div', { class: 'chemin-chiffres' },
         chiffre(store.streak(), 'chemin_stat_serie'), chiffre(store.meilleureSerie(), 'chemin_stat_meilleure'), chiffre(total, 'chemin_stat_total')),
-      h('p', { class: 'chemin-mois' }, nomMois.charAt(0).toLocaleUpperCase(tr.langue) + nomMois.slice(1)),
+      h('p', { class: 'chemin-mois' }, nomMois.charAt(0).toLocaleUpperCase(tr.locale) + nomMois.slice(1)),
       graphiqueDuMois().graphique),
     h('div', { class: 'carte' },
       ligne({ nom: tr.t('nav_journal'), etat: tr.p('journal_summary', faites, faites, total), onclick: () => ouvrir('journal') }),
@@ -894,7 +894,7 @@ function rappelsDeTefila() {
   const muk = mukafChoma();
   const edot = store.siddurNusah() === 'edot';
   const ajoute = (iso, n) => { const d = new Date(`${iso}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
-  const jourSemaine = (iso) => { const t = new Intl.DateTimeFormat(tr.langue, { weekday: 'long', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`)); return t.charAt(0).toLocaleUpperCase(tr.langue) + t.slice(1); };
+  const jourSemaine = (iso) => { const t = new Intl.DateTimeFormat(tr.locale, { weekday: 'long', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`)); return t.charAt(0).toLocaleUpperCase(tr.locale) + t.slice(1); };
   const moment = (r) => {
     if (!RAPPELS_TEFILA[r.type].leSoir) return r.date === aujourdhui ? tr.t('rappel_aujourdhui') : r.date === ajoute(aujourdhui, 1) ? tr.t('rappel_demain') : jourSemaine(r.date);
     const soir = ajoute(r.date, -1);
@@ -1053,17 +1053,17 @@ function ecranTehilim() {
   const { jour, portion } = portionDuMois();
   const auj = new Date(`${isoLocal(new Date())}T12:00:00Z`);
   const semaine = CycleTehilim.deLaSemaine(auj.getUTCDay());
-  const nomJour = new Intl.DateTimeFormat(tr.langue, { weekday: 'long', timeZone: 'UTC' }).format(auj);
+  const nomJour = new Intl.DateTimeFormat(tr.locale, { weekday: 'long', timeZone: 'UTC' }).format(auj);
   const pret = chargeTehilim();
   const versets = pret ? tehilim.reduce((n, ch) => n + ch.length, 0) : null;
   return h('div', { class: 'ecran' }, barre(tr.t('tehilim_title')),
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
-      versets ? h('p', { class: 'indice' }, tr.t('tehilim_count', 150, versets.toLocaleString(tr.langue))) : null,
+      versets ? h('p', { class: 'indice' }, tr.t('tehilim_count', 150, versets.toLocaleString(tr.locale))) : null,
       // Les marque-pages des Tehilim (28/10), en tête : la même feuille que la Bibliothèque.
       ...[ligneSignets('t')].filter(Boolean).map((l) => h('div', { class: 'carte' }, l)),
       h('div', { class: 'carte' },
         ligne({ nom: tr.t('tehilim_month'), etat: tr.t('tehilim_month_state', nombreTehilim(jour), libellePortion(portion)), onclick: () => lire(portion) }),
-        ligne({ nom: tr.t('tehilim_week'), etat: tr.t('tehilim_week_state', nomJour.charAt(0).toLocaleUpperCase(tr.langue) + nomJour.slice(1), libellePortion(semaine)), onclick: () => lire(semaine) })),
+        ligne({ nom: tr.t('tehilim_week'), etat: tr.t('tehilim_week_state', nomJour.charAt(0).toLocaleUpperCase(tr.locale) + nomJour.slice(1), libellePortion(semaine)), onclick: () => lire(semaine) })),
       h('h2', { class: 'section' }, tr.t('tehilim_all')),
       h('div', { class: 'grille-psaumes' }, Array.from({ length: 150 }, (_, i) => i + 1).map((n) =>
         h('button', { class: 'case-psaume', 'aria-label': libellePortion(CycleTehilim.portion(n, n)), onclick: () => lire(CycleTehilim.portion(n, n)) },
@@ -1346,7 +1346,7 @@ function reglagesLecture({ avecNusah, sansNuit = false }) {
     h('div', { class: 'lecture-barre', role: 'toolbar', 'aria-label': tl('lecture_reglages') },
       bouton({ class: 'lettres', lang: 'en', dir: 'ltr', 'aria-label': tl('lecture_moins'), disabled: e <= 0.8, onclick: () => echelle(e - 0.1) }, 'A−'),
       bouton({ class: 'taille', 'aria-label': tl('lecture_taille', pourcent), onclick: () => echelle(1) },
-        new Intl.NumberFormat(tr.langue, { style: 'percent' }).format(pourcent / 100)),
+        new Intl.NumberFormat(tr.locale, { style: 'percent' }).format(pourcent / 100)),
       bouton({ class: 'lettres', lang: 'en', dir: 'ltr', 'aria-label': tl('lecture_plus'), disabled: e >= 2, onclick: () => echelle(e + 0.1) }, 'A+'),
       separateur(),
       // « אA » : les langues du texte (04/11) — hébreu, français, anglais, ou deux à la fois.
@@ -1449,7 +1449,7 @@ function changeVitesseDefilement(delta) {
   const c = app.querySelector('.lecture-defil');
   if (!c) return;
   const niveau = c.querySelector('.defil-niveau');
-  niveau.textContent = new Intl.NumberFormat(tr.langue).format(n);
+  niveau.textContent = new Intl.NumberFormat(tr.locale).format(n);
   niveau.setAttribute('aria-label', tl('lecture_vitesse', n));
   c.querySelector('.defil-moins').disabled = n <= NIVEAU_MIN;
   c.querySelector('.defil-plus').disabled = n >= NIVEAU_MAX;
@@ -1462,7 +1462,7 @@ function commandeDefilement() {
   return h('div', { class: 'lecture-ctrl' },
     h('div', { class: 'lecture-barre lecture-defil', role: 'toolbar', 'aria-label': tl('lecture_defiler') },
       bouton({ class: 'lettres defil-moins', lang: 'en', dir: 'ltr', 'aria-label': tl('lecture_moins_vite'), disabled: n <= NIVEAU_MIN, onclick: () => changeVitesseDefilement(-1) }, '−'),
-      h('span', { class: 'defil-niveau', role: 'status', 'aria-label': tl('lecture_vitesse', n) }, new Intl.NumberFormat(tr.langue).format(n)),
+      h('span', { class: 'defil-niveau', role: 'status', 'aria-label': tl('lecture_vitesse', n) }, new Intl.NumberFormat(tr.locale).format(n)),
       bouton({ class: 'lettres defil-plus', lang: 'en', dir: 'ltr', 'aria-label': tl('lecture_plus_vite'), disabled: n >= NIVEAU_MAX, onclick: () => changeVitesseDefilement(1) }, '+'),
       h('span', { class: 'lecture-sep', 'aria-hidden': 'true' }),
       bouton({ class: 'icone-bouton defil-pause', 'aria-label': tl('lecture_defiler_pause'), onclick: () => arreteDefilement(true, '.lecture-defiler') }, icone('pause'))));
@@ -2581,7 +2581,7 @@ function graphiqueDuMois() {
   const auj = new Date();
   const minutes = JournalPlus.minutesDuMois(store.minutesParJour(), auj.getFullYear(), auj.getMonth() + 1);
   const plus = Math.max(1, ...minutes);
-  const nomMois = new Intl.DateTimeFormat(tr.langue, { month: 'long', year: 'numeric' }).format(auj);
+  const nomMois = new Intl.DateTimeFormat(tr.locale, { month: 'long', year: 'numeric' }).format(auj);
   const graphique = h('div', { class: 'journal-graphique', role: 'img', 'aria-label': tr.t('journal_graphique', nomMois) },
     minutes.map((m, k) => h('span', {
       class: `journal-barre${k + 1 === auj.getDate() ? ' aujourdhui' : ''}${m > 0 ? ' faite' : ''}`,
@@ -2601,12 +2601,12 @@ function ecranJournal() {
   const { graphique } = graphiqueDuMois();
   // Le journal enrichi (JournalActivity, 02/11) : l'humeur, la gratitude et la chose à travailler sous la note.
   const notes = store.journalPlusTout();
-  const formatJour = new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const formatJour = new Intl.DateTimeFormat(tr.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const dateLisible = (iso) => {
     const [y, m, d] = iso.split('-').map(Number);
     if (!y || !m || !d) return iso;
     const t = formatJour.format(new Date(y, m - 1, d));
-    return t.charAt(0).toLocaleUpperCase(tr.langue) + t.slice(1);
+    return t.charAt(0).toLocaleUpperCase(tr.locale) + t.slice(1);
   };
   const contenu = jours.length === 0
     ? h('div', { class: 'carte journal-vide' }, h('p', {}, tr.t('journal_empty')),
@@ -2866,7 +2866,7 @@ let moisCalendrier = null;
 let moisHebreuCalendrier = null;
 
 /** « 16.1 » → « 16,1 » en français : les paramètres des méthodes, à la locale. */
-const parametre = (p) => (p !== '' && !Number.isNaN(Number(p)) ? Number(p).toLocaleString(tr.langue) : p);
+const parametre = (p) => (p !== '' && !Number.isNaN(Number(p)) ? Number(p).toLocaleString(tr.locale) : p);
 
 /** Choisir le lieu : la position du téléphone, ou une ville de la liste (GeoNames). */
 /**
@@ -3064,7 +3064,7 @@ function carteJour(iso, { complet = true } = {}) {
   // L'omer se compte le soir, pour le jour hébreu qui commence : celui de demain.
   const [a, m, d] = iso.split('-').map(Number);
   const omerCeSoir = jourJuif(new Date(Date.UTC(a, m - 1, d + 1, 12)).toISOString().slice(0, 10), store.inIsrael()).omer;
-  const civil = new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+  const civil = new Intl.DateTimeFormat(tr.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
     .format(new Date(`${iso}T12:00:00Z`));
   const marques = [
     ...j.fetes.map((f) => tr.t(`fete_${f}`)),
@@ -3097,7 +3097,7 @@ function carteJour(iso, { complet = true } = {}) {
  */
 async function partagerJour(iso) {
   const j = jourJuif(iso, store.inIsrael(), mukafChoma());
-  const civil = new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
+  const civil = new Intl.DateTimeFormat(tr.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
   const marques = [...j.fetes.map((f) => tr.t(`fete_${f}`)), j.paracha ? tr.t('zmanim_paracha', j.paracha) : null].filter(Boolean).join('  ·  ');
   const hil = tableHilloulot() ? hilloulotPour(tableHilloulot(), iso, store.inIsrael(), store.siddurNusah() === 'ashkenaz').slice(0, 3).map((x) => x.he).join(' · ') : '';
   const [livre, debut] = apercuHalakha(iso) ?? ['', ''];
@@ -3214,9 +3214,9 @@ function blocLevana(iso) {
   const usage = usageLevanaCourant();
   const l = levana(iso, zone, optionsLevana());
   const nusah = store.siddurNusah();
-  const court = (d) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`));
-  const heure = (ms) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: zone }).format(new Date(ms));
-  const jourSeul = (ms) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', timeZone: zone }).format(new Date(ms));
+  const court = (d) => new Intl.DateTimeFormat(tr.locale, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`));
+  const heure = (ms) => new Intl.DateTimeFormat(tr.locale, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: zone }).format(new Date(ms));
+  const jourSeul = (ms) => new Intl.DateTimeFormat(tr.locale, { weekday: 'short', day: 'numeric', month: 'short', timeZone: zone }).format(new Date(ms));
   const etat = l.etat === 'ce_soir' ? tr.t('levana_ce_soir') : l.etat === 'dernier' ? tr.t('levana_dernier_soir')
     : l.etat.pas ? tr.t(l.etat.pas === 'chabbat' ? 'levana_pas_chabbat' : 'levana_pas_yom_tov') : tr.p('levana_dans', l.etat.dans);
   // Kippour : en Edot, « notre usage » du Yalkut Yosef 426:34 ; le 9 Av : après avoir goûté (audit du 16/11).
@@ -3228,7 +3228,7 @@ function blocLevana(iso) {
       h('div', { class: 'levana-corps' },
         h('h3', { class: 'jour-sous-titre' }, tr.t('levana_titre')),
         h('p', { class: `levana-etat${typeof l.etat === 'string' ? ' ouvert' : ''}` }, etat),
-        h('p', { class: 'levana-lune' }, tr.t('levana_lune', new Intl.NumberFormat(tr.langue, { style: 'percent' }).format(Math.round(l.lune.eclairage * 100) / 100), tr.t(l.lune.croissante ? 'levana_croissante' : 'levana_decroissante'))))),
+        h('p', { class: 'levana-lune' }, tr.t('levana_lune', new Intl.NumberFormat(tr.locale, { style: 'percent' }).format(Math.round(l.lune.eclairage * 100) / 100), tr.t(l.lune.croissante ? 'levana_croissante' : 'levana_decroissante'))))),
     // Sans lieu, la sortie de Kippour ou du 9 Av n'a pas d'heure : la date seule (audit du 16/11).
     h('p', { class: 'levana-fenetre' }, tr.t('levana_fenetre', !lieu && l.restriction ? jourSeul(l.debutMs) : heure(l.debutMs), heure(l.finMs))),
     l.motsae ? h('p', { class: 'levana-conseil' }, tr.t('levana_motsae', court(l.motsae))) : null,
@@ -3359,7 +3359,7 @@ function blocHilloula(iso) {
     // Le nom traduit après l'hébreu, isolé, quand il existe (VueJour.blocHilloula, THILLOULOT-10).
     h('div', { class: 'jour-hilloula', lang: 'he', dir: 'rtl' }, ...liste.slice(0, 5).map((x) => {
       const traduit = nomTraduitHilloula(x);
-      return h('div', {}, x.he, traduit ? [' (', h('bdi', { lang: tr.langue }, traduit), ')'] : null);
+      return h('div', {}, x.he, traduit ? [' (', h('bdi', { lang: tr.locale }, traduit), ')'] : null);
     }),
       reste > 0 ? h('button', { class: 'jour-hilloula-reste lien-bouton', onclick: versHilloulot }, `${tr.p('hilloula_autres', reste)} ›`) : null),
     h('button', { class: 'jour-lien lien-bouton', onclick: versHilloulot }, tr.t('hilloulot_tout')),
@@ -3738,7 +3738,7 @@ function ecranBoussole() {
     const etat = h('p', { class: 'indice', 'aria-live': 'polite' });
     contenu.push(h('button', { class: 'secondaire boussole-position', onclick: () => localiserPosition({ etat }) }, tr.t('boussole_actualiser_position')), etat);
     const points = tr.tab('boussole_points');
-    const km = new Intl.NumberFormat(tr.langue).format(Math.round(Boussole.distanceKm(lieu.latitude, lieu.longitude)));
+    const km = new Intl.NumberFormat(tr.locale).format(Math.round(Boussole.distanceKm(lieu.latitude, lieu.longitude)));
     contenu.push(h('div', { class: 'carte carte-texte' },
       // Celle que suit le hassid en premier, mise en avant ; l'autre dessous.
       ...(() => {
@@ -3850,8 +3850,8 @@ function choisirAeroport(onChoisi) {
  * le sens de la langue.
  */
 function deuxHeures(plan, t) {
-  const jour = (fuseau) => new Intl.DateTimeFormat(tr.langue, { timeZone: fuseau, weekday: 'short', day: 'numeric' }).format(t);
-  const heure = (a) => `\u2066${new Intl.DateTimeFormat(tr.langue, { timeZone: a.fuseau, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(t)} ${a.iata}\u2069`;
+  const jour = (fuseau) => new Intl.DateTimeFormat(tr.locale, { timeZone: fuseau, weekday: 'short', day: 'numeric' }).format(t);
+  const heure = (a) => `\u2066${new Intl.DateTimeFormat(tr.locale, { timeZone: a.fuseau, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(t)} ${a.iata}\u2069`;
   const civil = (fuseau) => new Intl.DateTimeFormat('en-CA', { timeZone: fuseau }).format(t);
   const autreJour = civil(plan.arrivee.fuseau) !== civil(plan.depart.fuseau);
   return `${jour(plan.depart.fuseau)} ${heure(plan.depart)} · ${autreJour ? `${jour(plan.arrivee.fuseau)} ` : ''}${heure(plan.arrivee)}`;
@@ -3865,7 +3865,7 @@ function dureeEnMots(minutes) {
 }
 
 /** « mer. 28 19:20 TLV » : l'heure locale d'un aéroport (celle du billet). */
-const heureAeroport = (a, t) => `${new Intl.DateTimeFormat(tr.langue, { timeZone: a.fuseau, weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(t)} ⁦${a.iata}⁩`;
+const heureAeroport = (a, t) => `${new Intl.DateTimeFormat(tr.locale, { timeZone: a.fuseau, weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(t)} ⁦${a.iata}⁩`;
 
 const ecartVol = (ms) => tr.t(calculVol && calculVol.fiabilite !== 'route_prevue' ? 'vol_ecart_gps' : 'vol_ecart', `${ms < 0 ? '−' : '+'}${Math.abs(Math.round(ms / 60000))}`);
 
@@ -4054,7 +4054,7 @@ function releverGps() {
 }
 
 function positionVol(e) {
-  const n = (x) => Math.abs(x).toLocaleString(tr.langue, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const n = (x) => Math.abs(x).toLocaleString(tr.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   return tr.t('vol_position', tr.t(e.latitude >= 0 ? 'vol_lat_nord' : 'vol_lat_sud', n(e.latitude)),
     tr.t(e.longitude >= 0 ? 'vol_lon_est' : 'vol_lon_ouest', n(e.longitude)));
 }
@@ -4096,7 +4096,7 @@ function resultatsVol(c) {
       ecart !== null && ecart !== undefined ? h('p', { class: 'indice' }, ecartVol(ecart)) : null];
   }
   const RESERVES = ['haute_latitude', 'absent', 'erreur', 'a_rebours'];
-  const date = (iso) => new Intl.DateTimeFormat(tr.langue, { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(`${iso}T12:00:00Z`));
+  const date = (iso) => new Intl.DateTimeFormat(tr.locale, { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(`${iso}T12:00:00Z`));
   return [
     // La carte prend le ciel de son heure (04/11) : aube, après-midi, nuit.
     h('div', { class: `carte carte-texte carte-vol carte-heros ciel-${p && !p[2] ? p[0] : 'hors'}` }, h('p', { class: 'indice' }, tr.t('vol_priere_titre')), ...priere),
@@ -4412,8 +4412,8 @@ function datesTrophees() {
   return Trophees.datesGain(store.minutesParJour(), store.joursAvecNote(), store.exempteur(), store.tikkunJournal());
 }
 /** La date civile en toutes lettres, avec le jour (VueJour.dateCivile) : « mardi 29 septembre 2026 ». */
-const dateCivile = (iso) => new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
-const dateLongue = (iso) => new Intl.DateTimeFormat(tr.langue, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
+const dateCivile = (iso) => new Intl.DateTimeFormat(tr.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
+const dateLongue = (iso) => new Intl.DateTimeFormat(tr.locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
 
 /** Un texte en plusieurs paragraphes (VueJour.paragraphes, 19/10) : un bloc par paragraphe, un écart entre eux. */
 const paragraphes = (t) => String(t ?? '').split(/\n+/).map((x) => x.trim()).filter(Boolean).map((x) => h('span', { class: 'para' }, x));
@@ -4691,7 +4691,7 @@ function ecranCalendrier() {
   const choisi = jourCalendrier ?? aujourdhui;
   const civil = store.calendrierCivil();
   const israel = store.inIsrael();
-  const moisCourt = new Intl.DateTimeFormat(tr.langue, { month: 'short', timeZone: 'UTC' });
+  const moisCourt = new Intl.DateTimeFormat(tr.locale, { month: 'short', timeZone: 'UTC' });
   const date = (iso) => new Date(`${iso}T12:00:00Z`);
   let grille;
   let titre;
@@ -4703,7 +4703,7 @@ function ecranCalendrier() {
     const jours = grille.flat().filter(Boolean);
     const premier = jourJuif(jours[0], israel);
     const dernier = jourJuif(jours.at(-1), israel);
-    titre = h('p', { class: 'mois-principal' }, new Intl.DateTimeFormat(tr.langue, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(a, m - 1, 15))));
+    titre = h('p', { class: 'mois-principal' }, new Intl.DateTimeFormat(tr.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(a, m - 1, 15))));
     sousTitre = h('p', { class: 'mois-second mois-hebreu', lang: 'he', dir: 'rtl' },
       premier.moisEtAnnee === dernier.moisEtAnnee ? premier.moisEtAnnee : `${premier.moisEtAnnee} – ${dernier.moisEtAnnee}`);
     decale = (n) => { const d = new Date(Date.UTC(a, m - 1 + n, 1)); moisCalendrier = [d.getUTCFullYear(), d.getUTCMonth() + 1]; rendre(); };
@@ -4713,16 +4713,16 @@ function ecranCalendrier() {
     const jours = grille.flat().filter(Boolean);
     const [d0, d1] = [date(jours[0]), date(jours.at(-1))];
     const memeAnnee = d0.getUTCFullYear() === d1.getUTCFullYear();
-    const mois = (d, an) => new Intl.DateTimeFormat(tr.langue, { month: 'long', ...(an ? { year: 'numeric' } : {}), timeZone: 'UTC' }).format(d);
+    const mois = (d, an) => new Intl.DateTimeFormat(tr.locale, { month: 'long', ...(an ? { year: 'numeric' } : {}), timeZone: 'UTC' }).format(d);
     titre = h('p', { class: 'mois-principal mois-hebreu', lang: 'he', dir: 'rtl' }, jourJuif(debut, israel).moisEtAnnee);
     // Seule l'initiale de la plage prend la majuscule (« Septembre – octobre 2026 »).
     const plage = `${mois(d0, !memeAnnee)} – ${mois(d1, true)}`;
-    sousTitre = h('p', { class: 'mois-second' }, plage.charAt(0).toLocaleUpperCase(tr.langue) + plage.slice(1));
+    sousTitre = h('p', { class: 'mois-second' }, plage.charAt(0).toLocaleUpperCase(tr.locale) + plage.slice(1));
     decale = (n) => { moisHebreuCalendrier = moisHebreuVoisin(debut, n); rendre(); };
   }
   const bascule = (versCivil) => { store.setCalendrierCivil(versCivil); moisCalendrier = null; moisHebreuCalendrier = null; rendre(); };
   // Les initiales des jours, du dimanche (4/10/2026) au samedi.
-  const initiales = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(tr.langue, { weekday: 'narrow', timeZone: 'UTC' })
+  const initiales = Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(tr.locale, { weekday: 'narrow', timeZone: 'UTC' })
     .format(new Date(Date.UTC(2026, 9, 4 + i, 12))));
   return h('div', { class: 'ecran' }, barre(tr.t('calendrier_title')),
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
@@ -4747,7 +4747,7 @@ function ecranCalendrier() {
             return h('button', {
               class: ['case', d === aujourdhui ? 'aujourdhui' : '', d === choisi ? 'choisi' : '', j.chome ? 'chome' : '', j.fetes.length ? 'fete' : ''].filter(Boolean).join(' '),
               'aria-pressed': String(d === choisi),
-              'aria-label': `${new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`))} · ${j.dateHebraique}${j.fetes.length ? ` · ${j.fetes.map((f) => tr.t(`fete_${f}`)).join(', ')}` : ''}`,
+              'aria-label': `${new Intl.DateTimeFormat(tr.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`))} · ${j.dateHebraique}${j.fetes.length ? ` · ${j.fetes.map((f) => tr.t(`fete_${f}`)).join(', ')}` : ''}`,
               onclick: () => { jourCalendrier = d; rendre(); },
             }, ...(civil ? [civ, hebreu] : [hebreu, civ]));
           })),
@@ -5175,7 +5175,7 @@ function ajoutTemps(iso, montrer = null) {
   if (iso > store.today()) return;
   const r = store.record(iso);
   const minutes = r?.faite ? r.minutes : null;
-  const titre = new Intl.DateTimeFormat(tr.langue, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
+  const titre = new Intl.DateTimeFormat(tr.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T12:00:00Z`));
   feuille(titre, (f, fermer) => {
     f.append(h('p', { class: 'message' }, minutes === null ? tr.t('jour_rien') : tr.t('jour_fait', tr.duree(minutes))),
       h('div', { class: 'actions' },
@@ -6185,19 +6185,23 @@ if ('serviceWorker' in navigator) {
 }
 /**
  * Un fichier du démarrage qui échoue (réseau instable avant la fin de l'installation hors connexion) :
- * un message et « Réessayer » plutôt qu'un écran vide (FWEBCODE-06). Écrit en dur dans les trois langues :
+ * un message et « Réessayer » plutôt qu'un écran vide (FWEBCODE-06). Écrit en dur dans les langues du site :
  * tr n'existe peut-être pas, le fichier de chaînes étant parfois celui qui a échoué.
  */
 function echecDemarrage() {
-  const langue = (navigator.languages?.[0] ?? 'fr').slice(0, 2).toLowerCase();
+  // La langue que l'interface aurait prise (le réglage, sinon le téléphone ; l'arabe, seulement de Tunisie).
+  let langue = 'en';
+  try { langue = langueInitiale(store.langueApp(), navigator.languages); } catch { /* le stockage peut manquer */ }
   const textes = {
     fr: ['Le chargement a échoué. Vérifiez la connexion, puis réessayez.', 'Réessayer'],
     en: ['Loading failed. Check your connection, then try again.', 'Try again'],
     he: ['הטעינה נכשלה. בדקו את החיבור ונסו שוב.', 'לנסות שוב'],
+    es: ['No se pudo cargar. Revisa la conexión y vuelve a intentarlo.', 'Reintentar'],
+    ar: ['التحميل ما نجحش. ثبّت في الاتصال، ومن بعد عاود جرّب.', 'عاود جرّب'],
   };
-  const [message, bouton] = textes[langue === 'iw' ? 'he' : langue] ?? textes.fr;
+  const [message, bouton] = textes[langue] ?? textes.en;
   document.getElementById('ouverture')?.remove();
-  const e = h('div', { class: 'ecran', role: 'alert', style: 'padding:32px 16px;text-align:center', dir: langue === 'he' || langue === 'iw' ? 'rtl' : 'ltr' },
+  const e = h('div', { class: 'ecran', role: 'alert', style: 'padding:32px 16px;text-align:center', dir: langue === 'he' || langue === 'ar' ? 'rtl' : 'ltr' },
     h('p', {}, message),
     h('button', { class: 'principal', onclick: () => location.reload() }, bouton));
   app.replaceChildren(e);

@@ -117,6 +117,43 @@ public final class TestsRegles {
         p.setTime(new Date(Regles.prochain(7 * 60, c.getTime().getTime())));
         egal("16 7:00", p.get(Calendar.DAY_OF_MONTH) + " " + p.get(Calendar.HOUR_OF_DAY) + ":" + p.get(Calendar.MINUTE) + "0", "vendredi matin permis");
 
+        // Les langues : le tableau des mots est complet et dans l'ordre des clés.
+        egal(new Integer(Mots.DEFIL_CRAN + 1), new Integer(Mots.T.length), "un mot par clé");
+        boolean plein = true;
+        for (int i = 0; i < Mots.T.length; i++) {
+            if (Mots.T[i].length != 3) plein = false;
+            for (int l = 0; l < Mots.T[i].length; l++) if (Mots.T[i][l] == null || Mots.T[i][l].length() == 0) plein = false;
+        }
+        egal(Boolean.TRUE, new Boolean(plein), "chaque mot en français, en anglais et en hébreu");
+        egal("Défil. %1/%2", Mots.T[Mots.DEFIL_CRAN][Mots.FR], "dernière clé à sa place");
+        egal("En tout : %1, %2", Mots.T[Mots.EN_TOUT][Mots.FR], "clé de la fin à sa place");
+        // Le défilement automatique : l'aide et le cran dans le bandeau, dans chaque langue.
+        egal("0 : défilement auto, * et # : vitesse", Mots.T[Mots.DEFIL_AIDE][Mots.FR], "aide du défilement en français");
+        egal("Scroll 3/10", Mots.remplace(Mots.remplace(Mots.T[Mots.DEFIL_CRAN][Mots.EN], "%1", "3"), "%2", "10"), "cran du défilement en anglais");
+        egal("Hitbodedout", Mots.T[Mots.HITBODEDOUT][Mots.FR], "clé du milieu à sa place");
+        // La langue du téléphone : hébreu (he ou l'ancien iw), anglais, français ; toute autre donne l'anglais.
+        egal(new Integer(Mots.HE), new Integer(Mots.depuisLocale("he-IL")), "he-IL : hébreu");
+        egal(new Integer(Mots.HE), new Integer(Mots.depuisLocale("iw")), "iw : hébreu");
+        egal(new Integer(Mots.FR), new Integer(Mots.depuisLocale("fr-FR")), "fr-FR : français");
+        egal(new Integer(Mots.EN), new Integer(Mots.depuisLocale("en_US")), "en_US : anglais");
+        egal(new Integer(Mots.EN), new Integer(Mots.depuisLocale("es-ES")), "es-ES : anglais (repli)");
+        egal(new Integer(Mots.EN), new Integer(Mots.depuisLocale(null)), "sans langue : anglais");
+        egal("Faite : 5 min", Mots.m(Mots.FAITE, Regles.duree(5)), "français : %1 remplacé");
+        egal("3 jours", Mots.jours(3), "jours en français");
+        Mots.langue = Mots.EN;
+        egal("1 h 30 min", Regles.duree(90), "durée en anglais");
+        egal("20:05", Regles.heure(20 * 60 + 5), "heure en anglais");
+        egal("In all: 1 day, 5 min", Mots.m(Mots.EN_TOUT, Mots.jours(1), Regles.duree(5)), "anglais : %1 et %2");
+        egal("W", Mots.initiale(3), "mercredi en anglais");
+        Mots.langue = Mots.HE;
+        egal("1 שע' 30 דק'", Regles.duree(90), "durée en hébreu");
+        egal("5 דק'", Regles.duree(5), "minutes en hébreu");
+        egal("יומיים", Mots.jours(2), "deux jours en hébreu");
+        egal("א", Mots.initiale(0), "dimanche en hébreu");
+        egal(Boolean.TRUE, new Boolean(Mots.rtl()), "l'hébreu se dessine de droite à gauche");
+        Mots.langue = Mots.FR;
+        egal(Boolean.FALSE, new Boolean(Mots.rtl()), "le français de gauche à droite");
+
         if (echecs > 0) {
             System.out.println(echecs + " échec(s)");
             System.exit(1);

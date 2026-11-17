@@ -21,11 +21,17 @@ object Langues {
      */
     data class Langue(val etiquette: String, val nom: String)
 
-    /** Dans l'ordre demandé : עברית, English, Français. */
+    /**
+     * Dans l'ordre demandé : עברית, English, Français ; puis l'espagnol d'Amérique latine
+     * (`values-es`, servi à tout téléphone en espagnol) et l'arabe tunisien (`values-ar-rTN`,
+     * le 17/11). L'interface seule est traduite : les textes y restent en hébreu (RegleLangue).
+     */
     val TOUTES = listOf(
         Langue("iw", "עברית"),
         Langue("en", "English"),
         Langue("fr", "Français"),
+        Langue("es", "Español"),
+        Langue("ar-TN", "تونسي"),
     )
 
     /**
@@ -40,7 +46,7 @@ object Langues {
         // « he » est le code actuel de l'hébreu, « iw » celui qu'Android rend
         // encore. Les deux désignent la même langue et le même dossier.
         val code = if (brute == "he") "iw" else brute
-        return TOUTES.firstOrNull { it.etiquette == code }?.etiquette ?: DEFAUT
+        return TOUTES.firstOrNull { it.etiquette.substringBefore('-') == code }?.etiquette ?: DEFAUT
     }
 
     fun nomDe(etiquette: String?): String {
