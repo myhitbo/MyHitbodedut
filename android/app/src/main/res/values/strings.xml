@@ -1220,6 +1220,7 @@
     <string name="rappel_guechem_titre">« מַשִּׁיב הָרוּחַ » dans la Amida</string>
     <string name="rappel_guechem_debut">%1$s, à Moussaf de Chemini Atsérèt, on commence à dire « מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם ».</string>
     <string name="rappel_guechem_fin">%1$s, à Moussaf du premier jour de Pessa’h, on cesse de dire « מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם ».</string>
+    <string name="rappel_guechem_fin_ashkenaz">%1$s, à Moussaf du premier jour de Pessa’h, l’officiant cesse de dire « מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם » dans sa répétition ; l’assemblée le dit encore dans la Amida de Moussaf et cesse à Min’ha (Rema et Michna Beroura 114:3).</string>
     <string name="rappel_dix_jours_titre">Dix jours de techouva</string>
     <string name="rappel_dix_jours">%1$s commencent les dix jours de techouva : « הַמֶּלֶךְ הַקָּדוֹשׁ », « הַמֶּלֶךְ הַמִּשְׁפָּט » et les ajouts de la Amida (« זָכְרֵנוּ »…).</string>
     <string name="rappel_omer_titre">Compte de l’Omer</string>

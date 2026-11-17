@@ -1208,6 +1208,7 @@
     <string name="rappel_guechem_titre">„מַשִּׁיב הָרוּחַ” בתפילה</string>
     <string name="rappel_guechem_debut">%1$s, במוסף של שמיני עצרת, מתחילים לומר „מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
     <string name="rappel_guechem_fin">%1$s, במוסף של יום טוב ראשון של פסח, מפסיקים לומר „מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
+    <string name="rappel_guechem_fin_ashkenaz">%1$s, במוסף של יום טוב ראשון של פסח, שליח הציבור מפסיק לומר „מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם” בחזרת הש״ץ; הקהל עוד מזכירים בתפילת מוסף ופוסקים במנחה (רמ״א ומשנה ברורה קי״ד, ג׳).</string>
     <string name="rappel_dix_jours_titre">עשרת ימי תשובה</string>
     <string name="rappel_dix_jours">%1$s מתחילים עשרת ימי תשובה: „הַמֶּלֶךְ הַקָּדוֹשׁ”, „הַמֶּלֶךְ הַמִּשְׁפָּט” והתוספות בעמידה („זָכְרֵנוּ”…).</string>
     <string name="rappel_omer_titre">ספירת העומר</string>

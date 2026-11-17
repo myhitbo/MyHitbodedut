@@ -30,8 +30,8 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   if (c.has('bascule_pluie')) { c.add('machiv_harouah'); c.add('morid_hatal'); }
   if (nusah === 'ashkenaz' && !enIsrael) c.delete('morid_hatal');
   // Hémisphère sud, Edot (14/10) : « מוריד הטל » toute l'année, jamais « מוריד הגשם » ;
-  // ותן טל ומטר suit la diaspora. Yalkut Yosef, Kitsour Choulhan Aroukh, O.H. 117:19
-  // (Chéérit Yossef III p. 105 ; Yalkut Yosef Tefila II, 117 note 19, p. 100) ; recoupé le 16/10
+  // ותן טל ומטר suit la diaspora. Yalkut Yosef, Kitsour Choulhan Aroukh, O.H. 117:20 (סעיף כ)
+  // (Chéérit Yossef III p. 105 ; Yalkut Yosef Tefila II, 117 note כ, p. קא ; audit du 16/11) ; recoupé le 16/10
   // avec Halakha Yomit (site de Rav Ovadia Yossef).
   if (sud && nusah === 'edot' && c.delete('machiv_harouah')) c.add('morid_hatal');
   // Pas de Ta'hanoun du lendemain de Kippour jusqu'au 2 'Hechvan : Edot, et Sfard au choix.

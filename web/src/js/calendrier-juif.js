@@ -304,6 +304,13 @@ export const RAPPELS_TEFILA = {
   guechem_debut: { source: '114:1', leSoir: false }, guechem_fin: { source: '114:1', leSoir: false },
   dix_jours: { source: '582:1', leSoir: true }, omer: { source: '489:1', leSoir: true },
 };
+/**
+ * Le texte de la fin de מַשִּׁיב הָרוּחַ (RappelsTefila.cleGuechemFin ; audit du 16/11) : en Ashkenaz hors d'Israël,
+ * l'officiant cesse à la répétition de Moussaf, l'assemblée à Min'ha (Rema 114:3 ; Michna Beroura 114:3).
+ */
+export function cleGuechemFin(nusah, enIsrael) {
+  return nusah === 'ashkenaz' && !enIsrael ? 'rappel_guechem_fin_ashkenaz' : 'rappel_guechem_fin';
+}
 export function rappelsTefila(aujourdhui, enIsrael, avance = 3, jourDe = (iso) => jour(iso, enIsrael), sansGuechem = false) {
   const ajoute = (iso, n) => { const d = new Date(`${iso}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
   const res = [];
