@@ -1637,4 +1637,18 @@
         <item quantity="one">jour d’affilée</item>
         <item quantity="other">jours d’affilée</item>
     </plurals>
+
+    <!-- Version Sérénité (VersionApp, 17/11). -->
+    <string name="version_serenite">Sérénité</string>
+    <string name="version_serenite_desc">Une grande carte-paysage qui suit le ciel du moment, des titres élégants, quatre onglets.</string>
+    <string name="serenite_titre">Hitbodedout · %1$s</string>
+    <string name="serenite_ouvrir">Commencer : %1$s</string>
+    <string name="serenite_en_cours">En cours</string>
+    <string name="serenite_faite">Faite aujourd’hui</string>
+    <string name="serenite_ce_soir">Ce soir</string>
+    <string name="serenite_aujourdhui">Aujourd’hui</string>
+    <string name="serenite_modifier">Modifier</string>
+    <string name="serenite_lire">Lire</string>
+    <string name="serenite_tout_voir">Tout voir</string>
+    <string name="serenite_cette_semaine">Vos derniers jours</string>
 </resources>

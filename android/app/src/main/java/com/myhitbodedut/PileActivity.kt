@@ -164,7 +164,13 @@ class PileActivity : AccueilVersion() {
                 })
             }
         })
-        ressort()
+        // Le hassid occupe le milieu de la carte : il accueille, ou se réjouit quand c'est fait.
+        addView(android.widget.ImageView(context).apply {
+            setImageResource(Personnage.pour(context, Character.greeting(d.faite)))
+            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(12) }
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        })
         val enCours = Store.isSessionRunning(context)
         addView(VueVersion.bouton(context,
             when {

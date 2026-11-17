@@ -106,6 +106,11 @@ object VueVersion {
         // Barres.installer a déjà posé la bande de la barre d'état aux couleurs du thème : la version la recouvre.
         activite.findViewById<View>(android.R.id.content)?.background = android.graphics.drawable.ColorDrawable(fond)
         activite.window.decorView.setBackgroundColor(fond)
+        // Jusqu'à Android 14, le système peint encore la barre d'état de la couleur du thème.
+        @Suppress("DEPRECATION")
+        activite.window.statusBarColor = fond
+        @Suppress("DEPRECATION")
+        activite.window.navigationBarColor = fond
         androidx.core.view.WindowCompat.getInsetsController(activite.window, activite.window.decorView).apply {
             isAppearanceLightStatusBars = clair
             isAppearanceLightNavigationBars = clair

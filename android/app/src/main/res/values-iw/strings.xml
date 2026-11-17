@@ -1622,4 +1622,18 @@
         <item quantity="two">ימים ברצף</item>
         <item quantity="other">ימים ברצף</item>
     </plurals>
+
+    <!-- Version Sérénité (VersionApp, 17/11). -->
+    <string name="version_serenite">שלווה</string>
+    <string name="version_serenite_desc">כרטיס נוף גדול שעוקב אחרי השמיים של הרגע, כותרות אלגנטיות, ארבע לשוניות.</string>
+    <string name="serenite_titre">התבודדות · %1$s</string>
+    <string name="serenite_ouvrir">להתחיל: %1$s</string>
+    <string name="serenite_en_cours">מתקיימת עכשיו</string>
+    <string name="serenite_faite">נעשתה היום</string>
+    <string name="serenite_ce_soir">הערב</string>
+    <string name="serenite_aujourdhui">היום</string>
+    <string name="serenite_modifier">עריכה</string>
+    <string name="serenite_lire">לקרוא</string>
+    <string name="serenite_tout_voir">הכול</string>
+    <string name="serenite_cette_semaine">הימים האחרונים שלכם</string>
 </resources>

@@ -1576,4 +1576,18 @@
         <item quantity="one">day in a row</item>
         <item quantity="other">days in a row</item>
     </plurals>
+
+    <!-- Version Sérénité (VersionApp, 17/11). -->
+    <string name="version_serenite">Serenity</string>
+    <string name="version_serenite_desc">A large landscape card that follows the sky of the moment, elegant titles, four tabs.</string>
+    <string name="serenite_titre">Hitbodedut · %1$s</string>
+    <string name="serenite_ouvrir">Start: %1$s</string>
+    <string name="serenite_en_cours">In progress</string>
+    <string name="serenite_faite">Done today</string>
+    <string name="serenite_ce_soir">Tonight</string>
+    <string name="serenite_aujourdhui">Today</string>
+    <string name="serenite_modifier">Edit</string>
+    <string name="serenite_lire">Read</string>
+    <string name="serenite_tout_voir">See all</string>
+    <string name="serenite_cette_semaine">Your last days</string>
 </resources>

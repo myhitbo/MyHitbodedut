@@ -1079,8 +1079,9 @@ def main():
     # Les versions de l'application (VersionApp, 17/11) : l'ecran du choix, puis chaque accueil,
     # en faisant glisser ses cartes ; on revient a Classique pour la suite.
     def balayer():
-        sh(f"input swipe {int(W * 0.85)} {int(H * 0.55)} {int(W * 0.12)} {int(H * 0.55)} 300")
-        pause(1.2)
+        pause(1.0)
+        sh(f"input swipe {int(W * 0.88)} {int(H * 0.45)} {int(W * 0.08)} {int(H * 0.45)} 450")
+        pause(1.5)
 
     def s28():
         activite("ChoixVersionActivity")
@@ -1102,6 +1103,11 @@ def main():
         capture("28-bento-1")
         defiler(True)
         capture("28-bento-2-bas")
+        regler({"version_app": ("string", "serenite")})
+        lancer(attente=6)
+        capture("28-serenite-1")
+        defiler(True)
+        capture("28-serenite-2-bas")
         regler({"version_app": ("string", "classique")})
     etape("28 versions de l'app", s28)
 

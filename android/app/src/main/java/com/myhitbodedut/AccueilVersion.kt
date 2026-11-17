@@ -179,7 +179,8 @@ data class DonneesAccueil(
                 prenom = Store.firstName(c),
                 dateCivile = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMMM", langue(c)))
                     .replaceFirstChar { it.titlecase(langue(c)) },
-                dateHebraique = hebraique,
+                // Isolée : la date hébraïque garde son ordre de droite à gauche au milieu d'une ligne en français.
+                dateHebraique = hebraique?.let { "\u2067$it\u2069" },
                 faite = Store.isDone(c),
                 minutesAujourdhui = Store.record(c)?.minutes ?: 0,
                 serie = Store.streak(c),
