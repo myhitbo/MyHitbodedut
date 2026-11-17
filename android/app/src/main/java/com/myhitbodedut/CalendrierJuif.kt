@@ -77,7 +77,16 @@ object CalendrierJuif {
         val JOURS_SEMAINE = (1..6).map { "jour_$it" }
         const val TSOM_GUEDALIA_TEVET = "tsom_guedalia_tevet"
         const val LENDEMAIN_KIPPOUR = "lendemain_kippour"
+        /** Le 9 Av ou Kippour (12/11) : « שעשה לי כל צרכי » ne se dit pas (Edot, Ben Ich 'Haï, Vayechev 9). */
+        const val TICHA_BEAV_KIPPOUR = "ticha_beav_kippour"
         const val ESTHER_POURIM = "esther_pourim"
+        /**
+         * Le dimanche 16 Adar d'un Pourim triple, en Israël hors de Jérusalem (14/11) : l'Ashkenaz y omet
+         * Ta'hanoun (Halikhot Chlomo 22:8 ; SiddurJour.conditionsPour), Edot et Sfard le disent (Yalkut Yosef).
+         */
+        const val POURIM_TRIPLE_HORS_JERUSALEM = "pourim_triple_hors_jerusalem"
+        /** Le même dimanche à Jérusalem, jour du festin : « על הנסים » dans un « הרחמן » (Edot, Yalkut Yosef 688:6, § 15). */
+        const val POURIM_TRIPLE_FESTIN = "pourim_triple_festin"
         const val CHIVA_ASSAR_TAMOUZ = "chiva_assar_tamouz"
         /**
          * Les deux jours de bascule (audit du 16/10) : le 22 Tichri, Cha'harit dit מוריד הטל et
@@ -113,7 +122,7 @@ object CalendrierJuif {
         /** Le zimoun de Birkat haMazon, à trois convives ou plus (29/10) : jamais du jour, replié. */
         const val ZIMUN = "zimun"
 
-        /** Ce qui n'est pas obligatoire dans Birkat haMazon (03/11) : psaumes d'avant, הרחמן et fin. Jamais du jour, replié. */
+        /** Ce qui n'est pas obligatoire dans Birkat haMazon (03/11) : les psaumes d'avant (les הרחמן en clair depuis le 12/11). Jamais du jour, replié. */
         const val FACULTATIF = "facultatif"
 
         /** Roch 'Hodech d'une année embolismique ; avant Nissan (« וּלְכַפָּרַת פָּשַׁע », 28/10). */
@@ -122,10 +131,127 @@ object CalendrierJuif {
 
         /** Ce qui ne se dit qu'avec un minyan (Kaddich, Barekhou, Kedoucha…) : jamais du jour, replié. */
         const val MINYAN = "minyan"
+
+        /**
+         * Audit du 16/11 (Ta'hanoun et ce qui en dépend) :
+         *  - AVINOU_MALKENOU_JEUNE : les lignes des jeûnes d'Avinou malkénou (« ברך עלינו », « זכרנו »), un jeûne
+         *    hors des dix jours ; à Tsom Guedalia, on dit celles des dix jours (Matté Efraïm 602:13) ;
+         *  - KADDICH_COMPLET_HALLEL : la fin du Kaddich après le Hallel, sauf à 'Hanouka, mais à Roch 'Hodech Tévèt
+         *    et le Chabbat de 'Hanouka, qui ont un Moussaf (Kitsour Yalkout Yossef 423:1 ; Kaf ha'Haïm 683:2) ;
+         *  - VEILLE_PESSAH_CHENI : le 13 Iyar, sans Vidouï à Min'ha en Edot (Kitsour Yalkout Yossef 131:38) ;
+         *  - EREV_KIPPOUR : le 9 Tichri, Vidouï et « על חטא » après l'Amida de Min'ha (Choul'han Aroukh O.H. 607:1).
+         */
+        const val AVINOU_MALKENOU_JEUNE = "avinou_malkenou_jeune"
+        const val KADDICH_COMPLET_HALLEL = "kaddich_complet_hallel"
+        const val VEILLE_PESSAH_CHENI = "veille_pessah_cheni"
+        /** Le 14 Iyar : sans Ta'hanoun, usage que ni le Choul'han Aroukh ni le Michna Beroura ne citent (JourAffiche le dit en Ashkenaz). */
+        const val JOUR_PESSAH_CHENI = "jour_pessah_cheni"
+        /**
+         * אל ארך אפים (Ashkenaz, Sfard) : les jours de למנצח, le lundi et le jeudi seulement (Michna Beroura 131:35 ;
+         * Choul'han Aroukh haRav 429:12 ; Matté Efraïm 602:12), pas un jeûne d'un autre jour.
+         */
+        const val EL_EREKH_APAYIM = "el_erekh_apayim"
+        const val EREV_KIPPOUR = "erev_kippour"
+
+        /**
+         * « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel, audit du 16/11 ; Choul'han Aroukh O.H. 131:4) :
+         * maison en deuil, brit mila, 'hatan. Jamais calculée : ajoutée par l'écran le jour choisi
+         * (Store.sansTahanounAujourdhui), elle retire le Ta'hanoun (SiddurJour.conditionsPour).
+         */
+        const val SANS_TAHANOUN_PONCTUEL = "sans_tahanoun_ponctuel"
+
+        /**
+         * Hallel et Moussaf (audit du 16/11) :
+         * - Roch 'Hodech en semaine : le Moussaf de l'application (« מקדש ישראל וראשי חדשים ») ; le
+         *   Chabbat, c'est « אתה יצרת » (Kitsour Yalkut Yosef 423:10 ; Choul'han Aroukh O.H. 425:3) ;
+         * - 'Hol hamoed, sans les jours de Yom tov : le Moussaf de la fête (Kitsour Yalkut Yosef 490:2) ;
+         * - 'Hanouka sans Moussaf (ni Roch 'Hodech ni Chabbat) : demi-Kaddich après le Hallel ; les autres
+         *   jours de Hallel, תתקבל (Kitsour Yalkut Yosef 423:1 ; Michna Beroura 423:1) ;
+         * - 'Hanouka hors de Roch 'Hodech : le psaume de 'Hanouka dans le Chir chel yom ; à Roch 'Hodech
+         *   Tévèt, après Moussaf et ברכי נפשי (Kitsour Yalkut Yosef 683:11) ;
+         * - le soir du Séder (15 Nissan, et 16 en diaspora ; Arvit relève de ce jour-là) : Hallel complet
+         *   après l'Amida d'Arvit chez les Séfarades (Kitsour Yalkut Yosef 487:5) ;
+         * - Hallel partiel : Roch 'Hodech, fin de Pessa'h.
+         */
+        const val ROCH_HODECH_CHOL = "roch_hodech_chol"
+        const val HOL_HAMOED = "hol_hamoed"
+        const val HANOUKA_SANS_MOUSSAF = "hanouka_sans_moussaf"
+        const val HANOUKA_HORS_ROCH_HODECH = "hanouka_hors_roch_hodech"
+        const val LEIL_PESSAH = "leil_pessah"
+        const val HALLEL_PARTIEL = "hallel_partiel"
+
+        /**
+         * Audit du 16/11 (structure des offices). [MIZMOR_LETODA] : pas le Chabbat, le Yom tov, pendant
+         * Pessa'h, la veille de Pessa'h ni la veille de Kippour (Rema O.H. 51:9 ; Michna Beroura 51:22, 604:4).
+         * [HOL_HAMOED] (plus haut) : 'Hol hamoed seul, sans le Yom tov. [YOM_TOV_SEMAINE] : le dimanche, quand un Yom tov
+         * ou 'Hol hamoed tombe du dimanche au vendredi (Michna Beroura 295:3). [LEIL_HASEDER] : la nuit du
+         * Séder, deux en diaspora. [LENDEMAIN_ROCH_HODECH] : le jour qui suit Roch 'Hodech. [CHOME] : Chabbat
+         * ou Yom tov (isAssurBemelacha), comme Jour.chome.
+         */
+        const val MIZMOR_LETODA = "mizmor_letoda"
+        const val YOM_TOV_SEMAINE = "yom_tov_semaine"
+        const val LEIL_HASEDER = "leil_haseder"
+        const val LENDEMAIN_ROCH_HODECH = "lendemain_roch_hodech"
+        const val CHOME = "chome"
+
+        /**
+         * Posées par SiddurJour.conditionsPour selon le noussa'h (audit du 16/11). [VIHI_NOAM] : ויהי נועם au
+         * motsaé Chabbat ; [VEATA_KADOCH] : « ואתה קדוש » et la suite, ces soirs-là et le soir du 9 Av ;
+         * [TEFILIN] : le jour où l'on met les téfilin ; [TEFILIN_SANS_BERAKHA] : 'Hol hamoed, Ashkenaz hors
+         * d'Israël ; [VIDUI_COUCHER] : le Vidouï du Chema du coucher (Edot).
+         */
+        const val VIHI_NOAM = "vihi_noam"
+        const val VEATA_KADOCH = "veata_kadoch"
+        const val TEFILIN = "tefilin"
+        const val TEFILIN_SANS_BERAKHA = "tefilin_sans_berakha"
+        const val VIDUI_COUCHER = "vidui_coucher"
+        /**
+         * Le vendredi 14 Adar d'un Pourim triple, à Jérusalem (audit du 16/11) : la Méguila s'y lit, et la nuit
+         * qui l'ouvre, avant Arvit, le psaume 22 (Kitsour Yalkut Yosef 693:1), sans que ce soit « pourim ».
+         */
+        const val POURIM_TRIPLE_VENDREDI = "pourim_triple_vendredi"
+        /** La nuit (audit du 16/11, Méguila) : posée par la lecture d'après l'heure ([nuit]), jamais par le calendrier. */
+        const val NUIT = "nuit"
+
+        /**
+         * Audit du 16/11, la Havdala (Choul'han Aroukh O.H. 556:1 et 624:3-5 ; Michna Beroura 556:1-5 ;
+         * Kitsour Yalkut Yosef 556:6-8 et 624:4-6) : la flamme le Chabbat qui finit et au sortir de Kippour ;
+         * les bessamim le Chabbat qui finit, sauf le samedi soir du 9 Av (le soir, avec le jour hébreu qui
+         * commence, ou le samedi même quand l'app ne connaît pas le lieu) ; le lundi après un 9 Av du
+         * dimanche, Havdala sur la coupe, sans flamme ni bessamim.
+         */
+        const val HAVDALA_NER = "havdala_ner"
+        const val HAVDALA_BESSAMIM = "havdala_bessamim"
+        const val LENDEMAIN_TICHA_BEAV_DIMANCHE = "lendemain_ticha_beav_dimanche"
+        /**
+         * Le jour hébreu qui suit un jour d'ajouts au Birkat haMazon (Chabbat, Roch 'Hodech, Yom tov,
+         * 'Hol hamoed, 'Hanouka, Pourim), sauf le Chabbat : un repas commencé la veille s'y conclut avec
+         * les ajouts de la veille (Choul'han Aroukh O.H. 188:10 ; Michna Beroura 188:32-34 ; Kitsour
+         * Yalkut Yosef 188:16, 19 ; audit du 16/11).
+         */
+        const val LENDEMAIN_AJOUTS = "lendemain_ajouts"
+        /** Du 17 Tamouz au 10 Av : שהחיינו évité (Choul'han Aroukh O.H. 551:17 ; Kitsour Yalkut Yosef 551:9 ; audit du 16/11). */
+        const val BEIN_HAMETSARIM = "bein_hametsarim"
+
+        /**
+         * Tikoun Ra'hel (audit du 16/11) : pas à Roch 'Hodech, de Roch Hachana à Chemini Atseret, à 'Hanouka,
+         * aux jours de Pourim, en Nissan, pendant l'omer (Kitsour Yalkut Yosef, דיני תיקון חצות §נה ; Ben Ich
+         * 'Haï, Vayichla'h ה), ni en Israël l'année de chemita (§נז).
+         */
+        const val TIKOUN_RAHEL = "tikoun_rahel"
+
+        /** Toujours vrai (audit du 16/11) : une indication fixe du siddour, sans condition du jour. */
+        const val TOUJOURS = "toujours"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
-            listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
+            listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
-                MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN)
+                MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
+                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN, AVINOU_MALKENOU_JEUNE, KADDICH_COMPLET_HALLEL,
+                VEILLE_PESSAH_CHENI, EREV_KIPPOUR, SANS_TAHANOUN_PONCTUEL, JOUR_PESSAH_CHENI, EL_EREKH_APAYIM,
+                ROCH_HODECH_CHOL, HOL_HAMOED, HANOUKA_SANS_MOUSSAF, HANOUKA_HORS_ROCH_HODECH, LEIL_PESSAH, HALLEL_PARTIEL,
+                MIZMOR_LETODA, YOM_TOV_SEMAINE, LEIL_HASEDER, LENDEMAIN_ROCH_HODECH, CHOME, VIHI_NOAM, VEATA_KADOCH, TEFILIN,
+                TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT, POURIM_TRIPLE_VENDREDI, HAVDALA_NER, HAVDALA_BESSAMIM,
+                LENDEMAIN_TICHA_BEAV_DIMANCHE, LENDEMAIN_AJOUTS, BEIN_HAMETSARIM, TIKOUN_RAHEL, TOUJOURS)
     }
 
     /**
@@ -193,6 +319,8 @@ object CalendrierJuif {
         /** Chabbat ou Yom Tov : jour où le travail est interdit (isAssurBemelacha). */
         val chome: Boolean,
         val conditions: Set<String>,
+        /** Le Chabbat spécial (Chekalim, Zakhor, Para, ha'Hodech…), en hébreu ; null les autres jours (audit du 16/11). */
+        val parachaSpeciale: String? = null,
     )
 
     private val formatHebreu = HebrewDateFormatter().apply { isHebrewFormat = true }
@@ -257,10 +385,19 @@ object CalendrierJuif {
             if (tefila.isHallelShalemRecited(regles)) add(C.HALLEL_COMPLET)
             // La veille de Roch Hachana, pas de Ta'hanoun à la prière (Choul'han
             // Aroukh, OC 581:3), que TefilaRules 2.5.0 fait dire.
+            // Pourim triple (15 Adar un Chabbat) : à Jérusalem, le dimanche 16 est le jour du festin, sans
+            // Ta'hanoun ni למנצח (Kitsour Yalkout Yossef 688:6, § 14 ; Piskei techouvot 693:7), ce que TefilaRules
+            // ignore. Ailleurs en Israël, Ta'hanoun lekhat'hila (Rav Its'hak Yossef, chiour 488, 5785), sauf en
+            // Ashkenaz (C.POURIM_TRIPLE_HORS_JERUSALEM).
+            val dimanchePourimTriple = semaine == DayOfWeek.SUNDAY && regles.jewishDayOfMonth == 16 &&
+                regles.jewishMonth == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)
+            val festinJerusalem = mukafChoma && dimanchePourimTriple
+            if (festinJerusalem) add(C.POURIM_TRIPLE_FESTIN)
+            if (enIsrael && !mukafChoma && dimanchePourimTriple) add(C.POURIM_TRIPLE_HORS_JERUSALEM)
             val tahanoun = tefila.isTachanunRecitedShacharis(regles) &&
-                regles.yomTovIndex != JewishCalendar.EREV_ROSH_HASHANA
+                regles.yomTovIndex != JewishCalendar.EREV_ROSH_HASHANA && !festinJerusalem
             if (tahanoun) add(C.TAHANOUN_CHAHARIT)
-            if (tefila.isTachanunRecitedMincha(regles)) add(C.TAHANOUN_MINHA)
+            if (tefila.isTachanunRecitedMincha(regles) && !festinJerusalem) add(C.TAHANOUN_MINHA)
             // « לשני וחמישי » : le titre de la section du siddour le dit ; les
             // jours sans Ta'hanoun, la section ne se dit pas non plus.
             if (tahanoun && (semaine == DayOfWeek.MONDAY || semaine == DayOfWeek.THURSDAY)) add(C.LUNDI_JEUDI)
@@ -281,6 +418,7 @@ object CalendrierJuif {
             val index = regles.yomTovIndex
             if (index == JewishCalendar.FAST_OF_GEDALYAH || index == JewishCalendar.TENTH_OF_TEVES) add(C.TSOM_GUEDALIA_TEVET)
             if (regles.jewishMonth == JewishDate.TISHREI && regles.jewishDayOfMonth == 11) add(C.LENDEMAIN_KIPPOUR)
+            if (regles.isTishaBav || regles.isYomKippur) add(C.TICHA_BEAV_KIPPOUR)
             if (index == JewishCalendar.FAST_OF_ESTHER || C.POURIM in this) add(C.ESTHER_POURIM)
             if (index == JewishCalendar.SEVENTEEN_OF_TAMMUZ) add(C.CHIVA_ASSAR_TAMOUZ)
             if ((regles.jewishMonth == JewishDate.TISHREI && regles.jewishDayOfMonth == 22) ||
@@ -290,7 +428,7 @@ object CalendrierJuif {
             val mois = regles.jewishMonth
             val quantieme = regles.jewishDayOfMonth
             val adar1415 = (mois == JewishDate.ADAR || mois == JewishDate.ADAR_II) && quantieme in 14..15
-            if (!(regles.isRoshChodesh || regles.isChanukah || adar1415 || regles.isTishaBav || regles.isAssurBemelacha || regles.isCholHamoed ||
+            if (!(regles.isRoshChodesh || regles.isChanukah || adar1415 || festinJerusalem || regles.isTishaBav || regles.isAssurBemelacha || regles.isCholHamoed ||
                     index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR)) add(C.LAMNATSEAH)
             if (mois == JewishDate.ELUL || (mois == JewishDate.TISHREI && quantieme <= 21)) add(C.LEDAVID)
             if (regles.isAseresYemeiTeshuva || (mois == JewishDate.TISHREI && quantieme == 21)) add(C.TECHOUVA_HOCHAANA)
@@ -298,9 +436,19 @@ object CalendrierJuif {
             if (yomTov) add(C.YOM_TOV)
             if (listOf(C.PESSAH, C.SOUKKOT, C.CHAVOUOT, C.CHEMINI_ATSERET).any { it in this }) add(C.MOED)
             if (C.CHABBAT in this && regles.isRoshChodesh) add(C.CHABBAT_ROCH_HODECH)
-            // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique (28/10) : toute l'année
-            // (consigne du siddour Edot) ou jusqu'à Roch 'Hodech Adar II inclus (« עד חודש ניסן », Sfard et
-            // Ashkenaz) ; les deux usages, Michna beroura 423:6. Le 30 inaugure le mois suivant.
+            // Hallel et Moussaf (audit du 16/11 ; C.ROCH_HODECH_CHOL…).
+            if (C.CHABBAT !in this && regles.isRoshChodesh) add(C.ROCH_HODECH_CHOL)
+            if (regles.isCholHamoed) add(C.HOL_HAMOED)
+            if (regles.isChanukah && !regles.isRoshChodesh && C.CHABBAT !in this) add(C.HANOUKA_SANS_MOUSSAF)
+            if (regles.isChanukah && !regles.isRoshChodesh) add(C.HANOUKA_HORS_ROCH_HODECH)
+            if (index == JewishCalendar.PESACH && mois == JewishDate.NISSAN && quantieme <= 16) add(C.LEIL_PESSAH)
+            if (C.HALLEL in this && C.HALLEL_COMPLET !in this) add(C.HALLEL_PARTIEL)
+            // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique (28/10) : jusqu'à
+            // Roch 'Hodech Adar II inclus, plus à partir de Nissan (« עד חודש ניסן », Sfard et Ashkenaz ; pour
+            // les Edot, Kitsour Yalkut Yosef 423:14, audit du 16/11 : la consigne de leur siddour, « בשנה
+            // מעוברת », le dit toute l'année comme le Ben Ich 'Haï et le Kaf ha'Haïm 423:18). Michna Beroura
+            // 423:6 rapporte trois usages : tous les mois, l'année embolismique, ou celle-ci jusqu'à la fin
+            // d'Adar II. Le 30 inaugure le mois suivant.
             if (regles.isRoshChodesh && regles.isJewishLeapYear) {
                 val inaugure = if (quantieme == 30) when (mois) {
                     JewishDate.ADAR -> JewishDate.ADAR_II
@@ -312,8 +460,41 @@ object CalendrierJuif {
             }
             if (C.CHABBAT in this && yomTov) add(C.YOM_TOV_CHABBAT)
             if (C.CHABBAT in this && regles.isRoshHashana) add(C.ROCH_HACHANA_CHABBAT)
-            val hierYomTov = calendrier(date.minusDays(1), enIsrael, modernes = false).isYomTovAssurBemelacha
-            if (C.MOTSAE_CHABBAT in this || (hierYomTov && !regles.isAssurBemelacha)) add(C.MOTSAE_CHABBAT_YT)
+            // Audit du 16/11 (C.AVINOU_MALKENOU_JEUNE…).
+            if (C.JEUNE in this && C.ASSERET_YEMEI_TECHOUVA !in this) add(C.AVINOU_MALKENOU_JEUNE)
+            if (!regles.isChanukah || regles.isRoshChodesh || C.CHABBAT in this) add(C.KADDICH_COMPLET_HALLEL)
+            if (mois == JewishDate.IYAR && quantieme == 13) add(C.VEILLE_PESSAH_CHENI)
+            if (mois == JewishDate.IYAR && quantieme == 14) add(C.JOUR_PESSAH_CHENI)
+            if (C.LAMNATSEAH in this && (semaine == DayOfWeek.MONDAY || semaine == DayOfWeek.THURSDAY)) add(C.EL_EREKH_APAYIM)
+            if (index == JewishCalendar.EREV_YOM_KIPPUR) add(C.EREV_KIPPOUR)
+            val hier = calendrier(date.minusDays(1), enIsrael, modernes = false)
+            // Un samedi soir qui est Yom tov n'est pas un soir ouvrable : ni אתה חוננתנו ni ajouts du motsaé Chabbat
+            // (Choul'han Aroukh O.H. 491:2, « ותודיענו » ; audit du 16/11).
+            if ((C.MOTSAE_CHABBAT in this || hier.isYomTovAssurBemelacha) && !regles.isAssurBemelacha) add(C.MOTSAE_CHABBAT_YT)
+            // Audit du 16/11 (C.MIZMOR_LETODA…). (C.HOL_HAMOED est posé plus haut.)
+            if (regles.isAssurBemelacha) add(C.CHOME)
+            if (!(C.CHABBAT in this || yomTov || regles.isPesach || index == JewishCalendar.EREV_PESACH ||
+                    index == JewishCalendar.EREV_YOM_KIPPUR)) add(C.MIZMOR_LETODA)
+            if (semaine == DayOfWeek.SUNDAY && (0L..5L).any { k ->
+                    calendrier(date.plusDays(k), enIsrael, modernes = false).let { it.isYomTovAssurBemelacha || it.isCholHamoed }
+                }) add(C.YOM_TOV_SEMAINE)
+            if (mois == JewishDate.NISSAN && (quantieme == 15 || (quantieme == 16 && !enIsrael))) add(C.LEIL_HASEDER)
+            if (hier.isRoshChodesh && !regles.isRoshChodesh) add(C.LENDEMAIN_ROCH_HODECH)
+            if (mukafChoma && semaine == DayOfWeek.FRIDAY && quantieme == 14 &&
+                mois == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)) add(C.POURIM_TRIPLE_VENDREDI)
+            // La Havdala et le lendemain d'un jour d'ajouts (audit du 16/11, C.HAVDALA_NER…).
+            val veille = calendrier(date.minusDays(1), enIsrael, modernes = false).apply { setIsMukafChoma(mukafChoma) }
+            val kippour = C.KIPPOUR in this || C.LENDEMAIN_KIPPOUR in this
+            if (C.CHABBAT in this || C.MOTSAE_CHABBAT in this || kippour) add(C.HAVDALA_NER)
+            if (C.CHABBAT in this || (C.MOTSAE_CHABBAT in this && C.TICHA_BEAV !in this) || kippour) add(C.HAVDALA_BESSAMIM)
+            if (semaine == DayOfWeek.MONDAY && veille.isTishaBav) add(C.LENDEMAIN_TICHA_BEAV_DIMANCHE)
+            if (semaine != DayOfWeek.SATURDAY && (semaine == DayOfWeek.SUNDAY || veille.isRoshChodesh || veille.isYomTovAssurBemelacha ||
+                    veille.isCholHamoed || veille.isChanukah || veille.isPurim)) add(C.LENDEMAIN_AJOUTS)
+            if ((mois == JewishDate.TAMMUZ && quantieme >= 17) || (mois == JewishDate.AV && quantieme <= 10)) add(C.BEIN_HAMETSARIM)
+            // Tikoun Ra'hel (audit du 16/11, C.TIKOUN_RAHEL).
+            if (!(regles.isRoshChodesh || (mois == JewishDate.TISHREI && quantieme <= (if (enIsrael) 22 else 23)) || regles.isChanukah || adar1415 ||
+                    mois == JewishDate.NISSAN || regles.dayOfOmer > 0 || (enIsrael && regles.jewishYear % 7 == 0))) add(C.TIKOUN_RAHEL)
+            add(C.TOUJOURS)
         }
 
         val fetes = buildList {
@@ -338,7 +519,89 @@ object CalendrierJuif {
             paracha = paracha?.takeIf { it.isNotBlank() },
             chome = regles.isAssurBemelacha,
             conditions = conditions,
+            parachaSpeciale = parachaSpeciale(regles, mukafChoma),
         )
+    }
+
+    /**
+     * Le Chabbat spécial (audit du 16/11) : Chekalim, Zakhor, Para, ha'Hodech… (formatSpecialParsha) ; à
+     * Jérusalem, le Chabbat 15 Adar d'un Pourim triple, le maftir « ויבא עמלק » lu dans un second Séfer
+     * (Choul'han Aroukh O.H. 688:6), que getSpecialShabbos ne connaît pas.
+     */
+    private fun parachaSpeciale(regles: JewishCalendar, mukafChoma: Boolean): String? {
+        if (regles.dayOfWeek != 7) return null
+        if (regles.specialShabbos != JewishCalendar.Parsha.NONE) return formatHebreu.formatSpecialParsha(regles).takeIf { it.isNotBlank() }
+        val adar = if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR
+        return if (mukafChoma && regles.jewishMonth == adar && regles.jewishDayOfMonth == 15) "מפטיר ויבא עמלק" else null
+    }
+
+    /**
+     * Les repères du jour qui ne changent pas le texte de la prière (audit du 16/11), en clés de chaîne :
+     *  - Seli'hot : Edot dès le 2 Eloul (Kitsour Yalkut Yosef 581:1) ; Ashkenaz et Sfard dès le dimanche
+     *    avant Roch Hachana, une semaine plus tôt s'il tombe un lundi ou un mardi (Rema 581:1 ; pour le
+     *    Sfard, l'usage courant) ; jusqu'à la veille de Kippour, sauf Chabbat et Roch Hachana (usage général) ;
+     *  - le chofar après Cha'harit, du 1er au 28 Eloul sauf Chabbat, en Ashkenaz (Rema 581:1) et en Sfard
+     *    (usage courant) ; pas de chofar le 29 Eloul, pour tous (Rema 581:3 ; YY, ערב ראש השנה ה) ;
+     *  - lundi-jeudi-lundi (בה״ב) en Ashkenaz et en Sfard (Rema 492:1 ; MB 492:3 et 566:10 ; Choul'han
+     *    Aroukh haRav 492), et le « מי שבירך » du Chabbat qui précède ; rien pour les Edot ;
+     *  - Yom Kippour katan, pour qui en a l'usage (MB 417:4 ; YY 417:5) ;
+     *  - l'érouv tavchilin, la veille d'une fête qui mène à Chabbat (Choul'han Aroukh O.H. 527:1).
+     */
+    fun reperes(date: LocalDate, enIsrael: Boolean, nusah: String): List<String> = buildList {
+        val c = calendrier(date, enIsrael, modernes = false)
+        val mois = c.jewishMonth
+        val j = c.jewishDayOfMonth
+        val chabbat = date.dayOfWeek == DayOfWeek.SATURDAY
+        val edot = nusah == "edot"
+        if (selihot(date, enIsrael, edot)) add("repere_selihot")
+        if (!edot && mois == JewishDate.ELUL && j <= 28 && !chabbat) add("repere_chofar")
+        if (mois == JewishDate.ELUL && j == 29) add("repere_pas_de_chofar")
+        if (!edot && c.isBeHaB) add("repere_behab")
+        if (!edot && chabbat && calendrier(date.plusDays(2), enIsrael, false).isBeHaB && calendrier(date.plusDays(5), enIsrael, false).isBeHaB) {
+            add("repere_behab_mi_cheberakh")
+        }
+        if (c.isYomKippurKatan) add("repere_yom_kippour_katan")
+        if (erouvTavchilin(date, enIsrael)) add("repere_erouv_tavchilin")
+    }
+
+    private fun selihot(date: LocalDate, enIsrael: Boolean, edot: Boolean): Boolean {
+        val c = calendrier(date, enIsrael, false)
+        if (date.dayOfWeek == DayOfWeek.SATURDAY || c.isRoshHashana) return false
+        if (c.jewishMonth == JewishDate.TISHREI) return c.jewishDayOfMonth <= 9
+        if (c.jewishMonth != JewishDate.ELUL) return false
+        if (edot) return c.jewishDayOfMonth >= 2
+        // Le dimanche avant Roch Hachana ; s'il reste moins de quatre jours, celui d'avant.
+        val rh = date.plusDays((30 - c.jewishDayOfMonth).toLong())
+        var debut = rh.minusDays(((rh.dayOfWeek.value % 7)).toLong())
+        if (java.time.temporal.ChronoUnit.DAYS.between(debut, rh) < 4) debut = debut.minusDays(7)
+        return !date.isBefore(debut)
+    }
+
+    /**
+     * La période où l'on évite d'écouter des chants avec instruments, même enregistrés (audit du 16/11) :
+     * « omer » (sauf Lag baOmer ; Kitsour Yalkut Yosef 493:8), « bein_hametsarim » du 17 Tamouz au 9 Av,
+     * le jeûne repoussé compris (YY 551:6 ; Michna Beroura 551:16) ; null sinon. Un rappel, jamais une
+     * coupure : la joie d'une mitsva en excepte, et elle dépend de l'utilisateur.
+     */
+    fun periodeSansMusique(date: LocalDate): String? {
+        val c = calendrier(date, false, false)
+        return when {
+            c.dayOfOmer > 0 && c.dayOfOmer != 33 -> "omer"
+            (c.jewishMonth == JewishDate.TAMMUZ && c.jewishDayOfMonth >= 17) || (c.jewishMonth == JewishDate.AV && c.jewishDayOfMonth <= 9) ||
+                c.yomTovIndex == JewishCalendar.TISHA_BEAV -> "bein_hametsarim"
+            else -> null
+        }
+    }
+
+    /** La veille d'un Yom tov dont les jours chômés mènent jusqu'à Chabbat (un vendredi de fête). */
+    private fun erouvTavchilin(date: LocalDate, enIsrael: Boolean): Boolean {
+        if (calendrier(date, enIsrael, false).isAssurBemelacha) return false
+        var d = date.plusDays(1)
+        while (calendrier(d, enIsrael, false).isYomTovAssurBemelacha) {
+            if (d.dayOfWeek == DayOfWeek.FRIDAY) return true
+            d = d.plusDays(1)
+        }
+        return false
     }
 
     /**
@@ -356,9 +619,19 @@ object CalendrierJuif {
      */
     fun jourDeLaPriere(texte: String, date: LocalDate, heure: LocalTime, apresSortie: Boolean = false): LocalDate = when (texte) {
         "arvit", "chema_coucher" -> if (heure >= LocalTime.NOON) date.plusDays(1) else date
+        // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
+        "tikoun_hatsot" -> if (heure >= LocalTime.of(18, 0)) date.plusDays(1) else date
         "minha" -> date
         else -> if (apresSortie) date.plusDays(1) else date
     }
+
+    /**
+     * La nuit, pour la lecture (audit du 16/11 : שהחיינו de la Méguila chez les Edot, « אשר הניא » en Sfard et
+     * en Ashkenaz) : après la sortie des étoiles ou avant l'aube du lieu ; sans lieu ([apresSortie],
+     * [avantAube] null), de 19 h à 6 h.
+     */
+    fun nuit(heure: LocalTime, apresSortie: Boolean?, avantAube: Boolean?): Boolean =
+        (apresSortie ?: (heure.hour >= 19)) || (avantAube ?: (heure.hour < 6))
 
     private fun calendrier(date: LocalDate, enIsrael: Boolean, modernes: Boolean) =
         JewishCalendar(date).apply {

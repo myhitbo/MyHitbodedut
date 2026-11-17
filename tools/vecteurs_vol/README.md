@@ -4,7 +4,8 @@
 pour quelques vols : vers l'est, vers l'ouest, de nuit, la ligne de date dans
 les deux sens, une route polaire, un vol sans zman, un passage à l'heure d'été,
 Melbourne–Los Angeles–Montréal et retour en été et en hiver austral,
-Sydney–Queenstown, Tel Aviv–Buenos Aires, et quatre vols dont le calendrier
+Sydney–Queenstown, Tel Aviv–Buenos Aires, un vol polaire au Omer sans tsét
+(San Francisco–Londres, audit du 16/11), et quatre vols dont le calendrier
 choisit la date (entrée et sortie de Chabbat, deux jours chômés, un soir du
 Omer). Les jalons de Chabbat, des fêtes et du Omer (`VolCalendrier.kt`) y sont aussi.
 Le résultat, `web/test/vecteurs_vol.json`, sert de référence à `vol.js` :

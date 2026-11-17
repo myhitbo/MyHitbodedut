@@ -42,7 +42,7 @@ final class Mots {
         PARLE = 48, CENTRALE_REPRENDRE = 49, CENTRALE_PAUSE = 50, NIGGOUN = 51, AUCUN_FORMAT = 52,
         INCONNUS = 53, LECTURE_IMPOSSIBLE = 54, MUET = 55, NI_MP3_NI_AMR = 56, CENTRALE_ECOUTER = 57,
         JOUE = 58, EN_PAUSE_REPRENDRE = 59, FORMATS = 60, AUJOURDHUI = 61, A_FAIRE_MIN = 62, SERIE = 63,
-        EN_TOUT = 64;
+        EN_TOUT = 64, DEFIL_AIDE = 65, DEFIL_CRAN = 66;
 
     static final String[][] T = {
         {"Quitter", "Quit", "יציאה"},
@@ -118,6 +118,9 @@ final class Mots {
         {"à faire", "to do", "לביצוע"},
         {"Série", "Streak", "רצף"},
         {"En tout : %1, %2", "In all: %1, %2", "סך הכול: %1, %2"},
+        // Le défilement automatique d'un texte (Lecture) : l'aide, puis le cran dans le bandeau.
+        {"0 : défilement auto, * et # : vitesse", "0: auto-scroll, * and #: speed", "0: גלילה אוטומטית, * ו-#: מהירות"},
+        {"Défil. %1/%2", "Scroll %1/%2", "גלילה %1/%2"},
     };
 
     /** Comment vous appeler, dans l'ordre de Journal.PAS_CHOISI, TSADIK, TSADEKET (adresse_*). */

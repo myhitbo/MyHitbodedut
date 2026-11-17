@@ -180,7 +180,7 @@ test('parité avec Android : chaque zman en vol, à deux secondes près (vecteur
     assert.deepEqual([...c.reserves].sort(), v.reserves);
     assert.deepEqual(c.lignesDate.map((l) => [l.avant, l.apres]), v.lignesDate);
     const jalons = Vol.jalons(c, false, 18);
-    assert.deepEqual(jalons.map((j) => [j.type, j.date, j.omer]), v.jalons.map((j) => [j.type, j.date, j.omer]), `${v.depart}-${v.arrivee} ${v.decollage}`);
+    assert.deepEqual(jalons.map((j) => [j.type, j.date, j.omer, j.repli]), v.jalons.map((j) => [j.type, j.date, j.omer, j.repli]), `${v.depart}-${v.arrivee} ${v.decollage}`);
     jalons.forEach((j, i) => assert.ok(Math.abs(j.instant - Date.parse(v.jalons[i].instant)) <= 2000));
   }
 });
@@ -208,6 +208,24 @@ test('fête un vendredi en vol : Chabbat entre à la chki\'a, allumage avant ell
   const j = Vol.jalons(Vol.calculer(plan('CDG', 'TLV', '2027-06-11T15:00', '2027-06-11T21:00')), false, 18);
   assert.deepEqual(j.map((x) => [x.type, x.date, x.chabbat]), [['entree', '2027-06-12', true]]);
   assert.equal(+j[0].instant - +j[0].allumage, 18 * MIN);
+});
+
+test('vol polaire sans tsét et ligne de date pendant le Omer (audit du 16/11)', async () => {
+  // SFO → LHR du 24/05/2027 : Omer à la chki'a, dit comme un repli.
+  const polaire = Vol.calculer(plan('SFO', 'LHR', '2027-05-24T17:30', '2027-05-25T11:45'));
+  const chkia = Vol.enVol(polaire).find((e) => e.cle === 'chkia');
+  assert.ok(Vol.tsetManque(polaire, chkia));
+  const omer = Vol.jalons(polaire, false, 18).filter((j) => j.type === 'omer');
+  assert.equal(omer.length, 1);
+  assert.ok(omer[0].repli);
+  assert.equal(+omer[0].instant, +chkia.instant);
+  assert.ok(Vol.jalons(Vol.calculer(plan('TLV', 'JFK', '2026-11-10T12:30', '2026-11-10T17:45')), false, 18).every((j) => !j.repli));
+  // SYD → LAX du 06/05/2027 : ligne de date pendant le Omer ; MEL → LAX en décembre : hors Omer.
+  assert.ok(Vol.ligneDateOmer(Vol.calculer(plan('SYD', 'LAX', '2027-05-06T10:00', '2027-05-06T06:30')), false));
+  assert.ok(!Vol.ligneDateOmer(Vol.calculer(plan('MEL', 'LAX', '2026-12-15T10:30', '2026-12-15T06:45')), false));
+  const { ligneDateDiscutee } = await import('../src/js/jour-affiche.js');
+  assert.ok(ligneDateDiscutee(139.69) && ligneDateDiscutee(151.21) && ligneDateDiscutee(-157.86));
+  assert.ok(!ligneDateDiscutee(35.21) && !ligneDateDiscutee(-118.24));
 });
 
 test('un relevé GPS en vol recale la route ; hors du vol, il est ignoré', () => {

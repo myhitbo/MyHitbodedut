@@ -28,6 +28,9 @@ final class Journal {
     static final int PAS_CHOISI = 0, TSADIK = 1, TSADEKET = 2;
     int adresse = PAS_CHOISI;
 
+    /** Le cran du défilement automatique des textes, 1 à 10 (lecture_defilement_vitesse, comme Android). */
+    int vitesseDefilement = Defilement.DEFAUT;
+
     static int jour(Date d) {
         Calendar c = Calendar.getInstance();
         c.setTime(d);
@@ -95,7 +98,7 @@ final class Journal {
     byte[] versOctets() throws IOException {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
         DataOutputStream d = new DataOutputStream(o);
-        d.writeShort(2);
+        d.writeShort(3);
         d.writeInt(rappel);
         d.writeInt(minutes.size());
         for (Enumeration e = minutes.keys(); e.hasMoreElements();) {
@@ -104,6 +107,7 @@ final class Journal {
             d.writeInt(((Integer) minutes.get(j)).intValue());
         }
         d.writeByte(adresse); // depuis la version 2
+        d.writeByte(vitesseDefilement); // depuis la version 3
         d.close();
         return o.toByteArray();
     }
@@ -121,6 +125,7 @@ final class Journal {
             int a = d.readByte();
             if (a == TSADIK || a == TSADEKET) j.adresse = a;
         }
+        if (version >= 3) j.vitesseDefilement = Defilement.borne(d.readByte());
         return j;
     }
 

@@ -2,7 +2,9 @@
 
 `Vecteurs.kt` fait répondre le code Android (`CalendrierJuif.kt`, `Zmanim.kt`,
 sur KosherJava 2.5.0) pour chaque jour du 01/09/2025 au 31/12/2030, en
-Israël et en diaspora, et pour 35 couples lieu-date de zmanim. Le résultat,
+Israël et en diaspora, et pour 56 couples lieu-date de zmanim (profil commun,
+profil des Edot, heures du 'hamets ; Sydney, Auckland et Wellington depuis
+l'audit du 16/11). Le résultat,
 `web/test/vecteurs_kosherjava.json`, sert de référence au portage web
 (`tefila.js`, `zmanim.js`) : `web/test/calendrier.test.mjs` exige l'égalité
 jour par jour, et une seconde près pour les zmanim.

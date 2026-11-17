@@ -110,6 +110,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(this, OnboardingActivity::class.java))
         }
         findViewById<Button>(R.id.mode_button).setOnClickListener { askMode() }
+        findViewById<Button>(R.id.version_button).setOnClickListener { startActivity(Intent(this, ChoixVersionActivity::class.java)) }
         findViewById<Button>(R.id.fond_button).setOnClickListener { askFond() }
         findViewById<Button>(R.id.accent_button).setOnClickListener { askAccent() }
         // Personnalisation (14/10) : police hébraïque, écran d'ouverture, livre de la halakha.
@@ -508,6 +509,7 @@ class SettingsActivity : AppCompatActivity() {
             Store.adresse(this)?.nom ?: R.string.adresse_none
         )
         findViewById<Button>(R.id.mode_button).setText(Store.modeApparence(this).nom)
+        findViewById<Button>(R.id.version_button).setText(VersionApp.courante(this).nom)
         findViewById<Button>(R.id.fond_button).setText(Store.fond(this).nom)
         findViewById<Button>(R.id.accent_button).setText(Store.accent(this).nom)
         findViewById<Button>(R.id.police_button).setText(Store.lecturePolice(this).libelle)

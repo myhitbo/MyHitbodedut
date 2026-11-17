@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Une autre version que Classique est choisie (VersionApp, 17/11) : son accueil prend la place.
+        if (VersionApp.rediriger(this)) return
         setContentView(R.layout.activity_main)
         ouverture(savedInstanceState == null)
         jaugeCompacte()
@@ -186,6 +188,11 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         }
         if (presentationLancee) {
             presentationLancee = false
+            return
+        }
+        // Au retour de la présentation, ou à la première ouverture après la mise à jour : le choix de la version.
+        if (Store.hasOnboarded(this) && Store.versionApp(this) == null) {
+            startActivity(Intent(this, ChoixVersionActivity::class.java))
             return
         }
         refresh()
@@ -507,7 +514,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             val lieu = Store.lieuZmanim(this)
             val fuseau = lieu?.fuseau?.let { runCatching { java.time.ZoneId.of(it) }.getOrNull() } ?: java.time.ZoneId.systemDefault()
             val maintenant = java.time.ZonedDateTime.now(fuseau)
-            val tset = lieu?.let { l -> Zmanim.jour(l, maintenant.toLocalDate()).firstOrNull { it.cle == "tset" }?.local }
+            val tset = lieu?.let { l -> Zmanim.jour(l, maintenant.toLocalDate(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.local }
             CalendrierJuif.jour(ZmanimVignette.jourHebreuAffiche(maintenant, tset), Store.inIsrael(this)).dateHebraique
         }.getOrNull()
         findViewById<TextView>(R.id.nav_zmanim).apply {

@@ -37,6 +37,8 @@ val VOLS = listOf(
     listOf("SYD", "ZQN", "2026-07-17T09:00", "2026-07-17T14:10"),
     listOf("TLV", "EZE", "2026-11-10T23:00", "2026-11-11T09:20"),
     listOf("TLV", "EZE", "2026-06-10T23:00", "2026-06-11T08:20"),
+    // Vol polaire au Omer sans tsét sous l'avion (audit du 16/11) : jalon et rappel de repli à la chki'a.
+    listOf("SFO", "LHR", "2027-05-24T17:30", "2027-05-25T11:45"),
     // Un relevé GPS en vol (latitude, longitude, instant UTC) : 4° au nord de la route, au-dessus de l'Atlantique.
     listOf("TLV", "JFK", "2026-11-10T12:30", "2026-11-10T17:45", "56.0", "-30.0", "2026-11-10T18:30:00Z"),
 ) + calendrier()
@@ -80,7 +82,7 @@ fun main() {
         sb.append(" \"enVol\": [${c.enVol.joinToString { "{\"cle\": \"${it.cle}\", \"instant\": \"${it.instant}\"}" }}],\n")
         sb.append(" \"reserves\": [${c.reserves.map { it.name.lowercase() }.sorted().joinToString { "\"$it\"" }}],\n")
         sb.append(" \"lignesDate\": [${c.lignesDate.joinToString { "[\"${it.avant}\", \"${it.apres}\"]" }}],\n")
-        sb.append(" \"jalons\": [${VolCalendrier.jalons(c, false, 18).joinToString { "{\"type\": \"${it.type.name.lowercase()}\", \"instant\": \"${it.instant}\", \"date\": \"${it.date}\", \"omer\": ${it.omer}}" }}]}")
+        sb.append(" \"jalons\": [${VolCalendrier.jalons(c, false, 18).joinToString { "{\"type\": \"${it.type.name.lowercase()}\", \"instant\": \"${it.instant}\", \"date\": \"${it.date}\", \"omer\": ${it.omer}, \"repli\": ${it.repli}}" }}]}")
         sb.append(if (i < VOLS.size - 1) ",\n" else "\n")
     }
     sb.append("]\n}\n")

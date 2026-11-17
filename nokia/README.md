@@ -14,6 +14,7 @@ Une vraie application, en un seul fichier : `MyHitbodedut.jar` (environ 720 Ko, 
 | Musique | un niggoun d'essai (Niggoun 33), en boucle, qui continue pendant la hitbodedout |
 | Rappels | un rappel quotidien, si le téléphone l'autorise (PushRegistry) ; sinon, l'alarme du téléphone |
 | Langue (français, anglais, hébreu) | « Langue » : d'abord celle du téléphone (`microedition.locale` ; une autre langue donne l'anglais), puis le choix fait dans l'application, gardé dans son propre RecordStore `langue` |
+| Défilement automatique des textes, vitesse 1 à 10 (3 par défaut, gardée) | touche 0 : lancer ou arrêter ; * et # (ou gauche et droite) : plus lent, plus vite ; haut ou bas le suspend ; « Défil. 3/10 » dans le bandeau (« Scroll 3/10 », « גלילה 3/10 » à gauche en hébreu) ; vitesse gardée dans le journal (version 3), comme `lecture_defilement_vitesse` |
 | Comment vous appeler (צדיק / צדקת) | « Vous appeler » : Tsadik, Tsadeket ou pas choisi ; avec Tsadeket, le personnage est une femme et la fin dit « Bravo, Tsadeket ! » |
 
 Les écrans sont dessinés (couleurs de `values/colors.xml`) ; le personnage change avec le moment, comme `Character.kt`. Les illustrations viennent de `drawable-nodpi/char_*.webp`, converties en PNG de 80 px par `app/genere-personnages.mjs` (un téléphone Java ne lit que le PNG) et gardées dans `app/res/p`. Pour qui a choisi Tsadeket, chaque pose devient celle de la planche féminine (`char_f_*.webp`, même table que `Personnage.kt` et `web/src/js/personnage.js`), gardée en `app/res/p/f_*.png` ; sans choix, ou Tsadik, rien ne change.
@@ -53,4 +54,4 @@ nokia/app/test.sh    # règles (Java), textes (Node), parcours à l'écran 240×
 
 Il faut Node, un JDK 8 (le dernier dont `javac` vise encore Java 1.3, ce qu'exige CLDC) et Java 11 ou plus pour ProGuard, qui fait la pré-vérification sans laquelle le téléphone refuse le fichier. Les API MIDP/CLDC, ProGuard et MicroEmulator sont téléchargés dans `nokia/app/outils`.
 
-Le parcours à l'écran joue l'application dans MicroEmulator, sur un appareil 240×320 (`app/test/appareil240`), touche par touche, et garde une capture de chaque étape dans `nokia/app/build/captures` : en français, puis l'écran Langue, l'accueil et un texte en anglais et en hébreu, et le journal en hébreu.
+Le parcours à l'écran joue l'application dans MicroEmulator, sur un appareil 240×320 (`app/test/appareil240`), touche par touche, et garde une capture de chaque étape dans `nokia/app/build/captures` : en français (dont le défilement automatique, touche 0), puis l'écran Langue, l'accueil et un texte en anglais et en hébreu (avec son défilement automatique), et le journal en hébreu.

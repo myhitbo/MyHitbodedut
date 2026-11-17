@@ -22,7 +22,8 @@ rm -rf "$T" && mkdir -p "$T"
 "$JDK8/bin/javac" -nowarn -encoding UTF-8 -cp "$T:$API" -d "$T" "$ICI/test/TestsRegles.java"
 "$JDK8/bin/java" -cp "$T:$API" myhitbodedut.TestsRegles
 
-# Le parcours à l'écran.
+# Le parcours à l'écran (16b et 26b : la touche 0 lance le défilement automatique, la suivante l'arrête ;
+# en hébreu, le cran est à gauche du bandeau).
 EMU="$OUTILS/microemulator-2.0.4.jar"
 if [ ! -f "$EMU" ]; then
   curl -sSfL -o "$EMU" https://repo1.maven.org/maven2/org/microemu/microemulator/2.0.4/microemulator-2.0.4.jar || true
@@ -31,25 +32,25 @@ if [ -f "$EMU" ] && command -v xvfb-run >/dev/null; then
   P="$ICI/build/pilote"
   mkdir -p "$P"
   "$JDK8/bin/javac" -nowarn -encoding UTF-8 -cp "$EMU" -d "$P" "$ICI/test/Pilote.java"
-  PARCOURS="ok attente:800 capture:01-accueil ok capture:02-durees ok capture:03-pour-commencer ok attente:2500 capture:04-decompte ok capture:05-pause gauche capture:06-menu ok capture:07-bloque gauche capture:08-retour-decompte gauche bas ok capture:09-arret ok capture:10-accueil bas bas ok capture:11-moments bas capture:12-moment-suivant ok capture:13-liste ok capture:14-texte bas capture:15-texte-defile ok capture:16-autre-texte gauche gauche gauche bas ok capture:17-journal gauche haut haut ok capture:18-musique ok attente:1500 capture:19-musique-lecture gauche bas bas bas bas ok haut ok capture:20-vous-appeler droite attente:500 haut haut haut haut haut attente:300 capture:21-accueil-tsadeket texte:7 capture:22-langues texte:2 capture:23-accueil-en texte:3 texte:1 texte:1 capture:24-texte-en gauche gauche gauche texte:7 texte:3 capture:25-accueil-he texte:3 texte:1 texte:1 capture:26-texte-he gauche gauche gauche texte:4 capture:27-journal-he"
+  PARCOURS="ok attente:800 capture:01-accueil ok capture:02-durees ok capture:03-pour-commencer ok attente:2500 capture:04-decompte ok capture:05-pause gauche capture:06-menu ok capture:07-bloque gauche capture:08-retour-decompte gauche bas ok capture:09-arret ok capture:10-accueil bas bas ok capture:11-moments bas capture:12-moment-suivant ok capture:13-liste ok capture:14-texte bas capture:15-texte-defile ok capture:16-autre-texte texte:0 capture:16b-defilement-auto texte:0 gauche gauche gauche bas ok capture:17-journal gauche haut haut ok capture:18-musique ok attente:1500 capture:19-musique-lecture gauche bas bas bas bas ok haut ok capture:20-vous-appeler droite attente:500 haut haut haut haut haut attente:300 capture:21-accueil-tsadeket texte:7 capture:22-langues texte:2 capture:23-accueil-en texte:3 texte:1 texte:1 capture:24-texte-en gauche gauche gauche texte:7 texte:3 capture:25-accueil-he texte:3 texte:1 texte:1 capture:26-texte-he texte:0 capture:26b-defilement-he texte:0 gauche gauche gauche texte:4 capture:27-journal-he"
   # Le téléphone simulé est en français (microedition.locale suit la langue de Java) : le parcours
   # commence en français, puis passe en anglais et en hébreu par l'écran Langue.
   (cd "$ICI/test" && timeout 150 xvfb-run -a "$JDK8/bin/java" -Djavax.accessibility.assistive_technologies=" " -Duser.language=fr -Duser.country=FR \
     -cp "$EMU:$P:." Pilote "$RACINE/nokia/dist/MyHitbodedut.jar" "$ICI/build/captures" "$PARCOURS")
   n=$(ls "$ICI/build/captures" | wc -l)
-  [ "$n" -eq 27 ] || { echo "Parcours incomplet : $n captures sur 27" >&2; exit 1; }
+  [ "$n" -eq 29 ] || { echo "Parcours incomplet : $n captures sur 29" >&2; exit 1; }
   # Chaque touche de ces étapes doit changer l'écran : sinon, l'application n'a pas suivi.
   empreinte() { md5sum "$ICI/build/captures/$1.png" | cut -d' ' -f1; }
   for paire in 01-accueil:02-durees 02-durees:03-pour-commencer 03-pour-commencer:04-decompte 04-decompte:05-pause \
       06-menu:07-bloque 08-retour-decompte:09-arret 09-arret:10-accueil 10-accueil:11-moments 11-moments:12-moment-suivant \
-      12-moment-suivant:13-liste 13-liste:14-texte 14-texte:15-texte-defile 15-texte-defile:16-autre-texte 16-autre-texte:17-journal \
+      12-moment-suivant:13-liste 13-liste:14-texte 14-texte:15-texte-defile 15-texte-defile:16-autre-texte 16-autre-texte:16b-defilement-auto 16-autre-texte:17-journal \
       17-journal:18-musique 18-musique:19-musique-lecture 19-musique-lecture:20-vous-appeler \
       20-vous-appeler:21-accueil-tsadeket 01-accueil:21-accueil-tsadeket 21-accueil-tsadeket:22-langues \
       22-langues:23-accueil-en 23-accueil-en:24-texte-en 24-texte-en:25-accueil-he 23-accueil-en:25-accueil-he \
-      25-accueil-he:26-texte-he 24-texte-en:26-texte-he 26-texte-he:27-journal-he 17-journal:27-journal-he; do
+      25-accueil-he:26-texte-he 24-texte-en:26-texte-he 26-texte-he:26b-defilement-he 16b-defilement-auto:26b-defilement-he 26-texte-he:27-journal-he 17-journal:27-journal-he; do
     [ "$(empreinte "${paire%%:*}")" != "$(empreinte "${paire##*:}")" ] || { echo "Écran inchangé entre ${paire%%:*} et ${paire##*:}" >&2; exit 1; }
   done
-  echo "Parcours à l'écran : 27 captures dans nokia/app/build/captures"
+  echo "Parcours à l'écran : 29 captures dans nokia/app/build/captures"
 else
   echo "MicroEmulator ou xvfb-run absent : parcours à l'écran non joué."
 fi

@@ -1,8 +1,10 @@
 package com.myhitbodedut
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 import java.time.LocalDate
 
 /** Les rappels de tefila (16/10) : les dates des changements, en Israël et en diaspora. */
@@ -65,5 +67,17 @@ class RappelsTefilaTest {
         // La demande de pluie suit la diaspora au sud : début en décembre, pas le 7 'Hechvan.
         val hechvan = RappelsTefila.prochains(LocalDate.of(2026, 10, 16), 3, sansGuechem = true) { CalendrierJuif.jour(it, false) }
         assertTrue(hechvan.none { it.type == RappelsTefila.Type.PLUIE_DEBUT })
+    }
+
+    @Test
+    fun `rappel de fin de machiv harouah - l ashkenaz de diaspora cesse a Minha`() {
+        // Audit du 16/11 : Rema 114:3 ; Michna Beroura 114:3.
+        assertEquals("rappel_guechem_fin_ashkenaz", RappelsTefila.cleGuechemFin(Nusah.ASHKENAZ, false))
+        assertEquals("rappel_guechem_fin", RappelsTefila.cleGuechemFin(Nusah.ASHKENAZ, true))
+        assertEquals("rappel_guechem_fin", RappelsTefila.cleGuechemFin(Nusah.SEFARD, false))
+        assertEquals("rappel_guechem_fin", RappelsTefila.cleGuechemFin(Nusah.EDOT, false))
+        val xml = listOf("values", "values-en", "values-iw").map { File("src/main/res/$it/strings.xml").readText() }
+        xml.forEach { assertTrue(it.contains("name=\"rappel_guechem_fin_ashkenaz\"")) }
+        assertFalse(xml[0].contains("name=\"rappel_guechem_fin_ashkenaz\">%1\$s, à Moussaf du premier jour de Pessa’h, on cesse"))
     }
 }

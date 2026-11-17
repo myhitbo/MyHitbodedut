@@ -79,6 +79,7 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         Mots.lit();
         journal = Journal.lit();
         Ecran.feminin(journal.adresse == Journal.TSADEKET);
+        Defilement.relit(journal);
         try {
             textes = Textes.charge(Mots.langue);
         } catch (Exception e) {

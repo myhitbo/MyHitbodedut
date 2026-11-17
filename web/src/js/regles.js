@@ -297,9 +297,10 @@ export const DureeSeance = {
 // Le texte que l'heure suggère en tête du siddour, et le hassid qui l'accompagne.
 export const SiddurMoment = {
   /** Le texte de l'heure locale (heures, minutes). */
-  suggestion(heures, minutes = 0) {
+  suggestion(heures, minutes = 0, sansTikoun = false) {
     const m = heures * 60 + minutes;
-    if (m < 5 * 60) return 'tikoun_hatsot';
+    // sansTikoun : une nuit de Chabbat, de Yom tov ou de 'Hol hamoed Pessa'h (sansTikounHatsot, audit du 16/11).
+    if (m < 5 * 60) return sansTikoun ? 'chema_coucher' : 'tikoun_hatsot';
     if (m < 6 * 60 + 30) return 'birkot_hachahar';
     if (m < 12 * 60 + 30) return 'chaharit';
     if (m < 18 * 60 + 30) return 'minha';

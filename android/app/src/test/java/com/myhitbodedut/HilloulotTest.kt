@@ -30,6 +30,22 @@ class HilloulotTest {
         assertEquals(listOf("8-29", "8-30"), Hilloulot.cles(8, 29, embolismique = false, dernierJour = true))
     }
 
+    /** Audit du 16/11 : le 30 Adar n'existe qu'en Adar I (Kitsour Yalkut Yosef 40:22 ; Michna Beroura 568:42). */
+    @Test
+    fun `audit du 16-11, le 30 Adar`() {
+        // Année embolismique : le 30 Adar I pour tous, jamais le 29 Adar II.
+        assertTrue("adar-30" in Hilloulot.clesPour(LocalDate.of(2027, 3, 9), false))
+        assertTrue("adar-30" !in Hilloulot.clesPour(LocalDate.of(2027, 4, 7), false))
+        assertTrue("adar-30" in Hilloulot.clesPour(LocalDate.of(2030, 3, 5), false, ashkenaz = true))
+        assertTrue("adar-30" !in Hilloulot.clesPour(LocalDate.of(2030, 4, 3), false))
+        // Année simple : le 30 Chevat en Ashkenaz ; le 29 Adar en Edot et en Sfard.
+        assertTrue("adar-30" !in Hilloulot.clesPour(LocalDate.of(2026, 3, 18), false, ashkenaz = true))
+        assertTrue("adar-30" in Hilloulot.clesPour(LocalDate.of(2026, 2, 17), false, ashkenaz = true))
+        assertTrue("adar1-30" in Hilloulot.clesPour(LocalDate.of(2026, 2, 17), false, ashkenaz = true))
+        assertTrue("adar-30" in Hilloulot.clesPour(LocalDate.of(2026, 3, 18), false))
+        assertTrue("adar-30" !in Hilloulot.clesPour(LocalDate.of(2026, 2, 17), false))
+    }
+
     @Test
     fun `chaque jour d une annee simple a sa hilloula`() {
         var d = LocalDate.of(2025, 9, 23)
