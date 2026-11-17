@@ -796,6 +796,8 @@
     <string name="ajout_pourim_triple_festin">סעודת פורים (יום ראשון, ירושלים)</string>
     <string name="ajout_chiva_assar_tamouz">שבעה עשר בתמוז</string>
     <string name="ajout_ticha_beav">נחם</string>
+    <string name="ajout_ticha_beav_trois">נחם, בערבית, בשחרית ובמנחה</string>
+    <string name="ajout_ticha_beav_minha">נחם, במנחה בלבד</string>
     <string name="ajout_chabbat">שבת</string>
     <string name="ajout_lundi_jeudi">שני וחמישי</string>
     <string name="ajout_lundi_jeudi_usage">שני וחמישי, לפי המנהג</string>
@@ -833,6 +835,8 @@
     <string name="ajout_oubli">אם שכח</string>
     <string name="ajout_ticha_beav_kippour">תשעה באב ויום כיפור</string>
     <string name="ajout_sauf_ticha_beav_kippour">חוץ מתשעה באב ויום כיפור</string>
+    <string name="ajout_hors_jeune_public">חוץ מתענית ציבור</string>
+    <string name="ajout_voyageur_tal_oumatar">הנוסע בין ארץ ישראל לחוץ לארץ</string>
     <string name="ajout_sauf_hanouka">חוץ מחנוכה</string>
     <string name="ajout_chol">בחול</string>
     <string name="ajout_autres_jours">בשאר הימים</string>
@@ -1211,6 +1215,7 @@
     <string name="rappel_guechem_titre">„מַשִּׁיב הָרוּחַ” בתפילה</string>
     <string name="rappel_guechem_debut">%1$s, במוסף של שמיני עצרת, מתחילים לומר „מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
     <string name="rappel_guechem_fin">%1$s, במוסף של יום טוב ראשון של פסח, מפסיקים לומר „מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
+    <string name="rappel_guechem_fin_ashkenaz">%1$s, במוסף של יום טוב ראשון של פסח, שליח הציבור מפסיק לומר „מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם” בחזרת הש״ץ; הקהל עוד מזכירים בתפילת מוסף ופוסקים במנחה (רמ״א ומשנה ברורה קי״ד, ג׳).</string>
     <string name="rappel_dix_jours_titre">עשרת ימי תשובה</string>
     <string name="rappel_dix_jours">%1$s מתחילים עשרת ימי תשובה: „הַמֶּלֶךְ הַקָּדוֹשׁ”, „הַמֶּלֶךְ הַמִּשְׁפָּט” והתוספות בעמידה („זָכְרֵנוּ”…).</string>
     <string name="rappel_omer_titre">ספירת העומר</string>

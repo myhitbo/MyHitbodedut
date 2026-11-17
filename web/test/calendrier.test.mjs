@@ -510,3 +510,12 @@ test('Roch \'Hodech d\'une année embolismique : וּלְכַפָּרַת פֶּ
   // Hors Roch 'Hodech : rien.
   assert.ok(!c('2026-11-12').has('embolismique'));
 });
+
+// Audit du 16/11 (RappelsTefilaTest).
+import { cleGuechemFin } from '../src/js/calendrier-juif.js';
+test('Rappel de fin de משיב הרוח : l\'Ashkenaz de diaspora cesse à Min\'ha (Rema 114:3)', () => {
+  assert.equal(cleGuechemFin('ashkenaz', false), 'rappel_guechem_fin_ashkenaz');
+  assert.equal(cleGuechemFin('ashkenaz', true), 'rappel_guechem_fin');
+  assert.equal(cleGuechemFin('sefard', false), 'rappel_guechem_fin');
+  assert.equal(cleGuechemFin('edot', false), 'rappel_guechem_fin');
+});

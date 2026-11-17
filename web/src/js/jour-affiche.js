@@ -30,7 +30,8 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
     if (nusah !== 'edot') l.push('ajout_anenou_particulier_minha');
     else l.push(c.has(C.TICHA_BEAV) ? 'ajout_anenou_particulier_trois' : 'ajout_anenou_particulier_matin_minha');
   }
-  if (c.has(C.TICHA_BEAV)) l.push('ajout_ticha_beav');
+  // Na'hem (audit du 16/11) : Edot aux trois offices (Yalkut Yosef, Kitsour 557:1) ; Sfard, Ashkenaz à Min'ha seulement (Rema 557:1).
+  if (c.has(C.TICHA_BEAV)) l.push(nusah === 'edot' ? 'ajout_ticha_beav_trois' : 'ajout_ticha_beav_minha');
   if (c.has(C.YAALE_VEYAVO)) l.push('ajout_yaale_veyavo');
   if (c.has(C.AL_HANISSIM)) l.push('ajout_al_hanissim');
   const hallel = libelleHallel(nusah, c);

@@ -62,7 +62,9 @@ object JourAffiche {
                 else -> "ajout_anenou_particulier_matin_minha"
             })
         }
-        if (C.TICHA_BEAV in c) add("ajout_ticha_beav")
+        // Na'hem (audit du 16/11) : Edot à Arvit, Cha'harit et Min'ha (« וכן מנהג ירושלים לומר נחם בכל התפלות »,
+        // Yalkut Yosef, Kitsour 557:1) ; Sfard et Ashkenaz à Min'ha seulement (Rema 557:1).
+        if (C.TICHA_BEAV in c) add(if (nusah == "edot") "ajout_ticha_beav_trois" else "ajout_ticha_beav_minha")
         if (C.YAALE_VEYAVO in c) add("ajout_yaale_veyavo")
         if (C.AL_HANISSIM in c) add("ajout_al_hanissim")
         SiddurJour.libelleHallel(nusah, c)?.let { add(it) }

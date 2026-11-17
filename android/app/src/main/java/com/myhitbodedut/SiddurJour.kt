@@ -231,8 +231,8 @@ object SiddurJour {
         if (CalendrierJuif.C.BASCULE_PLUIE in c) c = c + CalendrierJuif.C.MACHIV_HAROUAH + CalendrierJuif.C.MORID_HATAL
         if (nusah == "ashkenaz" && !enIsrael) c = c - CalendrierJuif.C.MORID_HATAL
         // Hémisphère sud, Edot (14/10) : « מוריד הטל » toute l'année, jamais « מוריד הגשם » ;
-        // ותן טל ומטר suit la diaspora. Yalkut Yosef, Kitsour Choulhan Aroukh, O.H. 117:19
-        // (Chéérit Yossef III p. 105 ; Yalkut Yosef Tefila II, 117 note 19, p. 100) ; recoupé
+        // ותן טל ומטר suit la diaspora. Yalkut Yosef, Kitsour Choulhan Aroukh, O.H. 117:20 (סעיף כ)
+        // (Chéérit Yossef III p. 105 ; Yalkut Yosef Tefila II, 117 note כ, p. קא ; audit du 16/11) ; recoupé
         // le 16/10 avec Halakha Yomit (site de Rav Ovadia Yossef) : pas de « משיב הרוח » là-bas.
         if (sud && nusah == "edot" && CalendrierJuif.C.MACHIV_HAROUAH in c) c = c - CalendrierJuif.C.MACHIV_HAROUAH + CalendrierJuif.C.MORID_HATAL
         // Pas de Ta'hanoun du lendemain de Kippour jusqu'au 2 'Hechvan : la

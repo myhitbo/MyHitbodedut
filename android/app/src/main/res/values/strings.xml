@@ -830,6 +830,8 @@
     <string name="ajout_pourim_triple_festin">Festin de Pourim (dimanche, Jérusalem)</string>
     <string name="ajout_chiva_assar_tamouz">17 Tamouz</string>
     <string name="ajout_ticha_beav">Na’hem</string>
+    <string name="ajout_ticha_beav_trois">Na’hem, à Arvit, Cha’harit et Min’ha</string>
+    <string name="ajout_ticha_beav_minha">Na’hem, à Min’ha seulement</string>
     <string name="ajout_chabbat">Chabbat</string>
     <string name="ajout_lundi_jeudi">Lundi et jeudi</string>
     <string name="ajout_lundi_jeudi_usage">Lundi et jeudi, selon l’usage</string>
@@ -867,6 +869,8 @@
     <string name="ajout_oubli">En cas d’oubli</string>
     <string name="ajout_ticha_beav_kippour">Ticha bèAv et Yom Kippour</string>
     <string name="ajout_sauf_ticha_beav_kippour">Sauf Ticha bèAv et Yom Kippour</string>
+    <string name="ajout_hors_jeune_public">Sauf jeûne public</string>
+    <string name="ajout_voyageur_tal_oumatar">En voyage, entre Israël et la diaspora</string>
     <string name="ajout_sauf_hanouka">Sauf à ’Hanouka</string>
     <string name="ajout_chol">En semaine</string>
     <string name="ajout_autres_jours">Les autres jours</string>
@@ -1223,6 +1227,7 @@
     <string name="rappel_guechem_titre">« מַשִּׁיב הָרוּחַ » dans la Amida</string>
     <string name="rappel_guechem_debut">%1$s, à Moussaf de Chemini Atsérèt, on commence à dire « מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם ».</string>
     <string name="rappel_guechem_fin">%1$s, à Moussaf du premier jour de Pessa’h, on cesse de dire « מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם ».</string>
+    <string name="rappel_guechem_fin_ashkenaz">%1$s, à Moussaf du premier jour de Pessa’h, l’officiant cesse de dire « מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם » dans sa répétition ; l’assemblée le dit encore dans la Amida de Moussaf et cesse à Min’ha (Rema et Michna Beroura 114:3).</string>
     <string name="rappel_dix_jours_titre">Dix jours de techouva</string>
     <string name="rappel_dix_jours">%1$s commencent les dix jours de techouva : « הַמֶּלֶךְ הַקָּדוֹשׁ », « הַמֶּלֶךְ הַמִּשְׁפָּט » et les ajouts de la Amida (« זָכְרֵנוּ »…).</string>
     <string name="rappel_omer_titre">Compte de l’Omer</string>

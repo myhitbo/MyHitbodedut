@@ -780,6 +780,8 @@
     <string name="ajout_pourim_triple_festin">Purim feast (Sunday, Jerusalem)</string>
     <string name="ajout_chiva_assar_tamouz">17 Tammuz</string>
     <string name="ajout_ticha_beav">Nachem</string>
+    <string name="ajout_ticha_beav_trois">Nachem, at Arvit, Shacharit and Mincha</string>
+    <string name="ajout_ticha_beav_minha">Nachem, at Mincha only</string>
     <string name="ajout_chabbat">Shabbat</string>
     <string name="ajout_lundi_jeudi">Monday and Thursday</string>
     <string name="ajout_lundi_jeudi_usage">Monday and Thursday, by custom</string>
@@ -817,6 +819,8 @@
     <string name="ajout_oubli">If forgotten</string>
     <string name="ajout_ticha_beav_kippour">Tisha B’Av and Yom Kippur</string>
     <string name="ajout_sauf_ticha_beav_kippour">Except Tisha B’Av and Yom Kippur</string>
+    <string name="ajout_hors_jeune_public">Except public fast days</string>
+    <string name="ajout_voyageur_tal_oumatar">Travelling between Israel and abroad</string>
     <string name="ajout_sauf_hanouka">Except on Chanukah</string>
     <string name="ajout_chol">Weekdays</string>
     <string name="ajout_autres_jours">Other days</string>
@@ -1173,6 +1177,7 @@
     <string name="rappel_guechem_titre">“מַשִּׁיב הָרוּחַ” in the Amida</string>
     <string name="rappel_guechem_debut">%1$s, at Musaf of Shemini Atzeret, we begin to say “מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
     <string name="rappel_guechem_fin">%1$s, at Musaf of the first day of Pesach, we stop saying “מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
+    <string name="rappel_guechem_fin_ashkenaz">%1$s, at Musaf of the first day of Pesach, the chazan stops saying “מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם” in his repetition; the congregation still says it in the Musaf Amida and stops at Mincha (Rema and Mishnah Berurah 114:3).</string>
     <string name="rappel_dix_jours_titre">Ten Days of Repentance</string>
     <string name="rappel_dix_jours">%1$s the Ten Days of Repentance begin: “הַמֶּלֶךְ הַקָּדוֹשׁ”, “הַמֶּלֶךְ הַמִּשְׁפָּט” and the additions to the Amida (“זָכְרֵנוּ”…).</string>
     <string name="rappel_omer_titre">Counting the Omer</string>
