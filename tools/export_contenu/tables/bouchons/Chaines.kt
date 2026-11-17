@@ -5,7 +5,8 @@ import java.io.File
 
 class Chaines(val simples: Map<String, String>, val pluriels: Map<String, Map<String, String>>, val tableaux: Map<String, List<String>>) {
     companion object {
-        private val dossiers = mapOf("fr" to "values", "en" to "values-en", "he" to "values-iw")
+        private val dossiers = mapOf("fr" to "values", "en" to "values-en", "he" to "values-iw", "es" to "values-es",
+            "ar" to "values-ar-rTN")
         private val lues = HashMap<String, Chaines>()
 
         /** Les chaînes d'une langue ; ce qu'elle ne traduit pas retombe sur le français, le défaut d'Android. */

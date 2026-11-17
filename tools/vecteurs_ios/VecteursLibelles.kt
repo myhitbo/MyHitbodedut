@@ -1,11 +1,11 @@
 // Les chaînes de l'interface mises en forme comme Android le fait (getString et getQuantityString),
-// dans les trois langues : le juge de Libelle (iOS) et de la conversion des marqueurs par l'export
+// dans les cinq langues : le juge de Libelle (iOS) et de la conversion des marqueurs par l'export
 // (%1$s → %1$@, %d → %lld, %2$02d → %2$02lld). Toutes les chaînes à marqueurs, tous les pluriels.
 
 object VecteursLibelles : Generateur {
     override val fichier = "libelles.json"
 
-    private val langues = listOf("fr", "en", "he")
+    private val langues = listOf("fr", "en", "he", "es", "ar")
 
     // Les marqueurs de strings.xml : position éventuelle, largeur éventuelle, type.
     private val marqueur = Regex("""%(?:(\d+)\$)?(0?\d+)?([sd%])""")

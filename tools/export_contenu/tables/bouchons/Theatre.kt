@@ -38,7 +38,8 @@ object Identifiants {
 class Theatre(val langue: String = "fr") {
     private val prefs = LinkedHashMap<String, PrefsMemoire>()
     private val chaines = Chaines.de(langue)
-    private val locale: Locale = Locale.forLanguageTag(langue)
+    // L'arabe de l'app est celui de Tunisie (values-ar-rTN), aux chiffres latins.
+    private val locale: Locale = Locale.forLanguageTag(if (langue == "ar") "ar-TN" else langue)
 
     fun prefs(nom: String): PrefsMemoire = prefs.getOrPut(nom) { PrefsMemoire() }
 
@@ -97,10 +98,19 @@ class Theatre(val langue: String = "fr") {
     private fun pluriel(id: Int, quantite: Int, arguments: List<Any?>): String {
         val nom = Identifiants.entree(id)
         val formes = chaines.pluriels[nom] ?: error("pluriel absent : $nom")
-        // Les règles de CLDR pour les trois langues de l'app, sur des entiers.
+        // Les règles de CLDR pour les langues de l'app, sur des entiers.
         val forme = when (langue) {
             "fr" -> if (quantite == 0 || quantite == 1) "one" else "other"
             "he" -> when (quantite) { 1 -> "one"; 2 -> "two"; else -> "other" }
+            "es" -> if (quantite == 1) "one" else if (quantite != 0 && quantite % 1_000_000 == 0) "many" else "other"
+            "ar" -> when {
+                quantite == 0 -> "zero"
+                quantite == 1 -> "one"
+                quantite == 2 -> "two"
+                Math.floorMod(quantite, 100) in 3..10 -> "few"
+                Math.floorMod(quantite, 100) in 11..99 -> "many"
+                else -> "other"
+            }
             else -> if (quantite == 1) "one" else "other"
         }
         val brute = formes[forme] ?: formes["other"] ?: error("pluriel sans forme « other » : $nom")
