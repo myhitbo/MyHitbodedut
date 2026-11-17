@@ -17,6 +17,7 @@ Sources (export public de Sefaria), du domaine public :
     pas, ou seulement en listes non vocalisées : repris du Sefard (Torat Emet),
     et dit (« nusah »), comme le fait déjà siddur_construction.py.
 Ce qu'un nusah n'a pas dans ses sources libres est emprunté à un autre et marqué.
+L'Omer de Sfard et d'Ashkenaz est ensuite remplacé par celui de leur Arvit : relancer tools/siddur_omer.py.
 
   python3 tools/siddur_occasions.py <dossier des exports Sefaria>
 """

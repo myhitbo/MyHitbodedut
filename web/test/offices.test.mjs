@@ -195,3 +195,52 @@ test('Méguila : שהחיינו la nuit seulement (Edot), « אשר הניא » 
   assert.equal(nuit(18, true, false), true);
   assert.equal(nuit(5, false, false), false);
 });
+
+// Suite de l'audit du 16/11 : la double annotation (un bloc d'un groupe du jour qui demande aussi le minyan,
+// ou un fragment d'un Kaddich qui ne se dit pas tel jour), l'Omer de chaque rite, le Pourim triple.
+test('Double annotation : Kaddich des ajouts du jour, תתקבל du 9 Av, fin du Kaddich ashkénaze au motsaé Chabbat', async () => {
+  const { segments } = await import('../src/js/siddur-jour.js');
+  const segs = (nusah, id, iso, debut) => {
+    const texte = siddur[nusah].textes.find((t) => t.id === id);
+    const idx = index(annotations[nusah][id]);
+    const c = cond(nusah, iso);
+    return texte.sections.flatMap((s, si) => plan(s, si, idx, c).filter((p) => p.annotation?.sorte === 'bloc'
+      && p.blocs.some((i) => nu(s.blocs[i].t ?? s.blocs[i].c).startsWith(debut)))
+      .map((p) => ({ etat: p.etat, segments: segments(p.blocs, si, idx, c).map((g) => g.et) })));
+  };
+  // לדוד ה׳ אורי en Eloul (Ashkenaz) : le psaume en clair, son Kaddich replié sous le minyan.
+  const ledavid = segs('ashkenaz', 'chaharit', '2026-08-20', 'לדוד יהוה אורי');
+  assert.equal(ledavid[0].etat, 'du_jour');
+  assert.deepEqual(ledavid[0].segments, [null, 'minyan']);
+  // « תתקבל » (Ashkenaz, fin de Cha'harit) : à part le 9 Av, dans le groupe du minyan.
+  const tit = (iso) => segs('ashkenaz', 'chaharit', iso, 'תתקבל')[0].segments;
+  assert.ok(tit('2026-07-23').includes('!ticha_beav'));
+  assert.ok(!tit('2026-11-18').includes('!ticha_beav'));
+  assert.ok(annotations.edot.arvit.some((a) => a.et === '!ticha_beav' && a.empreinte.startsWith('תתקבל')));
+  // Ashkenaz, Arvit du motsaé Chabbat : la fin du Kaddich se replie, un repère la reprend après ואתה קדוש.
+  assert.ok(segs('ashkenaz', 'arvit', '2026-11-15', 'תתקבל')[0].segments.includes('!veata_kadoch'));
+  assert.ok(!segs('ashkenaz', 'arvit', '2026-11-18', 'תתקבל')[0].segments.includes('!veata_kadoch'));
+  assert.ok(annotations.ashkenaz.arvit.some((a) => a.sorte === 'indice' && a.si === 'vihi_noam' && a.texte.includes('תתקבל')));
+  // Le Hallel et Birkat halevana : leurs Kaddich repliés (minyan).
+  for (const nusah of ['edot', 'sefard']) {
+    assert.ok(annotations[nusah].hallel.some((a) => a.si === 'minyan'), nusah);
+    assert.ok(annotations[nusah].birkat_halevana.some((a) => a.si === 'minyan'), nusah);
+  }
+  assert.deepEqual(segs('edot', 'hallel', '2026-11-11', 'תתקבל')[0].segments, ['minyan']);
+});
+
+test('Page de l\'Omer : le texte de chaque rite (Sfard « לעמר », Ashkenaz « בעמר »), plus d\'emprunt aux Edot', () => {
+  for (const [nusah, mot] of [['sefard', 'לעמר'], ['ashkenaz', 'בעמר']]) {
+    const t = siddur[nusah].textes.find((x) => x.id === 'sefirat_haomer');
+    assert.equal(t.nusah, undefined, nusah);
+    assert.ok(t.source.includes('Metsudah'), nusah);
+    assert.ok(t.sections[0].blocs.some((b) => b.t && nu(b.t).includes(`היום יום אחד ${mot}`)), nusah);
+  }
+});
+
+test('Psaume 22 (Edot) : aussi le jeudi soir d\'un Pourim triple à Jérusalem', () => {
+  const c = jour('2025-03-14', true, true).conditions; // vendredi 14 Adar 5785, Jérusalem
+  assert.ok(c.has('pourim_triple_vendredi') && !c.has('pourim'));
+  assert.ok(!jour('2025-03-14', true, false).conditions.has('pourim_triple_vendredi'));
+  assert.ok(annotations.edot.arvit.some((a) => a.sorte === 'indice' && a.si === 'pourim_triple_vendredi' && a.texte.includes('אילת השחר')));
+});

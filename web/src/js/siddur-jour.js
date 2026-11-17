@@ -76,7 +76,7 @@ export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hato
   'pourim_triple_hors_jerusalem', 'pourim_triple_festin',
   // Audit du 16/11 (structure des offices).
   'mizmor_letoda', 'hol_hamoed', 'yom_tov_semaine', 'leil_haseder', 'lendemain_roch_hodech', 'chome',
-  'vihi_noam', 'veata_kadoch', 'tefilin', 'tefilin_sans_berakha', 'vidui_coucher', 'nuit'];
+  'vihi_noam', 'veata_kadoch', 'tefilin', 'tefilin_sans_berakha', 'vidui_coucher', 'nuit', 'pourim_triple_vendredi'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix
@@ -142,6 +142,23 @@ export function index(annotations = []) {
     else indices.set(`${a.s}:${a.b}`, [...(indices.get(`${a.s}:${a.b}`) ?? []), a]);
   }
   return { sections, blocs, indices, renvois, seuls };
+}
+
+/**
+ * La double annotation (audit du 16/11, SiddurJour.lignes) : les blocs d'une partie, en suites. Une suite
+ * sans « et » (ou dont le « et » est vrai) se lit avec son groupe ; une suite dont le « et » est faux (le
+ * minyan, « תתקבל » le 9 Av) se replie à part : { blocs, et, libelle }.
+ */
+export function segments(blocs, si, idx, conditions) {
+  const sortie = [];
+  for (const i of blocs) {
+    const a = idx.blocs.get(`${si}:${i}`);
+    const et = a?.et && !vrai(a.et, conditions) ? a.et : null;
+    const dernier = sortie[sortie.length - 1];
+    if (dernier && dernier.et === et) dernier.blocs.push(i);
+    else sortie.push({ blocs: [i], et, libelle: et ? (a.et_libelle ?? libelle(et)) : null });
+  }
+  return sortie;
 }
 
 /**

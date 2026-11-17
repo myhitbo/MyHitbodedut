@@ -813,6 +813,7 @@
     <string name="ajout_sauf_hanouka">Except on Chanukah</string>
     <string name="ajout_chol">Weekdays</string>
     <string name="ajout_autres_jours">Other days</string>
+    <string name="ajout_pourim_triple_vendredi">Friday 14 Adar in Jerusalem (triple Purim)</string>
     <string name="ajout_nuit">At night</string>
     <string name="ajout_nuit_megila">At night only, not at the morning reading</string>
     <string name="ajout_mizmor_letoda">Mizmor Letodah</string>

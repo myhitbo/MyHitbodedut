@@ -829,6 +829,7 @@
     <string name="ajout_sauf_hanouka">חוץ מחנוכה</string>
     <string name="ajout_chol">בחול</string>
     <string name="ajout_autres_jours">בשאר הימים</string>
+    <string name="ajout_pourim_triple_vendredi">יום שישי י״ד באדר בירושלים (פורים המשולש)</string>
     <string name="ajout_nuit">בלילה</string>
     <string name="ajout_nuit_megila">בלילה בלבד, לא בקריאת הבוקר</string>
     <string name="ajout_mizmor_letoda">מזמור לתודה</string>

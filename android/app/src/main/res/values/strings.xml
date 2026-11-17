@@ -863,6 +863,7 @@
     <string name="ajout_sauf_hanouka">Sauf à ’Hanouka</string>
     <string name="ajout_chol">En semaine</string>
     <string name="ajout_autres_jours">Les autres jours</string>
+    <string name="ajout_pourim_triple_vendredi">Vendredi 14 Adar à Jérusalem (Pourim triple)</string>
     <string name="ajout_nuit">La nuit</string>
     <string name="ajout_nuit_megila">La nuit seulement, pas à la lecture du matin</string>
     <string name="ajout_mizmor_letoda">Mizmor létoda</string>

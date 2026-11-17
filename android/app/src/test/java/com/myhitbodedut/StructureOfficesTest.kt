@@ -91,8 +91,9 @@ class StructureOfficesTest {
             }
         }
         // Sfard : « תתקבל » estompé ce soir-là.
-        assertEquals(setOf("hors"), etats("sefard", "arvit", "2026-07-23", Regex("^תתקבל צלותהון")))
-        assertEquals(setOf("du_jour"), etats("sefard", "arvit", "2026-11-15", Regex("^תתקבל צלותהון")))
+        // (Depuis la double annotation, ce Kaddich est aussi replié sous le minyan.)
+        assertTrue(SiddurJour.parse(json, "sefard").getValue("arvit")
+            .any { it.condition == "!ticha_beav" && it.racine == C.VEATA_KADOCH && it.et == C.MINYAN })
     }
 
     @Test
@@ -201,6 +202,53 @@ class StructureOfficesTest {
         assertTrue(CalendrierJuif.nuit(LocalTime.of(20, 0), null, null))
         assertFalse(CalendrierJuif.nuit(LocalTime.of(10, 0), null, null))
         assertFalse(CalendrierJuif.nuit(LocalTime.of(5, 0), false, false))
+    }
+
+    private fun lignes(nusah: String, id: String, iso: String, ouverts: Set<String> = emptySet()): List<SiddurJour.Ligne> {
+        val texte = DataFiles.siddur(Nusah.entries.first { it.cle == nusah }).texte(id)!!
+        return SiddurJour.lignes(texte, SiddurJour.parse(json, nusah).getValue(id),
+            CalendrierJuif.jour(LocalDate.parse(iso), false).conditions, ouverts, nusah = nusah)
+    }
+
+    /** Suite de l'audit du 16/11 : la double annotation. */
+    @Test
+    fun `double annotation - kaddich des ajouts du jour, tetkabal du 9 av, fin du kaddich ashkenaze`() {
+        // לדוד ה׳ אורי en Eloul : le psaume en clair, son Kaddich replié sous « Avec minyan ».
+        val l = lignes("ashkenaz", "chaharit", "2026-08-20")
+        val psaume = l.indexOfFirst { it is SiddurJour.Ligne.Bloc && nu(it.bloc.texte).startsWith("לדוד יהוה אורי") }
+        assertTrue(psaume >= 0)
+        assertTrue((l[psaume + 1] as SiddurJour.Ligne.Replie).condition == C.MINYAN)
+        // « תתקבל » (Ashkenaz, fin de Cha'harit), dans le groupe du minyan ouvert : à part le 9 Av.
+        fun tetkabal(iso: String): List<SiddurJour.Ligne> {
+            val ann = SiddurJour.parse(json, "ashkenaz").getValue("chaharit").first { it.empreinte.startsWith("תתקבל") && it.section == 6 }
+            return lignes("ashkenaz", "chaharit", iso, setOf("6:${ann.groupe}"))
+        }
+        assertTrue(tetkabal("2026-07-23").any { it is SiddurJour.Ligne.Replie && it.libelle == "ajout_sauf_ticha_beav" })
+        assertFalse(tetkabal("2026-07-23").any { it is SiddurJour.Ligne.Bloc && nu(it.bloc.texte).startsWith("תתקבל") })
+        assertTrue(tetkabal("2026-11-18").any { it is SiddurJour.Ligne.Bloc && nu(it.bloc.texte).startsWith("תתקבל") })
+        // Ashkenaz, Arvit du motsaé Chabbat : un repère reprend la fin du Kaddich après ואתה קדוש.
+        assertTrue(lignes("ashkenaz", "arvit", "2026-11-15").any { it is SiddurJour.Ligne.Indice && "תתקבל" in it.texte })
+        assertFalse(lignes("ashkenaz", "arvit", "2026-11-18").any { it is SiddurJour.Ligne.Indice && "תתקבל" in it.texte })
+        // Le Hallel : son Kaddich sous le minyan.
+        assertTrue(SiddurJour.parse(json, "edot").getValue("hallel").any { it.condition == C.MINYAN })
+    }
+
+    @Test
+    fun `page de l omer - le texte de chaque rite`() {
+        listOf(Nusah.SEFARD to "לעמר", Nusah.ASHKENAZ to "בעמר").forEach { (n, mot) ->
+            val t = DataFiles.siddur(n).texte("sefirat_haomer")!!
+            assertNull(n.cle, t.emprunt)
+            assertTrue(n.cle, t.sections[0].blocs.any { nu(it.texte).contains("היום יום אחד $mot") })
+        }
+    }
+
+    @Test
+    fun `psaume 22 - aussi le jeudi soir d un pourim triple a jerusalem`() {
+        val c = CalendrierJuif.jour(LocalDate.parse("2025-03-14"), true, true).conditions
+        assertTrue(C.POURIM_TRIPLE_VENDREDI in c && C.POURIM !in c)
+        val texte = DataFiles.siddur(Nusah.EDOT).texte("arvit")!!
+        assertTrue(SiddurJour.lignes(texte, SiddurJour.parse(json, "edot").getValue("arvit"), c, enIsrael = true)
+            .any { it is SiddurJour.Ligne.Indice && "אילת השחר" in it.texte })
     }
 
     @Test

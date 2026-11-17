@@ -69,6 +69,7 @@ object Libelles {
         "ajout_omer" -> R.string.ajout_omer
         "ajout_oubli" -> R.string.ajout_oubli
         "ajout_pourim_triple_festin" -> R.string.ajout_pourim_triple_festin
+        "ajout_pourim_triple_vendredi" -> R.string.ajout_pourim_triple_vendredi
         "ajout_roch_hachana_chabbat" -> R.string.ajout_roch_hachana_chabbat
         "ajout_roch_hodech" -> R.string.ajout_roch_hodech
         "ajout_sans_tahanoun" -> R.string.ajout_sans_tahanoun

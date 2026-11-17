@@ -97,7 +97,8 @@ class SimulationSiddurTest {
         // Edot la disent ces jours-là aussi (Yalkut Yosef 46:12). La fin du Kaddich après le Hallel pas à 'Hanouka.
         Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { C.TICHA_BEAV_KIPPOUR !in it }, setOf(Nusah.SEFARD)),
         Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { true }, setOf(Nusah.EDOT)),
-        Regle(setOf("hallel"), "תתקבל", { C.HANOUKA !in it }),
+        // Depuis l'audit du 16/11, le Kaddich du Hallel demande le minyan : toujours replié (double annotation).
+        Regle(setOf("hallel"), "תתקבל", { false }),
         Regle(setOf("minha"), "ויאמר דוד אל גד", si(C.TAHANOUN_MINHA)),
         // Avinou malkénou (Ashkenaz, Sfard) ; à Min'ha, pas la veille de Chabbat (12/11 : jeûne de Tévèt un vendredi).
         Regle(setOf("chaharit"), "אבינו מלכנו חטאנו לפניך", si(C.AVINOU_MALKENOU), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
@@ -139,8 +140,15 @@ class SimulationSiddurTest {
                 val ann = annotations.getValue(n)[id].orEmpty()
                 val lignes = SiddurJour.lignes(texte, ann, conditions, nusah = n.cle, enIsrael = lieu.israel, sud = lieu.sud)
                 // Rien n'est retiré : tous les replis ouverts, chaque bloc revient, une fois.
-                val cles = lignes.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }.toSet()
-                val tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
+                // Un repli dans un repli (double annotation, audit du 16/11) : on ouvre jusqu'à ce qu'il n'en reste plus.
+                var cles = lignes.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }.toSet()
+                var tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
+                while (true) {
+                    val plus = cles + tout.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }
+                    if (plus == cles) break
+                    cles = plus
+                    tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
+                }
                 val vus = tout.filterIsInstance<SiddurJour.Ligne.Bloc>().map { it.bloc }
                 if (vus.size != texte.sections.sumOf { it.blocs.size } ||
                     texte.sections.any { s -> s.blocs.any { b -> vus.none { it === b } } }) {

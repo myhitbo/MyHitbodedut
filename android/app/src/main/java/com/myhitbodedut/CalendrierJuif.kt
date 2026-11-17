@@ -158,6 +158,11 @@ object CalendrierJuif {
         const val TEFILIN = "tefilin"
         const val TEFILIN_SANS_BERAKHA = "tefilin_sans_berakha"
         const val VIDUI_COUCHER = "vidui_coucher"
+        /**
+         * Le vendredi 14 Adar d'un Pourim triple, à Jérusalem (audit du 16/11) : la Méguila s'y lit, et la nuit
+         * qui l'ouvre, avant Arvit, le psaume 22 (Kitsour Yalkut Yosef 693:1), sans que ce soit « pourim ».
+         */
+        const val POURIM_TRIPLE_VENDREDI = "pourim_triple_vendredi"
         /** La nuit (audit du 16/11, Méguila) : posée par la lecture d'après l'heure ([nuit]), jamais par le calendrier. */
         const val NUIT = "nuit"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
@@ -165,7 +170,7 @@ object CalendrierJuif {
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
                 POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN, MIZMOR_LETODA, HOL_HAMOED, YOM_TOV_SEMAINE, LEIL_HASEDER,
-                LENDEMAIN_ROCH_HODECH, CHOME, VIHI_NOAM, VEATA_KADOCH, TEFILIN, TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT)
+                LENDEMAIN_ROCH_HODECH, CHOME, VIHI_NOAM, VEATA_KADOCH, TEFILIN, TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT, POURIM_TRIPLE_VENDREDI)
     }
 
     /**
@@ -376,6 +381,8 @@ object CalendrierJuif {
                 }) add(C.YOM_TOV_SEMAINE)
             if (mois == JewishDate.NISSAN && (quantieme == 15 || (quantieme == 16 && !enIsrael))) add(C.LEIL_HASEDER)
             if (hier.isRoshChodesh && !regles.isRoshChodesh) add(C.LENDEMAIN_ROCH_HODECH)
+            if (mukafChoma && semaine == DayOfWeek.FRIDAY && quantieme == 14 &&
+                mois == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)) add(C.POURIM_TRIPLE_VENDREDI)
         }
 
         val fetes = buildList {

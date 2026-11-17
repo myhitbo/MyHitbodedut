@@ -42,7 +42,7 @@ import sys
 RACINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 RAW = os.path.join(RACINE, "android", "app", "src", "main", "res", "raw")
 TEXTES = ["chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "havdala", "hallel",
-          "birkot_hachahar", "chema_coucher", "megila"]
+          "birkot_hachahar", "chema_coucher", "megila", "birkat_halevana"]
 
 # Les consignes d'oubli (12/11) : « טעה ולא אמר… », « אם שכח… », « אם לא אמר… », ce qu'on fait si l'on
 # s'est trompé. « כל שלא אמר אמת ויציב… לא יצא » n'en est pas une : c'est l'obligation même.
@@ -153,9 +153,13 @@ TEFILIN_SANS_BERAKHA = "בחול המועד מניחים תפילין בלי ב�
 HAMAPIL_APRES_AUBE = ("אחר עלות השחר אומרים „המפיל“ בלי שם ומלכות; ואם מסתפק שמא לא יישן – לא יברך "
                       "(ביאור הלכה רל״ט)")
 KRIAT_TAANIT = "בתענית ציבור, אחר חצי קדיש: הוצאת ספר תורה – „ויחל“ (שמות ל״ב:י״א–י״ד; ל״ד:א׳–י׳), שלושה עולים"
+# Ashkenaz, haftara « דרשו » aussi à Min'ha du 9 Av (Rema O.H. 566:1 ; Kitsour Choul'han Aroukh 124:19) :
+# l'audit du 16/11 proposait « שובה ישראל » dans les trois rites, ce qui n'est l'usage que des Edot ; écarté.
 KRIAT_TAANIT_ACHKENAZ = KRIAT_TAANIT + ", והמפטיר מפטיר „דרשו“ (ישעיה נ״ה:ו׳–נ״ו:ח׳). הברכות – בקריאת התורה של שחרית"
 KRIAT_TAANIT_EDOT = KRIAT_TAANIT + ". הברכות – בקריאת התורה של שחרית; בשאר התעניות אין מפטירים (ילקוט יוסף תק״נ:מ)"
 HAFTARA_TICHA_BEAV_EDOT = "בתשעה באב מפטירים במנחה „שובה ישראל“ (הושע י״ד:ב׳)"
+KADDICH_MOTSAE_ACHKENAZ = "כאן אומר החזן סוף הקדיש השלם: „תתקבל“, „יהא שלמא“, „עושה שלום“ (לעיל, אחר העמידה)"
+KADDICH_TICHA_BEAV_ACHKENAZ = "כאן אומר החזן קדיש שלם בלא „תתקבל“ (רמ״א תקנ״ט:ד)"
 TEFILIN_MINHA_TICHA_BEAV = "בתשעה באב מתעטפים בטלית ומניחים תפילין במנחה (שולחן ערוך תקנ״ה:א)"
 LEDAVID_MINHA = "„לדוד ה׳ אורי“: לפי המשנה ברורה (תקפ״א:ב) אומרים אותו בערב אחר מנחה; בסידור זה – בסוף ערבית"
 TEHILIM_22_POURIM = "בליל פורים אומרים קודם ערבית מזמור „למנצח על אילת השחר“ (תהלים כ״ב), שבשיר של יום של שחרית (ילקוט יוסף תרצ״ג:א)"
@@ -200,6 +204,13 @@ def reperes(texte_id, sections, nusah, sortie, note):
         k = next((b for b, x in enumerate(sections[0]["blocs"]) if "t" in x and (0, b) not in pris), None)
         if k is not None:
             note("indice", 0, k, "pourim", {"texte": TEHILIM_22_POURIM})
+            # Pourim triple à Jérusalem : la Méguila se lit le jeudi soir, nuit du 14 (Kitsour Yalkut Yosef 688).
+            note("indice", 0, k, "pourim_triple_vendredi", {"texte": TEHILIM_22_POURIM})
+    if texte_id == "arvit" and nusah == "ashkenaz" and any("מוצאי שבת" in t for t in titres):
+        si = next(i for i, t in enumerate(titres) if "מוצאי שבת" in t)
+        b = len(sections[si]["blocs"]) - 1
+        note("indice", si, b, "vihi_noam", {"texte": KADDICH_MOTSAE_ACHKENAZ})
+        note("indice", si, b, "ticha_beav", {"texte": KADDICH_TICHA_BEAV_ACHKENAZ})
     if texte_id == "chaharit" and nusah == "edot" and "אשרי" in titres:
         # Le Sefer Torah rendu à l'arche aussitôt après le Kaddich (Kitsour Yalkut Yosef 423:6).
         si = titres.index("אשרי")
@@ -1024,11 +1035,13 @@ def annoter(texte_id, sections, nusah):
                     if kapara:
                         note("indice", si, bi, kapara[0], {"texte": "וּלְכַפָּרַת פֶּשַׁע", "retire": kapara[1]})
             bi += 1
-        if office or texte_id in ("arvit", "moussaf_rosh_hodech"):
+        if office or texte_id in TEXTES_MINYAN:
             minyan(txt, cons, pris, prend)
     if texte_id == "birkat_hamazon":
         facultatif(sections, sortie, note)
     reperes(texte_id, sections, nusah, sortie, note)
+    if office or texte_id in TEXTES_MINYAN:
+        double_annotation(texte_id, sections, nusah, sortie)
     # La passe « minyan » ajoute ses blocs après les autres : grouper veut l'ordre du texte.
     sortie.sort(key=lambda e: (e["s"], e.get("b", -1)))
     grouper(sortie)
@@ -1133,6 +1146,59 @@ def minyan(txt, cons, pris, prend):
         for j in range(debut(bi), fin):
             prend(j, "minyan")
         bi = fin
+
+
+# Les textes où ce qui demande un minyan est replié : les offices, Arvit, Moussaf ; le Hallel et Birkat
+# halevana depuis l'audit du 16/11 (leurs Kaddich).
+TEXTES_MINYAN = ("arvit", "moussaf_rosh_hodech", "hallel", "birkat_halevana")
+
+
+def double_annotation(texte_id, sections, nusah, sortie):
+    """
+    Audit du 16/11 : un bloc d'un groupe du jour peut aussi demander autre chose (« et ») : le
+    minyan, pour les Kaddich, Barekhou et Kedoucha à l'intérieur d'un ajout du jour (לדוד ה׳ אורי, Vidouï,
+    motsaé Chabbat, fin du Kaddich après le Hallel…), que la passe « minyan » ne voyait pas ; ou un jour,
+    pour un fragment d'un groupe « minyan » (« תתקבל », pas le 9 Av : Rema O.H. 559:4 ; Kitsour Yalkut
+    Yosef 559:7, la nuit). Le groupe se lit selon sa condition ; dedans, un bloc dont le « et » est faux
+    se replie à part (SiddurJour.lignes, siddur-jour.js segments). La lecture de la Torah (groupe imposé)
+    n'est pas découpée : elle suppose le minyan tout entière.
+    """
+    for si, sec in enumerate(sections):
+        blocs = sec["blocs"]
+        txt = [nu(b.get("t") or b.get("c")).replace("''", "״") for b in blocs]
+        cons = ["c" in b for b in blocs]
+        deja = {e["b"]: e for e in sortie if e["sorte"] == "bloc" and e["s"] == si}
+
+        def marque(j, _c):
+            e = deja.get(j)
+            if e is not None and e["si"] != "minyan" and "force" not in e and "_force" not in e:
+                e["et"] = "minyan"
+
+        minyan(txt, cons, set(), marque)
+        # La fin d'un Kaddich séparée de son début par une consigne (« עד כאן אומרים בחנוכה ») : « תתקבל »,
+        # « יהא שלמא », et « עושה שלום » qui les suit.
+        for j in sorted(deja):
+            e = deja[j]
+            if cons[j] or e["si"] == "minyan" or "et" in e or "force" in e or "_force" in e:
+                continue
+            avant = deja.get(j - 1)
+            if any(commence(txt[j], k) for k in ("תתקבל", "יהא שלמא")) or (
+                    any(commence(re.sub(r"^יפסע שלש פסיעות לאחור ", "", txt[j]), k) for k in ("עושה שלום", "עשה שלום"))
+                    and avant is not None and avant.get("et") == "minyan"):
+                e["et"] = "minyan"
+        titre = nu(sec["titre"])
+        for j, e in deja.items():
+            # « תתקבל » : pas le 9 Av (Ashkenaz, Cha'harit ; Edot, Arvit, la nuit seulement).
+            if e["si"] == "minyan" and commence(txt[j], "תתקבל") and (
+                    (nusah == "ashkenaz" and texte_id == "chaharit" and titre == "סיום תפילה")
+                    or (nusah == "edot" and texte_id == "arvit")):
+                e["et"], e["et_libelle"] = "!ticha_beav", "ajout_sauf_ticha_beav"
+            # Ashkenaz, Arvit : la fin du Kaddich complet (« תתקבל », « יהא שלמא », « עושה שלום ») ne se dit
+            # pas avant ויהי נועם ou ואתה קדוש, mais après (consigne du siddour, Rema O.H. 295:1) : repliée
+            # ces soirs-là ; un repère, après la section du motsaé Chabbat, dit de la reprendre.
+            if nusah == "ashkenaz" and texte_id == "arvit" and titre == "קדיש שלם" and e["si"] == "minyan" \
+                    and any(commence(txt[j], k) for k in ("תתקבל", "יהא שלמא", "עושה שלום")):
+                e["et"], e["et_libelle"] = "!veata_kadoch", AUTRES_JOURS
 
 
 # Qui prie seul, à la place de Barekhou (demande du 19/10) : la braïta « חיה אחת ». Texte du

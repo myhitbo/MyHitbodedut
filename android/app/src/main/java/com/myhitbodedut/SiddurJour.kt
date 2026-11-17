@@ -41,6 +41,13 @@ object SiddurJour {
          * le Hallel) : le jour dit, en clair sans étiquette ni mise en évidence ; les autres, replié.
          */
         val discret: Boolean = false,
+        /**
+         * La double annotation (audit du 16/11) : ce que ce bloc demande en plus de son groupe — « minyan »
+         * (un Kaddich dans un ajout du jour), ou un jour (« !ticha_beav » : « תתקבל » d'un Kaddich). Faux, le
+         * bloc se replie à part dans son groupe, sous [etLibelle] (sinon le libellé de la condition).
+         */
+        val et: String? = null,
+        val etLibelle: String? = null,
     )
 
     /** Les annotations d'un nusah, par identifiant de texte. */
@@ -68,6 +75,8 @@ object SiddurJour {
                     consigne = a.optString("consigne", "").ifBlank { null },
                     retire = a.optString("retire", "").ifBlank { null },
                     discret = a.optBoolean("discret", false),
+                    et = a.optString("et", "").ifBlank { null },
+                    etLibelle = a.optString("et_libelle", "").ifBlank { null },
                 )
             }
         }
@@ -196,15 +205,38 @@ object SiddurJour {
                 val racine = a.racine ?: a.condition
                 // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage
                 // « discret » (12/11) : le jour dit, tel quel, sans étiquette.
+                // La double annotation (audit du 16/11) : dans le groupe, un bloc dont le « et » est faux (le
+                // minyan, « תתקבל » le 9 Av) se replie à part, avec ses voisins de même « et » ; un groupe lu
+                // garde aussi ses repères du jour (« Aujourd'hui : … »).
+                fun membresLus(style: (Annotation) -> Style, reperes: Boolean) {
+                    var k = 0
+                    while (k < membres.size) {
+                        val (b, m) = membres[k]
+                        val et = m.et
+                        if (et == null || vrai(et, conditions)) {
+                            sortie += Ligne.Bloc(b, style(m))
+                            if (reperes) indices[si to m.bloc!!].orEmpty()
+                                .filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
+                                .map { it.texte!! }.distinct().forEach { sortie += Ligne.Indice(it) }
+                            k++
+                            continue
+                        }
+                        val suite = membres.drop(k).takeWhile { it.second.et == et }
+                        val cle = "$si:${a.groupe}:${m.bloc}"
+                        sortie += Ligne.Replie(cle, et, cle in ouverts, m.etLibelle ?: libelle(et))
+                        if (cle in ouverts) suite.forEach { (sb, _) -> sortie += Ligne.Bloc(sb, Style.HORS) }
+                        k += suite.size
+                    }
+                }
                 if (vrai(racine, conditions) && (a.libelle == AUTRES_JOURS || a.discret)) {
-                    membres.forEach { (b, _) -> sortie += Ligne.Bloc(b, Style.NORMAL) }
+                    membresLus({ Style.NORMAL }, true)
                 } else if (vrai(racine, conditions)) {
                     sortie += Ligne.Etiquette(racine, nom(a, racine))
-                    membres.forEach { (b, m) -> sortie += Ligne.Bloc(b, if (vrai(m.condition, conditions)) Style.DU_JOUR else Style.HORS) }
+                    membresLus({ m -> if (vrai(m.condition, conditions)) Style.DU_JOUR else Style.HORS }, true)
                 } else {
                     val cle = "$si:${a.groupe}"
                     sortie += Ligne.Replie(cle, racine, cle in ouverts, nom(a, racine))
-                    if (cle in ouverts) membres.forEach { (b, _) -> sortie += Ligne.Bloc(b, Style.HORS) }
+                    if (cle in ouverts) membresLus({ Style.HORS }, false)
                 }
                 seul(si, i - 1)
             }

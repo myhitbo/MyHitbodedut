@@ -163,6 +163,8 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(semaine === 0 && [0, 1, 2, 3, 4, 5].some((k) => { const d = decale(k); return d.isYomTovAssurBemelacha() || d.isCholHamoed(); }), 'yom_tov_semaine');
   si(mois === JewishDate.NISSAN && (quantieme === 15 || (quantieme === 16 && !enIsrael)), 'leil_haseder');
   si(hier.isRoshChodesh() && !regles.isRoshChodesh(), 'lendemain_roch_hodech');
+  // Le vendredi 14 Adar d'un Pourim triple à Jérusalem (CalendrierJuif.C.POURIM_TRIPLE_VENDREDI).
+  si(mukafChoma && semaine === 5 && quantieme === 14 && mois === (regles.isJewishLeapYear() ? JewishDate.ADAR_II : JewishDate.ADAR), 'pourim_triple_vendredi');
 
   const fetes = [];
   const fete = FETES.get(affiche.getYomTovIndex());

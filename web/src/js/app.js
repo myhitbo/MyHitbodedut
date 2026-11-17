@@ -14,7 +14,7 @@ import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
 import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, nuit as nuitDuLieu, rappelsTefila, usageLevana } from './calendrier-juif.js';
-import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
+import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, segments as segmentsAjout, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
 import { distanceKm } from './direction.js';
@@ -1659,11 +1659,18 @@ function ecranPriere() {
       if (!a) { corps.push(...avecIndices(s, si, dernier).filter(Boolean), ...seuls(si, dernier)); continue; }
       // Une section entière, ou un groupe : dans un groupe du jour, la variante d'un autre jour reste lisible, estompée.
       const groupe = a.sorte === 'bloc';
-      const membres = partie.blocs.map((i) => {
+      const para = (i) => {
         const p = paragraphe(s, i);
         if (groupe && !ajoutVrai(idx.blocs.get(`${si}:${i}`).si, c)) p.classList.add('hors-jour');
         return p;
-      });
+      };
+      // La double annotation (audit du 16/11, segments) : un bloc dont le « et » est faux (minyan, « תתקבל »
+      // le 9 Av) se replie à part dans son groupe ; un groupe lu garde ses repères du jour.
+      const lu = partie.etat !== 'replie';
+      const membres = !groupe ? partie.blocs.map(para) : segmentsAjout(partie.blocs, si, idx, c).flatMap((g) => g.et
+        ? [ajout(tr.t(g.libelle), false, g.blocs.map((i) => { const p = paragraphe(s, i); p.classList.add('hors-jour'); return p; }), g.et.replace(/^!/, ''))]
+        : g.blocs.flatMap((i) => [para(i), ...(lu ? (idx.indices.get(`${si}:${i}`) ?? []).filter((x) => !x.retire && ajoutVrai(x.si, c))
+          .map((x) => h('p', { class: 'indice-jour' }, h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, x.texte))) : [])]));
       // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage discret (12/11,
       // SiddurJour.Annotation.discret) : tel quel quand il se dit, sans étiquette.
       if (partie.etat === 'ordinaire') corps.push(...membres);

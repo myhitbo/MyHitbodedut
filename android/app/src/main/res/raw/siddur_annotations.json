@@ -2259,6 +2259,7 @@
     "b": 49,
     "empreinte": "ברכת כהנים",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2269,6 +2270,7 @@
     "b": 50,
     "empreinte": "בתענית ציבור כשמתפללים מנחה קטנה תוך חצי",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2279,6 +2281,7 @@
     "b": 51,
     "empreinte": "כשעוקר הכהן רגליו לישא כפיו יאמר (בא״ח ת",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2289,6 +2292,7 @@
     "b": 52,
     "empreinte": "וכשעומדים הכהנים על הדוכן לאחר שענו \"מוד",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2299,6 +2303,7 @@
     "b": 53,
     "empreinte": "אם יש יותר מכהן אחד קורא להם החזן: כהנים",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2309,6 +2314,7 @@
     "b": 54,
     "empreinte": "ואומר החזן והכהנים אחריו מילה במילה:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2319,6 +2325,7 @@
     "b": 55,
     "empreinte": "יברכך יהוה וישמרך ועונים אמן: יאר יהוה פ",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2329,6 +2336,7 @@
     "b": 56,
     "empreinte": "וכשמתחיל שליח ציבור \"שים שלום\" אז מחזירי",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2339,6 +2347,7 @@
     "b": 57,
     "empreinte": "אם אין כהנים אומר החזן:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2349,6 +2358,7 @@
     "b": 58,
     "empreinte": "אלהינו ואלהי אבותינו, ברכנו בברכה המשלשת",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2359,6 +2369,7 @@
     "b": 59,
     "empreinte": "יברכך יהוה וישמרך ועונים כן יהי רצון:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2369,6 +2380,7 @@
     "b": 60,
     "empreinte": "יאר יהוה פניו אליך ויחנך ועונים כן יהי ר",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2379,6 +2391,7 @@
     "b": 61,
     "empreinte": "ישא יהוה פניו אליך וישם לך שלום ועונים כ",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 11,
     "racine": "jeune"
    },
@@ -2965,6 +2978,14 @@
     "texte": "בליל פורים אומרים קודם ערבית מזמור „למנצח על אילת השחר“ (תהלים כ״ב), שבשיר של יום של שחרית (ילקוט יוסף תרצ״ג:א)"
    },
    {
+    "sorte": "indice",
+    "s": 0,
+    "si": "pourim_triple_vendredi",
+    "b": 2,
+    "empreinte": "לשם יחוד קדשא בריך הוא ושכינתה, בדחילו ו",
+    "texte": "בליל פורים אומרים קודם ערבית מזמור „למנצח על אילת השחר“ (תהלים כ״ב), שבשיר של יום של שחרית (ילקוט יוסף תרצ״ג:א)"
+   },
+   {
     "sorte": "bloc",
     "s": 0,
     "si": "minyan",
@@ -3287,6 +3308,7 @@
     "si": "vihi_noam",
     "b": 52,
     "empreinte": "יתגדל ויתקדש שמה רבא. [אמן] בעלמא די ברא",
+    "et": "minyan",
     "g": 11,
     "racine": "vihi_noam"
    },
@@ -3377,6 +3399,8 @@
     "si": "minyan",
     "b": 62,
     "empreinte": "תתקבל צלותנא ובעותנא, עם צלותהון ובעותהו",
+    "et": "!ticha_beav",
+    "et_libelle": "ajout_sauf_ticha_beav",
     "g": 13,
     "racine": "minyan"
    },
@@ -4126,6 +4150,44 @@
     "racine": "chemini_atseret"
    }
   ],
+  "birkat_halevana": [
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 18,
+    "empreinte": "ואומרים קדיש על ישראל",
+    "g": 0,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 19,
+    "empreinte": "יתגדל ויתקדש שמה רבא. [אמן] בעלמא די ברא",
+    "g": 0,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 20,
+    "empreinte": "על ישראל ועל רבנן. ועל תלמידיהון ועל כל ",
+    "g": 0,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 21,
+    "empreinte": "יהא שלמא רבא מן שמיא. חיים ושבע וישועה ו",
+    "g": 0,
+    "racine": "minyan"
+   }
+  ],
   "hallel": [
    {
     "sorte": "bloc",
@@ -4220,12 +4282,22 @@
    {
     "sorte": "bloc",
     "s": 0,
+    "si": "minyan",
+    "b": 25,
+    "empreinte": "יתגדל ויתקדש שמה רבא. [אמן] בעלמא די ברא",
+    "g": 4,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
     "si": "!hanouka",
     "b": 26,
     "empreinte": "תתקבל צלותנא ובעותנא, עם צלותהון ובעותהו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
-    "g": 4,
+    "et": "minyan",
+    "g": 5,
     "racine": "!hanouka"
    },
    {
@@ -4236,7 +4308,8 @@
     "empreinte": "יהא שלמא רבא מן שמיא. חיים ושבע וישועה ו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
-    "g": 4,
+    "et": "minyan",
+    "g": 5,
     "racine": "!hanouka"
    },
    {
@@ -4247,7 +4320,8 @@
     "empreinte": "יפסע שלש פסיעות לאחור עושה שלום במרומיו.",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
-    "g": 4,
+    "et": "minyan",
+    "g": 5,
     "racine": "!hanouka"
    }
   ],
@@ -7090,6 +7164,7 @@
     "si": "beit_avel",
     "b": 8,
     "empreinte": "קדיש יתום יתגדל ויתקדש שמה רבא בעלמא די ",
+    "et": "minyan",
     "g": 53,
     "racine": "beit_avel"
    },
@@ -7099,6 +7174,7 @@
     "si": "beit_avel",
     "b": 9,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא :",
+    "et": "minyan",
     "g": 53,
     "racine": "beit_avel"
    },
@@ -7108,6 +7184,7 @@
     "si": "beit_avel",
     "b": 10,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "et": "minyan",
     "g": 53,
     "racine": "beit_avel"
    },
@@ -7117,6 +7194,7 @@
     "si": "beit_avel",
     "b": 11,
     "empreinte": "יהא שלמא רבא מן שמיא וחיים עלינו ועל כל ",
+    "et": "minyan",
     "g": 53,
     "racine": "beit_avel"
    },
@@ -7126,6 +7204,7 @@
     "si": "beit_avel",
     "b": 12,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "et": "minyan",
     "g": 53,
     "racine": "beit_avel"
    },
@@ -7950,6 +8029,7 @@
     "b": 110,
     "empreinte": "ברכת כהנים",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -7960,6 +8040,7 @@
     "b": 111,
     "empreinte": "אלהינו ואלהי אבותינו ברכנו בברכה המשלשת ",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -7970,6 +8051,7 @@
     "b": 112,
     "empreinte": "יברכך יהוה וישמרך:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -7980,6 +8062,7 @@
     "b": 113,
     "empreinte": "יאר יהוה פניו אליך ויחנך:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -7990,6 +8073,7 @@
     "b": 114,
     "empreinte": "ישא יהוה פניו אליך וישם לך שלום:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -8000,6 +8084,7 @@
     "b": 115,
     "empreinte": "לאחר ברכת כהנים יאמרו הציבור:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -8010,6 +8095,7 @@
     "b": 116,
     "empreinte": "אדיר במרום שוכן בגבורה, אתה שלום ושמך של",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -9499,6 +9585,7 @@
     "si": "vihi_noam",
     "b": 0,
     "empreinte": "יתגדל ויתקדש שמה רבא בעלמא די ברא כרעותה",
+    "et": "minyan",
     "g": 29,
     "racine": "vihi_noam"
    },
@@ -9508,6 +9595,7 @@
     "si": "vihi_noam",
     "b": 1,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
+    "et": "minyan",
     "g": 29,
     "racine": "vihi_noam"
    },
@@ -9517,6 +9605,7 @@
     "si": "vihi_noam",
     "b": 2,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "et": "minyan",
     "g": 29,
     "racine": "vihi_noam"
    },
@@ -9598,6 +9687,7 @@
     "si": "veata_kadoch",
     "b": 11,
     "empreinte": "יתגדל ויתקדש שמה רבא בעלמא די ברא כרעותה",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9607,6 +9697,7 @@
     "si": "veata_kadoch",
     "b": 12,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא:",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9616,6 +9707,7 @@
     "si": "veata_kadoch",
     "b": 13,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9625,6 +9717,7 @@
     "si": "!ticha_beav",
     "b": 14,
     "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9634,6 +9727,7 @@
     "si": "veata_kadoch",
     "b": 15,
     "empreinte": "יהא שלמא רבא מן שמיא וחיים עלינו ועל כל ",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9643,6 +9737,7 @@
     "si": "veata_kadoch",
     "b": 16,
     "empreinte": "עושה שלום במרומיו הוא יעשה שלום עלינו וע",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9679,6 +9774,7 @@
     "si": "veata_kadoch",
     "b": 20,
     "empreinte": "יתגדל ויתקדש שמה רבא בעלמא די ברא כרעותה",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9688,6 +9784,7 @@
     "si": "veata_kadoch",
     "b": 21,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא:",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9697,6 +9794,7 @@
     "si": "veata_kadoch",
     "b": 22,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9706,6 +9804,7 @@
     "si": "veata_kadoch",
     "b": 23,
     "empreinte": "יהא שלמא רבא מן שמיא וחיים עלינו ועל כל ",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -9715,6 +9814,7 @@
     "si": "veata_kadoch",
     "b": 24,
     "empreinte": "עושה שלום במרומיו הוא יעשה שלום עלינו וע",
+    "et": "minyan",
     "g": 30,
     "racine": "veata_kadoch"
    },
@@ -10788,6 +10888,53 @@
     "racine": "moed"
    }
   ],
+  "birkat_halevana": [
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 21,
+    "empreinte": "קדיש יתום:",
+    "g": 0,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "asseret_yemei_techouva",
+    "b": 22,
+    "empreinte": "יתגדל ויתקדש שמה רבא. בעלמא די ברא כרעות",
+    "texte": "ולעלא מכל",
+    "retire": " <small>(בעשי״ת וּלְעֵלָּא מִכָּל)</small>"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 22,
+    "empreinte": "יתגדל ויתקדש שמה רבא. בעלמא די ברא כרעות",
+    "g": 0,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "asseret_yemei_techouva",
+    "b": 23,
+    "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
+    "texte": "השלום",
+    "retire": " <small>(בעשי״ת <b>הַשָּׁלוֹם</b>)</small>"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 23,
+    "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
+    "g": 0,
+    "racine": "minyan"
+   }
+  ],
   "hallel": [
    {
     "sorte": "bloc",
@@ -10853,6 +11000,15 @@
     "racine": "roch_hodech"
    },
    {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "minyan",
+    "b": 28,
+    "empreinte": "קדיש שלם",
+    "g": 3,
+    "racine": "minyan"
+   },
+   {
     "sorte": "indice",
     "s": 0,
     "si": "asseret_yemei_techouva",
@@ -10864,12 +11020,22 @@
    {
     "sorte": "bloc",
     "s": 0,
+    "si": "minyan",
+    "b": 29,
+    "empreinte": "יתגדל ויתקדש שמה רבא. בעלמא די ברא כרעות",
+    "g": 3,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
     "si": "!hanouka",
     "b": 31,
     "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
-    "g": 3,
+    "et": "minyan",
+    "g": 4,
     "racine": "!hanouka"
    },
    {
@@ -10880,7 +11046,8 @@
     "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
-    "g": 3,
+    "et": "minyan",
+    "g": 4,
     "racine": "!hanouka"
    },
    {
@@ -10891,7 +11058,8 @@
     "empreinte": "עשה שלום במרומיו הוא יעשה שלום עלינו ועל",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
-    "g": 3,
+    "et": "minyan",
+    "g": 4,
     "racine": "!hanouka"
    }
   ],
@@ -13742,6 +13910,8 @@
     "si": "minyan",
     "b": 19,
     "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
+    "et": "!ticha_beav",
+    "et_libelle": "ajout_sauf_ticha_beav",
     "g": 44,
     "racine": "minyan"
    },
@@ -14111,6 +14281,7 @@
     "si": "ledavid",
     "b": 60,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
+    "et": "minyan",
     "g": 53,
     "racine": "ledavid"
    },
@@ -14120,6 +14291,7 @@
     "si": "ledavid",
     "b": 61,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
+    "et": "minyan",
     "g": 53,
     "racine": "ledavid"
    },
@@ -14129,6 +14301,7 @@
     "si": "ledavid",
     "b": 62,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
+    "et": "minyan",
     "g": 53,
     "racine": "ledavid"
    },
@@ -14138,6 +14311,7 @@
     "si": "ledavid",
     "b": 63,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "et": "minyan",
     "g": 53,
     "racine": "ledavid"
    },
@@ -14147,6 +14321,7 @@
     "si": "ledavid",
     "b": 64,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "et": "minyan",
     "g": 53,
     "racine": "ledavid"
    },
@@ -14156,6 +14331,7 @@
     "si": "ledavid",
     "b": 65,
     "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
+    "et": "minyan",
     "g": 53,
     "racine": "ledavid"
    },
@@ -14165,6 +14341,7 @@
     "si": "ledavid",
     "b": 66,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "et": "minyan",
     "g": 53,
     "racine": "ledavid"
    },
@@ -14912,6 +15089,7 @@
     "b": 86,
     "empreinte": "שליח ציבור:",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -14922,6 +15100,7 @@
     "b": 87,
     "empreinte": "אלהינו ואלהי אבותינו ברכנו בברכה המשלשת ",
     "libelle": "ajout_jeune_public",
+    "et": "minyan",
     "g": 27,
     "racine": "jeune"
    },
@@ -16114,6 +16293,8 @@
     "si": "minyan",
     "b": 6,
     "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
+    "et": "!veata_kadoch",
+    "et_libelle": "ajout_autres_jours",
     "g": 25,
     "racine": "minyan"
    },
@@ -16123,6 +16304,8 @@
     "si": "minyan",
     "b": 7,
     "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
+    "et": "!veata_kadoch",
+    "et_libelle": "ajout_autres_jours",
     "g": 25,
     "racine": "minyan"
    },
@@ -16141,6 +16324,8 @@
     "si": "minyan",
     "b": 8,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "et": "!veata_kadoch",
+    "et_libelle": "ajout_autres_jours",
     "g": 25,
     "racine": "minyan"
    },
@@ -16242,6 +16427,22 @@
     "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ",
     "g": 27,
     "racine": "veata_kadoch"
+   },
+   {
+    "sorte": "indice",
+    "s": 5,
+    "si": "vihi_noam",
+    "b": 10,
+    "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ",
+    "texte": "כאן אומר החזן סוף הקדיש השלם: „תתקבל“, „יהא שלמא“, „עושה שלום“ (לעיל, אחר העמידה)"
+   },
+   {
+    "sorte": "indice",
+    "s": 5,
+    "si": "ticha_beav",
+    "b": 10,
+    "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ",
+    "texte": "כאן אומר החזן קדיש שלם בלא „תתקבל“ (רמ״א תקנ״ט:ד)"
    },
    {
     "sorte": "section",
@@ -16354,6 +16555,7 @@
     "si": "ledavid",
     "b": 2,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
+    "et": "minyan",
     "g": 29,
     "racine": "ledavid"
    },
@@ -16363,6 +16565,7 @@
     "si": "ledavid",
     "b": 3,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
+    "et": "minyan",
     "g": 29,
     "racine": "ledavid"
    },
@@ -16372,6 +16575,7 @@
     "si": "ledavid",
     "b": 4,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
+    "et": "minyan",
     "g": 29,
     "racine": "ledavid"
    },
@@ -16381,6 +16585,7 @@
     "si": "ledavid",
     "b": 5,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "et": "minyan",
     "g": 29,
     "racine": "ledavid"
    },
@@ -16390,6 +16595,7 @@
     "si": "ledavid",
     "b": 6,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "et": "minyan",
     "g": 29,
     "racine": "ledavid"
    },
@@ -16399,6 +16605,7 @@
     "si": "ledavid",
     "b": 7,
     "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
+    "et": "minyan",
     "g": 29,
     "racine": "ledavid"
    },
@@ -16408,6 +16615,7 @@
     "si": "ledavid",
     "b": 8,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "et": "minyan",
     "g": 29,
     "racine": "ledavid"
    },
