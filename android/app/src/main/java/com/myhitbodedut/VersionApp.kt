@@ -33,6 +33,8 @@ enum class VersionApp(
         intArrayOf(0xFF14111F.toInt(), 0xFF4E3486.toInt(), 0xFFF2C6A0.toInt())),
     BENTO("bento", R.string.version_bento, R.string.version_bento_desc, BentoActivity::class.java,
         intArrayOf(0xFFF2F2EF.toInt(), 0xFF123B30.toInt(), 0xFFD9F56B.toInt())),
+    INSTANT("instant", R.string.version_instant, R.string.version_instant_desc, InstantActivity::class.java,
+        intArrayOf(0xFF141414.toInt(), 0xFF232323.toInt(), 0xFFC2D67A.toInt())),
     PILE("pile", R.string.version_pile, R.string.version_pile_desc, PileActivity::class.java,
         intArrayOf(0xFF1D1B2E.toInt(), 0xFF0E4D52.toInt(), 0xFF7FE7D9.toInt()));
 

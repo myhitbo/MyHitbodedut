@@ -1651,4 +1651,20 @@
     <string name="serenite_lire">Lire</string>
     <string name="serenite_tout_voir">Tout voir</string>
     <string name="serenite_cette_semaine">Vos derniers jours</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_instant">Instant</string>
+    <string name="version_instant_desc">Un tableau de bord sombre : le ciel réel du moment avec les zmanim en petit, une jauge de la semaine, vos minutes en barres.</string>
+    <string name="instant_titre">Votre hitbodedout du jour</string>
+    <string name="instant_z_netz">Nets</string>
+    <string name="instant_z_chatsot">’Hatsot</string>
+    <string name="instant_z_minha">Min’ha</string>
+    <string name="instant_z_chkia">Chkia</string>
+    <string name="instant_z_tset">Tset</string>
+    <string name="instant_semaine">Semaine</string>
+    <string name="instant_cette_semaine">jours faits</string>
+    <string name="instant_serie">Série</string>
+    <string name="instant_total">%1$s au total</string>
+    <string name="instant_minutes">Vos 7 derniers jours</string>
+    <string name="instant_moyenne">Moyenne des jours faits : %1$s</string>
 </resources>

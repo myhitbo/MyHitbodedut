@@ -1103,6 +1103,11 @@ def main():
         capture("28-bento-1")
         defiler(True)
         capture("28-bento-2-bas")
+        regler({"version_app": ("string", "instant")})
+        lancer(attente=6)
+        capture("28-instant-1")
+        defiler(True)
+        capture("28-instant-2-bas")
         regler({"version_app": ("string", "serenite")})
         lancer(attente=6)
         capture("28-serenite-1")
@@ -1121,7 +1126,7 @@ def main():
             serre(nom, "choix-version")
             capture(f"29-{nom}-choix-version")
             retour()
-            for version, bouton in (("serenite", "Modifier"), ("bento", "Commencer"), ("pile", "Commencer")):
+            for version, bouton in (("serenite", "Modifier"), ("bento", "Commencer"), ("instant", "Commencer"), ("pile", "Commencer")):
                 regler({"version_app": ("string", version)})
                 lancer(attente=6)
                 serre(nom, version)
