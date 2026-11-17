@@ -147,3 +147,20 @@ struct ChapitresTests {
         #expect(t.avec(sections: t.sections).traductionAuto)
     }
 }
+
+@Suite("Autorisations à signaler")
+struct AutorisationsASignalerTests {
+
+    /// PermissionRules.aSignaler (TFRUX-05, FACCUEIL-06) et rappelMuet.
+    @Test func ceQuiSeSignale() {
+        let rien: (Autorisation) -> Bool = { _ in false }
+        #expect(PermissionRules.aSignaler(avecBarriere: true, modeActif: false, accordee: rien) == [.notifications])
+        #expect(PermissionRules.aSignaler(avecBarriere: true, modeActif: true, accordee: rien) == [.notifications, .overlay, .usage])
+        #expect(PermissionRules.aSignaler(avecBarriere: false, modeActif: true, accordee: rien) == [.notifications])
+        #expect(PermissionRules.aSignaler(avecBarriere: true, modeActif: true, accordee: { _ in true }).isEmpty)
+        #expect(PermissionRules.rappelMuet(actif: true, notifications: false, demandeEnCours: false))
+        #expect(!PermissionRules.rappelMuet(actif: true, notifications: false, demandeEnCours: true))
+        #expect(!PermissionRules.rappelMuet(actif: true, notifications: true, demandeEnCours: false))
+        #expect(!PermissionRules.rappelMuet(actif: false, notifications: false, demandeEnCours: false))
+    }
+}

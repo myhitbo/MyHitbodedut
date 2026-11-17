@@ -57,4 +57,23 @@ public enum PermissionRules {
     public static func manquantes(avecBarriere: Bool, accordee: (Autorisation) -> Bool) -> [Autorisation] {
         demandees(avecBarriere: avecBarriere).filter { !accordee($0) }
     }
+
+    /// Celles qu'il y a lieu de signaler comme manquantes en tête des Réglages (13/11, TFRUX-05 et FACCUEIL-06).
+    /// Aucune n'est obligatoire : les deux accès de la barrière ne comptent que mode allumé, la batterie jamais, les
+    /// notifications toujours (elles servent la hitbodedout et le rappel de Birkat haLevana, allumé par défaut).
+    public static func aSignaler(avecBarriere: Bool, modeActif: Bool, accordee: (Autorisation) -> Bool) -> [Autorisation] {
+        manquantes(avecBarriere: avecBarriere, accordee: accordee).filter {
+            switch $0 {
+            case .batterie: false
+            case .overlay, .usage: modeActif
+            case .notifications: true
+            }
+        }
+    }
+
+    /// Faut-il avertir qu'un rappel allumé ne s'affichera pas ? Oui s'il l'est sans les notifications ; pas tant
+    /// que la question du système est à l'écran, où rien n'est encore refusé.
+    public static func rappelMuet(actif: Bool, notifications: Bool, demandeEnCours: Bool) -> Bool {
+        actif && !notifications && !demandeEnCours
+    }
 }
