@@ -443,7 +443,8 @@ public final class AccueilModele {
                             valeur: .libelle(Store.formatDuration(reglages.targetMinutes))),
             AccueilPastille(genre: .sujet, etiquette: Libelle("start_theme"),
                             valeur: .libelle(Libelle(sujet?.titre ?? "session_theme_none_short"))),
-            AccueilPastille(genre: .musique, etiquette: Libelle("start_music"), valeur: valeurMusique),
+            // « start_music » a disparu avec la refonte de l'accueil d'Android (13/11) : le titre de l'écran de la musique.
+            AccueilPastille(genre: .musique, etiquette: Libelle("music_title"), valeur: valeurMusique),
         ]
         if barriere {
             liste.append(AccueilPastille(genre: .barriere, etiquette: Libelle("start_focus"),
@@ -893,12 +894,13 @@ public final class AccueilModele {
         return LanguesTexte.defaut(langue)
     }
 
-    /// La pastille de la musique : « aucune » éteinte ou sans morceau, « Aléatoire », ou le morceau retenu.
+    /// La pastille de la musique : éteinte ou sans morceau (les phrases de la carte de la musique d'Android,
+    /// MainActivity.renderMusic, depuis la refonte du 13/11), « Aléatoire », ou le morceau retenu.
     private var valeurMusique: AccueilTexte {
-        guard reglages.musicEnabled else { return .libelle(Libelle("start_music_off")) }
+        guard reglages.musicEnabled else { return .libelle(Libelle("music_off_summary")) }
         let etat = MusicLibrary.Etat(names: reglages.musicNames, userTracks: reglages.musicUserTracks,
                                      trackId: reglages.musicTrackId)
-        guard let morceau = MusicLibrary.selected(etat) else { return .libelle(Libelle("start_music_off")) }
+        guard let morceau = MusicLibrary.selected(etat) else { return .libelle(Libelle("music_none_summary")) }
         if reglages.musicShuffle { return .libelle(Libelle("music_shuffle_short")) }
         switch morceau.title {
         case .nom(let nom): return .brut(nom)

@@ -179,7 +179,7 @@ struct AccueilModeleTests {
         var eteinte = Reglages()
         eteinte.setMusicEnabled(false)
         let m1 = try banc(Journal(), eteinte).modele
-        #expect(m1.pastilles[2].valeur == .libelle(Libelle("start_music_off")))
+        #expect(m1.pastilles[2].valeur == .libelle(Libelle("music_off_summary")))
         var aleatoire = Reglages()
         aleatoire.setMusicShuffle(true)
         let m2 = try banc(Journal(), aleatoire).modele
@@ -885,7 +885,8 @@ struct AccueilModeleTests {
             "plaque_serie", "plaque_meilleure", "plaque_total", "plaque_jours", "plaque_moyenne", "ring_day_reached",
             "ring_day_detail", "ring_streak_reached", "ring_streak_detail", "week_gauge", "trophees_tous",
             "accueil_prochain_trophee", "grade_titre", "action_back_to_session", "action_another_session",
-            "action_start_session", "start_duration", "start_theme", "start_music", "start_focus", "start_music_off",
+            "action_start_session", "start_duration", "start_theme", "music_title", "start_focus", "music_off_summary",
+            "music_none_summary",
             "music_shuffle_short", "start_focus_on", "start_focus_off", "session_theme_none_short",
             "session_theme_title", "settings_target", "duration_custom", "duration_custom_hint",
             "duration_custom_title", "action_back", "offline_which_day", "offline_today", "offline_yesterday",

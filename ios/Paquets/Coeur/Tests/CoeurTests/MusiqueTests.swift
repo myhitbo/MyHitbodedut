@@ -144,15 +144,16 @@ struct MusiqueTests {
     }
 
     /// Ce que la version Play livre, et rien d'autre (29/10) : Yanuka, המלך בשדה, נעם שפייר et
-    /// יניר קילינסקי (Ianir), § 3.2. Liste écrite en entier : chaque morceau ajouté passe par ici.
+    /// יניר קילינסקי (Ianir), § 3.2. Liste écrite en entier : chaque morceau ajouté passe par ici. Retirés
+    /// le 16/11 sur Android, faute d'accord écrit complet : « Eshet 'Hayil », « Arba Bavot », « Zemer
+    /// bichva'hin » (passés dans la version GitHub seulement).
     @Test func lAppNeLivreQueLesMorceauxAutorises() throws {
         let autorises = [
             "hamelech_basade",
             "ianir_al_harega", "ianir_baal_shem_tov", "ianir_berditchev", "ianir_bessarabie",
             "ianir_eden_el_salvador", "ianir_hakol_milfanekha", "ianir_haleluhu", "ianir_hello", "ianir_houppa",
             "ianir_kabbalat_chabbat", "ianir_kol_bayaar", "ianir_mirage", "ianir_yohanan_hasandlar",
-            "ianir_zemer_bishvahin",
-            "shpayer_afilou", "shpayer_arba_bavot", "shpayer_beyond", "shpayer_esh_kamanche", "shpayer_eshet_hayil",
+            "shpayer_afilou", "shpayer_beyond", "shpayer_esh_kamanche",
             "shpayer_hithadshout", "shpayer_kenout", "shpayer_ki_hine_kahomer", "shpayer_pnima", "shpayer_tunnels_end",
             "yanuka_nigoun_3",
         ]
