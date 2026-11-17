@@ -30,10 +30,14 @@ public enum LectureContenu: Sendable, Equatable {
     case bloc(LectureBloc)
     /// « Aujourd'hui · <nom> » au-dessus d'un ajout du jour : la vue écrit `siddur_aujourdhui`, « · », puis ce nom.
     case etiquette(Libelle)
-    /// « Aujourd'hui : המלך הקדוש » sous un bloc : la vue écrit `siddur_aujourdhui`, « : », puis ce texte hébreu.
-    case indice(String)
+    /// « Aujourd'hui : המלך הקדוש » sous un bloc : la vue écrit `siddur_aujourdhui`, « : », puis ce texte hébreu ;
+    /// une indication fixe du siddour (`fixe`, audit du 16/11) s'écrit telle quelle.
+    case indice(String, fixe: Bool)
     /// « Aujourd'hui · הַלֵּל › » : le texte de ce jour à cet endroit, ouvert d'un geste.
     case renvoi(LectureRenvoi)
+    /// « Aujourd'hui · <nom> » : ce que le jour change ici sans texte dans le siddour (audit du 16/11) ; 13 ×
+    /// échelle, couleur des titres, fond teinté, dans le sens de la langue de l'app.
+    case rappel(Libelle)
     /// Le bandeau d'un ajout replié (ou déplié) : un toucher l'ouvre ou le referme.
     case replie(LectureRepli)
     /// Qui prie seul : une carte à part, jamais repliée.
@@ -139,56 +143,14 @@ enum LectureLignes {
         CalendrierJuif.C.chevaBerakhot, CalendrierJuif.C.zimun, CalendrierJuif.C.facultatif,
     ]
 
-    /// La place (section, paragraphe) de chaque ligne `.bloc`, nil pour les autres : les blocs sortent dans
-    /// l'ordre du texte, et un repli fermé saute sa section (« §2 ») ou son groupe (« 3:1 ») ; une variante
-    /// repliée (« v3:4 ») ne saute rien.
+    /// La place (section, paragraphe) de chaque ligne `.bloc`, nil pour les autres : son origine dans le texte,
+    /// que SiddurJour.lignes donne (FLECTURE-08 ; Android la retrouve par l'identité du paragraphe).
     static func places(_ texte: SiddurTexte, _ annotations: [SiddurJour.Annotation],
                        _ lignes: [SiddurJour.Ligne]) -> [LecturePlace?] {
-        // Les blocs annotés, la dernière annotation l'emportant (associateBy), comme SiddurJour.lignes.
-        var annotes: [LecturePlace: SiddurJour.Annotation] = [:]
-        for a in annotations where a.sorte == .bloc {
-            if let b = a.bloc { annotes[LecturePlace(section: a.section, bloc: b)] = a }
+        lignes.map { ligne in
+            if case .bloc(_, _, let origine) = ligne { return LecturePlace(section: origine.section, bloc: origine.bloc) }
+            return nil
         }
-        let sections = texte.sections
-        var si = 0
-        var bi = 0
-        var sortie: [LecturePlace?] = []
-        sortie.reserveCapacity(lignes.count)
-        for ligne in lignes {
-            switch ligne {
-            case .replie(let cle, _, let ouvert, _):
-                sortie.append(nil)
-                if ouvert || cle.commenceParUnites("v") { continue }
-                if cle.commenceParUnites("\u{00A7}") {
-                    // Une section entière repliée : la suite reprend à la section d'après.
-                    if let n = Int(cle.sansPremieresUnites(1)) {
-                        si = n + 1
-                        bi = 0
-                    }
-                    continue
-                }
-                // Un groupe replié : ses blocs, à la suite, tant qu'ils sont annotés du même groupe.
-                if let n = Int(cle.avantUnites(":")), si < n {
-                    si = n
-                    bi = 0
-                }
-                guard si < sections.count, let premier = annotes[LecturePlace(section: si, bloc: bi)] else { continue }
-                while bi < sections[si].blocs.count,
-                      let m = annotes[LecturePlace(section: si, bloc: bi)], m.groupe == premier.groupe {
-                    bi += 1
-                }
-            case .bloc:
-                while si < sections.count && bi >= sections[si].blocs.count {
-                    si += 1
-                    bi = 0
-                }
-                sortie.append(LecturePlace(section: si, bloc: bi))
-                bi += 1
-            default:
-                sortie.append(nil)
-            }
-        }
-        return sortie
     }
 
     /// Les lignes du lecteur. `notes` : celles de tête ; `marques` : les places marquées de ce texte ;
@@ -221,16 +183,11 @@ enum LectureLignes {
             return base + "#" + String(rang)
         }
         var titres = 0
-        // Le repli déplié dont on lit les blocs : son pied vient après le dernier.
-        var ouvert: String?
+        // Un ajout déplié se lit dans un panneau, fermé par un pied « Replier » à la fin du repli (Ligne.fin), après
+        // tous ses membres, même quand un repli s'ouvre dedans (audit du 16/11).
+        let dansUnPanneau = SiddurJour.panneaux(jour)
         for (k, ligne) in jour.enumerated() {
-            var dedans = false
-            if case .bloc(_, let style) = ligne, style == .hors { dedans = true }
-            if let cle = ouvert, !dedans {
-                ajouter("pied:" + cle, .pied(cle: cle))
-                ouvert = nil
-            }
-            let panneau = ouvert != nil
+            let panneau = dansUnPanneau.contains(k)
             switch ligne {
             case .titre(let he, let fr, let en):
                 let section = titres < sectionsTitrees.count ? sectionsTitrees[titres] : titres
@@ -239,34 +196,35 @@ enum LectureLignes {
                 ajouter(ancre, .titre(LectureTitre(
                     paragraphes: LectureBalisage.titre(he, fr: fr, en: en, langues: langues, police: police),
                     hebreu: PoliceHebraique.masque(he, police: police), section: section)))
-            case .bloc(let bloc, let style):
+            case .bloc(let bloc, let style, _):
                 let place = lesPlaces[k] ?? LecturePlace(section: 0, bloc: 0)
                 ancre = "bloc:" + String(place.section) + ":" + String(place.bloc)
                 ajouter(ancre, .bloc(LectureBloc(place: place, bloc: bloc, style: style, dansPanneau: panneau,
                                                  marque: marques.contains(place), langues: langues, police: police)))
             case .etiquette(_, let libelle):
                 ajouter(idRelatif("etiquette"), .etiquette(Libelle(libelle)))
-            case .indice(let variante):
-                ajouter(idRelatif("indice"), .indice(PoliceHebraique.masque(variante, police: police)))
+            case .indice(let variante, let fixe):
+                ajouter(idRelatif("indice"), .indice(PoliceHebraique.masque(variante, police: police), fixe: fixe))
             case .renvoi(_, let cible):
                 let titre = titreDe(cible)
                 ajouter(idRelatif("renvoi"), .renvoi(LectureRenvoi(
                     titre: PoliceHebraique.masque(titre ?? cible, police: police),
                     route: titre == nil ? nil : .lecture(.siddour(cible)))))
-            case .seul(let texteSeul, let consigne):
+            case .rappel(_, let libelle):
+                ajouter(idRelatif("rappel"), .rappel(Libelle(libelle)))
+            case .seul(let texteSeul, let consigne, let note):
+                // Une note de l'application (audit du 16/11) : même carte, son étiquette propre.
                 ajouter(idRelatif("seul"), .seul(LectureSeul(
-                    etiquette: Libelle("siddur_seul"),
+                    etiquette: Libelle(note ? "siddur_note" : "siddur_seul"),
                     consigne: consigne.map { PoliceHebraique.masque($0, police: police) },
                     texte: PoliceHebraique.masque(texteSeul, police: police))))
             case .replie(let cle, let condition, let estOuvert, let libelle):
                 ajouter("replie:" + cle, .replie(LectureRepli(cle: cle, nom: Libelle(libelle),
                                                               etat: etat(condition: condition, ouvert: estOuvert),
                                                               ouvert: estOuvert)))
-                if estOuvert { ouvert = cle }
+            case .fin(let cle):
+                ajouter("pied:" + cle, .pied(cle: cle))
             }
-        }
-        if let cle = ouvert {
-            ajouter("pied:" + cle, .pied(cle: cle))
         }
         return sortie
     }

@@ -189,12 +189,15 @@ public final class SiddourModele {
 
     /// Le texte que suggère l'heure : avec un lieu, d'après ses zmanim (nil dans les creux) ; sans lieu, les
     /// heures fixes de SiddurMoment.
+    /// La nuit de Chabbat, de fête ou de 'Hol hamoed Pessa'h, pas de Tikoun 'hatsot (audit du 16/11).
     public var moment: String? {
         if let lieu = reglages.lieuZmanim {
-            return JourAffiche.momentDuSiddour(lieu: lieu, maintenant: Date(timeIntervalSince1970: Double(instant) / 1000))
+            return JourAffiche.momentDuSiddour(lieu: lieu, maintenant: Date(timeIntervalSince1970: Double(instant) / 1000),
+                                               enIsrael: enIsrael, nusah: reglages.siddurNusah)
         }
         let heure = horloge.fuseau.dateHeure(millis: instant)
-        return SiddurMoment.suggestion(heure: heure.heure, minute: heure.minute)
+        return SiddurMoment.suggestion(heure: heure.heure, minute: heure.minute,
+                                       sansTikoun: JourAffiche.sansTikounHatsot(aujourdhui, enIsrael: enIsrael))
     }
 
     /// La Méguila se propose : sous Arvit la nuit qui ouvre Pourim, sous Cha'harit le jour même.
@@ -208,7 +211,9 @@ public final class SiddourModele {
         guard let siddur else { return [] }
         var sortie: [SiddourSuggestion] = []
         let moment = self.moment
-        if let id = moment, let texte = siddur.texte(id) {
+        // Pas d'office de semaine proposé un Chabbat ou un Yom tov (audit du 16/11).
+        let heure = horloge.fuseau.dateHeure(millis: instant).heure
+        if let id = JourAffiche.momentOuvrable(moment, date: aujourdhui, heure: heure, enIsrael: enIsrael), let texte = siddur.texte(id) {
             sortie.append(suggestion(texte, image: SiddurMoment.illustration(texte.id), route: .lecture(.siddour(texte.id))))
         }
         if moment == "chaharit",
@@ -216,7 +221,8 @@ public final class SiddourModele {
            let hallel = siddur.texte("hallel") {
             sortie.append(suggestion(hallel, image: "scene_hanukkah", route: .lecture(.siddour(hallel.id))))
         }
-        if SiddurMoment.ilanot(aujourdhui, latitude: reglages.lieuZmanim?.latitude), let ilanot = siddur.texte("birkat_hailanot") {
+        if SiddurMoment.ilanot(aujourdhui, latitude: reglages.lieuZmanim?.latitude, nusah: reglages.siddurNusah),
+           let ilanot = siddur.texte("birkat_hailanot") {
             sortie.append(suggestion(ilanot, image: "scene_nature", route: .lecture(.siddour(ilanot.id))))
         }
         if meguila, let esther = livresIndex?.texte("meguilat_esther") {

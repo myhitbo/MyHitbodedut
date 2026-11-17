@@ -73,7 +73,7 @@ struct SiddurJourTests {
     private func blocs(_ l: [SiddurJour.Ligne]) -> [(bloc: SiddurBloc, style: SiddurJour.Style)] {
         var r: [(bloc: SiddurBloc, style: SiddurJour.Style)] = []
         for x in l {
-            if case let .bloc(b, style) = x { r.append((bloc: b, style: style)) }
+            if case let .bloc(b, style, _) = x { r.append((bloc: b, style: style)) }
         }
         return r
     }
@@ -353,6 +353,8 @@ struct SiddurJourTests {
             let o: String
             let h: Int32
             let s: [Int]
+            /// Les places lues dans le panneau d'un repli déplié, en empreinte (`List.hashCode`).
+            let p: Int32
         }
 
         struct Detail: Decodable {
@@ -377,6 +379,8 @@ struct SiddurJourTests {
                 let s: [Int]
                 /// La suite entière, pour quelques lectures.
                 let lignes: [String]?
+                /// Les places lues dans le panneau d'un repli déplié.
+                let panneaux: [Int]
             }
 
             let siddur: String
@@ -499,34 +503,50 @@ struct SiddurJourTests {
         return String(Kotlin.hashCode(s))
     }
 
-    private func signature(_ l: SiddurJour.Ligne) -> String {
+    /// `texte` : celui des lignes, pour l'origine d'un bloc rogné (FLECTURE-08), que la signature d'Android
+    /// ajoute quand le bloc montré en est une copie.
+    private func signature(_ l: SiddurJour.Ligne, _ texte: SiddurTexte) -> String {
         switch l {
         case let .titre(texte, fr, en):
             return "titre|\(h(texte))|\(h(fr))|\(h(en))"
-        case let .bloc(b, style):
+        case let .bloc(b, style, origine):
             let genre = b.consigne ? "c" : "t"
-            return "bloc|\(nom(style))|\(genre)|\(h(b.texte))|\(h(b.fr))|\(h(b.en))"
+            let original = texte.sections[origine.section].blocs[origine.bloc]
+            let copie = original == b ? "" : "|\(h(original.texte))"
+            return "bloc|\(nom(style))|\(genre)|\(h(b.texte))|\(h(b.fr))|\(h(b.en))" + copie
         case let .etiquette(condition, libelle):
             return "etiquette|\(condition)|\(libelle)"
-        case let .indice(texte):
-            return "indice|\(h(texte))"
+        case let .indice(texte, fixe):
+            return "indice|\(h(texte))|\(fixe)"
         case let .renvoi(condition, cible):
             return "renvoi|\(condition)|\(cible)"
-        case let .seul(texte, consigne):
-            return "seul|\(h(texte))|\(h(consigne))"
+        case let .rappel(condition, libelle):
+            return "rappel|\(condition)|\(libelle)"
+        case let .seul(texte, consigne, note):
+            return "seul|\(h(texte))|\(h(consigne))|\(note)"
         case let .replie(cle, condition, ouvert, libelle):
             let etat = ouvert ? "true" : "false"
             return "replie|\(cle)|\(condition)|\(etat)|\(libelle)"
+        case let .fin(cle):
+            return "fin|\(cle)"
         }
     }
 
-    /// Titres, blocs (normaux, du jour, hors du jour), étiquettes, indices, renvois, cartes « seul », replis.
+    /// `List<Int>.hashCode()` de Kotlin.
+    private func hashListe(_ l: [Int]) -> Int32 {
+        var h: Int32 = 1
+        for e in l { h = h &* 31 &+ Int32(truncatingIfNeeded: e) }
+        return h
+    }
+
+    /// Titres, blocs (normaux, du jour, hors du jour), étiquettes, indices, renvois, cartes « seul », replis,
+    /// rappels, fins de replis.
     private func genres(_ l: [SiddurJour.Ligne]) -> [Int] {
-        var g = [Int](repeating: 0, count: 9)
+        var g = [Int](repeating: 0, count: 11)
         for x in l {
             switch x {
             case .titre: g[0] += 1
-            case let .bloc(_, style):
+            case let .bloc(_, style, _):
                 switch style {
                 case .normal: g[1] += 1
                 case .duJour: g[2] += 1
@@ -537,6 +557,8 @@ struct SiddurJourTests {
             case .renvoi: g[6] += 1
             case .seul: g[7] += 1
             case .replie: g[8] += 1
+            case .rappel: g[9] += 1
+            case .fin: g[10] += 1
             }
         }
         return g
@@ -596,14 +618,16 @@ struct SiddurJourTests {
         let v = try vecteurs()
         let d = try donnees()
         let jours = conditionsLues(v)
-        #expect(v.lignes.count == 1456)
+        #expect(v.lignes.count == 3957)
         var ecarts: [String] = []
         for r in v.lignes {
             let n = try #require(Nusah(rawValue: r.n), "\(r.n)")
+            let texte = try #require(d.siddourim[n]?.texte(r.t), "\(r.n)/\(r.t)")
             let l = try lignesDuReleve(v, jours, d, n: n, t: r.t, c: r.c, o: r.o)
-            let empreinte = Kotlin.hashCode(l.map { signature($0) }.joined(separator: "\n"))
+            let empreinte = Kotlin.hashCode(l.map { signature($0, texte) }.joined(separator: "\n"))
             let compte = genres(l)
-            if empreinte != r.h || compte != r.s {
+            let panneaux = hashListe(SiddurJour.panneaux(l).sorted())
+            if empreinte != r.h || compte != r.s || panneaux != r.p {
                 ecarts.append("\(r.n)/\(r.t), \(v.cas[r.c].nom), \(r.o) : \(compte) au lieu de \(r.s)")
             }
         }
@@ -618,7 +642,8 @@ struct SiddurJourTests {
         let jours = conditionsLues(v)
         for detail in v.details {
             let n = try #require(Nusah(rawValue: detail.n), "\(detail.n)")
-            let l = try lignesDuReleve(v, jours, d, n: n, t: detail.t, c: detail.c, o: detail.o).map { signature($0) }
+            let texte = try #require(d.siddourim[n]?.texte(detail.t), "\(detail.n)/\(detail.t)")
+            let l = try lignesDuReleve(v, jours, d, n: n, t: detail.t, c: detail.c, o: detail.o).map { signature($0, texte) }
             #expect(l.count == detail.lignes.count, "\(detail.n)/\(detail.t) : \(l.count) lignes au lieu de \(detail.lignes.count)")
             let premiere = zip(l, detail.lignes).enumerated().first { $0.element.0 != $0.element.1 }
             if let p = premiere {
@@ -633,15 +658,16 @@ struct SiddurJourTests {
         let e = try vecteurs().ecrit
         let siddur = try JSONDecoder().decode(Siddur.self, from: Data(e.siddur.utf8))
         let parTexte = try SiddurJour.parse(e.annotations, .edot)
-        #expect(e.lectures.count == 150)
+        #expect(e.lectures.count == 315)
         for (rang, lecture) in e.lectures.enumerated() {
             let n = try #require(Nusah(rawValue: lecture.nusah), "\(lecture.nusah)")
             let texte = try #require(siddur.texte(lecture.t), "\(lecture.t)")
             let l = SiddurJour.lignes(texte, parTexte[lecture.t] ?? [], Set(e.conditions[lecture.c]), ouverts: Set(lecture.ouverts),
                                       nusah: n, enIsrael: lecture.israel, sansTahanounFinTichri: lecture.finTichri, sud: lecture.sud)
-            let signatures = l.map { signature($0) }
+            let signatures = l.map { signature($0, texte) }
             let compte = genres(l)
             let egal = Kotlin.hashCode(signatures.joined(separator: "\n")) == lecture.h && compte == lecture.s
+                && SiddurJour.panneaux(l).sorted() == lecture.panneaux
             #expect(egal, "lecture \(rang) (\(lecture.t), \(n.rawValue), conditions \(lecture.c)) : \(compte) au lieu de \(lecture.s)")
             if let attendues = lecture.lignes {
                 let premiere = zip(signatures, attendues).enumerated().first { $0.element.0 != $0.element.1 }
@@ -656,7 +682,7 @@ struct SiddurJourTests {
     private func decrit(_ a: SiddurJour.Annotation) -> String {
         let champs: [String?] = [a.sorte.rawValue.uppercased(), String(a.section), a.bloc.map { String($0) }, a.condition,
                                  a.empreinte, a.texte, a.groupe.map { String($0) }, a.racine, a.libelle, a.cible,
-                                 a.consigne, a.retire]
+                                 a.consigne, a.retire, String(a.discret), a.et, a.etLibelle, String(a.fixe)]
         return champs.map { $0 ?? "\u{2205}" }.joined(separator: "|")
     }
 

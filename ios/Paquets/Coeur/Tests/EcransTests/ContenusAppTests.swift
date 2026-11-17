@@ -38,8 +38,9 @@ struct ContenusAppTests {
             let inconnus = Set(annotations.keys).subtracting(siddur.textes.map(\.id))
             #expect(inconnus.isEmpty, "\(nusah.rawValue) : \(inconnus.sorted())")
         }
+        // 21 textes annotés en Edot depuis l'audit du 16/11 d'Android (8 avant).
         let edot = try await Self.contenus.annotations(.edot).count
-        #expect(edot == 8)
+        #expect(edot == 21)
     }
 
     // MARK: Les textes

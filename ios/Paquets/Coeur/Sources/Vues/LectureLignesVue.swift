@@ -85,10 +85,12 @@ struct LectureLigneVue: View {
             LectureBlocVue(bloc: bloc, modele: modele, rendu: rendu, e: e)
         case .etiquette(let nom):
             etiquette(nom)
-        case .indice(let texte):
-            indice(texte)
+        case .indice(let texte, let fixe):
+            indice(texte, fixe: fixe)
         case .renvoi(let renvoi):
             renvoiVue(renvoi)
+        case .rappel(let nom):
+            rappel(nom)
         case .replie(let repli):
             LectureRepliVue(repli: repli, modele: modele, rendu: rendu)
         case .seul(let seul):
@@ -142,9 +144,20 @@ struct LectureLigneVue: View {
             .background(rendu.teinte(0x1C))
     }
 
-    /// « Aujourd'hui : המלך הקדוש » sous un bloc.
-    private func indice(_ texte: String) -> some View {
-        Text(verbatim: aujourdhui + " : " + texte)
+    /// « Aujourd'hui · <nom> » : ce que le jour change ici sans texte dans le siddour (audit du 16/11).
+    private func rappel(_ nom: Libelle) -> some View {
+        Text(verbatim: aujourdhui + " \u{00B7} " + traducteur.texte(nom))
+            .font(.system(size: 13 * e))
+            .foregroundStyle(rendu.titre)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(rendu.teinte(0x1C))
+    }
+
+    /// « Aujourd'hui : המלך הקדוש » sous un bloc ; une indication fixe du siddour, telle quelle (audit du 16/11).
+    private func indice(_ texte: String, fixe: Bool) -> some View {
+        Text(verbatim: fixe ? texte : aujourdhui + " : " + texte)
             .font(.hebreu(modele.police, taille: 12 * e))
             .foregroundStyle(rendu.titre)
             .multilineTextAlignment(.leading)

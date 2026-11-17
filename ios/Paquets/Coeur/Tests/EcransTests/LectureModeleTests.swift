@@ -204,12 +204,19 @@ struct LectureModeleTests {
                 for date in jours {
                     let conditions = CalendrierJuif.jour(date, enIsrael: true).conditions
                     let fermes = SiddurJour.lignes(texte, annotations, conditions, nusah: nusah, enIsrael: true)
+                    // Tout déplié, replis imbriqués compris (la double annotation, audit du 16/11) : on ouvre
+                    // jusqu'à ce qu'aucun repli neuf n'apparaisse.
                     var cles = Set<String>()
-                    for ligne in fermes {
-                        if case .replie(let cle, _, _, _) = ligne { cles.insert(cle) }
+                    var ouverts = fermes
+                    while true {
+                        var neuves = cles
+                        for ligne in ouverts {
+                            if case .replie(let cle, _, _, _) = ligne { neuves.insert(cle) }
+                        }
+                        if neuves == cles { break }
+                        cles = neuves
+                        ouverts = SiddurJour.lignes(texte, annotations, conditions, ouverts: cles, nusah: nusah, enIsrael: true)
                     }
-                    let ouverts = SiddurJour.lignes(texte, annotations, conditions, ouverts: cles, nusah: nusah,
-                                                    enIsrael: true)
                     for (tout, lignes) in [(false, fermes), (true, ouverts)] {
                         let nom = "\(nusah.rawValue)/\(texte.id)/\(date.iso)/\(tout ? "ouvert" : "fermé")"
                         if let faute = verifier(texte, lignes, LectureLignes.places(texte, annotations, lignes), tout: tout) {
@@ -228,7 +235,7 @@ struct LectureModeleTests {
         var precedente: LecturePlace?
         var vues = Set<LecturePlace>()
         for (k, ligne) in lignes.enumerated() {
-            guard case .bloc(let bloc, let style) = ligne else {
+            guard case .bloc(let bloc, let style, _) = ligne else {
                 if places[k] != nil { return "place hors d'un bloc à \(k)" }
                 continue
             }
