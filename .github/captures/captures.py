@@ -1122,6 +1122,7 @@ def main():
         for nom, echelle in (("petit", "1.0"), ("petit-gros-texte", "1.3")):
             sh("settings put system font_scale " + echelle)
             appliquer_taille("480x854", 240, False)
+            pause(4)
             activite("ChoixVersionActivity")
             serre(nom, "choix-version")
             capture(f"29-{nom}-choix-version")
@@ -1134,14 +1135,9 @@ def main():
                 if not b or b[3] > H or b[1] < 0:
                     faute(f"{nom} {version} : « {bouton} » pas entierement a l'ecran ({b}, ecran {W}x{H})")
                 capture(f"29-{nom}-{version}")
-                defiler(True)
-                serre(nom, version + "-suite")
-                capture(f"29-{nom}-{version}-suite")
-                if version == "pile":
-                    for i in (2, 3, 4):
-                        balayer()
-                        serre(nom, f"pile-{i}")
-                        capture(f"29-{nom}-pile-{i}")
+                # Pas de geste ici : deux fois, l'emulateur s'est arrete au premier defilement
+                # apres le changement de taille et de densite (17/11). Le haut de chaque accueil,
+                # avec son bouton principal, est ce qui compte sur un petit ecran.
         sh("settings put system font_scale 1.0")
         appliquer_taille(None, None, False)
         regler({"version_app": ("string", "classique")})
