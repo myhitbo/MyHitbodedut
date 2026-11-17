@@ -1084,6 +1084,10 @@ def main():
         pause(1.5)
 
     def s28():
+        # En plein jour d'abord (17/11) : deux fois, l'emulateur s'est arrete le soir en ouvrant
+        # un accueil au ciel dessine ; le ciel de nuit est essaye a part, en dernier (s28 nuit).
+        sh("settings put global auto_time 0")
+        log("  date :", sh("date 111712002026.00").strip())
         activite("ChoixVersionActivity")
         capture("28-choix-version")
         retour()
@@ -1116,12 +1120,22 @@ def main():
         regler({"version_app": ("string", "classique")})
     etape("28 versions de l'app", s28)
 
+    def s28n():
+        log("  date :", sh("date 111721302026.00").strip())
+        for version in ("instant", "serenite"):
+            regler({"version_app": ("string", version)})
+            lancer(attente=6)
+            capture(f"28n-{version}-nuit")
+        regler({"version_app": ("string", "classique")})
+    etape("28n ciel de nuit", s28n)
+
     # Les versions sur un petit telephone (480x854, 240 dpi), puis avec le texte du systeme
     # agrandi (17/11) : chaque accueil, sans texte ecrase, et son bouton principal entier a l'ecran.
     def s29():
         for nom, echelle in (("petit", "1.0"), ("petit-gros-texte", "1.3")):
             sh("settings put system font_scale " + echelle)
             appliquer_taille("480x854", 240, False)
+            sh("date 111712002026.00")
             pause(4)
             activite("ChoixVersionActivity")
             serre(nom, "choix-version")
