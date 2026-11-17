@@ -53,6 +53,91 @@ class JourAfficheTest {
         }
     }
 
+    private val newYork = Zmanim.Lieu("New York", 40.71427, -74.00597, 0.0, "America/New_York")
+
+    @Test
+    fun `fete un vendredi - les dates de l audit du 16-11`() {
+        // Jérusalem, Chavouot 2026-05-22 ; New York, Pessa'h 2026-04-03 ; Paris, Roch Hachana 2024-10-04.
+        for ((lieu, date, israel) in listOf(Triple(jerusalem, "2026-05-22", true), Triple(newYork, "2026-04-03", false), Triple(paris, "2024-10-04", false))) {
+            for (nusah in listOf("edot", "sefard", "ashkenaz")) {
+                val h = JourAffiche.horaires(lieu, LocalDate.parse(date), israel, 18, nusah).associateBy { it.cle }
+                assertEquals("$date $nusah", "avant_chkia", h.getValue("allumage").methode.cle)
+                assertTrue("$date $nusah", h.getValue("allumage").instant!! < h.getValue("chkia").instant!!)
+            }
+        }
+    }
+
+    @Test
+    fun `Edot - sortie a Rabbenou Tam en zmaniyot, tset du Yalkut Yosef (audit du 16-11)`() {
+        val samedi = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-10-17"), true, 18, "edot").associateBy { it.cle }
+        assertEquals(samedi.getValue("tset_rt").instant, samedi.getValue("sortie").instant)
+        assertEquals("zmaniyot_apres_chkia", samedi.getValue("sortie").methode.cle)
+        assertEquals("13.5", samedi.getValue("tset").methode.parametres)
+        // Fête puis fête (Roch Hachana 5787, diaspora, samedi puis dimanche) : après la sortie de Chabbat.
+        val rh1 = JourAffiche.horaires(paris, LocalDate.parse("2026-09-12"), false, 18, "edot").associateBy { it.cle }
+        assertEquals("apres_sortie", rh1.getValue("allumage").methode.cle)
+        assertEquals(rh1.getValue("tset_rt").instant, rh1.getValue("allumage").instant)
+        // Le premier jour de Roch Hachana 5786 (mardi 23/09/2025) : après le tsét du rite.
+        val rh = JourAffiche.horaires(paris, LocalDate.parse("2025-09-23"), false, 18, "edot").associateBy { it.cle }
+        assertEquals(rh.getValue("tset").instant, rh.getValue("allumage").instant)
+        // Sfard et Ashkenaz : inchangés, sortie à 8,5°.
+        val ashkenaz = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-10-17"), true, 18, "ashkenaz").associateBy { it.cle }
+        assertEquals(ashkenaz.getValue("tset").instant, ashkenaz.getValue("sortie").instant)
+        assertEquals("8.5", ashkenaz.getValue("tset").methode.parametres)
+    }
+
+    @Test
+    fun `jeunes - debut et fin, et la veille du 9 Av la chkia (audit du 16-11)`() {
+        val teveth = horaires(paris, "2026-12-20", false)
+        assertEquals(teveth.getValue("alot").instant, teveth.getValue("debut_jeune").instant)
+        assertEquals(teveth.getValue("tset").instant, teveth.getValue("fin_jeune").instant)
+        val veille = horaires(paris, "2026-07-22", false)
+        assertEquals(veille.getValue("chkia").instant, veille.getValue("debut_jeune").instant)
+        val av = horaires(paris, "2026-07-23", false)
+        assertFalse("debut_jeune" in av)
+        assertEquals(av.getValue("tset").instant, av.getValue("fin_jeune").instant)
+        // 9 Av repoussé (dimanche 03/08/2025) : le samedi, le jeûne commence à la chki'a, avant la sortie.
+        val samedi = horaires(paris, "2025-08-02", false)
+        assertEquals(samedi.getValue("chkia").instant, samedi.getValue("debut_jeune").instant)
+        assertTrue("sortie" in samedi)
+        assertFalse("debut_jeune" in horaires(paris, "2026-10-14", false))
+    }
+
+    @Test
+    fun `veille de Pessah - heures du hamets, et le vendredi quand elle tombe un Chabbat (audit du 16-11)`() {
+        val heure = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+        val edot = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-04-01"), true, 18, "edot").filter { it.cle.startsWith("hamets") }
+        assertEquals(listOf("hamets_achila", "hamets_achila", "hamets_biour", "hamets_biour"), edot.map { it.cle })
+        // Kitsour YY 443:1 : MGA en heures zmaniyot depuis l'aube, 10:13 à Jérusalem (10:14 en minutes fixes).
+        assertEquals("10:13", edot[0].local!!.format(heure))
+        assertEquals("mga_72_zmaniyot", edot[0].methode.cle)
+        val commun = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-04-01"), true, 18, "ashkenaz").filter { it.cle.startsWith("hamets") }
+        assertEquals(listOf("10:14", "10:38", "11:28", "11:40"), commun.map { it.local!!.format(heure) })
+        // 14 Nissan 5785 un Chabbat (12/04/2025) : le vendredi, la fin du bi'our.
+        val vendredi = JourAffiche.horaires(jerusalem, LocalDate.parse("2025-04-11"), true, 18).filter { it.cle.startsWith("hamets") }
+        assertEquals(listOf("hamets_biour", "hamets_biour"), vendredi.map { it.cle })
+        assertTrue(JourAffiche.horaires(jerusalem, LocalDate.parse("2026-03-31"), true, 18).none { it.cle.startsWith("hamets") })
+    }
+
+    @Test
+    fun `Jerusalem - 40 min hors Edot, 20 min pour les Edot (audit du 16-11)`() {
+        assertEquals("reglage_allumage_proposition_edot", JourAffiche.propositionAllumage("edot", true, 40))
+        assertEquals(null, JourAffiche.propositionAllumage("edot", true, 20))
+        assertEquals("reglage_allumage_proposition", JourAffiche.propositionAllumage("sefard", true, 18))
+        assertEquals(null, JourAffiche.propositionAllumage("ashkenaz", true, 40))
+        assertEquals(null, JourAffiche.propositionAllumage("ashkenaz", false, 18))
+        assertFalse(JourAffiche.coutumeJerusalem("edot", true, 40))
+        assertTrue(JourAffiche.coutumeJerusalem("sefard", true, 40))
+    }
+
+    @Test
+    fun `Edot - Chaharit pas avant le michéyakir du Yalkut Yosef (audit du 16-11)`() {
+        // Paris, 2026-12-21 à 07:30 : michéyakir à 11,5° (07:26) mais aube du Yalkut Yosef à 07:51.
+        val t = java.time.ZonedDateTime.parse("2026-12-21T07:30:00+01:00[Europe/Paris]").toInstant()
+        assertEquals("chaharit", JourAffiche.momentDuSiddour(paris, t, nusah = "sefard"))
+        assertTrue(JourAffiche.momentDuSiddour(paris, t, nusah = "edot") != "chaharit")
+    }
+
     @Test
     fun `les ajouts nommes suivent les conditions`() {
         val rc = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-12"), false).conditions)

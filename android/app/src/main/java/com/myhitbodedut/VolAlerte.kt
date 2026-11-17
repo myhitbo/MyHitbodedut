@@ -81,14 +81,25 @@ object VolAlerte {
                     (r.limite?.let { "\n" + c.getString(R.string.vol_rappel_derekh_priere, nomPriere(c, r.priere), heure(it)) } ?: ""))
             VolRappels.Type.PRIERE -> c.getString(R.string.vol_rappel_priere_titre, nomPriere(c, r.priere)) to
                 (r.limite?.let { c.getString(R.string.vol_rappel_priere_texte, nomPriere(c, r.priere), heure(it)) }
-                    ?: c.getString(R.string.vol_rappel_priere_sans_limite, nomPriere(c, r.priere)))
+                    ?: c.getString(R.string.vol_rappel_priere_sans_limite, nomPriere(c, r.priere))) +
+                // Cha'harit : le Chema d'abord (audit du 16/11).
+                (r.chema?.let { "\n" + texteChema(c, r, heure) } ?: "")
             VolRappels.Type.PRIERE_FIN -> c.getString(R.string.vol_rappel_fin_titre, nomPriere(c, r.priere)) to
                 c.getString(R.string.vol_rappel_fin_texte, heure(r.limite ?: r.instant))
             VolRappels.Type.OMER -> c.getString(R.string.vol_rappel_omer_titre) to c.getString(R.string.vol_rappel_omer_texte, r.omer.toString())
             // Audit du 16/11 : obligation en Edot (Kitsour Yalkut Yosef 219:20) ; selon l'usage ailleurs.
             VolRappels.Type.HAGOMEL -> c.getString(R.string.vol_rappel_gomel_titre) to
                 c.getString(if (Store.siddurNusah(c) == Nusah.EDOT) R.string.vol_rappel_gomel_texte_edot else R.string.vol_rappel_gomel_texte)
+            VolRappels.Type.CHEMA_FIN -> c.getString(R.string.vol_rappel_chema_titre) to texteChema(c, r, heure)
         }
+    }
+
+    /** « Fin du Chema (Maguen Avraham) : … ; au besoin, selon le Gra : … » (audit du 16/11). */
+    private fun texteChema(c: Context, r: VolRappels.Rappel, heure: (Instant) -> String): String {
+        val chema = heure(r.chema ?: r.instant)
+        val autre = r.chemaAutre?.let(heure) ?: "—"
+        return if (r.chemaCle == "szks_mga") c.getString(R.string.vol_rappel_chema_mga, chema, autre)
+        else c.getString(R.string.vol_rappel_chema_gra, chema, autre)
     }
 
     /** Le texte du siddur qu'ouvre le rappel, et le hassid qui l'accompagne. */

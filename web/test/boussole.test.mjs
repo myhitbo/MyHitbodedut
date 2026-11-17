@@ -37,6 +37,12 @@ test('écart, tolérance, degrés, points, filtre', () => {
   assert.equal(B.xHorizon(-90), -150);
 });
 
+test('conseil du minyan au-delà de 20° entre les deux méthodes (audit du 16/11, MB 94:10)', () => {
+  assert.ok(B.conseilMinyan(34.0522, -118.2437));
+  assert.ok(!B.conseilMinyan(48.8566, 2.3522));
+  assert.ok(!B.conseilMinyan(31.7769, 35.2224));
+});
+
 test("le cap d'un événement d'orientation", () => {
   assert.equal(B.capMagnetique({ webkitCompassHeading: 30 }), 30);
   assert.equal(B.capMagnetique({ webkitCompassHeading: 30 }, 90), 120);

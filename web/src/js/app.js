@@ -13,7 +13,7 @@ import { DanseMesure, SessionRule } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, cleGuechemFin, jour as jourJuif, jourDeLaPriere, levana, nuit as nuitDuLieu, periodeSansMusique, rappelsTefila, reperes as reperesDuJour, usageLevana } from './calendrier-juif.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, cleGuechemFin, dansIsrael, jour as jourJuif, jourDeLaPriere, levana, nuit as nuitDuLieu, periodeSansMusique, rappelsTefila, reperes as reperesDuJour, usageLevana } from './calendrier-juif.js';
 import { avecSansTahanoun, conditionsPour, index as indexAjouts, libelleJour, plan as planSection, segments as segmentsAjout, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
@@ -23,7 +23,7 @@ import * as Trophees from './trophees.js';
 import { FORMES, ICONES } from './trophees-formes.js';
 import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHalakha } from './halakha.js';
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
-import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, momentOuvrable, OFFICES, moisHebreuVoisin, sansTikounHatsot, semaines, semainesHebreu } from './jour-affiche.js';
+import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, momentOuvrable, OFFICES, moisHebreuVoisin, ligneDateDiscutee, noteYomTovCheni, propositionAllumage, coutumeJerusalem, sansTikounHatsot, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
 import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
@@ -510,7 +510,7 @@ function cielMaintenant() {
   const lieu = store.lieu();
   if (!lieu) return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
   try {
-    const z = Object.fromEntries(zmanimDuJour(lieu, jourLieu(maintenant)).map((x) => [x.cle, x.instant]));
+    const z = Object.fromEntries(zmanimDuJour(lieu, jourLieu(maintenant), store.siddurNusah()).map((x) => [x.cle, x.instant]));
     return Ciel.phase(maintenant, z, heureLieu(maintenant));
   } catch {
     return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
@@ -1580,10 +1580,10 @@ function ecranPriere() {
   // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
   const lieuSortie = store.lieu();
   const isoMaintenant = jourLieu(maintenant);
-  const tset = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant).find((z) => z.cle === 'tset')?.instant : null;
+  const tset = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant : null;
   const jourDuTexte = jourJuif(jourDeLaPriere(x.id, isoMaintenant, heureLieu(maintenant).heures, !!tset && maintenant >= tset), store.inIsrael(), mukafChoma());
   // La nuit (audit du 16/11, CalendrierJuif.nuit) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
-  const alot = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant).find((z) => z.cle === 'alot')?.instant : null;
+  const alot = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant, store.siddurNusah()).find((z) => z.cle === 'alot')?.instant : null;
   if (nuitDuLieu(heureLieu(maintenant).heures, tset ? maintenant >= tset : null, alot ? maintenant < alot : null)) jourDuTexte.conditions.add('nuit');
   const nusah = store.siddurNusah();
   const c = conditionsPour(nusah, store.inIsrael(), avecSansTahanoun(jourDuTexte.conditions, store.sansTahanounLe(jourDuTexte.date)),
@@ -2580,7 +2580,7 @@ function horairePriere(id) {
   const lieu = store.lieu();
   if (!lieu || !['chaharit', 'minha', 'arvit'].includes(id)) return null;
   const iso = jourLieu();
-  const z = Object.fromEntries(zmanimDuJour(lieu, iso).map((x) => [x.cle, x.instant]));
+  const z = Object.fromEntries(zmanimDuJour(lieu, iso, store.siddurNusah()).map((x) => [x.cle, x.instant]));
   const hh = (c) => (z[c] ? heureZman(z[c], lieu.fuseau) : null);
   if (id === 'chaharit') return hh('szt_gra') && tr.t('banniere_chaharit', hh('szt_gra'));
   if (id === 'minha') return hh('minha_gedola') && hh('chkia') && tr.t('banniere_minha', hh('minha_gedola'), hh('chkia'));
@@ -2751,11 +2751,11 @@ const parametre = (p) => (p !== '' && !Number.isNaN(Number(p)) ? Number(p).toLoc
  * La position du téléphone (16/10 ; précise depuis le 28/10, « en fonction de la position exacte ») :
  * haute précision, un point de moins d'une minute ; sans réponse, la dernière connue, même
  * ancienne. La ville la plus proche nomme le lieu. Silencieux : aucun message, aucune demande.
- * Choisie : « Ma position » vient d'être prise dans la liste des lieux, la région est redéduite ;
- * sinon une reprise (le lieu était déjà la position) garde la région choisie à la main dans les
- * réglages (audit du 12/11, FCALENDRIER-06, store.setLieuPosition).
+ * Choisie : « Ma position » vient d'être prise dans la liste des lieux. Ni ce choix ni une reprise
+ * ne réécrivent le statut Israël ou diaspora : un lieu de l'autre région pose la question
+ * (audit du 16/11, store.setLieu).
  */
-function localiserPosition({ etat = null, apres = rendre, silencieux = false, choisie = false } = {}) {
+function localiserPosition({ etat = null, apres = rendre, silencieux = false } = {}) {
   const dire = (cle) => { if (etat && !silencieux) etat.textContent = tr.t(cle); };
   if (!navigator.geolocation) { dire('zmanim_position_refusee'); return; }
   dire('zmanim_position_attente');
@@ -2766,7 +2766,7 @@ function localiserPosition({ etat = null, apres = rendre, silencieux = false, ch
       latitude: p.coords.latitude, longitude: p.coords.longitude,
       // Le fuseau du téléphone ; Israël ou diaspora d'après le territoire (TerritoireIsrael, 16/10).
       altitude: proche?.altitude ?? 0, fuseau: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    }, choisie);
+    });
     if (ancienne && !silencieux) signale(tr.t('zmanim_position_ancienne'));
     apres();
   };
@@ -2802,7 +2802,7 @@ function choisirLieu() {
     const etat = h('p', { class: 'message', 'aria-live': 'polite' });
     f.append(h('button', {
       class: 'choix',
-      onclick: () => localiserPosition({ etat, choisie: true, apres: () => { fermer(); rendre(); } }),
+      onclick: () => localiserPosition({ etat, apres: () => { fermer(); rendre(); } }),
     }, tr.t('zmanim_position')), etat);
     // La liste se remplit à l'arrivée de villes.json (FWEBCODE-05) : « Chargement… » en attendant,
     // un message et « Réessayer » si le fichier échoue.
@@ -2834,7 +2834,7 @@ function choisirLieu() {
 }
 
 /** « 40 min avant la chki'a · coutume de Jérusalem », quand Jérusalem est choisie. */
-const libelleAllumage = (m) => tr.t(m === 40 && mukafChoma() ? 'reglage_allumage_jerusalem' : 'reglage_allumage_valeur', m);
+const libelleAllumage = (m) => tr.t(coutumeJerusalem(store.siddurNusah(), mukafChoma(), m) ? 'reglage_allumage_jerusalem' : 'reglage_allumage_valeur', m);
 
 function choisirTahanounTichri() {
   choisirDans(tr.t('reglage_tahanoun_tichri'), [tr.t('reglage_tahanoun_tichri_dit'), tr.t('reglage_tahanoun_tichri_sans')],
@@ -2931,7 +2931,7 @@ function lienExterne(libelle, url) {
 function jourDepuisSortie(iso) {
   const lieu = store.lieu();
   if (!lieu || iso !== jourLieu()) return null;
-  const tset = zmanimDuJour(lieu, iso).find((z) => z.cle === 'tset')?.instant;
+  const tset = zmanimDuJour(lieu, iso, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant;
   if (!tset || new Date() < tset) return null;
   const [a, m, d] = iso.split('-').map(Number);
   return jourJuif(new Date(Date.UTC(a, m - 1, d + 1, 12)).toISOString().slice(0, 10), store.inIsrael(), mukafChoma()).dateHebraique;
@@ -3372,7 +3372,7 @@ function listeZmanim(iso) {
     return h('div', { class: 'carte carte-texte' }, h('p', { class: 'message' }, tr.t('zmanim_sans_lieu')),
       h('button', { class: 'principal', onclick: choisirLieu }, tr.t('zmanim_choisir_lieu')));
   }
-  return h('div', { class: 'carte carte-zmanim' }, horaires(lieu, iso, store.inIsrael(), store.allumage()).map((z) =>
+  return h('div', { class: 'carte carte-zmanim' }, horaires(lieu, iso, store.inIsrael(), store.allumage(), store.siddurNusah()).map((z) =>
     h('div', { class: `zman${z.cle === 'allumage' || z.cle === 'sortie' ? ' zman-chabbat' : ''}` },
       h('div', { class: 'zman-tete' },
         h('span', { class: 'zman-nom' }, tr.t(`zman_${z.cle}`)),
@@ -3399,6 +3399,13 @@ function ecranZmanim() {
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
       // Le jour seul, trois boutons, puis les horaires (14/10, « trop de choses avant les זמנים »).
       carteJour(iso, { complet: false }),
+      // Audit du 16/11 : le statut Israël ou diaspora suit la résidence ; un lieu de l'autre région
+      // pose la question, et le Yom tov chéni d'un voyageur a sa note.
+      questionRegion(),
+      lieu && noteYomTovCheni(iso, store.inIsrael(), dansIsrael(lieu.latitude, lieu.longitude), store.siddurNusah())
+        ? h('p', { class: 'indice' }, tr.t(noteYomTovCheni(iso, store.inIsrael(), dansIsrael(lieu.latitude, lieu.longitude), store.siddurNusah()))) : null,
+      // Japon, Nouvelle-Zélande, Australie orientale, Hawaï… : la ligne de date halakhique est discutée.
+      lieu && ligneDateDiscutee(lieu.longitude) ? h('p', { class: 'indice' }, tr.t('ligne_date_discutee')) : null,
       h('div', { class: 'boutons-jour' },
         h('button', { class: 'secondaire', onclick: () => { jourHalakha = iso; rechercheHalakhaTexte = ''; ouvrir('halakha'); } }, tr.t('zmanim_bouton_halakha')),
         h('button', { class: 'secondaire', onclick: () => { jourHilloulot = iso; rechercheHilloulot = ''; ouvrir('hilloulot'); } }, tr.t('zmanim_bouton_hilloulot')),
@@ -3410,6 +3417,18 @@ function ecranZmanim() {
       listeZmanim(iso),
       ...sousHoraires(iso),
       ...piedZmanim())));
+}
+
+/** La question du statut (ZmanimActivity.questionRegion, audit du 16/11) : seule la réponse le change. */
+function questionRegion() {
+  const proposee = store.regionProposee();
+  if (proposee === null) return null;
+  return h('div', { class: 'carte carte-texte' },
+    h('p', {}, tr.t(proposee ? 'region_proposee_israel' : 'region_proposee_diaspora')),
+    h('div', { class: 'boutons-jour' },
+      h('button', { class: 'secondaire', onclick: () => { store.setInIsrael(proposee, true); rendre(); } },
+        tr.t(proposee ? 'region_proposee_israel_oui' : 'region_proposee_diaspora_oui')),
+      h('button', { class: 'secondaire', onclick: () => { store.setInIsrael(store.inIsrael(), true); rendre(); } }, tr.t('region_proposee_garder'))));
 }
 
 // --- La boussole de Jérusalem (BoussoleActivity, 28/10) : boussole.js ------------------------
@@ -3620,6 +3639,8 @@ function ecranBoussole() {
     contenu.push(h('div', { class: 'carte carte-texte' },
       h('p', { class: 'nom' }, tr.t('boussole_note_titre')),
       h('p', { class: 'indice' }, tr.t('boussole_note')),
+      // Audit du 16/11 : plus de 20° entre les deux méthodes, le conseil du minyan (MB 94:10).
+      Boussole.conseilMinyan(lieu.latitude, lieu.longitude) ? h('p', { class: 'indice' }, tr.t('boussole_minyan')) : null,
       h('p', {}, source[0], h('a', { href: SOURCE_BOUSSOLE, target: '_blank', rel: 'noopener', dir: 'ltr' }, tr.t('boussole_source_titre')), source[1] ?? '')));
   }
   return h('div', { class: 'ecran avec-bandeau' }, bandeau(tr.t('boussole_title'), { puce: lieu ? puce : null, dessin: 'char_standing_back' }),
@@ -4025,14 +4046,19 @@ function friseVol(c, enVol, maintenant) {
 function carteJalons(c) {
   const minutes = store.allumage();
   const jalons = Vol.jalons(c, store.inIsrael(), minutes);
-  if (!jalons.length) return null;
+  if (!jalons.length && !c.lignesDate.length) return null;
   const libelle = (f) => { try { return tr.t(`fete_${f}`); } catch { return null; } };
   return h('div', { class: 'carte carte-texte carte-vol' }, h('p', { class: 'indice' }, tr.t('vol_jalons_titre')),
+    // Ligne de date (audit du 16/11) : le choix de la ligne est discuté ; pendant le Omer, deux comptes.
+    c.lignesDate.length ? h('p', {}, tr.t('ligne_date_discutee')) : null,
+    Vol.ligneDateOmer(c, store.inIsrael()) ? h('p', { class: 'vol-jalon' }, tr.t('vol_omer_ligne_date')) : null,
     ...jalons.flatMap((j) => {
       const nom = [j.chabbat ? tr.t('vol_chabbat') : null, ...j.fetes.map(libelle)].filter(Boolean).join(' · ');
       const heure = deuxHeures(c.plan, j.instant);
       const texte = j.type === 'omer' ? tr.t('vol_jalon_omer', String(j.omer), heure) : tr.t(`vol_jalon_${j.type}`, nom, heure);
       return [h('p', { class: 'vol-jalon' }, texte),
+        // Vol polaire sans tsét : le repère de repli est dit (audit du 16/11).
+        j.repli ? h('p', {}, tr.t('vol_jalon_repli')) : null,
         j.allumage ? h('p', {}, tr.t('vol_jalon_allumage', String(minutes), deuxHeures(c.plan, j.allumage))) : null,
         h('p', { class: 'indice' }, positionVol(j))];
     }),
@@ -4646,9 +4672,9 @@ function ecranReglages() {
         ligne({ nom: tr.t('settings_region'), etat: tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'),
           onclick: () => choisirDans(tr.t('settings_region'), [tr.t('region_israel'), tr.t('region_diaspora')], store.inIsrael() ? 0 : 1,
             (j) => { store.setInIsrael(j === 0, true); rendre(); }) }),
-        // À Jérusalem, l'usage des 40 minutes est proposé, jamais imposé.
+        // À Jérusalem, l'usage du rite est proposé, jamais imposé : 40 min hors Edot, 20 min pour les Edot (audit du 16/11).
         ligne({ nom: tr.t('reglage_allumage'), onclick: choisirAllumage,
-          etat: [libelleAllumage(store.allumage()), mukafChoma() && store.allumage() !== 40 ? tr.t('reglage_allumage_proposition') : null].filter(Boolean).join(' · ') }),
+          etat: [libelleAllumage(store.allumage()), propositionAllumage(store.siddurNusah(), mukafChoma(), store.allumage()) ? tr.t(propositionAllumage(store.siddurNusah(), mukafChoma(), store.allumage())) : null].filter(Boolean).join(' · ') }),
         store.siddurNusah() === 'sefard' ? ligne({ nom: tr.t('reglage_tahanoun_tichri'), onclick: choisirTahanounTichri,
           etat: tr.t(store.sansTahanounFinTichri() ? 'reglage_tahanoun_tichri_sans' : 'reglage_tahanoun_tichri_dit') }) : null,
         // « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; Choul'han Aroukh O.H. 131:4) : deuil, brit, 'hatan ; ce jour seulement.

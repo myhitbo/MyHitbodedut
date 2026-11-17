@@ -293,12 +293,12 @@ class SiddurLectureActivity : AppCompatActivity() {
         val israel = Store.inIsrael(this)
         // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
         val apresSortie = Store.lieuZmanim(this)?.let { lieu ->
-            Zmanim.jour(lieu, LocalDate.now()).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
+            Zmanim.jour(lieu, LocalDate.now(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
         } ?: false
         val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
             Store.mukafChoma(this)).let { j ->
             // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
-            val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now()) }
+            val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now(), Store.siddurNusah(this).cle) }
             val maintenant = java.time.Instant.now()
             val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
             val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }

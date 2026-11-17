@@ -158,6 +158,10 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
         contenu.addView(VueJour.carte(this).apply {
             addView(VueJour.texte(this@BoussoleActivity, getString(R.string.boussole_note_titre), 15f, R.color.ink))
             addView(VueJour.texte(this@BoussoleActivity, getString(R.string.boussole_note), 13f, R.color.muted, haut = 4))
+            // Audit du 16/11 : plus de 20° entre les deux méthodes, le conseil du minyan (MB 94:10).
+            if (DirectionJerusalem.conseilMinyan(lieu.latitude, lieu.longitude)) {
+                addView(VueJour.texte(this@BoussoleActivity, getString(R.string.boussole_minyan), 13f, R.color.muted, haut = 4))
+            }
             addView(VueJour.texte(this@BoussoleActivity, HtmlCompat.fromHtml(getString(R.string.boussole_source,
                 "\u2066<a href=\"$SOURCE\">${android.text.TextUtils.htmlEncode(getString(R.string.boussole_source_titre))}</a>\u2069"), HtmlCompat.FROM_HTML_MODE_LEGACY),
                 13f, R.color.brand, haut = 6).apply { movementMethod = LinkMovementMethod.getInstance() })

@@ -98,24 +98,103 @@ object JourAffiche {
      *  - le dernier jour chômé : la sortie, à tsét 8,5° (et Rabbénou Tam reste
      *    dans la liste).
      * Le profil et ses limites : ZMANIM.md.
+     *
+     * Le profil suit le [nusah] (audit du 16/11, Zmanim.PROFIL_EDOT). Pour les Edot, la sortie de
+     * Chabbat ou de fête est Rabbénou Tam en 72 min zmaniyot, que le Yalkut Yosef recommande
+     * (Kitsour YY 293:3 et 293:7) ; la ligne tsét (Gueonim, 13,5 min zmaniyot) reste affichée.
+     * L'allumage d'un deuxième jour de fête suit le tsét du rite ; après Chabbat, la sortie.
+     *
+     * Ajouts de l'audit du 16/11, à titre d'information :
+     *  - un jeûne public : « Début du jeûne » à l'aube du rite, « Fin du jeûne » à son tsét ; la
+     *    veille du 9 Av (Chabbat compris), « Début du jeûne » à la chki'a (Kitsour YY 550:2) ;
+     *  - la veille de Pessa'h : fin de la consommation et du bi'our du 'hamets (Zmanim.hamets) ;
+     *    quand elle tombe un Chabbat, le vendredi, la fin de la 5e heure pour brûler (CA 444:2).
      */
-    fun horaires(lieu: Zmanim.Lieu, date: LocalDate, enIsrael: Boolean, minutes: Int): List<Zmanim.Zman> {
-        val aujourdhui = CalendrierJuif.jour(date, enIsrael).chome
-        val demain = CalendrierJuif.jour(date.plusDays(1), enIsrael).chome
+    fun horaires(
+        lieu: Zmanim.Lieu, date: LocalDate, enIsrael: Boolean, minutes: Int, nusah: String = Zmanim.NUSAH_COMMUN,
+    ): List<Zmanim.Zman> {
+        val jourJ = CalendrierJuif.jour(date, enIsrael)
+        val jourDemain = CalendrierJuif.jour(date.plusDays(1), enIsrael)
+        val aujourdhui = jourJ.chome
+        val demain = jourDemain.chome
         val veilleDeChabbat = date.dayOfWeek == java.time.DayOfWeek.FRIDAY
-        val base = Zmanim.jour(lieu, date)
+        val samedi = date.dayOfWeek == java.time.DayOfWeek.SATURDAY
+        val edot = nusah == "edot"
+        val base = Zmanim.jour(lieu, date, nusah)
         val tset = base.first { it.cle == "tset" }
+        val fin = if (edot) base.first { it.cle == "tset_rt" } else tset
+        val jeune = C.JEUNE in jourJ.conditions
+        val veilleAv = C.TICHA_BEAV in jourDemain.conditions
+        val hamets = when {
+            "erev_pessah" in jourJ.fetes -> Zmanim.hamets(lieu, date, nusah)
+            veilleDeChabbat && "erev_pessah" in jourDemain.fetes -> Zmanim.hamets(lieu, date, nusah).filter { it.cle == "hamets_biour" }
+            else -> emptyList()
+        }
         val sortie = mutableListOf<Zmanim.Zman>()
         base.forEach { z ->
             if (z.cle == "chkia" && demain && (!aujourdhui || veilleDeChabbat)) sortie += Zmanim.allumage(lieu, date, minutes)
+            if (z.cle == "chkia" && veilleAv) sortie += z.copy(cle = "debut_jeune")
             sortie += z
-            if (z.cle == "tset") {
-                if (aujourdhui && !demain) sortie += tset.copy(cle = "sortie")
-                if (aujourdhui && demain && !veilleDeChabbat) sortie += tset.copy(cle = "allumage", methode = Zmanim.Methode("apres_tset", ""))
+            if (z.cle == "alot" && jeune && C.TICHA_BEAV !in jourJ.conditions) sortie += z.copy(cle = "debut_jeune")
+            if (z.cle == "szt_gra") sortie += hamets
+            if (z.cle == "tset" && jeune) sortie += z.copy(cle = "fin_jeune")
+            if (z.cle == fin.cle && aujourdhui && !demain) sortie += fin.copy(cle = "sortie")
+            val apres = if (samedi) fin else tset
+            if (z.cle == apres.cle && aujourdhui && demain && !veilleDeChabbat) {
+                sortie += apres.copy(cle = "allumage", methode = Zmanim.Methode(if (edot) "apres_sortie" else "apres_tset", ""))
             }
         }
         return sortie
     }
+
+    /**
+     * La note du Yom tov chéni pour un voyageur (audit du 16/11) : une clé de chaîne, ou null.
+     * Le calendrier suit le statut ([statutIsrael], la résidence) ; la note dit ce qui change
+     * quand le lieu ([lieuEnIsrael]) est de l'autre région un jour qui n'est chômé qu'en diaspora :
+     *  - résident d'Israël en diaspora : jour de semaine pour lui, sans mélakha en public, tefillin
+     *    en privé (Choul'han Aroukh 496:3 ; Kitsour Yalkut Yosef 31:3, « ויניח תפילין בביתו בצינעא ») ;
+     *  - résident de diaspora en Israël : jour de fête pour lui (Michna Beroura 496:13) ; en
+     *    Ashkenaz, la note rappelle l'avis du 'Hakham Tsvi (un seul jour), que l'application ne suit pas.
+     */
+    fun noteYomTovCheni(date: LocalDate, statutIsrael: Boolean, lieuEnIsrael: Boolean, nusah: String): String? {
+        if (statutIsrael == lieuEnIsrael) return null
+        if (!CalendrierJuif.jour(date, false).chome || CalendrierJuif.jour(date, true).chome) return null
+        return when {
+            statutIsrael -> "note_ytc_ben_israel"
+            nusah == "ashkenaz" -> "note_ytc_ben_houl_ashkenaz"
+            else -> "note_ytc_ben_houl"
+        }
+    }
+
+    /**
+     * Un lieu où la ligne de date halakhique est discutée (audit du 16/11) : à l'est de 125,2° E
+     * (90° de Jérusalem, la ligne du 'Hazon Ich) ou à l'ouest de 150° O (Hawaï, Samoa, Tonga).
+     * L'application suit le jour civil (Rav Frank) ; l'écran le dit, sans trancher.
+     */
+    fun ligneDateDiscutee(longitude: Double): Boolean = longitude >= 125.2 || longitude <= -150.0
+
+    /** Les minutes d'allumage d'usage à Jérusalem, hors Edot (calendrier de Rav Toukatchinsky). */
+    const val ALLUMAGE_JERUSALEM = 40
+
+    /** Les minutes d'allumage que le Yalkut Yosef donne aux Edot, à Jérusalem comme ailleurs. */
+    const val ALLUMAGE_EDOT = 20
+
+    /**
+     * La proposition sous le réglage d'allumage, à Jérusalem seulement ([mukafChoma]) : une clé de
+     * chaîne, ou null. Audit du 16/11 : les 40 min, « coutume de Jérusalem », pour Sfard et
+     * Ashkenaz ; pour les Edot, environ 20 min, à Jérusalem aussi (Kitsour Yalkut Yosef 263:47 :
+     * « להדליק את הנר ארבעים דקות קודם השקיעה. שאין לזה כל יסוד בהלכה »).
+     */
+    fun propositionAllumage(nusah: String, mukafChoma: Boolean, minutes: Int): String? = when {
+        !mukafChoma -> null
+        nusah == "edot" -> if (minutes != ALLUMAGE_EDOT) "reglage_allumage_proposition_edot" else null
+        minutes != ALLUMAGE_JERUSALEM -> "reglage_allumage_proposition"
+        else -> null
+    }
+
+    /** Le libellé « · coutume de Jérusalem » : 40 min, à Jérusalem, hors Edot (audit du 16/11). */
+    fun coutumeJerusalem(nusah: String, mukafChoma: Boolean, minutes: Int): Boolean =
+        mukafChoma && nusah != "edot" && minutes == ALLUMAGE_JERUSALEM
 
     /**
      * Le texte du siddour que suggère l'instant [maintenant], d'après les
@@ -139,14 +218,18 @@ object JourAffiche {
         if (moment != null && moment in OFFICES &&
             CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(moment, date, heure), enIsrael).chome) null else moment
 
-    fun momentDuSiddour(lieu: Zmanim.Lieu, maintenant: java.time.Instant, enIsrael: Boolean = true, nusah: String = "edot"): String? {
+    /**
+     * [enIsrael] : pour le Tikoun 'hatsot de la nuit (sansTikounHatsot) ; [nusah] : le profil des zmanim
+     * (Zmanim.jour, audit du 16/11, horaires) et le Tikoun Ra'hel de midi (tikounRahelDeMidi).
+     */
+    fun momentDuSiddour(lieu: Zmanim.Lieu, maintenant: java.time.Instant, enIsrael: Boolean = true, nusah: String = Zmanim.NUSAH_COMMUN): String? {
         val zone = java.time.ZoneId.of(lieu.fuseau)
         val local = maintenant.atZone(zone)
         val date = local.toLocalDate()
         // La nuit appartient au jour hébreu civil après minuit, au lendemain avant minuit (audit du 16/11).
         val nuit = if (local.toLocalTime() < java.time.LocalTime.NOON) date else date.plusDays(1)
         val tikoun = if (sansTikounHatsot(nuit, enIsrael)) "chema_coucher" else "tikoun_hatsot"
-        fun instants(d: LocalDate) = Zmanim.jour(lieu, d).associate { it.cle to it.instant }
+        fun instants(d: LocalDate) = Zmanim.jour(lieu, d, nusah).associate { it.cle to it.instant }
         // Aube absente autour du solstice (Londres, Berlin, Moscou…, FCALENDRIER-08) : michéyakir, puis
         // le lever du soleil, en tiennent lieu ; les heures fixes ne servent que si chki'a ou tsét manquent.
         val z = instants(date).toMutableMap().also {

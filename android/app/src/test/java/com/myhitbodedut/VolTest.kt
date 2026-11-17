@@ -337,6 +337,7 @@ class VolTest {
                 assertEquals(nom, y.getString("type"), x.type.name.lowercase())
                 assertEquals(nom, y.getString("date"), x.date.toString())
                 assertEquals(nom, y.getInt("omer"), x.omer)
+                assertEquals(nom, y.getBoolean("repli"), x.repli)
             }
         }
     }

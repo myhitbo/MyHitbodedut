@@ -749,6 +749,14 @@
     <string name="zmanim_source_villes">Villes : GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
     <string name="zmanim_depuis_tset">Depuis la sortie des étoiles : %1$s</string>
+    <string name="region_proposee_israel">Ce lieu est en Israël. Votre statut pour le Yom tov chéni reste « diaspora » : il suit votre résidence, pas l’endroit où vous êtes (Choul’han Aroukh 496:3).</string>
+    <string name="region_proposee_diaspora">Ce lieu est hors d’Israël. Votre statut pour le Yom tov chéni reste « Israël » : il suit votre résidence, pas l’endroit où vous êtes (Choul’han Aroukh 496:3).</string>
+    <string name="region_proposee_israel_oui">J’habite en Israël</string>
+    <string name="region_proposee_diaspora_oui">J’habite hors d’Israël</string>
+    <string name="region_proposee_garder">Garder mon statut</string>
+    <string name="note_ytc_ben_israel">Yom tov chéni de la diaspora : pour un résident d’Israël, c’est un jour de semaine. Office de semaine, tefillin en privé, et pas de mélakha en public (Choul’han Aroukh 496:3).</string>
+    <string name="note_ytc_ben_houl">Yom tov chéni : pour un résident de la diaspora qui compte rentrer, c’est encore jour de fête, même en Israël (Michna Beroura 496:13).</string>
+    <string name="note_ytc_ben_houl_ashkenaz">Yom tov chéni : pour un résident de la diaspora qui compte rentrer, c’est encore jour de fête, même en Israël (Michna Beroura 496:13). Le ’Hakham Tsvi tient qu’un seul jour suffit au visiteur ; l’application suit le Michna Beroura.</string>
     <string name="calendrier_title">Calendrier</string>
     <string name="calendrier_precedent">Mois précédent</string>
     <string name="calendrier_suivant">Mois suivant</string>
@@ -764,6 +772,7 @@
     <string name="reglage_allumage_valeur">%1$d min avant la chki’a</string>
     <string name="reglage_allumage_jerusalem">%1$d min avant la chki’a · coutume de Jérusalem</string>
     <string name="reglage_allumage_proposition">À Jérusalem, l’usage est d’allumer 40 min avant la chki’a</string>
+    <string name="reglage_allumage_proposition_edot">Yalkut Yosef : à Jérusalem aussi, on allume environ 20 min avant la chki’a</string>
     <string name="reglage_tahanoun_tichri">Ta’hanoun en fin de Tichri</string>
     <string name="reglage_tahanoun_tichri_dit">Dit après Isrou ’hag</string>
     <string name="reglage_tahanoun_tichri_sans">Pas dit jusqu’à Roch ’Hodech ’Hechvan</string>
@@ -787,15 +796,24 @@
     <string name="zman_chatsot_layla">’Hatsot de la nuit</string>
     <string name="zman_allumage">Allumage des bougies</string>
     <string name="zman_sortie">Sortie de Chabbat ou de fête</string>
+    <string name="zman_debut_jeune">Début du jeûne</string>
+    <string name="zman_fin_jeune">Fin du jeûne</string>
+    <string name="zman_hamets_achila">Fin de la consommation du ’hamets</string>
+    <string name="zman_hamets_biour">Fin du bi’our du ’hamets</string>
     <string name="zman_methode_degres">soleil à %1$s° sous l’horizon</string>
     <string name="zman_methode_niveau_mer">au niveau de la mer</string>
-    <string name="zman_methode_mga_72">journée de %1$s min avant le lever à %1$s min après le coucher</string>
-    <string name="zman_methode_gra">heures saisonnières du lever au coucher</string>
+    <string name="zman_methode_mga_72">journée de %1$s min avant le lever à %1$s min après le coucher (et non depuis l’aube à 16,1°)</string>
+    <string name="zman_methode_gra">heures saisonnières du lever au coucher, selon le Gra</string>
     <string name="zman_methode_meridien">passage du soleil au méridien</string>
     <string name="zman_methode_minutes">%1$s min après le coucher</string>
     <string name="zman_methode_milieu_chatsot">milieu entre le ’hatsot du jour et celui du lendemain</string>
     <string name="zman_methode_avant_chkia">%1$s min avant le coucher</string>
     <string name="zman_methode_apres_tset">pas avant la sortie des étoiles de ce jour (8,5°)</string>
+    <string name="zman_methode_apres_sortie">pas avant la sortie de ce jour, selon le Yalkut Yosef</string>
+    <string name="zman_methode_zmaniyot_avant_netz">%1$s min zmaniyot avant le lever (Yalkut Yosef)</string>
+    <string name="zman_methode_zmaniyot_apres_chkia">%1$s min zmaniyot après le coucher (Yalkut Yosef)</string>
+    <string name="zman_methode_mga_72_zmaniyot">journée de %1$s min zmaniyot avant le lever à %1$s min zmaniyot après le coucher (Yalkut Yosef)</string>
+    <string name="zman_methode_plag_yalkut_yosef">1¼ heure zmanit avant la sortie des étoiles, 13,5 min zmaniyot après le coucher (Yalkut Yosef)</string>
     <string name="ajout_yaale_veyavo">Ya’alé véyavo</string>
     <string name="ajout_al_hanissim">Al hanissim</string>
     <string name="ajout_machiv_harouah">Machiv haroua’h</string>
@@ -1465,6 +1483,9 @@
     <string name="vol_jalons_note">Jour civil du point sous l’avion ; %1$s, d’après le réglage de l’application.</string>
     <string name="vol_jalons_israel">calendrier d’Israël</string>
     <string name="vol_jalons_diaspora">calendrier de diaspora</string>
+    <string name="vol_jalon_repli">Pas de tsét sous l’avion : repère de repli, choix de calcul (le Omer et Arvit à la chki’a, la sortie à Rabbénou Tam).</string>
+    <string name="vol_omer_ligne_date">Ligne de date pendant le Omer : votre compte personnel (les nuits vécues) et celui du lieu sous l’avion ne coïncident plus. Selon Rav Chlomo Zalman Auerbach, qui a perdu un jour continue sans bénédiction ; selon le Rabbi de Loubavitch, on suit son compte personnel. Mieux vaut éviter de traverser la ligne pendant le Omer ; demandez à votre rav.</string>
+    <string name="ligne_date_discutee">Ligne de date : l’application suit la ligne internationale (le jour civil du lieu). Pour le Japon, la Nouvelle-Zélande, l’Australie orientale, Hawaï, Tonga ou Samoa, les poskim divergent sur la ligne halakhique (’Hazon Ich, Rav Toukatchinsky, Rav Frank) : demandez à votre rav.</string>
     <string name="vol_gps">Position réelle (GPS)</string>
     <string name="vol_gps_oublier">Revenir à la route prévue</string>
     <string name="vol_gps_attente">Recherche du signal GPS… Près d’un hublot, la réception est meilleure.</string>
@@ -1515,6 +1536,9 @@
     <string name="vol_rappel_gomel_titre">HaGomel</string>
     <string name="vol_rappel_gomel_texte_edot">Atterrissage après un vol d’une heure douze ou plus : on bénit HaGomel dans les trois jours, devant dix, de préférence à la lecture de la Torah (Yalkut Yosef 219:20).</string>
     <string name="vol_rappel_gomel_texte">Atterrissage après un long vol : selon votre usage, on bénit HaGomel dans les trois jours, devant dix (certains l’exigent après un vol, d’autres non).</string>
+    <string name="vol_rappel_chema_titre">Plus que 30 min pour le Chema</string>
+    <string name="vol_rappel_chema_mga">Fin du Chema (Maguen Avraham) : %1$s. Au besoin, selon le Gra : %2$s.</string>
+    <string name="vol_rappel_chema_gra">Fin du Chema (Gra) : %1$s. Selon le Maguen Avraham : %2$s.</string>
     <string name="vol_direct_explication_opensky">Désactivé par défaut. Activé, il demande à OpenSky Network, gratuitement et sans compte, les avions vus dans un carré de 10° autour de la position estimée ; l’indicatif reste sur le téléphone, qui y cherche l’avion. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_source_aeroports">Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms en hébreu et en français : Wikidata (CC0)</string>
 
@@ -1535,6 +1559,7 @@
     <string name="boussole_sans_capteur">Ce téléphone n’a pas de boussole : la direction est donnée par rapport au nord, en haut.</string>
     <string name="boussole_note_titre">Deux façons de calculer</string>
     <string name="boussole_note">La direction de Jérusalem se calcule de deux façons. Par le grand cercle, la direction réelle sur le globe : le Choul’han Aroukh haRav (Ora’h ’Haïm 94, 2), le Mor ouKetsia de Rabbi Ya’akov Emden (150) et d’autres la tiennent pour préférable ; de New York, environ 54°. Par la ligne droite sur une carte de Mercator (cap constant), qu’on lit par exemple dans le Levouch (Ora’h ’Haïm 94) : de New York, environ 96°. Le personnage suit celle que vous choisissez dans « Direction suivie » (par défaut, la direction réelle) ; l’autre reste affichée pour information. Calculé sur l’appareil, vers Har haBayit (31,7781° N, 35,2354° E), en corrigeant la déclinaison magnétique du lieu.</string>
+    <string name="boussole_minyan">Ici, les deux méthodes diffèrent de plus de 20°. Au minyan, priez dans la direction de la communauté et tournez seulement le visage vers Jérusalem (Michna Beroura 94:10).</string>
     <string name="boussole_widget_label">Direction de Jérusalem</string>
     <string name="boussole_widget_description">Le personnage et la direction de Jérusalem depuis le lieu des zmanim, par rapport au nord. Le toucher ouvre la boussole.</string>
     <string name="boussole_widget_lecture">Jérusalem depuis %1$s : %2$d° depuis le nord</string>

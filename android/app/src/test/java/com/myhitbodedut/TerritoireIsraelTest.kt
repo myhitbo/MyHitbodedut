@@ -34,44 +34,55 @@ class TerritoireIsraelTest {
     @Test
     fun `les villes voisines sont dehors`() = dehors.forEach { (nom, p) -> assertFalse(nom, TerritoireIsrael.contient(p.first, p.second)) }
 
-    // Audit du 12/11, FCALENDRIER-06 : la région choisie à la main survit aux reprises de la position.
+    // Audit du 16/11 (gravité haute) : le statut pour le Yom tov chéni suit la résidence (Choul'han
+    // Aroukh 496:3, Michna Beroura 496:13) ; un lieu de l'autre région pose la question, sans rien changer.
+    // Il remplace la règle du 12/11 (FCALENDRIER-06), où choisir un lieu redéduisait la région.
 
     @Test
-    fun `une reprise de la position garde la region choisie a la main`() {
-        val (lat, lon) = dedans.getValue("Jérusalem")
-        val paris = dehors.getValue("Paris")
-        // Bascule manuelle puis reprise silencieuse : rien à écrire, la région ne bouge pas.
-        assertNull(TerritoireIsrael.regionPourPosition(lat, lon, manuelle = true, reprise = true))
-        assertNull(TerritoireIsrael.regionPourPosition(paris.first, paris.second, manuelle = true, reprise = true))
-        // Sans choix manuel, la région suit la position, reprise ou non (16/10).
-        assertEquals(true, TerritoireIsrael.regionPourPosition(lat, lon, manuelle = false, reprise = true))
-        assertEquals(false, TerritoireIsrael.regionPourPosition(paris.first, paris.second, manuelle = false, reprise = true))
-        // Choisir le lieu redéduit la région, même réglée à la main.
-        assertEquals(true, TerritoireIsrael.regionPourPosition(lat, lon, manuelle = true, reprise = false))
-        assertEquals(false, TerritoireIsrael.regionPourPosition(paris.first, paris.second, manuelle = true, reprise = false))
+    fun `un lieu ne change jamais le statut, il pose la question`() {
+        // Un Israélien à New York (ville ou position) : le statut reste Israël, la question est posée.
+        assertEquals(TerritoireIsrael.Decision(null, false), TerritoireIsrael.decisionRegion(impliquee = false, actuelle = true, premierLieu = false, declare = false))
+        assertEquals(TerritoireIsrael.Decision(null, false), TerritoireIsrael.decisionRegion(impliquee = false, actuelle = true, premierLieu = false, declare = true))
+        // Un visiteur de diaspora en Israël : le statut reste diaspora.
+        assertEquals(TerritoireIsrael.Decision(null, true), TerritoireIsrael.decisionRegion(impliquee = true, actuelle = false, premierLieu = false, declare = true))
+        // Même région : rien à demander, et la question en attente tombe.
+        assertEquals(TerritoireIsrael.Decision(null, null), TerritoireIsrael.decisionRegion(impliquee = true, actuelle = true, premierLieu = false, declare = false))
+        // Le tout premier lieu d'un statut jamais choisi remplace la déduction faite du fuseau.
+        assertEquals(TerritoireIsrael.Decision(true, null), TerritoireIsrael.decisionRegion(impliquee = true, actuelle = false, premierLieu = true, declare = false))
+        // Un statut choisi l'emporte, même au premier lieu.
+        assertEquals(TerritoireIsrael.Decision(null, true), TerritoireIsrael.decisionRegion(impliquee = true, actuelle = false, premierLieu = true, declare = true))
     }
 
     @Test
-    fun `le choix manuel est memorise, sauvegarde, et seul un choix de lieu l efface`() {
+    fun `le statut ne s ecrit que par les reglages ou la reponse a la question`() {
         fun lire(nom: String) = File("src/main/java/com/myhitbodedut/$nom").readText()
         val store = lire("Store.kt")
-        // La région et son drapeau s'écrivent ensemble : toute région déduite efface le choix manuel.
         assertTrue(store.contains("putBoolean(KEY_IN_ISRAEL, value).putBoolean(KEY_IN_ISRAEL_MANUEL, manuel)"))
-        // Une reprise : le lieu était déjà la position du téléphone, et on ne vient pas de la choisir.
-        val position = store.substringAfter("fun setLieuPosition(").substringBefore("\n    }")
-        assertTrue(position.contains("val reprise = !choisie && lieuZmanim(context) != null && lieuVille(context) == -1L"))
-        assertTrue(position.contains("TerritoireIsrael.regionPourPosition(lieu.latitude, lieu.longitude, inIsraelManuel(context), reprise)"))
+        // Le lieu passe par decisionRegion ; la position, par le même chemin.
+        val lieu = store.substringAfter("fun setLieuZmanim(").substringBefore("\n    }")
+        assertTrue(lieu.contains("TerritoireIsrael.decisionRegion(impliquee, inIsrael(context), lieuZmanim(context) == null, inIsraelManuel(context))"))
+        assertTrue(lieu.contains("setRegionProposee(context, decision.proposition)"))
+        assertTrue(store.substringAfter("fun setLieuPosition(").substringBefore("\n    }").contains("setLieuZmanim(context, lieu, null)"))
         // L'export et l'import portent le drapeau.
         assertTrue(store.substringAfter("fun exportJson").substringBefore("fun importJson").contains(".put(\"in_israel_manuel\", inIsraelManuel(context))"))
         assertTrue(store.substringAfter("fun importJson").contains("manuel = settings.optBoolean(\"in_israel_manuel\", inIsraelManuel(context))"))
-        // Les réglages : la bascule est un choix manuel.
         assertTrue(lire("SettingsActivity.kt").contains("Store.setInIsrael(this, !Store.inIsrael(this), manuel = true)"))
-        // La position ne réécrit plus la région qu'en passant par Store.setLieuPosition ; seule la liste des lieux « choisit ».
-        val choix = lire("ChoixLieu.kt")
-        assertFalse(choix.contains("Store.setInIsrael("))
-        assertTrue(choix.contains("Store.setLieuPosition(context, lieu, choisie)"))
-        assertTrue(choix.contains("if (i == 0) demanderPosition(choisie = true)"))
-        assertTrue(choix.substringAfter("fun rafraichir()").substringBefore("localiser()").contains("choisie = false"))
-        assertTrue(choix.substringAfter("fun reprendreEnFond(").contains("enregistrerPosition(context, connue)"))
+        assertFalse(lire("ChoixLieu.kt").contains("Store.setInIsrael("))
+        // L'écran Zmanim pose la question, et la réponse est un choix.
+        val zmanim = lire("ZmanimActivity.kt")
+        assertTrue(zmanim.contains("Store.regionProposee(this)"))
+        assertTrue(zmanim.contains("Store.setInIsrael(this@ZmanimActivity, proposee, manuel = true)"))
+    }
+
+    @Test
+    fun `Yom tov cheni d un voyageur - la note`() {
+        // 2026-10-04 : Sim'hat Torah en diaspora, jour ouvré en Israël (l'exemple de l'audit).
+        val d = java.time.LocalDate.parse("2026-10-04")
+        assertEquals("note_ytc_ben_israel", JourAffiche.noteYomTovCheni(d, statutIsrael = true, lieuEnIsrael = false, nusah = "edot"))
+        assertEquals("note_ytc_ben_houl", JourAffiche.noteYomTovCheni(d, statutIsrael = false, lieuEnIsrael = true, nusah = "sefard"))
+        assertEquals("note_ytc_ben_houl_ashkenaz", JourAffiche.noteYomTovCheni(d, statutIsrael = false, lieuEnIsrael = true, nusah = "ashkenaz"))
+        assertNull(JourAffiche.noteYomTovCheni(d, statutIsrael = true, lieuEnIsrael = true, nusah = "edot"))
+        // Un jour ordinaire : pas de note.
+        assertNull(JourAffiche.noteYomTovCheni(java.time.LocalDate.parse("2026-10-14"), statutIsrael = true, lieuEnIsrael = false, nusah = "edot"))
     }
 }

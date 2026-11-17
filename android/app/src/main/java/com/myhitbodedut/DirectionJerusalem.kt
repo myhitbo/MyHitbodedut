@@ -71,6 +71,17 @@ object DirectionJerusalem {
 
     fun face(ecart: Double) = abs(ecart) <= TOLERANCE
 
+    /** Au-delà de cet écart entre les deux méthodes, le conseil du minyan s'affiche (audit du 16/11). */
+    const val ECART_MINYAN = 20.0
+
+    /**
+     * Les deux méthodes (grand cercle, cap constant) diffèrent ici de plus de [ECART_MINYAN] (Los
+     * Angeles : 23,8° contre 91,0°) : au minyan, prier dans la direction de la communauté et ne
+     * tourner que le visage (Michna Beroura 94:10, « הבא להתפלל שם יתפלל לצד שהצבור מתפללין אך
+     * יצדד פניו למזרח »). Audit du 16/11.
+     */
+    fun conseilMinyan(lat: Double, lon: Double): Boolean = abs(ecart(grandCercle(lat, lon), carte(lat, lon))) > ECART_MINYAN
+
     /** Le point cardinal le plus proche, de 0 (N) à 7 (NO), dans le sens des aiguilles. */
     fun point(d: Double): Int = (norm(d) / 45).roundToInt() % 8
 

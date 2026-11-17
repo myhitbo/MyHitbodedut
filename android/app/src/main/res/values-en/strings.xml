@@ -699,6 +699,14 @@
     <string name="zmanim_source_villes">Cities: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
     <string name="zmanim_depuis_tset">Since nightfall: %1$s</string>
+    <string name="region_proposee_israel">This place is in Israel. Your status for Yom Tov Sheni stays “diaspora”: it follows where you live, not where you are (Shulchan Aruch 496:3).</string>
+    <string name="region_proposee_diaspora">This place is outside Israel. Your status for Yom Tov Sheni stays “Israel”: it follows where you live, not where you are (Shulchan Aruch 496:3).</string>
+    <string name="region_proposee_israel_oui">I live in Israel</string>
+    <string name="region_proposee_diaspora_oui">I live outside Israel</string>
+    <string name="region_proposee_garder">Keep my status</string>
+    <string name="note_ytc_ben_israel">Diaspora Yom Tov Sheni: for a resident of Israel it is a weekday. Weekday prayers, tefillin in private, and no melacha in public (Shulchan Aruch 496:3).</string>
+    <string name="note_ytc_ben_houl">Yom Tov Sheni: for a diaspora resident who intends to return, it is still a holiday, even in Israel (Mishna Berura 496:13).</string>
+    <string name="note_ytc_ben_houl_ashkenaz">Yom Tov Sheni: for a diaspora resident who intends to return, it is still a holiday, even in Israel (Mishna Berura 496:13). The Chacham Tzvi holds that one day suffices for a visitor; the app follows the Mishna Berura.</string>
     <string name="calendrier_title">Calendar</string>
     <string name="calendrier_precedent">Previous month</string>
     <string name="calendrier_suivant">Next month</string>
@@ -714,6 +722,7 @@
     <string name="reglage_allumage_valeur">%1$d min before sunset</string>
     <string name="reglage_allumage_jerusalem">%1$d min before sunset · Jerusalem custom</string>
     <string name="reglage_allumage_proposition">In Jerusalem, the custom is to light 40 min before sunset</string>
+    <string name="reglage_allumage_proposition_edot">Yalkut Yosef: in Jerusalem too, candles are lit about 20 min before sunset</string>
     <string name="reglage_tahanoun_tichri">Tachanun at the end of Tishrei</string>
     <string name="reglage_tahanoun_tichri_dit">Said after Isru Chag</string>
     <string name="reglage_tahanoun_tichri_sans">Not said until Rosh Chodesh Cheshvan</string>
@@ -737,15 +746,24 @@
     <string name="zman_chatsot_layla">Midnight (Chatzot)</string>
     <string name="zman_allumage">Candle lighting</string>
     <string name="zman_sortie">End of Shabbat or holiday</string>
+    <string name="zman_debut_jeune">Fast begins</string>
+    <string name="zman_fin_jeune">Fast ends</string>
+    <string name="zman_hamets_achila">Last time to eat chametz</string>
+    <string name="zman_hamets_biour">Last time to burn chametz</string>
     <string name="zman_methode_degres">sun %1$s° below the horizon</string>
     <string name="zman_methode_niveau_mer">at sea level</string>
-    <string name="zman_methode_mga_72">day from %1$s min before sunrise to %1$s min after sunset</string>
-    <string name="zman_methode_gra">seasonal hours from sunrise to sunset</string>
+    <string name="zman_methode_mga_72">day from %1$s min before sunrise to %1$s min after sunset (not from dawn at 16.1°)</string>
+    <string name="zman_methode_gra">seasonal hours from sunrise to sunset, per the Gra</string>
     <string name="zman_methode_meridien">solar transit</string>
     <string name="zman_methode_minutes">%1$s min after sunset</string>
     <string name="zman_methode_milieu_chatsot">midpoint between today’s and tomorrow’s midday</string>
     <string name="zman_methode_avant_chkia">%1$s min before sunset</string>
     <string name="zman_methode_apres_tset">not before nightfall today (8.5°)</string>
+    <string name="zman_methode_apres_sortie">not before the end of this day, per Yalkut Yosef</string>
+    <string name="zman_methode_zmaniyot_avant_netz">%1$s seasonal minutes before sunrise (Yalkut Yosef)</string>
+    <string name="zman_methode_zmaniyot_apres_chkia">%1$s seasonal minutes after sunset (Yalkut Yosef)</string>
+    <string name="zman_methode_mga_72_zmaniyot">day from %1$s seasonal minutes before sunrise to %1$s after sunset (Yalkut Yosef)</string>
+    <string name="zman_methode_plag_yalkut_yosef">1¼ seasonal hours before nightfall, 13.5 seasonal minutes after sunset (Yalkut Yosef)</string>
     <string name="ajout_yaale_veyavo">Yaale veyavo</string>
     <string name="ajout_al_hanissim">Al hanissim</string>
     <string name="ajout_machiv_harouah">Mashiv haruach</string>
@@ -1415,6 +1433,9 @@
     <string name="vol_jalons_note">Civil day of the point below the aircraft; %1$s, from the app setting.</string>
     <string name="vol_jalons_israel">Israel calendar</string>
     <string name="vol_jalons_diaspora">diaspora calendar</string>
+    <string name="vol_jalon_repli">No nightfall under the plane: fallback marker, a calculation choice (Omer and Arvit at sunset, end of Shabbat at Rabbenu Tam).</string>
+    <string name="vol_omer_ligne_date">Date line during the Omer: your personal count (the nights you lived) and that of the place under the plane no longer match. According to Rav Shlomo Zalman Auerbach, one who lost a day continues without a blessing; according to the Lubavitcher Rebbe, one follows one’s personal count. Better avoid crossing the line during the Omer; ask your rav.</string>
+    <string name="ligne_date_discutee">Date line: the app follows the international line (the local civil day). For Japan, New Zealand, eastern Australia, Hawaii, Tonga or Samoa, the poskim differ on the halachic line (Chazon Ish, Rav Tukachinsky, Rav Frank): ask your rav.</string>
     <string name="vol_gps">Real position (GPS)</string>
     <string name="vol_gps_oublier">Back to the planned route</string>
     <string name="vol_gps_attente">Searching for a GPS signal… Reception is better near a window.</string>
@@ -1465,6 +1486,9 @@
     <string name="vol_rappel_gomel_titre">HaGomel</string>
     <string name="vol_rappel_gomel_texte_edot">Landed after a flight of 72 minutes or more: say HaGomel within three days, before ten men, preferably at the Torah reading (Yalkut Yosef 219:20).</string>
     <string name="vol_rappel_gomel_texte">Landed after a long flight: according to your custom, HaGomel is said within three days, before ten men (some require it after a flight, others do not).</string>
+    <string name="vol_rappel_chema_titre">30 min left for the Shema</string>
+    <string name="vol_rappel_chema_mga">End of Shema (Magen Avraham): %1$s. If need be, per the Gra: %2$s.</string>
+    <string name="vol_rappel_chema_gra">End of Shema (Gra): %1$s. Per the Magen Avraham: %2$s.</string>
     <string name="vol_direct_explication_opensky">Off by default. When on, it asks OpenSky Network, free and without an account, for the aircraft seen in a 10° square around the estimated position; the callsign stays on the phone, which looks for the flight there. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_source_aeroports">Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); Hebrew and French names: Wikidata (CC0)</string>
 
@@ -1485,6 +1509,7 @@
     <string name="boussole_sans_capteur">This phone has no compass: the direction is given relative to north, at the top.</string>
     <string name="boussole_note_titre">Two ways to calculate</string>
     <string name="boussole_note">The direction of Jerusalem can be calculated in two ways. By the great circle, the real direction on the globe: the Shulchan Aruch HaRav (Orach Chaim 94:2), Rabbi Yaakov Emden’s Mor uKetziah (150) and others consider it preferable; from New York, about 54°. By the straight line on a Mercator map (constant heading), as read for example in the Levush (Orach Chaim 94): from New York, about 96°. The figure follows the one you choose under “Direction followed” (by default, the real direction); the other stays on screen for information. Calculated on the device, toward Har haBayit (31.7781° N, 35.2354° E), corrected for the local magnetic declination.</string>
+    <string name="boussole_minyan">Here the two methods differ by more than 20°. In a minyan, pray in the direction of the congregation and turn only your face toward Jerusalem (Mishna Berura 94:10).</string>
     <string name="boussole_widget_label">Direction of Jerusalem</string>
     <string name="boussole_widget_description">The figure and the direction of Jerusalem from your zmanim location, relative to north. Tap to open the compass.</string>
     <string name="boussole_widget_lecture">Jerusalem from %1$s: %2$d° from north</string>

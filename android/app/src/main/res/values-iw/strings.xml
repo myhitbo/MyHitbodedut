@@ -715,6 +715,14 @@
     <string name="zmanim_source_villes">ערים: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
     <string name="zmanim_depuis_tset">מצאת הכוכבים: %1$s</string>
+    <string name="region_proposee_israel">המקום הזה בארץ ישראל. מעמדך לעניין יום טוב שני נשאר „חוץ לארץ”: הוא תלוי במקום מגוריך, לא במקום שבו אתה נמצא (שולחן ערוך תצו, ג).</string>
+    <string name="region_proposee_diaspora">המקום הזה בחוץ לארץ. מעמדך לעניין יום טוב שני נשאר „ארץ ישראל”: הוא תלוי במקום מגוריך, לא במקום שבו אתה נמצא (שולחן ערוך תצו, ג).</string>
+    <string name="region_proposee_israel_oui">אני גר בארץ ישראל</string>
+    <string name="region_proposee_diaspora_oui">אני גר בחוץ לארץ</string>
+    <string name="region_proposee_garder">להשאיר את המעמד</string>
+    <string name="note_ytc_ben_israel">יום טוב שני של גלויות: לבן ארץ ישראל זהו יום חול. תפילת חול, תפילין בצנעה, ואין לעשות מלאכה בפרהסיה (שולחן ערוך תצו, ג).</string>
+    <string name="note_ytc_ben_houl">יום טוב שני: לבן חוץ לארץ שדעתו לחזור, זהו עדיין יום טוב, גם בארץ ישראל (משנה ברורה תצו, יג).</string>
+    <string name="note_ytc_ben_houl_ashkenaz">יום טוב שני: לבן חוץ לארץ שדעתו לחזור, זהו עדיין יום טוב, גם בארץ ישראל (משנה ברורה תצו, יג). החכם צבי סובר שדי למבקר ביום אחד; האפליקציה הולכת לפי המשנה ברורה.</string>
     <string name="calendrier_title">לוח שנה</string>
     <string name="calendrier_precedent">החודש הקודם</string>
     <string name="calendrier_suivant">החודש הבא</string>
@@ -730,6 +738,7 @@
     <string name="reglage_allumage_valeur">%1$d דקות לפני השקיעה</string>
     <string name="reglage_allumage_jerusalem">%1$d דקות לפני השקיעה · מנהג ירושלים</string>
     <string name="reglage_allumage_proposition">בירושלים נוהגים להדליק 40 דקות לפני השקיעה</string>
+    <string name="reglage_allumage_proposition_edot">ילקוט יוסף: גם בירושלים מדליקים כעשרים דקות לפני השקיעה</string>
     <string name="reglage_tahanoun_tichri">תחנון בסוף תשרי</string>
     <string name="reglage_tahanoun_tichri_dit">אומרים אחרי אסרו חג</string>
     <string name="reglage_tahanoun_tichri_sans">אין אומרים עד ראש חודש חשון</string>
@@ -753,15 +762,24 @@
     <string name="zman_chatsot_layla">חצות הלילה</string>
     <string name="zman_allumage">הדלקת נרות</string>
     <string name="zman_sortie">צאת שבת או חג</string>
+    <string name="zman_debut_jeune">תחילת הצום</string>
+    <string name="zman_fin_jeune">סוף הצום</string>
+    <string name="zman_hamets_achila">סוף זמן אכילת חמץ</string>
+    <string name="zman_hamets_biour">סוף זמן ביעור חמץ</string>
     <string name="zman_methode_degres">השמש ⁦%1$s°⁩ מתחת לאופק</string>
     <string name="zman_methode_niveau_mer">בגובה פני הים</string>
-    <string name="zman_methode_mga_72">היום מ־%1$s דקות לפני הנץ עד %1$s דקות אחרי השקיעה</string>
-    <string name="zman_methode_gra">שעות זמניות מהנץ עד השקיעה</string>
+    <string name="zman_methode_mga_72">היום מ־%1$s דקות לפני הנץ עד %1$s דקות אחרי השקיעה (ולא מעלות השחר ב־⁦16.1°⁩)</string>
+    <string name="zman_methode_gra">שעות זמניות מהנץ עד השקיעה, לפי הגר״א</string>
     <string name="zman_methode_meridien">מעבר השמש במרידיאן</string>
     <string name="zman_methode_minutes">%1$s דקות אחרי השקיעה</string>
     <string name="zman_methode_milieu_chatsot">אמצע בין חצות היום לחצות של מחר</string>
     <string name="zman_methode_avant_chkia">%1$s דקות לפני השקיעה</string>
     <string name="zman_methode_apres_tset">לא לפני צאת הכוכבים של היום (⁦8.5°⁩)</string>
+    <string name="zman_methode_apres_sortie">לא לפני צאת היום, לפי ילקוט יוסף</string>
+    <string name="zman_methode_zmaniyot_avant_netz">⁦%1$s⁩ דקות זמניות לפני הנץ (ילקוט יוסף)</string>
+    <string name="zman_methode_zmaniyot_apres_chkia">⁦%1$s⁩ דקות זמניות אחרי השקיעה (ילקוט יוסף)</string>
+    <string name="zman_methode_mga_72_zmaniyot">היום מ־%1$s דקות זמניות לפני הנץ עד %1$s דקות זמניות אחרי השקיעה (ילקוט יוסף)</string>
+    <string name="zman_methode_plag_yalkut_yosef">שעה ורבע זמנית לפני צאת הכוכבים, ⁦13.5⁩ דקות זמניות אחרי השקיעה (ילקוט יוסף)</string>
     <string name="ajout_yaale_veyavo">יעלה ויבוא</string>
     <string name="ajout_al_hanissim">על הניסים</string>
     <string name="ajout_machiv_harouah">משיב הרוח</string>
@@ -1459,6 +1477,9 @@
     <string name="vol_jalons_note">היום האזרחי של הנקודה שמתחת למטוס; %1$s, לפי הגדרת האפליקציה.</string>
     <string name="vol_jalons_israel">לוח ארץ ישראל</string>
     <string name="vol_jalons_diaspora">לוח חוץ לארץ</string>
+    <string name="vol_jalon_repli">אין צאת הכוכבים מתחת למטוס: נקודת גיבוי, בחירה בחישוב (ספירת העומר וערבית בשקיעה, צאת השבת לפי רבנו תם).</string>
+    <string name="vol_omer_ligne_date">קו התאריך בימי הספירה: הספירה האישית שלך (הלילות שעברו עליך) וספירת המקום שמתחת למטוס כבר אינן שוות. לדעת הרב שלמה זלמן אויערבך, מי שדילג על יום ימשיך לספור בלי ברכה; לדעת הרבי מליובאוויטש, הולכים אחר הספירה האישית. ראוי להימנע מלעבור את קו התאריך בימי הספירה; שאל את רבך.</string>
+    <string name="ligne_date_discutee">קו התאריך: האפליקציה הולכת לפי הקו הבינלאומי (היום האזרחי של המקום). ביפן, בניו זילנד, במזרח אוסטרליה, בהוואי, בטונגה או בסמואה נחלקו הפוסקים בקו התאריך ההלכתי (החזון איש, הרב טוקצינסקי, הרב פרנק): שאל את רבך.</string>
     <string name="vol_gps">מיקום אמיתי (GPS)</string>
     <string name="vol_gps_oublier">חזרה למסלול המתוכנן</string>
     <string name="vol_gps_attente">מחפש אות GPS… ליד חלון הקליטה טובה יותר.</string>
@@ -1509,6 +1530,9 @@
     <string name="vol_rappel_gomel_titre">ברכת הגומל</string>
     <string name="vol_rappel_gomel_texte_edot">נחיתה אחר טיסה של שעה ושתים עשרה דקות ויותר: מברכים הגומל תוך שלושה ימים, בפני עשרה, ולכתחילה בקריאת התורה (ילקוט יוסף ריט, כ).</string>
     <string name="vol_rappel_gomel_texte">נחיתה אחר טיסה ארוכה: לפי מנהגכם, מברכים הגומל תוך שלושה ימים בפני עשרה (יש המחייבים בטיסה ויש שלא).</string>
+    <string name="vol_rappel_chema_titre">עוד 30 דקות לסוף זמן קריאת שמע</string>
+    <string name="vol_rappel_chema_mga">סוף זמן קריאת שמע (מגן אברהם): %1$s. בשעת הצורך, לפי הגר״א: %2$s.</string>
+    <string name="vol_rappel_chema_gra">סוף זמן קריאת שמע (גר״א): %1$s. לפי המגן אברהם: %2$s.</string>
     <string name="vol_direct_explication_opensky">כבוי כברירת מחדל. כשהוא פעיל, הוא מבקש מ־OpenSky Network, בחינם וללא חשבון, את המטוסים שנראים בריבוע של ⁦10°⁩ סביב המיקום המשוער; אות הקריאה נשאר בטלפון, שמחפש בו את הטיסה. מעל אוקיינוסים המטוס לעיתים קרובות אינו נראה.</string>
     <string name="vol_source_aeroports">שדות תעופה: OurAirports (נחלת הכלל); אזורי זמן: timezone-boundary-builder ‏(ODbL, © תורמי OpenStreetMap); שמות בעברית ובצרפתית: Wikidata (CC0)</string>
 
@@ -1529,6 +1553,7 @@
     <string name="boussole_sans_capteur">בטלפון זה אין מצפן: הכיוון מוצג ביחס לצפון, למעלה.</string>
     <string name="boussole_note_titre">שתי דרכים לחשב</string>
     <string name="boussole_note">את כיוון ירושלים אפשר לחשב בשתי דרכים. לפי המעגל הגדול, הכיוון האמיתי על פני כדור הארץ: שולחן ערוך הרב (אורח חיים צד, ב), המור וקציעה לרבי יעקב עמדן (קנ) ועוד סוברים שזו הדרך העדיפה; מניו יורק, כ־⁦54°⁩. לפי הקו הישר על מפת מרקטור (כיוון קבוע), כפי שנראה למשל מדברי הלבוש (אורח חיים צד): מניו יורק, כ־⁦96°⁩. הדמות עוקבת אחרי הכיוון שבחרתם ב„הכיוון שהמצפן עוקב אחריו” (כברירת מחדל, הכיוון האמיתי); הכיוון השני מוצג לידיעה בלבד. החישוב נעשה במכשיר, לעבר הר הבית (⁦31.7781°⁩ צפון, ⁦35.2354°⁩ מזרח), בתיקון הסטייה המגנטית של המקום.</string>
+    <string name="boussole_minyan">כאן שתי השיטות שונות ביותר מ־⁦20°⁩. במניין, יתפלל לצד שהציבור מתפללים ויצדד פניו לירושלים (משנה ברורה צד, י).</string>
     <string name="boussole_widget_label">כיוון ירושלים</string>
     <string name="boussole_widget_description">הדמות וכיוון ירושלים ממקום הזמנים, ביחס לצפון. נגיעה פותחת את המצפן.</string>
     <string name="boussole_widget_lecture">ירושלים מ%1$s: ⁦%2$d°⁩ מהצפון</string>

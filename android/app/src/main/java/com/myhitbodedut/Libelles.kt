@@ -171,15 +171,24 @@ object Libelles {
         "zman_chatsot" -> R.string.zman_chatsot
         "zman_chatsot_layla" -> R.string.zman_chatsot_layla
         "zman_chkia" -> R.string.zman_chkia
+        "zman_debut_jeune" -> R.string.zman_debut_jeune
+        "zman_fin_jeune" -> R.string.zman_fin_jeune
+        "zman_hamets_achila" -> R.string.zman_hamets_achila
+        "zman_hamets_biour" -> R.string.zman_hamets_biour
+        "zman_methode_apres_sortie" -> R.string.zman_methode_apres_sortie
         "zman_methode_apres_tset" -> R.string.zman_methode_apres_tset
         "zman_methode_avant_chkia" -> R.string.zman_methode_avant_chkia
         "zman_methode_degres" -> R.string.zman_methode_degres
         "zman_methode_gra" -> R.string.zman_methode_gra
         "zman_methode_meridien" -> R.string.zman_methode_meridien
         "zman_methode_mga_72" -> R.string.zman_methode_mga_72
+        "zman_methode_mga_72_zmaniyot" -> R.string.zman_methode_mga_72_zmaniyot
         "zman_methode_milieu_chatsot" -> R.string.zman_methode_milieu_chatsot
         "zman_methode_minutes" -> R.string.zman_methode_minutes
         "zman_methode_niveau_mer" -> R.string.zman_methode_niveau_mer
+        "zman_methode_plag_yalkut_yosef" -> R.string.zman_methode_plag_yalkut_yosef
+        "zman_methode_zmaniyot_apres_chkia" -> R.string.zman_methode_zmaniyot_apres_chkia
+        "zman_methode_zmaniyot_avant_netz" -> R.string.zman_methode_zmaniyot_avant_netz
         "zman_minha_gedola" -> R.string.zman_minha_gedola
         "zman_minha_ketana" -> R.string.zman_minha_ketana
         "zman_misheyakir" -> R.string.zman_misheyakir

@@ -48,6 +48,43 @@ celles de la documentation de KosherJava 2.5.0 (`zmanim-2.5.0-sources.jar`).
 | צאת הכוכבים, ר״ת | `getTzais72` | 72 minutes fixes après le coucher, « selon Rabbénou Tam » |
 | חצות הלילה | `getSolarMidnight` | le milieu entre chatsot d'aujourd'hui et de demain |
 
+La ligne « Fin du Chema (Maguen Avraham) » compte sa journée depuis 72 min
+fixes avant le lever, et non depuis l'aube affichée à 16,1° : l'écran le dit
+sous la ligne (audit du 16/11, Michna Beroura 58:4). Le plag est celui du Gra,
+nommé sous la ligne (MB 233:4 rapporte aussi l'avis de l'aube à tsét).
+
+**Le profil des Edot** (`Zmanim.PROFIL_EDOT`, audit du 16/11) : le noussa'h
+Edot suit le Yalkut Yosef ; Sfard et Ashkenaz gardent le profil ci-dessus.
+L'heure zmanit est celle du Gra (lever–coucher au niveau de la mer).
+
+| Zman | Edot (Yalkut Yosef) | Source |
+| --- | --- | --- |
+| עלות השחר | `getAlos72Zmanis`, 72 min zmaniyot avant le lever | Kitsour YY 89:12 |
+| משיכיר | 66 min zmaniyot avant le lever (aube + 6) | calendrier Or ha'Haïm |
+| סוף זמן ק״ש / תפילה, מג״א | `getSofZmanShmaMGA72MinutesZmanis` / `…Tfila…` | Kitsour YY 58:3 |
+| פלג המנחה | coucher − 1,025 heure zmanit (1¼ heure avant tsét) | Kitsour YY 263:45 |
+| צאת הכוכבים | coucher + 13,5 min zmaniyot | Kitsour YY 233:5 |
+| צאת הכוכבים, ר״ת | `getTzais72Zmanis` | Kitsour YY 293:3, 293:7 |
+
+Pour les Edot, la sortie de Chabbat ou de fête est Rabbénou Tam en zmaniyot ;
+la ligne tsét des Gueonim reste affichée. L'exception du Yalkut Yosef pour
+l'Europe (heures fixes, 293:7) n'est pas appliquée. Le profil des Edot borne
+aussi la suggestion du siddour (pas de Cha'harit avant michéyakir).
+
+**Jeûnes et veille de Pessa'h** (audit du 16/11) : un jeûne public affiche
+« Début du jeûne » à l'aube du rite et « Fin du jeûne » à son tsét ; la
+veille du 9 Av, Chabbat compris, « Début du jeûne » à la chki'a. La veille de
+Pessa'h, la fin de la consommation (4e heure) et du bi'our (5e heure) du
+'hamets, selon le Maguen Avraham (Edot : zmaniyot, Kitsour YY 443:1) puis le
+Gra ; quand elle tombe un Chabbat, le vendredi, la fin de la 5e heure.
+
+**Hautes latitudes** : dès environ 50,5° N autour du solstice d'été (Londres,
+Manchester, Anvers, Bruxelles), le soleil ne descend pas à 16,1° et l'aube du
+profil commun est « absente », sans repli ; la suggestion du siddour prend
+alors michéyakir, puis le lever. À la même saison, tsét à 8,5° peut tomber
+après Rabbénou Tam en 72 min fixes (Londres, 20/06/2026 : 22:36 et 22:33) ;
+la sortie affichée reste tsét à 8,5°, la plus tardive.
+
 **Chabbat et fêtes** (`JourAffiche.horaires`) :
 
 - la veille d'un jour chômé, l'allumage : `getCandleLighting`, coucher moins
@@ -223,24 +260,30 @@ suit la consigne du texte (« בעשרת ימי תשובה אומרים »).
   (`tools/villes_construction.py`). Chacune est désignée par son identifiant
   GeoNames ; ses coordonnées et son fuseau sont repris tels quels. Le nom
   hébreu est vérifié contre les noms alternatifs de GeoNames, sauf Lakewood
-  (New Jersey), déclaré dans l'outil. Choisir une ville règle aussi Israël ou
-  diaspora.
+  (New Jersey), déclaré dans l'outil.
 - **La position du téléphone** : sur Android, l'autorisation de localisation
   approximative, demandée seulement à ce moment-là ; sur le web,
-  `navigator.geolocation`. Depuis le 16/10, la région suit la position
-  (contour du territoire, `TerritoireIsrael`) ; le fuseau reste celui du téléphone.
+  `navigator.geolocation`. Le fuseau reste celui du téléphone ; Israël ou
+  diaspora se lit sur le contour du territoire (`TerritoireIsrael`).
   Eilat et la Arava (Yotvata, Ketoura, Sapir) sont en Israël, avec un seul jour
   de fête (Kitsour Yalkout Yossef, Chevi'it 1:5 ; Peninei Halakha, Moadim 9:4,
   note 3) ; certains en doutent, selon l'avis qui place Na'hal Mitsrayim à
   el-Arich (audit du 16/11). Taba est hors du contour.
-- **La région choisie à la main** (réglages, « Région ») est mémorisée comme
-  telle (`in_israel_manuel`, sauvegarde comprise) : les reprises de la
-  position — ouverture de Zmanim ou de la boussole, retour sur l'accueil,
-  changement de fuseau, « Actualiser ma position » — ne la réécrivent plus
-  (audit du 12/11, FCALENDRIER-06). Choisir un lieu (une ville, « Ma
-  position » dans la liste, la position à la place d'une ville) redéduit la
-  région et efface ce choix. Sans choix manuel, la région suit toujours la
-  position, voyage compris (décision du 16/10).
+- **Le statut Israël ou diaspora** (réglages, « Région ») décide du Yom tov
+  chéni. Il suit la résidence, pas l'endroit où l'on est (audit du 16/11 ;
+  Choul'han Aroukh 496:3, Michna Beroura 496:13, Kitsour YY 496) : un lieu
+  — ville ou position, choisie ou reprise — ne le réécrit jamais
+  (`TerritoireIsrael.decisionRegion`). Seul le tout premier lieu d'un statut
+  jamais choisi remplace la déduction faite du fuseau. Ensuite, un lieu de
+  l'autre région pose une question sur l'écran Zmanim (« J'habite en
+  Israël » / « Garder mon statut ») ; la réponse, comme le réglage, est un
+  choix (`in_israel_manuel`, sauvegarde comprise). L'émissaire installé à
+  l'étranger ou le ben 'houts laarets qui a un logement en Israël règlent
+  leur statut à la main. Un jour chômé seulement en diaspora, quand le lieu
+  est de l'autre région, une note dit ce qui change pour le voyageur
+  (`JourAffiche.noteYomTovCheni`) ; en Ashkenaz, elle rappelle l'avis du
+  'Hakham Tsvi, que l'application ne suit pas. Cette règle remplace celle du
+  16/10 et du 12/11 (FCALENDRIER-06), où le lieu redéduisait la région.
 
 Le lieu reste sur l'appareil. Choisir une ville revient sur la décision du
 21/09 (« sans ville ni coucher du soleil »), à la demande du propriétaire.
@@ -344,6 +387,24 @@ sur une partie de la route ; un zman qui repasse (l'avion plus rapide que le
 soleil vers l'ouest) ; le passage du méridien de 180°, avec la date locale de
 part et d'autre. La vraie ligne de changement de date s'écarte de ce
 méridien (Kiribati, Samoa…) : seul le méridien est calculé.
+
+**Audit du 16/11.**
+
+- Vol polaire sans tsét (SFO–LHR au Omer) : après une chki'a sans tsét,
+  `VolCalendrier.tsetManque` pose un repère de repli, dit comme un choix de
+  calcul : le Omer et Arvit à la chki'a (Kitsour YY 489:18, MB 489:14), la
+  sortie et l'enchaînement à Rabbénou Tam (72 min), jamais à la chki'a.
+- Cha'harit : le rappel nomme la fin du Chema (Edot : Maguen Avraham,
+  Kitsour YY 89:4 ; les autres : Gra), avec l'autre avis, et l'annonce
+  30 minutes avant (`VolRappels.Type.CHEMA_FIN`). En vol, le profil reste le
+  profil commun : la fin MGA y est en 72 min fixes.
+- Ligne de date : la carte des jalons dit que la ligne halakhique est
+  discutée ('Hazon Ich, Rav Toukatchinsky, Rav Frank) ; pendant le Omer,
+  elle avertit que les deux comptes divergent, avec les avis, sans trancher.
+  L'écran Zmanim le dit aussi à l'est de 125,2° E et à l'ouest de 150° O.
+  Le jour civil en vol reste celui du fuseau nautique (méridien 180°) : le
+  fuseau réel du point n'est pas calculé (non fait, faute de carte des fuseaux
+  hors ligne).
 
 **Ce qui est vérifié, estimé, supposé.**
 

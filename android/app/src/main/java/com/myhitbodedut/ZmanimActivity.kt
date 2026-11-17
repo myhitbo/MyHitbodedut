@@ -52,10 +52,22 @@ class ZmanimActivity : AppCompatActivity() {
         // Le jour seul, puis trois boutons, puis les horaires (14/10, « trop de choses avant les זמנים ») :
         // Levana, hilloula et halakha viennent après, chacune masquable dans les réglages.
         contenu.addView(VueJour.carteJour(this, aujourdhui, israel, complet = false))
+        // Audit du 16/11 : le statut Israël ou diaspora suit la résidence. Un lieu de l'autre région
+        // ne le change pas : il pose la question, et le Yom tov chéni d'un voyageur a sa note.
+        Store.regionProposee(this)?.let { proposee -> contenu.addView(questionRegion(proposee)) }
+        if (lieu != null) {
+            JourAffiche.noteYomTovCheni(aujourdhui, israel, TerritoireIsrael.contient(lieu.latitude, lieu.longitude), Store.siddurNusah(this).cle)
+                ?.let { noteYtc(it) }
+                ?.let { contenu.addView(VueJour.texte(this, getString(it), 13f, R.color.brand, haut = 8).apply { setPadding(dp(16), 0, dp(16), 0) }) }
+            // Japon, Nouvelle-Zélande, Australie orientale, Hawaï… : la ligne de date halakhique est discutée.
+            if (JourAffiche.ligneDateDiscutee(lieu.longitude)) {
+                contenu.addView(VueJour.texte(this, getString(R.string.ligne_date_discutee), 13f, R.color.muted, haut = 8).apply { setPadding(dp(16), 0, dp(16), 0) })
+            }
+        }
         // Après la sortie des étoiles du lieu, le jour hébreu a déjà changé (la vignette le dit) : la ligne aussi (FCALENDRIER-13).
         if (lieu != null) {
             val maintenantLieu = java.time.ZonedDateTime.now(runCatching { java.time.ZoneId.of(lieu.fuseau) }.getOrDefault(java.time.ZoneId.systemDefault()))
-            val tset = Zmanim.jour(lieu, maintenantLieu.toLocalDate()).firstOrNull { it.cle == "tset" }?.local
+            val tset = Zmanim.jour(lieu, maintenantLieu.toLocalDate(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.local
             val affiche = ZmanimVignette.jourHebreuAffiche(maintenantLieu, tset)
             // Comparée au jour de la carte (celui du téléphone) : rien quand la carte dit déjà ce jour-là.
             if (affiche.isAfter(aujourdhui)) {
@@ -88,9 +100,12 @@ class ZmanimActivity : AppCompatActivity() {
             addView(VueJour.texte(this@ZmanimActivity, getString(R.string.reglage_allumage), 15f, R.color.ink))
             addView(VueJour.texte(this@ZmanimActivity, libelleAllumage(Store.allumage(this@ZmanimActivity)),
                 13f, R.color.muted, haut = 2))
-            // À Jérusalem, l'usage est d'allumer 40 minutes avant : proposé, jamais imposé.
-            if (Store.mukafChoma(this@ZmanimActivity) && Store.allumage(this@ZmanimActivity) != ALLUMAGE_JERUSALEM) {
-                addView(VueJour.texte(this@ZmanimActivity, getString(R.string.reglage_allumage_proposition), 13f, R.color.brand, haut = 2))
+            // À Jérusalem, l'usage du rite est proposé, jamais imposé : 40 min hors Edot, 20 min
+            // pour les Edot (audit du 16/11, JourAffiche.propositionAllumage).
+            JourAffiche.propositionAllumage(Store.siddurNusah(this@ZmanimActivity).cle, Store.mukafChoma(this@ZmanimActivity),
+                Store.allumage(this@ZmanimActivity))?.let { cle ->
+                val res = if (cle == "reglage_allumage_proposition_edot") R.string.reglage_allumage_proposition_edot else R.string.reglage_allumage_proposition
+                addView(VueJour.texte(this@ZmanimActivity, getString(res), 13f, R.color.brand, haut = 2))
             }
             foreground = Apparence.effetToucher(this@ZmanimActivity)
             setOnClickListener { choisirAllumage() }
@@ -136,7 +151,7 @@ class ZmanimActivity : AppCompatActivity() {
 
     /** « 40 min avant la chki'a · coutume de Jérusalem », quand Jérusalem est choisie. */
     private fun libelleAllumage(minutes: Int): String =
-        if (minutes == ALLUMAGE_JERUSALEM && Store.mukafChoma(this)) getString(R.string.reglage_allumage_jerusalem, minutes)
+        if (JourAffiche.coutumeJerusalem(Store.siddurNusah(this).cle, Store.mukafChoma(this), minutes)) getString(R.string.reglage_allumage_jerusalem, minutes)
         else getString(R.string.reglage_allumage_valeur, minutes)
 
     private fun choisirTahanounTichri() {
@@ -167,9 +182,30 @@ class ZmanimActivity : AppCompatActivity() {
             setOnClickListener { action() }
         }
 
-    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
-
-    private companion object {
-        const val ALLUMAGE_JERUSALEM = 40
+    private fun noteYtc(cle: String): Int = when (cle) {
+        "note_ytc_ben_israel" -> R.string.note_ytc_ben_israel
+        "note_ytc_ben_houl_ashkenaz" -> R.string.note_ytc_ben_houl_ashkenaz
+        else -> R.string.note_ytc_ben_houl
     }
+
+    /** La question du statut (audit du 16/11) : le lieu dit l'autre région ; seule la réponse change le statut. */
+    private fun questionRegion(proposee: Boolean): View = VueJour.carte(this).apply {
+        addView(VueJour.texte(this@ZmanimActivity, getString(if (proposee) R.string.region_proposee_israel else R.string.region_proposee_diaspora),
+            14f, R.color.ink))
+        addView(LinearLayout(this@ZmanimActivity).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                .apply { topMargin = dp(8) }
+            addView(bouton(if (proposee) R.string.region_proposee_israel_oui else R.string.region_proposee_diaspora_oui, 0) {
+                Store.setInIsrael(this@ZmanimActivity, proposee, manuel = true)
+                afficher()
+            })
+            addView(bouton(R.string.region_proposee_garder, 8) {
+                Store.setInIsrael(this@ZmanimActivity, Store.inIsrael(this@ZmanimActivity), manuel = true)
+                afficher()
+            })
+        })
+    }
+
+    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 }
