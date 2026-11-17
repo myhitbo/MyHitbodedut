@@ -827,6 +827,13 @@
     <string name="ajout_ticha_beav_kippour">תשעה באב ויום כיפור</string>
     <string name="ajout_sauf_ticha_beav_kippour">חוץ מתשעה באב ויום כיפור</string>
     <string name="ajout_sauf_hanouka">חוץ מחנוכה</string>
+    <string name="siddur_note">הערת היישום</string>
+    <string name="ajout_havdala_coupe">הבדלה על הכוס (לא במוצאי שבת של תשעה באב)</string>
+    <string name="ajout_havdala_ner">ברכת הנר (מוצאי שבת ומוצאי יום הכיפורים)</string>
+    <string name="ajout_havdala_bessamim">בשמים (מוצאי שבת, חוץ מליל תשעה באב)</string>
+    <string name="ajout_lendemain_ticha_beav_dimanche">מוצאי תשעה באב שחל ביום ראשון</string>
+    <string name="ajout_lendemain_ajouts">סעודה שהתחילה אתמול</string>
+    <string name="ajout_bein_hametsarim">בין המצרים</string>
     <string name="ajout_chol">בחול</string>
     <string name="ajout_autres_jours">בשאר הימים</string>
     <string name="siddur_aujourdhui">היום</string>

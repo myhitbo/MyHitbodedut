@@ -298,7 +298,8 @@ class SiddurLectureActivity : AppCompatActivity() {
         val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
             Store.mukafChoma(this))
         val annotations = if (livre) emptyList() else Data.ajouts(this)[id].orEmpty()
-        val note = if (annotations.isEmpty()) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
+        // Un texte qui n'a que des notes de l'application (audit du 16/11) n'a pas d'ajouts du jour.
+        val note = if (annotations.all { it.sorte == SiddurJour.Sorte.NOTE }) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
             jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora))))
         // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
         langues = LanguesTexte.mode(this)
@@ -767,7 +768,8 @@ class SiddurLectureActivity : AppCompatActivity() {
                 is SiddurJour.Ligne.Seul -> vue.apply {
                     // Qui prie seul (19/10) : une carte à part, jamais repliée ; la consigne petite, la braïta en grand.
                     PoliceHebraique.appliquer(this)
-                    val etiquette = getString(R.string.siddur_seul)
+                    // Une note de l'application (audit du 16/11) : même carte, son étiquette propre.
+                    val etiquette = getString(if (ligne.note) R.string.siddur_note else R.string.siddur_seul)
                     text = android.text.SpannableStringBuilder(etiquette).apply {
                         setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         setSpan(android.text.style.ForegroundColorSpan(rendu.titre), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

@@ -1618,9 +1618,10 @@ function ecranPriere() {
   };
   // « Aujourd'hui · הַלֵּל › » : le texte à dire là ce jour-là, ouvert d'un geste ; rien hors du jour.
   // Qui prie seul (19/10) : une carte à part, jamais repliée, après Barekhou.
+  // Les notes de l'application (audit du 16/11, SiddurJour.Sorte.NOTE) : même carte, leur étiquette propre.
   const seuls = (si, i) => (idx.seuls.get(`${si}:${i}`) ?? []).filter((a) => ajoutVrai(a.si, c)).map((a) =>
     h('div', { class: 'seul-carte', lang: 'he', dir: 'rtl' },
-      h('p', { class: 'seul-etiquette' }, tr.t('siddur_seul')),
+      h('p', { class: 'seul-etiquette' }, tr.t(a.sorte === 'note' ? 'siddur_note' : 'siddur_seul')),
       a.consigne ? h('p', { class: 'seul-consigne' }, a.consigne) : null,
       h('p', { class: a.consigne ? 'seul-texte' : 'seul-consigne' }, a.texte)));
   const renvois = (si, i) => (idx.renvois.get(`${si}:${i ?? ''}`) ?? []).filter((a) => ajoutVrai(a.si, c)).map((a) => {
@@ -1683,7 +1684,7 @@ function ecranPriere() {
     // Une traduction automatique affichée : non relue, l'hébreu fait foi (COUV-05).
     traductionPartielle ? h('p', { class: 'indice' }, tl('lecture_traduction_partielle', chapitresTraduits, x.sections.length)) : null,
     traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
-    annotations ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
+    annotations?.some((a) => a.sorte !== 'note') ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
     ...x.sections.flatMap((s, si) => {
       // Le titre traduit (04/11), sous l'hébreu ou à sa place.
@@ -2830,7 +2831,9 @@ const moisIlanotSud = (mois) => mois === 6 || mois === 7;
 function ilanotDuMois(iso) {
   const c = calendrier(iso, store.inIsrael(), false, false);
   const l = store.lieu();
-  return l && l.latitude < 0 ? moisIlanotSud(c.getJewishMonth()) : c.getJewishMonth() === 1;
+  // Audit du 16/11 : en Edot et en Ashkenaz, encore en Iyar (2) pour qui n'a pas béni en Nissan (SiddurMoment.ilanot).
+  return l && l.latitude < 0 ? moisIlanotSud(c.getJewishMonth())
+    : c.getJewishMonth() === 1 || (c.getJewishMonth() === 2 && ['edot', 'ashkenaz'].includes(store.siddurNusah()));
 }
 
 /** La Méguila avec la prière : sous Arvit, le jour hébreu de demain ; sous Cha'harit, aujourd'hui (SiddurMoment.megila). */

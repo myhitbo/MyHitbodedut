@@ -811,6 +811,13 @@
     <string name="ajout_ticha_beav_kippour">Tisha B’Av and Yom Kippur</string>
     <string name="ajout_sauf_ticha_beav_kippour">Except Tisha B’Av and Yom Kippur</string>
     <string name="ajout_sauf_hanouka">Except on Chanukah</string>
+    <string name="siddur_note">App note</string>
+    <string name="ajout_havdala_coupe">Havdalah over the cup (not on Saturday night of Tisha B’Av)</string>
+    <string name="ajout_havdala_ner">Blessing over the flame (Motzaei Shabbat and Yom Kippur)</string>
+    <string name="ajout_havdala_bessamim">Spices (Motzaei Shabbat, except the night of Tisha B’Av)</string>
+    <string name="ajout_lendemain_ticha_beav_dimanche">End of Tisha B’Av on a Sunday</string>
+    <string name="ajout_lendemain_ajouts">Meal begun the day before</string>
+    <string name="ajout_bein_hametsarim">The Three Weeks</string>
     <string name="ajout_chol">Weekdays</string>
     <string name="ajout_autres_jours">Other days</string>
     <string name="siddur_aujourdhui">Today</string>

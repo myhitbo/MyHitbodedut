@@ -861,6 +861,13 @@
     <string name="ajout_ticha_beav_kippour">Ticha bèAv et Yom Kippour</string>
     <string name="ajout_sauf_ticha_beav_kippour">Sauf Ticha bèAv et Yom Kippour</string>
     <string name="ajout_sauf_hanouka">Sauf à ’Hanouka</string>
+    <string name="siddur_note">Note de l’application</string>
+    <string name="ajout_havdala_coupe">Havdala sur la coupe (pas le samedi soir du 9 Av)</string>
+    <string name="ajout_havdala_ner">Bénédiction de la flamme (motsaé Chabbat et Kippour)</string>
+    <string name="ajout_havdala_bessamim">Bessamim (motsaé Chabbat, sauf le soir du 9 Av)</string>
+    <string name="ajout_lendemain_ticha_beav_dimanche">Sortie du 9 Av un dimanche</string>
+    <string name="ajout_lendemain_ajouts">Repas commencé la veille</string>
+    <string name="ajout_bein_hametsarim">Bein hamétsarim</string>
     <string name="ajout_chol">En semaine</string>
     <string name="ajout_autres_jours">Les autres jours</string>
     <string name="siddur_aujourdhui">Aujourd’hui</string>

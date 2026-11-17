@@ -79,6 +79,8 @@ VARIANTES_YAALE = [
     (r"^(ב|ל)(ראש השנה|ר״ה)\b", "roch_hachana"),
     (r"^(ב|ל)(שמיני עצרת|שמ״ע|ש״ע)", "chemini_atseret"),
     (r"^ילדים האוכלים ביו״כ", "kippour"),
+    # Edot : qui mange à Kippour (audit du 16/11 ; Kitsour Yalkut Yosef 618:12, tools/siddur_audit_berakhot.py).
+    (r"^(ב|ל)(יום הכפורים|יוה״כ|יו״כ)\b", "kippour"),
 ]
 
 # Méèn chaloch : le début d'un bloc d'ajout (sans voyelles), et sa condition. Edot : « בשבת ורצה »,
@@ -296,6 +298,8 @@ def annoter(texte_id, sections, nusah):
             return ("ticha_beav" if texte_id == "arvit" else "jeune"), "ajout_anenou_particulier"
 
         n = len(blocs)
+        if texte_id == "havdala":
+            havdala(txt, cons, prend_discret)
         for k in range(fin_tahanoun):
             prend(k, "tahanoun_" + office)
         bi = fin_tahanoun
@@ -671,6 +675,9 @@ def annoter(texte_id, sections, nusah):
                     j += 1
                 bi = j
                 continue
+            # Ashkenaz : Na'hem au Birkat pour qui mange le 9 Av (audit du 16/11 ; Rema O.H. 557:1).
+            elif cons[bi] and texte_id == "birkat_hamazon" and x.startswith("מי שאוכל בתשעה באב"):
+                prend(bi, "ticha_beav")
             # Na'hem, le 9 Av.
             elif not cons[bi] and commence(x, "נחם יהוה אלהינו"):
                 en_tete(bi, "ticha_beav", "באב")
@@ -781,7 +788,9 @@ def annoter(texte_id, sections, nusah):
                 # de Moussaf (Chabbat, Roch 'Hodech, fêtes et 'Hol hamoed, Yom tov). Motsaé Chabbat,
                 # que les Edot nomment aussi, n'est pas un jour du calendrier : il n'est pas repéré.
                 if texte_id == "birkat_hamazon" and re.search(r"\( ?(ביום שמתפללים מוסף|בשבת וביו״ט)[^:]*: ?מגדול", x):
-                    jours = ("chabbat", "roch_hodech", "moed", "yom_tov") if "מוסף" in x else ("chabbat", "yom_tov")
+                    # Ashkenaz et Sfard, aussi Roch 'Hodech (audit du 16/11 : Michna Beroura 189:5 ; Choul'han
+                    # Aroukh haRav 189:7), que la consigne imprimée ne nomme pas : une note le dit (NOTES).
+                    jours = ("chabbat", "roch_hodech", "moed", "yom_tov") if "מוסף" in x else ("chabbat", "yom_tov", "roch_hodech")
                     for c in jours:
                         note("indice", si, bi, c, {"texte": "מִגְדּוֹל"})
                 if re.fullmatch(r"בקיץ: מוריד הטל\. בחורף: משיב הרוח ומוריד הגשם\.?", x):
@@ -804,6 +813,181 @@ def annoter(texte_id, sections, nusah):
     sortie += seul(texte_id, sections, sortie)
     for e in sortie:
         e.pop("_force", None)
+    return sortie
+
+
+# --- Audit du 16/11, « Birkat haMazon et bénédictions » -------------------------------------
+# La Havdala (Choul'han Aroukh O.H. 556:1, 491:1 et 624:3-5 ; Michna Beroura 556:1-5 ; Kitsour
+# Yalkut Yosef 556:6-8 et 624:4-6) : au samedi soir du 9 Av, la flamme seule ; à la sortie du jeûne
+# (un dimanche), la coupe seule ; à la sortie d'un Yom tov de semaine, ni flamme ni bessamim. Tout
+# est « discret » : en clair, sans étiquette, les soirs où il se dit ; replié les autres.
+def havdala(txt, cons, prend_discret):
+    for k, x in enumerate(txt):
+        # La consigne du siddour Edot (« במוצאי יו״ט שאינו מוצ״ש אין מברכים… ») vaut toujours ; Roch
+        # 'Hodech et 'Hol hamoed dans la bénédiction finale ont leurs règles plus bas (TSIDDUR-17).
+        if (cons[k] and x.startswith("במוצאי יו״ט שאינו מוצ״ש")) or re.match(r"(חוה״מ (פסח|סוכות)|בראש חודש) ", x):
+            continue
+        if "מאורי האש" in x or (cons[k] and x.startswith("כשיברך על הנר")):
+            prend_discret(k, "havdala_ner", "ajout_havdala_ner")
+        elif not cons[k] and "בשמים" in x:
+            prend_discret(k, "havdala_bessamim", "ajout_havdala_bessamim")
+        else:
+            prend_discret(k, "!ticha_beav", "ajout_havdala_coupe")
+
+
+# Les notes de l'application (sorte « note », SiddurJour.Sorte.NOTE) : sous un bloc, quand leur
+# condition vaut ; le texte du siddour n'est pas touché. TOUJOURS : « minyan » n'est jamais une
+# condition du jour, sa négation vaut toujours (comme les cartes « seul »).
+TOUJOURS = "!minyan"
+E, S, A = ("edot",), ("sefard",), ("ashkenaz",)
+SA = S + A
+
+HAVDALA_TICHA_BEAV = ("במוצאי שבת שחל בו תשעה באב (או שנדחה ליום ראשון): כשרואה הנר מברך ״בורא מאורי האש״ בלבד, בלי כוס "
+                      "ובלי בשמים; ומבדילים על הכוס במוצאי התענית, בלי נר ובלי בשמים (שו״ע תקנו, א; מ״ב שם; ילקוט יוסף תקנו, ו-ח).")
+HAVDALA_DIMANCHE = ("במוצאי תשעה באב שחל (או שנדחה) ביום ראשון: מבדילים על הכוס בלבד, בלי נר ובלי בשמים "
+                    "(שו״ע תקנו, א; מ״ב שם ס״ק ה; ילקוט יוסף תקנו, ח).")
+HAVDALA_KIPPOUR = ("במוצאי יום הכפורים אין מברכים על הבשמים בהבדלה, אפילו כשחל בשבת, וטוב לברך עליהם אחר הטעימה; "
+                   "ועל הנר מברכים רק על נר ששבת (וכשחל בשבת, אם אין, על נר שהודלק עתה) (שו״ע תרכד, ג-ה; ילקוט יוסף תרכד, ד-ו).")
+
+APRES_NUIT = {
+    "edot": ("סעודה שהתחילה ביום (שבת, ראש חודש, יום טוב, חול המועד, חנוכה או פורים) ונמשכה אחר צאת הכוכבים: אם לא התפלל "
+             "ערבית באמצע הסעודה, מזכיר בברכת המזון מעין המאורע של אותו יום, אף שהוא מקופל כאן הערב. ובמוצאי שבת שהוא ראש "
+             "חודש, אומר ״רצה״ בלבד (ילקוט יוסף קפח, טז, יט; תכד, ג)."),
+    "ashkenaz": ("סעודה שהתחילה ביום (שבת, ראש חודש, יום טוב, חול המועד, חנוכה או פורים) ונמשכה אחר צאת הכוכבים: אם לא התפלל "
+                 "ערבית, מזכיר מעין המאורע של אותו יום, אף שהוא מקופל כאן הערב (שו״ע קפח, י; מ״ב שם ס״ק לב-לד). ובמוצאי שבת "
+                 "שהוא ראש חודש: אם אכל פת בלילה, ״יעלה ויבוא״ בלבד; ואם לאו, ״רצה״ בלבד (מ״ב קפח ס״ק לג)."),
+    "sefard": ("סעודה שהתחילה ביום (שבת, ראש חודש, יום טוב, חול המועד, חנוכה או פורים) ונמשכה אחר צאת הכוכבים: אם לא התפלל "
+               "ערבית, מזכיר מעין המאורע של אותו יום, אף שהוא מקופל כאן הערב. ובמוצאי שבת שהוא ראש חודש, אם אכל כזית פת "
+               "בלילה, אומר שניהם (שו״ע הרב קפח, יז)."),
+}
+
+MEKOM_GIDOUL = ("הולכים אחר מקום גידול הפרי: פרי ארץ ישראל, אף כשאוכלו בחו״ל — ״פרותיה״ / ״פרי גפנה״; פרי חו״ל, אף "
+                "כשאוכלו בארץ, או כשאינו יודע — ״הפרות״ / ״פרי הגפן״ (שו״ע רח, י; מ״ב שם ס״ק נב-נד).")
+
+YY_PERAS = ("לדעת הילקוט יוסף (רז, א-ב), שיעור ״כדי אכילת פרס״ לברכה אחרונה הוא כ־7.5 דקות; ובדברים שמן התורה טוב להחמיר "
+            "לאכול כזית בארבע דקות.")
+
+NOTES = [
+    # (noussa'h, texte, début du bloc sans voyelles (None : le premier ; « …$ » devant : le dernier qui commence
+    # ainsi), condition, note)
+    # La Havdala.
+    (E, "havdala", "ברוך אתה יהוה, אלהינו מלך העולם, בורא מאורי האש", "ticha_beav", HAVDALA_TICHA_BEAV),
+    (SA, "havdala", "על הנר:", "ticha_beav", HAVDALA_TICHA_BEAV),
+    (E, "havdala", "ברוך אתה יהוה, אלהינו מלך העולם, בורא עצי", "lendemain_ticha_beav_dimanche", HAVDALA_DIMANCHE),
+    (SA, "havdala", "על הבשמים:", "lendemain_ticha_beav_dimanche", HAVDALA_DIMANCHE),
+    (E, "havdala", "ברוך אתה יהוה, אלהינו מלך העולם, בורא עצי", "lendemain_kippour", HAVDALA_KIPPOUR),
+    (SA, "havdala", "על הבשמים:", "lendemain_kippour", HAVDALA_KIPPOUR),
+    # Birkat haMazon : le soir qui suit un jour d'ajouts, sous les consignes d'oubli.
+    (E, "birkat_hamazon", 'אם שכח לומר "רצה"', "lendemain_ajouts", APRES_NUIT["edot"]),
+    (S, "birkat_hamazon", "שכח לומר רצה בשבת", "lendemain_ajouts", APRES_NUIT["sefard"]),
+    (A, "birkat_hamazon", "שכח לומר רצה בשבת", "lendemain_ajouts", APRES_NUIT["ashkenaz"]),
+    # « מגדול » à Roch 'Hodech, que la consigne imprimée ne nomme pas.
+    (A, "birkat_hamazon", "הרחמן הוא יזכנו לימות המשיח", "roch_hodech",
+     "גם בראש חודש אומרים ״מגדול״ (מ״ב קפט ס״ק ה: ״נוהגים לומר בשבת ויו״ט ור״ח מגדול ובחול מגדיל״)."),
+    (S, "birkat_hamazon", "הרחמן הוא יזכנו לימות המשיח", "roch_hodech",
+     "גם בראש חודש אומרים ״מגדול״ (שו״ע הרב קפט, ז), אף שהוראת הסידור מזכירה רק שבת ויום טוב."),
+    # Ashkenaz, le psaume d'avant le Birkat (Michna Beroura 1:11).
+    (A, "birkat_hamazon", "שיר המעלות בשוב", "!tahanoun_chaharit", "היום אומרים ״שיר המעלות בשוב״ לפני ברכת המזון (מ״ב א ס״ק יא)."),
+    (A, "birkat_hamazon", "שיר המעלות בשוב", "tahanoun_chaharit", "היום אומרים ״על נהרות בבל״ לפני ברכת המזון (מ״ב א ס״ק יא)."),
+    # Méèn chaloch : l'origine du fruit, pas le lieu où on le mange.
+    (S, "meen_chaloch", "(על מזונות ויין ביחד:)", TOUJOURS, MEKOM_GIDOUL),
+    (A, "meen_chaloch", "…$על פירות משבעת המינים", TOUJOURS, MEKOM_GIDOUL),
+    # Edot, le délai de la bénédiction finale (Kitsour Yalkut Yosef 207:1-2).
+    (E, "bore_nefachot", "לאחר האכילה אם אכל כזית", TOUJOURS, YY_PERAS),
+    (E, "nehenin", "לאחר האכילה אם אכל כזית", TOUJOURS, YY_PERAS),
+    # Bein hamétsarim : שהחיינו.
+    (E, "nehenin", "ברוך אתה יהוה, אלהינו מלך העולם, שהחינו", "bein_hametsarim",
+     "בין המצרים נוהגים להיזהר שלא לאכול פרי חדש ושלא ללבוש בגד חדש שצריך לברך עליהם ״שהחיינו״, עד אחר תשעה באב (ונוהגים עד "
+     "י׳ באב); ובשבתות שבינתיים מותר. ולחולה, או לפרי שלא יימצא אחר תשעה באב, מותר (ילקוט יוסף תקנא, ט, יג)."),
+    (SA, "nehenin", "ברוך אתה יהוה אלהינו מלך העולם שהחינו", "bein_hametsarim",
+     "מי״ז בתמוז עד אחר תשעה באב נוהגים להיזהר שלא לאכול פרי חדש ושלא ללבוש בגד חדש שצריך לברך עליהם ״שהחיינו״; ובשבתות "
+     "שבינתיים מותר (אך לא בגד חדש מראש חודש אב). ואין זה אלא מנהג זהירות, ולחולה מותר (שו״ע תקנא, יז; מ״ב שם ס״ק צח-צט)."),
+    # Les bougies.
+    (E, "nerot_chabbat", None, TOUJOURS,
+     "הוראת הסידור לברך בשבת אחר ההדלקה היא כמנהג הבן איש חי (נח, שנה ב, ח, י). לדעת הילקוט יוסף (רסג, לג-לה; תרי, ב; תקיד, "
+     "הערה כז) מברכים קודם ההדלקה, בשבת כביום טוב; ומי שהדליקה ולא בירכה, אינה מברכת אחר כך."),
+    (E, "nerot_chabbat", "ביום טוב שאומרים שהחיינו בקידוש", TOUJOURS,
+     "לדעת הילקוט יוסף (תקיד, ג; תמד, מא) עדיף לצאת ידי ״שהחיינו״ בקידוש; והנוהגות לברך בהדלקה, יברכו אותו אחר שהדליקו לפחות "
+     "נר אחד, שלא יהיה הפסק בין ברכת ההדלקה להדלקה."),
+    (A, "nerot_chabbat", None, TOUJOURS,
+     "נוהגים להדליק, לשים את הידיים לפני הנרות, לברך ואחר כך להסיר את הידיים (רמ״א רסג, ה). ביום טוב יש מברכות קודם ההדלקה "
+     "(מ״ב רסג ס״ק כז), ויש שאינן מחלקות בין שבת ליום טוב (מגן אברהם). וכן ביום הכפורים."),
+    (S, "nerot_chabbat", None, TOUJOURS,
+     "לדעת שו״ע הרב (רסג, ח) מדליקים תחילה ואחר כך מברכים, אף ביום טוב, שלא לחלק בברכה אחת; והמנהג חלוק. וכן ביום הכפורים."),
+    (A, "nerot_chabbat", "ליו״ט (חוץ מז׳ וח׳ של פסח)", TOUJOURS,
+     "אין חובה לברך ״שהחיינו״ בהדלקה, ובמקום שנהגו אין למחות (מ״ב רסג ס״ק כג)."),
+    # La mer, les éclairs, l'arc-en-ciel.
+    (SA, "yam", "ברוך אתה יהוה", TOUJOURS,
+     "על ים אוקינוס; ויש אומרים אף על הים התיכון (שו״ע רכח, א). ולדעת הרבה אחרונים על הים התיכון מברך ״עושה מעשה בראשית״ "
+     "(מ״ב רכח ס״ק ב). ואינו מברך אלא משלשים יום לשלשים יום."),
+    (SA, "barakim", "…$ברוך אתה יהוה", TOUJOURS,
+     "מברכים תוך כדי דיבור לראיית הברק או לשמיעת הרעם. ראה ברק ושמע רעם יחד — מברך על שניהם ברכה אחת, ״עושה מעשה בראשית״; "
+     "ואם לא היו תכופים — על הברק ״עושה מעשה בראשית״ ועל הרעם ״שכחו וגבורתו מלא עולם״ (מ״ב רכז ס״ק ה). ואין מברכים יותר "
+     "מפעם אחת ביום, אלא אם כן נתפזרו העבים בינתיים."),
+    (SA, "keshet", None, TOUJOURS, "ואסור להסתכל בה ביותר (שו״ע רכט, א)."),
+    (A, "keshet", None, TOUJOURS, "ואין כדאי להגיד לחבירו שיש קשת, מטעם מוציא דיבה (מ״ב רכט ס״ק א)."),
+    # Le Chema du coucher (Edot).
+    (E, "chema_coucher", "בברכה זו לא יאמר בשם ומלכות", TOUJOURS,
+     "לדעת הילקוט יוסף (רלט, א, ו) ההולך לישון קודם חצות מברך ״המפיל״ בשם ומלכות, וכן הנשים; אחר חצות — בלי שם ומלכות, "
+     "כהוראת הסידור. הוראת הסידור כמנהג הבן איש חי (פקודי, שנה א, יב)."),
+    # Le loulav et la soukka.
+    (E, "loulav", "בפעם הראשו", TOUJOURS,
+     "נשים נוטלות את הלולב בלא ברכה, ונכון שלא יברכו אף ״שהחיינו״ (ילקוט יוסף, דין נשים בנטילת לולב, א)."),
+    (SA, "loulav", "בפעם הראשו", TOUJOURS, "נשים מברכות על הלולב, כמנהג לברך על מצות עשה שהזמן גרמא (רמ״א תקפט, ו; יז, ב)."),
+    (E, "soukka", "כתוב, בסכת תשבו", TOUJOURS,
+     "נשים אינן רשאות לברך ״לישב בסוכה״ (ילקוט יוסף תרמ, א). ולדעת הילקוט יוסף (דיני ישיבה בסוכה, כז) עדיף לברך ״לישב "
+     "בסוכה״ מעומד קודם המוציא (ובימים שיש קידוש — בקידוש); והמברכים אחר המוציא, כהוראת הסידור, יש להם על מה שיסמוכו."),
+    (S, "soukka", "כתוב, בסכת תשבו", TOUJOURS, "נשים מברכות ״לישב בסוכה״, כמנהג לברך על מצות עשה שהזמן גרמא (רמ״א תקפט, ו)."),
+    (A, "soukka", None, TOUJOURS, "נשים מברכות ״לישב בסוכה״, כמנהג לברך על מצות עשה שהזמן גרמא (רמ״א תקפט, ו)."),
+    # HaGomel.
+    (E, "hagomel", "צריך לברך בפני עשרה", TOUJOURS,
+     "נשים חייבות לברך ״הגומל״ לאחר שנתרפאו ממחלה או לאחר לידה, בפני עשרה אנשים (ילקוט יוסף ריט, ז-ח). והטס במטוס שעה "
+     "ושתים עשרה דקות ויותר מברך ״הגומל״ כשהגיע לשלום, אף מעל מקום ישוב (שם, כ-כא); מברכים תוך שלושה ימים, ולכתחילה "
+     "בקריאת התורה."),
+    (A, "hagomel", None, TOUJOURS,
+     "נשים: מנהג העולם שאין מברכות; ויש שכתבו שנכון שתברך בפני עשרה, או לפחות בפני נשים ואיש אחד (מ״ב ריט ס״ק ג). "
+     "ולענין טיסה במטוס — לפי מנהגו (באשכנז לא נהגו לברך בהולך מעיר לעיר, שו״ע ריט, ז; ויש מחייבים בטיסה)."),
+    (S, "hagomel", None, TOUJOURS,
+     "ולענין טיסה במטוס — לפי מנהגו (שו״ע ריט, ז: באשכנז לא נהגו לברך בהולך מעיר לעיר; ויש מחייבים בטיסה)."),
+    # Birkat haIlanot.
+    (E, "birkat_hailanot", None, TOUJOURS,
+     "אין מברכים אלא על אילני מאכל כשיש בהם פרחים; די בשני אילנות; ומברכים פעם אחת בשנה (ילקוט יוסף רכו, א, ה, ו). ולדעת "
+     "הילקוט יוסף (שם, ד) אומרים ״מזמור בשוב ה׳ את שיבת ציון״ ו״הללויה הללו את ה׳ מן השמים״ אחר הברכה, ומסיימים בקדיש. "
+     "ואם לא בירך בניסן, רשאי בדיעבד לברך באייר, כל זמן שהאילנות בפריחתם (שם, י)."),
+    (E, "birkat_hailanot", None, "chabbat",
+     "מותר לברך ברכת האילנות בשבת, אך לכתחילה עדיף בימות החול, אלא אם כן הוא סוף ניסן (ילקוט יוסף רכו, יג); ויש נמנעים "
+     "בשבת (כף החיים רכו, ד)."),
+    (E, "birkat_hailanot", None, "yom_tov",
+     "מותר לברך ברכת האילנות ביום טוב, אך לכתחילה עדיף בימות החול, אלא אם כן הוא סוף ניסן (ילקוט יוסף רכו, יג); ויש נמנעים "
+     "(כף החיים רכו, ד)."),
+    (A, "birkat_hailanot", None, TOUJOURS, "אם לא בירך בניסן, יכול לברך אחר כך כל זמן שלא גדלו הפירות (מ״ב רכו ס״ק ה)."),
+    # 'Hanouka : l'ordre d'allumage.
+    (E, "nerot_hanouka", "אחר שידליק נר אחד", TOUJOURS,
+     "בלילה הראשון מדליק את הנר הקיצוני שמימין, ובכל לילה מדליק תחילה את הנר הנוסף, ואחר כך את הנרות שמשמאלו; ואם אין "
+     "מזוזה מימין, להפך (ילקוט יוסף תרעו, יט-כ)."),
+    (A, "nerot_hanouka", None, TOUJOURS,
+     "סדר ההדלקה: מתחיל בנר הנוסף — יש מסדרים את הנרות מימין ויש משמאל, ודעביד כמר עביד ודעביד כמר עביד (מ״ב תרעו ס״ק ט)."),
+]
+
+
+def notes(nusah, texte, annotations):
+    """Les notes de [texte] pour [nusah], sous leur bloc ; sous le dernier bloc du groupe s'il est dans un groupe."""
+    sortie = []
+    for noussah, id_, debut, cond, contenu in NOTES:
+        if nusah not in noussah or id_ != texte["id"]:
+            continue
+        cherche = (debut or "").removeprefix("…$")
+        places = [(si, bi) for si, s in enumerate(texte["sections"]) for bi, b in enumerate(s["blocs"])
+                  if debut is None or nu(b.get("t") or b.get("c")).replace("''", "״").startswith(cherche)]
+        if not places:
+            raise ValueError(f"{nusah}/{id_} : pas de bloc « {debut} »")
+        si, bi = places[-1] if debut and debut.startswith("…$") else places[0]
+        a = next((e for e in annotations if e["sorte"] == "bloc" and e["s"] == si and e["b"] == bi), None)
+        if a is not None:
+            bi = max(e["b"] for e in annotations if e["sorte"] == "bloc" and e["s"] == si and e.get("g") == a["g"])
+        bloc = texte["sections"][si]["blocs"][bi]
+        sortie.append({"sorte": "note", "s": si, "b": bi, "si": cond, "empreinte": nu(bloc.get("t") or bloc.get("c"))[:40],
+                       "texte": contenu})
     return sortie
 
 
@@ -990,6 +1174,9 @@ CONSIGNES_COURTES = [
     # Le festin du dimanche 16 Adar à Jérusalem, Pourim triple (14/11, tools/siddur_harahaman_pourim.py).
     (r"בסעודת פורים ביום ראשון ט״ז באדר בירושלים.*", "pourim_triple_festin"),
     (r"בחול קודם ברכת המזון אומרים:?", "!chabbat"),
+    # Ashkenaz (audit du 16/11 ; Michna Beroura 1:11) : le psaume selon Ta'hanoun, Yom tov compris.
+    (r"בימים שאומרים בהם תחנון קודם ברכת המזון אומרים:?", "tahanoun_chaharit"),
+    (r"בשבת, ביו״ט ובימים שאין אומרים בהם תחנון קודם ברכת המזון אומרים.*", "!tahanoun_chaharit"),
     (r"בשבת קודם ברכת המזון אומרים:?", "chabbat"),
     (r"(בראש חודש|בר״ח) שחל בשבת:?", "chabbat_roch_hodech"),
     (r"(ביו״ט|ביום טוב) שחל בשבת:?", "yom_tov_chabbat"),
@@ -1134,11 +1321,14 @@ def main():
         siddur = json.load(open(os.path.join(RAW, f"siddur_{nusah}.json"), encoding="utf-8"))
         racine[nusah] = {}
         for t in siddur["textes"]:
+            a = []
             if t["id"] in TEXTES:
                 a = annoter(t["id"], t["sections"], nusah)
                 if t["id"] == "chaharit":
                     a += renvois(t["sections"], nusah)
-                if a:
+            # Les notes de l'application (audit du 16/11), dans tout texte.
+            a += notes(nusah, t, a)
+            if a:
                     racine[nusah][t["id"]] = a
     cible = os.path.join(RAW, "siddur_annotations.json")
     json.dump(racine, open(cible, "w", encoding="utf-8"), ensure_ascii=False, indent=1)

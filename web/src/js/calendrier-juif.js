@@ -156,6 +156,15 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   hier.setUTCDate(hier.getUTCDate() - 1);
   const hierYomTov = calendrier(hier.toISOString().slice(0, 10), enIsrael, false, mukafChoma).isYomTovAssurBemelacha();
   si(c.has('motsae_chabbat') || (hierYomTov && !regles.isAssurBemelacha()), 'motsae_chabbat_yt');
+  // La Havdala et le lendemain d'un jour d'ajouts (audit du 16/11, CalendrierJuif.C.HAVDALA_NER…).
+  const veille = calendrier(hier.toISOString().slice(0, 10), enIsrael, false, mukafChoma);
+  const kippour = c.has('kippour') || c.has('lendemain_kippour');
+  si(c.has('chabbat') || c.has('motsae_chabbat') || kippour, 'havdala_ner');
+  si(c.has('chabbat') || (c.has('motsae_chabbat') && !c.has('ticha_beav')) || kippour, 'havdala_bessamim');
+  si(semaine === 1 && veille.isTishaBav(), 'lendemain_ticha_beav_dimanche');
+  si(semaine !== 6 && (semaine === 0 || veille.isRoshChodesh() || veille.isYomTovAssurBemelacha() || veille.isCholHamoed()
+    || veille.isChanukah() || veille.isPurim()), 'lendemain_ajouts');
+  si((mois === JewishDate.TAMMUZ && quantieme >= 17) || (mois === JewishDate.AV && quantieme <= 10), 'bein_hametsarim');
 
   const fetes = [];
   const fete = FETES.get(affiche.getYomTovIndex());

@@ -126,6 +126,10 @@ def main(dossier):
         json.dump(d, open(chemin, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
         empruntes = [i for i, v in table.items() if v[3]]
         print(f"{n}: {len(table)} textes ajoutés, {sum(len(s['blocs']) for v in table.values() for s in v[2])} paragraphes ; empruntés : {empruntes}")
+    # Les retouches de l'audit du 16/11 (la mer et les éclairs en Edot, la 'hala ashkénaze, המוציא…) :
+    # ce groupe vient d'être refait depuis Sefaria, elles sont à refaire après lui.
+    import siddur_audit_berakhot
+    siddur_audit_berakhot.main()
 
 
 if __name__ == "__main__":

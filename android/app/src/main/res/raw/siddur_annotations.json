@@ -3348,6 +3348,16 @@
     "consigne": "המתפלל ביחיד אומר במקום ברכו, בלי להזכיר את השם (בן איש חי, ויגש י״ח; חיד״א, צפורן שמיר):"
    }
   ],
+  "chema_coucher": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "!minyan",
+    "empreinte": "בברכה זו לא יאמר בשם ומלכות אלא יהרהר בל",
+    "texte": "לדעת הילקוט יוסף (רלט, א, ו) ההולך לישון קודם חצות מברך ״המפיל״ בשם ומלכות, וכן הנשים; אחר חצות — בלי שם ומלכות, כהוראת הסידור. הוראת הסידור כמנהג הבן איש חי (פקודי, שנה א, יב)."
+   }
+  ],
   "birkat_hamazon": [
    {
     "sorte": "bloc",
@@ -3507,127 +3517,127 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "chabbat",
-    "b": 22,
-    "empreinte": "בשבת אומרים",
+    "si": "oubli",
+    "b": 20,
+    "empreinte": "אם שכח ״על הנסים״ ונזכר אחר שאמר ״ברוך א",
     "g": 3,
-    "racine": "chabbat"
+    "racine": "oubli"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "chabbat",
     "b": 23,
+    "empreinte": "בשבת אומרים",
+    "g": 4,
+    "racine": "chabbat"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "chabbat",
+    "b": 24,
     "empreinte": "רצה והחליצנו יהוה אלהינו במצותיך ובמצות ",
-    "g": 3,
+    "g": 4,
     "racine": "chabbat"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "yaale_veyavo",
-    "b": 24,
+    "b": 25,
     "empreinte": "בראש חודש ביום טוב ובחול המועד אומרים",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "yaale_veyavo",
-    "b": 25,
+    "b": 26,
     "empreinte": "אלהינו ואלהי אבותינו, יעלה ויבא, ויגיע ו",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "roch_hodech",
-    "b": 26,
+    "b": 27,
     "empreinte": "בראש חדש: ראש חדש הזה,",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "pessah",
-    "b": 27,
+    "b": 28,
     "empreinte": "בפסח: חג המצות הזה, ביום ביום טוב מוסיפי",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "chavouot",
-    "b": 28,
+    "b": 29,
     "empreinte": "בשבועות: חג השבועות הזה, ביום טוב מקרא ק",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "roch_hachana",
-    "b": 29,
+    "b": 30,
     "empreinte": "בראש השנה: הזכרון הזה, ביום טוב מקרא קדש",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "soukkot",
-    "b": 30,
+    "b": 31,
     "empreinte": "בסוכות: חג הסכות הזה, ביום ביום טוב מוסי",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "chemini_atseret",
-    "b": 31,
+    "b": 32,
     "empreinte": "בשמיני עצרת: שמיני חג עצרת הזה, ביום טוב",
-    "g": 4,
+    "g": 5,
+    "racine": "yaale_veyavo"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "kippour",
+    "b": 33,
+    "empreinte": "ביום הכפורים: הכפרים הזה, ביום סליחת העו",
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "yaale_veyavo",
-    "b": 32,
+    "b": 34,
     "empreinte": "לרחם בו עלינו ולהושיענו. זכרנו יהוה אלהי",
-    "g": 4,
+    "g": 5,
     "racine": "yaale_veyavo"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "oubli",
-    "b": 34,
-    "empreinte": "אם שכח לומר \"רצה\" או \"יעלה ויבא\" ונזכר ל",
-    "g": 5,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 35,
-    "empreinte": "ברוך (אתה יהוה, אלהינו מלך העולם), שנתן",
-    "g": 5,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
     "b": 36,
-    "empreinte": "לשבת שבתות למנוחה לעמו ישראל, באהבה לאות",
-    "g": 5,
+    "empreinte": "אם שכח לומר \"רצה\" או \"יעלה ויבא\" ונזכר ל",
+    "g": 6,
     "racine": "oubli"
    },
    {
@@ -3635,8 +3645,8 @@
     "s": 0,
     "si": "oubli",
     "b": 37,
-    "empreinte": "לראש חודש (ו)ראשי חדשים לעמו ישראל לזכרו",
-    "g": 5,
+    "empreinte": "הערה: לדעת הילקוט יוסף (קפח, י; תקכט, ז;",
+    "g": 6,
     "racine": "oubli"
    },
    {
@@ -3644,8 +3654,8 @@
     "s": 0,
     "si": "oubli",
     "b": 38,
-    "empreinte": "לראש השנה (ו)ימים טובים לישראל את יום הז",
-    "g": 5,
+    "empreinte": "הערה: אם לא נזכר עד שהתחיל ברכת הטוב והמ",
+    "g": 6,
     "racine": "oubli"
    },
    {
@@ -3653,141 +3663,177 @@
     "s": 0,
     "si": "oubli",
     "b": 39,
+    "empreinte": "ברוך (אתה יהוה, אלהינו מלך העולם), שנתן",
+    "g": 6,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 40,
+    "empreinte": "לשבת שבתות למנוחה לעמו ישראל, באהבה לאות",
+    "g": 6,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 41,
+    "empreinte": "לראש חודש (ו)ראשי חדשים לעמו ישראל לזכרו",
+    "g": 6,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 42,
+    "empreinte": "לראש השנה (ו)ימים טובים לישראל את יום הז",
+    "g": 6,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 43,
     "empreinte": "לשלש רגלים (ו)ימים טובים לששון ולשמחה, א",
-    "g": 5,
+    "g": 6,
     "racine": "oubli"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "chabbat",
-    "b": 42,
-    "empreinte": "בשבת",
-    "g": 6,
-    "racine": "chabbat"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "chabbat",
-    "b": 43,
-    "empreinte": "הרחמן הוא ינחילנו עולם שכלו שבת ומנוחה ל",
-    "g": 6,
-    "racine": "chabbat"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "roch_hodech",
-    "b": 44,
-    "empreinte": "בר''ח",
-    "g": 7,
-    "racine": "roch_hodech"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "roch_hodech",
-    "b": 45,
-    "empreinte": "הרחמן הוא יחדש עלינו את החדש הזה לטובה ו",
-    "g": 7,
-    "racine": "roch_hodech"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "roch_hachana",
     "b": 46,
-    "empreinte": "ברה''ש",
+    "empreinte": "בשבת",
+    "g": 7,
+    "racine": "chabbat"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "chabbat",
+    "b": 47,
+    "empreinte": "הרחמן הוא ינחילנו עולם שכלו שבת ומנוחה ל",
+    "g": 7,
+    "racine": "chabbat"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "roch_hodech",
+    "b": 48,
+    "empreinte": "בר''ח",
     "g": 8,
+    "racine": "roch_hodech"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "roch_hodech",
+    "b": 49,
+    "empreinte": "הרחמן הוא יחדש עלינו את החדש הזה לטובה ו",
+    "g": 8,
+    "racine": "roch_hodech"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "roch_hachana",
+    "b": 50,
+    "empreinte": "ברה''ש",
+    "g": 9,
     "racine": "roch_hachana"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "roch_hachana",
-    "b": 47,
+    "b": 51,
     "empreinte": "הרחמן הוא יחדש עלינו את השנה הזאת לטובה ",
-    "g": 8,
+    "g": 9,
     "racine": "roch_hachana"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "soukkot",
-    "b": 48,
+    "b": 52,
     "empreinte": "בסוכות",
-    "g": 9,
+    "g": 10,
     "racine": "soukkot"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "soukkot",
-    "b": 49,
+    "b": 53,
     "empreinte": "הרחמן הוא יזכנו לישב בסכת עורו של לויתן:",
-    "g": 9,
+    "g": 10,
     "racine": "soukkot"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "moed",
-    "b": 50,
+    "b": 54,
     "empreinte": "במועדים",
-    "g": 10,
+    "g": 11,
     "racine": "moed"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "moed",
-    "b": 51,
+    "b": 55,
     "empreinte": "הרחמן הוא יגיענו למועדים אחרים הבאים לקר",
-    "g": 10,
+    "g": 11,
     "racine": "moed"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "pourim_triple_festin",
-    "b": 52,
+    "b": 56,
     "empreinte": "בסעודת פורים ביום ראשון ט״ז באדר בירושלי",
-    "g": 11,
+    "g": 12,
     "racine": "pourim_triple_festin"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "pourim_triple_festin",
-    "b": 53,
+    "b": 57,
     "empreinte": "הרחמן הוא יעשהלנו נסים ונפלאות כמו שעשה ",
-    "g": 11,
+    "g": 12,
     "racine": "pourim_triple_festin"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "yom_tov",
-    "b": 54,
+    "b": 58,
     "empreinte": "ביו''ט",
-    "g": 12,
+    "g": 13,
     "racine": "yom_tov"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "yom_tov",
-    "b": 55,
+    "b": 59,
     "empreinte": "הרחמן הוא ינחילנו יום שכלו טוב:",
-    "g": 12,
+    "g": 13,
     "racine": "yom_tov"
    },
    {
     "sorte": "indice",
     "s": 0,
     "si": "chabbat",
-    "b": 59,
+    "b": 63,
     "empreinte": "מגדיל ( ביום שמתפללים מוסף, במוצ״ש, בסעו",
     "texte": "מִגְדּוֹל"
    },
@@ -3795,7 +3841,7 @@
     "sorte": "indice",
     "s": 0,
     "si": "roch_hodech",
-    "b": 59,
+    "b": 63,
     "empreinte": "מגדיל ( ביום שמתפללים מוסף, במוצ״ש, בסעו",
     "texte": "מִגְדּוֹל"
    },
@@ -3803,7 +3849,7 @@
     "sorte": "indice",
     "s": 0,
     "si": "moed",
-    "b": 59,
+    "b": 63,
     "empreinte": "מגדיל ( ביום שמתפללים מוסף, במוצ״ש, בסעו",
     "texte": "מִגְדּוֹל"
    },
@@ -3811,53 +3857,17 @@
     "sorte": "indice",
     "s": 0,
     "si": "yom_tov",
-    "b": 59,
+    "b": 63,
     "empreinte": "מגדיל ( ביום שמתפללים מוסף, במוצ״ש, בסעו",
     "texte": "מִגְדּוֹל"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 60,
-    "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
-    "g": 13,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 61,
-    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, שהכל בר",
-    "g": 13,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 62,
-    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, יוצר הא",
-    "g": 13,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
-    "b": 63,
-    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, אשר יצר",
-    "g": 13,
-    "racine": "cheva_berakhot"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "cheva_berakhot",
     "b": 64,
-    "empreinte": "שוש תשיש ותגל עקרה בקבוץ בניה לתוכה במהר",
-    "g": 13,
+    "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -3865,8 +3875,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 65,
-    "empreinte": "שמח תשמח רעים אהובים כשמחך יצירך בגן עדן",
-    "g": 13,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, שהכל בר",
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -3874,8 +3884,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 66,
-    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, אשר ברא",
-    "g": 13,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, יוצר הא",
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -3883,8 +3893,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 67,
-    "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
-    "g": 13,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, אשר יצר",
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -3892,8 +3902,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 68,
-    "empreinte": "סברי מרנן ועונים: לחיים.",
-    "g": 13,
+    "empreinte": "שוש תשיש ותגל עקרה בקבוץ בניה לתוכה במהר",
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -3901,9 +3911,53 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 69,
-    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא פר",
-    "g": 13,
+    "empreinte": "שמח תשמח רעים אהובים כשמחך יצירך בגן עדן",
+    "g": 14,
     "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 70,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, אשר ברא",
+    "g": 14,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 71,
+    "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
+    "g": 14,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 72,
+    "empreinte": "סברי מרנן ועונים: לחיים.",
+    "g": 14,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 73,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא פר",
+    "g": 14,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 43,
+    "si": "lendemain_ajouts",
+    "empreinte": "לשלש רגלים (ו)ימים טובים לששון ולשמחה, א",
+    "texte": "סעודה שהתחילה ביום (שבת, ראש חודש, יום טוב, חול המועד, חנוכה או פורים) ונמשכה אחר צאת הכוכבים: אם לא התפלל ערבית באמצע הסעודה, מזכיר בברכת המזון מעין המאורע של אותו יום, אף שהוא מקופל כאן הערב. ובמוצאי שבת שהוא ראש חודש, אומר ״רצה״ בלבד (ילקוט יוסף קפח, טז, יט; תכד, ג)."
    }
   ],
   "meen_chaloch": [
@@ -3969,6 +4023,16 @@
     "empreinte": "בשמיני עצרת ושמחנו ביום שמיני חג עצרת הז",
     "g": 6,
     "racine": "chemini_atseret"
+   }
+  ],
+  "bore_nefachot": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "לאחר האכילה אם אכל כזית בכדי אכילת פרס (",
+    "texte": "לדעת הילקוט יוסף (רז, א-ב), שיעור ״כדי אכילת פרס״ לברכה אחרונה הוא כ־7.5 דקות; ובדברים שמן התורה טוב להחמיר לאכול כזית בארבע דקות."
    }
   ],
   "hallel": [
@@ -4341,14 +4405,281 @@
     "racine": "minyan"
    }
   ],
+  "birkat_hailanot": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "סדר ברכת האילנות",
+    "texte": "אין מברכים אלא על אילני מאכל כשיש בהם פרחים; די בשני אילנות; ומברכים פעם אחת בשנה (ילקוט יוסף רכו, א, ה, ו). ולדעת הילקוט יוסף (שם, ד) אומרים ״מזמור בשוב ה׳ את שיבת ציון״ ו״הללויה הללו את ה׳ מן השמים״ אחר הברכה, ומסיימים בקדיש. ואם לא בירך בניסן, רשאי בדיעבד לברך באייר, כל זמן שהאילנות בפריחתם (שם, י)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "chabbat",
+    "empreinte": "סדר ברכת האילנות",
+    "texte": "מותר לברך ברכת האילנות בשבת, אך לכתחילה עדיף בימות החול, אלא אם כן הוא סוף ניסן (ילקוט יוסף רכו, יג); ויש נמנעים בשבת (כף החיים רכו, ד)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "yom_tov",
+    "empreinte": "סדר ברכת האילנות",
+    "texte": "מותר לברך ברכת האילנות ביום טוב, אך לכתחילה עדיף בימות החול, אלא אם כן הוא סוף ניסן (ילקוט יוסף רכו, יג); ויש נמנעים (כף החיים רכו, ד)."
+   }
+  ],
+  "nehenin": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 14,
+    "si": "!minyan",
+    "empreinte": "לאחר האכילה אם אכל כזית בכדי אכילת פרס (",
+    "texte": "לדעת הילקוט יוסף (רז, א-ב), שיעור ״כדי אכילת פרס״ לברכה אחרונה הוא כ־7.5 דקות; ובדברים שמן התורה טוב להחמיר לאכול כזית בארבע דקות."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 23,
+    "si": "bein_hametsarim",
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, שהחינו ",
+    "texte": "בין המצרים נוהגים להיזהר שלא לאכול פרי חדש ושלא ללבוש בגד חדש שצריך לברך עליהם ״שהחיינו״, עד אחר תשעה באב (ונוהגים עד י׳ באב); ובשבתות שבינתיים מותר. ולחולה, או לפרי שלא יימצא אחר תשעה באב, מותר (ילקוט יוסף תקנא, ט, יג)."
+   }
+  ],
+  "hagomel": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 1,
+    "si": "!minyan",
+    "empreinte": "צריך לברך בפני עשרה ותרי מנייהו דתנו הלכ",
+    "texte": "נשים חייבות לברך ״הגומל״ לאחר שנתרפאו ממחלה או לאחר לידה, בפני עשרה אנשים (ילקוט יוסף ריט, ז-ח). והטס במטוס שעה ושתים עשרה דקות ויותר מברך ״הגומל״ כשהגיע לשלום, אף מעל מקום ישוב (שם, כ-כא); מברכים תוך שלושה ימים, ולכתחילה בקריאת התורה."
+   }
+  ],
+  "nerot_hanouka": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 6,
+    "si": "!minyan",
+    "empreinte": "אחר שידליק נר אחד יאמר:",
+    "texte": "בלילה הראשון מדליק את הנר הקיצוני שמימין, ובכל לילה מדליק תחילה את הנר הנוסף, ואחר כך את הנרות שמשמאלו; ואם אין מזוזה מימין, להפך (ילקוט יוסף תרעו, יט-כ)."
+   }
+  ],
+  "soukka": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 1,
+    "si": "!minyan",
+    "empreinte": "כתוב, בסכת תשבו שבעת ימים, פרוש: תדורו ב",
+    "texte": "נשים אינן רשאות לברך ״לישב בסוכה״ (ילקוט יוסף תרמ, א). ולדעת הילקוט יוסף (דיני ישיבה בסוכה, כז) עדיף לברך ״לישב בסוכה״ מעומד קודם המוציא (ובימים שיש קידוש — בקידוש); והמברכים אחר המוציא, כהוראת הסידור, יש להם על מה שיסמוכו."
+   }
+  ],
+  "loulav": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "!minyan",
+    "empreinte": "בפעם הראשונה שמברך על הלולב מברך גם שהחי",
+    "texte": "נשים נוטלות את הלולב בלא ברכה, ונכון שלא יברכו אף ״שהחיינו״ (ילקוט יוסף, דין נשים בנטילת לולב, א)."
+   }
+  ],
+  "nerot_chabbat": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "לפני הדלקת נרות תתן ג׳ פרוטות לצדקה ותאמ",
+    "texte": "הוראת הסידור לברך בשבת אחר ההדלקה היא כמנהג הבן איש חי (נח, שנה ב, ח, י). לדעת הילקוט יוסף (רסג, לג-לה; תרי, ב; תקיד, הערה כז) מברכים קודם ההדלקה, בשבת כביום טוב; ומי שהדליקה ולא בירכה, אינה מברכת אחר כך."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "!minyan",
+    "empreinte": "ביום טוב שאומרים שהחיינו בקידוש נוהגים ה",
+    "texte": "לדעת הילקוט יוסף (תקיד, ג; תמד, מא) עדיף לצאת ידי ״שהחיינו״ בקידוש; והנוהגות לברך בהדלקה, יברכו אותו אחר שהדליקו לפחות נר אחד, שלא יהיה הפסק בין ברכת ההדלקה להדלקה."
+   }
+  ],
   "havdala": [
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 0,
+    "empreinte": "ראשון לציון הנה הנם ולירושל‍ם מבשר אתן: ",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 1,
+    "empreinte": "קומי אורי כי בא אורך וכבוד יהוה עליך זרח",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 2,
+    "empreinte": "יקח הכוס בידו הימנית והבשמים בשמאלו ויאמ",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 3,
+    "empreinte": "כוסישועות אשא ובשם יהוה אקרא",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 4,
+    "empreinte": "אנא יהוה הושיעה נא, אנא יהוה הושיעה נא:",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 5,
+    "empreinte": "אנא יהוה הצליחה נא. אנא יהוה הצליחה נא",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 6,
+    "empreinte": "הצליחנו , הצליח דרכינו, הצליח למודינו, ו",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 7,
+    "empreinte": "סברי מרנן. ועונים: לחיים.",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 8,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא פר",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "havdala_bessamim",
+    "b": 10,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא עצ",
+    "libelle": "ajout_havdala_bessamim",
+    "discret": true,
+    "g": 1,
+    "racine": "havdala_bessamim"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "havdala_ner",
+    "b": 11,
+    "empreinte": "כשיברך על הנר, יכוף ראשי אצבעותיו הימנים",
+    "libelle": "ajout_havdala_ner",
+    "discret": true,
+    "g": 2,
+    "racine": "havdala_ner"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "havdala_ner",
+    "b": 12,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא מא",
+    "libelle": "ajout_havdala_ner",
+    "discret": true,
+    "g": 2,
+    "racine": "havdala_ner"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 13,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, המבדיל ",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 14,
+    "empreinte": "שותה רביעית ומברך על הגפן",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 15,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, על הגפן",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "roch_hodech",
     "b": 16,
     "empreinte": "בראש חודש וזכרנו לטובה ביום ראש חדש הזה.",
-    "g": 0,
+    "g": 4,
     "racine": "roch_hodech"
    },
    {
@@ -4357,7 +4688,7 @@
     "si": "pessah",
     "b": 17,
     "empreinte": "חוה''מ פסח ושמחנו ביום חג המצות הזה ביום",
-    "g": 1,
+    "g": 5,
     "racine": "pessah"
    },
    {
@@ -4366,8 +4697,43 @@
     "si": "soukkot",
     "b": 18,
     "empreinte": "חוה''מ סוכות ושמחנו ביום חג הסכות הזה בי",
-    "g": 2,
+    "g": 6,
     "racine": "soukkot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 19,
+    "empreinte": "כי אתה טוב ומטיב לכל, ונודה לך על הארץ ו",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 7,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 12,
+    "si": "ticha_beav",
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא מא",
+    "texte": "במוצאי שבת שחל בו תשעה באב (או שנדחה ליום ראשון): כשרואה הנר מברך ״בורא מאורי האש״ בלבד, בלי כוס ובלי בשמים; ומבדילים על הכוס במוצאי התענית, בלי נר ובלי בשמים (שו״ע תקנו, א; מ״ב שם; ילקוט יוסף תקנו, ו-ח)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 10,
+    "si": "lendemain_ticha_beav_dimanche",
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא עצ",
+    "texte": "במוצאי תשעה באב שחל (או שנדחה) ביום ראשון: מבדילים על הכוס בלבד, בלי נר ובלי בשמים (שו״ע תקנו, א; מ״ב שם ס״ק ה; ילקוט יוסף תקנו, ח)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 10,
+    "si": "lendemain_kippour",
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא עצ",
+    "texte": "במוצאי יום הכפורים אין מברכים על הבשמים בהבדלה, אפילו כשחל בשבת, וטוב לברך עליהם אחר הטעימה; ועל הנר מברכים רק על נר ששבת (וכשחל בשבת, אם אין, על נר שהודלק עתה) (שו״ע תרכד, ג-ה; ילקוט יוסף תרכד, ד-ו)."
    }
   ]
  },
@@ -9765,6 +10131,14 @@
     "texte": "מִגְדּוֹל"
    },
    {
+    "sorte": "indice",
+    "s": 0,
+    "si": "roch_hodech",
+    "b": 84,
+    "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
+    "texte": "מִגְדּוֹל"
+   },
+   {
     "sorte": "bloc",
     "s": 0,
     "si": "cheva_berakhot",
@@ -9859,7 +10233,7 @@
     "s": 0,
     "si": "oubli",
     "b": 96,
-    "empreinte": "בשבת אומר:",
+    "empreinte": "הערה: אם לא נזכר עד שהתחיל הטוב והמטיב, ",
     "g": 13,
     "racine": "oubli"
    },
@@ -9868,7 +10242,7 @@
     "s": 0,
     "si": "oubli",
     "b": 97,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
+    "empreinte": "בשבת אומר:",
     "g": 13,
     "racine": "oubli"
    },
@@ -9877,7 +10251,7 @@
     "s": 0,
     "si": "oubli",
     "b": 98,
-    "empreinte": "בראש חודש:",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
     "g": 13,
     "racine": "oubli"
    },
@@ -9886,7 +10260,7 @@
     "s": 0,
     "si": "oubli",
     "b": 99,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
+    "empreinte": "בראש חודש:",
     "g": 13,
     "racine": "oubli"
    },
@@ -9895,7 +10269,7 @@
     "s": 0,
     "si": "oubli",
     "b": 100,
-    "empreinte": "בראש חודש שחל בשבת:",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
     "g": 13,
     "racine": "oubli"
    },
@@ -9904,7 +10278,7 @@
     "s": 0,
     "si": "oubli",
     "b": 101,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
+    "empreinte": "בראש חודש שחל בשבת:",
     "g": 13,
     "racine": "oubli"
    },
@@ -9913,7 +10287,7 @@
     "s": 0,
     "si": "oubli",
     "b": 102,
-    "empreinte": "ביו״ט אומר:",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
     "g": 13,
     "racine": "oubli"
    },
@@ -9922,7 +10296,7 @@
     "s": 0,
     "si": "oubli",
     "b": 103,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
+    "empreinte": "ביו״ט אומר:",
     "g": 13,
     "racine": "oubli"
    },
@@ -9931,33 +10305,6 @@
     "s": 0,
     "si": "oubli",
     "b": 104,
-    "empreinte": "ביו״ט שחל בשבת:",
-    "g": 13,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 105,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 106,
-    "empreinte": "בראש השנה:",
-    "g": 13,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
-    "b": 107,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
     "g": 13,
     "racine": "oubli"
@@ -9966,8 +10313,35 @@
     "sorte": "bloc",
     "s": 0,
     "si": "oubli",
+    "b": 105,
+    "empreinte": "בחול המועד (בלי חתימה; ״ביו״ט אומר״ אינו",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 106,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן מ",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 107,
+    "empreinte": "ביו״ט שחל בשבת:",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
     "b": 108,
-    "empreinte": "בראש השנה שחל בשבת:",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
     "g": 13,
     "racine": "oubli"
    },
@@ -9976,9 +10350,52 @@
     "s": 0,
     "si": "oubli",
     "b": 109,
+    "empreinte": "בראש השנה:",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 110,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 111,
+    "empreinte": "בראש השנה שחל בשבת:",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 112,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
     "g": 13,
     "racine": "oubli"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 56,
+    "si": "lendemain_ajouts",
+    "empreinte": "שכח לומר רצה בשבת או יעלה ויבא בראש חודש",
+    "texte": "סעודה שהתחילה ביום (שבת, ראש חודש, יום טוב, חול המועד, חנוכה או פורים) ונמשכה אחר צאת הכוכבים: אם לא התפלל ערבית, מזכיר מעין המאורע של אותו יום, אף שהוא מקופל כאן הערב. ובמוצאי שבת שהוא ראש חודש, אם אכל כזית פת בלילה, אומר שניהם (שו״ע הרב קפח, יז)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 84,
+    "si": "roch_hodech",
+    "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
+    "texte": "גם בראש חודש אומרים ״מגדול״ (שו״ע הרב קפט, ז), אף שהוראת הסידור מזכירה רק שבת ויום טוב."
    }
   ],
   "meen_chaloch": [
@@ -10017,6 +10434,14 @@
     "empreinte": "(ביו״ט:) ושמחנו ביום חג (פלוני) הזה:",
     "g": 3,
     "racine": "moed"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 15,
+    "si": "!minyan",
+    "empreinte": "(על מזונות ויין ביחד:) המחיה ועל פרי הגפ",
+    "texte": "הולכים אחר מקום גידול הפרי: פרי ארץ ישראל, אף כשאוכלו בחו״ל — ״פרותיה״ / ״פרי גפנה״; פרי חו״ל, אף כשאוכלו בארץ, או כשאינו יודע — ״הפרות״ / ״פרי הגפן״ (שו״ע רח, י; מ״ב שם ס״ק נב-נד)."
    }
   ],
   "hallel": [
@@ -10360,6 +10785,189 @@
     "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
     "g": 6,
     "racine": "minyan"
+   }
+  ],
+  "keshet": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "הרואה קשת צריך לברך ברכה זו:",
+    "texte": "ואסור להסתכל בה ביותר (שו״ע רכט, א)."
+   }
+  ],
+  "barakim": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 3,
+    "si": "!minyan",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שכחו וגב",
+    "texte": "מברכים תוך כדי דיבור לראיית הברק או לשמיעת הרעם. ראה ברק ושמע רעם יחד — מברך על שניהם ברכה אחת, ״עושה מעשה בראשית״; ואם לא היו תכופים — על הברק ״עושה מעשה בראשית״ ועל הרעם ״שכחו וגבורתו מלא עולם״ (מ״ב רכז ס״ק ה). ואין מברכים יותר מפעם אחת ביום, אלא אם כן נתפזרו העבים בינתיים."
+   }
+  ],
+  "yam": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 1,
+    "si": "!minyan",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, עשה את ה",
+    "texte": "על ים אוקינוס; ויש אומרים אף על הים התיכון (שו״ע רכח, א). ולדעת הרבה אחרונים על הים התיכון מברך ״עושה מעשה בראשית״ (מ״ב רכח ס״ק ב). ואינו מברך אלא משלשים יום לשלשים יום."
+   }
+  ],
+  "nehenin": [
+   {
+    "sorte": "note",
+    "s": 6,
+    "b": 1,
+    "si": "bein_hametsarim",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם שהחינו וק",
+    "texte": "מי״ז בתמוז עד אחר תשעה באב נוהגים להיזהר שלא לאכול פרי חדש ושלא ללבוש בגד חדש שצריך לברך עליהם ״שהחיינו״; ובשבתות שבינתיים מותר (אך לא בגד חדש מראש חודש אב). ואין זה אלא מנהג זהירות, ולחולה מותר (שו״ע תקנא, יז; מ״ב שם ס״ק צח-צט)."
+   }
+  ],
+  "hagomel": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "ארבעה צריכים להודות יורדי הים כשעלו ממנה",
+    "texte": "ולענין טיסה במטוס — לפי מנהגו (שו״ע ריט, ז: באשכנז לא נהגו לברך בהולך מעיר לעיר; ויש מחייבים בטיסה)."
+   }
+  ],
+  "soukka": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 1,
+    "si": "!minyan",
+    "empreinte": "כתוב, בסכת תשבו שבעת ימים, פרוש: תדורו ב",
+    "texte": "נשים מברכות ״לישב בסוכה״, כמנהג לברך על מצות עשה שהזמן גרמא (רמ״א תקפט, ו)."
+   }
+  ],
+  "loulav": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "!minyan",
+    "empreinte": "בפעם הראשונה שמברך על הלולב מברך גם שהחי",
+    "texte": "נשים מברכות על הלולב, כמנהג לברך על מצות עשה שהזמן גרמא (רמ״א תקפט, ו; יז, ב)."
+   }
+  ],
+  "nerot_chabbat": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "צריכים להדליק בכל חדר וחדר שהולך שם בשבת",
+    "texte": "לדעת שו״ע הרב (רסג, ח) מדליקים תחילה ואחר כך מברכים, אף ביום טוב, שלא לחלק בברכה אחת; והמנהג חלוק. וכן ביום הכפורים."
+   }
+  ],
+  "havdala": [
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 0,
+    "empreinte": "נוטל הכוס בידו ואומר:",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 1,
+    "empreinte": "הנה אל ישועתי אבטח ולא אפחד: כי עזי וזמר",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 2,
+    "empreinte": "סברי מרנן ורבנן ורבותי:",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 3,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם. בורא פרי",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "havdala_bessamim",
+    "b": 4,
+    "empreinte": "על הבשמים: ברוך אתה יהוה אלהינו מלך העול",
+    "libelle": "ajout_havdala_bessamim",
+    "discret": true,
+    "g": 1,
+    "racine": "havdala_bessamim"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "havdala_ner",
+    "b": 5,
+    "empreinte": "על הנר: ברוך אתה יהוה אלהינו מלך העולם. ",
+    "libelle": "ajout_havdala_ner",
+    "discret": true,
+    "g": 2,
+    "racine": "havdala_ner"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 6,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם. המבדיל ב",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 5,
+    "si": "ticha_beav",
+    "empreinte": "על הנר: ברוך אתה יהוה אלהינו מלך העולם. ",
+    "texte": "במוצאי שבת שחל בו תשעה באב (או שנדחה ליום ראשון): כשרואה הנר מברך ״בורא מאורי האש״ בלבד, בלי כוס ובלי בשמים; ומבדילים על הכוס במוצאי התענית, בלי נר ובלי בשמים (שו״ע תקנו, א; מ״ב שם; ילקוט יוסף תקנו, ו-ח)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "lendemain_ticha_beav_dimanche",
+    "empreinte": "על הבשמים: ברוך אתה יהוה אלהינו מלך העול",
+    "texte": "במוצאי תשעה באב שחל (או שנדחה) ביום ראשון: מבדילים על הכוס בלבד, בלי נר ובלי בשמים (שו״ע תקנו, א; מ״ב שם ס״ק ה; ילקוט יוסף תקנו, ח)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "lendemain_kippour",
+    "empreinte": "על הבשמים: ברוך אתה יהוה אלהינו מלך העול",
+    "texte": "במוצאי יום הכפורים אין מברכים על הבשמים בהבדלה, אפילו כשחל בשבת, וטוב לברך עליהם אחר הטעימה; ועל הנר מברכים רק על נר ששבת (וכשחל בשבת, אם אין, על נר שהודלק עתה) (שו״ע תרכד, ג-ה; ילקוט יוסף תרכד, ד-ו)."
    }
   ]
  },
@@ -15030,9 +15638,9 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!chabbat",
+    "si": "tahanoun_chaharit",
     "b": 0,
-    "empreinte": "בחול קודם ברכת המזון אומרים:",
+    "empreinte": "בימים שאומרים בהם תחנון קודם ברכת המזון ",
     "libelle": "ajout_facultatif_avant",
     "g": 0,
     "racine": "facultatif"
@@ -15040,7 +15648,7 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!chabbat",
+    "si": "tahanoun_chaharit",
     "b": 1,
     "empreinte": "עלנהרות בבל שם ישבנו גםבכינו בזכרנו אתצי",
     "libelle": "ajout_facultatif_avant",
@@ -15050,9 +15658,9 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "chabbat",
+    "si": "!tahanoun_chaharit",
     "b": 2,
-    "empreinte": "בשבת קודם ברכת המזון אומרים:",
+    "empreinte": "בשבת, ביו״ט ובימים שאין אומרים בהם תחנון",
     "libelle": "ajout_facultatif_avant",
     "g": 0,
     "racine": "facultatif"
@@ -15060,7 +15668,7 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "chabbat",
+    "si": "!tahanoun_chaharit",
     "b": 3,
     "empreinte": "שיר המעלות בשוב יהוה אתשיבת ציון היינו כ",
     "libelle": "ajout_facultatif_avant",
@@ -15385,98 +15993,107 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "chabbat",
-    "b": 64,
-    "empreinte": "בשבת אומר:",
+    "si": "ticha_beav",
+    "b": 46,
+    "empreinte": "מי שאוכל בתשעה באב אומר כאן ״נחם״, כבתפל",
     "g": 6,
-    "racine": "chabbat"
+    "racine": "ticha_beav"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "chabbat",
     "b": 65,
+    "empreinte": "בשבת אומר:",
+    "g": 7,
+    "racine": "chabbat"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "chabbat",
+    "b": 66,
     "empreinte": "הרחמן הוא ינחילנו יום שכלו שבת ומנוחה לח",
-    "g": 6,
+    "g": 7,
     "racine": "chabbat"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "roch_hodech",
-    "b": 66,
+    "b": 67,
     "empreinte": "בראש חודש:",
-    "g": 7,
+    "g": 8,
     "racine": "roch_hodech"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "roch_hodech",
-    "b": 67,
+    "b": 68,
     "empreinte": "הרחמן הוא יחדש עלינו את החדש הזה לטובה ו",
-    "g": 7,
+    "g": 8,
     "racine": "roch_hodech"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "yom_tov",
-    "b": 68,
+    "b": 69,
     "empreinte": "ביו״ט אומר:",
-    "g": 8,
+    "g": 9,
     "racine": "yom_tov"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "yom_tov",
-    "b": 69,
-    "empreinte": "הרחמן הוא ינחילנו יום שכלו טוב:",
-    "g": 8,
-    "racine": "yom_tov"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "roch_hachana",
     "b": 70,
-    "empreinte": "בראש השנה:",
+    "empreinte": "הרחמן הוא ינחילנו יום שכלו טוב:",
     "g": 9,
-    "racine": "roch_hachana"
+    "racine": "yom_tov"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "roch_hachana",
     "b": 71,
+    "empreinte": "בראש השנה:",
+    "g": 10,
+    "racine": "roch_hachana"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "roch_hachana",
+    "b": 72,
     "empreinte": "הרחמן הוא יחדש עלינו את השנה הזאת לטובה ",
-    "g": 9,
+    "g": 10,
     "racine": "roch_hachana"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "soukkot",
-    "b": 72,
+    "b": 73,
     "empreinte": "בסוכות:",
-    "g": 10,
+    "g": 11,
     "racine": "soukkot"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "soukkot",
-    "b": 73,
+    "b": 74,
     "empreinte": "הרחמן הוא יקים לנו אתסכת דוד הנופלת:",
-    "g": 10,
+    "g": 11,
     "racine": "soukkot"
    },
    {
     "sorte": "indice",
     "s": 0,
     "si": "chabbat",
-    "b": 74,
+    "b": 75,
     "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
     "texte": "מִגְדּוֹל"
    },
@@ -15484,7 +16101,15 @@
     "sorte": "indice",
     "s": 0,
     "si": "yom_tov",
-    "b": 74,
+    "b": 75,
+    "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
+    "texte": "מִגְדּוֹל"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "roch_hodech",
+    "b": 75,
     "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
     "texte": "מִגְדּוֹל"
    },
@@ -15492,18 +16117,9 @@
     "sorte": "bloc",
     "s": 0,
     "si": "cheva_berakhot",
-    "b": 76,
-    "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
-    "g": 11,
-    "racine": "cheva_berakhot"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "cheva_berakhot",
     "b": 77,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שהכל ברא",
-    "g": 11,
+    "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
@@ -15511,8 +16127,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 78,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, יוצר האד",
-    "g": 11,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שהכל ברא",
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
@@ -15520,8 +16136,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 79,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר יצר ",
-    "g": 11,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, יוצר האד",
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
@@ -15529,8 +16145,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 80,
-    "empreinte": "שוש תשיש ותגל עקרה, בקבוץ בניה לתוכה בשמ",
-    "g": 11,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר יצר ",
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
@@ -15538,8 +16154,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 81,
-    "empreinte": "שמח תשמח רעים האהובים, כשמחך יצירך בגן ע",
-    "g": 11,
+    "empreinte": "שוש תשיש ותגל עקרה, בקבוץ בניה לתוכה בשמ",
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
@@ -15547,8 +16163,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 82,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר ברא ",
-    "g": 11,
+    "empreinte": "שמח תשמח רעים האהובים, כשמחך יצירך בגן ע",
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
@@ -15556,8 +16172,8 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 83,
-    "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
-    "g": 11,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר ברא ",
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
@@ -15565,26 +16181,26 @@
     "s": 0,
     "si": "cheva_berakhot",
     "b": 84,
+    "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
+    "g": 12,
+    "racine": "cheva_berakhot"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "cheva_berakhot",
+    "b": 85,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, בורא פרי",
-    "g": 11,
+    "g": 12,
     "racine": "cheva_berakhot"
    },
    {
     "sorte": "bloc",
     "s": 0,
     "si": "oubli",
-    "b": 85,
-    "empreinte": "דיני שכחה:",
-    "g": 12,
-    "racine": "oubli"
-   },
-   {
-    "sorte": "bloc",
-    "s": 0,
-    "si": "oubli",
     "b": 86,
-    "empreinte": "בשבת אומר:",
-    "g": 12,
+    "empreinte": "דיני שכחה:",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15592,8 +16208,8 @@
     "s": 0,
     "si": "oubli",
     "b": 87,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 12,
+    "empreinte": "הערה: אם לא נזכר עד שהתחיל הטוב והמטיב, ",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15601,8 +16217,8 @@
     "s": 0,
     "si": "oubli",
     "b": 88,
-    "empreinte": "בראש חודש:",
-    "g": 12,
+    "empreinte": "בשבת אומר:",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15610,8 +16226,8 @@
     "s": 0,
     "si": "oubli",
     "b": 89,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
-    "g": 12,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15619,8 +16235,8 @@
     "s": 0,
     "si": "oubli",
     "b": 90,
-    "empreinte": "ביו״ט אומר:",
-    "g": 12,
+    "empreinte": "בראש חודש:",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15628,8 +16244,8 @@
     "s": 0,
     "si": "oubli",
     "b": 91,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 12,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15637,8 +16253,8 @@
     "s": 0,
     "si": "oubli",
     "b": 92,
-    "empreinte": "ביו״ט שחל בשבת:",
-    "g": 12,
+    "empreinte": "ביו״ט אומר:",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15646,8 +16262,8 @@
     "s": 0,
     "si": "oubli",
     "b": 93,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 12,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15655,8 +16271,8 @@
     "s": 0,
     "si": "oubli",
     "b": 94,
-    "empreinte": "בראש השנה:",
-    "g": 12,
+    "empreinte": "בחול המועד (בלי חתימה; ״ביו״ט אומר״ אינו",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15664,8 +16280,8 @@
     "s": 0,
     "si": "oubli",
     "b": 95,
-    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 12,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן מ",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15673,8 +16289,8 @@
     "s": 0,
     "si": "oubli",
     "b": 96,
-    "empreinte": "בראש השנה שחל בשבת:",
-    "g": 12,
+    "empreinte": "ביו״ט שחל בשבת:",
+    "g": 13,
     "racine": "oubli"
    },
    {
@@ -15683,8 +16299,76 @@
     "si": "oubli",
     "b": 97,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 12,
+    "g": 13,
     "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 98,
+    "empreinte": "בראש השנה:",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 99,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 100,
+    "empreinte": "בראש השנה שחל בשבת:",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "oubli",
+    "b": 101,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
+    "g": 13,
+    "racine": "oubli"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 45,
+    "si": "lendemain_ajouts",
+    "empreinte": "שכח לומר רצה בשבת או יעלה ויבא בראש חודש",
+    "texte": "סעודה שהתחילה ביום (שבת, ראש חודש, יום טוב, חול המועד, חנוכה או פורים) ונמשכה אחר צאת הכוכבים: אם לא התפלל ערבית, מזכיר מעין המאורע של אותו יום, אף שהוא מקופל כאן הערב (שו״ע קפח, י; מ״ב שם ס״ק לב-לד). ובמוצאי שבת שהוא ראש חודש: אם אכל פת בלילה, ״יעלה ויבוא״ בלבד; ואם לאו, ״רצה״ בלבד (מ״ב קפח ס״ק לג)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 75,
+    "si": "roch_hodech",
+    "empreinte": "הרחמן הוא יזכנו לימות המשיח ולחיי העולם ",
+    "texte": "גם בראש חודש אומרים ״מגדול״ (מ״ב קפט ס״ק ה: ״נוהגים לומר בשבת ויו״ט ור״ח מגדול ובחול מגדיל״)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 3,
+    "si": "!tahanoun_chaharit",
+    "empreinte": "שיר המעלות בשוב יהוה אתשיבת ציון היינו כ",
+    "texte": "היום אומרים ״שיר המעלות בשוב״ לפני ברכת המזון (מ״ב א ס״ק יא)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 3,
+    "si": "tahanoun_chaharit",
+    "empreinte": "שיר המעלות בשוב יהוה אתשיבת ציון היינו כ",
+    "texte": "היום אומרים ״על נהרות בבל״ לפני ברכת המזון (מ״ב א ס״ק יא)."
    }
   ],
   "meen_chaloch": [
@@ -15768,6 +16452,14 @@
     "empreinte": "ביום (טוב) מקרא קדש הזה.",
     "g": 3,
     "racine": "moed"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 21,
+    "si": "!minyan",
+    "empreinte": "על פירות משבעת המינים— ועל פרותיה ( בחו״",
+    "texte": "הולכים אחר מקום גידול הפרי: פרי ארץ ישראל, אף כשאוכלו בחו״ל — ״פרותיה״ / ״פרי גפנה״; פרי חו״ל, אף כשאוכלו בארץ, או כשאינו יודע — ״הפרות״ / ״פרי הגפן״ (שו״ע רח, י; מ״ב שם ס״ק נב-נד)."
    }
   ],
   "hallel": [
@@ -16168,6 +16860,225 @@
     "empreinte": "הקהל - אדיר במרום שוכן בגבורה אתה שלום ו",
     "g": 5,
     "racine": "minyan"
+   }
+  ],
+  "birkat_hailanot": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "הרואה אילני מאכל (לפחות שני אילנות) בפרי",
+    "texte": "אם לא בירך בניסן, יכול לברך אחר כך כל זמן שלא גדלו הפירות (מ״ב רכו ס״ק ה)."
+   }
+  ],
+  "keshet": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "הרואה קשת צריך לברך ברכה זו:",
+    "texte": "ואסור להסתכל בה ביותר (שו״ע רכט, א)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "הרואה קשת צריך לברך ברכה זו:",
+    "texte": "ואין כדאי להגיד לחבירו שיש קשת, מטעם מוציא דיבה (מ״ב רכט ס״ק א)."
+   }
+  ],
+  "barakim": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 3,
+    "si": "!minyan",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שכחו וגב",
+    "texte": "מברכים תוך כדי דיבור לראיית הברק או לשמיעת הרעם. ראה ברק ושמע רעם יחד — מברך על שניהם ברכה אחת, ״עושה מעשה בראשית״; ואם לא היו תכופים — על הברק ״עושה מעשה בראשית״ ועל הרעם ״שכחו וגבורתו מלא עולם״ (מ״ב רכז ס״ק ה). ואין מברכים יותר מפעם אחת ביום, אלא אם כן נתפזרו העבים בינתיים."
+   }
+  ],
+  "yam": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 1,
+    "si": "!minyan",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, עשה את ה",
+    "texte": "על ים אוקינוס; ויש אומרים אף על הים התיכון (שו״ע רכח, א). ולדעת הרבה אחרונים על הים התיכון מברך ״עושה מעשה בראשית״ (מ״ב רכח ס״ק ב). ואינו מברך אלא משלשים יום לשלשים יום."
+   }
+  ],
+  "nehenin": [
+   {
+    "sorte": "note",
+    "s": 6,
+    "b": 1,
+    "si": "bein_hametsarim",
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם שהחינו וק",
+    "texte": "מי״ז בתמוז עד אחר תשעה באב נוהגים להיזהר שלא לאכול פרי חדש ושלא ללבוש בגד חדש שצריך לברך עליהם ״שהחיינו״; ובשבתות שבינתיים מותר (אך לא בגד חדש מראש חודש אב). ואין זה אלא מנהג זהירות, ולחולה מותר (שו״ע תקנא, יז; מ״ב שם ס״ק צח-צט)."
+   }
+  ],
+  "hagomel": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "ארבעה צריכים להודות יורדי הים כשעלו ממנה",
+    "texte": "נשים: מנהג העולם שאין מברכות; ויש שכתבו שנכון שתברך בפני עשרה, או לפחות בפני נשים ואיש אחד (מ״ב ריט ס״ק ג). ולענין טיסה במטוס — לפי מנהגו (באשכנז לא נהגו לברך בהולך מעיר לעיר, שו״ע ריט, ז; ויש מחייבים בטיסה)."
+   }
+  ],
+  "nerot_hanouka": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "לפני ההדלקה מברכים:",
+    "texte": "סדר ההדלקה: מתחיל בנר הנוסף — יש מסדרים את הנרות מימין ויש משמאל, ודעביד כמר עביד ודעביד כמר עביד (מ״ב תרעו ס״ק ט)."
+   }
+  ],
+  "soukka": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "הריני מוכן ומזומן לקיים מצות סכה כאשר צו",
+    "texte": "נשים מברכות ״לישב בסוכה״, כמנהג לברך על מצות עשה שהזמן גרמא (רמ״א תקפט, ו)."
+   }
+  ],
+  "loulav": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 1,
+    "si": "!minyan",
+    "empreinte": "בפעם הראשון שמברך על הלולב מברך גם שהחיי",
+    "texte": "נשים מברכות על הלולב, כמנהג לברך על מצות עשה שהזמן גרמא (רמ״א תקפט, ו; יז, ב)."
+   }
+  ],
+  "nerot_chabbat": [
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 0,
+    "si": "!minyan",
+    "empreinte": "צריכים להדליק בכל חדר וחדר שהולך שם בשבת",
+    "texte": "נוהגים להדליק, לשים את הידיים לפני הנרות, לברך ואחר כך להסיר את הידיים (רמ״א רסג, ה). ביום טוב יש מברכות קודם ההדלקה (מ״ב רסג ס״ק כז), ויש שאינן מחלקות בין שבת ליום טוב (מגן אברהם). וכן ביום הכפורים."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 11,
+    "si": "!minyan",
+    "empreinte": "ליו״ט (חוץ מז׳ וח׳ של פסח):",
+    "texte": "אין חובה לברך ״שהחיינו״ בהדלקה, ובמקום שנהגו אין למחות (מ״ב רסג ס״ק כג)."
+   }
+  ],
+  "havdala": [
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 0,
+    "empreinte": "נוטל הכוס בידו ואומר:",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 1,
+    "empreinte": "הנה אל ישועתי אבטח ולא אפחד: כי עזי וזמר",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 2,
+    "empreinte": "סברי מרנן ורבנן ורבותי:",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 3,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם. בורא פרי",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 0,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "havdala_bessamim",
+    "b": 4,
+    "empreinte": "על הבשמים: ברוך אתה יהוה אלהינו מלך העול",
+    "libelle": "ajout_havdala_bessamim",
+    "discret": true,
+    "g": 1,
+    "racine": "havdala_bessamim"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "havdala_ner",
+    "b": 5,
+    "empreinte": "על הנר: ברוך אתה יהוה אלהינו מלך העולם. ",
+    "libelle": "ajout_havdala_ner",
+    "discret": true,
+    "g": 2,
+    "racine": "havdala_ner"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "!ticha_beav",
+    "b": 6,
+    "empreinte": "ברוך אתה יהוה אלהינו מלך העולם. המבדיל ב",
+    "libelle": "ajout_havdala_coupe",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 5,
+    "si": "ticha_beav",
+    "empreinte": "על הנר: ברוך אתה יהוה אלהינו מלך העולם. ",
+    "texte": "במוצאי שבת שחל בו תשעה באב (או שנדחה ליום ראשון): כשרואה הנר מברך ״בורא מאורי האש״ בלבד, בלי כוס ובלי בשמים; ומבדילים על הכוס במוצאי התענית, בלי נר ובלי בשמים (שו״ע תקנו, א; מ״ב שם; ילקוט יוסף תקנו, ו-ח)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "lendemain_ticha_beav_dimanche",
+    "empreinte": "על הבשמים: ברוך אתה יהוה אלהינו מלך העול",
+    "texte": "במוצאי תשעה באב שחל (או שנדחה) ביום ראשון: מבדילים על הכוס בלבד, בלי נר ובלי בשמים (שו״ע תקנו, א; מ״ב שם ס״ק ה; ילקוט יוסף תקנו, ח)."
+   },
+   {
+    "sorte": "note",
+    "s": 0,
+    "b": 4,
+    "si": "lendemain_kippour",
+    "empreinte": "על הבשמים: ברוך אתה יהוה אלהינו מלך העול",
+    "texte": "במוצאי יום הכפורים אין מברכים על הבשמים בהבדלה, אפילו כשחל בשבת, וטוב לברך עליהם אחר הטעימה; ועל הנר מברכים רק על נר ששבת (וכשחל בשבת, אם אין, על נר שהודלק עתה) (שו״ע תרכד, ג-ה; ילקוט יוסף תרכד, ד-ו)."
    }
   ]
  }
