@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import Coeur
 
@@ -111,5 +112,38 @@ struct ReglesDuTreizeNovembreTests {
         #expect(SessionRule.finSilencieuse(avantTerme: false, masque: true, sonnerieAudible: true))
         #expect(!SessionRule.finSilencieuse(avantTerme: false, masque: true, sonnerieAudible: false))
         #expect(!SessionRule.finSilencieuse(avantTerme: false, masque: false, sonnerieAudible: true))
+    }
+}
+
+@Suite("Chapitres et siddour du 12/11")
+struct ChapitresTests {
+
+    /// Chapitres.filtrer (FLECTURE-03) : par numéro, par mot sans voyelles ni casse ; vide, tous.
+    @Test func laListeDesChapitresSeFiltre() {
+        let titres = ["תּוֹרָה 282", "Torah 1", "Introduction", "282"]
+        #expect(Chapitres.filtrer(titres, "") == [0, 1, 2, 3])
+        #expect(Chapitres.filtrer(titres, "  ") == [0, 1, 2, 3])
+        #expect(Chapitres.filtrer(titres, "282") == [0, 3])
+        #expect(Chapitres.filtrer(titres, "תורה") == [0])
+        #expect(Chapitres.filtrer(titres, "TORAH") == [1])
+        #expect(Chapitres.filtrer(titres, "zzz").isEmpty)
+    }
+
+    /// Les consignes traduites (c_fr, c_en), la traduction automatique et les chapitres traduits (COUV-01, COUV-05).
+    @Test func lesTraductionsDUnLivre() throws {
+        let json = #"""
+        {"id": "x", "groupe": "g", "titre": {"he": "א"}, "traduction": "auto", "sections": [
+          {"titre": "1", "blocs": [{"c": "הוראה", "c_fr": "Consigne", "c_en": " "}, {"t": "טקסט"}]},
+          {"titre": "2", "blocs": [{"t": "טקסט", "fr": "Texte"}]},
+          {"titre": "3", "blocs": [{"t": "טקסט", "en": "Text"}, {"c": "ב"}]}]}
+        """#
+        let t = try JSONDecoder().decode(SiddurTexte.self, from: Data(json.utf8))
+        #expect(t.traductionAuto)
+        #expect(t.chapitresTraduits() == 2)
+        let consigne = t.sections[0].blocs[0]
+        #expect(consigne.consigne)
+        #expect(consigne.fr == "Consigne")
+        #expect(consigne.en == nil)
+        #expect(t.avec(sections: t.sections).traductionAuto)
     }
 }

@@ -90,8 +90,10 @@ public enum JournalPlus {
     }
 
     /// « 🙁 → 🙂 · Gratitude » pour la ligne du journal ; vide s'il n'y a rien. L'humeur est isolée de
-    /// gauche à droite (U+2066…U+2069) : en hébreu, la flèche pointait d'après vers avant (02/11).
-    public static func resume(_ plus: Plus, gratitude: String, travail: String = "", sujets: String = "") -> String {
+    /// gauche à droite (U+2066…U+2069) : en hébreu, la flèche pointait d'après vers avant (02/11). `ligne` écrit
+    /// « libellé : texte » (l'écran peut mettre la ponctuation de sa langue).
+    public static func resume(_ plus: Plus, gratitude: String, travail: String = "", sujets: String = "",
+                              ligne: (String, String) -> String = { $0 + " : " + $1 }) -> String {
         var lignes: [String] = []
         if !sujets.estBlanc {
             lignes.append(sujets)
@@ -100,10 +102,10 @@ public enum JournalPlus {
             lignes.append("\u{2066}" + humeur(plus.avant) + " \u{2192} " + humeur(plus.apres) + "\u{2069}")
         }
         if !plus.gratitude.estBlanc {
-            lignes.append(gratitude + " : " + plus.gratitude)
+            lignes.append(ligne(gratitude, plus.gratitude))
         }
         if !plus.travail.estBlanc {
-            lignes.append(travail + " : " + plus.travail)
+            lignes.append(ligne(travail, plus.travail))
         }
         return lignes.joined(separator: "\n")
     }

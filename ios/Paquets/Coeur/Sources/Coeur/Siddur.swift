@@ -21,7 +21,9 @@ public struct SiddurBloc: Sendable, Equatable, Decodable {
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: Cle.self)
         if c.contains(Cle("c")) {
-            self.init(texte: try c.decode(String.self, forKey: Cle("c")), consigne: true)
+            // Une consigne a ses traductions à part, c_fr et c_en (TEFILA-02, Tefila LiChlomo).
+            self.init(texte: try c.decode(String.self, forKey: Cle("c")), consigne: true,
+                      fr: c.texteOuNil("c_fr"), en: c.texteOuNil("c_en"))
         } else {
             self.init(texte: try c.decode(String.self, forKey: Cle("t")), consigne: false,
                       fr: c.texteOuNil("fr"), en: c.texteOuNil("en"))
@@ -54,9 +56,14 @@ public struct SiddurTexte: Sendable, Equatable, Decodable {
     public let emprunt: TexteLocalise?
     /// Le nombre de chapitres : celui de `sections`, ou celui d'un index de livres, qui n'a pas leur texte.
     public let chapitres: Int
+    /// Ses traductions sont automatiques, pas encore relues (clé « traduction » de livres.json ; audit du 12/11,
+    /// COUV-05).
+    public let traductionAuto: Bool
 
     public init(id: String, groupe: String, titre: TexteLocalise, source: String,
-                sections: [SiddurSection], emprunt: TexteLocalise? = nil, chapitres: Int? = nil) {
+                sections: [SiddurSection], emprunt: TexteLocalise? = nil, chapitres: Int? = nil,
+                traductionAuto: Bool = false) {
+        self.traductionAuto = traductionAuto
         self.id = id
         self.groupe = groupe
         self.titre = titre
@@ -76,12 +83,20 @@ public struct SiddurTexte: Sendable, Equatable, Decodable {
                   source: c.texte("source"),
                   sections: sections,
                   emprunt: try? c.decodeIfPresent(TexteLocalise.self, forKey: Cle("nusah")),
-                  chapitres: try? c.decodeIfPresent(Int.self, forKey: Cle("chapitres")))
+                  chapitres: try? c.decodeIfPresent(Int.self, forKey: Cle("chapitres")),
+                  traductionAuto: c.contains(Cle("traduction")))
     }
 
     /// Le même texte avec ses chapitres, lus à part.
     func avec(sections: [SiddurSection]) -> SiddurTexte {
-        SiddurTexte(id: id, groupe: groupe, titre: titre, source: source, sections: sections, emprunt: emprunt)
+        SiddurTexte(id: id, groupe: groupe, titre: titre, source: source, sections: sections, emprunt: emprunt,
+                    traductionAuto: traductionAuto)
+    }
+
+    /// Les chapitres dont au moins un paragraphe est traduit (hors consignes) : le Yalkout Yossef n'en a que 92 sur
+    /// 1 048 (audit du 12/11, COUV-01, TLIVRES-05) ; le lecteur le dit au lieu de passer sans prévenir à l'hébreu.
+    public func chapitresTraduits() -> Int {
+        sections.filter { s in s.blocs.contains { !$0.consigne && ($0.fr != nil || $0.en != nil) } }.count
     }
 }
 

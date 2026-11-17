@@ -282,7 +282,9 @@ public final class LectureModele {
         let fuseau = Fuseau(lieu.fuseau) ?? horloge.fuseau
         guard let zone = TimeZone(identifier: fuseau.identifiant) else { return nil }
         let date = fuseau.jour(millis: horloge.maintenant)
-        guard let heures = HorairePriere.heures(id, zmanim: Zmanim.jour(lieu: lieu, date: date), fuseau: zone) else {
+        guard let heures = HorairePriere.heures(id, zmanim: Zmanim.jour(lieu: lieu, date: date,
+                                                                               nusah: magasin.reglages.siddurNusah),
+                                                    fuseau: zone) else {
             return nil
         }
         switch id {
