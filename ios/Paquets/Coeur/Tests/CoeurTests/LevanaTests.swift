@@ -20,13 +20,24 @@ struct LevanaTests {
         Fuseau.utc.millis(DateHeure(JourCivil.du(iso), heure: 12))
     }
 
-    /// L'état écrit comme les vecteurs : Dans(n) → n, CeSoir → -1, DernierSoir → -2.
+    /// L'état écrit comme les vecteurs : Dans(n) → n, CeSoir → -1, DernierSoir → -2, PasCeSoir(CHABBAT) → -3,
+    /// PasCeSoir(YOM_TOV) → -4.
     private static func code(_ e: Levana.Etat) -> Int {
         switch e {
         case .dans(let jours): jours
         case .ceSoir: -1
         case .dernierSoir: -2
+        case .pasCeSoir(let chome): chome == .chabbat ? -3 : -4
         }
+    }
+
+    /// Israël : Jérusalem seule ; les autres fuseaux des vecteurs sont en diaspora.
+    private static func israel(_ fuseau: String) -> Bool { fuseau == "Asia/Jerusalem" }
+
+    /// Une fenêtre aux nuits du lieu (sa tsét et son lever), comme Levana.Horaires.du.
+    private static func fen(_ iso: String, _ lieu: Zmanim.Lieu, _ usage: Levana.Usage) throws -> Levana.Fenetre {
+        let z = try #require(Fuseau(lieu.fuseau))
+        return Levana.fenetre(.du(iso), fuseau: z, usage: usage, horaires: Levana.Horaires.du(lieu, fuseau: z))
     }
 
     // MARK: LevanaTest
@@ -52,6 +63,88 @@ struct LevanaTests {
         let partDebut = Levana.part(f, f.debut)
         let partFin = Levana.part(f, f.fin)
         #expect(partDebut < partFin)
+    }
+
+    // Audit du 12/11, FCALENDRIER-03 : quand la fenêtre se ferme l'après-midi, le dernier soir est la veille.
+    @Test func kislev5787LaMiMoisTombeLApresMidiDu24NovembreAParisDernierSoirLe23() throws {
+        let paris = try #require(Fuseau("Europe/Paris"))
+        for usage in [Levana.Usage.troisMiMois, .septMiMois] {
+            let f = Levana.fenetre(.du("2026-11-20"), fuseau: paris, usage: usage)
+            #expect(f.dernierSoir(paris) == .du("2026-11-23"))
+            // Le soir du 24 la fenêtre est fermée (15 h 28) : plus de « dernier soir ».
+            #expect(f.fin < Levana.soir(.du("2026-11-24"), fuseau: paris))
+            #expect(Levana.etat(f, .du("2026-11-23"), fuseau: paris) == .dernierSoir)
+            #expect(Levana.etat(f, .du("2026-11-22"), fuseau: paris) == .ceSoir)
+            // Le 24, c'est déjà la fenêtre suivante.
+            let suivante = Levana.etat(Levana.fenetre(.du("2026-11-24"), fuseau: paris, usage: usage), .du("2026-11-24"), fuseau: paris)
+            if case .dans = suivante {} else { Issue.record("le 24 : \(suivante)") }
+        }
+        // Quinze jours : la fin est à 21 h 06 à Paris, le dernier soir reste le 24 ; à New York (15 h 06), le 23.
+        #expect(Levana.fenetre(.du("2026-11-20"), fuseau: paris, usage: .septQuinze).dernierSoir(paris) == .du("2026-11-24"))
+        let ny = try #require(Fuseau("America/New_York"))
+        #expect(Levana.fenetre(.du("2026-11-20"), fuseau: ny, usage: .septQuinze).dernierSoir(ny) == .du("2026-11-23"))
+    }
+
+    // Audit du 16/11 (mêmes valeurs que LevanaTest d'Android et web/test/levana.test.mjs).
+
+    @Test func leDernierSoirDApresLaTset() throws {
+        for usage in [Levana.Usage.septQuinze, .septNuitQuinze] {
+            #expect(try Self.fen("2025-12-03", Lieux.paris, usage).dernier == .du("2025-12-04"))
+            #expect(try Self.fen("2025-12-03", Lieux.jerusalem, usage).dernier == .du("2025-12-04"))
+            #expect(try Self.fen("2026-01-30", Lieux.jerusalem, usage).dernier == .du("2026-02-01"))
+        }
+        #expect(try Self.fen("2026-05-28", Lieux.paris, .troisMiMois).dernier == .du("2026-05-30"))
+    }
+
+    @Test func edotJusquALaNuitDu15InclusejamaisLaNuitDu16() throws {
+        #expect(Levana.Usage.duNusah(.edot) == .septNuitQuinze)
+        #expect(try Self.fen("2024-10-14", Lieux.jerusalem, .septQuinze).dernier == .du("2024-10-17"))
+        #expect(try Self.fen("2024-10-14", Lieux.jerusalem, .septNuitQuinze).dernier == .du("2024-10-16"))
+        #expect(try Self.fen("2027-02-18", Lieux.paris, .septQuinze).dernier == .du("2027-02-20"))
+        #expect(try Self.fen("2027-02-18", Lieux.paris, .septNuitQuinze).dernier == .du("2027-02-21"))
+        for lieu in [Lieux.jerusalem, Lieux.paris] {
+            for m in 0..<24 {
+                let d = JourCivil.du("2026-01-03").plus(mois: m)
+                let f = try Self.fen(d.iso, lieu, .septNuitQuinze)
+                #expect(CalendrierJuif.jour(f.dernier.plus(jours: 1), enIsrael: false).jourHebreu <= 15, "\(d.iso) : \(f.dernier.iso)")
+            }
+        }
+    }
+
+    @Test func niChabbatNiYomTovSaufLeDernierSoir() throws {
+        let jz = try Self.jerusalem()
+        let pz = try #require(Fuseau("Europe/Paris"))
+        let edot = try Self.fen("2026-04-24", Lieux.jerusalem, .septNuitQuinze)
+        #expect(Levana.etat(edot, .du("2026-04-24"), fuseau: jz, enIsrael: true) == .pasCeSoir(.chabbat))
+        #expect(Levana.premierPossible(edot, fuseau: jz, enIsrael: true) == .du("2026-04-25"))
+        // Le rappel du premier soir passe au samedi soir.
+        let premier = LevanaAlerte.soirs(edot, depuis: .du("2026-04-20"), fuseau: jz, enIsrael: true).first
+        #expect(premier?.jour == .du("2026-04-25") && premier?.soir == .premier)
+        let juin = try Self.fen("2027-06-11", Lieux.paris, .troisMiMois)
+        #expect(Levana.etat(juin, .du("2027-06-11"), fuseau: pz, enIsrael: false) == .pasCeSoir(.chabbat))
+        let chavouot = try Self.fen("2029-05-20", Lieux.paris, .troisMiMois)
+        #expect(Levana.etat(chavouot, .du("2029-05-20"), fuseau: pz, enIsrael: false) == .pasCeSoir(.yomTov))
+        #expect(Levana.etat(chavouot, .du("2029-05-20"), fuseau: pz, enIsrael: true) == .ceSoir)
+        var vus = 0
+        for m in 0..<36 {
+            let f = try Self.fen(JourCivil.du("2026-01-01").plus(mois: m).iso, Lieux.jerusalem, .troisMiMois)
+            if f.dernier.jourDeSemaine == 6 {
+                vus += 1
+                #expect(Levana.etat(f, f.dernier, fuseau: jz, enIsrael: true) == .dernierSoir)
+            }
+        }
+        #expect(vus > 0)
+    }
+
+    @Test func sortieDu9AvALaTsetEt10Tevet() throws {
+        let av = try Self.fen("2026-07-20", Lieux.paris, .troisMiMois)
+        #expect(av.restriction == .tishaBeav)
+        let neufAv = Fuseau.utc.millis(DateHeure(.du("2026-07-23"), heure: 20, minute: 30))
+        #expect(av.debut >= neufAv)
+        #expect(Levana.sortieDeJeune(.du("2025-12-30"), enIsrael: false))
+        #expect(Levana.sortieDeJeune(.du("2026-12-20"), enIsrael: false))
+        #expect(!Levana.sortieDeJeune(.du("2025-12-29"), enIsrael: false))
+        #expect(!Levana.sortieDeJeune(.du("2026-09-21"), enIsrael: false))  // Kippour
     }
 
     @Test func laFenetrePasseeCelleDuMoisSuivant() throws {
@@ -140,9 +233,11 @@ struct LevanaTests {
             let libelle: String
             let troisJours: Bool
             let quinzeJours: Bool
+            let nuitDuQuinze: Bool
         }
-        /// Un mois hébreu : par fuseau (ordre de `fuseaux`), par usage (ordre de `usages`), sept chaînes :
-        /// début, fin, restriction ou "", premier soir, dernier soir, motsaé Chabbat ou "", soirs du rappel.
+        /// Un mois hébreu : par fuseau (ordre de `fuseaux`), par usage (ordre de `usages`), huit chaînes :
+        /// début, fin, restriction ou "", premier soir, dernier soir, motsaé Chabbat ou "", soirs du rappel,
+        /// premier soir possible (ni Chabbat ni Yom tov).
         struct MoisHebreu: Decodable {
             let date: String
             let annee: Int
@@ -184,6 +279,21 @@ struct LevanaTests {
         let jours: [Jours]
         let soirs20h: [[String]]
         let phase: Phase
+        struct Nuits: Decodable {
+            let depart: String
+            let chomeesIsrael: [String?]
+            let chomeesDiaspora: [String?]
+            let jeunesIsrael: [Bool]
+            let jeunesDiaspora: [Bool]
+        }
+        let nuits: Nuits
+        struct HorairesV: Decodable {
+            let fuseau: String
+            let usage: String
+            /// [date, début, fin, dernier soir, premier possible].
+            let fenetres: [[String]]
+        }
+        let horaires: [HorairesV]
     }
 
     private static func vecteurs() throws -> Vecteurs {
@@ -204,6 +314,7 @@ struct LevanaTests {
             #expect(troisJours == u.troisJours, "\(u.nom) : trois jours")
             let quinzeJours = usage.quinzeJours
             #expect(quinzeJours == u.quinzeJours, "\(u.nom) : quinze jours")
+            #expect(usage.nuitDuQuinze == u.nuitDuQuinze, "\(u.nom) : la nuit du 15")
             for langue in Catalogue.langues {
                 let present = catalogue.simples(langue)[libelle] != nil
                 #expect(present, "\(langue) : la chaîne \(libelle)")
@@ -239,7 +350,7 @@ struct LevanaTests {
                 try #require(ligne.vues[i].count == usages.count)
                 for (j, usage) in usages.enumerated() {
                     let attendu = ligne.vues[i][j]
-                    try #require(attendu.count == 7)
+                    try #require(attendu.count == 8)
                     let ou = "\(ligne.date) (\(ligne.mois)/\(ligne.annee)), \(id), \(usage.cle)"
                     let f = Levana.fenetre(date, fuseau: zone, usage: usage)
                     let molad = f.molad
@@ -257,6 +368,12 @@ struct LevanaTests {
                     #expect(dernier == attendu[4], "\(ou) : le dernier soir")
                     let conseille = Levana.motsaeChabbat(f, premier, fuseau: zone)?.iso ?? ""
                     #expect(conseille == attendu[5], "\(ou) : le motsaé Chabbat conseillé")
+                    let enIsrael = Self.israel(id)
+                    let possible = Levana.premierPossible(f, fuseau: zone, enIsrael: enIsrael).iso
+                    #expect(possible == attendu[7], "\(ou) : le premier soir possible")
+                    let rappels = LevanaAlerte.soirs(f, depuis: date, fuseau: zone, enIsrael: enIsrael)
+                        .map { $0.soir.rawValue }.joined(separator: " ")
+                    #expect(rappels == attendu[6], "\(ou) : les soirs du rappel")
                     if !restriction.isEmpty { restrictions += 1 }
                     if !conseille.isEmpty { conseilles += 1 }
                 }
@@ -282,7 +399,7 @@ struct LevanaTests {
             let ou = "\(b.date), \(b.fuseau), \(b.usage)"
             for (k, attendu) in b.etats.enumerated() {
                 let jour = depart.plus(jours: k)
-                let etat = Self.code(Levana.etat(f, jour, fuseau: zone))
+                let etat = Self.code(Levana.etat(f, jour, fuseau: zone, enIsrael: Self.israel(b.fuseau)))
                 #expect(etat == attendu, "\(ou) : l'état du \(jour.iso)")
             }
             try #require(b.instants.count == b.parts.count)
@@ -311,7 +428,7 @@ struct LevanaTests {
                 let molad = f.molad
                 let attenduMolad = ligne.molads[k]
                 #expect(molad == attenduMolad, "\(ou) : le molad de la fenêtre")
-                let etat = Self.code(Levana.etat(f, jour, fuseau: zone))
+                let etat = Self.code(Levana.etat(f, jour, fuseau: zone, enIsrael: Self.israel(ligne.fuseau)))
                 let attenduEtat = ligne.etats[k]
                 #expect(etat == attenduEtat, "\(ou) : l'état")
                 let conseille = Levana.motsaeChabbat(f, jour, fuseau: zone)?.iso
@@ -349,5 +466,51 @@ struct LevanaTests {
             let attendue = p.croissantes[k]
             #expect(croissante == attendue, "la croissance à \(t)")
         }
+    }
+
+    /// La nuit qui suit chaque jour : Chabbat, Yom tov (Israël, diaspora), et la sortie d'un jeûne.
+    @Test func lesNuitsChomeesEtLesSortiesDeJeune() throws {
+        let n = try Self.vecteurs().nuits
+        let depart = JourCivil.du(n.depart)
+        try #require(n.chomeesIsrael.count == n.chomeesDiaspora.count && n.jeunesIsrael.count == n.chomeesIsrael.count)
+        for k in n.chomeesIsrael.indices {
+            let d = depart.plus(jours: k)
+            #expect(Levana.nuitChomee(d, enIsrael: true)?.rawValue == n.chomeesIsrael[k], "\(d.iso), Israël")
+            #expect(Levana.nuitChomee(d, enIsrael: false)?.rawValue == n.chomeesDiaspora[k], "\(d.iso), diaspora")
+            #expect(Levana.sortieDeJeune(d, enIsrael: true) == n.jeunesIsrael[k], "\(d.iso), jeûne en Israël")
+            #expect(Levana.sortieDeJeune(d, enIsrael: false) == n.jeunesDiaspora[k], "\(d.iso), jeûne en diaspora")
+        }
+    }
+
+    /// Les nuits bornées par des heures données (tsét 19 h 37, lever 6 h 11) : début, fin, dernier soir.
+    @Test func lesNuitsDUnLieu() throws {
+        for h in try Self.vecteurs().horaires {
+            let zone = try #require(Fuseau(h.fuseau))
+            let usage = try #require(Levana.Usage(rawValue: h.usage))
+            let horaires = Levana.Horaires(fuseau: zone,
+                                           tset: { zone.millis(DateHeure($0, heure: 19, minute: 37)) },
+                                           netz: { zone.millis(DateHeure($0, heure: 6, minute: 11)) })
+            for ligne in h.fenetres {
+                try #require(ligne.count == 5)
+                let f = Levana.fenetre(.du(ligne[0]), fuseau: zone, usage: usage, horaires: horaires)
+                let ou = "\(ligne[0]), \(h.fuseau), \(h.usage)"
+                #expect(String(f.debut) == ligne[1], "\(ou) : début")
+                #expect(String(f.fin) == ligne[2], "\(ou) : fin")
+                #expect(f.dernier.iso == ligne[3], "\(ou) : dernier soir")
+                let possible = Levana.premierPossible(f, fuseau: zone, enIsrael: Self.israel(h.fuseau)).iso
+                #expect(possible == ligne[4], "\(ou) : premier soir possible")
+            }
+        }
+    }
+}
+
+extension JourCivil {
+    /// `plusMonths` de java.time : le même quantième, ramené au dernier jour d'un mois plus court.
+    fileprivate func plus(mois n: Int) -> JourCivil {
+        let total = annee * 12 + (mois - 1) + n
+        let a = total / 12, m = total % 12 + 1
+        var j = jour
+        while JourCivil(annee: a, mois: m, jour: j) == nil { j -= 1 }
+        return JourCivil(annee: a, mois: m, jour: j)!
     }
 }

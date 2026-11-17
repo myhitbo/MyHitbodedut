@@ -297,6 +297,13 @@ public enum PlanNotifications {
                               nombre: Int = NotificationPlanifiee.Categorie.levana.part,
                               horaires: Horaires) -> [NotificationPlanifiee] {
         guard reglages.levanaRappel else { return [] }
+        return withoutActuallyEscaping(horaires) { horaires in
+            levanaRappels(reglages: reglages, maintenant: maintenant, fuseau: fuseau, nombre: nombre, horaires: horaires)
+        }
+    }
+
+    private static func levanaRappels(reglages: Reglages, maintenant: Int64, fuseau: Fuseau, nombre: Int,
+                                      horaires: @escaping Horaires) -> [NotificationPlanifiee] {
         let lieu = reglages.lieuAlertes(fuseauTelephone: fuseau.identifiant)
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? fuseau
         let usage = reglages.levanaUsage.flatMap { Levana.Usage(rawValue: $0) } ?? Levana.Usage.duNusah(reglages.siddurNusah)
@@ -310,7 +317,9 @@ public enum PlanNotifications {
                         return DateHeureZonee(millis: tset, fuseau: zone)
                     }
                     return DateHeureZonee(DateHeure(jour, heure: 20), fuseau: zone)
-                })
+                },
+                // Le Yom tov de la nuit suit le statut Israël ou diaspora (audit du 16/11).
+                enIsrael: reglages.inIsrael(fuseauTelephone: fuseau.identifiant))
             guard let rappel else { break }
             res.append(NotificationPlanifiee(
                 identifiant: "levana-" + rappel.quand.jour.iso + "-" + rappel.soir.rawValue.lowercased(),

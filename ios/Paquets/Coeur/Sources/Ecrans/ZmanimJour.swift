@@ -203,6 +203,9 @@ public struct ZmanimLevana: Sendable, Equatable {
     public let motsae: JourCivil?
     /// « Pas avant la sortie de Kippour… » ou « … de Ticha bèAv » ; nil sinon.
     public let restriction: Libelle?
+    /// Sous la restriction, 13 pt, couleur de la marque (audit du 16/11) : « Lekhat'hila, pas le soir de Chabbat
+    /// ni de Yom tov… », « Ce soir, sortie du jeûne… ».
+    public let remarques: [Libelle]
     public let jauge: ZmanimJauge
     /// « Choul'han Aroukh O.H. 426 ; Michna Beroura 426. Usage : … » : 11 pt, atténué.
     public let source: Libelle
@@ -344,12 +347,14 @@ public enum ZmanimVueJour {
         let lieu = c.reglages.lieuZmanim
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? c.fuseauTelephone
         let usage = usageLevana(c.reglages)
-        let f = Levana.fenetre(date, fuseau: zone, usage: usage)
+        // Les nuits bornées par la tsét du lieu (audit du 16/11).
+        let f = Levana.fenetre(date, fuseau: zone, usage: usage, horaires: Levana.Horaires.du(lieu, fuseau: zone))
         let soir = Levana.soir(date, fuseau: zone)
         let lune = Levana.phase(soir)
         let etat: Libelle
         let misEnAvant: Bool
-        switch Levana.etat(f, date, fuseau: zone) {
+        let etatDuSoir = Levana.etat(f, date, fuseau: zone, enIsrael: c.enIsrael)
+        switch etatDuSoir {
         case .dans(let jours):
             etat = Libelle.pluriel("levana_dans", quantite: jours, .entier(jours))
             misEnAvant = false
@@ -359,13 +364,24 @@ public enum ZmanimVueJour {
         case .dernierSoir:
             etat = Libelle("levana_dernier_soir")
             misEnAvant = true
+        case .pasCeSoir(let chome):
+            etat = Libelle(chome == .chabbat ? "levana_pas_chabbat" : "levana_pas_yom_tov")
+            misEnAvant = false
         }
         // "${Math.round(lune.eclairage * 100)} %"
         let pourcent = Kotlin.arrondiLong(lune.eclairage * 100)
         let phase = Libelle(lune.croissante ? "levana_croissante" : "levana_decroissante")
         var restriction: Libelle?
         if let r = f.restriction {
-            restriction = Libelle(r == .kippour ? "levana_kippour" : "levana_tisha")
+            // Kippour : en Edot, « notre usage » du Yalkut Yosef (426:34) ; le 9 Av : après avoir goûté (audit du 16/11).
+            restriction = Libelle(r == .tishaBeav ? "levana_tisha" : c.reglages.siddurNusah == .edot ? "levana_kippour_edot" : "levana_kippour")
+        }
+        // Un soir de Chabbat ou de Yom tov (MB 426:12 ; YY 426:33) ; la sortie d'un autre jeûne : goûter d'abord, le
+        // Rema attend un autre soir en Ashkenaz (audit du 16/11).
+        var remarques: [Libelle] = []
+        if case .pasCeSoir = etatDuSoir { remarques.append(Libelle("levana_pas_chome_source")) }
+        if case .dans = etatDuSoir {} else if f.restriction == nil && Levana.sortieDeJeune(date, enIsrael: c.enIsrael) {
+            remarques.append(Libelle(c.reglages.siddurNusah == .ashkenaz ? "levana_jeune_ashkenaz" : "levana_jeune"))
         }
         return ZmanimLevana(lune: lune,
                             sud: (lieu?.latitude ?? 1.0) < 0,
@@ -377,6 +393,7 @@ public enum ZmanimVueJour {
                             fin: zone.dateHeure(millis: f.fin),
                             motsae: Levana.motsaeChabbat(f, date, fuseau: zone),
                             restriction: restriction,
+                            remarques: remarques,
                             jauge: ZmanimJauge(debut: Levana.part(f, f.debut), fin: Levana.part(f, f.fin),
                                                point: Levana.part(f, soir)),
                             source: Libelle("levana_source", .libelle(Libelle(usage.libelle))),

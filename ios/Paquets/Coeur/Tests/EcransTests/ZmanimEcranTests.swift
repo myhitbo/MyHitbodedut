@@ -323,11 +323,13 @@ struct ZmanimEcranTests {
         let levana = try #require(modele.levana)
         let fuseau = try #require(Fuseau("Asia/Jerusalem"))
         let usage = Levana.Usage.duNusah(.edot)
-        let fenetre = Levana.fenetre(modele.jour, fuseau: fuseau, usage: usage)
+        // Les nuits bornées par la tsét du lieu (audit du 16/11).
+        let fenetre = Levana.fenetre(modele.jour, fuseau: fuseau, usage: usage,
+                                     horaires: Levana.Horaires.du(ZmanimEssais.reglages(ville).lieuZmanim, fuseau: fuseau))
         #expect(levana.debut == fuseau.dateHeure(millis: fenetre.debut))
         #expect(levana.fin == fuseau.dateHeure(millis: fenetre.fin))
         #expect(levana.debut < levana.fin)
-        let etat = Levana.etat(fenetre, modele.jour, fuseau: fuseau)
+        let etat = Levana.etat(fenetre, modele.jour, fuseau: fuseau, enIsrael: true)
         switch etat {
         case .dans(let jours):
             #expect(levana.etat == Libelle.pluriel("levana_dans", quantite: jours, .entier(jours)))
@@ -338,6 +340,9 @@ struct ZmanimEcranTests {
         case .dernierSoir:
             #expect(levana.etat == Libelle("levana_dernier_soir"))
             #expect(levana.etatMisEnAvant)
+        case .pasCeSoir(let chome):
+            #expect(levana.etat == Libelle(chome == .chabbat ? "levana_pas_chabbat" : "levana_pas_yom_tov"))
+            #expect(!levana.etatMisEnAvant)
         }
         #expect(levana.lune == Levana.phase(Levana.soir(modele.jour, fuseau: fuseau)))
         #expect(!levana.sud)

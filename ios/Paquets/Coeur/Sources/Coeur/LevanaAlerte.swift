@@ -20,17 +20,21 @@ public enum LevanaAlerte {
         }
     }
 
-    /// Les soirs à rappeler d'une fenêtre, à partir de `depuis`, dans l'ordre des dates.
-    public static func soirs(_ f: Levana.Fenetre, depuis: JourCivil, fuseau: Fuseau) -> [(jour: JourCivil, soir: Soir)] {
-        let premier = f.premierSoir(fuseau)
-        let dernier = f.dernierSoir(fuseau)
-        var liste: [(jour: JourCivil, soir: Soir)] = [(jour: premier, soir: Soir.premier)]
-        if let motsae = Levana.motsaeChabbat(f, premier, fuseau: fuseau), motsae != premier, motsae != dernier {
+    /// Les soirs à rappeler d'une fenêtre, à partir de `depuis`, dans l'ordre des dates. Le premier soir rappelé
+    /// n'est ni Chabbat ni Yom tov (audit du 16/11 : MB 426:12, Kitsour YY 426:33) : jamais de rappel pendant
+    /// Chabbat ou Yom tov, sauf pour le dernier soir.
+    public static func soirs(_ f: Levana.Fenetre, depuis: JourCivil, fuseau: Fuseau,
+                             enIsrael: Bool = true) -> [(jour: JourCivil, soir: Soir)] {
+        let premier = Levana.premierPossible(f, fuseau: fuseau, enIsrael: enIsrael)
+        let dernier = f.dernier
+        var liste: [(jour: JourCivil, soir: Soir)] = []
+        if premier != dernier {
+            liste.append((jour: premier, soir: Soir.premier))
+        }
+        if let motsae = Levana.motsaeChabbat(f, f.premierSoir(fuseau), fuseau: fuseau), motsae != premier, motsae != dernier {
             liste.append((jour: motsae, soir: Soir.motsae))
         }
-        if dernier != premier {
-            liste.append((jour: dernier, soir: Soir.dernier))
-        }
+        liste.append((jour: dernier, soir: Soir.dernier))
         // `sortedBy` de Kotlin est stable : à date égale, l'ordre d'ajout.
         let gardes = Array(liste.enumerated()).filter { rappel in rappel.element.jour >= depuis }
         let tries = gardes.sorted { a, b in
@@ -39,17 +43,21 @@ public enum LevanaAlerte {
         return tries.map { rappel in rappel.element }
     }
 
-    /// Le prochain rappel après `maintenant` : le soir, à `heure` de ce jour-là. Trois fenêtres sont
-    /// essayées ; un soir dont l'heure passe la fin de sa fenêtre est sauté.
+    /// Le prochain rappel après `maintenant` : le soir, à `heure` de ce jour-là, qui borne aussi les nuits (la
+    /// tsét, audit du 16/11). Trois fenêtres sont essayées ; un soir dont l'heure passe la fin de sa fenêtre est
+    /// sauté ; pas avant l'ouverture réelle de la fenêtre, qui peut tomber tard dans la nuit (FCALENDRIER-10).
     public static func prochain(_ maintenant: DateHeureZonee, usage: Levana.Usage,
-                                heure: (JourCivil) -> DateHeureZonee) -> (quand: DateHeureZonee, soir: Soir)? {
+                                heure: @escaping (JourCivil) -> DateHeureZonee,
+                                enIsrael: Bool = true) -> (quand: DateHeureZonee, soir: Soir)? {
         let fuseau = maintenant.fuseau
         let aujourdhui = maintenant.jour
+        let horaires = Levana.Horaires(fuseau: fuseau, tset: { heure($0).millis })
         var date = aujourdhui
         for _ in 0..<3 {
-            let f = Levana.fenetre(date, fuseau: fuseau, usage: usage)
-            for rappel in soirs(f, depuis: aujourdhui, fuseau: fuseau) {
-                let quand = heure(rappel.jour)
+            let f = Levana.fenetre(date, fuseau: fuseau, usage: usage, horaires: horaires)
+            for rappel in soirs(f, depuis: aujourdhui, fuseau: fuseau, enIsrael: enIsrael) {
+                let h = heure(rappel.jour)
+                let quand = h.millis < f.debut ? DateHeureZonee(millis: f.debut, fuseau: fuseau) : h
                 if quand > maintenant && quand.millis <= f.fin { return (quand: quand, soir: rappel.soir) }
             }
             date = f.dernierSoir(fuseau).plus(jours: 1)
