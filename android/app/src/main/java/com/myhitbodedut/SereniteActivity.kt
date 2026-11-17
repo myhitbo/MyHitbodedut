@@ -97,7 +97,9 @@ class SereniteActivity : AccueilVersion() {
     private fun cartePaysage(d: DonneesAccueil, phase: CielDuJour.Phase): View = FrameLayout(this).apply {
         // La moitié de l'écran, entre 300 et 380 dp, agrandie avec le texte du système : sur un
         // 480x854 le titre et le bouton restaient sous les onglets (petits écrans, 17/11).
-        val haut = (resources.configuration.screenHeightDp / 2).coerceIn(300, 380) * resources.configuration.fontScale.coerceIn(1f, 1.4f)
+        val c = resources.configuration
+        // Sans dépasser la hauteur visible sous l'en-tête et au-dessus des onglets (texte agrandi).
+        val haut = minOf((c.screenHeightDp / 2).coerceIn(300, 380) * c.fontScale.coerceIn(1f, 1.4f), (c.screenHeightDp - 200).coerceAtLeast(280).toFloat())
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(haut.toInt())).apply { topMargin = dp(18) }
         background = PaysageCiel(phase, resources.displayMetrics.density)
         outlineProvider = object : android.view.ViewOutlineProvider() {
@@ -285,6 +287,9 @@ class SereniteActivity : AccueilVersion() {
                     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                 })
                 addView(VueVersion.texte(context, getString(nom), 12f, if (actif) k.accent else k.texte2, haut = 4).apply {
+                    // « Aujourd'hui » se coupait en deux lignes avec le texte agrandi.
+                    maxLines = 1
+                    ellipsize = android.text.TextUtils.TruncateAt.END
                     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                     if (actif) setTypeface(typeface, android.graphics.Typeface.BOLD)
                 })

@@ -187,7 +187,8 @@ class BentoActivity : AccueilVersion() {
             })
             addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 0, 1f).apply { topMargin = dp(12) } })
             addView(VueVersion.colonne(context).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(210), ViewGroup.LayoutParams.WRAP_CONTENT)
+            // La place à gauche du hassid (130 dp, débordant de 14) : le titre ne passe plus dessous.
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginEnd = dp(104) }
             addView(VueVersion.texte(context,
                 if (d.faite) getString(R.string.bento_faite, DonneesAccueil.duree(context, d.minutesAujourdhui)) else getString(R.string.bento_hitbo_titre),
                 22f, BLANC, heeboGras))
@@ -198,6 +199,8 @@ class BentoActivity : AccueilVersion() {
                     d.faite -> getString(R.string.version_encore)
                     else -> getString(R.string.version_commencer, DonneesAccueil.duree(context, d.objectifMinutes))
                 }, 15f, VERT, heeboGras, haut = 10).apply {
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
                 background = VueVersion.fond(context, 21, CITRON)
                 minHeight = dp(42)
                 gravity = Gravity.CENTER_VERTICAL

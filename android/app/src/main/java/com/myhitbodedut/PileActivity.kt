@@ -30,6 +30,9 @@ class PileActivity : AccueilVersion() {
     private var donnees: DonneesAccueil? = null
 
     private val titre by lazy { VueVersion.police(this, R.font.secular_one) }
+
+    /** Un petit écran (480x854 : 569 dp de haut) ou un texte agrandi qui le rend aussi serré. */
+    private val petit by lazy { resources.configuration.screenHeightDp / resources.configuration.fontScale.coerceAtLeast(1f) < 680 }
     private val corps by lazy { VueVersion.police(this, R.font.rubik, 400) }
     private val corpsGras by lazy { VueVersion.police(this, R.font.rubik, 600) }
 
@@ -56,7 +59,7 @@ class PileActivity : AccueilVersion() {
         val gauche = VueVersion.colonne(this).apply { layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f) }
         dateVue = VueVersion.texte(this, "", 14f, ENCRE_DOUCE, corps)
         gauche.addView(dateVue)
-        gauche.addView(VueVersion.texte(this, getString(R.string.pile_titre), 30f, ENCRE, titre, haut = 2))
+        gauche.addView(VueVersion.texte(this, getString(R.string.pile_titre), if (petit) 24f else 30f, ENCRE, titre, haut = 2))
         entete.addView(gauche)
         entete.addView(VueVersion.icone(this, R.drawable.ic_nav_texts, ENCRE_DOUCE, getString(R.string.version_textes)) { ouvrirTextes() })
         entete.addView(VueVersion.icone(this, R.drawable.ic_nav_settings_off, ENCRE_DOUCE, getString(R.string.version_reglages)) { ouvrirReglages() })
@@ -150,7 +153,9 @@ class PileActivity : AccueilVersion() {
         addView(VueVersion.texte(context,
             if (d.faite) getString(R.string.pile_hitbo_faite, DonneesAccueil.duree(context, d.minutesAujourdhui))
             else if (d.prenom.isNotBlank()) getString(R.string.pile_hitbo_titre_prenom, d.prenom) else getString(R.string.pile_hitbo_titre),
-            28f, HITBO_ENCRE, titre, haut = 14))
+            // Plus petit sur un petit écran : en 28 sp le titre prenait trois lignes et poussait
+            // « Commencer » sous le bord de la carte (480x854, 17/11).
+            if (petit) 22f else 28f, HITBO_ENCRE, titre, haut = 14))
         addView(VueVersion.texte(context, resources.getQuantityString(R.plurals.version_serie, d.serie, d.serie), 17f, HITBO_ENCRE, corpsGras, haut = 22))
         addView(VueVersion.texte(context, getString(R.string.version_semaine, d.semaineFaits, d.semaineDus), 15f, HITBO_DOUCE, corps, haut = 4))
         // Les jours de la semaine en pastilles : faits pleins, à venir creux.
