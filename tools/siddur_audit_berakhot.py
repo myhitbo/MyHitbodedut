@@ -253,11 +253,28 @@ def occasions(sid, nusah, edot):
     return fait
 
 
+def amida(sid, nusah):
+    """
+    Edot, על הנסים de Pourim dans l'Amida de Cha'harit, Min'ha et Arvit : « נסים ונפלאות » au lieu de
+    « נס ופלא », comme dans le Birkat (Kitsour Yalkut Yosef 695:7 ; 682:21).
+    """
+    fait = []
+    if nusah != "edot":
+        return fait
+    for office in ("chaharit", "minha", "arvit"):
+        for s in texte(sid, office)["sections"]:
+            for b in s["blocs"]:
+                if "t" in b and "וְעָשִֽׂיתָ עִמָּהֶם נֵס וָפֶֽלֶא" in b["t"] and "בימי מרדכי" in plat(b["t"]):
+                    b["t"] = b["t"].replace("נֵס וָפֶֽלֶא", "נִסִּים וְנִפְלָאוֹת")
+                    fait.append(f"נסים ונפלאות ({office})")
+    return fait
+
+
 def main():
     chemins = {n: os.path.join(RAW, f"siddur_{n}.json") for n in ("edot", "sefard", "ashkenaz")}
     siddurs = {n: json.load(open(c, encoding="utf-8")) for n, c in chemins.items()}
     for n, sid in siddurs.items():
-        fait = birkat(sid, n) + occasions(sid, n, siddurs["edot"])
+        fait = birkat(sid, n) + amida(sid, n) + occasions(sid, n, siddurs["edot"])
         json.dump(sid, open(chemins[n], "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
         print(n, ":", ", ".join(fait) if fait else "rien à faire")
 

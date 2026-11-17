@@ -114,6 +114,19 @@ class BerakhotAuditTest {
         assertEquals(3, b.count { it.contains(plat("ועשית עמהם נסים ונפלאות ונודה")) }) // 'Hanouka, Pourim, le הרחמן du Pourim triple
     }
 
+    /**
+     * Edot : la fin d'על הנסים de Pourim au pluriel aussi dans l'Amida de Cha'harit, Min'ha et Arvit,
+     * comme dans le Birkat (Kitsour Yalkut Yosef 695:7 ; tools/siddur_audit_berakhot.py, amida).
+     */
+    @Test
+    fun `amida edot - nissim veniflaot`() {
+        listOf("chaharit", "minha", "arvit").forEach { id ->
+            val b = blocs(Nusah.EDOT, id).filter { !it.consigne }.map { plat(it.texte) }
+            assertTrue(id, b.none { it.contains(plat("נס ופלא")) })
+            assertEquals(id, 1, b.count { it.contains(plat("בימי מרדכי")) && it.contains(plat("ועשית עמהם נסים ונפלאות ונודה")) })
+        }
+    }
+
     /** Ashkenaz : Na'hem pour qui mange le 9 Av (Rema 557:1), replié les autres jours. */
     @Test
     fun `birkat ashkenaz - nahem le 9 Av`() {

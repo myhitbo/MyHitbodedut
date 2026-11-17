@@ -54,3 +54,13 @@ test('les notes de l\'application désignent un bloc et ont un texte', () => {
   }
   assert.ok(n > 40, `${n}`);
 });
+
+// Edot : על הנסים de Pourim au pluriel dans l'Amida, comme dans le Birkat (Kitsour Yalkut Yosef 695:7).
+test('Edot : « נסים ונפלאות » dans l\'על הנסים de Pourim de l\'Amida (Cha\'harit, Min\'ha, Arvit)', () => {
+  const edot = siddur('edot');
+  for (const id of ['chaharit', 'minha', 'arvit']) {
+    const blocs = edot.textes.find((t) => t.id === id).sections.flatMap((s) => s.blocs).filter((b) => b.t).map((b) => nu(b.t));
+    assert.ok(!blocs.some((t) => t.includes('נס ופלא')), id);
+    assert.equal(blocs.filter((t) => t.includes('בימי מרדכי') && t.includes('ועשית עמהם נסים ונפלאות ונודה')).length, 1, id);
+  }
+});
