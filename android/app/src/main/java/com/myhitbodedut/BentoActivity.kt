@@ -126,7 +126,9 @@ class BentoActivity : AccueilVersion() {
 
     /** Une tuile : arrondie, qui s'enfonce un peu sous le doigt (maquette : 0,97 en 160 ms). */
     private fun tuile(fond: Int, hauteur: Int, description: String, action: (View) -> Unit): FrameLayout = FrameLayout(this).apply {
-        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(hauteur)).apply { topMargin = dp(10) }
+        // Le texte agrandi du système (jusqu'à 1,5) agrandit les tuiles d'autant : rien ne se chevauche.
+        val echelle = resources.configuration.fontScale.coerceIn(1f, 1.5f)
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp((hauteur * echelle).toInt())).apply { topMargin = dp(10) }
         background = VueVersion.fond(context, 24, fond)
         clipToOutline = true
         setPadding(dp(18), dp(16), dp(18), dp(16))
@@ -170,12 +172,22 @@ class BentoActivity : AccueilVersion() {
             layoutParams = FrameLayout.LayoutParams(dp(130), dp(180), Gravity.END or Gravity.BOTTOM).apply { setMargins(0, 0, -dp(14), -dp(16)) }
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         })
-        addView(Anneau(context, d.semaineFaits, d.semaineDus, heeboGras).apply {
-            layoutParams = FrameLayout.LayoutParams(dp(72), dp(72), Gravity.START or Gravity.TOP)
-            contentDescription = getString(R.string.version_semaine, d.semaineFaits, d.semaineDus)
-        })
+        // Une seule colonne, l'anneau en haut et le texte en bas, séparés par un ressort : sur un
+        // écran étroit (320 dp) le titre passe sur deux lignes, et la tuile grandit au lieu de
+        // faire chevaucher l'anneau et le titre (petits écrans, 17/11).
+        layoutParams = (layoutParams as LinearLayout.LayoutParams).apply {
+            minimumHeight = height
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
+        }
         addView(VueVersion.colonne(context).apply {
-            layoutParams = FrameLayout.LayoutParams(dp(210), ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.START or Gravity.BOTTOM)
+            layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            addView(Anneau(context, d.semaineFaits, d.semaineDus, heeboGras).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(72), dp(72))
+                contentDescription = getString(R.string.version_semaine, d.semaineFaits, d.semaineDus)
+            })
+            addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 0, 1f).apply { topMargin = dp(12) } })
+            addView(VueVersion.colonne(context).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(210), ViewGroup.LayoutParams.WRAP_CONTENT)
             addView(VueVersion.texte(context,
                 if (d.faite) getString(R.string.bento_faite, DonneesAccueil.duree(context, d.minutesAujourdhui)) else getString(R.string.bento_hitbo_titre),
                 22f, BLANC, heeboGras))
@@ -190,6 +202,7 @@ class BentoActivity : AccueilVersion() {
                 minHeight = dp(42)
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(dp(18), 0, dp(18), 0)
+            })
             })
         })
     }

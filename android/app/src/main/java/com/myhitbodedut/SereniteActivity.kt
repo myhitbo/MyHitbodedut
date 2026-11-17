@@ -95,7 +95,10 @@ class SereniteActivity : AccueilVersion() {
     // --- La carte-paysage ------------------------------------------------------------
 
     private fun cartePaysage(d: DonneesAccueil, phase: CielDuJour.Phase): View = FrameLayout(this).apply {
-        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(380)).apply { topMargin = dp(18) }
+        // La moitié de l'écran, entre 300 et 380 dp, agrandie avec le texte du système : sur un
+        // 480x854 le titre et le bouton restaient sous les onglets (petits écrans, 17/11).
+        val haut = (resources.configuration.screenHeightDp / 2).coerceIn(300, 380) * resources.configuration.fontScale.coerceIn(1f, 1.4f)
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(haut.toInt())).apply { topMargin = dp(18) }
         background = PaysageCiel(phase, resources.displayMetrics.density)
         outlineProvider = object : android.view.ViewOutlineProvider() {
             override fun getOutline(view: View, outline: android.graphics.Outline) = outline.setRoundRect(0, 0, view.width, view.height, dp(32).toFloat())

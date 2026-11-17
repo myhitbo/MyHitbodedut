@@ -89,7 +89,10 @@ class InstantActivity : AccueilVersion() {
     // --- La carte du ciel ------------------------------------------------------------------
 
     private fun carteCiel(d: DonneesAccueil, phase: CielDuJour.Phase): View = FrameLayout(this).apply {
-        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(300)).apply { topMargin = dp(4) }
+        // Au moins 300 dp ; plus haute si le texte agrandi ou un écran étroit l'exigent, au lieu de
+        // faire chevaucher le titre et les zmanim (petits écrans, 17/11).
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) }
+        minimumHeight = dp(300)
         background = PaysageCiel(phase, resources.displayMetrics.density)
         outlineProvider = object : android.view.ViewOutlineProvider() {
             override fun getOutline(view: View, outline: android.graphics.Outline) = outline.setRoundRect(0, 0, view.width, view.height, dp(28).toFloat())
@@ -101,8 +104,11 @@ class InstantActivity : AccueilVersion() {
             background = android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
                 intArrayOf(0x8C000000.toInt(), 0x10000000, 0x99000000.toInt()))
         })
-        addView(VueVersion.colonne(context).apply {
-            layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP)
+        val pile = VueVersion.colonne(context).apply {
+            layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        }
+        addView(pile)
+        pile.addView(VueVersion.colonne(context).apply {
             setPadding(dp(20), dp(18), dp(20), 0)
             addView(VueVersion.texte(context,
                 if (d.faite) getString(R.string.serenite_faite) else getString(R.string.instant_titre),
@@ -128,9 +134,9 @@ class InstantActivity : AccueilVersion() {
                 }
             })
         })
+        pile.addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 0, 1f).apply { topMargin = dp(20) } })
         // Les zmanim, en petit : le prochain, puis les repères du jour sur une ligne.
-        addView(VueVersion.colonne(context).apply {
-            layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM)
+        pile.addView(VueVersion.colonne(context).apply {
             setPadding(dp(20), 0, dp(20), dp(16))
             contentDescription = d.prochain?.let { getString(R.string.version_prochain, it.nom) + ", " + it.heure } ?: getString(R.string.version_sans_lieu)
             isClickable = true
