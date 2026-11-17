@@ -88,7 +88,17 @@ object LangueApp {
      * des langues du téléphone est livrée : on la suit.
      */
     fun repli(systeme: List<String>): String? =
-        if (systeme.none { RegleLangue.normalise(it) in setOf("fr", "en", "he") }) "en" else null
+        if (systeme.none { livree(it) }) "en" else null
+
+    /**
+     * Une langue du téléphone que l'application livre. L'arabe ne l'est qu'en Tunisie : l'interface
+     * est en derja (values-ar-rTN), qu'un téléphone en arabe d'ailleurs ne lirait pas en premier.
+     */
+    fun livree(etiquette: String): Boolean {
+        val langue = RegleLangue.normalise(etiquette)
+        if (langue == "ar") return etiquette.replace('_', '-').split('-').drop(1).any { it.equals("TN", ignoreCase = true) }
+        return langue in setOf("fr", "en", "he", "es")
+    }
 
     /**
      * Au lancement, avant le premier écran : un téléphone en espagnol passe l'application en

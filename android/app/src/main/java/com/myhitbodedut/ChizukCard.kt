@@ -132,9 +132,10 @@ object ChizukCard {
     fun translationOf(item: ChizukItem, language: String): String = when (language) {
         "he", "iw" -> ""
         "en" -> item.en
-        // Le francais et toute langue que l'application ne parle pas : c'est
-        // la langue de values/, donc celle de l'interface qui entoure la carte.
-        else -> item.fr
+        "fr" -> item.fr
+        // L'espagnol, l'arabe tunisien (17/11) : l'interface est traduite, pas les textes ;
+        // l'hébreu seul, comme le veut RegleLangue.
+        else -> ""
     }
 
     /** « iw » est l'ancien code d'Android pour l'hébreu, encore rendu par Locale. */
