@@ -92,10 +92,72 @@ public enum CalendrierJuif {
         /// Ce qui ne se dit qu'avec un minyan : jamais du jour, replié.
         public static let minyan = "minyan"
 
-        public static let derivees = [avinouMalkenou, kriatHatorah] + joursSemaine + [
-            tsomGuedaliaTevet, lendemainKippour, estherPourim, chivaAssarTamouz, basculePluie, erevKippourVendredi,
+        /// Avinou malkénou à Min'ha : le même jour, si Ta'hanoun s'y dit ou à Roch Hachana et Kippour, jamais le
+        /// vendredi (TSIDDUR-09).
+        public static let avinouMalkenouMinha = "avinou_malkenou_minha"
+        /// Le 9 Av ou Kippour (12/11) : « שעשה לי כל צרכי » ne se dit pas.
+        public static let tichaBeavKippour = "ticha_beav_kippour"
+        /// Le dimanche 16 Adar d'un Pourim triple, en Israël hors de Jérusalem (14/11) : l'Ashkenaz y omet Ta'hanoun.
+        public static let pourimTripleHorsJerusalem = "pourim_triple_hors_jerusalem"
+        /// Le même dimanche à Jérusalem, jour du festin (Yalkut Yosef 688:6, § 15).
+        public static let pourimTripleFestin = "pourim_triple_festin"
+
+        // Audit du 16/11 : Ta'hanoun et ce qui en dépend (CalendrierJuif.kt).
+        public static let avinouMalkenouJeune = "avinou_malkenou_jeune"
+        public static let kaddichCompletHallel = "kaddich_complet_hallel"
+        public static let veillePessahCheni = "veille_pessah_cheni"
+        public static let jourPessahCheni = "jour_pessah_cheni"
+        public static let elErekhApayim = "el_erekh_apayim"
+        public static let erevKippour = "erev_kippour"
+        /// « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel) : jamais calculée, ajoutée le jour choisi.
+        public static let sansTahanounPonctuel = "sans_tahanoun_ponctuel"
+
+        // Hallel et Moussaf (audit du 16/11).
+        public static let rochHodechChol = "roch_hodech_chol"
+        public static let holHamoed = "hol_hamoed"
+        public static let hanoukaSansMoussaf = "hanouka_sans_moussaf"
+        public static let hanoukaHorsRochHodech = "hanouka_hors_roch_hodech"
+        public static let leilPessah = "leil_pessah"
+        public static let hallelPartiel = "hallel_partiel"
+
+        // Structure des offices (audit du 16/11).
+        public static let mizmorLetoda = "mizmor_letoda"
+        public static let yomTovSemaine = "yom_tov_semaine"
+        public static let leilHaseder = "leil_haseder"
+        public static let lendemainRochHodech = "lendemain_roch_hodech"
+        public static let chome = "chome"
+
+        // Posées par SiddurJour.conditionsPour selon le noussa'h (audit du 16/11).
+        public static let vihiNoam = "vihi_noam"
+        public static let veataKadoch = "veata_kadoch"
+        public static let tefilin = "tefilin"
+        public static let tefilinSansBerakha = "tefilin_sans_berakha"
+        public static let viduiCoucher = "vidui_coucher"
+        /// Le vendredi 14 Adar d'un Pourim triple, à Jérusalem : la Méguila s'y lit.
+        public static let pourimTripleVendredi = "pourim_triple_vendredi"
+        /// La nuit : posée par la lecture d'après l'heure (`nuit`), jamais par le calendrier.
+        public static let nuit = "nuit"
+
+        // La Havdala, le lendemain d'un jour d'ajouts, Bein hamétsarim, Tikoun Ra'hel (audit du 16/11).
+        public static let havdalaNer = "havdala_ner"
+        public static let havdalaBessamim = "havdala_bessamim"
+        public static let lendemainTichaBeavDimanche = "lendemain_ticha_beav_dimanche"
+        public static let lendemainAjouts = "lendemain_ajouts"
+        public static let beinHametsarim = "bein_hametsarim"
+        public static let tikounRahel = "tikoun_rahel"
+        /// Toujours vrai : une indication fixe du siddour, sans condition du jour.
+        public static let toujours = "toujours"
+
+        public static let derivees = [avinouMalkenou, avinouMalkenouMinha, kriatHatorah] + joursSemaine + [
+            tsomGuedaliaTevet, lendemainKippour, tichaBeavKippour, estherPourim, chivaAssarTamouz, basculePluie, erevKippourVendredi,
             lamnatseah, ledavid, techouvaHochaana, yomTov, moed, chabbatRochHodech, yomTovChabbat, rochHachanaChabbat,
             motsaeChabbatYT, beitAvel, oubli, minyan, chevaBerakhot, zimun, facultatif, embolismique, embolismiqueAvantNissan,
+            pourimTripleHorsJerusalem, pourimTripleFestin, avinouMalkenouJeune, kaddichCompletHallel,
+            veillePessahCheni, erevKippour, sansTahanounPonctuel, jourPessahCheni, elErekhApayim,
+            rochHodechChol, holHamoed, hanoukaSansMoussaf, hanoukaHorsRochHodech, leilPessah, hallelPartiel,
+            mizmorLetoda, yomTovSemaine, leilHaseder, lendemainRochHodech, chome, vihiNoam, veataKadoch, tefilin,
+            tefilinSansBerakha, viduiCoucher, nuit, pourimTripleVendredi, havdalaNer, havdalaBessamim,
+            lendemainTichaBeavDimanche, lendemainAjouts, beinHametsarim, tikounRahel, toujours,
         ]
     }
 
@@ -160,6 +222,8 @@ public enum CalendrierJuif {
         /// Chabbat ou Yom Tov : jour où le travail est interdit (isAssurBemelacha).
         public let chome: Bool
         public let conditions: Set<String>
+        /// Le Chabbat spécial (Chekalim, Zakhor, Para, ha'Hodech…), en hébreu ; nil les autres jours (audit du 16/11).
+        public var parachaSpeciale: String? = nil
     }
 
     /// Jérusalem, ville murée depuis Josué : Pourim y est le 15 Adar (Chouchan Pourim).
@@ -190,9 +254,85 @@ public enum CalendrierJuif {
     public static func jourDeLaPriere(_ texte: String, date: JourCivil, heure: Int, apresSortie: Bool = false) -> JourCivil {
         switch texte {
         case "arvit", "chema_coucher": heure >= 12 ? date.plus(jours: 1) : date
+        // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
+        case "tikoun_hatsot": heure >= 18 ? date.plus(jours: 1) : date
         case "minha": date
         default: apresSortie ? date.plus(jours: 1) : date
         }
+    }
+
+    /// La nuit, pour la lecture (audit du 16/11 : שהחיינו de la Méguila chez les Edot, « אשר הניא » en Sfard et en
+    /// Ashkenaz) : après la sortie des étoiles ou avant l'aube du lieu ; sans lieu (`apresSortie`, `avantAube`
+    /// nil), de 19 h à 6 h. `heure` : l'heure de la journée (0 à 23).
+    public static func nuit(heure: Int, apresSortie: Bool?, avantAube: Bool?) -> Bool {
+        (apresSortie ?? (heure >= 19)) || (avantAube ?? (heure < 6))
+    }
+
+    /// Les repères du jour qui ne changent pas le texte de la prière (audit du 16/11), en clés de chaîne :
+    /// Seli'hot, chofar d'Eloul (Ashkenaz, Sfard), pas de chofar le 29 Eloul, בה״ב et son « מי שבירך »
+    /// (Ashkenaz, Sfard), Yom Kippour katan, érouv tavchilin (CalendrierJuif.reperes).
+    public static func reperes(_ date: JourCivil, enIsrael: Bool, nusah: String) -> [String] {
+        verrou.withLock { _ in
+            let c = calendrier(date, enIsrael: enIsrael, modernes: false)
+            let mois = moisKosherJava(c.getJewishMonth(), embolismique: c.isJewishLeapYear())
+            let j = c.getJewishDayOfMonth()
+            let chabbat = date.jourDeSemaine == 7
+            let edot = nusah == "edot"
+            var r: [String] = []
+            if selihot(date, enIsrael: enIsrael, edot: edot) { r.append("repere_selihot") }
+            if !edot && mois == Mois.eloul && j <= 28 && !chabbat { r.append("repere_chofar") }
+            if mois == Mois.eloul && j == 29 { r.append("repere_pas_de_chofar") }
+            if !edot && c.isBeHaB() { r.append("repere_behab") }
+            if !edot && chabbat && calendrier(date.plus(jours: 2), enIsrael: enIsrael, modernes: false).isBeHaB()
+                && calendrier(date.plus(jours: 5), enIsrael: enIsrael, modernes: false).isBeHaB() {
+                r.append("repere_behab_mi_cheberakh")
+            }
+            if c.isYomKippurKatan() { r.append("repere_yom_kippour_katan") }
+            if erouvTavchilin(date, enIsrael: enIsrael) { r.append("repere_erouv_tavchilin") }
+            return r
+        }
+    }
+
+    private static func selihot(_ date: JourCivil, enIsrael: Bool, edot: Bool) -> Bool {
+        let c = calendrier(date, enIsrael: enIsrael, modernes: false)
+        if date.jourDeSemaine == 7 || c.isRoshHashana() { return false }
+        let mois = moisKosherJava(c.getJewishMonth(), embolismique: c.isJewishLeapYear())
+        let j = c.getJewishDayOfMonth()
+        if mois == Mois.tichri { return j <= 9 }
+        if mois != Mois.eloul { return false }
+        if edot { return j >= 2 }
+        // Le dimanche avant Roch Hachana ; s'il reste moins de quatre jours, celui d'avant.
+        let rh = date.plus(jours: 30 - j)
+        // dayOfWeek.value % 7 de Java : 0 le dimanche, 6 le samedi.
+        var debut = rh.plus(jours: -(rh.jourDeSemaine - 1))
+        if rh.jourJulien - debut.jourJulien < 4 { debut = debut.plus(jours: -7) }
+        return !(date < debut)
+    }
+
+    /// La période où l'on évite d'écouter des chants avec instruments (audit du 16/11) : « omer » (sauf Lag
+    /// baOmer), « bein_hametsarim » du 17 Tamouz au 9 Av, le jeûne repoussé compris ; nil sinon.
+    public static func periodeSansMusique(_ date: JourCivil) -> String? {
+        verrou.withLock { _ in
+            let c = calendrier(date, enIsrael: false, modernes: false)
+            let mois = moisKosherJava(c.getJewishMonth(), embolismique: c.isJewishLeapYear())
+            let j = c.getJewishDayOfMonth()
+            if c.getDayOfOmer() > 0 && c.getDayOfOmer() != 33 { return "omer" }
+            if (mois == Mois.tamouz && j >= 17) || (mois == Mois.av && j <= 9) || c.getYomTovIndex() == JewishCalendar.TISHA_BEAV {
+                return "bein_hametsarim"
+            }
+            return nil
+        }
+    }
+
+    /// La veille d'un Yom tov dont les jours chômés mènent jusqu'à Chabbat (un vendredi de fête).
+    private static func erouvTavchilin(_ date: JourCivil, enIsrael: Bool) -> Bool {
+        if calendrier(date, enIsrael: enIsrael, modernes: false).isAssurBemelacha() { return false }
+        var d = date.plus(jours: 1)
+        while calendrier(d, enIsrael: enIsrael, modernes: false).isYomTovAssurBemelacha() {
+            if d.jourDeSemaine == 6 { return true }
+            d = d.plus(jours: 1)
+        }
+        return false
     }
 
     // MARK: KosherSwift
@@ -257,9 +397,17 @@ public enum CalendrierJuif {
         if tefila.isHallelRecited(jewishCalendar: regles) { c.insert(C.hallel) }
         if tefila.isHallelShalemRecited(jewishCalendar: regles) { c.insert(C.hallelComplet) }
         // La veille de Roch Hachana, pas de Ta'hanoun à la prière (O.H. 581:3), que TefilaRules fait dire.
+        // Pourim triple (15 Adar un Chabbat) : à Jérusalem, le dimanche 16 est le jour du festin, sans Ta'hanoun
+        // ni למנצח (Kitsour Yalkout Yossef 688:6, § 14), ce que TefilaRules ignore ; ailleurs en Israël,
+        // Ta'hanoun, sauf en Ashkenaz (C.pourimTripleHorsJerusalem).
+        let dimanchePourimTriple = dimanche && quantieme == 16 && mois == (embolismique ? Mois.adarII : Mois.adar)
+        let festinJerusalem = mukafChoma && dimanchePourimTriple
+        if festinJerusalem { c.insert(C.pourimTripleFestin) }
+        if enIsrael && !mukafChoma && dimanchePourimTriple { c.insert(C.pourimTripleHorsJerusalem) }
         let tahanoun = tefila.isTachanunRecitedShacharis(jewishCalendar: regles) && index != JewishCalendar.EREV_ROSH_HASHANA
+            && !festinJerusalem
         if tahanoun { c.insert(C.tahanounChaharit) }
-        if tefila.isTachanunRecitedMincha(jewishCalendar: regles) { c.insert(C.tahanounMinha) }
+        if tefila.isTachanunRecitedMincha(jewishCalendar: regles) && !festinJerusalem { c.insert(C.tahanounMinha) }
         // « לשני וחמישי » : les jours sans Ta'hanoun, la section ne se dit pas non plus.
         if tahanoun && lundiOuJeudi { c.insert(C.lundiJeudi) }
         if regles.isAseresYemeiTeshuva() { c.insert(C.asseretYemeiTechouva) }
@@ -278,22 +426,31 @@ public enum CalendrierJuif {
         if !samedi { c.insert("jour_\(semaine)") }
         if index == JewishCalendar.FAST_OF_GEDALYAH || index == JewishCalendar.TENTH_OF_TEVES { c.insert(C.tsomGuedaliaTevet) }
         if mois == Mois.tichri && quantieme == 11 { c.insert(C.lendemainKippour) }
+        if regles.isTishaBav() || regles.isYomKippur() { c.insert(C.tichaBeavKippour) }
         if index == JewishCalendar.FAST_OF_ESTHER || c.contains(C.pourim) { c.insert(C.estherPourim) }
         if index == JewishCalendar.SEVENTEEN_OF_TAMMUZ { c.insert(C.chivaAssarTamouz) }
         if (mois == Mois.tichri && quantieme == 22) || (mois == Mois.nissan && quantieme == 15) { c.insert(C.basculePluie) }
         if mois == Mois.tichri && quantieme == 9 && semaine == 6 { c.insert(C.erevKippourVendredi) }
         // Relevé du 19/10 : למנצח, « לדוד ה׳ אורי », les dix jours et Hochaana Rabba, fêtes et Chabbat.
         let adar1415 = (mois == Mois.adar || mois == Mois.adarII) && (14...15).contains(quantieme)
-        if !(roshChodesh || regles.isChanukah() || adar1415 || regles.isTishaBav() || regles.isAssurBemelacha()
-             || index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR) { c.insert(C.lamnatseah) }
+        if !(roshChodesh || regles.isChanukah() || adar1415 || festinJerusalem || regles.isTishaBav() || regles.isAssurBemelacha()
+             || regles.isCholHamoed() || index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR) { c.insert(C.lamnatseah) }
         if mois == Mois.eloul || (mois == Mois.tichri && quantieme <= 21) { c.insert(C.ledavid) }
         if regles.isAseresYemeiTeshuva() || (mois == Mois.tichri && quantieme == 21) { c.insert(C.techouvaHochaana) }
         let yomTov = regles.isYomTovAssurBemelacha()
         if yomTov { c.insert(C.yomTov) }
         if [C.pessah, C.soukkot, C.chavouot, C.cheminiAtseret].contains(where: { c.contains($0) }) { c.insert(C.moed) }
         if samedi && roshChodesh { c.insert(C.chabbatRochHodech) }
-        // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique : toute l'année
-        // (Edot) ou jusqu'à Roch 'Hodech Adar II inclus (Sfard et Ashkenaz) ; le 30 inaugure le mois suivant.
+        // Hallel et Moussaf (audit du 16/11).
+        if !samedi && roshChodesh { c.insert(C.rochHodechChol) }
+        if regles.isCholHamoed() { c.insert(C.holHamoed) }
+        if regles.isChanukah() && !roshChodesh && !samedi { c.insert(C.hanoukaSansMoussaf) }
+        if regles.isChanukah() && !roshChodesh { c.insert(C.hanoukaHorsRochHodech) }
+        if index == JewishCalendar.PESACH && mois == Mois.nissan && quantieme <= 16 { c.insert(C.leilPessah) }
+        if c.contains(C.hallel) && !c.contains(C.hallelComplet) { c.insert(C.hallelPartiel) }
+        // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique : jusqu'à Roch 'Hodech Adar II
+        // inclus, plus à partir de Nissan (Sfard, Ashkenaz ; pour les Edot, Kitsour Yalkut Yosef 423:14, audit du
+        // 16/11, leur siddour le dit toute l'année) ; le 30 inaugure le mois suivant.
         if roshChodesh && embolismique {
             let inaugure: Int
             if quantieme == 30 {
@@ -310,8 +467,43 @@ public enum CalendrierJuif {
         }
         if samedi && yomTov { c.insert(C.yomTovChabbat) }
         if samedi && regles.isRoshHashana() { c.insert(C.rochHachanaChabbat) }
-        let hierYomTov = calendrier(date.plus(jours: -1), enIsrael: enIsrael, modernes: false).isYomTovAssurBemelacha()
-        if dimanche || (hierYomTov && !regles.isAssurBemelacha()) { c.insert(C.motsaeChabbatYT) }
+        // Audit du 16/11 (C.avinouMalkenouJeune…).
+        if c.contains(C.jeune) && !c.contains(C.asseretYemeiTechouva) { c.insert(C.avinouMalkenouJeune) }
+        if !regles.isChanukah() || roshChodesh || samedi { c.insert(C.kaddichCompletHallel) }
+        if mois == Mois.iyar && quantieme == 13 { c.insert(C.veillePessahCheni) }
+        if mois == Mois.iyar && quantieme == 14 { c.insert(C.jourPessahCheni) }
+        if c.contains(C.lamnatseah) && lundiOuJeudi { c.insert(C.elErekhApayim) }
+        if index == JewishCalendar.EREV_YOM_KIPPUR { c.insert(C.erevKippour) }
+        let hier = calendrier(date.plus(jours: -1), enIsrael: enIsrael, modernes: false)
+        // Un samedi soir qui est Yom tov n'est pas un soir ouvrable (O.H. 491:2 ; audit du 16/11).
+        if (dimanche || hier.isYomTovAssurBemelacha()) && !regles.isAssurBemelacha() { c.insert(C.motsaeChabbatYT) }
+        if regles.isAssurBemelacha() { c.insert(C.chome) }
+        if !(samedi || yomTov || regles.isPesach() || index == JewishCalendar.EREV_PESACH
+             || index == JewishCalendar.EREV_YOM_KIPPUR) { c.insert(C.mizmorLetoda) }
+        if dimanche && (0...5).contains(where: { k in
+            let j = calendrier(date.plus(jours: k), enIsrael: enIsrael, modernes: false)
+            return j.isYomTovAssurBemelacha() || j.isCholHamoed()
+        }) { c.insert(C.yomTovSemaine) }
+        if mois == Mois.nissan && (quantieme == 15 || (quantieme == 16 && !enIsrael)) { c.insert(C.leilHaseder) }
+        if hier.isRoshChodesh() && !roshChodesh { c.insert(C.lendemainRochHodech) }
+        if mukafChoma && semaine == 6 && quantieme == 14 && mois == (embolismique ? Mois.adarII : Mois.adar) {
+            c.insert(C.pourimTripleVendredi)
+        }
+        // La Havdala et le lendemain d'un jour d'ajouts (audit du 16/11).
+        let veille = calendrier(date.plus(jours: -1), enIsrael: enIsrael, modernes: false, mukafChoma: mukafChoma)
+        let kippour = c.contains(C.kippour) || c.contains(C.lendemainKippour)
+        if samedi || dimanche || kippour { c.insert(C.havdalaNer) }
+        if samedi || (dimanche && !c.contains(C.tichaBeav)) || kippour { c.insert(C.havdalaBessamim) }
+        if semaine == 2 && veille.isTishaBav() { c.insert(C.lendemainTichaBeavDimanche) }
+        if !samedi && (dimanche || veille.isRoshChodesh() || veille.isYomTovAssurBemelacha() || veille.isCholHamoed()
+                       || veille.isChanukah() || veille.isPurim()) { c.insert(C.lendemainAjouts) }
+        if (mois == Mois.tamouz && quantieme >= 17) || (mois == Mois.av && quantieme <= 10) { c.insert(C.beinHametsarim) }
+        // Tikoun Ra'hel (audit du 16/11).
+        if !(roshChodesh || (mois == Mois.tichri && quantieme <= (enIsrael ? 22 : 23)) || regles.isChanukah() || adar1415
+             || mois == Mois.nissan || regles.getDayOfOmer() > 0 || (enIsrael && regles.getJewishYear() % 7 == 0)) {
+            c.insert(C.tikounRahel)
+        }
+        c.insert(C.toujours)
 
         // Dans une ville murée, le 15 Adar est Pourim ; le 14 ne l'est qu'ailleurs.
         var fetesDuJour: [String] = []
@@ -340,6 +532,21 @@ public enum CalendrierJuif {
             omer: max(regles.getDayOfOmer(), 0),
             paracha: paracha,
             chome: regles.isAssurBemelacha(),
-            conditions: c)
+            conditions: c,
+            parachaSpeciale: parachaSpeciale(regles, samedi: samedi, mois: mois, embolismique: embolismique,
+                                             quantieme: quantieme, mukafChoma: mukafChoma, format: format))
+    }
+
+    /// Le Chabbat spécial (audit du 16/11) : Chekalim, Zakhor, Para, ha'Hodech… ; à Jérusalem, le Chabbat 15 Adar
+    /// d'un Pourim triple, le maftir « ויבא עמלק » (O.H. 688:6), que getSpecialShabbos ne connaît pas.
+    private static func parachaSpeciale(_ regles: JewishCalendar, samedi: Bool, mois: Int, embolismique: Bool,
+                                        quantieme: Int, mukafChoma: Bool, format: HebrewDateFormatter) -> String? {
+        if !samedi { return nil }
+        if regles.getSpecialShabbos() != .NONE {
+            let nom = format.formatSpecialParsha(jewishCalendar: regles)
+            return nom.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : nom
+        }
+        let adar = embolismique ? Mois.adarII : Mois.adar
+        return mukafChoma && mois == adar && quantieme == 15 ? "מפטיר ויבא עמלק" : nil
     }
 }
