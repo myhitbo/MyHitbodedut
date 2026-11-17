@@ -97,6 +97,7 @@ object Store {
     private const val KEY_LECTURE_ECHELLE = "lecture_echelle"
     private const val KEY_LECTURE_SOMBRE = "lecture_sombre"
     private const val KEY_LECTURE_POLICE = "lecture_police"
+    private const val KEY_LECTURE_DEFILEMENT_VITESSE = "lecture_defilement_vitesse"
     /** Les langues d'un texte à lire (04/11) : « he », « fr », « en », « he+fr », « he+en », « fr+en ». */
     private const val KEY_LECTURE_LANGUES = "lecture_langues"
     private const val KEY_LECTURE_MASQUEE = "lecture_masquee"
@@ -841,6 +842,14 @@ object Store {
 
     fun setLectureEchelle(context: Context, echelle: Float) {
         prefs(context).edit().putFloat(KEY_LECTURE_ECHELLE, echelle).apply()
+    }
+
+    /** La vitesse du défilement automatique des textes (16/11), de 1 à 10 ; la troisième par défaut. */
+    fun lectureDefilementVitesse(context: Context): Int =
+        prefs(context).getInt(KEY_LECTURE_DEFILEMENT_VITESSE, DefilementAuto.DEFAUT).coerceIn(DefilementAuto.MIN, DefilementAuto.MAX)
+
+    fun setLectureDefilementVitesse(context: Context, niveau: Int) {
+        prefs(context).edit().putInt(KEY_LECTURE_DEFILEMENT_VITESSE, niveau.coerceIn(DefilementAuto.MIN, DefilementAuto.MAX)).apply()
     }
 
     /** La police des textes (12/10) : clé de PoliceHebraique.Police, l'hébraïque à empattements par défaut. */
