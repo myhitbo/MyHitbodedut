@@ -38,7 +38,7 @@ test('le site dit ce qui n’est pas traduit et d’où viennent les textes (COU
   assert.match(app, /lecture_traduction_partielle', chapitresTraduits, x\.sections\.length/);
   assert.equal((app.match(/tl\('lecture_traduction_auto'\)/g) ?? []).length, 3);
   assert.match(app, /function carteLicences\(\)[\s\S]*?licences_texte/);
-  for (const dossier of ['values', 'values-en', 'values-iw']) {
+  for (const dossier of ['values', 'values-en', 'values-iw', 'values-es', 'values-ar-rTN']) {
     const xml = lire(`android/app/src/main/res/${dossier}/strings.xml`);
     for (const mot of ['licences_texte', 'KosherJava', 'CC BY-NC-SA 2.5', 'GeoNames']) assert.ok(xml.includes(mot), `${dossier} ${mot}`);
   }

@@ -181,7 +181,7 @@ test('chaque langue a toutes les chaînes et tous les pluriels du français', ()
   const fr = litChaines(readFileSync(join(RES, 'values', 'strings.xml'), 'utf8'));
   const nonTraduisibles = new Set([...readFileSync(join(RES, 'values', 'strings.xml'), 'utf8')
     .matchAll(/<string name="([^"]+)" translatable="false"/g)].map((m) => m[1]));
-  for (const dossier of ['values-en', 'values-iw']) {
+  for (const dossier of ['values-en', 'values-iw', 'values-es', 'values-ar-rTN']) {
     const l = litChaines(readFileSync(join(RES, dossier, 'strings.xml'), 'utf8'));
     const manquantes = Object.keys(fr.chaines).filter((k) => !nonTraduisibles.has(k) && !(k in l.chaines));
     assert.deepEqual(manquantes, [], dossier);
@@ -246,12 +246,14 @@ test('les compteurs s’accordent dans les trois langues (audit du 12/11, TFRLAN
   for (const l of ['fr', 'en', 'he']) assert.ok(!/%3\$s/.test(tr[l].t('trophee_niveau_gagne')), l);
 });
 
-test('la langue : le choix, sinon le téléphone, sinon le français', () => {
+test('la langue : le choix, sinon le téléphone, sinon l’anglais', () => {
   assert.equal(langueInitiale('en', ['fr-FR']), 'en');
   assert.equal(langueInitiale('', ['iw-IL', 'en']), 'he');
   assert.equal(langueInitiale('', ['de-DE', 'en-GB']), 'en');
   assert.equal(langueInitiale('', ['de-DE']), 'en');
-  assert.equal(langueInitiale('', ['es-ES', 'fr-FR']), 'fr');
+  // L'espagnol est livré depuis le 17/11 : il passe avant le français qui le suit.
+  assert.equal(langueInitiale('', ['es-ES', 'fr-FR']), 'es');
+  assert.equal(langueInitiale('', ['pt-BR', 'fr-FR']), 'fr');
   assert.equal(langueInitiale('', []), 'en');
 });
 

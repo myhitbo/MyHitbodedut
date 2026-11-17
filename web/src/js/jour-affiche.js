@@ -223,9 +223,12 @@ export function lienHyomi(iso) {
   return `https://hyomi.org.il/day.php?month1=0&dd=${d}&mm=${m}&yy=${a}`;
 }
 
-/** La halakha du jour, dans la langue de l'application. */
+/**
+ * La halakha du jour, dans la langue de l'application (le site a he, fr, en). Ni l'espagnol ni
+ * l'arabe : l'anglais pour l'un, le français, lu en Tunisie, pour l'autre (Hilloulot.lienHalakha).
+ */
 export function lienHalakha(langue) {
-  const code = /^(he|iw)/.test(langue) ? 'he' : /^en/.test(langue) ? 'en' : 'fr';
+  const code = /^(he|iw)/.test(langue) ? 'he' : /^(en|es)/.test(langue) ? 'en' : 'fr';
   return `https://halachayomit.co.il/${code}/default.aspx`;
 }
 
