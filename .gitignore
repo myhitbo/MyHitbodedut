@@ -7,3 +7,6 @@ nokia/app/build/
 nokia/app/outils/
 .attach_pid*
 __pycache__/
+
+# Produit par swift build sous Linux (COEUR_SANS_VUES change les dépendances)
+ios/Paquets/Coeur/Package.resolved
