@@ -8,10 +8,11 @@
 // Le stockage est passé en paramètre : les tests donnent le leur.
 
 import { ajouteJours, estJourChome, isoLocal, israelParDefaut, jourSemaine } from './calendrier.js';
-import { regionPourPosition } from './calendrier-juif.js';
+import { decisionRegion, dansIsrael } from './calendrier-juif.js';
 import { SessionRule } from './seance.js';
 import { Anneaux, HistoriqueReglage, JaugeSemaine, Plaque } from './regles.js';
 import { JournalPlus } from './regles.js';
+import { NIVEAU_DEFAUT, borneNiveau } from './defilement.js';
 
 export const DEFAULT_START = 6 * 60;
 export const DEFAULT_END = 11 * 60;
@@ -269,33 +270,46 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
      * efface ce drapeau et redéduit la région.
      */
     inIsraelManuel: () => get('in_israel_manuel', false) === true,
-    setInIsrael: (v, manuel = false) => { changeDate('in_israel', !!v); set('in_israel_manuel', !!manuel); },
+    setInIsrael: (v, manuel = false) => {
+      changeDate('in_israel', !!v);
+      set('in_israel_manuel', !!manuel);
+      // Un statut choisi répond à la question en attente (audit du 16/11).
+      if (manuel) set('region_proposee', null);
+    },
+    /**
+     * Le statut que le lieu suggère quand il diffère du statut enregistré (Store.regionProposee,
+     * audit du 16/11) : true, Israël ; false, diaspora ; null, aucune question en attente.
+     */
+    regionProposee: () => { const v = get('region_proposee', null); return typeof v === 'boolean' ? v : null; },
     /**
      * Le lieu des zmanim (10/10) : { nom, latitude, longitude, altitude,
      * fuseau, ville } ; null tant que rien n'est choisi. Il reste dans le
-     * navigateur. Il règle aussi Israël ou diaspora (deuxième jour de fête).
+     * navigateur.
      */
     lieu: () => {
       const l = get('lieu_zmanim', null);
       return l && Number.isFinite(l.latitude) && Number.isFinite(l.longitude) && l.fuseau ? l : null;
     },
-    setLieu(lieu, ville = null, enIsrael = ville ? ville.pays === 'IL' : israelParDefaut(lieu.fuseau)) {
+    /**
+     * La région que le lieu indique (impliquee : une ville le dit, une position se lit sur le
+     * contour du territoire) ne règle le statut Israël ou diaspora que pour le tout premier lieu ;
+     * ensuite, si elle diffère, elle devient une question (audit du 16/11, decisionRegion : le
+     * statut suit la résidence, Choul'han Aroukh 496:3). null : rien à décider (simple renommage).
+     */
+    setLieu(lieu, ville = null, impliquee = ville ? ville.pays === 'IL' : dansIsrael(lieu.latitude, lieu.longitude)) {
+      const premier = store.lieu() === null;
       set('lieu_zmanim', { ...lieu, ville: ville?.id ?? null });
-      // Une ville dit Israël ou diaspora ; la position, le contour du territoire
-      // (regionPourPosition) ; à défaut, le fuseau (israelParDefaut). null : la région
-      // des réglages est gardée (choisie à la main, lors d'une reprise de la position).
-      if (enIsrael !== null) store.setInIsrael(enIsrael);
+      if (impliquee === null) return;
+      const d = decisionRegion(impliquee, store.inIsrael(), premier, store.inIsraelManuel());
+      if (d.region !== null) store.setInIsrael(d.region);
+      set('region_proposee', d.proposition);
     },
     /**
-     * La position du téléphone comme lieu des zmanim (Store.setLieuPosition). Une reprise — le
-     * lieu était déjà la position, et on ne vient pas de la choisir dans la liste (choisie) —
-     * garde la région choisie à la main dans les réglages (audit du 12/11, FCALENDRIER-06) :
-     * avant, chaque ouverture de Zmanim ou de la boussole la réécrivait sans rien dire.
+     * La position du téléphone comme lieu des zmanim (Store.setLieuPosition) : le statut n'en est
+     * jamais réécrit (audit du 16/11), que la position soit choisie dans la liste ou reprise.
      */
-    setLieuPosition(lieu, choisie = false) {
-      const avant = store.lieu();
-      const reprise = !choisie && !!avant && avant.ville == null;
-      store.setLieu(lieu, null, regionPourPosition(lieu.latitude, lieu.longitude, store.inIsraelManuel(), reprise));
+    setLieuPosition(lieu) {
+      store.setLieu(lieu, null);
     },
     /**
      * Le vol des zmanim en vol (28/10, Store.vol) : { numero, depart, arrivee
@@ -325,6 +339,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
     /** Pas de Ta'hanoun en fin de Tichri : toujours en Edot, au choix en Sfard (Store.sansTahanounFinTichri). */
     sansTahanounFinTichri: () => ({ edot: true, sefard: get('sans_tahanoun_fin_tichri_sfard', false) === true }[store.siddurNusah()] ?? false),
     setSansTahanounFinTichriSfard: (v) => set('sans_tahanoun_fin_tichri_sfard', v),
+    /** « Pas de Ta'hanoun aujourd'hui » (Store.sansTahanounLe, audit du 16/11) : le jour choisi, et lui seul. */
+    sansTahanounLe: (iso) => get('sans_tahanoun_jour', null) === iso,
+    setSansTahanounLe: (iso, sans) => set('sans_tahanoun_jour', sans ? iso : null),
     /** Le calendrier s'ouvre sur le mois hébreu ; le mois civil est au choix (Store.calendrierCivil). */
     calendrierCivil: () => get('calendrier_civil', false) === true,
     setCalendrierCivil: (v) => set('calendrier_civil', v),
@@ -401,6 +418,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
     /** La lecture (ReglagesLecture.kt) : taille des lettres de 0,8 à 2, fond noir. */
     lectureEchelle: () => Math.min(2, Math.max(0.8, Number(get('lecture_echelle', 1)) || 1)),
     setLectureEchelle: (e) => set('lecture_echelle', Math.round(Math.min(2, Math.max(0.8, e)) * 10) / 10),
+    /** La vitesse du défilement automatique (16/11), commune à tous les écrans de lecture : niveau 1 à 10, 3 par défaut. */
+    lectureDefilementVitesse: () => borneNiveau(get('lecture_defilement_vitesse', NIVEAU_DEFAUT)),
+    setLectureDefilementVitesse: (n) => set('lecture_defilement_vitesse', borneNiveau(n)),
     // La police des textes (12/10) : 'serif' (par défaut), 'sans', 'arrondie' ; 'frank', 'david', 'rachi', 'miriam' (14/10).
     lecturePolice: () => (['serif', 'sans', 'arrondie', 'frank', 'david', 'rachi', 'miriam'].includes(get('lecture_police', 'serif')) ? get('lecture_police', 'serif') : 'serif'),
     setLecturePolice: (p) => set('lecture_police', p),

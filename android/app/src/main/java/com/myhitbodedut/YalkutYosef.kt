@@ -61,6 +61,9 @@ object YalkutYosef {
 
     private fun fenetreDu(date: LocalDate, israel: Boolean): String? {
         val c = cal(date, israel)
+        // Le jeûne repoussé au dimanche 10 Av : un jour de 9 Av, pas un jour ordinaire, l'étude ordinaire y
+        // étant interdite (audit du 16/11 : Kitsour Yalkut Yosef 554:13 et 551:10).
+        if (c.yomTovIndex == JewishCalendar.TISHA_BEAV) return "bein_hametsarim"
         return fenetre(c.jewishMonth, c.jewishDayOfMonth, c.isJewishLeapYear)
     }
 

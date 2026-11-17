@@ -30,7 +30,9 @@ object LanguesTexte {
     fun defaut(langueApp: String): Mode = when (langueApp) {
         "he", "iw" -> Mode.HE
         "en" -> Mode.HE_EN
-        else -> Mode.HE_FR
+        "fr" -> Mode.HE_FR
+        // L'espagnol et l'arabe tunisien (17/11) : les textes n'y sont pas traduits, l'hébreu seul.
+        else -> Mode.HE
     }
 
     fun mode(c: Context): Mode = Store.lectureLangues(c)?.let { k -> Mode.entries.firstOrNull { it.cle == k } }

@@ -53,6 +53,96 @@ class JourAfficheTest {
         }
     }
 
+    private val newYork = Zmanim.Lieu("New York", 40.71427, -74.00597, 0.0, "America/New_York")
+
+    @Test
+    fun `fete un vendredi - les dates de l audit du 16-11`() {
+        // Jérusalem, Chavouot 2026-05-22 ; New York, Pessa'h 2026-04-03 ; Paris, Roch Hachana 2024-10-04.
+        for ((lieu, date, israel) in listOf(Triple(jerusalem, "2026-05-22", true), Triple(newYork, "2026-04-03", false), Triple(paris, "2024-10-04", false))) {
+            for (nusah in listOf("edot", "sefard", "ashkenaz")) {
+                val h = JourAffiche.horaires(lieu, LocalDate.parse(date), israel, 18, nusah).associateBy { it.cle }
+                assertEquals("$date $nusah", "avant_chkia", h.getValue("allumage").methode.cle)
+                assertTrue("$date $nusah", h.getValue("allumage").instant!! < h.getValue("chkia").instant!!)
+            }
+        }
+    }
+
+    @Test
+    fun `Edot - sortie a Rabbenou Tam en zmaniyot, tset du Yalkut Yosef (audit du 16-11)`() {
+        val samedi = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-10-17"), true, 18, "edot").associateBy { it.cle }
+        assertEquals(samedi.getValue("tset_rt").instant, samedi.getValue("sortie").instant)
+        assertEquals("rabbenou_tam_zmaniyot", samedi.getValue("sortie").methode.cle)
+        assertEquals(samedi.getValue("tset_rt").methode.parametres, samedi.getValue("sortie").methode.parametres)
+        // Les deux sorties, au choix du propriétaire (17/11) : Gueonim à tsét, puis Rabbénou Tam.
+        assertEquals(samedi.getValue("tset").instant, samedi.getValue("sortie_gueonim").instant)
+        assertTrue(samedi.getValue("sortie_gueonim").instant!! < samedi.getValue("sortie").instant!!)
+        assertFalse(JourAffiche.horaires(jerusalem, LocalDate.parse("2026-10-17"), true, 18, "ashkenaz").any { it.cle == "sortie_gueonim" })
+        assertEquals("13.5", samedi.getValue("tset").methode.parametres)
+        // Fête puis fête (Roch Hachana 5787, diaspora, samedi puis dimanche) : après la sortie de Chabbat.
+        val rh1 = JourAffiche.horaires(paris, LocalDate.parse("2026-09-12"), false, 18, "edot").associateBy { it.cle }
+        assertEquals("apres_sortie", rh1.getValue("allumage").methode.cle)
+        assertEquals(rh1.getValue("tset_rt").instant, rh1.getValue("allumage").instant)
+        // Le premier jour de Roch Hachana 5786 (mardi 23/09/2025) : après le tsét du rite.
+        val rh = JourAffiche.horaires(paris, LocalDate.parse("2025-09-23"), false, 18, "edot").associateBy { it.cle }
+        assertEquals(rh.getValue("tset").instant, rh.getValue("allumage").instant)
+        // Sfard et Ashkenaz : inchangés, sortie à 8,5°.
+        val ashkenaz = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-10-17"), true, 18, "ashkenaz").associateBy { it.cle }
+        assertEquals(ashkenaz.getValue("tset").instant, ashkenaz.getValue("sortie").instant)
+        assertEquals("8.5", ashkenaz.getValue("tset").methode.parametres)
+    }
+
+    @Test
+    fun `jeunes - debut et fin, et la veille du 9 Av la chkia (audit du 16-11)`() {
+        val teveth = horaires(paris, "2026-12-20", false)
+        assertEquals(teveth.getValue("alot").instant, teveth.getValue("debut_jeune").instant)
+        assertEquals(teveth.getValue("tset").instant, teveth.getValue("fin_jeune").instant)
+        val veille = horaires(paris, "2026-07-22", false)
+        assertEquals(veille.getValue("chkia").instant, veille.getValue("debut_jeune").instant)
+        val av = horaires(paris, "2026-07-23", false)
+        assertFalse("debut_jeune" in av)
+        assertEquals(av.getValue("tset").instant, av.getValue("fin_jeune").instant)
+        // 9 Av repoussé (dimanche 03/08/2025) : le samedi, le jeûne commence à la chki'a, avant la sortie.
+        val samedi = horaires(paris, "2025-08-02", false)
+        assertEquals(samedi.getValue("chkia").instant, samedi.getValue("debut_jeune").instant)
+        assertTrue("sortie" in samedi)
+        assertFalse("debut_jeune" in horaires(paris, "2026-10-14", false))
+    }
+
+    @Test
+    fun `veille de Pessah - heures du hamets, et le vendredi quand elle tombe un Chabbat (audit du 16-11)`() {
+        val heure = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+        val edot = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-04-01"), true, 18, "edot").filter { it.cle.startsWith("hamets") }
+        assertEquals(listOf("hamets_achila", "hamets_achila", "hamets_biour", "hamets_biour"), edot.map { it.cle })
+        // Kitsour YY 443:1 : MGA en heures zmaniyot depuis l'aube, 10:13 à Jérusalem (10:14 en minutes fixes).
+        assertEquals("10:13", edot[0].local!!.format(heure))
+        assertEquals("mga_72_zmaniyot", edot[0].methode.cle)
+        val commun = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-04-01"), true, 18, "ashkenaz").filter { it.cle.startsWith("hamets") }
+        assertEquals(listOf("10:14", "10:38", "11:28", "11:40"), commun.map { it.local!!.format(heure) })
+        // 14 Nissan 5785 un Chabbat (12/04/2025) : le vendredi, la fin du bi'our.
+        val vendredi = JourAffiche.horaires(jerusalem, LocalDate.parse("2025-04-11"), true, 18).filter { it.cle.startsWith("hamets") }
+        assertEquals(listOf("hamets_biour", "hamets_biour"), vendredi.map { it.cle })
+        assertTrue(JourAffiche.horaires(jerusalem, LocalDate.parse("2026-03-31"), true, 18).none { it.cle.startsWith("hamets") })
+    }
+
+    @Test
+    fun `Jerusalem - 40 min hors Edot, 20 min pour les Edot (audit du 16-11)`() {
+        assertEquals("reglage_allumage_proposition_edot", JourAffiche.propositionAllumage("edot", true, 40))
+        assertEquals(null, JourAffiche.propositionAllumage("edot", true, 20))
+        assertEquals("reglage_allumage_proposition", JourAffiche.propositionAllumage("sefard", true, 18))
+        assertEquals(null, JourAffiche.propositionAllumage("ashkenaz", true, 40))
+        assertEquals(null, JourAffiche.propositionAllumage("ashkenaz", false, 18))
+        assertFalse(JourAffiche.coutumeJerusalem("edot", true, 40))
+        assertTrue(JourAffiche.coutumeJerusalem("sefard", true, 40))
+    }
+
+    @Test
+    fun `Edot - Chaharit pas avant le michéyakir du Yalkut Yosef (audit du 16-11)`() {
+        // Paris, 2026-12-21 à 07:30 : michéyakir à 11,5° (07:26) mais aube du Yalkut Yosef à 07:51.
+        val t = java.time.ZonedDateTime.parse("2026-12-21T07:30:00+01:00[Europe/Paris]").toInstant()
+        assertEquals("chaharit", JourAffiche.momentDuSiddour(paris, t, nusah = "sefard"))
+        assertTrue(JourAffiche.momentDuSiddour(paris, t, nusah = "edot") != "chaharit")
+    }
+
     @Test
     fun `les ajouts nommes suivent les conditions`() {
         val rc = JourAffiche.ajouts(CalendrierJuif.jour(LocalDate.parse("2026-10-12"), false).conditions)
@@ -74,6 +164,17 @@ class JourAfficheTest {
         assertTrue(chabbat.none { it.contains("tahanoun") })
         // Chaque clé a son libellé dans la table.
         (rc + hanouka).forEach { assertTrue(it, Libelles.res(it) != null) }
+    }
+
+    @Test
+    fun `Pourim triple, le dimanche 16 Adar - Halikhot Chlomo en Ashkenaz, precise contre le Michna Beroura`() {
+        val dimanche = LocalDate.parse("2025-03-16") // 16 Adar 5785, après le Chabbat 15
+        val israel = CalendrierJuif.jour(dimanche, true).conditions
+        assertTrue("ajout_sans_tahanoun_halikhot_chlomo" in JourAffiche.ajouts(israel, "ashkenaz", true))
+        listOf("edot", "sefard").forEach { assertTrue(it, "ajout_tahanoun" in JourAffiche.ajouts(israel, it, true)) }
+        assertTrue("ajout_tahanoun" in JourAffiche.ajouts(CalendrierJuif.jour(dimanche, false).conditions, "ashkenaz", false))
+        assertTrue("ajout_sans_tahanoun" in JourAffiche.ajouts(CalendrierJuif.jour(dimanche, true, true).conditions, "ashkenaz", true))
+        assertTrue(Libelles.res("ajout_sans_tahanoun_halikhot_chlomo") != null)
     }
 
     @Test
@@ -158,6 +259,29 @@ class JourAfficheTest {
         val tromso = Zmanim.Lieu("Tromsø", 69.6492, 18.9553, 0.0, "Europe/Oslo")
         val juin = java.time.ZonedDateTime.parse("2026-06-21T14:00:00+02:00[Europe/Oslo]").toInstant()
         assertEquals(SiddurMoment.suggestion(java.time.LocalTime.of(14, 0)), JourAffiche.momentDuSiddour(tromso, juin))
+    }
+
+    // Audit du 16/11 : pas de Tikoun 'hatsot les nuits de Chabbat, de Yom tov et de 'Hol hamoed Pessa'h (consigne du
+    // texte ; Kitsour Yalkut Yosef, דיני תיקון חצות §נה) ; le Tikoun Ra'hel de midi à Bein hamétsarim (§מה). Comme le web.
+    @Test
+    fun `audit du 16-11, Tikoun hatsot selon la nuit et Tikoun Rahel de midi`() {
+        val jer = Zmanim.Lieu("Jérusalem", 31.76904, 35.21633, 0.0, "Asia/Jerusalem")
+        val paris = Zmanim.Lieu("Paris", 48.85341, 2.3488, 0.0, "Europe/Paris")
+        fun t(s: String) = java.time.OffsetDateTime.parse(s).toInstant()
+        for (s in listOf("2026-11-21T01:30:00+02:00", "2026-04-05T01:30:00+03:00", "2026-09-12T01:30:00+03:00", "2026-09-21T01:30:00+03:00", "2027-04-25T01:30:00+03:00", "2026-11-20T23:55:00+02:00")) {
+            assertEquals(s, "chema_coucher", JourAffiche.momentDuSiddour(jer, t(s)))
+        }
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-11-19T01:30:00+02:00")))
+        assertEquals("chema_coucher", JourAffiche.momentDuSiddour(paris, t("2026-09-27T03:00:00+02:00"), false))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(paris, t("2026-09-27T03:00:00+02:00"), true))
+        assertEquals("chema_coucher", SiddurMoment.suggestion(java.time.LocalTime.of(1, 0), true))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-07-05T12:50:00+03:00")))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-07-05T12:50:00+03:00"), true, "sefard"))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-07-05T12:50:00+03:00"), true, "ashkenaz"))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-07-04T12:50:00+03:00")))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-07-20T12:50:00+03:00")))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-07-23T12:50:00+03:00")))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-10-16T12:50:00+03:00")))
     }
 
 }

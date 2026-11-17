@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- L'édition légère ne déclare aucun accès Internet (pas de suivi de vol en direct) : sa promesse reste entière. -->
+<resources>
+    <string name="onboarding_private_body">التطبيق ما يطلب حتى نفاذ للإنترنت. اللي تكتبو يقعد في التليفون هذا، وما يخرج منو كان إذا إنت صدّرتو بيدك.</string>
+</resources>

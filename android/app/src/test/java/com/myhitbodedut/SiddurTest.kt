@@ -119,10 +119,11 @@ class SiddurTest {
         fun empruntes(n: Nusah) = nusah.getValue(n).textes.filter { it.emprunt != null }.map { it.id }
         // Les bénédictions des occasions (14/10) : ce qu'une source libre n'a pas est emprunté.
         assertEquals(listOf("yam", "soukka", "loulav", "bedikat_hamets", "erouv_tavchilin"), empruntes(Nusah.EDOT))
-        assertEquals(listOf("tikoun_hatsot", "maakeh", "refoua", "sefirat_haomer"), empruntes(Nusah.SEFARD))
+        // L'Omer : depuis l'audit du 16/11, celui de l'Arvit de chaque siddour (tools/siddur_omer.py).
+        assertEquals(listOf("tikoun_hatsot", "maakeh", "refoua"), empruntes(Nusah.SEFARD))
         assertEquals(
             listOf("tikoun_hatsot", "birkat_hailanot", "keshet", "barakim", "yam", "nehenin", "hagomel", "mezouza", "hala",
-                "tevilat_kelim", "maakeh", "maasrot", "refoua", "megila", "sefirat_haomer", "bedikat_hamets",
+                "tevilat_kelim", "maakeh", "maasrot", "refoua", "megila", "bedikat_hamets",
                 "erouv_tavchilin", "nerot_chabbat", "havdala"),
             empruntes(Nusah.ASHKENAZ),
         )

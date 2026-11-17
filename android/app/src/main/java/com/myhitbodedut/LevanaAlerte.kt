@@ -24,23 +24,30 @@ object LevanaAlerte {
 
     enum class Soir(val titre: Int) { PREMIER(R.string.levana_rappel_premier), MOTSAE(R.string.levana_rappel_motsae), DERNIER(R.string.levana_rappel_dernier) }
 
-    /** Les soirs à rappeler d'une fenêtre, à partir de [depuis]. */
-    fun soirs(f: Levana.Fenetre, depuis: LocalDate, zone: ZoneId): List<Pair<LocalDate, Soir>> = buildList {
-        add(f.premierSoir(zone) to Soir.PREMIER)
-        Levana.motsaeChabbat(f, f.premierSoir(zone), zone)?.let { if (it != f.premierSoir(zone) && it != f.dernierSoir(zone)) add(it to Soir.MOTSAE) }
-        if (f.dernierSoir(zone) != f.premierSoir(zone)) add(f.dernierSoir(zone) to Soir.DERNIER)
+    /**
+     * Les soirs à rappeler d'une fenêtre, à partir de [depuis]. Le premier soir rappelé n'est ni Chabbat
+     * ni Yom tov (audit du 16/11 : Michna Beroura 426:12, Kitsour Yalkut Yosef 426:33) : jamais de
+     * rappel pendant Chabbat ou Yom tov, sauf pour le dernier soir.
+     */
+    fun soirs(f: Levana.Fenetre, depuis: LocalDate, zone: ZoneId, enIsrael: Boolean = true): List<Pair<LocalDate, Soir>> = buildList {
+        val premier = Levana.premierPossible(f, zone, enIsrael)
+        if (premier != f.dernier) add(premier to Soir.PREMIER)
+        Levana.motsaeChabbat(f, f.premierSoir(zone), zone)?.let { if (it != premier && it != f.dernier) add(it to Soir.MOTSAE) }
+        add(f.dernier to Soir.DERNIER)
     }.filter { !it.first.isBefore(depuis) }.sortedBy { it.first }
 
     /**
      * Le prochain rappel après [maintenant] : le soir, à [heure] de ce jour-là
      * (la sortie des étoiles au lieu choisi, sinon 20 h).
      */
-    fun prochain(maintenant: ZonedDateTime, usage: Levana.Usage, heure: (LocalDate) -> ZonedDateTime): Pair<ZonedDateTime, Soir>? {
+    fun prochain(maintenant: ZonedDateTime, usage: Levana.Usage, heure: (LocalDate) -> ZonedDateTime, enIsrael: Boolean = true): Pair<ZonedDateTime, Soir>? {
         val zone = maintenant.zone
+        // Les nuits bornées par l'heure même du rappel, la tsét (audit du 16/11).
+        val horaires = Levana.Horaires(zone, { heure(it).toInstant() })
         var date = maintenant.toLocalDate()
         repeat(3) {
-            val f = Levana.fenetre(date, zone, usage)
-            for ((d, soir) in soirs(f, maintenant.toLocalDate(), zone)) {
+            val f = Levana.fenetre(date, zone, usage, horaires)
+            for ((d, soir) in soirs(f, maintenant.toLocalDate(), zone, enIsrael)) {
                 // Pas avant l'ouverture réelle de la fenêtre, qui peut tomber tard dans la nuit (FCALENDRIER-10).
                 val quand = heure(d).let { h -> if (h.toInstant().isBefore(f.debut)) f.debut.atZone(zone) else h }
                 if (quand.isAfter(maintenant) && !quand.toInstant().isAfter(f.fin)) return quand to soir
@@ -67,7 +74,7 @@ object LevanaAlerte {
         alarmes.cancel(pending)
         if (!Store.levanaRappel(context)) return
         val zone = Store.lieuAlertes(context)?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
-        val (quand, soir) = prochain(ZonedDateTime.now(zone), VueJour.usageLevana(context), heure(context, zone)) ?: return
+        val (quand, soir) = prochain(ZonedDateTime.now(zone), VueJour.usageLevana(context), heure(context, zone), Store.inIsrael(context)) ?: return
         Store.setLevanaRappelSoir(context, soir.name)
         runCatching { alarmes.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, quand.toInstant().toEpochMilli(), pending) }
     }

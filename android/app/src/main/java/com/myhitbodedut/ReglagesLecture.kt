@@ -37,6 +37,10 @@ import kotlin.math.roundToInt
  * rien : un appui long sur le texte le fait revenir, ce que dit une barre
  * en bas de l'écran au moment où on le masque.
  *
+ * Le défilement automatique (16/11, DefilementAuto) : un bouton de la barre fait monter le
+ * texte tout seul ; pendant qu'il défile, une petite commande remplace la pastille :
+ * moins vite, la vitesse, plus vite, arrêter. Toucher le texte l'arrête aussi.
+ *
  * Les réglages valent pour tous les écrans de lecture (Store) ; chaque
  * écran redessine son texte dans surChangement, ou laisse [appliquer]
  * retailler et recolorer les vues qu'il a marquées.
@@ -61,7 +65,7 @@ class ReglagesLecture private constructor(
      */
     private val bouton: Int = run {
         val largeur = contexte.resources.displayMetrics.widthPixels / densite
-        val nombre = 5 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0)
+        val nombre = 6 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0)
         (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(30, 48)
     }
 
@@ -101,7 +105,39 @@ class ReglagesLecture private constructor(
         visibility = View.GONE
     }
 
+    /** Le défilement automatique de cet écran, posé par [installer]. */
+    private var defilementAuto: DefilementAuto? = null
+
+    /** La vitesse, au milieu de la commande du défilement. */
+    private val niveau = TextView(contexte)
+
+    /** La commande du défilement en cours : moins vite, la vitesse, plus vite, arrêter. */
+    private val commande = LinearLayout(contexte).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        background = fondArrondi(24)
+        setPadding(dp(4), 0, dp(4), 0)
+        elevation = dp(6).toFloat()
+        // Moins vite à gauche et plus vite à droite, comme A− et A+.
+        layoutDirection = View.LAYOUT_DIRECTION_LTR
+        visibility = View.GONE
+    }
+
     init {
+        commande.addView(vitesse(plus = false))
+        commande.addView(niveau.apply {
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48))
+            gravity = Gravity.CENTER
+            minWidth = dp(40)
+            textSize = 15f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(surAccent)
+        })
+        commande.addView(vitesse(plus = true))
+        commande.addView(filet())
+        commande.addView(icone(R.drawable.ic_lecture_pause, R.string.lecture_defiler_pause) { defilementAuto?.arreter() })
+        montrerVitesse()
+
         barre.addView(lettre(plus = false))
         barre.addView(pourcent.apply {
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48))
@@ -151,6 +187,7 @@ class ReglagesLecture private constructor(
             setOnClickListener { choisirLangues(it) }
         })
         if (avecNusah) barre.addView(icone(R.drawable.ic_lecture_nusah, R.string.siddur_choose) { choisirNusah(it) })
+        barre.addView(icone(R.drawable.ic_lecture_defiler, R.string.lecture_defiler) { defilementAuto?.demarrer() })
         barre.addView(filet())
         barre.addView(icone(R.drawable.ic_lecture_masquer, R.string.lecture_masquer) { masquer() })
         barre.addView(icone(R.drawable.ic_lecture_replier, R.string.lecture_replier) { deplier(false) })
@@ -160,7 +197,9 @@ class ReglagesLecture private constructor(
         )
         pastille.layoutParams = bas(36)
         barre.layoutParams = bas(52)
+        commande.layoutParams = bas(52)
         racine.addView(barre)
+        racine.addView(commande)
         racine.addView(pastille)
         placer()
         // Au-dessus du bouton du bas de l'écran (« Terminé », précédent / suivant).
@@ -177,7 +216,7 @@ class ReglagesLecture private constructor(
         val pied = auDessusDe?.takeIf { it.visibility == View.VISIBLE }
             ?.let { it.height + ((it.layoutParams as? ViewGroup.MarginLayoutParams)?.bottomMargin ?: 0) } ?: 0
         val marge = pied + dp(16)
-        listOf(pastille, barre).forEach { v ->
+        listOf(pastille, barre, commande).forEach { v ->
             val lp = v.layoutParams as FrameLayout.LayoutParams
             if (lp.bottomMargin != marge) {
                 lp.bottomMargin = marge
@@ -219,6 +258,47 @@ class ReglagesLecture private constructor(
         contentDescription = contexte.getString(if (plus) R.string.lecture_plus else R.string.lecture_moins)
         touchable(this)
         setOnClickListener { changerTaille(Store.lectureEchelle(contexte) + if (plus) PAS else -PAS) }
+    }
+
+    /** « − » et « + » de la commande du défilement : une vitesse de moins, une de plus. */
+    private fun vitesse(plus: Boolean): View = TextView(contexte).apply {
+        layoutParams = LinearLayout.LayoutParams(dp(48), dp(48))
+        gravity = Gravity.CENTER
+        text = if (plus) "+" else "−"
+        textSize = 22f
+        typeface = Typeface.DEFAULT_BOLD
+        setTextColor(surAccent)
+        contentDescription = contexte.getString(if (plus) R.string.lecture_plus_vite else R.string.lecture_moins_vite)
+        touchable(this)
+        setOnClickListener {
+            Store.setLectureDefilementVitesse(contexte, Store.lectureDefilementVitesse(contexte) + if (plus) 1 else -1)
+            montrerVitesse()
+            niveau.announceForAccessibility(niveau.contentDescription)
+        }
+    }
+
+    private fun montrerVitesse() {
+        val n = Store.lectureDefilementVitesse(contexte)
+        niveau.text = n.toString()
+        niveau.contentDescription = contexte.getString(R.string.lecture_vitesse, n)
+    }
+
+    /** Le défilement démarre ou s'arrête : la commande prend la place de la barre, puis la rend à la pastille. */
+    private fun surDefilement(actif: Boolean) {
+        if (actif) {
+            montrerVitesse()
+            barre.visibility = View.GONE
+            pastille.visibility = View.GONE
+            commande.visibility = View.VISIBLE
+        } else {
+            commande.visibility = View.GONE
+            if (!Store.lectureMasquee(contexte)) deplier(false)
+        }
+    }
+
+    /** Un toucher posé sur le texte arrête le défilement : on reprend la main. */
+    private fun arreterAuToucher(e: MotionEvent) {
+        if (e.actionMasked == MotionEvent.ACTION_DOWN) defilementAuto?.arreter()
     }
 
     private fun changerTaille(voulue: Float) {
@@ -308,6 +388,7 @@ class ReglagesLecture private constructor(
 
     /** Plus rien à l'écran ; la barre du bas dit comment le retrouver. */
     private fun masquer() {
+        defilementAuto?.arreter()
         Store.setLectureMasquee(contexte, true)
         barre.visibility = View.GONE
         pastille.visibility = View.GONE
@@ -360,6 +441,7 @@ class ReglagesLecture private constructor(
 
     /** Pour un texte qui prend lui-même les touchers (les versets des Tehilim) : il les montre ici. */
     fun toucher(e: MotionEvent) {
+        arreterAuToucher(e)
         toucher.onTouchEvent(e)
     }
 
@@ -372,6 +454,7 @@ class ReglagesLecture private constructor(
         })
         liste.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                arreterAuToucher(e)
                 toucher.onTouchEvent(e)
                 return false
             }
@@ -387,6 +470,7 @@ class ReglagesLecture private constructor(
         // Le texte ne prend pas les touchers : ils arrivent à la vue qui défile,
         // qui les laisse passer (false) après les avoir montrés au détecteur.
         defilement.setOnTouchListener { _, e ->
+            arreterAuToucher(e)
             toucher.onTouchEvent(e)
             false
         }
@@ -437,6 +521,7 @@ class ReglagesLecture private constructor(
                 }
             }
             val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, garderPlace)
+            reglages.defilementAuto = DefilementAuto(activite, defilement) { reglages.surDefilement(it) }
             reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement)
             if (defilement is RecyclerView) reglages.suivreListe(defilement) else reglages.suivreDefilement(defilement)
             // De quoi lire la fin du texte au-dessus de la barre ouverte.

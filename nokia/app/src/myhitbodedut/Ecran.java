@@ -142,6 +142,26 @@ abstract class Ecran extends Canvas {
     static final String[] PENDANT = {"praying", "standing_back", "praise"};
     static final String[] JOIE = {"dancing_joy", "thumbs_up", "open_arms"};
 
+    /**
+     * L'hébreu se lit de droite à gauche : en hébreu, les écrans se retournent
+     * (titre à droite, chiffre des cartes à droite, semaine de droite à gauche).
+     * Le téléphone dessine lui-même chaque ligne dans le bon sens (bidi de
+     * drawString) : ici, on ne fait que placer et aligner.
+     */
+    static boolean rtl() {
+        return Mots.rtl();
+    }
+
+    /** Le x d'un élément de largeur l, posé à x dans un écran de largeur w : en miroir en hébreu. */
+    static int mx(int x, int l, int w) {
+        return rtl() ? w - x - l : x;
+    }
+
+    /** L'ancre d'un texte posé au début de sa zone : à gauche, ou à droite en hébreu. */
+    static int debut() {
+        return rtl() ? Graphics.RIGHT : Graphics.LEFT;
+    }
+
     /** Le bandeau vert du haut ; renvoie sa hauteur. */
     static int bandeau(Graphics g, int largeur, String titre, String droite) {
         int h = GRASSE.getHeight() + 10;
@@ -150,13 +170,16 @@ abstract class Ecran extends Canvas {
         g.setColor(0xFFFFFF);
         g.setFont(GRASSE);
         int place = largeur - 2 * MARGE;
+        // En hébreu, le titre est à droite et le complément (durée, format) à gauche.
+        boolean r = rtl();
         if (droite != null) {
             g.setFont(PETITE);
-            g.drawString(droite, largeur - MARGE, h / 2 + PETITE.getHeight() / 2, Graphics.BASELINE | Graphics.RIGHT);
+            g.drawString(droite, r ? MARGE : largeur - MARGE, h / 2 + PETITE.getHeight() / 2, Graphics.BASELINE | (r ? Graphics.LEFT : Graphics.RIGHT));
             place -= PETITE.stringWidth(droite) + 6;
             g.setFont(GRASSE);
         }
-        g.drawString(tronque(titre, place, GRASSE), MARGE, h / 2 + GRASSE.getBaselinePosition() / 2 - 1, Graphics.BASELINE | Graphics.LEFT);
+        g.drawString(tronque(titre, place, GRASSE), r ? largeur - MARGE : MARGE, h / 2 + GRASSE.getBaselinePosition() / 2 - 1,
+            Graphics.BASELINE | (r ? Graphics.RIGHT : Graphics.LEFT));
         return h;
     }
 
@@ -209,6 +232,23 @@ abstract class Ecran extends Canvas {
         Vector lignes = coupe(texte, largeur, f);
         for (int i = 0; i < lignes.size(); i++) {
             g.drawString((String) lignes.elementAt(i), x + largeur / 2, y, Graphics.TOP | Graphics.HCENTER);
+            y += f.getHeight();
+        }
+        return y;
+    }
+
+    /**
+     * Écrit des lignes déjà coupées, alignées à gauche, ou à droite pour
+     * l'hébreu (droite) ; renvoie le y suivant. Coupé dans l'ordre du texte,
+     * l'hébreu garde ses premiers mots en haut : le téléphone retourne
+     * chaque ligne, pas le paragraphe.
+     */
+    static int lignes(Graphics g, Vector lignes, int x, int y, int largeur, Font f, boolean droite) {
+        g.setFont(f);
+        for (int i = 0; i < lignes.size(); i++) {
+            String l = (String) lignes.elementAt(i);
+            if (droite) g.drawString(l, x + largeur, y, Graphics.TOP | Graphics.RIGHT);
+            else g.drawString(l, x, y, Graphics.TOP | Graphics.LEFT);
             y += f.getHeight();
         }
         return y;

@@ -4,6 +4,7 @@
 // Android : deux se'ifim par jour ; Roch 'Hodech ; avant et pendant chaque fête
 // les siennes ; les vendredis ordinaires le Chabbat ; sinon la vie de chaque jour.
 import { calendrier } from './calendrier-juif.js';
+import { JewishCalendar } from '../vendor/kosher-zmanim-0.9.0.min.js';
 
 export const PAR_JOUR = 2;
 // Les mois de KosherJava et de kosher-zmanim.
@@ -26,7 +27,13 @@ export function fenetre(mois, jour, embolismique) {
 
 const decale = (iso, n) => { const [a, m, d] = iso.split('-').map(Number); return new Date(Date.UTC(a, m - 1, d + n, 12)).toISOString().slice(0, 10); };
 const epoque = (iso) => Math.floor(Date.parse(`${iso}T00:00:00Z`) / 86400000);
-const fenetreDu = (iso, il) => { const c = calendrier(iso, il, false, false); return fenetre(c.getJewishMonth(), c.getJewishDayOfMonth(), c.isJewishLeapYear()); };
+// Le jeûne repoussé au dimanche 10 Av : un jour de 9 Av, pas un jour ordinaire (audit du 16/11 :
+// Kitsour Yalkut Yosef 554:13 et 551:10 ; YalkutYosef.fenetreDu).
+const fenetreDu = (iso, il) => {
+  const c = calendrier(iso, il, false, false);
+  if (c.getYomTovIndex() === JewishCalendar.TISHA_BEAV) return 'bein_hametsarim';
+  return fenetre(c.getJewishMonth(), c.getJewishDayOfMonth(), c.isJewishLeapYear());
+};
 
 /** [période, rang du jour dans la période] */
 export function periode(iso, il) {

@@ -57,7 +57,16 @@ object Hilloulot {
      * Un « adar » sans précision se dit en Adar II les années embolismiques
      * (Choul'han Aroukh OH 568:7) ; en Adar I pour les Ashkénazes, comme le Rema
      * l'y note (« וכן המנהג », audit du 16/10). Un 30 absent cette année
-     * ([dernierJour] le 29), le 29.
+     * ([dernierJour] le 29), le 29 : c'est l'avis du Maguen Avraham, que le
+     * monde suit (Michna Beroura 568:42, pour un premier anniversaire dans un
+     * mois court ; certains A'haronim fixent toujours Roch 'Hodech) ; le Yalkut
+     * Yosef n'a pas été trouvé sur ce point (audit du 16/11).
+     *
+     * Le 30 Adar (audit du 16/11) n'existe qu'en Adar I : une année embolismique,
+     * « adar-30 » vaut le 30 Adar I dans tous les rites (Kitsour Yalkut Yosef 40:22),
+     * jamais le 29 Adar II. Une année simple, en Ashkenaz, le 30 Chevat, premier jour
+     * de Roch 'Hodech Adar (Michna Beroura 568:42) ; en Edot et en Sfard, aucune
+     * source lue ne le règle : le 29 Adar, comme un autre 30 absent.
      */
     fun cles(mois: Int, jour: Int, embolismique: Boolean, dernierJour: Boolean, ashkenaz: Boolean = false): List<String> {
         val m = when {
@@ -67,7 +76,15 @@ object Hilloulot {
             else -> listOf(mois.toString())
         }
         val jours = if (jour == 29 && dernierJour) listOf(29, 30) else listOf(jour)
-        return m.flatMap { k -> jours.map { "$k-$it" } }
+        val base = m.flatMap { k -> jours.map { "$k-$it" } }
+        val trente = listOf("adar-30", "adar1-30")
+        return when {
+            embolismique && mois == 13 -> base - "adar-30"
+            embolismique && mois == 12 && jour == 30 && "adar-30" !in base -> base + "adar-30"
+            !embolismique && ashkenaz && mois == 12 -> base - trente
+            !embolismique && ashkenaz && mois == 11 && jour == 30 -> base + trente
+            else -> base
+        }
     }
 
     /**
@@ -142,7 +159,8 @@ object Hilloulot {
     /** La halakha du jour, dans la langue de l'application (le site a he, fr, en). */
     fun lienHalakha(langue: String): String {
         val l = langue.lowercase()
-        val code = if (l.startsWith("he") || l.startsWith("iw")) "he" else if (l.startsWith("en")) "en" else "fr"
+        // Le site n'a ni l'espagnol ni l'arabe : l'anglais pour l'un, le français, lu en Tunisie, pour l'autre.
+        val code = if (l.startsWith("he") || l.startsWith("iw")) "he" else if (l.startsWith("en") || l.startsWith("es")) "en" else "fr"
         return "https://halachayomit.co.il/$code/default.aspx"
     }
 

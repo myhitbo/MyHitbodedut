@@ -63,6 +63,9 @@ data class LocalizedText(val he: String, val fr: String, val en: String) {
     fun forLanguage(language: String): String = when (language) {
         "fr" -> fr.ifBlank { he }
         "en" -> en.ifBlank { he }
+        // L'espagnol et l'arabe tunisien (17/11) : l'interface seule est traduite, les textes en hébreu.
+        "es" -> he
+        "ar" -> he
         else -> he
     }
 

@@ -53,10 +53,50 @@ test('zmanim : la même heure que KosherJava, à une seconde près, et les même
   }
 });
 
+test('zmanim des Edot et heures du ’hamets : la même heure que KosherJava, à une seconde près (audit du 16/11)', () => {
+  let n = 0;
+  for (const r of VECTEURS.zmanim) {
+    const lieu = { nom: r.lieu, latitude: r.lat, longitude: r.lon, altitude: 0, fuseau: r.fuseau };
+    const edot = Z.jour(lieu, r.date, 'edot').filter((z) => Z.CLES_EDOT.includes(z.cle)).map((z) => [`edot_${z.cle}`, z]);
+    const hamets = ['edot', ''].flatMap((nusah) => Z.hamets(lieu, r.date, nusah).map((z, i) => [`hamets_${i}_${nusah || 'commun'}`, z]));
+    for (const [cle, z] of [...edot, ...hamets]) {
+      const attendu = r[cle];
+      const ou = `${r.lieu} ${r.date} ${cle}`;
+      assert.ok(attendu, ou);
+      if (attendu === 'ABSENT') { assert.equal(z.statut, 'absent', ou); continue; }
+      assert.equal(z.statut, 'ok', ou);
+      assert.ok(Math.abs(+z.instant - Date.parse(attendu)) <= 1000, `${ou} : ${z.instant.toISOString()} contre ${attendu}`);
+      n++;
+    }
+  }
+  assert.ok(n > 500, `${n}`);
+});
+
+test('Edot : les zmanim du Yalkut Yosef, avec les écarts relevés par l’audit du 16/11', () => {
+  const [jer, paris, ny] = LIEUX;
+  const t = (l, iso, cle, nusah) => Z.jour(l, iso, nusah).find((z) => z.cle === cle).instant;
+  const ecart = (l, iso, cle) => (+t(l, iso, cle, 'edot') - +t(l, iso, cle)) / 60e3;
+  const hms = (d, f) => new Intl.DateTimeFormat('fr-FR', { timeZone: f, timeStyle: 'medium' }).format(d);
+  // Aube à 72 min zmaniyot (Kitsour YY 89:12) : Jérusalem 2026-12-19, 05:33:20 contre 05:15:56 à 16,1°.
+  assert.equal(hms(t(jer, '2026-12-19', 'alot', 'edot'), jer.fuseau).slice(0, 5), '05:33');
+  // Plag du Yalkut Yosef (263:45) : 18:34:19 contre 18:18:18 selon le Gra, Jérusalem 2026-06-19.
+  assert.equal(hms(t(jer, '2026-06-19', 'plag', 'edot'), jer.fuseau).slice(0, 5), '18:34');
+  assert.ok(Math.abs(ecart(paris, '2026-06-20', 'plag') - 18.2) < 0.5);
+  // Maguen Avraham en 72 min zmaniyot : Jérusalem 2026-06-20, 08:24:38 contre 08:31:19.
+  assert.equal(hms(t(jer, '2026-06-20', 'szks_mga', 'edot'), jer.fuseau).slice(0, 5), '08:24');
+  // Rabbénou Tam en zmaniyot : New York 2026-06-20, 22:01:07 contre 21:42:33.
+  assert.equal(hms(t(ny, '2026-06-20', 'tset_rt', 'edot'), ny.fuseau).slice(0, 5), '22:01');
+  // Le profil commun (Sfard, Ashkenaz) ne bouge pas.
+  for (const nusah of ['sefard', 'ashkenaz']) assert.deepEqual(Z.jour(jer, '2026-06-20', nusah), Z.jour(jer, '2026-06-20'));
+});
+
 test('le profil web est celui d’Android, dans le même ordre', () => {
   const kotlin = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'java', 'com', 'myhitbodedut', 'Zmanim.kt'), 'utf8');
-  const cles = [...kotlin.matchAll(/^\s+"([a-z_]+)" to Methode\(/gm)].map(([, c]) => c);
-  assert.deepEqual(Z.CLES, cles);
+  const [commun, edot] = kotlin.split('val PROFIL_EDOT');
+  const cles = (texte) => [...texte.matchAll(/^\s+"([a-z_]+)" to Methode\(/gm)].map(([, c]) => c);
+  assert.deepEqual(Z.CLES, cles(commun));
+  // Le profil des Edot (audit du 16/11) : les mêmes lignes remplacées des deux côtés.
+  assert.deepEqual(Z.CLES_EDOT, cles(edot.split('\n    )')[0]));
 });
 
 // --- 2. Hebcal, moteur de comparaison ------------------------------------------------
@@ -217,13 +257,70 @@ test('siddour : chaque annotation désigne encore son bloc, et chaque libellé e
   const { index } = await import('../src/js/siddur-jour.js');
   for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
     const siddur = JSON.parse(readFileSync(join(raw, 'raw', `siddur_${nusah}.json`), 'utf8'));
-    const renvois = [...index(annotations[nusah].chaharit).renvois.values()].flat();
+    // Les rappels (audit du 16/11) sont des renvois sans cible : hors de ce compte.
+    const renvois = [...index(annotations[nusah].chaharit).renvois.values()].flat().filter((a) => a.cible);
     assert.deepEqual(renvois.map((a) => a.cible), ['hallel', 'moussaf_rosh_hodech'], nusah);
     for (const a of renvois) assert.ok(siddur.textes.some((t) => t.id === a.cible), `${nusah} ${a.cible}`);
+    // Audit du 16/11 : pas le Moussaf de semaine un Chabbat Roch 'Hodech (2025-12-20), où l'on dit « אתה יצרת ».
+    const moussaf = renvois.find((a) => a.cible === 'moussaf_rosh_hodech');
+    assert.ok(vrai(moussaf.si, jour('2025-12-21', false).conditions) && !vrai(moussaf.si, jour('2025-12-20', false).conditions), nusah);
   }
 });
 
 // --- 5. L'onglet Zmanim et le calendrier (JourAfficheTest) ---------------------------
+test('JourAffiche, audit du 16/11 : profil Edot, jeûnes, ’hamets, vendredi de fête, Jérusalem', async () => {
+  const A = await import('../src/js/jour-affiche.js');
+  const parIndex = (l) => Object.fromEntries(l.map((z) => [z.cle, z]));
+  const [jer, paris, ny] = LIEUX;
+  const hm = (d, f) => new Intl.DateTimeFormat('fr-FR', { timeZone: f, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(d);
+  // Vendredi de fête : les dates de l'audit, dans les trois noussa'h.
+  for (const [l, iso, il] of [[jer, '2026-05-22', true], [ny, '2026-04-03', false], [paris, '2024-10-04', false]]) {
+    for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
+      const h = parIndex(A.horaires(l, iso, il, 18, nusah));
+      assert.equal(h.allumage.methode, 'avant_chkia', `${iso} ${nusah}`);
+      assert.ok(+h.allumage.instant < +h.chkia.instant, `${iso} ${nusah}`);
+    }
+  }
+  // Edot : sortie à Rabbénou Tam en zmaniyot ; après Chabbat, l'allumage de la fête suit cette sortie.
+  const samedi = parIndex(A.horaires(jer, '2026-10-17', true, 18, 'edot'));
+  // Les deux sorties, au choix du propriétaire (17/11) : Gueonim à tsét, puis Rabbénou Tam.
+  assert.equal(+samedi.sortie_gueonim.instant, +samedi.tset.instant);
+  assert.ok(+samedi.sortie_gueonim.instant < +samedi.sortie.instant);
+  assert.equal(samedi.sortie.methode, 'rabbenou_tam_zmaniyot');
+  assert.ok(!('sortie_gueonim' in parIndex(A.horaires(jer, '2026-10-17', true, 18, 'ashkenaz'))));
+  assert.equal(+samedi.sortie.instant, +samedi.tset_rt.instant);
+  const rh1 = parIndex(A.horaires(paris, '2026-09-12', false, 18, 'edot'));
+  assert.equal(rh1.allumage.methode, 'apres_sortie');
+  assert.equal(+rh1.allumage.instant, +rh1.tset_rt.instant);
+  assert.equal(+parIndex(A.horaires(paris, '2025-09-23', false, 18, 'edot')).allumage.instant, +parIndex(A.horaires(paris, '2025-09-23', false, 18, 'edot')).tset.instant);
+  assert.equal(+parIndex(A.horaires(jer, '2026-10-17', true, 18, 'ashkenaz')).sortie.instant, +parIndex(A.horaires(jer, '2026-10-17', true, 18)).tset.instant);
+  // Jeûnes.
+  const teveth = parIndex(A.horaires(paris, '2026-12-20', false, 18));
+  assert.equal(+teveth.debut_jeune.instant, +teveth.alot.instant);
+  assert.equal(+teveth.fin_jeune.instant, +teveth.tset.instant);
+  assert.equal(+parIndex(A.horaires(paris, '2026-07-22', false, 18)).debut_jeune.instant, +parIndex(A.horaires(paris, '2026-07-22', false, 18)).chkia.instant);
+  assert.ok(!('debut_jeune' in parIndex(A.horaires(paris, '2026-07-23', false, 18))));
+  const samediAv = parIndex(A.horaires(paris, '2025-08-02', false, 18));
+  assert.equal(+samediAv.debut_jeune.instant, +samediAv.chkia.instant);
+  assert.ok('sortie' in samediAv);
+  // 'Hamets : Jérusalem 2026-04-01, et le vendredi 2025-04-11 (14 Nissan un Chabbat).
+  const edot = A.horaires(jer, '2026-04-01', true, 18, 'edot').filter((z) => z.cle.startsWith('hamets'));
+  assert.deepEqual(edot.map((z) => z.cle), ['hamets_achila', 'hamets_achila', 'hamets_biour', 'hamets_biour']);
+  assert.equal(hm(edot[0].instant, jer.fuseau), '10:13');
+  assert.deepEqual(A.horaires(jer, '2026-04-01', true, 18, 'ashkenaz').filter((z) => z.cle.startsWith('hamets')).map((z) => hm(z.instant, jer.fuseau)),
+    ['10:14', '10:38', '11:28', '11:40']);
+  assert.deepEqual(A.horaires(jer, '2025-04-11', true, 18).filter((z) => z.cle.startsWith('hamets')).map((z) => z.cle), ['hamets_biour', 'hamets_biour']);
+  // Jérusalem : 40 min hors Edot, 20 min pour les Edot.
+  assert.equal(A.propositionAllumage('edot', true, 40), 'reglage_allumage_proposition_edot');
+  assert.equal(A.propositionAllumage('edot', true, 20), null);
+  assert.equal(A.propositionAllumage('sefard', true, 18), 'reglage_allumage_proposition');
+  assert.equal(A.propositionAllumage('ashkenaz', false, 18), null);
+  assert.ok(!A.coutumeJerusalem('edot', true, 40) && A.coutumeJerusalem('sefard', true, 40));
+  // Edot : pas de Cha'harit avant l'aube du Yalkut Yosef (Paris, 2026-12-21 à 07:30).
+  const t = new Date('2026-12-21T06:30:00Z');
+  assert.equal(A.momentDuSiddour(paris, t, false, 'sefard'), 'chaharit');
+  assert.notEqual(A.momentDuSiddour(paris, t, false, 'edot'), 'chaharit');
+});
 test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', async () => {
   const A = await import('../src/js/jour-affiche.js');
   const parIndex = (l) => Object.fromEntries(l.map((z) => [z.cle, z]));
@@ -309,6 +406,27 @@ test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', 
   assert.deepEqual(jour('2027-03-23', true).fetes, ['pourim']);
   assert.ok(jour('2027-03-23', true).conditions.has('al_hanissim'));
   assert.ok(!jour('2027-03-24', true).conditions.has('al_hanissim'));
+  // Pourim triple 5785 : à Jérusalem, le dimanche 16 Adar (16/03/2025), ni Ta'hanoun ni למנצח ; ailleurs, si.
+  for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lamnatseah']) {
+    assert.ok(!jour('2025-03-16', true, true).conditions.has(k), k);
+    assert.ok(jour('2025-03-16', true).conditions.has(k) && jour('2025-03-16', false).conditions.has(k), k);
+  }
+  // Un 16 Adar ordinaire à Jérusalem (jeudi 16 Adar II 5787, 25/03/2027) : Ta'hanoun.
+  assert.ok(jour('2027-03-25', true, true).conditions.has('tahanoun_chaharit'));
+  // Ailleurs en Israël, l'Ashkenaz suit le Halikhot Chlomo (sans Ta'hanoun, למנצח gardé), précisé contre le
+  // Michna Beroura ; Edot et Sfard (Yalkut Yosef) et la diaspora disent Ta'hanoun.
+  const triple = jour('2025-03-16', true).conditions;
+  assert.ok(triple.has('pourim_triple_hors_jerusalem'));
+  assert.ok(!jour('2025-03-16', false).conditions.has('pourim_triple_hors_jerusalem') && !jour('2025-03-16', true, true).conditions.has('pourim_triple_hors_jerusalem'));
+  const ashk = conditionsPour('ashkenaz', true, triple);
+  assert.ok(!ashk.has('tahanoun_chaharit') && !ashk.has('tahanoun_minha') && ashk.has('lamnatseah'));
+  assert.ok(A.ajouts(triple, 'ashkenaz', true).includes('ajout_sans_tahanoun_halikhot_chlomo'));
+  for (const n of ['edot', 'sefard']) assert.ok(A.ajouts(triple, n, true).includes('ajout_tahanoun'), n);
+  assert.ok(A.ajouts(jour('2025-03-16', false).conditions, 'ashkenaz', false).includes('ajout_tahanoun'));
+  assert.ok(A.ajouts(jour('2025-03-16', true, true).conditions, 'ashkenaz', true).includes('ajout_sans_tahanoun'));
+  // Le festin du dimanche à Jérusalem : « על הנסים » dans un « הרחמן » (Edot, Yalkut Yosef 688:6, § 15) ; seulement là.
+  assert.ok(jour('2025-03-16', true, true).conditions.has('pourim_triple_festin') && !triple.has('pourim_triple_festin'));
+  assert.ok(!jour('2025-03-15', true, true).conditions.has('pourim_triple_festin') && !jour('2025-03-16', false).conditions.has('pourim_triple_festin'));
   const chaines = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'), 'utf8');
   for (const n of ['edot', 'sefard', 'ashkenaz']) {
     for (const k of [...A.ajouts(rc, n), ...A.ajouts(jeune, n), ...A.ajouts(ete, n), ...A.ajouts(av, n)]) assert.ok(chaines.includes(`name="${k}"`), k);
@@ -387,6 +505,32 @@ test('siddour : la suggestion suit les zmanim du lieu, rien dans les creux', asy
   assert.equal(A.momentDuSiddour(tromso, new Date('2026-06-21T14:00:00+02:00')), SiddurMoment.suggestion(14, 0));
 });
 
+// Audit du 16/11 : pas de Tikoun 'hatsot les nuits de Chabbat, de Yom tov et de 'Hol hamoed Pessa'h
+// (consigne du texte ; Kitsour Yalkut Yosef, דיני תיקון חצות §נה) ; le Tikoun Ra'hel de midi à Bein hamétsarim (§מה).
+test('siddour (audit du 16/11) : Tikoun ’hatsot selon la nuit, Tikoun Ra’hel de midi', async () => {
+  const A = await import('../src/js/jour-affiche.js');
+  const { SiddurMoment } = await import('../src/js/regles.js');
+  const jer = { nom: 'J', latitude: 31.76904, longitude: 35.21633, altitude: 0, fuseau: 'Asia/Jerusalem' };
+  const paris = { nom: 'P', latitude: 48.85341, longitude: 2.3488, altitude: 0, fuseau: 'Europe/Paris' };
+  for (const t of ['2026-11-21T01:30:00+02:00', '2026-04-05T01:30:00+03:00', '2026-09-12T01:30:00+03:00', '2026-09-21T01:30:00+03:00', '2027-04-25T01:30:00+03:00', '2026-11-20T23:55:00+02:00']) {
+    assert.equal(A.momentDuSiddour(jer, new Date(t)), 'chema_coucher', t);
+  }
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-11-19T01:30:00+02:00')), 'tikoun_hatsot');
+  // Le 2e jour de Soukkot ne compte qu'en diaspora ; en Israël, 'Hol hamoed Soukkot n'est pas exclu.
+  assert.equal(A.momentDuSiddour(paris, new Date('2026-09-27T03:00:00+02:00'), false), 'chema_coucher');
+  assert.equal(A.momentDuSiddour(paris, new Date('2026-09-27T03:00:00+02:00'), true), 'tikoun_hatsot');
+  assert.equal(SiddurMoment.suggestion(1, 0, true), 'chema_coucher');
+  assert.equal(SiddurMoment.suggestion(1, 0), 'tikoun_hatsot');
+  // Bein hamétsarim : 20 Tamouz 5786 à 12 h 50, en Edot et en Sfard ; pas en Ashkenaz, ni le Chabbat.
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-05T12:50:00+03:00')), 'tikoun_hatsot');
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-05T12:50:00+03:00'), true, 'sefard'), 'tikoun_hatsot');
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-05T12:50:00+03:00'), true, 'ashkenaz'), null);
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-04T12:50:00+03:00')), null);
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-20T12:50:00+03:00')), 'tikoun_hatsot');
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-23T12:50:00+03:00')), null); // 9 Av
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-10-16T12:50:00+03:00')), null);
+});
+
 // --- Rappels de tefila (RappelsTefilaTest, 16/10) ---
 import { rappelsTefila } from '../src/js/calendrier-juif.js';
 test('rappels de tefila : mêmes cas que RappelsTefilaTest', () => {
@@ -411,60 +555,60 @@ test('territoire d’Israël : mêmes villes que TerritoireIsraelTest', () => {
   for (const [lat, lon] of [[31.9539, 35.9106], [29.5321, 35.0063], [33.2705, 35.2038], [31.1316, 33.7984], [29.49, 34.876], [48.8566, 2.3522], [33.1256, 35.8244]]) assert.ok(!dansIsrael(lat, lon), `${lat},${lon}`);
 });
 
-// Audit du 12/11, FCALENDRIER-06 : la région choisie à la main survit aux reprises de la position.
-test('Israël / diaspora : une reprise de la position garde la région choisie à la main', async () => {
-  const { regionPourPosition } = await import('../src/js/calendrier-juif.js');
+// Audit du 16/11 (gravité haute) : le statut pour le Yom tov chéni suit la résidence (Choul'han Aroukh
+// 496:3, Michna Beroura 496:13) ; un lieu de l'autre région pose la question sans rien changer. Remplace
+// la règle du 12/11 (FCALENDRIER-06), où choisir un lieu redéduisait la région.
+test('Israël / diaspora : un lieu ne change jamais le statut, il pose la question', async () => {
+  const { decisionRegion } = await import('../src/js/calendrier-juif.js');
   const { creeStore, memoire } = await import('../src/js/store.js');
-  const jerusalem = { nom: 'Ma position', latitude: 31.7769, longitude: 35.2224, altitude: 750, fuseau: 'Asia/Jerusalem' };
-  const paris = { nom: 'Ma position', latitude: 48.8566, longitude: 2.3522, altitude: 35, fuseau: 'Europe/Paris' };
-  assert.equal(regionPourPosition(31.7769, 35.2224, true, true), null);
-  assert.equal(regionPourPosition(31.7769, 35.2224, false, true), true);
-  assert.equal(regionPourPosition(48.8566, 2.3522, true, false), false);
+  const A = await import('../src/js/jour-affiche.js');
+  // Mêmes cas que TerritoireIsraelTest.
+  assert.deepEqual(decisionRegion(false, true, false, false), { region: null, proposition: false });
+  assert.deepEqual(decisionRegion(true, false, false, true), { region: null, proposition: true });
+  assert.deepEqual(decisionRegion(true, true, false, false), { region: null, proposition: null });
+  assert.deepEqual(decisionRegion(true, false, true, false), { region: true, proposition: null });
+  assert.deepEqual(decisionRegion(true, false, true, true), { region: null, proposition: true });
 
-  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12) });
-  // « Ma position » choisie dans la liste, à Jérusalem : la région suit la position (16/10).
-  s.setLieuPosition(jerusalem, true);
-  assert.equal(s.inIsrael(), true);
-  assert.equal(s.inIsraelManuel(), false);
-  // Bascule manuelle dans les réglages, puis reprises silencieuses : la région ne bouge pas.
-  s.setInIsrael(false, true);
+  const jerusalem = { nom: 'Ma position', latitude: 31.7769, longitude: 35.2224, altitude: 750, fuseau: 'Asia/Jerusalem' };
+  const newYork = { nom: 'Ma position', latitude: 40.7128, longitude: -74.006, altitude: 10, fuseau: 'America/New_York' };
+  const s = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12), fuseau: 'Asia/Jerusalem' });
+  // Le premier lieu fixe le statut.
   s.setLieuPosition(jerusalem);
-  s.setLieuPosition({ ...jerusalem, latitude: 32.0853, longitude: 34.7818 });
+  assert.equal(s.inIsrael(), true);
+  assert.equal(s.regionProposee(), null);
+  // Un Israélien à New York (position ou ville) : le statut reste Israël, la question est posée.
+  s.setLieuPosition(newYork);
+  assert.equal(s.inIsrael(), true);
+  assert.equal(s.regionProposee(), false);
+  assert.equal(s.lieu().latitude, 40.7128, 'la position, elle, est bien reprise');
+  s.setLieu({ nom: 'New York', latitude: 40.7128, longitude: -74.006, altitude: 10, fuseau: 'America/New_York' }, { id: 5128581, pays: 'US' });
+  assert.equal(s.inIsrael(), true);
+  // « Garder » : le statut est déclaré, la question tombe ; les reprises ne la reposent pas en Israël.
+  s.setInIsrael(true, true);
+  assert.equal(s.regionProposee(), null);
+  s.setLieuPosition(jerusalem);
+  assert.equal(s.regionProposee(), null);
+  // Revenu à New York, la question revient ; « J'habite hors d'Israël » change le statut.
+  s.setLieuPosition(newYork);
+  assert.equal(s.regionProposee(), false);
+  s.setInIsrael(false, true);
   assert.equal(s.inIsrael(), false);
-  assert.equal(s.inIsraelManuel(), true);
-  assert.equal(s.lieu().latitude, 32.0853, 'la position, elle, est bien reprise');
+  assert.equal(s.regionProposee(), null);
   // Le drapeau voyage avec la sauvegarde.
   const fichier = JSON.parse(s.exportJson());
   assert.equal(fichier.settings.in_israel, false);
   assert.equal(fichier.settings.in_israel_manuel, true);
-  const autre = creeStore(memoire(), { maintenant: () => new Date(2026, 10, 13, 12) });
-  autre.setLieuPosition(jerusalem, true);
-  autre.importJson(JSON.stringify(fichier));
-  autre.setLieuPosition(jerusalem);
-  assert.equal(autre.inIsrael(), false);
-  assert.equal(autre.inIsraelManuel(), true);
-  // Choisir de nouveau le lieu redéduit la région et efface le choix manuel : « Ma position » dans la liste…
-  s.setLieuPosition(jerusalem, true);
-  assert.equal(s.inIsrael(), true);
-  assert.equal(s.inIsraelManuel(), false);
-  // … une ville…
-  s.setInIsrael(true, true);
-  s.setLieu({ nom: 'Paris', latitude: 48.8566, longitude: 2.3522, altitude: 35, fuseau: 'Europe/Paris' }, { id: 2988507, pays: 'FR' });
-  assert.equal(s.inIsrael(), false);
-  assert.equal(s.inIsraelManuel(), false);
-  // … ou la position à la place d'une ville (« Actualiser ma position » de la boussole).
-  s.setInIsrael(true, true);
-  s.setLieuPosition(paris);
-  assert.equal(s.inIsrael(), false);
-  assert.equal(s.inIsraelManuel(), false);
-  // Sans choix manuel, la région suit toujours la position, reprise ou non (voyage, 16/10).
-  s.setLieuPosition(jerusalem);
-  assert.equal(s.inIsrael(), true);
-  // L'écran : la bascule des réglages est manuelle, la liste des lieux choisit, la reprise passe par le store.
+  // La note du Yom tov chéni (2026-10-04, Sim'hat Torah en diaspora).
+  assert.equal(A.noteYomTovCheni('2026-10-04', true, false, 'edot'), 'note_ytc_ben_israel');
+  assert.equal(A.noteYomTovCheni('2026-10-04', false, true, 'sefard'), 'note_ytc_ben_houl');
+  assert.equal(A.noteYomTovCheni('2026-10-04', false, true, 'ashkenaz'), 'note_ytc_ben_houl_ashkenaz');
+  assert.equal(A.noteYomTovCheni('2026-10-04', true, true, 'edot'), null);
+  assert.equal(A.noteYomTovCheni('2026-10-14', true, false, 'edot'), null);
+  // L'écran : la bascule des réglages est manuelle, la question aussi ; la position ne réécrit pas le statut.
   const app = readFileSync(join(ICI, '../src/js/app.js'), 'utf8');
   assert.ok(app.includes('store.setInIsrael(j === 0, true)'));
-  assert.ok(app.includes('localiserPosition({ etat, choisie: true,'));
-  assert.ok(!/store\.setInIsrael\(dansIsrael/.test(app), 'la position ne réécrit plus la région sans passer par setLieuPosition');
+  assert.ok(app.includes('store.setInIsrael(proposee, true)'));
+  assert.ok(!/store\.setInIsrael\(dansIsrael/.test(app));
 });
 
 test('rappels de tefila : nord et sud, Israël et diaspora', () => {
@@ -488,4 +632,77 @@ test('Roch \'Hodech d\'une année embolismique : וּלְכַפָּרַת פֶּ
   assert.ok(!c('2026-01-19').has('embolismique'));
   // Hors Roch 'Hodech : rien.
   assert.ok(!c('2026-11-12').has('embolismique'));
+});
+
+// Audit du 16/11 (RappelsTefilaTest).
+import { cleGuechemFin } from '../src/js/calendrier-juif.js';
+test('Rappel de fin de משיב הרוח : l\'Ashkenaz de diaspora cesse à Min\'ha (Rema 114:3)', () => {
+  assert.equal(cleGuechemFin('ashkenaz', false), 'rappel_guechem_fin_ashkenaz');
+  assert.equal(cleGuechemFin('ashkenaz', true), 'rappel_guechem_fin');
+  assert.equal(cleGuechemFin('sefard', false), 'rappel_guechem_fin');
+  assert.equal(cleGuechemFin('edot', false), 'rappel_guechem_fin');
+});
+
+// Audit du 16/11 : Tikoun Ra'hel (Kitsour Yalkut Yosef, דיני תיקון חצות §נה et §נז), comme CalendrierJuif.C.TIKOUN_RAHEL ;
+// le jour hébreu de la nuit pour Tikoun 'hatsot (avant minuit, le lendemain ; à midi, le jour même).
+test('Tikoun Ra’hel selon le jour (audit du 16/11)', () => {
+  const r = (iso, il = false) => jour(iso, il).conditions.has('tikoun_rahel');
+  assert.equal(r('2026-11-19'), true);
+  assert.equal(r('2026-07-23'), true); // 9 Av : Tikoun Ra'hel seul
+  for (const iso of ['2027-03-09', '2026-04-08', '2026-09-15', '2027-05-12', '2026-12-08', '2027-03-23']) assert.equal(r(iso), false, iso);
+  assert.equal(r('2026-10-04'), false); // Simha Torah en diaspora (23 Tichri)
+  assert.equal(r('2026-10-04', true), true); // en Israël, le 23 Tichri
+  assert.equal(r('2028-11-16', true), false); // chemita 5789, en Israël
+  assert.equal(r('2028-11-16'), true);
+  assert.ok(jour('2026-11-19', false).conditions.has('toujours'));
+  assert.equal(jourDeLaPriere('tikoun_hatsot', '2026-11-20', 23), '2026-11-21');
+  assert.equal(jourDeLaPriere('tikoun_hatsot', '2026-07-05', 12), '2026-07-05');
+});
+
+// Audit du 16/11 : les repères du jour (CalendrierJuifTest, mêmes dates) et les Chabbatot spéciaux.
+test('repères du jour : Seli’hot, chofar, בה״ב, Yom Kippour katan, érouv tavchilin (audit du 16/11)', async () => {
+  const { reperes } = await import('../src/js/calendrier-juif.js');
+  const r = (iso, il, n) => reperes(iso, il, n);
+  // בה״ב : Ashkenaz et Sfard, le מי שבירך du Chabbat d'avant ; rien en Edot (Rema 492:1 ; MB 492:3).
+  for (const iso of ['2025-10-27', '2025-10-30', '2025-11-03', '2026-10-19', '2026-10-22', '2026-10-26']) {
+    assert.ok(r(iso, false, 'ashkenaz').includes('repere_behab'), iso);
+    assert.ok(r(iso, false, 'sefard').includes('repere_behab'), iso);
+    assert.ok(!r(iso, false, 'edot').includes('repere_behab'), iso);
+  }
+  assert.deepEqual(r('2025-10-25', false, 'ashkenaz'), ['repere_behab_mi_cheberakh']);
+  assert.ok(r('2026-04-27', true, 'ashkenaz').includes('repere_behab'));
+  // Seli'hot : Edot dès le 2 Eloul, sauf Chabbat ; Ashkenaz dès le dimanche avant Roch Hachana (Rema 581:1).
+  assert.deepEqual(r('2026-08-15', false, 'edot'), []);
+  assert.deepEqual(r('2026-08-16', false, 'edot'), ['repere_selihot']);
+  assert.deepEqual(r('2026-08-17', false, 'ashkenaz'), ['repere_chofar']);
+  assert.deepEqual(r('2026-09-05', false, 'ashkenaz'), []);
+  assert.deepEqual(r('2026-09-06', false, 'ashkenaz'), ['repere_selihot', 'repere_chofar']);
+  assert.ok(r('2025-09-14', false, 'ashkenaz').includes('repere_selihot')); // Roch Hachana un lundi : une semaine plus tôt
+  assert.ok(!r('2025-09-12', false, 'ashkenaz').includes('repere_selihot'));
+  assert.deepEqual(r('2026-09-11', false, 'edot'), ['repere_selihot', 'repere_pas_de_chofar']);
+  assert.deepEqual(r('2026-09-20', false, 'ashkenaz'), ['repere_selihot']);
+  assert.deepEqual(r('2026-09-21', false, 'ashkenaz'), []);
+  for (const iso of ['2025-11-20', '2026-11-09', '2024-11-28']) assert.deepEqual(r(iso, false, 'edot'), ['repere_yom_kippour_katan'], iso);
+  assert.deepEqual(r('2026-05-21', true, 'edot'), ['repere_erouv_tavchilin']);
+  assert.deepEqual(r('2024-10-16', false, 'edot'), ['repere_erouv_tavchilin']);
+  assert.deepEqual(r('2024-10-16', true, 'edot'), []);
+  assert.deepEqual(r('2026-11-19', false, 'ashkenaz'), []);
+  // Chekalim, Zakhor ; à Jérusalem, le Chabbat 15 Adar d'un Pourim triple (Choul'han Aroukh O.H. 688:6).
+  assert.equal(jour('2026-02-28', false).parachaSpeciale, 'זכור');
+  assert.equal(jour('2027-03-06', false).parachaSpeciale, 'שקלים');
+  assert.equal(jour('2025-03-15', true, true).parachaSpeciale, 'מפטיר ויבא עמלק');
+  assert.equal(jour('2025-03-15', true, false).parachaSpeciale, null);
+  assert.equal(jour('2026-11-21', false).parachaSpeciale, null);
+});
+
+// Audit du 16/11 (« Autres ») : le rappel de l'écran Musique, l'omer sauf Lag baOmer et Bein hamétsarim (YY 493:8, 551:6).
+test('musique : rappel de l’omer et de Bein hamétsarim (audit du 16/11)', async () => {
+  const { periodeSansMusique } = await import('../src/js/calendrier-juif.js');
+  assert.equal(periodeSansMusique('2026-07-23'), 'bein_hametsarim'); // 9 Av 5786
+  assert.equal(periodeSansMusique('2026-07-02'), 'bein_hametsarim'); // 17 Tamouz
+  assert.equal(periodeSansMusique('2029-07-22'), 'bein_hametsarim'); // jeûne repoussé au 10 Av
+  assert.equal(periodeSansMusique('2026-07-24'), null);
+  assert.equal(periodeSansMusique('2026-04-20'), 'omer');
+  assert.equal(periodeSansMusique('2026-05-05'), null); // Lag baOmer 5786
+  assert.equal(periodeSansMusique('2026-11-19'), null);
 });

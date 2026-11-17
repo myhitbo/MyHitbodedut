@@ -24,15 +24,22 @@ object AccueilMoment {
     fun cartes(c: Context): List<View> {
         val siddur = Data.siddur(c)
         val lieu = Store.lieuZmanim(c)
-        val moment = if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now()) else SiddurMoment.suggestion(LocalTime.now())
+        // La nuit de Chabbat, de fête ou de 'Hol hamoed Pessa'h, pas de Tikoun 'hatsot (audit du 16/11) ; pas d'office
+        // de semaine proposé un Chabbat ou un Yom tov (audit du 16/11, structure des offices).
+        val moment = JourAffiche.momentOuvrable(
+            if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now(), Store.inIsrael(c), Store.siddurNusah(c).cle)
+            else SiddurMoment.suggestion(LocalTime.now(), JourAffiche.sansTikounHatsot(LocalDate.now(), Store.inIsrael(c))),
+            LocalDate.now(), LocalTime.now(), Store.inIsrael(c))
         val vues = mutableListOf<View>()
         val mot = c.getString(Salutation.mot(LocalTime.now().hour))
         moment?.let(siddur::texte)?.let { t -> vues += carte(c, c.getString(R.string.siddur_maintenant), t.titre.he, SiddurMoment.illustration(t.id), mot) { SiddurLectureActivity.ouvrir(c, t.id) } }
         // Birkat haLevana : pendant la fenêtre, à partir de l'après-midi.
         val zone = lieu?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
         val aujourdhui = LocalDate.now(zone)
-        val f = Levana.fenetre(aujourdhui, zone, VueJour.usageLevana(c))
-        if (Store.levanaAffichee(c) && Levana.etat(f, aujourdhui, zone) !is Levana.Etat.Dans && LocalTime.now(zone).hour >= 14 &&
+        val f = Levana.fenetre(aujourdhui, zone, VueJour.usageLevana(c), Levana.Horaires.du(lieu, zone))
+        // Ni un soir de Chabbat ou de Yom tov qui n'est pas le dernier (audit du 16/11, MB 426:12 ; YY 426:33).
+        val etat = Levana.etat(f, aujourdhui, zone, Store.inIsrael(c))
+        if (Store.levanaAffichee(c) && (etat == Levana.Etat.CeSoir || etat == Levana.Etat.DernierSoir) && LocalTime.now(zone).hour >= 14 &&
             java.time.Instant.now().isBefore(f.fin)) {
             siddur.texte("birkat_halevana")?.let { t ->
                 vues += carte(c, c.getString(R.string.levana_ce_soir), t.titre.he, R.drawable.char_praise) { SiddurLectureActivity.ouvrir(c, t.id) }

@@ -66,10 +66,10 @@ test('le parcours reste dans ses bornes, et un indice aberrant ne rompt pas', ()
   assert.equal(Hitbodedut.mouvement(undefined), MOUVEMENTS[0]);
 });
 
-test('les libellés existent dans les trois langues', () => {
+test('les libellés existent dans chaque langue de l’interface', () => {
   const cles = ['settings_hitbodedut', 'settings_hitbodedut_hint', 'hitbodedut_step', 'hitbodedut_previous', 'hitbodedut_next',
     ...MOUVEMENTS.flatMap((m) => [m.titre, m.invite])];
-  for (const dossier of ['values', 'values-en', 'values-iw']) {
+  for (const dossier of ['values', 'values-en', 'values-iw', 'values-es', 'values-ar-rTN']) {
     const xml = readFileSync(join(RES, dossier, 'strings.xml'), 'utf8');
     for (const c of cles) assert.ok(xml.includes(`name="${c}"`), `${dossier} : ${c}`);
   }

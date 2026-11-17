@@ -35,6 +35,28 @@ class ZmanimTest {
         Zmanim.jour(lieu, LocalDate.parse(iso)).associateBy { it.cle }
 
     @Test
+    fun `Edot - les zmanim du Yalkut Yosef, aux valeurs de l audit du 16-11`() {
+        val f = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")
+        fun edot(lieu: String, iso: String, cle: String) =
+            Zmanim.jour(lieux.getValue(lieu), LocalDate.parse(iso), "edot").first { it.cle == cle }.local!!.format(f)
+        // Kitsour YY 89:12 : aube à 72 min zmaniyot (Jérusalem 2026-12-19, 05:33:20).
+        assertEquals("05:33", edot("Jérusalem", "2026-12-19", "alot").take(5))
+        // 263:45 : plag 1¼ heure zmanit avant tsét (Jérusalem 2026-06-19, 18:34:19).
+        assertEquals("18:34", edot("Jérusalem", "2026-06-19", "plag").take(5))
+        // 58:3 : fin du Chema MGA en 72 min zmaniyot (Jérusalem 2026-06-20, 08:24:38).
+        assertEquals("08:24", edot("Jérusalem", "2026-06-20", "szks_mga").take(5))
+        // 293:7 : Rabbénou Tam en zmaniyot (Jérusalem 2026-06-20, 21:12:53 ; New York, 22:01:07).
+        assertEquals("21:12", edot("Jérusalem", "2026-06-20", "tset_rt").take(5))
+        assertEquals("22:01", edot("New York", "2026-06-20", "tset_rt").take(5))
+        // Michéyakir 6 min zmaniyot après l'aube : Paris 2026-12-21, après 07:51 (aube du Yalkut Yosef).
+        assertTrue(edot("Paris", "2026-12-21", "misheyakir") > "07:51")
+        // Sfard et Ashkenaz gardent le profil commun.
+        val jer = lieux.getValue("Jérusalem")
+        assertEquals(Zmanim.jour(jer, LocalDate.parse("2026-06-20")), Zmanim.jour(jer, LocalDate.parse("2026-06-20"), "ashkenaz"))
+        assertEquals(Zmanim.PROFIL.map { it.first }, Zmanim.profil("edot").map { it.first })
+    }
+
+    @Test
     fun `astronomie - concorde avec PyEphem a une minute pres`() {
         val reference = JSONArray(File("src/test/resources/zmanim_reference_pyephem.json").readText())
         assertTrue("référence vide", reference.length() >= 20)
@@ -149,7 +171,9 @@ class ZmanimTest {
     @Test
     fun `chaque zman et chaque methode a son libelle dans les trois langues`() {
         val cles = Zmanim.PROFIL.map { "zman_${it.first}" } + "zman_allumage" + "zman_sortie" +
-            (Zmanim.PROFIL.map { it.second.cle } + "avant_chkia").distinct().map { "zman_methode_$it" }
+            listOf("zman_debut_jeune", "zman_fin_jeune", "zman_hamets_achila", "zman_hamets_biour") +
+            (Zmanim.PROFIL.map { it.second.cle } + Zmanim.PROFIL_EDOT.values.map { it.cle } + "avant_chkia" + "apres_tset" + "apres_sortie")
+                .distinct().map { "zman_methode_$it" }
         listOf("values", "values-en", "values-iw").forEach { d ->
             val xml = File("src/main/res/$d/strings.xml").readText()
             cles.forEach { assertTrue("$d : $it", xml.contains("name=\"$it\"")) }

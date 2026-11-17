@@ -7,7 +7,8 @@
 
 // --- RegleLangue (Langue.kt) ------------------------------------------------
 // En hébreu, rien que de l'hébreu ; en anglais, l'hébreu et l'anglais ; en
-// français, l'hébreu et le français. Jamais de repli d'une langue sur une
+// français, l'hébreu et le français ; en espagnol et en arabe tunisien (17/11),
+// dont les textes ne sont pas traduits, l'hébreu seul. Jamais de repli d'une langue sur une
 // autre : un texte dont la langue n'est pas permise n'est pas montré.
 export const RegleLangue = {
   /** « iw » est l'ancien code d'Android pour l'hébreu. */
@@ -67,7 +68,9 @@ const CENTAINES = ' קרש';
  */
 export const LanguesTexte = {
   MODES: ['he', 'fr', 'en', 'he+fr', 'he+en', 'fr+en'],
-  defaut: (langue) => (langue === 'he' || langue === 'iw' ? 'he' : langue === 'en' ? 'he+en' : 'he+fr'),
+  // L'espagnol et l'arabe tunisien (17/11), comme toute langue sans traduction des textes :
+  // l'hébreu seul, jamais le français ni l'anglais à leur place (RegleLangue, LanguesTexte.defaut).
+  defaut: (langue) => (langue === 'en' ? 'he+en' : langue === 'fr' ? 'he+fr' : 'he'),
   mode(choix, langue) { return this.MODES.includes(choix) ? choix : this.defaut(langue); },
   textes(mode, he, fr, en) {
     const tous = mode.split('+').map((l) => (l === 'he' ? ['he', he] : l === 'fr' ? (fr ? ['fr', fr] : null) : (en ? ['en', en] : null))).filter(Boolean);
@@ -294,9 +297,10 @@ export const DureeSeance = {
 // Le texte que l'heure suggère en tête du siddour, et le hassid qui l'accompagne.
 export const SiddurMoment = {
   /** Le texte de l'heure locale (heures, minutes). */
-  suggestion(heures, minutes = 0) {
+  suggestion(heures, minutes = 0, sansTikoun = false) {
     const m = heures * 60 + minutes;
-    if (m < 5 * 60) return 'tikoun_hatsot';
+    // sansTikoun : une nuit de Chabbat, de Yom tov ou de 'Hol hamoed Pessa'h (sansTikounHatsot, audit du 16/11).
+    if (m < 5 * 60) return sansTikoun ? 'chema_coucher' : 'tikoun_hatsot';
     if (m < 6 * 60 + 30) return 'birkot_hachahar';
     if (m < 12 * 60 + 30) return 'chaharit';
     if (m < 18 * 60 + 30) return 'minha';

@@ -33,7 +33,7 @@ html, body { margin: 0; height: 100%; }
 body {
   background: var(--paper);
   color: var(--ink);
-  font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Hebrew", "Arial Hebrew", sans-serif;
+  font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Hebrew", "Arial Hebrew", "Noto Sans Arabic", "Geeza Pro", Tahoma, sans-serif;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
@@ -44,6 +44,10 @@ body {
   -webkit-touch-callout: none;
 }
 input, textarea { -webkit-user-select: text; user-select: text; }
+/* L'arabe tunisien (17/11) : les polices arabes du système (Geeza Pro sur iPhone, Noto Sans Arabic sur
+   Android, Segoe UI ou Tahoma ailleurs), un peu plus d'interligne pour ses hampes. Le sens de droite à
+   gauche est celui de l'hébreu : les règles [dir="rtl"] valent pour les deux. */
+:root[lang|="ar"] body { font-family: -apple-system, BlinkMacSystemFont, "Geeza Pro", "Noto Sans Arabic", "Segoe UI", Roboto, Tahoma, "Noto Sans Hebrew", "Arial Hebrew", sans-serif; line-height: 1.5; }
 button { font: inherit; color: inherit; }
 
 #app { height: 100%; display: flex; flex-direction: column; }
@@ -692,6 +696,13 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .lecture-barre .lecture-nusah-bouton[aria-expanded="true"] { background: color-mix(in srgb, var(--on-brand) 20%, transparent); }
 .lecture-sep { flex: none; width: 1px; height: 22px; margin: 0 4px; background: var(--on-brand); opacity: 0.35; }
 .lecture-barre button:focus-visible, .lecture-pastille:focus-visible { outline: 2px solid var(--on-brand); outline-offset: -4px; }
+/* Le défilement automatique (16/11) : la commande compacte, aux couleurs de la barre. */
+.lecture-defil .lettres { min-width: 40px; font-size: 20px; }
+.lecture-defil .defil-niveau {
+  flex: none; min-width: 34px; text-align: center; font: 700 16px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.lecture-barre .lecture-defiler svg path { fill: currentColor; }
 .lecture-nusah {
   margin-bottom: 8px; min-width: 200px; padding: 4px 0;
   background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;

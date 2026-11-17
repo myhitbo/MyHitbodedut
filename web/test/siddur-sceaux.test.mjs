@@ -83,3 +83,21 @@ test('TSIDDUR-09 : Avinou malkénou à Min\'ha seulement si Ta\'hanoun s\'y dit 
 test('TSIDDUR-17 : Havdala Edot, la ligne de \'Hol hamoèd de Pessa\'h ne se lit pas un samedi soir ordinaire', () => {
   assert.equal(nb(visibles('edot', 'havdala', '2026-11-14'), /חוה.{0,3}מ פסח ושמחנו/), 0);
 });
+
+test('Discret (12/11) : « שעשה לי כל צרכי » en clair sans étiquette, replié le 9 Av ; la fin du Kaddich après le Hallel repliée à \'Hanouka', () => {
+  const etats = (nusah, id, iso, motif) => {
+    const texte = siddur[nusah].textes.find((t) => t.id === id);
+    const c = conditionsPour(nusah, false, jour(iso, false).conditions);
+    const idx = index(annotations[nusah][id]);
+    return texte.sections.flatMap((s, si) => plan(s, si, idx, c).filter((p) => p.blocs.some((i) => s.blocs[i].t && motif.test(nu(s.blocs[i].t)))).map((p) => p.etat));
+  };
+  // Audit du 16/11 : les Edot suivent le Yalkut Yosef (46:12), qui la fait dire le 9 Av et à Kippour ; le
+  // Sfard suit la consigne de son siddour (« בט׳ אב ויוה״כ אין אומרים ברכה זו »).
+  assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-11-12', /שעשה לי כל ?צרכי/), ['libre']);
+  assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-07-23', /שעשה לי כל ?צרכי/), ['libre']);
+  assert.deepEqual(etats('sefard', 'birkot_hachahar', '2026-11-12', /שעשה לי כל ?צרכי/), ['ordinaire']);
+  assert.deepEqual(etats('sefard', 'birkot_hachahar', '2026-07-23', /שעשה לי כל ?צרכי/), ['replie']);
+  assert.deepEqual(etats('sefard', 'chaharit', '2026-09-21', /שעשה לי כל ?צרכי/), ['replie']);
+  assert.deepEqual([...new Set(etats('edot', 'hallel', '2026-11-11', /^תתקבל/))], ['ordinaire']);
+  assert.deepEqual([...new Set(etats('edot', 'hallel', '2026-12-07', /^תתקבל/))], ['replie']);
+});

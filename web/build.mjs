@@ -2,7 +2,7 @@
 // Android. Aucune dépendance : Node seul.
 //
 // Ce qui vient d'Android est relu, jamais recopié à la main :
-//   - les chaînes (values, values-en, values-iw) ;
+//   - les chaînes (values, values-en, values-iw, values-es, values-ar-rTN) ;
 //   - les textes vérifiés (res/raw/*.json), copiés octet pour octet ;
 //   - les illustrations (drawable-nodpi/char_*.webp) ;
 //   - la musique de la version Play, dans l'ordre de MusiquePlay.kt.
@@ -51,7 +51,9 @@ if (relais) {
 // l'application, titres de morceaux) viennent ainsi du défaut.
 mkdirSync(join(DIST, 'data'), { recursive: true });
 const defaut = litChaines(readFileSync(join(RES, 'values', 'strings.xml'), 'utf8'));
-for (const [langue, dossier] of [['fr', 'values'], ['en', 'values-en'], ['he', 'values-iw']]) {
+// L'espagnol (values-es) et l'arabe tunisien (values-ar-rTN, 17/11) : codes « es » et « ar » sur le
+// site (i18n.js LANGUES), dont les formats suivent es-419 et ar-TN.
+for (const [langue, dossier] of [['fr', 'values'], ['en', 'values-en'], ['he', 'values-iw'], ['es', 'values-es'], ['ar', 'values-ar-rTN']]) {
   const propre = litChaines(readFileSync(join(RES, dossier, 'strings.xml'), 'utf8'));
   const table = {
     chaines: { ...defaut.chaines, ...propre.chaines },

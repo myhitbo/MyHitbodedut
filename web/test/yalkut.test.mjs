@@ -55,6 +55,10 @@ test('les fenêtres de fête', () => {
   assert.equal(periode('2026-10-12', false)[0], 'roch_hodech'); // 1er 'Hechvan 5787
   assert.equal(periode('2026-10-23', false)[0], 'chabbat'); // vendredi 12 'Hechvan
   assert.equal(periode('2026-10-21', false)[0], 'ordinaire');
+  // Audit du 16/11 : le jeûne repoussé au dimanche 10 Av n'est pas un jour ordinaire (Kitsour YY 554:13).
+  assert.equal(periode('2029-07-22', false)[0], 'bein_hametsarim');
+  assert.equal(periode('2015-07-26', true)[0], 'bein_hametsarim');
+  assert.equal(periode('2026-07-24', false)[0], 'chabbat'); // vendredi 10 Av 5786 : le jeûne était la veille
   assert.deepEqual(du([1, 2, 3], 2), [2, 3]);
   assert.ok(recherche(livre, 'ציצית').length > 0);
 });

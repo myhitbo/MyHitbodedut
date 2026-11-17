@@ -13,8 +13,8 @@ test('le bouton principal de l\'accueil demarre la seance sans second toucher', 
   assert.ok(app.includes("tr.t('start_prepare')"));
 });
 
-test('l\'ecran de preparation reste atteignable, en trois langues', () => {
-  for (const d of ['values', 'values-en', 'values-iw']) {
+test('l\'ecran de preparation reste atteignable, dans chaque langue', () => {
+  for (const d of ['values', 'values-en', 'values-iw', 'values-es', 'values-ar-rTN']) {
     assert.match(res(d), /name="start_prepare"/, d);
   }
   assert.match(res('values'), /name="chizuk_commencer">Préparer une hitbodedout</);
