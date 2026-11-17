@@ -1624,6 +1624,8 @@ function ecranPriere() {
       a.consigne ? h('p', { class: 'seul-consigne' }, a.consigne) : null,
       h('p', { class: a.consigne ? 'seul-texte' : 'seul-consigne' }, a.texte)));
   const renvois = (si, i) => (idx.renvois.get(`${si}:${i ?? ''}`) ?? []).filter((a) => ajoutVrai(a.si, c)).map((a) => {
+    // Un rappel sans texte cible (audit du 16/11 : Moussaf de Chabbat Roch 'Hodech, de 'Hol hamoed…) : SiddurJour.Ligne.Rappel.
+    if (!a.cible && a.libelle) return h('p', { class: 'indice-jour rappel-jour' }, `${tr.t('siddur_aujourdhui')} · ${tr.t(a.libelle)}`);
     const cible = siddur.textes.find((y) => y.id === a.cible);
     return cible ? h('button', { type: 'button', class: 'renvoi-jour', lang: 'he', dir: 'rtl', onclick: () => ouvrirRenvoi(x.id, cible.id) },
       `${tr.t('siddur_aujourdhui')} · ${cible.titre.he}  ›`) : null;

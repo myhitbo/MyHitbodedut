@@ -131,11 +131,32 @@ object CalendrierJuif {
 
         /** Ce qui ne se dit qu'avec un minyan (Kaddich, Barekhou, Kedoucha…) : jamais du jour, replié. */
         const val MINYAN = "minyan"
+
+        /**
+         * Hallel et Moussaf (audit du 16/11) :
+         * - Roch 'Hodech en semaine : le Moussaf de l'application (« מקדש ישראל וראשי חדשים ») ; le
+         *   Chabbat, c'est « אתה יצרת » (Kitsour Yalkut Yosef 423:10 ; Choul'han Aroukh O.H. 425:3) ;
+         * - 'Hol hamoed, sans les jours de Yom tov : le Moussaf de la fête (Kitsour Yalkut Yosef 490:2) ;
+         * - 'Hanouka sans Moussaf (ni Roch 'Hodech ni Chabbat) : demi-Kaddich après le Hallel ; les autres
+         *   jours de Hallel, תתקבל (Kitsour Yalkut Yosef 423:1 ; Michna Beroura 423:1) ;
+         * - 'Hanouka hors de Roch 'Hodech : le psaume de 'Hanouka dans le Chir chel yom ; à Roch 'Hodech
+         *   Tévèt, après Moussaf et ברכי נפשי (Kitsour Yalkut Yosef 683:11) ;
+         * - le soir du Séder (15 Nissan, et 16 en diaspora ; Arvit relève de ce jour-là) : Hallel complet
+         *   après l'Amida d'Arvit chez les Séfarades (Kitsour Yalkut Yosef 487:5) ;
+         * - Hallel partiel : Roch 'Hodech, fin de Pessa'h.
+         */
+        const val ROCH_HODECH_CHOL = "roch_hodech_chol"
+        const val HOL_HAMOED = "hol_hamoed"
+        const val HANOUKA_SANS_MOUSSAF = "hanouka_sans_moussaf"
+        const val HANOUKA_HORS_ROCH_HODECH = "hanouka_hors_roch_hodech"
+        const val LEIL_PESSAH = "leil_pessah"
+        const val HALLEL_PARTIEL = "hallel_partiel"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
-                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN)
+                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN,
+                ROCH_HODECH_CHOL, HOL_HAMOED, HANOUKA_SANS_MOUSSAF, HANOUKA_HORS_ROCH_HODECH, LEIL_PESSAH, HALLEL_PARTIEL)
     }
 
     /**
@@ -318,9 +339,19 @@ object CalendrierJuif {
             if (yomTov) add(C.YOM_TOV)
             if (listOf(C.PESSAH, C.SOUKKOT, C.CHAVOUOT, C.CHEMINI_ATSERET).any { it in this }) add(C.MOED)
             if (C.CHABBAT in this && regles.isRoshChodesh) add(C.CHABBAT_ROCH_HODECH)
-            // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique (28/10) : toute l'année
-            // (consigne du siddour Edot) ou jusqu'à Roch 'Hodech Adar II inclus (« עד חודש ניסן », Sfard et
-            // Ashkenaz) ; les deux usages, Michna beroura 423:6. Le 30 inaugure le mois suivant.
+            // Hallel et Moussaf (audit du 16/11 ; C.ROCH_HODECH_CHOL…).
+            if (C.CHABBAT !in this && regles.isRoshChodesh) add(C.ROCH_HODECH_CHOL)
+            if (regles.isCholHamoed) add(C.HOL_HAMOED)
+            if (regles.isChanukah && !regles.isRoshChodesh && C.CHABBAT !in this) add(C.HANOUKA_SANS_MOUSSAF)
+            if (regles.isChanukah && !regles.isRoshChodesh) add(C.HANOUKA_HORS_ROCH_HODECH)
+            if (index == JewishCalendar.PESACH && mois == JewishDate.NISSAN && quantieme <= 16) add(C.LEIL_PESSAH)
+            if (C.HALLEL in this && C.HALLEL_COMPLET !in this) add(C.HALLEL_PARTIEL)
+            // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique (28/10) : jusqu'à
+            // Roch 'Hodech Adar II inclus, plus à partir de Nissan (« עד חודש ניסן », Sfard et Ashkenaz ; pour
+            // les Edot, Kitsour Yalkut Yosef 423:14, audit du 16/11 : la consigne de leur siddour, « בשנה
+            // מעוברת », le dit toute l'année comme le Ben Ich 'Haï et le Kaf ha'Haïm 423:18). Michna Beroura
+            // 423:6 rapporte trois usages : tous les mois, l'année embolismique, ou celle-ci jusqu'à la fin
+            // d'Adar II. Le 30 inaugure le mois suivant.
             if (regles.isRoshChodesh && regles.isJewishLeapYear) {
                 val inaugure = if (quantieme == 30) when (mois) {
                     JewishDate.ADAR -> JewishDate.ADAR_II

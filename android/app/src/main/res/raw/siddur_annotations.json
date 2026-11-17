@@ -1651,20 +1651,20 @@
    {
     "sorte": "bloc",
     "s": 15,
-    "si": "hanouka",
+    "si": "hanouka_hors_roch_hodech",
     "b": 17,
     "empreinte": "בחנוכה אומרים",
     "g": 35,
-    "racine": "hanouka"
+    "racine": "hanouka_hors_roch_hodech"
    },
    {
     "sorte": "bloc",
     "s": 15,
-    "si": "hanouka",
+    "si": "hanouka_hors_roch_hodech",
     "b": 18,
     "empreinte": "מזמור (תהילים ל׳:א׳-ב׳) שירחנכת הבית לדו",
     "g": 35,
-    "racine": "hanouka"
+    "racine": "hanouka_hors_roch_hodech"
    },
    {
     "sorte": "bloc",
@@ -1845,8 +1845,37 @@
    },
    {
     "sorte": "renvoi",
+    "s": 13,
+    "si": "roch_hodech_chol",
+    "libelle": "ajout_rappel_sans_titkabal",
+    "b": 1,
+    "empreinte": "ברוך אלהינו שבראנו לכבודו, והבדילנו מן ה"
+   },
+   {
+    "sorte": "renvoi",
     "s": 15,
-    "si": "roch_hodech",
+    "si": "roch_hodech_chol",
+    "libelle": "ajout_rappel_demi_kaddich_moussaf_edot",
+    "empreinte": "שיר של יום"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 15,
+    "si": "chabbat_roch_hodech",
+    "libelle": "ajout_rappel_moussaf_chabbat_roch_hodech",
+    "empreinte": "שיר של יום"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 15,
+    "si": "hol_hamoed",
+    "libelle": "ajout_rappel_moussaf_hol_hamoed",
+    "empreinte": "שיר של יום"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 15,
+    "si": "roch_hodech_chol",
     "cible": "moussaf_rosh_hodech",
     "empreinte": "שיר של יום"
    }
@@ -3346,6 +3375,22 @@
     "empreinte": "ואומר החזן: ברוך יהוה המברך לעולם ועד:",
     "texte": "אמר רבי עקיבא: חיה אחת עומדת ברקיע ושמה ישראל, וחקוק על מצחה ישראל, עומדת באמצע הרקיע ואומרת: ברכו את ה׳ המבורך; וכל גדודי מעלה עונים ואומרים: ברוך ה׳ המבורך לעולם ועד.",
     "consigne": "המתפלל ביחיד אומר במקום ברכו, בלי להזכיר את השם (בן איש חי, ויגש י״ח; חיד״א, צפורן שמיר):"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 2,
+    "si": "leil_pessah",
+    "libelle": "ajout_rappel_hallel_leil_pessah_edot",
+    "b": 49,
+    "empreinte": "יהי רצון מלפניך, יהוה אלהינו ואלהי אבותי"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 2,
+    "si": "leil_pessah",
+    "cible": "hallel",
+    "b": 49,
+    "empreinte": "יהי רצון מלפניך, יהוה אלהינו ואלהי אבותי"
    }
   ],
   "birkat_hamazon": [
@@ -4065,35 +4110,35 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "!hanouka_sans_moussaf",
     "b": 26,
     "empreinte": "תתקבל צלותנא ובעותנא, עם צלותהון ובעותהו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 4,
-    "racine": "!hanouka"
+    "racine": "!hanouka_sans_moussaf"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "!hanouka_sans_moussaf",
     "b": 27,
     "empreinte": "יהא שלמא רבא מן שמיא. חיים ושבע וישועה ו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 4,
-    "racine": "!hanouka"
+    "racine": "!hanouka_sans_moussaf"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "!hanouka_sans_moussaf",
     "b": 28,
     "empreinte": "יפסע שלש פסיעות לאחור עושה שלום במרומיו.",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 4,
-    "racine": "!hanouka"
+    "racine": "!hanouka_sans_moussaf"
    }
   ],
   "moussaf_rosh_hodech": [
@@ -4127,7 +4172,7 @@
    {
     "sorte": "indice",
     "s": 0,
-    "si": "embolismique",
+    "si": "embolismique_avant_nissan",
     "b": 10,
     "empreinte": "אלהינו ואלהי אבותינו, חדש עלינו את החדש ",
     "texte": "וּלְכַפָּרַת פֶּשַׁע",
@@ -4339,6 +4384,58 @@
     "empreinte": "עושה שלום במרומיו, הוא ברחמיו יעשה שלום ",
     "g": 4,
     "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "roch_hodech",
+    "b": 0,
+    "empreinte": "אומרים ברכי נפשי",
+    "g": 5,
+    "racine": "roch_hodech"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "roch_hodech",
+    "b": 1,
+    "empreinte": "ברכי נפשי אתיהוה יהוה אלהי גדלת מאד הוד ",
+    "g": 5,
+    "racine": "roch_hodech"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "minyan",
+    "b": 2,
+    "empreinte": "ואומרים קדיש יהא שלמא",
+    "g": 6,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "minyan",
+    "b": 3,
+    "empreinte": "יתגדל ויתקדש שמה רבא. [אמן] בעלמא די ברא",
+    "g": 6,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "minyan",
+    "b": 4,
+    "empreinte": "יהא שלמא רבא מן שמיא. חיים ושבע וישועה ו",
+    "g": 6,
+    "racine": "minyan"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 1,
+    "si": "hanouka",
+    "libelle": "ajout_rappel_psaume_hanouka_apres_moussaf",
+    "empreinte": "ברכי נפשי"
    }
   ],
   "havdala": [
@@ -7016,7 +7113,14 @@
    {
     "sorte": "renvoi",
     "s": 13,
-    "si": "roch_hodech",
+    "si": "chabbat_roch_hodech",
+    "libelle": "ajout_rappel_moussaf_chabbat_roch_hodech",
+    "empreinte": "אשרי"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 13,
+    "si": "roch_hodech_chol",
     "cible": "moussaf_rosh_hodech",
     "empreinte": "אשרי"
    }
@@ -9182,6 +9286,22 @@
     "empreinte": "ברוך יהוה המברך לעולם ועד:",
     "texte": "אמר רבי עקיבא: חיה אחת עומדת ברקיע ושמה ישראל, וחקוק על מצחה ישראל, עומדת באמצע הרקיע ואומרת: ברכו את ה׳ המבורך; וכל גדודי מעלה עונים ואומרים: ברוך ה׳ המבורך לעולם ועד.",
     "consigne": "המתפלל ביחיד אומר במקום ברכו, בלי להזכיר את השם (בן איש חי, ויגש י״ח; חיד״א, צפורן שמיר):"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 1,
+    "si": "leil_pessah",
+    "libelle": "ajout_rappel_hallel_leil_pessah_sefard",
+    "b": 95,
+    "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 1,
+    "si": "leil_pessah",
+    "cible": "hallel",
+    "b": 95,
+    "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ"
    }
   ],
   "birkat_hamazon": [
@@ -10095,35 +10215,43 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "!hanouka_sans_moussaf",
     "b": 31,
     "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 3,
-    "racine": "!hanouka"
+    "racine": "!hanouka_sans_moussaf"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "!hanouka_sans_moussaf",
     "b": 32,
     "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 3,
-    "racine": "!hanouka"
+    "racine": "!hanouka_sans_moussaf"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "!hanouka_sans_moussaf",
     "b": 33,
     "empreinte": "עשה שלום במרומיו הוא יעשה שלום עלינו ועל",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 3,
-    "racine": "!hanouka"
+    "racine": "!hanouka_sans_moussaf"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 0,
+    "si": "hallel_partiel",
+    "libelle": "ajout_rappel_berakha_hallel_sefard",
+    "b": 1,
+    "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, אשר קדש"
    }
   ],
   "moussaf_rosh_hodech": [
@@ -13094,7 +13222,31 @@
    {
     "sorte": "renvoi",
     "s": 6,
-    "si": "roch_hodech",
+    "si": "roch_hodech_chol",
+    "libelle": "ajout_rappel_demi_kaddich_moussaf",
+    "b": 13,
+    "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 6,
+    "si": "chabbat_roch_hodech",
+    "libelle": "ajout_rappel_moussaf_chabbat_roch_hodech",
+    "b": 13,
+    "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 6,
+    "si": "hol_hamoed",
+    "libelle": "ajout_rappel_moussaf_hol_hamoed",
+    "b": 13,
+    "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ"
+   },
+   {
+    "sorte": "renvoi",
+    "s": 6,
+    "si": "roch_hodech_chol",
     "cible": "moussaf_rosh_hodech",
     "b": 13,
     "empreinte": "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינ"
@@ -15806,6 +15958,48 @@
     "empreinte": "אהבתי כי ישמע יהוה את קולי תחנוני. כי הט",
     "g": 1,
     "racine": "hallel_complet"
+   },
+   {
+    "sorte": "indice",
+    "s": 8,
+    "si": "asseret_yemei_techouva",
+    "b": 5,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "texte": "לעלא לעלא מכל",
+    "retire": " (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)"
+   },
+   {
+    "sorte": "bloc",
+    "s": 8,
+    "si": "!hanouka_sans_moussaf",
+    "b": 7,
+    "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
+    "libelle": "ajout_sauf_hanouka",
+    "discret": true,
+    "g": 2,
+    "racine": "!hanouka_sans_moussaf"
+   },
+   {
+    "sorte": "bloc",
+    "s": 8,
+    "si": "!hanouka_sans_moussaf",
+    "b": 8,
+    "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
+    "libelle": "ajout_sauf_hanouka",
+    "discret": true,
+    "g": 2,
+    "racine": "!hanouka_sans_moussaf"
+   },
+   {
+    "sorte": "bloc",
+    "s": 8,
+    "si": "!hanouka_sans_moussaf",
+    "b": 9,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "libelle": "ajout_sauf_hanouka",
+    "discret": true,
+    "g": 2,
+    "racine": "!hanouka_sans_moussaf"
    }
   ],
   "moussaf_rosh_hodech": [

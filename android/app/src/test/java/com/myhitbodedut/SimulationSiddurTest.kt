@@ -95,7 +95,13 @@ class SimulationSiddurTest {
         Regle(setOf("chaharit"), "ובנחה יאמר שובה יהוה", si(C.KRIAT_HATORAH)),
         // 12/11 : « שעשה לי כל צרכי » (Edot) pas le 9 Av ni à Kippour ; la fin du Kaddich après le Hallel pas à 'Hanouka.
         Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { C.TICHA_BEAV_KIPPOUR !in it }, setOf(Nusah.EDOT)),
-        Regle(setOf("hallel"), "תתקבל", { C.HANOUKA !in it }),
+        // Audit du 16/11 : תתקבל tout jour de Moussaf, Roch 'Hodech Tévèt et Chabbat 'Hanouka compris (Kitsour Yalkut
+        // Yosef 423:1 ; Michna Beroura 423:1) ; l'Ashkenaz, qui n'avait aucun Kaddich après le Hallel, l'a désormais.
+        Regle(setOf("hallel"), "תתקבל", { C.HANOUKA_SANS_MOUSSAF !in it }),
+        // Edot : la bénédiction du Hallel les seuls jours de Hallel complet (Kitsour Yalkut Yosef 422:2).
+        Regle(setOf("hallel"), "לגמור את ההלל", si(C.HALLEL_COMPLET), setOf(Nusah.EDOT)),
+        // Edot : ברכי נפשי après Moussaf (Kitsour Yalkut Yosef 423:5).
+        Regle(setOf("moussaf_rosh_hodech"), "ברכי נפשי את יהוה", si(C.ROCH_HODECH), setOf(Nusah.EDOT)),
         Regle(setOf("minha"), "ויאמר דוד אל גד", si(C.TAHANOUN_MINHA)),
         // Avinou malkénou (Ashkenaz, Sfard) ; à Min'ha, pas la veille de Chabbat (12/11 : jeûne de Tévèt un vendredi).
         Regle(setOf("chaharit"), "אבינו מלכנו חטאנו לפניך", si(C.AVINOU_MALKENOU), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),

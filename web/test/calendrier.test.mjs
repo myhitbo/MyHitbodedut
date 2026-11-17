@@ -217,9 +217,13 @@ test('siddour : chaque annotation désigne encore son bloc, et chaque libellé e
   const { index } = await import('../src/js/siddur-jour.js');
   for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
     const siddur = JSON.parse(readFileSync(join(raw, 'raw', `siddur_${nusah}.json`), 'utf8'));
-    const renvois = [...index(annotations[nusah].chaharit).renvois.values()].flat();
+    // Les rappels (audit du 16/11) sont des renvois sans cible : hors de ce compte.
+    const renvois = [...index(annotations[nusah].chaharit).renvois.values()].flat().filter((a) => a.cible);
     assert.deepEqual(renvois.map((a) => a.cible), ['hallel', 'moussaf_rosh_hodech'], nusah);
     for (const a of renvois) assert.ok(siddur.textes.some((t) => t.id === a.cible), `${nusah} ${a.cible}`);
+    // Audit du 16/11 : pas le Moussaf de semaine un Chabbat Roch 'Hodech (2025-12-20), où l'on dit « אתה יצרת ».
+    const moussaf = renvois.find((a) => a.cible === 'moussaf_rosh_hodech');
+    assert.ok(vrai(moussaf.si, jour('2025-12-21', false).conditions) && !vrai(moussaf.si, jour('2025-12-20', false).conditions), nusah);
   }
 });
 
