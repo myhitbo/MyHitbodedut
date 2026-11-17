@@ -81,15 +81,17 @@ object VueJour {
      * ce soir ou dans combien de jours, la fenêtre à l'heure près, le motsaé Chabbat
      * conseillé, Kippour et Tich'a beAv, la jauge du mois lunaire, l'usage suivi.
      */
-    private fun levana(c: Context, date: LocalDate, langue: String, haut: Int = 14): View = LinearLayout(c).apply {
+    private fun levana(c: Context, date: LocalDate, langue: String, enIsrael: Boolean, haut: Int = 14): View = LinearLayout(c).apply {
         orientation = LinearLayout.VERTICAL
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         val lieu = Store.lieuZmanim(c)
         val zone = lieu?.fuseau?.let { runCatching { java.time.ZoneId.of(it) }.getOrNull() } ?: java.time.ZoneId.systemDefault()
         val usage = usageLevana(c)
-        val f = Levana.fenetre(date, zone, usage)
+        // Les nuits bornées par la tsét du lieu (audit du 16/11).
+        val f = Levana.fenetre(date, zone, usage, Levana.Horaires.du(lieu, zone))
         val lune = Levana.phase(Levana.soir(date, zone))
-        val etat = Levana.etat(f, date, zone)
+        val etat = Levana.etat(f, date, zone, enIsrael)
+        val nusah = Store.siddurNusah(c)
         val jour = DateTimeFormatter.ofPattern("EEE d MMM", locale(langue))
         val heure = DateTimeFormatter.ofPattern("EEE d MMM, HH:mm", locale(langue))
         addView(LinearLayout(c).apply {
@@ -110,16 +112,31 @@ object VueJour {
                     is Levana.Etat.Dans -> c.resources.getQuantityString(R.plurals.levana_dans, etat.jours, etat.jours)
                     Levana.Etat.CeSoir -> c.getString(R.string.levana_ce_soir)
                     Levana.Etat.DernierSoir -> c.getString(R.string.levana_dernier_soir)
-                }, 17f, if (etat is Levana.Etat.Dans) R.color.ink else R.color.brand, gras = true, haut = 2))
+                    is Levana.Etat.PasCeSoir -> c.getString(if (etat.chome == Levana.Chome.CHABBAT) R.string.levana_pas_chabbat else R.string.levana_pas_yom_tov)
+                }, 17f, if (etat is Levana.Etat.Dans || etat is Levana.Etat.PasCeSoir) R.color.ink else R.color.brand, gras = true, haut = 2))
                 val pct = java.text.NumberFormat.getPercentInstance(locale(langue)).format(Math.round(lune.eclairage * 100) / 100.0)
                 addView(texte(c, c.getString(R.string.levana_lune, pct,
                     c.getString(if (lune.croissante) R.string.levana_croissante else R.string.levana_decroissante)), 13f, R.color.muted, haut = 2))
             })
         })
-        addView(texte(c, c.getString(R.string.levana_fenetre, f.debut.atZone(zone).format(heure), f.fin.atZone(zone).format(heure)), 14f, R.color.ink, haut = 8))
+        // Sans lieu, la sortie de Kippour ou du 9 Av n'a pas d'heure : la date seule (audit du 16/11).
+        val debut = f.debut.atZone(zone).format(if (lieu == null && f.restriction != null) jour else heure)
+        addView(texte(c, c.getString(R.string.levana_fenetre, debut, f.fin.atZone(zone).format(heure)), 14f, R.color.ink, haut = 8))
         Levana.motsaeChabbat(f, date, zone)?.let { addView(texte(c, c.getString(R.string.levana_motsae, it.format(jour)), 13f, R.color.brand, haut = 4)) }
         f.restriction?.let {
-            addView(texte(c, c.getString(if (it == Levana.Restriction.KIPPOUR) R.string.levana_kippour else R.string.levana_tisha), 13f, R.color.brand, haut = 4))
+            // Kippour : en Edot, « notre usage » du Yalkut Yosef (426:34) ; le 9 Av : après avoir goûté (audit du 16/11).
+            val res = when {
+                it == Levana.Restriction.TISHA_BEAV -> R.string.levana_tisha
+                nusah == Nusah.EDOT -> R.string.levana_kippour_edot
+                else -> R.string.levana_kippour
+            }
+            addView(texte(c, c.getString(res), 13f, R.color.brand, haut = 4))
+        }
+        // Un soir de Chabbat ou de Yom tov (audit du 16/11, MB 426:12 ; YY 426:33).
+        if (etat is Levana.Etat.PasCeSoir) addView(texte(c, c.getString(R.string.levana_pas_chome_source), 13f, R.color.brand, haut = 4))
+        // La sortie d'un autre jeûne (10 Tévèt…) : goûter d'abord ; le Rema attend un autre soir en Ashkenaz (audit du 16/11).
+        if (etat !is Levana.Etat.Dans && Levana.sortieDeJeune(date, enIsrael) && f.restriction == null) {
+            addView(texte(c, c.getString(if (nusah == Nusah.ASHKENAZ) R.string.levana_jeune_ashkenaz else R.string.levana_jeune), 13f, R.color.brand, haut = 4))
         }
         addView(Levana.Jauge(c, Levana.part(f, f.debut), Levana.part(f, f.fin), Levana.part(f, Levana.soir(date, zone))).apply {
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -167,7 +184,7 @@ object VueJour {
         // Le calendrier montre tout dans la carte ; l'écran Zmanim (14/10) n'y garde que le jour,
         // et pose Levana, hilloula et halakha sous les horaires (VueJour.sousHoraires).
         if (complet) {
-            if (Store.levanaAffichee(c)) carte.addView(levana(c, date, langue))
+            if (Store.levanaAffichee(c)) carte.addView(levana(c, date, langue, enIsrael))
             blocHilloula(c, carte, date, enIsrael)
             blocHalakha(c, carte, date, enIsrael)
         }
@@ -182,7 +199,7 @@ object VueJour {
      * carte et chacune masquable dans les réglages.
      */
     fun sousHoraires(c: Context, date: LocalDate, enIsrael: Boolean): List<View> = listOfNotNull(
-        if (Store.levanaAffichee(c)) carte(c).apply { addView(levana(c, date, ChizukCard.language(c), haut = 0)) } else null,
+        if (Store.levanaAffichee(c)) carte(c).apply { addView(levana(c, date, ChizukCard.language(c), enIsrael, haut = 0)) } else null,
         carte(c).takeIf { blocHilloula(c, it, date, enIsrael, haut = 0) },
         carte(c).takeIf { blocHalakha(c, it, date, enIsrael, haut = 0) },
     )

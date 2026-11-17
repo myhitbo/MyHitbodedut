@@ -1068,7 +1068,7 @@
     <string name="levana_decroissante">waning</string>
     <string name="levana_motsae">Best: Motzaei Shabbat %s (Shulchan Aruch 426:2 and Rema)</string>
     <string name="levana_kippour">Not before Yom Kippur ends (Rema 426:2)</string>
-    <string name="levana_tisha">Not before Tisha B’Av ends (Rema 426:2; Mishnah Berurah 426:11)</string>
+    <string name="levana_tisha">Once the fast is over, preferably after tasting something (Mishnah Berurah 426:11; Yalkut Yosef 426:35); the Rema does not say it on Motzaei Tisha B’Av (426:2)</string>
     <string name="levana_usage_titre">Birkat HaLevana: custom</string>
     <string name="levana_usage_auto">By nusach</string>
     <string name="levana_usage_trois_mi_mois">From 3 days, until mid-month (Mishnah Berurah, Rema)</string>
@@ -1082,6 +1082,13 @@
     <string name="levana_rappel_reglage">Birkat HaLevana reminder</string>
     <string name="chabbat_alerte_reglage">“Shabbat in 3 hours” alert</string>
     <string name="levana_lire">Read Birkat HaLevana ›</string>
+    <string name="levana_usage_sept_nuit_quinze">From 7 days, through the night of the 15th (Yalkut Yosef)</string>
+    <string name="levana_pas_chabbat">Not tonight (Shabbat)</string>
+    <string name="levana_pas_yom_tov">Not tonight (Yom Tov)</string>
+    <string name="levana_pas_chome_source">Ideally not on Shabbat or Yom Tov night, unless the time is running out (Mishnah Berurah 426:12; Yalkut Yosef 426:33)</string>
+    <string name="levana_kippour_edot">Our custom: right after Yom Kippur (Yalkut Yosef 426:34)</string>
+    <string name="levana_jeune">Tonight the fast ends: say it after tasting something (Mishnah Berurah 426:11)</string>
+    <string name="levana_jeune_ashkenaz">Tonight the fast ends: the Rema waits for another night (426:2); the Acharonim say it after tasting something (Mishnah Berurah 426:11)</string>
     <string name="widget_zmanim_label">MyHitbodedut Zmanim</string>
     <string name="widget_zmanim_description">The Hebrew date, the prayer of the moment, the next three zmanim and the streak.</string>
     <string name="widget_zmanim_chaharit">Shacharit</string>

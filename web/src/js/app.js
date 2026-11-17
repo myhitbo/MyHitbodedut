@@ -928,8 +928,9 @@ function momentAccueil() {
   const t = moment ? siddur.textes.find((x) => x.id === moment) : null;
   if (t) cartes.push(carteMaintenant(t, undefined, undefined, tr.t(Salutation.mot(heureLieu(heure).heures))));
   const zone = store.lieu()?.fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const l = levana(jourLieu(heure), zone, { usage: usageLevanaCourant() });
+  const l = levana(jourLieu(heure), zone, optionsLevana());
   const lv = siddur.textes.find((x) => x.id === 'birkat_halevana');
+  // Ni un soir de Chabbat ou de Yom tov qui n'est pas le dernier ({ pas }, audit du 16/11).
   if (lv && store.levanaAffichee() && typeof l.etat === 'string' && heureLieu(heure).heures >= 14 && +heure < l.finMs) {
     cartes.push(h('button', { class: 'maintenant', onclick: () => { priere = lv.id; ouvrir('priere'); } },
       plateau('char_praise', 'plateau-maintenant'),
@@ -3032,6 +3033,16 @@ const hemisphereSud = () => (store.lieu()?.latitude ?? 0) < 0;
 const usageLevanaCourant = () => usageLevana(store.siddurNusah(), store.levanaUsage());
 
 /**
+ * Les options de levana() pour le lieu choisi (audit du 16/11, Levana.Horaires) : la tsét et le
+ * lever du soleil bornent les nuits ; Israël ou la diaspora pour le second jour de fête.
+ */
+function optionsLevana() {
+  const lieu = store.lieu();
+  const heureDe = (cle) => (lieu ? (d) => { const z = zmanimDuJour(lieu, d).find((x) => x.cle === cle); return z?.instant ? +z.instant : null; } : null);
+  return { usage: usageLevanaCourant(), enIsrael: store.inIsrael(), tset: heureDe('tset'), netz: heureDe('netz') };
+}
+
+/**
  * Birkat haLevana (Levana.kt ; plus réaliste le 14/10) : la lune de ce soir dessinée,
  * ce soir ou dans combien de jours, la fenêtre à l'heure près, le motsaé Chabbat
  * conseillé, Kippour et Tich'a beAv, la jauge du mois lunaire, l'usage suivi.
@@ -3040,10 +3051,15 @@ function blocLevana(iso) {
   const lieu = store.lieu();
   const zone = lieu?.fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   const usage = usageLevanaCourant();
-  const l = levana(iso, zone, { usage });
+  const l = levana(iso, zone, optionsLevana());
+  const nusah = store.siddurNusah();
   const court = (d) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`));
   const heure = (ms) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: zone }).format(new Date(ms));
-  const etat = l.etat === 'ce_soir' ? tr.t('levana_ce_soir') : l.etat === 'dernier' ? tr.t('levana_dernier_soir') : tr.p('levana_dans', l.etat.dans);
+  const jourSeul = (ms) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', timeZone: zone }).format(new Date(ms));
+  const etat = l.etat === 'ce_soir' ? tr.t('levana_ce_soir') : l.etat === 'dernier' ? tr.t('levana_dernier_soir')
+    : l.etat.pas ? tr.t(l.etat.pas === 'chabbat' ? 'levana_pas_chabbat' : 'levana_pas_yom_tov') : tr.p('levana_dans', l.etat.dans);
+  // Kippour : en Edot, « notre usage » du Yalkut Yosef 426:34 ; le 9 Av : après avoir goûté (audit du 16/11).
+  const restriction = l.restriction === 'tisha_beav' ? 'levana_tisha' : nusah === 'edot' ? 'levana_kippour_edot' : 'levana_kippour';
   const pct = (x) => `${(x * 100).toFixed(2)}%`;
   return h('div', { class: 'levana' },
     h('div', { class: 'levana-tete' },
@@ -3052,9 +3068,12 @@ function blocLevana(iso) {
         h('h3', { class: 'jour-sous-titre' }, tr.t('levana_titre')),
         h('p', { class: `levana-etat${typeof l.etat === 'string' ? ' ouvert' : ''}` }, etat),
         h('p', { class: 'levana-lune' }, tr.t('levana_lune', new Intl.NumberFormat(tr.langue, { style: 'percent' }).format(Math.round(l.lune.eclairage * 100) / 100), tr.t(l.lune.croissante ? 'levana_croissante' : 'levana_decroissante'))))),
-    h('p', { class: 'levana-fenetre' }, tr.t('levana_fenetre', heure(l.debutMs), heure(l.finMs))),
+    // Sans lieu, la sortie de Kippour ou du 9 Av n'a pas d'heure : la date seule (audit du 16/11).
+    h('p', { class: 'levana-fenetre' }, tr.t('levana_fenetre', !lieu && l.restriction ? jourSeul(l.debutMs) : heure(l.debutMs), heure(l.finMs))),
     l.motsae ? h('p', { class: 'levana-conseil' }, tr.t('levana_motsae', court(l.motsae))) : null,
-    l.restriction ? h('p', { class: 'levana-conseil' }, tr.t(l.restriction === 'kippour' ? 'levana_kippour' : 'levana_tisha')) : null,
+    l.restriction ? h('p', { class: 'levana-conseil' }, tr.t(restriction)) : null,
+    l.etat.pas ? h('p', { class: 'levana-conseil' }, tr.t('levana_pas_chome_source')) : null,
+    l.jeune ? h('p', { class: 'levana-conseil' }, tr.t(nusah === 'ashkenaz' ? 'levana_jeune_ashkenaz' : 'levana_jeune')) : null,
     h('div', { class: 'levana-jauge', 'aria-hidden': 'true' },
       h('span', { class: 'levana-fil' }),
       h('span', { class: 'levana-or', style: `inset-inline-start: ${pct(l.debut)}; width: ${pct(l.fin - l.debut)}` }),

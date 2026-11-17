@@ -1118,7 +1118,7 @@
     <string name="levana_decroissante">décroissante</string>
     <string name="levana_motsae">Conseillé : motsaé Chabbat %s (Choul’han Aroukh 426, 2 et Rema)</string>
     <string name="levana_kippour">Pas avant la sortie de Kippour (Rema 426, 2)</string>
-    <string name="levana_tisha">Pas avant la sortie de Ticha bèAv (Rema 426, 2 ; Michna Beroura 426, 11)</string>
+    <string name="levana_tisha">Dès la sortie du jeûne, de préférence après avoir goûté quelque chose (Michna Beroura 426, 11 ; Yalkout Yossef 426, 35) ; le Rema ne la dit pas au motsaé Ticha bèAv (426, 2)</string>
     <string name="levana_usage_titre">Birkat haLevana : usage</string>
     <string name="levana_usage_auto">Selon le noussa’h</string>
     <string name="levana_usage_trois_mi_mois">Dès 3 jours, jusqu’à la mi-mois (Michna Beroura, Rema)</string>
@@ -1132,6 +1132,13 @@
     <string name="levana_rappel_reglage">Rappel de Birkat haLevana</string>
     <string name="chabbat_alerte_reglage">Alerte « Chabbat dans 3 h »</string>
     <string name="levana_lire">Lire Birkat haLevana ›</string>
+    <string name="levana_usage_sept_nuit_quinze">Dès 7 jours, jusqu’à la nuit du 15 incluse (Yalkout Yossef)</string>
+    <string name="levana_pas_chabbat">Pas ce soir (Chabbat)</string>
+    <string name="levana_pas_yom_tov">Pas ce soir (Yom tov)</string>
+    <string name="levana_pas_chome_source">Lekhat’hila, pas le soir de Chabbat ni de Yom tov, sauf si le délai va passer (Michna Beroura 426, 12 ; Yalkout Yossef 426, 33)</string>
+    <string name="levana_kippour_edot">Notre usage : à la sortie de Kippour (Yalkout Yossef 426, 34)</string>
+    <string name="levana_jeune">Ce soir, sortie du jeûne : bénir après avoir goûté quelque chose (Michna Beroura 426, 11)</string>
+    <string name="levana_jeune_ashkenaz">Ce soir, sortie du jeûne : le Rema attend un autre soir (426, 2) ; les A’haronim bénissent après avoir goûté quelque chose (Michna Beroura 426, 11)</string>
     <string name="widget_zmanim_label">Zmanim MyHitbodedut</string>
     <string name="widget_zmanim_description">La date hébraïque, la prière du moment, les trois prochains zmanim et la série.</string>
     <string name="widget_zmanim_chaharit">Cha’harit</string>

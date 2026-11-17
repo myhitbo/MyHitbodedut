@@ -1103,7 +1103,7 @@
     <string name="levana_decroissante">מתמעטת</string>
     <string name="levana_motsae">מומלץ: במוצאי %s (שו״ע תכ״ו, ב ורמ״א)</string>
     <string name="levana_kippour">לא לפני מוצאי יום הכיפורים (רמ״א תכ״ו, ב)</string>
-    <string name="levana_tisha">לא לפני מוצאי תשעה באב (רמ״א תכ״ו, ב; משנה ברורה תכ״ו, י״א)</string>
+    <string name="levana_tisha">במוצאי הצום, ולכתחילה אחרי שטעם משהו (משנה ברורה תכ״ו, י״א; ילקוט יוסף תכ״ו, ל״ה); הרמ״א אינו מקדש במוצאי תשעה באב (תכ״ו, ב)</string>
     <string name="levana_usage_titre">ברכת הלבנה: מנהג</string>
     <string name="levana_usage_auto">לפי הנוסח</string>
     <string name="levana_usage_trois_mi_mois">מ־3 ימים עד חצי החודש (משנה ברורה, רמ״א)</string>
@@ -1117,6 +1117,13 @@
     <string name="levana_rappel_reglage">תזכורת לברכת הלבנה</string>
     <string name="chabbat_alerte_reglage">התראת „שבת בעוד 3 שעות”</string>
     <string name="levana_lire">לנוסח ברכת הלבנה ›</string>
+    <string name="levana_usage_sept_nuit_quinze">מ־7 ימים עד סוף ליל ט״ו בחודש (ילקוט יוסף)</string>
+    <string name="levana_pas_chabbat">לא הלילה (שבת)</string>
+    <string name="levana_pas_yom_tov">לא הלילה (יום טוב)</string>
+    <string name="levana_pas_chome_source">לכתחילה לא בליל שבת ויום טוב, אלא אם כן יעבור הזמן (משנה ברורה תכ״ו, י״ב; ילקוט יוסף תכ״ו, ל״ג)</string>
+    <string name="levana_kippour_edot">מנהגנו: במוצאי יום הכיפורים (ילקוט יוסף תכ״ו, ל״ד)</string>
+    <string name="levana_jeune">הלילה מוצאי תענית: לקדש אחרי שטעם משהו (משנה ברורה תכ״ו, י״א)</string>
+    <string name="levana_jeune_ashkenaz">הלילה מוצאי תענית: הרמ״א ממתין ללילה אחר (תכ״ו, ב); האחרונים מקדשים אחרי שטעם משהו (משנה ברורה תכ״ו, י״א)</string>
     <string name="widget_zmanim_label">זמנים MyHitbodedut</string>
     <string name="widget_zmanim_description">התאריך העברי, התפילה של השעה, שלושת הזמנים הבאים והרצף.</string>
     <string name="widget_zmanim_chaharit">שחרית</string>
