@@ -297,8 +297,9 @@ struct RechercheListe<Element: Sendable>: Sendable {
     }
 }
 
-/// Un recueil (le siddour ou les livres) : `RechercheGlobale.dansRecueil`. Chaque texte, le titre d'abord (hébreu
-/// ou traduit), puis son premier bloc (hors consignes) qui contient la requête ; trente textes au plus.
+/// Un recueil (le siddour ou les livres) : `RechercheGlobale.dansRecueil`. Chaque texte, son titre s'il répond
+/// (hébreu ou traduit), puis ses blocs (hors consignes) qui contiennent la requête, cinq résultats au plus par
+/// texte, avec leur place ; cinquante résultats au plus.
 struct RechercheRecueil: Sendable {
 
     struct Texte: Sendable {
@@ -315,6 +316,8 @@ struct RechercheRecueil: Sendable {
     let textes: [Texte]
     /// Le texte de chaque bloc, pour l'extrait.
     private let blocs: [String]
+    /// La place de chaque bloc (rang de section, rang de bloc) et le titre de sa section devant l'extrait.
+    private let places: [(section: Int, bloc: Int, chapitre: String)]
     private let tampon: RechercheTampon
 
     init(_ recueil: Siddur, sorte: RechercheGlobale.Sorte, langue: String) {
@@ -322,11 +325,14 @@ struct RechercheRecueil: Sendable {
         var textes: [Texte] = []
         var blocs: [String] = []
         var nus: [[String]] = []
+        var places: [(section: Int, bloc: Int, chapitre: String)] = []
         for t in recueil.textes {
             let debut = blocs.count
-            for section in t.sections {
-                for bloc in section.blocs where !bloc.consigne {
+            for (si, section) in t.sections.enumerated() {
+                let chapitre = section.titre.estBlanc ? "" : "\(section.titre) · "
+                for (bi, bloc) in section.blocs.enumerated() where !bloc.consigne {
                     blocs.append(bloc.texte)
+                    places.append((si, bi, chapitre))
                     nus.append([RechercheGlobale.nu(bloc.texte)])
                 }
             }
@@ -337,6 +343,7 @@ struct RechercheRecueil: Sendable {
         }
         self.textes = textes
         self.blocs = blocs
+        self.places = places
         tampon = RechercheTampon(nus)
     }
 
@@ -344,17 +351,23 @@ struct RechercheRecueil: Sendable {
     func chercher(_ q: String, motif: Data) -> [RechercheGlobale.Resultat] {
         var resultats: [RechercheGlobale.Resultat] = []
         for t in textes {
-            if resultats.count >= RechercheGlobale.parSorte { break }
+            if resultats.count >= RechercheGlobale.parRecueil { break }
+            var trouves: [RechercheGlobale.Resultat] = []
             if t.titreNu.contientUnites(q) || t.traduitNu.contientUnites(q) {
-                resultats.append(RechercheGlobale.Resultat(sorte: sorte, id: t.id, titre: t.titre,
-                                                           extrait: t.traduit.egalUnites(t.titre) ? "" : t.traduit))
-                continue
+                trouves.append(RechercheGlobale.Resultat(sorte: sorte, id: t.id, titre: t.titre,
+                                                         extrait: t.traduit.egalUnites(t.titre) ? "" : t.traduit))
             }
-            if let b = tampon.premier(contenant: motif, de: t.blocs.lowerBound, a: t.blocs.upperBound) {
-                resultats.append(RechercheGlobale.Resultat(sorte: sorte, id: t.id, titre: t.titre,
-                                                           extrait: RechercheGlobale.extrait(blocs[b], q)))
+            var depuis = t.blocs.lowerBound
+            while trouves.count < RechercheGlobale.parTexte,
+                  let b = tampon.premier(contenant: motif, de: depuis, a: t.blocs.upperBound) {
+                let place = places[b]
+                trouves.append(RechercheGlobale.Resultat(sorte: sorte, id: t.id, titre: t.titre,
+                                                         extrait: place.chapitre + RechercheGlobale.extrait(blocs[b], q),
+                                                         section: place.section, bloc: place.bloc))
+                depuis = b + 1
             }
+            resultats += trouves
         }
-        return resultats
+        return Array(resultats.prefix(RechercheGlobale.parRecueil))
     }
 }

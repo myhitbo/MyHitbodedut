@@ -26,23 +26,32 @@ public enum RechercheGlobale {
         public let id: String
         public let titre: String
         public let extrait: String
+        /// Le paragraphe trouvé (rang de section, rang de bloc) : le toucher y conduit ; -1 pour un titre.
+        public let section: Int
+        public let bloc: Int
 
-        public init(sorte: Sorte, id: String, titre: String, extrait: String) {
+        public init(sorte: Sorte, id: String, titre: String, extrait: String, section: Int = -1, bloc: Int = -1) {
             self.sorte = sorte
             self.id = id
             self.titre = titre
             self.extrait = extrait
+            self.section = section
+            self.bloc = bloc
         }
     }
 
     /// Au plus tant de résultats de chaque source (`PAR_SORTE`).
     public static let parSorte = 30
+    /// Au plus tant de résultats d'un même texte d'un recueil (`PAR_TEXTE`).
+    public static let parTexte = 5
+    /// Au plus tant de résultats d'un recueil (`PAR_RECUEIL`).
+    public static let parRecueil = 50
 
     // MARK: Le texte mis à nu
 
     /// Les accents latins et l'apostrophe typographique tombent aussi : « priere » trouve « Prières »,
     /// « hachahar » trouve « Birkot hacha’har » (vérification du 29/10). Les étapes de Kotlin, dans son ordre :
-    /// NFD, sans U+0300 à U+036F ni ’ ‘ ; chaque balise `<[^>]+>` en une espace ; le maqaf et le paseq en
+    /// NFD, sans U+0300 à U+036F ni ’ ‘ ni le liant sans chasse U+200D ; chaque balise `<[^>]+>` en une espace ; le maqaf et le paseq en
     /// espace ; sans les voyelles et les te'amim (U+0591 à U+05C7), les guillemets droits, le guéresh et le
     /// guershayim ; chaque suite de blancs `\s+` en une espace (`\s` de la JVM : espace, U+0009 à U+000D) ;
     /// rogné (`trim`) ; en minuscules.
@@ -57,7 +66,7 @@ public enum RechercheGlobale {
         a.reserveCapacity(decompose.utf16.count)
         for u in decompose.utf16 {
             switch u {
-            case 0x0300...0x036F, 0x2018, 0x2019: continue
+            case 0x0300...0x036F, 0x2018, 0x2019, 0x200D: continue
             default: a.append(u)
             }
         }
@@ -119,28 +128,35 @@ public enum RechercheGlobale {
 
     // MARK: Les sources
 
-    /// Les textes d'un recueil (siddour ou livres) : le titre d'abord, puis le premier paragraphe qui contient
-    /// la recherche (`q`, déjà mise à nu) ; trente textes au plus.
-    public static func dansRecueil(_ recueil: Siddur, _ q: String, _ sorte: Sorte, langue: String) -> [Resultat] {
+    /// Les textes d'un recueil (siddour ou livres) : le titre s'il répond, puis chaque paragraphe qui contient la
+    /// recherche (`q`, déjà mise à nu), cinq au plus par texte, avec sa place et le titre de sa section devant
+    /// l'extrait ; cinquante résultats au plus. Une recherche dépassée par la frappe suivante s'abandonne en
+    /// route (`annule`, FLECTURE-07).
+    public static func dansRecueil(_ recueil: Siddur, _ q: String, _ sorte: Sorte, langue: String,
+                                   annule: () -> Bool = { false }) -> [Resultat] {
         let motif = Array(q.utf16)
         var resultats: [Resultat] = []
         for t in recueil.textes {
-            // take(PAR_SORTE) : ce qui suit le trentième ne changerait rien.
-            if resultats.count >= parSorte { break }
+            // take(PAR_RECUEIL) : ce qui suit le cinquantième ne changerait rien.
+            if resultats.count >= parRecueil { break }
+            if annule() { continue }
             let titre = t.titre.he
             let traduit = t.titre.pour(langue)
+            var trouves: [Resultat] = []
             if contient(nu(titre), motif) || contient(nu(traduit), motif) {
-                resultats.append(Resultat(sorte: sorte, id: t.id, titre: titre, extrait: traduit.egalUnites(titre) ? "" : traduit))
-                continue
+                trouves.append(Resultat(sorte: sorte, id: t.id, titre: titre, extrait: traduit.egalUnites(titre) ? "" : traduit))
             }
-            blocs: for section in t.sections {
-                for bloc in section.blocs where !bloc.consigne && contient(nu(bloc.texte), motif) {
-                    resultats.append(Resultat(sorte: sorte, id: t.id, titre: titre, extrait: extrait(bloc.texte, q)))
-                    break blocs
+            paragraphes: for (si, section) in t.sections.enumerated() {
+                for (bi, bloc) in section.blocs.enumerated() where !bloc.consigne && contient(nu(bloc.texte), motif) {
+                    let chapitre = section.titre.estBlanc ? "" : "\(section.titre) · "
+                    trouves.append(Resultat(sorte: sorte, id: t.id, titre: titre, extrait: chapitre + extrait(bloc.texte, q),
+                                            section: si, bloc: bi))
+                    if trouves.count >= parTexte { break paragraphes }
                 }
             }
+            resultats += trouves
         }
-        return resultats
+        return Array(resultats.prefix(parRecueil))
     }
 
     private static func contient(_ texte: String, _ motif: [UInt16]) -> Bool {
@@ -191,17 +207,19 @@ public enum RechercheGlobale {
     /// du Ben Ish 'Haï). Une source absente (nil) est passée.
     public static func chercher(_ texte: String, langue: String, siddur: Siddur, livres: Siddur?,
                                 yalkut: YalkutYosef.Livre?, benIshHai: Halakha.Livre?, hilloulot: Hilloulot.Table?,
-                                portee: Portee = .tout) -> [Resultat] {
+                                portee: Portee = .tout, annule: () -> Bool = { false }) -> [Resultat] {
         let q = nu(texte.rogne)
         if q.utf16.count < 2 { return [] }
         let s = portee.sortes
         var resultats: [Resultat] = []
         if s.contains(.siddour) {
-            resultats += dansRecueil(siddur, q, .siddour, langue: langue)
+            resultats += dansRecueil(siddur, q, .siddour, langue: langue, annule: annule)
         }
+        if annule() { return resultats }
         if s.contains(.livre), let livres {
-            resultats += dansRecueil(livres, q, .livre, langue: langue)
+            resultats += dansRecueil(livres, q, .livre, langue: langue, annule: annule)
         }
+        if annule() { return resultats }
         if s.contains(.halakha), let yalkut {
             for seif in YalkutYosef.recherche(yalkut, texte: texte).prefix(parSorte) {
                 resultats.append(Resultat(sorte: .halakha, id: texte, titre: YalkutYosef.source(seif), extrait: extrait(seif.texte, q)))

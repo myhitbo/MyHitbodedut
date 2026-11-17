@@ -4,7 +4,7 @@ import Coeur
 @testable import Ecrans
 
 /// La recherche globale (RechercheActivity.kt) : l'index rend ce que rend `RechercheGlobale.chercher` d'Android,
-/// requête par requête ; l'écran groupe les résultats par sorte, un par texte et trente par sorte, en moins de
+/// requête par requête ; l'écran groupe les résultats par sorte, cinq paragraphes au plus par texte et cinquante par recueil, en moins de
 /// 300 ms une fois l'index prêt (mesuré ici, ContinuousClock) ; chaque résultat ouvre son écran ; seule la
 /// dernière recherche s'affiche.
 ///
@@ -30,6 +30,16 @@ struct RechercheModeleTests {
         reglages.setSiddurNusah(nusah)
         let magasin = Magasin.enMemoire(Enregistrement(reglages: reglages))
         return (RechercheModele(magasin: magasin, preparateur: preparateur), magasin)
+    }
+
+    /// Le plafond d'une sorte : cinquante pour un recueil (PAR_RECUEIL) ; trente du Yalkut Yosef puis trente du
+    /// Ben Ish 'Haï pour la halakha ; trente hilloulot.
+    private static func plafond(_ sorte: RechercheGlobale.Sorte) -> Int {
+        switch sorte {
+        case .siddour, .livre: RechercheGlobale.parRecueil
+        case .halakha: 2 * RechercheGlobale.parSorte
+        case .hilloula: RechercheGlobale.parSorte
+        }
     }
 
     private static func resultats(_ modele: RechercheModele) throws -> RechercheResultats {
@@ -72,15 +82,16 @@ struct RechercheModeleTests {
         #expect(titres == [Libelle("recherche_tefilot"), Libelle("recherche_livres"), Libelle("recherche_halakhot"),
                            Libelle("hilloulot_title")])
         for g in r.groupes {
-            // Trente par sorte ; la halakha : trente du Yalkut Yosef, puis trente du Ben Ish 'Haï.
-            let plafond = g.sorte == .halakha ? 2 * RechercheGlobale.parSorte : RechercheGlobale.parSorte
-            #expect(g.lignes.count <= plafond, "\(g.sorte)")
+            #expect(g.lignes.count <= Self.plafond(g.sorte), "\(g.sorte)")
             #expect(!g.lignes.isEmpty, "\(g.sorte)")
         }
-        // Un résultat par texte : une prière ou un livre n'y est qu'une fois.
+        // Android a changé la règle (FLECTURE-02, main du 12/11) : chaque paragraphe trouvé est un résultat, cinq
+        // au plus par texte, avec sa place ; un même paragraphe n'y est qu'une fois, un texte cinq fois au plus.
         for g in r.groupes where g.sorte == .siddour || g.sorte == .livre {
             let routes = g.lignes.map { $0.route }
             #expect(Set(routes).count == routes.count, "\(g.sorte)")
+            let parTexte = Dictionary(grouping: g.lignes.compactMap { $0.route.cible?.id }, by: { $0 }).mapValues(\.count)
+            #expect(parTexte.values.allSatisfy { $0 <= RechercheGlobale.parTexte }, "\(g.sorte)")
         }
         let ids = r.groupes.flatMap { $0.lignes }.map { $0.id }
         #expect(Set(ids).count == ids.count)
@@ -95,10 +106,9 @@ struct RechercheModeleTests {
         let r = try Self.resultats(modele)
         let siddour = r.groupes.first(where: { $0.sorte == .siddour })?.lignes.count ?? 0
         let siddourEdot = try await Self.contenus.siddur(.edot).textes.count
-        #expect(siddour <= min(RechercheGlobale.parSorte, siddourEdot))
+        #expect(siddour <= min(RechercheGlobale.parRecueil, RechercheGlobale.parTexte * siddourEdot))
         for g in r.groupes {
-            let plafond = g.sorte == .halakha ? 2 * RechercheGlobale.parSorte : RechercheGlobale.parSorte
-            #expect(g.lignes.count <= plafond, "\(g.sorte)")
+            #expect(g.lignes.count <= Self.plafond(g.sorte), "\(g.sorte)")
         }
         // La halakha bute vraiment sur ses plafonds : trente du Yalkut Yosef au plus, trente du Ben Ish 'Haï au plus.
         let yalkut = try await Self.contenus.yalkutYosef()
@@ -201,6 +211,13 @@ struct RechercheModeleTests {
         let hilloula = RechercheGlobale.Resultat(sorte: .hilloula, id: "נחמן", titre: "Rabbi Nahman", extrait: "")
         #expect(RechercheModele.route(siddour) == .siddour("arvit"))
         #expect(RechercheModele.route(livre) == .livre("likoutei_moharan"))
+        // Un paragraphe trouvé ouvre le lecteur à sa place (ouvrirA, MARQUE « section:bloc »).
+        let paragraphe = RechercheGlobale.Resultat(sorte: .livre, id: "likoutei_moharan", titre: "ליקוטי מוהר״ן",
+                                                   extrait: "…", section: 3, bloc: 7)
+        #expect(RechercheModele.route(paragraphe) == .livre("likoutei_moharan", place: LecturePlace(section: 3, bloc: 7)))
+        #expect(RechercheModele.route(paragraphe).cible == LectureCible(id: "likoutei_moharan", livre: true,
+                                                                        marque: LecturePlace(section: 3, bloc: 7)))
+        #expect(RechercheModele.route(siddour).cible == LectureCible.siddour("arvit"))
         #expect(RechercheModele.route(halakha) == .halakha(recherche: " שבת "))
         #expect(RechercheModele.route(hilloula) == .hilloulot(recherche: "נחמן"))
 
@@ -226,7 +243,7 @@ struct RechercheModeleTests {
         var ids: [String] = []
         for g in r.groupes where g.sorte == .siddour {
             for l in g.lignes {
-                if case .siddour(let id) = l.route { ids.append(id) }
+                if case .siddour(let id, _) = l.route { ids.append(id) }
             }
         }
         #expect(!ids.isEmpty)

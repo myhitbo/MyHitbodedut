@@ -78,10 +78,21 @@ public enum RechercheEtat: Sendable, Equatable {
 /// Les écrans qu'ouvre un résultat (RechercheActivity.ligne), pour `NavigationLink(value:)` et
 /// `navigationDestination(for:)`.
 public enum RechercheRoute: Sendable, Hashable {
-    /// `SiddurLectureActivity.ouvrir(id)` : le lecteur du siddour, sur ce texte (du noussa'h des réglages).
-    case siddour(String)
-    /// `SiddurLectureActivity.ouvrirLivre(id)` : le lecteur, sur un livre entier (`LIVRE` vrai).
-    case livre(String)
+    /// Ce qu'ouvre le lecteur pour un texte du siddour ou un livre (`MARQUE` : « section:bloc »).
+    public var cible: LectureCible? {
+        switch self {
+        case .siddour(let id, let place): LectureCible(id: id, marque: place)
+        case .livre(let id, let place): LectureCible(id: id, livre: true, marque: place)
+        case .halakha, .hilloulot: nil
+        }
+    }
+
+    /// `SiddurLectureActivity.ouvrirA(id, false, section, bloc)` : le lecteur du siddour, sur ce texte (du
+    /// noussa'h des réglages), au paragraphe trouvé s'il y en a un (FLECTURE-02) ; nil pour un titre.
+    case siddour(String, place: LecturePlace? = nil)
+    /// `SiddurLectureActivity.ouvrirA(id, true, section, bloc)` : le lecteur, sur un livre entier (`LIVRE` vrai),
+    /// au paragraphe trouvé s'il y en a un.
+    case livre(String, place: LecturePlace? = nil)
     /// HalakhaActivity, `EXTRA_RECHERCHE` : l'écran de la halakha, son champ rempli de la recherche telle que
     /// tapée (`HalakhaModele(… recherche:)`).
     case halakha(recherche: String)
@@ -222,11 +233,17 @@ public final class RechercheModele {
     /// Ce qu'ouvre un résultat.
     public nonisolated static func route(_ r: RechercheGlobale.Resultat) -> RechercheRoute {
         switch r.sorte {
-        case .siddour: .siddour(r.id)
-        case .livre: .livre(r.id)
+        case .siddour: .siddour(r.id, place: place(r))
+        case .livre: .livre(r.id, place: place(r))
         case .halakha: .halakha(recherche: r.id)
         case .hilloula: .hilloulot(recherche: r.id)
         }
+    }
+
+    /// La place d'un paragraphe trouvé ; nil pour un titre (`section` ou `bloc` à -1 : `ouvrirA` ouvre alors
+    /// le texte comme avant, à la reprise).
+    nonisolated static func place(_ r: RechercheGlobale.Resultat) -> LecturePlace? {
+        r.section < 0 || r.bloc < 0 ? nil : LecturePlace(section: r.section, bloc: r.bloc)
     }
 
     /// Le libellé d'une puce de portée.
