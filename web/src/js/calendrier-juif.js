@@ -152,6 +152,13 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   }
   si(c.has('chabbat') && yomTov, 'yom_tov_chabbat');
   si(c.has('chabbat') && regles.isRoshHashana(), 'roch_hachana_chabbat');
+  // Audit du 16/11 (CalendrierJuif.C.AVINOU_MALKENOU_JEUNE…) : les lignes des jeûnes d'Avinou malkénou hors des
+  // dix jours (Matté Efraïm 602:13) ; la fin du Kaddich après le Hallel les jours de Moussaf (Kitsour Yalkout
+  // Yossef 423:1) ; le 13 Iyar (Kitsour Yalkout Yossef 131:38) ; la veille de Kippour (Choul'han Aroukh O.H. 607:1).
+  si(c.has('jeune') && !c.has('asseret_yemei_techouva'), 'avinou_malkenou_jeune');
+  si(!regles.isChanukah() || regles.isRoshChodesh() || c.has('chabbat'), 'kaddich_complet_hallel');
+  si(mois === JewishDate.IYAR && quantieme === 13, 'veille_pessah_cheni');
+  si(index === JewishCalendar.EREV_YOM_KIPPUR, 'erev_kippour');
   const hier = new Date(`${iso}T12:00:00Z`);
   hier.setUTCDate(hier.getUTCDate() - 1);
   const hierYomTov = calendrier(hier.toISOString().slice(0, 10), enIsrael, false, mukafChoma).isYomTovAssurBemelacha();

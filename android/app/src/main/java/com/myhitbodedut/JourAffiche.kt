@@ -71,9 +71,14 @@ object JourAffiche {
         // l'Ashkenaz suit le Halikhot Chlomo contre le Michna Beroura (131:33) : le libellé le dit.
         if (C.CHABBAT !in c && C.YOM_TOV !in c) add(when {
             C.TAHANOUN_CHAHARIT in c -> "ajout_tahanoun"
+            // Le réglage ponctuel (deuil, brit, 'hatan ; audit du 16/11) : on dit d'où vient l'absence.
+            C.SANS_TAHANOUN_PONCTUEL in c -> "ajout_sans_tahanoun_ponctuel"
             nusah == "ashkenaz" && C.POURIM_TRIPLE_HORS_JERUSALEM in c -> "ajout_sans_tahanoun_halikhot_chlomo"
             else -> "ajout_sans_tahanoun"
         })
+        // La veille de Kippour : Vidouï et « על חטא » après l'Amida de Min'ha, que l'app n'a pas (ma'hzor) ;
+        // Choul'han Aroukh O.H. 607:1 ; Kitsour Yalkout Yossef 607:1 (audit du 16/11).
+        if (C.EREV_KIPPOUR in c) add("ajout_vidoui_erev_kippour")
     }
 
     /**

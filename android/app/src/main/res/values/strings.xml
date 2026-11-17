@@ -767,6 +767,9 @@
     <string name="reglage_tahanoun_tichri">Ta’hanoun en fin de Tichri</string>
     <string name="reglage_tahanoun_tichri_dit">Dit après Isrou ’hag</string>
     <string name="reglage_tahanoun_tichri_sans">Pas dit jusqu’à Roch ’Hodech ’Hechvan</string>
+    <string name="reglage_sans_tahanoun_jour">Pas de Ta’hanoun aujourd’hui</string>
+    <string name="reglage_sans_tahanoun_jour_non">Non · pour une maison en deuil, une brit mila ou un ’hatan, pour ce jour seulement</string>
+    <string name="reglage_sans_tahanoun_jour_oui">Oui, aujourd’hui seulement : le Ta’hanoun est replié dans le siddour</string>
     <string name="zman_alot">Alot hacha’har</string>
     <string name="zman_misheyakir">Michéyakir</string>
     <string name="zman_netz">Lever du soleil (Nets)</string>
@@ -805,6 +808,8 @@
     <string name="ajout_hallel_complet">Hallel complet</string>
     <string name="ajout_tahanoun">Ta’hanoun</string>
     <string name="ajout_sans_tahanoun">Pas de Ta’hanoun</string>
+    <string name="ajout_sans_tahanoun_ponctuel">Pas de Ta’hanoun (réglage du jour)</string>
+    <string name="ajout_vidoui_erev_kippour">Min’ha : Vidouï et « על חטא » après l’Amida (dans le ma’hzor)</string>
     <string name="ajout_sans_tahanoun_halikhot_chlomo">Pas de Ta’hanoun (Halikhot Chlomo) ; selon le Michna Beroura, on le dit</string>
     <string name="ajout_asseret_yemei_techouva">Dix jours de techouva</string>
     <string name="ajout_jeune">Anénou</string>
@@ -826,6 +831,7 @@
     <string name="ajout_ticha_beav">Na’hem</string>
     <string name="ajout_chabbat">Chabbat</string>
     <string name="ajout_lundi_jeudi">Lundi et jeudi</string>
+    <string name="ajout_lundi_jeudi_usage">Lundi et jeudi, selon l’usage</string>
     <string name="ajout_motsae_chabbat">Motsaé Chabbat</string>
     <string name="ajout_roch_hodech">Roch ’Hodech</string>
     <string name="ajout_hallel_annonce">Hallel</string>

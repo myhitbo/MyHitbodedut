@@ -733,6 +733,9 @@
     <string name="reglage_tahanoun_tichri">תחנון בסוף תשרי</string>
     <string name="reglage_tahanoun_tichri_dit">אומרים אחרי אסרו חג</string>
     <string name="reglage_tahanoun_tichri_sans">אין אומרים עד ראש חודש חשון</string>
+    <string name="reglage_sans_tahanoun_jour">אין תחנון היום</string>
+    <string name="reglage_sans_tahanoun_jour_non">כבוי · לבית האבל, לברית מילה או לחתן, להיום בלבד</string>
+    <string name="reglage_sans_tahanoun_jour_oui">פעיל, להיום בלבד: התחנון מקופל בסידור</string>
     <string name="zman_alot">עלות השחר</string>
     <string name="zman_misheyakir">משיכיר</string>
     <string name="zman_netz">הנץ החמה</string>
@@ -771,6 +774,8 @@
     <string name="ajout_hallel_complet">הלל שלם</string>
     <string name="ajout_tahanoun">תחנון</string>
     <string name="ajout_sans_tahanoun">אין תחנון</string>
+    <string name="ajout_sans_tahanoun_ponctuel">אין תחנון (הגדרת היום)</string>
+    <string name="ajout_vidoui_erev_kippour">מנחה: וידוי ו״על חטא״ אחר העמידה (במחזור)</string>
     <string name="ajout_sans_tahanoun_halikhot_chlomo">אין תחנון (הליכות שלמה); לפי המשנה ברורה אומרים</string>
     <string name="ajout_asseret_yemei_techouva">עשרת ימי תשובה</string>
     <string name="ajout_jeune">עננו</string>
@@ -792,6 +797,7 @@
     <string name="ajout_ticha_beav">נחם</string>
     <string name="ajout_chabbat">שבת</string>
     <string name="ajout_lundi_jeudi">שני וחמישי</string>
+    <string name="ajout_lundi_jeudi_usage">שני וחמישי, לפי המנהג</string>
     <string name="ajout_motsae_chabbat">מוצאי שבת</string>
     <string name="ajout_roch_hodech">ראש חודש</string>
     <string name="ajout_hallel_annonce">הלל</string>

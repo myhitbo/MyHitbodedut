@@ -131,6 +131,42 @@ Roch Hachana, de Kippour et de Pessa'h chéni. Restent des coutumes qui
 divergent entre communautés, Sfard et Ashkenaz surtout (fin de Tichri, 13
 Sivan hors d'Israël).
 
+**Choix documentés (audit du 16/11)**, là où les poskim divergent et où l'app
+garde un usage sans réglage :
+
+- après Chavouot, pas de Ta'hanoun jusqu'au 12 Sivan inclus, et il est dit
+  le 13 hors d'Israël (`TefilaRules`) : c'est l'usage « יש מקומות » du Michna
+  Beroura 131:36 ; le Rema (494:3) et le Choul'han Aroukh haRav s'arrêtent
+  après Isrou 'hag, et d'autres omettent aussi le 13 (Chaarei Techouva 131:19) ;
+- Pessa'h chéni (14 Iyar) sans Ta'hanoun en Sfard et en Ashkenaz : ni le
+  Choul'han Aroukh ni le Michna Beroura n'en parlent ; l'ancien usage ashkénaze
+  le disait. En Edot, pas de Vidouï non plus à Min'ha du 13 Iyar (Kitsour
+  Yalkout Yossef 131:38 ; `KosherJava` le fait dire, corrigé dans
+  `SiddurJour.conditionsPour`) ;
+- la veille de Lag baOmer, Min'ha sans Ta'hanoun en Sfard (consigne du siddour) ;
+  le Choul'han Aroukh haRav (493:5) le fait dire ;
+- למנצח en Sfard suit la liste de la consigne du siddour (Dérekh ha'Haïm : Roch
+  'Hodech, 'Hanouka, Pourim, veilles de Pessa'h et de Kippour, 9 Av, 14-15 Adar I),
+  plus 'Hol hamoed (consigne du Hallel) ; l'Admour Hazaken l'omet tous les jours
+  sans Ta'hanoun. אל ארך אפים suit la même liste (« דאא״א ולמנצח דינם שוה »),
+  en Ashkenaz aussi (Michna Beroura 131:35) ; en Edot, il suit le Ta'hanoun. Un
+  jour de jeûne qui n'est ni lundi ni jeudi, il se dit avec la lecture (consigne
+  du siddour, Maharil) ; le Choul'han Aroukh haRav (429:12) le lie au lundi et au
+  jeudi ;
+- les jours propres à 'Habad (10 Kislev, 19-20 Kislev, 12-13 Tamouz, et Min'ha
+  de la veille) ne sont pas retirés en Sfard : l'app suit l'usage Sfard
+  'hassidique général, 'Habad priant dans le noussa'h Ari ;
+- Avinou malkénou à Min'ha du vendredi des dix jours reste ouvert en Edot
+  (Kitsour Yalkout Yossef 582/602:23), replié en Ashkenaz et en Sfard (Michna
+  Beroura 584:4) ; le Chabbat, les Edot le disent sans les lignes de faute
+  (§24), que l'app estompe ;
+- maison en deuil, brit mila, 'hatan (Choul'han Aroukh O.H. 131:4) : le
+  réglage « Pas de Ta'hanoun aujourd'hui » replie le Ta'hanoun pour la journée.
+  Il ne distingue pas les cas : למנצח, que la consigne Sfard omet aussi dans la
+  maison en deuil, et Avinou malkénou (gardé pour une mila, Rema 602:1) restent ;
+  le détail par rite (mila à Cha'harit seulement en Ashkenaz, toute la journée en
+  Edot ; sept jours pour le 'hatan) reste à la charge de celui qui prie.
+
 **Le siddour, « Pour cette heure »** (`JourAffiche.momentDuSiddour`) : avec
 un lieu, la prière proposée suit ses zmanim. Tikoun 'hatsot de 'hatsot de la
 nuit à l'aube ; Birkot hacha'har de l'aube à michéyakir ; Cha'harit jusqu'à
@@ -142,7 +178,8 @@ du soleil, en tiennent lieu. Sans lieu, sans zmanim (soleil de minuit), ou
 quand un autre manque (chki'a, tsét…), les heures fixes d'avant.
 
 **Réglages** : en noussa'h Sfard, Ta'hanoun de fin de Tichri au choix (dit
-après Isrou 'hag par défaut) ; à Jérusalem, l'allumage 40 minutes avant la
+après Isrou 'hag par défaut) ; dans tous les noussa'h, « Pas de Ta'hanoun
+aujourd'hui », qui ne vaut que pour le jour où on l'allume (deuil, brit, 'hatan) ; à Jérusalem, l'allumage 40 minutes avant la
 chki'a est proposé, sans être imposé.
 
 **Le soir** : Arvit et le Chema du coucher relèvent du jour hébreu suivant à

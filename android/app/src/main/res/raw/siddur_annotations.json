@@ -624,7 +624,7 @@
    {
     "sorte": "bloc",
     "s": 9,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 73,
     "empreinte": "אבינו מלכנו חטאנו לפניך רחם עלינו:",
     "g": 15,
@@ -732,7 +732,7 @@
    {
     "sorte": "bloc",
     "s": 9,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 85,
     "empreinte": "אבינו מלכנו מחול וסלח לכל עונותינו:",
     "g": 15,
@@ -750,7 +750,7 @@
    {
     "sorte": "bloc",
     "s": 9,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 87,
     "empreinte": "אבינו מלכנו מחוק ברחמיך הרבים כל שטרי חו",
     "g": 15,
@@ -759,7 +759,7 @@
    {
     "sorte": "bloc",
     "s": 9,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 88,
     "empreinte": "אבינו מלכנו מחה והעבר פשעינו מנגד עיניך:",
     "g": 15,
@@ -2344,7 +2344,7 @@
    {
     "sorte": "bloc",
     "s": 1,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 72,
     "empreinte": "אבינו מלכנו חטאנו לפניך רחם עלינו:",
     "g": 14,
@@ -2452,7 +2452,7 @@
    {
     "sorte": "bloc",
     "s": 1,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 84,
     "empreinte": "אבינו מלכנו מחול וסלח לכל עונותינו:",
     "g": 14,
@@ -2470,7 +2470,7 @@
    {
     "sorte": "bloc",
     "s": 1,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 86,
     "empreinte": "אבינו מלכנו מחוק ברחמיך הרבים כל שטרי חו",
     "g": 14,
@@ -2479,7 +2479,7 @@
    {
     "sorte": "bloc",
     "s": 1,
-    "si": "asseret_yemei_techouva",
+    "si": "!chabbat",
     "b": 87,
     "empreinte": "אבינו מלכנו מחה והעבר פשעינו מנגד עיניך:",
     "g": 14,
@@ -4065,35 +4065,35 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "kaddich_complet_hallel",
     "b": 26,
     "empreinte": "תתקבל צלותנא ובעותנא, עם צלותהון ובעותהו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 4,
-    "racine": "!hanouka"
+    "racine": "kaddich_complet_hallel"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "kaddich_complet_hallel",
     "b": 27,
     "empreinte": "יהא שלמא רבא מן שמיא. חיים ושבע וישועה ו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 4,
-    "racine": "!hanouka"
+    "racine": "kaddich_complet_hallel"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "kaddich_complet_hallel",
     "b": 28,
     "empreinte": "יפסע שלש פסיעות לאחור עושה שלום במרומיו.",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 4,
-    "racine": "!hanouka"
+    "racine": "kaddich_complet_hallel"
    }
   ],
   "moussaf_rosh_hodech": [
@@ -5258,7 +5258,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 6,
     "empreinte": "בתענית ציבור:",
     "g": 32,
@@ -5267,7 +5267,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 7,
     "empreinte": "אבינו מלכנו ברך עלינו שנה טובה:",
     "g": 32,
@@ -5456,7 +5456,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 28,
     "empreinte": "בתענית ציבור",
     "g": 32,
@@ -5465,7 +5465,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 29,
     "empreinte": "אבינו מלכנו זכרנו לחיים טובים:",
     "g": 32,
@@ -5474,7 +5474,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 30,
     "empreinte": "אבינו מלכנו זכרנו לגאלה וישועה:",
     "g": 32,
@@ -5483,7 +5483,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 31,
     "empreinte": "אבינו מלכנו זכרנו לפרנסה וכלכלה:",
     "g": 32,
@@ -5492,7 +5492,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 32,
     "empreinte": "אבינו מלכנו זכרנו לזכיות:",
     "g": 32,
@@ -5501,7 +5501,7 @@
    {
     "sorte": "bloc",
     "s": 10,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 33,
     "empreinte": "אבינו מלכנו זכרנו לסליחה ומחילה:",
     "g": 32,
@@ -5978,7 +5978,7 @@
    {
     "sorte": "bloc",
     "s": 12,
-    "si": "tahanoun_chaharit",
+    "si": "lamnatseah",
     "b": 0,
     "empreinte": "אין אומרים אא״א לא בר״ח ולא בע״פ ולא בער",
     "g": 37,
@@ -5987,7 +5987,7 @@
    {
     "sorte": "bloc",
     "s": 12,
-    "si": "tahanoun_chaharit",
+    "si": "lamnatseah",
     "b": 1,
     "empreinte": "אל ארך אפים ומלא רחמים, אלתסתר פניך ממנו",
     "g": 37,
@@ -7811,7 +7811,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 6,
     "empreinte": "בתענית ציבור:",
     "g": 29,
@@ -7820,7 +7820,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 7,
     "empreinte": "אבינו מלכנו ברך עלינו שנה טובה:",
     "g": 29,
@@ -8009,7 +8009,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 28,
     "empreinte": "בתענית ציבור",
     "g": 29,
@@ -8018,7 +8018,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 29,
     "empreinte": "אבינו מלכנו זכרנו לחיים טובים:",
     "g": 29,
@@ -8027,7 +8027,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 30,
     "empreinte": "אבינו מלכנו זכרנו לגאלה וישועה:",
     "g": 29,
@@ -8036,7 +8036,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 31,
     "empreinte": "אבינו מלכנו זכרנו לפרנסה וכלכלה:",
     "g": 29,
@@ -8045,7 +8045,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 32,
     "empreinte": "אבינו מלכנו זכרנו לזכיות:",
     "g": 29,
@@ -8054,7 +8054,7 @@
    {
     "sorte": "bloc",
     "s": 3,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 33,
     "empreinte": "אבינו מלכנו זכרנו לסליחה ומחילה:",
     "g": 29,
@@ -10095,35 +10095,35 @@
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "kaddich_complet_hallel",
     "b": 31,
     "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 3,
-    "racine": "!hanouka"
+    "racine": "kaddich_complet_hallel"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "kaddich_complet_hallel",
     "b": 32,
     "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 3,
-    "racine": "!hanouka"
+    "racine": "kaddich_complet_hallel"
    },
    {
     "sorte": "bloc",
     "s": 0,
-    "si": "!hanouka",
+    "si": "kaddich_complet_hallel",
     "b": 33,
     "empreinte": "עשה שלום במרומיו הוא יעשה שלום עלינו ועל",
     "libelle": "ajout_sauf_hanouka",
     "discret": true,
     "g": 3,
-    "racine": "!hanouka"
+    "racine": "kaddich_complet_hallel"
    }
   ],
   "moussaf_rosh_hodech": [
@@ -11153,83 +11153,92 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 0,
     "empreinte": "טעם נכון למה נתקן הוידוי בלשון רבים כי ה",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 1,
     "empreinte": "אלהינו ואלהי אבותינו תבא לפניך תפלתנו, ו",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 2,
     "empreinte": "אשמנו. בגדנו. גזלנו. דברנו דפי. העוינו. ",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 3,
     "empreinte": "סרנו ממצותיך וממשפטיך הטובים ולא שוה לנו",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 4,
     "empreinte": "אל ארךאפים אתה. ובעל הרחמים נקראת. ודרך ",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 5,
     "empreinte": "קהל וש״ץ:",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 6,
     "empreinte": "ויעבר יהוה על פניו ויקרא:",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 7,
     "empreinte": "יהוה יהוה אל רחום וחנון ארך אפים ורבחסד ",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 8,
     "empreinte": "וסלחת לעוננו ולחטאתנו ונחלתנו: סלחלנו אב",
+    "libelle": "ajout_lundi_jeudi_usage",
     "g": 32,
-    "racine": "tahanoun_chaharit"
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
@@ -11279,7 +11288,7 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 14,
     "empreinte": "בתענית ציבור: אבינו מלכנו ברך עלינו שנה ",
     "g": 33,
@@ -11468,7 +11477,7 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 35,
     "empreinte": "בתענית ציבור",
     "g": 33,
@@ -11477,7 +11486,7 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 36,
     "empreinte": "אבינו מלכנו זכרנו לחיים טובים:",
     "g": 33,
@@ -11486,7 +11495,7 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 37,
     "empreinte": "אבינו מלכנו זכרנו לגאלה וישועה:",
     "g": 33,
@@ -11495,7 +11504,7 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 38,
     "empreinte": "אבינו מלכנו זכרנו לפרנסה וכלכלה:",
     "g": 33,
@@ -11504,7 +11513,7 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 39,
     "empreinte": "אבינו מלכנו זכרנו לזכיות:",
     "g": 33,
@@ -11513,7 +11522,7 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 40,
     "empreinte": "אבינו מלכנו זכרנו לסליחה ומחילה:",
     "g": 33,
@@ -11810,101 +11819,101 @@
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 73,
     "empreinte": "יהוה אלהי ישראל שוב מחרון אפך והנחם עלהר",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 74,
     "empreinte": "הבט משמים וראה כי היינו לעג וקלס בגוים: ",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 75,
     "empreinte": "יהוה אלהי ישראל שוב מחרון אפך והנחם עלהר",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 76,
     "empreinte": "זרים אומרים אין תוחלת ותקוה: חון אום לשמ",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 77,
     "empreinte": "יהוה אלהי ישראל שוב מחרון אפך והנחם עלהר",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 78,
     "empreinte": "חוסה יהוה עלינו ברחמיך, ואל תתננו בידי א",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 79,
     "empreinte": "יהוה אלהי ישראל שוב מחרון אפך והנחם עלהר",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 80,
     "empreinte": "קולנו תשמע ותחון ואלתטשנו ביד איבינו למח",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 81,
     "empreinte": "יהוה אלהי ישראל שוב מחרון אפך והנחם עלהר",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 82,
     "empreinte": "עזרנו אלהי ישענו עלדבר כבודשמך והצילנו ו",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
     "s": 4,
-    "si": "tahanoun_chaharit",
+    "si": "lundi_jeudi",
     "b": 83,
     "empreinte": "יהוה אלהי ישראל שוב מחרון אפך והנחם עלהר",
-    "g": 36,
-    "racine": "tahanoun_chaharit"
+    "g": 37,
+    "racine": "lundi_jeudi"
    },
    {
     "sorte": "bloc",
@@ -11912,7 +11921,7 @@
     "si": "tahanoun_chaharit",
     "b": 84,
     "empreinte": "שומר ישראל שמור שארית ישראל ואל יאבד ישר",
-    "g": 36,
+    "g": 38,
     "racine": "tahanoun_chaharit"
    },
    {
@@ -11921,7 +11930,7 @@
     "si": "tahanoun_chaharit",
     "b": 85,
     "empreinte": "שומר גוי אחד שמור שארית עם אחד ואל יאבד ",
-    "g": 36,
+    "g": 38,
     "racine": "tahanoun_chaharit"
    },
    {
@@ -11930,7 +11939,7 @@
     "si": "tahanoun_chaharit",
     "b": 86,
     "empreinte": "שומר גוי קדוש שמור שארית עם קדוש ואל יאב",
-    "g": 36,
+    "g": 38,
     "racine": "tahanoun_chaharit"
    },
    {
@@ -11939,7 +11948,7 @@
     "si": "tahanoun_chaharit",
     "b": 87,
     "empreinte": "מתרצה ברחמים ומתפיס בתחנונים התרצה והתפי",
-    "g": 36,
+    "g": 38,
     "racine": "tahanoun_chaharit"
    },
    {
@@ -11948,7 +11957,7 @@
     "si": "tahanoun_chaharit",
     "b": 88,
     "empreinte": "ואנחנו לא נדע מה נעשה כי עליך עינינו: זכ",
-    "g": 36,
+    "g": 38,
     "racine": "tahanoun_chaharit"
    },
    {
@@ -11957,7 +11966,7 @@
     "si": "minyan",
     "b": 89,
     "empreinte": "ש״ץ אומר חצי קדיש:",
-    "g": 37,
+    "g": 39,
     "racine": "minyan"
    },
    {
@@ -11966,7 +11975,7 @@
     "si": "minyan",
     "b": 90,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
-    "g": 37,
+    "g": 39,
     "racine": "minyan"
    },
    {
@@ -11975,7 +11984,7 @@
     "si": "minyan",
     "b": 91,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
-    "g": 37,
+    "g": 39,
     "racine": "minyan"
    },
    {
@@ -11984,7 +11993,7 @@
     "si": "minyan",
     "b": 92,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
-    "g": 37,
+    "g": 39,
     "racine": "minyan"
    },
    {
@@ -11993,7 +12002,7 @@
     "si": "minyan",
     "b": 93,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
-    "g": 37,
+    "g": 39,
     "racine": "minyan"
    },
    {
@@ -12011,25 +12020,25 @@
     "si": "minyan",
     "b": 94,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
-    "g": 37,
+    "g": 39,
     "racine": "minyan"
    },
    {
     "sorte": "bloc",
     "s": 5,
-    "si": "tahanoun_chaharit",
+    "si": "lamnatseah",
     "b": 0,
     "empreinte": "אין אומרים אא״א לא בר״ח ולא בע״פ ולא בער",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
     "sorte": "bloc",
     "s": 5,
-    "si": "tahanoun_chaharit",
+    "si": "lamnatseah",
     "b": 1,
     "empreinte": "אל ארך אפים ורבחסד ואמת אל באפך תוכיחנו:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12038,7 +12047,7 @@
     "si": "kriat_hatorah",
     "b": 2,
     "empreinte": "משה רבינו ונביאים שעמו תקנו שיהו קורין ב",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12047,7 +12056,7 @@
     "si": "kriat_hatorah",
     "b": 3,
     "empreinte": "כשפותחין הארון הקדוש אומרים זה:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12056,7 +12065,7 @@
     "si": "kriat_hatorah",
     "b": 4,
     "empreinte": "ויהי בנסע הארן ויאמר משה קומה יהוה ויפצו",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12065,7 +12074,7 @@
     "si": "kriat_hatorah",
     "b": 5,
     "empreinte": "איתא בזהר (ויקהל דף ר״ו.) אר״ש כד מפקין ",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12074,7 +12083,7 @@
     "si": "kriat_hatorah",
     "b": 6,
     "empreinte": "בריך שמה דמרא עלמא. בריך כתרך ואתרך. יהא",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12083,7 +12092,7 @@
     "si": "kriat_hatorah",
     "b": 7,
     "empreinte": "שליח ציבור:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12092,7 +12101,7 @@
     "si": "kriat_hatorah",
     "b": 8,
     "empreinte": "גדלו ליהוה אתי ונרוממה שמו יחדו:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12101,7 +12110,7 @@
     "si": "kriat_hatorah",
     "b": 9,
     "empreinte": "והקהל עונים: לך יהוה הגדלה והגבורה והתפא",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12110,7 +12119,7 @@
     "si": "kriat_hatorah",
     "b": 10,
     "empreinte": "אב הרחמים הוא ירחם עם עמוסים, ויזכר ברית",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12119,7 +12128,7 @@
     "si": "kriat_hatorah",
     "b": 11,
     "empreinte": "חזן:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12128,7 +12137,7 @@
     "si": "kriat_hatorah",
     "b": 12,
     "empreinte": "ותגלה ותראה מלכותו עלינו בזמן קרוב ויחון",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12137,7 +12146,7 @@
     "si": "kriat_hatorah",
     "b": 13,
     "empreinte": "והקהל עונים:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12146,7 +12155,7 @@
     "si": "kriat_hatorah",
     "b": 14,
     "empreinte": "ואתם הדבקים ביהוה אלהיכם חיים כלכם היום:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12155,7 +12164,7 @@
     "si": "kriat_hatorah",
     "b": 15,
     "empreinte": "כשקורין אותו לתורה יאמר זה:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12164,7 +12173,7 @@
     "si": "kriat_hatorah",
     "b": 16,
     "empreinte": "ברכו את יהוה המברך:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12173,7 +12182,7 @@
     "si": "kriat_hatorah",
     "b": 17,
     "empreinte": "קהל ועולה:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12182,7 +12191,7 @@
     "si": "kriat_hatorah",
     "b": 18,
     "empreinte": "ברוך יהוה המברך לעולם ועד:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12191,7 +12200,7 @@
     "si": "kriat_hatorah",
     "b": 19,
     "empreinte": "ויאמר העולה:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12200,7 +12209,7 @@
     "si": "kriat_hatorah",
     "b": 20,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר בחר ב",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12209,7 +12218,7 @@
     "si": "kriat_hatorah",
     "b": 21,
     "empreinte": "לאחר הקריאה מברך:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12218,7 +12227,7 @@
     "si": "kriat_hatorah",
     "b": 22,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ל",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12227,7 +12236,7 @@
     "si": "kriat_hatorah",
     "b": 23,
     "empreinte": "ארבעה צריכים להודות יורדי הים כשעלו ממנה",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12236,7 +12245,7 @@
     "si": "kriat_hatorah",
     "b": 24,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם הגומל לחי",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12245,7 +12254,7 @@
     "si": "kriat_hatorah",
     "b": 25,
     "empreinte": "והקהל עונים: מי שגמלך טוב הוא יגמלך כלטו",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12254,7 +12263,7 @@
     "si": "kriat_hatorah",
     "b": 26,
     "empreinte": "מי שהגיע בנו לבן י״ג שנה ויום אחד יברך ה",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12263,7 +12272,7 @@
     "si": "kriat_hatorah",
     "b": 27,
     "empreinte": "ברוך שפטרני מענשו של זה:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12272,7 +12281,7 @@
     "si": "kriat_hatorah",
     "b": 28,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12281,7 +12290,7 @@
     "si": "kriat_hatorah",
     "b": 29,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12290,7 +12299,7 @@
     "si": "kriat_hatorah",
     "b": 30,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12299,7 +12308,7 @@
     "si": "kriat_hatorah",
     "b": 31,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12308,7 +12317,7 @@
     "si": "kriat_hatorah",
     "b": 32,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12317,7 +12326,7 @@
     "si": "kriat_hatorah",
     "b": 33,
     "empreinte": "בעת הגבהת ס״ת לאחר הקריאה היה האר״י ז״ל ",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12326,7 +12335,7 @@
     "si": "kriat_hatorah",
     "b": 34,
     "empreinte": "וזאת התורה אשר שם משה לפני בני ישראל על ",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12335,7 +12344,7 @@
     "si": "kriat_hatorah",
     "b": 35,
     "empreinte": "עץ חיים היא למחזיקים בה ותומכיה מאשר: דר",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12344,7 +12353,7 @@
     "si": "lundi_jeudi",
     "b": 36,
     "empreinte": "בשני וחמישי כשאומרים תחנון בשעה שהגולל ג",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12353,7 +12362,7 @@
     "si": "lundi_jeudi",
     "b": 37,
     "empreinte": "יהי רצון מלפני אבינו שבשמים לכונן את בית",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12362,7 +12371,7 @@
     "si": "lundi_jeudi",
     "b": 38,
     "empreinte": "יהי רצון מלפני אבינו שבשמים לרחם עלינו ו",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12371,7 +12380,7 @@
     "si": "lundi_jeudi",
     "b": 39,
     "empreinte": "יהי רצון מלפני אבינו שבשמים לקים בנו חכמ",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12380,7 +12389,7 @@
     "si": "lundi_jeudi",
     "b": 40,
     "empreinte": "יהי רצון מלפני אבינו שבשמים שנשמע ונתבשר",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12389,7 +12398,7 @@
     "si": "lundi_jeudi",
     "b": 41,
     "empreinte": "אחינו כל בית ישראל הנתונים בצרה ובשביה ה",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12398,7 +12407,7 @@
     "si": "kriat_hatorah",
     "b": 42,
     "empreinte": "בשני ובחמישי ושאר ימים שמוציאין ספר תורה",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12407,7 +12416,7 @@
     "si": "kriat_hatorah",
     "b": 43,
     "empreinte": "יהללו אתשם יהוה כינשגב שמו לבדו:",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12416,7 +12425,7 @@
     "si": "kriat_hatorah",
     "b": 44,
     "empreinte": "קהל: הודו עלארץ ושמים: וירם קרן לעמו תהל",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12425,7 +12434,7 @@
     "si": "kriat_hatorah",
     "b": 45,
     "empreinte": "לדוד מזמור ליהוה הארץ ומלואה תבל וישבי ב",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12434,7 +12443,7 @@
     "si": "kriat_hatorah",
     "b": 46,
     "empreinte": "ובנחה יאמר שובה יהוה רבבות אלפי ישראל: ק",
-    "g": 38,
+    "g": 40,
     "racine": "kriat_hatorah"
    },
    {
@@ -12443,7 +12452,7 @@
     "si": "lamnatseah",
     "b": 1,
     "empreinte": "מה שתקנו לאומרו בסוף התפלה מפני שאומר במ",
-    "g": 39,
+    "g": 41,
     "racine": "lamnatseah"
    },
    {
@@ -12452,7 +12461,7 @@
     "si": "lamnatseah",
     "b": 2,
     "empreinte": "למנצח מזמור לדוד: יענך יהוה ביום צרה ישג",
-    "g": 39,
+    "g": 41,
     "racine": "lamnatseah"
    },
    {
@@ -12461,7 +12470,7 @@
     "si": "minyan",
     "b": 14,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12470,7 +12479,7 @@
     "si": "minyan",
     "b": 15,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12479,7 +12488,7 @@
     "si": "minyan",
     "b": 16,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12488,7 +12497,7 @@
     "si": "minyan",
     "b": 17,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12506,7 +12515,7 @@
     "si": "minyan",
     "b": 18,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12515,7 +12524,7 @@
     "si": "minyan",
     "b": 19,
     "empreinte": "תתקבל צלותהון ובעותהון דכל בית ישראל קדם",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12524,7 +12533,7 @@
     "si": "minyan",
     "b": 20,
     "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12542,7 +12551,7 @@
     "si": "minyan",
     "b": 21,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
-    "g": 40,
+    "g": 42,
     "racine": "minyan"
    },
    {
@@ -12551,7 +12560,7 @@
     "si": "minyan",
     "b": 24,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
-    "g": 41,
+    "g": 43,
     "racine": "minyan"
    },
    {
@@ -12560,7 +12569,7 @@
     "si": "minyan",
     "b": 25,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
-    "g": 41,
+    "g": 43,
     "racine": "minyan"
    },
    {
@@ -12569,7 +12578,7 @@
     "si": "minyan",
     "b": 26,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
-    "g": 41,
+    "g": 43,
     "racine": "minyan"
    },
    {
@@ -12578,7 +12587,7 @@
     "si": "minyan",
     "b": 27,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
-    "g": 41,
+    "g": 43,
     "racine": "minyan"
    },
    {
@@ -12596,7 +12605,7 @@
     "si": "minyan",
     "b": 28,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
-    "g": 41,
+    "g": 43,
     "racine": "minyan"
    },
    {
@@ -12605,7 +12614,7 @@
     "si": "minyan",
     "b": 29,
     "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
-    "g": 41,
+    "g": 43,
     "racine": "minyan"
    },
    {
@@ -12623,7 +12632,7 @@
     "si": "minyan",
     "b": 30,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
-    "g": 41,
+    "g": 43,
     "racine": "minyan"
    },
    {
@@ -12632,7 +12641,7 @@
     "si": "jour_1",
     "b": 32,
     "empreinte": "בראשון בשבת:",
-    "g": 42,
+    "g": 44,
     "racine": "jour_1"
    },
    {
@@ -12641,7 +12650,7 @@
     "si": "jour_1",
     "b": 33,
     "empreinte": "היום יום ראשון בשבת שבו היו הלוים אומרים",
-    "g": 42,
+    "g": 44,
     "racine": "jour_1"
    },
    {
@@ -12650,7 +12659,7 @@
     "si": "jour_1",
     "b": 34,
     "empreinte": "לדוד מזמור ליהוה הארץ ומלואה תבל וישבי ב",
-    "g": 42,
+    "g": 44,
     "racine": "jour_1"
    },
    {
@@ -12659,7 +12668,7 @@
     "si": "jour_2",
     "b": 35,
     "empreinte": "בשני בשבת:",
-    "g": 43,
+    "g": 45,
     "racine": "jour_2"
    },
    {
@@ -12668,7 +12677,7 @@
     "si": "jour_2",
     "b": 36,
     "empreinte": "היום יום שני בשבת שבו היו הלוים אומרים ב",
-    "g": 43,
+    "g": 45,
     "racine": "jour_2"
    },
    {
@@ -12677,7 +12686,7 @@
     "si": "jour_2",
     "b": 37,
     "empreinte": "שיר מזמור לבני קרח: גדול יהוה ומהלל מאד ",
-    "g": 43,
+    "g": 45,
     "racine": "jour_2"
    },
    {
@@ -12686,7 +12695,7 @@
     "si": "jour_3",
     "b": 38,
     "empreinte": "בשלישי בשבת:",
-    "g": 44,
+    "g": 46,
     "racine": "jour_3"
    },
    {
@@ -12695,7 +12704,7 @@
     "si": "jour_3",
     "b": 39,
     "empreinte": "היום יום שלישי בשבת שבו היו הלוים אומרים",
-    "g": 44,
+    "g": 46,
     "racine": "jour_3"
    },
    {
@@ -12704,7 +12713,7 @@
     "si": "jour_3",
     "b": 40,
     "empreinte": "מזמור לאסף אלהים נצב בעדת אל בקרב אלהים ",
-    "g": 44,
+    "g": 46,
     "racine": "jour_3"
    },
    {
@@ -12713,7 +12722,7 @@
     "si": "jour_4",
     "b": 41,
     "empreinte": "ברביעי בשבת:",
-    "g": 45,
+    "g": 47,
     "racine": "jour_4"
    },
    {
@@ -12722,7 +12731,7 @@
     "si": "jour_4",
     "b": 42,
     "empreinte": "היום יום רביעי בשבת שבו היו הלוים אומרים",
-    "g": 45,
+    "g": 47,
     "racine": "jour_4"
    },
    {
@@ -12731,7 +12740,7 @@
     "si": "jour_4",
     "b": 43,
     "empreinte": "אל נקמות יהוה אל נקמות הופיע: הנשא שפט ה",
-    "g": 45,
+    "g": 47,
     "racine": "jour_4"
    },
    {
@@ -12740,7 +12749,7 @@
     "si": "jour_5",
     "b": 44,
     "empreinte": "בחמישי בשבת:",
-    "g": 46,
+    "g": 48,
     "racine": "jour_5"
    },
    {
@@ -12749,7 +12758,7 @@
     "si": "jour_5",
     "b": 45,
     "empreinte": "היום יום חמישי בשבת שבו היו הלוים אומרים",
-    "g": 46,
+    "g": 48,
     "racine": "jour_5"
    },
    {
@@ -12758,7 +12767,7 @@
     "si": "jour_5",
     "b": 46,
     "empreinte": "למנצח על הגתית לאסף: הרנינו לאלהים עזנו ",
-    "g": 46,
+    "g": 48,
     "racine": "jour_5"
    },
    {
@@ -12767,7 +12776,7 @@
     "si": "jour_6",
     "b": 47,
     "empreinte": "בשישי בשבת:",
-    "g": 47,
+    "g": 49,
     "racine": "jour_6"
    },
    {
@@ -12776,7 +12785,7 @@
     "si": "jour_6",
     "b": 48,
     "empreinte": "היום יום ששי בשבת שבו היו הלוים אומרים ב",
-    "g": 47,
+    "g": 49,
     "racine": "jour_6"
    },
    {
@@ -12785,7 +12794,7 @@
     "si": "jour_6",
     "b": 49,
     "empreinte": "יהוה מלך גאות לבש לבש יהוה עז התאזר אף ת",
-    "g": 47,
+    "g": 49,
     "racine": "jour_6"
    },
    {
@@ -12794,7 +12803,7 @@
     "si": "roch_hodech",
     "b": 50,
     "empreinte": "נוהגין בספרד לומר מזמור ברכי נפשי בראש ח",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12803,7 +12812,7 @@
     "si": "roch_hodech",
     "b": 51,
     "empreinte": "ברכי נפשי אתיהוה יהוה אלהי גדלת מאד, הוד",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12812,7 +12821,7 @@
     "si": "roch_hodech",
     "b": 52,
     "empreinte": "תהום כלבוש כסיתו, עלהרים יעמדו מים: מןגע",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12821,7 +12830,7 @@
     "si": "roch_hodech",
     "b": 53,
     "empreinte": "המשלח מעינים בנחלים, בין הרים יהלכון: יש",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12830,7 +12839,7 @@
     "si": "roch_hodech",
     "b": 54,
     "empreinte": "מצמיח חציר לבהמה ועשב לעבדת האדם, להוציא",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12839,7 +12848,7 @@
     "si": "roch_hodech",
     "b": 55,
     "empreinte": "עשה ירח למועדים שמש ידע מבואו: תשת חשך ו",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12848,7 +12857,7 @@
     "si": "roch_hodech",
     "b": 56,
     "empreinte": "מהרבו מעשיך יהוה כלם בחכמה עשית, מלאה הא",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12857,7 +12866,7 @@
     "si": "roch_hodech",
     "b": 57,
     "empreinte": "יהי כבוד יהוה לעולם, ישמח יהוה במעשיו: ה",
-    "g": 48,
+    "g": 50,
     "racine": "roch_hodech"
    },
    {
@@ -12866,7 +12875,7 @@
     "si": "ledavid",
     "b": 58,
     "empreinte": "מנהג טוב לומר אחר כל תפלה מזמור לדוד ה׳‬",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12875,7 +12884,7 @@
     "si": "ledavid",
     "b": 59,
     "empreinte": "לדוד יהוה אורי וישעי ממי אירא יהוה מעוז ",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12884,7 +12893,7 @@
     "si": "ledavid",
     "b": 60,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12893,7 +12902,7 @@
     "si": "ledavid",
     "b": 61,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12902,7 +12911,7 @@
     "si": "ledavid",
     "b": 62,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12911,7 +12920,7 @@
     "si": "ledavid",
     "b": 63,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12920,7 +12929,7 @@
     "si": "ledavid",
     "b": 64,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12929,7 +12938,7 @@
     "si": "ledavid",
     "b": 65,
     "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12938,7 +12947,7 @@
     "si": "ledavid",
     "b": 66,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
-    "g": 49,
+    "g": 51,
     "racine": "ledavid"
    },
    {
@@ -12947,7 +12956,7 @@
     "si": "minyan",
     "b": 74,
     "empreinte": "יתגדל ויתקדש שמה רבא ( אמן )",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -12956,7 +12965,7 @@
     "si": "minyan",
     "b": 75,
     "empreinte": "בעלמא דיברא כרעותה וימליך מלכותה בחייכון",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -12965,7 +12974,7 @@
     "si": "minyan",
     "b": 76,
     "empreinte": "יהא שמה רבא מברך לעלם ולעלמי עלמיא",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -12974,7 +12983,7 @@
     "si": "minyan",
     "b": 77,
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -12992,7 +13001,7 @@
     "si": "minyan",
     "b": 78,
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13001,7 +13010,7 @@
     "si": "minyan",
     "b": 79,
     "empreinte": "על ישראל ועל רבנן ועל תלמידיהון ועל כל ת",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13010,7 +13019,7 @@
     "si": "minyan",
     "b": 80,
     "empreinte": "יהא שלמא רבא מןשמיא וחיים עלינו ועלכלישר",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13028,7 +13037,7 @@
     "si": "minyan",
     "b": 81,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13037,7 +13046,7 @@
     "si": "minyan",
     "b": 82,
     "empreinte": "ואומר שליח צבור:",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13046,7 +13055,7 @@
     "si": "minyan",
     "b": 83,
     "empreinte": "ברכו את יהוה המברך:",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13055,7 +13064,7 @@
     "si": "minyan",
     "b": 84,
     "empreinte": "ועונין הקהל:",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13064,7 +13073,7 @@
     "si": "minyan",
     "b": 85,
     "empreinte": "ברוך יהוה המברך לעולם ועד:",
-    "g": 50,
+    "g": 52,
     "racine": "minyan"
    },
    {
@@ -13716,7 +13725,7 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 5,
     "empreinte": "בתענית ציבור: אבינו מלכנו ברך עלינו שנה ",
     "g": 30,
@@ -13905,7 +13914,7 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 26,
     "empreinte": "בתענית ציבור",
     "g": 30,
@@ -13914,7 +13923,7 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 27,
     "empreinte": "אבינו מלכנו זכרנו לחיים טובים:",
     "g": 30,
@@ -13923,7 +13932,7 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 28,
     "empreinte": "אבינו מלכנו זכרנו לגאלה וישועה:",
     "g": 30,
@@ -13932,7 +13941,7 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 29,
     "empreinte": "אבינו מלכנו זכרנו לפרנסה וכלכלה:",
     "g": 30,
@@ -13941,7 +13950,7 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 30,
     "empreinte": "אבינו מלכנו זכרנו לזכיות:",
     "g": 30,
@@ -13950,7 +13959,7 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "jeune",
+    "si": "avinou_malkenou_jeune",
     "b": 31,
     "empreinte": "אבינו מלכנו זכרנו לסליחה ומחילה:",
     "g": 30,

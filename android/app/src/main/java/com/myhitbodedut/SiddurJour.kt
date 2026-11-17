@@ -247,6 +247,14 @@ object SiddurJour {
         if (nusah == "ashkenaz" && CalendrierJuif.C.POURIM_TRIPLE_HORS_JERUSALEM in c) {
             c = c - setOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
         }
+        // Edot : pas de Vidouï à Min'ha du 13 Iyar, veille de Pessa'h chéni (Kitsour Yalkout Yossef 131:38 ; audit du
+        // 16/11) ; KosherJava le fait dire (« Halakha Beroura », dont l'auteur s'est rétracté).
+        if (nusah == "edot" && CalendrierJuif.C.VEILLE_PESSAH_CHENI in c) c = c - CalendrierJuif.C.TAHANOUN_MINHA
+        // « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel, audit du 16/11) : maison en deuil, brit mila, 'hatan
+        // (Choul'han Aroukh O.H. 131:4). למנצח et Avinou malkénou restent (Rema 602:1 pour la mila).
+        if (CalendrierJuif.C.SANS_TAHANOUN_PONCTUEL in c) {
+            c = c - setOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
+        }
         if (avinouMalkenou(conditions)) c = c + CalendrierJuif.C.AVINOU_MALKENOU
         // À Min'ha, il ne se dit que si Ta'hanoun s'y dit : pas le 13 Adar (veille de Pourim), pas le
         // vendredi après-midi, pas à Min'ha de la veille de Kippour un vendredi (TSIDDUR-09). Roch Hachana
@@ -298,6 +306,10 @@ object SiddurJour {
         else -> "ajout_hallel_partiel_avec_berakha"
     }
 
+    /** [conditions], avec le réglage ponctuel « Pas de Ta'hanoun aujourd'hui » quand [sansTahanoun] (audit du 16/11). */
+    fun avecSansTahanoun(conditions: Set<String>, sansTahanoun: Boolean): Set<String> =
+        if (sansTahanoun) conditions + CalendrierJuif.C.SANS_TAHANOUN_PONCTUEL else conditions
+
     fun vrai(condition: String, conditions: Set<String>): Boolean =
         if (condition.startsWith("!")) condition.drop(1) !in conditions else condition in conditions
 
@@ -309,6 +321,9 @@ object SiddurJour {
             c.startsWith("tahanoun") -> "ajout_tahanoun"
             c == "kippour" -> "fete_yom_kippour"
             c == "avinou_malkenou_minha" -> "ajout_avinou_malkenou"
+            // Audit du 16/11 : des variantes, nommées comme ce qu'elles sont.
+            c == CalendrierJuif.C.AVINOU_MALKENOU_JEUNE -> "ajout_jeune_public"
+            c == CalendrierJuif.C.KADDICH_COMPLET_HALLEL -> "ajout_sauf_hanouka"
             // « אומרים כאן הלל » : le Hallel, complet ou non selon le jour.
             c == "hallel" -> "ajout_hallel_annonce"
             c.startsWith("embolismique") -> "ajout_embolismique"
