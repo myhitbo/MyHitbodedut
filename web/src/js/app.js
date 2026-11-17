@@ -13,7 +13,7 @@ import { DanseMesure, SessionRule } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, rappelsTefila, usageLevana } from './calendrier-juif.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, jour as jourJuif, jourDeLaPriere, levana, periodeSansMusique, rappelsTefila, reperes as reperesDuJour, usageLevana } from './calendrier-juif.js';
 import { conditionsPour, index as indexAjouts, libelleJour, plan as planSection, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
@@ -2582,8 +2582,11 @@ function ecranMusique() {
     'aria-label': tr.t('music_enable'),
     onchange: (e) => { store.setMusicEnabled(e.target.checked); rendre(); },
   });
+  // L'omer et Bein hamétsarim : un rappel discret, sans couper la musique (audit du 16/11, YY 493:8 et 551:6).
+  const periode = periodeSansMusique(isoLocal(new Date()));
   return h('div', { class: 'ecran' }, barre(tr.t('music_title')),
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
+      periode ? h('p', { class: 'indice' }, tr.t(`music_rappel_${periode}`)) : null,
       h('div', { class: 'carte' },
         h('label', { class: 'ligne' },
           h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('music_enable')),
@@ -2922,6 +2925,8 @@ function carteJour(iso, { complet = true } = {}) {
   const marques = [
     ...j.fetes.map((f) => tr.t(`fete_${f}`)),
     j.paracha ? tr.t('zmanim_paracha', j.paracha) : null,
+    // Chekalim, Zakhor, Para, ha'Hodech… (audit du 16/11, CalendrierJuif.parachaSpeciale).
+    j.parachaSpeciale,
     omerCeSoir ? tr.t('zmanim_omer_ce_soir', omerCeSoir) : null,
   ].filter(Boolean);
   const dessin = illustrationDuJour(j.fetes, iso);
@@ -2933,6 +2938,8 @@ function carteJour(iso, { complet = true } = {}) {
     marques.length ? h('div', { class: 'jour-marques' }, marques.map((m) => h('span', { class: 'marque' }, m))) : null,
     h('h3', { class: 'jour-sous-titre' }, tr.t('zmanim_ajouts_titre')),
     h('p', { class: 'jour-ajouts' }, ajoutsDuJour(j.conditions, store.siddurNusah(), store.inIsrael(), store.sansTahanounFinTichri(), hemisphereSud()).map((k) => tr.t(k)).join(' · ')),
+    // Les repères du jour (audit du 16/11) : Seli'hot, chofar d'Eloul, בה״ב, Yom Kippour katan, érouv tavchilin.
+    ...reperesDuJour(iso, store.inIsrael(), store.siddurNusah()).map((k) => h('p', { class: 'levana-conseil' }, tr.t(k))),
     // Partager le jour en image (14/10, PartageJour.kt).
     h('button', { class: 'jour-lien lien-bouton', onclick: () => partagerJour(iso) }, `${tr.t('partage_jour')} ↗`),
     // Le calendrier montre tout ; l'écran Zmanim (14/10) n'y garde que le jour (sousHoraires).

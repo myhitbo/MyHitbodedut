@@ -1092,6 +1092,15 @@
     <string name="levana_kippour_edot">Our custom: right after Yom Kippur (Yalkut Yosef 426:34)</string>
     <string name="levana_jeune">Tonight the fast ends: say it after tasting something (Mishnah Berurah 426:11)</string>
     <string name="levana_jeune_ashkenaz">Tonight the fast ends: the Rema waits for another night (426:2); the Acharonim say it after tasting something (Mishnah Berurah 426:11)</string>
+    <string name="repere_selihot">Selichot (text: a printed siddur or the synagogue’s)</string>
+    <string name="repere_chofar">Shofar after Shacharit (Rema 581:1)</string>
+    <string name="repere_pas_de_chofar">No shofar on Erev Rosh Hashanah (Rema 581:3)</string>
+    <string name="repere_behab">BeHaB (custom): Selichot as the synagogue does; Aneinu for those fasting; the chazzan’s Aneinu and Vayechal at Mincha only with ten people fasting (Rema 492:1; Mishnah Berurah 566:10)</string>
+    <string name="repere_behab_mi_cheberakh">This Shabbat: Mi Sheberach for those who will fast BeHaB (Mishnah Berurah 492:3)</string>
+    <string name="repere_yom_kippour_katan">Yom Kippur Katan at Mincha, for those with the custom (Mishnah Berurah 417:4; Yalkut Yosef 417:5)</string>
+    <string name="repere_erouv_tavchilin">Eruv Tavshilin today (Shulchan Aruch OC 527:1): the text is in the siddur</string>
+    <string name="music_rappel_omer">Omer period: we avoid listening to songs with instruments, even recorded, except for the joy of a mitzvah (Yalkut Yosef 493:8).</string>
+    <string name="music_rappel_bein_hametsarim">The Three Weeks: we avoid listening to songs with instruments, even recorded, except for the joy of a mitzvah (Yalkut Yosef 551:6; Mishnah Berurah 551:16).</string>
     <string name="widget_zmanim_label">MyHitbodedut Zmanim</string>
     <string name="widget_zmanim_description">The Hebrew date, the prayer of the moment, the next three zmanim and the streak.</string>
     <string name="widget_zmanim_chaharit">Shacharit</string>

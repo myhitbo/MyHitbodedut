@@ -142,7 +142,7 @@ class MusicActivity : AppCompatActivity() {
 
     private fun renderSummary() {
         val selected = MusicLibrary.selected(this)
-        findViewById<TextView>(R.id.music_summary).text = when {
+        val resume = when {
             !Store.musicEnabled(this) -> getString(R.string.music_off_summary)
             selected == null -> getString(R.string.music_none_summary)
             Store.musicShuffle(this) -> getString(R.string.music_shuffle_summary, Store.musicVolume(this))
@@ -152,6 +152,13 @@ class MusicActivity : AppCompatActivity() {
                 Store.musicVolume(this)
             )
         }
+        // L'omer et Bein hamétsarim : un rappel discret, sans couper la musique (audit du 16/11, YY 493:8 et 551:6).
+        val rappel = when (CalendrierJuif.periodeSansMusique(java.time.LocalDate.now())) {
+            "omer" -> getString(R.string.music_rappel_omer)
+            "bein_hametsarim" -> getString(R.string.music_rappel_bein_hametsarim)
+            else -> null
+        }
+        findViewById<TextView>(R.id.music_summary).text = if (rappel != null) "$resume\n\n$rappel" else resume
     }
 
     private fun addTrack(uri: Uri) {

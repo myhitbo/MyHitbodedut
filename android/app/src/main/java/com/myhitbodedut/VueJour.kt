@@ -73,6 +73,18 @@ object VueJour {
     fun dateCivile(c: Context, date: LocalDate): String =
         date.format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", locale(ChizukCard.language(c))))
 
+    /** La chaîne d'un repère du jour (CalendrierJuif.reperes) ; une table écrite, comme Libelles. */
+    fun repere(cle: String): Int? = when (cle) {
+        "repere_selihot" -> R.string.repere_selihot
+        "repere_chofar" -> R.string.repere_chofar
+        "repere_pas_de_chofar" -> R.string.repere_pas_de_chofar
+        "repere_behab" -> R.string.repere_behab
+        "repere_behab_mi_cheberakh" -> R.string.repere_behab_mi_cheberakh
+        "repere_yom_kippour_katan" -> R.string.repere_yom_kippour_katan
+        "repere_erouv_tavchilin" -> R.string.repere_erouv_tavchilin
+        else -> null
+    }
+
     /** L'usage de Birkat haLevana : celui choisi, sinon celui du noussa'h (14/10). */
     fun usageLevana(c: Context): Levana.Usage = Store.levanaUsage(c) ?: Levana.Usage.duNusah(Store.siddurNusah(c).cle)
 
@@ -175,12 +187,17 @@ object VueJour {
         val marques = j.fetes.mapNotNull { Libelles.res("fete_$it")?.let(c::getString) } +
             listOfNotNull(
                 j.paracha?.let { c.getString(R.string.zmanim_paracha, it) },
+                // Chekalim, Zakhor, Para, ha'Hodech… (audit du 16/11).
+                j.parachaSpeciale,
                 omerCeSoir.takeIf { it > 0 }?.let { c.getString(R.string.zmanim_omer_ce_soir, it) },
             )
         if (marques.isNotEmpty()) carte.addView(texte(c, marques.joinToString("  ·  "), 14f, R.color.brand, gras = true, haut = 10))
         carte.addView(texte(c, c.getString(R.string.zmanim_ajouts_titre), 12f, R.color.muted, gras = true, haut = 14))
         val ajouts = JourAffiche.ajouts(j.conditions, Store.siddurNusah(c).cle, enIsrael, Store.sansTahanounFinTichri(c), Store.hemisphereSud(c)).mapNotNull { Libelles.res(it)?.let(c::getString) }
         carte.addView(texte(c, ajouts.joinToString(" · ").ifBlank { c.getString(R.string.zmanim_aucun_ajout) }, 15f, R.color.ink, haut = 2))
+        // Les repères du jour (audit du 16/11) : Seli'hot, chofar d'Eloul, בה״ב, Yom Kippour katan, érouv tavchilin.
+        val reperes = CalendrierJuif.reperes(date, enIsrael, Store.siddurNusah(c).cle).mapNotNull { repere(it)?.let(c::getString) }
+        if (reperes.isNotEmpty()) carte.addView(texte(c, reperes.joinToString("\n"), 13f, R.color.brand, haut = 8))
         // Le calendrier montre tout dans la carte ; l'écran Zmanim (14/10) n'y garde que le jour,
         // et pose Levana, hilloula et halakha sous les horaires (VueJour.sousHoraires).
         if (complet) {

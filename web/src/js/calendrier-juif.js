@@ -186,7 +186,71 @@ export function jour(iso, enIsrael, mukafChoma = false) {
     paracha: paracha || null,
     chome: regles.isAssurBemelacha(),
     conditions: c,
+    parachaSpeciale: parachaSpeciale(regles, mukafChoma),
   };
+}
+
+/**
+ * Le Chabbat spécial (CalendrierJuif.parachaSpeciale, audit du 16/11) : Chekalim, Zakhor, Para, ha'Hodech… ;
+ * à Jérusalem, le Chabbat 15 Adar d'un Pourim triple, le maftir « ויבא עמלק » (Choul'han Aroukh O.H. 688:6).
+ */
+function parachaSpeciale(regles, mukafChoma) {
+  if (regles.getDayOfWeek() !== 7) return null;
+  if (regles.getSpecialShabbos() !== 0) return FORMAT.formatSpecialParsha(regles) || null;
+  const adar = regles.isJewishLeapYear() ? JewishDate.ADAR_II : JewishDate.ADAR;
+  return mukafChoma && regles.getJewishMonth() === adar && regles.getJewishDayOfMonth() === 15 ? 'מפטיר ויבא עמלק' : null;
+}
+
+/**
+ * La période où l'on évite d'écouter des chants avec instruments (CalendrierJuif.periodeSansMusique, audit
+ * du 16/11) : 'omer' sauf Lag baOmer (Kitsour Yalkut Yosef 493:8), 'bein_hametsarim' du 17 Tamouz au 9 Av
+ * (YY 551:6 ; MB 551:16) ; null sinon. Un rappel, jamais une coupure.
+ */
+export function periodeSansMusique(iso) {
+  const c = calendrier(iso, false, false, false);
+  const omer = c.getDayOfOmer();
+  if (omer > 0 && omer !== 33) return 'omer';
+  const m = c.getJewishMonth(), j = c.getJewishDayOfMonth();
+  if ((m === JewishDate.TAMMUZ && j >= 17) || (m === JewishDate.AV && j <= 9) || c.getYomTovIndex() === JewishCalendar.TISHA_BEAV) return 'bein_hametsarim';
+  return null;
+}
+
+/**
+ * Les repères du jour qui ne changent pas le texte de la prière (CalendrierJuif.reperes, audit du 16/11) :
+ * Seli'hot (Kitsour Yalkut Yosef 581:1 ; Rema 581:1), chofar d'Eloul (Rema 581:1 et 3), בה״ב (Rema 492:1 ;
+ * MB 492:3 et 566:10), Yom Kippour katan (MB 417:4 ; YY 417:5), érouv tavchilin (Choul'han Aroukh O.H. 527:1).
+ */
+export function reperes(iso, enIsrael, nusah) {
+  const cal = (d) => calendrier(d, enIsrael, false, false);
+  const c = cal(iso);
+  const mois = c.getJewishMonth(), j = c.getJewishDayOfMonth();
+  const chabbat = new Date(`${iso}T12:00:00Z`).getUTCDay() === 6;
+  const edot = nusah === 'edot';
+  const r = [];
+  const selihot = (() => {
+    if (chabbat || c.isRoshHashana()) return false;
+    if (mois === JewishDate.TISHREI) return j <= 9;
+    if (mois !== JewishDate.ELUL) return false;
+    if (edot) return j >= 2;
+    // Le dimanche avant Roch Hachana ; s'il reste moins de quatre jours, celui d'avant.
+    const rh = ajoute(iso, 30 - j);
+    let debut = ajoute(rh, -new Date(`${rh}T12:00:00Z`).getUTCDay());
+    if ((Date.parse(rh) - Date.parse(debut)) / 86400000 < 4) debut = ajoute(debut, -7);
+    return iso >= debut;
+  })();
+  if (selihot) r.push('repere_selihot');
+  if (!edot && mois === JewishDate.ELUL && j <= 28 && !chabbat) r.push('repere_chofar');
+  if (mois === JewishDate.ELUL && j === 29) r.push('repere_pas_de_chofar');
+  if (!edot && c.isBeHaB()) r.push('repere_behab');
+  if (!edot && chabbat && cal(ajoute(iso, 2)).isBeHaB() && cal(ajoute(iso, 5)).isBeHaB()) r.push('repere_behab_mi_cheberakh');
+  if (c.isYomKippurKatan()) r.push('repere_yom_kippour_katan');
+  // L'érouv tavchilin : la veille d'un Yom tov dont les jours chômés mènent jusqu'à un vendredi.
+  if (!c.isAssurBemelacha()) {
+    for (let d = ajoute(iso, 1); cal(d).isYomTovAssurBemelacha(); d = ajoute(d, 1)) {
+      if (new Date(`${d}T12:00:00Z`).getUTCDay() === 5) { r.push('repere_erouv_tavchilin'); break; }
+    }
+  }
+  return r;
 }
 
 /**

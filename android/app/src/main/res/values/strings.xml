@@ -1142,6 +1142,15 @@
     <string name="levana_kippour_edot">Notre usage : à la sortie de Kippour (Yalkout Yossef 426, 34)</string>
     <string name="levana_jeune">Ce soir, sortie du jeûne : bénir après avoir goûté quelque chose (Michna Beroura 426, 11)</string>
     <string name="levana_jeune_ashkenaz">Ce soir, sortie du jeûne : le Rema attend un autre soir (426, 2) ; les A’haronim bénissent après avoir goûté quelque chose (Michna Beroura 426, 11)</string>
+    <string name="repere_selihot">Seli’hot (texte : le siddour papier ou celui de la synagogue)</string>
+    <string name="repere_chofar">Chofar après Cha’harit (Rema 581, 1)</string>
+    <string name="repere_pas_de_chofar">Pas de chofar la veille de Roch Hachana (Rema 581, 3)</string>
+    <string name="repere_behab">בה״ב (coutume) : Seli’hot selon la synagogue ; עננו pour qui jeûne ; עננו de l’officiant et ויחל à Min’ha seulement s’il y a dix jeûneurs (Rema 492, 1 ; Michna Beroura 566, 10)</string>
+    <string name="repere_behab_mi_cheberakh">Ce Chabbat : מי שבירך pour qui jeûnera בה״ב (Michna Beroura 492, 3)</string>
+    <string name="repere_yom_kippour_katan">Yom Kippour katan à Min’ha, pour qui en a l’usage (Michna Beroura 417, 4 ; Yalkout Yossef 417, 5)</string>
+    <string name="repere_erouv_tavchilin">Érouv tavchilin aujourd’hui (Choul’han Aroukh O.H. 527, 1) : le texte est dans le siddour</string>
+    <string name="music_rappel_omer">Période de l’omer : on évite d’écouter des chants avec instruments, même enregistrés, sauf pour la joie d’une mitsva (Yalkout Yossef 493, 8).</string>
+    <string name="music_rappel_bein_hametsarim">Bein hamétsarim : on évite d’écouter des chants avec instruments, même enregistrés, sauf pour la joie d’une mitsva (Yalkout Yossef 551, 6 ; Michna Beroura 551, 16).</string>
     <string name="widget_zmanim_label">Zmanim MyHitbodedut</string>
     <string name="widget_zmanim_description">La date hébraïque, la prière du moment, les trois prochains zmanim et la série.</string>
     <string name="widget_zmanim_chaharit">Cha’harit</string>
