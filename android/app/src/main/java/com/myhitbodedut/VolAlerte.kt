@@ -85,6 +85,9 @@ object VolAlerte {
             VolRappels.Type.PRIERE_FIN -> c.getString(R.string.vol_rappel_fin_titre, nomPriere(c, r.priere)) to
                 c.getString(R.string.vol_rappel_fin_texte, heure(r.limite ?: r.instant))
             VolRappels.Type.OMER -> c.getString(R.string.vol_rappel_omer_titre) to c.getString(R.string.vol_rappel_omer_texte, r.omer.toString())
+            // Audit du 16/11 : obligation en Edot (Kitsour Yalkut Yosef 219:20) ; selon l'usage ailleurs.
+            VolRappels.Type.HAGOMEL -> c.getString(R.string.vol_rappel_gomel_titre) to
+                c.getString(if (Store.siddurNusah(c) == Nusah.EDOT) R.string.vol_rappel_gomel_texte_edot else R.string.vol_rappel_gomel_texte)
         }
     }
 
@@ -92,6 +95,7 @@ object VolAlerte {
     fun texteSiddur(r: VolRappels.Rappel): String = when (r.type) {
         VolRappels.Type.TEFILAT_HADEREKH -> "tefilat_haderekh"
         VolRappels.Type.OMER -> "sefirat_haomer"
+        VolRappels.Type.HAGOMEL -> "hagomel"
         else -> r.priere ?: "arvit"
     }
 
@@ -102,7 +106,7 @@ object VolAlerte {
     }
 
     fun illustration(r: VolRappels.Rappel): Int = when (r.type) {
-        VolRappels.Type.TEFILAT_HADEREKH -> R.drawable.scene_airport
+        VolRappels.Type.TEFILAT_HADEREKH, VolRappels.Type.HAGOMEL -> R.drawable.scene_airport
         VolRappels.Type.OMER -> R.drawable.char_tehilim
         else -> SiddurMoment.illustration(r.priere ?: "arvit")
     }

@@ -837,6 +837,13 @@
     <string name="ajout_rappel_hallel_leil_pessah_sefard">Seder night: widespread custom of full Hallel with its blessing after the Amidah (the Shulchan Aruch HaRav omits it)</string>
     <string name="ajout_rappel_berakha_hallel_sefard">With a minyan, each person says the blessing quietly (Shulchan Aruch HaRav 619:8); per the Siddur Admur, the chazan blesses for all</string>
     <string name="ajout_rappel_psaume_hanouka_apres_moussaf">Rosh Chodesh Teves: the Chanukah psalm (“מזמור שיר חנכת הבית”) is said here; it is in Shacharis, Shir shel yom</string>
+    <string name="siddur_note">App note</string>
+    <string name="ajout_havdala_coupe">Havdalah over the cup (not on Saturday night of Tisha B’Av)</string>
+    <string name="ajout_havdala_ner">Blessing over the flame (Motzaei Shabbat and Yom Kippur)</string>
+    <string name="ajout_havdala_bessamim">Spices (Motzaei Shabbat, except the night of Tisha B’Av)</string>
+    <string name="ajout_lendemain_ticha_beav_dimanche">End of Tisha B’Av on a Sunday</string>
+    <string name="ajout_lendemain_ajouts">Meal begun the day before</string>
+    <string name="ajout_bein_hametsarim">The Three Weeks</string>
     <string name="ajout_chol">Weekdays</string>
     <string name="ajout_autres_jours">Other days</string>
     <string name="ajout_pourim_triple_vendredi">Friday 14 Adar in Jerusalem (triple Purim)</string>
@@ -1436,6 +1443,9 @@
     <string name="vol_rappel_fin_texte">Deadline: %1$s.</string>
     <string name="vol_rappel_omer_titre">Sefirat HaOmer</string>
     <string name="vol_rappel_omer_texte">The stars come out below the aircraft: tonight is day %1$s of the Omer.</string>
+    <string name="vol_rappel_gomel_titre">HaGomel</string>
+    <string name="vol_rappel_gomel_texte_edot">Landed after a flight of 72 minutes or more: say HaGomel within three days, before ten men, preferably at the Torah reading (Yalkut Yosef 219:20).</string>
+    <string name="vol_rappel_gomel_texte">Landed after a long flight: according to your custom, HaGomel is said within three days, before ten men (some require it after a flight, others do not).</string>
     <string name="vol_direct_explication_opensky">Off by default. When on, it asks OpenSky Network, free and without an account, for the aircraft seen in a 10° square around the estimated position; the callsign stays on the phone, which looks for the flight there. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_source_aeroports">Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); Hebrew and French names: Wikidata (CC0)</string>
 

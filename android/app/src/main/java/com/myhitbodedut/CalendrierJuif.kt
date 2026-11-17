@@ -212,6 +212,26 @@ object CalendrierJuif {
         const val POURIM_TRIPLE_VENDREDI = "pourim_triple_vendredi"
         /** La nuit (audit du 16/11, Méguila) : posée par la lecture d'après l'heure ([nuit]), jamais par le calendrier. */
         const val NUIT = "nuit"
+
+        /**
+         * Audit du 16/11, la Havdala (Choul'han Aroukh O.H. 556:1 et 624:3-5 ; Michna Beroura 556:1-5 ;
+         * Kitsour Yalkut Yosef 556:6-8 et 624:4-6) : la flamme le Chabbat qui finit et au sortir de Kippour ;
+         * les bessamim le Chabbat qui finit, sauf le samedi soir du 9 Av (le soir, avec le jour hébreu qui
+         * commence, ou le samedi même quand l'app ne connaît pas le lieu) ; le lundi après un 9 Av du
+         * dimanche, Havdala sur la coupe, sans flamme ni bessamim.
+         */
+        const val HAVDALA_NER = "havdala_ner"
+        const val HAVDALA_BESSAMIM = "havdala_bessamim"
+        const val LENDEMAIN_TICHA_BEAV_DIMANCHE = "lendemain_ticha_beav_dimanche"
+        /**
+         * Le jour hébreu qui suit un jour d'ajouts au Birkat haMazon (Chabbat, Roch 'Hodech, Yom tov,
+         * 'Hol hamoed, 'Hanouka, Pourim), sauf le Chabbat : un repas commencé la veille s'y conclut avec
+         * les ajouts de la veille (Choul'han Aroukh O.H. 188:10 ; Michna Beroura 188:32-34 ; Kitsour
+         * Yalkut Yosef 188:16, 19 ; audit du 16/11).
+         */
+        const val LENDEMAIN_AJOUTS = "lendemain_ajouts"
+        /** Du 17 Tamouz au 10 Av : שהחיינו évité (Choul'han Aroukh O.H. 551:17 ; Kitsour Yalkut Yosef 551:9 ; audit du 16/11). */
+        const val BEIN_HAMETSARIM = "bein_hametsarim"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
@@ -220,7 +240,8 @@ object CalendrierJuif {
                 VEILLE_PESSAH_CHENI, EREV_KIPPOUR, SANS_TAHANOUN_PONCTUEL, JOUR_PESSAH_CHENI, EL_EREKH_APAYIM,
                 ROCH_HODECH_CHOL, HOL_HAMOED, HANOUKA_SANS_MOUSSAF, HANOUKA_HORS_ROCH_HODECH, LEIL_PESSAH, HALLEL_PARTIEL,
                 MIZMOR_LETODA, YOM_TOV_SEMAINE, LEIL_HASEDER, LENDEMAIN_ROCH_HODECH, CHOME, VIHI_NOAM, VEATA_KADOCH, TEFILIN,
-                TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT, POURIM_TRIPLE_VENDREDI)
+                TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT, POURIM_TRIPLE_VENDREDI, HAVDALA_NER, HAVDALA_BESSAMIM,
+                LENDEMAIN_TICHA_BEAV_DIMANCHE, LENDEMAIN_AJOUTS, BEIN_HAMETSARIM)
     }
 
     /**
@@ -449,6 +470,15 @@ object CalendrierJuif {
             if (hier.isRoshChodesh && !regles.isRoshChodesh) add(C.LENDEMAIN_ROCH_HODECH)
             if (mukafChoma && semaine == DayOfWeek.FRIDAY && quantieme == 14 &&
                 mois == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)) add(C.POURIM_TRIPLE_VENDREDI)
+            // La Havdala et le lendemain d'un jour d'ajouts (audit du 16/11, C.HAVDALA_NER…).
+            val veille = calendrier(date.minusDays(1), enIsrael, modernes = false).apply { setIsMukafChoma(mukafChoma) }
+            val kippour = C.KIPPOUR in this || C.LENDEMAIN_KIPPOUR in this
+            if (C.CHABBAT in this || C.MOTSAE_CHABBAT in this || kippour) add(C.HAVDALA_NER)
+            if (C.CHABBAT in this || (C.MOTSAE_CHABBAT in this && C.TICHA_BEAV !in this) || kippour) add(C.HAVDALA_BESSAMIM)
+            if (semaine == DayOfWeek.MONDAY && veille.isTishaBav) add(C.LENDEMAIN_TICHA_BEAV_DIMANCHE)
+            if (semaine != DayOfWeek.SATURDAY && (semaine == DayOfWeek.SUNDAY || veille.isRoshChodesh || veille.isYomTovAssurBemelacha ||
+                    veille.isCholHamoed || veille.isChanukah || veille.isPurim)) add(C.LENDEMAIN_AJOUTS)
+            if ((mois == JewishDate.TAMMUZ && quantieme >= 17) || (mois == JewishDate.AV && quantieme <= 10)) add(C.BEIN_HAMETSARIM)
         }
 
         val fetes = buildList {

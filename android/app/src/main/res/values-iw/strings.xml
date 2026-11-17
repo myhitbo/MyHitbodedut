@@ -853,6 +853,13 @@
     <string name="ajout_rappel_hallel_leil_pessah_sefard">ליל הסדר: מנהג רווח לגמור את ההלל בברכה אחר העמידה (בשולחן ערוך הרב אין אומרים)</string>
     <string name="ajout_rappel_berakha_hallel_sefard">בציבור, כל אחד מברך לעצמו בלחש (שולחן ערוך הרב תריט:ח); לפי סידור אדמו״ר, השליח ציבור מברך לכולם</string>
     <string name="ajout_rappel_psaume_hanouka_apres_moussaf">ראש חודש טבת: אומרים כאן מזמור שיר חנכת הבית; הוא בשחרית, בשיר של יום</string>
+    <string name="siddur_note">הערת היישום</string>
+    <string name="ajout_havdala_coupe">הבדלה על הכוס (לא במוצאי שבת של תשעה באב)</string>
+    <string name="ajout_havdala_ner">ברכת הנר (מוצאי שבת ומוצאי יום הכיפורים)</string>
+    <string name="ajout_havdala_bessamim">בשמים (מוצאי שבת, חוץ מליל תשעה באב)</string>
+    <string name="ajout_lendemain_ticha_beav_dimanche">מוצאי תשעה באב שחל ביום ראשון</string>
+    <string name="ajout_lendemain_ajouts">סעודה שהתחילה אתמול</string>
+    <string name="ajout_bein_hametsarim">בין המצרים</string>
     <string name="ajout_chol">בחול</string>
     <string name="ajout_autres_jours">בשאר הימים</string>
     <string name="ajout_pourim_triple_vendredi">יום שישי י״ד באדר בירושלים (פורים המשולש)</string>
@@ -1480,6 +1487,9 @@
     <string name="vol_rappel_fin_texte">סוף הזמן: %1$s.</string>
     <string name="vol_rappel_omer_titre">ספירת העומר</string>
     <string name="vol_rappel_omer_texte">צאת הכוכבים מתחת למטוס: הלילה סופרים יום %1$s לעומר.</string>
+    <string name="vol_rappel_gomel_titre">ברכת הגומל</string>
+    <string name="vol_rappel_gomel_texte_edot">נחיתה אחר טיסה של שעה ושתים עשרה דקות ויותר: מברכים הגומל תוך שלושה ימים, בפני עשרה, ולכתחילה בקריאת התורה (ילקוט יוסף ריט, כ).</string>
+    <string name="vol_rappel_gomel_texte">נחיתה אחר טיסה ארוכה: לפי מנהגכם, מברכים הגומל תוך שלושה ימים בפני עשרה (יש המחייבים בטיסה ויש שלא).</string>
     <string name="vol_direct_explication_opensky">כבוי כברירת מחדל. כשהוא פעיל, הוא מבקש מ־OpenSky Network, בחינם וללא חשבון, את המטוסים שנראים בריבוע של ⁦10°⁩ סביב המיקום המשוער; אות הקריאה נשאר בטלפון, שמחפש בו את הטיסה. מעל אוקיינוסים המטוס לעיתים קרובות אינו נראה.</string>
     <string name="vol_source_aeroports">שדות תעופה: OurAirports (נחלת הכלל); אזורי זמן: timezone-boundary-builder ‏(ODbL, © תורמי OpenStreetMap); שמות בעברית ובצרפתית: Wikidata (CC0)</string>
 

@@ -92,7 +92,9 @@ export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hato
   'roch_hodech_chol', 'hol_hamoed', 'hanouka_sans_moussaf', 'hanouka_hors_roch_hodech', 'leil_pessah', 'hallel_partiel',
   // Audit du 16/11 (structure des offices).
   'mizmor_letoda', 'yom_tov_semaine', 'leil_haseder', 'lendemain_roch_hodech', 'chome',
-  'vihi_noam', 'veata_kadoch', 'tefilin', 'tefilin_sans_berakha', 'vidui_coucher', 'nuit', 'pourim_triple_vendredi'];
+  'vihi_noam', 'veata_kadoch', 'tefilin', 'tefilin_sans_berakha', 'vidui_coucher', 'nuit', 'pourim_triple_vendredi',
+  // Audit du 16/11 (Birkat haMazon et bénédictions).
+  'havdala_ner', 'havdala_bessamim', 'lendemain_ticha_beav_dimanche', 'lendemain_ajouts', 'bein_hametsarim'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix
@@ -153,7 +155,8 @@ export function index(annotations = []) {
   for (const a of annotations) {
     if (a.sorte === 'section') sections.set(a.s, a);
     else if (a.sorte === 'bloc') blocs.set(`${a.s}:${a.b}`, a);
-    else if (a.sorte === 'seul') seuls.set(`${a.s}:${a.b}`, [...(seuls.get(`${a.s}:${a.b}`) ?? []), a]);
+    // Les notes de l'application (audit du 16/11) suivent leur bloc comme les cartes « seul ».
+    else if (a.sorte === 'seul' || a.sorte === 'note') seuls.set(`${a.s}:${a.b}`, [...(seuls.get(`${a.s}:${a.b}`) ?? []), a]);
     else if (a.sorte === 'renvoi') renvois.set(`${a.s}:${a.b ?? ''}`, [...(renvois.get(`${a.s}:${a.b ?? ''}`) ?? []), a]);
     else indices.set(`${a.s}:${a.b}`, [...(indices.get(`${a.s}:${a.b}`) ?? []), a]);
   }

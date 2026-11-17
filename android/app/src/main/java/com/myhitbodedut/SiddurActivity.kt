@@ -59,7 +59,7 @@ class SiddurActivity : AppCompatActivity() {
             siddur.texte("hallel")?.let { liste.addView(maintenant(it, langue, R.drawable.scene_hanukkah)) }
         }
         // Birkat haIlanot (14/10), le mois où on la dit, sous la suggestion de l'heure.
-        if (SiddurMoment.ilanot(java.time.LocalDate.now(), lieu?.latitude)) {
+        if (SiddurMoment.ilanot(java.time.LocalDate.now(), lieu?.latitude, Store.siddurNusah(this).cle)) {
             siddur.texte("birkat_hailanot")?.let { liste.addView(maintenant(it, langue, R.drawable.scene_nature)) }
         }
         // Pourim (13/10) : la Méguila sous Arvit (la nuit qui ouvre Pourim) et sous Cha'harit.

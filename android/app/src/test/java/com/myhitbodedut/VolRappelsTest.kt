@@ -84,6 +84,21 @@ class VolRappelsTest {
         assertTrue(VolRappels.rappels(Vol.calculer(trajets[7]), false).any { it.type == VolRappels.Type.PRIERE && it.priere == "chaharit" })
     }
 
+    /** Hagomel (audit du 16/11, Kitsour Yalkut Yosef 219:20) : à l'atterrissage, si le vol a duré une heure douze ou plus. */
+    @Test
+    fun `hagomel a l atterrissage d un vol d une heure douze ou plus`() {
+        trajets.forEach { p ->
+            val r = VolRappels.rappels(Vol.calculer(p), false)
+            assertEquals(listOf(p.atterrissage), r.filter { it.type == VolRappels.Type.HAGOMEL }.map { it.instant })
+            assertEquals(VolRappels.Type.HAGOMEL, r.last().type)
+        }
+        // Tel Aviv → Eilat (Ramon), une heure : pas de rappel.
+        assertTrue(VolRappels.rappels(Vol.calculer(plan("TLV", "ETM", "2026-11-10T10:00", "2026-11-10T11:00")), false)
+            .none { it.type == VolRappels.Type.HAGOMEL })
+        assertTrue(VolRappels.rappels(Vol.calculer(plan("TLV", "ETM", "2026-11-10T10:00", "2026-11-10T11:12")), false)
+            .any { it.type == VolRappels.Type.HAGOMEL })
+    }
+
     @Test
     fun `le Omer en vol a son rappel, le jour du soir`() {
         val veille = generateSequence(LocalDate.parse("2027-01-01")) { it.plusDays(1) }.first { CalendrierJuif.jour(it.plusDays(1), false).omer == 4 }

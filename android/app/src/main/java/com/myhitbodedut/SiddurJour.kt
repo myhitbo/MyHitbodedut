@@ -13,7 +13,11 @@ import org.json.JSONObject
  */
 object SiddurJour {
 
-    enum class Sorte { BLOC, SECTION, INDICE, RENVOI, SEUL }
+    /**
+     * NOTE (audit du 16/11) : une note de l'application sous un bloc, quand sa condition vaut ;
+     * jamais repliée, elle ne touche pas au texte du siddour (« ! » + une clé jamais du jour : toujours).
+     */
+    enum class Sorte { BLOC, SECTION, INDICE, RENVOI, SEUL, NOTE }
 
     data class Annotation(
         val sorte: Sorte,
@@ -61,6 +65,7 @@ object SiddurJour {
                         "indice" -> Sorte.INDICE
                         "renvoi" -> Sorte.RENVOI
                         "seul" -> Sorte.SEUL
+                        "note" -> Sorte.NOTE
                         else -> Sorte.BLOC
                     },
                     section = a.getInt("s"),
@@ -119,7 +124,7 @@ object SiddurJour {
         data class Rappel(val condition: String, val libelle: String) : Ligne()
 
         /** Qui prie seul (19/10) : la braïta à la place de Barekhou, ou où la dire ; [consigne] avant. */
-        data class Seul(val texte: String, val consigne: String?) : Ligne()
+        data class Seul(val texte: String, val consigne: String?, val note: Boolean = false) : Ligne()
 
         /** Un ajout hors du jour, replié ; [ouvert] quand on l'a déplié. */
         data class Replie(val cle: String, val condition: String, val ouvert: Boolean, val libelle: String) : Ligne()
@@ -151,10 +156,11 @@ object SiddurJour {
         // Les renvois du jour seulement : hors du jour, rien (le texte renvoyé n'est pas d'ici).
         val renvois = annotations.filter { it.sorte == Sorte.RENVOI && (it.cible != null || it.libelle != null) && vrai(it.condition, conditions) }
             .groupBy { it.section to it.bloc }
-        val seuls = annotations.filter { it.sorte == Sorte.SEUL && it.texte != null && vrai(it.condition, conditions) }
+        // Les notes de l'application (audit du 16/11) suivent leur bloc comme les cartes « seul ».
+        val seuls = annotations.filter { (it.sorte == Sorte.SEUL || it.sorte == Sorte.NOTE) && it.texte != null && vrai(it.condition, conditions) }
             .groupBy { it.section to it.bloc }
         val sortie = mutableListOf<Ligne>()
-        fun seul(si: Int, bi: Int) = seuls[si to bi].orEmpty().forEach { sortie += Ligne.Seul(it.texte!!, it.consigne) }
+        fun seul(si: Int, bi: Int) = seuls[si to bi].orEmpty().forEach { sortie += Ligne.Seul(it.texte!!, it.consigne, it.sorte == Sorte.NOTE) }
         fun renvoyer(si: Int, bi: Int?) = renvois[si to bi].orEmpty().forEach {
             sortie += if (it.cible != null) Ligne.Renvoi(it.condition, it.cible) else Ligne.Rappel(it.condition, it.libelle!!)
         }
@@ -245,7 +251,9 @@ object SiddurJour {
                 } else {
                     val cle = "$si:${a.groupe}"
                     sortie += Ligne.Replie(cle, racine, cle in ouverts, nom(a, racine))
-                    if (cle in ouverts) membresLus({ Style.HORS }, false)
+                    // Ouvert, un groupe replié distingue ses membres comme le web (audit du 16/11 : dans les
+                    // psaumes d'avant le Birkat, celui du jour se lit en clair, l'autre estompé).
+                    if (cle in ouverts) membresLus({ m -> if (vrai(m.condition, conditions)) Style.NORMAL else Style.HORS }, false)
                 }
                 seul(si, i - 1)
             }

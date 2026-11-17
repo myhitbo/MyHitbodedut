@@ -133,6 +133,12 @@ class SimulationSiddurTest {
         // Méèn chaloch.
         Regle(setOf("meen_chaloch"), "ורצה והחליצנו", si(C.CHABBAT)),
         Regle(setOf("meen_chaloch"), "ביום הזכרון הזה", si(C.ROCH_HACHANA)),
+        // Audit du 16/11 : la Havdala (le samedi soir du 9 Av, la flamme seule ; à la sortie d'un Yom tov de
+        // semaine, ni flamme ni bessamim) et יעלה ויבוא de Kippour pour qui mange (Edot).
+        Regle(setOf("havdala"), "בורא מאורי האש", si(C.HAVDALA_NER)),
+        Regle(setOf("havdala"), "בשמים", si(C.HAVDALA_BESSAMIM)),
+        Regle(setOf("havdala"), "המבדיל בין קדש לחול", { C.TICHA_BEAV !in it }),
+        Regle(setOf("birkat_hamazon"), "ביום סליחת העון הזה", si(C.KIPPOUR), setOf(Nusah.EDOT)),
     )
 
     @Test
@@ -156,7 +162,7 @@ class SimulationSiddurTest {
     private fun lire(lieu: Lieu, conditions: Set<String>): Pair<List<String>, Int> {
         val ecarts = mutableListOf<String>()
         var verifications = 0
-        val textes = setOf("chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "hallel", "birkot_hachahar")
+        val textes = setOf("chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "hallel", "birkot_hachahar", "havdala")
         // Les consignes d'oubli (12/11) : toujours repliées, jamais en clair.
         val oubli = Regex("^\\(?(טעה|שכח|אם שכח|אם טעה|ואם טעה|אם לא אמר|ואם לא אמר)(?=\\s|:|$)|^בכל השנה אם אמר המלך המשפט")
         for (n in Nusah.entries) {
@@ -207,7 +213,9 @@ class SimulationSiddurTest {
     /** « מגדול » à la fin du Birkat (12/11) : les jours de Moussaf en Edot, Chabbat et Yom tov en Ashkenaz et en Sfard ; une fois. */
     @Test
     fun `migdol les jours dits, une seule fois`() {
-        val jours = mapOf(Nusah.EDOT to setOf(C.CHABBAT, C.ROCH_HODECH, C.MOED, C.YOM_TOV), Nusah.ASHKENAZ to setOf(C.CHABBAT, C.YOM_TOV), Nusah.SEFARD to setOf(C.CHABBAT, C.YOM_TOV))
+        // Audit du 16/11 : Roch 'Hodech aussi en Ashkenaz et en Sfard (Michna Beroura 189:5 ; Choul'han Aroukh haRav 189:7).
+        val jours = mapOf(Nusah.EDOT to setOf(C.CHABBAT, C.ROCH_HODECH, C.MOED, C.YOM_TOV), Nusah.ASHKENAZ to setOf(C.CHABBAT, C.YOM_TOV, C.ROCH_HODECH),
+            Nusah.SEFARD to setOf(C.CHABBAT, C.YOM_TOV, C.ROCH_HODECH))
         for ((n, cles) in jours) for (date in this.jours) for (israel in listOf(false, true)) {
             val c = jour(date, israel).conditions
             val l = SiddurJour.lignes(siddurs.getValue(n).texte("birkat_hamazon")!!, annotations.getValue(n).getValue("birkat_hamazon"), c, nusah = n.cle, enIsrael = israel)

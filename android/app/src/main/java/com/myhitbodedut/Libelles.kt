@@ -23,6 +23,7 @@ object Libelles {
         "ajout_avinou_malkenou" -> R.string.ajout_avinou_malkenou
         "ajout_barekh_alenou" -> R.string.ajout_barekh_alenou
         "ajout_barkhenou" -> R.string.ajout_barkhenou
+        "ajout_bein_hametsarim" -> R.string.ajout_bein_hametsarim
         "ajout_beit_avel" -> R.string.ajout_beit_avel
         "ajout_berakha" -> R.string.ajout_berakha
         "ajout_chaasa_li_yalkut" -> R.string.ajout_chaasa_li_yalkut
@@ -46,6 +47,9 @@ object Libelles {
         "ajout_hallel_partiel_sans_berakha" -> R.string.ajout_hallel_partiel_sans_berakha
         "ajout_hanouka_hors_roch_hodech" -> R.string.ajout_hanouka_hors_roch_hodech
         "ajout_hanouka_sans_moussaf" -> R.string.ajout_hanouka_sans_moussaf
+        "ajout_havdala_bessamim" -> R.string.ajout_havdala_bessamim
+        "ajout_havdala_coupe" -> R.string.ajout_havdala_coupe
+        "ajout_havdala_ner" -> R.string.ajout_havdala_ner
         "ajout_hol_hamoed" -> R.string.ajout_hol_hamoed
         "ajout_hors_jeune_public" -> R.string.ajout_hors_jeune_public
         "ajout_jeune" -> R.string.ajout_jeune
@@ -61,7 +65,9 @@ object Libelles {
         "ajout_ledavid" -> R.string.ajout_ledavid
         "ajout_leil_haseder" -> R.string.ajout_leil_haseder
         "ajout_leil_pessah" -> R.string.ajout_leil_pessah
+        "ajout_lendemain_ajouts" -> R.string.ajout_lendemain_ajouts
         "ajout_lendemain_kippour" -> R.string.ajout_lendemain_kippour
+        "ajout_lendemain_ticha_beav_dimanche" -> R.string.ajout_lendemain_ticha_beav_dimanche
         "ajout_lundi_jeudi" -> R.string.ajout_lundi_jeudi
         "ajout_lundi_jeudi_usage" -> R.string.ajout_lundi_jeudi_usage
         "ajout_machiv_harouah" -> R.string.ajout_machiv_harouah

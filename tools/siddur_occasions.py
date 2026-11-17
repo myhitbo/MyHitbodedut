@@ -18,6 +18,8 @@ Sources (export public de Sefaria), du domaine public :
     et dit (« nusah »), comme le fait déjà siddur_construction.py.
 Ce qu'un nusah n'a pas dans ses sources libres est emprunté à un autre et marqué.
 L'Omer de Sfard et d'Ashkenaz est ensuite remplacé par celui de leur Arvit : relancer tools/siddur_omer.py.
+Ordre après une reconstruction : siddur_occasions.py (qui appelle siddur_audit_berakhot.py à la fin),
+puis tools/siddur_omer.py, puis tools/siddur_annotations.py.
 
   python3 tools/siddur_occasions.py <dossier des exports Sefaria>
 """
@@ -127,6 +129,10 @@ def main(dossier):
         json.dump(d, open(chemin, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
         empruntes = [i for i, v in table.items() if v[3]]
         print(f"{n}: {len(table)} textes ajoutés, {sum(len(s['blocs']) for v in table.values() for s in v[2])} paragraphes ; empruntés : {empruntes}")
+    # Les retouches de l'audit du 16/11 (la mer et les éclairs en Edot, la 'hala ashkénaze, המוציא…) :
+    # ce groupe vient d'être refait depuis Sefaria, elles sont à refaire après lui.
+    import siddur_audit_berakhot
+    siddur_audit_berakhot.main()
 
 
 if __name__ == "__main__":

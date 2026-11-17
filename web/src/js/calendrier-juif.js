@@ -186,6 +186,15 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(hier.isRoshChodesh() && !regles.isRoshChodesh(), 'lendemain_roch_hodech');
   // Le vendredi 14 Adar d'un Pourim triple à Jérusalem (CalendrierJuif.C.POURIM_TRIPLE_VENDREDI).
   si(mukafChoma && semaine === 5 && quantieme === 14 && mois === (regles.isJewishLeapYear() ? JewishDate.ADAR_II : JewishDate.ADAR), 'pourim_triple_vendredi');
+  // La Havdala et le lendemain d'un jour d'ajouts (audit du 16/11, CalendrierJuif.C.HAVDALA_NER…).
+  const veille = hier;
+  const kippour = c.has('kippour') || c.has('lendemain_kippour');
+  si(c.has('chabbat') || c.has('motsae_chabbat') || kippour, 'havdala_ner');
+  si(c.has('chabbat') || (c.has('motsae_chabbat') && !c.has('ticha_beav')) || kippour, 'havdala_bessamim');
+  si(semaine === 1 && veille.isTishaBav(), 'lendemain_ticha_beav_dimanche');
+  si(semaine !== 6 && (semaine === 0 || veille.isRoshChodesh() || veille.isYomTovAssurBemelacha() || veille.isCholHamoed()
+    || veille.isChanukah() || veille.isPurim()), 'lendemain_ajouts');
+  si((mois === JewishDate.TAMMUZ && quantieme >= 17) || (mois === JewishDate.AV && quantieme <= 10), 'bein_hametsarim');
 
   const fetes = [];
   const fete = FETES.get(affiche.getYomTovIndex());
