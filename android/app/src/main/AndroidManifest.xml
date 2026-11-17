@@ -242,6 +242,11 @@
             android:label="@string/app_name" />
 
         <activity
+            android:name=".InstantActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
+        <activity
             android:name=".PileActivity"
             android:exported="false"
             android:label="@string/app_name" />

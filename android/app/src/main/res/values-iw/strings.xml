@@ -1687,6 +1687,7 @@
     <string name="version_reprendre">חזרה להתבודדות</string>
     <string name="version_encore">עוד התבודדות</string>
     <string name="version_commencer">להתחיל · %1$s</string>
+    <string name="version_commencer_court">להתחיל</string>
     <string name="version_preparer">משך, נושא, מוזיקה</string>
     <string name="version_chargement">טוען את הטקסט היומי…</string>
     <string name="version_plus_de_textes">עוד חיזוק</string>
@@ -1748,4 +1749,20 @@
     <string name="serenite_lire">לקרוא</string>
     <string name="serenite_tout_voir">הכול</string>
     <string name="serenite_cette_semaine">הימים האחרונים שלכם</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_instant">רגע</string>
+    <string name="version_instant_desc">לוח כהה: השמיים של הרגע עם הזמנים בקטן, מד שבועי, הדקות שלכם בעמודות.</string>
+    <string name="instant_titre">ההתבודדות של היום</string>
+    <string name="instant_z_netz">נץ</string>
+    <string name="instant_z_chatsot">חצות</string>
+    <string name="instant_z_minha">מנחה</string>
+    <string name="instant_z_chkia">שקיעה</string>
+    <string name="instant_z_tset">צאת</string>
+    <string name="instant_semaine">שבוע</string>
+    <string name="instant_cette_semaine">ימים שנעשו</string>
+    <string name="instant_serie">רצף</string>
+    <string name="instant_total">%1$s בסך הכול</string>
+    <string name="instant_minutes">7 הימים האחרונים שלכם</string>
+    <string name="instant_moyenne">ממוצע בימים שנעשו: %1$s</string>
 </resources>

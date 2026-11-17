@@ -1084,6 +1084,10 @@ def main():
         pause(1.5)
 
     def s28():
+        # En plein jour d'abord (17/11) : deux fois, l'emulateur s'est arrete le soir en ouvrant
+        # un accueil au ciel dessine ; le ciel de nuit est essaye a part, en dernier (s28 nuit).
+        sh("settings put global auto_time 0")
+        log("  date :", sh("date 111712002026.00").strip())
         activite("ChoixVersionActivity")
         capture("28-choix-version")
         retour()
@@ -1103,6 +1107,11 @@ def main():
         capture("28-bento-1")
         defiler(True)
         capture("28-bento-2-bas")
+        regler({"version_app": ("string", "instant")})
+        lancer(attente=6)
+        capture("28-instant-1")
+        defiler(True)
+        capture("28-instant-2-bas")
         regler({"version_app": ("string", "serenite")})
         lancer(attente=6)
         capture("28-serenite-1")
@@ -1110,6 +1119,45 @@ def main():
         capture("28-serenite-2-bas")
         regler({"version_app": ("string", "classique")})
     etape("28 versions de l'app", s28)
+
+
+    # Les versions sur un petit telephone (480x854, 240 dpi), puis avec le texte du systeme
+    # agrandi (17/11) : chaque accueil, sans texte ecrase, et son bouton principal entier a l'ecran.
+    def s29():
+        for nom, echelle in (("petit", "1.0"), ("petit-gros-texte", "1.3")):
+            sh("settings put system font_scale " + echelle)
+            appliquer_taille("480x854", 240, False)
+            sh("date 111712002026.00")
+            pause(4)
+            activite("ChoixVersionActivity")
+            serre(nom, "choix-version")
+            capture(f"29-{nom}-choix-version")
+            retour()
+            for version, bouton in (("serenite", "Modifier"), ("bento", "Commencer"), ("instant", "Commencer"), ("pile", "Commencer")):
+                regler({"version_app": ("string", version)})
+                lancer(attente=6)
+                serre(nom, version)
+                b = trouver(text=bouton, contains=True)
+                if not b or b[3] > H or b[1] < 0:
+                    faute(f"{nom} {version} : « {bouton} » pas entierement a l'ecran ({b}, ecran {W}x{H})")
+                capture(f"29-{nom}-{version}")
+                # Pas de geste ici : deux fois, l'emulateur s'est arrete au premier defilement
+                # apres le changement de taille et de densite (17/11). Le haut de chaque accueil,
+                # avec son bouton principal, est ce qui compte sur un petit ecran.
+        sh("settings put system font_scale 1.0")
+        appliquer_taille(None, None, False)
+        regler({"version_app": ("string", "classique")})
+        log("  fautes des petits ecrans :", [f for f in FAUTES if f.startswith("petit")])
+    etape("29 versions sur petit ecran", s29)
+
+    def s28n():
+        log("  date :", sh("date 111721302026.00").strip())
+        for version in ("instant", "serenite"):
+            regler({"version_app": ("string", version)})
+            lancer(attente=6)
+            capture(f"28n-{version}-nuit")
+        regler({"version_app": ("string", "classique")})
+    etape("30 ciel de nuit", s28n)
 
     log("\ncaptures :", sorted(os.listdir(OUT)))
 

@@ -1643,6 +1643,7 @@
     <string name="version_reprendre">Back to the hitbodedut</string>
     <string name="version_encore">Another hitbodedut</string>
     <string name="version_commencer">Start · %1$s</string>
+    <string name="version_commencer_court">Start</string>
     <string name="version_preparer">Length, topic, music</string>
     <string name="version_chargement">Loading today’s text…</string>
     <string name="version_plus_de_textes">More chizuk</string>
@@ -1702,4 +1703,20 @@
     <string name="serenite_lire">Read</string>
     <string name="serenite_tout_voir">See all</string>
     <string name="serenite_cette_semaine">Your last days</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_instant">Instant</string>
+    <string name="version_instant_desc">A dark dashboard: the real sky of the moment with discreet zmanim, a week gauge, your minutes as bars.</string>
+    <string name="instant_titre">Today’s hitbodedut</string>
+    <string name="instant_z_netz">Netz</string>
+    <string name="instant_z_chatsot">Chatzot</string>
+    <string name="instant_z_minha">Mincha</string>
+    <string name="instant_z_chkia">Shkia</string>
+    <string name="instant_z_tset">Tzeit</string>
+    <string name="instant_semaine">Week</string>
+    <string name="instant_cette_semaine">days done</string>
+    <string name="instant_serie">Streak</string>
+    <string name="instant_total">%1$s in total</string>
+    <string name="instant_minutes">Your last 7 days</string>
+    <string name="instant_moyenne">Average on days done: %1$s</string>
 </resources>
