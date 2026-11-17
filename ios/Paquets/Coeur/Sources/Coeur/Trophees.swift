@@ -136,34 +136,49 @@ public enum Trophees {
 
         /// Le seuil du niveau ; comme sur Android, un rang hors de la famille n'en a pas (l'accès s'arrête).
         public var seuil: Int { famille.seuils[rang - 1] }
-
-        public var metal: Metal { Trophees.metal(famille, rang) }
-    }
-
-    /// Le métal d'un rang : un quart de la famille par métal ; une famille d'un seul niveau est de bronze. Le
-    /// calcul suit les 32 bits de Kotlin, pour un rang hors de la famille.
-    public static func metal(_ f: Famille, _ rang: Int) -> Metal {
-        let nombre = f.seuils.count
-        if nombre == 1 { return .bronze }
-        let produit = (Int32(truncatingIfNeeded: rang) &- 1) &* 4
-        let i = min(max(Int(produit / Int32(nombre)), 0), 3)
-        return Metal.allCases[i]
     }
 
     /// Ce que les trophées regardent : les minutes par jour fait, les notes écrites, la meilleure série ; et
-    /// les jours où le Tikoun HaKlali a été dit en entier (04/11).
+    /// les jours où le Tikoun HaKlali a été dit en entier (04/11). Le métal ne dépend plus de la famille
+    /// (15/10) : c'est celui du grade (`grade`), d'après le nombre de trophées gagnés en tout.
     public struct Pratique: Hashable, Sendable {
         public let minutes: [JourCivil: Int]
         public let notes: Int
         public let meilleureSerie: Int
         public let tikkun: Set<JourCivil>
+        /// Les jours exemptés : ils ne cassent pas la suite du Tikoun (FDONNEES-09). Hors de l'égalité, comme
+        /// une fonction l'est de celle d'une data class de Kotlin (par identité, jamais égale à une autre).
+        public let exempt: @Sendable (JourCivil) -> Bool
 
-        public init(minutes: [JourCivil: Int], notes: Int, meilleureSerie: Int, tikkun: Set<JourCivil> = []) {
+        public init(minutes: [JourCivil: Int], notes: Int, meilleureSerie: Int, tikkun: Set<JourCivil> = [],
+                    exempt: @escaping @Sendable (JourCivil) -> Bool = { _ in false }) {
             self.minutes = minutes
             self.notes = notes
             self.meilleureSerie = meilleureSerie
             self.tikkun = tikkun
+            self.exempt = exempt
         }
+
+        public static func == (a: Pratique, b: Pratique) -> Bool {
+            a.minutes == b.minutes && a.notes == b.notes && a.meilleureSerie == b.meilleureSerie && a.tikkun == b.tikkun
+        }
+
+        public func hash(into h: inout Hasher) {
+            h.combine(minutes)
+            h.combine(notes)
+            h.combine(meilleureSerie)
+            h.combine(tikkun)
+        }
+    }
+
+    /// Tous les jours entre `avant` et `d` (exclus) sont-ils exemptés ? Alors la suite continue.
+    private static func suiteContinue(_ avant: JourCivil, _ d: JourCivil, _ exempt: (JourCivil) -> Bool) -> Bool {
+        var j = avant.plus(jours: 1)
+        while j < d {
+            if !exempt(j) { return false }
+            j = j.plus(jours: 1)
+        }
+        return true
     }
 
     /// Une somme comme `sum()` de Kotlin : sur 32 bits, qui déborde sans lever.
@@ -179,13 +194,14 @@ public enum Trophees {
     /// Le dimanche de la semaine d'un jour.
     private static func dimanche(_ d: JourCivil) -> JourCivil { d.plus(jours: 1 - d.jourDeSemaine) }
 
-    /// La plus longue suite de jours consécutifs.
-    public static func plusLongueSuite(_ jours: Set<JourCivil>) -> Int {
+    /// La plus longue suite de jours de pratique. Un jour exempté (Chabbat, Yom Tov, pause) ne compte pas et
+    /// ne casse pas la suite, comme la série de hitbodedout (FDONNEES-09).
+    public static func plusLongueSuite(_ jours: Set<JourCivil>, exempt: (JourCivil) -> Bool = { _ in false }) -> Int {
         var meilleure = 0
         var courante = 0
         var avant: JourCivil?
         for d in jours.sorted() {
-            if let a = avant, d.jourJulien - a.jourJulien == 1 {
+            if let a = avant, suiteContinue(a, d, exempt) {
                 courante += 1
             } else {
                 courante = 1
@@ -238,7 +254,7 @@ public enum Trophees {
         case .retour: return retours(Set(p.minutes.keys))
         case .plume: return p.notes
         case .tikkun: return p.tikkun.count
-        case .tikkunSerie: return plusLongueSuite(p.tikkun)
+        case .tikkunSerie: return plusLongueSuite(p.tikkun, exempt: p.exempt)
         }
     }
 
@@ -402,7 +418,7 @@ public enum Trophees {
             if notes.contains(d) { notesVues += 1 }
             if tikkun.contains(d) {
                 tikkunN += 1
-                if let a = tikkunAvant, d.jourJulien - a.jourJulien == 1 {
+                if let a = tikkunAvant, suiteContinue(a, d, exempt) {
                     tikkunSuite += 1
                 } else {
                     tikkunSuite = 1
@@ -494,10 +510,11 @@ public enum Trophees {
         return Progres(valeur: valeur(p, f), cible: seuils[min(r, seuils.count - 1)])
     }
 
-    /// Les niveaux gagnés depuis la dernière fois, le plus haut de chaque famille d'abord ; rien la première
-    /// fois (`vus` nil), ni quand `vus` date d'avant les niveaux (des clés sans « : ») : pas de pluie de vieux
-    /// trophées. À égalité de métal et de rang, l'ordre des familles : celui où Kotlin parcourt les gagnés
-    /// que rend `gagnes`. Une clé est faite de lettres ASCII, de chiffres et de signes : l'égalité de Swift
+    /// Les niveaux gagnés depuis la dernière fois, le plus haut de chaque famille, le plus coûteux d'abord
+    /// (`cout`) ; rien la première fois (`vus` nil), ni quand `vus` date d'avant les niveaux (des clés sans
+    /// « : ») : pas de pluie de vieux trophées. L'ordre suivait le métal par famille, que plus aucun écran ne
+    /// montre (13/11, FDONNEES-06). À égalité de coût, l'ordre des familles : celui où Kotlin parcourt les
+    /// gagnés que rend `gagnes`. Une clé est faite de lettres ASCII, de chiffres et de signes : l'égalité de Swift
     /// (à l'équivalence canonique près) y est celle de Kotlin.
     public static func nouveaux(_ gagnes: Set<Niveau>, vus: Set<String>?) -> [Niveau] {
         guard let vus else { return [] }
@@ -508,10 +525,19 @@ public enum Trophees {
             plusHauts[n.famille] = n
         }
         return plusHauts.values.sorted { a, b in
-            let poidsA = a.metal.ordinal * 100 + a.rang
-            let poidsB = b.metal.ordinal * 100 + b.rang
-            if poidsA != poidsB { return poidsA > poidsB }
+            let coutA = cout(a.famille, a.seuil)
+            let coutB = cout(b.famille, b.seuil)
+            if coutA != coutB { return coutA > coutB }
             return a.famille.ordinal < b.famille.ordinal
         }
+    }
+
+    /// Ce qui est fêté, à retenir : l'union de `vus` et de `gagnes`, jamais le remplacement (FDONNEES-10) ; un
+    /// niveau perdu puis regagné n'est pas refêté. Les clés d'avant les niveaux (sans « : ») tombent : gardées,
+    /// elles empêcheraient la migration de finir.
+    public static func vusAvec<C: Collection>(_ vus: Set<String>?, _ gagnes: C) -> Set<String> where C.Element == Niveau {
+        var r = Set((vus ?? []).filter { $0.utf16.contains(0x3A) })
+        for n in gagnes { r.insert(n.cle) }
+        return r
     }
 }

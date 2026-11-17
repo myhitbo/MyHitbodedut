@@ -51,27 +51,16 @@ struct TropheesTests {
         #expect(rangPremierPas == 5)  // 42 jours : les cinq premiers
     }
 
-    @Test func lesMetauxMontentDeBronzeAPlatineSansSauter() {
+    /// Le métal par famille et par rang a disparu d'Android le 13/11 (FDONNEES-06) : le métal est celui du
+    /// grade (`Trophees.grade`). Restent les seuils, croissants.
+    @Test func lesSeuilsDeChaqueFamilleCroissent() {
         for f in Trophees.Famille.allCases where f.seuils.count > 1 {
-            var m: [Trophees.Metal] = []
-            for r in 1...f.seuils.count { m.append(Trophees.metal(f, r)) }
-            let premier = m[0]
-            #expect(premier == Trophees.Metal.bronze, "\(f.rawValue)")
-            let dernier = m[m.count - 1]
-            #expect(dernier == Trophees.Metal.platine, "\(f.rawValue)")
-            for i in 1..<m.count {
-                let saut = m[i].ordinal - m[i - 1].ordinal
-                let sansSauter = saut >= 0 && saut <= 1
-                #expect(sansSauter, "\(f.rawValue) : rang \(i + 1)")
-            }
             let seuils = f.seuils
             for i in 1..<seuils.count {
                 let croissant = seuils[i] > seuils[i - 1]
                 #expect(croissant, "\(f.rawValue) : seuil \(i + 1)")
             }
         }
-        let bronze = Trophees.metal(.premierPas, 1)
-        #expect(bronze == Trophees.Metal.bronze)
     }
 
     @Test func laProgressionViseLeNiveauSuivantEtLeSommetResteAuDernierSeuil() {
@@ -131,20 +120,6 @@ struct TropheesTests {
         let forme: String
     }
 
-    /// [famille, un entier, un texte] : [famille, rang, métal].
-    private struct MetalV: Decodable {
-        let famille: String
-        let rang: Int
-        let metal: String
-
-        init(from decoder: any Decoder) throws {
-            var c = try decoder.unkeyedContainer()
-            famille = try c.decode(String.self)
-            rang = try c.decode(Int.self)
-            metal = try c.decode(String.self)
-        }
-    }
-
     /// [famille, seuil, moitié haute des bits du coût, moitié basse].
     private struct CoutV: Decodable {
         let famille: String
@@ -182,6 +157,8 @@ struct TropheesTests {
         let debut: String?
         let jours: [Int]
         let plusLongueSuite: Int
+        /// Les samedis exemptés (FDONNEES-09).
+        let plusLongueSuiteSansSamedis: Int
         let semainesPleines: Int
         let retours: Int
     }
@@ -223,6 +200,8 @@ struct TropheesTests {
             let type: String
             let liste: [String]
             let rendus: [String]
+            /// Ce qui est retenu comme fêté (FDONNEES-10), trié.
+            let vusAvec: [String]
         }
 
         let valeurs: [Int]
@@ -331,7 +310,6 @@ struct TropheesTests {
         let metaux: [String]
         let formes: [FormeV]
         let familles: [FamilleV]
-        let metal: [MetalV]
         let couts: [CoutV]
         let chemin: [String]
         let seuilsGrades: [Int]
@@ -417,17 +395,6 @@ struct TropheesTests {
             let forme = f.forme.rawValue
             #expect(forme == fv.forme, "\(fv.nom)")
         }
-        let nombre = v.metal.count
-        #expect(nombre > 250)
-        for m in v.metal {
-            let f = try famille(m.famille)
-            let metal = Trophees.metal(f, m.rang).rawValue
-            #expect(metal == m.metal, "metal(\(m.famille), \(m.rang))")
-            if m.rang >= 1 && m.rang <= f.seuils.count {
-                let duNiveau = Trophees.Niveau(famille: f, rang: m.rang).metal.rawValue
-                #expect(duNiveau == m.metal, "Niveau(\(m.famille), \(m.rang)).metal")
-            }
-        }
     }
 
     @Test func leCheminLesCoutsEtLesGradesDAndroid() throws {
@@ -466,6 +433,8 @@ struct TropheesTests {
             }
             let suite = Trophees.plusLongueSuite(jours)
             #expect(suite == s.plusLongueSuite, "\(s.nom) : plus longue suite")
+            let sansSamedis = Trophees.plusLongueSuite(jours) { $0.jourDeSemaine == 7 }
+            #expect(sansSamedis == s.plusLongueSuiteSansSamedis, "\(s.nom) : plus longue suite, samedis exemptés")
             let pleines = Trophees.semainesPleines(jours)
             #expect(pleines == s.semainesPleines, "\(s.nom) : semaines pleines")
             let retours = Trophees.retours(jours)
@@ -574,6 +543,8 @@ struct TropheesTests {
             }
             let rendus = Trophees.nouveaux(gagnes, vus: vus).map { $0.cle }
             #expect(rendus == n.rendus, "\(nom) : nouveaux, \(n.type) \(n.liste)")
+            let retenus = Trophees.vusAvec(vus, gagnes).sorted()
+            #expect(retenus == n.vusAvec, "\(nom) : vusAvec, \(n.type) \(n.liste)")
         }
         if let fractions = a.fractions {
             let calculees = Trophees.chemin.map { bits(Trophees.fraction(p, $0)) }
@@ -628,7 +599,11 @@ struct TropheesTests {
                 exemptes.contains(j) || (samedis && j.jourDeSemaine == 7)
             }
             #expect(serie == h.meilleureSerie, "\(h.nom) : meilleure série")
-            let p = Trophees.Pratique(minutes: lue.minutes, notes: notes.count, meilleureSerie: serie, tikkun: lue.tikkun)
+            // Les jours exemptés ne cassent pas la suite du Tikoun (FDONNEES-09), comme dans datesGain.
+            let exemptesFiges = exemptes
+            let p = Trophees.Pratique(minutes: lue.minutes, notes: notes.count, meilleureSerie: serie, tikkun: lue.tikkun) { j in
+                exemptesFiges.contains(j) || (samedis && j.jourDeSemaine == 7)
+            }
             verifie(h.analyse, p, h.nom)
             let datesDesBilans = h.datesDesBilans ? attendues : [:]
             for b in h.bilans {

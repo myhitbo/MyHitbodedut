@@ -203,7 +203,7 @@ public struct PaliersFeteGrade: Sendable, Hashable {
         ancien = Trophees.Metal.allCases[max(grade.ordinal - 1, 0)]
         self.compte = compte
         titre = Libelle("grade_nouveau", .libelle(TropheeTextes.metal(grade)))
-        sous = Libelle("grade_sous_max", .entier(compte))
+        sous = Libelle.pluriel("grade_sous_max", quantite: compte, .entier(compte))
         if let suivant = Trophees.seuilsGrades.first(where: { $0 > compte }) {
             prochain = Libelle("grade_prochain", .libelle(TropheeTextes.metal(Trophees.grade(suivant))), .entier(suivant))
         } else {
@@ -227,14 +227,14 @@ public struct PaliersPartage: Sendable, Hashable {
 
     /// Le texte joint à l'image (EXTRA_TEXT) : « Grade Argent sur MyHitbodedut : 12 trophées, jour après jour. »
     public var texte: Libelle {
-        Libelle("grade_partage_texte", .libelle(TropheeTextes.metal(grade)), .entier(compte))
+        Libelle.pluriel("grade_partage_texte", quantite: compte, .libelle(TropheeTextes.metal(grade)), .entier(compte))
     }
     /// Le titre du choix de l'app (createChooser) : « Partager mon grade ».
     public var titreChoix: Libelle { Libelle("grade_partager") }
     /// Sur l'image : « Grade Argent » (gras).
     public var titreImage: Libelle { TropheeTextes.grade(grade) }
     /// Sur l'image : « 12 trophées gagnés ».
-    public var sousImage: Libelle { Libelle("grade_sous_max", .entier(compte)) }
+    public var sousImage: Libelle { Libelle.pluriel("grade_sous_max", quantite: compte, .entier(compte)) }
     /// Sur l'image, en pied : « MyHitbodedut » (gras, opacité 180/255).
     public var marque: Libelle { Libelle("app_name") }
 }
@@ -378,12 +378,12 @@ public final class PaliersModele {
         let sous: Libelle
         var barre: Float?
         if let suivant {
-            sous = Libelle("grade_sous", .entier(n), .entier(suivant - n),
+            sous = Libelle.pluriel("grade_sous", quantite: n, .entier(n), .entier(suivant - n),
                            .libelle(TropheeTextes.metal(Trophees.grade(suivant))))
             let de = Trophees.seuilsGrades.last { $0 <= n } ?? 0
             barre = Float(n - de) / Float(suivant - de)
         } else {
-            sous = Libelle("grade_sous_max", .entier(n))
+            sous = Libelle.pluriel("grade_sous_max", quantite: n, .entier(n))
         }
         // Le prochain a déjà sa carte « Vous êtes ici » : pas deux fois le même (04/11). Sans filtre, toujours.
         let prochainCle = Trophees.prochain(p)?.cle

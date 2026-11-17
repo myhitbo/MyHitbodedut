@@ -41,8 +41,8 @@ struct CelebrationsTests {
         let icone = r.icone
         #expect(icone == "premier_pas")
         let message = r.message
-        let attendu = Libelle("trophee_niveau_gagne", .libelle(Libelle("trophee_premier_pas")), .entier(1),
-                              .libelle(Libelle("metal_bronze")))
+        // Sans métal depuis le 13/11 (FDONNEES-06) : celui de la famille n'est plus celui que l'écran montre.
+        let attendu = Libelle("trophee_niveau_gagne", .libelle(Libelle("trophee_premier_pas")), .entier(1))
         #expect(message == attendu)
     }
 
@@ -149,8 +149,7 @@ struct CelebrationsTests {
             for f in Trophees.Famille.allCases {
                 for rang in 1...f.seuils.count {
                     let n = Trophees.Niveau(famille: f, rang: rang)
-                    let message = Libelle("trophee_niveau_gagne", .libelle(Celebrations.nomTrophee(f)), .entier(rang),
-                                          .libelle(Celebrations.metalTrophee(n.metal)))
+                    let message = Libelle("trophee_niveau_gagne", .libelle(Celebrations.nomTrophee(f)), .entier(rang))
                     let texte = langue.texte(message)
                     #expect(texte != nil, "\(code) : \(n.cle)")
                 }
@@ -215,8 +214,10 @@ struct CelebrationsTests {
         let message: String
         let marques: [String]
         let trophees: [String]
-        /// [clé, métal] du trophée fêté.
+        /// [clé] du trophée fêté, annoncé sans métal (FDONNEES-06).
         let trophee: [String]?
+        /// Les trophées gagnés à cet instant.
+        let compte: Int
         let palier: PalierV?
         let moisEtAnnee: String?
     }
@@ -315,11 +316,12 @@ struct CelebrationsTests {
             #expect(marques == cas.marques, "\(cas.nom) : marques")
             let trophees = r.trophees.sorted()
             #expect(trophees == cas.trophees, "\(cas.nom) : trophées")
+            #expect(r.compte == cas.compte, "\(cas.nom) : compte")
 
             // La phrase : ce que neuf a choisi.
             var attendu: Libelle?
             if let trophee = cas.trophee {
-                let complet = trophee.count == 2
+                let complet = trophee.count == 1
                 #expect(complet, "\(cas.nom) : \(trophee)")
                 if !complet { continue }
                 let cle = trophee[0]
@@ -328,12 +330,7 @@ struct CelebrationsTests {
                 let famille = try #require(trouvee, "\(cas.nom) : famille de \(cle)")
                 let rangLu = Int(cle.apresUnites(":"))
                 let rang = try #require(rangLu, "\(cas.nom) : rang de \(cle)")
-                let metalLu = Trophees.Metal(rawValue: trophee[1])
-                let metal = try #require(metalLu, "\(cas.nom) : métal \(trophee[1])")
-                let calcule = Trophees.metal(famille, rang)
-                #expect(calcule == metal, "\(cas.nom) : métal")
-                attendu = Libelle("trophee_niveau_gagne", .libelle(Celebrations.nomTrophee(famille)), .entier(rang),
-                                  .libelle(Celebrations.metalTrophee(metal)))
+                attendu = Libelle("trophee_niveau_gagne", .libelle(Celebrations.nomTrophee(famille)), .entier(rang))
             } else if let palier = cas.palier {
                 let pisteLue = Paliers.Piste(rawValue: palier.piste)
                 let piste = try #require(pisteLue, "\(cas.nom) : piste \(palier.piste)")

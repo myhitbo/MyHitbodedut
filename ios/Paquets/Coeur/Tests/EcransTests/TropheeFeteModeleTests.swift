@@ -69,7 +69,7 @@ struct TropheeFeteModeleTests {
         #expect(fiche.metal == Trophees.grade(rang))
         let aujourdhui = try PaliersModeleTests.jour(PaliersModeleTests.aujourdhui)
         #expect(fiche.etat == .gagne(sous: .gagneLe(aujourdhui),
-                                     grade: Libelle("trophee_detail_grade", .libelle(TropheeTextes.metal(Trophees.grade(rang))),
+                                     grade: Libelle.pluriel("trophee_detail_grade", quantite: rang, .libelle(TropheeTextes.metal(Trophees.grade(rang))),
                                                     .entier(rang))))
         fete.fermerFiche()
         #expect(fete.ficheCourante == nil)

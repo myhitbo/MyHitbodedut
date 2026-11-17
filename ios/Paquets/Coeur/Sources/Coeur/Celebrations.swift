@@ -24,14 +24,18 @@ public enum Celebrations {
         public let message: Libelle?
         /// Les marques des paliers atteints (`Paliers.marques`).
         public let marques: Set<String>
-        /// Les clés de tous les niveaux de trophée gagnés (`Trophees.Niveau.cle`).
+        /// Les clés des trophées fêtés, à retenir : celles déjà vues et celles des niveaux gagnés, l'union
+        /// (`Trophees.vusAvec`, FDONNEES-10) : un niveau perdu puis regagné n'est pas refêté.
         public let trophees: Set<String>
+        /// Les trophées gagnés à cet instant (le grade des étincelles) ; l'union retenue garde aussi ceux perdus.
+        public let compte: Int
 
-        public init(icone: String, message: Libelle?, marques: Set<String>, trophees: Set<String>) {
+        public init(icone: String, message: Libelle?, marques: Set<String>, trophees: Set<String>, compte: Int) {
             self.icone = icone
             self.message = message
             self.marques = marques
             self.trophees = trophees
+            self.compte = compte
         }
     }
 
@@ -68,8 +72,8 @@ public enum Celebrations {
         let message: Libelle?
         if let trophee {
             icone = trophee.famille.icone
-            message = Libelle("trophee_niveau_gagne", .libelle(nomTrophee(trophee.famille)), .entier(trophee.rang),
-                              .libelle(metalTrophee(trophee.metal)))
+            // Sans métal (13/11, FDONNEES-06) : celui de la famille n'est plus celui que l'écran montre.
+            message = Libelle("trophee_niveau_gagne", .libelle(nomTrophee(trophee.famille)), .entier(trophee.rang))
         } else if let palier {
             icone = "\u{1F389}"
             message = Libelle("palier_nouveau", .libelle(libellePalier(palier.piste, bilan)),
@@ -78,9 +82,10 @@ public enum Celebrations {
             icone = ""
             message = nil
         }
-        var trophees = Set<String>()
-        for n in gagnes { trophees.insert(n.cle) }
-        return Neuf(icone: icone, message: message, marques: Paliers.marques(etats, bilan), trophees: trophees)
+        // L'union, jamais le remplacement : un trophée qui disparaît puis revient (note effacée, interrupteur
+        // rallumé) n'est pas fêté une seconde fois (FDONNEES-10).
+        return Neuf(icone: icone, message: message, marques: Paliers.marques(etats, bilan),
+                    trophees: Trophees.vusAvec(tropheesVus, gagnes), compte: gagnes.count)
     }
 
     /// Ce qui est neuf est su sans notification (ajout de temps, application ouverte ; 16/10) : rien n'est

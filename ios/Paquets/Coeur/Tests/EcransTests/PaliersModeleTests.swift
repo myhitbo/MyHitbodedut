@@ -90,7 +90,7 @@ struct PaliersModeleTests {
         #expect(tete.grade == .bronze)
         #expect(tete.compte == 0)
         #expect(tete.titre == Libelle("grade_titre", .libelle(Libelle("metal_bronze"))))
-        #expect(tete.sous == Libelle("grade_sous", .entier(0), .entier(10), .libelle(Libelle("metal_argent"))))
+        #expect(tete.sous == Libelle.pluriel("grade_sous", quantite: 0, .entier(0), .entier(10), .libelle(Libelle("metal_argent"))))
         #expect(tete.barre == 0)
         #expect(tete.partager == nil)
         #expect(modele.partage == nil)
@@ -182,7 +182,7 @@ struct PaliersModeleTests {
         let tete = modele.enTete
         #expect(tete.grade == .argent)
         #expect(tete.barre == Float(n - 10) / Float(15))
-        #expect(tete.sous == Libelle("grade_sous", .entier(n), .entier(25 - n), .libelle(Libelle("metal_or"))))
+        #expect(tete.sous == Libelle.pluriel("grade_sous", quantite: n, .entier(n), .entier(25 - n), .libelle(Libelle("metal_or"))))
         #expect(tete.couleurBarre == TropheeTeintes.de(.argent).fonce)
         // Le prochain n'est jamais parmi les plus proches.
         let prochain = try #require(ici(lignes)).niveau
@@ -255,7 +255,7 @@ struct PaliersModeleTests {
         #expect(fete == PaliersFeteGrade(grade: .argent, compte: n))
         #expect(fete.ancien == .bronze)
         #expect(fete.titre == Libelle("grade_nouveau", .libelle(Libelle("metal_argent"))))
-        #expect(fete.sous == Libelle("grade_sous_max", .entier(n)))
+        #expect(fete.sous == Libelle.pluriel("grade_sous_max", quantite: n, .entier(n)))
         #expect(fete.prochain == Libelle("grade_prochain", .libelle(Libelle("metal_or")), .entier(25)))
         #expect(fete.rayons == TropheeTeintes.de(.argent).clair.opacite(0x70))
         modele.fermerFeteGrade()
@@ -394,11 +394,11 @@ struct PaliersModeleTests {
         try #require(n > 0)
         let partage = try #require(modele.partage)
         #expect(partage == PaliersPartage(grade: Trophees.grade(n), compte: n))
-        #expect(partage.texte == Libelle("grade_partage_texte", .libelle(TropheeTextes.metal(Trophees.grade(n))),
+        #expect(partage.texte == Libelle.pluriel("grade_partage_texte", quantite: n, .libelle(TropheeTextes.metal(Trophees.grade(n))),
                                          .entier(n)))
         #expect(partage.titreChoix == Libelle("grade_partager"))
         #expect(partage.titreImage == Libelle("grade_titre", .libelle(TropheeTextes.metal(Trophees.grade(n)))))
-        #expect(partage.sousImage == Libelle("grade_sous_max", .entier(n)))
+        #expect(partage.sousImage == Libelle.pluriel("grade_sous_max", quantite: n, .entier(n)))
         #expect(partage.marque == Libelle("app_name"))
         #expect(modele.enTete.partager == Libelle("grade_partager"))
     }
@@ -417,7 +417,7 @@ struct PaliersModeleTests {
         #expect(fiche.metal == Trophees.grade(rang))
         let septieme = try Self.jour("2026-10-07")
         #expect(fiche.etat == .gagne(sous: .gagneLe(septieme),
-                                     grade: Libelle("trophee_detail_grade", .libelle(TropheeTextes.metal(Trophees.grade(rang))),
+                                     grade: Libelle.pluriel("trophee_detail_grade", quantite: rang, .libelle(TropheeTextes.metal(Trophees.grade(rang))),
                                                     .entier(rang))))
         #expect(fiche.titre == Libelle.pluriel("trophee_jours_desc", quantite: 7, .entier(7)))
         #expect(fiche.nom == Libelle("trophee_jours"))
@@ -511,10 +511,11 @@ struct PaliersModeleTests {
         #expect(fr.texte(banniere.titre) == "Grade Argent atteint")
         #expect(fr.texte(banniere.sous) == "au 10ᵉ trophée")
         let (modele, _, _) = try fabriquer(Journal())
-        #expect(fr.texte(modele.enTete.sous) == "0 trophées gagnés · encore 10 pour Argent")
+        // Un pluriel depuis le 13/11 (Android) : 0 prend « one » en français.
+        #expect(fr.texte(modele.enTete.sous) == "0 trophée gagné · encore 10 pour Argent")
         let en = try Traducteur(catalogue: Fichiers.catalogue(), langue: "en")
         let partage = PaliersPartage(grade: .or, compte: 30)
-        #expect(en.texte(partage.texte) == "Gold grade on MyHitbodedut: 30 trophies, day after day.")
+        #expect(en.texte(partage.texte) == "Gold rank on MyHitbodedut: 30 trophies, day after day.")
         #expect(en.texte(TropheeTextes.description(.serie, seuil: 7)) == "7 days in a row")
     }
 }

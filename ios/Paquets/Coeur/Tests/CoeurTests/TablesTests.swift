@@ -131,8 +131,6 @@ struct TablesTests {
             #expect(f.icone == attendue.icone, "\(attendue.nom)")
             #expect(f.forme.rawValue == attendue.forme, "\(attendue.nom)")
             #expect(f.seuils == attendue.seuils, "\(attendue.nom) : les seuils")
-            let metauxFamille = (1...max(f.seuils.count, 1)).map { Trophees.metal(f, $0).rawValue }
-            #expect(metauxFamille == attendue.metaux, "\(attendue.nom) : le métal de chaque rang")
             let couts = f.seuils.map { Trophees.cout(f, $0) }
             #expect(couts == attendue.couts, "\(attendue.nom) : le coût de chaque niveau")
         }
@@ -491,7 +489,6 @@ struct TablesTests {
             let icone: String
             let forme: String
             let seuils: [Int]
-            let metaux: [String]
             let couts: [Double]
         }
         let metaux: [String]

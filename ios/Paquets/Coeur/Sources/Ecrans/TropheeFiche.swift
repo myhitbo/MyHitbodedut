@@ -136,7 +136,8 @@ public struct TropheeFiche: Sendable, Hashable, Identifiable {
         niveauCourt = Libelle("trophee_niveau_court", .entier(niveau.rang), .entier(niveau.famille.seuils.count))
         if let metal {
             etat = .gagne(sous: TropheeSous.pour(niveau, dates: dates),
-                          grade: Libelle("trophee_detail_grade", .libelle(TropheeTextes.metal(metal)), .entier(rangGlobal)))
+                          grade: Libelle.pluriel("trophee_detail_grade", quantite: rangGlobal, .libelle(TropheeTextes.metal(metal)),
+                                                .entier(rangGlobal)))
         } else {
             let v = min(Trophees.valeur(pratique, niveau.famille), niveau.seuil)
             etat = .aGagner(fraction: min(max(Trophees.fraction(pratique, niveau), 0), 1),
