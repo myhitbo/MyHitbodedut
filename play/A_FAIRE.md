@@ -84,3 +84,16 @@ Compte **organisation** : pas de test fermé obligatoire (ni 12 testeurs, ni
 Sur la piste interne, passer la recette sur de vrais téléphones
 (`PUBLICATION_PLAY_STORE.md` § 8), en particulier la barrière du matin sur un
 Samsung et un Xiaomi.
+
+## 7. Dons (plus tard, avec la version Play)
+
+Décidé le 17/11 : la page de dons viendra avec la version Play. Il faudra :
+
+1. HelloAsso : l'association s'inscrit avec son numéro RNA, ajoute son IBAN, fait
+   vérifier le compte (pièce d'identité du président, statuts), puis crée un
+   « Formulaire de don » (« Soutenir MyHitbodedut »). Garder le lien du formulaire.
+2. Site : page `don.html` (fr, en, he) avec le bouton vers ce lien.
+3. Application : bouton « Soutenir l'app » dans les Réglages, qui ouvre la page
+   dans le navigateur, jamais dans l'application ; jamais le paiement de Google
+   Play pour un don. Avoir les statuts de l'association sous la main au cas où
+   l'examen de Google demande la preuve du caractère non lucratif.
