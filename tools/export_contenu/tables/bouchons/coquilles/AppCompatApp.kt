@@ -18,6 +18,12 @@ object AppCompatDelegate {
 }
 
 class AlertDialog {
+    companion object {
+        const val BUTTON_POSITIVE = -1
+    }
+    fun getButton(@Suppress("UNUSED_PARAMETER") quel: Int): android.widget.Button = android.widget.Button(null as Context?)
+    fun dismiss() {}
+
     class Builder(@Suppress("UNUSED_PARAMETER") context: Context) {
         fun setTitle(id: Int) = this
         fun setTitle(titre: CharSequence?) = this

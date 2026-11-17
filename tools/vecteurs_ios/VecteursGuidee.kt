@@ -223,7 +223,7 @@ object VecteursGuidee : Generateur {
     // --- Character : les poses -------------------------------------------------------------------
 
     private val source = SourceEntry(id = "source", titreHe = "", ref = "", refSefaria = null, url = null, edition = "",
-        paragraphes = emptyList(), paragraphesSansNikkoud = emptyList(), liensChizuk = emptyList(), statutVerif = "",
+        paragraphes = emptyList(), liensChizuk = emptyList(), statutVerif = "",
         sujet = null, leconSurLeSujet = null)
 
     private val article = ArticleEntry(id = "article", titre = "", auteur = null, site = null, date = null, url = null,

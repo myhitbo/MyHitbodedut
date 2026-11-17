@@ -23,6 +23,13 @@ object Horloge {
     /** Le fuseau « du téléphone ». */
     @JvmStatic var zoneFigee: ZoneId = ZoneOffset.UTC
 
+    /**
+     * Le format d'heure « du téléphone » (android.text.format.DateFormat.getTimeFormat, que build.gradle.kts
+     * détourne ici comme l'horloge) : 24 h, « HH:mm », celui d'iOS en France et en Israël.
+     */
+    @JvmStatic fun formatHeureTelephone(@Suppress("UNUSED_PARAMETER") c: android.content.Context?): java.text.DateFormat =
+        java.text.SimpleDateFormat("HH:mm", java.util.Locale.US)
+
     @JvmStatic fun defaut() {
         instantFige = INSTANT_DEFAUT
         zoneFigee = ZoneOffset.UTC

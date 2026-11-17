@@ -2,9 +2,13 @@
 // ressources), puis le détail tel que l'écran l'écrit, dans les trois langues, pour 0, 1, 2, 3 et 51
 // applications et quelques fenêtres (de jour, de nuit, bornes de formatMinutes).
 //
-// `evaluate` n'a pas d'oracle ici : Permissions.allGranted lit Android (canDrawOverlays rend faux sur la
-// JVM). Ses sous-règles (fenetreFaite, isExempt, isSnoozed, inWindow) ont leurs vecteurs dans store.json.
+// `evaluate` lit Android (Permissions.allGranted, le service) ; sa règle, GateRule (13/11, FPRODUIT-01), est
+// ici : l'état et le geste de la pastille pour chaque combinaison de faits, la fenêtre (début compris, fin
+// exclue, fenêtres de nuit), le service et la pastille de l'accueil. Les sous-règles des faits (fenetreFaite,
+// isExempt, isSnoozed, inWindow) ont leurs vecteurs dans store.json.
 
+import com.myhitbodedut.GateFaits
+import com.myhitbodedut.GateRule
 import com.myhitbodedut.GateState
 import com.myhitbodedut.GateStatus
 import com.myhitbodedut.Store
@@ -24,7 +28,26 @@ object VecteursBarriere : Generateur {
                 "etat" to etat.name,
                 "titre" to Identifiants.entree(GateStatus.titleOf(etat)),
                 "couleur" to Identifiants.entree(GateStatus.colorOf(etat)),
+                "pastille" to Identifiants.entree(GateStatus.pastilleDe(etat)),
             )
+        },
+        // [active, accès, applications, service, séance, faite, exempte, reportée, dans la fenêtre, état, geste] :
+        // chaque combinaison, pour 0 et 2 applications.
+        "regle" to (0 until 512).map { bits ->
+            fun b(i: Int) = (bits shr i) and 1 == 1
+            val f = GateFaits(active = b(0), accesAccordes = b(1), applications = if (b(2)) 2 else 0, serviceVivant = b(3),
+                seanceEnCours = b(4), faite = b(5), exempte = b(6), reportee = b(7), dansLaFenetre = b(8))
+            listOf(f.active, f.accesAccordes, f.applications, f.serviceVivant, f.seanceEnCours, f.faite, f.exempte, f.reportee,
+                f.dansLaFenetre, GateRule.etat(f).name, GateRule.geste(f).name)
+        },
+        // [minutes, début, fin, dans la fenêtre, fin d'une fenêtre de nuit].
+        "fenetre" to listOf(0, 1, 119, 120, 121, 359, 360, 361, 659, 660, 1259, 1260, 1261, 1439).flatMap { m ->
+            fenetres.map { (debut, fin) -> listOf(m, debut, fin, GateRule.dansLaFenetre(m, debut, fin), GateRule.finDeFenetreDeNuit(m, debut, fin)) }
+        },
+        // [avec la barrière, active, accès, le service doit tourner].
+        "service" to (0 until 8).map { bits ->
+            val (a, b, c) = Triple(bits and 1 == 1, bits and 2 == 2, bits and 4 == 4)
+            listOf(a, b, c, GateRule.doitTourner(a, b, c))
         },
         // Le détail résolu sur un Theatre : une ligne par langue, fenêtre et nombre d'applications, un texte
         // par état dans l'ordre de l'énumération.

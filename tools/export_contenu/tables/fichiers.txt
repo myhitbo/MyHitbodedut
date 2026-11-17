@@ -18,12 +18,14 @@ ChizukCard
 ChizukRules
 Confettis
 DanseMesure
+DefilementAuto
 DirectionJerusalem
 DureeSeance
 GateStatus
 GuideSujets
 Halakha
 Hilloulot
+HistoriqueReglage
 Hitbodedut
 Holidays
 HorairePriere
@@ -74,6 +76,7 @@ Theme
 Tikkun
 Tips
 Trophees
+VersionApp
 VignetteDecor
 Villes
 Vol

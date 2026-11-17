@@ -261,16 +261,22 @@ object VecteursVol : Generateur {
             "evenements" to c.evenements.map { listOf(it.cle, it.instant.toEpochMilli(), it.latitude, it.longitude, it.ecartSiRetard?.toMillis()) },
             "enVol" to c.enVol.size,
             "reserves" to c.reserves.map { it.name.lowercase() }.sorted(),
+            // Les zmanim absents en un point du vol, dans l'ordre du profil (FVOL-11) ; une durée invraisemblable (FVOL-12).
+            "absents" to c.absents,
+            "invraisemblable" to Vol.invraisemblable(p),
             "lignesDate" to c.lignesDate.map { listOf(it.instant.toEpochMilli(), it.avant.toString(), it.apres.toString()) },
             "jalons" to listOf(false to 18, true to 40).map { (israel, minutes) ->
                 linkedMapOf("enIsrael" to israel, "minutes" to minutes, "liste" to VolCalendrier.jalons(c, israel, minutes).map { j ->
                     listOf(j.type.name.lowercase(), j.instant.toEpochMilli(), j.date.toString(), j.chabbat, j.fetes, j.omer, j.allumage?.toEpochMilli(), j.latitude, j.longitude)
                 })
             },
-            "priere" to instantsPriere(c).map { m -> VolPriere.priere(c, m).let { r -> listOf(m.toEpochMilli(), r?.first, r?.second?.toEpochMilli()) } },
+            // [instant, prière, limite, début] ; le début d'une Min'ha pas encore ouverte (FVOL-05).
+            "priere" to instantsPriere(c).map { m ->
+                VolPriere.priere(c, m).let { r -> listOf(m.toEpochMilli(), r?.priere, r?.limite?.toEpochMilli(), r?.debut?.toEpochMilli()) }
+            },
             "horaires" to instantsHoraires(c).map { m ->
                 val h = Vol.horaires(c, m)
-                listOf(m.toEpochMilli()) + listOf("alot", "szt_gra", "chkia", "chatsot_layla").map { h[it]?.toInstant()?.toEpochMilli() }
+                listOf(m.toEpochMilli()) + listOf("alot", "szt_gra", "minha_gedola", "chkia", "chatsot_layla").map { h[it]?.toInstant()?.toEpochMilli() }
             },
         )
     }

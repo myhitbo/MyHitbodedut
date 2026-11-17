@@ -184,7 +184,6 @@ object VecteursTables : Generateur {
         "familles" to Trophees.Famille.entries.map { f ->
             linkedMapOf("nom" to f.name, "cle" to f.cle, "icone" to f.icone, "forme" to f.forme.name,
                 "seuils" to f.seuils.toList(),
-                "metaux" to (1..f.seuils.size).map { Trophees.metal(f, it).name },
                 "couts" to f.seuils.map { Trophees.cout(f, it) })
         },
         // Les 128 niveaux, du plus facile au plus dur.

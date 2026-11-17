@@ -1,5 +1,5 @@
 // Les trophées et le bilan de la semaine devant la JVM : ce que répondent Trophees.kt et BilanSemaine.kt.
-// Les familles (seuils, formes, icônes), le métal de chaque rang, le coût et l'ordre du chemin, les grades,
+// Les familles (seuils, formes, icônes), le coût et l'ordre du chemin, les grades,
 // la progression ; les suites, semaines pleines et retours d'un ensemble de jours ; puis des pratiques :
 // la valeur et le rang de chaque famille, la progression, le prochain, le proche, les plus proches et les
 // nouveautés ; enfin des historiques jour par jour, avec la date de gain de chaque niveau (rejeu jour après
@@ -39,8 +39,6 @@ object VecteursTrophees : Generateur {
         "familles" to Famille.entries.map { f ->
             linkedMapOf("nom" to f.name, "cle" to f.cle, "icone" to f.icone, "seuils" to f.seuils.toList(), "forme" to f.forme.name)
         },
-        // [famille, rang, métal] : le rang de 1 au nombre de seuils, et au-delà (Kotlin calcule sur 32 bits).
-        "metal" to metaux(),
         // [famille, seuil, bits du coût : moitié haute, moitié basse]
         "couts" to couts(),
         "chemin" to Trophees.chemin.map { it.cle },
@@ -53,11 +51,6 @@ object VecteursTrophees : Generateur {
         "pratiques" to pratiques(),
         "historiques" to historiques(),
     )
-
-    private fun metaux(): List<List<Any?>> = Famille.entries.flatMap { f ->
-        ((-3..f.seuils.size + 3) + listOf(MIN, MIN + 1, -536_870_912, 536_870_912, 536_870_913, 1_000_000, MAX - 1, MAX))
-            .distinct().map { r -> listOf(f.name, r, Trophees.metal(f, r).name) }
-    }
 
     private fun couts(): List<List<Any?>> = Famille.entries.flatMap { f ->
         (listOf(MIN, -1, 0, 1) + f.seuils.toList() + listOf(1000, 16_777_217, MAX)).distinct()
@@ -101,7 +94,10 @@ object VecteursTrophees : Generateur {
             val debut = jours.minOrNull()
             linkedMapOf("nom" to nom, "debut" to debut?.toString(),
                 "jours" to jours.sorted().map { (it.toEpochDay() - debut!!.toEpochDay()).toInt() },
-                "plusLongueSuite" to Trophees.plusLongueSuite(jours), "semainesPleines" to Trophees.semainesPleines(jours),
+                "plusLongueSuite" to Trophees.plusLongueSuite(jours),
+                // Les samedis exemptés (FDONNEES-09) : ils ne comptent pas et ne cassent pas la suite.
+                "plusLongueSuiteSansSamedis" to Trophees.plusLongueSuite(jours) { it.dayOfWeek == DayOfWeek.SATURDAY },
+                "semainesPleines" to Trophees.semainesPleines(jours),
                 "retours" to Trophees.retours(jours))
         }
     }
@@ -195,7 +191,9 @@ object VecteursTrophees : Generateur {
                     "ajoutes" -> liste.toSet()
                     else -> cles - liste.toSet()
                 }
-                linkedMapOf("type" to type, "liste" to liste, "rendus" to Trophees.nouveaux(gagnes, vus).map { it.cle })
+                linkedMapOf("type" to type, "liste" to liste, "rendus" to Trophees.nouveaux(gagnes, vus).map { it.cle },
+                    // Ce qui est retenu comme fêté (FDONNEES-10) : l'union, triée.
+                    "vusAvec" to Trophees.vusAvec(vus, gagnes).sorted())
             },
         )
         // Pour les cas des tests : la fraction vers chaque étape du chemin, dans l'ordre du chemin.
@@ -301,7 +299,8 @@ object VecteursTrophees : Generateur {
         var demandes = 0
         val dates = Trophees.datesGain(minutes, notes, tikkun) { d -> demandes++; exempt(d) }
         val serie = Plaque.meilleureSerie(minutes.keys, exempt)
-        val p = Trophees.Pratique(minutes, notes.size, serie, tikkun)
+        // Les jours exemptés ne cassent pas la suite du Tikoun (FDONNEES-09), comme dans datesGain.
+        val p = Trophees.Pratique(minutes, notes.size, serie, tikkun, exempt)
         fun decalage(d: LocalDate) = (d.toEpochDay() - e.debut.toEpochDay()).toInt()
         val dernier = (minutes.keys + notes + tikkun).maxOrNull()?.let { decalage(it) } ?: 0
         val vus = bilans ?: (listOf(0, 7, 8, 14) + listOf(3, 6, 9).map { it * dernier / 10 } +

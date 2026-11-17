@@ -87,11 +87,12 @@ object VecteursChronologies : Generateur {
         val dates = sortedMapOf<String, Map<String, Any?>>()
         val reponses = instants.map { ms ->
             val maintenant = Instant.ofEpochMilli(ms).atZone(zone)
-            val (priere, limite) = ZmanimWidget.prochaine(h, maintenant)
+            val (priere, limite, debut) = ZmanimWidget.prochaine(h, maintenant)
             val jourHebreu = ZmanimVignette.jourHebreuAffiche(maintenant, h["tset"])
             dates.getOrPut(jourHebreu.toString()) { hebreu(jourHebreu, israel) }
             val (demain, prochain) = journee(lieu, h, d, maintenant)
-            listOf(ms, priere, cleDe(limite, h), jourHebreu.toString(), demain, prochain)
+            // Le début d'une Min'ha pas encore ouverte (FVOL-05) : son instant, ou null.
+            listOf(ms, priere, cleDe(limite, h), jourHebreu.toString(), demain, prochain, debut?.let(::millis))
         }
         return linkedMapOf(
             "lieu" to lieu.nom, "latitude" to lieu.latitude, "longitude" to lieu.longitude, "fuseau" to lieu.fuseau,

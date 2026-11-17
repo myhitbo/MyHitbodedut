@@ -554,5 +554,52 @@ object VecteursStore : Generateur {
         "reprises" to reprises(),
         "jourTikkun" to joursTikkun(),
         "formats" to formats(),
+        "historique" to historique(),
+        // Store.dateValide (revue du 15/11) : ni avant 2000 ni après 2100.
+        "datesValides" to listOf("2026-09-29", "1999-12-31", "2000-01-01", "2100-12-31", "2101-01-01", "0000-01-01",
+            "-999999999-01-01", "2026-02-30", "2026-9-29", "", "2026-09-29 ").map { listOf(it, Store.dateValide(it)?.toString()) },
+        // Store.jourCorrige (FDONNEES-04, FDONNEES-14) : [minutes, note, noteSeule, nouvelles minutes, garde] →
+        // null ou [minutes, note, noteSeule].
+        "joursCorriges" to listOf(null to false, 30 to false, 0 to true).flatMap { (m, seule) ->
+            listOf("", "une note").flatMap { note ->
+                listOf(0, -5, 20, 1440, 2000).flatMap { nouvelles ->
+                    listOf(false, true).map { garde ->
+                        val existant = m?.let { com.myhitbodedut.DayRecord("2026-11-10", it, note, listOf("t"), noteSeule = seule) }
+                        val r = Store.jourCorrige(existant, "2026-11-10", nouvelles, garde)
+                        listOf(m, note, seule, nouvelles, garde, r?.let { listOf(it.minutes, it.note, it.noteSeule, it.themes) })
+                    }
+                }
+            }
+        },
     )
+
+    /** HistoriqueReglage (FDONNEES-05) : décodage, valeur en vigueur, et suites de changements. */
+    private fun historique(): Map<String, Any?> {
+        val H = com.myhitbodedut.HistoriqueReglage
+        val bruts = listOf(null, "", "  ", "2000-01-01=0,2026-11-05=1", "2026-11-05=1,2000-01-01=0", "2026-11-05=1,2026-11-05=0",
+            "x=1,2026-01-01=2,2026-02-01=1", "2026-03-01 = 0 , 2026-04-01=1", "2026-02-30=1", "2026-05-01", "2026-05-01=")
+        val jours = listOf("1999-01-01", "2000-01-01", "2026-03-01", "2026-03-15", "2026-04-01", "2026-11-04", "2026-11-05", "2027-01-01")
+            .map { LocalDate.parse(it) }
+        val decodes = bruts.map { b ->
+            val h = H.decoder(b)
+            linkedMapOf("brut" to b, "encode" to H.encoder(h),
+                "valeurs" to jours.map { j -> listOf(H.valeurLe(h, j, false), H.valeurLe(h, j, true)) })
+        }
+        // Des changements successifs [jour, ancienne, nouvelle], l'historique encodé après chacun.
+        val changements = listOf(
+            listOf("2026-11-05" to (true to false)),
+            listOf("2026-11-05" to (true to false), "2026-11-05" to (false to true)),
+            listOf("2026-11-05" to (true to true)),
+            listOf("2026-01-01" to (false to true), "2026-02-01" to (true to false), "2026-01-15" to (false to true), "2026-03-01" to (true to true)),
+            (0 until 210).map { k -> LocalDate.of(2026, 1, 1).plusDays(k.toLong()).toString() to ((k % 2 == 0) to (k % 2 != 0)) },
+        ).map { suite ->
+            var h = emptyList<com.myhitbodedut.HistoriqueReglage.Entree>()
+            linkedMapOf("suite" to suite.map { (j, v) -> listOf(j, v.first, v.second) }, "apres" to suite.map { (j, v) ->
+                h = H.apresChangement(h, LocalDate.parse(j), v.first, v.second)
+                H.encoder(h)
+            })
+        }
+        return linkedMapOf("origine" to H.ORIGINE.toString(), "max" to H.MAX, "jours" to jours.map { it.toString() },
+            "decodes" to decodes, "changements" to changements)
+    }
 }

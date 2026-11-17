@@ -88,13 +88,17 @@ object VecteursSiddurJour : Generateur {
 
     private fun signature(l: SiddurJour.Ligne): String = when (l) {
         is SiddurJour.Ligne.Titre -> "titre|${h(l.texte)}|${h(l.fr)}|${h(l.en)}"
+        // L'origine (FLECTURE-08) : le paragraphe du texte, quand le bloc montré en est une copie rognée.
         is SiddurJour.Ligne.Bloc ->
-            "bloc|${l.style.name}|${if (l.bloc.consigne) "c" else "t"}|${h(l.bloc.texte)}|${h(l.bloc.fr)}|${h(l.bloc.en)}"
+            "bloc|${l.style.name}|${if (l.bloc.consigne) "c" else "t"}|${h(l.bloc.texte)}|${h(l.bloc.fr)}|${h(l.bloc.en)}" +
+                if (l.origine !== l.bloc) "|${h(l.origine.texte)}" else ""
         is SiddurJour.Ligne.Etiquette -> "etiquette|${l.condition}|${l.libelle}"
-        is SiddurJour.Ligne.Indice -> "indice|${h(l.texte)}"
+        is SiddurJour.Ligne.Indice -> "indice|${h(l.texte)}|${l.fixe}"
         is SiddurJour.Ligne.Renvoi -> "renvoi|${l.condition}|${l.cible}"
-        is SiddurJour.Ligne.Seul -> "seul|${h(l.texte)}|${h(l.consigne)}"
+        is SiddurJour.Ligne.Rappel -> "rappel|${l.condition}|${l.libelle}"
+        is SiddurJour.Ligne.Seul -> "seul|${h(l.texte)}|${h(l.consigne)}|${l.note}"
         is SiddurJour.Ligne.Replie -> "replie|${l.cle}|${l.condition}|${l.ouvert}|${l.libelle}"
+        is SiddurJour.Ligne.Fin -> "fin|${l.cle}"
     }
 
     /** Titres, blocs (normaux, du jour, hors du jour), étiquettes, indices, renvois, cartes « seul », replis. */
@@ -108,6 +112,8 @@ object VecteursSiddurJour : Generateur {
         lignes.count { it is SiddurJour.Ligne.Renvoi },
         lignes.count { it is SiddurJour.Ligne.Seul },
         lignes.count { it is SiddurJour.Ligne.Replie },
+        lignes.count { it is SiddurJour.Ligne.Rappel },
+        lignes.count { it is SiddurJour.Ligne.Fin },
     )
 
     private fun lignes(n: Nusah, t: SiddurTexte, a: List<SiddurJour.Annotation>, ci: Int, ouverts: Set<String>) =
@@ -115,7 +121,9 @@ object VecteursSiddurJour : Generateur {
 
     private fun releve(n: Nusah, t: SiddurTexte, ci: Int, mode: String, l: List<SiddurJour.Ligne>): Map<String, Any?> =
         linkedMapOf("n" to n.cle, "t" to t.id, "c" to ci, "o" to mode,
-            "h" to l.joinToString("\n") { signature(it) }.hashCode(), "s" to genres(l))
+            "h" to l.joinToString("\n") { signature(it) }.hashCode(), "s" to genres(l),
+            // Les places lues dans le panneau d'un repli déplié (SiddurJour.panneaux), en empreinte.
+            "p" to SiddurJour.panneaux(l).sorted().hashCode())
 
     /** Chaque texte, chaque jour : replis fermés, tous ouverts, un sur deux (pour quelques jours). */
     private fun toutesLesLignes(): List<Map<String, Any?>> = siddourim.flatMap { (n, siddur) ->
@@ -175,7 +183,12 @@ object VecteursSiddurJour : Generateur {
         """ {"titre": "מוּסָף", "titre_en": "Musaf", "blocs": [{"t": "תִּכַּנְתָּ שַׁבָּת"}, {"c": "ש״ץ"}]},""" +
         """ {"titre": "   ", "blocs": [{"t": "עָלֵינוּ"}]}]},""" +
         """ {"id": "unique", "groupe": "essai", "titre": {"he": "אחד"}, "sections": [""" +
-        """{"titre": "כותרת", "blocs": [{"t": "א"}, {"t": "ב"}]}]}]}"""
+        """{"titre": "כותרת", "blocs": [{"t": "א"}, {"t": "ב"}]}]},""" +
+        // L'audit du 16/11 : le texte ordinaire qu'une formule du jour remplace, la double annotation (minyan, 9 Av),
+        // un passage discret, une indication fixe répétée, une note de l'application, un rappel sans texte cible.
+        """ {"id": "audit", "groupe": "essai", "titre": {"he": "ביקורת"}, "sections": [""" +
+        """{"titre": "א", "blocs": [{"t": "ב0"}, {"t": "ב1"}, {"t": "ב2"}, {"t": "ב3"}, {"t": "ב4"}, {"t": "ב5"},""" +
+        """ {"t": "ב6"}, {"t": "ב7"}, {"t": "ב8"}]}, {"titre": "ב", "blocs": [{"t": "ג0"}, {"t": "ג1"}]}]}]}"""
 
     private val annotationsEcrites = """{"edot": {"ecrit": [""" +
         // Section 0, bloc 1 : quatre variantes à retirer, une à signaler.
@@ -229,7 +242,25 @@ object VecteursSiddurJour : Generateur {
         """ {"sorte": "section", "s": 9, "si": "!minyan", "empreinte": "e"},""" +
         """ {"sorte": "indice", "s": 9, "b": 0, "si": "!minyan", "empreinte": "e", "texte": "tu"}],""" +
         """ "unique": [{"sorte": "bloc", "s": 0, "b": 1, "g": 7, "si": "omer", "racine": "omer", "empreinte": "e"},""" +
-        """ {"sorte": "renvoi", "s": 0, "si": "omer", "empreinte": "e", "cible": "sefirat_haomer"}]}}"""
+        """ {"sorte": "renvoi", "s": 0, "si": "omer", "empreinte": "e", "cible": "sefirat_haomer"}],""" +
+        """ "audit": [""" +
+        """{"sorte": "bloc", "s": 0, "b": 0, "g": 1, "si": "!asseret_yemei_techouva", "racine": "!asseret_yemei_techouva",""" +
+        """ "libelle": "ajout_autres_jours", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 1, "g": 2, "si": "hallel", "racine": "hallel", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 2, "g": 2, "si": "hallel", "racine": "hallel", "et": "minyan", "et_libelle": "ajout_minyan",""" +
+        """ "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 3, "g": 2, "si": "hallel", "racine": "hallel", "et": "minyan", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 4, "g": 2, "si": "hallel_complet", "racine": "hallel", "et": "!ticha_beav", "empreinte": "e"},""" +
+        """ {"sorte": "indice", "s": 0, "b": 1, "si": "rosh_hodech", "empreinte": "e", "texte": "יום"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 5, "g": 3, "si": "chabbat", "racine": "chabbat", "discret": true, "empreinte": "e"},""" +
+        """ {"sorte": "indice", "s": 0, "b": 6, "si": "toujours", "empreinte": "e", "texte": "קבוע", "fixe": true},""" +
+        """ {"sorte": "indice", "s": 0, "b": 6, "si": "chabbat", "empreinte": "e", "texte": "קבוע"},""" +
+        """ {"sorte": "note", "s": 0, "b": 6, "si": "!zzz", "empreinte": "e", "texte": "הערה", "consigne": "c"},""" +
+        """ {"sorte": "note", "s": 0, "b": 6, "si": "chabbat", "empreinte": "e", "texte": "שבת"},""" +
+        """ {"sorte": "renvoi", "s": 0, "b": 7, "si": "roch_hodech", "empreinte": "e", "libelle": "ajout_minyan"},""" +
+        """ {"sorte": "renvoi", "s": 0, "b": 7, "si": "chabbat", "empreinte": "e", "cible": "x", "libelle": "ajout_minyan"},""" +
+        """ {"sorte": "indice", "s": 0, "b": 8, "si": "!kippour", "empreinte": "e", "retire": "8"},""" +
+        """ {"sorte": "section", "s": 1, "si": "minyan", "empreinte": "e"}]}}"""
 
     private val conditionsEcrites: List<Set<String>> = listOf(
         emptySet(),
@@ -238,6 +269,8 @@ object VecteursSiddurJour : Generateur {
             "minyan"),
         setOf("bascule_pluie", "fin_tichri", "tahanoun_chaharit", "lundi_jeudi", "jeune", "omer"),
         setOf("chabbat", "roch_hodech", "kippour", "asseret_yemei_techouva", "machiv_harouah"),
+        setOf("hallel", "hallel_complet", "minyan", "toujours", "rosh_hodech"),
+        setOf("hallel", "ticha_beav", "toujours", "asseret_yemei_techouva", "chabbat"),
     )
 
     /** Noussa'h, Israël, coutume de la fin de Tichri (null : celle du noussa'h), hémisphère sud. */
@@ -261,7 +294,8 @@ object VecteursSiddurJour : Generateur {
                 r.finTichri ?: (r.nusah == Nusah.EDOT), r.sud)
             lectures += linkedMapOf("t" to t.id, "c" to ci, "nusah" to r.nusah.cle, "israel" to r.israel, "finTichri" to r.finTichri,
                 "sud" to r.sud, "ouverts" to ouverts.sorted(), "h" to l.joinToString("\n") { signature(it) }.hashCode(),
-                "s" to genres(l), "lignes" to if (complet) l.map(::signature) else null)
+                "s" to genres(l), "lignes" to if (complet) l.map(::signature) else null,
+                "panneaux" to SiddurJour.panneaux(l).sorted())
             return l
         }
         siddur.textes.forEach { t ->
@@ -282,7 +316,7 @@ object VecteursSiddurJour : Generateur {
 
     private fun decrit(a: SiddurJour.Annotation): String = listOf(
         a.sorte.name, a.section.toString(), a.bloc?.toString(), a.condition, a.empreinte, a.texte, a.groupe?.toString(),
-        a.racine, a.libelle, a.cible, a.consigne, a.retire,
+        a.racine, a.libelle, a.cible, a.consigne, a.retire, a.discret.toString(), a.et, a.etLibelle, a.fixe.toString(),
     ).joinToString("|") { it ?: RIEN }
 
     private fun parSorte(a: List<SiddurJour.Annotation>): List<Int> =

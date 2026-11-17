@@ -20,9 +20,27 @@ object BuildConfig {
     const val HAS_GATE = true
     const val SUIVI_VOL = true
     const val RELAIS_VOL = ""
+    const val OPENSKY_DIRECT = false
 }
 
 class MainActivity : Activity()
+class SereniteActivity : Activity()
+class BentoActivity : Activity()
+class PileActivity : Activity()
+
+/** BlockerView.kt : l'écran de garde, dont les règles ne nomment que les modes. */
+enum class BlockerMode { PROMPT, SESSION_RUNNING, PREVIEW }
+
+/** GateService.kt : le service n'est jamais vivant sur la JVM. */
+object GateService {
+    val vivant: Boolean get() = false
+}
+
+/** BootReceiver.kt : le travail d'un receveur, fait sur-le-champ (aucun fil à part sur la JVM). */
+object EnFond {
+    fun recevoir(@Suppress("UNUSED_PARAMETER") recepteur: android.content.BroadcastReceiver, travail: () -> Unit) = travail()
+    internal fun lancer(travail: () -> Unit, fin: () -> Unit) { try { travail() } finally { fin() } }
+}
 class ZmanimActivity : Activity()
 class PaliersActivity : Activity()
 

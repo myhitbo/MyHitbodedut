@@ -335,6 +335,8 @@ val versHorloge: Map<String, String> = mapOf(
     "java/lang/System.currentTimeMillis()J" to "millis",
     "java/time/ZoneId.systemDefault()Ljava/time/ZoneId;" to "zone",
     "java/util/TimeZone.getDefault()Ljava/util/TimeZone;" to "fuseau",
+    // Le format d'heure du téléphone (Store.formatHeure, FACCUEIL-26) : android.jar docile rendrait null.
+    "android/text/format/DateFormat.getTimeFormat(Landroid/content/Context;)Ljava/text/DateFormat;" to "formatHeureTelephone",
 )
 
 /** La classe réécrite, ou null si elle ne lit pas l'horloge. */

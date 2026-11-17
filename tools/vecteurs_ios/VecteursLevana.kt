@@ -2,11 +2,12 @@
 // bornes viennent de KosherJava 2.5.0), que rejouent LevanaTests et LevanaAlerteTests de Coeur.
 //
 // Les instants sont des millisecondes Unix, les jours des dates ISO. Un état de Levana.etat s'écrit en
-// nombre : Dans(n) → n (≥ 0), CeSoir → -1, DernierSoir → -2. Un rappel de LevanaAlerte s'écrit
+// nombre : Dans(n) → n (≥ 0), CeSoir → -1, DernierSoir → -2, PasCeSoir(CHABBAT) → -3, PasCeSoir(YOM_TOV) → -4
+// (audit du 16/11). Israël : Jérusalem seule ; les autres fuseaux sont en diaspora. Un rappel de LevanaAlerte s'écrit
 // [date, nom du soir]. Dans « fenetres », une fenêtre tient en sept chaînes, pour rester sous 300 Ko :
 // [début, fin, restriction ou "", premier soir, dernier soir, motsaé Chabbat ou "", noms des soirs du
-// rappel séparés d'une espace] ; la date d'un soir du rappel est celle du premier soir, du motsaé
-// Chabbat ou du dernier soir. Les vues d'un mois suivent l'ordre de « fuseaux », leurs fenêtres celui
+// rappel séparés d'une espace, premier soir possible (ni Chabbat ni Yom tov)] ; la date d'un soir du rappel
+// est celle du premier soir possible, du motsaé Chabbat ou du dernier soir. Les vues d'un mois suivent l'ordre de « fuseaux », leurs fenêtres celui
 // de « usages ».
 
 import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar
@@ -29,7 +30,10 @@ object VecteursLevana : Generateur {
         is Levana.Etat.Dans -> e.jours
         Levana.Etat.CeSoir -> -1
         Levana.Etat.DernierSoir -> -2
+        is Levana.Etat.PasCeSoir -> if (e.chome == Levana.Chome.CHABBAT) -3 else -4
     }
+
+    private fun israel(id: String) = id == "Asia/Jerusalem"
 
     /** Le premier jour de chaque mois hébreu, de Tichri 5784 à Eloul 5790 (le 1 du mois, le jour civil). */
     private val premiersJours: List<LocalDate> = buildList {
@@ -45,7 +49,7 @@ object VecteursLevana : Generateur {
         "_meta" to mapOf("source" to "tools/vecteurs_ios/VecteursLevana.kt"),
         "usages" to usages.map { u ->
             linkedMapOf("nom" to u.name, "cle" to u.cle, "libelle" to Identifiants.entree(u.libelle),
-                "troisJours" to u.troisJours, "quinzeJours" to u.quinzeJours)
+                "troisJours" to u.troisJours, "quinzeJours" to u.quinzeJours, "nuitDuQuinze" to u.nuitDuQuinze)
         },
         // Usage.duNusah, pour les trois noussa'hs de l'app.
         "duNusah" to listOf("edot", "sefard", "ashkenaz").map { n -> listOf(n, Levana.Usage.duNusah(n).cle) },
@@ -72,12 +76,14 @@ object VecteursLevana : Generateur {
                         val premier = f.premierSoir(zone)
                         val dernier = f.dernierSoir(zone)
                         val motsae = Levana.motsaeChabbat(f, premier, zone)
-                        val rappels = LevanaAlerte.soirs(f, date, zone)
+                        val possible = Levana.premierPossible(f, zone, israel(zone.id))
+                        val rappels = LevanaAlerte.soirs(f, date, zone, israel(zone.id))
                         check(rappels.all { (d, s) ->
-                            d == when (s) { LevanaAlerte.Soir.PREMIER -> premier; LevanaAlerte.Soir.MOTSAE -> motsae; LevanaAlerte.Soir.DERNIER -> dernier }
+                            d == when (s) { LevanaAlerte.Soir.PREMIER -> possible; LevanaAlerte.Soir.MOTSAE -> motsae; LevanaAlerte.Soir.DERNIER -> dernier }
                         }) { "$date : la date d'un soir du rappel" }
                         listOf(f.debut.toEpochMilli().toString(), f.fin.toEpochMilli().toString(), f.restriction?.name ?: "",
-                            premier.toString(), dernier.toString(), motsae?.toString() ?: "", rappels.joinToString(" ") { it.second.name })
+                            premier.toString(), dernier.toString(), motsae?.toString() ?: "", rappels.joinToString(" ") { it.second.name },
+                            possible.toString())
                     }
                 })
         },
@@ -98,8 +104,8 @@ object VecteursLevana : Generateur {
                         Levana.soir(f.premierSoir(zone), zone).toEpochMilli(), Levana.soir(f.dernierSoir(zone), zone).toEpochMilli(),
                         p - 1, p, p + 1)
                     linkedMapOf("date" to date.toString(), "fuseau" to id, "usage" to u.cle, "depart" to depart.toString(),
-                        "etats" to jours.map { etat(Levana.etat(f, it, zone)) },
-                        "soirs" to jours.map { d -> LevanaAlerte.soirs(f, d, zone).joinToString(" ") { it.second.name } },
+                        "etats" to jours.map { etat(Levana.etat(f, it, zone, israel(id))) },
+                        "soirs" to jours.map { d -> LevanaAlerte.soirs(f, d, zone, israel(id)).joinToString(" ") { it.second.name } },
                         "instants" to instants,
                         "parts" to instants.map { Levana.part(f, Instant.ofEpochMilli(it)) })
                 }
@@ -110,6 +116,7 @@ object VecteursLevana : Generateur {
         "jours" to listOf(
             "Asia/Jerusalem" to Levana.Usage.SEPT_MI_MOIS, "Europe/Paris" to Levana.Usage.TROIS_MI_MOIS,
             "America/New_York" to Levana.Usage.SEPT_QUINZE, "Australia/Melbourne" to Levana.Usage.SEPT_MI_MOIS,
+            "Asia/Jerusalem" to Levana.Usage.SEPT_NUIT_QUINZE,
         ).map { (id, u) ->
             val zone = ZoneId.of(id)
             val depart = LocalDate.of(2026, 7, 15)
@@ -117,7 +124,7 @@ object VecteursLevana : Generateur {
             val fs = jours.map { Levana.fenetre(it, zone, u) }
             linkedMapOf("fuseau" to id, "usage" to u.cle, "depart" to depart.toString(),
                 "molads" to fs.map { it.molad.toEpochMilli() },
-                "etats" to jours.indices.map { etat(Levana.etat(fs[it], jours[it], zone)) },
+                "etats" to jours.indices.map { etat(Levana.etat(fs[it], jours[it], zone, israel(id))) },
                 "motsae" to jours.indices.map { Levana.motsaeChabbat(fs[it], jours[it], zone)?.toString() },
                 "parts" to jours.indices.map { Levana.part(fs[it], Levana.soir(jours[it], zone)) })
         },
@@ -145,7 +152,7 @@ object VecteursLevana : Generateur {
                 var maintenant = ZonedDateTime.of(2026, 1, 1, 0, 0, 0, 0, zone)
                 val rappels = mutableListOf<List<String>>()
                 while (true) {
-                    val (quand, soir) = LevanaAlerte.prochain(maintenant, u) { d -> d.atTime(20, 0).atZone(zone) } ?: break
+                    val (quand, soir) = LevanaAlerte.prochain(maintenant, u, { d -> d.atTime(20, 0).atZone(zone) }, israel(id)) ?: break
                     if (quand.isAfter(fin)) break
                     rappels.add(listOf(quand.toLocalDate().toString(), soir.name))
                     maintenant = quand.plusMinutes(1)
@@ -160,11 +167,35 @@ object VecteursLevana : Generateur {
             val reponses = (0L until 122L).flatMap { k ->
                 val jour = depart.plusDays(k)
                 listOf(12, 21).map { h ->
-                    LevanaAlerte.prochain(jour.atTime(h, 0).atZone(zone), u) { d -> d.atTime(20, 0).atZone(zone) }
+                    LevanaAlerte.prochain(jour.atTime(h, 0).atZone(zone), u, { d -> d.atTime(20, 0).atZone(zone) }, israel(id))
                         ?.let { (q, s) -> listOf(q.toLocalDate().toString(), s.name) }
                 }
             }
             linkedMapOf("fuseau" to id, "usage" to u.cle, "depart" to depart.toString(), "heures" to listOf(12, 21), "reponses" to reponses)
+        },
+        // Audit du 16/11 : la nuit qui suit chaque jour de 5787 est-elle Chabbat ou Yom tov (null, CHABBAT, YOM_TOV),
+        // en Israël puis en diaspora ; et le soir sort-il d'un jeûne autre que Kippour.
+        "nuits" to run {
+            val depart = LocalDate.of(2026, 9, 1)
+            val jours = (0L until 400L).map { depart.plusDays(it) }
+            linkedMapOf("depart" to depart.toString(),
+                "chomeesIsrael" to jours.map { Levana.nuitChomee(it, true)?.name },
+                "chomeesDiaspora" to jours.map { Levana.nuitChomee(it, false)?.name },
+                "jeunesIsrael" to jours.map { Levana.sortieDeJeune(it, true) },
+                "jeunesDiaspora" to jours.map { Levana.sortieDeJeune(it, false) })
+        },
+        // Les nuits bornées par des heures données (Horaires) : la sortie des étoiles à 19 h 37 et le lever du soleil
+        // à 6 h 11 du lieu, pour chaque usage, sur les mois de 5787 ; [début, fin, dernier soir, premier possible].
+        "horaires" to fuseaux.flatMap { id ->
+            val zone = ZoneId.of(id)
+            val h = Levana.Horaires(zone, { d -> d.atTime(19, 37).atZone(zone).toInstant() }, { d -> d.atTime(6, 11).atZone(zone).toInstant() })
+            usages.map { u ->
+                linkedMapOf("fuseau" to id, "usage" to u.cle, "fenetres" to premiersJours.filter { JewishCalendar(it).jewishYear == 5787 }.map { date ->
+                    val f = Levana.fenetre(date, zone, u, h)
+                    listOf(date.toString(), f.debut.toEpochMilli().toString(), f.fin.toEpochMilli().toString(), f.dernier.toString(),
+                        Levana.premierPossible(f, zone, israel(id)).toString())
+                })
+            }
         },
     )
 }

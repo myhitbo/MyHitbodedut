@@ -106,8 +106,8 @@ object VecteursTefilot : Generateur {
                 linkedMapOf(
                     "id" to p.id, "ref" to p.ref, "edition" to p.edition, "statutVerif" to p.statutVerif,
                     "titreHe" to p.titreHe.hashCode(),
-                    "paragraphes" to p.paragraphes.size, "paragraphesSansNikkoud" to p.paragraphesSansNikkoud.size,
-                    "avec" to empreinte(p.paragraphes), "sans" to empreinte(p.paragraphesSansNikkoud),
+                    // Plus de « sans nikkoud » à part : le fichier livre déjà la forme que la licence permet.
+                    "paragraphes" to p.paragraphes.size, "avec" to empreinte(p.paragraphes),
                     "affiches" to empreinte(LibraryRules.paragraphs(bibliotheque, p)),
                 )
             },

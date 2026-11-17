@@ -132,6 +132,19 @@ object VecteursGeo : Generateur {
         "ecarts" to ecarts().map { (cible, cap) ->
             linkedMapOf("cible" to cible, "cap" to cap, "ecart" to DirectionJerusalem.ecart(cible, cap))
         },
+        // Le conseil du minyan (audit du 16/11) : les deux méthodes diffèrent de plus de 20° ; une grille du globe.
+        "conseilMinyan" to (-80..80 step 10).map { lat ->
+            linkedMapOf("lat" to lat, "conseil" to (-180..170 step 10).joinToString("") { lon ->
+                if (DirectionJerusalem.conseilMinyan(lat.toDouble(), lon.toDouble())) "1" else "0"
+            })
+        },
+        // Le statut Israël ou diaspora devant un nouveau lieu (audit du 16/11) : [impliquée, actuelle, premier lieu,
+        // déclaré, région à enregistrer, question à poser].
+        "decisionRegion" to (0 until 16).map { bits ->
+            val (a, b, c, d) = listOf(1, 2, 4, 8).map { bits and it != 0 }
+            val r = TerritoireIsrael.decisionRegion(a, b, c, d)
+            listOf(a, b, c, d, r.region, r.proposition)
+        },
         // PositionApprocheeTest : de combien la direction tourne au pire avec 1, 3 ou 10 km d'écart.
         "approchee" to listOf(48.8534 to 2.3488, 40.7143 to -74.006, -37.814 to 144.9633, 32.0853 to 34.7818,
             32.7940 to 34.9896, 31.7683 to 35.2137, 29.5577 to 34.9519, 31.25 to 34.79).map { (lat, lon) ->

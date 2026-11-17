@@ -39,7 +39,10 @@ object VecteursVignettes : Generateur {
         return linkedMapOf(
             "alot" to if (Math.floorMod(e, 9L) == 0L) null else le(zone, d, 280 + Math.floorMod(e * 13, 60L)),
             "netz" to le(zone, d, 400 + Math.floorMod(e * 5, 40L)),
+            // Sans aube, le michéyakir certains jours (FCALENDRIER-08) ; min'ha guedola, absente certains jours (FVOL-05).
+            "misheyakir" to if (Math.floorMod(e, 9L) == 0L && Math.floorMod(e, 2L) == 0L) le(zone, d, 330 + Math.floorMod(e * 3, 30L)) else null,
             "szt_gra" to le(zone, d, 540 + Math.floorMod(e * 7, 50L)),
+            "minha_gedola" to if (Math.floorMod(e, 5L) == 2L) null else le(zone, d, 740 + Math.floorMod(e * 3, 40L)),
             "chkia" to if (Math.floorMod(e, 11L) == 0L) null else le(zone, d, 990 + Math.floorMod(e * 11, 90L)),
             "tset" to le(zone, d, 1050 + Math.floorMod(e * 3, 40L)),
             "chatsot_layla" to if (Math.floorMod(e, 7L) == 5L) null else le(zone, d.plusDays(1), Math.floorMod(e * 17, 210L) - 30),
@@ -56,6 +59,13 @@ object VecteursVignettes : Generateur {
             listOfNotNull("veille".takeIf { horaires["chatsot_layla"]?.minusDays(1) == limite })
         check(cles.size == 1) { "limite ambiguë : $limite, $cles" }
         return cles.single()
+    }
+
+    /** D'où vient le début d'une prière pas encore ouverte (FVOL-05) : min'ha guedola, ou rien. */
+    private fun cleDebut(debut: ZonedDateTime?, horaires: Map<String, ZonedDateTime?>): String? {
+        if (debut == null) return null
+        check(horaires["minha_gedola"] == debut) { "début inattendu : $debut" }
+        return "minha_gedola"
     }
 
     /** Des semaines entières à pas de 30 minutes, depuis minuit du premier jour ; les horaires du jour civil de chaque instant. */
@@ -75,8 +85,8 @@ object VecteursVignettes : Generateur {
             "reponses" to (0 until nombre).map { k ->
                 val maintenant = vu(debut + k.toLong() * 30 * MINUTE, zone)
                 val horaires = horairesPriere(zone, maintenant.toLocalDate())
-                val (priere, limite) = ZmanimWidget.prochaine(horaires, maintenant)
-                listOf(priere, cleDe(limite, horaires))
+                val (priere, limite, debut) = ZmanimWidget.prochaine(horaires, maintenant)
+                listOf(priere, cleDe(limite, horaires), cleDebut(debut, horaires))
             },
         )
     }
@@ -99,6 +109,13 @@ object VecteursVignettes : Generateur {
         val heureDouble = mapOf("alot" to a(PARIS, d, 5, 20), "szt_gra" to a(PARIS, d, 10, 0), "chkia" to a(PARIS, d, 17, 30),
             "chatsot_layla" to a(PARIS, d.plusDays(1), 2, 30))
         val desordre = mapOf("chatsot_layla" to t(8, 0), "chkia" to t(9, 0), "szt_gra" to t(10, 30))
+        // Min'ha guedola (FVOL-05) : avant elle, Min'ha n'est pas ouverte ; après la chki'a, celle du lendemain.
+        val guedola = horaires + mapOf("alot" to t(5, 20), "minha_gedola" to t(12, 35))
+        val guedolaTardive = horaires + mapOf("minha_gedola" to t(18, 0))
+        // Sans aube : le michéyakir, sinon le nets (FCALENDRIER-08).
+        val sansAube = mapOf("misheyakir" to t(4, 10), "netz" to t(5, 0), "szt_gra" to t(10, 30), "chkia" to t(17, 50),
+            "chatsot_layla" to t(23, 40).plusMinutes(70))
+        val netzSeul = mapOf("netz" to t(5, 0), "szt_gra" to t(10, 30), "chkia" to t(17, 50))
         fun z(texte: String) = Instant.parse(texte).atZone(PARIS)
         val cas: List<Pair<Map<String, ZonedDateTime?>, ZonedDateTime>> = listOf(
             horaires to t(7, 0), horaires to t(13, 0), horaires to t(19, 0), horaires to t(23, 50),
@@ -110,16 +127,20 @@ object VecteursVignettes : Generateur {
             heureDouble to z("2026-10-25T01:45:00Z"), heureDouble to z("2026-10-25T04:30:00Z"),
             emptyMap<String, ZonedDateTime?>() to t(12, 0), mapOf("alot" to t(5, 20)) to t(4, 0), mapOf("alot" to t(5, 20)) to t(12, 0),
             desordre to t(7, 0), desordre to t(8, 30), desordre to t(9, 30), desordre to t(11, 0),
+            guedola to t(10, 30), guedola to t(12, 34, 59, 999), guedola to t(12, 35), guedola to t(17, 0),
+            guedolaTardive to t(11, 0), guedolaTardive to t(17, 55), sansAube to t(1, 0), sansAube to t(4, 30), sansAube to t(4, 0),
+            netzSeul to t(4, 59), netzSeul to t(5, 0),
             // « Maintenant » vu d'un autre fuseau : tout se compare sur la ligne du temps.
             horaires to t(13, 0).withZoneSameInstant(ZoneId.of("UTC")),
         )
         return cas.map { (h, maintenant) ->
-            val (priere, limite) = ZmanimWidget.prochaine(h, maintenant)
+            val (priere, limite, debut) = ZmanimWidget.prochaine(h, maintenant)
             val fuseau = h.values.firstNotNullOfOrNull { it }?.zone?.id ?: maintenant.zone.id
             check(h.values.all { it == null || it.zone.id == fuseau })
             linkedMapOf(
                 "fuseau" to fuseau, "horaires" to ecrites(h), "fuseauMaintenant" to maintenant.zone.id, "maintenant" to millis(maintenant),
                 "priere" to priere, "limite" to limite?.let(::millis), "fuseauLimite" to limite?.zone?.id, "civile" to limite?.format(CIVILE),
+                "debut" to debut?.let(::millis),
             )
         }
     }
@@ -263,7 +284,10 @@ object VecteursVignettes : Generateur {
         val complet = mapOf("alot" to a(PARIS, d, 5, 20), "netz" to a(PARIS, d, 7, 30), "szt_gra" to a(PARIS, d, 10, 12),
             "chkia" to a(PARIS, d, 17, 15), "tset" to a(PARIS, d, 17, 52))
         val sansAlot = complet - "alot"
-        val variantes = listOf(complet, sansAlot, emptyMap<String, ZonedDateTime?>(), mapOf("chkia" to null))
+        // Min'ha guedola et michéyakir (13/11, FVOL-05 ; FCALENDRIER-08).
+        val avecGuedola = complet + mapOf("minha_gedola" to a(PARIS, d, 12, 31), "misheyakir" to a(PARIS, d, 6, 0))
+        val sansAlotMisheyakir = avecGuedola - "alot"
+        val variantes = listOf(complet, sansAlot, emptyMap<String, ZonedDateTime?>(), mapOf("chkia" to null), avecGuedola, sansAlotMisheyakir)
         return variantes.flatMap { h ->
             listOf("chaharit", "minha", "arvit", "", "autre", "Chaharit").map { priere ->
                 linkedMapOf("priere" to priere, "horaires" to ecrites(h), "resultat" to ZmanimVignette.debut(priere, h)?.let(::millis))

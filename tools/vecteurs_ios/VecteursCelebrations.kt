@@ -44,7 +44,7 @@ object VecteursCelebrations : Generateur {
         fun avantAujourdhui(): Monde = copy(seances = seances.filter { it.first != aujourdhui })
     }
 
-    private class Neuf(val icone: String, val message: String, val marques: Set<String>, val trophees: Set<String>)
+    private class Neuf(val icone: String, val message: String, val marques: Set<String>, val trophees: Set<String>, val compte: Int)
 
     private val methode = Celebrations::class.java
         .getDeclaredMethod("neuf", Context::class.java, Set::class.java, Set::class.java)
@@ -57,7 +57,7 @@ object VecteursCelebrations : Generateur {
     private fun neuf(c: Context, paliersVus: Set<String>?, tropheesVus: Set<String>?): Neuf {
         val r = methode.invoke(Celebrations, c, paliersVus, tropheesVus)!!
         return Neuf(champ(r, "icone") as String, champ(r, "message") as String,
-            champ(r, "marques") as Set<String>, champ(r, "trophees") as Set<String>)
+            champ(r, "marques") as Set<String>, champ(r, "trophees") as Set<String>, champ(r, "compte") as Int)
     }
 
     private fun theatre(m: Monde): Theatre {
@@ -95,7 +95,7 @@ object VecteursCelebrations : Generateur {
             else -> ""
         }
         check(r.icone == icone && r.message.isEmpty() == (trophee == null && palier == null)) { "$nom : le choix de neuf n'est pas celui relevé" }
-        check(r.marques == Paliers.marques(etats, bilan) && r.trophees == gagnes.map { it.cle }.toSet()) { "$nom : état à retenir" }
+        check(r.marques == Paliers.marques(etats, bilan) && r.trophees == Trophees.vusAvec(tropheesVus, gagnes)) { "$nom : état à retenir" }
         // marquerNotifies et notification retiennent, comme notifié, ce que neuf rend. notification n'est
         // appelée que s'il n'y a rien à annoncer : le Context du théâtre ne rend pas le NotificationManager
         // par son nom (Theatre.getSystemService lève), et Confettis.notifier le demande avant tout.
@@ -125,8 +125,11 @@ object VecteursCelebrations : Generateur {
             "message" to r.message,
             "marques" to r.marques.sorted(),
             "trophees" to r.trophees.sorted(),
-            // [clé, métal] du trophée fêté ; [piste, atteint, rang] du palier fêté s'il n'y a pas de trophée.
-            "trophee" to trophee?.let { listOf(it.cle, it.metal.name) },
+            // [clé] du trophée fêté, annoncé sans métal (FDONNEES-06) ; [piste, atteint, rang] du palier fêté
+            // s'il n'y a pas de trophée.
+            "trophee" to trophee?.let { listOf(it.cle) },
+            // Les trophées gagnés à cet instant (le grade des étincelles), l'union retenue gardant aussi ceux perdus.
+            "compte" to r.compte,
             "palier" to if (trophee == null) palier?.let { listOf(it.piste.name, it.atteint, it.rang) } else null,
             "moisEtAnnee" to if (trophee == null && palier?.piste == Paliers.Piste.MOIS)
                 CalendrierJuif.jour(bilan.aujourdhui, false).moisEtAnnee else null,
@@ -285,11 +288,11 @@ object VecteursCelebrations : Generateur {
                 "val trophee = Trophees.nouveaux(gagnes, tropheesVus).firstOrNull()",
                 "val palier = paliersVus?.let { vus -> Paliers.nouveaux(etats, bilan, vus).maxByOrNull { it.rang } }",
                 "trophee != null -> trophee.famille.icone to c.getString(R.string.trophee_niveau_gagne,",
-                "TropheesVue.nom(c, trophee.famille), trophee.rang, TropheesVue.metal(c, trophee.metal))",
+                "TropheesVue.nom(c, trophee.famille), trophee.rang)",
                 "palier != null -> \"\uD83C\uDF89\" to c.getString(R.string.palier_nouveau,",
                 "PaliersVue.libelle(c, palier.piste, bilan), PaliersVue.valeur(c, palier.piste, palier.atteint))",
                 "else -> \"\" to \"\"",
-                "return Neuf(icone, message, Paliers.marques(etats, bilan), gagnes.map { it.cle }.toSet())",
+                "return Neuf(icone, message, Paliers.marques(etats, bilan), Trophees.vusAvec(tropheesVus, gagnes), gagnes.size)",
                 "if (r.message.isNotEmpty()) Confettis.notifier(context, context.getString(R.string.celebration_titre), r.message, r.icone)",
             ),
         )
