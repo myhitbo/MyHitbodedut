@@ -131,6 +131,12 @@ object SiddurJour {
 
         /** Un ajout hors du jour, replié ; [ouvert] quand on l'a déplié. */
         data class Replie(val cle: String, val condition: String, val ouvert: Boolean, val libelle: String) : Ligne()
+
+        /**
+         * La fin d'un repli déplié ([cle] : celle de son [Replie]), après tout ce qu'il contient, replis
+         * imbriqués compris (une double annotation dans un groupe ouvert) : l'écran y met « Replier ».
+         */
+        data class Fin(val cle: String) : Ligne()
     }
 
     /**
@@ -178,7 +184,10 @@ object SiddurJour {
                 } else {
                     val cle = "§$si"
                     sortie += Ligne.Replie(cle, section.condition, cle in ouverts, nom(section, section.condition))
-                    if (cle in ouverts) s.blocs.forEach { sortie += Ligne.Bloc(it, Style.HORS) }
+                    if (cle in ouverts) {
+                        s.blocs.forEach { sortie += Ligne.Bloc(it, Style.HORS) }
+                        sortie += Ligne.Fin(cle)
+                    }
                 }
                 renvoyer(si, null)
                 return@forEachIndexed
@@ -209,6 +218,7 @@ object SiddurJour {
                     if (horsJour.isNotEmpty() && (ouverte || bloc !== s.blocs[i])) {
                         val v = horsJour.first()
                         sortie += Ligne.Replie(cleVariante, v.condition, ouverte, nom(v, v.condition))
+                        if (ouverte) sortie += Ligne.Fin(cleVariante)
                     }
                     seul(si, i)
                     renvoyer(si, i)
@@ -242,7 +252,10 @@ object SiddurJour {
                         val suite = membres.drop(k).takeWhile { it.second.et == et }
                         val cle = "$si:${a.groupe}:${m.bloc}"
                         sortie += Ligne.Replie(cle, et, cle in ouverts, m.etLibelle ?: libelle(et))
-                        if (cle in ouverts) suite.forEach { (sb, _) -> sortie += Ligne.Bloc(sb, Style.HORS) }
+                        if (cle in ouverts) {
+                            suite.forEach { (sb, _) -> sortie += Ligne.Bloc(sb, Style.HORS) }
+                            sortie += Ligne.Fin(cle)
+                        }
                         k += suite.size
                     }
                 }
@@ -256,13 +269,35 @@ object SiddurJour {
                     sortie += Ligne.Replie(cle, racine, cle in ouverts, nom(a, racine))
                     // Ouvert, un groupe replié distingue ses membres comme le web (audit du 16/11 : dans les
                     // psaumes d'avant le Birkat, celui du jour se lit en clair, l'autre estompé).
-                    if (cle in ouverts) membresLus({ m -> if (vrai(m.condition, conditions)) Style.NORMAL else Style.HORS }, false)
+                    if (cle in ouverts) {
+                        membresLus({ m -> if (vrai(m.condition, conditions)) Style.NORMAL else Style.HORS }, false)
+                        sortie += Ligne.Fin(cle)
+                    }
                 }
                 seul(si, i - 1)
             }
             renvoyer(si, null)
         }
         return sortie
+    }
+
+    /**
+     * Les places de [lignes] qui se lisent dans le panneau d'un repli déplié : entre un [Ligne.Replie]
+     * ouvert et sa [Ligne.Fin], replis imbriqués compris (le pied d'un groupe ouvert vient après tous
+     * ses membres, même quand un repli du minyan s'ouvre dedans). Ni le Replie ni la Fin n'y sont.
+     */
+    fun panneaux(lignes: List<Any?>): Set<Int> {
+        val dedans = HashSet<Int>()
+        val ouverts = ArrayDeque<String>()
+        lignes.forEachIndexed { k, l ->
+            if (l is Ligne.Fin) {
+                ouverts.remove(l.cle)
+                return@forEachIndexed
+            }
+            if (ouverts.isNotEmpty()) dedans += k
+            if (l is Ligne.Replie && l.ouvert) ouverts.addLast(l.cle)
+        }
+        return dedans
     }
 
     /**

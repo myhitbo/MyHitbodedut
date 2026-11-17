@@ -333,18 +333,10 @@ class SiddurLectureActivity : AppCompatActivity() {
         places = java.util.IdentityHashMap<SiddurBloc, Pair<Int, Int>>().apply {
             texte.sections.forEachIndexed { si, s -> s.blocs.forEachIndexed { bi, b -> put(b, si to bi) } }
         }
-        // Un ajout déplié se lit dans un panneau, fermé par un pied « Replier » (19/10).
-        val avecPieds = ArrayList<Any>(lignes.size + 4)
-        val panneau = HashSet<Int>()
-        var ouvert: String? = null
-        for (l in lignes) {
-            val dedans = l is SiddurJour.Ligne.Bloc && l.style == SiddurJour.Style.HORS
-            if (ouvert != null && !dedans) { avecPieds += Pied(ouvert); ouvert = null }
-            if (ouvert != null) panneau += avecPieds.size
-            avecPieds += l
-            if (l is SiddurJour.Ligne.Replie && l.ouvert) ouvert = l.cle
-        }
-        ouvert?.let { avecPieds += Pied(it) }
+        // Un ajout déplié se lit dans un panneau, fermé par un pied « Replier » (19/10) : à la fin du repli
+        // (SiddurJour.Ligne.Fin), après tous ses membres, même quand un repli s'ouvre dedans (audit du 16/11).
+        val avecPieds: List<Any> = lignes.map { if (it is SiddurJour.Ligne.Fin) Pied(it.cle) else it }
+        val panneau = SiddurJour.panneaux(lignes)
         lignesAffichees = avecPieds
         liste.setBackgroundColor(rendu.fond)
         // Déplier, replier : les paragraphes glissent en place au lieu d'apparaître d'un coup.

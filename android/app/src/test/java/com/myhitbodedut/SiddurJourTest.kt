@@ -389,4 +389,33 @@ class SiddurJourTest {
         assertTrue(ind.single().fixe && ind.single().texte.contains("חב״ד"))
         assertTrue(l.none { it is SiddurJour.Ligne.Replie })
     }
+
+    /**
+     * Un repli ouvert dans un groupe replié qu'on a ouvert (double annotation, audit du 16/11) : le pied
+     * « Replier » du groupe vient après tous ses membres, pas au premier repli imbriqué. Edot, Arvit d'un
+     * mercredi : ויהי נועם (groupe 2:20, du motsaé Chabbat) replié, son Kaddich (bloc 62) sous le minyan.
+     */
+    @Test
+    fun `un repli ouvert dans un groupe ouvert - le panneau du groupe va jusqu a son dernier membre`() {
+        val texte = DataFiles.siddur(Nusah.EDOT).texte("arvit")!!
+        val a = SiddurJour.parse(json, "edot").getValue("arvit")
+        val c = CalendrierJuif.jour(java.time.LocalDate.parse("2026-11-18"), false).conditions
+        val ferme = SiddurJour.lignes(texte, a, c, nusah = "edot")
+        val groupe = ferme.filterIsInstance<SiddurJour.Ligne.Replie>().single { it.condition == CalendrierJuif.C.VIHI_NOAM }.cle
+        val un = SiddurJour.lignes(texte, a, c, setOf(groupe), nusah = "edot")
+        val minyan = un.filterIsInstance<SiddurJour.Ligne.Replie>().single { it.cle.startsWith("$groupe:") }.cle
+        val l = SiddurJour.lignes(texte, a, c, setOf(groupe, minyan), nusah = "edot")
+        val bloc = { bi: Int -> l.indexOfFirst { it is SiddurJour.Ligne.Bloc && it.origine === texte.sections[2].blocs[bi] } }
+        val debut = l.indexOfFirst { it is SiddurJour.Ligne.Replie && it.cle == groupe }
+        val fin = l.indexOf(SiddurJour.Ligne.Fin(groupe))
+        val finMinyan = l.indexOf(SiddurJour.Ligne.Fin(minyan))
+        // Dans l'ordre : le groupe, son premier membre, le repli du minyan et sa fin, les autres membres, la fin du groupe.
+        assertTrue(debut < bloc(61) && bloc(61) < bloc(62) && bloc(62) < finMinyan && finMinyan < bloc(63))
+        assertTrue(bloc(67) in 0 until fin)
+        val panneau = SiddurJour.panneaux(l)
+        (61..67).forEach { assertTrue("$it", bloc(it) in panneau) }
+        assertFalse(debut in panneau || fin in panneau || fin + 1 in panneau)
+        // Sans repli ouvert, pas de fin ni de panneau.
+        assertTrue(ferme.none { it is SiddurJour.Ligne.Fin } && SiddurJour.panneaux(ferme).isEmpty())
+    }
 }
