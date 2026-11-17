@@ -59,7 +59,7 @@ test('Edot : pas de Vidouï à Min\'ha la veille de Pessa\'h chéni (Kitsour Yal
 });
 
 test('Edot, Avinou malkénou le Chabbat : les lignes de faute estompées (Kitsour Yalkout Yossef 602:24)', () => {
-  for (const [texte, s, faute, autre] of [['chaharit', 9, 73, 74], ['minha', 1, 72, 73]]) {
+  for (const [texte, s, faute, autre] of [['chaharit', 9, 83, 84], ['minha', 1, 79, 80]]) {
     assert.equal(etat('edot', texte, s, faute, '2025-09-27'), 'hors', texte); // Chabbat Chouva
     assert.equal(etat('edot', texte, s, autre, '2025-09-27'), 'du_jour', texte);
     assert.equal(etat('edot', texte, s, faute, '2025-09-29'), 'du_jour', texte);

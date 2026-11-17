@@ -308,9 +308,10 @@ class SiddurJourTest {
 
     @Test
     fun `edot - avinou malkenou du chabbat sans les lignes de faute`() {
-        assertEquals(SiddurJour.Style.HORS, styleDe(Nusah.EDOT, "chaharit", 9, 73, "2025-09-27"))
-        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 74, "2025-09-27"))
-        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 73, "2025-09-29"))
+        // Blocs 83-84 de l'Amida Edot depuis les insertions de la Amida du 16/11 (Na'hem, consignes d'oubli).
+        assertEquals(SiddurJour.Style.HORS, styleDe(Nusah.EDOT, "chaharit", 9, 83, "2025-09-27"))
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 84, "2025-09-27"))
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 83, "2025-09-29"))
     }
 
     @Test
