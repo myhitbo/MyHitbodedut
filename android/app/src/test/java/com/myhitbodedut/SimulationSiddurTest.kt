@@ -217,7 +217,8 @@ class SimulationSiddurTest {
      */
     @Test
     fun `chaque condition de repli change avec les jours`() {
-        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL)
+        // « toujours » (audit du 16/11) : une indication fixe, vraie par construction.
+        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL, C.TOUJOURS)
         val vues = mutableMapOf<String, MutableSet<Boolean>>()
         for (lieu in lieux) for (date in jours) {
             val jour = jour(date, lieu.israel, lieu.muree)

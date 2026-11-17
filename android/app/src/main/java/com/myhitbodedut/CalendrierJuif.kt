@@ -131,11 +131,21 @@ object CalendrierJuif {
 
         /** Ce qui ne se dit qu'avec un minyan (Kaddich, Barekhou, Kedoucha…) : jamais du jour, replié. */
         const val MINYAN = "minyan"
+
+        /**
+         * Tikoun Ra'hel (audit du 16/11) : pas à Roch 'Hodech, de Roch Hachana à Chemini Atseret, à 'Hanouka,
+         * aux jours de Pourim, en Nissan, pendant l'omer (Kitsour Yalkut Yosef, דיני תיקון חצות §נה ; Ben Ich
+         * 'Haï, Vayichla'h ה), ni en Israël l'année de chemita (§נז).
+         */
+        const val TIKOUN_RAHEL = "tikoun_rahel"
+
+        /** Toujours vrai (audit du 16/11) : une indication fixe du siddour, sans condition du jour. */
+        const val TOUJOURS = "toujours"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
-                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN)
+                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN, TIKOUN_RAHEL, TOUJOURS)
     }
 
     /**
@@ -334,6 +344,10 @@ object CalendrierJuif {
             if (C.CHABBAT in this && regles.isRoshHashana) add(C.ROCH_HACHANA_CHABBAT)
             val hierYomTov = calendrier(date.minusDays(1), enIsrael, modernes = false).isYomTovAssurBemelacha
             if (C.MOTSAE_CHABBAT in this || (hierYomTov && !regles.isAssurBemelacha)) add(C.MOTSAE_CHABBAT_YT)
+            // Tikoun Ra'hel (audit du 16/11, C.TIKOUN_RAHEL).
+            if (!(regles.isRoshChodesh || (mois == JewishDate.TISHREI && quantieme <= (if (enIsrael) 22 else 23)) || regles.isChanukah || adar1415 ||
+                    mois == JewishDate.NISSAN || regles.dayOfOmer > 0 || (enIsrael && regles.jewishYear % 7 == 0))) add(C.TIKOUN_RAHEL)
+            add(C.TOUJOURS)
         }
 
         val fetes = buildList {
@@ -376,6 +390,8 @@ object CalendrierJuif {
      */
     fun jourDeLaPriere(texte: String, date: LocalDate, heure: LocalTime, apresSortie: Boolean = false): LocalDate = when (texte) {
         "arvit", "chema_coucher" -> if (heure >= LocalTime.NOON) date.plusDays(1) else date
+        // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
+        "tikoun_hatsot" -> if (heure >= LocalTime.of(18, 0)) date.plusDays(1) else date
         "minha" -> date
         else -> if (apresSortie) date.plusDays(1) else date
     }

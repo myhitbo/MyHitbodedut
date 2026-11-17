@@ -704,7 +704,7 @@ class SiddurLectureActivity : AppCompatActivity() {
                 is SiddurJour.Ligne.Indice -> vue.apply {
                     PoliceHebraique.appliquer(this)
                     setPadding(dp(16), dp(0), dp(16), dp(8))
-                    text = getString(R.string.siddur_aujourdhui) + " : " + ligne.texte
+                    text = if (ligne.fixe) ligne.texte else getString(R.string.siddur_aujourdhui) + " : " + ligne.texte
                     textSize = 12f * e
                     setTextColor(rendu.titre)
                 }

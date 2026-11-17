@@ -23,7 +23,7 @@ import * as Trophees from './trophees.js';
 import { FORMES, ICONES } from './trophees-formes.js';
 import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHalakha } from './halakha.js';
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
-import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, semaines, semainesHebreu } from './jour-affiche.js';
+import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, sansTikounHatsot, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
 import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
@@ -923,7 +923,7 @@ function momentAccueil() {
   const rappels = rappelsDeTefila();
   if (!chargeSiddur()) return rappels;
   const heure = new Date();
-  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
+  const moment = momentSiddour(heure);
   const cartes = [...rappels];
   const t = moment ? siddur.textes.find((x) => x.id === moment) : null;
   if (t) cartes.push(carteMaintenant(t, undefined, undefined, tr.t(Salutation.mot(heureLieu(heure).heures))));
@@ -1519,7 +1519,7 @@ function ecranSiddur() {
   const nomNusah = tr.t(NUSAH.find(([c]) => c === store.siddurNusah())?.[1] ?? 'siddur_nusah');
   const heure = new Date();
   // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
-  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
+  const moment = momentSiddour(heure);
   const suggere = pret && moment ? siddur.textes.find((x) => x.id === moment) : null;
   // 'Hanouka (13/10) : le Hallel du jour, avec la scène de 'Hanouka, sous la prière du matin.
   const isoHeure = jourLieu(heure);
@@ -1640,8 +1640,9 @@ function ecranPriere() {
     const du = tous.filter((a) => !a.retire && ajoutVrai(a.si, c)).filter((a, k, l) => l.findIndex((y) => y.texte === a.texte) === k);
     const pli = hors.length && reduit !== brut
       ? ajout(nom(hors[0], hors[0].si), false, hors.map((a) => h('p', { class: 'priere hors-jour', lang: 'he', dir: 'rtl' }, a.texte)), hors[0].si) : null;
+    // Une indication fixe (audit du 16/11, « fixe ») : sans « Aujourd'hui : ».
     return [paragraphe(s, i, reduit !== brut ? reduit : undefined), pli, ...du.map((a) => h('p', { class: 'indice-jour' },
-      h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, a.texte))), ...renvois(si, i)];
+      a.fixe ? null : h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, a.texte))), ...renvois(si, i)];
   };
   // Le corps d'une section, sans son titre : construit d'un coup pour une prière, à la demande pour un livre.
   const corpsDe = (s, si) => {
@@ -3029,6 +3030,15 @@ function dessinLune({ eclairage, croissante }, sud) {
 /** L'usage de Birkat haLevana : celui choisi, sinon celui du noussa'h (VueJour.usageLevana). */
 /** Le lieu des zmanim est au sud de l'équateur (Store.hemisphereSud). */
 const hemisphereSud = () => (store.lieu()?.latitude ?? 0) < 0;
+
+/**
+ * Le texte du moment (AccueilMoment, SiddurActivity) : avec un lieu, ses zmanim ; sinon les heures fixes.
+ * Pas de Tikoun 'hatsot la nuit de Chabbat, de fête ou de 'Hol hamoed Pessa'h (audit du 16/11).
+ */
+function momentSiddour(heure) {
+  return store.lieu() ? momentDuSiddour(store.lieu(), heure, store.inIsrael(), store.siddurNusah())
+    : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes(), sansTikounHatsot(isoLocal(heure), store.inIsrael()));
+}
 
 const usageLevanaCourant = () => usageLevana(store.siddurNusah(), store.levanaUsage());
 

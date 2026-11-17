@@ -19,6 +19,7 @@ object Libelles {
         "ajout_anenou_particulier_trois" -> R.string.ajout_anenou_particulier_trois
         "ajout_asseret_yemei_techouva" -> R.string.ajout_asseret_yemei_techouva
         "ajout_autres_jours" -> R.string.ajout_autres_jours
+        "ajout_avant_jeune_individuel" -> R.string.ajout_avant_jeune_individuel
         "ajout_avinou_malkenou" -> R.string.ajout_avinou_malkenou
         "ajout_barekh_alenou" -> R.string.ajout_barekh_alenou
         "ajout_barkhenou" -> R.string.ajout_barkhenou
@@ -32,7 +33,6 @@ object Libelles {
         "ajout_embolismique" -> R.string.ajout_embolismique
         "ajout_embolismique_avant_nissan" -> R.string.ajout_embolismique
         "ajout_esther_pourim" -> R.string.ajout_esther_pourim
-        "ajout_pourim_triple_festin" -> R.string.ajout_pourim_triple_festin
         "ajout_facultatif" -> R.string.ajout_facultatif
         "ajout_facultatif_apres" -> R.string.ajout_facultatif_apres
         "ajout_facultatif_avant" -> R.string.ajout_facultatif_avant
@@ -43,7 +43,6 @@ object Libelles {
         "ajout_hallel_partiel_sans_berakha" -> R.string.ajout_hallel_partiel_sans_berakha
         "ajout_jeune" -> R.string.ajout_jeune
         "ajout_jeune_public" -> R.string.ajout_jeune_public
-        "ajout_avant_jeune_individuel" -> R.string.ajout_avant_jeune_individuel
         "ajout_jour_1" -> R.string.ajout_jour_1
         "ajout_jour_2" -> R.string.ajout_jour_2
         "ajout_jour_3" -> R.string.ajout_jour_3
@@ -63,6 +62,7 @@ object Libelles {
         "ajout_motsae_chabbat_yt" -> R.string.ajout_motsae_chabbat_yt
         "ajout_omer" -> R.string.ajout_omer
         "ajout_oubli" -> R.string.ajout_oubli
+        "ajout_pourim_triple_festin" -> R.string.ajout_pourim_triple_festin
         "ajout_roch_hachana_chabbat" -> R.string.ajout_roch_hachana_chabbat
         "ajout_roch_hodech" -> R.string.ajout_roch_hodech
         "ajout_sans_tahanoun" -> R.string.ajout_sans_tahanoun
@@ -74,6 +74,9 @@ object Libelles {
         "ajout_techouva_hochaana" -> R.string.ajout_techouva_hochaana
         "ajout_ticha_beav" -> R.string.ajout_ticha_beav
         "ajout_ticha_beav_kippour" -> R.string.ajout_ticha_beav_kippour
+        "ajout_tikoun_lea" -> R.string.ajout_tikoun_lea
+        "ajout_tikoun_rahel" -> R.string.ajout_tikoun_rahel
+        "ajout_toujours" -> R.string.ajout_toujours
         "ajout_tsom_guedalia_tevet" -> R.string.ajout_tsom_guedalia_tevet
         "ajout_yaale_veyavo" -> R.string.ajout_yaale_veyavo
         "ajout_yom_tov" -> R.string.ajout_yom_tov

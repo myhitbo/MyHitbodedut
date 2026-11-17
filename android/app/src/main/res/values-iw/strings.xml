@@ -804,6 +804,9 @@
     <string name="ajout_hallel_partiel_avec_berakha">הלל בדילוג, בברכה</string>
     <string name="zmanim_omer_ce_soir">ספירת העומר הלילה: %1$d</string>
     <string name="ajout_omer">ספירת העומר</string>
+    <string name="ajout_tikoun_rahel">תיקון רחל, אין אומרים ביום זה</string>
+    <string name="ajout_tikoun_lea">תיקון לאה, אין אומרים בליל תשעה באב</string>
+    <string name="ajout_toujours">הערה</string>
     <string name="ajout_lamnatseah">למנצח</string>
     <string name="ajout_ledavid">מר״ח אלול עד הושענא רבה</string>
     <string name="ajout_techouva_hochaana">עשרת ימי תשובה והושענא רבה</string>

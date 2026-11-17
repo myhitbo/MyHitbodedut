@@ -156,6 +156,13 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   hier.setUTCDate(hier.getUTCDate() - 1);
   const hierYomTov = calendrier(hier.toISOString().slice(0, 10), enIsrael, false, mukafChoma).isYomTovAssurBemelacha();
   si(c.has('motsae_chabbat') || (hierYomTov && !regles.isAssurBemelacha()), 'motsae_chabbat_yt');
+  // Tikoun Ra'hel (audit du 16/11, CalendrierJuif.C.TIKOUN_RAHEL) : pas à Roch 'Hodech, de Roch Hachana à
+  // Chemini Atseret, à 'Hanouka, aux jours de Pourim, en Nissan, pendant l'omer (Kitsour Yalkut Yosef, דיני
+  // תיקון חצות §נה ; Ben Ich 'Haï, Vayichla'h ה), ni en Israël l'année de chemita (§נז).
+  si(!(regles.isRoshChodesh() || (mois === JewishDate.TISHREI && quantieme <= (enIsrael ? 22 : 23)) || regles.isChanukah() || adar1415
+    || mois === JewishDate.NISSAN || regles.getDayOfOmer() > 0 || (enIsrael && regles.getJewishYear() % 7 === 0)), 'tikoun_rahel');
+  // Un repère sans condition (audit du 16/11, CalendrierJuif.C.TOUJOURS) : une indication fixe du siddour.
+  c.add('toujours');
 
   const fetes = [];
   const fete = FETES.get(affiche.getYomTovIndex());
@@ -189,7 +196,8 @@ export function jour(iso, enIsrael, mukafChoma = false) {
  * CalendrierJuif.jourDeLaPriere, qui documente la règle).
  */
 export function jourDeLaPriere(texte, iso, heures, apresSortie = false) {
-  const soir = texte === 'arvit' || texte === 'chema_coucher' ? heures >= 12 : texte !== 'minha' && apresSortie;
+  // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
+  const soir = texte === 'arvit' || texte === 'chema_coucher' ? heures >= 12 : texte === 'tikoun_hatsot' ? heures >= 18 : texte !== 'minha' && apresSortie;
   if (soir) {
     const [a, m, j] = iso.split('-').map(Number);
     return new Date(Date.UTC(a, m - 1, j + 1, 12)).toISOString().slice(0, 10);

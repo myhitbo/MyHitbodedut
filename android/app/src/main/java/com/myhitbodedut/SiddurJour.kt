@@ -41,6 +41,8 @@ object SiddurJour {
          * le Hallel) : le jour dit, en clair sans étiquette ni mise en évidence ; les autres, replié.
          */
         val discret: Boolean = false,
+        /** Une indication fixe du siddour (audit du 16/11) : affichée telle quelle, sans « Aujourd'hui : ». */
+        val fixe: Boolean = false,
     )
 
     /** Les annotations d'un nusah, par identifiant de texte. */
@@ -68,6 +70,7 @@ object SiddurJour {
                     consigne = a.optString("consigne", "").ifBlank { null },
                     retire = a.optString("retire", "").ifBlank { null },
                     discret = a.optBoolean("discret", false),
+                    fixe = a.optBoolean("fixe", false),
                 )
             }
         }
@@ -97,7 +100,7 @@ object SiddurJour {
         data class Etiquette(val condition: String, val libelle: String) : Ligne()
 
         /** « Aujourd'hui : המלך הקדוש », sous un bloc qui mêle une variante. */
-        data class Indice(val texte: String) : Ligne()
+        data class Indice(val texte: String, val fixe: Boolean = false) : Ligne()
 
         /** « Aujourd'hui · Hallel › » : le texte à dire ici ce jour-là, ouvert d'un geste ; [cible] : son identifiant. */
         data class Renvoi(val condition: String, val cible: String) : Ligne()
@@ -178,7 +181,7 @@ object SiddurJour {
                     // reste que pour les variantes qu'on ne sait pas replier.
                     // Une fois chacune : « מגדול » vaut le Chabbat comme Roch 'Hodech (12/11).
                     ind.filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
-                        .map { it.texte!! }.distinct().forEach { sortie += Ligne.Indice(it) }
+                        .distinctBy { it.texte }.forEach { sortie += Ligne.Indice(it.texte!!, it.fixe) }
                     if (horsJour.isNotEmpty() && (ouverte || bloc !== s.blocs[i])) {
                         val v = horsJour.first()
                         sortie += Ligne.Replie(cleVariante, v.condition, ouverte, nom(v, v.condition))

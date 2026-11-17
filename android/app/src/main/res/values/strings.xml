@@ -838,6 +838,9 @@
     <string name="ajout_hallel_partiel_avec_berakha">Hallel partiel, avec bénédiction</string>
     <string name="zmanim_omer_ce_soir">Omer ce soir : jour %1$d</string>
     <string name="ajout_omer">Compte de l’omer</string>
+    <string name="ajout_tikoun_rahel">Tikoun Ra’hel, pas ce jour-là</string>
+    <string name="ajout_tikoun_lea">Tikoun Léa, pas la nuit du 9 Av</string>
+    <string name="ajout_toujours">Indication</string>
     <string name="ajout_lamnatseah">Lamnatséa’h</string>
     <string name="ajout_ledavid">D’Eloul à Hochaana Rabba</string>
     <string name="ajout_techouva_hochaana">Dix jours de techouva et Hochaana Rabba</string>

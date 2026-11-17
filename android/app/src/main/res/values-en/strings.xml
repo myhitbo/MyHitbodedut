@@ -788,6 +788,9 @@
     <string name="ajout_hallel_partiel_avec_berakha">Partial Hallel, with a blessing</string>
     <string name="zmanim_omer_ce_soir">Omer tonight: day %1$d</string>
     <string name="ajout_omer">Counting the Omer</string>
+    <string name="ajout_tikoun_rahel">Tikkun Rachel, not on this day</string>
+    <string name="ajout_tikoun_lea">Tikkun Leah, not on the night of Tisha B’Av</string>
+    <string name="ajout_toujours">Note</string>
     <string name="ajout_lamnatseah">Lamenatze’ach</string>
     <string name="ajout_ledavid">Elul to Hoshana Rabbah</string>
     <string name="ajout_techouva_hochaana">Ten Days of Repentance and Hoshana Rabbah</string>
