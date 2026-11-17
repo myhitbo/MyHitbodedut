@@ -1560,4 +1560,20 @@
         <item quantity="one">%1$d day in a row</item>
         <item quantity="other">%1$d days in a row</item>
     </plurals>
+
+    <!-- Version Bento (VersionApp, 17/11). -->
+    <string name="version_bento">Bento</string>
+    <string name="version_bento_desc">A board of live tiles that open full screen, with search under your thumb.</string>
+    <string name="bento_siddour">Siddur</string>
+    <string name="bento_tehilim">Tehillim</string>
+    <string name="bento_recherche">Siddur, Tehillim, books…</string>
+    <string name="bento_hitbo_titre">Today’s hitbodedut</string>
+    <string name="bento_faite">Done today · %1$s</string>
+    <string name="bento_ambiance">Ambience</string>
+    <string name="bento_musique">Music</string>
+    <string name="bento_journal_quand">Journal · %1$s, %2$s</string>
+    <plurals name="bento_jours">
+        <item quantity="one">day in a row</item>
+        <item quantity="other">days in a row</item>
+    </plurals>
 </resources>

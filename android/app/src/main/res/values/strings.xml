@@ -1621,4 +1621,20 @@
         <item quantity="one">%1$d jour d’affilée</item>
         <item quantity="other">%1$d jours d’affilée</item>
     </plurals>
+
+    <!-- Version Bento (VersionApp, 17/11). -->
+    <string name="version_bento">Bento</string>
+    <string name="version_bento_desc">Un tableau de tuiles vivantes qui s’ouvrent en plein écran, la recherche sous le pouce.</string>
+    <string name="bento_siddour">Siddour</string>
+    <string name="bento_tehilim">Tehilim</string>
+    <string name="bento_recherche">Siddour, Tehilim, livres…</string>
+    <string name="bento_hitbo_titre">Votre hitbodedout du jour</string>
+    <string name="bento_faite">Faite aujourd’hui · %1$s</string>
+    <string name="bento_ambiance">Ambiance</string>
+    <string name="bento_musique">Musique</string>
+    <string name="bento_journal_quand">Journal · %1$s, %2$s</string>
+    <plurals name="bento_jours">
+        <item quantity="one">jour d’affilée</item>
+        <item quantity="other">jours d’affilée</item>
+    </plurals>
 </resources>

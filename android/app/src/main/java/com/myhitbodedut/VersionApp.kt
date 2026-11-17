@@ -29,6 +29,8 @@ enum class VersionApp(
 ) {
     CLASSIQUE("classique", R.string.version_classique, R.string.version_classique_desc, null,
         intArrayOf(0xFF0F3D2E.toInt(), 0xFF1E5A45.toInt(), 0xFF8FD9B6.toInt())),
+    BENTO("bento", R.string.version_bento, R.string.version_bento_desc, BentoActivity::class.java,
+        intArrayOf(0xFFF2F2EF.toInt(), 0xFF123B30.toInt(), 0xFFD9F56B.toInt())),
     PILE("pile", R.string.version_pile, R.string.version_pile_desc, PileActivity::class.java,
         intArrayOf(0xFF1D1B2E.toInt(), 0xFF0E4D52.toInt(), 0xFF7FE7D9.toInt()));
 

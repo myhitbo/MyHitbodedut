@@ -1097,6 +1097,11 @@ def main():
         capture("28-pile-3-zmanim")
         balayer()
         capture("28-pile-4-journal")
+        regler({"version_app": ("string", "bento")})
+        lancer(attente=6)
+        capture("28-bento-1")
+        defiler(True)
+        capture("28-bento-2-bas")
         regler({"version_app": ("string", "classique")})
     etape("28 versions de l'app", s28)
 

@@ -1605,4 +1605,21 @@
         <item quantity="two">%1$d ימים ברצף</item>
         <item quantity="other">%1$d ימים ברצף</item>
     </plurals>
+
+    <!-- Version Bento (VersionApp, 17/11). -->
+    <string name="version_bento">בנטו</string>
+    <string name="version_bento_desc">לוח של אריחים חיים שנפתחים למסך מלא, והחיפוש תחת האגודל.</string>
+    <string name="bento_siddour">סידור</string>
+    <string name="bento_tehilim">תהילים</string>
+    <string name="bento_recherche">סידור, תהילים, ספרים…</string>
+    <string name="bento_hitbo_titre">ההתבודדות של היום</string>
+    <string name="bento_faite">נעשתה היום · %1$s</string>
+    <string name="bento_ambiance">אווירה</string>
+    <string name="bento_musique">מוזיקה</string>
+    <string name="bento_journal_quand">יומן · %1$s, %2$s</string>
+    <plurals name="bento_jours">
+        <item quantity="one">יום ברצף</item>
+        <item quantity="two">ימים ברצף</item>
+        <item quantity="other">ימים ברצף</item>
+    </plurals>
 </resources>
