@@ -21,7 +21,8 @@ import java.time.Instant
  */
 object VolRappels {
 
-    enum class Type { TEFILAT_HADEREKH, PRIERE, PRIERE_FIN, OMER }
+    /** HAGOMEL (audit du 16/11) : à l'atterrissage d'un vol d'une heure douze ou plus, le rappel de bénir dans les trois jours. */
+    enum class Type { TEFILAT_HADEREKH, PRIERE, PRIERE_FIN, OMER, HAGOMEL }
 
     data class Rappel(
         val type: Type,
@@ -34,6 +35,13 @@ object VolRappels {
 
     val APRES_DECOLLAGE: Duration = Duration.ofMinutes(5)
     val AVANT_LIMITE: Duration = Duration.ofMinutes(30)
+
+    /**
+     * Hagomel après un vol (audit du 16/11) : « הטס במטוס שיעור שעה ושתים עשרה דקות… יברך ברכת הגומל »
+     * (Kitsour Yalkut Yosef 219:20-21). Le texte du rappel suit le noussa'h (VolAlerte.textes) : en Ashkenaz
+     * et en Sfard, « selon votre usage » (Choul'han Aroukh O.H. 219:7 ; Igrot Moché O.H. 2).
+     */
+    val DUREE_HAGOMEL: Duration = Duration.ofMinutes(72)
 
     /** Chaque prière : le zman qui l'ouvre, celui qui la ferme. */
     val BORNES = listOf(
@@ -77,6 +85,7 @@ object VolRappels {
         }
         VolCalendrier.jalons(calcul, enIsrael, 0).filter { it.type == VolCalendrier.Type.OMER }
             .forEach { res += Rappel(Type.OMER, it.instant, omer = it.omer) }
+        if (Duration.between(plan.decollage, plan.atterrissage) >= DUREE_HAGOMEL) res += Rappel(Type.HAGOMEL, plan.atterrissage)
         return res.sortedWith(compareBy({ it.instant }, { it.type.ordinal }))
     }
 }

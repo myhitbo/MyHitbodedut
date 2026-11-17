@@ -1447,6 +1447,9 @@
     <string name="vol_rappel_fin_texte">Limite : %1$s.</string>
     <string name="vol_rappel_omer_titre">Compte de l’Omer</string>
     <string name="vol_rappel_omer_texte">Les étoiles sortent sous l’avion : ce soir, on compte le jour %1$s de l’Omer.</string>
+    <string name="vol_rappel_gomel_titre">HaGomel</string>
+    <string name="vol_rappel_gomel_texte_edot">Atterrissage après un vol d’une heure douze ou plus : on bénit HaGomel dans les trois jours, devant dix, de préférence à la lecture de la Torah (Yalkut Yosef 219:20).</string>
+    <string name="vol_rappel_gomel_texte">Atterrissage après un long vol : selon votre usage, on bénit HaGomel dans les trois jours, devant dix (certains l’exigent après un vol, d’autres non).</string>
     <string name="vol_direct_explication_opensky">Désactivé par défaut. Activé, il demande à OpenSky Network, gratuitement et sans compte, les avions vus dans un carré de 10° autour de la position estimée ; l’indicatif reste sur le téléphone, qui y cherche l’avion. Au-dessus des océans, l’avion n’est souvent pas vu.</string>
     <string name="vol_source_aeroports">Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms en hébreu et en français : Wikidata (CC0)</string>
 

@@ -1397,6 +1397,9 @@
     <string name="vol_rappel_fin_texte">Deadline: %1$s.</string>
     <string name="vol_rappel_omer_titre">Sefirat HaOmer</string>
     <string name="vol_rappel_omer_texte">The stars come out below the aircraft: tonight is day %1$s of the Omer.</string>
+    <string name="vol_rappel_gomel_titre">HaGomel</string>
+    <string name="vol_rappel_gomel_texte_edot">Landed after a flight of 72 minutes or more: say HaGomel within three days, before ten men, preferably at the Torah reading (Yalkut Yosef 219:20).</string>
+    <string name="vol_rappel_gomel_texte">Landed after a long flight: according to your custom, HaGomel is said within three days, before ten men (some require it after a flight, others do not).</string>
     <string name="vol_direct_explication_opensky">Off by default. When on, it asks OpenSky Network, free and without an account, for the aircraft seen in a 10° square around the estimated position; the callsign stays on the phone, which looks for the flight there. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_source_aeroports">Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); Hebrew and French names: Wikidata (CC0)</string>
 
