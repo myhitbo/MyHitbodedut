@@ -1546,8 +1546,8 @@
     <string name="pile_titre">Your day</string>
     <string name="pile_position">%1$d / %2$d</string>
     <string name="pile_hitbodedout">Hitbodedut</string>
-    <string name="pile_hitbo_titre">A moment alone with Hashem</string>
-    <string name="pile_hitbo_titre_prenom">%1$s, a moment alone with Hashem</string>
+    <string name="pile_hitbo_titre">Today’s hitbodedut</string>
+    <string name="pile_hitbo_titre_prenom">%1$s, today’s hitbodedut</string>
     <string name="pile_hitbo_faite">Done today · %1$s</string>
     <string name="pile_hizouk">Today’s chizuk</string>
     <string name="pile_traduction">Translation</string>

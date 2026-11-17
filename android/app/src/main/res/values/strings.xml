@@ -1607,8 +1607,8 @@
     <string name="pile_titre">Votre journée</string>
     <string name="pile_position">%1$d / %2$d</string>
     <string name="pile_hitbodedout">Hitbodedout</string>
-    <string name="pile_hitbo_titre">Un moment en tête-à-tête avec Hachem</string>
-    <string name="pile_hitbo_titre_prenom">%1$s, un moment en tête-à-tête avec Hachem</string>
+    <string name="pile_hitbo_titre">Votre hitbodedout du jour</string>
+    <string name="pile_hitbo_titre_prenom">%1$s, votre hitbodedout du jour</string>
     <string name="pile_hitbo_faite">Faite aujourd’hui · %1$s</string>
     <string name="pile_hizouk">’Hizouk du jour</string>
     <string name="pile_traduction">Traduction</string>

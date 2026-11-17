@@ -1590,8 +1590,8 @@
     <string name="pile_titre">היום שלך</string>
     <string name="pile_position">%1$d / %2$d</string>
     <string name="pile_hitbodedout">התבודדות</string>
-    <string name="pile_hitbo_titre">רגע לבד עם ה׳</string>
-    <string name="pile_hitbo_titre_prenom">%1$s, רגע לבד עם ה׳</string>
+    <string name="pile_hitbo_titre">ההתבודדות של היום</string>
+    <string name="pile_hitbo_titre_prenom">%1$s, ההתבודדות של היום</string>
     <string name="pile_hitbo_faite">נעשתה היום · %1$s</string>
     <string name="pile_hizouk">חיזוק יומי</string>
     <string name="pile_traduction">תרגום</string>
