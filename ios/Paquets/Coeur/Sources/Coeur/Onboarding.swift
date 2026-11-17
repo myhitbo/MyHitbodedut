@@ -78,6 +78,14 @@ public enum Onboarding {
             corps: "onboarding_texts_body",
             illustration: "char_tehilim"
         ),
+        // La barrière du matin, la promesse centrale de l'édition complète (13/11, FACCUEIL-04). Android ne la
+        // présente que là où elle existe (BuildConfig.HAS_GATE) ; l'iOS a la sienne (Sources/Barriere).
+        OnboardingEcran(
+            cle: "barriere",
+            titre: "onboarding_gate",
+            corps: "onboarding_gate_body",
+            illustration: "char_thinking"
+        ),
         OnboardingEcran(
             cle: "reglages",
             titre: "onboarding_yours",
@@ -94,7 +102,9 @@ public enum Onboarding {
         OnboardingEcran(
             cle: "prive",
             titre: "onboarding_private",
-            corps: "onboarding_private_body",
+            // Sans suivi en direct, OpenSky n'est pas nommé (Android : construction Play sans relais). L'iOS n'appelle
+            // jamais OpenSky directement et aucune construction ne lui donne encore de relais (VolEnLigne).
+            corps: "onboarding_private_body_route",
             illustration: "char_thumbs_up"
         ),
     ]

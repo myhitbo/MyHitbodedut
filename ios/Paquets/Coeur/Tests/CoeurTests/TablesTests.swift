@@ -21,7 +21,7 @@ struct TablesTests {
         let v = try Self.vecteurs()
         let critere: [String: Int] = [
             "paliersEchelles": 6, "tropheesFamilles": 11, "tropheesNiveaux": 128, "tehilimMois": 30,
-            "tehilimSemaine": 7, "sujetsTefila": 10, "sujetsSeance": 10, "mouvements": 5, "posesFeminines": 21,
+            "tehilimSemaine": 7, "sujetsTefila": 10, "sujetsSeance": 10, "mouvements": 5, "posesFeminines": 26,
             "zmanim": 15,
         ]
         for cle in critere.keys.sorted() {

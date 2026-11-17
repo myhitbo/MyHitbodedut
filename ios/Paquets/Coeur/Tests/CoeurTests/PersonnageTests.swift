@@ -46,8 +46,13 @@ struct PersonnageTests {
         let hassid = try dessins().filter {
             $0.commenceParUnites("char_") && !$0.commenceParUnites("char_f_") && !$0.egalUnites("char_face")
         }.sorted()
-        let cles = table().keys.sorted()
+        let cles = table().keys.filter { $0.commenceParUnites("char_") }.sorted()
         #expect(hassid == cles)
+        // Les cinq scènes à décor (13/11, FACCUEIL-03) : des dessins livrés, repliés sur une pose féminine.
+        let scenes = table().keys.filter { !$0.commenceParUnites("char_") }.sorted()
+        #expect(scenes == ["scene_airport", "scene_hanukkah", "scene_nature", "scene_sleeping", "scene_sukkot"])
+        let livres = Set(try dessins())
+        #expect(scenes.allSatisfy { livres.contains($0) })
     }
 
     @Test func chaquePoseFeminineLivreeSertEtChaquePoseCiteeExiste() throws {
@@ -69,7 +74,7 @@ struct PersonnageTests {
         let donnees = try Depot.donnees("web/src/js/personnage.js")
         let web = String(decoding: donnees, as: UTF8.self)
         // `\w` d'ICU déborde l'ASCII : la classe s'écrit en toutes lettres.
-        let motif = ExpressionReguliere("(char_[A-Za-z0-9_]+): '(char_f_[A-Za-z0-9_]+)'")
+        let motif = ExpressionReguliere("((?:char|scene)_[A-Za-z0-9_]+): '(char_f_[A-Za-z0-9_]+)'")
         var jsTable: [String: String] = [:]
         for m in motif.toutes(web) {
             jsTable[m.groupes[1]] = m.groupes[2]
@@ -78,12 +83,13 @@ struct PersonnageTests {
         #expect(ici == jsTable)
     }
 
-    /// La table, entrée par entrée et dans l'ordre d'Android : les 21 correspondances du personnage féminin.
+    /// La table, entrée par entrée et dans l'ordre d'Android : les 26 correspondances du personnage féminin (21, puis
+    /// les cinq scènes à décor du 13/11).
     @Test func laTableEstCelleDAndroid() throws {
         let v = try vecteurs()
         let n = Personnage.feminins.count
         let lus = v.personnageTable.count
-        #expect(n == 21)
+        #expect(n == 26)
         #expect(n == lus, "nombre de correspondances")
         for (rang, (ici, lu)) in zip(Personnage.feminins, v.personnageTable).enumerated() {
             #expect(ici.hassid == lu.hassid, "rang \(rang)")

@@ -36,6 +36,13 @@ public enum Personnage {
         ("char_offering", "char_f_offering"),
         ("char_torah", "char_f_kneel_reading"),
         ("char_standing_back", "char_f_standing_back"),
+        // Les cinq scènes à décor montrent le hassid barbu et n'ont pas encore leur planche féminine : elles se
+        // replient sur la pose la plus proche (13/11, FACCUEIL-03).
+        ("scene_sleeping", "char_f_praying"),
+        ("scene_nature", "char_f_standing_back"),
+        ("scene_airport", "char_f_walking"),
+        ("scene_hanukkah", "char_f_praise"),
+        ("scene_sukkot", "char_f_joy"),
     ]
 
     private static let parHassid: [String: String] =

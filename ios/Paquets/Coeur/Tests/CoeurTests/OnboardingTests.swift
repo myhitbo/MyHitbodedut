@@ -52,7 +52,8 @@ struct OnboardingTests {
         let titres = Set(ecrans.map { $0.titre }).count
         let corps = Set(ecrans.map { $0.corps }).count
         let illustrations = Set(ecrans.map { $0.illustration }).count
-        #expect(n == 7)
+        // Huit depuis la page de la barrière (13/11, FACCUEIL-04).
+        #expect(n == 8)
         #expect(cles == n)
         #expect(titres == n)
         #expect(corps == n)

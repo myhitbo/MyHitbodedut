@@ -70,11 +70,11 @@ struct PresentationModeleTests {
     @Test func laPremierePageOuvreLaPresentation() {
         let modele = PresentationModele.apercu()
         #expect(modele.index == 0)
-        #expect(modele.nombreDePages == 7)
+        #expect(modele.nombreDePages == 8)
         #expect(modele.titre == Libelle("onboarding_practice"))
         #expect(modele.corps == Libelle("onboarding_practice_body"))
         #expect(modele.illustration == "char_open_arms")
-        let etape = Libelle("onboarding_step", .entier(1), .entier(7))
+        let etape = Libelle("onboarding_step", .entier(1), .entier(8))
         #expect(modele.etape == etape)
         #expect(!modele.retourVisible)
         #expect(modele.passerVisible)
@@ -95,14 +95,15 @@ struct PresentationModeleTests {
             try await modele.suivant()
             cles.append(modele.ecran.cle)
         }
-        #expect(cles == ["pratique", "seance", "jours", "textes", "reglages", "adresse", "prive"])
+        // La page de la barrière depuis le 13/11 (FACCUEIL-04).
+        #expect(cles == ["pratique", "seance", "jours", "textes", "barriere", "reglages", "adresse", "prive"])
         #expect(modele.index == Onboarding.dernier)
         #expect(modele.estDerniere)
         #expect(modele.libelleSuivant == Libelle("onboarding_start"))
         #expect(!modele.passerVisible)
         #expect(modele.retourVisible)
         #expect(!modele.termine)
-        let etape = Libelle("onboarding_step", .entier(7), .entier(7))
+        let etape = Libelle("onboarding_step", .entier(8), .entier(8))
         #expect(modele.etape == etape)
     }
 
@@ -118,7 +119,7 @@ struct PresentationModeleTests {
             #expect(modele.montreAdresse == (ecran.cle == "adresse"), "\(ecran.cle)")
             #expect(modele.retourVisible == (rang > 0), "\(ecran.cle)")
             #expect(modele.passerVisible == (rang < Onboarding.dernier), "\(ecran.cle)")
-            let etape = Libelle("onboarding_step", .entier(rang + 1), .entier(7))
+            let etape = Libelle("onboarding_step", .entier(rang + 1), .entier(8))
             #expect(modele.etape == etape)
         }
     }
@@ -204,7 +205,7 @@ struct PresentationModeleTests {
         #expect(reprise.montreDurees)
         let cochees = reprise.durees.filter { $0.choisie }.map { $0.minutes }
         #expect(cochees == [30])
-        let etape = Libelle("onboarding_step", .entier(2), .entier(7))
+        let etape = Libelle("onboarding_step", .entier(2), .entier(8))
         #expect(reprise.etape == etape)
         #expect(!reprise.termine)
     }
@@ -212,7 +213,7 @@ struct PresentationModeleTests {
     /// Le glissement du `TabView` paginé : la page dite, ramenée dans les bornes, sans rien finir ni écrire.
     @Test func glisserAmeneLaPageSansRienFinir() async {
         let banc = PresentationBanc()
-        banc.modele.afficher(page: 4)
+        banc.modele.afficher(page: 5)
         #expect(banc.modele.ecran.cle == "reglages")
         banc.modele.afficher(page: 99)
         #expect(banc.modele.index == Onboarding.dernier)
@@ -291,7 +292,7 @@ struct PresentationModeleTests {
     // MARK: L'adresse
 
     @Test func sansChoixAucuneAdresseNEstCochee() {
-        let modele = PresentationModele.apercu(index: 5)
+        let modele = PresentationModele.apercu(index: 6)
         #expect(modele.ecran.cle == "adresse")
         #expect(modele.adresse == nil)
         let adresses = modele.adresses.map { $0.adresse }
@@ -304,7 +305,7 @@ struct PresentationModeleTests {
     }
 
     @Test func choisirTsadeketChangeLImageSurLaPageMeme() async throws {
-        let banc = PresentationBanc(index: 5)
+        let banc = PresentationBanc(index: 6)
         try await banc.modele.choisirAdresse(.femme)
         #expect(banc.magasin.reglages.adresse == "f")
         #expect(banc.modele.adresse == Adresse.femme)
@@ -524,16 +525,16 @@ struct PresentationModeleTests {
         let francais = try Traducteur(catalogue: donnees, langue: "fr")
         let anglais = try Traducteur(catalogue: donnees, langue: "en")
         let modele = PresentationModele.apercu(index: 2)
-        #expect(francais.texte(modele.etape) == "3 / 7")
-        #expect(anglais.texte(modele.etape) == "3 / 7")
+        #expect(francais.texte(modele.etape) == "3 / 8")
+        #expect(anglais.texte(modele.etape) == "3 / 8")
         #expect(francais.texte(modele.libelleHeureRappel("07:00")) == "à 07:00")
         #expect(anglais.texte(modele.libelleHeureRappel("7:00 AM")) == "at 7:00 AM")
         let trouvee = modele.durees.first { $0.minutes == 15 }
         let quinze = try #require(trouvee)
         #expect(francais.texte(quinze.libelle) == "15 min")
-        // L'hébreu dit « 3 sur 7 » ; la vue le pose de droite à gauche.
+        // L'hébreu dit « 3 sur 8 » ; la vue le pose de droite à gauche.
         let hebreu = try Traducteur(catalogue: donnees, langue: "he")
-        #expect(hebreu.texte(modele.etape) == "3 מתוך 7")
+        #expect(hebreu.texte(modele.etape) == "3 מתוך 8")
         let trente = PresentationModele.apercu(index: 1).durees.last
         let derniere = try #require(trente)
         #expect(derniere.minutes == 30)
