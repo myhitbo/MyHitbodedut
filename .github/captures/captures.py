@@ -1120,14 +1120,6 @@ def main():
         regler({"version_app": ("string", "classique")})
     etape("28 versions de l'app", s28)
 
-    def s28n():
-        log("  date :", sh("date 111721302026.00").strip())
-        for version in ("instant", "serenite"):
-            regler({"version_app": ("string", version)})
-            lancer(attente=6)
-            capture(f"28n-{version}-nuit")
-        regler({"version_app": ("string", "classique")})
-    etape("28n ciel de nuit", s28n)
 
     # Les versions sur un petit telephone (480x854, 240 dpi), puis avec le texte du systeme
     # agrandi (17/11) : chaque accueil, sans texte ecrase, et son bouton principal entier a l'ecran.
@@ -1157,6 +1149,15 @@ def main():
         regler({"version_app": ("string", "classique")})
         log("  fautes des petits ecrans :", [f for f in FAUTES if f.startswith("petit")])
     etape("29 versions sur petit ecran", s29)
+
+    def s28n():
+        log("  date :", sh("date 111721302026.00").strip())
+        for version in ("instant", "serenite"):
+            regler({"version_app": ("string", version)})
+            lancer(attente=6)
+            capture(f"28n-{version}-nuit")
+        regler({"version_app": ("string", "classique")})
+    etape("30 ciel de nuit", s28n)
 
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
