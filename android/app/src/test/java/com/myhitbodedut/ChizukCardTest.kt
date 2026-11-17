@@ -28,6 +28,13 @@ class ChizukCardTest {
     }
 
     @Test
+    fun `en espagnol et en arabe tunisien, l hebreu seul`() {
+        // L'interface seule est traduite dans ces deux langues (17/11) : pas de traduction du texte.
+        assertEquals("", ChizukCard.translationOf(item, "es"))
+        assertEquals("", ChizukCard.translationOf(item, "ar"))
+    }
+
+    @Test
     fun `une langue inconnue retombe sur le francais`() {
         // L'exemple etait « es » ; l'espagnol a ete ecrit puis retire le
         // 22/09, et pendant ce temps ce test illustrait sa regle par un cas

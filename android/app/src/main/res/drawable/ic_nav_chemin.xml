@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Onglet Le Chemin (13/11) : au trait au repos, épaissi quand l'onglet est actif,
+    comme les autres onglets (finition du 04/10).
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_nav_chemin_on" android:state_checked="true" />
+    <item android:drawable="@drawable/ic_nav_chemin_off" />
+</selector>

@@ -1,11 +1,9 @@
 package com.myhitbodedut
 
-import android.Manifest
 import android.app.TimePickerDialog
 import android.content.Intent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.core.os.LocaleListCompat
@@ -40,18 +39,25 @@ import com.google.android.material.materialswitch.MaterialSwitch
 class SettingsActivity : AppCompatActivity() {
 
     /**
-     * La demande de notification a déjà été présentée. Android cesse
-     * d'afficher la boîte après deux refus : il faut alors passer par
-     * l'écran système, sinon le bouton ne ferait plus rien.
+     * La demande des notifications, partagée avec la présentation et Rappels (13/11). Android
+     * cesse d'afficher sa question après deux refus : elle passe alors par l'écran système,
+     * sinon le bouton ne ferait plus rien.
      */
-    private var notificationsDemandees = false
+    private val notifications = DemandeNotifications(this) { refresh() }
 
-    private val requestNotifications =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { refresh() }
+    /**
+     * Le mot de passe choisi avant le sélecteur de fichier (revue du 15/11).
+     * Perdu si l'écran est recréé pendant le choix : la fenêtre est alors
+     * reposée une fois le fichier choisi.
+     */
+    private var motEnAttente: String? = null
 
     private val exportFile =
         registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-            if (uri != null) writeBackup(uri)
+            val mot = motEnAttente
+            motEnAttente = null
+            if (uri == null) return@registerForActivityResult
+            if (mot != null) ecrireSauvegarde(uri, mot) else writeBackup(uri)
         }
 
     private val importFile =
@@ -63,23 +69,30 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         bornerValeurs(window.decorView)
-        notificationsDemandees = savedInstanceState?.getBoolean(ETAT_DEMANDE, false) ?: false
         wireActions()
         applyEdition()
         // Le moment « lieu » accompagne les réglages de lieu et de moment :
         // il ne change pas d'un aller-retour à l'autre, on le tire une fois.
         ChizukCard.show(findViewById(R.id.lieu_chizuk), Moment.LIEU)
+        // La pastille « Avec Hachem » de l'accueil mène ici quand le mode ne peut pas agir
+        // (13/11, FBARRIERE-08) : la carte d'état, pas l'interrupteur.
+        if (BuildConfig.HAS_GATE && savedInstanceState == null && intent.getBooleanExtra(EXTRA_CARTE_BARRIERE, false)) {
+            val defil = findViewById<ScrollView>(R.id.settings_scroll)
+            val carte = findViewById<View>(R.id.card_gate_state)
+            defil.post { defil.scrollTo(0, carte.top) }
+        }
     }
 
     override fun onResume() {
         super.onResume()
+        // Un accès accordé à l'instant, ou un service arrêté depuis (13/11, FBARRIERE-01) :
+        // la carte d'état dit ce qui est, et le service reprend sans attendre un interrupteur.
+        if (BuildConfig.HAS_GATE) {
+            if (GateStatus.shouldRunService(this)) GateService.start(this) else GateService.stop(this)
+        }
         refresh()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(ETAT_DEMANDE, notificationsDemandees)
-    }
 
     // --- Actions ------------------------------------------------------------
 
@@ -97,6 +110,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(this, OnboardingActivity::class.java))
         }
         findViewById<Button>(R.id.mode_button).setOnClickListener { askMode() }
+        findViewById<Button>(R.id.version_button).setOnClickListener { startActivity(Intent(this, ChoixVersionActivity::class.java)) }
         findViewById<Button>(R.id.fond_button).setOnClickListener { askFond() }
         findViewById<Button>(R.id.accent_button).setOnClickListener { askAccent() }
         // Personnalisation (14/10) : police hébraïque, écran d'ouverture, livre de la halakha.
@@ -126,23 +140,31 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         findViewById<Button>(R.id.region_button).setOnClickListener {
-            Store.setInIsrael(this, !Store.inIsrael(this))
+            // Choisie à la main : une reprise de la position ne la réécrit plus (FCALENDRIER-06).
+            Store.setInIsrael(this, !Store.inIsrael(this), manuel = true)
             refresh()
         }
         findViewById<Button>(R.id.preview_gate).setOnClickListener { previewGate() }
-        findViewById<Button>(R.id.gate_fix_permissions).setOnClickListener { scrollToPermissions() }
+        findViewById<Button>(R.id.gate_fix_permissions).setOnClickListener {
+            if (GateStatus.evaluate(this) == GateState.SERVICE_STOPPED) {
+                GateService.start(this)
+                refresh()
+            } else {
+                scrollToPermissions()
+            }
+        }
         findViewById<Button>(R.id.pick_apps).setOnClickListener {
             startActivity(Intent(this, AppPickerActivity::class.java))
         }
         findViewById<Button>(R.id.window_start).setOnClickListener {
             pickTime(Store.windowStart(this)) {
-                Store.setWindow(this, it, Store.windowEnd(this))
+                if (it == Store.windowEnd(this)) fenetreVide() else Store.setWindow(this, it, Store.windowEnd(this))
                 refresh()
             }
         }
         findViewById<Button>(R.id.window_end).setOnClickListener {
             pickTime(Store.windowEnd(this)) {
-                Store.setWindow(this, Store.windowStart(this), it)
+                if (it == Store.windowStart(this)) fenetreVide() else Store.setWindow(this, Store.windowStart(this), it)
                 refresh()
             }
         }
@@ -164,13 +186,16 @@ class SettingsActivity : AppCompatActivity() {
                 refresh()
             }
         }
+        // L'export emporte tout le journal : le verrou le garde aussi (revue du 15/11).
         findViewById<Button>(R.id.export_data).setOnClickListener {
-            exportFile.launch("myhitbodedut-${Store.today()}.json")
+            VerrouJournal.exiger(this, onOk = { demanderMotDePasseExport() })
         }
         findViewById<Button>(R.id.import_data).setOnClickListener {
-            importFile.launch(arrayOf("application/json", "text/plain", "*/*"))
+            runCatching { importFile.launch(arrayOf("application/json", "text/plain", "*/*")) }
+                .onFailure { Toast.makeText(this, R.string.fichiers_absents, Toast.LENGTH_LONG).show() }
         }
         findViewById<Button>(R.id.privacy_policy).setOnClickListener { ouvrirConfidentialite() }
+        findViewById<Button>(R.id.licences_button).setOnClickListener { montrerLicences() }
         findViewById<Button>(R.id.dedicace_button).setOnClickListener { Dedicace.ouvrir(this) }
         findViewById<Button>(R.id.reset_app).setOnClickListener { confirmerReinitialisation() }
     }
@@ -183,11 +208,21 @@ class SettingsActivity : AppCompatActivity() {
             .setNegativeButton(R.string.reset_confirm_no, null)
             .setPositiveButton(R.string.reset_confirm_yes) { _, _ ->
                 stopService(Intent(this, SessionService::class.java))
+                // Avant l'effacement : il emporte le témoin du mode posé, sans retour possible.
+                NePasDeranger.retablir(this)
                 GateService.stop(this)
                 Reminder.cancel(this)
                 (getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager).cancelAll()
                 Store.reinitialiser(this)
                 StreakWidget.refresh(this)
+                ZmanimWidget.refresh(this)
+                // Les réglages effacés, mais le mode sombre et la langue de l'application vivent
+                // hors des préférences : sans ces deux lignes ils survivraient à « Tout effacer ».
+                // L'icône, elle, se remet d'elle-même à la prochaine sortie de l'application.
+                Apparence.appliquerMode(this)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    getSystemService(android.app.LocaleManager::class.java).applicationLocales = android.os.LocaleList.getEmptyLocaleList()
+                else AppCompatDelegate.setApplicationLocales(androidx.core.os.LocaleListCompat.getEmptyLocaleList())
                 startActivity(Intent(this, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
                 finish()
@@ -254,24 +289,40 @@ class SettingsActivity : AppCompatActivity() {
     private fun renderPermissions() {
         val liste = findViewById<LinearLayout>(R.id.permission_list)
         liste.removeAllViews()
-        var manquantes = 0
+        val modeActif = Store.isEnabled(this)
+        val manquantes = PermissionRules.aSignaler(BuildConfig.HAS_GATE, modeActif) {
+            Permissions.isGranted(this, it)
+        }.size
         PermissionRules.demandees(BuildConfig.HAS_GATE).forEach { autorisation ->
             val accordee = Permissions.isGranted(this, autorisation)
-            if (!accordee) manquantes++
+            // Les deux accès de la barrière ne sont pas réclamés tant que le mode est éteint.
+            val facultative = !accordee && autorisation.barriere && !modeActif
             val ligne = layoutInflater.inflate(R.layout.item_permission, liste, false)
             ligne.findViewById<TextView>(R.id.permission_title).setText(autorisation.titre)
             ligne.findViewById<TextView>(R.id.permission_why).setText(autorisation.pourquoi)
             ligne.findViewById<TextView>(R.id.permission_state).apply {
-                setText(if (accordee) R.string.permission_granted else R.string.permission_missing)
+                setText(
+                    when {
+                        accordee -> R.string.permission_granted
+                        facultative -> R.string.permission_optional_off
+                        else -> R.string.permission_missing
+                    }
+                )
                 setTextColor(
                     Apparence.couleur(
                         this@SettingsActivity,
-                        if (accordee) R.color.brand else R.color.warning
+                        when {
+                            accordee -> R.color.brand
+                            facultative -> R.color.muted
+                            else -> R.color.warning
+                        }
                     )
                 )
             }
             ligne.findViewById<Button>(R.id.permission_grant).apply {
                 isEnabled = !accordee
+                // « Accorder : Notifications » (FACCUEIL-12) : quatre « Accorder » de suite ne disaient rien.
+                contentDescription = getString(R.string.reglage_libelle_valeur, text, getString(autorisation.titre))
                 setOnClickListener { demander(autorisation) }
             }
             liste.addView(ligne)
@@ -289,6 +340,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun renderDiagnostic() {
         val state = GateStatus.evaluate(this)
         val missing = state == GateState.MISSING_PERMISSIONS
+        val arrete = state == GateState.SERVICE_STOPPED
 
         val title = findViewById<TextView>(R.id.gate_state_title)
         title.setText(GateStatus.titleOf(state))
@@ -297,8 +349,10 @@ class SettingsActivity : AppCompatActivity() {
         title.visibility = if (missing) View.GONE else View.VISIBLE
 
         findViewById<TextView>(R.id.gate_state_detail).text = GateStatus.detailOf(this, state)
-        findViewById<Button>(R.id.gate_fix_permissions).visibility =
-            if (missing) View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.gate_fix_permissions).apply {
+            setText(if (arrete) R.string.gate_stopped_action else R.string.gate_permissions_action)
+            visibility = if (missing || arrete) View.VISIBLE else View.GONE
+        }
     }
 
     /** Amène la carte des autorisations sous les yeux, plutôt que « plus bas ». */
@@ -322,6 +376,7 @@ class SettingsActivity : AppCompatActivity() {
                 safeStart(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
             }
         }
+        renderVerrou()
         bindSwitch(R.id.hide_countdown_switch, Store.hideCountdown(this)) { checked ->
             Store.setHideCountdown(this, checked)
         }
@@ -334,8 +389,22 @@ class SettingsActivity : AppCompatActivity() {
         }
         // Grand texte (14/10) : les textes de lecture à 140 % ; la barre « Aa » règle toujours finement.
         bindSwitch(R.id.grand_texte_switch, Store.lectureEchelle(this) >= GRAND_TEXTE) { Store.setLectureEchelle(this, if (it) GRAND_TEXTE else 1f) }
+        // L'écran gardé allumé pendant la lecture (audit du 12/11, FLECTURE-01), par défaut.
+        bindSwitch(R.id.ecran_allume_switch, Store.lectureEcranAllume(this)) { Store.setLectureEcranAllume(this, it) }
         bindSwitch(R.id.levana_switch, Store.levanaAffichee(this)) { Store.setLevanaAffichee(this, it) }
-        bindSwitch(R.id.levana_rappel_switch, Store.levanaRappel(this)) { Store.setLevanaRappel(this, it); LevanaAlerte.programmer(this) }
+        bindSwitch(R.id.levana_rappel_switch, Store.levanaRappel(this)) {
+            Store.setLevanaRappel(this, it)
+            LevanaAlerte.programmer(this)
+            // Allumé sans les notifications, il resterait muet : la demande, puis l'avertissement (13/11).
+            if (it) askNotifications()
+            renderLevanaRappel()
+        }
+        renderLevanaRappel()
+        bindSwitch(R.id.chabbat_alerte_switch, Store.chabbatAlerte(this)) {
+            Store.setChabbatAlerte(this, it)
+            ChabbatAlerte.programmer(this)
+            if (it) askNotifications()
+        }
         bindSwitch(R.id.hilloulot_switch, Store.hilloulotAffichees(this)) { Store.setHilloulotAffichees(this, it) }
         bindSwitch(R.id.halakha_switch, Store.halakhaAffichee(this)) { Store.setHalakhaAffichee(this, it) }
         bindSwitch(R.id.exempt_today_switch, Store.pausedDates(this).contains(Store.today())) {
@@ -345,7 +414,45 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Le verrou du journal (audit du 12/11, revue du 15/11). L'interrupteur
+     * montre ce qui protège vraiment : sans verrouillage d'écran, il est
+     * éteint. Le couper demande le code, sinon quiconque tient le téléphone
+     * déverrouillé l'éteignait avant d'ouvrir le journal.
+     */
+    private fun renderVerrou() {
+        bindSwitch(R.id.journal_verrou_switch, VerrouJournal.actif(this)) { checked ->
+            when {
+                checked && !VerrouJournal.ecranProtege(this) -> {
+                    Toast.makeText(this, R.string.journal_verrou_sans_code, Toast.LENGTH_LONG).show()
+                    renderVerrou()
+                }
+                checked -> Store.setJournalVerrou(this, true)
+                VerrouJournal.actif(this) -> {
+                    renderVerrou()
+                    VerrouJournal.exiger(this, onOk = {
+                        Store.setJournalVerrou(this, false)
+                        renderVerrou()
+                    })
+                }
+                else -> Store.setJournalVerrou(this, false)
+            }
+        }
+    }
+
     /** Pose la valeur sans déclencher l'écouteur, puis le réarme. */
+    /**
+     * Le rappel de Birkat haLevana est allumé d'origine : sans les notifications il ne s'affichera
+     * pas, et la ligne le dit comme l'écran Rappels ; la toucher mène à l'autorisation (13/11, FACCUEIL-05).
+     */
+    private fun renderLevanaRappel() {
+        findViewById<TextView>(R.id.levana_rappel_permission).apply {
+            visibility = if (PermissionRules.rappelMuet(Store.levanaRappel(this@SettingsActivity),
+                    Permissions.hasNotifications(this@SettingsActivity), notifications.enCours)) View.VISIBLE else View.GONE
+            setOnClickListener { askNotifications() }
+        }
+    }
+
     private fun bindSwitch(id: Int, checked: Boolean, onChange: (Boolean) -> Unit) {
         val view = findViewById<MaterialSwitch>(id)
         // Sans texte propre, l'interrupteur prend le libellé de sa ligne : TalkBack le lisait
@@ -356,6 +463,17 @@ class SettingsActivity : AppCompatActivity() {
         view.setOnCheckedChangeListener(null)
         view.isChecked = checked
         view.setOnCheckedChangeListener { _, value -> onChange(value) }
+    }
+
+    /** Le premier texte d'une ligne qui ne soit pas un bouton : l'intitulé d'un bouton de valeur. */
+    private fun intituleDe(g: ViewGroup): CharSequence? {
+        for (i in 0 until g.childCount) {
+            val v = g.getChildAt(i)
+            if (v is Button) continue
+            if (v is TextView && !v.text.isNullOrBlank()) return v.text
+            if (v is ViewGroup) intituleDe(v)?.let { return it }
+        }
+        return null
     }
 
     /** Le premier texte d'une ligne, hors l'interrupteur lui-même. */
@@ -370,8 +488,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun renderValues() {
-        findViewById<Button>(R.id.window_start).text = Store.formatMinutes(Store.windowStart(this))
-        findViewById<Button>(R.id.window_end).text = Store.formatMinutes(Store.windowEnd(this))
+        findViewById<Button>(R.id.window_start).text = Store.formatHeure(this, Store.windowStart(this))
+        findViewById<Button>(R.id.window_end).text = Store.formatHeure(this, Store.windowEnd(this))
         findViewById<Button>(R.id.snooze_length).text =
             Store.formatDuration(this, Store.snoozeMinutes(this))
         findViewById<Button>(R.id.target_length).text =
@@ -391,6 +509,7 @@ class SettingsActivity : AppCompatActivity() {
             Store.adresse(this)?.nom ?: R.string.adresse_none
         )
         findViewById<Button>(R.id.mode_button).setText(Store.modeApparence(this).nom)
+        findViewById<Button>(R.id.version_button).setText(VersionApp.courante(this).nom)
         findViewById<Button>(R.id.fond_button).setText(Store.fond(this).nom)
         findViewById<Button>(R.id.accent_button).setText(Store.accent(this).nom)
         findViewById<Button>(R.id.police_button).setText(Store.lecturePolice(this).libelle)
@@ -416,11 +535,11 @@ class SettingsActivity : AppCompatActivity() {
 
     // --- Service, autorisations, sauvegarde ---------------------------------
 
-    private fun applyServiceState() {
+    private fun applyServiceState(context: android.content.Context = this) {
         if (BuildConfig.HAS_GATE) {
-            if (GateStatus.shouldRunService(this)) GateService.start(this) else GateService.stop(this)
+            if (GateStatus.shouldRunService(context)) GateService.start(context) else GateService.stop(context)
         }
-        Reminder.reschedule(this)
+        Reminder.reschedule(context)
     }
 
     /**
@@ -514,45 +633,106 @@ class SettingsActivity : AppCompatActivity() {
             .forEach { findViewById<View>(it).visibility = View.GONE }
     }
 
-    /**
-     * Demande les notifications. Après deux refus, Android n'affiche plus
-     * rien : le bouton ouvre alors l'écran système, sinon il resterait mort
-     * sans que personne comprenne pourquoi.
-     */
-    private fun askNotifications() {
-        if (Permissions.hasNotifications(this)) return
-        // Coupées dans les réglages du téléphone (avant Android 13, ou permission pourtant accordée) :
-        // il n'y a rien à demander, seulement l'écran système à ouvrir (04/11).
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-            androidx.core.content.ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            safeStart(Permissions.notificationSettingsIntent(this))
-            return
-        }
-        val refuseeDefinitivement = notificationsDemandees &&
-            !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
-        if (refuseeDefinitivement) {
-            safeStart(Permissions.notificationSettingsIntent(this))
-            return
-        }
-        notificationsDemandees = true
-        requestNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+    /** Demande les notifications (DemandeNotifications) ; après deux refus, par l'écran système. */
+    private fun askNotifications() = notifications.lancer()
+
+    /** Un champ de mot de passe, masqué. */
+    private fun champMotDePasse(indice: Int) = EditText(this).apply {
+        setHint(indice)
+        inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+        filters = arrayOf(android.text.InputFilter.LengthFilter(MOT_DE_PASSE_MAX))
     }
 
+    private fun boiteMotDePasse(vararg champs: EditText) = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        val marge = (20 * resources.displayMetrics.density).toInt()
+        setPadding(marge, marge / 2, marge, 0)
+        champs.forEach { addView(it) }
+    }
+
+    /**
+     * Le mot de passe de la sauvegarde (audit du 12/11) : le fichier part là
+     * où l'on veut, souvent un nuage, et il porte le journal. Vide, il reste
+     * en clair, et le texte de la fenêtre le dit. [choisi] reçoit le mot de
+     * passe ; renoncer appelle [renonce].
+     */
+    private fun fenetreMotDePasseExport(choisi: (String) -> Unit, renonce: () -> Unit) {
+        val premier = champMotDePasse(R.string.export_mdp_champ)
+        val second = champMotDePasse(R.string.export_mdp_confirmer)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.export_mdp_titre)
+            .setMessage(R.string.export_mdp_message)
+            .setView(boiteMotDePasse(premier, second))
+            .setNegativeButton(R.string.action_back) { _, _ -> renonce() }
+            .setOnCancelListener { renonce() }
+            .setPositiveButton(R.string.action_export) { _, _ ->
+                val mot = premier.text.toString()
+                if (mot != second.text.toString()) {
+                    Toast.makeText(this, R.string.export_mdp_different, Toast.LENGTH_LONG).show()
+                    fenetreMotDePasseExport(choisi, renonce)
+                } else {
+                    choisi(mot)
+                }
+            }
+            .show()
+    }
+
+    /**
+     * Le mot de passe avant le choix du fichier (revue du 15/11). Après, renoncer
+     * devait effacer le fichier tout juste créé, et effaçait aussi une ancienne
+     * sauvegarde choisie pour être remplacée.
+     */
+    private fun demanderMotDePasseExport() {
+        fenetreMotDePasseExport(choisi = { mot ->
+            motEnAttente = mot
+            // Sans sélecteur de fichiers, un message plutôt qu'un plantage (examen du 14/11, constat 12).
+            runCatching { exportFile.launch("myhitbodedut-${Store.today()}.json") }
+                .onFailure {
+                    motEnAttente = null
+                    Toast.makeText(this, R.string.fichiers_absents, Toast.LENGTH_LONG).show()
+                }
+        }, renonce = {})
+    }
+
+    /** Le fichier est choisi mais le mot de passe a été perdu (écran recréé entre-temps) : on le redemande. */
     private fun writeBackup(uri: Uri) {
-        val ok = runCatching {
-            contentResolver.openOutputStream(uri)?.use { stream ->
-                stream.write(Store.exportJson(this).toByteArray())
-            } ?: error("flux indisponible")
-        }.isSuccess
-        Toast.makeText(
-            this,
-            if (ok) R.string.export_ok else R.string.export_failed,
-            Toast.LENGTH_LONG
-        ).show()
+        // Renoncer n'efface que le fichier vide que le sélecteur vient de créer, jamais un fichier existant.
+        val renoncer = {
+            if (tailleDocument(uri) == 0L) runCatching { android.provider.DocumentsContract.deleteDocument(contentResolver, uri) }
+            Unit
+        }
+        fenetreMotDePasseExport(choisi = { mot -> ecrireSauvegarde(uri, mot) }, renonce = renoncer)
+    }
+
+    private fun tailleDocument(uri: Uri): Long? = runCatching {
+        contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { c ->
+            if (c.moveToFirst() && !c.isNull(0)) c.getLong(0) else null
+        }
+    }.getOrNull()
+
+    /** Écrit la sauvegarde, chiffrée si [motDePasse] n'est pas vide ; la dérivation de la clé prend une seconde, hors du fil de l'interface. */
+    private fun ecrireSauvegarde(uri: Uri, motDePasse: String) {
+        val clair = Store.exportJson(this)
+        Thread {
+            val ok = runCatching {
+                val texte = if (motDePasse.isEmpty()) clair else Coffre.chiffrer(clair, motDePasse)
+                contentResolver.openOutputStream(uri, "wt")?.use { stream ->
+                    stream.write(texte.toByteArray())
+                } ?: error("flux indisponible")
+            }.isSuccess
+            runOnUiThread {
+                // L'écran a pu être recréé pendant la dérivation : le message passe quand même.
+                Toast.makeText(
+                    applicationContext,
+                    if (ok) R.string.export_ok else R.string.export_failed,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }.start()
     }
 
     private fun readBackup(uri: Uri) {
-        // Au plus 2 Mo : une sauvegarde réelle pèse quelques dizaines de Ko,
+        // Au plus 3 Mo lus, 2 Mo de texte en clair : une sauvegarde réelle pèse quelques dizaines de Ko,
         // et un fichier énorme restait ensuite relu à chaque ouverture.
         val octets = runCatching {
             contentResolver.openInputStream(uri)?.use { flux ->
@@ -574,24 +754,72 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         val text = String(octets, Charsets.UTF_8)
-        val imported = Store.importJson(this, text)
+        when {
+            Coffre.estChiffre(text) -> demanderMotDePasse(text)
+            // En clair, la borne reste celle du texte : 2 Mo (revue du 15/11).
+            octets.size > CLAIR_MAX_OCTETS -> Toast.makeText(this, R.string.import_failed, Toast.LENGTH_LONG).show()
+            else -> importer(text)
+        }
+    }
+
+    /** Une sauvegarde chiffrée (audit du 12/11) : le mot de passe, puis l'import ; un mot faux le redemande. */
+    private fun demanderMotDePasse(chiffre: String) {
+        val champ = champMotDePasse(R.string.export_mdp_champ)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.import_mdp_titre)
+            .setView(boiteMotDePasse(champ))
+            .setNegativeButton(R.string.action_back, null)
+            .setPositiveButton(R.string.action_import) { _, _ ->
+                val mot = champ.text.toString()
+                Thread {
+                    val clair = Coffre.dechiffrer(chiffre, mot)
+                    runOnUiThread {
+                        when {
+                            clair == null && isDestroyed ->
+                                Toast.makeText(applicationContext, R.string.import_mdp_faux, Toast.LENGTH_LONG).show()
+                            clair == null -> {
+                                Toast.makeText(this, R.string.import_mdp_faux, Toast.LENGTH_LONG).show()
+                                demanderMotDePasse(chiffre)
+                            }
+                            clair.toByteArray(Charsets.UTF_8).size > CLAIR_MAX_OCTETS ->
+                                Toast.makeText(applicationContext, R.string.import_failed, Toast.LENGTH_LONG).show()
+                            // Même si l'écran a été recréé entre-temps : l'import ne se perd plus en silence.
+                            else -> importer(clair)
+                        }
+                    }
+                }.start()
+            }
+            .show()
+    }
+
+    /** L'import ; il aboutit aussi quand l'écran a été recréé pendant la dérivation de la clé. */
+    private fun importer(text: String) {
+        val app = applicationContext
+        val textes = if (isDestroyed) app else this
+        val imported = Store.importJson(app, text)
         if (imported == null) {
-            Toast.makeText(this, R.string.import_invalid, Toast.LENGTH_LONG).show()
+            Toast.makeText(app, R.string.import_invalid, Toast.LENGTH_LONG).show()
             return
         }
+        Celebrations.apresImport(this)
         // Le clair ou le sombre de la sauvegarde, tout de suite (audit du 04/10).
-        Apparence.appliquerMode(this)
-        StreakWidget.refresh(this)
+        Apparence.appliquerMode(app)
+        StreakWidget.refresh(app)
         Toast.makeText(
-            this,
-            resources.getQuantityString(R.plurals.import_ok, imported, imported),
+            app,
+            textes.resources.getQuantityString(R.plurals.import_ok, imported, imported),
             Toast.LENGTH_LONG
         ).show()
-        applyServiceState()
-        refresh()
+        applyServiceState(app)
+        if (!isDestroyed) refresh()
     }
 
     // --- Sélecteurs ---------------------------------------------------------
+
+    /** Début = fin : la plage serait vide, le mode n'agirait jamais (FBARRIERE-17). */
+    private fun fenetreVide() {
+        Toast.makeText(this, R.string.settings_window_same, Toast.LENGTH_LONG).show()
+    }
 
     private fun pickTime(currentMinutes: Int, onPicked: (Int) -> Unit) {
         TimePickerDialog(
@@ -599,7 +827,7 @@ class SettingsActivity : AppCompatActivity() {
             { _, hour, minute -> onPicked(hour * 60 + minute) },
             (currentMinutes / 60) % 24,
             currentMinutes % 60,
-            true
+            android.text.format.DateFormat.is24HourFormat(this)
         ).show()
     }
 
@@ -615,6 +843,30 @@ class SettingsActivity : AppCompatActivity() {
      * Les règles de confidentialité (31/10, Google Play), publiées avec le site web
      * (web/src/confidentialite.html), ouvertes dans le navigateur à la langue de l'interface.
      */
+    /**
+     * Sources et licences (audit du 12/11, TLIVRES-09, TPLAYDOCS-13) : d'où viennent les textes et les
+     * traductions, les polices, les données, puis le texte des licences livrées avec l'application
+     * (LGPL 2.1 de KosherJava, Apache 2.0 de ZXing, AndroidX et Material).
+     */
+    private fun montrerLicences() {
+        fun asset(nom: String) = runCatching { assets.open("licences/$nom").bufferedReader().use { it.readText() } }.getOrDefault("")
+        val texte = getString(R.string.licences_texte) + getString(R.string.licences_android) +
+            "\n\n— LGPL 2.1 —\n\n" + asset("LGPL-2.1-KosherJava.txt") +
+            "\n\n— Apache 2.0 —\n\n" + asset("Apache-2.0-ZXing.txt")
+        val vue = TextView(this).apply {
+            this.text = texte
+            textSize = 14f
+            setTextIsSelectable(true)
+            val d = resources.displayMetrics.density
+            setPadding((24 * d).toInt(), (8 * d).toInt(), (24 * d).toInt(), (8 * d).toInt())
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.settings_licences)
+            .setView(ScrollView(this).apply { addView(vue) })
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
     private fun ouvrirConfidentialite() {
         val ancre = when (ChizukCard.language(this)) {
             "he" -> "he"
@@ -645,17 +897,40 @@ class SettingsActivity : AppCompatActivity() {
             if (rangee && e is Button && e.layoutParams.width == android.view.ViewGroup.LayoutParams.WRAP_CONTENT) {
                 e.maxWidth = (resources.displayMetrics.widthPixels * 0.45).toInt()
             }
+            // TalkBack (FACCUEIL-12) : un bouton de valeur ne disait que sa valeur (« 15 min ») ;
+            // il dit « intitulé : valeur », lue au moment où le focus passe, la valeur ayant pu changer.
+            // L'intitulé peut être posé dans une colonne (titre et aide : prénom, objectif quotidien) ;
+            // un autre bouton de la ligne n'est jamais pris pour intitulé.
+            if (v is android.widget.LinearLayout && v.orientation == android.widget.LinearLayout.HORIZONTAL &&
+                e is Button && e !is android.widget.CompoundButton && intituleDe(v) != null) {
+                androidx.core.view.ViewCompat.setAccessibilityDelegate(e, object : androidx.core.view.AccessibilityDelegateCompat() {
+                    override fun onInitializeAccessibilityNodeInfo(host: View, info: androidx.core.view.accessibility.AccessibilityNodeInfoCompat) {
+                        super.onInitializeAccessibilityNodeInfo(host, info)
+                        val valeur = (host as? Button)?.text
+                        val libelle = (host.parent as? ViewGroup)?.let { intituleDe(it) }
+                        if (!valeur.isNullOrBlank() && !libelle.isNullOrBlank() && libelle != valeur) info.text = getString(R.string.reglage_libelle_valeur, libelle, valeur)
+                    }
+                })
+            }
             bornerValeurs(e)
         }
     }
 
-    private companion object {
-        const val ETAT_DEMANDE = "notifications_demandees"
+    companion object {
+        /** Ouvrir les Réglages sur la carte « État du mode ». */
+        const val EXTRA_CARTE_BARRIERE = "carte_barriere"
+        private const val MOT_DE_PASSE_MAX = 128
         /** La page publique des règles de confidentialité, sur GitHub Pages avec le site (web/build.mjs). */
-        const val LIEN_CONFIDENTIALITE = CelebrationActivity.LIEN_WEB + "confidentialite.html"
+        private const val LIEN_CONFIDENTIALITE = CelebrationActivity.LIEN_WEB + "confidentialite.html"
         /** Au-delà, ce n'est pas une sauvegarde de cette application. */
-        const val IMPORT_MAX_OCTETS = 2 * 1024 * 1024
+        private const val IMPORT_MAX_OCTETS = 3 * 1024 * 1024
+        /**
+         * La borne du texte en clair. Le fichier lu peut aller jusqu'à 3 Mo : une
+         * sauvegarde chiffrée passe en base64, un tiers plus grosse, et celle de
+         * 2 Mo de données ne se réimportait plus (revue du 15/11).
+         */
+        private const val CLAIR_MAX_OCTETS = 2 * 1024 * 1024
         /** Grand texte (14/10) : l'échelle des textes de lecture. */
-        const val GRAND_TEXTE = 1.4f
+        private const val GRAND_TEXTE = 1.4f
     }
 }

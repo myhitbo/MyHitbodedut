@@ -43,7 +43,7 @@ object Onboarding {
     /** Les durées proposées à l'accueil : les quatre premières de l'écran de pratique. */
     val DUREES = intArrayOf(5, 10, 15, 30)
 
-    val ECRANS: List<OnboardingEcran> = listOf(
+    val ECRANS: List<OnboardingEcran> = listOfNotNull(
         OnboardingEcran(
             "pratique",
             R.string.onboarding_practice,
@@ -70,6 +70,14 @@ object Onboarding {
             R.string.onboarding_texts_body,
             R.drawable.char_tehilim
         ),
+        // La barrière du matin, la promesse centrale de l'édition complète (13/11, FACCUEIL-04) :
+        // l'édition légère n'a pas de barrière, donc pas de page qui la présente.
+        if (BuildConfig.HAS_GATE) OnboardingEcran(
+            "barriere",
+            R.string.onboarding_gate,
+            R.string.onboarding_gate_body,
+            R.drawable.char_thinking
+        ) else null,
         OnboardingEcran(
             "reglages",
             R.string.onboarding_yours,
@@ -86,7 +94,9 @@ object Onboarding {
         OnboardingEcran(
             "prive",
             R.string.onboarding_private,
-            R.string.onboarding_private_body,
+            // Sans suivi en direct (construction Play sans relais), OpenSky n'est pas nommé.
+            if (BuildConfig.SUIVI_VOL && !BuildConfig.OPENSKY_DIRECT && !BuildConfig.RELAIS_VOL.startsWith("https://"))
+                R.string.onboarding_private_body_route else R.string.onboarding_private_body,
             R.drawable.char_thumbs_up
         )
     )

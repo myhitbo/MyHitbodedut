@@ -13,7 +13,7 @@ Rien n'est recopié à la main. À chaque construction, `build.mjs` relit les re
 | Illustrations | `res/drawable-nodpi/*.webp` |
 | Couleurs, jour et nuit | `res/values*/colors.xml`, `palettes.xml` |
 | Icônes des onglets | `res/drawable/ic_nav_*.xml` |
-| Musique et titres | `res/raw/*.m4a` (AAC 96 kb/s), dans l'ordre de `MusicLibrary.kt` |
+| Musique et titres | les morceaux de la version Play seulement : `MusiquePlay.kt` et `main/res/raw/*.m4a` (AAC 96 kb/s) |
 | Villes des zmanim, ajouts du siddour | `res/raw/villes.json`, `res/raw/siddur_annotations.json` |
 
 Les règles d'Android (`Langue.kt`, `Reference.kt`, `JaugeSemaine.kt`, `DureeSeance.kt`, les fêtes de `Holidays.kt`, l'export et l'import de `Store.kt`) sont portées dans `src/js/`, avec leurs tests dans `test/`.
@@ -40,6 +40,6 @@ de 2025 à 2030, la même réponse que l'application Android. Détail : `ZMANIM.
 
 ## Confidentialité
 
-- Aucune requête ne sort du site : pas de police en ligne, pas de mesure d'audience. La politique de sécurité de la page (`Content-Security-Policy`) l'interdit, et les tests échouent si une requête part ailleurs.
-- Les données restent dans le navigateur du téléphone, en `localStorage`, le lieu des zmanim compris. La position, si on la choisit, ne sert qu'au calcul local.
+- Une seule requête sort du site : le numéro de vol envoyé à `api.adsbdb.com` quand l'utilisateur active les services en ligne et lance la recherche ; la politique de sécurité de la page (`Content-Security-Policy`) n'autorise aucun autre hôte. Pas de police en ligne, pas de mesure d'audience.
+- Les données restent dans le navigateur : `localStorage` (réglages, journal, lieu des zmanim), IndexedDB (morceaux ajoutés) et cache hors connexion. La position, si on la choisit, ne sert qu'au calcul local.
 - La musique est gardée hors connexion morceau par morceau, à la première écoute.

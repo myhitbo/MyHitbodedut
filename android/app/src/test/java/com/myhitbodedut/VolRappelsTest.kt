@@ -1,6 +1,7 @@
 package com.myhitbodedut
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -51,7 +52,8 @@ class VolRappelsTest {
         assertEquals(1, r.count { it.type == VolRappels.Type.TEFILAT_HADEREKH })
         r.filter { it.type == VolRappels.Type.PRIERE }.forEach { x ->
             val (_, debut, fin) = VolRappels.BORNES.first { it.first == x.priere }
-            assertTrue(c.enVol.any { it.cle == debut && it.instant == x.instant })
+            // Arvit d'un vol polaire sans tsét : à la chki'a, repère de repli (audit du 16/11).
+            assertTrue(c.enVol.any { (it.cle == debut || (x.priere == "arvit" && it.cle == "chkia" && VolCalendrier.tsetManque(c, it))) && it.instant == x.instant })
             assertEquals(c.evenements.firstOrNull { it.cle == fin && it.instant.isAfter(x.instant) }?.instant, x.limite)
             assertEquals(x.priere, VolRappels.ouverte(c, x.instant)?.first)
         }
@@ -84,6 +86,77 @@ class VolRappelsTest {
         assertTrue(VolRappels.rappels(Vol.calculer(trajets[7]), false).any { it.type == VolRappels.Type.PRIERE && it.priere == "chaharit" })
     }
 
+    /** Hagomel (audit du 16/11, Kitsour Yalkut Yosef 219:20) : à l'atterrissage, si le vol a duré une heure douze ou plus. */
+    @Test
+    fun `hagomel a l atterrissage d un vol d une heure douze ou plus`() {
+        trajets.forEach { p ->
+            val r = VolRappels.rappels(Vol.calculer(p), false)
+            assertEquals(listOf(p.atterrissage), r.filter { it.type == VolRappels.Type.HAGOMEL }.map { it.instant })
+            assertEquals(VolRappels.Type.HAGOMEL, r.last().type)
+        }
+        // Tel Aviv → Eilat (Ramon), une heure : pas de rappel.
+        assertTrue(VolRappels.rappels(Vol.calculer(plan("TLV", "ETM", "2026-11-10T10:00", "2026-11-10T11:00")), false)
+            .none { it.type == VolRappels.Type.HAGOMEL })
+        assertTrue(VolRappels.rappels(Vol.calculer(plan("TLV", "ETM", "2026-11-10T10:00", "2026-11-10T11:12")), false)
+            .any { it.type == VolRappels.Type.HAGOMEL })
+    }
+
+    @Test
+    fun `Chaharit en vol - le rappel nomme la fin du Chema et l annonce 30 min avant (audit du 16-11)`() {
+        // JFK → TLV des 16-17/11/2026 : lever sous l'avion vers 08:46Z, fin du Chema MGA vers 09:37Z.
+        val c = Vol.calculer(plan("JFK", "TLV", "2026-11-16T22:00", "2026-11-17T15:30"))
+        for (nusah in listOf("edot", "sefard", "ashkenaz")) {
+            val r = VolRappels.rappels(c, false, nusah)
+            verifier(c, r)
+            val cle = VolRappels.cleChema(nusah)
+            val fin = c.evenements.first { it.cle == cle && it.instant.isAfter(c.plan.decollage) }.instant
+            val chaharit = r.single { it.type == VolRappels.Type.PRIERE && it.priere == "chaharit" }
+            assertEquals(nusah, fin, chaharit.chema)
+            assertEquals(nusah, cle, chaharit.chemaCle)
+            assertTrue(nusah, chaharit.chemaAutre != null)
+            val alerte = r.single { it.type == VolRappels.Type.CHEMA_FIN }
+            assertEquals(nusah, fin - VolRappels.AVANT_LIMITE, alerte.instant)
+        }
+        // Les Edot : le Maguen Avraham, avant la fin de la Téfila (Gra) et son alerte.
+        assertEquals("szks_mga", VolRappels.cleChema("edot"))
+        val edot = VolRappels.rappels(c, false, "edot")
+        val chema = edot.single { it.type == VolRappels.Type.CHEMA_FIN }
+        val tefila = edot.single { it.type == VolRappels.Type.PRIERE_FIN && it.priere == "chaharit" }
+        assertTrue(chema.instant < tefila.instant)
+    }
+
+    @Test
+    fun `vol polaire sans tset - Omer et Arvit a la chkia, choix de calcul dit (audit du 16-11)`() {
+        // SFO → LHR du 24/05/2027 (Lag baOmer) : chki'a vers 03:01Z, pas de tsét sous l'avion.
+        val c = Vol.calculer(plan("SFO", "LHR", "2027-05-24T17:30", "2027-05-25T11:45"))
+        assertTrue(c.enVol.none { it.cle == "tset" })
+        val chkia = c.enVol.first { it.cle == "chkia" }
+        assertTrue(VolCalendrier.tsetManque(c, chkia))
+        val omer = VolCalendrier.jalons(c, false, 18).single { it.type == VolCalendrier.Type.OMER }
+        assertTrue(omer.repli)
+        assertEquals(chkia.instant, omer.instant)
+        val r = VolRappels.rappels(c, false)
+        verifier(c, r)
+        assertTrue(r.any { it.type == VolRappels.Type.OMER && it.instant == chkia.instant })
+        assertTrue(r.any { it.type == VolRappels.Type.PRIERE && it.priere == "arvit" && it.instant == chkia.instant })
+        // Un vol ordinaire n'a pas de repli.
+        assertTrue(VolCalendrier.jalons(Vol.calculer(trajets[6]), false, 18).none { it.repli })
+    }
+
+    @Test
+    fun `ligne de date pendant le Omer - l avertissement (audit du 16-11)`() {
+        // SYD → LAX du 06/05/2027, vers l'est, pendant le Omer ; MEL → LAX en décembre, hors Omer.
+        assertTrue(VolCalendrier.ligneDateOmer(Vol.calculer(plan("SYD", "LAX", "2027-05-06T10:00", "2027-05-06T06:30")), false))
+        assertFalse(VolCalendrier.ligneDateOmer(Vol.calculer(trajets[0]), false))
+        assertTrue(Vol.calculer(trajets[0]).lignesDate.isNotEmpty())
+        // Les lieux où la ligne halakhique est discutée.
+        assertTrue(JourAffiche.ligneDateDiscutee(139.69)) // Tokyo
+        assertTrue(JourAffiche.ligneDateDiscutee(151.21)) // Sydney
+        assertTrue(JourAffiche.ligneDateDiscutee(-157.86)) // Honolulu
+        assertFalse(JourAffiche.ligneDateDiscutee(35.21))
+        assertFalse(JourAffiche.ligneDateDiscutee(-118.24))
+    }
+
     @Test
     fun `le Omer en vol a son rappel, le jour du soir`() {
         val veille = generateSequence(LocalDate.parse("2027-01-01")) { it.plusDays(1) }.first { CalendrierJuif.jour(it.plusDays(1), false).omer == 4 }
@@ -94,6 +167,15 @@ class VolRappelsTest {
         // Le Omer tombe à la sortie des étoiles, avec Arvit : deux rappels à la même minute.
         val omer = r.single { it.type == VolRappels.Type.OMER }
         assertTrue(r.any { it.type == VolRappels.Type.PRIERE && it.priere == "arvit" && it.instant == omer.instant })
+    }
+
+    @Test
+    fun `deux rappels dus d un coup n ont pas la meme etiquette de notification`() {
+        val t = Instant.parse("2026-11-10T08:00:00Z")
+        val derekh = VolRappels.Rappel(VolRappels.Type.TEFILAT_HADEREKH, t)
+        val minha = VolRappels.Rappel(VolRappels.Type.PRIERE, t, "minha")
+        val arvit = VolRappels.Rappel(VolRappels.Type.PRIERE, t, "arvit")
+        assertEquals(3, setOf(derekh, minha, arvit).map(VolAlerte::etiquette).toSet().size)
     }
 
     @Test
@@ -131,5 +213,10 @@ class VolRappelsTest {
         assertTrue(SuiviVol.fournisseur("") === SuiviVol.OpenSkyAnonyme)
         assertTrue(SuiviVol.fournisseur("https://r.test") is SuiviVol.Relais)
         assertNull((SuiviVol.fournisseur("http://r.test") as? SuiviVol.Relais))
+        // La construction Play (audit du 12/11, TPLAYDOCS-01) : sans relais, aucun suivi en direct, jamais OpenSky anonyme.
+        assertNull(SuiviVol.fournisseur("", directAutorise = false))
+        assertTrue(SuiviVol.fournisseur("https://r.test", directAutorise = false) is SuiviVol.Relais)
+        val gradle = java.io.File("build.gradle.kts").readText()
+        assertTrue(gradle.contains("?: ((project.findProperty(\"play\") as String?) != \"true\")"))
     }
 }

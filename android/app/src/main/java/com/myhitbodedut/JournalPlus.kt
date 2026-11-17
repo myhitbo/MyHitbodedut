@@ -37,10 +37,13 @@ object JournalPlus {
             o.optString("travail", "").take(GRATITUDE_MAX))
     }
 
+    /** L'entrée enregistrée d'un jour, bornée ; aussi pour l'import, qui écrit tout d'un coup. */
+    fun versJson(plus: Plus): JSONObject = JSONObject().put("avant", plus.avant).put("apres", plus.apres)
+        .put("gratitude", plus.gratitude.take(GRATITUDE_MAX)).put("travail", plus.travail.take(GRATITUDE_MAX))
+
     fun ecrire(context: Context, date: String, plus: Plus) {
         val t = tout(context)
-        if (plus.vide) t.remove(date) else t.put(date, JSONObject().put("avant", plus.avant).put("apres", plus.apres)
-            .put("gratitude", plus.gratitude.take(GRATITUDE_MAX)).put("travail", plus.travail.take(GRATITUDE_MAX)))
+        if (plus.vide) t.remove(date) else t.put(date, versJson(plus))
         Store.setJournalPlusBrut(context, t.toString())
     }
 
@@ -48,22 +51,28 @@ object JournalPlus {
      * « 🙁 → 🙂 · Gratitude » pour la ligne du journal ; vide s'il n'y a rien. L'humeur est isolée
      * de gauche à droite (U+2066…U+2069) : en hébreu, la flèche pointait d'après vers avant (02/11).
      */
-    fun resume(plus: Plus, gratitude: String, travail: String = "", sujets: String = ""): String = listOfNotNull(
+    fun resume(
+        plus: Plus, gratitude: String, travail: String = "", sujets: String = "",
+        ligne: (String, String) -> String = { libelle, texte -> "$libelle : $texte" },
+    ): String = listOfNotNull(
         sujets.takeIf { it.isNotBlank() },
         if (plus.avant > 0 || plus.apres > 0) "\u2066${HUMEURS.getOrNull(plus.avant - 1) ?: "·"} → ${HUMEURS.getOrNull(plus.apres - 1) ?: "·"}\u2069" else null,
-        plus.gratitude.takeIf { it.isNotBlank() }?.let { "$gratitude : $it" },
-        plus.travail.takeIf { it.isNotBlank() }?.let { "$travail : $it" },
+        plus.gratitude.takeIf { it.isNotBlank() }?.let { ligne(gratitude, it) },
+        plus.travail.takeIf { it.isNotBlank() }?.let { ligne(travail, it) },
     ).joinToString("\n")
 
     /** Les minutes de chaque jour du mois, du 1er au dernier (0 sans hitbodedout). */
     fun minutesDuMois(jours: Map<String, DayRecord>, mois: YearMonth): List<Int> =
         (1..mois.lengthOfMonth()).map { j -> jours[mois.atDay(j).toString()]?.takeIf { it.faite }?.minutes ?: 0 }
 
-    /** Les barres du mois : une par jour, à l'échelle du plus long ; le jour d'aujourd'hui marqué. */
-    class Graphique(c: Context, private val minutes: List<Int>, private val aujourdhui: Int) : View(c) {
+    /**
+     * Les barres du mois : une par jour, à l'échelle du plus long ; le jour d'aujourd'hui marqué.
+     * [encre] : blanche sur le bandeau du journal ; celle de l'accent sur la carte du Chemin (13/11).
+     */
+    class Graphique(c: Context, private val minutes: List<Int>, private val aujourdhui: Int, encre: Int = 0xFFFFFFFF.toInt()) : View(c) {
         private val d = c.resources.displayMetrics.density
-        private val barre = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFFFFF.toInt() }
-        private val vide = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x40FFFFFF }
+        private val barre = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = encre }
+        private val vide = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = (encre and 0x00FFFFFF) or 0x40000000 }
 
         override fun onMeasure(w: Int, h: Int) = setMeasuredDimension(MeasureSpec.getSize(w), (64 * d).toInt())
 

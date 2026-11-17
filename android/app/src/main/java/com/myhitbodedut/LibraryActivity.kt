@@ -28,6 +28,9 @@ class LibraryActivity : AppCompatActivity() {
         /** Les livres entiers (12/10) : leur titre de groupe, puis un livre par ligne. */
         data class TitreLivres(val titre: LocalizedText) : Row
         data class Livre(val texte: SiddurTexte) : Row
+
+        /** Au pied de la liste des livres : la licence du Yalkout Yossef et l'origine des traductions (TLIVRES-02, COUV-05). */
+        data object Pied : Row
     }
 
     /** Les livres entiers (onglet Bibliothèque, 13/10), ou les sources de la hitbodedout. */
@@ -36,7 +39,7 @@ class LibraryActivity : AppCompatActivity() {
     private val rows: List<Row> by lazy {
         if (livresSeuls) {
             val livres = Data.livresIndex(this)
-            livres.groupes.flatMap { g -> listOf(Row.TitreLivres(g.titre)) + livres.du(g.cle).map { Row.Livre(it) } }
+            livres.groupes.flatMap { g -> listOf(Row.TitreLivres(g.titre)) + livres.du(g.cle).map { Row.Livre(it) } } + Row.Pied
         } else Data.library(this).sections.flatMap { section ->
             listOf(Row.Header(section)) + section.sousSections.map { Row.Sub(it) }
         }
@@ -71,9 +74,22 @@ class LibraryActivity : AppCompatActivity() {
         override fun getItemCount(): Int = rows.size
 
         override fun getItemViewType(position: Int): Int =
-            if (rows[position] is Row.Header || rows[position] is Row.TitreLivres) TYPE_HEADER else TYPE_SUB
+            when (rows[position]) {
+                is Row.Header, is Row.TitreLivres -> TYPE_HEADER
+                is Row.Pied -> TYPE_PIED
+                else -> TYPE_SUB
+            }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            if (viewType == TYPE_PIED) return object : RecyclerView.ViewHolder(TextView(parent.context).apply {
+                layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                setText(R.string.livres_pied)
+                textSize = 12f
+                textDirection = View.TEXT_DIRECTION_LOCALE
+                setTextColor(Apparence.couleur(context, R.color.muted))
+                val d = resources.displayMetrics.density
+                setPadding((16 * d).toInt(), (20 * d).toInt(), (16 * d).toInt(), (24 * d).toInt())
+            }) {}
             val layout =
                 if (viewType == TYPE_HEADER) R.layout.item_library_section
                 else R.layout.item_library_subsection
@@ -91,6 +107,7 @@ class LibraryActivity : AppCompatActivity() {
                     bindTranslation(holder.itemView.findViewById(R.id.section_translation), row.titre, language)
                 }
                 is Row.Livre -> bindLivre(holder.itemView, row.texte, language)
+                is Row.Pied -> Unit
             }
         }
 
@@ -142,5 +159,6 @@ class LibraryActivity : AppCompatActivity() {
         const val EXTRA_LIVRES = "livres"
         private const val TYPE_HEADER = 0
         private const val TYPE_SUB = 1
+        private const val TYPE_PIED = 2
     }
 }

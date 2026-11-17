@@ -1,6 +1,6 @@
 # L'application pour téléphone à touches (Java ME, nokia/) : construite,
-# testée, puis publiée dans son propre dépôt, avrahamohayon02102001/Nokia-my-hitbodedut-app,
-# comme le site iPhone l'est dans hil123/myhitbodedut-web. C'est un
+# testée, puis publiée dans son propre dépôt, myhitbo/Nokia-my-hitbodedut-app,
+# comme le site iPhone l'est sur Cloudflare Pages (myhitbodedut.pages.dev). C'est un
 # produit à part : rien n'est ajouté à la release Android.
 name: Nokia (Java ME)
 
@@ -12,6 +12,8 @@ on:
       # Les textes et les règles qu'elle relit à chaque construction.
       - 'android/app/src/main/res/raw/chizuk.json'
       - 'android/app/src/main/res/values/strings.xml'
+      - 'android/app/src/main/res/values-en/strings.xml'
+      - 'android/app/src/main/res/values-iw/strings.xml'
       - 'web/src/js/**'
       - '.github/workflows/nokia.yml'
   pull_request:
@@ -34,21 +36,21 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           # La version du .jar compte les commits (build.sh).
           fetch-depth: 0
 
       # Un JDK 8, dont javac vise encore Java 1.3 (CLDC), et un Java récent
       # pour ProGuard.
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: |
             8
             21
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 22
 
@@ -58,7 +60,7 @@ jobs:
       - name: Build MyHitbodedut.jar
         run: JDK8="$JAVA_HOME_8_X64" JAVA_RECENT="$JAVA_HOME_21_X64/bin/java" bash nokia/app/build.sh
 
-      - name: Test (rules, texts, 21 screens at 240x320)
+      - name: Test (rules, texts, 29 screens at 240x320 in French, English, Hebrew)
         run: JDK8="$JAVA_HOME_8_X64" bash nokia/app/test.sh
 
       - name: Prepare the published folder
@@ -71,21 +73,21 @@ jobs:
           printf '%s\n%s\n' "$v" "$GITHUB_SHA" > publie/version.txt
           cat publie/version.txt
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: MyHitbodedut-nokia
           path: publie
 
-      - name: Publish to avrahamohayon02102001/Nokia-my-hitbodedut-app
+      - name: Publish to myhitbo/Nokia-my-hitbodedut-app
         # Seule main publie (une exécution manuelle d'une autre branche publierait du code non fusionné).
         if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         env:
           # Le jeton propre au dépôt Nokia s'il existe ; sinon celui du site,
           # s'il a aussi accès à ce dépôt (jeton classique « repo »).
           TOKEN: ${{ secrets.NOKIA_DEPLOY_TOKEN || secrets.WEB_DEPLOY_TOKEN }}
-          # Le dépôt a changé de propriétaire (03/11) : hil123/Nokia-my-hitbodedut-app
-          # y redirige, mais le jeton de hil123 n'y a pas le droit d'écrire (403).
-          CIBLE: avrahamohayon02102001/Nokia-my-hitbodedut-app
+          # Les trois dépôts sont au compte myhitbo (audit du 12/11, TPLAYDOCS-02) : le jeton
+          # doit pouvoir écrire dans myhitbo/Nokia-my-hitbodedut-app.
+          CIBLE: myhitbo/Nokia-my-hitbodedut-app
         run: |
           if [ -z "$TOKEN" ]; then
             echo "::warning::Ni NOKIA_DEPLOY_TOKEN ni WEB_DEPLOY_TOKEN : .jar construit et testé (artefact), non publié."

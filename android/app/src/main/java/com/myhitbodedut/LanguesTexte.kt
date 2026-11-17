@@ -30,7 +30,9 @@ object LanguesTexte {
     fun defaut(langueApp: String): Mode = when (langueApp) {
         "he", "iw" -> Mode.HE
         "en" -> Mode.HE_EN
-        else -> Mode.HE_FR
+        "fr" -> Mode.HE_FR
+        // L'espagnol et l'arabe tunisien (17/11) : les textes n'y sont pas traduits, l'hébreu seul.
+        else -> Mode.HE
     }
 
     fun mode(c: Context): Mode = Store.lectureLangues(c)?.let { k -> Mode.entries.firstOrNull { it.cle == k } }
@@ -51,6 +53,29 @@ object LanguesTexte {
         return tous.ifEmpty { listOf("he" to he) }
     }
 
+    /**
+     * Une traduction et ses balises (<b>, <small>, <br>) rendues, et non affichées en toutes lettres
+     * (audit du 12/11, FWEBLIVE-01, YALKUT-02, TLIVRES-01 : environ 1 775 paragraphes par langue).
+     */
+    fun riche(t: CharSequence): CharSequence =
+        if (t is String && '<' in t) android.text.Html.fromHtml(t, android.text.Html.FROM_HTML_MODE_LEGACY).trimEnd() else t
+
+    /** Le mode montre une traduction (et non l'hébreu seul) : la réserve sur son origine s'impose. */
+    fun montreTraduction(mode: Mode): Boolean = mode.langues.any { it != "he" }
+
+    /**
+     * La réserve sur les traductions automatiques, au pied du texte ou de la carte, comme en tête des livres
+     * (audit du 12/11, COUV-05) : « Traduction automatique, non relue : l'hébreu fait foi ».
+     */
+    fun mentionAuto(c: Context): TextView = TextView(c).apply {
+        setText(R.string.lecture_traduction_auto)
+        textSize = 12f
+        textDirection = View.TEXT_DIRECTION_LOCALE
+        setTextColor(Apparence.couleur(c, R.color.muted))
+        val d = c.resources.displayMetrics.density
+        setPadding(0, (12 * d).toInt(), 0, (4 * d).toInt())
+    }
+
     /** Le mode veut une traduction que ce texte n'a pas. */
     fun manque(mode: Mode, aTraduction: Boolean): Boolean = !aTraduction && mode.langues.any { it != "he" }
 
@@ -60,7 +85,7 @@ object LanguesTexte {
      */
     fun vueTraduction(c: Context, texte: CharSequence, rendu: ReglagesLecture.Rendu, seule: Boolean, base: Float = 19f): TextView =
         TextView(c).apply {
-            text = texte
+            text = riche(texte)
             layoutDirection = View.LAYOUT_DIRECTION_LTR
             textDirection = View.TEXT_DIRECTION_LTR
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
@@ -76,7 +101,7 @@ object LanguesTexte {
      */
     fun vueMarquee(c: Context, texte: CharSequence, seule: Boolean, base: Float = 19f): TextView =
         ReglagesLecture.marquer(TextView(c).apply {
-            text = texte
+            text = riche(texte)
             layoutDirection = View.LAYOUT_DIRECTION_LTR
             textDirection = View.TEXT_DIRECTION_LTR
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START

@@ -3,7 +3,7 @@
 # Codespace, quand GitHub Actions ne démarre plus (quota de minutes épuisé,
 # 11/10/2026). Mêmes étapes que .github/workflows/android.yml (build) :
 # JDK 17, plateforme Android 35, build-tools 35.0.0, signature par la clé
-# du dépôt (android/keystore/myhitbodedut-dev.jks, comme la CI).
+# privée de publication (jamais celle du dépôt, devenue publique).
 #
 #   bash tools/apk_codespace.sh            # numéro de version : 224
 #   bash tools/apk_codespace.sh 225        # ou celui qu'on veut
@@ -12,6 +12,14 @@ set -euo pipefail
 NUM="${1:-224}"
 RACINE="$(cd "$(dirname "$0")/.." && pwd)"
 SDK="$HOME/android-sdk"
+
+# Le dépôt est public (15/11/2026) : la clé de développement aussi. Une
+# release se signe par la clé privée, fournie comme dans la CI (KEYSTORE_PATH,
+# KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD ; android/keystore/README.md).
+if [ -z "${KEYSTORE_PATH:-}" ] || [ ! -f "$KEYSTORE_PATH" ] || [ -z "${KEYSTORE_PASSWORD:-}" ] || [ -z "${KEY_ALIAS:-}" ]; then
+  echo "Clé de publication absente (KEYSTORE_PATH, KEYSTORE_PASSWORD, KEY_ALIAS) : pas de release signée par la clé publique."
+  exit 0
+fi
 
 # Une seule fois : la release de ce numéro existe déjà, rien à faire.
 if gh release view "v1.$NUM" >/dev/null 2>&1; then
@@ -57,4 +65,4 @@ gh release create "v1.$NUM" MyHitbodedut.apk MyHitbodedut-Light.apk mapping-full
 rm -f MyHitbodedut.apk MyHitbodedut-Light.apk mapping-full.txt
 
 echo
-echo "Fait : https://github.com/hil123/MyHitbodedut/releases/latest/download/MyHitbodedut.apk"
+echo "Fait : https://github.com/myhitbo/MyHitbodedut/releases/latest/download/MyHitbodedut.apk"

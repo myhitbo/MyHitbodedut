@@ -36,7 +36,7 @@ const DONNEES = {
 };
 const MAINTENANT = new Date('2026-09-29T09:00:00').getTime();
 
-async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'vert', prenom = '', ecran = '', onglet = null, adresse = null, actions = null, calme = false, extra = {} }) {
+async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'vert', prenom = '', ecran = '', onglet = null, adresse = null, actions = null, calme = false, extra = {}, heure = null }) {
   if (process.env.SEUL && !nom.startsWith(process.env.SEUL)) return;
   const contexte = await navigateur.newContext({
     viewport: { width: LARGEUR, height: HAUTEUR }, deviceScaleFactor: 2, colorScheme: mode === 'sombre' ? 'dark' : 'light',
@@ -73,7 +73,7 @@ async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'v
     const d = new Date(); d.setDate(d.getDate() - d.getDay() - 7);
     const vu = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     localStorage.setItem('myhitbodedut', JSON.stringify({ bilan_vu: vu, ...JSON.parse(prefs) }));
-  }, { donnees: DONNEES, prefs, maintenant: MAINTENANT });
+  }, { donnees: DONNEES, prefs, maintenant: heure ? new Date(`2026-09-29T${heure}:00`).getTime() : MAINTENANT });
   if (moteur === 'webkit') {
     // WebKit sous Linux lit l'audio par GStreamer, que ni Safari ni l'iPhone
     // n'emploient, et la page s'y fige par moments à l'arrêt d'un morceau.
@@ -147,7 +147,7 @@ async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'v
   // L'accueil, sans défiler : « Commencer » entier au-dessus des onglets (comme sur Android).
   if (nom.startsWith('accueil') && !actions) {
     const cache = await page.evaluate(() => {
-      const b = document.querySelector('.accueil-actions .principal')?.getBoundingClientRect();
+      const b = document.querySelector('.depart .principal')?.getBoundingClientRect();
       const o = document.querySelector('nav.onglets')?.getBoundingClientRect();
       return !b || b.bottom > (o ? o.top : window.innerHeight) - 2;
     });
@@ -162,6 +162,13 @@ await capture('presentation-fr', { langue: 'fr', extra: { onboarded_version: 0 }
 await capture('presentation-he-duree', { langue: 'he', extra: { onboarded_version: 0 }, actions: (p) => p.click('.presentation .principal') });
 await capture('accueil-he', { langue: 'he', prenom: 'אברהם' });
 await capture('accueil-en-sombre', { langue: 'en', mode: 'sombre' });
+// L'espagnol et l'arabe tunisien (17/11) : l'interface traduite, l'arabe de droite à gauche.
+await capture('accueil-es', { langue: 'es', prenom: 'Abraham' });
+await capture('accueil-ar', { langue: 'ar' });
+await capture('reglages-es', { langue: 'es', ecran: 'reglages' });
+await capture('reglages-ar', { langue: 'ar', ecran: 'reglages' });
+await capture('textes-ar', { langue: 'ar', onglet: 'textes' });
+await capture('chemin-es', { langue: 'es', onglet: 'chemin' });
 // Un jour fait touché : sa durée à la place du ✓ (14/10).
 // Un jour fait touché ouvre sa feuille (16/10) ; « Montrer la durée » la met sur la bande.
 await capture('accueil-fr-durees', { langue: 'fr', actions: async (p) => { const n = await p.locator('button.jour.fait').count(); for (let i = 0; i < n; i++) { await p.locator('button.jour.fait').nth(i).click(); await p.locator('.feuille .actions button').first().click(); } } });
@@ -169,6 +176,24 @@ await capture('accueil-fr-durees', { langue: 'fr', actions: async (p) => { const
 await capture('accueil-fr-ajout-temps', { langue: 'fr', actions: (p) => p.locator('button.jour:not(.fait)').first().click() });
 await capture('accueil-fr-sable-violet', { langue: 'fr', fond: 'sable', accent: 'violet', prenom: 'Hillel' });
 await capture('textes-he', { langue: 'he', onglet: 'textes' });
+// Le Jour suit le ciel (14/11) : sans lieu, l'heure du téléphone choisit l'aube, le jour, le coucher ou la nuit.
+for (const [nom, heure, ciel, options] of [['accueil-aube-fr', '06:40', 'aube', {}], ['accueil-coucher-he', '18:30', 'coucher', { langue: 'he' }],
+  ['accueil-nuit-fr-sombre', '21:30', 'nuit', { mode: 'sombre' }], ['accueil-nuit-en', '23:10', 'nuit', { langue: 'en' }]]) {
+  await capture(nom, { langue: 'fr', heure, ...options, actions: async (p) => {
+    const vu = await p.evaluate(() => ({ ecran: document.querySelector('.ecran[data-ciel]')?.dataset.ciel,
+      plaque: document.querySelector('.plaque.avec-ciel svg.ciel') !== null, lanternes: document.querySelectorAll('.semaine .lanterne').length }));
+    if (vu.ecran !== ciel || !vu.plaque || vu.lanternes !== 7) erreurs.push(`${nom} : ${JSON.stringify(vu)}, attendu ${ciel}`);
+  } });
+}
+// La refonte du 13/11 : les rayons des Livres, Le Chemin, et le volet de la barre de départ.
+await capture('textes-fr', { langue: 'fr', onglet: 'textes' });
+await capture('chemin-fr', { langue: 'fr', onglet: 'chemin' });
+await capture('chemin-he-sombre', { langue: 'he', mode: 'sombre', onglet: 'chemin' });
+await capture('volet-fr', { langue: 'fr', actions: async (p) => {
+  await p.click('.depart-regler');
+  const lignes = await p.locator('.volet-depart .ligne').count();
+  if (lignes !== 3) erreurs.push(`volet de la séance : ${lignes} lignes au lieu de 3`);
+} });
 await capture('musique-fr', { langue: 'fr', ecran: 'musique' });
 await capture('reglages-en', { langue: 'en', ecran: 'reglages' });
 
@@ -354,13 +379,39 @@ await capture('hazak-he', {
     await p.waitForSelector('.bravo');
   },
 });
+// La fin de séance sur un seul écran (13/11) : une humeur ouvre le carnet ; « Enregistrer » l'inscrit.
+await capture('bravo-carnet-fr', {
+  langue: 'fr', ecran: 'seance', calme: true,
+  actions: async (p) => {
+    await p.click('.duree');
+    await finDeSeance(p);
+    if (await p.locator('.carnet-champ').count()) erreurs.push('le carnet doit attendre une humeur pour s\'ouvrir');
+    await p.locator('.carnet .humeur').nth(3).click();
+    await p.fill('#carnet-gratitude', 'Le calme du matin');
+    await p.fill('#carnet-note', 'J\'ai parlé de la semaine qui vient.');
+    const libelle = await p.textContent('.bravo .principal');
+    if (libelle !== 'Enregistrer') erreurs.push(`bouton du carnet : « ${libelle} »`);
+    await p.screenshot({ path: join(SORTIE, `${moteur}-bravo-carnet-fr-ouvert.png`), animations: 'disabled' });
+    await p.click('.bravo .principal');
+    const s = await p.evaluate(() => ({ j: JSON.parse(localStorage.getItem('myhitbodedut-journal')), tout: JSON.stringify(localStorage) }));
+    if (s.j.days['2026-09-29']?.note !== 'J\'ai parlé de la semaine qui vient.') erreurs.push(`note du carnet non inscrite : ${JSON.stringify(s.j.days['2026-09-29'])}`);
+    if (!s.tout.includes('Le calme du matin')) erreurs.push('gratitude du carnet non inscrite');
+  },
+});
 // Le journal a reçu la séance, et l'accueil la montre.
 await capture('accueil-apres-seance-fr', {
   langue: 'fr', ecran: 'seance', calme: true,
   actions: async (p) => {
     await p.click('.duree');
     await finDeSeance(p);
+    // Après une séance arrivée à son terme, la note est proposée (14/11, FWEBLIVE-02) : depuis la
+    // refonte du 13/11, sur l'écran du bravo lui-même (le carnet : humeurs et « Écrire une note »).
+    // « Continuer » sans rien remplir n'inscrit rien de plus que la séance.
+    if (!(await p.locator('.bravo .carnet .humeur').count()) || !(await p.locator('.bravo .carnet .texte-bouton').count())) {
+      erreurs.push('la note n\'est pas proposée après la séance');
+    }
     await p.click('.bravo .principal');
+    if (await p.locator('.voile').count()) erreurs.push('une fenêtre s\'ouvre encore après « Continuer »');
     await p.click('.retour');
     const jour = await p.evaluate(() => JSON.parse(localStorage.getItem('myhitbodedut-journal')).days['2026-09-29']);
     if (!jour || jour.minutes !== 5) erreurs.push(`séance non inscrite : ${JSON.stringify(jour)}`);

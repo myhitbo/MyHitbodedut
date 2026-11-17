@@ -41,6 +41,14 @@ object RappelsTefila {
     private const val TICHREI = 7
 
     /**
+     * Le texte de la fin de מַשִּׁיב הָרוּחַ (audit du 16/11) : en Ashkenaz hors d'Israël, seul l'officiant cesse à
+     * la répétition de Moussaf ; l'assemblée le dit encore dans la Amida de Moussaf et cesse à Min'ha (Rema 114:3 :
+     * « הקהל מזכירין ואין פוסקין עד מנחה … וכן נוהגין » ; Michna Beroura 114:3). Ailleurs, tous cessent à Moussaf.
+     */
+    fun cleGuechemFin(nusah: Nusah, enIsrael: Boolean): String =
+        if (nusah == Nusah.ASHKENAZ && !enIsrael) "rappel_guechem_fin_ashkenaz" else "rappel_guechem_fin"
+
+    /**
      * Les changements des [avance] jours à venir (aujourd'hui compris), du plus proche au plus lointain.
      * [sansGuechem] : les Edot de l'hémisphère sud disent מוריד הטל toute l'année (SiddurJour.conditionsPour,
      * Yalkut Yosef O.H. 117) ; ni début ni fin de מַשִּׁיב הָרוּחַ à annoncer.
@@ -52,7 +60,11 @@ object RappelsTefila {
             val d = aujourdhui.plusDays(k.toLong())
             val j = jour(d)
             val pluie = CalendrierJuif.C.TAL_OUMATAR
-            if (pluie in j.conditions && pluie !in veille.conditions) res += Rappel(Type.PLUIE_DEBUT, d)
+            // Premier jour un samedi : la Amida de Chabbat ne la demande pas, on commence à motsaé Chabbat,
+            // soit à Arvit du soir du samedi (KosherJava : isVeseinTalUmatarStartDate le dimanche) : FCALENDRIER-04.
+            if (pluie in j.conditions && pluie !in veille.conditions) {
+                res += Rappel(Type.PLUIE_DEBUT, if (d.dayOfWeek == java.time.DayOfWeek.SATURDAY) d.plusDays(1) else d)
+            }
             if (pluie !in j.conditions && pluie in veille.conditions) res += Rappel(Type.PLUIE_FIN, d)
             if (!sansGuechem && j.moisHebreu == TICHREI && j.jourHebreu == 22) res += Rappel(Type.GUECHEM_DEBUT, d)
             if (!sansGuechem && j.moisHebreu == NISSAN && j.jourHebreu == 15) res += Rappel(Type.GUECHEM_FIN, d)
@@ -86,7 +98,9 @@ object RappelsTefilaVue {
                 RappelsTefila.Type.PLUIE_DEBUT -> R.string.rappel_pluie_debut_titre to if (edot) R.string.rappel_pluie_debut_edot else R.string.rappel_pluie_debut
                 RappelsTefila.Type.PLUIE_FIN -> R.string.rappel_pluie_fin_titre to if (edot) R.string.rappel_pluie_fin_edot else R.string.rappel_pluie_fin
                 RappelsTefila.Type.GUECHEM_DEBUT -> R.string.rappel_guechem_titre to R.string.rappel_guechem_debut
-                RappelsTefila.Type.GUECHEM_FIN -> R.string.rappel_guechem_titre to R.string.rappel_guechem_fin
+                RappelsTefila.Type.GUECHEM_FIN -> R.string.rappel_guechem_titre to
+                    if (RappelsTefila.cleGuechemFin(Store.siddurNusah(c), israel) == "rappel_guechem_fin_ashkenaz") R.string.rappel_guechem_fin_ashkenaz
+                    else R.string.rappel_guechem_fin
                 RappelsTefila.Type.DIX_JOURS -> R.string.rappel_dix_jours_titre to R.string.rappel_dix_jours
                 RappelsTefila.Type.OMER -> R.string.rappel_omer_titre to R.string.rappel_omer
             }

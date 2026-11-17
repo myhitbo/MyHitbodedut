@@ -20,7 +20,7 @@ class DarkModeTest {
     /** Les plaques qui restent claires la nuit, parce qu'une illustration s'y pose. */
     private val plaques = setOf(
         "@drawable/bg_chip_mint", "@drawable/bg_tip_number",
-        "@drawable/bg_stage", "@drawable/bg_stage_soft",
+        "@drawable/bg_stage", "@drawable/bg_stage_soft", "@drawable/bg_gauge_plate",
     )
 
     private fun couleurs(dossier: String): Set<String> {
@@ -88,6 +88,39 @@ class DarkModeTest {
         )
     }
 
+    /**
+     * FACCUEIL-02 (14/11) : les enfants d'une plaque claire comptent aussi (la légende de la plaque
+     * centrale était en « mhMuted », qui s'éclaircit la nuit), et les encres posées par le code
+     * sur la plaque centrale (MainActivity.remplirFace).
+     */
+    @Test
+    fun `les enfants d une plaque claire n ont pas d encre qui bascule la nuit`() {
+        val basculent = couleurs("values-night")
+        val fautes = mutableListOf<String>()
+        File("src/main/res").walkTopDown().filter { it.extension == "xml" && it.parentFile.name.startsWith("layout") }
+            .sortedBy { it.path }.forEach { fichier ->
+                fun descendre(e: org.w3c.dom.Element, surPlaque: Boolean) {
+                    val plaque = surPlaque || attribut(e, "background") in plaques
+                    if (surPlaque) attribut(e, "textColor")?.let { jeton(it) }?.takeIf { it in basculent }?.let {
+                        fautes.add("${fichier.parentFile.name}/${fichier.name} : « ${attribut(e, "id") ?: e.tagName} » en « $it »")
+                    }
+                    val enfants = e.childNodes
+                    for (i in 0 until enfants.length) (enfants.item(i) as? org.w3c.dom.Element)?.let { descendre(it, plaque) }
+                }
+                descendre(DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }
+                    .newDocumentBuilder().parse(fichier).documentElement, false)
+            }
+        assertTrue("encre illisible la nuit :\n" + fautes.joinToString("\n"), fautes.isEmpty())
+        val face = File("src/main/java/com/myhitbodedut/MainActivity.kt").readText()
+            .substringAfter("valeur.setTextColor(").substringBefore("compteurFace?.cancel()")
+        listOf("R.color.on_plate", "R.color.ring_week_on_plate", "R.color.ring_streak_on_plate", "R.color.on_plate_ink").forEach {
+            assertTrue(it, it in face)
+        }
+        listOf("R.color.brand", "R.color.ring_week ", "R.color.ring_streak ", "R.color.ink").forEach {
+            assertTrue(it, it !in face)
+        }
+    }
+
     /** Sans thème DayNight, tout values-night est du poids mort. */
     @Test
     fun `le theme suit le mode de l appareil`() {
@@ -116,7 +149,8 @@ class DarkModeTest {
     @Test
     fun `les jetons fixes ne sont pas redefinis la nuit`() {
         val nuit = couleurs("values-night")
-        listOf("white", "mint", "on_plate", "stage_soft", "brand_dark").forEach {
+        listOf("white", "mint", "on_plate", "stage_soft", "brand_dark",
+            "ring_week_on_plate", "ring_streak_on_plate", "on_plate_ink", "on_plate_muted").forEach {
             assertTrue("« $it » ne doit pas être redéfini la nuit", it !in nuit)
         }
     }

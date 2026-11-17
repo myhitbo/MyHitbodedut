@@ -102,7 +102,7 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
         }
         contenu.addView(boussole)
         precision = VueJour.texte(this, getString(R.string.boussole_calibrer), 13f, R.color.warning, haut = 8)
-            .apply { visibility = android.view.View.GONE; setPadding(dp(16), 0, dp(16), 0) }
+            .apply { visibility = if (peuPrecise) android.view.View.VISIBLE else android.view.View.GONE; setPadding(dp(16), 0, dp(16), 0) }
         contenu.addView(precision)
         val avecCapteur = aBoussole()
         contenu.addView(VueJour.texte(this, getString(if (avecCapteur) R.string.boussole_a_plat else R.string.boussole_sans_capteur),
@@ -158,6 +158,10 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
         contenu.addView(VueJour.carte(this).apply {
             addView(VueJour.texte(this@BoussoleActivity, getString(R.string.boussole_note_titre), 15f, R.color.ink))
             addView(VueJour.texte(this@BoussoleActivity, getString(R.string.boussole_note), 13f, R.color.muted, haut = 4))
+            // Audit du 16/11 : plus de 20° entre les deux méthodes, le conseil du minyan (MB 94:10).
+            if (DirectionJerusalem.conseilMinyan(lieu.latitude, lieu.longitude)) {
+                addView(VueJour.texte(this@BoussoleActivity, getString(R.string.boussole_minyan), 13f, R.color.muted, haut = 4))
+            }
             addView(VueJour.texte(this@BoussoleActivity, HtmlCompat.fromHtml(getString(R.string.boussole_source,
                 "\u2066<a href=\"$SOURCE\">${android.text.TextUtils.htmlEncode(getString(R.string.boussole_source_titre))}</a>\u2069"), HtmlCompat.FROM_HTML_MODE_LEGACY),
                 13f, R.color.brand, haut = 6).apply { movementMethod = LinkMovementMethod.getInstance() })
@@ -168,7 +172,7 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
     /** Sans lieu (29/10) : le hassid, une question, la position en un toucher, ou une ville. */
     private fun etatVide() = VueJour.carte(this).apply {
         gravity = android.view.Gravity.CENTER_HORIZONTAL
-        addView(android.widget.ImageView(this@BoussoleActivity).apply {
+        addView(PersonnageImageView(this@BoussoleActivity).apply {
             setImageResource(R.drawable.char_standing_back)
             setBackgroundResource(R.drawable.bg_stage)
             setPadding(dp(6), dp(6), dp(6), dp(6))
@@ -245,9 +249,13 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
         if (sensor.type != Sensor.TYPE_ROTATION_VECTOR && sensor.type != Sensor.TYPE_MAGNETIC_FIELD) return
+        // Retenue pour que le redessin de l'écran (afficher()) ne fasse pas disparaître l'avertissement.
+        peuPrecise = accuracy <= SensorManager.SENSOR_STATUS_ACCURACY_LOW
         if (!::precision.isInitialized) return
-        precision.visibility = if (accuracy <= SensorManager.SENSOR_STATUS_ACCURACY_LOW) android.view.View.VISIBLE else android.view.View.GONE
+        precision.visibility = if (peuPrecise) android.view.View.VISIBLE else android.view.View.GONE
     }
+
+    private var peuPrecise = false
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 

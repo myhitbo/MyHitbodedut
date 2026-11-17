@@ -85,6 +85,14 @@
 
             <TextView style="@style/CardHint" android:text="@string/section_appearance_hint" />
 
+            <!-- La version de l'application (VersionApp, 17/11) : Classique, Sérénité, Bento ou Pile. -->
+            <LinearLayout style="@style/SettingRow">
+
+                <TextView style="@style/SettingLabel" android:text="@string/settings_version" />
+
+                <Button android:id="@+id/version_button" style="@style/SettingValue" />
+            </LinearLayout>
+
             <LinearLayout style="@style/SettingRow">
 
                 <TextView style="@style/SettingLabel" android:text="@string/settings_mode" />
@@ -123,6 +131,21 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/grand_texte_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- L'écran gardé allumé pendant la lecture (audit du 12/11, FLECTURE-01). -->
+            <LinearLayout style="@style/SettingRow">
+
+                <TextView
+                    style="@style/SettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/settings_ecran_allume" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/ecran_allume_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -166,6 +189,31 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/levana_rappel_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Rappel allumé sans les notifications (13/11) : le même avertissement que l'écran Rappels. -->
+            <TextView
+                android:id="@+id/levana_rappel_permission"
+                style="@style/CardHint"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:text="@string/reminders_permission_missing"
+                android:textColor="@color/warning"
+                android:visibility="gone" />
+
+            <LinearLayout style="@style/SettingRow">
+
+                <TextView
+                    style="@style/SettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/chabbat_alerte_reglage" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/chabbat_alerte_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -536,6 +584,26 @@
                     android:text="@string/action_import" />
             </LinearLayout>
 
+            <!-- Le verrou du journal (audit du 12/11) : le code ou l'empreinte du téléphone. -->
+            <LinearLayout style="@style/SettingRow">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView style="@style/SettingLabelStacked" android:text="@string/journal_verrou" />
+
+                    <TextView style="@style/CardHint" android:text="@string/journal_verrou_hint" />
+                </LinearLayout>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/journal_verrou_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
             <!-- Les règles de confidentialité (31/10, Google Play) : la page publique, dans le navigateur. -->
             <Button
                 android:id="@+id/privacy_policy"
@@ -544,6 +612,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/settings_confidentialite" />
+
+            <!-- Sources et licences (audit du 12/11, TLIVRES-09, TPLAYDOCS-13) : provenance, traductions, polices, bibliothèques. -->
+            <Button
+                android:id="@+id/licences_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_licences" />
         </LinearLayout>
 
         <!-- Réinitialiser l'application (12/10) : en dernier, à l'écart, avec une confirmation. -->

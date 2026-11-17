@@ -86,6 +86,17 @@ class VolTest {
     }
 
     @Test
+    fun `une duree que la distance ne permet pas est signalee`() {
+        assertEquals(false, Vol.invraisemblable(versOuest))
+        // 25 minutes pour la traversée : bien plus de 1 100 km/h.
+        assertEquals(true, Vol.invraisemblable(versOuest.copy(atterrissage = versOuest.decollage + Duration.ofMinutes(25))))
+        // Un vol court de 6 h (AM/PM inversé) reste sous les 22 h mais dépasse deux fois l'estimation.
+        val court = plan("TLV", "LCA", "2026-11-10T12:30", "2026-11-10T14:00")
+        assertEquals(false, Vol.invraisemblable(court))
+        assertEquals(true, Vol.invraisemblable(court.copy(atterrissage = court.decollage + Duration.ofHours(6))))
+    }
+
+    @Test
     fun `la route va d un aeroport a l autre par le grand cercle`() {
         val debut = Vol.position(versOuest, versOuest.decollage - Duration.ofHours(3))
         assertEquals(a("TLV").latitude, debut.latitude, 1e-9)
@@ -177,15 +188,15 @@ class VolTest {
         assertTrue(c.evenements.zipWithNext().all { (x, y) -> !y.instant.isBefore(x.instant) })
         // Avant minuit de la nuit : Arvit jusqu'à minuit ; après, Arvit sans limite.
         val minuit = c.enVol.first { it.cle == "chatsot_layla" }.instant
-        assertEquals("arvit" to minuit, VolPriere.priere(c, minuit - Duration.ofMinutes(10)))
-        assertEquals("arvit" to null, VolPriere.priere(c, minuit + Duration.ofMinutes(10)))
+        assertEquals(VolPriere.Moment("arvit", minuit), VolPriere.priere(c, minuit - Duration.ofMinutes(10)))
+        assertEquals(VolPriere.Moment("arvit", null), VolPriere.priere(c, minuit + Duration.ofMinutes(10)))
     }
 
     @Test
     fun `la priere du moment suit les zmanim de la route, par ZmanimWidget`() {
         val c = Vol.calculer(versOuest)
         val chkia = c.enVol.first { it.cle == "chkia" }.instant
-        assertEquals("minha" to chkia, VolPriere.priere(c, chkia - Duration.ofMinutes(5)))
+        assertEquals(VolPriere.Moment("minha", chkia), VolPriere.priere(c, chkia - Duration.ofMinutes(5)))
         val (priere, limite) = VolPriere.priere(c, chkia + Duration.ofMinutes(5))!!
         assertEquals("arvit", priere)
         assertEquals(c.evenements.first { it.cle == "chatsot_layla" && it.instant.isAfter(chkia) }.instant, limite)
@@ -195,11 +206,54 @@ class VolTest {
     }
 
     @Test
+    fun `au nord de 50 degres l'ete, sans aube a 16,1 degres, pas de Chaharit l'apres-midi ni la nuit`() {
+        // Audit du 12/11, FVOL-01 : Londres → Tel-Aviv le 20/06/2027 à 16:00 (heure de Londres, UTC+1).
+        val c = Vol.calculer(plan("LHR", "TLV", "2027-06-20T16:00", "2027-06-20T23:00"))
+        val apresMidi = VolPriere.priere(c, Instant.parse("2027-06-20T16:00:00Z"))!!
+        assertEquals("minha", apresMidi.priere)
+        assertNull("Min'ha est ouverte à 17:00, heure de Londres", apresMidi.debut)
+        assertEquals("arvit", VolPriere.priere(c, Instant.parse("2027-06-20T21:00:00Z"))!!.priere)
+        assertEquals("arvit", VolPriere.priere(c, Instant.parse("2027-06-20T23:00:00Z"))!!.priere)
+        val nuit = Vol.calculer(plan("LHR", "TLV", "2027-07-08T22:30", "2027-07-09T05:30"))
+        assertEquals("arvit", VolPriere.priere(nuit, Instant.parse("2027-07-09T00:30:00Z"))!!.priere)
+    }
+
+    @Test
+    fun `pas de Minha avant minha guedola, la carte annonce la prochaine priere et suit les rappels`() {
+        // Audit du 12/11, FVOL-05 : Paris → Tel-Aviv le 15/11/2026 à 10:35. La fin du temps de la
+        // tefila passe vers 10:51 (heure de Paris), 'hatsot vers 11:50, min'ha guedola vers 12:05.
+        val c = Vol.calculer(plan("CDG", "TLV", "2026-11-15T10:35", "2026-11-15T16:00"))
+        val finChaharit = c.evenements.first { it.cle == "szt_gra" && it.instant.isAfter(Instant.parse("2026-11-15T06:00:00Z")) }.instant
+        val guedola = c.enVol.single { it.cle == "minha_gedola" }.instant
+        // La chki'a tombe après l'atterrissage, à Tel-Aviv.
+        val chkia = c.evenements.first { it.cle == "chkia" && it.instant.isAfter(guedola) }.instant
+        assertTrue(finChaharit.isBefore(guedola) && guedola.isBefore(chkia))
+        assertEquals(VolPriere.Moment("chaharit", finChaharit), VolPriere.priere(c, finChaharit - Duration.ofMinutes(1)))
+        // 11:00, 11:30 et 12:00 à Paris : aucune prière ouverte, Min'ha annoncée à min'ha guedola.
+        listOf("10:00", "10:30", "11:00").map { Instant.parse("2026-11-15T$it:00Z") }.forEach { t ->
+            assertTrue("$t", t.isAfter(finChaharit) && t.isBefore(guedola))
+            assertEquals("$t", VolPriere.Moment("minha", chkia, debut = guedola), VolPriere.priere(c, t))
+            assertNull("$t : les rappels non plus n'ont pas de prière ouverte", VolRappels.ouverte(c, t))
+        }
+        // À min'ha guedola, Min'ha s'ouvre, à l'instant où le rappel « Min'ha dans l'avion » part.
+        assertEquals(VolPriere.Moment("minha", chkia), VolPriere.priere(c, guedola))
+        assertEquals("minha" to chkia, VolRappels.ouverte(c, guedola))
+        assertTrue(VolRappels.rappels(c, false).any { it.type == VolRappels.Type.PRIERE && it.priere == "minha" && it.instant == guedola })
+        // Tant que la carte dit Min'ha ouverte, les rappels le disent aussi, minute par minute.
+        generateSequence(guedola) { it + Duration.ofMinutes(7) }.takeWhile { it.isBefore(chkia) }.forEach { t ->
+            assertEquals("$t", VolPriere.priere(c, t)!!.let { it.priere to it.limite }, VolRappels.ouverte(c, t))
+        }
+    }
+
+    @Test
     fun `un vol court sans zman reste calculable`() {
         val court = plan("TLV", "ETM", "2026-11-10T09:50", "2026-11-10T10:40")
         val c = Vol.calculer(court)
         assertTrue(c.enVol.isEmpty())
-        assertEquals("minha", VolPriere.priere(c, court.decollage + Duration.ofMinutes(20))!!.first)
+        // 10:10 à Tel Aviv : après la fin du temps de la tefila, avant min'ha guedola (FVOL-05).
+        val m = VolPriere.priere(c, court.decollage + Duration.ofMinutes(20))!!
+        assertEquals("minha", m.priere)
+        assertEquals(c.evenements.first { it.cle == "minha_gedola" && it.instant.isAfter(court.decollage) }.instant, m.debut)
         assertTrue(c.reserves.isEmpty())
         assertTrue(c.lignesDate.isEmpty())
     }
@@ -238,6 +292,20 @@ class VolTest {
         assertTrue(Vol.Reserve.ABSENT in c.reserves)
         assertFalse(Vol.Reserve.ERREUR in c.reserves)
         assertTrue(c.enVol.zipWithNext().all { (x, y) -> !y.instant.isBefore(x.instant) })
+        // Les zmanim absents sont nommés, dans l'ordre de la journée (FVOL-11).
+        assertTrue("alot" in c.absents)
+        assertEquals(Zmanim.PROFIL.map { it.first }.filter { it in c.absents }, c.absents)
+    }
+
+    @Test
+    fun `sous 60 degres en juin, seule l aube a 16,1 degres manque`() {
+        // Londres → Tel-Aviv au solstice : à 51,5° N le soleil ne descend pas à 16,1°, la sortie des étoiles (8,5°) a lieu.
+        val c = Vol.calculer(plan("LHR", "TLV", "2027-06-20T10:00", "2027-06-20T17:00"))
+        assertTrue(Vol.Reserve.ABSENT in c.reserves)
+        assertFalse(Vol.Reserve.HAUTE_LATITUDE in c.reserves)
+        assertEquals(listOf("alot"), c.absents)
+        val novembre = Vol.calculer(versOuest)
+        assertEquals(Vol.Reserve.ABSENT in novembre.reserves, novembre.absents.isNotEmpty())
     }
 
     /** web/test/vecteurs_vol.json (tools/vecteurs_vol) reste ce que Vol.kt répond : sinon, le régénérer. */
@@ -269,6 +337,7 @@ class VolTest {
                 assertEquals(nom, y.getString("type"), x.type.name.lowercase())
                 assertEquals(nom, y.getString("date"), x.date.toString())
                 assertEquals(nom, y.getInt("omer"), x.omer)
+                assertEquals(nom, y.getBoolean("repli"), x.repli)
             }
         }
     }
@@ -318,6 +387,11 @@ class VolTest {
         assertEquals(Duration.ofMinutes(18), Duration.between(entree.allumage, entree.instant))
         val sortie = VolCalendrier.jalons(Vol.calculer(plan("TLV", "JFK", "${vendredi.plusDays(1)}T12:30", "${vendredi.plusDays(1)}T17:45")), false, 18).single()
         assertEquals(VolCalendrier.Type.SORTIE, sortie.type)
+        // Chavouot un vendredi (11/06/2027) : Chabbat entre à la chki'a, allumage avant elle (FCALENDRIER-01).
+        val chavouot = VolCalendrier.jalons(Vol.calculer(plan("CDG", "TLV", "2027-06-11T15:00", "2027-06-11T21:00")), false, 18).single()
+        assertEquals(VolCalendrier.Type.ENTREE, chavouot.type)
+        assertTrue(chavouot.chabbat)
+        assertEquals(Duration.ofMinutes(18), Duration.between(chavouot.allumage, chavouot.instant))
         // Le Omer : le jour compté ce soir est celui du lendemain hébreu.
         val omer = premier("2027-01-01") { CalendrierJuif.jour(it.plusDays(1), false).omer == 4 }
         val j = VolCalendrier.jalons(Vol.calculer(plan("TLV", "JFK", "${omer}T17:00", "${omer}T22:15")), false, 18)

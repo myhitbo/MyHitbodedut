@@ -1,0 +1,731 @@
+[
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Nioufe – Adultère",
+  "apres": "Nioufe – L’immoralité sexuelle",
+  "occurrences": 1,
+  "raison": "Titre de la section 61 (ניאוף)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Ni’uf – Adultery",
+  "apres": "Ni’uf – Sexual immorality",
+  "occurrences": 1,
+  "raison": "Titre de la section 61 (ניאוף)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par le mensonge, on en vient à l’adultère, et l’on renforce les mains des méchants pour qu’ils ne fassent pas techouva.",
+  "apres": "Par le mensonge, on en vient à l’immoralité sexuelle, et l’on renforce les mains des méchants pour qu’ils ne fassent pas techouva.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 0/34)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through falsehood one comes to adultery, and strengthens the hands of evildoers so that they do not return in teshuvah.",
+  "apres": "Through falsehood one comes to sexual immorality, and strengthens the hands of evildoers so that they do not return in teshuvah.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 0/34)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "One who sits among adulterers, or in a place where there was adultery, comes through this to bad thoughts.",
+  "apres": "One who sits among immoral people, or in a place where there was sexual immorality, comes through this to bad thoughts.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 23/17)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère, on tombe en prison ou dans la maladie des douleurs de jambes. De même, l’élève qui n’a pas atteint le niveau d’enseigner et qui rend des décisions tombe dans cela. Et les démons ont aussi prise sur lui.",
+  "apres": "Par l’immoralité sexuelle, on tombe en prison ou dans la maladie des douleurs de jambes. De même, l’élève qui n’a pas atteint le niveau d’enseigner et qui rend des décisions tombe dans cela. Et les démons ont aussi prise sur lui.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 27/5)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery one falls into imprisonment or into the illness of pain in the legs. Also a student who has not reached the level of ruling and yet rules falls into this. Also harmful spirits gain dominion over him.",
+  "apres": "Through sexual immorality one falls into imprisonment or into the illness of pain in the legs. Also a student who has not reached the level of ruling and yet rules falls into this. Also harmful spirits gain dominion over him.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 27/5)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère, on perd la mémoire.",
+  "apres": "Par l’immoralité sexuelle, on perd la mémoire.",
+  "occurrences": 2,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 32/6, 61/48)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery one loses memory.",
+  "apres": "Through sexual immorality one loses memory.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 32/6)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "On ne fait pas de miracle pour l’adultère.",
+  "apres": "On ne fait pas de miracle pour un débauché.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 44/6)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "No miracle is performed for an adulterer.",
+  "apres": "No miracle is performed for one who is sexually immoral.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 44/6)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les enfants nés par le moyen d’incantations de noms impurs ou par la sorcellerie seront des adultères.",
+  "apres": "Les enfants nés par le moyen d’incantations de noms impurs ou par la sorcellerie seront des débauchés.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 49/0)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Children born through incantations of impure names or through sorcery will be adulterers.",
+  "apres": "Children born through incantations of impure names or through sorcery will be sexually immoral.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 49/0)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par la moquerie, il aura beaucoup de créanciers, et ils le domineront. Il trébuche aussi dans l’adultère, et sa femme le domine aussi.",
+  "apres": "Par la moquerie, il aura beaucoup de créanciers, et ils le domineront. Il trébuche aussi dans l’immoralité sexuelle, et sa femme le domine aussi.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 52/0)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through scoffing he will have many creditors, and they will rule over him. He also stumbles into adultery, and also his wife rules over him.",
+  "apres": "Through scoffing he will have many creditors, and they will rule over him. He also stumbles into sexual immorality, and also his wife rules over him.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 52/0)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les adultères sont, le plus souvent, des adversaires querelleurs des Tsadikim.",
+  "apres": "Les débauchés sont, le plus souvent, des adversaires querelleurs des Tsadikim.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 53/19)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Adulterers are, for the most part, quarrelsome opponents of the tzaddikim.",
+  "apres": "The sexually immoral are, for the most part, quarrelsome opponents of the tzaddikim.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 53/19)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par la discorde, on tombe dans le désir de l’adultère.",
+  "apres": "Par la discorde, on tombe dans le désir sexuel.",
+  "occurrences": 2,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 53/113, 61/59)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through strife one falls into the lust of adultery.",
+  "apres": "Through strife one falls into sexual lust.",
+  "occurrences": 2,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 53/113, 61/59)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Celui qui résiste à l’épreuve de l’adultère méritera une grande richesse au milieu de ses ennemis.",
+  "apres": "Celui qui résiste à l’épreuve de l’immoralité sexuelle méritera une grande richesse au milieu de ses ennemis.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 54/3)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "One who withstands the trial of adultery will merit great wealth among his enemies.",
+  "apres": "One who withstands the trial of sexual immorality will merit great wealth among his enemies.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 54/3)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les pluies sont retenues à cause de l’idolâtrie, à cause de l’adultère, à cause d’un Tsadik dont on n’a pas fait l’éloge funèbre comme il convient, et à cause de ceux qui privent les autres de leur subsistance.",
+  "apres": "Les pluies sont retenues à cause de l’idolâtrie, à cause de l’immoralité sexuelle, à cause d’un Tsadik dont on n’a pas fait l’éloge funèbre comme il convient, et à cause de ceux qui privent les autres de leur subsistance.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 54/54)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Rain is withheld because of idolatry, because of adultery, because of a tzaddik who was not eulogized properly, and because of those who cut off the livelihood of others.",
+  "apres": "Rain is withheld because of idolatry, because of sexual immorality, because of a tzaddik who was not eulogized properly, and because of those who cut off the livelihood of others.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 54/54)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère vient la pauvreté.",
+  "apres": "Par l’immoralité sexuelle vient la pauvreté.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 54/60)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery comes poverty.",
+  "apres": "Through sexual immorality comes poverty.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 54/60)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "An old man who commits adultery, the mind cannot bear him, and afterward he is contemptible in his own eyes.",
+  "apres": "An old man who is sexually immoral, the mind cannot bear him, and afterward he is contemptible in his own eyes.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/6)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Le désir de l’adultère ne s’éloigne de l’homme qu’en éloignant le regard de l’œil et la pensée.",
+  "apres": "Le désir sexuel ne s’éloigne de l’homme qu’en éloignant le regard de l’œil et la pensée.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/8)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "The lust for adultery is distanced from a person only by distancing the sight of the eye and the thought.",
+  "apres": "Sexual lust is distanced from a person only by distancing the sight of the eye and the thought.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/8)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par le vin, beaucoup d’adultère.",
+  "apres": "Par le vin, beaucoup d’immoralité sexuelle.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/10)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through wine there is much adultery.",
+  "apres": "Through wine there is much sexual immorality.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/10)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère, les Tsadikim tombent.",
+  "apres": "Par l’immoralité sexuelle, les Tsadikim tombent.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/23)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery the tzaddikim fall.",
+  "apres": "Through sexual immorality the tzaddikim fall.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/23)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Celui qui extirpe les adultères répare par là la faute de ses pères.",
+  "apres": "Celui qui extirpe les débauchés répare par là la faute de ses pères.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/27)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "One who eradicates adulterers rectifies thereby the sin of his fathers.",
+  "apres": "One who eradicates the sexually immoral rectifies thereby the sin of his fathers.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/27)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les pensées d’adultère viennent de la brisure d’un réceptacle de ’hessed, et selon la quantité d’étincelles est la quantité de pensées d’adultère.",
+  "apres": "Les pensées d’immoralité sexuelle viennent de la brisure d’un réceptacle de ’hessed, et selon la quantité d’étincelles est la quantité de pensées d’immoralité sexuelle.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/31)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Thoughts of adultery come because of the breaking of a vessel of chesed, and according to the number of sparks is the number of thoughts of adultery.",
+  "apres": "Thoughts of sexual immorality come because of the breaking of a vessel of chesed, and according to the number of sparks is the number of thoughts of sexual immorality.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/31)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère, on en vient à l’exil sous la main de ministres moqueurs, et l’on devient débiteur.",
+  "apres": "Par l’immoralité sexuelle, on en vient à l’exil sous la main de ministres moqueurs, et l’on devient débiteur.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/35)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery one comes to exile under the hand of scoffing ministers, and one becomes a debtor.",
+  "apres": "Through sexual immorality one comes to exile under the hand of scoffing ministers, and one becomes a debtor.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/35)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par le mérite des femmes qui se gardent de l’adultère, le Machia’h viendra ; de plus, l’homme n’aura pas besoin de son prochain, et l’honneur des Tsadikim grandira.",
+  "apres": "Par le mérite des femmes qui se gardent de l’immoralité sexuelle, le Machia’h viendra ; de plus, l’homme n’aura pas besoin de son prochain, et l’honneur des Tsadikim grandira.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/36)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "In the merit of women guarding themselves from adultery, Mashiach will come; also, a person will not need his fellow, and the honor of the tzaddikim will grow.",
+  "apres": "In the merit of women guarding themselves from sexual immorality, Mashiach will come; also, a person will not need his fellow, and the honor of the tzaddikim will grow.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/36)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "L’adultère vient de l’occupation des noms impurs et de la sorcellerie.",
+  "apres": "L’immoralité sexuelle vient de l’occupation des noms impurs et de la sorcellerie.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/37)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Adultery comes through dealing with impure names and sorcery.",
+  "apres": "Sexual immorality comes through dealing with impure names and sorcery.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/37)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère vient l’oubli.",
+  "apres": "Par l’immoralité sexuelle vient l’oubli.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/39)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery comes forgetfulness.",
+  "apres": "Through sexual immorality comes forgetfulness.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/39)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par le manque de [foi] viennent les pensées d’adultère.]",
+  "apres": "Par le manque de [foi] viennent les pensées d’immoralité sexuelle.]",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/42)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through lack of [faith] thoughts of adultery come.]",
+  "apres": "Through lack of [faith] thoughts of sexual immorality come.]",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/42)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "À cause de la faute de la sorcellerie et de l’adultère, le Tsadik est enlevé (de ce monde).",
+  "apres": "À cause de la faute de la sorcellerie et de l’immoralité sexuelle, le Tsadik est enlevé (de ce monde).",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/43)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through the sin of sorcery and adultery the tzaddik passes away.",
+  "apres": "Through the sin of sorcery and sexual immorality the tzaddik passes away.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/43)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les enfants des adultères auront besoin de la sorcellerie.",
+  "apres": "Les enfants des débauchés auront besoin de la sorcellerie.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/44)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "The children of adulterers will need sorcery.",
+  "apres": "The children of the sexually immoral will need sorcery.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/44)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les enfants nés par l’occupation de la sorcellerie seront des adultères.",
+  "apres": "Les enfants nés par l’occupation de la sorcellerie seront des débauchés.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/45)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Children born through dealings in sorcery will be adulterers.",
+  "apres": "Children born through dealings in sorcery will be sexually immoral.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/45)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les adultères sont, le plus souvent, des opposants aux Tsadikim.",
+  "apres": "Les débauchés sont, le plus souvent, des opposants aux Tsadikim.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/46)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Adulterers are, for the most part, opponents of the tzaddikim.",
+  "apres": "The sexually immoral are, for the most part, opponents of the tzaddikim.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/46)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery one loses one’s memory.",
+  "apres": "Through sexual immorality one loses one’s memory.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/48)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère, la pudeur s’en va.",
+  "apres": "Par l’immoralité sexuelle, la pudeur s’en va.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/49)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery the sense of shame departs.",
+  "apres": "Through sexual immorality the sense of shame departs.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/49)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par la goinfrerie, on en vient à l’adultère.",
+  "apres": "Par la goinfrerie, on en vient à l’immoralité sexuelle.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/50)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through gluttonous eating one comes to adultery.",
+  "apres": "Through gluttonous eating one comes to sexual immorality.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/50)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les pensées d’adultère viennent par un faux serment.",
+  "apres": "Les pensées d’immoralité sexuelle viennent par un faux serment.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/53)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Thoughts of adultery come through a false oath.",
+  "apres": "Thoughts of sexual immorality come through a false oath.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/53)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Celui qui se porte garant pour un méchant devient adultère.",
+  "apres": "Celui qui se porte garant pour un méchant devient débauché.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/54)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "One who becomes guarantor for a wicked person becomes an adulterer.",
+  "apres": "One who becomes guarantor for a wicked person becomes sexually immoral.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/54)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’adultère, on tombe dans l’emprisonnement ou dans la maladie des douleurs aux jambes ; de même le disciple qui n’a pas atteint le niveau de décider la loi et qui la décide tombe dans cela ; de même, les démons ont prise sur lui.",
+  "apres": "Par l’immoralité sexuelle, on tombe dans l’emprisonnement ou dans la maladie des douleurs aux jambes ; de même le disciple qui n’a pas atteint le niveau de décider la loi et qui la décide tombe dans cela ; de même, les démons ont prise sur lui.",
+  "occurrences": 3,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/58, 82/13, 85/71)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through adultery one falls into imprisonment or into the illness of leg pains; also a disciple who has not reached the level of rendering rulings and rules falls into this; also, demons have dominion over him.",
+  "apres": "Through sexual immorality one falls into imprisonment or into the illness of leg pains; also a disciple who has not reached the level of rendering rulings and rules falls into this; also, demons have dominion over him.",
+  "occurrences": 3,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/58, 82/13, 85/71)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par le désir de l’adultère vient la constipation, et par la constipation vient la lèpre.",
+  "apres": "Par le désir sexuel vient la constipation, et par la constipation vient la lèpre.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/61)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through the lust of adultery comes constipation, and through constipation comes leprosy.",
+  "apres": "Through sexual lust comes constipation, and through constipation comes leprosy.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/61)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par les bienfaits qu’on fait aux gens, le désir de l’adultère s’annule, et inversement.",
+  "apres": "Par les bienfaits qu’on fait aux gens, le désir sexuel s’annule, et inversement.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/62)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through the kindnesses one does for people, the lust of adultery is nullified, and likewise the reverse.",
+  "apres": "Through the kindnesses one does for people, sexual lust is nullified, and likewise the reverse.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/62)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les gens de calculs (les comptables) sont, le plus souvent, des gens soumis au désir de l’adultère.",
+  "apres": "Les gens de calculs (les comptables) sont, le plus souvent, des gens soumis au désir sexuel.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/75)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "People of accounts are, for the most part, given to the lust of adultery.",
+  "apres": "People of accounts are, for the most part, given to sexual lust.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 61/75)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Le Tsadik est enlevé à cause du péché de sorcellerie et d’adultère.",
+  "apres": "Le Tsadik est enlevé à cause du péché de sorcellerie et d’immoralité sexuelle.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 86/161)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "The tzaddik departs because of the sin of sorcery and adultery.",
+  "apres": "The tzaddik departs because of the sin of sorcery and sexual immorality.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 86/161)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Les adultères, pour la plupart, s’opposent au Tsadik.",
+  "apres": "Les débauchés, pour la plupart, s’opposent au Tsadik.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 86/162)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Adulterers, for the most part, are opponents of the tzaddik.",
+  "apres": "The sexually immoral, for the most part, are opponents of the tzaddik.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 86/162)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Celui qui se porte garant pour un méchant tombe dans les désirs d’adultère et tombe aussi dans la faiblesse.",
+  "apres": "Celui qui se porte garant pour un méchant tombe dans les désirs sexuels et tombe aussi dans la faiblesse.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 92/7)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "One who becomes a guarantor for a wicked man falls into lusts of adultery and also falls into weakness.",
+  "apres": "One who becomes a guarantor for a wicked man falls into sexual lusts and also falls into weakness.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 92/7)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par l’ivresse, on tombe dans des pensées d’adultère.",
+  "apres": "Par l’ivresse, on tombe dans des pensées d’immoralité sexuelle.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 97/6)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through drunkenness one falls into thoughts of adultery.",
+  "apres": "Through drunkenness one falls into thoughts of sexual immorality.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 97/6)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "fr",
+  "avant": "Par le faux serment viennent des pensées d’adultère.",
+  "apres": "Par le faux serment viennent des pensées d’immoralité sexuelle.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 101/3)"
+ },
+ {
+  "id": "MIDOT-05",
+  "fichier": "android/app/src/main/livres/livres.json",
+  "langue": "en",
+  "avant": "Through a false oath come thoughts of adultery.",
+  "apres": "Through a false oath come thoughts of sexual immorality.",
+  "occurrences": 1,
+  "raison": "ניאוף rendu par adultère/adultery : glossaire « immoralité sexuelle / sexual immorality » ; désir sexuel ; débauchés (blocs 101/3)"
+ }
+]

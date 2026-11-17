@@ -1,6 +1,7 @@
 package com.myhitbodedut
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -49,18 +50,18 @@ class LibraryRulesTest {
     }
 
     @Test
-    fun `les paragraphes suivent le nikkoud de l edition`() {
+    fun `les paragraphes affiches sont ceux du fichier, sans vocalisation si l edition l interdit`() {
         library.entrees.filterIsInstance<SourceEntry>().forEach { source ->
             val affiches = LibraryRules.paragraphs(library, source)
             val edition = library.editions.getValue(source.edition)
-            if (edition.nikkoudOk) {
-                assertEquals("${source.id}", source.paragraphes, affiches)
-            } else {
-                assertTrue(
-                    "${source.id} : édition non vocalisable sans paragraphes_sans_nikkoud",
-                    source.paragraphesSansNikkoud.isNotEmpty(),
-                )
-                assertEquals("${source.id}", source.paragraphesSansNikkoud, affiches)
+            assertEquals("${source.id}", source.paragraphes, affiches)
+            if (!edition.nikkoudOk) {
+                affiches.forEach { p ->
+                    assertFalse(
+                        "${source.id} : édition non vocalisable, mais « ${p.take(40)} » est vocalisé",
+                        p.any { it.code in 0x0591..0x05BD || it.code in 0x05BF..0x05C2 || it.code in 0x05C4..0x05C7 },
+                    )
+                }
             }
             assertTrue("${source.id} : aucun paragraphe à afficher", affiches.isNotEmpty())
         }

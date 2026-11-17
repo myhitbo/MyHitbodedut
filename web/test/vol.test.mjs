@@ -65,6 +65,14 @@ test('une saisie impossible est refusée', () => {
   assert.equal(Vol.verifier({ ...versOuest, arrivee: { ...a('JFK'), fuseau: 'Mars/Olympus' } }), 'fuseau_inconnu');
 });
 
+test('une durée que la distance ne permet pas est signalée (FVOL-12)', () => {
+  assert.equal(Vol.invraisemblable(versOuest), false);
+  assert.equal(Vol.invraisemblable({ ...versOuest, atterrissage: new Date(+versOuest.decollage + 25 * 60000) }), true);
+  const court = { ...versOuest, arrivee: a('LCA'), atterrissage: new Date(+versOuest.decollage + 1.5 * H) };
+  assert.equal(Vol.invraisemblable(court), false);
+  assert.equal(Vol.invraisemblable({ ...court, atterrissage: new Date(+court.decollage + 6 * H) }), true);
+});
+
 test('le fuseau nautique suit la longitude, signe inversé', () => {
   assert.equal(Vol.fuseauNautique(35), 'Etc/GMT-2');
   assert.equal(Vol.fuseauNautique(-74), 'Etc/GMT+5');
@@ -105,21 +113,34 @@ test('minuit UTC et minuit local, la prière du moment, loin du vol', () => {
   const minuits = Vol.enVol(c).filter((e) => e.cle === 'chatsot_layla');
   assert.equal(minuits.length, 1);
   const m = minuits[0].instant;
-  assert.deepEqual(Vol.priere(c, new Date(+m - 10 * MIN)), ['arvit', m]);
-  assert.deepEqual(Vol.priere(c, new Date(+m + 10 * MIN)), ['arvit', null]);
+  assert.deepEqual(Vol.priere(c, new Date(+m - 10 * MIN)), ['arvit', m, null]);
+  assert.deepEqual(Vol.priere(c, new Date(+m + 10 * MIN)), ['arvit', null, null]);
   const o = Vol.calculer(versOuest);
   const chkia = Vol.enVol(o).find((e) => e.cle === 'chkia').instant;
-  assert.deepEqual(Vol.priere(o, new Date(+chkia - 5 * MIN)), ['minha', chkia]);
+  assert.deepEqual(Vol.priere(o, new Date(+chkia - 5 * MIN)), ['minha', chkia, null]);
   assert.equal(Vol.priere(o, new Date(+versOuest.atterrissage + 7 * H)), null);
 });
 
 test('prochaine : la règle de ZmanimWidget, mêmes cas que DixAmeliorationsTest', () => {
   const t = (h, m) => new Date(Date.UTC(2026, 9, 14, h, m));
-  const horaires = { alot: t(5, 0), szt_gra: t(10, 30), chkia: t(17, 50), chatsot_layla: t(23, 40) };
-  assert.deepEqual(Vol.prochaine(horaires, t(7, 0)), ['chaharit', t(10, 30)]);
-  assert.deepEqual(Vol.prochaine(horaires, t(13, 0)), ['minha', t(17, 50)]);
-  assert.deepEqual(Vol.prochaine(horaires, t(19, 0)), ['arvit', t(23, 40)]);
-  assert.deepEqual(Vol.prochaine(horaires, t(23, 50)), ['arvit', null]);
+  const horaires = { alot: t(5, 0), szt_gra: t(10, 30), minha_gedola: t(12, 20), chkia: t(17, 50), chatsot_layla: t(23, 40) };
+  assert.deepEqual(Vol.prochaine(horaires, t(7, 0)), ['chaharit', t(10, 30), null]);
+  assert.deepEqual(Vol.prochaine(horaires, t(13, 0)), ['minha', t(17, 50), null]);
+  assert.deepEqual(Vol.prochaine(horaires, t(19, 0)), ['arvit', t(23, 40), null]);
+  assert.deepEqual(Vol.prochaine(horaires, t(23, 50)), ['arvit', null, null]);
+  // Entre la fin de Cha'harit et min'ha guedola : aucune prière ouverte, Min'ha annoncée (FVOL-05).
+  assert.deepEqual(Vol.prochaine(horaires, t(11, 0)), ['minha', t(17, 50), t(12, 20)]);
+  assert.deepEqual(Vol.prochaine(horaires, t(12, 20)), ['minha', t(17, 50), null]);
+  assert.deepEqual(Vol.prochaine({ ...horaires, minha_gedola: null }, t(11, 0)), ['minha', t(17, 50), null]);
+});
+
+test('au nord de 50° l’été, sans aube à 16,1° : pas de Cha’harit l’après-midi ni la nuit (FVOL-01)', () => {
+  const c = Vol.calculer(plan('LHR', 'TLV', '2027-06-20T16:00', '2027-06-20T23:00'));
+  assert.equal(Vol.priere(c, new Date('2027-06-20T16:00:00Z'))[0], 'minha');
+  assert.equal(Vol.priere(c, new Date('2027-06-20T21:00:00Z'))[0], 'arvit');
+  assert.equal(Vol.priere(c, new Date('2027-06-20T23:00:00Z'))[0], 'arvit');
+  const nuit = Vol.calculer(plan('LHR', 'TLV', '2027-07-08T22:30', '2027-07-09T05:30'));
+  assert.equal(Vol.priere(nuit, new Date('2027-07-09T00:30:00Z'))[0], 'arvit');
 });
 
 test('un vol court sans zman ; la ligne de date ; une route polaire', () => {
@@ -134,6 +155,15 @@ test('un vol court sans zman ; la ligne de date ; une route polaire', () => {
   assert.ok(est.lignesDate[0].apres < est.lignesDate[0].avant);
   const polaire = Vol.calculer(plan('JFK', 'HKG', '2026-06-20T11:00', '2026-06-21T15:00'));
   assert.ok(polaire.reserves.has('haute_latitude') && polaire.reserves.has('absent') && !polaire.reserves.has('erreur'));
+  // Les zmanim absents sont nommés, dans l'ordre de la journée (FVOL-11).
+  assert.ok(polaire.absents.includes('alot'));
+  assert.equal(court.absents.length, 0);
+});
+
+test('sous 60° en juin, seule l\'aube à 16,1° manque (FVOL-11)', () => {
+  const c = Vol.calculer(plan('LHR', 'TLV', '2027-06-20T10:00', '2027-06-20T17:00'));
+  assert.ok(c.reserves.has('absent') && !c.reserves.has('haute_latitude'));
+  assert.deepEqual(c.absents, ['alot']);
 });
 
 test('parité avec Android : chaque zman en vol, à deux secondes près (vecteurs_vol.json)', () => {
@@ -150,7 +180,7 @@ test('parité avec Android : chaque zman en vol, à deux secondes près (vecteur
     assert.deepEqual([...c.reserves].sort(), v.reserves);
     assert.deepEqual(c.lignesDate.map((l) => [l.avant, l.apres]), v.lignesDate);
     const jalons = Vol.jalons(c, false, 18);
-    assert.deepEqual(jalons.map((j) => [j.type, j.date, j.omer]), v.jalons.map((j) => [j.type, j.date, j.omer]), `${v.depart}-${v.arrivee} ${v.decollage}`);
+    assert.deepEqual(jalons.map((j) => [j.type, j.date, j.omer, j.repli]), v.jalons.map((j) => [j.type, j.date, j.omer, j.repli]), `${v.depart}-${v.arrivee} ${v.decollage}`);
     jalons.forEach((j, i) => assert.ok(Math.abs(j.instant - Date.parse(v.jalons[i].instant)) <= 2000));
   }
 });
@@ -173,6 +203,30 @@ test('Melbourne – Los Angeles – Montréal, Sydney – Queenstown, Tel Aviv �
   assert.equal(Vol.calculer(plan('TLV', 'EZE', '2026-11-10T23:00', '2026-11-11T09:20')).lignesDate.length, 0);
 });
 
+
+test('fête un vendredi en vol : Chabbat entre à la chki\'a, allumage avant elle (FCALENDRIER-01)', () => {
+  const j = Vol.jalons(Vol.calculer(plan('CDG', 'TLV', '2027-06-11T15:00', '2027-06-11T21:00')), false, 18);
+  assert.deepEqual(j.map((x) => [x.type, x.date, x.chabbat]), [['entree', '2027-06-12', true]]);
+  assert.equal(+j[0].instant - +j[0].allumage, 18 * MIN);
+});
+
+test('vol polaire sans tsét et ligne de date pendant le Omer (audit du 16/11)', async () => {
+  // SFO → LHR du 24/05/2027 : Omer à la chki'a, dit comme un repli.
+  const polaire = Vol.calculer(plan('SFO', 'LHR', '2027-05-24T17:30', '2027-05-25T11:45'));
+  const chkia = Vol.enVol(polaire).find((e) => e.cle === 'chkia');
+  assert.ok(Vol.tsetManque(polaire, chkia));
+  const omer = Vol.jalons(polaire, false, 18).filter((j) => j.type === 'omer');
+  assert.equal(omer.length, 1);
+  assert.ok(omer[0].repli);
+  assert.equal(+omer[0].instant, +chkia.instant);
+  assert.ok(Vol.jalons(Vol.calculer(plan('TLV', 'JFK', '2026-11-10T12:30', '2026-11-10T17:45')), false, 18).every((j) => !j.repli));
+  // SYD → LAX du 06/05/2027 : ligne de date pendant le Omer ; MEL → LAX en décembre : hors Omer.
+  assert.ok(Vol.ligneDateOmer(Vol.calculer(plan('SYD', 'LAX', '2027-05-06T10:00', '2027-05-06T06:30')), false));
+  assert.ok(!Vol.ligneDateOmer(Vol.calculer(plan('MEL', 'LAX', '2026-12-15T10:30', '2026-12-15T06:45')), false));
+  const { ligneDateDiscutee } = await import('../src/js/jour-affiche.js');
+  assert.ok(ligneDateDiscutee(139.69) && ligneDateDiscutee(151.21) && ligneDateDiscutee(-157.86));
+  assert.ok(!ligneDateDiscutee(35.21) && !ligneDateDiscutee(-118.24));
+});
 
 test('un relevé GPS en vol recale la route ; hors du vol, il est ignoré', () => {
   const releve = { latitude: 56, longitude: -30, instant: new Date('2026-11-10T18:30:00Z') };
@@ -276,4 +330,42 @@ test('saisie rapide : la phrase du propriétaire, en hébreu, et un billet coll�
   assert.equal(`${billet.heureDepart}-${billet.heureArrivee}-${billet.date}`, '11:00-16:05-2026-11-14');
   assert.equal(lire('Flight LY81 Tel Aviv to Bangkok on Nov 12 at 11:30pm').heureDepart, '23:30');
   assert.ok(Vol.phraseVide(lire('bonjour')));
+});
+
+test('saisie rapide : la durée n’est ni une heure ni un numéro, la porte non plus (FVOL-04)', () => {
+  const R = new URL('../../android/app/src/main/res/raw/', import.meta.url);
+  const liste = Vol.aeroports(JSON.parse(readFileSync(new URL('aeroports.json', R), 'utf8')), JSON.parse(readFileSync(new URL('aeroports_noms.json', R), 'utf8')));
+  const lire = (t) => Vol.lirePhrase(t, liste, '2026-11-04');
+  const a = lire('Vol AF1620 · Durée 4h25 · Paris-Charles de Gaulle (CDG) 10:35 → Tel Aviv (TLV) 16:00');
+  assert.deepEqual([a.numero, a.heureDepart, a.heureArrivee], ['AF1620', '10:35', '16:00']);
+  const b = lire('Flight time 4h 25m. Departs CDG 10:35 arrives TLV 16:00 on 15 Nov');
+  assert.deepEqual([b.numero, b.compagnie, b.heureDepart, b.heureArrivee], [null, null, '10:35', '16:00']);
+  const c = lire('Boarding 5:20 gate B12 Departure 6:05 BUD TLV 15 Nov');
+  assert.deepEqual([c.numero, c.heureDepart], [null, '06:05']);
+  const d = lire('Israir 6H 123 TLV ATH 15/11 10:35 13:00');
+  assert.deepEqual([d.numero, d.heureDepart, d.heureArrivee], ['6H123', '10:35', '13:00']);
+  const e = lire('Porte fermée 5h45, départ 6h05 BUD TLV 15/11');
+  assert.deepEqual([e.numero, e.heureDepart, e.heureArrivee], [null, '06:05', null]);
+  // FVOL-03 : le vol ne se calcule pas seul sur une date sans heure, une arrivée estimée ou un jour repris.
+  const sans = lire('Tel Aviv Paris le 20/11');
+  assert.ok(Vol.dateSansHeure(sans));
+  assert.ok(!Vol.calculAutomatique(sans, true));
+  const complet = lire('Tel Aviv Paris le 20/11 à 10h35');
+  assert.ok(!Vol.dateSansHeure(complet));
+  assert.ok(!Vol.calculAutomatique(complet, true));
+  assert.ok(Vol.calculAutomatique(complet, false));
+  assert.ok(!Vol.calculAutomatique(lire('à 10h35'), false));
+  assert.deepEqual(Vol.heuresPhrase('boarding time 5:20'), []);
+  assert.deepEqual(Vol.heuresPhrase('porte fermee 5h45'), []);
+});
+
+test('sans relais, le site ne promet pas de suivi en direct (TWEBCONF-09, -16)', () => {
+  const app = readFileSync(new URL('../src/js/app.js', import.meta.url), 'utf8');
+  // L'accord de la loupe et le libellé de l'interrupteur : variantes _web, sans OpenSky.
+  assert.match(app, /tr\.t\(RELAIS_VOL \? 'vol_en_ligne_aide' : 'vol_en_ligne_aide_web'\)/);
+  assert.match(app, /tr\.t\(RELAIS_VOL \? 'vol_direct_activer' : 'vol_direct_activer_web'\)/);
+  assert.match(app, /tr\.t\('settings_shabbat_hint_web'\)/);
+  const fr = readFileSync(new URL('../../android/app/src/main/res/values/strings.xml', import.meta.url), 'utf8');
+  const web = fr.match(/<string name="vol_en_ligne_aide_web">([^<]*)</)[1];
+  assert.doesNotMatch(web, /OpenSky|téléphone/);
 });

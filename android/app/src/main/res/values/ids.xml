@@ -9,6 +9,10 @@
     <item name="lecture_police" type="id" />
     <item name="lecture_taille" type="id" />
     <item name="lecture_interligne" type="id" />
+    <!-- Le rang d'un paragraphe ou d'un verset, pour le retrouver quand le texte se redessine (FLECTURE-04). -->
+    <item name="lecture_repere" type="id" />
+    <!-- Les champs de recherche : avec un identifiant, leur saisie survit à l'écran recréé (FLECTURE-04). -->
+    <item name="recherche_champ" type="id" />
     <!-- La banderole déjà surveillée par BandeauDefilant. -->
     <item name="bandeau_defilant" type="id" />
     <!-- La zone des résultats des zmanim en vol, récrite par la minuterie (VolActivity). -->

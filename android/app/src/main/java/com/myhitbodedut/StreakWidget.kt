@@ -62,9 +62,13 @@ class StreakWidget : AppWidgetProvider() {
         appWidgetIds: IntArray
     ) {
         val traduit = LangueApp.envelopper(context)
-        appWidgetIds.forEach { draw(traduit, manager, it) }
-        // L'alarme de minuit déclenche onUpdate : on reprogramme la suivante, sinon elle ne sert qu'une nuit (02/11).
-        if (appWidgetIds.isNotEmpty()) programmerMinuit(context, appWidgetIds)
+        // Hors du fil principal (15/11, EnFond) : les textes de 'hizouk (300 ko de JSON) s'analysent
+        // au premier dessin après la relance du processus, et chaque taille dessine son fond.
+        EnFond.recevoir(this) {
+            appWidgetIds.forEach { draw(traduit, manager, it) }
+            // L'alarme de minuit déclenche onUpdate : on reprogramme la suivante, sinon elle ne sert qu'une nuit (02/11).
+            if (appWidgetIds.isNotEmpty()) programmerMinuit(context, appWidgetIds)
+        }
     }
 
     /**
@@ -78,7 +82,8 @@ class StreakWidget : AppWidgetProvider() {
         appWidgetId: Int,
         newOptions: Bundle
     ) {
-        draw(LangueApp.envelopper(context), manager, appWidgetId)
+        val traduit = LangueApp.envelopper(context)
+        EnFond.recevoir(this) { draw(traduit, manager, appWidgetId) }
     }
 
     companion object {
@@ -318,7 +323,10 @@ class StreakWidget : AppWidgetProvider() {
             views.setTextColor(R.id.widget_chrono, teintes.encre)
             views.setContentDescription(
                 R.id.widget_badge,
-                if (etat.streak == 0) context.getString(R.string.status_streak_none)
+                if (etat.streak == 0) context.getString(
+                    // « à relancer » ne se dit qu'à qui a déjà pratiqué (FDONNEES-29, comme l'accueil).
+                    if (Store.aDejaPratique(context)) R.string.status_streak_none else R.string.status_streak_first
+                )
                 else context.resources.getQuantityString(R.plurals.status_streak, etat.streak, etat.streak)
             )
             compteur(context, views, etat, taille)
@@ -432,7 +440,8 @@ class StreakWidget : AppWidgetProvider() {
             context.getString(
                 R.string.rings_description,
                 Store.formatDuration(context, etat.jour.fait), Store.formatDuration(context, etat.jour.objectif),
-                etat.semaine.fait, etat.semaine.objectif, etat.serie.fait, etat.serie.objectif
+                context.resources.getQuantityString(R.plurals.ring_week_detail, etat.semaine.fait, etat.semaine.fait, etat.semaine.objectif),
+                context.resources.getQuantityString(R.plurals.ring_streak_detail, etat.serie.fait, etat.serie.fait, etat.serie.objectif)
             )
 
         /**

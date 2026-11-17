@@ -37,6 +37,10 @@ import kotlin.math.roundToInt
  * rien : un appui long sur le texte le fait revenir, ce que dit une barre
  * en bas de l'écran au moment où on le masque.
  *
+ * Le défilement automatique (16/11, DefilementAuto) : un bouton de la barre fait monter le
+ * texte tout seul ; pendant qu'il défile, une petite commande remplace la pastille :
+ * moins vite, la vitesse, plus vite, arrêter. Toucher le texte l'arrête aussi.
+ *
  * Les réglages valent pour tous les écrans de lecture (Store) ; chaque
  * écran redessine son texte dans surChangement, ou laisse [appliquer]
  * retailler et recolorer les vues qu'il a marquées.
@@ -44,6 +48,8 @@ import kotlin.math.roundToInt
 class ReglagesLecture private constructor(
     activite: Activity,
     private val avecNusah: Boolean,
+    private val avecNuit: Boolean,
+    private val avecLangues: Boolean,
     private val auDessusDe: View?,
     private val surChangement: () -> Unit,
 ) {
@@ -53,14 +59,14 @@ class ReglagesLecture private constructor(
     private fun dp(v: Int) = (v * densite).roundToInt()
 
     /**
-     * La taille d'un bouton de la barre : 44 dp, moins sur un écran étroit
+     * La taille d'un bouton de la barre : 48 dp, moins sur un écran étroit
      * (320 dp, ou un affichage agrandi) pour que la barre tienne toujours
      * entière, « Replier » compris (audit du 04/10).
      */
     private val bouton: Int = run {
         val largeur = contexte.resources.displayMetrics.widthPixels / densite
-        val nombre = if (avecNusah) 9 else 8
-        (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(30, 44)
+        val nombre = 6 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0)
+        (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(30, 48)
     }
 
     private val accent = Apparence.couleur(contexte, R.color.brand)
@@ -99,10 +105,42 @@ class ReglagesLecture private constructor(
         visibility = View.GONE
     }
 
+    /** Le défilement automatique de cet écran, posé par [installer]. */
+    private var defilementAuto: DefilementAuto? = null
+
+    /** La vitesse, au milieu de la commande du défilement. */
+    private val niveau = TextView(contexte)
+
+    /** La commande du défilement en cours : moins vite, la vitesse, plus vite, arrêter. */
+    private val commande = LinearLayout(contexte).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        background = fondArrondi(24)
+        setPadding(dp(4), 0, dp(4), 0)
+        elevation = dp(6).toFloat()
+        // Moins vite à gauche et plus vite à droite, comme A− et A+.
+        layoutDirection = View.LAYOUT_DIRECTION_LTR
+        visibility = View.GONE
+    }
+
     init {
+        commande.addView(vitesse(plus = false))
+        commande.addView(niveau.apply {
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48))
+            gravity = Gravity.CENTER
+            minWidth = dp(40)
+            textSize = 15f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(surAccent)
+        })
+        commande.addView(vitesse(plus = true))
+        commande.addView(filet())
+        commande.addView(icone(R.drawable.ic_lecture_pause, R.string.lecture_defiler_pause) { defilementAuto?.arreter() })
+        montrerVitesse()
+
         barre.addView(lettre(plus = false))
         barre.addView(pourcent.apply {
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(44))
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48))
             gravity = Gravity.CENTER
             minWidth = dp(48)
             textSize = 14f
@@ -113,8 +151,8 @@ class ReglagesLecture private constructor(
         })
         barre.addView(lettre(plus = true))
         barre.addView(filet())
-        barre.addView(lune.apply {
-            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+        if (avecNuit) barre.addView(lune.apply {
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
             setImageResource(R.drawable.ic_lecture_lune)
             imageTintList = ColorStateList.valueOf(surAccent)
             scaleType = ImageView.ScaleType.CENTER
@@ -127,7 +165,7 @@ class ReglagesLecture private constructor(
         })
         barre.addView(TextView(contexte).apply {
             // « אב » : le choix de la police (12/10), en lettres hébraïques puisque c'est elles qu'il change.
-            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
             gravity = Gravity.CENTER
             text = "אב"
             textSize = 17f
@@ -136,9 +174,9 @@ class ReglagesLecture private constructor(
             touchable(this)
             setOnClickListener { choisirPolice(it) }
         })
-        barre.addView(TextView(contexte).apply {
+        if (avecLangues) barre.addView(TextView(contexte).apply {
             // « אA » : les langues du texte (04/11) — hébreu, français, anglais, ou deux à la fois.
-            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
             gravity = Gravity.CENTER
             text = "אA"
             textSize = 15f
@@ -149,6 +187,7 @@ class ReglagesLecture private constructor(
             setOnClickListener { choisirLangues(it) }
         })
         if (avecNusah) barre.addView(icone(R.drawable.ic_lecture_nusah, R.string.siddur_choose) { choisirNusah(it) })
+        barre.addView(icone(R.drawable.ic_lecture_defiler, R.string.lecture_defiler) { defilementAuto?.demarrer() })
         barre.addView(filet())
         barre.addView(icone(R.drawable.ic_lecture_masquer, R.string.lecture_masquer) { masquer() })
         barre.addView(icone(R.drawable.ic_lecture_replier, R.string.lecture_replier) { deplier(false) })
@@ -158,7 +197,9 @@ class ReglagesLecture private constructor(
         )
         pastille.layoutParams = bas(36)
         barre.layoutParams = bas(52)
+        commande.layoutParams = bas(52)
         racine.addView(barre)
+        racine.addView(commande)
         racine.addView(pastille)
         placer()
         // Au-dessus du bouton du bas de l'écran (« Terminé », précédent / suivant).
@@ -175,7 +216,7 @@ class ReglagesLecture private constructor(
         val pied = auDessusDe?.takeIf { it.visibility == View.VISIBLE }
             ?.let { it.height + ((it.layoutParams as? ViewGroup.MarginLayoutParams)?.bottomMargin ?: 0) } ?: 0
         val marge = pied + dp(16)
-        listOf(pastille, barre).forEach { v ->
+        listOf(pastille, barre, commande).forEach { v ->
             val lp = v.layoutParams as FrameLayout.LayoutParams
             if (lp.bottomMargin != marge) {
                 lp.bottomMargin = marge
@@ -197,7 +238,7 @@ class ReglagesLecture private constructor(
     }
 
     private fun icone(res: Int, description: Int, action: (View) -> Unit): View = ImageView(contexte).apply {
-        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
         setImageResource(res)
         imageTintList = ColorStateList.valueOf(surAccent)
         scaleType = ImageView.ScaleType.CENTER
@@ -208,7 +249,7 @@ class ReglagesLecture private constructor(
 
     /** « A− » et « A+ » : la lettre latine, comme partout pour la taille du texte. */
     private fun lettre(plus: Boolean): View = TextView(contexte).apply {
-        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(44))
+        layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
         gravity = Gravity.CENTER
         text = if (plus) "A+" else "A−"
         textSize = if (plus) 18f else 14f
@@ -217,6 +258,47 @@ class ReglagesLecture private constructor(
         contentDescription = contexte.getString(if (plus) R.string.lecture_plus else R.string.lecture_moins)
         touchable(this)
         setOnClickListener { changerTaille(Store.lectureEchelle(contexte) + if (plus) PAS else -PAS) }
+    }
+
+    /** « − » et « + » de la commande du défilement : une vitesse de moins, une de plus. */
+    private fun vitesse(plus: Boolean): View = TextView(contexte).apply {
+        layoutParams = LinearLayout.LayoutParams(dp(48), dp(48))
+        gravity = Gravity.CENTER
+        text = if (plus) "+" else "−"
+        textSize = 22f
+        typeface = Typeface.DEFAULT_BOLD
+        setTextColor(surAccent)
+        contentDescription = contexte.getString(if (plus) R.string.lecture_plus_vite else R.string.lecture_moins_vite)
+        touchable(this)
+        setOnClickListener {
+            Store.setLectureDefilementVitesse(contexte, Store.lectureDefilementVitesse(contexte) + if (plus) 1 else -1)
+            montrerVitesse()
+            niveau.announceForAccessibility(niveau.contentDescription)
+        }
+    }
+
+    private fun montrerVitesse() {
+        val n = Store.lectureDefilementVitesse(contexte)
+        niveau.text = n.toString()
+        niveau.contentDescription = contexte.getString(R.string.lecture_vitesse, n)
+    }
+
+    /** Le défilement démarre ou s'arrête : la commande prend la place de la barre, puis la rend à la pastille. */
+    private fun surDefilement(actif: Boolean) {
+        if (actif) {
+            montrerVitesse()
+            barre.visibility = View.GONE
+            pastille.visibility = View.GONE
+            commande.visibility = View.VISIBLE
+        } else {
+            commande.visibility = View.GONE
+            if (!Store.lectureMasquee(contexte)) deplier(false)
+        }
+    }
+
+    /** Un toucher posé sur le texte arrête le défilement : on reprend la main. */
+    private fun arreterAuToucher(e: MotionEvent) {
+        if (e.actionMasked == MotionEvent.ACTION_DOWN) defilementAuto?.arreter()
     }
 
     private fun changerTaille(voulue: Float) {
@@ -258,7 +340,11 @@ class ReglagesLecture private constructor(
         }
     }
 
-    /** Les six façons de lire (LanguesTexte) ; le choix redessine l'écran entier. */
+    /**
+     * Les six façons de lire (LanguesTexte). Le texte se redessine sur place (audit du 12/11,
+     * FLECTURE-04) : recréer l'écran ramenait les Tehilim au psaume d'ouverture, le siddour à son
+     * marque-page, et les autres textes à un nombre de pixels qui n'était plus le même passage.
+     */
     private fun choisirLangues(ancre: View) {
         PopupMenu(contexte, ancre).apply {
             val actuel = LanguesTexte.mode(contexte)
@@ -268,8 +354,7 @@ class ReglagesLecture private constructor(
             menu.setGroupCheckable(0, true, true)
             setOnMenuItemClickListener { item ->
                 Store.setLectureLangues(contexte, LanguesTexte.Mode.entries[item.itemId].cle)
-                // Le texte lui-même change : l'écran se refait (il garde sa place de défilement).
-                (contexte as? Activity)?.recreate()
+                surChangement()
                 true
             }
             show()
@@ -303,6 +388,7 @@ class ReglagesLecture private constructor(
 
     /** Plus rien à l'écran ; la barre du bas dit comment le retrouver. */
     private fun masquer() {
+        defilementAuto?.arreter()
         Store.setLectureMasquee(contexte, true)
         barre.visibility = View.GONE
         pastille.visibility = View.GONE
@@ -355,6 +441,7 @@ class ReglagesLecture private constructor(
 
     /** Pour un texte qui prend lui-même les touchers (les versets des Tehilim) : il les montre ici. */
     fun toucher(e: MotionEvent) {
+        arreterAuToucher(e)
         toucher.onTouchEvent(e)
     }
 
@@ -367,6 +454,7 @@ class ReglagesLecture private constructor(
         })
         liste.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                arreterAuToucher(e)
                 toucher.onTouchEvent(e)
                 return false
             }
@@ -382,6 +470,7 @@ class ReglagesLecture private constructor(
         // Le texte ne prend pas les touchers : ils arrivent à la vue qui défile,
         // qui les laisse passer (false) après les avoir montrés au détecteur.
         defilement.setOnTouchListener { _, e ->
+            arreterAuToucher(e)
             toucher.onTouchEvent(e)
             false
         }
@@ -401,29 +490,38 @@ class ReglagesLecture private constructor(
         /**
          * Pose le bouton sur l'écran. [defilement] est la vue qui défile
          * (ScrollView ou RecyclerView) ; [auDessusDe], le bouton du bas que
-         * la pastille ne doit pas couvrir.
+         * la pastille ne doit pas couvrir ; [gardeSaPlace], pour un écran qui
+         * retrouve lui-même son passage dans surChangement (les Tehilim, au verset).
          */
         fun installer(
             activite: Activity,
             defilement: View,
             avecNusah: Boolean = false,
+            // Coupés tant que l'écran n'applique ni le fond noir ni les traductions (FLECTURE-11).
+            avecNuit: Boolean = true,
+            avecLangues: Boolean = true,
             auDessusDe: View? = null,
+            gardeSaPlace: Boolean = false,
             surChangement: () -> Unit,
         ): ReglagesLecture {
-            // Une vue qui défile garde sa place quand les lettres grandissent :
-            // la même proportion du texte reste en haut de l'écran.
-            val garderPlace: () -> Unit = if (defilement is RecyclerView) surChangement else {
+            // Une vue qui défile garde sa place quand les lettres grandissent ou que les langues
+            // changent : le paragraphe repéré ([reperer], FLECTURE-04) qui était en haut de l'écran
+            // y revient ; sans repère, la même proportion du texte.
+            val garderPlace: () -> Unit = if (defilement is RecyclerView || gardeSaPlace) surChangement else {
                 {
+                    val repere = repereDuHaut(defilement)
                     val portee = ((defilement as? ViewGroup)?.getChildAt(0)?.height ?: 0) - defilement.height
                     val part = if (portee > 0) defilement.scrollY.toFloat() / portee else 0f
                     surChangement()
                     defilement.post {
+                        if (repere != null && allerAuRepere(defilement, repere)) return@post
                         val nouvelle = ((defilement as? ViewGroup)?.getChildAt(0)?.height ?: 0) - defilement.height
                         if (nouvelle > 0) defilement.scrollTo(0, (part * nouvelle).toInt())
                     }
                 }
             }
-            val reglages = ReglagesLecture(activite, avecNusah, auDessusDe, garderPlace)
+            val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, garderPlace)
+            reglages.defilementAuto = DefilementAuto(activite, defilement) { reglages.surDefilement(it) }
             reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement)
             if (defilement is RecyclerView) reglages.suivreListe(defilement) else reglages.suivreDefilement(defilement)
             // De quoi lire la fin du texte au-dessus de la barre ouverte.
@@ -475,6 +573,71 @@ class ReglagesLecture private constructor(
                 vue.setTag(R.id.lecture_interligne, vue.lineSpacingExtra)
             }
             return vue
+        }
+
+        /**
+         * Donne son repère à une vue du texte (audit du 12/11, FLECTURE-04) : le rang de son verset
+         * ou de son paragraphe, le même dans toutes les langues. Quand le texte se redessine
+         * (taille, langues) ou que l'écran se recrée (rotation, thème), on retrouve ce passage, et
+         * non un nombre de pixels qui n'est plus au même endroit du texte.
+         */
+        fun <V : View> reperer(vue: V, repere: Int): V {
+            vue.setTag(R.id.lecture_repere, repere)
+            return vue
+        }
+
+        /** Les vues repérées sous [defilement] : (repère, haut, bas) dans le texte qui défile. */
+        private fun bords(defilement: View): List<Triple<Int, Int, Int>> {
+            val sortie = ArrayList<Triple<Int, Int, Int>>()
+            fun parcourir(v: View, haut: Int) {
+                (v.getTag(R.id.lecture_repere) as? Int)?.let { sortie += Triple(it, haut, haut + v.height) }
+                if (v is ViewGroup) for (i in 0 until v.childCount) v.getChildAt(i).let { parcourir(it, haut + it.top) }
+            }
+            (defilement as? ViewGroup)?.let { g -> for (i in 0 until g.childCount) g.getChildAt(i).let { parcourir(it, it.top) } }
+            return sortie
+        }
+
+        /**
+         * Le passage en haut de l'écran : le repère de la première vue qui dépasse encore sous
+         * [y], et la part de cette vue déjà passée (négative dans la marge qui la précède).
+         * Rien tout en haut du texte, ni sans vue repérée.
+         */
+        fun premierRepere(bords: List<Triple<Int, Int, Int>>, y: Int): Pair<Int, Float>? {
+            if (y <= 0) return null
+            val (repere, haut, bas) = bords.firstOrNull { it.third > y } ?: return null
+            return repere to (y - haut).toFloat() / (bas - haut).coerceAtLeast(1)
+        }
+
+        /** Où défiler pour retrouver [repere] : la première vue qui le porte, à la même part. */
+        fun placeDuRepere(bords: List<Triple<Int, Int, Int>>, repere: Pair<Int, Float>): Int? {
+            val (_, haut, bas) = bords.firstOrNull { it.first == repere.first } ?: return null
+            return (haut + repere.second * (bas - haut)).toInt().coerceAtLeast(0)
+        }
+
+        fun repereDuHaut(defilement: View): Pair<Int, Float>? = premierRepere(bords(defilement), defilement.scrollY)
+
+        /** Ramène [repere] en haut de l'écran ; faux si aucune vue ne le porte. */
+        fun allerAuRepere(defilement: View, repere: Pair<Int, Float>): Boolean {
+            val y = placeDuRepere(bords(defilement), repere) ?: return false
+            defilement.scrollTo(0, y)
+            return true
+        }
+
+        private const val ETAT_REPERE = "lecture_repere"
+        private const val ETAT_REPERE_PART = "lecture_repere_part"
+
+        /** Le passage en haut de l'écran, gardé pour l'écran recréé (onSaveInstanceState). */
+        fun sauverRepere(etat: android.os.Bundle, defilement: View) {
+            val (repere, part) = repereDuHaut(defilement) ?: return
+            etat.putInt(ETAT_REPERE, repere)
+            etat.putFloat(ETAT_REPERE_PART, part)
+        }
+
+        /** L'écran recréé revient au passage gardé, une fois sa mise en page faite. */
+        fun reprendreRepere(etat: android.os.Bundle?, defilement: View) {
+            if (etat == null || !etat.containsKey(ETAT_REPERE)) return
+            val repere = etat.getInt(ETAT_REPERE) to etat.getFloat(ETAT_REPERE_PART)
+            defilement.post { allerAuRepere(defilement, repere) }
         }
 
         /**

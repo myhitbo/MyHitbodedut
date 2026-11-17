@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.drawable.Icon
+import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
@@ -51,6 +52,13 @@ class SessionService : Service() {
      */
     private var eveil: PowerManager.WakeLock? = null
 
+    /**
+     * Android a refusé le type lecture multimédia (Android 15 et plus : service relancé
+     * depuis le démarrage du téléphone ; service collant relancé en arrière-plan) : il
+     * n'est redemandé qu'à la prochaine commande, pas à chaque tour de 5 s.
+     */
+    private var lectureRefusee = false
+
     private val tick = object : Runnable {
         override fun run() {
             if (refresh()) handler.postDelayed(this, delaiTick())
@@ -79,9 +87,12 @@ class SessionService : Service() {
         // close par reconcilier() : il n'y a rien à suivre. Sans ce garde,
         // le tour suivant inscrivait une journée fantôme de 0 min.
         if (intent == null && !Store.hasSessionRecord(this)) {
+            NePasDeranger.retablir(this)
             stopSelf()
             return START_NOT_STICKY
         }
+        // Chaque commande redemande le type lecture : la musique a pu être rallumée depuis l'application.
+        lectureRefusee = false
         when (intent?.action) {
             ACTION_CANCEL -> {
                 Store.endSession(this)
@@ -117,11 +128,26 @@ class SessionService : Service() {
                 // pendant la séance : on coupe, le chemin ordinaire relance.
                 if (modeAleatoire != null && modeAleatoire != Store.musicShuffle(this)) {
                     music.stop(fade = false)
+                } else if (SessionRule.autreMorceau(
+                        Store.musicShuffle(this), music.charge,
+                        MusicLibrary.selected(this)?.id, Store.musicNow(this),
+                    )
+                ) {
+                    // Un autre morceau a été touché dans l'écran Musique : il prend la place.
+                    music.stop(fade = false)
                 }
+                music.setVolume(Store.musicVolume(this))
                 // Réactivée : le chemin ordinaire ci-dessous relance le morceau.
             }
         }
-        startForegroundNow()
+        // Refusé alors que le service n'était pas encore au premier plan : il s'arrête
+        // proprement au lieu de planter. La séance reste inscrite ; reconcilier() la clôt
+        // ou la relance à la prochaine ouverture, depuis le premier plan.
+        if (!startForegroundNow() && !enMarche) {
+            NePasDeranger.retablir(this)
+            stopSelf()
+            return START_NOT_STICKY
+        }
         enMarche = true
         lecteur = music
         garderEveille()
@@ -139,6 +165,7 @@ class SessionService : Service() {
         ambiance.stop()
         lecteur = null
         handler.removeCallbacks(tick)
+        handler.removeCallbacks(finDuSon)
         relacherEveil()
         enMarche = false
         super.onDestroy()
@@ -166,7 +193,12 @@ class SessionService : Service() {
 
     /** Renvoie vrai tant que la séance continue. */
     private fun refresh(): Boolean {
-        if (!Store.isSessionRunning(this)) {
+        // Une séance sans durée oubliée en marche se clôt ici au plafond, comme le fait
+        // reconcilier() : le mode « Ne pas déranger » ne reste pas posé indéfiniment.
+        val plafond = SessionRule.estEchue(
+            Store.sessionStartedAt(this), Store.sessionEndsAt(this), Store.sessionTarget(this), System.currentTimeMillis()
+        )
+        if (!Store.isSessionRunning(this) || plafond) {
             finishSession(early = false)
             return false
         }
@@ -186,31 +218,62 @@ class SessionService : Service() {
         // Le sujet se lit AVANT la clôture : endSession efface la séance.
         val theme = Store.sessionTheme(this)
         val close = Store.endSession(this)
+        // Le mode d'avant se rétablit d'abord : la notification et le son de fin partent
+        // ensuite, et ne sont plus à la merci de « Ne pas déranger » (FSEANCE-06).
+        NePasDeranger.retablir(this)
         if (close.minutes > 0 || !early) {
             inscrire(this, close, theme = theme)
-            notifyCompleted(close)
+            // Un seul son à la fin : celui du décompte masqué (chime) ou celui de la notification.
+            // Celui qui termine lui-même n'a pas besoin qu'on le prévienne par un son.
+            notifyCompleted(
+                close,
+                silencieuse = SessionRule.finSilencieuse(early, Store.hideCountdown(this), sonnerieAudible()),
+            )
         }
+        StreakWidget.refresh(this)
         // Décompte masqué : rien n'a prévenu que le temps s'écoulait, il faut
         // donc que quelque chose dise qu'il est écoulé. Seulement quand la
         // séance arrive d'elle-même à son terme : celui qui l'arrête lui-même
         // n'a pas besoin qu'on le lui apprenne.
-        if (!early && Store.hideCountdown(this)) chime()
-        StreakWidget.refresh(this)
+        if (!early && Store.hideCountdown(this)) {
+            // « Ne pas déranger » rendu avant le son, qu'il ne fasse pas taire ; musique et
+            // ambiance coupées dessous. Le service reste au premier plan le temps du son :
+            // depuis Android 17, un son joué sans activité visible ni service de premier
+            // plan est rendu muet, sans exception ni message (examen du 14/11, constat 10).
+            NePasDeranger.retablir(this)
+            music.stop()
+            ambiance.stop()
+            if (chime()) {
+                handler.removeCallbacks(tick)
+                handler.postDelayed(finDuSon, DUREE_SON_MS)
+                return
+            }
+        }
         stopSelfAndClear()
+    }
+
+    /** Le son de fin a eu son temps : le service s'arrête, sauf si une séance neuve l'a repris. */
+    private val finDuSon = Runnable {
+        if (!Store.hasSessionRecord(this)) stopSelfAndClear()
     }
 
     /**
      * Le son de fin. La sonnerie de notification du téléphone, celle que son
      * propriétaire a déjà choisie et déjà réglée : rien de plus discret qu'un
      * son qu'on reconnaît. La référence est gardée le temps qu'il finisse.
+     * Rend vrai si le son est parti.
      */
-    private fun chime() {
-        runCatching {
-            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                ?: return
-            ringtone = RingtoneManager.getRingtone(applicationContext, uri)?.also { it.play() }
-        }
-    }
+    private fun chime(): Boolean = runCatching {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            ?: return false
+        ringtone = RingtoneManager.getRingtone(applicationContext, uri)?.also { it.play() }
+        ringtone != null
+    }.getOrDefault(false)
+
+    /** La sonnerie de fin s'entend : en vibreur ou en silencieux, Ringtone ne joue rien. */
+    private fun sonnerieAudible(): Boolean = runCatching {
+        (getSystemService(Context.AUDIO_SERVICE) as AudioManager).ringerMode == AudioManager.RINGER_MODE_NORMAL
+    }.getOrDefault(true)
 
     /** Lance le morceau retenu, si la musique est active et rien ne joue déjà. */
     private fun ensureMusic() {
@@ -313,7 +376,7 @@ class SessionService : Service() {
         stopSelf()
     }
 
-    private fun notifyCompleted(close: SeanceClose) {
+    private fun notifyCompleted(close: SeanceClose, silencieuse: Boolean = false) {
         val minutes = close.minutes
         // Code de requête propre et FLAG_UPDATE_CURRENT : les autres
         // notifications ouvrent aussi l'accueil, et Android rendait la même
@@ -324,7 +387,10 @@ class SessionService : Service() {
             Intent(this, MainActivity::class.java).putExtra(MainActivity.EXTRA_ASK_NOTE, close.date),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val notification = Notification.Builder(this, Notifications.CHANNEL_REMINDER)
+        // Le canal « séance » est de faible importance : sans son ni vibration.
+        val notification = Notification.Builder(
+            this, if (silencieuse) Notifications.CHANNEL_SESSION else Notifications.CHANNEL_REMINDER
+        )
             .setContentTitle(getString(R.string.session_done_title))
             .setContentText(getString(R.string.session_done_text, Store.formatDuration(this, minutes)))
             .setSmallIcon(R.drawable.ic_notification)
@@ -342,14 +408,34 @@ class SessionService : Service() {
      * quand il y en a un, le temps déjà passé quand la séance est ouverte.
      */
     private fun runningText(): String = when (Store.sessionCounter(this)) {
-        SessionRule.Compteur.MASQUE -> getString(R.string.session_running_hidden)
+        // Masqué, le chiffre se tait ; la séance sans durée se dit tout de même (13/11, audit FSEANCE-05).
+        SessionRule.Compteur.MASQUE -> getString(
+            if (Store.isSessionOpen(this)) R.string.session_running_open_hidden
+            else R.string.session_running_hidden
+        )
         SessionRule.Compteur.ECOULE ->
             getString(R.string.session_elapsed, Store.formatDuration(this, Store.sessionElapsedMinutes(this)))
         SessionRule.Compteur.RESTE ->
             getString(R.string.session_remaining, Store.formatDuration(this, remainingMinutes()))
     }
 
-    private fun startForegroundNow() {
+    /**
+     * Pose la notification de séance au premier plan ; rend vrai si Android l'a accepté.
+     *
+     * Il peut le refuser (examen du 14/11, suite de FBARRIERE-06) : service collant relancé
+     * en arrière-plan sous Android 12 et plus après la mort du processus, application
+     * restreinte, type refusé sous Android 14 et plus. L'exception n'était pas rattrapée :
+     * plantage, relance par Android, séance toujours inscrite, et plantage de nouveau
+     * jusqu'à la prochaine ouverture de l'application. GateService porte la même garde.
+     * Au tour de 5 s le résultat s'ignore : le service est déjà au premier plan, un refus
+     * ne l'en retire pas.
+     *
+     * Sous Android 14 et plus, le type suit ce qui joue (constat 2) : usage spécial pour le
+     * décompte, plus lecture multimédia tant que la musique ou une ambiance est allumée, comme
+     * Android le prévoit pour un service qui ajoute la lecture à sa tâche. Le type lecture
+     * refusé n'empêche rien : la séance repart sous usage spécial seul, comme jusqu'au 14/11.
+     */
+    private fun startForegroundNow(): Boolean = runCatching {
         val open = PendingIntent.getActivity(
             this,
             0,
@@ -378,15 +464,33 @@ class SessionService : Service() {
             .build()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(Notifications.ID_SESSION, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            // La musique ou l'ambiance s'ajoutent en lecture multimédia (examen du 14/11, constat 2).
+            // Refusée, la séance reste au premier plan sous son seul type, comme avant.
+            val lecture = !lectureRefusee &&
+                SessionRule.joueDuSon(Store.musicEnabled(this), AmbiancePlayer.choisie(this))
+            if (lecture) {
+                lectureRefusee = runCatching {
+                    startForeground(
+                        Notifications.ID_SESSION,
+                        notification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+                    )
+                }.isFailure
+            }
+            if (!lecture || lectureRefusee) {
+                startForeground(Notifications.ID_SESSION, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            }
         } else {
             startForeground(Notifications.ID_SESSION, notification)
         }
-    }
+    }.isSuccess
 
     companion object {
         private const val TICK_MS = 5_000L
         private const val MARGE_EVEIL_MS = 2 * 60_000L
+
+        /** Le temps laissé au son de fin, service au premier plan (une sonnerie de notification dure moins). */
+        private const val DUREE_SON_MS = 4_000L
         private const val REQUETE_FIN = 30
 
         /**
@@ -414,7 +518,12 @@ class SessionService : Service() {
          * cours, le service est relancé, s'il peut l'être d'ici.
          */
         fun reconcilier(context: Context) {
-            if (enMarche || !Store.hasSessionRecord(context)) return
+            if (enMarche) return
+            if (!Store.hasSessionRecord(context)) {
+                // Rien n'est inscrit, mais un mode posé par une séance morte peut rester.
+                NePasDeranger.retablir(context)
+                return
+            }
             val maintenant = System.currentTimeMillis()
             val echue = SessionRule.estEchue(
                 Store.sessionStartedAt(context),
@@ -426,11 +535,12 @@ class SessionService : Service() {
                 val theme = Store.sessionTheme(context)
                 val close = Store.endSession(context)
                 if (close.minutes > 0) inscrire(context, close, theme)
+                NePasDeranger.retablir(context)
                 StreakWidget.refresh(context)
             } else {
                 runCatching {
                     context.startForegroundService(Intent(context, SessionService::class.java))
-                }
+                }.onFailure { NePasDeranger.retablir(context) }
             }
         }
         const val ACTION_CANCEL = "com.myhitbodedut.CANCEL_SESSION"
@@ -487,6 +597,7 @@ class SessionService : Service() {
             val theme = Store.sessionTheme(context)
             val close = Store.endSession(context)
             if (echue || close.minutes > 0) inscrire(context, close, theme)
+            NePasDeranger.retablir(context)
         }
 
         fun cancel(context: Context) {

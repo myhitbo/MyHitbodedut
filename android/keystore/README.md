@@ -3,8 +3,14 @@
 `myhitbodedut-dev.jks` signe les APK produits par l'intégration continue.
 
 **Ce n'est pas un secret.** Le mot de passe du trousseau et de la clé est
-`myhitbodedut`, et il est écrit ici exprès. Cette clé sert uniquement aux
-installations directes depuis ce dépôt privé.
+`myhitbodedut`, et il est écrit ici exprès.
+
+> **Le dépôt est public depuis le 15/11/2026 : cette clé l'est donc pour tout le
+> monde.** N'importe qui peut signer avec elle un APK qu'Android installera
+> par-dessus une MyHitbodedut signée par elle, avec accès au journal. Elle ne
+> doit plus signer aucune version distribuée : créer la clé privée et les
+> secrets `RELEASE_*` décrits plus bas, puis réinstaller une fois sur chaque
+> téléphone (exporter, désinstaller, installer, importer).
 
 ## Pourquoi elle est versionnée
 
@@ -34,3 +40,24 @@ En intégration continue, passer ces valeurs par des secrets GitHub.
 
 Une clé de publication est définitive : la perdre interdit toute mise à jour de
 l'application sur le Play Store.
+
+## Signer les APK des releases GitHub par une clé privée (audit du 12/11/2026)
+
+Tant que les APK publiés sont signés par la clé de ce dossier, quiconque lit le
+dépôt peut signer une « mise à jour » qu'Android installera par-dessus
+l'application, avec accès au journal. `android.yml` prend une clé privée dès
+que ces quatre secrets existent (Settings → Secrets and variables → Actions) :
+
+```bash
+keytool -genkeypair -v -keystore release-myhitbodedut.jks -alias myhitbodedut \
+  -keyalg RSA -keysize 4096 -validity 10000
+base64 -w0 release-myhitbodedut.jks   # → RELEASE_KEYSTORE_BASE64
+```
+
+`RELEASE_KEYSTORE_BASE64`, `RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`,
+`RELEASE_KEY_PASSWORD`. Garder le fichier et ses mots de passe hors du dépôt,
+avec une copie de secours : la perdre interdit toute mise à jour.
+
+Android refuse une mise à jour signée par une autre clé. Le passage se fait
+donc une fois, sur chaque téléphone : exporter (Réglages → Mes données),
+désinstaller, installer le nouvel APK, importer.

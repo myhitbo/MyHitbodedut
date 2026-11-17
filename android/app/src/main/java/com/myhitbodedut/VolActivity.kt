@@ -8,7 +8,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
-import android.os.CancellationSignal
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import android.app.TimePickerDialog
@@ -50,10 +49,14 @@ class VolActivity : AppCompatActivity() {
     private var numero = ""
     private var depart: Vol.Aeroport? = null
     private var arrivee: Vol.Aeroport? = null
+    /** Le plan jugé invraisemblable pour lequel l'avertissement a déjà été donné (FVOL-12). */
+    private var avertiPour: Vol.Plan? = null
     private var decollage: LocalDateTime? = null
     private var atterrissage: LocalDateTime? = null
     private var calcul: Vol.Calcul? = null
     private var gpsEnCours = false
+    /** Arrête le relevé GPS en cours (écouteur et délai) : l'écouteur continu ne survit pas à l'écran (FVOL-15). */
+    private var arreterGps: (() -> Unit)? = null
     private val autorisationGps = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { r ->
         if (r[Manifest.permission.ACCESS_FINE_LOCATION] == true) releverGps() else message(getString(R.string.vol_gps_refuse))
     }
@@ -79,7 +82,7 @@ class VolActivity : AppCompatActivity() {
         val maintenant = Instant.now()
         if (signature(c, maintenant) != signatureAffichee) return afficherResultats()
         val p = VolPriere.priere(c, maintenant) ?: return
-        val limite = p.second ?: return
+        val limite = p.limite ?: return
         compteur?.text = getString(R.string.vol_dans, dureeEnMots(Duration.between(maintenant, limite).toMinutes().toInt().coerceAtLeast(0)))
     }
 
@@ -87,8 +90,8 @@ class VolActivity : AppCompatActivity() {
     private fun signature(c: Vol.Calcul, maintenant: Instant): String {
         val p = VolPriere.priere(c, maintenant)
         val place = c.enVol.indexOfFirst { maintenant.isBefore(it.instant) }
-        val rappels = VolRappels.rappels(c, Store.inIsrael(this)).count { it.instant.isAfter(maintenant) }
-        return "${p?.first}|${p?.second}|$place|$rappels|${maintenant.isAfter(c.plan.atterrissage)}"
+        val rappels = VolRappels.rappels(c, Store.inIsrael(this), Store.siddurNusah(this).cle).count { it.instant.isAfter(maintenant) }
+        return "${p?.priere}|${p?.limite}|${p?.debut}|$place|$rappels|${maintenant.isAfter(c.plan.atterrissage)}"
     }
 
     private var signatureAffichee: String? = null
@@ -123,6 +126,7 @@ class VolActivity : AppCompatActivity() {
             arrivee = enregistre.arrivee
             decollage = Vol.zone(enregistre.depart.fuseau)?.let { LocalDateTime.ofInstant(enregistre.decollage, it) }
             atterrissage = Vol.zone(enregistre.arrivee.fuseau)?.let { LocalDateTime.ofInstant(enregistre.atterrissage, it) }
+            arriveeEstimee = Store.volArriveeEstimee(this)
         }
         afficherFormulaire()
         // Après une rotation aussi : le calcul n'est pas gardé, il se refait en un instant.
@@ -151,6 +155,11 @@ class VolActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         minuterie.removeCallbacks(rafraichir)
+    }
+
+    override fun onDestroy() {
+        arreterGps?.invoke()
+        super.onDestroy()
     }
 
     private val contenu get() = findViewById<LinearLayout>(R.id.vol_contenu)
@@ -196,6 +205,7 @@ class VolActivity : AppCompatActivity() {
         val fleche = if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) "←" else "→"
         addView(VueJour.texte(this@VolActivity, "\u2068${heureAeroport(plan.depart, plan.decollage)}\u2069 $fleche " +
             "\u2068${heureAeroport(plan.arrivee, plan.atterrissage)}\u2069", 14f, R.color.muted, haut = 2).apply { fontFeatureSettings = "tnum" })
+        if (Store.volArriveeEstimee(this@VolActivity)) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_resume_estimee), 12f, R.color.muted, haut = 4))
     }
 
     /** « mer. 28 19:20 TLV » : l'heure locale d'un aéroport (celle du billet). */
@@ -364,7 +374,9 @@ class VolActivity : AppCompatActivity() {
             appliquer(SaisieVol.lire(phrase, aeroports, LocalDate.now()), source = null)
         }.apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(12) })
         addView(bouton(getString(R.string.vol_rapide_billet), Genre.SECONDAIRE) {
-            choixBillet.launch(arrayOf("application/pdf", "image/*"))
+            // Sans sélecteur de fichiers, un message plutôt qu'un plantage (examen du 14/11, constat 12).
+            runCatching { choixBillet.launch(arrayOf("application/pdf", "image/*")) }
+                .onFailure { message(getString(R.string.fichiers_absents)) }
         }.apply {
             (layoutParams as LinearLayout.LayoutParams).topMargin = dp(8)
             setIconResource(R.drawable.ic_billet)
@@ -396,9 +408,12 @@ class VolActivity : AppCompatActivity() {
         p.depart?.let { depart = it }
         p.arrivee?.let { arrivee = it }
         if (p.depart != null || p.arrivee != null) routeTexte = null
+        // Une date sans heure (code-barres, « demain ») : l'ancien vol n'est pas gardé, le sélecteur d'heure
+        // s'ouvre sur cette date (audit du 12/11, FVOL-03 : le vol se calculait sur l'ancienne date).
+        if (SaisieVol.dateSansHeure(p)) { decollage = null; atterrissage = null; dateSeule = p.date }
         val jour = p.date ?: decollage?.toLocalDate()
         if (jour != null && p.heureDepart != null) decollage = LocalDateTime.of(jour, p.heureDepart)
-        else if (jour != null) dateSeule = jour
+        else if (jour != null && decollage == null) dateSeule = jour
         arriveeEstimee = false
         val d = depart
         val a = arrivee
@@ -440,7 +455,9 @@ class VolActivity : AppCompatActivity() {
             depart != null && decollage == null -> choisirHeure(dateSeule?.atTime(12, 0)) {
                 appliquer(SaisieVol.Proposition(date = it.toLocalDate(), heureDepart = it.toLocalTime()), null)
             }
-            depart != null && arrivee != null && decollage != null && atterrissage != null -> calculer()
+            // Une arrivée estimée ou un jour repris de l'ancien vol ne s'enregistrent pas d'eux-mêmes : on remplit
+            // les tuiles, la personne vérifie et touche « Calculer » (FVOL-03).
+            SaisieVol.calculAutomatique(p, arriveeEstimee) && depart != null && arrivee != null && decollage != null && atterrissage != null -> calculer()
         }
     }
 
@@ -452,12 +469,17 @@ class VolActivity : AppCompatActivity() {
         rapideTexte = getString(R.string.vol_rapide_lecture)
         afficherFormulaire()
         Thread {
-            val code = runCatching { LecteurBillet.code(this, uri) }.getOrNull()
+            val lecture = runCatching { LecteurBillet.code(this, uri) }
+            val code = lecture.getOrNull()
             val troncon = code?.let { CarteEmbarquement.lire(it, LocalDate.now()) }
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
                 if (troncon == null) {
-                    rapideTexte = getString(if (code == null) R.string.vol_rapide_billet_sans_code else R.string.vol_rapide_billet_illisible)
+                    rapideTexte = getString(when {
+                        lecture.isFailure -> R.string.vol_rapide_billet_echec
+                        code == null -> R.string.vol_rapide_billet_sans_code
+                        else -> R.string.vol_rapide_billet_illisible
+                    })
                     return@runOnUiThread afficherFormulaire()
                 }
                 appliquer(SaisieVol.Proposition(
@@ -476,7 +498,7 @@ class VolActivity : AppCompatActivity() {
         if (Store.suiviDirect(this)) return chercherRoute()
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.vol_en_ligne_titre)
-            .setMessage(R.string.vol_en_ligne_aide)
+            .setMessage(aideEnLigne)
             .setPositiveButton(R.string.vol_en_ligne_oui) { _, _ ->
                 Store.setSuiviDirect(this, true)
                 chercherRoute()
@@ -492,7 +514,7 @@ class VolActivity : AppCompatActivity() {
         val detail = LinearLayout(this@VolActivity).apply {
             orientation = LinearLayout.VERTICAL
             visibility = View.GONE
-            addView(VueJour.texte(this@VolActivity, getString(R.string.zmanim_a_valider), 12f, R.color.muted))
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_methodes), 12f, R.color.muted))
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_source_aeroports), 12f, R.color.muted, haut = 6))
             if (BuildConfig.SUIVI_VOL) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_source_adsbdb), 12f, R.color.muted, haut = 4))
         }
@@ -692,7 +714,14 @@ class VolActivity : AppCompatActivity() {
         val garde = Store.vol(this, aeroports)?.takeIf { it.depart == d && it.arrivee == a && it.decollage == i1 && it.atterrissage == i2 }
         val plan = Vol.Plan(numero, d, a, i1, i2, garde?.releve, garde?.sourceReleve ?: Vol.SourceReleve.GPS)
         Vol.verifier(plan)?.let { return message(getString(invalide(it))) }
+        // Une durée que la distance ne permet pas : on avertit une fois, un second toucher passe outre (FVOL-12).
+        if (Vol.invraisemblable(plan) && avertiPour != plan.copy(releve = null)) {
+            avertiPour = plan.copy(releve = null)
+            val minutes = Duration.between(i1, i2).toMinutes().toInt()
+            return message(getString(R.string.vol_invraisemblable, Math.round(Vol.distanceKm(plan)).toString(), dureeEnMots(minutes)))
+        }
         Store.setVol(this, plan)
+        Store.setVolArriveeEstimee(this, arriveeEstimee)
         modifier = false
         afficherFormulaire()
         lancer(plan)
@@ -718,7 +747,7 @@ class VolActivity : AppCompatActivity() {
                 enCours = false
                 calcul = c
                 // Les rappels suivent le dernier calcul (un relevé GPS les recale aussi).
-                if (c != null) VolAlerte.enregistrer(this, VolRappels.rappels(c, Store.inIsrael(this)))
+                if (c != null) VolAlerte.enregistrer(this, VolRappels.rappels(c, Store.inIsrael(this), Store.siddurNusah(this).cle))
                 if (c == null) message(getString(R.string.vol_reserve_erreur)) else afficherResultats()
             }
         }.start()
@@ -778,8 +807,11 @@ class VolActivity : AppCompatActivity() {
         val israel = Store.inIsrael(this)
         val minutes = Store.allumage(this)
         val jalons = VolCalendrier.jalons(c, israel, minutes)
-        if (jalons.isEmpty()) return null
+        if (jalons.isEmpty() && c.lignesDate.isEmpty()) return null
         return VueJour.carte(this).apply {
+            // Ligne de date (audit du 16/11) : le choix de la ligne est discuté ; pendant le Omer, deux comptes.
+            if (c.lignesDate.isNotEmpty()) addView(VueJour.texte(this@VolActivity, getString(R.string.ligne_date_discutee), 13f, R.color.ink, haut = 4))
+            if (VolCalendrier.ligneDateOmer(c, israel)) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_omer_ligne_date), 13f, R.color.brand, haut = 4))
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_jalons_titre), 13f, R.color.muted))
             jalons.forEach { j ->
                 val nom = (listOfNotNull(if (j.chabbat) getString(R.string.vol_chabbat) else null) +
@@ -792,6 +824,8 @@ class VolActivity : AppCompatActivity() {
                     VolCalendrier.Type.OMER -> getString(R.string.vol_jalon_omer, j.omer.toString(), heure)
                 }
                 addView(VueJour.texte(this@VolActivity, texte, 15f, R.color.ink, gras = true, haut = 10))
+                // Vol polaire sans tsét : le repère de repli est dit (audit du 16/11).
+                if (j.repli) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_jalon_repli), 13f, R.color.ink, haut = 2))
                 j.allumage?.let { addView(VueJour.texte(this@VolActivity, getString(R.string.vol_jalon_allumage, minutes.toString(), deuxHeures(c.plan, it)), 13f, R.color.ink, haut = 2)) }
                 addView(VueJour.texte(this@VolActivity, position(Vol.Evenement("", j.instant, j.latitude, j.longitude)), 12f, R.color.muted, haut = 1))
             }
@@ -829,7 +863,7 @@ class VolActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this@VolActivity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_rappels_sans_permission), 13f, R.color.ink, haut = 4))
         }
-        val aVenir = VolRappels.rappels(c, Store.inIsrael(this@VolActivity)).filter { it.instant.isAfter(maintenant) }
+        val aVenir = VolRappels.rappels(c, Store.inIsrael(this@VolActivity), Store.siddurNusah(this@VolActivity).cle).filter { it.instant.isAfter(maintenant) }
         if (aVenir.isEmpty()) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_rappels_aucun), 14f, R.color.ink, haut = 4))
         aVenir.forEach { r ->
             addView(VueJour.texte(this@VolActivity, VolAlerte.textes(this@VolActivity, r, c.plan).first, 15f, R.color.ink, gras = true, haut = 10))
@@ -841,11 +875,13 @@ class VolActivity : AppCompatActivity() {
     /**
      * La prière du moment mise en avant : la carte prend le ciel de son heure (04/11) — l'aube
      * pour Cha'harit, l'or de l'après-midi pour Min'ha, la nuit pour Arvit —, texte en blanc,
-     * le compte à rebours en grand.
+     * le compte à rebours en grand. Entre deux prières (13/11, FVOL-05 : de la fin de Cha'harit à
+     * min'ha guedola), aucune n'est donnée pour ouverte : la prochaine et l'heure où elle commence,
+     * sur le fond neutre.
      */
     private fun cartePriere(c: Vol.Calcul, maintenant: Instant) = VueJour.carte(this).apply {
         val p = VolPriere.priere(c, maintenant)
-        val ciel = when (p?.first) {
+        val ciel = when (p?.priere.takeIf { p?.debut == null }) {
             "chaharit" -> intArrayOf(0xFF2B3F6E.toInt(), 0xFF8C5A7A.toInt(), 0xFFE0906B.toInt())
             "minha" -> intArrayOf(0xFF17525A.toInt(), 0xFF6E7A3E.toInt(), 0xFFC9962E.toInt())
             null -> intArrayOf(Apparence.couleur(this@VolActivity, R.color.brand), androidx.core.graphics.ColorUtils.blendARGB(Apparence.couleur(this@VolActivity, R.color.brand), 0xFF000000.toInt(), 0.35f))
@@ -864,11 +900,18 @@ class VolActivity : AppCompatActivity() {
             addView(VueJour.texte(this@VolActivity, getString(R.string.vol_hors_fenetre), 15f, R.color.ink, haut = 8).apply { setTextColor(blanc(240)) })
             return@apply
         }
-        val (priere, limite) = p
+        val (priere, limite, debut) = p
         val nom = when (priere) {
             "chaharit" -> R.string.widget_zmanim_chaharit
             "minha" -> R.string.widget_zmanim_minha
             else -> R.string.widget_zmanim_arvit
+        }
+        if (debut != null) {
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_prochaine, getString(nom)), 22f, R.color.ink, gras = true, haut = 8).apply { setTextColor(blanc(255)) })
+            addView(VueJour.texte(this@VolActivity, getString(R.string.vol_des, deuxHeures(c.plan, debut)), 14f, R.color.ink, haut = 4).apply {
+                setTextColor(blanc(215)); fontFeatureSettings = "tnum"
+            })
+            return@apply
         }
         addView(VueJour.texte(this@VolActivity, getString(nom), 34f, R.color.ink, gras = true, haut = 4).apply { setTextColor(blanc(255)) })
         if (limite == null) {
@@ -891,7 +934,7 @@ class VolActivity : AppCompatActivity() {
     private fun dureeEnMots(minutes: Int): String = when {
         minutes == 1 -> getString(R.string.vol_duree_une_minute)
         minutes < 60 -> getString(R.string.vol_duree_minutes, minutes.toString())
-        minutes % 60 == 0 -> getString(R.string.vol_duree_heures, (minutes / 60).toString())
+        minutes % 60 == 0 -> resources.getQuantityString(R.plurals.vol_duree_heures, minutes / 60, (minutes / 60).toString())
         else -> getString(R.string.vol_duree_heures_minutes, (minutes / 60).toString(), (minutes % 60).toString())
     }
 
@@ -905,7 +948,7 @@ class VolActivity : AppCompatActivity() {
     }
 
     /**
-     * Un relevé du GPS seul (pas le réseau : en vol, il n'y en a pas), 90 s au plus. Il recale la
+     * Un relevé du GPS seul (pas le réseau : en vol, il n'y en a pas), 2 min 30 au plus (écouteur continu : getCurrentLocation est coupé à moins d’une minute). Il recale la
      * route s'il tombe pendant le vol prévu ; sinon on le dit et la route prévue reste.
      */
     @SuppressLint("MissingPermission") // vérifiée par demanderGps
@@ -916,14 +959,19 @@ class VolActivity : AppCompatActivity() {
         afficherResultats()
         val delai = Handler(Looper.getMainLooper())
         var fini = false
-        val annulation = CancellationSignal()
         var ecouteur: LocationListener? = null
-        fun conclure(l: Location?) {
-            if (fini || isFinishing || isDestroyed) return
+        // L'écouteur et le délai sont retirés dans tous les cas, écran fermé compris : sinon le GPS
+        // resterait allumé, l'écouteur continu ne s'arrêtant pas seul.
+        fun arreter() {
             fini = true
             delai.removeCallbacksAndMessages(null)
-            annulation.cancel()
             ecouteur?.let { runCatching { lm.removeUpdates(it) } }
+            arreterGps = null
+        }
+        fun conclure(l: Location?) {
+            if (fini) return
+            arreter()
+            if (isFinishing || isDestroyed) return
             gpsEnCours = false
             if (l == null) {
                 afficherResultats()
@@ -931,24 +979,22 @@ class VolActivity : AppCompatActivity() {
             }
             appliquerReleve(Vol.Point(Instant.ofEpochMilli(l.time), l.latitude, l.longitude))
         }
+        arreterGps = { arreter() }
         delai.postDelayed({ conclure(null) }, GPS_MS)
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                lm.getCurrentLocation(LocationManager.GPS_PROVIDER, annulation, mainExecutor) { conclure(it) }
-            } else {
-                // Avant Android 11, les quatre méthodes de LocationListener sont abstraites (ChoixLieu).
-                val e = object : LocationListener {
-                    override fun onLocationChanged(location: Location) = conclure(location)
-                    override fun onProviderEnabled(provider: String) = Unit
-                    override fun onProviderDisabled(provider: String) = conclure(null)
+            // requestLocationUpdates sur toutes les versions (FVOL-15) : getCurrentLocation est plafonné
+            // par Android à moins d'une minute, trop court pour un premier relevé GPS en mode avion.
+            // Les quatre méthodes de LocationListener sont abstraites avant Android 11 (ChoixLieu).
+            val e = object : LocationListener {
+                override fun onLocationChanged(location: Location) = conclure(location)
+                override fun onProviderEnabled(provider: String) = Unit
+                override fun onProviderDisabled(provider: String) = conclure(null)
 
-                    @Deprecated("Android 10 et avant seulement")
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
-                }
-                ecouteur = e
-                @Suppress("DEPRECATION")
-                lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, e, Looper.getMainLooper())
+                @Deprecated("Android 10 et avant seulement")
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
             }
+            ecouteur = e
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000L, 0f, e, Looper.getMainLooper())
         } catch (e: SecurityException) {
             conclure(null)
         } catch (e: IllegalArgumentException) {
@@ -964,7 +1010,7 @@ class VolActivity : AppCompatActivity() {
     private fun ajouterSuiviDirect(carte: LinearLayout) {
         val actif = Store.suiviDirect(this)
         ajouterInterrupteurEnLigne(carte)
-        if (!actif) return
+        if (!actif || fournisseurDirect == null) return
         val champ = EditText(this).apply {
             hint = getString(R.string.vol_indicatif)
             setText(Store.volIndicatif(this@VolActivity))
@@ -986,18 +1032,28 @@ class VolActivity : AppCompatActivity() {
 
     /**
      * L'interrupteur des services en ligne (02/11) : un seul, désactivé par défaut, pour la route
-     * d'un numéro (adsbdb) et le suivi en direct (OpenSky). Il figure dans le formulaire et sous
-     * les résultats ; le basculer redessine les deux, pour que la loupe suive.
+     * d'un numéro (adsbdb) et le suivi en direct (OpenSky). Il vit sous « Préciser la position », donc
+     * seulement après un calcul (04/11) ; le basculer redessine l'écran. Allumé, il redit ce qui part.
      */
     private fun ajouterInterrupteurEnLigne(carte: LinearLayout) {
         val actif = Store.suiviDirect(this)
         carte.addView(com.google.android.material.materialswitch.MaterialSwitch(this).apply {
-            text = getString(R.string.vol_direct_activer)
+            text = getString(if (fournisseurDirect != null) R.string.vol_direct_activer else R.string.vol_route_activer)
             isChecked = actif
             setOnCheckedChangeListener { _, v -> Store.setSuiviDirect(this@VolActivity, v); afficherFormulaire() }
         })
-        if (!actif) carte.addView(VueJour.texte(this, getString(R.string.vol_en_ligne_aide), 12f, R.color.muted, haut = 2))
+        if (!actif) carte.addView(VueJour.texte(this, getString(aideEnLigne), 12f, R.color.muted, haut = 2))
+        else if (fournisseurDirect != null) carte.addView(VueJour.texte(this, getString(
+            if (BuildConfig.RELAIS_VOL.startsWith("https://")) R.string.vol_direct_explication else R.string.vol_direct_explication_opensky), 12f, R.color.muted, haut = 2))
     }
+
+    /** Le suivi en direct de cette construction ; null : pas de suivi en direct (construction Play sans relais). */
+    private val fournisseurDirect: SuiviVol.FournisseurPosition? by lazy {
+        SuiviVol.fournisseur(BuildConfig.RELAIS_VOL, BuildConfig.OPENSKY_DIRECT)
+    }
+
+    /** Ce que disent les services en ligne : la route seule quand il n'y a pas de suivi en direct. */
+    private val aideEnLigne: Int get() = if (fournisseurDirect != null) R.string.vol_en_ligne_aide else R.string.vol_en_ligne_aide_route
 
     /** Le formulaire est affiché (et non son résumé) : il porte alors l'interrupteur des services en ligne. */
     private var formulaireOuvert = true
@@ -1012,7 +1068,7 @@ class VolActivity : AppCompatActivity() {
      * (et le départ s'il est vide) et l'indicatif du suivi en direct ; les heures restent à saisir.
      */
     private fun chercherRoute() {
-        // La loupe n'existe que services en ligne activés ; la garde tient même si elle réapparaissait.
+        // La loupe est toujours visible ; sans l'accord des services en ligne, la garde l'arrête ici.
         if (!BuildConfig.SUIVI_VOL || !Store.suiviDirect(this)) return
         if (RouteVol.normaliser(numero) == null) {
             routeTexte = getString(R.string.vol_route_invalide)
@@ -1064,6 +1120,7 @@ class VolActivity : AppCompatActivity() {
             SuiviVol.Raison.ILLISIBLE -> R.string.vol_erreur_illisible
             SuiviVol.Raison.POSITION_INVALIDE -> R.string.vol_erreur_position
             SuiviVol.Raison.RELAIS_ABSENT -> R.string.vol_erreur_relais_absent
+            SuiviVol.Raison.TROP_DE_DEMANDES -> R.string.vol_erreur_trop_de_demandes
             else -> R.string.vol_erreur_service
         })
 
@@ -1075,7 +1132,7 @@ class VolActivity : AppCompatActivity() {
         val estime = Vol.position(plan, maintenant)
         directEnCours = true
         afficherResultats()
-        val fournisseur: SuiviVol.FournisseurPosition = SuiviVol.fournisseur(BuildConfig.RELAIS_VOL)
+        val fournisseur = fournisseurDirect ?: return
         Thread {
             val r = fournisseur.position(indicatif, estime)
             runOnUiThread {
@@ -1142,7 +1199,10 @@ class VolActivity : AppCompatActivity() {
                 Vol.Reserve.ERREUR -> R.string.vol_reserve_erreur
                 Vol.Reserve.A_REBOURS -> R.string.vol_reserve_a_rebours
             }
-            addView(VueJour.texte(this@VolActivity, getString(texte), 14f, R.color.ink, haut = 8))
+            // Les zmanim absents, nommés à la suite de la réserve (FVOL-11).
+            val absents = if (r == Vol.Reserve.ABSENT && c.absents.isNotEmpty()) "\n" + getString(R.string.vol_reserve_absents,
+                c.absents.joinToString(", ") { Libelles.res("zman_$it")?.let(::getString) ?: it }) else ""
+            addView(VueJour.texte(this@VolActivity, getString(texte) + absents, 14f, R.color.ink, haut = 8))
         }
         val date = DateTimeFormatter.ofPattern("EEE d MMM", locale)
         c.lignesDate.forEach { l ->
@@ -1164,7 +1224,11 @@ class VolActivity : AppCompatActivity() {
         }
         val ecarts = c.enVol.mapNotNull { it.ecartSiRetard }.sorted()
         val median = ecarts.getOrNull(ecarts.size / 2)
-        if (median != null) addView(VueJour.texte(this@VolActivity, getString(R.string.vol_frise_retard), 13f, R.color.muted, haut = 2))
+        if (median != null) {
+            val gps = calcul?.fiabilite != null && calcul?.fiabilite != Vol.Fiabilite.ROUTE_PREVUE
+            val signe = (if (median.isNegative) "−" else "+") + abs(median.toMinutes())
+            addView(VueJour.texte(this@VolActivity, getString(if (gps) R.string.vol_frise_retard_gps else R.string.vol_frise_retard, signe), 13f, R.color.muted, haut = 2))
+        }
         val frise = LinearLayout(this@VolActivity).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) }
@@ -1260,7 +1324,7 @@ class VolActivity : AppCompatActivity() {
         val CIEL = mapOf("chatsot_layla" to Ciel.NUIT, "tset" to Ciel.NUIT, "tset_rt" to Ciel.NUIT,
             "alot" to Ciel.AUBE, "misheyakir" to Ciel.AUBE, "netz" to Ciel.AUBE, "chkia" to Ciel.CREPUSCULE)
         const val RAFRAICHISSEMENT_MS = 30_000L
-        const val GPS_MS = 90_000L
+        const val GPS_MS = 150_000L
         const val ETAT_NUMERO = "vol_numero"
         const val ETAT_DEPART = "vol_depart"
         const val ETAT_ARRIVEE = "vol_arrivee"

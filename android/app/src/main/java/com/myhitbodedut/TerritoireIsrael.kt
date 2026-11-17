@@ -12,6 +12,11 @@ package com.myhitbodedut
  * de Gaza est dans le contour, qui suit la côte depuis Rafia'h : choix géographique, sans
  * prise de position sur son statut pour le deuxième jour de fête.
  *
+ * Eilat et la Arava (Yotvata, Ketoura, Sapir) : un seul jour de fête (Kitsour Yalkut Yosef,
+ * Chevi'it 1:5 : « אך אין צריך לעשות שם ב' ימים טובים של גלויות » ; Peninei Halakha, Moadim 9:4,
+ * note 3) ; certains en doutent, selon l'avis qui place Na'hal Mitsrayim à el-Arich (audit du
+ * 16/11). Taba reste hors du contour.
+ *
  * Rien d'Android ici.
  */
 object TerritoireIsrael {
@@ -37,6 +42,25 @@ object TerritoireIsrael {
         doubleArrayOf(29.80, 34.76), doubleArrayOf(30.20, 34.60), doubleArrayOf(30.60, 34.50), doubleArrayOf(30.95, 34.37),
         doubleArrayOf(31.22, 34.26),
     )
+
+    /** Ce que fait un nouveau lieu au statut : [region] à enregistrer, [proposition] à poser en question ; null, rien. */
+    data class Decision(val region: Boolean?, val proposition: Boolean?)
+
+    /**
+     * Le statut Israël ou diaspora pour le Yom tov chéni (audit du 16/11) dépend de la
+     * résidence, pas de l'endroit où l'on est : « בני ארץ ישראל שבאו לחוצה לארץ אסורים לעשות
+     * מלאכה ביו"ט שני ביישוב אפילו דעתו לחזור » (Choul'han Aroukh 496:3) ; « ובן חו"ל שבא לא"י אם
+     * דעתו לחזור למקומו צריך לעשות שני ימים יו"ט » (Michna Beroura 496:13) ; Kitsour Yalkut Yosef
+     * 496 : « כמו המקום שיצא משם ». Un lieu (ville ou position du téléphone) ne réécrit donc jamais
+     * le statut : quand il dit l'autre région ([impliquee]), l'application pose la question.
+     * Seule exception, le tout premier lieu ([premierLieu]) d'un statut jamais choisi
+     * ([declare]) : il remplace la déduction faite du fuseau du téléphone.
+     */
+    fun decisionRegion(impliquee: Boolean, actuelle: Boolean, premierLieu: Boolean, declare: Boolean): Decision = when {
+        premierLieu && !declare -> Decision(impliquee, null)
+        impliquee == actuelle -> Decision(null, null)
+        else -> Decision(null, impliquee)
+    }
 
     /** Le point est-il dans le contour (tracé de rayon) ? */
     fun contient(latitude: Double, longitude: Double): Boolean {

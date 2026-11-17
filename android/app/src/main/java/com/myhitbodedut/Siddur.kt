@@ -23,7 +23,15 @@ data class SiddurTexte(
     val emprunt: LocalizedText? = null,
     /** Le nombre de chapitres : celui de [sections], ou celui de l'index des livres, qui n'a pas leur texte. */
     val chapitres: Int = sections.size,
-)
+    /** Ses traductions sont automatiques, pas encore relues (clé « traduction » de livres.json ; audit du 12/11, COUV-05). */
+    val traductionAuto: Boolean = false,
+) {
+    /**
+     * Les chapitres dont au moins un paragraphe est traduit (hors consignes) : le Yalkout Yossef n'en a que
+     * 92 sur 1 048 (audit du 12/11, COUV-01, TLIVRES-05) ; le lecteur le dit au lieu de passer sans prévenir à l'hébreu seul.
+     */
+    fun chapitresTraduits(): Int = sections.count { s -> s.blocs.any { !it.consigne && (it.fr != null || it.en != null) } }
+}
 
 data class SiddurGroupe(val cle: String, val titre: LocalizedText)
 
@@ -87,13 +95,15 @@ object SiddurLoader {
                     source = t.optString("source", ""),
                     emprunt = t.optJSONObject("nusah")?.let { LocalizedText.parse(it) },
                     chapitres = t.optInt("chapitres", t.getJSONArray("sections").length()),
+                    traductionAuto = t.has("traduction"),
                     sections = Json.array(t.getJSONArray("sections")) { s ->
                         SiddurSection(
                             titre = s.optString("titre", ""),
                             titreFr = s.optString("titre_fr", "").ifBlank { null },
                             titreEn = s.optString("titre_en", "").ifBlank { null },
                             blocs = Json.array(s.getJSONArray("blocs")) { b ->
-                                if (b.has("c")) SiddurBloc(b.getString("c"), true)
+                                // Une consigne a ses traductions à part, c_fr et c_en (TEFILA-02, Tefila LiChlomo).
+                                if (b.has("c")) SiddurBloc(b.getString("c"), true, b.optString("c_fr", "").ifBlank { null }, b.optString("c_en", "").ifBlank { null })
                                 else SiddurBloc(b.getString("t"), false, b.optString("fr", "").ifBlank { null }, b.optString("en", "").ifBlank { null })
                             },
                         )
@@ -133,10 +143,11 @@ object SignetsSiddur {
  */
 object SiddurMoment {
 
-    fun suggestion(heure: java.time.LocalTime): String {
+    /** [sansTikoun] : une nuit de Chabbat, de Yom tov ou de 'Hol hamoed Pessa'h (JourAffiche.sansTikounHatsot, audit du 16/11). */
+    fun suggestion(heure: java.time.LocalTime, sansTikoun: Boolean = false): String {
         val minutes = heure.hour * 60 + heure.minute
         return when {
-            minutes < 5 * 60 -> "tikoun_hatsot"
+            minutes < 5 * 60 -> if (sansTikoun) "chema_coucher" else "tikoun_hatsot"
             minutes < 6 * 60 + 30 -> "birkot_hachahar"
             minutes < 12 * 60 + 30 -> "chaharit"
             minutes < 18 * 60 + 30 -> "minha"
@@ -166,11 +177,16 @@ object SiddurMoment {
      * Birkat haIlanot (14/10) : on la dit une fois l'an, en voyant des arbres
      * fruitiers en fleur — en Nissan dans l'hémisphère nord (Choulhan Aroukh
      * O.H. 226). [latitude] : celle du lieu des zmanim, ou null.
+     * Audit du 16/11 : en Edot et en Ashkenaz, encore en Iyar pour qui n'a pas béni en Nissan, tant que
+     * les arbres sont en fleur (Kitsour Yalkut Yosef 226:10, a posteriori ; Michna Beroura 226:5) ; le
+     * texte le dit (note de l'application). Le Sfard s'en tient à Nissan (Kaf ha'Haïm 226:1 : après
+     * Nissan, sans Chem ni Malkhout).
      */
-    fun ilanot(date: java.time.LocalDate, latitude: Double?): Boolean {
+    fun ilanot(date: java.time.LocalDate, latitude: Double?, nusah: String? = null): Boolean {
         val c = com.kosherjava.zmanim.hebrewcalendar.JewishCalendar(date)
         return if (latitude != null && latitude < 0) moisIlanotSud(c.jewishMonth)
-        else c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.NISSAN
+        else c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.NISSAN ||
+            (c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.IYAR && nusah in setOf("edot", "ashkenaz"))
     }
 
     /**

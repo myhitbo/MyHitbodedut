@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Anneaux, CycleTehilim, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, RegleLangue, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from '../src/js/regles.js';
+import { Anneaux, HistoriqueReglage, CycleTehilim, DureeSeance, JaugeSemaine, LibraryRules, Plaque, Reference, RegleLangue, Salutation, SiddurMoment, SignetsSiddur, SourceDuJour, Parcours } from '../src/js/regles.js';
 import { estJourChome, israelParDefaut } from '../src/js/calendrier.js';
 import { creeStore, dateValide, memoire } from '../src/js/store.js';
 import { creeTraduction, formate, langueInitiale } from '../src/js/i18n.js';
@@ -181,12 +181,21 @@ test('chaque langue a toutes les chaînes et tous les pluriels du français', ()
   const fr = litChaines(readFileSync(join(RES, 'values', 'strings.xml'), 'utf8'));
   const nonTraduisibles = new Set([...readFileSync(join(RES, 'values', 'strings.xml'), 'utf8')
     .matchAll(/<string name="([^"]+)" translatable="false"/g)].map((m) => m[1]));
-  for (const dossier of ['values-en', 'values-iw']) {
+  for (const dossier of ['values-en', 'values-iw', 'values-es', 'values-ar-rTN']) {
     const l = litChaines(readFileSync(join(RES, dossier, 'strings.xml'), 'utf8'));
     const manquantes = Object.keys(fr.chaines).filter((k) => !nonTraduisibles.has(k) && !(k in l.chaines));
     assert.deepEqual(manquantes, [], dossier);
     assert.deepEqual(Object.keys(fr.pluriels).filter((k) => !(k in l.pluriels)), [], dossier);
   }
+});
+
+test('chaque clé écrite en toutes lettres dans app.js existe : plus de repli français muet (COUV-21)', () => {
+  const app = readFileSync(join(ICI, '..', 'src', 'js', 'app.js'), 'utf8');
+  const fr = litChaines(readFileSync(join(RES, 'values', 'strings.xml'), 'utf8'));
+  assert.doesNotMatch(app, /CHAINES_LECTURE/);
+  const cles = new Set([...app.matchAll(/\b(?:tl|tr\.t)\('([a-z_0-9]+)'/g)].map((m) => m[1]));
+  assert.ok(cles.has('lecture_masque_info') && cles.has('lecture_taille'), 'les clés de la barre de lecture sont lues');
+  assert.deepEqual([...cles].filter((c) => !(c in fr.chaines)), []);
 });
 
 test('le format et les pluriels suivent Android', () => {
@@ -205,12 +214,46 @@ test('le format et les pluriels suivent Android', () => {
   assert.equal(he.p('x', 5), '5 ימים');
 });
 
-test('la langue : le choix, sinon le téléphone, sinon le français', () => {
+test('les compteurs s’accordent dans les trois langues (audit du 12/11, TFRLANGUE-01 et TEN-02)', () => {
+  const tr = Object.fromEntries([['fr', 'values'], ['en', 'values-en'], ['he', 'values-iw']]
+    .map(([l, d]) => [l, creeTraduction(l, litChaines(readFileSync(join(RES, d, 'strings.xml'), 'utf8')))]));
+  // Dès la première hitbodedout : un trophée, un jour de série.
+  assert.equal(tr.fr.p('grade_sous_max', 1), '1 trophée gagné');
+  assert.equal(tr.fr.p('grade_sous_max', 0), '0 trophée gagné');
+  assert.equal(tr.fr.p('grade_sous_max', 2), '2 trophées gagnés');
+  assert.equal(tr.fr.p('grade_sous', 1, 1, 9, 'Argent'), '1 trophée gagné · encore 9 pour Argent');
+  assert.equal(tr.fr.p('ring_streak_detail', 1, 1, 7), 'Série : 1 jour sur 7');
+  assert.equal(tr.fr.p('ring_streak_detail', 3, 3, 7), 'Série : 3 jours sur 7');
+  assert.equal(tr.fr.p('trophees_autres', 1), '… et 1 autre trophée plus loin');
+  assert.equal(tr.fr.p('trophee_detail_grade', 1, 'Bronze', 1), 'En Bronze : c’était votre premier trophée.');
+  assert.equal(tr.fr.p('trophee_detail_grade', 8, 'Bronze', 8), 'En Bronze : c’était votre 8ᵉ trophée.');
+  assert.equal(tr.fr.t('rings_description', '5 min', '15 min', tr.fr.p('ring_week_detail', 1, 1, 6), tr.fr.p('ring_streak_detail', 1, 1, 7)),
+    'Anneaux. Aujourd’hui : 5 min sur 15 min. Semaine : 1 jour sur 6. Série : 1 jour sur 7.');
+  assert.equal(tr.en.p('grade_sous_max', 1), '1 trophy earned');
+  assert.equal(tr.en.p('grade_sous_max', 0), '0 trophies earned');
+  assert.equal(tr.en.p('trophees_autres', 1), '… and 1 more trophy further on');
+  assert.equal(tr.en.p('grade_partage_texte', 1, 'Bronze', 1), 'Bronze rank on MyHitbodedut: 1 trophy, day after day.');
+  assert.equal(tr.en.p('journal_summary', 3, 3, '1 h 05'), '3 days of hitbodedut, 1 h 05 in total');
+  assert.equal(tr.en.p('journal_summary', 1, 1, '20 min'), '1 day of hitbodedut, 20 min in total');
+  assert.equal(tr.en.p('trophee_premier_pas_desc', 3), 'First 3 days of hitbodedut');
+  assert.equal(tr.en.p('trophee_retour_desc', 1), 'Coming back once after a week’s break');
+  assert.equal(tr.he.p('grade_sous_max', 1), 'גביע אחד הושג');
+  assert.equal(tr.he.p('grade_sous_max', 2), 'שני גביעים הושגו');
+  assert.equal(tr.he.p('grade_sous_max', 7), '7 גביעים הושגו');
+  assert.equal(tr.he.p('ring_streak_detail', 1, 1, 7), 'רצף: יום אחד מתוך 7');
+  assert.equal(tr.he.p('trophee_detail_grade', 1, 'ארד', 1), 'בארד: זה היה הגביע הראשון שלכם.');
+  // Le message d'un trophée neuf ne nomme plus de métal (FDONNEES-06).
+  for (const l of ['fr', 'en', 'he']) assert.ok(!/%3\$s/.test(tr[l].t('trophee_niveau_gagne')), l);
+});
+
+test('la langue : le choix, sinon le téléphone, sinon l’anglais', () => {
   assert.equal(langueInitiale('en', ['fr-FR']), 'en');
   assert.equal(langueInitiale('', ['iw-IL', 'en']), 'he');
   assert.equal(langueInitiale('', ['de-DE', 'en-GB']), 'en');
   assert.equal(langueInitiale('', ['de-DE']), 'en');
-  assert.equal(langueInitiale('', ['es-ES', 'fr-FR']), 'fr');
+  // L'espagnol est livré depuis le 17/11 : il passe avant le français qui le suit.
+  assert.equal(langueInitiale('', ['es-ES', 'fr-FR']), 'es');
+  assert.equal(langueInitiale('', ['pt-BR', 'fr-FR']), 'fr');
   assert.equal(langueInitiale('', []), 'en');
 });
 
@@ -267,8 +310,10 @@ test('un fichier de sauvegarde Android se relit, et l’export garde le même fo
 
   const exporte = JSON.parse(s.exportJson());
   assert.equal(exporte.format, 'myhitbodedut');
-  assert.equal(exporte.version, 1);
-  assert.deepEqual(Object.keys(exporte.settings).sort(), Object.keys(android.settings).sort());
+  // Version 2 (audit du 12/11, FDONNEES-01) : le noussa'h et les réglages de lecture s'ajoutent aux réglages d'Android 1.
+  assert.equal(exporte.version, 2);
+  const v2 = ['siddur_nusah', 'lecture_echelle', 'lecture_police', 'lecture_sombre', 'lecture_masquee', 'in_israel_manuel'];
+  assert.deepEqual(Object.keys(exporte.settings).sort(), [...Object.keys(android.settings), ...v2].sort());
   // Ce que l'iPhone ne sait pas régler repart tel qu'il est arrivé.
   assert.deepEqual([exporte.settings.window_start, exporte.settings.reminder_enabled], [360, true]);
   assert.deepEqual(exporte.settings.reminder_times, [420, 1260]);
@@ -487,14 +532,24 @@ test('le siddour suggère le texte de l’heure, aux bornes d’Android', () => 
 });
 
 // --- LibraryRules (LibraryRulesTest) ------------------------------------------------
-test('une source sans licence de vocalisation se lit sans nikkoud', () => {
-  const lib = { _meta: { editions: { ok: { nikkoud_ok: true }, non: { nikkoud_ok: false } } } };
-  const s = { paragraphes: ['בְּ'], paragraphes_sans_nikkoud: ['ב'] };
-  assert.deepEqual(LibraryRules.paragraphes(lib, { ...s, edition: 'ok' }), ['בְּ']);
-  assert.deepEqual(LibraryRules.paragraphes(lib, { ...s, edition: 'non' }), ['ב']);
-  assert.deepEqual(LibraryRules.paragraphes(lib, { ...s, edition: 'inconnue' }), ['ב']);
-  // Faute de texte sans nikkoud, le texte tel quel.
-  assert.deepEqual(LibraryRules.paragraphes(lib, { paragraphes: ['בְּ'], edition: 'non' }), ['בְּ']);
+// Signes de vocalisation (le maqaf U+05BE et le sof pasouq U+05C3 sont de la ponctuation).
+const VOCALISATION = /[\u0591-\u05BD\u05BF-\u05C2\u05C4-\u05C7]/;
+
+test('les paragraphes affichés sont ceux du fichier ; sans nikkoud quand l’édition n’a pas de licence de vocalisation', () => {
+  const lib = JSON.parse(readFileSync(join(RES, 'raw', 'bibliotheque.json'), 'utf8'));
+  const sources = LibraryRules.sources(lib).flatMap((s) => s.sous_sections.flatMap((ss) => ss.entrees));
+  let sansLicence = 0;
+  for (const e of sources) {
+    const affiches = LibraryRules.paragraphes(lib, e);
+    assert.deepEqual(affiches, e.paragraphes, e.id);
+    if (lib._meta.editions[e.edition]?.nikkoud_ok !== true) {
+      sansLicence += 1;
+      for (const p of affiches) assert.ok(!VOCALISATION.test(p), `${e.id} : vocalisation livrée`);
+    }
+  }
+  assert.ok(sansLicence > 0, 'aucune source sans licence de vocalisation : le test ne prouve rien');
+  assert.ok(!JSON.stringify(lib).includes('_sans_nikkoud'));
+  assert.deepEqual(LibraryRules.paragraphes(lib, { edition: 'inconnue' }), []);
 });
 
 test('la bibliothèque du web ne montre que des sources, chacune avec du texte', () => {
@@ -537,6 +592,16 @@ test('carte du jour : illustration, hilloula et liens', async () => {
   assert.deepEqual(J.clesHilloula(12, 7, true, false, true), ['adar-7', 'adar1-7']);
   assert.deepEqual(J.clesHilloula(13, 7, true, false, true), ['adar2-7']);
   assert.deepEqual(J.clesHilloula(8, 29, false, true), ['8-29', '8-30']);
+  // Audit du 16/11 : le 30 Adar n'existe qu'en Adar I (Kitsour YY 40:22 ; MB 568:42), comme HilloulotTest.
+  assert.ok(J.clesHilloulotPour('2027-03-09', false).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2027-04-07', false).includes('adar-30'));
+  assert.ok(J.clesHilloulotPour('2030-03-05', false, true).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2030-04-03', false).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2026-03-18', false, true).includes('adar-30'));
+  assert.ok(J.clesHilloulotPour('2026-02-17', false, true).includes('adar-30'));
+  assert.ok(J.clesHilloulotPour('2026-02-17', false, true).includes('adar1-30'));
+  assert.ok(J.clesHilloulotPour('2026-03-18', false).includes('adar-30'));
+  assert.ok(!J.clesHilloulotPour('2026-02-17', false).includes('adar-30'));
   const table = JSON.parse(readFileSync(join(RES, 'raw', 'hilloulot.json'), 'utf8')).jours;
   // Chaque jour d'une année simple (5786) a au moins une hilloula ; en année
   // embolismique, Adar I n'a que les hilloulot dites « Adar I ».
@@ -589,15 +654,26 @@ test('hilloulot : date lisible et recherche par nom', async () => {
   assert.ok(J.rechercheHilloula(table, 'Chelah').length > 0);
   assert.ok(J.rechercheHilloula(table, 'Shelah').length > 0);
   assert.equal(J.rechercheHilloula(table, 'Moché').length, J.rechercheHilloula(table, 'moche').length);
+  assert.ok(J.rechercheHilloula(table, 'Moïse').some(([cle, x]) => cle === 'adar-7' && x.he === 'משה רבנו'));
   // Réorganisé (04/11) : la recherche suit l'année, de Tichri à Eloul.
   const rangs = J.rechercheHilloula(table, 'רבי').map(([cle]) => J.rangDansLAnnee(cle));
   assert.ok(rangs.length > 100);
   assert.deepEqual(rangs, [...rangs].sort((a, b) => a - b));
   assert.ok(J.rangDansLAnnee('11-30') < J.rangDansLAnnee('adar1-1') && J.rangDansLAnnee('adar1-30') < J.rangDansLAnnee('adar-1'));
   assert.ok(J.rangDansLAnnee('adar2-29') < J.rangDansLAnnee('1-1') && J.rangDansLAnnee('7-1') < J.rangDansLAnnee('8-1'));
-  // Un jour : les mieux connus d'abord, les dates douteuses en dernier (Hilloulot.duJour).
+  // Un jour : les mieux connus d'abord (sources, puis doute) (Hilloulot.duJour).
   const t = { '8-23': [{ he: 'un', s: 'm' }, { he: 'doute', s: 'wm', t: 'x', d: 'faux' }, { he: 'trois', s: 'hwm', t: 'x' }, { he: 'deux', s: 'wm' }, { he: 'deux-notice', s: 'wm', t: 'x' }] };
-  assert.deepEqual(J.hilloulotDuJour(t, ['8-23']).map((x) => x.he), ['trois', 'deux-notice', 'deux', 'un', 'doute']);
+  assert.deepEqual(J.hilloulotDuJour(t, ['8-23']).map((x) => x.he), ['trois', 'deux-notice', 'deux', 'doute', 'un']);
+  // Les plus célèbres ne sont plus relégués : Rachbi le 18 Iyar, le Rambam le 20 Tevet.
+  const reel = JSON.parse(readFileSync(join(RES, 'raw', 'hilloulot.json'), 'utf8')).jours;
+  const cinq = (cle) => J.hilloulotDuJour(reel, [cle]).slice(0, 5).map((x) => x.he);
+  assert.ok(cinq('2-18').includes('רבי שמעון בר יוחאי'));
+  assert.ok(cinq('10-20').some((x) => x.includes('הרמב"ם')));
+  // Un tsadik n'apparaît qu'une fois par jour (identifiant de dépliage « jour|nom ») ; Rav Mandelbaum est à la date de sa mort.
+  for (const [cle, liste] of Object.entries(reel)) assert.equal(new Set(liste.map((x) => x.he.trim())).size, liste.length, cle);
+  assert.equal(reel['10-10'].filter((x) => x.he.includes('נתן') && x.he.includes('ברסלב')).length, 1);
+  assert.ok(!reel['10-22'].some((x) => x.he.includes('מנדלבאום')));
+  assert.equal(reel['2-17'].find((x) => x.he.includes('מנדלבאום')).a, 'ה\'תרס"ה');
   // « Voir ce jour » : 23 Hechvan 5787 est le 3 novembre 2026.
   assert.equal(J.prochainJourHilloula('8-23', '2026-10-01', false), '2026-11-03');
   assert.ok(J.prochainJourHilloula('adar2-14', '2026-11-04', false));
@@ -617,12 +693,10 @@ test('trophées à niveaux : mêmes règles que TropheesTest (12/10)', () => {
   assert.equal(Trophees.rang(p, F.premier_pas), 5);
   assert.equal(Trophees.rang(p, F.retour), 1);
   assert.equal(Trophees.semainesPleines(Object.keys(jours(41))), 6);
-  for (const f of Trophees.FAMILLES.filter((x) => x.seuils.length > 1)) {
-    const m = f.seuils.map((_, i) => Trophees.METAUX.indexOf(Trophees.metal(f, i + 1)));
-    assert.equal(m[0], 0, f.cle); assert.equal(m.at(-1), 3, f.cle);
-    assert.ok(m.every((v, i) => i === 0 || v - m[i - 1] <= 1), f.cle);
-  }
-  assert.equal(Trophees.metal(F.premier_pas, 1), 'bronze');
+  // Le métal est celui du grade, pas de la famille (13/11, FDONNEES-06).
+  assert.equal(Trophees.metal, undefined);
+  assert.deepEqual([0, 9, 10, 25, 50].map(Trophees.grade), ['bronze', 'bronze', 'argent', 'or', 'platine']);
+  for (const f of Trophees.FAMILLES) assert.ok(f.seuils.every((s, i) => i === 0 || s > f.seuils[i - 1]), f.cle);
   for (const q of [{ minutes: {}, notes: 0, meilleureSerie: 0 }, { minutes: jours(6, 1, 70), notes: 12, meilleureSerie: 6 }, { minutes: jours(700, 1, 200), notes: 200, meilleureSerie: 700 }]) {
     for (const f of Trophees.FAMILLES) {
       const r = Trophees.rang(q, f); const pr = Trophees.progres(q, f);
@@ -634,6 +708,24 @@ test('trophées à niveaux : mêmes règles que TropheesTest (12/10)', () => {
   assert.deepEqual(Trophees.nouveaux(g, new Set(['chai'])), []);
   const n = Trophees.nouveaux(g, new Set(['premier_pas:1']));
   assert.ok(n.some((x) => x.famille.cle === 'jours' && x.rang === 5));
+  // Le plus coûteux d'abord (Trophees.nouveaux, 13/11) : 20 jours d'affilée (30) devant 20 jours (20).
+  const couts = n.map((x) => Trophees.cout(x.famille, x.famille.seuils[x.rang - 1]));
+  assert.deepEqual(couts, [...couts].sort((a, b) => b - a));
+  assert.equal(n[0].famille.cle, 'serie');
+});
+
+test('une fête de trophées remise à plus tard les laisse neufs pour le prochain accueil (FWEBCODE-13)', () => {
+  // La note qui suit le bravo est ouverte quand la fiche devait venir : rien n'est perdu.
+  const jours = (n) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`2026-10-${String(i + 1).padStart(2, '0')}`, 15]));
+  const avant = Trophees.gagnes({ minutes: jours(2), notes: 0, meilleureSerie: 2 });
+  const apres = Trophees.gagnes({ minutes: jours(3), notes: 0, meilleureSerie: 3 });
+  assert.ok(apres.size > avant.size);
+  const vus = Trophees.remisANeuf(new Set(apres), apres, avant);
+  assert.deepEqual([...vus].sort(), [...avant].sort());
+  assert.deepEqual(Trophees.nouveaux(apres, vus), Trophees.nouveaux(apres, avant));
+  assert.ok(Trophees.nouveaux(apres, vus).length > 0);
+  // Ce qui était vu avant reste vu, même absent des gagnés (ancienne clé gardée).
+  assert.ok(Trophees.remisANeuf(new Set(['x:1', ...apres]), apres, new Set(['x:1', ...avant])).has('x:1'));
 });
 
 // --- Dates de gain, trophées proches, bilan de la semaine (BilanTropheesTest, 16/10) ---
@@ -702,6 +794,38 @@ test('la source du jour : la même qu’Android, le même jour (19/10)', async (
   assert.ok(SourceDuJour.extrait('א'.repeat(10) + ' ' + 'ב'.repeat(400)).endsWith('…'));
 });
 
+// Audit du 12/11 (COUV-08, BIBLIO-03, FACCUEIL-08, FWEBCODE-08) : la carte ne montrait que l'hébreu.
+test('la source du jour donne la traduction du même paragraphe, selon les langues de lecture', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const b = JSON.parse(await readFile(new URL('../../android/app/src/main/res/raw/bibliotheque.json', import.meta.url), 'utf8'));
+  const c = SourceDuJour.candidats(b);
+  // Le rang gardé est celui du paragraphe dans sa source, et chaque candidat a ses deux traductions.
+  for (const p of c) {
+    assert.equal(LibraryRules.paragraphes(b, p.source)[p.indice], p.texte);
+    assert.deepEqual(SourceDuJour.textes(p, 'fr+en').map(([l]) => l), ['fr', 'en'], `${p.source.id}[${p.indice}]`);
+    for (const [, t] of SourceDuJour.textes(p, 'fr+en')) assert.ok(t.length <= 321 && !t.includes('<'));
+  }
+  // L'exemple de l'audit : Likoutei Tefilot II, 22, deuxième paragraphe.
+  const p = c.find((x) => x.source.id === 'src-lt-hitbodedut' && x.indice === 1);
+  const fr = SourceDuJour.textes(p, 'he+fr');
+  assert.deepEqual(fr.map(([l]) => l), ['he', 'fr']);
+  assert.equal(fr[0][1], SourceDuJour.extrait(p.texte));
+  assert.ok(fr[1][1].startsWith('Aie pitié de moi et ouvre ma bouche en tout temps'));
+  assert.ok(SourceDuJour.textes(p, 'he+en')[1][1].startsWith('Have mercy on me and open my mouth at all times'));
+  assert.deepEqual(SourceDuJour.textes(p, 'he'), [['he', SourceDuJour.extrait(p.texte)]]);
+  // Un paragraphe court écarté ne décale pas les traductions.
+  const petite = { _meta: { editions: { e: { nikkoud_ok: true } } }, sections: [{ sous_sections: [{ entrees: [{ type: 'source', id: 's', edition: 'e',
+    paragraphes: ['קצר', 'א'.repeat(80)], paragraphes_fr: ['court', 'long'], paragraphes_en: ['short', 'long one'] }] }] }] };
+  const [seul] = SourceDuJour.candidats(petite);
+  assert.equal(seul.indice, 1);
+  assert.deepEqual(SourceDuJour.textes(seul, 'he+fr'), [['he', 'א'.repeat(80)], ['fr', 'long']]);
+  assert.deepEqual(SourceDuJour.textes(seul, 'en'), [['en', 'long one']]);
+  // L'accueil passe par là : plus d'hébreu posé seul.
+  const app = await readFile(new URL('../src/js/app.js', import.meta.url), 'utf8');
+  assert.match(app, /SourceDuJour\.textes\(p, languesLecture\(\)\)/);
+  assert.ok(!app.includes('SourceDuJour.extrait(p.texte)'));
+});
+
 test('mon parcours : jours faits, temps, moyenne, sujets fréquents (19/10)', () => {
   const b = Parcours.bilan([
     { date: '2026-10-01', minutes: 20, faite: true, themes: ['famille', 'parnassa'] },
@@ -747,6 +871,15 @@ test('trophées du Tikoun (04/11) : lectures complètes et jours d’affilée, c
   assert.equal(d['tikkun_serie:1'], '2026-11-03');
 });
 
+test('un jour exempté ne casse pas la suite du Tikoun (FDONNEES-09)', async () => {
+  const T = await import('../src/js/trophees.js');
+  const exempt = (d) => d === '2026-11-04' || d === '2026-11-05';
+  const tikkun = ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-06', '2026-11-07', '2026-11-09'];
+  assert.equal(T.valeur({ minutes: {}, notes: 0, meilleureSerie: 0, tikkun, exempt }, 'tikkun_serie'), 5);
+  assert.equal(T.valeur({ minutes: {}, notes: 0, meilleureSerie: 0, tikkun }, 'tikkun_serie'), 3);
+  assert.equal(T.datesGain({}, [], exempt, tikkun.slice(0, 5))['tikkun_serie:1'], '2026-11-03');
+});
+
 test('langues de lecture (04/11) : six modes, la règle d’avant par défaut, l’hébreu faute de traduction', async () => {
   const { LanguesTexte } = await import('../src/js/regles.js');
   assert.equal(LanguesTexte.defaut('he'), 'he');
@@ -757,6 +890,10 @@ test('langues de lecture (04/11) : six modes, la règle d’avant par défaut, l
   assert.deepEqual(LanguesTexte.textes('fr+en', 'אחד', 'un', 'one'), [['fr', 'un'], ['en', 'one']]);
   assert.deepEqual(LanguesTexte.textes('fr', 'אחד', null, 'one'), [['he', 'אחד']]);
   assert.ok(LanguesTexte.manque('he+fr', false));
+  // Une consigne a ses traductions à part (TEFILA-02) ; un paragraphe, les siennes.
+  assert.deepEqual(LanguesTexte.bloc({ c: 'לאיש', c_fr: 'Pour un homme', c_en: 'For a man' }), { he: 'לאיש', fr: 'Pour un homme', en: 'For a man' });
+  assert.deepEqual(LanguesTexte.bloc({ c: 'לאיש' }), { he: 'לאיש', fr: undefined, en: undefined });
+  assert.deepEqual(LanguesTexte.bloc({ t: 'אחד', fr: 'un', en: 'one' }), { he: 'אחד', fr: 'un', en: 'one' });
   const teh = JSON.parse(readFileSync(new URL('../../android/app/src/main/res/raw/tehilim.json', import.meta.url), 'utf8'));
   assert.equal(teh.traductions.fr.psaumes.length, 150);
   assert.ok(teh.traductions.fr.psaumes[22][0].includes('L’Éternel est mon berger'));
@@ -773,4 +910,29 @@ test('Dedicace : la demande va à l’équipe, la formule en hébreu, le lien en
   assert.ok(l.startsWith('mailto:myhitbodedut26@gmail.com?subject='));
   assert.equal(decodeURIComponent(l.split('&body=')[1]), 'a b\nc & d');
   assert.equal(Dedicace.INTENTIONS.length, 5);
+});
+
+test('un réglage daté ne réécrit pas le passé (HistoriqueReglageTest, FDONNEES-05)', () => {
+  const H = HistoriqueReglage;
+  const h = H.apresChangement([], '2026-11-05', false, true);
+  assert.equal(H.encoder(h), '2000-01-01=0,2026-11-05=1');
+  assert.equal(H.valeurLe(h, '2026-11-04', true), false);
+  assert.equal(H.valeurLe(h, '2026-11-05', true), true);
+  assert.equal(H.valeurLe([], '2026-01-01', true), true);
+  assert.deepEqual(H.decoder(H.encoder(h)), h);
+  assert.deepEqual(H.decoder('x,2026-13-45=1,2026-11-05=x,2000-01-01=0'), [{ depuis: '2000-01-01', valeur: false }]);
+  assert.equal(H.encoder(H.apresChangement(H.decoder('2000-01-01=0,2099-01-01=1'), '2026-11-05', false, true)), '2000-01-01=0,2026-11-05=1');
+});
+
+test('un voyage en Israël ne casse plus la série passée (store.js, FDONNEES-05)', () => {
+  let maintenant = new Date(2026, 10, 12, 12);
+  const c = creeStore(memoire(), { maintenant: () => maintenant, fuseau: 'Europe/Paris' });
+  c.setInIsrael(false);
+  assert.equal(c.isExempt('2026-10-04'), true); // Simhat Torah en diaspora (23 Tichri)
+  maintenant = new Date(2026, 10, 13, 12);
+  c.setInIsrael(true);
+  assert.equal(c.isExempt('2026-10-04'), true, 'le passé garde la diaspora');
+  c.setShabbatMode(false);
+  assert.equal(c.isExempt('2026-10-04'), true, 'couper l’interrupteur ne change pas le passé');
+  assert.equal(c.isExempt('2026-11-14'), false, 'le jour même suit le nouveau réglage');
 });

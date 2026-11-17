@@ -225,6 +225,27 @@
             </intent-filter>
         </activity-alias>
 
+        <!-- Les versions de l'application (VersionApp, 17/11) : le choix, et les accueils autres que Classique. -->
+        <activity
+            android:name=".ChoixVersionActivity"
+            android:exported="false"
+            android:label="@string/version_choix_titre" />
+
+        <activity
+            android:name=".SereniteActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".BentoActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".PileActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
@@ -238,6 +259,7 @@
             android:name=".CelebrationActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/app_name" />
 
         <activity
@@ -361,14 +383,16 @@
             android:label="@string/music_title" />
 
         <!-- La séance décompte le temps et peut jouer un morceau : les deux
-             types sont déclarés, comme Android l'exige depuis la version 14. -->
+             types sont déclarés, comme Android l'exige depuis la version 14.
+             Le second n'est demandé que tant que la musique ou une ambiance
+             joue (SessionService.startForegroundNow, examen du 14/11). -->
         <service
             android:name=".SessionService"
             android:exported="false"
             android:foregroundServiceType="specialUse|mediaPlayback">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FOREGROUND_SERVICE_SUBTYPE"
-                android:value="Runs the countdown of a user-started meditation session and shows the remaining time, so the phone can be put down." />
+                android:value="Runs the countdown of a user-started personal prayer session (hitbodedut) and shows the remaining time, so the phone can be put down." />
         </service>
 
         <receiver

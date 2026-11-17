@@ -75,8 +75,8 @@ class PaliersActivity : AppCompatActivity() {
                     orientation = LinearLayout.VERTICAL
                     layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(12) }
                     addView(VueJour.texte(context, getString(R.string.grade_titre, TropheesVue.metal(context, grade)), 18f, R.color.ink, gras = true))
-                    addView(VueJour.texte(context, if (suivant != null) getString(R.string.grade_sous, n, suivant - n,
-                        TropheesVue.metal(context, Trophees.grade(suivant))) else getString(R.string.grade_sous_max, n), 13f, R.color.muted, haut = 2))
+                    addView(VueJour.texte(context, if (suivant != null) resources.getQuantityString(R.plurals.grade_sous, n, n, suivant - n,
+                        TropheesVue.metal(context, Trophees.grade(suivant))) else resources.getQuantityString(R.plurals.grade_sous_max, n, n), 13f, R.color.muted, haut = 2))
                     if (suivant != null) {
                         val de = Trophees.SEUILS_GRADES.last { it <= n }
                         addView(barre((n - de).toFloat() / (suivant - de), dp(6), grade).apply { (layoutParams as LinearLayout.LayoutParams).topMargin = dp(4) })
@@ -144,7 +144,7 @@ class PaliersActivity : AppCompatActivity() {
                 val v = Trophees.valeur(pratique, t.famille)
                 addView(etape(t, null, if (v > 0) getString(R.string.trophee_progres, v.coerceAtMost(t.seuil), t.seuil) else null, gagne = false) { ouvrirDetail(t) }.first)
             }
-            if (futurs.size > MONTRES) addView(VueJour.texte(context, getString(R.string.trophees_autres, futurs.size - MONTRES), 13f, R.color.muted, haut = 12)
+            if (futurs.size > MONTRES) addView(VueJour.texte(context, resources.getQuantityString(R.plurals.trophees_autres, futurs.size - MONTRES, futurs.size - MONTRES), 13f, R.color.muted, haut = 12)
                 .apply { gravity = Gravity.CENTER })
         })
 
@@ -186,7 +186,7 @@ class PaliersActivity : AppCompatActivity() {
         Store.setGradeVu(this, niveauGrade)
         // Ce qui est vu ici est acquis : l'accueil ne le refête pas.
         Store.setPaliersVus(this, Paliers.marques(Paliers.etats(bilan), bilan))
-        Store.setTropheesVus(this, Trophees.gagnes(pratique).map { it.cle }.toSet())
+        Store.setTropheesVus(this, Trophees.vusAvec(vus, Trophees.gagnes(pratique)))
     }
 
     private fun dateLongue(d: java.time.LocalDate): String =
@@ -338,7 +338,7 @@ class PaliersActivity : AppCompatActivity() {
         p.textSize = 76f; p.typeface = Typeface.DEFAULT_BOLD
         cv.drawText(getString(R.string.grade_titre, TropheesVue.metal(this, g)), taille / 2f, 790f, p)
         p.textSize = 46f; p.typeface = Typeface.DEFAULT
-        cv.drawText(getString(R.string.grade_sous_max, n), taille / 2f, 860f, p)
+        cv.drawText(resources.getQuantityString(R.plurals.grade_sous_max, n, n), taille / 2f, 860f, p)
         p.textSize = 38f; p.alpha = 180; p.typeface = Typeface.DEFAULT_BOLD
         cv.drawText(getString(R.string.app_name), taille / 2f, 990f, p)
         val dossier = java.io.File(cacheDir, "partage").apply { mkdirs() }
@@ -348,7 +348,7 @@ class PaliersActivity : AppCompatActivity() {
         val uri = androidx.core.content.FileProvider.getUriForFile(this, "$packageName.partage", fichier)
         val envoi = android.content.Intent(android.content.Intent.ACTION_SEND).setType("image/png")
             .putExtra(android.content.Intent.EXTRA_STREAM, uri)
-            .putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.grade_partage_texte, TropheesVue.metal(this, g), n))
+            .putExtra(android.content.Intent.EXTRA_TEXT, resources.getQuantityString(R.plurals.grade_partage_texte, n, TropheesVue.metal(this, g), n))
             .addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivity(android.content.Intent.createChooser(envoi, getString(R.string.grade_partager)))
     }
@@ -401,7 +401,7 @@ class PaliersActivity : AppCompatActivity() {
             }, LinearLayout.LayoutParams(dp(260), dp(220)))
             addView(VueJour.texte(context, getString(R.string.grade_nouveau, TropheesVue.metal(context, g)), 24f, R.color.ink, gras = true, haut = 6)
                 .apply { gravity = Gravity.CENTER })
-            addView(VueJour.texte(context, getString(R.string.grade_sous_max, n), 15f, R.color.muted, haut = 4).apply { gravity = Gravity.CENTER })
+            addView(VueJour.texte(context, resources.getQuantityString(R.plurals.grade_sous_max, n, n), 15f, R.color.muted, haut = 4).apply { gravity = Gravity.CENTER })
             suivant?.let {
                 addView(VueJour.texte(context, getString(R.string.grade_prochain, TropheesVue.metal(context, Trophees.grade(it)), it), 13f, R.color.muted, haut = 6)
                     .apply { gravity = Gravity.CENTER })

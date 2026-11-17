@@ -48,6 +48,9 @@ object VolAlerte {
         runCatching { alarmes.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, prochain.coerceAtLeast(maintenant), pending) }
     }
 
+    /** L'étiquette de notification d'un rappel : son type et sa prière, pour que deux rappels dus d'un coup ne s'écrasent pas. */
+    fun etiquette(r: VolRappels.Rappel): String = "vol:${r.type.name}:${r.priere.orEmpty()}"
+
     /** Les rappels dus maintenant, pas encore montrés (plusieurs peuvent tomber à la même minute). */
     fun dus(rappels: List<VolRappels.Rappel>, vu: Long, maintenant: Long): List<VolRappels.Rappel> =
         rappels.filter { val t = it.instant.toEpochMilli(); t > vu && t <= maintenant + 60_000L && t > maintenant - TOLERANCE_MS }
@@ -78,17 +81,32 @@ object VolAlerte {
                     (r.limite?.let { "\n" + c.getString(R.string.vol_rappel_derekh_priere, nomPriere(c, r.priere), heure(it)) } ?: ""))
             VolRappels.Type.PRIERE -> c.getString(R.string.vol_rappel_priere_titre, nomPriere(c, r.priere)) to
                 (r.limite?.let { c.getString(R.string.vol_rappel_priere_texte, nomPriere(c, r.priere), heure(it)) }
-                    ?: c.getString(R.string.vol_rappel_priere_sans_limite, nomPriere(c, r.priere)))
+                    ?: c.getString(R.string.vol_rappel_priere_sans_limite, nomPriere(c, r.priere))) +
+                // Cha'harit : le Chema d'abord (audit du 16/11).
+                (r.chema?.let { "\n" + texteChema(c, r, heure) } ?: "")
             VolRappels.Type.PRIERE_FIN -> c.getString(R.string.vol_rappel_fin_titre, nomPriere(c, r.priere)) to
                 c.getString(R.string.vol_rappel_fin_texte, heure(r.limite ?: r.instant))
             VolRappels.Type.OMER -> c.getString(R.string.vol_rappel_omer_titre) to c.getString(R.string.vol_rappel_omer_texte, r.omer.toString())
+            // Audit du 16/11 : obligation en Edot (Kitsour Yalkut Yosef 219:20) ; selon l'usage ailleurs.
+            VolRappels.Type.HAGOMEL -> c.getString(R.string.vol_rappel_gomel_titre) to
+                c.getString(if (Store.siddurNusah(c) == Nusah.EDOT) R.string.vol_rappel_gomel_texte_edot else R.string.vol_rappel_gomel_texte)
+            VolRappels.Type.CHEMA_FIN -> c.getString(R.string.vol_rappel_chema_titre) to texteChema(c, r, heure)
         }
+    }
+
+    /** « Fin du Chema (Maguen Avraham) : … ; au besoin, selon le Gra : … » (audit du 16/11). */
+    private fun texteChema(c: Context, r: VolRappels.Rappel, heure: (Instant) -> String): String {
+        val chema = heure(r.chema ?: r.instant)
+        val autre = r.chemaAutre?.let(heure) ?: "—"
+        return if (r.chemaCle == "szks_mga") c.getString(R.string.vol_rappel_chema_mga, chema, autre)
+        else c.getString(R.string.vol_rappel_chema_gra, chema, autre)
     }
 
     /** Le texte du siddur qu'ouvre le rappel, et le hassid qui l'accompagne. */
     fun texteSiddur(r: VolRappels.Rappel): String = when (r.type) {
         VolRappels.Type.TEFILAT_HADEREKH -> "tefilat_haderekh"
         VolRappels.Type.OMER -> "sefirat_haomer"
+        VolRappels.Type.HAGOMEL -> "hagomel"
         else -> r.priere ?: "arvit"
     }
 
@@ -99,40 +117,50 @@ object VolAlerte {
     }
 
     fun illustration(r: VolRappels.Rappel): Int = when (r.type) {
-        VolRappels.Type.TEFILAT_HADEREKH -> R.drawable.scene_airport
+        VolRappels.Type.TEFILAT_HADEREKH, VolRappels.Type.HAGOMEL -> R.drawable.scene_airport
         VolRappels.Type.OMER -> R.drawable.char_tehilim
         else -> SiddurMoment.illustration(r.priere ?: "arvit")
     }
 }
 
-/** Montre les rappels dus, puis programme le suivant. */
+/**
+ * Montre les rappels dus, puis programme le suivant. Hors du fil principal (15/11, EnFond) : les
+ * aéroports (550 ko de JSON) s'y analysaient quand le processus venait d'être relancé.
+ */
 class VolAlerteReceiver : BroadcastReceiver() {
     override fun onReceive(brut: Context, intent: Intent) {
         val context = LangueApp.envelopper(brut)
-        Notifications.ensureChannels(context)
-        val maintenant = System.currentTimeMillis()
-        val dus = if (Store.volRappelsActifs(context)) VolAlerte.dus(Store.volRappels(context), Store.volRappelVu(context), maintenant) else emptyList()
-        val plan = Store.vol(context, Data.aeroports(context))
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        dus.forEach { r ->
-            val (titre, texte) = VolAlerte.textes(context, r, plan)
-            val ouvrir = PendingIntent.getActivity(
-                context, 161 + r.type.ordinal, SiddurLectureActivity.intent(context, VolAlerte.texteSiddur(r)),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-            val n = Notification.Builder(context, Notifications.CHANNEL_REMINDER)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setLargeIcon(VolAlerte.icone(context, r))
-                .setContentTitle(titre)
-                .setContentText(texte)
-                .setStyle(Notification.BigTextStyle().bigText(texte))
-                .setContentIntent(ouvrir)
-                .setAutoCancel(true)
-                .build()
-            // Le Omer garde sa notification à part : il tombe à la même minute qu'Arvit.
-            runCatching { manager.notify(if (r.type == VolRappels.Type.OMER) Notifications.ID_VOL_OMER else Notifications.ID_VOL, n) }
+        EnFond.recevoir(this) {
+            Notifications.ensureChannels(context)
+            val maintenant = System.currentTimeMillis()
+            val dus = if (Store.volRappelsActifs(context)) VolAlerte.dus(Store.volRappels(context), Store.volRappelVu(context), maintenant) else emptyList()
+            val plan = Store.vol(context, Data.aeroports(context))
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            dus.forEach { r ->
+                val (titre, texte) = VolAlerte.textes(context, r, plan)
+                // Une intention par texte ouvert : les extras ne distinguent pas deux PendingIntent, et
+                // FLAG_UPDATE_CURRENT ferait ouvrir à la notification de Min'ha, restée affichée, le texte
+                // d'Arvit (même type, même code) maintenant que chaque rappel garde la sienne (FVOL-16).
+                val ouvrir = PendingIntent.getActivity(
+                    context, 161 + r.type.ordinal,
+                    SiddurLectureActivity.intent(context, VolAlerte.texteSiddur(r))
+                        .setData(android.net.Uri.fromParts("vol-rappel", VolAlerte.texteSiddur(r), null)),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+                val n = Notification.Builder(context, Notifications.CHANNEL_REMINDER)
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setLargeIcon(VolAlerte.icone(context, r))
+                    .setContentTitle(titre)
+                    .setContentText(texte)
+                    .setStyle(Notification.BigTextStyle().bigText(texte))
+                    .setContentIntent(ouvrir)
+                    .setAutoCancel(true)
+                    .build()
+                // Chaque rappel garde sa notification (FVOL-16) : un lot de rappels dus d'un coup (Doze) ne s'écrase pas.
+                runCatching { manager.notify(VolAlerte.etiquette(r), if (r.type == VolRappels.Type.OMER) Notifications.ID_VOL_OMER else Notifications.ID_VOL, n) }
+            }
+            dus.maxOfOrNull { it.instant.toEpochMilli() }?.let { Store.setVolRappelVu(context, it) }
+            VolAlerte.programmer(context)
         }
-        dus.maxOfOrNull { it.instant.toEpochMilli() }?.let { Store.setVolRappelVu(context, it) }
-        VolAlerte.programmer(context)
     }
 }

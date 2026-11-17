@@ -47,10 +47,14 @@ object ZmanimVignette {
     private val MENTHE = 0xFF9FE3CC.toInt()
     private val HEURE = DateTimeFormatter.ofPattern("HH:mm")
 
-    /** Où commence la fenêtre de la prière du moment, pour la jauge : l'aube, la fin de Cha'harit, la chki'a. */
+    /**
+     * Où commence la fenêtre de la prière du moment, pour la jauge : l'aube, min'ha guedola (13/11,
+     * FVOL-05 : la fin de Cha'harit avant, quand Min'ha s'affichait dès ce moment), la chki'a.
+     */
     fun debut(priere: String, horaires: Map<String, ZonedDateTime?>): ZonedDateTime? = when (priere) {
-        "chaharit" -> horaires["alot"]
-        "minha" -> horaires["szt_gra"]
+        // Sans aube (Londres, Berlin, Moscou autour du solstice, FCALENDRIER-08) : comme ZmanimWidget.prochaine.
+        "chaharit" -> horaires["alot"] ?: horaires["misheyakir"] ?: horaires["netz"]
+        "minha" -> horaires["minha_gedola"] ?: horaires["szt_gra"]
         else -> horaires["chkia"]
     }
 
@@ -60,6 +64,13 @@ object ZmanimVignette {
      */
     fun jourHebreuAffiche(maintenant: ZonedDateTime, tset: ZonedDateTime?): LocalDate =
         if (tset != null && !maintenant.isBefore(tset)) maintenant.toLocalDate().plusDays(1) else maintenant.toLocalDate()
+
+    /**
+     * Le libellé de la fête du jour pour la pastille, ou null un jour ordinaire. Les clés du
+     * calendrier sont nues (« hanouka ») et celles de la table préfixées (« fete_hanouka ») :
+     * sans le préfixe, la pastille n'affichait jamais la fête (13/11, TMECA-01).
+     */
+    fun libelleFete(jour: CalendrierJuif.Jour): Int? = jour.fetes.firstNotNullOfOrNull { Libelles.res("fete_$it") }
 
     /** La part écoulée de la fenêtre, de 0 à 1000 ; 0 sans bornes. */
     fun ecoule(debut: ZonedDateTime?, fin: ZonedDateTime?, maintenant: ZonedDateTime): Int {
@@ -77,12 +88,13 @@ object ZmanimVignette {
         // soir, la vignette dit déjà Chabbat. Sans lieu, pas de tsét connu : minuit.
         val lieuDate = Store.lieuZmanim(context)
         val maintenantLieu = ZonedDateTime.now(lieuDate?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault())
-        val tset = lieuDate?.let { l -> Zmanim.jour(l, maintenantLieu.toLocalDate()).firstOrNull { it.cle == "tset" }?.local }
+        val tset = lieuDate?.let { l -> Zmanim.jour(l, maintenantLieu.toLocalDate(), Store.siddurNusah(context).cle).firstOrNull { it.cle == "tset" }?.local }
         val aujourdhui = jourHebreuAffiche(maintenantLieu, tset)
-        val jour = CalendrierJuif.jour(aujourdhui, israel)
+        // À Jérusalem, Pourim est le 15 Adar : la pastille nomme la fête comme le calendrier (13/11).
+        val jour = CalendrierJuif.jour(aujourdhui, israel, Store.mukafChoma(context))
         v.setTextViewText(R.id.wv_date, jour.dateHebraique)
         // La fête du jour, sinon la paracha de la semaine.
-        val fete = jour.fetes.firstNotNullOfOrNull { Libelles.res(it) }?.let { context.getString(it) }
+        val fete = libelleFete(jour)?.let { context.getString(it) }
         val paracha = CalendrierJuif.jour(aujourdhui.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)), israel).paracha
             ?.let { context.getString(R.string.widget_paracha, it) }
         val pastille = fete ?: paracha
@@ -103,12 +115,16 @@ object ZmanimVignette {
         }
         val zone = runCatching { ZoneId.of(lieu.fuseau) }.getOrDefault(ZoneId.systemDefault())
         val maintenant = ZonedDateTime.now(zone)
-        val horaires = Zmanim.jour(lieu, maintenant.toLocalDate()).associate { it.cle to it.local }
-        val (priere, limite) = ZmanimWidget.prochaine(horaires, maintenant)
+        val horaires = Zmanim.jour(lieu, maintenant.toLocalDate(), Store.siddurNusah(context).cle).associate { it.cle to it.local }
+        val moment = ZmanimWidget.prochaine(horaires, maintenant)
+        val priere = moment.priere
+        // Pas encore ouverte (13/11, FVOL-05) : « dès 12:05 », sans jauge ni temps restant.
+        val limite = moment.limite.takeIf { moment.debut == null }
         v.setTextViewText(R.id.wv_priere, context.getString(when (priere) {
             "chaharit" -> R.string.widget_zmanim_chaharit; "minha" -> R.string.widget_zmanim_minha; else -> R.string.widget_zmanim_arvit
         }))
-        v.setTextViewText(R.id.wv_limite, limite?.let { context.getString(R.string.widget_jusqua, it.format(HEURE)) } ?: "")
+        v.setTextViewText(R.id.wv_limite, moment.debut?.let { context.getString(R.string.widget_des, it.format(HEURE)) }
+            ?: limite?.let { context.getString(R.string.widget_jusqua, it.format(HEURE)) } ?: "")
         v.setViewVisibility(R.id.wv_jauge, if (limite != null) View.VISIBLE else View.GONE)
         v.setProgressBar(R.id.wv_jauge, 1000, ecoule(debut(priere, horaires), limite, maintenant), false)
         v.setTextViewText(R.id.wv_reste, limite?.let {
@@ -119,7 +135,7 @@ object ZmanimVignette {
         // La journée : aujourd'hui, ou demain une fois la nuit tombée.
         var journee = JOURNEE.mapNotNull { k -> horaires[k]?.let { k to it } }
         if (journee.none { it.second.isAfter(maintenant) }) {
-            val demain = Zmanim.jour(lieu, maintenant.toLocalDate().plusDays(1)).associate { it.cle to it.local }
+            val demain = Zmanim.jour(lieu, maintenant.toLocalDate().plusDays(1), Store.siddurNusah(context).cle).associate { it.cle to it.local }
             journee = JOURNEE.mapNotNull { k -> demain[k]?.let { k to it } }
         }
         val prochain = journee.indexOfFirst { it.second.isAfter(maintenant) }
@@ -199,7 +215,7 @@ object ZmanimVignette {
         val zone = lieu?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
         val maintenant = ZonedDateTime.now(zone)
         val horaires = lieu?.let { l ->
-            (Zmanim.jour(l, maintenant.toLocalDate()) + Zmanim.jour(l, maintenant.toLocalDate().plusDays(1))).map { it.local }
+            (Zmanim.jour(l, maintenant.toLocalDate(), Store.siddurNusah(context).cle) + Zmanim.jour(l, maintenant.toLocalDate().plusDays(1), Store.siddurNusah(context).cle)).map { it.local }
         }.orEmpty()
         val minuitTelephone = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault())
         val quand = prochainChangement(horaires, maintenant, minuitTelephone)
@@ -207,21 +223,25 @@ object ZmanimVignette {
     }
 }
 
-/** Le prochain changement des vignettes des zmanim est arrivé (ZmanimVignette.programmer). */
+/**
+ * Le prochain changement des vignettes des zmanim est arrivé (ZmanimVignette.programmer). Toutes
+ * les dix minutes au plus : les zmanim de deux jours et l'image de la boussole se calculent hors
+ * du fil principal (15/11, EnFond), pour ne pas retarder l'écran ouvert.
+ */
 class ZmanimTic : android.content.BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) = ZmanimWidget.refresh(context)
+    override fun onReceive(context: Context, intent: Intent) = EnFond.recevoir(this) { ZmanimWidget.refresh(context) }
 }
 
 class ZmanimPetitWidget : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        // Toutes les tailles, et le prochain changement reprogrammé (02/11).
-        ZmanimVignette.rafraichir(context)
+        // Toutes les tailles, et le prochain changement reprogrammé (02/11) ; hors du fil principal (15/11).
+        EnFond.recevoir(this) { ZmanimVignette.rafraichir(context) }
     }
 }
 
 class ZmanimGrandWidget : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
-        // Toutes les tailles, et le prochain changement reprogrammé (02/11).
-        ZmanimVignette.rafraichir(context)
+        // Toutes les tailles, et le prochain changement reprogrammé (02/11) ; hors du fil principal (15/11).
+        EnFond.recevoir(this) { ZmanimVignette.rafraichir(context) }
     }
 }

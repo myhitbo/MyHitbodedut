@@ -94,7 +94,7 @@ try {
     await wd('POST', `${S}/url`, { url: base });
     await attendre(1500);
     const m = await executer(`const n = document.querySelector('.onglets').getBoundingClientRect();
-      const b = document.querySelector('.accueil .principal').getBoundingClientRect();
+      const b = document.querySelector('.depart .principal').getBoundingClientRect();
       return { l: innerWidth, h: innerHeight, deborde: document.documentElement.scrollWidth > innerWidth,
         colonne: n.height > n.width && n.left < 1, bouton: b.bottom };`);
     const png = await wd('GET', `${S}/screenshot`);
@@ -128,8 +128,8 @@ try {
       .then(() => setTimeout(() => fin({ duree: a.duration, joue: !a.paused, position: a.currentTime }), 2000))
       .catch((e) => fin({ duree: a.duration, joue: false, refus: e.name })), { once: true });
     a.addEventListener('error', () => fin({ erreur: a.error && a.error.code }), { once: true });
-    setTimeout(() => fin({ delai: true }), 20000);`, [`${base}musique/niggoun_01.m4a`]);
-  rapport.push(`Musique (niggoun_01) : ${JSON.stringify(son)}`);
+    setTimeout(() => fin({ delai: true }), 20000);`, [`${base}musique/hamelech_basade.m4a`]);
+  rapport.push(`Musique (hamelech_basade) : ${JSON.stringify(son)}`);
   if (!(son.duree > 0)) erreurs.push(`musique : le morceau ne se charge pas ${JSON.stringify(son)}`);
 } finally {
   await wd('DELETE', S).catch(() => {});

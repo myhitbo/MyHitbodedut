@@ -15,7 +15,7 @@ object HorairePriere {
         if (id !in setOf("chaharit", "minha", "arvit")) return null
         val lieu = Store.lieuZmanim(c) ?: return null
         val zone = runCatching { ZoneId.of(lieu.fuseau) }.getOrDefault(ZoneId.systemDefault())
-        val z = Zmanim.jour(lieu, ZonedDateTime.now(zone).toLocalDate()).associate { it.cle to it.local }
+        val z = Zmanim.jour(lieu, ZonedDateTime.now(zone).toLocalDate(), Store.siddurNusah(c).cle).associate { it.cle to it.local }
         val f = DateTimeFormatter.ofPattern("HH:mm")
         val h = { cle: String -> z[cle]?.format(f) }
         return when (id) {

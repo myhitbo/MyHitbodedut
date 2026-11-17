@@ -37,7 +37,7 @@ class ConfidentialiteTest {
         assertTrue("build.mjs ne copie plus web/src en entier", build.contains("cpSync(SRC, DIST, { recursive: true })"))
         val reglages = source("SettingsActivity.kt")
         assertTrue(reglages.contains("CelebrationActivity.LIEN_WEB + \"confidentialite.html\""))
-        assertTrue(source("CelebrationActivity.kt").contains("const val LIEN_WEB = \"https://hil123.github.io/myhitbodedut-web/\""))
+        assertTrue(source("CelebrationActivity.kt").contains("const val LIEN_WEB = \"https://myhitbodedut.pages.dev/\""))
         assertTrue(File("src/main/res/layout/activity_settings.xml").readText().contains("@string/settings_confidentialite"))
     }
 
@@ -56,6 +56,36 @@ class ConfidentialiteTest {
             mots.forEach { assertTrue("$langue : « $it » manque", texte.contains(it)) }
             assertTrue("$langue : le contact", texte.contains("<a href=\"mailto:myhitbodedut26@gmail.com\">"))
             assertTrue("$langue : l'éditeur", texte.contains("MyHitbodedut Team"))
+            // Compte Play « organisation » (16/11) : la page nomme l'association, titulaire du compte.
+            assertTrue("$langue : l'association", texte.contains("HACHIVEINOU LÉTORATEKHA"))
+        }
+    }
+
+    /** TWEBCONF-10/18 : la date des règles est la même dans les trois langues ; à changer avec le texte. */
+    @Test
+    fun `la date des regles est la meme dans les trois langues`() {
+        val dateRegles = mapOf("fr" to "Mise à jour : 16 novembre 2026", "en" to "Last updated: 16 November 2026", "he" to "עודכן: 16 בנובמבר 2026")
+        dateRegles.forEach { (langue, date) ->
+            val datee = Regex("""<p class="date">([^.]*)\.""").find(section(langue))?.groupValues?.get(1)
+            assertTrue("$langue : date « $date » attendue, trouvé « $datee »", datee == date)
+        }
+    }
+
+    /** TWEBCONF-18 : formules devenues fausses (position relue sans geste) : elles ne reviennent pas. */
+    @Test
+    fun `les formules perimees ne reviennent pas`() {
+        listOf("n’apparaît que", "only appears", "מופיעה רק").forEach { assertFalse("« $it »", html.contains(it)) }
+    }
+
+    /**
+     * TWEBCONF-18 : une construction avec relais (-PrelaisVol=https://…) envoie l'indicatif et la
+     * position au relais du développeur ; la page doit alors le dire dans les trois langues.
+     */
+    @Test
+    fun `avec un relais la page parle du relais`() {
+        if (BuildConfig.RELAIS_VOL.isEmpty()) return
+        mapOf("fr" to "relais", "en" to "relay", "he" to "ממסר").forEach { (langue, mot) ->
+            assertTrue("$langue : « $mot » manque alors que RELAIS_VOL est configuré", section(langue).contains(mot))
         }
     }
 

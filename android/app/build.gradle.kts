@@ -33,12 +33,15 @@ android {
      * est public. Pour une publication sur le Play Store, générer une autre clé
      * gardée hors du dépôt et la fournir par les variables ci-dessous.
      */
+    // Une variable vide vaut absente : en intégration continue, un secret qui n'existe pas arrive vide.
+    fun env(nom: String): String? = System.getenv(nom)?.takeIf { it.isNotEmpty() }
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "../keystore/myhitbodedut-dev.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "myhitbodedut"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "myhitbodedut"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "myhitbodedut"
+            storeFile = file(env("KEYSTORE_PATH") ?: "../keystore/myhitbodedut-dev.jks")
+            storePassword = env("KEYSTORE_PASSWORD") ?: "myhitbodedut"
+            keyAlias = env("KEY_ALIAS") ?: "myhitbodedut"
+            // Sans mot de passe de clé, celui du trousseau : c'est le même dans un PKCS12 créé par keytool.
+            keyPassword = env("KEY_PASSWORD") ?: env("KEYSTORE_PASSWORD") ?: "myhitbodedut"
         }
     }
 
@@ -161,11 +164,18 @@ android {
             dimension = "edition"
             buildConfigField("boolean", "HAS_GATE", "true")
             // Le suivi de vol en direct (28/10) : l'édition complète seule déclare INTERNET
-            // (src/full/AndroidManifest.xml). Sans -PrelaisVol=https://…, OpenSky en accès anonyme et gratuit (SuiviVol).
+            // (src/full/AndroidManifest.xml). Avec -PrelaisVol=https://…, par le relais (tools/relais_vol).
             buildConfigField("boolean", "SUIVI_VOL", "true")
             val relais = (project.findProperty("relaisVol") as String?).orEmpty()
             require(relais.isEmpty() || relais.startsWith("https://")) { "relaisVol doit être en https://" }
             buildConfigField("String", "RELAIS_VOL", "\"$relais\"")
+            // Sans relais, OpenSky en accès anonyme depuis le téléphone : les conditions écrites
+            // d'OpenSky l'excluent pour une diffusion publique. La construction Play
+            // (-Pplay=true) ne l'a donc jamais : sans relais, pas de suivi en direct, la route adsbdb
+            // reste (audit du 12/11, TPLAYDOCS-01, FVOL-02). -PsuiviDirect=false le coupe ailleurs aussi.
+            val directAutorise = (project.findProperty("suiviDirect") as String?)?.let { it == "true" }
+                ?: ((project.findProperty("play") as String?) != "true")
+            buildConfigField("boolean", "OPENSKY_DIRECT", directAutorise.toString())
         }
         create("light") {
             dimension = "edition"
@@ -175,6 +185,7 @@ android {
             // Light ne déclare aucun accès Internet : pas de suivi en direct.
             buildConfigField("boolean", "SUIVI_VOL", "false")
             buildConfigField("String", "RELAIS_VOL", "\"\"")
+            buildConfigField("boolean", "OPENSKY_DIRECT", "false")
         }
     }
 

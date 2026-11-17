@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Les onglets de l'accueil. Aujourd'hui et Textes changent de panneau sur
-    place ; Zmanim (10/10), Journal et Réglages ouvrent leurs écrans, et
-    l'onglet actif ne bouge pas : au retour, on retrouve la page qu'on avait
-    quittée.
+    Les onglets de l'accueil (refonte du 13/11) : trois lieux, qui changent de
+    panneau sur place. Zmanim et Réglages ne sont plus des onglets : la date
+    hébraïque et la roue, en tête du Jour, portent leurs identifiants.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
@@ -15,15 +14,7 @@
         android:icon="@drawable/ic_nav_texts"
         android:title="@string/nav_texts" />
     <item
-        android:id="@+id/nav_zmanim"
-        android:icon="@drawable/ic_nav_zmanim"
-        android:title="@string/nav_zmanim" />
-    <item
         android:id="@+id/nav_journal"
-        android:icon="@drawable/ic_nav_journal"
-        android:title="@string/nav_journal" />
-    <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/ic_nav_settings"
-        android:title="@string/settings_title" />
+        android:icon="@drawable/ic_nav_chemin"
+        android:title="@string/nav_chemin" />
 </menu>

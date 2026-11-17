@@ -19,9 +19,12 @@ class LanguesTest {
     private val manifeste = File("src/main/AndroidManifest.xml").readText()
 
     @Test
-    fun `les trois langues sont offertes, dans l ordre demande`() {
-        assertEquals(listOf("iw", "en", "fr"), Langues.TOUTES.map { it.etiquette })
-        assertEquals(listOf("עברית", "English", "Français"), Langues.TOUTES.map { it.nom })
+    fun `les cinq langues sont offertes, dans l ordre demande`() {
+        // L'espagnol d'Amérique latine et l'arabe tunisien s'ajoutent le 17/11, l'interface seule.
+        assertEquals(listOf("iw", "en", "fr", "es", "ar-TN"), Langues.TOUTES.map { it.etiquette })
+        assertEquals(listOf("עברית", "English", "Français", "Español", "تونسي"), Langues.TOUTES.map { it.nom })
+        assertEquals("es", Langues.normalise("es-MX"))
+        assertEquals("ar-TN", Langues.normalise("ar-TN"))
     }
 
     @Test
@@ -58,7 +61,8 @@ class LanguesTest {
     fun `chaque langue offerte a son dossier de ressources`() {
         Langues.TOUTES.forEach { langue ->
             val dossier = if (langue.etiquette == Langues.DEFAUT) "values"
-                          else "values-${langue.etiquette}"
+                          // « ar-TN » : le dossier d'Android écrit la région « rTN ».
+                          else "values-" + langue.etiquette.replace(Regex("-([A-Z]{2})$"), "-r$1")
             assertTrue(
                 "on propose « ${langue.nom} » sans livrer $dossier/strings.xml",
                 File("src/main/res/$dossier/strings.xml").isFile,
@@ -107,11 +111,16 @@ class LanguesTest {
     @Test
     fun `un telephone dont aucune langue n est livree passe en anglais`() {
         // Audit 1.390, choix du propriétaire le 29/10 : l'anglais, non plus le français de values/.
-        assertEquals("en", LangueApp.repli(listOf("es-ES")))
         assertEquals("en", LangueApp.repli(listOf("de-DE", "ru-RU")))
+        // L'espagnol est livré depuis le 17/11 ; l'arabe, en derja, seulement pour la Tunisie.
+        assertEquals(null, LangueApp.repli(listOf("es-ES")))
+        assertEquals(null, LangueApp.repli(listOf("es-419")))
+        assertEquals(null, LangueApp.repli(listOf("ar-TN")))
+        assertEquals("en", LangueApp.repli(listOf("ar-EG")))
+        assertEquals("en", LangueApp.repli(listOf("ar")))
         assertEquals("en", LangueApp.repli(emptyList()))
         // Une langue livrée, même en second : on suit le téléphone.
-        assertEquals(null, LangueApp.repli(listOf("es-ES", "fr-FR")))
+        assertEquals(null, LangueApp.repli(listOf("de-DE", "fr-FR")))
         assertEquals(null, LangueApp.repli(listOf("iw-IL")))
         assertEquals(null, LangueApp.repli(listOf("he")))
         assertEquals(null, LangueApp.repli(listOf("en-GB")))

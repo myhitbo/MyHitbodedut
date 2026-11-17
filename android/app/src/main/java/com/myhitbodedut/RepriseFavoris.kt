@@ -24,22 +24,46 @@ object RepriseFavoris {
         return recueil.texte(id)?.titre?.he
     }
 
+    /** La traduction du titre dans la langue de l'écran, quand elle diffère de l'hébreu (FDONNEES-24) ; null sinon. */
+    fun traduction(c: Context, cle: String): String? {
+        if (cle == TehilimLectureActivity.CLE) return null
+        val id = cle.substringAfter(':')
+        val recueil = if (cle.startsWith("l:")) Data.livresIndex(c) else Data.siddur(c)
+        val titre = recueil.texte(id)?.titre ?: return null
+        return titre.forLanguage(ChizukCard.language(c)).takeIf { it.isNotBlank() && it != titre.he }
+    }
+
+    /** Une petite ligne de traduction sous un titre hébreu, dans le sens de la langue de l'écran. */
+    private fun sousTitre(c: Context, texte: String, taille: Float): TextView = TextView(c).apply {
+        text = texte
+        textSize = taille
+        textDirection = View.TEXT_DIRECTION_LOCALE
+        textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+        setTextColor(Apparence.couleur(c, R.color.muted))
+    }
+
     fun ouvrir(c: Context, cle: String) {
         val id = cle.substringAfter(':')
         if (cle.startsWith("l:")) SiddurLectureActivity.ouvrirLivre(c, id) else SiddurLectureActivity.ouvrir(c, id)
     }
 
     fun lignes(c: Context): List<View> = buildList {
-        Store.derniereLecture(c)?.let { cle -> titre(c, cle)?.let { add(ligne(c, c.getString(R.string.reprise_titre), it, cle)) } }
+        Store.derniereLecture(c)?.let { cle -> titre(c, cle)?.let { add(ligne(c, c.getString(R.string.reprise_titre), it, cle, traduction = traduction(c, cle))) } }
         val favoris = Store.favoris(c).mapNotNull { cle -> titre(c, cle)?.let { cle to it } }
-        favoris.forEachIndexed { i, (cle, t) -> add(ligne(c, if (i == 0) c.getString(R.string.favoris_titre) else null, t, cle)) }
+        favoris.forEachIndexed { i, (cle, t) -> add(ligne(c, if (i == 0) c.getString(R.string.favoris_titre) else null, t, cle, traduction = traduction(c, cle))) }
         // Les marque-pages (15/10) : une seule ligne (28/10), qui ouvre la liste filtrée.
         ligneSignets(c)?.let { add(it) }
     }
 
     /** La ligne « סימניות · n » (28/10) : tous les marque-pages, ou ceux d'un recueil (« s », « l »). */
     fun ligneSignets(c: Context, recueil: String? = null): View? {
-        val marques = Store.marques(c).filter { (recueil == null || it.cle.startsWith("$recueil:")) && titre(c, it.cle) != null }
+        // Un marque-page du siddour est lié à son noussa'h (les paragraphes diffèrent) : seuls ceux du
+        // noussa'h courant sont listés, sinon la ligne ouvrirait un autre paragraphe (FLECTURE-09).
+        val nusah = Store.siddurNusah(c).cle
+        val marques = Store.marques(c).filter {
+            (recueil == null || it.cle.startsWith("$recueil:")) && titre(c, it.cle) != null &&
+                (it.nusah.isEmpty() || it.nusah == nusah)
+        }
         if (marques.isEmpty()) return null
         return ligne(c, null, "${c.getString(R.string.marques_titre)} · ${marques.size}", "",
             icone = SiddurLectureActivity.icone(recueil == "l")) { listeSignets(c, marques) }
@@ -122,6 +146,7 @@ object RepriseFavoris {
                 setTint(Apparence.couleur(c, R.color.brand)); setBounds(0, 0, dp(c, 14), dp(c, 14))
             }?.let { setCompoundDrawablesRelative(null, null, it, null); compoundDrawablePadding = dp(c, 6) }
         })
+        traduction(c, m.cle)?.let { addView(sousTitre(c, it, 12f)) }
         addView(TextView(c).apply {
             text = "${m.apercu}…"
             textSize = 17f
@@ -134,7 +159,7 @@ object RepriseFavoris {
         })
     }
 
-    private fun ligne(c: Context, entete: String?, titre: String, cle: String, icone: Int? = null, discret: Boolean = false, action: () -> Unit = { ouvrir(c, cle) }): View = LinearLayout(c).apply {
+    private fun ligne(c: Context, entete: String?, titre: String, cle: String, icone: Int? = null, discret: Boolean = false, traduction: String? = null, action: () -> Unit = { ouvrir(c, cle) }): View = LinearLayout(c).apply {
         orientation = LinearLayout.VERTICAL
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             .apply { setMargins(dp(c, 16), dp(c, if (entete != null) 14 else if (discret) 0 else 4), dp(c, 16), 0) }
@@ -148,9 +173,12 @@ object RepriseFavoris {
             })
         }
         addView(TextView(c).apply {
+            // Le chevron reste « › » pour un titre hébreu ; sinon (« Marque-pages · 3 ») il se retournerait
+            // en « ‹ » sous le sens droite-à-gauche (FLECTURE-25) : on suit alors le premier caractère fort.
+            val hebreu = titre.any { it in '\u0590'..'\u05FF' }
             text = "$titre  ›"
             textSize = if (discret) 14f else 19f
-            textDirection = View.TEXT_DIRECTION_RTL
+            textDirection = if (hebreu) View.TEXT_DIRECTION_RTL else View.TEXT_DIRECTION_FIRST_STRONG_LTR
             textAlignment = View.TEXT_ALIGNMENT_VIEW_START
             setTextColor(Apparence.couleur(c, if (discret) R.color.muted else R.color.ink))
             if (discret) { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END }
@@ -163,5 +191,7 @@ object RepriseFavoris {
                     ?.let { setCompoundDrawablesRelative(null, null, it, null); compoundDrawablePadding = dp(c, 8) }
             }
         })
+        // La traduction ouvre le texte, comme le titre : c'est elle que le lecteur reconnaît.
+        traduction?.let { addView(sousTitre(c, it, 13f).apply { setOnClickListener { action() } }) }
     }
 }

@@ -15,9 +15,11 @@ vérifiés ; la mention « profil à valider par un Rav » est retirée de l'éc
 | Règles de prière | `TefilaRules` de KosherJava | `web/src/js/tefila.js`, portage ligne à ligne de `TefilaRules.java` (absent de kosher-zmanim) | LGPL 2.1 |
 | Comparaison | — | Hebcal (`@hebcal/core` 6.14.1), **dans les tests seulement**, jamais servi | GPL 2.0+ |
 
-Tout se calcule sur l'appareil, sans réseau. Le site garde sa politique de
-sécurité (`connect-src 'self'`) ; l'application Android ne déclare toujours
-aucune permission Internet.
+Tout se calcule sur l'appareil, sans réseau. L'édition Light ne déclare
+aucune permission Internet ; l'édition complète ne la déclare que pour les
+services de vol, désactivés par défaut (« Zmanim en vol », plus bas). Le site
+n'autorise qu'une connexion extérieure (`connect-src 'self'
+https://api.adsbdb.com`), pour la route d'un numéro de vol.
 
 Hebcal n'est pas embarqué : sa licence GPL obligerait à publier toute
 l'application sous GPL. Il sert de second avis dans les tests.
@@ -46,12 +48,53 @@ celles de la documentation de KosherJava 2.5.0 (`zmanim-2.5.0-sources.jar`).
 | צאת הכוכבים, ר״ת | `getTzais72` | 72 minutes fixes après le coucher, « selon Rabbénou Tam » |
 | חצות הלילה | `getSolarMidnight` | le milieu entre chatsot d'aujourd'hui et de demain |
 
+La ligne « Fin du Chema (Maguen Avraham) » compte sa journée depuis 72 min
+fixes avant le lever, et non depuis l'aube affichée à 16,1° : l'écran le dit
+sous la ligne (audit du 16/11, Michna Beroura 58:4). Le plag est celui du Gra,
+nommé sous la ligne (MB 233:4 rapporte aussi l'avis de l'aube à tsét).
+
+**Le profil des Edot** (`Zmanim.PROFIL_EDOT`, audit du 16/11) : le noussa'h
+Edot suit le Yalkut Yosef ; Sfard et Ashkenaz gardent le profil ci-dessus.
+L'heure zmanit est celle du Gra (lever–coucher au niveau de la mer).
+
+| Zman | Edot (Yalkut Yosef) | Source |
+| --- | --- | --- |
+| עלות השחר | `getAlos72Zmanis`, 72 min zmaniyot avant le lever | Kitsour YY 89:12 |
+| משיכיר | 66 min zmaniyot avant le lever (aube + 6) | calendrier Or ha'Haïm |
+| סוף זמן ק״ש / תפילה, מג״א | `getSofZmanShmaMGA72MinutesZmanis` / `…Tfila…` | Kitsour YY 58:3 |
+| פלג המנחה | coucher − 1,025 heure zmanit (1¼ heure avant tsét) | Kitsour YY 263:45 |
+| צאת הכוכבים | coucher + 13,5 min zmaniyot | Kitsour YY 233:5 |
+| צאת הכוכבים, ר״ת | `getTzais72Zmanis` | Kitsour YY 293:3, 293:7 |
+
+Pour les Edot, la sortie de Chabbat ou de fête est Rabbénou Tam en zmaniyot ;
+la ligne tsét des Gueonim reste affichée. L'exception du Yalkut Yosef pour
+l'Europe (heures fixes, 293:7) n'est pas appliquée. Le profil des Edot borne
+aussi la suggestion du siddour (pas de Cha'harit avant michéyakir).
+
+**Jeûnes et veille de Pessa'h** (audit du 16/11) : un jeûne public affiche
+« Début du jeûne » à l'aube du rite et « Fin du jeûne » à son tsét ; la
+veille du 9 Av, Chabbat compris, « Début du jeûne » à la chki'a. La veille de
+Pessa'h, la fin de la consommation (4e heure) et du bi'our (5e heure) du
+'hamets, selon le Maguen Avraham (Edot : zmaniyot, Kitsour YY 443:1) puis le
+Gra ; quand elle tombe un Chabbat, le vendredi, la fin de la 5e heure.
+
+**Hautes latitudes** : dès environ 50,5° N autour du solstice d'été (Londres,
+Manchester, Anvers, Bruxelles), le soleil ne descend pas à 16,1° et l'aube du
+profil commun est « absente », sans repli ; la suggestion du siddour prend
+alors michéyakir, puis le lever. À la même saison, tsét à 8,5° peut tomber
+après Rabbénou Tam en 72 min fixes (Londres, 20/06/2026 : 22:36 et 22:33) ;
+la sortie affichée reste tsét à 8,5°, la plus tardive.
+
 **Chabbat et fêtes** (`JourAffiche.horaires`) :
 
 - la veille d'un jour chômé, l'allumage : `getCandleLighting`, coucher moins
   18 minutes par défaut, réglable à 18, 20, 22, 30 ou 40 ;
 - un jour chômé suivi d'un autre (deuxième jour de fête, Chabbat puis fête) :
   allumage pas avant tsét à 8,5° ;
+- sauf une fête un vendredi (2e jour de Pessa'h le 23/04/2027 en diaspora,
+  Chavouot le 11/06/2027…) : l'allumage de Chabbat se fait avant la chki'a,
+  d'une flamme existante, comme une veille ordinaire (audit du 12/11,
+  FCALENDRIER-01). En vol, Chabbat entre alors à la chki'a ;
 - le dernier jour chômé, la sortie : tsét à 8,5°. Rabbénou Tam reste dans la
   liste.
 
@@ -60,8 +103,14 @@ Un jour est « chômé » selon `JewishCalendar.isAssurBemelacha`.
 ## Les ajouts de prière
 
 `CalendrierJuif.kt` et `web/src/js/calendrier-juif.js` calculent pour chaque
-jour un jeu de conditions. Chacune renvoie à une méthode de KosherJava, et
-aucune règle n'est écrite à la main :
+jour un jeu de conditions. La plupart renvoient à une méthode de KosherJava ;
+les conditions dérivées sont écrites à la main, à partir de ces méthodes et des
+usages cités dans le code (`CalendrierJuif.C.DERIVEES`, `SiddurJour.conditionsPour`) :
+Lamnatséa'h, Ledavid, lecture de la Torah, bascule de la pluie, année
+embolismique, veille de Kippour un vendredi, psaume du jour (`jour_1` à
+`jour_6`), Avinou malkénou (à Min'ha : `avinou_malkenou_minha`, si Ta'hanoun
+s'y dit, ou à Roch Hachana et Kippour, jamais le vendredi)… Elles sont les plus sujettes à erreur : à vérifier d'abord.
+Les autres :
 
 - Ya'alé véyavo, Al hanissim, Machiv haroua'h, Morid hatal, Tal oumatar,
   Hallel complet ou partiel, Ta'hanoun du matin et de Min'ha : `TefilaRules` ;
@@ -119,23 +168,70 @@ Roch Hachana, de Kippour et de Pessa'h chéni. Restent des coutumes qui
 divergent entre communautés, Sfard et Ashkenaz surtout (fin de Tichri, 13
 Sivan hors d'Israël).
 
+**Choix documentés (audit du 16/11)**, là où les poskim divergent et où l'app
+garde un usage sans réglage :
+
+- après Chavouot, pas de Ta'hanoun jusqu'au 12 Sivan inclus, et il est dit
+  le 13 hors d'Israël (`TefilaRules`) : c'est l'usage « יש מקומות » du Michna
+  Beroura 131:36 ; le Rema (494:3) et le Choul'han Aroukh haRav s'arrêtent
+  après Isrou 'hag, et d'autres omettent aussi le 13 (Chaarei Techouva 131:19).
+  En Sfard, c'est la règle de Piskei haSiddour (vérifiée conforme) ; en Ashkenaz,
+  le rapport ne tranche pas entre le Rema et l'usage du Michna Beroura : gardé ;
+- Pessa'h chéni (14 Iyar) sans Ta'hanoun en Sfard et en Ashkenaz : ni le
+  Choul'han Aroukh ni le Michna Beroura n'en parlent ; l'ancien usage ashkénaze
+  le disait, et la carte du jour le précise en Ashkenaz
+  (`ajout_sans_tahanoun_pessah_cheni`). En Sfard, Piskei haSiddour l'omet. En Edot, pas de Vidouï non plus à Min'ha du 13 Iyar (Kitsour
+  Yalkout Yossef 131:38 ; `KosherJava` le fait dire, corrigé dans
+  `SiddurJour.conditionsPour`) ;
+- la veille de Lag baOmer, Min'ha sans Ta'hanoun en Sfard (consigne du siddour,
+  vérifiée conforme) ; le Choul'han Aroukh haRav (493:5) le fait dire et cite
+  l'omission comme usage local ;
+- למנצח en Sfard suit la liste de la consigne du siddour (Dérekh ha'Haïm : Roch
+  'Hodech, 'Hanouka, Pourim, veilles de Pessa'h et de Kippour, 9 Av, 14-15 Adar I),
+  plus 'Hol hamoed (consigne du Hallel) ; l'Admour Hazaken l'omet tous les jours
+  sans Ta'hanoun. Le rapport ne tranche pas entre les deux : l'app garde la
+  consigne du siddour. אל ארך אפים suit la même liste (« דאא״א ולמנצח דינם שוה »),
+  en Ashkenaz aussi (Michna Beroura 131:35), et seulement le lundi et le jeudi
+  (`el_erekh_apayim`) : un jeûne d'un autre jour, il n'est pas dit (Choul'han
+  Aroukh haRav 429:12 ; Matté Efraïm 602:12 ; le Maharil le faisait dire, contre
+  l'usage répandu). En Edot, il suit le Ta'hanoun (Yalkout Yossef) ;
+- les jours propres à 'Habad (10 Kislev, 19-20 Kislev, 12-13 Tamouz, et Min'ha
+  de la veille) ne sont pas retirés en Sfard : l'app suit la liste du siddour
+  Sfard (Min'ha 2.0), qui ne les nomme pas ; seuls les usages 'Habad les
+  documentent ('Habad prie dans le noussa'h Ari), et le rapport n'en fait qu'une
+  option ;
+- Avinou malkénou à Min'ha du vendredi des dix jours reste ouvert en Edot
+  (Kitsour Yalkout Yossef 582/602:23), replié en Ashkenaz et en Sfard (Michna
+  Beroura 584:4) ; le Chabbat, les Edot le disent sans les lignes de faute
+  (§24), que l'app estompe ;
+- maison en deuil, brit mila, 'hatan (Choul'han Aroukh O.H. 131:4) : le
+  réglage « Pas de Ta'hanoun aujourd'hui » replie le Ta'hanoun pour la journée.
+  Il ne distingue pas les cas : למנצח, que la consigne Sfard omet aussi dans la
+  maison en deuil, et Avinou malkénou (gardé pour une mila, Rema 602:1) restent ;
+  le détail par rite (mila à Cha'harit seulement en Ashkenaz, toute la journée en
+  Edot ; sept jours pour le 'hatan) reste à la charge de celui qui prie.
+
 **Le siddour, « Pour cette heure »** (`JourAffiche.momentDuSiddour`) : avec
 un lieu, la prière proposée suit ses zmanim. Tikoun 'hatsot de 'hatsot de la
 nuit à l'aube ; Birkot hacha'har de l'aube à michéyakir ; Cha'harit jusqu'à
 'hatsot ; Min'ha de min'ha guedola à la chki'a ; Arvit dès tsét, puis le
 Chema du coucher après 22 h 30 (repère d'usage, pas un zman). Rien n'est
-proposé de 'hatsot à min'ha guedola ni de la chki'a à tsét. Sans lieu, ou
-sans zmanim (soleil de minuit), les heures fixes d'avant.
+proposé de 'hatsot à min'ha guedola ni de la chki'a à tsét. Sans aube
+(autour du solstice à Londres, Berlin, Moscou…), michéyakir, puis le lever
+du soleil, en tiennent lieu. Sans lieu, sans zmanim (soleil de minuit), ou
+quand un autre manque (chki'a, tsét…), les heures fixes d'avant.
 
 **Réglages** : en noussa'h Sfard, Ta'hanoun de fin de Tichri au choix (dit
-après Isrou 'hag par défaut) ; à Jérusalem, l'allumage 40 minutes avant la
+après Isrou 'hag par défaut) ; dans tous les noussa'h, « Pas de Ta'hanoun
+aujourd'hui », qui ne vaut que pour le jour où on l'allume (deuil, brit, 'hatan) ; à Jérusalem, l'allumage 40 minutes avant la
 chki'a est proposé, sans être imposé.
 
 **Le soir** : Arvit et le Chema du coucher relèvent du jour hébreu suivant à
 partir de midi (`jourDeLaPriere`). Midi plutôt que la chki'a, qui demanderait
-un lieu ; aucun Arvit ne se dit le matin. Les bénédictions du repas suivent
-le jour civil : après la chki'a, la règle dépend de l'heure du début du
-repas, et les ajouts restent ouvrables.
+un lieu ; aucun Arvit ne se dit le matin. Les bénédictions du repas et les
+autres textes passent au jour hébreu suivant à la sortie des étoiles du lieu
+(tsét 8,5°) ; sans lieu, ils suivent le jour civil. Min'ha garde le jour
+civil ; les ajouts restent ouvrables à la main.
 
 ### Dans le siddour
 
@@ -150,13 +246,12 @@ eux-mêmes ne sont jamais modifiés.
 - **Ajout hors du jour** : replié en une ligne ; une flèche l'ouvre et le
   referme. Rien n'est retiré.
 - **Variante enchâssée dans un bloc** (« בעשרת ימי תשובה אומרים: המלך
-  הקדוש ») : un repère « Aujourd'hui : … » sous le bloc.
+  הקדוש ») : la variante hors du jour est retirée du bloc, et une ligne repliée
+  la rend d'un geste.
 
-Volontairement non annotés, donc toujours dépliés : Avinou malkénou dans les
-noussa'him Sfard et Ashkenaz (coutumes diverses), le Ta'hanoun du siddour
-ashkénaze (mêlé au Vidouï sans frontière nette), le Chir chel yom. Dans le
-siddour Edot, Avinou malkénou suit la consigne du texte (« בעשרת ימי תשובה
-אומרים »).
+Avinou malkénou (Sfard, Ashkenaz), le Ta'hanoun du siddour ashkénaze et le
+Chir chel yom sont annotés comme le reste. Dans le siddour Edot, Avinou malkénou
+suit la consigne du texte (« בעשרת ימי תשובה אומרים »).
 
 ## Les lieux
 
@@ -165,12 +260,30 @@ siddour Edot, Avinou malkénou suit la consigne du texte (« בעשרת ימי �
   (`tools/villes_construction.py`). Chacune est désignée par son identifiant
   GeoNames ; ses coordonnées et son fuseau sont repris tels quels. Le nom
   hébreu est vérifié contre les noms alternatifs de GeoNames, sauf Lakewood
-  (New Jersey), déclaré dans l'outil. Choisir une ville règle aussi Israël ou
-  diaspora.
+  (New Jersey), déclaré dans l'outil.
 - **La position du téléphone** : sur Android, l'autorisation de localisation
   approximative, demandée seulement à ce moment-là ; sur le web,
-  `navigator.geolocation`. Depuis le 16/10, la région suit la position
-  (contour du territoire, `TerritoireIsrael`) ; le fuseau reste celui du téléphone.
+  `navigator.geolocation`. Le fuseau reste celui du téléphone ; Israël ou
+  diaspora se lit sur le contour du territoire (`TerritoireIsrael`).
+  Eilat et la Arava (Yotvata, Ketoura, Sapir) sont en Israël, avec un seul jour
+  de fête (Kitsour Yalkout Yossef, Chevi'it 1:5 ; Peninei Halakha, Moadim 9:4,
+  note 3) ; certains en doutent, selon l'avis qui place Na'hal Mitsrayim à
+  el-Arich (audit du 16/11). Taba est hors du contour.
+- **Le statut Israël ou diaspora** (réglages, « Région ») décide du Yom tov
+  chéni. Il suit la résidence, pas l'endroit où l'on est (audit du 16/11 ;
+  Choul'han Aroukh 496:3, Michna Beroura 496:13, Kitsour YY 496) : un lieu
+  — ville ou position, choisie ou reprise — ne le réécrit jamais
+  (`TerritoireIsrael.decisionRegion`). Seul le tout premier lieu d'un statut
+  jamais choisi remplace la déduction faite du fuseau. Ensuite, un lieu de
+  l'autre région pose une question sur l'écran Zmanim (« J'habite en
+  Israël » / « Garder mon statut ») ; la réponse, comme le réglage, est un
+  choix (`in_israel_manuel`, sauvegarde comprise). L'émissaire installé à
+  l'étranger ou le ben 'houts laarets qui a un logement en Israël règlent
+  leur statut à la main. Un jour chômé seulement en diaspora, quand le lieu
+  est de l'autre région, une note dit ce qui change pour le voyageur
+  (`JourAffiche.noteYomTovCheni`) ; en Ashkenaz, elle rappelle l'avis du
+  'Hakham Tsvi, que l'application ne suit pas. Cette règle remplace celle du
+  16/10 et du 12/11 (FCALENDRIER-06), où le lieu redéduisait la région.
 
 Le lieu reste sur l'appareil. Choisir une ville revient sur la décision du
 21/09 (« sans ville ni coucher du soleil »), à la demande du propriétaire.
@@ -257,6 +370,16 @@ veille, le jour et le lendemain. La prière du moment est
 `ZmanimWidget.prochaine`, sans règle nouvelle, nourrie des zmanim de la
 route (`VolPriere`).
 
+**Saisie rapide et billet (04/11).** `SaisieVol` lit une phrase (« El Al Lyon →
+TLV demain à 11h », un texte de billet collé) ; `LecteurBillet` (ZXing,
+Apache 2.0, licence dans `assets/licences/`) cherche le code-barres d'une
+carte d'embarquement dans un PDF (quatre pages au plus, une à la fois) ou une
+photo. `CarteEmbarquement` lit le format BCBP : seul le **premier tronçon**
+(aéroports, compagnie, numéro, jour du vol) est retenu, ni le nom ni le numéro
+de réservation. Le code ne porte pas les heures : l'arrivée est estimée d'après
+la distance (820 km/h + 30 min), dite comme telle, à corriger avec le billet.
+Une correspondance se saisit un tronçon à la fois. Tout est lu sur le téléphone.
+
 **Ce que l'écran dit, sans conseil** : la fiabilité (« route prévue », jamais
 une position réelle) ; de combien chaque horaire bouge si le départ a
 30 minutes de retard ; la haute latitude (au-delà de 60°) ; un zman absent
@@ -264,6 +387,24 @@ sur une partie de la route ; un zman qui repasse (l'avion plus rapide que le
 soleil vers l'ouest) ; le passage du méridien de 180°, avec la date locale de
 part et d'autre. La vraie ligne de changement de date s'écarte de ce
 méridien (Kiribati, Samoa…) : seul le méridien est calculé.
+
+**Audit du 16/11.**
+
+- Vol polaire sans tsét (SFO–LHR au Omer) : après une chki'a sans tsét,
+  `VolCalendrier.tsetManque` pose un repère de repli, dit comme un choix de
+  calcul : le Omer et Arvit à la chki'a (Kitsour YY 489:18, MB 489:14), la
+  sortie et l'enchaînement à Rabbénou Tam (72 min), jamais à la chki'a.
+- Cha'harit : le rappel nomme la fin du Chema (Edot : Maguen Avraham,
+  Kitsour YY 89:4 ; les autres : Gra), avec l'autre avis, et l'annonce
+  30 minutes avant (`VolRappels.Type.CHEMA_FIN`). En vol, le profil reste le
+  profil commun : la fin MGA y est en 72 min fixes.
+- Ligne de date : la carte des jalons dit que la ligne halakhique est
+  discutée ('Hazon Ich, Rav Toukatchinsky, Rav Frank) ; pendant le Omer,
+  elle avertit que les deux comptes divergent, avec les avis, sans trancher.
+  L'écran Zmanim le dit aussi à l'est de 125,2° E et à l'ouest de 150° O.
+  Le jour civil en vol reste celui du fuseau nautique (méridien 180°) : le
+  fuseau réel du point n'est pas calculé (non fait, faute de carte des fuseaux
+  hors ligne).
 
 **Ce qui est vérifié, estimé, supposé.**
 
@@ -298,7 +439,7 @@ méridien (Kiribati, Samoa…) : seul le méridien est calculé.
 
 **Le GPS** (au choix, en plus de la route prévue). Au toucher de « position
 réelle », l'application demande la localisation précise et un relevé du GPS
-seul, 90 s au plus ; le GPS marche en mode avion, sans réseau. Un relevé pris
+seul, 2 min 30 au plus sur Android (90 s sur le site) ; le GPS marche en mode avion, sans réseau. Un relevé pris
 entre le décollage et l'atterrissage prévus recale la route : grand cercle du
 départ au relevé, puis du relevé à l'arrivée, chaque tronçon à vitesse
 constante. L'écart affiché devient alors celui d'une arrivée retardée de
@@ -319,7 +460,7 @@ position estimée arrondie au dixième de degré, et interroge OpenSky en
 anonyme, ou avec un client API s'il en a un. Une position de plus de 10 minutes est écartée. La position reçue
 devient un relevé, comme celui du GPS, et la fiabilité le dit. OpenSky ne voit
 les avions que près de ses antennes au sol : au-dessus des océans, souvent
-rien. Conditions d'OpenSky (courriel du 28/10, ticket 837455) : application
+rien. Conditions d'OpenSky (courriel du 28/10) : application
 gratuite sans publicité ni fonction payante = usage non commercial, compte
 gratuit ; données demandées par le relais avec le client OAuth2 du compte, pas
 par chaque téléphone ; une réponse partagée en cache temporaire par zone (relais :
@@ -347,7 +488,7 @@ même en mode avion, aux heures calculées sur la route :
   vol jusqu'à la descente, avis rapporté dans les sources consultées sans
   être unanime (shulchanaruchharav.com, « When traveling on an airplane, when
   is Tefilas Haderech to be recited? » ; OU Torah, « Airplane Travel »).
-  L'application ne tranche pas entre ces cas.
+  L'application ne tranche pas entre ces cas : la notification dit « décollage prévu il y a cinq minutes, Tefilat haDerekh si vous ne l'avez pas déjà dite pour ce voyage ».
 - **Le début de chaque prière dans l'avion**, aux bornes de l'application
   (HorairePriere, ZmanimWidget) : Min'ha à min'ha guedola, Arvit à la sortie
   des étoiles. Cha'harit n'avait pas de début dans l'application : le rappel
@@ -456,8 +597,8 @@ tourne »), widget 2 × 2 `BoussoleWidget`. Vers Har haBayit, 31,7781° N,
   (graduations aux 5°, degrés aux 30°, zone d'or de ±4°, aiguille d'or vers
   Jérusalem, anneau d'or face à elle), avec le pointillé bleu de la carte.
 - **Actualiser ma position** (ex-« Position exacte », 31/10). Le bouton relance
-  la localisation, approximative seulement depuis le 31/10 (`ChoixLieu.maPosition`,
-  web `localiserPosition`) : Google Play réserve la position exacte aux usages
+  la localisation, approximative seulement depuis le 31/10 sur Android
+  (`ChoixLieu.maPosition` ; le web demande la haute précision, `localiserPosition`) : Google Play réserve la position exacte aux usages
   qui l'exigent, ici le seul GPS en vol ; à l'ouverture, la position du
   téléphone se reprend sans bruit si elle est déjà permise.
   La boussole parallèle de `main` (`DirectionTefila`, même calcul) est

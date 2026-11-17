@@ -126,8 +126,8 @@ class MusicFilesTest {
                 "sélection et de laisser le reste dans musique/, que " +
                 "MusicActivity sait déjà ouvrir depuis le téléphone — pas de " +
                 "relever une quatrième fois, et surtout pas de télécharger à " +
-                "la demande : l'application ne déclare aucune permission " +
-                "INTERNET, et c'est une propriété revendiquée.",
+                "la demande : l'édition complète ne déclare INTERNET que pour le " +
+                "vol en ligne, et c'est une propriété revendiquée.",
             mo < 150.0,
         )
     }
@@ -213,12 +213,9 @@ class MusicFilesTest {
             "ianir_kol_bayaar",
             "ianir_mirage",
             "ianir_yohanan_hasandlar",
-            "ianir_zemer_bishvahin",
             "shpayer_afilou",
-            "shpayer_arba_bavot",
             "shpayer_beyond",
             "shpayer_esh_kamanche",
-            "shpayer_eshet_hayil",
             "shpayer_hithadshout",
             "shpayer_kenout",
             "shpayer_ki_hine_kahomer",

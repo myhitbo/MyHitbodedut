@@ -7,10 +7,15 @@
     <string name="status_streak_none">Streak to restart</string>
     <string name="status_streak_first">No streak yet</string>
     <string name="action_done_offline">Done without the phone</string>
+    <string name="start_prepare">No set time, or another way to start</string>
     <string name="offline_which_day">Which day?</string>
     <string name="offline_today">Today</string>
     <string name="offline_yesterday">Yesterday</string>
     <string name="offline_how_long">How long?</string>
+    <string name="offline_how_long_today">Today: how long?</string>
+    <string name="offline_how_long_yesterday">Yesterday: how long?</string>
+    <string name="offline_added_today">Added to today: %1$s.</string>
+    <string name="offline_added_yesterday">Added to yesterday: %1$s.</string>
     <string name="note_discard">Don’t save</string>
     <string name="journal_note_only">Note only</string>
     <string name="status_total">%1$s in total</string>
@@ -18,14 +23,15 @@
     <string name="today_declared">Confirmed without a timer</string>
 
     <string name="section_practice">My practice</string>
-    <string name="section_gate_state">Mode status</string>
+    <string name="section_gate_state">Where “I am with Hashem” stands</string>
     <string name="section_gate">I am with Hashem</string>
-    <string name="section_gate_hint">The apps you choose stay closed until the practice is done.</string>
+    <string name="section_gate_hint">The apps you choose stay closed until the practice is done, and during a hitbodedut in progress.</string>
     <string name="section_rhythm">Rhythm</string>
-    <string name="section_permissions">Required permissions</string>
-    <string name="section_permissions_hint">What the app asks for, and why.</string>
+    <string name="section_permissions">Permissions</string>
+    <string name="section_permissions_hint">None is required. Each serves one specific function, and can be withdrawn at any time in Android settings.</string>
     <string name="section_data">My data</string>
-    <string name="section_data_hint">Everything is stored on this phone only. Export from time to time.</string>
+    <string name="section_data_hint">Your journal and notes stay on this phone. Settings (including the zmanim location) may be included in Android’s backup to your Google account, if it is turned on. Export from time to time.</string>
+    <string name="section_data_hint_web">Everything is kept in this browser, on this device. Export from time to time.</string>
     <!-- Dédicace (04/11) : la demande part à l’équipe, par la messagerie de l’utilisateur. -->
     <string name="section_dedicace">Dedication</string>
     <string name="section_dedicace_hint">To dedicate your hitbodedut or your study, the request goes through the MyHitbodedut team. It is written in your own mail app, addressed to myhitbodedut26@gmail.com: nothing is sent without you.</string>
@@ -43,6 +49,8 @@
     <string name="dedicace_mot">A word for the team (optional)</string>
     <string name="dedicace_ecrire">Write the email</string>
     <string name="dedicace_nom_manque">Enter the name.</string>
+    <string name="dedicace_intention_manque">Please specify the intention.</string>
+    <string name="dedicace_copie">Message copied: paste it into your mail app.</string>
     <string name="dedicace_sans_messagerie">No mail app found: write to myhitbodedut26@gmail.com.</string>
     <string name="dedicace_sujet">Dedication – %1$s</string>
     <string name="dedicace_corps_intro">Hello,</string>
@@ -55,25 +63,29 @@
         <item quantity="other">%1$d apps are blocked until %2$s or until your hitbodedut.</item>
     </plurals>
     <string name="gate_permissions_title">Permissions missing</string>
-    <string name="gate_permissions_detail">Grant display over other apps and usage access, further down.</string>
-    <string name="gate_disabled_title">Mode switched off</string>
-    <string name="gate_disabled_detail">Turn on the “I am with Hashem” switch for the mode to act.</string>
-    <string name="gate_no_apps_title">No app selected</string>
-    <string name="gate_no_apps_detail">The mode has nothing to hold back. Choose at least one app.</string>
+    <string name="gate_permissions_detail">To work, “I am with Hashem” needs two accesses: display over other apps and usage access.</string>
+    <string name="gate_disabled_title">“I am with Hashem” is off</string>
+    <string name="gate_disabled_detail">Turn on the “I am with Hashem” switch for it to act.</string>
+    <string name="gate_no_apps_title">No apps selected</string>
+    <string name="gate_no_apps_detail">It has nothing to hold back. Choose at least one app.</string>
+    <string name="gate_stopped_title">Monitoring stopped</string>
+    <string name="gate_stopped_detail">Everything is set, but the service that watches is not running. Restart it, or reopen the app.</string>
+    <string name="gate_stopped_action">Restart the mode</string>
+    <string name="gate_session_detail">The apps you chose stay blocked until the hitbodedut ends.</string>
     <string name="gate_done_title">Day confirmed</string>
-    <string name="gate_done_detail">Nothing will be held back today. The mode returns tomorrow.</string>
+    <string name="gate_done_detail">Nothing will be held back until the next window, except during a hitbodedut in progress.</string>
     <string name="gate_exempt_title">Rest day</string>
-    <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: the mode is silent and the streak stays intact.</string>
+    <string name="gate_exempt_detail">Shabbat, Yom Tov or a pause: it is silent and the streak stays intact.</string>
     <string name="gate_snoozed_title">Snoozed</string>
-    <string name="gate_snoozed_detail">You asked for a delay. The mode returns when it ends.</string>
+    <string name="gate_snoozed_detail">You asked for a delay. It returns when the delay ends.</string>
+    <string name="settings_window_same">Start and end are the same: the mode would never act.</string>
     <string name="gate_window_title">Outside the window</string>
-    <string name="gate_window_detail">The mode acts between %1$s and %2$s. Outside that, nothing is held back.</string>
+    <string name="gate_window_detail">It acts between %1$s and %2$s. Outside that, nothing is held back.</string>
 
-    <string name="action_start_session">Start a %1$s hitbodedut</string>
+    <string name="action_start_session">Out to the field · %1$s</string>
     <string name="action_another_session">Another hitbodedut</string>
     <string name="action_back_to_session">Back to the hitbodedut in progress</string>
     <string name="action_write_note">Write a note</string>
-    <string name="action_journal">Open the journal</string>
     <string name="action_preview_gate">Preview the “I am with Hashem” screen now</string>
     <string name="action_pick_apps">Choose apps</string>
     <string name="action_grant">Grant</string>
@@ -83,51 +95,60 @@
     <string name="action_later">Later</string>
     <string name="action_back">Back</string>
 
-    <string name="settings_window">Mode hours</string>
+    <string name="settings_window">“I am with Hashem” hours</string>
     <string name="settings_snooze">Snooze length</string>
     <string name="settings_target">Hitbodedut length</string>
     <string name="settings_daily_goal">Daily goal</string>
     <string name="settings_daily_goal_hint">What the day ring measures. Until you set it, it is the hitbodedut length.</string>
     <string name="rings_character_hint">Tap to see your numbers</string>
-    <string name="ring_day">Today</string>
-    <string name="ring_week">Week</string>
-    <string name="ring_streak">Streak</string>
     <string name="ring_day_detail">Today: %1$s of %2$s</string>
     <string name="ring_day_reached">Daily goal reached: %1$s of %2$s</string>
-    <string name="ring_streak_detail">Streak: %1$d of %2$d days</string>
+    <plurals name="ring_streak_detail">
+        <item quantity="one">Streak: %1$d of %2$d days</item>
+        <item quantity="other">Streak: %1$d of %2$d days</item>
+    </plurals>
+    <plurals name="ring_week_detail">
+        <item quantity="one">Week: %1$d of %2$d days</item>
+        <item quantity="other">Week: %1$d of %2$d days</item>
+    </plurals>
     <string name="ring_streak_reached">%2$d-day milestone reached!</string>
-    <string name="rings_description">Rings. Today: %1$s of %2$s. Week: %3$d of %4$d days. Streak: %5$d of %6$d days.</string>
+    <string name="rings_description">Rings. Today: %1$s of %2$s. %3$s. %4$s.</string>
     <string name="settings_shabbat">Shabbat and Yom Tov</string>
     <string name="settings_shabbat_hint">On those days: the mode is silent, no reminder, and the streak stays intact.</string>
+    <string name="settings_shabbat_hint_web">On those days, your streak stays intact.</string>
     <string name="settings_exempt_today">Rest day today</string>
-    <string name="settings_exempt_today_hint">For a Yom Tov, a trip or illness: the day does not count against you.</string>
+    <string name="settings_exempt_today_hint">For a trip, illness or a day you cannot manage: the day does not count against you.</string>
     <string name="settings_screen_missing">This settings screen does not exist on this phone.</string>
+    <string name="lien_impossible">This link can’t be opened: no browser on this phone.</string>
+    <string name="fichiers_absents">No app on this phone can open or save a file.</string>
 
     <string name="permission_overlay">Display over other apps</string>
     <string name="permission_usage">Usage access</string>
     <string name="permission_battery">Unrestricted battery</string>
     <string name="settings_title">Settings</string>
     <string name="action_open">Open</string>
-    <string name="settings_all_granted">All permissions granted.</string>
+    <string name="settings_all_granted">All useful permissions are granted.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_why">Without them the reminder is scheduled and never appears, and the hitbodedut shows nothing once the phone is down.</string>
-    <string name="permission_battery_why">Without it, Android may hold the reminder back for hours to save power.</string>
-    <string name="permission_overlay_why">To show the “I am with Hashem” screen over the app you open in the morning.</string>
+    <string name="session_notifications_pourquoi">To show the time left and tell you when the hitbodedut ends once the phone is down, the app needs notifications.</string>
+    <string name="permission_battery_why">Without it, Android may hold the reminder back for hours. In the list that opens, find MyHitbodedut and choose “Don’t optimize”.</string>
+    <string name="permission_overlay_why">To show the “I am with Hashem” screen over the app you open during the mode hours.</string>
     <string name="permission_usage_why">To know which app has just opened. Nothing is recorded or sent.</string>
     <string name="permission_granted">Granted</string>
-    <string name="permission_missing">Missing</string>
+    <string name="permission_missing">Not granted</string>
+    <string name="permission_optional_off">Optional while the mode is off</string>
 
     <string name="apps_title">Apps to block</string>
     <string name="apps_loading">Loading apps…</string>
     <string name="apps_select_all">Select all</string>
     <string name="apps_clear">Clear all</string>
-    <string name="apps_none_warning">No app selected: nothing will be blocked.</string>
+    <string name="apps_none_warning">No apps selected, so nothing will be blocked.</string>
 
     <string name="blocker_question">Did you do your hitbodedut?</string>
-    <string name="blocker_subtitle">A moment alone before the rest of the day.</string>
+    <string name="blocker_subtitle">A moment alone before everything else.</string>
     <string name="blocker_streak_none">First day of the streak.</string>
     <string name="blocker_start">Start now, %1$s</string>
-    <string name="blocker_already_done">I already did it</string>
+    <string name="blocker_already_done">Done without the phone</string>
     <string name="blocker_snooze">Later (%1$d min)</string>
     <string name="blocker_session_title">Hitbodedut in progress</string>
     <string name="blocker_session_subtitle">%1$s left. The phone can wait.</string>
@@ -144,23 +165,29 @@
     <string name="session_cancel">Discard</string>
     <string name="session_finish_title">Finish the hitbodedut?</string>
     <string name="session_finish_message">The time already elapsed will be recorded and the day confirmed.</string>
+    <string name="session_finish_short">Less than a minute has passed: nothing will be recorded.</string>
     <string name="session_cancel_title">Discard this hitbodedut?</string>
     <string name="session_cancel_message">Nothing will be recorded and the day stays open.</string>
+    <string name="session_cancel_message_done">Nothing will be recorded for this hitbodedut.</string>
+    <string name="journal_humeur_n">Mood %1$d of 5</string>
     <string name="session_running_title">Hitbodedut in progress</string>
     <string name="session_remaining">%1$s left</string>
     <string name="session_open">No set length</string>
-    <string name="session_open_caption">No set length: you stop when you stop.</string>
+    <string name="session_open_caption">No set length: you stop whenever you like.</string>
     <string name="session_elapsed">%1$s so far</string>
     <string name="settings_hide_countdown">Hide the countdown</string>
     <string name="settings_hide_countdown_hint">Nothing on screen during the hitbodedut, a quiet sound at the end.</string>
     <string name="session_hidden_caption">The countdown is hidden. A sound will tell you.</string>
+    <string name="session_hidden_caption_web">The countdown is hidden. At the end the screen changes, and the music stops if it was playing.</string>
     <string name="session_running_hidden">The countdown is hidden.</string>
+    <string name="session_open_hidden_caption">No set length, countdown hidden: you stop whenever you like.</string>
+    <string name="session_running_open_hidden">No set length, countdown hidden.</string>
     <string name="blocker_session_hidden_subtitle">Hitbodedut in progress. The phone can wait.</string>
     <string name="widget_label">MyHitbodedut streak</string>
     <string name="widget_description">The streak so far, and one tap to begin.</string>
     <string name="widget_done">Done today.</string>
     <string name="widget_todo">Not yet today.</string>
-    <string name="widget_rest">Not expected today.</string>
+    <string name="widget_rest">Rest day today.</string>
     <string name="widget_running">Hitbodedut in progress.</string>
     <string name="widget_start">Start</string>
     <string name="widget_resume">Back to the hitbodedut</string>
@@ -168,28 +195,29 @@
     <string name="settings_hitbodedut">Guided hitbodedut</string>
     <string name="settings_hitbodedut_hint">Five movements, so you know what comes next — from Likutei Moharan II, 25 and the Rambam (Hilchot Tefillah 1:2).</string>
     <string name="hitbodedut_step">%1$d / %2$d</string>
-    <string name="hitbodedut_previous">Back</string>
+    <string name="hitbodedut_previous">Previous</string>
     <string name="hitbodedut_next">Next</string>
     <string name="hitbodedut_sihah">Say what is on your heart</string>
     <string name="hitbodedut_sihah_invite">Speak in your own language, as you would to someone. Everything on your heart, unrehearsed.</string>
     <string name="hitbodedut_harata">Regret for the past</string>
-    <string name="hitbodedut_harata_invite">Say what you regret, and say it plainly. Regret before Him is not a trial.</string>
+    <string name="hitbodedut_harata_invite">Say what you regret, and say it plainly. Regret before Him is not putting yourself on trial.</string>
     <string name="hitbodedut_bakasha">Asking</string>
     <string name="hitbodedut_bakasha_invite">Ask for what you lack, and first of all to be brought close to Him. Even for what feels out of your reach.</string>
     <string name="hitbodedut_torah">Turn learning into prayer</string>
     <string name="hitbodedut_torah_invite">Take a teaching you heard today, and ask to reach it yourself.</string>
-    <string name="hitbodedut_hodaa">Thanksgiving</string>
+    <string name="hitbodedut_hodaa">Giving thanks</string>
     <string name="hitbodedut_hodaa_invite">Give thanks for what you have been given, each as far as you are able. This is how you take leave.</string>
     <string name="onboarding_step">%1$d / %2$d</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_back">Back</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_start">Start</string>
-    <string name="onboarding_practice">Simply speaking</string>
+    <string name="onboarding_practice">Just talk</string>
     <string name="onboarding_practice_body">Hitbodedut means withdrawing alone for a while each day and speaking to Hashem in your own language, as you would to someone. No formula to recite, no level to reach.</string>
-    <string name="onboarding_private">Nothing leaves this phone</string>
+    <string name="onboarding_private">Your writing stays here</string>
     <string name="onboarding_private_body">The app only connects to the Internet when you ask it to: live flight tracking asks OpenSky Network for the aircraft in an approximate area, without sending the flight’s callsign; looking up a flight number sends only that number to adsbdb.com. What you write stays on this phone, and only you can take it out, through the export.</string>
-    <string name="blocker_session_open_subtitle">Open hitbodedut, %1$s so far. The phone can wait.</string>
+    <string name="onboarding_private_body_route">The app only connects to the Internet when you ask it to: looking up a flight number sends only that number to adsbdb.com. What you write stays on this phone, and only you can take it out, through the export.</string>
+    <string name="blocker_session_open_subtitle">Hitbodedut with no set length, %1$s so far. The phone can wait.</string>
     <string name="session_done_title">You spoke with Hashem today</string>
     <string name="session_done_text">%1$s of hitbodedut. Tap to leave a note.</string>
 
@@ -212,6 +240,17 @@
     <string name="export_failed">Export failed.</string>
     <string name="import_failed">The file could not be read.</string>
     <string name="import_invalid">This file is not a MyHitbodedut backup.</string>
+    <string name="export_mdp_titre">Protect the backup</string>
+    <string name="export_mdp_message">A password encrypts the file. Without it the backup cannot be read, and there is no way to recover it. Leave empty for a plain file, readable by anyone who opens it.</string>
+    <string name="export_mdp_champ">Password</string>
+    <string name="export_mdp_confirmer">The same one, once more</string>
+    <string name="export_mdp_different">The two passwords differ.</string>
+    <string name="import_mdp_titre">Encrypted backup</string>
+    <string name="import_mdp_faux">Wrong password, or damaged file.</string>
+    <string name="journal_verrou">Lock the journal</string>
+    <string name="journal_verrou_hint">The phone’s code or fingerprint is asked to open the journal.</string>
+    <string name="journal_verrou_titre">Open the journal</string>
+    <string name="journal_verrou_sans_code">Set a screen lock on this phone first.</string>
 
     <plurals name="status_streak">
         <item quantity="one">%d day in a row</item>
@@ -224,8 +263,8 @@
     </plurals>
 
     <plurals name="apps_selected">
-        <item quantity="one">%d app blocked</item>
-        <item quantity="other">%d apps blocked</item>
+        <item quantity="one">%d app selected</item>
+        <item quantity="other">%d apps selected</item>
     </plurals>
 
     <plurals name="import_ok">
@@ -234,8 +273,8 @@
     </plurals>
 
     <plurals name="journal_summary">
-        <item quantity="one">%1$d time hitbodedut, %2$s in total</item>
-        <item quantity="other">%1$d times hitbodedut, %2$s in total</item>
+        <item quantity="one">%1$d day of hitbodedut, %2$s in total</item>
+        <item quantity="other">%1$d days of hitbodedut, %2$s in total</item>
     </plurals>
 
     <!-- Music -->
@@ -266,7 +305,7 @@
     <string name="music_remove">Remove</string>
     <string name="music_off_short">Off</string>
     <string name="music_off_summary">No music during hitbodedut.</string>
-    <string name="music_none_summary">No track in the library.</string>
+    <string name="music_none_summary">No track yet.</string>
     <string name="music_on_summary">%1$s, volume %2$d%%</string>
     <string name="session_music_line">Music: %1$s</string>
     <string name="music_open_library">Open the music library</string>
@@ -275,14 +314,14 @@
     <string name="edition_light">Light edition</string>
     <string name="week_done">done</string>
     <string name="week_todo">to do</string>
-    <string name="gate_permissions_action">Permissions missing, grant them</string>
+    <string name="gate_permissions_action">See the two accesses</string>
     <string name="settings_language">Language</string>
     <string name="settings_region">Region</string>
     <string name="region_israel">Israel</string>
     <string name="region_diaspora">Diaspora</string>
 
     <!-- Tips for Hitbodedut -->
-    <string name="tips_title">Tips for Hitbodedut</string>
+    <string name="tips_title">Tips for hitbodedut</string>
     <string name="tips_hint">Ten pointers, to begin and to keep going.</string>
     <string name="tips_open">Read the tips</string>
     <string name="tip_1_title">Choose a quiet, separate place</string>
@@ -355,10 +394,11 @@
     <string name="tikkun_progress">%1$d of %2$d Tehillim said today</string>
     <string name="tikkun_progress_all">Said in full today.</string>
     <string name="tikkun_flow_done">I have said the whole Tikkun</string>
+    <string name="tikkun_flow_confirm">Mark today’s Tikkun as said in full?</string>
 
     <!-- Rappels de hitbodedout -->
     <string name="reminders_title">Reminders</string>
-    <string name="reminders_hint">One or several times a day. Nothing rings on a rest day, or once the hitbodedut is done.</string>
+    <string name="reminders_hint">One or several times a day. Nothing rings on a rest day, on its eve from candle lighting (from noon if no place is set), or once the hitbodedut is done.</string>
     <string name="reminders_open">Set the reminders</string>
     <string name="reminders_enable">Remind me to do hitbodedut</string>
     <string name="reminders_enable_hint">A reminder at the times you set, as long as today’s hitbodedut is not done.</string>
@@ -368,17 +408,17 @@
     <string name="reminders_remove">Remove</string>
     <string name="reminders_off">Off.</string>
     <string name="reminders_none">No time set.</string>
-    <string name="reminders_permission_missing">Notifications are denied: the reminder will not appear. Tap here to allow them.</string>
+    <string name="reminders_permission_missing">Notifications are blocked, so the reminder will not appear. Tap here to allow them.</string>
     <string name="reminder_action_start">Start</string>
     <string name="reminder_action_later">Later</string>
 
     <plurals name="reminders_count">
-        <item quantity="one">%1$d time set.</item>
-        <item quantity="other">%1$d times set.</item>
+        <item quantity="one">%1$d reminder time set.</item>
+        <item quantity="other">%1$d reminder times set.</item>
     </plurals>
     <plurals name="permissions_missing">
-        <item quantity="one">%1$d permission to grant.</item>
-        <item quantity="other">%1$d permissions to grant.</item>
+        <item quantity="one">%1$d useful permission not granted.</item>
+        <item quantity="other">%1$d useful permissions not granted.</item>
     </plurals>
     <string name="session_theme_title">What do you want to talk about?</string>
     <string name="session_theme_none">Subject: none (optional)</string>
@@ -407,11 +447,11 @@
     </plurals>
     <string name="start_duration">Length</string>
     <string name="start_theme">Subject</string>
-    <string name="start_music">Music</string>
-    <string name="start_focus">With Hashem</string>
-    <string name="start_music_off">none</string>
-    <string name="start_focus_on">on</string>
-    <string name="start_focus_off">off</string>
+    <string name="start_focus">I am with Hashem</string>
+    <string name="start_focus_on">mornings</string>
+    <string name="start_focus_off">no</string>
+    <string name="start_focus_setup">needs setup</string>
+    <string name="start_focus_stopped">stopped</string>
     <string name="settings_name">First name</string>
     <string name="settings_name_hint">So the home screen can greet you. It never leaves the phone.</string>
     <string name="settings_name_empty">Not set</string>
@@ -434,15 +474,17 @@
 
     <!-- Présentation détaillée, bravo de fin de séance, apparence (28/09). -->
     <string name="onboarding_session">Your hitbodedut</string>
-    <string name="onboarding_session_body">Pick a length, or an open hitbodedut, and a subject if you like. A niggun can play along. A word of chizuk opens and closes the hitbodedut, and if the words won’t come, a button is there to help.</string>
+    <string name="onboarding_session_body">Pick a length, or a hitbodedut with no set length, and a subject if you like. A niggun can play along. A word of chizuk opens and closes the hitbodedut, and if the words won’t come, a button is there to help.</string>
     <string name="onboarding_days">Day after day</string>
     <string name="onboarding_days_body">The streak counts your days in a row, and the week shows at a glance. After each hitbodedut, a note can go into your journal. Reminders nudge you at the time you choose.</string>
     <string name="onboarding_texts">Texts to pray with</string>
-    <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, a library and tips for hitbodedut, ready whenever you are.</string>
+    <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, sources on hitbodedut and tips for hitbodedut, ready whenever you are.</string>
     <string name="onboarding_yours">Your way</string>
     <string name="onboarding_yours_body">In Settings: the language (French, English or Hebrew), the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
+    <string name="onboarding_gate">In the morning, before everything else</string>
+    <string name="onboarding_gate_body">Choose the apps that will wait for your hitbodedut: when you open one of them, you will first see “Have you done your hitbodedut?”. This mode is set up in Settings and can be turned off whenever you like.</string>
     <string name="onboarding_adresse">What should we call you?</string>
-    <string name="onboarding_adresse_body">At the end of each hitbodedut, the app congratulates you. Pick the word that fits you; you can change it in Settings.</string>
+    <string name="onboarding_adresse_body">At the end of each hitbodedut, the app congratulates you. Pick the word that fits you: the character and the app icon will follow. You can change it in Settings.</string>
     <string name="onboarding_rappel">Remind me every day</string>
     <string name="onboarding_rappel_heure">at %1$s</string>
     <string name="onboarding_rappel_heure_desc">Reminder time: %1$s</string>
@@ -452,18 +494,30 @@
     <string name="music_remove_message_web">The track is erased from this browser; the original file stays on the device.</string>
     <!-- Pour la version web (16/10) : pas de rappels, et un navigateur plutôt qu’un téléphone sans Internet. -->
     <string name="onboarding_days_body_web">The streak counts your days in a row, and the week shows at a glance. After each hitbodedut, a note can go into your journal.</string>
-    <string name="onboarding_private_body_web">What you write stays in this browser, on this device: nothing is sent anywhere, except a flight’s callsign and an approximate position if you turn on live tracking.</string>
+    <string name="onboarding_private_body_web">What you write stays in this browser, on this device. Nothing is sent, except a flight number to adsbdb.com if you turn on the online services of in-flight zmanim.</string>
+    <string name="onboarding_private_body_web_relais">What you write stays in this browser, on this device. Nothing is sent unless you turn on the online services of in-flight zmanim: a flight number then goes to adsbdb.com and, for live tracking, the flight’s callsign and its estimated position go to the app’s relay, which queries OpenSky Network.</string>
     <!-- Pour la version web (02/11) : les livres (16 Mo) se téléchargent à la première ouverture. -->
     <string name="livres_chargement_web">Loading the books…</string>
     <string name="livres_echec_web">The books could not be loaded. Check your connection, then try again.</string>
     <string name="livres_reessayer_web">Try again</string>
     <!-- Pour la version web (02/11) : la ligne de version des réglages, avec l’empreinte de la construction (version.txt) au lieu du numéro Android. -->
     <string name="app_version_web">Web version %1$s</string>
-    <string name="adresse_tsadik">Tsadik</string>
-    <string name="adresse_tsadeket">Tsadeket</string>
+    <!-- Pour la version web (13/11, audit du 12/11) : la garde des données dans un navigateur (FWEBCODE-01), la liste des villes (FWEBCODE-05), la réinitialisation (FWEBCODE-07). -->
+    <string name="installer_ios_web">On iPhone, install the app: Share → “Add to Home Screen”. Otherwise Safari may erase your journal after seven days without a visit.</string>
+    <string name="import_installe_web">Were you already using MyHitbodedut in Safari? The installed app keeps its data separately: in Safari, export it (Settings → My data), then import the file here.</string>
+    <string name="export_rappel_web">More than thirty days without a backup. Your data is kept only in this browser: export it from “My data”.</string>
+    <string name="stockage_memoire_web">This browser refuses to save anything (private browsing or blocked storage): nothing you do here will be kept.</string>
+    <string name="stockage_echec_web">Could not save: this browser’s storage is full or refused.</string>
+    <string name="stockage_fragile_web">This browser does not guarantee to keep this data: it may erase it on its own, for example when space runs low. Export regularly.</string>
+    <string name="villes_chargement_web">Loading the cities…</string>
+    <string name="villes_echec_web">The list of cities could not be loaded. Check your connection, then try again.</string>
+    <string name="reset_hint_web">Erases what the app keeps in this browser: journal, hitbodedut days, streaks, trophies, settings and added tracks. Export your data first if you want to keep it.</string>
+    <string name="reset_confirm_text_web">The journal, hitbodedut days, streaks, trophies, settings and added tracks will be erased from this browser. This cannot be undone.</string>
+    <string name="adresse_tsadik">Tzaddik</string>
+    <string name="adresse_tsadeket">Tzaddeket</string>
     <string name="adresse_none">Not chosen</string>
-    <string name="celebration_tsadik">Well done, Tsadik!</string>
-    <string name="celebration_tsadeket">Well done, Tsadeket!</string>
+    <string name="celebration_tsadik">Well done, Tzaddik!</string>
+    <string name="celebration_tsadeket">Well done, Tzaddeket!</string>
     <string name="celebration_neutral">Well done!</string>
     <string name="celebration_continue">Continue</string>
     <string name="settings_adresse">Address me as</string>
@@ -529,13 +583,28 @@
     <string name="track_niggoun_31">Niggun 31</string>
     <string name="track_niggoun_32">Niggun 32</string>
     <string name="track_niggoun_33">Niggun 33</string>
+    <string name="track_shpayer_ki_hine_kahomer">Niggun “Ki Hineh KaChomer” — Noam Shpayer</string>
+    <string name="track_ianir_baal_shem_tov">Niggun of the Baal Shem Tov — Ianir</string>
+    <string name="track_ianir_zemer_bishvahin">Zemer Bishvachin (title uncertain) — Ianir</string>
+    <string name="track_ianir_berditchev">Berditchev Niggun — Ianir</string>
+    <string name="track_ianir_kol_bayaar">Kol BaYa’ar (Niggun of the Shpoler Zeide) — Ianir</string>
+    <string name="track_ianir_yohanan_hasandlar">Niggun of Rabbi Yochanan HaSandlar — Ianir</string>
+    <string name="track_ianir_houppa">Chuppah Niggun — Ianir</string>
+    <string name="track_ianir_kabbalat_chabbat">Kabbalat Shabbat Niggun (live) — Ianir</string>
+    <string name="track_ianir_bessarabie">Bessarabian Niggun — Ianir</string>
+    <string name="track_hamelech_basade">HaMelech BaSadeh (המלך בשדה)</string>
+    <string name="track_yanuka_nigoun_3">Niggun of the Yanuka (3)</string>
+    <string name="track_shpayer_eshet_hayil">Eshet Chayil — Or &amp; Noam Shpayer</string>
+    <string name="track_shpayer_afilou">Afilu (Even) — Noam Shpayer</string>
+    <string name="track_shpayer_kenout">Kenut (Sincerity) — Noam Shpayer</string>
+    <string name="track_shpayer_hithadshout">Hitchadshut (Awakening) — Noam Shpayer</string>
 
     <!-- Les durées, dans la langue de l’interface (Store.formatDuration). -->
     <string name="duration_minutes">%1$d min</string>
     <string name="duration_hours">%1$d h</string>
-    <string name="duration_hours_minutes">%1$d h %2$02d min</string>
-    <string name="duration_custom">Custom length…</string>
-    <string name="duration_custom_title">Hitbodedut length, in minutes</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="duration_custom">Other length…</string>
+    <string name="duration_custom_title">Length, in minutes (1 to 240)</string>
     <string name="duration_custom_hint">1 to 240 minutes</string>
     <string name="music_shuffle">Shuffle</string>
     <string name="music_shuffle_hint">A random track, then another; none comes back until all have played.</string>
@@ -599,6 +668,11 @@
     <string name="siddur_maintenant">For this hour</string>
     <string name="lecture_plus">Larger letters</string>
     <string name="lecture_moins">Smaller letters</string>
+    <string name="lecture_defiler">Auto-scroll</string>
+    <string name="lecture_defiler_pause">Stop scrolling</string>
+    <string name="lecture_vitesse">Speed %1$d of 10</string>
+    <string name="lecture_plus_vite">Faster</string>
+    <string name="lecture_moins_vite">Slower</string>
     <string name="siddur_choose">Nusach</string>
     <string name="siddur_signets">Sections</string>
     <string name="siddur_nusah_edot">Sephardi (Edot HaMizrach)</string>
@@ -612,7 +686,7 @@
     <string name="zmanim_choisir_lieu">Choose location</string>
     <string name="zmanim_position">My location</string>
     <string name="zmanim_position_attente">Finding your location…</string>
-    <string name="zmanim_position_refusee">Location unavailable: choose a city.</string>
+    <string name="zmanim_position_refusee">Location unavailable. Choose a city.</string>
     <string name="zmanim_position_pres">My location · near %1$s</string>
     <string name="zmanim_position_ancienne">No fresh location: the last known one is used.</string>
     <string name="zmanim_calendrier">Calendar</string>
@@ -621,15 +695,23 @@
     <string name="boussole_vide_titre">Where are you?</string>
     <string name="boussole_vide_position">Use my location</string>
     <string name="boussole_vide_ville">or choose a city</string>
-    <string name="zmanim_absent">does not occur today</string>
+    <string name="zmanim_absent">does not occur on this day</string>
     <string name="zmanim_erreur">cannot be calculated</string>
     <string name="zmanim_a_valider">Each time shows its method. Calculated at sea level, on the device, offline.</string>
     <string name="zmanim_ajouts_titre">In the prayers</string>
     <string name="zmanim_aucun_ajout">Nothing special</string>
-    <string name="zmanim_omer">Omer: day %1$d</string>
     <string name="zmanim_paracha">Parasha %1$s</string>
     <string name="zmanim_source_villes">Cities: GeoNames (CC-BY 4.0)</string>
     <string name="zmanim_lieu_detail">%1$s · %2$s</string>
+    <string name="zmanim_depuis_tset">Since nightfall: %1$s</string>
+    <string name="region_proposee_israel">This place is in Israel. Your status for Yom Tov Sheni stays “diaspora”: it follows where you live, not where you are (Shulchan Aruch 496:3).</string>
+    <string name="region_proposee_diaspora">This place is outside Israel. Your status for Yom Tov Sheni stays “Israel”: it follows where you live, not where you are (Shulchan Aruch 496:3).</string>
+    <string name="region_proposee_israel_oui">I live in Israel</string>
+    <string name="region_proposee_diaspora_oui">I live outside Israel</string>
+    <string name="region_proposee_garder">Keep my status</string>
+    <string name="note_ytc_ben_israel">Diaspora Yom Tov Sheni: for a resident of Israel it is a weekday. Weekday prayers, tefillin in private, and no melacha in public (Shulchan Aruch 496:3).</string>
+    <string name="note_ytc_ben_houl">Yom Tov Sheni: for a diaspora resident who intends to return, it is still a holiday, even in Israel (Mishna Berura 496:13).</string>
+    <string name="note_ytc_ben_houl_ashkenaz">Yom Tov Sheni: for a diaspora resident who intends to return, it is still a holiday, even in Israel (Mishna Berura 496:13). The Chacham Tzvi holds that one day suffices for a visitor; the app follows the Mishna Berura.</string>
     <string name="calendrier_title">Calendar</string>
     <string name="calendrier_precedent">Previous month</string>
     <string name="calendrier_suivant">Next month</string>
@@ -645,9 +727,13 @@
     <string name="reglage_allumage_valeur">%1$d min before sunset</string>
     <string name="reglage_allumage_jerusalem">%1$d min before sunset · Jerusalem custom</string>
     <string name="reglage_allumage_proposition">In Jerusalem, the custom is to light 40 min before sunset</string>
+    <string name="reglage_allumage_proposition_edot">Yalkut Yosef: in Jerusalem too, candles are lit about 20 min before sunset</string>
     <string name="reglage_tahanoun_tichri">Tachanun at the end of Tishrei</string>
     <string name="reglage_tahanoun_tichri_dit">Said after Isru Chag</string>
     <string name="reglage_tahanoun_tichri_sans">Not said until Rosh Chodesh Cheshvan</string>
+    <string name="reglage_sans_tahanoun_jour">No Tachanun today</string>
+    <string name="reglage_sans_tahanoun_jour_non">Off · for a house of mourning, a brit milah or a chatan, for this day only</string>
+    <string name="reglage_sans_tahanoun_jour_oui">On, today only: Tachanun is folded in the siddur</string>
     <string name="zman_alot">Dawn (Alot hashachar)</string>
     <string name="zman_misheyakir">Misheyakir</string>
     <string name="zman_netz">Sunrise (Netz)</string>
@@ -664,16 +750,27 @@
     <string name="zman_tset_rt">Nightfall, Rabbeinu Tam</string>
     <string name="zman_chatsot_layla">Midnight (Chatzot)</string>
     <string name="zman_allumage">Candle lighting</string>
+    <string name="zman_sortie_gueonim">End of Shabbat or festival, per the Geonim</string>
     <string name="zman_sortie">End of Shabbat or holiday</string>
+    <string name="zman_debut_jeune">Fast begins</string>
+    <string name="zman_fin_jeune">Fast ends</string>
+    <string name="zman_hamets_achila">Last time to eat chametz</string>
+    <string name="zman_hamets_biour">Last time to burn chametz</string>
     <string name="zman_methode_degres">sun %1$s° below the horizon</string>
     <string name="zman_methode_niveau_mer">at sea level</string>
-    <string name="zman_methode_mga_72">day from %1$s min before sunrise to %1$s min after sunset</string>
-    <string name="zman_methode_gra">seasonal hours from sunrise to sunset</string>
+    <string name="zman_methode_mga_72">day from %1$s min before sunrise to %1$s min after sunset (not from dawn at 16.1°)</string>
+    <string name="zman_methode_gra">seasonal hours from sunrise to sunset, per the Gra</string>
     <string name="zman_methode_meridien">solar transit</string>
     <string name="zman_methode_minutes">%1$s min after sunset</string>
-    <string name="zman_methode_milieu_chatsot">midpoint between two middays</string>
+    <string name="zman_methode_milieu_chatsot">midpoint between today’s and tomorrow’s midday</string>
     <string name="zman_methode_avant_chkia">%1$s min before sunset</string>
-    <string name="zman_methode_apres_tset">not before the previous day ends (8.5°)</string>
+    <string name="zman_methode_apres_tset">not before nightfall today (8.5°)</string>
+    <string name="zman_methode_apres_sortie">not before the end of this day, per Yalkut Yosef</string>
+    <string name="zman_methode_zmaniyot_avant_netz">%1$s seasonal minutes before sunrise (Yalkut Yosef)</string>
+    <string name="zman_methode_rabbenou_tam_zmaniyot">Rabbeinu Tam, %1$s zmaniyot minutes after sunset (Yalkut Yosef)</string>
+    <string name="zman_methode_zmaniyot_apres_chkia">%1$s seasonal minutes after sunset (Yalkut Yosef)</string>
+    <string name="zman_methode_mga_72_zmaniyot">day from %1$s seasonal minutes before sunrise to %1$s after sunset (Yalkut Yosef)</string>
+    <string name="zman_methode_plag_yalkut_yosef">1¼ seasonal hours before nightfall, 13.5 seasonal minutes after sunset (Yalkut Yosef)</string>
     <string name="ajout_yaale_veyavo">Yaale veyavo</string>
     <string name="ajout_al_hanissim">Al hanissim</string>
     <string name="ajout_machiv_harouah">Mashiv haruach</string>
@@ -686,9 +783,14 @@
     <string name="ajout_hallel_complet">Full Hallel</string>
     <string name="ajout_tahanoun">Tachanun</string>
     <string name="ajout_sans_tahanoun">No Tachanun</string>
+    <string name="ajout_sans_tahanoun_pessah_cheni">No Tachanun (custom; neither the Shulchan Aruch nor the Mishna Berura mention it, the old Ashkenazi custom said it)</string>
+    <string name="ajout_sans_tahanoun_ponctuel">No Tachanun (today’s setting)</string>
+    <string name="ajout_vidoui_erev_kippour">Mincha: Viduy and « על חטא » after the Amida (in the machzor)</string>
+    <string name="ajout_sans_tahanoun_halikhot_chlomo">No Tachanun (Halichos Shlomo); per the Mishna Berura, it is said</string>
     <string name="ajout_asseret_yemei_techouva">Ten Days of Repentance</string>
     <string name="ajout_jeune">Aneinu</string>
     <string name="ajout_jeune_public">Public fast</string>
+    <string name="ajout_avant_jeune_individuel">Before a personal fast</string>
     <string name="ajout_avinou_malkenou">Avinu Malkeinu</string>
     <string name="ajout_kriat_hatorah">Torah reading</string>
     <string name="ajout_jour_1">Sunday’s psalm</string>
@@ -700,10 +802,14 @@
     <string name="ajout_tsom_guedalia_tevet">Fast of Gedaliah and 10 Tevet</string>
     <string name="ajout_lendemain_kippour">Day after Yom Kippur</string>
     <string name="ajout_esther_pourim">Fast of Esther and Purim</string>
+    <string name="ajout_pourim_triple_festin">Purim feast (Sunday, Jerusalem)</string>
     <string name="ajout_chiva_assar_tamouz">17 Tammuz</string>
     <string name="ajout_ticha_beav">Nachem</string>
+    <string name="ajout_ticha_beav_trois">Nachem, at Arvit, Shacharit and Mincha</string>
+    <string name="ajout_ticha_beav_minha">Nachem, at Mincha only</string>
     <string name="ajout_chabbat">Shabbat</string>
     <string name="ajout_lundi_jeudi">Monday and Thursday</string>
+    <string name="ajout_lundi_jeudi_usage">Monday and Thursday, by custom</string>
     <string name="ajout_motsae_chabbat">Motzaei Shabbat</string>
     <string name="ajout_roch_hodech">Rosh Chodesh</string>
     <string name="ajout_hallel_annonce">Hallel</string>
@@ -716,6 +822,9 @@
     <string name="ajout_hallel_partiel_avec_berakha">Partial Hallel, with a blessing</string>
     <string name="zmanim_omer_ce_soir">Omer tonight: day %1$d</string>
     <string name="ajout_omer">Counting the Omer</string>
+    <string name="ajout_tikoun_rahel">Tikkun Rachel, not on this day</string>
+    <string name="ajout_tikoun_lea">Tikkun Leah, not on the night of Tisha B’Av</string>
+    <string name="ajout_toujours">Note</string>
     <string name="ajout_lamnatseah">Lamenatze’ach</string>
     <string name="ajout_ledavid">Elul to Hoshana Rabbah</string>
     <string name="ajout_techouva_hochaana">Ten Days of Repentance and Hoshana Rabbah</string>
@@ -736,7 +845,54 @@
     <string name="ajout_minyan">With a minyan</string>
     <string name="siddur_toucher_lire">Tap to read</string>
     <string name="ajout_oubli">If forgotten</string>
+    <string name="ajout_ticha_beav_kippour">Tisha B’Av and Yom Kippur</string>
+    <string name="ajout_sauf_ticha_beav_kippour">Except Tisha B’Av and Yom Kippur</string>
+    <string name="ajout_hors_jeune_public">Except public fast days</string>
+    <string name="ajout_voyageur_tal_oumatar">Travelling between Israel and abroad</string>
+    <string name="ajout_sauf_hanouka">Except on Chanukah</string>
+    <string name="ajout_roch_hodech_chol">Rosh Chodesh on a weekday</string>
+    <string name="ajout_hol_hamoed">Chol Hamoed</string>
+    <string name="ajout_hanouka_sans_moussaf">Chanukah without Musaf</string>
+    <string name="ajout_hanouka_hors_roch_hodech">Chanukah (on Rosh Chodesh Teves: after Musaf)</string>
+    <string name="ajout_leil_pessah">Seder night</string>
+    <string name="ajout_hallel_partiel">Partial Hallel</string>
+    <string name="ajout_rappel_moussaf_chabbat_roch_hodech">Musaf of Shabbat Rosh Chodesh: “אתה יצרת”, ending “מקדש השבת וישראל וראשי חדשים” (not in the app: use a printed siddur)</string>
+    <string name="ajout_rappel_moussaf_hol_hamoed">Musaf of the festival (not in the app: use a printed siddur)</string>
+    <string name="ajout_rappel_sans_titkabal">Rosh Chodesh: no “תתקבל” here, it was said after Hallel; half-Kaddish before Musaf</string>
+    <string name="ajout_rappel_demi_kaddich_moussaf_edot">Rosh Chodesh: before Musaf, half-Kaddish (the Kaddish above without “יהא שלמא”), then the tefillin are removed</string>
+    <string name="ajout_rappel_demi_kaddich_moussaf">Rosh Chodesh: half-Kaddish before Musaf (up to “דאמירן בעלמא”); the full Kaddish below is said after Musaf</string>
+    <string name="ajout_rappel_hallel_leil_pessah_edot">Seder night: full Hallel, with its blessing, after the Amidah (on Shabbat, after “ויכולו”); the Yom Tov Amidah is not in the app</string>
+    <string name="ajout_rappel_hallel_leil_pessah_sefard">Seder night: widespread custom of full Hallel with its blessing after the Amidah (the Shulchan Aruch HaRav omits it)</string>
+    <string name="ajout_rappel_berakha_hallel_sefard">With a minyan, each person says the blessing quietly (Shulchan Aruch HaRav 619:8); per the Siddur Admur, the chazan blesses for all</string>
+    <string name="ajout_rappel_psaume_hanouka_apres_moussaf">Rosh Chodesh Teves: the Chanukah psalm (“מזמור שיר חנכת הבית”) is said here; it is in Shacharis, Shir shel yom</string>
+    <string name="siddur_note">App note</string>
+    <string name="ajout_havdala_coupe">Havdalah over the cup (not on Saturday night of Tisha B’Av)</string>
+    <string name="ajout_havdala_ner">Blessing over the flame (Motzaei Shabbat and Yom Kippur)</string>
+    <string name="ajout_havdala_bessamim">Spices (Motzaei Shabbat, except the night of Tisha B’Av)</string>
+    <string name="ajout_lendemain_ticha_beav_dimanche">End of Tisha B’Av on a Sunday</string>
+    <string name="ajout_lendemain_ajouts">Meal begun the day before</string>
+    <string name="ajout_bein_hametsarim">The Three Weeks</string>
     <string name="ajout_chol">Weekdays</string>
+    <string name="ajout_autres_jours">Other days</string>
+    <string name="ajout_pourim_triple_vendredi">Friday 14 Adar in Jerusalem (triple Purim)</string>
+    <string name="ajout_nuit">At night</string>
+    <string name="ajout_nuit_megila">At night only, not at the morning reading</string>
+    <string name="ajout_mizmor_letoda">Mizmor Letodah</string>
+    <string name="ajout_sauf_mizmor_letoda">Not on Shabbat, festivals, Pesach, or the eves of Pesach and Yom Kippur</string>
+    <string name="ajout_vihi_noam">Vihi Noam (Motzaei Shabbat)</string>
+    <string name="ajout_veata_kadoch">Ve’atah Kadosh (Motzaei Shabbat, Tisha B’Av night)</string>
+    <string name="ajout_tefilin">Tefillin</string>
+    <string name="ajout_sauf_tefilin">Tefillin: not on Shabbat or festivals; Chol HaMoed and Tisha B’Av by custom</string>
+    <string name="ajout_tefilin_sans_berakha">Chol HaMoed: tefillin without a blessing</string>
+    <string name="ajout_sauf_ticha_beav_matin">Not on Tisha B’Av morning (at Minchah)</string>
+    <string name="ajout_sauf_ticha_beav">Except Tisha B’Av</string>
+    <string name="ajout_chaasa_li_yalkut">Tisha B’Av and Yom Kippur: Yalkut Yosef says to recite it (46:12)</string>
+    <string name="ajout_vidui_coucher">Viduy: not on Shabbat, days without Tachanun, after Shabbat or a festival, or the day after Rosh Chodesh</string>
+    <string name="ajout_leil_haseder">Seder night</string>
+    <string name="ajout_sauf_leil_haseder">Not on Seder night (only the Shema and Hamapil)</string>
+    <string name="ajout_chome">Shabbat and Yom Tov</string>
+    <string name="ajout_sauf_chabbat_yom_tov">Not on Shabbat or Yom Tov</string>
+    <string name="siddur_semaine_chabbat">Weekday siddur: the Shabbat and Yom Tov text is not included.</string>
     <string name="siddur_aujourdhui">Today</string>
     <string name="siddur_pas_aujourdhui">Not today · tap to read</string>
     <string name="siddur_replier">Collapse</string>
@@ -788,16 +944,12 @@
     <string name="halakha_yomit_titre">Halacha Yomit</string>
     <string name="halakha_yomit_lien">Today’s halacha on halachayomit.co.il</string>
     <!-- Les paliers d'objectifs (11/10) -->
-    <string name="paliers_title">My milestones</string>
-    <string name="paliers_sous_titre">Each milestone leads to the next</string>
     <string name="palier_serie">Days in a row</string>
     <string name="palier_jour">Today</string>
     <string name="palier_semaine">This week</string>
     <string name="palier_mois">This month · %1$s</string>
     <string name="palier_cumul">Total time</string>
     <string name="palier_jours">Days of practice</string>
-    <string name="palier_prochain">Next milestone: %1$s · %2$s to go</string>
-    <string name="palier_atteints">Milestones reached: %1$d</string>
     <string name="palier_nouveau">Milestone reached: %1$s — %2$s!</string>
     <string name="palier_une_serie">%1$s more for %2$s in a row</string>
     <string name="palier_une_jour">%1$s more for %2$s today</string>
@@ -819,6 +971,7 @@
     <string name="hilloula_annee">Passed away: %1$s</string>
     <string name="hilloulot_aucune">No hillula on this day</string>
     <string name="hilloulot_resultats">Results: %1$d</string>
+    <string name="resultats_coupes">Results: %2$d (showing the first %1$d)</string>
     <string name="hilloula_source_wiki">Wikipedia (CC BY-SA)</string>
     <string name="hilloula_source_hyomi">HaChacham HaYomi</string>
     <string name="hilloula_source_mytzadik">MyTzadik</string>
@@ -833,8 +986,8 @@
         <item quantity="one">%1$d tzaddik on this day</item>
         <item quantity="other">%1$d tzaddikim on this day</item>
     </plurals>
-    <string name="hilloulot_afficher_detail">On the day card, on the home screen</string>
-    <string name="hilloulot_toucher">Tap a name to read the biography.</string>
+    <string name="hilloulot_afficher_detail">Below the times, on the Zmanim screen</string>
+    <string name="hilloulot_toucher">Tap a name to read the biography (in Hebrew).</string>
     <string name="hilloulot_ouvrir_jour">See this day ›</string>
     <!-- La halakha du jour hors ligne : le Ben Ish 'Haï (11/10) -->
     <string name="halakha_title">Halacha of the day</string>
@@ -842,29 +995,32 @@
     <string name="halakha_recherche">Search the halacha</string>
     <string name="halakha_aucune">No halacha for this day</string>
     <string name="halakha_tout">The whole halacha of the day ›</string>
-    <string name="halakha_livre">Yalkut Yosef, Kitzur Shulchan Aruch</string>
+    <string name="halakha_livre">Yalkut Yosef, Kitzur Shulchan Aruch (Sephardic custom)</string>
     <string name="halakha_note">Original Hebrew text, verbatim.</string>
     <!-- Les trophées et la fête (11/10) -->
     <string name="celebration_titre">Mazal tov!</string>
     <string name="trophees_paliers_titre">Trophies and milestones</string>
-    <string name="trophees_titre">Trophies</string>
-    <string name="grade_titre">%1$s grade</string>
-    <string name="grade_sous">%1$d trophies earned · %2$d more for %3$s</string>
-    <string name="grade_sous_max">%1$d trophies earned</string>
-    <string name="grade_atteint">%1$s grade reached</string>
+    <string name="grade_titre">%1$s rank</string>
+    <plurals name="grade_sous">
+        <item quantity="one">%1$d trophy earned · %2$d more for %3$s</item>
+        <item quantity="other">%1$d trophies earned · %2$d more for %3$s</item>
+    </plurals>
+    <plurals name="grade_sous_max">
+        <item quantity="one">%1$d trophy earned</item>
+        <item quantity="other">%1$d trophies earned</item>
+    </plurals>
+    <string name="grade_atteint">%1$s rank reached</string>
     <string name="grade_au">at trophy %1$d</string>
     <string name="trophee_gagne">Earned ✓</string>
     <string name="trophees_ici">YOU ARE HERE · NEXT GOAL</string>
     <string name="trophee_encore">%1$d / %2$d · %3$d to go</string>
-    <string name="trophees_autres">… and %1$d more trophies further on</string>
-    <string name="grade_nouveau">New grade: %1$s</string>
-    <string name="grade_prochain">Next grade: %1$s, at trophy %2$d.</string>
-    <string name="trophees_prochain">Next trophy</string>
-    <string name="trophees_gagnes">Earned · %1$d</string>
-    <string name="trophees_a_venir">Coming up · %1$d</string>
-    <string name="trophees_aucun_gagne">No trophy yet: the first comes with your first hitbodedut.</string>
+    <plurals name="trophees_autres">
+        <item quantity="one">… and %1$d more trophy further on</item>
+        <item quantity="other">… and %1$d more trophies further on</item>
+    </plurals>
+    <string name="grade_nouveau">New rank: %1$s</string>
+    <string name="grade_prochain">Next rank: %1$s, at trophy %2$d.</string>
     <string name="trophees_tous">Every trophy is earned!</string>
-    <string name="trophees_compte">%1$d of %2$d</string>
     <string name="trophees_paliers">🏆  Trophies</string>
     <string name="channel_celebration">Milestones and trophies</string>
     <string name="channel_celebration_description">A celebration when a milestone or trophy is reached</string>
@@ -885,7 +1041,7 @@
         <item quantity="other">%1$d minutes</item>
     </plurals>
     <!-- Web : le partage sans feuille de partage du navigateur, par le presse-papiers. -->
-    <string name="partage_copie">Text copied: paste it wherever you like.</string>
+    <string name="partage_copie">Text copied. Paste it wherever you like.</string>
     <string name="trophee_progres">%1$d / %2$d</string>
     <!-- Les trophées à niveaux (12/10). -->
     <string name="trophee_premier_pas">First step</string>
@@ -899,7 +1055,7 @@
     <string name="trophee_plume">The pen</string>
     <plurals name="trophee_premier_pas_desc">
         <item quantity="one">A first hitbodedut</item>
-        <item quantity="other">First %1$d times hitbodedut</item>
+        <item quantity="other">First %1$d days of hitbodedut</item>
     </plurals>
     <plurals name="trophee_seance_longue_desc">
         <item quantity="one">%1$d minute in one day</item>
@@ -926,7 +1082,7 @@
         <item quantity="other">%1$d Fridays of hitbodedut</item>
     </plurals>
     <plurals name="trophee_retour_desc">
-        <item quantity="one">Coming back %1$d time after a week’s break</item>
+        <item quantity="one">Coming back once after a week’s break</item>
         <item quantity="other">Coming back %1$d times after a week’s break</item>
     </plurals>
     <plurals name="trophee_plume_desc">
@@ -948,20 +1104,14 @@
     <string name="metal_argent">Silver</string>
     <string name="metal_or">Gold</string>
     <string name="metal_platine">Platinum</string>
-    <string name="trophee_niveau">Level %1$d of %2$d · %3$s</string>
     <string name="trophee_niveau_court">Level %1$d of %2$d</string>
-    <string name="trophees_explication">Each trophy climbs level by level, from bronze to silver, gold and platinum. Under each one: your level, what the next one asks, and how far you are.</string>
-    <string name="trophee_a_venir">To win</string>
-    <string name="trophee_niveau_gagne">“%1$s” trophy: level %2$d, %3$s!</string>
-    <string name="trophee_prochain">Next level: %1$s</string>
-    <string name="trophee_sommet">Highest level reached</string>
-    <string name="trophee_vedette">Your finest trophy</string>
-    <string name="trophee_vedette_aucune">Your first trophy is waiting</string>
-    <string name="chabbat_alerte_titre">Shabbat in 3 hours, get ready to enjoy!</string>
-    <string name="chabbat_alerte_texte">Double neshama, double joy and double meals! Try a double hitbodedut.</string>
+    <string name="trophee_niveau_gagne">“%1$s” trophy: level %2$d!</string>
+    <string name="chabbat_alerte_titre">Shabbat in 3 hours: get ready to enjoy it!</string>
+    <string name="chabbat_alerte_texte">A little time for hitbodedut before Shabbat. Shabbat shalom!</string>
     <!-- L’onglet Bibliothèque : les livres entiers (13/10) -->
     <string name="livres_title">Books</string>
     <string name="livres_hint">Likutei Moharan, Hishtapchut HaNefesh, Kochvei Or, megillot, Perek Shira, Nishmat…</string>
+    <string name="livres_pied">Yalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef. Text: Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5). Partial, unreviewed machine French and English translations, under the same licence.\nThe other French and English translations are machine-made and unreviewed: the Hebrew prevails.</string>
     <!-- La halakha du jour : le Yalkut Yosef, puis le Ben Ish 'Haï (13/10) -->
     <string name="halakha_ben_ish_hai">Ben Ish Chai, weekly portion</string>
     <string name="halakha_yalkut_source">Yalkut Yosef – Kitzur Shulchan Aruch, Rav Yitzchak Yosef (Torat Emet text, CC BY-NC-SA 2.5): a selection, not the whole book.</string>
@@ -998,7 +1148,7 @@
     <string name="levana_decroissante">waning</string>
     <string name="levana_motsae">Best: Motzaei Shabbat %s (Shulchan Aruch 426:2 and Rema)</string>
     <string name="levana_kippour">Not before Yom Kippur ends (Rema 426:2)</string>
-    <string name="levana_tisha">Not before Tisha B’Av ends (Rema 426:2; Mishnah Berurah 426:11)</string>
+    <string name="levana_tisha">Once the fast is over, preferably after tasting something (Mishnah Berurah 426:11; Yalkut Yosef 426:35); the Rema does not say it on Motzaei Tisha B’Av (426:2)</string>
     <string name="levana_usage_titre">Birkat HaLevana: custom</string>
     <string name="levana_usage_auto">By nusach</string>
     <string name="levana_usage_trois_mi_mois">From 3 days, until mid-month (Mishnah Berurah, Rema)</string>
@@ -1010,18 +1160,34 @@
     <string name="levana_rappel_dernier">Birkat HaLevana: final night</string>
     <string name="levana_rappel_texte">Tap to open the text.</string>
     <string name="levana_rappel_reglage">Birkat HaLevana reminder</string>
+    <string name="chabbat_alerte_reglage">“Shabbat in 3 hours” alert</string>
     <string name="levana_lire">Read Birkat HaLevana ›</string>
+    <string name="levana_usage_sept_nuit_quinze">From 7 days, through the night of the 15th (Yalkut Yosef)</string>
+    <string name="levana_pas_chabbat">Not tonight (Shabbat)</string>
+    <string name="levana_pas_yom_tov">Not tonight (Yom Tov)</string>
+    <string name="levana_pas_chome_source">Ideally not on Shabbat or Yom Tov night, unless the time is running out (Mishnah Berurah 426:12; Yalkut Yosef 426:33)</string>
+    <string name="levana_kippour_edot">Our custom: right after Yom Kippur (Yalkut Yosef 426:34)</string>
+    <string name="levana_jeune">Tonight the fast ends: say it after tasting something (Mishnah Berurah 426:11)</string>
+    <string name="levana_jeune_ashkenaz">Tonight the fast ends: the Rema waits for another night (426:2); the Acharonim say it after tasting something (Mishnah Berurah 426:11)</string>
+    <string name="repere_selihot">Selichot (text: a printed siddur or the synagogue’s)</string>
+    <string name="repere_chofar">Shofar after Shacharit (Rema 581:1)</string>
+    <string name="repere_pas_de_chofar">No shofar on Erev Rosh Hashanah (Rema 581:3)</string>
+    <string name="repere_behab">BeHaB (custom): Selichot as the synagogue does; Aneinu for those fasting; the chazzan’s Aneinu and Vayechal at Mincha only with ten people fasting (Rema 492:1; Mishnah Berurah 566:10)</string>
+    <string name="repere_behab_mi_cheberakh">This Shabbat: Mi Sheberach for those who will fast BeHaB (Mishnah Berurah 492:3)</string>
+    <string name="repere_yom_kippour_katan">Yom Kippur Katan at Mincha, for those with the custom (Mishnah Berurah 417:4; Yalkut Yosef 417:5)</string>
+    <string name="repere_erouv_tavchilin">Eruv Tavshilin today (Shulchan Aruch OC 527:1): the text is in the siddur</string>
+    <string name="music_rappel_omer">Omer period: we avoid listening to songs with instruments, even recorded, except for the joy of a mitzvah (Yalkut Yosef 493:8).</string>
+    <string name="music_rappel_bein_hametsarim">The Three Weeks: we avoid listening to songs with instruments, even recorded, except for the joy of a mitzvah (Yalkut Yosef 551:6; Mishnah Berurah 551:16).</string>
     <string name="widget_zmanim_label">MyHitbodedut Zmanim</string>
-    <string name="widget_zmanim_description">The Hebrew date, the prayer of the moment, sunset and the streak.</string>
+    <string name="widget_zmanim_description">The Hebrew date, the prayer of the moment, the next three zmanim and the streak.</string>
     <string name="widget_zmanim_chaharit">Shacharit</string>
     <string name="widget_zmanim_minha">Mincha</string>
     <string name="widget_zmanim_arvit">Arvit</string>
-    <string name="widget_zmanim_jusqua">%1$s until %2$s</string>
-    <string name="widget_zmanim_chkia">Sunset %s</string>
     <string name="settings_ne_pas_deranger">Do not disturb during hitbodedut</string>
     <string name="settings_ne_pas_deranger_hint">The phone switches to priority mode for the hitbodedut, then returns to how it was. Android asks for permission the first time.</string>
     <string name="recherche_titre">Search</string>
     <string name="recherche_indice">Search the siddur, books, halacha, hillulot</string>
+    <string name="recherche_aucun_web">No results. Texts are searched in Hebrew; in English, only titles and hillulot are searched.</string>
     <string name="recherche_tout">All</string>
     <string name="recherche_tefilot">Prayers</string>
     <string name="recherche_halakhot">Halachot</string>
@@ -1035,11 +1201,16 @@
     <string name="marques_aucun">No bookmark in this text. Long-press a paragraph to add one; long-press again to remove it.</string>
     <string name="marque_posee">Bookmark added</string>
     <string name="marque_retiree">Bookmark removed</string>
+    <string name="marque_action_poser">Add a bookmark</string>
+    <string name="marque_action_retirer">Remove the bookmark</string>
+    <string name="marque_etat">Bookmarked</string>
     <string name="fond_contraste">High contrast</string>
     <string name="settings_grand_texte">Large reading text</string>
+    <string name="settings_ecran_allume">Keep the screen on while reading</string>
     <string name="journal_humeur_avant">Before the hitbodedut</string>
     <string name="journal_humeur_apres">After</string>
     <string name="journal_gratitude">Gratitude</string>
+    <string name="journal_ligne">%1$s: %2$s</string>
     <string name="journal_gratitude_hint">One thing I am thankful for today</string>
     <string name="journal_graphique">Minutes each day, %s</string>
     <string name="partage_jour">Share this day</string>
@@ -1049,14 +1220,19 @@
     </plurals>
     <!-- Les trophées, lot du 16/10 : détail, date, proches, filtre, accueil, partage, bilan, rappel. -->
     <string name="trophee_gagne_le">Earned on %1$s</string>
-    <string name="trophee_a_gagner">To earn · %1$d / %2$d</string>
-    <string name="trophee_detail_grade">In %1$s: it was your trophy no. %2$d.</string>
+    <plurals name="trophee_detail_grade">
+        <item quantity="one">In %1$s: it was your first trophy.</item>
+        <item quantity="other">In %1$s: it was your trophy no. %2$d.</item>
+    </plurals>
     <string name="trophees_proches_titre">Closest</string>
     <string name="trophees_filtre_tous">All</string>
     <string name="trophees_filtre">Show trophies: %1$s</string>
     <string name="accueil_prochain_trophee">Next trophy: %1$s · %2$d to go</string>
-    <string name="grade_partager">Share my grade</string>
-    <string name="grade_partage_texte">%1$s grade on MyHitbodedut: %2$d trophies, day after day.</string>
+    <string name="grade_partager">Share my rank</string>
+    <plurals name="grade_partage_texte">
+        <item quantity="one">%1$s rank on MyHitbodedut: %2$d trophy, day after day.</item>
+        <item quantity="other">%1$s rank on MyHitbodedut: %2$d trophies, day after day.</item>
+    </plurals>
     <string name="bilan_titre">Your week</string>
     <string name="bilan_minutes">%1$s of hitbodedut, over %2$s.</string>
     <string name="bilan_plus">%1$s more than the week before.</string>
@@ -1070,6 +1246,12 @@
     <string name="jour_fait">%1$s recorded on this day.</string>
     <string name="jour_montrer_duree">Show the duration</string>
     <string name="jour_ajoute">%1$s added.</string>
+    <string name="jour_modifier">Edit this day…</string>
+    <string name="jour_corriger_duree">Correct the duration</string>
+    <string name="jour_retirer">Remove this day</string>
+    <string name="jour_retirer_confirmation">Remove this day (%1$s recorded)? Its note stays.</string>
+    <string name="jour_retire">Day removed.</string>
+    <string name="jour_corrige">Duration corrected: %1$s.</string>
     <!-- Les rappels de tefila (16/10) : un changement dans la prière, annoncé quelques jours avant. -->
     <string name="rappel_pluie_debut_titre">Winter blessing in the Amida</string>
     <string name="rappel_pluie_debut_edot">%1$s, in the Arvit Amida, we begin to say the winter blessing “בָּרֵךְ עָלֵינוּ”.</string>
@@ -1080,6 +1262,7 @@
     <string name="rappel_guechem_titre">“מַשִּׁיב הָרוּחַ” in the Amida</string>
     <string name="rappel_guechem_debut">%1$s, at Musaf of Shemini Atzeret, we begin to say “מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
     <string name="rappel_guechem_fin">%1$s, at Musaf of the first day of Pesach, we stop saying “מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם”.</string>
+    <string name="rappel_guechem_fin_ashkenaz">%1$s, at Musaf of the first day of Pesach, the chazan stops saying “מַשִּׁיב הָרוּחַ וּמוֹרִיד הַגֶּשֶׁם” in his repetition; the congregation still says it in the Musaf Amida and stops at Mincha (Rema and Mishnah Berurah 114:3).</string>
     <string name="rappel_dix_jours_titre">Ten Days of Repentance</string>
     <string name="rappel_dix_jours">%1$s the Ten Days of Repentance begin: “הַמֶּלֶךְ הַקָּדוֹשׁ”, “הַמֶּלֶךְ הַמִּשְׁפָּט” and the additions to the Amida (“זָכְרֵנוּ”…).</string>
     <string name="rappel_omer_titre">Counting the Omer</string>
@@ -1106,7 +1289,7 @@
     <string name="chizuk_garder">Save</string>
     <string name="chizuk_garde">Saved ✓</string>
     <string name="chizuk_partager">Share</string>
-    <string name="chizuk_commencer">Start a hitbodedut</string>
+    <string name="chizuk_commencer">Prepare a hitbodedut</string>
     <string name="chizuk_favoris">Saved texts</string>
     <string name="source_du_jour">Source of the day</string>
     <string name="source_du_jour_commencer">Start</string>
@@ -1120,15 +1303,10 @@
     <string name="parcours_meilleure">Best streak</string>
     <string name="parcours_jours_faits">Days of hitbodedut</string>
     <string name="parcours_total">Total time</string>
-    <string name="parcours_moyenne">On average, per day</string>
     <string name="parcours_mois">This month</string>
     <string name="parcours_sujets">Your most frequent subjects</string>
     <string name="parcours_sujets_vide">Choose a subject when you start a hitbodedut: the most frequent will appear here.</string>
     <string name="parcours_humeur">Mood</string>
-    <plurals name="parcours_jours">
-        <item quantity="one">%d day</item>
-        <item quantity="other">%d days</item>
-    </plurals>
     <plurals name="parcours_fois">
         <item quantity="one">%d time</item>
         <item quantity="other">%d times</item>
@@ -1174,6 +1352,7 @@
     <string name="widget_paracha">Parasha %s</string>
     <string name="widget_jusqua">until %s</string>
     <string name="widget_reste">%s left</string>
+    <string name="widget_des">from %s</string>
     <string name="widget_zmanim_petit_label">Zmanim · small</string>
     <string name="widget_zmanim_petit_description">The prayer of the moment and when it closes.</string>
     <string name="widget_zmanim_grand_label">Zmanim · full day</string>
@@ -1184,23 +1363,26 @@
     <string name="vol_carte_sous">Enter a flight: times are computed along the planned route, on the device.</string>
     <string name="vol_carte_vol">%1$s · %2$s → %3$s</string>
     <string name="vol_numero">Flight number (optional)</string>
-    <string name="vol_duree_heures">%1$s h</string>
+    <plurals name="vol_duree_heures">
+        <item quantity="one">%1$s h</item>
+        <item quantity="other">%1$s h</item>
+    </plurals>
     <string name="vol_duree_heures_minutes">%1$s h %2$s min</string>
     <string name="vol_duree_une_minute">1 minute</string>
     <string name="vol_duree_minutes">%1$s minutes</string>
     <string name="vol_sources">Method and sources</string>
+    <string name="vol_methodes">Methods: dawn 16.1°, Misheyakir 11.5°, nightfall 8.5° below the horizon; Rabbeinu Tam 72 min; seasonal hours from sunrise to sunset (Gra) or from 72 min before to 72 min after (Magen Avraham). Calculated at sea level, on the device, offline.</string>
     <string name="vol_frise_decollage">Take-off %1$s</string>
     <string name="vol_frise_atterrissage">Landing %1$s</string>
     <string name="vol_frise_maintenant">Now</string>
-    <string name="vol_frise_retard">If the flight is delayed, the times will change accordingly.</string>
+    <string name="vol_frise_retard">Calculated for the times entered. With a 30-min late departure, most of these times move by about %1$s min; the screen does not adjust by itself: edit the takeoff time.</string>
+    <string name="vol_frise_retard_gps">Calculated for the times entered. With a 30-min late arrival, most of these times move by about %1$s min; the screen does not adjust by itself: edit the landing time, then take a new position reading.</string>
     <string name="vol_fiabilite_court">📍 Estimate along the planned route</string>
     <string name="vol_comment_calcule">How is it calculated?</string>
     <string name="vol_preciser_titre">Refine the position</string>
-    <string name="vol_route_aide">The 🔍 fills in the arrival: only the number is sent to adsbdb.com. Enter the times from your ticket.</string>
     <string name="vol_modifier">Edit</string>
     <string name="vol_route_bouton">Find the arrival from the number</string>
     <string name="vol_route_attente">Looking up the flight…</string>
-    <string name="vol_route_explication">When tapped, only the flight number is sent to adsbdb.com (free, no account). It returns the known stops and the radio callsign, not the times: enter those from your ticket.</string>
     <string name="vol_route_trouvee">%1$s: %2$s. Departure %3$s, arrival %4$s. Route known to adsbdb.com, sometimes outdated: check it against your ticket.</string>
     <string name="vol_route_autre_depart">According to adsbdb.com, %1$s flies %2$s and does not depart from %3$s. Check the number or the departure airport; the known route may be outdated.</string>
     <string name="vol_route_inconnue">Airport %1$s, given by adsbdb.com, is not in the app’s list: choose it by hand.</string>
@@ -1224,10 +1406,13 @@
     <string name="vol_invalide_arrivee_avant_depart">Arrival must come after departure: check the dates, in each airport’s local time.</string>
     <string name="vol_invalide_trop_long">More than 22 hours of flight: check the arrival date.</string>
     <string name="vol_invalide_fuseau_inconnu">This device does not know this airport’s time zone.</string>
+    <string name="vol_invraisemblable">The duration does not match the distance (%1$s km in %2$s): check the dates and AM/PM, in each airport’s local time. Tap “Calculate” again if the flight is correct.</string>
     <string name="vol_priere_titre">Current prayer</string>
     <string name="vol_jusqua">until %1$s</string>
     <string name="vol_sans_limite">until dawn, no limit shown</string>
     <string name="vol_dans">%1$s left</string>
+    <string name="vol_prochaine">Next prayer: %1$s</string>
+    <string name="vol_des">from %1$s</string>
     <string name="vol_hors_fenetre">The calculation covers the flight and the 6 hours either side.</string>
     <string name="vol_en_vol_titre">During the flight</string>
     <string name="vol_aucun_zman">No zman during this flight.</string>
@@ -1237,10 +1422,10 @@
     <string name="vol_lon_est">%1$s° E</string>
     <string name="vol_lon_ouest">%1$s° W</string>
     <string name="vol_ecart">%1$s min if departure is 30 min late</string>
-    <string name="vol_fiabilite_titre">Reliability</string>
-    <string name="vol_fiabilite">Estimate along the planned route (great circle, constant speed between the times entered), not the aircraft’s real position. Zmanim of the point below the aircraft, at sea level, computed on the device, without network.</string>
+    <string name="vol_fiabilite">Estimate along the planned route (great circle, constant speed between the times entered), not the aircraft’s real position. Zmanim of the point below the aircraft, at sea level, computed on the device, without network: seen from the aircraft, around 11,000 m, the sun rises earlier and sets later, by a quarter of an hour or more at mid-latitudes. Seasonal hours follow the day at that point, not the day as lived on board.</string>
     <string name="vol_reserve_haute_latitude">The route goes beyond 60° latitude: the degree-based and minute-based methods give very different times there, and some zmanim are missing.</string>
-    <string name="vol_reserve_absent">Some zmanim do not occur on part of the route (midnight sun or polar night).</string>
+    <string name="vol_reserve_absent">Some zmanim do not occur on part of the route: beyond about 50° of latitude in summer, the sun does not go low enough for dawn (16.1°) or nightfall (8.5°); closer to the poles, midnight sun or polar night.</string>
+    <string name="vol_reserve_absents">Missing on part of the route: %1$s.</string>
     <string name="vol_reserve_erreur">The calculation failed at a point on the route.</string>
     <string name="vol_reserve_a_rebours">The aircraft flies west faster than the sun: a zman occurs more than once.</string>
     <string name="vol_ligne_date">Date line (180th meridian) crossed around %1$s: the local date changes from %2$s to %3$s.</string>
@@ -1255,6 +1440,9 @@
     <string name="vol_jalons_note">Civil day of the point below the aircraft; %1$s, from the app setting.</string>
     <string name="vol_jalons_israel">Israel calendar</string>
     <string name="vol_jalons_diaspora">diaspora calendar</string>
+    <string name="vol_jalon_repli">No nightfall under the plane: fallback marker, a calculation choice (Omer and Arvit at sunset, end of Shabbat at Rabbenu Tam).</string>
+    <string name="vol_omer_ligne_date">Date line during the Omer: your personal count (the nights you lived) and that of the place under the plane no longer match. According to Rav Shlomo Zalman Auerbach, one who lost a day continues without a blessing; according to the Lubavitcher Rebbe, one follows one’s personal count. Better avoid crossing the line during the Omer; ask your rav.</string>
+    <string name="ligne_date_discutee">Date line: the app follows the international line (the local civil day). For Japan, New Zealand, eastern Australia, Hawaii, Tonga or Samoa, the poskim differ on the halachic line (Chazon Ish, Rav Tukachinsky, Rav Frank): ask your rav.</string>
     <string name="vol_gps">Real position (GPS)</string>
     <string name="vol_gps_oublier">Back to the planned route</string>
     <string name="vol_gps_attente">Searching for a GPS signal… Reception is better near a window.</string>
@@ -1263,9 +1451,10 @@
     <string name="vol_gps_hors_vol">The GPS fix is only used during the flight, between scheduled departure and arrival.</string>
     <string name="vol_fiabilite_gps">Route adjusted to the GPS fix of %1$s (%2$s), then great circle to arrival, at constant speed. Zmanim of the point below the aircraft, at sea level, computed on the device, without network.</string>
     <string name="vol_ecart_gps">%1$s min if arrival is 30 min late</string>
-    <string name="vol_direct_titre">Live tracking (Internet)</string>
     <string name="vol_direct_explication">Off by default. When on, it sends the app’s relay the flight’s callsign and the aircraft’s estimated position, nothing else; the relay asks OpenSky Network for the real position. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_direct_activer">Online services: flight route and live tracking</string>
+    <string name="vol_direct_activer_web">Online service: flight route</string>
+    <string name="vol_route_activer">Online services: flight route</string>
     <string name="vol_indicatif">Radio callsign (ICAO), for example ELY1</string>
     <string name="vol_indicatif_invalide">Expected callsign: three letters then the number, for example ELY1.</string>
     <string name="vol_direct_bouton">Live position</string>
@@ -1278,8 +1467,12 @@
     <string name="vol_erreur_position">invalid position</string>
     <string name="vol_erreur_relais_absent">relay not configured</string>
     <string name="vol_erreur_service">service unavailable</string>
+    <string name="vol_erreur_trop_de_demandes">too many requests: try again in a few minutes</string>
     <string name="vol_erreur_serveur">server error %1$d</string>
     <string name="vol_direct_inactif">The tracking relay is not in service yet in this version.</string>
+    <string name="vol_direct_activer_web_aide">When on, the magnifier 🔍 sends only the flight number to adsbdb.com to fill in the arrival.</string>
+    <string name="reglages_android_seulement">The morning gate (“I am with Hashem”) and the reminders exist only in the Android app.</string>
+    <string name="reglage_libelle_valeur">%1$s: %2$s</string>
     <string name="vol_fiabilite_direct">Route adjusted to the position received from OpenSky Network at %1$s (%2$s), then great circle to arrival, at constant speed. Zmanim of the point below the aircraft, at sea level, computed on the device.</string>
     <string name="vol_source_opensky">Aircraft data: OpenSky Network (opensky-network.org)</string>
     <string name="vol_rappels_titre">Reminders during the flight</string>
@@ -1288,7 +1481,7 @@
     <string name="vol_rappels_sans_permission">The app’s notifications are off: the reminders will not show.</string>
     <string name="vol_rappels_note">At the ticket times: a late takeoff does not move the reminders. Android may delay them by a few minutes.</string>
     <string name="vol_rappel_derekh_titre">Tefilat HaDerech</string>
-    <string name="vol_rappel_derekh_texte">Five minutes after the scheduled takeoff: time to say Tefilat HaDerech.</string>
+    <string name="vol_rappel_derekh_texte">Scheduled takeoff was five minutes ago. Tefilat HaDerech, if you have not already said it for this journey.</string>
     <string name="vol_rappel_derekh_priere">Prayer now: %1$s, until %2$s.</string>
     <string name="vol_rappel_priere_titre">%1$s on the plane</string>
     <string name="vol_rappel_priere_texte">The time of %1$s begins below the aircraft. Until %2$s.</string>
@@ -1297,12 +1490,18 @@
     <string name="vol_rappel_fin_texte">Deadline: %1$s.</string>
     <string name="vol_rappel_omer_titre">Sefirat HaOmer</string>
     <string name="vol_rappel_omer_texte">The stars come out below the aircraft: tonight is day %1$s of the Omer.</string>
+    <string name="vol_rappel_gomel_titre">HaGomel</string>
+    <string name="vol_rappel_gomel_texte_edot">Landed after a flight of 72 minutes or more: say HaGomel within three days, before ten men, preferably at the Torah reading (Yalkut Yosef 219:20).</string>
+    <string name="vol_rappel_gomel_texte">Landed after a long flight: according to your custom, HaGomel is said within three days, before ten men (some require it after a flight, others do not).</string>
+    <string name="vol_rappel_chema_titre">30 min left for the Shema</string>
+    <string name="vol_rappel_chema_mga">End of Shema (Magen Avraham): %1$s. If need be, per the Gra: %2$s.</string>
+    <string name="vol_rappel_chema_gra">End of Shema (Gra): %1$s. Per the Magen Avraham: %2$s.</string>
     <string name="vol_direct_explication_opensky">Off by default. When on, it asks OpenSky Network, free and without an account, for the aircraft seen in a 10° square around the estimated position; the callsign stays on the phone, which looks for the flight there. Over the oceans, the aircraft is often not seen.</string>
     <string name="vol_source_aeroports">Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); Hebrew and French names: Wikidata (CC0)</string>
 
     <!-- La boussole de Jérusalem (28/10, design C). -->
     <string name="boussole_title">Toward Jerusalem</string>
-    <string name="boussole_carte_sous">Choose a place: the chassid turns toward Jerusalem.</string>
+    <string name="boussole_carte_sous">Choose a place: the figure turns toward Jerusalem.</string>
     <string name="boussole_face">Facing Jerusalem</string>
     <string name="boussole_droite">Turn right %1$d°</string>
     <string name="boussole_gauche">Turn left %1$d°</string>
@@ -1316,9 +1515,10 @@
     <string name="boussole_calibrer">Compass not accurate: draw a figure 8 in the air with the phone.</string>
     <string name="boussole_sans_capteur">This phone has no compass: the direction is given relative to north, at the top.</string>
     <string name="boussole_note_titre">Two ways to calculate</string>
-    <string name="boussole_note">The direction of Jerusalem can be calculated in two ways. By the great circle, the real direction on the globe: the Shulchan Aruch HaRav (Orach Chaim 94:2), Rabbi Yaakov Emden’s Mor uKetziah (150) and others consider it preferable; from New York, about 54°. By the straight line on a Mercator map (constant heading), as read for example in the Levush (Orach Chaim 94): from New York, about 96°. The Equal Earth map, recommended by the UN since September 2026, is for comparing the size of continents; it does not give a direction. The chassid follows the one you choose under “Direction followed” (by default, the real direction); the other stays on screen for information. Calculated on the device, toward Har haBayit (31.7781° N, 35.2354° E), corrected for the local magnetic declination.</string>
+    <string name="boussole_note">The direction of Jerusalem can be calculated in two ways. By the great circle, the real direction on the globe: the Shulchan Aruch HaRav (Orach Chaim 94:2), Rabbi Yaakov Emden’s Mor uKetziah (150) and others consider it preferable; from New York, about 54°. By the straight line on a Mercator map (constant heading), as read for example in the Levush (Orach Chaim 94): from New York, about 96°. The figure follows the one you choose under “Direction followed” (by default, the real direction); the other stays on screen for information. Calculated on the device, toward Har haBayit (31.7781° N, 35.2354° E), corrected for the local magnetic declination.</string>
+    <string name="boussole_minyan">Here the two methods differ by more than 20°. In a minyan, pray in the direction of the congregation and turn only your face toward Jerusalem (Mishna Berura 94:10).</string>
     <string name="boussole_widget_label">Direction of Jerusalem</string>
-    <string name="boussole_widget_description">The chassid and the direction of Jerusalem from your zmanim location, relative to north. Tap to open the compass.</string>
+    <string name="boussole_widget_description">The figure and the direction of Jerusalem from your zmanim location, relative to north. Tap to open the compass.</string>
     <string name="boussole_widget_lecture">Jerusalem from %1$s: %2$d° from north</string>
     <string name="boussole_source">Source: %1$s</string>
     <!-- Le web seulement : l’iPhone demande l’autorisation après un toucher. -->
@@ -1328,7 +1528,7 @@
     <string name="boussole_methode_carte">Along the Mercator map (constant heading)</string>
     <string name="boussole_legende_carte">The ירושלים label (on the rose, the gold needle) follows the direction on the map; the dashed blue mark shows the real direction, for information.</string>
     <string name="boussole_affichage">Compass display</string>
-    <string name="boussole_affichage_hassid">The chassid turns (default)</string>
+    <string name="boussole_affichage_hassid">The figure turns (default)</string>
     <string name="boussole_affichage_rose">Compass rose</string>
     <!-- Reprend la position, approximative (ChoixLieu.maPosition, 31/10). -->
     <string name="boussole_actualiser_position">Update my location</string>
@@ -1351,21 +1551,26 @@
 
     <!-- La divulgation avant les deux accès spéciaux de la barrière (31/10, Divulgation). -->
     <string name="divulgation_overlay_titre">Display over other apps</string>
-    <string name="divulgation_overlay_texte">What is used: showing a screen over other apps.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. When you open one of the apps you selected, during the time window you set, the “I am with Hashem” screen appears in front of it until the practice of the day is done.\n\nNothing is sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
+    <string name="divulgation_overlay_texte">What is used: showing a screen over other apps.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. When you open one of the apps you selected, during the time window you set, the “I am with Hashem” screen appears in front of it until the practice of the day is done. It also appears in front of these apps during any hitbodedut in progress, at any time of day, until it ends.\n\nNothing is sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
     <string name="divulgation_usage_titre">Usage access</string>
-    <string name="divulgation_usage_texte">What is read: which app is shown in the foreground. Only the last one opened is kept, in memory; no history is stored.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. During the time window you set, and until the practice of the day is done, the app checks whether the one just opened is among those you selected.\n\nNothing is recorded, sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
+    <string name="divulgation_usage_texte">What is read: which app is shown in the foreground. Only the last one opened is kept, in memory; no history is stored.\n\nWhy: for the morning gate, the “I am with Hashem” mode, which you chose. During the time window you set, and until the practice of the day is done, the app checks whether the one just opened is among those you selected. It also checks during any hitbodedut in progress, at any time of day.\n\nNothing is recorded, sent or shared: everything stays on this phone.\n\nTo turn the gate off at any time: Settings, “I am with Hashem” switch. You can also remove this access in Android settings.</string>
     <string name="divulgation_continuer">Continue</string>
     <string name="divulgation_pas_maintenant">Not now</string>
 
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">Privacy policy</string>
+    <string name="settings_licences">Sources and licences</string>
+    <string name="licences_texte">Texts\nThe Hebrew texts (siddur, Tehillim, Tikkun, books, sources) come from public-domain editions, notably Sefaria, Torat Emet, tanach.us and rabenubook, or are used with their authors’ permission; each edition and its licence are declared in the app’s data files.\nYalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef: text from Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilulot: Hebrew Wikipedia (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik and HaMeir LaArets with their permission.\n\nTranslations\nThe French and English translations are machine-made and unreviewed: the Hebrew prevails. Those of Yalkut Yosef are partial, under the same licence as the text. For Tehillim, the Tikkun, Esther and Song of Songs: Bible du Rabbinat (1899) and JPS (1917), public domain.\n\nFonts\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew and Varela Round, Secular One, Rubik, Heebo and Bellefair (app versions), under the SIL OFL 1.1 licence.\n\nData\nCities: GeoNames (CC BY 4.0). Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); names: Wikidata (CC0). Flight routes: adsbdb.com.\n\nCalendar and zmanim\nKosherJava (LGPL 2.1), directly or through its JavaScript port. The app ships with the licence text; the app’s source code is available on written request to myhitbodedut26@gmail.com.</string>
+    <string name="licences_android">\n\nLibraries of the Android app\nBarcode reading: ZXing (Apache 2.0). AndroidX and Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
-    <string name="vol_en_ligne_aide">Off by default: nothing leaves the phone. When on, the 🔍 sends only the flight number to adsbdb.com to fill in the arrival, and live tracking queries OpenSky Network.</string>
+    <string name="vol_en_ligne_aide">Off by default: nothing leaves the phone. Once turned on, they stay on until you switch them off. The 🔍 then sends only the flight number to adsbdb.com; “Live position” sends OpenSky Network an area of about 10° around the aircraft’s estimated position. These services see your IP address.</string>
+    <string name="vol_en_ligne_aide_route">Off by default: nothing leaves the phone. Once turned on, they stay on until you switch them off. The 🔍 then sends only the flight number to adsbdb.com to fill in the arrival. This service sees your IP address.</string>
+    <string name="vol_en_ligne_aide_web">Off by default: nothing leaves the device. Once turned on, it stays on until you switch it off. The 🔍 then sends only the flight number to adsbdb.com to fill in the arrival. This service sees your IP address.</string>
     <string name="vol_en_ligne_titre">Look up the route online?</string>
     <string name="vol_en_ligne_oui">Turn on and search</string>
     <string name="vol_rapide_titre">Describe your flight</string>
-    <string name="vol_rapide_aide">As you would say it, or paste the ticket text. Everything is read on the phone.</string>
+    <string name="vol_rapide_aide">As you would say it, or paste the ticket text. Everything is read on the phone. One leg at a time: for a connection, enter the next flight at the layover.</string>
     <string name="vol_rapide_exemple">E.g. El Al Lyon → TLV tomorrow at 11am</string>
     <string name="vol_rapide_remplir">Fill in the flight</string>
     <string name="vol_rapide_billet">Import the ticket (PDF or photo)</string>
@@ -1373,20 +1578,128 @@
     <string name="vol_rapide_heure">the departure time</string>
     <string name="vol_rapide_compris">Understood: %1$s</string>
     <string name="vol_rapide_estimee">Arrival estimated from the distance: correct it with the time on the ticket.</string>
+    <string name="vol_resume_estimee">Arrival estimated from the distance: tap “Edit” to enter the time on the ticket.</string>
     <string name="vol_rapide_estimee_court">Estimated from the distance: check it on the ticket.</string>
     <string name="vol_rapide_manque">Still needed: %1$s.</string>
     <string name="vol_rapide_lecture">Reading the ticket…</string>
     <string name="vol_rapide_billet_sans_code">No boarding-pass barcode found. Open the ticket, copy its text and paste it above.</string>
+    <string name="vol_rapide_billet_echec">The ticket could not be opened. Try a photo, or copy its text and paste it above.</string>
     <string name="vol_rapide_billet_illisible">A barcode was read, but it is not a boarding pass.</string>
     <string name="vol_rapide_billet_lu">Boarding pass read (the barcode does not carry the times).</string>
 
     <!-- Les langues d’un texte à lire (04/11), LanguesTexte. -->
     <string name="lecture_langues">Text languages</string>
-    <string name="lecture_sans_traduction">This text has no translation yet: it stays in Hebrew.</string>
+    <string name="lecture_sans_traduction">This text has no translation yet, so it stays in Hebrew.</string>
+    <string name="lecture_traduction_auto">Machine translation, not reviewed: the Hebrew text is authoritative.</string>
+    <string name="lecture_traduction_partielle">Partly translated: %1$d of %2$d chapters. The rest remain in Hebrew.</string>
     <string name="langues_he">עברית</string>
     <string name="langues_fr">Français</string>
     <string name="langues_en">English</string>
     <string name="langues_he_fr">עברית + Français</string>
     <string name="langues_he_en">עברית + English</string>
     <string name="langues_fr_en">Français + English</string>
+    <string name="lecture_chargement">Loading…</string>
+    <string name="recherche_en_cours">Searching…</string>
+    <string name="siddur_chapitres">Chapters</string>
+    <string name="siddur_chapitres_filtre">Number or word</string>
+
+    <!-- La refonte du 13/11 : trois lieux (Le Jour, Les Livres, Le Chemin) et la barre de départ. -->
+    <string name="nav_chemin">The Path</string>
+    <string name="depart_titre">Your hitbodedut</string>
+    <string name="depart_regler">Hitbodedut options</string>
+    <string name="depart_fermer">Close</string>
+    <string name="rayon_prier">Pray</string>
+    <string name="rayon_etudier">Study</string>
+    <string name="rayon_renforcer">Find strength</string>
+    <string name="chemin_stat_serie">days in a row</string>
+    <string name="chemin_stat_meilleure">best streak</string>
+    <string name="chemin_stat_total">in total</string>
+    <string name="chemin_parcours_hint">A summary of your practice</string>
+    <string name="chemin_trophees">Trophies and milestones</string>
+    <string name="jour_ciel">%1$s. Zmanim, calendar, hillulot, compass</string>
+    <!-- La fin de séance sur un seul écran (13/11). -->
+    <string name="celebration_humeur">How do you feel now?</string>
+    <string name="celebration_prive">Everything stays on this phone.</string>
+
+    <!-- Les versions de l’application (VersionApp, 17/11). -->
+    <string name="settings_version">App version</string>
+    <string name="version_classique">Classic</string>
+    <string name="version_classique_desc">The original home: the hassid, the rings, the Today and Texts tabs.</string>
+    <string name="version_pile">Stack</string>
+    <string name="version_pile_desc">Your day as four cards you swipe through: hitbodedut, chizuk, zmanim, journal.</string>
+    <string name="version_choix_titre">Choose your version</string>
+    <string name="version_choix_detail">The same journal, streak and settings: only the way they are presented changes.</string>
+    <string name="version_choix_pied">You can change at any time: Settings › App version.</string>
+    <string name="version_choisie">current version</string>
+    <string name="version_textes">Texts</string>
+    <string name="version_reglages">Settings</string>
+    <string name="version_dans_min">in %1$d min</string>
+    <string name="version_dans_h">in %1$d h %2$02d</string>
+    <string name="version_duree_min">%1$d min</string>
+    <string name="version_duree_h">%1$d h %2$02d</string>
+    <string name="version_aujourdhui">Today</string>
+    <string name="version_hier">Yesterday</string>
+    <string name="version_semaine">%1$d of %2$d this week</string>
+    <string name="version_reprendre">Back to the hitbodedut</string>
+    <string name="version_encore">Another hitbodedut</string>
+    <string name="version_commencer">Start · %1$s</string>
+    <string name="version_preparer">Length, topic, music</string>
+    <string name="version_chargement">Loading today’s text…</string>
+    <string name="version_plus_de_textes">More chizuk</string>
+    <string name="version_sans_lieu">Choose a place to see today’s zmanim.</string>
+    <string name="version_choisir_lieu">Choose a place</string>
+    <string name="version_prochain">Next: %1$s</string>
+    <string name="version_tous_zmanim">All zmanim</string>
+    <string name="version_journal_vide">Nothing written yet. After a hitbodedut, one line is enough.</string>
+    <string name="version_note_sans_texte">No note.</string>
+    <string name="version_ecrire_note">Write today’s note</string>
+    <string name="version_tout_journal">The whole journal</string>
+    <string name="version_parcours">My journey</string>
+    <string name="pile_titre">Your day</string>
+    <string name="pile_position">%1$d / %2$d</string>
+    <string name="pile_hitbodedout">Hitbodedut</string>
+    <string name="pile_hitbo_titre">Today’s hitbodedut</string>
+    <string name="pile_hitbo_titre_prenom">%1$s, today’s hitbodedut</string>
+    <string name="pile_hitbo_faite">Done today · %1$s</string>
+    <string name="pile_hizouk">Today’s chizuk</string>
+    <string name="pile_traduction">Translation</string>
+    <string name="pile_voir_traduction">See the translation</string>
+    <string name="pile_revoir_hebreu">Back to the Hebrew</string>
+    <string name="pile_zmanim">Zmanim</string>
+    <string name="pile_zmanim_lieu">Zmanim · %1$s</string>
+    <string name="pile_journal">Journal</string>
+    <plurals name="version_serie">
+        <item quantity="one">%1$d day in a row</item>
+        <item quantity="other">%1$d days in a row</item>
+    </plurals>
+
+    <!-- Version Bento (VersionApp, 17/11). -->
+    <string name="version_bento">Bento</string>
+    <string name="version_bento_desc">A board of live tiles that open full screen, with search under your thumb.</string>
+    <string name="bento_siddour">Siddur</string>
+    <string name="bento_tehilim">Tehillim</string>
+    <string name="bento_recherche">Siddur, Tehillim, books…</string>
+    <string name="bento_hitbo_titre">Today’s hitbodedut</string>
+    <string name="bento_faite">Done today · %1$s</string>
+    <string name="bento_ambiance">Ambience</string>
+    <string name="bento_musique">Music</string>
+    <string name="bento_journal_quand">Journal · %1$s, %2$s</string>
+    <plurals name="bento_jours">
+        <item quantity="one">day in a row</item>
+        <item quantity="other">days in a row</item>
+    </plurals>
+
+    <!-- Version Sérénité (VersionApp, 17/11). -->
+    <string name="version_serenite">Serenity</string>
+    <string name="version_serenite_desc">A large landscape card that follows the sky of the moment, elegant titles, four tabs.</string>
+    <string name="serenite_titre">Hitbodedut · %1$s</string>
+    <string name="serenite_ouvrir">Start: %1$s</string>
+    <string name="serenite_en_cours">In progress</string>
+    <string name="serenite_faite">Done today</string>
+    <string name="serenite_ce_soir">Tonight</string>
+    <string name="serenite_aujourdhui">Today</string>
+    <string name="serenite_modifier">Edit</string>
+    <string name="serenite_lire">Read</string>
+    <string name="serenite_tout_voir">See all</string>
+    <string name="serenite_cette_semaine">Your last days</string>
 </resources>

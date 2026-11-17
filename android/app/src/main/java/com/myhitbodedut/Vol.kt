@@ -82,6 +82,17 @@ object Vol {
         else -> null
     }
 
+    /**
+     * Une durée que la distance ne permet pas (FVOL-12) : plus de 1 100 km/h de moyenne, ou plus de
+     * deux fois la durée estimée (820 km/h + 30 min) plus 2 h. Une erreur d'AM/PM ou de fuseau ;
+     * l'écran avertit mais laisse passer (escale technique).
+     */
+    fun invraisemblable(plan: Plan): Boolean {
+        val km = distanceKm(plan)
+        val heures = Duration.between(plan.decollage, plan.atterrissage).seconds / 3600.0
+        return km > 1100.0 * heures || heures > 2 * (km / 820.0 + 0.5) + 2
+    }
+
     /** Un fuseau que l'appareil ne connaît pas (base tz trop ancienne) rend null plutôt que d'échouer. */
     fun zone(fuseau: String): ZoneId? = try { ZoneId.of(fuseau) } catch (e: RuntimeException) { null }
 
@@ -198,6 +209,8 @@ object Vol {
             plan.sourceReleve == SourceReleve.DIRECT -> Fiabilite.RELEVE_DIRECT
             else -> Fiabilite.RELEVE_GPS
         },
+        /** Les zmanim qui n'ont pas lieu en un point du vol (Reserve.ABSENT), dans l'ordre de Zmanim.PROFIL (FVOL-11). */
+        val absents: List<String> = emptyList(),
     ) {
         /** Les zmanim entre le décollage et l'atterrissage. */
         val enVol: List<Evenement>
@@ -232,6 +245,7 @@ object Vol {
 
     private fun calculerSeul(plan: Plan): Calcul {
         val reserves = mutableSetOf<Reserve>()
+        val absents = mutableSetOf<String>()
         val instants = buildList {
             var t = plan.decollage - MARGE
             while (t.isBefore(plan.decollage)) { add(t); t += PAS_SOL }
@@ -245,7 +259,11 @@ object Vol {
             val p = position(plan, t)
             val enVol = !t.isBefore(plan.decollage) && !t.isAfter(plan.atterrissage)
             if (enVol && abs(p.latitude) > LATITUDE_HAUTE) reserves += Reserve.HAUTE_LATITUDE
-            Echantillon(t, p, occurrences(p) { if (enVol) reserves += it })
+            Echantillon(t, p, occurrences(p) { r, cle ->
+                if (!enVol) return@occurrences
+                reserves += r
+                if (r == Reserve.ABSENT) absents += cle
+            })
         }
         val trouves = mutableListOf<Evenement>()
         for (i in 0 until echantillons.size - 1) {
@@ -278,11 +296,12 @@ object Vol {
             if (acc.none { it.cle == e.cle && abs(secondes(it.instant, e.instant)) < 60 }) acc += e
             acc
         }
-        return Calcul(plan, evenements, reserves, lignesDate(plan, echantillons))
+        return Calcul(plan, evenements, reserves, lignesDate(plan, echantillons),
+            absents = Zmanim.PROFIL.map { it.first }.filter { it in absents })
     }
 
     /** Les zmanim du point pour la veille, le jour et le lendemain (jour du fuseau nautique). */
-    private fun occurrences(p: Point, signaler: (Reserve) -> Unit = {}): Map<String, List<Instant>> {
+    private fun occurrences(p: Point, signaler: (Reserve, String) -> Unit = { _, _ -> }): Map<String, List<Instant>> {
         val lieu = lieuSous(p)
         val jour = p.instant.atZone(ZoneId.of(lieu.fuseau)).toLocalDate()
         val parCle = mutableMapOf<String, MutableList<Instant>>()
@@ -290,8 +309,8 @@ object Vol {
             for (z in Zmanim.jour(lieu, d)) {
                 when (z.statut) {
                     Zmanim.Statut.OK -> parCle.getOrPut(z.cle) { mutableListOf() } += z.instant!!
-                    Zmanim.Statut.ABSENT -> signaler(Reserve.ABSENT)
-                    Zmanim.Statut.ERREUR -> signaler(Reserve.ERREUR)
+                    Zmanim.Statut.ABSENT -> signaler(Reserve.ABSENT, z.cle)
+                    Zmanim.Statut.ERREUR -> signaler(Reserve.ERREUR, z.cle)
                 }
             }
         }
@@ -346,20 +365,27 @@ object Vol {
         return lignes
     }
 
+    /** Les repères du début de la journée, du plus tôt au plus tard. */
+    private val REPERES_AUBE = setOf("alot", "misheyakir", "netz")
+
     /**
-     * Les horaires que ZmanimWidget.prochaine attend, pris sur la route : l'aube
-     * passée la plus récente, puis la première fin de Cha'harit, chki'a et
-     * minuit qui la suivent. Sans aube passée (route polaire), les prochains
-     * de chaque zman. La règle de prochaine n'est pas réécrite.
+     * Les horaires que ZmanimWidget.prochaine attend, pris sur la route : le
+     * repère d'aube passé le plus récent (alot, sinon michéyakir ou nets, l'été
+     * au nord d'environ 50° où le soleil ne descend pas à 16,1° : audit du
+     * 12/11, FVOL-01), puis la première fin de Cha'harit, chki'a et minuit qui
+     * le suivent. Sans aucun de ces repères (route polaire), les prochains de
+     * chaque zman. La règle de prochaine n'est pas réécrite. Min'ha guedola en
+     * fait partie (13/11, FVOL-05) : avant elle, Min'ha n'est pas ouverte.
      */
     fun horaires(calcul: Calcul, maintenant: Instant): Map<String, ZonedDateTime?> {
         val ev = calcul.evenements
-        val alot = ev.lastOrNull { it.cle == "alot" && !it.instant.isAfter(maintenant) }?.instant
+        val alot = ev.lastOrNull { it.cle in REPERES_AUBE && !it.instant.isAfter(maintenant) }?.instant
         val apres = alot ?: maintenant
         fun suivant(cle: String) = ev.firstOrNull { it.cle == cle && it.instant.isAfter(apres) }?.instant
         return mapOf(
             "alot" to alot,
             "szt_gra" to suivant("szt_gra"),
+            "minha_gedola" to suivant("minha_gedola"),
             "chkia" to suivant("chkia"),
             "chatsot_layla" to suivant("chatsot_layla"),
         ).mapValues { (_, v) -> v?.atZone(ZoneOffset.UTC) }

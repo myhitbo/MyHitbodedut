@@ -48,7 +48,10 @@ data class SeanceClose(val minutes: Int, val date: String)
 
 /**
  * Toute la persistance de l'application, dans les préférences locales.
- * Rien ne quitte l'appareil : aucune permission Internet n'est déclarée.
+ * L'application n'envoie rien de ce qu'elle garde ici. Le fichier des réglages peut
+ * toutefois partir dans la sauvegarde Android du compte Google (backup_rules.xml) ; le
+ * journal n'en sort que par l'export ou le transfert d'appareil. Seule l'édition complète
+ * déclare Internet, pour les services de vol (13/11, TWEBCONF-07).
  */
 object Store {
 
@@ -90,15 +93,20 @@ object Store {
     private const val KEY_OUVERTURE = "ecran_ouverture"
     private const val KEY_SIDDUR_NUSAH = "siddur_nusah"
     private const val KEY_TAHANOUN_TICHRI_SFARD = "sans_tahanoun_fin_tichri_sfard"
+    private const val KEY_SANS_TAHANOUN_JOUR = "sans_tahanoun_jour"
     private const val KEY_CALENDRIER_CIVIL = "calendrier_civil"
     private const val KEY_LECTURE_ECHELLE = "lecture_echelle"
     private const val KEY_LECTURE_SOMBRE = "lecture_sombre"
     private const val KEY_LECTURE_POLICE = "lecture_police"
+    private const val KEY_LECTURE_DEFILEMENT_VITESSE = "lecture_defilement_vitesse"
     /** Les langues d'un texte à lire (04/11) : « he », « fr », « en », « he+fr », « he+en », « fr+en ». */
     private const val KEY_LECTURE_LANGUES = "lecture_langues"
     private const val KEY_LECTURE_MASQUEE = "lecture_masquee"
+    private const val KEY_LECTURE_ECRAN_ALLUME = "lecture_ecran_allume"
     private const val KEY_PAUSE_SHABBAT = "pause_shabbat"
     private const val KEY_IN_ISRAEL = "in_israel"
+    private const val KEY_IN_ISRAEL_MANUEL = "in_israel_manuel"
+    private const val KEY_REGION_PROPOSEE = "region_proposee"
     private const val KEY_LIEU_NOM = "lieu_nom"
     private const val KEY_LIEU_LAT = "lieu_latitude"
     private const val KEY_LIEU_LON = "lieu_longitude"
@@ -118,6 +126,7 @@ object Store {
     private const val KEY_VOL_RELEVE_SOURCE = "vol_releve_source"
     private const val KEY_VOL_INDICATIF = "vol_indicatif"
     private const val KEY_VOL_RAPPELS = "vol_rappels"
+    private const val KEY_VOL_ARRIVEE_ESTIMEE = "vol_arrivee_estimee"
     private const val KEY_VOL_RAPPELS_ACTIFS = "vol_rappels_actifs"
     private const val KEY_VOL_RAPPEL_VU = "vol_rappel_vu"
     private const val KEY_SUIVI_DIRECT = "vol_suivi_direct"
@@ -134,6 +143,7 @@ object Store {
     private const val KEY_SESSION_START = "session_started_at"
     private const val KEY_SESSION_THEME = "session_theme"
     private const val KEY_HIDE_COUNTDOWN = "hide_countdown"
+    private const val KEY_JOURNAL_VERROU = "journal_verrou"
     private const val KEY_GUIDED = "guided_hitbodedut"
     private const val KEY_ONBOARDED = "onboarded_version"
     /** Le booléen de la v1.96, retiré au premier passage. */
@@ -145,6 +155,8 @@ object Store {
     private const val KEY_MODE = "apparence_mode"
     private const val KEY_FOND = "apparence_fond"
     private const val KEY_ACCENT = "apparence_accent"
+    /** La version de l'application (17/11) : Classique, Sérénité, Bento ou Pile. Absente tant qu'on n'a pas choisi. */
+    private const val KEY_VERSION_APP = "version_app"
     private const val KEY_LANGUE_APP = "langue_app"
     private const val KEY_LANGUE_REPLI = "langue_repli"
     private const val KEY_MUSIC_ON = "music_enabled"
@@ -250,7 +262,8 @@ object Store {
     /** Les sujets d'une journée, absents des journaux d'avant cette version. */
     private fun readThemes(entry: JSONObject): List<String> {
         val array = entry.optJSONArray("themes") ?: return emptyList()
-        return (0 until array.length()).mapNotNull { array.optString(it).ifBlank { null } }
+        // Bornés comme le web (revue du 15/11) : 20 sujets de 40 caractères au plus.
+        return (0 until array.length()).mapNotNull { array.optString(it).ifBlank { null }?.takeIf { s -> s.length <= 40 } }.take(20)
     }
 
     private fun toJson(record: DayRecord): JSONObject {
@@ -264,10 +277,14 @@ object Store {
         return entry
     }
 
-    /** La date si la clé est une vraie date ISO (2026-09-29), sinon null. */
+    /**
+     * La date si la clé est une vraie date ISO (2026-09-29), sinon null. Ni avant 2000 ni après
+     * 2100, comme le web (revue du 15/11) : « 0000-01-01 » importé faisait planter l'accueil à chaque
+     * lancement (JewishCalendar refuse l'ère avant J.-C.), et « -999999999-01-01 » le bloquait.
+     */
     fun dateValide(cle: String): LocalDate? =
         runCatching { LocalDate.parse(cle, FORMAT) }.getOrNull()
-            ?.takeIf { it.format(FORMAT) == cle }
+            ?.takeIf { it.format(FORMAT) == cle && it.year in 2000..2100 }
 
     /** Le jour civil d'un instant, dans le fuseau du téléphone. */
     fun dateOf(millis: Long): String =
@@ -318,21 +335,49 @@ object Store {
         if (credit > p.getLong(KEY_FAIT_A, 0L)) p.edit().putLong(KEY_FAIT_A, credit).apply()
         clearSnooze(context)
         // La journée est faite : le rappel « Il est temps… » ne reste pas dans le volet jusqu'au lendemain (02/11).
-        if (minutes > 0) runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancel(Notifications.ID_REMINDER) }
+        // Même à 0 minute (« Je l'ai déjà faite », séance sans durée) : le jour est fait (FBARRIERE-11).
+        runCatching { androidx.core.app.NotificationManagerCompat.from(context).cancel(Notifications.ID_REMINDER) }
     }
 
     /** La note d'un jour. Sur un jour sans hitbodedout, elle ne le valide pas. */
     fun setNote(context: Context, date: String, note: String) {
         val all = days(context).toMutableMap()
         val existing = all[date]
+        // Une humeur ou une gratitude gardée pour ce jour lui garde sa ligne : sans elle, le journal ne
+        // la montrerait plus et rien ne permettrait de la modifier (FDONNEES-14 ; même règle que le site).
+        val garde = !JournalPlus.lire(context, date).vide
         when {
+            existing?.noteSeule == true && note.isBlank() && garde -> all[date] = existing.copy(note = "")
             // Une note seule qu'on efface : la ligne n'a plus de raison d'être.
             existing?.noteSeule == true && note.isBlank() -> all.remove(date)
             existing != null -> all[date] = existing.copy(note = note.take(NOTE_MAX))
-            note.isNotBlank() -> all[date] = DayRecord(date, 0, note.take(NOTE_MAX), emptyList(), noteSeule = true)
+            note.isNotBlank() || garde -> all[date] = DayRecord(date, 0, note.take(NOTE_MAX), emptyList(), noteSeule = true)
             else -> return
         }
         writeDays(context, all)
+    }
+
+    /**
+     * Ce que devient un jour quand on corrige sa durée (FDONNEES-04) : [minutes] remplace les
+     * minutes inscrites ; 0 retire la journée (sa note, si elle en a une, reste, sans valider
+     * le jour). Null : rien à garder, la ligne disparaît. [garde] : une humeur ou une gratitude
+     * de ce jour lui garde sa ligne, sans valider le jour (même règle que setNote, FDONNEES-14).
+     */
+    fun jourCorrige(existant: DayRecord?, date: String, minutes: Int, garde: Boolean = false): DayRecord? {
+        if (existant == null) return null
+        if (minutes > 0) return existant.copy(minutes = minutes.coerceAtMost(24 * 60), noteSeule = false)
+        return if (existant.note.isBlank() && !garde) null else DayRecord(date, 0, existant.note, emptyList(), noteSeule = true)
+    }
+
+    /** Remplace la durée d'un jour (0 : retire la journée). Sans effet sur un jour sans durée. */
+    fun corrigerJour(context: Context, date: String, minutes: Int) {
+        val all = days(context).toMutableMap()
+        val existant = all[date]?.takeIf { it.faite } ?: return
+        val nouveau = jourCorrige(existant, date, minutes, garde = !JournalPlus.lire(context, date).vide)
+        if (nouveau == null) all.remove(date) else all[date] = nouveau
+        writeDays(context, all)
+        // Aujourd'hui retiré : l'instant de la dernière séance ne doit plus honorer la barrière.
+        if (minutes <= 0 && date == today()) prefs(context).edit().remove(KEY_FAIT_A).apply()
     }
 
     fun unmarkToday(context: Context) {
@@ -384,14 +429,28 @@ object Store {
     fun shabbatMode(context: Context): Boolean = prefs(context).getBoolean(KEY_PAUSE_SHABBAT, true)
 
     fun setShabbatMode(context: Context, value: Boolean) {
-        prefs(context).edit().putBoolean(KEY_PAUSE_SHABBAT, value).apply()
+        val ancienne = shabbatMode(context)
+        prefs(context).edit().putBoolean(KEY_PAUSE_SHABBAT, value)
+            .putString(KEY_HISTO_SHABBAT, datee(context, KEY_HISTO_SHABBAT, ancienne, value)).apply()
     }
 
-    /** Israël ou diaspora : décide du deuxième jour de fête. */
+    /** Historique daté d'un réglage qui pèse sur le passé (FDONNEES-05) : voir [HistoriqueReglage]. */
+    private const val KEY_HISTO_SHABBAT = "pause_shabbat_histoire"
+    private const val KEY_HISTO_ISRAEL = "in_israel_histoire"
+
+    private fun histoire(context: Context, cle: String): List<HistoriqueReglage.Entree> =
+        HistoriqueReglage.decoder(prefs(context).getString(cle, null))
+
+    private fun datee(context: Context, cle: String, ancienne: Boolean, nouvelle: Boolean): String =
+        HistoriqueReglage.encoder(HistoriqueReglage.apresChangement(histoire(context, cle), LocalDate.now(), ancienne, nouvelle))
+
     /**
-     * Israël ou diaspora. Le premier accès fige la valeur déduite du fuseau :
-     * sans cela, un voyage changeait le deuxième jour de fête après coup, et
-     * pouvait casser une série (revue du 01/10).
+     * Israël ou diaspora : le statut pour le deuxième jour de fête, qui suit la
+     * résidence et non l'endroit où l'on est (audit du 16/11, Choul'han Aroukh
+     * 496:3). Le premier accès fige la valeur déduite du fuseau (revue du
+     * 01/10), le premier lieu la remplace ; ensuite, seuls les réglages ou la
+     * réponse à la question d'un lieu de l'autre région ([regionProposee]) la
+     * changent (ZMANIM.md).
      */
     fun inIsrael(context: Context): Boolean {
         val p = prefs(context)
@@ -401,8 +460,21 @@ object Store {
         return p.getBoolean(KEY_IN_ISRAEL, false)
     }
 
-    fun setInIsrael(context: Context, value: Boolean) {
-        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value).apply()
+    /**
+     * La région a été choisie à la main dans les réglages (audit du 12/11,
+     * FCALENDRIER-06) : une reprise de la position du téléphone ne la réécrit
+     * plus (TerritoireIsrael.regionPourPosition). Choisir un lieu (une ville,
+     * « Ma position ») efface ce drapeau et redéduit la région.
+     */
+    fun inIsraelManuel(context: Context): Boolean = prefs(context).getBoolean(KEY_IN_ISRAEL_MANUEL, false)
+
+    /** [manuel] : choisie à la main dans les réglages, et non déduite du lieu. */
+    fun setInIsrael(context: Context, value: Boolean, manuel: Boolean = false) {
+        val ancienne = inIsrael(context)
+        prefs(context).edit().putBoolean(KEY_IN_ISRAEL, value).putBoolean(KEY_IN_ISRAEL_MANUEL, manuel)
+            .putString(KEY_HISTO_ISRAEL, datee(context, KEY_HISTO_ISRAEL, ancienne, value)).apply()
+        // Un statut choisi répond à la question en attente (audit du 16/11).
+        if (manuel) setRegionProposee(context, null)
     }
 
     /**
@@ -455,12 +527,18 @@ object Store {
             (lieuVille(context) == -1L && lieuZmanim(context)?.let { CalendrierJuif.aJerusalem(it.latitude, it.longitude) } == true)
 
     /**
-     * Choisir le lieu règle aussi Israël ou diaspora : le deuxième jour de
-     * fête suit le lieu des zmanim. Une ville le dit ; une position, le
-     * contour du territoire (TerritoireIsrael, 16/10). Sans lieu, le fuseau
-     * du téléphone (Holidays.defaultInIsrael).
+     * Le lieu des zmanim. La région qu'il indique ([impliquee] : une ville le
+     * dit, une position se lit sur le contour du territoire) ne règle le statut
+     * Israël ou diaspora que pour le tout premier lieu ; ensuite, si elle
+     * diffère, elle devient une question (audit du 16/11, TerritoireIsrael.decisionRegion).
      */
-    fun setLieuZmanim(context: Context, lieu: Zmanim.Lieu, ville: Ville?) {
+    fun setLieuZmanim(
+        context: Context, lieu: Zmanim.Lieu, ville: Ville?,
+        impliquee: Boolean = ville?.enIsrael ?: TerritoireIsrael.contient(lieu.latitude, lieu.longitude),
+    ) {
+        // Audit du 16/11 : le statut pour le Yom tov chéni suit la résidence, pas le lieu
+        // (TerritoireIsrael.decisionRegion) ; un lieu de l'autre région pose la question.
+        val decision = TerritoireIsrael.decisionRegion(impliquee, inIsrael(context), lieuZmanim(context) == null, inIsraelManuel(context))
         prefs(context).edit()
             .putString(KEY_LIEU_NOM, lieu.nom)
             .putString(KEY_LIEU_LAT, lieu.latitude.toString())
@@ -470,7 +548,34 @@ object Store {
             .putLong(KEY_LIEU_VILLE, ville?.id ?: -1L)
             .putLong(KEY_LIEU_T, System.currentTimeMillis())
             .apply()
-        setInIsrael(context, ville?.enIsrael ?: Holidays.defaultInIsrael(lieu.fuseau))
+        decision.region?.let { setInIsrael(context, it) }
+        setRegionProposee(context, decision.proposition)
+    }
+
+    /**
+     * La position du téléphone comme lieu des zmanim : Israël ou diaspora se lit sur le
+     * territoire (TerritoireIsrael, 16/10), et ne fait que poser la question (audit du 16/11),
+     * que la position soit choisie dans la liste ([choisie]) ou seulement reprise.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    fun setLieuPosition(context: Context, lieu: Zmanim.Lieu, choisie: Boolean) {
+        setLieuZmanim(context, lieu, null)
+    }
+
+    /**
+     * Le statut que le lieu suggère quand il diffère du statut enregistré (audit du 16/11) :
+     * true, Israël ; false, diaspora ; null, aucune question en attente.
+     */
+    fun regionProposee(context: Context): Boolean? = when (prefs(context).getString(KEY_REGION_PROPOSEE, null)) {
+        "israel" -> true
+        "diaspora" -> false
+        else -> null
+    }
+
+    fun setRegionProposee(context: Context, valeur: Boolean?) {
+        prefs(context).edit().apply {
+            if (valeur == null) remove(KEY_REGION_PROPOSEE) else putString(KEY_REGION_PROPOSEE, if (valeur) "israel" else "diaspora")
+        }.apply()
     }
 
     /**
@@ -508,7 +613,7 @@ object Store {
         val e = prefs(context).edit()
         val releve = listOf(KEY_VOL_RELEVE_LAT, KEY_VOL_RELEVE_LON, KEY_VOL_RELEVE_T, KEY_VOL_RELEVE_SOURCE)
         if (plan == null) {
-            (listOf(KEY_VOL_NUMERO, KEY_VOL_DEPART, KEY_VOL_ARRIVEE, KEY_VOL_DECOLLAGE, KEY_VOL_ATTERRISSAGE, KEY_VOL_RAPPELS) + releve).forEach { e.remove(it) }
+            (listOf(KEY_VOL_NUMERO, KEY_VOL_DEPART, KEY_VOL_ARRIVEE, KEY_VOL_DECOLLAGE, KEY_VOL_ATTERRISSAGE, KEY_VOL_RAPPELS, KEY_VOL_ARRIVEE_ESTIMEE) + releve).forEach { e.remove(it) }
         } else {
             e.putString(KEY_VOL_NUMERO, plan.numero)
                 .putString(KEY_VOL_DEPART, plan.depart.iata)
@@ -522,6 +627,13 @@ object Store {
                 .putLong(KEY_VOL_RELEVE_T, r.instant.toEpochMilli()).putString(KEY_VOL_RELEVE_SOURCE, plan.sourceReleve.name)
         }
         e.apply()
+    }
+
+    /** L'arrivée du vol enregistré est une estimation d'après la distance, pas l'heure du billet (FVOL-03). */
+    fun volArriveeEstimee(context: Context): Boolean = prefs(context).getBoolean(KEY_VOL_ARRIVEE_ESTIMEE, false)
+
+    fun setVolArriveeEstimee(context: Context, estimee: Boolean) {
+        prefs(context).edit().putBoolean(KEY_VOL_ARRIVEE_ESTIMEE, estimee).apply()
     }
 
     /** Les rappels en vol (VolRappels, VolAlerte) : actifs par défaut, un interrupteur sur l'écran du vol. */
@@ -608,6 +720,21 @@ object Store {
         prefs(context).edit().putBoolean(KEY_TAHANOUN_TICHRI_SFARD, sans).apply()
     }
 
+    /**
+     * « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; Choul'han Aroukh O.H. 131:4) : maison en deuil,
+     * brit mila, 'hatan. Un réglage ponctuel : on garde le jour choisi, il ne vaut que pour ce jour-là.
+     */
+    fun sansTahanounLe(context: Context, date: LocalDate): Boolean =
+        prefs(context).getString(KEY_SANS_TAHANOUN_JOUR, null) == date.toString()
+
+    fun setSansTahanounLe(context: Context, date: LocalDate, sans: Boolean) {
+        prefs(context).edit().apply { if (sans) putString(KEY_SANS_TAHANOUN_JOUR, date.toString()) else remove(KEY_SANS_TAHANOUN_JOUR) }.apply()
+    }
+
+    /** Les conditions d'un jour, avec « Pas de Ta'hanoun aujourd'hui » si on l'a choisi pour ce jour-là. */
+    fun conditionsDuJour(context: Context, jour: CalendrierJuif.Jour): Set<String> =
+        SiddurJour.avecSansTahanoun(jour.conditions, sansTahanounLe(context, jour.date))
+
     /** Le calendrier s'ouvre sur le mois hébreu ; le mois civil est au choix. */
     fun calendrierCivil(context: Context): Boolean = prefs(context).getBoolean(KEY_CALENDRIER_CIVIL, false)
 
@@ -630,7 +757,10 @@ object Store {
      */
     fun isExempt(context: Context, date: LocalDate): Boolean {
         if (pausedDates(context).contains(date.format(FORMAT))) return true
-        return shabbatMode(context) && Holidays.isRestDay(date, inIsrael(context))
+        // Chaque jour se juge avec le réglage en vigueur ce jour-là (FDONNEES-05) : un voyage
+        // ou un interrupteur changé après coup ne réécrit pas le passé.
+        val chabbat = HistoriqueReglage.valeurLe(histoire(context, KEY_HISTO_SHABBAT), date, shabbatMode(context))
+        return chabbat && Holidays.isRestDay(date, HistoriqueReglage.valeurLe(histoire(context, KEY_HISTO_ISRAEL), date, inIsrael(context)))
     }
 
     /** Veille d'un jour chômé, pour taire le rappel du soir. */
@@ -706,11 +836,7 @@ object Store {
 
     fun inWindow(context: Context): Boolean {
         val now = LocalTime.now()
-        val minutes = now.hour * 60 + now.minute
-        val start = windowStart(context)
-        val end = windowEnd(context)
-        return if (start <= end) minutes >= start && minutes < end
-        else minutes >= start || minutes < end
+        return GateRule.dansLaFenetre(now.hour * 60 + now.minute, windowStart(context), windowEnd(context))
     }
 
     fun snoozeMinutes(context: Context): Int = prefs(context).getInt(KEY_SNOOZE, DEFAULT_SNOOZE)
@@ -747,10 +873,19 @@ object Store {
 
     /** La taille des lettres dans les écrans de lecture, de 0,8 à 2 fois la taille de base. */
     fun lectureEchelle(context: Context): Float =
-        prefs(context).getFloat(KEY_LECTURE_ECHELLE, 1f).coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX)
+        // NaN passe coerceIn : il faisait planter chaque écran de lecture et l'export (revue du 15/11).
+        prefs(context).getFloat(KEY_LECTURE_ECHELLE, 1f).takeIf { it.isFinite() }?.coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX) ?: 1f
 
     fun setLectureEchelle(context: Context, echelle: Float) {
         prefs(context).edit().putFloat(KEY_LECTURE_ECHELLE, echelle).apply()
+    }
+
+    /** La vitesse du défilement automatique des textes (16/11), de 1 à 10 ; la troisième par défaut. */
+    fun lectureDefilementVitesse(context: Context): Int =
+        prefs(context).getInt(KEY_LECTURE_DEFILEMENT_VITESSE, DefilementAuto.DEFAUT).coerceIn(DefilementAuto.MIN, DefilementAuto.MAX)
+
+    fun setLectureDefilementVitesse(context: Context, niveau: Int) {
+        prefs(context).edit().putInt(KEY_LECTURE_DEFILEMENT_VITESSE, niveau.coerceIn(DefilementAuto.MIN, DefilementAuto.MAX)).apply()
     }
 
     /** La police des textes (12/10) : clé de PoliceHebraique.Police, l'hébraïque à empattements par défaut. */
@@ -784,6 +919,16 @@ object Store {
 
     fun setLectureMasquee(context: Context, masquee: Boolean) {
         prefs(context).edit().putBoolean(KEY_LECTURE_MASQUEE, masquee).apply()
+    }
+
+    /**
+     * L'écran gardé allumé pendant la lecture (audit du 12/11, FLECTURE-01), par défaut : il
+     * s'éteignait au milieu d'une prière. VeilleLecture le relâche après dix minutes sans toucher.
+     */
+    fun lectureEcranAllume(context: Context): Boolean = prefs(context).getBoolean(KEY_LECTURE_ECRAN_ALLUME, true)
+
+    fun setLectureEcranAllume(context: Context, allume: Boolean) {
+        prefs(context).edit().putBoolean(KEY_LECTURE_ECRAN_ALLUME, allume).apply()
     }
 
     /** Le nusah du siddour : Edot HaMizra'h par défaut. */
@@ -826,6 +971,9 @@ object Store {
 
         val yalkut get() = this != BEN_ISH_HAI
         val benIshHai get() = this != YALKUT
+
+        /** Les deux livres quand on vient de la recherche globale, qui les interroge tous deux (FLECTURE-05). */
+        fun pourRecherche(deuxLivres: Boolean): SourceHalakha = if (deuxLivres) LES_DEUX else this
     }
 
     fun sourceHalakha(context: Context): SourceHalakha =
@@ -852,6 +1000,13 @@ object Store {
 
     /** Le lieu des zmanim est au sud de l'équateur (14/10) : Ilanot, Morid hatal des Edot. */
     fun hemisphereSud(context: Context): Boolean = (lieuZmanim(context)?.latitude ?: 0.0) < 0
+
+    /** L'alerte « Chabbat dans 3 h » (audit du 12/11, FCALENDRIER-07) : allumée d'origine. */
+    fun chabbatAlerte(context: Context): Boolean = prefs(context).getBoolean("chabbat_alerte", true)
+
+    fun setChabbatAlerte(context: Context, v: Boolean) {
+        prefs(context).edit().putBoolean("chabbat_alerte", v).apply()
+    }
 
     /** Le rappel de Birkat haLevana (14/10) : activé par défaut ; le soir annoncé par l'alarme posée. */
     fun levanaRappel(context: Context): Boolean = prefs(context).getBoolean("levana_rappel", true)
@@ -952,6 +1107,13 @@ object Store {
         journalPrefs(context).edit().putString("journal_plus", v).apply()
     }
 
+    /** Les brouillons de note (13/11), en JSON : NoteBrouillon. Dans le fichier du journal : ni nuage, ni export. */
+    fun noteBrouillonsBrut(context: Context): String? = journalPrefs(context).getString("note_brouillons", null)
+
+    fun setNoteBrouillonsBrut(context: Context, v: String?) {
+        journalPrefs(context).edit().apply { if (v == null) remove("note_brouillons") else putString("note_brouillons", v) }.apply()
+    }
+
     /** L'écran d'ouverture (14/10) : Aujourd'hui, Textes ou Zmanim. */
     enum class Ouverture(val cle: String, val libelle: Int) {
         AUJOURDHUI("aujourdhui", R.string.nav_today),
@@ -998,7 +1160,7 @@ object Store {
     fun pratique(context: Context): Trophees.Pratique {
         val tous = days(context).values
         val minutes = tous.filter { it.faite }.mapNotNull { r -> dateValide(r.date)?.let { it to r.minutes } }.toMap()
-        return Trophees.Pratique(minutes, tous.count { it.note.isNotBlank() }, meilleureSerie(context), tikkunJournal(context))
+        return Trophees.Pratique(minutes, tous.count { it.note.isNotBlank() }, meilleureSerie(context), tikkunJournal(context)) { isExempt(context, it) }
     }
 
     /**
@@ -1077,6 +1239,16 @@ object Store {
 
     fun setReminderEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_REMINDER_ON, enabled).apply()
+    }
+
+    /**
+     * Les notifications ont été proposées au départ d'une séance (13/11, FACCUEIL-05) : une seule
+     * fois, pour ne pas reposer la question à qui a répondu « plus tard ».
+     */
+    fun notificationsProposees(context: Context): Boolean = prefs(context).getBoolean("notifications_proposees", false)
+
+    fun setNotificationsProposees(context: Context) {
+        prefs(context).edit().putBoolean("notifications_proposees", true).apply()
     }
 
     fun reminderMinutes(context: Context): Int = prefs(context).getInt(KEY_REMINDER_MIN, DEFAULT_REMINDER)
@@ -1206,6 +1378,13 @@ object Store {
      * laisse qu'un son discret à la fin. Elle est éteinte par défaut : c'est
      * un choix, pas une opinion imposée.
      */
+    /** Le journal ne s'ouvre qu'après le code ou l'empreinte du téléphone (audit du 12/11) ; éteint par défaut. */
+    fun journalVerrou(context: Context): Boolean = prefs(context).getBoolean(KEY_JOURNAL_VERROU, false)
+
+    fun setJournalVerrou(context: Context, verrou: Boolean) {
+        prefs(context).edit().putBoolean(KEY_JOURNAL_VERROU, verrou).apply()
+    }
+
     fun hideCountdown(context: Context): Boolean =
         prefs(context).getBoolean(KEY_HIDE_COUNTDOWN, false)
 
@@ -1278,11 +1457,11 @@ object Store {
     fun adresse(context: Context): Adresse? =
         Adresse.parse(prefs(context).getString(KEY_ADRESSE, null))
 
+    /** L'icône de lancement suit ce choix, mais seulement quand l'application quitte l'écran (IconeLanceur, 13/11). */
     fun setAdresse(context: Context, adresse: Adresse?) {
         prefs(context).edit().apply {
             if (adresse == null) remove(KEY_ADRESSE) else putString(KEY_ADRESSE, adresse.cle)
         }.apply()
-        IconeLanceur.appliquer(context)
     }
 
     /** Copie du choix de langue d'AppCompat, pour les services (LangueApp). */
@@ -1316,12 +1495,19 @@ object Store {
         prefs(context).edit().putString(KEY_FOND, fond.cle).apply()
     }
 
+    /** La version choisie, ou null tant que l'écran de choix n'a pas été passé. */
+    fun versionApp(context: Context): VersionApp? = VersionApp.parse(prefs(context).getString(KEY_VERSION_APP, null))
+
+    fun setVersionApp(context: Context, version: VersionApp) {
+        prefs(context).edit().putString(KEY_VERSION_APP, version.cle).apply()
+    }
+
     fun accent(context: Context): Apparence.Accent =
         Apparence.Accent.parse(prefs(context).getString(KEY_ACCENT, null))
 
+    /** Comme [setAdresse] : l'icône de lancement suit à la sortie de l'application. */
     fun setAccent(context: Context, accent: Apparence.Accent) {
         prefs(context).edit().putString(KEY_ACCENT, accent.cle).apply()
-        IconeLanceur.appliquer(context)
     }
 
     /** Le bravo en attente, et le jour de la note qu'il proposera ensuite. */
@@ -1484,7 +1670,9 @@ object Store {
     fun exportJson(context: Context): String {
         val root = JSONObject()
         root.put("format", "myhitbodedut")
-        root.put("version", 1)
+        // Version 2 (audit du 12/11, FDONNEES-01) : le journal enrichi, le journal du Tikoun,
+        // les favoris, les 'hizouk gardés, les marque-pages, le noussa'h et les réglages de lecture.
+        root.put("version", 2)
         root.put("exported_at", java.time.Instant.now().toString())
 
         val daysJson = JSONObject()
@@ -1499,6 +1687,7 @@ object Store {
             .put("daily_goal_minutes", prefs(context).getInt(KEY_DAILY_GOAL, 0))
             .put("pause_shabbat", shabbatMode(context))
             .put("in_israel", inIsrael(context))
+            .put("in_israel_manuel", inIsraelManuel(context))
             .put("reminder_enabled", reminderEnabled(context))
             .put("reminder_minutes", reminderMinutes(context))
             // Toutes les heures : l'ancienne clé n'en porte qu'une, et une
@@ -1515,10 +1704,85 @@ object Store {
             .put("apparence_mode", modeApparence(context).cle)
             .put("apparence_fond", fond(context).cle)
             .put("apparence_accent", accent(context).cle)
+            .put("siddur_nusah", siddurNusah(context).cle)
+            .put("lecture_echelle", lectureEchelle(context).toDouble())
+            .put("lecture_police", lecturePolice(context).cle)
+            .put("lecture_sombre", lectureSombre(context))
+            .put("lecture_masquee", lectureMasquee(context))
+            .put("lecture_ecran_allume", lectureEcranAllume(context))
+        lectureLangues(context)?.let { settings.put("lecture_langues", it) }
         root.put("settings", settings)
         root.put("paused_dates", org.json.JSONArray(pausedDates(context).toList()))
         root.put("blocked_apps", org.json.JSONArray(blockedApps(context).toList()))
+        // Le journal enrichi : humeurs, gratitude, chose à travailler (même forme que le site).
+        root.put("journal_plus", runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject()))
+        root.put("tikkun_journal", org.json.JSONArray(tikkunJournal(context).sorted().map { it.toString() }))
+        root.put("favoris", org.json.JSONArray(favoris(context)))
+        root.put("chizuk_favoris", org.json.JSONArray(chizukFavoris(context)))
+        root.put("marques_pages", org.json.JSONArray(marques(context).map {
+            JSONObject().put("cle", it.cle).put("nusah", it.nusah).put("section", it.section).put("bloc", it.bloc).put("apercu", it.apercu)
+        }))
         return root.toString(2)
+    }
+
+    /** Au plus autant de jours du Tikoun qu'il y en a en dix ans et plus (revue du 15/11). */
+    private const val IMPORT_DATES_MAX = 4000
+
+    /** Les chaînes d'un tableau JSON, non vides, sans doublon. */
+    private fun chaines(a: org.json.JSONArray?): List<String> =
+        if (a == null) emptyList() else (0 until a.length()).mapNotNull { a.optString(it).takeIf(String::isNotBlank) }.distinct()
+
+    /**
+     * Ce que la version 2 a ajouté : réuni à ce que le téléphone a déjà, sans rien en retirer.
+     * Un jour du journal enrichi déjà noté ici garde ce qu'il a (store.js fait de même).
+     */
+    private fun importerAjouts(context: Context, root: JSONObject, demain: LocalDate) {
+        root.optJSONObject("journal_plus")?.let { entrant ->
+            val ici = runCatching { JSONObject(journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject())
+            var change = false
+            for (date in entrant.keys()) {
+                val jour = dateValide(date) ?: continue
+                if (!jour.isBefore(demain)) continue
+                val e = entrant.optJSONObject(date) ?: continue
+                val plus = JournalPlus.Plus(e.optInt("avant", 0).coerceIn(0, 5), e.optInt("apres", 0).coerceIn(0, 5),
+                    e.optString("gratitude", "").take(JournalPlus.GRATITUDE_MAX), e.optString("travail", "").take(JournalPlus.GRATITUDE_MAX))
+                val dejaNote = ici.optJSONObject(date)?.let { o ->
+                    o.optInt("avant", 0) != 0 || o.optInt("apres", 0) != 0 || o.optString("gratitude").isNotBlank() || o.optString("travail").isNotBlank()
+                } ?: false
+                if (!plus.vide && !dejaNote) {
+                    ici.put(date, JournalPlus.versJson(plus))
+                    change = true
+                }
+            }
+            // Une seule écriture (revue du 15/11) : une par jour relisait tout le journal à chaque fois,
+            // sur le fil de l'interface.
+            if (change) setJournalPlusBrut(context, ici.toString())
+        }
+        // Bornés (revue du 15/11) : un fichier fabriqué ne remplit plus les préférences, relues à chaque
+        // écran, et un « | » ne coupe plus un favori en deux entrées.
+        val tikkun = chaines(root.optJSONArray("tikkun_journal")).mapNotNull(::dateValide).filter { it.isBefore(demain) }
+        if (tikkun.isNotEmpty()) {
+            prefs(context).edit().putString(KEY_TIKKUN_JOURNAL, (tikkunJournal(context) + tikkun).distinct().sorted().takeLast(IMPORT_DATES_MAX).joinToString(",")).apply()
+        }
+        val favoris = chaines(root.optJSONArray("favoris")).filter { (it.startsWith("s:") || it.startsWith("l:")) && '|' !in it && it.length <= 100 }
+        if (favoris.isNotEmpty()) prefs(context).edit().putString("favoris", (favoris(context) + favoris).distinct().take(200).joinToString("|")).apply()
+        val chizuk = chaines(root.optJSONArray("chizuk_favoris")).filter { '|' !in it && it.length <= 40 }
+        if (chizuk.isNotEmpty()) prefs(context).edit().putString("chizuk_favoris", (chizukFavoris(context) + chizuk).distinct().take(500).joinToString("|")).apply()
+        root.optJSONArray("marques_pages")?.let { a ->
+            val entrantes = (0 until a.length()).mapNotNull { i ->
+                val o = a.optJSONObject(i) ?: return@mapNotNull null
+                val m = MarquesPages.Marque(o.optString("cle"), o.optString("nusah"), o.optInt("section", -1), o.optInt("bloc", -1),
+                    o.optString("apercu").replace('\t', ' ').replace('\n', ' ').take(200))
+                m.takeIf {
+                    it.cle.isNotBlank() && it.cle.length <= 100 && it.nusah.length <= 20 &&
+                        it.cle.none { c -> c == '\t' || c == '\n' } && it.nusah.none { c -> c == '\t' || c == '\n' } &&
+                        it.section >= 0 && it.bloc >= 0
+                }
+            }
+            val ici = marques(context)
+            val reunies = (ici + entrantes.filter { e -> ici.none { it.memePlace(e) } }).take(MarquesPages.MAX)
+            prefs(context).edit().putString("marques_pages", MarquesPages.encoder(reunies)).apply()
+        }
     }
 
     /** Fusionne une sauvegarde. Renvoie le nombre de journées importées, ou null si le fichier est invalide. */
@@ -1544,6 +1808,7 @@ object Store {
                     entry.optBoolean("note_seule", false)
                 )
                 val existing = merged[date]
+                val avant = existing
                 merged[date] = when {
                     existing == null -> incoming
                     // En cas de conflit on garde la séance la plus longue et la
@@ -1558,10 +1823,13 @@ object Store {
                         existing.noteSeule && incoming.noteSeule
                     )
                 }
-                imported++
+                // Seules les journées ajoutées ou modifiées comptent : réimporter le même fichier
+                // n'annonce plus tout le journal (FDONNEES-11).
+                if (merged[date] != avant) imported++
             }
         }
         writeDays(context, merged)
+        importerAjouts(context, root, LocalDate.now().plusDays(1))
 
         root.optJSONObject("settings")?.let { settings ->
             // Chaque valeur est ramenée dans ce que l'écran permet : un
@@ -1582,7 +1850,11 @@ object Store {
                 setDailyGoal(context, settings.optInt("daily_goal_minutes", 0).coerceIn(0, DureeSeance.MAX))
             }
             setShabbatMode(context, settings.optBoolean("pause_shabbat", shabbatMode(context)))
-            setInIsrael(context, settings.optBoolean("in_israel", inIsrael(context)))
+            // La région et son drapeau « choisie à la main » voyagent ensemble (FCALENDRIER-06).
+            setInIsrael(
+                context, settings.optBoolean("in_israel", inIsrael(context)),
+                manuel = settings.optBoolean("in_israel_manuel", inIsraelManuel(context)),
+            )
             setReminderEnabled(context, settings.optBoolean("reminder_enabled", reminderEnabled(context)))
             // Les heures de rappel : la liste si le fichier l'a, sinon l'heure
             // unique des anciennes sauvegardes. Écrite par setReminderTimes,
@@ -1590,8 +1862,10 @@ object Store {
             val heures = settings.optJSONArray("reminder_times")?.let { a ->
                 (0 until a.length()).mapNotNull { i -> a.optInt(i, -1).takeIf { it in jour } }
             } ?: settings.optInt("reminder_minutes", -1).takeIf { it in jour }?.let { listOf(it) }
-            if (!heures.isNullOrEmpty()) setReminderTimes(context, heures)
-            if (settings.has("first_name")) setFirstName(context, settings.optString("first_name"))
+            // Douze heures au plus, comme le web (revue du 15/11) : 1 440 heures donnaient un rappel par minute.
+            if (!heures.isNullOrEmpty()) setReminderTimes(context, heures.distinct().take(12))
+            // Un prénom vide dans le fichier (export du site sans prénom) n'efface pas celui du téléphone (FDONNEES-11).
+            settings.optString("first_name").takeIf { it.isNotBlank() }?.let { setFirstName(context, it) }
             if (settings.has("hide_countdown")) setHideCountdown(context, settings.optBoolean("hide_countdown"))
             if (settings.has("guided_hitbodedut")) {
                 setGuidedHitbodedut(context, settings.optBoolean("guided_hitbodedut"))
@@ -1599,7 +1873,7 @@ object Store {
             setMusicEnabled(context, settings.optBoolean("music_enabled", musicEnabled(context)))
             setMusicVolume(context, settings.optInt("music_volume", musicVolume(context)))
             setMusicShuffle(context, settings.optBoolean("music_shuffle", musicShuffle(context)))
-            settings.optString("music_track").takeIf { it.isNotBlank() }
+            settings.optString("music_track").takeIf { it.isNotBlank() && it.length <= 100 }
                 ?.let { setMusicTrackId(context, it) }
             Adresse.parse(settings.optString("adresse"))?.let { setAdresse(context, it) }
             // Une clé absente garde le choix présent ; parse() seul le ramènerait au vert.
@@ -1609,16 +1883,26 @@ object Store {
                 ?.let { setFond(context, Apparence.Fond.parse(it)) }
             settings.optString("apparence_accent").takeIf { it.isNotBlank() }
                 ?.let { setAccent(context, Apparence.Accent.parse(it)) }
+            Nusah.entries.firstOrNull { it.cle == settings.optString("siddur_nusah") }?.let { setSiddurNusah(context, it) }
+            // « NaN » se lit comme un nombre dans org.json : écarté (revue du 15/11).
+            settings.optDouble("lecture_echelle", Double.NaN).takeIf { it.isFinite() }?.let {
+                setLectureEchelle(context, it.toFloat().coerceIn(ReglagesLecture.MIN, ReglagesLecture.MAX))
+            }
+            PoliceHebraique.Police.entries.firstOrNull { it.cle == settings.optString("lecture_police") }?.let { setLecturePolice(context, it) }
+            LanguesTexte.Mode.entries.firstOrNull { it.cle == settings.optString("lecture_langues") }?.let { setLectureLangues(context, it.cle) }
+            if (settings.has("lecture_sombre")) setLectureSombre(context, settings.optBoolean("lecture_sombre"))
+            if (settings.has("lecture_masquee")) setLectureMasquee(context, settings.optBoolean("lecture_masquee"))
+            if (settings.has("lecture_ecran_allume")) setLectureEcranAllume(context, settings.optBoolean("lecture_ecran_allume", true))
         }
         root.optJSONArray("paused_dates")?.let { array ->
             val dates = pausedDates(context).toMutableSet()
             for (i in 0 until array.length()) dates.add(array.optString(i))
-            prefs(context).edit().putStringSet(KEY_PAUSED_DATES, HashSet(dates.filter { dateValide(it) != null })).apply()
+            prefs(context).edit().putStringSet(KEY_PAUSED_DATES, HashSet(dates.filter { dateValide(it) != null }.take(4000))).apply()
         }
         root.optJSONArray("blocked_apps")?.let { array ->
             val apps = blockedApps(context).toMutableSet()
             for (i in 0 until array.length()) apps.add(array.optString(i))
-            setBlockedApps(context, apps.filter { it.isNotBlank() }.toSet())
+            setBlockedApps(context, apps.filter { it.isNotBlank() && it.length <= 255 }.take(500).toSet())
         }
         return imported
     }
@@ -1627,6 +1911,17 @@ object Store {
 
     fun formatMinutes(minutes: Int): String =
         String.format(Locale.US, "%02d:%02d", (minutes / 60) % 24, minutes % 60)
+
+    /** L'heure comme le téléphone l'écrit (24 h ou 12 h), pour l'affichage et pour les sélecteurs (FACCUEIL-26). */
+    fun formatHeure(context: Context, minutes: Int): String {
+        // En UTC, sur un jour fixe : le jour du passage à l'heure d'été, 02:30 n'existe pas dans le
+        // fuseau du téléphone, et un calendrier du jour l'aurait affiché 03:30.
+        val utc = java.util.TimeZone.getTimeZone("UTC")
+        val c = java.util.Calendar.getInstance(utc).apply {
+            clear(); set(1970, java.util.Calendar.JANUARY, 1, (minutes / 60) % 24, minutes % 60)
+        }
+        return android.text.format.DateFormat.getTimeFormat(context).apply { timeZone = utc }.format(c.time)
+    }
 
     /**
      * « 20 min », « 1 h 30 » : les unités viennent des chaînes, pour suivre

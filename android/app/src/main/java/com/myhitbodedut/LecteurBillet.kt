@@ -25,33 +25,48 @@ object LecteurBillet {
     private const val PAGES_MAX = 4
     private const val COTE_MAX = 2400
 
-    /** Le texte du premier code-barres trouvé, ou null. */
+    /**
+     * Le texte du premier code-barres trouvé, ou null s'il n'y en a pas. Les pages se rendent et se
+     * décodent une à une (une seule en mémoire) et la lecture s'arrête au premier code (FVOL-17).
+     * Un fichier qu'on ne peut pas ouvrir, ou la mémoire qui manque, lève une exception : l'écran
+     * dit alors que le billet n'a pas pu être ouvert, et non qu'il n'a pas de code-barres.
+     */
     fun code(context: Context, uri: Uri): String? {
         val type = context.contentResolver.getType(uri).orEmpty()
-        val images = if (type == "application/pdf" || uri.toString().endsWith(".pdf", ignoreCase = true)) pages(context, uri) else listOfNotNull(image(context, uri))
-        for (b in images) {
-            val r = decoder(b) ?: decoder(tourner(b))
-            b.recycle()
-            if (r != null) return r
-        }
-        return null
+        if (type == "application/pdf" || uri.toString().endsWith(".pdf", ignoreCase = true)) return codeDuPdf(context, uri)
+        val b = image(context, uri) ?: throw java.io.IOException("image illisible")
+        return decoderEtLiberer(b)
     }
 
-    private fun pages(context: Context, uri: Uri): List<Bitmap> = runCatching {
-        context.contentResolver.openFileDescriptor(uri, "r")?.use { fd ->
+    private fun codeDuPdf(context: Context, uri: Uri): String? {
+        val fd = context.contentResolver.openFileDescriptor(uri, "r") ?: throw java.io.IOException("fichier introuvable")
+        fd.use {
             PdfRenderer(fd).use { pdf ->
-                (0 until minOf(pdf.pageCount, PAGES_MAX)).map { i ->
-                    pdf.openPage(i).use { page ->
+                for (i in 0 until minOf(pdf.pageCount, PAGES_MAX)) {
+                    val b = pdf.openPage(i).use { page ->
                         val echelle = COTE_MAX.toFloat() / maxOf(page.width, page.height)
                         val b = Bitmap.createBitmap((page.width * echelle).toInt().coerceAtLeast(1), (page.height * echelle).toInt().coerceAtLeast(1), Bitmap.Config.ARGB_8888)
                         b.eraseColor(Color.WHITE)
                         page.render(b, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT)
                         b
                     }
+                    decoderEtLiberer(b)?.let { return it }
                 }
             }
         }
-    }.getOrNull().orEmpty()
+        return null
+    }
+
+    /** Le code de l'image, puis de sa copie tournée de 90° ; les deux images sont libérées. */
+    private fun decoderEtLiberer(b: Bitmap): String? {
+        try {
+            decoder(b)?.let { return it }
+            val t = tourner(b)
+            try { return decoder(t) } finally { t.recycle() }
+        } finally {
+            b.recycle()
+        }
+    }
 
     private fun image(context: Context, uri: Uri): Bitmap? = runCatching {
         val bornes = BitmapFactory.Options().apply { inJustDecodeBounds = true }

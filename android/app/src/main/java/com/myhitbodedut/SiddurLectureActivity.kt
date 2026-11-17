@@ -71,6 +71,8 @@ class SiddurLectureActivity : AppCompatActivity() {
         setContentView(R.layout.activity_siddur_lecture)
         id = intent.getStringExtra(ID).orEmpty()
         livre = intent.getBooleanExtra(LIVRE, false)
+        // L'écran recréé (rotation, thème) garde ses ajouts dépliés (audit du 12/11, FLECTURE-04).
+        savedInstanceState?.getStringArrayList(ETAT_OUVERTS)?.let { ouverts.addAll(it) }
         liste = findViewById<RecyclerView>(R.id.siddur_lecture_list).apply {
             layoutManager = LinearLayoutManager(this@SiddurLectureActivity)
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -85,11 +87,27 @@ class SiddurLectureActivity : AppCompatActivity() {
             // Même nusah : on garde sa place ; un autre nusah n'a pas les mêmes paragraphes.
             afficher(garderPlace = recueil().nusah == nusahAffiche)
         }
+        val ouvrir = {
         afficher(garderPlace = false)
         // Ouvert depuis un marque-page (15/10) : à sa place ; sinon, reprendre là où on s'était arrêté (14/10).
-        val marque = intent.getStringExtra(MARQUE)?.split(':')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 }
+        // Le marque-page n'est suivi qu'à l'ouverture : l'écran recréé reprend la dernière place lue,
+        // pas le marque-page d'origine (FLECTURE-04).
+        val marque = intent.getStringExtra(MARQUE)?.split(':')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && savedInstanceState == null }
         if (marque != null) liste.post { allerA(marque[0], marque[1]) }
         else Store.positionLecture(this, cle())?.let { p -> liste.post { (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(p, 0) } }
+        }
+        // Un gros livre (Likoutei Moharan, 10 Mo) se lit et s'analyse hors du fil principal, avec un
+        // mot d'attente, puis s'affiche (audit du 12/11, FLECTURE-06) : l'écran ne reste plus figé.
+        if (livre && !Data.livreEnMemoire(id)) {
+            chargement = true
+            findViewById<TextView>(R.id.siddur_lecture_subtitle).setText(R.string.lecture_chargement)
+            val contexte = applicationContext
+            val numero = id
+            Thread {
+                runCatching { Data.livre(contexte, numero) }
+                runOnUiThread { if (!isFinishing && !isDestroyed) { chargement = false; ouvrir() } }
+            }.start()
+        } else ouvrir()
         findViewById<android.widget.ImageView>(R.id.siddur_lecture_marques).apply {
             // Ruban en contour pour une prière, livre ouvert et ruban pour une étude (15/10).
             setImageResource(icone(livre))
@@ -142,8 +160,8 @@ class SiddurLectureActivity : AppCompatActivity() {
     /** Va au paragraphe ; replié aujourd'hui, au titre de sa section. */
     private fun allerA(si: Int, bi: Int) {
         val gestion = liste.layoutManager as LinearLayoutManager
-        val i = lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && places[it.bloc] == (si to bi) }
-        val repli = if (i >= 0) i else lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && (places[it.bloc]?.first ?: -1) >= si }
+        val i = lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && places[it.origine] == (si to bi) }
+        val repli = if (i >= 0) i else lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Bloc && (places[it.origine]?.first ?: -1) >= si }
         if (repli >= 0) { choisi = null; liste.stopScroll(); gestion.scrollToPositionWithOffset(repli, 0) }
     }
 
@@ -156,11 +174,30 @@ class SiddurLectureActivity : AppCompatActivity() {
         dialogue.setPositiveButton(android.R.string.ok, null).show()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putStringArrayList(ETAT_OUVERTS, ArrayList(ouverts))
+    }
+
+    /** L'écran reste allumé tant qu'on lit (FLECTURE-01). */
+    private val veille by lazy { VeilleLecture(this) }
+
+    override fun onResume() {
+        super.onResume()
+        veille.toucher()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        veille.toucher()
+    }
+
     override fun onPause() {
         super.onPause()
+        veille.arreter()
         pauseA = System.currentTimeMillis()
         val p = (liste.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-        if (p >= 0) Store.setPositionLecture(this, cle(), p, pauseA)
+        if (p >= 0 && !chargement) Store.setPositionLecture(this, cle(), p, pauseA)
     }
 
     /** Quand la lecture a été quittée (onPause), pour onRestart. */
@@ -178,6 +215,7 @@ class SiddurLectureActivity : AppCompatActivity() {
     }
 
     private var nusahAffiche: LocalizedText? = null
+    private var languesDessinees: LanguesTexte.Mode? = null
 
     /** Un livre de la bibliothèque (Likoutei Etsot, Sefer HaMiddot, 12/10), lu comme une prière, sans nusah ni ajouts du jour. */
     private var livre = false
@@ -185,10 +223,24 @@ class SiddurLectureActivity : AppCompatActivity() {
     /** Les langues de lecture (LanguesTexte, 04/11). */
     private var langues = LanguesTexte.Mode.HE
 
+    /**
+     * Le livre ouvert, gardé tant que l'écran vit (examen du 14/11, constat 11) : la mémoire
+     * vidée par Android (MyHitbodedutApp.onTrimMemory) faisait relire et réanalyser tout le
+     * livre sur le fil principal au réglage suivant, au lendemain ou au renvoi touché. Ses
+     * paragraphes sont de toute façon retenus par la liste affichée.
+     */
+    private var livreOuvert: Siddur? = null
+
     // Un livre seul (04/11) : ouvrir la Méguila ne lit plus les 16 Mo de tous les livres.
-    private fun recueil(): Siddur = if (livre) Data.livre(this, id) ?: Siddur(emptyList(), emptyList()) else Data.siddur(this)
+    private fun recueil(): Siddur =
+        if (livre) livreOuvert ?: (Data.livre(this, id) ?: Siddur(emptyList(), emptyList())).also { if (it.textes.isNotEmpty()) livreOuvert = it }
+        else Data.siddur(this)
+
+    /** Le livre se charge encore : rien à dessiner, ni à relire en position. */
+    private var chargement = false
 
     private fun afficher(garderPlace: Boolean) {
+        if (chargement) return
         val siddur = recueil()
         val texte = siddur.texte(id)
         if (texte == null) {
@@ -241,18 +293,37 @@ class SiddurLectureActivity : AppCompatActivity() {
         val israel = Store.inIsrael(this)
         // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
         val apresSortie = Store.lieuZmanim(this)?.let { lieu ->
-            Zmanim.jour(lieu, LocalDate.now()).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
+            Zmanim.jour(lieu, LocalDate.now(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
         } ?: false
         val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
-            Store.mukafChoma(this))
+            Store.mukafChoma(this)).let { j ->
+            // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
+            val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now(), Store.siddurNusah(this).cle) }
+            val maintenant = java.time.Instant.now()
+            val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
+            val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }
+            if (CalendrierJuif.nuit(LocalTime.now(), sortie, aube)) j.copy(conditions = j.conditions + CalendrierJuif.C.NUIT) else j
+        }
         val annotations = if (livre) emptyList() else Data.ajouts(this)[id].orEmpty()
-        val note = if (annotations.isEmpty()) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
-            jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora))))
+        // Un texte qui n'a que des notes de l'application (audit du 16/11) n'a pas d'ajouts du jour.
+        val note = (if (annotations.all { it.sorte == SiddurJour.Sorte.NOTE }) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
+            jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora))))) +
+            // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
+            (if (id in JourAffiche.OFFICES && jour.chome) listOf(Note(getString(R.string.siddur_semaine_chabbat))) else emptyList())
         // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
         langues = LanguesTexte.mode(this)
-        val traduit = texte.sections.any { s -> s.blocs.any { it.fr != null || it.en != null } }
-        val sansTraduction = if (livre && LanguesTexte.manque(langues, traduit)) listOf(Note(getString(R.string.lecture_sans_traduction))) else emptyList()
-        val lignes: List<Any> = sansTraduction + note + SiddurJour.lignes(texte, annotations, jour.conditions, ouverts,
+        // Une consigne traduite (TEFILA-02) ne fait pas d'un texte un texte traduit.
+        val traduit = texte.sections.any { s -> s.blocs.any { !it.consigne && (it.fr != null || it.en != null) } }
+        // Le siddour aussi : ses prières et ses consignes ne sont pas traduites, et il le dit (COUV-02).
+        val sansTraduction = if (LanguesTexte.manque(langues, traduit)) listOf(Note(getString(R.string.lecture_sans_traduction))) else emptyList()
+        // Un livre traduit en partie (le Yalkout Yossef) : combien de chapitres, les autres restent en hébreu (COUV-01, TLIVRES-05).
+        val chapitresTraduits = texte.chapitresTraduits()
+        val partielle = if (livre && traduit && chapitresTraduits < texte.sections.size && langues.langues.any { it != "he" })
+            listOf(Note(getString(R.string.lecture_traduction_partielle, chapitresTraduits, texte.sections.size))) else emptyList()
+        // Une traduction automatique affichée : on dit qu'elle n'est pas relue, l'hébreu fait foi (COUV-05).
+        val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
+            listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
+        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, Store.conditionsDuJour(this, jour), ouverts,
             Store.siddurNusah(this).cle, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this))
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager
@@ -262,18 +333,10 @@ class SiddurLectureActivity : AppCompatActivity() {
         places = java.util.IdentityHashMap<SiddurBloc, Pair<Int, Int>>().apply {
             texte.sections.forEachIndexed { si, s -> s.blocs.forEachIndexed { bi, b -> put(b, si to bi) } }
         }
-        // Un ajout déplié se lit dans un panneau, fermé par un pied « Replier » (19/10).
-        val avecPieds = ArrayList<Any>(lignes.size + 4)
-        val panneau = HashSet<Int>()
-        var ouvert: String? = null
-        for (l in lignes) {
-            val dedans = l is SiddurJour.Ligne.Bloc && l.style == SiddurJour.Style.HORS
-            if (ouvert != null && !dedans) { avecPieds += Pied(ouvert); ouvert = null }
-            if (ouvert != null) panneau += avecPieds.size
-            avecPieds += l
-            if (l is SiddurJour.Ligne.Replie && l.ouvert) ouvert = l.cle
-        }
-        ouvert?.let { avecPieds += Pied(it) }
+        // Un ajout déplié se lit dans un panneau, fermé par un pied « Replier » (19/10) : à la fin du repli
+        // (SiddurJour.Ligne.Fin), après tous ses membres, même quand un repli s'ouvre dedans (audit du 16/11).
+        val avecPieds: List<Any> = lignes.map { if (it is SiddurJour.Ligne.Fin) Pied(it.cle) else it }
+        val panneau = SiddurJour.panneaux(lignes)
         lignesAffichees = avecPieds
         liste.setBackgroundColor(rendu.fond)
         // Déplier, replier : les paragraphes glissent en place au lieu d'apparaître d'un coup.
@@ -284,7 +347,10 @@ class SiddurLectureActivity : AppCompatActivity() {
             moveDuration = 260
         } else null
         val ancien = liste.adapter as? Adaptateur
-        if (garderPlace && ancien != null && ancien.rendu == rendu) {
+        // Les langues ont changé : les mêmes lignes se dessinent autrement, l'ancienne liste ne se rebinde pas.
+        val memesLangues = languesDessinees == langues
+        languesDessinees = langues
+        if (garderPlace && ancien != null && ancien.rendu == rendu && memesLangues) {
             ancien.remplacer(avecPieds, panneau)
         } else {
             liste.adapter = Adaptateur(avecPieds, panneau, rendu)
@@ -314,6 +380,22 @@ class SiddurLectureActivity : AppCompatActivity() {
         val ondulation = TypedValue().also {
             theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, it, true)
         }.resourceId
+        // Un livre de centaines de chapitres : un bouton « Chapitres » et une liste filtrable, non
+        // une bande de pastilles à faire défiler (audit du 12/11, FLECTURE-03).
+        if (debuts.size > SEUIL_CHAPITRES) {
+            rang.addView(TextView(this).apply {
+                text = "${getString(R.string.siddur_chapitres)} (${debuts.size})  ▾"
+                textSize = 14f
+                setPadding(dp(12), dp(4), dp(12), dp(4))
+                minHeight = dp(48)
+                gravity = android.view.Gravity.CENTER
+                setTextColor(rendu.titre)
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                foreground = ContextCompat.getDrawable(context, ondulation)
+                setOnClickListener { listeChapitres(lignes) }
+            })
+            return
+        }
         debuts.forEachIndexed { i, position ->
             rang.addView(TextView(this).apply {
                 text = (lignes[position] as SiddurJour.Ligne.Titre).texte
@@ -335,9 +417,59 @@ class SiddurLectureActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Les chapitres d'un long livre, dans une boîte de dialogue : on filtre par numéro ou par mot,
+     * on touche, on y est (FLECTURE-03).
+     */
+    private fun listeChapitres(lignes: List<Any>) {
+        val titres = debuts.map { (lignes[it] as SiddurJour.Ligne.Titre).texte }
+        val montres = ArrayList<Int>(titres.indices.toList())
+        val adaptateur = object : android.widget.BaseAdapter() {
+            override fun getCount() = montres.size
+            override fun getItem(i: Int) = titres[montres[i]]
+            override fun getItemId(i: Int) = montres[i].toLong()
+            override fun getView(i: Int, v: View?, parent: ViewGroup): View = ((v as? TextView) ?: TextView(this@SiddurLectureActivity).apply {
+                textSize = 17f
+                setPadding(dp(20), dp(12), dp(20), dp(12))
+                layoutDirection = View.LAYOUT_DIRECTION_RTL
+                textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                PoliceHebraique.appliquer(this)
+            }).apply { text = getItem(i) }
+        }
+        val champ = android.widget.EditText(this).apply {
+            hint = getString(R.string.siddur_chapitres_filtre)
+            setSingleLine()
+            setPadding(dp(20), dp(12), dp(20), dp(12))
+        }
+        val vue = android.widget.ListView(this).apply { adapter = adaptateur }
+        val corps = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(champ)
+            addView(vue, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(360)))
+        }
+        val dialogue = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.siddur_chapitres).setView(corps).setNegativeButton(android.R.string.cancel, null).show()
+        champ.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+            override fun afterTextChanged(e: android.text.Editable?) {
+                montres.clear()
+                montres.addAll(Chapitres.filtrer(titres, e?.toString().orEmpty()))
+                adaptateur.notifyDataSetChanged()
+            }
+        })
+        vue.setOnItemClickListener { _, _, i, _ ->
+            val position = debuts[montres[i]]
+            dialogue.dismiss()
+            choisi = null
+            liste.stopScroll()
+            (liste.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 0)
+        }
+    }
+
     /** Marque le signet de la section qu'on lit. */
     private fun suivre() {
-        if (debuts.size < 2) return
+        if (debuts.size < 2 || debuts.size > SEUIL_CHAPITRES) return
         val gestion = liste.layoutManager as LinearLayoutManager
         val premiere = gestion.findFirstVisibleItemPosition()
         if (premiere == RecyclerView.NO_POSITION) return
@@ -453,6 +585,11 @@ class SiddurLectureActivity : AppCompatActivity() {
                 setCompoundDrawablesRelative(null, null, null, null)
                 alpha = 1f
                 contentDescription = null
+                // L'action « marque-page » et l'état « marqué » d'un paragraphe (FLECTURE-21) ne
+                // doivent pas suivre la vue recyclée sur un titre ou un repli.
+                androidx.core.view.ViewCompat.removeAccessibilityAction(this,
+                    androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_LONG_CLICK)
+                androidx.core.view.ViewCompat.setStateDescription(this, null)
                 setOnClickListener(null)
                 setOnLongClickListener(null)
                 isClickable = false
@@ -480,11 +617,13 @@ class SiddurLectureActivity : AppCompatActivity() {
                     setPadding(dp(16), dp(if (position == 0) 8 else 32), dp(16), dp(8))
                     // Le titre traduit (04/11), sous l'hébreu ou à sa place, selon les langues choisies.
                     val titres = LanguesTexte.textes(langues, ligne.texte, ligne.fr, ligne.en)
-                    text = if (titres.size == 1) titres[0].second else android.text.SpannableStringBuilder().apply {
-                        titres.forEachIndexed { k, (_, t) ->
+                    text = if (titres.size == 1 && titres[0].first == "he") titres[0].second else android.text.SpannableStringBuilder().apply {
+                        titres.forEachIndexed { k, (l, t) ->
                             if (k > 0) append("\n")
                             val d = length
                             append(t)
+                            // La police hébraïque réduite n'a pas les lettres accentuées (FLECTURE-24).
+                            if (l != "he") setSpan(android.text.style.TypefaceSpan("serif"), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             if (k > 0) setSpan(android.text.style.RelativeSizeSpan(0.72f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         }
                     }
@@ -505,18 +644,20 @@ class SiddurLectureActivity : AppCompatActivity() {
                     val hebreu = if (consigne) Html.fromHtml(ligne.bloc.texte, Html.FROM_HTML_MODE_LEGACY)
                     else premierMotAgrandi(Html.fromHtml(Aeration.aerer(ligne.bloc.texte), Html.FROM_HTML_MODE_LEGACY))
                     // Un verset traduit (Esther, Chir HaChirim, 04/11) : l'hébreu et/ou la traduction, un
-                    // paragraphe chacun, chacun dans son sens (premier caractère fort).
-                    val textes = if (consigne) emptyList() else LanguesTexte.textes(langues, ligne.bloc.texte, ligne.bloc.fr, ligne.bloc.en)
+                    // paragraphe chacun, chacun dans son sens (premier caractère fort). Une consigne
+                    // traduite aussi (TEFILA-02 : « à dire sept fois de suite ») ; sans traduction, l'hébreu.
+                    val textes = LanguesTexte.textes(langues, ligne.bloc.texte, ligne.bloc.fr, ligne.bloc.en)
                     text = if (textes.none { it.first != "he" }) hebreu else android.text.SpannableStringBuilder().apply {
                         val avecHebreu = textes.any { it.first == "he" }
                         textes.forEach { (l, t) ->
                             if (isNotEmpty()) append("\n")
                             if (l == "he") { append(hebreu); return@forEach }
                             val d = length
-                            append(t)
+                            append(LanguesTexte.riche(t))
                             setSpan(android.text.style.TypefaceSpan("serif"), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             if (avecHebreu) {
-                                setSpan(android.text.style.RelativeSizeSpan(0.84f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                // Une consigne est déjà petite : sa traduction garde sa taille.
+                                if (!consigne) setSpan(android.text.style.RelativeSizeSpan(0.84f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                                 setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                             }
                         }
@@ -534,17 +675,23 @@ class SiddurLectureActivity : AppCompatActivity() {
                     if (position in dansPanneau) background = panneau(voile, haut = false, bas = false)
                     else if (ligne.style == SiddurJour.Style.HORS) alpha = 0.55f
                     // Le marque-page : un trait de la couleur des titres au début du paragraphe.
-                    if (marquee(ligne.bloc)) background = android.graphics.drawable.LayerDrawable(arrayOf(
+                    val marque = marquee(ligne.origine)
+                    if (marque) background = android.graphics.drawable.LayerDrawable(arrayOf(
                         background ?: android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT),
                         android.graphics.drawable.ColorDrawable(rendu.titre))).apply {
                         setLayerWidth(1, dp(4)); setLayerGravity(1, android.view.Gravity.START or android.view.Gravity.FILL_VERTICAL)
                     }
-                    if (marquee(ligne.bloc)) setCompoundDrawablesRelative(null, null,
+                    if (marque) setCompoundDrawablesRelative(null, null,
                         ContextCompat.getDrawable(context, icone(livre))?.mutate()?.apply {
                             setTint(rendu.titre); setBounds(0, 0, dp(16), dp(16))
                         }, null)
                     compoundDrawablePadding = dp(6)
-                    setOnLongClickListener { basculerMarque(ligne.bloc); true }
+                    setOnLongClickListener { basculerMarque(ligne.origine); true }
+                    // TalkBack (FLECTURE-21) : l'appui long annonce son effet, et le paragraphe marqué le dit.
+                    androidx.core.view.ViewCompat.replaceAccessibilityAction(this,
+                        androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK,
+                        getString(if (marque) R.string.marque_action_retirer else R.string.marque_action_poser), null)
+                    androidx.core.view.ViewCompat.setStateDescription(this, if (marque) getString(R.string.marque_etat) else null)
                 }
                 is SiddurJour.Ligne.Etiquette -> vue.apply {
                     layoutDirection = View.LAYOUT_DIRECTION_LOCALE
@@ -559,9 +706,19 @@ class SiddurLectureActivity : AppCompatActivity() {
                 is SiddurJour.Ligne.Indice -> vue.apply {
                     PoliceHebraique.appliquer(this)
                     setPadding(dp(16), dp(0), dp(16), dp(8))
-                    text = getString(R.string.siddur_aujourdhui) + " : " + ligne.texte
+                    text = if (ligne.fixe) ligne.texte else getString(R.string.siddur_aujourdhui) + " : " + ligne.texte
                     textSize = 12f * e
                     setTextColor(rendu.titre)
+                }
+                // Ce que le jour change ici sans texte dans le siddour (audit du 16/11).
+                is SiddurJour.Ligne.Rappel -> vue.apply {
+                    layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                    textDirection = View.TEXT_DIRECTION_LOCALE
+                    setPadding(dp(16), dp(8), dp(16), dp(8))
+                    text = getString(R.string.siddur_aujourdhui) + " · " + nom(ligne.libelle)
+                    textSize = 13f * e
+                    setTextColor(rendu.titre)
+                    setBackgroundColor(teinte)
                 }
                 is SiddurJour.Ligne.Renvoi -> vue.apply {
                     // « Aujourd'hui · הַלֵּל › » : le texte de ce jour, à cet endroit, ouvert d'un geste.
@@ -622,7 +779,8 @@ class SiddurLectureActivity : AppCompatActivity() {
                 is SiddurJour.Ligne.Seul -> vue.apply {
                     // Qui prie seul (19/10) : une carte à part, jamais repliée ; la consigne petite, la braïta en grand.
                     PoliceHebraique.appliquer(this)
-                    val etiquette = getString(R.string.siddur_seul)
+                    // Une note de l'application (audit du 16/11) : même carte, son étiquette propre.
+                    val etiquette = getString(if (ligne.note) R.string.siddur_note else R.string.siddur_seul)
                     text = android.text.SpannableStringBuilder(etiquette).apply {
                         setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         setSpan(android.text.style.ForegroundColorSpan(rendu.titre), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -685,6 +843,10 @@ class SiddurLectureActivity : AppCompatActivity() {
         private const val ID = "id"
         private const val LIVRE = "livre"
         private const val MARQUE = "marque"
+        private const val ETAT_OUVERTS = "ouverts"
+
+        /** Au-delà, la bande de pastilles cède la place à la liste des chapitres. */
+        const val SEUIL_CHAPITRES = 40
 
         /** L'icône des marque-pages : prière (siddour) ou étude (livre). */
         fun icone(etude: Boolean) = if (etude) R.drawable.ic_marque_etude else R.drawable.ic_marque_priere
@@ -702,6 +864,13 @@ class SiddurLectureActivity : AppCompatActivity() {
 
         fun ouvrir(context: Context, id: String) {
             context.startActivity(intent(context, id))
+        }
+
+        /** Ouvre un texte ou un livre au paragraphe (section, bloc) : un résultat de recherche (FLECTURE-02). */
+        fun ouvrirA(context: Context, id: String, etude: Boolean, section: Int, bloc: Int) {
+            if (section < 0 || bloc < 0) return if (etude) ouvrirLivre(context, id) else ouvrir(context, id)
+            context.startActivity(Intent(context, SiddurLectureActivity::class.java).putExtra(ID, id)
+                .putExtra(LIVRE, etude).putExtra(MARQUE, "$section:$bloc"))
         }
 
         fun ouvrirLivre(context: Context, id: String) {

@@ -24,6 +24,10 @@ object Holidays {
     fun isYomTov(date: LocalDate, inIsrael: Boolean): Boolean =
         calendar(date, inIsrael).isYomTovAssurBemelacha
 
+    /** Yom Kippour ce jour-là (FBARRIERE-13 : la veille, « double repas » serait faux). */
+    fun isYomKippur(date: LocalDate, inIsrael: Boolean): Boolean =
+        calendar(date, inIsrael).yomTovIndex == JewishCalendar.YOM_KIPPUR
+
     /** Vrai si le lendemain est chômé : la fête entre au coucher du soleil. */
     fun isEveOfRestDay(date: LocalDate, inIsrael: Boolean): Boolean =
         isRestDay(date.plusDays(1), inIsrael)

@@ -30,6 +30,7 @@
     <color name="paper">#F4F7F2</color>
     <color name="card">#FFFFFF</color>
     <color name="line">#DCE7DF</color>
+    <color name="nav_pastille">#DCE7DF</color>
     <color name="white">#FFFFFF</color>
 
     <!-- Encre du bouton principal, qui se renverse la nuit. -->
@@ -50,9 +51,18 @@
          la semaine et la série ont les leurs, fixes de jour et de nuit. -->
     <color name="ring_week">#2E7DB3</color>
     <color name="ring_streak">#B8780F</color>
+    <!-- Le texte de la légende des anneaux (FACCUEIL-18) : plus sombre que le trait, 4,5:1 sur la carte. -->
+    <color name="ring_week_text">#256A9A</color>
+    <color name="ring_streak_text">#8A5A00</color>
     <!-- Les mêmes, sur le fond vert foncé de la vignette : plus clairs, et fixes. -->
     <color name="ring_week_on_dark">#8CCBF2</color>
     <color name="ring_streak_on_dark">#F0C46A</color>
+    <!-- Les chiffres de la plaque centrale (FACCUEIL-02, 14/11) : la plaque reste claire la nuit,
+         leurs encres aussi. Fixes, jamais redéfinies la nuit ; 4,5:1 au moins sur les six plaques. -->
+    <color name="ring_week_on_plate">#2A74A6</color>
+    <color name="ring_streak_on_plate">#8A5A00</color>
+    <color name="on_plate_ink">#172B27</color>
+    <color name="on_plate_muted">#5E706A</color>
     <!-- Fond très dilué du badge d'avertissement. -->
     <color name="warning_wash">#1FC66B2D</color>
     <!-- La lecture de nuit des textes saints (ReglagesLecture) ; le bouton, lui, prend l'accent choisi. -->
@@ -76,4 +86,27 @@
     <color name="icone_fond_bordeaux">#F8E1E5</color>
     <color name="icone_fond_ambre">#FBEFD6</color>
     <color name="icone_fond_turquoise">#D9F3F5</color>
+
+    <!-- Le voile derrière le volet de la séance (13/11). -->
+    <color name="voile">#99000000</color>
+
+    <!-- Les couvertures du rayonnage des Livres (13/11) : le plat et le dos. Fixes : ce sont les couleurs des livres, pas celles du thème. -->
+    <color name="couv_vert">#1B7A5C</color>
+    <color name="couv_vert_dos">#0F5440</color>
+    <color name="couv_bleu">#2D5F9A</color>
+    <color name="couv_bleu_dos">#1D4270</color>
+    <color name="couv_clair">#EEF8F3</color>
+    <color name="couv_clair_dos">#B9D9CB</color>
+    <color name="couv_violet">#4B3F8F</color>
+    <color name="couv_violet_dos">#33296B</color>
+    <color name="couv_brun">#8A4B1F</color>
+    <color name="couv_brun_dos">#5F3212</color>
+    <color name="couv_parchemin">#EFE3C8</color>
+    <color name="couv_parchemin_dos">#CDBB8F</color>
+    <color name="couv_petrole">#1D4A57</color>
+    <color name="couv_petrole_dos">#12333D</color>
+    <color name="couv_menthe">#6AD1A7</color>
+    <color name="couv_menthe_dos">#3FA57C</color>
+    <color name="couv_encre_claire">#FFFFFF</color>
+    <color name="couv_encre_sombre">#12241E</color>
 </resources>

@@ -41,7 +41,10 @@ object Zmanim {
     enum class Statut {
         OK,
 
-        /** L'événement n'a pas lieu ce jour-là (soleil de minuit, nuit polaire) : ce n'est pas une erreur. */
+        /**
+         * L'événement n'a pas lieu ce jour-là (soleil de minuit, nuit polaire) : ce n'est pas une erreur.
+         * L'aube à 16,1° manque dès environ 50,5° N autour du solstice d'été (Londres ; audit du 16/11).
+         */
         ABSENT,
 
         /** Le calcul a échoué : une erreur technique, distincte d'un événement absent. */
@@ -84,6 +87,36 @@ object Zmanim {
         "chatsot_layla" to Methode("milieu_chatsot", ""),    // getSolarMidnight
     )
 
+    /**
+     * Le profil des Edot (audit du 16/11) : les zmanim du Yalkut Yosef à la place de ceux de
+     * [PROFIL] ; les autres lignes restent communes. Sfard et Ashkenaz gardent [PROFIL] (Biour
+     * Halakha 89:1 ne fixe pas de méthode pour l'aube ; MB 233:4 rapporte le plag du Gra ;
+     * Biour Halakha 261:2 dispense des zmaniyot pour Rabbénou Tam). L'heure zmanit est celle du
+     * Gra (du lever au coucher au niveau de la mer).
+     *  - aube : 72 min zmaniyot avant le lever (Kitsour Yalkut Yosef 89:12) ;
+     *  - michéyakir : 6 min zmaniyot après cette aube (calendrier Or ha'Haïm, proposé par l'audit) ;
+     *  - Maguen Avraham : journée de 72 min zmaniyot de chaque côté (Kitsour YY 58:3 et 89:12) ;
+     *  - tsét : 13,5 min zmaniyot après le coucher (Kitsour YY 233:5) ;
+     *  - plag : 1¼ heure zmanit avant ce tsét (Kitsour YY 263:45) ;
+     *  - Rabbénou Tam : 72 min zmaniyot après le coucher (Kitsour YY 293:3 et 293:7).
+     */
+    val PROFIL_EDOT: Map<String, Methode> = mapOf(
+        "alot" to Methode("zmaniyot_avant_netz", "72"),       // getAlos72Zmanis
+        "misheyakir" to Methode("zmaniyot_avant_netz", "66"), // lever − 1,1 heure zmanit
+        "szks_mga" to Methode("mga_72_zmaniyot", "72"),       // getSofZmanShmaMGA72MinutesZmanis
+        "szt_mga" to Methode("mga_72_zmaniyot", "72"),        // getSofZmanTfilaMGA72MinutesZmanis
+        "plag" to Methode("plag_yalkut_yosef", ""),           // coucher − 1,025 heure zmanit
+        "tset" to Methode("zmaniyot_apres_chkia", "13.5"),    // coucher + 0,225 heure zmanit
+        "tset_rt" to Methode("zmaniyot_apres_chkia", "72"),   // getTzais72Zmanis
+    )
+
+    /** Le noussa'h « commun » : le profil [PROFIL] (Sfard, Ashkenaz, et tout appel sans noussa'h). */
+    const val NUSAH_COMMUN = ""
+
+    /** Le profil d'un noussa'h : [PROFIL], où les Edot prennent les lignes de [PROFIL_EDOT]. */
+    fun profil(nusah: String = NUSAH_COMMUN): List<Pair<String, Methode>> =
+        if (nusah == "edot") PROFIL.map { (cle, m) -> cle to (PROFIL_EDOT[cle] ?: m) } else PROFIL
+
     /** L'allumage : coucher au niveau de la mer moins [minutes] (getCandleLighting). */
     fun methodeAllumage(minutes: Int) = Methode("avant_chkia", minutes.toString())
 
@@ -108,8 +141,8 @@ object Zmanim {
         }
     }
 
-    /** Les quinze zmanim du profil pour [date] au [lieu]. */
-    fun jour(lieu: Lieu, date: LocalDate): List<Zman> {
+    /** Les quinze zmanim du profil de [nusah] pour [date] au [lieu]. */
+    fun jour(lieu: Lieu, date: LocalDate, nusah: String = NUSAH_COMMUN): List<Zman> {
         val c = calendrier(lieu, date)
         val zone = ZoneId.of(lieu.fuseau)
         // getSolarMidnight prend le milieu entre chatsot d'aujourd'hui et de
@@ -117,8 +150,15 @@ object Zmanim {
         // l'un des deux manque et la bibliothèque lèverait une exception là où
         // l'événement est simplement absent.
         val nuitCalculable = c.chatzos != null && calendrier(lieu, date.plusDays(1)).chatzos != null
-        return PROFIL.map { (cle, methode) ->
-            zman(cle, methode, zone) { if (cle == "chatsot_layla" && !nuitCalculable) null else valeur(c, cle) }
+        val edot = nusah == "edot"
+        return profil(nusah).map { (cle, methode) ->
+            zman(cle, methode, zone) {
+                when {
+                    cle == "chatsot_layla" && !nuitCalculable -> null
+                    edot && cle in PROFIL_EDOT -> valeurEdot(c, cle)
+                    else -> valeur(c, cle)
+                }
+            }
         }
     }
 
@@ -126,6 +166,47 @@ object Zmanim {
     fun allumage(lieu: Lieu, date: LocalDate, minutes: Int): Zman {
         val c = calendrier(lieu, date).apply { candleLightingOffset = minutes.toDouble() }
         return zman("allumage", methodeAllumage(minutes), ZoneId.of(lieu.fuseau)) { c.candleLighting }
+    }
+
+    /**
+     * Les heures du 'hamets la veille de Pessa'h (audit du 16/11) : fin de la consommation (fin
+     * de la 4e heure) et fin du bi'our (fin de la 5e heure), selon le Maguen Avraham puis selon
+     * le Gra. Edot : heures zmaniyot de l'aube à tsét, à 72 min zmaniyot (Kitsour Yalkut Yosef
+     * 443:1, « וחושבים השעות בשעות זמניות מעמוד השחר עד צאת הכוכבים ») ; les autres : la journée de
+     * 72 min fixes de la ligne « Fin du Chema (Maguen Avraham) ». Choul'han Aroukh 443:1.
+     */
+    fun hamets(lieu: Lieu, date: LocalDate, nusah: String = NUSAH_COMMUN): List<Zman> {
+        val c = calendrier(lieu, date)
+        val zone = ZoneId.of(lieu.fuseau)
+        val edot = nusah == "edot"
+        val mga = if (edot) Methode("mga_72_zmaniyot", "72") else Methode("mga_72", "72")
+        fun heures(debut: Date?, heure: Long, n: Int): Date? =
+            if (debut == null || heure == Long.MIN_VALUE) null else Date(debut.time + n * heure)
+        fun mgaHeures(n: Int): Date? =
+            if (edot) heures(c.alos72Zmanis, c.shaahZmanis72MinutesZmanis, n) else heures(c.alos72, c.shaahZmanisMGA, n)
+        return listOf(
+            zman("hamets_achila", mga, zone) { mgaHeures(4) },
+            zman("hamets_achila", Methode("gra", ""), zone) { heures(c.seaLevelSunrise, c.shaahZmanisGra, 4) },
+            zman("hamets_biour", mga, zone) { mgaHeures(5) },
+            zman("hamets_biour", Methode("gra", ""), zone) { heures(c.seaLevelSunrise, c.shaahZmanisGra, 5) },
+        )
+    }
+
+    /** Les lignes de [PROFIL_EDOT], en heures zmaniyot du Gra (lever et coucher au niveau de la mer). */
+    private fun valeurEdot(c: ComplexZmanimCalendar, cle: String): Date? {
+        val heure = c.shaahZmanisGra
+        fun decale(d: Date?, heures: Double): Date? =
+            if (d == null || heure == Long.MIN_VALUE) null else Date(d.time + Math.round(heures * heure))
+        return when (cle) {
+            "alot" -> c.alos72Zmanis
+            "misheyakir" -> decale(c.seaLevelSunrise, -1.1)
+            "szks_mga" -> c.sofZmanShmaMGA72MinutesZmanis
+            "szt_mga" -> c.sofZmanTfilaMGA72MinutesZmanis
+            "plag" -> decale(c.seaLevelSunset, -1.025)
+            "tset" -> decale(c.seaLevelSunset, 0.225)
+            "tset_rt" -> c.tzais72Zmanis
+            else -> error("zman Edot inconnu : $cle")
+        }
     }
 
     private fun valeur(c: ComplexZmanimCalendar, cle: String): Date? = when (cle) {

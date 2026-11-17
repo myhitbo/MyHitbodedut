@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Une couverture du rayonnage des Livres (13/11) : le plat, et le dos du livre au bord de départ. Couleur fixe, de jour comme de nuit : c'est celle du livre. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/couv_bleu" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <item android:width="6dp" android:gravity="start">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/couv_bleu_dos" />
+            <corners android:bottomLeftRadius="8dp" android:topLeftRadius="8dp" />
+        </shape>
+    </item>
+</layer-list>

@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DanseMesure, SessionRule } from '../src/js/seance.js';
@@ -123,13 +123,19 @@ test('chaque moment tire dans son propre vivier, et n’a que des textes relus',
   }
 });
 
-test('l’hébreu sans nikkoud pour les éditions sans licence de vocalisation', () => {
+test('l’hébreu affiché est he, sans nikkoud pour les éditions sans licence de vocalisation', () => {
+  const vocalisation = /[\u0591-\u05BD\u05BF-\u05C2\u05C4-\u05C7]/;
+  let sansLicence = 0;
   for (const it of chizuk.items) {
-    const ok = chizuk._meta.editions[it.edition]?.nikkoud_ok ?? false;
     const he = ChizukRules.hebreu(chizuk, it);
-    if (ok) assert.equal(he, it.he);
-    else if (it.he_sans_nikkoud) assert.equal(he, it.he_sans_nikkoud);
+    assert.equal(he, it.he);
+    assert.ok(!('he_sans_nikkoud' in it), it.id);
+    if (!(chizuk._meta.editions[it.edition]?.nikkoud_ok ?? false)) {
+      sansLicence += 1;
+      assert.ok(!vocalisation.test(he), `${it.id} : vocalisation livrée`);
+    }
   }
+  assert.ok(sansLicence > 0, 'aucun texte sans licence de vocalisation : le test ne prouve rien');
 });
 
 test('la traduction suit la règle des langues', () => {
@@ -223,4 +229,96 @@ test('les ambiances calculées : audibles, douces, jamais saturées, le silence 
     else { assert.ok(Math.sqrt(r / s.length) > 0.02, a); assert.ok(crete <= 0.61, a); assert.equal(Math.abs(s[0]), 0, a); }
   }
   assert.deepEqual(generer('mer', 8000, 2), generer('mer', 8000, 2));
+});
+
+// La note après le bravo (audit FWEBLIVE-02) et la légende du décompte masqué (FWEBCODE-02) :
+// app.js ne s'importe pas hors du navigateur, on lit donc le source.
+const appSource = readFileSync(join(ICI, '..', 'src', 'js', 'app.js'), 'utf8');
+
+test('toute séance inscrite propose la note après le bravo, comme sur Android', () => {
+  // Le bravo porte la page du carnet, pour le jour de la séance ou de la journée déclarée.
+  const clore = appSource.slice(appSource.indexOf('function cloreSeance'), appSource.indexOf('function terminerMaintenant'));
+  assert.match(clore, /if \(inscrite\) \{[\s\S]*?store\.setPendingCelebration\(minutes\);[\s\S]*?dateNote = date;/);
+  const hors = appSource.slice(appSource.indexOf('function declarerHorsTelephone'), appSource.indexOf('function ajoutTemps'));
+  assert.match(hors, /if \(date === aujourdhui\) \{[^}]*setPendingCelebration\(m\);[^}]*dateNote = date;/);
+  assert.ok(appSource.includes('const c = annulee || bravo.sansCarnet ? null : ouvrirCarnet();'));
+  assert.ok(appSource.includes('const date = dateNote ?? store.today();'));
+  // L'ancien drapeau, écrit mais plus lu depuis le carnet du bravo, ne revient pas.
+  assert.doesNotMatch(appSource, /noteApresBravo/);
+});
+
+test('le bravo attend la feuille de note ouverte, puis s’ouvre sans carnet (FSEANCE-03)', () => {
+  const rendreSrc = appSource.slice(appSource.indexOf('function rendre()'));
+  assert.match(rendreSrc, /if \(minutes !== null && document\.querySelector\('\.feuille-note'\)\) \{[^}]*store\.setPendingCelebration\(minutes\);[^}]*bravoApresNote = true;/);
+  assert.match(rendreSrc, /bravo = \{ minutes, sansCarnet: bravoApresNote \};\s*bravoApresNote = false;/);
+  const note = appSource.slice(appSource.indexOf('function ecrireNote'), appSource.indexOf('let chizukSeance'));
+  assert.match(note, /f\.classList\.add\('feuille-note'\)/);
+  // Échap ou un toucher à côté rendent aussi la main : feuille() rappelle [apres].
+  assert.match(note, /\}, apres\);\n\}\n/);
+  // Un carnet pris sous la feuille relit ce qui vient d'être enregistré, au lieu de l'écraser.
+  assert.match(note, /store\.setNote\(date, champ\.value\.trim\(\)\);\s*\/\/[^\n]*\n\s*\/\/[^\n]*\n\s*if \(carnetBravo && !carnetChange\(carnetBravo\)\) carnetBravo = null;\s*fermer\(\);/);
+});
+
+test('la fin de séance se lit dans le stockage, les feuilles périmées se ferment (FWEBCODE-10, FWEBCODE-11)', () => {
+  // Une page rechargée pendant la séance n'a plus le drapeau en mémoire : le tic lit le stockage.
+  const tic = appSource.slice(appSource.indexOf('function demarreTic'), appSource.indexOf('function arreteTic'));
+  assert.match(tic, /if \(store\.isSessionOver\(\)\) \{\s*cloreSeance\(\{ avantTerme: false \}\);/);
+  assert.doesNotMatch(tic, /etaitEnCours/);
+  const clore = appSource.slice(appSource.indexOf('function cloreSeance'), appSource.indexOf('function terminerMaintenant'));
+  assert.match(clore, /^function cloreSeance\(\{ avantTerme \}\) \{\s*fermeLesFeuilles\(\);/);
+  // « Abandonner ? » confirmé après le terme : la séance est déjà inscrite, le bravo reste.
+  for (const nom of ['function terminerMaintenant', 'function annulerSeance']) {
+    const i = appSource.indexOf(nom);
+    assert.match(appSource.slice(i, appSource.indexOf('\n}\n', i)), /if \(store\.sessionStartedAt\(\) === 0\) \{ rendre\(\); return; \}/, nom);
+  }
+  assert.match(appSource, /addEventListener\('popstate', \(\) => \{\s*fermeLesFeuilles\(\);/);
+  // Le retour ferme les feuilles. Depuis la refonte (13/11), la note se tape dans le carnet du bravo :
+  // « Continuer » l'enregistre puis revient, et aucune feuille de note ne se rouvre après le retour.
+  const bravo = appSource.slice(appSource.indexOf('function ecranBravo'), appSource.indexOf('// Un jour la danse'));
+  assert.match(bravo, /const continuer = \(\) => \{\s*enregistrerCarnet\(\);[\s\S]*?retour\(\);\s*\};/);
+  assert.doesNotMatch(bravo, /ecrireNote\(/);
+});
+
+test('lecture en échec, page rechargée, langue changée : rien ne reste dans l’état d’avant (FWEBLIVE-06, FWEBCODE-11, FWEBCODE-15)', () => {
+  // La fin d'un aperçu relance la musique de la séance après l'écouteur aléatoire, pas avant (FWEBCODE-14).
+  const fin = appSource.slice(appSource.indexOf("lecteur.addEventListener('ended', () => {\n  const apercu"), appSource.indexOf("lecteur.addEventListener('pause'"));
+  assert.match(fin, /setTimeout\(\(\) => \{ if \(store\.isSessionRunning\(\) && enEcoute === null\) demarreMusique\(\); \}, 0\)/);
+  const echec = appSource.slice(appSource.indexOf('function echecLecture'), appSource.indexOf('function metadonnees'));
+  assert.match(echec, /lecteur\.pause\(\);\s*lecteur\.removeAttribute\('src'\);\s*lecteur\.load\(\);\s*majMini\(\);/);
+  const demarrer = appSource.slice(appSource.indexOf('async function demarrer'), appSource.indexOf('// Le premier lancement'));
+  assert.match(demarrer, /rendre\(\);[\s\S]*if \(store\.isSessionRunning\(\)\) gardeEcranAllume\(\);/);
+  const reglages = appSource.slice(appSource.indexOf('function ecranReglages'), appSource.indexOf("tr.t('reglage_lieu'), etat"));
+  assert.match(reglages, /mini\?\.remove\(\); mini = null;/);
+  // La région reste celle des réglages : troisième argument null.
+  assert.match(reglages, /store\.setLieu\(\{ \.\.\.lieu, nom: titreTexte\(ville\.nom\) \}, ville, null\);/);
+});
+
+test('le site ne promet pas un son de fin qu’il ne joue pas', () => {
+  assert.doesNotMatch(appSource, /tr\.t\('session_hidden_caption'\)/);
+  assert.match(appSource, /tr\.t\('session_hidden_caption_web'\)/);
+});
+
+// « Terminer » appelait SessionRule sans l'importer : ReferenceError au toucher, la séance
+// ne se terminait plus depuis le site (relecture du lot « séance », FSEANCE-12).
+test('app.js importe chaque objet de règles qu’il appelle', () => {
+  const dossier = join(ICI, '..', 'src', 'js');
+  const importes = new Set();
+  for (const m of appSource.matchAll(/^import\s*\{([^}]*)\}\s*from/gm)) {
+    for (const nom of m[1].split(',')) {
+      const t = nom.trim().split(/\s+as\s+/).pop();
+      if (t) importes.add(t);
+    }
+  }
+  for (const m of appSource.matchAll(/^import\s+\*\s+as\s+(\w+)/gm)) importes.add(m[1]);
+  const declares = new Set([...appSource.matchAll(/^\s*(?:const|let|var|function|class)\s+([A-Z]\w*)/gm)].map((m) => m[1]));
+  const manquants = [];
+  for (const fichier of readdirSync(dossier).filter((f) => f.endsWith('.js') && f !== 'app.js')) {
+    const source = readFileSync(join(dossier, fichier), 'utf8');
+    for (const m of source.matchAll(/^export\s+(?:const|class|function)\s+([A-Z]\w*)/gm)) {
+      const nom = m[1];
+      if (importes.has(nom) || declares.has(nom)) continue;
+      if (new RegExp(`(?<![.\\w$'"\`])${nom}\\.\\w`).test(appSource)) manquants.push(`${nom} (${fichier})`);
+    }
+  }
+  assert.deepEqual(manquants, []);
 });

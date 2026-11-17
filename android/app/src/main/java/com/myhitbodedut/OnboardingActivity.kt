@@ -1,18 +1,13 @@
 package com.myhitbodedut
 
-import android.Manifest
 import android.app.TimePickerDialog
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -29,8 +24,8 @@ class OnboardingActivity : AppCompatActivity() {
 
     private var index = 0
 
-    private val demandeNotifications =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { render() }
+    /** La demande partagée (13/11) : refusée, l'écran le dit sous l'interrupteur au lieu de laisser croire au rappel. */
+    private val notifications = DemandeNotifications(this) { render() }
 
     private val boutonsDuree by lazy {
         listOf(R.id.onboarding_duree_0, R.id.onboarding_duree_1, R.id.onboarding_duree_2, R.id.onboarding_duree_3)
@@ -58,11 +53,12 @@ class OnboardingActivity : AppCompatActivity() {
         findViewById<MaterialSwitch>(R.id.onboarding_rappel_switch).setOnCheckedChangeListener { v, coche ->
             if (!v.isPressed && coche == Store.reminderEnabled(this)) return@setOnCheckedChangeListener
             Store.setReminderEnabled(this, coche)
-            if (coche) demanderNotifications()
+            if (coche) notifications.lancer()
             Reminder.reschedule(this)
             render()
         }
         findViewById<Button>(R.id.onboarding_rappel_heure).setOnClickListener { choisirHeure() }
+        findViewById<TextView>(R.id.onboarding_rappel_permission).setOnClickListener { notifications.lancer() }
         findViewById<Button>(R.id.onboarding_back).setOnClickListener {
             index = Onboarding.precedent(index)
             render()
@@ -74,6 +70,12 @@ class OnboardingActivity : AppCompatActivity() {
                 render()
             }
         }
+        render()
+    }
+
+    /** Au retour de l'écran système des notifications, l'avertissement du rappel suit ce qu'on y a réglé. */
+    override fun onResume() {
+        super.onResume()
         render()
     }
 
@@ -93,14 +95,11 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun choisir(adresse: Adresse) {
         Store.setAdresse(this, adresse)
+        // L'icône de lancement suivra ce choix quand l'application quittera l'écran, et Android
+        // peut alors retirer la tâche (IconeLanceur) : la présentation est vue dès ce choix, pour
+        // ne pas repartir de son premier écran au retour (13/11, FACCUEIL-01).
+        Store.setOnboarded(this)
         render()
-    }
-
-    private fun demanderNotifications() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-            PackageManager.PERMISSION_GRANTED) return
-        demandeNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 
     /** La première heure de rappel ; les autres se règlent dans les réglages. */
@@ -110,7 +109,7 @@ class OnboardingActivity : AppCompatActivity() {
         TimePickerDialog(this, { _, h, m ->
             Store.setReminderTimes(this, listOf(h * 60 + m) + heures.drop(1))
             Store.setReminderEnabled(this, true)
-            demanderNotifications()
+            notifications.lancer()
             Reminder.reschedule(this)
             render()
         }, (depart / 60) % 24, depart % 60, DateFormat.is24HourFormat(this)).show()
@@ -128,7 +127,13 @@ class OnboardingActivity : AppCompatActivity() {
         boutonsDuree.forEachIndexed { i, b -> b.isChecked = Onboarding.DUREES[i] == cible }
         findViewById<View>(R.id.onboarding_rappel).visibility =
             if (ecran.choixRappel) View.VISIBLE else View.GONE
-        findViewById<MaterialSwitch>(R.id.onboarding_rappel_switch).isChecked = Store.reminderEnabled(this)
+        val rappel = Store.reminderEnabled(this)
+        findViewById<MaterialSwitch>(R.id.onboarding_rappel_switch).isChecked = rappel
+        // Sans les notifications, le rappel se programme et ne s'affiche jamais : le dire ici,
+        // une fois la réponse donnée, plutôt que de laisser l'interrupteur allumé sans un mot.
+        findViewById<View>(R.id.onboarding_rappel_permission).visibility =
+            if (ecran.choixRappel && PermissionRules.rappelMuet(rappel, Permissions.hasNotifications(this), notifications.enCours))
+                View.VISIBLE else View.GONE
         findViewById<Button>(R.id.onboarding_rappel_heure).apply {
             val premiere = Store.reminderTimes(this@OnboardingActivity).firstOrNull() ?: Store.DEFAULT_REMINDER
             text = getString(R.string.onboarding_rappel_heure, heure(premiere))

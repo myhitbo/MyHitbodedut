@@ -88,6 +88,36 @@ object SessionRule {
         return finMillis <= maintenant
     }
 
+    /**
+     * La seance joue-t-elle du son ? Le morceau choisi, ou une ambiance sous lui. Le service
+     * de seance se declare alors aussi en lecture multimedia (mediaPlayback) : la regle Play
+     * reserve le type « usage special » a ce qu'aucun autre type ne couvre, et la lecture
+     * audio a le sien (examen du 14/11, constat 2, FBARRIERE-16).
+     */
+    fun joueDuSon(musique: Boolean, ambiance: Ambiance): Boolean =
+        musique || ambiance != Ambiance.SILENCE
+
+    /**
+     * Un autre morceau a ete choisi dans l'ecran Musique pendant que celui de la seance est
+     * charge (qu'il joue ou soit en pause) : hors lecture aleatoire, il prend sa place.
+     * [retenu] est le morceau que la bibliotheque retient (MusicLibrary.selected), pas
+     * l'identifiant enregistre : sans choix explicite, ou quand le morceau choisi a ete retire,
+     * c'est le premier de la bibliotheque qui joue, et chaque reglage touche (volume, ambiance)
+     * relancait la musique a zero (relecture du lot « seance », FSEANCE-07).
+     */
+    fun autreMorceau(aleatoire: Boolean, charge: Boolean, retenu: String?, joue: String?): Boolean =
+        !aleatoire && charge && retenu != null && retenu != joue
+
+    /**
+     * La notification de fin part-elle sans son ni vibration ? Quand on termine soi-meme (on
+     * le sait deja), et quand le decompte masque joue sa sonnerie, pour ne pas sonner deux fois.
+     * Mais en vibreur ou en silencieux la sonnerie est muette : la notification garde alors son
+     * canal ordinaire, qui vibre en vibreur, sans quoi la fin ne se signalait plus du tout
+     * (relecture du lot « seance », FSEANCE-06).
+     */
+    fun finSilencieuse(avantTerme: Boolean, masque: Boolean, sonnerieAudible: Boolean): Boolean =
+        avantTerme || (masque && sonnerieAudible)
+
     /** La plus longue seance qu'on puisse choisir ; une seance ouverte s'y arrete aussi. */
     const val PLAFOND_OUVERTE = 240
 

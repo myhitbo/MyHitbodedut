@@ -20,9 +20,9 @@ import javax.microedition.midlet.MIDlet;
 
 /**
  * MyHitbodedut pour téléphone à touches (Java ME, MIDP 2.0) : la
- * hitbodedout minutée, les textes de ’hizouk en français, le journal et
- * un rappel quotidien, dans les couleurs et avec le personnage de
- * l'application. Aucune connexion.
+ * hitbodedout minutée, les textes de ’hizouk, le journal et un rappel
+ * quotidien, dans les couleurs et avec le personnage de l'application.
+ * En français, en anglais ou en hébreu (Mots). Aucune connexion.
  */
 public final class MyHitbodedut extends MIDlet implements CommandListener, Minuteur.Fin, Menu.Choix {
     static final int[] DUREES = {5, 10, 15, 30, 60, 90};
@@ -31,21 +31,28 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
     private Textes textes;
     private Journal journal;
 
-    private final Command quitter = new Command("Quitter", Command.EXIT, 1);
-    private final Command retour = new Command("Retour", Command.BACK, 1);
-    private final Command choisir = new Command("Choisir", Command.OK, 1);
-    private final Command commencer = new Command("Commencer", Command.OK, 1);
-    private final Command ok = new Command("OK", Command.OK, 1);
-    private final Command accueilCmd = new Command("Accueil", Command.OK, 1);
-    private final Command autre = new Command("Autre texte", Command.SCREEN, 2);
-    private final Command pause = new Command("Pause", Command.SCREEN, 1);
-    private final Command reprendre = new Command("Reprendre", Command.SCREEN, 1);
-    private final Command bloque = new Command("Je n'arrive pas à parler", Command.SCREEN, 2);
-    private final Command arreter = new Command("Arrêter", Command.STOP, 3);
-    private final Command enregistrer = new Command("Enregistrer", Command.OK, 1);
-    private final Command lecturePause = new Command("Lecture/Pause", Command.OK, 1);
+    // Les touches écran, refaites quand la langue change (le libellé d'une Command est fixe).
+    private Command quitter, retour, choisir, commencer, ok, accueilCmd, autre, pause, reprendre, bloque, arreter,
+        enregistrer, lecturePause;
+
+    private void creeCommandes() {
+        quitter = new Command(Mots.m(Mots.QUITTER), Command.EXIT, 1);
+        retour = new Command(Mots.m(Mots.RETOUR), Command.BACK, 1);
+        choisir = new Command(Mots.m(Mots.CHOISIR), Command.OK, 1);
+        commencer = new Command(Mots.m(Mots.COMMENCER), Command.OK, 1);
+        ok = new Command(Mots.m(Mots.OK), Command.OK, 1);
+        accueilCmd = new Command(Mots.m(Mots.ACCUEIL), Command.OK, 1);
+        autre = new Command(Mots.m(Mots.AUTRE), Command.SCREEN, 2);
+        pause = new Command(Mots.m(Mots.PAUSE), Command.SCREEN, 1);
+        reprendre = new Command(Mots.m(Mots.REPRENDRE), Command.SCREEN, 1);
+        bloque = new Command(textes.mot("chizuk_stuck"), Command.SCREEN, 2);
+        arreter = new Command(Mots.m(Mots.ARRETER), Command.STOP, 3);
+        enregistrer = new Command(Mots.m(Mots.ENREGISTRER), Command.OK, 1);
+        lecturePause = new Command(Mots.m(Mots.LECTURE_PAUSE), Command.OK, 1);
+    }
 
     private Menu accueil;
+    private Menu langues;
     private Menu durees;
     private Menu moments;
     private Menu liste;
@@ -69,14 +76,17 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
     protected void startApp() {
         if (display != null) return; // retour d'une pause : l'écran reste où il était
         display = Display.getDisplay(this);
+        Mots.lit();
         journal = Journal.lit();
         Ecran.feminin(journal.adresse == Journal.TSADEKET);
+        Defilement.relit(journal);
         try {
-            textes = Textes.charge();
+            textes = Textes.charge(Mots.langue);
         } catch (Exception e) {
-            display.setCurrent(new Alert("MyHitbodedut", "Textes illisibles : " + e.getMessage(), null, AlertType.ERROR));
+            display.setCurrent(new Alert("MyHitbodedut", Mots.m(Mots.ILLISIBLES, e.getMessage()), null, AlertType.ERROR));
             return;
         }
+        creeCommandes();
         construitAccueil();
         reprogrammeRappel();
         if (appeleParRappel()) {
@@ -109,7 +119,8 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
 
     // --- Accueil -------------------------------------------------------------------
     private void construitAccueil() {
-        accueil = new Menu("MyHitbodedut", new String[] {"Hitbodedout", "Musique", "'Hizouk", "Journal", "Rappel", "Vous appeler"}, this);
+        accueil = new Menu("MyHitbodedut", new String[] {Mots.m(Mots.HITBODEDOUT), Mots.m(Mots.MUSIQUE), Mots.m(Mots.HIZOUK),
+            Mots.m(Mots.JOURNAL), Mots.m(Mots.RAPPEL), Mots.m(Mots.APPEL), Mots.m(Mots.LANGUE)}, this);
         accueil.haut = new Menu.Haut() {
             public int dessine(Graphics g, int y, int w) {
                 return enteteAccueil(g, y, w);
@@ -123,12 +134,13 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         int n = 0;
         for (int i = 0; i < textes.textes.length; i++) n += textes.textes[i].length;
         accueil.details = new String[] {
-            "De 5 min à 1 h 30, ou au choix",
-            musique != null && musique.joue() ? Musique.TITRE + " : en lecture" : Musique.TITRE + " (essai)",
-            n + " textes, moment par moment",
-            "Série et 7 derniers jours",
-            journal.rappel >= 0 ? "Chaque jour à " + Regles.heure(journal.rappel) : "Pas de rappel",
-            ADRESSES[journal.adresse],
+            Mots.m(Mots.DETAIL_DUREES, Regles.duree(DUREES[0]), Regles.duree(DUREES[DUREES.length - 1])),
+            Mots.m(musique != null && musique.joue() ? Mots.EN_LECTURE : Mots.ESSAI, Mots.m(Mots.NIGGOUN)),
+            Mots.m(Mots.DETAIL_TEXTES, String.valueOf(n)),
+            Mots.m(Mots.DETAIL_JOURNAL),
+            journal.rappel >= 0 ? Mots.m(Mots.CHAQUE_JOUR, Regles.heure(journal.rappel)) : Mots.m(Mots.PAS_DE_RAPPEL),
+            Mots.adresse(journal.adresse),
+            Mots.NOMS[Mots.langue],
         };
     }
 
@@ -138,32 +150,35 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         accueil.repaint();
     }
 
-    /** Le personnage du jour, l'état de la hitbodedout, la série et la semaine. */
+    /** Le personnage du jour, l'état de la hitbodedout, la série et la semaine ; en hébreu, en miroir. */
     private int enteteAccueil(Graphics g, int y, int w) {
         int auj = journal.minutesDu(Journal.aujourdhui());
         int d = 76;
-        Ecran.plaque(g, auj > 0 ? Ecran.duJour(Ecran.JOIE, 3) : Ecran.duJour(Ecran.ACCUEIL, 0), Ecran.MARGE + d / 2, y, d);
-        int x = Ecran.MARGE + d + 10;
+        boolean r = Ecran.rtl();
+        Ecran.plaque(g, auj > 0 ? Ecran.duJour(Ecran.JOIE, 3) : Ecran.duJour(Ecran.ACCUEIL, 0), Ecran.mx(Ecran.MARGE, d, w) + d / 2, y, d);
+        int x = r ? w - Ecran.MARGE - d - 10 : Ecran.MARGE + d + 10;
+        int a = Graphics.TOP | Ecran.debut();
         g.setFont(Ecran.PETITE);
         g.setColor(Ecran.MUTED);
-        g.drawString("Hitbodedout du jour", x, y + 2, Graphics.TOP | Graphics.LEFT);
+        g.drawString(Mots.m(Mots.DU_JOUR), x, y + 2, a);
         g.setFont(Ecran.GRANDE);
         g.setColor(auj > 0 ? Ecran.BRAND : Ecran.WARNING);
-        g.drawString(auj > 0 ? "Faite : " + Regles.duree(auj) : "À faire", x, y + 2 + Ecran.PETITE.getHeight(), Graphics.TOP | Graphics.LEFT);
+        g.drawString(auj > 0 ? Mots.m(Mots.FAITE, Regles.duree(auj)) : Mots.m(Mots.A_FAIRE), x, y + 2 + Ecran.PETITE.getHeight(), a);
         int s = journal.serie();
         g.setFont(Ecran.PETITE);
         g.setColor(Ecran.INK);
         int ys = y + 4 + Ecran.PETITE.getHeight() + Ecran.GRANDE.getHeight();
-        g.drawString("Série : " + s + (s > 1 ? " jours" : " jour"), x, ys, Graphics.TOP | Graphics.LEFT);
+        g.drawString(Mots.m(Mots.SERIE_N, Mots.jours(s)), x, ys, a);
 
-        // La semaine : un carré par jour, plein quand la hitbodedout est faite.
-        int c = Math.min(16, (w - x - Ecran.MARGE - 6 * 3) / 7);
+        // La semaine : un carré par jour, plein quand la hitbodedout est faite ; en hébreu, de droite à gauche.
+        int place = r ? x - Ecran.MARGE : w - x - Ecran.MARGE;
+        int c = Math.min(16, (place - 6 * 3) / 7);
         int yc = ys + Ecran.PETITE.getHeight() + 4;
         Calendar cal = Calendar.getInstance();
         for (int k = 0; k < 7; k++) {
             cal.setTime(new Date(System.currentTimeMillis() - (6 - k) * 86400000L));
             boolean fait = journal.minutesDu(Journal.jour(cal.getTime())) > 0;
-            int cx = x + k * (c + 3);
+            int cx = r ? x - c - k * (c + 3) : x + k * (c + 3);
             g.setColor(fait ? Ecran.BRAND : Ecran.DAY_TODO);
             g.fillRoundRect(cx, yc, c, c, 5, 5);
             if (k == 6) {
@@ -171,7 +186,7 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
                 g.drawRoundRect(cx - 1, yc - 1, c + 1, c + 1, 6, 6);
             }
             g.setColor(fait ? 0xFFFFFF : Ecran.MUTED);
-            g.drawString(JournalEcran.INITIALES[cal.get(Calendar.DAY_OF_WEEK) - 1], cx + c / 2, yc + (c - Ecran.PETITE.getHeight()) / 2 + 1, Graphics.TOP | Graphics.HCENTER);
+            g.drawString(Mots.initiale(cal.get(Calendar.DAY_OF_WEEK) - 1), cx + c / 2, yc + (c - Ecran.PETITE.getHeight()) / 2 + 1, Graphics.TOP | Graphics.HCENTER);
         }
         return Math.max(d, yc + c - y);
     }
@@ -181,8 +196,8 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         if (durees == null) {
             String[] items = new String[DUREES.length + 1];
             for (int i = 0; i < DUREES.length; i++) items[i] = Regles.duree(DUREES[i]);
-            items[DUREES.length] = "Au choix";
-            durees = new Menu("Durée", items, this);
+            items[DUREES.length] = Mots.m(Mots.AU_CHOIX);
+            durees = new Menu(Mots.m(Mots.DUREE), items, this);
             durees.personnage = "praying";
             ecoute(durees, new Command[] {choisir, retour});
         }
@@ -190,7 +205,7 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
     }
 
     private void demandeAuChoix() {
-        auChoix = new TextBox("Minutes (1 à 180)", "20", 3, TextField.NUMERIC);
+        auChoix = new TextBox(Mots.m(Mots.MINUTES), "20", 3, TextField.NUMERIC);
         ecoute(auChoix, new Command[] {ok, retour});
         display.setCurrent(auChoix);
     }
@@ -200,8 +215,8 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         dureeChoisie = minutes;
         int m = textes.moment("ouverture");
         int t = m < 0 ? -1 : textes.tire(m);
-        avant = new Lecture("Hitbodedout · " + Regles.duree(minutes), "open_arms", null,
-            t < 0 ? null : textes.textes[m][t], t < 0 ? null : textes.refs[m][t]);
+        avant = new Lecture(Mots.m(Mots.TITRE_PREPARE, Regles.duree(minutes)), "open_arms", null,
+            t < 0 ? null : textes.hebreu[m][t], t < 0 ? null : textes.textes[m][t], t < 0 ? null : textes.refs[m][t]);
         avant.action = new Lecture.Action() {
             public void centre(Lecture l) {
                 lance();
@@ -258,9 +273,9 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         if (complete) sonne();
         int m = textes.moment("cloture");
         int t = m < 0 ? -1 : textes.tire(m);
-        String bilan = minutes > 0 ? BRAVO[journal.adresse] + " " + Regles.duree(minutes) + " de hitbodedout." : "Moins d'une minute : rien n'est noté.";
+        String bilan = minutes > 0 ? Mots.m(Mots.BILAN, Mots.bravo(journal.adresse), Regles.duree(minutes)) : Mots.m(Mots.MOINS_D_UNE_MINUTE);
         fin = new Lecture(textes.mot("session_done_title"), minutes > 0 ? Ecran.duJour(Ecran.JOIE, 3) : "walking", bilan,
-            t < 0 ? null : textes.textes[m][t], t < 0 ? null : textes.refs[m][t]);
+            t < 0 ? null : textes.hebreu[m][t], t < 0 ? null : textes.textes[m][t], t < 0 ? null : textes.refs[m][t]);
         fin.action = new Lecture.Action() {
             public void centre(Lecture l) {
                 montreAccueil();
@@ -287,12 +302,12 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
     private void montreMoments() {
         if (moments == null) {
             int n = textes.titres.length;
-            moments = new Menu("'Hizouk", textes.titres, this);
+            moments = new Menu(Mots.m(Mots.HIZOUK), textes.titres, this);
             moments.details = new String[n];
             moments.personnages = new String[n];
             for (int i = 0; i < n; i++) {
                 int k = textes.textes[i].length;
-                moments.details[i] = k + (k > 1 ? " textes" : " texte");
+                moments.details[i] = Mots.textes(k);
                 moments.personnages[i] = Ecran.duMoment(textes.cles[i]);
             }
             ecoute(moments, new Command[] {choisir, retour});
@@ -306,13 +321,9 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         liste = new Menu(textes.titres[moment], textes.refs[moment], this);
         liste.personnage = Ecran.duMoment(textes.cles[moment]);
         liste.details = new String[n];
-        for (int i = 0; i < n; i++) liste.details[i] = debut(textes.textes[moment][i]);
+        for (int i = 0; i < n; i++) liste.details[i] = textes.apercu(moment, i);
         ecoute(liste, new Command[] {choisir, retour});
         display.setCurrent(liste);
-    }
-
-    private static String debut(String texte) {
-        return texte.length() <= 40 ? texte : texte.substring(0, 40);
     }
 
     private void lit(int moment, int texte, Displayable ensuite) {
@@ -320,7 +331,7 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         texteOuvert = texte;
         apresLecture = ensuite;
         lecture = new Lecture(textes.titres[moment], Ecran.duMoment(textes.cles[moment]), null,
-            textes.textes[moment][texte], textes.refs[moment][texte]);
+            textes.hebreu[moment][texte], textes.textes[moment][texte], textes.refs[moment][texte]);
         if (textes.textes[moment].length > 1) {
             lecture.action = new Lecture.Action() {
                 public void centre(Lecture l) {
@@ -356,12 +367,12 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
 
     // --- Rappel -------------------------------------------------------------------------
     private void montreRappel() {
-        reglage = new Form("Rappel");
+        reglage = new Form(Mots.m(Mots.RAPPEL));
         actif = new ChoiceGroup(null, ChoiceGroup.MULTIPLE);
-        actif.append("Me rappeler chaque jour", null);
+        actif.append(Mots.m(Mots.ME_RAPPELER), null);
         actif.setSelectedIndex(0, journal.rappel >= 0);
         reglage.append(actif);
-        heure = new DateField("Heure", DateField.TIME);
+        heure = new DateField(Mots.m(Mots.HEURE), DateField.TIME);
         int m = journal.rappel >= 0 ? journal.rappel : 20 * 60;
         // MIDP : un champ TIME attend le 1er janvier 1970 ; une autre date le laisse « non initialisé »
         // sur un vrai téléphone, et l'enregistrement désactivait le rappel.
@@ -376,7 +387,7 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         c.set(Calendar.MILLISECOND, 0);
         heure.setDate(c.getTime());
         reglage.append(heure);
-        reglage.append("Le téléphone ouvre MyHitbodedut à l'heure choisie. S'il le refuse, règle plutôt son alarme.");
+        reglage.append(Mots.m(Mots.RAPPEL_AIDE));
         ecoute(reglage, new Command[] {enregistrer, retour});
         display.setCurrent(reglage);
     }
@@ -392,7 +403,7 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         journal.ecrit();
         String resultat = reprogrammeRappel();
         metAJourAccueil();
-        Alert a = new Alert("Rappel", resultat, null, AlertType.CONFIRMATION);
+        Alert a = new Alert(Mots.m(Mots.RAPPEL), resultat, null, AlertType.CONFIRMATION);
         a.setTimeout(3000);
         display.setCurrent(a, accueil);
     }
@@ -403,9 +414,9 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
             long quand = journal.rappel >= 0
                 ? Regles.prochain(journal.rappel, System.currentTimeMillis(), journal.minutesDu(Journal.aujourdhui()) > 0) : 0;
             PushRegistry.registerAlarm(getClass().getName(), quand);
-            return journal.rappel >= 0 ? "Rappel chaque jour à " + Regles.heure(journal.rappel) + "." : "Rappel désactivé.";
+            return journal.rappel >= 0 ? Mots.m(Mots.RAPPEL_ACTIF, Regles.heure(journal.rappel)) : Mots.m(Mots.RAPPEL_COUPE);
         } catch (Throwable t) {
-            return "Ce téléphone refuse les rappels d'application. Règle plutôt son alarme (Menu > Extras).";
+            return Mots.m(Mots.RAPPEL_REFUSE);
         }
     }
 
@@ -419,19 +430,15 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
 
 
     // --- Comment vous appeler ---------------------------------------------------------------
-    /** Dans l'ordre de Journal.PAS_CHOISI, TSADIK, TSADEKET (strings.xml : adresse_*, celebration_*). */
-    static final String[] ADRESSES = {"Pas choisi", "Tsadik", "Tsadeket"};
-    static final String[] BRAVO = {"Bravo !", "Bravo, Tsadik !", "Bravo, Tsadeket !"};
-
     private void montreAppel() {
-        appel = new Form("Vous appeler");
-        adresse = new ChoiceGroup("Comment vous appeler ?", ChoiceGroup.EXCLUSIVE);
-        adresse.append(ADRESSES[Journal.TSADIK], null);
-        adresse.append(ADRESSES[Journal.TSADEKET], null);
-        adresse.append(ADRESSES[Journal.PAS_CHOISI], null);
+        appel = new Form(Mots.m(Mots.APPEL));
+        adresse = new ChoiceGroup(Mots.m(Mots.COMMENT_APPELER), ChoiceGroup.EXCLUSIVE);
+        adresse.append(Mots.adresse(Journal.TSADIK), null);
+        adresse.append(Mots.adresse(Journal.TSADEKET), null);
+        adresse.append(Mots.adresse(Journal.PAS_CHOISI), null);
         adresse.setSelectedIndex(journal.adresse == Journal.TSADIK ? 0 : journal.adresse == Journal.TSADEKET ? 1 : 2, true);
         appel.append(adresse);
-        appel.append("À la fin de chaque hitbodedout, l'application vous félicite. Avec Tsadeket, le personnage est une femme.");
+        appel.append(Mots.m(Mots.APPEL_AIDE));
         ecoute(appel, new Command[] {enregistrer, retour});
         display.setCurrent(appel);
     }
@@ -445,6 +452,47 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
         montreAccueil();
     }
 
+    // --- Langue ------------------------------------------------------------------------------
+    /** Les trois langues, chacune écrite dans sa langue, avec ce qu'elle montre des textes. */
+    private void montreLangues() {
+        langues = new Menu(Mots.m(Mots.LANGUE), Mots.NOMS, this);
+        langues.details = Mots.CONTENU;
+        langues.personnage = "open_arms";
+        langues.selection = Mots.langue;
+        ecoute(langues, new Command[] {choisir, retour});
+        display.setCurrent(langues);
+    }
+
+    /**
+     * Change la langue : gardée à part du journal, puis textes relus et écrans
+     * refaits (les menus gardés en mémoire, les touches écran). Une
+     * hitbodedout ne peut pas être en cours : on vient de l'accueil.
+     */
+    private void changeLangue(int l) {
+        if (l != Mots.langue) {
+            int avantChoix = Mots.langue;
+            Mots.ecrit(l);
+            try {
+                textes = Textes.charge(l);
+            } catch (Exception e) {
+                Mots.ecrit(avantChoix);
+                display.setCurrent(new Alert("MyHitbodedut", Mots.m(Mots.ILLISIBLES, e.getMessage()), null, AlertType.ERROR), accueil);
+                return;
+            }
+            Command[] anciennes = {lecturePause, retour};
+            creeCommandes();
+            if (musique != null) {
+                for (int i = 0; i < anciennes.length; i++) musique.removeCommand(anciennes[i]);
+                ecoute(musique, new Command[] {lecturePause, retour});
+            }
+            durees = null;
+            moments = null;
+            liste = null;
+            construitAccueil();
+        }
+        montreAccueil();
+    }
+
     // --- Choix dans les menus et commandes ----------------------------------------------------
     public void choisi(Menu m, int i) {
         if (m == accueil) {
@@ -453,7 +501,8 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
             else if (i == 2) montreMoments();
             else if (i == 3) montreJournal();
             else if (i == 4) montreRappel();
-            else montreAppel();
+            else if (i == 5) montreAppel();
+            else montreLangues();
         } else if (m == durees) {
             if (i < DUREES.length) prepare(DUREES[i]);
             else demandeAuChoix();
@@ -461,6 +510,8 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
             montreListe(i);
         } else if (m == liste) {
             lit(momentOuvert, i, liste);
+        } else if (m == langues) {
+            changeLangue(i);
         }
     }
 

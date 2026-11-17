@@ -54,8 +54,16 @@ class TraductionTest {
 
     private val tout by lazy { LANGUES.associateWith { lire(it) } }
 
+    /**
+     * Les marqueurs d'une chaîne, ramenés à leur position et à leur type : la
+     * largeur et les drapeaux (« %2$02d ») relèvent de la typographie de chaque
+     * langue (audit du 12/11, TMECA-12 : « 1 h 05 » en français, « 1 h 5 min »
+     * en anglais) ; un marqueur avec largeur n'échappe plus pour autant au test.
+     */
     private fun marqueurs(s: String): List<String> =
-        Regex("""%\d+\$[sd]|%[sd]|%%""").findAll(s).map { it.value }.sorted().toList()
+        Regex("""%(\d+\$)?[-#+0,(]*\d*([sd])|%%""").findAll(s)
+            .map { m -> if (m.value == "%%") "%%" else "%" + m.groupValues[1] + m.groupValues[2] }
+            .sorted().toList()
 
     @Test
     fun `les quatre langues portent le meme jeu de cles`() {
@@ -256,5 +264,21 @@ class TraductionTest {
             }
         }
         assertTrue("aucun titre lu : la lecture est cassée", vus >= 4)
+    }
+
+    /**
+     * Audit du 12/11, FVOL-09 : en hébreu, le compte à rebours du vol disait « עד » (jusqu'à) au lieu
+     * de « עוד », et « 1 שעות » ; et FVOL-06 : le rappel de Tefilat haDerekh ne tranche pas.
+     */
+    @Test
+    fun `vol, l'hebreu du compte a rebours et le rappel de Tefilat haDerekh ne tranche pas`() {
+        val iw = File("src/main/res/values-iw/strings.xml").readText()
+        assertTrue(iw.contains("""<string name="vol_dans">עוד %1${'$'}s</string>"""))
+        assertEquals("שעתיים", lire("values-iw").pluriels["vol_duree_heures[two]"])
+        assertEquals("שעה אחת", lire("values-iw").pluriels["vol_duree_heures[one]"])
+        listOf("values", "values-en", "values-iw").forEach { d ->
+            val t = Regex("""name="vol_rappel_derekh_texte">([^<]*)<""").find(File("src/main/res/$d/strings.xml").readText())!!.groupValues[1]
+            assertTrue("$d : pas de « le moment de dire »", !t.contains("le moment de dire") && !t.contains("time to say") && !t.contains("הזמן לומר"))
+        }
     }
 }

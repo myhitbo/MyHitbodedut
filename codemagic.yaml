@@ -1,5 +1,11 @@
+# Codemagic : la CI Android hors de GitHub Actions (quota de minutes épuisé le 15/11/2026).
+# Mise en route (une fois) : codemagic.io → se connecter avec GitHub → Add application →
+# myhitbo/MyHitbodedut → « codemagic.yaml ». Pour l'AAB Play : Team settings → Code signing
+# identities → Android keystores → importer la clé d'envoi sous la référence « upload ».
+# Rien de secret dans ce fichier.
+#
 # Constructions iOS sur macOS, chez Codemagic (ios/PORTAGE.md § 7.2 à 7.5 ; décision D5 :
-# 500 minutes gratuites par mois, aucun secours payant). Android, le site et Nokia n'y passent pas.
+# 500 minutes gratuites par mois, aucun secours payant). Le site et Nokia n'y passent pas.
 #
 #   ios-verification : compile l'app sur simulateur, sans signature, avec et sans la barrière.
 #                      À chaque envoi sur une branche claude/ios-* qui touche l'app ou ses extensions.
@@ -7,6 +13,11 @@
 #                      À la main ; demande le compte Apple (P1) et la clé d'API (P2), voir ios/SIGNATURE.md.
 
 definitions:
+  instance: &instance
+    instance_type: linux_x2
+    max_build_duration: 45
+  env: &env
+    java: 17
   scripts:
     - &xcodegen
       name: XcodeGen 2.46.0
@@ -21,6 +32,54 @@ definitions:
         echo "XG=$XG" >> "$CM_ENV"
 
 workflows:
+  tests:
+    name: Tests Android (complète et Play)
+    <<: *instance
+    environment: *env
+    triggering:
+      events: [push, pull_request]
+      branch_patterns:
+        - pattern: '*'
+          include: true
+      cancel_previous_builds: true
+    scripts:
+      - name: SDK Android 36
+        script: yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" || true
+      - name: Tests (édition complète)
+        working_directory: android
+        script: ./gradlew --console=plain testFullDebugUnitTest
+      - name: Tests et lint (édition Play)
+        working_directory: android
+        script: ./gradlew --console=plain -Pplay=true testFullDebugUnitTest lintFullRelease
+    artifacts:
+      - android/app/build/reports/**
+
+  play-aab:
+    name: AAB Play signé (clé d'envoi)
+    <<: *instance
+    environment:
+      java: 17
+      android_signing:
+        - upload
+      vars:
+        VERSION_CODE: $BUILD_NUMBER
+    scripts:
+      - name: SDK Android 36
+        script: yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" || true
+      - name: AAB Play
+        working_directory: android
+        script: |
+          export KEYSTORE_PATH="$CM_KEYSTORE_PATH" KEYSTORE_PASSWORD="$CM_KEYSTORE_PASSWORD" \
+                 KEY_ALIAS="$CM_KEY_ALIAS" KEY_PASSWORD="$CM_KEY_PASSWORD"
+          ./gradlew --console=plain -Pplay=true bundleFullRelease
+          # Refus d'un AAB signé par la clé de développement, comme play.yml.
+          if keytool -printcert -jarfile app/build/outputs/bundle/fullRelease/app-full-release.aab | grep -q "ED:78:70:52:56:33:9D:AB:37:28:66:83:9B:8B:62:6A"; then
+            echo "AAB signé avec la clé de développement" && exit 1
+          fi
+    artifacts:
+      - android/app/build/outputs/bundle/fullRelease/*.aab
+      - android/app/build/outputs/mapping/fullRelease/mapping.txt
+
   ios-verification:
     name: iOS – compilation sur simulateur
     instance_type: mac_mini_m2

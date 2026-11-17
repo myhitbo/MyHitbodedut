@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /** Historique des séances, avec les notes laissées après chacune. */
-class JournalActivity : AppCompatActivity() {
+class JournalActivity : AppCompatActivity(), NoteDialog.Hote {
 
     private val rows = mutableListOf<DayRecord>()
     private lateinit var adapter: Adapter
@@ -26,6 +26,7 @@ class JournalActivity : AppCompatActivity() {
             android.view.WindowManager.LayoutParams.FLAG_SECURE,
             android.view.WindowManager.LayoutParams.FLAG_SECURE
         )
+        verrouiller(savedInstanceState)
         adapter = Adapter()
         findViewById<RecyclerView>(R.id.journal_list).apply {
             layoutManager = LinearLayoutManager(this@JournalActivity)
@@ -33,8 +34,88 @@ class JournalActivity : AppCompatActivity() {
         }
     }
 
+    /** Vrai une fois le code ou l'empreinte donnés, ou si le verrou n'est pas demandé. */
+    private var ouvert = true
+
+    /** Vrai entre le lancement de la demande du code et sa réponse. */
+    private var demandeEnCours = false
+
+    /** Le journal a été caché en passant à l'arrière-plan : le code est redemandé au retour. */
+    private var aRedemander = false
+
+    private val demandeCode =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { resultat ->
+            demandeEnCours = false
+            if (resultat.resultCode == RESULT_OK) {
+                ouvert = true
+                findViewById<View>(android.R.id.content).visibility = View.VISIBLE
+                reload()
+            } else {
+                finish()
+            }
+        }
+
+    /**
+     * Le verrou du journal (audit du 12/11) : rien ne s'affiche avant le code
+     * ou l'empreinte du téléphone. Un téléphone sans verrouillage d'écran n'a
+     * rien à demander : le journal s'ouvre, comme avant.
+     */
+    private fun verrouiller(etat: Bundle?) {
+        if (!VerrouJournal.actif(this) || etat?.getBoolean(ETAT_OUVERT) == true) return
+        val demande = VerrouJournal.demande(this) ?: return
+        ouvert = false
+        findViewById<View>(android.R.id.content).visibility = View.INVISIBLE
+        // Après une rotation ou la mort du processus pendant la demande, elle
+        // est encore à l'écran : on attend sa réponse au lieu d'en lancer une autre.
+        demandeEnCours = true
+        if (etat?.getBoolean(ETAT_DEMANDE) != true) demandeCode.launch(demande)
+    }
+
+    /**
+     * Le journal se referme dès qu'on le quitte (revue du 15/11) : ouvert puis
+     * laissé à l'arrière-plan, il se montrait à quiconque revenait par les
+     * applications récentes, et même après la mort du processus, puisque
+     * l'état sauvegardé disait « ouvert ». Une rotation ne le referme pas.
+     */
+    override fun onStop() {
+        super.onStop()
+        if (ouvert && !isChangingConfigurations && VerrouJournal.actif(this)) {
+            ouvert = false
+            aRedemander = true
+            findViewById<View>(android.R.id.content).visibility = View.INVISIBLE
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (aRedemander && !demandeEnCours) {
+            aRedemander = false
+            val demande = VerrouJournal.demande(this)
+            if (demande == null) {
+                // Le verrouillage d'écran a été retiré entre-temps : rien à demander.
+                ouvert = true
+                findViewById<View>(android.R.id.content).visibility = View.VISIBLE
+            } else {
+                demandeEnCours = true
+                demandeCode.launch(demande)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // « Ouvert » ne survit qu'à une rotation, jamais à la mort du processus.
+        outState.putBoolean(ETAT_OUVERT, ouvert && isChangingConfigurations)
+        outState.putBoolean(ETAT_DEMANDE, demandeEnCours)
+    }
+
     override fun onResume() {
         super.onResume()
+        if (ouvert) reload()
+    }
+
+    /** La note enregistrée se lit aussitôt dans la liste (NoteDialog.Hote). */
+    override fun noteEnregistree(date: String) {
         reload()
     }
 
@@ -107,13 +188,19 @@ class JournalActivity : AppCompatActivity() {
             val plus = JournalPlus.resume(
                 JournalPlus.lire(holder.itemView.context, row.date), getString(R.string.journal_gratitude),
                 getString(R.string.journal_travail), if (sujets.isBlank()) "" else getString(R.string.journal_sujets, sujets),
+                ligne = { libelle, texte -> getString(R.string.journal_ligne, libelle, texte) },
             )
             val texte = listOf(row.note, plus).filter { it.isNotBlank() }.joinToString("\n")
             holder.note.visibility = if (texte.isBlank()) View.GONE else View.VISIBLE
             holder.note.text = texte
             holder.itemView.setOnClickListener {
-                NoteDialog.show(this@JournalActivity, row.date, onSaved = { reload() })
+                NoteDialog.show(this@JournalActivity, row.date)
             }
         }
+    }
+
+    private companion object {
+        const val ETAT_OUVERT = "journal_ouvert"
+        const val ETAT_DEMANDE = "journal_demande"
     }
 }

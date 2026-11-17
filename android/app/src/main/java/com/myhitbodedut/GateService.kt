@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.view.Gravity
 import android.view.WindowManager
 
@@ -36,6 +37,13 @@ class GateService : Service() {
     private var foregroundPackage: String? = null
     private var previewing = false
 
+    /** startForeground a réussi au moins une fois : le service est bien au premier plan. */
+    private var auPremierPlan = false
+
+    /** Les applications jamais retenues (AppsProtegees), relues au plus une fois par minute. */
+    private var protegeesMemo: Set<String> = emptySet()
+    private var protegeesLues = 0L
+
     private val tick = object : Runnable {
         override fun run() {
             evaluate()
@@ -45,6 +53,8 @@ class GateService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        enMarche = true
+        demarrage = false
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         Notifications.ensureChannels(this)
     }
@@ -52,9 +62,20 @@ class GateService : Service() {
     /**
      * Android exige startForeground dans les secondes qui suivent chaque
      * startForegroundService, service déjà lancé ou non.
+     *
+     * Il peut aussi le refuser (13/11, FPRODUIT-01 et FBARRIERE-06) : relance d'un service
+     * collant en arrière-plan sous Android 12 et plus, application restreinte, type refusé
+     * sous Android 14 et plus. L'exception n'était pas rattrapée : plantage, puis barrière
+     * morte sans que rien le dise. Refusé, le service s'arrête proprement ; l'état passe à
+     * « Mode arrêté » (GateState.SERVICE_STOPPED) et l'ouverture suivante de l'application
+     * le relance, depuis le premier plan où Android l'accepte.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startInForeground()
+        if (!startInForeground()) {
+            enMarche = false
+            stopSelf()
+            return START_NOT_STICKY
+        }
         if (intent?.action == ACTION_PREVIEW) {
             previewing = true
             showOverlay(BlockerMode.PREVIEW)
@@ -67,6 +88,7 @@ class GateService : Service() {
     override fun onDestroy() {
         handler.removeCallbacks(tick)
         hideOverlay()
+        enMarche = false
         super.onDestroy()
     }
 
@@ -76,25 +98,37 @@ class GateService : Service() {
 
     private fun evaluate() {
         if (previewing) return
-        rafraichirNotification()
+        // Un seul état par tour, pour la notification comme pour l'écran : ils ne peuvent
+        // plus se contredire (13/11, TFRUX-02 : « Hors de la fenêtre » pendant un blocage).
+        val etat = GateStatus.evaluate(this)
+        rafraichirNotification(etat)
 
-        val running = Store.isSessionRunning(this)
-        val armed = GateStatus.isArmed(this) || (running && GateStatus.shouldRunService(this))
-        if (!armed) {
+        val mode = GateRule.ecran(etat)
+        if (mode == null) {
             hideOverlay()
             return
         }
 
-        val current = readForegroundPackage()
-        val blocked = current != null &&
-            current != packageName &&
-            Store.blockedApps(this).contains(current)
-
-        if (blocked) {
-            showOverlay(if (running) BlockerMode.SESSION_RUNNING else BlockerMode.PROMPT)
+        if (GateRule.retenue(readForegroundPackage(), packageName, Store.blockedApps(this), ::protegees)) {
+            showOverlay(mode)
         } else {
             hideOverlay()
         }
+    }
+
+    /**
+     * Le Téléphone, l'écran d'accueil et les Réglages ne sont jamais retenus, même venus
+     * d'une liste importée ou choisie avant le 13/11 (FBARRIERE-05). Le Téléphone ou
+     * l'écran d'accueil par défaut peuvent changer : relus au plus une fois par minute,
+     * et seulement quand une application choisie est au premier plan.
+     */
+    private fun protegees(): Set<String> {
+        val maintenant = SystemClock.elapsedRealtime()
+        if (protegeesLues == 0L || maintenant - protegeesLues > PROTEGEES_MS) {
+            protegeesMemo = AppsProtegees.de(this)
+            protegeesLues = maintenant
+        }
+        return protegeesMemo
     }
 
     /** Dernière application passée au premier plan, mémorisée entre deux tours. */
@@ -118,7 +152,10 @@ class GateService : Service() {
     // --- Écran de garde -----------------------------------------------------
 
     private fun showOverlay(mode: BlockerMode) {
-        if (overlay != null && overlayMode == mode) return
+        if (overlay != null && overlayMode == mode) {
+            (overlay as? BlockerView)?.actualiser()
+            return
+        }
         hideOverlay()
         if (!Permissions.canDrawOverlays(this)) return
 
@@ -126,17 +163,22 @@ class GateService : Service() {
             context = this,
             mode = mode,
             onStartSession = {
-                hideOverlay()
                 previewing = false
                 if (!Store.isSessionRunning(this)) {
-                    // Démarrage d'un service de premier plan depuis un autre :
-                    // autorisé tant que celui-ci tourne, mais on ne parie pas dessus.
+                    // Démarrage d'un service de premier plan depuis un autre : on ne parie pas
+                    // dessus. Il part avant que l'écran de garde soit retiré (13/11) : pour une
+                    // application qui cible Android 15 ou plus, l'affichage par-dessus n'en
+                    // exempte que si une fenêtre par-dessus est visible à cet instant.
                     runCatching { SessionService.start(this, Store.targetMinutes(this)) }
                 }
+                hideOverlay()
                 openSession()
             },
             onAlreadyDone = {
                 Store.addSession(this, 0)
+                // La vignette de série et le rappel suivent aussitôt la journée faite (FBARRIERE-11, FDONNEES-15).
+                runCatching { StreakWidget.refresh(this) }
+                runCatching { Reminder.reschedule(this) }
                 hideOverlay()
                 goHome()
             },
@@ -156,9 +198,10 @@ class GateService : Service() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            // Sans FLAG_KEEP_SCREEN_ON (audit du 12/11, FBARRIERE-02) : posé pour aller faire la
+            // hitbodedout, le téléphone doit pouvoir se mettre en veille, et non rester allumé et
+            // déverrouillé jusqu'à la fin de la fenêtre.
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.OPAQUE
         )
         params.gravity = Gravity.TOP or Gravity.START
@@ -208,19 +251,26 @@ class GateService : Service() {
      * La notification suit l'état (bug du 02/11) : « Fait pour aujourd'hui » la veille
      * restait affiché le lendemain matin, mode armé, jusqu'au prochain démarrage du service.
      */
-    private fun rafraichirNotification() {
-        val state = GateStatus.evaluate(this)
+    private fun rafraichirNotification(state: GateState) {
         if (state == etatNotifie) return
         runCatching { getSystemService(NotificationManager::class.java).notify(Notifications.ID_GATE, notification(state)) }
     }
 
-    private fun startInForeground() {
-        val notification = notification(GateStatus.evaluate(this))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(Notifications.ID_GATE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-        } else {
-            startForeground(Notifications.ID_GATE, notification)
-        }
+    /**
+     * Rend vrai si le service est au premier plan. Un refus alors qu'il y était déjà
+     * (startForeground est rappelé à chaque ouverture de l'application) ne l'en retire pas.
+     */
+    private fun startInForeground(): Boolean {
+        val reussi = runCatching {
+            val notification = notification(GateStatus.evaluate(this))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(Notifications.ID_GATE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            } else {
+                startForeground(Notifications.ID_GATE, notification)
+            }
+        }.isSuccess
+        if (reussi) auPremierPlan = true
+        return auPremierPlan
     }
 
     private fun notification(state: GateState): Notification {
@@ -245,21 +295,53 @@ class GateService : Service() {
         private const val POLL_MS = 900L
         private const val QUERY_BACKFILL_MS = 60_000L
         private const val QUERY_OVERLAP_MS = 2_000L
+        private const val PROTEGEES_MS = 60_000L
         const val ACTION_PREVIEW = "com.myhitbodedut.PREVIEW_GATE"
 
-        fun start(context: Context) {
-            context.startForegroundService(Intent(context, GateService::class.java))
+        /**
+         * Le service tourne dans ce processus, de sa création à son arrêt. Un processus
+         * tué repart à faux, comme SessionService.enMarche.
+         */
+        @Volatile
+        private var enMarche = false
+
+        /** Android vient d'accepter de lancer le service, qui n'est pas encore né. */
+        @Volatile
+        private var demarrage = false
+
+        /**
+         * La surveillance tourne-t-elle (13/11, FBARRIERE-01) ? La carte d'état affichait
+         * « veille » d'après les seuls réglages, service jamais lancé ou arrêté par Android.
+         * Un démarrage accepté compte : le service naît un instant après l'appel, et l'écran
+         * qui vient de le demander se dessine avant.
+         */
+        val vivant: Boolean
+            get() = enMarche || demarrage
+
+        /**
+         * Demande le service ; rend faux si Android refuse de le lancer d'ici (arrière-plan
+         * sous Android 12 et plus), au lieu de laisser l'exception fermer l'application.
+         */
+        fun start(context: Context): Boolean {
+            val accepte = runCatching {
+                context.startForegroundService(Intent(context, GateService::class.java))
+            }.isSuccess
+            demarrage = accepte && !enMarche
+            return accepte
         }
 
         fun stop(context: Context) {
+            demarrage = false
             context.stopService(Intent(context, GateService::class.java))
         }
 
         /** Affiche l'écran de garde une fois, sans effet, pour vérifier qu'il fonctionne. */
         fun preview(context: Context) {
-            context.startForegroundService(
-                Intent(context, GateService::class.java).setAction(ACTION_PREVIEW)
-            )
+            runCatching {
+                context.startForegroundService(
+                    Intent(context, GateService::class.java).setAction(ACTION_PREVIEW)
+                )
+            }
         }
     }
 }

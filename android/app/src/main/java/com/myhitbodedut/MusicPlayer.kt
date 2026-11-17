@@ -17,8 +17,31 @@ class MusicPlayer(private val context: Context) {
 
     private val handler = Handler(Looper.getMainLooper())
     private var player: MediaPlayer? = null
-    private var focusRequest: AudioFocusRequest? = null
     private var volume = 1f
+
+    /**
+     * La demande de focus audio, la même du début à la fin (13/11, audit
+     * FSEANCE-02). Android reconnaît un client à son écouteur : une demande
+     * neuve à chaque reprise était un second client de la même application,
+     * et le premier recevait AUDIOFOCUS_LOSS, donc coupait le morceau qu'on
+     * venait de relancer. « Pause » puis « Lecture » donnait un instant de
+     * son, puis le silence, et la position était perdue.
+     */
+    private val focusRequest: AudioFocusRequest by lazy {
+        AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+            .setAudioAttributes(attributes())
+            .setOnAudioFocusChangeListener { change ->
+                when (change) {
+                    AudioManager.AUDIOFOCUS_LOSS -> stop(fade = false)
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> runCatching { player?.pause() }
+                    AudioManager.AUDIOFOCUS_GAIN -> if (!enPause) runCatching { player?.start() }
+                }
+            }
+            .build()
+    }
+
+    /** Le focus est demandé ou tenu : il n'y a rien à rendre sinon. */
+    private var focusDemande = false
 
     val isPlaying: Boolean get() = runCatching { player?.isPlaying == true }.getOrDefault(false)
 
@@ -61,8 +84,9 @@ class MusicPlayer(private val context: Context) {
         enPause = false
         // Les attributs audio se posent avant prepare(), sans quoi certains
         // appareils lèvent une exception d'état.
+        val brut = MediaPlayer()
         val created = runCatching {
-            MediaPlayer().apply {
+            brut.apply {
                 setAudioAttributes(attributes())
                 if (track.isBundled) {
                     context.resources.openRawResourceFd(track.rawRes).use { fd ->
@@ -73,8 +97,11 @@ class MusicPlayer(private val context: Context) {
                 }
                 prepare()
             }
-        }.onFailure { Log.w(TAG, "lecture impossible : ${track.id}", it) }
-            .getOrNull() ?: return false
+        }.onFailure {
+            // Le lecteur créé avant l'échec est libéré, sinon il restait en mémoire (FSEANCE-22).
+            runCatching { brut.release() }
+            Log.w(TAG, "lecture impossible : ${track.id}", it)
+        }.getOrNull() ?: return false
 
         created.isLooping = loop && onEnd == null
         if (onEnd != null) {
@@ -130,7 +157,9 @@ class MusicPlayer(private val context: Context) {
     private fun release(target: MediaPlayer) {
         runCatching { if (target.isPlaying) target.stop() }
         runCatching { target.release() }
-        abandonFocus()
+        // Un morceau relancé pendant le fondu du précédent tient le même
+        // focus : la fin du fondu ne doit pas le lui retirer.
+        if (player == null) abandonFocus()
     }
 
     private fun audioManager(): AudioManager =
@@ -141,23 +170,15 @@ class MusicPlayer(private val context: Context) {
         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
         .build()
 
+    /** Redemander avec la même demande ne retire rien à personne : c'est le même client. */
     private fun requestFocus(): Boolean {
-        val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-            .setAudioAttributes(attributes())
-            .setOnAudioFocusChangeListener { change ->
-                when (change) {
-                    AudioManager.AUDIOFOCUS_LOSS -> stop(fade = false)
-                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> runCatching { player?.pause() }
-                    AudioManager.AUDIOFOCUS_GAIN -> if (!enPause) runCatching { player?.start() }
-                }
-            }
-            .build()
-        focusRequest = request
-        return audioManager().requestAudioFocus(request) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        focusDemande = true
+        return audioManager().requestAudioFocus(focusRequest) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
     }
 
     private fun abandonFocus() {
-        focusRequest?.let { runCatching { audioManager().abandonAudioFocusRequest(it) } }
-        focusRequest = null
+        if (!focusDemande) return
+        focusDemande = false
+        runCatching { audioManager().abandonAudioFocusRequest(focusRequest) }
     }
 }

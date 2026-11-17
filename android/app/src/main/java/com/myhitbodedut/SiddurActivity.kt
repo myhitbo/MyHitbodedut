@@ -50,18 +50,24 @@ class SiddurActivity : AppCompatActivity() {
 
         // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
         val lieu = Store.lieuZmanim(this)
-        val moment = if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now()) else SiddurMoment.suggestion(LocalTime.now())
-        moment?.let(siddur::texte)?.let { liste.addView(maintenant(it, langue)) }
+        // La nuit de Chabbat, de fête ou de 'Hol hamoed Pessa'h, pas de Tikoun 'hatsot (audit du 16/11).
+        val moment = if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now(), Store.inIsrael(this), Store.siddurNusah(this).cle)
+            else SiddurMoment.suggestion(LocalTime.now(), JourAffiche.sansTikounHatsot(java.time.LocalDate.now(), Store.inIsrael(this)))
+        // Pas d'office de semaine proposé un Chabbat ou un Yom tov (audit du 16/11).
+        JourAffiche.momentOuvrable(moment, java.time.LocalDate.now(), LocalTime.now(), Store.inIsrael(this))
+            ?.let(siddur::texte)?.let { liste.addView(maintenant(it, langue)) }
         // 'Hanouka (13/10) : le Hallel du jour, avec la scène de 'Hanouka, sous la prière du matin.
         if (moment == "chaharit" && "hanouka" in CalendrierJuif.jour(java.time.LocalDate.now(), Store.inIsrael(this)).fetes) {
             siddur.texte("hallel")?.let { liste.addView(maintenant(it, langue, R.drawable.scene_hanukkah)) }
         }
         // Birkat haIlanot (14/10), le mois où on la dit, sous la suggestion de l'heure.
-        if (SiddurMoment.ilanot(java.time.LocalDate.now(), lieu?.latitude)) {
+        if (SiddurMoment.ilanot(java.time.LocalDate.now(), lieu?.latitude, Store.siddurNusah(this).cle)) {
             siddur.texte("birkat_hailanot")?.let { liste.addView(maintenant(it, langue, R.drawable.scene_nature)) }
         }
         // Pourim (13/10) : la Méguila sous Arvit (la nuit qui ouvre Pourim) et sous Cha'harit.
         if (SiddurMoment.megila(moment, java.time.LocalDate.now(), Store.inIsrael(this), Store.mukafChoma(this))) {
+            // Les bénédictions de la Méguila, du siddour, avant le livre (audit du 16/11).
+            siddur.texte("megila")?.let { liste.addView(maintenant(it, langue, R.drawable.char_purim)) }
             Data.livresIndex(this).texte("meguilat_esther")?.let { esther ->
                 liste.addView(maintenant(esther, langue, R.drawable.char_purim) { SiddurLectureActivity.ouvrirLivre(this, esther.id) })
             }

@@ -43,6 +43,8 @@ class BasculeTest {
         assertTrue(C.LAMNATSEAH in c("2026-10-19"))
         assertFalse(C.LAMNATSEAH in c("2026-10-11"))
         assertFalse(C.LAMNATSEAH in c("2027-04-21"))
+        assertFalse(C.LAMNATSEAH in c("2027-04-26")) // Hol hamoed (TSIDDUR-08)
+        assertFalse(C.LAMNATSEAH in c("2027-10-22")) // Hochaana Rabba
         assertTrue(C.LEDAVID in c("2026-08-20") && C.LEDAVID in c("2026-10-02"))
         assertFalse(C.LEDAVID in c("2026-10-19"))
         assertTrue(C.TECHOUVA_HOCHAANA in c("2026-10-02"))
