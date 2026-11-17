@@ -89,7 +89,12 @@ class SimulationSiddurTest {
         Regle(AMIDOT, "טל ומטר", si(C.TAL_OUMATAR)),
         Regle(AMIDOT, "ברכנו יהוה אלהינו בכל", si(C.BERAKHA)),
         Regle(setOf("arvit"), "אתה חוננתנו", si(C.MOTSAE_CHABBAT_YT)),
-        Regle(setOf("minha"), "נחם יהוה אלהינו", si(C.TICHA_BEAV)),
+        // Na'hem : Edot aux trois offices (audit du 16/11 ; Yalkut Yosef, Kitsour 557:1), Sfard et Ashkenaz à Min'ha (Rema 557:1).
+        Regle(AMIDOT, "נחם יהוה אלהינו", si(C.TICHA_BEAV), setOf(Nusah.EDOT)),
+        Regle(setOf("minha"), "נחם יהוה אלהינו", si(C.TICHA_BEAV), setOf(Nusah.SEFARD, Nusah.ASHKENAZ)),
+        Regle(AMIDOT, "מנחם ציון בבנין ירושלים", si(C.TICHA_BEAV), setOf(Nusah.EDOT)),
+        // « שלום רב » d'un jeûne public (Ashkenaz, Min'ha : audit du 16/11 ; Rema 127:2).
+        Regle(setOf("minha"), "שלום רב על ישראל עמך", { C.JEUNE !in it }, setOf(Nusah.ASHKENAZ)),
         Regle(setOf("chaharit"), "ויאמר דוד אל גד", si(C.TAHANOUN_CHAHARIT)),
         // Le retour du Sefer Torah, les seuls jours de lecture (12/11 : Edot et Sfard l'affichaient tous les jours).
         Regle(setOf("chaharit"), "ובנחה יאמר שובה יהוה", si(C.KRIAT_HATORAH)),

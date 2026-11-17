@@ -381,6 +381,12 @@ def annoter(texte_id, sections, nusah):
                 continue
             # Les consignes d'oubli de la Amida et du Birkat (12/11) : repliées sous « En cas d'oubli »,
             # comme les bénédictions de qui a oublié רצה ; elles s'affichaient chaque jour.
+            # Le voyageur entre Israël et la diaspora, pour טל ומטר (audit du 16/11 ; Yalkut Yosef, Kitsour 117:15-17 ;
+            # Michna Beroura 117:5) : une consigne qui n'est d'aucun jour, repliée sous son libellé.
+            if cons[bi] and bi not in pris and x.startswith("בן ארץ ישראל בחוץ לארץ"):
+                prend(bi, "facultatif", "ajout_voyageur_tal_oumatar")
+                bi += 1
+                continue
             if cons[bi] and bi not in pris and OUBLI.search(x):
                 prend(bi, "oubli")
                 bi += 1
@@ -516,6 +522,12 @@ def annoter(texte_id, sections, nusah):
                                           or txt[j].startswith("לתענית ציבור")))
                         or (cons[j] and (txt[j] in ("שלום", "שים שלום") or txt[j].startswith("בעשי״ת"))))):
                     prend(j, "jeune", JEUNE)
+                    j += 1
+                # « שלום רב », quand le siddour donne ensuite « לתענית ציבור: שים שלום » (Ashkenaz, Min'ha) :
+                # pas les jours de jeûne public, où l'on dit שים שלום avec ברכת כהנים ; en clair les autres
+                # jours (audit du 16/11 ; Rema 127:2, Michna Beroura 127:12).
+                if j + 1 < n and not cons[j] and commence(txt[j], "שלום רב") and txt[j + 1].startswith("לתענית ציבור"):
+                    prend_discret(j, "!jeune", "ajout_hors_jeune_public")
                     j += 1
                 bi = j
                 continue

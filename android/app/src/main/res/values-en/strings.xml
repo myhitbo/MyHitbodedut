@@ -774,6 +774,8 @@
     <string name="ajout_pourim_triple_festin">Purim feast (Sunday, Jerusalem)</string>
     <string name="ajout_chiva_assar_tamouz">17 Tammuz</string>
     <string name="ajout_ticha_beav">Nachem</string>
+    <string name="ajout_ticha_beav_trois">Nachem, at Arvit, Shacharit and Mincha</string>
+    <string name="ajout_ticha_beav_minha">Nachem, at Mincha only</string>
     <string name="ajout_chabbat">Shabbat</string>
     <string name="ajout_lundi_jeudi">Monday and Thursday</string>
     <string name="ajout_motsae_chabbat">Motzaei Shabbat</string>
@@ -810,6 +812,8 @@
     <string name="ajout_oubli">If forgotten</string>
     <string name="ajout_ticha_beav_kippour">Tisha B’Av and Yom Kippur</string>
     <string name="ajout_sauf_ticha_beav_kippour">Except Tisha B’Av and Yom Kippur</string>
+    <string name="ajout_hors_jeune_public">Except public fast days</string>
+    <string name="ajout_voyageur_tal_oumatar">Travelling between Israel and abroad</string>
     <string name="ajout_sauf_hanouka">Except on Chanukah</string>
     <string name="ajout_chol">Weekdays</string>
     <string name="ajout_autres_jours">Other days</string>
