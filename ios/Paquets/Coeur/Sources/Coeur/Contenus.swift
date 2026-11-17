@@ -29,6 +29,8 @@ public struct TexteLocalise: Sendable, Equatable, Decodable {
         switch langue {
         case "fr": fr.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? he : fr
         case "en": en.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? he : en
+        // L'espagnol et l'arabe tunisien (17/11) : l'interface seule est traduite, les textes en hébreu.
+        case "es", "ar": he
         default: he
         }
     }

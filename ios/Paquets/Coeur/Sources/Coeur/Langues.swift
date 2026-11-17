@@ -1,7 +1,7 @@
 // Les langues que l'application parle (Langues.kt d'Android). Le bouton des réglages et l'application du
 // choix (SettingsActivity, AppCompatDelegate) restent à Android : sur iOS, la langue de l'app se choisit
 // dans les Réglages du système (PORTAGE.md § 2.2.7). Ces règles ramènent une étiquette de langue, quelle que
-// soit sa forme, à l'une des trois, et la nomment.
+// soit sa forme, à l'une des cinq, et la nomment.
 
 /// Les langues que l'application parle, et celle qu'on a choisie.
 ///
@@ -23,11 +23,15 @@ public enum Langues {
         }
     }
 
-    /// Dans l'ordre demandé : עברית, English, Français. Recopiées par programme de Langues.kt.
+    /// Dans l'ordre demandé : עברית, English, Français ; puis l'espagnol d'Amérique latine (`values-es`) et
+    /// l'arabe tunisien (`values-ar-rTN`, le 17/11). L'interface seule est traduite : les textes y restent
+    /// en hébreu (RegleLangue). Recopiées par programme de Langues.kt.
     public static let toutes: [Langue] = [
         Langue(etiquette: "iw", nom: "עברית"),
         Langue(etiquette: "en", nom: "English"),
         Langue(etiquette: "fr", nom: "Français"),
+        Langue(etiquette: "es", nom: "Español"),
+        Langue(etiquette: "ar-TN", nom: "تونسي"),
     ]
 
     /// Le français est la langue de `values/`. Un téléphone dont aucune langue n'est livrée passe pourtant en
@@ -41,7 +45,8 @@ public enum Langues {
         // « he » est le code actuel de l'hébreu, « iw » celui qu'Android rend encore. Les deux désignent la
         // même langue et le même dossier.
         let code = brute.egalUnites("he") ? "iw" : brute
-        return toutes.first { $0.etiquette.egalUnites(code) }?.etiquette ?? defaut
+        // « ar-TN » se trouve par « ar » : la langue, sans la région.
+        return toutes.first { $0.etiquette.avantUnites("-").egalUnites(code) }?.etiquette ?? defaut
     }
 
     /// Le nom de la langue, dans sa propre langue : « Hébreu » écrit en français ne se lit pas par qui

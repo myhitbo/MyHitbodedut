@@ -52,7 +52,9 @@ public enum LanguesTexte {
     public static func defaut(_ langueApp: String) -> Mode {
         if langueApp.egalUnites("he") || langueApp.egalUnites("iw") { return .he }
         if langueApp.egalUnites("en") { return .heEn }
-        return .heFr
+        if langueApp.egalUnites("fr") { return .heFr }
+        // L'espagnol et l'arabe tunisien (17/11) : les textes n'y sont pas traduits, l'hébreu seul.
+        return .he
     }
 
     /// Les textes à montrer, dans l'ordre du mode : (langue, texte). Une traduction absente ou blanche

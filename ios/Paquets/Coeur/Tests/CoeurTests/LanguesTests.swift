@@ -32,11 +32,12 @@ struct LanguesTests {
         try JSONDecoder().decode(Vecteurs.self, from: Depot.donnees("ios/Paquets/Coeur/Tests/Vecteurs/interface_a.json"))
     }
 
-    @Test func lesTroisLanguesSontOffertesDansLOrdreDemande() {
+    /// עברית, English, Français ; puis, depuis le 17/11, l'espagnol et l'arabe tunisien (Langues.kt).
+    @Test func lesCinqLanguesSontOffertesDansLOrdreDemande() {
         let etiquettes = Langues.toutes.map { $0.etiquette }
         let noms = Langues.toutes.map { $0.nom }
-        #expect(etiquettes == ["iw", "en", "fr"])
-        #expect(noms == ["עברית", "English", "Français"])
+        #expect(etiquettes == ["iw", "en", "fr", "es", "ar-TN"])
+        #expect(noms == ["עברית", "English", "Français", "Español", "تونسي"])
     }
 
     @Test func chaqueLangueEstNommeeDansSaPropreLangue() {
@@ -81,11 +82,11 @@ struct LanguesTests {
     }
 
     /// Chaque langue offerte a ses chaînes : sur iOS, dans le catalogue exporté, où l'hébreu se nomme « he »
-    /// et non « iw » comme le dossier values-iw d'Android.
+    /// et non « iw » comme le dossier values-iw d'Android, et l'arabe tunisien « ar » (values-ar-rTN).
     @Test func chaqueLangueOfferteASonDossierDeRessources() throws {
         let catalogue = try Catalogue.lire()
         for langue in Langues.toutes {
-            let code = langue.etiquette == "iw" ? "he" : langue.etiquette
+            let code = langue.etiquette == "iw" ? "he" : langue.etiquette.avantUnites("-")
             let n = catalogue.simples(code).count
             #expect(n > 0, "on propose « \(langue.nom) » sans livrer ses chaînes (\(code))")
         }

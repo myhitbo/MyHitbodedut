@@ -3,7 +3,7 @@ import Testing
 @testable import Coeur
 
 /// TraductionTest d'Android, porté sur ce qu'iOS livre : `Localizable.xcstrings`, que l'export
-/// écrit d'après les trois strings.xml (français, anglais, hébreu). Ce qui se vérifie n'est pas
+/// écrit d'après les cinq strings.xml (français, anglais, hébreu, espagnol, arabe tunisien). Ce qui se vérifie n'est pas
 /// « le fichier existe » mais « aucun texte ne peut échapper à la traduction ».
 ///
 /// Restent à Android : « aucun texte écrit en dur dans un layout ni dans le code », qui lit ses
@@ -13,10 +13,16 @@ struct TraductionTests {
 
     private let langues = Catalogue.langues
 
-    /// Les marqueurs d'Android (`%1$s`, `%s`, `%d`, `%%`) tels que l'export les écrit pour iOS.
-    private func marqueurs(_ motif: Motif, _ s: String) -> [String] { motif.groupes(s).sorted() }
+    /// Les marqueurs d'Android (`%1$s`, `%s`, `%d`, `%%`) tels que l'export les écrit pour iOS, ramenés à leur
+    /// position et à leur type, comme TraductionTest d'Android depuis l'audit du 12/11 (TMECA-12) : la largeur
+    /// (« %2$02lld ») relève de la typographie de chaque langue (« 1 h 05 » en français, « 1 h 5 min » en anglais).
+    private func marqueurs(_ motif: Motif, _ s: String) -> [String] {
+        motif.groupes(s).map { m in
+            m.replacingOccurrences(of: #"^(%(?:\d+\$)?)0?\d*"#, with: "$1", options: .regularExpression)
+        }.sorted()
+    }
 
-    @Test func lesTroisLanguesPortentLeMemeJeuDeCles() throws {
+    @Test func lesCinqLanguesPortentLeMemeJeuDeCles() throws {
         let c = try Catalogue.lire()
         #expect(c.sourceLanguage == "fr")
         #expect(c.strings.count > 200, "aucune chaîne lue : la lecture est cassée")
@@ -104,8 +110,12 @@ struct TraductionTests {
         let posees = Set(c.strings.values.flatMap(\.localizations.keys))
         #expect(posees.contains("en"), "aucune langue trouvée : la lecture est cassée")
         let temoin = TexteLocalise(he: "he", fr: "fr", en: "en")
+        // L'espagnol et l'arabe tunisien (17/11) ne traduisent que l'interface : LocalizedText.forLanguage d'Android
+        // les nomme pour leur servir l'hébreu, exprès.
+        let interfaceSeule: Set<String> = ["es", "ar"]
         for langue in posees.sorted() {
-            #expect(temoin.pour(langue) == langue, "« \(langue) » est dans les chaînes, TexteLocalise.pour ne la nomme pas")
+            let attendue = interfaceSeule.contains(langue) ? "he" : langue
+            #expect(temoin.pour(langue) == attendue, "« \(langue) » est dans les chaînes, TexteLocalise.pour ne la nomme pas")
         }
         // Un titre sans traduction prend l'hébreu, seul champ sûrement rempli.
         let seul = TexteLocalise(he: "שם", fr: " ", en: "")

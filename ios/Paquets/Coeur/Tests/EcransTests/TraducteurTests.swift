@@ -19,8 +19,9 @@ struct TraducteurTests {
     // MARK: Le catalogue exporté
 
     @Test func desClesSimplesDansLesTroisLangues() throws {
+        // « Le Jour » depuis la refonte de l'accueil d'Android (« Aujourd'hui » avant).
         let francais = try traducteur("fr").texte(cle: "nav_today")
-        #expect(francais == "Aujourd\u{2019}hui")
+        #expect(francais == "Le Jour")
         let anglais = try traducteur("en").texte(cle: "nav_today")
         #expect(anglais == "Today")
         let hebreu = try traducteur("he").texte(cle: "nav_today")
@@ -51,16 +52,17 @@ struct TraducteurTests {
         }
         // Français : 0 et 1 prennent « one ».
         let francais = try [0, 1, 2].map { try bloquees($0, "fr") }
-        #expect(francais == ["0 application bloquée", "1 application bloquée", "2 applications bloquées"])
+        // « choisie » depuis l'audit du 13/11 d'Android (« bloquée » avant).
+        #expect(francais == ["0 application choisie", "1 application choisie", "2 applications choisies"])
         // Anglais : 0 prend « other ».
         let anglais = try [0, 1, 5].map { try bloquees($0, "en") }
-        #expect(anglais == ["0 apps blocked", "1 app blocked", "5 apps blocked"])
+        #expect(anglais == ["0 apps selected", "1 app selected", "5 apps selected"])
         // Hébreu : « one », « two », « other » ; les deux premières formes n'écrivent pas le nombre.
         let hebreu = try [1, 2, 5].map { try bloquees($0, "he") }
-        #expect(hebreu == ["אפליקציה אחת חסומה", "שתי אפליקציות חסומות", "5 אפליקציות חסומות"])
+        #expect(hebreu == ["אפליקציה אחת נבחרה", "שתי אפליקציות נבחרו", "5 אפליקציות נבחרו"])
         // Deux arguments, la quantité choisit la forme.
         let resume = try traducteur("fr").texte(Libelle.pluriel("journal_summary", quantite: 3, .entier(3), .texte("1 h")))
-        #expect(resume == "3 hitbodedout, 1 h au total")
+        #expect(resume == "3 jours de hitbodedout, 1 h au total")
     }
 
     @Test func uneCleIntrouvableSeRendTelleQuelle() throws {
@@ -100,6 +102,12 @@ struct TraducteurTests {
         let codes: [String?] = ["fr", "en", "he", "iw", "he-IL", "fr-CA", "FR", "en_GB", "de", "", nil]
         let langues = codes.map { Traducteur.langueApp($0) }
         #expect(langues == ["fr", "en", "he", "he", "he", "fr", "fr", "en", "en", "en", "en"])
+        // L'espagnol, partout ; l'arabe, seulement en Tunisie (LangueApp.livree d'Android, 17/11).
+        let nouvelles: [String?] = ["es", "es-MX", "es_ES", "ar-TN", "ar_tn", "ar-Latn-TN", "ar", "ar-MA", "ar_EG"]
+        #expect(nouvelles.map { Traducteur.langueApp($0) } == ["es", "es", "es", "ar", "ar", "ar", "en", "en", "en"])
+        let espagnol = try traducteur("es-MX")
+        #expect(espagnol.langue == "es")
+        #expect(espagnol.texte(cle: "nav_today") == "El Día")
         let iw = try traducteur("iw")
         #expect(iw.langue == "he")
         let hebreu = iw.texte(cle: "nav_journal")

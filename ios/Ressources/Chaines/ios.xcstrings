@@ -22,6 +22,18 @@
             "state": "needs_review",
             "value": "תשובה אחרת"
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Otra respuesta"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "جواب آخر"
+          }
         }
       }
     },
@@ -45,6 +57,18 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "געו כדי להתחיל את ההתבודדות"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Toca para empezar tu hitbodedut"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "انقر باش تبدا الهتبوديدوت متاعك"
           }
         }
       }
@@ -70,6 +94,18 @@
             "state": "needs_review",
             "value": "המגן לא פעל לפי הכלל הנוכחי. האפליקציה תיקנה אותו ורשמה זאת ביומן."
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "El escudo no seguía la regla del momento. La app lo ha corregido y lo ha anotado en el registro."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الدرع ما كانش يتبّع القاعدة متاع الوقت هذا. التطبيق صلّحو وكتبها في السجل."
+          }
         }
       }
     },
@@ -93,6 +129,18 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "המגן אינו מתואם"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escudo desajustado"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الدرع موش متوافق"
           }
         }
       }
@@ -118,6 +166,18 @@
             "state": "needs_review",
             "value": "שעות המצב אינן רשומות עוד ב־iOS. האפליקציה רושמת אותן מחדש; אם ההודעה נשארת, כבו והדליקו את המצב."
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Los horarios del modo ya no están registrados en iOS. La app los registra de nuevo; si este mensaje sigue, apaga y vuelve a encender el modo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "أوقات الوضع ما عادش مسجّلة عند iOS. التطبيق يسجّلها من جديد؛ كان الرسالة هذي تقعد، طفّي الوضع وعاود شعّلو."
+          }
         }
       }
     },
@@ -141,6 +201,18 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "המעקב חסר"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vigilancia ausente"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "المراقبة غايبة"
           }
         }
       }
@@ -166,6 +238,18 @@
             "state": "needs_review",
             "value": "iOS לא העירה את המעקב מאתמול. פתיחת האפליקציה בבוקר מפעילה אותו מחדש."
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS no ha despertado la vigilancia desde ayer. Abrir la app por la mañana la reactiva."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS ما فيّقش المراقبة من البارح. حلّ التطبيق في الصباح يعاود يشعّلها."
+          }
         }
       }
     },
@@ -189,6 +273,18 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "המעקב שותק"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vigilancia en silencio"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "المراقبة ساكتة"
           }
         }
       }
@@ -214,6 +310,18 @@
             "state": "needs_review",
             "value": "האפליקציות שנבחרו אינן מזוהות עוד במכשיר הזה. בחרו אותן מחדש."
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Las aplicaciones elegidas ya no se reconocen en este iPhone. Elígelas de nuevo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التطبيقات اللي اخترتها ما عادش معروفة على الآيفون هذا. اختارها من جديد."
+          }
         }
       }
     },
@@ -237,6 +345,18 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "יש לבחור מחדש"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hay que volver a elegir"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "لازم تعاود تختار"
           }
         }
       }
@@ -262,6 +382,18 @@
             "state": "needs_review",
             "value": "iOS הסירה את הגישה לזמן מסך: דבר כבר לא מעוכב. להחזיר אותה?"
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS retiró el acceso a Tiempo de uso: ya no se retiene nada. ¿Devolverlo?"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS نحّى النفاذ لمدة استخدام الشاشة: ما عاد شي يتسكّر. ترجّعو؟"
+          }
         }
       }
     },
@@ -286,6 +418,18 @@
             "state": "needs_review",
             "value": "הגישה הוסרה על ידי iOS"
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Acceso retirado por iOS"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "النفاذ تنحّى من iOS"
+          }
         }
       }
     },
@@ -309,6 +453,18 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "בקרוב"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Próximamente"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "قريب"
           }
         }
       }

@@ -42,7 +42,9 @@ struct Catalogue: Decodable {
     let sourceLanguage: String
     let strings: [String: Entree]
 
-    static let langues = ["fr", "en", "he"]
+    /// Les langues du catalogue : le français de `values/`, l'anglais, l'hébreu, et depuis le 17/11 l'espagnol
+    /// (`values-es`) et l'arabe tunisien (`values-ar-rTN`).
+    static let langues = ["fr", "en", "he", "es", "ar"]
 
     static func lire() throws -> Catalogue {
         try JSONDecoder().decode(Catalogue.self, from: Depot.donnees("ios/Ressources/Chaines/Localizable.xcstrings"))
