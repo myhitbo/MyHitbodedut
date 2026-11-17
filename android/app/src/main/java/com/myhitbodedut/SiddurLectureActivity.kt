@@ -296,10 +296,19 @@ class SiddurLectureActivity : AppCompatActivity() {
             Zmanim.jour(lieu, LocalDate.now()).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
         } ?: false
         val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
-            Store.mukafChoma(this))
+            Store.mukafChoma(this)).let { j ->
+            // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
+            val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now()) }
+            val maintenant = java.time.Instant.now()
+            val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
+            val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }
+            if (CalendrierJuif.nuit(LocalTime.now(), sortie, aube)) j.copy(conditions = j.conditions + CalendrierJuif.C.NUIT) else j
+        }
         val annotations = if (livre) emptyList() else Data.ajouts(this)[id].orEmpty()
         val note = if (annotations.isEmpty()) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
-            jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora))))
+            jour.dateHebraique, getString(if (israel) R.string.region_israel else R.string.region_diaspora)))) +
+            // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
+            (if (id in JourAffiche.OFFICES && jour.chome) listOf(Note(getString(R.string.siddur_semaine_chabbat))) else emptyList())
         // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
         langues = LanguesTexte.mode(this)
         // Une consigne traduite (TEFILA-02) ne fait pas d'un texte un texte traduit.

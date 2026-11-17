@@ -127,6 +127,18 @@ object JourAffiche {
      * à tsét : aucune de ces prières n'y a sa place à priori. Sans les
      * zmanim du jour (soleil de minuit), les heures fixes de SiddurMoment.
      */
+    /** Les offices de semaine du siddour (audit du 16/11). */
+    val OFFICES = setOf("chaharit", "minha", "arvit")
+
+    /**
+     * Audit du 16/11 (structure des offices) : le siddour n'a que les offices de semaine. La carte « Pour
+     * cette heure » ne propose pas Cha'harit, Min'ha ni Arvit quand la prière relève d'un Chabbat ou d'un
+     * Yom tov (le vendredi soir, le samedi, la fête) ; [moment] sinon.
+     */
+    fun momentOuvrable(moment: String?, date: LocalDate, heure: java.time.LocalTime, enIsrael: Boolean): String? =
+        if (moment != null && moment in OFFICES &&
+            CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(moment, date, heure), enIsrael).chome) null else moment
+
     fun momentDuSiddour(lieu: Zmanim.Lieu, maintenant: java.time.Instant): String? {
         val zone = java.time.ZoneId.of(lieu.fuseau)
         val local = maintenant.atZone(zone)

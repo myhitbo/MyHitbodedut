@@ -30,6 +30,17 @@ function clair(nusah, id, iso, passage, israel = false) {
   })));
 }
 
+/**
+ * Le passage se dit ce jour-là avec un minyan : depuis l'audit du 16/11 (structure des offices, double
+ * annotation), un Kaddich est replié sous « minyan », dans un groupe du jour.
+ */
+function avecMinyan(nusah, id, iso, passage, israel = false) {
+  const texte = siddur[nusah].textes.find((t) => t.id === id);
+  const k = conditionsPour(nusah, israel, c(iso, israel));
+  const idx = index(annotations[nusah][id]);
+  return texte.sections.some((s, si) => plan(s, si, idx, k).some((p) => p.racine === 'minyan' && p.blocs.some((i) => s.blocs[i].t && plat(s.blocs[i].t).includes(plat(passage)))));
+}
+
 test('conditions déduites : Roch \'Hodech en semaine, \'Hol hamoèd, \'Hanouka sans Moussaf, soir du Séder, Hallel partiel', () => {
   assert.ok(c('2025-12-20').has('chabbat_roch_hodech') && !c('2025-12-20').has('roch_hodech_chol'));
   assert.ok(c('2025-12-21').has('roch_hodech_chol') && c('2026-10-12').has('roch_hodech_chol'));
@@ -62,7 +73,8 @@ test('Kaddich du Hallel : תתקבל tout jour de Moussaf, demi-Kaddich à \'Han
   for (const n of ['edot', 'sefard', 'ashkenaz']) {
     for (const d of ['2025-12-20', '2025-12-21', '2026-12-05', '2026-10-12']) assert.ok(clair(n, 'hallel', d, 'תתקבל'), `${n} ${d}`);
     assert.ok(!clair(n, 'hallel', '2025-12-17', 'תתקבל'), n);
-    assert.ok(clair(n, 'hallel', '2025-12-17', 'יתגדל ויתקדש שמה רבא'), n);
+    // Le demi-Kaddich, sous le minyan (audit du 16/11, structure des offices).
+    assert.ok(avecMinyan(n, 'hallel', '2025-12-17', 'יתגדל ויתקדש שמה רבא'), n);
   }
 });
 
@@ -77,7 +89,8 @@ test('Soir du Séder : Hallel après l\'Amida d\'Arvit (Edot, Sfard), rien en As
   for (const n of ['edot', 'sefard']) {
     assert.ok(renvois(n, 'arvit', '2026-04-02').includes('hallel'), n);
     assert.ok(renvois(n, 'arvit', '2026-04-03').includes('hallel'), n);
-    assert.ok(!renvois(n, 'arvit', '2026-04-03', true).length, n);
+    // Pas de Hallel ; en Edot, le renvoi au compte de l'Omer (audit du 16/11, structure des offices).
+    assert.deepEqual(renvois(n, 'arvit', '2026-04-03', true), n === 'edot' ? ['sefirat_haomer'] : [], n);
   }
   assert.ok(!renvois('ashkenaz', 'arvit', '2026-04-02').length);
 });

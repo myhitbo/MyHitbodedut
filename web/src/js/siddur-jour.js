@@ -53,12 +53,32 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   const minha = c0.has('tahanoun_minha') || c0.has('roch_hachana') || c0.has('kippour');
   const vendredi = c0.has('jour_6') || c0.has('erev_kippour_vendredi');
   if (avinouMalkenou(conditions) && minha && !vendredi) c.add('avinou_malkenou_minha');
+  for (const k of ajoutsOffices(nusah, enIsrael, c)) c.add(k);
   return c;
 }
 
 /** [conditions], avec le réglage ponctuel « Pas de Ta'hanoun aujourd'hui » quand [sansTahanoun] (SiddurJour.avecSansTahanoun). */
 export function avecSansTahanoun(conditions, sansTahanoun) {
   return sansTahanoun ? new Set([...conditions, 'sans_tahanoun_ponctuel']) : conditions;
+}
+
+/**
+ * Audit du 16/11 (SiddurJour.ajoutsOffices, qui cite les sources) : ויהי נועם et « ואתה קדוש » au motsaé
+ * Chabbat et le soir du 9 Av, les téfilin, le Vidouï du Chema du coucher, לדוד ה׳ אורי à Chemini Atséret
+ * (Ashkenaz hors d'Israël).
+ */
+function ajoutsOffices(nusah, enIsrael, c) {
+  const r = [];
+  const edot = nusah === 'edot';
+  const vihiNoam = c.has('motsae_chabbat') && !c.has('ticha_beav') && !c.has('chome') && (edot || !c.has('yom_tov_semaine'));
+  if (vihiNoam) r.push('vihi_noam');
+  if (vihiNoam || c.has('ticha_beav')) r.push('veata_kadoch');
+  const sansTefilin = c.has('chabbat') || c.has('yom_tov') || (c.has('hol_hamoed') && (edot || enIsrael)) || (c.has('ticha_beav') && !edot);
+  if (!sansTefilin) r.push('tefilin');
+  if (nusah === 'ashkenaz' && !enIsrael && c.has('hol_hamoed')) r.push('tefilin_sans_berakha');
+  if (c.has('tahanoun_chaharit') && !c.has('motsae_chabbat_yt') && !c.has('lendemain_roch_hodech')) r.push('vidui_coucher');
+  if (nusah === 'ashkenaz' && !enIsrael && c.has('chemini_atseret') && c.has('bascule_pluie')) r.push('ledavid');
+  return r;
 }
 
 /** Les conditions déduites (SiddurJour, CalendrierJuif.C.DERIVEES), hors des vecteurs KosherJava. */
@@ -69,7 +89,10 @@ export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hato
   'pourim_triple_hors_jerusalem', 'pourim_triple_festin', 'avinou_malkenou_jeune', 'kaddich_complet_hallel', 'veille_pessah_cheni',
   'erev_kippour', 'sans_tahanoun_ponctuel', 'jour_pessah_cheni', 'el_erekh_apayim',
   // Hallel et Moussaf (audit du 16/11).
-  'roch_hodech_chol', 'hol_hamoed', 'hanouka_sans_moussaf', 'hanouka_hors_roch_hodech', 'leil_pessah', 'hallel_partiel'];
+  'roch_hodech_chol', 'hol_hamoed', 'hanouka_sans_moussaf', 'hanouka_hors_roch_hodech', 'leil_pessah', 'hallel_partiel',
+  // Audit du 16/11 (structure des offices).
+  'mizmor_letoda', 'yom_tov_semaine', 'leil_haseder', 'lendemain_roch_hodech', 'chome',
+  'vihi_noam', 'veata_kadoch', 'tefilin', 'tefilin_sans_berakha', 'vidui_coucher', 'nuit', 'pourim_triple_vendredi'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix
@@ -135,6 +158,23 @@ export function index(annotations = []) {
     else indices.set(`${a.s}:${a.b}`, [...(indices.get(`${a.s}:${a.b}`) ?? []), a]);
   }
   return { sections, blocs, indices, renvois, seuls };
+}
+
+/**
+ * La double annotation (audit du 16/11, SiddurJour.lignes) : les blocs d'une partie, en suites. Une suite
+ * sans « et » (ou dont le « et » est vrai) se lit avec son groupe ; une suite dont le « et » est faux (le
+ * minyan, « תתקבל » le 9 Av) se replie à part : { blocs, et, libelle }.
+ */
+export function segments(blocs, si, idx, conditions) {
+  const sortie = [];
+  for (const i of blocs) {
+    const a = idx.blocs.get(`${si}:${i}`);
+    const et = a?.et && !vrai(a.et, conditions) ? a.et : null;
+    const dernier = sortie[sortie.length - 1];
+    if (dernier && dernier.et === et) dernier.blocs.push(i);
+    else sortie.push({ blocs: [i], et, libelle: et ? (a.et_libelle ?? libelle(et)) : null });
+  }
+  return sortie;
 }
 
 /**

@@ -98,12 +98,14 @@ class SimulationSiddurTest {
         Regle(setOf("chaharit"), "ויאמר דוד אל גד", si(C.TAHANOUN_CHAHARIT)),
         // Le retour du Sefer Torah, les seuls jours de lecture (12/11 : Edot et Sfard l'affichaient tous les jours).
         Regle(setOf("chaharit"), "ובנחה יאמר שובה יהוה", si(C.KRIAT_HATORAH)),
-        // 12/11 : « שעשה לי כל צרכי » (Edot) pas le 9 Av ni à Kippour ; la fin du Kaddich après le Hallel pas à 'Hanouka.
-        Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { C.TICHA_BEAV_KIPPOUR !in it }, setOf(Nusah.EDOT)),
+        // « שעשה לי כל צרכי » : audit du 16/11, le Sfard pas le 9 Av ni à Kippour (consigne de son siddour) ; les
+        // Edot la disent ces jours-là aussi (Yalkut Yosef 46:12).
+        Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { C.TICHA_BEAV_KIPPOUR !in it }, setOf(Nusah.SEFARD)),
+        Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { true }, setOf(Nusah.EDOT)),
         // Audit du 16/11 : תתקבל tout jour de Moussaf, Roch 'Hodech Tévèt et Chabbat 'Hanouka compris (Kitsour Yalkut
         // Yosef 423:1 ; Michna Beroura 423:1) ; l'Ashkenaz, qui n'avait aucun Kaddich après le Hallel, l'a désormais.
-        // (Les deux branches du 16/11 l'écrivaient : kaddich_complet_hallel = !hanouka_sans_moussaf.)
-        Regle(setOf("hallel"), "תתקבל", { C.HANOUKA_SANS_MOUSSAF !in it }),
+        // Mais ce Kaddich demande le minyan (audit du 16/11, structure des offices) : toujours replié (double annotation).
+        Regle(setOf("hallel"), "תתקבל", { false }),
         // Edot : la bénédiction du Hallel les seuls jours de Hallel complet (Kitsour Yalkut Yosef 422:2).
         Regle(setOf("hallel"), "לגמור את ההלל", si(C.HALLEL_COMPLET), setOf(Nusah.EDOT)),
         // Edot : ברכי נפשי après Moussaf (Kitsour Yalkut Yosef 423:5).
@@ -165,8 +167,15 @@ class SimulationSiddurTest {
                 val ann = annotations.getValue(n)[id].orEmpty()
                 val lignes = SiddurJour.lignes(texte, ann, conditions, nusah = n.cle, enIsrael = lieu.israel, sud = lieu.sud)
                 // Rien n'est retiré : tous les replis ouverts, chaque bloc revient, une fois.
-                val cles = lignes.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }.toSet()
-                val tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
+                // Un repli dans un repli (double annotation, audit du 16/11) : on ouvre jusqu'à ce qu'il n'en reste plus.
+                var cles = lignes.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }.toSet()
+                var tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
+                while (true) {
+                    val plus = cles + tout.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }
+                    if (plus == cles) break
+                    cles = plus
+                    tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
+                }
                 val vus = tout.filterIsInstance<SiddurJour.Ligne.Bloc>().map { it.bloc }
                 if (vus.size != texte.sections.sumOf { it.blocs.size } ||
                     texte.sections.any { s -> s.blocs.any { b -> vus.none { it === b } } }) {
@@ -245,7 +254,8 @@ class SimulationSiddurTest {
      */
     @Test
     fun `chaque condition de repli change avec les jours`() {
-        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL)
+        // « nuit » (audit du 16/11) dépend de l'heure, pas du jour : la lecture la pose (CalendrierJuif.nuit).
+        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL, C.NUIT)
         val vues = mutableMapOf<String, MutableSet<Boolean>>()
         for (lieu in lieux) for (date in jours) {
             val jour = jour(date, lieu.israel, lieu.muree)
@@ -261,17 +271,22 @@ class SimulationSiddurTest {
         assertTrue("Conditions figées : $figees", figees.isEmpty())
     }
 
-    /** « Discret » (12/11) : « שעשה לי כל צרכי » en clair sans étiquette d'ordinaire, replié le 9 Av. */
+    /** « Discret » (12/11) : « שעשה לי כל צרכי » en clair sans étiquette d'ordinaire, replié le 9 Av (Sfard depuis l'audit du 16/11). */
     @Test
     fun `discret - en clair sans etiquette, replie le jour sans`() {
-        val texte = siddurs.getValue(Nusah.EDOT).texte("birkot_hachahar")!!
-        val ann = annotations.getValue(Nusah.EDOT).getValue("birkot_hachahar")
+        val texte = siddurs.getValue(Nusah.SEFARD).texte("birkot_hachahar")!!
+        val ann = annotations.getValue(Nusah.SEFARD).getValue("birkot_hachahar")
         val ordinaire = SiddurJour.lignes(texte, ann, CalendrierJuif.jour(LocalDate.parse("2026-11-12"), false).conditions)
         assertTrue(ordinaire.none { it is SiddurJour.Ligne.Etiquette })
         assertTrue(ordinaire.any { it is SiddurJour.Ligne.Bloc && it.style == SiddurJour.Style.NORMAL && plat(it.bloc.texte).contains(plat("שעשה לי כל צרכי")) })
         val av = SiddurJour.lignes(texte, ann, CalendrierJuif.jour(LocalDate.parse("2026-07-23"), false).conditions)
         assertTrue(av.any { it is SiddurJour.Ligne.Replie && it.libelle == "ajout_sauf_ticha_beav_kippour" })
         assertTrue(av.none { it is SiddurJour.Ligne.Bloc && plat(it.bloc.texte).contains(plat("שעשה לי כל צרכי")) })
+        // Edot (audit du 16/11, Yalkut Yosef 46:12) : en clair le 9 Av ; la consigne du Ben Ich 'Haï y paraît sous l'avis du Yalkut Yosef.
+        val edot = SiddurJour.lignes(siddurs.getValue(Nusah.EDOT).texte("birkot_hachahar")!!,
+            annotations.getValue(Nusah.EDOT).getValue("birkot_hachahar"), CalendrierJuif.jour(LocalDate.parse("2026-07-23"), false).conditions)
+        assertTrue(edot.any { it is SiddurJour.Ligne.Bloc && plat(it.bloc.texte).contains(plat("שעשה לי כל צרכי")) })
+        assertTrue(edot.any { it is SiddurJour.Ligne.Etiquette && it.libelle == "ajout_chaasa_li_yalkut" })
     }
 
     /** Les situations demandées, nommées : Roch 'Hodech, motsaé Chabbat, fêtes, jeûnes, Hanouka, Pourim, dix jours. */

@@ -22,6 +22,18 @@ class HallelMoussafTest {
     /** Le passage se lit en clair (ni replié ni estompé), hors des consignes. */
     private fun clair(l: List<SiddurJour.Ligne>, p: String) =
         l.any { it is SiddurJour.Ligne.Bloc && it.style != SiddurJour.Style.HORS && !it.bloc.consigne && plat(it.bloc.texte).contains(plat(p)) }
+    /**
+     * Le passage se dit ce jour-là avec un minyan : depuis l'audit du 16/11 (structure des offices, double
+     * annotation), un Kaddich est replié sous « minyan » ; ce repli ouvert, le passage paraît.
+     */
+    private fun avecMinyan(n: Nusah, id: String, iso: String, p: String): Boolean {
+        val l = lignes(n, id, iso)
+        val cles = l.filterIsInstance<SiddurJour.Ligne.Replie>().filter { it.condition == C.MINYAN }.map { it.cle }.toSet()
+        val compte = { x: List<SiddurJour.Ligne> ->
+            x.count { it is SiddurJour.Ligne.Bloc && !it.bloc.consigne && plat(it.bloc.texte).contains(plat(p)) }
+        }
+        return compte(lignes(n, id, iso, ouverts = cles)) > compte(l)
+    }
     private fun rappels(l: List<SiddurJour.Ligne>) = l.filterIsInstance<SiddurJour.Ligne.Rappel>().map { it.libelle }
     private fun renvois(l: List<SiddurJour.Ligne>) = l.filterIsInstance<SiddurJour.Ligne.Renvoi>().map { it.cible }
 
@@ -71,11 +83,13 @@ class HallelMoussafTest {
     fun `hallel - titkabal les jours de moussaf, ashkenaz compris`() {
         Nusah.entries.forEach { n ->
             listOf("2025-12-20", "2025-12-21", "2026-12-05", "2026-10-12", "2026-04-06").forEach { d ->
-                assertTrue("${n.cle} $d", clair(lignes(n, "hallel", d), "תתקבל"))
+                // Sous le minyan (audit du 16/11, structure des offices : double annotation).
+                assertTrue("${n.cle} $d", avecMinyan(n, "hallel", d, "תתקבל"))
             }
             val hanouka = lignes(n, "hallel", "2025-12-17")
             assertFalse(n.cle, clair(hanouka, "תתקבל"))
-            assertTrue(n.cle, clair(hanouka, "יתגדל ויתקדש שמה רבא"))
+            assertFalse(n.cle, avecMinyan(n, "hallel", "2025-12-17", "תתקבל"))
+            assertTrue(n.cle, avecMinyan(n, "hallel", "2025-12-17", "יתגדל ויתקדש שמה רבא"))
         }
     }
 
@@ -95,11 +109,14 @@ class HallelMoussafTest {
     @Test
     fun `leil pessah - hallel apres l amida d arvit`() {
         listOf(Nusah.EDOT, Nusah.SEFARD).forEach { n ->
-            listOf("2026-04-02" to false, "2026-04-02" to true, "2026-04-03" to false).forEach { (d, israel) ->
+            // En Edot, le renvoi au compte de l'Omer dès le 16 Nissan (audit du 16/11, structure des offices).
+            val omer = if (n == Nusah.EDOT) listOf("sefirat_haomer") else emptyList()
+            listOf("2026-04-02" to false, "2026-04-02" to true).forEach { (d, israel) ->
                 assertEquals("${n.cle} $d", listOf("hallel"), renvois(lignes(n, "arvit", d, israel)))
             }
-            assertTrue(n.cle, renvois(lignes(n, "arvit", "2026-04-03", true)).isEmpty())
-            assertTrue(n.cle, renvois(lignes(n, "arvit", "2026-04-08")).isEmpty())
+            assertEquals("${n.cle} 2026-04-03", listOf("hallel") + omer, renvois(lignes(n, "arvit", "2026-04-03")))
+            assertEquals(n.cle, omer, renvois(lignes(n, "arvit", "2026-04-03", true)))
+            assertEquals(n.cle, omer, renvois(lignes(n, "arvit", "2026-04-08")))
         }
         assertTrue(renvois(lignes(Nusah.ASHKENAZ, "arvit", "2026-04-02")).isEmpty())
     }

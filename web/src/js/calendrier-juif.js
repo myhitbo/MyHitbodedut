@@ -174,10 +174,18 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   // אל ארך אפים : les jours de למנצח, lundi et jeudi seulement (ShA haRav 429:12 ; CalendrierJuif.C.EL_EREKH_APAYIM).
   si(c.has('lamnatseah') && (semaine === 1 || semaine === 4), 'el_erekh_apayim');
   si(index === JewishCalendar.EREV_YOM_KIPPUR, 'erev_kippour');
-  const hier = new Date(`${iso}T12:00:00Z`);
-  hier.setUTCDate(hier.getUTCDate() - 1);
-  const hierYomTov = calendrier(hier.toISOString().slice(0, 10), enIsrael, false, mukafChoma).isYomTovAssurBemelacha();
-  si(c.has('motsae_chabbat') || (hierYomTov && !regles.isAssurBemelacha()), 'motsae_chabbat_yt');
+  const decale = (k) => { const d = new Date(`${iso}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + k); return calendrier(d.toISOString().slice(0, 10), enIsrael, false, mukafChoma); };
+  const hier = decale(-1);
+  // Un samedi soir qui est Yom tov n'est pas un soir ouvrable (O.H. 491:2 ; audit du 16/11, CalendrierJuif.kt).
+  si((c.has('motsae_chabbat') || hier.isYomTovAssurBemelacha()) && !regles.isAssurBemelacha(), 'motsae_chabbat_yt');
+  // Audit du 16/11 (CalendrierJuif.C.MIZMOR_LETODA…) ; 'hol_hamoed' est posé plus haut.
+  si(regles.isAssurBemelacha(), 'chome');
+  si(!(c.has('chabbat') || yomTov || regles.isPesach() || index === JewishCalendar.EREV_PESACH || index === JewishCalendar.EREV_YOM_KIPPUR), 'mizmor_letoda');
+  si(semaine === 0 && [0, 1, 2, 3, 4, 5].some((k) => { const d = decale(k); return d.isYomTovAssurBemelacha() || d.isCholHamoed(); }), 'yom_tov_semaine');
+  si(mois === JewishDate.NISSAN && (quantieme === 15 || (quantieme === 16 && !enIsrael)), 'leil_haseder');
+  si(hier.isRoshChodesh() && !regles.isRoshChodesh(), 'lendemain_roch_hodech');
+  // Le vendredi 14 Adar d'un Pourim triple à Jérusalem (CalendrierJuif.C.POURIM_TRIPLE_VENDREDI).
+  si(mukafChoma && semaine === 5 && quantieme === 14 && mois === (regles.isJewishLeapYear() ? JewishDate.ADAR_II : JewishDate.ADAR), 'pourim_triple_vendredi');
 
   const fetes = [];
   const fete = FETES.get(affiche.getYomTovIndex());
@@ -217,6 +225,14 @@ export function jourDeLaPriere(texte, iso, heures, apresSortie = false) {
     return new Date(Date.UTC(a, m - 1, j + 1, 12)).toISOString().slice(0, 10);
   }
   return iso;
+}
+
+/**
+ * La nuit, pour la lecture (CalendrierJuif.nuit, audit du 16/11 : la Méguila) : après la sortie des
+ * étoiles ou avant l'aube du lieu ; sans lieu (null), de 19 h à 6 h.
+ */
+export function nuit(heures, apresSortie, avantAube) {
+  return (apresSortie ?? heures >= 19) || (avantAube ?? heures < 6);
 }
 
 /**

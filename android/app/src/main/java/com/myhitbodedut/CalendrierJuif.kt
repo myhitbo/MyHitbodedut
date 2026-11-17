@@ -179,13 +179,48 @@ object CalendrierJuif {
         const val HANOUKA_HORS_ROCH_HODECH = "hanouka_hors_roch_hodech"
         const val LEIL_PESSAH = "leil_pessah"
         const val HALLEL_PARTIEL = "hallel_partiel"
+
+        /**
+         * Audit du 16/11 (structure des offices). [MIZMOR_LETODA] : pas le Chabbat, le Yom tov, pendant
+         * Pessa'h, la veille de Pessa'h ni la veille de Kippour (Rema O.H. 51:9 ; Michna Beroura 51:22, 604:4).
+         * [HOL_HAMOED] (plus haut) : 'Hol hamoed seul, sans le Yom tov. [YOM_TOV_SEMAINE] : le dimanche, quand un Yom tov
+         * ou 'Hol hamoed tombe du dimanche au vendredi (Michna Beroura 295:3). [LEIL_HASEDER] : la nuit du
+         * Séder, deux en diaspora. [LENDEMAIN_ROCH_HODECH] : le jour qui suit Roch 'Hodech. [CHOME] : Chabbat
+         * ou Yom tov (isAssurBemelacha), comme Jour.chome.
+         */
+        const val MIZMOR_LETODA = "mizmor_letoda"
+        const val YOM_TOV_SEMAINE = "yom_tov_semaine"
+        const val LEIL_HASEDER = "leil_haseder"
+        const val LENDEMAIN_ROCH_HODECH = "lendemain_roch_hodech"
+        const val CHOME = "chome"
+
+        /**
+         * Posées par SiddurJour.conditionsPour selon le noussa'h (audit du 16/11). [VIHI_NOAM] : ויהי נועם au
+         * motsaé Chabbat ; [VEATA_KADOCH] : « ואתה קדוש » et la suite, ces soirs-là et le soir du 9 Av ;
+         * [TEFILIN] : le jour où l'on met les téfilin ; [TEFILIN_SANS_BERAKHA] : 'Hol hamoed, Ashkenaz hors
+         * d'Israël ; [VIDUI_COUCHER] : le Vidouï du Chema du coucher (Edot).
+         */
+        const val VIHI_NOAM = "vihi_noam"
+        const val VEATA_KADOCH = "veata_kadoch"
+        const val TEFILIN = "tefilin"
+        const val TEFILIN_SANS_BERAKHA = "tefilin_sans_berakha"
+        const val VIDUI_COUCHER = "vidui_coucher"
+        /**
+         * Le vendredi 14 Adar d'un Pourim triple, à Jérusalem (audit du 16/11) : la Méguila s'y lit, et la nuit
+         * qui l'ouvre, avant Arvit, le psaume 22 (Kitsour Yalkut Yosef 693:1), sans que ce soit « pourim ».
+         */
+        const val POURIM_TRIPLE_VENDREDI = "pourim_triple_vendredi"
+        /** La nuit (audit du 16/11, Méguila) : posée par la lecture d'après l'heure ([nuit]), jamais par le calendrier. */
+        const val NUIT = "nuit"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
                 POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN, AVINOU_MALKENOU_JEUNE, KADDICH_COMPLET_HALLEL,
                 VEILLE_PESSAH_CHENI, EREV_KIPPOUR, SANS_TAHANOUN_PONCTUEL, JOUR_PESSAH_CHENI, EL_EREKH_APAYIM,
-                ROCH_HODECH_CHOL, HOL_HAMOED, HANOUKA_SANS_MOUSSAF, HANOUKA_HORS_ROCH_HODECH, LEIL_PESSAH, HALLEL_PARTIEL)
+                ROCH_HODECH_CHOL, HOL_HAMOED, HANOUKA_SANS_MOUSSAF, HANOUKA_HORS_ROCH_HODECH, LEIL_PESSAH, HALLEL_PARTIEL,
+                MIZMOR_LETODA, YOM_TOV_SEMAINE, LEIL_HASEDER, LENDEMAIN_ROCH_HODECH, CHOME, VIHI_NOAM, VEATA_KADOCH, TEFILIN,
+                TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT, POURIM_TRIPLE_VENDREDI)
     }
 
     /**
@@ -399,8 +434,21 @@ object CalendrierJuif {
             if (mois == JewishDate.IYAR && quantieme == 14) add(C.JOUR_PESSAH_CHENI)
             if (C.LAMNATSEAH in this && (semaine == DayOfWeek.MONDAY || semaine == DayOfWeek.THURSDAY)) add(C.EL_EREKH_APAYIM)
             if (index == JewishCalendar.EREV_YOM_KIPPUR) add(C.EREV_KIPPOUR)
-            val hierYomTov = calendrier(date.minusDays(1), enIsrael, modernes = false).isYomTovAssurBemelacha
-            if (C.MOTSAE_CHABBAT in this || (hierYomTov && !regles.isAssurBemelacha)) add(C.MOTSAE_CHABBAT_YT)
+            val hier = calendrier(date.minusDays(1), enIsrael, modernes = false)
+            // Un samedi soir qui est Yom tov n'est pas un soir ouvrable : ni אתה חוננתנו ni ajouts du motsaé Chabbat
+            // (Choul'han Aroukh O.H. 491:2, « ותודיענו » ; audit du 16/11).
+            if ((C.MOTSAE_CHABBAT in this || hier.isYomTovAssurBemelacha) && !regles.isAssurBemelacha) add(C.MOTSAE_CHABBAT_YT)
+            // Audit du 16/11 (C.MIZMOR_LETODA…). (C.HOL_HAMOED est posé plus haut.)
+            if (regles.isAssurBemelacha) add(C.CHOME)
+            if (!(C.CHABBAT in this || yomTov || regles.isPesach || index == JewishCalendar.EREV_PESACH ||
+                    index == JewishCalendar.EREV_YOM_KIPPUR)) add(C.MIZMOR_LETODA)
+            if (semaine == DayOfWeek.SUNDAY && (0L..5L).any { k ->
+                    calendrier(date.plusDays(k), enIsrael, modernes = false).let { it.isYomTovAssurBemelacha || it.isCholHamoed }
+                }) add(C.YOM_TOV_SEMAINE)
+            if (mois == JewishDate.NISSAN && (quantieme == 15 || (quantieme == 16 && !enIsrael))) add(C.LEIL_HASEDER)
+            if (hier.isRoshChodesh && !regles.isRoshChodesh) add(C.LENDEMAIN_ROCH_HODECH)
+            if (mukafChoma && semaine == DayOfWeek.FRIDAY && quantieme == 14 &&
+                mois == (if (regles.isJewishLeapYear) JewishDate.ADAR_II else JewishDate.ADAR)) add(C.POURIM_TRIPLE_VENDREDI)
         }
 
         val fetes = buildList {
@@ -446,6 +494,14 @@ object CalendrierJuif {
         "minha" -> date
         else -> if (apresSortie) date.plusDays(1) else date
     }
+
+    /**
+     * La nuit, pour la lecture (audit du 16/11 : שהחיינו de la Méguila chez les Edot, « אשר הניא » en Sfard et
+     * en Ashkenaz) : après la sortie des étoiles ou avant l'aube du lieu ; sans lieu ([apresSortie],
+     * [avantAube] null), de 19 h à 6 h.
+     */
+    fun nuit(heure: LocalTime, apresSortie: Boolean?, avantAube: Boolean?): Boolean =
+        (apresSortie ?: (heure.hour >= 19)) || (avantAube ?: (heure.hour < 6))
 
     private fun calendrier(date: LocalDate, enIsrael: Boolean, modernes: Boolean) =
         JewishCalendar(date).apply {
