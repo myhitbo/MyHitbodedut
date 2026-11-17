@@ -129,9 +129,18 @@ public enum Store {
         reglages.clearSnooze()
     }
 
-    /// La note d'un jour. Sur un jour sans hitbodedout, elle ne le valide pas.
+    /// La note d'un jour. Sur un jour sans hitbodedout, elle ne le valide pas. Le journal enrichi du jour s'écrit
+    /// avant (NoteDialog) : une humeur ou une gratitude garde la ligne (FDONNEES-14).
     public static func setNote(journal: inout Journal, date: JourCivil, note: String) {
         journal.setNote(date: date, note: note)
+    }
+
+    /// `Store.corrigerJour` (FDONNEES-04) : remplace la durée d'un jour (0 : retire la journée). Aujourd'hui retiré,
+    /// l'instant de la dernière séance n'honore plus la barrière.
+    public static func corrigerJour(journal: inout Journal, reglages: inout Reglages, date: JourCivil, minutes: Int,
+                                    aujourdhui: JourCivil) {
+        guard journal.corrigerJour(date: date, minutes: minutes) else { return }
+        if minutes <= 0 && date == aujourdhui { pose(&reglages, cleFaitA, nil) }
     }
 
     /// La journée d'aujourd'hui est retirée, et l'instant de sa séance avec elle.

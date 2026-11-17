@@ -246,18 +246,48 @@ public struct Journal: Sendable, Equatable {
     }
 
     /// `Store.setNote` : la note d'un jour. Sur un jour sans hitbodedout, elle ne le valide pas ; une note
-    /// seule qu'on efface retire la ligne ; une note blanche sur un jour vide n'écrit rien.
+    /// seule qu'on efface retire la ligne ; une note blanche sur un jour vide n'écrit rien. Une humeur ou une
+    /// gratitude gardée pour ce jour (le journal enrichi, à écrire avant) lui garde sa ligne : sans elle, le
+    /// journal ne la montrerait plus et rien ne permettrait de la modifier (FDONNEES-14).
     public mutating func setNote(date: JourCivil, note: String) {
+        let garde = !lirePlus(date).vide
         if var existante = jours[date] {
-            if existante.noteSeule && note.estBlanc {
+            if existante.noteSeule && note.estBlanc && garde {
+                existante.note = ""
+                self[date] = existante
+            } else if existante.noteSeule && note.estBlanc {
                 self[date] = nil
             } else {
                 existante.note = note.premieresUnites(Journal.noteMax)
                 self[date] = existante
             }
-        } else if !note.estBlanc {
+        } else if !note.estBlanc || garde {
             self[date] = Journee(minutes: 0, note: note.premieresUnites(Journal.noteMax), themes: [], noteSeule: true)
         }
+    }
+
+    /// `Store.jourCorrige` : ce que devient un jour quand on corrige sa durée (FDONNEES-04). `minutes` remplace les
+    /// minutes inscrites (24 h au plus) ; 0 retire la journée (sa note, si elle en a une, reste, sans valider le
+    /// jour). Nil : rien à garder, la ligne disparaît. `garde` : une humeur ou une gratitude de ce jour lui garde
+    /// sa ligne, sans valider le jour (même règle que `setNote`, FDONNEES-14).
+    public static func jourCorrige(_ existant: Journee?, minutes: Int, garde: Bool = false) -> Journee? {
+        guard var existant else { return nil }
+        if minutes > 0 {
+            existant.minutes = min(minutes, 24 * 60)
+            existant.noteSeule = false
+            return existant
+        }
+        if existant.note.estBlanc && !garde { return nil }
+        return Journee(minutes: 0, note: existant.note, themes: [], noteSeule: true)
+    }
+
+    /// `Store.corrigerJour` : remplace la durée d'un jour (0 : retire la journée). Sans effet sur un jour sans durée.
+    /// Rend vrai si le jour a changé.
+    @discardableResult
+    public mutating func corrigerJour(date: JourCivil, minutes: Int) -> Bool {
+        guard let existant = jours[date], existant.faite else { return false }
+        self[date] = Journal.jourCorrige(existant, minutes: minutes, garde: !lirePlus(date).vide)
+        return true
     }
 
     /// `Store.unmarkToday` : la journée d'aujourd'hui est retirée.

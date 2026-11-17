@@ -191,10 +191,34 @@ struct DirectionJerusalemTests {
         let angles: [Angle]
         let ecarts: [Ecart]
         let approchee: [Approchee]
+        struct Conseil: Decodable {
+            let lat: Int
+            /// « 1 » : le conseil du minyan, une colonne par longitude de -180 à 170, de dix en dix.
+            let conseil: String
+        }
+        let conseilMinyan: [Conseil]
     }
 
     private func vecteurs() throws -> Vecteurs {
         try JSONDecoder().decode(Vecteurs.self, from: Depot.donnees("ios/Paquets/Coeur/Tests/Vecteurs/geo.json"))
+    }
+
+    /// DirectionJerusalem.conseilMinyan (audit du 16/11) : les deux méthodes diffèrent de plus de 20°.
+    @Test func leConseilDuMinyanCommeLaJVM() throws {
+        let v = try vecteurs()
+        #expect(v.conseilMinyan.count == 17)
+        var oui = 0
+        for ligne in v.conseilMinyan {
+            let calcule = stride(from: -180, through: 170, by: 10).map {
+                DirectionJerusalem.conseilMinyan(Double(ligne.lat), Double($0)) ? "1" : "0"
+            }.joined()
+            #expect(calcule == ligne.conseil, "latitude \(ligne.lat)")
+            oui += ligne.conseil.filter { $0 == "1" }.count
+        }
+        #expect(oui > 0)
+        // Los Angeles : 23,8° contre 91,0°.
+        #expect(DirectionJerusalem.conseilMinyan(34.05, -118.24))
+        #expect(!DirectionJerusalem.conseilMinyan(48.8534, 2.3488))
     }
 
     @Test func lesConstantesSontCellesDuKotlin() throws {

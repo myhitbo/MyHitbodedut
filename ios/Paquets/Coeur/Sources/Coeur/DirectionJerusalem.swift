@@ -70,6 +70,16 @@ public enum DirectionJerusalem {
         abs(ecart) <= Double(tolerance)
     }
 
+    /// Au-delà de cet écart entre les deux méthodes, le conseil du minyan s'affiche (audit du 16/11).
+    public static let ecartMinyan = 20.0
+
+    /// Les deux méthodes (grand cercle, cap constant) diffèrent ici de plus de `ecartMinyan` (Los Angeles : 23,8°
+    /// contre 91,0°) : au minyan, prier dans la direction de la communauté et ne tourner que le visage (Michna
+    /// Beroura 94:10). Audit du 16/11.
+    public static func conseilMinyan(_ lat: Double, _ lon: Double) -> Bool {
+        abs(ecart(grandCercle(lat, lon), carte(lat, lon))) > ecartMinyan
+    }
+
     /// Le point cardinal le plus proche, de 0 (N) à 7 (NO), dans le sens des aiguilles.
     public static func point(_ d: Double) -> Int {
         Kotlin.arrondi(norm(d) / 45) % 8

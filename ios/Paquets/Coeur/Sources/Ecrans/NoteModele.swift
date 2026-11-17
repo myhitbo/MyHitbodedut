@@ -125,8 +125,9 @@ public final class NoteModele {
         let plus = JournalPlus.Plus(avant: avant, apres: apres, gratitude: gratitude.rogne, travail: travail.rogne)
         let date = self.date
         try await magasin.modifierJournal { journal in
-            journal.setNote(date: date, note: note)
+            // Le journal enrichi d'abord (NoteDialog) : il garde la ligne d'une note effacée (FDONNEES-14).
             journal.ecrirePlus(plus, pour: date)
+            journal.setNote(date: date, note: note)
         }
     }
 }

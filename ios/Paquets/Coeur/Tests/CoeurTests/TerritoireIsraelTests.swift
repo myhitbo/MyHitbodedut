@@ -58,10 +58,38 @@ struct TerritoireIsraelTests {
         let territoireLongitudes: [Double]
         let territoire: [Ligne]
         let bords: [Bord]
+        /// [impliquée, actuelle, premier lieu, déclaré, région à enregistrer, question à poser].
+        struct DecisionRegion: Decodable {
+            let impliquee, actuelle, premierLieu, declare: Bool
+            let region, proposition: Bool?
+
+            init(from decoder: any Decoder) throws {
+                var c = try decoder.unkeyedContainer()
+                impliquee = try c.decode(Bool.self)
+                actuelle = try c.decode(Bool.self)
+                premierLieu = try c.decode(Bool.self)
+                declare = try c.decode(Bool.self)
+                region = try c.decodeIfPresent(Bool.self)
+                proposition = try c.decodeIfPresent(Bool.self)
+            }
+        }
+        let decisionRegion: [DecisionRegion]
     }
 
     private func vecteurs() throws -> Vecteurs {
         try JSONDecoder().decode(Vecteurs.self, from: Depot.donnees("ios/Paquets/Coeur/Tests/Vecteurs/geo.json"))
+    }
+
+    /// TerritoireIsrael.decisionRegion (audit du 16/11) : les seize combinaisons de la JVM.
+    @Test func laDecisionDeRegionCommeLaJVM() throws {
+        let v = try vecteurs()
+        #expect(v.decisionRegion.count == 16)
+        for d in v.decisionRegion {
+            let r = TerritoireIsrael.decisionRegion(impliquee: d.impliquee, actuelle: d.actuelle, premierLieu: d.premierLieu,
+                                                    declare: d.declare)
+            #expect(r.region == d.region, "\(d)")
+            #expect(r.proposition == d.proposition, "\(d)")
+        }
     }
 
     @Test func leContourEstCeluiDuKotlin() throws {
