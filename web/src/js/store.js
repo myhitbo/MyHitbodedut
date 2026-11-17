@@ -325,6 +325,9 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
     /** Pas de Ta'hanoun en fin de Tichri : toujours en Edot, au choix en Sfard (Store.sansTahanounFinTichri). */
     sansTahanounFinTichri: () => ({ edot: true, sefard: get('sans_tahanoun_fin_tichri_sfard', false) === true }[store.siddurNusah()] ?? false),
     setSansTahanounFinTichriSfard: (v) => set('sans_tahanoun_fin_tichri_sfard', v),
+    /** « Pas de Ta'hanoun aujourd'hui » (Store.sansTahanounLe, audit du 16/11) : le jour choisi, et lui seul. */
+    sansTahanounLe: (iso) => get('sans_tahanoun_jour', null) === iso,
+    setSansTahanounLe: (iso, sans) => set('sans_tahanoun_jour', sans ? iso : null),
     /** Le calendrier s'ouvre sur le mois hébreu ; le mois civil est au choix (Store.calendrierCivil). */
     calendrierCivil: () => get('calendrier_civil', false) === true,
     setCalendrierCivil: (v) => set('calendrier_civil', v),

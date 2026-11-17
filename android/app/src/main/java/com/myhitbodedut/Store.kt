@@ -93,6 +93,7 @@ object Store {
     private const val KEY_OUVERTURE = "ecran_ouverture"
     private const val KEY_SIDDUR_NUSAH = "siddur_nusah"
     private const val KEY_TAHANOUN_TICHRI_SFARD = "sans_tahanoun_fin_tichri_sfard"
+    private const val KEY_SANS_TAHANOUN_JOUR = "sans_tahanoun_jour"
     private const val KEY_CALENDRIER_CIVIL = "calendrier_civil"
     private const val KEY_LECTURE_ECHELLE = "lecture_echelle"
     private const val KEY_LECTURE_SOMBRE = "lecture_sombre"
@@ -695,6 +696,21 @@ object Store {
     fun setSansTahanounFinTichriSfard(context: Context, sans: Boolean) {
         prefs(context).edit().putBoolean(KEY_TAHANOUN_TICHRI_SFARD, sans).apply()
     }
+
+    /**
+     * « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; Choul'han Aroukh O.H. 131:4) : maison en deuil,
+     * brit mila, 'hatan. Un réglage ponctuel : on garde le jour choisi, il ne vaut que pour ce jour-là.
+     */
+    fun sansTahanounLe(context: Context, date: LocalDate): Boolean =
+        prefs(context).getString(KEY_SANS_TAHANOUN_JOUR, null) == date.toString()
+
+    fun setSansTahanounLe(context: Context, date: LocalDate, sans: Boolean) {
+        prefs(context).edit().apply { if (sans) putString(KEY_SANS_TAHANOUN_JOUR, date.toString()) else remove(KEY_SANS_TAHANOUN_JOUR) }.apply()
+    }
+
+    /** Les conditions d'un jour, avec « Pas de Ta'hanoun aujourd'hui » si on l'a choisi pour ce jour-là. */
+    fun conditionsDuJour(context: Context, jour: CalendrierJuif.Jour): Set<String> =
+        SiddurJour.avecSansTahanoun(jour.conditions, sansTahanounLe(context, jour.date))
 
     /** Le calendrier s'ouvre sur le mois hébreu ; le mois civil est au choix. */
     fun calendrierCivil(context: Context): Boolean = prefs(context).getBoolean(KEY_CALENDRIER_CIVIL, false)

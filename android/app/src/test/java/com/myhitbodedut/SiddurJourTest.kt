@@ -269,4 +269,71 @@ class SiddurJourTest {
         assertEquals("ajout_sans_tahanoun", SiddurJour.libelle("!tahanoun_chaharit"))
         assertEquals("fete_yom_kippour", SiddurJour.libelle("kippour"))
     }
+
+    // --- Audit du 16/11, « Ta'hanoun et ce qui en dépend » (les mêmes cas : web/test/tahanoun.test.mjs) ---------------
+
+    private fun c(date: String) = CalendrierJuif.jour(java.time.LocalDate.parse(date), false).conditions
+
+    /** Le style d'un bloc ce jour-là ; null quand il est replié. */
+    private fun styleDe(n: Nusah, id: String, si: Int, bi: Int, date: String): SiddurJour.Style? {
+        val texte = DataFiles.siddur(n).texte(id)!!
+        val lignes = SiddurJour.lignes(texte, SiddurJour.parse(json, n.cle).getValue(id), c(date), nusah = n.cle)
+        return lignes.filterIsInstance<SiddurJour.Ligne.Bloc>().firstOrNull { it.origine === texte.sections[si].blocs[bi] }?.style
+    }
+
+    @Test
+    fun `al erekh apayim suit lamnatseah, pas le tahanoun (MB 131-35)`() {
+        listOf(Nusah.SEFARD to 12, Nusah.ASHKENAZ to 5).forEach { (n, s) ->
+            assertEquals(n.cle, SiddurJour.Style.DU_JOUR, styleDe(n, "chaharit", s, 1, "2026-02-02")) // lundi, Tou biChvat
+            assertEquals(n.cle, SiddurJour.Style.HORS, styleDe(n, "chaharit", s, 1, "2026-08-13")) // jeudi, Roch 'Hodech
+            assertEquals(n.cle, SiddurJour.Style.HORS, styleDe(n, "chaharit", s, 1, "2025-12-30")) // mardi, 10 Tévèt (ShA haRav 429:12)
+        }
+    }
+
+    @Test
+    fun `ashkenaz - vidoui et piyout du lundi et du jeudi seulement (MB 134-1)`() {
+        listOf(2, 73, 83).forEach { b ->
+            assertEquals("$b", SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, b, "2025-11-17"))
+            assertEquals("$b", null, styleDe(Nusah.ASHKENAZ, "chaharit", 4, b, "2025-11-18"))
+        }
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 84, "2025-11-18")) // שומר ישראל
+    }
+
+    @Test
+    fun `tsom guedalia - avinou malkenou sans les lignes des jeunes`() {
+        assertEquals(SiddurJour.Style.HORS, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 14, "2025-09-25")) // ברך עלינו
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 13, "2025-09-25")) // חדש עלינו
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.ASHKENAZ, "chaharit", 4, 14, "2025-12-30")) // 10 Tévèt
+    }
+
+    @Test
+    fun `edot - avinou malkenou du chabbat sans les lignes de faute`() {
+        assertEquals(SiddurJour.Style.HORS, styleDe(Nusah.EDOT, "chaharit", 9, 73, "2025-09-27"))
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 74, "2025-09-27"))
+        assertEquals(SiddurJour.Style.DU_JOUR, styleDe(Nusah.EDOT, "chaharit", 9, 73, "2025-09-29"))
+    }
+
+    @Test
+    fun `edot - pas de vidoui a minha la veille de pessah cheni, kaddich du hallel les jours de moussaf`() {
+        assertFalse(CalendrierJuif.C.TAHANOUN_MINHA in SiddurJour.conditionsPour("edot", false, c("2026-04-30")))
+        assertTrue(CalendrierJuif.C.TAHANOUN_MINHA in SiddurJour.conditionsPour("sefard", false, c("2026-04-30")))
+        assertTrue(CalendrierJuif.C.KADDICH_COMPLET_HALLEL in c("2025-12-21")) // Roch 'Hodech Tévèt
+        assertTrue(CalendrierJuif.C.KADDICH_COMPLET_HALLEL in c("2025-12-20")) // Chabbat 'Hanouka
+        assertFalse(CalendrierJuif.C.KADDICH_COMPLET_HALLEL in c("2025-12-16")) // 'Hanouka, mardi
+    }
+
+    @Test
+    fun `pas de tahanoun aujourd hui - le reglage ponctuel retire le tahanoun, pas lamnatseah`() {
+        val jour = SiddurJour.avecSansTahanoun(c("2025-11-17"), true)
+        listOf("edot", "sefard", "ashkenaz").forEach { n ->
+            val cc = SiddurJour.conditionsPour(n, false, jour)
+            listOf(CalendrierJuif.C.TAHANOUN_CHAHARIT, CalendrierJuif.C.TAHANOUN_MINHA, CalendrierJuif.C.LUNDI_JEUDI)
+                .forEach { assertFalse("$n $it", it in cc) }
+            assertTrue(n, CalendrierJuif.C.LAMNATSEAH in cc)
+            assertTrue(n, "ajout_sans_tahanoun_ponctuel" in JourAffiche.ajouts(jour, n))
+        }
+        assertTrue(CalendrierJuif.C.TAHANOUN_CHAHARIT in SiddurJour.conditionsPour("sefard", false, SiddurJour.avecSansTahanoun(c("2025-11-17"), false)))
+        assertTrue("ajout_vidoui_erev_kippour" in JourAffiche.ajouts(c("2025-10-01"), "ashkenaz"))
+        assertTrue("ajout_sans_tahanoun_pessah_cheni" in JourAffiche.ajouts(c("2026-05-01"), "ashkenaz"))
+    }
 }

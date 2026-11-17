@@ -180,7 +180,15 @@ def annoter(texte_id, sections, nusah):
             for bi, b in enumerate(sec["blocs"]):
                 x = nu(b.get("t") or b.get("c"))
                 if "c" in b:
-                    if "ביום שיש בו תחנון" in x or x.startswith("אין אומרים אא״א"):
+                    # אל ארך אפים (Ashkenaz, Sfard) suit למנצח, pas le Ta'hanoun : « דאל ארך אפים ולמנצח
+                    # דינם שוה » (Michna Beroura 131:35 ; consigne Sfard d'Achré, Dérekh ha'Haïm ; Choul'han
+                    # Aroukh haRav 429:12). Il se dit donc les lundis et jeudis sans Ta'hanoun (Nissan, Tou
+                    # biChvat…) ; « ויש נוהגים » qui le lient au Ta'hanoun restent un usage cité (audit du 16/11).
+                    # Le lundi et le jeudi seulement, pas un jeûne d'un autre jour : « ובשני וחמישי אומרים אל ארך
+                    # אפים » (Choul'han Aroukh haRav 429:12 ; Matté Efraïm 602:12) : clé el_erekh_apayim.
+                    if x.startswith("אין אומרים אא״א") and nusah != "edot":
+                        mode, reste = "el_erekh_apayim", None
+                    elif "ביום שיש בו תחנון" in x or x.startswith("אין אומרים אא״א"):
                         mode, reste = "tahanoun_chaharit", None
                     elif "ביום שאין בו תחנון" in x:
                         mode, reste = "!tahanoun_chaharit", 1
@@ -266,16 +274,24 @@ def annoter(texte_id, sections, nusah):
             # La fin : la consigne du demi-Kaddich (Cha'harit) ou le Kaddich lui-même (Min'ha).
             kd = next((k for k, y in enumerate(txt) if dd is not None and k > dd
                        and ((cons[k] and "קדיש" in y) or (not cons[k] and commence(y, "יתגדל")))), None)
+            # Le Vidouï et les treize attributs d'avant Avinou malkénou : « יש מקומות שנוהגין לומר קודם
+            # והוא רחום י"ג מדות של רחמים ווידוי » (Michna Beroura 134:1), donc le lundi et le jeudi, et
+            # selon l'usage ; ils étaient mis en évidence chaque jour de Ta'hanoun (audit du 16/11).
             if am is not None and txt[0].startswith("טעם נכון למה נתקן הוידוי"):
                 for k in range(0, am):
-                    prend(k, "tahanoun_" + office)
+                    prend(k, "lundi_jeudi", "ajout_lundi_jeudi_usage")
             if lj is not None and dd is not None and lj < dd:
                 prend(lj, "tahanoun_" + office)
                 for k in range(lj + 1, dd):
                     prend(k, "lundi_jeudi")
             if dd is not None and kd is not None:
+                # « ה׳ אלהי ישראל שוב », הבט משמים, זרים, חוסה, קולנו, עזרנו : le piyout qui suit והוא רחום
+                # le lundi et le jeudi, jusqu'à « שומר ישראל » (Aroukh haChoul'han O.H. 134:1-2 ; le siddour
+                # Sfard de l'app le range de même ; audit du 16/11). Le Ps 6 et שומר ישראל : tous les jours.
+                pj = next((k for k in range(dd, kd) if not cons[k] and commence(txt[k], "יהוה אלהי ישראל שוב")), None)
+                sh = next((k for k in range(dd, kd) if not cons[k] and commence(txt[k], "שומר ישראל")), None)
                 for k in range(dd, kd):
-                    prend(k, "tahanoun_" + office)
+                    prend(k, "lundi_jeudi" if pj is not None and sh is not None and pj <= k < sh else "tahanoun_" + office)
 
         # Anénou : l'officiant le dit dans sa répétition, bénédiction à part
         # entre « גואל ישראל » et « רפאנו » ; le particulier, dans « שומע
@@ -394,12 +410,15 @@ def annoter(texte_id, sections, nusah):
                 continue
             # Après le Hallel, la fin du Kaddich (תתקבל, יהא שלמא, עושה שלום) : pas à 'Hanouka, où l'on
             # s'arrête au demi-Kaddich (« עד כאן אומרים בחנוכה », « ובחנוכה אומר רק חצי קדיש », 12/11).
+            # Sauf à Roch 'Hodech Tévèt et le Chabbat de 'Hanouka, où le Moussaf suit : « כל יום שיש בו מוסף
+            # אומרים קדיש תתקבל אחר ההלל » (Kitsour Yalkout Yossef 423:1 ; Kaf ha'Haïm 683:2 ; consigne Sfard,
+            # « בראש חודש וביום טוב ובחול המועד אומר החזן קדיש שלם » ; audit du 16/11) : kaddich_complet_hallel.
             if texte_id == "hallel" and not cons[bi] and commence(x, "תתקבל") and any(
                     cons[k] and ("עד כאן אומרים בחנוכה" in txt[k] or "ובחנוכה אומר רק חצי קדיש" in txt[k])
                     for k in range(max(0, bi - 3), bi)):
                 j = bi
                 while j < n and not cons[j] and any(commence(txt[j], m) for m in ("תתקבל", "יהא שלמא", "יפסע", "עושה שלום", "עשה שלום")):
-                    prend_discret(j, "!hanouka", "ajout_sauf_hanouka")
+                    prend_discret(j, "kaddich_complet_hallel", "ajout_sauf_hanouka")
                     j += 1
                 bi = j
                 continue
@@ -584,8 +603,10 @@ def annoter(texte_id, sections, nusah):
                 while j < n:
                     y = txt[j]
                     if cons[j]:
+                        # Les lignes des jeûnes (« ברך עלינו », « זכרנו ») : pas à Tsom Guedalia, où l'on
+                        # dit celles des dix jours (Matté Efraïm 602:13 ; audit du 16/11).
                         if re.fullmatch(r"בתענית ציבור:?", y):
-                            sous = "jeune"
+                            sous = "avinou_malkenou_jeune"
                         elif re.fullmatch(r"(בעשי״ת|בעשרת ימי תשובה)( (אומרים|מוסיפים))?:?", y):
                             sous = "asseret_yemei_techouva"
                         else:
@@ -593,7 +614,7 @@ def annoter(texte_id, sections, nusah):
                         souche = None
                         prend(j, sous)
                     elif y.startswith("בתענית ציבור:"):
-                        prend(j, "jeune")
+                        prend(j, "avinou_malkenou_jeune")
                     elif re.match(r"בעשי״ת:", y):
                         prend(j, "asseret_yemei_techouva")
                     elif commence(y, "אבינו מלכנו"):
@@ -729,13 +750,17 @@ def annoter(texte_id, sections, nusah):
                     and bi + 1 < n and not cons[bi + 1]:
                 prend(bi, "asseret_yemei_techouva")
                 j = bi + 1
-                prend(j, "asseret_yemei_techouva")
+                # Avinou malkénou des Edot le Chabbat (Roch Hachana, Chabbat Chouva) : « מדלגים חטא ועון,
+                # כגון אבינו מלכנו חטאנו לפניך, וכן מחול וסלח לכל עוונותינו » (Kitsour Yalkout Yossef 582/602:24 ;
+                # audit du 16/11). Ces lignes, estompées le Chabbat (variante « !chabbat »).
+                faute = lambda k: nusah == "edot" and FAUTES.match(txt[k])
+                prend(j, "!chabbat" if faute(j) else "asseret_yemei_techouva")
                 ordinaire(bi, txt[j])
                 # Avinou malkénou annoncé par la consigne (Edot) : toute la suite.
                 while commence(txt[j], "אבינו מלכנו") and j + 1 < n and not cons[j + 1] \
                         and commence(txt[j + 1], "אבינו מלכנו"):
                     j += 1
-                    prend(j, "asseret_yemei_techouva")
+                    prend(j, "!chabbat" if faute(j) else "asseret_yemei_techouva")
                 bi = j + 1
                 continue
             elif not cons[bi] and re.match(r"בעשי״ת( (מסיים|יסיים))?:", x):
@@ -961,12 +986,18 @@ AUTRES_JOURS = "ajout_autres_jours"
 SCEAU_ORDINAIRE = re.compile(r"ברוך אתה \S+ (האל הקדוש|מלך או?הב צדקה ומשפט):?")
 SCEAU_DIX_JOURS = re.compile(r"ברוך אתה \S+ המלך (הקדוש|המשפט)")
 
+# Les lignes d'Avinou malkénou qui demandent pardon d'une faute, que les Edot sautent le Chabbat
+# (Kitsour Yalkout Yossef 582/602:24) : חטאנו לפניך, מחול וסלח, מחה והעבר פשעינו, מחוק… שטרי חובותינו.
+FAUTES = re.compile(r"אבינו מלכנו (חטאנו לפניך|מחול וסלח|מחה והעבר פשעינו|מחוק ברחמיך הרבים כל שטרי חובותינו)")
+
 SOUS = {
     "yaale_veyavo": {"roch_hodech", "pessah", "soukkot", "chavouot", "roch_hachana", "chemini_atseret", "kippour"},
     "al_hanissim": {"hanouka", "pourim"},
     "moed": {"pessah", "chavouot", "soukkot", "chemini_atseret"},
-    "avinou_malkenou": {"jeune", "asseret_yemei_techouva"},
-    "avinou_malkenou_minha": {"jeune", "asseret_yemei_techouva"},
+    "avinou_malkenou": {"avinou_malkenou_jeune", "asseret_yemei_techouva"},
+    "avinou_malkenou_minha": {"avinou_malkenou_jeune", "asseret_yemei_techouva"},
+    # Avinou malkénou des dix jours (Edot) : les lignes de faute, sautées le Chabbat.
+    "asseret_yemei_techouva": {"!chabbat"},
 }
 
 # Une consigne courte annonce les blocs de prière qui la suivent, jusqu'à la

@@ -131,11 +131,40 @@ object CalendrierJuif {
 
         /** Ce qui ne se dit qu'avec un minyan (Kaddich, Barekhou, Kedoucha…) : jamais du jour, replié. */
         const val MINYAN = "minyan"
+
+        /**
+         * Audit du 16/11 (Ta'hanoun et ce qui en dépend) :
+         *  - AVINOU_MALKENOU_JEUNE : les lignes des jeûnes d'Avinou malkénou (« ברך עלינו », « זכרנו »), un jeûne
+         *    hors des dix jours ; à Tsom Guedalia, on dit celles des dix jours (Matté Efraïm 602:13) ;
+         *  - KADDICH_COMPLET_HALLEL : la fin du Kaddich après le Hallel, sauf à 'Hanouka, mais à Roch 'Hodech Tévèt
+         *    et le Chabbat de 'Hanouka, qui ont un Moussaf (Kitsour Yalkout Yossef 423:1 ; Kaf ha'Haïm 683:2) ;
+         *  - VEILLE_PESSAH_CHENI : le 13 Iyar, sans Vidouï à Min'ha en Edot (Kitsour Yalkout Yossef 131:38) ;
+         *  - EREV_KIPPOUR : le 9 Tichri, Vidouï et « על חטא » après l'Amida de Min'ha (Choul'han Aroukh O.H. 607:1).
+         */
+        const val AVINOU_MALKENOU_JEUNE = "avinou_malkenou_jeune"
+        const val KADDICH_COMPLET_HALLEL = "kaddich_complet_hallel"
+        const val VEILLE_PESSAH_CHENI = "veille_pessah_cheni"
+        /** Le 14 Iyar : sans Ta'hanoun, usage que ni le Choul'han Aroukh ni le Michna Beroura ne citent (JourAffiche le dit en Ashkenaz). */
+        const val JOUR_PESSAH_CHENI = "jour_pessah_cheni"
+        /**
+         * אל ארך אפים (Ashkenaz, Sfard) : les jours de למנצח, le lundi et le jeudi seulement (Michna Beroura 131:35 ;
+         * Choul'han Aroukh haRav 429:12 ; Matté Efraïm 602:12), pas un jeûne d'un autre jour.
+         */
+        const val EL_EREKH_APAYIM = "el_erekh_apayim"
+        const val EREV_KIPPOUR = "erev_kippour"
+
+        /**
+         * « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel, audit du 16/11 ; Choul'han Aroukh O.H. 131:4) :
+         * maison en deuil, brit mila, 'hatan. Jamais calculée : ajoutée par l'écran le jour choisi
+         * (Store.sansTahanounAujourdhui), elle retire le Ta'hanoun (SiddurJour.conditionsPour).
+         */
+        const val SANS_TAHANOUN_PONCTUEL = "sans_tahanoun_ponctuel"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
                 MOTSAE_CHABBAT_YT, BEIT_AVEL, OUBLI, MINYAN, CHEVA_BERAKHOT, ZIMUN, FACULTATIF, EMBOLISMIQUE, EMBOLISMIQUE_AVANT_NISSAN,
-                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN)
+                POURIM_TRIPLE_HORS_JERUSALEM, POURIM_TRIPLE_FESTIN, AVINOU_MALKENOU_JEUNE, KADDICH_COMPLET_HALLEL,
+                VEILLE_PESSAH_CHENI, EREV_KIPPOUR, SANS_TAHANOUN_PONCTUEL, JOUR_PESSAH_CHENI, EL_EREKH_APAYIM)
     }
 
     /**
@@ -332,6 +361,13 @@ object CalendrierJuif {
             }
             if (C.CHABBAT in this && yomTov) add(C.YOM_TOV_CHABBAT)
             if (C.CHABBAT in this && regles.isRoshHashana) add(C.ROCH_HACHANA_CHABBAT)
+            // Audit du 16/11 (C.AVINOU_MALKENOU_JEUNE…).
+            if (C.JEUNE in this && C.ASSERET_YEMEI_TECHOUVA !in this) add(C.AVINOU_MALKENOU_JEUNE)
+            if (!regles.isChanukah || regles.isRoshChodesh || C.CHABBAT in this) add(C.KADDICH_COMPLET_HALLEL)
+            if (mois == JewishDate.IYAR && quantieme == 13) add(C.VEILLE_PESSAH_CHENI)
+            if (mois == JewishDate.IYAR && quantieme == 14) add(C.JOUR_PESSAH_CHENI)
+            if (C.LAMNATSEAH in this && (semaine == DayOfWeek.MONDAY || semaine == DayOfWeek.THURSDAY)) add(C.EL_EREKH_APAYIM)
+            if (index == JewishCalendar.EREV_YOM_KIPPUR) add(C.EREV_KIPPOUR)
             val hierYomTov = calendrier(date.minusDays(1), enIsrael, modernes = false).isYomTovAssurBemelacha
             if (C.MOTSAE_CHABBAT in this || (hierYomTov && !regles.isAssurBemelacha)) add(C.MOTSAE_CHABBAT_YT)
         }

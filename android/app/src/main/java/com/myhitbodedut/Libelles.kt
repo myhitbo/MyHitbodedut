@@ -55,6 +55,7 @@ object Libelles {
         "ajout_ledavid" -> R.string.ajout_ledavid
         "ajout_lendemain_kippour" -> R.string.ajout_lendemain_kippour
         "ajout_lundi_jeudi" -> R.string.ajout_lundi_jeudi
+        "ajout_lundi_jeudi_usage" -> R.string.ajout_lundi_jeudi_usage
         "ajout_machiv_harouah" -> R.string.ajout_machiv_harouah
         "ajout_minyan" -> R.string.ajout_minyan
         "ajout_moed" -> R.string.ajout_moed
@@ -67,6 +68,8 @@ object Libelles {
         "ajout_roch_hodech" -> R.string.ajout_roch_hodech
         "ajout_sans_tahanoun" -> R.string.ajout_sans_tahanoun
         "ajout_sans_tahanoun_halikhot_chlomo" -> R.string.ajout_sans_tahanoun_halikhot_chlomo
+        "ajout_sans_tahanoun_pessah_cheni" -> R.string.ajout_sans_tahanoun_pessah_cheni
+        "ajout_sans_tahanoun_ponctuel" -> R.string.ajout_sans_tahanoun_ponctuel
         "ajout_sauf_hanouka" -> R.string.ajout_sauf_hanouka
         "ajout_sauf_ticha_beav_kippour" -> R.string.ajout_sauf_ticha_beav_kippour
         "ajout_tahanoun" -> R.string.ajout_tahanoun
@@ -75,6 +78,7 @@ object Libelles {
         "ajout_ticha_beav" -> R.string.ajout_ticha_beav
         "ajout_ticha_beav_kippour" -> R.string.ajout_ticha_beav_kippour
         "ajout_tsom_guedalia_tevet" -> R.string.ajout_tsom_guedalia_tevet
+        "ajout_vidoui_erev_kippour" -> R.string.ajout_vidoui_erev_kippour
         "ajout_yaale_veyavo" -> R.string.ajout_yaale_veyavo
         "ajout_yom_tov" -> R.string.ajout_yom_tov
         "ajout_yom_tov_chabbat" -> R.string.ajout_yom_tov_chabbat

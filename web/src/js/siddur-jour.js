@@ -15,6 +15,10 @@ export function libelle(condition) {
   if (c.startsWith('tahanoun')) return 'ajout_tahanoun';
   if (c === 'kippour') return 'fete_yom_kippour';
   if (c === 'avinou_malkenou_minha') return 'ajout_avinou_malkenou';
+  // Audit du 16/11 : des variantes, nommées comme ce qu'elles sont.
+  if (c === 'avinou_malkenou_jeune') return 'ajout_jeune_public';
+  if (c === 'kaddich_complet_hallel') return 'ajout_sauf_hanouka';
+  if (c === 'el_erekh_apayim') return 'ajout_lundi_jeudi';
   if (c === 'hallel') return 'ajout_hallel_annonce';
   if (c.startsWith('embolismique')) return 'ajout_embolismique';
   if (['pessah', 'soukkot', 'chavouot', 'roch_hachana', 'chemini_atseret', 'hanouka', 'pourim'].includes(c)) return `fete_${c}`;
@@ -39,6 +43,10 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   // Pourim triple, le dimanche 16 Adar en Israël hors de Jérusalem : l'Ashkenaz suit le Halikhot Chlomo (22:8),
   // sans Ta'hanoun ; למנצח reste (Michna Beroura 131:35, qui fait dire Ta'hanoun : ajouts le précise).
   if (nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
+  // Edot : pas de Vidouï à Min'ha du 13 Iyar, veille de Pessa'h chéni (Kitsour Yalkout Yossef 131:38 ; audit du 16/11).
+  if (nusah === 'edot' && c.has('veille_pessah_cheni')) c.delete('tahanoun_minha');
+  // « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel : deuil, brit, 'hatan ; Choul'han Aroukh O.H. 131:4 ; audit du 16/11).
+  if (c.has('sans_tahanoun_ponctuel')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
   if (avinouMalkenou(conditions)) c.add('avinou_malkenou');
   // À Min'ha : seulement si Ta'hanoun s'y dit (TSIDDUR-09) ; Roch Hachana et Kippour gardent le leur, sauf un vendredi (relecture du 15/11).
   const c0 = new Set(conditions);
@@ -48,12 +56,18 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   return c;
 }
 
+/** [conditions], avec le réglage ponctuel « Pas de Ta'hanoun aujourd'hui » quand [sansTahanoun] (SiddurJour.avecSansTahanoun). */
+export function avecSansTahanoun(conditions, sansTahanoun) {
+  return sansTahanoun ? new Set([...conditions, 'sans_tahanoun_ponctuel']) : conditions;
+}
+
 /** Les conditions déduites (SiddurJour, CalendrierJuif.C.DERIVEES), hors des vecteurs KosherJava. */
 export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hatorah', 'jour_1', 'jour_2', 'jour_3', 'jour_4', 'jour_5', 'jour_6',
   'tsom_guedalia_tevet', 'lendemain_kippour', 'ticha_beav_kippour', 'esther_pourim', 'chiva_assar_tamouz', 'bascule_pluie', 'erev_kippour_vendredi',
   'lamnatseah', 'ledavid', 'techouva_hochaana', 'yom_tov', 'moed', 'chabbat_roch_hodech', 'yom_tov_chabbat', 'roch_hachana_chabbat',
   'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan',
-  'pourim_triple_hors_jerusalem', 'pourim_triple_festin'];
+  'pourim_triple_hors_jerusalem', 'pourim_triple_festin', 'avinou_malkenou_jeune', 'kaddich_complet_hallel', 'veille_pessah_cheni',
+  'erev_kippour', 'sans_tahanoun_ponctuel', 'jour_pessah_cheni', 'el_erekh_apayim'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix

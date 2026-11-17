@@ -38,9 +38,16 @@ export function ajouts(c0, nusah = 'edot', enIsrael = false, sansTahanounFinTich
   // Le Chabbat et un Yom Tov (Kippour compris), il n'y a pas d'Amida de semaine où dire ou taire Ta'hanoun.
   // Le dimanche d'un Pourim triple hors de Jérusalem, l'Ashkenaz suit le Halikhot Chlomo contre le Michna Beroura (131:33).
   if (!c.has(C.CHABBAT) && !c.has('yom_tov')) {
+    // Le réglage ponctuel (deuil, brit, 'hatan ; audit du 16/11) : on dit d'où vient l'absence.
     l.push(c.has(C.TAHANOUN_CHAHARIT) ? 'ajout_tahanoun'
-      : nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem') ? 'ajout_sans_tahanoun_halikhot_chlomo' : 'ajout_sans_tahanoun');
+      : c.has('sans_tahanoun_ponctuel') ? 'ajout_sans_tahanoun_ponctuel'
+      : nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem') ? 'ajout_sans_tahanoun_halikhot_chlomo'
+      // Pessa'h chéni (Ashkenaz) : un usage que ni le Choul'han Aroukh ni le Michna Beroura ne citent (JourAffiche.ajouts).
+      : nusah === 'ashkenaz' && c.has('jour_pessah_cheni') ? 'ajout_sans_tahanoun_pessah_cheni' : 'ajout_sans_tahanoun');
   }
+  // La veille de Kippour : Vidouï et « על חטא » après l'Amida de Min'ha, dans le ma'hzor (Choul'han Aroukh O.H. 607:1 ;
+  // Kitsour Yalkout Yossef 607:1 ; audit du 16/11).
+  if (c.has('erev_kippour')) l.push('ajout_vidoui_erev_kippour');
   return l;
 }
 

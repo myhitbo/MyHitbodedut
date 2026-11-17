@@ -95,11 +95,28 @@ class SimulationSiddurTest {
         Regle(setOf("chaharit"), "ובנחה יאמר שובה יהוה", si(C.KRIAT_HATORAH)),
         // 12/11 : « שעשה לי כל צרכי » (Edot) pas le 9 Av ni à Kippour ; la fin du Kaddich après le Hallel pas à 'Hanouka.
         Regle(setOf("birkot_hachahar"), "שעשה לי כל צרכי", { C.TICHA_BEAV_KIPPOUR !in it }, setOf(Nusah.EDOT)),
-        Regle(setOf("hallel"), "תתקבל", { C.HANOUKA !in it }),
+        // Audit du 16/11 : sauf à Roch 'Hodech Tévèt et le Chabbat de 'Hanouka, jours de Moussaf (Kitsour Yalkout Yossef 423:1).
+        Regle(setOf("hallel"), "תתקבל", { C.HANOUKA !in it || C.ROCH_HODECH in it || C.CHABBAT in it }),
         Regle(setOf("minha"), "ויאמר דוד אל גד", si(C.TAHANOUN_MINHA)),
         // Avinou malkénou (Ashkenaz, Sfard) ; à Min'ha, pas la veille de Chabbat (12/11 : jeûne de Tévèt un vendredi).
         Regle(setOf("chaharit"), "אבינו מלכנו חטאנו לפניך", si(C.AVINOU_MALKENOU), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
         Regle(setOf("minha"), "אבינו מלכנו חטאנו לפניך", si(C.AVINOU_MALKENOU_MINHA), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
+        // Audit du 16/11 (Ta'hanoun et ce qui en dépend).
+        // עלינו suit chacun des trois offices, sans lien avec le Ta'hanoun (Michna Beroura 132:7).
+        Regle(setOf("minha"), "עלינו לשבח לאדון הכל", TOUJOURS),
+        // אל ארך אפים suit למנצח (Michna Beroura 131:35 ; consigne Sfard, Dérekh ha'Haïm), le lundi et le jeudi (ShA haRav 429:12).
+        Regle(setOf("chaharit"), "אל ארך אפים ומלא רחמים אל תסתר פניך ממנו", { C.LAMNATSEAH in it && (C.JOURS_SEMAINE[1] in it || C.JOURS_SEMAINE[4] in it) }, setOf(Nusah.SEFARD)),
+        Regle(setOf("chaharit"), "אל ארך אפים ורב חסד ואמת אל באפך תוכיחנו", { C.LAMNATSEAH in it && (C.JOURS_SEMAINE[1] in it || C.JOURS_SEMAINE[4] in it) }, setOf(Nusah.ASHKENAZ)),
+        // Le piyout du lundi et du jeudi (Aroukh haChoul'han 134:1-2), le Vidouï ashkénaze (Michna Beroura 134:1).
+        Regle(setOf("chaharit"), "זרים אומרים אין תוחלת ותקוה", si(C.LUNDI_JEUDI), setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
+        Regle(setOf("chaharit"), "אשמנו בגדנו גזלנו", si(C.LUNDI_JEUDI), setOf(Nusah.ASHKENAZ)),
+        // Tsom Guedalia : les lignes des dix jours seulement (Matté Efraïm 602:13).
+        Regle(setOf("chaharit"), "אבינו מלכנו ברך עלינו שנה טובה", { C.AVINOU_MALKENOU in it && C.ASSERET_YEMEI_TECHOUVA !in it && C.JEUNE in it },
+            setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
+        Regle(setOf("chaharit"), "אבינו מלכנו זכרנו לחיים טובים", { C.AVINOU_MALKENOU in it && C.ASSERET_YEMEI_TECHOUVA !in it && C.JEUNE in it },
+            setOf(Nusah.ASHKENAZ, Nusah.SEFARD)),
+        // Edot, le Chabbat des dix jours : sans les lignes de faute (Kitsour Yalkout Yossef 582/602:24).
+        Regle(setOf("chaharit", "minha"), "אבינו מלכנו מחה והעבר פשעינו", { C.ASSERET_YEMEI_TECHOUVA in it && C.CHABBAT !in it }, setOf(Nusah.EDOT)),
         // Méèn chaloch.
         Regle(setOf("meen_chaloch"), "ורצה והחליצנו", si(C.CHABBAT)),
         Regle(setOf("meen_chaloch"), "ביום הזכרון הזה", si(C.ROCH_HACHANA)),

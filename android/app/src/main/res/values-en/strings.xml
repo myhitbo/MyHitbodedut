@@ -717,6 +717,9 @@
     <string name="reglage_tahanoun_tichri">Tachanun at the end of Tishrei</string>
     <string name="reglage_tahanoun_tichri_dit">Said after Isru Chag</string>
     <string name="reglage_tahanoun_tichri_sans">Not said until Rosh Chodesh Cheshvan</string>
+    <string name="reglage_sans_tahanoun_jour">No Tachanun today</string>
+    <string name="reglage_sans_tahanoun_jour_non">Off · for a house of mourning, a brit milah or a chatan, for this day only</string>
+    <string name="reglage_sans_tahanoun_jour_oui">On, today only: Tachanun is folded in the siddur</string>
     <string name="zman_alot">Dawn (Alot hashachar)</string>
     <string name="zman_misheyakir">Misheyakir</string>
     <string name="zman_netz">Sunrise (Netz)</string>
@@ -755,6 +758,9 @@
     <string name="ajout_hallel_complet">Full Hallel</string>
     <string name="ajout_tahanoun">Tachanun</string>
     <string name="ajout_sans_tahanoun">No Tachanun</string>
+    <string name="ajout_sans_tahanoun_pessah_cheni">No Tachanun (custom; neither the Shulchan Aruch nor the Mishna Berura mention it, the old Ashkenazi custom said it)</string>
+    <string name="ajout_sans_tahanoun_ponctuel">No Tachanun (today’s setting)</string>
+    <string name="ajout_vidoui_erev_kippour">Mincha: Viduy and « על חטא » after the Amida (in the machzor)</string>
     <string name="ajout_sans_tahanoun_halikhot_chlomo">No Tachanun (Halichos Shlomo); per the Mishna Berura, it is said</string>
     <string name="ajout_asseret_yemei_techouva">Ten Days of Repentance</string>
     <string name="ajout_jeune">Aneinu</string>
@@ -776,6 +782,7 @@
     <string name="ajout_ticha_beav">Nachem</string>
     <string name="ajout_chabbat">Shabbat</string>
     <string name="ajout_lundi_jeudi">Monday and Thursday</string>
+    <string name="ajout_lundi_jeudi_usage">Monday and Thursday, by custom</string>
     <string name="ajout_motsae_chabbat">Motzaei Shabbat</string>
     <string name="ajout_roch_hodech">Rosh Chodesh</string>
     <string name="ajout_hallel_annonce">Hallel</string>
