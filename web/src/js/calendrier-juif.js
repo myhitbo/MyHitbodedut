@@ -142,9 +142,21 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(yomTov, 'yom_tov');
   si(['pessah', 'soukkot', 'chavouot', 'chemini_atseret'].some((k) => c.has(k)), 'moed');
   si(c.has('chabbat') && regles.isRoshChodesh(), 'chabbat_roch_hodech');
-  // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique (28/10) : toute l'année
-  // (consigne du siddour Edot) ou jusqu'à Roch 'Hodech Adar II inclus (« עד חודש ניסן », Sfard et
-  // Ashkenaz) ; les deux usages, Michna beroura 423:6. Le 30 inaugure le mois suivant.
+  // Hallel et Moussaf (audit du 16/11 ; CalendrierJuif.C.ROCH_HODECH_CHOL…) : le Moussaf de Roch 'Hodech
+  // en semaine seulement (le Chabbat, « אתה יצרת », Kitsour Yalkut Yosef 423:10) ; 'Hol hamoed ; 'Hanouka
+  // sans Moussaf (demi-Kaddich après le Hallel, Kitsour Yalkut Yosef 423:1) ; 'Hanouka hors de Roch
+  // 'Hodech (psaume 30 après Moussaf à Roch 'Hodech Tévèt, 683:11) ; le soir du Séder (487:5) ; Hallel partiel.
+  si(!c.has('chabbat') && regles.isRoshChodesh(), 'roch_hodech_chol');
+  si(regles.isCholHamoed(), 'hol_hamoed');
+  si(regles.isChanukah() && !regles.isRoshChodesh() && !c.has('chabbat'), 'hanouka_sans_moussaf');
+  si(regles.isChanukah() && !regles.isRoshChodesh(), 'hanouka_hors_roch_hodech');
+  si(index === JewishCalendar.PESACH && mois === JewishDate.NISSAN && quantieme <= 16, 'leil_pessah');
+  si(c.has('hallel') && !c.has('hallel_complet'), 'hallel_partiel');
+  // « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech d'une année embolismique (28/10) : jusqu'à Roch 'Hodech
+  // Adar II inclus, plus à partir de Nissan (« עד חודש ניסן », Sfard et Ashkenaz ; pour les Edot, Kitsour Yalkut
+  // Yosef 423:14, audit du 16/11 : la consigne de leur siddour, « בשנה מעוברת », le dit toute l'année comme le
+  // Ben Ich 'Haï et le Kaf ha'Haïm 423:18). Michna Beroura 423:6 rapporte trois usages : tous les mois, l'année
+  // embolismique, ou celle-ci jusqu'à la fin d'Adar II. Le 30 inaugure le mois suivant.
   if (regles.isRoshChodesh() && regles.isJewishLeapYear()) {
     const inaugure = quantieme === 30 ? (mois === JewishDate.ADAR ? JewishDate.ADAR_II : mois === JewishDate.ADAR_II ? JewishDate.NISSAN : mois + 1) : mois;
     c.add('embolismique');

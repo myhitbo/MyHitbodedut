@@ -102,6 +102,13 @@ object SiddurJour {
         /** « Aujourd'hui · Hallel › » : le texte à dire ici ce jour-là, ouvert d'un geste ; [cible] : son identifiant. */
         data class Renvoi(val condition: String, val cible: String) : Ligne()
 
+        /**
+         * « Aujourd'hui · … » : ce que le jour change ici et que le siddour n'a pas, ou pas à cette place
+         * (audit du 16/11 : le Moussaf de Chabbat Roch 'Hodech, celui de 'Hol hamoed, le demi-Kaddich avant
+         * Moussaf) ; un renvoi sans texte cible, [libelle] : la clé de chaîne.
+         */
+        data class Rappel(val condition: String, val libelle: String) : Ligne()
+
         /** Qui prie seul (19/10) : la braïta à la place de Barekhou, ou où la dire ; [consigne] avant. */
         data class Seul(val texte: String, val consigne: String?) : Ligne()
 
@@ -133,13 +140,15 @@ object SiddurJour {
         val blocs = annotations.filter { it.sorte == Sorte.BLOC }.associateBy { it.section to it.bloc!! }
         val indices = annotations.filter { it.sorte == Sorte.INDICE }.groupBy { it.section to it.bloc!! }
         // Les renvois du jour seulement : hors du jour, rien (le texte renvoyé n'est pas d'ici).
-        val renvois = annotations.filter { it.sorte == Sorte.RENVOI && it.cible != null && vrai(it.condition, conditions) }
+        val renvois = annotations.filter { it.sorte == Sorte.RENVOI && (it.cible != null || it.libelle != null) && vrai(it.condition, conditions) }
             .groupBy { it.section to it.bloc }
         val seuls = annotations.filter { it.sorte == Sorte.SEUL && it.texte != null && vrai(it.condition, conditions) }
             .groupBy { it.section to it.bloc }
         val sortie = mutableListOf<Ligne>()
         fun seul(si: Int, bi: Int) = seuls[si to bi].orEmpty().forEach { sortie += Ligne.Seul(it.texte!!, it.consigne) }
-        fun renvoyer(si: Int, bi: Int?) = renvois[si to bi].orEmpty().forEach { sortie += Ligne.Renvoi(it.condition, it.cible!!) }
+        fun renvoyer(si: Int, bi: Int?) = renvois[si to bi].orEmpty().forEach {
+            sortie += if (it.cible != null) Ligne.Renvoi(it.condition, it.cible) else Ligne.Rappel(it.condition, it.libelle!!)
+        }
         texte.sections.forEachIndexed { si, s ->
             // Une section seule porte déjà le nom du texte : pas de titre répété.
             if (texte.sections.size > 1 && s.titre.isNotBlank()) sortie += Ligne.Titre(s.titre, s.titreFr, s.titreEn)

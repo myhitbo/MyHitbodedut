@@ -708,6 +708,16 @@ class SiddurLectureActivity : AppCompatActivity() {
                     textSize = 12f * e
                     setTextColor(rendu.titre)
                 }
+                // Ce que le jour change ici sans texte dans le siddour (audit du 16/11).
+                is SiddurJour.Ligne.Rappel -> vue.apply {
+                    layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                    textDirection = View.TEXT_DIRECTION_LOCALE
+                    setPadding(dp(16), dp(8), dp(16), dp(8))
+                    text = getString(R.string.siddur_aujourdhui) + " · " + nom(ligne.libelle)
+                    textSize = 13f * e
+                    setTextColor(rendu.titre)
+                    setBackgroundColor(teinte)
+                }
                 is SiddurJour.Ligne.Renvoi -> vue.apply {
                     // « Aujourd'hui · הַלֵּל › » : le texte de ce jour, à cet endroit, ouvert d'un geste.
                     val cible = recueil().texte(ligne.cible)

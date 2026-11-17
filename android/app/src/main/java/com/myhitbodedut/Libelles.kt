@@ -39,8 +39,12 @@ object Libelles {
         "ajout_hallel" -> R.string.ajout_hallel
         "ajout_hallel_annonce" -> R.string.ajout_hallel_annonce
         "ajout_hallel_complet" -> R.string.ajout_hallel_complet
+        "ajout_hallel_partiel" -> R.string.ajout_hallel_partiel
         "ajout_hallel_partiel_avec_berakha" -> R.string.ajout_hallel_partiel_avec_berakha
         "ajout_hallel_partiel_sans_berakha" -> R.string.ajout_hallel_partiel_sans_berakha
+        "ajout_hanouka_hors_roch_hodech" -> R.string.ajout_hanouka_hors_roch_hodech
+        "ajout_hanouka_sans_moussaf" -> R.string.ajout_hanouka_sans_moussaf
+        "ajout_hol_hamoed" -> R.string.ajout_hol_hamoed
         "ajout_hors_jeune_public" -> R.string.ajout_hors_jeune_public
         "ajout_jeune" -> R.string.ajout_jeune
         "ajout_jeune_public" -> R.string.ajout_jeune_public
@@ -53,6 +57,7 @@ object Libelles {
         "ajout_kriat_hatorah" -> R.string.ajout_kriat_hatorah
         "ajout_lamnatseah" -> R.string.ajout_lamnatseah
         "ajout_ledavid" -> R.string.ajout_ledavid
+        "ajout_leil_pessah" -> R.string.ajout_leil_pessah
         "ajout_lendemain_kippour" -> R.string.ajout_lendemain_kippour
         "ajout_lundi_jeudi" -> R.string.ajout_lundi_jeudi
         "ajout_lundi_jeudi_usage" -> R.string.ajout_lundi_jeudi_usage
@@ -65,8 +70,18 @@ object Libelles {
         "ajout_omer" -> R.string.ajout_omer
         "ajout_oubli" -> R.string.ajout_oubli
         "ajout_pourim_triple_festin" -> R.string.ajout_pourim_triple_festin
+        "ajout_rappel_berakha_hallel_sefard" -> R.string.ajout_rappel_berakha_hallel_sefard
+        "ajout_rappel_demi_kaddich_moussaf" -> R.string.ajout_rappel_demi_kaddich_moussaf
+        "ajout_rappel_demi_kaddich_moussaf_edot" -> R.string.ajout_rappel_demi_kaddich_moussaf_edot
+        "ajout_rappel_hallel_leil_pessah_edot" -> R.string.ajout_rappel_hallel_leil_pessah_edot
+        "ajout_rappel_hallel_leil_pessah_sefard" -> R.string.ajout_rappel_hallel_leil_pessah_sefard
+        "ajout_rappel_moussaf_chabbat_roch_hodech" -> R.string.ajout_rappel_moussaf_chabbat_roch_hodech
+        "ajout_rappel_moussaf_hol_hamoed" -> R.string.ajout_rappel_moussaf_hol_hamoed
+        "ajout_rappel_psaume_hanouka_apres_moussaf" -> R.string.ajout_rappel_psaume_hanouka_apres_moussaf
+        "ajout_rappel_sans_titkabal" -> R.string.ajout_rappel_sans_titkabal
         "ajout_roch_hachana_chabbat" -> R.string.ajout_roch_hachana_chabbat
         "ajout_roch_hodech" -> R.string.ajout_roch_hodech
+        "ajout_roch_hodech_chol" -> R.string.ajout_roch_hodech_chol
         "ajout_sans_tahanoun" -> R.string.ajout_sans_tahanoun
         "ajout_sans_tahanoun_halikhot_chlomo" -> R.string.ajout_sans_tahanoun_halikhot_chlomo
         "ajout_sans_tahanoun_pessah_cheni" -> R.string.ajout_sans_tahanoun_pessah_cheni

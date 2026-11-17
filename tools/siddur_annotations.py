@@ -113,9 +113,13 @@ INDICES = [
 
 
 # « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech (vérification du 28/10) : année embolismique
-# seulement. Edot, « בשנה מעוברת » : toute l'année ; Sfard, Ashkenaz, « עד חודש ניסן » : jusqu'à
-# Roch 'Hodech Adar II inclus. Les deux usages : Michna beroura 423:6. Rend (condition, passage
-# brut à retirer hors du jour : la consigne et le mot, avec l'espace qui les précède).
+# seulement, jusqu'à Roch 'Hodech Adar II inclus ; plus à partir de Nissan. Sfard, Ashkenaz : la
+# consigne de leur siddour, « עד חודש ניסן ». Edot (audit du 16/11) : le Yalkut Yosef, référence
+# de l'application pour ce rite (Kitsour Yalkut Yosef 423:14, « מראש חודש ניסן ואילך אין צריך
+# להוסיף ») ; la consigne de leur siddour, « בשנה מעוברת », le dit toute l'année, avec le Ben Ich
+# 'Haï et le Kaf ha'Haïm 423:18. Michna Beroura 423:6 rapporte trois usages (tous les mois, l'année
+# embolismique, ou celle-ci jusqu'à la fin d'Adar II). Rend (condition, passage brut à retirer hors
+# du jour : la consigne et le mot, avec l'espace qui les précède).
 def kapparat_pecha(brut, nusah):
     m = re.search(r"(בשנת העיבור|בשנה מעוברת)", brut)
     if not m:
@@ -132,7 +136,7 @@ def kapparat_pecha(brut, nusah):
         debut -= 1
     if brut[fin:fin + 1] == ")" and brut[debut - 1:debut] == ",":
         debut -= 1
-    return ("embolismique" if nusah == "edot" else "embolismique_avant_nissan"), brut[debut:fin]
+    return "embolismique_avant_nissan", brut[debut:fin]
 
 
 def annoter(texte_id, sections, nusah):
@@ -417,8 +421,9 @@ def annoter(texte_id, sections, nusah):
             # Après le Hallel, la fin du Kaddich (תתקבל, יהא שלמא, עושה שלום) : pas à 'Hanouka, où l'on
             # s'arrête au demi-Kaddich (« עד כאן אומרים בחנוכה », « ובחנוכה אומר רק חצי קדיש », 12/11).
             # Sauf à Roch 'Hodech Tévèt et le Chabbat de 'Hanouka, où le Moussaf suit : « כל יום שיש בו מוסף
-            # אומרים קדיש תתקבל אחר ההלל » (Kitsour Yalkout Yossef 423:1 ; Kaf ha'Haïm 683:2 ; consigne Sfard,
-            # « בראש חודש וביום טוב ובחול המועד אומר החזן קדיש שלם » ; audit du 16/11) : kaddich_complet_hallel.
+            # אומרים קדיש תתקבל אחר ההלל » (Kitsour Yalkout Yossef 423:1 ; Kaf ha'Haïm 683:2 ; Michna Beroura
+            # 423:1 ; consigne Sfard, « בראש חודש וביום טוב ובחול המועד אומר החזן קדיש שלם » ; audit du 16/11) :
+            # kaddich_complet_hallel, le contraire de hanouka_sans_moussaf.
             if texte_id == "hallel" and not cons[bi] and commence(x, "תתקבל") and any(
                     cons[k] and ("עד כאן אומרים בחנוכה" in txt[k] or "ובחנוכה אומר רק חצי קדיש" in txt[k])
                     for k in range(max(0, bi - 3), bi)):
@@ -431,6 +436,13 @@ def annoter(texte_id, sections, nusah):
             # Barekhi nafchi la veille de Roch 'Hodech (Edot, Arvit : « בליל ראש חודש יש הנוהגים
             # לומר ») : la consigne et le psaume ; Arvit relève déjà du jour hébreu suivant.
             if cons[bi] and x.startswith("בליל ראש חודש") and bi + 1 < n and not cons[bi + 1]:
+                prend(bi, "roch_hodech")
+                prend(bi + 1, "roch_hodech")
+                bi += 2
+                continue
+            # Barekhi nafchi après Moussaf (Edot, tools/siddur_barchi_nafchi.py ; audit du 16/11, Kitsour
+            # Yalkut Yosef 423:5) : la consigne et le psaume ; son Kaddich suit la passe « minyan ».
+            if texte_id == "moussaf_rosh_hodech" and cons[bi] and x.startswith("אומרים ברכי נפשי") and bi + 1 < n and not cons[bi + 1]:
                 prend(bi, "roch_hodech")
                 prend(bi + 1, "roch_hodech")
                 bi += 2
@@ -646,6 +658,10 @@ def annoter(texte_id, sections, nusah):
             # Une consigne courte (« בחנוכה אומרים », « בראש חודש: », « בשבת אומר: »…) et ses blocs.
             elif cons[bi] and any(re.fullmatch(m, x) for m, _ in CONSIGNES_COURTES) and bi + 1 < n and not cons[bi + 1]:
                 c = next(c for m, c in CONSIGNES_COURTES if re.fullmatch(m, x))
+                # Le psaume de 'Hanouka (Edot, Chir chel yom) : à Roch 'Hodech Tévèt, après Moussaf et ברכי
+                # נפשי (audit du 16/11 ; Kitsour Yalkut Yosef 683:11) ; un rappel l'y annonce (RENVOIS).
+                if c == "hanouka" and nusah == "edot" and office == "chaharit" and titre == "שיר של יום":
+                    c = "hanouka_hors_roch_hodech"
                 lib = LIBELLES_CONSIGNE.get(c)
                 prend(bi, c, lib)
                 j = bi + 1
@@ -1143,25 +1159,71 @@ def grouper(annotations):
 # Edot, Hallel · Ouva léTsion · Chir chel yom · Moussaf ; Sfard, Hallel ·
 # Chir chel yom · Barkhi nafchi · lecture · Achré-Ouva léTsion · Moussaf ;
 # Ashkenaz (Metsudah), Hallel · lecture · Achré · Ouva léTsion · Moussaf,
-# avant le Kaddich titkabal. (section, début du bloc après lequel renvoyer ou None, condition, cible)
+# avant le Kaddich titkabal.
+# Audit du 16/11 (Hallel et Moussaf) : le Moussaf de l'application est celui de Roch 'Hodech en
+# semaine (« roch_hodech_chol ») ; le Chabbat, on dit « אתה יצרת », qui n'y est pas (Kitsour Yalkut
+# Yosef 423:10 ; Choul'han Aroukh O.H. 425:3). Un renvoi sans cible est un rappel (« libelle » : la
+# chaîne), « Aujourd'hui · … », pour ce que le siddour n'a pas, ou pas à cette place : le Moussaf de
+# Chabbat Roch 'Hodech et celui de 'Hol hamoed (Kitsour Yalkut Yosef 490:2 ; Choul'han Aroukh O.H.
+# 490:2), le demi-Kaddich avant Moussaf (Kitsour Yalkut Yosef 423:2 et 5 ; Michna Beroura 423:4 et 8),
+# le Hallel du soir du Séder (Kitsour Yalkut Yosef 487:5 ; Choul'han Aroukh O.H. 487:4).
+# Dans l'ordre d'affichage : (texte, section, début du bloc après lequel renvoyer ou None, condition,
+# cible ou None, libellé du rappel ou None).
+APRES_AMIDA_EDOT = "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינו שתבנה"
+APRES_AMIDA_SEFARD = "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינו שיבנה"
+AVANT_MOUSSAF_ASHKENAZ = "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינו שנשמר"
 RENVOIS = {
-    "edot": [("עמידה", None, "hallel", "hallel"), ("שיר של יום", None, "roch_hodech", "moussaf_rosh_hodech")],
-    "sefard": [("עמידה", None, "hallel", "hallel"), ("אשרי", None, "roch_hodech", "moussaf_rosh_hodech")],
-    "ashkenaz": [("עמידה", None, "hallel", "hallel"),
-                 ("סיום תפילה", "יהי רצון מלפניך יהוה אלהינו ואלהי אבותינו שנשמר", "roch_hodech", "moussaf_rosh_hodech")],
+    "edot": [
+        ("chaharit", "עמידה", None, "hallel", "hallel", None),
+        # Ni תתקבל après ובא לציון à Roch 'Hodech : il a été dit après le Hallel ; demi-Kaddich avant Moussaf.
+        ("chaharit", "ובא לציון", "ברוך אלהינו שבראנו", "roch_hodech_chol", None, "ajout_rappel_sans_titkabal"),
+        ("chaharit", "שיר של יום", None, "roch_hodech_chol", None, "ajout_rappel_demi_kaddich_moussaf_edot"),
+        ("chaharit", "שיר של יום", None, "chabbat_roch_hodech", None, "ajout_rappel_moussaf_chabbat_roch_hodech"),
+        ("chaharit", "שיר של יום", None, "hol_hamoed", None, "ajout_rappel_moussaf_hol_hamoed"),
+        ("chaharit", "שיר של יום", None, "roch_hodech_chol", "moussaf_rosh_hodech", None),
+        # Le soir du Séder, après l'Amida (Kitsour Yalkut Yosef 487:5 ; le Chabbat, après ויכולו, 487:11).
+        ("arvit", "עמידה", APRES_AMIDA_EDOT, "leil_pessah", None, "ajout_rappel_hallel_leil_pessah_edot"),
+        ("arvit", "עמידה", APRES_AMIDA_EDOT, "leil_pessah", "hallel", None),
+        # À Roch 'Hodech Tévèt, le psaume de 'Hanouka après Moussaf et ברכי נפשי (Kitsour Yalkut Yosef 683:11) :
+        # il est dans Cha'harit (Chir chel yom), replié ce jour-là.
+        ("moussaf_rosh_hodech", "ברכי נפשי", None, "hanouka", None, "ajout_rappel_psaume_hanouka_apres_moussaf"),
+    ],
+    "sefard": [
+        ("chaharit", "עמידה", None, "hallel", "hallel", None),
+        ("chaharit", "אשרי", None, "chabbat_roch_hodech", None, "ajout_rappel_moussaf_chabbat_roch_hodech"),
+        ("chaharit", "אשרי", None, "roch_hodech_chol", "moussaf_rosh_hodech", None),
+        # Usage 'hassidique répandu, que le Choul'han Aroukh haRav (487:8) écarte : présenté comme tel.
+        ("arvit", "עמידה", APRES_AMIDA_SEFARD, "leil_pessah", None, "ajout_rappel_hallel_leil_pessah_sefard"),
+        ("arvit", "עמידה", APRES_AMIDA_SEFARD, "leil_pessah", "hallel", None),
+        # La bénédiction du Hallel partiel en minyan (Rema O.H. 422:2 ; Choul'han Aroukh haRav 619:8).
+        ("hallel", "סדר הלל", "ברוך אתה יהוה אלהינו מלך העולם אשר קדשנו", "hallel_partiel", None, "ajout_rappel_berakha_hallel_sefard"),
+    ],
+    "ashkenaz": [
+        ("chaharit", "עמידה", None, "hallel", "hallel", None),
+        ("chaharit", "סיום תפילה", AVANT_MOUSSAF_ASHKENAZ, "roch_hodech_chol", None, "ajout_rappel_demi_kaddich_moussaf"),
+        ("chaharit", "סיום תפילה", AVANT_MOUSSAF_ASHKENAZ, "chabbat_roch_hodech", None, "ajout_rappel_moussaf_chabbat_roch_hodech"),
+        ("chaharit", "סיום תפילה", AVANT_MOUSSAF_ASHKENAZ, "hol_hamoed", None, "ajout_rappel_moussaf_hol_hamoed"),
+        ("chaharit", "סיום תפילה", AVANT_MOUSSAF_ASHKENAZ, "roch_hodech_chol", "moussaf_rosh_hodech", None),
+    ],
 }
 
 
-def renvois(sections, nusah):
+def renvois(texte_id, sections, nusah):
     sortie = []
-    for titre, debut, cond, cible in RENVOIS[nusah]:
+    for texte, titre, debut, cond, cible, libelle in RENVOIS[nusah]:
+        if texte != texte_id:
+            continue
         si = next(i for i, s in enumerate(sections) if nu(s["titre"]) == titre)
-        e = {"sorte": "renvoi", "s": si, "si": cond, "cible": cible}
+        e = {"sorte": "renvoi", "s": si, "si": cond}
+        if cible:
+            e["cible"] = cible
+        if libelle:
+            e["libelle"] = libelle
         if debut is None:
             e["empreinte"] = nu(sections[si]["titre"])
         else:
             bi = next(i for i, b in enumerate(sections[si]["blocs"]) if commence(nu(b.get("t") or b.get("c")), debut))
-            e["b"], e["empreinte"] = bi, nu(sections[si]["blocs"][bi].get("t"))[:40]
+            e["b"], e["empreinte"] = bi, nu(sections[si]["blocs"][bi].get("t") or sections[si]["blocs"][bi].get("c"))[:40]
         sortie.append(e)
     return sortie
 
@@ -1179,8 +1241,7 @@ def main():
         for t in siddur["textes"]:
             if t["id"] in TEXTES:
                 a = annoter(t["id"], t["sections"], nusah)
-                if t["id"] == "chaharit":
-                    a += renvois(t["sections"], nusah)
+                a += renvois(t["id"], t["sections"], nusah)
                 if a:
                     racine[nusah][t["id"]] = a
     cible = os.path.join(RAW, "siddur_annotations.json")

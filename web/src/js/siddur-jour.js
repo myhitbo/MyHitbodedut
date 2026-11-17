@@ -67,7 +67,9 @@ export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hato
   'lamnatseah', 'ledavid', 'techouva_hochaana', 'yom_tov', 'moed', 'chabbat_roch_hodech', 'yom_tov_chabbat', 'roch_hachana_chabbat',
   'motsae_chabbat_yt', 'beit_avel', 'oubli', 'minyan', 'cheva_berakhot', 'zimun', 'facultatif', 'embolismique', 'embolismique_avant_nissan',
   'pourim_triple_hors_jerusalem', 'pourim_triple_festin', 'avinou_malkenou_jeune', 'kaddich_complet_hallel', 'veille_pessah_cheni',
-  'erev_kippour', 'sans_tahanoun_ponctuel', 'jour_pessah_cheni', 'el_erekh_apayim'];
+  'erev_kippour', 'sans_tahanoun_ponctuel', 'jour_pessah_cheni', 'el_erekh_apayim',
+  // Hallel et Moussaf (audit du 16/11).
+  'roch_hodech_chol', 'hol_hamoed', 'hanouka_sans_moussaf', 'hanouka_hors_roch_hodech', 'leil_pessah', 'hallel_partiel'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix
