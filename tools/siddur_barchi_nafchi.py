@@ -14,6 +14,8 @@ Entrée : la réponse de l'API de Sefaria, enregistrée telle quelle :
   https://www.sefaria.org/api/v3/texts/Siddur_Edot_HaMizrach,_Rosh_Hodesh,_Barchi_Nafshi
 
   python3 tools/siddur_barchi_nafchi.py <fichier.json> && python3 tools/siddur_annotations.py
+
+Sans fichier (ou s'il manque), la section déjà présente est laissée telle quelle : rien à refaire.
 """
 import json
 import os
@@ -29,6 +31,13 @@ SOURCE = "Siddur Edot HaMizrach (Torat Emet 357, Public Domain; Shaliehsaboo Edi
 
 
 def main(chemin):
+    if not chemin or not os.path.exists(chemin):
+        d = json.load(open(CIBLE, encoding="utf-8"))
+        moussaf = next(t for t in d["textes"] if t["id"] == "moussaf_rosh_hodech")
+        if any(s["titre"] == TITRE for s in moussaf["sections"]):
+            print("Moussaf de Roch 'Hodech Edot : ברכי נפשי déjà présent, rien à faire")
+            return
+        sys.exit(f"Réponse de Sefaria introuvable ({chemin}) et ברכי נפשי absent de {CIBLE}")
     api = json.load(open(chemin, encoding="utf-8"))
     version = next(v for v in api["versions"] if v.get("language") == "he" and v.get("license") == "CC0")
     blocs = sc.sans_renvois([{"titre": TITRE, "blocs": sc.blocs(list(sc.aplatit(version["text"])))}])[0]["blocs"]
@@ -43,4 +52,4 @@ def main(chemin):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1] if len(sys.argv) > 1 else None)
