@@ -21,7 +21,7 @@ struct YalkutYosefTests {
 
     @Test func uneSelectionDeHalakhotCourtes() throws {
         let livre = try livre()
-        let attendues: Set<String> = ["ordinaire", "chabbat", "roch_hodech", "pessah", "omer", "bein_hametsarim", "eloul",
+        let attendues: Set<String> = ["ordinaire", "chabbat", "roch_hodech", "pessah", "omer", "chavouot", "bein_hametsarim", "eloul",
                                       "kippour", "soukkot", "hanouka", "tou_bichvat", "pourim"]
         let periodes = Set(livre.periodes.keys)
         #expect(periodes == attendues)
@@ -63,8 +63,11 @@ struct YalkutYosefTests {
         #expect(adarI == nil)
         let pessah = YalkutYosef.fenetre(mois: M.nissan, jour: 15, embolismique: false)
         #expect(pessah == "pessah")
-        let omer = YalkutYosef.fenetre(mois: M.sivan, jour: 6, embolismique: false)
+        // Chavouot a sa fenêtre depuis l'audit du 12/11 d'Android (avec l'omer avant).
+        let omer = YalkutYosef.fenetre(mois: M.iyar, jour: 29, embolismique: false)
         #expect(omer == "omer")
+        let chavouot = YalkutYosef.fenetre(mois: M.sivan, jour: 6, embolismique: false)
+        #expect(chavouot == "chavouot")
         let beinHametsarim = YalkutYosef.fenetre(mois: M.av, jour: 9, embolismique: false)
         #expect(beinHametsarim == "bein_hametsarim")
         let eloul = YalkutYosef.fenetre(mois: M.tichri, jour: 1, embolismique: false)
@@ -90,9 +93,40 @@ struct YalkutYosefTests {
         #expect(vendredi == "chabbat")
         let mercredi = YalkutYosef.periode(JourCivil.du("2026-10-21"), israel: false).periode
         #expect(mercredi == "ordinaire")
+        // Audit du 16/11 : le jeûne repoussé au dimanche 10 Av n'est pas un jour ordinaire (Kitsour YY 554:13).
+        #expect(YalkutYosef.periode(JourCivil.du("2029-07-22"), israel: false).periode == "bein_hametsarim")
+        #expect(YalkutYosef.periode(JourCivil.du("2015-07-26"), israel: true).periode == "bein_hametsarim")
+        // Le vendredi 10 Av : le jeûne était la veille.
+        #expect(YalkutYosef.periode(JourCivil.du("2026-07-24"), israel: false).periode == "chabbat")
         let livre = try livre()
         let tsitsit = YalkutYosef.recherche(livre, texte: "ציצית").isEmpty
         #expect(!tsitsit)
+    }
+
+    /// Une fenêtre est répartie sur toute sa liste, les lois de la fête à la fin (THILLOULOT-02).
+    @Test func uneFenetreEstRepartieSurToutesaListeLesLoisDeLaFeteALaFin() throws {
+        let livre = try livre()
+        func siman(_ iso: String) -> [String] { YalkutYosef.pour(livre, date: .du(iso), israel: false).map { $0.siman } }
+        // Soukkot 5787 : 15 Tichri (26/09/2026), la soukka ; Hochaana Rabba (02/10), le loulav.
+        #expect(YalkutYosef.longueur(.du("2026-10-02"), israel: false) == 13)
+        #expect(siman("2026-09-26").allSatisfy { $0.contient("תרכט") })
+        #expect(siman("2026-10-02").allSatisfy { $0.contient("תרנא") })
+        // 6 Sivan 5787 (11/06/2027) : Chavouot, plus la sefirat haomer.
+        #expect(siman("2027-06-11").allSatisfy { $0.contient("תצד") })
+        // 22 Nissan 5787 (29/04/2027) : les quatre coupes, plus la bedikat 'hamets.
+        #expect(siman("2027-04-29").allSatisfy { $0.contient("תעב") })
+        #expect(siman("2027-03-25").allSatisfy { $0.contient("תלג") })
+        // Chaque se'if de chaque fenêtre sort au moins une fois en trois ans, sauf si la liste dépasse deux fois la fenêtre.
+        var vus = Set<String>()
+        var d = JourCivil.du("2025-09-01")
+        while d < JourCivil.du("2028-09-01") {
+            for s in YalkutYosef.pour(livre, date: d, israel: false) { vus.insert("\(s.siman)|\(s.lettre)|\(s.texte.premieresUnites(20))") }
+            d = d.plus(jours: 1)
+        }
+        for p in ["soukkot", "chavouot"] {
+            let n = (livre.periodes[p] ?? []).filter { vus.contains("\($0.siman)|\($0.lettre)|\($0.texte.premieresUnites(20))") }.count
+            #expect(n >= 8, "\(p)")
+        }
     }
 
     // MARK: Les vecteurs de la JVM

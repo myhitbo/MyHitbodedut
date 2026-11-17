@@ -150,8 +150,12 @@ public enum Halakha {
 
     /// Les halakhot du jour : `parsha` du Chabbat qui vient (nom de KosherJava), `jourSemaine` 0 le
     /// dimanche … 6 le Chabbat, `jourHanouka` 1 … 8 ou 0.
+    /// Début de la note de l'auteur qui remplace une section sans halakhot (Vayéchev, deuxième année).
+    public static let sansHalakhot = "בפרשה זו לא כתבתי"
+
+    /// `jourSemaine` : 0 le dimanche … 6 le Chabbat (sur `parts` jours : 0 … parts − 1).
     public static func choix(_ livre: Livre, parsha: String, jourSemaine: Int, anneeHebraique: Int,
-                             jourHanouka: Int = 0) -> [Choisie] {
+                             jourHanouka: Int = 0, parts: Int = 7) -> [Choisie] {
         if (1...8).contains(jourHanouka), let h = livre.hanouka {
             return part(Array(h.halakhot.indices), jour: jourHanouka - 1, parts: 8)
                 .map { Choisie(texte: h.halakhot[$0], numero: $0 + 1, section: h.he, annee: 1) }
@@ -165,7 +169,9 @@ public enum Halakha {
                     toutes.append(Choisie(texte: t, numero: s.depart + i + 1, section: s.section.he, annee: a))
                 }
             }
-            if !toutes.isEmpty { return part(toutes, jour: jourSemaine, parts: 7) }
+            // Ni la note « je n'ai pas écrit de halakhot ici » (Vayéchev, année 2) : l'autre année.
+            let utiles = toutes.filter { !$0.texte.commenceParUnites(sansHalakhot) }
+            if !utiles.isEmpty { return part(utiles, jour: jourSemaine, parts: parts) }
         }
         return []
     }
@@ -173,6 +179,11 @@ public enum Halakha {
     /// Pour une date : la paracha du Chabbat qui vient (le Chabbat même, la sienne), le jour de la semaine, 'Hanouka.
     public static func pour(_ livre: Livre, date: JourCivil, enIsrael: Bool) -> [Choisie] {
         let cal = calendrier(date, enIsrael: enIsrael)
+        // Du 15 au 23 Tichri (Soukkot, Hochaana Rabba, Sim'hat Torah) : la section de Vézot haBéra'kha, qui parle de
+        // Hochaana Rabba, et non la paracha qui vient (Béréchit) ; partagée sur ces neuf jours.
+        if cal.mois == CalendrierJuif.Mois.tichri && (15...23).contains(cal.jour) {
+            return choix(livre, parsha: "VZOS_HABERACHA", jourSemaine: cal.jour - 15, anneeHebraique: cal.annee, parts: 9)
+        }
         // 0 le dimanche … 6 le Chabbat (`jourDeSemaine` : 1 le dimanche … 7 le samedi).
         let jour = date.jourDeSemaine - 1
         return choix(livre, parsha: cal.parsha, jourSemaine: jour, anneeHebraique: cal.annee,
@@ -272,14 +283,16 @@ public enum Halakha {
     /// Ce que `pour` lit de KosherSwift pour un jour civil : la paracha du Chabbat (`getParshah`, ou en
     /// semaine et le Chabbat qui n'en a pas, `getUpcomingParshah`), l'année hébraïque, le jour de
     /// 'Hanouka (−1 hors de la fête). Le jour civil à midi UTC, lu en UTC, comme CalendrierJuif.
-    private static func calendrier(_ date: JourCivil, enIsrael: Bool) -> (parsha: String, annee: Int, hanouka: Int) {
+    private static func calendrier(_ date: JourCivil, enIsrael: Bool) -> (parsha: String, annee: Int, hanouka: Int, mois: Int, jour: Int) {
         verrou.withLock { _ in
             let utc = TimeZone(identifier: "UTC") ?? TimeZone(secondsFromGMT: 0)!
             let midi = Date(timeIntervalSince1970: Double(date.jourJulien - 2_440_588) * 86_400 + 43_200)
             let c = JewishCalendar(workingDate: midi, timezone: utc, inIsrael: enIsrael, useModernHolidays: false)
             let chabbat = c.getParshah()
             let parsha = chabbat == .NONE ? c.getUpcomingParshah() : chabbat
-            return (parsha: nom(parsha), annee: c.getJewishYear(), hanouka: c.getDayOfChanukah())
+            return (parsha: nom(parsha), annee: c.getJewishYear(), hanouka: c.getDayOfChanukah(),
+                    mois: CalendrierJuif.moisKosherJava(c.getJewishMonth(), embolismique: c.isJewishLeapYear()),
+                    jour: c.getJewishDayOfMonth())
         }
     }
 

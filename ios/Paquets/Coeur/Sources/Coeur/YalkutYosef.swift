@@ -88,7 +88,8 @@ public enum YalkutYosef {
         let adar = embolismique ? M.adarII : M.adar
         if mois == adar && jour <= 15 { return "pourim" }
         if mois == adar || (mois == M.nissan && jour <= 22) { return "pessah" }
-        if mois == M.nissan || mois == M.iyar || (mois == M.sivan && jour <= 7) { return "omer" }
+        if mois == M.nissan || mois == M.iyar { return "omer" }
+        if mois == M.sivan && jour <= 7 { return "chavouot" }
         if (mois == M.tamouz && jour >= 17) || (mois == M.av && jour <= 9) { return "bein_hametsarim" }
         if mois == M.eloul || (mois == M.tichri && jour <= 2) { return "eloul" }
         if mois == M.tichri && jour <= 10 { return "kippour" }
@@ -108,7 +109,7 @@ public enum YalkutYosef {
         if (c.jour == 1 && c.mois != CalendrierJuif.Mois.tichri) || c.jour == 30 {
             return (periode: "roch_hodech", rang: c.jour == 30 ? (c.mois + 1) * 2 : c.mois * 2 + 1)
         }
-        if let f = fenetre(mois: c.mois, jour: c.jour, embolismique: c.embolismique) {
+        if let f = fenetreDu(date, calendrier) {
             var n = 0
             while n < 60 && fenetreDu(date.plus(jours: -(n + 1)), calendrier) == f { n += 1 }
             return (periode: f, rang: n)
@@ -120,16 +121,41 @@ public enum YalkutYosef {
     }
 
     /// Les se'ifim d'un rang : `parJour` à la suite, en boucle.
-    public static func du(_ seifs: [Seif], rang: Int) -> [Seif] {
+    /// La durée, en jours, de la fenêtre de fête où tombe `date`, ou 0 hors fenêtre et le jour du Roch 'Hodech,
+    /// qui a son propre rang.
+    public static func longueur(_ date: JourCivil, israel: Bool) -> Int {
+        let calendrier = calendrierHebreu()
+        let c = jourHebreu(date, calendrier)
+        if (c.jour == 1 && c.mois != CalendrierJuif.Mois.tichri) || c.jour == 30 { return 0 }
+        guard let f = fenetreDu(date, calendrier) else { return 0 }
+        var avant = 0
+        while avant < 60 && fenetreDu(date.plus(jours: -(avant + 1)), calendrier) == f { avant += 1 }
+        var apres = 0
+        while apres < 60 && fenetreDu(date.plus(jours: apres + 1), calendrier) == f { apres += 1 }
+        return avant + 1 + apres
+    }
+
+    /// Les se'ifim d'un rang : `parJour` à la suite, en boucle. Dans une fenêtre de `longueur` jours, le rang est
+    /// réparti sur toute la liste (THILLOULOT-02, audit 12/11) : les lois de la veille au début, celles de la fête
+    /// à la fin ; une liste plus courte que la fenêtre avance d'un se'if par jour.
+    public static func du(_ seifs: [Seif], rang: Int, longueur: Int = 0) -> [Seif] {
         if seifs.isEmpty { return [] }
-        // floorMod(rang * PAR_JOUR, taille) ; le rang réduit d'abord, pour qu'aucun produit ne déborde.
-        let debut = Kotlin.floorMod((rang % seifs.count) * parJour, seifs.count)
+        let debut: Int
+        if longueur > 0 {
+            // (rang * taille / longueur).mod(taille), ou rang.mod(taille), sur 64 bits comme Kotlin.
+            let r = Int64(rang), n = Int64(seifs.count)
+            let x = seifs.count >= longueur ? r * n / Int64(longueur) : r
+            debut = Int(((x % n) + n) % n)
+        } else {
+            // floorMod(rang * PAR_JOUR, taille) ; le rang réduit d'abord, pour qu'aucun produit ne déborde.
+            debut = Kotlin.floorMod((rang % seifs.count) * parJour, seifs.count)
+        }
         return (0..<min(parJour, seifs.count)).map { seifs[(debut + $0) % seifs.count] }
     }
 
     public static func pour(_ livre: Livre, date: JourCivil, israel: Bool) -> [Seif] {
         let p = periode(date, israel: israel)
-        return du(livre.periodes[p.periode] ?? [], rang: p.rang)
+        return du(livre.periodes[p.periode] ?? [], rang: p.rang, longueur: longueur(date, israel: israel))
     }
 
     // MARK: Le jour hébreu
@@ -160,8 +186,15 @@ public enum YalkutYosef {
         return JourHebreu(mois: mois, jour: calendrier.component(.day, from: midi), embolismique: embolismique)
     }
 
+    /// Le jeûne repoussé au dimanche 10 Av est un jour de 9 Av, pas un jour ordinaire, l'étude ordinaire y étant
+    /// interdite (audit du 16/11 : Kitsour Yalkut Yosef 554:13 et 551:10) : `TISHA_BEAV` de KosherJava, le 9 Av
+    /// hors Chabbat ou le 10 un dimanche.
     private static func fenetreDu(_ date: JourCivil, _ calendrier: Calendar) -> String? {
         let c = jourHebreu(date, calendrier)
+        if c.mois == CalendrierJuif.Mois.av
+            && ((c.jour == 9 && date.jourDeSemaine != 7) || (c.jour == 10 && date.jourDeSemaine == 1)) {
+            return "bein_hametsarim"
+        }
         return fenetre(mois: c.mois, jour: c.jour, embolismique: c.embolismique)
     }
 

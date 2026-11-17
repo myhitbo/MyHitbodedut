@@ -82,8 +82,9 @@ struct ContenusAppTests {
         }
         #expect(halakhot == 2002)
         let yalkut = try await Self.contenus.yalkutYosef()
+        // 13 périodes : Chavouot a la sienne depuis l'audit du 12/11 d'Android.
         let periodes = yalkut.ordre.count
-        #expect(periodes == 12)
+        #expect(periodes == 13)
         let premiere = yalkut.ordre.first
         #expect(premiere == "ordinaire")
         let ordinaire = yalkut.periodes["ordinaire"]?.isEmpty
