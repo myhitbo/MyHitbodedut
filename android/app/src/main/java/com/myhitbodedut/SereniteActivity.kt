@@ -287,7 +287,8 @@ class SereniteActivity : AccueilVersion() {
                     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                 })
                 addView(VueVersion.texte(context, getString(nom), 12f, if (actif) k.accent else k.texte2, haut = 4).apply {
-                    // « Aujourd'hui » se coupait en deux lignes avec le texte agrandi.
+                    // « Aujourd'hui » se coupait en deux lignes avec le texte agrandi : un cran plus petit.
+                    if (resources.configuration.fontScale > 1.15f) setTextSize(android.util.TypedValue.COMPLEX_UNIT_DIP, 12f)
                     maxLines = 1
                     ellipsize = android.text.TextUtils.TruncateAt.END
                     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO

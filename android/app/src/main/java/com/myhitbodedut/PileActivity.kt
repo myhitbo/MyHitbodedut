@@ -170,7 +170,11 @@ class PileActivity : AccueilVersion() {
             }
         })
         // Le hassid occupe le milieu de la carte : il accueille, ou se réjouit quand c'est fait.
-        addView(android.widget.ImageView(context).apply {
+        // Borné en hauteur, et absent sur un petit écran : dans la carte qui défile, il prenait
+        // sa taille d'origine et poussait « Commencer » hors de vue (480x854, 17/11).
+        if (!petit) addView(android.widget.ImageView(context).apply {
+            adjustViewBounds = true
+            maxHeight = dp(200)
             setImageResource(Personnage.pour(context, Character.greeting(d.faite)))
             scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(12) }

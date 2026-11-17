@@ -1592,6 +1592,7 @@
     <string name="version_reprendre">Revenir à la hitbodedout</string>
     <string name="version_encore">Encore une hitbodedout</string>
     <string name="version_commencer">Commencer · %1$s</string>
+    <string name="version_commencer_court">Commencer</string>
     <string name="version_preparer">Durée, sujet, musique</string>
     <string name="version_chargement">Chargement du texte du jour…</string>
     <string name="version_plus_de_textes">Plus de ’hizouk</string>

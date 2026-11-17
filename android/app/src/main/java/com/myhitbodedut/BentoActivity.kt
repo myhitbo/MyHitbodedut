@@ -197,6 +197,8 @@ class BentoActivity : AccueilVersion() {
                 when {
                     enCours -> getString(R.string.version_reprendre)
                     d.faite -> getString(R.string.version_encore)
+                    // Texte agrandi : « Commencer » seul, la durée ne tenait plus sur la ligne.
+                    resources.configuration.fontScale > 1.15f -> getString(R.string.version_commencer_court)
                     else -> getString(R.string.version_commencer, DonneesAccueil.duree(context, d.objectifMinutes))
                 }, 15f, VERT, heeboGras, haut = 10).apply {
                 maxLines = 1
