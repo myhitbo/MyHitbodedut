@@ -50,7 +50,9 @@ class SiddurActivity : AppCompatActivity() {
 
         // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
         val lieu = Store.lieuZmanim(this)
-        val moment = if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now()) else SiddurMoment.suggestion(LocalTime.now())
+        // La nuit de Chabbat, de fête ou de 'Hol hamoed Pessa'h, pas de Tikoun 'hatsot (audit du 16/11).
+        val moment = if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now(), Store.inIsrael(this), Store.siddurNusah(this).cle)
+            else SiddurMoment.suggestion(LocalTime.now(), JourAffiche.sansTikounHatsot(java.time.LocalDate.now(), Store.inIsrael(this)))
         // Pas d'office de semaine proposé un Chabbat ou un Yom tov (audit du 16/11).
         JourAffiche.momentOuvrable(moment, java.time.LocalDate.now(), LocalTime.now(), Store.inIsrael(this))
             ?.let(siddur::texte)?.let { liste.addView(maintenant(it, langue)) }

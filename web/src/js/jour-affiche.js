@@ -2,7 +2,8 @@
 // 10/10) : les ajouts à nommer, les horaires avec l'entrée et la sortie de
 // Chabbat ou de fête, la grille d'un mois. Mêmes règles, mêmes cas de test.
 
-import { C, jour, jourDeLaPriere } from './calendrier-juif.js';
+import { C, calendrier, jour, jourDeLaPriere } from './calendrier-juif.js';
+import { JewishCalendar, JewishDate } from '../vendor/kosher-zmanim-0.9.0.min.js';
 import { conditionsPour, libelleHallel } from './siddur-jour.js';
 import * as Z from './zmanim.js';
 import { SiddurMoment } from './regles.js';
@@ -95,30 +96,56 @@ export function momentOuvrable(moment, iso, heures, enIsrael) {
  * dans les creux ('hatsot – min'ha guedola, chki'a – tsét) ; sans zmanim,
  * les heures fixes de SiddurMoment.
  */
-export function momentDuSiddour(lieu, maintenant) {
+export function momentDuSiddour(lieu, maintenant, enIsrael = true, nusah = 'edot') {
   const parties = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: lieu.fuseau, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
     .formatToParts(maintenant).map((p) => [p.type, p.value]));
   const iso = `${parties.year}-${parties.month}-${parties.day}`;
   const minutes = Number(parties.hour) * 60 + Number(parties.minute);
+  const [a, m, j] = iso.split('-').map(Number);
+  const decale = (n) => new Date(Date.UTC(a, m - 1, j + n, 12)).toISOString().slice(0, 10);
+  // La nuit appartient au jour hébreu civil après minuit, au lendemain avant minuit (audit du 16/11).
+  const sans = sansTikounHatsot(minutes < 12 * 60 ? iso : decale(1), enIsrael);
+  const tikoun = sans ? 'chema_coucher' : 'tikoun_hatsot';
   const instants = (d) => Object.fromEntries(Z.jour(lieu, d).map((x) => [x.cle, x.instant]));
   const z = instants(iso);
   // Aube absente autour du solstice (Londres, Berlin, Moscou…) : michéyakir, puis le lever du soleil, en tiennent lieu.
   if (!z.alot) z.alot = z.misheyakir || z.netz;
   if (!z.misheyakir) z.misheyakir = z.netz;
-  const [a, m, j] = iso.split('-').map(Number);
-  const hier = instants(new Date(Date.UTC(a, m - 1, j - 1, 12)).toISOString().slice(0, 10));
+  const hier = instants(decale(-1));
   const cles = ['alot', 'misheyakir', 'chatsot', 'minha_gedola', 'chkia', 'tset', 'chatsot_layla'];
-  if (cles.some((c) => !z[c]) || !hier.chatsot_layla) return SiddurMoment.suggestion(Math.floor(minutes / 60), minutes % 60);
+  if (cles.some((c) => !z[c]) || !hier.chatsot_layla) return SiddurMoment.suggestion(Math.floor(minutes / 60), minutes % 60, sans);
   const t = +maintenant;
   const avant = (c) => t < +z[c];
-  if (avant('alot')) return t >= +hier.chatsot_layla ? 'tikoun_hatsot' : 'chema_coucher';
+  if (avant('alot')) return t >= +hier.chatsot_layla ? tikoun : 'chema_coucher';
   if (avant('misheyakir')) return 'birkot_hachahar';
   if (avant('chatsot')) return 'chaharit';
-  if (avant('minha_gedola')) return null;
+  if (avant('minha_gedola')) return tikounRahelDeMidi(iso, nusah) ? 'tikoun_hatsot' : null;
   if (avant('chkia')) return 'minha';
   if (avant('tset')) return null;
   if (avant('chatsot_layla')) return minutes > 12 * 60 && minutes < 22 * 60 + 30 ? 'arvit' : 'chema_coucher';
-  return 'tikoun_hatsot';
+  return tikoun;
+}
+
+/**
+ * Pas de Tikoun 'hatsot la nuit du jour hébreu iso : Chabbat, Yom tov (le second jour en diaspora),
+ * 'Hol hamoed Pessa'h (JourAffiche.sansTikounHatsot ; audit du 16/11 : consigne du texte ;
+ * Kitsour Yalkut Yosef, דיני תיקון חצות, se'if נה).
+ */
+export function sansTikounHatsot(iso, enIsrael) {
+  const c = calendrier(iso, enIsrael, false, false);
+  return new Date(`${iso}T12:00:00Z`).getUTCDay() === 6 || c.isYomTovAssurBemelacha() || c.getYomTovIndex() === JewishCalendar.CHOL_HAMOED_PESACH;
+}
+
+/**
+ * Bein hamétsarim, du 17 Tamouz au 8 Av, sauf Chabbat et Roch 'Hodech Av : le Tikoun Ra'hel après
+ * 'hatsot du jour (JourAffiche.tikounRahelDeMidi ; Kitsour Yalkut Yosef, דיני תיקון חצות, se'ifim מה
+ * et נז) ; usage des Edot et du Sfard, pas de l'Ashkenaz.
+ */
+export function tikounRahelDeMidi(iso, nusah) {
+  if (nusah === 'ashkenaz' || new Date(`${iso}T12:00:00Z`).getUTCDay() === 6) return false;
+  const c = calendrier(iso, false, false, false);
+  const j = c.getJewishDayOfMonth();
+  return (c.getJewishMonth() === JewishDate.TAMMUZ && j >= 17) || (c.getJewishMonth() === JewishDate.AV && j >= 2 && j <= 8);
 }
 
 /** Les semaines d'un mois civil (mois 1-12), du dimanche au samedi ; null hors du mois. */
@@ -195,7 +222,15 @@ export function clesHilloula(mois, jourH, emb, dernierJour, ashkenaz = false) {
   const m = mois === 12 && !emb ? ['adar', 'adar1', 'adar2'] : mois === 12 ? (ashkenaz ? ['adar', 'adar1'] : ['adar1'])
     : mois === 13 ? (ashkenaz ? ['adar2'] : ['adar', 'adar2']) : [String(mois)];
   const jours = jourH === 29 && dernierJour ? [29, 30] : [jourH];
-  return m.flatMap((k) => jours.map((j) => `${k}-${j}`));
+  const base = m.flatMap((k) => jours.map((j) => `${k}-${j}`));
+  // Le 30 Adar n'existe qu'en Adar I (audit du 16/11, Hilloulot.cles) : une année embolismique, le 30 Adar I
+  // pour tous (Kitsour Yalkut Yosef 40:22) ; une année simple, en Ashkenaz, le 30 Chevat (Michna Beroura 568:42).
+  const trente = ['adar-30', 'adar1-30'];
+  if (emb && mois === 13) return base.filter((k) => k !== 'adar-30');
+  if (emb && mois === 12 && jourH === 30 && !base.includes('adar-30')) return [...base, 'adar-30'];
+  if (!emb && ashkenaz && mois === 12) return base.filter((k) => !trente.includes(k));
+  if (!emb && ashkenaz && mois === 11 && jourH === 30) return [...base, ...trente];
+  return base;
 }
 
 /**

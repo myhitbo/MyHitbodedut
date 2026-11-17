@@ -3828,6 +3828,263 @@
     "texte": "לדעת הילקוט יוסף (רלט, א, ו) ההולך לישון קודם חצות מברך ״המפיל״ בשם ומלכות, וכן הנשים; אחר חצות — בלי שם ומלכות, כהוראת הסידור. הוראת הסידור כמנהג הבן איש חי (פקודי, שנה א, יב)."
    }
   ],
+  "tikoun_hatsot": [
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 0,
+    "empreinte": "על נהרות בבל שם ישבנו גםבכינו בזכרנו אתצ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 1,
+    "empreinte": "מזמור לאסף אלהים באו גוים בנחלתך טמאו את",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 2,
+    "empreinte": "זכר יהוה מההיה לנו הביט [הביטה] וראה אתח",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 3,
+    "empreinte": "הבט משמים וראה מזבל קדשך ותפארתך איה קנא",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 4,
+    "empreinte": "ועתה יהוה אבינו אתה אנחנו החמר ואתה יצרנ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 5,
+    "empreinte": "בסוף פסוקי הקינות יאמר (מורה באצבע מ״ה) ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 6,
+    "empreinte": "עלחומתיך ירושל‍ם הפקדתי שמרים כלהיום וכל",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 7,
+    "empreinte": "אתה תקום תרחם ציון כיעת לחננה כיבא מועד ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 0,
+    "empreinte": "למנצח משכיל לבניקרח כאיל תערג עלאפיקימים",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 1,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 1,
+    "empreinte": "שפטני אלהים וריבה ריבי מגוי לאחסיד מאיש ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 1,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 2,
+    "empreinte": "בימים שאין אומרים תחנון לא יאמר מזמור זה",
+    "discret": true,
+    "g": 2,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 3,
+    "empreinte": "למנצח מזמור לדוד יענך יהוה ביום צרה ישגב",
+    "discret": true,
+    "g": 2,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 4,
+    "empreinte": "לדוד מזמור ליהוה הארץ ומלואה תבל וישבי ב",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 5,
+    "empreinte": "למנצח בנגינת מזמור שיר אלהים יחננו ויברכ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 6,
+    "empreinte": "הללויה אודה יהוה בכללבב בסוד ישרים ועדה ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 7,
+    "empreinte": "למנצח מזמור לדוד בבואאליו נתן הנביא כאשר",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 8,
+    "empreinte": "בימים שאין אומרים תחנון לא יאמר",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 9,
+    "empreinte": "עד אנה בכיה בציון ומספד בירושלים:",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 10,
+    "empreinte": "תקום תרחם ציון, תבנה חומות ירושלים:",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 11,
+    "empreinte": "מנהג לומר אחר סיום תיקון לאה מלך רחמן וכ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 12,
+    "empreinte": "אלהינו ואלהי אבותינו, מלך רחמן רחם עלינו",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 13,
+    "empreinte": "שיר המעלות בשוב יהוה אתשיבת ציון היינו כ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "toujours",
+    "b": 0,
+    "empreinte": "אין אומרים תיקון חצות בליל שבת, ראש השנה",
+    "texte": "וכל אשה יראת ה׳ הרוצה לומר תיקון חצות, תבוא עליה ברכה, ואין למונעה מכך (ילקוט יוסף, דיני תיקון חצות, נא)",
+    "fixe": true
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "toujours",
+    "b": 1,
+    "empreinte": "אנא יהוה אלהינו ואלהי אבותינו. תבא לפניך",
+    "texte": "אין חוזרים על הוידוי אם אומרים את התיקון סמוך לוידוי שבקריאת שמע שעל המטה, או סמוך למנחה, או באלול ובעשרת ימי תשובה סמוך לסליחות (ילקוט יוסף, דיני תיקון חצות, נח)",
+    "fixe": true
+   }
+  ],
   "birkat_hamazon": [
    {
     "sorte": "bloc",
@@ -10810,6 +11067,254 @@
     "discret": true,
     "g": 0,
     "racine": "!leil_haseder"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "toujours",
+    "b": 0,
+    "empreinte": "רבונו של עולם הריני מוחל לכל מי שהכעיס ו",
+    "texte": "מנהג חב״ד: אין אומרים ״רבונו של עולם״ בשבת וביום טוב; ומוסיפים וידוי (בימים שאומרים בהם תחנון) ו״אנא בכח״",
+    "fixe": true
+   }
+  ],
+  "tikoun_hatsot": [
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 0,
+    "empreinte": "על נהרות בבל שם ישבנו גםבכינו בזכרנו אתצ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 1,
+    "empreinte": "מזמור לאסף אלהים באו גוים בנחלתך טמאו את",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 2,
+    "empreinte": "זכר יהוה מההיה לנו הביט [הביטה] וראה אתח",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 3,
+    "empreinte": "הבט משמים וראה מזבל קדשך ותפארתך איה קנא",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 4,
+    "empreinte": "ועתה יהוה אבינו אתה אנחנו החמר ואתה יצרנ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 5,
+    "empreinte": "בסוף פסוקי הקינות יאמר (מורה באצבע מ״ה) ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 6,
+    "empreinte": "עלחומתיך ירושל‍ם הפקדתי שמרים כלהיום וכל",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 7,
+    "empreinte": "אתה תקום תרחם ציון כיעת לחננה כיבא מועד ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 0,
+    "empreinte": "למנצח משכיל לבניקרח כאיל תערג עלאפיקימים",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 1,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 1,
+    "empreinte": "שפטני אלהים וריבה ריבי מגוי לאחסיד מאיש ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 1,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 2,
+    "empreinte": "בימים שאין אומרים תחנון לא יאמר מזמור זה",
+    "discret": true,
+    "g": 2,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 3,
+    "empreinte": "למנצח מזמור לדוד יענך יהוה ביום צרה ישגב",
+    "discret": true,
+    "g": 2,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 4,
+    "empreinte": "לדוד מזמור ליהוה הארץ ומלואה תבל וישבי ב",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 5,
+    "empreinte": "למנצח בנגינת מזמור שיר אלהים יחננו ויברכ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 6,
+    "empreinte": "הללויה אודה יהוה בכללבב בסוד ישרים ועדה ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 7,
+    "empreinte": "למנצח מזמור לדוד בבואאליו נתן הנביא כאשר",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 8,
+    "empreinte": "בימים שאין אומרים תחנון לא יאמר",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 9,
+    "empreinte": "עד אנה בכיה בציון ומספד בירושלים:",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 10,
+    "empreinte": "תקום תרחם ציון, תבנה חומות ירושלים:",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 11,
+    "empreinte": "מנהג לומר אחר סיום תיקון לאה מלך רחמן וכ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 12,
+    "empreinte": "אלהינו ואלהי אבותינו, מלך רחמן רחם עלינו",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 13,
+    "empreinte": "שיר המעלות בשוב יהוה אתשיבת ציון היינו כ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
    }
   ],
   "birkat_hamazon": [
@@ -18055,6 +18560,245 @@
     "discret": true,
     "g": 0,
     "racine": "!leil_haseder"
+   }
+  ],
+  "tikoun_hatsot": [
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 0,
+    "empreinte": "על נהרות בבל שם ישבנו גםבכינו בזכרנו אתצ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 1,
+    "empreinte": "מזמור לאסף אלהים באו גוים בנחלתך טמאו את",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 2,
+    "empreinte": "זכר יהוה מההיה לנו הביט [הביטה] וראה אתח",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 3,
+    "empreinte": "הבט משמים וראה מזבל קדשך ותפארתך איה קנא",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 4,
+    "empreinte": "ועתה יהוה אבינו אתה אנחנו החמר ואתה יצרנ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 5,
+    "empreinte": "בסוף פסוקי הקינות יאמר (מורה באצבע מ״ה) ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 6,
+    "empreinte": "עלחומתיך ירושל‍ם הפקדתי שמרים כלהיום וכל",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 1,
+    "si": "tikoun_rahel",
+    "b": 7,
+    "empreinte": "אתה תקום תרחם ציון כיעת לחננה כיבא מועד ",
+    "libelle": "ajout_tikoun_rahel",
+    "discret": true,
+    "g": 0,
+    "racine": "tikoun_rahel"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 0,
+    "empreinte": "למנצח משכיל לבניקרח כאיל תערג עלאפיקימים",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 1,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 1,
+    "empreinte": "שפטני אלהים וריבה ריבי מגוי לאחסיד מאיש ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 1,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 2,
+    "empreinte": "בימים שאין אומרים תחנון לא יאמר מזמור זה",
+    "discret": true,
+    "g": 2,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 3,
+    "empreinte": "למנצח מזמור לדוד יענך יהוה ביום צרה ישגב",
+    "discret": true,
+    "g": 2,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 4,
+    "empreinte": "לדוד מזמור ליהוה הארץ ומלואה תבל וישבי ב",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 5,
+    "empreinte": "למנצח בנגינת מזמור שיר אלהים יחננו ויברכ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 6,
+    "empreinte": "הללויה אודה יהוה בכללבב בסוד ישרים ועדה ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 7,
+    "empreinte": "למנצח מזמור לדוד בבואאליו נתן הנביא כאשר",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 3,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 8,
+    "empreinte": "בימים שאין אומרים תחנון לא יאמר",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 9,
+    "empreinte": "עד אנה בכיה בציון ומספד בירושלים:",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "tahanoun_chaharit",
+    "b": 10,
+    "empreinte": "תקום תרחם ציון, תבנה חומות ירושלים:",
+    "discret": true,
+    "g": 4,
+    "racine": "tahanoun_chaharit"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 11,
+    "empreinte": "מנהג לומר אחר סיום תיקון לאה מלך רחמן וכ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 12,
+    "empreinte": "אלהינו ואלהי אבותינו, מלך רחמן רחם עלינו",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
+   },
+   {
+    "sorte": "bloc",
+    "s": 2,
+    "si": "!ticha_beav",
+    "b": 13,
+    "empreinte": "שיר המעלות בשוב יהוה אתשיבת ציון היינו כ",
+    "libelle": "ajout_tikoun_lea",
+    "discret": true,
+    "g": 5,
+    "racine": "!ticha_beav"
    }
   ],
   "birkat_hamazon": [

@@ -1719,6 +1719,79 @@ def renvois(texte_id, sections, nusah):
     return sortie
 
 
+def _repere(sections, si, bi, cond, extra=None):
+    """Une annotation à la main, avec son empreinte, comme note() dans annoter()."""
+    b = sections[si]["blocs"][bi]
+    e = {"sorte": "bloc", "s": si, "si": cond, "b": bi, "empreinte": nu(b.get("t") or b.get("c"))[:40]}
+    e.update(extra or {})
+    return e
+
+
+def tikoun_hatsot(sections, nusah):
+    """
+    Tikoun 'hatsot (audit du 16/11) ; le texte, emprunté à l'Edot, est le même dans les trois siddourim.
+      - Tikoun Ra'hel (section 1) : pas à Roch 'Hodech, de Roch Hachana à Chemini Atseret, à 'Hanouka,
+        aux jours de Pourim, en Nissan, pendant l'omer (Kitsour Yalkut Yosef, דיני תיקון חצות §נה ;
+        Ben Ich 'Haï, Vayichla'h ה) : condition « tikoun_rahel », discrète (en clair les autres jours).
+      - Tikoun Léa (section 2) : pas la nuit du 9 Av, où l'on ne dit que Tikoun Ra'hel (YY §נו) ;
+        les psaumes « בימים שאין אומרים תחנון לא יאמר » (יענך, עד אנה) : les jours de Ta'hanoun
+        (consigne du siddour 2:2 et 2:8), le jour hébreu de la nuit (jourDeLaPriere).
+      - Indications fixes, en Edot : le vidui d'avant le Tikoun ne se répète pas (YY §נח) ; les
+        femmes qui veulent le dire (YY §נא).
+    La section se repère par son titre et ses consignes, pour qu'un siddour reconstruit échoue ici.
+    """
+    titres = [nu(s["titre"]) for s in sections]
+    assert titres == ["לשם יחוד", "תיקון רחל", "תיקון לאה"], titres
+    sortie = []
+    rahel = sections[1]["blocs"]
+    for bi in range(len(rahel)):
+        sortie.append(_repere(sections, 1, bi, "tikoun_rahel", {"libelle": "ajout_tikoun_rahel", "discret": True}))
+    lea = sections[2]["blocs"]
+    cons = [nu(b.get("c") or "") for b in lea]
+    assert cons[2].startswith("בימים שאין אומרים תחנון") and cons[8].startswith("בימים שאין אומרים תחנון"), cons
+    tahanoun = {2, 3, 8, 9, 10}
+    for bi in range(len(lea)):
+        if bi in tahanoun:
+            sortie.append(_repere(sections, 2, bi, "tahanoun_chaharit", {"discret": True}))
+        else:
+            sortie.append(_repere(sections, 2, bi, "!ticha_beav", {"libelle": "ajout_tikoun_lea", "discret": True}))
+    if nusah == "edot":
+        assert nu(sections[0]["blocs"][0]["t"]).startswith("אין אומרים תיקון חצות"), "consigne 0:0"
+        assert commence(nu(sections[0]["blocs"][1]["t"]), "אנא יהוה"), "vidui 0:1"
+        for bi, texte in ((0, "וכל אשה יראת ה׳ הרוצה לומר תיקון חצות, תבוא עליה ברכה, ואין למונעה מכך"
+                              " (ילקוט יוסף, דיני תיקון חצות, נא)"),
+                          (1, "אין חוזרים על הוידוי אם אומרים את התיקון סמוך לוידוי שבקריאת שמע שעל המטה,"
+                               " או סמוך למנחה, או באלול ובעשרת ימי תשובה סמוך לסליחות"
+                               " (ילקוט יוסף, דיני תיקון חצות, נח)")):
+            e = _repere(sections, 0, bi, "toujours", {"texte": texte, "fixe": True})
+            e["sorte"] = "indice"
+            sortie.append(e)
+    grouper(sortie)
+    for e in sortie:
+        e.pop("_force", None)
+    return sortie
+
+
+def chema_coucher_sfard(sections, nusah):
+    """
+    Chema du coucher Sfard (audit du 16/11) : l'usage 'Habad (Tehillat Hachem), signalé sans rien
+    replier : « רבונו של עולם » (0:0) omis le Chabbat et le Yom tov ; le vidui (les jours de
+    Ta'hanoun) et « אנא בכח », que ce siddour n'a pas.
+    """
+    if nusah != "sefard":
+        return []
+    assert commence(nu(sections[0]["blocs"][0]["t"]), "רבונו של עולם הריני מוחל"), "chema_coucher sefard 0:0"
+    e = _repere(sections, 0, 0, "toujours", {
+        "texte": "מנהג חב״ד: אין אומרים ״רבונו של עולם״ בשבת וביום טוב; ומוסיפים וידוי (בימים שאומרים בהם תחנון) ו״אנא בכח״",
+        "fixe": True})
+    e["sorte"] = "indice"
+    return [e]
+
+
+# Les textes annotés à la main, hors des règles générales d'annoter() (audit du 16/11).
+SPECIAUX = {"tikoun_hatsot": tikoun_hatsot, "chema_coucher": chema_coucher_sfard}
+
+
 def main():
     racine = {"_meta": {
         "outil": "tools/siddur_annotations.py",
@@ -1734,6 +1807,8 @@ def main():
             if t["id"] in TEXTES:
                 a = annoter(t["id"], t["sections"], nusah)
                 a += renvois(t["id"], t["sections"], nusah)
+            if t["id"] in SPECIAUX:
+                a += SPECIAUX[t["id"]](t["sections"], nusah)
             # Les notes de l'application (audit du 16/11), dans tout texte.
             a += notes(nusah, t, a)
             if a:

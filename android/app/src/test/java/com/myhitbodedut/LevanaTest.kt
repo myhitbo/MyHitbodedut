@@ -87,6 +87,72 @@ class LevanaTest {
         assertEquals(Levana.Restriction.TISHA_BEAV, av.restriction)
     }
 
+    // --- Audit du 16/11 (mêmes valeurs que web/test/levana.test.mjs) ---------------------------------
+
+    private val jer = Zmanim.Lieu("Jérusalem", 31.76904, 35.21633, 0.0, "Asia/Jerusalem")
+    private val parisLieu = Zmanim.Lieu("Paris", 48.85341, 2.3488, 0.0, "Europe/Paris")
+    private fun fen(iso: String, lieu: Zmanim.Lieu, usage: Levana.Usage): Levana.Fenetre {
+        val z = ZoneId.of(lieu.fuseau)
+        return Levana.fenetre(LocalDate.parse(iso), z, usage, Levana.Horaires.du(lieu, z))
+    }
+
+    @Test
+    fun `audit du 16-11, le dernier soir d apres la tset`() {
+        for (usage in listOf(Levana.Usage.SEPT_QUINZE, Levana.Usage.SEPT_NUIT_QUINZE)) {
+            assertEquals(LocalDate.of(2025, 12, 4), fen("2025-12-03", parisLieu, usage).dernier)
+            assertEquals(LocalDate.of(2025, 12, 4), fen("2025-12-03", jer, usage).dernier)
+            assertEquals(LocalDate.of(2026, 2, 1), fen("2026-01-30", jer, usage).dernier)
+        }
+        assertEquals(LocalDate.of(2026, 5, 30), fen("2026-05-28", parisLieu, Levana.Usage.TROIS_MI_MOIS).dernier)
+    }
+
+    @Test
+    fun `audit du 16-11, Edot jusqu a la nuit du 15 incluse, jamais la nuit du 16`() {
+        assertEquals(Levana.Usage.SEPT_NUIT_QUINZE, Levana.Usage.duNusah("edot"))
+        assertEquals(LocalDate.of(2024, 10, 17), fen("2024-10-14", jer, Levana.Usage.SEPT_QUINZE).dernier)
+        assertEquals(LocalDate.of(2024, 10, 16), fen("2024-10-14", jer, Levana.Usage.SEPT_NUIT_QUINZE).dernier)
+        assertEquals(LocalDate.of(2027, 2, 20), fen("2027-02-18", parisLieu, Levana.Usage.SEPT_QUINZE).dernier)
+        assertEquals(LocalDate.of(2027, 2, 21), fen("2027-02-18", parisLieu, Levana.Usage.SEPT_NUIT_QUINZE).dernier)
+        for (lieu in listOf(jer, parisLieu)) for (m in 0L until 24L) {
+            val d = LocalDate.of(2026, 1, 3).plusMonths(m)
+            val f = fen(d.toString(), lieu, Levana.Usage.SEPT_NUIT_QUINZE)
+            assertTrue("$d : ${f.dernier}", com.kosherjava.zmanim.hebrewcalendar.JewishCalendar(f.dernier.plusDays(1)).jewishDayOfMonth <= 15)
+        }
+    }
+
+    @Test
+    fun `audit du 16-11, ni Chabbat ni Yom tov sauf le dernier soir`() {
+        val jz = ZoneId.of("Asia/Jerusalem")
+        val pz = ZoneId.of("Europe/Paris")
+        val edot = fen("2026-04-24", jer, Levana.Usage.SEPT_NUIT_QUINZE)
+        assertEquals(Levana.Etat.PasCeSoir(Levana.Chome.CHABBAT), Levana.etat(edot, LocalDate.of(2026, 4, 24), jz, true))
+        assertEquals(LocalDate.of(2026, 4, 25), Levana.premierPossible(edot, jz, true))
+        // Le rappel du premier soir passe au samedi soir.
+        assertEquals(LocalDate.of(2026, 4, 25) to LevanaAlerte.Soir.PREMIER, LevanaAlerte.soirs(edot, LocalDate.of(2026, 4, 20), jz, true).first())
+        assertEquals(Levana.Etat.PasCeSoir(Levana.Chome.CHABBAT),
+            Levana.etat(fen("2027-06-11", parisLieu, Levana.Usage.TROIS_MI_MOIS), LocalDate.of(2027, 6, 11), pz, false))
+        val chavouot = fen("2029-05-20", parisLieu, Levana.Usage.TROIS_MI_MOIS)
+        assertEquals(Levana.Etat.PasCeSoir(Levana.Chome.YOM_TOV), Levana.etat(chavouot, LocalDate.of(2029, 5, 20), pz, false))
+        assertEquals(Levana.Etat.CeSoir, Levana.etat(chavouot, LocalDate.of(2029, 5, 20), pz, true))
+        var vus = 0
+        for (m in 0L until 36L) {
+            val f = fen(LocalDate.of(2026, 1, 1).plusMonths(m).toString(), jer, Levana.Usage.TROIS_MI_MOIS)
+            if (f.dernier.dayOfWeek == java.time.DayOfWeek.FRIDAY) { vus++; assertEquals(Levana.Etat.DernierSoir, Levana.etat(f, f.dernier, jz, true)) }
+        }
+        assertTrue(vus > 0)
+    }
+
+    @Test
+    fun `audit du 16-11, sortie du 9 Av a la tset et 10 Tevet`() {
+        val av = fen("2026-07-20", parisLieu, Levana.Usage.TROIS_MI_MOIS)
+        assertEquals(Levana.Restriction.TISHA_BEAV, av.restriction)
+        assertTrue(!av.debut.isBefore(java.time.Instant.parse("2026-07-23T20:30:00Z")))
+        assertTrue(Levana.sortieDeJeune(LocalDate.of(2025, 12, 30), false))
+        assertTrue(Levana.sortieDeJeune(LocalDate.of(2026, 12, 20), false))
+        assertTrue(!Levana.sortieDeJeune(LocalDate.of(2025, 12, 29), false))
+        assertTrue(!Levana.sortieDeJeune(LocalDate.of(2026, 9, 21), false)) // Kippour
+    }
+
     @Test
     fun `la lune nouvelle, au premier quartier, pleine`() {
         fun a(iso: String) = java.time.Instant.parse(iso)

@@ -94,7 +94,9 @@ export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hato
   'mizmor_letoda', 'yom_tov_semaine', 'leil_haseder', 'lendemain_roch_hodech', 'chome',
   'vihi_noam', 'veata_kadoch', 'tefilin', 'tefilin_sans_berakha', 'vidui_coucher', 'nuit', 'pourim_triple_vendredi',
   // Audit du 16/11 (Birkat haMazon et bénédictions).
-  'havdala_ner', 'havdala_bessamim', 'lendemain_ticha_beav_dimanche', 'lendemain_ajouts', 'bein_hametsarim'];
+  'havdala_ner', 'havdala_bessamim', 'lendemain_ticha_beav_dimanche', 'lendemain_ajouts', 'bein_hametsarim',
+  // Audit du 16/11 (calendrier).
+  'tikoun_rahel', 'toujours'];
 
 /**
  * Avinou malkénou (SiddurJour.avinouMalkenou) : jeûnes publics sauf le 9 Av, dix

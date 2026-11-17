@@ -33,40 +33,71 @@ object Levana {
     /** Un mois lunaire moyen : 29 j 12 h 793 halakim. */
     private val MOIS: Duration = Duration.ofDays(29).plusHours(12).plusMinutes(44).plusMillis(3333)
 
-    /** Les trois usages : début (jours depuis le molad), fin (quinze jours ou mi-mois). */
-    enum class Usage(val cle: String, val libelle: Int, val troisJours: Boolean, val quinzeJours: Boolean) {
+    /**
+     * Les usages : début (jours depuis le molad), fin (quinze jours, mi-mois, ou d'après la date).
+     * [nuitDuQuinze] (audit du 16/11) : le Yalkut Yosef compte selon la date du mois, et non d'heure à
+     * heure : jamais la nuit du 16, même avant quinze jours révolus, et encore la fin de la nuit du 15,
+     * jusqu'au lever du soleil (Kitsour Yalkut Yosef 426, se'ifim 28 et 37).
+     */
+    enum class Usage(val cle: String, val libelle: Int, val troisJours: Boolean, val quinzeJours: Boolean, val nuitDuQuinze: Boolean = false) {
         TROIS_MI_MOIS("trois_mi_mois", R.string.levana_usage_trois_mi_mois, true, false),
         SEPT_MI_MOIS("sept_mi_mois", R.string.levana_usage_sept_mi_mois, false, false),
-        SEPT_QUINZE("sept_quinze", R.string.levana_usage_sept_quinze, false, true);
+        SEPT_QUINZE("sept_quinze", R.string.levana_usage_sept_quinze, false, true),
+        SEPT_NUIT_QUINZE("sept_nuit_quinze", R.string.levana_usage_sept_nuit_quinze, false, false, nuitDuQuinze = true);
 
         companion object {
-            /** L'usage par défaut d'un noussa'h : Edot haMizra'h le Choulhan Aroukh, Sefard l'Ari, Ashkenaz la Michna Beroura et le Rema. */
+            /**
+             * L'usage par défaut d'un noussa'h : Edot haMizra'h le Yalkut Yosef (d'après la date, audit du
+             * 16/11), Sefard l'Ari, Ashkenaz la Michna Beroura et le Rema.
+             */
             fun duNusah(nusah: String): Usage = when (nusah) {
-                "edot" -> SEPT_QUINZE
+                "edot" -> SEPT_NUIT_QUINZE
                 "sefard" -> SEPT_MI_MOIS
                 else -> TROIS_MI_MOIS
             }
         }
     }
 
+    /**
+     * Les heures qui bornent les nuits d'un lieu (audit du 16/11) : la sortie des étoiles (soir) et le
+     * lever du soleil (matin) ; sans lieu, 20 h et 6 h, de simples repères.
+     */
+    class Horaires(val zone: ZoneId, private val tset: (LocalDate) -> Instant? = { null }, private val netz: (LocalDate) -> Instant? = { null }) {
+        fun soir(d: LocalDate): Instant = tset(d) ?: d.atTime(20, 0).atZone(zone).toInstant()
+        fun matin(d: LocalDate): Instant = netz(d) ?: d.atTime(6, 0).atZone(zone).toInstant()
+
+        companion object {
+            fun du(lieu: Zmanim.Lieu?, zone: ZoneId): Horaires = if (lieu == null) Horaires(zone) else Horaires(
+                zone,
+                { d -> Zmanim.jour(lieu, d).firstOrNull { it.cle == "tset" }?.instant },
+                { d -> Zmanim.jour(lieu, d).firstOrNull { it.cle == "netz" }?.instant },
+            )
+        }
+    }
+
+    /** Pourquoi pas ce soir : la nuit est Chabbat ou Yom tov (Michna Beroura 426:12 ; Kitsour Yalkut Yosef 426:33). */
+    enum class Chome { CHABBAT, YOM_TOV }
+
     enum class Restriction { KIPPOUR, TISHA_BEAV }
 
-    data class Fenetre(val molad: Instant, val debut: Instant, val fin: Instant, val restriction: Restriction? = null) {
+    data class Fenetre(val molad: Instant, val debut: Instant, val fin: Instant, val restriction: Restriction? = null, val dernier: LocalDate) {
         val prochainMolad: Instant get() = molad.plus(MOIS)
         fun premierSoir(zone: ZoneId): LocalDate = debut.atZone(zone).toLocalDate()
         /**
-         * Le dernier soir : le dernier jour dont le soir (20 h, [soir]) précède la fin. « Fin moins
-         * 12 h » désignait, quand la fenêtre se ferme l'après-midi, un jour où elle était déjà
-         * fermée avant la nuit (audit du 12/11, FCALENDRIER-03 : Kislev 5787, mi-mois le 24/11 à
-         * 15 h 28 à Paris, dernier soir le 23).
+         * Le dernier soir : le jour de la fin si la nuit (tsét du lieu, sinon 20 h) y commence avant elle,
+         * sinon la veille (audit du 16/11 : « fin − 12 h », puis « fin − 20 h », désignaient l'été un soir
+         * déjà fermé ; Choul'han Aroukh O.H. 426:3, Kitsour Yalkut Yosef 426:37).
          */
-        fun dernierSoir(zone: ZoneId): LocalDate = fin.minus(Duration.ofHours(20)).atZone(zone).toLocalDate()
+        @Suppress("UNUSED_PARAMETER")
+        fun dernierSoir(zone: ZoneId): LocalDate = dernier
     }
 
     sealed interface Etat {
         data class Dans(val jours: Int) : Etat
         data object CeSoir : Etat
         data object DernierSoir : Etat
+        /** Un soir de la fenêtre qui est Chabbat ou Yom tov, sans être le dernier (audit du 16/11). */
+        data class PasCeSoir(val chome: Chome) : Etat
     }
 
     /** La lune : la part éclairée du disque (0 à 1), si elle croît. */
@@ -88,13 +119,20 @@ object Levana {
         return Lune((1 + Math.cos(i * r)) / 2, ((d % 360) + 360) % 360 < 180)
     }
 
-    private fun du(date: LocalDate, usage: Usage, zone: ZoneId): Fenetre {
+    private fun du(date: LocalDate, usage: Usage, h: Horaires): Fenetre {
+        val zone = h.zone
         val c = JewishCalendar(date)
         val molad = c.moladAsDate.toInstant()
         var debut = (if (usage.troisJours) c.tchilasZmanKidushLevana3Days else c.tchilasZmanKidushLevana7Days).toInstant()
-        val fin = (if (usage.quinzeJours) c.sofZmanKidushLevana15Days else c.sofZmanKidushLevanaBetweenMoldos).toInstant()
+        val fin = when {
+            // Le Yalkut Yosef : jusqu'au lever du soleil qui clôt la nuit du 15 (audit du 16/11, YY 426:28).
+            usage.nuitDuQuinze -> h.matin(date.plusDays((15 - c.jewishDayOfMonth).toLong()))
+            usage.quinzeJours -> c.sofZmanKidushLevana15Days.toInstant()
+            else -> c.sofZmanKidushLevanaBetweenMoldos.toInstant()
+        }
         var restriction: Restriction? = null
-        // Tichri et Av : pas avant la sortie de Kippour, de Tich'a beAv (le jeûne, même repoussé au 10).
+        // Tichri et Av : pas avant la sortie de Kippour, de Tich'a beAv (le jeûne, même repoussé au 10),
+        // à la sortie des étoiles du lieu (audit du 16/11 : non plus à 20 h, avant la fin du jeûne l'été).
         val mois = JewishCalendar(debut.atZone(zone).toLocalDate()).jewishMonth
         if (mois == JewishDate.TISHREI || mois == JewishDate.AV) {
             val cible = if (mois == JewishDate.TISHREI) JewishCalendar.YOM_KIPPUR else JewishCalendar.TISHA_BEAV
@@ -102,7 +140,7 @@ object Levana {
             for (k in -9L..12L) {
                 val j = base.plusDays(k)
                 if (JewishCalendar(j).yomTovIndex == cible) {
-                    val sortie = soir(j, zone)
+                    val sortie = h.soir(j)
                     if (sortie.isAfter(debut)) {
                         debut = sortie
                         restriction = if (mois == JewishDate.TISHREI) Restriction.KIPPOUR else Restriction.TISHA_BEAV
@@ -111,21 +149,51 @@ object Levana {
                 }
             }
         }
-        return Fenetre(molad, debut, fin, restriction)
+        val jourFin = fin.atZone(zone).toLocalDate()
+        val dernier = if (h.soir(jourFin).isBefore(fin)) jourFin else jourFin.minusDays(1)
+        return Fenetre(molad, debut, fin, restriction, dernier)
     }
 
     /** La fenêtre qui concerne le soir de [date] : celle du mois, ou celle du mois suivant si elle est passée. */
-    fun fenetre(date: LocalDate, zone: ZoneId, usage: Usage = Usage.SEPT_MI_MOIS): Fenetre {
-        val ici = du(date, usage, zone)
-        if (!date.isAfter(ici.dernierSoir(zone))) return ici
+    fun fenetre(date: LocalDate, zone: ZoneId, usage: Usage = Usage.SEPT_MI_MOIS, horaires: Horaires = Horaires(zone)): Fenetre {
+        val ici = du(date, usage, horaires)
+        if (!date.isAfter(ici.dernier)) return ici
         val jour = JewishCalendar(date).jewishDayOfMonth
-        return du(date.plusDays((31 - jour + 2).toLong()), usage, zone)
+        return du(date.plusDays((31 - jour + 2).toLong()), usage, horaires)
+    }
+
+    /**
+     * La nuit qui suit le jour civil [date] est-elle Chabbat ou Yom tov (le second jour seulement en
+     * diaspora) ? Lekhat'hila, on ne bénit pas la lune ces soirs-là, sauf si le délai va passer
+     * (audit du 16/11 : Michna Beroura 426:12 ; Kitsour Yalkut Yosef 426:33).
+     */
+    fun nuitChomee(date: LocalDate, enIsrael: Boolean): Chome? = when {
+        date.dayOfWeek == java.time.DayOfWeek.FRIDAY -> Chome.CHABBAT
+        JewishCalendar(date.plusDays(1)).apply { inIsrael = enIsrael }.isYomTovAssurBemelacha -> Chome.YOM_TOV
+        else -> null
+    }
+
+    /** Le premier soir où l'on peut bénir lekhat'hila : ni Chabbat ni Yom tov, sinon le dernier soir. */
+    fun premierPossible(f: Fenetre, zone: ZoneId, enIsrael: Boolean): LocalDate {
+        var d = f.premierSoir(zone)
+        while (d.isBefore(f.dernier) && nuitChomee(d, enIsrael) != null) d = d.plusDays(1)
+        return d
+    }
+
+    /**
+     * Le soir de [date] sort-il d'un jeûne autre que Kippour ? Selon les A'haronim, on bénit alors après
+     * avoir goûté quelque chose ; selon le Rema, on attend un autre soir (audit du 16/11 : Rema 426:2,
+     * Michna Beroura 426:11).
+     */
+    fun sortieDeJeune(date: LocalDate, enIsrael: Boolean): Boolean {
+        val c = JewishCalendar(date).apply { inIsrael = enIsrael }
+        return c.isTaanis && c.yomTovIndex != JewishCalendar.YOM_KIPPUR
     }
 
     /** Le motsaé Chabbat conseillé de la fenêtre, à partir de [date] : sa nuit avant le 10, et pas Yom Tov. */
     fun motsaeChabbat(f: Fenetre, date: LocalDate, zone: ZoneId): LocalDate? {
         var d = f.premierSoir(zone)
-        while (!d.isAfter(f.dernierSoir(zone))) {
+        while (!d.isAfter(f.dernier)) {
             if (d.dayOfWeek == java.time.DayOfWeek.SATURDAY) {
                 val nuit = JewishCalendar(d.plusDays(1))
                 if (nuit.jewishDayOfMonth <= 10 && !nuit.isYomTovAssurBemelacha) return d.takeIf { !it.isBefore(date) }
@@ -135,13 +203,12 @@ object Levana {
         return null
     }
 
-    fun etat(f: Fenetre, date: LocalDate, zone: ZoneId): Etat {
+    fun etat(f: Fenetre, date: LocalDate, zone: ZoneId, enIsrael: Boolean = true): Etat {
         val premier = f.premierSoir(zone)
-        val dernier = f.dernierSoir(zone)
         return when {
             date.isBefore(premier) -> Etat.Dans(java.time.temporal.ChronoUnit.DAYS.between(date, premier).toInt())
-            date == dernier -> Etat.DernierSoir
-            else -> Etat.CeSoir
+            date == f.dernier -> Etat.DernierSoir
+            else -> nuitChomee(date, enIsrael)?.let { Etat.PasCeSoir(it) } ?: Etat.CeSoir
         }
     }
 

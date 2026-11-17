@@ -171,4 +171,27 @@ class JourAfficheTest {
         assertEquals(SiddurMoment.suggestion(java.time.LocalTime.of(14, 0)), JourAffiche.momentDuSiddour(tromso, juin))
     }
 
+    // Audit du 16/11 : pas de Tikoun 'hatsot les nuits de Chabbat, de Yom tov et de 'Hol hamoed Pessa'h (consigne du
+    // texte ; Kitsour Yalkut Yosef, דיני תיקון חצות §נה) ; le Tikoun Ra'hel de midi à Bein hamétsarim (§מה). Comme le web.
+    @Test
+    fun `audit du 16-11, Tikoun hatsot selon la nuit et Tikoun Rahel de midi`() {
+        val jer = Zmanim.Lieu("Jérusalem", 31.76904, 35.21633, 0.0, "Asia/Jerusalem")
+        val paris = Zmanim.Lieu("Paris", 48.85341, 2.3488, 0.0, "Europe/Paris")
+        fun t(s: String) = java.time.OffsetDateTime.parse(s).toInstant()
+        for (s in listOf("2026-11-21T01:30:00+02:00", "2026-04-05T01:30:00+03:00", "2026-09-12T01:30:00+03:00", "2026-09-21T01:30:00+03:00", "2027-04-25T01:30:00+03:00", "2026-11-20T23:55:00+02:00")) {
+            assertEquals(s, "chema_coucher", JourAffiche.momentDuSiddour(jer, t(s)))
+        }
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-11-19T01:30:00+02:00")))
+        assertEquals("chema_coucher", JourAffiche.momentDuSiddour(paris, t("2026-09-27T03:00:00+02:00"), false))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(paris, t("2026-09-27T03:00:00+02:00"), true))
+        assertEquals("chema_coucher", SiddurMoment.suggestion(java.time.LocalTime.of(1, 0), true))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-07-05T12:50:00+03:00")))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-07-05T12:50:00+03:00"), true, "sefard"))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-07-05T12:50:00+03:00"), true, "ashkenaz"))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-07-04T12:50:00+03:00")))
+        assertEquals("tikoun_hatsot", JourAffiche.momentDuSiddour(jer, t("2026-07-20T12:50:00+03:00")))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-07-23T12:50:00+03:00")))
+        assertEquals(null, JourAffiche.momentDuSiddour(jer, t("2026-10-16T12:50:00+03:00")))
+    }
+
 }

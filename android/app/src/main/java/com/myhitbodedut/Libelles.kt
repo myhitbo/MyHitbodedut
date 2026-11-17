@@ -116,6 +116,9 @@ object Libelles {
         "ajout_ticha_beav_kippour" -> R.string.ajout_ticha_beav_kippour
         "ajout_ticha_beav_minha" -> R.string.ajout_ticha_beav_minha
         "ajout_ticha_beav_trois" -> R.string.ajout_ticha_beav_trois
+        "ajout_tikoun_lea" -> R.string.ajout_tikoun_lea
+        "ajout_tikoun_rahel" -> R.string.ajout_tikoun_rahel
+        "ajout_toujours" -> R.string.ajout_toujours
         "ajout_tsom_guedalia_tevet" -> R.string.ajout_tsom_guedalia_tevet
         "ajout_veata_kadoch" -> R.string.ajout_veata_kadoch
         "ajout_vidoui_erev_kippour" -> R.string.ajout_vidoui_erev_kippour

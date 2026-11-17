@@ -412,6 +412,32 @@ test('siddour : la suggestion suit les zmanim du lieu, rien dans les creux', asy
   assert.equal(A.momentDuSiddour(tromso, new Date('2026-06-21T14:00:00+02:00')), SiddurMoment.suggestion(14, 0));
 });
 
+// Audit du 16/11 : pas de Tikoun 'hatsot les nuits de Chabbat, de Yom tov et de 'Hol hamoed Pessa'h
+// (consigne du texte ; Kitsour Yalkut Yosef, דיני תיקון חצות §נה) ; le Tikoun Ra'hel de midi à Bein hamétsarim (§מה).
+test('siddour (audit du 16/11) : Tikoun ’hatsot selon la nuit, Tikoun Ra’hel de midi', async () => {
+  const A = await import('../src/js/jour-affiche.js');
+  const { SiddurMoment } = await import('../src/js/regles.js');
+  const jer = { nom: 'J', latitude: 31.76904, longitude: 35.21633, altitude: 0, fuseau: 'Asia/Jerusalem' };
+  const paris = { nom: 'P', latitude: 48.85341, longitude: 2.3488, altitude: 0, fuseau: 'Europe/Paris' };
+  for (const t of ['2026-11-21T01:30:00+02:00', '2026-04-05T01:30:00+03:00', '2026-09-12T01:30:00+03:00', '2026-09-21T01:30:00+03:00', '2027-04-25T01:30:00+03:00', '2026-11-20T23:55:00+02:00']) {
+    assert.equal(A.momentDuSiddour(jer, new Date(t)), 'chema_coucher', t);
+  }
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-11-19T01:30:00+02:00')), 'tikoun_hatsot');
+  // Le 2e jour de Soukkot ne compte qu'en diaspora ; en Israël, 'Hol hamoed Soukkot n'est pas exclu.
+  assert.equal(A.momentDuSiddour(paris, new Date('2026-09-27T03:00:00+02:00'), false), 'chema_coucher');
+  assert.equal(A.momentDuSiddour(paris, new Date('2026-09-27T03:00:00+02:00'), true), 'tikoun_hatsot');
+  assert.equal(SiddurMoment.suggestion(1, 0, true), 'chema_coucher');
+  assert.equal(SiddurMoment.suggestion(1, 0), 'tikoun_hatsot');
+  // Bein hamétsarim : 20 Tamouz 5786 à 12 h 50, en Edot et en Sfard ; pas en Ashkenaz, ni le Chabbat.
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-05T12:50:00+03:00')), 'tikoun_hatsot');
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-05T12:50:00+03:00'), true, 'sefard'), 'tikoun_hatsot');
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-05T12:50:00+03:00'), true, 'ashkenaz'), null);
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-04T12:50:00+03:00')), null);
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-20T12:50:00+03:00')), 'tikoun_hatsot');
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-07-23T12:50:00+03:00')), null); // 9 Av
+  assert.equal(A.momentDuSiddour(jer, new Date('2026-10-16T12:50:00+03:00')), null);
+});
+
 // --- Rappels de tefila (RappelsTefilaTest, 16/10) ---
 import { rappelsTefila } from '../src/js/calendrier-juif.js';
 test('rappels de tefila : mêmes cas que RappelsTefilaTest', () => {
@@ -522,4 +548,68 @@ test('Rappel de fin de משיב הרוח : l\'Ashkenaz de diaspora cesse à Min\
   assert.equal(cleGuechemFin('ashkenaz', true), 'rappel_guechem_fin');
   assert.equal(cleGuechemFin('sefard', false), 'rappel_guechem_fin');
   assert.equal(cleGuechemFin('edot', false), 'rappel_guechem_fin');
+});
+
+// Audit du 16/11 : Tikoun Ra'hel (Kitsour Yalkut Yosef, דיני תיקון חצות §נה et §נז), comme CalendrierJuif.C.TIKOUN_RAHEL ;
+// le jour hébreu de la nuit pour Tikoun 'hatsot (avant minuit, le lendemain ; à midi, le jour même).
+test('Tikoun Ra’hel selon le jour (audit du 16/11)', () => {
+  const r = (iso, il = false) => jour(iso, il).conditions.has('tikoun_rahel');
+  assert.equal(r('2026-11-19'), true);
+  assert.equal(r('2026-07-23'), true); // 9 Av : Tikoun Ra'hel seul
+  for (const iso of ['2027-03-09', '2026-04-08', '2026-09-15', '2027-05-12', '2026-12-08', '2027-03-23']) assert.equal(r(iso), false, iso);
+  assert.equal(r('2026-10-04'), false); // Simha Torah en diaspora (23 Tichri)
+  assert.equal(r('2026-10-04', true), true); // en Israël, le 23 Tichri
+  assert.equal(r('2028-11-16', true), false); // chemita 5789, en Israël
+  assert.equal(r('2028-11-16'), true);
+  assert.ok(jour('2026-11-19', false).conditions.has('toujours'));
+  assert.equal(jourDeLaPriere('tikoun_hatsot', '2026-11-20', 23), '2026-11-21');
+  assert.equal(jourDeLaPriere('tikoun_hatsot', '2026-07-05', 12), '2026-07-05');
+});
+
+// Audit du 16/11 : les repères du jour (CalendrierJuifTest, mêmes dates) et les Chabbatot spéciaux.
+test('repères du jour : Seli’hot, chofar, בה״ב, Yom Kippour katan, érouv tavchilin (audit du 16/11)', async () => {
+  const { reperes } = await import('../src/js/calendrier-juif.js');
+  const r = (iso, il, n) => reperes(iso, il, n);
+  // בה״ב : Ashkenaz et Sfard, le מי שבירך du Chabbat d'avant ; rien en Edot (Rema 492:1 ; MB 492:3).
+  for (const iso of ['2025-10-27', '2025-10-30', '2025-11-03', '2026-10-19', '2026-10-22', '2026-10-26']) {
+    assert.ok(r(iso, false, 'ashkenaz').includes('repere_behab'), iso);
+    assert.ok(r(iso, false, 'sefard').includes('repere_behab'), iso);
+    assert.ok(!r(iso, false, 'edot').includes('repere_behab'), iso);
+  }
+  assert.deepEqual(r('2025-10-25', false, 'ashkenaz'), ['repere_behab_mi_cheberakh']);
+  assert.ok(r('2026-04-27', true, 'ashkenaz').includes('repere_behab'));
+  // Seli'hot : Edot dès le 2 Eloul, sauf Chabbat ; Ashkenaz dès le dimanche avant Roch Hachana (Rema 581:1).
+  assert.deepEqual(r('2026-08-15', false, 'edot'), []);
+  assert.deepEqual(r('2026-08-16', false, 'edot'), ['repere_selihot']);
+  assert.deepEqual(r('2026-08-17', false, 'ashkenaz'), ['repere_chofar']);
+  assert.deepEqual(r('2026-09-05', false, 'ashkenaz'), []);
+  assert.deepEqual(r('2026-09-06', false, 'ashkenaz'), ['repere_selihot', 'repere_chofar']);
+  assert.ok(r('2025-09-14', false, 'ashkenaz').includes('repere_selihot')); // Roch Hachana un lundi : une semaine plus tôt
+  assert.ok(!r('2025-09-12', false, 'ashkenaz').includes('repere_selihot'));
+  assert.deepEqual(r('2026-09-11', false, 'edot'), ['repere_selihot', 'repere_pas_de_chofar']);
+  assert.deepEqual(r('2026-09-20', false, 'ashkenaz'), ['repere_selihot']);
+  assert.deepEqual(r('2026-09-21', false, 'ashkenaz'), []);
+  for (const iso of ['2025-11-20', '2026-11-09', '2024-11-28']) assert.deepEqual(r(iso, false, 'edot'), ['repere_yom_kippour_katan'], iso);
+  assert.deepEqual(r('2026-05-21', true, 'edot'), ['repere_erouv_tavchilin']);
+  assert.deepEqual(r('2024-10-16', false, 'edot'), ['repere_erouv_tavchilin']);
+  assert.deepEqual(r('2024-10-16', true, 'edot'), []);
+  assert.deepEqual(r('2026-11-19', false, 'ashkenaz'), []);
+  // Chekalim, Zakhor ; à Jérusalem, le Chabbat 15 Adar d'un Pourim triple (Choul'han Aroukh O.H. 688:6).
+  assert.equal(jour('2026-02-28', false).parachaSpeciale, 'זכור');
+  assert.equal(jour('2027-03-06', false).parachaSpeciale, 'שקלים');
+  assert.equal(jour('2025-03-15', true, true).parachaSpeciale, 'מפטיר ויבא עמלק');
+  assert.equal(jour('2025-03-15', true, false).parachaSpeciale, null);
+  assert.equal(jour('2026-11-21', false).parachaSpeciale, null);
+});
+
+// Audit du 16/11 (« Autres ») : le rappel de l'écran Musique, l'omer sauf Lag baOmer et Bein hamétsarim (YY 493:8, 551:6).
+test('musique : rappel de l’omer et de Bein hamétsarim (audit du 16/11)', async () => {
+  const { periodeSansMusique } = await import('../src/js/calendrier-juif.js');
+  assert.equal(periodeSansMusique('2026-07-23'), 'bein_hametsarim'); // 9 Av 5786
+  assert.equal(periodeSansMusique('2026-07-02'), 'bein_hametsarim'); // 17 Tamouz
+  assert.equal(periodeSansMusique('2029-07-22'), 'bein_hametsarim'); // jeûne repoussé au 10 Av
+  assert.equal(periodeSansMusique('2026-07-24'), null);
+  assert.equal(periodeSansMusique('2026-04-20'), 'omer');
+  assert.equal(periodeSansMusique('2026-05-05'), null); // Lag baOmer 5786
+  assert.equal(periodeSansMusique('2026-11-19'), null);
 });

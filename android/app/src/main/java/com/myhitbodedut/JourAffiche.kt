@@ -139,10 +139,13 @@ object JourAffiche {
         if (moment != null && moment in OFFICES &&
             CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(moment, date, heure), enIsrael).chome) null else moment
 
-    fun momentDuSiddour(lieu: Zmanim.Lieu, maintenant: java.time.Instant): String? {
+    fun momentDuSiddour(lieu: Zmanim.Lieu, maintenant: java.time.Instant, enIsrael: Boolean = true, nusah: String = "edot"): String? {
         val zone = java.time.ZoneId.of(lieu.fuseau)
         val local = maintenant.atZone(zone)
         val date = local.toLocalDate()
+        // La nuit appartient au jour hébreu civil après minuit, au lendemain avant minuit (audit du 16/11).
+        val nuit = if (local.toLocalTime() < java.time.LocalTime.NOON) date else date.plusDays(1)
+        val tikoun = if (sansTikounHatsot(nuit, enIsrael)) "chema_coucher" else "tikoun_hatsot"
         fun instants(d: LocalDate) = Zmanim.jour(lieu, d).associate { it.cle to it.instant }
         // Aube absente autour du solstice (Londres, Berlin, Moscou…, FCALENDRIER-08) : michéyakir, puis
         // le lever du soleil, en tiennent lieu ; les heures fixes ne servent que si chki'a ou tsét manquent.
@@ -152,19 +155,43 @@ object JourAffiche {
         }
         val hier = instants(date.minusDays(1))
         val cles = listOf("alot", "misheyakir", "chatsot", "minha_gedola", "chkia", "tset", "chatsot_layla")
-        if (cles.any { z[it] == null } || hier["chatsot_layla"] == null) return SiddurMoment.suggestion(local.toLocalTime())
+        if (cles.any { z[it] == null } || hier["chatsot_layla"] == null) return SiddurMoment.suggestion(local.toLocalTime(), sansTikounHatsot(nuit, enIsrael))
         fun avant(cle: String) = maintenant < z.getValue(cle)!!
         val soir = if (local.toLocalTime() < java.time.LocalTime.of(22, 30) && local.toLocalTime() > java.time.LocalTime.NOON) "arvit" else "chema_coucher"
         return when {
-            avant("alot") -> if (maintenant >= hier.getValue("chatsot_layla")!!) "tikoun_hatsot" else "chema_coucher"
+            avant("alot") -> if (maintenant >= hier.getValue("chatsot_layla")!!) tikoun else "chema_coucher"
             avant("misheyakir") -> "birkot_hachahar"
             avant("chatsot") -> "chaharit"
-            avant("minha_gedola") -> null
+            avant("minha_gedola") -> if (tikounRahelDeMidi(date, nusah)) "tikoun_hatsot" else null
             avant("chkia") -> "minha"
             avant("tset") -> null
             avant("chatsot_layla") -> soir
-            else -> "tikoun_hatsot"
+            else -> tikoun
         }
+    }
+
+    /**
+     * Pas de Tikoun 'hatsot la nuit du jour hébreu [nuit] : Chabbat, Yom tov (le second jour en diaspora),
+     * 'Hol hamoed Pessa'h (audit du 16/11 : consigne du texte tikoun_hatsot ; Kitsour Yalkut Yosef, דיני
+     * תיקון חצות, se'if נה).
+     */
+    fun sansTikounHatsot(nuit: LocalDate, enIsrael: Boolean): Boolean {
+        val c = com.kosherjava.zmanim.hebrewcalendar.JewishCalendar(nuit).apply { inIsrael = enIsrael }
+        return nuit.dayOfWeek == java.time.DayOfWeek.SATURDAY || c.isYomTovAssurBemelacha ||
+            c.yomTovIndex == com.kosherjava.zmanim.hebrewcalendar.JewishCalendar.CHOL_HAMOED_PESACH
+    }
+
+    /**
+     * Bein hamétsarim, du 17 Tamouz au 8 Av, sauf Chabbat et Roch 'Hodech Av : beaucoup disent le Tikoun
+     * Ra'hel après 'hatsot du jour (audit du 16/11 : Kitsour Yalkut Yosef, דיני תיקון חצות, se'ifim מה et
+     * נז) ; usage des Edot et du Sfard, pas de l'Ashkenaz (Michna Beroura 1:9).
+     */
+    fun tikounRahelDeMidi(date: LocalDate, nusah: String): Boolean {
+        if (nusah == "ashkenaz" || date.dayOfWeek == java.time.DayOfWeek.SATURDAY) return false
+        val c = com.kosherjava.zmanim.hebrewcalendar.JewishCalendar(date)
+        val j = c.jewishDayOfMonth
+        return (c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.TAMMUZ && j >= 17) ||
+            (c.jewishMonth == com.kosherjava.zmanim.hebrewcalendar.JewishDate.AV && j in 2..8)
     }
 
     /**

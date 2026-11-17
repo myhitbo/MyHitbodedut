@@ -263,7 +263,8 @@ class SimulationSiddurTest {
     @Test
     fun `chaque condition de repli change avec les jours`() {
         // « nuit » (audit du 16/11) dépend de l'heure, pas du jour : la lecture la pose (CalendrierJuif.nuit).
-        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL, C.NUIT)
+        // « toujours » (audit du 16/11) : une indication fixe, vraie par construction.
+        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL, C.NUIT, C.TOUJOURS)
         val vues = mutableMapOf<String, MutableSet<Boolean>>()
         for (lieu in lieux) for (date in jours) {
             val jour = jour(date, lieu.israel, lieu.muree)

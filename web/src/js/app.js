@@ -13,7 +13,7 @@ import { DanseMesure, SessionRule } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, cleGuechemFin, jour as jourJuif, jourDeLaPriere, levana, nuit as nuitDuLieu, rappelsTefila, usageLevana } from './calendrier-juif.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, cleGuechemFin, jour as jourJuif, jourDeLaPriere, levana, nuit as nuitDuLieu, periodeSansMusique, rappelsTefila, reperes as reperesDuJour, usageLevana } from './calendrier-juif.js';
 import { avecSansTahanoun, conditionsPour, index as indexAjouts, libelleJour, plan as planSection, segments as segmentsAjout, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
@@ -23,7 +23,7 @@ import * as Trophees from './trophees.js';
 import { FORMES, ICONES } from './trophees-formes.js';
 import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHalakha } from './halakha.js';
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
-import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, momentOuvrable, OFFICES, moisHebreuVoisin, semaines, semainesHebreu } from './jour-affiche.js';
+import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, momentOuvrable, OFFICES, moisHebreuVoisin, sansTikounHatsot, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
 import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
@@ -924,14 +924,14 @@ function momentAccueil() {
   if (!chargeSiddur()) return rappels;
   const heure = new Date();
   // Pas d'office de semaine proposé un Chabbat ou un Yom tov (audit du 16/11, JourAffiche.momentOuvrable).
-  const moment = momentOuvrable(store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes()),
-    jourLieu(heure), heureLieu(heure).heures, store.inIsrael());
+  const moment = momentOuvrable(momentSiddour(heure), jourLieu(heure), heureLieu(heure).heures, store.inIsrael());
   const cartes = [...rappels];
   const t = moment ? siddur.textes.find((x) => x.id === moment) : null;
   if (t) cartes.push(carteMaintenant(t, undefined, undefined, tr.t(Salutation.mot(heureLieu(heure).heures))));
   const zone = store.lieu()?.fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const l = levana(jourLieu(heure), zone, { usage: usageLevanaCourant() });
+  const l = levana(jourLieu(heure), zone, optionsLevana());
   const lv = siddur.textes.find((x) => x.id === 'birkat_halevana');
+  // Ni un soir de Chabbat ou de Yom tov qui n'est pas le dernier ({ pas }, audit du 16/11).
   if (lv && store.levanaAffichee() && typeof l.etat === 'string' && heureLieu(heure).heures >= 14 && +heure < l.finMs) {
     cartes.push(h('button', { class: 'maintenant', onclick: () => { priere = lv.id; ouvrir('priere'); } },
       plateau('char_praise', 'plateau-maintenant'),
@@ -1520,7 +1520,7 @@ function ecranSiddur() {
   const nomNusah = tr.t(NUSAH.find(([c]) => c === store.siddurNusah())?.[1] ?? 'siddur_nusah');
   const heure = new Date();
   // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
-  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
+  const moment = momentSiddour(heure);
   const ouvrable = momentOuvrable(moment, jourLieu(heure), heureLieu(heure).heures, store.inIsrael());
   const suggere = pret && ouvrable ? siddur.textes.find((x) => x.id === ouvrable) : null;
   // 'Hanouka (13/10) : le Hallel du jour, avec la scène de 'Hanouka, sous la prière du matin.
@@ -1651,8 +1651,9 @@ function ecranPriere() {
     const du = tous.filter((a) => !a.retire && ajoutVrai(a.si, c)).filter((a, k, l) => l.findIndex((y) => y.texte === a.texte) === k);
     const pli = hors.length && reduit !== brut
       ? ajout(nom(hors[0], hors[0].si), false, hors.map((a) => h('p', { class: 'priere hors-jour', lang: 'he', dir: 'rtl' }, a.texte)), hors[0].si) : null;
+    // Une indication fixe (audit du 16/11, « fixe ») : sans « Aujourd'hui : ».
     return [paragraphe(s, i, reduit !== brut ? reduit : undefined), pli, ...du.map((a) => h('p', { class: 'indice-jour' },
-      h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, a.texte))), ...renvois(si, i)];
+      a.fixe ? null : h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, a.texte))), ...renvois(si, i)];
   };
   // Le corps d'une section, sans son titre : construit d'un coup pour une prière, à la demande pour un livre.
   const corpsDe = (s, si) => {
@@ -1674,7 +1675,7 @@ function ecranPriere() {
       const membres = !groupe ? partie.blocs.map(para) : segmentsAjout(partie.blocs, si, idx, c).flatMap((g) => g.et
         ? [ajout(tr.t(g.libelle), false, g.blocs.map((i) => { const p = paragraphe(s, i); p.classList.add('hors-jour'); return p; }), g.et.replace(/^!/, ''))]
         : g.blocs.flatMap((i) => [para(i), ...(lu ? (idx.indices.get(`${si}:${i}`) ?? []).filter((x) => !x.retire && ajoutVrai(x.si, c))
-          .map((x) => h('p', { class: 'indice-jour' }, h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, x.texte))) : [])]));
+          .map((x) => h('p', { class: 'indice-jour' }, x.fixe ? null : h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, x.texte))) : [])]));
       // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage discret (12/11,
       // SiddurJour.Annotation.discret) : tel quel quand il se dit, sans étiquette.
       if (partie.etat === 'ordinaire') corps.push(...membres);
@@ -2601,8 +2602,11 @@ function ecranMusique() {
     'aria-label': tr.t('music_enable'),
     onchange: (e) => { store.setMusicEnabled(e.target.checked); rendre(); },
   });
+  // L'omer et Bein hamétsarim : un rappel discret, sans couper la musique (audit du 16/11, YY 493:8 et 551:6).
+  const periode = periodeSansMusique(isoLocal(new Date()));
   return h('div', { class: 'ecran' }, barre(tr.t('music_title')),
     h('div', { class: 'defile' }, h('div', { class: 'contenu' },
+      periode ? h('p', { class: 'indice' }, tr.t(`music_rappel_${periode}`)) : null,
       h('div', { class: 'carte' },
         h('label', { class: 'ligne' },
           h('span', { class: 'corps' }, h('div', { class: 'nom' }, tr.t('music_enable')),
@@ -2943,6 +2947,8 @@ function carteJour(iso, { complet = true } = {}) {
   const marques = [
     ...j.fetes.map((f) => tr.t(`fete_${f}`)),
     j.paracha ? tr.t('zmanim_paracha', j.paracha) : null,
+    // Chekalim, Zakhor, Para, ha'Hodech… (audit du 16/11, CalendrierJuif.parachaSpeciale).
+    j.parachaSpeciale,
     omerCeSoir ? tr.t('zmanim_omer_ce_soir', omerCeSoir) : null,
   ].filter(Boolean);
   const dessin = illustrationDuJour(j.fetes, iso);
@@ -2954,6 +2960,8 @@ function carteJour(iso, { complet = true } = {}) {
     marques.length ? h('div', { class: 'jour-marques' }, marques.map((m) => h('span', { class: 'marque' }, m))) : null,
     h('h3', { class: 'jour-sous-titre' }, tr.t('zmanim_ajouts_titre')),
     h('p', { class: 'jour-ajouts' }, ajoutsDuJour(avecSansTahanoun(j.conditions, store.sansTahanounLe(iso)), store.siddurNusah(), store.inIsrael(), store.sansTahanounFinTichri(), hemisphereSud()).map((k) => tr.t(k)).join(' · ')),
+    // Les repères du jour (audit du 16/11) : Seli'hot, chofar d'Eloul, בה״ב, Yom Kippour katan, érouv tavchilin.
+    ...reperesDuJour(iso, store.inIsrael(), store.siddurNusah()).map((k) => h('p', { class: 'levana-conseil' }, tr.t(k))),
     // Partager le jour en image (14/10, PartageJour.kt).
     h('button', { class: 'jour-lien lien-bouton', onclick: () => partagerJour(iso) }, `${tr.t('partage_jour')} ↗`),
     // Le calendrier montre tout ; l'écran Zmanim (14/10) n'y garde que le jour (sousHoraires).
@@ -3052,7 +3060,26 @@ function dessinLune({ eclairage, croissante }, sud) {
 /** Le lieu des zmanim est au sud de l'équateur (Store.hemisphereSud). */
 const hemisphereSud = () => (store.lieu()?.latitude ?? 0) < 0;
 
+/**
+ * Le texte du moment (AccueilMoment, SiddurActivity) : avec un lieu, ses zmanim ; sinon les heures fixes.
+ * Pas de Tikoun 'hatsot la nuit de Chabbat, de fête ou de 'Hol hamoed Pessa'h (audit du 16/11).
+ */
+function momentSiddour(heure) {
+  return store.lieu() ? momentDuSiddour(store.lieu(), heure, store.inIsrael(), store.siddurNusah())
+    : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes(), sansTikounHatsot(isoLocal(heure), store.inIsrael()));
+}
+
 const usageLevanaCourant = () => usageLevana(store.siddurNusah(), store.levanaUsage());
+
+/**
+ * Les options de levana() pour le lieu choisi (audit du 16/11, Levana.Horaires) : la tsét et le
+ * lever du soleil bornent les nuits ; Israël ou la diaspora pour le second jour de fête.
+ */
+function optionsLevana() {
+  const lieu = store.lieu();
+  const heureDe = (cle) => (lieu ? (d) => { const z = zmanimDuJour(lieu, d).find((x) => x.cle === cle); return z?.instant ? +z.instant : null; } : null);
+  return { usage: usageLevanaCourant(), enIsrael: store.inIsrael(), tset: heureDe('tset'), netz: heureDe('netz') };
+}
 
 /**
  * Birkat haLevana (Levana.kt ; plus réaliste le 14/10) : la lune de ce soir dessinée,
@@ -3063,10 +3090,15 @@ function blocLevana(iso) {
   const lieu = store.lieu();
   const zone = lieu?.fuseau ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   const usage = usageLevanaCourant();
-  const l = levana(iso, zone, { usage });
+  const l = levana(iso, zone, optionsLevana());
+  const nusah = store.siddurNusah();
   const court = (d) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`));
   const heure = (ms) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: zone }).format(new Date(ms));
-  const etat = l.etat === 'ce_soir' ? tr.t('levana_ce_soir') : l.etat === 'dernier' ? tr.t('levana_dernier_soir') : tr.p('levana_dans', l.etat.dans);
+  const jourSeul = (ms) => new Intl.DateTimeFormat(tr.langue, { weekday: 'short', day: 'numeric', month: 'short', timeZone: zone }).format(new Date(ms));
+  const etat = l.etat === 'ce_soir' ? tr.t('levana_ce_soir') : l.etat === 'dernier' ? tr.t('levana_dernier_soir')
+    : l.etat.pas ? tr.t(l.etat.pas === 'chabbat' ? 'levana_pas_chabbat' : 'levana_pas_yom_tov') : tr.p('levana_dans', l.etat.dans);
+  // Kippour : en Edot, « notre usage » du Yalkut Yosef 426:34 ; le 9 Av : après avoir goûté (audit du 16/11).
+  const restriction = l.restriction === 'tisha_beav' ? 'levana_tisha' : nusah === 'edot' ? 'levana_kippour_edot' : 'levana_kippour';
   const pct = (x) => `${(x * 100).toFixed(2)}%`;
   return h('div', { class: 'levana' },
     h('div', { class: 'levana-tete' },
@@ -3075,9 +3107,12 @@ function blocLevana(iso) {
         h('h3', { class: 'jour-sous-titre' }, tr.t('levana_titre')),
         h('p', { class: `levana-etat${typeof l.etat === 'string' ? ' ouvert' : ''}` }, etat),
         h('p', { class: 'levana-lune' }, tr.t('levana_lune', new Intl.NumberFormat(tr.langue, { style: 'percent' }).format(Math.round(l.lune.eclairage * 100) / 100), tr.t(l.lune.croissante ? 'levana_croissante' : 'levana_decroissante'))))),
-    h('p', { class: 'levana-fenetre' }, tr.t('levana_fenetre', heure(l.debutMs), heure(l.finMs))),
+    // Sans lieu, la sortie de Kippour ou du 9 Av n'a pas d'heure : la date seule (audit du 16/11).
+    h('p', { class: 'levana-fenetre' }, tr.t('levana_fenetre', !lieu && l.restriction ? jourSeul(l.debutMs) : heure(l.debutMs), heure(l.finMs))),
     l.motsae ? h('p', { class: 'levana-conseil' }, tr.t('levana_motsae', court(l.motsae))) : null,
-    l.restriction ? h('p', { class: 'levana-conseil' }, tr.t(l.restriction === 'kippour' ? 'levana_kippour' : 'levana_tisha')) : null,
+    l.restriction ? h('p', { class: 'levana-conseil' }, tr.t(restriction)) : null,
+    l.etat.pas ? h('p', { class: 'levana-conseil' }, tr.t('levana_pas_chome_source')) : null,
+    l.jeune ? h('p', { class: 'levana-conseil' }, tr.t(nusah === 'ashkenaz' ? 'levana_jeune_ashkenaz' : 'levana_jeune')) : null,
     h('div', { class: 'levana-jauge', 'aria-hidden': 'true' },
       h('span', { class: 'levana-fil' }),
       h('span', { class: 'levana-or', style: `inset-inline-start: ${pct(l.debut)}; width: ${pct(l.fin - l.debut)}` }),

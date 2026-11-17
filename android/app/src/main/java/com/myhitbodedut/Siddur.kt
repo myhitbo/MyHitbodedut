@@ -143,10 +143,11 @@ object SignetsSiddur {
  */
 object SiddurMoment {
 
-    fun suggestion(heure: java.time.LocalTime): String {
+    /** [sansTikoun] : une nuit de Chabbat, de Yom tov ou de 'Hol hamoed Pessa'h (JourAffiche.sansTikounHatsot, audit du 16/11). */
+    fun suggestion(heure: java.time.LocalTime, sansTikoun: Boolean = false): String {
         val minutes = heure.hour * 60 + heure.minute
         return when {
-            minutes < 5 * 60 -> "tikoun_hatsot"
+            minutes < 5 * 60 -> if (sansTikoun) "chema_coucher" else "tikoun_hatsot"
             minutes < 6 * 60 + 30 -> "birkot_hachahar"
             minutes < 12 * 60 + 30 -> "chaharit"
             minutes < 18 * 60 + 30 -> "minha"

@@ -64,6 +64,10 @@ class YalkutYosefTest {
         assertEquals("roch_hodech", YalkutYosef.periode(LocalDate.of(2026, 10, 12), false).first)
         assertEquals("chabbat", YalkutYosef.periode(LocalDate.of(2026, 10, 23), false).first)
         assertEquals("ordinaire", YalkutYosef.periode(LocalDate.of(2026, 10, 21), false).first)
+        // Audit du 16/11 : le jeûne repoussé au dimanche 10 Av n'est pas un jour ordinaire (Kitsour YY 554:13).
+        assertEquals("bein_hametsarim", YalkutYosef.periode(LocalDate.of(2029, 7, 22), false).first)
+        assertEquals("bein_hametsarim", YalkutYosef.periode(LocalDate.of(2015, 7, 26), true).first)
+        assertEquals("chabbat", YalkutYosef.periode(LocalDate.of(2026, 7, 24), false).first) // vendredi 10 Av : le jeûne était la veille
         assertTrue(YalkutYosef.recherche(livre, "ציצית").isNotEmpty())
     }
 

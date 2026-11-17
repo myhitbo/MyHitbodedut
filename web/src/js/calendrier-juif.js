@@ -195,6 +195,13 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   si(semaine !== 6 && (semaine === 0 || veille.isRoshChodesh() || veille.isYomTovAssurBemelacha() || veille.isCholHamoed()
     || veille.isChanukah() || veille.isPurim()), 'lendemain_ajouts');
   si((mois === JewishDate.TAMMUZ && quantieme >= 17) || (mois === JewishDate.AV && quantieme <= 10), 'bein_hametsarim');
+  // Tikoun Ra'hel (audit du 16/11, CalendrierJuif.C.TIKOUN_RAHEL) : pas à Roch 'Hodech, de Roch Hachana à
+  // Chemini Atseret, à 'Hanouka, aux jours de Pourim, en Nissan, pendant l'omer (Kitsour Yalkut Yosef, דיני
+  // תיקון חצות §נה ; Ben Ich 'Haï, Vayichla'h ה), ni en Israël l'année de chemita (§נז).
+  si(!(regles.isRoshChodesh() || (mois === JewishDate.TISHREI && quantieme <= (enIsrael ? 22 : 23)) || regles.isChanukah() || adar1415
+    || mois === JewishDate.NISSAN || regles.getDayOfOmer() > 0 || (enIsrael && regles.getJewishYear() % 7 === 0)), 'tikoun_rahel');
+  // Un repère sans condition (audit du 16/11, CalendrierJuif.C.TOUJOURS) : une indication fixe du siddour.
+  c.add('toujours');
 
   const fetes = [];
   const fete = FETES.get(affiche.getYomTovIndex());
@@ -218,7 +225,71 @@ export function jour(iso, enIsrael, mukafChoma = false) {
     paracha: paracha || null,
     chome: regles.isAssurBemelacha(),
     conditions: c,
+    parachaSpeciale: parachaSpeciale(regles, mukafChoma),
   };
+}
+
+/**
+ * Le Chabbat spécial (CalendrierJuif.parachaSpeciale, audit du 16/11) : Chekalim, Zakhor, Para, ha'Hodech… ;
+ * à Jérusalem, le Chabbat 15 Adar d'un Pourim triple, le maftir « ויבא עמלק » (Choul'han Aroukh O.H. 688:6).
+ */
+function parachaSpeciale(regles, mukafChoma) {
+  if (regles.getDayOfWeek() !== 7) return null;
+  if (regles.getSpecialShabbos() !== 0) return FORMAT.formatSpecialParsha(regles) || null;
+  const adar = regles.isJewishLeapYear() ? JewishDate.ADAR_II : JewishDate.ADAR;
+  return mukafChoma && regles.getJewishMonth() === adar && regles.getJewishDayOfMonth() === 15 ? 'מפטיר ויבא עמלק' : null;
+}
+
+/**
+ * La période où l'on évite d'écouter des chants avec instruments (CalendrierJuif.periodeSansMusique, audit
+ * du 16/11) : 'omer' sauf Lag baOmer (Kitsour Yalkut Yosef 493:8), 'bein_hametsarim' du 17 Tamouz au 9 Av
+ * (YY 551:6 ; MB 551:16) ; null sinon. Un rappel, jamais une coupure.
+ */
+export function periodeSansMusique(iso) {
+  const c = calendrier(iso, false, false, false);
+  const omer = c.getDayOfOmer();
+  if (omer > 0 && omer !== 33) return 'omer';
+  const m = c.getJewishMonth(), j = c.getJewishDayOfMonth();
+  if ((m === JewishDate.TAMMUZ && j >= 17) || (m === JewishDate.AV && j <= 9) || c.getYomTovIndex() === JewishCalendar.TISHA_BEAV) return 'bein_hametsarim';
+  return null;
+}
+
+/**
+ * Les repères du jour qui ne changent pas le texte de la prière (CalendrierJuif.reperes, audit du 16/11) :
+ * Seli'hot (Kitsour Yalkut Yosef 581:1 ; Rema 581:1), chofar d'Eloul (Rema 581:1 et 3), בה״ב (Rema 492:1 ;
+ * MB 492:3 et 566:10), Yom Kippour katan (MB 417:4 ; YY 417:5), érouv tavchilin (Choul'han Aroukh O.H. 527:1).
+ */
+export function reperes(iso, enIsrael, nusah) {
+  const cal = (d) => calendrier(d, enIsrael, false, false);
+  const c = cal(iso);
+  const mois = c.getJewishMonth(), j = c.getJewishDayOfMonth();
+  const chabbat = new Date(`${iso}T12:00:00Z`).getUTCDay() === 6;
+  const edot = nusah === 'edot';
+  const r = [];
+  const selihot = (() => {
+    if (chabbat || c.isRoshHashana()) return false;
+    if (mois === JewishDate.TISHREI) return j <= 9;
+    if (mois !== JewishDate.ELUL) return false;
+    if (edot) return j >= 2;
+    // Le dimanche avant Roch Hachana ; s'il reste moins de quatre jours, celui d'avant.
+    const rh = ajoute(iso, 30 - j);
+    let debut = ajoute(rh, -new Date(`${rh}T12:00:00Z`).getUTCDay());
+    if ((Date.parse(rh) - Date.parse(debut)) / 86400000 < 4) debut = ajoute(debut, -7);
+    return iso >= debut;
+  })();
+  if (selihot) r.push('repere_selihot');
+  if (!edot && mois === JewishDate.ELUL && j <= 28 && !chabbat) r.push('repere_chofar');
+  if (mois === JewishDate.ELUL && j === 29) r.push('repere_pas_de_chofar');
+  if (!edot && c.isBeHaB()) r.push('repere_behab');
+  if (!edot && chabbat && cal(ajoute(iso, 2)).isBeHaB() && cal(ajoute(iso, 5)).isBeHaB()) r.push('repere_behab_mi_cheberakh');
+  if (c.isYomKippurKatan()) r.push('repere_yom_kippour_katan');
+  // L'érouv tavchilin : la veille d'un Yom tov dont les jours chômés mènent jusqu'à un vendredi.
+  if (!c.isAssurBemelacha()) {
+    for (let d = ajoute(iso, 1); cal(d).isYomTovAssurBemelacha(); d = ajoute(d, 1)) {
+      if (new Date(`${d}T12:00:00Z`).getUTCDay() === 5) { r.push('repere_erouv_tavchilin'); break; }
+    }
+  }
+  return r;
 }
 
 /**
@@ -228,7 +299,8 @@ export function jour(iso, enIsrael, mukafChoma = false) {
  * CalendrierJuif.jourDeLaPriere, qui documente la règle).
  */
 export function jourDeLaPriere(texte, iso, heures, apresSortie = false) {
-  const soir = texte === 'arvit' || texte === 'chema_coucher' ? heures >= 12 : texte !== 'minha' && apresSortie;
+  // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
+  const soir = texte === 'arvit' || texte === 'chema_coucher' ? heures >= 12 : texte === 'tikoun_hatsot' ? heures >= 18 : texte !== 'minha' && apresSortie;
   if (soir) {
     const [a, m, j] = iso.split('-').map(Number);
     return new Date(Date.UTC(a, m - 1, j + 1, 12)).toISOString().slice(0, 10);
@@ -259,17 +331,38 @@ export function nuit(heures, apresSortie, avantAube) {
  */
 const MOIS_LUNAIRE = ((29 * 24 + 12) * 60 + 44) * 60000 + 3333;
 
-/** Les trois usages : début (jours depuis le molad), fin (15 jours ou mi-mois). */
+/**
+ * Les usages : début (jours depuis le molad), fin (15 jours, mi-mois, ou d'après la date).
+ * 'nuit_15' (audit du 16/11, Levana.Usage.SEPT_NUIT_QUINZE) : le Yalkut Yosef compte selon la date
+ * du mois : jamais la nuit du 16, et encore la fin de la nuit du 15, jusqu'au lever du soleil
+ * (Kitsour Yalkut Yosef 426, se'ifim 28 et 37).
+ */
 export const USAGES_LEVANA = {
   trois_mi_mois: { debut: 3, fin: 'mi_mois' },
   sept_mi_mois: { debut: 7, fin: 'mi_mois' },
   sept_quinze: { debut: 7, fin: 15 },
+  sept_nuit_quinze: { debut: 7, fin: 'nuit_15' },
 };
 
-/** L'usage par défaut d'un noussa'h : Edot haMizra'h le Choulhan Aroukh, Sefard l'Ari, Ashkenaz la Michna Beroura et le Rema. */
+/** L'usage par défaut d'un noussa'h : Edot haMizra'h le Yalkut Yosef (audit du 16/11), Sefard l'Ari, Ashkenaz la Michna Beroura et le Rema. */
 export function usageLevana(nusah, choix = 'auto') {
   if (USAGES_LEVANA[choix]) return choix;
-  return nusah === 'edot' ? 'sept_quinze' : nusah === 'sefard' ? 'sept_mi_mois' : 'trois_mi_mois';
+  return nusah === 'edot' ? 'sept_nuit_quinze' : nusah === 'sefard' ? 'sept_mi_mois' : 'trois_mi_mois';
+}
+
+/**
+ * La nuit qui suit le jour civil iso est-elle Chabbat ou Yom tov (Levana.nuitChomee) ? Lekhat'hila,
+ * pas de Birkat haLevana ces soirs-là (audit du 16/11 : MB 426:12 ; Kitsour Yalkut Yosef 426:33).
+ */
+export function nuitChomee(iso, enIsrael) {
+  if (new Date(`${iso}T12:00:00Z`).getUTCDay() === 5) return 'chabbat';
+  return calendrier(ajoute(iso, 1), enIsrael, false, false).isYomTovAssurBemelacha() ? 'yom_tov' : null;
+}
+
+/** Le soir de iso sort-il d'un jeûne autre que Kippour (Levana.sortieDeJeune ; Rema 426:2, MB 426:11) ? */
+export function sortieDeJeune(iso, enIsrael) {
+  const c = calendrier(iso, enIsrael, false, false);
+  return c.isTaanis() && c.getYomTovIndex() !== JewishCalendar.YOM_KIPPUR;
 }
 
 const ajoute = (iso, n) => { const [a, m, d] = iso.split('-').map(Number); return new Date(Date.UTC(a, m - 1, d + n, 12)).toISOString().slice(0, 10); };
@@ -290,32 +383,44 @@ export function phaseLune(ms) {
   return { eclairage: (1 + Math.cos(i * r)) / 2, croissante: ((D % 360) + 360) % 360 < 180 };
 }
 
-export function levana(iso, zone, { usage = 'sept_mi_mois' } = {}) {
+/**
+ * Options : usage ; enIsrael (le second jour de fête en diaspora) ; tset(iso) et netz(iso), en ms,
+ * l'heure des étoiles et du lever du soleil au lieu choisi (Levana.Horaires) ; sans lieu, 20 h et 6 h.
+ */
+export function levana(iso, zone, { usage = 'sept_mi_mois', enIsrael = true, tset = null, netz = null } = {}) {
   const regle = USAGES_LEVANA[usage] ?? USAGES_LEVANA.sept_mi_mois;
   const local = (ms) => new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms));
   const soir = (d) => DateTime.fromISO(`${d}T20:00`, { zone }).toMillis();
+  // Les heures qui bornent les nuits (audit du 16/11) : la tsét du lieu, sinon 20 h ; le lever du soleil, sinon 6 h.
+  const nuit = (d) => tset?.(d) ?? soir(d);
+  const matin = (d) => netz?.(d) ?? DateTime.fromISO(`${d}T06:00`, { zone }).toMillis();
   const du = (d) => {
     const c = calendrier(d, false, false, false);
+    const fin = regle.fin === 'nuit_15' ? matin(ajoute(d, 15 - c.getJewishDayOfMonth()))
+      : (regle.fin === 15 ? c.getSofZmanKidushLevana15Days() : c.getSofZmanKidushLevanaBetweenMoldos()).toMillis();
     const f = {
       molad: c.getMoladAsDate().toMillis(),
       debut: (regle.debut === 3 ? c.getTchilasZmanKidushLevana3Days() : c.getTchilasZmanKidushLevana7Days()).toMillis(),
-      fin: (regle.fin === 15 ? c.getSofZmanKidushLevana15Days() : c.getSofZmanKidushLevanaBetweenMoldos()).toMillis(),
+      fin,
       restriction: null,
     };
-    // Tichri et Av : pas avant la sortie de Kippour, de Tich'a beAv (le jeûne, même repoussé au 10).
+    // Tichri et Av : pas avant la sortie de Kippour, de Tich'a beAv (le jeûne, même repoussé au 10),
+    // à la tsét du lieu (audit du 16/11 : non plus à 20 h, avant la fin du jeûne l'été).
     const mois = calendrier(local(f.debut), false, false, false).getJewishMonth();
     if (mois === JewishDate.TISHREI || mois === JewishDate.AV) {
       const cible = mois === JewishDate.TISHREI ? JewishCalendar.YOM_KIPPUR : JewishCalendar.TISHA_BEAV;
       for (let k = -9; k <= 12; k++) {
         const j = ajoute(local(f.molad), k);
         if (calendrier(j, false, false, false).getYomTovIndex() === cible) {
-          if (soir(j) > f.debut) { f.debut = soir(j); f.restriction = mois === JewishDate.TISHREI ? 'kippour' : 'tisha_beav'; }
+          if (nuit(j) > f.debut) { f.debut = nuit(j); f.restriction = mois === JewishDate.TISHREI ? 'kippour' : 'tisha_beav'; }
           break;
         }
       }
     }
-    // Le dernier soir : le dernier jour dont le soir (20 h) précède la fin (FCALENDRIER-03, Levana.dernierSoir).
-    return { ...f, premier: local(f.debut), dernier: local(f.fin - 20 * 3600000) };
+    // Le dernier soir (audit du 16/11, Levana.dernierSoir) : le jour de la fin si la nuit y commence
+    // avant elle, sinon la veille (Choul'han Aroukh O.H. 426:3 ; Kitsour Yalkut Yosef 426:37).
+    const jourFin = local(f.fin);
+    return { ...f, premier: local(f.debut), dernier: nuit(jourFin) < f.fin ? jourFin : ajoute(jourFin, -1) };
   };
   let f = du(iso);
   if (iso > f.dernier) {
@@ -331,10 +436,16 @@ export function levana(iso, zone, { usage = 'sept_mi_mois' } = {}) {
   }
   const part = (ms) => Math.min(1, Math.max(0, (ms - f.molad) / MOIS_LUNAIRE));
   const jours = Math.round((Date.parse(`${f.premier}T12:00:00Z`) - Date.parse(`${iso}T12:00:00Z`)) / 86400000);
-  const etat = iso < f.premier ? { dans: jours } : iso === f.dernier ? 'dernier' : 'ce_soir';
+  // Un soir de Chabbat ou de Yom tov qui n'est pas le dernier : pas ce soir (audit du 16/11, Levana.etat).
+  const chome = iso >= f.premier && iso !== f.dernier ? nuitChomee(iso, enIsrael) : null;
+  const etat = iso < f.premier ? { dans: jours } : iso === f.dernier ? 'dernier' : chome ? { pas: chome } : 'ce_soir';
+  // Le premier soir où l'on peut bénir lekhat'hila (Levana.premierPossible).
+  let premierPossible = f.premier;
+  while (premierPossible < f.dernier && nuitChomee(premierPossible, enIsrael)) premierPossible = ajoute(premierPossible, 1);
   const ceSoir = soir(iso);
   return {
-    premier: f.premier, dernier: f.dernier, etat, debutMs: f.debut, finMs: f.fin, restriction: f.restriction, usage,
+    premier: f.premier, dernier: f.dernier, premierPossible, etat, debutMs: f.debut, finMs: f.fin, restriction: f.restriction, usage,
+    jeune: typeof etat === 'string' || etat.pas ? sortieDeJeune(iso, enIsrael) && !f.restriction : false,
     motsae: motsae && motsae >= iso ? motsae : null,
     debut: part(f.debut), fin: part(f.fin), point: part(ceSoir),
     lune: { ...phaseLune(ceSoir), age: (ceSoir - f.molad) / 86400000 },
