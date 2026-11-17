@@ -1111,6 +1111,38 @@ def main():
         regler({"version_app": ("string", "classique")})
     etape("28 versions de l'app", s28)
 
+    # Les versions sur un petit telephone (480x854, 240 dpi), puis avec le texte du systeme
+    # agrandi (17/11) : chaque accueil, sans texte ecrase, et son bouton principal entier a l'ecran.
+    def s29():
+        for nom, echelle in (("petit", "1.0"), ("petit-gros-texte", "1.3")):
+            sh("settings put system font_scale " + echelle)
+            appliquer_taille("480x854", 240, False)
+            activite("ChoixVersionActivity")
+            serre(nom, "choix-version")
+            capture(f"29-{nom}-choix-version")
+            retour()
+            for version, bouton in (("serenite", "Modifier"), ("bento", "Commencer"), ("pile", "Commencer")):
+                regler({"version_app": ("string", version)})
+                lancer(attente=6)
+                serre(nom, version)
+                b = trouver(text=bouton, contains=True)
+                if not b or b[3] > H or b[1] < 0:
+                    faute(f"{nom} {version} : « {bouton} » pas entierement a l'ecran ({b}, ecran {W}x{H})")
+                capture(f"29-{nom}-{version}")
+                defiler(True)
+                serre(nom, version + "-suite")
+                capture(f"29-{nom}-{version}-suite")
+                if version == "pile":
+                    for i in (2, 3, 4):
+                        balayer()
+                        serre(nom, f"pile-{i}")
+                        capture(f"29-{nom}-pile-{i}")
+        sh("settings put system font_scale 1.0")
+        appliquer_taille(None, None, False)
+        regler({"version_app": ("string", "classique")})
+        log("  fautes des petits ecrans :", [f for f in FAUTES if f.startswith("petit")])
+    etape("29 versions sur petit ecran", s29)
+
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
 
