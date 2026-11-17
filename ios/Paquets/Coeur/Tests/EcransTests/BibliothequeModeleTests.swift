@@ -30,11 +30,11 @@ struct BibliothequeModeleTests {
           "texte_integral": "Le texte entier"},
          {"type": "source", "id": "s1", "titre_he": "מקור", "ref": "Tehilim 51:19", "edition": "pd",
           "url": "https://www.sefaria.org/Psalms.51.19", "paragraphes": ["\u{05D0}\u{05B8}\u{05BD}", "\u{05D1}\u{05BC}"],
-          "paragraphes_sans_nikkoud": ["א", "ב"], "paragraphes_fr": ["A", ""], "paragraphes_en": ["A-en"]},
+          "paragraphes_fr": ["A", ""], "paragraphes_en": ["A-en"]},
          {"type": "article", "id": "a2", "titre": "שני", "auteur": "Auteur",
           "autorisation": "accord écrit du 1er janvier", "texte_integral": "Texte autorisé", "resume_he": "תקציר"},
          {"type": "source", "id": "s2", "titre_he": "שני", "ref": "", "edition": "sans",
-          "paragraphes": ["\u{05D2}\u{05BC}\u{05B8}"], "paragraphes_sans_nikkoud": ["ג"]}
+          "paragraphes": ["\u{05D2}"]}
        ]}]}]}
     """
 
@@ -561,7 +561,10 @@ struct BibliothequeModeleTests {
                 #expect(modele.etat == .pret, "\(article.id)")
                 #expect(modele.blocs.isEmpty, "\(article.id)")
                 let intitules = modele.faits.map { $0.intitule.cle }
-                #expect(intitules == ["library_summary"], "\(article.id) \(langue)")
+                // L'espagnol et l'arabe ne traduisent que l'interface : pas de résumé dans leur langue, et pas de
+                // repli (RegleLangue).
+                let attendus = ["es", "ar"].contains(langue) ? [] : ["library_summary"]
+                #expect(intitules == attendus, "\(article.id) \(langue)")
                 #expect(modele.lien?.titre != Libelle("library_open_sefaria"), "\(article.id)")
             }
         }

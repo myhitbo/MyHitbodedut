@@ -24,8 +24,7 @@ struct ChizukModeleTests {
      "items": [
        {"id": "a", "moments": ["ouverture"], "edition": "pd", "ref": "Tehilim 1:1", "he": "\u{05D0}\u{05B7}",
         "fr": "A fr", "en": "A en", "statut_verif": "verifie_texte", "relu": true},
-       {"id": "b", "moments": [], "edition": "nu", "ref": "Si'hot HaRan 2", "he": "\u{05D1}\u{05BC}\u{05B8}",
-        "he_sans_nikkoud": "\u{05D1}", "fr": "B fr", "en": "", "statut_verif": "verifie_texte", "relu": true},
+       {"id": "b", "moments": [], "edition": "nu", "ref": "Si'hot HaRan 2", "he": "\u{05D1}", "fr": "B fr", "en": "", "statut_verif": "verifie_texte", "relu": true},
        {"id": "c", "moments": ["blocage"], "edition": "pd", "ref": "Michlé 24:16", "he": "\u{05D2}",
         "fr": "", "en": "C en", "statut_verif": "verifie_texte", "relu": true},
        {"id": "x", "moments": [], "edition": "pd", "ref": "Tehilim 2:2", "he": "\u{05D3}",

@@ -85,31 +85,19 @@ struct ChizukRulesTests {
         #expect(aRelire == nonPubliables)
     }
 
-    @Test func lHebreuSuitLeNikkoudDeLEdition() throws {
+    /// L'hébreu affiché est `he`, sans vocalisation si l'édition l'interdit : le fichier la livre déjà nue
+    /// (ChizukRulesTest et LicencesEditionsTest d'Android, audit du 12/11 ; `he_sans_nikkoud` a disparu).
+    @Test func lHebreuAfficheEstHeSansVocalisationSiLEditionLInterdit() throws {
         let c = try livre()
         for item in c.items {
             let affiche = ChizukRules.hebrew(c, item)
             let edition = try #require(c.editions[item.edition], "\(item.id) : édition « \(item.edition) » non déclarée")
-            if edition.nikkoudOk {
-                let egal = affiche.egalUnites(item.he)
-                #expect(egal, "\(item.id) : devrait afficher he")
-            } else {
-                let sans = try #require(item.heSansNikkoud, "\(item.id) : devrait afficher he_sans_nikkoud")
-                let egal = affiche.egalUnites(sans)
-                #expect(egal, "\(item.id) : devrait afficher he_sans_nikkoud")
+            #expect(affiche.egalUnites(item.he), "\(item.id) : devrait afficher he")
+            #expect(!affiche.estBlanc, "\(item.id) : hébreu vide")
+            if !edition.nikkoudOk {
+                let vocalise = affiche.utf16.contains { u in (0x0591...0x05BD).contains(u) || (0x05BF...0x05C2).contains(u) || (0x05C4...0x05C7).contains(u) }
+                #expect(!vocalise, "\(item.id) : édition « \(item.edition) » non vocalisable, mais he est vocalisé")
             }
-            let blanc = affiche.estBlanc
-            #expect(!blanc, "\(item.id) : hébreu vide")
-        }
-    }
-
-    @Test func touteEditionSansNikkoudFournitSonTexteSansNikkoud() throws {
-        let c = try livre()
-        for item in c.items {
-            let edition = try #require(c.editions[item.edition], "\(item.id) : édition « \(item.edition) » non déclarée")
-            if edition.nikkoudOk { continue }
-            let fourni = item.heSansNikkoud != nil
-            #expect(fourni, "\(item.id) : édition « \(item.edition) » non vocalisable, he_sans_nikkoud manquant")
         }
     }
 

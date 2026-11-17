@@ -29,11 +29,12 @@ struct SourceDuJourTests {
         return -1
     }
 
-    /// L'indice d'une pensée parmi les candidats (la première de même source et de même texte), ou nil.
+    /// L'indice d'une pensée parmi les candidats (la première de même source, de même texte et de même rang dans
+    /// sa source, l'égalité de la data class depuis le 13/11), ou nil.
     private func indice(_ pensee: SourceDuJour.Pensee?, parmi candidats: [SourceDuJour.Pensee]) -> Int? {
         guard let pensee else { return nil }
         for (i, candidat) in candidats.enumerated()
-        where candidat.source.id == pensee.source.id && candidat.texte.egalUnites(pensee.texte) {
+        where candidat.source.id == pensee.source.id && candidat.texte.egalUnites(pensee.texte) && candidat.indice == pensee.indice {
             return i
         }
         return -1

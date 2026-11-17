@@ -18,13 +18,11 @@ public enum LibraryRules {
         return texte
     }
 
-    /// Les paragraphes d'une source, dans la forme que sa licence permet. Même règle que pour le
-    /// 'hizouk : la vocalisation d'une édition dont la licence n'est pas déclarée est un travail
-    /// éditorial qu'on ne reprend pas. Une édition absente de `_meta.editions` ne vocalise pas.
+    /// Les paragraphes d'une source. Même règle que pour le 'hizouk : la vocalisation d'une édition dont la
+    /// licence n'est pas déclarée est un travail éditorial qu'on ne reprend pas ; le fichier livre donc déjà ces
+    /// paragraphes sans vocalisation (LicencesEditionsTest d'Android l'impose).
     public static func paragraphs(_ library: Bibliotheque, _ source: SourceBibliotheque) -> [String] {
-        let nikkoudOk = library.editions[source.edition]?.nikkoudOk ?? false
-        if nikkoudOk { return source.paragraphes }
-        return source.paragraphesSansNikkoud.isEmpty ? source.paragraphes : source.paragraphesSansNikkoud
+        source.paragraphes
     }
 
     /// Le résumé dans la langue de l'interface — et seulement elle (RegleLangue : pas de repli).

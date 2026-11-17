@@ -42,13 +42,10 @@ public enum ChizukRules {
         return visibles.filter { $0.moments.contains(moment) }
     }
 
-    /// L'hébreu à afficher. `he_sans_nikkoud` est fourni exactement pour les éditions dont
-    /// `nikkoud_ok` est faux ; le repli sur `he` ne sert qu'à ne jamais rendre une carte vide si une
-    /// version future l'oubliait. Une édition inconnue compte comme une édition sans nikkoud.
+    /// L'hébreu à afficher. Pour une édition dont `nikkoud_ok` est faux, le fichier livre déjà `he` sans
+    /// vocalisation (LicencesEditionsTest d'Android l'impose) : il n'y a rien à retirer à l'affichage.
     public static func hebrew(_ chizuk: Chizuk, _ item: ChizukItem) -> String {
-        if nikkoudOk(chizuk, item.edition) { return item.he }
-        if let sans = item.heSansNikkoud, !sans.estBlanc { return sans }
-        return item.he
+        item.he
     }
 
     /// `editions[cle]?.nikkoudOk ?: false`, la clé comparée comme Kotlin compare deux chaînes : un

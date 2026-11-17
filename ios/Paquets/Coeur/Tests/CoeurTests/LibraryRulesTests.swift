@@ -84,12 +84,13 @@ struct LibraryRulesTests {
             let affiches = LibraryRules.paragraphs(library, source)
             // `getValue` d'Android : une édition absente de `_meta.editions` est une faute des données.
             let edition = try #require(library.editions[source.edition], "\(source.id) : édition « \(source.edition) » absente")
-            if edition.nikkoudOk {
-                #expect(affiches == source.paragraphes, "\(source.id)")
-            } else {
-                let sansNikkoud = !source.paragraphesSansNikkoud.isEmpty
-                #expect(sansNikkoud, "\(source.id) : édition non vocalisable sans paragraphes_sans_nikkoud")
-                #expect(affiches == source.paragraphesSansNikkoud, "\(source.id)")
+            // Les paragraphes du fichier, sans vocalisation si l'édition l'interdit (LibraryRulesTest d'Android).
+            #expect(affiches == source.paragraphes, "\(source.id)")
+            if !edition.nikkoudOk {
+                for p in affiches {
+                    let vocalise = p.utf16.contains { u in (0x0591...0x05BD).contains(u) || (0x05BF...0x05C2).contains(u) || (0x05C4...0x05C7).contains(u) }
+                    #expect(!vocalise, "\(source.id) : édition non vocalisable, mais « \(p.premieresUnites(40)) » est vocalisé")
+                }
             }
             let nonVide = !affiches.isEmpty
             #expect(nonVide, "\(source.id) : aucun paragraphe à afficher")

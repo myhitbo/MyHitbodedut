@@ -37,9 +37,7 @@ struct TefilotTests {
     /// `LibraryRules.paragraphs` (LibraryRules.kt), que cette grappe ne porte pas : la forme que la
     /// licence de l'édition permet d'afficher. À remplacer par l'appel quand LibraryRules sera porté.
     private static func paragraphesAffiches(_ library: Bibliotheque, _ source: SourceBibliotheque) -> [String] {
-        let nikkoudOk = library.editions[source.edition]?.nikkoudOk ?? false
-        if nikkoudOk { return source.paragraphes }
-        return source.paragraphesSansNikkoud.isEmpty ? source.paragraphes : source.paragraphesSansNikkoud
+        LibraryRules.paragraphs(library, source)
     }
 
     /// `==` de Kotlin entre un texte peut-être absent et un texte.
@@ -131,7 +129,7 @@ struct TefilotTests {
 
     /// Le cœur : la licence de l'édition 2021 n'est pas déclarée, donc sa vocalisation ne se reprend
     /// pas. Si quelqu'un passe `lt` à nikkoud_ok = true, ce test tombe.
-    @Test func cEstLaFormeSansNikkoudQuiSAffiche() throws {
+    @Test func cEstLeTexteLivreSansNikkoudQuiSAffiche() throws {
         let library = try lireBibliotheque()
         let edition = try #require(library.editions["lt"], "l'édition lt est absente du fichier")
         let nikkoud = edition.nikkoudOk
@@ -140,14 +138,13 @@ struct TefilotTests {
         let assez = tefilot.count >= sujets.count * 2
         #expect(assez, "rien à vérifier : la sous-section est vide")
         for t in tefilot {
-            let avec = t.paragraphes.count, sans = t.paragraphesSansNikkoud.count
-            #expect(avec == sans, "\(t.id) : il faut autant de paragraphes dans les deux formes")
+            // Le fichier livre déjà le texte sans vocalisation (audit du 12/11) : c'est lui qui sort.
             let affiches = TefilotTests.paragraphesAffiches(library, t)
-            let memes = TefilotTests.memesTextes(affiches, t.paragraphesSansNikkoud)
-            #expect(memes, "\(t.id) : c'est la forme sans nikkoud qui doit sortir")
+            let memes = TefilotTests.memesTextes(affiches, t.paragraphes)
+            #expect(memes, "\(t.id) : c'est le texte livré qui doit sortir")
             for p in affiches {
                 var signe = false
-                for unite in p.utf16 where (0x0591...0x05BD).contains(unite) || (0x05BF...0x05C7).contains(unite) {
+                for u in p.utf16 where (0x0591...0x05BD).contains(u) || (0x05BF...0x05C2).contains(u) || (0x05C4...0x05C7).contains(u) {
                     signe = true
                 }
                 #expect(!signe, "\(t.id) : un signe de vocalisation a survécu dans « \(p.premieresUnites(40)) »")
@@ -160,12 +157,16 @@ struct TefilotTests {
     /// refera pas en silence.
     @Test func leMaqqefSurvitAuRetraitDuNikkoud() throws {
         let tefilot = try prieresDe(lireBibliotheque())
+        // Le relevé vocalisé d'origine vit hors de res/raw (livres/editions_vocalisees.json), comme sur Android.
+        let releves = try #require(try ObjetJSON(texte: String(decoding: Depot.donnees(
+            "android/app/src/main/livres/editions_vocalisees.json"), as: UTF8.self)).objet("bibliotheque"))
         var avec = 0, sans = 0
         for t in tefilot {
-            for p in t.paragraphes {
-                for unite in p.utf16 where unite == 0x05BE { avec += 1 }
+            guard let origine = releves.objet(t.id)?.tableau("paragraphes") else { continue }
+            for i in origine.indices {
+                for unite in origine.texte(i).utf16 where unite == 0x05BE { avec += 1 }
             }
-            for p in t.paragraphesSansNikkoud {
+            for p in t.paragraphes {
                 for unite in p.utf16 where unite == 0x05BE { sans += 1 }
             }
         }
@@ -217,9 +218,7 @@ struct TefilotTests {
             let statutVerif: String
             let titreHe: Int32
             let paragraphes: Int
-            let paragraphesSansNikkoud: Int
             let avec: Int32
-            let sans: Int32
             let affiches: Int32
         }
         struct Livree: Decodable {
@@ -329,12 +328,9 @@ struct TefilotTests {
             #expect(entete, "\(t.id) : id, ref, édition, statut")
             let titre = Kotlin.hashCode(p.titreHe)
             #expect(titre == t.titreHe, "\(t.id) : titre hébreu")
-            let nombres = [p.paragraphes.count, p.paragraphesSansNikkoud.count]
-            let nombresAndroid = [t.paragraphes, t.paragraphesSansNikkoud]
-            #expect(nombres == nombresAndroid, "\(t.id) : nombre de paragraphes")
-            let avec = TefilotTests.empreinte(p.paragraphes), sans = TefilotTests.empreinte(p.paragraphesSansNikkoud)
+            #expect(p.paragraphes.count == t.paragraphes, "\(t.id) : nombre de paragraphes")
+            let avec = TefilotTests.empreinte(p.paragraphes)
             #expect(avec == t.avec, "\(t.id) : paragraphes")
-            #expect(sans == t.sans, "\(t.id) : paragraphes sans nikkoud")
             let affiches = TefilotTests.empreinte(TefilotTests.paragraphesAffiches(library, p))
             #expect(affiches == t.affiches, "\(t.id) : forme affichée")
         }

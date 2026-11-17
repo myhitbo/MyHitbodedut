@@ -58,7 +58,6 @@ public struct ChizukItem: Sendable, Equatable, Decodable {
     public let edition: String
     public let ref: String
     public let he: String
-    public let heSansNikkoud: String?
     public let fr: String
     public let en: String
     public let note: String?
@@ -74,7 +73,6 @@ public struct ChizukItem: Sendable, Equatable, Decodable {
         edition = c.texte("edition")
         ref = c.texte("ref")
         he = c.texte("he")
-        heSansNikkoud = c.texteOuNil("he_sans_nikkoud")
         fr = c.texte("fr")
         en = c.texte("en")
         note = c.texteOuNil("note")
@@ -110,7 +108,6 @@ public struct SourceBibliotheque: Sendable, Equatable {
     public let url: String?
     public let edition: String
     public let paragraphes: [String]
-    public let paragraphesSansNikkoud: [String]
     public let liensChizuk: [String]
     public let paragraphesFr: [String]
     public let paragraphesEn: [String]
@@ -158,7 +155,6 @@ public enum EntreeBibliotheque: Sendable, Equatable, Decodable {
             self = .source(SourceBibliotheque(
                 id: id, titreHe: c.texte("titre_he"), ref: c.texte("ref"), url: c.texteOuNil("url"),
                 edition: c.texte("edition"), paragraphes: c.liste("paragraphes"),
-                paragraphesSansNikkoud: c.liste("paragraphes_sans_nikkoud"),
                 liensChizuk: c.liste("liens_chizuk"), paragraphesFr: c.liste("paragraphes_fr"),
                 paragraphesEn: c.liste("paragraphes_en"), statutVerif: c.texte("statut_verif"),
                 sujet: c.texteOuNil("sujet"), leconSurLeSujet: c.texteOuNil("lecon_sur_le_sujet")))

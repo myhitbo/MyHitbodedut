@@ -14,6 +14,8 @@ public enum ChizukCard {
     public static func translationOf(_ item: ChizukItem, _ language: String) -> String {
         if language.egalUnites("he") || language.egalUnites("iw") { return "" }
         if language.egalUnites("en") { return item.en }
+        // L'espagnol, l'arabe tunisien (17/11) : l'interface est traduite, pas les textes ; l'hébreu seul.
+        if language.egalUnites("es") || language.egalUnites("ar") { return "" }
         // Le français et toute langue que l'application ne parle pas : c'est la langue de values/,
         // donc celle de l'interface qui entoure la carte.
         return item.fr

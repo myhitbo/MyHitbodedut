@@ -9,14 +9,16 @@ import Foundation
 /// à l'écran : il lit le jour qu'il est et le passe à `choix`.
 public enum SourceDuJour {
 
-    /// Un paragraphe et la source d'où il vient.
+    /// Un paragraphe et la source d'où il vient ; `indice` : son rang dans la source, celui de ses traductions.
     public struct Pensee: Sendable, Equatable {
         public let source: SourceBibliotheque
         public let texte: String
+        public let indice: Int
 
-        public init(source: SourceBibliotheque, texte: String) {
+        public init(source: SourceBibliotheque, texte: String, indice: Int) {
             self.source = source
             self.texte = texte
+            self.indice = indice
         }
     }
 
@@ -43,8 +45,10 @@ public enum SourceDuJour {
         var resultat: [Pensee] = []
         for entree in library.entrees {
             guard case .source(let source) = entree else { continue }
-            for paragraphe in LibraryRules.paragraphs(library, source) where paragraphe.utf16.count >= SourceDuJour.min {
-                resultat.append(Pensee(source: source, texte: paragraphe))
+            // Le rang d'abord, le filtre ensuite : un paragraphe court écarté ne décale pas les traductions.
+            for (indice, paragraphe) in LibraryRules.paragraphs(library, source).enumerated()
+            where paragraphe.utf16.count >= SourceDuJour.min {
+                resultat.append(Pensee(source: source, texte: paragraphe, indice: indice))
             }
         }
         return resultat
@@ -57,6 +61,24 @@ public enum SourceDuJour {
         if c.isEmpty { return nil }
         let joursDepuis1970 = jour.jourJulien - jourJulien1970
         return c[Kotlin.floorMod(joursDepuis1970 * pas, c.count)]
+    }
+
+    /// Les balises (<b>, <small>, <br>) des textes, ôtées avant la coupe : la carte est du texte nu (audit du
+    /// 12/11, TLIVRES-01). Les blancs réduits à une espace (`\\s+` de Java : ASCII).
+    public static func sansBalises(_ texte: String) -> String {
+        let sans = balise.remplace(texte, par: " ")
+        return blancs.remplace(sans, par: " ").rogne
+    }
+
+    private static let balise = ExpressionReguliere("<[^>]+>")
+    private static let blancs = ExpressionReguliere("[ \\t\\n\\u000B\\f\\r]+")
+
+    /// Ce que la carte donne à lire, dans l'ordre des langues choisies : (langue, extrait). La règle de
+    /// LanguesTexte : une traduction absente est sautée, et l'hébreu reste s'il n'y a rien (13/11, COUV-08).
+    public static func textes(_ p: Pensee, _ mode: LanguesTexte.Mode) -> [(langue: String, texte: String)] {
+        let fr = p.indice < p.source.paragraphesFr.count ? p.source.paragraphesFr[p.indice] : nil
+        let en = p.indice < p.source.paragraphesEn.count ? p.source.paragraphesEn[p.indice] : nil
+        return LanguesTexte.textes(mode, p.texte, fr, en).map { (langue: $0.langue, texte: extrait(sansBalises($0.texte))) }
     }
 
     /// Un extrait qui tient sur l'accueil : coupé à un mot, jamais au milieu. Les `max` premières unités
