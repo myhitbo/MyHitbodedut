@@ -28,15 +28,17 @@ TESTS = IOS / "Paquets" / "Coeur" / "Tests" / "Ressources"
 MANIFESTE = SORTIE / "MANIFESTE.json"
 
 SEUIL_DECOUPE = 2_000_000  # octets : au-delà, un livre est servi chapitre par chapitre
-LANGUES = [("fr", "values"), ("en", "values-en"), ("he", "values-iw")]
+# Codes de langue du catalogue : ceux que lit le Traducteur (« iw » d'Android → « he », « ar-rTN » → « ar »).
+LANGUES = [("fr", "values"), ("en", "values-en"), ("he", "values-iw"), ("es", "values-es"),
+           ("ar", "values-ar-rTN")]
 # Chaînes propres à Android (divulgations Play, batterie, superposition) : sans objet sur iOS.
 EXCLUES = re.compile(r"^(divulgation_|permission_battery|permission_overlay)")
 
 # Ce que l'export doit trouver (critère de la tâche 5) : un écart arrête tout.
 COMPTES = {
     "textes par rite": 38, "psaumes": 150, "versets": 2527, "psaumes du Tikoun": 10,
-    "textes de 'hizouk": 171, "livres": 12, "hilloulot": 4049, "villes": 51,
-    "aéroports": 3226, "morceaux": 26,
+    "textes de 'hizouk": 171, "livres": 12, "hilloulot": 3966, "villes": 51,
+    "aéroports": 3226, "morceaux": 23,
 }
 
 # Licence et mention de chaque fichier produit (PORTAGE.md § 4.1 et § 6) : un fichier sans
@@ -238,7 +240,9 @@ class Export:
     def polices(self):
         for source in sorted((RES / "font").glob("*.ttf")):
             self.copier(source, SORTIE / "Polices" / source.name)
-        for source in sorted((ANDROID / "assets" / "licences").glob("*.txt")):
+        # Les seules licences des polices (OFL) : celles de ZXing et de KosherJava, bibliothèques
+        # d'Android, voisinent dans assets/licences sans concerner iOS.
+        for source in sorted((ANDROID / "assets" / "licences").glob("OFL-*.txt")):
             self.copier(source, SORTIE / "Polices" / "licences" / source.name)
 
     # --- 7. Musique ---------------------------------------------------------
@@ -381,12 +385,13 @@ def format_ios(valeur):
 
 
 def marqueurs(valeur):
-    return sorted(m.group(0) for m in FORMAT.finditer(valeur))
+    """Position et type de chaque marqueur, sans la largeur : « %2$02d » et « %2$d » citent le même nombre."""
+    return sorted((m.group(1) or "") + m.group(3) for m in FORMAT.finditer(valeur))
 
 
 def verifier_chaines(brutes):
     fr = brutes["fr"]
-    for langue in ("en", "he"):
+    for langue in (l for l, _ in LANGUES if l != "fr"):
         b = brutes[langue]
         inconnues = (set(b["chaines"]) - set(fr["chaines"])) | (set(b["pluriels"]) - set(fr["pluriels"]))
         if inconnues:
@@ -416,8 +421,10 @@ def styles(xml, camel):
     xml = re.sub(r"<!--.*?-->", "", xml, flags=re.S)
     sortie = {}
     for genre, nom, corps in re.findall(r'<style name="(Fond|Accent)\.(\w+)"[^>]*>(.*?)</style>', xml, flags=re.S):
+        # Les jetons propres à Android (mhNavPastille, la pastille de la barre du bas) ne passent pas.
         sortie[(genre.lower(), nom.lower())] = {camel[k]: v for k, v in
-                                                re.findall(r'<item name="(mh\w+)">(#[0-9A-Fa-f]{6})</item>', corps)}
+                                                re.findall(r'<item name="(mh\w+)">(#[0-9A-Fa-f]{6})</item>', corps)
+                                                if k in camel}
     return sortie
 
 
