@@ -132,10 +132,11 @@ struct SiddurTests {
         // Les bénédictions des occasions (14/10) : ce qu'une source libre n'a pas est emprunté.
         let edot = try empruntes(.edot), sefard = try empruntes(.sefard), ashkenaz = try empruntes(.ashkenaz)
         #expect(edot == ["yam", "soukka", "loulav", "bedikat_hamets", "erouv_tavchilin"])
-        #expect(sefard == ["tikoun_hatsot", "maakeh", "refoua", "sefirat_haomer"])
+        // L'Omer : depuis l'audit du 16/11, celui de l'Arvit de chaque siddour (tools/siddur_omer.py).
+        #expect(sefard == ["tikoun_hatsot", "maakeh", "refoua"])
         #expect(ashkenaz == ["tikoun_hatsot", "birkat_hailanot", "keshet", "barakim", "yam", "nehenin", "hagomel",
                             "mezouza", "hala", "tevilat_kelim", "maakeh", "maasrot", "refoua", "megila",
-                            "sefirat_haomer", "bedikat_hamets", "erouv_tavchilin", "nerot_chabbat", "havdala"])
+                            "bedikat_hamets", "erouv_tavchilin", "nerot_chabbat", "havdala"])
         // Les Hachkavot, coutume séfarade, deviennent l'El malé ra'hamim du souvenir, pour un homme
         // et pour une femme ; jamais l'élégie du 20 Sivan (Rabbi Ye'hiel Mikhal de Nemirov).
         let balise = try Motif("<[^>]+>"), signes = try Motif(#"[\u0591-\u05C7]"#)

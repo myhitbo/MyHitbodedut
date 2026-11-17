@@ -123,7 +123,7 @@ struct LevanaAlerteTests {
     }
 
     /// LevanaAlerte.soirs depuis le 1 de chaque mois : les noms dans l'ordre, et la date de chacun (celle du
-    /// premier soir, du motsaé Chabbat conseillé ou du dernier soir, que LevanaTests vérifie).
+    /// premier soir possible, du motsaé Chabbat conseillé ou du dernier soir, que LevanaTests vérifie).
     @Test func lesSoirsDuRappelDeChaqueMois() throws {
         let v = try Self.vecteurs()
         let usages = Levana.Usage.allCases
@@ -136,7 +136,7 @@ struct LevanaAlerteTests {
                 try #require(ligne.vues[i].count == usages.count)
                 for (j, usage) in usages.enumerated() {
                     let attendu = ligne.vues[i][j]
-                    try #require(attendu.count == 7)
+                    try #require(attendu.count == 8)
                     let ou = "\(ligne.date), \(id), \(usage.cle)"
                     let f = Levana.fenetre(date, fuseau: zone, usage: usage)
                     let soirs = LevanaAlerte.soirs(f, depuis: date, fuseau: zone)
@@ -146,7 +146,9 @@ struct LevanaAlerteTests {
                         let jour = rappel.jour.iso
                         let attendue: String
                         switch rappel.soir {
-                        case .premier: attendue = attendu[3]
+                        // Le premier soir rappelé n'est ni Chabbat ni Yom tov depuis le 16/11 (MB 426:12) : le
+                        // premier soir possible, plus le premier soir de la fenêtre.
+                        case .premier: attendue = attendu[7]
                         case .motsae: attendue = attendu[5]
                         case .dernier: attendue = attendu[4]
                         }

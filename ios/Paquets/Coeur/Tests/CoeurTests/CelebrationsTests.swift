@@ -38,11 +38,13 @@ struct CelebrationsTests {
     @Test func unTropheeNeufPasseAvantUnPalier() {
         let (bilan, pratique) = premierJour()
         let r = Celebrations.neuf(bilan, pratique, paliersVus: [], tropheesVus: [])
+        // Le plus coûteux d'abord (Trophees.nouveaux, 13/11, FDONNEES-06 : l'ordre suivait le métal) : la séance
+        // longue avant le premier pas.
         let icone = r.icone
-        #expect(icone == "premier_pas")
+        #expect(icone == "seance_longue")
         let message = r.message
         // Sans métal depuis le 13/11 (FDONNEES-06) : celui de la famille n'est plus celui que l'écran montre.
-        let attendu = Libelle("trophee_niveau_gagne", .libelle(Libelle("trophee_premier_pas")), .entier(1))
+        let attendu = Libelle("trophee_niveau_gagne", .libelle(Libelle("trophee_seance_longue")), .entier(1))
         #expect(message == attendu)
     }
 
@@ -83,7 +85,7 @@ struct CelebrationsTests {
         let message = r.message
         #expect(texte == message)
         let icone = lue.icone
-        #expect(icone == "premier_pas")
+        #expect(icone == "seance_longue")
         let marquees = Celebrations.marquerNotifies(bilan, pratique, paliersNotifies: [], tropheesNotifies: [])
         #expect(marquees == r)
         let (rien, premier) = Celebrations.notification(bilan, pratique, paliersNotifies: nil, tropheesNotifies: nil)
