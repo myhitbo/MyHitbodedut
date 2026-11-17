@@ -13,6 +13,13 @@ public enum DureeSeance {
     public static let min = 1
     public static let max = 240
 
+    /// La saisie de la boîte « Durée réglable… » : le nombre s'il est entre 1 et 240 minutes, nil sinon
+    /// (FACCUEIL-15). 0 ou 999 ne sont plus ramenés en silence : la boîte reste ouverte et le dit.
+    public static func valide(_ texte: String) -> Int? {
+        guard let valeur = entier(texte.rogne), valeur >= DureeSeance.min, valeur <= DureeSeance.max else { return nil }
+        return valeur
+    }
+
     /// Le nombre saisi, ramené entre 1 et 240 minutes ; nil si ce n'est pas un nombre.
     public static func lire(_ texte: String) -> Int? {
         guard let valeur = entier(texte.rogne) else { return nil }

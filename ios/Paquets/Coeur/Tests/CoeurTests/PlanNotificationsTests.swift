@@ -211,7 +211,13 @@ struct PlanNotificationsTests {
                 let exempt = Store.isExempt(reglages: e.reglages, date: civile.jour, fuseauTelephone: tel)
                 #expect(!exempt, "graine \(graine) : \(p.identifiant)")
                 let veille = Store.isEveOfRestDay(reglages: e.reglages, date: civile.jour, fuseauTelephone: tel)
-                let veilleApresMidi = veille && civile.minutesDuJour >= ReminderRule.noSunsetCutoffMinutes
+                // La limite de la veille : l'allumage du jour au lieu des alertes (FBARRIERE-12), sinon midi.
+                var limite = ReminderRule.noSunsetCutoffMinutes
+                if let lieu = e.reglages.lieuAlertes(fuseauTelephone: tel),
+                   let allumage = Self.allumageFactice(lieu, civile.jour, e.reglages.allumage) {
+                    limite = e.fuseau.dateHeure(millis: allumage).minutesDuJour
+                }
+                let veilleApresMidi = veille && civile.minutesDuJour >= limite
                 #expect(!veilleApresMidi, "graine \(graine) : \(p.identifiant)")
                 if e.reglages.shabbatMode {
                     let repos = Holidays.isRestDay(civile.jour, inIsrael: e.reglages.inIsrael(fuseauTelephone: tel))
@@ -523,6 +529,39 @@ struct PlanNotificationsTests {
                 #expect(premier.suite == nil, "\(c.nom)")
             }
         }
+    }
+
+    /// ChabbatAlerte.aAnnoncer (FBARRIERE-13) décidé d'avance : rien éteinte, ni un vendredi en pause, ni la veille
+    /// de Yom Kippour (le premier Kippour un samedi après 2026).
+    @Test func lAlerteDeChabbatSeTaitQuandIlNYARienADire() throws {
+        var vendredi = JourCivil.du("2026-01-02")
+        while !Holidays.isYomKippur(vendredi.plus(jours: 1), inIsrael: false) { vendredi = vendredi.plus(jours: 7) }
+        let avant = vendredi.plus(jours: -7)
+        var r = Self.reglages(heures: [])
+        let maintenant = Self.a(avant.plus(jours: -2).iso, 9)
+        r.setLieuZmanim(Lieux.paris, ville: nil, maintenant: maintenant)
+        let chaine = PlanNotifications.chabbat(reglages: r, maintenant: maintenant, fuseau: Self.paris,
+                                               allumage: Self.allumageFactice)
+        let jours = chaine.map { DateHeureZonee(millis: $0.instant, fuseau: Self.paris).jour.iso }
+        #expect(jours.contains(vendredi.iso))
+        let retenus = PlanNotifications.aAnnoncer(chaine, reglages: r, fuseau: Self.paris)
+            .map { DateHeureZonee(millis: $0.instant, fuseau: Self.paris).jour.iso }
+        #expect(!retenus.contains(vendredi.iso))
+        // Automne 2028 : Roch Hachana (22/09), la veille de Kippour (29/09), Soukkot (06/10) et Chemini Atseret
+        // (13/10) tombent un vendredi : rien à annoncer ; un vendredi ordinaire, l'alerte reste.
+        let attendus = jours.filter { $0 != vendredi.iso && !Store.isExempt(reglages: r, date: .du($0), fuseauTelephone: "Europe/Paris") }
+        #expect(retenus == attendus)
+        let ordinaire = PlanNotifications.aAnnoncer(PlanNotifications.chabbat(reglages: r, maintenant: Self.a("2028-11-01", 9),
+                                                                              fuseau: Self.paris, allumage: Self.allumageFactice),
+                                                    reglages: r, fuseau: Self.paris)
+        #expect(ordinaire.count == 4)
+        r.togglePausedDate(avant.iso)
+        let sansPause = PlanNotifications.aAnnoncer(chaine, reglages: r, fuseau: Self.paris)
+            .map { DateHeureZonee(millis: $0.instant, fuseau: Self.paris).jour.iso }
+        #expect(jours.contains(avant.iso))
+        #expect(!sansPause.contains(avant.iso))
+        r.setChabbatAlerte(false)
+        #expect(PlanNotifications.aAnnoncer(chaine, reglages: r, fuseau: Self.paris).isEmpty)
     }
 
     @Test func chabbatEtLevanaSontCeuxDAndroid() throws {

@@ -19,8 +19,25 @@ struct RappelsTefilaTests {
     @Test func enDiasporaRienEnOctobreEtLeDebutEnDecembre() {
         #expect(!rappels("2026-10-16", israel: false).contains { $0.genre == .pluieDebut })
         let dec = rappels("2026-12-02", israel: false, avance: 6).filter { $0.genre == .pluieDebut }
-        // Premier jour le 5 décembre : on commence à Arvit du 4 au soir.
-        #expect(dec.map(\.date) == [JourCivil.du("2026-12-05")])
+        // Premier jour le samedi 5 décembre : pas d'Arvit de vendredi soir, on commence à motsaé Chabbat (rappel
+        // daté du dimanche 6, FCALENDRIER-04, RappelsTefilaTest d'Android) ; il reste affiché le samedi.
+        #expect(dec.map(\.date) == [JourCivil.du("2026-12-06")])
+        for jour in ["2026-12-02", "2026-12-04", "2026-12-05"] {
+            let r = rappels(jour, israel: false).filter { $0.genre == .pluieDebut }
+            #expect(r.map(\.date) == [JourCivil.du("2026-12-06")], "vu le \(jour)")
+        }
+        #expect(!rappels("2026-12-06", israel: false).contains { $0.genre == .pluieDebut })
+        // 2031 : le premier jour est le samedi 6 décembre, rappel au 7.
+        let r2031 = rappels("2031-12-05", israel: false).filter { $0.genre == .pluieDebut }
+        #expect(r2031.map(\.date) == [JourCivil.du("2031-12-07")])
+    }
+
+    /// La fin de מַשִּׁיב הָרוּחַ (audit du 16/11) : en Ashkenaz hors d'Israël, l'assemblée cesse à Min'ha.
+    @Test func laFinDeMachivHarouahSelonLeNoussah() {
+        #expect(RappelsTefila.cleGuechemFin(.ashkenaz, enIsrael: false) == "rappel_guechem_fin_ashkenaz")
+        #expect(RappelsTefila.cleGuechemFin(.ashkenaz, enIsrael: true) == "rappel_guechem_fin")
+        #expect(RappelsTefila.cleGuechemFin(.edot, enIsrael: false) == "rappel_guechem_fin")
+        #expect(RappelsTefila.cleGuechemFin(.sefard, enIsrael: false) == "rappel_guechem_fin")
     }
 
     /// 15 Nissan 5787 : jeudi 22 avril 2027.

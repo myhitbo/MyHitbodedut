@@ -15,6 +15,11 @@ public enum Holidays {
         avecCalendrier(date, inIsrael) { $0.isYomTovAssurBemelacha() }
     }
 
+    /// Yom Kippour ce jour-là (FBARRIERE-13 : la veille, « double repas » serait faux).
+    public static func isYomKippur(_ date: JourCivil, inIsrael: Bool) -> Bool {
+        avecCalendrier(date, inIsrael) { $0.getYomTovIndex() == JewishCalendar.YOM_KIPPUR }
+    }
+
     /// Vrai si le lendemain est chômé : la fête entre au coucher du soleil.
     public static func isEveOfRestDay(_ date: JourCivil, inIsrael: Bool) -> Bool {
         isRestDay(date.plus(jours: 1), inIsrael: inIsrael)

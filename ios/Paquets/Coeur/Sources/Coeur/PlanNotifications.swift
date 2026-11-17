@@ -141,8 +141,10 @@ public enum PlanNotifications {
     public static func planifier(reglages: Reglages, journal: Journal, volRappels: [VolRappels.Rappel],
                                  maintenant: Int64, fuseau: Fuseau, horaires: Horaires, allumage: Allumage,
                                  heureVol: (Int64) -> String) -> [NotificationPlanifiee] {
-        let chaine = rappels(reglages: reglages, journal: journal, maintenant: maintenant, fuseau: fuseau,
-                             nombre: NotificationPlanifiee.Categorie.rappel.part)
+        let chaine = withoutActuallyEscaping(allumage) { allumage in
+            rappels(reglages: reglages, journal: journal, maintenant: maintenant, fuseau: fuseau,
+                    nombre: NotificationPlanifiee.Categorie.rappel.part, allumage: allumage)
+        }
         var liste: [NotificationPlanifiee] = []
         liste.append(contentsOf: chaine.filter { $0.categorie == .rappel }.prefix(NotificationPlanifiee.Categorie.rappel.part))
         var seance = chaine.filter { $0.categorie == .seance }
@@ -150,7 +152,8 @@ public enum PlanNotifications {
             seance.append(fin)
         }
         liste.append(contentsOf: trie(seance).prefix(NotificationPlanifiee.Categorie.seance.part))
-        liste.append(contentsOf: chabbat(reglages: reglages, maintenant: maintenant, fuseau: fuseau, allumage: allumage))
+        liste.append(contentsOf: aAnnoncer(chabbat(reglages: reglages, maintenant: maintenant, fuseau: fuseau, allumage: allumage),
+                                           reglages: reglages, fuseau: fuseau))
         liste.append(contentsOf: levana(reglages: reglages, maintenant: maintenant, fuseau: fuseau, horaires: horaires))
         let vols = vol(reglages: reglages, rappels: volRappels, maintenant: maintenant, heure: heureVol)
         liste.append(contentsOf: vols.prefix(NotificationPlanifiee.Categorie.vol.part))
@@ -167,9 +170,11 @@ public enum PlanNotifications {
     /// jour-là à cette heure : la journée faite, un jour de repos, la veille après midi le taisent. Un rappel
     /// reporté est de la catégorie `seance`. La phrase du trophée tout proche va sous le premier, une fois. La
     /// suite s'arrête une fois `nombre` rappels (hors report) trouvés. Une séance ouverte court tant qu'on ne l'a
-    /// pas close (`SessionRule.enCours`) : elle tait tous les rappels, et la suite n'est pas parcourue.
+    /// pas close (`SessionRule.enCours`) : elle tait tous les rappels, et la suite n'est pas parcourue. Avec
+    /// `allumage` et un lieu des alertes, la veille d'un jour chômé, le rappel se tait à l'heure d'allumage de ce
+    /// jour, à l'heure du téléphone ; sans lieu, à midi (Reminder.allumageDuJour, FBARRIERE-12).
     public static func rappels(reglages: Reglages, journal: Journal, maintenant: Int64, fuseau: Fuseau,
-                               nombre: Int = Int.max) -> [NotificationPlanifiee] {
+                               nombre: Int = Int.max, allumage: Allumage? = nil) -> [NotificationPlanifiee] {
         guard reglages.reminderEnabled, !Store.isSessionOpen(reglages: reglages) else { return [] }
         let fuseauTelephone = fuseau.identifiant
         let heures = reglages.reminderTimes
@@ -183,6 +188,13 @@ public enum PlanNotifications {
         var trouves = 0
         var t = maintenant
         var report = reglages.reminderSnoozedUntil
+        let lieu = reglages.lieuAlertes(fuseauTelephone: fuseauTelephone)
+        let minutesAllumage = reglages.allumage
+        func allumageDuJour(_ jour: JourCivil) -> Int? {
+            guard let allumage, let lieu, let instant = allumage(lieu, jour, minutesAllumage) else { return nil }
+            let h = fuseau.dateHeure(millis: instant)
+            return h.heure * 60 + h.minute
+        }
         // Chaque tour avance jusqu'à l'heure réglée suivante : 1 440 heures par jour sur dix jours, et le report.
         for _ in 0..<(joursRappels * ReminderRule.minutesParJour + 2) {
             if trouves >= nombre { break }
@@ -211,7 +223,7 @@ public enum PlanNotifications {
                 doneToday: Store.isDone(journal: journal, date: jour),
                 todayIsRestDay: Store.isExempt(reglages: reglages, date: jour, fuseauTelephone: fuseauTelephone),
                 tomorrowIsRestDay: Store.isEveOfRestDay(reglages: reglages, date: jour, fuseauTelephone: fuseauTelephone),
-                sunsetMinutes: nil)
+                sunsetMinutes: allumageDuJour(jour))
             if permis {
                 let premier = res.isEmpty
                 res.append(NotificationPlanifiee(
@@ -264,6 +276,8 @@ public enum PlanNotifications {
     /// Les `nombre` prochaines alertes, chacune `ChabbatAlerte.prochaine` après la précédente, comme le récepteur
     /// les enchaîne ; au lieu des alertes (`lieuAlertes`), avec les minutes d'allumage des réglages. Sans lieu,
     /// rien. Une chaîne s'arrête quand deux vendredis de suite n'ont pas d'allumage (nuit ou jour polaire).
+    /// La chaîne de l'alarme d'Android, telle que `rappels.json` la juge ; `aAnnoncer` en retire ce que le récepteur
+    /// tairait.
     public static func chabbat(reglages: Reglages, maintenant: Int64, fuseau: Fuseau,
                                nombre: Int = NotificationPlanifiee.Categorie.chabbat.part,
                                allumage: Allumage) -> [NotificationPlanifiee] {
@@ -280,12 +294,26 @@ public enum PlanNotifications {
                     return DateHeureZonee(millis: instant, fuseau: fuseauLieu)
                 })
             guard let alerte else { break }
+            t = alerte.millis
             res.append(NotificationPlanifiee(identifiant: "chabbat-" + alerte.jour.iso, instant: alerte.millis,
                                           titre: Libelle("chabbat_alerte_titre"), texte: Libelle("chabbat_alerte_texte"),
                                           categorie: .chabbat))
-            t = alerte.millis
         }
         return res
+    }
+
+    /// Ce que le récepteur de ChabbatAlerte.kt annonce vraiment (`aAnnoncer`, FBARRIERE-13), décidé ici d'avance
+    /// puisque l'iOS programme ses notifications : rien si l'alerte est éteinte (réglage `chabbat_alerte`), rien
+    /// un jour exempté (Yom Tov un vendredi, pause) ni la veille de Yom Kippour (jeûne, pas de repas). Le jour est
+    /// celui de l'alerte à l'heure du téléphone.
+    public static func aAnnoncer(_ alertes: [NotificationPlanifiee], reglages: Reglages, fuseau: Fuseau) -> [NotificationPlanifiee] {
+        guard reglages.chabbatAlerte else { return [] }
+        let israel = reglages.inIsrael(fuseauTelephone: fuseau.identifiant)
+        return alertes.filter { a in
+            let jour = DateHeureZonee(millis: a.instant, fuseau: fuseau).jour
+            return !Store.isExempt(reglages: reglages, date: jour, fuseauTelephone: fuseau.identifiant)
+                && !Holidays.isYomKippur(jour.plus(jours: 1), inIsrael: israel)
+        }
     }
 
     // MARK: Birkat haLevana (LevanaAlerte.kt)

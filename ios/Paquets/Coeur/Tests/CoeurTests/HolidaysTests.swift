@@ -71,3 +71,45 @@ struct HolidaysTests {
         #expect(!Holidays.defaultInIsrael(timeZoneId: "America/New_York"))
     }
 }
+
+/// Les petites règles pures d'Android du 13 au 16/11, recopiées sans écran.
+@Suite("Règles du 13 au 16/11")
+struct ReglesDuTreizeNovembreTests {
+
+    /// Holidays.isYomKippur (FBARRIERE-13) : 10 Tichri 5787 le lundi 21 septembre 2026.
+    @Test func yomKippour() {
+        #expect(Holidays.isYomKippur(.du("2026-09-21"), inIsrael: false))
+        #expect(Holidays.isYomKippur(.du("2026-09-21"), inIsrael: true))
+        #expect(!Holidays.isYomKippur(.du("2026-09-20"), inIsrael: false))
+        #expect(!Holidays.isYomKippur(.du("2026-09-12"), inIsrael: false))
+    }
+
+    /// DureeSeance.valide (FACCUEIL-15) : de 1 à 240, sans ramener en silence.
+    @Test func laDureeSaisieEstValideOuRefusee() {
+        #expect(DureeSeance.valide(" 25 ") == 25)
+        #expect(DureeSeance.valide("1") == 1)
+        #expect(DureeSeance.valide("240") == 240)
+        #expect(DureeSeance.valide("0") == nil)
+        #expect(DureeSeance.valide("241") == nil)
+        #expect(DureeSeance.valide("999") == nil)
+        #expect(DureeSeance.valide("") == nil)
+        #expect(DureeSeance.valide("abc") == nil)
+        #expect(DureeSeance.lire("999") == 240)
+    }
+
+    /// SessionRule.joueDuSon, autreMorceau, finSilencieuse (FBARRIERE-16, FSEANCE-06, FSEANCE-07).
+    @Test func lesReglesDeLaSeance() {
+        #expect(!SessionRule.joueDuSon(musique: false, ambiance: .silence))
+        #expect(SessionRule.joueDuSon(musique: false, ambiance: .pluie))
+        #expect(SessionRule.joueDuSon(musique: true, ambiance: .silence))
+        #expect(SessionRule.autreMorceau(aleatoire: false, charge: true, retenu: "b", joue: "a"))
+        #expect(!SessionRule.autreMorceau(aleatoire: true, charge: true, retenu: "b", joue: "a"))
+        #expect(!SessionRule.autreMorceau(aleatoire: false, charge: false, retenu: "b", joue: "a"))
+        #expect(!SessionRule.autreMorceau(aleatoire: false, charge: true, retenu: nil, joue: "a"))
+        #expect(!SessionRule.autreMorceau(aleatoire: false, charge: true, retenu: "a", joue: "a"))
+        #expect(SessionRule.finSilencieuse(avantTerme: true, masque: false, sonnerieAudible: false))
+        #expect(SessionRule.finSilencieuse(avantTerme: false, masque: true, sonnerieAudible: true))
+        #expect(!SessionRule.finSilencieuse(avantTerme: false, masque: true, sonnerieAudible: false))
+        #expect(!SessionRule.finSilencieuse(avantTerme: false, masque: false, sonnerieAudible: true))
+    }
+}

@@ -56,7 +56,11 @@ public enum RappelsTefila {
         for k in 0...avance {
             let d = aujourdhui.plus(jours: k)
             let j = jour(d)
-            if j.conditions.contains(pluie) && !veille.conditions.contains(pluie) { res.append(Rappel(.pluieDebut, d)) }
+            // Premier jour un samedi : la Amida de Chabbat ne la demande pas, on commence à motsaé Chabbat, soit à
+            // Arvit du soir du samedi (KosherJava : isVeseinTalUmatarStartDate le dimanche) : FCALENDRIER-04.
+            if j.conditions.contains(pluie) && !veille.conditions.contains(pluie) {
+                res.append(Rappel(.pluieDebut, d.jourDeSemaine == 7 ? d.plus(jours: 1) : d))
+            }
             if !j.conditions.contains(pluie) && veille.conditions.contains(pluie) { res.append(Rappel(.pluieFin, d)) }
             if !sansGuechem && j.moisHebreu == tichri && j.jourHebreu == 22 { res.append(Rappel(.guechemDebut, d)) }
             if !sansGuechem && j.moisHebreu == nissan && j.jourHebreu == 15 { res.append(Rappel(.guechemFin, d)) }
@@ -66,6 +70,13 @@ public enum RappelsTefila {
         }
         // Un changement du soir dont le soir est déjà passé n'est plus annoncé.
         return res.filter { !($0.genre.leSoir && !($0.date > aujourdhui)) }
+    }
+
+    /// Le texte de la fin de מַשִּׁיב הָרוּחַ (audit du 16/11) : en Ashkenaz hors d'Israël, seul l'officiant cesse à
+    /// la répétition de Moussaf ; l'assemblée le dit encore dans la Amida de Moussaf et cesse à Min'ha (Rema 114:3 ;
+    /// Michna Beroura 114:3). Ailleurs, tous cessent à Moussaf.
+    public static func cleGuechemFin(_ nusah: Nusah, enIsrael: Bool) -> String {
+        nusah == .ashkenaz && !enIsrael ? "rappel_guechem_fin_ashkenaz" : "rappel_guechem_fin"
     }
 }
 

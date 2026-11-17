@@ -28,6 +28,25 @@ public enum SessionRule {
         case masque
     }
 
+    /// La séance joue-t-elle du son ? Le morceau choisi, ou une ambiance sous lui (examen du 14/11, FBARRIERE-16).
+    public static func joueDuSon(musique: Bool, ambiance: Ambiance) -> Bool {
+        musique || ambiance != .silence
+    }
+
+    /// Un autre morceau a été choisi dans l'écran Musique pendant que celui de la séance est chargé (qu'il joue ou
+    /// soit en pause) : hors lecture aléatoire, il prend sa place. `retenu` est le morceau que la bibliothèque
+    /// retient, pas l'identifiant enregistré (FSEANCE-07).
+    public static func autreMorceau(aleatoire: Bool, charge: Bool, retenu: String?, joue: String?) -> Bool {
+        !aleatoire && charge && retenu != nil && retenu != joue
+    }
+
+    /// La notification de fin part-elle sans son ni vibration ? Quand on termine soi-même, et quand le décompte
+    /// masqué joue sa sonnerie, pour ne pas sonner deux fois ; en vibreur ou en silencieux la sonnerie est muette,
+    /// la notification garde alors son canal ordinaire (FSEANCE-06).
+    public static func finSilencieuse(avantTerme: Bool, masque: Bool, sonnerieAudible: Bool) -> Bool {
+        avantTerme || (masque && sonnerieAudible)
+    }
+
     /// Le choix est fait une fois ici pour tous les endroits qui affichent un compteur : sur Android
     /// l'écran de séance, la notification en cours et l'écran de barrage. Le masquage l'emporte sur
     /// le reste : promettre « rien à l'écran » et laisser le chiffre ailleurs ne serait pas tenir parole.

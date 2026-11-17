@@ -774,7 +774,7 @@ public final class AccueilModele {
                 corps = "rappel_guechem_debut"
             case .guechemFin:
                 titre = "rappel_guechem_titre"
-                corps = "rappel_guechem_fin"
+                corps = RappelsTefila.cleGuechemFin(reglages.siddurNusah, enIsrael: israel)
             case .dixJours:
                 titre = "rappel_dix_jours_titre"
                 corps = "rappel_dix_jours"

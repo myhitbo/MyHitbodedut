@@ -3,9 +3,8 @@ import Foundation
 /// Faut-il sonner le rappel maintenant, et quand sonne le prochain (ReminderRule.kt).
 ///
 /// Le calendrier hébraïque raisonne en date civile, alors que la fête entre au coucher du soleil la
-/// veille : un rappel du soir tomberait en pleine entrée de Chabbat ou de Yom Tov. Avec une ville
-/// réglée on utiliserait le coucher du soleil ; l'application n'en demande aucune, pour ne pas réclamer
-/// la localisation, et retient donc midi comme limite sûre.
+/// veille : un rappel du soir tomberait en pleine entrée de Chabbat ou de Yom Tov. Avec un lieu de zmanim
+/// réglé, l'heure d'allumage des bougies sert de limite (FBARRIERE-12) ; sans lieu, midi reste la limite sûre.
 ///
 /// Les heures réglées sont des minutes depuis minuit ; « maintenant » se passe en argument, rien ici ne
 /// lit l'horloge. Jugée par `Tests/Vecteurs/rappels.json` (tools/vecteurs_ios/VecteursRappels.kt).
