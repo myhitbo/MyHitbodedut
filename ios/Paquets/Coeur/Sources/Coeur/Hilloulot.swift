@@ -135,11 +135,21 @@ public enum Hilloulot {
             m = [String(mois)]
         }
         let jours = jour == 29 && dernierJour ? [29, 30] : [jour]
-        return m.flatMap { k in jours.map { "\(k)-\($0)" } }
+        let base = m.flatMap { k in jours.map { "\(k)-\($0)" } }
+        // Le 30 Adar n'existe qu'en Adar I (audit du 16/11) : une année embolismique, « adar-30 » vaut le 30 Adar I
+        // dans tous les rites (Kitsour Yalkut Yosef 40:22), jamais le 29 Adar II. Une année simple, en Ashkenaz, le
+        // 30 Chevat, premier jour de Roch 'Hodech Adar (Michna Beroura 568:42) ; en Edot et en Sfard, le 29 Adar.
+        let trente = ["adar-30", "adar1-30"]
+        if embolismique && mois == 13 { return base.filter { $0 != "adar-30" } }
+        if embolismique && mois == 12 && jour == 30 && !base.contains("adar-30") { return base + ["adar-30"] }
+        if !embolismique && ashkenaz && mois == 12 { return base.filter { !trente.contains($0) } }
+        if !embolismique && ashkenaz && mois == 11 && jour == 30 { return base + trente }
+        return base
     }
 
     /// L'ordre d'un jour (04/11, « très mal organisé ») : d'abord les mieux connus, ceux que le plus de
-    /// sources donnent, puis ceux qui ont une notice ; ceux dont la date est mise en doute en dernier. À
+    /// sources donnent ; à nombre de sources égal, ceux dont rien n'est mis en doute, puis ceux qui ont une
+    /// notice (THILLOULOT-03). À
     /// égalité, l'ordre du fichier (le tri de Kotlin est stable : le rang départage). La carte du jour en
     /// montre les cinq premiers.
     public static func duJour(_ table: Table, _ cles: [String]) -> [Hilloula] {
@@ -147,7 +157,7 @@ public enum Hilloulot {
         var rangees: [(cle: (Int, Int, Int, Int), hilloula: Hilloula)] = []
         rangees.reserveCapacity(toutes.count)
         for (i, h) in toutes.enumerated() {
-            rangees.append((cle: (h.doute != nil ? 1 : 0, -h.sources.utf16.count, h.description == nil ? 1 : 0, i), hilloula: h))
+            rangees.append((cle: (-h.sources.utf16.count, h.doute != nil ? 1 : 0, h.description == nil ? 1 : 0, i), hilloula: h))
         }
         rangees.sort { $0.cle < $1.cle }
         return rangees.map { $0.hilloula }
@@ -290,7 +300,8 @@ public enum Hilloulot {
         let code: String
         if l.commenceParUnites("he") || l.commenceParUnites("iw") {
             code = "he"
-        } else if l.commenceParUnites("en") {
+        } else if l.commenceParUnites("en") || l.commenceParUnites("es") {
+            // Le site n'a ni l'espagnol ni l'arabe : l'anglais pour l'un, le français, lu en Tunisie, pour l'autre.
             code = "en"
         } else {
             code = "fr"

@@ -141,14 +141,35 @@ struct HilloulotTests {
         #expect(sansBios)
     }
 
-    @Test func unJourRangeLesMieuxConnusDAbordLesDatesDouteusesEnDernier() {
+    /// Les sources avant le doute depuis le 12/11 (THILLOULOT-03) : les plus célèbres ne sont plus relégués par
+    /// une simple note.
+    @Test func unJourRangeLesMieuxConnusDAbordLesSourcesAvantLeDoute() throws {
         func h(_ he: String, _ s: String, _ t: String?, _ d: String?) -> Hilloulot.Hilloula {
             Hilloulot.Hilloula(he: he, fr: nil, en: nil, annee: "", sources: s, doute: d, description: t)
         }
         let t: Hilloulot.Table = ["8-23": [h("un", "m", nil, nil), h("doute", "wm", "x", "faux"), h("trois", "hwm", "x", nil),
                                            h("deux", "wm", nil, nil), h("deux-notice", "wm", "x", nil)]]
         let ordre = Hilloulot.duJour(t, ["8-23"]).map { $0.he }
-        #expect(ordre == ["trois", "deux-notice", "deux", "un", "doute"])
+        #expect(ordre == ["trois", "deux-notice", "deux", "doute", "un"])
+        let table = try lireTable()
+        func cinq(_ cle: String) -> [String] { Array(Hilloulot.duJour(table, [cle]).prefix(5).map { $0.he }) }
+        #expect(cinq("2-18").contains("רבי שמעון בר יוחאי"))
+        #expect(cinq("10-20").contains { $0.contient("הרמב\"ם") })
+    }
+
+    /// Audit du 16/11 : le 30 Adar n'existe qu'en Adar I (Kitsour Yalkut Yosef 40:22 ; Michna Beroura 568:42).
+    @Test func leTrenteAdar() {
+        // Année embolismique : le 30 Adar I pour tous, jamais le 29 Adar II.
+        #expect(Hilloulot.clesPour(.du("2027-03-09"), enIsrael: false).contains("adar-30"))
+        #expect(!Hilloulot.clesPour(.du("2027-04-07"), enIsrael: false).contains("adar-30"))
+        #expect(Hilloulot.clesPour(.du("2030-03-05"), enIsrael: false, ashkenaz: true).contains("adar-30"))
+        #expect(!Hilloulot.clesPour(.du("2030-04-03"), enIsrael: false).contains("adar-30"))
+        // Année simple : le 30 Chevat en Ashkenaz ; le 29 Adar en Edot et en Sfard.
+        #expect(!Hilloulot.clesPour(.du("2026-03-18"), enIsrael: false, ashkenaz: true).contains("adar-30"))
+        #expect(Hilloulot.clesPour(.du("2026-02-17"), enIsrael: false, ashkenaz: true).contains("adar-30"))
+        #expect(Hilloulot.clesPour(.du("2026-02-17"), enIsrael: false, ashkenaz: true).contains("adar1-30"))
+        #expect(Hilloulot.clesPour(.du("2026-03-18"), enIsrael: false).contains("adar-30"))
+        #expect(!Hilloulot.clesPour(.du("2026-02-17"), enIsrael: false).contains("adar-30"))
     }
 
     @Test func laRechercheSuitLAnneeDeTichriAEloul() throws {
