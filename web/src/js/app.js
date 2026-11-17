@@ -23,7 +23,7 @@ import * as Trophees from './trophees.js';
 import { FORMES, ICONES } from './trophees-formes.js';
 import { pour as halakhotPour, recherche as rechercheHalakha, source as sourceHalakha } from './halakha.js';
 import { pour as yalkutPour, recherche as rechercheYalkut, source as sourceYalkut, texteCarte, titreCarte } from './yalkut.js';
-import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, semaines, semainesHebreu } from './jour-affiche.js';
+import { ajouts as ajoutsDuJour, dateHilloula, debutMoisHebreu, hilloulotPour, clesHilloulotPour, prochainJourHilloula, lienArticle, rechercheHilloula, horaires, illustration as illustrationDuJour, lienHalakha, lienHyomi, momentDuSiddour, moisHebreuVoisin, propositionAllumage, coutumeJerusalem, semaines, semainesHebreu } from './jour-affiche.js';
 import { ALLUMAGES, heure as heureZman, jour as zmanimDuJour } from './zmanim.js';
 import * as Ciel from './ciel.js';
 import * as Vol from './vol.js';
@@ -510,7 +510,7 @@ function cielMaintenant() {
   const lieu = store.lieu();
   if (!lieu) return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
   try {
-    const z = Object.fromEntries(zmanimDuJour(lieu, jourLieu(maintenant)).map((x) => [x.cle, x.instant]));
+    const z = Object.fromEntries(zmanimDuJour(lieu, jourLieu(maintenant), store.siddurNusah()).map((x) => [x.cle, x.instant]));
     return Ciel.phase(maintenant, z, heureLieu(maintenant));
   } catch {
     return Ciel.parHeure(maintenant.getHours(), maintenant.getMinutes());
@@ -923,7 +923,7 @@ function momentAccueil() {
   const rappels = rappelsDeTefila();
   if (!chargeSiddur()) return rappels;
   const heure = new Date();
-  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
+  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure, store.siddurNusah()) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
   const cartes = [...rappels];
   const t = moment ? siddur.textes.find((x) => x.id === moment) : null;
   if (t) cartes.push(carteMaintenant(t, undefined, undefined, tr.t(Salutation.mot(heureLieu(heure).heures))));
@@ -1518,7 +1518,7 @@ function ecranSiddur() {
   const nomNusah = tr.t(NUSAH.find(([c]) => c === store.siddurNusah())?.[1] ?? 'siddur_nusah');
   const heure = new Date();
   // Avec un lieu, la suggestion suit ses zmanim ; sans lieu, les heures fixes.
-  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
+  const moment = store.lieu() ? momentDuSiddour(store.lieu(), heure, store.siddurNusah()) : SiddurMoment.suggestion(heure.getHours(), heure.getMinutes());
   const suggere = pret && moment ? siddur.textes.find((x) => x.id === moment) : null;
   // 'Hanouka (13/10) : le Hallel du jour, avec la scène de 'Hanouka, sous la prière du matin.
   const isoHeure = jourLieu(heure);
@@ -1575,7 +1575,7 @@ function ecranPriere() {
   // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
   const lieuSortie = store.lieu();
   const isoMaintenant = jourLieu(maintenant);
-  const tset = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant).find((z) => z.cle === 'tset')?.instant : null;
+  const tset = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant : null;
   const jourDuTexte = jourJuif(jourDeLaPriere(x.id, isoMaintenant, heureLieu(maintenant).heures, !!tset && maintenant >= tset), store.inIsrael(), mukafChoma());
   const nusah = store.siddurNusah();
   const c = conditionsPour(nusah, store.inIsrael(), jourDuTexte.conditions, store.sansTahanounFinTichri(), hemisphereSud());
@@ -2558,7 +2558,7 @@ function horairePriere(id) {
   const lieu = store.lieu();
   if (!lieu || !['chaharit', 'minha', 'arvit'].includes(id)) return null;
   const iso = jourLieu();
-  const z = Object.fromEntries(zmanimDuJour(lieu, iso).map((x) => [x.cle, x.instant]));
+  const z = Object.fromEntries(zmanimDuJour(lieu, iso, store.siddurNusah()).map((x) => [x.cle, x.instant]));
   const hh = (c) => (z[c] ? heureZman(z[c], lieu.fuseau) : null);
   if (id === 'chaharit') return hh('szt_gra') && tr.t('banniere_chaharit', hh('szt_gra'));
   if (id === 'minha') return hh('minha_gedola') && hh('chkia') && tr.t('banniere_minha', hh('minha_gedola'), hh('chkia'));
@@ -2809,7 +2809,7 @@ function choisirLieu() {
 }
 
 /** « 40 min avant la chki'a · coutume de Jérusalem », quand Jérusalem est choisie. */
-const libelleAllumage = (m) => tr.t(m === 40 && mukafChoma() ? 'reglage_allumage_jerusalem' : 'reglage_allumage_valeur', m);
+const libelleAllumage = (m) => tr.t(coutumeJerusalem(store.siddurNusah(), mukafChoma(), m) ? 'reglage_allumage_jerusalem' : 'reglage_allumage_valeur', m);
 
 function choisirTahanounTichri() {
   choisirDans(tr.t('reglage_tahanoun_tichri'), [tr.t('reglage_tahanoun_tichri_dit'), tr.t('reglage_tahanoun_tichri_sans')],
@@ -2904,7 +2904,7 @@ function lienExterne(libelle, url) {
 function jourDepuisSortie(iso) {
   const lieu = store.lieu();
   if (!lieu || iso !== jourLieu()) return null;
-  const tset = zmanimDuJour(lieu, iso).find((z) => z.cle === 'tset')?.instant;
+  const tset = zmanimDuJour(lieu, iso, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant;
   if (!tset || new Date() < tset) return null;
   const [a, m, d] = iso.split('-').map(Number);
   return jourJuif(new Date(Date.UTC(a, m - 1, d + 1, 12)).toISOString().slice(0, 10), store.inIsrael(), mukafChoma()).dateHebraique;
@@ -3314,7 +3314,7 @@ function listeZmanim(iso) {
     return h('div', { class: 'carte carte-texte' }, h('p', { class: 'message' }, tr.t('zmanim_sans_lieu')),
       h('button', { class: 'principal', onclick: choisirLieu }, tr.t('zmanim_choisir_lieu')));
   }
-  return h('div', { class: 'carte carte-zmanim' }, horaires(lieu, iso, store.inIsrael(), store.allumage()).map((z) =>
+  return h('div', { class: 'carte carte-zmanim' }, horaires(lieu, iso, store.inIsrael(), store.allumage(), store.siddurNusah()).map((z) =>
     h('div', { class: `zman${z.cle === 'allumage' || z.cle === 'sortie' ? ' zman-chabbat' : ''}` },
       h('div', { class: 'zman-tete' },
         h('span', { class: 'zman-nom' }, tr.t(`zman_${z.cle}`)),
@@ -4588,9 +4588,9 @@ function ecranReglages() {
         ligne({ nom: tr.t('settings_region'), etat: tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'),
           onclick: () => choisirDans(tr.t('settings_region'), [tr.t('region_israel'), tr.t('region_diaspora')], store.inIsrael() ? 0 : 1,
             (j) => { store.setInIsrael(j === 0, true); rendre(); }) }),
-        // À Jérusalem, l'usage des 40 minutes est proposé, jamais imposé.
+        // À Jérusalem, l'usage du rite est proposé, jamais imposé : 40 min hors Edot, 20 min pour les Edot (audit du 16/11).
         ligne({ nom: tr.t('reglage_allumage'), onclick: choisirAllumage,
-          etat: [libelleAllumage(store.allumage()), mukafChoma() && store.allumage() !== 40 ? tr.t('reglage_allumage_proposition') : null].filter(Boolean).join(' · ') }),
+          etat: [libelleAllumage(store.allumage()), propositionAllumage(store.siddurNusah(), mukafChoma(), store.allumage()) ? tr.t(propositionAllumage(store.siddurNusah(), mukafChoma(), store.allumage())) : null].filter(Boolean).join(' · ') }),
         store.siddurNusah() === 'sefard' ? ligne({ nom: tr.t('reglage_tahanoun_tichri'), onclick: choisirTahanounTichri,
           etat: tr.t(store.sansTahanounFinTichri() ? 'reglage_tahanoun_tichri_sans' : 'reglage_tahanoun_tichri_dit') }) : null),
       carteMaPratique(),

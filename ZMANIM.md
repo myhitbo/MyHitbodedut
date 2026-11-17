@@ -48,6 +48,43 @@ celles de la documentation de KosherJava 2.5.0 (`zmanim-2.5.0-sources.jar`).
 | צאת הכוכבים, ר״ת | `getTzais72` | 72 minutes fixes après le coucher, « selon Rabbénou Tam » |
 | חצות הלילה | `getSolarMidnight` | le milieu entre chatsot d'aujourd'hui et de demain |
 
+La ligne « Fin du Chema (Maguen Avraham) » compte sa journée depuis 72 min
+fixes avant le lever, et non depuis l'aube affichée à 16,1° : l'écran le dit
+sous la ligne (audit du 16/11, Michna Beroura 58:4). Le plag est celui du Gra,
+nommé sous la ligne (MB 233:4 rapporte aussi l'avis de l'aube à tsét).
+
+**Le profil des Edot** (`Zmanim.PROFIL_EDOT`, audit du 16/11) : le noussa'h
+Edot suit le Yalkut Yosef ; Sfard et Ashkenaz gardent le profil ci-dessus.
+L'heure zmanit est celle du Gra (lever–coucher au niveau de la mer).
+
+| Zman | Edot (Yalkut Yosef) | Source |
+| --- | --- | --- |
+| עלות השחר | `getAlos72Zmanis`, 72 min zmaniyot avant le lever | Kitsour YY 89:12 |
+| משיכיר | 66 min zmaniyot avant le lever (aube + 6) | calendrier Or ha'Haïm |
+| סוף זמן ק״ש / תפילה, מג״א | `getSofZmanShmaMGA72MinutesZmanis` / `…Tfila…` | Kitsour YY 58:3 |
+| פלג המנחה | coucher − 1,025 heure zmanit (1¼ heure avant tsét) | Kitsour YY 263:45 |
+| צאת הכוכבים | coucher + 13,5 min zmaniyot | Kitsour YY 233:5 |
+| צאת הכוכבים, ר״ת | `getTzais72Zmanis` | Kitsour YY 293:3, 293:7 |
+
+Pour les Edot, la sortie de Chabbat ou de fête est Rabbénou Tam en zmaniyot ;
+la ligne tsét des Gueonim reste affichée. L'exception du Yalkut Yosef pour
+l'Europe (heures fixes, 293:7) n'est pas appliquée. Le profil des Edot borne
+aussi la suggestion du siddour (pas de Cha'harit avant michéyakir).
+
+**Jeûnes et veille de Pessa'h** (audit du 16/11) : un jeûne public affiche
+« Début du jeûne » à l'aube du rite et « Fin du jeûne » à son tsét ; la
+veille du 9 Av, Chabbat compris, « Début du jeûne » à la chki'a. La veille de
+Pessa'h, la fin de la consommation (4e heure) et du bi'our (5e heure) du
+'hamets, selon le Maguen Avraham (Edot : zmaniyot, Kitsour YY 443:1) puis le
+Gra ; quand elle tombe un Chabbat, le vendredi, la fin de la 5e heure.
+
+**Hautes latitudes** : dès environ 50,5° N autour du solstice d'été (Londres,
+Manchester, Anvers, Bruxelles), le soleil ne descend pas à 16,1° et l'aube du
+profil commun est « absente », sans repli ; la suggestion du siddour prend
+alors michéyakir, puis le lever. À la même saison, tsét à 8,5° peut tomber
+après Rabbénou Tam en 72 min fixes (Londres, 20/06/2026 : 22:36 et 22:33) ;
+la sortie affichée reste tsét à 8,5°, la plus tardive.
+
 **Chabbat et fêtes** (`JourAffiche.horaires`) :
 
 - la veille d'un jour chômé, l'allumage : `getCandleLighting`, coucher moins

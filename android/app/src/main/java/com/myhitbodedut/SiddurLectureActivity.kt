@@ -293,7 +293,7 @@ class SiddurLectureActivity : AppCompatActivity() {
         val israel = Store.inIsrael(this)
         // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
         val apresSortie = Store.lieuZmanim(this)?.let { lieu ->
-            Zmanim.jour(lieu, LocalDate.now()).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
+            Zmanim.jour(lieu, LocalDate.now(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
         } ?: false
         val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
             Store.mukafChoma(this))

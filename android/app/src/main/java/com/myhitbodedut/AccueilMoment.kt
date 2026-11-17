@@ -24,7 +24,7 @@ object AccueilMoment {
     fun cartes(c: Context): List<View> {
         val siddur = Data.siddur(c)
         val lieu = Store.lieuZmanim(c)
-        val moment = if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now()) else SiddurMoment.suggestion(LocalTime.now())
+        val moment = if (lieu != null) JourAffiche.momentDuSiddour(lieu, java.time.Instant.now(), Store.siddurNusah(c).cle) else SiddurMoment.suggestion(LocalTime.now())
         val vues = mutableListOf<View>()
         val mot = c.getString(Salutation.mot(LocalTime.now().hour))
         moment?.let(siddur::texte)?.let { t -> vues += carte(c, c.getString(R.string.siddur_maintenant), t.titre.he, SiddurMoment.illustration(t.id), mot) { SiddurLectureActivity.ouvrir(c, t.id) } }

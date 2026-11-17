@@ -19,6 +19,7 @@ object Libelles {
         "ajout_anenou_particulier_trois" -> R.string.ajout_anenou_particulier_trois
         "ajout_asseret_yemei_techouva" -> R.string.ajout_asseret_yemei_techouva
         "ajout_autres_jours" -> R.string.ajout_autres_jours
+        "ajout_avant_jeune_individuel" -> R.string.ajout_avant_jeune_individuel
         "ajout_avinou_malkenou" -> R.string.ajout_avinou_malkenou
         "ajout_barekh_alenou" -> R.string.ajout_barekh_alenou
         "ajout_barkhenou" -> R.string.ajout_barkhenou
@@ -32,7 +33,6 @@ object Libelles {
         "ajout_embolismique" -> R.string.ajout_embolismique
         "ajout_embolismique_avant_nissan" -> R.string.ajout_embolismique
         "ajout_esther_pourim" -> R.string.ajout_esther_pourim
-        "ajout_pourim_triple_festin" -> R.string.ajout_pourim_triple_festin
         "ajout_facultatif" -> R.string.ajout_facultatif
         "ajout_facultatif_apres" -> R.string.ajout_facultatif_apres
         "ajout_facultatif_avant" -> R.string.ajout_facultatif_avant
@@ -43,7 +43,6 @@ object Libelles {
         "ajout_hallel_partiel_sans_berakha" -> R.string.ajout_hallel_partiel_sans_berakha
         "ajout_jeune" -> R.string.ajout_jeune
         "ajout_jeune_public" -> R.string.ajout_jeune_public
-        "ajout_avant_jeune_individuel" -> R.string.ajout_avant_jeune_individuel
         "ajout_jour_1" -> R.string.ajout_jour_1
         "ajout_jour_2" -> R.string.ajout_jour_2
         "ajout_jour_3" -> R.string.ajout_jour_3
@@ -63,6 +62,7 @@ object Libelles {
         "ajout_motsae_chabbat_yt" -> R.string.ajout_motsae_chabbat_yt
         "ajout_omer" -> R.string.ajout_omer
         "ajout_oubli" -> R.string.ajout_oubli
+        "ajout_pourim_triple_festin" -> R.string.ajout_pourim_triple_festin
         "ajout_roch_hachana_chabbat" -> R.string.ajout_roch_hachana_chabbat
         "ajout_roch_hodech" -> R.string.ajout_roch_hodech
         "ajout_sans_tahanoun" -> R.string.ajout_sans_tahanoun
@@ -121,15 +121,24 @@ object Libelles {
         "zman_chatsot" -> R.string.zman_chatsot
         "zman_chatsot_layla" -> R.string.zman_chatsot_layla
         "zman_chkia" -> R.string.zman_chkia
+        "zman_debut_jeune" -> R.string.zman_debut_jeune
+        "zman_fin_jeune" -> R.string.zman_fin_jeune
+        "zman_hamets_achila" -> R.string.zman_hamets_achila
+        "zman_hamets_biour" -> R.string.zman_hamets_biour
+        "zman_methode_apres_sortie" -> R.string.zman_methode_apres_sortie
         "zman_methode_apres_tset" -> R.string.zman_methode_apres_tset
         "zman_methode_avant_chkia" -> R.string.zman_methode_avant_chkia
         "zman_methode_degres" -> R.string.zman_methode_degres
         "zman_methode_gra" -> R.string.zman_methode_gra
         "zman_methode_meridien" -> R.string.zman_methode_meridien
         "zman_methode_mga_72" -> R.string.zman_methode_mga_72
+        "zman_methode_mga_72_zmaniyot" -> R.string.zman_methode_mga_72_zmaniyot
         "zman_methode_milieu_chatsot" -> R.string.zman_methode_milieu_chatsot
         "zman_methode_minutes" -> R.string.zman_methode_minutes
         "zman_methode_niveau_mer" -> R.string.zman_methode_niveau_mer
+        "zman_methode_plag_yalkut_yosef" -> R.string.zman_methode_plag_yalkut_yosef
+        "zman_methode_zmaniyot_apres_chkia" -> R.string.zman_methode_zmaniyot_apres_chkia
+        "zman_methode_zmaniyot_avant_netz" -> R.string.zman_methode_zmaniyot_avant_netz
         "zman_minha_gedola" -> R.string.zman_minha_gedola
         "zman_minha_ketana" -> R.string.zman_minha_ketana
         "zman_misheyakir" -> R.string.zman_misheyakir

@@ -49,26 +49,62 @@ const lendemain = (iso) => {
   return new Date(Date.UTC(a, m - 1, j + 1, 12)).toISOString().slice(0, 10);
 };
 
-/** Les horaires du jour, avec l'allumage et la sortie (règles de JourAffiche.horaires). */
-export function horaires(lieu, iso, enIsrael, minutes) {
-  const aujourdhui = jour(iso, enIsrael).chome;
-  const demain = jour(lendemain(iso), enIsrael).chome;
+/**
+ * Les horaires du jour, avec l'allumage et la sortie (règles de JourAffiche.horaires). Le profil suit
+ * le nusah (audit du 16/11) : pour les Edot, sortie à Rabbénou Tam en 72 min zmaniyot (Kitsour YY 293:3
+ * et 293:7). Jeûnes publics : début à l'aube, fin à tsét, et la veille du 9 Av début à la chki'a
+ * (Kitsour YY 550:2). Veille de Pessa'h : heures du 'hamets (Zmanim.hamets), et le vendredi quand elle
+ * tombe un Chabbat, la fin de la 5e heure (CA 444:2).
+ */
+export function horaires(lieu, iso, enIsrael, minutes, nusah = '') {
+  const jourJ = jour(iso, enIsrael);
+  const jourDemain = jour(lendemain(iso), enIsrael);
+  const aujourdhui = jourJ.chome;
+  const demain = jourDemain.chome;
   // Fête un vendredi (FCALENDRIER-01) : les bougies de Chabbat avant la chki'a, jamais à tsét.
   const [a, m, j] = iso.split('-').map(Number);
-  const veilleDeChabbat = new Date(Date.UTC(a, m - 1, j, 12)).getUTCDay() === 5;
-  const base = Z.jour(lieu, iso);
+  const semaine = new Date(Date.UTC(a, m - 1, j, 12)).getUTCDay();
+  const veilleDeChabbat = semaine === 5;
+  const edot = nusah === 'edot';
+  const base = Z.jour(lieu, iso, nusah);
   const tset = base.find((z) => z.cle === 'tset');
+  const fin = edot ? base.find((z) => z.cle === 'tset_rt') : tset;
+  const apres = semaine === 6 ? fin : tset;
+  const jeune = jourJ.conditions.has(C.JEUNE);
+  const av = jourJ.conditions.has(C.TICHA_BEAV);
+  const veilleAv = jourDemain.conditions.has(C.TICHA_BEAV);
+  const hamets = jourJ.fetes.includes('erev_pessah') ? Z.hamets(lieu, iso, nusah)
+    : veilleDeChabbat && jourDemain.fetes.includes('erev_pessah') ? Z.hamets(lieu, iso, nusah).filter((z) => z.cle === 'hamets_biour') : [];
   const sortie = [];
   for (const z of base) {
     if (z.cle === 'chkia' && demain && (!aujourdhui || veilleDeChabbat)) sortie.push(Z.allumage(lieu, iso, minutes));
+    if (z.cle === 'chkia' && veilleAv) sortie.push({ ...z, cle: 'debut_jeune' });
     sortie.push(z);
-    if (z.cle === 'tset') {
-      if (aujourdhui && !demain) sortie.push({ ...tset, cle: 'sortie' });
-      if (aujourdhui && demain && !veilleDeChabbat) sortie.push({ ...tset, cle: 'allumage', methode: 'apres_tset', parametres: '' });
-    }
+    if (z.cle === 'alot' && jeune && !av) sortie.push({ ...z, cle: 'debut_jeune' });
+    if (z.cle === 'szt_gra') sortie.push(...hamets);
+    if (z.cle === 'tset' && jeune) sortie.push({ ...z, cle: 'fin_jeune' });
+    if (z.cle === fin.cle && aujourdhui && !demain) sortie.push({ ...fin, cle: 'sortie' });
+    if (z.cle === apres.cle && aujourdhui && demain && !veilleDeChabbat) sortie.push({ ...apres, cle: 'allumage', methode: edot ? 'apres_sortie' : 'apres_tset', parametres: '' });
   }
   return sortie;
 }
+
+export const ALLUMAGE_JERUSALEM = 40;
+export const ALLUMAGE_EDOT = 20;
+
+/**
+ * La proposition sous le réglage d'allumage, à Jérusalem (JourAffiche.propositionAllumage, audit du
+ * 16/11) : 40 min, « coutume de Jérusalem », pour Sfard et Ashkenaz ; environ 20 min pour les Edot
+ * (Kitsour Yalkut Yosef 263:47). Une clé de chaîne, ou null.
+ */
+export function propositionAllumage(nusah, mukafChoma, minutes) {
+  if (!mukafChoma) return null;
+  if (nusah === 'edot') return minutes !== ALLUMAGE_EDOT ? 'reglage_allumage_proposition_edot' : null;
+  return minutes !== ALLUMAGE_JERUSALEM ? 'reglage_allumage_proposition' : null;
+}
+
+/** Le libellé « · coutume de Jérusalem » : 40 min, à Jérusalem, hors Edot. */
+export const coutumeJerusalem = (nusah, mukafChoma, minutes) => mukafChoma && nusah !== 'edot' && minutes === ALLUMAGE_JERUSALEM;
 
 /**
  * Le texte du siddour que suggère l'instant [maintenant] (Date) d'après les
@@ -76,12 +112,12 @@ export function horaires(lieu, iso, enIsrael, minutes) {
  * dans les creux ('hatsot – min'ha guedola, chki'a – tsét) ; sans zmanim,
  * les heures fixes de SiddurMoment.
  */
-export function momentDuSiddour(lieu, maintenant) {
+export function momentDuSiddour(lieu, maintenant, nusah = '') {
   const parties = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: lieu.fuseau, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
     .formatToParts(maintenant).map((p) => [p.type, p.value]));
   const iso = `${parties.year}-${parties.month}-${parties.day}`;
   const minutes = Number(parties.hour) * 60 + Number(parties.minute);
-  const instants = (d) => Object.fromEntries(Z.jour(lieu, d).map((x) => [x.cle, x.instant]));
+  const instants = (d) => Object.fromEntries(Z.jour(lieu, d, nusah).map((x) => [x.cle, x.instant]));
   const z = instants(iso);
   // Aube absente autour du solstice (Londres, Berlin, Moscou…) : michéyakir, puis le lever du soleil, en tiennent lieu.
   if (!z.alot) z.alot = z.misheyakir || z.netz;

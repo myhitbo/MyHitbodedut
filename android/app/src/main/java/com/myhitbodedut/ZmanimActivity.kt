@@ -55,7 +55,7 @@ class ZmanimActivity : AppCompatActivity() {
         // Après la sortie des étoiles du lieu, le jour hébreu a déjà changé (la vignette le dit) : la ligne aussi (FCALENDRIER-13).
         if (lieu != null) {
             val maintenantLieu = java.time.ZonedDateTime.now(runCatching { java.time.ZoneId.of(lieu.fuseau) }.getOrDefault(java.time.ZoneId.systemDefault()))
-            val tset = Zmanim.jour(lieu, maintenantLieu.toLocalDate()).firstOrNull { it.cle == "tset" }?.local
+            val tset = Zmanim.jour(lieu, maintenantLieu.toLocalDate(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.local
             val affiche = ZmanimVignette.jourHebreuAffiche(maintenantLieu, tset)
             // Comparée au jour de la carte (celui du téléphone) : rien quand la carte dit déjà ce jour-là.
             if (affiche.isAfter(aujourdhui)) {
@@ -88,9 +88,12 @@ class ZmanimActivity : AppCompatActivity() {
             addView(VueJour.texte(this@ZmanimActivity, getString(R.string.reglage_allumage), 15f, R.color.ink))
             addView(VueJour.texte(this@ZmanimActivity, libelleAllumage(Store.allumage(this@ZmanimActivity)),
                 13f, R.color.muted, haut = 2))
-            // À Jérusalem, l'usage est d'allumer 40 minutes avant : proposé, jamais imposé.
-            if (Store.mukafChoma(this@ZmanimActivity) && Store.allumage(this@ZmanimActivity) != ALLUMAGE_JERUSALEM) {
-                addView(VueJour.texte(this@ZmanimActivity, getString(R.string.reglage_allumage_proposition), 13f, R.color.brand, haut = 2))
+            // À Jérusalem, l'usage du rite est proposé, jamais imposé : 40 min hors Edot, 20 min
+            // pour les Edot (audit du 16/11, JourAffiche.propositionAllumage).
+            JourAffiche.propositionAllumage(Store.siddurNusah(this@ZmanimActivity).cle, Store.mukafChoma(this@ZmanimActivity),
+                Store.allumage(this@ZmanimActivity))?.let { cle ->
+                val res = if (cle == "reglage_allumage_proposition_edot") R.string.reglage_allumage_proposition_edot else R.string.reglage_allumage_proposition
+                addView(VueJour.texte(this@ZmanimActivity, getString(res), 13f, R.color.brand, haut = 2))
             }
             foreground = Apparence.effetToucher(this@ZmanimActivity)
             setOnClickListener { choisirAllumage() }
@@ -123,7 +126,7 @@ class ZmanimActivity : AppCompatActivity() {
 
     /** « 40 min avant la chki'a · coutume de Jérusalem », quand Jérusalem est choisie. */
     private fun libelleAllumage(minutes: Int): String =
-        if (minutes == ALLUMAGE_JERUSALEM && Store.mukafChoma(this)) getString(R.string.reglage_allumage_jerusalem, minutes)
+        if (JourAffiche.coutumeJerusalem(Store.siddurNusah(this).cle, Store.mukafChoma(this), minutes)) getString(R.string.reglage_allumage_jerusalem, minutes)
         else getString(R.string.reglage_allumage_valeur, minutes)
 
     private fun choisirTahanounTichri() {
@@ -155,8 +158,4 @@ class ZmanimActivity : AppCompatActivity() {
         }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
-
-    private companion object {
-        const val ALLUMAGE_JERUSALEM = 40
-    }
 }

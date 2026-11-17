@@ -53,10 +53,50 @@ test('zmanim : la même heure que KosherJava, à une seconde près, et les même
   }
 });
 
+test('zmanim des Edot et heures du ’hamets : la même heure que KosherJava, à une seconde près (audit du 16/11)', () => {
+  let n = 0;
+  for (const r of VECTEURS.zmanim) {
+    const lieu = { nom: r.lieu, latitude: r.lat, longitude: r.lon, altitude: 0, fuseau: r.fuseau };
+    const edot = Z.jour(lieu, r.date, 'edot').filter((z) => Z.CLES_EDOT.includes(z.cle)).map((z) => [`edot_${z.cle}`, z]);
+    const hamets = ['edot', ''].flatMap((nusah) => Z.hamets(lieu, r.date, nusah).map((z, i) => [`hamets_${i}_${nusah || 'commun'}`, z]));
+    for (const [cle, z] of [...edot, ...hamets]) {
+      const attendu = r[cle];
+      const ou = `${r.lieu} ${r.date} ${cle}`;
+      assert.ok(attendu, ou);
+      if (attendu === 'ABSENT') { assert.equal(z.statut, 'absent', ou); continue; }
+      assert.equal(z.statut, 'ok', ou);
+      assert.ok(Math.abs(+z.instant - Date.parse(attendu)) <= 1000, `${ou} : ${z.instant.toISOString()} contre ${attendu}`);
+      n++;
+    }
+  }
+  assert.ok(n > 500, `${n}`);
+});
+
+test('Edot : les zmanim du Yalkut Yosef, avec les écarts relevés par l’audit du 16/11', () => {
+  const [jer, paris, ny] = LIEUX;
+  const t = (l, iso, cle, nusah) => Z.jour(l, iso, nusah).find((z) => z.cle === cle).instant;
+  const ecart = (l, iso, cle) => (+t(l, iso, cle, 'edot') - +t(l, iso, cle)) / 60e3;
+  const hms = (d, f) => new Intl.DateTimeFormat('fr-FR', { timeZone: f, timeStyle: 'medium' }).format(d);
+  // Aube à 72 min zmaniyot (Kitsour YY 89:12) : Jérusalem 2026-12-19, 05:33:20 contre 05:15:56 à 16,1°.
+  assert.equal(hms(t(jer, '2026-12-19', 'alot', 'edot'), jer.fuseau).slice(0, 5), '05:33');
+  // Plag du Yalkut Yosef (263:45) : 18:34:19 contre 18:18:18 selon le Gra, Jérusalem 2026-06-19.
+  assert.equal(hms(t(jer, '2026-06-19', 'plag', 'edot'), jer.fuseau).slice(0, 5), '18:34');
+  assert.ok(Math.abs(ecart(paris, '2026-06-20', 'plag') - 18.2) < 0.5);
+  // Maguen Avraham en 72 min zmaniyot : Jérusalem 2026-06-20, 08:24:38 contre 08:31:19.
+  assert.equal(hms(t(jer, '2026-06-20', 'szks_mga', 'edot'), jer.fuseau).slice(0, 5), '08:24');
+  // Rabbénou Tam en zmaniyot : New York 2026-06-20, 22:01:07 contre 21:42:33.
+  assert.equal(hms(t(ny, '2026-06-20', 'tset_rt', 'edot'), ny.fuseau).slice(0, 5), '22:01');
+  // Le profil commun (Sfard, Ashkenaz) ne bouge pas.
+  for (const nusah of ['sefard', 'ashkenaz']) assert.deepEqual(Z.jour(jer, '2026-06-20', nusah), Z.jour(jer, '2026-06-20'));
+});
+
 test('le profil web est celui d’Android, dans le même ordre', () => {
   const kotlin = readFileSync(join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'java', 'com', 'myhitbodedut', 'Zmanim.kt'), 'utf8');
-  const cles = [...kotlin.matchAll(/^\s+"([a-z_]+)" to Methode\(/gm)].map(([, c]) => c);
-  assert.deepEqual(Z.CLES, cles);
+  const [commun, edot] = kotlin.split('val PROFIL_EDOT');
+  const cles = (texte) => [...texte.matchAll(/^\s+"([a-z_]+)" to Methode\(/gm)].map(([, c]) => c);
+  assert.deepEqual(Z.CLES, cles(commun));
+  // Le profil des Edot (audit du 16/11) : les mêmes lignes remplacées des deux côtés.
+  assert.deepEqual(Z.CLES_EDOT, cles(edot.split('\n    )')[0]));
 });
 
 // --- 2. Hebcal, moteur de comparaison ------------------------------------------------
@@ -224,6 +264,54 @@ test('siddour : chaque annotation désigne encore son bloc, et chaque libellé e
 });
 
 // --- 5. L'onglet Zmanim et le calendrier (JourAfficheTest) ---------------------------
+test('JourAffiche, audit du 16/11 : profil Edot, jeûnes, ’hamets, vendredi de fête, Jérusalem', async () => {
+  const A = await import('../src/js/jour-affiche.js');
+  const parIndex = (l) => Object.fromEntries(l.map((z) => [z.cle, z]));
+  const [jer, paris, ny] = LIEUX;
+  const hm = (d, f) => new Intl.DateTimeFormat('fr-FR', { timeZone: f, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(d);
+  // Vendredi de fête : les dates de l'audit, dans les trois noussa'h.
+  for (const [l, iso, il] of [[jer, '2026-05-22', true], [ny, '2026-04-03', false], [paris, '2024-10-04', false]]) {
+    for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
+      const h = parIndex(A.horaires(l, iso, il, 18, nusah));
+      assert.equal(h.allumage.methode, 'avant_chkia', `${iso} ${nusah}`);
+      assert.ok(+h.allumage.instant < +h.chkia.instant, `${iso} ${nusah}`);
+    }
+  }
+  // Edot : sortie à Rabbénou Tam en zmaniyot ; après Chabbat, l'allumage de la fête suit cette sortie.
+  const samedi = parIndex(A.horaires(jer, '2026-10-17', true, 18, 'edot'));
+  assert.equal(+samedi.sortie.instant, +samedi.tset_rt.instant);
+  const rh1 = parIndex(A.horaires(paris, '2026-09-12', false, 18, 'edot'));
+  assert.equal(rh1.allumage.methode, 'apres_sortie');
+  assert.equal(+rh1.allumage.instant, +rh1.tset_rt.instant);
+  assert.equal(+parIndex(A.horaires(paris, '2025-09-23', false, 18, 'edot')).allumage.instant, +parIndex(A.horaires(paris, '2025-09-23', false, 18, 'edot')).tset.instant);
+  assert.equal(+parIndex(A.horaires(jer, '2026-10-17', true, 18, 'ashkenaz')).sortie.instant, +parIndex(A.horaires(jer, '2026-10-17', true, 18)).tset.instant);
+  // Jeûnes.
+  const teveth = parIndex(A.horaires(paris, '2026-12-20', false, 18));
+  assert.equal(+teveth.debut_jeune.instant, +teveth.alot.instant);
+  assert.equal(+teveth.fin_jeune.instant, +teveth.tset.instant);
+  assert.equal(+parIndex(A.horaires(paris, '2026-07-22', false, 18)).debut_jeune.instant, +parIndex(A.horaires(paris, '2026-07-22', false, 18)).chkia.instant);
+  assert.ok(!('debut_jeune' in parIndex(A.horaires(paris, '2026-07-23', false, 18))));
+  const samediAv = parIndex(A.horaires(paris, '2025-08-02', false, 18));
+  assert.equal(+samediAv.debut_jeune.instant, +samediAv.chkia.instant);
+  assert.ok('sortie' in samediAv);
+  // 'Hamets : Jérusalem 2026-04-01, et le vendredi 2025-04-11 (14 Nissan un Chabbat).
+  const edot = A.horaires(jer, '2026-04-01', true, 18, 'edot').filter((z) => z.cle.startsWith('hamets'));
+  assert.deepEqual(edot.map((z) => z.cle), ['hamets_achila', 'hamets_achila', 'hamets_biour', 'hamets_biour']);
+  assert.equal(hm(edot[0].instant, jer.fuseau), '10:13');
+  assert.deepEqual(A.horaires(jer, '2026-04-01', true, 18, 'ashkenaz').filter((z) => z.cle.startsWith('hamets')).map((z) => hm(z.instant, jer.fuseau)),
+    ['10:14', '10:38', '11:28', '11:40']);
+  assert.deepEqual(A.horaires(jer, '2025-04-11', true, 18).filter((z) => z.cle.startsWith('hamets')).map((z) => z.cle), ['hamets_biour', 'hamets_biour']);
+  // Jérusalem : 40 min hors Edot, 20 min pour les Edot.
+  assert.equal(A.propositionAllumage('edot', true, 40), 'reglage_allumage_proposition_edot');
+  assert.equal(A.propositionAllumage('edot', true, 20), null);
+  assert.equal(A.propositionAllumage('sefard', true, 18), 'reglage_allumage_proposition');
+  assert.equal(A.propositionAllumage('ashkenaz', false, 18), null);
+  assert.ok(!A.coutumeJerusalem('edot', true, 40) && A.coutumeJerusalem('sefard', true, 40));
+  // Edot : pas de Cha'harit avant l'aube du Yalkut Yosef (Paris, 2026-12-21 à 07:30).
+  const t = new Date('2026-12-21T06:30:00Z');
+  assert.equal(A.momentDuSiddour(paris, t, 'sefard'), 'chaharit');
+  assert.notEqual(A.momentDuSiddour(paris, t, 'edot'), 'chaharit');
+});
 test('JourAffiche : allumage, sortie, ajouts nommés et grille, comme Android', async () => {
   const A = await import('../src/js/jour-affiche.js');
   const parIndex = (l) => Object.fromEntries(l.map((z) => [z.cle, z]));
