@@ -101,7 +101,8 @@ object JourAffiche {
      *
      * Le profil suit le [nusah] (audit du 16/11, Zmanim.PROFIL_EDOT). Pour les Edot, la sortie de
      * Chabbat ou de fête est Rabbénou Tam en 72 min zmaniyot, que le Yalkut Yosef recommande
-     * (Kitsour YY 293:3 et 293:7) ; la ligne tsét (Gueonim, 13,5 min zmaniyot) reste affichée.
+     * (Kitsour YY 293:3 et 293:7) ; la ligne tsét (Gueonim, 13,5 min zmaniyot) reste affichée, et, au choix
+     * du propriétaire (17/11), une seconde sortie à cette heure-là, « selon les Gueonim ».
      * L'allumage d'un deuxième jour de fête suit le tsét du rite ; après Chabbat, la sortie.
      *
      * Ajouts de l'audit du 16/11, à titre d'information :
@@ -138,7 +139,12 @@ object JourAffiche {
             if (z.cle == "alot" && jeune && C.TICHA_BEAV !in jourJ.conditions) sortie += z.copy(cle = "debut_jeune")
             if (z.cle == "szt_gra") sortie += hamets
             if (z.cle == "tset" && jeune) sortie += z.copy(cle = "fin_jeune")
-            if (z.cle == fin.cle && aujourdhui && !demain) sortie += fin.copy(cle = "sortie")
+            // Edot : les deux sorties, au choix du propriétaire (17/11) : tsét des Gueonim, puis Rabbénou Tam.
+            if (edot && z.cle == "tset" && aujourdhui && !demain) sortie += z.copy(cle = "sortie_gueonim")
+            if (z.cle == fin.cle && aujourdhui && !demain) {
+                sortie += if (edot) fin.copy(cle = "sortie", methode = fin.methode.copy(cle = "rabbenou_tam_zmaniyot"))
+                    else fin.copy(cle = "sortie")
+            }
             val apres = if (samedi) fin else tset
             if (z.cle == apres.cle && aujourdhui && demain && !veilleDeChabbat) {
                 sortie += apres.copy(cle = "allumage", methode = Zmanim.Methode(if (edot) "apres_sortie" else "apres_tset", ""))

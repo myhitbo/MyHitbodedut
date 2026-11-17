@@ -325,7 +325,7 @@ object VueJour {
         val heure = DateTimeFormatter.ofPattern("HH:mm")
         val langue = ChizukCard.language(c)
         JourAffiche.horaires(lieu, date, enIsrael, Store.allumage(c), Store.siddurNusah(c).cle).forEachIndexed { i, z ->
-            val chabbat = z.cle == "allumage" || z.cle == "sortie"
+            val chabbat = z.cle == "allumage" || z.cle.startsWith("sortie")
             val ligne = LinearLayout(c).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL

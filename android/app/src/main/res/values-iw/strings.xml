@@ -761,6 +761,7 @@
     <string name="zman_tset_rt">צאת הכוכבים לר״ת</string>
     <string name="zman_chatsot_layla">חצות הלילה</string>
     <string name="zman_allumage">הדלקת נרות</string>
+    <string name="zman_sortie_gueonim">צאת שבת או חג, לדעת הגאונים</string>
     <string name="zman_sortie">צאת שבת או חג</string>
     <string name="zman_debut_jeune">תחילת הצום</string>
     <string name="zman_fin_jeune">סוף הצום</string>
@@ -777,6 +778,7 @@
     <string name="zman_methode_apres_tset">לא לפני צאת הכוכבים של היום (⁦8.5°⁩)</string>
     <string name="zman_methode_apres_sortie">לא לפני צאת היום, לפי ילקוט יוסף</string>
     <string name="zman_methode_zmaniyot_avant_netz">⁦%1$s⁩ דקות זמניות לפני הנץ (ילקוט יוסף)</string>
+    <string name="zman_methode_rabbenou_tam_zmaniyot">רבנו תם, %1$s דקות זמניות אחרי השקיעה (ילקוט יוסף)</string>
     <string name="zman_methode_zmaniyot_apres_chkia">⁦%1$s⁩ דקות זמניות אחרי השקיעה (ילקוט יוסף)</string>
     <string name="zman_methode_mga_72_zmaniyot">היום מ־%1$s דקות זמניות לפני הנץ עד %1$s דקות זמניות אחרי השקיעה (ילקוט יוסף)</string>
     <string name="zman_methode_plag_yalkut_yosef">שעה ורבע זמנית לפני צאת הכוכבים, ⁦13.5⁩ דקות זמניות אחרי השקיעה (ילקוט יוסף)</string>

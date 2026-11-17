@@ -283,6 +283,11 @@ test('JourAffiche, audit du 16/11 : profil Edot, jeûnes, ’hamets, vendredi de
   }
   // Edot : sortie à Rabbénou Tam en zmaniyot ; après Chabbat, l'allumage de la fête suit cette sortie.
   const samedi = parIndex(A.horaires(jer, '2026-10-17', true, 18, 'edot'));
+  // Les deux sorties, au choix du propriétaire (17/11) : Gueonim à tsét, puis Rabbénou Tam.
+  assert.equal(+samedi.sortie_gueonim.instant, +samedi.tset.instant);
+  assert.ok(+samedi.sortie_gueonim.instant < +samedi.sortie.instant);
+  assert.equal(samedi.sortie.methode, 'rabbenou_tam_zmaniyot');
+  assert.ok(!('sortie_gueonim' in parIndex(A.horaires(jer, '2026-10-17', true, 18, 'ashkenaz'))));
   assert.equal(+samedi.sortie.instant, +samedi.tset_rt.instant);
   const rh1 = parIndex(A.horaires(paris, '2026-09-12', false, 18, 'edot'));
   assert.equal(rh1.allumage.methode, 'apres_sortie');

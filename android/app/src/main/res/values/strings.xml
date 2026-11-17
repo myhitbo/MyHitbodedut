@@ -795,6 +795,7 @@
     <string name="zman_tset_rt">Tsét, Rabbénou Tam</string>
     <string name="zman_chatsot_layla">’Hatsot de la nuit</string>
     <string name="zman_allumage">Allumage des bougies</string>
+    <string name="zman_sortie_gueonim">Sortie de Chabbat ou de fête, selon les Gueonim</string>
     <string name="zman_sortie">Sortie de Chabbat ou de fête</string>
     <string name="zman_debut_jeune">Début du jeûne</string>
     <string name="zman_fin_jeune">Fin du jeûne</string>
@@ -811,6 +812,7 @@
     <string name="zman_methode_apres_tset">pas avant la sortie des étoiles de ce jour (8,5°)</string>
     <string name="zman_methode_apres_sortie">pas avant la sortie de ce jour, selon le Yalkut Yosef</string>
     <string name="zman_methode_zmaniyot_avant_netz">%1$s min zmaniyot avant le lever (Yalkut Yosef)</string>
+    <string name="zman_methode_rabbenou_tam_zmaniyot">Rabbénou Tam, %1$s min zmaniyot après le coucher (Yalkut Yosef)</string>
     <string name="zman_methode_zmaniyot_apres_chkia">%1$s min zmaniyot après le coucher (Yalkut Yosef)</string>
     <string name="zman_methode_mga_72_zmaniyot">journée de %1$s min zmaniyot avant le lever à %1$s min zmaniyot après le coucher (Yalkut Yosef)</string>
     <string name="zman_methode_plag_yalkut_yosef">1¼ heure zmanit avant la sortie des étoiles, 13,5 min zmaniyot après le coucher (Yalkut Yosef)</string>

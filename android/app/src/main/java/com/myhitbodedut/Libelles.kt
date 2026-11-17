@@ -187,6 +187,7 @@ object Libelles {
         "zman_methode_minutes" -> R.string.zman_methode_minutes
         "zman_methode_niveau_mer" -> R.string.zman_methode_niveau_mer
         "zman_methode_plag_yalkut_yosef" -> R.string.zman_methode_plag_yalkut_yosef
+        "zman_methode_rabbenou_tam_zmaniyot" -> R.string.zman_methode_rabbenou_tam_zmaniyot
         "zman_methode_zmaniyot_apres_chkia" -> R.string.zman_methode_zmaniyot_apres_chkia
         "zman_methode_zmaniyot_avant_netz" -> R.string.zman_methode_zmaniyot_avant_netz
         "zman_minha_gedola" -> R.string.zman_minha_gedola
@@ -195,6 +196,7 @@ object Libelles {
         "zman_netz" -> R.string.zman_netz
         "zman_plag" -> R.string.zman_plag
         "zman_sortie" -> R.string.zman_sortie
+        "zman_sortie_gueonim" -> R.string.zman_sortie_gueonim
         "zman_szks_gra" -> R.string.zman_szks_gra
         "zman_szks_mga" -> R.string.zman_szks_mga
         "zman_szt_gra" -> R.string.zman_szt_gra

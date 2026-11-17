@@ -71,7 +71,12 @@ class JourAfficheTest {
     fun `Edot - sortie a Rabbenou Tam en zmaniyot, tset du Yalkut Yosef (audit du 16-11)`() {
         val samedi = JourAffiche.horaires(jerusalem, LocalDate.parse("2026-10-17"), true, 18, "edot").associateBy { it.cle }
         assertEquals(samedi.getValue("tset_rt").instant, samedi.getValue("sortie").instant)
-        assertEquals("zmaniyot_apres_chkia", samedi.getValue("sortie").methode.cle)
+        assertEquals("rabbenou_tam_zmaniyot", samedi.getValue("sortie").methode.cle)
+        assertEquals(samedi.getValue("tset_rt").methode.parametres, samedi.getValue("sortie").methode.parametres)
+        // Les deux sorties, au choix du propriétaire (17/11) : Gueonim à tsét, puis Rabbénou Tam.
+        assertEquals(samedi.getValue("tset").instant, samedi.getValue("sortie_gueonim").instant)
+        assertTrue(samedi.getValue("sortie_gueonim").instant!! < samedi.getValue("sortie").instant!!)
+        assertFalse(JourAffiche.horaires(jerusalem, LocalDate.parse("2026-10-17"), true, 18, "ashkenaz").any { it.cle == "sortie_gueonim" })
         assertEquals("13.5", samedi.getValue("tset").methode.parametres)
         // Fête puis fête (Roch Hachana 5787, diaspora, samedi puis dimanche) : après la sortie de Chabbat.
         val rh1 = JourAffiche.horaires(paris, LocalDate.parse("2026-09-12"), false, 18, "edot").associateBy { it.cle }

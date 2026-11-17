@@ -745,6 +745,7 @@
     <string name="zman_tset_rt">Nightfall, Rabbeinu Tam</string>
     <string name="zman_chatsot_layla">Midnight (Chatzot)</string>
     <string name="zman_allumage">Candle lighting</string>
+    <string name="zman_sortie_gueonim">End of Shabbat or festival, per the Geonim</string>
     <string name="zman_sortie">End of Shabbat or holiday</string>
     <string name="zman_debut_jeune">Fast begins</string>
     <string name="zman_fin_jeune">Fast ends</string>
@@ -761,6 +762,7 @@
     <string name="zman_methode_apres_tset">not before nightfall today (8.5°)</string>
     <string name="zman_methode_apres_sortie">not before the end of this day, per Yalkut Yosef</string>
     <string name="zman_methode_zmaniyot_avant_netz">%1$s seasonal minutes before sunrise (Yalkut Yosef)</string>
+    <string name="zman_methode_rabbenou_tam_zmaniyot">Rabbeinu Tam, %1$s zmaniyot minutes after sunset (Yalkut Yosef)</string>
     <string name="zman_methode_zmaniyot_apres_chkia">%1$s seasonal minutes after sunset (Yalkut Yosef)</string>
     <string name="zman_methode_mga_72_zmaniyot">day from %1$s seasonal minutes before sunrise to %1$s after sunset (Yalkut Yosef)</string>
     <string name="zman_methode_plag_yalkut_yosef">1¼ seasonal hours before nightfall, 13.5 seasonal minutes after sunset (Yalkut Yosef)</string>

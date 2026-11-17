@@ -92,7 +92,9 @@ export function horaires(lieu, iso, enIsrael, minutes, nusah = '') {
     if (z.cle === 'alot' && jeune && !av) sortie.push({ ...z, cle: 'debut_jeune' });
     if (z.cle === 'szt_gra') sortie.push(...hamets);
     if (z.cle === 'tset' && jeune) sortie.push({ ...z, cle: 'fin_jeune' });
-    if (z.cle === fin.cle && aujourdhui && !demain) sortie.push({ ...fin, cle: 'sortie' });
+    // Edot : les deux sorties, au choix du propriétaire (17/11) : tsét des Gueonim, puis Rabbénou Tam.
+    if (edot && z.cle === 'tset' && aujourdhui && !demain) sortie.push({ ...z, cle: 'sortie_gueonim' });
+    if (z.cle === fin.cle && aujourdhui && !demain) sortie.push(edot ? { ...fin, cle: 'sortie', methode: 'rabbenou_tam_zmaniyot' } : { ...fin, cle: 'sortie' });
     if (z.cle === apres.cle && aujourdhui && demain && !veilleDeChabbat) sortie.push({ ...apres, cle: 'allumage', methode: edot ? 'apres_sortie' : 'apres_tset', parametres: '' });
   }
   return sortie;
