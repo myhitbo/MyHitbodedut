@@ -83,17 +83,24 @@ export function pour(livre, iso, il) {
   return du(livre.periodes[p] ?? [], rang, longueur(iso, il));
 }
 
+// Le livre mis à plat une seule fois (check-up du 11/11) : chaque frappe le renormalisait en entier.
+const aPlat = new WeakMap();
 export function recherche(livre, texte) {
   const nu = (t) => t.replace(/[־׀]/g, ' ').replace(/[֑-ׇ"'״׳]/g, '');
   const q = nu(texte.trim());
   if (q.length < 2) return [];
-  const vus = new Set();
-  return Object.values(livre.periodes).flat().filter((x) => {
-    const cle = `${x.p}|${x.l}`;
-    if (vus.has(cle)) return false;
-    vus.add(cle);
-    return nu(x.t).includes(q) || nu(x.s).includes(q);
-  });
+  let seifs = aPlat.get(livre);
+  if (!seifs) {
+    const vus = new Set();
+    seifs = Object.values(livre.periodes).flat().filter((x) => {
+      const cle = `${x.p}|${x.l}`;
+      if (vus.has(cle)) return false;
+      vus.add(cle);
+      return true;
+    }).map((x) => ({ x, t: nu(x.t), s: nu(x.s) }));
+    aPlat.set(livre, seifs);
+  }
+  return seifs.filter((e) => e.t.includes(q) || e.s.includes(q)).map((e) => e.x);
 }
 
 /** « ילקוט יוסף · סימן א - הלכות השכמת הבוקר · סעיף ב » */
