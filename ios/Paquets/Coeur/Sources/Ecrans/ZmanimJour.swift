@@ -285,7 +285,9 @@ public enum ZmanimVueJour {
         }
         if let paracha = j.paracha { marques.append(Libelle("zmanim_paracha", .texte(paracha))) }
         if omerCeSoir > 0 { marques.append(Libelle("zmanim_omer_ce_soir", .entier(omerCeSoir))) }
-        let cles = JourAffiche.ajouts(j.conditions, nusah: c.reglages.siddurNusah, enIsrael: enIsrael,
+        // « Pas de Ta'hanoun aujourd'hui » compte dans les ajouts (Store.conditionsDuJour).
+        let conditions = SiddurJour.avecSansTahanoun(j.conditions, c.reglages.sansTahanounLe(date))
+        let cles = JourAffiche.ajouts(conditions, nusah: c.reglages.siddurNusah, enIsrael: enIsrael,
                                       sansTahanounFinTichri: c.reglages.sansTahanounFinTichri,
                                       sud: c.reglages.hemisphereSud)
         var ajouts: [Libelle] = []

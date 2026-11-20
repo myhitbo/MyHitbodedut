@@ -462,7 +462,9 @@ struct ZmanimEcranTests {
 
     @Test func lAllumageProposeLaCoutumeDeJerusalem() async throws {
         let jerusalem = try await ZmanimEssais.ville(ZmanimEssais.jerusalem)
-        let (modele, _) = try await fabriquer(ZmanimEssais.reglages(jerusalem), "2026-10-12", fuseau: "Asia/Jerusalem")
+        // Hors Edot, 40 minutes (audit du 16/11, JourAffiche.propositionAllumage).
+        let (modele, _) = try await fabriquer(ZmanimEssais.reglages(jerusalem, nusah: .sefard), "2026-10-12",
+                                              fuseau: "Asia/Jerusalem")
         let carte = modele.allumageCarte
         #expect(carte.titre == Libelle("reglage_allumage"))
         #expect(carte.valeur == Libelle("reglage_allumage_valeur", .entier(18)))
@@ -487,6 +489,84 @@ struct ZmanimEcranTests {
         let carteParis = ailleurs.allumageCarte
         #expect(carteParis.valeur == Libelle("reglage_allumage_valeur", .entier(40)))
         #expect(carteParis.proposition == nil)
+        // Les Edot de Jérusalem : 20 minutes proposées, et 40 n'est pas « la coutume de Jérusalem ».
+        let (edot, _) = try await fabriquer(ZmanimEssais.reglages(jerusalem, nusah: .edot), "2026-10-12",
+                                            fuseau: "Asia/Jerusalem")
+        #expect(edot.allumageCarte.proposition == Libelle("reglage_allumage_proposition_edot"))
+        #expect(edot.allumageCarte.options.last?.libelle == Libelle("reglage_allumage_valeur", .entier(40)))
+        try await edot.choisirAllumage(20)
+        #expect(edot.allumageCarte.proposition == nil)
+    }
+
+    // MARK: Sous la carte du jour (audit du 16/11)
+
+    /// Un lieu de l'autre région pose la question ; la réponse règle la région à la main et la question tombe.
+    @Test func laQuestionDeLaRegion() async throws {
+        let paris = try await ZmanimEssais.ville(ZmanimEssais.paris)
+        var reglages = ZmanimEssais.reglages(paris)
+        reglages.setRegionProposee(true)
+        let (modele, magasin) = try await fabriquer(reglages, "2026-10-12", fuseau: "Europe/Paris")
+        let q = try #require(modele.questionRegion)
+        #expect(q.question == Libelle("region_proposee_israel"))
+        #expect(q.accepter == Libelle("region_proposee_israel_oui"))
+        #expect(q.garder == Libelle("region_proposee_garder"))
+        try await modele.repondreRegion(accepter: true)
+        #expect(modele.questionRegion == nil)
+        #expect(modele.enIsrael)
+        #expect(magasin.reglages.inIsraelManuel)
+
+        var autre = ZmanimEssais.reglages(paris)
+        autre.setRegionProposee(true)
+        let (garde, magasinGarde) = try await fabriquer(autre, "2026-10-12", fuseau: "Europe/Paris")
+        let avant = garde.enIsrael
+        try await garde.repondreRegion(accepter: false)
+        #expect(garde.questionRegion == nil)
+        #expect(garde.enIsrael == avant)
+        #expect(magasinGarde.reglages.inIsraelManuel)
+    }
+
+    /// Un ben 'houl à Jérusalem le 22 Tichri 5787 (Chemini Atseret en Israël, Yom tov chéni en diaspora : le
+    /// 4 octobre 2026 n'est chômé qu'en diaspora) : la note du voyageur.
+    @Test func laNoteDuVoyageurEtLaLigneDeDate() async throws {
+        let jerusalem = try await ZmanimEssais.ville(ZmanimEssais.jerusalem)
+        var reglages = ZmanimEssais.reglages(jerusalem)
+        reglages.setInIsrael(false, manuel: true, aujourdhui: JourCivil(iso: "2026-10-01")!, fuseauTelephone: "Asia/Jerusalem")
+        let attendue = JourAffiche.noteYomTovCheni(JourCivil(iso: "2026-10-04")!, statutIsrael: false, lieuEnIsrael: true,
+                                                   nusah: .edot)
+        #expect(attendue != nil)
+        let (modele, _) = try await fabriquer(reglages, "2026-10-04", fuseau: "Asia/Jerusalem")
+        #expect(modele.noteYomTovCheni?.cle == attendue)
+        #expect(modele.ligneDateDiscutee == nil)
+        let tokyo = Zmanim.Lieu(nom: "Tokyo", latitude: 35.68, longitude: 139.69, fuseau: "Asia/Tokyo")
+        var japon = Reglages()
+        japon.setLieuZmanim(tokyo, ville: nil, maintenant: 0)
+        let (loin, _) = try await fabriquer(japon, "2026-10-12", fuseau: "Asia/Tokyo")
+        #expect(loin.ligneDateDiscutee == Libelle("ligne_date_discutee"))
+    }
+
+    /// Après la sortie des étoiles, le jour hébreu a changé : la ligne le dit ; le matin, rien.
+    @Test func leJourHebreuDepuisTset() async throws {
+        let paris = try await ZmanimEssais.ville(ZmanimEssais.paris)
+        let (soir, _) = try await fabriquer(ZmanimEssais.reglages(paris), "2026-10-12", heure: 22, fuseau: "Europe/Paris")
+        let demain = CalendrierJuif.jour(JourCivil(iso: "2026-10-13")!, enIsrael: soir.enIsrael).dateHebraique
+        #expect(soir.depuisTset == Libelle("zmanim_depuis_tset", .texte(demain)))
+        let (matin, _) = try await fabriquer(ZmanimEssais.reglages(paris), "2026-10-12", heure: 9, fuseau: "Europe/Paris")
+        #expect(matin.depuisTset == nil)
+    }
+
+    /// « Pas de Ta'hanoun aujourd'hui » : pour ce jour seulement, et il compte dans les ajouts du jour.
+    @Test func pasDeTahanounAujourdhui() async throws {
+        let paris = try await ZmanimEssais.ville(ZmanimEssais.paris)
+        let (modele, magasin) = try await fabriquer(ZmanimEssais.reglages(paris), "2026-11-16", fuseau: "Europe/Paris")
+        #expect(modele.sansTahanounCarte.valeur == Libelle("reglage_sans_tahanoun_jour_non"))
+        #expect(!modele.sansTahanounCarte.actif)
+        try await modele.basculerSansTahanounAujourdhui()
+        #expect(modele.sansTahanounCarte.actif)
+        #expect(modele.sansTahanounCarte.valeur == Libelle("reglage_sans_tahanoun_jour_oui"))
+        let lendemain = magasin.reglages.sansTahanounLe(JourCivil(iso: "2026-11-17")!)
+        #expect(!lendemain)
+        try await modele.basculerSansTahanounAujourdhui()
+        #expect(!modele.sansTahanounCarte.actif)
     }
 
     @Test func tahanounDeFinDeTichriEnSfardSeulement() async throws {

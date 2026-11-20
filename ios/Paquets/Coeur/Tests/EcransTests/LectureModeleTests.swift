@@ -134,9 +134,15 @@ struct LectureModeleTests {
         let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(nusah), jour: jourOrdinaire())
         await m.charger()
         #expect(m.etat == .pret)
-        // En tête, la note du jour : la date hébraïque qui décide des ajouts, et la région.
-        guard case .note(let note)? = m.lignes.first?.contenu else {
+        // En tête, en français, la note du siddour sans traduction (COUV-02), puis celle du jour : la date hébraïque
+        // qui décide des ajouts, et la région.
+        guard case .note(let premiere)? = m.lignes.first?.contenu else {
             Issue.record("pas de note en tête")
+            return
+        }
+        #expect(premiere.cle == "lecture_sans_traduction")
+        guard m.lignes.count > 1, case .note(let note) = m.lignes[1].contenu else {
+            Issue.record("pas de note du jour")
             return
         }
         #expect(note.cle == "siddur_jour_ajouts")
@@ -258,6 +264,45 @@ struct LectureModeleTests {
         return nil
     }
 
+    // MARK: Le jour de la prière, les notes de traduction (audit du 16/11)
+
+    /// Sans lieu, la nuit va de 19 h à 6 h : la condition « nuit » s'ajoute au jour de la prière (la Méguila).
+    @Test func laNuitSAjouteAuJourDeLaPriere() throws {
+        let (soir, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire(), heure: 22)
+        let nuit = soir.jourDeLaPriere.conditions.contains(CalendrierJuif.C.nuit)
+        #expect(nuit)
+        let (matin, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: jourOrdinaire(), heure: 10)
+        let jour = matin.jourDeLaPriere.conditions.contains(CalendrierJuif.C.nuit)
+        #expect(!jour)
+    }
+
+    /// Un livre traduit en partie, ou automatiquement : on le dit quand une autre langue que l'hébreu est demandée.
+    @Test func lesNotesDeTraduction() {
+        let partielle = LectureModele.notesDeTraduction(livre: true, traduit: true, chapitresTraduits: 3, chapitres: 10,
+                                                        auto: true, langues: .heFr).map(\.libelle)
+        #expect(partielle == [Libelle("lecture_traduction_partielle", .entier(3), .entier(10)),
+                              Libelle("lecture_traduction_auto")])
+        let hebreu = LectureModele.notesDeTraduction(livre: true, traduit: true, chapitresTraduits: 3, chapitres: 10,
+                                                     auto: true, langues: .he)
+        #expect(hebreu.isEmpty)
+        let siddour = LectureModele.notesDeTraduction(livre: false, traduit: true, chapitresTraduits: 3, chapitres: 10,
+                                                      auto: true, langues: .heFr)
+        #expect(siddour.isEmpty)
+        let complet = LectureModele.notesDeTraduction(livre: true, traduit: true, chapitresTraduits: 10, chapitres: 10,
+                                                      auto: false, langues: .heEn)
+        #expect(complet.isEmpty)
+    }
+
+    /// « Pas de Ta'hanoun aujourd'hui » (ZmanimActivity) : la condition ponctuelle vaut pour la tefila du jour.
+    @Test func pasDeTahanounAujourdhui() throws {
+        var r = reglages(.edot)
+        let date = try jourOrdinaire()
+        r.setSansTahanounLe(date, sans: true)
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: r, jour: date, heure: 8)
+        let conditions = SiddurJour.avecSansTahanoun(m.jourDeLaPriere.conditions, r.sansTahanounLe(date))
+        #expect(conditions.contains(CalendrierJuif.C.sansTahanounPonctuel))
+    }
+
     // MARK: Likoutei Moharan : le signet 300, la taille, la reprise (critère de la feuille de route)
 
     @Test func likouteiMoharanAuSignet300LaTailleGardeLeMemeBloc() async throws {
@@ -269,11 +314,18 @@ struct LectureModeleTests {
         try #require(signets.count > 300)
         #expect(signets[300].texte == "תנינא תורה טו")
 
-        m.allerAuSignet(300)
+        // 411 chapitres : un bouton « Chapitres (411) » et une liste filtrable, non une bande (FLECTURE-03).
+        #expect(m.enChapitres)
+        #expect(m.boutonChapitres?.nombre == 411)
+        m.filtreChapitres = "תנינא תורה טו"
+        let trouves = m.chapitresFiltres.map(\.id)
+        #expect(trouves.contains(300))
+        m.ouvrirChapitre(300)
+        #expect(m.filtreChapitres.isEmpty)
         let demande = try #require(m.defilement)
         #expect(demande.ligne == signets[300].ligne)
         #expect(!demande.anime)
-        #expect(m.signetActif == 300)
+        #expect(m.signetActif == nil)
 
         // La vue montre le titre et les paragraphes qui le suivent.
         let rangTrouve = m.lignes.firstIndex { $0.id == signets[300].ligne }
@@ -281,7 +333,6 @@ struct LectureModeleTests {
         m.visibles(m.lignes[rang..<(rang + 6)].map { $0.id }, enBas: false)
         let tete = try #require(m.ligneDeTete?.id)
         #expect(tete == signets[300].ligne)
-        #expect(m.signetActif == 300)
 
         try await m.changerTaille(plus: true)
         #expect(m.pourcent == 110)
@@ -303,7 +354,9 @@ struct LectureModeleTests {
         try await m.quitter()
         let gardee = LecturePreferences.positionLecture(magasin.reglages, cle: "l:likoutei_moharan",
                                                         maintenant: Int64.max / 2)
-        #expect(gardee == rang)
+        // Le rang a pu bouger d'une ligne : en hébreu seul, la note de la traduction partielle n'est plus là.
+        let rangFinal = m.lignes.firstIndex { $0.id == tete }
+        #expect(gardee == rangFinal)
         #expect(LecturePreferences.derniereLecture(magasin.reglages) == "l:likoutei_moharan")
         let lendemain = HorlogeFixe(DateHeure(try #require(JourCivil(iso: "2026-11-18")), heure: 9), fuseau: try fuseau())
         let rouvert = LectureModele(magasin: magasin, contenus: Self.contenus, horloge: lendemain, langue: "fr",

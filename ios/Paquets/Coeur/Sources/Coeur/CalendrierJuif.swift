@@ -224,6 +224,14 @@ public enum CalendrierJuif {
         public let conditions: Set<String>
         /// Le Chabbat spécial (Chekalim, Zakhor, Para, ha'Hodech…), en hébreu ; nil les autres jours (audit du 16/11).
         public var parachaSpeciale: String? = nil
+
+        /// Le même jour avec d'autres conditions (`j.copy(conditions = …)` : la nuit pour la lecture, 16/11).
+        public func avecConditions(_ conditions: Set<String>) -> Jour {
+            Jour(date: date, enIsrael: enIsrael, dateHebraique: dateHebraique, jourEnLettres: jourEnLettres,
+                 jourHebreu: jourHebreu, moisHebreu: moisHebreu, anneeHebraique: anneeHebraique, moisEtAnnee: moisEtAnnee,
+                 fetes: fetes, omer: omer, paracha: paracha, chome: chome, conditions: conditions,
+                 parachaSpeciale: parachaSpeciale)
+        }
     }
 
     /// Jérusalem, ville murée depuis Josué : Pourim y est le 15 Adar (Chouchan Pourim).

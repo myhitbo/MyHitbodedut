@@ -190,17 +190,30 @@ public final class LectureModele {
 
     /// Le jour hébreu dont relève cette prière maintenant : Arvit, l'après-midi, est déjà celui de demain ; après
     /// la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
+    ///
+    /// La nuit (audit du 16/11 : la Méguila n'a pas les mêmes bénédictions le soir et le matin), la condition
+    /// `nuit` s'ajoute : après la sortie des étoiles ou avant l'aube du lieu, de 19 h à 6 h sans lieu. Les zmanim
+    /// sont ceux du noussa'h (les Edot sortent à 13,5 min zmaniyot).
     public var jourDeLaPriere: CalendrierJuif.Jour {
         let reglages = magasin.reglages
         let aujourdhui = horloge.aujourdhui
-        var apresSortie = false
-        if let lieu = reglages.lieuZmanim,
-           let sortie = Zmanim.jour(lieu: lieu, date: aujourdhui).first(where: { $0.cle == "tset" })?.instant {
-            apresSortie = horloge.maintenant >= Int64((sortie.timeIntervalSince1970 * 1000).rounded(.down))
+        let heure = horloge.dateHeure.heure
+        var apresSortie: Bool? = nil
+        var avantAube: Bool? = nil
+        if let lieu = reglages.lieuZmanim {
+            let zmanim = Zmanim.jour(lieu: lieu, date: aujourdhui, nusah: reglages.siddurNusah)
+            if let sortie = zmanim.first(where: { $0.cle == "tset" })?.instant {
+                apresSortie = horloge.maintenant >= Int64((sortie.timeIntervalSince1970 * 1000).rounded(.down))
+            }
+            if let aube = zmanim.first(where: { $0.cle == "alot" })?.instant {
+                avantAube = horloge.maintenant < Int64((aube.timeIntervalSince1970 * 1000).rounded(.down))
+            }
         }
-        let date = CalendrierJuif.jourDeLaPriere(cible.id, date: aujourdhui, heure: horloge.dateHeure.heure,
-                                                 apresSortie: apresSortie)
-        return CalendrierJuif.jour(date, enIsrael: enIsrael, mukafChoma: reglages.mukafChoma)
+        let date = CalendrierJuif.jourDeLaPriere(cible.id, date: aujourdhui, heure: heure,
+                                                 apresSortie: apresSortie ?? false)
+        let jour = CalendrierJuif.jour(date, enIsrael: enIsrael, mukafChoma: reglages.mukafChoma)
+        guard CalendrierJuif.nuit(heure: heure, apresSortie: apresSortie, avantAube: avantAube) else { return jour }
+        return jour.avecConditions(jour.conditions.union([CalendrierJuif.C.nuit]))
     }
 
     /// Refait les lignes d'après le texte lu, le jour, les replis ouverts, les marque-pages et les réglages.
@@ -209,22 +222,34 @@ public final class LectureModele {
         let reglages = magasin.reglages
         let modeLangues = langues
         var notes: [(id: String, libelle: Libelle)] = []
-        // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
-        let traduit = texte.sections.contains { s in s.blocs.contains { $0.fr != nil || $0.en != nil } }
-        if cible.livre && LanguesTexte.manque(modeLangues, aTraduction: traduit) {
+        // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste. Une consigne
+        // traduite (TEFILA-02) ne fait pas d'un texte un texte traduit ; le siddour aussi le dit (COUV-02).
+        let traduit = texte.sections.contains { s in s.blocs.contains { !$0.consigne && ($0.fr != nil || $0.en != nil) } }
+        if LanguesTexte.manque(modeLangues, aTraduction: traduit) {
             notes.append((id: "traduction", libelle: Libelle("lecture_sans_traduction")))
         }
+        notes += LectureModele.notesDeTraduction(livre: cible.livre, traduit: traduit,
+                                                 chapitresTraduits: texte.chapitresTraduits(),
+                                                 chapitres: texte.sections.count, auto: texte.traductionAuto,
+                                                 langues: modeLangues)
         let jourLignes: [SiddurJour.Ligne]
         if cible.livre {
             jourLignes = SiddurJour.lignes(texte, [], [], nusah: reglages.siddurNusah)
         } else {
             let israel = enIsrael
             let jour = jourDeLaPriere
-            if !annotations.isEmpty {
+            // Un texte qui n'a que des notes de l'application (audit du 16/11) n'a pas d'ajouts du jour.
+            if !annotations.allSatisfy({ $0.sorte == .note }) {
                 notes.append((id: "jour", libelle: Libelle("siddur_jour_ajouts", .texte(jour.dateHebraique),
                                                            .libelle(Libelle(israel ? "region_israel" : "region_diaspora")))))
             }
-            jourLignes = SiddurJour.lignes(texte, annotations, jour.conditions, ouverts: ouverts,
+            // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
+            if JourAffiche.offices.contains(cible.id) && jour.chome {
+                notes.append((id: "semaine", libelle: Libelle("siddur_semaine_chabbat")))
+            }
+            // « Pas de Ta'hanoun aujourd'hui » (ZmanimActivity) vaut pour la tefila du jour (Store.conditionsDuJour).
+            let conditions = SiddurJour.avecSansTahanoun(jour.conditions, reglages.sansTahanounLe(jour.date))
+            jourLignes = SiddurJour.lignes(texte, annotations, conditions, ouverts: ouverts,
                                            nusah: reglages.siddurNusah, enIsrael: israel,
                                            sansTahanounFinTichri: reglages.sansTahanounFinTichri,
                                            sud: reglages.hemisphereSud)
@@ -432,10 +457,46 @@ public final class LectureModele {
 
     /// Le signet de la section qu'on lit (SignetsSiddur.courant), ou celui qu'on vient de toucher ; nil sans bande.
     public var signetActif: Int? {
-        guard debuts.count > 1 else { return nil }
+        guard debuts.count > 1, !enChapitres else { return nil }
         if let choisi { return choisi }
         guard let premiere else { return 0 }
         return SignetsSiddur.courant(debuts, premiere: premiere, derniere: derniere, enBas: enBas)
+    }
+
+    // MARK: Les chapitres d'un long livre (FLECTURE-03)
+
+    /// Au-delà de ce nombre de sections, la bande de signets cède la place à un bouton « Chapitres (n) ▾ » et à une
+    /// liste filtrable (SiddurLectureActivity.SEUIL_CHAPITRES, audit du 12/11).
+    nonisolated public static let seuilChapitres = 40
+
+    /// Le livre a trop de chapitres pour une bande : le bouton et la liste à la place.
+    public var enChapitres: Bool {
+        debuts.count > LectureModele.seuilChapitres
+    }
+
+    /// « Chapitres (282)  ▾ » : le titre de la liste (siddur_chapitres) et leur nombre ; nil sans liste.
+    public var boutonChapitres: (titre: Libelle, nombre: Int)? {
+        enChapitres ? (Libelle("siddur_chapitres"), debuts.count) : nil
+    }
+
+    /// Le champ de la liste (« Numéro ou mot », siddur_chapitres_filtre) et ce qu'on y a tapé.
+    public var indicationFiltre: Libelle { Libelle("siddur_chapitres_filtre") }
+    public var filtreChapitres = ""
+
+    /// Les chapitres qui répondent au filtre (Chapitres.filtrer : un nombre cherche le chiffre, un mot sans voyelles
+    /// ni casse) ; tous sans filtre.
+    public var chapitresFiltres: [LectureSignet] {
+        let tous = signets
+        let rangs = Chapitres.filtrer(tous.map(\.texte), filtreChapitres)
+        return rangs.map { tous[$0] }
+    }
+
+    /// Un chapitre touché dans la liste : il passe en tête ; la liste se ferme, rien ne reste marqué.
+    public func ouvrirChapitre(_ i: Int) {
+        guard i >= 0, i < debuts.count else { return }
+        choisi = nil
+        filtreChapitres = ""
+        demander(lignes[debuts[i]].id, anime: false)
     }
 
     /// Un toucher sur un signet : sa section en tête, et il reste marqué.
@@ -457,6 +518,21 @@ public final class LectureModele {
         let tete = ligneDeTete?.id
         reconstruire()
         if let tete, rangs[tete] != nil { demander(tete, anime: false) }
+    }
+
+    /// Les notes de traduction d'un livre, quand une autre langue que l'hébreu est demandée : traduit en partie (le
+    /// Yalkout Yossef : combien de chapitres, les autres restent en hébreu ; COUV-01, TLIVRES-05), et une traduction
+    /// automatique, pas relue, l'hébreu faisant foi (COUV-05).
+    nonisolated static func notesDeTraduction(livre: Bool, traduit: Bool, chapitresTraduits: Int, chapitres: Int,
+                                              auto: Bool, langues: LanguesTexte.Mode) -> [(id: String, libelle: Libelle)] {
+        guard livre, traduit, langues.langues.contains(where: { $0 != "he" }) else { return [] }
+        var notes: [(id: String, libelle: Libelle)] = []
+        if chapitresTraduits < chapitres {
+            notes.append((id: "partielle", libelle: Libelle("lecture_traduction_partielle", .entier(chapitresTraduits),
+                                                            .entier(chapitres))))
+        }
+        if auto { notes.append((id: "auto", libelle: Libelle("lecture_traduction_auto"))) }
+        return notes
     }
 
     // MARK: Quitter, revenir

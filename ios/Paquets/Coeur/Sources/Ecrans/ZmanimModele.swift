@@ -15,7 +15,9 @@ import Coeur
 /// carte du jour (`carte`), trois boutons (halakha, hilloulot, calendrier), deux autres (vol, boussole), les
 /// horaires (`lignes`, ou l'invitation à choisir un lieu), puis Birkat haLevana, la hilloula et la halakha du jour,
 /// chacune dans sa carte et masquable dans les réglages, l'allumage des bougies, Ta'hanoun de fin de Tichri (en
-/// Sfard seulement), le pied.
+/// Sfard seulement), « Pas de Ta'hanoun aujourd'hui », le pied. Sous la carte du jour, selon le cas (audit du
+/// 16/11) : la question de la région, la note du Yom tov chéni d'un voyageur, la ligne de date discutée, et le jour
+/// hébreu qui a déjà changé à la sortie des étoiles.
 @MainActor
 @Observable
 public final class ZmanimModele {
@@ -160,6 +162,64 @@ public final class ZmanimModele {
          ZmanimBouton(id: "boussole", libelle: Libelle("zmanim_bouton_boussole"), icone: "🧭", route: .boussole)]
     }
 
+    // MARK: Sous la carte du jour (audit du 16/11)
+
+    /// Le statut Israël ou diaspora suit la résidence : un lieu de l'autre région ne le change pas, il pose la
+    /// question (Store.regionProposee) ; nil sans question en attente.
+    public var questionRegion: ZmanimQuestionRegion? {
+        guard let proposee = magasin.reglages.regionProposee else { return nil }
+        return ZmanimQuestionRegion(
+            proposee: proposee,
+            question: Libelle(proposee ? "region_proposee_israel" : "region_proposee_diaspora"),
+            accepter: Libelle(proposee ? "region_proposee_israel_oui" : "region_proposee_diaspora_oui"),
+            garder: Libelle("region_proposee_garder"))
+    }
+
+    /// La réponse : la région proposée, ou garder la sienne ; dans les deux cas, choisie à la main, et la question
+    /// tombe (Store.setInIsrael(…, manuel = true)).
+    public func repondreRegion(accepter: Bool) async throws {
+        guard let proposee = magasin.reglages.regionProposee else { return }
+        let valeur = accepter ? proposee : enIsrael
+        let aujourdhui = horloge.aujourdhui, fuseau = horloge.fuseau.identifiant
+        try await magasin.modifierReglages {
+            $0.setInIsrael(valeur, manuel: true, aujourdhui: aujourdhui, fuseauTelephone: fuseau)
+        }
+    }
+
+    /// Le Yom tov chéni d'un voyageur (JourAffiche.noteYomTovCheni), aujourd'hui : un ben Israël en diaspora, un ben
+    /// 'houl en Israël ; nil sinon, ou sans lieu. 13 pt, couleur de la marque.
+    public var noteYomTovCheni: Libelle? {
+        guard let lieu else { return nil }
+        return JourAffiche.noteYomTovCheni(horloge.aujourdhui, statutIsrael: enIsrael,
+                                           lieuEnIsrael: TerritoireIsrael.contient(lieu.latitude, lieu.longitude),
+                                           nusah: magasin.reglages.siddurNusah).map { Libelle($0) }
+    }
+
+    /// Japon, Nouvelle-Zélande, Australie orientale, Hawaï… : la ligne de date halakhique est discutée (13 pt,
+    /// atténué) ; nil ailleurs ou sans lieu.
+    public var ligneDateDiscutee: Libelle? {
+        guard let lieu, JourAffiche.ligneDateDiscutee(lieu.longitude) else { return nil }
+        return Libelle("ligne_date_discutee")
+    }
+
+    /// Après la sortie des étoiles du lieu, le jour hébreu a déjà changé (FCALENDRIER-13) : « Depuis la sortie des
+    /// étoiles : … » (14 pt, gras, couleur de la marque). Comparé au jour du téléphone ; nil sans lieu, ou quand le
+    /// jour hébreu n'a pas changé.
+    public var depuisTset: Libelle? {
+        guard let lieu else { return nil }
+        let zone = Fuseau(lieu.fuseau) ?? horloge.fuseau
+        let maintenant = DateHeureZonee(millis: horloge.maintenant, fuseau: zone)
+        var tset: DateHeureZonee? = nil
+        if let instant = Zmanim.jour(lieu: lieu, date: maintenant.jour, nusah: magasin.reglages.siddurNusah)
+            .first(where: { $0.cle == "tset" })?.instant {
+            tset = DateHeureZonee(millis: Kotlin.versLong((instant.timeIntervalSince1970 * 1000).rounded()), fuseau: zone)
+        }
+        let affiche = ZmanimVignette.jourHebreuAffiche(maintenant: maintenant, tset: tset)
+        guard affiche > horloge.aujourdhui else { return nil }
+        let suivant = CalendrierJuif.jour(affiche, enIsrael: enIsrael, mukafChoma: magasin.reglages.mukafChoma).dateHebraique
+        return Libelle("zmanim_depuis_tset", .texte(suivant))
+    }
+
     // MARK: Les horaires
 
     /// Les horaires du jour montré (JourAffiche.horaires), allumage et sortie compris ; vide sans lieu.
@@ -209,18 +269,18 @@ public final class ZmanimModele {
     public var allumageCarte: ZmanimReglage {
         let minutes = allumage
         let mukafChoma = magasin.reglages.mukafChoma
+        let nusah = magasin.reglages.siddurNusah
         var options: [ZmanimOption] = []
         for m in Zmanim.allumages {
-            options.append(ZmanimOption(id: m, libelle: ZmanimModele.libelleAllumage(m, mukafChoma: mukafChoma),
+            options.append(ZmanimOption(id: m, libelle: ZmanimModele.libelleAllumage(m, mukafChoma: mukafChoma, nusah: nusah),
                                         choisie: m == minutes))
         }
-        // À Jérusalem, l'usage est d'allumer 40 minutes avant : proposé, jamais imposé.
-        var proposition: Libelle?
-        if mukafChoma && minutes != ZmanimModele.allumageJerusalem {
-            proposition = Libelle("reglage_allumage_proposition")
-        }
+        // À Jérusalem, l'usage du rite est proposé, jamais imposé : 40 min hors Edot, 20 min pour les Edot (audit du
+        // 16/11, JourAffiche.propositionAllumage).
+        let proposition = JourAffiche.propositionAllumage(nusah: nusah, mukafChoma: mukafChoma, minutes: minutes)
+            .map { Libelle($0) }
         return ZmanimReglage(titre: Libelle("reglage_allumage"),
-                             valeur: ZmanimModele.libelleAllumage(minutes, mukafChoma: mukafChoma),
+                             valeur: ZmanimModele.libelleAllumage(minutes, mukafChoma: mukafChoma, nusah: nusah),
                              proposition: proposition, options: options)
     }
 
@@ -235,6 +295,21 @@ public final class ZmanimModele {
                              proposition: nil,
                              options: [ZmanimOption(id: 0, libelle: Libelle("reglage_tahanoun_tichri_dit"), choisie: !sans),
                                        ZmanimOption(id: 1, libelle: Libelle("reglage_tahanoun_tichri_sans"), choisie: sans)])
+    }
+
+    /// « Pas de Ta'hanoun aujourd'hui » (audit du 16/11 ; Choul'han Aroukh O.H. 131:4) : maison en deuil, brit mila,
+    /// 'hatan. Un interrupteur pour ce jour seulement (le jour du téléphone) ; le lendemain, il est de nouveau éteint.
+    public var sansTahanounCarte: ZmanimInterrupteur {
+        let sans = magasin.reglages.sansTahanounLe(horloge.aujourdhui)
+        return ZmanimInterrupteur(titre: Libelle("reglage_sans_tahanoun_jour"),
+                                  valeur: Libelle(sans ? "reglage_sans_tahanoun_jour_oui" : "reglage_sans_tahanoun_jour_non"),
+                                  actif: sans)
+    }
+
+    public func basculerSansTahanounAujourdhui() async throws {
+        let aujourdhui = horloge.aujourdhui
+        let sans = !magasin.reglages.sansTahanounLe(aujourdhui)
+        try await magasin.modifierReglages { $0.setSansTahanounLe(aujourdhui, sans: sans) }
     }
 
     /// Le pied : la méthode, la source des villes.
@@ -316,12 +391,13 @@ public final class ZmanimModele {
 
     // MARK: Les règles
 
-    /// À Jérusalem, l'usage d'allumer 40 minutes avant la chki'a.
-    public static let allumageJerusalem = 40
+    /// À Jérusalem, l'usage d'allumer 40 minutes avant la chki'a (hors Edot).
+    public static let allumageJerusalem = JourAffiche.allumageJerusalem
 
-    /// « 18 min avant la chki'a » ; « 40 min avant la chki'a · coutume de Jérusalem » quand Jérusalem est choisie.
-    public static func libelleAllumage(_ minutes: Int, mukafChoma: Bool) -> Libelle {
-        if minutes == allumageJerusalem && mukafChoma {
+    /// « 18 min avant la chki'a » ; « 40 min avant la chki'a · coutume de Jérusalem » quand Jérusalem est choisie,
+    /// hors Edot (JourAffiche.coutumeJerusalem).
+    public static func libelleAllumage(_ minutes: Int, mukafChoma: Bool, nusah: Nusah = .sefard) -> Libelle {
+        if JourAffiche.coutumeJerusalem(nusah: nusah, mukafChoma: mukafChoma, minutes: minutes) {
             return Libelle("reglage_allumage_jerusalem", .entier(minutes))
         }
         return Libelle("reglage_allumage_valeur", .entier(minutes))
@@ -336,6 +412,22 @@ public struct ZmanimBouton: Sendable, Equatable, Identifiable {
     /// « ✈ » ou « 🧭 », posé devant le texte avec deux espaces ; nil sinon.
     public let icone: String?
     public let route: ZmanimRoute
+}
+
+/// La question de la région (ZmanimActivity.questionRegion) : la phrase, puis deux boutons côte à côte.
+public struct ZmanimQuestionRegion: Sendable, Equatable {
+    /// La région que le lieu indique : vrai, Israël.
+    public let proposee: Bool
+    public let question: Libelle
+    public let accepter: Libelle
+    public let garder: Libelle
+}
+
+/// Une carte qui bascule d'un toucher (« Pas de Ta'hanoun aujourd'hui ») : le titre, l'état en dessous.
+public struct ZmanimInterrupteur: Sendable, Equatable {
+    public let titre: Libelle
+    public let valeur: Libelle
+    public let actif: Bool
 }
 
 /// Une option d'un dialogue à choix unique (minutes d'allumage, Ta'hanoun).
