@@ -43,7 +43,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 | 12 | Logique de la barrière, planificateur, chronologies | Linux | 8, 10 | jamais plus de 64 ; 13 états |
 | 13 | Vol et géographie | Linux | 2, 5 | 26 vols à deux secondes |
 | 14 | Système visuel et galerie | Linux, macOS | 3, 5 | contrastes tenus ; galerie publiée |
-| 15 | Accueil, navigation, présentation | macOS | 8, 14 | parcours des cinq onglets ; import par l'écran |
+| 15 | Accueil, navigation, présentation | macOS | 8, 14 | parcours des trois onglets ; import par l'écran |
 | 16 | Séance, journal, parcours | macOS | 9, 15 | séance d'une minute jusqu'au journal |
 | 17 | La séance hors de l'app | macOS | 16 | réconciliation testée ; Live Activity en captures |
 | 18 | Musique et ambiances | macOS | 16 | mêmes échantillons qu'Android |
@@ -175,7 +175,8 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 ### 15. Accueil, navigation, présentation
 
 - **Sources** : `MainActivity.kt`, `AnneauxDessin.kt`, `AnneauxView.kt`, `Onboarding.kt`, `OnboardingActivity.kt`, `SettingsActivity.kt` (prénom, adresse, apparence, données), `AccueilMoment.kt`, `Dedicace.kt`, `Tips.kt`, `TipsActivity.kt`.
-- **Critère de fin** : un test d'interface va de la présentation à l'accueil puis dans les cinq onglets ; il importe un fichier d'or par l'écran des réglages et lit la série attendue ; captures de l'accueil dans ses quatre états (pas encore faite, en cours, faite, jour sans obligation) ; les anneaux ne bougent pas quand « Réduire les animations » est actif.
+- **Critère de fin** : un test d'interface va de la présentation à l'accueil puis dans les trois onglets (Le Jour,
+  Les Livres, Le Chemin ; refonte d'Android du 13/11), et ouvre Zmanim et les réglages depuis l'en-tête du Jour ; il importe un fichier d'or par l'écran des réglages et lit la série attendue ; captures de l'accueil dans ses quatre états (pas encore faite, en cours, faite, jour sans obligation) ; les anneaux ne bougent pas quand « Réduire les animations » est actif.
 
 ### 16. Séance, journal, parcours
 
@@ -328,6 +329,25 @@ Chacune tient en moins d'une heure. L'ami renvoie la grille remplie et, pour la 
 | 11 | éteindre le mode | plus aucun bouclier |
 | 12 | carte d'état, à chaque étape | elle dit vrai ; le journal de la barrière raconte la même histoire |
 | 13 | boussole dehors, à plat puis tenue droite ; widgets posés | la direction est stable ; les widgets suivent l'heure |
+
+## Suivi d'Android main (refonte du 13/11, audit du 16/11, langues du 17/11)
+
+La ligne iOS a repris l'Android de main le 17/11 (modèle, vecteurs, export), puis ses écrans le 20/11. Ce qui est
+fait est vérifié sous Linux (modèles d'écran et règles) ; les vues marquées « sans compilateur » attendent la CI
+macOS.
+
+| Sujet d'Android | Fait sur iOS | Reste |
+| --- | --- | --- |
+| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour` (sans compilateur) | l'écran du Jour lui-même (tâche 15), le dessin du mois au Chemin |
+| Pastille « Avec Hachem » | `GateStatus.pastilleDe`, `GateRule.geste` d'après Temps d'écran | — |
+| Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele`, ligne des réglages | les accueils Sérénité, Bento et Pile (BentoActivity, PileActivity, SereniteActivity, AccueilVersion) ; d'ici là l'app montre Classique et le dit |
+| Espagnol, arabe de Tunisie | localisations es et ar-TN déclarées (`CFBundleLocalizations`, catalogues `Catalogue/` en « ar-TN ») ; `Traducteur.langueDuTelephone` (LangueApp.livree) ; l'app de droite à gauche en arabe | le choix de la langue reste dans les Réglages d'iOS (§ 2.2.7) : iOS n'a pas d'équivalent sûr au sélecteur d'Android dans l'app |
+| Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot | les cartes dans `ZmanimVue` |
+| Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`) | les vues du lecteur (en chantier) |
+| Audit : journal, durées | corriger ou retirer un jour (`Store.corrigerJour`), durée réglable refusée sans être ramenée (`DureeSeance.valide`) | — |
+| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel | la vue du vol (tâche 26) |
+| Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture, historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
+| Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit | le code des trois extensions (tâches 27 et 28) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
 
 ## Hors de ces trente tâches
 

@@ -56,6 +56,17 @@ Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Li
 - Une signature de SwiftUI en doute se vérifie à la source :
   `python3 tools/swiftui_papier/declarations.py swiftui/<symbole> --profondeur 3` (la documentation d'Apple).
 
+## La navigation
+
+Trois onglets, comme la barre d'Android depuis la refonte du 13/11 (`Ecrans/Onglets.swift`) : Le Jour, Les Livres,
+Le Chemin, chacun avec sa pile. Zmanim et les réglages ne sont plus des onglets : l'en-tête du Jour les ouvre
+(`AccueilModele.entete`, `ouvrirZmanim`, `ouvrirReglages`), dans la pile du Jour. Un modèle ne pousse rien
+lui-même : il ajoute une route à sa file (`routes`), la racine (`ios/App/Racine.swift`) l'ouvre puis appelle
+`routeOuverte()`. Une route dont l'écran n'est pas encore porté est retirée sans rien ouvrir.
+
+La langue de l'app est la première des langues préférées qu'elle livre (`Traducteur.langueDuTelephone`) ; la
+racine pose `\.locale` (l'arabe est `ar-TN`) et `\.layoutDirection` (l'hébreu et l'arabe de droite à gauche).
+
 ## Style
 
 Celui de `Coeur` : identifiants et commentaires en français, un commentaire dit le pourquoi ou renvoie au fichier
