@@ -94,11 +94,12 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="44dp"
                                     android:autoSizeMaxTextSize="34sp"
-                                    android:autoSizeMinTextSize="16sp"
+                                    android:autoSizeMinTextSize="10sp"
                                     android:autoSizeTextType="uniform"
                                     android:fontFeatureSettings="tnum"
                                     android:gravity="center"
                                     android:maxLines="1"
+                                    android:ellipsize="end"
                                     android:textStyle="bold" />
 
                                 <TextView
@@ -107,7 +108,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="0dp"
                                     android:gravity="center"
-                                    android:maxLines="3"
+                                    android:maxLines="2"
+                                    android:ellipsize="end"
                                     android:textColor="@color/on_plate_muted"
                                     android:textSize="12sp" />
                             </LinearLayout>
