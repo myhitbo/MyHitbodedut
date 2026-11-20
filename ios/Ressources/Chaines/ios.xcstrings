@@ -468,6 +468,42 @@
           }
         }
       }
+    },
+    "ios_version_a_venir": {
+      "comment": "Choix de la version (VersionApp) : l'accueil choisi n'est pas encore porté sur iOS. À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cet accueil n’existe pas encore sur iPhone : l’app garde l’accueil Classique, et votre choix est retenu."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "This home screen is not on iPhone yet: the app keeps the Classic home, and your choice is saved."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מסך הבית הזה עדיין לא קיים באייפון: האפליקציה נשארת במסך הקלאסי, והבחירה שלך נשמרת."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Esta pantalla de inicio aún no está en iPhone: la app mantiene la pantalla Clásica y tu elección queda guardada."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الصفحة الرئيسية هاذي مازالت موش موجودة في الآيفون: التطبيق يقعد على الصفحة الكلاسيكية، واختيارك محفوظ."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

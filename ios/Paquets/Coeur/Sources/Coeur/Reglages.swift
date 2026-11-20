@@ -780,6 +780,13 @@ public struct Reglages: Sendable, Equatable {
         poseChaine("ecran_ouverture", v.rawValue)
     }
 
+    /// La version de l'app choisie (Store.versionApp, 17/11) ; nil tant qu'aucune ne l'est.
+    public var versionApp: VersionApp? { VersionApp.parse(chaine("version_app")) }
+
+    public mutating func setVersionApp(_ v: VersionApp) {
+        poseChaine("version_app", v.cle)
+    }
+
     // MARK: Ce qui a déjà été fêté ou annoncé (anneaux, paliers, trophées, bilan)
 
     /// Les marques des anneaux déjà fêtés (Anneaux.marque).

@@ -171,6 +171,8 @@ public enum ReglagesRoute: Sendable, Hashable {
     case aideConcentration
     /// Tout a été effacé : l'app repart de zéro, présentation comprise (MainActivity, tâche vidée).
     case recommencer
+    /// « Version de l'app » (ChoixVersionActivity) : `ChoixVersionModele`.
+    case choixVersion
 }
 
 /// Les listes à choix (`choisirParmi`, `pickMinutes`, `DureeSeance.choisir`, `askAdresse`).
@@ -574,6 +576,12 @@ public final class ReglagesModele {
 
     /// La langue se règle dans les Réglages d'iOS (§ 2.2.7).
     public var routeLangue: ReglagesRoute { .reglagesApp }
+
+    /// « Version de l'app » (settings_version) et le nom de la version choisie, Classique tant qu'aucune ne l'est
+    /// (VersionApp.courante) ; le bouton ouvre le choix.
+    public var titreVersionApp: Libelle { Libelle("settings_version") }
+    public var versionApp: Libelle { VersionApp.courante(reglages).nom }
+    public var routeVersionApp: ReglagesRoute { .choixVersion }
 
     public var adresse: Libelle {
         Libelle(Adresse.parse(reglages.adresse)?.nom ?? "adresse_none")
