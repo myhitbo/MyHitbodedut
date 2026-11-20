@@ -230,8 +230,8 @@ public struct RechercheIndex: Sendable {
 /// n'y trouvent un motif qu'aux mêmes frontières de caractères. Un élément peut avoir plusieurs textes (le nom
 /// hébreu, français et anglais d'une hilloula) : il est trouvé si l'un d'eux contient le motif.
 ///
-/// La recherche elle-même est celle de Foundation (`Data.range(of:in:)`), compilée optimisée même quand l'app
-/// ou ses tests ne le sont pas.
+/// La recherche elle-même est le `memmem` de la libc, compilé optimisé même quand l'app ou ses tests ne le sont
+/// pas.
 struct RechercheTampon: Sendable {
     private let octets: Data
     /// Le premier octet de chaque élément ; en dernier, la longueur du tampon.
@@ -259,19 +259,37 @@ struct RechercheTampon: Sendable {
     /// Le premier élément de `debut ..< fin` dont un texte contient `motif` (de l'UTF-8 non vide) ; nil sinon.
     func premier(contenant motif: Data, de debut: Int, a fin: Int) -> Int? {
         guard debut < fin, !motif.isEmpty else { return nil }
-        guard let trouve = octets.range(of: motif, in: bornes[debut]..<bornes[fin]) else { return nil }
+        guard let position = RechercheTampon.position(de: motif, dans: octets, de: bornes[debut], a: bornes[fin]) else {
+            return nil
+        }
         // Le dernier élément qui commence au plus tard à la trouvaille : celui qui la contient.
         var bas = debut
         var haut = fin - 1
         while bas < haut {
             let milieu = (bas + haut + 1) / 2
-            if bornes[milieu] <= trouve.lowerBound {
+            if bornes[milieu] <= position {
                 bas = milieu
             } else {
                 haut = milieu - 1
             }
         }
         return bas
+    }
+}
+
+extension RechercheTampon {
+    /// La première position de `motif` dans `octets[debut ..< fin]`, par `memmem` de la libc : des dizaines de
+    /// fois plus vite que `Data.range(of:in:)` sur les 28 Mo du corpus (785 ms au simulateur de la CI pour une
+    /// recherche, avec cinq paragraphes par texte).
+    static func position(de motif: Data, dans octets: Data, de debut: Int, a fin: Int) -> Int? {
+        guard fin - debut >= motif.count else { return nil }
+        return octets.withUnsafeBytes { (tout: UnsafeRawBufferPointer) -> Int? in
+            motif.withUnsafeBytes { (m: UnsafeRawBufferPointer) -> Int? in
+                guard let base = tout.baseAddress, let aiguille = m.baseAddress else { return nil }
+                guard let trouve = memmem(base + debut, fin - debut, aiguille, m.count) else { return nil }
+                return base.distance(to: UnsafeRawPointer(trouve))
+            }
+        }
     }
 }
 
@@ -314,8 +332,8 @@ struct RechercheRecueil: Sendable {
 
     let sorte: RechercheGlobale.Sorte
     let textes: [Texte]
-    /// Le texte de chaque bloc, pour l'extrait.
-    private let blocs: [String]
+    /// Le texte de chaque bloc, déjà mis à nu, pour l'extrait.
+    private let blocsNus: [String]
     /// La place de chaque bloc (rang de section, rang de bloc) et le titre de sa section devant l'extrait.
     private let places: [(section: Int, bloc: Int, chapitre: String)]
     private let tampon: RechercheTampon
@@ -323,28 +341,26 @@ struct RechercheRecueil: Sendable {
     init(_ recueil: Siddur, sorte: RechercheGlobale.Sorte, langue: String) {
         self.sorte = sorte
         var textes: [Texte] = []
-        var blocs: [String] = []
-        var nus: [[String]] = []
+        var nus: [String] = []
         var places: [(section: Int, bloc: Int, chapitre: String)] = []
         for t in recueil.textes {
-            let debut = blocs.count
+            let debut = nus.count
             for (si, section) in t.sections.enumerated() {
                 let chapitre = section.titre.estBlanc ? "" : "\(section.titre) · "
                 for (bi, bloc) in section.blocs.enumerated() where !bloc.consigne {
-                    blocs.append(bloc.texte)
                     places.append((si, bi, chapitre))
-                    nus.append([RechercheGlobale.nu(bloc.texte)])
+                    nus.append(RechercheGlobale.nu(bloc.texte))
                 }
             }
             let titre = t.titre.he
             let traduit = t.titre.pour(langue)
             textes.append(Texte(id: t.id, titre: titre, traduit: traduit, titreNu: RechercheGlobale.nu(titre),
-                                traduitNu: RechercheGlobale.nu(traduit), blocs: debut..<blocs.count))
+                                traduitNu: RechercheGlobale.nu(traduit), blocs: debut..<nus.count))
         }
         self.textes = textes
-        self.blocs = blocs
+        blocsNus = nus
         self.places = places
-        tampon = RechercheTampon(nus)
+        tampon = RechercheTampon(nus.map { [$0] })
     }
 
     /// `q` déjà mis à nu, `motif` ses octets UTF-8.
@@ -362,7 +378,7 @@ struct RechercheRecueil: Sendable {
                   let b = tampon.premier(contenant: motif, de: depuis, a: t.blocs.upperBound) {
                 let place = places[b]
                 trouves.append(RechercheGlobale.Resultat(sorte: sorte, id: t.id, titre: t.titre,
-                                                         extrait: place.chapitre + RechercheGlobale.extrait(blocs[b], q),
+                                                         extrait: place.chapitre + RechercheGlobale.extrait(nu: blocsNus[b], q),
                                                          section: place.section, bloc: place.bloc))
                 depuis = b + 1
             }

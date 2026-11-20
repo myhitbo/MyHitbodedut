@@ -115,7 +115,12 @@ public enum RechercheGlobale {
     /// Un extrait d'une quarantaine de caractères autour de la trouvaille, dans le texte sans voyelles : trente
     /// unités avant, cinquante après ; « … » là où le texte continue. Sans trouvaille, le début du texte.
     public static func extrait(_ texte: String, _ q: String) -> String {
-        let t = Array(nu(texte).utf16)
+        extrait(nu: nu(texte), q)
+    }
+
+    /// `extrait` d'un texte déjà mis à nu (`nu(texte)`) : l'index de la recherche le garde, et ne le refait pas.
+    public static func extrait(nu texteNu: String, _ q: String) -> String {
+        let t = Array(texteNu.utf16)
         let motif = Array(q.utf16)
         let i = Unites.position(de: motif, dans: t) ?? 0
         let debut = max(i - 30, 0)
