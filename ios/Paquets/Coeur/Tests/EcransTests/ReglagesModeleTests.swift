@@ -143,6 +143,16 @@ struct ReglagesModeleTests {
         #expect(autre.routeConfidentialite == .navigateur(ReglagesModele.lienConfidentialite + "#en"))
     }
 
+    /// L'espagnol et l'arabe de Tunisie (17/11) : leur nom dans leur langue ; un arabe d'ailleurs passe en anglais.
+    @Test func lEspagnolEtLArabeDeTunisie() throws {
+        let espagnol = try fabriquer(langue: "es-MX").modele
+        #expect(espagnol.nomLangue == .brut("Español"))
+        let tunisien = try fabriquer(langue: "ar-TN").modele
+        #expect(tunisien.nomLangue == .brut("تونسي"))
+        let egyptien = try fabriquer(langue: "ar-EG").modele
+        #expect(egyptien.nomLangue == .brut("English"))
+    }
+
     // MARK: Chaque réglage écrit sa clé d'Android
 
     @Test func chaqueInterrupteurEcritSaCleDAndroid() async throws {

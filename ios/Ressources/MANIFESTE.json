@@ -44,8 +44,16 @@
   {
    "chemin": "Ressources/Catalogue/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
-   "octets": 1462430,
-   "sha256": "cb98ee9ffa3fa06d49d07d5916ca4f04461d1a68cbafb275c0a468bac13f20f7",
+   "octets": 1466870,
+   "sha256": "41f3b8c821a021dc18a5f2f8971f0ab119fed409dbbc6c45b295c81b86696cbe",
+   "licence": "propre à l'app",
+   "mention": ""
+  },
+  {
+   "chemin": "Ressources/Catalogue/ios.xcstrings",
+   "source": "ios/Ressources/Chaines/ios.xcstrings",
+   "octets": 16440,
+   "sha256": "d1664484deeb928c520d1cb62412532e1ec01d000c3deb64b90741bd7b0b0dd3",
    "licence": "propre à l'app",
    "mention": ""
   },

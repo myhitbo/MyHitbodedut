@@ -41,12 +41,12 @@ targetTemplates:
         type: folder
       - path: Ressources/Musique
         type: folder
-      # Les catalogues de chaînes, compilés pour Text("clé") ; XcodeGen y lit les langues du projet.
-      # Catalogue/Localizable.xcstrings est la copie du catalogue d'Android acceptée par Xcode (export.py).
+      # Les catalogues de chaînes, compilés pour Text("clé") ; XcodeGen y lit les langues du projet (knownRegions).
+      # Catalogue/ tient les copies qu'Xcode accepte, écrites par export.py : celle du catalogue d'Android
+      # (Localizable) et celle des chaînes propres à iOS (ios, écrites à la main sous Chaines/), l'arabe y étant
+      # régional (« ar-TN ») : l'app ne se déclare au système qu'en derja de Tunisie (LangueApp.livree).
       - path: Ressources/Catalogue
         includes: ["*.xcstrings"]
-      - path: Ressources/Chaines
-        includes: ["ios.xcstrings"]
       # Les mêmes fichiers tels quels, sous Chaines/ : le Traducteur d'Ecrans lit le JSON du catalogue, les
       # écrans les tableaux de chaînes (Tableaux.json).
       - path: Ressources/Chaines
@@ -63,9 +63,10 @@ targetTemplates:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
-        # Trois langues ; un téléphone dans une autre langue a l'anglais (LangueApp, PORTAGE.md § 2.2.7).
+        # Cinq langues, celles de Langues.toutes (l'espagnol partout, l'arabe de Tunisie seulement, 17/11) ; un
+        # téléphone dans une autre langue a l'anglais (LangueApp, Traducteur.langueDuTelephone, PORTAGE.md § 2.2.7).
         CFBundleDevelopmentRegion: en
-        CFBundleLocalizations: [fr, en, he]
+        CFBundleLocalizations: [fr, en, he, es, ar-TN]
         # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).
         UIAppFonts:
           - Polices/hebreu_serif_regular.ttf

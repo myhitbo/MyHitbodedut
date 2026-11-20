@@ -114,6 +114,53 @@ struct TraducteurTests {
         #expect(hebreu == "יומן")
     }
 
+    /// LanguesTest d'Android (« un téléphone dont aucune langue n'est livrée passe en anglais ») : la première des
+    /// langues préférées que l'app livre ; l'arabe d'ailleurs que la Tunisie n'est pas livré.
+    @Test func laLangueDuTelephone() {
+        let cas: [([String], String)] = [
+            (["de-DE", "ru-RU"], "en"), (["es-ES"], "es"), (["es-419"], "es"), (["ar-TN"], "ar"), (["ar-EG"], "en"),
+            (["ar"], "en"), ([], "en"), (["de-DE", "fr-FR"], "fr"), (["iw-IL"], "he"), (["he"], "he"),
+            (["en-GB"], "en"), (["ar-EG", "fr-FR"], "fr"), (["ar-Latn-TN", "fr"], "ar"),
+        ]
+        for (preferees, attendue) in cas {
+            let langue = Traducteur.langueDuTelephone(preferees)
+            #expect(langue == attendue, "\(preferees)")
+        }
+        let livrees = ["fr", "en-US", "he", "iw", "es-MX", "ar-TN", "ar_tn"].map(Traducteur.livree)
+        #expect(livrees == [true, true, true, true, true, true, true])
+        let refusees = ["ar", "ar-SA", "de", ""].map(Traducteur.livree)
+        #expect(refusees == [false, false, false, false])
+    }
+
+    /// L'arabe est l'arabe de Tunisie, de droite à gauche comme l'hébreu.
+    @Test func laLocalisationEtLeSensDEcriture() {
+        let identifiants = Traducteur.langues.map(Traducteur.identifiantLocale)
+        #expect(identifiants == ["fr", "en", "he", "es", "ar-TN"])
+        let rtl = Traducteur.langues.filter(Traducteur.deDroiteAGauche)
+        #expect(rtl == ["he", "ar"])
+    }
+
+    /// LanguesTest d'Android (« les langues livrées sont déclarées au système ») : chaque langue de Langues.toutes
+    /// est dans les localisations de l'app (projet-commun.yml) et dans le catalogue que compile Xcode, sous le même
+    /// code (« iw » s'écrit « he » sur iOS).
+    @Test func lesLanguesLivreesSontDeclareesAuSysteme() throws {
+        let projet = String(decoding: try Fichiers.donnees("ios/projet-commun.yml"), as: UTF8.self)
+        let attendues = Langues.toutes.map { $0.etiquette == "iw" ? "he" : $0.etiquette }
+        #expect(projet.contains("CFBundleLocalizations: [fr, en, he, es, ar-TN]"))
+        for code in attendues {
+            #expect(projet.contains(code), "\(code)")
+        }
+        // Le catalogue compilé n'existe qu'après l'export (tools/export_contenu), comme les contenus.
+        let compile = try JSONSerialization.jsonObject(with: Fichiers.donnees("ios/Ressources/Catalogue/Localizable.xcstrings"))
+        let entree = ((compile as? [String: Any])?["strings"] as? [String: Any])?["nav_today"] as? [String: Any]
+        let langues = (entree?["localizations"] as? [String: Any])?.keys.sorted() ?? []
+        #expect(langues == attendues.sorted())
+        let ios = try JSONSerialization.jsonObject(with: Fichiers.donnees("ios/Ressources/Catalogue/ios.xcstrings"))
+        let bientot = ((ios as? [String: Any])?["strings"] as? [String: Any])?["ios_bientot"] as? [String: Any]
+        let languesIos = (bientot?["localizations"] as? [String: Any])?.keys.sorted() ?? []
+        #expect(languesIos == attendues.sorted())
+    }
+
     // MARK: Un catalogue écrit ici
 
     private static let petit = Data("""

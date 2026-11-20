@@ -62,14 +62,21 @@ struct MyHitbodedutApp: App {
             Racine(magasin: magasin, palettes: palettes, zmanim: zmanim, accueil: accueil, chemin: chemin,
                    onglet: $onglet, pileDuJour: $pileDuJour)
                 .environment(\.traducteur, traducteur)
+                // La langue de l'app pour les Text(« clé ») du catalogue compilé, et son sens d'écriture : l'hébreu
+                // et l'arabe de Tunisie se lisent de droite à gauche.
+                .environment(\.locale, Locale(identifier: Traducteur.identifiantLocale(traducteur.langue)))
+                .environment(\.layoutDirection,
+                             Traducteur.deDroiteAGauche(traducteur.langue) ? .rightToLeft : .leftToRight)
         }
     }
 
-    /// Le traducteur des `Libelle`, dans la langue que iOS a choisie pour l'app parmi fr, en et he (réglage de
-    /// langue par app, PORTAGE.md § 2.2.7) ; il lit le catalogue copié tel quel sous Chaines/. Sans catalogue
-    /// lisible, chaque libellé montre sa clé : ce qui se voit, au lieu de se taire.
+    /// Le traducteur des `Libelle`, dans la langue de l'app : la première des langues préférées que l'app livre (la
+    /// langue choisie pour l'app dans les Réglages d'iOS vient en tête, PORTAGE.md § 2.2.7), parmi fr, en, he, es
+    /// et l'arabe de Tunisie seulement ; sinon l'anglais (Traducteur.langueDuTelephone, LangueApp d'Android). Il
+    /// lit le catalogue copié tel quel sous Chaines/. Sans catalogue lisible, chaque libellé montre sa clé : ce qui
+    /// se voit, au lieu de se taire.
     private static func traducteur(paquet: URL) -> Traducteur {
-        let langue = Bundle.main.preferredLocalizations.first ?? "en"
+        let langue = Traducteur.langueDuTelephone(Locale.preferredLanguages)
         let fichier = paquet.appending(path: "Chaines/Localizable.xcstrings")
         if let catalogue = try? Data(contentsOf: fichier),
            let traducteur = try? Traducteur(catalogue: catalogue, langue: langue) {

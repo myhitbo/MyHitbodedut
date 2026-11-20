@@ -82,6 +82,39 @@ public struct Traducteur: Sendable {
         }
     }
 
+    /// Une langue du téléphone que l'app livre (LangueApp.livree) : fr, en, he (ou iw), es ; l'arabe en Tunisie
+    /// seulement, l'interface étant en derja, qu'un téléphone en arabe d'ailleurs ne lirait pas en premier.
+    public static func livree(_ etiquette: String) -> Bool {
+        let parties = etiquette.lowercased().split(whereSeparator: { $0 == "-" || $0 == "_" }).map(String.init)
+        switch parties.first ?? "" {
+        case "fr", "en", "he", "iw", "es": return true
+        case "ar": return parties.dropFirst().contains("tn")
+        default: return false
+        }
+    }
+
+    /// La langue de l'app d'après les langues préférées (`Locale.preferredLanguages`, la langue choisie pour l'app
+    /// dans les Réglages d'iOS en tête) : la première que l'app livre ; aucune, l'anglais (LangueApp.repli, 29/10).
+    /// Un téléphone en arabe d'Égypte ne passe pas en derja : il prend la langue suivante qui est livrée, ou
+    /// l'anglais.
+    public static func langueDuTelephone(_ preferees: [String]) -> String {
+        for code in preferees where livree(code) {
+            return langueApp(code)
+        }
+        return "en"
+    }
+
+    /// L'identifiant de la localisation d'une langue de l'app, pour l'environnement des vues (`\.locale`) et les
+    /// dossiers de l'app : « ar » est l'arabe tunisien (`ar-TN`, values-ar-rTN d'Android).
+    public static func identifiantLocale(_ langue: String) -> String {
+        langue == "ar" ? "ar-TN" : langue
+    }
+
+    /// L'hébreu et l'arabe s'écrivent de droite à gauche : l'app entière se retourne (`\.layoutDirection`).
+    public static func deDroiteAGauche(_ langue: String) -> Bool {
+        langue == "he" || langue == "ar"
+    }
+
     /// Le texte du libellé dans la langue de l'app ; sa clé si rien ne se résout.
     public func texte(_ libelle: Libelle) -> String {
         let resolu = libelle.texte(langue: langue,

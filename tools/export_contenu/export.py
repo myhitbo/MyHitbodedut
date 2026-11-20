@@ -31,6 +31,9 @@ SEUIL_DECOUPE = 2_000_000  # octets : au-delà, un livre est servi chapitre par 
 # Codes de langue du catalogue : ceux que lit le Traducteur (« iw » d'Android → « he », « ar-rTN » → « ar »).
 LANGUES = [("fr", "values"), ("en", "values-en"), ("he", "values-iw"), ("es", "values-es"),
            ("ar", "values-ar-rTN")]
+# Les localisations des catalogues que compile Xcode (Catalogue/) : l'arabe y est régional, « ar-TN », pour
+# que l'app ne se déclare au système qu'en derja de Tunisie (LangueApp.livree d'Android).
+LOCALISATIONS_XCODE = {"ar": "ar-TN"}
 # Chaînes propres à Android (divulgations Play, batterie, superposition) : sans objet sur iOS.
 EXCLUES = re.compile(r"^(divulgation_|permission_battery|permission_overlay)")
 
@@ -71,7 +74,7 @@ LICENCES = [
     (r"Contenu/(trophees_formes|palettes)\.json", "propre à l'app", ""),
     (r"Contenu/musique\.json", "accord écrit (PORTAGE.md § 6.1)", "voir chaque morceau"),
     (r"Chaines/(Localizable\.xcstrings|Tableaux\.json)", "propre à l'app", ""),
-    (r"Catalogue/Localizable\.xcstrings", "propre à l'app", ""),
+    (r"Catalogue/(Localizable|ios)\.xcstrings", "propre à l'app", ""),
     (r"Images/[a-z0-9_]+\.webp", "fournies par le propriétaire", ""),
     (r"Icones/[a-z0-9_]+\.svg", "propre à l'app", ""),
     (r"Polices/[a-z0-9_]+\.ttf", "SIL OFL 1.1", "voir Polices/licences"),
@@ -187,7 +190,11 @@ class Export:
             if pluriels and not any("%" in f["stringUnit"]["value"] for pl in pluriels for f in pl.values()):
                 entree["localizations"] = {lg: {"stringUnit": l["variations"]["plural"]["other"]["stringUnit"]}
                                            for lg, l in locs.items()}
-        self.json(SORTIE / "Catalogue" / "Localizable.xcstrings", compile, source, indent=2)
+        self.json(SORTIE / "Catalogue" / "Localizable.xcstrings", localiser_xcode(compile), source, indent=2)
+        # Les chaînes propres à iOS, écrites à la main sous Chaines/ios.xcstrings, compilées de même.
+        ios = json.loads((SORTIE / "Chaines" / "ios.xcstrings").read_text(encoding="utf-8"))
+        self.json(SORTIE / "Catalogue" / "ios.xcstrings", localiser_xcode(ios), "ios/Ressources/Chaines/ios.xcstrings",
+                  indent=2)
         tableaux = {langue: {**fr["tableaux"], **brutes[langue]["tableaux"]} for langue, _ in LANGUES}
         self.json(SORTIE / "Chaines" / "Tableaux.json", tableaux, source)
 
@@ -377,6 +384,15 @@ def lit_chaines(xml):
 
 # Position, puis largeur éventuelle (« %2$02d », des minutes sur deux chiffres), puis le type.
 FORMAT = re.compile(r"%(\d+\$)?(0?\d*)([sd])")
+
+
+def localiser_xcode(doc):
+    """Le catalogue avec les codes de localisation d'Xcode (LOCALISATIONS_XCODE), dans le même ordre."""
+    copie = json.loads(json.dumps(doc))
+    for entree in copie["strings"].values():
+        if "localizations" in entree:
+            entree["localizations"] = {LOCALISATIONS_XCODE.get(l, l): v for l, v in entree["localizations"].items()}
+    return copie
 
 
 def format_ios(valeur):
