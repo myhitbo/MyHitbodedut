@@ -561,18 +561,21 @@ struct SeanceModeleTests {
         #expect(b.modele.indicationDuree == Libelle("duration_custom_hint"))
         #expect(SeanceDialogue.duree.titre == Libelle("duration_custom_title"))
 
+        // Pas un nombre, ou hors de 1 à 240 : la boîte reste ouverte et le dit (FACCUEIL-15).
         try await b.modele.validerDuree("douze")
-        #expect(b.modele.dialogue == nil)
+        #expect(b.modele.dialogue == .duree)
+        #expect(b.modele.erreurSaisie == Libelle("duration_custom_hint"))
+        #expect(!b.modele.enCours)
+        try await b.modele.validerDuree("999")
+        try await b.modele.validerDuree("0")
+        #expect(b.modele.dialogue == .duree)
         #expect(!b.modele.enCours)
 
         try await b.modele.validerDuree(" 25 ")
+        #expect(b.modele.dialogue == nil)
+        #expect(b.modele.erreurSaisie == nil)
         #expect(b.seance.duree == 25)
         #expect(b.magasin.reglages.targetMinutes == 25)
-
-        try await b.modele.validerDuree("999")
-        #expect(b.seance.duree == 240)
-        try await b.modele.validerDuree("0")
-        #expect(b.seance.duree == 1)
     }
 
     /// Android écrit la durée habituelle puis lance la séance, quoi qu'il arrive : un disque qui refuse ne la

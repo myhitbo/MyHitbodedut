@@ -223,10 +223,17 @@ struct AjoutTempsModeleTests {
         #expect(modele.saisie == "25")
         #expect(modele.titreSaisie == Libelle("duration_custom_title"))
         #expect(modele.indicationSaisie == Libelle("duration_custom_hint"))
+        // Hors de 1 à 240 : la boîte reste ouverte et le dit (FACCUEIL-15, DureeSeance.valide).
         modele.saisie = " 500 "
+        try await modele.validerSaisie()
+        #expect(modele.etape == .saisie)
+        #expect(modele.erreurSaisie == Libelle("duration_custom_hint"))
+        #expect(banc.magasin.journal.record(date) == nil)
+        modele.saisie = " 240 "
         try await modele.validerSaisie()
         let minutes = banc.magasin.journal.record(date)?.minutes
         #expect(minutes == 240)
+        #expect(modele.erreurSaisie == nil)
         #expect(modele.issue == .ajoute(minutes: 240))
     }
 
@@ -238,6 +245,10 @@ struct AjoutTempsModeleTests {
         try await modele.choisir(reglable)
         modele.saisie = "un quart d'heure"
         try await modele.validerSaisie()
+        // La boîte reste ouverte et le dit (FACCUEIL-15) ; « Retour » la ferme sans rien inscrire.
+        #expect(modele.etape == .saisie)
+        #expect(modele.erreurSaisie == Libelle("duration_custom_hint"))
+        modele.retour()
         #expect(modele.etape == nil)
         #expect(modele.issue == .fermee)
         #expect(modele.confirmation == nil)
@@ -246,6 +257,59 @@ struct AjoutTempsModeleTests {
         #expect(ecritures == 0)
         let widgets = await banc.systeme.widgetsRafraichis
         #expect(widgets == 0)
+    }
+
+    // MARK: Corriger ou retirer un jour fait (FDONNEES-04)
+
+    @Test func unJourFaitSeCorrige() async throws {
+        let date = try Self.jour("2026-11-10")
+        var journal = Journal()
+        journal.addSession(minutes: 30, date: date)
+        let banc = try fabriquer("2026-11-10", journal: journal, montrer: true)
+        let modele = try #require(banc.modele)
+        #expect(modele.modifiable)
+        modele.modifier()
+        #expect(modele.etape == .modifier)
+        #expect(modele.actions == [.montrer, .corriger, .retirer])
+        modele.choisirAction(.corriger)
+        #expect(modele.etape == .durees)
+        #expect(modele.titreDurees == Libelle("jour_corriger_duree"))
+        let dix = try #require(modele.durees.first { $0.minutes == 10 })
+        try await modele.choisir(dix)
+        // La durée est remplacée, non ajoutée.
+        #expect(banc.magasin.journal.record(date)?.minutes == 10)
+        #expect(modele.issue == .corrige(minutes: 10))
+        #expect(modele.confirmation == Libelle("jour_corrige", .libelle(Store.formatDuration(10))))
+        let widgets = await banc.systeme.widgetsRafraichis
+        #expect(widgets == 1)
+    }
+
+    @Test func unJourFaitSeRetireSaNoteReste() async throws {
+        let date = try Self.jour("2026-11-10")
+        var journal = Journal()
+        journal.addSession(minutes: 30, date: date)
+        journal.setNote(date: date, note: "Merci")
+        let banc = try fabriquer("2026-11-10", journal: journal)
+        let modele = try #require(banc.modele)
+        modele.modifier()
+        #expect(modele.actions == [.corriger, .retirer])
+        modele.choisirAction(.retirer)
+        #expect(modele.etape == .retrait)
+        #expect(modele.messageRetrait == Libelle("jour_retirer_confirmation", .libelle(Store.formatDuration(30))))
+        try await modele.confirmerRetrait()
+        let reste = banc.magasin.journal.record(date)
+        #expect(reste?.faite == false)
+        #expect(reste?.note == "Merci")
+        #expect(modele.issue == .corrige(minutes: 0))
+        #expect(modele.confirmation == Libelle("jour_retire"))
+    }
+
+    @Test func unJourSansDureeNeSeModifiePas() throws {
+        let banc = try fabriquer("2026-11-10")
+        let modele = try #require(banc.modele)
+        #expect(!modele.modifiable)
+        modele.modifier()
+        #expect(modele.etape == .jour)
     }
 
     @Test func lesFenetresSeSuiventDansLOrdre() async throws {

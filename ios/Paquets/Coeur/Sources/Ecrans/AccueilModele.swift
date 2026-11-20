@@ -101,7 +101,11 @@ public final class AccueilModele {
     public private(set) var cascade = false
 
     /// La boîte ouverte ; nil : aucune.
-    public private(set) var dialogue: AccueilDialogue? = nil
+    public private(set) var dialogue: AccueilDialogue? = nil {
+        didSet { if dialogue == nil { erreurSaisie = nil } }
+    }
+    /// La durée réglable refusée : la boîte reste ouverte et le dit sous le champ ; nil sinon.
+    public private(set) var erreurSaisie: Libelle? = nil
     /// Le bilan de la semaine écoulée, à montrer une fois ; nil sinon.
     public private(set) var bilan: AccueilBilan? = nil
     /// Un mot bref (un Toast d'Android) ; nil sinon. La vue le retire avec `messageMontre()`.
@@ -772,10 +776,16 @@ public final class AccueilModele {
     }
 
     /// « OK » sur la durée réglable : le nombre lu, ramené de 1 à 240 ; ce qui n'est pas un nombre ne fait rien.
+    /// « OK » de la durée réglable : un nombre de 1 à 240 minutes ; sinon la boîte reste ouverte et le dit sous le
+    /// champ (FACCUEIL-15, DureeSeance.valide).
     public func validerDureeLibre(_ texte: String) async throws {
         guard case .dureeLibre(let usage)? = dialogue else { return }
+        guard let minutes = DureeSeance.valide(texte) else {
+            erreurSaisie = Libelle("duration_custom_hint")
+            return
+        }
+        erreurSaisie = nil
         dialogue = nil
-        guard let minutes = DureeSeance.lire(texte) else { return }
         try await appliquerDuree(minutes, usage)
     }
 

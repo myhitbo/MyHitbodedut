@@ -322,7 +322,9 @@ public final class SeanceModele {
     /// L'écran ouvert par-dessus (le bravo, la note, les prières) ; la vue le remet à nil en le fermant.
     public var route: SeanceRoute? = nil
     /// Le dialogue ouvert ; la vue le remet à nil en le fermant.
-    public var dialogue: SeanceDialogue? = nil
+    public var dialogue: SeanceDialogue? = nil {
+        didSet { if dialogue == nil { erreurSaisie = nil } }
+    }
     /// La pratique est calme : tout s'efface sauf le minuteur, sa lueur, « Terminer », le guide et la question.
     public private(set) var calme = false
     /// VoiceOver est actif : rien ne s'efface (un bouton invisible resterait atteignable). La vue le tient à jour.
@@ -693,11 +695,20 @@ public final class SeanceModele {
 
     /// « OK » du champ : un nombre, ramené entre 1 et 240, lance la séance et devient la durée habituelle ; autre
     /// chose ne fait rien.
+    /// « OK » de la durée réglable : un nombre de 1 à 240 minutes ; sinon la boîte reste ouverte et le dit sous le
+    /// champ (FACCUEIL-15, DureeSeance.valide).
     public func validerDuree(_ texte: String) async throws {
+        guard let minutes = DureeSeance.valide(texte) else {
+            erreurSaisie = Libelle("duration_custom_hint")
+            return
+        }
+        erreurSaisie = nil
         dialogue = nil
-        guard let minutes = DureeSeance.lire(texte) else { return }
         try await commencer(minutes: minutes)
     }
+
+    /// La durée réglable refusée : la boîte reste ouverte et le dit sous le champ ; nil sinon.
+    public private(set) var erreurSaisie: Libelle? = nil
 
     /// « Sans durée » : la séance court jusqu'à ce qu'on l'arrête ; la durée habituelle ne bouge pas.
     public func commencerSansDuree() async throws {

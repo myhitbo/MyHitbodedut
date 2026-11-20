@@ -287,18 +287,24 @@ struct ReglagesModeleTests {
         #expect(m.dialogue == nil)
         let cible = await ecrit(banc, "target_minutes")
         #expect(cible == .entier(45))
+        // Hors de 1 à 240, ou pas un nombre : rien ne change, la boîte reste ouverte et le dit (FACCUEIL-15).
+        try await m.choisir(DureeSeance.proposees.count, dans: .duree)
         try await m.validerDureeLibre("500", pour: .duree)
-        let bornee = await ecrit(banc, "target_minutes")
-        #expect(bornee == .entier(240))
-        // Ce qui n'est pas un nombre ne change rien.
+        #expect(m.dialogue == .dureeLibre(.duree))
+        #expect(m.erreurSaisie == Libelle("duration_custom_hint"))
         try await m.validerDureeLibre("abc", pour: .duree)
         let inchangee = await ecrit(banc, "target_minutes")
-        #expect(inchangee == .entier(240))
+        #expect(inchangee == .entier(45))
+        try await m.validerDureeLibre("240", pour: .duree)
+        #expect(m.dialogue == nil)
+        #expect(m.erreurSaisie == nil)
         // L'objectif aussi, prérempli de la durée habituelle.
         try await m.choisir(DureeSeance.proposees.count, dans: .objectif)
         #expect(m.dialogue == .dureeLibre(.objectif))
         #expect(m.dureeLibreInitiale == "240")
         try await m.validerDureeLibre("0", pour: .objectif)
+        #expect(m.dialogue == .dureeLibre(.objectif))
+        try await m.validerDureeLibre("1", pour: .objectif)
         let objectif = await ecrit(banc, "daily_goal_minutes")
         #expect(objectif == .entier(1))
     }

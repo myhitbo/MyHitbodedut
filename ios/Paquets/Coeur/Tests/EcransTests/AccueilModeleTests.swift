@@ -320,15 +320,16 @@ struct AccueilModeleTests {
         #expect(m.texteDureeLibre == "15")
         #expect(m.indicationDureeLibre == Libelle("duration_custom_hint"))
         #expect(m.libelleValider == Libelle("action_ok"))
-        // Ramenée entre 1 et 240 minutes.
+        // Hors de 1 à 240, ou pas un nombre : la boîte reste ouverte et le dit (FACCUEIL-15).
         try await m.validerDureeLibre(" 500 ")
-        #expect(m.dialogue == nil)
-        #expect(b.magasin.reglages.targetMinutes == 240)
-        // Ce qui n'est pas un nombre ne change rien, et la boîte se ferme.
-        try await m.toucherPastille(.duree)
-        try await m.choisirDuree(nil)
+        #expect(m.dialogue == .dureeLibre(.prochaine))
+        #expect(m.erreurSaisie == Libelle("duration_custom_hint"))
+        #expect(b.magasin.reglages.targetMinutes == 15)
         try await m.validerDureeLibre("abc")
+        #expect(m.dialogue == .dureeLibre(.prochaine))
+        try await m.validerDureeLibre(" 240 ")
         #expect(m.dialogue == nil)
+        #expect(m.erreurSaisie == nil)
         #expect(b.magasin.reglages.targetMinutes == 240)
     }
 

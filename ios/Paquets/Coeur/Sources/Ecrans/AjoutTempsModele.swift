@@ -7,7 +7,11 @@ import Coeur
 // même un jour déjà fait (les minutes s'ajoutent, Store.addSession). Jamais un jour à venir
 // (`AjoutTemps.possible`). S'ouvre depuis la bande de la semaine de l'accueil et depuis le calendrier.
 //
-// Trois fenêtres qui se suivent : le jour (ce qui y est inscrit, « Ajouter du temps », « Montrer la durée »,
+// Un jour fait se corrige ou se retire (FDONNEES-04) : « Modifier » ouvre « Montrer la durée » (quand l'écran la
+// propose), « Corriger la durée » (la durée inscrite est remplacée, Store.corrigerJour) et « Retirer cette
+// journée » (après confirmation ; sa note reste, sans valider le jour).
+//
+// Trois fenêtres qui se suivent : le jour (ce qui y est inscrit, « Ajouter du temps », « Modifier »,
 // « Retour ») ; la durée (les durées proposées, puis « Durée réglable… », DureeSeance.choisir) ; la durée
 // réglable (un nombre de minutes, DureeSeance.saisir). Une durée choisie s'inscrit, ce qui est neuf est retenu
 // comme fêté sans notification (l'app est ouverte : Celebrations.marquerNotifies), le widget se redessine, et
@@ -48,6 +52,25 @@ public enum AjoutTempsEtape: Sendable, Hashable {
     case durees
     /// « Durée de la hitbodedout, en minutes » : le champ numérique.
     case saisie
+    /// « Modifier » un jour fait : montrer, corriger, retirer.
+    case modifier
+    /// « Retirer cette journée ? » : la confirmation.
+    case retrait
+}
+
+/// Une action de « Modifier » (AjoutTemps.modifier).
+public enum AjoutTempsAction: String, Sendable, Hashable, CaseIterable, Identifiable {
+    case montrer, corriger, retirer
+
+    public var id: String { rawValue }
+
+    public var libelle: Libelle {
+        switch self {
+        case .montrer: Libelle("jour_montrer_duree")
+        case .corriger: Libelle("jour_corriger_duree")
+        case .retirer: Libelle("jour_retirer")
+        }
+    }
 }
 
 /// Comment les fenêtres se sont fermées : l'écran qui les a ouvertes y répond.
@@ -58,6 +81,8 @@ public enum AjoutTempsIssue: Sendable, Hashable {
     case montrer
     /// Des minutes ont été inscrites : l'écran qui l'a ouvert se rafraîchit (`apres()`).
     case ajoute(minutes: Int)
+    /// La durée du jour a été corrigée ; 0 : la journée est retirée.
+    case corrige(minutes: Int)
 }
 
 /// Une ligne de la liste des durées.
@@ -83,7 +108,8 @@ public final class AjoutTempsModele {
     public let boutonAjouter = Libelle("jour_ajouter_temps")
     public let boutonMontrer = Libelle("jour_montrer_duree")
     public let boutonRetour = Libelle("action_back")
-    public let titreDurees = Libelle("offline_how_long")
+    public let boutonModifier = Libelle("jour_modifier")
+    public let boutonRetirer = Libelle("jour_retirer")
     public let titreSaisie = Libelle("duration_custom_title")
     public let indicationSaisie = Libelle("duration_custom_hint")
     /// « OK » du champ : `android.R.string.ok` sur Android, une chaîne du système ; clé neuve à ajouter au
@@ -103,6 +129,11 @@ public final class AjoutTempsModele {
     public private(set) var issue: AjoutTempsIssue? = nil
     /// Le nombre écrit dans le champ de la durée réglable.
     public var saisie = ""
+    /// La saisie refusée (vide, illisible, hors de 1 à 240) : la boîte reste ouverte et le dit sous le champ
+    /// (FACCUEIL-15, DureeSeance.valide) ; nil sinon.
+    public private(set) var erreurSaisie: Libelle? = nil
+    /// La liste des durées sert à corriger le jour, non à y ajouter.
+    public private(set) var correction = false
     /// Le message bref après un ajout (« Ajouté : 30 min. », un Toast court sur Android) ; nil sinon.
     public private(set) var confirmation: Libelle? = nil
 
@@ -140,9 +171,49 @@ public final class AjoutTempsModele {
         return Libelle("jour_fait", .libelle(Store.formatDuration(minutes)))
     }
 
-    /// Le bouton du milieu, « Montrer la durée » : proposé par l'écran qui ouvre, pour un jour fait.
+    /// « Montrer la durée » : proposé par l'écran qui ouvre, pour un jour fait ; sous « Modifier » depuis
+    /// FDONNEES-04.
     public var montrerDuree: Bool {
         montrerPropose && minutesFaites != nil
+    }
+
+    /// Le bouton du milieu, « Modifier », pour un jour fait seulement.
+    public var modifiable: Bool {
+        minutesFaites != nil
+    }
+
+    /// « Modifier » : la liste des actions.
+    public func modifier() {
+        guard etape == .jour, modifiable else { return }
+        etape = .modifier
+    }
+
+    /// Les actions de « Modifier », dans l'ordre d'Android.
+    public var actions: [AjoutTempsAction] {
+        montrerDuree ? [.montrer, .corriger, .retirer] : [.corriger, .retirer]
+    }
+
+    public func choisirAction(_ action: AjoutTempsAction) {
+        guard etape == .modifier else { return }
+        switch action {
+        case .montrer: montrer()
+        case .corriger:
+            correction = true
+            etape = .durees
+        case .retirer:
+            etape = .retrait
+        }
+    }
+
+    /// « Retirer cette journée (30 min) ? Sa note, si elle en a une, reste. »
+    public var messageRetrait: Libelle {
+        Libelle("jour_retirer_confirmation", .libelle(Store.formatDuration(minutesFaites ?? 0)))
+    }
+
+    /// La journée retirée confirmée : la durée passe à 0 (Store.corrigerJour).
+    public func confirmerRetrait() async throws {
+        guard etape == .retrait else { return }
+        try await corriger(0)
     }
 
     /// « Ajouter du temps fait hors du téléphone » : la liste des durées.
@@ -153,7 +224,7 @@ public final class AjoutTempsModele {
 
     /// « Montrer la durée ».
     public func montrer() {
-        guard montrerDuree else { return }
+        guard montrerDuree, etape == .jour || etape == .modifier else { return }
         fermer(.montrer)
     }
 
@@ -163,6 +234,11 @@ public final class AjoutTempsModele {
     }
 
     // MARK: La durée
+
+    /// Le titre de la liste : « Combien de temps ? », ou « Corriger la durée ».
+    public var titreDurees: Libelle {
+        Libelle(correction ? "jour_corriger_duree" : "offline_how_long")
+    }
 
     /// 5 min, 10 min, 15 min, 30 min, 1 h, 1 h 30, puis « Durée réglable… » (DureeSeance.choisir).
     public var durees: [AjoutTempsDuree] {
@@ -176,22 +252,22 @@ public final class AjoutTempsModele {
     public func choisir(_ duree: AjoutTempsDuree) async throws {
         guard etape == .durees else { return }
         if let minutes = duree.minutes {
-            try await inscrire(minutes)
+            try await (correction ? corriger(minutes) : inscrire(minutes))
         } else {
             saisie = String(magasin.reglages.targetMinutes)
             etape = .saisie
         }
     }
 
-    /// « OK » du champ : le nombre ramené entre 1 et 240 minutes s'inscrit ; ce qui n'est pas un nombre ferme
-    /// sans rien inscrire, comme sur Android.
+    /// « OK » du champ : un nombre de 1 à 240 minutes s'inscrit ; sinon la boîte reste ouverte et le dit (FACCUEIL-15).
     public func validerSaisie() async throws {
         guard etape == .saisie else { return }
-        if let minutes = DureeSeance.lire(saisie) {
-            try await inscrire(minutes)
-        } else {
-            fermer(.fermee)
+        guard let minutes = DureeSeance.valide(saisie) else {
+            erreurSaisie = Libelle("duration_custom_hint")
+            return
         }
+        erreurSaisie = nil
+        try await (correction ? corriger(minutes) : inscrire(minutes))
     }
 
     /// Le message bref a été montré.
@@ -246,6 +322,32 @@ public final class AjoutTempsModele {
         if let echec {
             throw echec
         }
+    }
+
+    /// Store.corrigerJour : la durée du jour remplacée (0 la retire ; la note reste). Aujourd'hui retiré, l'instant
+    /// de la dernière séance n'honore plus la barrière. Le widget se redessine et un mot le confirme.
+    private func corriger(_ minutes: Int) async throws {
+        var journal = magasin.journal
+        var reglages = magasin.reglages
+        Store.corrigerJour(journal: &journal, reglages: &reglages, date: date, minutes: minutes,
+                           aujourdhui: horloge.aujourdhui)
+        let journalFinal = journal
+        let reglagesFinals = reglages
+        var echec: (any Error)? = nil
+        do {
+            try await magasin.modifierJournal { $0 = journalFinal }
+        } catch {
+            echec = error
+        }
+        do {
+            try await magasin.modifierReglages { $0 = reglagesFinals }
+        } catch {
+            if echec == nil { echec = error }
+        }
+        await systeme.rafraichirWidgets()
+        confirmation = minutes > 0 ? Libelle("jour_corrige", .libelle(Store.formatDuration(minutes))) : Libelle("jour_retire")
+        fermer(.corrige(minutes: minutes))
+        if let echec { throw echec }
     }
 
     private func fermer(_ comment: AjoutTempsIssue) {

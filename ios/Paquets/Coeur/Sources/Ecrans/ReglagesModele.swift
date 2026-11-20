@@ -373,7 +373,9 @@ public final class ReglagesModele {
     public let version: ReglagesVersion
 
     /// La fenêtre ouverte par-dessus l'écran ; nil sans fenêtre.
-    public var dialogue: ReglagesDialogue? = nil
+    public var dialogue: ReglagesDialogue? = nil {
+        didSet { if dialogue == nil { erreurSaisie = nil } }
+    }
     /// Le message bref à montrer (les Toast d'Android) ; `messageVu()` l'efface.
     public private(set) var message: Libelle? = nil
     /// La carte vers laquelle faire défiler l'écran ; `defilementFait()` l'efface.
@@ -737,11 +739,20 @@ public final class ReglagesModele {
     }
 
     /// « OK » de la durée libre : un nombre, ramené entre 1 et 240 ; autre chose ne change rien.
+    /// « OK » de la durée réglable : un nombre de 1 à 240 minutes ; sinon la boîte reste ouverte et le dit sous le
+    /// champ (FACCUEIL-15, DureeSeance.valide).
     public func validerDureeLibre(_ texte: String, pour liste: ReglagesListe) async throws {
+        guard let minutes = DureeSeance.valide(texte) else {
+            erreurSaisie = Libelle("duration_custom_hint")
+            return
+        }
+        erreurSaisie = nil
         dialogue = nil
-        guard let minutes = DureeSeance.lire(texte) else { return }
         try await appliquerDuree(minutes, pour: liste)
     }
+
+    /// La durée réglable refusée : la boîte reste ouverte et le dit sous le champ ; nil sinon.
+    public private(set) var erreurSaisie: Libelle? = nil
 
     private func appliquerDuree(_ minutes: Int, pour liste: ReglagesListe) async throws {
         switch liste {
