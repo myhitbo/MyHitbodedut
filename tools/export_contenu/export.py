@@ -181,13 +181,15 @@ class Export:
         source = "android/app/src/main/res/values*/strings.xml"
         self.json(SORTIE / "Chaines" / "Localizable.xcstrings", doc, source, indent=2)
         # La copie que compile Xcode (Catalogue/, pour Text("clé")) : son compilateur refuse un pluriel dont
-        # aucune forme ne cite le nombre (« jour » / « jours ») ; un tel pluriel y devient une chaîne simple,
-        # sa forme « other ». Le Traducteur lit Chaines/Localizable.xcstrings, fidèle à Android.
+        # aucune forme ne cite le nombre (« jour » / « jours »), ou dont l'argument n'est pas un nombre (« %1$@ h »,
+        # la durée déjà mise en chiffres) ; un tel pluriel y devient une chaîne simple, sa forme « other ».
+        # Le Traducteur lit Chaines/Localizable.xcstrings, fidèle à Android.
+        nombre = re.compile(r"%(\d+\$)?(lld|ld|d)")
         compile = json.loads(json.dumps(doc))
         for cle, entree in compile["strings"].items():
             locs = entree["localizations"]
             pluriels = [l["variations"]["plural"] for l in locs.values() if "variations" in l]
-            if pluriels and not any("%" in f["stringUnit"]["value"] for pl in pluriels for f in pl.values()):
+            if pluriels and not any(nombre.search(f["stringUnit"]["value"]) for pl in pluriels for f in pl.values()):
                 entree["localizations"] = {lg: {"stringUnit": l["variations"]["plural"]["other"]["stringUnit"]}
                                            for lg, l in locs.items()}
         self.json(SORTIE / "Catalogue" / "Localizable.xcstrings", localiser_xcode(compile), source, indent=2)
