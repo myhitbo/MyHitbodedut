@@ -91,8 +91,9 @@ struct ReglagesModeleTests {
         #expect(m.nomLangue == .brut("Français"))
         #expect(m.texteVersion == Libelle("app_version", .texte("2.4"), .entier(87), .libelle(Libelle("edition_full"))))
         let actifs = ReglagesInterrupteur.allCases.filter { m.estActif($0) }
-        // Affichés par défaut : Levana, son rappel, les hilloulot, la halakha ; Chabbat et Yom Tov compté.
-        #expect(actifs == [.levana, .levanaRappel, .hilloulot, .halakha, .chabbat])
+        // Affichés par défaut : Levana, son rappel, les hilloulot, la halakha ; Chabbat et Yom Tov compté ; l'alerte
+        // de Chabbat et l'écran allumé pendant la lecture (audit du 12/11).
+        #expect(actifs == [.levana, .levanaRappel, .hilloulot, .halakha, .chabbat, .chabbatAlerte, .ecranAllume])
         // Avant la première lecture du système : ni résumé ni carte d'état.
         #expect(m.resume == nil)
         #expect(m.carteBarriere == nil)
@@ -167,6 +168,8 @@ struct ReglagesModeleTests {
             (.masquerDecompte, true, "hide_countdown", .booleen(true)),
             (.guidee, true, "guided_hitbodedut", .booleen(true)),
             (.pauseAujourdhui, true, "paused_dates", .tableau([.chaine(ReglagesModeleTests.lundi)])),
+            (.chabbatAlerte, false, "chabbat_alerte", .booleen(false)),
+            (.ecranAllume, false, "lecture_ecran_allume", .booleen(false)),
         ]
         #expect(attendus.count == ReglagesInterrupteur.allCases.count)
         let banc = try fabriquer()

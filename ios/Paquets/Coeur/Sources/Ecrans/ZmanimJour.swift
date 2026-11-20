@@ -199,6 +199,9 @@ public struct ZmanimLevana: Sendable, Equatable {
     /// « EEE d MMM, HH:mm » de la langue de l'app), par `ZmanimLevana.fenetre(debut:fin:)`.
     public let debut: DateHeure
     public let fin: DateHeure
+    /// Sans lieu, la sortie de Kippour ou du 9 Av n'a pas d'heure : le début s'écrit sans heure (« EEE d MMM »,
+    /// audit du 16/11).
+    public let debutDateSeule: Bool
     /// Le motsaé Chabbat conseillé (« EEE d MMM »), par `ZmanimLevana.motsae(_:)` ; nil s'il n'y en a pas.
     public let motsae: JourCivil?
     /// « Pas avant la sortie de Kippour… » ou « … de Ticha bèAv » ; nil sinon.
@@ -395,6 +398,7 @@ public enum ZmanimVueJour {
                             luneTexte: Libelle("levana_lune", .texte(String(pourcent) + " %"), .libelle(phase)),
                             debut: zone.dateHeure(millis: f.debut),
                             fin: zone.dateHeure(millis: f.fin),
+                            debutDateSeule: lieu == nil && f.restriction != nil,
                             motsae: Levana.motsaeChabbat(f, date, fuseau: zone),
                             restriction: restriction,
                             remarques: remarques,

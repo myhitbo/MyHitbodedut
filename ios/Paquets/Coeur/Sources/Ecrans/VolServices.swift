@@ -571,7 +571,10 @@ public enum VolMiseEnPage {
     public static func dureeEnMots(_ minutes: Int) -> Libelle {
         if minutes == 1 { return Libelle("vol_duree_une_minute") }
         if minutes < 60 { return Libelle("vol_duree_minutes", .texte(String(minutes))) }
-        if minutes % 60 == 0 { return Libelle("vol_duree_heures", .texte(String(minutes / 60))) }
+        // Un pluriel d'Android (« 1 heure », « 3 heures ») : `getQuantityString`.
+        if minutes % 60 == 0 {
+            return Libelle.pluriel("vol_duree_heures", quantite: minutes / 60, .texte(String(minutes / 60)))
+        }
         return Libelle("vol_duree_heures_minutes", .texte(String(minutes / 60)), .texte(String(minutes % 60)))
     }
 

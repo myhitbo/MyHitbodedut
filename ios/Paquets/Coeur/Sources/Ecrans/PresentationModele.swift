@@ -88,12 +88,17 @@ public final class PresentationModele {
     /// l'ignorer.
     public private(set) var notificationsRefusees = false
 
+    /// L'édition a la barrière : sans elle (SANS_BARRIERE), la page qui la présente n'est pas montrée (FACCUEIL-04).
+    public let avecBarriere: Bool
+
     /// `index` : la page où reprendre (une restauration d'état), ramenée dans les bornes ; la première sinon.
-    public init(magasin: Magasin, notificateur: any Notificateur, rappels: any PresentationRappels, index: Int = 0) {
+    public init(magasin: Magasin, notificateur: any Notificateur, rappels: any PresentationRappels, index: Int = 0,
+                avecBarriere: Bool = true) {
         self.magasin = magasin
         self.notificateur = notificateur
         self.rappels = rappels
-        self.index = min(max(index, 0), Onboarding.dernier)
+        self.avecBarriere = avecBarriere
+        self.index = min(max(index, 0), Onboarding.dernier(avecBarriere: avecBarriere))
     }
 
     /// Une présentation sur des réglages donnés d'avance, dans un magasin en mémoire, avec un notificateur qui
@@ -119,17 +124,17 @@ public final class PresentationModele {
 
     /// La page montrée (Onboarding.ecran).
     public var ecran: OnboardingEcran {
-        Onboarding.ecran(index)
+        Onboarding.ecran(index, avecBarriere: avecBarriere)
     }
 
-    /// Le nombre de pages : sept.
+    /// Le nombre de pages : huit, sept sans la barrière.
     public var nombreDePages: Int {
-        Onboarding.ecrans.count
+        Onboarding.ecrans(avecBarriere: avecBarriere).count
     }
 
-    /// La pastille du haut, « 3 / 7 » (onboarding_step).
+    /// La pastille du haut, « 3 / 8 » (onboarding_step).
     public var etape: Libelle {
-        Libelle("onboarding_step", .entier(index + 1), .entier(Onboarding.ecrans.count))
+        Libelle("onboarding_step", .entier(index + 1), .entier(nombreDePages))
     }
 
     /// Le titre de la page.
@@ -230,7 +235,7 @@ public final class PresentationModele {
 
     /// La page montrée est la dernière, celle de la promesse.
     public var estDerniere: Bool {
-        Onboarding.estDernier(index)
+        Onboarding.estDernier(index, avecBarriere: avecBarriere)
     }
 
     /// « Précédent » se voit, sauf sur la première page, où sa place reste vide (INVISIBLE, pas GONE).
@@ -240,12 +245,12 @@ public final class PresentationModele {
 
     /// « Passer » se voit, sauf sur la dernière page, où sa place reste vide.
     public var passerVisible: Bool {
-        !Onboarding.estDernier(index)
+        !Onboarding.estDernier(index, avecBarriere: avecBarriere)
     }
 
     /// Le grand bouton : « Commencer » sur la dernière page, « Suivant » ailleurs.
     public var libelleSuivant: Libelle {
-        Onboarding.estDernier(index) ? Libelle("onboarding_start") : Libelle("onboarding_next")
+        Onboarding.estDernier(index, avecBarriere: avecBarriere) ? Libelle("onboarding_start") : Libelle("onboarding_next")
     }
 
     public var libelleRetour: Libelle {
@@ -260,22 +265,22 @@ public final class PresentationModele {
 
     /// Le grand bouton : la page suivante, ou, sur la dernière, la fin de la présentation.
     public func suivant() async throws {
-        if Onboarding.estDernier(index) {
+        if Onboarding.estDernier(index, avecBarriere: avecBarriere) {
             try await terminer()
         } else {
-            index = Onboarding.suivant(index)
+            index = Onboarding.suivant(index, avecBarriere: avecBarriere)
         }
     }
 
     /// « Précédent » : la page d'avant ; rien sur la première.
     public func precedent() {
-        index = Onboarding.precedent(index)
+        index = Onboarding.precedent(index, avecBarriere: avecBarriere)
     }
 
     /// La page amenée par un glissement du doigt (le `TabView` paginé de PORTAGE.md, que la vue lie à `index`),
     /// ramenée dans les bornes. Android n'a que ses boutons : glisser ne termine rien et n'écrit rien.
     public func afficher(page: Int) {
-        index = min(max(page, 0), Onboarding.dernier)
+        index = min(max(page, 0), Onboarding.dernier(avecBarriere: avecBarriere))
     }
 
     /// « Passer » : la présentation finit d'un geste, depuis n'importe quelle page.

@@ -32,6 +32,26 @@ struct PresentationModeleTests {
 
     // MARK: Quand la montrer
 
+    /// L'édition sans barrière (SANS_BARRIERE) n'a pas la page qui la présente (FACCUEIL-04) : une page de moins,
+    /// la même fin.
+    @Test func lEditionSansBarriereNePresentePasLaBarriere() async throws {
+        let avec = PresentationBanc().modele
+        let sans = PresentationModele(magasin: Magasin.enMemoire(), notificateur: FauxNotificateur(),
+                                      rappels: PresentationRappelsEnMemoire(), avecBarriere: false)
+        #expect(avec.nombreDePages == Onboarding.ecrans.count)
+        #expect(sans.nombreDePages == Onboarding.ecrans.count - 1)
+        var vues: [String] = []
+        for _ in 0..<sans.nombreDePages {
+            vues.append(sans.ecran.cle)
+            if !sans.estDerniere { try await sans.suivant() }
+        }
+        #expect(!vues.contains("barriere"))
+        #expect(vues.last == "prive")
+        #expect(sans.etape == Libelle("onboarding_step", .entier(sans.nombreDePages), .entier(sans.nombreDePages)))
+        sans.afficher(page: 99)
+        #expect(sans.index == sans.nombreDePages - 1)
+    }
+
     @Test func laVersionDeLaPresentationEstCelleDesReglages() {
         #expect(Reglages.versionPresentation == Onboarding.version)
         #expect(Onboarding.version >= 2)

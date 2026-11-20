@@ -259,6 +259,10 @@ public enum ReglagesInterrupteur: String, Sendable, Hashable, CaseIterable {
     case guidee
     /// Pause aujourd'hui (le jour dans `paused_dates`).
     case pauseAujourdhui
+    /// L'alerte « Chabbat dans 3 h » (`chabbat_alerte`, audit du 12/11, FCALENDRIER-07), allumée d'origine.
+    case chabbatAlerte
+    /// L'écran gardé allumé pendant la lecture (`lecture_ecran_allume`, audit du 12/11, FLECTURE-01), d'origine.
+    case ecranAllume
 }
 
 /// Une autorisation que l'app demande sur iOS (Autorisation.kt, dans l'ordre de l'utilité décroissante).
@@ -799,6 +803,8 @@ public final class ReglagesModele {
         case .masquerDecompte: return r.hideCountdown
         case .guidee: return r.guidedHitbodedut
         case .pauseAujourdhui: return r.pausedDates.contains(horloge.aujourdhui.iso)
+        case .chabbatAlerte: return r.chabbatAlerte
+        case .ecranAllume: return r.lectureEcranAllume
         }
     }
 
@@ -842,6 +848,12 @@ public final class ReglagesModele {
             let jour = horloge.aujourdhui.iso
             guard reglages.pausedDates.contains(jour) != actif else { return nil }
             try await modifier(.tout) { $0.togglePausedDate(jour) }
+        case .chabbatAlerte:
+            try await modifier(.rappels) { $0.setChabbatAlerte(actif) }
+            // Allumée sans les notifications, elle resterait muette : la demande (ChabbatAlerte.programmer).
+            if actif { return await accorderNotifications() }
+        case .ecranAllume:
+            try await modifier([]) { $0.setLectureEcranAllume(actif) }
         }
         return nil
     }

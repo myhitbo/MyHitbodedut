@@ -187,10 +187,16 @@ public struct VolJalonLigne: Sendable, Hashable, Identifiable {
     public let allumage: Libelle?
     /// « au-dessus de … », en petit.
     public let position: Libelle
+    /// Vol polaire sans tsét après cette chki'a : le repère de repli est dit (audit du 16/11) ; nil sinon.
+    public let repli: Libelle?
 }
 
 /// Chabbat, fêtes et Omer sur la route (VolCalendrier) : des heures, sans conseil.
 public struct VolCarteJalons: Sendable, Hashable {
+    /// La ligne de date est franchie (audit du 16/11) : son tracé est discuté ; nil sinon.
+    public let ligneDateDiscutee: Libelle?
+    /// Pendant le Omer, la ligne de date donne deux comptes (VolCalendrier.ligneDateOmer) ; nil sinon.
+    public let omerLigneDate: Libelle?
     public let lignes: [VolJalonLigne]
     /// « Jour civil du point sous l'avion ; calendrier d'Israël, d'après le réglage de l'application. »
     public let note: Libelle
@@ -352,6 +358,8 @@ public final class VolModele {
 
     /// Chaque calcul lancé ou vol effacé : un calcul fini après un autre n'est pas montré.
     @ObservationIgnored private var generation = 0
+    /// Le plan jugé invraisemblable pour lequel l'avertissement a déjà été donné, sans son relevé (FVOL-12).
+    @ObservationIgnored private var avertiPour: Vol.Plan?
     /// La lecture des aéroports est lancée : un second `apparaitre()` ne la refait pas.
     @ObservationIgnored private var lectureLancee = false
 
@@ -635,7 +643,7 @@ public final class VolModele {
         let israel = enIsrael
         let minutes = magasin.reglages.allumage
         let jalons = VolCalendrier.jalons(c, enIsrael: israel, minutes: minutes)
-        if jalons.isEmpty { return nil }
+        if jalons.isEmpty && c.lignesDate.isEmpty { return nil }
         var lignes: [VolJalonLigne] = []
         for (rang, j) in jalons.enumerated() {
             var noms: [Libelle] = []
@@ -656,10 +664,13 @@ public final class VolModele {
                 Libelle("vol_jalon_allumage", .texte(String(minutes)), .texte(VolMiseEnPage.texteDeuxHeures(c.plan, $0, formats)))
             }
             lignes.append(VolJalonLigne(id: rang, texte: texte, allumage: allumage,
-                                        position: VolMiseEnPage.position(j.latitude, j.longitude, formats)))
+                                        position: VolMiseEnPage.position(j.latitude, j.longitude, formats),
+                                        repli: j.repli ? Libelle("vol_jalon_repli") : nil))
         }
         let note = Libelle("vol_jalons_note", .libelle(Libelle(israel ? "vol_jalons_israel" : "vol_jalons_diaspora")))
-        return VolCarteJalons(lignes: lignes, note: note)
+        return VolCarteJalons(ligneDateDiscutee: c.lignesDate.isEmpty ? nil : Libelle("ligne_date_discutee"),
+                              omerLigneDate: VolCalendrier.ligneDateOmer(c, enIsrael: israel) ? Libelle("vol_omer_ligne_date") : nil,
+                              lignes: lignes, note: note)
     }
 
     private func carteRappels(_ c: Vol.Calcul) -> VolCarteRappels {
@@ -689,7 +700,15 @@ public final class VolModele {
                                     bouton: Libelle(directEnCours ? "vol_direct_attente" : "vol_direct_bouton"),
                                     enCours: directEnCours)
         }
-        let reserves = Vol.Reserve.allCases.filter { c.reserves.contains($0) }.map(VolMiseEnPage.reserve)
+        var reserves: [Libelle] = []
+        for r in Vol.Reserve.allCases where c.reserves.contains(r) {
+            reserves.append(VolMiseEnPage.reserve(r))
+            // Les zmanim absents, nommés à la suite de la réserve (FVOL-11).
+            if r == .absent && !c.absents.isEmpty {
+                let noms = c.absents.map { cle in traducteur.texte(Libelle(Libelles.res("zman_" + cle) ?? cle)) }
+                reserves.append(Libelle("vol_reserve_absents", .texte(noms.joined(separator: ", "))))
+            }
+        }
         let lignesDate = c.lignesDate.map { l in
             Libelle("vol_ligne_date", .texte(VolMiseEnPage.texteDeuxHeures(c.plan, l.instant, formats)),
                     .texte(formats.jour(l.avant)), .texte(formats.jour(l.apres)))
@@ -899,6 +918,16 @@ public final class VolModele {
                                releve: garde?.releve, sourceReleve: garde?.sourceReleve ?? .gps)
         if let invalide = Vol.verifier(nouveau) {
             dialogue = .message(VolMiseEnPage.invalide(invalide))
+            return
+        }
+        // Une durée que la distance ne permet pas : on avertit une fois, un second toucher passe outre (FVOL-12).
+        var sansReleve = nouveau
+        sansReleve.releve = nil
+        if Vol.invraisemblable(nouveau) && avertiPour != sansReleve {
+            avertiPour = sansReleve
+            let minutes = Int((i2 - i1) / 60_000)
+            dialogue = .message(Libelle("vol_invraisemblable", .texte(String(Kotlin.arrondiLong(Vol.distanceKm(nouveau)))),
+                                        .libelle(VolMiseEnPage.dureeEnMots(minutes))))
             return
         }
         modifier = false

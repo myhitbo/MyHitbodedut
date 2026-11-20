@@ -487,6 +487,35 @@ struct VolModeleTests {
         #expect(modele.plan == nil)
     }
 
+    /// Une durée que la distance ne permet pas (FVOL-12) : un avertissement, une fois ; un second « Calculer »
+    /// passe outre.
+    @Test func uneDureeInvraisemblableAvertitUneFois() async throws {
+        let modele = try fabriquer("2026-11-16", heure: 8).modele
+        await modele.apparaitre()
+        for (tuile, iata) in [(VolTuile.Genre.depart, "CDG"), (.arrivee, "TLV")] {
+            modele.toucher(tuile)
+            modele.chercherAeroport(iata)
+            modele.validerRecherche()
+        }
+        let jour = try #require(JourCivil(iso: "2026-11-20"))
+        modele.toucher(.decollage)
+        await modele.choisirHeure(DateHeure(jour, heure: 9))
+        modele.toucher(.atterrissage)
+        // Une heure pour Paris – Tel-Aviv.
+        await modele.choisirHeure(DateHeure(jour, heure: 11))
+        await modele.calculer()
+        guard case .message(let message)? = modele.dialogue else {
+            Issue.record("pas d'avertissement")
+            return
+        }
+        #expect(message.cle == "vol_invraisemblable")
+        #expect(message.arguments.last == .libelle(Libelle.pluriel("vol_duree_heures", quantite: 1, .texte("1"))))
+        #expect(modele.plan == nil)
+        modele.fermerDialogue()
+        await modele.calculer()
+        #expect(modele.plan != nil)
+    }
+
     @Test func leVolGardeSeRouvreEnResumeEtSEfface() async throws {
         let banc = try fabriquer("2026-11-16", heure: 8, reglages: reglagesAvecVol())
         let modele = banc.modele
@@ -622,7 +651,7 @@ struct VolModeleTests {
     @Test func lesTextesDeVolActivity() throws {
         #expect(VolMiseEnPage.dureeEnMots(1) == Libelle("vol_duree_une_minute"))
         #expect(VolMiseEnPage.dureeEnMots(10) == Libelle("vol_duree_minutes", .texte("10")))
-        #expect(VolMiseEnPage.dureeEnMots(120) == Libelle("vol_duree_heures", .texte("2")))
+        #expect(VolMiseEnPage.dureeEnMots(120) == Libelle.pluriel("vol_duree_heures", quantite: 2, .texte("2")))
         #expect(VolMiseEnPage.dureeEnMots(71) == Libelle("vol_duree_heures_minutes", .texte("1"), .texte("11")))
         // `Duration.toMinutes` : les secondes vers moins l'infini, puis la division tronquée.
         #expect(VolMiseEnPage.minutes(de: 0, a: 119_999) == 1)

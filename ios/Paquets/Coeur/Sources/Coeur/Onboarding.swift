@@ -109,35 +109,46 @@ public enum Onboarding {
         ),
     ]
 
+    /// Les écrans d'une édition : la construction sans barrière (SANS_BARRIERE, l'édition légère d'Android sans
+    /// HAS_GATE) n'a pas la page qui la présente (FACCUEIL-04). Les règles sans `avecBarriere` sont celles de
+    /// l'édition complète.
+    public static func ecrans(avecBarriere: Bool) -> [OnboardingEcran] {
+        avecBarriere ? ecrans : ecrans.filter { $0.cle != "barriere" }
+    }
+
     /// Le rang du dernier écran (`ECRANS.lastIndex`).
     public static let dernier = ecrans.count - 1
 
+    public static func dernier(avecBarriere: Bool) -> Int {
+        ecrans(avecBarriere: avecBarriere).count - 1
+    }
+
     /// L'écran de ce rang, ramené dans les bornes.
-    public static func ecran(_ index: Int) -> OnboardingEcran {
-        ecrans[borne(index)]
+    public static func ecran(_ index: Int, avecBarriere: Bool = true) -> OnboardingEcran {
+        ecrans(avecBarriere: avecBarriere)[borne(index, avecBarriere)]
     }
 
     /// Le rang suivant, ramené dans les bornes. `index + 1` se compte sur les 32 bits d'un Int de Kotlin :
     /// Int.MAX_VALUE + 1 y repasse à Int.MIN_VALUE, donc au premier écran, comme sur Android.
-    public static func suivant(_ index: Int) -> Int {
-        borne(Int(Int32(truncatingIfNeeded: index) &+ 1))
+    public static func suivant(_ index: Int, avecBarriere: Bool = true) -> Int {
+        borne(Int(Int32(truncatingIfNeeded: index) &+ 1), avecBarriere)
     }
 
     /// Le rang précédent, ramené dans les bornes ; Int.MIN_VALUE − 1 repasse à Int.MAX_VALUE, comme sur Android.
-    public static func precedent(_ index: Int) -> Int {
-        borne(Int(Int32(truncatingIfNeeded: index) &- 1))
+    public static func precedent(_ index: Int, avecBarriere: Bool = true) -> Int {
+        borne(Int(Int32(truncatingIfNeeded: index) &- 1), avecBarriere)
     }
 
     public static func estPremier(_ index: Int) -> Bool {
         index <= 0
     }
 
-    public static func estDernier(_ index: Int) -> Bool {
-        index >= dernier
+    public static func estDernier(_ index: Int, avecBarriere: Bool = true) -> Bool {
+        index >= dernier(avecBarriere: avecBarriere)
     }
 
     /// `coerceIn(0, DERNIER)`.
-    private static func borne(_ index: Int) -> Int {
-        min(max(index, 0), dernier)
+    private static func borne(_ index: Int, _ avecBarriere: Bool) -> Int {
+        min(max(index, 0), dernier(avecBarriere: avecBarriere))
     }
 }
