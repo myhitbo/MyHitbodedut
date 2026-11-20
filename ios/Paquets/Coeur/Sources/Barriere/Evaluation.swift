@@ -22,8 +22,8 @@
 ///    de service (§ 2.1.1) ;
 /// 5. une hitbodedout en cours (13/11, TFRUX-02) : avant les états du jour, comme sur Android ;
 /// 6. les états du jour d'Android, dans leur ordre (validée, exemptée, hors fenêtre, reportée) ;
-/// 7. le bouclier désaccordé : la règle a parlé (« veille » ou non) et le magasin `barriere` dit l'inverse.
-///    Il passe devant le verdict qu'il contredit, quel qu'il soit ;
+/// 7. le bouclier désaccordé : la règle a parlé (le bouclier posé, « veille » ou « séance en cours », ou levé) et
+///    le magasin `barriere` dit l'inverse. Il passe devant le verdict qu'il contredit, quel qu'il soit ;
 /// 8. sinon, la barrière veille.
 public enum GateState: String, Sendable, CaseIterable, Codable {
     case disabled = "DISABLED"
@@ -97,11 +97,11 @@ public enum Evaluation {
         if constat.selectionValide == false { return .selectionARefaire }
         if constat.surveillanceInscrite == false { return .surveillanceAbsente }
         if let reveil = constat.dernierReveil, maintenant.millis - reveil > silenceMaximum { return .surveillanceMuette }
-        // La séance passe avant le magasin : rien sur iOS ne pose encore le bouclier pendant une séance hors de la
-        // fenêtre (l'écran SESSION_RUNNING d'Android), la carte le dit sans crier au désaccord.
-        if seanceEnCours(etat, millis: maintenant.millis) { return .sessionRunning }
-        let verdict = regleDuJour(etat, maintenant: maintenant)
-        if let actif = constat.magasinActif, actif != (verdict == .armed) { return .bouclierDesaccorde }
+        // Pendant une séance, le bouclier « Hitbodedout en cours » est posé à toute heure (l'écran SESSION_RUNNING
+        // d'Android, GateRule.ecran) : un magasin levé pendant la séance est un désaccord, comme un magasin posé
+        // hors d'elle et hors de la veille.
+        let verdict = seanceEnCours(etat, millis: maintenant.millis) ? .sessionRunning : regleDuJour(etat, maintenant: maintenant)
+        if let actif = constat.magasinActif, actif != (GateRule.ecran(verdict) != nil) { return .bouclierDesaccorde }
         return verdict
     }
 
@@ -128,6 +128,33 @@ public enum Evaluation {
 
     // MARK: Les sous-règles de Store.kt
 
+    /// Une séance minutée arrivée à son terme compte comme close à sa fin : Android l'inscrit à cet instant
+    /// (SessionService) ; l'iOS ne le fait qu'au retour dans l'app (la réconciliation), et d'ici là l'extension
+    /// ne doit pas reposer le bouclier « rien de fait » sur une journée que la séance vient d'honorer. Une séance
+    /// sans durée, ou abandonnée (l'app retire alors la séance de l'instantané), ne compte pas.
+    public static func journeeAvecSeanceClose(_ etat: Etat, maintenant: Horodatage) -> Etat.JourneeValidee {
+        guard let s = etat.seance, s.debut > 0, s.minutes > 0, s.fin > 0, s.fin <= maintenant.millis else {
+            return etat.journee
+        }
+        let fin = instant(s.fin, commeMaintenant: maintenant)
+        return etat.journee.avec([Evenement(quand: fin, genre: .dejaFaite, detail: "seance")])
+    }
+
+    /// L'instant `millis` lu avec le décalage du fuseau de `maintenant` (une séance dure quatre heures au plus :
+    /// un changement d'heure entre les deux ne déplace la fin que d'une heure, sans changer le jour de la fenêtre
+    /// d'une fenêtre ordinaire).
+    static func instant(_ millis: Int64, commeMaintenant maintenant: Horodatage) -> Horodatage {
+        // Le décalage du fuseau, en minutes pleines : l'heure locale de `maintenant` à la minute, moins l'instant
+        // ramené à la minute.
+        let localMaintenant = Int64(JoursIso.jourUnix(maintenant.jour) ?? 0) * JoursIso.millisParJour
+            + Int64(maintenant.minutes) * 60_000
+        let decalage = localMaintenant - JoursIso.divisionEntiere(maintenant.millis, 60_000) * 60_000
+        let local = millis + decalage
+        let jour = JoursIso.divisionEntiere(local, JoursIso.millisParJour)
+        let reste = local - jour * JoursIso.millisParJour
+        return Horodatage(millis: millis, jour: JoursIso.iso(jourUnix: Int(jour)), minutes: Int(reste / 60_000))
+    }
+
     /// `Store.fenetreFaite` : une fenêtre qui passe minuit (21:00–02:00) appartient au soir où elle commence ;
     /// compte une séance close après la fin de la fenêtre précédente (le même jour à `end`). Sans heure
     /// connue, le jour de la fenêtre fait foi. Fenêtre dans la journée : le jour civil. Les minutes suffisent :
@@ -142,8 +169,9 @@ public enum Evaluation {
     }
 
     public static func fenetreFaite(_ etat: Etat, maintenant: Horodatage) -> Bool {
-        fenetreFaite(start: etat.windowStart, end: etat.windowEnd, maintenant: maintenant, faitA: etat.journee.faitA,
-                     jours: etat.journee.jours)
+        let journee = journeeAvecSeanceClose(etat, maintenant: maintenant)
+        return fenetreFaite(start: etat.windowStart, end: etat.windowEnd, maintenant: maintenant, faitA: journee.faitA,
+                            jours: journee.jours)
     }
 
     /// `Store.isExempt` : une date en pause, ou un jour chômé si « Chabbat et Yom Tov » est actif. La liste
@@ -192,6 +220,24 @@ public enum Evaluation {
     public static func activiteReport(_ etat: Etat, millis: Int64) -> (debut: Int64, fin: Int64) {
         let debut = finDuReport(etat, millis: millis)
         return (debut, debut + Int64(intervalleMinimum) * 60_000)
+    }
+
+    // MARK: Le bouclier (GateService.verifier, GateRule.ecran)
+
+    /// Le visage du bouclier que la règle demande maintenant : « rien de fait » dans la veille, « Hitbodedout en
+    /// cours » pendant une séance, à toute heure ; nil, le magasin `barriere` levé. Ce que l'extension de
+    /// surveillance applique (`store.shield` posé ou retiré) et ce que l'extension du bouclier montre.
+    public static func bouclier(_ etat: Etat, maintenant: Horodatage) -> VisageBouclier? {
+        GateRule.ecran(regle(etat, maintenant: maintenant))
+    }
+
+    /// L'activité `seance` : la surveillance se réveille à la fin d'une séance minutée, pour lever le bouclier
+    /// « en cours » (la séance close honore alors la fenêtre). Elle commence à la fin de la séance et dure
+    /// l'intervalle minimal du système, comme `activiteReport`. nil sans séance, pour une séance sans durée (l'app
+    /// qui la clôt réécrit l'instantané et réévalue) ou déjà finie.
+    public static func activiteSeance(_ etat: Etat, millis: Int64) -> (debut: Int64, fin: Int64)? {
+        guard let s = etat.seance, s.debut > 0, s.minutes > 0, s.fin > millis else { return nil }
+        return (s.fin, s.fin + Int64(intervalleMinimum) * 60_000)
     }
 
     /// La durée de la fenêtre en minutes ; une fenêtre de nuit passe minuit. Début et fin égaux : vide.
@@ -260,6 +306,16 @@ public struct GateFaits: Sendable, Equatable {
     }
 }
 
+/// Le visage du bouclier (BlockerMode de BlockerView.kt). Valeurs brutes : les noms de Kotlin.
+public enum VisageBouclier: String, Sendable, CaseIterable, Codable {
+    /// Rien n'a encore été fait aujourd'hui : « Commencer », « Je l'ai déjà faite », « Plus tard ».
+    case invite = "PROMPT"
+    /// Une séance est en cours : la seule issue est d'y retourner.
+    case seance = "SESSION_RUNNING"
+    /// L'aperçu des réglages (« Faire un essai ») : aucun effet.
+    case apercu = "PREVIEW"
+}
+
 /// Ce que fait le toucher de la pastille « Avec Hachem » de l'accueil. Valeurs brutes : les noms de Kotlin.
 public enum GesteBarriere: String, Sendable, CaseIterable {
     /// Il manque un accès ou une application : ouvrir les réglages sur la carte du mode.
@@ -288,6 +344,16 @@ public enum GateRule {
         if !f.dansLaFenetre { return .outsideWindow }
         if f.reportee { return .snoozed }
         return .armed
+    }
+
+    /// L'écran de garde d'un état (GateRule.ecran) : l'invite quand la barrière veille, l'écran de la séance
+    /// pendant une hitbodedout ; aucun sinon.
+    public static func ecran(_ etat: GateState) -> VisageBouclier? {
+        switch etat {
+        case .armed: .invite
+        case .sessionRunning: .seance
+        default: nil
+        }
     }
 
     /// Le service doit-il tourner ? Oui dès que les réglages sont bons, même hors fenêtre (Android seul).

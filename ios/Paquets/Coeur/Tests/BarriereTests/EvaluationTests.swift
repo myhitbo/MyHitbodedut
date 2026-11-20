@@ -65,13 +65,16 @@ private func veille() -> Etat {
         var enSeance = base
         enSeance.journee = Etat.JourneeValidee(jours: [lundi])
         enSeance.seance = Etat.Seance(debut: matin.millis - 60_000, fin: matin.millis + 60_000, minutes: 2)
-        cas.append(("séance en cours", enSeance, a(lundi, 7, 0), Constat(magasinActif: false), .sessionRunning))
+        // Le bouclier « Hitbodedout en cours » est posé pendant la séance (GateRule.ecran) : le magasin actif.
+        cas.append(("séance en cours", enSeance, a(lundi, 7, 0), Constat(magasinActif: true), .sessionRunning))
         var ouverte = base
         ouverte.seance = Etat.Seance(debut: matin.millis - 60_000, fin: 0, minutes: 0)
         cas.append(("séance sans durée", ouverte, a(lundi, 12, 0), Constat(), .sessionRunning))
+        // Une séance minutée finie compte comme close à sa fin (Android l'inscrit alors) ; une séance commencée
+        // avant d'être interrompue (l'app la retire de l'instantané) ne laisse rien.
         var finie = base
         finie.seance = Etat.Seance(debut: matin.millis - 120_000, fin: matin.millis, minutes: 2)
-        cas.append(("séance finie", finie, matin, Constat(), .armed))
+        cas.append(("séance finie", finie, matin, Constat(), .alreadyDone))
         var faite = base
         faite.journee = Etat.JourneeValidee(jours: [lundi])
         cas.append(("journée validée", faite, matin, Constat(), .alreadyDone))
@@ -103,6 +106,60 @@ private func veille() -> Etat {
         let attendu = ["DISABLED", "MISSING_PERMISSIONS", "NO_APPS_SELECTED", "SERVICE_STOPPED", "SESSION_RUNNING",
                        "ALREADY_DONE", "EXEMPT_DAY", "SNOOZED", "OUTSIDE_WINDOW", "ARMED"]
         #expect(android == attendu)
+    }
+
+    // MARK: Le bouclier de la séance (GateService, GateRule.ecran)
+
+    /// L'écran de garde : l'invite dans la veille, l'écran de la séance pendant une hitbodedout, à toute heure ;
+    /// rien sinon.
+    @Test func leVisageDuBouclier() {
+        let ecrans = GateState.allCases.compactMap { etat in GateRule.ecran(etat).map { (etat, $0) } }
+        #expect(ecrans.map(\.0) == [.sessionRunning, .armed])
+        #expect(ecrans.map(\.1) == [.seance, .invite])
+        let base = veille()
+        #expect(Evaluation.bouclier(base, maintenant: a(lundi, 7, 0)) == .invite)
+        #expect(Evaluation.bouclier(base, maintenant: a(lundi, 12, 0)) == nil)
+        // Une séance de 20 minutes l'après-midi, hors de la fenêtre et la journée déjà faite : le bouclier de la
+        // séance, puis, la séance finie, plus rien.
+        var e = base
+        e.journee = Etat.JourneeValidee(jours: [lundi])
+        let debut = a(lundi, 15, 0)
+        e.seance = Etat.Seance(debut: debut.millis, fin: debut.millis + 20 * 60_000, minutes: 20)
+        #expect(Evaluation.bouclier(e, maintenant: a(lundi, 15, 10)) == .seance)
+        #expect(Evaluation.evaluate(e, maintenant: a(lundi, 15, 10), constat: Constat(magasinActif: false)) == .bouclierDesaccorde)
+        #expect(Evaluation.bouclier(e, maintenant: a(lundi, 15, 20)) == nil)
+        // L'activité `seance` réveille la surveillance à la fin ; aucune pour une séance sans durée ou finie.
+        let activite = Evaluation.activiteSeance(e, millis: a(lundi, 15, 10).millis)
+        #expect(activite?.debut == debut.millis + 20 * 60_000)
+        #expect(activite?.fin == debut.millis + 35 * 60_000)
+        #expect(Evaluation.activiteSeance(e, millis: a(lundi, 15, 30).millis) == nil)
+        var libre = base
+        libre.seance = Etat.Seance(debut: debut.millis, fin: 0, minutes: 0)
+        #expect(Evaluation.activiteSeance(libre, millis: debut.millis) == nil)
+        #expect(Evaluation.bouclier(libre, maintenant: a(lundi, 23, 0)) == .seance)
+    }
+
+    /// La séance minutée finie dans la veille honore la fenêtre, jour et minute de sa fin lus dans le fuseau de
+    /// `maintenant` ; une fenêtre de nuit (21:00–02:00) : la séance finie à 21 h 40 sert la nuit, même à 0 h 30.
+    @Test func laSeanceFinieHonoreLaFenetre() {
+        var e = veille()
+        let debut = a(lundi, 7, 0)
+        e.seance = Etat.Seance(debut: debut.millis, fin: debut.millis + 15 * 60_000, minutes: 15)
+        #expect(Evaluation.regle(e, maintenant: a(lundi, 7, 20)) == .alreadyDone)
+        #expect(Evaluation.regle(e, maintenant: a(lundi, 7, 10)) == .sessionRunning)
+        var nuit = veille()
+        nuit.windowStart = 21 * 60
+        nuit.windowEnd = 2 * 60
+        let soir = a(lundi, 21, 25)
+        nuit.seance = Etat.Seance(debut: soir.millis, fin: soir.millis + 15 * 60_000, minutes: 15)
+        #expect(Evaluation.regle(nuit, maintenant: a("2026-11-17", 0, 30)) == .alreadyDone)
+        // Le fuseau de `maintenant` : à Paris (UTC+1), 7 h 20 locales ; la fin lue à 7 h 15 locales.
+        let paris = Horodatage(millis: debut.millis + 20 * 60_000 - 3_600_000, jour: lundi, minutes: 7 * 60 + 20)
+        var p = veille()
+        p.seance = Etat.Seance(debut: paris.millis - 20 * 60_000, fin: paris.millis - 5 * 60_000, minutes: 15)
+        let journee = Evaluation.journeeAvecSeanceClose(p, maintenant: paris)
+        #expect(journee.faitA?.minutes == 7 * 60 + 15)
+        #expect(journee.jours == [lundi])
     }
 
     /// Toutes les causes à la fois : chacune levée à son tour découvre la suivante, dans l'ordre de GateStatus.kt.
