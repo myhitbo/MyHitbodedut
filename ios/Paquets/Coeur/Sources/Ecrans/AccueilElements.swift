@@ -393,6 +393,28 @@ public enum AccueilRoute: Sendable, Hashable {
     case siddour(String)
     /// LibraryEntryActivity, EXTRA_ID : une entrée de la bibliothèque.
     case entreeBibliotheque(String)
+    /// ZmanimActivity : la date hébraïque en tête du Jour ouvre le ciel (zmanim, calendrier, hilloulot, boussole).
+    case zmanim
+    /// SettingsActivity ; `carteBarriere` (EXTRA_CARTE_BARRIERE) : l'écran défile jusqu'à la carte du mode, quand
+    /// la pastille « Avec Hachem » demande un réglage (GesteBarriere.REGLER).
+    case reglages(carteBarriere: Bool)
+}
+
+// MARK: L'en-tête du Jour
+
+/// En tête du Jour (refonte du 13/11, MainActivity.renderEntete et renderCiel) : à gauche, l'icône du ciel du moment
+/// et la date hébraïque, qui ouvrent les zmanim ; à droite, la roue des réglages (ic_nav_settings_off, 48 pt).
+public struct AccueilEntete: Sendable, Hashable {
+    /// La date hébraïque, qui change à la sortie des étoiles du lieu (minuit sans lieu) ; nil si le calcul échoue.
+    public let dateHebraique: String?
+    /// Ce que la puce montre : la date, sinon « Zmanim » (nav_zmanim). 14 pt, une ligne, suivie d'un chevron.
+    public let titre: AccueilTexte
+    /// « כ״ט חשון. Zmanim, calendrier, hilloulot, boussole » (jour_ciel).
+    public let accessibilite: Libelle
+    /// Le ciel du moment : l'icône devant la date, la plaque et le voile du haut de page (CielDuJour).
+    public let ciel: CielDuJour.Phase
+    /// « Réglages » : la description de la roue (settings_title).
+    public let reglages: Libelle
 }
 
 // MARK: Le dessin des anneaux

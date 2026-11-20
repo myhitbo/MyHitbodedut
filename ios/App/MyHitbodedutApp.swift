@@ -5,14 +5,18 @@ import SwiftUI
 import Vues
 
 /// Le point d'entrée de l'app (MyHitbodedutApp.kt, PORTAGE.md § 1.1) : il construit ce que les écrans reçoivent
-/// (le magasin du journal et des réglages, l'horloge, le traducteur, les contenus, la palette) et montre les cinq
+/// (le magasin du journal et des réglages, l'horloge, le traducteur, les contenus, la palette) et montre les trois
 /// onglets (Racine.swift). Ce point d'entrée lit le paquet de l'app (`Bundle.main`), et seule `Illustration` de
 /// Vues y prend encore ses images : les modèles d'écran reçoivent ce qu'il en tire.
 @main
 struct MyHitbodedutApp: App {
     @State private var magasin: Magasin
     @State private var zmanim: ZmanimModele
+    @State private var accueil: AccueilModele
+    @State private var chemin: CheminModele
     @State private var onglet: Onglet
+    /// La pile du Jour : Zmanim y est déjà posé au lancement quand le réglage « ecran_ouverture » le demande.
+    @State private var pileDuJour: [EcranDuJour]
     private let traducteur: Traducteur
     private let palettes: Palettes?
     /// Les contenus exportés (Contenu/ du paquet), lus à la demande : les écrans à venir le recevront.
@@ -32,19 +36,31 @@ struct MyHitbodedutApp: App {
         let horloge = HorlogeSysteme()
 
         let lecteur = ContenusApp.lecteur(dossier: paquet.appending(path: "Contenu"))
-        contenus = ContenusApp(lecteur: lecteur)
+        let contenus = ContenusApp(lecteur: lecteur)
+        self.contenus = contenus
         // La palette est lue dès le lancement, d'un seul fichier, pour que le premier écran ait déjà ses couleurs.
         palettes = (try? lecteur("palettes.json")).flatMap { try? Palettes.lire($0) }
-        traducteur = MyHitbodedutApp.traducteur(paquet: paquet)
+        let traducteur = MyHitbodedutApp.traducteur(paquet: paquet)
+        self.traducteur = traducteur
 
         _magasin = State(initialValue: magasin)
         _zmanim = State(initialValue: ZmanimModele(magasin: magasin, horloge: horloge))
+        #if SANS_BARRIERE
+        let barriere = false
+        #else
+        let barriere = true
+        #endif
+        _accueil = State(initialValue: AccueilModele(magasin: magasin, contenus: contenus, horloge: horloge,
+                                                     langue: traducteur.langue, barriere: barriere))
+        _chemin = State(initialValue: CheminModele(magasin: magasin, horloge: horloge))
         _onglet = State(initialValue: Onglet.initial(magasin.reglages))
+        _pileDuJour = State(initialValue: Onglet.zmanimParDessus(magasin.reglages) ? [.zmanim] : [])
     }
 
     var body: some Scene {
         WindowGroup {
-            Racine(magasin: magasin, palettes: palettes, zmanim: zmanim, onglet: $onglet)
+            Racine(magasin: magasin, palettes: palettes, zmanim: zmanim, accueil: accueil, chemin: chemin,
+                   onglet: $onglet, pileDuJour: $pileDuJour)
                 .environment(\.traducteur, traducteur)
         }
     }

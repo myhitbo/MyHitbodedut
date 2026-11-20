@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 import Coeur
+import Barriere
 @testable import Ecrans
 
 /// L'accueil (MainActivity.kt, onglet Aujourd'hui) : ce qu'il montre dans ses quatre états (pas encore faite, en
@@ -40,7 +41,8 @@ struct AccueilModeleTests {
     }
 
     func banc(_ journal: Journal = Journal(), _ reglages: Reglages = Reglages(), iso: String = AccueilModeleTests.lundi,
-              heure: Int = 10, barriere: Bool = false, langue: String = "fr", presentationVue: Bool = true) throws -> Banc {
+              heure: Int = 10, barriere: Bool = false, langue: String = "fr", presentationVue: Bool = true,
+              tempsEcran: ReglagesFausseBarriere? = nil) throws -> Banc {
         var r = reglages
         if presentationVue { r.setOnboarded() }
         let enregistrement = Enregistrement(journal: journal, reglages: r)
@@ -50,7 +52,7 @@ struct AccueilModeleTests {
         let horloge = HorlogeFixe(DateHeure(date, heure: heure), fuseau: .utc)
         let systeme = FauxAccueilSysteme()
         let modele = AccueilModele(magasin: magasin, contenus: Self.contenus, horloge: horloge, langue: langue,
-                                   barriere: barriere, systeme: systeme, melange: { $0 })
+                                   barriere: barriere, systeme: systeme, systemeBarriere: tempsEcran, melange: { $0 })
         return Banc(modele: modele, magasin: magasin, persistance: persistance, systeme: systeme, aujourdhui: date)
     }
 
@@ -197,16 +199,100 @@ struct AccueilModeleTests {
         let genres = sans.pastilles.map { $0.genre }
         #expect(!genres.contains(.barriere))
 
-        let b = try banc(barriere: true)
+        // Trois applications retenues, Temps d'écran autorisé : la pastille bascule le mode (GesteBarriere.BASCULER),
+        // et dit l'état réel (GateStatus.pastilleDe) : à midi, hors de la fenêtre de 6 h à 11 h.
+        let b = try banc(heure: 12, barriere: true, tempsEcran: ReglagesFausseBarriere(jetons: 3))
         let m = b.modele
+        await m.apparaitre()
         #expect(m.pastilles.last?.valeur == .libelle(Libelle("start_focus_off")))
+        #expect(m.gesteBarriere == .basculer)
         try await m.toucherPastille(.barriere)
         #expect(b.magasin.reglages.isEnabled)
-        #expect(m.pastilles.last?.valeur == .libelle(Libelle("start_focus_on")))
+        #expect(m.etatBarriere == .outsideWindow)
+        #expect(m.pastilles.last?.valeur == .libelle(Libelle("gate_window_title")))
+        // apparaitre, puis le geste.
         let appliques = await b.systeme.etatsAppliques
-        #expect(appliques == 1)
+        #expect(appliques == 2)
         let ecrit = await b.persistance.enregistrement.reglages.isEnabled
         #expect(ecrit)
+    }
+
+    /// Dans la fenêtre, rien de fait : la pastille dit « Activé » ; la journée faite, « Journée validée ».
+    @Test func laPastilleDitLEtatReel() async throws {
+        var r = Reglages()
+        r.setEnabled(true)
+        let b = try banc(Journal(), r, heure: 7, barriere: true, tempsEcran: ReglagesFausseBarriere(jetons: 2))
+        let m = b.modele
+        await m.apparaitre()
+        #expect(m.etatBarriere == .armed)
+        #expect(m.pastilles.last?.valeur == .libelle(Libelle("start_focus_on")))
+        let fait = try banc(try Self.journal([(Self.lundi, 15)]), r, heure: 7, barriere: true,
+                            tempsEcran: ReglagesFausseBarriere(jetons: 2)).modele
+        await fait.apparaitre()
+        #expect(fait.pastilles.last?.valeur == .libelle(Libelle("gate_done_title")))
+    }
+
+    /// Sans application ou sans autorisation, le toucher mène à la carte du mode (GesteBarriere.REGLER) au lieu
+    /// d'afficher « activée » pour rien ; la surveillance arrêtée, il la relance (RELANCER).
+    @Test func laPastilleNeBasculeQueSiLeModePeutAgir() async throws {
+        let vide = try banc(barriere: true, tempsEcran: ReglagesFausseBarriere(jetons: 0))
+        await vide.modele.apparaitre()
+        #expect(vide.modele.gesteBarriere == .regler)
+        try await vide.modele.toucherPastille(.barriere)
+        #expect(vide.modele.routes.last == .reglages(carteBarriere: true))
+        #expect(!vide.magasin.reglages.isEnabled)
+
+        let refuse = try banc(barriere: true, tempsEcran: ReglagesFausseBarriere(constat: Constat(autorise: false),
+                                                                                 jetons: 3))
+        await refuse.modele.apparaitre()
+        #expect(refuse.modele.gesteBarriere == .regler)
+
+        var r = Reglages()
+        r.setEnabled(true)
+        let arrete = try banc(Journal(), r, heure: 7, barriere: true,
+                              tempsEcran: ReglagesFausseBarriere(constat: Constat(surveillanceInscrite: false), jetons: 3))
+        await arrete.modele.apparaitre()
+        #expect(arrete.modele.gesteBarriere == .relancer)
+        #expect(arrete.modele.pastilles.last?.valeur == .libelle(Libelle("start_focus_stopped")))
+        try await arrete.modele.toucherPastille(.barriere)
+        let relances = await arrete.systeme.etatsAppliques
+        #expect(relances == 2)
+        #expect(arrete.magasin.reglages.isEnabled)
+    }
+
+    // MARK: L'en-tête du Jour
+
+    /// La date hébraïque du jour, sans lieu (minuit du téléphone) ; elle ouvre les zmanim, la roue les réglages.
+    @Test func lEnTeteOuvreLesZmanimEtLesReglages() throws {
+        let m = try banc().modele
+        let e = m.entete
+        let date = try #require(e.dateHebraique)
+        let attendue = CalendrierJuif.jour(try Self.jour(Self.lundi), enIsrael: false).dateHebraique
+        #expect(date == attendue)
+        #expect(e.titre == .brut(attendue))
+        #expect(e.accessibilite == Libelle("jour_ciel", .texte(attendue)))
+        #expect(e.ciel == .jour)
+        #expect(e.reglages == Libelle("settings_title"))
+        m.ouvrirZmanim()
+        m.ouvrirReglages()
+        #expect(m.routes == [.zmanim, .reglages(carteBarriere: false)])
+        m.preparer()
+        #expect(m.routes.last == .seance(demarrer: false))
+        #expect(m.libellePreparer == Libelle("start_prepare"))
+    }
+
+    /// Avec un lieu, la date change à la sortie des étoiles : à 23 h à Jérusalem, c'est déjà le lendemain hébreu.
+    @Test func lEnTeteBasculeATset() throws {
+        var r = Reglages()
+        r.setLieuZmanim(Zmanim.Lieu(nom: "Jérusalem", latitude: 31.778, longitude: 35.2354, fuseau: "UTC"), ville: nil,
+                        maintenant: 0)
+        let soir = try banc(Journal(), r, heure: 23).modele
+        let demain = CalendrierJuif.jour(try Self.jour("2026-11-17"), enIsrael: false).dateHebraique
+        #expect(soir.entete.dateHebraique == demain)
+        #expect(soir.entete.ciel == .nuit)
+        let matin = try banc(Journal(), r, heure: 10).modele
+        let aujourdhui = CalendrierJuif.jour(try Self.jour(Self.lundi), enIsrael: false).dateHebraique
+        #expect(matin.entete.dateHebraique == aujourdhui)
     }
 
     @Test func dureeDeLaProchaineSeance() async throws {
@@ -900,7 +986,8 @@ struct AccueilModeleTests {
             "rappel_guechem_fin", "rappel_dix_jours_titre", "rappel_dix_jours", "rappel_omer_titre", "rappel_omer",
             "rappel_source", "rappel_aujourdhui", "rappel_demain", "rappel_hier_soir", "rappel_motsae",
             "rappel_ce_soir", "rappel_demain_soir", "rappel_soir", "jour_rien", "jour_fait", "jour_ajouter_temps",
-            "jour_montrer_duree", "jour_ajoute", "moment_relance",
+            "jour_montrer_duree", "jour_ajoute", "moment_relance", "jour_ciel", "nav_zmanim", "settings_title",
+            "start_prepare", "start_focus_setup", "start_focus_stopped", "gate_window_title", "gate_done_title",
         ]
         for cle in cles {
             for langue in ["fr", "en", "he"] {

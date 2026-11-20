@@ -1,11 +1,13 @@
 import Foundation
 import Observation
 import Coeur
+import Barriere
 
 /// L'accueil, l'onglet Aujourd'hui (MainActivity.kt, le panneau main_scroll d'activity_main.xml ; AnneauxView.kt,
 /// AnneauxDessin.kt, AccueilMoment.kt, RappelsTefila.kt, SourceDuJour.kt, AjoutTemps.kt, DureeSeance.kt).
 ///
-/// De haut en bas : le nom de l'app, la salutation, l'état du jour, la série et le total ; les trois anneaux autour
+/// De haut en bas (refonte d'Android du 13/11) : l'en-tête — la date hébraïque qui ouvre les zmanim, la roue des
+/// réglages —, le nom de l'app, la salutation, l'état du jour, la série et le total ; les trois anneaux autour
 /// du hassid et leur légende ; le grade et le prochain trophée ; « Commencer » et ses pastilles ; la bande de la
 /// semaine ; le mot de relance après une série rompue ; la note et « Je l'ai faite sans le téléphone » ; les cartes
 /// du moment ; « Trophées » et « Mon parcours ».
@@ -38,6 +40,8 @@ public final class AccueilModele {
     private let contenus: ContenusApp
     private let horloge: any Horloge
     private let systeme: (any AccueilSysteme)?
+    /// Ce que l'app constate de Temps d'écran (le même service que la carte des réglages) ; nil : rien d'observé.
+    private let systemeBarriere: (any ReglagesBarriereSysteme)?
     private let melange: @Sendable ([String]) -> [String]
 
     /// « fr », « en » ou « he ».
@@ -105,9 +109,18 @@ public final class AccueilModele {
     /// Les écrans à ouvrir, dans l'ordre : la vue ouvre le premier puis appelle `routeOuverte()`.
     public private(set) var routes: [AccueilRoute] = []
 
+    /// Ce que Temps d'écran a dit au dernier passage (autorisation, surveillance), et les jetons de la sélection.
+    public private(set) var constat = Constat()
+    public private(set) var nombreDeJetons = 0
+    /// L'état de la barrière, recalculé à chaque passage et après chaque geste (il compte deux ans de jours chômés :
+    /// pas à chaque dessin) ; nil sans barrière ou avant le premier passage.
+    public private(set) var etatBarriere: GateState? = nil
+
     /// `melange` : le mélange du sac des textes de relance ; un mélange fixe dans les tests.
+    /// `systemeBarriere` : Temps d'écran, pour la pastille « Avec Hachem » (nil : autorisé, aucune application).
     public init(magasin: Magasin, contenus: ContenusApp, horloge: any Horloge, langue: String, barriere: Bool,
                 debug: Bool = false, systeme: (any AccueilSysteme)? = nil,
+                systemeBarriere: (any ReglagesBarriereSysteme)? = nil,
                 melange: @escaping @Sendable ([String]) -> [String] = { $0.shuffled() }) {
         self.magasin = magasin
         self.contenus = contenus
@@ -116,6 +129,7 @@ public final class AccueilModele {
         self.barriere = barriere
         self.debug = debug
         self.systeme = systeme
+        self.systemeBarriere = systemeBarriere
         self.melange = melange
         fete = TropheeFeteModele(magasin: magasin, horloge: horloge)
     }
@@ -135,6 +149,7 @@ public final class AccueilModele {
             cascade = false
         }
         await systeme?.appliquerEtat()
+        await lireBarriere()
         await lireContenus()
         await rafraichir()
         // renderPaliers : la fête du neuf, puis le bilan de la semaine.
@@ -172,7 +187,39 @@ public final class AccueilModele {
         message = nil
     }
 
-    // MARK: L'en-tête
+    // MARK: L'en-tête du Jour (refonte du 13/11)
+
+    /// La date hébraïque et le ciel du moment, en tête du Jour (renderEntete, renderCiel). La date suit la sortie des
+    /// étoiles du lieu, dans les zmanim de son noussa'h, comme la vignette ; sans lieu, minuit du téléphone.
+    public var entete: AccueilEntete {
+        let lieu = reglages.lieuZmanim
+        let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
+        let maintenant = DateHeureZonee(millis: horloge.maintenant, fuseau: zone)
+        var tset: DateHeureZonee? = nil
+        if let lieu,
+           let instant = Zmanim.jour(lieu: lieu, date: maintenant.jour, nusah: reglages.siddurNusah)
+            .first(where: { $0.cle == "tset" })?.instant {
+            tset = DateHeureZonee(millis: Kotlin.versLong((instant.timeIntervalSince1970 * 1000).rounded()), fuseau: zone)
+        }
+        let jour = ZmanimVignette.jourHebreuAffiche(maintenant: maintenant, tset: tset)
+        let date = CalendrierJuif.jour(jour, enIsrael: enIsrael).dateHebraique
+        let titre: AccueilTexte = date.isEmpty ? .libelle(Libelle("nav_zmanim")) : .brut(date)
+        let nom: Libelle.Argument = date.isEmpty ? .libelle(Libelle("nav_zmanim")) : .texte(date)
+        return AccueilEntete(dateHebraique: date.isEmpty ? nil : date, titre: titre,
+                             accessibilite: Libelle("jour_ciel", nom),
+                             ciel: CielDuJour.phase(maintenant: maintenant, lieu: lieu),
+                             reglages: Libelle("settings_title"))
+    }
+
+    /// La date hébraïque touchée : le ciel (zmanim, calendrier, hilloulot, boussole).
+    public func ouvrirZmanim() {
+        routes.append(.zmanim)
+    }
+
+    /// La roue : les réglages.
+    public func ouvrirReglages() {
+        routes.append(.reglages(carteBarriere: false))
+    }
 
     /// Le nom de l'app, 13 pt, atténué, espacement 0,08.
     public var nomApp: Libelle { Libelle("app_name") }
@@ -440,6 +487,14 @@ public final class AccueilModele {
         routes.append(.seance(demarrer: !enCours))
     }
 
+    /// « Préparer la séance » (start_prepare, FPRODUIT-04) : l'écran de préparation, sans démarrer — « Sans durée »
+    /// et « Commencer simplement » y vivent.
+    public var libellePreparer: Libelle { Libelle("start_prepare") }
+
+    public func preparer() {
+        routes.append(.seance(demarrer: false))
+    }
+
     /// Les pastilles sous le bouton, dans l'ordre ; celle de la barrière seulement dans l'édition qui l'a.
     public var pastilles: [AccueilPastille] {
         var liste = [
@@ -451,10 +506,30 @@ public final class AccueilModele {
             AccueilPastille(genre: .musique, etiquette: Libelle("music_title"), valeur: valeurMusique),
         ]
         if barriere {
+            // L'état réel, en court (13/11, FPRODUIT-02) : « Activé » ne s'affiche plus pour rien.
+            let etat = etatBarriere ?? (reglages.isEnabled ? .armed : .disabled)
             liste.append(AccueilPastille(genre: .barriere, etiquette: Libelle("start_focus"),
-                                         valeur: .libelle(Libelle(reglages.isEnabled ? "start_focus_on" : "start_focus_off"))))
+                                         valeur: .libelle(GateStatus.pastilleDe(etat))))
         }
         return liste
+    }
+
+    /// Ce que fait le toucher de la pastille « Avec Hachem » (GateRule.geste, 13/11, FBARRIERE-08) : basculer le mode
+    /// s'il peut agir ; sinon mener à la carte du mode, ou relancer la surveillance arrêtée.
+    public var gesteBarriere: GesteBarriere {
+        GateRule.geste(faitsBarriere)
+    }
+
+    /// Les faits de GateStatus.faits, vus d'iOS : l'accès est l'autorisation de Temps d'écran ; une sélection que le
+    /// système ne reconnaît plus ne compte pas d'application ; le « service » vit tant que la surveillance est
+    /// inscrite et s'est réveillée dans le jour.
+    private var faitsBarriere: GateFaits {
+        let applications = constat.selectionValide == false ? 0 : nombreDeJetons
+        var vivant = constat.surveillanceInscrite != false
+        if let reveil = constat.dernierReveil, horloge.maintenant - reveil > Evaluation.silenceMaximum { vivant = false }
+        return GateFaits(active: reglages.isEnabled, accesAccordes: constat.autorise, applications: applications,
+                         serviceVivant: vivant, seanceEnCours: enCours, faite: false, exempte: false, reportee: false,
+                         dansLaFenetre: false)
     }
 
     /// Une pastille touchée : la durée et le sujet se choisissent dans une liste, la musique ouvre son écran, la
@@ -469,9 +544,18 @@ public final class AccueilModele {
             routes.append(.musique)
         case .barriere:
             guard barriere else { return }
-            let active = !reglages.isEnabled
-            try await magasin.modifierReglages { $0.setEnabled(active) }
-            await systeme?.appliquerEtat()
+            switch gesteBarriere {
+            case .regler:
+                routes.append(.reglages(carteBarriere: true))
+            case .relancer:
+                await systeme?.appliquerEtat()
+                await lireBarriere()
+            case .basculer:
+                let active = !reglages.isEnabled
+                try await magasin.modifierReglages { $0.setEnabled(active) }
+                await systeme?.appliquerEtat()
+                await lireBarriere()
+            }
         }
     }
 
@@ -926,6 +1010,24 @@ public final class AccueilModele {
 
     // MARK: Les gestes intérieurs
 
+    /// Relit Temps d'écran et recalcule l'état de la barrière (renderStartCard : GateStatus.evaluate).
+    private func lireBarriere() async {
+        guard barriere else {
+            etatBarriere = nil
+            return
+        }
+        if let systemeBarriere {
+            constat = await systemeBarriere.constat()
+            nombreDeJetons = max(await systemeBarriere.nombreDeJetons(), 0)
+        }
+        let millis = horloge.maintenant
+        let fuseau = horloge.fuseau
+        let etat = EtatBarriere.etat(journal: magasin.journal, reglages: reglages, millis: millis, fuseau: fuseau,
+                                     nombreDeJetons: nombreDeJetons, textes: { $0.cle })
+        etatBarriere = GateStatus.evaluate(etat, maintenant: EtatBarriere.horodatage(millis: millis, fuseau: fuseau),
+                                           constat: constat)
+    }
+
     /// Les contenus des cartes : le siddour du nusah choisi, la bibliothèque, les textes de 'hizouk. Un contenu
     /// illisible ne montre pas ses cartes ; il sera relu au passage suivant.
     private func lireContenus() async {
@@ -1016,6 +1118,8 @@ public final class AccueilModele {
             await bilanDeLaSemaine()
         }
         await rafraichir()
+        // Une journée inscrite lève la barrière du jour : la pastille le dit aussitôt.
+        await lireBarriere()
         montrerAnneaux(depuisZero: false)
     }
 
