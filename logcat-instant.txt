@@ -1,0 +1,570 @@
+--------- beginning of kernel
+11-17 09:30:56.073     0     0 I servicemanager: Caller(pid=5134,uid=0,sid=u:r:su:s0) Found mapper/ranchu in device VINTF manifest.
+11-17 09:30:56.274     0     0 I logd    : logdr: UID=0 GID=0 PID=5136 b tail=1 logMask=99 pid=0 start=0ns deadline=0ns
+--------- beginning of system
+11-17 09:30:56.033   672  1209 I ActivityManager: Force stopping com.myhitbodedut appid=10216 user=0: from pid 5140
+--------- beginning of main
+11-17 09:30:56.034  1395  1395 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:56.034   672  1209 I ActivityManager: Killing 4464:com.myhitbodedut/u0a216 (adj 0): stop com.myhitbodedut due to from pid 5140
+11-17 09:30:56.037   672  1006 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+11-17 09:30:56.038   672  1006 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+11-17 09:30:56.038   672  1006 D InetDiagMessage: Destroyed live tcp sockets for uids={10216} in 1ms
+11-17 09:30:56.038   672  1006 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+11-17 09:30:56.038   672  1006 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+11-17 09:30:56.038   672  1006 D InetDiagMessage: Destroyed live tcp sockets for uids={20216} in 1ms
+11-17 09:30:56.043   672   796 W InputDispatcher: channel '903b482 com.myhitbodedut/com.myhitbodedut.MainActivity' ~ Consumer closed input channel or an error occurred.  events=0x9
+11-17 09:30:56.043   672   796 E InputDispatcher: channel '903b482 com.myhitbodedut/com.myhitbodedut.MainActivity' ~ Channel is unrecoverably broken and will be disposed!
+11-17 09:30:56.044   672  1068 I ImeTracker: com.myhitbodedut:32de2da6: onRequestHide at ORIGIN_SERVER reason HIDE_REMOVE_CLIENT fromUser false
+11-17 09:30:56.044   672  1068 I ImeTracker: com.myhitbodedut:32de2da6: onCancelled at PHASE_SERVER_SHOULD_HIDE
+11-17 09:30:56.044   475   475 I Zygote  : Process 4464 exited due to signal 9 (Killed)
+11-17 09:30:56.292     0     0 I binder_alloc: 4464: binder_alloc_buf, no vma
+11-17 09:30:56.293     0     0 I binder  : cannot allocate buffer: vma cleared, target dead or dying
+11-17 09:30:56.293     0     0 I binder  : 672:1209 transaction async to 4464:0 failed 284622/29189/-3, size 396-0 line 3548
+11-17 09:30:56.047   672  1209 E IPCThreadState: Binder transaction failure. id: 284622, BR_*: 29189, error: -3 (No such process)
+11-17 09:30:56.047   672  1209 W ActivityManager: pid 672 system sent binder code 54 with flags 1 to frozen apps and got error -32
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: Failed to deliver transaction for null
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: transaction=com.android.server.wm.ClientLifecycleManager@a16e3d
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: android.os.DeadObjectException
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.os.BinderProxy.transactNative(Native Method)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.os.BinderProxy.transact(BinderProxy.java:592)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.app.IApplicationThread$Stub$Proxy.scheduleTransaction(IApplicationThread.java:2308)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.app.IApplicationThread$Delegator.scheduleTransaction(IApplicationThread.java:439)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.app.servertransaction.ClientTransaction.schedule(ClientTransaction.java:245)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.ClientLifecycleManager.scheduleTransaction(ClientLifecycleManager.java:75)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.ClientLifecycleManager.onClientTransactionItemScheduled(ClientLifecycleManager.java:240)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.ClientLifecycleManager.scheduleTransactionItem(ClientLifecycleManager.java:119)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessController.scheduleClientTransactionItem(WindowProcessController.java:1803)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessController.dispatchConfiguration(WindowProcessController.java:1772)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessController.onConfigurationChanged(WindowProcessController.java:1677)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.ConfigurationContainer.onRequestedOverrideConfigurationChanged(ConfigurationContainer.java:351)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessController.onMergedOverrideConfigurationChanged(WindowProcessController.java:1705)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessController.unregisterActivityConfigurationListener(WindowProcessController.java:1605)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessController.unregisterConfigurationListeners(WindowProcessController.java:1614)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessController.destroy(WindowProcessController.java:1622)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.WindowProcessControllerMap.remove(WindowProcessControllerMap.java:70)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.wm.ActivityTaskManagerService$LocalService.onProcessUnMapped(ActivityTaskManagerService.java:6474)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.removePidLocked(ActivityManagerService.java:1002)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ProcessList.removeProcessLocked(ProcessList.java:3239)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ProcessList.killPackageProcessesLSP(ProcessList.java:3169)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.forceStopPackageInternalLocked(ActivityManagerService.java:4360)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.forceStopPackageLocked(ActivityManagerService.java:4313)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.forceStopPackageLocked(ActivityManagerService.java:4304)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.forceStopPackage(ActivityManagerService.java:3878)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.forceStopPackage(ActivityManagerService.java:3807)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerShellCommand.runForceStop(ActivityManagerShellCommand.java:1623)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:317)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.modules.utils.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:97)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.os.ShellCommand.exec(ShellCommand.java:38)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10418)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.os.Binder.shellCommand(Binder.java:1151)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.os.Binder.onTransact(Binder.java:953)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5739)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2735)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.os.Binder.execTransactInternal(Binder.java:1426)
+11-17 09:30:56.048   672  1209 W ClientLifecycleManager: 	at android.os.Binder.execTransact(Binder.java:1365)
+11-17 09:30:56.048   672  1209 W ActivityTaskManager: Failed for dead process. ClientTransactionItem=ConfigurationChangeItem{deviceId=0, config{1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h914dp 420dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2400) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.3 s.73 fontWeightAdjustment=0}} owner=ProcessRecord{68c6674 4464:com.myhitbodedut/u0a216}
+11-17 09:30:56.048   672   796 I WindowManager: WINDOW DIED Window{903b482 u0 com.myhitbodedut/com.myhitbodedut.MainActivity}
+11-17 09:30:56.049   672   706 I libprocessgroup: Removed cgroup /sys/fs/cgroup/apps/uid_10216/pid_4464
+11-17 09:30:56.049   672   796 I ImeTracker: system_server:36fdaa2a: onRequestHide at ORIGIN_SERVER reason IME_REQUESTED_CHANGED_LISTENER fromUser false
+11-17 09:30:56.049   672   698 I ImeTracker: system_server:36fdaa2a: onCancelled at PHASE_SERVER_SHOULD_HIDE
+11-17 09:30:56.051  1096  1096 E LauncherProxyService: Failed to get launcher proxy for system bar attr change.
+11-17 09:30:56.051   672  1209 W ActivityTaskManager: Force removing ActivityRecord{158184904 u0 com.myhitbodedut/.MainActivity t11 f}}: app died, no saved state
+11-17 09:30:56.052  1096  1171 V WindowManagerShell: Transition requested (#12): android.os.BinderProxy@189b822 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=11 effectiveUid=10216 displayId=0 isRunning=false baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=0 lastActiveTime=89191 supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@a09f2b3} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=true lastNonFullscreenBounds=Rect(284, 724 - 797, 1804) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 0, 0) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=undefined}} topActivityMainWindowFrame=null}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 12 }
+11-17 09:30:56.056   672  1209 W IPCThreadState: Sending oneway calls to frozen process.
+11-17 09:30:56.056   672  1209 W IPCThreadState: Sending oneway calls to frozen process.
+11-17 09:30:56.056   672  1209 W IPCThreadState: Sending oneway calls to frozen process.
+11-17 09:30:56.056   672  1209 W IPCThreadState: Sending oneway calls to frozen process.
+11-17 09:30:56.057   672  1209 W IPCThreadState: Sending oneway calls to frozen process.
+11-17 09:30:56.057   672  1209 W IPCThreadState: Sending oneway calls to frozen process.
+11-17 09:30:56.057   672  1209 I AppsFilter: interaction: PackageSetting{18cde7f com.android.microdroid.empty_payload/10208} -> PackageSetting{a33512c com.myhitbodedut/10216} BLOCKED
+11-17 09:30:56.057   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:56.058   672   689 V ActivityManager: Got obituary of 4464:com.myhitbodedut
+11-17 09:30:56.058   672   698 W ActivityManager: setHasOverlayUi called on unknown pid: 4464
+11-17 09:30:56.066  1395  1395 D ViewRootImpl: Skipping stats log for color mode
+11-17 09:30:56.067   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:56.067   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:56.067   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:56.068   672  1032 I AppWidgetServiceImpl: Received broadcast: android.intent.action.PACKAGE_RESTARTED on user 0
+11-17 09:30:56.068   672  1032 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10216 package com.myhitbodedut isStopped true
+11-17 09:30:56.068   672  1032 I AppWidgetServiceImpl: cancelBroadcastsLocked() for Provider{ProviderId{user:0, app:10216, cmp:ComponentInfo{com.myhitbodedut/com.myhitbodedut.ZmanimWidget}}}
+11-17 09:30:56.068   672  1032 I AppWidgetServiceImpl: cancelBroadcastsLocked() for Provider{ProviderId{user:0, app:10216, cmp:ComponentInfo{com.myhitbodedut/com.myhitbodedut.ZmanimPetitWidget}}}
+11-17 09:30:56.068   672  1032 I AppWidgetServiceImpl: cancelBroadcastsLocked() for Provider{ProviderId{user:0, app:10216, cmp:ComponentInfo{com.myhitbodedut/com.myhitbodedut.ZmanimGrandWidget}}}
+11-17 09:30:56.068   672  1032 I AppWidgetServiceImpl: cancelBroadcastsLocked() for Provider{ProviderId{user:0, app:10216, cmp:ComponentInfo{com.myhitbodedut/com.myhitbodedut.BoussoleWidget}}}
+11-17 09:30:56.068   672  1032 I AppWidgetServiceImpl: cancelBroadcastsLocked() for Provider{ProviderId{user:0, app:10216, cmp:ComponentInfo{com.myhitbodedut/com.myhitbodedut.StreakWidget}}}
+11-17 09:30:56.070   672   804 I system_server: AssetManager2(0x71da1f8632d8) locale list changing from [] to [en-US]
+11-17 09:30:56.075  1278  1278 D CarrierSvcBindHelper: onHandleForceStop: [com.myhitbodedut]
+11-17 09:30:56.078  1278  1278 D CarrierSvcBindHelper: No carrier app for: 0
+11-17 09:30:56.078  1096  1096 E LauncherProxyService: Failed to get launcher proxy for system bar attr change.
+11-17 09:30:56.080   672   804 I system_server: AssetManager2(0x71da1f84f738) locale list changing from [] to [en-US]
+11-17 09:30:56.084   548   548 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+11-17 09:30:56.089   672   698 V WindowManager: Unknown focus tokens, dropping reportFocusChanged
+11-17 09:30:56.092  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.092   548   548 E BpTransactionCompletedListener: Failed to transact (-32)
+11-17 09:30:56.100   672  1209 D CompatChangeReporter: Compat change id reported: 311402873; UID 10147; state: ENABLED
+11-17 09:30:56.100   672  1209 D CompatChangeReporter: Compat change id reported: 323349338; UID 10147; state: ENABLED
+11-17 09:30:56.112  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.115  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.117  1775  2430 W acsw    : Account id is not cached
+11-17 09:30:56.118  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.123   672   695 V WindowManager: Sent Transition (#12) createdAt=11-17 09:30:56.051 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=11 effectiveUid=10216 displayId=0 isRunning=false baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=0 lastActiveTime=89191 supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{RemoteToken{82eaee6 Task{1c98661 #11 type=standard A=10216:com.myhitbodedut minWidth=840 minHeight=840}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=true lastNonFullscreenBounds=Rect(284, 724 - 797, 1804) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 0, 0) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=undefined}} topActivityMainWindowFrame=null}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 12 }
+11-17 09:30:56.123   672   695 V WindowManager:     startWCT=WindowContainerTransaction { changes= {} hops= [] errorCallbackToken=null taskFragmentOrganizer=null }
+11-17 09:30:56.123   672   695 V WindowManager:     info={id=12 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+11-17 09:30:56.123   672   695 V WindowManager:         {WCT{RemoteToken{a02298f Task{bf04dac #8 type=home}}} m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP leash=Surface(name=Task=8)/@0x49101bb sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},
+11-17 09:30:56.123   672   695 V WindowManager:         {m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0xe406a2 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+11-17 09:30:56.123   672   695 V WindowManager:     ]}
+11-17 09:30:56.124  1096  1120 V WindowManagerShell: onTransitionReady(transaction=2886218023629)
+11-17 09:30:56.124  1096  1171 V WindowManagerShell: onTransitionReady (#12) android.os.BinderProxy@189b822: {id=12 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+11-17 09:30:56.124  1096  1171 V WindowManagerShell:         {m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP leash=Surface(name=Task=8)/@0x9364fe9 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},
+11-17 09:30:56.124  1096  1171 V WindowManagerShell:         {m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0xfaf346e sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+11-17 09:30:56.124  1096  1171 V WindowManagerShell:     ]}
+11-17 09:30:56.124  1096  1171 V WindowManagerShell: Playing animation for (#12) android.os.BinderProxy@189b822@0
+11-17 09:30:56.124  1096  1171 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+11-17 09:30:56.124  1096  1171 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=12 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP leash=Surface(name=Task=8)/@0x9364fe9 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},{m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0xfaf346e sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}]}
+11-17 09:30:56.124  1096  1171 V WindowManagerShell:  Delegate animation for (#12) to null
+11-17 09:30:56.124  1096  1171 V WindowManagerShell: start default transition animation, info = {id=12 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP leash=Surface(name=Task=8)/@0x9364fe9 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},{m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0xfaf346e sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}]}
+11-17 09:30:56.125  1096  1171 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@21b01a5 animAttr=0x10 type=CLOSE isEntrance=true
+11-17 09:30:56.125  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.127  1096  1096 E LauncherProxyService: Failed to get launcher proxy for system bar attr change.
+11-17 09:30:56.127  1096  1171 V WindowManagerShell:  animated by com.android.wm.shell.transition.DefaultTransitionHandler@4251de7
+11-17 09:30:56.133  1775  2430 W akhw    : Refreshing not complete, unable to upload top contacts.
+11-17 09:30:56.144  1775  2427 I sey     : (REDACTED) Attempting to cache the data for corpora %s.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.150  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.156  1096  1171 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#12) android.os.BinderProxy@189b822@0
+11-17 09:30:56.160   672   803 I ImeTracker: com.android.settings:a471587: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+11-17 09:30:56.161  1596  1596 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():2043 
+11-17 09:30:56.161  1596  1596 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatus():100 repeatCheckTimes = 0, locked = false
+11-17 09:30:56.161  1596  1596 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1293 onStartInput(EditorInfo{EditorInfo{packageName=com.android.settings, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+11-17 09:30:56.163   672   759 I ImeTracker: system_server:a55b0139: onRequestHide at ORIGIN_SERVER reason IME_REQUESTED_CHANGED_LISTENER fromUser false
+11-17 09:30:56.164   672   698 I ImeTracker: system_server:a55b0139: onCancelled at PHASE_SERVER_SHOULD_HIDE
+11-17 09:30:56.169   672   695 V WindowManager: Finish Transition (#12): created at 11-17 09:30:56.051 collect-started=0.025ms request-sent=0.127ms started=4.854ms ready=4.842ms sent=71.363ms commit=17.643ms finished=114.971ms
+11-17 09:30:56.170  1596  1596 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatus():100 repeatCheckTimes = 1, locked = false
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: EmojiCompatManager.getEmojiCompatIfLoaded():343 EmojiCompat.init() was never called.
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: java.lang.IllegalStateException: EmojiCompat is not initialized. Please call EmojiCompat.init() first
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at asx.p(PG:6)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at axb.b(PG:13)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at jnr.b(PG:2)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at jnr.c(PG:4)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at jnr.f(PG:3)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at jnx.c(PG:3)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at kif.cz(PG:47)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at lhl.run(PG:1025)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at jaf.execute(PG:12)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at nco.v(PG:13)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at lhn.m(PG:96)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at lhn.k(PG:25)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at kgn.onStartInput(PG:250)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.inputmethodservice.InputMethodService.doStartInput(InputMethodService.java:3521)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.inputmethodservice.InputMethodService$InputMethodImpl.startInput(InputMethodService.java:879)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.inputmethodservice.InputMethodService$InputMethodImpl.dispatchStartInput(InputMethodService.java:908)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.inputmethodservice.IInputMethodWrapper.executeMessage(IInputMethodWrapper.java:201)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at com.android.internal.os.HandlerCaller$MyHandler.handleMessage(HandlerCaller.java:44)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.os.Handler.dispatchMessage(Handler.java:110)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.os.Looper.loopOnce(Looper.java:248)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.os.Looper.loop(Looper.java:338)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at android.app.ActivityThread.main(ActivityThread.java:9067)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at java.lang.reflect.Method.invoke(Native Method)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:593)
+11-17 09:30:56.170  1596  1596 I EmojiCompatManager: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:932)
+11-17 09:30:56.171  1395  1395 D InsetsController: hide(ime(), fromIme=false)
+11-17 09:30:56.171  1395  1395 I ImeTracker: com.android.settings:a471587: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+11-17 09:30:56.171   672   689 W PackageConfigPersister: App-specific configuration not found for packageName: com.android.settings and userId: 0
+11-17 09:30:56.171  1596  1596 I InputMethodEntryManager: InputMethodEntryManager.clearTemporarilyEnabledLanguages():2071 temporarilyEnabledEntryTuples [LanguageTagVariantTuple{languageTag=fr-FR, variant=qwerty}]
+11-17 09:30:56.171  1596  1596 I InputMethodEntryManager: InputMethodEntryManager.changeCurrentInputMethodEntry():2958 Set current input method entry: source=UNSPECIFIED, entryChanged=true, kek{languageTag=en-US, variant=qwerty, hasLocalizedResources=true, conditionCacheKey=_app_first_start_timestamp=1795350721933_cache_additional_ime_defs_for_condition_change=false_cache_ime_defs_for_condition_change=false_deprecate_long_press_space_for_ime_picker=false_device=phone_device_size=default_enable_access_points_in_password_number=false_enable_flick_symbols=true_enable_more_candidates_view_for_multilingual=false_enable_number_row=false_enable_preemptive_decode=true_enable_premium_exp_tablet_layout_change=false_enable_secondary_digits=true_enable_secondary_symbols=false_expressions=normal_four_or_more_letter_rows=false_keyboard_mode=normal_language=en-US_layout_9key_split=false_orientation=portrait_physical_keyboard=qwerty_rtl_layout=false_show_secondary_digits=true_show_suggestions=true_split_with_duplicate_keys=true_variant=qwerty, imeDef.stringId=ime_english_united_states, imeDef.className=com.google.android.libraries.inputmethod.ime.experiment.ExperimentImeWrapper, imeDef.languageTag=en-US}
+11-17 09:30:56.171  1596  1596 I InputMethodEntryManager: InputMethodEntryManager.loadAdditionalImeDefsForCurrentEntry():2981 loadAdditionalImeDefsForCurrentEntry(): kek{languageTag=en-US, variant=qwerty, hasLocalizedResources=true, conditionCacheKey=_app_first_start_timestamp=1795350721933_cache_additional_ime_defs_for_condition_change=false_cache_ime_defs_for_condition_change=false_deprecate_long_press_space_for_ime_picker=false_device=phone_device_size=default_enable_access_points_in_password_number=false_enable_flick_symbols=true_enable_more_candidates_view_for_multilingual=false_enable_number_row=false_enable_preemptive_decode=true_enable_premium_exp_tablet_layout_change=false_enable_secondary_digits=true_enable_secondary_symbols=false_expressions=normal_four_or_more_letter_rows=false_keyboard_mode=normal_language=en-US_layout_9key_split=false_orientation=portrait_physical_keyboard=qwerty_rtl_layout=false_show_secondary_digits=true_show_suggestions=true_split_with_duplicate_keys=true_variant=qwerty, imeDef.stringId=ime_english_united_states, imeDef.className=com.google.android.libraries.inputmethod.ime.experiment.ExperimentImeWrapper, imeDef.languageTag=en-US}
+11-17 09:30:56.172  1596  1596 I InputMethodEntryManager: InputMethodEntryManager$6.onSuccess():2997 Success load additional ImeDefs, entryChanged=true, additionalImeDefsChanged=false, [kyj{stringId=password, language=und-Latn-x-password, languageTag=und-Latn-x-password, processedConditions={variant=qwerty, enable_access_points_in_password_number=false, enable_number_row=false, device=phone}, className=com.google.android.libraries.inputmethod.ime.password.PasswordIme, label=2132019061, keyEventInterpreter=null, inlineComposing=true, autoCapital=true, announceAutoSelectedCandidate=true, statusIcon=0, primeKeyboardType=SOFT, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@b751e7a, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=number, language=und-Latn-x-number, languageTag=und-Latn-x-number, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132019005, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=0, primeKeyboardType=SOFT, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@c83562b, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=number_password, language=und-Latn-x-number-password, languageTag=und-Latn-x-number-password, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132019006, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=0, primeKeyboardType=SOFT, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@86efa88, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=phone_number, language=und-Latn-x-phone-number, languageTag=und-Latn-x-phone-number, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132019096, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=0, primeKeyboardType=SOFT, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@4c64c21, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=date_time, language=und-Latn-x-date-time, languageTag=und-Latn-x-date-time, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132017724, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=0, primeKeyboardType=SOFT, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@626a846, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=dummy_hard, language=en, languageTag=en, processedConditions={device=unknown}, className=com.google.android.apps.inputmethod.libs.latin5.LatinDummyIme, label=0, keyEventI
+11-17 09:30:56.172  1596  1596 I InputMethodEntryManager: nterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=true, statusIcon=0, primeKeyboardType=HARD_QWERTY, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@1df2a07, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=password_floating_hard_qwerty, language=und-Latn-x-password, languageTag=und-Latn-x-password, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132019097, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=2131231749, primeKeyboardType=HARD_QWERTY, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@33d3734, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=phone_number_floating_hard_qwerty, language=und-Latn-x-phone-number, languageTag=und-Latn-x-phone-number, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132019097, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=2131231925, primeKeyboardType=HARD_QWERTY, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@e1a895d, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=number_floating_hard_qwerty, language=und-Latn-x-number, languageTag=und-Latn-x-number, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132019097, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=2131231925, primeKeyboardType=HARD_QWERTY, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@21502d2, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}, kyj{stringId=date_time_floating_hard_qwerty, language=und-Latn-x-date-time, languageTag=und-Latn-x-date-time, processedConditions={}, className=com.google.android.libraries.inputmethod.ime.DummyIme, label=2132019097, keyEventInterpreter=null, inlineComposing=true, autoCapital=false, announceAutoSelectedCandidate=false, statusIcon=2131231925, primeKeyboardType=HARD_QWERTY, indicatorIcon=0, indicatorLabel=null, displayAppCompletions=false, extraValues=kyb{}, processors=lac@6d0aaa5, unacceptableMetaKeys=4098, languageSpecificSettings=0, asciiCapable=false, alwaysShowSuggestions=false, useAsciiPasswordKeyboard=false, secondaryIme=null, keyboardGroupDef=kzl@a3a5fa3, phenotypeFlagId=0, localizationLanguageTag=null, supportsInlineSuggestion=false}]
+11-17 09:30:56.172  1596  1596 I InputMethodEntryManager: InputMethodEntryManager.onSuccessLoadingAdditionalImeDefs():3063 Additional ImeDefs have been loaded, maybe notify entry change: true
+11-17 09:30:56.175  1596  1596 I SystemSubtypesReportModule: SystemSubtypesReportModule$3.onCurrentInputMethodEntryChanged():149 entry: en-US, source: UNSPECIFIED
+11-17 09:30:56.175  1596  1596 I SystemSubtypesReportModule: SystemSubtypesReportModule$3.onCurrentInputMethodEntryChanged():163 switchSubtype(en-US)
+11-17 09:30:56.179  1096  1171 V WindowManagerShell: Track 0 became idle
+11-17 09:30:56.179  1096  1171 V WindowManagerShell: All active transition animations finished
+11-17 09:30:56.190   672   797 I InputReader: Reconfiguring input devices, changes=KEYBOARD_LAYOUTS
+11-17 09:30:56.191   672   797 I system_server: AssetManager2(0x71da1f81a218) locale list changing from [] to [en-US]
+11-17 09:30:56.192  1695  2948 I AiAiEcho: Settings changed for uri: content://settings/secure/input_methods_subtype_history
+11-17 09:30:56.192  1695  1919 I AiAiEcho: Predicting[0]:  [CONTEXT sampling_count=5 ]
+11-17 09:30:56.192  1695  1919 I AiAiEcho: EchoTargets: 
+11-17 09:30:56.192  1695  1919 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:30:56.192  1695  1919 I AiAiEcho: [CONTEXT ratelimit_period="10 SECONDS" ]
+11-17 09:30:56.192  1695  1919 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+11-17 09:30:56.192  1695  1919 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:30:56.196  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.196  1695  2948 I AiAiEcho: Settings changed for uri: content://settings/secure/selected_input_method_subtype
+11-17 09:30:56.197  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.197  1695  1919 I AiAiEcho: Predicting[0]:  [CONTEXT sampling_count=5 ]
+11-17 09:30:56.197  1695  1919 I AiAiEcho: EchoTargets: 
+11-17 09:30:56.197  1695  1919 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:30:56.197  1695  1919 I AiAiEcho: [CONTEXT ratelimit_period="10 SECONDS" ]
+11-17 09:30:56.197  1695  1919 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+11-17 09:30:56.197  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.197  1695  1919 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:30:56.197  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.213  1096  1096 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:30:56.213  1096  1096 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:30:56.214  1596  1596 W NotificationCenter: NotificationCenter$NotificationQueue.notifyPendingNotificationsOnExecutor():877 Heavy notify work detected on UI thread: [kds->iic, kds->lcn, kds->lwm, jwt->jws] takes 38ms
+11-17 09:30:56.214  1596  1596 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1350 module ggx is unavailable
+11-17 09:30:56.214  1596  1596 W NotificationCenter: NotificationCenter$NotificationQueue.notifyPendingNotificationsOnExecutor():877 Heavy notify work detected on UI thread: [kds->leg] takes 38ms
+11-17 09:30:56.214  1596  1596 I GoogleInputMethodService: GoogleInputMethodService.onCurrentInputMethodEntryChanged():2285 onCurrentInputMethodEntryChanged(): imeDefsChanged=true, entryLanguageVariantChanged=true, keyboardContextChanged=true
+11-17 09:30:56.214  1596  1596 I GoogleInputMethodService: GoogleInputMethodService.clearInputMethodServiceData():1016 clearInputMethodServiceData for entryChange
+11-17 09:30:56.215  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension.maybeDestroyExistingKeyboardGroupManager():537 Destroy existing keyboard group manager in eay
+11-17 09:30:56.215  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension.createKeyboardGroupManagerListenableFuture():121 Create keyboard group manager listenable future in eay
+11-17 09:30:56.215  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension.maybeDestroyExistingKeyboardGroupManager():537 Destroy existing keyboard group manager in fso
+11-17 09:30:56.215  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension.createKeyboardGroupManagerListenableFuture():121 Create keyboard group manager listenable future in fso
+11-17 09:30:56.215  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension.maybeDestroyExistingKeyboardGroupManager():537 Destroy existing keyboard group manager in fve
+11-17 09:30:56.215  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension.createKeyboardGroupManagerListenableFuture():121 Create keyboard group manager listenable future in fve
+11-17 09:30:56.215  1596  1596 I KeyboardHeightUtil: KeyboardHeightUtil.calculateMaxKeyboardBodyHeight():46 leave 281 height for app when ime window height:2272, header height:116 and isFullscreenMode:false, so the max keyboard body height is:1875
+11-17 09:30:56.216  1596  1596 I KeyboardModeManager: KeyboardModeManager.onCurrentInputMethodEntryChanged():1400 Reload data for context change
+11-17 09:30:56.216  1596  1596 I GoogleInputMethodService: GoogleInputMethodService.initializeInputMethodServiceData():834 initializeInputMethodServiceData for kek{languageTag=en-US, variant=qwerty, hasLocalizedResources=true, conditionCacheKey=_app_first_start_timestamp=1795350721933_cache_additional_ime_defs_for_condition_change=false_cache_ime_defs_for_condition_change=false_deprecate_long_press_space_for_ime_picker=false_device=phone_device_size=default_enable_access_points_in_password_number=false_enable_flick_symbols=true_enable_more_candidates_view_for_multilingual=false_enable_number_row=false_enable_preemptive_decode=true_enable_premium_exp_tablet_layout_change=false_enable_secondary_digits=true_enable_secondary_symbols=false_expressions=normal_four_or_more_letter_rows=false_keyboard_mode=normal_language=en-US_layout_9key_split=false_orientation=portrait_physical_keyboard=qwerty_rtl_layout=false_show_secondary_digits=true_show_suggestions=true_split_with_duplicate_keys=true_variant=qwerty, imeDef.stringId=ime_english_united_states, imeDef.className=com.google.android.libraries.inputmethod.ime.experiment.ExperimentImeWrapper, imeDef.languageTag=en-US}
+11-17 09:30:56.225  1596  1784 I KeyboardGroupDefParser: KeyboardGroupDefParser.parseKeyboardGroupDef():86 parseKeyboardGroupDef() 2132214031 -> 0_resource_name_obfuscated : WaitTime = 11 ms : RunTime = 0 ms
+11-17 09:30:56.226  1596  1784 I KeyboardGroupDefParser: KeyboardGroupDefParser.parseKeyboardGroupDef():86 parseKeyboardGroupDef() 2132214028 -> 0_resource_name_obfuscated : WaitTime = 11 ms : RunTime = 0 ms
+11-17 09:30:56.226  1596  1784 I KeyboardGroupDefParser: KeyboardGroupDefParser.parseKeyboardGroupDef():86 parseKeyboardGroupDef() 2132214032 -> 0_resource_name_obfuscated : WaitTime = 11 ms : RunTime = 0 ms
+11-17 09:30:56.230  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.230  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.230  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.231  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.231  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.231  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.233  1096  1237 D StylusManager: Stylus InputDevice changed: 12 virtio_input_multi_touch_1
+11-17 09:30:56.237  1096  1237 D StylusManager: Stylus InputDevice changed: 6 virtio_input_multi_touch_7
+11-17 09:30:56.237  1096  1237 D StylusManager: Stylus InputDevice changed: 5 virtio_input_multi_touch_8
+11-17 09:30:56.237  1096  1237 D StylusManager: Stylus InputDevice changed: 4 virtio_input_multi_touch_9
+11-17 09:30:56.243   672  1753 W JobScheduler: Job didn't exist in JobStore: 7b42092 #u0a147/-49 com.google.android.googlequicksearchbox/com.google.android.apps.gsa.tasks.BackgroundTasksJobService
+11-17 09:30:56.244  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.250  1096  1237 D StylusManager: Stylus InputDevice changed: 3 virtio_input_multi_touch_10
+11-17 09:30:56.253  1096  1237 D StylusManager: Stylus InputDevice changed: 2 virtio_input_multi_touch_11
+11-17 09:30:56.254  1096  1237 D StylusManager: Stylus InputDevice changed: 10 virtio_input_multi_touch_3
+11-17 09:30:56.254  1096  1237 D StylusManager: Stylus InputDevice changed: 9 virtio_input_multi_touch_4
+11-17 09:30:56.259  1096  1237 D StylusManager: Stylus InputDevice changed: 8 virtio_input_multi_touch_5
+11-17 09:30:56.259  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.260  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.260  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.260  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.261  1775  2368 I sig     : Uploading hotword settings to server.
+11-17 09:30:56.266  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.266  1096  1237 D StylusManager: Stylus InputDevice changed: 7 virtio_input_multi_touch_6
+11-17 09:30:56.267  1775  2424 I sey     : (REDACTED) Attempting to cache the data for corpora %s.
+11-17 09:30:56.267  1775  2433 I sjn     : Canceling restore - user account is null
+11-17 09:30:56.267  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.267  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.267  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.267  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.268  1096  1237 D StylusManager: Stylus InputDevice changed: 11 virtio_input_multi_touch_2
+11-17 09:30:56.269  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.269  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.269  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.273   672   759 D FileUtils: Rounded bytes from 4110151680 to 8000000000
+11-17 09:30:56.275  1596  1596 I KeyboardThemeProvider: KeyboardThemeProvider.applyKeyboardTheme():27 Apply keyboard theme: theme_!gsf_!pgsans_!pgsf_!use_system_font_BORDER=true_FLAVOR_DPI=XXHDPI_KEYBOARD_WIDTH_CATEGORY=NORMAL_LIGHT_THEME=true_PHYSICAL_DIAGONAL=5.9895906_SCREEN_SHORTEST_WIDTH=411_SCREEN_SHORTEST_WIDTH_NO_SCALE=411_bottom4dp_enable_google_fonts_icons=true_enable_popup_on_keypress=true_keyboard_redesign_google_sans=true_noshadow_overlay_builtin_dynamic_color_light_base.binarypb:gm3-light-fffaf8ff-ff475d92-6dac7c28fa7faa76f8370bbfdbc77981_silkpopup_unify_function_key_color=true
+11-17 09:30:56.277  1596  1596 I AndroidIME: InputBundleManager.loadActiveInputBundleId():483 loadActiveInputBundleId: und-Latn-x-password, password
+11-17 09:30:56.279  1596  1596 W NotificationCenter: NotificationCenter$NotificationQueue.notifyPendingNotificationsOnExecutor():877 Heavy notify work detected on UI thread: [kds->kgi] takes 64ms
+11-17 09:30:56.279  1596  1596 I InputMethodEntryManager: InputMethodEntryManager.disableTemporaryEnabledEntries():2109 
+11-17 09:30:56.279  1596  1596 I SystemSubtypesReportModule: SystemSubtypesReportModule$2.onEnabledInputMethodEntriesChanged():131 1 entries
+11-17 09:30:56.285  1596  1784 I LatinImeEntryActivation: LatinImeActivationContentObserver.activeLanguagesHaveChanged():70 Active entries changed: [en-US, fr] -> {en-US}
+11-17 09:30:56.289  1596  1596 W NotificationCenter: NotificationCenter$NotificationQueue.notifyPendingNotificationsOnExecutor():877 Heavy notify work detected on UI thread: [kig->jjs] takes 115ms
+11-17 09:30:56.290  1596  1596 I PKIndicatorController: PKIndicatorController$3.maybeShowLanguageSwitchIndicator():137 Entry changed. Showing language indicator.
+11-17 09:30:56.295  1596  1596 D CompatChangeReporter: Compat change id reported: 270674727; UID 10154; state: ENABLED
+11-17 09:30:56.295  1596  1596 I HandwritingOfflineSuperpacks: HandwritingOfflineSuperpacks.syncInternal():80 no bundled lm for handwriting.
+11-17 09:30:56.295  1596  1596 I HandwritingSuperpacks: HandwritingSuperpacks.register():273 register(): version '86', url 'https://dl.google.com/handwriting/models/handwriting_release.superpack_manifest.20231127.json' [ONLINE]
+11-17 09:30:56.295  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.296  1596  1596 I DictionarySuperpacksManager: DictionarySuperpacksManager$1.onEnabledInputMethodEntriesChanged():65 onEnabledInputMethodEntriesChanged
+11-17 09:30:56.296  1596  1596 I SystemSubtypesReportModule: SystemSubtypesReportModule$4.onSetCurrentInputMethodSubtype():192 en_US
+11-17 09:30:56.297  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.297  1596  1596 I SystemSubtypesReportModule: SystemSubtypesReportModule$4.onSetCurrentInputMethodSubtype():204 Subtype en_US was caused by entry
+11-17 09:30:56.298  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension$3.onSuccess():555 KeyboardGroupManager destroyed in eay.
+11-17 09:30:56.298  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension$3.onSuccess():555 KeyboardGroupManager destroyed in fso.
+11-17 09:30:56.298  1596  1596 I AbstractOpenableExtension: AbstractOpenableExtension$3.onSuccess():555 KeyboardGroupManager destroyed in fve.
+11-17 09:30:56.302  1596  1959 I DownloadManager: DownloadManager.downloadInternal():412 Download for __SP_MANIFEST_emoticon_content_description scheduled with params DownloadParams{allowMetered=true, requireCharging=false, foreground=false, immediately=true, priority=0}
+11-17 09:30:56.302  1596  1959 I DownloadManager: DownloadManager.startDownload():495 start download of __SP_MANIFEST_emoticon_content_description
+11-17 09:30:56.303  1596  1959 I DownloadManager: DownloadManager$4.onSuccess():564 download for __SP_MANIFEST_emoticon_content_description is finished with files # mxp@aff9d1ed
+11-17 09:30:56.306  1596  1959 I DownloadManager: DownloadManager.downloadInternal():412 Download for __SP_MANIFEST_handwriting_recognition scheduled with params DownloadParams{allowMetered=true, requireCharging=false, foreground=false, immediately=true, priority=0}
+11-17 09:30:56.306  1596  1959 I DownloadManager: DownloadManager.startDownload():495 start download of __SP_MANIFEST_handwriting_recognition
+11-17 09:30:56.307  1596  1959 I DownloadManager: DownloadManager$4.onSuccess():564 download for __SP_MANIFEST_handwriting_recognition is finished with files # mxp@6e5b11b9
+11-17 09:30:56.307  1695  2948 I AiAiEcho: Settings changed for uri: content://settings/secure/enabled_input_methods
+11-17 09:30:56.309  1596  1784 I LmManager: LmManager.asyncUpdateEnabledLanguageModels():96 asyncUpdateEnabledLanguageModels()
+11-17 09:30:56.309  1596  1784 I SuperDelight: SuperDelightManager.initializeOverridesSuperpacks():405 initializeOverridesSuperpacks()
+11-17 09:30:56.310  1695  1919 I AiAiEcho: Predicting[0]:  [CONTEXT sampling_count=5 ]
+11-17 09:30:56.310  1695  1919 I AiAiEcho: EchoTargets: 
+11-17 09:30:56.310  1695  1919 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:30:56.310  1695  1919 I AiAiEcho: [CONTEXT ratelimit_period="10 SECONDS" ]
+11-17 09:30:56.310  1695  1919 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+11-17 09:30:56.310  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.311  1596  1784 I DelightKLPDownloader: DelightKLPDownloader.downloadKLPInternal():199 downloading KLP for en_840
+11-17 09:30:56.312  1596  1784 I ManifestedDataDownloader: ManifestedDataDownloader.download():63 downloading manifest https://www.gstatic.com/android/keyboard/dictionarypack/2025031619/metadata.json-perlang/en-840.json?v=2025052001
+11-17 09:30:56.312  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.313  1596  1784 I DataFileManager: DataFileManager.removeDataWithoutNotify():219 removing data fr-FR mdd
+11-17 09:30:56.317  1695  1919 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:30:56.319  1096  1096 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:30:56.321  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.321  1596  1784 I SuperDelight: SuperDelightManager.initializeBundledDelightSuperpacks():379 initializeBundledDelightSuperpacks()
+11-17 09:30:56.321  1596  1784 I MDDSuperpacks: MDDSuperpacks.sync():223 sync requested for emoticon_content_description
+11-17 09:30:56.333  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.334  1775  1775 I avrd    : (REDACTED) Starting %s background task %s.
+11-17 09:30:56.336  1775  2372 I sey     : (REDACTED) Attempting to cache the data for corpora %s.
+11-17 09:30:56.338  1786  1786 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START xflg=0x4 pkg=com.google.android.gms }
+11-17 09:30:56.349  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.350  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.350  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.355  1775  2434 I sgv     : (REDACTED) No accounts found for %s, not syncing anything.
+11-17 09:30:56.355  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.355  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.357  1596  1794 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.376  1596  1839 I DelightKLPDownloader: DelightKLPDownloader.downloadKLPInternal():199 downloading KLP for en_840
+11-17 09:30:56.376  1596  1839 I ManifestedDataDownloader: ManifestedDataDownloader.download():63 downloading manifest https://www.gstatic.com/android/keyboard/dictionarypack/2025031619/metadata.json-perlang/en-840.json?v=2025052001
+11-17 09:30:56.376  1596  1839 I HandwritingOnlineSuperpacks: HandwritingOnlineSuperpacks.syncInternal():168 syncPackMapping()
+11-17 09:30:56.376  1596  1839 I MDDSuperpacks: MDDSuperpacks.sync():223 sync requested for handwriting_recognition
+11-17 09:30:56.379  1775  2321 W achh    : Abort, client detached.
+11-17 09:30:56.461  1596  1835 I DelightKLPDownloader: DelightKLPDownloader$1.onSuccess():153 removing filegroup __KLP_delight__fr-FR
+11-17 09:30:56.462  1596  1835 I DelightKLPDownloader: DelightKLPDownloader$1.onSuccess():153 removing filegroup __KLP_manifest_delight__fr-FR
+11-17 09:30:56.462  1596  1784 I SuperDelight: SuperDelightManager.syncOverridesLanguageModels():687 SuperDelightManager#syncOverridesLanguageModels(): Superpack delight_overrides not found or negative version provided
+11-17 09:30:56.462  1596  1784 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: delight_overrides
+11-17 09:30:56.470  1596  1959 I DownloadManager: DownloadManager.downloadInternal():412 Download for __KLP_manifest_delight__en-840 scheduled with params DownloadParams{allowMetered=true, requireCharging=false, foreground=false, immediately=true, priority=0}
+11-17 09:30:56.470  1596  1959 I DownloadManager: DownloadManager.startDownload():495 start download of __KLP_manifest_delight__en-840
+11-17 09:30:56.483  1596  1963 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: emoticon_content_description
+11-17 09:30:56.544  1395  1395 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:56.568  1596  1839 I DelightKLPDownloader: DelightKLPDownloader$1.onSuccess():153 removing filegroup __KLP_delight__fr-FR
+11-17 09:30:56.570  1596  1839 I DelightKLPDownloader: DelightKLPDownloader$1.onSuccess():153 removing filegroup __KLP_manifest_delight__fr-FR
+11-17 09:30:56.576  1596  1964 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.577  1596  1794 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.594  1278  1513 D SatelliteController: iisInCarrierRoamingNbIotNtn: satellite is disabled
+11-17 09:30:56.610  1596  1964 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.638  1278  1287 W System  : A resource failed to call AbstractCursor.close. 
+11-17 09:30:56.638  1278  1287 W System  : A resource failed to call AbstractCursor.close. 
+11-17 09:30:56.703  1596  1959 I DownloadManager: DownloadManager$5.onSuccess():626 Data __KLP_delight__fr-FR removed!
+11-17 09:30:56.710  1596  1959 I DownloadManager: DownloadManager$5.onSuccess():626 Data __KLP_manifest_delight__fr-FR removed!
+11-17 09:30:56.710  1596  1959 I DownloadManager: DownloadManager$4.onSuccess():564 download for __KLP_manifest_delight__en-840 is finished with files # mxp@3b61779b
+11-17 09:30:56.711  1596  1959 I DownloadManager: DownloadManager.downloadInternal():412 Download for __SP_MANIFEST_bundled_delight scheduled with params DownloadParams{allowMetered=true, requireCharging=false, foreground=false, immediately=true, priority=0}
+11-17 09:30:56.711  1596  1959 I DownloadManager: DownloadManager.startDownload():495 start download of __SP_MANIFEST_bundled_delight
+11-17 09:30:56.711  1596  1959 I DownloadManager: DownloadManager.downloadInternal():412 Download for __KLP_manifest_delight__en-840 scheduled with params DownloadParams{allowMetered=true, requireCharging=false, foreground=false, immediately=true, priority=0}
+11-17 09:30:56.711  1596  1959 I DownloadManager: DownloadManager.startDownload():495 start download of __KLP_manifest_delight__en-840
+11-17 09:30:56.712  1596  1959 I DownloadManager: DownloadManager$5.onSuccess():626 Data __KLP_delight__fr-FR removed!
+11-17 09:30:56.712  1596  1959 I DownloadManager: DownloadManager$5.onSuccess():626 Data __KLP_manifest_delight__fr-FR removed!
+11-17 09:30:56.714  1596  1960 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: emoticon_content_description
+11-17 09:30:56.715  1596  1963 E MDDSuperpacks: MDDSuperpacks.parseManifest():476 cannot find metadata for delight_overrides
+11-17 09:30:56.721  1596  1955 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [7a635888cb828dfa2fc744b7b9b50f04, 5a6773e78c139f5b7ea3bd5d11fc1f63] got for superpack: emoticon_content_description
+11-17 09:30:56.725  1596  1964 W MDDSuperpacks: MDDSuperpacks.constructPackSet():578 file group is empty
+11-17 09:30:56.725  1596  1791 I SuperDelight: SuperDelightBundledMetadataParser.addSystemLms():202 system lm dir /system/usr/share/ime/google/d3_lms does not exist or is not readable
+11-17 09:30:56.726  1596  1791 I SuperDelight: SuperDelightBundledMetadataParser.parse():192 SuperDelightBundledMetadataParser#parse(): manifest parsed with 1 packs
+11-17 09:30:56.726  1596  1955 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [] got for superpack: delight_overrides
+11-17 09:30:56.726  1596  1959 I DownloadManager: DownloadManager$4.onSuccess():564 download for __SP_MANIFEST_bundled_delight is finished with files # mxp@aac16d36
+11-17 09:30:56.727  1596  1791 I SuperDelight: SuperDelightBundledMetadataParser.addSystemLms():202 system lm dir /system/usr/share/ime/google/d3_lms does not exist or is not readable
+11-17 09:30:56.727  1596  1959 I DownloadManager: DownloadManager$4.onSuccess():564 download for __KLP_manifest_delight__en-840 is finished with files # mxp@3b61779b
+11-17 09:30:56.727  1596  1791 I SuperDelight: SuperDelightBundledMetadataParser.parse():192 SuperDelightBundledMetadataParser#parse(): manifest parsed with 1 packs
+11-17 09:30:56.735  1596  1964 I MDDSuperpacks: MDDSuperpacks$2.onSuccess():274 Sync success for emoticon_content_description with result: {old=[5a6773e78c139f5b7ea3bd5d11fc1f63, 7a635888cb828dfa2fc744b7b9b50f04], new=[5a6773e78c139f5b7ea3bd5d11fc1f63, 7a635888cb828dfa2fc744b7b9b50f04], metadata=false, last batch=true}
+11-17 09:30:56.735  1596  1964 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.735  1596  1964 I HandwritingSlicingStrategy: HandwritingSlicingStrategy.getSlices():44 getSlices(): handwriting_recognition.86 useForeground=true
+11-17 09:30:56.736  1596  1964 I HandwritingSlicingStrategy: HandwritingSlicingStrategy.getSlices():103 getSlices(): result {slices=[{handwriting_recognition:pack_mapping_v1_lstm_20231127, m:*:*:*, fg}, {handwriting_recognition:transformer_latin_tflite_20231010_zip, m:*:*:*, fg}, {handwriting_recognition:qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, m:*:*:*, fg}, {handwriting_recognition:transformer_latin_conf_tflite_20231010_zip, m:*:*:*, fg}, {handwriting_recognition:transformer_latin_seg_tflite_20231010_zip, m:*:*:*, fg}, {handwriting_recognition:en_us_20230613_compact_fst_zip, m:*:*:*, fg}, {handwriting_recognition:scribe_latin_20231123_tflite_zip, m:*:*:*, fg}, {handwriting_recognition:scribe_latin_20231123_recospec_zip, m:*:*:*, fg}], last batch=true, sync metadata=false}
+11-17 09:30:56.738  1596  1791 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.751  1596  1963 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.752  1596  1963 I MDDSuperpacks: MDDSuperpacks$2.onSuccess():274 Sync success for handwriting_recognition with result: {old=[en_us_20230613_compact_fst_zip, fr_fr_20230613_compact_fst_zip, pack_mapping_v1_lstm_20231127, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, scribe_latin_20231123_recospec_zip, scribe_latin_20231123_tflite_zip, transformer_latin_conf_tflite_20231010_zip, transformer_latin_seg_tflite_20231010_zip, transformer_latin_tflite_20231010_zip], new=[en_us_20230613_compact_fst_zip, fr_fr_20230613_compact_fst_zip, pack_mapping_v1_lstm_20231127, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, scribe_latin_20231123_recospec_zip, scribe_latin_20231123_tflite_zip, transformer_latin_conf_tflite_20231010_zip, transformer_latin_seg_tflite_20231010_zip, transformer_latin_tflite_20231010_zip], metadata=false, last batch=true}
+11-17 09:30:56.754  1596  1959 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [7a635888cb828dfa2fc744b7b9b50f04, 5a6773e78c139f5b7ea3bd5d11fc1f63] got for superpack: emoticon_content_description
+11-17 09:30:56.759  1596  1959 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.760  1596  1794 I ManifestedDataDownloader: ManifestedDataDownloader.checkVersionAndDownload():91 filegroup __KLP_delight__en-840 with version 2025031300 is already downloaded
+11-17 09:30:56.760  1596  1794 I HandwritingOnlineSuperpacks: HandwritingOnlineSuperpacks.syncInternal():187 syncInternal(): syncing packs
+11-17 09:30:56.762  1596  1794 I DelightKLPDownloader: DelightKLPDownloader$2.onSuccess():222 klp en_840 downloaded with version 2025031300
+11-17 09:30:56.762  1596  1794 I HandwritingOnlineSuperpacks: HandwritingOnlineSuperpacks$2.onSyncSuccess():225 syncInternal(): complete {old=[en_us_20230613_compact_fst_zip, fr_fr_20230613_compact_fst_zip, pack_mapping_v1_lstm_20231127, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, scribe_latin_20231123_recospec_zip, scribe_latin_20231123_tflite_zip, transformer_latin_conf_tflite_20231010_zip, transformer_latin_seg_tflite_20231010_zip, transformer_latin_tflite_20231010_zip], new=[en_us_20230613_compact_fst_zip, fr_fr_20230613_compact_fst_zip, pack_mapping_v1_lstm_20231127, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, scribe_latin_20231123_recospec_zip, scribe_latin_20231123_tflite_zip, transformer_latin_conf_tflite_20231010_zip, transformer_latin_seg_tflite_20231010_zip, transformer_latin_tflite_20231010_zip], metadata=false, last batch=true}
+11-17 09:30:56.762  1596  1794 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.762  1596  1955 I SuperDelight: SuperDelightBundledMetadataParser.addSystemLms():202 system lm dir /system/usr/share/ime/google/d3_lms does not exist or is not readable
+11-17 09:30:56.765  1596  1959 E MDDSuperpacks: MDDSuperpacks.parseManifest():476 cannot find metadata for delight_overrides
+11-17 09:30:56.765  1596  1955 I SuperDelight: SuperDelightBundledMetadataParser.parse():192 SuperDelightBundledMetadataParser#parse(): manifest parsed with 1 packs
+11-17 09:30:56.770  1596  1794 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.771  1596  1955 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.779  1596  1963 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.779  1596  1794 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition_offline
+11-17 09:30:56.780  1596  1794 I ManifestedDataDownloader: ManifestedDataDownloader.checkVersionAndDownload():91 filegroup __KLP_delight__en-840 with version 2025031300 is already downloaded
+11-17 09:30:56.780  1596  1794 I DelightKLPDownloader: DelightKLPDownloader$2.onSuccess():222 klp en_840 downloaded with version 2025031300
+11-17 09:30:56.781  1596  1959 W MDDSuperpacks: MDDSuperpacks.constructPackSet():578 file group is empty
+11-17 09:30:56.781  1596  1963 I SuperDelight: SuperDelightBundledMetadataParser.addSystemLms():202 system lm dir /system/usr/share/ime/google/d3_lms does not exist or is not readable
+11-17 09:30:56.781  1596  1963 I SuperDelight: SuperDelightBundledMetadataParser.parse():192 SuperDelightBundledMetadataParser#parse(): manifest parsed with 1 packs
+11-17 09:30:56.785  1596  1955 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [] got for superpack: handwriting_recognition_offline
+11-17 09:30:56.785  1596  1784 I SuperDelight: SuperDelightManager$2.onSuccess():635 delight_overrides sync success, adding to data file manager
+11-17 09:30:56.785  1596  1839 E HandwritingSuperpacksUtil: HandwritingSuperpacksUtil.getPackMappingPackName():40 No pack mapping pack found in []
+11-17 09:30:56.786  1596  1839 I HandwritingSuperpacks: HandwritingSuperpacks.reloadCache():237 updatePackMappingsCache(): pack mapping pack unavailable [OFFLINE]
+11-17 09:30:56.786  1596  1839 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.792  1596  1959 E MDDSuperpacks: MDDSuperpacks.parseManifest():476 cannot find metadata for delight_overrides
+11-17 09:30:56.793  1596  1839 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: handwriting_recognition
+11-17 09:30:56.793  1596  1959 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.811  1596  1784 I SuperDelight: SuperDelightManager.syncBundledLanguageModels():773 SuperDelightManager#syncBundledLanguageModels(): Syncing for version 2025021100
+11-17 09:30:56.818  1596  1784 I MDDSuperpacks: MDDSuperpacks.sync():223 sync requested for bundled_delight
+11-17 09:30:56.827  1596  1959 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [transformer_latin_tflite_20231010_zip, scribe_latin_20231123_tflite_zip, fr_fr_20230613_compact_fst_zip, qrnn_fr_fr_reco_20231010_fst_20230613_recospec_zip, qrnn_en_us_reco_20231010_fst_20230613_recospec_zip, transformer_latin_conf_tflite_20231010_zip, pack_mapping_v1_lstm_20231127, transformer_latin_seg_tflite_20231010_zip, scribe_latin_20231123_recospec_zip, en_us_20230613_compact_fst_zip] got for superpack: handwriting_recognition
+11-17 09:30:56.828  1596  1959 I SuperDelight: SuperDelightBundledMetadataParser.addSystemLms():202 system lm dir /system/usr/share/ime/google/d3_lms does not exist or is not readable
+11-17 09:30:56.828  1596  1959 I SuperDelight: SuperDelightBundledMetadataParser.parse():192 SuperDelightBundledMetadataParser#parse(): manifest parsed with 1 packs
+11-17 09:30:56.869  1596  1963 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: bundled_delight
+11-17 09:30:56.872  1596  1963 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [main_en_us_2024102000_2] got for superpack: bundled_delight
+11-17 09:30:56.872  1596  1959 I SuperDelight: SuperDelightBundledSlicingStrategy.getSlices():41 BundledSlicing#getSlices() : Locale = [en_US]
+11-17 09:30:56.872  1596  1959 I SuperDelight: SuperDelightBundledSlicingStrategy.getSlices():67 BundledSlicing#getSlices(): result {slices=[bundled_delight:main_en_us_2024102000_2], last batch=true, sync metadata=false}
+11-17 09:30:56.873  1596  1963 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: bundled_delight
+11-17 09:30:56.878  1596  1963 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [main_en_us_2024102000_2] got for superpack: bundled_delight
+11-17 09:30:56.878  1596  1963 I LmManager: LmManager$1.onSuccess():82 Bundled delight sync success
+11-17 09:30:56.878  1596  1961 I MDDSuperpacks: MDDSuperpacks$2.onSuccess():274 Sync success for bundled_delight with result: {old=[main_en_us_2024102000_2], new=[main_en_us_2024102000_2], metadata=false, last batch=true}
+11-17 09:30:56.885  1596  1785 I MDDSuperpacks: MDDSuperpacks.getPacks():548 getting packs for superpack: bundled_delight
+11-17 09:30:56.890  1596  1963 I MDDSuperpacks: MDDSuperpacks$3.onSuccess():558 packs [main_en_us_2024102000_2] got for superpack: bundled_delight
+11-17 09:30:56.890  1596  1785 I SuperDelight: SuperDelightManager$2.onSuccess():635 bundled_delight sync success, adding to data file manager
+11-17 09:30:56.891  1596  1785 I DataFileManager: DataFileManager.addDataWithoutNotify():181 data en-US already exists
+11-17 09:30:57.050  1395  1395 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:57.554  1395  1395 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:57.738   672  1753 W ActivityTaskManager: callingPackage for (uid=0, pid=5167) has no WPC
+11-17 09:30:57.739   672  1753 V Configuration: Updating configuration, locales updated from [] to [fr,en_US]
+11-17 09:30:57.739   672  1753 V GrammaticalInflectionUtils: AttributionSource: AttributionSource { uid = 10216, packageName = null, attributionTag = null, token = android.os.Binder@4ac3e54, deviceId = 0, next = null } does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+11-17 09:30:57.739   672  1753 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_OVERRIDE
+11-17 09:30:57.739   672  1753 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_FULLSCREEN_OVERRIDE
+11-17 09:30:57.740   672  1753 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES
+11-17 09:30:57.740   672  1753 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE
+11-17 09:30:57.743   672  1753 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_ORIENTATION_OVERRIDE
+11-17 09:30:57.750  1096  1171 V WindowManagerShell: Transition requested (#13): android.os.BinderProxy@457052b TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=12 effectiveUid=10216 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=1 lastActiveTime=119328 supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@6e27d88} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{fdf1321 com.myhitbodedut.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=Rect(284, 724 - 797, 1804) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=inactive}} topActivityMainWindowFrame=null}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 13 }
+11-17 09:30:57.750  1096  1171 D ShellSplitScreen: logExit: no-op, mLoggerSessionId is null
+11-17 09:30:57.751   672  1753 I ActivityTaskManager: START u0 {flg=0x14000000 xflg=0x4 cmp=com.myhitbodedut/.MainActivity} with LAUNCH_MULTIPLE from uid 0 (BAL_ALLOW_ALLOWLISTED_UID) result code=0
+11-17 09:30:57.756   548   548 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+11-17 09:30:57.757   672   759 D CompatChangeReporter: Compat change id reported: 377864165; UID 10216; state: ENABLED
+11-17 09:30:57.758   672   689 I AppsFilter: interaction: PackageSetting{18cde7f com.android.microdroid.empty_payload/10208} -> PackageSetting{e95ce12 com.myhitbodedut/10216} BLOCKED
+11-17 09:30:57.759   672  1032 I AppWidgetServiceImpl: Received broadcast: android.intent.action.PACKAGE_UNSTOPPED on user 0
+11-17 09:30:57.759   672  1032 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10216 package com.myhitbodedut isStopped false
+11-17 09:30:57.765  1096  1216 D SplashScreenView: Build android.window.SplashScreenView{4bec907 V.E...... ......ID 0,0-0,0}
+11-17 09:30:57.765  1096  1216 D SplashScreenView: Icon: view: android.widget.ImageView{8e5ea34 V.ED..... ......I. 0,0-0,0 #1020542 android:id/splashscreen_icon_view} drawable: com.android.wm.shell.startingsurface.SplashscreenIconDrawableFactory$ImmobileIconDrawable@f78c05d size: 504
+11-17 09:30:57.765  1096  1216 D SplashScreenView: Branding: view: android.view.View{5f46dd2 G.ED..... ......I. 0,0-0,0 #1020541 android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+11-17 09:30:57.770   672   698 V Configuration: Updating configuration, locales updated from [] to [fr,en_US]
+11-17 09:30:57.770   672   698 V GrammaticalInflectionUtils: AttributionSource: AttributionSource { uid = 10216, packageName = null, attributionTag = null, token = android.os.Binder@4ac3e54, deviceId = 0, next = null } does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+11-17 09:30:57.771   672   689 D OomAdjuster: Not killing cached processes
+11-17 09:30:57.776   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:57.788   475   475 D Zygote  : Forked child process 5170
+11-17 09:30:57.789   672  1877 D CoreBackPreview: Window{f9d325b u0 Splash Screen com.myhitbodedut}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@8929636, mPriority=0, mIsAnimationCallback=false, mOverrideBehavior=0}
+11-17 09:30:57.790   672   705 I ActivityManager: Start proc 5170:com.myhitbodedut/u0a216 for next-top-activity {com.myhitbodedut/com.myhitbodedut.MainActivity}
+11-17 09:30:57.790   672   705 I ActivityManager: ProcessObserver broadcast disabled
+11-17 09:30:57.805   672  1000 D WifiClientModeImpl[32547:wlan0]: updateLinkLayerStatsRssiSpeedFrequencyCapabilities rssi=-50 TxLinkspeed=6 freq=2437 RxLinkSpeed=2
+11-17 09:30:57.806   672  1000 D WifiDataStall: tx tput in kbps: 37000
+11-17 09:30:57.806   672  1000 D WifiDataStall: rx tput in kbps: 37000
+11-17 09:30:57.806   672  1000 V WifiConfigManager: Updating scan detail cache freq=2437 BSSID=02:15:b2:00:00:01 RSSI=-50 for "AndroidWifi"NONE
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 37
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 37
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 37
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  utilization (LLS) 80 isBluetoothConnected: false final utilization: 80
+11-17 09:30:57.806   672  1000 D WifiThroughputPredictor:  BW: 0 RSSI: -50 Nss: 1 Mode: 1 symDur: 4000 snrDb 30 bitPerTone: 4500 rate: 54 throughput: 37
+11-17 09:30:57.806   672  1000 D WifiScoreCard: BSSID update SIGNAL_POLL ID: 1608418199 SSID: "AndroidWifi", BSSID: 02:15:b2:00:00:01, MAC: 02:15:b2:00:00:00, IP: /10.0.2.16, Security type: 0, Supplicant state: COMPLETED, Wi-Fi standard: legacy, RSSI: -50, Link speed: 6Mbps, Tx Link speed: 6Mbps, Max Supported Tx Link speed: 54Mbps, Rx Link speed: 2Mbps, Max Supported Rx Link speed: 54Mbps, Frequency: 2437MHz, Net ID: 0, Metered hint: false, score: 60, isUsable: true, CarrierMerged: false, SubscriptionId: -1, IsPrimary: 1, Trusted: true, Restricted: false, Ephemeral: false, OEM paid: false, OEM private: false, OSU AP: false, FQDN: <none>, Provider friendly name: <none>, Requesting package name: <none>"AndroidWifi"openMLO Information: , Is TID-To-Link negotiation supported by the AP: false, AP MLD Address: <none>, AP MLO Link Id: <none>, AP MLO Affiliated links: <none>, Vendor Data: <none>
+11-17 09:30:57.806   672  1000 D WifiScoreCard: txRate: 23 txSpeed: 6
+11-17 09:30:57.806   672  1000 D WifiScoreCard: network update SIGNAL_POLL "AndroidWifi" ID: 1655628132 RSSI -50 txSpeed 6
+11-17 09:30:57.806   672  1000 D WifiClientModeImpl[32547:wlan0]:  ClientModeImpl$L2ConnectedState screen=on 1 0 "AndroidWifi" 02:15:b2:00:00:01 rssi=-50 f=2437 sc=60 link=6 tx=22.8, 0.0, 0.0 rx=121.8 bcn=0 [on:0 tx:0 rx:0 period:3010] from screen [on:0 period:-388471922] score=60
+11-17 09:30:57.820  5170  5170 I om.myhitbodedut: Using CollectorTypeCMC GC.
+11-17 09:30:57.821  5170  5170 W om.myhitbodedut: Unexpected CPU variant for x86: x86_64.
+11-17 09:30:57.821  5170  5170 W om.myhitbodedut: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, default
+11-17 09:30:57.822  5170  5170 E om.myhitbodedut: Not starting debugger since process cannot load the jdwp agent.
+11-17 09:30:57.824  5170  5170 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+11-17 09:30:57.840   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:57.851  5170  5170 I om.myhitbodedut: AssetManager2(0x71da1f80c438) locale list changing from [en-US] to [fr]
+11-17 09:30:57.861  5170  5170 D nativeloader: Configuring clns-9 for other apk /data/app/~~BYLIzM6SFWGlBK9NxNMJnw==/com.myhitbodedut--w5UKg4R1X2tIvbtoM6IZA==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~BYLIzM6SFWGlBK9NxNMJnw==/com.myhitbodedut--w5UKg4R1X2tIvbtoM6IZA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.myhitbodedut
+11-17 09:30:57.873  1096  2184 V WindowManagerShell: onTransitionReady(transaction=2886218023648)
+11-17 09:30:57.873  1096  1171 V WindowManagerShell: onTransitionReady (#13) android.os.BinderProxy@457052b: {id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+11-17 09:30:57.873  1096  1171 V WindowManagerShell:         {m=OPEN f=NONE leash=Surface(name=Task=12)/@0x2e329f6 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},
+11-17 09:30:57.873  1096  1171 V WindowManagerShell:         {m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=8)/@0xbc601f7 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},
+11-17 09:30:57.873  1096  1171 V WindowManagerShell:         {m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0x3f24864 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+11-17 09:30:57.873  1096  1171 V WindowManagerShell:     ]}
+11-17 09:30:57.874  5170  5170 I om.myhitbodedut: AssetManager2(0x71da1f809b98) locale list changing from [] to [fr]
+11-17 09:30:57.885  1096  1171 V WindowManagerShell: Playing animation for (#13) android.os.BinderProxy@457052b@0
+11-17 09:30:57.885  1096  1171 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+11-17 09:30:57.885  1096  1171 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{m=OPEN f=NONE leash=Surface(name=Task=12)/@0x2e329f6 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},{m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=8)/@0xbc601f7 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},{m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0x3f24864 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}]}
+11-17 09:30:57.885  1096  1171 V WindowManagerShell:  Delegate animation for (#13) to null
+11-17 09:30:57.885  1096  1171 V WindowManagerShell: start default transition animation, info = {id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{m=OPEN f=NONE leash=Surface(name=Task=12)/@0x2e329f6 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},{m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=8)/@0xbc601f7 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},{m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0x3f24864 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}]}
+11-17 09:30:57.886  5170  5170 V GraphicsEnvironment: Currently set values for:
+11-17 09:30:57.886  5170  5170 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+11-17 09:30:57.886  5170  5170 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+11-17 09:30:57.886  5170  5170 V GraphicsEnvironment: com.myhitbodedut is not listed in per-application setting
+11-17 09:30:57.886  5170  5170 V GraphicsEnvironment: ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast
+11-17 09:30:57.886  5170  5170 V GraphicsEnvironment: com.myhitbodedut is not listed in ANGLE allowlist or settings, returning default
+11-17 09:30:57.886  5170  5170 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+11-17 09:30:57.886  1096  1171 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@74ec693 animAttr=0x13 type=OPEN isEntrance=false
+11-17 09:30:57.887  1096  1171 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@89538ef animAttr=0x12 type=OPEN isEntrance=true
+11-17 09:30:57.901  1096  1171 V WindowManagerShell:  animated by com.android.wm.shell.transition.DefaultTransitionHandler@4251de7
+11-17 09:30:57.901   672   695 V WindowManager: Sent Transition (#13) createdAt=11-17 09:30:57.740 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=12 effectiveUid=10216 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=1 lastActiveTime=119328 supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{RemoteToken{cf4a7c5 Task{cab1047 #12 type=standard A=10216:com.myhitbodedut minWidth=840 minHeight=840}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{6a7a51a com.myhitbodedut.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=Rect(284, 724 - 797, 1804) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=inactive}} topActivityMainWindowFrame=null}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 13 }
+11-17 09:30:57.901   672   695 V WindowManager:     startWCT=WindowContainerTransaction { changes= {} hops= [] errorCallbackToken=null taskFragmentOrganizer=null }
+11-17 09:30:57.901   672   695 V WindowManager:     info={id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+11-17 09:30:57.901   672   695 V WindowManager:         {WCT{RemoteToken{cf4a7c5 Task{cab1047 #12 type=standard A=10216:com.myhitbodedut minWidth=840 minHeight=840}}} m=OPEN f=NONE leash=Surface(name=Task=12)/@0xf7a360e sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},
+11-17 09:30:57.901   672   695 V WindowManager:         {WCT{RemoteToken{a02298f Task{bf04dac #8 type=home}}} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=8)/@0x49101bb sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 taskParent=-1},
+11-17 09:30:57.901   672   695 V WindowManager:         {m=TO_BACK f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a3253c6 showWhenLocked=false})/@0xe406a2 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0}
+11-17 09:30:57.901   672   695 V WindowManager:     ]}
+11-17 09:30:57.902  1096  1171 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#13) android.os.BinderProxy@457052b@0
+11-17 09:30:57.903  1096  1096 E LauncherProxyService: Failed to get launcher proxy for system bar attr change.
+11-17 09:30:57.905   672   689 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ENABLE_FAKE_FOCUS
+11-17 09:30:57.906   672   695 V WindowManager: Finish Transition (#13): created at 11-17 09:30:57.740 collect-started=0.027ms request-sent=10.05ms started=11.401ms ready=131.411ms sent=132.258ms finished=165.615ms
+11-17 09:30:57.908   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:57.908   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:57.910  1096  1171 V WindowManagerShell: Track 0 became idle
+11-17 09:30:57.910  1096  1171 V WindowManagerShell: All active transition animations finished
+11-17 09:30:57.911  1395  1395 D VRI[FallbackHome]: visibilityChanged oldVisibility=true newVisibility=false
+11-17 09:30:57.913  5170  5170 I om.myhitbodedut: AssetManager2(0x71da1f806998) locale list changing from [] to [fr]
+11-17 09:30:57.914  5170  5186 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+11-17 09:30:57.918  5170  5170 I om.myhitbodedut: AssetManager2(0x71da1f80a4f8) locale list changing from [] to [fr]
+11-17 09:30:57.919  5170  5170 E ashmem  : Pinning is deprecated since Android Q. Please use trim or other methods.
+11-17 09:30:57.947  5170  5170 D CompatChangeReporter: Compat change id reported: 377864165; UID 10216; state: ENABLED
+11-17 09:30:57.949  5170  5170 D DesktopModeFlags: Toggle override initialized to: OVERRIDE_UNSET
+11-17 09:30:57.968   672   759 V Configuration: Updating configuration, locales updated from [] to [fr,en_US]
+11-17 09:30:57.968   672   759 V GrammaticalInflectionUtils: AttributionSource: AttributionSource { uid = 10216, packageName = null, attributionTag = null, token = android.os.Binder@4ac3e54, deviceId = 0, next = null } does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+11-17 09:30:57.968   672   759 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_OVERRIDE
+11-17 09:30:57.968   672   759 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_FULLSCREEN_OVERRIDE
+11-17 09:30:57.968   672   759 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES
+11-17 09:30:57.968   672   759 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE
+11-17 09:30:57.968   672   759 D CompatChangeReporter: Compat change id reported: 358129114; UID 10216; state: ENABLED
+11-17 09:30:57.971   672   759 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_ORIENTATION_OVERRIDE
+11-17 09:30:57.973  5170  5186 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+11-17 09:30:57.973  5170  5186 I EGL_emulation: Opening libGLESv2_emulation.so
+11-17 09:30:57.976   672   759 I ActivityTaskManager: START u0 {xflg=0x4 cmp=com.myhitbodedut/.InstantActivity} with LAUNCH_MULTIPLE from uid 10216 (sr=154484614) (BAL_ALLOW_VISIBLE_WINDOW) result code=0
+11-17 09:30:57.976  1096  1171 V WindowManagerShell: Transition requested (#14): android.os.BinderProxy@726750b TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=12 effectiveUid=10216 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.InstantActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=2 lastActiveTime=119552 supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@48b5fe8} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 0 - 0, 0) topActivityInfo=ActivityInfo{c00b601 com.myhitbodedut.InstantActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=Rect(284, 724 - 797, 1804) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=inactive}} topActivityMainWindowFrame=null}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 14 }
+11-17 09:30:57.978  1096  1171 D ShellSplitScreen: logExit: no-op, mLoggerSessionId is null
+11-17 09:30:58.001   548   548 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+11-17 09:30:58.009   672  1879 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ENABLE_FAKE_FOCUS
+11-17 09:30:58.011   672   695 V WindowManager: Sent Transition (#14) createdAt=11-17 09:30:57.968 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=12 effectiveUid=10216 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.InstantActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=2 lastActiveTime=119552 supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{RemoteToken{cf4a7c5 Task{cab1047 #12 type=standard A=10216:com.myhitbodedut minWidth=840 minHeight=840}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 0 - 0, 0) topActivityInfo=ActivityInfo{ada36b1 com.myhitbodedut.InstantActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isTopActivityNoDisplay=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=Rect(284, 724 - 797, 1804) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2400) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=inactive}} topActivityMainWindowFrame=null}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 14 }
+11-17 09:30:58.011   672   695 V WindowManager:     startWCT=WindowContainerTransaction { changes= {} hops= [] errorCallbackToken=null taskFragmentOrganizer=null }
+11-17 09:30:58.011   672   695 V WindowManager:     info={id=14 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+11-17 09:30:58.011   672   695 V WindowManager:         {m=OPEN f=STARTING_WINDOW_TRANSFER|FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{48643774 u0 com.myhitbodedut/.InstantActivity)/@0xfaafa3b sb=Rect(0, 0 - 0, 0) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=-1->0 r=-1->0:-1 component=com.myhitbodedut/.InstantActivity opt={t=CUSTOM enterResId=0 changeResId=0 exitResId=0 mUserId=0}},
+11-17 09:30:58.011   672   695 V WindowManager:         {m=CLOSE f=FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{154484614 u0 com.myhitbodedut/.MainActivity)/@0xd4388ca sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 component=com.myhitbodedut/.MainActivity opt={t=CUSTOM enterResId=0 changeResId=0 exitResId=0 mUserId=0}}
+11-17 09:30:58.011   672   695 V WindowManager:     ]}
+11-17 09:30:58.013   672   689 I AppWidgetServiceImpl: getInstalledProvidersForProfiles() 0
+11-17 09:30:58.014   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:58.015   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:58.015   672  1051 D BackgroundInstallControlService: Package event received: 0
+11-17 09:30:58.015  1096  1241 V WindowManagerShell: onTransitionReady(transaction=2886218023661)
+11-17 09:30:58.016  1096  1171 V WindowManagerShell: onTransitionReady (#14) android.os.BinderProxy@726750b: {id=14 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+11-17 09:30:58.016  1096  1171 V WindowManagerShell:         {m=OPEN f=STARTING_WINDOW_TRANSFER|FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{48643774 u0 com.myhitbodedut/.InstantActivity)/@0xc4556e7 sb=Rect(0, 0 - 0, 0) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=-1->0 r=-1->0:-1 component=com.myhitbodedut/.InstantActivity opt={t=CUSTOM enterResId=0 changeResId=0 exitResId=0 mUserId=0}},
+11-17 09:30:58.016  1096  1171 V WindowManagerShell:         {m=CLOSE f=FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{154484614 u0 com.myhitbodedut/.MainActivity)/@0x7aa9294 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) epz=Point(1080, 2400) d=0 component=com.myhitbodedut/.MainActivity opt={t=CUSTOM enterResId=0 changeResId=0 exitResId=0 mUserId=0}}
+11-17 09:30:58.016  1096  1171 V WindowManagerShell:     ]}
+11-17 09:30:58.016  1096  1171 V WindowManagerShell: Non-visible anim so abort: (#14) android.os.BinderProxy@726750b@0
+11-17 09:30:58.016  1096  1171 V WindowManagerShell: Transition animation finished (aborted=true), notifying core (#14) android.os.BinderProxy@726750b@0
+11-17 09:30:58.017  1096  1171 V WindowManagerShell: Track 0 became idle
+11-17 09:30:58.017  1096  1171 V WindowManagerShell: All active transition animations finished
+11-17 09:30:58.017   672   695 V WindowManager: Finish Transition (#14): created at 11-17 09:30:57.968 collect-started=0.017ms request-sent=6.0ms started=9.917ms ready=41.246ms sent=42.169ms finished=47.701ms
+11-17 09:30:58.027   672   689 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.028   672  1879 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.028   672   689 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.028   672   689 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.034   672  1879 I AppWidgetServiceImpl: notifyProviderInheritance() 0
+11-17 09:30:58.034   672   689 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.037   672   689 I BroadcastQueue: BOOT_COMPLETED_BROADCAST_COMPLETION_LATENCY_REPORTED action:android.intent.action.BOOT_COMPLETED dispatchLatency:4 completeLatency:200 dispatchRealLatency:4 completeRealLatency:200 receiversSize:1 userId:0 userType:android.os.usertype.full.SYSTEM
+11-17 09:30:58.056  1395  1395 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:58.068  5170  5186 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+11-17 09:30:58.120   672   689 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.121   672   759 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.121   672   689 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.121   672   689 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.121   672  1879 I AppWidgetServiceImpl: getInstalledProvidersForProfiles() 0
+11-17 09:30:58.122   672   759 I AppWidgetServiceImpl: getAppWidgetIds() 0
+11-17 09:30:58.123   672  1209 I AppWidgetServiceImpl: notifyProviderInheritance() 0
+11-17 09:30:58.127  5170  5170 W HWUI    : Unknown dataspace 0
+11-17 09:30:58.377     0     0 I servicemanager: Caller(pid=5170,uid=10216,sid=u:r:untrusted_app:s0:c216,c256,c512,c768) Found android.hardware.graphics.allocator.IAllocator/default in device VINTF manifest.
+11-17 09:30:58.400     0     0 I servicemanager: Caller(pid=5170,uid=10216,sid=u:r:untrusted_app:s0:c216,c256,c512,c768) Found android.hardware.graphics.allocator.IAllocator/default in device VINTF manifest.
+11-17 09:30:58.173   672  1877 D CoreBackPreview: Window{a12ba0f u0 com.myhitbodedut/com.myhitbodedut.InstantActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@4f56ca5, mPriority=0, mIsAnimationCallback=false, mOverrideBehavior=0}
+11-17 09:30:58.418     0     0 I servicemanager: Caller(pid=5170,uid=10216,sid=u:r:untrusted_app:s0:c216,c256,c512,c768) Found mapper/ranchu in device VINTF manifest.
+11-17 09:30:58.545   672  1209 W ActivityManager: Unable to start service Intent { act=grpc.io.action.BIND xflg=0x4 cmp=com.google.android.apps.stargate/.endpointservice.GrpcEndpointService } U=0: not found
+11-17 09:30:58.545   672  1209 W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@d752e21
+11-17 09:30:58.556  1395  1395 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:59.058  1395  1395 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:59.131  5170  5170 I Choreographer: Skipped 57 frames!  The application may be doing too much work on its main thread.
+11-17 09:30:59.140   672   695 I ActivityTaskManager: Displayed com.myhitbodedut/.InstantActivity for user 0: +1s399ms
+11-17 09:30:59.144  5170  5181 I HWUI    : Davey! duration=998ms; Flags=1, FrameTimelineVsyncId=10520, IntendedVsync=119714234086, Vsync=119730900752, InputEventId=0, HandleInputStart=119734159997, AnimationStart=119734160315, PerformTraversalsStart=119734160617, DrawStart=119780805270, FrameDeadline=119730900752, FrameStartTime=119734158260, FrameInterval=16666666, WorkloadTarget=16666666, SyncQueued=119783476716, SyncStart=119787384999, IssueDrawCommandsStart=119787465502, SwapBuffers=120638837838, FrameCompleted=120716225797, DequeueBufferDuration=3312, QueueBufferDuration=224513, GpuCompleted=120716225797, SwapBuffersCompleted=120708284235, DisplayPresentTime=0, CommandSubmissionCompleted=120638837838, 
+11-17 09:30:59.148   672  1051 D BackgroundInstallControlService: Package event received: 0
