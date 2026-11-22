@@ -1,0 +1,21 @@
+== gestes-seance-en-cours
+== gestes-seance-calme
+== gestes-seance-apres
+== boutons-seance-en-cours
+== boutons-seance-calme
+== boutons-seance-apres
+PETIT 363x45dp Button celebration_continue «Continuer»
+== gestes-barriere-etat
+PETIT 52x43dp Switch enable_switch «Je suis avec Hachem»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 88x5dp Button window_start «Plage horaire : 09:04»
+PETIT 88x5dp Button window_end «Plage horaire : 11:34»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+PETIT 363x43dp Button blocker_snooze «Plus tard (15 min)»
+== boutons-barriere-reelle-bas
