@@ -56,7 +56,7 @@ public struct MusiqueVue: View {
         .sheet(isPresented: choixAmbianceOuvert) {
             MusiqueChoixAmbianceVue(modele: modele)
         }
-        .alert(titreRenommage, item: renommageOuvert) { dialogue in
+        .alert(titreRenommage, isPresented: renommageOuvert, presenting: modele.renommage) { dialogue in
             actionsRenommage(dialogue)
         }
         .onDisappear {
@@ -213,7 +213,7 @@ public struct MusiqueVue: View {
     /// Le dialogue « Renommer ». Chaque bouton ferme le dialogue par le modèle lui-même (le début de son action
     /// part tout de suite) : la fermeture que SwiftUI écrit ici n'a rien à faire, et surtout pas « Retour »,
     /// qui effacerait le dialogue avant que « Enregistrer » ne le lise.
-    private var renommageOuvert: Binding<MusiqueRenommage?> {
+    private var renommageOuvert: Binding<Bool> {
         Bindable(modele).renommageLie
     }
 

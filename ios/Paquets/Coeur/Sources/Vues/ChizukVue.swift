@@ -203,7 +203,7 @@ public struct ChizukVue: View {
 
 /// La carte (view_chizuk.xml, ChizukCard.bind) : l'illustration du moment et son nom, le badge « à relire », le
 /// texte (hébreu ou traduction seule), un filet, la traduction, la source. VoiceOver la lit d'un trait.
-private struct ChizukCarteVue: View {
+struct ChizukCarteVue: View {
     let carte: ChizukCarte
     @Environment(\.traducteur) private var traducteur
     /// Un téléphone en portrait a toujours plus de 480 points de haut : les hauteurs de values-h480dp.

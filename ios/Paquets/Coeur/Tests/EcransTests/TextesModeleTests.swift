@@ -73,6 +73,53 @@ struct TextesModeleTests {
         #expect(interrupteurs.isEmpty)
     }
 
+    @Test func lesTroisRayonsSontCeuxDuLayoutDansLeMemeOrdre() async throws {
+        let (modele, _, _) = try fabriquer()
+        await modele.actualiser()
+        let rayons = modele.rayons
+        let titres = rayons.map { $0.titre.cle }
+        #expect(titres == ["rayon_prier", "rayon_etudier", "rayon_renforcer"])
+        let ids = rayons.flatMap { $0.couvertures.map(\.id) }
+        // Les couvertures dans l'ordre d'activity_main.xml (refonte du 13/11), lu en place.
+        let octets = try Fichiers.donnees("android/app/src/main/res/layout/activity_main.xml")
+        let layout = String(decoding: octets, as: UTF8.self)
+        let livres = try #require(layout.range(of: "android:id=\"@+id/texts_scroll\""))
+        let chemin = try #require(layout.range(of: "android:id=\"@+id/chemin_scroll\""))
+        let panneau = String(layout[livres.upperBound..<chemin.lowerBound])
+        let couvertures = ExpressionReguliere(#"android:id="@\+id/([a-z_]+)"\s+style="@style/Couverture""#)
+            .toutes(panneau).map { $0.groupes[1] }
+        #expect(ids == couvertures)
+        #expect(ids == ["siddur_button", "tehilim_button", "tikkun_button", "tefilot_button", "library_button",
+                        "livres_button", "halakha_button", "chizuk_button", "tips_button"])
+        // Chaque couverture porte la couleur de son drawable (android:background="@drawable/couv_…").
+        let fonds = ExpressionReguliere(#"style="@style/Couverture"\s+(?:android:layout_marginEnd="0dp"\s+)?android:background="@drawable/couv_([a-z]+)""#)
+            .toutes(panneau).map { $0.groupes[1] }
+        let couleurs = rayons.flatMap { $0.couvertures.map(\.couleur.rawValue) }
+        #expect(couleurs == fonds)
+        let routes = rayons.flatMap { $0.couvertures.map(\.route) }
+        let attendues: [TextesRoute] = [.siddour, .tehilim, .tikkun, .tefilot, .bibliotheque(livresSeuls: false),
+                                        .bibliotheque(livresSeuls: true), .halakha, .chizuk, .conseils]
+        #expect(routes == attendues)
+        // Quatre places au plus par rayon ; l'état du Tikoun et des Tehilim sous le premier.
+        let pleins = rayons.allSatisfy { $0.couvertures.count <= TextesRayon.places }
+        #expect(pleins)
+        let etats = rayons[0].etats.map(\.cle)
+        #expect(etats == ["tikkun_progress_none", "tehilim_today"])
+        let autres = rayons[1].etats.count + rayons[2].etats.count
+        #expect(autres == 0)
+        // Les couvertures claires portent l'encre sombre.
+        let claires = TextesCouleur.allCases.filter(\.claire)
+        #expect(claires == [.clair, .parchemin, .menthe])
+    }
+
+    @Test func laRelectureSousLesRayonsEnDebugSeulement() throws {
+        let (publie, _, _) = try fabriquer()
+        #expect(publie.ligneRelecture == nil)
+        let (debug, _, _) = try fabriquer(relecture: true)
+        let route = debug.ligneRelecture?.route
+        #expect(route == .relecture)
+    }
+
     @Test func autourDeLaHitbodedoutLaMusiquePuisLesRappels() throws {
         let (modele, _, _) = try fabriquer()
         #expect(modele.titreAutour == Libelle("section_around"))

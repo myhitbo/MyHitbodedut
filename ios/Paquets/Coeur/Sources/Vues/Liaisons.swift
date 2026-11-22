@@ -142,8 +142,8 @@ extension MusiqueModele {
     /// Le dialogue « Renommer ». Chaque bouton ferme le dialogue par le modèle lui-même : la fermeture que SwiftUI
     /// écrit ici n'a rien à faire, et surtout pas « Retour », qui effacerait le dialogue avant que « Enregistrer »
     /// ne le lise.
-    var renommageLie: MusiqueRenommage? {
-        get { renommage }
+    var renommageLie: Bool {
+        get { renommage != nil }
         set {}
     }
 }

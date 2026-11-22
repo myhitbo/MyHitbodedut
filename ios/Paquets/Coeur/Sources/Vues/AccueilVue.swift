@@ -1,0 +1,1035 @@
+import Foundation
+import SwiftUI
+import Coeur
+import Ecrans
+
+/// Le Jour (refonte d'Android du 13/11, le panneau main_scroll d'activity_main.xml) : l'en-tête (la date hébraïque
+/// vers les zmanim, la roue vers les réglages), la salutation et l'état du jour, les trois anneaux autour du hassid et
+/// leur légende, le grade et le prochain trophée, la bande de la semaine, le mot de relance, « Écrire une note »,
+/// « Préparer la séance », « Je l'ai faite sans le téléphone », puis les cartes du moment (les rappels de la tefila,
+/// la prière de l'heure, Birkat haLevana, la source du jour). En bas, la barre de départ : « Commencer » et la flèche
+/// du volet de la séance (durée, sujet, musique, barrière).
+///
+/// La vue ne décide rien : elle lit `AccueilModele` (testé sous Linux) et appelle ses actions ; les écrans qu'il
+/// demande (`routes`) sont ouverts par la pile de l'onglet (ios/App). Les animations suivent ce que le modèle dit
+/// (remplissage, retour au hassid, fête d'un anneau) ; « Réduire les animations » les coupe.
+public struct AccueilVue: View {
+    private let modele: AccueilModele
+    private let textes: TextesModele
+    @Environment(\.traducteur) private var traducteur
+    @Environment(\.accessibilityReduceMotion) private var reduire
+    @Environment(\.scenePhase) private var phase
+
+    /// `textes` : l'interrupteur et l'état de la musique, dans le volet (MainActivity.renderMusic).
+    public init(modele: AccueilModele, textes: TextesModele) {
+        self.modele = modele
+        self.textes = textes
+    }
+
+    public var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                EnteteJour(modele: modele)
+                AccueilEtatVue(modele: modele)
+                AccueilAnneauxVue(modele: modele)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 16)
+                Text(modele.legende, traducteur: traducteur)
+                    .font(.callout)
+                    .foregroundStyle(AccueilTeintes.style(modele.couleurLegende))
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 4)
+                ligneTrophee
+                AccueilSemaineVue(modele: modele)
+                    .padding(.top, 16)
+                if let relance = modele.relance {
+                    ChizukCarteVue(carte: relance)
+                        .padding(.top, 12)
+                }
+                boutonsDuJour
+                ForEach(modele.cartes) { carte in
+                    AccueilCarteVue(carte: carte, police: modele.police) { route in
+                        modele.ouvrir(route)
+                    }
+                    .padding(.top, 14)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 24)
+        }
+        .background(Teinte(.paper))
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            AccueilBarreDepart(modele: modele)
+        }
+        .sheet(isPresented: Bindable(modele).feuilleLiee) {
+            AccueilFeuille(modele: modele, textes: textes)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: Bindable(modele).bilanLie) {
+            if let bilan = modele.bilan {
+                AccueilBilanVue(bilan: bilan) { modele.fermerBilan() }
+                    .presentationDetents([.medium])
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if let message = modele.message {
+                AccueilMessage(texte: Text(message, traducteur: traducteur))
+                    .padding(.bottom, 96)
+                    .transition(.opacity)
+            }
+        }
+        .task(id: modele.message) {
+            guard modele.message != nil else { return }
+            // Un Toast court d'Android : 2 s.
+            if await AccueilAttente.ms(2_000) { modele.messageMontre() }
+        }
+        .onAppear {
+            modele.reduireAnimations = reduire
+            Task { await modele.apparaitre() }
+        }
+        .onChange(of: reduire) { _, oui in
+            modele.reduireAnimations = oui
+        }
+        .onChange(of: phase) { _, nouvelle in
+            // onResume d'Android : le retour au premier plan relit tout.
+            if nouvelle == .active { Task { await modele.apparaitre() } }
+        }
+    }
+
+    /// Le grade et le prochain trophée (paliers_line) : touché, il ouvre les paliers.
+    private var ligneTrophee: some View {
+        let ligne = modele.ligneTrophee
+        return Button {
+            modele.ouvrirPaliers()
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "medal.fill")
+                    .foregroundStyle(AccueilTeintes.metal(ligne.grade))
+                    .accessibilityHidden(true)
+                Text(ligne.texte, traducteur: traducteur)
+                    .font(Font.subheadline.bold())
+                    .foregroundStyle(Teinte(.brand))
+                    .multilineTextAlignment(.center)
+                Image(systemName: "chevron.forward")
+                    .font(.caption.bold())
+                    .foregroundStyle(Teinte(.brand))
+                    .accessibilityHidden(true)
+            }
+            .padding(.vertical, 4)
+            .frame(minHeight: 48)
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(verbatim: ligne.accessibilite.map { traducteur.texte($0) }.joined(separator: ". ")))
+        .padding(.top, 4)
+    }
+
+    /// « Écrire une note » (un jour fait), « Préparer la séance », « Je l'ai faite sans le téléphone » : des boutons
+    /// texte, toute la largeur.
+    private var boutonsDuJour: some View {
+        VStack(spacing: 4) {
+            if let note = modele.libelleNote {
+                boutonTexte(note) { modele.ecrireNote() }
+            }
+            boutonTexte(modele.libellePreparer) { modele.preparer() }
+            if let horsTelephone = modele.libelleHorsTelephone {
+                boutonTexte(horsTelephone) { modele.declarerHorsTelephone() }
+            }
+        }
+        .padding(.top, 8)
+    }
+
+    private func boutonTexte(_ libelle: Libelle, action: @escaping @MainActor () -> Void) -> some View {
+        Button(action: action) {
+            Text(libelle, traducteur: traducteur)
+                .font(Font.subheadline.weight(.medium))
+                .foregroundStyle(Teinte(.brand))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Les liaisons des feuilles
+
+extension AccueilModele {
+    /// Le volet ou une boîte : la feuille baissée d'un geste ferme l'un et l'autre.
+    var feuilleLiee: Bool {
+        get { feuilleOuverte }
+        set { if !newValue { fermerFeuille() } }
+    }
+
+    /// Le bilan de la semaine : le baisser d'un geste vaut « Continuer ».
+    var bilanLie: Bool {
+        get { bilan != nil }
+        set { if !newValue { fermerBilan() } }
+    }
+}
+
+extension TextesModele {
+    /// L'interrupteur de la musique (music_switch_main), dans le volet.
+    var musiqueLiee: Bool {
+        get { musiqueActive }
+        set {
+            let oui = newValue
+            Task { try? await self.basculerMusique(oui) }
+        }
+    }
+}
+
+// MARK: - Les couleurs et les dates
+
+/// Les couleurs de l'accueil : les jetons de la palette, et les couleurs fixes de res/values/colors.xml que la palette
+/// n'a pas (les anneaux de la semaine et de la série, le jour exempté), de jour et de nuit (values-night).
+enum AccueilTeintes {
+    static func style(_ couleur: AccueilCouleur) -> AnyShapeStyle {
+        switch couleur {
+        case .brand: AnyShapeStyle(Teinte(.brand))
+        case .ink: AnyShapeStyle(Teinte(.ink))
+        case .muted: AnyShapeStyle(Teinte(.muted))
+        case .white: AnyShapeStyle(Color.white)
+        case .ringWeek: AnyShapeStyle(AccueilFixe(jour: 0x2E7DB3, nuit: 0x6FB7E8))
+        case .ringStreak: AnyShapeStyle(AccueilFixe(jour: 0xB8780F, nuit: 0xE8B45C))
+        }
+    }
+
+    /// La couleur concrète d'un anneau, pour le dessin.
+    static func anneau(_ quel: Anneaux.Quel, palette: PaletteApp, schema: ColorScheme) -> Color {
+        switch quel {
+        case .jour: palette.couleur(.brand, schema: schema)
+        case .semaine: AccueilFixe.couleur(schema == .dark ? 0x6FB7E8 : 0x2E7DB3)
+        case .serie: AccueilFixe.couleur(schema == .dark ? 0xE8B45C : 0xB8780F)
+        }
+    }
+
+    /// Le métal d'une médaille, en une couleur (TropheeTeintes, le ton moyen).
+    static func metal(_ metal: Trophees.Metal) -> Color {
+        TropheeTeintes.de(metal).fonce.couleurSwiftUI
+    }
+}
+
+/// Une couleur fixe de colors.xml, de jour et de nuit.
+struct AccueilFixe: ShapeStyle {
+    let jour: Int
+    let nuit: Int
+
+    func resolve(in environment: EnvironmentValues) -> Color {
+        AccueilFixe.couleur(environment.colorScheme == .dark ? nuit : jour)
+    }
+
+    static func couleur(_ hex: Int) -> Color {
+        Color(.sRGB, red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255,
+              blue: Double(hex & 0xFF) / 255, opacity: 1)
+    }
+}
+
+/// Les dates écrites dans la langue de l'app, au calendrier grégorien (DateTimeFormatter.ofPattern d'Android).
+enum AccueilDate {
+    static func texte(_ jour: JourCivil, langue: String, motif: String? = nil, style: DateFormatter.Style = .full) -> String {
+        var calendrier = Calendar(identifier: .gregorian)
+        calendrier.timeZone = .gmt
+        // Midi : aucun changement d'heure ne fait glisser le jour.
+        let composantes = DateComponents(year: jour.annee, month: jour.mois, day: jour.jour, hour: 12)
+        guard let date = calendrier.date(from: composantes) else { return jour.iso }
+        let format = DateFormatter()
+        format.calendar = calendrier
+        format.timeZone = .gmt
+        format.locale = Locale(identifier: Traducteur.identifiantLocale(langue))
+        if let motif {
+            format.dateFormat = motif
+        } else {
+            format.dateStyle = style
+            format.timeStyle = .none
+        }
+        return format.string(from: date)
+    }
+
+    /// Le jour en toutes lettres, majuscule initiale (« EEEE » puis `replaceFirstChar { titlecase }`).
+    static func jourSemaine(_ jour: JourCivil, langue: String) -> String {
+        let brut = texte(jour, langue: langue, motif: "EEEE")
+        guard let premier = brut.first else { return brut }
+        return String(premier).uppercased() + brut.dropFirst()
+    }
+}
+
+/// Une attente dans la suite d'une animation ; faux si la vue est partie entre-temps (la tâche est annulée).
+enum AccueilAttente {
+    static func ms(_ millisecondes: Int) async -> Bool {
+        do {
+            try await Task.sleep(for: .milliseconds(max(millisecondes, 0)))
+            return true
+        } catch {
+            return false
+        }
+    }
+}
+
+/// Un texte de l'accueil : une chaîne du catalogue, ou un texte tel quel.
+struct AccueilTexteVue {
+    static func texte(_ t: AccueilTexte, _ traducteur: Traducteur) -> Text {
+        switch t {
+        case .libelle(let libelle): Text(libelle, traducteur: traducteur)
+        case .brut(let brut): Text(verbatim: brut)
+        }
+    }
+
+    static func chaine(_ t: AccueilTexte, _ traducteur: Traducteur) -> String {
+        switch t {
+        case .libelle(let libelle): traducteur.texte(libelle)
+        case .brut(let brut): brut
+        }
+    }
+}
+
+// MARK: - L'état du jour
+
+/// La salutation (26 pt gras), l'état du jour (le titre sans prénom), la série et le total, le détail d'un jour fait.
+private struct AccueilEtatVue: View {
+    let modele: AccueilModele
+    @Environment(\.traducteur) private var traducteur
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let salutation = modele.salutation {
+                Text(salutation, traducteur: traducteur)
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(Teinte(.ink))
+            }
+            if modele.etatEstTitre {
+                Text(modele.titreEtat, traducteur: traducteur)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(Teinte(.ink))
+            } else {
+                Text(modele.titreEtat, traducteur: traducteur)
+                    .font(.hebreu(.arrondie, taille: 15))
+                    .foregroundStyle(Teinte(.muted))
+            }
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(modele.ligneSerie, traducteur: traducteur)
+                    .monospacedDigit()
+                if let total = modele.ligneTotal {
+                    Text(modele.separateur, traducteur: traducteur)
+                        .accessibilityHidden(true)
+                    Text(total, traducteur: traducteur)
+                        .monospacedDigit()
+                        .lineLimit(2)
+                }
+            }
+            .font(.hebreu(.arrondie, taille: 15))
+            .foregroundStyle(Teinte(.muted))
+            if let detail = modele.detailDuJour {
+                Text(detail, traducteur: traducteur)
+                    .font(.hebreu(.arrondie, taille: 16))
+                    .foregroundStyle(Teinte(.brand))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 8)
+    }
+}
+
+// MARK: - Les anneaux
+
+/// Les trois anneaux (AnneauxView, AnneauxDessin) et la plaque au creux : le hassid, ou une face et son chiffre.
+/// Un anneau touché passe devant ; la plaque touchée tourne vers la face suivante.
+private struct AccueilAnneauxVue: View {
+    let modele: AccueilModele
+    @Environment(\.traducteur) private var traducteur
+    @Environment(\.layoutDirection) private var sens
+    /// L'avance du remplissage, de 0 à 1.
+    @State private var avance: Double = 1
+    /// Le petit saut du hassid.
+    @State private var decalage: CGFloat = 0
+    /// Le battement des anneaux quand l'un se ferme.
+    @State private var battement: CGFloat = 1
+
+    /// gauge_size des téléphones de plus de 640 points de haut.
+    private let cote: CGFloat = 260
+    /// La plaque est rentrée de 32 points : trois anneaux de 8, deux écarts de 3, et un peu d'air.
+    private let marge: CGFloat = 32
+
+    var body: some View {
+        ZStack {
+            AccueilAnneauxDessin(traits: modele.traits(avance: avance), droite: sens == .leftToRight)
+                .frame(width: cote, height: cote)
+                .contentShape(Circle())
+                .onTapGesture { point in
+                    let x = sens == .leftToRight ? point.x : cote - point.x
+                    if let quel = AccueilAnneaux.sousLePoint(cote: Double(cote), x: Double(x), y: Double(point.y)) {
+                        modele.toucherAnneau(quel)
+                    }
+                }
+                .accessibilityElement()
+                .accessibilityLabel(Text(modele.descriptionAnneaux, traducteur: traducteur))
+            plaque
+                .frame(width: cote - 2 * marge, height: cote - 2 * marge)
+        }
+        .scaleEffect(battement)
+        .sensoryFeedback(.impact(weight: .light), trigger: modele.touches)
+        .task(id: modele.remplissage) {
+            guard let numero = modele.remplissage else {
+                avance = 1
+                return
+            }
+            await remplir(numero)
+        }
+        .task(id: modele.retourHassidPrevu) {
+            guard let numero = modele.retourHassidPrevu else { return }
+            if await AccueilAttente.ms(AccueilModele.dureeRetourHassid) { modele.retourHassid(numero) }
+        }
+        .task(id: modele.feteAnneau) {
+            guard let fete = modele.feteAnneau else { return }
+            await battre()
+            if await AccueilAttente.ms(AccueilModele.dureeFeteAnneau) { modele.finFeteAnneau(fete.numero) }
+        }
+        .task(id: modele.saut) {
+            guard let saut = modele.saut else { return }
+            await sauter(saut.fois)
+        }
+    }
+
+    /// La plaque ronde (bg_gauge_plate, `stageSoft`, claire de jour comme de nuit).
+    private var plaque: some View {
+        Button {
+            modele.toucherPlaque()
+        } label: {
+            ZStack {
+                Circle().fill(Teinte(.stageSoft))
+                if let face = modele.plaque {
+                    VStack(spacing: 0) {
+                        AccueilTexteVue.texte(face.texte, traducteur)
+                            .font(.system(size: 34, weight: .bold))
+                            .monospacedDigit()
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.45)
+                            .foregroundStyle(AccueilTeintes.style(face.couleur))
+                        Text(face.legende, traducteur: traducteur)
+                            .font(.caption)
+                            .foregroundStyle(AccueilFixe(jour: 0x5E706A, nuit: 0x5E706A))
+                            .multilineTextAlignment(.center)
+                            .lineLimit(3)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+                    .transition(.opacity)
+                } else {
+                    Illustration(decorative: modele.imageHassid)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+                        .padding(.bottom, 4)
+                        .offset(y: decalage)
+                        .transition(.opacity)
+                }
+            }
+            .clipShape(Circle())
+            .contentShape(Circle())
+            .animation(modele.reduireAnimations ? nil : .easeInOut(duration: 0.34), value: modele.face)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(verbatim: modele.accessibilitePlaque.map { AccueilTexteVue.chaine($0, traducteur) }
+            .joined(separator: " ")))
+    }
+
+    /// 900 ms en ralentissant (DecelerateInterpolator 1,6), puis le modèle décide de la fête ou du saut.
+    private func remplir(_ numero: Int) async {
+        avance = 0
+        let horloge = ContinuousClock()
+        let debut = horloge.now
+        let duree = Double(AccueilModele.dureeRemplissage)
+        while true {
+            let ecoule = Double((horloge.now - debut).components.attoseconds) / 1e15
+                + Double((horloge.now - debut).components.seconds) * 1000
+            let t = min(ecoule / duree, 1)
+            avance = 1 - pow(1 - t, 3.2)
+            if t >= 1 { break }
+            guard await AccueilAttente.ms(16) else { return }
+        }
+        try? await modele.remplissageFini(numero)
+    }
+
+    /// Les anneaux battent deux fois (×1,07 en 180 ms, retour en 260 ms).
+    private func battre() async {
+        guard !modele.reduireAnimations else { return }
+        for _ in 0..<2 {
+            withAnimation(.easeOut(duration: 0.18)) { battement = 1.07 }
+            guard await AccueilAttente.ms(180) else { return }
+            withAnimation(.spring(duration: 0.26, bounce: 0.4)) { battement = 1 }
+            guard await AccueilAttente.ms(260) else { return }
+        }
+    }
+
+    /// Le saut du hassid : 10 points vers le haut en 220 ms, retour en rebond en 260 ms.
+    private func sauter(_ fois: Int) async {
+        guard !modele.reduireAnimations else { return }
+        for _ in 0..<max(fois, 0) {
+            withAnimation(.easeOut(duration: 0.22)) { decalage = -10 }
+            guard await AccueilAttente.ms(220) else { return }
+            withAnimation(.spring(duration: 0.26, bounce: 0.5)) { decalage = 0 }
+            guard await AccueilAttente.ms(420) else { return }
+        }
+    }
+}
+
+/// Le dessin des anneaux (AnneauxDessin.kt) : pour chacun, la piste, un premier tour plein, puis le tour en cours
+/// depuis le haut, dans le sens de lecture.
+private struct AccueilAnneauxDessin: View {
+    let traits: [AccueilTrait]
+    /// Le sens de lecture : à droite en français, à gauche en hébreu.
+    let droite: Bool
+    @Environment(\.paletteApp) private var palette
+    @Environment(\.colorScheme) private var schema
+
+    var body: some View {
+        Canvas { contexte, taille in
+            let cote = min(taille.width, taille.height)
+            for trait in traits {
+                dessiner(trait, dans: contexte, cote: cote)
+            }
+        }
+        .environment(\.layoutDirection, .leftToRight)
+    }
+
+    private func dessiner(_ trait: AccueilTrait, dans contexte: GraphicsContext, cote: CGFloat) {
+        let retrait = CGFloat(trait.retrait)
+        let cadre = CGRect(x: retrait, y: retrait, width: cote - 2 * retrait, height: cote - 2 * retrait)
+        guard cadre.width > 0 else { return }
+        let couleur = AccueilTeintes.anneau(trait.quel, palette: palette, schema: schema)
+        let piste = palette.couleur(.dayTodo, schema: schema).mix(with: couleur, by: trait.teintePiste)
+        let largeur = CGFloat(trait.epaisseur)
+        var c = contexte
+        c.opacity = trait.opacite
+        let cercle = Path(ellipseIn: cadre)
+        c.stroke(cercle, with: .color(piste), lineWidth: largeur)
+        if trait.tourPlein {
+            c.stroke(cercle, with: .color(couleur), lineWidth: largeur)
+        }
+        guard trait.reste > 0 else { return }
+        let teinte = trait.assombri ? couleur.mix(with: .black, by: AccueilAnneaux.assombrissement) : couleur
+        let balayage = 360 * trait.reste
+        var arc = Path()
+        // En y vers le bas, `clockwise: false` tourne à l'œil dans le sens des aiguilles d'une montre.
+        arc.addArc(center: CGPoint(x: cadre.midX, y: cadre.midY), radius: cadre.width / 2,
+                   startAngle: .degrees(-90), endAngle: .degrees(droite ? -90 + balayage : -90 - balayage),
+                   clockwise: !droite)
+        c.stroke(arc, with: .color(teinte), style: StrokeStyle(lineWidth: largeur, lineCap: .round))
+    }
+}
+
+// MARK: - La bande de la semaine
+
+/// Les sept cases, du dimanche au samedi (item_day.xml) : le jour en abrégé, la marque ; touchée, la boîte du jour.
+private struct AccueilSemaineVue: View {
+    let modele: AccueilModele
+    @Environment(\.traducteur) private var traducteur
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(modele.semaine) { jour in
+                Button {
+                    modele.ouvrirJour(jour.date)
+                } label: {
+                    caseDuJour(jour)
+                }
+                .buttonStyle(.plain)
+                .disabled(!jour.ouvrable)
+                .accessibilityLabel(Text(verbatim: accessibilite(jour)))
+            }
+        }
+    }
+
+    private func caseDuJour(_ jour: AccueilJourSemaine) -> some View {
+        VStack(spacing: 4) {
+            Text(verbatim: AccueilDate.texte(jour.date, langue: traducteur.langue, motif: "EEE"))
+                .font(.caption)
+                .foregroundStyle(AccueilTeintes.style(jour.couleurEtiquette))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            AccueilTexteVue.texte(jour.marque, traducteur)
+                .font(Font.system(size: jour.marqueReduite ? 12 : 16, weight: .bold).monospacedDigit())
+                .foregroundStyle(AccueilTeintes.style(jour.couleurMarque))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+        }
+        .frame(maxWidth: .infinity, minHeight: 56)
+        .background(fond(jour.fond), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay {
+            if jour.fond == .aujourdhui {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(Teinte(.brand), lineWidth: 1.5)
+            }
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private func fond(_ fond: AccueilFondJour) -> AnyShapeStyle {
+        switch fond {
+        case .faite: AnyShapeStyle(Teinte(.dayDone))
+        case .exempte: AnyShapeStyle(AccueilFixe(jour: 0xF3EEE2, nuit: 0x36322A))
+        case .aujourdhui, .aFaire: AnyShapeStyle(Teinte(.dayTodo))
+        }
+    }
+
+    private func accessibilite(_ jour: AccueilJourSemaine) -> String {
+        let date = AccueilDate.texte(jour.date, langue: traducteur.langue, motif: "EEEE d")
+        return ([date] + jour.accessibilite.map { traducteur.texte($0) }).joined(separator: " · ")
+    }
+}
+
+// MARK: - Les cartes du moment
+
+/// Une carte sous les boutons du jour : un rappel de la tefila, une prière, la source du jour.
+private struct AccueilCarteVue: View {
+    let carte: AccueilCarte
+    let police: PoliceHebraique.Police
+    let ouvrir: @MainActor (AccueilRoute) -> Void
+    @Environment(\.traducteur) private var traducteur
+
+    var body: some View {
+        switch carte {
+        case .rappel(let rappel):
+            rappelVue(rappel)
+        case .priere(let priere):
+            priereVue(priere)
+        case .source(let source):
+            sourceVue(source)
+        }
+    }
+
+    /// Trois lignes centrées (RappelsTefilaVue.cartes).
+    private func rappelVue(_ rappel: AccueilRappel) -> some View {
+        let langue = traducteur.langue
+        let corps = rappel.corps { AccueilDate.jourSemaine($0, langue: langue) }
+        return Carte {
+            VStack(spacing: 8) {
+                Text(rappel.titre, traducteur: traducteur)
+                    .font(.system(size: 19, weight: .bold))
+                    .foregroundStyle(Teinte(.ink))
+                Text(corps, traducteur: traducteur)
+                    .font(.callout)
+                    .foregroundStyle(Teinte(.ink))
+                    .lineSpacing(3)
+                Text(rappel.source, traducteur: traducteur)
+                    .font(.caption)
+                    .foregroundStyle(Teinte(.muted))
+            }
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    /// La prière de l'heure ou Birkat haLevana (AccueilMoment.carte) : le personnage, l'étiquette, le titre hébreu.
+    private func priereVue(_ priere: AccueilPriere) -> some View {
+        Button {
+            ouvrir(priere.route)
+        } label: {
+            Carte {
+                HStack(spacing: 14) {
+                    Illustration(decorative: priere.image, hauteur: 56)
+                        .frame(width: 48, height: 56)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(priere.etiquette, traducteur: traducteur)
+                            .font(Font.caption.weight(.semibold))
+                            .textCase(.uppercase)
+                            .kerning(0.7)
+                            .foregroundStyle(Teinte(.brand))
+                        Text(verbatim: priere.hebreu)
+                            .policeHebraique(police, taille: 21)
+                            .bold()
+                            .foregroundStyle(Teinte(.ink))
+                            .environment(\.layoutDirection, .rightToLeft)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        if let mot = priere.mot {
+                            Text(mot, traducteur: traducteur)
+                                .font(.footnote)
+                                .foregroundStyle(Teinte(.muted))
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: "chevron.forward")
+                        .font(Font.subheadline.weight(.semibold))
+                        .foregroundStyle(Teinte(.brand))
+                        .accessibilityHidden(true)
+                }
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+    }
+
+    /// La source du jour (SourceDuJour.carte) : l'extrait de droite à gauche, la référence, « Lire la suite ».
+    private func sourceVue(_ source: AccueilSource) -> some View {
+        Carte {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(source.titre, traducteur: traducteur)
+                    .font(Font.caption.weight(.semibold))
+                    .textCase(.uppercase)
+                    .kerning(0.7)
+                    .foregroundStyle(Teinte(.brand))
+                Text(verbatim: source.texte)
+                    .policeHebraique(police, taille: 18)
+                    .lineSpacing(4)
+                    .foregroundStyle(Teinte(.ink))
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .environment(\.layoutDirection, .rightToLeft)
+                Text(verbatim: source.reference)
+                    .font(.footnote)
+                    .italic()
+                    .foregroundStyle(Teinte(.muted))
+                Button {
+                    ouvrir(source.route)
+                } label: {
+                    Text(source.bouton, traducteur: traducteur)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.secondaire)
+            }
+        }
+    }
+}
+
+// MARK: - La barre de départ
+
+/// La barre de départ (depart_barre) : « Commencer » sur toute la largeur, et la flèche du volet à son bout.
+private struct AccueilBarreDepart: View {
+    let modele: AccueilModele
+    @Environment(\.traducteur) private var traducteur
+
+    var body: some View {
+        Button {
+            modele.commencer()
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "play.fill")
+                    .accessibilityHidden(true)
+                Text(modele.libelleCommencer, traducteur: traducteur)
+                    .lineLimit(2)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.trailing, 48)
+        }
+        .buttonStyle(.principalGrand)
+        .overlay(alignment: .trailing) {
+            Button {
+                modele.basculerVolet()
+            } label: {
+                Image(systemName: "chevron.up")
+                    .font(Font.body.weight(.semibold))
+                    .foregroundStyle(Teinte(.onBrand))
+                    .rotationEffect(.degrees(modele.volet ? 180 : 0))
+                    .frame(width: 60, height: 60)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text(modele.libelleRegler, traducteur: traducteur))
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 6)
+        .padding(.bottom, 8)
+        .background(Teinte(.paper))
+    }
+}
+
+// MARK: - La feuille : le volet, ou une boîte
+
+/// Le volet de la séance, ou la boîte qu'il a ouverte (ou qu'un geste du Jour a ouverte) à sa place.
+private struct AccueilFeuille: View {
+    let modele: AccueilModele
+    let textes: TextesModele
+
+    var body: some View {
+        Group {
+            if let dialogue = modele.dialogue {
+                AccueilBoite(modele: modele, dialogue: dialogue)
+            } else {
+                AccueilVolet(modele: modele, textes: textes)
+            }
+        }
+        .background(Teinte(.paper))
+    }
+}
+
+/// Le volet (depart_volet) : son titre, puis la durée, le sujet, la musique avec son interrupteur, la barrière.
+private struct AccueilVolet: View {
+    let modele: AccueilModele
+    let textes: TextesModele
+    @Environment(\.traducteur) private var traducteur
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(modele.titreVolet, traducteur: traducteur)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(Teinte(.ink))
+                    .padding(.top, 20)
+                    .padding(.bottom, 4)
+                ForEach(modele.pastilles) { pastille in
+                    ligne(pastille)
+                    Divider().overlay(Teinte(.line))
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 16)
+        }
+    }
+
+    @ViewBuilder
+    private func ligne(_ pastille: AccueilPastille) -> some View {
+        HStack(spacing: 10) {
+            Button {
+                Task { try? await modele.toucherPastille(pastille.genre) }
+            } label: {
+                HStack(spacing: 10) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(pastille.etiquette, traducteur: traducteur)
+                            .font(.subheadline)
+                            .foregroundStyle(Teinte(.ink))
+                        if pastille.genre == .musique {
+                            Text(textes.etatMusique, traducteur: traducteur)
+                                .font(.footnote)
+                                .foregroundStyle(Teinte(.muted))
+                                .lineLimit(2)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    if pastille.genre != .musique {
+                        AccueilTexteVue.texte(pastille.valeur, traducteur)
+                            .font(Font.subheadline.bold())
+                            .foregroundStyle(Teinte(.brand))
+                            .lineLimit(1)
+                            .frame(maxWidth: 160, alignment: .trailing)
+                    }
+                    if pastille.genre != .barriere {
+                        Image(systemName: "chevron.forward")
+                            .font(Font.footnote.weight(.semibold))
+                            .foregroundStyle(Teinte(.brand))
+                            .accessibilityHidden(true)
+                    }
+                }
+                .frame(minHeight: 56)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            if pastille.genre == .musique {
+                Toggle(isOn: Bindable(textes).musiqueLiee) {
+                    Text(pastille.etiquette, traducteur: traducteur)
+                }
+                .labelsHidden()
+                .tint(Teinte(.brand))
+            }
+        }
+    }
+}
+
+/// Les boîtes du Jour : une liste à choisir, la durée réglable, la boîte d'un jour de la bande.
+private struct AccueilBoite: View {
+    let modele: AccueilModele
+    let dialogue: AccueilDialogue
+    @Environment(\.traducteur) private var traducteur
+    @State private var saisie = ""
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                if let titre = titre {
+                    titre
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(Teinte(.ink))
+                        .padding(.top, 20)
+                        .padding(.bottom, 8)
+                }
+                contenu
+                Button {
+                    modele.fermerDialogue()
+                } label: {
+                    Text(modele.libelleRetour, traducteur: traducteur)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.secondaire)
+                .padding(.top, 16)
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 16)
+        }
+    }
+
+    private var titre: Text? {
+        if case .jour(let boite) = dialogue {
+            return Text(verbatim: AccueilDate.texte(boite.date, langue: traducteur.langue))
+        }
+        return modele.titreDialogue.map { Text($0, traducteur: traducteur) }
+    }
+
+    @ViewBuilder
+    private var contenu: some View {
+        switch dialogue {
+        case .duree:
+            ForEach(modele.optionsDuree) { option in
+                choix(Text(option.libelle, traducteur: traducteur)) {
+                    Task { try? await modele.choisirDuree(option.minutes) }
+                }
+            }
+        case .dureeLibre:
+            dureeLibre
+        case .sujet:
+            ForEach(modele.optionsSujet) { option in
+                choix(Text(option.libelle, traducteur: traducteur)) {
+                    Task { try? await modele.choisirSujet(option.theme) }
+                }
+            }
+        case .jourHorsTelephone:
+            let options = modele.optionsJourHorsTelephone
+            ForEach(Array(options.enumerated()), id: \.offset) { rang, libelle in
+                choix(Text(libelle, traducteur: traducteur)) {
+                    modele.choisirJourHorsTelephone(hier: rang == 1)
+                }
+            }
+        case .jour(let boite):
+            jour(boite)
+        }
+    }
+
+    private func choix(_ texte: Text, action: @escaping @MainActor () -> Void) -> some View {
+        Button(action: action) {
+            texte
+                .font(.body)
+                .foregroundStyle(Teinte(.ink))
+                .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// La durée réglable (DureeSeance.saisir) : un champ numérique, prérempli ; refusée, la boîte le dit dessous.
+    private var dureeLibre: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            TextField(text: $saisie, prompt: Text(modele.indicationDureeLibre, traducteur: traducteur)) {
+                Text(modele.indicationDureeLibre, traducteur: traducteur)
+            }
+            .keyboardType(.numberPad)
+            .textFieldStyle(.roundedBorder)
+            .onAppear { saisie = modele.texteDureeLibre }
+            if let erreur = modele.erreurSaisie {
+                Text(erreur, traducteur: traducteur)
+                    .font(.footnote)
+                    .foregroundStyle(AccueilFixe(jour: 0xA8561F, nuit: 0xE8A062))
+            } else {
+                Text(modele.indicationDureeLibre, traducteur: traducteur)
+                    .font(.footnote)
+                    .foregroundStyle(Teinte(.muted))
+            }
+            Button {
+                let texte = saisie
+                Task { try? await modele.validerDureeLibre(texte) }
+            } label: {
+                Text(modele.libelleValider, traducteur: traducteur)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.principal)
+            .padding(.top, 8)
+        }
+    }
+
+    /// La boîte d'un jour (AjoutTemps.ouvrir) : ce qui est inscrit, ajouter du temps, montrer la durée.
+    private func jour(_ boite: AccueilJourDialogue) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(boite.message, traducteur: traducteur)
+                .font(.body)
+                .foregroundStyle(Teinte(.ink))
+            Button {
+                modele.ajouterTemps()
+            } label: {
+                Text(boite.ajouter, traducteur: traducteur)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.principal)
+            if let montrer = boite.montrer {
+                Button {
+                    modele.montrerDuree()
+                } label: {
+                    Text(montrer, traducteur: traducteur)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.secondaire)
+            }
+        }
+    }
+}
+
+// MARK: - Le bilan de la semaine
+
+/// Le bilan de la semaine écoulée (MainActivity.bilanDeLaSemaine), une fois par semaine.
+private struct AccueilBilanVue: View {
+    let bilan: AccueilBilan
+    let fermer: @MainActor () -> Void
+    @Environment(\.traducteur) private var traducteur
+    @Environment(\.tropheeFormes) private var formes
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(bilan.titre, traducteur: traducteur)
+                .font(.title3.bold())
+                .foregroundStyle(Teinte(.ink))
+                .padding(.bottom, 6)
+            Text(bilan.minutes, traducteur: traducteur)
+                .font(Font.body.bold())
+                .foregroundStyle(Teinte(.ink))
+            if let plus = bilan.plus {
+                Text(plus, traducteur: traducteur)
+                    .font(.subheadline)
+                    .foregroundStyle(Teinte(.muted))
+            }
+            if let record = bilan.record {
+                Text(record, traducteur: traducteur)
+                    .font(Font.subheadline.bold())
+                    .foregroundStyle(Teinte(.brand))
+            }
+            if let titreTrophees = bilan.titreTrophees {
+                Text(titreTrophees, traducteur: traducteur)
+                    .font(.subheadline)
+                    .foregroundStyle(Teinte(.muted))
+                    .padding(.top, 4)
+                HStack(spacing: 6) {
+                    ForEach(bilan.trophees) { trophee in
+                        TropheeObjet(formes?.dessin(trophee.forme, metal: trophee.metal, icone: trophee.icone))
+                            .frame(width: 40, height: 40)
+                            .accessibilityLabel(Text(trophee.description, traducteur: traducteur))
+                    }
+                }
+            }
+            Spacer(minLength: 12)
+            Button(action: fermer) {
+                Text(bilan.bouton, traducteur: traducteur)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.principal)
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Teinte(.paper))
+    }
+}
+
+/// Un mot bref (un Toast d'Android), en bas de l'écran.
+private struct AccueilMessage: View {
+    let texte: Text
+
+    var body: some View {
+        texte
+            .font(.subheadline)
+            .foregroundStyle(Teinte(.paper))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(Teinte(.ink).opacity(0.9), in: Capsule())
+            .accessibilityAddTraits(.updatesFrequently)
+    }
+}

@@ -42,6 +42,8 @@ public enum TextesRoute: Sendable, Hashable {
     case chizuk
     /// TipsActivity (tips_button) : ConseilsModele.
     case conseils
+    /// HalakhaActivity (halakha_button, rayon « Étudier » depuis le 13/11) : HalakhaModele.
+    case halakha
     /// ProofreadActivity (proofread_button), en debug seulement.
     case relecture
     /// MusicActivity (music_button) : MusiqueModele.
@@ -168,6 +170,90 @@ public struct TextesSourceDuJour: Sendable, Equatable {
                                police: PoliceHebraique.Police) -> TextesSourceDuJour? {
         guard let pensee = SourceDuJour.choix(bibliotheque, jour) else { return nil }
         return TextesSourceDuJour(pensee, langue: langue, police: police)
+    }
+}
+
+/// La couleur d'une couverture du rayonnage (drawable/couv_*.xml, colors.xml) : le plat et le dos du livre, fixes
+/// de jour comme de nuit, « c'est celle du livre ».
+public enum TextesCouleur: String, Sendable, CaseIterable {
+    case vert, bleu, clair, violet, brun, parchemin, petrole, menthe
+
+    /// Le plat (couv_<nom>).
+    public var plat: Couleur {
+        switch self {
+        case .vert: Couleur(rouge: 0x1B, vert: 0x7A, bleu: 0x5C)
+        case .bleu: Couleur(rouge: 0x2D, vert: 0x5F, bleu: 0x9A)
+        case .clair: Couleur(rouge: 0xEE, vert: 0xF8, bleu: 0xF3)
+        case .violet: Couleur(rouge: 0x4B, vert: 0x3F, bleu: 0x8F)
+        case .brun: Couleur(rouge: 0x8A, vert: 0x4B, bleu: 0x1F)
+        case .parchemin: Couleur(rouge: 0xEF, vert: 0xE3, bleu: 0xC8)
+        case .petrole: Couleur(rouge: 0x1D, vert: 0x4A, bleu: 0x57)
+        case .menthe: Couleur(rouge: 0x6A, vert: 0xD1, bleu: 0xA7)
+        }
+    }
+
+    /// Le dos, 6 points au bord de départ (couv_<nom>_dos).
+    public var dos: Couleur {
+        switch self {
+        case .vert: Couleur(rouge: 0x0F, vert: 0x54, bleu: 0x40)
+        case .bleu: Couleur(rouge: 0x1D, vert: 0x42, bleu: 0x70)
+        case .clair: Couleur(rouge: 0xB9, vert: 0xD9, bleu: 0xCB)
+        case .violet: Couleur(rouge: 0x33, vert: 0x29, bleu: 0x6B)
+        case .brun: Couleur(rouge: 0x5F, vert: 0x32, bleu: 0x12)
+        case .parchemin: Couleur(rouge: 0xCD, vert: 0xBB, bleu: 0x8F)
+        case .petrole: Couleur(rouge: 0x12, vert: 0x33, bleu: 0x3D)
+        case .menthe: Couleur(rouge: 0x3F, vert: 0xA5, bleu: 0x7C)
+        }
+    }
+
+    /// Une couverture claire porte l'encre sombre (CouvertureTitre.Clair : couv_encre_sombre #12241E) ; les autres,
+    /// le blanc (couv_encre_claire).
+    public var claire: Bool {
+        self == .clair || self == .parchemin || self == .menthe
+    }
+
+    /// L'encre du titre et du libellé.
+    public var encre: Couleur {
+        claire ? Couleur(rouge: 0x12, vert: 0x24, bleu: 0x1E) : .blanc
+    }
+}
+
+/// Une couverture du rayonnage (style Couverture, 124 points de haut) : le titre hébreu en Frank Ruhl, de droite à
+/// gauche, deux lignes au plus (couv_*, que la lecture d'écran passe) ; le nom de l'écran dessous, en 11 points.
+public struct TextesCouverture: Sendable, Equatable, Identifiable {
+    /// L'identifiant de la vue d'Android : « siddur_button »…
+    public let id: String
+    public let titre: Libelle
+    public let libelle: Libelle
+    public let couleur: TextesCouleur
+    public let route: TextesRoute
+
+    public init(id: String, titre: Libelle, libelle: Libelle, couleur: TextesCouleur, route: TextesRoute) {
+        self.id = id
+        self.titre = titre
+        self.libelle = libelle
+        self.couleur = couleur
+        self.route = route
+    }
+}
+
+/// Un rayon des Livres (refonte du 13/11) : son titre (RayonTitre, 18 points gras), quatre places dont les vides
+/// gardent leur largeur, l'étagère dessous, puis ses lignes d'état.
+public struct TextesRayon: Sendable, Equatable, Identifiable {
+    /// « prier », « etudier », « renforcer ».
+    public let id: String
+    public let titre: Libelle
+    public let couvertures: [TextesCouverture]
+    /// Les places du rayon : quatre, comme les quatre poids égaux de la ligne d'Android.
+    public static let places = 4
+    /// Sous l'étagère (SectionState) : où en sont le Tikoun et les Tehilim du jour, sous le rayon « Prier ».
+    public let etats: [Libelle]
+
+    public init(id: String, titre: Libelle, couvertures: [TextesCouverture], etats: [Libelle]) {
+        self.id = id
+        self.titre = titre
+        self.couvertures = couvertures
+        self.etats = etats
     }
 }
 
@@ -370,6 +456,48 @@ public final class TextesModele {
                                        route: .relecture))
         }
         return lignes
+    }
+
+    /// Les trois rayons des Livres (activity_main.xml, texts_scroll, refonte du 13/11) : prier (siddour, Tehilim,
+    /// Tikoun, Tefilot), étudier (sources, livres, halakha), se renforcer ('hizouk, conseils). Aucune section n'est
+    /// retirée ; la musique et les rappels ont rejoint le volet de la séance (`autour`).
+    public var rayons: [TextesRayon] {
+        var etats: [Libelle] = []
+        if let etatTikkun { etats.append(etatTikkun) }
+        etats.append(etatTehilim)
+        return [
+            TextesRayon(id: "prier", titre: Libelle("rayon_prier"), couvertures: [
+                TextesCouverture(id: "siddur_button", titre: Libelle("couv_siddur"), libelle: Libelle("siddur_title"),
+                                 couleur: .vert, route: .siddour),
+                TextesCouverture(id: "tehilim_button", titre: Libelle("couv_tehilim"),
+                                 libelle: Libelle("tehilim_title"), couleur: .bleu, route: .tehilim),
+                TextesCouverture(id: "tikkun_button", titre: Libelle("couv_tikkun"), libelle: Libelle("tikkun_title"),
+                                 couleur: .clair, route: .tikkun),
+                TextesCouverture(id: "tefilot_button", titre: Libelle("couv_tefilot"),
+                                 libelle: Libelle("tefilot_title"), couleur: .violet, route: .tefilot),
+            ], etats: etats),
+            TextesRayon(id: "etudier", titre: Libelle("rayon_etudier"), couvertures: [
+                TextesCouverture(id: "library_button", titre: Libelle("couv_sources"),
+                                 libelle: Libelle("library_title"), couleur: .brun,
+                                 route: .bibliotheque(livresSeuls: false)),
+                TextesCouverture(id: "livres_button", titre: Libelle("couv_livres"), libelle: Libelle("livres_title"),
+                                 couleur: .parchemin, route: .bibliotheque(livresSeuls: true)),
+                TextesCouverture(id: "halakha_button", titre: Libelle("couv_halakha"),
+                                 libelle: Libelle("halakha_title"), couleur: .petrole, route: .halakha),
+            ], etats: []),
+            TextesRayon(id: "renforcer", titre: Libelle("rayon_renforcer"), couvertures: [
+                TextesCouverture(id: "chizuk_button", titre: Libelle("couv_chizuk"),
+                                 libelle: Libelle("chizuk_demande_title"), couleur: .menthe, route: .chizuk),
+                TextesCouverture(id: "tips_button", titre: Libelle("couv_conseils"), libelle: Libelle("tips_title"),
+                                 couleur: .vert, route: .conseils),
+            ], etats: []),
+        ]
+    }
+
+    /// La ligne de la relecture sous les rayons, en debug seulement (proofread_button) ; nil sinon.
+    public var ligneRelecture: TextesEntree? {
+        guard relecture else { return nil }
+        return TextesEntree(id: "proofread_button", titre: Libelle("proofread_open"), etat: nil, route: .relecture)
     }
 
     /// « Autour de la hitbodedout » : 12 sp, capitales, espacé, discret, au-dessus de la seconde carte.

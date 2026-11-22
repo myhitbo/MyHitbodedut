@@ -488,7 +488,42 @@ public final class AccueilModele {
     /// Un seul geste : la séance part tout de suite, avec la durée, le sujet et la musique des pastilles ; une
     /// séance en cours, on y revient.
     public func commencer() {
+        volet = false
         routes.append(.seance(demarrer: !enCours))
+    }
+
+    // MARK: Le volet de la séance (13/11)
+
+    /// Le volet des réglages de la séance (depart_volet) : il monte au-dessus de la barre de départ quand on touche sa
+    /// flèche (depart_regler), avec la durée, le sujet, la musique et la barrière ; le voile derrière lui le referme.
+    public private(set) var volet = false
+
+    /// « Ce avec quoi on y entre » (depart_titre) : le titre du volet.
+    public var titreVolet: Libelle { Libelle("depart_titre") }
+    /// La description de la flèche (depart_regler) et du voile (depart_fermer).
+    public var libelleRegler: Libelle { Libelle("depart_regler") }
+    public var libelleFermerVolet: Libelle { Libelle("depart_fermer") }
+
+    /// La flèche : le volet s'ouvre, ou se referme s'il l'était (montrerVolet).
+    public func basculerVolet() {
+        volet.toggle()
+    }
+
+    /// Le voile touché, ou le volet baissé d'un geste.
+    public func fermerVolet() {
+        volet = false
+    }
+
+    /// Une feuille est montrée par-dessus le Jour : le volet, ou une boîte (une boîte ouverte depuis le volet
+    /// prend sa place, puis le rend en se fermant, comme le dialogue d'Android posé sur le volet).
+    public var feuilleOuverte: Bool {
+        volet || dialogue != nil
+    }
+
+    /// La feuille baissée d'un geste : la boîte et le volet se ferment sans rien faire.
+    public func fermerFeuille() {
+        dialogue = nil
+        volet = false
     }
 
     /// « Préparer la séance » (start_prepare, FPRODUIT-04) : l'écran de préparation, sans démarrer — « Sans durée »
@@ -545,11 +580,14 @@ public final class AccueilModele {
         case .sujet:
             dialogue = .sujet
         case .musique:
+            // L'écran de la musique s'ouvre dans la pile : le volet ne reste pas par-dessus.
+            volet = false
             routes.append(.musique)
         case .barriere:
             guard barriere else { return }
             switch gesteBarriere {
             case .regler:
+                volet = false
                 routes.append(.reglages(carteBarriere: true))
             case .relancer:
                 await systeme?.appliquerEtat()

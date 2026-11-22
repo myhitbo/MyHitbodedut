@@ -160,6 +160,43 @@ struct AccueilModeleTests {
         #expect(m.routes.isEmpty)
     }
 
+    @Test func leVoletSOuvreParLaFlecheEtSeFermeAuDepart() async throws {
+        let m = try banc().modele
+        #expect(!m.volet)
+        #expect(!m.feuilleOuverte)
+        #expect(m.titreVolet == Libelle("depart_titre"))
+        #expect(m.libelleRegler == Libelle("depart_regler"))
+        m.basculerVolet()
+        #expect(m.volet)
+        #expect(m.feuilleOuverte)
+        m.basculerVolet()
+        #expect(!m.volet)
+        // Une boîte ouverte depuis le volet prend sa place, puis le rend en se fermant.
+        m.basculerVolet()
+        try await m.toucherPastille(.duree)
+        #expect(m.dialogue == .duree(.prochaine))
+        #expect(m.feuilleOuverte)
+        m.fermerDialogue()
+        #expect(m.volet)
+        #expect(m.feuilleOuverte)
+        // La feuille baissée d'un geste : la boîte et le volet se ferment.
+        try await m.toucherPastille(.sujet)
+        m.fermerFeuille()
+        #expect(m.dialogue == nil)
+        #expect(!m.feuilleOuverte)
+        // « Commencer » referme le volet (start_session : montrerVolet(false)), la musique aussi.
+        m.basculerVolet()
+        m.commencer()
+        #expect(!m.volet)
+        m.basculerVolet()
+        try await m.toucherPastille(.musique)
+        #expect(!m.volet)
+        #expect(m.routes == [.seance(demarrer: true), .musique])
+        m.basculerVolet()
+        m.fermerVolet()
+        #expect(!m.volet)
+    }
+
     @Test func pastillesParDefaut() throws {
         let m = try banc().modele
         let genres = m.pastilles.map { $0.genre }
