@@ -1,0 +1,116 @@
+== he-boutons-accueil
+PETIT 363x8dp Button today_offline «התבודדתי בלי הטלפון»
+== he-boutons-accueil-bas
+PETIT 363x8dp Button today_offline «התבודדתי בלי הטלפון»
+== he-boutons-accueil-volet
+PETIT 363x8dp Button today_offline «התבודדתי בלי הטלפון»
+MUET Switch music_switch_main (147, 1410, 284, 1536)
+== he-boutons-livres
+== he-boutons-livres-bas
+== he-boutons-chemin
+== he-boutons-chemin-bas
+== he-boutons-reglages
+PETIT 88x32dp Button ouverture_button «מסך פתיחה: היום»
+== he-boutons-reglages-bas
+== he-boutons-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-siddour-lecture-bas
+PETIT 26x48dp TextView  «תפילת שחרית»
+== he-boutons-version-pile
+== he-boutons-version-pile-2
+PETIT 12x49dp TextView  «להתחיל · 15 דק׳»
+PETIT 12x49dp TextView  «משך, נושא, מוזיקה»
+== he-boutons-version-pile-3
+PETIT 12x49dp TextView  «עוד חיזוק»
+== he-boutons-version-pile-4
+PETIT 12x49dp TextView  «כל הזמנים»
+== he-boutons-version-bento
+== he-boutons-version-instant
+PETIT 146x44dp TextView  «להתחיל · 15 דק׳»
+== he-boutons-version-serenite
+PETIT 69x44dp TextView  «עריכה»
+PETIT 39x40dp TextView  «לקרוא»
+PETIT 29x26dp TextView  «הכול»
+== ar-gestes-accueil
+PETIT 363x32dp Button today_offline «عملتها من غير التليفون»
+== ar-gestes-accueil-bas
+PETIT 228x10dp FrameLayout hero_plate «انقر باش تشوف أرقامك»
+== ar-gestes-accueil-volet
+PETIT 363x32dp Button today_offline «عملتها من غير التليفون»
+MUET Switch music_switch_main (147, 1473, 284, 1599)
+== ar-gestes-livres
+== ar-gestes-livres-bas
+== ar-gestes-chemin
+== ar-gestes-chemin-bas
+== ar-gestes-reglages
+== ar-gestes-reglages-bas
+PETIT 88x18dp Button permission_grant «اسمح»
+== ar-gestes-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x22dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+== ar-gestes-version-pile
+== ar-gestes-version-pile-2
+PETIT 12x49dp TextView  «ابدا · 15 دق»
+PETIT 12x49dp TextView  «المدّة، الموضوع، الموسيقى»
+== ar-gestes-version-pile-3
+PETIT 12x49dp TextView  «شوف الترجمة»
+PETIT 12x49dp TextView  «حيزوق أكثر»
+== ar-gestes-version-pile-4
+PETIT 12x49dp TextView  «الزمانيم الكل»
+== ar-gestes-version-bento
+PETIT 185x21dp FrameLayout  «سيدور»
+PETIT 185x21dp FrameLayout  «تهيليم»
+== ar-gestes-version-instant
+PETIT 104x44dp TextView  «ابدا · 15 دق»
+PETIT 379x7dp LinearLayout  «»
+MUET LinearLayout  (42, 2319, 1038, 2337)
+== ar-gestes-version-serenite
+PETIT 51x44dp TextView  «بدّل»
+PETIT 19x40dp TextView  «إقرا»
+== fr-couche-accueil
+PETIT 168x7dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 434x5dp Button start_prepare «Sans durée ou autre façon de c»
+== fr-couche-accueil-volet
+PETIT 168x7dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 434x5dp Button start_prepare «Sans durée ou autre façon de c»
+PETIT 52x46dp Switch music_switch_main «»
+MUET Switch music_switch_main (1864, 492, 2001, 612)
+== fr-couche-livres
+PETIT 149x46dp LinearLayout siddur_button «סידור»
+PETIT 149x46dp LinearLayout tehilim_button «תהלים»
+PETIT 149x46dp LinearLayout tikkun_button «תיקון הכללי»
+PETIT 149x46dp LinearLayout tefilot_button «תפילות»
+== fr-couche-chemin
+== fr-couche-reglages
+PETIT 111x2dp Button version_button «Version de l’app : Classique»
+== fr-couche-siddour-lecture
+PETIT 39x48dp TextView  «הודו»
+PETIT 39x48dp TextView  «וידוי»
+PETIT 2x48dp TextView  «קריאת התורה»
+PETIT 866x20dp TextView  «פתיחת אליהו»
+PETIT 56x36dp TextView  «Aa»
+== fr-couche-version-pile
+PETIT 746x23dp TextView  «Commencer · 15 min»
+PETIT 12x32dp TextView  «Voir la traduction»
+== fr-couche-version-pile-2
+PETIT 746x35dp TextView  «Voir la traduction»
+== fr-couche-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x33dp TextView  «Tout le journal»
+== fr-couche-version-pile-4
+PETIT 746x35dp TextView  «Tout le journal»
+== fr-couche-version-bento
+== fr-couche-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 834x45dp LinearLayout  «Prochain : Fin de la Téfila (M»
+== fr-couche-version-serenite
+PETIT 84x44dp TextView  «Modifier»
