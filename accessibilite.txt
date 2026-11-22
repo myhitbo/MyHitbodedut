@@ -1,0 +1,54 @@
+== exam-01-bienvenue
+== exam-03-choix-version
+== exam-04-today
+PETIT 363x32dp Button today_offline «Done without the phone»
+== exam-05-settings
+PETIT 88x41dp Button ouverture_button «Opening screen: Today»
+== exam-06-carte-etat
+PETIT 52x18dp Switch chabbat_alerte_switch «“Shabbat in 3 hours” alert»
+== exam-09-retour-reglages
+PETIT 52x18dp Switch chabbat_alerte_switch «“Shabbat in 3 hours” alert»
+== exam-10-apercu
+== exam-11-apercu-bas
+== exam-13-carte-autorisations
+== exam-16-autorisations-accordees
+== exam-17-carte-mode
+== exam-18-liste-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== exam-19-application-choisie
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== exam-20-plage
+PETIT 344x26dp Button preview_gate «Preview the “I am with Hashem”»
+PETIT 52x32dp Switch hide_countdown_switch «Hide the countdown»
+== exam-21-etat-arme
+PETIT 185x32dp Button levana_usage_button «Birkat HaLevana: custom: By nu»
+== exam-22-barriere-reelle
+== exam-23-barriere-reelle-bas
+== exam-25-rythme
+PETIT 101x45dp Button window_start «“I am with Hashem” hours: 6:00»
+PETIT 110x45dp Button window_end «“I am with Hashem” hours: 11:0»
+PETIT 52x46dp Switch guided_switch «Guided hitbodedut»
+== exam-26-mode-coupe
+PETIT 104x8dp Button region_button «Region: Diaspora»
