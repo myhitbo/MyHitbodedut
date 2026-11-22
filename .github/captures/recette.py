@@ -11,11 +11,16 @@ l'emulateur (13 a 16), et regarde ce qu'aucun autre parcours ne regarde :
     reglages, apercu de l'ecran « Je suis avec Hachem », puis les deux acces accordes par les
     ecrans d'Android, une application choisie, l'ecran devant elle ;
   - video : les deux sequences demandees pour la declaration des services de premier plan
-    (play/CONSOLE.md § 3.9), filmees sur l'emulateur ;
+    (play/CONSOLE.md § 3.9), filmees sur l'emulateur en six films courts (screenrecord s'arrete a
+    trois minutes), avec des reperes dates que le montage (tools/montage_video_play.py) lit ;
   - ecrans : chaque ecran, le haut puis le bas apres defilement, et le clavier la ou l'on
     ecrit, en francais (navigation par gestes), en hebreu (trois boutons), en arabe, en espagnol ;
   - versions : l'accueil de chacune des cinq versions de l'application ;
-  - nuit, seance, barriere, presentation, tablette, couche (le telephone couche), redemarrage.
+  - nuit, seance, barriere, presentation, tablette, couche (le telephone couche), redemarrage ;
+  - lanceur (a nommer en premier) : rallume le lanceur de l'emulateur, qui dessine la barre de
+    navigation sous Android 15 et 16 ;
+  - pile, bento, instant, serenite : l'accueil d'une seule version, isole ; rendu-gl (avant) le
+    fait dessiner par Skia sur OpenGL au lieu de Vulkan.
 
 Chaque capture est controlee sur l'arbre de l'ecran :
 
@@ -30,7 +35,8 @@ Les fautes vont dans fautes.txt, a cote des captures. Comme captures.py, rien ne
 le job : on lit le bilan.
 
 Variables : RECETTE_PASSES (les noms ci-dessus, separes par des virgules ; toutes par defaut) ;
-RECETTE_ECRANS (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut).
+RECETTE_ECRANS (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut) ;
+RECETTE_SAUF (les versions de l'application a ne pas ouvrir).
 """
 import datetime
 import json
@@ -171,6 +177,15 @@ def navigation(mode):
 
 def devant():
     return c.sh("dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2").strip()
+
+
+def emulateur_repond():
+    """L'emulateur est-il encore la ? Il lui arrive de s'arreter en plein parcours (22/11)."""
+    try:
+        r = subprocess.run(["adb", "get-state"], capture_output=True, timeout=20)
+        return r.stdout.decode("utf-8", "replace").strip() == "device"
+    except subprocess.TimeoutExpired:
+        return False
 
 
 def textes(racine=None):
@@ -362,10 +377,20 @@ def neuve():
           c.sh(f"appops get {c.PKG} GET_USAGE_STATS").strip())
 
 
-def chercher(rid=None, text=None, pas=16, lent=False, place=None):
-    """Un element de l'ecran qui defile, ou qu'il soit : on descend, puis on remonte. Rend ses bornes.
+def chercher(rid=None, text=None, pas=16, lent=False, place=None, dabord="bas"):
+    """Un element de l'ecran qui defile, ou qu'il soit : on descend, puis on remonte (ou l'inverse,
+    dabord="haut"). Rend ses bornes.
     place : la part de la hauteur ou l'amener (0.25 : au quart haut), pour voir avec lui ce qui
-    l'entoure ; sans elle, il reste ou il est des qu'il se voit hors des barres."""
+    l'entoure ; sans elle, il reste ou il est des qu'il se voit hors des barres.
+    Pendant un film, la recherche est encadree de deux reperes : le montage l'accelere."""
+    repere("cherche")
+    try:
+        return _chercher(rid, text, pas, lent, place, dabord)
+    finally:
+        repere("trouve")
+
+
+def _chercher(rid, text, pas, lent, place, dabord):
     duree = 500 if lent else 300
     x = c.W // 2
 
@@ -379,8 +404,8 @@ def chercher(rid=None, text=None, pas=16, lent=False, place=None):
         c.pause(1.0)
         return c.trouver(rid=rid, text=text) or b
 
-    for sens in (1, -1):
-        for _ in range(pas if sens == 1 else 2 * pas):
+    for tour, sens in enumerate((1, -1) if dabord == "bas" else (-1, 1)):
+        for _ in range(pas if tour == 0 else 2 * pas):
             b = c.trouver(rid=rid, text=text)
             if b is not None:
                 if place is not None:
@@ -613,11 +638,21 @@ def preparer_film():
     neuve()
     mardi_matin()
     c.sh(f"pm grant {c.PKG} android.permission.POST_NOTIFICATIONS")
-    c.regler({"onboarded_version": ("int", 2), "langue_app": ("string", "en"), "version_app": ("string", "classique"),
-              "lieu_nom": ("string", "New York"), "lieu_latitude": ("string", "40.71427"),
-              "lieu_longitude": ("string", "-74.00597"), "lieu_altitude": ("string", "0.0"),
-              "lieu_fuseau": ("string", "America/New_York"), "lieu_ville": ("long", 5128581),
-              "lieu_t": ("long", 1794800000000), "in_israel": ("boolean", "false")})
+    c.regler({"onboarded_version": ("int", 2), "langue_app": ("string", "en"), "version_app": ("string", "classique")})
+    # Paris : a 9 h 30 a l'horloge de l'emulateur (temps universel), il y fait jour, et le Jour montre
+    # son ciel de matin. New York (premier tournage) y etait encore dans la nuit.
+    lieu("Paris", "48.85341", "2.3488", "Europe/Paris", 2988507)
+    # Les textes que le film montrera a l'ouverture de la seance et sur l'ecran de garde : le sac
+    # de tirage (ChizukBag) est rempli d'avance d'enseignements de Rabbi Na'hman sur la
+    # hitbodedout, publiables, dont aucun ne porte le Nom en toutes lettres — on ne le met pas
+    # dans une video publique, meme dans un verset (web/test/fiche-play.test.mjs pour la fiche).
+    # Quatre moments tirent un texte a l'ecran pendant le film : l'ouverture de la seance, l'ecran de
+    # garde, la carte « Le lieu et l'heure » des reglages (a chaque ouverture), et la relance de
+    # l'accueil si la serie etait rompue.
+    c.regler({"chizuk_bag_ouverture": ("string", "lm2-25-fondement\nlm2-25-langue\nlm2-25-tout-dire\nlm2-97-chemin-neuf"),
+              "chizuk_bag_porte": ("string", "lm2-25-pour-tous\nlm2-96-une-heure\nlm2-99-ami\nlm2-100-tsadikim"),
+              "chizuk_bag_lieu": ("string", "lm2-11-champs\nlm1-52-nuit\nsh-275-sous-le-talit\nshr-10-grenier\nsh-275-derriere-un-livre\nshr-10-langue"),
+              "chizuk_bag_relance": ("string", "lm2-78-desespoir\nsh-68-perseverer\nsh-234-eau-pierre")})
     journal_de_demonstration()
     c.langue("en")
     c.sh("settings put system show_touches 1")
@@ -664,9 +699,8 @@ def video_seance():
     repere("retour au volet")
     c.pause(1.5)
     c.toucher(rid="start_session", attente=3.0)
-    autoriser_notifications()
     repere("seance lancee")
-    c.pause(7.0)
+    c.pause(9.0)
     services = services_seance()
     c.log("  services :", services.strip().replace("\n", " | ")[:700])
     if "SessionService" not in services:
@@ -713,9 +747,10 @@ def video_seance():
 
 
 def video_barriere():
-    """Sequence 2, en trois films : chaque acces accorde apres sa divulgation ; puis le mode allume,
-    une application choisie, l'ecran devant elle, « Done without the phone », et l'interrupteur
-    qui coupe le mode. Jamais l'ecran d'accueil du telephone : le lanceur de l'emulateur est coupe."""
+    """Sequence 2, en quatre films courts, dans l'ordre de la note remise a Google : chaque acces
+    accorde apres sa divulgation ; le mode allume et une application choisie ; l'ecran devant elle
+    et « Done without the phone » ; l'interrupteur qui coupe le mode. Jamais l'ecran d'accueil du
+    telephone : le lanceur de l'emulateur est coupe."""
     navigation("gestes")
     preparer_film()
     c.lancer(attente=5)
@@ -727,7 +762,12 @@ def video_barriere():
             repere("accueil")
             c.toucher(desc="Settings", attente=3.0)
             repere("reglages")
-        chercher(text=titre, lent=True, place=0.6)
+            c.pause(1.5)
+            # La carte des autorisations est tout en bas : d'un elan, puis on remonte jusqu'a la ligne.
+            repere("cherche")
+            au_bout(True, 6)
+            repere("trouve")
+        chercher(text=titre, lent=True, place=0.6, dabord="haut")
         repere("carte des autorisations : " + nom)
         c.pause(2.0)
         b = bouton_de_la_ligne(titre)
@@ -738,44 +778,64 @@ def video_barriere():
         toucher_bornes(b, attente=3.0)   # la divulgation dans l'application
         repere("divulgation : " + nom)
         photo(f"video-barriere-{i}-divulgation")
-        c.pause(4.0)                      # le temps de la lire
+        c.pause(5.0)                      # le temps de la lire
         c.toucher(text="Continue", attente=3.0)
         repere("ecran d'Android : " + nom)
         if not accorder_dans_android():
             faute(f"VIDEO barriere : l'ecran d'Android n'offre pas d'interrupteur pour [{titre}]")
         repere("retour dans l'application : " + nom)
-        c.pause(2.5)
+        c.pause(3.0)
         photo(f"video-barriere-{i}-accorde")
         film_fin()
     if c.PKG not in devant():
         c.lancer(attente=4)
         c.toucher(desc="Settings", attente=3.0)
+    # Troisieme film : le mode allume, une application choisie, l'etat.
     film_debut("video-barriere-3")
     c.pause(1.5)
-    chercher(rid="enable_switch", lent=True, place=0.25)
+    chercher(rid="enable_switch", lent=True, place=0.25, dabord="haut")
     repere("carte du mode")
-    c.pause(1.5)
+    c.pause(2.0)
     c.toucher(rid="enable_switch", attente=2.5)
-    autoriser_notifications()
     repere("mode allume")
+    c.pause(1.5)
     c.toucher(text="Choose apps", attente=4.0)
     repere("liste des applications")
     paquet = None
     for libelle, p in (("Chrome", "com.android.chrome"), ("YouTube", "com.google.android.youtube"),
                        ("Messages", "com.google.android.apps.messaging"), ("Photos", "com.google.android.apps.photos")):
         if c.trouver(text=libelle, defilements=6) is not None:
-            c.toucher(text=libelle, attente=2.0)
+            c.toucher(text=libelle, attente=2.5)
             paquet = p
             repere("application choisie : " + libelle)
             break
         au_bout(False, 3)
+    c.pause(1.5)
     c.retour()
     c.pause(2.0)
-    chercher(text="Where “I am with Hashem” stands", lent=True, place=0.3)
+    chercher(text="Where “I am with Hashem” stands", lent=True, place=0.3, dabord="haut")
     repere("etat : le mode agit")
     photo("video-barriere-3-arme")
-    c.pause(3.0)
+    c.pause(4.0)
     c.log("  services :", services_app()[:300])
+    if "GateService" not in services_app():
+        faute("VIDEO barriere : GateService ne tourne pas une fois tout regle")
+    # La notification permanente du service, que la declaration annonce. Ici et pas plus tot :
+    # Android n'affiche la notification d'un service de premier plan qu'une dizaine de secondes
+    # apres son depart (tournage du 22/11 : volet vide quatre secondes apres l'interrupteur).
+    c.sh("cmd statusbar expand-notifications")
+    repere("notification du mode")
+    c.pause(5.0)
+    photo("video-barriere-3-notification")
+    vues = " | ".join(textes())
+    if "MyHitbodedut" not in vues and "I am with Hashem" not in vues:
+        faute("VIDEO barriere : la notification du service n'est pas dans le volet (" + vues[:200] + ")")
+    c.sh("cmd statusbar collapse")
+    c.pause(2.5)
+    film_fin()
+    # Quatrieme film : l'application choisie, l'ecran devant elle, puis le mode coupe.
+    film_debut("video-barriere-4")
+    c.pause(2.0)
     if paquet:
         # « Open the app you picked » : lancee d'ici, sans passer par l'ecran d'accueil.
         c.sh(f"monkey -p {paquet} -c android.intent.category.LAUNCHER 1")
@@ -784,22 +844,34 @@ def video_barriere():
         if c.trouver(text="Did you do your hitbodedut?") is None:
             faute(f"VIDEO barriere : l'ecran ne se pose pas sur {paquet}")
         repere("ecran de garde")
-        photo("video-barriere-3-ecran")
-        c.pause(3.0)
+        photo("video-barriere-4-ecran")
+        c.pause(4.0)
         c.toucher(text="Done without the phone", defilements=2, attente=4.0)
         repere("fait sans le telephone")
-        photo("video-barriere-3-apres")
-        c.pause(2.0)
+        photo("video-barriere-4-apres")
+        c.pause(3.0)
     else:
         faute("VIDEO barriere : aucune application connue a choisir")
     c.lancer(attente=4)
     fermer_trophees()
+    repere("retour dans MyHitbodedut")
     c.toucher(desc="Settings", attente=3.0)
     chercher(rid="enable_switch", lent=True, place=0.3)
+    repere("carte du mode, pour couper")
+    c.pause(1.5)
     c.toucher(rid="enable_switch", attente=2.5)
     repere("mode coupe")
-    c.pause(2.5)
-    photo("video-barriere-3-coupe")
+    c.pause(3.0)
+    photo("video-barriere-4-coupe")
+    # Le service s'arrete avec l'interrupteur : sa notification n'est plus la. (Et screenrecord
+    # n'ecrit sa derniere image que si une autre la suit : sans cela, l'interrupteur coupe
+    # manquait au premier montage.)
+    c.sh("cmd statusbar expand-notifications")
+    repere("plus de notification")
+    c.pause(5.0)
+    photo("video-barriere-4-sans-notification")
+    c.sh("cmd statusbar collapse")
+    c.pause(3.0)
     film_fin()
     if "GateService" in services_app():
         faute("VIDEO barriere : GateService tourne encore apres l'interrupteur coupe")
@@ -915,11 +987,22 @@ def parler(etiquette):
     c.langue(etiquette)
 
 
+# RECETTE_SAUF (« sauf » de demande.json) : les versions de l'application a ne pas ouvrir. L'accueil
+# Instant arrete l'emulateur sous Android 15 et 16 (22/11) : sans lui, le reste du parcours se fait.
+SAUF = [v.strip() for v in os.environ.get("RECETTE_SAUF", "").split(",") if v.strip()]
+
+
 def versions(prefixe, bas=True):
     """L'accueil de chaque version de l'application (VersionApp)."""
     for version in ("pile", "bento", "instant", "serenite"):
+        if version in SAUF:
+            c.log(f"  version {version} : laissee de cote (RECETTE_SAUF)")
+            continue
         c.regler({"version_app": ("string", version)})
         c.lancer(attente=6)
+        if not emulateur_repond():
+            faute(f"{prefixe} : EMULATEUR il ne repond plus apres l'ouverture de l'accueil {version}")
+            return
         fermer_trophees()
         prise(f"{prefixe}-version-{version}")
         if version == "pile":
@@ -1165,6 +1248,60 @@ def couche(prefixe):
     c.appliquer_taille(None, None, False)
 
 
+def version_seule(version):
+    """L'accueil d'une seule version, sur un emulateur qui n'a rien fait d'autre. Sous Android 15 et
+    16, l'emulateur lui-meme s'est arrete cinq fois sur cinq a l'ouverture de l'accueil Instant
+    (22/11, apres Pile et Bento) : cette passe l'isole, garde le journal du systeme jusqu'au
+    dernier instant, et dit par quel moteur l'ecran est dessine (Skia sur Vulkan ou sur OpenGL)."""
+    def rendu():
+        lignes = c.sh(f"dumpsys gfxinfo {c.PKG} | grep -iE 'pipeline' | head -2").split()
+        return " ".join(lignes)[:120]
+
+    navigation("gestes")
+    c.regler({"version_app": ("string", "classique")})
+    c.lancer(attente=6)
+    fermer_trophees()
+    c.log("  moteur demande :", c.sh("getprop debug.hwui.renderer").strip() or "(defaut)",
+          "| ro.hwui.use_vulkan :", c.sh("getprop ro.hwui.use_vulkan").strip() or "(vide)",
+          "| Classique :", rendu())
+    prise(f"seule-classique-avant-{version}")
+    # Le journal du systeme, en continu, cote hote : ses dernieres lignes restent si l'emulateur tombe.
+    brut = os.path.join(c.OUT, f"logcat-{version}.brut")
+    sortie = open(brut, "wb")
+    suivi = subprocess.Popen(["adb", "logcat", "-v", "threadtime", "-T", "1"], stdout=sortie, stderr=subprocess.DEVNULL)
+    c.regler({"version_app": ("string", version)})
+    debut = time.time()
+    c.sh(f"am start -W --activity-clear-top -n {c.PKG}/com.myhitbodedut.MainActivity", timeout=150)
+    c.pause(8.0)
+    vivant = c.sh("getprop sys.boot_completed", timeout=30).strip() == "1"
+    c.log(f"  {version} : ouvert en {time.time() - debut:.0f} s | emulateur :", "repond" if vivant else "NE REPOND PLUS",
+          "| moteur :", rendu() if vivant else "?")
+    if vivant:
+        fermer_trophees()
+        prise(f"seule-{version}")
+        au_bout(True, 4)
+        prise(f"seule-{version}-bas")
+        au_bout(False, 4)
+        c.pause(20.0)   # l'accueil reste ouvert : son ciel se redessine
+        vivant = c.sh("getprop sys.boot_completed", timeout=30).strip() == "1"
+        prise(f"seule-{version}-apres-20-s")
+    suivi.terminate()
+    sortie.close()
+    # Les trois mille dernieres lignes suffisent, et pesent peu.
+    try:
+        with open(brut, "rb") as f:
+            lignes = f.read().decode("utf-8", "replace").splitlines()
+        with open(os.path.join(c.OUT, f"logcat-{version}.txt"), "w", encoding="utf-8") as f:
+            f.write("\n".join(lignes[-3000:]) + "\n")
+        os.remove(brut)
+    except OSError:
+        pass
+    if not vivant:
+        faute(f"EMULATEUR : il ne repond plus apres l'ouverture de l'accueil {version}")
+    else:
+        c.regler({"version_app": ("string", "classique")})
+
+
 def lieu(nom, lat, lon, fuseau, ville, israel="false"):
     c.regler({"lieu_nom": ("string", nom), "lieu_latitude": ("string", lat), "lieu_longitude": ("string", lon),
               "lieu_altitude": ("string", "0.0"), "lieu_fuseau": ("string", fuseau), "lieu_ville": ("long", ville),
@@ -1178,6 +1315,19 @@ def main():
     passes = [p.strip() for p in os.environ.get("RECETTE_PASSES", "").split(",") if p.strip()] or toutes
     c.log("passes :", passes, "| Android", c.sh("getprop ro.build.version.release").strip(),
           "API", c.sh("getprop ro.build.version.sdk").strip())
+
+    # Sous Android 15 et 16, la barre de navigation est dessinee par le lanceur (sa barre des
+    # taches) : captures.sh le coupe, et l'emulateur n'a alors plus aucune barre en bas — ni
+    # languette, ni boutons (22/11). La passe « lanceur », a nommer en premier, le rallume, pour
+    # eprouver la marge du bas de chaque ecran sous l'affichage bord a bord impose.
+    if "lanceur" in passes:
+        c.sh("pm enable com.google.android.apps.nexuslauncher")
+        c.sh("input keyevent KEYCODE_HOME")
+        c.pause(30)
+        c.sh("input keyevent KEYCODE_HOME")
+        c.pause(8)
+        c.log("  lanceur rallume :", devant()[:200])
+        photo("lanceur")
 
     # D'abord ce qui part d'une application neuve.
     if "examinateur" in passes:
@@ -1263,6 +1413,12 @@ def main():
         navigation("gestes")
         couche("fr")
 
+    def p_rendu_gl():
+        # Skia sur OpenGL au lieu de Vulkan, pour les applications lancees ensuite.
+        c.sh("setprop debug.hwui.renderer skiagl")
+        c.arreter()
+        c.log("  moteur demande :", c.sh("getprop debug.hwui.renderer").strip())
+
     def p_ciel():
         # Le soir : les accueils au ciel dessine (Instant, Serenite). L'emulateur s'y est
         # arrete deux fois le 17/11 : en dernier, pour ne rien perdre d'autre.
@@ -1278,9 +1434,15 @@ def main():
 
     table = {"ecrans-fr": p_fr, "ecrans-he": p_he, "ecrans-ar": p_ar, "ecrans-es": p_es, "versions": p_versions,
              "nuit": p_nuit, "seance": p_seance, "barriere": p_barriere, "presentation": p_presentation,
-             "tablette": p_tablette, "couche": p_couche, "ciel-de-nuit": p_ciel, "redemarrage": p_redemarrage}
+             "tablette": p_tablette, "couche": p_couche, "ciel-de-nuit": p_ciel, "redemarrage": p_redemarrage,
+             "rendu-gl": p_rendu_gl}
+    for v in ("pile", "bento", "instant", "serenite"):
+        table[v] = (lambda v=v: version_seule(v))
     for nom in passes:
         if nom in table:
+            if not emulateur_repond():
+                faute(f"EMULATEUR : il ne repond plus avant la passe « {nom} » ; elle et les suivantes ne sont pas faites")
+                break
             c.etape(nom, table[nom])
     c.log("\n=== bilan de la recette ===")
     c.log("\n".join(FAUTES) if FAUTES else "aucune faute relevee par les controles automatiques")
