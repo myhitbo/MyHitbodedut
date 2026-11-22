@@ -1,0 +1,8 @@
+ar-gestes-version-pile : COLLE au bord TextView  «1 / 4» (872, 355, 1080, 408)
+ar-gestes-version-pile-2 : COLLE au bord TextView  «1 / 4» (872, 355, 1080, 408)
+ar-gestes-version-pile-3 : COLLE au bord TextView  «1 / 4» (872, 355, 1080, 408)
+ar-gestes-version-pile-4 : COLLE au bord TextView  «1 / 4» (872, 355, 1080, 408)
+fr-couche-siddour-lecture : COLLE au bord TextView  «Ce texte n’a pas encore de t» (128, 664, 2400, 728)
+fr-couche-siddour-lecture : COLLE au bord TextView  «Ajouts du ז׳ כסלו תשפ״ז (Dia» (128, 728, 2400, 792)
+fr-couche-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (128, 792, 2400, 964)
+fr-couche-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (128, 964, 2400, 1017)
