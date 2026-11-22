@@ -1,0 +1,94 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['ecrans-fr'] | Android 15 API 35
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== ecrans-fr ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" val
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  capture fr-gestes-accueil (379403 octets)
+  capture fr-gestes-accueil-bas (275579 octets)
+  toucher id='depart_regler' -> (938,2090)
+  capture fr-gestes-accueil-volet (292632 octets)
+  toucher id='depart_regler' -> (938,2090)
+  toucher id='nav_texts' -> (540,2295)
+  capture fr-gestes-livres (162116 octets)
+  capture fr-gestes-livres-bas (161959 octets)
+  toucher id='nav_journal' -> (900,2295)
+  capture fr-gestes-chemin (118805 octets)
+  capture fr-gestes-chemin-bas (118805 octets)
+  capture fr-gestes-reglages (229935 octets)
+  capture fr-gestes-reglages-bas (298785 octets)
+  capture fr-gestes-choix-version (202306 octets)
+  capture fr-gestes-choix-version-bas (202306 octets)
+  capture fr-gestes-seance (235852 octets)
+  capture fr-gestes-seance-bas (155467 octets)
+  capture fr-gestes-bravo (499555 octets)
+  capture fr-gestes-bravo-bas (499555 octets)
+  capture fr-gestes-journal (19986 octets)
+  capture fr-gestes-journal-bas (19986 octets)
+  capture fr-gestes-parcours (175409 octets)
+  capture fr-gestes-parcours-bas (175409 octets)
+  capture fr-gestes-hizouk (162101 octets)
+  capture fr-gestes-hizouk-bas (162101 octets)
+  capture fr-gestes-conseils (343528 octets)
+  capture fr-gestes-conseils-bas (325243 octets)
+  capture fr-gestes-rappels (162561 octets)
+  capture fr-gestes-rappels-bas (162561 octets)
+  capture fr-gestes-musique (278516 octets)
+  capture fr-gestes-musique-bas (343873 octets)
+  capture fr-gestes-siddour (289474 octets)
+  capture fr-gestes-siddour-bas (206041 octets)
+  capture fr-gestes-siddour-lecture (313594 octets)
+  capture fr-gestes-siddour-lecture-bas (395202 octets)
+  capture fr-gestes-tefilot (329877 octets)
+  capture fr-gestes-tefilot-bas (318072 octets)
+  capture fr-gestes-tehilim (172345 octets)
+  capture fr-gestes-tehilim-bas (125059 octets)
+  capture fr-gestes-tehilim-lecture (289121 octets)
+  capture fr-gestes-tehilim-lecture-bas (255973 octets)
+  capture fr-gestes-tikkun (331836 octets)
+  capture fr-gestes-tikkun-bas (323242 octets)
+  capture fr-gestes-bibliotheque (215972 octets)
+  capture fr-gestes-bibliotheque-bas (215948 octets)
+  capture fr-gestes-livres (372450 octets)
+  capture fr-gestes-livres-bas (326500 octets)
+  capture fr-gestes-source (379784 octets)
+  capture fr-gestes-source-bas (313989 octets)
+  capture fr-gestes-zmanim (274859 octets)
+  capture fr-gestes-zmanim-bas (221028 octets)
+  capture fr-gestes-vol (296309 octets)
+  capture fr-gestes-vol-clavier (319990 octets)
+  capture fr-gestes-vol-bas (281481 octets)
+  capture fr-gestes-boussole (291768 octets)
+  capture fr-gestes-boussole-bas (369443 octets)
+  capture fr-gestes-calendrier (238708 octets)
+  capture fr-gestes-calendrier-bas (275001 octets)
+  capture fr-gestes-halakha (276600 octets)
+  capture fr-gestes-halakha-bas (294176 octets)
+  capture fr-gestes-hilloulot (195877 octets)
+  capture fr-gestes-hilloulot-clavier (219573 octets)
+  capture fr-gestes-hilloulot-bas (178676 octets)
+  capture fr-gestes-recherche (136499 octets)
+  capture fr-gestes-recherche-clavier (136499 octets)
+  capture fr-gestes-recherche-bas (57971 octets)
+  capture fr-gestes-paliers (184865 octets)
+  capture fr-gestes-paliers-bas (173293 octets)
+  capture fr-gestes-applications (206907 octets)
+  capture fr-gestes-applications-bas (195131 octets)
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 66
