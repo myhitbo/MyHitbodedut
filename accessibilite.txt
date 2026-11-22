@@ -1,0 +1,15 @@
+== gestes-barriere-etat
+PETIT 52x34dp Switch levana_switch «Afficher Birkat haLevana»
+PETIT 91x34dp Button snooze_length «Durée du report : 15 min»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+PETIT 363x43dp Button blocker_snooze «Plus tard (15 min)»
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 91x6dp Button snooze_length «Durée du report : 15 min»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+== boutons-barriere-reelle-bas
+== gestes-barriere-apres-redemarrage
