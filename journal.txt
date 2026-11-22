@@ -1,0 +1,1470 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['couche', 'tablette', 'ecrans-fr', 'ecrans-es'] | Android 16 API 36
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== couche ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  ecran : 2400x1080, densite Physical density: 420
+  capture fr-couche-accueil (227734 octets)
+  toucher id='depart_regler' -> (2006,770)
+  capture fr-couche-accueil-volet (98540 octets)
+  toucher id='depart_regler' -> (2006,770)
+  toucher id='nav_texts' -> (1264,975)
+  capture fr-couche-livres (81240 octets)
+  toucher id='nav_journal' -> (1706,975)
+  capture fr-couche-chemin (74808 octets)
+  capture fr-couche-reglages (131836 octets)
+  capture fr-couche-seance (159573 octets)
+  capture fr-couche-bravo (101784 octets)
+  capture fr-couche-zmanim (123236 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm2-11-champs&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">cm-437-commencer&#10;lm2-2
+  capture fr-couche-version-pile (141457 octets)
+  capture fr-couche-version-pile-2 (242952 octets)
+  capture fr-couche-version-pile-3 (201010 octets)
+  capture fr-couche-version-pile-4 (122681 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm2-11-champs&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">cm-437-commencer&#10;lm2-2
+  capture fr-couche-version-bento (160427 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm2-11-champs&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">cm-437-commencer&#10;lm2-2
+  capture fr-couche-version-instant (144356 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm2-11-champs&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">cm-437-commencer&#10;lm2-2
+  capture fr-couche-version-serenite (129866 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm2-11-champs&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">cm-437-commencer&#10;lm2-2
+  ecran : 1080x2400, densite Physical density: 420
+
+=== tablette ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  ecran : 1600x2560, densite Physical density: 420
+Override density: 320
+  capture fr-tablette-accueil (389821 octets)
+  toucher id='depart_regler' -> (1444,2324)
+  capture fr-tablette-accueil-volet (289663 octets)
+  toucher id='depart_regler' -> (1444,2324)
+  toucher id='nav_texts' -> (799,2480)
+  capture fr-tablette-livres (130526 octets)
+  toucher id='nav_journal' -> (1136,2480)
+  capture fr-tablette-chemin (103900 octets)
+  capture fr-tablette-reglages (295519 octets)
+  capture fr-tablette-seance (311100 octets)
+  capture fr-tablette-bravo (660007 octets)
+  capture fr-tablette-zmanim (300715 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-25-fondement&#10;tehilim-55-23&#10;tehil
+  FAUTE : fr-tablette-version-pile : COLLE au bord TextView  «1 / 4» (0, 309, 156, 350)
+  capture fr-tablette-version-pile (673010 octets)
+  FAUTE : fr-tablette-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 309, 161, 350)
+  capture fr-tablette-version-pile-2 (296480 octets)
+  FAUTE : fr-tablette-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 309, 161, 350)
+  capture fr-tablette-version-pile-3 (275547 octets)
+  FAUTE : fr-tablette-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 309, 161, 350)
+  capture fr-tablette-version-pile-4 (204228 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-25-fondement&#10;tehilim-55-23&#10;tehil
+  capture fr-tablette-version-bento (221639 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;tehilim-121-1-2&#10;shr-10-langue&#10;eikha-2-19&#10;lm1-52-nuit</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-25-fondement&#10;tehilim-55-23&#10;tehil
+  adb shell rm -f /sdcard/ui.xml -> 1 error: closed
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device offline
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-version-instant (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-version-serenite (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell settings put system accelerometer_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size 1600x2560 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm density 320 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size -> 1 adb: device 'emulator-5554' not found
+  adb shell wm density -> 1 adb: device 'emulator-5554' not found
+  ecran : 2400x1080, densite 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-accueil (0 octets)
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='depart_regler'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='depart_regler') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_texts'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_texts') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_journal'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_journal') ----
+(aucun arbre)
+---- fin ----
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SettingsActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SettingsActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-reglages (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SessionActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SessionActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-seance (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.CelebrationActivity --ei minutes 20 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  CelebrationActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-bravo (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.ZmanimActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  ZmanimActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-zmanim (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-version-pile (0 octets)
+  adb shell input swipe 2112 486 192 486 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-version-pile-2 (0 octets)
+  adb shell input swipe 2112 486 192 486 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-version-pile-3 (0 octets)
+  adb shell input swipe 2112 486 192 486 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-version-pile-4 (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-version-bento (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-version-instant (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-tablette-couchee-version-serenite (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell settings put system accelerometer_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size 1812x2176 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm density 420 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size -> 1 adb: device 'emulator-5554' not found
+  adb shell wm density -> 1 adb: device 'emulator-5554' not found
+  ecran : 1080x2400, densite 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-accueil (0 octets)
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='depart_regler'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='depart_regler') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_texts'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_texts') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_journal'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_journal') ----
+(aucun arbre)
+---- fin ----
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SettingsActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SettingsActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-reglages (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SessionActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SessionActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-seance (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.CelebrationActivity --ei minutes 20 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  CelebrationActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-bravo (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.ZmanimActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  ZmanimActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-zmanim (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-version-pile (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-version-pile-2 (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-version-pile-3 (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-version-pile-4 (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-version-bento (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-version-instant (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-pliant-version-serenite (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell settings put system accelerometer_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size reset -> 1 adb: device 'emulator-5554' not found
+  adb shell wm density reset -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 1 -> 1 adb: device 'emulator-5554' not found
+  adb shell settings put system user_rotation 0 -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size -> 1 adb: device 'emulator-5554' not found
+  adb shell wm size -> 1 adb: device 'emulator-5554' not found
+  adb shell wm density -> 1 adb: device 'emulator-5554' not found
+  ecran : 1080x2400, densite 
+
+=== ecrans-fr ===
+  adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys window displays -> 1 adb: device 'emulator-5554' not found
+  navigation : gestes | cadres : (0, 2400, None)
+  adb shell dumpsys window displays | grep -E 'type=navigationBars|ITYPE_NAVIGATION_BAR' | head -4 -> 1 adb: device 'emulator-5554' not found
+  barres du bas : (aucune)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale set-app-locales com.myhitbodedut --locales fr -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale get-app-locales com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  langue : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-accueil (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-accueil-bas (0 octets)
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='depart_regler'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='depart_regler') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_texts'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_texts') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_journal'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_journal') ----
+(aucun arbre)
+---- fin ----
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SettingsActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SettingsActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-reglages (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-reglages-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SessionActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SessionActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-seance (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-seance-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.CelebrationActivity --ei minutes 20 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  CelebrationActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-bravo (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-bravo-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.ZmanimActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  ZmanimActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-zmanim (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-zmanim-bas (0 octets)
+
+=== ecrans-es ===
+  adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys window displays -> 1 adb: device 'emulator-5554' not found
+  navigation : gestes | cadres : (0, 2400, None)
+  adb shell dumpsys window displays | grep -E 'type=navigationBars|ITYPE_NAVIGATION_BAR' | head -4 -> 1 adb: device 'emulator-5554' not found
+  barres du bas : (aucune)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale set-app-locales com.myhitbodedut --locales es -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale get-app-locales com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  langue : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-accueil (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-accueil-bas (0 octets)
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 528 540 1920 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='depart_regler'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='depart_regler') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_texts'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_texts') ----
+(aucun arbre)
+---- fin ----
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  INTROUVABLE : id='nav_journal'
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+---- ecran (recherche de id='nav_journal') ----
+(aucun arbre)
+---- fin ----
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SettingsActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SettingsActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-reglages (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-reglages-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.SessionActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  SessionActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-seance (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-seance-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.CelebrationActivity --ei minutes 20 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  CelebrationActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-bravo (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-bravo-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell am start -W -n com.myhitbodedut/com.myhitbodedut.ZmanimActivity  -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2 -> 1 adb: device 'emulator-5554' not found
+  ZmanimActivity : pas au premier plan ()
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-zmanim (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-zmanim-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-version-pile (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-version-pile-2 (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-version-pile-3 (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-version-pile-4 (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-version-bento (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-version-instant (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture es-gestes-version-serenite (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale set-app-locales com.myhitbodedut --locales fr -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale get-app-locales com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  langue : 
+
+=== bilan de la recette ===
+fr-tablette-version-pile : COLLE au bord TextView  «1 / 4» (0, 309, 156, 350)
+fr-tablette-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 309, 161, 350)
+fr-tablette-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 309, 161, 350)
+fr-tablette-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 309, 161, 350)
+
+captures : 84
