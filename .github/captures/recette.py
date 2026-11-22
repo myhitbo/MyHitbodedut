@@ -139,6 +139,9 @@ def prise(nom, attente=1.0, verifier=True, **kw):
     except Exception as e:  # le controle ne doit jamais empecher la capture
         c.log("  controle:", repr(e))
     png = c.adb("exec-out", "screencap", "-p", binary=True)
+    if len(png) < 1000:   # l'emulateur ne repond plus : pas de fichier vide parmi les captures
+        c.log(f"  capture {nom} : rien (l'emulateur ne rend pas d'image)")
+        return racine
     with open(os.path.join(c.OUT, nom + ".png"), "wb") as f:
         f.write(png)
     c.log(f"  capture {nom} ({len(png)} octets)")
@@ -148,6 +151,9 @@ def prise(nom, attente=1.0, verifier=True, **kw):
 def photo(nom):
     """Une capture seule, sans lire l'arbre : pendant un film, ou sur un ecran du systeme."""
     png = c.adb("exec-out", "screencap", "-p", binary=True)
+    if len(png) < 1000:
+        c.log(f"  photo {nom} : rien (l'emulateur ne rend pas d'image)")
+        return
     with open(os.path.join(c.OUT, nom + ".png"), "wb") as f:
         f.write(png)
     c.log(f"  photo {nom} ({len(png)} octets)")
@@ -220,7 +226,7 @@ def journal_de_demonstration():
     c.ecrire_prefs(xml, c.JOURNAL)
 
 
-def fermer_trophees(libelles=("Continue", "Continuer", "להמשיך", "Continuar", "متابعة")):
+def fermer_trophees(libelles=("Continue", "Continuer", "להמשיך", "Continuar", "كمّل")):
     """Le journal de demonstration fait gagner des trophees : leurs fenetres s'ouvrent sur l'accueil."""
     for _ in range(10):
         racine = c.dump()
