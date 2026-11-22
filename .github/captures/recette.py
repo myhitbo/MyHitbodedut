@@ -16,7 +16,9 @@ l'emulateur (13 a 16), et regarde ce qu'aucun autre parcours ne regarde :
   - ecrans : chaque ecran, le haut puis le bas apres defilement, et le clavier la ou l'on
     ecrit, en francais (navigation par gestes), en hebreu (trois boutons), en arabe, en espagnol ;
   - versions : l'accueil de chacune des cinq versions de l'application ;
-  - nuit, seance, barriere, presentation, tablette, couche (le telephone couche), redemarrage.
+  - nuit, seance, barriere, presentation, tablette, couche (le telephone couche), redemarrage ;
+  - lanceur (a nommer en premier) : rallume le lanceur de l'emulateur, qui dessine la barre de
+    navigation sous Android 15 et 16.
 
 Chaque capture est controlee sur l'arbre de l'ecran :
 
@@ -1236,6 +1238,19 @@ def main():
     passes = [p.strip() for p in os.environ.get("RECETTE_PASSES", "").split(",") if p.strip()] or toutes
     c.log("passes :", passes, "| Android", c.sh("getprop ro.build.version.release").strip(),
           "API", c.sh("getprop ro.build.version.sdk").strip())
+
+    # Sous Android 15 et 16, la barre de navigation est dessinee par le lanceur (sa barre des
+    # taches) : captures.sh le coupe, et l'emulateur n'a alors plus aucune barre en bas — ni
+    # languette, ni boutons (22/11). La passe « lanceur », a nommer en premier, le rallume, pour
+    # eprouver la marge du bas de chaque ecran sous l'affichage bord a bord impose.
+    if "lanceur" in passes:
+        c.sh("pm enable com.google.android.apps.nexuslauncher")
+        c.sh("input keyevent KEYCODE_HOME")
+        c.pause(30)
+        c.sh("input keyevent KEYCODE_HOME")
+        c.pause(8)
+        c.log("  lanceur rallume :", devant()[:200])
+        photo("lanceur")
 
     # D'abord ce qui part d'une application neuve.
     if "examinateur" in passes:
