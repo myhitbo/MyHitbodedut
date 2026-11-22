@@ -64,7 +64,6 @@ class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : D
         }, loin)
         brume.shader = RadialGradient(w / 2, h * 0.76f, w * 0.7f,
             intArrayOf(if (nuit) 0x80F7CDA8.toInt() else 0x99FFFFFF.toInt(), 0x00FFFFFF), null, Shader.TileMode.CLAMP)
-        canvas.drawOval(-w * 0.2f, h * 0.7f, w * 1.2f, h * 0.84f, brume)
         canvas.drawPath(Path().apply {
             moveTo(0f, h * 0.8f)
             cubicTo(w * 0.3f, h * 0.72f, w * 0.55f, h * 0.78f, w * 0.75f, h * 0.74f)
