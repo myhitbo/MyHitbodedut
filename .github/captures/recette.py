@@ -80,6 +80,19 @@ def controle(racine, nom, en_haut=True, en_bas=True):
     if racine is None:
         return
     haut, bas, _ = cadres()
+    parents = {enfant: parent for parent in racine.iter("node") for enfant in parent}
+
+    def defile_en_large(n):
+        """Dans une rangee qui defile de cote (onglets du siddour) ou un carrousel (les cartes de la
+        version Pile, dont la suivante depasse expres) : toucher le bord y est voulu."""
+        p = parents.get(n)
+        while p is not None:
+            classe = p.get("class", "")
+            if "HorizontalScrollView" in classe or "ViewPager" in classe:
+                return True
+            p = parents.get(p)
+        return False
+
     for n in racine.iter("node"):
         if n.get("package") != c.PKG:
             continue
@@ -99,7 +112,10 @@ def controle(racine, nom, en_haut=True, en_bas=True):
             faute(f"{nom} : SOUS-BARRE d'etat (barre jusqu'a {haut}) {quoi}")
         if en_bas and bas < c.H and b[3] > bas + 2 and b[1] < c.H:
             faute(f"{nom} : SOUS-BARRE de navigation (barre a partir de {bas}) {quoi}")
-        if texte and feuille and "TextView" in n.get("class", "") and (b[0] <= 0 or b[2] >= c.W) and (b[2] - b[0]) < c.W:
+        # Un bouton porte sa marge interieure (les fleches « ‹ › » de la halakha, larges de 48 dp) :
+        # seul un texte nu colle au bord se lit mal.
+        if (texte and feuille and "TextView" in n.get("class", "") and not touchable
+                and (b[0] <= 0 or b[2] >= c.W) and (b[2] - b[0]) < c.W and not defile_en_large(n)):
             faute(f"{nom} : COLLE au bord {quoi}")
 
 
@@ -316,9 +332,53 @@ def neuve():
     """L'application comme a sa premiere ouverture : donnees effacees, acces retires, langue du telephone."""
     c.sh(f"pm clear {c.PKG}")
     c.sh(f"cmd locale set-app-locales {c.PKG} --locales ''")
+    # « adb install -g » accorde aussi les autorisations dites de developpement : l'affichage
+    # par-dessus et l'acces a l'utilisation etaient donnes d'avance (premier passage du 22/11),
+    # ce qu'aucun telephone ne fait a l'installation depuis Play. On les retire.
+    for autorisation in ("SYSTEM_ALERT_WINDOW", "PACKAGE_USAGE_STATS"):
+        c.sh(f"pm revoke {c.PKG} android.permission.{autorisation}")
     for op in ("SYSTEM_ALERT_WINDOW", "GET_USAGE_STATS"):
         c.sh(f"appops set {c.PKG} {op} default")
     c.pause(1.5)
+    etat = c.sh(f"dumpsys package {c.PKG} | grep -E 'SYSTEM_ALERT_WINDOW|PACKAGE_USAGE_STATS|POST_NOTIFICATIONS' | head -8")
+    c.log("  application neuve :", " | ".join(l.strip() for l in etat.splitlines())[:500],
+          "| appops :", c.sh(f"appops get {c.PKG} SYSTEM_ALERT_WINDOW").strip(), "/",
+          c.sh(f"appops get {c.PKG} GET_USAGE_STATS").strip())
+
+
+def chercher(rid=None, text=None, pas=16, lent=False):
+    """Un element de l'ecran qui defile, ou qu'il soit : on descend, puis on remonte. Rend ses bornes."""
+    duree = 500 if lent else 300
+    x = c.W // 2
+    for sens in (1, -1):
+        for _ in range(pas if sens == 1 else 2 * pas):
+            b = c.trouver(rid=rid, text=text)
+            if b is not None and int(c.H * 0.12) < (b[1] + b[3]) // 2 < int(c.H * 0.84):
+                return b
+            if b is not None:
+                # A l'ecran, mais sous une barre : on l'amene vers le milieu.
+                vers = int(c.H * 0.45) - (b[1] + b[3]) // 2
+                vers = max(-int(c.H * 0.35), min(int(c.H * 0.35), vers))
+                c.sh(f"input swipe {x} {int(c.H * 0.5)} {x} {int(c.H * 0.5) + vers} {duree}")
+                c.pause(1.0)
+                return c.trouver(rid=rid, text=text) or b
+            if sens == 1:
+                c.sh(f"input swipe {x} {int(c.H * 0.70)} {x} {int(c.H * 0.34)} {duree}")
+            else:
+                c.sh(f"input swipe {x} {int(c.H * 0.34)} {x} {int(c.H * 0.70)} {duree}")
+            c.pause(0.9)
+    return None
+
+
+def autoriser_notifications(nom=None):
+    """La demande d'Android « Allow MyHitbodedut to send you notifications? » : on accepte."""
+    for libelle in ("Allow", "ALLOW", "Autoriser"):
+        if c.trouver(text=libelle) is not None:
+            if nom:
+                photo(nom)
+            c.toucher(text=libelle, attente=2.0)
+            return True
+    return False
 
 
 # --- Le chemin de l'examinateur --------------------------------------------------
@@ -340,52 +400,56 @@ def examinateur():
     mardi_matin()
     c.sh(f"am start -W -n {c.PKG}/com.myhitbodedut.MainActivity", timeout=60)
     c.pause(6.0)
-    # « On first launch a short welcome appears: tap [Skip]. »
+    # « On first launch a short welcome appears: tap [Skip]… »
     r = prise("exam-01-bienvenue")
     voir("1 (bienvenue)", "Skip", racine=r)
     c.toucher(text="Skip", attente=3.0)
-    # Une demande de notifications peut arriver ici : on la capture telle quelle, puis on l'accepte.
-    r = prise("exam-02-apres-bienvenue", verifier=False)
-    for libelle in ("Allow", "ALLOW"):
-        if c.trouver(text=libelle) is not None:
-            c.toucher(text=libelle, attente=2.0)
-            break
-    # « On the next screen, [Choose your version], pick [Classic]. »
+    autoriser_notifications("exam-02-notifications")
+    # « …then on the screen [Choose your version] tap [Classic]. »
     r = prise("exam-03-choix-version")
     voir("2 (choix de la version)", "Choose your version", "Classic", racine=r)
-    if not c.toucher(text="Classic", contains=True, attente=5.0):
-        c.toucher(desc="Classic", contains=True, attente=5.0)
+    if not c.toucher(text="Classic", attente=5.0):
+        c.toucher(text="Classic", contains=True, attente=5.0)
     fermer_trophees()
     r = prise("exam-04-today")
     voir("3 (accueil)", "Today", "Settings", racine=r)
-    # « On the [Today] screen, tap the gear icon at the top (Settings). »
+    # La roue des reglages : en haut, a droite en anglais.
+    b = c.trouver(desc="Settings")
+    if b is None or not (b[0] > c.W // 2 and b[3] < c.H // 4):
+        faute(f"EXAMINATEUR etape 3 : l'icone [Settings] n'est pas en haut a droite du Jour ({b})")
+    # « On the [Today] screen, tap the sliders icon at the top right ([Settings]). »
     c.toucher(desc="Settings", attente=2.5)
     r = prise("exam-05-settings")
+    voir("3 (reglages)", "Settings", racine=r)
     # « Card [Where “I am with Hashem” stands]: tap [Preview the “I am with Hashem” screen now]. »
-    b = c.trouver(text="Preview the “I am with Hashem” screen now", defilements=16)
+    chercher(text="Preview the “I am with Hashem” screen now")
     r = prise("exam-06-carte-etat")
     voir("4 (carte d'etat)", "Where “I am with Hashem” stands", "Preview the “I am with Hashem” screen now", racine=r)
     c.toucher(text="Preview the “I am with Hashem” screen now", attente=2.5)
     # « The first time, a dialog titled [Display over other apps] explains the access. Tap [Continue]… »
     r = prise("exam-07-divulgation-affichage", verifier=False)
     voir("5 (divulgation)", "Display over other apps", "Continue", racine=r)
-    c.toucher(text="Continue", attente=2.5)
-    ok = accorder_dans_android(avant="exam-08-android-affichage")
-    if not ok:
-        faute("EXAMINATEUR etape 6 : l'ecran d'Android « Display over other apps » n'offre pas d'interrupteur pour MyHitbodedut")
+    if c.toucher(text="Continue", attente=2.5):
+        ok = accorder_dans_android(avant="exam-08-android-affichage")
+        if not ok:
+            faute("EXAMINATEUR etape 6 : l'ecran d'Android « Display over other apps » n'offre pas d'interrupteur pour MyHitbodedut")
     r = prise("exam-09-retour-reglages")
     if c.PKG not in devant():
         faute(f"EXAMINATEUR etape 6 : apres l'accord, on ne revient pas dans l'application ({devant()[:160]})")
+        c.lancer(attente=4)
+        c.toucher(desc="Settings", attente=2.5)
     # « …go back, and tap the button again. »
     if c.trouver(text="PREVIEW, NO EFFECT") is None:
-        c.trouver(text="Preview the “I am with Hashem” screen now", defilements=16)
+        chercher(text="Preview the “I am with Hashem” screen now")
         c.toucher(text="Preview the “I am with Hashem” screen now", attente=3.5)
     # « The gate appears over the home screen with the badge [PREVIEW, NO EFFECT]. [Close the preview] dismisses it. »
     r = prise("exam-10-apercu")
     voir("7 (apercu)", "PREVIEW, NO EFFECT", "Did you do your hitbodedut?", racine=r)
-    au_bout(True, 2)
-    r = prise("exam-11-apercu-bas")
-    voir("7 (apercu, bas)", "Close the preview", racine=r)
+    if c.PKG in devant():
+        faute("EXAMINATEUR etape 7 : l'apercu ne se pose pas sur l'ecran d'accueil (l'application est restee devant)")
+    if c.trouver(text="Close the preview", defilements=2) is None:
+        faute("EXAMINATEUR etape 7 : [Close the preview] introuvable sur l'apercu")
+    prise("exam-11-apercu-bas")
     c.toucher(text="Close the preview", attente=2.5)
     if c.trouver(text="PREVIEW, NO EFFECT") is not None:
         faute("EXAMINATEUR etape 7 : [Close the preview] ne ferme pas l'apercu")
@@ -395,10 +459,11 @@ def examinateur():
     c.lancer(attente=4)
     fermer_trophees()
     c.toucher(desc="Settings", attente=2.5)
-    # « card [Permissions]: tap [Grant] for [Display over other apps] and for [Usage access]. »
-    c.trouver(text="Usage access", defilements=18)
+    # « [Settings], card [Permissions]: tap [Grant] for [Usage access] (and for [Display over other
+    # apps] if it is not granted yet). Each shows an in-app disclosure first. »
+    chercher(text="Usage access")
     r = prise("exam-13-carte-autorisations")
-    voir("8 (autorisations)", "Permissions", "Usage access", "Grant", racine=r)
+    voir("8 (autorisations)", "Permissions", "Display over other apps", "Usage access", "Grant", racine=r)
     b = bouton_de_la_ligne("Usage access")
     if b is None:
         faute("EXAMINATEUR etape 8 : pas de bouton [Grant] sur la ligne [Usage access]")
@@ -409,13 +474,25 @@ def examinateur():
         c.toucher(text="Continue", attente=2.5)
         if not accorder_dans_android(avant="exam-15-android-usage"):
             faute("EXAMINATEUR etape 9 : l'ecran d'Android « Usage access » n'offre pas d'interrupteur pour MyHitbodedut")
+    if c.PKG not in devant():
+        c.lancer(attente=4)
+        c.toucher(desc="Settings", attente=2.5)
+    chercher(text="Usage access")
     r = prise("exam-16-autorisations-accordees")
-    # « Card [I am with Hashem]: turn the switch on, tap [Choose apps] and pick one app… »
-    c.trouver(rid="enable_switch", defilements=18)
-    c.trouver(text="Choose apps", defilements=4)
+    accordees = sum(1 for t in textes(r) if t == "Granted")
+    if accordees < 2:
+        faute(f"EXAMINATEUR etape 9 : la carte [Permissions] ne montre pas les deux acces accordes ({accordees} « Granted »)")
+    # « Card [I am with Hashem]: turn the switch on (Android then asks to allow notifications…), tap
+    # [Choose apps] and pick one app, and set [“I am with Hashem” hours] around the current time. »
+    if chercher(text="Choose apps") is None:
+        faute("EXAMINATEUR etape 10 : [Choose apps] introuvable dans les reglages")
     r = prise("exam-17-carte-mode")
     voir("10 (carte du mode)", "I am with Hashem", "Choose apps", "“I am with Hashem” hours", racine=r)
-    c.toucher(rid="enable_switch", attente=1.5)
+    if not c.toucher(rid="enable_switch", attente=2.5):
+        faute("EXAMINATEUR etape 10 : l'interrupteur [I am with Hashem] n'est pas a l'ecran avec [Choose apps]")
+    if autoriser_notifications("exam-17b-notifications"):
+        etapes.append("10 (notifications demandees)")
+    chercher(text="Choose apps")
     c.toucher(text="Choose apps", attente=4.0)
     r = prise("exam-18-liste-applications")
     choisie, paquet = None, None
@@ -430,18 +507,29 @@ def examinateur():
         au_bout(False, 3)
     if choisie is None:
         faute("EXAMINATEUR etape 10 : aucune application connue dans la liste [Choose apps]")
-    # Les applications protegees ne doivent pas etre proposees.
-    visibles_liste = textes()
-    for interdit in ("Settings", "Phone"):
-        if interdit in visibles_liste:
-            faute(f"EXAMINATEUR etape 10 : « {interdit} » est propose dans la liste des applications a retenir")
     prise("exam-19-application-choisie")
+    # Les applications protegees ne doivent pas etre proposees : on parcourt la liste entiere.
+    au_bout(False, 4)
+    proposees = set()
+    for _ in range(12):
+        racine = c.dump()
+        avant = len(proposees)
+        if racine is not None:
+            proposees |= {(n.get("text") or "").strip() for n in racine.iter("node")
+                          if n.get("resource-id", "").endswith("/app_label")}
+        if len(proposees) == avant and avant:
+            break
+        c.defiler(True)
+    c.log("  applications proposees :", sorted(proposees))
+    for interdit in ("Settings", "Phone", "MyHitbodedut"):
+        if interdit in proposees:
+            faute(f"EXAMINATEUR etape 10 : « {interdit} » est propose dans la liste des applications a retenir")
     c.retour()
     c.pause(1.5)
-    # « …and set [“I am with Hashem” hours] around the current time. » L'horloge est a 9 h 30, dans la plage par defaut.
-    c.trouver(rid="window_start", defilements=6)
+    # L'horloge est a 9 h 30, dans la plage par defaut : on la montre, sans la changer.
+    chercher(text="“I am with Hashem” hours")
     r = prise("exam-20-plage")
-    c.trouver(text="Where “I am with Hashem” stands", defilements=10) or au_bout(False, 4)
+    chercher(text="Where “I am with Hashem” stands")
     r = prise("exam-21-etat-arme")
     if not any("is on" in t for t in textes(r)):
         faute("EXAMINATEUR etape 11 : la carte d'etat ne dit pas « “I am with Hashem” is on » une fois tout regle (" + " | ".join(textes(r)[:8])[:240] + ")")
@@ -464,16 +552,27 @@ def examinateur():
         r = prise("exam-24-apres-fait", verifier=False)
         if c.trouver(text="Did you do your hitbodedut?") is not None:
             faute("EXAMINATEUR etape 12 : [Done without the phone] ne retire pas l'ecran")
-    # « …can switch off at any time (Settings, [I am with Hashem] switch). »
+    # « On Saturdays and Jewish festivals the gate is silent by default (card [Rhythm], [Shabbat and Yom Tov]). »
     c.lancer(attente=4)
     fermer_trophees()
     c.toucher(desc="Settings", attente=2.5)
-    c.trouver(rid="enable_switch", defilements=18)
-    c.toucher(rid="enable_switch", attente=1.5)
-    prise("exam-25-mode-coupe")
+    chercher(text="Shabbat and Yom Tov")
+    r = prise("exam-25-rythme")
+    voir("13 (Chabbat)", "Rhythm", "Shabbat and Yom Tov", racine=r)
+    bascule = None
+    if r is not None:
+        for n in r.iter("node"):
+            if n.get("resource-id", "").endswith("/shabbat_switch"):
+                bascule = n
+    if bascule is None or bascule.get("checked") != "true":
+        faute("EXAMINATEUR etape 13 : l'interrupteur [Shabbat and Yom Tov] n'est pas allume par defaut")
+    # « …can switch off at any time (Settings, [I am with Hashem] switch). »
+    chercher(text="Choose apps")
+    c.toucher(rid="enable_switch", attente=2.0)
+    prise("exam-26-mode-coupe")
     c.pause(2.0)
     if "GateService" in services_app():
-        faute("EXAMINATEUR etape 13 : GateService tourne encore apres l'interrupteur coupe")
+        faute("EXAMINATEUR etape 14 : GateService tourne encore apres l'interrupteur coupe")
     c.log("  etapes de l'examinateur passees :", etapes)
 
 
@@ -904,9 +1003,18 @@ def redemarrage(prefixe):
     c.sh("input keyevent KEYCODE_WAKEUP")
     c.sh("wm dismiss-keyguard")
     c.sh("settings put global hide_error_dialogs 1")
+    # Android distribue BOOT_COMPLETED application par application : sur un emulateur, celle-ci
+    # peut l'attendre plusieurs minutes (Android 14 : rien apres 45 s le 22/11). On attend, et on note.
+    services, attendu = services_app(), 0
+    while "GateService" not in services and attendu < 300:
+        c.pause(10)
+        attendu += 10
+        services = services_app()
     refus = c.sh("logcat -d | grep -E 'ForegroundServiceStartNotAllowed|BackgroundServiceStartNotAllowed|MissingForegroundServiceType|ForegroundServiceTypeException|InvalidForegroundServiceType' | grep -i myhitbodedut | head -5").strip()
-    services = services_app()
-    c.log("  apres :", services[:300], "| refus :", refus[:500])
+    c.log("  apres :", services[:300], f"| attendu {attendu} s de plus | refus :", refus[:500])
+    c.log("  etat du paquet :", " ".join(c.sh(f"dumpsys package {c.PKG} | grep -E 'stopped=' | head -2").split())[:300])
+    recu = c.sh("logcat -d -v time | grep -iE 'myhitbodedut' | grep -iE 'Start proc|BootReceiver|BOOT_COMPLETED|GateService|not allowed|denied|Killing' | head -14")
+    c.log("  journal du demarrage :", " | ".join(l.strip()[:230] for l in recu.splitlines()))
     # La plage a pu passer pendant le redemarrage si l'horloge est revenue a l'heure du runner.
     etat = c.sh("date '+%F %H:%M %u'").strip()
     c.log("  horloge :", etat)
