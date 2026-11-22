@@ -1,0 +1,13 @@
+== seule-classique-avant-serenite
+== seule-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x2dp TextView  «Tout voir»
+== seule-serenite-bas
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x40dp TextView  «Tout voir»
+PETIT 54x40dp TextView  «Tout voir»
+== seule-serenite-apres-20-s
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x2dp TextView  «Tout voir»
