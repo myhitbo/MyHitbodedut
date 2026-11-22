@@ -6,8 +6,9 @@
 # plantages sur une branche claude/qa-<nom>.
 #
 # Ce qu'il faut passer est écrit dans .github/qa/demande.json : les cibles (niveau d'API, nom,
-# passes). Le flux part à la main, ou quand une poussée sur une branche claude/** modifie ce
-# fichier : une session Claude ne peut pas lancer un flux à la main, elle peut pousser.
+# passes, et au besoin « ecrans » : les seuls écrans à repasser). Le flux part à la main, ou
+# quand une poussée sur une branche claude/** modifie ce fichier : une session Claude ne peut
+# pas lancer un flux à la main, elle peut pousser.
 name: QA Android (émulateurs)
 
 on:
@@ -46,7 +47,7 @@ jobs:
           assert parcours in ("recette", "captures"), parcours
           for c in d["cibles"]:
               assert isinstance(c["api"], int) and 26 <= c["api"] <= 40, c
-              for cle in ("nom", "passes", "etapes"):
+              for cle in ("nom", "passes", "etapes", "ecrans"):
                   assert re.fullmatch(r"[A-Za-z0-9_,-]*", str(c.get(cle, ""))), c
               assert c["nom"], c
           print("cibles=" + json.dumps(d["cibles"]))
@@ -130,6 +131,7 @@ jobs:
           CAPTURES_VARIANTE: ${{ needs.apk.outputs.variante }}
           CAPTURES_ETAPES: ${{ matrix.cible.etapes || '' }}
           RECETTE_PASSES: ${{ matrix.cible.passes || '' }}
+          RECETTE_ECRANS: ${{ matrix.cible.ecrans || '' }}
         with:
           api-level: ${{ matrix.cible.api }}
           target: google_apis

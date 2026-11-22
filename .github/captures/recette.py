@@ -30,7 +30,7 @@ Les fautes vont dans fautes.txt, a cote des captures. Comme captures.py, rien ne
 le job : on lit le bilan.
 
 Variables : RECETTE_PASSES (les noms ci-dessus, separes par des virgules ; toutes par defaut) ;
-CAPTURES_ETAPES (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut).
+RECETTE_ECRANS (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut).
 """
 import datetime
 import json
@@ -865,9 +865,9 @@ def clavier(nom):
     c.pause(0.8)
 
 
-# Pour revoir une correction sans tout repasser : CAPTURES_ETAPES (« etapes » de demande.json)
+# Pour revoir une correction sans tout repasser : RECETTE_ECRANS (« ecrans » de demande.json)
 # nomme les seuls ecrans a passer (« seance,reglages »). L'accueil est toujours pris.
-SEULS = [e.strip() for e in os.environ.get("CAPTURES_ETAPES", "").split(",") if e.strip()]
+SEULS = [e.strip() for e in os.environ.get("RECETTE_ECRANS", "").split(",") if e.strip()]
 
 
 def passe(prefixe, ecrans=ECRANS, bas=True, saisie=True):
