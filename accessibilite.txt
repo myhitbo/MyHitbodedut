@@ -1,0 +1,91 @@
+== nuit-accueil
+== nuit-accueil-volet
+MUET Switch music_switch_main (796, 1536, 933, 1662)
+== nuit-livres
+== nuit-chemin
+== nuit-reglages
+PETIT 96x34dp Button ouverture_button «Écran d’ouverture : Le Jour»
+== nuit-choix-version
+== nuit-seance
+== nuit-bravo
+== nuit-journal
+== nuit-parcours
+== nuit-hizouk
+== nuit-conseils
+== nuit-rappels
+MUET Switch reminders_switch (854, 582, 991, 708)
+== nuit-musique
+MUET Switch music_switch (854, 477, 991, 603)
+MUET Switch music_shuffle (854, 890, 991, 1016)
+PETIT 344x40dp LinearLayout music_ambiance «Ambiance Silence»
+MUET RadioButton track_radio (74, 1465, 200, 1591)
+MUET RadioButton track_radio (74, 1654, 200, 1780)
+MUET RadioButton track_radio (74, 1843, 200, 1969)
+MUET RadioButton track_radio (74, 2032, 200, 2158)
+== nuit-siddour
+PETIT 272x36dp TextView siddur_heading_nusah «Noussa’h séfarade (Edot HaMizr»
+== nuit-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x7dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== nuit-tefilot
+== nuit-tehilim
+PETIT 70x34dp TextView  «46»
+PETIT 70x34dp TextView  «47»
+PETIT 70x34dp TextView  «48»
+PETIT 70x34dp TextView  «49»
+PETIT 70x34dp TextView  «50»
+== nuit-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== nuit-tikkun
+PETIT 56x36dp TextView  «Aa»
+== nuit-bibliotheque
+== nuit-livres
+== nuit-source
+PETIT 56x36dp TextView  «Aa»
+== nuit-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diaspora»
+== nuit-vol
+PETIT 379x44dp LinearLayout  «Méthode et sources»
+== nuit-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+== nuit-calendrier
+PETIT 95x26dp TextView  «Hébraïque»
+PETIT 92x26dp TextView  «Grégorien»
+PETIT 347x28dp TextView  «Aujourd’hui»
+== nuit-halakha
+PETIT 347x45dp EditText  «Rechercher dans la halakha»
+PETIT 56x36dp TextView  «Aa»
+== nuit-hilloulot
+PETIT 48x38dp Switch  «Afficher les hilloulot»
+PETIT 56x36dp TextView  «Aa»
+== nuit-recherche
+PETIT 347x45dp EditText recherche_champ «Rechercher dans le siddour, le»
+== nuit-paliers
+PETIT 379x35dp LinearLayout  «15 minutes en un jour, Gagné l»
+== nuit-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== nuit-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== nuit-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== nuit-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== nuit-version-pile-4
+== nuit-version-bento
+PETIT 185x21dp FrameLayout  «Siddour»
+PETIT 185x21dp FrameLayout  «Tehilim»

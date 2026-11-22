@@ -1,0 +1,144 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['nuit'] | Android 16 API 36
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== nuit ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+  capture nuit-accueil (381423 octets)
+  toucher id='depart_regler' -> (938,2090)
+  capture nuit-accueil-volet (286124 octets)
+  toucher id='depart_regler' -> (938,2090)
+  toucher id='nav_texts' -> (540,2295)
+  capture nuit-livres (159264 octets)
+  toucher id='nav_journal' -> (900,2295)
+  capture nuit-chemin (114750 octets)
+  capture nuit-reglages (223437 octets)
+  capture nuit-choix-version (198373 octets)
+  capture nuit-seance (224720 octets)
+  capture nuit-bravo (499259 octets)
+  capture nuit-journal (19441 octets)
+  capture nuit-parcours (187515 octets)
+  capture nuit-hizouk (252506 octets)
+  capture nuit-conseils (343388 octets)
+  capture nuit-rappels (160748 octets)
+  capture nuit-musique (269959 octets)
+  capture nuit-siddour (288374 octets)
+  capture nuit-siddour-lecture (310569 octets)
+  capture nuit-tefilot (334157 octets)
+  capture nuit-tehilim (175674 octets)
+  capture nuit-tehilim-lecture (286916 octets)
+  capture nuit-tikkun (329228 octets)
+  capture nuit-bibliotheque (216128 octets)
+  capture nuit-livres (374651 octets)
+  capture nuit-source (371808 octets)
+  capture nuit-zmanim (270803 octets)
+  capture nuit-vol (283589 octets)
+  capture nuit-boussole (286598 octets)
+  capture nuit-calendrier (236340 octets)
+  capture nuit-halakha (276622 octets)
+  capture nuit-hilloulot (192644 octets)
+  capture nuit-recherche (131755 octets)
+  capture nuit-paliers (188117 octets)
+  capture nuit-applications (209807 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">tehilim-121-1-2&#10;lm1-52-nuit&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;shr-10-grenier&#10;eikha-2-19&#10;shr-10-langue</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="apparence_mode">sombre</string>     <long name="lieu_ville" value="2988507" />     <string nam
+  FAUTE : nuit-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+  capture nuit-version-pile (400912 octets)
+  FAUTE : nuit-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+  capture nuit-version-pile-2 (282074 octets)
+  FAUTE : nuit-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+  capture nuit-version-pile-3 (241561 octets)
+  FAUTE : nuit-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+  capture nuit-version-pile-4 (162210 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">tehilim-121-1-2&#10;lm1-52-nuit&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;shr-10-grenier&#10;eikha-2-19&#10;shr-10-langue</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="apparence_mode">sombre</string>     <long name="lieu_ville" value="2988507" />     <string nam
+  capture nuit-version-bento (260423 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">tehilim-121-1-2&#10;lm1-52-nuit&#10;sh-275-derriere-un-livre&#10;sh-275-sous-le-talit&#10;shr-10-grenier&#10;eikha-2-19&#10;shr-10-langue</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="apparence_mode">sombre</string>     <long name="lieu_ville" value="2988507" />     <string nam
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 255 
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture nuit-version-instant (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture nuit-version-serenite (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+
+=== bilan de la recette ===
+nuit-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+nuit-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+nuit-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+nuit-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+
+captures : 41
