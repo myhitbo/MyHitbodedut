@@ -785,13 +785,6 @@ def video_barriere():
     c.toucher(rid="enable_switch", attente=2.5)
     repere("mode allume")
     c.pause(1.5)
-    # La notification permanente du service, que la declaration annonce.
-    c.sh("cmd statusbar expand-notifications")
-    repere("notification du mode")
-    c.pause(5.0)
-    photo("video-barriere-3-notification")
-    c.sh("cmd statusbar collapse")
-    c.pause(2.5)
     c.toucher(text="Choose apps", attente=4.0)
     repere("liste des applications")
     paquet = None
@@ -813,6 +806,18 @@ def video_barriere():
     c.log("  services :", services_app()[:300])
     if "GateService" not in services_app():
         faute("VIDEO barriere : GateService ne tourne pas une fois tout regle")
+    # La notification permanente du service, que la declaration annonce. Ici et pas plus tot :
+    # Android n'affiche la notification d'un service de premier plan qu'une dizaine de secondes
+    # apres son depart (tournage du 22/11 : volet vide quatre secondes apres l'interrupteur).
+    c.sh("cmd statusbar expand-notifications")
+    repere("notification du mode")
+    c.pause(5.0)
+    photo("video-barriere-3-notification")
+    vues = " | ".join(textes())
+    if "MyHitbodedut" not in vues and "I am with Hashem" not in vues:
+        faute("VIDEO barriere : la notification du service n'est pas dans le volet (" + vues[:200] + ")")
+    c.sh("cmd statusbar collapse")
+    c.pause(2.5)
     film_fin()
     # Quatrieme film : l'application choisie, l'ecran devant elle, puis le mode coupe.
     film_debut("video-barriere-4")
