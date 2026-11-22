@@ -1,0 +1,325 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['tablette', 'couche', 'ciel-de-nuit', 'barriere', 'redemarrage'] | Android 16 API 36
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== tablette ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  ecran : 1600x2560, densite Physical density: 420
+Override density: 320
+  capture fr-tablette-accueil (429635 octets)
+  toucher id='depart_regler' -> (1444,2324)
+  capture fr-tablette-accueil-volet (288936 octets)
+  toucher id='depart_regler' -> (1444,2324)
+  toucher id='nav_texts' -> (799,2480)
+  capture fr-tablette-livres (129874 octets)
+  toucher id='nav_journal' -> (1136,2480)
+  capture fr-tablette-chemin (103216 octets)
+  capture fr-tablette-reglages (294866 octets)
+  capture fr-tablette-choix-version (142425 octets)
+  capture fr-tablette-seance (259158 octets)
+  capture fr-tablette-bravo (659309 octets)
+  capture fr-tablette-journal (24348 octets)
+  capture fr-tablette-parcours (137336 octets)
+  capture fr-tablette-hizouk (132280 octets)
+  capture fr-tablette-conseils (377350 octets)
+  capture fr-tablette-rappels (138821 octets)
+  capture fr-tablette-musique (309049 octets)
+  capture fr-tablette-siddour (273519 octets)
+  capture fr-tablette-siddour-lecture (423964 octets)
+  capture fr-tablette-tefilot (329956 octets)
+  capture fr-tablette-tehilim (174324 octets)
+  capture fr-tablette-tehilim-lecture (221646 octets)
+  capture fr-tablette-tikkun (427357 octets)
+  capture fr-tablette-bibliotheque (160580 octets)
+  capture fr-tablette-livres (365618 octets)
+  capture fr-tablette-source (512202 octets)
+  capture fr-tablette-zmanim (300150 octets)
+  capture fr-tablette-vol (225529 octets)
+  capture fr-tablette-boussole (326058 octets)
+  capture fr-tablette-calendrier (249273 octets)
+  capture fr-tablette-halakha (238770 octets)
+  capture fr-tablette-hilloulot (162155 octets)
+  capture fr-tablette-recherche (113529 octets)
+  capture fr-tablette-paliers (204689 octets)
+  capture fr-tablette-applications (193111 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-145-18&#10;shr-10
+  FAUTE : fr-tablette-version-pile : COLLE au bord TextView  «1 / 4» (0, 309, 156, 350)
+  capture fr-tablette-version-pile (672224 octets)
+  FAUTE : fr-tablette-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 309, 161, 350)
+  capture fr-tablette-version-pile-2 (295789 octets)
+  FAUTE : fr-tablette-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 309, 161, 350)
+  capture fr-tablette-version-pile-3 (274802 octets)
+  FAUTE : fr-tablette-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 309, 161, 350)
+  capture fr-tablette-version-pile-4 (203391 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-145-18&#10;shr-10
+  capture fr-tablette-version-bento (220880 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-145-18&#10;shr-10
+  capture fr-tablette-version-instant (226146 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-145-18&#10;shr-10
+  capture fr-tablette-version-serenite (289701 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-145-18&#10;shr-10
+  ecran : 2560x1600, densite Physical density: 420
+Override density: 320
+  capture fr-tablette-couchee-accueil (350794 octets)
+  toucher id='depart_regler' -> (1860,1364)
+  capture fr-tablette-couchee-accueil-volet (252956 octets)
+  toucher id='depart_regler' -> (1860,1364)
+  toucher id='nav_texts' -> (1348,1520)
+  capture fr-tablette-couchee-livres (116923 octets)
+  toucher id='nav_journal' -> (1685,1520)
+  capture fr-tablette-couchee-chemin (101739 octets)
+  capture fr-tablette-couchee-reglages (223286 octets)
+  capture fr-tablette-couchee-choix-version (138998 octets)
+  capture fr-tablette-couchee-seance (200956 octets)
+  capture fr-tablette-couchee-bravo (297642 octets)
+  capture fr-tablette-couchee-journal (22524 octets)
+  capture fr-tablette-couchee-parcours (141021 octets)
+  capture fr-tablette-couchee-hizouk (152504 octets)
+  capture fr-tablette-couchee-conseils (259074 octets)
+  capture fr-tablette-couchee-rappels (127734 octets)
+  capture fr-tablette-couchee-musique (179213 octets)
+  capture fr-tablette-couchee-siddour (207960 octets)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «Ce texte n’a pas encore de t» (137, 504, 2560, 553)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «Ajouts du ז׳ כסלו תשפ״ז (Dia» (137, 553, 2560, 602)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (137, 602, 2560, 733)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (137, 733, 2560, 820)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «אחר המזמורים של תיקון לאה המ» (137, 820, 2560, 906)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «וִיהִ֤י ׀ נֹ֤עַם אֲדֹנָ֥י אֱ» (137, 906, 2560, 1046)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «פָּתַח אֵלִיָּ͏הוּ הַנָּבִיא» (137, 1046, 2560, 1309)
+  FAUTE : fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן א» (137, 1309, 2560, 1600)
+  capture fr-tablette-couchee-siddour-lecture (282774 octets)
+  capture fr-tablette-couchee-tefilot (207951 octets)
+  capture fr-tablette-couchee-tehilim (131235 octets)
+  capture fr-tablette-couchee-tehilim-lecture (214336 octets)
+  capture fr-tablette-couchee-tikkun (284649 octets)
+  capture fr-tablette-couchee-bibliotheque (161775 octets)
+  capture fr-tablette-couchee-livres (257623 octets)
+  capture fr-tablette-couchee-source (384687 octets)
+  capture fr-tablette-couchee-zmanim (199299 octets)
+  capture fr-tablette-couchee-vol (221894 octets)
+  capture fr-tablette-couchee-boussole (209639 octets)
+  capture fr-tablette-couchee-calendrier (168899 octets)
+  capture fr-tablette-couchee-halakha (233433 octets)
+  capture fr-tablette-couchee-hilloulot (149471 octets)
+  capture fr-tablette-couchee-recherche (116937 octets)
+  capture fr-tablette-couchee-paliers (141245 octets)
+  capture fr-tablette-couchee-applications (139353 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">shr-10-langue&#10;lm2-97-chemin-neuf&#10;te
+  capture fr-tablette-couchee-version-pile (326955 octets)
+  capture fr-tablette-couchee-version-pile-2 (279272 octets)
+  capture fr-tablette-couchee-version-pile-3 (288100 octets)
+  capture fr-tablette-couchee-version-pile-4 (204043 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">shr-10-langue&#10;lm2-97-chemin-neuf&#10;te
+  capture fr-tablette-couchee-version-bento (212316 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">shr-10-langue&#10;lm2-97-chemin-neuf&#10;te
+  capture fr-tablette-couchee-version-instant (169114 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">shr-10-langue&#10;lm2-97-chemin-neuf&#10;te
+  capture fr-tablette-couchee-version-serenite (222910 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">sh-275-sous-le-talit&#10;lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">shr-10-langue&#10;lm2-97-chemin-neuf&#10;te
+  ecran : 1812x2176, densite Physical density: 420
+  capture fr-pliant-accueil (363681 octets)
+  toucher id='depart_regler' -> (1607,1866)
+  capture fr-pliant-accueil-volet (282630 octets)
+  toucher id='depart_regler' -> (1607,1866)
+  toucher id='nav_texts' -> (906,2071)
+  capture fr-pliant-livres (149423 octets)
+  toucher id='nav_journal' -> (1348,2071)
+  capture fr-pliant-chemin (125722 octets)
+  capture fr-pliant-reglages (299972 octets)
+  capture fr-pliant-choix-version (176697 octets)
+  capture fr-pliant-seance (202802 octets)
+  capture fr-pliant-bravo (423556 octets)
+  capture fr-pliant-journal (23168 octets)
+  capture fr-pliant-parcours (182196 octets)
+  capture fr-pliant-hizouk (271238 octets)
+  capture fr-pliant-conseils (345410 octets)
+  capture fr-pliant-rappels (206560 octets)
+  capture fr-pliant-musique (289091 octets)
+  capture fr-pliant-siddour (291281 octets)
+  capture fr-pliant-siddour-lecture (345574 octets)
+  capture fr-pliant-tefilot (323230 octets)
+  capture fr-pliant-tehilim (172879 octets)
+  capture fr-pliant-tehilim-lecture (288743 octets)
+  capture fr-pliant-tikkun (340329 octets)
+  capture fr-pliant-bibliotheque (219540 octets)
+  capture fr-pliant-livres (359900 octets)
+  capture fr-pliant-source (453534 octets)
+  capture fr-pliant-zmanim (270157 octets)
+  capture fr-pliant-vol (327816 octets)
+  capture fr-pliant-boussole (310072 octets)
+  capture fr-pliant-calendrier (231553 octets)
+  capture fr-pliant-halakha (305895 octets)
+  capture fr-pliant-hilloulot (186175 octets)
+  capture fr-pliant-recherche (145700 octets)
+  capture fr-pliant-paliers (175257 octets)
+  capture fr-pliant-applications (211713 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-97-chemin-neuf&#10;tehilim-130-1&#10;le-hitbodedut-16-ces-genera
+  FAUTE : fr-pliant-version-pile : COLLE au bord TextView  «1 / 4» (0, 341, 205, 394)
+  capture fr-pliant-version-pile (441827 octets)
+  FAUTE : fr-pliant-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 341, 210, 394)
+  capture fr-pliant-version-pile-2 (324450 octets)
+  FAUTE : fr-pliant-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 341, 211, 394)
+  capture fr-pliant-version-pile-3 (319371 octets)
+  FAUTE : fr-pliant-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 341, 211, 394)
+  capture fr-pliant-version-pile-4 (223296 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-97-chemin-neuf&#10;tehilim-130-1&#10;le-hitbodedut-16-ces-genera
+  capture fr-pliant-version-bento (272323 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-97-chemin-neuf&#10;tehilim-130-1&#10;le-hitbodedut-16-ces-genera
+  capture fr-pliant-version-instant (211757 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-97-chemin-neuf&#10;tehilim-130-1&#10;le-hitbodedut-16-ces-genera
+  capture fr-pliant-version-serenite (288669 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">lm1-52-nuit&#10;shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">lm2-97-chemin-neuf&#10;tehilim-130-1&#10;le-hitbodedut-16-ces-genera
+  ecran : 1080x2400, densite Physical density: 420
+
+=== couche ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  ecran : 2400x1080, densite Physical density: 420
+  capture fr-couche-accueil (213958 octets)
+  toucher id='depart_regler' -> (2006,770)
+  capture fr-couche-accueil-volet (98039 octets)
+  toucher id='depart_regler' -> (2006,770)
+  toucher id='nav_texts' -> (1264,975)
+  capture fr-couche-livres (80722 octets)
+  toucher id='nav_journal' -> (1706,975)
+  capture fr-couche-chemin (74299 octets)
+  capture fr-couche-reglages (131245 octets)
+  capture fr-couche-choix-version (90661 octets)
+  capture fr-couche-seance (159029 octets)
+  capture fr-couche-bravo (101211 octets)
+  capture fr-couche-musique (97771 octets)
+  FAUTE : fr-couche-siddour-lecture : COLLE au bord TextView  «Ce texte n’a pas encore de t» (128, 664, 2400, 728)
+  FAUTE : fr-couche-siddour-lecture : COLLE au bord TextView  «Ajouts du ז׳ כסלו תשפ״ז (Dia» (128, 728, 2400, 792)
+  FAUTE : fr-couche-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (128, 792, 2400, 964)
+  FAUTE : fr-couche-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (128, 964, 2400, 1078)
+  FAUTE : fr-couche-siddour-lecture : COLLE au bord TextView  «אחר המזמורים של תיקון לאה המ» (128, 1078, 2400, 1080)
+  capture fr-couche-siddour-lecture (164437 octets)
+  capture fr-couche-zmanim (122074 octets)
+  capture fr-couche-applications (125882 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture fr-couche-version-pile (140186 octets)
+  capture fr-couche-version-pile-2 (241695 octets)
+  capture fr-couche-version-pile-3 (192184 octets)
+  capture fr-couche-version-pile-4 (121715 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture fr-couche-version-bento (159354 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture fr-couche-version-instant (166569 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture fr-couche-version-serenite (160518 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  ecran : 1080x2400, densite Physical density: 420
+
+=== ciel-de-nuit ===
+  date : Tue Nov 17 21:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  FAUTE : soir-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+  capture soir-version-pile (400075 octets)
+  FAUTE : soir-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+  capture soir-version-pile-2 (276751 octets)
+  FAUTE : soir-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+  capture soir-version-pile-3 (210858 octets)
+  FAUTE : soir-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+  capture soir-version-pile-4 (161478 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture soir-version-bento (254602 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture soir-version-instant (194665 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture soir-version-serenite (248007 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture soir-accueil (427363 octets)
+  date : Tue Nov 17 09:30:00 UTC 2026
+
+=== barriere ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;eikha-2-19&#10;tehilim-121-1-2&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-130-1&#10;le-hitbodedut-16-ces-generations&#10;lm2-25-fondement&#10;tehilim-
+  capture gestes-barriere-etat (278926 octets)
+  toucher id='preview_gate' -> (540,2036)
+  capture gestes-barriere-apercu (267209 octets)
+  capture gestes-barriere-apercu-bas (267209 octets)
+  toucher id='blocker_primary' -> (540,2187)
+  services : * ServiceRecord{2a494ab u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture gestes-barriere-reelle (283163 octets)
+  capture gestes-barriere-reelle-bas (282453 octets)
+  toucher id='blocker_snooze' -> (540,2274)
+  capture gestes-barriere-reportee (148596 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="690" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">lm2-96-une-heure</string>     <boolean name="enabled" value="true" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <string name="chizuk_last_demande">by-21-3</string>     <set name="trophees_vus">         <stri
+  capture gestes-barriere-reglages-android (186411 octets)
+  capture gestes-barriere-telephone (82300 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="690" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">lm2-96-une-heure</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <string name="chizuk_last_demande">by-21-3</string>     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>
+  navigation : boutons | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">lm2-96-une-heure</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <string name="chizuk_last_demande">by-21-3</string>     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_l
+  capture boutons-barriere-etat (238414 octets)
+  toucher id='preview_gate' -> (540,1860)
+  capture boutons-barriere-apercu (278790 octets)
+  capture boutons-barriere-apercu-bas (278790 octets)
+  toucher id='blocker_primary' -> (540,2187)
+  services : * ServiceRecord{20c13f4 u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture boutons-barriere-reelle (233727 octets)
+  capture boutons-barriere-reelle-bas (233728 octets)
+  toucher id='blocker_snooze' -> (540,2274)
+  capture boutons-barriere-reportee (151786 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="692" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-147-3</string>     <boolean name="enabled" value="true" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <string name="chizuk_last_demande">by-21-3</string>     <set name="trophees_vus">         <string>
+  capture boutons-barriere-reglages-android (188832 octets)
+  capture boutons-barriere-telephone (84657 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="692" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-147-3</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <string name="chizuk_last_demande">by-21-3</string>     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heu
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+
+=== redemarrage ===
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-147-3</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <string name="chizuk_last_demande">by-21-3</string>     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_long
+  avant : * ServiceRecord{aad8caa u0 com.myhitbodedut/.GateService c:com.myhitbodedut} | acces : SYSTEM_ALERT_WINDOW: allow; time=+1m31s887ms ago; duration=+19s645ms / GET_USAGE_STATS: allow; time=+257ms ago
+  apres : * ServiceRecord{3a090dd u0 com.myhitbodedut/.GateService c:com.myhitbodedut} | attendu 0 s de plus | refus :  | acces : SYSTEM_ALERT_WINDOW: allow; time=+45s19ms ago / GET_USAGE_STATS: allow; time=+5d4h14m39s535ms ago
+  etat du paquet : User 0: ceDataInode=353040 deDataInode=66061 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false quarantined=false
+  journal du demarrage : 11-22 13:48:37.668 I/ActivityManager(  660): Start proc 3130:com.myhitbodedut/u0a216 for broadcast {com.myhitbodedut/com.myhitbodedut.BootReceiver} | 11-22 13:48:37.867 I/ActivityManager(  660): Background started FGS: Allowed [callingPackage: com.myhitbodedut; callingUid: 10216; uidState: RCVR; uidBFSL: n/a; intent: Intent { xflg=0x4 cmp=com.myhitbodedut/.GateService }; code:B | 11-22 13:48:38.029 W/ActivityManager(  660): Foreground service started from background can not have location/camera/microphone access: service com.myhitbodedut/.GateService
+  horloge : 2026-11-22 13:49 7
+  capture gestes-barriere-apres-redemarrage (149713 octets)
+  FAUTE : gestes : BARRIERE apres un redemarrage, l'ecran de garde ne se pose pas sur com.android.chrome [horloge 2026-11-22 13:49 7]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-147-3</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <string name="chizuk_last_demande">by-21-3</string>     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_long
+
+=== bilan de la recette ===
+fr-tablette-version-pile : COLLE au bord TextView  «1 / 4» (0, 309, 156, 350)
+fr-tablette-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 309, 161, 350)
+fr-tablette-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 309, 161, 350)
+fr-tablette-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 309, 161, 350)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «Ce texte n’a pas encore de t» (137, 504, 2560, 553)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «Ajouts du ז׳ כסלו תשפ״ז (Dia» (137, 553, 2560, 602)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (137, 602, 2560, 733)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (137, 733, 2560, 820)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «אחר המזמורים של תיקון לאה המ» (137, 820, 2560, 906)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «וִיהִ֤י ׀ נֹ֤עַם אֲדֹנָ֥י אֱ» (137, 906, 2560, 1046)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «פָּתַח אֵלִיָּ͏הוּ הַנָּבִיא» (137, 1046, 2560, 1309)
+fr-tablette-couchee-siddour-lecture : COLLE au bord TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן א» (137, 1309, 2560, 1600)
+fr-pliant-version-pile : COLLE au bord TextView  «1 / 4» (0, 341, 205, 394)
+fr-pliant-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 341, 210, 394)
+fr-pliant-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 341, 211, 394)
+fr-pliant-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 341, 211, 394)
+fr-couche-siddour-lecture : COLLE au bord TextView  «Ce texte n’a pas encore de t» (128, 664, 2400, 728)
+fr-couche-siddour-lecture : COLLE au bord TextView  «Ajouts du ז׳ כסלו תשפ״ז (Dia» (128, 728, 2400, 792)
+fr-couche-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (128, 792, 2400, 964)
+fr-couche-siddour-lecture : COLLE au bord TextView  «פתיחת אליהו» (128, 964, 2400, 1078)
+fr-couche-siddour-lecture : COLLE au bord TextView  «אחר המזמורים של תיקון לאה המ» (128, 1078, 2400, 1080)
+soir-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+soir-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+soir-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+soir-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+gestes : BARRIERE apres un redemarrage, l'ecran de garde ne se pose pas sur com.android.chrome [horloge 2026-11-22 13:49 7]
+
+captures : 162

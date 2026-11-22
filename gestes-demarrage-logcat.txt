@@ -1,0 +1,22 @@
+11-22 13:48:15.187   660   660 W PackageSettings: Missing permission state for package com.myhitbodedut on user 0
+11-22 13:48:18.199   660   660 V StorageManagerService: Package com.myhitbodedut does not have legacy storage
+11-22 13:48:33.929   660   682 I ActivityManager: Background started FGS: Allowed [callingPackage: com.google.android.apps.messaging; callingUid: 10146; uidState: BFGS; uidBFSL: [BFSL]; intent: Intent { xflg=0x4 cmp=com.google.android.apps.messaging/com.google.apps.tiktok.concurrent.InternalForegroundService (has extras) }; code:PROC_STATE_BFGS; tempAllowListReason:<7516a96 android.intent.action.BOOT_COMPLETED/u0,reasonCode:BOOT_COMPLETED,duration:20000,callingUid:1000>; allowWiu:-1; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null: isBindService:false]
+11-22 13:48:33.992   660  1698 W ActivityManager: Foreground service started from background can not have location/camera/microphone access: service com.google.android.apps.messaging/com.google.apps.tiktok.concurrent.InternalForegroundService
+11-22 13:48:34.007   660  1698 W ForegroundServiceTypeLoggerModule: Foreground service start for UID: 10146 does not have any types
+11-22 13:48:34.435   660  1698 W ForegroundServiceTypeLoggerModule: FGS stop call for: 10146 has no types!
+11-22 13:48:36.308  1512  2194 I AiAiCaptions: Would enable com.google.android.apps.miphone.aiai.captions.CaptionsForegroundService but already enabled
+11-22 13:48:37.668   660   697 I ActivityManager: Start proc 3130:com.myhitbodedut/u0a216 for broadcast {com.myhitbodedut/com.myhitbodedut.BootReceiver}
+11-22 13:48:37.690  3130  3130 I om.myhitbodedut: Using CollectorTypeCMC GC.
+11-22 13:48:37.690  3130  3130 W om.myhitbodedut: Unexpected CPU variant for x86: x86_64.
+11-22 13:48:37.690  3130  3130 W om.myhitbodedut: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, alderlake, default
+11-22 13:48:37.692  3130  3130 E om.myhitbodedut: Not starting debugger since process cannot load the jdwp agent.
+11-22 13:48:37.730  3130  3130 I om.myhitbodedut: AssetManager2(0x758ba50dfc58) locale list changing from [en-US] to [fr]
+11-22 13:48:37.749  3130  3130 D nativeloader: Configuring clns-9 for other apk /data/app/~~X6stMeykmjLOjyDrAvqafQ==/com.myhitbodedut-hdZW3AzbEvDsj4k-biA3Bg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~X6stMeykmjLOjyDrAvqafQ==/com.myhitbodedut-hdZW3AzbEvDsj4k-biA3Bg==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.myhitbodedut
+11-22 13:48:37.758  3130  3130 I om.myhitbodedut: AssetManager2(0x758ba50e6ff8) locale list changing from [] to [fr]
+11-22 13:48:37.794  3130  3130 V GraphicsEnvironment: com.myhitbodedut is not listed in per-application setting
+11-22 13:48:37.794  3130  3130 V GraphicsEnvironment: com.myhitbodedut is not listed in ANGLE allowlist or settings, returning default
+11-22 13:48:37.867   660  1816 I ActivityManager: Background started FGS: Allowed [callingPackage: com.myhitbodedut; callingUid: 10216; uidState: RCVR; uidBFSL: n/a; intent: Intent { xflg=0x4 cmp=com.myhitbodedut/.GateService }; code:BOOT_COMPLETED; tempAllowListReason:<7516a96 android.intent.action.BOOT_COMPLETED/u0,reasonCode:BOOT_COMPLETED,duration:20000,callingUid:1000>; allowWiu:-1; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null: isBindService:false]
+11-22 13:48:38.029   660  1696 W ActivityManager: Foreground service started from background can not have location/camera/microphone access: service com.myhitbodedut/.GateService
+11-22 13:48:38.031   660  1696 W ForegroundServiceTypeLoggerModule: Foreground service start for UID: 10216 does not have any types
+11-22 13:48:43.191  3130  3522 D ProfileInstaller: Skipping profile installation for com.myhitbodedut
+11-22 13:49:22.995  3749  3751 I artd    : GetBestInfo: odex next to the dex file (/data/app/~~X6stMeykmjLOjyDrAvqafQ==/com.myhitbodedut-hdZW3AzbEvDsj4k-biA3Bg==/oat/x86_64/base.odex) is kOatUpToDate with filter 'verify' executable 'false'
