@@ -1,0 +1,53 @@
+== exam-01-bienvenue
+== exam-03-choix-version
+== exam-04-today
+PETIT 363x32dp Button today_offline «Done without the phone»
+== exam-05-settings
+PETIT 88x41dp Button ouverture_button «Opening screen: Today»
+== exam-06-carte-etat
+PETIT 344x7dp TextView levana_rappel_permission «Notifications are blocked, so »
+PETIT 344x14dp Button pick_apps «Choose apps»
+== exam-09-retour-reglages
+PETIT 344x7dp TextView levana_rappel_permission «Notifications are blocked, so »
+PETIT 344x14dp Button pick_apps «Choose apps»
+== exam-10-apercu
+== exam-11-apercu-bas
+== exam-13-carte-autorisations
+== exam-16-autorisations-accordees
+== exam-17-carte-mode
+PETIT 52x25dp Switch enable_switch «I am with Hashem»
+== exam-18-liste-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== exam-19-application-choisie
+PETIT 411x39dp LinearLayout  «Drive»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 525, 1038, 595)
+MUET CheckBox app_check (912, 659, 1038, 785)
+MUET CheckBox app_check (912, 849, 1038, 975)
+MUET CheckBox app_check (912, 1039, 1038, 1165)
+MUET CheckBox app_check (912, 1229, 1038, 1355)
+MUET CheckBox app_check (912, 1419, 1038, 1545)
+MUET CheckBox app_check (912, 1609, 1038, 1735)
+MUET CheckBox app_check (912, 1799, 1038, 1925)
+MUET CheckBox app_check (912, 1989, 1038, 2115)
+MUET CheckBox app_check (912, 2179, 1038, 2305)
+== exam-20-plage
+PETIT 52x42dp Switch shabbat_switch «Shabbat and Yom Tov»
+== exam-21-etat-arme
+== exam-22-barriere-reelle
+== exam-23-barriere-reelle-bas
+== exam-25-rythme
+PETIT 52x26dp Switch exempt_today_switch «Rest day today»
+== exam-26-mode-coupe
+PETIT 52x26dp Switch exempt_today_switch «Rest day today»

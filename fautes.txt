@@ -1,0 +1,3 @@
+EXAMINATEUR etape 12 (barriere) : « Did you do your hitbodedut? » introuvable a l'ecran (Allow YouTube to send you notifications? | Allow | Don’t allow)
+EXAMINATEUR etape 12 (barriere) : « Done without the phone » introuvable a l'ecran (Allow YouTube to send you notifications? | Allow | Don’t allow)
+EXAMINATEUR etape 14 : GateService tourne encore apres l'interrupteur coupe
