@@ -142,3 +142,32 @@ jobs:
           npx --yes wrangler@3 pages project create "$CLOUDFLARE_PROJET" --production-branch=main || true
           npx --yes wrangler@3 pages deploy web/dist --project-name="$CLOUDFLARE_PROJET" --branch=main --commit-dirty=true
           echo "En ligne : https://${CLOUDFLARE_PROJET}.pages.dev/ (version $(cat web/dist/version.txt))"
+
+      # Copie du site en ligne dans le dépôt myhitbodedut-web (22/11), pour qu'il reste identique
+      # à Cloudflare Pages. Vient après la mise en ligne et ne la bloque jamais : si la copie
+      # échoue, le site reste en ligne. Un seul commit, remplacé à chaque fois : la musique
+      # (~65 Mo) ne s'empile pas d'une version à l'autre dans l'historique.
+      # Le jeton GitHub du flux ne peut pas écrire dans un autre dépôt : il faut le secret
+      # WEB_DEPLOY_TOKEN (jeton à accès fin, dépôt myhitbodedut-web, permission Contents en écriture).
+      # Sans lui, l'étape ne fait rien.
+      - name: Copy the site to the myhitbodedut-web repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        env:
+          TOKEN: ${{ secrets.WEB_DEPLOY_TOKEN }}
+          CIBLE: myhitbo/myhitbodedut-web
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "Pas de secret WEB_DEPLOY_TOKEN : dépôt $CIBLE non mis à jour."
+            exit 0
+          fi
+          cd web/dist
+          touch .nojekyll
+          git init -q -b main
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Site construit depuis ${GITHUB_SHA} (main), identique à Cloudflare Pages (version $(cat version.txt))"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${CIBLE}.git" main
+          rm -rf .git
+          echo "Dépôt $CIBLE à jour (version $(cat version.txt))"
