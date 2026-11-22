@@ -1,0 +1,46 @@
+== exam-01-bienvenue
+== exam-03-choix-version
+== exam-04-today
+== exam-05-settings
+== exam-06-carte-etat
+== exam-09-retour-reglages
+== exam-10-apercu
+== exam-11-apercu-bas
+== exam-13-carte-autorisations
+PETIT 52x39dp Switch journal_verrou_switch «Lock the journal»
+== exam-16-autorisations-accordees
+PETIT 52x39dp Switch journal_verrou_switch «Lock the journal»
+== exam-17-carte-mode
+PETIT 91x31dp Button snooze_length «Snooze length: 15 min»
+== exam-18-liste-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== exam-19-application-choisie
+MUET CheckBox app_check (912, 532, 1038, 658)
+MUET CheckBox app_check (912, 722, 1038, 848)
+MUET CheckBox app_check (912, 912, 1038, 1038)
+MUET CheckBox app_check (912, 1102, 1038, 1228)
+MUET CheckBox app_check (912, 1292, 1038, 1418)
+MUET CheckBox app_check (912, 1482, 1038, 1608)
+MUET CheckBox app_check (912, 1672, 1038, 1798)
+MUET CheckBox app_check (912, 1862, 1038, 1988)
+MUET CheckBox app_check (912, 2052, 1038, 2178)
+MUET CheckBox app_check (912, 2242, 1038, 2368)
+== exam-20-plage
+PETIT 52x27dp Switch hide_countdown_switch «Hide the countdown»
+== exam-21-etat-arme
+PETIT 94x15dp Button name_button «First name: Not set»
+== exam-22-barriere-reelle
+== exam-23-barriere-reelle-bas
+== exam-25-rythme
+PETIT 344x34dp Button pick_apps «Choose apps»
+== exam-26-mode-coupe
+== gestes-barriere-apres-redemarrage
