@@ -1,0 +1,169 @@
+== he-boutons-accueil
+== he-boutons-accueil-bas
+PETIT 228x34dp FrameLayout hero_plate «הקישו כדי לראות את המספרים שלכ»
+== he-boutons-accueil-volet
+MUET Switch music_switch_main (147, 1536, 284, 1662)
+== he-boutons-livres
+== he-boutons-livres-bas
+== he-boutons-chemin
+== he-boutons-chemin-bas
+== he-boutons-reglages
+== he-boutons-reglages-bas
+PETIT 88x42dp Button permission_grant «אישור»
+== he-boutons-choix-version
+== he-boutons-choix-version-bas
+== he-boutons-seance
+== he-boutons-seance-bas
+== he-boutons-bravo
+== he-boutons-bravo-bas
+== he-boutons-journal
+== he-boutons-journal-bas
+== he-boutons-parcours
+== he-boutons-parcours-bas
+== he-boutons-hizouk
+== he-boutons-hizouk-bas
+== he-boutons-conseils
+== he-boutons-conseils-bas
+== he-boutons-rappels
+MUET Switch reminders_switch (89, 585, 226, 711)
+== he-boutons-rappels-bas
+MUET Switch reminders_switch (89, 585, 226, 711)
+== he-boutons-musique
+MUET Switch music_switch (89, 464, 226, 590)
+MUET Switch music_shuffle (89, 867, 226, 993)
+PETIT 344x40dp LinearLayout music_ambiance «אווירה שקט»
+MUET RadioButton track_radio (880, 1445, 1006, 1571)
+MUET RadioButton track_radio (880, 1634, 1006, 1760)
+MUET RadioButton track_radio (880, 1823, 1006, 1949)
+MUET RadioButton track_radio (880, 2012, 1006, 2138)
+PETIT 379x4dp LinearLayout  «»
+MUET LinearLayout  (42, 2180, 1038, 2190)
+== he-boutons-musique-bas
+PETIT 48x45dp RadioButton track_radio «»
+MUET RadioButton track_radio (880, 128, 1006, 247)
+PETIT 48x45dp ImageButton track_rename «שינוי שם»
+PETIT 48x45dp ImageButton track_play «האזנה»
+MUET RadioButton track_radio (880, 310, 1006, 436)
+MUET RadioButton track_radio (880, 499, 1006, 625)
+MUET RadioButton track_radio (880, 688, 1006, 814)
+MUET RadioButton track_radio (880, 877, 1006, 1003)
+MUET RadioButton track_radio (880, 1066, 1006, 1192)
+MUET RadioButton track_radio (880, 1255, 1006, 1381)
+MUET RadioButton track_radio (880, 1444, 1006, 1570)
+MUET RadioButton track_radio (880, 1633, 1006, 1759)
+MUET RadioButton track_radio (880, 1822, 1006, 1948)
+MUET RadioButton track_radio (880, 2011, 1006, 2137)
+== he-boutons-siddour
+PETIT 205x36dp TextView siddur_heading_nusah «נוסח ספרדי – עדות המזרח»
+== he-boutons-siddour-bas
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x30dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+== he-boutons-tefilot
+== he-boutons-tefilot-bas
+== he-boutons-tehilim
+PETIT 70x34dp TextView  «מ״ו»
+PETIT 70x34dp TextView  «מ״ז»
+PETIT 70x34dp TextView  «מ״ח»
+PETIT 70x34dp TextView  «מ״ט»
+PETIT 70x34dp TextView  «נ׳»
+== he-boutons-tehilim-bas
+PETIT 70x3dp TextView  «ע״א»
+PETIT 70x3dp TextView  «ע״ב»
+PETIT 70x3dp TextView  «ע״ג»
+PETIT 70x3dp TextView  «ע״ד»
+PETIT 70x3dp TextView  «ע״ה»
+== he-boutons-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tehilim-lecture-bas
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tikkun
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tikkun-bas
+== he-boutons-bibliotheque
+== he-boutons-bibliotheque-bas
+== he-boutons-livres
+== he-boutons-livres-bas
+== he-boutons-source
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-source-bas
+== he-boutons-zmanim
+PETIT 120x36dp TextView zmanim_lieu «Paris · חו״ל»
+== he-boutons-zmanim-bas
+== he-boutons-vol
+PETIT 379x44dp LinearLayout  «שיטה ומקורות»
+== he-boutons-vol-clavier
+PETIT 347x44dp LinearLayout  «יציאה, בחירת שדה תעופה»
+== he-boutons-vol-bas
+PETIT 379x44dp LinearLayout  «שיטה ומקורות»
+== he-boutons-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+PETIT 379x6dp LinearLayout  «»
+MUET LinearLayout  (42, 2384, 1038, 2400)
+== he-boutons-boussole-bas
+== he-boutons-calendrier
+PETIT 61x27dp TextView  «עברי»
+PETIT 59x27dp TextView  «לועזי»
+PETIT 347x28dp TextView  «היום»
+== he-boutons-calendrier-bas
+== he-boutons-halakha
+PETIT 347x46dp EditText  «חיפוש בהלכה»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-halakha-bas
+PETIT 48x30dp TextView  «›»
+PETIT 48x30dp TextView  «‹»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot-clavier
+PETIT 347x9dp LinearLayout  «רבי יהודה אריה ליב, להמשך קריא»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot-bas
+PETIT 52x31dp TextView  «›»
+PETIT 52x31dp TextView  «‹»
+== he-boutons-recherche
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-recherche-clavier
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-recherche-bas
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-paliers
+PETIT 379x35dp LinearLayout  «15 דקות ביום אחד, הושג ב־11 בנ»
+== he-boutons-paliers-bas
+PETIT 379x11dp LinearLayout  «2 שעות בסך הכול, 1 מתוך 2»
+== he-boutons-applications
+MUET CheckBox app_check (42, 558, 168, 684)
+MUET CheckBox app_check (42, 748, 168, 874)
+MUET CheckBox app_check (42, 938, 168, 1064)
+MUET CheckBox app_check (42, 1128, 168, 1254)
+MUET CheckBox app_check (42, 1318, 168, 1444)
+MUET CheckBox app_check (42, 1508, 168, 1634)
+MUET CheckBox app_check (42, 1698, 168, 1824)
+MUET CheckBox app_check (42, 1888, 168, 2014)
+MUET CheckBox app_check (42, 2078, 168, 2204)
+MUET CheckBox app_check (42, 2268, 168, 2394)
+== he-boutons-applications-bas
+MUET CheckBox app_check (42, 532, 168, 658)
+MUET CheckBox app_check (42, 722, 168, 848)
+MUET CheckBox app_check (42, 912, 168, 1038)
+MUET CheckBox app_check (42, 1102, 168, 1228)
+MUET CheckBox app_check (42, 1292, 168, 1418)
+MUET CheckBox app_check (42, 1482, 168, 1608)
+MUET CheckBox app_check (42, 1672, 168, 1798)
+MUET CheckBox app_check (42, 1862, 168, 1988)
+MUET CheckBox app_check (42, 2052, 168, 2178)
+MUET CheckBox app_check (42, 2242, 168, 2368)
+== he-boutons-version-pile
+== he-boutons-version-pile-2
+== he-boutons-version-pile-3
+== he-boutons-version-pile-4
+== he-boutons-version-bento
+PETIT 185x46dp FrameLayout  «סידור»
+PETIT 185x46dp FrameLayout  «תהילים»
