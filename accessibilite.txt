@@ -1,0 +1,34 @@
+== gestes-seance-en-cours
+== gestes-seance-calme
+== gestes-seance-apres
+== boutons-seance-en-cours
+== boutons-seance-calme
+== boutons-seance-apres
+== gestes-barriere-etat
+PETIT 88x19dp Button window_start «Plage horaire : 09:01»
+PETIT 88x19dp Button window_end «Plage horaire : 11:31»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+PETIT 363x38dp Button blocker_snooze «Plus tard (15 min)»
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 88x10dp Button window_start «Plage horaire : 09:04»
+PETIT 88x10dp Button window_end «Plage horaire : 11:34»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+PETIT 363x14dp Button blocker_snooze «Plus tard (15 min)»
+== boutons-barriere-reelle-bas
+== fr-gestes-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-gestes-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-gestes-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-gestes-version-pile-4
+== fr-gestes-version-bento
+== fr-gestes-version-bento-bas
