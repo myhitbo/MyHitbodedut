@@ -166,7 +166,7 @@ class InstantActivity : AccueilVersion() {
 
     private fun carteJauge(d: DonneesAccueil): View = carte {
         titre(getString(R.string.instant_semaine))
-        addView(Jauge(context, d.semaineFaits, d.semaineDus).apply {
+        addView(View(context).apply {
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(96)).apply { topMargin = dp(10) }
             contentDescription = getString(R.string.version_semaine, d.semaineFaits, d.semaineDus)
         })
