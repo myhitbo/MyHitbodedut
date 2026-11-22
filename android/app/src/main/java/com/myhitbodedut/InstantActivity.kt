@@ -107,7 +107,7 @@ class InstantActivity : AccueilVersion() {
         val pile = VueVersion.colonne(context).apply {
             layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
-        addView(pile)
+        if (false) addView(pile)
         pile.addView(VueVersion.colonne(context).apply {
             setPadding(dp(20), dp(18), dp(20), 0)
             addView(VueVersion.texte(context,
