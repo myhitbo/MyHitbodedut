@@ -121,8 +121,11 @@ def controle(racine, nom, en_haut=True, en_bas=True):
         if en_bas and bas < c.H and b[3] > bas + 2 and b[1] < c.H:
             faute(f"{nom} : SOUS-BARRE de navigation (barre a partir de {bas}) {quoi}")
         # Un bouton porte sa marge interieure (les fleches « ‹ › » de la halakha, larges de 48 dp) :
-        # seul un texte nu colle au bord se lit mal.
-        if (texte and feuille and "TextView" in n.get("class", "") and not touchable
+        # seul un texte nu colle au bord se lit mal. Le compteur de l'accueil Pile (« 2 / 4 ») va
+        # jusqu'au bord, mais avec 24 dp de marge a l'interieur (PileActivity, setPadding) : l'arbre
+        # d'accessibilite ne donne pas les marges interieures, on le reconnait a son texte.
+        compteur_pile = re.fullmatch(r"\d+ / \d+", texte) is not None
+        if (texte and feuille and "TextView" in n.get("class", "") and not touchable and not compteur_pile
                 and (b[0] <= 0 or b[2] >= c.W) and (b[2] - b[0]) < c.W and not defile_en_large(n)):
             faute(f"{nom} : COLLE au bord {quoi}")
 
@@ -987,8 +990,15 @@ def passe(prefixe, ecrans=ECRANS, bas=True, saisie=True):
             prise(f"{prefixe}-{nom}-bas")
 
 
+# La langue en cours se lit-elle de droite a gauche ? Les cartes de l'accueil Pile se tirent alors
+# dans l'autre sens.
+DROITE_A_GAUCHE = False
+
+
 def parler(etiquette):
     """La langue de l'application : la preference et la langue par application d'Android."""
+    global DROITE_A_GAUCHE
+    DROITE_A_GAUCHE = etiquette.split("-")[0] in ("he", "iw", "ar")
     c.regler({"langue_app": ("string", etiquette)})
     c.langue(etiquette)
 
@@ -1012,9 +1022,14 @@ def versions(prefixe, bas=True):
         fermer_trophees()
         prise(f"{prefixe}-version-{version}")
         if version == "pile":
+            # La carte suivante est a droite ; a gauche en hebreu et en arabe (22/11 : tirees dans le
+            # sens du francais, les cartes 2 a 4 n'y avaient jamais ete vues).
+            depart, arrivee = (0.12, 0.92) if DROITE_A_GAUCHE else (0.88, 0.08)
             for i in range(2, 5):
-                c.sh(f"input swipe {int(c.W * 0.88)} {int(c.H * 0.45)} {int(c.W * 0.08)} {int(c.H * 0.45)} 450")
-                prise(f"{prefixe}-version-pile-{i}", attente=1.5)
+                c.sh(f"input swipe {int(c.W * depart)} {int(c.H * 0.45)} {int(c.W * arrivee)} {int(c.H * 0.45)} 450")
+                racine = prise(f"{prefixe}-version-pile-{i}", attente=1.5)
+                if not any(f"{i} / 4" in t for t in textes(racine)):
+                    faute(f"{prefixe}-version-pile-{i} : la carte {i} n'est pas venue (compteur attendu « {i} / 4 »)")
         elif bas:
             au_bout(True, 4)
             prise(f"{prefixe}-version-{version}-bas")
