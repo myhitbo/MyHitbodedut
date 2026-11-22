@@ -1,0 +1,159 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['video'] | Android 14 API 34
+
+=== video seance ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=f3be0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false | mSource=InsetsSource id=f3be0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" /> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" />     <string 
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-seance-1 : debut
+  film video-seance-1 t=4.0 : accueil
+  toucher id='depart_regler' -> (938,2027)
+  film video-seance-1 t=8.8 : volet
+  toucher id='music_button' -> (540,1536)
+  film video-seance-1 t=14.2 : musique
+  toucher id='track_title' -> (482,1695)
+  film video-seance-1 t=21.6 : morceau choisi
+  film video-seance-1 t=26.9 : retour au volet
+  toucher id='start_session' -> (540,2027)
+  film video-seance-1 t=33.5 : seance lancee
+  services : * ServiceRecord{9db1f2f u0 com.myhitbodedut/.SessionService} |     isForeground=true foregroundId=2 types=40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 actions=1 vis=PRIVATE)
+  photo video-seance-a-en-cours (147885 octets)
+  film video-seance-1 t=42.9 : notification
+  photo video-seance-b-notification (124846 octets)
+  film video-seance-1 t=50.2 : fin
+  film video-seance-1.mp4 (1761216 octets)
+  film video-seance-2 : debut
+  film video-seance-2 t=4.5 : ecran rallume
+  photo video-seance-c-rallume (148635 octets)
+  film video-seance-2 t=8.3 : seance toujours en cours
+  photo video-seance-d-toujours-en-cours (352319 octets)
+  film video-seance-2 t=12.7 : notification apres l'ecran eteint
+  photo video-seance-e-notification (125084 octets)
+  film video-seance-2 t=20.4 : fin
+  film video-seance-2.mp4 (688136 octets)
+  toucher id='session_secondary' -> (540,1431)
+  INTROUVABLE : id='button1'
+---- ecran (recherche de id='button1') ----
+  [LinearLayout] id=action_bar_root text='' desc='' [0,0][1080,2400]
+  [FrameLayout] id=content text='' desc='' [0,0][1080,2400]
+  [ScrollView] id=session_fond text='' desc='' [0,128][1080,2337]
+  [View] id=session_souffle text='' desc='' [0,128][1080,2337]
+  [TextView] id=session_titre text='HITBODEDUT' desc='' [415,191][665,237]
+  [FrameLayout] id=session_scene text='' desc='' [63,279][1017,820]
+  [ImageView] id=session_character text='' desc='' [84,300][996,799]
+  [TextView] id=session_countdown text='13:29' desc='' [351,862][728,1058]
+  [TextView] id=session_caption text='15 min hitbodedut' desc='' [63,1079][1017,1132]
+  [TextView] id=session_music text='Music: Niggun of the Yanuka (3)' desc='' [63,1143][1017,1189]
+  [Button] id=session_primary text='Finish now' desc='' [63,1231][1017,1357] clickable
+  [Button] id=session_secondary text='Discard' desc='' [63,1368][1017,1494] clickable
+  [Button] id=session_theme text='Subject: none (optional)' desc='' [63,1526][1017,1652] clickable
+  [LinearLayout] id=session_chizuk text='' desc='' [63,1694][1017,2337]
+  [ImageView] id=chizuk_art text='' desc='' [116,1737][236,1883]
+  [TextView] id=chizuk_moment text='To begin' desc='' [279,1784][975,1835]
+  [TextView] id=chizuk_he text='וּתְפִלָּה וְשִׂיחָה זוֹ יִהְיֶה בַּלָּשׁוֹן שֶׁמְּדַבְּרִים בּוֹ, דְּהַיְנוּ בִּלְשׁוֹן אַשְׁכְּנַז (בִּמְדִינָתֵנוּ), כִּי בִּלְשׁוֹן־הַקֹּדֶשׁ קָשֶׁה לוֹ לְפָרֵשׁ כָּל שִׂיחָתוֹ, וְגַם אֵין הַלֵּב נִמְשָׁךְ אַחֲרֵי הַדִּבּוּרִים … אֲבָל בִּלְשׁוֹן אַשְׁכְּנַז, שֶׁמְּסַפְּרִים וּמְדַבְּרִים בּוֹ, קַל וְקָרוֹב יוֹתֵר לְשַׁבֵּר לִבּוֹ.' desc='' [105,1926][975,2320]
+  [ImageView] id= text='' desc='Open the music player' [870,2127][1038,2295] clickable
+  [View] id=statusBarBackground text='' desc='' [0,0][1080,128]
+  [View] id=navigationBarBackground text='' desc='' [0,2337][1080,2400]
+---- xml brut ----
+<hierarchy rotation="0"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="com.myhitbodedut:id/action_bar_root" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="android:id/content" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="com.myhitbodedut:id/session_fond" class="android.widget.ScrollView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="true" focused="false" scrollable="true" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]"><node index="0" text="" resource-id="com.myhitbodedut:id/session_souffle" class="android.view.View" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]" /><node index="1" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]"><node index="0" text="HITBODEDUT" resource-id="com.myhitbodedut:id/session_titre" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[415,191][665,237]" /><node index="1" text="" resource-id="com.myhitbodedut:id/session_scene" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,279][1017,820]"><node index="0" text="" resource-id="com.myhitbodedut:id/session_character" class="android.widget.ImageView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[84,300][996,799]" /></node><node index="2" text="13:29" resource-id="com.myhitbodedut:id/session_countdown" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[351,862][728,1058]" /><node index="3" text="15 min hitbodedut" resource-id="com.myhitbodedut:id/session_caption" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1079][1017,1132]" /><node index="4" text="Music: Niggun of the Yanuka (3)" resource-id="com.myhitbodedut:id/session_music" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1143][1017,1189]" /><node index="5" text="Finish now" resource-id="com.myhitbodedut:id/session_primary" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1231][1017,1357]" /><node index="6" text="Discard" resource-id="com.myhitbodedut:id/session_secondary" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1368][1017,1494]" /><node index="7" text="Subject: none (optional)" resource-id="com.myhitbodedut:id/session_theme" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1526][1017,1652]" /><node index="8" text="" resource-id="com.myhitbodedut:id/session_chizuk" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1694][1017,2337]"><node index="0" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[105,1726][975,1894]"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[105,1726][247,1894]"><node index="0" text="" resource-id="com.myhitbodedut:id/chizuk_art" class="android.widget.ImageView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[116,1737][236,1883]" /></node><node index="1" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[279,1784][975,1835]"><node index="0" text="To begin" resource-id="com.myhitbodedut:id/chizuk_moment" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[279,1784][975,1835]" /></node></node><node index="1" text="וּתְפִלָּה וְשִׂיחָה זוֹ יִהְיֶה בַּלָּשׁוֹן שֶׁמְּדַבְּרִים בּוֹ, דְּהַיְנוּ בִּלְשׁוֹן אַשְׁכְּנַז (בִּמְדִינָתֵנוּ), כִּי בִּלְשׁוֹן־הַקֹּדֶשׁ קָשֶׁה לוֹ לְפָרֵשׁ כָּל שִׂיחָתוֹ, וְגַם אֵין הַלֵּב נִמְשָׁךְ אַחֲרֵי הַדִּבּוּרִים … אֲבָל בִּלְשׁוֹן אַשְׁכְּנַז, שֶׁמְּסַפְּרִים וּמְדַבְּרִים בּוֹ, קַל וְקָרוֹב יוֹתֵר לְשַׁבֵּר לִבּוֹ." resource-id="com.myhitbodedut:id/chizuk_he" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[105,1926][975,2320]" /></node></node></node></node><node index="1" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,2085][1080,2337]"><node index="0" text="" resource-id="" class="android.widget.ImageView" package="com.myhitbodedut" content-desc="Open the music player" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[870,2127][1038,2295]" /></node></node></node></node></node><node index="1" text="" resource-id="android:id/statusBarBackground" class="android.view.View" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,128]" /><node index="2" text="" resource-id="android:id/navigationBarBackground" class="android.view.View" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,2337][1080,2400]" /></node></hierarchy>
+---- fin ----
+
+=== video barriere ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=f3be0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false | mSource=InsetsSource id=f3be0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW: granted=false | android.permission.PACKAGE_USAGE_STATS: granted=false | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" /> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" />     <string 
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-barriere-1 : debut
+  film video-barriere-1 t=3.5 : accueil
+  toucher desc='Settings' -> (954,212)
+  film video-barriere-1 t=8.6 : reglages
+  film video-barriere-1 t=10.1 : cherche
+  film video-barriere-1 t=13.2 : trouve
+  film video-barriere-1 t=13.2 : cherche
+  film video-barriere-1 t=26.8 : trouve
+  film video-barriere-1 t=26.8 : carte des autorisations : affichage
+  film video-barriere-1 t=34.0 : divulgation : affichage
+  photo video-barriere-1-divulgation (239568 octets)
+  toucher text='Continue' -> (787,1811)
+  film video-barriere-1 t=44.3 : ecran d'Android : affichage
+  toucher text='MyHitbodedut' -> (360,1385)
+  film video-barriere-1 t=58.6 : retour dans l'application : affichage
+  photo video-barriere-1-accorde (263607 octets)
+  film video-barriere-1 t=61.9 : fin
+  film video-barriere-1.mp4 (3570399 octets)
+  film video-barriere-2 : debut
+  film video-barriere-2 t=3.5 : cherche
+  film video-barriere-2 t=9.5 : trouve
+  film video-barriere-2 t=9.5 : carte des autorisations : usage
+  film video-barriere-2 t=16.6 : divulgation : usage
+  photo video-barriere-2-divulgation (253886 octets)
+  toucher text='Continue' -> (787,1795)
+  film video-barriere-2 t=26.9 : ecran d'Android : usage
+  toucher text='MyHitbodedut' -> (355,1293)
+  film video-barriere-2 t=41.7 : retour dans l'application : usage
+  photo video-barriere-2-accorde (259125 octets)
+  film video-barriere-2 t=45.0 : fin
+  film video-barriere-2.mp4 (1596724 octets)
+  film video-barriere-3 : debut
+  film video-barriere-3 t=3.0 : cherche
+  film video-barriere-3 t=23.7 : trouve
+  film video-barriere-3 t=23.7 : carte du mode
+  toucher id='enable_switch' -> (922,658)
+  film video-barriere-3 t=30.3 : mode allume
+  film video-barriere-3 t=31.8 : notification du mode
+  photo video-barriere-3-notification (109912 octets)
+  toucher text='Choose apps' -> (540,1301)
+  film video-barriere-3 t=45.7 : liste des applications
+  toucher text='Chrome' -> (545,999)
+  film video-barriere-3 t=52.3 : application choisie : Chrome
+  film video-barriere-3 t=56.8 : cherche
+  film video-barriere-3 t=62.8 : trouve
+  film video-barriere-3 t=62.8 : etat : le mode agit
+  photo video-barriere-3-arme (210202 octets)
+  services : * ServiceRecord{42422a0 u0 com.myhitbodedut/.GateService}
+  film video-barriere-3 t=67.1 : fin
+  film video-barriere-3.mp4 (3144030 octets)
+  film video-barriere-4 : debut
+  film video-barriere-4 t=3.9 : application ouverte
+  film video-barriere-4 t=13.9 : ecran de garde
+  photo video-barriere-4-ecran (265586 octets)
+  toucher text='Done without the phone' -> (540,2082)
+  film video-barriere-4 t=24.2 : fait sans le telephone
+  photo video-barriere-4-apres (129685 octets)
+  film video-barriere-4 t=36.4 : retour dans MyHitbodedut
+  toucher desc='Settings' -> (954,212)
+  film video-barriere-4 t=41.5 : cherche
+  film video-barriere-4 t=62.3 : trouve
+  film video-barriere-4 t=62.3 : carte du mode, pour couper
+  toucher id='enable_switch' -> (922,829)
+  film video-barriere-4 t=68.4 : mode coupe
+  photo video-barriere-4-coupe (214953 octets)
+  film video-barriere-4 t=71.7 : plus de notification
+  photo video-barriere-4-sans-notification (109907 octets)
+  film video-barriere-4 t=79.9 : fin
+  film video-barriere-4.mp4 (3557828 octets)
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.PACKAGE_USAGE_STATS: granted=false | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default; time=+1m20s357ms ago; duration=+15s199ms / GET_USAGE_STATS: default; time=+1m5s448ms ago
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 22
