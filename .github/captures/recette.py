@@ -11,7 +11,8 @@ l'emulateur (13 a 16), et regarde ce qu'aucun autre parcours ne regarde :
     reglages, apercu de l'ecran « Je suis avec Hachem », puis les deux acces accordes par les
     ecrans d'Android, une application choisie, l'ecran devant elle ;
   - video : les deux sequences demandees pour la declaration des services de premier plan
-    (play/CONSOLE.md § 3.9), filmees sur l'emulateur ;
+    (play/CONSOLE.md § 3.9), filmees sur l'emulateur en six films courts (screenrecord s'arrete a
+    trois minutes), avec des reperes dates que le montage (tools/montage_video_play.py) lit ;
   - ecrans : chaque ecran, le haut puis le bas apres defilement, et le clavier la ou l'on
     ecrit, en francais (navigation par gestes), en hebreu (trois boutons), en arabe, en espagnol ;
   - versions : l'accueil de chacune des cinq versions de l'application ;
@@ -362,10 +363,20 @@ def neuve():
           c.sh(f"appops get {c.PKG} GET_USAGE_STATS").strip())
 
 
-def chercher(rid=None, text=None, pas=16, lent=False, place=None):
-    """Un element de l'ecran qui defile, ou qu'il soit : on descend, puis on remonte. Rend ses bornes.
+def chercher(rid=None, text=None, pas=16, lent=False, place=None, dabord="bas"):
+    """Un element de l'ecran qui defile, ou qu'il soit : on descend, puis on remonte (ou l'inverse,
+    dabord="haut"). Rend ses bornes.
     place : la part de la hauteur ou l'amener (0.25 : au quart haut), pour voir avec lui ce qui
-    l'entoure ; sans elle, il reste ou il est des qu'il se voit hors des barres."""
+    l'entoure ; sans elle, il reste ou il est des qu'il se voit hors des barres.
+    Pendant un film, la recherche est encadree de deux reperes : le montage l'accelere."""
+    repere("cherche")
+    try:
+        return _chercher(rid, text, pas, lent, place, dabord)
+    finally:
+        repere("trouve")
+
+
+def _chercher(rid, text, pas, lent, place, dabord):
     duree = 500 if lent else 300
     x = c.W // 2
 
@@ -379,8 +390,8 @@ def chercher(rid=None, text=None, pas=16, lent=False, place=None):
         c.pause(1.0)
         return c.trouver(rid=rid, text=text) or b
 
-    for sens in (1, -1):
-        for _ in range(pas if sens == 1 else 2 * pas):
+    for tour, sens in enumerate((1, -1) if dabord == "bas" else (-1, 1)):
+        for _ in range(pas if tour == 0 else 2 * pas):
             b = c.trouver(rid=rid, text=text)
             if b is not None:
                 if place is not None:
@@ -613,11 +624,10 @@ def preparer_film():
     neuve()
     mardi_matin()
     c.sh(f"pm grant {c.PKG} android.permission.POST_NOTIFICATIONS")
-    c.regler({"onboarded_version": ("int", 2), "langue_app": ("string", "en"), "version_app": ("string", "classique"),
-              "lieu_nom": ("string", "New York"), "lieu_latitude": ("string", "40.71427"),
-              "lieu_longitude": ("string", "-74.00597"), "lieu_altitude": ("string", "0.0"),
-              "lieu_fuseau": ("string", "America/New_York"), "lieu_ville": ("long", 5128581),
-              "lieu_t": ("long", 1794800000000), "in_israel": ("boolean", "false")})
+    c.regler({"onboarded_version": ("int", 2), "langue_app": ("string", "en"), "version_app": ("string", "classique")})
+    # Paris : a 9 h 30 a l'horloge de l'emulateur (temps universel), il y fait jour, et le Jour montre
+    # son ciel de matin. New York (premier tournage) y etait encore dans la nuit.
+    lieu("Paris", "48.85341", "2.3488", "Europe/Paris", 2988507)
     journal_de_demonstration()
     c.langue("en")
     c.sh("settings put system show_touches 1")
@@ -664,9 +674,8 @@ def video_seance():
     repere("retour au volet")
     c.pause(1.5)
     c.toucher(rid="start_session", attente=3.0)
-    autoriser_notifications()
     repere("seance lancee")
-    c.pause(7.0)
+    c.pause(9.0)
     services = services_seance()
     c.log("  services :", services.strip().replace("\n", " | ")[:700])
     if "SessionService" not in services:
@@ -713,9 +722,10 @@ def video_seance():
 
 
 def video_barriere():
-    """Sequence 2, en trois films : chaque acces accorde apres sa divulgation ; puis le mode allume,
-    une application choisie, l'ecran devant elle, « Done without the phone », et l'interrupteur
-    qui coupe le mode. Jamais l'ecran d'accueil du telephone : le lanceur de l'emulateur est coupe."""
+    """Sequence 2, en quatre films courts, dans l'ordre de la note remise a Google : chaque acces
+    accorde apres sa divulgation ; le mode allume et une application choisie ; l'ecran devant elle
+    et « Done without the phone » ; l'interrupteur qui coupe le mode. Jamais l'ecran d'accueil du
+    telephone : le lanceur de l'emulateur est coupe."""
     navigation("gestes")
     preparer_film()
     c.lancer(attente=5)
@@ -727,7 +737,12 @@ def video_barriere():
             repere("accueil")
             c.toucher(desc="Settings", attente=3.0)
             repere("reglages")
-        chercher(text=titre, lent=True, place=0.6)
+            c.pause(1.5)
+            # La carte des autorisations est tout en bas : d'un elan, puis on remonte jusqu'a la ligne.
+            repere("cherche")
+            au_bout(True, 6)
+            repere("trouve")
+        chercher(text=titre, lent=True, place=0.6, dabord="haut")
         repere("carte des autorisations : " + nom)
         c.pause(2.0)
         b = bouton_de_la_ligne(titre)
@@ -738,44 +753,52 @@ def video_barriere():
         toucher_bornes(b, attente=3.0)   # la divulgation dans l'application
         repere("divulgation : " + nom)
         photo(f"video-barriere-{i}-divulgation")
-        c.pause(4.0)                      # le temps de la lire
+        c.pause(5.0)                      # le temps de la lire
         c.toucher(text="Continue", attente=3.0)
         repere("ecran d'Android : " + nom)
         if not accorder_dans_android():
             faute(f"VIDEO barriere : l'ecran d'Android n'offre pas d'interrupteur pour [{titre}]")
         repere("retour dans l'application : " + nom)
-        c.pause(2.5)
+        c.pause(3.0)
         photo(f"video-barriere-{i}-accorde")
         film_fin()
     if c.PKG not in devant():
         c.lancer(attente=4)
         c.toucher(desc="Settings", attente=3.0)
+    # Troisieme film : le mode allume, une application choisie, l'etat.
     film_debut("video-barriere-3")
     c.pause(1.5)
-    chercher(rid="enable_switch", lent=True, place=0.25)
+    chercher(rid="enable_switch", lent=True, place=0.25, dabord="haut")
     repere("carte du mode")
-    c.pause(1.5)
+    c.pause(2.0)
     c.toucher(rid="enable_switch", attente=2.5)
-    autoriser_notifications()
     repere("mode allume")
+    c.pause(1.5)
     c.toucher(text="Choose apps", attente=4.0)
     repere("liste des applications")
     paquet = None
     for libelle, p in (("Chrome", "com.android.chrome"), ("YouTube", "com.google.android.youtube"),
                        ("Messages", "com.google.android.apps.messaging"), ("Photos", "com.google.android.apps.photos")):
         if c.trouver(text=libelle, defilements=6) is not None:
-            c.toucher(text=libelle, attente=2.0)
+            c.toucher(text=libelle, attente=2.5)
             paquet = p
             repere("application choisie : " + libelle)
             break
         au_bout(False, 3)
+    c.pause(1.5)
     c.retour()
     c.pause(2.0)
-    chercher(text="Where “I am with Hashem” stands", lent=True, place=0.3)
+    chercher(text="Where “I am with Hashem” stands", lent=True, place=0.3, dabord="haut")
     repere("etat : le mode agit")
     photo("video-barriere-3-arme")
-    c.pause(3.0)
+    c.pause(4.0)
     c.log("  services :", services_app()[:300])
+    if "GateService" not in services_app():
+        faute("VIDEO barriere : GateService ne tourne pas une fois tout regle")
+    film_fin()
+    # Quatrieme film : l'application choisie, l'ecran devant elle, puis le mode coupe.
+    film_debut("video-barriere-4")
+    c.pause(2.0)
     if paquet:
         # « Open the app you picked » : lancee d'ici, sans passer par l'ecran d'accueil.
         c.sh(f"monkey -p {paquet} -c android.intent.category.LAUNCHER 1")
@@ -784,22 +807,25 @@ def video_barriere():
         if c.trouver(text="Did you do your hitbodedut?") is None:
             faute(f"VIDEO barriere : l'ecran ne se pose pas sur {paquet}")
         repere("ecran de garde")
-        photo("video-barriere-3-ecran")
-        c.pause(3.0)
+        photo("video-barriere-4-ecran")
+        c.pause(4.0)
         c.toucher(text="Done without the phone", defilements=2, attente=4.0)
         repere("fait sans le telephone")
-        photo("video-barriere-3-apres")
-        c.pause(2.0)
+        photo("video-barriere-4-apres")
+        c.pause(3.0)
     else:
         faute("VIDEO barriere : aucune application connue a choisir")
     c.lancer(attente=4)
     fermer_trophees()
+    repere("retour dans MyHitbodedut")
     c.toucher(desc="Settings", attente=3.0)
     chercher(rid="enable_switch", lent=True, place=0.3)
+    repere("carte du mode, pour couper")
+    c.pause(1.5)
     c.toucher(rid="enable_switch", attente=2.5)
     repere("mode coupe")
-    c.pause(2.5)
-    photo("video-barriere-3-coupe")
+    c.pause(3.0)
+    photo("video-barriere-4-coupe")
     film_fin()
     if "GateService" in services_app():
         faute("VIDEO barriere : GateService tourne encore apres l'interrupteur coupe")
