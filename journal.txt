@@ -1,0 +1,187 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['ecrans-he'] | Android 15 API 35
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== ecrans-he ===
+  navigation : boutons | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" val
+  langue : Locales for com.myhitbodedut for user 0 are [he]
+  capture he-boutons-accueil (351646 octets)
+  capture he-boutons-accueil-bas (253198 octets)
+  toucher id='depart_regler' -> (142,2090)
+  capture he-boutons-accueil-volet (262326 octets)
+  toucher id='depart_regler' -> (142,2090)
+  toucher id='nav_texts' -> (540,2295)
+  capture he-boutons-livres (128676 octets)
+  capture he-boutons-livres-bas (128681 octets)
+  toucher id='nav_journal' -> (180,2295)
+  capture he-boutons-chemin (98680 octets)
+  capture he-boutons-chemin-bas (98680 octets)
+  capture he-boutons-reglages (170752 octets)
+  capture he-boutons-reglages-bas (234723 octets)
+  capture he-boutons-choix-version (158578 octets)
+  capture he-boutons-choix-version-bas (158578 octets)
+  capture he-boutons-seance (213405 octets)
+  capture he-boutons-seance-bas (184909 octets)
+  capture he-boutons-bravo (492823 octets)
+  capture he-boutons-bravo-bas (492823 octets)
+  capture he-boutons-journal (20867 octets)
+  capture he-boutons-journal-bas (20867 octets)
+  capture he-boutons-parcours (146550 octets)
+  capture he-boutons-parcours-bas (146550 octets)
+  capture he-boutons-hizouk (120354 octets)
+  capture he-boutons-hizouk-bas (120354 octets)
+  capture he-boutons-conseils (277418 octets)
+  capture he-boutons-conseils-bas (279226 octets)
+  capture he-boutons-rappels (136333 octets)
+  capture he-boutons-rappels-bas (136333 octets)
+  capture he-boutons-musique (215029 octets)
+  capture he-boutons-musique-bas (301705 octets)
+  capture he-boutons-siddour (252435 octets)
+  capture he-boutons-siddour-bas (177719 octets)
+  capture he-boutons-siddour-lecture (292447 octets)
+  capture he-boutons-siddour-lecture-bas (420144 octets)
+  capture he-boutons-tefilot (302362 octets)
+  capture he-boutons-tefilot-bas (186748 octets)
+  capture he-boutons-tehilim (147908 octets)
+  capture he-boutons-tehilim-bas (108536 octets)
+  capture he-boutons-tehilim-lecture (176886 octets)
+  capture he-boutons-tehilim-lecture-bas (176886 octets)
+  capture he-boutons-tikkun (280100 octets)
+  capture he-boutons-tikkun-bas (266459 octets)
+  capture he-boutons-bibliotheque (175966 octets)
+  capture he-boutons-bibliotheque-bas (175966 octets)
+  capture he-boutons-livres (323000 octets)
+  capture he-boutons-livres-bas (293645 octets)
+  capture he-boutons-source (326225 octets)
+  capture he-boutons-source-bas (279614 octets)
+  capture he-boutons-zmanim (234744 octets)
+  capture he-boutons-zmanim-bas (190818 octets)
+  capture he-boutons-vol (253796 octets)
+  capture he-boutons-vol-clavier (296576 octets)
+  capture he-boutons-vol-bas (244837 octets)
+  capture he-boutons-boussole (259902 octets)
+  capture he-boutons-boussole-bas (287254 octets)
+  capture he-boutons-calendrier (214851 octets)
+  capture he-boutons-calendrier-bas (232127 octets)
+  capture he-boutons-halakha (262276 octets)
+  capture he-boutons-halakha-bas (285005 octets)
+  capture he-boutons-hilloulot (173504 octets)
+  capture he-boutons-hilloulot-clavier (208087 octets)
+  capture he-boutons-hilloulot-bas (167306 octets)
+  capture he-boutons-recherche (124810 octets)
+  capture he-boutons-recherche-clavier (124789 octets)
+  capture he-boutons-recherche-bas (51794 octets)
+  capture he-boutons-paliers (157484 octets)
+  capture he-boutons-paliers-bas (148495 octets)
+  capture he-boutons-applications (180591 octets)
+  capture he-boutons-applications-bas (183449 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;tehilim-121-1-2&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;eikha-2-19&#10;lm2-11-champs&#10;shr-10-langue</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">yechayahou-65-24&#10;lm2-97-chemin-n
+  FAUTE : he-boutons-version-pile : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+  capture he-boutons-version-pile (399259 octets)
+  FAUTE : he-boutons-version-pile-2 : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+  capture he-boutons-version-pile-2 (399259 octets)
+  FAUTE : he-boutons-version-pile-3 : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+  capture he-boutons-version-pile-3 (399259 octets)
+  FAUTE : he-boutons-version-pile-4 : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+  capture he-boutons-version-pile-4 (399259 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;tehilim-121-1-2&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;eikha-2-19&#10;lm2-11-champs&#10;shr-10-langue</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">yechayahou-65-24&#10;lm2-97-chemin-n
+  capture he-boutons-version-bento (219314 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-grenier&#10;tehilim-121-1-2&#10;sh-275-sous-le-talit&#10;lm1-52-nuit&#10;eikha-2-19&#10;lm2-11-champs&#10;shr-10-langue</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">yechayahou-65-24&#10;lm2-97-chemin-n
+  adb shell rm -f /sdcard/ui.xml -> 1 error: closed
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device offline
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture he-boutons-version-instant (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture he-boutons-version-serenite (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale set-app-locales com.myhitbodedut --locales fr -> 1 adb: device 'emulator-5554' not found
+  adb shell cmd locale get-app-locales com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  langue : 
+  adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys window displays -> 1 adb: device 'emulator-5554' not found
+  navigation : gestes | cadres : (0, 2400, None)
+  adb shell dumpsys window displays | grep -E 'type=navigationBars|ITYPE_NAVIGATION_BAR' | head -4 -> 1 adb: device 'emulator-5554' not found
+  barres du bas : (aucune)
+
+=== bilan de la recette ===
+he-boutons-version-pile : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+he-boutons-version-pile-2 : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+he-boutons-version-pile-3 : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+he-boutons-version-pile-4 : COLLE au bord TextView  «1 / 4» (875, 353, 1080, 406)
+
+captures : 74
