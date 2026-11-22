@@ -1,0 +1,117 @@
+== exam-01-bienvenue
+== exam-03-choix-version
+== exam-04-today
+PETIT 363x32dp Button today_offline «Done without the phone»
+== exam-05-settings
+PETIT 88x41dp Button ouverture_button «Opening screen: Today»
+== exam-06-carte-etat
+PETIT 52x26dp Switch chabbat_alerte_switch «“Shabbat in 3 hours” alert»
+== exam-09-retour-reglages
+PETIT 52x26dp Switch chabbat_alerte_switch «“Shabbat in 3 hours” alert»
+== exam-10-apercu
+== exam-11-apercu-bas
+== exam-13-carte-autorisations
+== exam-16-autorisations-accordees
+== exam-17-carte-mode
+PETIT 344x22dp Button preview_gate «Preview the “I am with Hashem”»
+PETIT 52x37dp Switch hide_countdown_switch «Hide the countdown»
+== exam-18-liste-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== exam-19-application-choisie
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== exam-20-plage
+== exam-21-etat-arme
+PETIT 185x29dp Button levana_usage_button «Birkat HaLevana: custom: By nu»
+PETIT 94x2dp Button name_button «First name: Not set»
+== exam-22-barriere-reelle
+== exam-23-barriere-reelle-bas
+== exam-25-rythme
+PETIT 101x38dp Button window_start «“I am with Hashem” hours: 6:00»
+PETIT 110x38dp Button window_end «“I am with Hashem” hours: 11:0»
+== exam-26-mode-coupe
+PETIT 104x5dp Button region_button «Region: Diaspora»
+== fr-gestes-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-gestes-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-gestes-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-gestes-version-pile-4
+== fr-gestes-version-bento
+== fr-gestes-version-bento-bas
+== fr-gestes-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x12dp LinearLayout  «»
+MUET LinearLayout  (42, 2305, 1038, 2337)
+== fr-gestes-version-instant-bas
+== fr-gestes-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== fr-gestes-version-serenite-bas
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x40dp TextView  «Tout voir»
+PETIT 54x40dp TextView  «Tout voir»
+== fr-boutons-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-boutons-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-boutons-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-boutons-version-pile-4
+== fr-boutons-version-bento
+== fr-boutons-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+== fr-boutons-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== gestes-seance-en-cours
+== gestes-seance-calme
+== gestes-seance-apres
+== boutons-seance-en-cours
+== boutons-seance-calme
+== boutons-seance-apres
+PETIT 363x0dp Button celebration_continue «Continuer»
+== gestes-barriere-etat
+PETIT 96x9dp Button ouverture_button «Écran d’ouverture : Le Jour»
+PETIT 52x17dp Switch enable_switch «Je suis avec Hachem»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+PETIT 363x38dp Button blocker_snooze «Plus tard (15 min)»
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 96x3dp Button ouverture_button «Écran d’ouverture : Le Jour»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+PETIT 363x14dp Button blocker_snooze «Plus tard (15 min)»
+== boutons-barriere-reelle-bas
+== gestes-barriere-apres-redemarrage
