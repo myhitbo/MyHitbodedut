@@ -134,11 +134,7 @@ public struct MusiqueMiniLecteurVue: View {
     }
 
     private var liaisonPosition: Binding<Double> {
-        Binding(get: { @MainActor [mini] in
-            Double(mini.position)
-        }, set: { @MainActor [mini] valeur in
-            mini.glisser(a: Int(valeur))
-        })
+        Bindable(mini).positionGlissee
     }
 
     /// Le temps écoulé au début, la durée à la fin, en chiffres de même chasse.

@@ -158,4 +158,25 @@ struct MagasinTests {
         try await magasin.modifierReglages { $0.setAllumage(30) }
         #expect(magasin.reglages.allumage == 30)
     }
+
+    @Test func lesFichiersGardentLeJournalEtLesReglagesDUnLancementALAutre() async throws {
+        let dossier = FileManager.default.temporaryDirectory
+            .appendingPathComponent("MagasinTests-" + UUID().uuidString, isDirectory: true)
+        defer { _ = try? FileManager.default.removeItem(at: dossier) }
+        let date = try unJour()
+        let premier = try await Magasin.charger(PersistanceFichiers(dossier: dossier))
+        let vide = premier.journal.dates.isEmpty
+        #expect(vide)
+        try await premier.modifierJournal { $0[date] = Journee(minutes: 15, note: "Merci") }
+        try await premier.modifierReglages { $0.setTargetMinutes(30) }
+        // Un nouveau lancement : un autre dépôt sur le même dossier relit ce que le premier a écrit.
+        let second = try await Magasin.charger(PersistanceFichiers(dossier: dossier))
+        let journee = second.journal.record(date)
+        #expect(journee == Journee(minutes: 15, note: "Merci"))
+        #expect(second.reglages.targetMinutes == 30)
+        let journal = FileManager.default.fileExists(atPath: dossier.appendingPathComponent(Depot.fichierJournal).path)
+        let reglages = FileManager.default.fileExists(atPath: dossier.appendingPathComponent(Depot.fichierReglages).path)
+        #expect(journal)
+        #expect(reglages)
+    }
 }

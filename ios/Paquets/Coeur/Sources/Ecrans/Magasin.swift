@@ -66,6 +66,34 @@ public actor PersistanceEnMemoire: Persistance {
     }
 }
 
+/// La persistance de l'app : les deux fichiers du dossier de l'app (le conteneur du groupe d'apps quand il existe),
+/// par l'acteur `Depot` de Coeur, l'unique écrivain de journal.json et de reglages.json (PORTAGE.md § 3.2). Chaque
+/// écriture remplace le fichier d'un coup ; un fichier illisible est mis de côté, jamais écrasé en silence.
+public struct PersistanceFichiers: Persistance {
+    private let depot: Depot
+
+    public init(_ depot: Depot) {
+        self.depot = depot
+    }
+
+    /// Le dépôt d'un dossier, le journal hors de la sauvegarde iCloud (décision D6).
+    public init(dossier: URL) {
+        self.init(Depot(dossier: dossier))
+    }
+
+    public func lire() async throws -> Enregistrement {
+        Enregistrement(journal: try await depot.journal(), reglages: try await depot.reglages())
+    }
+
+    public func enregistrer(journal: Journal) async throws {
+        try await depot.modifier { $0 = journal }
+    }
+
+    public func enregistrer(reglages: Reglages) async throws {
+        try await depot.modifierReglages { $0 = reglages }
+    }
+}
+
 /// Le journal et les réglages de l'app, que les écrans lisent et changent (Store.kt d'Android). Un changement
 /// se voit tout de suite, puis s'écrit par la `Persistance` injectée ; les écritures d'un même fichier se
 /// suivent dans l'ordre des changements, si bien que le dernier écrit est toujours le dernier fait.

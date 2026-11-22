@@ -29,7 +29,8 @@ concurrency:
 
 jobs:
   vues:
-    # macos-26-intel, comme ios-app.yml : Xcode 26.6, sur x64.
+    # macos-26-intel, comme ios-app.yml : Xcode 26.6, sur x64. Une seule architecture (celle du runner), pour aller
+    # deux fois plus vite : ios-app.yml compile les deux.
     runs-on: macos-26-intel
     timeout-minutes: 40
     env:
@@ -49,7 +50,7 @@ jobs:
         working-directory: ios/Paquets/Coeur
         run: |
           set -o pipefail
-          xcodebuild build -scheme Coeur-Package -destination "generic/platform=iOS Simulator" \
+          xcodebuild build -scheme Coeur-Package -destination "generic/platform=iOS Simulator" ARCHS=x86_64 \
             -derivedDataPath "$RUNNER_TEMP/paquet" 2>&1 | tee "$GITHUB_WORKSPACE/vues.log" \
             | grep -E "error:|warning:|BUILD" || true
           # La preuve que l'interrupteur a joué : une vue en chantier a bien été compilée.
@@ -70,7 +71,7 @@ jobs:
           set -o pipefail
           xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
             -destination "generic/platform=iOS Simulator" -derivedDataPath "$RUNNER_TEMP/app" \
-            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
+            ARCHS=x86_64 CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
           grep -q "BUILD SUCCEEDED" app.log
       - name: Erreurs, une ligne chacune
         if: always()
@@ -78,6 +79,8 @@ jobs:
           for f in vues.log app.log; do
             test -f "$f" || continue
             n=$(grep -E "^/.*: error:" "$f" | sort -u | wc -l | tr -d ' ')
+            # Un plantage du compilateur n'écrit pas d'« error: » : le fichier en cours et la fonction en cause.
+            grep -E "While (evaluating|emitting|type-checking)|Command SwiftCompile failed" "$f" | sort -u | head -20 || true
             echo "## $f : $n erreurs" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             grep -E "^/.*: error:" "$f" | sed "s|$GITHUB_WORKSPACE/||" | sort -u | head -400 >> "$GITHUB_STEP_SUMMARY" || true

@@ -162,35 +162,17 @@ public struct MusiqueVue: View {
 
     /// L'interrupteur de la musique : la séance en cours suit (le modèle le fait).
     private var liaisonMusique: Binding<Bool> {
-        Binding(get: { @MainActor [modele] in
-            modele.musiqueActive
-        }, set: { @MainActor [modele] oui in
-            Task.immediate { @MainActor in
-                await modele.activerMusique(oui)
-            }
-        })
+        Bindable(modele).musiqueLiee
     }
 
     /// L'interrupteur de la lecture aléatoire.
     private var liaisonAleatoire: Binding<Bool> {
-        Binding(get: { @MainActor [modele] in
-            modele.aleatoire
-        }, set: { @MainActor [modele] oui in
-            Task.immediate { @MainActor in
-                await modele.activerAleatoire(oui)
-            }
-        })
+        Bindable(modele).aleatoireLie
     }
 
     /// La barre du volume, de 0 à 100 par pas de 1 : chaque pas est enregistré (onProgressChanged).
     private var liaisonVolume: Binding<Double> {
-        Binding(get: { @MainActor [modele] in
-            Double(modele.volume)
-        }, set: { @MainActor [modele] valeur in
-            Task.immediate { @MainActor in
-                await modele.choisirVolume(Int(valeur))
-            }
-        })
+        Bindable(modele).volumeLie
     }
 
     // MARK: Le bouton fixe
@@ -225,23 +207,14 @@ public struct MusiqueVue: View {
 
     /// Le dialogue des ambiances : fermé par « Retour », par le geste qui baisse la feuille, ou par un choix.
     private var choixAmbianceOuvert: Binding<Bool> {
-        Binding(get: { @MainActor [modele] in
-            modele.choixAmbianceOuvert
-        }, set: { @MainActor [modele] ouvert in
-            if !ouvert {
-                modele.fermerChoixAmbiance()
-            }
-        })
+        Bindable(modele).choixAmbianceLie
     }
 
     /// Le dialogue « Renommer ». Chaque bouton ferme le dialogue par le modèle lui-même (le début de son action
     /// part tout de suite) : la fermeture que SwiftUI écrit ici n'a rien à faire, et surtout pas « Retour »,
     /// qui effacerait le dialogue avant que « Enregistrer » ne le lise.
     private var renommageOuvert: Binding<MusiqueRenommage?> {
-        Binding(get: { @MainActor [modele] in
-            modele.renommage
-        }, set: { @MainActor _ in
-        })
+        Bindable(modele).renommageLie
     }
 
     private var titreRenommage: Text {

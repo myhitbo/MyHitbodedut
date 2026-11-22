@@ -24,35 +24,6 @@ let enChantierEcrans: [String] = [
 let enChantierEcransTests: [String] = [
 ]
 let enChantierVues: [String] = toutesLesVues ? [] : [
-    "BibliothequeCommun.swift",
-    "BibliothequeEntreeVue.swift",
-    "BibliothequeVue.swift",
-    "BoussoleFeuille.swift",
-    "BoussoleToile.swift",
-    "BoussoleVue.swift",
-    "ChizukVue.swift",
-    "ConseilsVue.swift",
-    "DefilementAutoVue.swift",
-    "HalakhaCommun.swift",
-    "HalakhaVue.swift",
-    "HilloulotVue.swift",
-    "LectureBarreVue.swift",
-    "LectureEcrans.swift",
-    "LectureLignesVue.swift",
-    "LectureMarquesVue.swift",
-    "LectureVue.swift",
-    "MusiqueMiniLecteurVue.swift",
-    "MusiqueVue.swift",
-    "PresentationVue.swift",
-    "RechercheVue.swift",
-    "SiddourVue.swift",
-    "TefilotVue.swift",
-    "TehilimCommun.swift",
-    "TehilimLectureVue.swift",
-    "TehilimVue.swift",
-    "TikkunVue.swift",
-    "TropheeEffets.swift",
-    "TropheeObjet.swift",
 ]
 
 let package = Package(

@@ -74,9 +74,7 @@ public struct HilloulotVue: View {
     }
 
     private var champ: Binding<String> {
-        let modele = self.modele
-        return Binding(get: { @MainActor in modele.recherche },
-                       set: { @MainActor nouveau in modele.chercher(nouveau) })
+        Bindable(modele).rechercheSaisie
     }
 
     // MARK: La liste
@@ -114,17 +112,7 @@ public struct HilloulotVue: View {
 
     /// Une écriture qui échoue ne dit rien, comme Store.setHilloulotAffichees.
     private var interrupteur: Binding<Bool> {
-        let modele = self.modele
-        return Binding(get: { @MainActor in modele.afficheesSurLaCarteDuJour },
-                       set: { @MainActor oui in
-                           Task {
-                               do {
-                                   try await modele.afficherSurLaCarteDuJour(oui)
-                               } catch {
-                                   // Android n'affiche rien.
-                               }
-                           }
-                       })
+        Bindable(modele).interrupteurCarteDuJour
     }
 }
 

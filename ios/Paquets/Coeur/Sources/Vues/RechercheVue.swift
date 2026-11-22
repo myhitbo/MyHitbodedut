@@ -64,9 +64,7 @@ public struct RechercheVue: View {
     }
 
     private var champ: Binding<String> {
-        let modele = self.modele
-        return Binding(get: { @MainActor in modele.texte },
-                       set: { @MainActor nouveau in modele.chercher(nouveau) })
+        Bindable(modele).texteSaisi
     }
 
     // MARK: La portée

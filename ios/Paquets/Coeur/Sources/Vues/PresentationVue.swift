@@ -288,22 +288,12 @@ public struct PresentationVue: View {
 
     /// L'interrupteur lit le réglage du modèle et l'écrit par son action.
     private var rappel: Binding<Bool> {
-        let modele = modele
-        return Binding(
-            get: { @MainActor in modele.rappelActif },
-            set: { @MainActor actif in
-                Task { try? await modele.basculerRappel(actif) }
-            })
+        Bindable(modele).rappelLie
     }
 
     /// La feuille de l'heure suit `choixHeureOuvert` ; glissée vers le bas, elle se ferme sans rien choisir.
     private var choixHeure: Binding<Bool> {
-        let modele = modele
-        return Binding(
-            get: { @MainActor in modele.choixHeureOuvert },
-            set: { @MainActor ouvert in
-                if !ouvert { modele.fermerChoixHeure() }
-            })
+        Bindable(modele).choixHeureLie
     }
 
     /// L'heure du rappel telle qu'Android l'écrit (OnboardingActivity.heure) : « HH:mm » si le téléphone est
