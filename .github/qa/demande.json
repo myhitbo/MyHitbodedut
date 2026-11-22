@@ -3,11 +3,9 @@
   "variante": "release",
   "cibles": [
     { "api": 36, "nom": "api36-instant", "passes": "instant" },
-    { "api": 36, "nom": "api36-instant-gl", "passes": "rendu-gl,instant" },
-    { "api": 36, "nom": "api36-serenite", "passes": "serenite" },
-    { "api": 36, "nom": "api36-serenite-gl", "passes": "rendu-gl,serenite" },
     { "api": 35, "nom": "api35-instant", "passes": "instant" },
-    { "api": 35, "nom": "api35-serenite", "passes": "serenite" },
-    { "api": 34, "nom": "api34-instant", "passes": "instant,serenite" }
+    { "api": 34, "nom": "api34-instant", "passes": "instant" },
+    { "api": 33, "nom": "api33-instant", "passes": "instant" },
+    { "api": 36, "nom": "api36-pile-bento", "passes": "pile,bento" }
   ]
 }
