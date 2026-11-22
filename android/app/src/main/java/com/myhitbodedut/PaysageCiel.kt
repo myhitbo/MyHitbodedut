@@ -37,6 +37,7 @@ class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : D
         val h = bounds.height().toFloat()
         ciel.shader = LinearGradient(0f, 0f, 0f, h * 0.85f, couleurs, null, Shader.TileMode.CLAMP)
         canvas.drawRect(0f, 0f, w, h, ciel)
+        if (w > 0) return
         if (phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER) {
             val visibles = if (phase == CielDuJour.Phase.NUIT) etoiles else etoiles.take(18)
             visibles.forEach { (x, y, t) -> canvas.drawCircle(x * w, y * h, t * d * 0.8f, etoile) }
