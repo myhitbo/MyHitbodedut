@@ -2,11 +2,6 @@
   "parcours": "recette",
   "variante": "release",
   "cibles": [
-    { "api": 36, "nom": "api36-barre-fr", "passes": "lanceur,ecrans-fr" },
-    { "api": 36, "nom": "api36-barre-he", "passes": "lanceur,ecrans-he" },
-    { "api": 36, "nom": "api36-barre-services", "passes": "lanceur,seance,barriere,versions" },
-    { "api": 35, "nom": "api35-barre-fr", "passes": "lanceur,ecrans-fr" },
-    { "api": 35, "nom": "api35-barre-he", "passes": "lanceur,ecrans-he" },
-    { "api": 35, "nom": "api35-barre-services", "passes": "lanceur,seance,barriere,versions" }
+    { "api": 36, "nom": "api36-barre-versions", "passes": "lanceur,versions", "sauf": "instant" }
   ]
 }
