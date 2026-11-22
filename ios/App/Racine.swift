@@ -3,154 +3,361 @@ import Ecrans
 import SwiftUI
 import Vues
 
-/// Un écran qu'ouvre la pile du Jour : les zmanim (la date hébraïque de l'en-tête) et les réglages (la roue).
-enum EcranDuJour: Hashable {
+/// Un écran poussé dans la pile d'un onglet. Les trois piles partagent ces destinations : la séance part de la barre
+/// de départ de n'importe quel lieu, un texte s'ouvre depuis le Jour comme depuis les Livres.
+enum Ecran: Hashable {
     case zmanim
-    case reglages
-}
-
-/// Un écran qu'ouvre la pile du Chemin : le journal, « Mon parcours », les trophées.
-enum EcranDuChemin: Hashable {
+    case reglages(carteBarriere: Bool)
+    case choixVersion
+    case seance(demarrer: Bool)
+    case tefilotDeLaSeance
     case journal
     case parcours
     case paliers
+    case recherche
+    case tikkun
+    case siddour
+    case tehilim
+    case tefilot
+    case chizuk
+    case conseils
+    case bibliotheque(livresSeuls: Bool)
+    case halakha(recherche: String?)
+    case hilloulot(recherche: String?)
+    case lecture(LectureCible)
+    case tehilimLecture(TehilimLectureCible)
+    case entree(String)
+}
+
+/// Une feuille ou un écran plein posé par-dessus les onglets.
+enum Pardessus: Hashable, Identifiable {
+    case presentation
+    case celebration(CelebrationDemande)
+    case note(JourCivil)
+    case marquesPages(recueil: String?)
+
+    var id: String {
+        switch self {
+        case .presentation: "presentation"
+        case .celebration(let demande): "celebration-\(demande.minutes)-\(demande.annulee)"
+        case .note(let jour): "note-\(jour.iso)"
+        case .marquesPages(let recueil): "marques-\(recueil ?? "")"
+        }
+    }
 }
 
 /// Les trois onglets de l'app, dans l'ordre de la barre d'Android (Onglet, nav_main.xml ; refonte du 13/11), chacun
-/// avec sa pile de navigation (PORTAGE.md § 1.2). Zmanim et Réglages ne sont plus des onglets : l'en-tête du Jour les
-/// ouvre dans sa pile. La racine pose aussi l'apparence tirée des réglages : la palette, le mode clair ou sombre,
-/// l'adresse qui choisit le personnage ; un réglage changé se voit aussitôt.
+/// avec sa pile de navigation (PORTAGE.md § 1.2) ; la barre de départ au bas de chacun, et son volet par-dessus. Les
+/// modèles demandent leurs écrans par des routes, que la racine ouvre. La racine pose aussi l'apparence tirée des
+/// réglages : la palette, le mode clair ou sombre, l'adresse qui choisit le personnage ; un réglage changé se voit
+/// aussitôt.
 struct Racine: View {
-    let magasin: Magasin
+    let app: ModelesApp
     let palettes: Palettes?
-    let zmanim: ZmanimModele
-    let accueil: AccueilModele
-    let chemin: CheminModele
-    @Binding var onglet: Onglet
-    @Binding var pileDuJour: [EcranDuJour]
-    @State private var pileDuChemin: [EcranDuChemin] = []
+    @State private var onglet: Onglet
+    @State private var pileDuJour: NavigationPath
+    @State private var pileDesLivres = NavigationPath()
+    @State private var pileDuChemin = NavigationPath()
+    @State private var feuille: Pardessus? = nil
+    @State private var plein: Pardessus? = nil
     @Environment(\.colorScheme) private var schema
 
-    init(magasin: Magasin, palettes: Palettes?, zmanim: ZmanimModele, accueil: AccueilModele, chemin: CheminModele,
-         onglet: Binding<Onglet>, pileDuJour: Binding<[EcranDuJour]>) {
-        self.magasin = magasin
+    init(app: ModelesApp, palettes: Palettes?) {
+        self.app = app
         self.palettes = palettes
-        self.zmanim = zmanim
-        self.accueil = accueil
-        self.chemin = chemin
-        _onglet = onglet
-        _pileDuJour = pileDuJour
+        _onglet = State(initialValue: Onglet.initial(app.magasin.reglages))
+        var pile = NavigationPath()
+        // Zmanim est déjà posé au lancement quand le réglage « ecran_ouverture » le demande.
+        if Onglet.zmanimParDessus(app.magasin.reglages) { pile.append(Ecran.zmanim) }
+        _pileDuJour = State(initialValue: pile)
     }
 
     var body: some View {
-        let apparence = ApparenceChoisie(magasin.reglages)
+        let apparence = ApparenceChoisie(app.magasin.reglages)
         let palette = PaletteApp.choisie(palettes, apparence)
         TabView(selection: $onglet) {
             Tab(LocalizedStringKey(Onglet.aujourdhui.cle), systemImage: Onglet.aujourdhui.symbole,
                 value: Onglet.aujourdhui) {
                 NavigationStack(path: $pileDuJour) {
-                    LeJourEnAttente(accueil: accueil)
-                        .navigationDestination(for: EcranDuJour.self) { ecran in
-                            switch ecran {
-                            case .zmanim:
-                                ZmanimVue(modele: zmanim)
-                            case .reglages:
-                                EnAttente(cle: "settings_title", symbole: "gearshape")
-                            }
-                        }
+                    racineDeLOnglet(AccueilVue(modele: app.accueil))
                 }
             }
-            Tab(LocalizedStringKey(Onglet.textes.cle), systemImage: Onglet.textes.symbole,
-                value: Onglet.textes) {
-                NavigationStack { EnAttente(onglet: .textes) }
+            Tab(LocalizedStringKey(Onglet.textes.cle), systemImage: Onglet.textes.symbole, value: Onglet.textes) {
+                NavigationStack(path: $pileDesLivres) {
+                    racineDeLOnglet(TextesVue(modele: app.textes) { route in ouvrirTexte(route) })
+                }
             }
-            Tab(LocalizedStringKey(Onglet.chemin.cle), systemImage: Onglet.chemin.symbole,
-                value: Onglet.chemin) {
+            Tab(LocalizedStringKey(Onglet.chemin.cle), systemImage: Onglet.chemin.symbole, value: Onglet.chemin) {
                 NavigationStack(path: $pileDuChemin) {
-                    CheminVue(modele: chemin)
-                        .navigationDestination(for: EcranDuChemin.self) { ecran in
-                            switch ecran {
-                            case .journal:
-                                EnAttente(cle: "nav_journal", symbole: "pencil.line")
-                            case .parcours:
-                                EnAttente(cle: "parcours_title", symbole: "chart.bar")
-                            case .paliers:
-                                EnAttente(cle: "trophees_paliers", symbole: "trophy")
-                            }
-                        }
+                    racineDeLOnglet(CheminVue(modele: app.chemin))
                 }
             }
         }
-        // Les routes des modèles deviennent des écrans de la pile ; celles dont l'écran n'est pas encore porté sont
-        // retirées sans rien ouvrir.
-        .onChange(of: accueil.routes) { _, routes in
-            guard let route = routes.first else { return }
-            switch route {
-            case .zmanim: pileDuJour.append(.zmanim)
-            case .reglages: pileDuJour.append(.reglages)
-            default: break
-            }
-            accueil.routeOuverte()
+        .feuilleDepart(accueil: app.accueil, textes: app.textes)
+        .sheet(item: $feuille) { pardessus in
+            vuePardessus(pardessus)
         }
-        .onChange(of: chemin.routes) { _, routes in
+        .fullScreenCover(item: $plein) { pardessus in
+            vuePardessus(pardessus)
+        }
+        // Les routes des modèles deviennent des écrans ; celles dont l'écran n'est pas encore porté (la musique) sont
+        // retirées sans rien ouvrir.
+        .onChange(of: app.accueil.routes) { _, routes in
             guard let route = routes.first else { return }
+            app.accueil.routeOuverte()
+            ouvrirAccueil(route)
+        }
+        .onChange(of: app.chemin.routes) { _, routes in
+            guard let route = routes.first else { return }
+            app.chemin.routeOuverte()
             switch route {
-            case .journal: pileDuChemin.append(.journal)
-            case .parcours: pileDuChemin.append(.parcours)
-            case .paliers: pileDuChemin.append(.paliers)
+            case .journal: pileDuChemin.append(Ecran.journal)
+            case .parcours: pileDuChemin.append(Ecran.parcours)
+            case .paliers: pileDuChemin.append(Ecran.paliers)
             }
-            chemin.routeOuverte()
+        }
+        .onChange(of: onglet) { _, nouveau in
+            // Revenir au Jour rejoue les anneaux (MainActivity.rejouer).
+            if nouveau == .aujourdhui { app.accueil.ongletChoisi() }
         }
         .tint(palette.couleur(.brand, schema: schema))
         .environment(\.paletteApp, palette)
         .environment(\.apparence, apparence)
         .preferredColorScheme(apparence.schema)
     }
-}
 
-/// Le Jour tant que son écran n'est pas porté : l'en-tête de la refonte (la date hébraïque vers les zmanim, la roue
-/// vers les réglages), puis « Bientôt ».
-struct LeJourEnAttente: View {
-    let accueil: AccueilModele
-
-    var body: some View {
-        VStack(spacing: 0) {
-            EnteteJour(modele: accueil)
-                .padding(.horizontal, 16)
-            EnAttente(onglet: .aujourdhui)
-        }
-        .background(Teinte(.paper))
-    }
-}
-
-/// Un écran qui n'est pas encore porté : son titre, son icône et « Bientôt », sans rien faire semblant.
-/// La chaîne est propre à iOS (Ressources/Chaines/ios.xcstrings, à relire par le propriétaire).
-struct EnAttente: View {
-    let cle: String
-    let symbole: String
-
-    init(cle: String, symbole: String) {
-        self.cle = cle
-        self.symbole = symbole
-    }
-
-    init(onglet: Onglet) {
-        self.init(cle: onglet.cle, symbole: onglet.symbole)
-    }
-
-    var body: some View {
-        ContentUnavailableView {
-            Label {
-                Text(LocalizedStringKey(cle))
-            } icon: {
-                Image(systemName: symbole)
+    /// La racine d'un onglet : la barre de départ en bas, et les destinations de la pile.
+    private func racineDeLOnglet<Contenu: View>(_ contenu: Contenu) -> some View {
+        contenu
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                BarreDepart(modele: app.accueil)
             }
-        } description: {
-            Text("ios_bientot", tableName: "ios")
+            .navigationDestination(for: Ecran.self) { ecran in
+                destination(ecran)
+            }
+    }
+
+    // MARK: Pousser dans la pile de l'onglet choisi
+
+    private func pousser(_ ecran: Ecran) {
+        switch onglet {
+        case .aujourdhui: pileDuJour.append(ecran)
+        case .textes: pileDesLivres.append(ecran)
+        case .chemin: pileDuChemin.append(ecran)
         }
-        .foregroundStyle(Teinte(.ink))
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Teinte(.paper))
-        .navigationTitle(Text(LocalizedStringKey(cle)))
+    }
+
+    // MARK: Les routes des modèles
+
+    private func ouvrirAccueil(_ route: AccueilRoute) {
+        switch route {
+        case .seance(let demarrer): pousser(.seance(demarrer: demarrer))
+        case .paliers: pousser(.paliers)
+        case .parcours: pousser(.parcours)
+        case .note(let jour): feuille = .note(jour)
+        case .celebration(let minutes, let dateNote):
+            plein = .celebration(CelebrationDemande(minutes: minutes, dateNote: dateNote.flatMap { JourCivil(iso: $0) }))
+        case .presentation: plein = .presentation
+        case .siddour(let id): pousser(.lecture(.siddour(id)))
+        case .entreeBibliotheque(let id): pousser(.entree(id))
+        case .zmanim: pileDuJour.append(Ecran.zmanim)
+        case .reglages(let carteBarriere): pileDuJour.append(Ecran.reglages(carteBarriere: carteBarriere))
+        case .musique: break
+        }
+    }
+
+    private func ouvrirTexte(_ route: TextesRoute) {
+        switch route {
+        case .recherche: pousser(.recherche)
+        case .tikkun: pousser(.tikkun)
+        case .siddour: pousser(.siddour)
+        case .tehilim: pousser(.tehilim)
+        case .tefilot: pousser(.tefilot)
+        case .bibliotheque(let livresSeuls): pousser(.bibliotheque(livresSeuls: livresSeuls))
+        case .chizuk: pousser(.chizuk)
+        case .conseils: pousser(.conseils)
+        case .halakha: pousser(.halakha(recherche: nil))
+        case .lecture(let id, let livre): pousser(.lecture(LectureCible(id: id, livre: livre)))
+        case .marquesPages(let recueil): feuille = .marquesPages(recueil: recueil)
+        case .entreeBibliotheque(let id): pousser(.entree(id))
+        case .relecture, .musique, .rappels: break
+        }
+    }
+
+    private func ouvrirLecture(_ route: LectureRoute) {
+        switch route {
+        case .lecture(let cible): pousser(.lecture(cible))
+        case .tehilim: pousser(.tehilim)
+        case .tikkun: pousser(.tikkun)
+        case .tehilimMarque(let psaume, let verset): pousser(.tehilimLecture(.marque(psaume: psaume, verset: verset)))
+        case .marquesPages(let recueil): feuille = .marquesPages(recueil: recueil)
+        }
+    }
+
+    private func ouvrirRecherche(_ route: RechercheRoute) {
+        if let cible = route.cible {
+            pousser(.lecture(cible))
+            return
+        }
+        switch route {
+        case .halakha(let recherche): pousser(.halakha(recherche: recherche))
+        case .hilloulot(let recherche): pousser(.hilloulot(recherche: recherche))
+        case .siddour, .livre: break
+        }
+    }
+
+    private func ouvrirBibliotheque(_ route: BibliothequeRoute) {
+        switch route {
+        case .livre(let id): pousser(.lecture(.livre(id)))
+        case .marque(let livre, let section, let bloc):
+            pousser(.lecture(LectureCible(id: livre, livre: true, marque: LecturePlace(section: section, bloc: bloc))))
+        case .sousSection, .entree: break
+        }
+    }
+
+    private func ouvrirReglage(_ route: ReglagesRoute) {
+        switch route {
+        case .presentation: plein = .presentation
+        case .choixVersion: pousser(.choixVersion)
+        case .recommencer:
+            // Tout a été effacé : l'app repart du Jour, présentation comprise.
+            pileDuJour = NavigationPath()
+            pileDesLivres = NavigationPath()
+            pileDuChemin = NavigationPath()
+            onglet = .aujourdhui
+            plein = .presentation
+        case .apercuBarriere, .choixApplications, .dedicace:
+            // Tâches 27 et 28, et la dédicace : pas encore d'écran sur iOS.
+            app.reglages.routeImpossible()
+        case .reglagesApp, .reglagesNotifications, .navigateur, .aideConcentration:
+            // Ouvertes par la vue des réglages elle-même.
+            break
+        }
+    }
+
+    // MARK: Les écrans
+
+    @ViewBuilder
+    private func destination(_ ecran: Ecran) -> some View {
+        switch ecran {
+        case .zmanim:
+            ZmanimVue(modele: app.zmanim)
+        case .reglages(let carteBarriere):
+            ReglagesVue(modele: app.reglages, carteBarriere: carteBarriere) { route in ouvrirReglage(route) }
+        case .choixVersion:
+            Garde(app.choixVersion) { ChoixVersionVue(modele: $0) }
+        case .seance(let demarrer):
+            Garde(app.seanceModele) { modele in
+                SeanceVue(modele: modele, demande: demarrer ? .commencer : .aucune,
+                          celebration: app.celebration, note: app.note,
+                          tefilot: { pousser(.tefilotDeLaSeance) })
+            }
+        case .tefilot, .tefilotDeLaSeance:
+            Garde(app.tefilot) { modele in
+                TefilotVue(modele: modele) { route in
+                    switch route {
+                    case .entree(let id): pousser(.entree(id))
+                    }
+                }
+            }
+        case .journal:
+            Garde(app.journal) { JournalVue(modele: $0) { pousser(.seance(demarrer: false)) } }
+        case .parcours:
+            Garde(app.parcours) { ParcoursVue(modele: $0) }
+        case .paliers:
+            Garde(app.paliers) { PaliersVue(modele: $0) }
+        case .recherche:
+            Garde(app.recherche) { modele in RechercheVue(modele: modele) { route in ouvrirRecherche(route) } }
+        case .tikkun:
+            Garde(app.tikkun) { TikkunVue(modele: $0) }
+        case .siddour:
+            SiddourEcran(magasin: app.magasin, contenus: app.contenus, horloge: app.horloge, langue: app.langue) { route in
+                ouvrirLecture(route)
+            }
+        case .tehilim:
+            Garde(app.tehilim) { TehilimVue(modele: $0, lecture: app.tehilimLecture) }
+        case .chizuk:
+            Garde(app.chizuk) { modele in
+                ChizukVue(modele: modele) { route in
+                    switch route {
+                    case .seance: pousser(.seance(demarrer: false))
+                    }
+                }
+            }
+        case .conseils:
+            Garde(app.conseils) { ConseilsVue(modele: $0) }
+        case .bibliotheque(let livresSeuls):
+            Garde({ app.bibliotheque(livresSeuls: livresSeuls) }) { modele in
+                BibliothequeVue(modele: modele, sousSection: app.sousSection, entree: app.entree) { route in
+                    ouvrirBibliotheque(route)
+                }
+            }
+        case .halakha(let recherche):
+            Garde({ app.halakha(recherche: recherche) }) { HalakhaVue(modele: $0) }
+        case .hilloulot(let recherche):
+            Garde({ app.hilloulotModele(recherche: recherche) }) { HilloulotVue(modele: $0) }
+        case .lecture(let cible):
+            LectureEcran(magasin: app.magasin, contenus: app.contenus, horloge: app.horloge, langue: app.langue,
+                         cible: cible) { route in
+                ouvrirLecture(route)
+            }
+        case .tehilimLecture(let cible):
+            TehilimLecturePage(cible: cible, fabrique: app.tehilimLecture)
+        case .entree(let id):
+            BibliothequeEntreePage(id: id, fabrique: app.entree)
+        }
+    }
+
+    @ViewBuilder
+    private func vuePardessus(_ pardessus: Pardessus) -> some View {
+        switch pardessus {
+        case .presentation:
+            Garde(app.presentation) { PresentationVue(modele: $0) }
+        case .celebration(let demande):
+            CelebrationEcran(modele: app.celebration(demande), note: app.note) { plein = nil }
+        case .note(let jour):
+            Garde({ app.note(jour) }) { modele in
+                JournalNoteVue(modele: modele, enregistrer: {
+                    do {
+                        try await modele.enregistrer()
+                        feuille = nil
+                    } catch {
+                        // La fenêtre reste ouverte ; le changement reste en mémoire (Magasin).
+                    }
+                }, fermer: { feuille = nil })
+            }
+        case .marquesPages(let recueil):
+            NavigationStack {
+                LectureMarquesEcran(magasin: app.magasin, contenus: app.contenus, recueil: recueil) { route in
+                    feuille = nil
+                    ouvrirLecture(route)
+                }
+            }
+        }
+    }
+}
+
+/// Un écran et son modèle, construit à la première apparition puis gardé le temps de l'écran : la destination de la
+/// pile est recalculée à chaque dessin de la racine, le modèle ne doit pas l'être.
+struct Garde<Modele: AnyObject, Contenu: View>: View {
+    @State private var modele: Modele? = nil
+    private let fabrique: @MainActor () -> Modele
+    private let contenu: @MainActor (Modele) -> Contenu
+    @Environment(\.paletteApp) private var palette
+    @Environment(\.colorScheme) private var schema
+
+    init(_ fabrique: @escaping @MainActor () -> Modele, @ViewBuilder contenu: @escaping @MainActor (Modele) -> Contenu) {
+        self.fabrique = fabrique
+        self.contenu = contenu
+    }
+
+    var body: some View {
+        if let modele {
+            contenu(modele)
+        } else {
+            palette.couleur(.paper, schema: schema)
+                .ignoresSafeArea()
+                .onAppear { modele = fabrique() }
+        }
     }
 }

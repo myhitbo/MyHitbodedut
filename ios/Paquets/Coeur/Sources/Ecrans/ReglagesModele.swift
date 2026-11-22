@@ -858,6 +858,22 @@ public final class ReglagesModele {
         return nil
     }
 
+    /// Les écrans qu'un geste sans réponse attendue a demandés (un interrupteur posé par la vue) : la vue ouvre le
+    /// premier, puis appelle `routeOuverte()`.
+    public private(set) var routes: [ReglagesRoute] = []
+
+    /// L'écran en tête de `routes` est ouvert.
+    public func routeOuverte() {
+        if !routes.isEmpty { routes.removeFirst() }
+    }
+
+    /// Un interrupteur posé par la vue (`bindSwitch`) : ce que `basculer` demande d'ouvrir rejoint `routes`.
+    public func poser(_ interrupteur: ReglagesInterrupteur, _ actif: Bool) async throws {
+        if let route = try await basculer(interrupteur, actif) {
+            routes.append(route)
+        }
+    }
+
     // MARK: Les listes à choix
 
     /// Le contenu d'une liste : son titre, ses lignes, la valeur réglée cochée.

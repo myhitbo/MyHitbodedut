@@ -7,23 +7,22 @@ import Ecrans
 /// vers les zmanim, la roue vers les réglages), la salutation et l'état du jour, les trois anneaux autour du hassid et
 /// leur légende, le grade et le prochain trophée, la bande de la semaine, le mot de relance, « Écrire une note »,
 /// « Préparer la séance », « Je l'ai faite sans le téléphone », puis les cartes du moment (les rappels de la tefila,
-/// la prière de l'heure, Birkat haLevana, la source du jour). En bas, la barre de départ : « Commencer » et la flèche
-/// du volet de la séance (durée, sujet, musique, barrière).
+/// la prière de l'heure, Birkat haLevana, la source du jour). La barre de départ (« Commencer » et la flèche du volet
+/// de la séance : durée, sujet, musique, barrière) est posée par la racine au bas des trois onglets.
 ///
 /// La vue ne décide rien : elle lit `AccueilModele` (testé sous Linux) et appelle ses actions ; les écrans qu'il
 /// demande (`routes`) sont ouverts par la pile de l'onglet (ios/App). Les animations suivent ce que le modèle dit
 /// (remplissage, retour au hassid, fête d'un anneau) ; « Réduire les animations » les coupe.
 public struct AccueilVue: View {
     private let modele: AccueilModele
-    private let textes: TextesModele
     @Environment(\.traducteur) private var traducteur
     @Environment(\.accessibilityReduceMotion) private var reduire
     @Environment(\.scenePhase) private var phase
 
-    /// `textes` : l'interrupteur et l'état de la musique, dans le volet (MainActivity.renderMusic).
-    public init(modele: AccueilModele, textes: TextesModele) {
+    /// La barre de départ et son volet sont posés par la racine sur les trois onglets (`BarreDepart`,
+    /// `feuilleDepart`).
+    public init(modele: AccueilModele) {
         self.modele = modele
-        self.textes = textes
     }
 
     public var body: some View {
@@ -61,14 +60,6 @@ public struct AccueilVue: View {
         }
         .background(Teinte(.paper))
         .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            AccueilBarreDepart(modele: modele)
-        }
-        .sheet(isPresented: Bindable(modele).feuilleLiee) {
-            AccueilFeuille(modele: modele, textes: textes)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-        }
         .sheet(isPresented: Bindable(modele).bilanLie) {
             if let bilan = modele.bilan {
                 AccueilBilanVue(bilan: bilan) { modele.fermerBilan() }
@@ -699,12 +690,18 @@ private struct AccueilCarteVue: View {
 
 // MARK: - La barre de départ
 
-/// La barre de départ (depart_barre) : « Commencer » sur toute la largeur, et la flèche du volet à son bout.
-private struct AccueilBarreDepart: View {
-    let modele: AccueilModele
+/// La barre de départ (depart_barre), « visible dans les trois lieux » : « Commencer » sur toute la largeur, et la
+/// flèche du volet à son bout. La racine la pose au bas de chaque onglet (`safeAreaInset`), et le volet une seule fois
+/// par-dessus les onglets (`feuilleDepart`).
+public struct BarreDepart: View {
+    private let modele: AccueilModele
     @Environment(\.traducteur) private var traducteur
 
-    var body: some View {
+    public init(modele: AccueilModele) {
+        self.modele = modele
+    }
+
+    public var body: some View {
         Button {
             modele.commencer()
         } label: {
@@ -740,6 +737,18 @@ private struct AccueilBarreDepart: View {
 }
 
 // MARK: - La feuille : le volet, ou une boîte
+
+extension View {
+    /// Le volet de la séance, ou la boîte qu'il a ouverte (ou qu'un geste du Jour a ouverte) à sa place : une feuille
+    /// posée une seule fois, sur les onglets, pour qu'elle paraisse de n'importe lequel des trois lieux.
+    public func feuilleDepart(accueil: AccueilModele, textes: TextesModele) -> some View {
+        sheet(isPresented: Bindable(accueil).feuilleLiee) {
+            AccueilFeuille(modele: accueil, textes: textes)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+    }
+}
 
 /// Le volet de la séance, ou la boîte qu'il a ouverte (ou qu'un geste du Jour a ouverte) à sa place.
 private struct AccueilFeuille: View {
@@ -1020,7 +1029,7 @@ private struct AccueilBilanVue: View {
 }
 
 /// Un mot bref (un Toast d'Android), en bas de l'écran.
-private struct AccueilMessage: View {
+struct AccueilMessage: View {
     let texte: Text
 
     var body: some View {

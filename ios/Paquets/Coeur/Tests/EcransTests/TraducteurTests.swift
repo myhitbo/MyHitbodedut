@@ -233,4 +233,27 @@ struct TraducteurTests {
         let repli = Traducteur(langue: "en", simples: ["fr": ["titre": "Titre"]]).texte(cle: "titre")
         #expect(repli == "Titre")
     }
+
+    @Test func lesChainesPropresAIOSSeLisentAvecCellesDAndroid() throws {
+        let android = try Fichiers.catalogue()
+        let ios = try Fichiers.donnees("ios/Ressources/Chaines/ios.xcstrings")
+        for langue in Traducteur.langues {
+            let deux = try Traducteur(catalogues: [android, ios], langue: langue)
+            let seul = try Traducteur(catalogue: android, langue: langue)
+            // Une clé d'Android garde son gabarit ; une clé d'iOS se résout au lieu de rendre sa clé.
+            #expect(deux.texte(cle: "nav_today") == seul.texte(cle: "nav_today"))
+            for cle in ["ios_bientot", "action_ok", "contenu_illisible", "reglages_autorisation_temps_ecran",
+                        "reglages_autorisation_temps_ecran_pourquoi"] {
+                let texte = deux.texte(cle: cle)
+                #expect(texte != cle, "\(cle) sans texte en \(langue)")
+                #expect(seul.texte(cle: cle) == cle)
+            }
+        }
+        // Le premier catalogue l'emporte sur une clé présente dans les deux.
+        let premier = Data(#"{"sourceLanguage":"fr","strings":{"x":{"localizations":{"fr":{"stringUnit":{"value":"Un"}}}}}}"#.utf8)
+        let second = Data(#"{"sourceLanguage":"fr","strings":{"x":{"localizations":{"fr":{"stringUnit":{"value":"Deux"}}}},"y":{"localizations":{"fr":{"stringUnit":{"value":"Y"}}}}}}"#.utf8)
+        let fusion = try Traducteur(catalogues: [premier, second], langue: "fr")
+        #expect(fusion.texte(cle: "x") == "Un")
+        #expect(fusion.texte(cle: "y") == "Y")
+    }
 }

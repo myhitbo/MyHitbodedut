@@ -406,6 +406,25 @@ struct ReglagesModeleTests {
         #expect(route == .reglagesNotifications)
     }
 
+    @Test func unInterrupteurPoseParLaVueMetSaRouteEnFile() async throws {
+        let banc = try fabriquer(notificationsAccordees: false)
+        let m = banc.modele
+        #expect(m.routes.isEmpty)
+        // Un interrupteur sans écran à ouvrir : rien en file, le réglage écrit.
+        try await m.poser(.levana, false)
+        #expect(m.routes.isEmpty)
+        #expect(!m.estActif(.levana))
+        // L'alerte de Chabbat allumée demande les notifications ; refusées une fois, les réglages d'iOS suivent.
+        _ = await m.accorder(.notifications)
+        try await m.poser(.chabbatAlerte, false)
+        try await m.poser(.chabbatAlerte, true)
+        #expect(m.routes == [.reglagesNotifications])
+        m.routeOuverte()
+        #expect(m.routes.isEmpty)
+        m.routeOuverte()
+        #expect(m.routes.isEmpty)
+    }
+
     @Test func tempsEcranPasseParLaDivulgation() async throws {
         let banc = try fabriquer(constat: Constat(autorise: false))
         let m = banc.modele

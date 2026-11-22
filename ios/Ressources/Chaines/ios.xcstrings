@@ -1,6 +1,42 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "action_ok": {
+      "comment": "« OK » d'une saisie (android.R.string.ok, une chaîne du système sur Android). Écrans d'iOS, phase 3 : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "OK"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "OK"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אישור"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aceptar"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "باهي"
+          }
+        }
+      }
+    },
     "bouclier_autre_reponse": {
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
@@ -69,6 +105,42 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "انقر باش تبدا الهتبوديدوت متاعك"
+          }
+        }
+      }
+    },
+    "contenu_illisible": {
+      "comment": "Un texte des contenus exportés qui n'a pu être lu. Écrans d'iOS, phase 3 : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ce texte n'a pas pu être lu."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "This text could not be read."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לא ניתן היה לקרוא את הטקסט."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No se pudo leer este texto."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ما نجمناش نقراو النص هذا."
           }
         }
       }
@@ -469,6 +541,42 @@
         }
       }
     },
+    "ios_icone_couleurs": {
+      "comment": "Réglages, apparence : changer l'icône de l'app sur un geste, iOS prévenant à chaque changement (PORTAGE.md § 2.3). Écrans d'iOS, phase 3 : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mettre l'icône aux couleurs choisies"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Match the app icon to your colours"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "להתאים את סמל היישום לצבעים שנבחרו"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Poner el icono con los colores elegidos"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "خلّي الأيقونة بالألوان اللي اخترتهم"
+          }
+        }
+      }
+    },
     "ios_version_a_venir": {
       "comment": "Choix de la version (VersionApp) : l'accueil choisi n'est pas encore porté sur iOS. À relire par le propriétaire.",
       "extractionState": "manual",
@@ -501,6 +609,78 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "الصفحة الرئيسية هاذي مازالت موش موجودة في الآيفون: التطبيق يقعد على الصفحة الكلاسيكية، واختيارك محفوظ."
+          }
+        }
+      }
+    },
+    "reglages_autorisation_temps_ecran": {
+      "comment": "Réglages, carte des autorisations : Family Controls (PORTAGE.md § 2.1). Écrans d'iOS, phase 3 : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Temps d'écran"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Screen Time"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "זמן מסך"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tiempo de uso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وقت الشاشة"
+          }
+        }
+      }
+    },
+    "reglages_autorisation_temps_ecran_pourquoi": {
+      "comment": "Réglages, carte des autorisations : pourquoi Temps d'écran. Écrans d'iOS, phase 3 : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pour poser l'écran « Je suis avec Hachem » sur les applications choisies, le matin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "To show the “I am with Hashem” screen on the apps you choose, in the morning."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כדי להציג את המסך „אני עם ה׳“ על היישומים שבחרת, בבוקר."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Para mostrar la pantalla «Estoy con Hashem» en las apps elegidas, por la mañana."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "باش تظهر شاشة «أنا مع ربّي» على التطبيقات اللي تختارها، الصباح."
           }
         }
       }

@@ -31,9 +31,24 @@ public struct Traducteur: Sendable {
     /// (`langues`), pris tel quel, ou passe par `langueApp`.
     /// Lève si les octets ne sont pas un catalogue.
     public init(catalogue: Data, langue: String) throws {
-        let fichier = try JSONDecoder().decode(Fichier.self, from: catalogue)
+        try self.init(catalogues: [catalogue], langue: langue)
+    }
+
+    /// Plusieurs catalogues lus ensemble : celui d'Android (`Localizable.xcstrings`), puis celui des chaînes propres
+    /// à iOS (`ios.xcstrings`). Une clé présente dans deux catalogues garde le gabarit du premier.
+    /// Lève si l'un des fichiers n'est pas un catalogue.
+    public init(catalogues: [Data], langue: String) throws {
         var simples: [String: [String: String]] = [:]
         var pluriels: [String: [String: [String: String]]] = [:]
+        for catalogue in catalogues.reversed() {
+            let fichier = try JSONDecoder().decode(Fichier.self, from: catalogue)
+            Traducteur.lire(fichier, simples: &simples, pluriels: &pluriels)
+        }
+        self.init(langue: langue, simples: simples, pluriels: pluriels)
+    }
+
+    private static func lire(_ fichier: Fichier, simples: inout [String: [String: String]],
+                             pluriels: inout [String: [String: [String: String]]]) {
         for (cle, entree) in fichier.strings {
             for (code, traduction) in entree.localizations ?? [:] {
                 // « iw », l'ancien code de l'hébreu qu'Android garde, se lit « he ».
@@ -52,7 +67,6 @@ public struct Traducteur: Sendable {
                 }
             }
         }
-        self.init(langue: langue, simples: simples, pluriels: pluriels)
     }
 
     /// Des gabarits déjà lus, pour un aperçu : langue → clé → gabarit, et langue → clé → forme → gabarit.
