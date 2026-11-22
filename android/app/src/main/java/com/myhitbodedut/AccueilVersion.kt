@@ -125,6 +125,15 @@ data class DonneesAccueil(
     val derniereNote: NoteAffichee?,
 ) {
     data class ZmanAffiche(val cle: String, val nom: String, val heure: String, val instant: ZonedDateTime)
+
+    /**
+     * Le soir, quand les zmanim du jour sont passés, [prochain] est null alors qu'un lieu est
+     * choisi : on montre alors le dernier repère du jour (la sortie des étoiles) et son heure,
+     * sans compte à rebours. Null aussi sans lieu : c'est le seul cas où l'on propose d'en
+     * choisir un. Recette du 22/11 : Bento, Instant et Sérénité affichaient « Choisir un lieu »
+     * chaque soir, lieu choisi ou non.
+     */
+    val dernierDuJour: ZmanAffiche? get() = if (prochain == null) zmanim.lastOrNull() else null
     data class PenseeAffichee(val hebreu: String, val traduction: String?, val reference: String)
     data class NoteAffichee(val date: LocalDate, val minutes: Int, val texte: String?)
 

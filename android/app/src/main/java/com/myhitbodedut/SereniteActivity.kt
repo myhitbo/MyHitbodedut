@@ -224,7 +224,14 @@ class SereniteActivity : AccueilVersion() {
         titreSection(d.lieu?.let { getString(R.string.pile_zmanim_lieu, it) } ?: getString(R.string.pile_zmanim), getString(R.string.serenite_tout_voir)) { ouvrirZmanim() }
         val z = d.prochain
         if (z == null) {
-            addView(VueVersion.texte(context, getString(R.string.version_sans_lieu), 15f, k.texte2, haut = 6))
+            // Le soir, zmanim du jour passés : le dernier repère et son heure (DonneesAccueil.dernierDuJour).
+            val soir = d.dernierDuJour
+            if (soir == null) {
+                addView(VueVersion.texte(context, getString(R.string.version_sans_lieu), 15f, k.texte2, haut = 6))
+            } else {
+                addView(VueVersion.texte(context, soir.nom, 24f, k.texte, bellefair, haut = 4))
+                addView(VueVersion.texte(context, soir.heure, 15f, k.texte2, haut = 2))
+            }
             return@carte
         }
         addView(VueVersion.texte(context, z.nom, 24f, k.texte, bellefair, haut = 4))
