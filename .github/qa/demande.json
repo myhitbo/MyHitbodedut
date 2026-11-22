@@ -2,7 +2,7 @@
   "parcours": "recette",
   "variante": "release",
   "cibles": [
-    { "api": 36, "nom": "api36-large", "passes": "couche,tablette,ecrans-fr,ecrans-es", "ecrans": "seance,reglages,bravo,zmanim" },
-    { "api": 34, "nom": "api34-large", "passes": "couche,tablette,ecrans-fr,ecrans-es", "ecrans": "seance,reglages,bravo,zmanim" }
+    { "api": 36, "nom": "api36-large2", "passes": "couche,tablette", "ecrans": "seance,reglages,bravo,zmanim,siddour-lecture,musique", "sauf": "instant" },
+    { "api": 35, "nom": "api35-large2", "passes": "couche,tablette", "ecrans": "seance,reglages,bravo,zmanim,siddour-lecture,musique", "sauf": "instant" }
   ]
 }
