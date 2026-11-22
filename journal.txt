@@ -1,0 +1,71 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['barriere', 'redemarrage'] | Android 14 API 34
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== barriere ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=da890001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false | mSource=InsetsSource id=da890001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+  capture gestes-barriere-etat (253646 octets)
+  toucher id='preview_gate' -> (540,2058)
+  capture gestes-barriere-apercu (289597 octets)
+  capture gestes-barriere-apercu-bas (289116 octets)
+  toucher id='blocker_primary' -> (540,2156)
+  services : * ServiceRecord{cb127c6 u0 com.myhitbodedut/.GateService}
+  capture gestes-barriere-reelle (232920 octets)
+  capture gestes-barriere-reelle-bas (231830 octets)
+  toucher id='blocker_snooze' -> (540,2211)
+  capture gestes-barriere-reportee (129445 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="690" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-142-3</string>     <boolean name="enabled" value="true" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</strin
+  capture gestes-barriere-reglages-android (150447 octets)
+  capture gestes-barriere-telephone (86792 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="690" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-142-3</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</string> 
+  navigation : boutons | cadres : (128, 2274, None)
+  barres du bas : InsetsSource id=da890001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags= insetsRoundedCornerFrame=false | mSource=InsetsSource id=da890001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags= insetsRoundedCornerFrame=false
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-142-3</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</string>         <string>premier_pas:2</string>    
+  capture boutons-barriere-etat (228208 octets)
+  toucher id='preview_gate' -> (540,1687)
+  capture boutons-barriere-apercu (312570 octets)
+  capture boutons-barriere-apercu-bas (312570 octets)
+  toucher id='blocker_primary' -> (540,2124)
+  services : * ServiceRecord{d715449 u0 com.myhitbodedut/.GateService}
+  capture boutons-barriere-reelle (239108 octets)
+  capture boutons-barriere-reelle-bas (232141 octets)
+  toucher id='blocker_snooze' -> (540,2148)
+  capture boutons-barriere-reportee (131411 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="692" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-55-23</string>     <boolean name="enabled" value="true" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</strin
+  capture boutons-barriere-reglages-android (149672 octets)
+  capture boutons-barriere-telephone (88801 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="692" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-55-23</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</string> 
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=da890001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false | mSource=InsetsSource id=da890001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false
+
+=== redemarrage ===
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-55-23</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</string>         <string>premier_pas:2</string>    
+  avant : * ServiceRecord{7a6beb9 u0 com.myhitbodedut/.GateService} | acces : SYSTEM_ALERT_WINDOW: allow; time=+1m32s634ms ago; duration=+21s942ms / GET_USAGE_STATS: allow; time=+282ms ago
+  apres : * ServiceRecord{1dd41aa u0 com.myhitbodedut/.GateService} | attendu 0 s de plus | refus :  | acces : SYSTEM_ALERT_WINDOW: allow; time=+46s197ms ago / GET_USAGE_STATS: allow; time=+5d4h51m44s585ms ago
+  etat du paquet : User 0: ceDataInode=320785 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  journal du demarrage : 11-22 14:25:55.285 I/ActivityManager(  541): Start proc 3575:com.myhitbodedut/u0a192 for broadcast {com.myhitbodedut/com.myhitbodedut.BootReceiver} | 11-22 14:25:55.559 I/ActivityManager(  541): Background started FGS: Allowed [callingPackage: com.myhitbodedut; callingUid: 10192; uidState: RCVR; uidBFSL: n/a; intent: Intent { cmp=com.myhitbodedut/.GateService }; code:SYSTEM_ALE | 11-22 14:25:55.599 W/ActivityManager(  541): Foreground service started from background can not have location/camera/microphone access: service com.myhitbodedut/.GateService
+  horloge au retour : 2026-11-22 14:26 7
+  date : Tue Nov 17 09:30:00 UTC 2026
+  horloge remise : 2026-11-17 09:30 2 | services : * ServiceRecord{1dd41aa u0 com.myhitbodedut/.GateService}
+  capture gestes-barriere-apres-redemarrage (280806 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <long name="snoozed_until" value="0" />     <string name="chizuk_last_porte">lm2-96-une-heure</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</st
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 20

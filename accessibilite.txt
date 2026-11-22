@@ -1,0 +1,19 @@
+== gestes-barriere-etat
+PETIT 96x11dp Button ouverture_button «Écran d’ouverture : Le Jour»
+PETIT 52x15dp Switch enable_switch «Je suis avec Hachem»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+PETIT 363x38dp Button blocker_snooze «Plus tard (15 min)»
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 52x36dp Switch levana_switch «Afficher Birkat haLevana»
+PETIT 88x42dp Button window_start «Plage horaire : 09:02»
+PETIT 88x42dp Button window_end «Plage horaire : 11:32»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+PETIT 363x14dp Button blocker_snooze «Plus tard (15 min)»
+== boutons-barriere-reelle-bas
+== gestes-barriere-apres-redemarrage
+PETIT 363x19dp Button blocker_snooze «Plus tard (15 min)»
