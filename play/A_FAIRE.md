@@ -76,9 +76,9 @@ tests à l'appui :
    nuit.
 
 **Aucune n'est dans `play-3`.** La sixième suffit à ne pas l'envoyer tel
-quel : le premier lancement propose les cinq versions de l'application, et le
-rapport de pré-lancement de Google comme ses examinateurs se servent aussi
-d'appareils virtuels.
+quel : le premier lancement propose les cinq versions de l'application, et les
+tests de Google peuvent passer par des appareils virtuels (Firebase Test Lab,
+qui fait tourner le rapport de pré-lancement, en propose).
 
 Ce que la recette ne remplace pas : un vrai téléphone — le son, la veille
 profonde, les surcouches Samsung et Xiaomi qui arrêtent les services — et,

@@ -21,7 +21,7 @@ import android.graphics.drawable.Drawable
  * c'est cette image qui est posée à l'écran à chaque trame. Ses dégradés ne passent donc
  * jamais par le processeur graphique. Recette du 22/11 : peints directement sur la carte de
  * l'accueil Instant, ils arrêtaient net les émulateurs Android 15 et 16 (rendu logiciel
- * d'OpenGL, celui des appareils virtuels des fermes de test) dès la première trame.
+ * d'OpenGL, sans carte graphique) dès la première trame.
  */
 class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : Drawable() {
     private val ciel = Paint()
