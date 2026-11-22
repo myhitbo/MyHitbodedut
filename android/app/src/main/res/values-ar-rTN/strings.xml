@@ -846,6 +846,8 @@
     <string name="ajout_zimun">زيمون (ثلاثة ولّا أكثر على الطاولة)</string>
     <string name="ajout_facultatif">عادة، موش واجبة</string>
     <string name="ajout_facultatif_avant">قبل البركات: مزامير متاع عادة (موش واجبة)</string>
+    <string name="ajout_harahaman_invite">هرحمان متاع الضيف، لصاحب الدار</string>
+    <string name="ajout_harahaman_maison">هرحمان متاع الدار: على طاولة بوه، ولا على طاولتو</string>
     <string name="ajout_facultatif_apres">هرحمان والخاتمة: عادة (موش واجبة)</string>
     <string name="ajout_embolismique">عام كبيس (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">دار فيها حزن</string>

@@ -1138,17 +1138,27 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
      * Petit écran et texte du système agrandi (15/10) : les lignes de l'en-tête et de la
      * légende s'allongent, et la jauge de 136dp repoussait encore « Commencer » sous les
      * onglets (capture 480x854, police 1,3). La jauge descend alors à 96dp.
+     *
+     * 22/11 (capture 480x854) : à 96dp, le hassid tenait dans 16dp de large, et la plaque
+     * (marge 24dp) cachait l'anneau du jour (30dp d'anneaux). « Commencer » vit désormais
+     * dans la barre fixe (13/11) : la jauge remonte à 136dp, les anneaux s'affinent (6dp,
+     * écarts de 2dp), la plaque s'arrête juste à l'intérieur, et son retrait suit sa taille.
      */
     private fun jaugeCompacte() {
         val c = resources.configuration
         if (c.fontScale <= 1.1f || c.screenHeightDp >= 640 || c.orientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) return
         val d = resources.displayMetrics.density
-        val cadre = findViewById<View>(R.id.week_gauge).parent as View
+        val anneaux = findViewById<AnneauxView>(R.id.week_gauge)
+        anneaux.geometrie = AnneauxDessin.Geometrie(epaisseur = 6f * d, ecart = 2f * d)
+        val cadre = anneaux.parent as View
         cadre.layoutParams = (cadre.layoutParams as android.view.ViewGroup.MarginLayoutParams).apply {
-            width = (96 * d).toInt(); height = (96 * d).toInt(); topMargin = (2 * d).toInt()
+            width = (136 * d).toInt(); height = (136 * d).toInt(); topMargin = (8 * d).toInt()
         }
+        // Les anneaux (22dp) et 2dp d'air ; le trait mis en avant (x1,3) n'y entre pas.
+        val marge = (anneaux.geometrie.largeur + 2 * d).toInt()
         findViewById<View>(R.id.hero_plate).apply {
-            layoutParams = (layoutParams as android.view.ViewGroup.MarginLayoutParams).apply { setMargins((24 * d).toInt(), (24 * d).toInt(), (24 * d).toInt(), (24 * d).toInt()) }
+            layoutParams = (layoutParams as android.view.ViewGroup.MarginLayoutParams).apply { setMargins(marge, marge, marge, marge) }
+            setPadding((8 * d).toInt(), (6 * d).toInt(), (8 * d).toInt(), (2 * d).toInt())
         }
     }
 

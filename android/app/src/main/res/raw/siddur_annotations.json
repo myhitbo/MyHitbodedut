@@ -4557,6 +4557,16 @@
     "racine": "yom_tov"
    },
    {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 61,
+    "empreinte": "אורח אומר הרחמן הוא יברך את השלחן הזה שא",
+    "libelle": "ajout_harahaman_invite",
+    "g": 14,
+    "racine": "facultatif"
+   },
+   {
     "sorte": "indice",
     "s": 0,
     "si": "chabbat",
@@ -4594,7 +4604,7 @@
     "si": "cheva_berakhot",
     "b": 64,
     "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4603,7 +4613,7 @@
     "si": "cheva_berakhot",
     "b": 65,
     "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, שהכל בר",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4612,7 +4622,7 @@
     "si": "cheva_berakhot",
     "b": 66,
     "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, יוצר הא",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4621,7 +4631,7 @@
     "si": "cheva_berakhot",
     "b": 67,
     "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, אשר יצר",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4630,7 +4640,7 @@
     "si": "cheva_berakhot",
     "b": 68,
     "empreinte": "שוש תשיש ותגל עקרה בקבוץ בניה לתוכה במהר",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4639,7 +4649,7 @@
     "si": "cheva_berakhot",
     "b": 69,
     "empreinte": "שמח תשמח רעים אהובים כשמחך יצירך בגן עדן",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4648,7 +4658,7 @@
     "si": "cheva_berakhot",
     "b": 70,
     "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, אשר ברא",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4657,7 +4667,7 @@
     "si": "cheva_berakhot",
     "b": 71,
     "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4666,7 +4676,7 @@
     "si": "cheva_berakhot",
     "b": 72,
     "empreinte": "סברי מרנן ועונים: לחיים.",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -4675,7 +4685,7 @@
     "si": "cheva_berakhot",
     "b": 73,
     "empreinte": "ברוך אתה יהוה, אלהינו מלך העולם, בורא פר",
-    "g": 14,
+    "g": 15,
     "racine": "cheva_berakhot"
    },
    {
@@ -11794,10 +11804,70 @@
    {
     "sorte": "bloc",
     "s": 0,
+    "si": "facultatif",
+    "b": 66,
+    "empreinte": "אם סמוך על שלחן אביו יאמר:",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 67,
+    "empreinte": "הרחמן הוא יברך את (אבי מורי) בעל הבית הז",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 68,
+    "empreinte": "(ואם סמוך על שלחן עצמו יאמר:)",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 69,
+    "empreinte": "הרחמן הוא יברך אותי ואת אשתי ואת זרעי וא",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 71,
+    "empreinte": "אם אוכל על שלחן אחרים יברך לבעה״ב. ואפיל",
+    "libelle": "ajout_harahaman_invite",
+    "g": 8,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 72,
+    "empreinte": "לזכר: יהי רצון שלא יבוש בעל הבית בעולם ה",
+    "libelle": "ajout_harahaman_invite",
+    "g": 8,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
     "si": "chabbat",
     "b": 74,
     "empreinte": "בשבת אומר:",
-    "g": 7,
+    "g": 9,
     "racine": "chabbat"
    },
    {
@@ -11806,7 +11876,7 @@
     "si": "chabbat",
     "b": 75,
     "empreinte": "הרחמן הוא ינחילנו יום שכלו שבת ומנוחה לח",
-    "g": 7,
+    "g": 9,
     "racine": "chabbat"
    },
    {
@@ -11815,7 +11885,7 @@
     "si": "roch_hodech",
     "b": 76,
     "empreinte": "בראש חודש:",
-    "g": 8,
+    "g": 10,
     "racine": "roch_hodech"
    },
    {
@@ -11824,7 +11894,7 @@
     "si": "roch_hodech",
     "b": 77,
     "empreinte": "הרחמן הוא יחדש עלינו את החדש הזה לטובה ו",
-    "g": 8,
+    "g": 10,
     "racine": "roch_hodech"
    },
    {
@@ -11833,7 +11903,7 @@
     "si": "yom_tov",
     "b": 78,
     "empreinte": "ביו״ט אומר:",
-    "g": 9,
+    "g": 11,
     "racine": "yom_tov"
    },
    {
@@ -11842,7 +11912,7 @@
     "si": "yom_tov",
     "b": 79,
     "empreinte": "הרחמן הוא ינחילנו יום שכלו טוב:",
-    "g": 9,
+    "g": 11,
     "racine": "yom_tov"
    },
    {
@@ -11851,7 +11921,7 @@
     "si": "roch_hachana",
     "b": 80,
     "empreinte": "בראש השנה:",
-    "g": 10,
+    "g": 12,
     "racine": "roch_hachana"
    },
    {
@@ -11860,7 +11930,7 @@
     "si": "roch_hachana",
     "b": 81,
     "empreinte": "הרחמן הוא יחדש עלינו את השנה הזאת לטובה ",
-    "g": 10,
+    "g": 12,
     "racine": "roch_hachana"
    },
    {
@@ -11869,7 +11939,7 @@
     "si": "soukkot",
     "b": 82,
     "empreinte": "בסוכות:",
-    "g": 11,
+    "g": 13,
     "racine": "soukkot"
    },
    {
@@ -11878,7 +11948,7 @@
     "si": "soukkot",
     "b": 83,
     "empreinte": "הרחמן הוא יקים לנו אתסכת דוד הנופלת:",
-    "g": 11,
+    "g": 13,
     "racine": "soukkot"
    },
    {
@@ -11911,7 +11981,7 @@
     "si": "cheva_berakhot",
     "b": 86,
     "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11920,7 +11990,7 @@
     "si": "cheva_berakhot",
     "b": 87,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שהכל ברא",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11929,7 +11999,7 @@
     "si": "cheva_berakhot",
     "b": 88,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, יוצר האד",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11938,7 +12008,7 @@
     "si": "cheva_berakhot",
     "b": 89,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר יצר ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11947,7 +12017,7 @@
     "si": "cheva_berakhot",
     "b": 90,
     "empreinte": "שוש תשיש ותגל העקרה, בקבוץ בניה לתוכה במ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11956,7 +12026,7 @@
     "si": "cheva_berakhot",
     "b": 91,
     "empreinte": "שמח תשמח רעים אהובים כשמחך יצירך בגן עדן",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11965,7 +12035,7 @@
     "si": "cheva_berakhot",
     "b": 92,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר ברא ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11974,7 +12044,7 @@
     "si": "cheva_berakhot",
     "b": 93,
     "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11983,7 +12053,7 @@
     "si": "cheva_berakhot",
     "b": 94,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, בורא פרי",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -11992,7 +12062,7 @@
     "si": "oubli",
     "b": 95,
     "empreinte": "דיני שכחה:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12001,7 +12071,7 @@
     "si": "oubli",
     "b": 96,
     "empreinte": "הערה: אם לא נזכר עד שהתחיל הטוב והמטיב, ",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12010,7 +12080,7 @@
     "si": "oubli",
     "b": 97,
     "empreinte": "בשבת אומר:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12019,7 +12089,7 @@
     "si": "oubli",
     "b": 98,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12028,7 +12098,7 @@
     "si": "oubli",
     "b": 99,
     "empreinte": "בראש חודש:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12037,7 +12107,7 @@
     "si": "oubli",
     "b": 100,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12046,7 +12116,7 @@
     "si": "oubli",
     "b": 101,
     "empreinte": "בראש חודש שחל בשבת:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12055,7 +12125,7 @@
     "si": "oubli",
     "b": 102,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12064,7 +12134,7 @@
     "si": "oubli",
     "b": 103,
     "empreinte": "ביו״ט אומר:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12073,7 +12143,7 @@
     "si": "oubli",
     "b": 104,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12082,7 +12152,7 @@
     "si": "oubli",
     "b": 105,
     "empreinte": "בחול המועד (בלי חתימה; ״ביו״ט אומר״ אינו",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12091,7 +12161,7 @@
     "si": "oubli",
     "b": 106,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן מ",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12100,7 +12170,7 @@
     "si": "oubli",
     "b": 107,
     "empreinte": "ביו״ט שחל בשבת:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12109,7 +12179,7 @@
     "si": "oubli",
     "b": 108,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12118,7 +12188,7 @@
     "si": "oubli",
     "b": 109,
     "empreinte": "בראש השנה:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12127,7 +12197,7 @@
     "si": "oubli",
     "b": 110,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12136,7 +12206,7 @@
     "si": "oubli",
     "b": 111,
     "empreinte": "בראש השנה שחל בשבת:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -12145,7 +12215,7 @@
     "si": "oubli",
     "b": 112,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19169,10 +19239,70 @@
    {
     "sorte": "bloc",
     "s": 0,
+    "si": "facultatif",
+    "b": 57,
+    "empreinte": "אם סמוך על שלחן אביו יאמר:",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 58,
+    "empreinte": "הרחמן הוא יברך את(אבי מורי) בעל הבית הזה",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 59,
+    "empreinte": "(ואם סמוך על שלחן עצמו יאמר:)",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 60,
+    "empreinte": "הרחמן הוא יברך אותי (ואתאשתי/בעלי ואתזרע",
+    "libelle": "ajout_harahaman_maison",
+    "g": 7,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 62,
+    "empreinte": "אם אוכל על שלחן אחרים יברך לבעה״ב. ואפיל",
+    "libelle": "ajout_harahaman_invite",
+    "g": 8,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
+    "si": "facultatif",
+    "b": 63,
+    "empreinte": "יהי רצון שלא יבוש ולא יכלם בעל הבית הזה ",
+    "libelle": "ajout_harahaman_invite",
+    "g": 8,
+    "racine": "facultatif"
+   },
+   {
+    "sorte": "bloc",
+    "s": 0,
     "si": "chabbat",
     "b": 65,
     "empreinte": "בשבת אומר:",
-    "g": 7,
+    "g": 9,
     "racine": "chabbat"
    },
    {
@@ -19181,7 +19311,7 @@
     "si": "chabbat",
     "b": 66,
     "empreinte": "הרחמן הוא ינחילנו יום שכלו שבת ומנוחה לח",
-    "g": 7,
+    "g": 9,
     "racine": "chabbat"
    },
    {
@@ -19190,7 +19320,7 @@
     "si": "roch_hodech",
     "b": 67,
     "empreinte": "בראש חודש:",
-    "g": 8,
+    "g": 10,
     "racine": "roch_hodech"
    },
    {
@@ -19199,7 +19329,7 @@
     "si": "roch_hodech",
     "b": 68,
     "empreinte": "הרחמן הוא יחדש עלינו את החדש הזה לטובה ו",
-    "g": 8,
+    "g": 10,
     "racine": "roch_hodech"
    },
    {
@@ -19208,7 +19338,7 @@
     "si": "yom_tov",
     "b": 69,
     "empreinte": "ביו״ט אומר:",
-    "g": 9,
+    "g": 11,
     "racine": "yom_tov"
    },
    {
@@ -19217,7 +19347,7 @@
     "si": "yom_tov",
     "b": 70,
     "empreinte": "הרחמן הוא ינחילנו יום שכלו טוב:",
-    "g": 9,
+    "g": 11,
     "racine": "yom_tov"
    },
    {
@@ -19226,7 +19356,7 @@
     "si": "roch_hachana",
     "b": 71,
     "empreinte": "בראש השנה:",
-    "g": 10,
+    "g": 12,
     "racine": "roch_hachana"
    },
    {
@@ -19235,7 +19365,7 @@
     "si": "roch_hachana",
     "b": 72,
     "empreinte": "הרחמן הוא יחדש עלינו את השנה הזאת לטובה ",
-    "g": 10,
+    "g": 12,
     "racine": "roch_hachana"
    },
    {
@@ -19244,7 +19374,7 @@
     "si": "soukkot",
     "b": 73,
     "empreinte": "בסוכות:",
-    "g": 11,
+    "g": 13,
     "racine": "soukkot"
    },
    {
@@ -19253,7 +19383,7 @@
     "si": "soukkot",
     "b": 74,
     "empreinte": "הרחמן הוא יקים לנו אתסכת דוד הנופלת:",
-    "g": 11,
+    "g": 13,
     "racine": "soukkot"
    },
    {
@@ -19286,7 +19416,7 @@
     "si": "cheva_berakhot",
     "b": 77,
     "empreinte": "בסעודת שבע ברכות, אחר ברכת המזון:",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19295,7 +19425,7 @@
     "si": "cheva_berakhot",
     "b": 78,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, שהכל ברא",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19304,7 +19434,7 @@
     "si": "cheva_berakhot",
     "b": 79,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, יוצר האד",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19313,7 +19443,7 @@
     "si": "cheva_berakhot",
     "b": 80,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר יצר ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19322,7 +19452,7 @@
     "si": "cheva_berakhot",
     "b": 81,
     "empreinte": "שוש תשיש ותגל עקרה, בקבוץ בניה לתוכה בשמ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19331,7 +19461,7 @@
     "si": "cheva_berakhot",
     "b": 82,
     "empreinte": "שמח תשמח רעים האהובים, כשמחך יצירך בגן ע",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19340,7 +19470,7 @@
     "si": "cheva_berakhot",
     "b": 83,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, אשר ברא ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19349,7 +19479,7 @@
     "si": "cheva_berakhot",
     "b": 84,
     "empreinte": "המברך ברכת המזון נוטל הכוס שבירך עליו ומ",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19358,7 +19488,7 @@
     "si": "cheva_berakhot",
     "b": 85,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם, בורא פרי",
-    "g": 12,
+    "g": 14,
     "racine": "cheva_berakhot"
    },
    {
@@ -19367,7 +19497,7 @@
     "si": "oubli",
     "b": 86,
     "empreinte": "דיני שכחה:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19376,7 +19506,7 @@
     "si": "oubli",
     "b": 87,
     "empreinte": "הערה: אם לא נזכר עד שהתחיל הטוב והמטיב, ",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19385,7 +19515,7 @@
     "si": "oubli",
     "b": 88,
     "empreinte": "בשבת אומר:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19394,7 +19524,7 @@
     "si": "oubli",
     "b": 89,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19403,7 +19533,7 @@
     "si": "oubli",
     "b": 90,
     "empreinte": "בראש חודש:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19412,7 +19542,7 @@
     "si": "oubli",
     "b": 91,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ר",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19421,7 +19551,7 @@
     "si": "oubli",
     "b": 92,
     "empreinte": "ביו״ט אומר:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19430,7 +19560,7 @@
     "si": "oubli",
     "b": 93,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19439,7 +19569,7 @@
     "si": "oubli",
     "b": 94,
     "empreinte": "בחול המועד (בלי חתימה; ״ביו״ט אומר״ אינו",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19448,7 +19578,7 @@
     "si": "oubli",
     "b": 95,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן מ",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19457,7 +19587,7 @@
     "si": "oubli",
     "b": 96,
     "empreinte": "ביו״ט שחל בשבת:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19466,7 +19596,7 @@
     "si": "oubli",
     "b": 97,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19475,7 +19605,7 @@
     "si": "oubli",
     "b": 98,
     "empreinte": "בראש השנה:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19484,7 +19614,7 @@
     "si": "oubli",
     "b": 99,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן י",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19493,7 +19623,7 @@
     "si": "oubli",
     "b": 100,
     "empreinte": "בראש השנה שחל בשבת:",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {
@@ -19502,7 +19632,7 @@
     "si": "oubli",
     "b": 101,
     "empreinte": "ברוך אתה יהוה אלהינו מלך העולם אשר נתן ש",
-    "g": 13,
+    "g": 15,
     "racine": "oubli"
    },
    {

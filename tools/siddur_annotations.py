@@ -1575,7 +1575,8 @@ def facultatif(sections, sortie, note):
         règles d'oubli. Ce n'est plus replié depuis le 12/11 (« corrige הרחמן replié ») :
         les הרחמן de chaque jour, la bénédiction de l'hôte, « מגדיל », « עושה שלום » et
         « יראו » se lisent en clair ; ceux d'un jour (« בשבת », « בר״ח », « בסוכות »…) se
-        déplient ce jour-là et se replient les autres, comme tout ajout du jour.
+        déplient ce jour-là et se replient les autres, comme tout ajout du jour. Depuis le
+        22/11, ceux de la table (la sienne, celle de son père, celle d'un hôte) sont repliés.
     Les annotations du jour qui portaient sur les psaumes d'avant (Chabbat, semaine) en
     deviennent les variantes. Le groupe est imposé (« force ») : les jours ne le coupent pas.
     """
@@ -1607,6 +1608,25 @@ def facultatif(sections, sortie, note):
                     sortie.remove(ancien)
                 cond = ancien["si"] if ancien is not None else "facultatif"
                 note("bloc", si, j, cond, {"force": "facultatif", "libelle": libelle})
+        # Les הרחמן particuliers (demande du 22/11) : ceux qui dépendent de la table où l'on
+        # mange, et non du jour, se replient sous « facultatif », jamais du jour : à la table de
+        # son père ou à la sienne (Sfard, Ashkenaz), ce que l'invité dit pour son hôte (les trois ;
+        # Edot : « אורח אומר »). « אותנו ואת כל אשר לנו », que chacun dit à la suite, reste en clair.
+        particuliers = []
+        for j in apres:
+            if cons[j] and re.match(r"^\(?ו?אם סמוך על שלחן (אביו|עצמו)", txt[j]):
+                particuliers += [(j, "ajout_harahaman_maison"), (j + 1, "ajout_harahaman_maison")]
+                assert commence(txt[j + 1], "הרחמן הוא יברך"), txt[j + 1][:40]
+            elif cons[j] and txt[j].startswith("אם אוכל על שלחן אחרים"):
+                particuliers += [(j, "ajout_harahaman_invite"), (j + 1, "ajout_harahaman_invite")]
+                assert re.match(r"^(לזכר: ?)?יהי רצון שלא", txt[j + 1]), txt[j + 1][:40]
+            elif not cons[j] and txt[j].startswith("אורח אומר"):
+                particuliers.append((j, "ajout_harahaman_invite"))
+        if apres:
+            assert any(l == "ajout_harahaman_invite" for _, l in particuliers), "Birkat : la bénédiction de l'invité est introuvable"
+        for j, libelle in particuliers:
+            assert j not in deja, f"Birkat : bloc {j} déjà annoté"
+            note("bloc", si, j, "facultatif", {"libelle": libelle})
 
 
 def grouper(annotations):

@@ -798,6 +798,8 @@
     <string name="ajout_zimun">Zimún (tres comensales o más)</string>
     <string name="ajout_facultatif">Costumbre, no obligatorio</string>
     <string name="ajout_facultatif_avant">Antes del Birkat: salmos por costumbre (no obligatorios)</string>
+    <string name="ajout_harahaman_invite">HaRajamán del invitado, por el anfitrión</string>
+    <string name="ajout_harahaman_maison">HaRajamán de la casa: en la mesa del padre, o en la propia</string>
     <string name="ajout_facultatif_apres">HaRajamán y final: por costumbre (no obligatorios)</string>
     <string name="ajout_embolismique">Año embolísmico (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">Casa de duelo</string>
