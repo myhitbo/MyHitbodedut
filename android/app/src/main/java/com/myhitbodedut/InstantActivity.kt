@@ -101,8 +101,6 @@ class InstantActivity : AccueilVersion() {
         // Un voile en haut et en bas pour que le texte reste lisible sur un ciel clair.
         addView(View(context).apply {
             layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            background = android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(0x8C000000.toInt(), 0x10000000, 0x99000000.toInt()))
         })
         val pile = VueVersion.colonne(context).apply {
             layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
