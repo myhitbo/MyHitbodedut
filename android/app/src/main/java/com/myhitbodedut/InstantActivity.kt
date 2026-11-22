@@ -49,7 +49,6 @@ class InstantActivity : AccueilVersion() {
         val phase = runCatching { CielDuJour.maintenant(this) }.getOrDefault(CielDuJour.Phase.JOUR)
         contenu.removeAllViews()
         contenu.addView(entete(d))
-        contenu.addView(carteCiel(d, phase))
         contenu.addView(VueVersion.ligne(this).apply {
             gravity = Gravity.TOP
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
