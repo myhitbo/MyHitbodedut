@@ -1,0 +1,71 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['barriere', 'redemarrage'] | Android 13 API 33
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="levana_rappel_soir">DERNIER</string>     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== barriere ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{8fdd14b u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=614bbc3 NavigationBar0)/@0x6ea181b - animation-leash of insets_animation)/@0x8b2d9
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+  capture gestes-barriere-etat (222873 octets)
+  toucher id='preview_gate' -> (540,1654)
+  capture gestes-barriere-apercu (284016 octets)
+  capture gestes-barriere-apercu-bas (284016 octets)
+  toucher id='blocker_primary' -> (540,2156)
+  services : * ServiceRecord{1dbce19 u0 com.myhitbodedut/.GateService}
+  capture gestes-barriere-reelle (240293 octets)
+  capture gestes-barriere-reelle-bas (238880 octets)
+  toucher id='blocker_snooze' -> (540,2211)
+  capture gestes-barriere-reportee (126039 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="690" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-55-23</string>     <boolean name="enabled" value="true" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</strin
+  capture gestes-barriere-reglages-android (146885 octets)
+  capture gestes-barriere-telephone (83962 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="690" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-55-23</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</string> 
+  navigation : boutons | cadres : (128, 2274, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2274][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{74767c9 u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2274][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=614bbc3 NavigationBar0)/@0x6ea181b - animation-leash of insets_animation)/@0x9020a
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">tehilim-55-23</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</string>         <string>premier_pas:2</string>    
+  capture boutons-barriere-etat (229311 octets)
+  toucher id='preview_gate' -> (540,1687)
+  capture boutons-barriere-apercu (370409 octets)
+  capture boutons-barriere-apercu-bas (370391 octets)
+  toucher id='blocker_primary' -> (540,2148)
+  services : * ServiceRecord{25191d3 u0 com.myhitbodedut/.GateService}
+  capture boutons-barriere-reelle (267085 octets)
+  capture boutons-barriere-reelle-bas (260341 octets)
+  toucher id='blocker_snooze' -> (540,2148)
+  capture boutons-barriere-reportee (132190 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="692" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">lm2-25-pour-tous</string>     <boolean name="enabled" value="true" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</st
+  capture boutons-barriere-reglages-android (148616 octets)
+  capture boutons-barriere-telephone (89560 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="692" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">lm2-25-pour-tous</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</strin
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{5552a47 u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=614bbc3 NavigationBar0)/@0x6ea181b - animation-leash of insets_animation)/@0x1bf5d
+
+=== redemarrage ===
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_last_porte">lm2-25-pour-tous</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</string>         <string>seance_longue:1</string>         <string>premier_pas:2</string> 
+  avant : * ServiceRecord{bf6c4df u0 com.myhitbodedut/.GateService} | acces : SYSTEM_ALERT_WINDOW: allow; time=+1m32s331ms ago; duration=+21s867ms / GET_USAGE_STATS: allow; time=+226ms ago
+  apres : * ServiceRecord{5a758e3 u0 com.myhitbodedut/.GateService} | attendu 0 s de plus | refus :  | acces : SYSTEM_ALERT_WINDOW: allow; time=+42s102ms ago / GET_USAGE_STATS: allow; time=+5d4h52m13s611ms ago
+  etat du paquet : User 0: ceDataInode=132344 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  journal du demarrage : 11-22 14:26:28.317 I/ActivityManager(  511): Start proc 3771:com.myhitbodedut/u0a174 for broadcast {com.myhitbodedut/com.myhitbodedut.BootReceiver} | 11-22 14:26:28.369 I/ActivityManager(  511): Background started FGS: Allowed [callingPackage: com.myhitbodedut; callingUid: 10174; uidState: RCVR; intent: Intent { cmp=com.myhitbodedut/.GateService }; code:SYSTEM_ALERT_WINDOW_PERM | 11-22 14:26:28.383 W/ActivityManager(  511): Foreground service started from background can not have location/camera/microphone access: service com.myhitbodedut/.GateService
+  horloge au retour : 2026-11-22 14:27 7
+  date : Tue Nov 17 09:30:00 UTC 2026
+  horloge remise : 2026-11-17 09:30 2 | services : * ServiceRecord{5a758e3 u0 com.myhitbodedut/.GateService}
+  capture gestes-barriere-apres-redemarrage (233645 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <long name="snoozed_until" value="0" />     <string name="chizuk_last_porte">tehilim-142-3</string>     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="trophees_vus">         <string>seance_longue:4</string>         <string>heures:1</strin
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 20
