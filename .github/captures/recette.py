@@ -35,7 +35,8 @@ Les fautes vont dans fautes.txt, a cote des captures. Comme captures.py, rien ne
 le job : on lit le bilan.
 
 Variables : RECETTE_PASSES (les noms ci-dessus, separes par des virgules ; toutes par defaut) ;
-RECETTE_ECRANS (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut).
+RECETTE_ECRANS (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut) ;
+RECETTE_SAUF (les versions de l'application a ne pas ouvrir).
 """
 import datetime
 import json
@@ -986,9 +987,17 @@ def parler(etiquette):
     c.langue(etiquette)
 
 
+# RECETTE_SAUF (« sauf » de demande.json) : les versions de l'application a ne pas ouvrir. L'accueil
+# Instant arrete l'emulateur sous Android 15 et 16 (22/11) : sans lui, le reste du parcours se fait.
+SAUF = [v.strip() for v in os.environ.get("RECETTE_SAUF", "").split(",") if v.strip()]
+
+
 def versions(prefixe, bas=True):
     """L'accueil de chaque version de l'application (VersionApp)."""
     for version in ("pile", "bento", "instant", "serenite"):
+        if version in SAUF:
+            c.log(f"  version {version} : laissee de cote (RECETTE_SAUF)")
+            continue
         c.regler({"version_app": ("string", version)})
         c.lancer(attente=6)
         if not emulateur_repond():
