@@ -201,7 +201,7 @@ class InstantActivity : AccueilVersion() {
         addView(VueVersion.texte(context, DonneesAccueil.duree(context, minutes.sum()), 26f, ENCRE, bellefair, haut = 6))
         addView(VueVersion.texte(context, getString(R.string.instant_moyenne, DonneesAccueil.duree(context, moyenne)), 12f, DOUX))
         val langue = resources.configuration.locales[0]
-        addView(Barres(context, minutes, moyenne, jours.map { it.dayOfWeek.getDisplayName(TextStyle.NARROW, langue) }).apply {
+        addView(View(context).apply {
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(130)).apply { topMargin = dp(10) }
             contentDescription = getString(R.string.instant_minutes) + " : " + minutes.joinToString(", ")
         })
