@@ -60,5 +60,9 @@ esac
   adb logcat -d -v brief 2>/dev/null | grep -E "ANR in com.myhitbodedut|FATAL EXCEPTION|E/AndroidRuntime" | head -50 || true
 } > out/plantages.txt
 cat out/plantages.txt
+# Si l'emulateur lui-meme est tombe (Android 15 et 16, accueil Instant, 22/11) : ce que le noyau de
+# la machine en dit (memoire epuisee, faute de segmentation), et rien d'autre.
+{ sudo dmesg 2>/dev/null || dmesg 2>/dev/null; } | grep -iE "out of memory|oom-kill|killed process|segfault|general protection|qemu|swiftshader|gfxstream" | tail -40 > out/noyau.txt || true
+[ -s out/noyau.txt ] || rm -f out/noyau.txt
 ls -la out || true
 exit 0
