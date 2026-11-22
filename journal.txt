@@ -1,0 +1,69 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['lanceur', 'versions'] | Android 16 API 36
+  lanceur rallume : topResumedActivity=ActivityRecord{114597587 u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity t9}
+  photo lanceur (1396566 octets)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== versions ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=fe0f0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=fe0f0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" val
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  FAUTE : fr-gestes-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+  capture fr-gestes-version-pile (378195 octets)
+  FAUTE : fr-gestes-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+  capture fr-gestes-version-pile-2 (281579 octets)
+  FAUTE : fr-gestes-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+  capture fr-gestes-version-pile-3 (234640 octets)
+  FAUTE : fr-gestes-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+  capture fr-gestes-version-pile-4 (158944 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  capture fr-gestes-version-bento (259828 octets)
+  capture fr-gestes-version-bento-bas (238827 octets)
+  version instant : laissee de cote (RECETTE_SAUF)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  capture fr-gestes-version-serenite (239468 octets)
+  capture fr-gestes-version-serenite-bas (223543 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  navigation : boutons | cadres : (128, 2274, None)
+  barres du bas : InsetsSource id=fe0f0001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags=INSETS_ROUNDED_CORNER sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=fe0f0001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags=INSETS_ROUNDED_CORNER sideHint=BOTTOM boundingRects=null
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  FAUTE : fr-boutons-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+  capture fr-boutons-version-pile (355001 octets)
+  FAUTE : fr-boutons-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+  capture fr-boutons-version-pile-2 (279728 octets)
+  FAUTE : fr-boutons-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+  capture fr-boutons-version-pile-3 (228568 octets)
+  FAUTE : fr-boutons-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+  capture fr-boutons-version-pile-4 (155217 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  capture fr-boutons-version-bento (260207 octets)
+  version instant : laissee de cote (RECETTE_SAUF)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  capture fr-boutons-version-serenite (240151 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="179
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=fe0f0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=fe0f0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null
+
+=== bilan de la recette ===
+fr-gestes-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+fr-gestes-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+fr-gestes-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+fr-gestes-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+fr-boutons-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+fr-boutons-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+fr-boutons-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+fr-boutons-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+
+captures : 18

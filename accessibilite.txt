@@ -1,0 +1,33 @@
+== fr-gestes-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-gestes-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-gestes-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-gestes-version-pile-4
+== fr-gestes-version-bento
+== fr-gestes-version-bento-bas
+== fr-gestes-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== fr-gestes-version-serenite-bas
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x40dp TextView  «Tout voir»
+PETIT 54x40dp TextView  «Tout voir»
+== fr-boutons-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-boutons-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-boutons-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-boutons-version-pile-4
+== fr-boutons-version-bento
+== fr-boutons-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
