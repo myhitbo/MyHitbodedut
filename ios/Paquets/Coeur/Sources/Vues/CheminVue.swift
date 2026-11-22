@@ -4,9 +4,9 @@ import Coeur
 import Ecrans
 
 /// Le Chemin (refonte d'Android du 13/11, panneau chemin_scroll d'activity_main.xml) : la série, la meilleure série
-/// et le temps total en tête, puis les cartes du journal, de « Mon parcours » et des trophées. La vue ne calcule
-/// rien : elle lit `CheminModele`, qui se teste sous Linux, et ne fait qu'appeler `ouvrir(_:)` ; la pile de son
-/// onglet (ios/App) ouvre l'écran demandé. Le mois en barres viendra avec le dessin du graphique du journal.
+/// et le temps total en tête, le mois en barres, puis les cartes du journal, de « Mon parcours » et des trophées. La
+/// vue ne calcule rien : elle lit `CheminModele`, qui se teste sous Linux, et ne fait qu'appeler `ouvrir(_:)` ; la pile
+/// de son onglet (ios/App) ouvre l'écran demandé.
 public struct CheminVue: View {
     private let modele: CheminModele
     @Environment(\.traducteur) private var traducteur
@@ -35,6 +35,10 @@ public struct CheminVue: View {
                             .accessibilityElement(children: .combine)
                         }
                     }
+                }
+                // Le mois en cours, en barres (chemin_mois).
+                Carte {
+                    GraphiqueMois(graphique: modele.graphique, sombre: false)
                 }
                 Carte {
                     Button {

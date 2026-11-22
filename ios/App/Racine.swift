@@ -26,6 +26,7 @@ enum Ecran: Hashable {
     case hilloulot(recherche: String?)
     case halakhaLe(JourCivil)
     case hilloulotLe(JourCivil)
+    case vol
     case lecture(LectureCible)
     case tehilimLecture(TehilimLectureCible)
     case entree(String)
@@ -222,8 +223,9 @@ struct Racine: View {
         case .halakha(let jour): pousser(.halakhaLe(jour))
         case .hilloulot(let jour): pousser(.hilloulotLe(jour))
         case .siddour(let id): pousser(.lecture(.siddour(id)))
-        case .calendrier, .vol, .boussole, .ajouterTemps:
-            // Le calendrier, le vol (tâche 26), la boussole et l'ajout de temps n'ont pas encore leur écran ici.
+        case .vol: pousser(.vol)
+        case .calendrier, .boussole, .ajouterTemps:
+            // Le calendrier, la boussole et l'ajout de temps n'ont pas encore leur écran ici.
             break
         }
     }
@@ -309,6 +311,8 @@ struct Racine: View {
             Garde({ app.halakha(recherche: recherche) }) { HalakhaVue(modele: $0) }
         case .hilloulot(let recherche):
             Garde({ app.hilloulotModele(recherche: recherche) }) { HilloulotVue(modele: $0) }
+        case .vol:
+            Garde(app.vol) { VolVue(modele: $0) }
         case .halakhaLe(let jour):
             Garde({ app.halakha(recherche: nil, date: jour) }) { HalakhaVue(modele: $0) }
         case .hilloulotLe(let jour):

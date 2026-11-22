@@ -22,6 +22,7 @@ final class ModelesApp {
     let debug: Bool
     private let hilloulot: HilloulotContenus
     private let notificateur: NotificateurSysteme
+    private let lecteur: ContenusApp.Lecteur
 
     /// La séance en cours, partagée : elle continue quand son écran se ferme.
     let seance: SeanceEnCours
@@ -38,6 +39,7 @@ final class ModelesApp {
         let horloge = HorlogeSysteme()
         self.horloge = horloge
         let lecteur = ContenusApp.lecteur(dossier: paquet.appending(path: "Contenu"))
+        self.lecteur = lecteur
         let contenus = ContenusApp(lecteur: lecteur)
         self.contenus = contenus
         hilloulot = HilloulotContenus(lecteur: lecteur)
@@ -168,6 +170,12 @@ final class ModelesApp {
     func presentation() -> PresentationModele {
         PresentationModele(magasin: magasin, notificateur: notificateur, rappels: RappelsAbsents(),
                            avecBarriere: barriere)
+    }
+
+    /// Le vol, hors ligne : ni relais, ni billet, ni relevé de position tant que leurs adaptateurs ne sont pas écrits.
+    func vol() -> VolModele {
+        VolModele(magasin: magasin, horloge: horloge, aeroports: VolModele.lireAeroports(lecteur: lecteur),
+                  notificateur: notificateur, traducteur: traducteur, formats: .langue(langue))
     }
 
     func choixVersion() -> ChoixVersionModele {

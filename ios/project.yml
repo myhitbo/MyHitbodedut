@@ -13,6 +13,8 @@ targets:
           - Coeur
           - Ecrans
           - Vues
+          # L'état de Temps d'écran que l'app constate (Constat), pour les adaptateurs d'App/Services.
+          - Barriere
       - target: Widgets
       - target: Surveillance
       - target: Bouclier

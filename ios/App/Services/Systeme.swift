@@ -1,3 +1,4 @@
+import Barriere
 import Coeur
 import Ecrans
 import Foundation

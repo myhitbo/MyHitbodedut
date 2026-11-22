@@ -146,12 +146,19 @@ private struct JournalLigneVue: View {
 
 /// Le mois en barres (JournalPlus.Graphique) : une barre par jour, à l'échelle du plus long, aujourd'hui marqué d'un
 /// point. `sombre` : sur le vert d'un bandeau, les barres sont claires.
-struct GraphiqueMois: View {
-    let graphique: JournalGraphique
-    let sombre: Bool
+public struct GraphiqueMois: View {
+    private let graphique: JournalGraphique
+    private let sombre: Bool
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.paletteApp) private var palette
+    @Environment(\.colorScheme) private var schema
 
-    var body: some View {
+    public init(graphique: JournalGraphique, sombre: Bool) {
+        self.graphique = graphique
+        self.sombre = sombre
+    }
+
+    public var body: some View {
         Canvas { contexte, taille in
             dessiner(contexte, taille)
         }
@@ -168,7 +175,7 @@ struct GraphiqueMois: View {
         let pas = taille.width / CGFloat(barres.count)
         let largeur = CGFloat(JournalGraphique.largeurBarre(largeur: Double(taille.width), nombre: barres.count))
         let base = CGFloat(JournalGraphique.hauteur)
-        let couleur = sombre ? Color.white : Color.accentColor
+        let couleur = sombre ? Color.white : palette.couleur(.brand, schema: schema)
         for (rang, barre) in barres.enumerated() {
             let hauteur = CGFloat(JournalGraphique.hauteurBarre(barre))
             let x = CGFloat(rang) * pas + (pas - largeur) / 2

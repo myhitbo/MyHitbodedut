@@ -333,21 +333,40 @@ Chacune tient en moins d'une heure. L'ami renvoie la grille remplie et, pour la 
 ## Suivi d'Android main (refonte du 13/11, audit du 16/11, langues du 17/11)
 
 La ligne iOS a repris l'Android de main le 17/11 (modèle, vecteurs, export), puis ses écrans le 20/11. Ce qui est
-fait est vérifié sous Linux (modèles d'écran et règles) ; les vues marquées « sans compilateur » attendent la CI
-macOS.
+fait est vérifié sous Linux (modèles d'écran et règles) ; depuis le 22/11, toutes les vues sont compilées par la CI
+macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 
 | Sujet d'Android | Fait sur iOS | Reste |
 | --- | --- | --- |
-| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour` (sans compilateur) | l'écran du Jour lui-même (tâche 15), le dessin du mois au Chemin |
+| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour`, `AccueilVue` (le Jour entier : anneaux, plaque, bande, relance, cartes du moment), la barre de départ et son volet sur les trois onglets (`BarreDepart`, `feuilleDepart`, `AccueilModele.volet`), `TextesVue` (les trois rayons, `TextesModele.rayons`), le mois en barres au Chemin (`GraphiqueMois`) | la fête des trophées neufs à l'accueil (`TropheeFeteModele`), la musique (le volet n'ouvre pas encore son écran) |
 | Pastille « Avec Hachem » | `GateStatus.pastilleDe`, `GateRule.geste` d'après Temps d'écran | — |
 | Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele`, ligne des réglages | les accueils Sérénité, Bento et Pile (BentoActivity, PileActivity, SereniteActivity, AccueilVersion) ; d'ici là l'app montre Classique et le dit |
 | Espagnol, arabe de Tunisie | localisations es et ar-TN déclarées (`CFBundleLocalizations`, catalogues `Catalogue/` en « ar-TN ») ; `Traducteur.langueDuTelephone` (LangueApp.livree) ; l'app de droite à gauche en arabe | le choix de la langue reste dans les Réglages d'iOS (§ 2.2.7) : iOS n'a pas d'équivalent sûr au sélecteur d'Android dans l'app |
-| Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot | les cartes dans `ZmanimVue` |
-| Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`) | les vues du lecteur (en chantier) |
+| Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot ; leurs cartes dans `ZmanimVue`, avec le choix du lieu par les villes | la position du téléphone (adaptateur de `Localisation`), le calendrier, la boussole et le partage depuis Zmanim |
+| Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`) ; les vues du lecteur compilées et ouvertes depuis les Livres, la recherche et le Jour | — |
 | Audit : journal, durées | corriger ou retirer un jour (`Store.corrigerJour`), durée réglable refusée sans être ramenée (`DureeSeance.valide`) | — |
-| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel | la vue du vol (tâche 26) |
+| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim | le billet (Vision), le relevé GPS et les services en ligne (leurs adaptateurs), le test d'interface de la tâche 26 |
 | Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture, historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
 | Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit | le code des trois extensions (tâches 27 et 28) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
+
+## Phase 3 : l'app utilisable (22/11)
+
+| Écran | Vue | État |
+| --- | --- | --- |
+| Le Jour | `AccueilVue`, `BarreDepart`, `feuilleDepart` | réel |
+| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels (sans musique ni Live Activity : tâches 17 et 18) |
+| Les Livres | `TextesVue` ; siddour, lecteur, Tehilim, Tikoun, Tefilot, sources et livres, halakha, hilloulot, recherche, 'hizouk, conseils | réels |
+| Le Chemin | `CheminVue` (et le mois en barres), `JournalVue`, `ParcoursVue`, `PaliersVue` | réels |
+| Les réglages | `ReglagesVue`, `ChoixVersionVue` | réels ; l'aperçu du bouclier, le choix des applications et la dédicace disent « écran introuvable » (tâches 27, 28) |
+| Zmanim | `ZmanimVue` | réel, sans position du téléphone |
+| Le vol | `VolVue` | réel, hors ligne, sans billet ni GPS |
+| La présentation | `PresentationVue` | réelle |
+| La musique, la boussole, le calendrier, les rappels | `MusiqueVue`, `BoussoleVue` compilées ; leurs adaptateurs (audio, capteurs) et les écrans du calendrier et des rappels manquent | en attente |
+
+Le journal et les réglages vivent dans les fichiers du dossier de l'app (`PersistanceFichiers` sur l'acteur
+`Depot`) ; les notifications locales et l'icône ont leurs adaptateurs (`ios/App/Services`). Temps d'écran, la Live
+Activity, le planificateur des rappels et les widgets restent à brancher. Rien de tout cela n'a encore été vu sur un
+téléphone : la CI compile et teste sur simulateur, sans lancer l'app.
 
 ## Hors de ces trente tâches
 
