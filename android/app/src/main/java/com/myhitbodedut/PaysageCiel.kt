@@ -49,9 +49,7 @@ class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : D
             CielDuJour.Phase.JOUR -> listOf(w * 0.3f, h * 0.24f, 30 * d, 0xFFFFF8E6.toInt())
         }.let { Quad(it[0] as Float, it[1] as Float, it[2] as Float, it[3] as Int) }
         halo.shader = RadialGradient(cx, cy, rayon * 3.6f, intArrayOf(0xB0FFD6AA.toInt(), 0x47FFBE96, 0x00FFBE96), floatArrayOf(0f, 0.32f, 0.64f), Shader.TileMode.CLAMP)
-        canvas.drawCircle(cx, cy, rayon * 3.6f, halo)
         astre.color = couleur
-        canvas.drawCircle(cx, cy, rayon, astre)
         // Deux collines : la plus lointaine plus claire.
         val nuit = phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER
         loin.color = if (nuit) 0xFF2A2350.toInt() else 0xFF8FA9C4.toInt()
