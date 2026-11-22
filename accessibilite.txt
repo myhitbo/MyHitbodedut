@@ -1,0 +1,20 @@
+== gestes-seance-en-cours
+== gestes-seance-calme
+== gestes-seance-apres
+PETIT 363x45dp Button celebration_continue «Continuer»
+== boutons-seance-en-cours
+== boutons-seance-calme
+== boutons-seance-apres
+== gestes-barriere-etat
+PETIT 88x14dp Button window_start «Plage horaire : 09:01»
+PETIT 88x14dp Button window_end «Plage horaire : 11:31»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 52x24dp Switch ecran_allume_switch «Garder l’écran allumé pendant »
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+== boutons-barriere-reelle-bas

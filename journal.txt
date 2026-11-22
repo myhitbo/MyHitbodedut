@@ -1,0 +1,82 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['seance', 'barriere'] | Android 15 API 35
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== seance ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  capture gestes-seance-en-cours (149725 octets)
+  services : * ServiceRecord{d269fe3 u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  photo gestes-seance-notification (129282 octets)
+  capture gestes-seance-calme (151101 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture gestes-seance-terminer-dialogue (237621 octets)
+  toucher id='button1' -> (676,1340)
+  capture gestes-seance-apres (419076 octets)
+  navigation : boutons | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  capture boutons-seance-en-cours (149725 octets)
+  services : * ServiceRecord{3ecdf71 u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  photo boutons-seance-notification (129282 octets)
+  capture boutons-seance-calme (151101 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture boutons-seance-terminer-dialogue (283346 octets)
+  toucher id='button1' -> (676,1340)
+  capture boutons-seance-apres (445679 octets)
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+
+=== barriere ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-16-1&#10;by-12-1&#10;by-3-3&#10;le-hitchazkut-42-cri&#10;lm2-48-point-bon&#10;by-43-2&#10;lm1-78-la-parole&#10;tehilim-27-14&#10;shr-12-rejet&#10;by-20-3&#10;lm1-282-un-peu-de-bien&#10;by-1-1&#10;by-5-1&#10;by-20-1&#10;by-45-2&#10;le-hitchazkut-5-descen
+  capture gestes-barriere-etat (279154 octets)
+  toucher id='preview_gate' -> (540,1888)
+  capture gestes-barriere-apercu (268095 octets)
+  capture gestes-barriere-apercu-bas (268095 octets)
+  toucher id='blocker_primary' -> (540,2187)
+  services : * ServiceRecord{8dd4c48 u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture gestes-barriere-reelle (269743 octets)
+  capture gestes-barriere-reelle-bas (269717 octets)
+  toucher id='blocker_snooze' -> (540,2274)
+  capture gestes-barriere-reportee (138765 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="691" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-16-1&#10;by-12-1&#10;by-3-3&#10;le-hitchazkut-42-cri&#10;lm2-48-point-bon&#10;by-43-2&#10;lm1-78-la-parole&#10;tehilim-27-14&#10;shr-12-rejet&#10;by-20-3&#10;lm1-282-un-peu-de-bien&#10;by-1-1&#10;by-5-1&#10;by-20-1&#10;by-45-2&#10;le-hitchazkut-5-descente&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-55-
+  capture gestes-barriere-reglages-android (151443 octets)
+  capture gestes-barriere-telephone (85477 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="691" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-16-1&#10;by-12-1&#10;by-3-3&#10;le-hitchazkut-42-cri&#10;lm2-48-point-bon&#10;by-43-2&#10;lm1-78-la-parole&#10;tehilim-27-14&#10;shr-12-rejet&#10;by-20-3&#10;lm1-282-un-peu-de-bien&#10;by-1-1&#10;by-5-1&#10;by-20-1&#10;by-45-2&#10;le-hitchazkut-5-descente&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-55-
+  navigation : boutons | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-16-1&#10;by-12-1&#10;by-3-3&#10;le-hitchazkut-42-cri&#10;lm2-48-point-bon&#10;by-43-2&#10;lm1-78-la-parole&#10;tehilim-27-14&#10;shr-12-rejet&#10;by-20-3&#10;lm1-282-un-peu-de-bien&#10;by-1-1&#10;by-5-1&#10;by-20-1&#10;by-45-2&#10;le-hitchazkut-5-descente&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-55-2&#10;by-41-1&#10;by-55-1&#10;by-10-1&#10;
+  capture boutons-barriere-etat (228581 octets)
+  toucher id='preview_gate' -> (540,2289)
+  capture boutons-barriere-apercu (278782 octets)
+  capture boutons-barriere-apercu-bas (278782 octets)
+  toucher id='blocker_primary' -> (540,2187)
+  services : * ServiceRecord{8bd32c6 u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture boutons-barriere-reelle (245345 octets)
+  capture boutons-barriere-reelle-bas (245304 octets)
+  toucher id='blocker_snooze' -> (540,2274)
+  capture boutons-barriere-reportee (139050 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-16-1&#10;by-12-1&#10;by-3-3&#10;le-hitchazkut-42-cri&#10;lm2-48-point-bon&#10;by-43-2&#10;lm1-78-la-parole&#10;tehilim-27-14&#10;shr-12-rejet&#10;by-20-3&#10;lm1-282-un-peu-de-bien&#10;by-1-1&#10;by-5-1&#10;by-20-1&#10;by-45-2&#10;le-hitchazkut-5-descente&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-55-
+  capture boutons-barriere-reglages-android (151393 octets)
+  capture boutons-barriere-telephone (85687 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-16-1&#10;by-12-1&#10;by-3-3&#10;le-hitchazkut-42-cri&#10;lm2-48-point-bon&#10;by-43-2&#10;lm1-78-la-parole&#10;tehilim-27-14&#10;shr-12-rejet&#10;by-20-3&#10;lm1-282-un-peu-de-bien&#10;by-1-1&#10;by-5-1&#10;by-20-1&#10;by-45-2&#10;le-hitchazkut-5-descente&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-55-
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 28
