@@ -1084,7 +1084,17 @@ def redemarrage(prefixe):
     fermer_trophees()
     c.sh("input keyevent KEYCODE_HOME")
     c.pause(2.0)
-    c.log("  avant :", services_app()[:300])
+
+    def acces():
+        return " / ".join(c.sh(f"appops get {c.PKG} {op}").strip().replace("\n", " ")[:90] for op in ("SYSTEM_ALERT_WINDOW", "GET_USAGE_STATS"))
+
+    # « adb reboot » ne passe pas par l'arret propre d'Android : les acces poses a l'instant par
+    # « appops set » ne sont ecrits sur le disque qu'apres un delai (Android 14, 22/11 : perdus au
+    # redemarrage, et la barriere, sans ses acces, ne repartait pas). On les fait ecrire d'abord.
+    c.sh("cmd appops write-settings")
+    c.sh("sync")
+    c.pause(12.0)
+    c.log("  avant :", services_app()[:300], "| acces :", acces())
     c.adb("reboot")
     c.pause(25)
     c.adb("wait-for-device", timeout=420)
@@ -1107,10 +1117,14 @@ def redemarrage(prefixe):
         attendu += 10
         services = services_app()
     refus = c.sh("logcat -d | grep -E 'ForegroundServiceStartNotAllowed|BackgroundServiceStartNotAllowed|MissingForegroundServiceType|ForegroundServiceTypeException|InvalidForegroundServiceType' | grep -i myhitbodedut | head -5").strip()
-    c.log("  apres :", services[:300], f"| attendu {attendu} s de plus | refus :", refus[:500])
+    c.log("  apres :", services[:300], f"| attendu {attendu} s de plus | refus :", refus[:500], "| acces :", acces())
     c.log("  etat du paquet :", " ".join(c.sh(f"dumpsys package {c.PKG} | grep -E 'stopped=' | head -2").split())[:300])
     recu = c.sh("logcat -d -v time | grep -iE 'myhitbodedut' | grep -iE 'Start proc|BootReceiver|BOOT_COMPLETED|GateService|not allowed|denied|Killing' | head -14")
     c.log("  journal du demarrage :", " | ".join(l.strip()[:230] for l in recu.splitlines()))
+    # Tout ce que le systeme dit de l'application depuis le demarrage, a part, pour le diagnostic.
+    tout = c.sh("logcat -d -v threadtime | grep -iE 'myhitbodedut|Background started FGS|ForegroundService' | head -300")
+    with open(os.path.join(c.OUT, f"{prefixe}-demarrage-logcat.txt"), "w", encoding="utf-8") as f:
+        f.write(tout)
     # La plage a pu passer pendant le redemarrage si l'horloge est revenue a l'heure du runner.
     etat = c.sh("date '+%F %H:%M %u'").strip()
     c.log("  horloge :", etat)
