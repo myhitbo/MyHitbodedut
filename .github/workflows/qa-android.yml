@@ -1,0 +1,176 @@
+# Recette avant Google Play (22/11, PUBLICATION_PLAY_STORE.md § 2.1 et § 8).
+#
+# Le parcours de recette (.github/captures/recette.py) sur une matrice d'émulateurs, d'Android 13
+# à 16, sur la construction Play (-Pplay=true) telle qu'elle est publiée : release, R8, non
+# débogable. Chaque cible publie ses captures, ses films, son bilan (fautes.txt) et ses
+# plantages sur une branche claude/qa-<nom>.
+#
+# Ce qu'il faut passer est écrit dans .github/qa/demande.json : les cibles (niveau d'API, nom,
+# passes). Le flux part à la main, ou quand une poussée sur une branche claude/** modifie ce
+# fichier : une session Claude ne peut pas lancer un flux à la main, elle peut pousser.
+name: QA Android (émulateurs)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/**']
+    paths: ['.github/qa/demande.json']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qa-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    outputs:
+      cibles: ${{ steps.demande.outputs.cibles }}
+      variante: ${{ steps.demande.outputs.variante }}
+      parcours: ${{ steps.demande.outputs.parcours }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Read the request
+        id: demande
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, re
+          d = json.load(open(".github/qa/demande.json"))
+          variante = d.get("variante", "release")
+          parcours = d.get("parcours", "recette")
+          assert variante in ("release", "debug", "verifR8"), variante
+          assert parcours in ("recette", "captures"), parcours
+          for c in d["cibles"]:
+              assert isinstance(c["api"], int) and 26 <= c["api"] <= 40, c
+              for cle in ("nom", "passes", "etapes"):
+                  assert re.fullmatch(r"[A-Za-z0-9_,-]*", str(c.get(cle, ""))), c
+              assert c["nom"], c
+          print("cibles=" + json.dumps(d["cibles"]))
+          print("variante=" + variante)
+          print("parcours=" + parcours)
+          PY
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
+
+      - name: Ensure Android platform 36
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" || true
+
+      # La construction Play, signée par la clé de développement : le code et les ressources de
+      # l'AAB, installables sur un émulateur. Aucun secret n'est lu ici.
+      - name: Build the Play edition
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          VARIANTE: ${{ steps.demande.outputs.variante }}
+        run: |
+          case "$VARIANTE" in
+            release) tache=:app:assembleFullRelease ;;
+            verifR8) tache=:app:assembleFullVerifR8 ;;
+            *) tache=:app:assembleFullDebug ;;
+          esac
+          ./gradlew --no-daemon -Pplay=true "$tache"
+          ls -la app/build/outputs/apk/full/*/
+
+      # Le cache, pas un artefact : le quota d'artefacts du compte est vite plein (android.yml).
+      - name: Keep the APK for the emulators
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: android/app/build/outputs/apk/full
+          key: qa-apk-${{ github.sha }}-${{ steps.demande.outputs.variante }}-${{ github.run_id }}
+
+  captures:
+    needs: apk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        cible: ${{ fromJSON(needs.apk.outputs.cibles) }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      # L'émulateur veut plus de 7 Go pour ses données ; le runner n'en laissait que 6.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/boost \
+            /opt/hostedtoolcache/CodeQL /usr/local/lib/node_modules /usr/share/swift /usr/local/share/powershell
+          sudo docker image prune -af > /dev/null 2>&1 || true
+          df -h /
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Fetch the APK
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: android/app/build/outputs/apk/full
+          key: qa-apk-${{ github.sha }}-${{ needs.apk.outputs.variante }}-${{ github.run_id }}
+          fail-on-cache-miss: true
+
+      - name: Run the journey on Android API ${{ matrix.cible.api }}
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        env:
+          CAPTURES_PARCOURS: ${{ needs.apk.outputs.parcours }}
+          CAPTURES_VARIANTE: ${{ needs.apk.outputs.variante }}
+          CAPTURES_ETAPES: ${{ matrix.cible.etapes || '' }}
+          RECETTE_PASSES: ${{ matrix.cible.passes || '' }}
+        with:
+          api-level: ${{ matrix.cible.api }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          cores: 4
+          ram-size: 4096M
+          disk-size: 6144M
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: bash .github/captures/captures.sh
+
+      - name: Summary
+        if: always()
+        env:
+          NOM: ${{ matrix.cible.nom }}
+          API: ${{ matrix.cible.api }}
+        run: |
+          {
+            echo "### $NOM (API $API)"
+            echo "Captures : $(ls out/*.png 2>/dev/null | wc -l) ; films : $(ls out/*.mp4 2>/dev/null | wc -l)"
+            echo
+            echo '```'
+            cat out/fautes.txt 2>/dev/null || echo "aucune faute relevée"
+            echo '```'
+            echo '```'
+            head -60 out/plantages.txt 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish the captures to a branch
+        if: always()
+        env:
+          JETON: ${{ secrets.GITHUB_TOKEN }}
+          NOM: ${{ matrix.cible.nom }}
+          API: ${{ matrix.cible.api }}
+        run: |
+          ls out/* >/dev/null 2>&1 || exit 0
+          rm -rf /tmp/pub && mkdir -p /tmp/pub && cp out/* /tmp/pub/
+          cd /tmp/pub
+          git init -q && git checkout -q -b pub
+          git add .
+          git -c user.name="captures" -c user.email="actions@github.com" commit -q -m "QA $NOM (API $API) ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${JETON}@github.com/${GITHUB_REPOSITORY}.git" "pub:claude/qa-$NOM"
