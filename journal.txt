@@ -1,0 +1,75 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['examinateur'] | Android 16 API 36
+
+=== examinateur ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  capture exam-01-bienvenue (389583 octets)
+  toucher text='Skip' -> (901,2279)
+  capture exam-03-choix-version (201870 octets)
+  toucher text='Classic' -> (410,534)
+  capture exam-04-today (338408 octets)
+  toucher desc='Settings' -> (954,212)
+  capture exam-05-settings (208740 octets)
+  capture exam-06-carte-etat (231758 octets)
+  toucher text='Preview the “I am with Hashem” screen now' -> (540,1363)
+  capture exam-07-divulgation-affichage (263841 octets)
+  toucher text='Continue' -> (788,1842)
+  photo exam-08-android-affichage-liste (173984 octets)
+  toucher text='MyHitbodedut' -> (359,1361)
+  photo exam-08-android-affichage-interrupteur (118914 octets)
+  photo exam-08-android-affichage-accorde (118276 octets)
+  capture exam-09-retour-reglages (231758 octets)
+  toucher text='Preview the “I am with Hashem” screen now' -> (540,1363)
+  capture exam-10-apercu (319644 octets)
+  capture exam-11-apercu-bas (319644 octets)
+  toucher text='Close the preview' -> (540,2150)
+  capture exam-12-apres-apercu (838796 octets)
+  toucher desc='Settings' -> (954,212)
+  capture exam-13-carte-autorisations (282908 octets)
+  capture exam-14-divulgation-usage (258017 octets)
+  toucher text='Continue' -> (788,1827)
+  photo exam-15-android-usage-liste (118885 octets)
+  toucher text='MyHitbodedut' -> (355,1293)
+  photo exam-15-android-usage-interrupteur (124722 octets)
+  photo exam-15-android-usage-accorde (124128 octets)
+  capture exam-16-autorisations-accordees (278543 octets)
+  capture exam-17-carte-mode (229145 octets)
+  toucher id='enable_switch' -> (922,655)
+  photo exam-17b-notifications (208363 octets)
+  toucher text='Allow' -> (540,1343)
+  toucher text='Choose apps' -> (540,1167)
+  capture exam-18-liste-applications (188291 octets)
+  toucher text='Chrome' -> (545,999)
+  capture exam-19-application-choisie (188220 octets)
+  applications proposees : ['Calendar', 'Camera', 'Chrome', 'Clock', 'Contacts', 'Drive', 'Files', 'Gmail', 'Google', 'Maps', 'Messages', 'Personal Safety', 'Photos', 'SIM Toolkit', 'YouTube', 'YouTube Music']
+  capture exam-20-plage (229372 octets)
+  capture exam-21-etat-arme (216735 octets)
+  services : * ServiceRecord{6125389 u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture exam-22-barriere-reelle (231937 octets)
+  capture exam-23-barriere-reelle-bas (231937 octets)
+  toucher text='Done without the phone' -> (540,2102)
+  capture exam-24-apres-fait (150480 octets)
+  toucher desc='Settings' -> (954,212)
+  capture exam-25-rythme (298965 octets)
+  toucher id='enable_switch' -> (922,683)
+  capture exam-26-mode-coupe (225871 octets)
+  etapes de l'examinateur passees : ['1 (bienvenue)', '2 (choix de la version)', '3 (accueil)', '3 (reglages)', "4 (carte d'etat)", '5 (divulgation)', '7 (apercu)', '8 (autorisations)', "9 (divulgation de l'acces a l'utilisation)", '10 (carte du mode)', '10 (notifications demandees)', '12 (barriere)', '13 (Chabbat)']
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.SYSTEM_ALERT_WINDOW: granted=false, flags=[ USER_SET] | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default; time=+2m38s201ms ago; duration=+16s568ms / GET_USAGE_STATS: default; time=+2m21s829ms ago
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="levana_rappel_soir">DERNIER</string>     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 32

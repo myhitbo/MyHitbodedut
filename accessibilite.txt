@@ -1,0 +1,50 @@
+== exam-01-bienvenue
+== exam-03-choix-version
+== exam-04-today
+== exam-05-settings
+== exam-06-carte-etat
+PETIT 52x32dp Switch chabbat_alerte_switch «“Shabbat in 3 hours” alert»
+== exam-09-retour-reglages
+PETIT 52x32dp Switch chabbat_alerte_switch «“Shabbat in 3 hours” alert»
+== exam-10-apercu
+== exam-11-apercu-bas
+== exam-13-carte-autorisations
+PETIT 344x29dp Button dedicace_button «Dedicate»
+== exam-16-autorisations-accordees
+PETIT 344x29dp Button dedicace_button «Dedicate»
+== exam-17-carte-mode
+PETIT 104x22dp Button region_button «Region: Diaspora»
+== exam-18-liste-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== exam-19-application-choisie
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== exam-20-plage
+== exam-21-etat-arme
+PETIT 52x13dp Switch hilloulot_switch «Show hillulot»
+PETIT 91x38dp Button target_length «Hitbodedut length: 15 min»
+== exam-22-barriere-reelle
+== exam-23-barriere-reelle-bas
+== exam-25-rythme
+PETIT 101x35dp Button window_start «“I am with Hashem” hours: 6:00»
+PETIT 109x35dp Button window_end «“I am with Hashem” hours: 11:0»
+PETIT 52x7dp Switch exempt_today_switch «Rest day today»
+== exam-26-mode-coupe
+PETIT 104x27dp Button region_button «Region: Diaspora»
