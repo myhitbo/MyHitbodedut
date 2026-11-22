@@ -1,0 +1,6 @@
+EXAMINATEUR etape 10 : l'interrupteur [I am with Hashem] n'est pas a l'ecran avec [Choose apps]
+EXAMINATEUR etape 11 : la carte d'etat ne dit pas « “I am with Hashem” is on » une fois tout regle (Birkat HaLevana: custom | Birkat HaLevana: custom: By nusach · From 7 days, through the night of the 15th (Yalkut Yosef) | Show hillulot | Show hillulot | Show the halacha of the day | Show the halacha of the day | Halacha book | Halacha bo)
+EXAMINATEUR etape 11 : GateService ne tourne pas une fois tout regle
+EXAMINATEUR etape 12 (barriere) : « Did you do your hitbodedut? » introuvable a l'ecran (Allow YouTube to send you notifications? | Allow | Don’t allow)
+EXAMINATEUR etape 12 (barriere) : « Done without the phone » introuvable a l'ecran (Allow YouTube to send you notifications? | Allow | Don’t allow)
+EXAMINATEUR etape 14 : GateService tourne encore apres l'interrupteur coupe
