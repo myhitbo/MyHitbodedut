@@ -83,6 +83,21 @@ struct MusiqueLecteurTests {
         #expect(fin == nil)
     }
 
+    @Test func laSeanceEnCoursFaitJouerLaMusique() async throws {
+        let b = banc()
+        let date = try #require(JourCivil(iso: "2026-11-16"))
+        let seance = SeanceEnCours(magasin: b.magasin, horloge: HorlogeFixe(DateHeure(date, heure: 9), fuseau: .utc),
+                                   musique: b.lecteur)
+        try await seance.commencer(minutes: 10)
+        #expect(b.lecteur.seanceEnCours)
+        let joues = await b.sortie.joues
+        #expect(joues == [livre("hamelech_basade")])
+        try await seance.abandonner()
+        #expect(!b.lecteur.seanceEnCours)
+        let arrets = await b.sortie.arrets
+        #expect(arrets.last == true)
+    }
+
     @Test func horsSeanceRienNeJoue() async {
         let b = banc()
         await b.lecteur.suivant()

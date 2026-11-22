@@ -484,3 +484,6 @@ public final class MusiqueLecteur {
         }
     }
 }
+
+/// La musique de la séance (SeanceEnCours) : le lecteur a déjà les trois membres que la séance appelle.
+extension MusiqueLecteur: SeanceMusique {}

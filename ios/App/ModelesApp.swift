@@ -23,7 +23,10 @@ final class ModelesApp {
     private let hilloulot: HilloulotContenus
     private let notificateur: NotificateurSysteme
     private let lecteur: ContenusApp.Lecteur
+    private let paquet: URL
 
+    /// La musique et l'ambiance de la séance, et de l'écran Musique.
+    let musique: MusiqueLecteur
     /// La séance en cours, partagée : elle continue quand son écran se ferme.
     let seance: SeanceEnCours
     let accueil: AccueilModele
@@ -40,6 +43,7 @@ final class ModelesApp {
         self.horloge = horloge
         let lecteur = ContenusApp.lecteur(dossier: paquet.appending(path: "Contenu"))
         self.lecteur = lecteur
+        self.paquet = paquet
         let contenus = ContenusApp(lecteur: lecteur)
         self.contenus = contenus
         hilloulot = HilloulotContenus(lecteur: lecteur)
@@ -55,10 +59,15 @@ final class ModelesApp {
         #else
         debug = false
         #endif
-        seance = SeanceEnCours(magasin: magasin, horloge: horloge, notificateur: notificateur)
+        let musique = MusiqueLecteur(magasin: magasin, contenus: contenus,
+                                     sortie: SortieAudioSysteme(paquet: paquet, documents: URL.documentsDirectory),
+                                     ambiance: SortieAmbianceSysteme())
+        self.musique = musique
+        seance = SeanceEnCours(magasin: magasin, horloge: horloge, musique: musique, notificateur: notificateur)
         accueil = AccueilModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue, barriere: barriere,
                                 debug: debug)
-        textes = TextesModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue, relecture: false)
+        textes = TextesModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue,
+                              signalMusique: SignalMusiqueSeance(lecteur: musique), relecture: false)
         chemin = CheminModele(magasin: magasin, horloge: horloge)
         zmanim = ZmanimModele(magasin: magasin, horloge: horloge, contenus: contenus, traducteur: traducteur)
         reglages = ReglagesModele(magasin: magasin, contenus: contenus, horloge: horloge, notificateur: notificateur,
@@ -79,7 +88,11 @@ final class ModelesApp {
         } catch {
             magasin = Magasin.enMemoire()
         }
-        return ModelesApp(magasin: magasin, paquet: paquet, traducteur: traducteur)
+        let modeles = ModelesApp(magasin: magasin, paquet: paquet, traducteur: traducteur)
+        // Les fins de morceau et les interruptions, le temps de l'app (MusiqueLecteur.ecouter).
+        let musique = modeles.musique
+        Task { await musique.ecouter() }
+        return modeles
     }
 
     /// `CFBundleShortVersionString` et `CFBundleVersion` (BuildConfig.VERSION_NAME, VERSION_CODE).
@@ -176,6 +189,14 @@ final class ModelesApp {
     func vol() -> VolModele {
         VolModele(magasin: magasin, horloge: horloge, aeroports: VolModele.lireAeroports(lecteur: lecteur),
                   notificateur: notificateur, traducteur: traducteur, formats: .langue(langue))
+    }
+
+    /// L'écran Musique : l'écoute d'essai et l'aperçu d'ambiance ont leurs propres sorties, à côté de la séance.
+    func musiqueModele() -> MusiqueModele {
+        let documents = URL.documentsDirectory
+        return MusiqueModele(magasin: magasin, lecteur: musique,
+                             apercu: SortieAudioSysteme(paquet: paquet, documents: documents),
+                             ambianceApercu: SortieAmbianceSysteme(), stockage: StockageMusiqueSysteme(documents: documents))
     }
 
     func choixVersion() -> ChoixVersionModele {

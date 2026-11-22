@@ -27,6 +27,7 @@ enum Ecran: Hashable {
     case halakhaLe(JourCivil)
     case hilloulotLe(JourCivil)
     case vol
+    case musique
     case lecture(LectureCible)
     case tehilimLecture(TehilimLectureCible)
     case entree(String)
@@ -103,8 +104,8 @@ struct Racine: View {
         .fullScreenCover(item: $plein) { pardessus in
             vuePardessus(pardessus)
         }
-        // Les routes des modèles deviennent des écrans ; celles dont l'écran n'est pas encore porté (la musique) sont
-        // retirées sans rien ouvrir.
+        // Les routes des modèles deviennent des écrans ; celles dont l'écran n'est pas encore porté sont retirées sans
+        // rien ouvrir.
         .onChange(of: app.accueil.routes) { _, routes in
             guard let route = routes.first else { return }
             app.accueil.routeOuverte()
@@ -165,7 +166,7 @@ struct Racine: View {
         case .entreeBibliotheque(let id): pousser(.entree(id))
         case .zmanim: pileDuJour.append(Ecran.zmanim)
         case .reglages(let carteBarriere): pileDuJour.append(Ecran.reglages(carteBarriere: carteBarriere))
-        case .musique: break
+        case .musique: pousser(.musique)
         }
     }
 
@@ -183,7 +184,8 @@ struct Racine: View {
         case .lecture(let id, let livre): pousser(.lecture(LectureCible(id: id, livre: livre)))
         case .marquesPages(let recueil): feuille = .marquesPages(recueil: recueil)
         case .entreeBibliotheque(let id): pousser(.entree(id))
-        case .relecture, .musique, .rappels: break
+        case .musique: pousser(.musique)
+        case .relecture, .rappels: break
         }
     }
 
@@ -313,6 +315,8 @@ struct Racine: View {
             Garde({ app.hilloulotModele(recherche: recherche) }) { HilloulotVue(modele: $0) }
         case .vol:
             Garde(app.vol) { VolVue(modele: $0) }
+        case .musique:
+            Garde(app.musiqueModele) { MusiqueVue(modele: $0) }
         case .halakhaLe(let jour):
             Garde({ app.halakha(recherche: nil, date: jour) }) { HalakhaVue(modele: $0) }
         case .hilloulotLe(let jour):

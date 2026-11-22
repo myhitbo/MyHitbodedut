@@ -338,7 +338,7 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 
 | Sujet d'Android | Fait sur iOS | Reste |
 | --- | --- | --- |
-| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour`, `AccueilVue` (le Jour entier : anneaux, plaque, bande, relance, cartes du moment), la barre de départ et son volet sur les trois onglets (`BarreDepart`, `feuilleDepart`, `AccueilModele.volet`), `TextesVue` (les trois rayons, `TextesModele.rayons`), le mois en barres au Chemin (`GraphiqueMois`) | la fête des trophées neufs à l'accueil (`TropheeFeteModele`), la musique (le volet n'ouvre pas encore son écran) |
+| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour`, `AccueilVue` (le Jour entier : anneaux, plaque, bande, relance, cartes du moment), la barre de départ et son volet sur les trois onglets (`BarreDepart`, `feuilleDepart`, `AccueilModele.volet`), `TextesVue` (les trois rayons, `TextesModele.rayons`), le mois en barres au Chemin (`GraphiqueMois`) | la fête des trophées neufs à l'accueil (`TropheeFeteModele`) |
 | Pastille « Avec Hachem » | `GateStatus.pastilleDe`, `GateRule.geste` d'après Temps d'écran | — |
 | Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele`, ligne des réglages | les accueils Sérénité, Bento et Pile (BentoActivity, PileActivity, SereniteActivity, AccueilVersion) ; d'ici là l'app montre Classique et le dit |
 | Espagnol, arabe de Tunisie | localisations es et ar-TN déclarées (`CFBundleLocalizations`, catalogues `Catalogue/` en « ar-TN ») ; `Traducteur.langueDuTelephone` (LangueApp.livree) ; l'app de droite à gauche en arabe | le choix de la langue reste dans les Réglages d'iOS (§ 2.2.7) : iOS n'a pas d'équivalent sûr au sélecteur d'Android dans l'app |
@@ -354,17 +354,18 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 | Écran | Vue | État |
 | --- | --- | --- |
 | Le Jour | `AccueilVue`, `BarreDepart`, `feuilleDepart` | réel |
-| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels (sans musique ni Live Activity : tâches 17 et 18) |
+| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels, avec la musique et l'ambiance ; sans Live Activity (tâche 17) |
+| La musique | `MusiqueVue` sur `MusiqueLecteur`, ouverte depuis le volet ; `App/Services/Musique.swift` (AVAudioPlayer, AVAudioEngine, copie des morceaux ajoutés, pochettes) | réelle ; le mini-lecteur de la séance (`MusiqueMiniLecteurVue`) n'est pas encore posé |
 | Les Livres | `TextesVue` ; siddour, lecteur, Tehilim, Tikoun, Tefilot, sources et livres, halakha, hilloulot, recherche, 'hizouk, conseils | réels |
 | Le Chemin | `CheminVue` (et le mois en barres), `JournalVue`, `ParcoursVue`, `PaliersVue` | réels |
 | Les réglages | `ReglagesVue`, `ChoixVersionVue` | réels ; l'aperçu du bouclier, le choix des applications et la dédicace disent « écran introuvable » (tâches 27, 28) |
 | Zmanim | `ZmanimVue` | réel, sans position du téléphone |
 | Le vol | `VolVue` | réel, hors ligne, sans billet ni GPS |
 | La présentation | `PresentationVue` | réelle |
-| La musique, la boussole, le calendrier, les rappels | `MusiqueVue`, `BoussoleVue` compilées ; leurs adaptateurs (audio, capteurs) et les écrans du calendrier et des rappels manquent | en attente |
+| La boussole, le calendrier, les rappels | `BoussoleVue` compilée ; ses capteurs, et les écrans du calendrier et des rappels manquent | en attente |
 
 Le journal et les réglages vivent dans les fichiers du dossier de l'app (`PersistanceFichiers` sur l'acteur
-`Depot`) ; les notifications locales et l'icône ont leurs adaptateurs (`ios/App/Services`). Temps d'écran, la Live
+`Depot`) ; les notifications locales, l'icône et la musique ont leurs adaptateurs (`ios/App/Services`). Temps d'écran, la Live
 Activity, le planificateur des rappels et les widgets restent à brancher. Rien de tout cela n'a encore été vu sur un
 téléphone : la CI compile et teste sur simulateur, sans lancer l'app.
 
