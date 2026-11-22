@@ -1,0 +1,3 @@
+seule-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+seule-pile-bas : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+seule-pile-apres-20-s : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)

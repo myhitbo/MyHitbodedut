@@ -1,0 +1,19 @@
+== seule-classique-avant-pile
+== seule-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== seule-pile-bas
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== seule-pile-apres-20-s
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== seule-classique-avant-bento
+== seule-bento
+PETIT 185x21dp FrameLayout  «Siddour»
+PETIT 185x21dp FrameLayout  «Tehilim»
+== seule-bento-bas
+PETIT 48x16dp FrameLayout  «Réglages»
+== seule-bento-apres-20-s
+PETIT 185x21dp FrameLayout  «Siddour»
+PETIT 185x21dp FrameLayout  «Tehilim»
