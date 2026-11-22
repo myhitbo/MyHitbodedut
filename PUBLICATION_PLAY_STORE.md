@@ -411,8 +411,10 @@ la branche fusionnée sur `main` et le site remis en ligne par `web.yml` (Cloudf
 **Hébergement (tranché le 13/11) : Cloudflare Pages**, projet `myhitbodedut`,
 gratuit, public, adresse indépendante du nom du compte GitHub (l'ancienne
 `hil123.github.io/…` est morte depuis le changement de nom en `myhitbo`).
-`web.yml` déploie `web/dist` avec `wrangler pages deploy` ; le dépôt
-`myhitbodedut-web` n'est plus alimenté et peut être archivé. Secrets du dépôt
+`web.yml` déploie `web/dist` avec `wrangler pages deploy`, puis en pousse une
+copie dans le dépôt `myhitbodedut-web` (depuis le 22/11, secret
+`WEB_DEPLOY_TOKEN` : jeton à accès fin sur ce dépôt, *Contents* en écriture ;
+sans lui la copie est sautée, le site reste en ligne). Secrets du dépôt
 `myhitbo/MyHitbodedut` : `CLOUDFLARE_API_TOKEN` (jeton d'API, permission
 *Account → Cloudflare Pages → Edit*) et `CLOUDFLARE_ACCOUNT_ID`. L'adresse est
 la même dans `CelebrationActivity.LIEN_WEB`, `web/src/js/app.js` et
