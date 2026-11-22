@@ -1,0 +1,179 @@
+== he-boutons-accueil
+PETIT 363x8dp Button today_offline «התבודדתי בלי הטלפון»
+== he-boutons-accueil-bas
+PETIT 363x8dp Button today_offline «התבודדתי בלי הטלפון»
+== he-boutons-accueil-volet
+PETIT 363x8dp Button today_offline «התבודדתי בלי הטלפון»
+MUET Switch music_switch_main (147, 1410, 284, 1536)
+== he-boutons-livres
+== he-boutons-livres-bas
+== he-boutons-chemin
+== he-boutons-chemin-bas
+== he-boutons-reglages
+PETIT 88x32dp Button ouverture_button «מסך פתיחה: היום»
+== he-boutons-reglages-bas
+== he-boutons-choix-version
+== he-boutons-choix-version-bas
+== he-boutons-seance
+== he-boutons-seance-bas
+== he-boutons-bravo
+== he-boutons-bravo-bas
+== he-boutons-journal
+== he-boutons-journal-bas
+== he-boutons-parcours
+== he-boutons-parcours-bas
+== he-boutons-hizouk
+== he-boutons-hizouk-bas
+== he-boutons-conseils
+== he-boutons-conseils-bas
+== he-boutons-rappels
+MUET Switch reminders_switch (89, 585, 226, 711)
+== he-boutons-rappels-bas
+MUET Switch reminders_switch (89, 585, 226, 711)
+== he-boutons-musique
+MUET Switch music_switch (89, 464, 226, 590)
+MUET Switch music_shuffle (89, 867, 226, 993)
+PETIT 344x40dp LinearLayout music_ambiance «אווירה שקט»
+MUET RadioButton track_radio (880, 1445, 1006, 1571)
+MUET RadioButton track_radio (880, 1634, 1006, 1760)
+MUET RadioButton track_radio (880, 1823, 1006, 1949)
+PETIT 379x28dp LinearLayout  «אפילו — נועם שפייר שינוי שם הא»
+PETIT 48x20dp RadioButton track_radio «»
+MUET RadioButton track_radio (880, 2012, 1006, 2064)
+PETIT 48x20dp ImageButton track_rename «שינוי שם»
+PETIT 48x20dp ImageButton track_play «האזנה»
+== he-boutons-musique-bas
+PETIT 379x5dp LinearLayout  «»
+MUET LinearLayout  (42, 128, 1038, 142)
+MUET RadioButton track_radio (880, 184, 1006, 310)
+MUET RadioButton track_radio (880, 373, 1006, 499)
+MUET RadioButton track_radio (880, 562, 1006, 688)
+MUET RadioButton track_radio (880, 751, 1006, 877)
+MUET RadioButton track_radio (880, 940, 1006, 1066)
+MUET RadioButton track_radio (880, 1129, 1006, 1255)
+MUET RadioButton track_radio (880, 1318, 1006, 1444)
+MUET RadioButton track_radio (880, 1507, 1006, 1633)
+MUET RadioButton track_radio (880, 1696, 1006, 1822)
+MUET RadioButton track_radio (880, 1885, 1006, 2011)
+== he-boutons-siddour
+PETIT 205x36dp TextView siddur_heading_nusah «נוסח ספרדי – עדות המזרח»
+PETIT 352x25dp LinearLayout  «תִּקּוּן חֲצוֹת»
+== he-boutons-siddour-bas
+PETIT 352x6dp LinearLayout  «»
+MUET LinearLayout  (84, 128, 1007, 144)
+== he-boutons-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+PETIT 411x11dp TextView  «וְשָׁחַ֨ט אֹת֜וֹ עַ֣ל יֶ֧רֶךְ »
+== he-boutons-tefilot
+== he-boutons-tefilot-bas
+PETIT 379x46dp LinearLayout  «ליקוטי תפילות א, קמ״ב
+התורה הנ»
+== he-boutons-tehilim
+PETIT 70x42dp TextView  «מ״א»
+PETIT 70x42dp TextView  «מ״ב»
+PETIT 70x42dp TextView  «מ״ג»
+PETIT 70x42dp TextView  «מ״ד»
+PETIT 70x42dp TextView  «מ״ה»
+== he-boutons-tehilim-bas
+PETIT 70x11dp TextView  «ע״ו»
+PETIT 70x11dp TextView  «ע״ז»
+PETIT 70x11dp TextView  «ע״ח»
+PETIT 70x11dp TextView  «ע״ט»
+PETIT 70x11dp TextView  «פ׳»
+== he-boutons-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tehilim-lecture-bas
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tikkun
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tikkun-bas
+== he-boutons-bibliotheque
+== he-boutons-bibliotheque-bas
+== he-boutons-livres
+PETIT 379x29dp LinearLayout  «»
+MUET LinearLayout  (42, 2198, 1038, 2274)
+== he-boutons-livres-bas
+PETIT 379x29dp LinearLayout  «»
+MUET LinearLayout  (42, 128, 1038, 204)
+== he-boutons-source
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-source-bas
+== he-boutons-zmanim
+PETIT 120x36dp TextView zmanim_lieu «Paris · חו״ל»
+== he-boutons-zmanim-bas
+== he-boutons-vol
+PETIT 379x44dp LinearLayout  «שיטה ומקורות»
+== he-boutons-vol-clavier
+== he-boutons-vol-bas
+PETIT 379x44dp LinearLayout  «שיטה ומקורות»
+== he-boutons-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+PETIT 379x44dp LinearLayout  «הכיוון שהמצפן עוקב אחריו הכיוו»
+== he-boutons-boussole-bas
+== he-boutons-calendrier
+PETIT 61x27dp TextView  «עברי»
+PETIT 59x27dp TextView  «לועזי»
+PETIT 347x28dp TextView  «היום»
+== he-boutons-calendrier-bas
+== he-boutons-halakha
+PETIT 347x46dp EditText  «חיפוש בהלכה»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-halakha-bas
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot
+PETIT 48x6dp Switch  «הצגת הילולות»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot-clavier
+PETIT 347x13dp LinearLayout  «רבי אהרן הלוי אפשטיין, להמשך ק»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot-bas
+== he-boutons-recherche
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-recherche-clavier
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-recherche-bas
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-paliers
+PETIT 379x19dp LinearLayout  «15 דקות ביום אחד, הושג ב־11 בנ»
+PETIT 379x20dp LinearLayout  «2 שעות בסך הכול, 1 מתוך 2»
+== he-boutons-paliers-bas
+PETIT 379x35dp LinearLayout  «שבוע מלא אחד, מראשון עד שישי»
+== he-boutons-applications
+MUET CheckBox app_check (42, 558, 168, 684)
+MUET CheckBox app_check (42, 748, 168, 874)
+MUET CheckBox app_check (42, 938, 168, 1064)
+MUET CheckBox app_check (42, 1128, 168, 1254)
+MUET CheckBox app_check (42, 1318, 168, 1444)
+MUET CheckBox app_check (42, 1508, 168, 1634)
+MUET CheckBox app_check (42, 1698, 168, 1824)
+MUET CheckBox app_check (42, 1888, 168, 2014)
+MUET CheckBox app_check (42, 2078, 168, 2204)
+PETIT 411x14dp LinearLayout  «»
+MUET LinearLayout  (0, 2236, 1080, 2274)
+PETIT 48x2dp CheckBox app_check «»
+MUET CheckBox app_check (42, 2268, 168, 2274)
+== he-boutons-applications-bas
+PETIT 411x14dp LinearLayout  «»
+MUET LinearLayout  (0, 526, 1080, 564)
+PETIT 48x2dp CheckBox app_check «»
+MUET CheckBox app_check (42, 526, 168, 532)
+MUET CheckBox app_check (42, 596, 168, 722)
+MUET CheckBox app_check (42, 786, 168, 912)
+MUET CheckBox app_check (42, 976, 168, 1102)
+MUET CheckBox app_check (42, 1166, 168, 1292)
+MUET CheckBox app_check (42, 1356, 168, 1482)
+MUET CheckBox app_check (42, 1546, 168, 1672)
+MUET CheckBox app_check (42, 1736, 168, 1862)
+MUET CheckBox app_check (42, 1926, 168, 2052)
+MUET CheckBox app_check (42, 2116, 168, 2242)
+== he-boutons-version-pile
+== he-boutons-version-pile-2
+== he-boutons-version-pile-3
+== he-boutons-version-pile-4
+== he-boutons-version-bento
