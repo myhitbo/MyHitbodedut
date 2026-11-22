@@ -1,0 +1,101 @@
+name: iOS (vues, macOS)
+
+# La passe rapide des vues SwiftUI : compiler seulement, sans tests, toutes les vues d'un coup (même celles que
+# Package.swift tient encore en chantier, par COEUR_TOUTES_VUES), puis l'app. Chaque erreur est listée dans le
+# résumé et dans le journal joint, pour les corriger toutes en une passe. Les tests du paquet sur le simulateur
+# restent à ios-app.yml, plus long. Même runner et même Xcode que lui.
+
+on:
+  push:
+    paths:
+      - 'ios/Paquets/Coeur/Sources/Vues/**'
+      - 'ios/App/**'
+      - 'ios/Paquets/Coeur/Package.swift'
+      - '.github/workflows/ios-vues.yml'
+  pull_request:
+    paths:
+      - 'ios/Paquets/Coeur/Sources/Vues/**'
+      - 'ios/App/**'
+      - 'ios/Paquets/Coeur/Package.swift'
+      - '.github/workflows/ios-vues.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  vues:
+    # macos-26-intel, comme ios-app.yml : Xcode 26.6, sur x64.
+    runs-on: macos-26-intel
+    timeout-minutes: 40
+    env:
+      # Package.swift vide alors la liste des vues en chantier : toutes se compilent.
+      COEUR_TOUTES_VUES: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode 26.6
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.6.app
+          xcodebuild -version
+      - name: Contenus exportés
+        run: python3 tools/export_contenu/export.py
+      - name: Paquet Coeur, toutes les vues (simulateur)
+        id: paquet
+        continue-on-error: true
+        working-directory: ios/Paquets/Coeur
+        run: |
+          set -o pipefail
+          xcodebuild build -scheme Coeur-Package -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$RUNNER_TEMP/paquet" 2>&1 | tee "$GITHUB_WORKSPACE/vues.log" \
+            | grep -E "error:|warning:|BUILD" || true
+          # La preuve que l'interrupteur a joué : une vue en chantier a bien été compilée.
+          grep -q "BibliothequeVue.swift" "$GITHUB_WORKSPACE/vues.log" || { echo "::error::les vues en chantier n'ont pas été compilées (COEUR_TOUTES_VUES)"; exit 1; }
+          grep -q "BUILD SUCCEEDED" "$GITHUB_WORKSPACE/vues.log"
+      # L'app importe Vues : elle ne se compile qu'une fois les vues sans erreur.
+      - name: Projet Xcode (XcodeGen)
+        if: steps.paquet.outcome == 'success'
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate --spec project.yml
+      - name: Compilation de l'app (simulateur, sans signature)
+        id: app
+        if: steps.paquet.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
+            -destination "generic/platform=iOS Simulator" -derivedDataPath "$RUNNER_TEMP/app" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
+          grep -q "BUILD SUCCEEDED" app.log
+      - name: Erreurs, une ligne chacune
+        if: always()
+        run: |
+          for f in vues.log app.log; do
+            test -f "$f" || continue
+            n=$(grep -E "^/.*: error:" "$f" | sort -u | wc -l | tr -d ' ')
+            echo "## $f : $n erreurs" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            grep -E "^/.*: error:" "$f" | sed "s|$GITHUB_WORKSPACE/||" | sort -u | head -400 >> "$GITHUB_STEP_SUMMARY" || true
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "== $f : $n erreurs"
+            grep -E "^/.*: error:" "$f" | sed "s|$GITHUB_WORKSPACE/||" | sort -u || true
+          done
+      - name: Journaux
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: journaux-vues
+          path: |
+            vues.log
+            app.log
+          if-no-files-found: ignore
+      - name: Verdict
+        if: always()
+        run: |
+          test "${{ steps.paquet.outcome }}" = success
+          test "${{ steps.app.outcome }}" = success

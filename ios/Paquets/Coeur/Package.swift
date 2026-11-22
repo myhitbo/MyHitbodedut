@@ -9,6 +9,10 @@ import PackageDescription
 // Linux ; Xcode (ios-app.yml, sur macOS) construit tout.
 let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 
+// COEUR_TOUTES_VUES : la passe de compilation rapide (ios-vues.yml) construit aussi les vues en chantier, pour
+// lister d'un coup toutes leurs erreurs.
+let toutesLesVues = ProcessInfo.processInfo.environment["COEUR_TOUTES_VUES"] != nil
+
 // Les fichiers en chantier : versionnés pour ne rien perdre, mais pas encore construits, tant que la
 // grappe qui les écrit n'a pas fini (chemins relatifs au dossier de la cible). Vides quand tout est intégré.
 let enChantierSources: [String] = [
@@ -19,7 +23,7 @@ let enChantierEcrans: [String] = [
 ]
 let enChantierEcransTests: [String] = [
 ]
-let enChantierVues: [String] = [
+let enChantierVues: [String] = toutesLesVues ? [] : [
     "BibliothequeCommun.swift",
     "BibliothequeEntreeVue.swift",
     "BibliothequeVue.swift",
