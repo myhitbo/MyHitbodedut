@@ -774,6 +774,13 @@ def video_barriere():
     c.toucher(rid="enable_switch", attente=2.5)
     repere("mode allume")
     c.pause(1.5)
+    # La notification permanente du service, que la declaration annonce.
+    c.sh("cmd statusbar expand-notifications")
+    repere("notification du mode")
+    c.pause(5.0)
+    photo("video-barriere-3-notification")
+    c.sh("cmd statusbar collapse")
+    c.pause(2.5)
     c.toucher(text="Choose apps", attente=4.0)
     repere("liste des applications")
     paquet = None
@@ -826,6 +833,15 @@ def video_barriere():
     repere("mode coupe")
     c.pause(3.0)
     photo("video-barriere-4-coupe")
+    # Le service s'arrete avec l'interrupteur : sa notification n'est plus la. (Et screenrecord
+    # n'ecrit sa derniere image que si une autre la suit : sans cela, l'interrupteur coupe
+    # manquait au premier montage.)
+    c.sh("cmd statusbar expand-notifications")
+    repere("plus de notification")
+    c.pause(5.0)
+    photo("video-barriere-4-sans-notification")
+    c.sh("cmd statusbar collapse")
+    c.pause(3.0)
     film_fin()
     if "GateService" in services_app():
         faute("VIDEO barriere : GateService tourne encore apres l'interrupteur coupe")

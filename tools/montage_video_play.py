@@ -17,49 +17,53 @@ POLICE_TITRE = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
 L, H_FILM, BANDEAU = 720, 1600, 232
 FOND = "0x143d31"
 
+# Par film : (debut du repere, legende, avance). Le repere est note apres l'attente qui suit le
+# geste ; l'avance (en secondes) ramene la legende au moment du geste.
 LEGENDES = {
     "video-seance-1": [
-        ("accueil", "1 · SESSION TIMER\nThe Today screen of the app."),
-        ("volet", "The user opens the start panel: length, topic, music."),
-        ("musique", "Music screen: the user picks the track that will play during the session."),
-        ("retour au volet", "Back to the start panel."),
-        ("seance lancee", "The user taps Start. A foreground service runs the countdown and plays the chosen track."),
-        ("notification", "Its notification shows the time left."),
+        ("accueil", "1 · SESSION TIMER\nThe Today screen of the app.", 9),
+        ("volet", "The user opens the start panel: length, topic, music.", 2.8),
+        ("musique", "Music screen: the user picks the track that will play during the session.", 3.2),
+        ("retour au volet", "Back to the start panel, with the chosen track.", 2.5),
+        ("seance lancee", "The user taps Start. A foreground service runs the countdown and plays the chosen track.", 3.2),
+        ("notification", "Its notification shows the time left.", 0.3),
     ],
     "video-seance-2": [
-        ("ecran rallume", "The screen was turned off for 30 seconds, phone put down, and is turned on again."),
-        ("seance toujours en cours", "The session kept running with the screen off: the countdown has moved on."),
-        ("notification apres l'ecran eteint", "The notification is still there, with the time left."),
+        ("ecran rallume", "The screen was turned off for 30 seconds, phone put down, and is turned on again.", 9),
+        ("seance toujours en cours", "The session kept running with the screen off: the countdown has moved on.", 3.5),
+        ("notification apres l'ecran eteint", "The notification is still there, with the time left.", 0.3),
     ],
     "video-barriere-1": [
-        ("accueil", "2 · MORNING GATE\nA self-discipline tool the user sets up for themselves."),
-        ("reglages", "Settings. The card “Permissions” is at the bottom."),
-        ("carte des autorisations", "Card “Permissions”: the user taps Grant for “Display over other apps”."),
-        ("divulgation", "An in-app disclosure comes first: what is used, why, and how to turn it off."),
-        ("ecran d'Android", "Then the user allows it in the Android screen."),
-        ("retour dans l'application", "Back in the app: granted."),
+        ("accueil", "2 · MORNING GATE\nA self-discipline tool the user sets up for themselves.", 9),
+        ("reglages", "Settings. The card “Permissions” is at the bottom.", 3.2),
+        ("carte des autorisations", "Card “Permissions”: the user taps Grant for “Display over other apps”.", 0.5),
+        ("divulgation", "An in-app disclosure comes first: what is used, why, and how to turn it off.", 3.2),
+        ("ecran d'Android", "Then the user allows it in the Android screen.", 3.2),
+        ("retour dans l'application", "Back in the app: granted.", 1.5),
     ],
     "video-barriere-2": [
-        ("carte des autorisations", "Same for “Usage access”: the user taps Grant."),
-        ("divulgation", "The in-app disclosure: only the app in the foreground is read; nothing is recorded or sent."),
-        ("ecran d'Android", "The user allows it in the Android screen."),
-        ("retour dans l'application", "Back in the app: both accesses are granted."),
+        ("carte des autorisations", "Same for “Usage access”: the user taps Grant.", 9),
+        ("divulgation", "The in-app disclosure: only the app in the foreground is read; nothing is recorded or sent.", 3.2),
+        ("ecran d'Android", "The user allows it in the Android screen.", 3.2),
+        ("retour dans l'application", "Back in the app: both accesses are granted.", 1.5),
     ],
     "video-barriere-3": [
-        ("cherche", "Up to the card “I am with Hashem”."),
-        ("carte du mode", "Card “I am with Hashem”: the user turns the gate on."),
-        ("mode allume", "The gate is on. It keeps a permanent notification while it runs."),
-        ("liste des applications", "The user picks the apps the gate applies to."),
-        ("application choisie", "One app is picked: Chrome."),
-        ("etat", "Status card: the gate acts during the hours the user set, until the practice of the day is done."),
+        ("cherche", "Up to the card “I am with Hashem”.", 9),
+        ("carte du mode", "Card “I am with Hashem”: the user turns the gate on.", 0.5),
+        ("mode allume", "The gate is on.", 2.7),
+        ("notification du mode", "Its service keeps a permanent notification while it runs.", 0.3),
+        ("liste des applications", "The user picks the apps the gate applies to.", 4.2),
+        ("application choisie", "One app is picked: Chrome.", 2.7),
+        ("etat", "Status card: the gate acts during the hours the user set, until the practice of the day is done.", 0.5),
     ],
     "video-barriere-4": [
-        ("application ouverte", "The user opens the app they picked…"),
-        ("ecran de garde", "…and the gate appears in front of it."),
-        ("fait sans le telephone", "“Done without the phone”: the gate goes away and the app is there."),
-        ("retour dans MyHitbodedut", "Back in MyHitbodedut, Settings."),
-        ("carte du mode, pour couper", "The user can switch the gate off at any time."),
-        ("mode coupe", "The gate is off: its service and its notification stop."),
+        ("application ouverte", "The user opens the app they picked…", 9),
+        ("ecran de garde", "…and the gate appears in front of it.", 6.5),
+        ("fait sans le telephone", "“Done without the phone”: the gate goes away and the app is there.", 4.2),
+        ("retour dans MyHitbodedut", "Back in MyHitbodedut, Settings.", 4.0),
+        ("carte du mode, pour couper", "The user can switch the gate off at any time.", 0.5),
+        ("mode coupe", "The gate is off.", 2.7),
+        ("plus de notification", "Its service has stopped: the notification is gone.", 0.3),
     ],
 }
 
@@ -113,7 +117,7 @@ def lignes_centrees(lignes, y0, taille, pas, police, couleur, travail, quand=Non
 VITE = 4.0
 
 
-def sequence(dossier, nom, travail, decalage=-1.0):
+def sequence(dossier, nom, travail, decalage=-0.8):
     """Une sequence sous son bandeau. decalage : screenrecord demarre un peu apres le repere « debut ».
     Les recherches dans la page (reperes « cherche » … « trouve ») passent en accelere."""
     source = os.path.join(dossier, nom + ".mp4")
@@ -157,10 +161,10 @@ def sequence(dossier, nom, travail, decalage=-1.0):
     chaines.append("".join(f"[m{i}]" for i in range(len(morceaux))) + f"concat=n={len(morceaux)}:v=1:a=0[film]")
 
     plages = []
-    for cle, legende in LEGENDES.get(nom, []):
+    for cle, legende, avance in LEGENDES.get(nom, []):
         t = next((t for t, texte in marques if texte.startswith(cle)), None)
         if t is not None:
-            plages.append([t, legende])
+            plages.append([max(0.0, t - avance), legende])
     plages.sort()
     filtres = [f"scale={L}:{H_FILM}:flags=lanczos", f"pad={L}:{H_FILM + BANDEAU}:0:{BANDEAU}:color={FOND}"]
     for i, (debut, legende) in enumerate(plages):
