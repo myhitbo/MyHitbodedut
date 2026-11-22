@@ -1,0 +1,2 @@
+== gestes-barriere-apres-redemarrage
+PETIT 363x19dp Button blocker_snooze «Plus tard (15 min)»
