@@ -633,8 +633,8 @@ def preparer_film():
     # hitbodedout, publiables, dont aucun ne porte le Nom en toutes lettres — on ne le met pas
     # dans une video publique, meme dans un verset (web/test/fiche-play.test.mjs pour la fiche).
     # Quatre moments tirent un texte a l'ecran pendant le film : l'ouverture de la seance, l'ecran de
-    # garde, la carte « Le lieu et l'heure » en tete... des reglages (a chaque ouverture), et la
-    # relance de l'accueil si la serie etait rompue.
+    # garde, la carte « Le lieu et l'heure » des reglages (a chaque ouverture), et la relance de
+    # l'accueil si la serie etait rompue.
     c.regler({"chizuk_bag_ouverture": ("string", "lm2-25-fondement\nlm2-25-langue\nlm2-25-tout-dire\nlm2-97-chemin-neuf"),
               "chizuk_bag_porte": ("string", "lm2-25-pour-tous\nlm2-96-une-heure\nlm2-99-ami\nlm2-100-tsadikim"),
               "chizuk_bag_lieu": ("string", "lm2-11-champs\nlm1-52-nuit\nsh-275-sous-le-talit\nshr-10-grenier\nsh-275-derriere-un-livre\nshr-10-langue"),
