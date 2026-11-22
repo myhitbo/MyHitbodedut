@@ -178,6 +178,15 @@ def devant():
     return c.sh("dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2").strip()
 
 
+def emulateur_repond():
+    """L'emulateur est-il encore la ? Il lui arrive de s'arreter en plein parcours (22/11)."""
+    try:
+        r = subprocess.run(["adb", "get-state"], capture_output=True, timeout=20)
+        return r.stdout.decode("utf-8", "replace").strip() == "device"
+    except subprocess.TimeoutExpired:
+        return False
+
+
 def textes(racine=None):
     """Tout ce qui est ecrit a l'ecran (textes et descriptions), toutes applications confondues."""
     racine = racine if racine is not None else c.dump()
@@ -982,6 +991,9 @@ def versions(prefixe, bas=True):
     for version in ("pile", "bento", "instant", "serenite"):
         c.regler({"version_app": ("string", version)})
         c.lancer(attente=6)
+        if not emulateur_repond():
+            faute(f"{prefixe} : EMULATEUR il ne repond plus apres l'ouverture de l'accueil {version}")
+            return
         fermer_trophees()
         prise(f"{prefixe}-version-{version}")
         if version == "pile":
@@ -1419,6 +1431,9 @@ def main():
         table[v] = (lambda v=v: version_seule(v))
     for nom in passes:
         if nom in table:
+            if not emulateur_repond():
+                faute(f"EMULATEUR : il ne repond plus avant la passe « {nom} » ; elle et les suivantes ne sont pas faites")
+                break
             c.etape(nom, table[nom])
     c.log("\n=== bilan de la recette ===")
     c.log("\n".join(FAUTES) if FAUTES else "aucune faute relevee par les controles automatiques")
