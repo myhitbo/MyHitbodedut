@@ -32,9 +32,18 @@ class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : D
         CielDuJour.Phase.JOUR -> intArrayOf(0xFF4F86C6.toInt(), 0xFF7FAEDC.toInt(), 0xFFB3D2EA.toInt(), 0xFFDCE9EC.toInt(), 0xFFF4E6CB.toInt())
     }
 
+    private var image: android.graphics.Bitmap? = null
+
     override fun draw(canvas: Canvas) {
-        val w = bounds.width().toFloat()
-        val h = bounds.height().toFloat()
+        val lw = bounds.width()
+        val lh = bounds.height()
+        if (lw <= 0 || lh <= 0) return
+        val img = image?.takeIf { it.width == lw && it.height == lh }
+            ?: android.graphics.Bitmap.createBitmap(lw, lh, android.graphics.Bitmap.Config.ARGB_8888).also { peindre(Canvas(it), lw.toFloat(), lh.toFloat()); image = it }
+        canvas.drawBitmap(img, bounds.left.toFloat(), bounds.top.toFloat(), null)
+    }
+
+    private fun peindre(canvas: Canvas, w: Float, h: Float) {
         ciel.shader = LinearGradient(0f, 0f, 0f, h * 0.85f, couleurs, null, Shader.TileMode.CLAMP)
         canvas.drawRect(0f, 0f, w, h, ciel)
         if (phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER) {
