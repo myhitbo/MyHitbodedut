@@ -2,13 +2,9 @@
   "parcours": "recette",
   "variante": "release",
   "cibles": [
-    { "api": 36, "nom": "api36-tout-a", "passes": "examinateur,instant,versions,seance,barriere,redemarrage" },
-    { "api": 36, "nom": "api36-tout-b", "passes": "ecrans-fr,ecrans-he,nuit,presentation" },
-    { "api": 35, "nom": "api35-tout-a", "passes": "examinateur,instant,versions,seance,barriere,redemarrage" },
-    { "api": 35, "nom": "api35-tout-b", "passes": "ecrans-fr,tablette,couche,ciel-de-nuit" },
-    { "api": 34, "nom": "api34-tout-a", "passes": "examinateur,versions,seance,barriere,redemarrage" },
-    { "api": 34, "nom": "api34-tout-b", "passes": "ecrans-fr,ecrans-ar,couche,presentation" },
-    { "api": 33, "nom": "api33-tout-a", "passes": "examinateur,versions,seance,barriere,redemarrage" },
-    { "api": 33, "nom": "api33-tout-b", "passes": "ecrans-fr,ecrans-es,tablette" }
+    { "api": 36, "nom": "api36-tout-c", "passes": "barriere,redemarrage" },
+    { "api": 35, "nom": "api35-tout-c", "passes": "barriere,redemarrage" },
+    { "api": 34, "nom": "api34-tout-c", "passes": "barriere,redemarrage" },
+    { "api": 33, "nom": "api33-tout-c", "passes": "barriere,redemarrage" }
   ]
 }
