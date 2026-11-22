@@ -67,8 +67,18 @@ test('Birkat haMazon : psaumes d\'avant repliés ; bénédictions et הרחמן 
     blocs.forEach((b, i) => {
       if (!b.t || !nu(b.t).startsWith('הרחמן')) return;
       const e = notes.get(i);
-      assert.ok(!e || ['chabbat', 'roch_hodech', 'roch_hachana', 'soukkot', 'moed', 'yom_tov', 'cheva_berakhot', 'oubli', 'pourim_triple_festin'].includes(e.racine), `${nusah} : הרחמן ${i} sous ${e?.racine}`);
+      const table = e?.racine === 'facultatif' && /^ajout_harahaman_(maison|invite)$/.test(e.libelle);
+      assert.ok(!e || table || ['chabbat', 'roch_hodech', 'roch_hachana', 'soukkot', 'moed', 'yom_tov', 'cheva_berakhot', 'oubli', 'pourim_triple_festin'].includes(e.racine), `${nusah} : הרחמן ${i} sous ${e?.racine}`);
     });
+    // Les הרחמן de la table (22/11) : la bénédiction de l'invité, repliée dans les trois ; Sfard et
+    // Ashkenaz, aussi celles de la table de son père ou de la sienne, mais pas « אותנו ואת כל אשר לנו ».
+    const invite = blocs.findIndex((b) => b.t && /^(אורח אומר |לזכר: )?(הרחמן הוא יברך את השלחן|יהי רצון שלא יבוש)/.test(nu(b.t)));
+    assert.equal(notes.get(invite)?.libelle, 'ajout_harahaman_invite', `${nusah} : invité`);
+    if (nusah !== 'edot') {
+      const moi = blocs.findIndex((b) => b.t && nu(b.t).startsWith('הרחמן הוא יברך אותי'));
+      assert.equal(notes.get(moi)?.libelle, 'ajout_harahaman_maison', `${nusah} : sa table`);
+      assert.equal(notes.get(moi + 1), undefined, `${nusah} : אותנו en clair`);
+    }
     const shabbat = blocs.findIndex((b) => b.t && /שכלו שבת/.test(nu(b.t)));
     if (shabbat >= 0) {
       assert.equal(notes.get(shabbat)?.racine, 'chabbat', nusah);
