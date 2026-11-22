@@ -271,7 +271,6 @@ class InstantActivity : AccueilVersion() {
         private val barre = Paint(Paint.ANTI_ALIAS_FLAG)
         private val ligne = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = 0x99FFFFFF.toInt(); strokeWidth = d; style = Paint.Style.STROKE
-            pathEffect = DashPathEffect(floatArrayOf(4 * d, 4 * d), 0f)
         }
         private val texte = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = DOUX; textSize = 11 * d; textAlign = Paint.Align.CENTER }
         private val r = RectF()
