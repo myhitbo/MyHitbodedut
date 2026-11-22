@@ -1,0 +1,9 @@
+EXAMINATEUR etape 10 (carte du mode) : « I am with Hashem » introuvable a l'ecran (Snooze length | Snooze length: 15 min | No apps selected, so nothing will be blocked. | Choose apps | Rhythm | First name | So the home screen can greet you. It never leaves the phone. | First name: Not set | Hitbodedut length | Hitbodedut length: 15 min)
+EXAMINATEUR etape 10 (carte du mode) : « “I am with Hashem” hours » introuvable a l'ecran (Snooze length | Snooze length: 15 min | No apps selected, so nothing will be blocked. | Choose apps | Rhythm | First name | So the home screen can greet you. It never leaves the phone. | First name: Not set | Hitbodedut length | Hitbodedut length: 15 min)
+EXAMINATEUR etape 10 : l'interrupteur [I am with Hashem] n'est pas a l'ecran avec [Choose apps]
+EXAMINATEUR etape 11 : la carte d'etat ne dit pas « “I am with Hashem” is on » une fois tout regle (Show the halacha of the day | Show the halacha of the day | Halacha book | Halacha book: Yalkut Yosef | Where “I am with Hashem” stands | “I am with Hashem” is off | Turn on the “I am with Hashem” switch for it to act. | Preview the “I am w)
+EXAMINATEUR etape 11 : GateService ne tourne pas une fois tout regle
+EXAMINATEUR etape 12 (barriere) : « Did you do your hitbodedut? » introuvable a l'ecran (Allow YouTube to send you notifications? | Allow | Don’t allow)
+EXAMINATEUR etape 12 (barriere) : « Done without the phone » introuvable a l'ecran (Allow YouTube to send you notifications? | Allow | Don’t allow)
+gestes : BARRIERE GateService ne repart pas apres un redemarrage () [horloge 2026-11-22 10:44 7]
+gestes : BARRIERE apres un redemarrage, l'ecran de garde ne se pose pas sur com.android.chrome [horloge 2026-11-22 10:44 7]
