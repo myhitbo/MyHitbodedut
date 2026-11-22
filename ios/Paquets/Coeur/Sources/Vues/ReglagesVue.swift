@@ -86,7 +86,7 @@ public struct ReglagesVue: View {
             case .success: modele.exportTermine(reussi: true)
             case .failure: modele.exportTermine(reussi: false)
             }
-        } onCancellation: {}
+        }
         .fileImporter(isPresented: $importOuvert, allowedContentTypes: [.json, .plainText, .data]) { resultat in
             importer(resultat)
         }

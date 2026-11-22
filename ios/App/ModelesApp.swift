@@ -155,12 +155,14 @@ final class ModelesApp {
         ConseilsModele(magasin: magasin)
     }
 
-    func halakha(recherche: String?) -> HalakhaModele {
-        HalakhaModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue, recherche: recherche)
+    func halakha(recherche: String?, date: JourCivil? = nil) -> HalakhaModele {
+        HalakhaModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue, date: date,
+                      recherche: recherche)
     }
 
-    func hilloulotModele(recherche: String?) -> HilloulotModele {
-        HilloulotModele(magasin: magasin, contenus: hilloulot, horloge: horloge, langue: langue, recherche: recherche)
+    func hilloulotModele(recherche: String?, date: JourCivil? = nil) -> HilloulotModele {
+        HilloulotModele(magasin: magasin, contenus: hilloulot, horloge: horloge, langue: langue, date: date,
+                        recherche: recherche)
     }
 
     func presentation() -> PresentationModele {

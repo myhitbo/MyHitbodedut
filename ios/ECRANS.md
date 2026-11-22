@@ -3,12 +3,17 @@
 Pour qui écrit un écran de l'app (tâches 14 à 30 de `ROADMAP.md`). Les règles viennent de `Coeur` (voir
 `Paquets/Coeur/PORTER.md`) ; cette notice dit comment un écran s'en sert, et ce qui juge son code.
 
-## Les trois juges
+## Les quatre juges
 
 1. **La CI Linux** (`ios-coeur.yml`) construit et teste `Coeur`, `Barriere` et `Ecrans` : les modèles d'écran.
-2. **La CI macOS** (`ios-app.yml`, gratuite depuis que le dépôt est public) engendre le projet par XcodeGen,
-   compile l'app avec le vrai Xcode pour le simulateur, et lance les tests du paquet sur un iPhone simulé.
-3. **L'écran d'Android**, `android/app/src/main/java/com/myhitbodedut/<Écran>Activity.kt` et son layout : la
+2. **La passe rapide des vues** (`ios-vues.yml`, macOS, une dizaine de minutes) compile seulement : le paquet avec
+   toutes ses vues (`COEUR_TOUTES_VUES=1` compile aussi celles que Package.swift tiendrait en chantier), puis l'app ;
+   chaque erreur est listée dans le résumé du travail, et le journal joint. C'est elle qu'on attend entre deux
+   corrections de vues.
+3. **La CI macOS** (`ios-app.yml`, gratuite depuis que le dépôt est public, une quarantaine de minutes) engendre le
+   projet par XcodeGen, compile l'app avec le vrai Xcode pour le simulateur, et lance les tests du paquet sur un
+   iPhone simulé.
+4. **L'écran d'Android**, `android/app/src/main/java/com/myhitbodedut/<Écran>Activity.kt` et son layout : la
    spécification de ce que l'écran montre et fait. Rien n'est modifié sous `android/`.
 
 Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Lire son journal, pas son verdict.
@@ -53,19 +58,40 @@ Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Li
 - L'hébreu de droite à gauche vient de l'environnement (`layoutDirection`) ; une image ou un sens qui doivent se
   retourner le disent explicitement.
 - Pas d'image pendant la prière (règle d'Android) ; « Réduire les animations » respecté.
+- Un champ, un interrupteur, une feuille qui suivent le modèle : une propriété calculée lue et écrite, dans une
+  extension du modèle sous `Vues` (`Vues/Liaisons.swift`, ou au bas de la vue), prise par
+  `Bindable(modele).propriete` ; son `set` appelle l'action du modèle. Jamais `Binding(get:set:)` avec des
+  fermetures `@MainActor` : Swift 6.3.3 plante en produisant leur conversion vers les paramètres
+  `@isolated(any) @Sendable` de `Binding` (IRGen, « report_size_overflow »). Un paramètre se passe par un indice
+  (`Bindable(modele)[dynamicMember: \ReglagesModele.[interrupteur: quel]]`).
 - Une signature de SwiftUI en doute se vérifie à la source :
   `python3 tools/swiftui_papier/declarations.py swiftui/<symbole> --profondeur 3` (la documentation d'Apple).
 
 ## La navigation
 
 Trois onglets, comme la barre d'Android depuis la refonte du 13/11 (`Ecrans/Onglets.swift`) : Le Jour, Les Livres,
-Le Chemin, chacun avec sa pile. Zmanim et les réglages ne sont plus des onglets : l'en-tête du Jour les ouvre
-(`AccueilModele.entete`, `ouvrirZmanim`, `ouvrirReglages`), dans la pile du Jour. Un modèle ne pousse rien
-lui-même : il ajoute une route à sa file (`routes`), la racine (`ios/App/Racine.swift`) l'ouvre puis appelle
-`routeOuverte()`. Une route dont l'écran n'est pas encore porté est retirée sans rien ouvrir.
+Le Chemin, chacun avec sa pile (`NavigationPath`). Zmanim et les réglages ne sont plus des onglets : l'en-tête du
+Jour les ouvre (`AccueilModele.entete`, `ouvrirZmanim`, `ouvrirReglages`), dans la pile du Jour. La barre de départ
+(`BarreDepart`) est au bas des trois racines, et son volet posé une fois sur les onglets (`feuilleDepart`).
+
+Un modèle ne pousse rien lui-même : il ajoute une route à sa file (`routes`), ou la vue reçoit une fermeture
+`ouvrir(route)` ; la racine (`ios/App/Racine.swift`) traduit la route en `Ecran`, qu'elle pousse dans la pile de
+l'onglet choisi (les trois piles partagent leurs destinations), ou en feuille par-dessus (`Pardessus` : la
+présentation, le bravo, la note, les marque-pages). Une route dont l'écran n'est pas encore porté est retirée sans
+rien ouvrir. Une vue qui pousse ses propres valeurs (`BibliothequeRoute`, `TehilimRoute`) pose leur
+`navigationDestination` elle-même : la pile, typée-effacée, les accepte.
+
+Les modèles partagés (le magasin, la séance en cours, l'accueil, les Livres, le Chemin, Zmanim, les réglages) sont
+construits une fois par `ios/App/ModelesApp.swift`, sur le magasin des fichiers du dossier de l'app
+(`PersistanceFichiers`, l'acteur `Depot`) ; les autres, à l'ouverture de leur écran, gardés le temps de l'écran par
+`Garde` (Racine.swift) : la destination de la pile est recalculée à chaque dessin, le modèle ne doit pas l'être. Les
+services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône ; Temps d'écran, Live
+Activity et répercussions des réglages sont encore des adaptateurs vides, qui le disent).
 
 La langue de l'app est la première des langues préférées qu'elle livre (`Traducteur.langueDuTelephone`) ; la
-racine pose `\.locale` (l'arabe est `ar-TN`) et `\.layoutDirection` (l'hébreu et l'arabe de droite à gauche).
+racine pose `\.locale` (l'arabe est `ar-TN`) et `\.layoutDirection` (l'hébreu et l'arabe de droite à gauche). Le
+traducteur lit les deux catalogues (`Traducteur(catalogues:)`) : celui d'Android, puis les chaînes propres à iOS
+(`ios.xcstrings`), si bien qu'un `Libelle` d'une clé d'iOS se résout comme les autres.
 
 ## Style
 

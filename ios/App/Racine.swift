@@ -24,6 +24,8 @@ enum Ecran: Hashable {
     case bibliotheque(livresSeuls: Bool)
     case halakha(recherche: String?)
     case hilloulot(recherche: String?)
+    case halakhaLe(JourCivil)
+    case hilloulotLe(JourCivil)
     case lecture(LectureCible)
     case tehilimLecture(TehilimLectureCible)
     case entree(String)
@@ -215,6 +217,17 @@ struct Racine: View {
         }
     }
 
+    private func ouvrirZmanim(_ route: ZmanimRoute) {
+        switch route {
+        case .halakha(let jour): pousser(.halakhaLe(jour))
+        case .hilloulot(let jour): pousser(.hilloulotLe(jour))
+        case .siddour(let id): pousser(.lecture(.siddour(id)))
+        case .calendrier, .vol, .boussole, .ajouterTemps:
+            // Le calendrier, le vol (tâche 26), la boussole et l'ajout de temps n'ont pas encore leur écran ici.
+            break
+        }
+    }
+
     private func ouvrirReglage(_ route: ReglagesRoute) {
         switch route {
         case .presentation: plein = .presentation
@@ -241,7 +254,7 @@ struct Racine: View {
     private func destination(_ ecran: Ecran) -> some View {
         switch ecran {
         case .zmanim:
-            ZmanimVue(modele: app.zmanim)
+            ZmanimVue(modele: app.zmanim) { route in ouvrirZmanim(route) }
         case .reglages(let carteBarriere):
             ReglagesVue(modele: app.reglages, carteBarriere: carteBarriere) { route in ouvrirReglage(route) }
         case .choixVersion:
@@ -296,6 +309,10 @@ struct Racine: View {
             Garde({ app.halakha(recherche: recherche) }) { HalakhaVue(modele: $0) }
         case .hilloulot(let recherche):
             Garde({ app.hilloulotModele(recherche: recherche) }) { HilloulotVue(modele: $0) }
+        case .halakhaLe(let jour):
+            Garde({ app.halakha(recherche: nil, date: jour) }) { HalakhaVue(modele: $0) }
+        case .hilloulotLe(let jour):
+            Garde({ app.hilloulotModele(recherche: nil, date: jour) }) { HilloulotVue(modele: $0) }
         case .lecture(let cible):
             LectureEcran(magasin: app.magasin, contenus: app.contenus, horloge: app.horloge, langue: app.langue,
                          cible: cible) { route in
