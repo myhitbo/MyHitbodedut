@@ -1,0 +1,129 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['video'] | Android 14 API 34
+
+=== video seance ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=b9520001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false | mSource=InsetsSource id=b9520001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" /> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-seance-1 : debut
+  film video-seance-1 t=4.0 : accueil
+  toucher id='depart_regler' -> (938,2027)
+  film video-seance-1 t=8.6 : volet
+  toucher id='music_button' -> (540,1536)
+  film video-seance-1 t=13.7 : musique
+  toucher id='track_title' -> (482,1695)
+  film video-seance-1 t=20.4 : morceau choisi
+  film video-seance-1 t=25.6 : retour au volet
+  toucher id='start_session' -> (540,2027)
+  film video-seance-1 t=32.3 : seance lancee
+  services : * ServiceRecord{fb54588 u0 com.myhitbodedut/.SessionService} |     isForeground=true foregroundId=2 types=40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 actions=1 vis=PRIVATE)
+  photo video-seance-a-en-cours (147888 octets)
+  film video-seance-1 t=41.5 : notification
+  photo video-seance-b-notification (124837 octets)
+  film video-seance-1 t=48.8 : fin
+  film video-seance-1.mp4 (1686098 octets)
+  film video-seance-2 : debut
+  film video-seance-2 t=4.5 : ecran rallume
+  photo video-seance-c-rallume (148633 octets)
+  film video-seance-2 t=8.3 : seance toujours en cours
+  photo video-seance-d-toujours-en-cours (352320 octets)
+  film video-seance-2 t=12.6 : notification apres l'ecran eteint
+  photo video-seance-e-notification (125075 octets)
+  film video-seance-2 t=20.3 : fin
+  film video-seance-2.mp4 (727254 octets)
+  toucher id='session_secondary' -> (540,1431)
+  toucher id='button1' -> (821,1371)
+
+=== video barriere ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=b9520001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false | mSource=InsetsSource id=b9520001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM insetsRoundedCornerFrame=false
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW: granted=false | android.permission.PACKAGE_USAGE_STATS: granted=false | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" /> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-barriere-1 : debut
+  film video-barriere-1 t=3.5 : accueil
+  toucher desc='Settings' -> (954,212)
+  film video-barriere-1 t=8.6 : reglages
+  film video-barriere-1 t=10.1 : cherche
+  film video-barriere-1 t=12.9 : trouve
+  film video-barriere-1 t=12.9 : cherche
+  film video-barriere-1 t=26.3 : trouve
+  film video-barriere-1 t=26.3 : carte des autorisations : affichage
+  film video-barriere-1 t=33.3 : divulgation : affichage
+  photo video-barriere-1-divulgation (272243 octets)
+  toucher text='Continue' -> (787,1811)
+  film video-barriere-1 t=43.6 : ecran d'Android : affichage
+  toucher text='MyHitbodedut' -> (360,1385)
+  film video-barriere-1 t=57.8 : retour dans l'application : affichage
+  photo video-barriere-1-accorde (299051 octets)
+  film video-barriere-1 t=61.1 : fin
+  film video-barriere-1.mp4 (3779034 octets)
+  film video-barriere-2 : debut
+  film video-barriere-2 t=3.5 : cherche
+  film video-barriere-2 t=9.4 : trouve
+  film video-barriere-2 t=9.4 : carte des autorisations : usage
+  film video-barriere-2 t=16.5 : divulgation : usage
+  photo video-barriere-2-divulgation (262970 octets)
+  toucher text='Continue' -> (787,1795)
+  film video-barriere-2 t=26.7 : ecran d'Android : usage
+  toucher text='MyHitbodedut' -> (355,1293)
+  film video-barriere-2 t=41.2 : retour dans l'application : usage
+  photo video-barriere-2-accorde (268635 octets)
+  film video-barriere-2 t=44.5 : fin
+  film video-barriere-2.mp4 (1694527 octets)
+  film video-barriere-3 : debut
+  film video-barriere-3 t=3.0 : cherche
+  film video-barriere-3 t=23.3 : trouve
+  film video-barriere-3 t=23.3 : carte du mode
+  toucher id='enable_switch' -> (922,476)
+  film video-barriere-3 t=29.9 : mode allume
+  toucher text='Choose apps' -> (540,1119)
+  film video-barriere-3 t=37.4 : liste des applications
+  toucher text='Chrome' -> (545,999)
+  film video-barriere-3 t=44.2 : application choisie : Chrome
+  film video-barriere-3 t=48.7 : cherche
+  film video-barriere-3 t=54.3 : trouve
+  film video-barriere-3 t=54.3 : etat : le mode agit
+  photo video-barriere-3-arme (211234 octets)
+  services : * ServiceRecord{35da200 u0 com.myhitbodedut/.GateService}
+  film video-barriere-3 t=58.6 : fin
+  film video-barriere-3.mp4 (2691264 octets)
+  film video-barriere-4 : debut
+  film video-barriere-4 t=3.9 : application ouverte
+  film video-barriere-4 t=13.9 : ecran de garde
+  photo video-barriere-4-ecran (265586 octets)
+  toucher text='Done without the phone' -> (540,2082)
+  film video-barriere-4 t=24.1 : fait sans le telephone
+  photo video-barriere-4-apres (129252 octets)
+  film video-barriere-4 t=36.0 : retour dans MyHitbodedut
+  toucher desc='Settings' -> (954,212)
+  film video-barriere-4 t=41.1 : cherche
+  film video-barriere-4 t=61.8 : trouve
+  film video-barriere-4 t=61.8 : carte du mode, pour couper
+  toucher id='enable_switch' -> (922,781)
+  film video-barriere-4 t=67.8 : mode coupe
+  photo video-barriere-4-coupe (219301 octets)
+  film video-barriere-4 t=71.0 : fin
+  film video-barriere-4.mp4 (3482031 octets)
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.PACKAGE_USAGE_STATS: granted=false | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default; time=+1m11s938ms ago; duration=+15s544ms / GET_USAGE_STATS: default; time=+56s687ms ago
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 20
