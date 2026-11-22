@@ -628,6 +628,12 @@ def preparer_film():
     # Paris : a 9 h 30 a l'horloge de l'emulateur (temps universel), il y fait jour, et le Jour montre
     # son ciel de matin. New York (premier tournage) y etait encore dans la nuit.
     lieu("Paris", "48.85341", "2.3488", "Europe/Paris", 2988507)
+    # Les textes que le film montrera a l'ouverture de la seance et sur l'ecran de garde : le sac
+    # de tirage (ChizukBag) est rempli d'avance d'enseignements de Rabbi Na'hman sur la
+    # hitbodedout, publiables, dont aucun ne porte le Nom en toutes lettres — on ne le met pas
+    # dans une video publique, meme dans un verset (web/test/fiche-play.test.mjs pour la fiche).
+    c.regler({"chizuk_bag_ouverture": ("string", "lm2-25-fondement\nlm2-25-langue\nlm2-25-tout-dire\nlm2-97-chemin-neuf"),
+              "chizuk_bag_porte": ("string", "lm2-25-pour-tous\nlm2-96-une-heure\nlm2-99-ami\nlm2-100-tsadikim")})
     journal_de_demonstration()
     c.langue("en")
     c.sh("settings put system show_touches 1")
