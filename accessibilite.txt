@@ -1,0 +1,5 @@
+== seule-classique-avant-instant
+== seule-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x36dp LinearLayout  «’HIZOUK DU JOUR»
+== seule-instant-bas

@@ -1,0 +1,2 @@
+EMULATEUR : il ne repond plus apres l'ouverture de l'accueil instant
+EMULATEUR : il ne repond plus a la fin du parcours
