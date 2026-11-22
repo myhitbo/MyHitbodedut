@@ -1,0 +1,373 @@
+== fr-couche-accueil
+PETIT 168x7dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 434x5dp Button start_prepare «Sans durée ou autre façon de c»
+== fr-couche-accueil-volet
+PETIT 168x7dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 434x5dp Button start_prepare «Sans durée ou autre façon de c»
+PETIT 52x46dp Switch music_switch_main «»
+MUET Switch music_switch_main (1864, 492, 2001, 612)
+== fr-couche-livres
+PETIT 149x46dp LinearLayout siddur_button «סידור»
+PETIT 149x46dp LinearLayout tehilim_button «תהלים»
+PETIT 149x46dp LinearLayout tikkun_button «תיקון הכללי»
+PETIT 149x46dp LinearLayout tefilot_button «תפילות»
+== fr-couche-chemin
+== fr-couche-reglages
+PETIT 111x2dp Button version_button «Version de l’app : Classique»
+== fr-couche-seance
+PETIT 150x7dp Button simplement_parler «Parler»
+PETIT 150x7dp Button simplement_ecrire «Écrire»
+== fr-couche-bravo
+PETIT 626x18dp Button celebration_share «Partager ma hitbodedout»
+== fr-couche-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diaspora»
+== fr-couche-version-pile
+PETIT 746x23dp TextView  «Commencer · 15 min»
+PETIT 12x32dp TextView  «Voir la traduction»
+== fr-couche-version-pile-2
+PETIT 746x35dp TextView  «Voir la traduction»
+== fr-couche-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x33dp TextView  «Tout le journal»
+== fr-couche-version-pile-4
+PETIT 746x35dp TextView  «Tout le journal»
+== fr-couche-version-bento
+== fr-couche-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 834x45dp LinearLayout  «Prochain : Fin de la Téfila (M»
+== fr-couche-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+== fr-tablette-accueil
+PETIT 129x37dp TextView nav_zmanim «ז׳ כסלו תשפ״ז»
+PETIT 37x37dp ImageButton nav_settings «Réglages»
+PETIT 302x37dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 536x37dp Button start_prepare «Sans durée ou autre façon de c»
+PETIT 536x37dp Button today_offline «Je l’ai faite sans le téléphon»
+PETIT 512x36dp Button  «Lire la suite»
+PETIT 536x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-accueil-volet
+PETIT 129x37dp TextView nav_zmanim «ז׳ כסלו תשפ״ז»
+PETIT 37x37dp ImageButton nav_settings «Réglages»
+PETIT 302x37dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 536x37dp Button start_prepare «Sans durée ou autre façon de c»
+PETIT 536x37dp Button today_offline «Je l’ai faite sans le téléphon»
+PETIT 512x36dp Button  «Lire la suite»
+PETIT 536x37dp LinearLayout start_duration «Durée 15 min»
+PETIT 536x37dp LinearLayout start_theme «Sujet Aucun»
+PETIT 40x37dp Switch music_switch_main «»
+MUET Switch music_switch_main (1336, 1901, 1440, 1997)
+PETIT 536x37dp LinearLayout start_focus «Je suis avec Hachem non»
+PETIT 536x47dp LinearLayout reminders_button «Rappels Désactivés.»
+PETIT 536x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-livres
+PETIT 536x37dp Button recherche_button «Rechercher dans le siddour, le»
+PETIT 536x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-chemin
+PETIT 509x46dp LinearLayout journal_button «Journal 5 jours de hitbodedout»
+PETIT 509x46dp LinearLayout parcours_button «Mon parcours Le bilan de votre»
+PETIT 509x46dp LinearLayout trophees_paliers «Trophées et paliers Prochain t»
+PETIT 536x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-reglages
+PETIT 78x37dp Button language_button «Langue : Français»
+PETIT 87x37dp Button adresse_button «Comment vous appeler : Pas cho»
+PETIT 148x37dp Button onboarding_again «Revoir la présentation»
+PETIT 85x37dp Button version_button «Version de l’app : Classique»
+PETIT 141x37dp Button mode_button «Clair ou sombre : Comme le tél»
+PETIT 80x37dp Button fond_button «Couleur du fond : Vert pâle»
+PETIT 67x37dp Button accent_button «Couleur des boutons : Vert»
+PETIT 175x37dp Button police_button «Police hébraïque : Hébraïque à»
+PETIT 40x37dp Switch grand_texte_switch «Grand texte de lecture»
+PETIT 40x37dp Switch ecran_allume_switch «Garder l’écran allumé pendant »
+PETIT 73x37dp Button ouverture_button «Écran d’ouverture : Le Jour»
+PETIT 40x37dp Switch levana_switch «Afficher Birkat haLevana»
+PETIT 40x37dp Switch levana_rappel_switch «Rappel de Birkat haLevana»
+PETIT 40x37dp Switch chabbat_alerte_switch «Alerte « Chabbat dans 3 h »»
+PETIT 274x44dp Button levana_usage_button «Birkat haLevana : usage : Selo»
+PETIT 40x24dp Switch hilloulot_switch «Afficher les hilloulot»
+== fr-tablette-seance
+PETIT 536x37dp Button session_primary «Commencer, 15 min»
+PETIT 536x37dp Button session_theme «Sujet : aucun (facultatif)»
+PETIT 177x37dp Button duration_5 «5 min»
+PETIT 177x37dp Button duration_10 «10 min»
+PETIT 177x37dp Button duration_15 «15 min»
+PETIT 177x37dp Button duration_30 «30 min»
+PETIT 177x37dp Button duration_60 «1 h»
+PETIT 177x37dp Button duration_90 «1 h 30»
+PETIT 536x37dp Button session_custom «Autre durée…»
+PETIT 536x37dp Button session_open «Sans durée»
+PETIT 117x37dp Button simplement_parler «Parler»
+PETIT 134x37dp Button simplement_ecrire «Écrire»
+PETIT 117x37dp Button simplement_prier «Prier»
+PETIT 169x37dp Button simplement_question «Une question»
+== fr-tablette-bravo
+PETIT 536x37dp Button celebration_continue «Continuer»
+PETIT 536x37dp Button celebration_share «Partager ma hitbodedout»
+== fr-tablette-zmanim
+PETIT 110x27dp TextView zmanim_lieu «Paris · Diaspora»
+PETIT 512x37dp TextView  «Partager ce jour ↗»
+PETIT 174x37dp Button  «Halakha yomit»
+PETIT 175x37dp Button  «Hilloulot»
+PETIT 175x37dp Button  «Calendrier»
+PETIT 265x37dp Button  «✈  En vol»
+PETIT 265x36dp Button  «🧭  Boussole prière»
+== fr-tablette-version-pile
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 518x40dp TextView  «Commencer · 15 min»
+PETIT 518x40dp TextView  «Durée, sujet, musique»
+PETIT 9x37dp TextView  «Voir la traduction»
+PETIT 9x37dp TextView  «Plus de ’hizouk»
+== fr-tablette-version-pile-2
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 518x40dp TextView  «Voir la traduction»
+PETIT 518x40dp TextView  «Plus de ’hizouk»
+PETIT 9x37dp TextView  «Tous les zmanim»
+== fr-tablette-version-pile-3
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 518x40dp TextView  «Tous les zmanim»
+PETIT 9x37dp TextView  «Écrire la note du jour»
+PETIT 9x37dp TextView  «Tout le journal»
+PETIT 9x37dp TextView  «Mon parcours»
+== fr-tablette-version-pile-4
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 518x40dp TextView  «Écrire la note du jour»
+PETIT 518x40dp TextView  «Tout le journal»
+PETIT 518x40dp TextView  «Mon parcours»
+== fr-tablette-version-bento
+PETIT 37x37dp FrameLayout  «Réglages»
+PETIT 585x43dp LinearLayout  «Siddour, Tehilim, livres…»
+== fr-tablette-version-instant
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 37x37dp ImageView  «Textes»
+PETIT 134x34dp TextView  «Commencer · 15 min»
+PETIT 585x40dp LinearLayout  «Prochain : Fin de la Téfila (M»
+PETIT 558x40dp TextView  «Écrire la note du jour»
+== fr-tablette-version-serenite
+PETIT 37x37dp TextView  «⚙»
+PETIT 65x34dp TextView  «Modifier»
+PETIT 18x30dp TextView  «Lire»
+PETIT 42x30dp TextView  «Tout voir»
+PETIT 42x30dp TextView  «Tout voir»
+PETIT 552x40dp TextView  «Écrire la note du jour»
+PETIT 149x43dp LinearLayout  «Aujourd’hui»
+PETIT 149x43dp LinearLayout  «Zmanim»
+PETIT 149x43dp LinearLayout  «Textes»
+PETIT 149x43dp LinearLayout  «Journal»
+== fr-tablette-couchee-accueil
+PETIT 204x37dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 129x37dp TextView nav_zmanim «ז׳ כסלו תשפ״ז»
+PETIT 37x37dp ImageButton nav_settings «Réglages»
+PETIT 30x59dp LinearLayout  «dimanche 15, faite · 15 min»
+PETIT 30x59dp LinearLayout  «lundi 16, faite · 20 min»
+PETIT 30x59dp LinearLayout  «mardi 17, à faire»
+PETIT 213x44dp Button start_prepare «Sans durée ou autre façon de c»
+PETIT 213x37dp Button today_offline «Je l’ai faite sans le téléphon»
+PETIT 435x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-couchee-accueil-volet
+PETIT 204x37dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 129x37dp TextView nav_zmanim «ז׳ כסלו תשפ״ז»
+PETIT 37x37dp ImageButton nav_settings «Réglages»
+PETIT 30x59dp LinearLayout  «dimanche 15, faite · 15 min»
+PETIT 30x59dp LinearLayout  «lundi 16, faite · 20 min»
+PETIT 30x59dp LinearLayout  «mardi 17, à faire»
+PETIT 213x44dp Button start_prepare «Sans durée ou autre façon de c»
+PETIT 213x37dp Button today_offline «Je l’ai faite sans le téléphon»
+PETIT 435x37dp LinearLayout start_duration «Durée 15 min»
+PETIT 435x37dp LinearLayout start_theme «Sujet Aucun»
+PETIT 40x37dp Switch music_switch_main «»
+MUET Switch music_switch_main (1752, 941, 1856, 1037)
+PETIT 435x37dp LinearLayout start_focus «Je suis avec Hachem non»
+PETIT 435x47dp LinearLayout reminders_button «Rappels Désactivés.»
+PETIT 435x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-couchee-livres
+PETIT 435x37dp Button recherche_button «Rechercher dans le siddour, le»
+PETIT 103x34dp LinearLayout chizuk_button «חיזוק»
+PETIT 103x34dp LinearLayout tips_button «עצות»
+PETIT 435x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-couchee-chemin
+PETIT 408x46dp LinearLayout journal_button «Journal 5 jours de hitbodedout»
+PETIT 408x46dp LinearLayout parcours_button «Mon parcours Le bilan de votre»
+PETIT 408x46dp LinearLayout trophees_paliers «Trophées et paliers Prochain t»
+PETIT 435x46dp Button start_session «Sortir au champ · 15 min»
+PETIT 46x46dp ImageButton depart_regler «Régler la hitbodedout»
+== fr-tablette-couchee-reglages
+PETIT 78x37dp Button language_button «Langue : Français»
+PETIT 87x37dp Button adresse_button «Comment vous appeler : Pas cho»
+PETIT 148x37dp Button onboarding_again «Revoir la présentation»
+PETIT 85x37dp Button version_button «Version de l’app : Classique»
+PETIT 141x37dp Button mode_button «Clair ou sombre : Comme le tél»
+PETIT 80x37dp Button fond_button «Couleur du fond : Vert pâle»
+PETIT 67x37dp Button accent_button «Couleur des boutons : Vert»
+PETIT 175x37dp Button police_button «Police hébraïque : Hébraïque à»
+PETIT 40x37dp Switch grand_texte_switch «Grand texte de lecture»
+PETIT 40x36dp Switch ecran_allume_switch «Garder l’écran allumé pendant »
+== fr-tablette-couchee-seance
+PETIT 209x37dp Button session_primary «Commencer, 15 min»
+PETIT 209x37dp Button session_theme «Sujet : aucun (facultatif)»
+PETIT 67x37dp Button duration_5 «5 min»
+PETIT 67x37dp Button duration_10 «10 min»
+PETIT 68x37dp Button duration_15 «15 min»
+PETIT 67x37dp Button duration_30 «30 min»
+PETIT 67x37dp Button duration_60 «1 h»
+PETIT 68x37dp Button duration_90 «1 h 30»
+PETIT 209x37dp Button session_custom «Autre durée…»
+PETIT 209x37dp Button session_open «Sans durée»
+PETIT 104x37dp Button simplement_parler «Parler»
+PETIT 104x37dp Button simplement_ecrire «Écrire»
+PETIT 104x37dp Button simplement_prier «Prier»
+PETIT 104x37dp Button simplement_question «Une question»
+== fr-tablette-couchee-bravo
+PETIT 435x37dp Button celebration_continue «Continuer»
+PETIT 435x37dp Button celebration_share «Partager ma hitbodedout»
+== fr-tablette-couchee-zmanim
+PETIT 110x27dp TextView zmanim_lieu «Paris · Diaspora»
+PETIT 411x37dp TextView  «Partager ce jour ↗»
+PETIT 141x37dp Button  «Halakha yomit»
+PETIT 141x37dp Button  «Hilloulot»
+PETIT 141x37dp Button  «Calendrier»
+PETIT 214x37dp Button  «✈  En vol»
+PETIT 215x36dp Button  «🧭  Boussole prière»
+== fr-tablette-couchee-version-pile
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 832x40dp TextView  «Commencer · 15 min»
+PETIT 832x40dp TextView  «Durée, sujet, musique»
+PETIT 9x37dp TextView  «Voir la traduction»
+PETIT 9x37dp TextView  «Plus de ’hizouk»
+== fr-tablette-couchee-version-pile-2
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 832x40dp TextView  «Voir la traduction»
+PETIT 832x40dp TextView  «Plus de ’hizouk»
+PETIT 9x37dp TextView  «Tous les zmanim»
+== fr-tablette-couchee-version-pile-3
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 832x40dp TextView  «Tous les zmanim»
+PETIT 9x37dp TextView  «Écrire la note du jour»
+PETIT 9x37dp TextView  «Tout le journal»
+PETIT 9x37dp TextView  «Mon parcours»
+== fr-tablette-couchee-version-pile-4
+PETIT 37x37dp ImageView  «Textes»
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 832x40dp TextView  «Écrire la note du jour»
+PETIT 832x40dp TextView  «Tout le journal»
+PETIT 832x40dp TextView  «Mon parcours»
+== fr-tablette-couchee-version-bento
+PETIT 37x37dp FrameLayout  «Réglages»
+PETIT 899x43dp LinearLayout  «Siddour, Tehilim, livres…»
+== fr-tablette-couchee-version-instant
+PETIT 37x37dp ImageView  «Réglages»
+PETIT 37x37dp ImageView  «Textes»
+PETIT 134x34dp TextView  «Commencer · 15 min»
+PETIT 899x40dp LinearLayout  «Prochain : Fin de la Téfila (M»
+== fr-tablette-couchee-version-serenite
+PETIT 37x37dp TextView  «⚙»
+PETIT 65x34dp TextView  «Modifier»
+PETIT 18x30dp TextView  «Lire»
+PETIT 227x43dp LinearLayout  «Aujourd’hui»
+PETIT 228x43dp LinearLayout  «Zmanim»
+PETIT 228x43dp LinearLayout  «Textes»
+PETIT 228x43dp LinearLayout  «Journal»
+== fr-pliant-accueil
+PETIT 594x28dp Button start_prepare «Sans durée ou autre façon de c»
+== fr-pliant-accueil-volet
+PETIT 594x28dp Button start_prepare «Sans durée ou autre façon de c»
+MUET Switch music_switch_main (1465, 1312, 1602, 1438)
+== fr-pliant-livres
+== fr-pliant-chemin
+== fr-pliant-reglages
+== fr-pliant-seance
+PETIT 129x44dp Button simplement_parler «Parler»
+PETIT 149x44dp Button simplement_ecrire «Écrire»
+PETIT 129x44dp Button simplement_prier «Prier»
+PETIT 187x44dp Button simplement_question «Une question»
+== fr-pliant-bravo
+== fr-pliant-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diaspora»
+== fr-pliant-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-pliant-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-pliant-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-pliant-version-pile-4
+== fr-pliant-version-bento
+== fr-pliant-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+== fr-pliant-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== fr-gestes-accueil
+PETIT 363x32dp Button today_offline «Je l’ai faite sans le téléphon»
+== fr-gestes-accueil-bas
+== fr-gestes-accueil-volet
+PETIT 363x32dp Button today_offline «Je l’ai faite sans le téléphon»
+MUET Switch music_switch_main (796, 1473, 933, 1599)
+== fr-gestes-livres
+== fr-gestes-livres-bas
+== fr-gestes-chemin
+== fr-gestes-chemin-bas
+== fr-gestes-reglages
+PETIT 96x10dp Button ouverture_button «Écran d’ouverture : Le Jour»
+== fr-gestes-reglages-bas
+== fr-gestes-seance
+== fr-gestes-seance-bas
+== fr-gestes-bravo
+== fr-gestes-bravo-bas
+== fr-gestes-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diaspora»
+== fr-gestes-zmanim-bas
+== es-gestes-accueil
+PETIT 363x32dp Button today_offline «La hice sin el teléfono»
+== es-gestes-accueil-bas
+== es-gestes-accueil-volet
+PETIT 363x32dp Button today_offline «La hice sin el teléfono»
+MUET Switch music_switch_main (796, 1473, 933, 1599)
+== es-gestes-livres
+== es-gestes-livres-bas
+== es-gestes-chemin
+== es-gestes-chemin-bas
+== es-gestes-reglages
+PETIT 88x19dp Button ouverture_button «Pantalla de inicio: El Día»
+== es-gestes-reglages-bas
+== es-gestes-seance
+== es-gestes-seance-bas
+== es-gestes-bravo
+== es-gestes-bravo-bas
+== es-gestes-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diáspora»
+== es-gestes-zmanim-bas
+== es-gestes-version-pile
+PETIT 12x49dp TextView  «Ver la traducción»
+PETIT 12x49dp TextView  «Más jizuk»
+== es-gestes-version-pile-2
+PETIT 12x49dp TextView  «Todos los zmanim»
+== es-gestes-version-pile-3
+PETIT 12x48dp TextView  «Escribir la nota del día»
+PETIT 12x49dp TextView  «Todo el diario»
+PETIT 12x49dp TextView  «Mi recorrido»
+== es-gestes-version-pile-4
+== es-gestes-version-bento
+PETIT 185x22dp FrameLayout  «Sidur»
+PETIT 185x22dp FrameLayout  «Tehilim»
+== es-gestes-version-instant
+PETIT 152x44dp TextView  «Empezar · 15 min»
+PETIT 379x12dp LinearLayout  «»
+MUET LinearLayout  (42, 2305, 1038, 2337)
+== es-gestes-version-serenite
+PETIT 68x44dp TextView  «Editar»
+PETIT 27x40dp TextView  «Leer»
