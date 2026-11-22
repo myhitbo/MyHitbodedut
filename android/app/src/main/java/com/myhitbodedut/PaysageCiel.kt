@@ -35,7 +35,7 @@ class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : D
     override fun draw(canvas: Canvas) {
         val w = bounds.width().toFloat()
         val h = bounds.height().toFloat()
-        ciel.shader = LinearGradient(0f, 0f, 0f, h * 0.85f, couleurs, null, Shader.TileMode.CLAMP)
+        ciel.color = couleurs[1]
         canvas.drawRect(0f, 0f, w, h, ciel)
         if (phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER) {
             val visibles = if (phase == CielDuJour.Phase.NUIT) etoiles else etoiles.take(18)
