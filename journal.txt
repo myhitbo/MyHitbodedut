@@ -1,0 +1,155 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['couche', 'tablette', 'versions'] | Android 15 API 35
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== couche ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  ecran : 2400x1080, densite Physical density: 420
+  capture fr-couche-accueil (228693 octets)
+  toucher id='depart_regler' -> (2006,770)
+  capture fr-couche-accueil-volet (98843 octets)
+  toucher id='depart_regler' -> (2006,770)
+  toucher id='nav_texts' -> (1264,975)
+  capture fr-couche-livres (81527 octets)
+  toucher id='nav_journal' -> (1706,975)
+  capture fr-couche-chemin (75079 octets)
+  capture fr-couche-siddour-lecture (165273 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-couche-version-pile (141109 octets)
+  capture fr-couche-version-pile-2 (242496 octets)
+  capture fr-couche-version-pile-3 (200539 octets)
+  capture fr-couche-version-pile-4 (122406 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-couche-version-bento (160568 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-couche-version-instant (170831 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-couche-version-serenite (161747 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  ecran : 1080x2400, densite Physical density: 420
+
+=== tablette ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  ecran : 1600x2560, densite Physical density: 420
+Override density: 320
+  capture fr-tablette-accueil (389902 octets)
+  toucher id='depart_regler' -> (1444,2324)
+  capture fr-tablette-accueil-volet (289346 octets)
+  toucher id='depart_regler' -> (1444,2324)
+  toucher id='nav_texts' -> (799,2480)
+  capture fr-tablette-livres (130228 octets)
+  toucher id='nav_journal' -> (1136,2480)
+  capture fr-tablette-chemin (103659 octets)
+  capture fr-tablette-siddour-lecture (424394 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-version-pile (672656 octets)
+  capture fr-tablette-version-pile-2 (296442 octets)
+  capture fr-tablette-version-pile-3 (275720 octets)
+  capture fr-tablette-version-pile-4 (204181 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-version-bento (222220 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-version-instant (227573 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-version-serenite (290908 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  ecran : 2560x1600, densite Physical density: 420
+Override density: 320
+  capture fr-tablette-couchee-accueil (351646 octets)
+  toucher id='depart_regler' -> (1860,1364)
+  capture fr-tablette-couchee-accueil-volet (253653 octets)
+  toucher id='depart_regler' -> (1860,1364)
+  toucher id='nav_texts' -> (1348,1520)
+  capture fr-tablette-couchee-livres (117936 octets)
+  toucher id='nav_journal' -> (1685,1520)
+  capture fr-tablette-couchee-chemin (102722 octets)
+  capture fr-tablette-couchee-siddour-lecture (284019 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-couchee-version-pile (327987 octets)
+  capture fr-tablette-couchee-version-pile-2 (280168 octets)
+  capture fr-tablette-couchee-version-pile-3 (293810 octets)
+  capture fr-tablette-couchee-version-pile-4 (204940 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-couchee-version-bento (215115 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-couchee-version-instant (172876 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-tablette-couchee-version-serenite (223464 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  ecran : 1812x2176, densite Physical density: 420
+  capture fr-pliant-accueil (364917 octets)
+  toucher id='depart_regler' -> (1607,1866)
+  capture fr-pliant-accueil-volet (283700 octets)
+  toucher id='depart_regler' -> (1607,1866)
+  toucher id='nav_texts' -> (906,2071)
+  capture fr-pliant-livres (150583 octets)
+  toucher id='nav_journal' -> (1348,2071)
+  capture fr-pliant-chemin (126903 octets)
+  capture fr-pliant-siddour-lecture (346532 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-pliant-version-pile (443454 octets)
+  capture fr-pliant-version-pile-2 (325653 octets)
+  capture fr-pliant-version-pile-3 (327536 octets)
+  capture fr-pliant-version-pile-4 (224993 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-pliant-version-bento (275099 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-pliant-version-instant (215123 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  capture fr-pliant-version-serenite (289496 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="langue_app">fr</string>     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</str
+  ecran : 1080x2400, densite Physical density: 420
+
+=== versions ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-gestes-version-pile (400646 octets)
+  capture fr-gestes-version-pile-2 (281752 octets)
+  capture fr-gestes-version-pile-3 (240944 octets)
+  capture fr-gestes-version-pile-4 (161983 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-gestes-version-bento (259956 octets)
+  capture fr-gestes-version-bento-bas (245529 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-gestes-version-instant (196829 octets)
+  capture fr-gestes-version-instant-bas (169135 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-gestes-version-serenite (270323 octets)
+  capture fr-gestes-version-serenite-bas (233200 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  navigation : boutons | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-boutons-version-pile (400195 octets)
+  capture fr-boutons-version-pile-2 (281484 octets)
+  capture fr-boutons-version-pile-3 (235594 octets)
+  capture fr-boutons-version-pile-4 (161649 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-boutons-version-bento (256724 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-boutons-version-instant (193457 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  capture fr-boutons-version-serenite (270128 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="lieu_fuseau">Europe/Paris</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>     
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 67
