@@ -1,0 +1,129 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['presentation'] | Android 16 API 36
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== presentation ===
+  navigation : gestes | cadres : (63, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" val
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="
+  capture fr-presentation-1 (393653 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-2 (518123 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-3 (589302 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-4 (537077 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-5 (658319 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-6 (616867 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-7 (431440 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-8 (435208 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture fr-presentation-9 (241608 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <string name="langue_app">fr</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  capture en-presentation-1 (387092 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-2 (542874 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-3 (581884 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-4 (560316 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-5 (655900 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-6 (613854 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-7 (445369 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-8 (455254 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture en-presentation-9 (353048 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <string name="langue_app">en</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  langue : Locales for com.myhitbodedut for user 0 are [he]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  capture he-presentation-1 (368915 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-2 (540870 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-3 (562790 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-4 (571181 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-5 (633070 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-6 (626243 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-7 (423860 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-8 (437693 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture he-presentation-9 (334990 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <string name="langue_app">he</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  langue : Locales for com.myhitbodedut for user 0 are [es]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  capture es-presentation-1 (391731 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-2 (542904 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-3 (583115 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-4 (562625 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-5 (656263 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-6 (616241 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-7 (426088 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-8 (432776 octets)
+  toucher id='onboarding_next' -> (540,2150)
+  capture es-presentation-9 (350958 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <string name="langue_app">es</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  langue : Locales for com.myhitbodedut for user 0 are [ar-TN]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  capture ar-presentation-1 (393055 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-2 (526018 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-3 (589931 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-4 (557882 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-5 (663231 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-6 (606169 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-7 (443512 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-8 (444542 octets)
+  toucher id='onboarding_next' -> (540,2143)
+  capture ar-presentation-9 (375043 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <string name="langue_app">ar-TN</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:6
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="version_app">classique</string>     <string name="lieu_fuseau">Europe/Paris</string>     <set name="paliers_vus">         <string>semaine:2026-11-15:30</string>         <string>cumul:60</string>         <string>serie:3</string>  
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 47
