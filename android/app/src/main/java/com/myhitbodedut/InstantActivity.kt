@@ -97,7 +97,6 @@ class InstantActivity : AccueilVersion() {
         outlineProvider = object : android.view.ViewOutlineProvider() {
             override fun getOutline(view: View, outline: android.graphics.Outline) = outline.setRoundRect(0, 0, view.width, view.height, dp(28).toFloat())
         }
-        clipToOutline = true
         // Un voile en haut et en bas pour que le texte reste lisible sur un ciel clair.
         addView(View(context).apply {
             layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
