@@ -1,0 +1,11 @@
+== seule-classique-avant-instant
+PETIT 363x32dp Button today_offline «Je l’ai faite sans le téléphon»
+== seule-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x12dp LinearLayout  «»
+MUET LinearLayout  (42, 2305, 1038, 2337)
+== seule-instant-bas
+== seule-instant-apres-20-s
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x12dp LinearLayout  «»
+MUET LinearLayout  (42, 2305, 1038, 2337)
