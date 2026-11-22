@@ -1,0 +1,112 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['video'] | Android 16 API 36
+
+=== video seance ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">New York</string>     <string name="lieu_latitude">40.71427</string>     <string name="lieu_longitude">-74.00597</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">America/New_York</string>     <long name="lieu_ville" value="5128581" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" /> </
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-seance-1 : debut
+  film video-seance-1 t=4.0 : accueil
+  toucher id='depart_regler' -> (938,2090)
+  film video-seance-1 t=9.2 : volet
+  toucher id='music_button' -> (540,1599)
+  film video-seance-1 t=14.7 : musique
+  toucher id='track_title' -> (482,1695)
+  film video-seance-1 t=22.1 : morceau choisi
+  film video-seance-1 t=27.2 : retour au volet
+  toucher id='start_session' -> (540,2090)
+  film video-seance-1 t=42.4 : seance lancee
+  services : * ServiceRecord{e199f59 u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  (le type lecture de media n'apparait pas dans dumpsys : voir la ligne ci-dessus)
+  photo video-seance-a-en-cours (143456 octets)
+  film video-seance-1 t=49.9 : notification
+  photo video-seance-b-notification (131336 octets)
+  film video-seance-1 t=57.2 : fin
+  film video-seance-1.mp4 (1011991 octets)
+  film video-seance-2 : debut
+  film video-seance-2 t=4.5 : ecran rallume
+  photo video-seance-c-rallume (148380 octets)
+  film video-seance-2 t=8.3 : seance toujours en cours
+  photo video-seance-d-toujours-en-cours (295199 octets)
+  film video-seance-2 t=12.7 : notification apres l'ecran eteint
+  photo video-seance-e-notification (131039 octets)
+  film video-seance-2 t=20.5 : fin
+  film video-seance-2.mp4 (314138 octets)
+  toucher id='session_secondary' -> (540,1431)
+  toucher id='button1' -> (822,1403)
+
+=== video barriere ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">New York</string>     <string name="lieu_latitude">40.71427</string>     <string name="lieu_longitude">-74.00597</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">America/New_York</string>     <long name="lieu_ville" value="5128581" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" /> </
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-barriere-1 : debut
+  film video-barriere-1 t=3.5 : accueil
+  toucher desc='Settings' -> (954,212)
+  film video-barriere-1 t=8.6 : reglages
+  film video-barriere-1 t=47.9 : carte des autorisations : affichage
+  film video-barriere-1 t=55.0 : divulgation : affichage
+  photo video-barriere-1-divulgation (280482 octets)
+  toucher text='Continue' -> (788,1842)
+  film video-barriere-1 t=64.3 : ecran d'Android : affichage
+  toucher text='MyHitbodedut' -> (359,1361)
+  film video-barriere-1 t=78.9 : retour dans l'application : affichage
+  photo video-barriere-1-accorde (301700 octets)
+  film video-barriere-1 t=81.7 : fin
+  film video-barriere-1.mp4 (5143892 octets)
+  film video-barriere-2 : debut
+  film video-barriere-2 t=9.6 : carte des autorisations : usage
+  film video-barriere-2 t=16.7 : divulgation : usage
+  photo video-barriere-2-divulgation (260579 octets)
+  toucher text='Continue' -> (788,1827)
+  film video-barriere-2 t=26.1 : ecran d'Android : usage
+  toucher text='MyHitbodedut' -> (355,1293)
+  film video-barriere-2 t=41.0 : retour dans l'application : usage
+  photo video-barriere-2-accorde (274034 octets)
+  film video-barriere-2 t=43.8 : fin
+  film video-barriere-2.mp4 (1654039 octets)
+  film video-barriere-3 : debut
+  film video-barriere-3 t=94.3 : carte du mode
+  toucher id='enable_switch' -> (922,549)
+  film video-barriere-3 t=106.6 : mode allume
+  toucher text='Choose apps' -> (540,1192)
+  film video-barriere-3 t=112.6 : liste des applications
+  toucher text='Chrome' -> (545,999)
+  film video-barriere-3 t=118.8 : application choisie : Chrome
+  film video-barriere-3 t=216.1 : etat : le mode agit
+  photo video-barriere-3-arme (214046 octets)
+  services : * ServiceRecord{4531032 u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  film video-barriere-3 t=219.8 : application ouverte
+  film video-barriere-3 t=229.9 : ecran de garde
+  photo video-barriere-3-ecran (224101 octets)
+  toucher text='Done without the phone' -> (540,2102)
+  film video-barriere-3 t=239.5 : fait sans le telephone
+  photo video-barriere-3-apres (150914 octets)
+  toucher desc='Settings' -> (954,212)
+  toucher id='enable_switch' -> (922,755)
+  film video-barriere-3 t=281.0 : mode coupe
+  photo video-barriere-3-coupe (227428 octets)
+  film video-barriere-3 t=283.7 : fin
+  adb shell kill -2 $(pidof screenrecord) 2>/dev/null -> 1 
+  film video-barriere-3.mp4 (8381772 octets)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.SYSTEM_ALERT_WINDOW: granted=false, flags=[ USER_SET] | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default; time=+1m3s331ms ago; duration=+9s560ms / GET_USAGE_STATS: default; time=+54s674ms ago
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 19
