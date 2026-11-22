@@ -1,0 +1,369 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['lanceur', 'seance', 'barriere', 'versions'] | Android 15 API 35
+  lanceur rallume : topResumedActivity=ActivityRecord{e533874 u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity t9}
+  photo lanceur (1396421 octets)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== seance ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null
+  capture gestes-seance-en-cours (149020 octets)
+  services : * ServiceRecord{14c0a2b u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  photo gestes-seance-notification (129630 octets)
+  capture gestes-seance-calme (150346 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture gestes-seance-terminer-dialogue (294204 octets)
+  toucher id='button1' -> (676,1308)
+  capture gestes-seance-apres (425458 octets)
+  navigation : boutons | cadres : (128, 2274, None)
+  barres du bas : InsetsSource id=191b0001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags=INSETS_ROUNDED_CORNER sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=191b0001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags=INSETS_ROUNDED_CORNER sideHint=BOTTOM boundingRects=null
+  capture boutons-seance-en-cours (149722 octets)
+  services : * ServiceRecord{6c3cc1b u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  photo boutons-seance-notification (131757 octets)
+  capture boutons-seance-calme (151100 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture boutons-seance-terminer-dialogue (284136 octets)
+  toucher id='button1' -> (676,1277)
+  capture boutons-seance-apres (431998 octets)
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null
+
+=== barriere ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-
+  capture gestes-barriere-etat (229301 octets)
+  toucher id='preview_gate' -> (540,1702)
+  capture gestes-barriere-apercu (345746 octets)
+  capture gestes-barriere-apercu-bas (345746 octets)
+  toucher id='blocker_primary' -> (540,2156)
+  services : * ServiceRecord{9f90f9f u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture gestes-barriere-reelle (233099 octets)
+  capture gestes-barriere-reelle-bas (231945 octets)
+  toucher id='blocker_snooze' -> (540,2211)
+  capture gestes-barriere-reportee (1381023 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="691" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  capture gestes-barriere-reglages-android (150977 octets)
+  capture gestes-barriere-telephone (86098 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="691" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  navigation : boutons | cadres : (128, 2274, None)
+  barres du bas : InsetsSource id=191b0001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags=INSETS_ROUNDED_CORNER sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=191b0001 type=navigationBars frame=[0,2274][1080,2400] visible=true flags=INSETS_ROUNDED_CORNER sideHint=BOTTOM boundingRects=null
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-les-eloignes&#10;by-40-1&#10;tehilim-51-19&
+  capture boutons-barriere-etat (225934 octets)
+  toucher id='preview_gate' -> (540,1745)
+  capture boutons-barriere-apercu (374652 octets)
+  capture boutons-barriere-apercu-bas (374652 octets)
+  toucher id='blocker_primary' -> (540,2124)
+  services : * ServiceRecord{db72a18 u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture boutons-barriere-reelle (281494 octets)
+  capture boutons-barriere-reelle-bas (263582 octets)
+  toucher id='blocker_snooze' -> (540,2148)
+  capture boutons-barriere-reportee (1382048 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  capture boutons-barriere-reglages-android (149549 octets)
+  capture boutons-barriere-telephone (88528 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null
+
+=== versions ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null | mSource=InsetsSource id=191b0001 type=navigationBars frame=[0,2337][1080,2400] visible=true flags=SUPPRESS_SCRIM|ANIMATE_RESIZING sideHint=BOTTOM boundingRects=null
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  FAUTE : fr-gestes-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+  capture fr-gestes-version-pile (378925 octets)
+  FAUTE : fr-gestes-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+  capture fr-gestes-version-pile-2 (282596 octets)
+  FAUTE : fr-gestes-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+  capture fr-gestes-version-pile-3 (235234 octets)
+  FAUTE : fr-gestes-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+  capture fr-gestes-version-pile-4 (159736 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  capture fr-gestes-version-bento (261142 octets)
+  capture fr-gestes-version-bento-bas (240007 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="694" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">by-3-3&#10;by-50-2&#10;by-21-2&#10;by-10-3&#10;by-46-1&#10;by-47-1&#10;by-1-2&#10;michle-24-16&#10;by-19-3&#10;cm-431-desirer-quand-rien-ne-reussit&#10;by-52-1&#10;sh-75-un-morceau-de-priere&#10;lm2-48-point-bon&#10;by-11-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-41-1&#10;by-15-3&#10;le-hitchazkut-2-l
+  adb shell rm -f /sdcard/ui.xml -> 1 error: closed
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device offline
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-version-instant (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-version-instant-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-version-serenite (0 octets)
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell input swipe 540 1920 540 528 70 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-gestes-version-serenite-bas (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys window displays -> 1 adb: device 'emulator-5554' not found
+  navigation : boutons | cadres : (0, 2400, None)
+  adb shell dumpsys window displays | grep -E 'type=navigationBars|ITYPE_NAVIGATION_BAR' | head -4 -> 1 adb: device 'emulator-5554' not found
+  barres du bas : (aucune)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-boutons-version-pile (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-boutons-version-pile-2 (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-boutons-version-pile-3 (0 octets)
+  adb shell input swipe 950 1080 86 1080 450 -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-boutons-version-pile-4 (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-boutons-version-bento (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-boutons-version-instant (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell am start -W --activity-clear-top -n com.myhitbodedut/com.myhitbodedut.MainActivity -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell rm -f /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell uiautomator dump /sdcard/ui.xml -> 1 adb: device 'emulator-5554' not found
+  capture fr-boutons-version-serenite (0 octets)
+  adb shell am force-stop com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell mkdir -p /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  adb shell cat > /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml -> 1 adb: device 'emulator-5554' not found
+  adb shell stat -c %u:%g /data/data/com.myhitbodedut -> 1 adb: device 'emulator-5554' not found
+  adb shell chown -R  /data/data/com.myhitbodedut/shared_prefs && chmod 771 /data/data/com.myhitbodedut/shared_prefs && chmod 660 /data/data/com.myhitbodedut/shared_prefs/myhitbodedut.xml && restorecon -R /data/data/com.myhitbodedut/shared_prefs -> 1 adb: device 'emulator-5554' not found
+  preferences : 
+  adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural -> 1 adb: device 'emulator-5554' not found
+  adb shell dumpsys window displays -> 1 adb: device 'emulator-5554' not found
+  navigation : gestes | cadres : (0, 2400, None)
+  adb shell dumpsys window displays | grep -E 'type=navigationBars|ITYPE_NAVIGATION_BAR' | head -4 -> 1 adb: device 'emulator-5554' not found
+  barres du bas : (aucune)
+
+=== bilan de la recette ===
+fr-gestes-version-pile : COLLE au bord TextView  «1 / 4» (0, 353, 205, 406)
+fr-gestes-version-pile-2 : COLLE au bord TextView  «2 / 4» (0, 353, 210, 406)
+fr-gestes-version-pile-3 : COLLE au bord TextView  «3 / 4» (0, 353, 211, 406)
+fr-gestes-version-pile-4 : COLLE au bord TextView  «4 / 4» (0, 353, 211, 406)
+
+captures : 47
