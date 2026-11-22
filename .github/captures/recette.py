@@ -121,8 +121,17 @@ def controle(racine, nom, en_haut=True, en_bas=True):
         if en_bas and bas < c.H and b[3] > bas + 2 and b[1] < c.H:
             faute(f"{nom} : SOUS-BARRE de navigation (barre a partir de {bas}) {quoi}")
         # Un bouton porte sa marge interieure (les fleches « ‹ › » de la halakha, larges de 48 dp) :
-        # seul un texte nu colle au bord se lit mal.
-        if (texte and feuille and "TextView" in n.get("class", "") and not touchable
+        # seul un texte nu colle au bord se lit mal. Le compteur de l'accueil Pile (« 2 / 4 ») va
+        # jusqu'au bord, mais avec 24 dp de marge a l'interieur (PileActivity, setPadding) : l'arbre
+        # d'accessibilite ne donne pas les marges interieures, on le reconnait a son texte.
+        compteur_pile = re.fullmatch(r"\d+ / \d+", texte) is not None
+        # Un bloc de texte aussi large que son parent (les paragraphes du siddour) porte de meme
+        # sa marge a l'interieur. Debout il fait toute la largeur de l'ecran et n'est pas releve ;
+        # couche, l'encoche du telephone retire une bande a gauche, et il l'etait a tort (22/11).
+        pb = c.bornes(parents[n]) if n in parents else None
+        remplit_son_parent = bool(pb) and b[0] <= pb[0] and b[2] >= pb[2] and (b[2] - b[0]) > c.W // 2
+        if (texte and feuille and "TextView" in n.get("class", "") and not touchable and not compteur_pile
+                and not remplit_son_parent
                 and (b[0] <= 0 or b[2] >= c.W) and (b[2] - b[0]) < c.W and not defile_en_large(n)):
             faute(f"{nom} : COLLE au bord {quoi}")
 
@@ -987,8 +996,15 @@ def passe(prefixe, ecrans=ECRANS, bas=True, saisie=True):
             prise(f"{prefixe}-{nom}-bas")
 
 
+# La langue en cours se lit-elle de droite a gauche ? Les cartes de l'accueil Pile se tirent alors
+# dans l'autre sens.
+DROITE_A_GAUCHE = False
+
+
 def parler(etiquette):
     """La langue de l'application : la preference et la langue par application d'Android."""
+    global DROITE_A_GAUCHE
+    DROITE_A_GAUCHE = etiquette.split("-")[0] in ("he", "iw", "ar")
     c.regler({"langue_app": ("string", etiquette)})
     c.langue(etiquette)
 
@@ -1012,9 +1028,14 @@ def versions(prefixe, bas=True):
         fermer_trophees()
         prise(f"{prefixe}-version-{version}")
         if version == "pile":
+            # La carte suivante est a droite ; a gauche en hebreu et en arabe (22/11 : tirees dans le
+            # sens du francais, les cartes 2 a 4 n'y avaient jamais ete vues).
+            depart, arrivee = (0.12, 0.92) if DROITE_A_GAUCHE else (0.88, 0.08)
             for i in range(2, 5):
-                c.sh(f"input swipe {int(c.W * 0.88)} {int(c.H * 0.45)} {int(c.W * 0.08)} {int(c.H * 0.45)} 450")
-                prise(f"{prefixe}-version-pile-{i}", attente=1.5)
+                c.sh(f"input swipe {int(c.W * depart)} {int(c.H * 0.45)} {int(c.W * arrivee)} {int(c.H * 0.45)} 450")
+                racine = prise(f"{prefixe}-version-pile-{i}", attente=1.5)
+                if not any(f"{i} / 4" in t for t in textes(racine)):
+                    faute(f"{prefixe}-version-pile-{i} : la carte {i} n'est pas venue (compteur attendu « {i} / 4 »)")
         elif bas:
             au_bout(True, 4)
             prise(f"{prefixe}-version-{version}-bas")
@@ -1214,13 +1235,20 @@ def redemarrage(prefixe):
     tout = c.sh("logcat -d -v threadtime | grep -iE 'myhitbodedut|Background started FGS|ForegroundService' | head -300")
     with open(os.path.join(c.OUT, f"{prefixe}-demarrage-logcat.txt"), "w", encoding="utf-8") as f:
         f.write(tout)
-    # La plage a pu passer pendant le redemarrage si l'horloge est revenue a l'heure du runner.
+    # Au redemarrage, l'horloge de l'emulateur revient a l'heure reelle du runner : le service est
+    # donc reparti seul a une heure quelconque (c'est ce qu'on vient de constater). Pour voir s'il
+    # retient encore, on revient au mardi matin de la recette, dans la plage armee : le 22/11 a
+    # 13 h 50, hors de la plage, l'ecran de garde ne se posait pas, a juste titre, et la recette
+    # y voyait une faute. Le service relit l'heure a chaque tour.
     etat = c.sh("date '+%F %H:%M %u'").strip()
-    c.log("  horloge :", etat)
+    c.log("  horloge au retour :", etat)
     if "GateService" not in services:
         faute(f"{prefixe} : BARRIERE GateService ne repart pas apres un redemarrage ({refus[:300]}) [horloge {etat}]")
     if refus:
         faute(f"{prefixe} : SERVICE refus d'Android au demarrage : {refus[:400]}")
+    mardi_matin()
+    etat = c.sh("date '+%F %H:%M %u'").strip()
+    c.log("  horloge remise :", etat, "| services :", services_app()[:200])
     c.sh(f"monkey -p {voulues[0]} -c android.intent.category.LAUNCHER 1")
     c.pause(9.0)
     vu = c.trouver(rid="blocker_title") is not None
