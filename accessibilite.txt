@@ -1,0 +1,14 @@
+== gestes-barriere-etat
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 88x38dp Button window_start «Plage horaire : 09:03»
+PETIT 88x38dp Button window_end «Plage horaire : 11:33»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+PETIT 363x43dp Button blocker_snooze «Plus tard (15 min)»
+== boutons-barriere-reelle-bas
+== gestes-barriere-apres-redemarrage
