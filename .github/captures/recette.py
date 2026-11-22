@@ -16,7 +16,11 @@ l'emulateur (13 a 16), et regarde ce qu'aucun autre parcours ne regarde :
   - ecrans : chaque ecran, le haut puis le bas apres defilement, et le clavier la ou l'on
     ecrit, en francais (navigation par gestes), en hebreu (trois boutons), en arabe, en espagnol ;
   - versions : l'accueil de chacune des cinq versions de l'application ;
-  - nuit, seance, barriere, presentation, tablette, couche (le telephone couche), redemarrage.
+  - nuit, seance, barriere, presentation, tablette, couche (le telephone couche), redemarrage ;
+  - lanceur (a nommer en premier) : rallume le lanceur de l'emulateur, qui dessine la barre de
+    navigation sous Android 15 et 16 ;
+  - pile, bento, instant, serenite : l'accueil d'une seule version, isole ; rendu-gl (avant) le
+    fait dessiner par Skia sur OpenGL au lieu de Vulkan.
 
 Chaque capture est controlee sur l'arbre de l'ecran :
 
@@ -31,7 +35,8 @@ Les fautes vont dans fautes.txt, a cote des captures. Comme captures.py, rien ne
 le job : on lit le bilan.
 
 Variables : RECETTE_PASSES (les noms ci-dessus, separes par des virgules ; toutes par defaut) ;
-RECETTE_ECRANS (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut).
+RECETTE_ECRANS (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut) ;
+RECETTE_SAUF (les versions de l'application a ne pas ouvrir).
 """
 import datetime
 import json
@@ -172,6 +177,15 @@ def navigation(mode):
 
 def devant():
     return c.sh("dumpsys activity activities | grep -E 'topResumedActivity|mResumedActivity' | head -2").strip()
+
+
+def emulateur_repond():
+    """L'emulateur est-il encore la ? Il lui arrive de s'arreter en plein parcours (22/11)."""
+    try:
+        r = subprocess.run(["adb", "get-state"], capture_output=True, timeout=20)
+        return r.stdout.decode("utf-8", "replace").strip() == "device"
+    except subprocess.TimeoutExpired:
+        return False
 
 
 def textes(racine=None):
@@ -785,13 +799,6 @@ def video_barriere():
     c.toucher(rid="enable_switch", attente=2.5)
     repere("mode allume")
     c.pause(1.5)
-    # La notification permanente du service, que la declaration annonce.
-    c.sh("cmd statusbar expand-notifications")
-    repere("notification du mode")
-    c.pause(5.0)
-    photo("video-barriere-3-notification")
-    c.sh("cmd statusbar collapse")
-    c.pause(2.5)
     c.toucher(text="Choose apps", attente=4.0)
     repere("liste des applications")
     paquet = None
@@ -813,6 +820,18 @@ def video_barriere():
     c.log("  services :", services_app()[:300])
     if "GateService" not in services_app():
         faute("VIDEO barriere : GateService ne tourne pas une fois tout regle")
+    # La notification permanente du service, que la declaration annonce. Ici et pas plus tot :
+    # Android n'affiche la notification d'un service de premier plan qu'une dizaine de secondes
+    # apres son depart (tournage du 22/11 : volet vide quatre secondes apres l'interrupteur).
+    c.sh("cmd statusbar expand-notifications")
+    repere("notification du mode")
+    c.pause(5.0)
+    photo("video-barriere-3-notification")
+    vues = " | ".join(textes())
+    if "MyHitbodedut" not in vues and "I am with Hashem" not in vues:
+        faute("VIDEO barriere : la notification du service n'est pas dans le volet (" + vues[:200] + ")")
+    c.sh("cmd statusbar collapse")
+    c.pause(2.5)
     film_fin()
     # Quatrieme film : l'application choisie, l'ecran devant elle, puis le mode coupe.
     film_debut("video-barriere-4")
@@ -968,11 +987,22 @@ def parler(etiquette):
     c.langue(etiquette)
 
 
+# RECETTE_SAUF (« sauf » de demande.json) : les versions de l'application a ne pas ouvrir. L'accueil
+# Instant arrete l'emulateur sous Android 15 et 16 (22/11) : sans lui, le reste du parcours se fait.
+SAUF = [v.strip() for v in os.environ.get("RECETTE_SAUF", "").split(",") if v.strip()]
+
+
 def versions(prefixe, bas=True):
     """L'accueil de chaque version de l'application (VersionApp)."""
     for version in ("pile", "bento", "instant", "serenite"):
+        if version in SAUF:
+            c.log(f"  version {version} : laissee de cote (RECETTE_SAUF)")
+            continue
         c.regler({"version_app": ("string", version)})
         c.lancer(attente=6)
+        if not emulateur_repond():
+            faute(f"{prefixe} : EMULATEUR il ne repond plus apres l'ouverture de l'accueil {version}")
+            return
         fermer_trophees()
         prise(f"{prefixe}-version-{version}")
         if version == "pile":
@@ -1218,6 +1248,60 @@ def couche(prefixe):
     c.appliquer_taille(None, None, False)
 
 
+def version_seule(version):
+    """L'accueil d'une seule version, sur un emulateur qui n'a rien fait d'autre. Sous Android 15 et
+    16, l'emulateur lui-meme s'est arrete cinq fois sur cinq a l'ouverture de l'accueil Instant
+    (22/11, apres Pile et Bento) : cette passe l'isole, garde le journal du systeme jusqu'au
+    dernier instant, et dit par quel moteur l'ecran est dessine (Skia sur Vulkan ou sur OpenGL)."""
+    def rendu():
+        lignes = c.sh(f"dumpsys gfxinfo {c.PKG} | grep -iE 'pipeline' | head -2").split()
+        return " ".join(lignes)[:120]
+
+    navigation("gestes")
+    c.regler({"version_app": ("string", "classique")})
+    c.lancer(attente=6)
+    fermer_trophees()
+    c.log("  moteur demande :", c.sh("getprop debug.hwui.renderer").strip() or "(defaut)",
+          "| ro.hwui.use_vulkan :", c.sh("getprop ro.hwui.use_vulkan").strip() or "(vide)",
+          "| Classique :", rendu())
+    prise(f"seule-classique-avant-{version}")
+    # Le journal du systeme, en continu, cote hote : ses dernieres lignes restent si l'emulateur tombe.
+    brut = os.path.join(c.OUT, f"logcat-{version}.brut")
+    sortie = open(brut, "wb")
+    suivi = subprocess.Popen(["adb", "logcat", "-v", "threadtime", "-T", "1"], stdout=sortie, stderr=subprocess.DEVNULL)
+    c.regler({"version_app": ("string", version)})
+    debut = time.time()
+    c.sh(f"am start -W --activity-clear-top -n {c.PKG}/com.myhitbodedut.MainActivity", timeout=150)
+    c.pause(8.0)
+    vivant = c.sh("getprop sys.boot_completed", timeout=30).strip() == "1"
+    c.log(f"  {version} : ouvert en {time.time() - debut:.0f} s | emulateur :", "repond" if vivant else "NE REPOND PLUS",
+          "| moteur :", rendu() if vivant else "?")
+    if vivant:
+        fermer_trophees()
+        prise(f"seule-{version}")
+        au_bout(True, 4)
+        prise(f"seule-{version}-bas")
+        au_bout(False, 4)
+        c.pause(20.0)   # l'accueil reste ouvert : son ciel se redessine
+        vivant = c.sh("getprop sys.boot_completed", timeout=30).strip() == "1"
+        prise(f"seule-{version}-apres-20-s")
+    suivi.terminate()
+    sortie.close()
+    # Les trois mille dernieres lignes suffisent, et pesent peu.
+    try:
+        with open(brut, "rb") as f:
+            lignes = f.read().decode("utf-8", "replace").splitlines()
+        with open(os.path.join(c.OUT, f"logcat-{version}.txt"), "w", encoding="utf-8") as f:
+            f.write("\n".join(lignes[-3000:]) + "\n")
+        os.remove(brut)
+    except OSError:
+        pass
+    if not vivant:
+        faute(f"EMULATEUR : il ne repond plus apres l'ouverture de l'accueil {version}")
+    else:
+        c.regler({"version_app": ("string", "classique")})
+
+
 def lieu(nom, lat, lon, fuseau, ville, israel="false"):
     c.regler({"lieu_nom": ("string", nom), "lieu_latitude": ("string", lat), "lieu_longitude": ("string", lon),
               "lieu_altitude": ("string", "0.0"), "lieu_fuseau": ("string", fuseau), "lieu_ville": ("long", ville),
@@ -1231,6 +1315,19 @@ def main():
     passes = [p.strip() for p in os.environ.get("RECETTE_PASSES", "").split(",") if p.strip()] or toutes
     c.log("passes :", passes, "| Android", c.sh("getprop ro.build.version.release").strip(),
           "API", c.sh("getprop ro.build.version.sdk").strip())
+
+    # Sous Android 15 et 16, la barre de navigation est dessinee par le lanceur (sa barre des
+    # taches) : captures.sh le coupe, et l'emulateur n'a alors plus aucune barre en bas — ni
+    # languette, ni boutons (22/11). La passe « lanceur », a nommer en premier, le rallume, pour
+    # eprouver la marge du bas de chaque ecran sous l'affichage bord a bord impose.
+    if "lanceur" in passes:
+        c.sh("pm enable com.google.android.apps.nexuslauncher")
+        c.sh("input keyevent KEYCODE_HOME")
+        c.pause(30)
+        c.sh("input keyevent KEYCODE_HOME")
+        c.pause(8)
+        c.log("  lanceur rallume :", devant()[:200])
+        photo("lanceur")
 
     # D'abord ce qui part d'une application neuve.
     if "examinateur" in passes:
@@ -1316,6 +1413,12 @@ def main():
         navigation("gestes")
         couche("fr")
 
+    def p_rendu_gl():
+        # Skia sur OpenGL au lieu de Vulkan, pour les applications lancees ensuite.
+        c.sh("setprop debug.hwui.renderer skiagl")
+        c.arreter()
+        c.log("  moteur demande :", c.sh("getprop debug.hwui.renderer").strip())
+
     def p_ciel():
         # Le soir : les accueils au ciel dessine (Instant, Serenite). L'emulateur s'y est
         # arrete deux fois le 17/11 : en dernier, pour ne rien perdre d'autre.
@@ -1331,9 +1434,15 @@ def main():
 
     table = {"ecrans-fr": p_fr, "ecrans-he": p_he, "ecrans-ar": p_ar, "ecrans-es": p_es, "versions": p_versions,
              "nuit": p_nuit, "seance": p_seance, "barriere": p_barriere, "presentation": p_presentation,
-             "tablette": p_tablette, "couche": p_couche, "ciel-de-nuit": p_ciel, "redemarrage": p_redemarrage}
+             "tablette": p_tablette, "couche": p_couche, "ciel-de-nuit": p_ciel, "redemarrage": p_redemarrage,
+             "rendu-gl": p_rendu_gl}
+    for v in ("pile", "bento", "instant", "serenite"):
+        table[v] = (lambda v=v: version_seule(v))
     for nom in passes:
         if nom in table:
+            if not emulateur_repond():
+                faute(f"EMULATEUR : il ne repond plus avant la passe « {nom} » ; elle et les suivantes ne sont pas faites")
+                break
             c.etape(nom, table[nom])
     c.log("\n=== bilan de la recette ===")
     c.log("\n".join(FAUTES) if FAUTES else "aucune faute relevee par les controles automatiques")

@@ -51,10 +51,10 @@ LEGENDES = {
         ("cherche", "Up to the card “I am with Hashem”.", 9),
         ("carte du mode", "Card “I am with Hashem”: the user turns the gate on.", 0.5),
         ("mode allume", "The gate is on.", 2.7),
-        ("notification du mode", "Its service keeps a permanent notification while it runs.", 0.3),
         ("liste des applications", "The user picks the apps the gate applies to.", 4.2),
         ("application choisie", "One app is picked: Chrome.", 2.7),
         ("etat", "Status card: the gate acts during the hours the user set, until the practice of the day is done.", 0.5),
+        ("notification du mode", "Its service keeps a permanent notification while it runs.", 0.3),
     ],
     "video-barriere-4": [
         ("application ouverte", "The user opens the app they picked…", 9),
