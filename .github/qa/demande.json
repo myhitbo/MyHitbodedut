@@ -2,14 +2,8 @@
   "parcours": "recette",
   "variante": "release",
   "cibles": [
-    { "api": 36, "nom": "api36-fr", "passes": "ecrans-fr" },
-    { "api": 36, "nom": "api36-he", "passes": "ecrans-he" },
-    { "api": 36, "nom": "api36-ar", "passes": "ecrans-ar" },
-    { "api": 36, "nom": "api36-nuit", "passes": "nuit" },
-    { "api": 36, "nom": "api36-services", "passes": "seance,barriere" },
-    { "api": 36, "nom": "api36-pres", "passes": "presentation" },
-    { "api": 35, "nom": "api35-fr", "passes": "ecrans-fr" },
-    { "api": 35, "nom": "api35-he", "passes": "ecrans-he" },
-    { "api": 35, "nom": "api35-services", "passes": "seance,barriere" }
+    { "api": 36, "nom": "api36-soir", "passes": "ciel-de-nuit", "sauf": "instant" },
+    { "api": 35, "nom": "api35-soir", "passes": "ciel-de-nuit", "sauf": "instant" },
+    { "api": 34, "nom": "api34-soir", "passes": "ciel-de-nuit" }
   ]
 }
