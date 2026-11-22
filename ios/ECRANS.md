@@ -81,12 +81,13 @@ présentation, le bravo, la note, les marque-pages). Une route dont l'écran n'e
 rien ouvrir. Une vue qui pousse ses propres valeurs (`BibliothequeRoute`, `TehilimRoute`) pose leur
 `navigationDestination` elle-même : la pile, typée-effacée, les accepte.
 
-Les modèles partagés (le magasin, la séance en cours, l'accueil, les Livres, le Chemin, Zmanim, les réglages) sont
+Les modèles partagés (le magasin, la séance en cours et sa musique, l'accueil, les Livres, le Chemin, Zmanim, les
+réglages) sont
 construits une fois par `ios/App/ModelesApp.swift`, sur le magasin des fichiers du dossier de l'app
 (`PersistanceFichiers`, l'acteur `Depot`) ; les autres, à l'ouverture de leur écran, gardés le temps de l'écran par
 `Garde` (Racine.swift) : la destination de la pile est recalculée à chaque dessin, le modèle ne doit pas l'être. Les
-services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône ; Temps d'écran, Live
-Activity et répercussions des réglages sont encore des adaptateurs vides, qui le disent).
+services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance ;
+Temps d'écran, Live Activity et répercussions des réglages sont encore des adaptateurs vides, qui le disent).
 
 La langue de l'app est la première des langues préférées qu'elle livre (`Traducteur.langueDuTelephone`) ; la
 racine pose `\.locale` (l'arabe est `ar-TN`) et `\.layoutDirection` (l'hébreu et l'arabe de droite à gauche). Le
