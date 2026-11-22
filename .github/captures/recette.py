@@ -15,7 +15,7 @@ l'emulateur (13 a 16), et regarde ce qu'aucun autre parcours ne regarde :
   - ecrans : chaque ecran, le haut puis le bas apres defilement, et le clavier la ou l'on
     ecrit, en francais (navigation par gestes), en hebreu (trois boutons), en arabe, en espagnol ;
   - versions : l'accueil de chacune des cinq versions de l'application ;
-  - nuit, seance, barriere, presentation, tablette, redemarrage.
+  - nuit, seance, barriere, presentation, tablette, couche (le telephone couche), redemarrage.
 
 Chaque capture est controlee sur l'arbre de l'ecran :
 
@@ -29,7 +29,8 @@ Chaque capture est controlee sur l'arbre de l'ecran :
 Les fautes vont dans fautes.txt, a cote des captures. Comme captures.py, rien ne fait echouer
 le job : on lit le bilan.
 
-Variables : RECETTE_PASSES (les noms ci-dessus, separes par des virgules ; toutes par defaut).
+Variables : RECETTE_PASSES (les noms ci-dessus, separes par des virgules ; toutes par defaut) ;
+CAPTURES_ETAPES (les seuls ecrans a passer, par leur nom dans ECRANS ; tous par defaut).
 """
 import datetime
 import json
@@ -37,6 +38,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import captures as c  # noqa: E402
@@ -161,6 +163,10 @@ def navigation(mode):
     c.sh(f"cmd overlay enable-exclusive --category {cat}")
     c.pause(3.0)
     c.log("  navigation :", mode, "| cadres :", cadres())
+    # Android 15 et 16 (22/11) : en mode gestes, aucune barre du bas n'est rendue sur l'emulateur
+    # (lanceur coupe). Les lignes brutes, pour savoir ce que le systeme declare.
+    brut = c.sh("dumpsys window displays | grep -E 'type=navigationBars|ITYPE_NAVIGATION_BAR' | head -4")
+    c.log("  barres du bas :", " | ".join(" ".join(l.split())[:170] for l in brut.splitlines()) or "(aucune)")
 
 
 def devant():
@@ -217,16 +223,25 @@ def fermer_trophees(libelles=("Continue", "Continuer", "להמשיך", "Continua
 # --- Films ---------------------------------------------------------------------
 
 FILM = None
+FILM_T0 = None
 
 
 def film_debut(nom, limite=175):
     """Filme l'ecran (screenrecord, 3 min au plus). L'image seule : ni son, ni fenetres protegees."""
-    global FILM
+    global FILM, FILM_T0
     c.sh("rm -f /sdcard/film.mp4")
     p = subprocess.Popen(["adb", "shell", "screenrecord", "--time-limit", str(limite), "--size", "720x1600",
-                          "--bit-rate", "4000000", "/sdcard/film.mp4"])
+                          "--bit-rate", "6000000", "/sdcard/film.mp4"])
     FILM = (nom, p)
+    FILM_T0 = time.time()
+    c.log(f"  film {nom} : debut")
     c.pause(1.5)
+
+
+def repere(texte):
+    """Un repere dans le journal, a la seconde du film en cours : les legendes s'y calent au montage."""
+    if FILM is not None and FILM_T0 is not None:
+        c.log(f"  film {FILM[0]} t={time.time() - FILM_T0:.1f} : {texte}")
 
 
 def film_fin():
@@ -234,6 +249,7 @@ def film_fin():
     if FILM is None:
         return
     nom, p = FILM
+    repere("fin")
     FILM = None
     # SIGINT : screenrecord ferme proprement son fichier.
     c.sh("kill -2 $(pidof screenrecord) 2>/dev/null")
@@ -346,22 +362,33 @@ def neuve():
           c.sh(f"appops get {c.PKG} GET_USAGE_STATS").strip())
 
 
-def chercher(rid=None, text=None, pas=16, lent=False):
-    """Un element de l'ecran qui defile, ou qu'il soit : on descend, puis on remonte. Rend ses bornes."""
+def chercher(rid=None, text=None, pas=16, lent=False, place=None):
+    """Un element de l'ecran qui defile, ou qu'il soit : on descend, puis on remonte. Rend ses bornes.
+    place : la part de la hauteur ou l'amener (0.25 : au quart haut), pour voir avec lui ce qui
+    l'entoure ; sans elle, il reste ou il est des qu'il se voit hors des barres."""
     duree = 500 if lent else 300
     x = c.W // 2
+
+    def amener(b, cible):
+        vers = int(c.H * cible) - (b[1] + b[3]) // 2
+        vers = max(-int(c.H * 0.38), min(int(c.H * 0.38), vers))
+        if abs(vers) < int(c.H * 0.06):
+            return b
+        # Lentement : le doigt pose le contenu ou il le lache, sans elan.
+        c.sh(f"input swipe {x} {int(c.H * 0.5)} {x} {int(c.H * 0.5) + vers} 700")
+        c.pause(1.0)
+        return c.trouver(rid=rid, text=text) or b
+
     for sens in (1, -1):
         for _ in range(pas if sens == 1 else 2 * pas):
             b = c.trouver(rid=rid, text=text)
-            if b is not None and int(c.H * 0.12) < (b[1] + b[3]) // 2 < int(c.H * 0.84):
-                return b
             if b is not None:
-                # A l'ecran, mais sous une barre : on l'amene vers le milieu.
-                vers = int(c.H * 0.45) - (b[1] + b[3]) // 2
-                vers = max(-int(c.H * 0.35), min(int(c.H * 0.35), vers))
-                c.sh(f"input swipe {x} {int(c.H * 0.5)} {x} {int(c.H * 0.5) + vers} {duree}")
-                c.pause(1.0)
-                return c.trouver(rid=rid, text=text) or b
+                if place is not None:
+                    b = amener(b, place)
+                    return amener(b, place)   # un second geste si le premier etait borne
+                if int(c.H * 0.12) < (b[1] + b[3]) // 2 < int(c.H * 0.84):
+                    return b
+                return amener(b, 0.45)
             if sens == 1:
                 c.sh(f"input swipe {x} {int(c.H * 0.70)} {x} {int(c.H * 0.34)} {duree}")
             else:
@@ -408,8 +435,8 @@ def examinateur():
     # « …then on the screen [Choose your version] tap [Classic]. »
     r = prise("exam-03-choix-version")
     voir("2 (choix de la version)", "Choose your version", "Classic", racine=r)
-    if not c.toucher(text="Classic", attente=5.0):
-        c.toucher(text="Classic", contains=True, attente=5.0)
+    # Le libelle porte une coche quand la version est deja la sienne : « Classic ✓ ».
+    c.toucher(text="Classic", contains=True, attente=5.0)
     fermer_trophees()
     r = prise("exam-04-today")
     voir("3 (accueil)", "Today", "Settings", racine=r)
@@ -461,7 +488,7 @@ def examinateur():
     c.toucher(desc="Settings", attente=2.5)
     # « [Settings], card [Permissions]: tap [Grant] for [Usage access] (and for [Display over other
     # apps] if it is not granted yet). Each shows an in-app disclosure first. »
-    chercher(text="Usage access")
+    chercher(text="Usage access", place=0.74)
     r = prise("exam-13-carte-autorisations")
     voir("8 (autorisations)", "Permissions", "Display over other apps", "Usage access", "Grant", racine=r)
     b = bouton_de_la_ligne("Usage access")
@@ -477,26 +504,29 @@ def examinateur():
     if c.PKG not in devant():
         c.lancer(attente=4)
         c.toucher(desc="Settings", attente=2.5)
-    chercher(text="Usage access")
+    chercher(text="Usage access", place=0.74)
     r = prise("exam-16-autorisations-accordees")
     accordees = sum(1 for t in textes(r) if t == "Granted")
     if accordees < 2:
         faute(f"EXAMINATEUR etape 9 : la carte [Permissions] ne montre pas les deux acces accordes ({accordees} « Granted »)")
     # « Card [I am with Hashem]: turn the switch on (Android then asks to allow notifications…), tap
     # [Choose apps] and pick one app, and set [“I am with Hashem” hours] around the current time. »
-    if chercher(text="Choose apps") is None:
-        faute("EXAMINATEUR etape 10 : [Choose apps] introuvable dans les reglages")
+    if chercher(rid="enable_switch", place=0.22) is None:
+        faute("EXAMINATEUR etape 10 : l'interrupteur [I am with Hashem] introuvable dans les reglages")
     r = prise("exam-17-carte-mode")
     voir("10 (carte du mode)", "I am with Hashem", "Choose apps", "“I am with Hashem” hours", racine=r)
-    if not c.toucher(rid="enable_switch", attente=2.5):
-        faute("EXAMINATEUR etape 10 : l'interrupteur [I am with Hashem] n'est pas a l'ecran avec [Choose apps]")
+    c.toucher(rid="enable_switch", attente=2.5)
     if autoriser_notifications("exam-17b-notifications"):
         etapes.append("10 (notifications demandees)")
+    else:
+        faute("EXAMINATEUR etape 10 : Android n'a pas demande les notifications a l'allumage du mode")
     chercher(text="Choose apps")
     c.toucher(text="Choose apps", attente=4.0)
     r = prise("exam-18-liste-applications")
     choisie, paquet = None, None
-    for libelle, p in (("YouTube", "com.google.android.youtube"), ("Chrome", "com.android.chrome"),
+    # Chrome d'abord : YouTube ouvre sur sa propre demande de notifications, une fenetre d'Android
+    # que l'ecran de garde ne couvre pas (le paquet au premier plan est alors celui du systeme).
+    for libelle, p in (("Chrome", "com.android.chrome"), ("YouTube", "com.google.android.youtube"),
                        ("Messages", "com.google.android.apps.messaging"), ("Photos", "com.google.android.apps.photos"),
                        ("Maps", "com.google.android.apps.maps"), ("Gmail", "com.google.android.gm"),
                        ("Calendar", "com.google.android.calendar"), ("Camera", "com.android.camera2")):
@@ -529,7 +559,7 @@ def examinateur():
     # L'horloge est a 9 h 30, dans la plage par defaut : on la montre, sans la changer.
     chercher(text="“I am with Hashem” hours")
     r = prise("exam-20-plage")
-    chercher(text="Where “I am with Hashem” stands")
+    chercher(text="Where “I am with Hashem” stands", place=0.3)
     r = prise("exam-21-etat-arme")
     if not any("is on" in t for t in textes(r)):
         faute("EXAMINATEUR etape 11 : la carte d'etat ne dit pas « “I am with Hashem” is on » une fois tout regle (" + " | ".join(textes(r)[:8])[:240] + ")")
@@ -556,7 +586,7 @@ def examinateur():
     c.lancer(attente=4)
     fermer_trophees()
     c.toucher(desc="Settings", attente=2.5)
-    chercher(text="Shabbat and Yom Tov")
+    chercher(text="Shabbat and Yom Tov", place=0.6)
     r = prise("exam-25-rythme")
     voir("13 (Chabbat)", "Rhythm", "Shabbat and Yom Tov", racine=r)
     bascule = None
@@ -567,7 +597,7 @@ def examinateur():
     if bascule is None or bascule.get("checked") != "true":
         faute("EXAMINATEUR etape 13 : l'interrupteur [Shabbat and Yom Tov] n'est pas allume par defaut")
     # « …can switch off at any time (Settings, [I am with Hashem] switch). »
-    chercher(text="Choose apps")
+    chercher(rid="enable_switch", place=0.3)
     c.toucher(rid="enable_switch", attente=2.0)
     prise("exam-26-mode-coupe")
     c.pause(2.0)
@@ -596,16 +626,25 @@ def preparer_film():
     c.arreter()
 
 
+def services_seance():
+    return c.sh(f"dumpsys activity services {c.PKG} | grep -E 'ServiceRecord|isForeground|foregroundServiceType|types=' | head -8")
+
+
 def video_seance():
-    """Sequence 1 : une hitbodedout lancee avec un morceau, l'ecran eteint puis rallume, la notification."""
+    """Sequence 1 : sur le Jour, le volet de depart, un morceau choisi, la hitbodedout lancee, la
+    notification du service ; puis l'ecran eteint une demi-minute, rallume : le decompte a avance."""
     navigation("gestes")
     preparer_film()
     c.lancer(attente=5)
+    fermer_trophees()
     film_debut("video-seance-1")
     c.pause(2.5)
+    repere("accueil")
     # Le volet de depart : la duree, le sujet, la musique.
-    c.toucher(rid="depart_regler", attente=2.0)
-    c.toucher(rid="music_button", attente=2.5)
+    c.toucher(rid="depart_regler", attente=2.5)
+    repere("volet")
+    c.toucher(rid="music_button", attente=3.0)
+    repere("musique")
     # « Play during the hitbodedut », puis un morceau.
     r = c.dump()
     bascule = None
@@ -615,42 +654,57 @@ def video_seance():
                 bascule = n
     if bascule is not None and bascule.get("checked") != "true":
         c.toucher(rid="music_switch", attente=1.5)
-    c.toucher(rid="track_title", index=1, attente=2.0)
-    c.pause(1.0)
+    if not c.toucher(rid="track_title", index=1, attente=2.5):
+        faute("VIDEO seance : aucun morceau a choisir dans l'ecran Musique")
+    repere("morceau choisi")
     c.retour()
-    c.pause(1.5)
+    c.pause(2.0)
     if c.trouver(rid="start_session") is None:
-        c.toucher(rid="depart_regler", attente=1.0)
-    c.toucher(rid="start_session", attente=5.0)
-    c.pause(5.0)
-    services = c.sh(f"dumpsys activity services {c.PKG} | grep -E 'ServiceRecord|isForeground|foregroundServiceType|types=' | head -8")
+        c.toucher(rid="depart_regler", attente=1.5)
+    repere("retour au volet")
+    c.pause(1.5)
+    c.toucher(rid="start_session", attente=3.0)
+    autoriser_notifications()
+    repere("seance lancee")
+    c.pause(7.0)
+    services = services_seance()
     c.log("  services :", services.strip().replace("\n", " | ")[:700])
     if "SessionService" not in services:
         faute("VIDEO seance : le service de seance ne tourne pas")
-    film_fin()
+    if "types=40000002" not in services.replace(" ", "") and "mediaPlayback" not in services:
+        c.log("  (le type lecture de media n'apparait pas dans dumpsys : voir la ligne ci-dessus)")
     photo("video-seance-a-en-cours")
+    c.sh("cmd statusbar expand-notifications")
+    repere("notification")
+    c.pause(5.0)
+    photo("video-seance-b-notification")
+    c.sh("cmd statusbar collapse")
+    c.pause(2.0)
+    film_fin()
     # L'ecran s'eteint : le telephone est pose. Une demi-minute, pour que le decompte ait avance.
     c.sh("input keyevent KEYCODE_SLEEP")
     c.pause(30.0)
     c.sh("input keyevent KEYCODE_WAKEUP")
     film_debut("video-seance-2")
-    c.pause(3.5)
-    photo("video-seance-b-rallume")
+    c.pause(3.0)
+    repere("ecran rallume")
+    photo("video-seance-c-rallume")
     c.sh("wm dismiss-keyguard")
     c.pause(3.5)
-    c.sh("cmd statusbar expand-notifications")
-    c.pause(5.0)
-    photo("video-seance-c-notification")
-    c.sh("cmd statusbar collapse")
-    c.pause(2.5)
-    # La seance tourne toujours : on reveille son ecran, le decompte a avance.
+    repere("seance toujours en cours")
+    # L'ecran de seance s'etait mis au calme : un toucher le reveille, le decompte a avance.
     c.sh(f"input tap {c.W // 2} {int(c.H * 0.14)}")
     c.pause(4.0)
     photo("video-seance-d-toujours-en-cours")
+    c.sh("cmd statusbar expand-notifications")
+    repere("notification apres l'ecran eteint")
+    c.pause(5.0)
+    photo("video-seance-e-notification")
+    c.sh("cmd statusbar collapse")
+    c.pause(2.5)
     film_fin()
     # Hors film : le bravo et sa page de carnet sont proteges des captures (FLAG_SECURE).
-    services = c.sh(f"dumpsys activity services {c.PKG} | grep -E 'ServiceRecord|isForeground|foregroundServiceType|types=' | head -8")
-    if "SessionService" not in services:
+    if "SessionService" not in services_seance():
         faute("VIDEO seance : le service de seance ne tourne plus apres l'ecran eteint")
     if c.toucher(rid="session_secondary", defilements=2, attente=1.5):
         c.toucher(rid="button1", attente=4.0)
@@ -659,61 +713,96 @@ def video_seance():
 
 
 def video_barriere():
-    """Sequence 2 : les deux acces accordes apres leur divulgation, une application choisie, l'ecran
-    devant elle, « Done without the phone », puis l'interrupteur qui coupe le mode."""
+    """Sequence 2, en trois films : chaque acces accorde apres sa divulgation ; puis le mode allume,
+    une application choisie, l'ecran devant elle, « Done without the phone », et l'interrupteur
+    qui coupe le mode. Jamais l'ecran d'accueil du telephone : le lanceur de l'emulateur est coupe."""
     navigation("gestes")
     preparer_film()
     c.lancer(attente=5)
-    film_debut("video-barriere-1")
-    c.pause(2.0)
-    c.toucher(desc="Settings", attente=2.5)
-    for titre, nom in (("Display over other apps", "affichage"), ("Usage access", "usage")):
-        amener(text=titre, defilements=18)
+    fermer_trophees()
+    for i, (titre, nom) in enumerate((("Display over other apps", "affichage"), ("Usage access", "usage")), start=1):
+        film_debut(f"video-barriere-{i}")
+        c.pause(2.0)
+        if i == 1:
+            repere("accueil")
+            c.toucher(desc="Settings", attente=3.0)
+            repere("reglages")
+        chercher(text=titre, lent=True, place=0.6)
+        repere("carte des autorisations : " + nom)
+        c.pause(2.0)
         b = bouton_de_la_ligne(titre)
         if b is None:
             faute(f"VIDEO barriere : pas de bouton [Grant] pour [{titre}]")
+            film_fin()
             continue
-        toucher_bornes(b, attente=3.5)   # la divulgation dans l'application
+        toucher_bornes(b, attente=3.0)   # la divulgation dans l'application
+        repere("divulgation : " + nom)
+        photo(f"video-barriere-{i}-divulgation")
+        c.pause(4.0)                      # le temps de la lire
+        c.toucher(text="Continue", attente=3.0)
+        repere("ecran d'Android : " + nom)
+        if not accorder_dans_android():
+            faute(f"VIDEO barriere : l'ecran d'Android n'offre pas d'interrupteur pour [{titre}]")
+        repere("retour dans l'application : " + nom)
         c.pause(2.5)
-        c.toucher(text="Continue", attente=2.5)
-        accorder_dans_android()
-        c.pause(1.5)
-    film_fin()
-    film_debut("video-barriere-2")
-    amener(rid="enable_switch", defilements=18)
-    c.toucher(rid="enable_switch", attente=2.0)
-    c.toucher(text="Choose apps", defilements=4, attente=4.0)
+        photo(f"video-barriere-{i}-accorde")
+        film_fin()
+    if c.PKG not in devant():
+        c.lancer(attente=4)
+        c.toucher(desc="Settings", attente=3.0)
+    film_debut("video-barriere-3")
+    c.pause(1.5)
+    chercher(rid="enable_switch", lent=True, place=0.25)
+    repere("carte du mode")
+    c.pause(1.5)
+    c.toucher(rid="enable_switch", attente=2.5)
+    autoriser_notifications()
+    repere("mode allume")
+    c.toucher(text="Choose apps", attente=4.0)
+    repere("liste des applications")
     paquet = None
-    for libelle, p in (("YouTube", "com.google.android.youtube"), ("Chrome", "com.android.chrome"),
+    for libelle, p in (("Chrome", "com.android.chrome"), ("YouTube", "com.google.android.youtube"),
                        ("Messages", "com.google.android.apps.messaging"), ("Photos", "com.google.android.apps.photos")):
         if c.trouver(text=libelle, defilements=6) is not None:
             c.toucher(text=libelle, attente=2.0)
             paquet = p
+            repere("application choisie : " + libelle)
             break
         au_bout(False, 3)
     c.retour()
     c.pause(2.0)
-    amener(rid="window_start", defilements=6)
-    c.pause(2.5)
+    chercher(text="Where “I am with Hashem” stands", lent=True, place=0.3)
+    repere("etat : le mode agit")
+    photo("video-barriere-3-arme")
+    c.pause(3.0)
+    c.log("  services :", services_app()[:300])
     if paquet:
-        c.sh("input keyevent KEYCODE_HOME")
-        c.pause(1.5)
+        # « Open the app you picked » : lancee d'ici, sans passer par l'ecran d'accueil.
         c.sh(f"monkey -p {paquet} -c android.intent.category.LAUNCHER 1")
+        repere("application ouverte")
         c.pause(8.0)
         if c.trouver(text="Did you do your hitbodedut?") is None:
             faute(f"VIDEO barriere : l'ecran ne se pose pas sur {paquet}")
-        photo("video-barriere-a-ecran")
+        repere("ecran de garde")
+        photo("video-barriere-3-ecran")
+        c.pause(3.0)
+        c.toucher(text="Done without the phone", defilements=2, attente=4.0)
+        repere("fait sans le telephone")
+        photo("video-barriere-3-apres")
         c.pause(2.0)
-        c.toucher(text="Done without the phone", defilements=2, attente=3.5)
-        photo("video-barriere-b-apres")
+    else:
+        faute("VIDEO barriere : aucune application connue a choisir")
     c.lancer(attente=4)
     fermer_trophees()
-    c.toucher(desc="Settings", attente=2.5)
-    amener(rid="enable_switch", defilements=18)
+    c.toucher(desc="Settings", attente=3.0)
+    chercher(rid="enable_switch", lent=True, place=0.3)
     c.toucher(rid="enable_switch", attente=2.5)
-    c.pause(1.5)
-    photo("video-barriere-c-coupe")
+    repere("mode coupe")
+    c.pause(2.5)
+    photo("video-barriere-3-coupe")
     film_fin()
+    if "GateService" in services_app():
+        faute("VIDEO barriere : GateService tourne encore apres l'interrupteur coupe")
     c.sh("settings put system show_touches 0")
     c.arreter()
 
@@ -776,8 +865,15 @@ def clavier(nom):
     c.pause(0.8)
 
 
+# Pour revoir une correction sans tout repasser : CAPTURES_ETAPES (« etapes » de demande.json)
+# nomme les seuls ecrans a passer (« seance,reglages »). L'accueil est toujours pris.
+SEULS = [e.strip() for e in os.environ.get("CAPTURES_ETAPES", "").split(",") if e.strip()]
+
+
 def passe(prefixe, ecrans=ECRANS, bas=True, saisie=True):
     """L'accueil et ses trois lieux, puis tous les ecrans : le haut, le bas, le clavier."""
+    if SEULS:
+        ecrans = [e for e in ecrans if e[0] in SEULS]
     c.lancer(attente=5)
     fermer_trophees()
     prise(f"{prefixe}-accueil")
@@ -1044,6 +1140,17 @@ def tablette(prefixe):
     c.appliquer_taille(None, None, False)
 
 
+def couche(prefixe):
+    """Le telephone couche (Pixel 6 : 915 x 411 dp). L'accueil, la seance et la presentation y ont
+    leur propre mise en page (res/layout-land) : la recette du 22/11 a trouve l'accueil casse sur
+    une tablette couchee, et personne ne l'avait regarde sur un telephone depuis la refonte."""
+    c.appliquer_taille("1080x2400", 420, True)
+    retenus = ("reglages", "seance", "bravo", "siddour-lecture", "zmanim", "musique", "choix-version", "applications")
+    passe(f"{prefixe}-couche", ecrans=[e for e in ECRANS if e[0] in retenus], bas=False, saisie=False)
+    versions(f"{prefixe}-couche", bas=False)
+    c.appliquer_taille(None, None, False)
+
+
 def lieu(nom, lat, lon, fuseau, ville, israel="false"):
     c.regler({"lieu_nom": ("string", nom), "lieu_latitude": ("string", lat), "lieu_longitude": ("string", lon),
               "lieu_altitude": ("string", "0.0"), "lieu_fuseau": ("string", fuseau), "lieu_ville": ("long", ville),
@@ -1053,7 +1160,7 @@ def lieu(nom, lat, lon, fuseau, ville, israel="false"):
 def main():
     c.racine_adb()
     toutes = ["examinateur", "video", "ecrans-fr", "ecrans-he", "ecrans-ar", "ecrans-es", "versions", "nuit", "seance",
-              "barriere", "presentation", "tablette", "ciel-de-nuit", "redemarrage"]
+              "barriere", "presentation", "tablette", "couche", "ciel-de-nuit", "redemarrage"]
     passes = [p.strip() for p in os.environ.get("RECETTE_PASSES", "").split(",") if p.strip()] or toutes
     c.log("passes :", passes, "| Android", c.sh("getprop ro.build.version.release").strip(),
           "API", c.sh("getprop ro.build.version.sdk").strip())
@@ -1138,6 +1245,10 @@ def main():
         navigation("gestes")
         tablette("fr")
 
+    def p_couche():
+        navigation("gestes")
+        couche("fr")
+
     def p_ciel():
         # Le soir : les accueils au ciel dessine (Instant, Serenite). L'emulateur s'y est
         # arrete deux fois le 17/11 : en dernier, pour ne rien perdre d'autre.
@@ -1153,7 +1264,7 @@ def main():
 
     table = {"ecrans-fr": p_fr, "ecrans-he": p_he, "ecrans-ar": p_ar, "ecrans-es": p_es, "versions": p_versions,
              "nuit": p_nuit, "seance": p_seance, "barriere": p_barriere, "presentation": p_presentation,
-             "tablette": p_tablette, "ciel-de-nuit": p_ciel, "redemarrage": p_redemarrage}
+             "tablette": p_tablette, "couche": p_couche, "ciel-de-nuit": p_ciel, "redemarrage": p_redemarrage}
     for nom in passes:
         if nom in table:
             c.etape(nom, table[nom])

@@ -195,7 +195,10 @@
                 android:text="@string/session_open"
                 android:textColor="?attr/mhMint" />
 
-            <!-- « Commencer simplement » (proposition 15, 19/10) : quatre façons d'entrer, qui démarrent tout de suite. -->
+            <!-- « Commencer simplement » (proposition 15, 19/10) : quatre façons d'entrer, qui démarrent tout de suite.
+                 Recette du 22/11 : sur un écran de 411 dp, « Une question » se coupait au milieu du mot
+                 (« Une questi / on »). Marges intérieures de 4 dp, et une part plus large aux deux mots
+                 les plus longs (« Écrire », « Escribir » ; « Une question », « Una pregunta »). -->
             <LinearLayout
                 android:id="@+id/session_simplement"
                 android:layout_width="match_parent"
@@ -209,6 +212,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:minWidth="0dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:text="@string/simplement_parler"
                     android:textColor="?attr/mhMint" />
 
@@ -217,7 +223,10 @@
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.15"
+                    android:minWidth="0dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:text="@string/simplement_ecrire"
                     android:textColor="?attr/mhMint" />
 
@@ -227,6 +236,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:minWidth="0dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:text="@string/simplement_prier"
                     android:textColor="?attr/mhMint" />
 
@@ -235,7 +247,10 @@
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.45"
+                    android:minWidth="0dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:text="@string/simplement_question"
                     android:textColor="?attr/mhMint" />
             </LinearLayout>

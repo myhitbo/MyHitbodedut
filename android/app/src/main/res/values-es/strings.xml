@@ -499,7 +499,7 @@
     <string name="onboarding_texts">Textos para rezar</string>
     <string name="onboarding_texts_body">El Tikún HaKlalí, los Tehilim, el sidur, las Tefilot ordenadas por tema, fuentes sobre la hitbodedut y consejos para la hitbodedut, para abrir cuando quieras.</string>
     <string name="onboarding_yours">A tu manera</string>
-    <string name="onboarding_yours_body">En la configuración: el idioma (francés, inglés o hebreo), los colores de la pantalla, tu nombre y la duración habitual de una hitbodedut. La música tiene su propia sección.</string>
+    <string name="onboarding_yours_body">En la configuración: el idioma, los colores de la pantalla, tu nombre y la duración habitual de una hitbodedut. La música tiene su propia sección.</string>
     <string name="onboarding_gate">Por la mañana, antes que nada</string>
     <string name="onboarding_gate_body">Elige las aplicaciones que esperarán tu hitbodedut: al abrir una de ellas, primero verás «¿Hiciste tu hitbodedut?». Este modo se configura en Configuración y se apaga cuando quieras.</string>
     <string name="onboarding_adresse">¿Cómo te llamamos?</string>

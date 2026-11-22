@@ -492,7 +492,7 @@
     <string name="onboarding_texts">טקסטים לתפילה</string>
     <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, מקורות על ההתבודדות ועצות להתבודדות, זמינים מתי שרוצים.</string>
     <string name="onboarding_yours">בדרך שלכם</string>
-    <string name="onboarding_yours_body">בהגדרות: השפה (צרפתית, אנגלית או עברית), צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
+    <string name="onboarding_yours_body">בהגדרות: השפה, צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
     <string name="onboarding_gate">מחסום הבוקר</string>
     <string name="onboarding_gate_body">אם תרצו, האפליקציות שתבחרו ימתינו להתבודדות שלכם: בשעות שתקבעו, מסך ישאל קודם אם היא כבר נעשתה. מפעילים בהגדרות, ואפשר לכבות בכל רגע.</string>
     <string name="onboarding_adresse">איך לפנות אליכם?</string>

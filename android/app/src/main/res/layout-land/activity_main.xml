@@ -40,11 +40,13 @@
                 android:paddingTop="4dp"
                 android:paddingBottom="16dp">
 
-                <!-- Les anneaux à part, au début de la ligne (à droite en hébreu). -->
+                <!-- Les anneaux à part, au début de la ligne (à droite en hébreu). En haut, pas au milieu :
+                     depuis la refonte du 13/11 la colonne voisine porte les cartes du moment et dépasse
+                     l'écran ; centrés sur elle, les anneaux partaient sous le pli (recette du 22/11). -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
+                    android:layout_gravity="top"
                     android:orientation="vertical">
 
                     <!-- Les trois anneaux (jour, semaine, série), et le hassid qui accueille en leur creux. -->
@@ -123,10 +125,13 @@
                         android:textColor="?attr/mhMuted"
                         android:textSize="16sp" />
 
-                    <!-- Le palier le plus proche (11/10) : touché, il ouvre les trophées et paliers. -->
+                    <!-- Le palier le plus proche (11/10) : touché, il ouvre les trophées et paliers.
+                         De la largeur des anneaux, sur plusieurs lignes : large comme son texte, il élargissait
+                         cette colonne à 420 dp et n'en laissait que 150 à l'en-tête, coupé lettre par lettre
+                         sur une tablette couchée (recette du 22/11). -->
                     <TextView
                         android:id="@+id/paliers_line"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_gravity="center_horizontal"
                         android:minHeight="48dp"
                         android:layout_height="wrap_content"
