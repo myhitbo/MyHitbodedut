@@ -26,6 +26,9 @@ public struct CheminVue: View {
                                     .font(Font.title2.bold())
                                     .monospacedDigit()
                                     .foregroundStyle(Teinte(.brand))
+                                    // Une ligne (CheminValeur : maxLines 1), « 18 שע׳ 30 דק׳ » rapetissé plutôt que coupé.
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.5)
                                 Text(chiffre.libelle, traducteur: traducteur)
                                     .font(.caption)
                                     .foregroundStyle(Teinte(.muted))
