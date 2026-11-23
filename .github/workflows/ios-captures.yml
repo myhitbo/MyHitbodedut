@@ -56,6 +56,9 @@ jobs:
           brew install xcodegen
           cd ios
           xcodegen generate --spec project.yml
+      # Le premier démarrage d'un simulateur prend plusieurs minutes : il se fait pendant la compilation.
+      - name: Démarrage de l'iPhone simulé
+        run: bash tools/captures_ios/capturer.sh prechauffer
       - name: Compilation de l'app (simulateur, sans signature)
         run: |
           set -o pipefail

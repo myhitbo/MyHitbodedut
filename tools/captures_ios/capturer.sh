@@ -10,13 +10,13 @@
 # tous), PASSES (iphone, sombre, grand, ipad, paysage : l'iPad couché), RESUME (le fichier du résumé, $GITHUB_STEP_SUMMARY dans la CI).
 set -uo pipefail
 
-APP=${APP:?le .app à installer}
+APP=${APP:-}
 SORTIE=${SORTIE:-captures}
 LANGUES=${LANGUES:-"fr en he es ar-TN"}
 ECRANS=${ECRANS:-}
 PASSES=${PASSES:-"iphone sombre grand ipad"}
 RESUME=${RESUME:-/dev/stdout}
-ATTENTE=${ATTENTE:-6}
+ATTENTE=${ATTENTE:-5}
 # Des arguments de lancement en plus, pour une passe (« -captureOrientation paysage »).
 EN_PLUS=""
 ID_APP=com.myhitbodedut
@@ -30,6 +30,8 @@ ECRANS_COURTS="jour depart seance bravo livres lecteur tehilim recherche chemin 
 test -n "$ECRANS" || ECRANS=$ECRANS_TOUS
 
 mkdir -p "$SORTIE/png" "$SORTIE/jpg" "$SORTIE/journaux"
+# Un chemin absolu : simctl ouvre --stdout et --stderr pour l'app, ailleurs que dans ce dossier.
+SORTIE=$(cd "$SORTIE" && pwd)
 PLANTAGES=()
 FAITES=0
 
@@ -59,13 +61,16 @@ barre() {
 demarrer() {
   local udid=$1
   xcrun simctl boot "$udid" 2>/dev/null || true
+  echo "démarrage de $udid…"
   xcrun simctl bootstatus "$udid" -b >/dev/null
+  echo "démarré"
   xcrun simctl ui "$udid" appearance light || true
   xcrun simctl ui "$udid" content_size large || true
-  xcrun simctl install "$udid" "$APP"
+  xcrun simctl install "$udid" "$APP" || echo "::error::installation refusée"
+  xcrun simctl get_app_container "$udid" "$ID_APP" || echo "::error::l'app n'est pas installée"
   barre "$udid"
   # Un premier lancement, à blanc : le premier est lent (caches du simulateur).
-  xcrun simctl launch "$udid" "$ID_APP" -capture jour -captureDemo >/dev/null 2>&1 || true
+  echo "premier lancement : $(xcrun simctl launch "$udid" "$ID_APP" -capture jour -captureDemo 2>&1)"
   sleep 20
   xcrun simctl terminate "$udid" "$ID_APP" >/dev/null 2>&1 || true
 }
@@ -75,6 +80,7 @@ plantage() {
   local udid=$1 nom=$2 depuis=$3
   PLANTAGES+=("$nom")
   echo "::error::plantage : $nom"
+  # Dans le résumé, et dans le journal du travail (que l'on lit sans compte).
   {
     echo "### Plantage : $nom"
     echo '```'
@@ -91,7 +97,12 @@ plantage() {
     xcrun simctl spawn "$udid" log show --predicate 'process == "MyHitbodedut"' --last 2m --style compact 2>/dev/null \
       | grep -vE "^Timestamp|^Filtering" | tail -40
     echo '```'
-  } >> "$RESUME"
+  } | tee -a "$RESUME"
+}
+
+# L'app tourne encore (un processus du simulateur est un processus du Mac).
+vivant() {
+  [ -n "$1" ] && kill -0 "$1" 2>/dev/null
 }
 
 # Lance l'app sur un écran dans une langue, attend, photographie. $4 : le nom de la capture.
@@ -113,15 +124,17 @@ capturer() {
     --stderr="$SORTIE/journaux/$nom.err" "$udid" "$ID_APP" \
     -AppleLanguages "($langue)" -AppleLocale "$locale" -capture "$ecran" -captureDemo $EN_PLUS 2>&1)
   pid=${lance##*: }
+  case $pid in
+    ''|*[!0-9]*) echo "lancement refusé ($nom) : $lance"; pid="" ;;
+  esac
   sleep "$ATTENTE"
-  if ! kill -0 "$pid" 2>/dev/null; then
+  if ! vivant "$pid"; then
     plantage "$udid" "$nom" "$depuis"
     return
   fi
   barre "$udid"
   xcrun simctl io "$udid" screenshot --type=png "$SORTIE/png/$nom.png" >/dev/null 2>&1
-  sleep 1
-  if ! kill -0 "$pid" 2>/dev/null; then
+  if ! vivant "$pid"; then
     plantage "$udid" "$nom" "$depuis"
   fi
   if [ -f "$SORTIE/png/$nom.png" ]; then
@@ -150,6 +163,13 @@ parmi() {
 }
 
 IPHONE=$(appareil iPhone "iPhone 17 Pro" "iPhone 16 Pro" "iPhone 17" | cut -f1)
+# « capturer.sh prechauffer » : l'iPhone démarre pendant la compilation de l'app (le premier démarrage d'un simulateur
+# prend plusieurs minutes), puis le script rend la main.
+if [ "${1:-}" = prechauffer ]; then
+  xcrun simctl boot "$IPHONE" 2>/dev/null || true
+  exit 0
+fi
+test -n "$APP" || { echo "::error::APP : le .app à installer"; exit 1; }
 test -n "$IPHONE" || { echo "::error::aucun iPhone simulé d'iOS 26.5"; exit 1; }
 echo "iPhone : $(appareil iPhone "iPhone 17 Pro" "iPhone 16 Pro" "iPhone 17" | cut -f2)"
 echo "$IPHONE" > "$SORTIE/iphone.txt"
