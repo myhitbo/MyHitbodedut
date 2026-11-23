@@ -147,6 +147,14 @@ targets:
         type: folder
       - path: Ressources/Contenu/palettes.json
         buildPhase: resources
+      # Le texte de 'hizouk du grand widget de la série (StreakWidget.texteDuJour) et le hassid de dos de la boussole
+      # (BoussoleWidget, BoussoleDessin.rose), dans ses deux poses.
+      - path: Ressources/Contenu/chizuk.json
+        buildPhase: resources
+      - path: Ressources/Images/char_standing_back.webp
+        buildPhase: resources
+      - path: Ressources/Images/char_f_standing_back.webp
+        buildPhase: resources
     dependencies:
       - package: Coeur
         products:

@@ -6,7 +6,7 @@ import WidgetKit
 // La série sur l'écran d'accueil, et de quoi commencer d'un geste (StreakWidget.kt, widget_small.xml,
 // widget_streak.xml, widget_large.xml). Elle suit la place qu'on lui donne (WidgetTaille) : petite, les anneaux et la
 // série en pastille ; moyenne, les anneaux d'un côté, de l'autre la salutation, les minutes du jour, la semaine et le
-// bouton ; grande, la semaine en sept pastilles en plus. Elle porte les couleurs choisies (VignetteDecor) : un dégradé
+// bouton ; grande, la semaine en sept pastilles et un texte de 'hizouk du jour en plus (texteDuJour). Elle porte les couleurs choisies (VignetteDecor) : un dégradé
 // de la couleur des boutons, plus sombre la nuit.
 //
 // Le bouton part droit sur la séance et la lance (« Commencer ») ; pendant une hitbodedout, il la termine sans ouvrir
@@ -26,6 +26,8 @@ struct EntreeSerie: TimelineEntry {
     let prenom: String
     let dejaPratique: Bool
     let reglages: Reglages
+    /// La grande place : le texte de 'hizouk du jour (StreakWidget.texteDuJour) ; nil ailleurs, ou sans chizuk.json.
+    var texteDuJour: WidgetTexteDuJour? = nil
 
     static func lire(_ etat: EtatWidgets, date: Date) -> EntreeSerie {
         let millis = Int64(date.timeIntervalSince1970 * 1000)
@@ -63,11 +65,26 @@ struct FournisseurSerie: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping (EntreeSerie) -> Void) {
         let rendu = Rendu(rendre: completion)
-        Task { rendu.rendre(EntreeSerie.lire(await EtatWidgets.lire(), date: Date())) }
+        let grande = context.family == .systemLarge
+        Task {
+            let etat = await EtatWidgets.lire()
+            rendu.rendre(FournisseurSerie.avecTexte(EntreeSerie.lire(etat, date: Date()), etat, grande))
+        }
+    }
+
+    /// Le texte du jour de l'entrée, pour la grande place seulement : chizuk.json (300 ko) ne se lit pas pour rien.
+    static func avecTexte(_ entree: EntreeSerie, _ etat: EtatWidgets, _ grande: Bool) -> EntreeSerie {
+        guard grande, let chizuk = TexteDuJourWidget.chizuk else { return entree }
+        var avec = entree
+        let jour = etat.fuseau.jour(millis: Int64((entree.date.timeIntervalSince1970 * 1000).rounded()))
+        avec.texteDuJour = WidgetTexteDuJour.choisir(chizuk, jour: jour, langue: TextesWidgets.traducteur.langue,
+                                                     debug: TexteDuJourWidget.debug)
+        return avec
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<EntreeSerie>) -> Void) {
         let rendu = Rendu(rendre: completion)
+        let grande = context.family == .systemLarge
         Task {
             let etat = await EtatWidgets.lire()
             let maintenant = Date()
@@ -78,7 +95,8 @@ struct FournisseurSerie: TimelineProvider {
             // Juste après minuit : sans cela, la coche de la veille restait jusqu'à une heure (programmerMinuit).
             let minuit = etat.fuseau.millis(DateHeure(etat.aujourdhui.plus(jours: 1))) + 60_000
             dates.append(date(minuit))
-            let entrees = dates.sorted().map { EntreeSerie.lire(etat, date: $0) }
+            // Juste après minuit, le texte du lendemain.
+            let entrees = dates.sorted().map { FournisseurSerie.avecTexte(EntreeSerie.lire(etat, date: $0), etat, grande) }
             rendu.rendre(Timeline(entries: entrees, policy: .after(maintenant.addingTimeInterval(3600))))
         }
     }
@@ -106,7 +124,11 @@ struct SerieVue: View {
             VStack(alignment: .leading, spacing: 12) {
                 moyenne
                 semaine
-                Spacer(minLength: 0)
+                if let texte = entree.texteDuJour {
+                    texteDuJour(texte)
+                } else {
+                    Spacer(minLength: 0)
+                }
             }
         default:
             moyenne
@@ -236,6 +258,33 @@ struct SerieVue: View {
         .background(RoundedRectangle(cornerRadius: 14).fill(Color.black.opacity(Double(VignetteDecor.voilePanneau))))
     }
 
+    /// Le texte de 'hizouk du jour (widget_large.xml, widget_text et widget_ref) : sous le même voile que la semaine,
+    /// l'hébreu de droite à gauche et à droite quelle que soit la langue (trois lignes au plus, en serif), sa référence
+    /// dessous, à droite aussi, en menthe.
+    private func texteDuJour(_ texte: WidgetTexteDuJour) -> some View {
+        // À droite : le début d'une ligne de droite à gauche, la fin d'une ligne de gauche à droite.
+        let droite: Alignment = TextesWidgets.deDroiteAGauche ? .leading : .trailing
+        return VStack(spacing: 4) {
+            Text(verbatim: texte.hebreu)
+                .font(.system(size: 15, design: .serif))
+                .foregroundStyle(.white)
+                .lineSpacing(2)
+                .lineLimit(3)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, .rightToLeft)
+            Text(verbatim: texte.reference)
+                .font(.system(size: 11))
+                .foregroundStyle(couleurs.mint)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: droite)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(RoundedRectangle(cornerRadius: 14).fill(Color.black.opacity(Double(VignetteDecor.voilePanneau))))
+        .accessibilityElement(children: .combine)
+    }
+
     /// Les jetons fixes de la palette choisie (StreakWidget.Teintes) : ils ne basculent pas la nuit.
     private var couleurs: TeintesSerie {
         TeintesSerie(entree.reglages)
@@ -340,5 +389,23 @@ struct SerieWidget: Widget {
         .configurationDisplayName(Text(verbatim: TextesWidgets.texte("widget_label")))
         .description(Text(verbatim: TextesWidgets.texte("widget_description")))
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+    }
+}
+
+/// Les textes de 'hizouk de l'extension (chizuk.json, copié par projet-commun.yml), lus une fois par processus.
+enum TexteDuJourWidget {
+    static let chizuk: Chizuk? = {
+        guard let url = Bundle.main.url(forResource: "chizuk", withExtension: "json"),
+              let donnees = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(Chizuk.self, from: donnees)
+    }()
+
+    /// `BuildConfig.DEBUG` : les textes non relus passent aussi.
+    static var debug: Bool {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
     }
 }
