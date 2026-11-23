@@ -23,8 +23,10 @@ on:
 permissions:
   contents: read
 
+# Une passe par commit poussé : plusieurs chantiers poussent sur la même branche, et chacun doit voir la sienne
+# aller au bout (six minutes) plutôt que d'être annulé par le suivant.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
