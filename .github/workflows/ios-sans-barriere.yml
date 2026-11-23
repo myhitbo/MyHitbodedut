@@ -1,0 +1,52 @@
+name: iOS (sans barrière, macOS)
+
+# La construction SANS_BARRIERE (project-sans-barriere.yml, PORTAGE.md § 2.1.11 : l'app et les widgets, sans les
+# extensions de Temps d'écran ni l'entitlement Family Controls), compilée seulement, quand ce qui porte ses
+# `#if SANS_BARRIERE` change : l'adaptateur de Temps d'écran et les écrans de la barrière de l'app. Codemagic la construit
+# pour TestFlight ; ici on vérifie qu'elle se compile encore. Même runner et même Xcode que ios-vues.yml.
+
+on:
+  push:
+    paths:
+      - 'ios/App/Services/TempsEcran*.swift'
+      - 'ios/App/Barriere/**'
+      - 'ios/project-sans-barriere.yml'
+      - '.github/workflows/ios-sans-barriere.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sans-barriere:
+    runs-on: macos-26-intel
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode 26.6
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.6.app
+          xcodebuild -version
+      - name: Contenus exportés
+        run: python3 tools/export_contenu/export.py
+      - name: Projet Xcode sans barrière (XcodeGen)
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate --spec project-sans-barriere.yml
+      - name: Compilation de l'app SANS_BARRIERE (simulateur, sans signature)
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
+            -destination "generic/platform=iOS Simulator" ARCHS=x86_64 CODE_SIGNING_ALLOWED=NO build 2>&1 \
+            | tee app.log | grep -E "error:|BUILD" || true
+          n=$(grep -E "^/.*: error:" app.log | sort -u | wc -l | tr -d ' ')
+          echo "## app.log : $n erreurs" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -E "^/.*: error:" app.log | sed "s|$GITHUB_WORKSPACE/||" | sort -u | head -200 >> "$GITHUB_STEP_SUMMARY" || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -q "BUILD SUCCEEDED" app.log

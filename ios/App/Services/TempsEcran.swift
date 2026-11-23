@@ -67,9 +67,15 @@ final class TempsEcranApp: TempsEcran, ReglagesBarriereSysteme, BarriereSysteme 
         observer()
         retour = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil,
                                                         queue: .main) { [weak self] _ in
-            Task { @MainActor in await self?.synchroniser(.retour) }
+            let moi = self
+            Task { @MainActor in await moi?.synchroniser(.retour) }
         }
-        Task { await synchroniser(.retour) }
+        // La première, une seconde après l'ouverture : la racine est alors à l'écran, et la séance que « Commencer » a
+        // demandée s'ouvre dans sa pile.
+        Task {
+            try? await Task.sleep(for: .seconds(1))
+            await synchroniser(.retour)
+        }
     }
 
     /// Un changement du journal ou des réglages : une synchronisation, un instant plus tard (plusieurs changements de
@@ -79,9 +85,10 @@ final class TempsEcranApp: TempsEcran, ReglagesBarriereSysteme, BarriereSysteme 
             _ = magasin.journal
             _ = magasin.reglages
         } onChange: { [weak self] in
+            let moi = self
             Task { @MainActor in
-                self?.observer()
-                self?.differer()
+                moi?.observer()
+                moi?.differer()
             }
         }
     }
@@ -268,7 +275,7 @@ final class TempsEcranApp: TempsEcran, ReglagesBarriereSysteme, BarriereSysteme 
         let etat = EtatBarriere.etat(journal: magasin.journal, reglages: magasin.reglages, millis: millis, fuseau: fuseau,
                                      nombreDeJetons: selection?.nombreDeJetons ?? 0, palette: palette, essai: essai,
                                      textes: { traducteur.texte($0) })
-        try? fichiers.ecrire(etat)
+        _ = try? fichiers.ecrire(etat)
         copierImages(etat.bouclier.apparence, fichiers: fichiers)
 
         // 3. La boîte versée passe au journal de la barrière.
