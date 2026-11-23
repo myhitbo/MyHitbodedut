@@ -154,7 +154,8 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
 - **Couché** : `simctl` ne sait pas tourner le simulateur, ni l'app le demander au simulateur
   (`requestGeometryUpdate` y est sans effet) ; la passe « paysage » passe donc par le test d'interface
   (`testCapturesCouchees`, `XCUIDevice.orientation`), sur l'iPhone et l'iPad, quelques écrans en fr et he ; ses
-  images sont l'artefact « captures-couchees-ios ».
+  images (l'écran de l'appareil debout, tourné d'un quart de tour par `sips`), nommées
+  `paysage-ipad-<langue>-<écran>.jpg` et `paysage-iphone-…`, sont l'artefact « captures-couchees-ios ».
 - **Les plantages** : une app qui ne tourne plus après son lancement est un plantage ; son rapport
   (`~/Library/Logs/DiagnosticReports`, résumé par `rapport.py` : l'exception, le message de Swift, le fil fautif),
   sa sortie d'erreur et son journal système vont dans le résumé du travail, qui échoue.

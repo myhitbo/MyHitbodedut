@@ -119,12 +119,21 @@ jobs:
               -only-testing:MyHitbodedutUITests/AuditAccessibiliteTests/testCapturesCouchees 2>&1 \
               | tee -a couchees.log | grep -E "error:|TEST (SUCCEEDED|FAILED)" || true
           }
+          # L'iPad d'abord, déjà démarré par le script ; puis l'iPhone, que le script avait éteint et qu'il faut
+          # redémarrer avant le test (sans quoi xcodebuild attend dix minutes et abandonne, le 23/11).
+          if [ -f captures/ipad.txt ]; then
+            couchees "$(cat captures/ipad.txt)" paysage-ipad
+            xcrun simctl shutdown "$(cat captures/ipad.txt)" || true
+          fi
+          xcrun simctl boot "$(cat captures/iphone.txt)" || true
+          xcrun simctl bootstatus "$(cat captures/iphone.txt)" -b >/dev/null
           couchees "$(cat captures/iphone.txt)" paysage-iphone
-          if [ -f captures/ipad.txt ]; then couchees "$(cat captures/ipad.txt)" paysage-ipad; fi
           mkdir -p captures/couchees-jpg
           for f in captures/couchees/*.png; do
             test -f "$f" || continue
-            sips -Z 1400 -s format jpeg -s formatOptions 70 "$f" --out "captures/couchees-jpg/$(basename "${f%.png}").jpg" >/dev/null
+            # L'image de l'écran est celle de l'appareil debout : tournée d'un quart de tour, elle se lit couchée.
+            sips -r 270 -Z 1400 -s format jpeg -s formatOptions 70 "$f" \
+              --out "captures/couchees-jpg/$(basename "${f%.png}").jpg" >/dev/null
           done
           echo "## Captures couchées : $(ls captures/couchees-jpg | wc -l | tr -d ' ')" >> "$GITHUB_STEP_SUMMARY"
       - name: Captures couchées et leur journal
