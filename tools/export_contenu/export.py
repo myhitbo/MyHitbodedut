@@ -74,7 +74,7 @@ LICENCES = [
     (r"Contenu/(trophees_formes|palettes)\.json", "propre à l'app", ""),
     (r"Contenu/musique\.json", "accord écrit (PORTAGE.md § 6.1)", "voir chaque morceau"),
     (r"Chaines/(Localizable\.xcstrings|Tableaux\.json)", "propre à l'app", ""),
-    (r"Catalogue/(Localizable|ios)\.xcstrings", "propre à l'app", ""),
+    (r"Catalogue/(Localizable|ios|InfoPlist)\.xcstrings", "propre à l'app", ""),
     (r"Images/[a-z0-9_]+\.webp", "fournies par le propriétaire", ""),
     (r"Icones/[a-z0-9_]+\.svg", "propre à l'app", ""),
     (r"Polices/[a-z0-9_]+\.ttf", "SIL OFL 1.1", "voir Polices/licences"),
@@ -193,10 +193,12 @@ class Export:
                 entree["localizations"] = {lg: {"stringUnit": l["variations"]["plural"]["other"]["stringUnit"]}
                                            for lg, l in locs.items()}
         self.json(SORTIE / "Catalogue" / "Localizable.xcstrings", localiser_xcode(compile), source, indent=2)
-        # Les chaînes propres à iOS, écrites à la main sous Chaines/ios.xcstrings, compilées de même.
-        ios = json.loads((SORTIE / "Chaines" / "ios.xcstrings").read_text(encoding="utf-8"))
-        self.json(SORTIE / "Catalogue" / "ios.xcstrings", localiser_xcode(ios), "ios/Ressources/Chaines/ios.xcstrings",
-                  indent=2)
+        # Les chaînes propres à iOS, écrites à la main sous Chaines/ios.xcstrings, compilées de même ; et, sous
+        # Chaines/InfoPlist.xcstrings, les raisons des autorisations que le système montre (NSCameraUsageDescription…),
+        # qu'Xcode compile en InfoPlist.strings dans chaque langue.
+        for nom in ("ios.xcstrings", "InfoPlist.xcstrings"):
+            propre = json.loads((SORTIE / "Chaines" / nom).read_text(encoding="utf-8"))
+            self.json(SORTIE / "Catalogue" / nom, localiser_xcode(propre), f"ios/Ressources/Chaines/{nom}", indent=2)
         tableaux = {langue: {**fr["tableaux"], **brutes[langue]["tableaux"]} for langue, _ in LANGUES}
         self.json(SORTIE / "Chaines" / "Tableaux.json", tableaux, source)
 

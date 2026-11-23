@@ -21,4 +21,5 @@ Ressources/*
 !Ressources/Chaines/
 Ressources/Chaines/*
 !Ressources/Chaines/ios.xcstrings
+!Ressources/Chaines/InfoPlist.xcstrings
 Paquets/Coeur/Tests/Ressources/
