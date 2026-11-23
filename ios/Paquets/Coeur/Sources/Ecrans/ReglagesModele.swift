@@ -24,6 +24,13 @@ import Barriere
 public protocol ReglagesBarriereSysteme: Sendable {
     func constat() async -> Constat
     func nombreDeJetons() async -> Int
+    /// Réinscrit la surveillance et réapplique les magasins (« Relancer le mode », gate_stopped_action d'Android, pour
+    /// les pannes de la surveillance d'iOS).
+    func relancer() async
+}
+
+extension ReglagesBarriereSysteme {
+    public func relancer() async {}
 }
 
 /// Une barrière qui rend ce qu'on lui a dit de rendre.
@@ -31,6 +38,7 @@ public actor ReglagesFausseBarriere: ReglagesBarriereSysteme {
     private var constatRendu: Constat
     private var jetons: Int
     public private(set) var lectures = 0
+    public private(set) var relances = 0
 
     public init(constat: Constat = Constat(), jetons: Int = 0) {
         constatRendu = constat
@@ -49,6 +57,10 @@ public actor ReglagesFausseBarriere: ReglagesBarriereSysteme {
 
     public func nombreDeJetons() -> Int {
         jetons
+    }
+
+    public func relancer() {
+        relances += 1
     }
 }
 
@@ -159,12 +171,14 @@ public enum ReglagesRoute: Sendable, Hashable {
     case reglagesNotifications
     /// « Revoir la présentation » (OnboardingActivity) : `PresentationModele`, page 0.
     case presentation
-    /// L'aperçu du bouclier (GateService.preview ; tâche 27).
+    /// L'aperçu du bouclier (GateService.preview) : la réplique du bouclier et l'essai réel (`ApercuBouclierModele`).
     case apercuBarriere
-    /// Le choix des applications à retenir (AppPickerActivity ; `FamilyActivityPicker` sur iOS).
+    /// Le choix des applications à retenir (AppPickerActivity ; `FamilyActivityPicker` sur iOS, `ChoixApplicationsModele`).
     case choixApplications
-    /// La dédicace (Dedicace.ouvrir) : un écran à venir.
+    /// La dédicace (Dedicace.ouvrir) : `DedicaceModele`.
     case dedicace
+    /// Le journal de la barrière (PORTAGE.md § 2.1.8) : les cinquante derniers événements, à partager.
+    case journalBarriere
     /// Une page dans le navigateur (les règles de confidentialité).
     case navigateur(String)
     /// L'aide qui remplace « Ne pas déranger » : créer un mode de concentration (§ 2.2.6).
@@ -334,6 +348,41 @@ public struct ReglagesCarteBarriere: Sendable, Equatable {
     public let detail: Libelle
     /// « Autorisations manquantes, les accorder » : mène à la carte des autorisations.
     public let boutonAutorisations: Bool
+    /// Le bouton de la carte (gate_fix_permissions d'Android, dont le texte et l'effet suivent l'état) ; nil sans bouton.
+    public let action: ReglagesActionBarriere?
+}
+
+/// Ce que propose le bouton de la carte d'état (renderDiagnostic ; PORTAGE.md § 2.1.8, colonne « ce que l'écran dit et
+/// propose »).
+public enum ReglagesActionBarriere: String, Sendable, Hashable, CaseIterable {
+    /// Les accès manquants : la carte des autorisations (« Voir les deux accès »).
+    case autorisations
+    /// iOS a retiré l'accès : le redemander, après la divulgation (« Rendre l'accès »).
+    case rendreAcces
+    /// Aucune application, ou une sélection à refaire : le sélecteur (« Choisir les applications »).
+    case choisirApplications
+    /// La surveillance absente ou muette : la réinscrire (« Relancer le mode », comme SERVICE_STOPPED d'Android).
+    case relancer
+
+    public var libelle: Libelle {
+        switch self {
+        case .autorisations: Libelle("gate_permissions_action")
+        case .rendreAcces: Libelle("gate_revoked_action")
+        case .choisirApplications: Libelle("action_pick_apps")
+        case .relancer: Libelle("gate_stopped_action")
+        }
+    }
+
+    /// Le bouton d'un état ; nil pour un état qui ne demande rien.
+    public static func de(_ etat: GateState) -> ReglagesActionBarriere? {
+        switch etat {
+        case .missingPermissions: .autorisations
+        case .autorisationRetiree: .rendreAcces
+        case .noAppsSelected, .selectionARefaire: .choisirApplications
+        case .serviceStopped, .surveillanceAbsente, .surveillanceMuette: .relancer
+        default: nil
+        }
+    }
 }
 
 /// Ce que l'export remet à `fileExporter`.
@@ -477,7 +526,26 @@ public final class ReglagesModele {
             titreVisible: !manque,
             detail: GateStatus.detailOf(verdict, etat: etat),
             // iOS : un accès retiré se rend aussi depuis la carte des autorisations.
-            boutonAutorisations: manque || verdict == .autorisationRetiree)
+            boutonAutorisations: manque || verdict == .autorisationRetiree,
+            action: ReglagesActionBarriere.de(verdict))
+    }
+
+    /// Le bouton de la carte d'état : rend l'écran à ouvrir, s'il y en a un.
+    @discardableResult
+    public func agir(_ action: ReglagesActionBarriere) async -> ReglagesRoute? {
+        switch action {
+        case .autorisations:
+            montrerAutorisations()
+            return nil
+        case .rendreAcces:
+            return await accorder(.tempsEcran)
+        case .choisirApplications:
+            return .choixApplications
+        case .relancer:
+            await systemeBarriere.relancer()
+            await rafraichir()
+            return nil
+        }
     }
 
     // MARK: L'en-tête et les autorisations
@@ -680,11 +748,21 @@ public final class ReglagesModele {
     }
 
     /// L'heure choisie pour une borne (pickTime → Store.setWindow).
+    /// Un début égal à la fin est refusé, comme sur Android (fenetreVide : le mode n'agirait jamais) ; sur iOS, une
+    /// fenêtre de moins d'un quart d'heure aussi : le système n'en surveille pas de plus courte (PORTAGE.md § 2.1.5).
     public func choisirHeure(_ borne: ReglagesBorne, heure: Int, minute: Int) async throws {
         dialogue = nil
         let choisie = heure * 60 + minute
         let debut = borne == .debut ? choisie : reglages.windowStart
         let fin = borne == .fin ? choisie : reglages.windowEnd
+        if debut == fin {
+            message = Libelle("settings_window_same")
+            return
+        }
+        if !Evaluation.fenetreAcceptable(start: debut, end: fin) {
+            message = Libelle("reglages_fenetre_courte")
+            return
+        }
         try await modifier(.barriere) { $0.setWindow(startMinutes: debut, endMinutes: fin) }
     }
 
@@ -708,6 +786,9 @@ public final class ReglagesModele {
 
     /// « Voir l'écran « Je suis avec Hachem » maintenant » : l'aperçu ne demande rien sur iOS.
     public var routeApercuBarriere: ReglagesRoute { .apercuBarriere }
+
+    /// « Journal de la barrière » : ce que la surveillance, le bouclier et l'app ont fait (§ 2.1.8).
+    public var routeJournalBarriere: ReglagesRoute { .journalBarriere }
 
     // MARK: Le rythme
 
@@ -1101,6 +1182,11 @@ public final class ReglagesModele {
         try await magasin.modifierReglages(changement)
         guard magasin.reglages != avant else { return }
         await repercuter(quoi)
+        // Le système a suivi le changement (la surveillance inscrite au mode allumé, levée à l'éteindre) : la carte dit ce
+        // qu'il en est maintenant, pas ce qu'il en était avant.
+        if quoi.contains(.barriere), avecBarriere, systemeLu {
+            constat = await systemeBarriere.constat()
+        }
     }
 
     private func repercuter(_ quoi: ReglagesRepercussions) async {

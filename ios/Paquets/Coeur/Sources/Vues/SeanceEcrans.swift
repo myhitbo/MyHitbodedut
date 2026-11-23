@@ -20,21 +20,26 @@ public struct SeanceVue: View {
     private let fabriqueCelebration: @MainActor (CelebrationDemande) -> CelebrationModele
     private let fabriqueNote: @MainActor (JourCivil) -> JournalNoteModele
     private let ouvrirTefilot: @MainActor () -> Void
+    /// Le mini-lecteur de la pratique (MiniLecteur.kt), sur la musique de la séance ; nil : pas de mini-lecteur.
+    private let mini: MusiqueMiniLecteurModele?
     @Environment(\.traducteur) private var traducteur
     @Environment(\.scenePhase) private var phase
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOver
     @Environment(\.dismiss) private var fermerEcran
 
-    /// `demande` : `.commencer` quand l'écran s'ouvre pour lancer la séance (EXTRA_START_NOW).
+    /// `demande` : `.commencer` quand l'écran s'ouvre pour lancer la séance (EXTRA_START_NOW). `mini` : le mini-lecteur
+    /// de l'app, posé au bas de l'écran pendant la séance.
     public init(modele: SeanceModele, demande: SeanceDemande,
                 celebration: @escaping @MainActor (CelebrationDemande) -> CelebrationModele,
                 note: @escaping @MainActor (JourCivil) -> JournalNoteModele,
-                tefilot: @escaping @MainActor () -> Void) {
+                tefilot: @escaping @MainActor () -> Void,
+                mini: MusiqueMiniLecteurModele? = nil) {
         self.modele = modele
         self.demande = demande
         fabriqueCelebration = celebration
         fabriqueNote = note
         ouvrirTefilot = tefilot
+        self.mini = mini
     }
 
     public var body: some View {
@@ -82,9 +87,18 @@ public struct SeanceVue: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
+            // Le disque du mini-lecteur ne cache pas le bas de la page (64 pt et ses marges).
+            .padding(.bottom, mini?.visible == true ? 96 : 0)
         }
         .background(Teinte(.paper))
         .background(modele.calme ? Color.black.opacity(SeanceModele.assombrissement) : Color.clear)
+        // Le mini-lecteur (19/10) : changer de morceau sans quitter la pratique. Hors de ce qui s'efface : la pratique
+        // calme le laisse paraître (PratiqueCalme, `restes`).
+        .overlay {
+            if let mini {
+                MusiqueMiniLecteurVue(mini: mini)
+            }
+        }
         .navigationTitle(Text(modele.titre, traducteur: traducteur))
         .navigationBarTitleDisplayMode(.inline)
         .simultaneousGesture(TapGesture().onEnded { modele.toucher() })

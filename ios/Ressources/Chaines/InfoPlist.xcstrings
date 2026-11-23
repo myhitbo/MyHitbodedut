@@ -1,0 +1,114 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "NSCameraUsageDescription": {
+      "comment": "La raison de l'appareil photo, que le système montre (Info.plist) : lire la carte d'embarquement sur l'écran du vol (VolVue, VisionKit). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’appareil photo lit le code-barres de votre carte d’embarquement, sur le téléphone : rien n’est envoyé."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The camera reads the barcode of your boarding pass, on the phone: nothing is sent."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המצלמה קוראת את הברקוד של כרטיס העלייה למטוס שלכם, בטלפון עצמו: שום דבר לא נשלח."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La cámara lee el código de barras de tu pase de abordar, en el teléfono: no se envía nada."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الكاميرا تقرا الكود-بار متاع بطاقة الصعود متاعك، في التليفون: ما يتبعث شي."
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription": {
+      "comment": "La raison de la localisation (ChoixLieu.kt, VolActivity.releverGps). Écrans d'iOS, phase 3 : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Votre position ne sert qu’aux zmanim, à la direction de Jérusalem et, en vol, aux horaires sous l’avion. Elle reste sur l’appareil."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Your location is only used for zmanim, the direction of Jerusalem and, in flight, the times below the plane. It stays on the device."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המיקום משמש רק לזמני היום, לכיוון ירושלים ובטיסה לזמנים שמתחת למטוס. הוא נשאר במכשיר."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Su ubicación solo sirve para los zmanim, la dirección de Jerusalén y, en vuelo, los horarios bajo el avión. Se queda en el dispositivo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بلاصتك تستعمل كان للزمنيم، لاتجاه القدس، وفي الطيارة للأوقات اللي تحت الطيارة. تبقى في التليفون."
+          }
+        }
+      }
+    },
+    "vol": {
+      "comment": "NSLocationTemporaryUsageDescriptionDictionary, clé « vol » : la précision complète demandée pour une fois au relevé GPS du vol. À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le relevé GPS précis recale la route de l’avion et les zmanim du vol."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A precise GPS fix realigns the plane’s route and the in-flight zmanim."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מיקום GPS מדויק מתקן את מסלול המטוס ואת זמני הטיסה."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La posición GPS precisa ajusta la ruta del avión y los zmanim del vuelo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "البلاصة الدقيقة متاع الـGPS تصلّح طريق الطيارة والزمنيم متاع الرحلة."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

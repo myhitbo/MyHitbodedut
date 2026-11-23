@@ -289,7 +289,7 @@ struct JournalModeleTests {
         let premiere = try #require(JournalNoteModele.humeurs.first)
         #expect(premiere.rang == 1)
         #expect(premiere.emoji == "\u{1F61E}")
-        #expect(premiere.accessibilite == "1/5")
+        #expect(premiere.accessibilite == Libelle("journal_humeur_n", .entier(1)))
     }
 
     @Test func lesChampsGardentLeurLongueurMaximale() throws {

@@ -280,7 +280,7 @@ public struct JournalNoteVue: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(Text(verbatim: humeur.accessibilite))
+                    .accessibilityLabel(Text(humeur.accessibilite, traducteur: traducteur))
                     .accessibilityAddTraits(choisie == humeur.rang ? .isSelected : [])
                 }
             }

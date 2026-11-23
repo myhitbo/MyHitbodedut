@@ -42,6 +42,14 @@
    "mention": "produites par le dépôt"
   },
   {
+   "chemin": "Ressources/Catalogue/InfoPlist.xcstrings",
+   "source": "ios/Ressources/Chaines/InfoPlist.xcstrings",
+   "octets": 4542,
+   "sha256": "038af194bf13f612a5ff81e627d3967d7fe370ee74675991098d5f276293c9d6",
+   "licence": "propre à l'app",
+   "mention": ""
+  },
+  {
    "chemin": "Ressources/Catalogue/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
    "octets": 1464132,
@@ -52,8 +60,8 @@
   {
    "chemin": "Ressources/Catalogue/ios.xcstrings",
    "source": "ios/Ressources/Chaines/ios.xcstrings",
-   "octets": 21900,
-   "sha256": "67af580ebb50c4717e3d772e1b27b24506e14ecb3b446d4d78ff7eba7d183e87",
+   "octets": 72862,
+   "sha256": "9854112e3f3dde2f780bbe827fe0d17ea8a2b7c275e60b5408765eb52e6dda44",
    "licence": "propre à l'app",
    "mention": ""
   },

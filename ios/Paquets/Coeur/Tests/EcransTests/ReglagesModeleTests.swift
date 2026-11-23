@@ -542,6 +542,65 @@ struct ReglagesModeleTests {
         #expect(carte.boutonAutorisations)
     }
 
+    /// Le bouton de la carte d'état (gate_fix_permissions) suit l'état, avec les pannes d'iOS (PORTAGE.md § 2.1.8) :
+    /// l'accès retiré se rend après la divulgation, la sélection se refait, la surveillance se relance.
+    @Test func leBoutonDeLaCarteDEtat() async throws {
+        var reglages = Reglages()
+        reglages.setEnabled(true)
+        let banc = try fabriquer(Enregistrement(reglages: reglages), constat: Constat(autorise: false))
+        let m = banc.modele
+        await m.rafraichir()
+        #expect(m.carteBarriere?.action == .rendreAcces)
+        let route = await m.agir(.rendreAcces)
+        #expect(route == nil)
+        #expect(m.dialogue == .divulgationTempsEcran)
+        m.fermerDialogue()
+        await banc.barriere.regler(constat: Constat(selectionValide: false), jetons: 2)
+        await m.rafraichir()
+        #expect(m.carteBarriere?.etat == .selectionARefaire)
+        #expect(m.carteBarriere?.action == .choisirApplications)
+        let choix = await m.agir(.choisirApplications)
+        #expect(choix == .choixApplications)
+        await banc.barriere.regler(constat: Constat(surveillanceInscrite: false), jetons: 2)
+        await m.rafraichir()
+        #expect(m.carteBarriere?.etat == .surveillanceAbsente)
+        #expect(m.carteBarriere?.action == .relancer)
+        await banc.barriere.regler(constat: Constat(), jetons: 2)
+        _ = await m.agir(.relancer)
+        let relances = await banc.barriere.relances
+        #expect(relances == 1)
+        #expect(m.carteBarriere?.etat == .armed)
+        #expect(m.carteBarriere?.action == nil)
+        _ = await m.agir(.autorisations)
+        #expect(m.cibleDefilement == .autorisations)
+        let attendus: [GateState: ReglagesActionBarriere] = [
+            .missingPermissions: .autorisations, .autorisationRetiree: .rendreAcces, .noAppsSelected: .choisirApplications,
+            .selectionARefaire: .choisirApplications, .serviceStopped: .relancer, .surveillanceAbsente: .relancer,
+            .surveillanceMuette: .relancer,
+        ]
+        for etat in GateState.allCases {
+            #expect(ReglagesActionBarriere.de(etat) == attendus[etat], "\(etat.rawValue)")
+        }
+        #expect(m.routeJournalBarriere == .journalBarriere)
+    }
+
+    /// Une fenêtre vide est refusée comme sur Android (settings_window_same) ; plus courte qu'un quart d'heure, aussi :
+    /// iOS n'en surveille pas (§ 2.1.5). Une fenêtre de nuit d'un quart d'heure passe.
+    @Test func uneFenetreTropCourteEstRefusee() async throws {
+        let banc = try fabriquer()
+        let m = banc.modele
+        try await m.choisirHeure(.fin, heure: 6, minute: 0)
+        #expect(m.message == Libelle("settings_window_same"))
+        #expect(m.minutes(.fin) == 11 * 60)
+        try await m.choisirHeure(.fin, heure: 6, minute: 10)
+        #expect(m.message == Libelle("reglages_fenetre_courte"))
+        #expect(m.minutes(.fin) == 11 * 60)
+        try await m.choisirHeure(.debut, heure: 23, minute: 50)
+        try await m.choisirHeure(.fin, heure: 0, minute: 5)
+        #expect(m.minutes(.debut) == 23 * 60 + 50)
+        #expect(m.minutes(.fin) == 5)
+    }
+
     // MARK: L'icône
 
     @Test func lIconeSuitLAdresseEtLAccentSurUnGesteSeulement() async throws {

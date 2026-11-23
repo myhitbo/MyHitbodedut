@@ -37,6 +37,11 @@ final class ModelesApp {
     /// La séance en cours, partagée : elle continue quand son écran se ferme.
     let seance: SeanceEnCours
     let accueil: AccueilModele
+    /// L'accueil des versions Sérénité, Bento et Pile (VersionApp), montré à la place des onglets quand l'une d'elles
+    /// est choisie.
+    let accueilVersion: AccueilVersionModele
+    /// Le mini-lecteur de la séance (MiniLecteur.kt), sur la musique partagée.
+    let miniLecteur: MusiqueMiniLecteurModele
     let textes: TextesModele
     let chemin: CheminModele
     let zmanim: ZmanimModele
@@ -84,6 +89,9 @@ final class ModelesApp {
                                notificateur: notificateur)
         accueil = AccueilModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue, barriere: barriere,
                                 debug: debug)
+        accueilVersion = AccueilVersionModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue)
+        miniLecteur = MusiqueMiniLecteurModele(magasin: magasin, lecteur: musique,
+                                               pochettes: PochettesSysteme(paquet: paquet, documents: URL.documentsDirectory))
         textes = TextesModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue,
                               signalMusique: SignalMusiqueSeance(lecteur: musique), relecture: false)
         chemin = CheminModele(magasin: magasin, horloge: horloge)
@@ -100,10 +108,15 @@ final class ModelesApp {
     /// que de ne pas s'ouvrir.
     static func charger(paquet: URL, traducteur: Traducteur) async -> ModelesApp {
         let magasin: Magasin
-        do {
-            magasin = try await Magasin.charger(PersistanceFichiers(dossier: DossierApp.app))
-        } catch {
-            magasin = Magasin.enMemoire()
+        if let demo = await Captures.magasinDemo(paquet: paquet, langue: traducteur.langue) {
+            // Les captures d'écran de la CI (Captures.swift) : la démonstration, en mémoire.
+            magasin = demo
+        } else {
+            do {
+                magasin = try await Magasin.charger(PersistanceFichiers(dossier: DossierApp.app))
+            } catch {
+                magasin = Magasin.enMemoire()
+            }
         }
         let modeles = ModelesApp(magasin: magasin, paquet: paquet, traducteur: traducteur)
         // Les fins de morceau et les interruptions, le temps de l'app (MusiqueLecteur.ecouter).
@@ -210,13 +223,14 @@ final class ModelesApp {
                            avecBarriere: barriere)
     }
 
-    /// Le vol, hors ligne (décision D10 : ni relais ni services en ligne) : le relevé GPS, qui marche en mode avion ;
-    /// ses rappels passent par le planificateur des notifications. Le billet attend son lecteur (Vision).
+    /// Le vol, hors ligne (décision D10 : ni relais ni services en ligne) : le billet lu sur le téléphone (Vision,
+    /// App/Services/Billet.swift), le relevé GPS, qui marche en mode avion ; ses rappels passent par le planificateur
+    /// des notifications.
     func vol() -> VolModele {
         VolModele(magasin: magasin, horloge: horloge, aeroports: VolModele.lireAeroports(lecteur: lecteur),
                   notificateur: NotificateurDuPlan(systeme: notificateur, planificateur: planificateur),
-                  retrait: planificateur, localisation: LieuSysteme(precision: .gps), traducteur: traducteur,
-                  formats: .langue(langue))
+                  retrait: planificateur, localisation: LieuSysteme(precision: .gps),
+                  lecteurBillet: LecteurBilletSysteme(), traducteur: traducteur, formats: .langue(langue))
     }
 
     // MARK: Le ciel : le calendrier, la boussole ; les rappels

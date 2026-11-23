@@ -17,7 +17,7 @@ settings:
     SWIFT_VERSION: "6.0"
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
-    TARGETED_DEVICE_FAMILY: "1"   # iPhone d'abord ; l'iPad à la tâche 29
+    TARGETED_DEVICE_FAMILY: "1,2"   # iPhone et iPad (tâche 29 : les marges des grands écrans, GrandEcran)
     DEVELOPMENT_TEAM: ""          # posé par la signature (Codemagic, P1 et P2)
     ENABLE_USER_SCRIPT_SANDBOXING: YES
 
@@ -54,7 +54,9 @@ targetTemplates:
       # écrans les tableaux de chaînes (Tableaux.json).
       - path: Ressources/Chaines
         type: folder
-    scheme: {}
+    # Le test d'interface de l'audit d'accessibilité (tâche 29), lancé par ios-captures.yml seulement.
+    scheme:
+      testTargets: [MyHitbodedutUITests]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut
@@ -67,7 +69,7 @@ targetTemplates:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         # La position du téléphone (PORTAGE.md § 2.2.5) : approximative par défaut, comme ACCESS_COARSE_LOCATION ;
-        # précise pour une fois au relevé GPS du vol. Les phrases sont traduites dans App/InfoPlist.xcstrings.
+        # précise pour une fois au relevé GPS du vol. Les phrases sont traduites dans Chaines/InfoPlist.xcstrings.
         NSLocationWhenInUseUsageDescription: "Your location is only used for zmanim, the direction of Jerusalem and, in flight, the times below the plane. It stays on the device."
         NSLocationDefaultAccuracyReduced: true
         NSLocationTemporaryUsageDescriptionDictionary:
@@ -78,10 +80,24 @@ targetTemplates:
         CFBundleURLTypes:
           - CFBundleURLName: com.myhitbodedut
             CFBundleURLSchemes: [myhitbodedut]
+        # Toutes les orientations, comme Android (aucun screenOrientation, layout-land) ; l'iPad les quatre, pour le
+        # partage d'écran (tâche 29).
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         # Cinq langues, celles de Langues.toutes (l'espagnol partout, l'arabe de Tunisie seulement, 17/11) ; un
         # téléphone dans une autre langue a l'anglais (LangueApp, Traducteur.langueDuTelephone, PORTAGE.md § 2.2.7).
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [fr, en, he, es, ar-TN]
+        # La raison de l'appareil photo (la carte d'embarquement, VolVue) ; ses traductions sont dans
+        # Chaines/InfoPlist.xcstrings, compilé avec les autres catalogues (Catalogue/).
+        NSCameraUsageDescription: "The camera reads the barcode of your boarding pass, on the phone: nothing is sent."
         # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).
         UIAppFonts:
           - Polices/hebreu_serif_regular.ttf
@@ -91,8 +107,27 @@ targetTemplates:
           - Polices/david_libre.ttf
           - Polices/noto_rashi.ttf
           - Polices/miriam_libre.ttf
+          # Celles des accueils des versions (Polices.fichiersVersions).
+          - Polices/bellefair.ttf
+          - Polices/heebo.ttf
+          - Polices/secular_one.ttf
+          - Polices/rubik.ttf
 
 targets:
+  # L'audit d'accessibilité d'Xcode sur chaque écran (UITests/, tâche 29), ouvert par « -capture » (App/Captures.swift).
+  MyHitbodedutUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: MyHitbodedut
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        # XCTest et ses fermetures d'audit, sans le contrôle strict de Swift 6 : un test, pas du code livré.
+        SWIFT_VERSION: "5.0"
+
   # Les widgets (tâche 25) et la Live Activity de la séance (tâche 17). Ils lisent le journal et les réglages dans le
   # conteneur du groupe d'apps (Depot), calculent comme l'app (Coeur), traduisent avec ses catalogues (Chaines/), et
   # prennent les couleurs choisies dans palettes.json.

@@ -67,6 +67,8 @@ public final class AccueilModele {
     /// Le texte de relance tiré pour la rupture en cours ; il ne change pas tant qu'elle dure (relanceTiree).
     private var relanceId: String? = nil
     private var relanceTiree = false
+    /// Le choix de la version a été demandé, et aucune n'est encore retenue : il ne se redemande pas.
+    private var choixVersionDemande = false
 
     /// Les jours faits de la bande dont on a demandé la durée (« Montrer la durée ») : elle remplace le ✓.
     public private(set) var joursMontres: Set<JourCivil> = []
@@ -151,6 +153,14 @@ public final class AccueilModele {
             cascade = !reduireAnimations
         } else {
             cascade = false
+        }
+        // Au retour de la présentation, ou à la première ouverture après la mise à jour : le choix de la version, une
+        // fois tant qu'aucune n'est retenue (MainActivity.onResume, ChoixVersionModele.aProposer).
+        if reglages.versionApp != nil {
+            choixVersionDemande = false
+        } else if ChoixVersionModele.aProposer(reglages) && !choixVersionDemande {
+            choixVersionDemande = true
+            routes.append(.choixVersion)
         }
         await systeme?.appliquerEtat()
         await lireBarriere()
