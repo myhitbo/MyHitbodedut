@@ -44,7 +44,8 @@ jobs:
           xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
             -destination "generic/platform=iOS Simulator" ARCHS=x86_64 CODE_SIGNING_ALLOWED=NO build 2>&1 \
             | tee app.log | grep -E "error:|BUILD" || true
-          n=$(grep -E "^/.*: error:" app.log | sort -u | wc -l | tr -d ' ')
+          # pipefail : un grep sans erreur trouvée rend 1, qui ne doit pas arrêter l'étape.
+          n=$( (grep -E "^/.*: error:" app.log || true) | sort -u | wc -l | tr -d ' ')
           echo "## app.log : $n erreurs" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           grep -E "^/.*: error:" app.log | sed "s|$GITHUB_WORKSPACE/||" | sort -u | head -200 >> "$GITHUB_STEP_SUMMARY" || true
