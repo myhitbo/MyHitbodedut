@@ -34,7 +34,7 @@ public struct DedicaceVue: View {
                     }
                 }
                 Carte {
-                    TextField(text: Bindable(modele).nom) {
+                    TextField(text: Bindable(modele).nom, axis: .vertical) {
                         Text(Libelle("dedicace_nom"), traducteur: traducteur)
                     }
                     .textFieldStyle(.roundedBorder)

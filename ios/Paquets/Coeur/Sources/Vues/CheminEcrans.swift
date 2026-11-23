@@ -233,11 +233,11 @@ public struct JournalNoteVue: View {
                 .textFieldStyle(.roundedBorder)
                 humeurs(Text(modele.titreAvant, traducteur: traducteur), choisie: modele.avant) { modele.toucherAvant($0) }
                 humeurs(Text(modele.titreApres, traducteur: traducteur), choisie: modele.apres) { modele.toucherApres($0) }
-                TextField(text: Bindable(modele).gratitudeSaisie) {
+                TextField(text: Bindable(modele).gratitudeSaisie, axis: .vertical) {
                     Text(modele.indicationGratitude, traducteur: traducteur)
                 }
                 .textFieldStyle(.roundedBorder)
-                TextField(text: Bindable(modele).travailSaisi) {
+                TextField(text: Bindable(modele).travailSaisi, axis: .vertical) {
                     Text(modele.indicationTravail, traducteur: traducteur)
                 }
                 .textFieldStyle(.roundedBorder)

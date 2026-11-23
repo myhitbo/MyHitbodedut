@@ -130,3 +130,42 @@ extension View {
         layoutValue(key: RoleDansTuile.self, value: role)
     }
 }
+
+extension View {
+    /// Les boutons de lecture au bas d'un texte qui défile (la pastille « Aa », la barre dépliée, la commande du
+    /// défilement automatique) : posés sous le texte, dans la marge du bas (`safeAreaInset`), sur une bande du fond
+    /// du texte tant qu'ils se voient. Flottants par-dessus le texte, comme sur Android, ils en couvraient des lignes
+    /// (couché surtout, captures du 23/11) ; ici, aucune ligne n'est jamais sous eux. Effacés au défilement, la bande
+    /// s'efface aussi et le texte passe dessous.
+    public func boutonsDeLecture<Fond: ShapeStyle, Boutons: View>(fond: Fond, visibles: Bool,
+                                                                  @ViewBuilder _ boutons: () -> Boutons) -> some View {
+        safeAreaInset(edge: .bottom, spacing: 0) {
+            boutons()
+                .frame(maxWidth: .infinity)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+                .background {
+                    Rectangle()
+                        .fill(fond)
+                        .opacity(visibles ? 1 : 0)
+                        .ignoresSafeArea(edges: .bottom)
+                }
+                .accessibilityIdentifier("barre-bas")
+        }
+    }
+
+    /// Les hauteurs d'une feuille : celles demandées à la taille ordinaire du texte ; la seule grande aux tailles
+    /// d'accessibilité, où une demi-feuille ne montrait plus que deux lignes.
+    public func hauteursDeFeuille(_ hauteurs: Set<PresentationDetent>) -> some View {
+        modifier(HauteursDeFeuille(hauteurs: hauteurs))
+    }
+}
+
+private struct HauteursDeFeuille: ViewModifier {
+    let hauteurs: Set<PresentationDetent>
+    @Environment(\.dynamicTypeSize) private var taille
+
+    func body(content: Content) -> some View {
+        content.presentationDetents(taille.isAccessibilitySize ? [.large] : hauteurs)
+    }
+}

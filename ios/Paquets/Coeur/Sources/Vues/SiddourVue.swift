@@ -344,7 +344,7 @@ private struct SiddourChoixNusah: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .hauteursDeFeuille([.medium])
     }
 }
 

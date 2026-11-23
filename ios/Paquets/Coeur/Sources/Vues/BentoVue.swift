@@ -125,6 +125,7 @@ struct BentoVue: View {
         .padding(.horizontal, 16)
         .padding(.top, 4)
         .padding(.bottom, 12)
+        .accessibilityIdentifier("barre-bas")
     }
 
     // MARK: Les tuiles

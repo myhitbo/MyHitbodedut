@@ -32,14 +32,14 @@ public struct ChizukVue: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            BibliothequeBandeau(titre: Text(modele.titre, traducteur: traducteur),
-                                sousTitre: Text(modele.sousTitre, traducteur: traducteur),
-                                image: modele.image, mesure: .hero)
+        Group {
             if modele.etat == .pret {
                 defilement
             } else {
-                Spacer(minLength: 0)
+                VStack(spacing: 0) {
+                    bandeau
+                    Spacer(minLength: 0)
+                }
             }
         }
         .background(Teinte(.paper))
@@ -55,33 +55,43 @@ public struct ChizukVue: View {
 
     // MARK: Le défilement
 
+    /// Le bandeau : il défile avec la carte (fixe, il en prenait toute la place aux grandes tailles du texte).
+    private var bandeau: some View {
+        BibliothequeBandeau(titre: Text(modele.titre, traducteur: traducteur),
+                            sousTitre: Text(modele.sousTitre, traducteur: traducteur),
+                            image: modele.image, mesure: .hero)
+    }
+
     private var defilement: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(spacing: 0) {
                     Color.clear
                         .frame(height: 0)
                         .id(ChizukVue.haut)
-                    carte
-                        .cascadeChizuk(rang: 0, jouee: entreeJouee)
-                    boutons
-                        .padding(.top, 12)
-                        .cascadeChizuk(rang: 1, jouee: entreeJouee)
-                    commencer
-                        .padding(.top, 8)
-                        .cascadeChizuk(rang: 2, jouee: entreeJouee)
-                    if !modele.gardes.isEmpty {
-                        titreGardes
-                            .padding(.top, 24)
-                            .cascadeChizuk(rang: 3, jouee: entreeJouee)
-                        listeGardes
+                    bandeau
+                    VStack(alignment: .leading, spacing: 0) {
+                        carte
+                            .cascadeChizuk(rang: 0, jouee: entreeJouee)
+                        boutons
+                            .padding(.top, 12)
+                            .cascadeChizuk(rang: 1, jouee: entreeJouee)
+                        commencer
                             .padding(.top, 8)
-                            .cascadeChizuk(rang: 4, jouee: entreeJouee)
+                            .cascadeChizuk(rang: 2, jouee: entreeJouee)
+                        if !modele.gardes.isEmpty {
+                            titreGardes
+                                .padding(.top, 24)
+                                .cascadeChizuk(rang: 3, jouee: entreeJouee)
+                            listeGardes
+                                .padding(.top, 8)
+                                .cascadeChizuk(rang: 4, jouee: entreeJouee)
+                        }
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 24)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 24)
             }
             .onChange(of: modele.changements) { _, _ in
                 // La carte a changé sous le doigt : on revient en haut (scrollTo(0, 0) d'Android).

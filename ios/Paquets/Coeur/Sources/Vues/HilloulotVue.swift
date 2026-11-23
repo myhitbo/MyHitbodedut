@@ -62,7 +62,7 @@ public struct HilloulotVue: View {
                 .foregroundStyle(Teinte(.muted))
                 .frame(width: 20, height: 20)
                 .accessibilityHidden(true)
-            TextField(text: champ, prompt: texte("hilloulot_recherche")) {
+            TextField(text: champ, prompt: texte("hilloulot_recherche"), axis: .vertical) {
                 texte("hilloulot_recherche")
             }
             .submitLabel(.search)

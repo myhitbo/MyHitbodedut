@@ -260,7 +260,7 @@ private struct RappelsChoixHeure: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .hauteursDeFeuille([.medium])
     }
 
     private func choisir() {

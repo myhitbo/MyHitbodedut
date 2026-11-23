@@ -4,9 +4,9 @@ import XCTest
 /// « l'audit d'accessibilité des tests d'interface passe sans défaut sur chaque écran »). L'app s'ouvre sur l'écran
 /// par « -capture <écran> -captureDemo » (App/Captures.swift), comme pour les captures ; chaque défaut relevé
 /// s'écrit sur une ligne « AUDIT », que la CI (ios-captures.yml) recopie dans son résumé, et le test échoue s'il en
-/// reste (sauf `AUDIT_RELEVE=1` : la liste sans l'échec). Les défauts que l'audit relève à tort sont dans `toleres`,
-/// chacun avec sa raison : ils s'écrivent sur une ligne « TOLERE » et ne comptent pas. Le même fichier photographie
-/// les écrans couchés (`testCapturesCouchees`), que `simctl` ne sait pas tourner.
+/// reste (sauf `AUDIT_RELEVE=1` : la liste sans l'échec). Les défauts que l'audit relève à tort sont tolérés, chacun
+/// avec sa raison (`tolerance`) : ils s'écrivent sur une ligne « TOLERE » et ne comptent pas. Le même fichier
+/// photographie les écrans couchés (`testCapturesCouchees`), que `simctl` ne sait pas tourner.
 final class AuditAccessibiliteTests: XCTestCase {
 
     /// Les écrans de Captures.ecrans, la présentation à part (elle se feuillette).
@@ -18,26 +18,42 @@ final class AuditAccessibiliteTests: XCTestCase {
         "presentation",
     ]
 
-    /// Les sortes de défaut, une à une : sur le simulateur lent de la CI, l'audit entier d'un écran chargé n'a pas
-    /// fini à temps (« Audit failed to complete in time », 17 écrans le 23/11) ; chaque sorte seule, si.
+    /// Les sortes de défaut, une à une et dans cet ordre : l'audit entier d'un écran chargé n'avait pas fini à temps
+    /// sur le simulateur lent de la CI (17 écrans le 23/11), et la montée de la taille du texte (Dynamic Type, texte
+    /// coupé) dérangeait les mesures de contraste faites dans le même passage ; le contraste passe donc le premier,
+    /// les tailles du texte en dernier.
     static let sortes: [XCUIAccessibilityAuditType] = [
-        .contrast, .elementDetection, .hitRegion, .sufficientElementDescription, .dynamicType, .textClipped, .trait,
+        .contrast, .elementDetection, .hitRegion, .sufficientElementDescription, .trait, .dynamicType, .textClipped,
     ]
 
-    /// Un défaut relevé à tort : l'écran (nil : tous), la sorte (son nom dans le résumé), le début du libellé de
-    /// l'élément (nil : tout élément), et pourquoi ce n'en est pas un.
-    struct Tolere {
-        let ecran: String?
-        let sorte: String
-        let libelle: String?
-        let raison: String
-    }
+    /// Trois essais par sorte : la durée d'un audit varie du simple au double d'un essai à l'autre sur la CI.
+    static let essais = 3
 
-    /// Les faux positifs, chacun justifié ; la liste reste courte, et chaque ligne dit ce qu'elle couvre.
-    static let toleres: [Tolere] = []
+    /// Les audits qui ne finissent pas à temps sur le simulateur de la CI, même seuls et en trois essais : des écrans
+    /// de texte long, que l'audit relit à chaque taille du texte. Les captures aux grandes tailles (passe « grand »)
+    /// les montrent ; ne s'y ajoute qu'un écran vu ainsi.
+    static let tropLongs: [String: Set<String>] = [:]
+
+    /// Un défaut relevé, et ce qu'on sait de son élément.
+    struct Defaut {
+        let ecran: String
+        let sorte: String
+        let compact: String
+        let detail: String
+        let libelle: String
+        let genre: String
+        let cadre: CGRect?
+
+        var ligne: String {
+            let position = cadre.map { "\(Int($0.minX)),\(Int($0.minY)),\(Int($0.width)),\(Int($0.height))" } ?? ""
+            return [ecran, sorte, compact, libelle, genre, position, detail].joined(separator: "\t")
+        }
+    }
 
     /// Les défauts relevés, une ligne chacun.
     private var defauts: [String] = []
+    /// Le haut et le bas de ce qui se voit de l'écran ouvert, entre ses barres (`zoneVisible`).
+    private var zone: (haut: CGFloat, bas: CGFloat) = (0, .greatestFiniteMagnitude)
 
     @MainActor
     func testChaqueEcranPasseLAudit() throws {
@@ -61,14 +77,22 @@ final class AuditAccessibiliteTests: XCTestCase {
             _ = app.wait(for: .runningForeground, timeout: 20)
             // L'écran s'ouvre par étapes (Captures.ouvrir) ; les animations d'entrée finissent.
             Thread.sleep(forTimeInterval: 4)
-            if !auditer(app, ecran: ecran, sortes: .all) {
-                // Trop long d'un coup : sorte par sorte, chacune deux fois au plus.
-                for sorte in Self.sortes {
-                    if auditer(app, ecran: ecran, sortes: sorte) { continue }
-                    if auditer(app, ecran: ecran, sortes: sorte) { continue }
-                    let ligne = [ecran, "erreur", "audit inachevé : \(Self.nom(sorte))"].joined(separator: "\t")
-                    print("AUDIT\t" + ligne)
-                    defauts.append(ligne)
+            zone = Self.zoneVisible(app)
+            print("ZONE\t\(ecran)\t\(Int(zone.haut))\t\(Int(zone.bas))")
+            for sorte in Self.sortes {
+                var fini = false
+                for _ in 0..<Self.essais where !fini {
+                    fini = auditer(app, ecran: ecran, sorte: sorte)
+                }
+                if !fini {
+                    let nom = Self.nom(sorte)
+                    let ligne = [ecran, "erreur", "audit inachevé : \(nom)"].joined(separator: "\t")
+                    if Self.tropLongs[ecran]?.contains(nom) == true {
+                        print("TOLERE\t" + ligne + "\tl'audit de cette sorte ne finit pas à temps sur le simulateur de la CI ; vu sur les captures « grand »")
+                    } else {
+                        print("AUDIT\t" + ligne)
+                        defauts.append(ligne)
+                    }
                 }
             }
             app.terminate()
@@ -78,39 +102,25 @@ final class AuditAccessibiliteTests: XCTestCase {
         }
     }
 
-    /// Un audit de l'écran ouvert, pour ces sortes de défaut : chaque défaut va dans `defauts` (ou, s'il est
-    /// toléré, sur une ligne « TOLERE »). Rend false si l'audit n'a pas fini à temps, pour le refaire par sorte ;
-    /// une autre erreur compte comme un défaut.
+    /// Un audit de l'écran ouvert, pour une sorte de défaut. Le gestionnaire ne fait que garder les défauts : leurs
+    /// éléments se lisent après l'audit, d'une seule photographie chacun (lus pendant l'audit, ils l'allongeaient
+    /// d'une seconde par défaut). Rend false si l'audit n'a pas fini à temps ; une autre erreur compte comme un défaut.
     @MainActor
-    private func auditer(_ app: XCUIApplication, ecran: String, sortes: XCUIAccessibilityAuditType) -> Bool {
+    private func auditer(_ app: XCUIApplication, ecran: String, sorte: XCUIAccessibilityAuditType) -> Bool {
         let debut = Date()
+        var releves: [XCUIAccessibilityAuditIssue] = []
         defer {
-            print("DUREE\t\(ecran)\t\(Self.nom(sortes))\t\(Int(Date().timeIntervalSince(debut))) s")
+            print("DUREE\t\(ecran)\t\(Self.nom(sorte))\t\(Int(Date().timeIntervalSince(debut))) s")
         }
         do {
-            try app.performAccessibilityAudit(for: sortes) { [unowned self] probleme in
-                let element = probleme.element
-                let libelle = element?.label ?? ""
-                let sorte = Self.nom(probleme.auditType)
-                // Le détail (la raison du défaut), sur une ligne, en dernier.
-                let detail = probleme.detailedDescription.split(whereSeparator: \.isNewline).joined(separator: " ¶ ")
-                let ligne = [ecran, sorte, probleme.compactDescription, libelle,
-                             element.map { String(describing: $0.elementType) } ?? "",
-                             element.map { "\(Int($0.frame.minX)),\(Int($0.frame.minY))" } ?? "", detail]
-                    .joined(separator: "\t")
-                if let tolere = Self.tolere(ecran: ecran, sorte: sorte, libelle: libelle) {
-                    print("TOLERE\t" + ligne + "\t" + tolere.raison)
-                } else {
-                    print("AUDIT\t" + ligne)
-                    defauts.append(ligne)
-                }
+            try app.performAccessibilityAudit(for: sorte) { probleme in
+                releves.append(probleme)
                 // Relevé, pas d'échec ici : la liste entière d'abord.
                 return true
             }
-            return true
         } catch let erreur as NSError where erreur.domain == "com.apple.xcode.xctest.accessibilityAudit"
                     && erreur.code == -56 {
-            print("LENT\t\(ecran)\t\(Self.nom(sortes))\t\(erreur.localizedDescription)")
+            print("LENT\t\(ecran)\t\(Self.nom(sorte))\t\(erreur.localizedDescription)")
             return false
         } catch {
             let ligne = [ecran, "erreur", "\(error)"].joined(separator: "\t")
@@ -118,14 +128,75 @@ final class AuditAccessibiliteTests: XCTestCase {
             defauts.append(ligne)
             return true
         }
+        for probleme in releves {
+            let photo = try? probleme.element?.snapshot()
+            let defaut = Defaut(ecran: ecran, sorte: Self.nom(probleme.auditType), compact: probleme.compactDescription,
+                                detail: probleme.detailedDescription.split(whereSeparator: \.isNewline)
+                                    .joined(separator: " ¶ "),
+                                libelle: photo?.label ?? "",
+                                genre: photo.map { String(describing: $0.elementType) } ?? "",
+                                cadre: photo?.frame)
+            if let raison = tolerance(defaut) {
+                print("TOLERE\t" + defaut.ligne + "\t" + raison)
+            } else {
+                print("AUDIT\t" + defaut.ligne)
+                defauts.append(defaut.ligne)
+            }
+        }
+        return true
     }
 
-    /// Le faux positif connu qui couvre ce défaut, s'il y en a un.
-    static func tolere(ecran: String, sorte: String, libelle: String) -> Tolere? {
-        toleres.first { t in
-            (t.ecran == nil || t.ecran == ecran) && sorte.contains(t.sorte)
-                && (t.libelle.map { libelle.hasPrefix($0) } ?? true)
+    /// La raison pour laquelle ce défaut n'en est pas un, ou nil. Chaque règle est étroite : un défaut qu'elle ne
+    /// décrit pas exactement compte.
+    private func tolerance(_ d: Defaut) -> String? {
+        // Le clavier du système (sa barre de prédictions) : rien de l'app.
+        if d.detail.contains("TUIPredictionViewCell") || d.detail.contains("UIKeyboard") {
+            return "le clavier du système, pas l'app"
         }
+        // Un bouton inactif : WCAG 1.4.3 n'exige pas de contraste d'un composant inactif ; il s'efface à 38 % comme
+        // sur Android (Material) pour se dire inactif.
+        if d.ecran == "apercu" && d.sorte == "contraste" && d.libelle.hasPrefix("Faire un essai") {
+            return "bouton inactif (Temps d'écran non autorisé) : un composant inactif n'a pas d'exigence de contraste"
+        }
+        // Un élément qui dépasse ce qui se voit de l'écran (sous une barre, ou au-delà du bas, dans un défilement) :
+        // l'audit mesure alors la barre ou le bord, pas lui. Le défilement l'amène en entier dans la zone visible.
+        // Seulement pour ce qui se mesure à l'image (contraste, texte coupé, police « en partie » suivie) ; jamais
+        // une police fixe, une zone de toucher, une description ou un élément manquant.
+        let mesureALImage = d.sorte == "contraste" || d.sorte == "texte coupé"
+            || (d.sorte == "Dynamic Type" && d.compact.contains("partially"))
+        if mesureALImage, let cadre = d.cadre, !cadre.isEmpty,
+           cadre.minY < zone.haut - 1 || cadre.maxY > zone.bas + 1 {
+            return "dépasse la zone visible (\(Int(zone.haut))–\(Int(zone.bas))) : sous une barre ou hors de l'écran, dans un défilement"
+        }
+        return nil
+    }
+
+    /// Le haut et le bas de ce qui se voit : sous la barre de navigation, au-dessus de la barre d'onglets, de la
+    /// barre de départ (identifiant « barre-bas ») et du clavier.
+    @MainActor
+    private static func zoneVisible(_ app: XCUIApplication) -> (haut: CGFloat, bas: CGFloat) {
+        let fenetre = app.windows.firstMatch.frame
+        var haut = fenetre.minY
+        var bas = fenetre.maxY
+        // Une barre du haut finit dans le premier tiers de l'écran ; une barre du bas commence dans sa moitié basse
+        // (une barre cachée qui resterait dans l'arbre, ailleurs, ne compte pas).
+        for barre in app.navigationBars.allElementsBoundByIndex
+            where barre.exists && !barre.frame.isEmpty && barre.frame.maxY < fenetre.midY - fenetre.height / 6 {
+            haut = max(haut, barre.frame.maxY)
+        }
+        for barre in app.tabBars.allElementsBoundByIndex
+            where barre.exists && barre.isHittable && barre.frame.minY > fenetre.midY {
+            bas = min(bas, barre.frame.minY)
+        }
+        for barre in app.descendants(matching: .any).matching(identifier: "barre-bas").allElementsBoundByIndex
+            where barre.exists && !barre.frame.isEmpty && barre.frame.minY > fenetre.midY {
+            bas = min(bas, barre.frame.minY)
+        }
+        let clavier = app.keyboards.firstMatch
+        if clavier.exists && !clavier.frame.isEmpty && clavier.frame.minY > fenetre.midY {
+            bas = min(bas, clavier.frame.minY)
+        }
+        return (haut, bas)
     }
 
     /// Les écrans couchés (tâche 29 : le Jour en deux colonnes, l'iPad en paysage) : `simctl` ne sait pas tourner le

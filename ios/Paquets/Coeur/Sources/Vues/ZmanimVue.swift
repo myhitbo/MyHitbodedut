@@ -80,7 +80,7 @@ public struct ZmanimVue: View {
                     }
                 }
             }
-            .presentationDetents([.medium, .large])
+            .hauteursDeFeuille([.medium, .large])
         }
         .modifier(ZmanimChoixLieu(choix: modele.choixLieu))
     }
@@ -132,14 +132,17 @@ public struct ZmanimVue: View {
                         if let icone = bouton.icone {
                             Text(verbatim: icone)
                         }
+                        // Sur deux lignes plutôt que rapetissé (« Halakha yomit » ne tient pas sur une ligne).
                         Text(bouton.libelle, traducteur: traducteur)
-                            .uneLigne(retrecie: 0.65)
+                            .lignesAuPlus(2)
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 .buttonStyle(.secondaire)
             }
         }
+        // Les trois de même hauteur.
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private func questionRegion(_ question: ZmanimQuestionRegion) -> some View {

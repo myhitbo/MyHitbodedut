@@ -45,7 +45,7 @@ public struct RechercheVue: View {
 
     private var carteDuChamp: some View {
         HStack(spacing: 8) {
-            TextField(text: champ, prompt: Text(modele.indice, traducteur: traducteur)) {
+            TextField(text: champ, prompt: Text(modele.indice, traducteur: traducteur), axis: .vertical) {
                 Text(modele.indice, traducteur: traducteur)
             }
             .focused($champActif)

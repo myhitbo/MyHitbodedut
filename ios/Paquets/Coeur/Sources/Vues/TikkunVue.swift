@@ -63,8 +63,8 @@ public struct TikkunVue: View {
         ScrollView {
             contenu
                 .padding(.top, 12)
-                // 16 sous le texte, et 72 pour lire au-dessus de la barre de lecture.
-                .padding(.bottom, 88)
+                // 16 sous le texte ; la barre de lecture est dessous (boutonsDeLecture).
+                .padding(.bottom, 16)
         }
         .scrollPosition($position, anchor: .top)
         .defilementAutomatique(modele.barre.defilementAuto, position: $position)
@@ -88,9 +88,10 @@ public struct TikkunVue: View {
                 position.scrollTo(edge: .top)
             }
         }
-        .overlay(alignment: .bottom) {
+        // La barre de lecture sous le texte, jamais sur une ligne.
+        .boutonsDeLecture(fond: rendu.fond, visibles: (modele.barre.pastilleVisible && !modele.barre.pastilleEffacee)
+                          || modele.barre.barreVisible || modele.barre.defilementAuto.commandeVisible) {
             TehilimBarreVue(barre: modele.barre)
-                .padding(.bottom, 16)
         }
     }
 

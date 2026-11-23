@@ -188,6 +188,7 @@ public struct MusiqueVue: View {
         }
         .buttonStyle(.principal)
         .padding(16)
+        .accessibilityIdentifier("barre-bas")
     }
 
     /// Le fichier choisi : copié et ajouté par le modèle ; une erreur du sélecteur se dit comme une copie
@@ -547,6 +548,6 @@ struct MusiqueChoixAmbianceVue: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .hauteursDeFeuille([.medium, .large])
     }
 }

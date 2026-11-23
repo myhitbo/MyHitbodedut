@@ -35,12 +35,16 @@ public struct BibliothequeVue: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            BibliothequeBandeau(titre: Text(modele.titre, traducteur: traducteur),
-                                sousTitre: Text(modele.sousTitre, traducteur: traducteur),
-                                image: modele.image, mesure: .liste)
-            ligneSignets
-            liste
+        // Le bandeau défile avec la liste : fixe au-dessus d'elle, il en prenait toute la place aux grandes tailles du
+        // texte, et son titre se coupait.
+        ScrollView {
+            VStack(spacing: 0) {
+                BibliothequeBandeau(titre: Text(modele.titre, traducteur: traducteur),
+                                    sousTitre: Text(modele.sousTitre, traducteur: traducteur),
+                                    image: modele.image, mesure: .liste)
+                ligneSignets
+                liste
+            }
         }
         .background(Teinte(.paper))
         .navigationTitle(Text(modele.titre, traducteur: traducteur))
@@ -99,15 +103,13 @@ public struct BibliothequeVue: View {
     // MARK: La liste
 
     private var liste: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ForEach(modele.lignes) { ligne in
-                    BibliothequeLigneVue(ligne: ligne, ouvrir: ouvrir)
-                }
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ForEach(modele.lignes) { ligne in
+                BibliothequeLigneVue(ligne: ligne, ouvrir: ouvrir)
             }
-            .padding(.top, 4)
-            .padding(.bottom, 24)
         }
+        .padding(.top, 4)
+        .padding(.bottom, 24)
     }
 }
 
@@ -464,7 +466,7 @@ private struct BibliothequeFeuilleSignets: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .hauteursDeFeuille([.medium, .large])
     }
 
     private var puces: some View {

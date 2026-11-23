@@ -19,7 +19,7 @@ public struct ConseilsVue: View {
 
     public var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text(modele.indication, traducteur: traducteur)
                     .font(.subheadline)
                     .foregroundStyle(Teinte(.muted))

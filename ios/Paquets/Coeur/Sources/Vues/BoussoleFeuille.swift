@@ -26,7 +26,7 @@ struct BoussoleFeuille: View {
                 .navigationTitle(Text(dialogue.titre, traducteur: traducteur))
                 .navigationBarTitleDisplayMode(.inline)
         }
-        .presentationDetents(hauteurs)
+        .hauteursDeFeuille(hauteurs)
         .presentationDragIndicator(.visible)
     }
 

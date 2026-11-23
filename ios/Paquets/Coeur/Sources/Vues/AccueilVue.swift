@@ -64,7 +64,7 @@ public struct AccueilVue: View {
         .sheet(isPresented: Bindable(modele).bilanLie) {
             if let bilan = modele.bilan {
                 AccueilBilanVue(bilan: bilan) { modele.fermerBilan() }
-                    .presentationDetents([.medium])
+                    .hauteursDeFeuille([.medium])
             }
         }
         .overlay(alignment: .bottom) {
@@ -795,6 +795,8 @@ public struct BarreDepart: View {
         .padding(.top, 6)
         .padding(.bottom, 8)
         .background(Teinte(.paper))
+        // Pour l'audit d'accessibilité : ce qui défile dessous ne se voit pas (UITests, zoneVisible).
+        .accessibilityIdentifier("barre-bas")
         .onGeometryChange(for: Double.self, of: { Double($0.size.width) }) { nouvelle in
             largeur = nouvelle
         }
@@ -809,7 +811,7 @@ extension View {
     public func feuilleDepart(accueil: AccueilModele, textes: TextesModele) -> some View {
         sheet(isPresented: Bindable(accueil).feuilleLiee) {
             AccueilFeuille(modele: accueil, textes: textes)
-                .presentationDetents([.medium, .large])
+                .hauteursDeFeuille([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
     }
@@ -986,7 +988,7 @@ private struct AccueilBoite: View {
     /// La durée réglable (DureeSeance.saisir) : un champ numérique, prérempli ; refusée, la boîte le dit dessous.
     private var dureeLibre: some View {
         VStack(alignment: .leading, spacing: 8) {
-            TextField(text: $saisie, prompt: Text(modele.indicationDureeLibre, traducteur: traducteur)) {
+            TextField(text: $saisie, prompt: Text(modele.indicationDureeLibre, traducteur: traducteur), axis: .vertical) {
                 Text(modele.indicationDureeLibre, traducteur: traducteur)
             }
             .keyboardType(.numberPad)

@@ -49,7 +49,7 @@ public struct VolVue: View {
         }
         .sheet(item: Bindable(modele).dialogueLie) { dialogue in
             VolBoite(modele: modele, dialogue: dialogue.dialogue)
-                .presentationDetents([.medium, .large])
+                .hauteursDeFeuille([.medium, .large])
         }
     }
 
@@ -110,7 +110,7 @@ public struct VolVue: View {
         Carte {
             Text(Libelle("vol_rapide_titre"), traducteur: traducteur)
                 .titreCarte()
-            TextField(text: Bindable(modele).phrase) {
+            TextField(text: Bindable(modele).phrase, axis: .vertical) {
                 Text(Libelle("vol_rapide_exemple"), traducteur: traducteur)
             }
             .textFieldStyle(.roundedBorder)
@@ -136,7 +136,7 @@ public struct VolVue: View {
                         .foregroundStyle(Teinte(.muted))
                 }
             }
-            TextField(text: Bindable(modele).numeroSaisi) {
+            TextField(text: Bindable(modele).numeroSaisi, axis: .vertical) {
                 Text(Libelle("vol_numero"), traducteur: traducteur)
             }
             .textFieldStyle(.roundedBorder)

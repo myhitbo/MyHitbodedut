@@ -78,6 +78,8 @@ private struct TropheeFeteFiche: View {
             }
         }
         .sensoryFeedback(.impact(weight: .heavy), trigger: vibre)
+        // Une fiche modale : VoiceOver (et l'audit d'accessibilité) ne voient plus l'écran voilé dessous.
+        .accessibilityAddTraits(.isModal)
         .onAppear {
             if fiche.confettis && !reduire { vibre = true }
         }

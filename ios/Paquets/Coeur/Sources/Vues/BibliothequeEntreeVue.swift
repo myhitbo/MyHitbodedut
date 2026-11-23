@@ -27,6 +27,12 @@ public struct BibliothequeEntreeVue: View {
             }
         }
         .background(Teinte(.paper))
+        // Le bouton de lecture sous le texte, jamais sur une ligne (boutonsDeLecture).
+        .boutonsDeLecture(fond: Teinte(.paper), visibles: modele.barreLectureVisible) {
+            if modele.barreLectureVisible {
+                BibliothequeBarreVue(barre: modele.barre)
+            }
+        }
         .overlay(alignment: .bottom) {
             bas
         }
@@ -53,22 +59,18 @@ public struct BibliothequeEntreeVue: View {
             }
         }
         // 24 sous la page, et 72 de plus pour lire au-dessus du bouton de lecture.
-        .padding(.bottom, modele.barreLectureVisible ? 96 : 24)
+        .padding(.bottom, 24)
     }
 
     // MARK: Le bas de l'écran
 
-    /// Le bouton de lecture, la barre du masquage et le message d'une adresse qui ne s'ouvre pas.
+    /// La barre du masquage et le message d'une adresse qui ne s'ouvre pas (le bouton de lecture est sous le texte).
     private var bas: some View {
         VStack(spacing: 0) {
             if let alerte = modele.alerte {
                 BibliothequeMessageBref(message: alerte) {
                     modele.fermerAlerte()
                 }
-            }
-            if modele.barreLectureVisible {
-                BibliothequeBarreVue(barre: modele.barre)
-                    .padding(.bottom, 16)
             }
             if let message = modele.barre.messageMasque {
                 BibliothequeAnnonceMasque(barre: modele.barre, message: message)

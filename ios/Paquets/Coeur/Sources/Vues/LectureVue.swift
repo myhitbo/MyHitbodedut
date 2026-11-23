@@ -50,7 +50,7 @@ public struct LectureVue: View {
         }
         .background(Teinte(.paper))
         .overlay(alignment: .bottom) {
-            bas
+            messages
         }
         .onGeometryChange(for: CGFloat.self, of: { $0.size.width }) { nouvelle in
             largeur = nouvelle
@@ -93,8 +93,7 @@ public struct LectureVue: View {
             }
             .scrollTargetLayout()
             .padding(.top, 8)
-            // De quoi lire la fin au-dessus du bouton de lecture.
-            .padding(.bottom, 88)
+            .padding(.bottom, 24)
         }
         .scrollPosition($position, anchor: .top)
         .defilementAutomatique(modele.defilementAuto, position: $position)
@@ -139,6 +138,11 @@ public struct LectureVue: View {
         .accessibilityAction(named: Text(Libelle("lecture_reglages"), traducteur: traducteur)) {
             retrouver()
         }
+        // Le bouton de lecture sous le texte, jamais sur une ligne (boutonsDeLecture).
+        .boutonsDeLecture(fond: rendu.fond, visibles: (modele.pastilleVisible && !modele.pastilleEffacee)
+                          || modele.barreVisible || modele.defilementAuto.commandeVisible) {
+            LectureBouton(modele: modele, largeur: largeur)
+        }
     }
 
     private func retrouver() {
@@ -148,13 +152,13 @@ public struct LectureVue: View {
 
     // MARK: Le bas de l'écran
 
-    /// Le bouton de lecture, le message bref et la barre qui suit le masquage, en calque au-dessus du texte.
-    private var bas: some View {
+    /// Le message bref et la barre qui suit le masquage, en calque au-dessus du texte (le bouton de lecture est sous
+    /// le texte, `boutonsDeLecture`).
+    private var messages: some View {
         VStack(spacing: 12) {
             if let message = modele.message {
                 LectureMessage(message: message, modele: modele)
             }
-            LectureBouton(modele: modele, largeur: largeur)
             if modele.annonceMasque {
                 LectureAnnonceMasque(modele: modele)
             }
@@ -204,9 +208,11 @@ private struct LectureBandeau: View {
                 etiquettes
             }
             if let horaire = modele.horaire {
+                // En blanc, comme le titre : la menthe d'Android, sur le vert clair du dégradé, n'avait pas le
+                // contraste que demande l'audit d'accessibilité.
                 Text(verbatim: "\u{25F7} " + traducteur.texte(horaire))
                     .font(.subheadline)
-                    .foregroundStyle(Teinte(.mint))
+                    .foregroundStyle(Color.white)
                     // gravity="right" : à droite, en français comme en hébreu.
                     .frame(maxWidth: .infinity, alignment: sens == .rightToLeft ? .leading : .trailing)
                     .padding(.top, 4)
@@ -434,6 +440,6 @@ private struct LectureFeuilleMarquesTexte: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .hauteursDeFeuille([.medium, .large])
     }
 }

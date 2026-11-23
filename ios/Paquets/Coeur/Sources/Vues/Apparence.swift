@@ -55,10 +55,19 @@ public struct PaletteApp: Sendable, Equatable {
         (nuit ? self.nuit : jour)[jeton] ?? .noir
     }
 
-    /// La couleur d'un jeton pour le mode de l'écran.
+    /// La couleur d'un jeton pour le mode de l'écran. Le gris discret (`muted`) est mêlé d'un quart de l'encre
+    /// (`ink`), de jour comme de nuit : à sa valeur d'Android, le texte discret en petite taille (les jours de la
+    /// semaine, les dates des trophées, les signets du lecteur) n'avait pas le contraste que demande l'audit
+    /// d'accessibilité d'Xcode (tâche 29) ; il reste un gris, un peu plus sombre de jour, un peu plus clair de nuit.
     public func couleur(_ jeton: Jeton, schema: ColorScheme) -> Color {
-        Color(couleur(jeton, nuit: schema == .dark))
+        let nuit = schema == .dark
+        guard jeton == .muted else { return Color(couleur(jeton, nuit: nuit)) }
+        return Color(couleur(.muted, nuit: nuit)).mix(with: Color(couleur(.ink, nuit: nuit)),
+                                                     by: PaletteApp.renfortDiscret)
     }
+
+    /// La part de l'encre dans le gris discret.
+    static let renfortDiscret = 0.25
 
     /// La palette d'origine d'Android, fond vert et accent vert : values/colors.xml de jour, values-night de
     /// nuit (les valeurs de palettes.json pour « vert/vert », recopiées). Valeur par défaut de l'environnement.

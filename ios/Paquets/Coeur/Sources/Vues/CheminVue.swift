@@ -19,6 +19,13 @@ public struct CheminVue: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
+                // Le titre dans la page, comme celui des Livres : le grand titre de la barre de navigation changeait
+                // de hauteur avec la taille du texte et déplaçait toute la page (relevé par l'audit d'accessibilité).
+                Text(modele.titre, traducteur: traducteur)
+                    .tailleSp(24, poids: .bold, relativeA: .title2)
+                    .foregroundStyle(Teinte(.ink))
+                    .accessibilityAddTraits(.isHeader)
+                    .padding(.top, 2)
                 Carte {
                     // Trois colonnes ; aux tailles d'accessibilité, trois lignes (le chiffre, puis son libellé), où
                     // les mots se coupaient lettre à lettre.
@@ -77,6 +84,7 @@ public struct CheminVue: View {
         }
         .background(Teinte(.paper))
         .navigationTitle(Text(modele.titre, traducteur: traducteur))
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     private func valeur(_ texte: AccueilTexte) -> Text {

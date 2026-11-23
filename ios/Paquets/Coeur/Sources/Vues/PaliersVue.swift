@@ -44,7 +44,7 @@ public struct PaliersVue: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: Bindable(modele).ficheLiee) { fiche in
             PaliersFicheVue(fiche: fiche) { modele.fermerFiche() }
-                .presentationDetents([.medium])
+                .hauteursDeFeuille([.medium])
         }
         .alert(Text(modele.feteGrade?.titre ?? Libelle("celebration_continue"), traducteur: traducteur),
                isPresented: Bindable(modele).feteGradeLiee) {

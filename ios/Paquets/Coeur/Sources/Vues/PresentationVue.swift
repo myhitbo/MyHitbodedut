@@ -48,13 +48,14 @@ public struct PresentationVue: View {
     /// (fillViewport) ; la scène prend la hauteur qui reste, jusqu'à sa hauteur minimale, puis le tout défile
     /// pour que les boutons du bas restent atteignables.
     private func debout(_ m: PresentationMesures) -> some View {
-        ViewThatFits(in: .vertical) {
+        // Toujours le même défilement, qui remplit au moins l'écran : la scène prend la place qui reste. Un
+        // ViewThatFits basculait d'une disposition à l'autre quand la taille du texte changeait, et l'audit
+        // d'accessibilité perdait les éléments recréés.
+        ScrollView {
             colonneDebout(m)
-            ScrollView {
-                colonneDebout(m)
-            }
-            .scrollBounceBehavior(.basedOnSize)
+                .frame(minHeight: m.hauteur)
         }
+        .scrollBounceBehavior(.basedOnSize)
     }
 
     private func colonneDebout(_ m: PresentationMesures) -> some View {
@@ -81,13 +82,10 @@ public struct PresentationVue: View {
             scene(m)
                 .frame(width: disponible / 2.25)
             VStack(alignment: .leading, spacing: 0) {
-                ViewThatFits(in: .vertical) {
+                ScrollView {
                     hautCouche(m)
-                    ScrollView {
-                        hautCouche(m)
-                    }
-                    .scrollBounceBehavior(.basedOnSize)
                 }
+                .scrollBounceBehavior(.basedOnSize)
                 suivant(m)
                     .padding(.top, m.ecartSuivant)
                 rangeeDuBas
@@ -320,6 +318,8 @@ public struct PresentationVue: View {
 /// values-h640dp) : la marge `edge` suit la largeur, les espacements de la page suivent la hauteur.
 private struct PresentationMesures {
     let largeur: CGFloat
+    /// La hauteur de l'écran : la colonne debout la remplit au moins (fillViewport).
+    let hauteur: CGFloat
     /// layout-land : l'écran est plus large que haut.
     let couchee: Bool
     /// edge : 16, 24 dès 360 de large, 48 dès 600, 120 dès 840, 320 dès 1200.
@@ -343,6 +343,7 @@ private struct PresentationMesures {
 
     init(taille: CGSize) {
         largeur = taille.width
+        hauteur = taille.height
         couchee = taille.width > taille.height
         let w = taille.width
         if w >= 1200 {
@@ -480,7 +481,7 @@ private struct PresentationChoixHeure: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .hauteursDeFeuille([.medium])
     }
 
     private func choisir() {

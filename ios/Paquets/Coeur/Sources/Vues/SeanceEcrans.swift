@@ -83,6 +83,8 @@ public struct SeanceVue: View {
                     }
                 }
                 .opacity(modele.opaciteEffacable)
+                // Effacé au calme, il sort aussi de l'accessibilité (VoiceOver allumé, le calme ne vient pas).
+                .accessibilityHidden(modele.calme)
                 .animation(.easeInOut(duration: Double(modele.calme ? SeanceModele.fonduCalme : SeanceModele.fonduReveil) / 1000),
                            value: modele.calme)
             }
@@ -105,7 +107,7 @@ public struct SeanceVue: View {
         .simultaneousGesture(TapGesture().onEnded { modele.toucher() })
         .sheet(item: Bindable(modele).dialogueLie) { dialogue in
             SeanceBoite(modele: modele, dialogue: dialogue)
-                .presentationDetents([.medium, .large])
+                .hauteursDeFeuille([.medium, .large])
         }
         .sheet(item: Bindable(modele).noteLiee) { route in
             if case .note(let jour) = route {
@@ -462,7 +464,7 @@ private struct SeanceBoite: View {
                 .buttonStyle(.plain)
             }
         case .duree:
-            TextField(text: $saisie) {
+            TextField(text: $saisie, axis: .vertical) {
                 Text(modele.indicationDuree, traducteur: traducteur)
             }
             .keyboardType(.numberPad)

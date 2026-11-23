@@ -29,19 +29,18 @@ public struct TehilimVue: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            TehilimBandeau(titre: Text(modele.titre, traducteur: traducteur),
-                           sousTitre: modele.sousTitre.map { Text($0, traducteur: traducteur) },
-                           image: modele.image)
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    ligneSignets
-                    portions
-                    entete
-                    grille
-                }
-                .padding(.bottom, 24)
+        // Le bandeau défile avec la page (fixe, il en prenait toute la place aux grandes tailles du texte).
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                TehilimBandeau(titre: Text(modele.titre, traducteur: traducteur),
+                               sousTitre: modele.sousTitre.map { Text($0, traducteur: traducteur) },
+                               image: modele.image)
+                ligneSignets
+                portions
+                entete
+                grille
             }
+            .padding(.bottom, 24)
         }
         .background(Teinte(.paper))
         .navigationTitle(Text(modele.titre, traducteur: traducteur))
@@ -246,7 +245,7 @@ struct TehilimFeuilleSignets: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .hauteursDeFeuille([.medium, .large])
     }
 
     private var puces: some View {

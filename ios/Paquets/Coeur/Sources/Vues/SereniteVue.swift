@@ -235,6 +235,7 @@ struct SereniteVue: View {
         .padding(.top, 6)
         .padding(.bottom, 8)
         .background(k.fond.ignoresSafeArea(edges: .bottom))
+        .accessibilityIdentifier("barre-bas")
     }
 
     /// ic_nav_today, ic_ciel, ic_nav_texts, ic_marque_etude.

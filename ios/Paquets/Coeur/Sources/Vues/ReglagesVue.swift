@@ -78,7 +78,7 @@ public struct ReglagesVue: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: Bindable(modele).dialogueLie) { dialogue in
             ReglagesBoite(modele: modele, dialogue: dialogue, ouvrir: ouvrirRoute)
-                .presentationDetents([.medium, .large])
+                .hauteursDeFeuille([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
         .fileExporter(isPresented: $exportOuvert, document: sauvegarde, contentType: .json,
@@ -658,7 +658,7 @@ private struct ReglagesBoite: View {
     private func saisieDuree(_ liste: ReglagesListe) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             titre(Libelle("duration_custom_title"))
-            TextField(text: $saisie) {
+            TextField(text: $saisie, axis: .vertical) {
                 Text(Libelle("duration_custom_hint"), traducteur: traducteur)
             }
             .keyboardType(.numberPad)
@@ -682,7 +682,7 @@ private struct ReglagesBoite: View {
     private var prenom: some View {
         VStack(alignment: .leading, spacing: 12) {
             titre(Libelle("settings_name"))
-            TextField(text: $saisie) {
+            TextField(text: $saisie, axis: .vertical) {
                 Text(Libelle("settings_name_hint"), traducteur: traducteur)
             }
             .textFieldStyle(.roundedBorder)

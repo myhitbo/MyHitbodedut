@@ -15,7 +15,9 @@ struct PileVue: View {
     var body: some View {
         let e = modele.pile
         VStack(alignment: .leading, spacing: 0) {
+            // L'en-tête garde sa hauteur : c'est la pile qui cède la place quand le texte grandit.
             entete(e)
+                .fixedSize(horizontal: false, vertical: true)
             Text(e.position, traducteur: traducteur)
                 .font(VersionPolice.rubik(13, .semibold))
                 .tracking(1)

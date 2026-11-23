@@ -13,11 +13,20 @@ import Ecrans
 
 // MARK: Les champs de recherche
 
+extension String {
+    /// Le texte d'un champ d'une ligne, sans les retours à la ligne que sa touche Entrée y ajoute quand il passe à la
+    /// ligne (`axis: .vertical`, pour que le texte agrandi ne s'y coupe pas).
+    var sansRetourALaLigne: String {
+        replacingOccurrences(of: "\n", with: "")
+    }
+}
+
 extension RechercheModele {
     /// Le champ de la recherche : chaque frappe relance la recherche.
     var texteSaisi: String {
         get { texte }
-        set { chercher(newValue) }
+        // Le champ passe à la ligne aux grandes tailles du texte (axis: .vertical) : sa touche Entrée n'y ajoute rien.
+        set { chercher(newValue.sansRetourALaLigne) }
     }
 }
 
@@ -25,7 +34,7 @@ extension HalakhaModele {
     /// Le champ : chaque frappe passe au modèle, qui cherche ou revient au jour.
     var rechercheSaisie: String {
         get { recherche }
-        set { chercher(newValue) }
+        set { chercher(newValue.sansRetourALaLigne) }
     }
 
     /// L'interrupteur, lu dans les réglages. Une écriture qui échoue ne dit rien, comme Store.setHalakhaAffichee :
@@ -42,7 +51,7 @@ extension HalakhaModele {
 extension HilloulotModele {
     var rechercheSaisie: String {
         get { recherche }
-        set { chercher(newValue) }
+        set { chercher(newValue.sansRetourALaLigne) }
     }
 
     /// Une écriture qui échoue ne dit rien, comme Store.setHilloulotAffichees.

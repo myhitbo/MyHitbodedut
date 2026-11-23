@@ -36,7 +36,7 @@ public struct AjoutTempsVue: View {
             .navigationTitle(Text(verbatim: AccueilDate.texte(modele.date, langue: traducteur.langue)))
             .navigationBarTitleDisplayMode(.inline)
         }
-        .presentationDetents([.medium, .large])
+        .hauteursDeFeuille([.medium, .large])
         .onChange(of: modele.etape) { _, etape in
             if etape == nil { fermer() }
         }
@@ -84,7 +84,7 @@ public struct AjoutTempsVue: View {
             Text(modele.titreSaisie, traducteur: traducteur)
                 .font(.title3.bold())
                 .foregroundStyle(Teinte(.ink))
-            TextField(text: $modele.saisie) {
+            TextField(text: $modele.saisie, axis: .vertical) {
                 Text(modele.indicationSaisie, traducteur: traducteur)
             }
             .keyboardType(.numberPad)

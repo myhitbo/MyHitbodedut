@@ -19,11 +19,12 @@ public struct TefilotVue: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            TehilimBandeau(titre: Text(modele.titre, traducteur: traducteur),
-                           sousTitre: Text(modele.sousTitre, traducteur: traducteur),
-                           image: modele.image, mesure: .tefilot)
-            ScrollView {
+        // Le bandeau défile avec la liste (fixe, il en prenait toute la place aux grandes tailles du texte).
+        ScrollView {
+            VStack(spacing: 0) {
+                TehilimBandeau(titre: Text(modele.titre, traducteur: traducteur),
+                               sousTitre: Text(modele.sousTitre, traducteur: traducteur),
+                               image: modele.image, mesure: .tefilot)
                 liste
                     .padding(.top, 4)
                     .padding(.bottom, 24)
@@ -46,7 +47,7 @@ public struct TefilotVue: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
         case .chargement, .pret:
-            LazyVStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 ForEach(modele.lignes) { ligne in
                     ligneVue(ligne)
                 }

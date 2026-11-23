@@ -59,7 +59,7 @@ public struct HalakhaVue: View {
                 }
             }
             .padding(.top, 8)
-            TextField(text: champ, prompt: texte("halakha_recherche")) {
+            TextField(text: champ, prompt: texte("halakha_recherche"), axis: .vertical) {
                 texte("halakha_recherche")
             }
             .submitLabel(.search)
