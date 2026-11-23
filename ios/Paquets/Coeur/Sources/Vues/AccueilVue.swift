@@ -830,7 +830,7 @@ private struct AccueilVolet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(modele.titreVolet, traducteur: traducteur)
-                    .font(.system(size: 20, weight: .bold))
+                    .tailleSp(20, poids: .bold, relativeA: .title3)
                     .foregroundStyle(Teinte(.ink))
                     .padding(.top, 20)
                     .padding(.bottom, 4)
@@ -904,7 +904,7 @@ private struct AccueilBoite: View {
             VStack(alignment: .leading, spacing: 0) {
                 if let titre = titre {
                     titre
-                        .font(.system(size: 20, weight: .bold))
+                        .tailleSp(20, poids: .bold, relativeA: .title3)
                         .foregroundStyle(Teinte(.ink))
                         .padding(.top, 20)
                         .padding(.bottom, 8)

@@ -536,7 +536,7 @@ public struct CelebrationEcran: View {
         ScrollView {
             VStack(spacing: 16) {
                 Text(modele.titre, traducteur: traducteur)
-                    .font(.system(size: 34, weight: .bold))
+                    .tailleSp(34, poids: .bold, relativeA: .largeTitle)
                     .foregroundStyle(Teinte(.brand))
                     .multilineTextAlignment(.center)
                     .padding(.top, 32)

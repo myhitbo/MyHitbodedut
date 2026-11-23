@@ -25,7 +25,7 @@ public struct TextesVue: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(modele.titre, traducteur: traducteur)
-                    .font(.system(size: 24, weight: .bold))
+                    .tailleSp(24, poids: .bold, relativeA: .title2)
                     .foregroundStyle(Teinte(.ink))
                     .accessibilityAddTraits(.isHeader)
                     .padding(.top, 16)
@@ -153,7 +153,7 @@ private struct TextesRayonVue: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(rayon.titre, traducteur: traducteur)
-                .font(.system(size: 18, weight: .bold))
+                .tailleSp(18, poids: .bold, relativeA: .headline)
                 .foregroundStyle(Teinte(.ink))
                 .accessibilityAddTraits(.isHeader)
                 .padding(.top, 20)
