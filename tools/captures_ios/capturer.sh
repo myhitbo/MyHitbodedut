@@ -7,7 +7,7 @@
 # journal système vont dans le résumé, et le script finit en échec une fois toutes les captures faites.
 #
 # Variables : APP (le .app compilé pour le simulateur), SORTIE (le dossier des captures), LANGUES, ECRANS (vide :
-# tous), PASSES (iphone, sombre, grand, ipad), RESUME (le fichier du résumé, $GITHUB_STEP_SUMMARY dans la CI).
+# tous), PASSES (iphone, sombre, grand, ipad, paysage : l'iPad couché), RESUME (le fichier du résumé, $GITHUB_STEP_SUMMARY dans la CI).
 set -uo pipefail
 
 APP=${APP:?le .app à installer}
@@ -17,6 +17,8 @@ ECRANS=${ECRANS:-}
 PASSES=${PASSES:-"iphone sombre grand ipad"}
 RESUME=${RESUME:-/dev/stdout}
 ATTENTE=${ATTENTE:-6}
+# Des arguments de lancement en plus, pour une passe (« -captureOrientation paysage »).
+EN_PLUS=""
 ID_APP=com.myhitbodedut
 ICI=$(cd "$(dirname "$0")" && pwd)
 
@@ -108,7 +110,7 @@ capturer() {
   # Le fuseau de la ville de la démonstration (Demonstration.ville) : SIMCTL_CHILD_ passe la variable à l'app.
   lance=$(SIMCTL_CHILD_TZ=$fuseau xcrun simctl launch --stdout="$SORTIE/journaux/$nom.out" \
     --stderr="$SORTIE/journaux/$nom.err" "$udid" "$ID_APP" \
-    -AppleLanguages "($langue)" -AppleLocale "$locale" -capture "$ecran" -captureDemo 2>&1)
+    -AppleLanguages "($langue)" -AppleLocale "$locale" -capture "$ecran" -captureDemo $EN_PLUS 2>&1)
   pid=${lance##*: }
   sleep "$ATTENTE"
   if ! kill -0 "$pid" 2>/dev/null; then
@@ -149,6 +151,7 @@ parmi() {
 IPHONE=$(appareil iPhone "iPhone 17 Pro" "iPhone 16 Pro" "iPhone 17" | cut -f1)
 test -n "$IPHONE" || { echo "::error::aucun iPhone simulé d'iOS 26.5"; exit 1; }
 echo "iPhone : $(appareil iPhone "iPhone 17 Pro" "iPhone 16 Pro" "iPhone 17" | cut -f2)"
+echo "$IPHONE" > "$SORTIE/iphone.txt"
 demarrer "$IPHONE"
 
 for p in $PASSES; do
@@ -168,13 +171,22 @@ for p in $PASSES; do
 done
 
 case " $PASSES " in
-  *" ipad "*)
+  *" ipad "*|*" paysage "*)
     xcrun simctl shutdown "$IPHONE" || true
     IPAD=$(appareil iPad "iPad Pro 13-inch (M5)" "iPad Pro 13-inch (M4)" "iPad Air 13-inch (M3)" | cut -f1)
     if [ -n "$IPAD" ]; then
       echo "iPad : $(appareil iPad "iPad Pro 13-inch (M5)" "iPad Pro 13-inch (M4)" "iPad Air 13-inch (M3)" | cut -f2)"
       demarrer "$IPAD"
-      passe "$IPAD" "ipad-" "$(parmi "fr he" "$LANGUES")" "$(parmi "$ECRANS_COURTS" "$ECRANS")"
+      case " $PASSES " in
+        *" ipad "*) passe "$IPAD" "ipad-" "$(parmi "fr he" "$LANGUES")" "$(parmi "$ECRANS_COURTS" "$ECRANS")" ;;
+      esac
+      case " $PASSES " in
+        *" paysage "*)
+          # L'iPad couché : l'app le demande elle-même (Captures.swift), simctl ne sait pas tourner l'appareil.
+          EN_PLUS="-captureOrientation paysage"
+          passe "$IPAD" "paysage-" "$(parmi "fr he" "$LANGUES")" "$(parmi "$ECRANS_COURTS" "$ECRANS")"
+          EN_PLUS="" ;;
+      esac
     else
       echo "::warning::aucun iPad simulé d'iOS 26.5"
     fi ;;

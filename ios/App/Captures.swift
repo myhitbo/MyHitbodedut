@@ -2,6 +2,7 @@ import Coeur
 import Ecrans
 import Foundation
 import SwiftUI
+import UIKit
 
 /// Les captures d'écran de la CI (`.github/workflows/ios-captures.yml`, ECRANS.md « Les captures ») : lancée avec
 /// « -capture <écran> », l'app s'ouvre d'elle-même sur cet écran ; avec « -captureDemo », sur le journal de
@@ -14,6 +15,8 @@ enum Captures {
     static let ecran: String? = valeur(apres: "-capture")
     /// « -captureDemo » : le journal et les réglages de démonstration.
     static let demo = ProcessInfo.processInfo.arguments.contains("-captureDemo")
+    /// « -captureOrientation paysage » : l'app se couche d'elle-même (simctl ne sait pas tourner l'appareil).
+    static let paysage = valeur(apres: "-captureOrientation") == "paysage"
 
     /// Les écrans que la CI sait demander, dans l'ordre de ses captures (ios-captures.yml les reprend).
     static let ecrans = [
@@ -48,6 +51,10 @@ enum Captures {
                        livres: Binding<NavigationPath>, chemin: Binding<NavigationPath>,
                        feuille: Binding<Pardessus?>, plein: Binding<Pardessus?>) async {
         guard let ecran else { return }
+        if paysage, let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeLeft))
+            try? await Task.sleep(for: .milliseconds(600))
+        }
         let aujourdhui = app.horloge.aujourdhui
         // L'onglet, et ce qui s'ouvre au-dessus de lui.
         let depart: (Onglet, [Ecran], Pardessus?, Pardessus?)
