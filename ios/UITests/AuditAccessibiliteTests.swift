@@ -92,9 +92,11 @@ final class AuditAccessibiliteTests: XCTestCase {
                 let element = probleme.element
                 let libelle = element?.label ?? ""
                 let sorte = Self.nom(probleme.auditType)
+                // Le détail (la raison du défaut), sur une ligne, en dernier.
+                let detail = probleme.detailedDescription.split(whereSeparator: \.isNewline).joined(separator: " ¶ ")
                 let ligne = [ecran, sorte, probleme.compactDescription, libelle,
                              element.map { String(describing: $0.elementType) } ?? "",
-                             element.map { "\(Int($0.frame.minX)),\(Int($0.frame.minY))" } ?? ""]
+                             element.map { "\(Int($0.frame.minX)),\(Int($0.frame.minY))" } ?? "", detail]
                     .joined(separator: "\t")
                 if let tolere = Self.tolere(ecran: ecran, sorte: sorte, libelle: libelle) {
                     print("TOLERE\t" + ligne + "\t" + tolere.raison)
