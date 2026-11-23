@@ -10,7 +10,7 @@
 # tous), PASSES (iphone, sombre, grand, ipad, paysage : l'iPad couché), RESUME (le fichier du résumé, $GITHUB_STEP_SUMMARY dans la CI).
 set -uo pipefail
 
-APP=${APP:-}
+APP=${APP:?le .app à installer}
 SORTIE=${SORTIE:-captures}
 LANGUES=${LANGUES:-"fr en he es ar-TN"}
 ECRANS=${ECRANS:-}
@@ -62,7 +62,7 @@ barre() {
 demarrer() {
   local udid=$1
   xcrun simctl boot "$udid" 2>/dev/null || true
-  echo "démarrage de $udid…"
+  echo "démarrage de ${udid}…"
   xcrun simctl bootstatus "$udid" -b >/dev/null
   echo "démarré"
   xcrun simctl ui "$udid" appearance light || true
@@ -164,13 +164,6 @@ parmi() {
 }
 
 IPHONE=$(appareil iPhone "iPhone 17 Pro" "iPhone 16 Pro" "iPhone 17" | cut -f1)
-# « capturer.sh prechauffer » : l'iPhone démarre pendant la compilation de l'app (le premier démarrage d'un simulateur
-# prend plusieurs minutes), puis le script rend la main.
-if [ "${1:-}" = prechauffer ]; then
-  xcrun simctl boot "$IPHONE" 2>/dev/null || true
-  exit 0
-fi
-test -n "$APP" || { echo "::error::APP : le .app à installer"; exit 1; }
 test -n "$IPHONE" || { echo "::error::aucun iPhone simulé d'iOS 26.5"; exit 1; }
 echo "iPhone : $(appareil iPhone "iPhone 17 Pro" "iPhone 16 Pro" "iPhone 17" | cut -f2)"
 echo "$IPHONE" > "$SORTIE/iphone.txt"
