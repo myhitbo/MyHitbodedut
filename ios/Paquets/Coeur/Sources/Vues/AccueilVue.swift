@@ -18,9 +18,10 @@ public struct AccueilVue: View {
     @Environment(\.traducteur) private var traducteur
     @Environment(\.accessibilityReduceMotion) private var reduire
     @Environment(\.scenePhase) private var phase
+    @Environment(\.tropheeFormes) private var formes
 
     /// La barre de départ et son volet sont posés par la racine sur les trois onglets (`BarreDepart`,
-    /// `feuilleDepart`).
+    /// `feuilleDepart`), comme la fiche des trophées neufs (`feteDesTrophees`).
     public init(modele: AccueilModele) {
         self.modele = modele
     }
@@ -78,6 +79,18 @@ public struct AccueilVue: View {
             // Un Toast court d'Android : 2 s.
             if await AccueilAttente.ms(2_000) { modele.messageMontre() }
         }
+        // Un palier neuf : sa phrase en bandeau, un Toast long d'Android (3,5 s) (Celebrations.ecran).
+        .overlay(alignment: .bottom) {
+            if modele.message == nil, let palier = modele.fete.palier {
+                AccueilMessage(texte: Text(palier, traducteur: traducteur))
+                    .padding(.bottom, 96)
+                    .transition(.opacity)
+            }
+        }
+        .task(id: modele.fete.palier) {
+            guard modele.fete.palier != nil else { return }
+            if await AccueilAttente.ms(3_500) { modele.fete.palierMontre() }
+        }
         .onAppear {
             modele.reduireAnimations = reduire
             Task { await modele.apparaitre() }
@@ -98,9 +111,11 @@ public struct AccueilVue: View {
             modele.ouvrirPaliers()
         } label: {
             HStack(spacing: 8) {
-                Image(systemName: "medal.fill")
-                    .foregroundStyle(AccueilTeintes.metal(ligne.grade))
-                    .accessibilityHidden(true)
+                // La médaille du grade, frappée de l'étoile (TropheeDessin MEDAILLE, 26 pt) ; un palier neuf y fait
+                // jaillir les étincelles du grade.
+                TropheeObjet(formes?.medaille(ligne.grade))
+                    .frame(width: 26, height: 26)
+                    .overlay { TropheeFetePalier(fete: modele.fete) }
                 Text(ligne.texte, traducteur: traducteur)
                     .font(Font.subheadline.bold())
                     .foregroundStyle(Teinte(.brand))
@@ -198,11 +213,6 @@ enum AccueilTeintes {
         case .semaine: AccueilFixe.couleur(schema == .dark ? 0x6FB7E8 : 0x2E7DB3)
         case .serie: AccueilFixe.couleur(schema == .dark ? 0xE8B45C : 0xB8780F)
         }
-    }
-
-    /// Le métal d'une médaille, en une couleur (TropheeTeintes, le ton moyen).
-    static func metal(_ metal: Trophees.Metal) -> Color {
-        TropheeTeintes.de(metal).fonce.couleurSwiftUI
     }
 }
 
