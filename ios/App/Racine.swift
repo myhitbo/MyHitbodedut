@@ -31,6 +31,8 @@ enum Ecran: Hashable {
     case lecture(LectureCible)
     case tehilimLecture(TehilimLectureCible)
     case entree(String)
+    /// L'aperçu du bouclier, le choix des applications, la dédicace, le journal de la barrière (Barriere/BarriereEcrans.swift).
+    case barriere(EcranBarriere)
 }
 
 /// Une feuille ou un écran plein posé par-dessus les onglets.
@@ -52,9 +54,10 @@ enum Pardessus: Hashable, Identifiable {
 
 /// Les trois onglets de l'app, dans l'ordre de la barre d'Android (Onglet, nav_main.xml ; refonte du 13/11), chacun
 /// avec sa pile de navigation (PORTAGE.md § 1.2) ; la barre de départ au bas de chacun, et son volet par-dessus. Les
-/// modèles demandent leurs écrans par des routes, que la racine ouvre. La racine pose aussi l'apparence tirée des
-/// réglages : la palette, le mode clair ou sombre, l'adresse qui choisit le personnage ; un réglage changé se voit
-/// aussitôt.
+/// modèles demandent leurs écrans par des routes, que la racine ouvre. Une autre version de l'app choisie (Sérénité,
+/// Bento, Pile : VersionApp) remplace les onglets par son accueil, avec la seule pile du Jour. La racine pose aussi
+/// l'apparence tirée des réglages : la palette, le mode clair ou sombre, l'adresse qui choisit le personnage ; un
+/// réglage changé se voit aussitôt.
 struct Racine: View {
     let app: ModelesApp
     let palettes: Palettes?
@@ -79,6 +82,90 @@ struct Racine: View {
     var body: some View {
         let apparence = ApparenceChoisie(app.magasin.reglages)
         let palette = PaletteApp.choisie(palettes, apparence)
+        let version = VersionApp.accueil(app.magasin.reglages)
+        accueil(version)
+        .sheet(item: $feuille) { pardessus in
+            vuePardessus(pardessus)
+        }
+        .fullScreenCover(item: $plein) { pardessus in
+            vuePardessus(pardessus)
+        }
+        // Les routes des modèles deviennent des écrans ; celles dont l'écran n'est pas encore porté sont retirées sans
+        // rien ouvrir.
+        .onChange(of: app.accueil.routes) { _, routes in
+            guard let route = routes.first else { return }
+            app.accueil.routeOuverte()
+            ouvrirAccueil(route)
+        }
+        .onChange(of: app.accueilVersion.routes) { _, routes in
+            guard let route = routes.first else { return }
+            app.accueilVersion.routeOuverte()
+            ouvrirAccueilVersion(route)
+        }
+        .onChange(of: app.chemin.routes) { _, routes in
+            guard let route = routes.first else { return }
+            app.chemin.routeOuverte()
+            switch route {
+            case .journal: pileDuChemin.append(Ecran.journal)
+            case .parcours: pileDuChemin.append(Ecran.parcours)
+            case .paliers: pileDuChemin.append(Ecran.paliers)
+            }
+        }
+        .onChange(of: onglet) { _, nouveau in
+            // Revenir au Jour rejoue les anneaux (MainActivity.rejouer).
+            if nouveau == .aujourdhui { app.accueil.ongletChoisi() }
+        }
+        .onChange(of: version) { _, _ in
+            // Une autre version choisie (VersionApp.appliquer) : l'app repart de son accueil, sans pile d'écrans derrière.
+            pileDuJour = NavigationPath()
+            pileDesLivres = NavigationPath()
+            pileDuChemin = NavigationPath()
+            onglet = .aujourdhui
+        }
+        .onChange(of: plein) { avant, apres in
+            // Au retour de la présentation, l'accueil repasse (onResume) : le choix de la version s'y propose.
+            if avant == .presentation && apres == nil && version == .classique {
+                Task { await app.accueil.apparaitre() }
+            }
+        }
+        // Les captures d'écran de la CI (Captures.swift) : l'écran demandé au lancement ; sans « -capture », rien.
+        .task {
+            await Captures.ouvrir(app, onglet: $onglet, jour: $pileDuJour, livres: $pileDesLivres, chemin: $pileDuChemin,
+                                  feuille: $feuille, plein: $plein)
+        }
+        // L'iPad et le téléphone couché : le contenu s'écarte des bords (GrandEcran, tâche 29).
+        .margesLarges()
+        .tint(palette.couleur(.brand, schema: schema))
+        .environment(\.paletteApp, palette)
+        .environment(\.apparence, apparence)
+        .preferredColorScheme(schemaPrefere(version, apparence))
+    }
+
+    /// L'accueil : les trois onglets de Classique, ou l'accueil d'une autre version (VersionApp.rediriger), qui prend
+    /// leur place avec une seule pile — celle du Jour — comme l'activité de la version remplace MainActivity.
+    @ViewBuilder
+    private func accueil(_ version: VersionApp) -> some View {
+        if version == .classique {
+            onglets
+        } else {
+            NavigationStack(path: $pileDuJour) {
+                AccueilVersionVue(modele: app.accueilVersion)
+                    .navigationDestination(for: Ecran.self) { ecran in
+                        destination(ecran)
+                    }
+            }
+        }
+    }
+
+    /// Le mode de l'écran : celui des réglages. L'accueil d'une version, seul à l'écran, garde le sien, clair ou sombre
+    /// selon ses couleurs (VueVersion.barres) : la barre d'état reste lisible sur son fond.
+    private func schemaPrefere(_ version: VersionApp, _ apparence: ApparenceChoisie) -> ColorScheme? {
+        guard version != .classique, pileDuJour.isEmpty, feuille == nil, plein == nil else { return apparence.schema }
+        return app.accueilVersion.fondSombre ? .dark : .light
+    }
+
+    /// Les trois onglets de l'accueil Classique, la barre de départ et son volet, la fête des trophées neufs.
+    private var onglets: some View {
         TabView(selection: $onglet) {
             Tab(LocalizedStringKey(Onglet.aujourdhui.cle), systemImage: Onglet.aujourdhui.symbole,
                 value: Onglet.aujourdhui) {
@@ -98,43 +185,7 @@ struct Racine: View {
             }
         }
         .feuilleDepart(accueil: app.accueil, textes: app.textes)
-        .sheet(item: $feuille) { pardessus in
-            vuePardessus(pardessus)
-        }
-        .fullScreenCover(item: $plein) { pardessus in
-            vuePardessus(pardessus)
-        }
-        // Les routes des modèles deviennent des écrans ; celles dont l'écran n'est pas encore porté sont retirées sans
-        // rien ouvrir.
-        .onChange(of: app.accueil.routes) { _, routes in
-            guard let route = routes.first else { return }
-            app.accueil.routeOuverte()
-            ouvrirAccueil(route)
-        }
-        .onChange(of: app.chemin.routes) { _, routes in
-            guard let route = routes.first else { return }
-            app.chemin.routeOuverte()
-            switch route {
-            case .journal: pileDuChemin.append(Ecran.journal)
-            case .parcours: pileDuChemin.append(Ecran.parcours)
-            case .paliers: pileDuChemin.append(Ecran.paliers)
-            }
-        }
-        .onChange(of: onglet) { _, nouveau in
-            // Revenir au Jour rejoue les anneaux (MainActivity.rejouer).
-            if nouveau == .aujourdhui { app.accueil.ongletChoisi() }
-        }
-        // Les captures d'écran de la CI (Captures.swift) : l'écran demandé au lancement ; sans « -capture », rien.
-        .task {
-            await Captures.ouvrir(app, onglet: $onglet, jour: $pileDuJour, livres: $pileDesLivres, chemin: $pileDuChemin,
-                                  feuille: $feuille, plein: $plein)
-        }
-        // L'iPad et le téléphone couché : le contenu s'écarte des bords (GrandEcran, tâche 29).
-        .margesLarges()
-        .tint(palette.couleur(.brand, schema: schema))
-        .environment(\.paletteApp, palette)
-        .environment(\.apparence, apparence)
-        .preferredColorScheme(apparence.schema)
+        .feteDesTrophees(app.accueil.fete)
     }
 
     /// La racine d'un onglet : la barre de départ en bas, et les destinations de la pile.
@@ -151,6 +202,11 @@ struct Racine: View {
     // MARK: Pousser dans la pile de l'onglet choisi
 
     private func pousser(_ ecran: Ecran) {
+        // L'accueil d'une autre version n'a qu'une pile.
+        if VersionApp.accueil(app.magasin.reglages) != .classique {
+            pileDuJour.append(ecran)
+            return
+        }
         switch onglet {
         case .aujourdhui: pileDuJour.append(ecran)
         case .textes: pileDesLivres.append(ecran)
@@ -174,6 +230,29 @@ struct Racine: View {
         case .zmanim: pileDuJour.append(Ecran.zmanim)
         case .reglages(let carteBarriere): pileDuJour.append(Ecran.reglages(carteBarriere: carteBarriere))
         case .musique: pousser(.musique)
+        case .choixVersion: pileDuJour.append(Ecran.choixVersion)
+        }
+    }
+
+    /// Les écrans qu'ouvre l'accueil d'une version (AccueilVersion : commencerSeance, ouvrirZmanim…).
+    private func ouvrirAccueilVersion(_ route: AccueilVersionRoute) {
+        switch route {
+        case .seance(let demarrer): pousser(.seance(demarrer: demarrer))
+        case .zmanim: pousser(.zmanim)
+        case .journal: pousser(.journal)
+        // LibraryActivity : les sources de la bibliothèque.
+        case .textes: pousser(.bibliotheque(livresSeuls: false))
+        case .siddour: pousser(.siddour)
+        case .tehilim: pousser(.tehilim)
+        case .chizuk: pousser(.chizuk)
+        case .musique: pousser(.musique)
+        case .reglages: pousser(.reglages(carteBarriere: false))
+        case .parcours: pousser(.parcours)
+        case .recherche: pousser(.recherche)
+        case .note(let jour): feuille = .note(jour)
+        case .celebration(let minutes, let dateNote):
+            plein = .celebration(CelebrationDemande(minutes: minutes, dateNote: dateNote.flatMap { JourCivil(iso: $0) }))
+        case .presentation: plein = .presentation
         }
     }
 
@@ -250,9 +329,9 @@ struct Racine: View {
             pileDuChemin = NavigationPath()
             onglet = .aujourdhui
             plein = .presentation
-        case .apercuBarriere, .choixApplications, .dedicace:
-            // Tâches 27 et 28, et la dédicace : pas encore d'écran sur iOS.
-            app.reglages.routeImpossible()
+        case .apercuBarriere, .choixApplications, .dedicace, .journalBarriere:
+            // Les écrans de la barrière et la dédicace (Barriere/BarriereEcrans.swift).
+            if let ecran = EcranBarriere(route) { pousser(.barriere(ecran)) }
         case .reglagesApp, .reglagesNotifications, .navigateur, .aideConcentration:
             // Ouvertes par la vue des réglages elle-même.
             break
@@ -274,7 +353,7 @@ struct Racine: View {
             Garde(app.seanceModele) { modele in
                 SeanceVue(modele: modele, demande: demarrer ? .commencer : .aucune,
                           celebration: app.celebration, note: app.note,
-                          tefilot: { pousser(.tefilotDeLaSeance) })
+                          tefilot: { pousser(.tefilotDeLaSeance) }, mini: app.miniLecteur)
             }
         case .tefilot, .tefilotDeLaSeance:
             Garde(app.tefilot) { modele in
@@ -337,6 +416,8 @@ struct Racine: View {
             TehilimLecturePage(cible: cible, fabrique: app.tehilimLecture)
         case .entree(let id):
             BibliothequeEntreePage(id: id, fabrique: app.entree)
+        case .barriere(let ecran):
+            BarriereDestination(app: app, ecran: ecran)
         }
     }
 

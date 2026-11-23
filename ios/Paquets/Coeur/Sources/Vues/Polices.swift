@@ -20,6 +20,15 @@ public enum Polices {
         "miriam_libre.ttf",
     ]
 
+    /// Les polices des accueils des versions (VueVersion.police) : Bellefair (Sérénité), Heebo (Bento), Secular One
+    /// et Rubik (Pile). Heebo et Rubik sont des polices variables : leur graisse se choisit à l'usage.
+    public static let fichiersVersions = [
+        "bellefair.ttf",
+        "heebo.ttf",
+        "secular_one.ttf",
+        "rubik.ttf",
+    ]
+
     /// La famille d'une police, telle que ses fichiers la déclarent (table « name ») ; nil pour la police du
     /// téléphone, qui n'a pas de fichier (`Police.sans`).
     public static func famille(_ police: PoliceHebraique.Police) -> String? {
@@ -40,7 +49,7 @@ public enum Polices {
     @discardableResult
     public static func enregistrer(dossier: URL) -> [String] {
         var echecs: [String] = []
-        for fichier in fichiers {
+        for fichier in fichiers + fichiersVersions {
             let url = dossier.appending(path: fichier)
             var erreur: Unmanaged<CFError>? = nil
             if CTFontManagerRegisterFontsForURL(url as CFURL, .process, &erreur) { continue }

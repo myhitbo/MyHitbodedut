@@ -3,10 +3,9 @@ import Foundation
 /// Les versions de l'application (VersionApp.kt d'Android, 17/11) : quatre manières d'habiter la même pratique.
 /// Classique est l'accueil d'origine ; Sérénité, Bento et Pile sont des accueils à part, tirés des maquettes du
 /// propriétaire, qui ouvrent les mêmes écrans. Le journal, la série, les réglages et la barrière sont les mêmes
-/// d'une version à l'autre : changer de version ne perd rien.
-///
-/// Sur iOS, seul l'accueil Classique est porté (`portee`) : la version choisie sur Android est gardée telle quelle
-/// (réglage « version_app », sauvegarde comprise), et l'app montre Classique tant que l'accueil choisi n'existe pas.
+/// d'une version à l'autre : changer de version ne perd rien. Les quatre accueils sont portés sur iOS (Classique dans
+/// AccueilVue, les trois autres dans SereniteVue, BentoVue et PileVue) ; le réglage « version_app » passe par la
+/// sauvegarde, d'un téléphone à l'autre.
 public enum VersionApp: String, Sendable, CaseIterable {
     case classique, serenite, bento, pile
 
@@ -27,9 +26,6 @@ public enum VersionApp: String, Sendable, CaseIterable {
         }
     }
 
-    /// L'accueil de cette version existe sur iOS.
-    public var portee: Bool { self == .classique }
-
     /// `VersionApp.parse` : la version de cette clé ; nil pour une clé absente ou inconnue.
     public static func parse(_ cle: String?) -> VersionApp? {
         guard let cle else { return nil }
@@ -41,9 +37,8 @@ public enum VersionApp: String, Sendable, CaseIterable {
         reglages.versionApp ?? .classique
     }
 
-    /// L'accueil que l'app montre : la version choisie si elle est portée, sinon Classique.
+    /// L'accueil que l'app montre (VersionApp.rediriger) : celui de la version choisie, Classique par défaut.
     public static func accueil(_ reglages: Reglages) -> VersionApp {
-        let v = courante(reglages)
-        return v.portee ? v : .classique
+        courante(reglages)
     }
 }

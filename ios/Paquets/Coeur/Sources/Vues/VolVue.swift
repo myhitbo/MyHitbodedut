@@ -124,6 +124,11 @@ public struct VolVue: View {
             }
             .buttonStyle(.secondaire)
             .padding(.top, 6)
+            // Le billet : l'appareil photo, une photo ou un fichier (VolBilletVue.swift).
+            if modele.billetDisponible {
+                VolBilletBouton(modele: modele)
+                    .padding(.top, 2)
+            }
             if let rapide = modele.rapide {
                 ForEach(Array(rapide.enumerated()), id: \.offset) { _, ligne in
                     Text(ligne, traducteur: traducteur)

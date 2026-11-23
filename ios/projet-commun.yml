@@ -80,6 +80,9 @@ targetTemplates:
         # téléphone dans une autre langue a l'anglais (LangueApp, Traducteur.langueDuTelephone, PORTAGE.md § 2.2.7).
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [fr, en, he, es, ar-TN]
+        # La raison de l'appareil photo (la carte d'embarquement, VolVue) ; ses traductions sont dans
+        # Chaines/InfoPlist.xcstrings, compilé avec les autres catalogues (Catalogue/).
+        NSCameraUsageDescription: "The camera reads the barcode of your boarding pass, on the phone: nothing is sent."
         # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).
         UIAppFonts:
           - Polices/hebreu_serif_regular.ttf
@@ -89,6 +92,11 @@ targetTemplates:
           - Polices/david_libre.ttf
           - Polices/noto_rashi.ttf
           - Polices/miriam_libre.ttf
+          # Celles des accueils des versions (Polices.fichiersVersions).
+          - Polices/bellefair.ttf
+          - Polices/heebo.ttf
+          - Polices/secular_one.ttf
+          - Polices/rubik.ttf
 
 targets:
   # L'audit d'accessibilité d'Xcode sur chaque écran (UITests/, tâche 29), ouvert par « -capture » (App/Captures.swift).

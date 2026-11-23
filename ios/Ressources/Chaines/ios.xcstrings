@@ -37,6 +37,258 @@
         }
       }
     },
+    "apps_ios_android": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sur Android, vous reteniez : %1$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "On Android, you held back: %1$@"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "באנדרואיד חסמתם: %1$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "En Android, retenías: %1$@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "في أندرويد، كنت تسكّر: %1$@"
+          }
+        }
+      }
+    },
+    "apps_ios_categories": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Catégories : %1$lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Categories: %1$lld"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "קטגוריות: %1$lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Categorías: %1$lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الفئات: %1$lld"
+          }
+        }
+      }
+    },
+    "apps_ios_explication": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le sélecteur d’Apple propose les applications, des catégories entières et des sites. MyHitbodedut ne voit ni leurs noms ni ce que vous en faites : iOS les garde pour lui."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apple’s picker offers apps, whole categories and websites. MyHitbodedut sees neither their names nor what you do with them: iOS keeps them to itself."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הבוחר של Apple מציע אפליקציות, קטגוריות שלמות ואתרים. MyHitbodedut לא רואה את שמותיהם ולא מה שאתם עושים בהם: iOS שומרת אותם לעצמה."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "El selector de Apple ofrece aplicaciones, categorías enteras y sitios web. MyHitbodedut no ve sus nombres ni lo que haces con ellos: iOS los guarda para sí."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "المختار متاع Apple يقترح التطبيقات، فئات كاملة والمواقع. MyHitbodedut ما يشوفش أساميهم ولا شنوّة تعمل بيهم: iOS يخبّيهم عندو."
+          }
+        }
+      }
+    },
+    "apps_ios_limite": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Plus de %1$lld applications : iOS n’en retient pas davantage, et ne le dit pas. Choisissez plutôt une catégorie entière."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "More than %1$lld apps: iOS holds back no more than that, and does not say so. Choose a whole category instead."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "יותר מ-%1$lld אפליקציות: iOS לא חוסמת יותר מזה, ולא אומרת זאת. בחרו במקום זאת קטגוריה שלמה."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Más de %1$lld aplicaciones: iOS no retiene más, y no lo dice. Elige mejor una categoría entera."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "أكثر من %1$lld تطبيق: iOS ما يسكّرش أكثر، وما يقولهاش. اختار خير فئة كاملة."
+          }
+        }
+      }
+    },
+    "apps_ios_sites": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sites : %1$lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Websites: %1$lld"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אתרים: %1$lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sitios web: %1$lld"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "المواقع: %1$lld"
+          }
+        }
+      }
+    },
+    "bouclier_apercu_explication": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voici l’écran qu’iOS posera sur les applications choisies. Il ne porte qu’une image, un titre, un texte et deux boutons ; touchez une variante pour la voir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "This is the screen iOS will place over the chosen apps. It can only hold an image, a title, a text and two buttons; tap a variant to see it."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "זה המסך ש-iOS תציב על האפליקציות שנבחרו. יש בו רק תמונה, כותרת, טקסט ושני כפתורים; געו באחת הגרסאות כדי לראות אותה."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Esta es la pantalla que iOS pondrá sobre las aplicaciones elegidas. Solo lleva una imagen, un título, un texto y dos botones; toca una variante para verla."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "هاذي الشاشة اللي iOS باش يحطها على التطبيقات اللي اخترتها. فيها كان تصويرة، عنوان، نص وزوز بوتونات؛ انقر على نسخة باش تشوفها."
+          }
+        }
+      }
+    },
+    "bouclier_apercu_titre": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le bouclier"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The shield"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המגן"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "El escudo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الدرع"
+          }
+        }
+      }
+    },
     "bouclier_autre_reponse": {
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
@@ -73,6 +325,222 @@
         }
       }
     },
+    "bouclier_essai": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Faire un essai de deux minutes"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Try it for two minutes"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לנסות במשך שתי דקות"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hacer una prueba de dos minutos"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اعمل تجربة دقيقتين"
+          }
+        }
+      }
+    },
+    "bouclier_essai_echec": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’essai n’a pas pu commencer. Rouvrez l’app et réessayez."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The trial could not start. Reopen the app and try again."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הניסיון לא הצליח להתחיל. פתחו שוב את האפליקציה ונסו שוב."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La prueba no pudo empezar. Vuelve a abrir la app e inténtalo de nuevo."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التجربة ما نجمتش تبدا. عاود حلّ التطبيق وجرّب مرة أخرى."
+          }
+        }
+      }
+    },
+    "bouclier_essai_en_cours": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essai en cours jusqu’à %1$@ : ouvrez une des applications choisies."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Trial running until %1$@: open one of the chosen apps."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הניסיון פעיל עד %1$@: פתחו אחת מהאפליקציות שנבחרו."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prueba en curso hasta las %1$@: abre una de las aplicaciones elegidas."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التجربة ماشية حتى %1$@: حلّ واحد من التطبيقات اللي اخترتها."
+          }
+        }
+      }
+    },
+    "bouclier_essai_explication": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pendant deux minutes, à n’importe quelle heure, les applications choisies montreront le vrai bouclier, « APERÇU, AUCUN EFFET ». Ouvrez-en une pour le voir, puis touchez « Fermer l’aperçu »."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "For two minutes, at any time of day, the chosen apps will show the real shield, “PREVIEW, NO EFFECT”. Open one to see it, then tap “Close the preview”."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "במשך שתי דקות, בכל שעה, האפליקציות שנבחרו יציגו את המגן האמיתי, „תצוגה מקדימה, ללא השפעה”. פתחו אחת מהן כדי לראות אותו, ואז געו ב„לסגור את התצוגה”."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Durante dos minutos, a cualquier hora, las aplicaciones elegidas mostrarán el escudo real, «VISTA PREVIA, SIN EFECTO». Abre una para verlo y luego toca «Cerrar la vista previa»."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "مدة دقيقتين، في أي وقت، التطبيقات اللي اخترتها باش تورّي الدرع الحقيقي، «معاينة، بلا تأثير». حلّ واحد منهم باش تشوفو، ومن بعد انقر على «سكّر المعاينة»."
+          }
+        }
+      }
+    },
+    "bouclier_essai_lance": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essai lancé : ouvrez une des applications choisies."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Trial started: open one of the chosen apps."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הניסיון התחיל: פתחו אחת מהאפליקציות שנבחרו."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prueba iniciada: abre una de las aplicaciones elegidas."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التجربة بدات: حلّ واحد من التطبيقات اللي اخترتها."
+          }
+        }
+      }
+    },
+    "bouclier_essai_sans_acces": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Autorisez d’abord Temps d’écran, dans la carte des autorisations des réglages."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "First allow Screen Time, in the permissions card of the settings."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "קודם אשרו את זמן מסך, בכרטיס ההרשאות שבהגדרות."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Primero autoriza Tiempo de uso, en la tarjeta de permisos de los ajustes."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "قبل كل شي سمّح لمدة استخدام الشاشة، في بطاقة الأذونات متاع الإعدادات."
+          }
+        }
+      }
+    },
     "bouclier_notification_commencer": {
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
@@ -105,6 +573,114 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "انقر باش تبدا الهتبوديدوت متاعك"
+          }
+        }
+      }
+    },
+    "bouclier_notification_revenir": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touchez pour revenir à votre hitbodedout"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tap to return to your hitbodedut"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "געו כדי לחזור להתבודדות"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Toca para volver a tu hitbodedut"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "انقر باش ترجع للهتبوديدوت متاعك"
+          }
+        }
+      }
+    },
+    "bouclier_visage_essai": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essai"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Trial"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ניסיון"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prueba"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تجربة"
+          }
+        }
+      }
+    },
+    "bouclier_visage_invite": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rien de fait"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nothing done yet"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "עוד לא נעשה"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nada hecho aún"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "مازال ما تعمل شي"
           }
         }
       }
@@ -433,6 +1009,42 @@
         }
       }
     },
+    "gate_revoked_action": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rendre l’accès"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Give access back"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "להחזיר את הגישה"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Devolver el acceso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "رجّع النفاذ"
+          }
+        }
+      }
+    },
     "gate_revoked_detail": {
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
@@ -577,38 +1189,866 @@
         }
       }
     },
-    "ios_version_a_venir": {
-      "comment": "Choix de la version (VersionApp) : l'accueil choisi n'est pas encore porté sur iOS. À relire par le propriétaire.",
+    "ios_vol_billet_fichier": {
+      "comment": "Écran du vol (VolVue), billet : choisir un fichier, PDF ou image, dans Fichiers (le sélecteur d'Android). À relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Cet accueil n’existe pas encore sur iPhone : l’app garde l’accueil Classique, et votre choix est retenu."
+            "value": "Choisir un fichier (PDF ou image)"
           }
         },
         "en": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "This home screen is not on iPhone yet: the app keeps the Classic home, and your choice is saved."
+            "value": "Choose a file (PDF or image)"
           }
         },
         "he": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "מסך הבית הזה עדיין לא קיים באייפון: האפליקציה נשארת במסך הקלאסי, והבחירה שלך נשמרת."
+            "value": "בחירת קובץ (PDF או תמונה)"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Esta pantalla de inicio aún no está en iPhone: la app mantiene la pantalla Clásica y tu elección queda guardada."
+            "value": "Elegir un archivo (PDF o imagen)"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "الصفحة الرئيسية هاذي مازالت موش موجودة في الآيفون: التطبيق يقعد على الصفحة الكلاسيكية، واختيارك محفوظ."
+            "value": "اختار ملف (PDF ولّا تصويرة)"
+          }
+        }
+      }
+    },
+    "ios_vol_billet_photo": {
+      "comment": "Écran du vol (VolVue), billet : choisir une photo dans la photothèque (PhotosPicker). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choisir une photo du billet"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choose a photo of the ticket"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "בחירת תמונה של הכרטיס"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Elegir una foto del boleto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اختار تصويرة متاع التذكرة"
+          }
+        }
+      }
+    },
+    "ios_vol_billet_scanner": {
+      "comment": "Écran du vol (VolVue), billet : lire la carte d'embarquement avec l'appareil photo (VisionKit, propre à iOS ; Android n'importe que le fichier). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scanner la carte d’embarquement"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scan the boarding pass"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "סריקת כרטיס העלייה למטוס"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escanear el pase de abordar"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اقرا بطاقة الصعود بالكاميرا"
+          }
+        }
+      }
+    },
+    "ios_vol_billet_viser": {
+      "comment": "Écran du vol, lecture du billet par l'appareil photo : la consigne au-dessus de l'image. À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Visez le code-barres de la carte d’embarquement."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Point the camera at the boarding pass barcode."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כוונו את המצלמה אל הברקוד של כרטיס העלייה למטוס."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apunta la cámara al código de barras del pase de abordar."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وجّه الكاميرا للكود-بار متاع بطاقة الصعود."
+          }
+        }
+      }
+    },
+    "journal_barriere_activite_essai": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "fin de l’essai"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "end of the trial"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "סוף הניסיון"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "fin de la prueba"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آخر التجربة"
+          }
+        }
+      }
+    },
+    "journal_barriere_activite_fenetre": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "plage horaire"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "hours"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "השעות"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "horario"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الفترة"
+          }
+        }
+      }
+    },
+    "journal_barriere_activite_minuit": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "minuit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "midnight"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "חצות"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "medianoche"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "نص الليل"
+          }
+        }
+      }
+    },
+    "journal_barriere_activite_report": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "fin du report"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "end of the delay"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "סוף הדחייה"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "fin del aplazamiento"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آخر التأجيل"
+          }
+        }
+      }
+    },
+    "journal_barriere_activite_seance": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "fin de la hitbodedout"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "end of the hitbodedut"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "סוף ההתבודדות"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "fin del hitbodedut"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "آخر الهتبوديدوت"
+          }
+        }
+      }
+    },
+    "journal_barriere_armee": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bouclier posé par %1$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Shield set by %1$@"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המגן הוצב על ידי %1$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escudo puesto por %1$@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الدرع تحطّ من %1$@"
+          }
+        }
+      }
+    },
+    "journal_barriere_bouton": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bouton « %1$@ »"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "“%1$@” button"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הכפתור „%1$@”"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Botón «%1$@»"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "البوتون «%1$@»"
+          }
+        }
+      }
+    },
+    "journal_barriere_essai_debut": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essai de deux minutes commencé"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Two-minute trial started"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ניסיון של שתי דקות התחיל"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prueba de dos minutos iniciada"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تجربة دقيقتين بدات"
+          }
+        }
+      }
+    },
+    "journal_barriere_essai_fin": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essai terminé"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Trial ended"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הניסיון הסתיים"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prueba terminada"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التجربة وفات"
+          }
+        }
+      }
+    },
+    "journal_barriere_inconnu": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Événement : %1$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Event: %1$@"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אירוע: %1$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Evento: %1$@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "حدث: %1$@"
+          }
+        }
+      }
+    },
+    "journal_barriere_inscrite": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Plage horaire inscrite auprès d’iOS"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hours registered with iOS"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "השעות נרשמו ב-iOS"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Horario registrado en iOS"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الفترة تسجّلت عند iOS"
+          }
+        }
+      }
+    },
+    "journal_barriere_levee": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bouclier levé par %1$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Shield lifted by %1$@"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המגן הוסר על ידי %1$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escudo quitado por %1$@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الدرع تنحّى من %1$@"
+          }
+        }
+      }
+    },
+    "journal_barriere_par_app": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "l’app"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "the app"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "האפליקציה"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "la app"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التطبيق"
+          }
+        }
+      }
+    },
+    "journal_barriere_par_bouclier": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "un bouton du bouclier"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "a shield button"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כפתור במגן"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "un botón del escudo"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "بوتون في الدرع"
+          }
+        }
+      }
+    },
+    "journal_barriere_par_correction": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "l’app, qui l’a remis d’accord"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "the app, which set it right"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "האפליקציה, שתיקנה אותו"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "la app, que lo corrigió"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التطبيق، اللي صلّحو"
+          }
+        }
+      }
+    },
+    "journal_barriere_par_surveillance": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "la surveillance"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "the schedule"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המעקב"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "la vigilancia"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "المراقبة"
+          }
+        }
+      }
+    },
+    "journal_barriere_report": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Report de %1$lld min"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Postponed by %1$lld min"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "נדחה ב-%1$lld דק׳"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aplazado %1$lld min"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "تأجيل %1$lld دقيقة"
+          }
+        }
+      }
+    },
+    "journal_barriere_reveil": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Surveillance réveillée : %1$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schedule woke up: %1$@"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המעקב התעורר: %1$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vigilancia despertada: %1$@"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "المراقبة فاقت: %1$@"
+          }
+        }
+      }
+    },
+    "journal_barriere_titre": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Journal de la barrière"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Barrier log"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "יומן המחסום"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Registro de la barrera"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "سجل الحاجز"
+          }
+        }
+      }
+    },
+    "journal_barriere_vide": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aucun événement pour l’instant."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No events yet."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אין עדיין אירועים."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aún no hay eventos."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "مازال حتى حدث."
           }
         }
       }
@@ -681,6 +2121,150 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "باش تظهر شاشة «أنا مع ربّي» على التطبيقات اللي تختارها، الصباح."
+          }
+        }
+      }
+    },
+    "reglages_fenetre_courte": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La plage horaire doit durer au moins 15 minutes : iOS n’en surveille pas de plus courte."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The hours must last at least 15 minutes: iOS does not watch a shorter span."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "השעות צריכות להימשך 15 דקות לפחות: iOS לא עוקבת אחרי פרק זמן קצר יותר."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "El horario debe durar al menos 15 minutos: iOS no vigila uno más corto."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الفترة لازمها تدوم 15 دقيقة على الأقل: iOS ما يراقبش فترة أقصر."
+          }
+        }
+      }
+    },
+    "temps_ecran_divulgation_pas_maintenant": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pas maintenant"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Not now"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לא עכשיו"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ahora no"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "موش توّة"
+          }
+        }
+      }
+    },
+    "temps_ecran_divulgation_texte": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ce qui est fait : pendant la plage horaire que vous avez fixée, tant que la pratique du jour n’est pas faite, et pendant toute hitbodedout en cours, iOS pose un écran sur les applications et les sites que vous choisirez dans le sélecteur d’Apple.\n\nCe qui n’est pas fait : MyHitbodedut ne voit ni le nom de vos applications, ni ce que vous ouvrez, ni le temps que vous y passez. iOS ne lui donne que des jetons illisibles.\n\nRien n’est enregistré, envoyé ni partagé : tout reste sur ce téléphone.\n\nPour couper la barrière à tout moment : Réglages, interrupteur « Je suis avec Hachem ». Vous pouvez aussi retirer cet accès dans les Réglages d’iOS, Temps d’écran."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "What is done: during the hours you set, as long as the day’s practice is not done, and during any hitbodedut in progress, iOS places a screen over the apps and websites you choose in Apple’s picker.\n\nWhat is not done: MyHitbodedut sees neither the names of your apps, nor what you open, nor how long you spend there. iOS only gives it unreadable tokens.\n\nNothing is recorded, sent or shared: everything stays on this phone.\n\nTo turn the barrier off at any time: Settings, “I am with Hashem” switch. You can also remove this access in iOS Settings, Screen Time."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מה נעשה: בשעות שקבעתם, כל עוד התרגול של היום לא נעשה, ובמהלך כל התבודדות פעילה, iOS מציבה מסך על האפליקציות והאתרים שתבחרו בבוחר של Apple.\n\nמה לא נעשה: MyHitbodedut לא רואה את שמות האפליקציות שלכם, לא מה שאתם פותחים ולא כמה זמן אתם שם. iOS נותנת לה רק אסימונים בלתי קריאים.\n\nדבר לא נשמר, נשלח או משותף: הכול נשאר בטלפון הזה.\n\nכדי לכבות את המחסום בכל רגע: הגדרות, המתג „אני עם השם”. אפשר גם להסיר את הגישה הזו בהגדרות של iOS, זמן מסך."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lo que se hace: durante el horario que fijaste, mientras la práctica del día no esté hecha, y durante cualquier hitbodedut en curso, iOS pone una pantalla sobre las aplicaciones y los sitios web que elijas en el selector de Apple.\n\nLo que no se hace: MyHitbodedut no ve el nombre de tus aplicaciones, ni lo que abres, ni el tiempo que pasas en ellas. iOS solo le da fichas ilegibles.\n\nNada se guarda, se envía ni se comparte: todo se queda en este teléfono.\n\nPara apagar la barrera en cualquier momento: Ajustes, interruptor «Estoy con Hashem». También puedes retirar este acceso en los Ajustes de iOS, Tiempo de uso."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "شنوّة يتعمل: في الفترة اللي حدّدتها، ما دامت الممارسة متاع النهار ما تعملتش، وفي كل هتبوديدوت ماشية، iOS يحط شاشة على التطبيقات والمواقع اللي باش تختارهم في المختار متاع Apple.\n\nشنوّة ما يتعملش: MyHitbodedut ما يشوفش أسامي تطبيقاتك، ولا شنوّة تحلّ، ولا قدّاش تقعد فيهم. iOS ما يعطيه كان رموز ما تتقراش.\n\nحتى شي ما يتسجّل، ما يتبعث وما يتشارك: كل شي يقعد في التليفون هذا.\n\nباش تطفّي الحاجز وقت ما تحب: الإعدادات، المفتاح «أنا مع هاشم». تنجم زادة تنحّي النفاذ هذا من إعدادات iOS، مدة استخدام الشاشة."
+          }
+        }
+      }
+    },
+    "temps_ecran_divulgation_titre": {
+      "comment": "Barrière, écrans et extensions d'iOS (tâches 27 et 28, PORTAGE.md § 2.1) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Accès à Temps d’écran"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Screen Time access"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "גישה לזמן מסך"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Acceso a Tiempo de uso"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "النفاذ لمدة استخدام الشاشة"
           }
         }
       }

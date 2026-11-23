@@ -177,6 +177,7 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 - **Sources** : `MainActivity.kt`, `AnneauxDessin.kt`, `AnneauxView.kt`, `Onboarding.kt`, `OnboardingActivity.kt`, `SettingsActivity.kt` (prénom, adresse, apparence, données), `AccueilMoment.kt`, `Dedicace.kt`, `Tips.kt`, `TipsActivity.kt`.
 - **Critère de fin** : un test d'interface va de la présentation à l'accueil puis dans les trois onglets (Le Jour,
   Les Livres, Le Chemin ; refonte d'Android du 13/11), et ouvre Zmanim et les réglages depuis l'en-tête du Jour ; il importe un fichier d'or par l'écran des réglages et lit la série attendue ; captures de l'accueil dans ses quatre états (pas encore faite, en cours, faite, jour sans obligation) ; les anneaux ne bougent pas quand « Réduire les animations » est actif.
+- **Les versions de l'app (17/11)** : `VersionApp.kt`, `ChoixVersionActivity.kt`, `AccueilVersion.kt`, `VueVersion.kt`, `SereniteActivity.kt`, `BentoActivity.kt`, `PileActivity.kt`. Classique est l'accueil aux trois onglets ; Sérénité, Bento et Pile ont le leur (`AccueilVersionModele`, testé sous Linux ; `SereniteVue`, `BentoVue`, `PileVue`), posé par la racine à la place des onglets, comme l'activité de la version remplace MainActivity. Restent à un test d'interface : les captures des trois accueils, de jour et de nuit pour Sérénité.
 
 ### 16. Séance, journal, parcours
 
@@ -248,12 +249,27 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 - **Livrable** : l'écran et sa carte d'état, l'explication avant l'autorisation, le sélecteur, les deux magasins, l'extension du bouclier (trois visages, textes lus dans `etat.json`), l'extension d'action (commencer, déjà faite, plus tard), la boîte, l'aide-mémoire de la liste d'Android.
 - **Critère de fin** : la réplique du bouclier en captures, trois visages × trois langues ; les tests du paquet `Barriere` restent verts ; la construction de développement s'installe sur l'iPhone et le bouclier « rien de fait » paraît.
 - **Où** : macOS, iPhone.
+- **Fait (23/11, vérifié sous Linux et compilé par la CI macOS, jamais vu sur un iPhone)** : la règle du bouclier dans
+  `Barriere` (`PlanBouclier` : invite et son sous-menu, deuxième page, séance, essai, bouclier resté posé à tort ; les
+  gestes de GateService), le dossier partagé (`FichiersBarriere` : instantané, boîte, journal, sélection et son
+  appareil), l'instantané vu avec la boîte ; dans `Coeur`, les textes, l'apparence (palette, personnage du jour) et la
+  boîte versée au journal (`EtatBarriere.verser`) ; l'adaptateur de l'app (`App/Services/TempsEcran.swift` :
+  FamilyControls, les magasins, la synchronisation à chaque changement et à chaque retour) ; les écrans de l'aperçu (la
+  réplique, l'essai réel), du choix des applications (`FamilyActivityPicker`, `Label(jeton)`, limite de 50,
+  aide-mémoire d'Android) et de la dédicace ; les extensions `Bouclier` et `BouclierAction` (« Commencer » ouvre l'app
+  par `.openParentalControlsApp`, avec une notification de repli). Reste à l'iPhone : les captures et le critère.
 
 ### 28. Barrière II : la surveillance, le diagnostic
 
 - **Livrable** : l'extension de surveillance et ses cinq activités, l'essai réel, le journal de la barrière, les états propres à iOS, la mise à jour de `etat.json` à chaque changement.
 - **Critère de fin** : **recette R4** réussie.
 - **Où** : iPhone.
+- **Fait (23/11, même réserve)** : l'extension `Surveillance` et ses cinq activités (`Planification` : fenêtre, minuit,
+  report, séance, essai ; un rendez-vous unique planifié à la minute pleine qui suit, avec son jour), l'essai réel de
+  deux minutes, le journal de la barrière (`JournalBarriereVue`, à partager), les cinq états d'iOS sur la carte d'état et
+  leur geste (rendre l'accès, choisir de nouveau, relancer la surveillance ; le bouclier désaccordé corrigé et noté),
+  `etat.json` réécrit à chaque changement du journal ou des réglages. Le magasin `seance` du § 2.1.2 est fondu dans
+  `barriere` : le visage se choisit à l'affichage. Reste la recette R4.
 
 ## G. Finir
 
@@ -338,35 +354,37 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 
 | Sujet d'Android | Fait sur iOS | Reste |
 | --- | --- | --- |
-| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour`, `AccueilVue` (le Jour entier : anneaux, plaque, bande, relance, cartes du moment), la barre de départ et son volet sur les trois onglets (`BarreDepart`, `feuilleDepart`, `AccueilModele.volet`), `TextesVue` (les trois rayons, `TextesModele.rayons`), le mois en barres au Chemin (`GraphiqueMois`) | la fête des trophées neufs à l'accueil (`TropheeFeteModele`) |
+| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour`, `AccueilVue` (le Jour entier : anneaux, plaque, bande, relance, cartes du moment), la barre de départ et son volet sur les trois onglets (`BarreDepart`, `feuilleDepart`, `AccueilModele.volet`), `TextesVue` (les trois rayons, `TextesModele.rayons`), le mois en barres au Chemin (`GraphiqueMois`), la fête des trophées neufs à l'accueil (`TropheeFeteModele` ; la fiche qui se retourne, les confettis et les étincelles par-dessus les onglets, `feteDesTrophees` ; la phrase et les étincelles d'un palier autour de la médaille du grade) | — |
 | Pastille « Avec Hachem » | `GateStatus.pastilleDe`, `GateRule.geste` d'après Temps d'écran | — |
-| Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele`, ligne des réglages | les accueils Sérénité, Bento et Pile (BentoActivity, PileActivity, SereniteActivity, AccueilVersion) ; d'ici là l'app montre Classique et le dit |
+| Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele` (et l'aperçu des trois couleurs), ligne des réglages, le choix proposé au retour de la présentation (`AccueilRoute.choixVersion`) ; les accueils Sérénité, Bento et Pile (`AccueilVersionModele`, `SereniteVue` et son paysage du ciel, `BentoVue` et ses tuiles vivantes, `PileVue` et ses quatre cartes), posés par la racine à la place des onglets ; leurs polices (Bellefair, Heebo, Secular One, Rubik) | — |
 | Espagnol, arabe de Tunisie | localisations es et ar-TN déclarées (`CFBundleLocalizations`, catalogues `Catalogue/` en « ar-TN ») ; `Traducteur.langueDuTelephone` (LangueApp.livree) ; l'app de droite à gauche en arabe | le choix de la langue reste dans les Réglages d'iOS (§ 2.2.7) : iOS n'a pas d'équivalent sûr au sélecteur d'Android dans l'app |
 | Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot ; leurs cartes dans `ZmanimVue`, avec le choix du lieu par les villes | la position du téléphone (adaptateur de `Localisation`), le calendrier, la boussole et le partage depuis Zmanim |
 | Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`) ; les vues du lecteur compilées et ouvertes depuis les Livres, la recherche et le Jour | — |
 | Audit : journal, durées | corriger ou retirer un jour (`Store.corrigerJour`), durée réglable refusée sans être ramenée (`DureeSeance.valide`) | — |
-| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim | le billet (Vision), le relevé GPS et les services en ligne (leurs adaptateurs), le test d'interface de la tâche 26 |
+| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim ; le billet (`VolBilletBouton` : l'appareil photo par VisionKit, une photo ou un PDF lus par Vision dans `LecteurBilletSysteme`, puis `CarteEmbarquement`) | le relevé GPS et les services en ligne (leurs adaptateurs), le test d'interface de la tâche 26 ; la lecture du billet par l'appareil photo reste à essayer sur un téléphone |
 | Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture, historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
-| Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit | le code des trois extensions (tâches 27 et 28) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
+| Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit ; les trois extensions, l'adaptateur de Temps d'écran, l'aperçu, le choix des applications, le journal de la barrière (tâches 27 et 28) | l'essai sur un iPhone (recettes R2 et R4) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
 
 ## Phase 3 : l'app utilisable (22/11)
 
 | Écran | Vue | État |
 | --- | --- | --- |
-| Le Jour | `AccueilVue`, `BarreDepart`, `feuilleDepart` | réel |
-| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels, avec la musique et l'ambiance ; sans Live Activity (tâche 17) |
-| La musique | `MusiqueVue` sur `MusiqueLecteur`, ouverte depuis le volet ; `App/Services/Musique.swift` (AVAudioPlayer, AVAudioEngine, copie des morceaux ajoutés, pochettes) | réelle ; le mini-lecteur de la séance (`MusiqueMiniLecteurVue`) n'est pas encore posé |
+| Le Jour | `AccueilVue`, `BarreDepart`, `feuilleDepart`, `feteDesTrophees` | réel, avec la fête des trophées neufs |
+| Les accueils des versions | `AccueilVersionVue` : `SereniteVue`, `BentoVue`, `PileVue` ; `ChoixVersionVue` | réels : la version choisie remplace aussitôt les onglets |
+| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels, avec la musique, l'ambiance et le mini-lecteur ; sans Live Activity (tâche 17) |
+| La musique | `MusiqueVue` sur `MusiqueLecteur`, ouverte depuis le volet ; `App/Services/Musique.swift` (AVAudioPlayer, AVAudioEngine, copie des morceaux ajoutés, pochettes) | réelle ; le mini-lecteur (`MusiqueMiniLecteurVue`) posé sur l'écran de séance |
 | Les Livres | `TextesVue` ; siddour, lecteur, Tehilim, Tikoun, Tefilot, sources et livres, halakha, hilloulot, recherche, 'hizouk, conseils | réels |
 | Le Chemin | `CheminVue` (et le mois en barres), `JournalVue`, `ParcoursVue`, `PaliersVue` | réels |
-| Les réglages | `ReglagesVue`, `ChoixVersionVue` | réels ; l'aperçu du bouclier, le choix des applications et la dédicace disent « écran introuvable » (tâches 27, 28) |
+| Les réglages | `ReglagesVue`, `ChoixVersionVue`, `DedicaceVue` | réels, avec la dédicace |
+| La barrière | `ApercuBouclierVue` (la réplique et l'essai réel), `ChoixApplicationsVue` (le sélecteur d'Apple), `JournalBarriereVue` ; `App/Services/TempsEcran.swift` ; les extensions `Bouclier`, `BouclierAction`, `Surveillance` | réels, compilés ; Temps d'écran ne tourne pas sur le simulateur : rien n'est vu avant l'iPhone (recette R4) |
 | Zmanim | `ZmanimVue` | réel, sans position du téléphone |
-| Le vol | `VolVue` | réel, hors ligne, sans billet ni GPS |
+| Le vol | `VolVue`, `VolBilletBouton` | réel, hors ligne, avec le billet (appareil photo, photo, PDF) ; sans GPS |
 | La présentation | `PresentationVue` | réelle |
 | La boussole, le calendrier, les rappels | `BoussoleVue` compilée ; ses capteurs, et les écrans du calendrier et des rappels manquent | en attente |
 
 Le journal et les réglages vivent dans les fichiers du dossier de l'app (`PersistanceFichiers` sur l'acteur
-`Depot`) ; les notifications locales, l'icône et la musique ont leurs adaptateurs (`ios/App/Services`). Temps d'écran, la Live
-Activity, le planificateur des rappels et les widgets restent à brancher. Rien de tout cela n'a encore été vu sur un
+`Depot`) ; les notifications locales, l'icône, la musique et Temps d'écran ont leurs adaptateurs (`ios/App/Services`). La
+Live Activity, le planificateur des rappels et les widgets restent à brancher. Rien de tout cela n'a encore été vu sur un
 téléphone : la CI compile et teste sur simulateur, sans lancer l'app.
 
 ## Hors de ces trente tâches

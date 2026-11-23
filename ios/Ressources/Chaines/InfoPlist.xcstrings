@@ -1,0 +1,42 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "NSCameraUsageDescription": {
+      "comment": "La raison de l'appareil photo, que le système montre (Info.plist) : lire la carte d'embarquement sur l'écran du vol (VolVue, VisionKit). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’appareil photo lit le code-barres de votre carte d’embarquement, sur le téléphone : rien n’est envoyé."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The camera reads the barcode of your boarding pass, on the phone: nothing is sent."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המצלמה קוראת את הברקוד של כרטיס העלייה למטוס שלכם, בטלפון עצמו: שום דבר לא נשלח."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La cámara lee el código de barras de tu pase de abordar, en el teléfono: no se envía nada."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "الكاميرا تقرا الكود-بار متاع بطاقة الصعود متاعك، في التليفون: ما يتبعث شي."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

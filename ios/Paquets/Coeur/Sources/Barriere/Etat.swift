@@ -114,6 +114,15 @@ public struct Etat: Codable, Sendable, Equatable {
         public var apercu = ""
         public var fermerApercu = ""
         public var notificationCommencer = ""
+        /// La notification de repli du bouclier de la séance (« Revenir »), comme celle de « Commencer ».
+        public var notificationRevenir = ""
+        /// « Continuer » : le bouton du bouclier resté posé alors que la règle n'en veut plus (§ 2.1.10).
+        public var continuer = ""
+        /// Le titre et le détail de la carte d'état (GateStatus.titleOf, detailOf) pour les états sans bouclier, sous
+        /// le nom brut de l'état (« ALREADY_DONE ») : ce que dit un bouclier resté posé à tort (§ 2.1.10).
+        public var titresLeve: [String: String] = [:]
+        public var detailsLeve: [String: String] = [:]
+        public var apparence = ApparenceBouclier()
 
         public init() {}
 
@@ -131,6 +140,11 @@ public struct Etat: Codable, Sendable, Equatable {
             case apercu
             case fermerApercu = "fermer_apercu"
             case notificationCommencer = "notification_commencer"
+            case notificationRevenir = "notification_revenir"
+            case continuer
+            case titresLeve = "titres_leve"
+            case detailsLeve = "details_leve"
+            case apparence
         }
 
         public init(from decoder: any Decoder) throws {
@@ -149,6 +163,33 @@ public struct Etat: Codable, Sendable, Equatable {
             apercu = texte(.apercu)
             fermerApercu = texte(.fermerApercu)
             notificationCommencer = texte(.notificationCommencer)
+            notificationRevenir = texte(.notificationRevenir)
+            continuer = texte(.continuer)
+            titresLeve = (try? c.decodeIfPresent([String: String].self, forKey: .titresLeve)) ?? [:]
+            detailsLeve = (try? c.decodeIfPresent([String: String].self, forKey: .detailsLeve)) ?? [:]
+            apparence = (try? c.decodeIfPresent(ApparenceBouclier.self, forKey: .apparence)) ?? ApparenceBouclier()
+        }
+    }
+
+    /// L'essai réel de deux minutes (§ 2.1.8) : le magasin `essai` retient les applications choisies de `debut` à
+    /// `fin` (millisecondes Unix), avec le bouclier « APERÇU, AUCUN EFFET ».
+    public struct Essai: Codable, Sendable, Equatable {
+        public var debut: Int64
+        public var fin: Int64
+
+        public init(debut: Int64, fin: Int64) {
+            self.debut = debut
+            self.fin = fin
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case debut, fin
+        }
+
+        public init(from decoder: any Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            debut = (try? c.decodeIfPresent(Int64.self, forKey: .debut)) ?? 0
+            fin = (try? c.decodeIfPresent(Int64.self, forKey: .fin)) ?? 0
         }
     }
 
@@ -176,6 +217,8 @@ public struct Etat: Codable, Sendable, Equatable {
     public var bouclier = Bouclier()
     /// Les jetons de la sélection : une application, une catégorie ou un site vaut un.
     public var nombreDeJetons = 0
+    /// L'essai réel en cours ou le dernier demandé ; nil sans essai.
+    public var essai: Essai?
 
     public init() {}
 
@@ -208,6 +251,7 @@ public struct Etat: Codable, Sendable, Equatable {
         case seance
         case bouclier
         case nombreDeJetons = "nombre_de_jetons"
+        case essai
     }
 
     public init(from decoder: any Decoder) throws {
@@ -229,6 +273,101 @@ public struct Etat: Codable, Sendable, Equatable {
         seance = try? c.decodeIfPresent(Seance.self, forKey: .seance)
         bouclier = (try? c.decodeIfPresent(Bouclier.self, forKey: .bouclier)) ?? defaut.bouclier
         nombreDeJetons = (try? c.decodeIfPresent(Int.self, forKey: .nombreDeJetons)) ?? defaut.nombreDeJetons
+        essai = try? c.decodeIfPresent(Essai.self, forKey: .essai)
+    }
+
+    /// L'instantané tel que les extensions le voient : celui de l'app, plus ce que la boîte dit depuis qu'il a été
+    /// écrit. « Je l'ai déjà faite » vaut une séance close (`JourneeValidee.avec`) ; « Plus tard » porte le report
+    /// (`Store.snooze` au moment de l'appui, pour la durée écrite dans le détail, sinon celle des réglages) ; la fin
+    /// de l'essai, écrite par l'action « Fermer l'aperçu » ou par la surveillance, le retire. Le reste (réveils,
+    /// « Commencer ») ne change pas la règle : la séance ne commence qu'à l'ouverture de l'app.
+    public func avec(_ evenements: [Evenement]) -> Etat {
+        var resultat = self
+        resultat.journee = journee.avec(evenements)
+        for evenement in evenements {
+            switch evenement.genreConnu {
+            case .plusTard:
+                let minutes = Int(evenement.detail).map { max($0, 0) } ?? snoozeMinutes
+                let fin = evenement.quand.millis + Int64(minutes) * 60_000
+                if fin > resultat.snoozedUntil { resultat.snoozedUntil = fin }
+            case .essai:
+                if evenement.detail == Etat.essaiFini, let essai = resultat.essai, evenement.quand.millis >= essai.debut {
+                    resultat.essai = nil
+                }
+            default:
+                break
+            }
+        }
+        return resultat
+    }
+
+    /// Le détail de l'événement `essai` qui dit sa fin (« debut » à son début).
+    public static let essaiFini = "fin"
+    public static let essaiCommence = "debut"
+
+    /// L'essai court-il à `millis` ? Sa fin est exclue, comme celle du report.
+    public func essaiEnCours(millis: Int64) -> Bool {
+        guard let essai else { return false }
+        return essai.debut <= millis && essai.fin > millis
+    }
+}
+
+/// Ce que le bouclier montre de l'apparence choisie (BlockerView, view_blocker.xml) : le fond `brand_dark`, le titre
+/// blanc, le sous-titre `mint`, le bouton principal `brand` et son texte `on_brand`, en « #RRGGBB » ; et le nom des
+/// trois images du personnage du jour (Character.call, during, joy), que l'app copie à côté de l'instantané, le
+/// paquet de l'extension n'ayant pas les images de l'app. Valeurs par défaut : la palette d'origine d'Android.
+public struct ApparenceBouclier: Codable, Sendable, Equatable {
+    public var fond = "#173C32"
+    public var titre = "#FFFFFF"
+    public var texte = "#DFF5E8"
+    public var bouton = "#16775A"
+    public var texteBouton = "#FFFFFF"
+    public var iconeAppel = ""
+    public var iconeSeance = ""
+    public var iconeJoie = ""
+
+    public init() {}
+
+    private enum CodingKeys: String, CodingKey {
+        case fond, titre, texte, bouton
+        case texteBouton = "texte_bouton"
+        case iconeAppel = "icone_appel"
+        case iconeSeance = "icone_seance"
+        case iconeJoie = "icone_joie"
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let defaut = ApparenceBouclier()
+        func lire(_ cle: CodingKeys, _ valeur: String) -> String {
+            (try? c.decodeIfPresent(String.self, forKey: cle)) ?? valeur
+        }
+        fond = lire(.fond, defaut.fond)
+        titre = lire(.titre, defaut.titre)
+        texte = lire(.texte, defaut.texte)
+        bouton = lire(.bouton, defaut.bouton)
+        texteBouton = lire(.texteBouton, defaut.texteBouton)
+        iconeAppel = lire(.iconeAppel, "")
+        iconeSeance = lire(.iconeSeance, "")
+        iconeJoie = lire(.iconeJoie, "")
+    }
+
+    /// « #RRGGBB » lu en trois composantes de 0 à 255 ; nil pour un autre texte.
+    public static func rvb(_ hex: String) -> (rouge: Int, vert: Int, bleu: Int)? {
+        let unites = Array(hex.utf8)
+        guard unites.count == 7, unites[0] == 0x23 else { return nil }
+        var valeur = 0
+        for u in unites[1...] {
+            let chiffre: Int
+            switch u {
+            case 0x30...0x39: chiffre = Int(u - 0x30)
+            case 0x41...0x46: chiffre = Int(u - 0x41) + 10
+            case 0x61...0x66: chiffre = Int(u - 0x61) + 10
+            default: return nil
+            }
+            valeur = valeur * 16 + chiffre
+        }
+        return ((valeur >> 16) & 0xFF, (valeur >> 8) & 0xFF, valeur & 0xFF)
     }
 }
 

@@ -240,11 +240,15 @@ public struct ReglagesVue: View {
                     .font(.subheadline)
                     .foregroundStyle(Teinte(.ink))
                     .padding(.top, 4)
-                if carte.boutonAutorisations {
+                // Le bouton suit l'état (gate_fix_permissions) : les accès, l'accès rendu, le choix des applications,
+                // la surveillance relancée (PORTAGE.md § 2.1.8).
+                if let action = carte.action {
                     Button {
-                        modele.montrerAutorisations()
+                        Task {
+                            if let route = await modele.agir(action) { ouvrirRoute(route) }
+                        }
                     } label: {
-                        Text(Libelle("gate_permissions_action"), traducteur: traducteur)
+                        Text(action.libelle, traducteur: traducteur)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.principal)
@@ -259,6 +263,14 @@ public struct ReglagesVue: View {
             }
             .buttonStyle(.secondaire)
             .padding(.top, 10)
+            Button {
+                ouvrir(modele.routeJournalBarriere)
+            } label: {
+                Text(Libelle("journal_barriere_titre"), traducteur: traducteur)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.secondaire)
+            .padding(.top, 6)
         }
         .id(ReglagesSection.etatBarriere)
     }
@@ -718,8 +730,10 @@ private struct ReglagesBoite: View {
     /// La divulgation avant Temps d'écran (Divulgation.montrer) : jamais l'accès sans l'avoir dit.
     private var divulgation: some View {
         VStack(alignment: .leading, spacing: 12) {
-            titre(Libelle("divulgation_usage_titre"))
-            Text(Libelle("divulgation_usage_texte"), traducteur: traducteur)
+            // Le texte de Divulgation, adapté à Temps d'écran (PORTAGE.md § 2.1.13) : ce qui est fait, ce qui ne l'est
+            // pas, rien n'est envoyé, comment l'éteindre. Les divulgations d'Android ne sont pas exportées.
+            titre(Libelle("temps_ecran_divulgation_titre"))
+            Text(Libelle("temps_ecran_divulgation_texte"), traducteur: traducteur)
                 .font(.body)
                 .foregroundStyle(Teinte(.ink))
             Button {
@@ -727,14 +741,14 @@ private struct ReglagesBoite: View {
                     if let route = try? await modele.continuerDivulgation() { ouvrir(route) }
                 }
             } label: {
-                Text(Libelle("divulgation_continuer"), traducteur: traducteur)
+                Text(Libelle("celebration_continue"), traducteur: traducteur)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.principal)
             Button {
                 modele.fermerDialogue()
             } label: {
-                Text(Libelle("divulgation_pas_maintenant"), traducteur: traducteur)
+                Text(Libelle("temps_ecran_divulgation_pas_maintenant"), traducteur: traducteur)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.secondaire)
