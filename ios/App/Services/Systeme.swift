@@ -1,4 +1,3 @@
-import Barriere
 import Coeur
 import Ecrans
 import Foundation
@@ -8,7 +7,8 @@ import UserNotifications
 // Les adaptateurs des services d'Ecrans (ECRANS.md, « Ce qui parle au système ») : les notifications locales et
 // l'icône de l'app. Les autres sont à côté : Temps d'écran (TempsEcran.swift), le lieu et la boussole (Lieu.swift,
 // Boussole.swift), le planificateur des notifications et les répercussions des réglages (Notifications.swift), la Live
-// Activity (Activite.swift), la musique.
+// Activity (Activite.swift), la musique, le code du téléphone pour le verrou du journal (CodeDuTelephone.swift), les
+// alarmes de la minuterie système (Minuterie.swift).
 
 /// Les notifications locales (`UNUserNotificationCenter`) ; les textes, des `Libelle`, se résolvent dans la langue de
 /// l'app au moment de programmer.
@@ -67,17 +67,3 @@ struct IconeSysteme: ReglagesIcone {
         try await UIApplication.shared.setAlternateIconName(nom)
     }
 }
-
-/// Temps d'écran tant que la barrière n'est pas écrite (tâches 27 et 28) : aucune autorisation demandée, aucun
-/// bouclier posé.
-struct TempsEcranAbsent: TempsEcran {
-    func demanderAutorisation() async -> Bool { false }
-    func leverBoucliers() async {}
-}
-
-/// Ce que l'app constate de Temps d'écran tant que la barrière n'est pas écrite : rien d'autorisé, aucune application.
-struct BarriereAbsente: ReglagesBarriereSysteme {
-    func constat() async -> Constat { Constat(autorise: false) }
-    func nombreDeJetons() async -> Int { 0 }
-}
-

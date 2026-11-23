@@ -101,6 +101,10 @@ targetTemplates:
         # La raison de l'appareil photo (la carte d'embarquement, VolVue) ; ses traductions sont dans
         # Chaines/InfoPlist.xcstrings, compilé avec les autres catalogues (Catalogue/).
         NSCameraUsageDescription: "The camera reads the barcode of your boarding pass, on the phone: nothing is sent."
+        # Le verrou du journal (VerrouJournal, App/Services/CodeDuTelephone.swift) et la minuterie système (tâche 17,
+        # App/Services/Minuterie.swift) ; traduits de même dans Chaines/InfoPlist.xcstrings.
+        NSFaceIDUsageDescription: "Face ID opens the journal when you have locked it."
+        NSAlarmKitUsageDescription: "If you choose it in the settings, an alarm rings at the end of a timed hitbodedut, even when the phone is silent."
         # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).
         UIAppFonts:
           - Polices/hebreu_serif_regular.ttf
@@ -142,6 +146,14 @@ targets:
       - path: Ressources/Chaines
         type: folder
       - path: Ressources/Contenu/palettes.json
+        buildPhase: resources
+      # Le texte de 'hizouk du grand widget de la série (StreakWidget.texteDuJour) et le hassid de dos de la boussole
+      # (BoussoleWidget, BoussoleDessin.rose), dans ses deux poses.
+      - path: Ressources/Contenu/chizuk.json
+        buildPhase: resources
+      - path: Ressources/Images/char_standing_back.webp
+        buildPhase: resources
+      - path: Ressources/Images/char_f_standing_back.webp
         buildPhase: resources
     dependencies:
       - package: Coeur

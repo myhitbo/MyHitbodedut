@@ -48,6 +48,8 @@ final class ModelesApp {
     let reglages: ReglagesModele
     /// La barrière « Je suis avec Hachem » : Temps d'écran, l'instantané des extensions (Services/TempsEcran.swift).
     let tempsEcran: TempsEcranApp
+    /// Le verrou du journal (VerrouJournal.kt) : le code du téléphone, Face ID ou Touch ID (Services/CodeDuTelephone.swift).
+    let verrouJournal: VerrouJournal
 
     private init(magasin: Magasin, paquet: URL, traducteur: Traducteur) {
         self.magasin = magasin
@@ -87,8 +89,12 @@ final class ModelesApp {
                                      sortie: SortieAudioSysteme(paquet: paquet, documents: URL.documentsDirectory),
                                      ambiance: SortieAmbianceSysteme())
         self.musique = musique
+        // La minuterie système (tâche 17) : l'alarme d'AlarmKit à la fin d'une séance minutée (Services/Minuterie.swift).
+        let alarmes = MinuterieAlarmes(traducteur: traducteur)
         seance = SeanceEnCours(magasin: magasin, horloge: horloge, musique: musique, activite: activite,
-                               notificateur: notificateur)
+                               notificateur: notificateur, minuterie: alarmes)
+        let verrouJournal = VerrouJournal(magasin: magasin, code: CodeDuTelephoneSysteme(traducteur: traducteur))
+        self.verrouJournal = verrouJournal
         let tempsEcran = TempsEcranApp(magasin: magasin, horloge: horloge, traducteur: traducteur, paquet: paquet,
                                        palettes: (try? lecteur("palettes.json")).flatMap { try? Palettes.lire($0) })
         self.tempsEcran = tempsEcran
@@ -106,6 +112,9 @@ final class ModelesApp {
                                   tempsEcran: tempsEcran, activite: activite, barriere: tempsEcran,
                                   icone: IconeSysteme(), effets: EffetsSysteme(planificateur: planificateur),
                                   avecBarriere: barriere, langue: langue, version: ModelesApp.version())
+        reglages.verrouJournal = verrouJournal
+        reglages.minuterie = MinuterieModele(magasin: magasin, systeme: alarmes)
+        accueilVersion.verrou = verrouJournal
     }
 
     /// Le magasin lu sur les fichiers du dossier de l'app (le conteneur du groupe d'apps quand la signature le donne,
@@ -164,7 +173,8 @@ final class ModelesApp {
     }
 
     func note(_ jour: JourCivil) -> JournalNoteModele {
-        JournalNoteModele(magasin: magasin, date: jour)
+        // Ouverte hors du journal (l'accueil, la séance, le bravo) : une note déjà écrite attend le code.
+        JournalNoteModele(magasin: magasin, date: jour, verrou: verrouJournal)
     }
 
     func journal() -> JournalModele {

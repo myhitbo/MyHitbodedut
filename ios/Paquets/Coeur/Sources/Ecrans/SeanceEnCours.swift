@@ -22,6 +22,9 @@ import Coeur
 // Activity), le son de fin d'un décompte masqué (`LecteurSon`), la notification « Mazal tov ! »
 // (`Notificateur`). Chacun est facultatif : sans lui, la séance s'inscrit pareil.
 //
+// La « minuterie système » (MinuterieSeance.swift, propre à iOS) : une alarme d'AlarmKit posée au début d'une séance
+// minutée, retirée par « Terminer maintenant » et « Abandonner », laissée sonner au terme.
+//
 // Restent ailleurs : la notification de fin, que pose le planificateur des notifications (PlanNotifications.finDeSeance,
 // `PlanificateurNotifications`) quand l'app le fait repasser au début et à la fin d'une séance, le widget de la série
 // (StreakWidget.refresh), le magasin `seance` de la barrière (§ 2.1.10).
@@ -101,6 +104,7 @@ public final class SeanceEnCours {
     private let activite: (any ActiviteEnDirect)?
     private let son: (any LecteurSon)?
     private let notificateur: (any Notificateur)?
+    private let minuterie: (any MinuterieSysteme)?
 
     /// Ce processus s'occupe de la séance (`SessionService.enMarche`) : la musique, la Live Activity, le tour
     /// qui la clôt à son terme. Faux au lancement : une séance encore inscrite est alors reprise par
@@ -108,16 +112,19 @@ public final class SeanceEnCours {
     public private(set) var suivie = false
     /// Monte à chaque séance close et inscrite au journal (pour l'accueil, le widget).
     public private(set) var inscriptions = 0
+    /// L'alarme de la minuterie système est posée pour la séance en cours : à son terme, elle sonne seule.
+    public private(set) var alarmePosee = false
 
     public init(magasin: Magasin, horloge: any Horloge, musique: (any SeanceMusique)? = nil,
                 activite: (any ActiviteEnDirect)? = nil, son: (any LecteurSon)? = nil,
-                notificateur: (any Notificateur)? = nil) {
+                notificateur: (any Notificateur)? = nil, minuterie: (any MinuterieSysteme)? = nil) {
         self.magasin = magasin
         self.horloge = horloge
         self.musique = musique
         self.activite = activite
         self.son = son
         self.notificateur = notificateur
+        self.minuterie = minuterie
     }
 
     // MARK: Ce qu'on en sait
@@ -216,6 +223,7 @@ public final class SeanceEnCours {
         Store.beginSession(reglages: &reglages, minutes: minutes, millis: maintenant)
         let erreur = await ecrire(journal: inscrite ? journal : nil, reglages: reglages)
         if inscrite { inscriptions += 1 }
+        await armer()
         await demarrer()
         await annoncer(annonce, maintenant: maintenant)
         if let erreur { throw erreur }
@@ -232,6 +240,7 @@ public final class SeanceEnCours {
         var reglages = magasin.reglages
         Store.endSession(reglages: &reglages, millis: horloge.maintenant, fuseau: horloge.fuseau)
         let erreur = await ecrire(journal: nil, reglages: reglages)
+        await desarmer()
         await arreter()
         if let erreur { throw erreur }
     }
@@ -311,7 +320,14 @@ public final class SeanceEnCours {
         }
         let erreur = await ecrire(journal: inscrite ? journal : nil, reglages: reglages)
         if inscrite { inscriptions += 1 }
-        if !precoce && reglages.hideCountdown && finPrevue > 0
+        // « Terminer maintenant » retire l'alarme ; au terme, elle sonne, et c'est le seul son.
+        let alarme = alarmePosee
+        if precoce {
+            await desarmer()
+        } else {
+            alarmePosee = false
+        }
+        if !precoce && !alarme && reglages.hideCountdown && finPrevue > 0
             && maintenant &- finPrevue <= SeanceEnCours.retardSonMax {
             await sonner()
         }
@@ -362,6 +378,28 @@ public final class SeanceEnCours {
             }
         }
         await musique?.commencerSeance()
+    }
+
+    /// La minuterie système : l'alarme d'une séance précédente est retirée, puis, le réglage allumé, une séance minutée
+    /// pose la sienne à son heure de fin. Sans autorisation, rien n'est posé.
+    private func armer() async {
+        guard let minuterie else { return }
+        let reglages = magasin.reglages
+        if alarmePosee {
+            await minuterie.retirer()
+            alarmePosee = false
+        }
+        let fin = Store.sessionEndsAt(reglages: reglages)
+        guard MinuterieReglage.lire(reglages), Store.sessionTarget(reglages: reglages) > 0,
+              fin > horloge.maintenant else { return }
+        alarmePosee = await minuterie.poser(fin: fin, titre: MinuterieModele.titreAlarme)
+    }
+
+    /// L'alarme de la séance est retirée (« Terminer maintenant », « Abandonner »).
+    private func desarmer() async {
+        guard let minuterie, alarmePosee || MinuterieReglage.lire(magasin.reglages) else { return }
+        await minuterie.retirer()
+        alarmePosee = false
     }
 
     /// `stopSelfAndClear` : plus rien ne suit la séance.

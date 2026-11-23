@@ -100,7 +100,15 @@ construits une fois par `ios/App/ModelesApp.swift`, sur le magasin des fichiers 
 services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance, lecture
 du billet du vol par Vision ; la position par CoreLocation et la boussole par CoreMotion, `Lieu.swift`,
 `Boussole.swift` ; le planificateur des notifications posé dans le centre d'iOS et les répercussions des réglages,
-`Notifications.swift` ; la Live Activity, `Activite.swift` ; Temps d'écran, `TempsEcran.swift`).
+`Notifications.swift` ; la Live Activity, `Activite.swift` ; Temps d'écran, `TempsEcran.swift` ; le code du téléphone par
+LocalAuthentication, `CodeDuTelephone.swift` ; les alarmes d'AlarmKit de la minuterie système, `Minuterie.swift`).
+
+Le verrou du journal (VerrouJournal.kt) est un modèle partagé d'`Ecrans`, `VerrouJournal`, que `ModelesApp` construit
+une fois sur le code du téléphone et distribue : la racine pose `.verrouJournal(_:)` (Vues/VerrouJournalVue.swift) sur
+l'écran du journal (couvert jusqu'au code, refermé à l'arrière-plan : `JournalVerrouille`) ; la fabrique des notes le
+donne à `JournalNoteModele`, que `JournalNoteVue` couvre tant qu'une note déjà écrite attend le code (le journal ouvre
+les siennes sans lui) ; `ReglagesModele.verrouJournal` garde l'export et l'interrupteur ; `AccueilVersionModele.verrou`
+tait les notes des accueils. Tout ce qui montre ou emporte le texte du journal passe par lui.
 
 Ce qui vient d'hors de l'app passe par une adresse « myhitbodedut:// » (`LienApp`, Ecrans, testé sous Linux) : les
 widgets et la Live Activity l'ouvrent (`onOpenURL`), une notification la garde dans son `userInfo`. Le délégué des

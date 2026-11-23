@@ -431,6 +431,9 @@ public final class ReglagesModele {
     }
     /// Le message bref à montrer (les Toast d'Android) ; `messageVu()` l'efface.
     public private(set) var message: Libelle? = nil
+    /// Le verrou du journal et la minuterie système, posés par l'app (ReglagesVerrou.swift) ; nil dans les aperçus.
+    public var verrouJournal: VerrouJournal? = nil
+    public var minuterie: MinuterieModele? = nil
     /// La carte vers laquelle faire défiler l'écran ; `defilementFait()` l'efface.
     public private(set) var cibleDefilement: ReglagesSection? = nil
 
@@ -636,6 +639,11 @@ public final class ReglagesModele {
 
     public func messageVu() {
         message = nil
+    }
+
+    /// Un message bref venu d'un réglage tenu à part (le verrou du journal, la minuterie système : ReglagesVerrou.swift).
+    public func annoncer(_ libelle: Libelle) {
+        message = libelle
     }
 
     /// Un écran du système n'a pu s'ouvrir (safeStart).

@@ -393,7 +393,8 @@ struct Racine: View {
                 }
             }
         case .journal:
-            Garde(app.journal) { JournalVue(modele: $0) { pousser(.seance(demarrer: false)) } }
+            // Le verrou du journal (VerrouJournal) : rien ne s'y montre avant le code, refermé à l'arrière-plan.
+            Garde(app.journal) { JournalVue(modele: $0) { pousser(.seance(demarrer: false)) }.verrouJournal(app.verrouJournal) }
         case .parcours:
             Garde(app.parcours) { ParcoursVue(modele: $0) }
         case .paliers:

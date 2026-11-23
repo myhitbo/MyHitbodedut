@@ -1117,42 +1117,6 @@
         }
       }
     },
-    "ios_bientot": {
-      "comment": "Propre à iOS (PORTAGE.md § 4.2), à relire par le propriétaire : sous le titre d'un onglet dont l'écran n'est pas encore porté.",
-      "extractionState": "manual",
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Bientôt"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Coming soon"
-          }
-        },
-        "he": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "בקרוב"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Próximamente"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "قريب"
-          }
-        }
-      }
-    },
     "ios_icone_couleurs": {
       "comment": "Réglages, apparence : changer l'icône de l'app sur un geste, iOS prévenant à chaque changement (PORTAGE.md § 2.3). Écrans d'iOS, phase 3 : à relire par le propriétaire.",
       "extractionState": "manual",
@@ -2193,6 +2157,114 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "الفترة لازمها تدوم 15 دقيقة على الأقل: iOS ما يراقبش فترة أقصر."
+          }
+        }
+      }
+    },
+    "reglages_minuterie_refusee": {
+      "comment": "Propre à iOS (tâche 17, la minuterie système, MinuterieSeance.swift), à relire par le propriétaire : le message bref quand iOS refuse les alarmes.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les alarmes ne sont pas autorisées : autorisez-les dans les Réglages d’iOS."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alarms are not allowed: allow them in iOS Settings."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המעוררים אינם מורשים: יש לאפשר אותם בהגדרות של iOS."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Las alarmas no están permitidas: permítelas en los Ajustes de iOS."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "المنبّهات موش مسموحة: سمّحلها في إعدادات iOS."
+          }
+        }
+      }
+    },
+    "reglages_minuterie_systeme": {
+      "comment": "Propre à iOS (tâche 17, la minuterie système, MinuterieSeance.swift), à relire par le propriétaire : l'interrupteur des réglages, sous « Masquer le décompte ».",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Minuterie système"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "System timer"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "טיימר המערכת"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Temporizador del sistema"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "منبّه السيستام"
+          }
+        }
+      }
+    },
+    "reglages_minuterie_systeme_indication": {
+      "comment": "Propre à iOS (tâche 17, la minuterie système, MinuterieSeance.swift), à relire par le propriétaire : ce que l'interrupteur fait.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "À la fin d’une hitbodedout minutée, une alarme d’iOS sonne, même en mode silencieux ou de concentration."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "When a timed hitbodedut ends, an iOS alarm rings, even in silent or Focus mode."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "בסוף התבודדות עם זמן קצוב, מעורר של iOS מצלצל, גם במצב שקט או במצב ריכוז."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Al terminar una hitbodedut con duración, suena una alarma de iOS, incluso en modo silencio o de concentración."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "كي توفى هتبوديدوت بوقت محدّد، يصوّت منبّه iOS، حتى كان التليفون في الصامت ولا في وضع التركيز."
           }
         }
       }
