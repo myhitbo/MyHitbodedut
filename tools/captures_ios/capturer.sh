@@ -69,11 +69,14 @@ demarrer() {
   xcrun simctl ui "$udid" content_size large || true
   # Sans la présentation du clavier glissé (« Speed up your typing… »), qui couvrait la recherche.
   xcrun simctl spawn "$udid" defaults write com.apple.Preferences DidShowContinuousPathIntroduction -bool true || true
+  xcrun simctl spawn "$udid" defaults write com.apple.keyboard.preferences KeyboardDidShowContinuousPathIntroduction \
+    -bool true || true
   xcrun simctl install "$udid" "$APP" || echo "::error::installation refusée"
   xcrun simctl get_app_container "$udid" "$ID_APP" || echo "::error::l'app n'est pas installée"
   barre "$udid"
-  # Un premier lancement, à blanc : le premier est lent (caches du simulateur).
-  echo "premier lancement : $(xcrun simctl launch "$udid" "$ID_APP" -capture jour -captureDemo 2>&1)"
+  # Un premier lancement, à blanc : le premier est lent (caches du simulateur). Sur la recherche, pour que la
+  # présentation du clavier glissé, qu'iOS montre au premier clavier ouvert, passe là et pas sur une capture.
+  echo "premier lancement : $(xcrun simctl launch "$udid" "$ID_APP" -capture recherche -captureDemo 2>&1)"
   sleep 20
   xcrun simctl terminate "$udid" "$ID_APP" >/dev/null 2>&1 || true
 }
