@@ -308,24 +308,27 @@ enum ZmanimChoix: String, Identifiable {
 }
 
 /// La carte du jour (VueJour.carte) : les flèches du jour, la date hébraïque, la date civile, les fêtes, les ajouts.
-private struct ZmanimCarteJourVue: View {
+/// Le calendrier la montre sans flèches : sa grille choisit le jour.
+struct ZmanimCarteJourVue: View {
     let carte: ZmanimCarteJour
     let estAujourdhui: Bool
-    let precedent: @MainActor () -> Void
-    let suivant: @MainActor () -> Void
-    let aujourdhui: @MainActor () -> Void
+    let precedent: (@MainActor () -> Void)?
+    let suivant: (@MainActor () -> Void)?
+    let aujourdhui: (@MainActor () -> Void)?
     @Environment(\.traducteur) private var traducteur
 
     var body: some View {
         Carte {
             HStack(spacing: 8) {
-                Button(action: precedent) {
-                    Image(systemName: "chevron.backward")
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
+                if let precedent {
+                    Button(action: precedent) {
+                        Image(systemName: "chevron.backward")
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text("jour_precedent"))
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text("jour_precedent"))
                 VStack(spacing: 2) {
                     Text(verbatim: carte.dateHebraique)
                         .font(.hebreu(.serif, taille: 22))
@@ -337,16 +340,18 @@ private struct ZmanimCarteJourVue: View {
                         .foregroundStyle(Teinte(.muted))
                 }
                 .frame(maxWidth: .infinity)
-                Button(action: suivant) {
-                    Image(systemName: "chevron.forward")
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
+                if let suivant {
+                    Button(action: suivant) {
+                        Image(systemName: "chevron.forward")
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text("jour_suivant"))
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text("jour_suivant"))
             }
             .foregroundStyle(Teinte(.brand))
-            if !estAujourdhui {
+            if !estAujourdhui, let aujourdhui {
                 Button(action: aujourdhui) {
                     Text(Libelle("calendrier_aujourdhui"), traducteur: traducteur)
                         .font(.footnote.weight(.semibold))
@@ -385,7 +390,7 @@ private struct ZmanimCarteJourVue: View {
 
 /// Birkat haLevana (VueJour.levana) : l'état, la lune de ce soir, la fenêtre, le motsaé conseillé, la restriction,
 /// les remarques, la jauge du mois, la source, « Lire Birkat haLevana ».
-private struct ZmanimLevanaVue: View {
+struct ZmanimLevanaVue: View {
     let levana: ZmanimLevana
     let lire: @MainActor () -> Void
     @Environment(\.traducteur) private var traducteur
@@ -454,7 +459,7 @@ private struct ZmanimLevanaVue: View {
 }
 
 /// La jauge du mois lunaire : le fil, la fenêtre en or, le soir du jour en point ; de droite à gauche en hébreu.
-private struct ZmanimJaugeVue: View {
+struct ZmanimJaugeVue: View {
     let jauge: ZmanimJauge
 
     var body: some View {
@@ -518,20 +523,57 @@ private struct ZmanimChoixVue: View {
     }
 }
 
-/// Le choix du lieu (ChoixLieu.kt) : une feuille avec les villes de la liste ; la position du téléphone quand
-/// l'app sait la demander.
-private struct ZmanimChoixLieu: ViewModifier {
+/// Le choix du lieu (ChoixLieu.kt) : une feuille avec « Ma position » et les villes de la liste, puis le message bref
+/// d'Android (un Toast : « Recherche de la position… », « Position indisponible : choisissez une ville. »). Partagé
+/// par Zmanim et le calendrier.
+struct ZmanimChoixLieu: ViewModifier {
     let choix: LieuModele?
 
     @ViewBuilder
     func body(content: Content) -> some View {
         if let choix {
-            content.sheet(isPresented: Bindable(choix).dialogueOuvert) {
-                ZmanimListeLieux(choix: choix)
-                    .presentationDetents([.large])
-            }
+            content
+                .sheet(isPresented: Bindable(choix).dialogueOuvert) {
+                    ZmanimListeLieux(choix: choix)
+                        .presentationDetents([.large])
+                }
+                .overlay(alignment: .bottom) {
+                    ZmanimMessageLieu(choix: choix)
+                }
         } else {
             content
+        }
+    }
+}
+
+/// Le message bref du choix du lieu, en bas de l'écran, effacé au bout de sa durée (Toast court ou long).
+private struct ZmanimMessageLieu: View {
+    let choix: LieuModele
+    @Environment(\.traducteur) private var traducteur
+
+    var body: some View {
+        Group {
+            if let message = choix.message {
+                Text(message.libelle, traducteur: traducteur)
+                    .font(.subheadline)
+                    .foregroundStyle(Teinte(.onBrand))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Capsule().fill(Teinte(.brandDark)))
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 24)
+                    .transition(.opacity)
+                    .accessibilityAddTraits(.isStaticText)
+            }
+        }
+        .animation(.default, value: choix.message)
+        .task(id: choix.message) {
+            guard let message = choix.message else { return }
+            // Toast.LENGTH_SHORT, LENGTH_LONG ; la recherche reste affichée tant qu'elle dure.
+            try? await Task.sleep(for: .seconds(message.long ? 3.5 : 2))
+            guard !Task.isCancelled, choix.message == message else { return }
+            if !choix.enCours || message != .attente { choix.messageVu() }
         }
     }
 }

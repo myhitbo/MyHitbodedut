@@ -68,6 +68,9 @@ struct RappelsModeleTests {
         // Le toucher suivant ne repose pas la question : les Réglages d'iOS.
         let ensuite = await b.modele.demanderNotifications()
         #expect(ensuite == .reglagesNotifications)
+        #expect(b.modele.routes == [.reglagesNotifications])
+        b.modele.routeOuverte()
+        #expect(b.modele.routes.isEmpty)
         #expect(await b.notificateur.demandes == 1)
     }
 

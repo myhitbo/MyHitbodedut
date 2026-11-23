@@ -59,6 +59,8 @@ public final class RappelsModele {
     public private(set) var demandeEnCours = false
     /// Le choix d'une heure ouvert ; nil sinon.
     public var dialogue: RappelsDialogue? = nil
+    /// Les écrans demandés, que la vue ouvre puis retire (`routeOuverte()`) : un interrupteur ne rend rien.
+    public private(set) var routes: [RappelsRoute] = []
 
     public init(magasin: Magasin, notificateur: any Notificateur, rappels: any PresentationRappels) {
         self.magasin = magasin
@@ -167,6 +169,7 @@ public final class RappelsModele {
             return nil
         case .refusee:
             notificationsAccordees = false
+            routes.append(.reglagesNotifications)
             return .reglagesNotifications
         case .aDemander:
             demandeEnCours = true
@@ -174,6 +177,11 @@ public final class RappelsModele {
             demandeEnCours = false
             return nil
         }
+    }
+
+    /// La première route demandée a été ouverte.
+    public func routeOuverte() {
+        if !routes.isEmpty { routes.removeFirst() }
     }
 
     /// « Ajouter une heure ».
