@@ -44,8 +44,8 @@
   {
    "chemin": "Ressources/Catalogue/InfoPlist.xcstrings",
    "source": "ios/Ressources/Chaines/InfoPlist.xcstrings",
-   "octets": 1566,
-   "sha256": "fe88173d4ab92698fc678ac9da759589a31e02a6abc8eda0414ded5a1b99df7a",
+   "octets": 4542,
+   "sha256": "038af194bf13f612a5ff81e627d3967d7fe370ee74675991098d5f276293c9d6",
    "licence": "propre à l'app",
    "mention": ""
   },

@@ -31,6 +31,9 @@ enum Ecran: Hashable {
     case lecture(LectureCible)
     case tehilimLecture(TehilimLectureCible)
     case entree(String)
+    case calendrier
+    case boussole
+    case rappels
     /// L'aperçu du bouclier, le choix des applications, la dédicace, le journal de la barrière (Barriere/BarriereEcrans.swift).
     case barriere(EcranBarriere)
 }
@@ -41,6 +44,7 @@ enum Pardessus: Hashable, Identifiable {
     case celebration(CelebrationDemande)
     case note(JourCivil)
     case marquesPages(recueil: String?)
+    case ajoutTemps(JourCivil)
 
     var id: String {
         switch self {
@@ -48,6 +52,7 @@ enum Pardessus: Hashable, Identifiable {
         case .celebration(let demande): "celebration-\(demande.minutes)-\(demande.annulee)"
         case .note(let jour): "note-\(jour.iso)"
         case .marquesPages(let recueil): "marques-\(recueil ?? "")"
+        case .ajoutTemps(let jour): "ajout-\(jour.iso)"
         }
     }
 }
@@ -133,6 +138,8 @@ struct Racine: View {
             await Captures.ouvrir(app, onglet: $onglet, jour: $pileDuJour, livres: $pileDesLivres, chemin: $pileDuChemin,
                                   feuille: $feuille, plein: $plein)
         }
+        // Les notifications touchées, les widgets, la Live Activity ; le planificateur et les widgets à jour.
+        .modifier(GestesExterieurs(app: app) { lien in ouvrirLien(lien) })
         // L'iPad et le téléphone couché : le contenu s'écarte des bords (GrandEcran, tâche 29).
         .margesLarges()
         .tint(palette.couleur(.brand, schema: schema))
@@ -271,7 +278,8 @@ struct Racine: View {
         case .marquesPages(let recueil): feuille = .marquesPages(recueil: recueil)
         case .entreeBibliotheque(let id): pousser(.entree(id))
         case .musique: pousser(.musique)
-        case .relecture, .rappels: break
+        case .rappels: pousser(.rappels)
+        case .relecture: break
         }
     }
 
@@ -312,10 +320,28 @@ struct Racine: View {
         case .hilloulot(let jour): pousser(.hilloulotLe(jour))
         case .siddour(let id): pousser(.lecture(.siddour(id)))
         case .vol: pousser(.vol)
-        case .calendrier, .boussole, .ajouterTemps:
-            // Le calendrier, la boussole et l'ajout de temps n'ont pas encore leur écran ici.
-            break
+        case .calendrier: pousser(.calendrier)
+        case .boussole: pousser(.boussole)
+        case .ajouterTemps(let jour): feuille = .ajoutTemps(jour)
         }
+    }
+
+    /// Un écran demandé d'hors de l'app (notification, widget, Live Activity) : sur le Jour, par-dessus ce qui y est.
+    private func ouvrirLien(_ lien: LienApp) {
+        let ecran: Ecran?
+        switch lien {
+        case .accueil, .terminerSeance: ecran = nil
+        case .zmanim: ecran = .zmanim
+        case .boussole: ecran = .boussole
+        case .calendrier: ecran = .calendrier
+        case .rappels: ecran = .rappels
+        case .seance(let demarrer): ecran = .seance(demarrer: demarrer)
+        case .siddour(let id): ecran = .lecture(.siddour(id))
+        case .vol: ecran = .vol
+        }
+        feuille = nil
+        onglet = .aujourdhui
+        if let ecran { pileDuJour.append(ecran) }
     }
 
     private func ouvrirReglage(_ route: ReglagesRoute) {
@@ -416,6 +442,12 @@ struct Racine: View {
             TehilimLecturePage(cible: cible, fabrique: app.tehilimLecture)
         case .entree(let id):
             BibliothequeEntreePage(id: id, fabrique: app.entree)
+        case .calendrier:
+            Garde(app.calendrier) { modele in CalendrierVue(modele: modele) { route in ouvrirZmanim(route) } }
+        case .boussole:
+            Garde(app.boussole) { BoussoleVue(modele: $0) }
+        case .rappels:
+            Garde(app.rappels) { RappelsVue(modele: $0) }
         case .barriere(let ecran):
             BarriereDestination(app: app, ecran: ecran)
         }
@@ -439,6 +471,8 @@ struct Racine: View {
                     }
                 }, fermer: { feuille = nil })
             }
+        case .ajoutTemps(let jour):
+            AjoutTempsFeuille(fabrique: { app.ajoutTemps(jour) }, fermer: { feuille = nil })
         case .marquesPages(let recueil):
             NavigationStack {
                 LectureMarquesEcran(magasin: app.magasin, contenus: app.contenus, recueil: recueil) { route in
