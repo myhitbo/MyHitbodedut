@@ -1,0 +1,81 @@
+name: iOS (captures, macOS)
+
+# L'app lancée pour de vrai sur le simulateur, et photographiée : chaque écran principal dans les cinq langues
+# (fr, en, he, es, ar-TN), puis quelques-uns en mode sombre, aux grandes tailles de texte d'accessibilité et sur
+# iPad (tâche 29). L'app ouvre l'écran demandé d'elle-même sur un journal de démonstration (« -capture <écran>
+# -captureDemo », ios/App/Captures.swift) ; tools/captures_ios/capturer.sh la lance, photographie et relève les
+# plantages. Les captures (JPEG réduits) sont dans l'artefact « captures-ios » ; les plantages dans le résumé.
+# Lancé à la main (une quarantaine de minutes de macOS) ou quand ce flux et son script changent, jamais à chaque
+# envoi. Même runner et même Xcode qu'ios-app.yml.
+
+on:
+  workflow_dispatch:
+    inputs:
+      langues:
+        description: 'Langues (fr en he es ar-TN)'
+        required: false
+        default: 'fr en he es ar-TN'
+      ecrans:
+        description: 'Écrans (vide : tous ceux de Captures.swift)'
+        required: false
+        default: ''
+      passes:
+        description: 'Passes (iphone sombre grand ipad)'
+        required: false
+        default: 'iphone sombre grand ipad'
+  push:
+    paths:
+      - '.github/workflows/ios-captures.yml'
+      - 'tools/captures_ios/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  captures:
+    runs-on: macos-26-intel
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode 26.6
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.6.app
+          xcodebuild -version
+      - name: Contenus exportés
+        run: python3 tools/export_contenu/export.py
+      - name: Projet Xcode (XcodeGen)
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate --spec project.yml
+      - name: Compilation de l'app (simulateur, sans signature)
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
+            -destination "generic/platform=iOS Simulator" -derivedDataPath "$RUNNER_TEMP/app" \
+            ARCHS=x86_64 CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|BUILD" || true
+          grep -q "BUILD SUCCEEDED" app.log
+      - name: Captures
+        env:
+          APP: ${{ runner.temp }}/app/Build/Products/Debug-iphonesimulator/MyHitbodedut.app
+          SORTIE: captures
+          LANGUES: ${{ inputs.langues || 'fr en he es ar-TN' }}
+          ECRANS: ${{ inputs.ecrans }}
+          PASSES: ${{ inputs.passes || 'iphone sombre grand ipad' }}
+        run: |
+          RESUME="$GITHUB_STEP_SUMMARY" bash tools/captures_ios/capturer.sh
+      - name: Captures et journaux
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: captures-ios
+          path: |
+            captures/jpg
+            captures/journaux
+            app.log
+          retention-days: 14
+          if-no-files-found: ignore
