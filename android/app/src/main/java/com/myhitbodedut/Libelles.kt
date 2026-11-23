@@ -47,6 +47,8 @@ object Libelles {
         "ajout_hallel_partiel_sans_berakha" -> R.string.ajout_hallel_partiel_sans_berakha
         "ajout_hanouka_hors_roch_hodech" -> R.string.ajout_hanouka_hors_roch_hodech
         "ajout_hanouka_sans_moussaf" -> R.string.ajout_hanouka_sans_moussaf
+        "ajout_harahaman_invite" -> R.string.ajout_harahaman_invite
+        "ajout_harahaman_maison" -> R.string.ajout_harahaman_maison
         "ajout_havdala_bessamim" -> R.string.ajout_havdala_bessamim
         "ajout_havdala_coupe" -> R.string.ajout_havdala_coupe
         "ajout_havdala_ner" -> R.string.ajout_havdala_ner

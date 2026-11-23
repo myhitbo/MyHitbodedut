@@ -31,7 +31,9 @@ class AnneauxView @JvmOverloads constructor(
 ) : View(context, attrs) {
 
     private val densite = resources.displayMetrics.density
-    val geometrie = AnneauxDessin.Geometrie(epaisseur = 8f * densite, ecart = 3f * densite)
+    /** Trois anneaux de 8dp et deux écarts de 3dp ; plus fins sur la jauge compacte (MainActivity, 22/11). */
+    var geometrie = AnneauxDessin.Geometrie(epaisseur = 8f * densite, ecart = 3f * densite)
+        set(valeur) { field = valeur; invalidate() }
     private val carre = RectF()
 
     private var etat: Anneaux.Etat? = null
