@@ -211,12 +211,39 @@ object Store {
 
     // --- Journées -----------------------------------------------------------
 
+    /*
+     * La dernière lecture du journal, gardée tant que son texte ne change pas.
+     * L'accueil appelait days() des dizaines de fois à chaque retour, et chaque
+     * appel réanalysait tout l'historique : l'application ralentissait à mesure
+     * qu'on s'en servait (check-up du 11/11). La clé est le texte lui-même, que
+     * SharedPreferences rend tel quel tant que rien ne l'a réécrit. Un journal
+     * illisible n'est jamais gardé : sa copie de secours doit toujours être faite.
+     */
+    @Volatile private var joursBrut: String? = null
+    @Volatile private var joursAnciens: Set<String>? = null
+    @Volatile private var joursLus: Map<String, DayRecord>? = null
+
     /** Lit la carte des journées, en reprenant l'ancien format s'il existe encore. */
     fun days(context: Context): Map<String, DayRecord> {
-        val result = linkedMapOf<String, DayRecord>()
         // Fichier du journal d'abord, puis reprise de l'ancien emplacement.
         val raw = journalPrefs(context).getString(KEY_DAYS, null)
             ?: prefs(context).getString(KEY_DAYS, null)
+        val anciens = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
+        val memoire = joursLus
+        if (memoire != null && raw == joursBrut && anciens == joursAnciens) return memoire
+        var lisible = true
+        val lus = lireJours(context, raw, anciens) { lisible = false }
+        if (lisible) {
+            joursLus = null
+            joursBrut = raw
+            joursAnciens = HashSet(anciens)
+            joursLus = lus
+        }
+        return lus
+    }
+
+    private fun lireJours(context: Context, raw: String?, legacy: Set<String>, illisible: () -> Unit): Map<String, DayRecord> {
+        val result = linkedMapOf<String, DayRecord>()
         if (raw != null) {
             runCatching {
                 val root = JSONObject(raw)
@@ -235,6 +262,7 @@ object Store {
                     )
                 }
             }.onFailure {
+                illisible()
                 // Illisible : on en garde une copie avant que la prochaine
                 // écriture ne le remplace par la seule journée du jour.
                 val p = journalPrefs(context)
@@ -242,11 +270,11 @@ object Store {
             }
         }
         // Reprise des jours validés par les versions précédentes.
-        val legacy = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
         legacy.forEach { date ->
             if (!result.containsKey(date)) result[date] = DayRecord(date, 0, "")
         }
-        return result
+        // Partagée entre les appels : personne ne doit pouvoir la modifier.
+        return java.util.Collections.unmodifiableMap(result)
     }
 
     private fun writeDays(context: Context, days: Map<String, DayRecord>) {

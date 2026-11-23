@@ -393,6 +393,9 @@ class SessionService : Service() {
         )
             .setContentTitle(getString(R.string.session_done_title))
             .setContentText(getString(R.string.session_done_text, Store.formatDuration(this, minutes)))
+            // Le texte entier, « Touchez pour laisser une note » compris : il
+            // était coupé sur une ligne (check-up du 11/11).
+            .setStyle(Notification.BigTextStyle().bigText(getString(R.string.session_done_text, Store.formatDuration(this, minutes))))
             .setSmallIcon(R.drawable.ic_notification)
             // Les anneaux tels que la séance les laisse.
             .setLargeIcon(AnneauxImage.notification(this))
