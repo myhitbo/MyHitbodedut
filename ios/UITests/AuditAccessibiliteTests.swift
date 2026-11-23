@@ -25,6 +25,13 @@ final class AuditAccessibiliteTests: XCTestCase {
         let demandes = (environnement["AUDIT_ECRANS"] ?? "").split(separator: " ").map(String.init)
         let voulus = demandes.isEmpty ? Self.ecrans : demandes
         var defauts: [String] = []
+        // Un lancement à blanc : le tout premier, juste après l'installation, ne recevait pas ses arguments (l'audit
+        // du « jour » voyait la présentation, en anglais).
+        let premier = XCUIApplication()
+        premier.launchArguments = ["-capture", "jour", "-captureDemo"]
+        premier.launch()
+        Thread.sleep(forTimeInterval: 3)
+        premier.terminate()
         for ecran in voulus {
             let app = XCUIApplication()
             app.launchArguments = ["-capture", ecran, "-captureDemo", "-AppleLanguages", "(\(langue))"]
