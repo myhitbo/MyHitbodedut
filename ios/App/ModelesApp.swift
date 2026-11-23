@@ -30,6 +30,11 @@ final class ModelesApp {
     /// La séance en cours, partagée : elle continue quand son écran se ferme.
     let seance: SeanceEnCours
     let accueil: AccueilModele
+    /// L'accueil des versions Sérénité, Bento et Pile (VersionApp), montré à la place des onglets quand l'une d'elles
+    /// est choisie.
+    let accueilVersion: AccueilVersionModele
+    /// Le mini-lecteur de la séance (MiniLecteur.kt), sur la musique partagée.
+    let miniLecteur: MusiqueMiniLecteurModele
     let textes: TextesModele
     let chemin: CheminModele
     let zmanim: ZmanimModele
@@ -66,6 +71,9 @@ final class ModelesApp {
         seance = SeanceEnCours(magasin: magasin, horloge: horloge, musique: musique, notificateur: notificateur)
         accueil = AccueilModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue, barriere: barriere,
                                 debug: debug)
+        accueilVersion = AccueilVersionModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue)
+        miniLecteur = MusiqueMiniLecteurModele(magasin: magasin, lecteur: musique,
+                                               pochettes: PochettesSysteme(paquet: paquet, documents: URL.documentsDirectory))
         textes = TextesModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue,
                               signalMusique: SignalMusiqueSeance(lecteur: musique), relecture: false)
         chemin = CheminModele(magasin: magasin, horloge: horloge)
@@ -190,10 +198,12 @@ final class ModelesApp {
                            avecBarriere: barriere)
     }
 
-    /// Le vol, hors ligne : ni relais, ni billet, ni relevé de position tant que leurs adaptateurs ne sont pas écrits.
+    /// Le vol, hors ligne : le billet lu sur le téléphone (Vision, App/Services/Billet.swift) ; ni relais, ni relevé de
+    /// position tant que leurs adaptateurs ne sont pas écrits.
     func vol() -> VolModele {
         VolModele(magasin: magasin, horloge: horloge, aeroports: VolModele.lireAeroports(lecteur: lecteur),
-                  notificateur: notificateur, traducteur: traducteur, formats: .langue(langue))
+                  notificateur: notificateur, lecteurBillet: LecteurBilletSysteme(), traducteur: traducteur,
+                  formats: .langue(langue))
     }
 
     /// L'écran Musique : l'écoute d'essai et l'aperçu d'ambiance ont leurs propres sorties, à côté de la séance.

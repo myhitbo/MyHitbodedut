@@ -72,7 +72,17 @@ Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Li
 Trois onglets, comme la barre d'Android depuis la refonte du 13/11 (`Ecrans/Onglets.swift`) : Le Jour, Les Livres,
 Le Chemin, chacun avec sa pile (`NavigationPath`). Zmanim et les réglages ne sont plus des onglets : l'en-tête du
 Jour les ouvre (`AccueilModele.entete`, `ouvrirZmanim`, `ouvrirReglages`), dans la pile du Jour. La barre de départ
-(`BarreDepart`) est au bas des trois racines, et son volet posé une fois sur les onglets (`feuilleDepart`).
+(`BarreDepart`) est au bas des trois racines, et son volet posé une fois sur les onglets (`feuilleDepart`), comme la
+fiche des trophées neufs (`feteDesTrophees`, Vues/TropheeFeteVue.swift), qui voile aussi la barre des onglets.
+
+Ces trois onglets sont l'accueil de la version Classique. Les trois autres versions de l'app (`VersionApp` :
+Sérénité, Bento, Pile) ont chacune le leur (`AccueilVersionVue` : `SereniteVue`, `BentoVue`, `PileVue`, sur le
+modèle partagé `AccueilVersionModele`), que la racine pose à la place des onglets, avec la seule pile du Jour : sur
+Android, l'activité de la version remplace MainActivity et sa barre (VersionApp.rediriger). Leurs entrées poussent les
+mêmes écrans (`AccueilVersionRoute`). Choisir une version vide les piles et montre aussitôt son accueil
+(VersionApp.appliquer) ; seul à l'écran, cet accueil impose son mode clair ou sombre (`fondSombre`), pour que la barre
+d'état reste lisible sur ses couleurs fixes. Au retour de la présentation, l'accueil Classique propose le choix de la
+version tant qu'aucune n'est retenue (`AccueilRoute.choixVersion`, MainActivity.onResume).
 
 Un modèle ne pousse rien lui-même : il ajoute une route à sa file (`routes`), ou la vue reçoit une fermeture
 `ouvrir(route)` ; la racine (`ios/App/Racine.swift`) traduit la route en `Ecran`, qu'elle pousse dans la pile de
@@ -81,12 +91,13 @@ présentation, le bravo, la note, les marque-pages). Une route dont l'écran n'e
 rien ouvrir. Une vue qui pousse ses propres valeurs (`BibliothequeRoute`, `TehilimRoute`) pose leur
 `navigationDestination` elle-même : la pile, typée-effacée, les accepte.
 
-Les modèles partagés (le magasin, la séance en cours et sa musique, l'accueil, les Livres, le Chemin, Zmanim, les
-réglages) sont
+Les modèles partagés (le magasin, la séance en cours, sa musique et son mini-lecteur, l'accueil et celui des
+versions, les Livres, le Chemin, Zmanim, les réglages) sont
 construits une fois par `ios/App/ModelesApp.swift`, sur le magasin des fichiers du dossier de l'app
 (`PersistanceFichiers`, l'acteur `Depot`) ; les autres, à l'ouverture de leur écran, gardés le temps de l'écran par
 `Garde` (Racine.swift) : la destination de la pile est recalculée à chaque dessin, le modèle ne doit pas l'être. Les
-services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance ;
+services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance, lecture
+du billet du vol par Vision ;
 Temps d'écran, Live Activity et répercussions des réglages sont encore des adaptateurs vides, qui le disent).
 
 La langue de l'app est la première des langues préférées qu'elle livre (`Traducteur.langueDuTelephone`) ; la

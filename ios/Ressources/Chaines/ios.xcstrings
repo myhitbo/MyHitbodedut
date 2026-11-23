@@ -577,38 +577,146 @@
         }
       }
     },
-    "ios_version_a_venir": {
-      "comment": "Choix de la version (VersionApp) : l'accueil choisi n'est pas encore porté sur iOS. À relire par le propriétaire.",
+    "ios_vol_billet_fichier": {
+      "comment": "Écran du vol (VolVue), billet : choisir un fichier, PDF ou image, dans Fichiers (le sélecteur d'Android). À relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Cet accueil n’existe pas encore sur iPhone : l’app garde l’accueil Classique, et votre choix est retenu."
+            "value": "Choisir un fichier (PDF ou image)"
           }
         },
         "en": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "This home screen is not on iPhone yet: the app keeps the Classic home, and your choice is saved."
+            "value": "Choose a file (PDF or image)"
           }
         },
         "he": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "מסך הבית הזה עדיין לא קיים באייפון: האפליקציה נשארת במסך הקלאסי, והבחירה שלך נשמרת."
+            "value": "בחירת קובץ (PDF או תמונה)"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Esta pantalla de inicio aún no está en iPhone: la app mantiene la pantalla Clásica y tu elección queda guardada."
+            "value": "Elegir un archivo (PDF o imagen)"
           }
         },
         "ar": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "الصفحة الرئيسية هاذي مازالت موش موجودة في الآيفون: التطبيق يقعد على الصفحة الكلاسيكية، واختيارك محفوظ."
+            "value": "اختار ملف (PDF ولّا تصويرة)"
+          }
+        }
+      }
+    },
+    "ios_vol_billet_photo": {
+      "comment": "Écran du vol (VolVue), billet : choisir une photo dans la photothèque (PhotosPicker). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choisir une photo du billet"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choose a photo of the ticket"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "בחירת תמונה של הכרטיס"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Elegir una foto del boleto"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اختار تصويرة متاع التذكرة"
+          }
+        }
+      }
+    },
+    "ios_vol_billet_scanner": {
+      "comment": "Écran du vol (VolVue), billet : lire la carte d'embarquement avec l'appareil photo (VisionKit, propre à iOS ; Android n'importe que le fichier). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scanner la carte d’embarquement"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scan the boarding pass"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "סריקת כרטיס העלייה למטוס"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escanear el pase de abordar"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "اقرا بطاقة الصعود بالكاميرا"
+          }
+        }
+      }
+    },
+    "ios_vol_billet_viser": {
+      "comment": "Écran du vol, lecture du billet par l'appareil photo : la consigne au-dessus de l'image. À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Visez le code-barres de la carte d’embarquement."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Point the camera at the boarding pass barcode."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כוונו את המצלמה אל הברקוד של כרטיס העלייה למטוס."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apunta la cámara al código de barras del pase de abordar."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "وجّه الكاميرا للكود-بار متاع بطاقة الصعود."
           }
         }
       }

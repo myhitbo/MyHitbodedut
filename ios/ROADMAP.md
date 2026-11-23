@@ -177,6 +177,7 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 - **Sources** : `MainActivity.kt`, `AnneauxDessin.kt`, `AnneauxView.kt`, `Onboarding.kt`, `OnboardingActivity.kt`, `SettingsActivity.kt` (prénom, adresse, apparence, données), `AccueilMoment.kt`, `Dedicace.kt`, `Tips.kt`, `TipsActivity.kt`.
 - **Critère de fin** : un test d'interface va de la présentation à l'accueil puis dans les trois onglets (Le Jour,
   Les Livres, Le Chemin ; refonte d'Android du 13/11), et ouvre Zmanim et les réglages depuis l'en-tête du Jour ; il importe un fichier d'or par l'écran des réglages et lit la série attendue ; captures de l'accueil dans ses quatre états (pas encore faite, en cours, faite, jour sans obligation) ; les anneaux ne bougent pas quand « Réduire les animations » est actif.
+- **Les versions de l'app (17/11)** : `VersionApp.kt`, `ChoixVersionActivity.kt`, `AccueilVersion.kt`, `VueVersion.kt`, `SereniteActivity.kt`, `BentoActivity.kt`, `PileActivity.kt`. Classique est l'accueil aux trois onglets ; Sérénité, Bento et Pile ont le leur (`AccueilVersionModele`, testé sous Linux ; `SereniteVue`, `BentoVue`, `PileVue`), posé par la racine à la place des onglets, comme l'activité de la version remplace MainActivity. Restent à un test d'interface : les captures des trois accueils, de jour et de nuit pour Sérénité.
 
 ### 16. Séance, journal, parcours
 
@@ -338,14 +339,14 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 
 | Sujet d'Android | Fait sur iOS | Reste |
 | --- | --- | --- |
-| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour`, `AccueilVue` (le Jour entier : anneaux, plaque, bande, relance, cartes du moment), la barre de départ et son volet sur les trois onglets (`BarreDepart`, `feuilleDepart`, `AccueilModele.volet`), `TextesVue` (les trois rayons, `TextesModele.rayons`), le mois en barres au Chemin (`GraphiqueMois`) | la fête des trophées neufs à l'accueil (`TropheeFeteModele`) |
+| Trois onglets (nav_main.xml) : Le Jour, Les Livres, Le Chemin | `Onglet`, `AccueilModele.entete` (date hébraïque → Zmanim, roue → réglages, ciel du moment, `CielDuJour`), `CheminModele` ; `Racine`, `CheminVue`, `EnteteJour`, `AccueilVue` (le Jour entier : anneaux, plaque, bande, relance, cartes du moment), la barre de départ et son volet sur les trois onglets (`BarreDepart`, `feuilleDepart`, `AccueilModele.volet`), `TextesVue` (les trois rayons, `TextesModele.rayons`), le mois en barres au Chemin (`GraphiqueMois`), la fête des trophées neufs à l'accueil (`TropheeFeteModele` ; la fiche qui se retourne, les confettis et les étincelles par-dessus les onglets, `feteDesTrophees` ; la phrase et les étincelles d'un palier autour de la médaille du grade) | — |
 | Pastille « Avec Hachem » | `GateStatus.pastilleDe`, `GateRule.geste` d'après Temps d'écran | — |
-| Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele`, ligne des réglages | les accueils Sérénité, Bento et Pile (BentoActivity, PileActivity, SereniteActivity, AccueilVersion) ; d'ici là l'app montre Classique et le dit |
+| Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele` (et l'aperçu des trois couleurs), ligne des réglages, le choix proposé au retour de la présentation (`AccueilRoute.choixVersion`) ; les accueils Sérénité, Bento et Pile (`AccueilVersionModele`, `SereniteVue` et son paysage du ciel, `BentoVue` et ses tuiles vivantes, `PileVue` et ses quatre cartes), posés par la racine à la place des onglets ; leurs polices (Bellefair, Heebo, Secular One, Rubik) | — |
 | Espagnol, arabe de Tunisie | localisations es et ar-TN déclarées (`CFBundleLocalizations`, catalogues `Catalogue/` en « ar-TN ») ; `Traducteur.langueDuTelephone` (LangueApp.livree) ; l'app de droite à gauche en arabe | le choix de la langue reste dans les Réglages d'iOS (§ 2.2.7) : iOS n'a pas d'équivalent sûr au sélecteur d'Android dans l'app |
 | Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot ; leurs cartes dans `ZmanimVue`, avec le choix du lieu par les villes | la position du téléphone (adaptateur de `Localisation`), le calendrier, la boussole et le partage depuis Zmanim |
 | Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`) ; les vues du lecteur compilées et ouvertes depuis les Livres, la recherche et le Jour | — |
 | Audit : journal, durées | corriger ou retirer un jour (`Store.corrigerJour`), durée réglable refusée sans être ramenée (`DureeSeance.valide`) | — |
-| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim | le billet (Vision), le relevé GPS et les services en ligne (leurs adaptateurs), le test d'interface de la tâche 26 |
+| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim ; le billet (`VolBilletBouton` : l'appareil photo par VisionKit, une photo ou un PDF lus par Vision dans `LecteurBilletSysteme`, puis `CarteEmbarquement`) | le relevé GPS et les services en ligne (leurs adaptateurs), le test d'interface de la tâche 26 ; la lecture du billet par l'appareil photo reste à essayer sur un téléphone |
 | Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture, historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
 | Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit | le code des trois extensions (tâches 27 et 28) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
 
@@ -353,14 +354,15 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 
 | Écran | Vue | État |
 | --- | --- | --- |
-| Le Jour | `AccueilVue`, `BarreDepart`, `feuilleDepart` | réel |
-| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels, avec la musique et l'ambiance ; sans Live Activity (tâche 17) |
-| La musique | `MusiqueVue` sur `MusiqueLecteur`, ouverte depuis le volet ; `App/Services/Musique.swift` (AVAudioPlayer, AVAudioEngine, copie des morceaux ajoutés, pochettes) | réelle ; le mini-lecteur de la séance (`MusiqueMiniLecteurVue`) n'est pas encore posé |
+| Le Jour | `AccueilVue`, `BarreDepart`, `feuilleDepart`, `feteDesTrophees` | réel, avec la fête des trophées neufs |
+| Les accueils des versions | `AccueilVersionVue` : `SereniteVue`, `BentoVue`, `PileVue` ; `ChoixVersionVue` | réels : la version choisie remplace aussitôt les onglets |
+| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels, avec la musique, l'ambiance et le mini-lecteur ; sans Live Activity (tâche 17) |
+| La musique | `MusiqueVue` sur `MusiqueLecteur`, ouverte depuis le volet ; `App/Services/Musique.swift` (AVAudioPlayer, AVAudioEngine, copie des morceaux ajoutés, pochettes) | réelle ; le mini-lecteur (`MusiqueMiniLecteurVue`) posé sur l'écran de séance |
 | Les Livres | `TextesVue` ; siddour, lecteur, Tehilim, Tikoun, Tefilot, sources et livres, halakha, hilloulot, recherche, 'hizouk, conseils | réels |
 | Le Chemin | `CheminVue` (et le mois en barres), `JournalVue`, `ParcoursVue`, `PaliersVue` | réels |
 | Les réglages | `ReglagesVue`, `ChoixVersionVue` | réels ; l'aperçu du bouclier, le choix des applications et la dédicace disent « écran introuvable » (tâches 27, 28) |
 | Zmanim | `ZmanimVue` | réel, sans position du téléphone |
-| Le vol | `VolVue` | réel, hors ligne, sans billet ni GPS |
+| Le vol | `VolVue`, `VolBilletBouton` | réel, hors ligne, avec le billet (appareil photo, photo, PDF) ; sans GPS |
 | La présentation | `PresentationVue` | réelle |
 | La boussole, le calendrier, les rappels | `BoussoleVue` compilée ; ses capteurs, et les écrans du calendrier et des rappels manquent | en attente |
 
