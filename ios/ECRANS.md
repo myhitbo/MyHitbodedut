@@ -87,8 +87,18 @@ réglages) sont
 construits une fois par `ios/App/ModelesApp.swift`, sur le magasin des fichiers du dossier de l'app
 (`PersistanceFichiers`, l'acteur `Depot`) ; les autres, à l'ouverture de leur écran, gardés le temps de l'écran par
 `Garde` (Racine.swift) : la destination de la pile est recalculée à chaque dessin, le modèle ne doit pas l'être. Les
-services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance ;
-Temps d'écran, Live Activity et répercussions des réglages sont encore des adaptateurs vides, qui le disent).
+services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance, Temps
+d'écran ; Live Activity et répercussions des réglages sont encore des adaptateurs vides, qui le disent).
+
+La barrière (tâches 27 et 28) : la règle est dans `Barriere` (l'instantané, la boîte, `PlanBouclier` pour le visage et
+les boutons du bouclier, `Planification` pour les rendez-vous et les magasins), que l'app et les trois extensions
+partagent ; `Coeur` remplit l'instantané (`EtatBarriere`). L'app tient `TempsEcranApp` (`App/Services/TempsEcran.swift`,
+un seul objet pour `TempsEcran`, `ReglagesBarriereSysteme` et `BarriereSysteme`, vide dans la construction
+SANS_BARRIERE) : à chaque changement du journal ou des réglages et à chaque retour au premier plan, il verse la boîte au
+journal, réécrit `barriere/etat.json`, met les magasins d'accord et refait les rendez-vous. `App/Services/TempsEcranCommun.swift`
+(magasins, sélection, `DeviceActivitySchedule`) est compilé aussi dans `Surveillance` et `BouclierAction`. Les écrans de
+la barrière et la dédicace passent par une seule route de la pile, `Ecran.barriere` (`App/Barriere/BarriereEcrans.swift`),
+le sélecteur d'Apple et `Label(jeton)` restant dans l'app, autour de `ChoixApplicationsVue`.
 
 La langue de l'app est la première des langues préférées qu'elle livre (`Traducteur.langueDuTelephone`) ; la
 racine pose `\.locale` (l'arabe est `ar-TN`) et `\.layoutDirection` (l'hébreu et l'arabe de droite à gauche). Le

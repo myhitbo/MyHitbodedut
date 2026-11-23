@@ -372,7 +372,7 @@ Le README dit encore « iOS n'autorise pas ce type de blocage par une applicatio
 | --- | --- | --- |
 | Autorisation | `FamilyControls`, `AuthorizationCenter.requestAuthorization(for: .individual)` | l'utilisateur s'autorise lui-même (Face ID ou code) ; il peut la retirer à tout moment dans Réglages → Temps d'écran |
 | Sélection | `FamilyActivityPicker` → `FamilyActivitySelection` | applications, catégories et sites, en jetons |
-| Deux magasins nommés | `ManagedSettingsStore(named:)` : `barriere` et `seance` | chacun porte les jetons à retenir ; on les **active** ou les **désactive** (`isActive`, iOS 26.5) sans y retoucher |
+| Deux magasins nommés | `ManagedSettingsStore(named:)` : `barriere` et `essai` | chacun porte les jetons à retenir, posés ou retirés à chaque rendez-vous. Écrit le 23/11 : `seance` est fondu dans `barriere` (le visage, invite ou séance, se choisit à l'affichage d'après `etat.json`, `PlanBouclier`), et l'essai réel a son magasin ; `isActive` (iOS 26.5) n'est pas employé, faute d'avoir été éprouvé |
 | Extension « bouclier » | `ManagedSettingsUI`, `ShieldConfigurationDataSource` | remplit le bouclier : icône, titre, sous-titre, deux boutons, couleurs |
 | Extension « action » | `ManagedSettings`, `ShieldActionDelegate` | reçoit l'appui sur un bouton, agit, répond au système |
 | Extension « surveillance » | `DeviceActivity`, `DeviceActivityMonitor` | réveillée aux rendez-vous (`intervalDidStart`, `intervalDidEnd`) |
