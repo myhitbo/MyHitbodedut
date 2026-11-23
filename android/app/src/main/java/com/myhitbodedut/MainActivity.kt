@@ -44,13 +44,6 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Lancée par l'icône alors que la tâche existe déjà sous une autre intention (ouverte la
-        // première fois par une notification ou une vignette) : Android pose alors un accueil de
-        // plus au lieu de ramener la tâche. On se retire, et l'écran laissé revient (23/11).
-        if (!isTaskRoot && intent?.action == Intent.ACTION_MAIN && intent?.hasCategory(Intent.CATEGORY_LAUNCHER) == true) {
-            finish()
-            return
-        }
         // Rouverte depuis les Récents : Android rejoue l'intention d'origine, extras compris, et la
         // note d'une ancienne séance se reproposait à chaque fois (comme SessionActivity.lireDemande).
         if (intent != null && intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) intent.removeExtra(EXTRA_ASK_NOTE)
