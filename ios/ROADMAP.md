@@ -283,7 +283,7 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 - **Critère de fin** : l'audit d'accessibilité des tests d'interface passe sans défaut sur chaque écran ; chaque élément de l'accueil, de la séance et d'un texte du siddour porte un libellé d'accessibilité dans les trois langues (vérifié par test) ; captures iPad en deux colonnes ; mesures tenues : premier écran en moins de 400 ms, défilement du plus long livre sans image perdue ; l'app pèse moins de 200 Mo.
 - **Où** : macOS.
 - **Fait (23/11)** : l'app est lancée et photographiée sur le simulateur (`ios-captures.yml`, ECRANS.md « Les
-  captures ») : les 42 écrans de `Captures.ecrans` (le Jour, le volet, la séance, le bravo, la note, les Livres et
+  captures ») : les 41 écrans de `Captures.ecrans` (le Jour, le volet, la séance, le bravo, la note, les Livres et
   chacun de leurs textes, le Chemin, les réglages, Zmanim, le calendrier, la boussole, les rappels, le vol, la
   musique, la barrière, la dédicace, les accueils Sérénité, Bento et Pile, la fête d'un trophée, le bilan) dans les
   cinq langues sur iPhone, puis en sombre, aux tailles d'accessibilité de Dynamic Type et sur iPad ; aucun
