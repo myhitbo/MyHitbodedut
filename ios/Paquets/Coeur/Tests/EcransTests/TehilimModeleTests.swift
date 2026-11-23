@@ -191,7 +191,12 @@ struct TehilimModeleTests {
         #expect(mercredi == "Wednesday")
         let lundi = TehilimTexte.nomDuJour(2, langue: "he")
         #expect(lundi == "יום שני")
-        // Une autre langue que les trois de l'app : l'anglais.
+        // L'espagnol et l'arabe de Tunisie (17/11), comme java.time les nomme.
+        let jeudi = TehilimTexte.nomDuJour(5, langue: "es")
+        #expect(jeudi == "Jueves")
+        let vendredi = TehilimTexte.nomDuJour(6, langue: "ar")
+        #expect(vendredi == "الجمعة")
+        // Une autre langue que celles de l'app : l'anglais.
         let autre = TehilimTexte.nomDuJour(7, langue: "de")
         #expect(autre == "Saturday")
     }

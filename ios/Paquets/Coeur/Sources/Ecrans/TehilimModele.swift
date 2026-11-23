@@ -56,14 +56,21 @@ public enum TehilimTexte {
     }
 
     /// `dayOfWeek.getDisplayName(TextStyle.FULL, locale)`, la première lettre en capitale : « Dimanche »,
-    /// « Sunday », « יום ראשון ». `jourDeSemaine` : 1 = dimanche … 7 = samedi (`JourCivil.jourDeSemaine`).
+    /// « Sunday », « יום ראשון », « Domingo », « الأحد » (les noms de java.time pour es et ar-TN, les deux
+    /// langues du 17/11 : l'espagnol disait « Monday » sur les captures du 23/11). `jourDeSemaine` : 1 = dimanche
+    /// … 7 = samedi (`JourCivil.jourDeSemaine`).
     public static func nomDuJour(_ jourDeSemaine: Int, langue: String) -> String {
         let rang = Kotlin.floorMod(jourDeSemaine - 1, 7)
         let code = ChizukCard.language(langue)
         if code.egalUnites("he") { return joursHe[rang] }
         if code.egalUnites("fr") { return joursFr[rang] }
+        if code.avantUnites("-").egalUnites("es") { return joursEs[rang] }
+        if code.avantUnites("-").egalUnites("ar") { return joursAr[rang] }
         return joursEn[rang]
     }
+
+    private static let joursEs = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    private static let joursAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"]
 
     private static let joursFr = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
     private static let joursEn = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
