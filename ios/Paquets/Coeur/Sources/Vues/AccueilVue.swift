@@ -733,6 +733,9 @@ private struct AccueilCarteVue: View {
 public struct BarreDepart: View {
     private let modele: AccueilModele
     @Environment(\.traducteur) private var traducteur
+    /// La largeur de la barre : ses marges sont « edge » d'Android (16 sur un téléphone, jusqu'à 320 sur une
+    /// tablette couchée, GrandEcran.bord).
+    @State private var largeur: Double = 0
 
     public init(modele: AccueilModele) {
         self.modele = modele
@@ -766,10 +769,13 @@ public struct BarreDepart: View {
             .buttonStyle(.plain)
             .accessibilityLabel(Text(modele.libelleRegler, traducteur: traducteur))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, GrandEcran.bord(largeur: largeur))
         .padding(.top, 6)
         .padding(.bottom, 8)
         .background(Teinte(.paper))
+        .onGeometryChange(for: Double.self, of: { Double($0.size.width) }) { nouvelle in
+            largeur = nouvelle
+        }
     }
 }
 
