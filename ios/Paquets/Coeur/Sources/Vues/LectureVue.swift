@@ -286,6 +286,9 @@ private struct LectureBandeSignets: View {
             .scrollIndicators(.hidden)
             .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
             .scrollPosition($position, anchor: .center)
+            // La hauteur de la bande, pas la moitié de l'écran : un défilement horizontal s'étire sinon dans la
+            // colonne (vu sur les captures, ios-captures.yml).
+            .fixedSize(horizontal: false, vertical: true)
             .environment(\.layoutDirection, .rightToLeft)
             .background(rendu.fond)
             .onChange(of: modele.signetActif, initial: true) { _, actif in
@@ -313,7 +316,7 @@ private struct LectureBandeSignets: View {
             modele.allerAuSignet(signet.id)
         } label: {
             Text(verbatim: signet.texte)
-                .font(.hebreu(modele.police, taille: 13))
+                .policeHebraique(modele.police, taille: 13, relativeA: .footnote)
                 .foregroundStyle(actif ? rendu.titre : rendu.discret)
                 .lineLimit(1)
                 .padding(.horizontal, 8)
