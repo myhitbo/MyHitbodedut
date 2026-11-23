@@ -68,7 +68,7 @@ public struct PaliersVue: View {
                     .frame(width: 56, height: 56)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(tete.titre, traducteur: traducteur)
-                        .font(.system(size: 18, weight: .bold))
+                        .tailleSp(18, poids: .bold, relativeA: .headline)
                         .foregroundStyle(Teinte(.ink))
                     Text(tete.sous, traducteur: traducteur)
                         .font(.footnote)
@@ -123,6 +123,7 @@ public struct PaliersVue: View {
                             .background(filtre.choisi ? Teinte(.brand) : Teinte(.card), in: Capsule())
                             .overlay { Capsule().strokeBorder(Teinte(.line), lineWidth: filtre.choisi ? 0 : 1) }
                     }
+                    .contentShape(Rectangle())
                     .buttonStyle(.plain)
                     .accessibilityLabel(Text(filtre.accessibilite, traducteur: traducteur))
                     .accessibilityAddTraits(filtre.choisi ? .isSelected : [])
@@ -261,7 +262,7 @@ private struct PaliersFicheVue: View {
             TropheeObjet(formes?.dessin(fiche.niveau, metal: fiche.metal))
                 .frame(width: 96, height: 96)
             Text(fiche.titre, traducteur: traducteur)
-                .font(.system(size: 20, weight: .bold))
+                .tailleSp(20, poids: .bold, relativeA: .title3)
                 .foregroundStyle(Teinte(.ink))
                 .multilineTextAlignment(.center)
             Text(verbatim: traducteur.texte(fiche.nom) + " · " + traducteur.texte(fiche.niveauCourt))

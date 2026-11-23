@@ -275,7 +275,7 @@ public struct JournalNoteVue: View {
                         toucher(humeur.rang)
                     } label: {
                         Text(verbatim: humeur.emoji)
-                            .font(.system(size: 30))
+                            .tailleSp(30, relativeA: .title)
                             .opacity(choisie == humeur.rang || choisie == 0 ? JournalNoteModele.opaciteChoisie
                                 : JournalNoteModele.opaciteAutre)
                             .frame(maxWidth: .infinity, minHeight: 48)
@@ -316,6 +316,7 @@ extension JournalNoteModele {
 public struct ParcoursVue: View {
     private let modele: ParcoursModele
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     public init(modele: ParcoursModele) {
         self.modele = modele
@@ -333,7 +334,9 @@ public struct ParcoursVue: View {
                         .font(.subheadline)
                         .foregroundStyle(Teinte(.muted))
                 }
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                // Deux tuiles par rangée ; une aux tailles d'accessibilité.
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12),
+                                         count: tailleTexte.isAccessibilitySize ? 1 : 2),
                           spacing: 12) {
                     ForEach(modele.tuiles) { tuile in
                         ParcoursTuileVue(tuile: tuile)
@@ -351,7 +354,7 @@ public struct ParcoursVue: View {
                         Text(modele.titreHumeur, traducteur: traducteur)
                             .titreCarte()
                         Text(verbatim: humeur.texte)
-                            .font(.system(size: 36))
+                            .tailleSp(36, relativeA: .largeTitle)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
                         Text(verbatim: humeur.legende.map { traducteur.texte($0) }.joined(separator: " · "))
@@ -432,8 +435,7 @@ private struct ParcoursTuileVue: View {
                     .font(Font.title.bold())
                     .monospacedDigit()
                     .foregroundStyle(teinte)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+                    .uneLigne(retrecie: 0.6)
                 if let unite = tuile.unite {
                     Text(unite, traducteur: traducteur)
                         .font(.footnote)

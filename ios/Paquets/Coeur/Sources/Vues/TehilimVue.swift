@@ -14,6 +14,7 @@ public struct TehilimVue: View {
 
     @Environment(\.traducteur) private var traducteur
     @Environment(\.scenePhase) private var phase
+    @Environment(\.dynamicTypeSize) private var tailleTexte
     /// Le marque-page choisi dans la feuille, ouvert une fois la feuille fermée.
     @State private var signetChoisi: TehilimRoute? = nil
     @State private var signetOuvert: TehilimRoute? = nil
@@ -91,7 +92,7 @@ public struct TehilimVue: View {
                         .padding(.vertical, 4)
                     // ic_marque_priere : un ruban en contour.
                     Image(systemName: "bookmark")
-                        .font(.system(size: 18))
+                        .font(.body)
                         .foregroundStyle(Teinte(.brand))
                         .accessibilityHidden(true)
                 }
@@ -138,11 +139,22 @@ public struct TehilimVue: View {
     }
 
     private var grille: some View {
-        VStack(spacing: 0) {
-            ForEach(modele.grille) { rangee in
-                HStack(spacing: 0) {
-                    ForEach(rangee.cases) { c in
+        Group {
+            if tailleTexte.isAccessibilitySize {
+                // Trois cases par rangée aux tailles d'accessibilité : à cinq, « 150 » ne tenait plus dans la sienne.
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 3), spacing: 0) {
+                    ForEach(modele.grille.flatMap(\.cases)) { c in
                         caseVue(c)
+                    }
+                }
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(modele.grille) { rangee in
+                        HStack(spacing: 0) {
+                            ForEach(rangee.cases) { c in
+                                caseVue(c)
+                            }
+                        }
                     }
                 }
             }
@@ -283,14 +295,14 @@ struct TehilimFeuilleSignets: View {
                         .font(.footnote)
                         .foregroundStyle(Teinte(.muted))
                     Image(systemName: "bookmark")
-                        .font(.system(size: 14))
+                        .font(.footnote)
                         .foregroundStyle(Teinte(.brand))
                         .accessibilityHidden(true)
                 }
                 Text(verbatim: ligne.apercu)
                     .policeHebraique(.serif, taille: 17)
                     .foregroundStyle(Teinte(.ink))
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                     .truncationMode(.tail)
             }
             .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)

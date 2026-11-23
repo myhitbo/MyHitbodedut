@@ -80,9 +80,9 @@ extension Font {
 extension View {
     /// Pose la police d'un texte saint : `taille` est celle d'Android en sp (15, 22…), mise à l'échelle de la
     /// taille du texte du téléphone comme le style `relativeA`, ce que fait le sp d'Android.
-    public func policeHebraique(_ police: PoliceHebraique.Police, taille: CGFloat,
+    public func policeHebraique(_ police: PoliceHebraique.Police, taille: CGFloat, gras: Bool = false,
                                 relativeA style: Font.TextStyle = .body) -> some View {
-        modifier(PoliceHebraiqueModificateur(police: police, taille: taille, style: style))
+        modifier(PoliceHebraiqueModificateur(police: police, taille: taille, gras: gras, style: style))
     }
 }
 
@@ -90,14 +90,16 @@ extension View {
 /// comprise.
 private struct PoliceHebraiqueModificateur: ViewModifier {
     let police: PoliceHebraique.Police
+    let gras: Bool
     @ScaledMetric private var taille: CGFloat
 
-    init(police: PoliceHebraique.Police, taille: CGFloat, style: Font.TextStyle) {
+    init(police: PoliceHebraique.Police, taille: CGFloat, gras: Bool, style: Font.TextStyle) {
         self.police = police
+        self.gras = gras
         _taille = ScaledMetric(wrappedValue: taille, relativeTo: style)
     }
 
     func body(content: Content) -> some View {
-        content.font(.hebreu(police, taille: taille))
+        content.font(gras ? Font.hebreu(police, taille: taille).bold() : .hebreu(police, taille: taille))
     }
 }

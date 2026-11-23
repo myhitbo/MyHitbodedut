@@ -135,6 +135,7 @@ struct VolBilletScanneur: View {
                         .frame(minHeight: 50)
                         .background(Color.black.opacity(0.55), in: Capsule())
                 }
+                .contentShape(Rectangle())
                 .buttonStyle(.plain)
             }
             .padding(.top, 12)

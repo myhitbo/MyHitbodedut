@@ -164,7 +164,7 @@ public struct Pastille: View {
                 valeur
                     .font(Font.footnote.bold())
                     .foregroundStyle(Teinte(.brand))
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
             }
             .padding(.horizontal, 14)
             .frame(minHeight: 40)
@@ -222,7 +222,7 @@ public struct LigneSection: View {
                     etat
                         .font(.footnote)
                         .foregroundStyle(Teinte(.muted))
-                        .lineLimit(2)
+                        .lignesAuPlus(2)
                 }
             }
             .multilineTextAlignment(.leading)

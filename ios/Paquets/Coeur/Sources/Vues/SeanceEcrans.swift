@@ -66,6 +66,7 @@ public struct SeanceVue: View {
                             .foregroundStyle(Teinte(.brand))
                             .frame(minHeight: 44)
                     }
+                    .contentShape(Rectangle())
                     .buttonStyle(.plain)
                     if modele.choixVisibles {
                         choix
@@ -149,14 +150,14 @@ public struct SeanceVue: View {
         switch modele.decompte {
         case .duree(let libelle):
             Text(libelle, traducteur: traducteur)
-                .font(.system(size: 56, weight: .bold))
+                .tailleSp(56, poids: .bold, relativeA: .largeTitle)
                 .monospacedDigit()
                 .foregroundStyle(Teinte(.ink))
         case .reste, .ecoule:
             TimelineView(.periodic(from: .now, by: 1)) { contexte in
                 let millis = Int64((contexte.date.timeIntervalSince1970 * 1000).rounded())
                 Text(verbatim: modele.texteDecompte(a: millis) ?? "")
-                    .font(.system(size: 64, weight: .bold))
+                    .tailleSp(64, poids: .bold, relativeA: .largeTitle)
                     .monospacedDigit()
                     .foregroundStyle(Teinte(.ink))
                     .environment(\.layoutDirection, .leftToRight)
@@ -250,6 +251,7 @@ public struct SeanceVue: View {
                         .foregroundStyle(Teinte(.brand))
                         .frame(maxWidth: .infinity, minHeight: 44)
                 }
+                .contentShape(Rectangle())
                 .buttonStyle(.plain)
             }
         }
@@ -289,7 +291,7 @@ public struct SeanceVue: View {
                         .font(.caption)
                         .foregroundStyle(Teinte(.muted))
                     Text(verbatim: guide.hebreu)
-                        .font(.hebreu(.serif, taille: 20))
+                        .policeHebraique(.serif, taille: 20, relativeA: .title3)
                         .foregroundStyle(Teinte(.ink))
                         .environment(\.layoutDirection, .rightToLeft)
                     Text(guide.titre, traducteur: traducteur)
@@ -378,7 +380,7 @@ struct SeanceCarteVue: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             Text(verbatim: carte.texte)
-                .font(carte.texteDroiteAGauche ? Font.hebreu(.serif, taille: 19) : Font.body)
+                .policeHebraique(carte.texteDroiteAGauche ? .serif : .sans, taille: carte.texteDroiteAGauche ? 19 : 17)
                 .foregroundStyle(Teinte(.ink))
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -410,7 +412,7 @@ private struct SeanceBoite: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 Text(dialogue.titre, traducteur: traducteur)
-                    .font(.system(size: 20, weight: .bold))
+                    .tailleSp(20, poids: .bold, relativeA: .title3)
                     .foregroundStyle(Teinte(.ink))
                 if let message = dialogue.message {
                     Text(message, traducteur: traducteur)

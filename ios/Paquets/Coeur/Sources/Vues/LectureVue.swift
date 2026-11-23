@@ -220,12 +220,13 @@ private struct LectureBandeau: View {
 
     /// Les étiquettes en pastilles, de droite à gauche ; VoiceOver lit leur phrase, pas chaque pastille.
     private var etiquettes: some View {
-        HStack(spacing: 6) {
+        // À la suite, et à la ligne quand la place manque (le texte agrandi ne se coupe plus).
+        HalakhaFlux(espacement: 6, interligne: 6) {
             ForEach(Array(modele.etiquettes.enumerated()), id: \.offset) { _, etiquette in
                 Text(verbatim: etiquette)
                     .font(.footnote)
                     .foregroundStyle(Color.white)
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                     .truncationMode(.tail)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 4)
@@ -379,6 +380,7 @@ private struct LectureAnnonceMasque: View {
                     .font(Font.subheadline.bold())
                     .foregroundStyle(Teinte(.brand))
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
@@ -416,7 +418,7 @@ private struct LectureFeuilleMarquesTexte: View {
                             Text(verbatim: "\u{1F516}  " + marque.apercu + "\u{2026}")
                                 .policeHebraique(modele.police, taille: 17)
                                 .foregroundStyle(Teinte(.ink))
-                                .lineLimit(2)
+                                .lignesAuPlus(2)
                                 .siddourHebreuAuDebut()
                         }
                     }

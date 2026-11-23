@@ -3,8 +3,9 @@ import XCTest
 /// L'audit d'accessibilité d'Xcode (`performAccessibilityAudit`) sur chaque écran de l'app (tâche 29 de ROADMAP.md :
 /// « l'audit d'accessibilité des tests d'interface passe sans défaut sur chaque écran »). L'app s'ouvre sur l'écran
 /// par « -capture <écran> -captureDemo » (App/Captures.swift), comme pour les captures ; chaque défaut relevé
-/// s'écrit sur une ligne « AUDIT », que la CI (ios-captures.yml) recopie dans son résumé. Le test échoue s'il en
-/// reste, sauf `AUDIT_RELEVE=1` (la CI le pose pour avoir la liste entière d'un coup). Le même fichier photographie
+/// s'écrit sur une ligne « AUDIT », que la CI (ios-captures.yml) recopie dans son résumé, et le test échoue s'il en
+/// reste (sauf `AUDIT_RELEVE=1` : la liste sans l'échec). Les défauts que l'audit relève à tort sont dans `toleres`,
+/// chacun avec sa raison : ils s'écrivent sur une ligne « TOLERE » et ne comptent pas. Le même fichier photographie
 /// les écrans couchés (`testCapturesCouchees`), que `simctl` ne sait pas tourner.
 final class AuditAccessibiliteTests: XCTestCase {
 
@@ -17,6 +18,27 @@ final class AuditAccessibiliteTests: XCTestCase {
         "presentation",
     ]
 
+    /// Les sortes de défaut, une à une : sur le simulateur lent de la CI, l'audit entier d'un écran chargé n'a pas
+    /// fini à temps (« Audit failed to complete in time », 17 écrans le 23/11) ; chaque sorte seule, si.
+    static let sortes: [XCUIAccessibilityAuditType] = [
+        .contrast, .elementDetection, .hitRegion, .sufficientElementDescription, .dynamicType, .textClipped, .trait,
+    ]
+
+    /// Un défaut relevé à tort : l'écran (nil : tous), la sorte (son nom dans le résumé), le début du libellé de
+    /// l'élément (nil : tout élément), et pourquoi ce n'en est pas un.
+    struct Tolere {
+        let ecran: String?
+        let sorte: String
+        let libelle: String?
+        let raison: String
+    }
+
+    /// Les faux positifs, chacun justifié ; la liste reste courte, et chaque ligne dit ce qu'elle couvre.
+    static let toleres: [Tolere] = []
+
+    /// Les défauts relevés, une ligne chacun.
+    private var defauts: [String] = []
+
     @MainActor
     func testChaqueEcranPasseLAudit() throws {
         let environnement = ProcessInfo.processInfo.environment
@@ -24,7 +46,7 @@ final class AuditAccessibiliteTests: XCTestCase {
         let releve = environnement["AUDIT_RELEVE"] == "1"
         let demandes = (environnement["AUDIT_ECRANS"] ?? "").split(separator: " ").map(String.init)
         let voulus = demandes.isEmpty ? Self.ecrans : demandes
-        var defauts: [String] = []
+        defauts = []
         // Un lancement à blanc : le tout premier, juste après l'installation, ne recevait pas ses arguments (l'audit
         // du « jour » voyait la présentation, en anglais).
         let premier = XCUIApplication()
@@ -39,25 +61,70 @@ final class AuditAccessibiliteTests: XCTestCase {
             _ = app.wait(for: .runningForeground, timeout: 20)
             // L'écran s'ouvre par étapes (Captures.ouvrir) ; les animations d'entrée finissent.
             Thread.sleep(forTimeInterval: 4)
-            do {
-                try app.performAccessibilityAudit { probleme in
-                    let element = probleme.element
-                    let ligne = [ecran, Self.nom(probleme.auditType), probleme.compactDescription,
-                                 element?.label ?? "", element.map { String(describing: $0.elementType) } ?? "",
-                                 element.map { "\(Int($0.frame.minX)),\(Int($0.frame.minY))" } ?? ""]
-                        .joined(separator: "\t")
+            if !auditer(app, ecran: ecran, sortes: .all) {
+                // Trop long d'un coup : sorte par sorte, chacune deux fois au plus.
+                for sorte in Self.sortes {
+                    if auditer(app, ecran: ecran, sortes: sorte) { continue }
+                    if auditer(app, ecran: ecran, sortes: sorte) { continue }
+                    let ligne = [ecran, "erreur", "audit inachevé : \(Self.nom(sorte))"].joined(separator: "\t")
                     print("AUDIT\t" + ligne)
                     defauts.append(ligne)
-                    // Relevé, pas d'échec ici : la liste entière d'abord.
-                    return true
                 }
-            } catch {
-                print("AUDIT\t\(ecran)\terreur\t\(error)")
             }
             app.terminate()
         }
         if !releve {
-            XCTAssertTrue(defauts.isEmpty, defauts.joined(separator: "\n"))
+            XCTAssertTrue(defauts.isEmpty, "\(defauts.count) défaut(s) d'accessibilité :\n" + defauts.joined(separator: "\n"))
+        }
+    }
+
+    /// Un audit de l'écran ouvert, pour ces sortes de défaut : chaque défaut va dans `defauts` (ou, s'il est
+    /// toléré, sur une ligne « TOLERE »). Rend false si l'audit n'a pas fini à temps, pour le refaire par sorte ;
+    /// une autre erreur compte comme un défaut.
+    @MainActor
+    private func auditer(_ app: XCUIApplication, ecran: String, sortes: XCUIAccessibilityAuditType) -> Bool {
+        let debut = Date()
+        defer {
+            print("DUREE\t\(ecran)\t\(Self.nom(sortes))\t\(Int(Date().timeIntervalSince(debut))) s")
+        }
+        do {
+            try app.performAccessibilityAudit(for: sortes) { [unowned self] probleme in
+                let element = probleme.element
+                let libelle = element?.label ?? ""
+                let sorte = Self.nom(probleme.auditType)
+                // Le détail (la raison du défaut), sur une ligne, en dernier.
+                let detail = probleme.detailedDescription.split(whereSeparator: \.isNewline).joined(separator: " ¶ ")
+                let ligne = [ecran, sorte, probleme.compactDescription, libelle,
+                             element.map { String(describing: $0.elementType) } ?? "",
+                             element.map { "\(Int($0.frame.minX)),\(Int($0.frame.minY))" } ?? "", detail]
+                    .joined(separator: "\t")
+                if let tolere = Self.tolere(ecran: ecran, sorte: sorte, libelle: libelle) {
+                    print("TOLERE\t" + ligne + "\t" + tolere.raison)
+                } else {
+                    print("AUDIT\t" + ligne)
+                    defauts.append(ligne)
+                }
+                // Relevé, pas d'échec ici : la liste entière d'abord.
+                return true
+            }
+            return true
+        } catch let erreur as NSError where erreur.domain == "com.apple.xcode.xctest.accessibilityAudit"
+                    && erreur.code == -56 {
+            print("LENT\t\(ecran)\t\(Self.nom(sortes))\t\(erreur.localizedDescription)")
+            return false
+        } catch {
+            let ligne = [ecran, "erreur", "\(error)"].joined(separator: "\t")
+            print("AUDIT\t" + ligne)
+            defauts.append(ligne)
+            return true
+        }
+    }
+
+    /// Le faux positif connu qui couvre ce défaut, s'il y en a un.
+    static func tolere(ecran: String, sorte: String, libelle: String) -> Tolere? {
+        toleres.first { t in
+            (t.ecran == nil || t.ecran == ecran) && sorte.contains(t.sorte)
+                && (t.libelle.map { libelle.hasPrefix($0) } ?? true)
         }
     }
 
@@ -95,7 +162,8 @@ final class AuditAccessibiliteTests: XCTestCase {
     }
 
     /// Le nom d'une sorte de défaut, pour le résumé.
-    private static func nom(_ type: XCUIAccessibilityAuditType) -> String {
+    static func nom(_ type: XCUIAccessibilityAuditType) -> String {
+        if type == .all { return "tout" }
         let noms: [(XCUIAccessibilityAuditType, String)] = [
             (.contrast, "contraste"), (.elementDetection, "élément"), (.hitRegion, "zone de toucher"),
             (.sufficientElementDescription, "description"), (.dynamicType, "Dynamic Type"),

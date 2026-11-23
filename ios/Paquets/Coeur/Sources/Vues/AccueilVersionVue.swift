@@ -76,10 +76,8 @@ enum VersionPolice {
         Font.custom("Rubik", size: taille, relativeTo: style(taille)).weight(graisse)
     }
 
-    /// La police du téléphone, à la taille d'Android en sp.
-    static func systeme(_ taille: CGFloat, _ graisse: Font.Weight = .regular) -> Font {
-        Font.system(size: taille, weight: graisse)
-    }
+    // La police du téléphone à la taille d'Android en sp : `.tailleSp(sp, poids:, relativeA: style(sp))`, qui suit
+    // Dynamic Type (une `Font.system(size:)` restait figée, relevée par l'audit d'accessibilité).
 
     /// Le style d'iOS dont la taille suit le même pas que ce sp.
     static func style(_ taille: CGFloat) -> Font.TextStyle {
@@ -122,13 +120,15 @@ struct VersionHebreu: View {
     let couleur: Color
     let police: PoliceHebraique.Police
     var lignes: Int? = nil
+    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     var body: some View {
         Text(verbatim: texte)
             .policeHebraique(police, taille: taille)
             .foregroundStyle(couleur)
             .lineSpacing(5)
-            .lineLimit(lignes)
+            // Le nombre de lignes de la maquette à la taille ordinaire du texte ; tout le texte au-delà.
+            .lineLimit(tailleTexte.agrandie ? nil : lignes)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.layoutDirection, .rightToLeft)

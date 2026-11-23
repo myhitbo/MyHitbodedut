@@ -137,7 +137,7 @@ public struct BoussoleVue: View {
             textePastille(pastille)
                 .font(.subheadline)
                 .foregroundStyle(Color.white)
-                .lineLimit(2)
+                .lignesAuPlus(2)
                 .multilineTextAlignment(.leading)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
@@ -309,6 +309,7 @@ public struct BoussoleVue: View {
             BoussoleCarteReglage(titre: t("boussole_methode"),
                                  valeur: Text(modele.methodeChoisie, traducteur: traducteur))
         }
+        .contentShape(Rectangle())
         .buttonStyle(.plain)
         .boussoleMargeCarte()
     }
@@ -321,6 +322,7 @@ public struct BoussoleVue: View {
             BoussoleCarteReglage(titre: t("boussole_affichage"),
                                  valeur: Text(modele.affichageChoisi, traducteur: traducteur))
         }
+        .contentShape(Rectangle())
         .buttonStyle(.plain)
         .boussoleMargeCarte()
     }

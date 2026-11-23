@@ -11,6 +11,7 @@ import Ecrans
 struct SereniteVue: View {
     let modele: AccueilVersionModele
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     var body: some View {
         let e = modele.serenite
@@ -52,7 +53,7 @@ struct SereniteVue: View {
                     modele.ouvrirReglages()
                 } label: {
                     Text(verbatim: e.initiale ?? "⚙")
-                        .font(VersionPolice.systeme(16, .bold))
+                        .tailleSp(16, poids: .bold, relativeA: VersionPolice.style(16))
                         .foregroundStyle(k.texte)
                         .frame(width: 48, height: 48)
                         .background(Circle().fill(k.bouton))
@@ -63,7 +64,7 @@ struct SereniteVue: View {
                 .accessibilityLabel(Text(Libelle("version_reglages"), traducteur: traducteur))
             }
             Text(verbatim: VersionEcrit.ligne(e.ligne, traducteur))
-                .font(VersionPolice.systeme(14))
+                .tailleSp(14, relativeA: VersionPolice.style(14))
                 .foregroundStyle(k.texte2)
         }
     }
@@ -86,7 +87,7 @@ struct SereniteVue: View {
                               ouvrir: @escaping @MainActor () -> Void) -> some View {
         HStack(spacing: 8) {
             Text(titre, traducteur: traducteur)
-                .font(VersionPolice.systeme(13, .bold))
+                .tailleSp(13, poids: .bold, relativeA: VersionPolice.style(13))
                 .textCase(.uppercase)
                 .tracking(1.3)
                 .foregroundStyle(k.texte2)
@@ -94,7 +95,7 @@ struct SereniteVue: View {
                 .accessibilityAddTraits(.isHeader)
             Button(action: ouvrir) {
                 Text(action, traducteur: traducteur)
-                    .font(VersionPolice.systeme(14, .bold))
+                    .tailleSp(14, poids: .bold, relativeA: VersionPolice.style(14))
                     .foregroundStyle(k.accent)
                     .frame(minHeight: 40)
                     .contentShape(Rectangle())
@@ -114,16 +115,16 @@ struct SereniteVue: View {
                         .font(VersionPolice.bellefair(17))
                         .foregroundStyle(k.texte)
                         .lineSpacing(3)
-                        .lineLimit(3)
+                        .lignesAuPlus(3)
                         .padding(.top, 8)
                 }
                 Text(verbatim: p.reference)
-                    .font(VersionPolice.systeme(13))
+                    .tailleSp(13, relativeA: VersionPolice.style(13))
                     .foregroundStyle(k.texte2)
                     .padding(.top, 8)
             } else {
                 Text(Libelle("version_chargement"), traducteur: traducteur)
-                    .font(VersionPolice.systeme(15))
+                    .tailleSp(15, relativeA: VersionPolice.style(15))
                     .foregroundStyle(k.texte2)
                     .padding(.top, 6)
             }
@@ -139,13 +140,13 @@ struct SereniteVue: View {
                     .foregroundStyle(k.texte)
                     .padding(.top, 4)
                 Text(verbatim: z.heure + " · " + traducteur.texte(z.dans))
-                    .font(VersionPolice.systeme(15))
+                    .tailleSp(15, relativeA: VersionPolice.style(15))
                     .monospacedDigit()
                     .foregroundStyle(k.texte2)
                     .padding(.top, 2)
             } else {
                 Text(Libelle("version_sans_lieu"), traducteur: traducteur)
-                    .font(VersionPolice.systeme(15))
+                    .tailleSp(15, relativeA: VersionPolice.style(15))
                     .foregroundStyle(k.texte2)
                     .padding(.top, 6)
             }
@@ -157,33 +158,33 @@ struct SereniteVue: View {
             titreSection(Libelle("serenite_cette_semaine"), Libelle("serenite_tout_voir"), k) { modele.ouvrirJournal() }
             if e.jours.isEmpty {
                 Text(Libelle("version_journal_vide"), traducteur: traducteur)
-                    .font(VersionPolice.systeme(15))
+                    .tailleSp(15, relativeA: VersionPolice.style(15))
                     .foregroundStyle(k.texte2)
                     .padding(.top, 6)
             }
             ForEach(Array(e.jours.enumerated()), id: \.element.id) { rang, jour in
                 VStack(alignment: .leading, spacing: 2) {
-                    HStack {
+                    RangeeAdaptable {
                         Text(verbatim: VersionEcrit.chaine(jour.jour, traducteur))
-                            .font(VersionPolice.systeme(15))
+                            .tailleSp(15, relativeA: VersionPolice.style(15))
                             .foregroundStyle(k.texte)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(jour.duree, traducteur: traducteur)
-                            .font(VersionPolice.systeme(15))
+                            .tailleSp(15, relativeA: VersionPolice.style(15))
                             .foregroundStyle(k.texte2)
                     }
                     if let note = jour.note {
                         Text(verbatim: note)
-                            .font(VersionPolice.systeme(14))
+                            .tailleSp(14, relativeA: VersionPolice.style(14))
                             .foregroundStyle(k.texte2)
-                            .lineLimit(1)
+                            .lignesAuPlus(1)
                     }
                 }
                 .accessibilityElement(children: .combine)
                 .padding(.top, rang == 0 ? 6 : 12)
             }
             VersionBouton(libelle: Text(Libelle("version_ecrire_note"), traducteur: traducteur), fond: k.accent,
-                          encre: k.accent, police: VersionPolice.systeme(15), trait: true) {
+                          encre: k.accent, police: .subheadline, trait: true) {
                 modele.ecrireNote()
             }
             .padding(.top, 16)
@@ -200,11 +201,17 @@ struct SereniteVue: View {
                 } label: {
                     VStack(spacing: 4) {
                         Image(systemName: SereniteVue.symbole(onglet))
-                            .font(.system(size: 20))
-                            .frame(width: 24, height: 24)
+                            .font(.title3)
+                            .frame(minWidth: 24, minHeight: 24)
                             .accessibilityHidden(true)
-                        Text(onglet.titre, traducteur: traducteur)
-                            .font(VersionPolice.systeme(12, onglet.actif ? .bold : .regular))
+                        // Aux tailles d'accessibilité, l'onglet ne montre que son image, et son nom en grand sous
+                        // un appui long (comme la barre d'onglets d'iOS).
+                        if !tailleTexte.isAccessibilitySize {
+                            Text(onglet.titre, traducteur: traducteur)
+                                .tailleSp(12, poids: onglet.actif ? .bold : .regular, relativeA: VersionPolice.style(12))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                        }
                     }
                     .foregroundStyle(onglet.actif ? k.accent : k.texte2)
                     .frame(maxWidth: .infinity, minHeight: 56)
@@ -213,7 +220,15 @@ struct SereniteVue: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(Text(onglet.titre, traducteur: traducteur))
                 .accessibilityAddTraits(onglet.actif ? .isSelected : [])
+                .accessibilityShowsLargeContentViewer {
+                    Label {
+                        Text(onglet.titre, traducteur: traducteur)
+                    } icon: {
+                        Image(systemName: SereniteVue.symbole(onglet))
+                    }
+                }
             }
         }
         .padding(.horizontal, 8)
@@ -294,8 +309,8 @@ private struct SereniteCartePaysage: View {
                         .padding(.trailing, 92)
                         .padding(.bottom, 22)
                     // Le bouton rond : commencer, ou revenir à la hitbodedout en cours.
-                    Text(verbatim: "▶")
-                        .font(.system(size: 20))
+                    Image(systemName: "play.fill")
+                        .font(.title3)
                         .foregroundStyle(SerenitePalette.violet)
                         .frame(width: 56, height: 56)
                         .background(Circle().fill(SerenitePalette.peche))
@@ -304,7 +319,8 @@ private struct SereniteCartePaysage: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                         .accessibilityHidden(true)
                 }
-                .frame(height: 380)
+                // 380 de haut ; plus haute si le texte grandit (Dynamic Type), pour ne pas le couper.
+                .frame(minHeight: 380)
                 .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
                 .contentShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
@@ -318,7 +334,7 @@ private struct SereniteCartePaysage: View {
                 modele.preparerSeance()
             } label: {
                 Text(Libelle("serenite_modifier"), traducteur: traducteur)
-                    .font(VersionPolice.systeme(14, .bold))
+                    .tailleSp(14, poids: .bold, relativeA: VersionPolice.style(14))
                     .foregroundStyle(Color.white)
                     .padding(.horizontal, 16)
                     .frame(minHeight: 44)
@@ -335,7 +351,7 @@ private struct SereniteCartePaysage: View {
     private var texte: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(ecran.etiquette, traducteur: traducteur)
-                .font(VersionPolice.systeme(12, .bold))
+                .tailleSp(12, poids: .bold, relativeA: VersionPolice.style(12))
                 .textCase(.uppercase)
                 .tracking(1.2)
                 .foregroundStyle(SerenitePalette.pecheClair)
@@ -344,7 +360,7 @@ private struct SereniteCartePaysage: View {
                 .foregroundStyle(Color.white)
                 .padding(.top, 4)
             Text(verbatim: VersionEcrit.ligne(ecran.reglage, traducteur))
-                .font(VersionPolice.systeme(14))
+                .tailleSp(14, relativeA: VersionPolice.style(14))
                 .foregroundStyle(VersionCouleur.argb(0xFFD9D0E6))
                 .padding(.top, 6)
         }

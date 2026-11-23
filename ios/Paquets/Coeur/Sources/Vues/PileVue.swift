@@ -56,7 +56,7 @@ struct PileVue: View {
     private func icone(_ symbole: String, _ description: Libelle, action: @escaping @MainActor () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbole)
-                .font(.system(size: 20))
+                .font(.title3)
                 .foregroundStyle(Pile.encreDouce)
                 .frame(width: 48, height: 48)
                 .contentShape(Rectangle())
@@ -81,11 +81,13 @@ struct PileVue: View {
                     }
                     .padding(.horizontal, 4)
                     .containerRelativeFrame(.horizontal)
-                    // La carte suivante attend derrière, un peu plus petite et plus sombre.
+                    // La carte suivante attend derrière, un peu plus petite et plus sombre : assombrie, pas
+                    // transparente (alpha 0,65 sur Android), pour que son texte reste lisible sur son fond
+                    // (contraste relevé par l'audit d'accessibilité).
                     .scrollTransition(axis: .horizontal) { contenu, phase in
                         contenu
                             .scaleEffect(x: 1, y: 1 - 0.06 * min(abs(phase.value), 1), anchor: UnitPoint.center)
-                            .opacity(1 - 0.35 * min(abs(phase.value), 1))
+                            .brightness(-0.2 * min(abs(phase.value), 1))
                     }
                     .id(carte.rawValue)
                 }
@@ -217,7 +219,7 @@ struct PileVue: View {
                         .font(VersionPolice.rubik(16))
                         .foregroundStyle(j.ecrite ? Pile.jrEncre : Pile.jrDouce)
                         .lineSpacing(4)
-                        .lineLimit(9)
+                        .lignesAuPlus(9)
                         .padding(.top, 10)
                 }
             } else {

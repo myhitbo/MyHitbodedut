@@ -21,6 +21,7 @@ public struct ReglagesVue: View {
     @Environment(\.traducteur) private var traducteur
     @Environment(\.openURL) private var ouvrirLien
     @Environment(\.scenePhase) private var phase
+    @Environment(\.dynamicTypeSize) private var tailleTexte
     @State private var exportOuvert = false
     @State private var importOuvert = false
     @State private var sauvegarde = ReglagesSauvegarde(donnees: Data())
@@ -155,7 +156,7 @@ public struct ReglagesVue: View {
     private var entete: some View {
         if let resume = modele.resume {
             Text(resume, traducteur: traducteur)
-                .font(.system(size: 19, weight: .bold))
+                .tailleSp(19, poids: .bold, relativeA: .title3)
                 .foregroundStyle(Teinte(.onBrand))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(18)
@@ -459,24 +460,28 @@ public struct ReglagesVue: View {
                        action: @escaping @MainActor () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(Libelle(cle), traducteur: traducteur)
-                        .font(.subheadline)
-                        .foregroundStyle(Teinte(.ink))
-                    if let indication {
-                        Text(Libelle(indication), traducteur: traducteur)
-                            .font(.footnote)
-                            .foregroundStyle(Teinte(.muted))
+                // La valeur au bout de la ligne ; sous le libellé aux tailles d'accessibilité, où les deux côte à
+                // côte n'avaient plus que quelques lettres par ligne.
+                RangeeAdaptable(espacement: 10) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(Libelle(cle), traducteur: traducteur)
+                            .font(.subheadline)
+                            .foregroundStyle(Teinte(.ink))
+                        if let indication {
+                            Text(Libelle(indication), traducteur: traducteur)
+                                .font(.footnote)
+                                .foregroundStyle(Teinte(.muted))
+                        }
                     }
-                }
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                if let valeur {
-                    valeur
-                        .font(Font.subheadline.weight(.semibold))
-                        .foregroundStyle(Teinte(.brand))
-                        .multilineTextAlignment(.trailing)
-                        .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    if let valeur {
+                        valeur
+                            .font(Font.subheadline.weight(.semibold))
+                            .foregroundStyle(Teinte(.brand))
+                            .multilineTextAlignment(tailleTexte.isAccessibilitySize ? .leading : .trailing)
+                            .lignesAuPlus(2)
+                    }
                 }
                 Image(systemName: "chevron.forward")
                     .font(Font.footnote.weight(.semibold))
@@ -612,7 +617,7 @@ private struct ReglagesBoite: View {
 
     private func titre(_ libelle: Libelle) -> some View {
         Text(libelle, traducteur: traducteur)
-            .font(.system(size: 20, weight: .bold))
+            .tailleSp(20, poids: .bold, relativeA: .title3)
             .foregroundStyle(Teinte(.ink))
     }
 

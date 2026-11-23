@@ -10,6 +10,7 @@ import Ecrans
 public struct CheminVue: View {
     private let modele: CheminModele
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     public init(modele: CheminModele) {
         self.modele = modele
@@ -19,22 +20,26 @@ public struct CheminVue: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 Carte {
-                    HStack(alignment: .top, spacing: 8) {
+                    // Trois colonnes ; aux tailles d'accessibilité, trois lignes (le chiffre, puis son libellé), où
+                    // les mots se coupaient lettre à lettre.
+                    RangeeAdaptable(alignement: .top, espacement: tailleTexte.isAccessibilitySize ? 12 : 8) {
                         ForEach(modele.chiffres) { chiffre in
-                            VStack(spacing: 4) {
+                            let disposition = tailleTexte.isAccessibilitySize
+                                ? AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 10))
+                                : AnyLayout(VStackLayout(spacing: 4))
+                            disposition {
                                 valeur(chiffre.valeur)
                                     .font(Font.title2.bold())
                                     .monospacedDigit()
                                     .foregroundStyle(Teinte(.brand))
                                     // Une ligne (CheminValeur : maxLines 1), « 18 שע׳ 30 דק׳ » rapetissé plutôt que coupé.
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.5)
+                                    .uneLigne(retrecie: 0.5)
                                 Text(chiffre.libelle, traducteur: traducteur)
                                     .font(.caption)
                                     .foregroundStyle(Teinte(.muted))
-                                    .multilineTextAlignment(.center)
+                                    .multilineTextAlignment(tailleTexte.isAccessibilitySize ? .leading : .center)
                             }
-                            .frame(maxWidth: .infinity)
+                            .frame(maxWidth: .infinity, alignment: tailleTexte.isAccessibilitySize ? .leading : .center)
                             .accessibilityElement(children: .combine)
                         }
                     }
@@ -104,7 +109,7 @@ public struct EnteteJour: View {
                         .accessibilityHidden(true)
                     titre(entete.titre)
                         .font(.subheadline)
-                        .lineLimit(1)
+                        .lignesAuPlus(1)
                     Image(systemName: "chevron.forward")
                         .font(.footnote)
                         .accessibilityHidden(true)
@@ -112,6 +117,7 @@ public struct EnteteJour: View {
                 .foregroundStyle(Teinte(.ink))
                 .frame(minHeight: 48)
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
             .accessibilityLabel(Text(entete.accessibilite, traducteur: traducteur))
             Spacer(minLength: 0)
@@ -123,6 +129,7 @@ public struct EnteteJour: View {
                     .foregroundStyle(Teinte(.ink))
                     .frame(width: 48, height: 48)
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
             .accessibilityLabel(Text(entete.reglages, traducteur: traducteur))
         }

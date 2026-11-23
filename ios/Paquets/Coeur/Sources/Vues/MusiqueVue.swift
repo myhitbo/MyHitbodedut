@@ -424,7 +424,7 @@ struct MusiqueLigneVue: View {
                 Text(verbatim: titre)
                     .font(.callout)
                     .foregroundStyle(Teinte(.ink))
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                     .truncationMode(.tail)
                 Text(verbatim: origine)
                     .font(.caption)
