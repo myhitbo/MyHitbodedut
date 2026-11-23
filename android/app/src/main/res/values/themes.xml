@@ -187,10 +187,18 @@
         <item name="android:elevation">3dp</item>
     </style>
 
+    <!--
+        Une valeur longue (usage de Birkat haLevana, police Rachi) prenait
+        toute la ligne et réduisait le libellé à rien sur 320dp : elle est
+        bornée à 180dp et 3 lignes (check-up du 11/11).
+    -->
     <style name="SettingValue" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minWidth">88dp</item>
+        <item name="android:maxWidth">180dp</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <!--
@@ -211,6 +219,7 @@
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetRight">0dp</item>
         <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">?attr/mhMint</item>
     </style>

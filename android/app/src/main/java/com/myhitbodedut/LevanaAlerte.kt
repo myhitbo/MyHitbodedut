@@ -1,6 +1,5 @@
 package com.myhitbodedut
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -20,7 +19,7 @@ import java.time.ZonedDateTime
  */
 object LevanaAlerte {
 
-    private const val REQUETE = 150
+    const val REQUETE = 150
 
     enum class Soir(val titre: Int) { PREMIER(R.string.levana_rappel_premier), MOTSAE(R.string.levana_rappel_motsae), DERNIER(R.string.levana_rappel_dernier) }
 
@@ -57,11 +56,6 @@ object LevanaAlerte {
         return null
     }
 
-    private fun intent(context: Context): PendingIntent = PendingIntent.getBroadcast(
-        context, REQUETE, Intent(context, LevanaAlerteReceiver::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
-
     /** L'heure du rappel un soir donné : la sortie des étoiles au lieu choisi, sinon 20 h. */
     fun heure(context: Context, zone: ZoneId): (LocalDate) -> ZonedDateTime = { d ->
         Store.lieuAlertes(context)?.let { lieu -> Zmanim.jour(lieu, d).firstOrNull { it.cle == "tset" }?.local?.withZoneSameInstant(zone) }
@@ -69,14 +63,12 @@ object LevanaAlerte {
     }
 
     fun programmer(context: Context) {
-        val alarmes = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pending = intent(context)
-        alarmes.cancel(pending)
+        Alarme.annuler(context, REQUETE, LevanaAlerteReceiver::class.java)
         if (!Store.levanaRappel(context)) return
         val zone = Store.lieuAlertes(context)?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
         val (quand, soir) = prochain(ZonedDateTime.now(zone), VueJour.usageLevana(context), heure(context, zone), Store.inIsrael(context)) ?: return
         Store.setLevanaRappelSoir(context, soir.name)
-        runCatching { alarmes.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, quand.toInstant().toEpochMilli(), pending) }
+        Alarme.poser(context, REQUETE, LevanaAlerteReceiver::class.java, quand.toInstant().toEpochMilli())
     }
 }
 
@@ -84,6 +76,8 @@ object LevanaAlerte {
 class LevanaAlerteReceiver : BroadcastReceiver() {
     override fun onReceive(brut: Context, intent: Intent) {
         val context = LangueApp.envelopper(brut)
+        // La seconde des deux alarmes (Alarme) : déjà montré, rappel suivant posé.
+        if (!Alarme.aTraiter(context, LevanaAlerte.REQUETE)) return
         Notifications.ensureChannels(context)
         val soir = runCatching { LevanaAlerte.Soir.valueOf(Store.levanaRappelSoir(context) ?: "") }.getOrDefault(LevanaAlerte.Soir.PREMIER)
         val ouvrir = PendingIntent.getActivity(

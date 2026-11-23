@@ -1919,13 +1919,31 @@ function extraitRecherche(texte, q) {
   const debut = Math.max(0, i - 30);
   return (debut > 0 ? '…' : '') + t.slice(debut, i + q.length + 50).trim() + (i + q.length + 50 < t.length ? '…' : '');
 }
+// Chaque paragraphe n'est mis à plat qu'une fois (check-up du 11/11) : les livres et le siddour
+// (28 Mo) étaient renormalisés à chaque frappe, 2 à 4 s sur téléphone. La mémoire suit le texte :
+// un livre rendu à la mémoire en quittant la recherche (rendreLivresDeRecherche) emporte la sienne.
+const nuMemo = new WeakMap();
+const nuBloc = (b) => {
+  let v = nuMemo.get(b);
+  if (v === undefined) { v = nuRecherche(b.t); nuMemo.set(b, v); }
+  return v;
+};
+const nuTitre = (titre) => {
+  let v = nuMemo.get(titre);
+  if (v === undefined || v.langue !== tr.langue) {
+    v = { langue: tr.langue, he: nuRecherche(titre.he), traduit: nuRecherche(titreTexte(titre)) };
+    nuMemo.set(titre, v);
+  }
+  return v;
+};
 function dansRecueil(recueil, q, livre) {
   const r = [];
   for (const t of recueil.textes) {
     if (r.length >= 30) break;
-    if (nuRecherche(t.titre.he).includes(q) || nuRecherche(titreTexte(t.titre)).includes(q)) { r.push({ t, extrait: titreTexte(t.titre) !== t.titre.he ? titreTexte(t.titre) : '', livre }); continue; }
+    const titre = nuTitre(t.titre);
+    if (titre.he.includes(q) || titre.traduit.includes(q)) { r.push({ t, extrait: titreTexte(t.titre) !== t.titre.he ? titreTexte(t.titre) : '', livre }); continue; }
     for (const s of t.sections ?? []) {
-      const b = s.blocs.find((x) => x.t && nuRecherche(x.t).includes(q));
+      const b = s.blocs.find((x) => x.t && nuBloc(x).includes(q));
       if (b) { r.push({ t, extrait: extraitRecherche(b.t, q), livre }); break; }
     }
   }
@@ -5298,11 +5316,16 @@ function ajusteLesTextes() {
   for (const el of app.querySelectorAll('.ajuste')) {
     const max = parseFloat(getComputedStyle(el).getPropertyValue('--corps-max')) || 19;
     let taille = max;
+    el.classList.remove('allonge');
     el.style.fontSize = `${taille}px`;
-    while (taille > 8 && el.scrollHeight > el.clientHeight + 1) {
+    // Plancher à 12 px, comme Android (12 sp) : en dessous, l'hébreu voyellé
+    // devenait illisible. Si le texte ne tient toujours pas, la carte s'allonge
+    // au lieu de le rogner (check-up du 11/11).
+    while (taille > 12 && el.scrollHeight > el.clientHeight + 1) {
       taille -= 1;
       el.style.fontSize = `${taille}px`;
     }
+    if (el.scrollHeight > el.clientHeight + 1) el.classList.add('allonge');
   }
 }
 
