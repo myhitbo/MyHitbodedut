@@ -60,8 +60,8 @@
   {
    "chemin": "Ressources/Catalogue/ios.xcstrings",
    "source": "ios/Ressources/Chaines/ios.xcstrings",
-   "octets": 73941,
-   "sha256": "7f7e584a5f38842a673d24f1e232af315e58b5889c1f6a1af521bb04178c9fd8",
+   "octets": 73010,
+   "sha256": "b4ba573ce83291f3b0076bdc5007ec46862e0adc79dc9d68c88ae65d36113369",
    "licence": "propre à l'app",
    "mention": ""
   },

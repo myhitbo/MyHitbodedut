@@ -1117,42 +1117,6 @@
         }
       }
     },
-    "ios_bientot": {
-      "comment": "Propre à iOS (PORTAGE.md § 4.2), à relire par le propriétaire : sous le titre d'un onglet dont l'écran n'est pas encore porté.",
-      "extractionState": "manual",
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Bientôt"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Coming soon"
-          }
-        },
-        "he": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "בקרוב"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Próximamente"
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "قريب"
-          }
-        }
-      }
-    },
     "ios_icone_couleurs": {
       "comment": "Réglages, apparence : changer l'icône de l'app sur un geste, iOS prévenant à chaque changement (PORTAGE.md § 2.3). Écrans d'iOS, phase 3 : à relire par le propriétaire.",
       "extractionState": "manual",

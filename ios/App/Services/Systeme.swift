@@ -1,4 +1,3 @@
-import Barriere
 import Coeur
 import Ecrans
 import Foundation
@@ -67,17 +66,3 @@ struct IconeSysteme: ReglagesIcone {
         try await UIApplication.shared.setAlternateIconName(nom)
     }
 }
-
-/// Temps d'écran tant que la barrière n'est pas écrite (tâches 27 et 28) : aucune autorisation demandée, aucun
-/// bouclier posé.
-struct TempsEcranAbsent: TempsEcran {
-    func demanderAutorisation() async -> Bool { false }
-    func leverBoucliers() async {}
-}
-
-/// Ce que l'app constate de Temps d'écran tant que la barrière n'est pas écrite : rien d'autorisé, aucune application.
-struct BarriereAbsente: ReglagesBarriereSysteme {
-    func constat() async -> Constat { Constat(autorise: false) }
-    func nombreDeJetons() async -> Int { 0 }
-}
-

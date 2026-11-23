@@ -156,8 +156,8 @@ struct TraducteurTests {
         let langues = (entree?["localizations"] as? [String: Any])?.keys.sorted() ?? []
         #expect(langues == attendues.sorted())
         let ios = try JSONSerialization.jsonObject(with: Fichiers.donnees("ios/Ressources/Catalogue/ios.xcstrings"))
-        let bientot = ((ios as? [String: Any])?["strings"] as? [String: Any])?["ios_bientot"] as? [String: Any]
-        let languesIos = (bientot?["localizations"] as? [String: Any])?.keys.sorted() ?? []
+        let ok = ((ios as? [String: Any])?["strings"] as? [String: Any])?["action_ok"] as? [String: Any]
+        let languesIos = (ok?["localizations"] as? [String: Any])?.keys.sorted() ?? []
         #expect(languesIos == attendues.sorted())
     }
 
@@ -242,7 +242,7 @@ struct TraducteurTests {
             let seul = try Traducteur(catalogue: android, langue: langue)
             // Une clé d'Android garde son gabarit ; une clé d'iOS se résout au lieu de rendre sa clé.
             #expect(deux.texte(cle: "nav_today") == seul.texte(cle: "nav_today"))
-            for cle in ["ios_bientot", "action_ok", "contenu_illisible", "reglages_autorisation_temps_ecran",
+            for cle in ["action_ok", "contenu_illisible", "reglages_autorisation_temps_ecran",
                         "reglages_autorisation_temps_ecran_pourquoi"] {
                 let texte = deux.texte(cle: cle)
                 #expect(texte != cle, "\(cle) sans texte en \(langue)")
