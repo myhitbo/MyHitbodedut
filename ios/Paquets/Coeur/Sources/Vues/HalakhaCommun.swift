@@ -174,7 +174,7 @@ struct HalakhaPuce: View {
                 }
                 texte
                     .font(.subheadline)
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
             }
             .foregroundStyle(choisie ? Teinte(.onPlate) : Teinte(.ink))
             .padding(.horizontal, 14)

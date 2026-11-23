@@ -122,7 +122,8 @@ public struct ZmanimVue: View {
 
     /// Les boutons sous la carte : même largeur, contour.
     private func boutons(_ liste: [ZmanimBouton]) -> some View {
-        HStack(spacing: 8) {
+        // Côte à côte ; l'un sous l'autre aux tailles d'accessibilité, où leur nom ne tenait plus.
+        RangeeAdaptable(espacement: 8) {
             ForEach(liste) { bouton in
                 Button {
                     ouvrir(bouton.route)
@@ -132,8 +133,7 @@ public struct ZmanimVue: View {
                             Text(verbatim: icone)
                         }
                         Text(bouton.libelle, traducteur: traducteur)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.65)
+                            .uneLigne(retrecie: 0.65)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -226,7 +226,7 @@ public struct ZmanimVue: View {
             Text(verbatim: halakha.debut)
                 .policeHebraique(modele.police, taille: 16)
                 .foregroundStyle(Teinte(.ink))
-                .lineLimit(4)
+                .lignesAuPlus(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .environment(\.layoutDirection, .rightToLeft)
                 .padding(.top, 4)
@@ -246,6 +246,7 @@ public struct ZmanimVue: View {
             .foregroundStyle(Teinte(.brand))
             .frame(minHeight: 44)
         }
+        .contentShape(Rectangle())
         .buttonStyle(.plain)
     }
 
@@ -343,8 +344,7 @@ struct ZmanimCarteJourVue: View {
                 }
                 VStack(spacing: 2) {
                     Text(verbatim: carte.dateHebraique)
-                        .font(.hebreu(.serif, taille: 22))
-                        .bold()
+                        .policeHebraique(.serif, taille: 22, gras: true, relativeA: .title2)
                         .foregroundStyle(Teinte(.ink))
                         .environment(\.layoutDirection, .rightToLeft)
                     Text(verbatim: HalakhaDateCivile.texte(carte.date, langue: Traducteur.identifiantLocale(traducteur.langue)))
@@ -370,6 +370,7 @@ struct ZmanimCarteJourVue: View {
                         .foregroundStyle(Teinte(.brand))
                         .frame(maxWidth: .infinity, minHeight: 32)
                 }
+                .contentShape(Rectangle())
                 .buttonStyle(.plain)
             }
             ForEach(Array(carte.marques.enumerated()), id: \.offset) { _, marque in
@@ -466,6 +467,7 @@ struct ZmanimLevanaVue: View {
                 .foregroundStyle(Teinte(.brand))
                 .frame(minHeight: 44)
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
         }
     }
@@ -516,7 +518,7 @@ private struct ZmanimChoixVue: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(reglage.titre, traducteur: traducteur)
-                    .font(.system(size: 20, weight: .bold))
+                    .tailleSp(20, poids: .bold, relativeA: .title3)
                     .foregroundStyle(Teinte(.ink))
                     .padding(.bottom, 8)
                 ForEach(reglage.options) { option in

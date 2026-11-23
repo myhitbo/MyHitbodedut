@@ -25,10 +25,10 @@ public struct RappelsVue: View {
                 carte
                 VStack(alignment: .leading, spacing: 0) {
                     Text(modele.heuresTitre, traducteur: traducteur)
-                        .font(.system(size: 17, weight: .bold))
+                        .tailleSp(17, poids: .bold, relativeA: .headline)
                         .foregroundStyle(Teinte(.ink))
                     Text(modele.heuresAide, traducteur: traducteur)
-                        .font(.system(size: 13))
+                        .tailleSp(13, relativeA: .footnote)
                         .foregroundStyle(Teinte(.muted))
                 }
                 .padding(.horizontal, 8)
@@ -84,7 +84,7 @@ public struct RappelsVue: View {
                     .foregroundStyle(.white)
                     .accessibilityAddTraits(.isHeader)
                 Text(modele.resume, traducteur: traducteur)
-                    .font(.system(size: 14))
+                    .tailleSp(14, relativeA: .subheadline)
                     .foregroundStyle(Teinte(.mint))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -121,6 +121,7 @@ public struct RappelsVue: View {
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .contentShape(Rectangle())
                 .buttonStyle(.plain)
                 .padding(.top, 8)
             }
@@ -162,7 +163,7 @@ public struct RappelsVue: View {
                 modele.ouvrirChangement(heure)
             } label: {
                 Text(verbatim: RappelsVue.heureTexte(heure.heure, heure.minute, langue: traducteur.langue))
-                    .font(.system(size: 20))
+                    .tailleSp(20, relativeA: .title3)
                     .foregroundStyle(Teinte(.ink))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .frame(minHeight: 44)
@@ -177,6 +178,7 @@ public struct RappelsVue: View {
                     .foregroundStyle(Teinte(.brand))
                     .frame(minHeight: 44)
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)

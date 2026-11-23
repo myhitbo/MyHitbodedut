@@ -332,39 +332,43 @@ struct AccueilTexteVue {
 private struct AccueilEtatVue: View {
     let modele: AccueilModele
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if let salutation = modele.salutation {
                 Text(salutation, traducteur: traducteur)
-                    .font(.system(size: 26, weight: .bold))
+                    .tailleSp(26, poids: .bold, relativeA: .title)
                     .foregroundStyle(Teinte(.ink))
             }
             if modele.etatEstTitre {
                 Text(modele.titreEtat, traducteur: traducteur)
-                    .font(.system(size: 20, weight: .bold))
+                    .tailleSp(20, poids: .bold, relativeA: .title3)
                     .foregroundStyle(Teinte(.ink))
             } else {
                 Text(modele.titreEtat, traducteur: traducteur)
-                    .font(.hebreu(.arrondie, taille: 15))
+                    .policeHebraique(.arrondie, taille: 15, relativeA: .subheadline)
                     .foregroundStyle(Teinte(.muted))
             }
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            // La série et le total côte à côte ; l'un sous l'autre aux tailles d'accessibilité, sans le point.
+            RangeeAdaptable(alignement: .firstTextBaseline, espacement: 8) {
                 Text(modele.ligneSerie, traducteur: traducteur)
                     .monospacedDigit()
                 if let total = modele.ligneTotal {
-                    Text(modele.separateur, traducteur: traducteur)
-                        .accessibilityHidden(true)
+                    if !tailleTexte.isAccessibilitySize {
+                        Text(modele.separateur, traducteur: traducteur)
+                            .accessibilityHidden(true)
+                    }
                     Text(total, traducteur: traducteur)
                         .monospacedDigit()
-                        .lineLimit(2)
+                        .lignesAuPlus(2)
                 }
             }
-            .font(.hebreu(.arrondie, taille: 15))
+            .policeHebraique(.arrondie, taille: 15, relativeA: .subheadline)
             .foregroundStyle(Teinte(.muted))
             if let detail = modele.detailDuJour {
                 Text(detail, traducteur: traducteur)
-                    .font(.hebreu(.arrondie, taille: 16))
+                    .policeHebraique(.arrondie, taille: 16, relativeA: .callout)
                     .foregroundStyle(Teinte(.brand))
             }
         }
@@ -443,7 +447,7 @@ private struct AccueilAnneauxVue: View {
                 if let face = modele.plaque {
                     VStack(spacing: 0) {
                         AccueilTexteVue.texte(face.texte, traducteur)
-                            .font(.system(size: 34, weight: .bold))
+                            .tailleSp(34, poids: .bold, relativeA: .largeTitle)
                             .monospacedDigit()
                             .lineLimit(1)
                             .minimumScaleFactor(0.45)
@@ -566,9 +570,12 @@ private struct AccueilAnneauxDessin: View {
 private struct AccueilSemaineVue: View {
     let modele: AccueilModele
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     var body: some View {
-        HStack(spacing: 6) {
+        // Aux tailles d'accessibilité, les sept cases ne tiennent plus sur une ligne : elles se mettent en colonne,
+        // le jour au début et la marque au bout de chaque case.
+        RangeeAdaptable(colonne: .leading, espacement: 6) {
             ForEach(modele.semaine) { jour in
                 Button {
                     modele.ouvrirJour(jour.date)
@@ -583,18 +590,24 @@ private struct AccueilSemaineVue: View {
     }
 
     private func caseDuJour(_ jour: AccueilJourSemaine) -> some View {
-        VStack(spacing: 4) {
-            Text(verbatim: AccueilDate.texte(jour.date, langue: traducteur.langue, motif: "EEE"))
+        let enLigne = tailleTexte.isAccessibilitySize
+        let disposition = enLigne ? AnyLayout(HStackLayout(spacing: 12)) : AnyLayout(VStackLayout(spacing: 4))
+        return disposition {
+            Text(verbatim: AccueilDate.texte(jour.date, langue: traducteur.langue, motif: enLigne ? "EEEE d" : "EEE"))
                 .font(.caption)
                 .foregroundStyle(AccueilTeintes.style(jour.couleurEtiquette))
-                .lineLimit(1)
+                .lineLimit(enLigne ? nil : 1)
                 .minimumScaleFactor(0.7)
+                .frame(maxWidth: enLigne ? .infinity : nil, alignment: .leading)
             AccueilTexteVue.texte(jour.marque, traducteur)
-                .font(Font.system(size: jour.marqueReduite ? 12 : 16, weight: .bold).monospacedDigit())
+                .tailleSp(jour.marqueReduite ? 12 : 16, poids: .bold, relativeA: jour.marqueReduite ? .caption : .callout)
+                .monospacedDigit()
                 .foregroundStyle(AccueilTeintes.style(jour.couleurMarque))
-                .lineLimit(1)
+                .lineLimit(enLigne ? nil : 1)
                 .minimumScaleFactor(0.6)
         }
+        .padding(.horizontal, enLigne ? 16 : 0)
+        .padding(.vertical, enLigne ? 8 : 0)
         .frame(maxWidth: .infinity, minHeight: 56)
         .background(fond(jour.fond), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay {
@@ -647,7 +660,7 @@ private struct AccueilCarteVue: View {
         return Carte {
             VStack(spacing: 8) {
                 Text(rappel.titre, traducteur: traducteur)
-                    .font(.system(size: 19, weight: .bold))
+                    .tailleSp(19, poids: .bold, relativeA: .title3)
                     .foregroundStyle(Teinte(.ink))
                 Text(corps, traducteur: traducteur)
                     .font(.callout)
@@ -679,8 +692,7 @@ private struct AccueilCarteVue: View {
                             .kerning(0.7)
                             .foregroundStyle(Teinte(.brand))
                         Text(verbatim: priere.hebreu)
-                            .policeHebraique(police, taille: 21)
-                            .bold()
+                            .policeHebraique(police, taille: 21, gras: true)
                             .foregroundStyle(Teinte(.ink))
                             .environment(\.layoutDirection, .rightToLeft)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -759,7 +771,7 @@ public struct BarreDepart: View {
                 Image(systemName: "play.fill")
                     .accessibilityHidden(true)
                 Text(modele.libelleCommencer, traducteur: traducteur)
-                    .lineLimit(2)
+                    .lignesAuPlus(2)
             }
             .frame(maxWidth: .infinity)
             .padding(.trailing, 48)
@@ -1037,6 +1049,14 @@ private struct AccueilBilanVue: View {
     @Environment(\.tropheeFormes) private var formes
 
     var body: some View {
+        // Défilante : aux grandes tailles du texte, le bilan dépasse la demi-hauteur de la feuille.
+        ScrollView {
+            contenu
+        }
+        .background(Teinte(.paper))
+    }
+
+    private var contenu: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(bilan.titre, traducteur: traducteur)
                 .font(.title3.bold())
@@ -1068,16 +1088,15 @@ private struct AccueilBilanVue: View {
                     }
                 }
             }
-            Spacer(minLength: 12)
             Button(action: fermer) {
                 Text(bilan.bouton, traducteur: traducteur)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.principal)
+            .padding(.top, 12)
         }
         .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Teinte(.paper))
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
 

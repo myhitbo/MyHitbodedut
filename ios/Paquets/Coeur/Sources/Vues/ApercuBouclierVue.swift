@@ -69,6 +69,7 @@ public struct ApercuBouclierVue: View {
                             .background(choisie ? Teinte(.brand) : Teinte(.card), in: Capsule())
                             .overlay { Capsule().strokeBorder(Teinte(.brand), lineWidth: 1) }
                     }
+                    .contentShape(Rectangle())
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(choisie ? .isSelected : [])
                 }

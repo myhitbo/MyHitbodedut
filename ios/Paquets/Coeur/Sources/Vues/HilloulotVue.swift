@@ -324,6 +324,7 @@ private struct HilloulotLigneVue: View {
             } label: {
                 contenuTete
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(Text(verbatim: etiquette))

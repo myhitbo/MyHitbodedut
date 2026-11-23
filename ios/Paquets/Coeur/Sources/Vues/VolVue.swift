@@ -200,6 +200,7 @@ public struct VolVue: View {
                         .foregroundStyle(Teinte(.muted))
                         .frame(maxWidth: .infinity, minHeight: 40)
                 }
+                .contentShape(Rectangle())
                 .buttonStyle(.plain)
             }
         }
@@ -301,6 +302,7 @@ public struct VolVue: View {
                         .foregroundStyle(Teinte(.brand))
                         .frame(minHeight: 40)
                 }
+                .contentShape(Rectangle())
                 .buttonStyle(.plain)
             }
             ForEach(Array((carte.reserves + carte.lignesDate).enumerated()), id: \.offset) { _, ligne in
@@ -329,6 +331,7 @@ public struct VolVue: View {
                 }
                 .frame(minHeight: 40)
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
             if modele.estOuvert(quel) {
                 contenu()

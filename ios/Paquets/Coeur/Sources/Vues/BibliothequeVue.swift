@@ -83,7 +83,7 @@ public struct BibliothequeVue: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, 4)
                     Image(systemName: BibliothequeIcone.symbole(ligne.icone))
-                        .font(.system(size: 18))
+                        .font(.body)
                         .foregroundStyle(Teinte(.brand))
                         .accessibilityHidden(true)
                 }
@@ -527,14 +527,14 @@ private struct BibliothequeFeuilleSignets: View {
                         .policeHebraique(modele.police, taille: 13, relativeA: .footnote)
                         .foregroundStyle(Teinte(.muted))
                     Image(systemName: BibliothequeIcone.symbole(ligne.icone))
-                        .font(.system(size: 14))
+                        .font(.footnote)
                         .foregroundStyle(Teinte(.brand))
                         .accessibilityHidden(true)
                 }
                 Text(verbatim: ligne.apercu)
                     .policeHebraique(modele.police, taille: 17)
                     .foregroundStyle(Teinte(.ink))
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                     .truncationMode(.tail)
             }
             .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)

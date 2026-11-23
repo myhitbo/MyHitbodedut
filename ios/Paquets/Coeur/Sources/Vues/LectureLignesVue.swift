@@ -111,9 +111,10 @@ struct LectureLigneVue: View {
         Text(libelle, traducteur: traducteur)
             .font(.caption)
             .foregroundStyle(rendu.discret)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            // 44 de haut au moins : le texte entier se touche (un toucher rend la pastille), et l'audit
+            // d'accessibilité relevait une zone de toucher trop petite.
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             .padding(.horizontal, 16)
-            .padding(.top, 8)
     }
 
     /// Le titre d'une section : 20 × échelle, gras, couleur des titres ; la traduction dessous à 0,72.

@@ -72,7 +72,7 @@ private struct ChoixVersionCarteVue: View {
             apercu
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: traducteur.texte(carte.nom) + (carte.choisie ? "  ✓" : ""))
-                    .font(.system(size: 19, weight: .bold))
+                    .tailleSp(19, poids: .bold, relativeA: .title3)
                     .foregroundStyle(carte.choisie ? AnyShapeStyle(Teinte(.brand)) : AnyShapeStyle(Teinte(.ink)))
                 Text(carte.description, traducteur: traducteur)
                     .font(.subheadline)

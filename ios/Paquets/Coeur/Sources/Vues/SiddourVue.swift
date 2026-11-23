@@ -82,7 +82,7 @@ public struct SiddourVue: View {
             HStack(spacing: 4) {
                 Text(verbatim: modele.nusah)
                     .font(.subheadline)
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                 Image(systemName: "chevron.down")
                     .font(Font.caption.weight(.semibold))
                     .accessibilityHidden(true)

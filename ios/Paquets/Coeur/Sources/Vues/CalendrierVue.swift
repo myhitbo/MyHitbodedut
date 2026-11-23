@@ -75,21 +75,27 @@ public struct CalendrierVue: View {
         Carte {
             choixVue
             enTete
-            initiales
-            ForEach(modele.semaines) { semaine in
-                HStack(spacing: 0) {
-                    ForEach(Array(semaine.cases.enumerated()), id: \.offset) { _, uneCase in
-                        if let uneCase {
-                            CalendrierCaseVue(uneCase: uneCase, police: modele.police, langue: traducteur.langue) {
-                                modele.choisir(uneCase.date)
+            // Sept colonnes : leurs chiffres grandissent avec le texte jusqu'à la première taille d'accessibilité,
+            // au-delà desquelles ils ne tiendraient plus dans leur case ; chaque case se montre alors en grand sous
+            // un appui long (le visualiseur de grand contenu, comme le calendrier d'iOS).
+            Group {
+                initiales
+                ForEach(modele.semaines) { semaine in
+                    HStack(spacing: 0) {
+                        ForEach(Array(semaine.cases.enumerated()), id: \.offset) { _, uneCase in
+                            if let uneCase {
+                                CalendrierCaseVue(uneCase: uneCase, police: modele.police, langue: traducteur.langue) {
+                                    modele.choisir(uneCase.date)
+                                }
+                            } else {
+                                Color.clear.frame(maxWidth: .infinity, minHeight: 52)
                             }
-                        } else {
-                            Color.clear.frame(maxWidth: .infinity, minHeight: 52)
                         }
                     }
+                    .padding(.top, 4)
                 }
-                .padding(.top, 4)
             }
+            .dynamicTypeSize(...DynamicTypeSize.accessibility1)
             Button {
                 modele.allerAujourdhui()
             } label: {
@@ -106,7 +112,8 @@ public struct CalendrierVue: View {
 
     /// « Hébraïque » | « Grégorien » : deux pilules sur la pilule commune.
     private var choixVue: some View {
-        HStack(spacing: 0) {
+        // L'un sous l'autre aux tailles d'accessibilité : côte à côte, chaque mot se coupait en deux.
+        RangeeAdaptable(colonne: .center, espacement: 0) {
             ForEach(modele.vues) { vue in
                 Button {
                     Task { try? await modele.basculer(civil: vue.civil) }
@@ -126,7 +133,8 @@ public struct CalendrierVue: View {
             }
         }
         .padding(4)
-        .background(Capsule().fill(Teinte(.brand).opacity(Double(0x17) / 255)))
+        .background(RoundedRectangle(cornerRadius: 22, style: .continuous)
+            .fill(Teinte(.brand).opacity(Double(0x17) / 255)))
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(modele.vueDescription, traducteur: traducteur))
         .frame(maxWidth: .infinity)
@@ -155,17 +163,17 @@ public struct CalendrierVue: View {
             switch titre {
             case .hebreu(let texte):
                 Text(verbatim: texte)
-                    .font(Font.hebreu(modele.police, taille: taille))
+                    .policeHebraique(modele.police, taille: taille, relativeA: VersionPolice.style(taille))
                     .environment(\.layoutDirection, .rightToLeft)
             case .moisCivil(let jour):
                 Text(verbatim: CalendrierVue.initiale(AccueilDate.texte(jour, langue: traducteur.langue, motif: "LLLL yyyy"),
                                                       langue: traducteur.langue))
-                    .font(.system(size: taille))
+                    .tailleSp(taille, relativeA: VersionPolice.style(taille))
             case .plageCivile(let debut, let fin, let anneeAuDebut):
                 let premier = AccueilDate.texte(debut, langue: traducteur.langue, motif: anneeAuDebut ? "LLLL yyyy" : "LLLL")
                 let dernier = AccueilDate.texte(fin, langue: traducteur.langue, motif: "LLLL yyyy")
                 Text(verbatim: CalendrierVue.initiale(premier + " – " + dernier, langue: traducteur.langue))
-                    .font(.system(size: taille))
+                    .tailleSp(taille, relativeA: VersionPolice.style(taille))
             }
         }
         .bold(gras)
@@ -192,7 +200,7 @@ public struct CalendrierVue: View {
         return HStack(spacing: 0) {
             ForEach(modele.joursDeSemaine, id: \.self) { jour in
                 Text(verbatim: jour - 1 < symboles.count ? symboles[jour - 1] : "")
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundStyle(Teinte(.muted))
                     .frame(maxWidth: .infinity, minHeight: 24)
             }
@@ -230,7 +238,7 @@ public struct CalendrierVue: View {
             Text(verbatim: halakha.debut)
                 .policeHebraique(modele.police, taille: 16)
                 .foregroundStyle(Teinte(.ink))
-                .lineLimit(4)
+                .lignesAuPlus(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .environment(\.layoutDirection, .rightToLeft)
                 .padding(.top, 4)
@@ -250,6 +258,7 @@ public struct CalendrierVue: View {
             .foregroundStyle(Teinte(.brand))
             .frame(minHeight: 44)
         }
+        .contentShape(Rectangle())
         .buttonStyle(.plain)
     }
 
@@ -341,6 +350,9 @@ private struct CalendrierCaseVue: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: description))
         .accessibilityAddTraits(uneCase.choisie ? .isSelected : [])
+        .accessibilityShowsLargeContentViewer {
+            Text(verbatim: description)
+        }
     }
 
     @ViewBuilder
@@ -348,16 +360,16 @@ private struct CalendrierCaseVue: View {
         switch q {
         case .hebreu(let lettres):
             Text(verbatim: lettres)
-                .font(Font.hebreu(police, taille: principal ? 17 : 11))
-                .bold(principal && uneCase.aujourdhui)
+                .policeHebraique(police, taille: principal ? 17 : 11, gras: principal && uneCase.aujourdhui,
+                                 relativeA: principal ? .body : .caption2)
         case .civil(let jour):
             Text(verbatim: String(jour))
-                .font(.system(size: principal ? 15 : 11))
-                .bold(principal && uneCase.aujourdhui)
+                .tailleSp(principal ? 15 : 11, poids: principal && uneCase.aujourdhui ? .bold : .regular,
+                          relativeA: principal ? .subheadline : .caption2)
         case .premierDuMois(let jour):
             Text(verbatim: "1 " + AccueilDate.texte(jour, langue: langue, motif: "LLL"))
-                .font(.system(size: principal ? 15 : 11))
-                .bold(principal && uneCase.aujourdhui)
+                .tailleSp(principal ? 15 : 11, poids: principal && uneCase.aujourdhui ? .bold : .regular,
+                          relativeA: principal ? .subheadline : .caption2)
         }
     }
 

@@ -111,6 +111,7 @@ public struct MusiqueMiniLecteurVue: View {
             } label: {
                 MusiqueIconeLecteur(symbole: "chevron.down", couleur: Color.white.opacity(0.7))
             }
+            .contentShape(Rectangle())
             .buttonStyle(.plain)
             .accessibilityLabel(Text("lecteur_replier"))
         }
@@ -199,6 +200,7 @@ public struct MusiqueMiniLecteurVue: View {
                 .frame(width: 48, height: 48)
                 .accessibilityHidden(true)
         }
+        .contentShape(Rectangle())
         .buttonStyle(.plain)
     }
 

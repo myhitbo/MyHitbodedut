@@ -192,8 +192,7 @@ public struct PresentationVue: View {
                     Task { try? await modele.choisirDuree(duree.minutes) }
                 } label: {
                     Text(duree.libelle, traducteur: traducteur)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
+                        .uneLigne(retrecie: 0.7)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(PresentationBoutonSegment(coche: duree.choisie))

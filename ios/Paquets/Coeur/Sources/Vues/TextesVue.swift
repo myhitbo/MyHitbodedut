@@ -149,6 +149,13 @@ private struct TextesRayonVue: View {
     let rayon: TextesRayon
     let ouvrir: @MainActor (TextesRoute) -> Void
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
+
+    /// Quatre places par étagère ; deux aux tailles d'accessibilité, où quatre couvertures côte à côte ne laissaient
+    /// que quelques lettres à leur nom.
+    private var colonnes: Int {
+        tailleTexte.isAccessibilitySize ? 2 : TextesRayon.places
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -157,30 +164,41 @@ private struct TextesRayonVue: View {
                 .foregroundStyle(Teinte(.ink))
                 .accessibilityAddTraits(.isHeader)
                 .padding(.top, 20)
+            ForEach(Array(stride(from: 0, to: rayon.couvertures.count, by: colonnes)), id: \.self) { debut in
+                etagere(Array(rayon.couvertures[debut..<min(debut + colonnes, rayon.couvertures.count)]))
+            }
+            ForEach(Array(rayon.etats.enumerated()), id: \.offset) { _, etat in
+                Text(etat, traducteur: traducteur)
+                    .font(.footnote)
+                    .foregroundStyle(Teinte(.muted))
+                    .lignesAuPlus(2)
+                    .padding(.top, 8)
+            }
+        }
+    }
+
+    /// Une rangée de couvertures, de même hauteur (124, et plus si leur nom agrandi le demande), les places vides
+    /// gardant la leur, puis le bois de l'étagère.
+    private func etagere(_ couvertures: [TextesCouverture]) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .bottom, spacing: 10) {
-                ForEach(rayon.couvertures) { couverture in
+                ForEach(couvertures) { couverture in
                     TextesCouvertureVue(couverture: couverture) { ouvrir(couverture.route) }
                 }
-                ForEach(0..<max(TextesRayon.places - rayon.couvertures.count, 0), id: \.self) { _ in
+                ForEach(0..<max(colonnes - couvertures.count, 0), id: \.self) { _ in
                     Color.clear
                         .frame(maxWidth: .infinity)
                         .frame(height: 124)
                         .accessibilityHidden(true)
                 }
             }
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.top, 10)
             // L'étagère (bg_etagere) : le bois sous les livres.
             RoundedRectangle(cornerRadius: 2, style: .continuous)
                 .fill(Teinte(.line))
                 .frame(height: 6)
                 .accessibilityHidden(true)
-            ForEach(Array(rayon.etats.enumerated()), id: \.offset) { _, etat in
-                Text(etat, traducteur: traducteur)
-                    .font(.footnote)
-                    .foregroundStyle(Teinte(.muted))
-                    .lineLimit(2)
-                    .padding(.top, 8)
-            }
         }
     }
 }
@@ -191,22 +209,23 @@ private struct TextesCouvertureVue: View {
     let couverture: TextesCouverture
     let action: @MainActor () -> Void
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     var body: some View {
         let encre = Color(couverture.couleur.encre)
         Button(action: action) {
             VStack(spacing: 4) {
                 Text(couverture.titre, traducteur: traducteur)
-                    .font(.hebreu(.frank, taille: 20))
-                    .minimumScaleFactor(0.55)
-                    .lineLimit(2)
+                    .policeHebraique(.frank, taille: 20, relativeA: .title3)
+                    .minimumScaleFactor(tailleTexte.agrandie ? 1 : 0.55)
+                    .lignesAuPlus(2)
                     .multilineTextAlignment(.center)
                     .environment(\.layoutDirection, .rightToLeft)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .accessibilityHidden(true)
                 Text(couverture.libelle, traducteur: traducteur)
                     .font(.caption2)
-                    .lineLimit(2)
+                    .lignesAuPlus(2)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
             }
@@ -215,7 +234,8 @@ private struct TextesCouvertureVue: View {
             .padding(.trailing, 4)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity)
-            .frame(height: 124)
+            // 124 de haut, et plus si le nom agrandi le demande (l'étagère égalise la rangée).
+            .frame(minHeight: 124, maxHeight: .infinity)
             .background {
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 8, style: .continuous)

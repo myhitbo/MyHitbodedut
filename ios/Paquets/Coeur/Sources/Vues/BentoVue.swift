@@ -113,7 +113,7 @@ struct BentoVue: View {
                 Text(Libelle("bento_recherche"), traducteur: traducteur)
                     .font(VersionPolice.heebo(15))
                     .foregroundStyle(Bento.doux)
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 18)
@@ -133,12 +133,13 @@ struct BentoVue: View {
     private func tuile<Contenu: View>(_ fond: Color, _ hauteur: CGFloat, action: @escaping @MainActor () -> Void,
                                       @ViewBuilder contenu: () -> Contenu) -> some View {
         Button(action: action) {
-            ZStack(alignment: .topLeading) {
+            // La hauteur de la maquette, et plus si le texte agrandi ne tient plus (TuileExtensible).
+            TuileExtensible(minimum: hauteur - 32) {
                 contenu()
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 16)
-            .frame(maxWidth: .infinity, minHeight: hauteur, maxHeight: hauteur, alignment: .topLeading)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
             .background(fond)
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
@@ -146,8 +147,9 @@ struct BentoVue: View {
         .buttonStyle(VersionPression())
     }
 
+    /// Deux tuiles côte à côte ; l'une sous l'autre aux tailles d'accessibilité.
     private func rangee<A: View, B: View>(_ a: A, _ b: B) -> some View {
-        HStack(alignment: .top, spacing: 10) {
+        RangeeAdaptable(alignement: .top, espacement: 10) {
             a.frame(maxWidth: .infinity)
             b.frame(maxWidth: .infinity)
         }
@@ -159,6 +161,7 @@ struct BentoVue: View {
                 .frame(width: 130, height: 180, alignment: .bottomTrailing)
                 .offset(x: 14, y: 16)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .roleDansTuile(.decor)
             BentoAnneau(faits: h.faits, dus: h.dus, fraction: h.fraction)
                 .frame(width: 72, height: 72)
                 .accessibilityLabel(Text(h.accessibiliteAnneau, traducteur: traducteur))
@@ -175,6 +178,7 @@ struct BentoVue: View {
             }
             .frame(maxWidth: 210, alignment: .leading)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+            .roleDansTuile(.bas)
         }
         .accessibilityElement(children: .combine)
     }
@@ -193,6 +197,7 @@ struct BentoVue: View {
                 .frame(height: 36)
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .accessibilityHidden(true)
+                .roleDansTuile(.bas)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(s.accessibilite, traducteur: traducteur))
@@ -205,18 +210,19 @@ struct BentoVue: View {
                 Text(z.etiquette, traducteur: traducteur)
                     .font(VersionPolice.heebo(13))
                     .foregroundStyle(Bento.bleuDoux)
-                    .lineLimit(2)
+                    .lignesAuPlus(2)
                 Text(z.valeur, traducteur: traducteur)
                     .font(VersionPolice.heebo(z.compte ? 26 : 20, .black))
                     .foregroundStyle(Bento.bleuEncre)
-                    .minimumScaleFactor(0.7)
+                    .uneLigne(retrecie: 0.7)
             }
             if let chkia = z.chkia {
                 Text(verbatim: traducteur.texte(chkia.nom) + " " + chkia.heure)
                     .font(VersionPolice.heebo(13))
                     .foregroundStyle(Bento.bleuDoux)
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                     .frame(maxHeight: .infinity, alignment: .bottom)
+                    .roleDansTuile(.bas)
             }
         }
         .accessibilityElement(children: .ignore)
@@ -255,12 +261,13 @@ struct BentoVue: View {
                 Text(verbatim: VersionEcrit.chaine(a.nom, traducteur))
                     .font(VersionPolice.heebo(17, .bold))
                     .foregroundStyle(Bento.nuitEncre)
-                    .lineLimit(2)
+                    .lignesAuPlus(2)
             }
             BentoEgaliseur(joue: a.joue)
                 .frame(width: 46, height: 34)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                 .accessibilityHidden(true)
+                .roleDansTuile(.bas)
         }
         .accessibilityElement(children: .combine)
     }
@@ -271,11 +278,11 @@ struct BentoVue: View {
                 Text(verbatim: quand(j))
                     .font(VersionPolice.heebo(13))
                     .foregroundStyle(Bento.doux)
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                 Text(verbatim: VersionEcrit.chaine(j.texte, traducteur))
                     .font(VersionPolice.heebo(15))
                     .foregroundStyle(j.ecrite ? Bento.encre : Bento.doux)
-                    .lineLimit(3)
+                    .lignesAuPlus(3)
             }
         }
         .accessibilityElement(children: .combine)

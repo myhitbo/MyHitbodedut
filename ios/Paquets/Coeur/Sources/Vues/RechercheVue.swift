@@ -141,7 +141,7 @@ private struct RechercheLigneVue: View {
                     Text(verbatim: extrait)
                         .font(.footnote)
                         .foregroundStyle(Teinte(.muted))
-                        .lineLimit(2)
+                        .lignesAuPlus(2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 4)
                 }

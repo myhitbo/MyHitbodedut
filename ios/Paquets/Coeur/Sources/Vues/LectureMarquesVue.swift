@@ -113,7 +113,7 @@ public struct LectureMarquesVue: View {
                 Text(verbatim: ligne.apercu)
                     .policeHebraique(police, taille: 17)
                     .foregroundStyle(Teinte(.ink))
-                    .lineLimit(1)
+                    .lignesAuPlus(1)
                     .truncationMode(.tail)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
