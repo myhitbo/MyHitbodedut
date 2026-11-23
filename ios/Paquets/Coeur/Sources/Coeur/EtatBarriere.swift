@@ -60,6 +60,11 @@ public enum EtatBarriere {
         public var apercu: Libelle
         public var fermerApercu: Libelle
         public var notificationCommencer: Libelle
+        public var notificationRevenir: Libelle
+        public var continuer: Libelle
+        /// Le titre et le détail de la carte d'état pour chaque état qui ne pose pas de bouclier : ce que dit un bouclier
+        /// resté posé à tort (§ 2.1.10).
+        public var leve: [GateState: TexteLeve]
 
         /// Les textes, résolus dans la langue de l'app par `resoudre`.
         public func textes(_ resoudre: (Libelle) -> String) -> Etat.Bouclier {
@@ -77,6 +82,12 @@ public enum EtatBarriere {
             bouclier.apercu = resoudre(apercu)
             bouclier.fermerApercu = resoudre(fermerApercu)
             bouclier.notificationCommencer = resoudre(notificationCommencer)
+            bouclier.notificationRevenir = resoudre(notificationRevenir)
+            bouclier.continuer = resoudre(continuer)
+            for (etat, textes) in leve {
+                bouclier.titresLeve[etat.rawValue] = resoudre(textes.titre)
+                bouclier.detailsLeve[etat.rawValue] = resoudre(textes.detail)
+            }
             return bouclier
         }
     }
@@ -86,8 +97,14 @@ public enum EtatBarriere {
     /// tard ». Le décompte d'une séance minutée change de minute en minute : le bouclier, figé à son
     /// apparition, prend la phrase sans décompte (`blocker_session_hidden_subtitle`).
     public static func libelles(journal: Journal, reglages: Reglages, aujourdhui: JourCivil,
-                                fuseauTelephone: String) -> TextesBouclier {
+                                fuseauTelephone: String, nombreDeJetons: Int = 0) -> TextesBouclier {
         let serie = Store.streak(journal: journal, reglages: reglages, aujourdhui: aujourdhui, fuseauTelephone: fuseauTelephone)
+        var leve: [GateState: TexteLeve] = [:]
+        for etat in etatsSansBouclier {
+            leve[etat] = TexteLeve(titre: GateStatus.titleOf(etat),
+                                   detail: GateStatus.detailOf(etat, applications: nombreDeJetons,
+                                                               windowStart: reglages.windowStart, windowEnd: reglages.windowEnd))
+        }
         return TextesBouclier(
             question: Libelle("blocker_question"),
             sousTitre: Libelle("blocker_subtitle"),
@@ -101,13 +118,45 @@ public enum EtatBarriere {
             revenir: Libelle("blocker_back_to_session"),
             apercu: Libelle("blocker_preview_badge"),
             fermerApercu: Libelle("blocker_close_preview"),
-            notificationCommencer: Libelle("bouclier_notification_commencer"))
+            notificationCommencer: Libelle("bouclier_notification_commencer"),
+            notificationRevenir: Libelle("bouclier_notification_revenir"),
+            continuer: Libelle("celebration_continue"),
+            leve: leve)
+    }
+
+    /// Le titre et le détail d'un état sans bouclier.
+    public struct TexteLeve: Sendable, Equatable {
+        public var titre: Libelle
+        public var detail: Libelle
+    }
+
+    /// Les états que la règle des extensions (`Evaluation.regle`) peut rendre sans poser de bouclier.
+    public static let etatsSansBouclier: [GateState] = [.disabled, .noAppsSelected, .alreadyDone, .exemptDay, .snoozed,
+                                                        .outsideWindow]
+
+    /// L'apparence du bouclier (view_blocker.xml) : le fond `brand_dark`, le titre blanc, le texte `mint`, le bouton
+    /// `brand` et son texte `on_brand`, de la palette choisie, de jour ; et les images du personnage du jour
+    /// (Character.call pour l'invite et l'aperçu, during pour la séance, joy pour le bouclier levé), à l'adresse
+    /// choisie (Personnage.pour), sous leur nom de fichier.
+    public static func apparence(palette: Palette?, reglages: Reglages, aujourdhui: JourCivil) -> ApparenceBouclier {
+        var apparence = ApparenceBouclier()
+        if let palette {
+            apparence.fond = palette[.brandDark].hex
+            apparence.texte = palette[.mint].hex
+            apparence.bouton = palette[.brand].hex
+            apparence.texteBouton = palette[.onBrand].hex
+        }
+        let adresse = Adresse.parse(reglages.adresse)
+        apparence.iconeAppel = Personnage.pour(adresse, Poses.call(aujourdhui)) + ".webp"
+        apparence.iconeSeance = Personnage.pour(adresse, Poses.during(aujourdhui)) + ".webp"
+        apparence.iconeJoie = Personnage.pour(adresse, Poses.joy(aujourdhui)) + ".webp"
+        return apparence
     }
 
     /// L'instantané complet à `millis`, vu de `fuseau` (celui du téléphone). `nombreDeJetons` compte la
     /// sélection de Temps d'écran (une catégorie vaut un) ; `textes` résout un libellé dans la langue de l'app.
     public static func etat(journal: Journal, reglages: Reglages, millis: Int64, fuseau: Fuseau, nombreDeJetons: Int,
-                            textes: (Libelle) -> String) -> Etat {
+                            palette: Palette? = nil, essai: Etat.Essai? = nil, textes: (Libelle) -> String) -> Etat {
         let aujourdhui = fuseau.jour(millis: millis)
         let zone = fuseau.identifiant
         var resultat = Etat()
@@ -133,9 +182,60 @@ public enum EtatBarriere {
                                           minutes: Store.sessionTarget(reglages: reglages))
         }
         resultat.bouclier = libelles(journal: journal, reglages: reglages, aujourdhui: aujourdhui,
-                                     fuseauTelephone: zone).textes(textes)
+                                     fuseauTelephone: zone, nombreDeJetons: max(nombreDeJetons, 0)).textes(textes)
+        resultat.bouclier.apparence = apparence(palette: palette, reglages: reglages, aujourdhui: aujourdhui)
         resultat.nombreDeJetons = max(nombreDeJetons, 0)
+        resultat.essai = essai
         return resultat
+    }
+
+    // MARK: La boîte versée au journal
+
+    /// Ce que l'app fait de la boîte en s'ouvrant (PORTAGE.md § 3.2) : les gestes faits sur le bouclier, app fermée,
+    /// deviennent ce qu'Android aurait écrit à l'instant même (GateService.showOverlay).
+    public struct Versement: Sendable, Equatable {
+        /// « Commencer » ou « Revenir » touché il y a moins d'un quart d'heure : l'app ouvre la séance (onStartSession).
+        public var commencer = false
+        /// Le journal ou les réglages ont changé.
+        public var change = false
+
+        public init(commencer: Bool = false, change: Bool = false) {
+            self.commencer = commencer
+            self.change = change
+        }
+    }
+
+    /// Une demande de séance plus vieille que cela n'ouvre plus la séance : l'utilisateur est passé à autre chose.
+    public static let fraicheurCommencer: Int64 = 15 * 60_000
+
+    /// Verse les événements de la boîte : « Je l'ai faite sans le téléphone » valide la journée à l'instant de l'appui
+    /// (`Store.addSession(context, 0)`, qui efface aussi le report) ; « Plus tard » pose le report (`Store.snooze`) à
+    /// l'instant de l'appui, pour la durée écrite, sans raccourcir un report plus lointain ; « Commencer » récent
+    /// demande la séance. Les réveils, les poses et les levées ne font que passer au journal de la barrière.
+    public static func verser(_ evenements: [Evenement], journal: inout Journal, reglages: inout Reglages,
+                              maintenant: Int64, fuseau: Fuseau) -> Versement {
+        var versement = Versement()
+        for evenement in evenements {
+            let quand = min(evenement.quand.millis, maintenant)
+            switch evenement.genreConnu {
+            case .dejaFaite:
+                let jour = JourCivil(iso: evenement.quand.jour) ?? fuseau.jour(millis: quand)
+                Store.addSession(journal: &journal, reglages: &reglages, minutes: 0, date: jour, millis: quand, fuseau: fuseau)
+                versement.change = true
+            case .plusTard:
+                let minutes = Int(evenement.detail).map { max($0, 0) } ?? reglages.snoozeMinutes
+                let fin = quand + Int64(minutes) * 60_000
+                if fin > reglages.snoozedUntil && fin > maintenant {
+                    Store.pose(&reglages, "snoozed_until", .entier(fin))
+                    versement.change = true
+                }
+            case .commencer:
+                if maintenant - evenement.quand.millis < fraicheurCommencer { versement.commencer = true }
+            default:
+                break
+            }
+        }
+        return versement
     }
 }
 

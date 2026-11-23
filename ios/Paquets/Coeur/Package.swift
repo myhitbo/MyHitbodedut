@@ -51,7 +51,9 @@ let package = Package(
             exclude: enChantierSources),
         .testTarget(
             name: "CoeurTests",
-            dependencies: ["Coeur", .product(name: "KosherSwift", package: "KosherSwift")],
+            // Barriere aussi : les tests lisent l'instantané (Etat) ; sans la dépendance déclarée, une construction
+            // incrémentale garderait l'ancienne forme d'Etat après un changement de Barriere.
+            dependencies: ["Coeur", "Barriere", .product(name: "KosherSwift", package: "KosherSwift")],
             exclude: enChantierTests),
         .target(
             name: "Ecrans",
@@ -59,7 +61,7 @@ let package = Package(
             exclude: enChantierEcrans),
         .testTarget(
             name: "EcransTests",
-            dependencies: ["Ecrans", "Coeur"],
+            dependencies: ["Ecrans", "Coeur", "Barriere"],
             exclude: enChantierEcransTests),
         .target(name: "Barriere"),
         .testTarget(name: "BarriereTests", dependencies: ["Barriere"]),
@@ -70,5 +72,5 @@ let package = Package(
 if avecVues {
     // Les vues SwiftUI de l'app : elles lisent les modèles d'écran d'Ecrans.
     package.products.append(.library(name: "Vues", targets: ["Vues"]))
-    package.targets.append(.target(name: "Vues", dependencies: ["Ecrans", "Coeur"], exclude: enChantierVues))
+    package.targets.append(.target(name: "Vues", dependencies: ["Ecrans", "Coeur", "Barriere"], exclude: enChantierVues))
 }
