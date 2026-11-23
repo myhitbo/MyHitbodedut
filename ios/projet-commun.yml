@@ -31,6 +31,9 @@ targetTemplates:
     platform: iOS
     sources:
       - App
+      # Ce que l'app partage avec l'extension des widgets : le dossier du groupe, les attributs de la Live Activity
+      # et l'action « Terminer maintenant » (Widgets/Commun, compilé dans les deux cibles).
+      - Widgets/Commun
       # Les ressources exportées par tools/export_contenu (PORTAGE.md § 4.2), en dossiers : le paquet de l'app
       # garde leur arborescence (Contenu/livres/<id>/…, Images/<nom>.webp, Polices/licences/…).
       - path: Ressources/Contenu
@@ -63,6 +66,18 @@ targetTemplates:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
+        # La position du téléphone (PORTAGE.md § 2.2.5) : approximative par défaut, comme ACCESS_COARSE_LOCATION ;
+        # précise pour une fois au relevé GPS du vol. Les phrases sont traduites dans App/InfoPlist.xcstrings.
+        NSLocationWhenInUseUsageDescription: "Your location is only used for zmanim, the direction of Jerusalem and, in flight, the times below the plane. It stays on the device."
+        NSLocationDefaultAccuracyReduced: true
+        NSLocationTemporaryUsageDescriptionDictionary:
+          vol: "A precise GPS fix realigns the plane's route and the in-flight zmanim."
+        # La séance sur l'écran verrouillé et dans l'île dynamique (tâche 17).
+        NSSupportsLiveActivities: true
+        # Les adresses des widgets, de la Live Activity et des notifications (LienApp).
+        CFBundleURLTypes:
+          - CFBundleURLName: com.myhitbodedut
+            CFBundleURLSchemes: [myhitbodedut]
         # Cinq langues, celles de Langues.toutes (l'espagnol partout, l'arabe de Tunisie seulement, 17/11) ; un
         # téléphone dans une autre langue a l'anglais (LangueApp, Traducteur.langueDuTelephone, PORTAGE.md § 2.2.7).
         CFBundleDevelopmentRegion: en

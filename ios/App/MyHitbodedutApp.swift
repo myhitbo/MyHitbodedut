@@ -11,6 +11,8 @@ import Vues
 /// reçoivent ce qu'il en tire.
 @main
 struct MyHitbodedutApp: App {
+    /// Le délégué des notifications, posé dès le lancement : une notification touchée qui lance l'app ne se perd pas.
+    @UIApplicationDelegateAdaptor(DelegueApp.self) private var delegue
     @State private var modeles: ModelesApp? = nil
     private let paquet: URL
     private let traducteur: Traducteur
