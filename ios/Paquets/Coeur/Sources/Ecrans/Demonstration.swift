@@ -89,6 +89,22 @@ public enum Demonstration {
         return Enregistrement(journal: journal, reglages: reglages)
     }
 
+    /// La fête au Jour (`-capture fete`) : tout ce qui est gagné est déjà vu, paliers compris, sauf le dernier trophée
+    /// gagné du chemin (Trophees.chemin) ; le passage sur l'accueil (TropheeFeteModele.passer) le fête, lui seul.
+    public static func avecTropheeNeuf(_ demo: Enregistrement, aujourdhui: JourCivil, fuseau: String) -> Enregistrement {
+        var demo = demo
+        let pratique = Store.pratique(journal: demo.journal, reglages: demo.reglages, aujourdhui: aujourdhui,
+                                      fuseauTelephone: fuseau)
+        let bilan = Store.bilan(journal: demo.journal, reglages: demo.reglages, aujourdhui: aujourdhui,
+                                fuseauTelephone: fuseau)
+        let gagnes = Trophees.gagnes(pratique)
+        guard let dernier = Trophees.chemin.last(where: { gagnes.contains($0) }) else { return demo }
+        let tout = Celebrations.neuf(bilan, pratique, paliersVus: nil, tropheesVus: nil)
+        demo.reglages.setPaliersVus(tout.marques)
+        demo.reglages.setTropheesVus(Set(gagnes.map(\.cle)).subtracting([dernier.cle]))
+        return demo
+    }
+
     /// Le prénom de la démonstration.
     static func prenom(_ langue: String) -> String {
         switch langue {

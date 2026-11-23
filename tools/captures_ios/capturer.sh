@@ -25,8 +25,9 @@ ICI=$(cd "$(dirname "$0")" && pwd)
 # Les écrans de Captures.swift, dans l'ordre ; les passes secondaires n'en prennent qu'une partie.
 ECRANS_TOUS="presentation jour depart seance bravo note livres siddour lecteur livre tehilim tikkun tefilot bibliotheque
 halakha hilloulot recherche chizuk conseils chemin journal parcours trophees reglages version zmanim vol musique apercu
-applications dedicace journal-barriere serenite bento pile"
-ECRANS_COURTS="jour depart seance bravo livres lecteur tehilim recherche chemin journal trophees reglages zmanim vol musique"
+applications dedicace journal-barriere serenite bento pile fete calendrier boussole rappels ajout-temps"
+ECRANS_COURTS="jour depart seance bravo livres lecteur tehilim recherche chemin journal trophees reglages zmanim vol musique
+calendrier boussole rappels serenite apercu"
 test -n "$ECRANS" || ECRANS=$ECRANS_TOUS
 
 mkdir -p "$SORTIE/png" "$SORTIE/jpg" "$SORTIE/journaux"

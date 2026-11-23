@@ -23,7 +23,8 @@ enum Captures {
         "presentation", "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre", "tehilim",
         "tikkun", "tefilot", "bibliotheque", "halakha", "hilloulot", "recherche", "chizuk", "conseils", "chemin",
         "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "apercu", "applications",
-        "dedicace", "journal-barriere", "serenite", "bento", "pile",
+        "dedicace", "journal-barriere", "serenite", "bento", "pile", "fete", "calendrier", "boussole", "rappels",
+        "ajout-temps",
     ]
 
     private static func valeur(apres argument: String) -> String? {
@@ -39,9 +40,14 @@ enum Captures {
         let horloge = HorlogeSysteme()
         let contenus = ContenusApp(lecteur: ContenusApp.lecteur(dossier: paquet.appending(path: "Contenu")))
         let villes = (try? await contenus.villes()) ?? []
-        let enregistrement = Demonstration.enregistrement(aujourdhui: horloge.aujourdhui, maintenant: horloge.maintenant,
+        var enregistrement = Demonstration.enregistrement(aujourdhui: horloge.aujourdhui, maintenant: horloge.maintenant,
                                                           fuseau: horloge.fuseau.identifiant, langue: langue,
                                                           villes: villes)
+        if ecran == "fete" {
+            // La fête des trophées neufs au Jour : le dernier trophée gagné n'a pas encore été vu.
+            enregistrement = Demonstration.avecTropheeNeuf(enregistrement, aujourdhui: horloge.aujourdhui,
+                                                           fuseau: horloge.fuseau.identifiant)
+        }
         return Magasin.enMemoire(enregistrement)
     }
 
@@ -88,6 +94,12 @@ enum Captures {
         case "journal": depart = (.chemin, [.journal], nil, nil)
         case "parcours": depart = (.chemin, [.parcours], nil, nil)
         case "trophees": depart = (.chemin, [.paliers], nil, nil)
+        // Le ciel (tâches 24 et 25) : le calendrier et la boussole depuis Zmanim, les rappels depuis les Livres, l'ajout
+        // de temps à un jour (la feuille du journal).
+        case "calendrier": depart = (.aujourdhui, [.zmanim, .calendrier], nil, nil)
+        case "boussole": depart = (.aujourdhui, [.zmanim, .boussole], nil, nil)
+        case "rappels": depart = (.textes, [.rappels], nil, nil)
+        case "ajout-temps": depart = (.chemin, [.journal], .ajoutTemps(aujourdhui.plus(jours: -1)), nil)
         // La barrière (tâches 27 et 28), depuis les réglages.
         case "apercu": depart = (.aujourdhui, [.reglages(carteBarriere: true), .barriere(.apercu)], nil, nil)
         case "applications":

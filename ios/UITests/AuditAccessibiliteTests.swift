@@ -12,7 +12,8 @@ final class AuditAccessibiliteTests: XCTestCase {
         "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre", "tehilim", "tikkun",
         "tefilot", "bibliotheque", "halakha", "hilloulot", "recherche", "chizuk", "conseils", "chemin", "journal",
         "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "apercu", "applications", "dedicace",
-        "journal-barriere", "serenite", "bento", "pile", "presentation",
+        "journal-barriere", "serenite", "bento", "pile", "fete", "calendrier", "boussole", "rappels", "ajout-temps",
+        "presentation",
     ]
 
     @MainActor

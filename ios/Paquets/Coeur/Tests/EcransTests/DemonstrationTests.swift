@@ -60,6 +60,22 @@ struct DemonstrationTests {
         #expect(es.lieuVille == 3_435_910)
     }
 
+    @Test func laFeteAuJourMontreUnSeulTropheeNeuf() async throws {
+        let demo = Demonstration.avecTropheeNeuf(try await demonstration("fr"), aujourdhui: jeudi,
+                                                 fuseau: "Europe/Paris")
+        let magasin = Magasin.enMemoire(demo)
+        let fete = TropheeFeteModele(magasin: magasin,
+                                     horloge: HorlogeFixe(DateHeure(jeudi, heure: 9), fuseau: Fuseau("Europe/Paris")!))
+        try await fete.passer()
+        #expect(fete.fiches.count == 1)
+        #expect(fete.palier == nil)
+        // Fêté une fois : le passage suivant ne montre plus rien.
+        let suivante = TropheeFeteModele(magasin: magasin,
+                                         horloge: HorlogeFixe(DateHeure(jeudi, heure: 9), fuseau: Fuseau("Europe/Paris")!))
+        try await suivante.passer()
+        #expect(suivante.fiches.isEmpty)
+    }
+
     @Test func lesNotesEtLePrenomSontDansLaLangueDeLApp() async throws {
         let hier = jeudi.plus(jours: -1)
         let fr = try await demonstration("fr").journal
