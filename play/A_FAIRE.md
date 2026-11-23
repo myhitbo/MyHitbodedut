@@ -32,6 +32,7 @@ Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
 | Droits sur la musique | 16/11 | la version Play livre 23 morceaux (`MusiquePlay.kt`) |
 | Fiche en-US et iw-IL, 8 visuels par langue | 17/11 | `play/fiche/`, `play/visuels/` |
 | Recette sur émulateurs, Android 13 à 16 | 22/11 | ci-dessous |
+| Recette des corrections du 23/11, Android 13 à 16 | 23/11 | sans faute, y compris sur le code de `play-7` : ci-dessous |
 | Six corrections trouvées par la recette | 22/11 | PR #50 « Recette avant Google Play », reprise dans la branche du 23/11 (§ 1) |
 | PR #48, #49 et #50 réunies, relecture du code, vingt et une corrections | 23/11 | branche `ccr-95e5794e-1ej68l` ; ci-dessous |
 | AAB signé `play-7` (versionCode 8, version 1.7) | 23/11 | construit sur cette branche, avec toutes les corrections : § 1. **Ne pas envoyer** `play-3` (17/11, aucune correction), `play-4` et `play-5` (23/11, construits avant la contre-relecture), ni `play-6` (23/11, construit sur `main` : les trois PR, mais **aucune** des corrections du 23/11, dont les trois plantages) |
@@ -137,6 +138,32 @@ changement de dernière heure.
 - La durée d'une séance suit l'horloge du téléphone : la changer en cours de
   séance la raccourcit ou l'allonge.
 
+### La recette du 23/11
+
+Les corrections du jour sont passées sur émulateurs, dans la construction
+Play telle qu'elle est publiée, par le même parcours que la veille :
+
+- **avant la contre-relecture** (exécution n° 38 du flux *QA Android*) :
+  Android 13, 14, 15 et 16 ; le chemin de l'examinateur, les cinq accueils, la
+  séance et la barrière sur les quatre ; le redémarrage sur Android 13 et 16 ;
+  tous les écrans en français (14) et en arabe tunisien (15) ; la présentation
+  (13). 474 captures ;
+- **sur le code de `play-7`** (exécution n° 39) : le chemin de l'examinateur,
+  les cinq accueils et la séance, sur Android 13 et 16. 114 captures.
+
+**Aucun plantage, aucun « l'application ne répond pas », aucune faute relevée
+par les contrôles automatiques**, sur aucune des six cibles. Les accueils
+touchés et l'écran de fin de séance ont été regardés à l'œil. Les bilans sont
+sur les branches `claude/qa-api33-relecture` à `claude/qa-api36-relecture`,
+`claude/qa-api33-contre` et `claude/qa-api36-contre` (`journal.txt`,
+`plantages.txt` ; un `fautes.txt` n'existe que s'il y a une faute).
+
+Ce que cette recette ne voit pas : Android 8 à 12 (les émulateurs du flux
+commencent à Android 13), donc ni le plantage d'Ouman et de Kiev ni la langue
+des notifications avant Android 13, vérifiés par les tests et à la lecture du
+code seulement ; et tout ce que la recette du 22/11 ne remplace pas non plus
+(ci-dessous).
+
 ### La recette du 22/11
 
 La construction Play telle qu'elle est publiée (release, R8, `-Pplay=true`) a
@@ -208,9 +235,8 @@ dit rien d'un vrai processeur graphique, dans un sens comme dans l'autre.
    les corrections du 23/11, elles, ne sont encore que sur cette branche. Tant
    qu'elle n'est pas fusionnée, une construction lancée sur `main` ne les a
    pas : c'est le cas de `play-6`.
-3. Avant de l'envoyer en production, lire le bilan de la recette du 23/11 sur
-   émulateurs (branches `claude/qa-api33-relecture` à
-   `claude/qa-api36-relecture`, fichier `fautes.txt`).
+3. La recette du 23/11 sur émulateurs est faite, sans faute (ci-dessus) : rien
+   n'empêche d'envoyer `play-7`.
 
 Pour reconstruire plus tard : *Actions → Play → Run workflow* sur `main`,
 une fois cette branche fusionnée. Le numéro de version suit celui de
