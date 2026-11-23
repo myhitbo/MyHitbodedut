@@ -4,7 +4,7 @@ import Testing
 
 /// VersionAppTest d'Android, porté : chaque version se retrouve par sa clé, Classique par défaut, son nom et sa
 /// description existent dans toutes les langues du catalogue. Restent à Android ses lectures du manifeste, de
-/// MainActivity.kt, des captures et des licences de ses polices ; sur iOS, seul Classique est porté.
+/// MainActivity.kt, des captures et des licences de ses polices.
 @Suite("Versions de l'app")
 struct VersionAppTests {
 
@@ -28,8 +28,9 @@ struct VersionAppTests {
         r.setVersionApp(.bento)
         #expect(r.brut["version_app"] == .chaine("bento"))
         #expect(VersionApp.courante(r) == .bento)
-        // L'accueil Bento n'est pas porté : l'app montre Classique, le choix reste retenu.
-        #expect(VersionApp.accueil(r) == .classique)
+        // L'app montre l'accueil de la version choisie (VersionApp.rediriger).
+        #expect(VersionApp.accueil(r) == .bento)
+        #expect(VersionApp.accueil(Reglages()) == .classique)
         let futur = try Reglages(texte: #"{"version_app":"nouvelle"}"#)
         #expect(VersionApp.courante(futur) == .classique)
     }

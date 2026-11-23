@@ -6,8 +6,8 @@ import Coeur
 // présentation, puis depuis les réglages (« Version de l'app »). Chaque version a sa carte : son nom, ce qu'elle
 // change, et ses trois couleurs en aperçu. Quitter sans choisir garde Classique.
 //
-// Sur iOS, seul l'accueil Classique est porté : choisir une autre version la retient (elle passe dans la
-// sauvegarde, et Android l'appliquera), et un mot dit que l'app garde Classique en attendant (`VersionApp.portee`).
+// Une version choisie est retenue (VersionApp.appliquer) : la racine de l'app montre aussitôt son accueil, sans pile
+// d'écrans derrière (ios/App/Racine.swift).
 
 /// Une carte de version.
 public struct ChoixVersionCarte: Sendable, Hashable, Identifiable {
@@ -18,8 +18,6 @@ public struct ChoixVersionCarte: Sendable, Hashable, Identifiable {
     public let apercu: [UInt32]
     /// La version actuelle : bord de l'accent, « ✓ » après le nom, « version actuelle » lu par VoiceOver.
     public let choisie: Bool
-    /// Son accueil existe sur iOS.
-    public let portee: Bool
 
     public var id: String { version.cle }
 }
@@ -32,8 +30,6 @@ public final class ChoixVersionModele {
 
     /// L'écran a fini : la vue se ferme.
     public private(set) var ferme = false
-    /// Un mot bref (un Toast) ; nil sinon. La vue le retire avec `messageMontre()`.
-    public private(set) var message: Libelle? = nil
 
     public init(magasin: Magasin) {
         self.magasin = magasin
@@ -54,15 +50,14 @@ public final class ChoixVersionModele {
         let choisie = VersionApp.courante(magasin.reglages)
         return VersionApp.allCases.map { v in
             ChoixVersionCarte(version: v, nom: v.nom, description: v.description, apercu: v.apercu,
-                              choisie: v == choisie, portee: v.portee)
+                              choisie: v == choisie)
         }
     }
 
-    /// Une carte touchée : la version est retenue (VersionApp.appliquer), l'écran se ferme ; un accueil pas encore
-    /// porté le dit. Lève si les réglages ne s'écrivent pas.
+    /// Une carte touchée : la version est retenue (VersionApp.appliquer), l'écran se ferme. Lève si les réglages ne
+    /// s'écrivent pas.
     public func choisir(_ version: VersionApp) async throws {
         try await magasin.modifierReglages { $0.setVersionApp(version) }
-        if !version.portee { message = Libelle("ios_version_a_venir") }
         ferme = true
     }
 
@@ -72,9 +67,5 @@ public final class ChoixVersionModele {
             try await magasin.modifierReglages { $0.setVersionApp(.classique) }
         }
         ferme = true
-    }
-
-    public func messageMontre() {
-        message = nil
     }
 }

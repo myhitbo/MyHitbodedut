@@ -730,7 +730,18 @@ public final class VolModele {
     public func importerBillet(_ fichier: URL) async {
         guard let lecteurBillet else { return }
         rapide = [Libelle("vol_rapide_lecture")]
-        let code = await lecteurBillet.code(fichier)
+        await lireBillet(await lecteurBillet.code(fichier))
+    }
+
+    /// Le code-barres lu par l'appareil photo (VisionKit, sur iOS seulement) : la carte d'embarquement qu'il porte,
+    /// comme un billet importé.
+    public func lireCodeBillet(_ code: String) async {
+        await lireBillet(code)
+    }
+
+    /// Le contenu d'un code-barres (nil : aucun trouvé) : la carte d'embarquement (CarteEmbarquement), appliquée au
+    /// formulaire, ou ce qui manque (lireBillet de VolActivity).
+    private func lireBillet(_ code: String?) async {
         guard let code, let troncon = CarteEmbarquement.lire(code, horloge.aujourdhui) else {
             rapide = [Libelle(code == nil ? "vol_rapide_billet_sans_code" : "vol_rapide_billet_illisible")]
             return

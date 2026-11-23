@@ -44,7 +44,11 @@ struct AccueilModeleTests {
               heure: Int = 10, barriere: Bool = false, langue: String = "fr", presentationVue: Bool = true,
               tempsEcran: ReglagesFausseBarriere? = nil) throws -> Banc {
         var r = reglages
-        if presentationVue { r.setOnboarded() }
+        if presentationVue {
+            r.setOnboarded()
+            // Une version déjà choisie : le choix ne se propose pas par-dessus l'accueil (ChoixVersionModeleTests).
+            if r.versionApp == nil { r.setVersionApp(.classique) }
+        }
         let enregistrement = Enregistrement(journal: journal, reglages: r)
         let persistance = PersistanceEnMemoire(enregistrement)
         let magasin = Magasin(persistance: persistance, enregistrement: enregistrement)

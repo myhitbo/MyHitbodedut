@@ -4,7 +4,7 @@ import Coeur
 @testable import Ecrans
 
 /// Le choix de la version (ChoixVersionActivity.kt) : quatre cartes, la version actuelle cochée, un choix retenu, et
-/// le retour sans choix qui garde Classique au premier lancement. Sur iOS, un accueil pas encore porté le dit.
+/// le retour sans choix qui garde Classique au premier lancement.
 @Suite("Modèle du choix de la version")
 @MainActor
 struct ChoixVersionModeleTests {
@@ -15,8 +15,8 @@ struct ChoixVersionModeleTests {
         #expect(versions == [.classique, .serenite, .bento, .pile])
         let cochees = m.cartes.filter(\.choisie).map(\.version)
         #expect(cochees == [.classique])
-        let portees = m.cartes.filter(\.portee).map(\.version)
-        #expect(portees == [.classique])
+        let apercus = m.cartes.map(\.apercu)
+        #expect(apercus == VersionApp.allCases.map(\.apercu))
         #expect(m.titre == Libelle("version_choix_titre"))
     }
 
@@ -26,12 +26,12 @@ struct ChoixVersionModeleTests {
         try await m.choisir(.serenite)
         #expect(magasin.reglages.versionApp == .serenite)
         #expect(m.ferme)
-        #expect(m.message == Libelle("ios_version_a_venir"))
+        // Les quatre accueils sont portés : l'app montre aussitôt celui qui est choisi.
+        #expect(VersionApp.accueil(magasin.reglages) == .serenite)
         let cochees = m.cartes.filter(\.choisie).map(\.version)
         #expect(cochees == [.serenite])
-        m.messageMontre()
         try await m.choisir(.classique)
-        #expect(m.message == nil)
+        #expect(VersionApp.accueil(magasin.reglages) == .classique)
     }
 
     @Test func fermerSansChoisirGardeClassiqueUneFois() async throws {
@@ -47,6 +47,34 @@ struct ChoixVersionModeleTests {
         try await magasin.modifierReglages { $0.setVersionApp(.pile) }
         try await ChoixVersionModele(magasin: magasin).fermerSansChoisir()
         #expect(magasin.reglages.versionApp == .pile)
+    }
+
+    /// MainActivity.onResume : au retour de la présentation, ou à la première ouverture après la mise à jour, l'accueil
+    /// propose le choix de la version, une fois, tant qu'aucune n'est retenue ; jamais avant la présentation.
+    @Test func lAccueilProposeLeChoixApresLaPresentation() async throws {
+        let magasin = Magasin.enMemoire()
+        let jour = try #require(JourCivil(iso: "2026-11-16"))
+        let accueil = AccueilModele(magasin: magasin, contenus: ContenusApp(dossier: Fichiers.contenu),
+                                    horloge: HorlogeFixe(DateHeure(jour, heure: 10), fuseau: .utc), langue: "fr",
+                                    barriere: false, melange: { $0 })
+        await accueil.apparaitre()
+        #expect(accueil.routes == [.presentation])
+        accueil.routeOuverte()
+        // La présentation vue : le choix, une fois, même si l'accueil repasse avant qu'il soit fait.
+        try await magasin.modifierReglages { $0.setOnboarded() }
+        await accueil.apparaitre()
+        await accueil.apparaitre()
+        #expect(accueil.routes == [.choixVersion])
+        accueil.routeOuverte()
+        // Revenir sans choisir garde Classique : la question ne revient plus.
+        try await ChoixVersionModele(magasin: magasin).fermerSansChoisir()
+        await accueil.apparaitre()
+        #expect(accueil.routes.isEmpty)
+        // Tout recommencer efface la version : après la présentation, le choix revient.
+        try await magasin.modifierReglages { $0 = Reglages() }
+        try await magasin.modifierReglages { $0.setOnboarded() }
+        await accueil.apparaitre()
+        #expect(accueil.routes == [.choixVersion])
     }
 
     /// La ligne des réglages nomme la version choisie et mène au choix.
