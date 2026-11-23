@@ -173,7 +173,7 @@ struct BentoVue: View {
                     .font(VersionPolice.heebo(15, .bold))
                     .foregroundStyle(Bento.vert)
                     .padding(.horizontal, 18)
-                    .frame(minHeight: 42)
+                    .frame(minHeight: 44)
                     .background(Capsule().fill(Bento.citron))
             }
             .frame(maxWidth: 210, alignment: .leading)

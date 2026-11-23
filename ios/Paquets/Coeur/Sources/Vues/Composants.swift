@@ -167,7 +167,7 @@ public struct Pastille: View {
                     .lignesAuPlus(1)
             }
             .padding(.horizontal, 14)
-            .frame(minHeight: 40)
+            .frame(minHeight: 44)
             .background(Teinte(.card), in: Capsule())
             .overlay {
                 Capsule().strokeBorder(Teinte(.line), lineWidth: 1)

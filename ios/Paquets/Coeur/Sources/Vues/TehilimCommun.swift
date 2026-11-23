@@ -262,7 +262,7 @@ struct TehilimBarreVue: View {
                 .font(Font.subheadline.bold())
                 .foregroundStyle(Teinte(.onBrand))
                 .padding(.horizontal, 12)
-                .frame(minWidth: 56, minHeight: 36)
+                .frame(minWidth: 56, minHeight: 44)
                 .background(Teinte(.brand).opacity(0xF2 / 255.0), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .shadow(color: Color.black.opacity(0.25), radius: 6, x: 0, y: 3)
                 .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))

@@ -196,7 +196,7 @@ private struct HilloulotJourVue: View {
                     Text(aujourdhui, traducteur: traducteur)
                         .halakhaTexte(14, gras: true, echelle: modele.echelle)
                         .foregroundStyle(Teinte(.brand))
-                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .frame(maxWidth: .infinity, minHeight: 44)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -274,7 +274,7 @@ private struct HilloulotGroupeVue: View {
                         .halakhaTexte(13, echelle: modele.echelle)
                         .foregroundStyle(Teinte(.brand))
                         .padding(.horizontal, 8)
-                        .frame(minHeight: 40)
+                        .frame(minHeight: 44)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)

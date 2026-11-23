@@ -97,10 +97,21 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/app" ARCHS=x86_64 CODE_SIGNING_ALLOWED=NO \
             -only-testing:MyHitbodedutUITests 2>&1 | tee audit.log | grep -E "^AUDIT|error:|TEST (SUCCEEDED|FAILED)" || true
           n=$(grep -c "^AUDIT" audit.log || true)
+          t=$(grep -c "^TOLERE" audit.log || true)
           {
             echo "## Audit d'accessibilité : $n défaut(s)"
             echo '```'
             grep "^AUDIT" audit.log | cut -f2- | sort | head -400
+            echo '```'
+            # Les faux positifs connus (AuditAccessibiliteTests.toleres), chacun avec sa raison ; les audits refaits
+            # sorte par sorte faute d'avoir fini à temps.
+            echo "### Tolérés : $t"
+            echo '```'
+            grep "^TOLERE" audit.log | cut -f2- | sort | head -100
+            echo '```'
+            echo "### Refaits sorte par sorte : $(grep -c '^LENT' audit.log || true)"
+            echo '```'
+            grep "^LENT" audit.log | cut -f2,3 | sort | head -100
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           grep -q "TEST SUCCEEDED" audit.log

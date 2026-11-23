@@ -97,7 +97,7 @@ struct SereniteVue: View {
                 Text(action, traducteur: traducteur)
                     .tailleSp(14, poids: .bold, relativeA: VersionPolice.style(14))
                     .foregroundStyle(k.accent)
-                    .frame(minHeight: 40)
+                    .frame(minHeight: 44)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)

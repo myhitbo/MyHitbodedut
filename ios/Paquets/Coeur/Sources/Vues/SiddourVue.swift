@@ -90,7 +90,7 @@ public struct SiddourVue: View {
             .foregroundStyle(Color.white)
             .padding(.leading, 12)
             .padding(.trailing, 8)
-            .frame(minHeight: 36)
+            .frame(minHeight: 44)
             .background(Color.white.opacity(SiddourMesures.alpha(0x26)), in: Capsule())
             .overlay {
                 Capsule().strokeBorder(Color.white.opacity(SiddourMesures.alpha(0x59)), lineWidth: 1)
