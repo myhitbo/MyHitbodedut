@@ -466,7 +466,9 @@ public final class ReglagesModele {
         self.icone = icone
         self.effets = effets
         self.avecBarriere = avecBarriere
-        self.langue = Traducteur.langueApp(langue)
+        // Déjà une langue de l'app (« ar », ce que ModelesApp passe, Traducteur.langue) ou une étiquette du téléphone
+        // (« ar-TN ») : « ar » seul n'est pas ramené à l'anglais (vu sur les captures du 23/11 : « English »).
+        self.langue = Traducteur.langues.contains(langue) ? langue : Traducteur.langueApp(langue)
         self.version = version
     }
 

@@ -150,6 +150,9 @@ struct ReglagesModeleTests {
         #expect(espagnol.nomLangue == .brut("Español"))
         let tunisien = try fabriquer(langue: "ar-TN").modele
         #expect(tunisien.nomLangue == .brut("تونسي"))
+        // La langue de l'app telle que ModelesApp la passe (Traducteur.langue) : « ar », l'arabe de Tunisie.
+        let langueDeLApp = try fabriquer(langue: "ar").modele
+        #expect(langueDeLApp.nomLangue == .brut("تونسي"))
         let egyptien = try fabriquer(langue: "ar-EG").modele
         #expect(egyptien.nomLangue == .brut("English"))
     }
