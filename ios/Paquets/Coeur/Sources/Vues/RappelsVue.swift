@@ -42,6 +42,9 @@ public struct RappelsVue: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.principal)
+                #if DEBUG
+                diagnostic
+                #endif
             }
             .padding(16)
         }
@@ -128,6 +131,27 @@ public struct RappelsVue: View {
             .tint(Teinte(.brand))
             .frame(minHeight: 48)
             .padding(.top, 8)
+        }
+    }
+
+    /// Le diagnostic de la construction de développement (tâche 19) : les notifications en attente, d'après le plan.
+    private var diagnostic: some View {
+        Carte {
+            Text(modele.diagnosticTitre, traducteur: traducteur)
+                .font(.footnote.bold())
+                .foregroundStyle(Teinte(.muted))
+            ForEach(modele.diagnostic) { demande in
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(verbatim: Date(timeIntervalSince1970: TimeInterval(demande.instant) / 1000)
+                        .formatted(date: .abbreviated, time: .shortened) + " · " + traducteur.texte(demande.titre))
+                        .font(.caption)
+                        .foregroundStyle(Teinte(.ink))
+                    Text(verbatim: demande.identifiant)
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(Teinte(.muted))
+                }
+                .padding(.top, 4)
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+import BackgroundTasks
 import Coeur
 import Ecrans
 import Foundation
@@ -198,5 +199,40 @@ struct AjoutTempsSystemeApp: AjoutTempsSysteme {
 
     func retirerRappelDuJour() async {
         await planificateur.retirerRappelParu()
+    }
+}
+
+/// Le rafraîchissement d'arrière-plan (`BGAppRefreshTask`, PORTAGE.md § 2.2.2) : sans lui, des rappels posés dix jours
+/// d'avance s'arrêtent si l'app n'est pas ouverte d'ici là. iOS l'accorde quand il veut, sans garantie ; chaque passage
+/// demande le suivant, au plus tôt dans six heures.
+enum ReplanificationFond {
+    /// `BGTaskSchedulerPermittedIdentifiers` (projet-commun.yml).
+    static let identifiant = "com.myhitbodedut.replanifier"
+
+    static func programmer() {
+        let demande = BGAppRefreshTaskRequest(identifier: identifiant)
+        demande.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 3600)
+        do {
+            try BGTaskScheduler.shared.submit(demande)
+        } catch {
+            // Refusé (simulateur, rafraîchissement coupé dans les réglages) : l'ouverture de l'app replanifie.
+        }
+    }
+
+    /// Les modèles de l'app s'ils sont là ; sinon (l'app lancée pour l'occasion) le magasin lu sur les fichiers.
+    @MainActor
+    static func executer(modeles: ModelesApp?, paquet: URL, traducteur: Traducteur) async {
+        programmer()
+        if let modeles {
+            await modeles.planificateur.replanifier()
+        } else if let magasin = try? await Magasin.charger(PersistanceFichiers(dossier: DossierApp.app)) {
+            let lecteur = ContenusApp.lecteur(dossier: paquet.appending(path: "Contenu"))
+            let planificateur = PlanificateurNotifications(magasin: magasin, horloge: HorlogeSysteme(),
+                                                           centre: CentreNotificationsSysteme(traducteur: traducteur),
+                                                           aeroports: VolModele.lireAeroports(lecteur: lecteur),
+                                                           formats: .langue(traducteur.langue))
+            await planificateur.replanifier()
+        }
+        RafraichissementWidgets.redessiner()
     }
 }

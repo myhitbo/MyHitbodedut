@@ -2053,6 +2053,42 @@
         }
       }
     },
+    "rappels_diagnostic": {
+      "comment": "Le diagnostic des rappels (construction de développement) : les notifications que le planificateur tient en attente (ROADMAP, tâche 19). Écrans d'iOS : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Notifications en attente"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pending notifications"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "התראות ממתינות"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Notificaciones pendientes"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "التنبيهات اللي تستنّى"
+          }
+        }
+      }
+    },
     "reglages_autorisation_temps_ecran": {
       "comment": "Réglages, carte des autorisations : Family Controls (PORTAGE.md § 2.1). Écrans d'iOS, phase 3 : à relire par le propriétaire.",
       "extractionState": "manual",

@@ -28,10 +28,18 @@ struct GestesExterieurs: ViewModifier {
             .onChange(of: phase) { _, nouvelle in
                 switch nouvelle {
                 case .active:
-                    replanifier()
+                    // MainActivity.onResume (02/11) : la position du téléphone, si elle est le lieu, se reprend sans
+                    // bruit quand elle a plus de six heures ou que le fuseau a changé ; puis les alertes la suivent.
+                    let lieu = app.zmanim.choixLieu
+                    let planificateur = app.planificateur
+                    Task {
+                        try? await lieu?.rafraichirSiBesoin()
+                        await planificateur.replanifier()
+                    }
                 case .background:
                     replanifier()
                     RafraichissementWidgets.redessiner()
+                    ReplanificationFond.programmer()
                 default:
                     break
                 }

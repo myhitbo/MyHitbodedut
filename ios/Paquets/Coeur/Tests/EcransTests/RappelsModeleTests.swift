@@ -131,6 +131,17 @@ struct RappelsModeleTests {
         #expect(b.magasin.reglages.reminderTimes.isEmpty)
     }
 
+    @Test func leDiagnosticEstLePlan() {
+        let demande = DemandeNotification(identifiant: "rappel-1", instant: 1, titre: Libelle("reminder_title"),
+                                          lignes: [], categorie: "rappel", lien: .accueil, trophee: nil)
+        let magasin = Magasin.enMemoire()
+        let modele = RappelsModele(magasin: magasin, notificateur: FauxNotificateur(),
+                                   rappels: PresentationRappelsEnMemoire(), plan: { [demande] })
+        #expect(modele.diagnostic == [demande])
+        #expect(modele.diagnosticTitre == Libelle("rappels_diagnostic"))
+        #expect(Self.banc().modele.diagnostic.isEmpty)
+    }
+
     @Test func leTropheeToutProche() async throws {
         let b = Self.banc()
         #expect(b.modele.trophee == b.magasin.reglages.rappelTropheeProche)

@@ -58,6 +58,11 @@ struct MyHitbodedutApp: App {
             .environment(\.layoutDirection,
                          Traducteur.deDroiteAGauche(traducteur.langue) ? .rightToLeft : .leftToRight)
         }
+        // Le rafraîchissement que iOS accorde en arrière-plan, sans garantie : les notifications des dix jours
+        // suivants et les widgets (PORTAGE.md § 2.2.2, BootReceiver).
+        .backgroundTask(.appRefresh(ReplanificationFond.identifiant)) { [modeles, paquet, traducteur] in
+            await ReplanificationFond.executer(modeles: modeles, paquet: paquet, traducteur: traducteur)
+        }
     }
 
     /// Le traducteur des `Libelle`, dans la langue de l'app : la première des langues préférées que l'app livre (la

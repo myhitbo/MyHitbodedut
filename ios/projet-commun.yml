@@ -80,6 +80,9 @@ targetTemplates:
         CFBundleURLTypes:
           - CFBundleURLName: com.myhitbodedut
             CFBundleURLSchemes: [myhitbodedut]
+        # Le rafraîchissement d'arrière-plan qui replanifie les notifications (ReplanificationFond, tâche 19).
+        BGTaskSchedulerPermittedIdentifiers: [com.myhitbodedut.replanifier]
+        UIBackgroundModes: [fetch]
         # Toutes les orientations, comme Android (aucun screenOrientation, layout-land) ; l'iPad les quatre, pour le
         # partage d'écran (tâche 29).
         UISupportedInterfaceOrientations:

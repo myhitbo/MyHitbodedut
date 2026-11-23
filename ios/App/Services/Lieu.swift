@@ -140,12 +140,12 @@ final class LieuSysteme: NSObject, Localisation, LieuAutorisation, BoussoleAutor
         for suite in attentes { suite.resume() }
     }
 
-    fileprivate func positions(_ lieux: [CLLocation]) {
+    fileprivate func positions(_ releves: [Releve]) {
         guard attentePosition != nil else { return }
         // Une position d'avant le relevé n'est pas un relevé (le GPS du vol, la fraîcheur de ChoixLieu).
-        guard let lieu = lieux.last(where: { $0.timestamp >= debutReleve.addingTimeInterval(-1) && $0.horizontalAccuracy >= 0 })
+        guard let releve = releves.last(where: { $0.instant >= debutReleve.addingTimeInterval(-1) && $0.precision >= 0 })
         else { return }
-        finir(lieu)
+        finir(CLLocation(latitude: releve.latitude, longitude: releve.longitude))
     }
 
     fileprivate func echec(_ erreur: CLError.Code?) {
@@ -153,6 +153,15 @@ final class LieuSysteme: NSObject, Localisation, LieuAutorisation, BoussoleAutor
         if erreur == .locationUnknown { return }
         if attentePosition != nil { finir(nil) }
     }
+}
+
+/// Une position reçue de CoreLocation, en valeurs qui passent d'un fil à l'autre.
+struct Releve: Sendable {
+    let latitude: Double
+    let longitude: Double
+    let instant: Date
+    /// `horizontalAccuracy` : négative, la position n'est pas valable.
+    let precision: Double
 }
 
 extension LieuSysteme: CLLocationManagerDelegate {
@@ -164,7 +173,11 @@ extension LieuSysteme: CLLocationManagerDelegate {
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        MainActor.assumeIsolated { positions(locations) }
+        let releves = locations.map {
+            Releve(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude, instant: $0.timestamp,
+                   precision: $0.horizontalAccuracy)
+        }
+        MainActor.assumeIsolated { positions(releves) }
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {

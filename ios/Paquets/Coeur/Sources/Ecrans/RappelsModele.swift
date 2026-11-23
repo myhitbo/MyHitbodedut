@@ -52,6 +52,7 @@ public final class RappelsModele {
     private let magasin: Magasin
     private let notificateur: any Notificateur
     private let rappels: any PresentationRappels
+    private let plan: (@MainActor () -> [DemandeNotification])?
 
     /// Les notifications s'affichent-elles ? Relu à chaque apparition (onResume → render).
     public private(set) var notificationsAccordees = true
@@ -62,10 +63,23 @@ public final class RappelsModele {
     /// Les écrans demandés, que la vue ouvre puis retire (`routeOuverte()`) : un interrupteur ne rend rien.
     public private(set) var routes: [RappelsRoute] = []
 
-    public init(magasin: Magasin, notificateur: any Notificateur, rappels: any PresentationRappels) {
+    /// `plan` : ce que le planificateur a posé à son dernier passage, pour le diagnostic.
+    public init(magasin: Magasin, notificateur: any Notificateur, rappels: any PresentationRappels,
+                plan: (@MainActor () -> [DemandeNotification])? = nil) {
         self.magasin = magasin
         self.notificateur = notificateur
         self.rappels = rappels
+        self.plan = plan
+    }
+
+    // MARK: Le diagnostic (ROADMAP, tâche 19)
+
+    /// « Notifications en attente » : la liste que montre la construction de développement.
+    public var diagnosticTitre: Libelle { Libelle("rappels_diagnostic") }
+
+    /// Les notifications que le planificateur tient en attente, dans l'ordre du temps ; vide sans planificateur.
+    public var diagnostic: [DemandeNotification] {
+        plan?() ?? []
     }
 
     // MARK: Le bandeau

@@ -268,7 +268,9 @@ final class ModelesApp {
     }
 
     func rappels() -> RappelsModele {
-        RappelsModele(magasin: magasin, notificateur: notificateur, rappels: planificateur)
+        let planificateur = self.planificateur
+        return RappelsModele(magasin: magasin, notificateur: notificateur, rappels: planificateur,
+                             plan: { planificateur.plan })
     }
 
     /// Ajouter du temps à un jour (AjoutTemps.kt) ; nil pour un jour à venir.
