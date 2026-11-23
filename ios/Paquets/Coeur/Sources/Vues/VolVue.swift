@@ -198,7 +198,7 @@ public struct VolVue: View {
                     Text(Libelle("vol_effacer"), traducteur: traducteur)
                         .font(.footnote)
                         .foregroundStyle(Teinte(.muted))
-                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .frame(maxWidth: .infinity, minHeight: 44)
                 }
                 .contentShape(Rectangle())
                 .buttonStyle(.plain)
@@ -300,7 +300,7 @@ public struct VolVue: View {
                     Text(Libelle("vol_gps_oublier"), traducteur: traducteur)
                         .font(.footnote)
                         .foregroundStyle(Teinte(.brand))
-                        .frame(minHeight: 40)
+                        .frame(minHeight: 44)
                 }
                 .contentShape(Rectangle())
                 .buttonStyle(.plain)
@@ -329,7 +329,8 @@ public struct VolVue: View {
                         .font(.caption)
                         .foregroundStyle(Teinte(.muted))
                 }
-                .frame(minHeight: 40)
+                // 44 de haut, toute la largeur : la zone de toucher que demande l'audit d'accessibilité.
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             }
             .contentShape(Rectangle())
             .buttonStyle(.plain)

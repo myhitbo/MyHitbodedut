@@ -871,7 +871,7 @@ private struct AccueilVolet: View {
                             Text(textes.etatMusique, traducteur: traducteur)
                                 .font(.footnote)
                                 .foregroundStyle(Teinte(.muted))
-                                .lineLimit(2)
+                                .lignesAuPlus(2)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -879,7 +879,7 @@ private struct AccueilVolet: View {
                         AccueilTexteVue.texte(pastille.valeur, traducteur)
                             .font(Font.subheadline.bold())
                             .foregroundStyle(Teinte(.brand))
-                            .lineLimit(1)
+                            .lignesAuPlus(1)
                             .frame(maxWidth: 160, alignment: .trailing)
                     }
                     if pastille.genre != .barriere {

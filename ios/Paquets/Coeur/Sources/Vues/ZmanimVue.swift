@@ -368,7 +368,7 @@ struct ZmanimCarteJourVue: View {
                     Text(Libelle("calendrier_aujourdhui"), traducteur: traducteur)
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Teinte(.brand))
-                        .frame(maxWidth: .infinity, minHeight: 32)
+                        .frame(maxWidth: .infinity, minHeight: 44)
                 }
                 .contentShape(Rectangle())
                 .buttonStyle(.plain)

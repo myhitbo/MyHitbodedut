@@ -119,7 +119,7 @@ public struct PaliersVue: View {
                             .font(.footnote)
                             .foregroundStyle(filtre.choisi ? Teinte(.onBrand) : Teinte(.ink))
                             .padding(.horizontal, 14)
-                            .frame(minHeight: 36)
+                            .frame(minHeight: 44)
                             .background(filtre.choisi ? Teinte(.brand) : Teinte(.card), in: Capsule())
                             .overlay { Capsule().strokeBorder(Teinte(.line), lineWidth: filtre.choisi ? 0 : 1) }
                     }

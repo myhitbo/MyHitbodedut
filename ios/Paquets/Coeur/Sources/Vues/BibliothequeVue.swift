@@ -495,7 +495,7 @@ private struct BibliothequeFeuilleSignets: View {
             }
             .foregroundStyle(Teinte(choisie ? .onPlate : .ink))
             .padding(.horizontal, 12)
-            .frame(minHeight: 32)
+            .frame(minHeight: 44)
             .background(Teinte(choisie ? .mint : .card), in: Capsule())
             .overlay {
                 Capsule().strokeBorder(Teinte(.line), lineWidth: 1)

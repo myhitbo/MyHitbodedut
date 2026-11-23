@@ -141,7 +141,7 @@ public struct BoussoleVue: View {
                 .multilineTextAlignment(.leading)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .frame(minHeight: 36)
+                .frame(minHeight: 44)
                 .background(Color.white.opacity(0.15), in: Capsule())
                 .overlay {
                     Capsule().strokeBorder(Color.white.opacity(0.35), lineWidth: 1)

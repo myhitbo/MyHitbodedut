@@ -120,7 +120,7 @@ public struct TuileExtensible: Layout {
 }
 
 /// La place d'un élément dans une `TuileExtensible` : en haut (par défaut), en bas, ou décoratif.
-public enum RoleDansTuile: LayoutValueKey {
+public enum RoleDansTuile: LayoutValueKey, Sendable {
     case haut, bas, decor
     public static let defaultValue = RoleDansTuile.haut
 }

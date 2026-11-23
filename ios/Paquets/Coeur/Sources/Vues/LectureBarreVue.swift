@@ -52,7 +52,7 @@ struct LectureBouton: View {
                 .font(Font.subheadline.bold())
                 .foregroundStyle(Teinte(.onBrand))
                 .padding(.horizontal, 12)
-                .frame(minWidth: 56, minHeight: 36)
+                .frame(minWidth: 56, minHeight: 44)
                 .background(Teinte(.brand).opacity(SiddourMesures.alpha(0xF2)),
                             in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 2)
