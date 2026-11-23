@@ -148,7 +148,36 @@ final class DelegueNotifications: NSObject, UNUserNotificationCenterDelegate, Se
         let action = response.actionIdentifier
         let adresse = response.notification.request.content.userInfo[CentreNotificationsSysteme.cleLien] as? String
         let geste = PlanificateurNotifications.reponse(action: action, lien: adresse.flatMap { LienApp(texte: $0) })
+        // « Plus tard » n'ouvre pas l'app : iOS la réveille en arrière-plan, sans écran pour vider l'aiguillage.
+        if geste == .reporter {
+            await ReportDuRappel.reporter()
+            return
+        }
         await Aiguillage.commun.recevoir(geste)
+    }
+}
+
+/// « Plus tard » (Reminder.snooze) depuis la notification : par le planificateur de l'app s'il est là, sinon sur les
+/// fichiers, l'app réveillée pour l'occasion.
+@MainActor
+enum ReportDuRappel {
+    /// Le planificateur de l'app, posé par `ModelesApp.charger`.
+    static weak var planificateur: PlanificateurNotifications?
+
+    static func reporter() async {
+        if let planificateur {
+            try? await planificateur.reporter()
+            return
+        }
+        guard let magasin = try? await Magasin.charger(PersistanceFichiers(dossier: DossierApp.app)) else { return }
+        let paquet = Bundle.main.bundleURL
+        let traducteur = MyHitbodedutApp.traducteur(paquet: paquet)
+        let lecteur = ContenusApp.lecteur(dossier: paquet.appending(path: "Contenu"))
+        let planificateur = PlanificateurNotifications(magasin: magasin, horloge: HorlogeSysteme(),
+                                                       centre: CentreNotificationsSysteme(traducteur: traducteur),
+                                                       aeroports: VolModele.lireAeroports(lecteur: lecteur),
+                                                       formats: .langue(traducteur.langue))
+        try? await planificateur.reporter()
     }
 }
 

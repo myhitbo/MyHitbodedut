@@ -70,7 +70,7 @@ struct MyHitbodedutApp: App {
     /// et l'arabe de Tunisie seulement ; sinon l'anglais (Traducteur.langueDuTelephone, LangueApp d'Android). Il
     /// lit les catalogues copiés tels quels sous Chaines/ : celui d'Android, puis celui des chaînes propres à iOS.
     /// Sans catalogue lisible, chaque libellé montre sa clé : ce qui se voit, au lieu de se taire.
-    private static func traducteur(paquet: URL) -> Traducteur {
+    static func traducteur(paquet: URL) -> Traducteur {
         let langue = Traducteur.langueDuTelephone(Locale.preferredLanguages)
         let chaines = paquet.appending(path: "Chaines")
         let catalogues = ["Localizable.xcstrings", "ios.xcstrings"].compactMap { nom in

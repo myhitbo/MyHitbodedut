@@ -139,6 +139,7 @@ final class ModelesApp {
         CentreNotificationsSysteme.enregistrerCategories(traducteur)
         DossierApp.retenirLangue(traducteur.langue)
         let planificateur = modeles.planificateur
+        ReportDuRappel.planificateur = planificateur
         Task { await planificateur.replanifier() }
         return modeles
     }
