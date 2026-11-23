@@ -19,6 +19,22 @@ import Coeur
 // interrogés ensemble, 25 s de délai, dernière position connue à défaut) est l'affaire de l'adaptateur de
 // `Localisation` (ios/App/Services) : ici, sa réponse.
 
+// MARK: La position gardée
+
+/// Au sol, le kilomètre suffit (zmanim, direction de Jérusalem) : rien de plus précis n'est gardé
+/// (ChoixLieu.PositionSol, examen du 14/11).
+public enum PositionSol {
+    /// `Math.round(degres * 100.0) / 100.0` : le centième de degré.
+    public static func arrondie(_ degres: Double) -> Double {
+        Double(Kotlin.arrondiLong(degres * 100.0)) / 100.0
+    }
+
+    /// La position arrondie.
+    public static func arrondie(_ position: PositionApprochee) -> PositionApprochee {
+        PositionApprochee(latitude: arrondie(position.latitude), longitude: arrondie(position.longitude))
+    }
+}
+
 // MARK: Ce que le système dit sans rien demander
 
 /// L'autorisation de localisation, lue sans la demander : `ChoixLieu.localisationPermise`. Sert à reprendre la
@@ -93,6 +109,9 @@ public final class LieuModele {
 
     /// Six heures : au retour sur l'accueil, une position plus vieille se reprend (02/11).
     public static let sixHeures: Int64 = 6 * 3_600_000
+    /// Deux heures (ChoixLieu.FOND_MAX_MS) : sans bruit, une position connue plus vieille ne remplace pas un lieu
+    /// périmé par un changement de fuseau, à qui elle donnerait le nouveau fuseau sans être du nouvel endroit.
+    public static let deuxHeures: Int64 = 2 * 3_600_000
 
     private let magasin: Magasin
     private let contenus: ContenusApp?
@@ -225,6 +244,14 @@ public final class LieuModele {
         case .position(let position):
             if message == .attente { message = nil }
             try await enregistrer(position)
+        case .ancienne(let position, let age):
+            // ChoixLieu.ancienne : après un voyage, une position d'avant le départ ne remplace pas la périmée.
+            if silencieux && magasin.reglages.lieuPerime(fuseauTelephone: horloge.fuseau.identifiant)
+                && age > LieuModele.deuxHeures {
+                return
+            }
+            if !silencieux { message = .ancienne }
+            try await enregistrer(position)
         case .refusee, .indisponible:
             if !silencieux { message = .refusee }
         }
@@ -242,10 +269,12 @@ public final class LieuModele {
         }
     }
 
-    /// Le lieu d'une position : « Ma position · près de <ville> » (dans la langue du traducteur) et l'altitude de
-    /// la ville la plus proche à moins de 60 km ; sinon « Ma position » et le niveau de la mer.
-    public static func lieu(_ position: PositionApprochee, villes: [Ville], fuseauTelephone: Fuseau,
+    /// Le lieu d'une position, arrondie au kilomètre (PositionSol) : « Ma position · près de <ville> » (dans la
+    /// langue du traducteur) et l'altitude de la ville la plus proche à moins de 60 km ; sinon « Ma position » et le
+    /// niveau de la mer.
+    public static func lieu(_ brute: PositionApprochee, villes: [Ville], fuseauTelephone: Fuseau,
                             traducteur: Traducteur) -> Zmanim.Lieu {
+        let position = PositionSol.arrondie(brute)
         let proche = Villes.plusProche(villes, position.latitude, position.longitude)
         let nom: String
         if let proche {

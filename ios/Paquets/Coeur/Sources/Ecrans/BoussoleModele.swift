@@ -359,6 +359,10 @@ public final class BoussoleModele {
         case .position(let position):
             message = nil
             try await enregistrer(position)
+        case .ancienne(let position, _):
+            // ChoixLieu.ancienne : la dernière position connue, et on le dit.
+            message = BoussoleMessage(libelle: Libelle("zmanim_position_ancienne"), long: true)
+            try await enregistrer(position)
         case .refusee, .indisponible:
             message = BoussoleMessage(libelle: Libelle("zmanim_position_refusee"), long: true)
         }
@@ -372,8 +376,17 @@ public final class BoussoleModele {
         guard await autorisationLieu.localisationPermise() else { return }
         rechercheEnCours = true
         defer { rechercheEnCours = false }
-        if case .position(let position) = await localisation.positionApprochee() {
+        switch await localisation.positionApprochee() {
+        case .position(let position):
             try await enregistrer(position)
+        case .ancienne(let position, let age):
+            // Sans bruit, une position vieille de plus de deux heures ne remplace pas un lieu périmé (02/11).
+            if magasin.reglages.lieuPerime(fuseauTelephone: horloge.fuseau.identifiant) && age > LieuModele.deuxHeures {
+                return
+            }
+            try await enregistrer(position)
+        case .refusee, .indisponible:
+            break
         }
     }
 
@@ -471,7 +484,8 @@ public final class BoussoleModele {
     /// ChoixLieu.enregistrerPosition : la ville la plus proche (à 60 km) ne fait que nommer la position et
     /// donner l'altitude ; le fuseau reste celui du téléphone, et Israël ou diaspora se lit sur le territoire,
     /// pas sur la ville (16/10). Le nom s'enregistre écrit dans la langue de l'app, comme sur Android.
-    private func enregistrer(_ position: PositionApprochee) async throws {
+    private func enregistrer(_ brute: PositionApprochee) async throws {
+        let position = PositionSol.arrondie(brute)
         let liste = await villesLues()
         let proche = Villes.plusProche(liste, position.latitude, position.longitude)
         let nom: String

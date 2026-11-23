@@ -588,8 +588,9 @@ struct BoussoleModeleTests {
         try await modele.reprendre()
         let lieu = try #require(modele.lieu)
         #expect(lieu.nom == "Ma position · près de Jérusalem")
-        #expect(lieu.latitude == jerusalem.latitude)
-        #expect(lieu.longitude == jerusalem.longitude)
+        // Gardée au kilomètre près (ChoixLieu.PositionSol, examen du 14/11).
+        #expect(lieu.latitude == 31.77)
+        #expect(lieu.longitude == 35.22)
         #expect(lieu.altitude == 0)
         // Le fuseau reste celui du téléphone ; Israël se lit sur le territoire, et ne fait que poser la question
         // (audit du 16/11 : le statut suit la résidence).

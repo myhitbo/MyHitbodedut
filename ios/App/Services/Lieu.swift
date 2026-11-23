@@ -27,8 +27,10 @@ final class LieuSysteme: NSObject, Localisation, LieuAutorisation, BoussoleAutor
         case gps
     }
 
-    /// ChoixLieu : une position de moins de deux minutes vaut une position fraîche.
+    /// ChoixLieu : une position de moins de deux minutes vaut une position fraîche…
     private static let fraicheur: TimeInterval = 120
+    /// … si elle est à 5 km près (APPROCHE_M) : la position est arrondie au kilomètre, attendre mieux ne sert à rien.
+    private static let approche: CLLocationAccuracy = 5_000
     /// ChoixLieu : 25 secondes ; VolActivity.GPS_MS : 2 min 30, le premier relevé sans réseau est long.
     private static func delai(_ precision: Precision) -> Duration {
         precision == .gps ? .seconds(150) : .seconds(25)
@@ -70,15 +72,19 @@ final class LieuSysteme: NSObject, Localisation, LieuAutorisation, BoussoleAutor
             guard gestionnaire.accuracyAuthorization == .fullAccuracy else { return .refusee }
         }
         if precision == .approchee, let connue = gestionnaire.location,
-           -connue.timestamp.timeIntervalSinceNow < LieuSysteme.fraicheur {
+           -connue.timestamp.timeIntervalSinceNow < LieuSysteme.fraicheur,
+           connue.horizontalAccuracy >= 0, connue.horizontalAccuracy <= LieuSysteme.approche {
             return LieuSysteme.reponse(connue)
         }
         if let fraiche = await relever() {
             return LieuSysteme.reponse(fraiche)
         }
-        // ChoixLieu : faute de position fraîche, la dernière connue. Le vol veut un relevé de maintenant.
+        // ChoixLieu.ancienne : faute de position fraîche, la dernière connue, et on le dit. Le vol veut un relevé de
+        // maintenant.
         if precision == .approchee, let connue = gestionnaire.location {
-            return LieuSysteme.reponse(connue)
+            let age = Int64((-connue.timestamp.timeIntervalSinceNow * 1000).rounded())
+            return .ancienne(PositionApprochee(latitude: connue.coordinate.latitude,
+                                               longitude: connue.coordinate.longitude), age: max(age, 0))
         }
         return .indisponible
     }

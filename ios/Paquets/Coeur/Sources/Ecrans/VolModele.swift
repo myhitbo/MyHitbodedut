@@ -1056,7 +1056,8 @@ public final class VolModele {
             await appliquerReleve(point, source: .gps)
         case .refusee:
             dialogue = .message(Libelle("vol_gps_refuse"))
-        case .indisponible:
+        case .indisponible, .ancienne:
+            // Le relevé du vol veut un point de maintenant : une position d'avant n'est pas un relevé.
             dialogue = .message(Libelle("vol_gps_echec"))
         }
     }

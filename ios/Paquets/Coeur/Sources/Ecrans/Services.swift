@@ -123,6 +123,9 @@ public struct PositionApprochee: Sendable, Hashable {
 /// Ce qu'une demande de position rend.
 public enum ReponseLocalisation: Sendable, Hashable {
     case position(PositionApprochee)
+    /// Pas de position fraîche à temps : la dernière connue du téléphone, vieille de `age` millisecondes
+    /// (ChoixLieu.ancienne : « Pas de position fraîche : la dernière connue est utilisée. »).
+    case ancienne(PositionApprochee, age: Int64)
     /// L'autorisation est refusée : l'écran propose de choisir une ville.
     case refusee
     /// Aucune position en un temps raisonnable (hors ligne, à l'intérieur).
