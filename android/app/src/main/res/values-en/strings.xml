@@ -480,7 +480,7 @@
     <string name="onboarding_texts">Texts to pray with</string>
     <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, sources on hitbodedut and tips for hitbodedut, ready whenever you are.</string>
     <string name="onboarding_yours">Your way</string>
-    <string name="onboarding_yours_body">In Settings: the language (French, English or Hebrew), the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
+    <string name="onboarding_yours_body">In Settings: the language, the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
     <string name="onboarding_gate">In the morning, before everything else</string>
     <string name="onboarding_gate_body">Choose the apps that will wait for your hitbodedut: when you open one of them, you will first see “Have you done your hitbodedut?”. This mode is set up in Settings and can be turned off whenever you like.</string>
     <string name="onboarding_adresse">What should we call you?</string>

@@ -138,12 +138,22 @@ class InstantActivity : AccueilVersion() {
         // Les zmanim, en petit : le prochain, puis les repères du jour sur une ligne.
         pile.addView(VueVersion.colonne(context).apply {
             setPadding(dp(20), 0, dp(20), dp(16))
-            contentDescription = d.prochain?.let { getString(R.string.version_prochain, it.nom) + ", " + it.heure } ?: getString(R.string.version_sans_lieu)
+            val z = d.prochain
+            // Le soir, zmanim du jour passés : le dernier repère et son heure (DonneesAccueil.dernierDuJour).
+            val soir = d.dernierDuJour
+            contentDescription = when {
+                z != null -> getString(R.string.version_prochain, z.nom) + ", " + z.heure
+                soir != null -> soir.nom + ", " + soir.heure
+                else -> getString(R.string.version_sans_lieu)
+            }
             isClickable = true
             setOnClickListener { ouvrirZmanim() }
-            val z = d.prochain
             addView(VueVersion.texte(context,
-                z?.let { getString(R.string.version_prochain, it.nom) + " · " + it.heure + " · " + d.dans(context, it) } ?: getString(R.string.version_choisir_lieu),
+                when {
+                    z != null -> getString(R.string.version_prochain, z.nom) + " · " + z.heure + " · " + d.dans(context, z)
+                    soir != null -> soir.nom + " · " + soir.heure
+                    else -> getString(R.string.version_choisir_lieu)
+                },
                 13f, BLANC).apply { maxLines = 2 })
             if (d.zmanim.isNotEmpty()) addView(VueVersion.texte(context,
                 d.zmanim.joinToString("   ") { "${court(it.cle)} ${it.heure}" }, 11f, 0xB3FFFFFF.toInt(), haut = 4).apply {

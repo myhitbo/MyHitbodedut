@@ -125,17 +125,33 @@ data class DonneesAccueil(
     val derniereNote: NoteAffichee?,
 ) {
     data class ZmanAffiche(val cle: String, val nom: String, val heure: String, val instant: ZonedDateTime)
+
+    /**
+     * Le soir, quand les zmanim du jour sont passés, [prochain] est null alors qu'un lieu est
+     * choisi : on montre alors le dernier repère du jour (la sortie des étoiles) et son heure,
+     * sans compte à rebours. Null aussi sans lieu : c'est le seul cas où l'on propose d'en
+     * choisir un. Recette du 22/11 : Bento, Instant et Sérénité affichaient « Choisir un lieu »
+     * chaque soir, lieu choisi ou non.
+     */
+    val dernierDuJour: ZmanAffiche? get() = if (prochain == null) zmanim.lastOrNull() else null
     data class PenseeAffichee(val hebreu: String, val traduction: String?, val reference: String)
     data class NoteAffichee(val date: LocalDate, val minutes: Int, val texte: String?)
 
     /** « dans 1 h 12 » jusqu'au prochain zman. */
     fun dans(context: Context, z: ZmanAffiche, maintenant: ZonedDateTime = ZonedDateTime.now(z.instant.zone)): String {
-        val minutes = java.time.Duration.between(maintenant, z.instant).toMinutes().coerceAtLeast(0)
+        val minutes = minutesAvant(maintenant, z.instant)
         return if (minutes < 60) context.getString(R.string.version_dans_min, minutes)
         else context.getString(R.string.version_dans_h, minutes / 60, minutes % 60)
     }
 
     companion object {
+        /**
+         * Les minutes entières jusqu'à [instant], jamais moins d'une : dans la dernière minute
+         * avant un zman, les accueils annonçaient « dans 0 min » (recette du 22/11).
+         */
+        fun minutesAvant(maintenant: ZonedDateTime, instant: ZonedDateTime): Long =
+            java.time.Duration.between(maintenant, instant).toMinutes().coerceAtLeast(1)
+
         /** Les zmanim qu'un accueil montre en bref, dans l'ordre du jour. */
         val REPERES = listOf("netz", "chatsot", "minha_ketana", "chkia", "tset")
 

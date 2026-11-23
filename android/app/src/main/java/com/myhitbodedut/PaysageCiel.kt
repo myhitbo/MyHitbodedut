@@ -1,5 +1,6 @@
 package com.myhitbodedut
 
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.LinearGradient
@@ -7,13 +8,20 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.RadialGradient
+import android.graphics.Rect
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
 
 /**
  * Le paysage de la carte : le ciel du moment en dégradé, le soleil (ou la lune) dans son
- * halo, les étoiles la nuit, deux collines et une brume. Dessiné, pas une image : il suit
- * la taille de la carte et la phase du ciel.
+ * halo, les étoiles la nuit, deux collines et une brume. Dessiné, pas une image livrée : il
+ * suit la taille de la carte et la phase du ciel.
+ *
+ * Il ne bouge pas : il est peint une seule fois, dans une image à la taille de la carte, et
+ * c'est cette image qui est posée à l'écran à chaque trame. Ses dégradés ne passent donc
+ * jamais par le processeur graphique. Recette du 22/11 : peints directement sur la carte de
+ * l'accueil Instant, ils arrêtaient net les émulateurs Android 15 et 16 (rendu logiciel
+ * d'OpenGL, sans carte graphique) dès la première trame.
  */
 class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : Drawable() {
     private val ciel = Paint()
@@ -32,9 +40,42 @@ class PaysageCiel(private val phase: CielDuJour.Phase, private val d: Float) : D
         CielDuJour.Phase.JOUR -> intArrayOf(0xFF4F86C6.toInt(), 0xFF7FAEDC.toInt(), 0xFFB3D2EA.toInt(), 0xFFDCE9EC.toInt(), 0xFFF4E6CB.toInt())
     }
 
+    /** Le paysage déjà peint, à la taille de la carte ; refait si la carte change de taille. */
+    private var image: Bitmap? = null
+
+    override fun onBoundsChange(bounds: Rect) {
+        image = null
+    }
+
     override fun draw(canvas: Canvas) {
-        val w = bounds.width().toFloat()
-        val h = bounds.height().toFloat()
+        val largeur = bounds.width()
+        val hauteur = bounds.height()
+        if (largeur <= 0 || hauteur <= 0) return
+        val peinte = image?.takeIf { it.width == largeur && it.height == hauteur } ?: imagePeinte(largeur, hauteur)
+        if (peinte != null) {
+            canvas.drawBitmap(peinte, null, bounds, null)
+            return
+        }
+        // Plus de mémoire pour l'image : le paysage directement, plutôt qu'une carte vide.
+        val retour = canvas.save()
+        canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
+        peindre(canvas, largeur.toFloat(), hauteur.toFloat())
+        canvas.restoreToCount(retour)
+    }
+
+    private fun imagePeinte(largeur: Int, hauteur: Int): Bitmap? {
+        val neuve = try {
+            Bitmap.createBitmap(largeur, hauteur, Bitmap.Config.ARGB_8888)
+        } catch (e: OutOfMemoryError) {
+            return null
+        }
+        peindre(Canvas(neuve), largeur.toFloat(), hauteur.toFloat())
+        image = neuve
+        return neuve
+    }
+
+    /** Le paysage, de (0, 0) à ([w], [h]). */
+    private fun peindre(canvas: Canvas, w: Float, h: Float) {
         ciel.shader = LinearGradient(0f, 0f, 0f, h * 0.85f, couleurs, null, Shader.TileMode.CLAMP)
         canvas.drawRect(0f, 0f, w, h, ciel)
         if (phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER) {

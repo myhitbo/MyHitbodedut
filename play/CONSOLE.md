@@ -1,10 +1,11 @@
 # Play Console — pas-à-pas de la saisie
 
 Rédigé le 14/11/2026 pour la version Play de `com.myhitbodedut` (édition
-complète, `-Pplay=true`). Ce fichier dit **quoi saisir ou cocher**, formulaire
-par formulaire ; le pourquoi est dans `PUBLICATION_PLAY_STORE.md` (les numéros
-de § y renvoient). Les textes à coller sont en anglais, tels quels, dans les
-blocs de code.
+complète, `-Pplay=true`) ; repris le 22/11 après la recette sur émulateurs
+(note aux examinateurs de 3.2, vidéo de 3.9). Ce fichier dit **quoi saisir ou
+cocher**, formulaire par formulaire ; le pourquoi est dans
+`PUBLICATION_PLAY_STORE.md` (les numéros de § y renvoient). Les textes à coller
+sont en anglais, tels quels, dans les blocs de code.
 
 La Play Console change souvent ses intitulés (« App access » s'appelle
 « Sign-in details » depuis octobre 2026, par exemple). Les intitulés ci-dessous
@@ -40,7 +41,7 @@ l'AAB : voir « Si le relais arrive » à la fin.
 | Icône 512 × 512 | `play/icone-512.png` |
 | Image de présentation 1024 × 500 | `play/fiche/<langue>/images/featureGraphic.png` |
 | Captures (8 par langue) | prises sur la construction Play, puis composées avec les légendes de `play/visuels/legendes.json` (dossiers `en-US` et `iw-IL`) |
-| Une vidéo YouTube « non répertoriée », en deux séquences | à tourner : voir 3.9 |
+| Une vidéo YouTube « non répertoriée », en deux séquences | tournée et montée le 22/11 (`MyHitbodedut-foreground-services.mp4`) ; reste à la mettre en ligne : voir 3.9 |
 | Adresse de contact | `myhitbodedut26@gmail.com` |
 | Testeurs (adresses Gmail), facultatif | piste de test interne ou fermée ; **pas** de test fermé obligatoire : le compte est une organisation (§ 4) |
 
@@ -117,22 +118,40 @@ chemin ci-dessous pour la voir. Créer une entrée :
   libellés exacts de l'interface anglaise.
 
 ```
-No account or login is needed, and nothing is restricted. On first launch a short welcome appears: tap [Skip].
+No account or login is needed, and nothing is restricted. On first launch a short welcome appears: tap [Skip], then on the screen [Choose your version] tap [Classic].
 
 To see the morning gate at any time of day:
-1. Bottom bar: [Settings].
+1. On the [Today] screen, tap the sliders icon at the top right (Settings).
 2. Card [Where “I am with Hashem” stands]: tap [Preview the “I am with Hashem” screen now].
 3. The first time, a dialog titled [Display over other apps] explains the access. Tap [Continue], allow MyHitbodedut in the Android screen that opens, go back, and tap the button again.
 4. The gate appears over the home screen with the badge [PREVIEW, NO EFFECT]. [Close the preview] dismisses it.
 
 To see it act for real:
-1. [Settings], card [Permissions]: tap [Grant] for [Display over other apps] and for [Usage access]. Each shows an in-app disclosure first.
-2. Card [I am with Hashem]: turn the switch on, tap [Choose apps] and pick one app, and set [“I am with Hashem” hours] around the current time.
+1. Settings, card [Permissions]: tap [Grant] for [Usage access], and for [Display over other apps] if it is not granted yet. Each shows an in-app disclosure first.
+2. Card [I am with Hashem]: turn the switch on (Android asks to allow notifications: the gate keeps a permanent one), tap [Choose apps] and pick one app. [“I am with Hashem” hours] must include the current time: 6:00 AM to 11:00 AM by default.
 3. Open the app you picked: the gate appears in front of it.
 On Saturdays and Jewish festivals the gate is silent by default (card [Rhythm], [Shabbat and Yom Tov]).
 
 The gate is a self-discipline tool that users set up on their own phone, for themselves, and can switch off at any time (Settings, [I am with Hashem] switch). It monitors no one else, has a permanent notification and never hides. No usage data leaves the device.
 ```
+
+Si le champ refuse ce texte pour sa longueur, coller la version courte (moins
+de 500 caractères) ; le texte entier va alors dans la description de la vidéo :
+
+```
+No login is needed and nothing is restricted. First launch: tap [Skip], then [Classic]. To see the morning gate at any time of day: [Today] screen, sliders icon at the top right (Settings), card [Where “I am with Hashem” stands], [Preview the “I am with Hashem” screen now]; allow “Display over other apps” when asked, go back, tap again. The gate is a self-discipline tool the user sets up for themselves and can switch off at any time. Demo video: see the foreground service declaration.
+```
+
+**Vérifié le 22/11** : ce chemin a été rejoué mot pour mot par la recette
+(`.github/captures/recette.py`, passe `examinateur`) sur une application
+neuve, en anglais, sur la construction Play publiée (release, R8), sous
+Android 13, 14, 15 et 16. Chaque libellé entre crochets est cherché à
+l'écran ; aucun ne manque. Ce que la note du 14/11 disait de faux est
+corrigé : les réglages ne sont plus dans la barre du bas (c'est l'icône à
+curseurs en haut à droite du Jour), et depuis les cinq versions de
+l'application le premier lancement passe par l'écran [Choose your version].
+À rejouer après tout changement de l'accueil ou des réglages
+(`.github/qa/demande.json`, passe `examinateur`).
 
 Le même texte sert de description à la vidéo (3.9).
 
@@ -285,16 +304,43 @@ retire quand les deux sont coupées. Si Android le refuse (relance au
 démarrage du téléphone, interdite à ce type depuis Android 15), la séance
 continue sous l'usage spécial seul.
 
-**La vidéo** (YouTube, *Unlisted*, téléphone en anglais, construction Play,
-aussi courte que possible : chaque séquence en moins de deux minutes),
-deux séquences à la suite :
+**La vidéo** — tournée et montée le 22/11 : `MyHitbodedut-foreground-services.mp4`
+(4 min 45 s, remise avec la recette ; aussi sur la branche `claude/video-play`,
+avec chaque séquence en vidéo séparée).
+Elle est filmée sur un émulateur Android 14, en anglais, sur la construction
+Play publiée (release, R8), par la passe `video` de la recette, puis montée
+par `tools/montage_video_play.py` sous un bandeau de légendes en anglais.
+Deux séquences à la suite, dans l'ordre de la note de 3.2 :
 
-1. *Session* — onglet [Today] ; choisir une durée et un morceau ; lancer la
-   hitbodedout ; éteindre l'écran ; le rallumer : la notification montre le
-   temps restant et la musique continue.
-2. *Morning gate* — le parcours « To see it act for real » de 3.2, en montrant
-   les deux fenêtres de divulgation, l'écran de garde devant l'application
-   choisie, puis [Done without the phone] et l'interrupteur qui coupe la barrière.
+1. *Session timer* — le Jour ; le volet de départ ; un morceau choisi dans
+   l'écran Musique ; la hitbodedout lancée ; la notification du service ;
+   l'écran éteint trente secondes puis rallumé : le décompte a avancé, la
+   notification est toujours là.
+2. *Morning gate* — les deux accès accordés, chacun après sa fenêtre de
+   divulgation ; le mode allumé ; Chrome choisi ; l'écran de garde devant
+   Chrome ; [Done without the phone] ; l'interrupteur qui coupe le mode.
+
+Ce qu'elle ne montre pas, et que ses cartons disent : le son (l'émulateur
+n'en a pas). Si Google demande à entendre la musique écran éteint, retourner
+la première séquence sur un téléphone (enregistreur d'écran d'Android, avec
+le son du média).
+
+**À faire par le propriétaire** : la mettre sur YouTube, visibilité *Non
+répertoriée* (*Unlisted*), « pas conçue pour les enfants ». Le même lien va
+dans les blocs A et B.
+
+- Titre :
+
+```
+MyHitbodedut – foreground services demo (session timer, morning gate)
+```
+
+- Description : le texte de 3.2, en entier.
+
+À retourner quand l'accueil, les réglages ou l'écran de garde changent :
+`.github/qa/demande.json` → `{ "api": 34, "nom": "api34-film", "passes": "video" }`
+sur une branche `claude/…`, puis
+`python3 tools/montage_video_play.py <dossier des films> MyHitbodedut-foreground-services.mp4`.
 
 ### 3.10 Position exacte (`ACCESS_FINE_LOCATION`)
 

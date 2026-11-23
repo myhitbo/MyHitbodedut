@@ -273,19 +273,41 @@ def lancer(attente=4.0):
         toucher(rid="onboarding_skip")
 
 
-def lire_prefs():
-    return adb("exec-out", "run-as", PKG, "cat", PREFS, binary=True).decode("utf-8", "replace")
+DEBOGABLE = True
+JOURNAL = "shared_prefs/myhitbodedut-journal.xml"
 
 
-def ecrire_prefs(contenu):
-    sh(f"run-as {PKG} mkdir -p shared_prefs")
-    adb("shell", f"run-as {PKG} sh -c 'cat > {PREFS}'", input=contenu.encode("utf-8"))
+def dossier_app():
+    return f"/data/data/{PKG}"
 
 
-def regler(valeurs):
+def lire_prefs(fichier=None):
+    fichier = fichier or PREFS
+    if DEBOGABLE:
+        return adb("exec-out", "run-as", PKG, "cat", fichier, binary=True).decode("utf-8", "replace")
+    return adb("exec-out", "cat", f"{dossier_app()}/{fichier}", binary=True).decode("utf-8", "replace")
+
+
+def ecrire_prefs(contenu, fichier=None):
+    """Sur l'edition publiee (release, non debogable : recette du 22/11), run-as est refuse.
+    On ecrit alors en root, puis on rend le fichier a l'application (proprietaire et contexte
+    SELinux), sans quoi elle ne le lit pas."""
+    fichier = fichier or PREFS
+    if DEBOGABLE:
+        sh(f"run-as {PKG} mkdir -p shared_prefs")
+        adb("shell", f"run-as {PKG} sh -c 'cat > {fichier}'", input=contenu.encode("utf-8"))
+        return
+    d = dossier_app()
+    sh(f"mkdir -p {d}/shared_prefs")
+    adb("shell", f"cat > {d}/{fichier}", input=contenu.encode("utf-8"))
+    proprio = sh(f"stat -c %u:%g {d}").strip()
+    sh(f"chown -R {proprio} {d}/shared_prefs && chmod 771 {d}/shared_prefs && chmod 660 {d}/{fichier} && restorecon -R {d}/shared_prefs")
+
+
+def regler(valeurs, fichier=None):
     """Ecrit des preferences (application arretee). valeurs : nom -> (type, valeur)."""
     arreter()
-    xml = lire_prefs()
+    xml = lire_prefs(fichier)
     if "<map" not in xml:
         xml = "<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<map>\n</map>\n"
     for nom, (typ, val) in valeurs.items():
@@ -296,8 +318,8 @@ def regler(valeurs):
         else:
             ligne = f'    <{typ} name="{nom}" value="{val}" />'
         xml = xml.replace("</map>", ligne + "\n</map>")
-    ecrire_prefs(xml)
-    log("  preferences :", lire_prefs().replace("\n", " ")[:600])
+    ecrire_prefs(xml, fichier)
+    log("  preferences :", lire_prefs(fichier).replace("\n", " ")[:600])
 
 
 def langue(etiquette):
@@ -357,8 +379,9 @@ def ouvrir_priere(fr=True):
 
 # --- Le parcours -----------------------------------------------------------
 
-def main():
-    global PKG, ROOT, W, H
+def racine_adb():
+    """Le paquet, l'ecran, root : avant tout parcours."""
+    global PKG, ROOT, W, H, DEBOGABLE
     PKG = paquet()
     log("paquet :", PKG)
     W, H = taille_ecran()
@@ -369,16 +392,26 @@ def main():
     adb("wait-for-device")
     ROOT = sh("id -u").strip() == "0"
     log("root :", ROOT)
+    DEBOGABLE = "uid=" in sh(f"run-as {PKG} id")
+    log("debogable :", DEBOGABLE)
 
+
+def initialiser(langue_app="fr"):
+    """La presentation passee, la version Classique, la langue : l'etat de depart des parcours."""
     for perm in ("android.permission.POST_NOTIFICATIONS",):
         sh(f"pm grant {PKG} {perm}")
     # Pas de presentation au premier lancement (Store.KEY_ONBOARDED, Onboarding.VERSION = 2).
     # La version Classique (VersionApp, 17/11) : sans elle, l'ecran du choix de la version couvre l'accueil.
-    regler({"onboarded_version": ("int", 2), "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+    regler({"onboarded_version": ("int", 2), "langue_app": ("string", langue_app), "version_app": ("string", "classique")})
     # Un premier lancement, puis la langue : posee avant, elle n'etait pas
     # gardee et l'application s'ouvrait en anglais.
     lancer()
-    langue("fr")
+    langue(langue_app)
+
+
+def main():
+    racine_adb()
+    initialiser()
 
     # Sur demande (CAPTURES_TAILLES_SEULES=1) : le seul passage des tailles,
     # deux fois plus court que le parcours entier.
@@ -951,7 +984,7 @@ def main():
             brut = _json.dumps(jours).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
             xml = ("<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<map>\n"
                    f"    <string name=\"days\">{brut}</string>\n</map>\n")
-            adb("shell", f"run-as {PKG} sh -c 'cat > shared_prefs/myhitbodedut-journal.xml'", input=xml.encode("utf-8"))
+            ecrire_prefs(xml, JOURNAL)
 
         def fermer_trophees(code):
             # Le journal de demonstration fait gagner des trophees : leurs fenetres s'ouvrent
