@@ -67,6 +67,8 @@ demarrer() {
   echo "démarré"
   xcrun simctl ui "$udid" appearance light || true
   xcrun simctl ui "$udid" content_size large || true
+  # Sans la présentation du clavier glissé (« Speed up your typing… »), qui couvrait la recherche.
+  xcrun simctl spawn "$udid" defaults write com.apple.Preferences DidShowContinuousPathIntroduction -bool true || true
   xcrun simctl install "$udid" "$APP" || echo "::error::installation refusée"
   xcrun simctl get_app_container "$udid" "$ID_APP" || echo "::error::l'app n'est pas installée"
   barre "$udid"
