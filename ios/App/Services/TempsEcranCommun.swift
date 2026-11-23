@@ -57,10 +57,10 @@ enum TempsEcranCommun {
             let pose = estPose(nom)
             if veut && !pose, let choisie {
                 poser(nom, selection: choisie)
-                changes.append((nom, true))
+                changes.append((nom: nom, pose: true))
             } else if !veut && pose {
                 lever(nom)
-                changes.append((nom, false))
+                changes.append((nom: nom, pose: false))
             }
         }
         return changes
