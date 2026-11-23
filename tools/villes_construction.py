@@ -10,7 +10,7 @@ construction. Chaque ville est désignée par son identifiant GeoNames, jamais
 par son nom : « Lakewood » ou « London » existent en plusieurs pays.
 
 Coordonnées et fuseau IANA viennent tels quels du fichier ; rien n'est tapé à
-la main. Le nom hébreu est choisi parmi les noms alternatifs que GeoNames
+la main (seul un fuseau renommé depuis peu reprend son ancien nom : FUSEAUX_ANCIENS). Le nom hébreu est choisi parmi les noms alternatifs que GeoNames
 donne pour la ville, et l'outil échoue s'il n'y figure pas. Les noms
 français et anglais sont des exonymes courants.
 
@@ -22,6 +22,11 @@ au niveau de la mer (voir ZMANIM.md), l'altitude n'y entre pas.
 import json
 import os
 import sys
+
+# Les fuseaux renommés par l'IANA, ramenés à l'ancien nom (23/11/2026) : « Europe/Kyiv » date de
+# tzdata 2022b, et les téléphones sous Android 8 et 9 ne le connaissent pas (ZoneId.of y lève une
+# exception). L'ancien nom reste valide partout. VillesTest refuse le retour d'un nom récent.
+FUSEAUX_ANCIENS = {"Europe/Kyiv": "Europe/Kiev"}
 
 # (identifiant GeoNames, hébreu, français, anglais), dans l'ordre affiché :
 # Israël d'abord, puis la diaspora par région.
@@ -101,7 +106,7 @@ def main(chemin):
             "latitude": c["latitude"],
             "longitude": c["longitude"],
             "altitude": 0,
-            "fuseau": c["timezone"],
+            "fuseau": FUSEAUX_ANCIENS.get(c["timezone"], c["timezone"]),
         })
     racine = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
     cible = os.path.join(racine, "android", "app", "src", "main", "res", "raw", "villes.json")

@@ -124,8 +124,28 @@ object Zmanim {
     val ALLUMAGES = listOf(18, 20, 22, 30, 40)
     const val ALLUMAGE_DEFAUT = 18
 
+    /**
+     * Les identifiants de fuseau renommés par l'IANA, vers l'ancien nom que tout téléphone connaît.
+     * « Europe/Kyiv » date de tzdata 2022b : Android 8 et 9, et les téléphones plus récents dont
+     * les données horaires n'ont pas suivi, ne connaissent que « Europe/Kiev ».
+     */
+    private val FUSEAUX_RENOMMES = mapOf("Europe/Kyiv" to "Europe/Kiev")
+
+    /**
+     * Le fuseau d'un lieu, sans jamais lever d'exception (relecture du 23/11). ZoneId.of en lève
+     * une pour un identifiant que le téléphone ne connaît pas : choisir Ouman ou Kiev faisait
+     * tomber l'application sous Android 8 et 9, puis à chaque lancement (l'alerte de Chabbat
+     * recalculait avec le lieu enregistré). Un identifiant inconnu prend son ancien nom, sinon
+     * le fuseau du téléphone.
+     */
+    fun fuseau(id: String): ZoneId =
+        runCatching { ZoneId.of(id) }.getOrNull()
+            ?: FUSEAUX_RENOMMES[id]?.let { runCatching { ZoneId.of(it) }.getOrNull() }
+            ?: ZoneId.systemDefault()
+
     fun calendrier(lieu: Lieu, date: LocalDate): ComplexZmanimCalendar {
-        val fuseau = TimeZone.getTimeZone(lieu.fuseau)
+        // Par le même chemin : TimeZone.getTimeZone, lui, rend GMT en silence pour un identifiant inconnu.
+        val fuseau = TimeZone.getTimeZone(fuseau(lieu.fuseau))
         val geo = GeoLocation(lieu.nom, lieu.latitude, lieu.longitude, lieu.altitude, fuseau)
         return ComplexZmanimCalendar(geo).apply {
             calendar = GregorianCalendar(fuseau).apply {
@@ -144,7 +164,7 @@ object Zmanim {
     /** Les quinze zmanim du profil de [nusah] pour [date] au [lieu]. */
     fun jour(lieu: Lieu, date: LocalDate, nusah: String = NUSAH_COMMUN): List<Zman> {
         val c = calendrier(lieu, date)
-        val zone = ZoneId.of(lieu.fuseau)
+        val zone = fuseau(lieu.fuseau)
         // getSolarMidnight prend le milieu entre chatsot d'aujourd'hui et de
         // demain, sans vérifier qu'ils existent : au-delà du cercle polaire,
         // l'un des deux manque et la bibliothèque lèverait une exception là où
@@ -165,7 +185,7 @@ object Zmanim {
     /** L'allumage des bougies ce jour-là au [lieu], [minutes] avant la chki'a. */
     fun allumage(lieu: Lieu, date: LocalDate, minutes: Int): Zman {
         val c = calendrier(lieu, date).apply { candleLightingOffset = minutes.toDouble() }
-        return zman("allumage", methodeAllumage(minutes), ZoneId.of(lieu.fuseau)) { c.candleLighting }
+        return zman("allumage", methodeAllumage(minutes), fuseau(lieu.fuseau)) { c.candleLighting }
     }
 
     /**
@@ -177,7 +197,7 @@ object Zmanim {
      */
     fun hamets(lieu: Lieu, date: LocalDate, nusah: String = NUSAH_COMMUN): List<Zman> {
         val c = calendrier(lieu, date)
-        val zone = ZoneId.of(lieu.fuseau)
+        val zone = fuseau(lieu.fuseau)
         val edot = nusah == "edot"
         val mga = if (edot) Methode("mga_72_zmaniyot", "72") else Methode("mga_72", "72")
         fun heures(debut: Date?, heure: Long, n: Int): Date? =

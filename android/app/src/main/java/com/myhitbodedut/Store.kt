@@ -516,8 +516,11 @@ object Store {
         val lat = p.getString(KEY_LIEU_LAT, null)?.toDoubleOrNull() ?: return null
         val lon = p.getString(KEY_LIEU_LON, null)?.toDoubleOrNull() ?: return null
         val fuseau = p.getString(KEY_LIEU_FUSEAU, null) ?: return null
+        // Un identifiant de fuseau que ce téléphone ne connaît pas (sauvegarde reprise sur un appareil
+        // plus ancien, « Europe/Kyiv » avant Android 10) est ramené à un fuseau qu'il connaît : tout
+        // ce qui lit le lieu reçoit un identifiant utilisable (Zmanim.fuseau, relecture du 23/11).
         return Zmanim.Lieu(p.getString(KEY_LIEU_NOM, "").orEmpty(), lat, lon,
-            p.getString(KEY_LIEU_ALT, null)?.toDoubleOrNull() ?: 0.0, fuseau)
+            p.getString(KEY_LIEU_ALT, null)?.toDoubleOrNull() ?: 0.0, Zmanim.fuseau(fuseau).id)
     }
 
     /** Quand le lieu a été enregistré (millisecondes), 0 s'il date d'avant le 02/11. */
@@ -671,21 +674,36 @@ object Store {
         prefs(context).edit().putBoolean(KEY_VOL_RAPPELS_ACTIFS, actifs).apply()
     }
 
-    /** Les rappels du vol enregistré, une ligne par rappel : « TYPE|instant|prière|limite|omer » (millisecondes). */
-    fun volRappels(context: Context): List<VolRappels.Rappel> =
-        prefs(context).getString(KEY_VOL_RAPPELS, "").orEmpty().lines().mapNotNull { ligne ->
+    /**
+     * Les rappels du vol enregistré, une ligne par rappel (millisecondes) :
+     * « TYPE|instant|prière|limite|omer|chema|chemaCle|chemaAutre ».
+     *
+     * Les trois derniers champs (la fin du Chema du rite, sa clé, celle de l'autre avis, audit du
+     * 16/11) n'étaient pas écrits : la notification, qui relit les rappels d'ici, annonçait pour
+     * fin du Chema l'heure du rappel lui-même, trente minutes trop tôt, toujours « selon le Gra »,
+     * et « — » pour l'autre avis (relecture du 23/11). Les lignes à cinq champs d'un vol
+     * enregistré avant se lisent encore.
+     */
+    fun volRappels(context: Context): List<VolRappels.Rappel> = volRappelsDe(prefs(context).getString(KEY_VOL_RAPPELS, "").orEmpty())
+
+    fun volRappelsDe(texte: String): List<VolRappels.Rappel> =
+        texte.lines().mapNotNull { ligne ->
             val c = ligne.split("|")
-            if (c.size != 5) return@mapNotNull null
+            if (c.size != 5 && c.size != 8) return@mapNotNull null
             val type = runCatching { VolRappels.Type.valueOf(c[0]) }.getOrNull() ?: return@mapNotNull null
             val t = c[1].toLongOrNull() ?: return@mapNotNull null
-            VolRappels.Rappel(type, java.time.Instant.ofEpochMilli(t), c[2].ifEmpty { null },
-                c[3].toLongOrNull()?.let(java.time.Instant::ofEpochMilli), c[4].toIntOrNull() ?: 0)
+            fun instant(i: Int) = c.getOrNull(i)?.toLongOrNull()?.let(java.time.Instant::ofEpochMilli)
+            VolRappels.Rappel(type, java.time.Instant.ofEpochMilli(t), c[2].ifEmpty { null }, instant(3), c[4].toIntOrNull() ?: 0,
+                chema = instant(5), chemaCle = c.getOrNull(6)?.ifEmpty { null }, chemaAutre = instant(7))
         }
 
+    fun volRappelsEnTexte(rappels: List<VolRappels.Rappel>): String = rappels.joinToString("\n") { r ->
+        "${r.type.name}|${r.instant.toEpochMilli()}|${r.priere.orEmpty()}|${r.limite?.toEpochMilli() ?: ""}|${r.omer}" +
+            "|${r.chema?.toEpochMilli() ?: ""}|${r.chemaCle.orEmpty()}|${r.chemaAutre?.toEpochMilli() ?: ""}"
+    }
+
     fun setVolRappels(context: Context, rappels: List<VolRappels.Rappel>) {
-        prefs(context).edit().putString(KEY_VOL_RAPPELS, rappels.joinToString("\n") { r ->
-            "${r.type.name}|${r.instant.toEpochMilli()}|${r.priere.orEmpty()}|${r.limite?.toEpochMilli() ?: ""}|${r.omer}"
-        }).apply()
+        prefs(context).edit().putString(KEY_VOL_RAPPELS, volRappelsEnTexte(rappels)).apply()
     }
 
     /** L'instant du dernier rappel montré : un rappel n'est pas montré deux fois. */

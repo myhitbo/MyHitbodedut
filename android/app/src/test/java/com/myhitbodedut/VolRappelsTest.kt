@@ -219,4 +219,34 @@ class VolRappelsTest {
         val gradle = java.io.File("build.gradle.kts").readText()
         assertTrue(gradle.contains("?: ((project.findProperty(\"play\") as String?) != \"true\")"))
     }
+
+    /**
+     * Relecture du 23/11 : la notification relit les rappels enregistrés. Les trois champs du Chema
+     * n'y étaient pas écrits : elle annonçait pour fin du Chema l'heure du rappel lui-même, toujours
+     * « selon le Gra », et « — » pour l'autre avis.
+     */
+    @Test
+    fun `les rappels enregistres gardent la fin du Chema, son rite et l'autre avis`() {
+        val chema = VolRappels.Rappel(
+            VolRappels.Type.CHEMA_FIN, Instant.ofEpochMilli(1_000), "chaharit", Instant.ofEpochMilli(2_000), 0,
+            chema = Instant.ofEpochMilli(3_000), chemaCle = "szks_mga", chemaAutre = Instant.ofEpochMilli(4_000),
+        )
+        val omer = VolRappels.Rappel(VolRappels.Type.OMER, Instant.ofEpochMilli(5_000), omer = 12)
+        assertEquals(listOf(chema, omer), Store.volRappelsDe(Store.volRappelsEnTexte(listOf(chema, omer))))
+        // Les rappels d'un vol calculé gardent tout à travers l'enregistrement (à la milliseconde, comme il les écrit).
+        fun ms(t: Instant?) = t?.let { Instant.ofEpochMilli(it.toEpochMilli()) }
+        var avecChema = 0
+        trajets.forEach { p ->
+            listOf(Zmanim.NUSAH_COMMUN, "edot").forEach { nusah ->
+                val calcules = VolRappels.rappels(Vol.calculer(p), false, nusah)
+                    .map { it.copy(instant = ms(it.instant)!!, limite = ms(it.limite), chema = ms(it.chema), chemaAutre = ms(it.chemaAutre)) }
+                assertEquals(calcules, Store.volRappelsDe(Store.volRappelsEnTexte(calcules)))
+                avecChema += calcules.count { it.chema != null && it.chemaCle != null }
+            }
+        }
+        assertTrue("aucun trajet de test ne porte la fin du Chema", avecChema > 0)
+        // Une ligne d'un vol enregistré avant (cinq champs) se lit encore ; une ligne abîmée est écartée.
+        assertEquals(listOf(omer), Store.volRappelsDe("OMER|5000|||12"))
+        assertTrue(Store.volRappelsDe("OMER|5000|||12|x").isEmpty())
+    }
 }

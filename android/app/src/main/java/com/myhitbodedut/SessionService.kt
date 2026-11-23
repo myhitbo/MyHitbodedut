@@ -151,6 +151,8 @@ class SessionService : Service() {
         enMarche = true
         lecteur = music
         garderEveille()
+        // Si le service est tué avant le terme, une alarme clôt la séance à sa place (SessionFilet).
+        SessionFiletReceiver.poser(this)
         // Ne pas déranger pendant la séance (14/10), si choisi.
         NePasDeranger.activer(this)
         ensureMusic()
@@ -371,6 +373,7 @@ class SessionService : Service() {
 
     private fun stopSelfAndClear() {
         relacherEveil()
+        SessionFiletReceiver.annuler(this)
         NePasDeranger.retablir(this)
         music.stop()
         ambiance.stop()

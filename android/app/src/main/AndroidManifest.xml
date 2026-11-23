@@ -415,6 +415,11 @@
             android:name=".ReminderReceiver"
             android:exported="false" />
 
+        <!-- Le filet de la fin de séance, si le service est tué avant le terme (23/11). -->
+        <receiver
+            android:name=".SessionFiletReceiver"
+            android:exported="false" />
+
         <!-- « Chabbat dans 3 h » (13/10). -->
         <receiver
             android:name=".ChabbatAlerteReceiver"

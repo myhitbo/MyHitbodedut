@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         // Rouverte depuis les Récents : Android rejoue l'intention d'origine, extras compris, et la
         // note d'une ancienne séance se reproposait à chaque fois (comme SessionActivity.lireDemande).
         if (intent != null && intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) intent.removeExtra(EXTRA_ASK_NOTE)
+        // L'accueil est ouvert aux autres applications (lanceur) : le jour demandé est une date, ou rien.
+        intent?.getStringExtra(EXTRA_ASK_NOTE)?.let { jour ->
+            if (runCatching { java.time.LocalDate.parse(jour) }.isFailure) intent.removeExtra(EXTRA_ASK_NOTE)
+        }
         // Une autre version que Classique est choisie (VersionApp, 17/11) : son accueil prend la place.
         if (VersionApp.rediriger(this)) return
         setContentView(R.layout.activity_main)
