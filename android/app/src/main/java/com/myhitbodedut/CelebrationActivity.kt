@@ -49,10 +49,12 @@ class CelebrationActivity : AppCompatActivity() {
      * (relecture du 23/11) : le carnet le préremplissait — note, gratitude, humeur — sans le code,
      * à qui lançait une seconde séance sur un téléphone déverrouillé. La fenêtre de note, elle,
      * demande le code (NoteDialog.show) : c'est par le journal qu'on complète alors la page.
+     *
+     * Décidé une fois par bravo, à sa première création, puis porté par l'état gardé : le brouillon
+     * que cette page écrit à chaque frappe compte comme un écrit, et l'écran recréé (thème sombre,
+     * taille du texte, processus tué en arrière-plan) se serait fermé sa propre page en pleine saisie.
      */
-    private val dateNote: String? by lazy {
-        intent.getStringExtra(EXTRA_NOTE_DATE)?.takeIf { !annulee && !(VerrouJournal.actif(this) && NoteDialog.dejaEcrit(this, it)) }
-    }
+    private var dateNote: String? = null
 
     /** L'humeur choisie après la séance, de 1 à 5 ; 0, aucune. */
     private var apres = 0
@@ -75,6 +77,9 @@ class CelebrationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dateNote = if (savedInstanceState != null) savedInstanceState.getString(ETAT_DATE)
+        else intent.getStringExtra(EXTRA_NOTE_DATE)
+            ?.takeIf { !annulee && !(VerrouJournal.actif(this) && NoteDialog.dejaEcrit(this, it)) }
         setContentView(R.layout.activity_celebration)
         // Petit écran (15/10) : la scène, mesurée sans limite dans le défilement, prenait la
         // hauteur de l'image et repoussait « Bravo » et « Continuer » hors de l'écran.
@@ -141,6 +146,7 @@ class CelebrationActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putString(ETAT_DATE, dateNote)
         outState.putInt(ETAT_APRES, apres)
         outState.putBoolean(ETAT_SUITE, findViewById<View>(R.id.celebration_suite).visibility == View.VISIBLE)
     }
@@ -440,6 +446,7 @@ class CelebrationActivity : AppCompatActivity() {
 
         private const val ETAT_APRES = "apres"
         private const val ETAT_SUITE = "suite"
+        private const val ETAT_DATE = "date_note"
 
         /** La hauteur de la scène quand le carnet est ouvert. */
         private const val PETITE_SCENE_DP = 132

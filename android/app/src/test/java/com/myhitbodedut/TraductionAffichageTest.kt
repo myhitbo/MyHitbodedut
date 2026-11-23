@@ -156,7 +156,7 @@ class TraductionAffichageTest {
             assertTrue("$it : attachBaseContext manque",
                 lire("src/main/java/com/myhitbodedut/$it").contains("super.attachBaseContext(LangueApp.envelopper(base))"))
         }
-        listOf("BootReceiver.kt", "Reminder.kt", "StreakWidget.kt").forEach {
+        listOf("BootReceiver.kt", "Reminder.kt", "StreakWidget.kt", "ChabbatAlerte.kt", "SessionFilet.kt").forEach {
             assertTrue("$it : contexte non enveloppé",
                 lire("src/main/java/com/myhitbodedut/$it").contains("LangueApp.envelopper("))
         }

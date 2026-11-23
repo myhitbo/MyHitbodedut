@@ -34,7 +34,7 @@ Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
 | Recette sur émulateurs, Android 13 à 16 | 22/11 | ci-dessous |
 | Six corrections trouvées par la recette | 22/11 | PR #50 « Recette avant Google Play », reprise dans la branche du 23/11 (§ 1) |
 | PR #48, #49 et #50 réunies, relecture du code, vingt et une corrections | 23/11 | branche `ccr-95e5794e-1ej68l` ; ci-dessous |
-| AAB signé `play-5` (versionCode 6, version 1.5) | 23/11 | construit sur cette branche, avec toutes les corrections : § 1. **Ne pas envoyer** `play-3` (17/11, aucune correction) ni `play-4` (23/11, construit avant la dernière retouche) |
+| AAB signé `play-6` (versionCode 7, version 1.6) | 23/11 | construit sur cette branche, avec toutes les corrections : § 1. **Ne pas envoyer** `play-3` (17/11, aucune correction), ni `play-4` et `play-5` (23/11, construits avant la contre-relecture) |
 | Note aux examinateurs, rejouée mot pour mot | 22/11 | `play/CONSOLE.md` § 3.2 |
 | Vidéo des services de premier plan | 22/11 | `MyHitbodedut-foreground-services.mp4`, `play/CONSOLE.md` § 3.9 |
 
@@ -52,7 +52,7 @@ sont réunies sur la branche `ccr-95e5794e-1ej68l`, sans conflit. Le code a
 ensuite été relu en quatre passes (services et arrière-plan ; données et
 réglages ; accueils et séance ; vol, lieu, zmanim et textes), à la recherche
 de ce qu'un parcours d'émulateur ne voit pas. Chaque constat a été vérifié
-dans le code avant d'être corrigé. Sur la construction Play : 937 tests,
+dans le code avant d'être corrigé. Sur la construction Play : 939 tests,
 lint sans erreur ; 353 tests du site.
 
 Trois plantages :
@@ -100,6 +100,24 @@ Comportement :
 19. « Mon parcours » relisait tout le journal une fois par jour d'historique.
 20. Le partage du grade pouvait faire tomber l'écran (cache plein).
 21. Fiche Play : elle annonçait trois langues ; l'application en parle cinq.
+
+Ces corrections ont ensuite été relues par un relecteur qui ne les avait pas
+écrites, à la recherche de ce qu'elles auraient cassé. Il n'a trouvé ni
+plantage ni perte de données, et trois retouches à faire, faites dans
+`play-6` :
+
+- la correction 4 fermait la page du carnet en pleine saisie quand l'écran du
+  bravo était recréé (passage au thème sombre, taille du texte, application
+  tuée en arrière-plan), journal verrouillé : ce qui était tapé restait au
+  brouillon, sans être enregistré. La page se décide maintenant une fois par
+  bravo ;
+- la correction 10 valait aussi pour l'icône, sur les accueils Sérénité,
+  Bento, Instant et Pile : quand l'application avait été ouverte par une
+  notification, toucher l'icône fermait l'écran en cours (une saisie de vol
+  non enregistrée avec lui). Elle ne vaut plus que pour les notifications et
+  la vignette ;
+- la correction 15 annonçait un trophée dans la langue du téléphone, et non
+  celle de l'application, avant Android 13.
 
 Relevé, **non corrigé** : décisions du propriétaire, ou trop peu sûr pour un
 changement de dernière heure.
@@ -169,7 +187,7 @@ tests à l'appui :
 quel : le premier lancement propose les cinq versions de l'application, et les
 tests de Google peuvent passer par des appareils virtuels (Firebase Test Lab,
 qui fait tourner le rapport de pré-lancement, en propose). Elles sont toutes
-dans `play-5`.
+dans `play-6`.
 
 Ce que la recette ne remplace pas : un vrai téléphone — le son, la veille
 profonde, les surcouches Samsung et Xiaomi qui arrêtent les services — et,
@@ -179,9 +197,9 @@ dit rien d'un vrai processeur graphique, dans un sens comme dans l'autre.
 
 ## 1. Récupérer le paquet et fusionner (≈ 10 min)
 
-1. **Le paquet à envoyer** : GitHub → *Actions → Play* → l'exécution n° 5 →
-   artefact `play-5` : `MyHitbodedut-5.aab` (versionCode 6, version 1.5) et
-   `mapping-5.txt`. Il est construit sur la branche `ccr-95e5794e-1ej68l`, qui
+1. **Le paquet à envoyer** : GitHub → *Actions → Play* → l'exécution n° 6 →
+   artefact `play-6` : `MyHitbodedut-6.aab` (versionCode 7, version 1.6) et
+   `mapping-6.txt`. Il est construit sur la branche `ccr-95e5794e-1ej68l`, qui
    réunit les PR #48, #49 et #50 et les corrections du 23/11 ; le flux a refait
    les tests et signé avec la clé d'envoi. Un artefact se garde 30 jours.
 2. **Fusionner cette branche dans `main`**, pour que `main` soit le code de la

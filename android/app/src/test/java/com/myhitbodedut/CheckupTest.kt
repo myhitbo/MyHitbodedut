@@ -94,7 +94,8 @@ class CheckupTest {
         assertTrue(service.substringAfter("enMarche = true").substringBefore("return START_STICKY").contains("SessionFiletReceiver.poser(this)"))
         assertTrue(service.substringAfter("private fun stopSelfAndClear()").substringBefore("stopSelf()").contains("SessionFiletReceiver.annuler(this)"))
         val filet = lire("SessionFilet.kt")
-        assertTrue(filet.contains("SessionService.reconcilier(context)"))
+        // Dans la langue de l'application avant Android 13 : la séance inscrite peut annoncer un trophée.
+        assertTrue(filet.contains("SessionService.reconcilier(LangueApp.envelopper(context))"))
         assertTrue(filet.contains("Alarme.poser(") && filet.contains("Alarme.annuler("))
         assertTrue(java.io.File("src/main/AndroidManifest.xml").readText().contains("android:name=\".SessionFiletReceiver\""))
         // reconcilier ne fait rien tant que le service vit : l'alarme d'une séance prolongée est sans effet.

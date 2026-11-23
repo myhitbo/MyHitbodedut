@@ -50,11 +50,18 @@ enum class VersionApp(
          */
         fun rediriger(activite: Activity): Boolean {
             val cible = courante(activite).accueil ?: return false
-            // CLEAR_TOP : l'accueil de cette version déjà ouvert dans la tâche est repris à neuf, avec
-            // l'intention reçue, au lieu d'en recevoir un second par-dessus (relecture du 23/11).
+            // CLEAR_TOP, depuis une notification ou une vignette : l'accueil de cette version déjà
+            // ouvert dans la tâche est repris à neuf, avec l'intention reçue, au lieu d'en recevoir
+            // un second par-dessus (relecture du 23/11). Pas depuis l'icône : sur une tâche ouverte
+            // par une notification, Android repose MainActivity au-dessus de l'écran en cours, et
+            // CLEAR_TOP aurait fermé cet écran — une saisie en cours avec lui.
+            val recue = activite.intent
+            val icone = recue?.action == Intent.ACTION_MAIN && recue.hasCategory(Intent.CATEGORY_LAUNCHER)
             activite.startActivity(
-                Intent(activite, cible).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .apply { activite.intent?.extras?.let(::putExtras) }
+                Intent(activite, cible).apply {
+                    if (!icone) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    recue?.extras?.let(::putExtras)
+                }
             )
             activite.overridePendingTransition(0, 0)
             activite.finish()

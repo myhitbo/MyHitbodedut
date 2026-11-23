@@ -22,7 +22,9 @@ import android.content.Intent
 class SessionFiletReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        runCatching { SessionService.reconcilier(context) }
+        // Dans la langue de l'application (LangueApp), comme BootReceiver : la séance inscrite ici
+        // peut annoncer un trophée, et les noms des canaux de notification sont réécrits.
+        runCatching { SessionService.reconcilier(LangueApp.envelopper(context)) }
     }
 
     companion object {
