@@ -19,7 +19,7 @@ public struct JournalBarriereVue: View {
                 Text(vide, traducteur: traducteur)
                     .font(.subheadline)
                     .foregroundStyle(Teinte(.muted))
-                    .listRowBackground(Teinte(.card))
+                    .listRowBackground(Rectangle().fill(Teinte(.card)))
             }
             ForEach(modele.lignes) { ligne in
                 HStack(alignment: .firstTextBaseline, spacing: 12) {
@@ -33,7 +33,7 @@ public struct JournalBarriereVue: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .accessibilityElement(children: .combine)
-                .listRowBackground(Teinte(.card))
+                .listRowBackground(Rectangle().fill(Teinte(.card)))
             }
         }
         .scrollContentBackground(.hidden)

@@ -34,6 +34,8 @@ final class ModelesApp {
     let chemin: CheminModele
     let zmanim: ZmanimModele
     let reglages: ReglagesModele
+    /// La barrière « Je suis avec Hachem » : Temps d'écran, l'instantané des extensions (Services/TempsEcran.swift).
+    let tempsEcran: TempsEcranApp
 
     private init(magasin: Magasin, paquet: URL, traducteur: Traducteur) {
         self.magasin = magasin
@@ -64,14 +66,17 @@ final class ModelesApp {
                                      ambiance: SortieAmbianceSysteme())
         self.musique = musique
         seance = SeanceEnCours(magasin: magasin, horloge: horloge, musique: musique, notificateur: notificateur)
+        let tempsEcran = TempsEcranApp(magasin: magasin, horloge: horloge, traducteur: traducteur, paquet: paquet,
+                                       palettes: (try? lecteur("palettes.json")).flatMap { try? Palettes.lire($0) })
+        self.tempsEcran = tempsEcran
         accueil = AccueilModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue, barriere: barriere,
-                                debug: debug)
+                                debug: debug, systemeBarriere: tempsEcran)
         textes = TextesModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue,
                               signalMusique: SignalMusiqueSeance(lecteur: musique), relecture: false)
         chemin = CheminModele(magasin: magasin, horloge: horloge)
         zmanim = ZmanimModele(magasin: magasin, horloge: horloge, contenus: contenus, traducteur: traducteur)
         reglages = ReglagesModele(magasin: magasin, contenus: contenus, horloge: horloge, notificateur: notificateur,
-                                  tempsEcran: TempsEcranAbsent(), activite: ActiviteAbsente(), barriere: BarriereAbsente(),
+                                  tempsEcran: tempsEcran, activite: ActiviteAbsente(), barriere: tempsEcran,
                                   icone: IconeSysteme(), effets: EffetsAbsents(), avecBarriere: barriere, langue: langue,
                                   version: ModelesApp.version())
     }
@@ -94,6 +99,11 @@ final class ModelesApp {
             }
         }
         let modeles = ModelesApp(magasin: magasin, paquet: paquet, traducteur: traducteur)
+        // La barrière : « Commencer » touché sur le bouclier ouvre la séance (onStartSession) ; puis la synchronisation,
+        // à chaque changement et à chaque retour au premier plan.
+        let accueil = modeles.accueil
+        modeles.tempsEcran.commencer = { accueil.commencer() }
+        modeles.tempsEcran.demarrer()
         // Les fins de morceau et les interruptions, le temps de l'app (MusiqueLecteur.ecouter).
         let musique = modeles.musique
         Task { await musique.ecouter() }
