@@ -17,15 +17,16 @@ public struct JournalHumeur: Sendable, Hashable, Identifiable {
     public let rang: Int
     /// L'émoji, en 26 pt.
     public let emoji: String
-    /// Ce que dit le lecteur d'écran : « 3/5 » (`contentDescription`, sans clé du catalogue sur Android).
-    public let accessibilite: String
+    /// Ce que dit le lecteur d'écran : « Humeur 3 sur 5 » (`contentDescription` de NoteDialog.kt,
+    /// `journal_humeur_n`).
+    public let accessibilite: Libelle
 
     public var id: Int { rang }
 
     public init(rang: Int, emoji: String) {
         self.rang = rang
         self.emoji = emoji
-        accessibilite = String(rang) + "/5"
+        accessibilite = Libelle("journal_humeur_n", .entier(rang))
     }
 }
 

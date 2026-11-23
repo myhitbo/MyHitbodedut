@@ -83,10 +83,15 @@ final class ModelesApp {
         let groupe = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.myhitbodedut")
         let dossier = groupe ?? URL.applicationSupportDirectory.appending(path: "MyHitbodedut")
         let magasin: Magasin
-        do {
-            magasin = try await Magasin.charger(PersistanceFichiers(dossier: dossier))
-        } catch {
-            magasin = Magasin.enMemoire()
+        if let demo = await Captures.magasinDemo(paquet: paquet, langue: traducteur.langue) {
+            // Les captures d'écran de la CI (Captures.swift) : la démonstration, en mémoire.
+            magasin = demo
+        } else {
+            do {
+                magasin = try await Magasin.charger(PersistanceFichiers(dossier: dossier))
+            } catch {
+                magasin = Magasin.enMemoire()
+            }
         }
         let modeles = ModelesApp(magasin: magasin, paquet: paquet, traducteur: traducteur)
         // Les fins de morceau et les interruptions, le temps de l'app (MusiqueLecteur.ecouter).

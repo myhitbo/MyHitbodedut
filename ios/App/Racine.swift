@@ -124,6 +124,13 @@ struct Racine: View {
             // Revenir au Jour rejoue les anneaux (MainActivity.rejouer).
             if nouveau == .aujourdhui { app.accueil.ongletChoisi() }
         }
+        // Les captures d'écran de la CI (Captures.swift) : l'écran demandé au lancement ; sans « -capture », rien.
+        .task {
+            await Captures.ouvrir(app, onglet: $onglet, jour: $pileDuJour, livres: $pileDesLivres, chemin: $pileDuChemin,
+                                  feuille: $feuille, plein: $plein)
+        }
+        // L'iPad et le téléphone couché : le contenu s'écarte des bords (GrandEcran, tâche 29).
+        .margesLarges()
         .tint(palette.couleur(.brand, schema: schema))
         .environment(\.paletteApp, palette)
         .environment(\.apparence, apparence)
