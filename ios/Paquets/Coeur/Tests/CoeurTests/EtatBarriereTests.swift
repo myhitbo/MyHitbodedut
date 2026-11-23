@@ -213,6 +213,7 @@ private struct LangueBarriere {
         #expect(nombreDeDetails == 15)
         cles.append(("bouclier_autre_reponse", false))
         cles.append(("bouclier_notification_commencer", false))
+        cles.append(("bouclier_notification_revenir", false))
         for code in Catalogue.langues {
             let simples = catalogue.simples(code)
             let pluriels = catalogue.pluriels(code)
@@ -436,5 +437,135 @@ private struct LangueBarriere {
         if Store.isSnoozed(reglages: reglages, millis: millis) { return .snoozed }
         if !Store.inWindow(reglages: reglages, maintenant: fuseau.dateHeure(millis: millis)) { return .outsideWindow }
         return .armed
+    }
+}
+
+// Ce que l'app dépose en plus pour les extensions (tâches 27 et 28) : les textes du bouclier resté posé à tort (le titre
+// et le détail de la carte d'état, GateStatus.titleOf et detailOf), l'apparence de view_blocker.xml (palette choisie,
+// personnage du jour à l'adresse choisie, Character.call, during, joy), et ce que l'app fait de la boîte en s'ouvrant
+// (GateService.showOverlay : onAlreadyDone → Store.addSession(context, 0), onSnooze → Store.snooze, onStartSession).
+@Suite struct EtatBarriereExtensionsTests {
+
+    @Test func lesTextesDuBouclierLeve() throws {
+        let paris = try #require(Fuseau("Europe/Paris"))
+        let fr = try LangueBarriere("fr", Catalogue.lire(), CatalogueIos.lire())
+        var reglages = Reglages()
+        reglages.setEnabled(true)
+        reglages.setWindow(startMinutes: 21 * 60, endMinutes: 2 * 60)
+        let maintenant = paris.millis(DateHeure(JourCivil.du("2026-11-16"), heure: 12))
+        let etat = EtatBarriere.etat(journal: Journal(), reglages: reglages, millis: maintenant, fuseau: paris,
+                                     nombreDeJetons: 2) { fr.texte($0) ?? "?" }
+        let b = etat.bouclier
+        #expect(b.continuer == "Continuer")
+        #expect(b.notificationRevenir == "Touchez pour revenir à votre hitbodedout")
+        let cles = Set(b.titresLeve.keys)
+        #expect(cles == ["DISABLED", "NO_APPS_SELECTED", "ALREADY_DONE", "EXEMPT_DAY", "SNOOZED", "OUTSIDE_WINDOW"])
+        #expect(Set(b.detailsLeve.keys) == cles)
+        #expect(b.titresLeve["ALREADY_DONE"] == "Journée validée")
+        #expect(b.titresLeve["OUTSIDE_WINDOW"] == "Hors de la plage horaire")
+        #expect(b.detailsLeve["OUTSIDE_WINDOW"] == "Il agit entre 21:00 et 02:00. En dehors, rien n’est bloqué.")
+        // Aucun texte du bouclier ne reste une clé non traduite, en français comme en hébreu.
+        let he = try LangueBarriere("he", Catalogue.lire(), CatalogueIos.lire())
+        let enHebreu = EtatBarriere.etat(journal: Journal(), reglages: reglages, millis: maintenant, fuseau: paris,
+                                         nombreDeJetons: 2) { he.texte($0) ?? "?" }
+        for texte in Array(enHebreu.bouclier.titresLeve.values) + Array(enHebreu.bouclier.detailsLeve.values)
+            + [enHebreu.bouclier.continuer, enHebreu.bouclier.notificationRevenir, enHebreu.bouclier.question] {
+            #expect(!texte.isEmpty && texte != "?", "\(texte)")
+        }
+        // Les états qui posent un bouclier n'ont pas de texte « levé ».
+        for etatPose in GateState.allCases where GateRule.ecran(etatPose) != nil {
+            #expect(!EtatBarriere.etatsSansBouclier.contains(etatPose))
+        }
+    }
+
+    /// view_blocker.xml : fond brand_dark, sous-titre mint, bouton brand et son texte on_brand, de la palette choisie ;
+    /// le personnage du jour, au féminin pour צדקת.
+    @Test func lApparenceDuBouclier() throws {
+        let lundi = JourCivil.du("2026-11-16")
+        let defaut = EtatBarriere.apparence(palette: nil, reglages: Reglages(), aujourdhui: lundi)
+        #expect(defaut.fond == "#173C32")
+        #expect(defaut.bouton == "#16775A")
+        #expect(defaut.iconeAppel == Poses.call(lundi) + ".webp")
+        #expect(defaut.iconeSeance == Poses.during(lundi) + ".webp")
+        #expect(defaut.iconeJoie == Poses.joy(lundi) + ".webp")
+        let palettes = try Palettes.lire(Depot.donnees("ios/Ressources/Contenu/palettes.json"))
+        var reglages = Reglages()
+        reglages.setAccent(.bleu)
+        reglages.setAdresse("f")
+        let palette = palettes.palette(fond: reglages.fond, accent: reglages.accent, nuit: false)
+        let bleue = EtatBarriere.apparence(palette: palette, reglages: reglages, aujourdhui: lundi)
+        #expect(bleue.fond == palette[.brandDark].hex)
+        #expect(bleue.texte == palette[.mint].hex)
+        #expect(bleue.bouton == palette[.brand].hex)
+        #expect(bleue.texteBouton == palette[.onBrand].hex)
+        #expect(bleue.titre == "#FFFFFF")
+        #expect(bleue.iconeAppel == Personnage.pour(.femme, Poses.call(lundi)) + ".webp")
+        #expect(bleue.iconeAppel.hasPrefix("char_f_"))
+        // Chaque image nommée existe parmi les images exportées.
+        for jour in (0..<7).map({ lundi.plus(jours: $0) }) {
+            for adresse in ["m", "f"] {
+                var r = Reglages()
+                r.setAdresse(adresse)
+                let a = EtatBarriere.apparence(palette: nil, reglages: r, aujourdhui: jour)
+                for nom in [a.iconeAppel, a.iconeSeance, a.iconeJoie] {
+                    let existe = (try? Depot.donnees("ios/Ressources/Images/" + nom)) != nil
+                    #expect(existe, "\(nom)")
+                }
+            }
+        }
+        // L'instantané porte l'apparence et l'essai qu'on lui donne.
+        let essai = Etat.Essai(debut: 1, fin: 120_001)
+        let etat = EtatBarriere.etat(journal: Journal(), reglages: reglages, millis: 0, fuseau: .utc, nombreDeJetons: 1,
+                                     palette: palette, essai: essai) { $0.cle }
+        #expect(etat.essai == essai)
+        #expect(etat.bouclier.apparence.bouton == palette[.brand].hex)
+    }
+
+    /// La boîte versée au journal : ce qu'Android aurait écrit à l'instant de l'appui.
+    @Test func laBoiteVerseeAuJournal() throws {
+        let paris = try #require(Fuseau("Europe/Paris"))
+        let lundi = JourCivil.du("2026-11-16")
+        let matin = paris.millis(DateHeure(lundi, heure: 7))
+        let quand = EtatBarriere.horodatage(millis: matin, fuseau: paris)
+        var journal = Journal()
+        var reglages = Reglages()
+        reglages.setSnoozeMinutes(15)
+        // « Plus tard » de 5 minutes il y a deux minutes : le report court jusqu'à 7 h 05 ; la durée réglée ne change pas.
+        var v = EtatBarriere.verser([Evenement(quand: quand, genre: .plusTard, detail: "5")], journal: &journal,
+                                    reglages: &reglages, maintenant: matin + 120_000, fuseau: paris)
+        #expect(v == EtatBarriere.Versement(commencer: false, change: true))
+        #expect(reglages.snoozedUntil == matin + 5 * 60_000)
+        #expect(reglages.snoozeMinutes == 15)
+        // Le même versé deux fois (l'app interrompue avant d'avoir vidé la boîte) ne change rien.
+        v = EtatBarriere.verser([Evenement(quand: quand, genre: .plusTard, detail: "5")], journal: &journal,
+                                reglages: &reglages, maintenant: matin + 120_000, fuseau: paris)
+        #expect(!v.change)
+        // Un report déjà fini n'est pas reposé.
+        var ancien = Reglages()
+        _ = EtatBarriere.verser([Evenement(quand: quand, genre: .plusTard, detail: "5")], journal: &journal,
+                                reglages: &ancien, maintenant: matin + 6 * 60_000, fuseau: paris)
+        #expect(ancien.snoozedUntil == 0)
+        // « Je l'ai faite sans le téléphone » : la journée validée sans minutes, l'instant de l'appui retenu, le report
+        // effacé (Store.addSession).
+        v = EtatBarriere.verser([Evenement(quand: quand, genre: .dejaFaite)], journal: &journal, reglages: &reglages,
+                                maintenant: matin + 180_000, fuseau: paris)
+        #expect(v.change)
+        #expect(journal.isDone(lundi))
+        #expect(journal.record(lundi)?.minutes == 0)
+        #expect(reglages.snoozedUntil == 0)
+        #expect(Store.fenetreFaite(journal: journal, reglages: reglages, millis: matin + 180_000, fuseau: paris))
+        // « Commencer » récent ouvre la séance ; vieux d'un quart d'heure, non.
+        let commencer = Evenement(quand: quand, genre: .commencer)
+        var j = Journal(), r = Reglages()
+        #expect(EtatBarriere.verser([commencer], journal: &j, reglages: &r, maintenant: matin + 60_000, fuseau: paris)
+                == EtatBarriere.Versement(commencer: true, change: false))
+        #expect(!EtatBarriere.verser([commencer], journal: &j, reglages: &r, maintenant: matin + EtatBarriere.fraicheurCommencer,
+                                     fuseau: paris).commencer)
+        // Les réveils, poses et levées ne touchent ni au journal ni aux réglages.
+        let passage = [Evenement(quand: quand, genre: .reveil, detail: "fenetre"), Evenement(quand: quand, genre: .armee),
+                       Evenement(quand: quand, genre: .autreReponse), Evenement(quand: quand, genre: "inconnu")]
+        #expect(EtatBarriere.verser(passage, journal: &j, reglages: &r, maintenant: matin, fuseau: paris) == EtatBarriere.Versement())
+        #expect(j == Journal())
+        #expect(r == Reglages())
     }
 }

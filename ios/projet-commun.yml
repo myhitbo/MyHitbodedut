@@ -17,7 +17,7 @@ settings:
     SWIFT_VERSION: "6.0"
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
-    TARGETED_DEVICE_FAMILY: "1"   # iPhone d'abord ; l'iPad à la tâche 29
+    TARGETED_DEVICE_FAMILY: "1,2"   # iPhone et iPad (tâche 29 : les marges des grands écrans, GrandEcran)
     DEVELOPMENT_TEAM: ""          # posé par la signature (Codemagic, P1 et P2)
     ENABLE_USER_SCRIPT_SANDBOXING: YES
 
@@ -51,7 +51,9 @@ targetTemplates:
       # écrans les tableaux de chaînes (Tableaux.json).
       - path: Ressources/Chaines
         type: folder
-    scheme: {}
+    # Le test d'interface de l'audit d'accessibilité (tâche 29), lancé par ios-captures.yml seulement.
+    scheme:
+      testTargets: [MyHitbodedutUITests]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut
@@ -63,6 +65,17 @@ targetTemplates:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
+        # Toutes les orientations, comme Android (aucun screenOrientation, layout-land) ; l'iPad les quatre, pour le
+        # partage d'écran (tâche 29).
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         # Cinq langues, celles de Langues.toutes (l'espagnol partout, l'arabe de Tunisie seulement, 17/11) ; un
         # téléphone dans une autre langue a l'anglais (LangueApp, Traducteur.langueDuTelephone, PORTAGE.md § 2.2.7).
         CFBundleDevelopmentRegion: en
@@ -86,6 +99,20 @@ targetTemplates:
           - Polices/rubik.ttf
 
 targets:
+  # L'audit d'accessibilité d'Xcode sur chaque écran (UITests/, tâche 29), ouvert par « -capture » (App/Captures.swift).
+  MyHitbodedutUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: MyHitbodedut
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        # XCTest et ses fermetures d'audit, sans le contrôle strict de Swift 6 : un test, pas du code livré.
+        SWIFT_VERSION: "5.0"
+
   Widgets:
     type: app-extension
     platform: iOS

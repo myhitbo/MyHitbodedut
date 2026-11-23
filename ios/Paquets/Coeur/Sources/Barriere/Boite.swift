@@ -24,6 +24,12 @@ public struct Evenement: Codable, Sendable, Equatable {
         case levee
         /// L'essai réel de deux minutes, ou sa fin.
         case essai
+        /// « Autre réponse » : le bouclier se redessine avec « Je l'ai déjà faite » et « Plus tard » (la deuxième page
+        /// du § 2.1.4, quand le sous-menu ne paraît pas).
+        case autreReponse = "autre_reponse"
+        /// L'app a inscrit les heures du mode auprès d'iOS (`DeviceActivityCenter.startMonitoring`) : un signe de vie
+        /// de la surveillance, comme un réveil, pour l'état « Surveillance muette ».
+        case inscrite
     }
 
     public var quand: Horodatage
@@ -103,6 +109,38 @@ public enum Boite {
         try Data().write(to: url)
     }
 
+    /// Ce qui reste du fichier une fois ses `octets` premiers octets lus et versés : ce qu'une extension a ajouté
+    /// entre la lecture et l'écriture de l'app n'est pas perdu. Un fichier plus court (vidé entre-temps) ne garde rien.
+    public static func reste(_ donnees: Data, apres octets: Int) -> Data {
+        guard octets >= 0, donnees.count > octets else { return Data() }
+        return Data(donnees.suffix(from: donnees.startIndex + octets))
+    }
+
+    /// Retire de la boîte les `octets` déjà lus (`reste`).
+    public static func retirer(_ octets: Int, de url: URL) throws {
+        let donnees = (try? Data(contentsOf: url)) ?? Data()
+        try reste(donnees, apres: octets).write(to: url, options: .atomic)
+    }
+
+    /// Le journal de la barrière (§ 2.1.8) : ce qu'il gardait, puis les événements neufs, les `garder` derniers dans
+    /// l'ordre des instants (un ajout se fait toujours à la fin ; une horloge remise en arrière ne mélange rien d'autre
+    /// que ses propres lignes).
+    public static func historique(_ ancien: [Evenement], plus neufs: [Evenement], garder: Int = maximum) -> [Evenement] {
+        let tous = (ancien + neufs).enumerated().sorted { a, b in
+            a.element.quand.millis != b.element.quand.millis ? a.element.quand.millis < b.element.quand.millis : a.offset < b.offset
+        }.map(\.element)
+        return Array(tous.suffix(max(garder, 0)))
+    }
+
+    /// Le fichier d'un journal : une ligne par événement.
+    public static func donnees(_ evenements: [Evenement]) -> Data {
+        var donnees = Data()
+        for evenement in evenements {
+            donnees.append(ligne(evenement))
+        }
+        return donnees
+    }
+
     /// Le dernier réveil de l'extension de surveillance, pour l'état « Surveillance muette » ; nil si la
     /// boîte n'en contient pas.
     public static func dernierReveil(_ evenements: [Evenement]) -> Int64? {
@@ -113,4 +151,30 @@ public enum Boite {
         }
         return dernier
     }
+
+    /// Le dernier signe de vie de la surveillance : son dernier réveil, ou la dernière inscription de ses heures par
+    /// l'app (une surveillance qu'on vient d'inscrire n'a pas encore eu l'occasion de se réveiller) ; nil sans l'un ni
+    /// l'autre.
+    public static func dernierSigneDeVie(_ evenements: [Evenement]) -> Int64? {
+        var dernier: Int64?
+        for evenement in evenements {
+            guard evenement.genre == Evenement.Genre.reveil.rawValue || evenement.genre == Evenement.Genre.inscrite.rawValue
+            else { continue }
+            if let deja = dernier, deja >= evenement.quand.millis { continue }
+            dernier = evenement.quand.millis
+        }
+        return dernier
+    }
+}
+
+/// Qui pose ou lève le bouclier : le détail des événements `armee` et `levee`.
+public enum AgentBarriere: String, Sendable, CaseIterable {
+    /// L'extension de surveillance, à un rendez-vous.
+    case surveillance
+    /// L'app, après un changement (une séance, un réglage, la journée validée).
+    case app
+    /// Un bouton du bouclier (l'extension d'action).
+    case bouclier
+    /// L'app, qui a trouvé le magasin en désaccord avec la règle (§ 2.1.8, « Bouclier désaccordé »).
+    case correction
 }
