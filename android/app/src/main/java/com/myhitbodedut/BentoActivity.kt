@@ -225,15 +225,24 @@ class BentoActivity : AccueilVersion() {
 
     private fun tuileZmanim(d: DonneesAccueil): View {
         val z = d.prochain
-        val description = z?.let { getString(R.string.version_prochain, it.nom) + ", " + d.dans(this, it) } ?: getString(R.string.pile_zmanim)
+        // Le soir, zmanim du jour passés : le dernier repère et son heure (DonneesAccueil.dernierDuJour).
+        val soir = d.dernierDuJour
+        val description = when {
+            z != null -> getString(R.string.version_prochain, z.nom) + ", " + d.dans(this, z)
+            soir != null -> soir.nom + ", " + soir.heure
+            else -> getString(R.string.pile_zmanim)
+        }
         return tuile(BLEU_FOND, 150, description) { v -> ouvrirDepuis(v, Intent(this, ZmanimActivity::class.java)) }.apply {
             addView(VueVersion.colonne(context).apply {
-                if (z == null) {
-                    addView(VueVersion.texte(context, getString(R.string.pile_zmanim), 13f, BLEU_DOUX, heebo))
-                    addView(VueVersion.texte(context, getString(R.string.version_choisir_lieu), 20f, BLEU_ENCRE, heeboNoir, haut = 4))
-                } else {
+                if (z != null) {
                     addView(VueVersion.texte(context, z.nom, 13f, BLEU_DOUX, heebo).apply { maxLines = 2 })
                     addView(VueVersion.texte(context, d.dans(context, z), 26f, BLEU_ENCRE, heeboNoir, haut = 4).apply { includeFontPadding = false })
+                } else if (soir != null) {
+                    addView(VueVersion.texte(context, soir.nom, 13f, BLEU_DOUX, heebo).apply { maxLines = 2 })
+                    addView(VueVersion.texte(context, soir.heure, 26f, BLEU_ENCRE, heeboNoir, haut = 4).apply { includeFontPadding = false })
+                } else {
+                    addView(VueVersion.texte(context, getString(R.string.pile_zmanim), 13f, BLEU_DOUX, heebo))
+                    addView(VueVersion.texte(context, getString(R.string.version_choisir_lieu), 20f, BLEU_ENCRE, heeboNoir, haut = 4))
                 }
             })
             d.zmanim.lastOrNull { it.cle == "chkia" }?.let { c ->

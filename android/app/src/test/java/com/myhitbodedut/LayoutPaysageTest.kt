@@ -36,6 +36,22 @@ class LayoutPaysageTest {
         }
     }
 
+    /**
+     * Recette du 22/11, tablette couchée : la ligne du prochain trophée, large comme son texte,
+     * élargissait la colonne des anneaux à 420 dp et n'en laissait que 150 à l'en-tête, coupé
+     * lettre par lettre ; et les anneaux, centrés sur une colonne plus haute que l'écran, partaient
+     * sous le pli. La ligne prend la largeur des anneaux, qui restent en haut.
+     */
+    @Test
+    fun `couche, la ligne du trophee garde la largeur des anneaux, qui restent en haut`() {
+        val xml = res("layout-land/activity_main.xml").readText()
+        val ligne = xml.substringAfter("@+id/paliers_line\"").substringBefore("/>")
+        assertTrue("paliers_line couchée : largeur des anneaux", ligne.contains("android:layout_width=\"match_parent\""))
+        val colonne = xml.substringBefore("@dimen/gauge_size_side").substringAfterLast("<LinearLayout")
+        assertTrue("la colonne des anneaux, large comme eux", colonne.contains("android:layout_width=\"wrap_content\""))
+        assertTrue("la colonne des anneaux, en haut", colonne.contains("android:layout_gravity=\"top\""))
+    }
+
     /** Couché, il ne reste que 320dp de haut sur un 480x854 : tout doit défiler. */
     @Test
     fun `les mises en page couchees defilent`() {

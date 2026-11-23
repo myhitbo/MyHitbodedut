@@ -45,15 +45,33 @@ adb logcat -G 16M || true
 adb logcat -c || true
 adb logcat -b crash -c || true
 
-python3 .github/captures/captures.py || true
+# Le parcours : celui des gestes (captures.py, par defaut), ou la recette ecran par ecran
+# avant Google Play (recette.py, 22/11).
+case "${CAPTURES_PARCOURS:-captures}" in
+  recette) python3 .github/captures/recette.py || true ;;
+  *) python3 .github/captures/captures.py || true ;;
+esac
 
-{
-  echo "== Plantages (logcat -b crash) =="
-  adb logcat -d -b crash 2>/dev/null | grep -B2 -A40 "com.myhitbodedut" || echo "aucun"
-  echo
-  echo "== ANR et erreurs de l'application =="
-  adb logcat -d -v brief 2>/dev/null | grep -E "ANR in com.myhitbodedut|FATAL EXCEPTION|E/AndroidRuntime" | head -50 || true
-} > out/plantages.txt
+# Si l'emulateur lui-meme est tombe (Android 15 et 16, accueil Instant, 22/11) : ce que le noyau de
+# la machine en dit (memoire epuisee, faute de segmentation), et rien d'autre.
+{ sudo dmesg 2>/dev/null || dmesg 2>/dev/null; } | grep -iE "out of memory|oom-kill|killed process|segfault|general protection|qemu|swiftshader|gfxstream" | tail -40 > out/noyau.txt || true
+[ -s out/noyau.txt ] || rm -f out/noyau.txt
+free -m > out/memoire.txt 2>/dev/null || true
+
+# Emulateur tombe : « adb logcat » attendrait un appareil sans fin, et le job avec lui jusqu'a sa
+# limite de deux heures et demie (cinq jobs le 22/11). On le dit, et on n'attend jamais plus d'une minute.
+if [ "$(timeout 20 adb get-state 2>/dev/null)" = "device" ]; then
+  {
+    echo "== Plantages (logcat -b crash) =="
+    timeout 60 adb logcat -d -b crash 2>/dev/null | grep -B2 -A40 "com.myhitbodedut" || echo "aucun"
+    echo
+    echo "== ANR et erreurs de l'application =="
+    timeout 60 adb logcat -d -v brief 2>/dev/null | grep -E "ANR in com.myhitbodedut|FATAL EXCEPTION|E/AndroidRuntime" | head -50 || true
+  } > out/plantages.txt
+else
+  echo "== L'EMULATEUR NE REPOND PLUS : le journal des plantages n'a pas pu etre lu ==" > out/plantages.txt
+  echo "EMULATEUR : il ne repond plus a la fin du parcours" >> out/fautes.txt
+fi
 cat out/plantages.txt
 ls -la out || true
 exit 0
