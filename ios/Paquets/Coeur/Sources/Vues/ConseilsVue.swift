@@ -35,7 +35,8 @@ public struct ConseilsVue: View {
         }
         .background(Teinte(.paper))
         .navigationTitle(Text(modele.titre, traducteur: traducteur))
-        .navigationBarTitleDisplayMode(.large)
+        // En ligne : « Conseils pour la hitbodedout » ne tient pas en grand titre (coupé sur les captures du 23/11).
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

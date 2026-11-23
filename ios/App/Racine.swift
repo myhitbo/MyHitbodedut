@@ -202,7 +202,10 @@ struct Racine: View {
                 BarreDepart(modele: app.accueil)
             }
             .navigationDestination(for: Ecran.self) { ecran in
+                // Hors des trois racines, pas de barre d'onglets : sur Android, chaque autre écran est une activité à
+                // part, sans la barre du bas ; ici elle couvrait le bas de la séance et du lecteur (captures du 23/11).
                 destination(ecran)
+                    .toolbar(.hidden, for: .tabBar)
             }
     }
 
