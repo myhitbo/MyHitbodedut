@@ -70,8 +70,15 @@ public final class JournalNoteModele {
     public private(set) var gratitude: String
     public private(set) var travail: String
 
-    /// La note du jour `date`, et son journal enrichi, tels que le magasin les garde.
-    public init(magasin: Magasin, date: JourCivil) {
+    /// Le verrou du journal (NoteDialog.show) : ouverte hors du journal sur un jour déjà écrit, la fenêtre reste
+    /// couverte jusqu'au code ; nil depuis le journal, qui l'a déjà demandé.
+    private let verrou: VerrouJournal?
+    /// La fenêtre attend le code avant de montrer ce qui est déjà écrit (`deverrouiller`).
+    public private(set) var verrouillee: Bool
+
+    /// La note du jour `date`, et son journal enrichi, tels que le magasin les garde. `verrou` : ouverte hors du
+    /// journal (l'accueil, la séance, le bravo).
+    public init(magasin: Magasin, date: JourCivil, verrou: VerrouJournal? = nil) {
         self.magasin = magasin
         self.date = date
         let journal = magasin.journal
@@ -82,6 +89,20 @@ public final class JournalNoteModele {
         apres = plus.apres
         gratitude = plus.gratitude
         travail = plus.travail
+        self.verrou = verrou
+        // NoteDialog.dejaEcrit : la note, la gratitude, la chose à travailler ou une humeur. Une fenêtre vide n'a rien
+        // à cacher.
+        let dejaEcrit = !initiale.estBlanc || !plus.vide
+        verrouillee = dejaEcrit && verrou?.actif == true
+    }
+
+    /// Demande le code (VerrouJournal.exiger) : vrai si la fenêtre peut se montrer ; faux si l'on y renonce, et la
+    /// vue la ferme alors comme « Plus tard » (`Hote.noteFermee`).
+    public func deverrouiller() async -> Bool {
+        guard verrouillee, let verrou else { return true }
+        guard await verrou.exiger() else { return false }
+        verrouillee = false
+        return true
     }
 
     // MARK: Ce qui s'affiche

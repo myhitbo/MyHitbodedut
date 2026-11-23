@@ -243,7 +243,7 @@ struct TraducteurTests {
             // Une clé d'Android garde son gabarit ; une clé d'iOS se résout au lieu de rendre sa clé.
             #expect(deux.texte(cle: "nav_today") == seul.texte(cle: "nav_today"))
             for cle in ["action_ok", "contenu_illisible", "reglages_autorisation_temps_ecran",
-                        "reglages_autorisation_temps_ecran_pourquoi"] {
+                        "reglages_autorisation_temps_ecran_pourquoi", "reglages_minuterie_systeme"] {
                 let texte = deux.texte(cle: cle)
                 #expect(texte != cle, "\(cle) sans texte en \(langue)")
                 #expect(seul.texte(cle: cle) == cle)

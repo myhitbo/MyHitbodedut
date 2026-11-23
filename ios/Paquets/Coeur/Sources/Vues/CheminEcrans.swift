@@ -260,6 +260,8 @@ public struct JournalNoteVue: View {
         }
         .background(Teinte(.paper))
         .interactiveDismissDisabled(!modele.fermableParGeste)
+        // Le verrou du journal (NoteDialog.show) : une note déjà écrite, ouverte hors du journal, attend le code.
+        .verrouNote(modele, fermer: fermer)
     }
 
     private func humeurs(_ titre: Text, choisie: Int, toucher: @escaping @MainActor (Int) -> Void) -> some View {

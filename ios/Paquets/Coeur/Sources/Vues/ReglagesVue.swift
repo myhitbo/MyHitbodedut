@@ -332,6 +332,7 @@ public struct ReglagesVue: View {
                 Task { try? await modele.basculerRegion() }
             }
             interrupteur("settings_hide_countdown", .masquerDecompte, indication: "settings_hide_countdown_hint")
+            ReglagesMinuterieLigne(modele: modele)
             ligne("settings_ne_pas_deranger", indication: "settings_ne_pas_deranger_hint") {
                 ouvrirRoute(modele.routeConcentration)
             }
@@ -395,10 +396,14 @@ public struct ReglagesVue: View {
             titreSection("section_data", indication: "section_data_hint")
             HStack(spacing: 12) {
                 Button {
-                    let export = modele.preparerExport()
-                    sauvegarde = ReglagesSauvegarde(donnees: export.donnees)
-                    nomSauvegarde = export.nomDeFichier
-                    exportOuvert = true
+                    Task {
+                        // L'export emporte tout le journal : le verrou le garde aussi (revue du 15/11).
+                        guard await modele.exportAutorise() else { return }
+                        let export = modele.preparerExport()
+                        sauvegarde = ReglagesSauvegarde(donnees: export.donnees)
+                        nomSauvegarde = export.nomDeFichier
+                        exportOuvert = true
+                    }
                 } label: {
                     Text(Libelle("action_export"), traducteur: traducteur)
                         .frame(maxWidth: .infinity)
@@ -413,6 +418,7 @@ public struct ReglagesVue: View {
                 .buttonStyle(.secondaire)
             }
             .padding(.top, 10)
+            ReglagesVerrouLigne(modele: modele)
             ligne("settings_confidentialite") { ouvrirRoute(modele.routeConfidentialite) }
         }
         .id(ReglagesSection.donnees)

@@ -183,6 +183,15 @@ public final class AccueilVersionModele {
     /// « Réduire les animations », que la vue recopie de l'environnement.
     public var reduireAnimations = false
 
+    /// Le verrou du journal, posé par l'app (AccueilVersion.kt : `VerrouJournal.actif`) : actif, la dernière note et les
+    /// derniers jours de Sérénité ne montrent pas le texte du journal.
+    public var verrou: VerrouJournal? = nil
+
+    /// Le texte du journal se cache.
+    var journalCache: Bool {
+        verrou?.actif == true
+    }
+
     private var bibliotheque: Bibliotheque? = nil
     private var dejaApparu = false
 
@@ -375,7 +384,7 @@ public final class AccueilVersionModele {
             plusRecente = (date, r)
         }
         guard let (date, r) = plusRecente else { return nil }
-        return VersionNote(date: date, minutes: r.minutes, texte: r.note.estBlanc ? nil : r.note)
+        return VersionNote(date: date, minutes: r.minutes, texte: r.note.estBlanc || journalCache ? nil : r.note)
     }
 
     /// Les trois dernières journées faites, de la plus récente à la plus ancienne (Sérénité, « Vos derniers jours »).

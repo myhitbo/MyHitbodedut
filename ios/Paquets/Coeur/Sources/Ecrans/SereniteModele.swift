@@ -95,7 +95,7 @@ extension AccueilVersionModele {
         let prochain = d.prochain.map { z in SereniteZman(nom: z.nom, heure: z.heure, dans: d.dans(z)) }
         let jours = derniersJours(3).map { (date, r) in
             SereniteJour(date: date, jour: d.jour(date), duree: DonneesAccueil.duree(r.minutes),
-                         note: r.note.estBlanc ? nil : r.note)
+                         note: r.note.estBlanc || journalCache ? nil : r.note)
         }
         let initiale = d.prenom.first.map { String($0).uppercased() }
         return SereniteEcran(

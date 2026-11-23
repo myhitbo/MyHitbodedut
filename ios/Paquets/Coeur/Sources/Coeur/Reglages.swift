@@ -455,6 +455,16 @@ public struct Reglages: Sendable, Equatable {
         poseLong("reminder_snoozed_until", millis)
     }
 
+    // MARK: Le verrou du journal
+
+    /// Le journal ne s'ouvre qu'après le code, Face ID ou Touch ID du téléphone (Store.journalVerrou, audit du
+    /// 12/11) ; éteint par défaut. Ce qu'il protège vraiment dépend aussi du téléphone (VerrouJournal.actif, Ecrans).
+    public var journalVerrou: Bool { booleen("journal_verrou", false) }
+
+    public mutating func setJournalVerrou(_ verrou: Bool) {
+        poseBooleen("journal_verrou", verrou)
+    }
+
     // MARK: Pendant la séance
 
     /// Masquer le décompte pendant la séance : éteint par défaut, c'est un choix.

@@ -1,6 +1,42 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "NSAlarmKitUsageDescription": {
+      "comment": "La raison des alarmes d'AlarmKit, que le système montre (Info.plist) : la minuterie système (MinuterieSeance.swift, App/Services/Minuterie.swift). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Si vous le choisissez dans les réglages, une alarme sonne à la fin d’une hitbodedout minutée, même téléphone en silencieux."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "If you choose it in the settings, an alarm rings at the end of a timed hitbodedut, even when the phone is silent."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אם תבחרו בכך בהגדרות, מעורר יצלצל בסוף התבודדות עם זמן קצוב, גם כשהטלפון במצב שקט."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Si lo eliges en los ajustes, suena una alarma al final de una hitbodedut con duración, incluso con el teléfono en silencio."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "كان تختارها في الإعدادات، يصوّت منبّه في آخر هتبوديدوت بوقت محدّد، حتى كان التليفون في الصامت."
+          }
+        }
+      }
+    },
     "NSCameraUsageDescription": {
       "comment": "La raison de l'appareil photo, que le système montre (Info.plist) : lire la carte d'embarquement sur l'écran du vol (VolVue, VisionKit). À relire par le propriétaire.",
       "extractionState": "manual",
@@ -33,6 +69,42 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "الكاميرا تقرا الكود-بار متاع بطاقة الصعود متاعك، في التليفون: ما يتبعث شي."
+          }
+        }
+      }
+    },
+    "NSFaceIDUsageDescription": {
+      "comment": "La raison de Face ID, que le système montre (Info.plist) : le verrou du journal (VerrouJournal.swift, App/Services/CodeDuTelephone.swift). À relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Face ID ouvre le journal quand vous l’avez verrouillé."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Face ID opens the journal when you have locked it."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Face ID פותח את היומן כשנעלתם אותו."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Face ID abre el diario cuando lo has bloqueado."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Face ID يحلّ اليومية كي تكون مسكّرة."
           }
         }
       }
