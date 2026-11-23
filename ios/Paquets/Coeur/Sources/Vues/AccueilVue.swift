@@ -18,6 +18,8 @@ public struct AccueilVue: View {
     @Environment(\.traducteur) private var traducteur
     @Environment(\.accessibilityReduceMotion) private var reduire
     @Environment(\.scenePhase) private var phase
+    /// La place de l'écran : couché, le Jour se met en deux colonnes (GrandEcran.deuxColonnes).
+    @State private var taille: CGSize = .zero
 
     /// La barre de départ et son volet sont posés par la racine sur les trois onglets (`BarreDepart`,
     /// `feuilleDepart`).
@@ -27,36 +29,34 @@ public struct AccueilVue: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                EnteteJour(modele: modele)
-                AccueilEtatVue(modele: modele)
-                AccueilAnneauxVue(modele: modele)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 16)
-                Text(modele.legende, traducteur: traducteur)
-                    .font(.callout)
-                    .foregroundStyle(AccueilTeintes.style(modele.couleurLegende))
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 4)
-                ligneTrophee
-                AccueilSemaineVue(modele: modele)
-                    .padding(.top, 16)
-                if let relance = modele.relance {
-                    ChizukCarteVue(carte: relance)
-                        .padding(.top, 12)
-                }
-                boutonsDuJour
-                ForEach(modele.cartes) { carte in
-                    AccueilCarteVue(carte: carte, police: modele.police) { route in
-                        modele.ouvrir(route)
+            Group {
+                if GrandEcran.deuxColonnes(largeur: Double(taille.width), hauteur: Double(taille.height)) {
+                    // Couché (layout-land/activity_main.xml) : les anneaux à part, au début de la ligne (à droite en
+                    // hébreu), l'en-tête, la semaine et la suite à côté d'eux.
+                    HStack(alignment: .top, spacing: 24) {
+                        VStack(spacing: 0) {
+                            anneaux
+                        }
+                        .frame(width: 300)
+                        VStack(alignment: .leading, spacing: 0) {
+                            tete
+                            suite
+                        }
                     }
-                    .padding(.top, 14)
+                } else {
+                    VStack(alignment: .leading, spacing: 0) {
+                        tete
+                        anneaux
+                        suite
+                    }
                 }
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 24)
+        }
+        .onGeometryChange(for: CGSize.self, of: { $0.size }) { nouvelle in
+            taille = nouvelle
         }
         .background(Teinte(.paper))
         .toolbar(.hidden, for: .navigationBar)
@@ -88,6 +88,43 @@ public struct AccueilVue: View {
         .onChange(of: phase) { _, nouvelle in
             // onResume d'Android : le retour au premier plan relit tout.
             if nouvelle == .active { Task { await modele.apparaitre() } }
+        }
+    }
+
+    /// L'en-tête (la date hébraïque, la roue) et l'état du jour.
+    @ViewBuilder private var tete: some View {
+        EnteteJour(modele: modele)
+        AccueilEtatVue(modele: modele)
+    }
+
+    /// Les anneaux autour du hassid, leur légende et la ligne du prochain trophée.
+    @ViewBuilder private var anneaux: some View {
+        AccueilAnneauxVue(modele: modele)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 16)
+        Text(modele.legende, traducteur: traducteur)
+            .font(.callout)
+            .foregroundStyle(AccueilTeintes.style(modele.couleurLegende))
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 4)
+        ligneTrophee
+    }
+
+    /// La bande de la semaine, le mot de relance, les boutons du jour et les cartes du moment.
+    @ViewBuilder private var suite: some View {
+        AccueilSemaineVue(modele: modele)
+            .padding(.top, 16)
+        if let relance = modele.relance {
+            ChizukCarteVue(carte: relance)
+                .padding(.top, 12)
+        }
+        boutonsDuJour
+        ForEach(modele.cartes) { carte in
+            AccueilCarteVue(carte: carte, police: modele.police) { route in
+                modele.ouvrir(route)
+            }
+            .padding(.top, 14)
         }
     }
 
