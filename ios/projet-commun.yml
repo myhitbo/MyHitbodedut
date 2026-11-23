@@ -93,10 +93,23 @@ targetTemplates:
           - Polices/miriam_libre.ttf
 
 targets:
+  # Les widgets (tâche 25) et la Live Activity de la séance (tâche 17). Ils lisent le journal et les réglages dans le
+  # conteneur du groupe d'apps (Depot), calculent comme l'app (Coeur), traduisent avec ses catalogues (Chaines/), et
+  # prennent les couleurs choisies dans palettes.json.
   Widgets:
     type: app-extension
     platform: iOS
-    sources: [Widgets]
+    sources:
+      - Widgets
+      - path: Ressources/Chaines
+        type: folder
+      - path: Ressources/Contenu/palettes.json
+        buildPhase: resources
+    dependencies:
+      - package: Coeur
+        products:
+          - Coeur
+          - Ecrans
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.widgets
@@ -106,6 +119,8 @@ targets:
         CFBundleDisplayName: MyHitbodedut
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [fr, en, he, es, ar-TN]
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
