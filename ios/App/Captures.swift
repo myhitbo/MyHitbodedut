@@ -22,7 +22,8 @@ enum Captures {
     static let ecrans = [
         "presentation", "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre", "tehilim",
         "tikkun", "tefilot", "bibliotheque", "halakha", "hilloulot", "recherche", "chizuk", "conseils", "chemin",
-        "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique",
+        "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "apercu", "applications",
+        "dedicace", "journal-barriere", "serenite", "bento", "pile",
     ]
 
     private static func valeur(apres argument: String) -> String? {
@@ -87,7 +88,18 @@ enum Captures {
         case "journal": depart = (.chemin, [.journal], nil, nil)
         case "parcours": depart = (.chemin, [.parcours], nil, nil)
         case "trophees": depart = (.chemin, [.paliers], nil, nil)
+        // La barrière (tâches 27 et 28), depuis les réglages.
+        case "apercu": depart = (.aujourdhui, [.reglages(carteBarriere: true), .barriere(.apercu)], nil, nil)
+        case "applications":
+            depart = (.aujourdhui, [.reglages(carteBarriere: true), .barriere(.choixApplications)], nil, nil)
+        case "dedicace": depart = (.aujourdhui, [.reglages(carteBarriere: false), .barriere(.dedicace)], nil, nil)
+        case "journal-barriere":
+            depart = (.aujourdhui, [.reglages(carteBarriere: true), .barriere(.journal)], nil, nil)
         default: depart = (.aujourdhui, [], nil, nil)
+        }
+        // Les autres accueils (Sérénité, Bento, Pile) : la version choisie dans le magasin de démonstration.
+        if let version = VersionApp(rawValue: ecran), version != .classique {
+            try? await app.magasin.modifierReglages { $0.setVersionApp(version) }
         }
         let (quel, ecrans, enFeuille, enPlein) = depart
         onglet.wrappedValue = quel

@@ -11,7 +11,8 @@ final class AuditAccessibiliteTests: XCTestCase {
     static let ecrans = [
         "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre", "tehilim", "tikkun",
         "tefilot", "bibliotheque", "halakha", "hilloulot", "recherche", "chizuk", "conseils", "chemin", "journal",
-        "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "presentation",
+        "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "apercu", "applications", "dedicace",
+        "journal-barriere", "serenite", "bento", "pile", "presentation",
     ]
 
     @MainActor
