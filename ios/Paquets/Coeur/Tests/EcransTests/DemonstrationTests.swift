@@ -42,8 +42,8 @@ struct DemonstrationTests {
         #expect(reglages.reminderEnabled)
         #expect(reglages.reminderTimes == [405, 810, 1335])
         #expect(reglages.musicTrackId == "yanuka_nigoun_3")
-        // Le bilan du lundi 9 au dimanche 15 est déjà lu.
-        #expect(reglages.bilanVu == "2026-11-09")
+        // Le bilan de la semaine passée (du dimanche 8 au samedi 14) est déjà lu.
+        #expect(reglages.bilanVu == "2026-11-08")
     }
 
     @Test func laVilleDeLaLangueEstChoisieDansLaListe() async throws {
