@@ -8,15 +8,15 @@ name: iOS (vues, macOS)
 on:
   push:
     paths:
-      - 'ios/Paquets/Coeur/Sources/Vues/**'
-      - 'ios/App/**'
-      - 'ios/Paquets/Coeur/Package.swift'
+      # Tout ce que l'app compile (vues, modèles, cœur, extensions, widgets, projet), sans la documentation.
+      - 'ios/**'
+      - '!ios/**/*.md'
       - '.github/workflows/ios-vues.yml'
   pull_request:
     paths:
-      - 'ios/Paquets/Coeur/Sources/Vues/**'
-      - 'ios/App/**'
-      - 'ios/Paquets/Coeur/Package.swift'
+      # Tout ce que l'app compile (vues, modèles, cœur, extensions, widgets, projet), sans la documentation.
+      - 'ios/**'
+      - '!ios/**/*.md'
       - '.github/workflows/ios-vues.yml'
   workflow_dispatch:
 
