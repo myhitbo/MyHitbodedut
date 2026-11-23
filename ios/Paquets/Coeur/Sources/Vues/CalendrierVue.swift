@@ -25,7 +25,7 @@ public struct CalendrierVue: View {
             VStack(alignment: .leading, spacing: 14) {
                 grille
                 ZmanimCarteJourVue(carte: modele.carte, estAujourdhui: true, precedent: nil, suivant: nil,
-                                   aujourdhui: nil)
+                                   aujourdhui: nil, partage: modele.partage)
                 if let levana = modele.levana {
                     ZmanimLevanaVue(levana: levana) { ouvrir(levana.route) }
                 }
@@ -299,6 +299,14 @@ private struct CalendrierCaseVue: View {
     let langue: String
     let choisir: @MainActor () -> Void
     @Environment(\.traducteur) private var traducteur
+
+    init(uneCase: CalendrierCase, police: PoliceHebraique.Police, langue: String,
+         choisir: @escaping @MainActor () -> Void) {
+        self.uneCase = uneCase
+        self.police = police
+        self.langue = langue
+        self.choisir = choisir
+    }
 
     var body: some View {
         Button(action: choisir) {

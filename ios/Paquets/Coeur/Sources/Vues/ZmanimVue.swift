@@ -26,7 +26,7 @@ public struct ZmanimVue: View {
                 lieu
                 ZmanimCarteJourVue(carte: modele.carte, estAujourdhui: modele.estAujourdhui,
                                    precedent: { modele.jourPrecedent() }, suivant: { modele.jourSuivant() },
-                                   aujourdhui: { modele.revenirAujourdhui() })
+                                   aujourdhui: { modele.revenirAujourdhui() }, partage: modele.partage)
                 boutons(modele.boutons)
                 if let question = modele.questionRegion {
                     questionRegion(question)
@@ -315,7 +315,19 @@ struct ZmanimCarteJourVue: View {
     let precedent: (@MainActor () -> Void)?
     let suivant: (@MainActor () -> Void)?
     let aujourdhui: (@MainActor () -> Void)?
+    /// L'image du jour à partager (« Partager ce jour ↗ ») ; nil sans lien.
+    let partage: PartageContenu?
     @Environment(\.traducteur) private var traducteur
+
+    init(carte: ZmanimCarteJour, estAujourdhui: Bool, precedent: (@MainActor () -> Void)?,
+         suivant: (@MainActor () -> Void)?, aujourdhui: (@MainActor () -> Void)?, partage: PartageContenu? = nil) {
+        self.carte = carte
+        self.estAujourdhui = estAujourdhui
+        self.precedent = precedent
+        self.suivant = suivant
+        self.aujourdhui = aujourdhui
+        self.partage = partage
+    }
 
     var body: some View {
         Carte {
@@ -384,6 +396,10 @@ struct ZmanimCarteJourVue: View {
                     .foregroundStyle(Teinte(.muted))
                     .padding(.top, 2)
             }
+            if let partage {
+                PartageJourLien(contenu: partage, libelle: carte.partage)
+                    .padding(.top, 6)
+            }
         }
     }
 }
@@ -394,6 +410,11 @@ struct ZmanimLevanaVue: View {
     let levana: ZmanimLevana
     let lire: @MainActor () -> Void
     @Environment(\.traducteur) private var traducteur
+
+    init(levana: ZmanimLevana, lire: @escaping @MainActor () -> Void) {
+        self.levana = levana
+        self.lire = lire
+    }
 
     var body: some View {
         Carte {
@@ -550,6 +571,10 @@ struct ZmanimChoixLieu: ViewModifier {
 private struct ZmanimMessageLieu: View {
     let choix: LieuModele
     @Environment(\.traducteur) private var traducteur
+
+    init(choix: LieuModele) {
+        self.choix = choix
+    }
 
     var body: some View {
         Group {

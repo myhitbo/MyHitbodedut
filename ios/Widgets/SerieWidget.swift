@@ -90,6 +90,10 @@ struct SerieVue: View {
     let entree: EntreeSerie
     @Environment(\.widgetFamily) private var famille
 
+    init(entree: EntreeSerie) {
+        self.entree = entree
+    }
+
     var body: some View {
         switch famille {
         case .systemSmall:
@@ -311,6 +315,10 @@ struct SerieAnneaux: View {
 private struct SerieFond: View {
     let reglages: Reglages
     @Environment(\.colorScheme) private var schema
+
+    init(reglages: Reglages) {
+        self.reglages = reglages
+    }
 
     var body: some View {
         let teintes = TeintesSerie(reglages)

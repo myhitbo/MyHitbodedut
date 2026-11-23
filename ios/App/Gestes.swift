@@ -13,6 +13,11 @@ struct GestesExterieurs: ViewModifier {
     let ouvrir: @MainActor (LienApp) -> Void
     @Environment(\.scenePhase) private var phase
 
+    init(app: ModelesApp, ouvrir: @escaping @MainActor (LienApp) -> Void) {
+        self.app = app
+        self.ouvrir = ouvrir
+    }
+
     func body(content: Content) -> some View {
         content
             .onOpenURL { url in
@@ -69,6 +74,11 @@ struct AjoutTempsFeuille: View {
     let fermer: @MainActor () -> Void
     @State private var modele: AjoutTempsModele? = nil
     @State private var construit = false
+
+    init(fabrique: @escaping @MainActor () -> AjoutTempsModele?, fermer: @escaping @MainActor () -> Void) {
+        self.fabrique = fabrique
+        self.fermer = fermer
+    }
 
     var body: some View {
         Group {

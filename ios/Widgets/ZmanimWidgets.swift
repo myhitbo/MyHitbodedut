@@ -260,6 +260,10 @@ struct ZmanimVerrouilleVue: View {
     let entree: EntreeZmanim
     @Environment(\.widgetFamily) private var famille
 
+    init(entree: EntreeZmanim) {
+        self.entree = entree
+    }
+
     var body: some View {
         let a = entree.affichage
         let titre = TextesWidgets.texte(a.titre)
