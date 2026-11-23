@@ -838,6 +838,8 @@
     <string name="ajout_zimun">Zimun (three or more who ate together)</string>
     <string name="ajout_facultatif">Custom, not required</string>
     <string name="ajout_facultatif_avant">Psalms before Birkat HaMazon (custom, not required)</string>
+    <string name="ajout_harahaman_invite">HaRachaman of the guest, for the host</string>
+    <string name="ajout_harahaman_maison">HaRachaman for the household: at one’s father’s table, or one’s own</string>
     <string name="ajout_facultatif_apres">HaRachaman and closing (custom, not required)</string>
     <string name="ajout_embolismique">Leap year (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">House of mourning</string>

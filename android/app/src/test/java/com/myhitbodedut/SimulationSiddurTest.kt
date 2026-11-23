@@ -67,7 +67,14 @@ class SimulationSiddurTest {
         Regle(setOf("birkat_hamazon"), "הרחמן הוא יפרנסנו", TOUJOURS),
         Regle(setOf("birkat_hamazon"), "הרחמן הוא ישתבח", TOUJOURS),
         Regle(setOf("birkat_hamazon"), "הרחמן הוא ישלח לנו את אליהו", TOUJOURS),
-        Regle(setOf("birkat_hamazon"), "הרחמן הוא יברך", TOUJOURS),
+        // Edot : « יברך כל אחד ואחד ממנו », que chacun dit.
+        Regle(setOf("birkat_hamazon"), "הרחמן הוא יברך כל אחד ואחד", TOUJOURS),
+        Regle(setOf("birkat_hamazon"), "אותנו ואת כל אשר לנו", TOUJOURS),
+        // Les הרחמן de la table (22/11) : selon où l'on mange, jamais du jour, toujours repliés.
+        Regle(setOf("birkat_hamazon"), "הרחמן הוא יברך את השלחן הזה", { false }),
+        Regle(setOf("birkat_hamazon"), "הרחמן הוא יברך את (אבי מורי)", { false }),
+        Regle(setOf("birkat_hamazon"), "הרחמן הוא יברך אותי", { false }),
+        Regle(setOf("birkat_hamazon"), "יהי רצון שלא יבוש", { false }),
         Regle(setOf("birkat_hamazon"), "במרום ילמדו", TOUJOURS),
         Regle(setOf("birkat_hamazon"), "ישועות מלכו", TOUJOURS),
         Regle(setOf("birkat_hamazon"), "עשה שלום במרומיו", TOUJOURS),
