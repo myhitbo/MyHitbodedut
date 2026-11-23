@@ -23,8 +23,8 @@ enum Captures {
         "presentation", "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre", "tehilim",
         "tikkun", "tefilot", "bibliotheque", "halakha", "hilloulot", "recherche", "chizuk", "conseils", "chemin",
         "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "apercu", "applications",
-        "dedicace", "journal-barriere", "serenite", "bento", "pile", "fete", "calendrier", "boussole", "rappels",
-        "ajout-temps",
+        "dedicace", "journal-barriere", "serenite", "bento", "pile", "fete", "bilan", "calendrier", "boussole",
+        "rappels", "ajout-temps",
     ]
 
     private static func valeur(apres argument: String) -> String? {
@@ -43,21 +43,33 @@ enum Captures {
         var enregistrement = Demonstration.enregistrement(aujourdhui: horloge.aujourdhui, maintenant: horloge.maintenant,
                                                           fuseau: horloge.fuseau.identifiant, langue: langue,
                                                           villes: villes)
-        if ecran == "fete" {
+        switch ecran {
+        case "fete":
             // La fête des trophées neufs au Jour : le dernier trophée gagné n'a pas encore été vu.
             enregistrement = Demonstration.avecTropheeNeuf(enregistrement, aujourdhui: horloge.aujourdhui,
                                                            fuseau: horloge.fuseau.identifiant)
+        case "bilan":
+            // Le bilan de la semaine passée, pas encore lu.
+            enregistrement.reglages.setBilanVu("")
+        case let autre?:
+            // Les autres accueils (Sérénité, Bento, Pile) : la version choisie.
+            if let version = VersionApp(rawValue: autre) { enregistrement.reglages.setVersionApp(version) }
+        case nil:
+            break
         }
         return Magasin.enMemoire(enregistrement)
     }
 
-    /// Ouvre l'écran demandé, une fois la racine posée : l'onglet, puis la pile, puis la feuille par-dessus. Les
-    /// pauses laissent à SwiftUI le temps de montrer l'onglet avant d'y pousser un écran. Sans « -capture », rien.
+    /// Ouvre l'écran demandé, une fois la racine posée : l'onglet, puis la pile, puis la feuille par-dessus, sans
+    /// animation (l'écran est photographié tel qu'il est, pas au milieu d'une transition). Les pauses laissent à
+    /// SwiftUI le temps de montrer l'onglet avant d'y pousser un écran. Puis l'app écrit « CAPTURE PRETE » sur sa
+    /// sortie d'erreur, que le script attend avant de photographier. Sans « -capture », rien.
     @MainActor
     static func ouvrir(_ app: ModelesApp, onglet: Binding<Onglet>, jour: Binding<NavigationPath>,
                        livres: Binding<NavigationPath>, chemin: Binding<NavigationPath>,
                        feuille: Binding<Pardessus?>, plein: Binding<Pardessus?>) async {
         guard let ecran else { return }
+        UIView.setAnimationsEnabled(false)
         if paysage, let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeLeft))
             try? await Task.sleep(for: .milliseconds(600))
@@ -109,10 +121,6 @@ enum Captures {
             depart = (.aujourdhui, [.reglages(carteBarriere: true), .barriere(.journal)], nil, nil)
         default: depart = (.aujourdhui, [], nil, nil)
         }
-        // Les autres accueils (Sérénité, Bento, Pile) : la version choisie dans le magasin de démonstration.
-        if let version = VersionApp(rawValue: ecran), version != .classique {
-            try? await app.magasin.modifierReglages { $0.setVersionApp(version) }
-        }
         let (quel, ecrans, enFeuille, enPlein) = depart
         onglet.wrappedValue = quel
         try? await Task.sleep(for: .milliseconds(400))
@@ -127,5 +135,8 @@ enum Captures {
         if ecran == "depart" { app.accueil.basculerVolet() }
         if let enFeuille { feuille.wrappedValue = enFeuille }
         if let enPlein { plein.wrappedValue = enPlein }
+        // Le temps que l'écran lise ses contenus et que la fête d'un trophée paraisse (500 ms après l'accueil).
+        try? await Task.sleep(for: .milliseconds(1_200))
+        FileHandle.standardError.write(Data("CAPTURE PRETE\n".utf8))
     }
 }

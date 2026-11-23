@@ -78,6 +78,8 @@ public enum Demonstration {
         reglages.setGuidedHitbodedut(true)
         reglages.setMusicEnabled(true)
         reglages.setMusicTrackId("yanuka_nigoun_3")
+        // Le bilan de la semaine passée déjà lu : le Jour se montre sans lui (AccueilModele.bilanDeLaSemaine).
+        reglages.setBilanVu(BilanSemaine.debutSemaine(aujourdhui).plus(jours: -7).iso)
         let id = ville(langue: langue)
         if let ville = villes.first(where: { $0.id == id }) {
             // Comme LieuModele.choisirVille : le nom dans la langue de l'app, Israël d'après le pays.

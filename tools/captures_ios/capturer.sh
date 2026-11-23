@@ -16,7 +16,7 @@ LANGUES=${LANGUES:-"fr en he es ar-TN"}
 ECRANS=${ECRANS:-}
 PASSES=${PASSES:-"iphone sombre grand ipad"}
 RESUME=${RESUME:-/dev/stdout}
-ATTENTE=${ATTENTE:-5}
+ATTENTE=${ATTENTE:-2}
 # Des arguments de lancement en plus, pour une passe (« -captureOrientation paysage »).
 EN_PLUS=""
 ID_APP=com.myhitbodedut
@@ -25,7 +25,7 @@ ICI=$(cd "$(dirname "$0")" && pwd)
 # Les écrans de Captures.swift, dans l'ordre ; les passes secondaires n'en prennent qu'une partie.
 ECRANS_TOUS="presentation jour depart seance bravo note livres siddour lecteur livre tehilim tikkun tefilot bibliotheque
 halakha hilloulot recherche chizuk conseils chemin journal parcours trophees reglages version zmanim vol musique apercu
-applications dedicace journal-barriere serenite bento pile fete calendrier boussole rappels ajout-temps"
+applications dedicace journal-barriere serenite bento pile fete bilan calendrier boussole rappels ajout-temps"
 ECRANS_COURTS="jour depart seance bravo livres lecteur tehilim recherche chemin journal trophees reglages zmanim vol musique
 calendrier boussole rappels serenite apercu"
 test -n "$ECRANS" || ECRANS=$ECRANS_TOUS
@@ -128,6 +128,14 @@ capturer() {
   case $pid in
     ''|*[!0-9]*) echo "lancement refusé ($nom) : $lance"; pid="" ;;
   esac
+  # L'app dit quand l'écran est ouvert (« CAPTURE PRETE », Captures.ouvrir) ; 60 s au plus, le simulateur de la CI
+  # est lent. Puis le temps que les dernières images se posent.
+  local n=0
+  while vivant "$pid" && ! grep -q "CAPTURE PRETE" "$SORTIE/journaux/$nom.err" 2>/dev/null && [ $n -lt 120 ]; do
+    sleep 0.5
+    n=$((n + 1))
+  done
+  [ $n -ge 120 ] && echo "::warning::$nom : l'écran n'a pas dit qu'il était prêt"
   sleep "$ATTENTE"
   if ! vivant "$pid"; then
     plantage "$udid" "$nom" "$depuis"
