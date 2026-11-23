@@ -22,8 +22,9 @@ import Coeur
 // Activity), le son de fin d'un décompte masqué (`LecteurSon`), la notification « Mazal tov ! »
 // (`Notificateur`). Chacun est facultatif : sans lui, la séance s'inscrit pareil.
 //
-// Restent ailleurs : la notification de fin programmée au début (tâche 17, il faudra pouvoir la retirer à
-// « Terminer »), le widget de la série (StreakWidget.refresh), le magasin `seance` de la barrière (§ 2.1.10).
+// Restent ailleurs : la notification de fin, que pose le planificateur des notifications (PlanNotifications.finDeSeance,
+// `PlanificateurNotifications`) quand l'app le fait repasser au début et à la fin d'une séance, le widget de la série
+// (StreakWidget.refresh), le magasin `seance` de la barrière (§ 2.1.10).
 // « Ne pas déranger » (NePasDeranger.kt) n'a pas d'équivalent : une app ne peut pas activer un mode de
 // concentration (§ 2.2.6).
 
@@ -352,8 +353,10 @@ public final class SeanceEnCours {
             finMontree = debut &+ Int64(SessionRule.plafondOuverte) &* 60_000
         }
         if let activite {
+            let affichee = SeanceAffichee(debut: debut, fin: finMontree, compteur: Store.sessionCounter(reglages: reglages),
+                                          ouverte: Store.isSessionOpen(reglages: reglages))
             do {
-                try await activite.commencer(debut: debut, fin: finMontree)
+                try await activite.commencer(affichee)
             } catch {
                 // Sans Live Activity (refusée dans les réglages d'iOS), la séance court pareil.
             }

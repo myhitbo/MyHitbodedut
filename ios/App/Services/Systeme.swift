@@ -6,8 +6,9 @@ import UIKit
 import UserNotifications
 
 // Les adaptateurs des services d'Ecrans (ECRANS.md, « Ce qui parle au système ») : les notifications locales et
-// l'icône de l'app, branchées sur iOS ; Temps d'écran, la Live Activity et les répercussions des réglages, encore
-// absents (tâches 17, 19, 27 et 28) : ils ne font rien et le disent.
+// l'icône de l'app. Les autres sont à côté : Temps d'écran (TempsEcran.swift), le lieu et la boussole (Lieu.swift,
+// Boussole.swift), le planificateur des notifications et les répercussions des réglages (Notifications.swift), la Live
+// Activity (Activite.swift), la musique.
 
 /// Les notifications locales (`UNUserNotificationCenter`) ; les textes, des `Libelle`, se résolvent dans la langue de
 /// l'app au moment de programmer.
@@ -80,19 +81,3 @@ struct BarriereAbsente: ReglagesBarriereSysteme {
     func nombreDeJetons() async -> Int { 0 }
 }
 
-/// La Live Activity de la séance (tâche 17) : pas encore.
-struct ActiviteAbsente: ActiviteEnDirect {
-    func commencer(debut: Int64, fin: Int64) async throws {}
-    func terminer() async {}
-}
-
-/// Ce que les réglages changés touchent (etat.json, le planificateur, les widgets) : le planificateur des rappels et
-/// les widgets viendront avec leurs tâches (19, 25) ; d'ici là, rien à réécrire.
-struct EffetsAbsents: ReglagesEffets {
-    func repercuter(_ quoi: ReglagesRepercussions, journal: Journal, reglages: Reglages) async {}
-}
-
-/// Les rappels que la présentation replanifie (tâche 19) : pas encore de planificateur branché.
-struct RappelsAbsents: PresentationRappels {
-    func replanifier(_ reglages: Reglages) async {}
-}

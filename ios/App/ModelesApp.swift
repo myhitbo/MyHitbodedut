@@ -24,6 +24,13 @@ final class ModelesApp {
     private let notificateur: NotificateurSysteme
     private let lecteur: ContenusApp.Lecteur
     private let paquet: URL
+    /// La table des hilloulot de la carte du jour, lue une fois, pour Zmanim et le calendrier.
+    private let tableHilloulot: ZmanimHilloulotTable
+    /// La position du téléphone pour les zmanim et la boussole (ChoixLieu.kt) : approximative.
+    private let lieu: LieuSysteme
+
+    /// Les notifications de l'app, posées d'après le plan (rappels, Chabbat, Levana, vol, fin de séance).
+    let planificateur: PlanificateurNotifications
 
     /// La musique et l'ambiance de la séance, et de l'écran Musique.
     let musique: MusiqueLecteur
@@ -56,6 +63,16 @@ final class ModelesApp {
         hilloulot = HilloulotContenus(lecteur: lecteur)
         let notificateur = NotificateurSysteme(traducteur: traducteur)
         self.notificateur = notificateur
+        let tableHilloulot = ZmanimHilloulotTable(lecteur: lecteur)
+        self.tableHilloulot = tableHilloulot
+        let lieu = LieuSysteme(precision: .approchee)
+        self.lieu = lieu
+        let planificateur = PlanificateurNotifications(magasin: magasin, horloge: horloge,
+                                                       centre: CentreNotificationsSysteme(traducteur: traducteur),
+                                                       aeroports: VolModele.lireAeroports(lecteur: lecteur),
+                                                       formats: .langue(traducteur.langue))
+        self.planificateur = planificateur
+        let activite = ActiviteSysteme(traducteur: traducteur)
         #if SANS_BARRIERE
         barriere = false
         #else
@@ -70,7 +87,8 @@ final class ModelesApp {
                                      sortie: SortieAudioSysteme(paquet: paquet, documents: URL.documentsDirectory),
                                      ambiance: SortieAmbianceSysteme())
         self.musique = musique
-        seance = SeanceEnCours(magasin: magasin, horloge: horloge, musique: musique, notificateur: notificateur)
+        seance = SeanceEnCours(magasin: magasin, horloge: horloge, musique: musique, activite: activite,
+                               notificateur: notificateur)
         let tempsEcran = TempsEcranApp(magasin: magasin, horloge: horloge, traducteur: traducteur, paquet: paquet,
                                        palettes: (try? lecteur("palettes.json")).flatMap { try? Palettes.lire($0) })
         self.tempsEcran = tempsEcran
@@ -82,26 +100,25 @@ final class ModelesApp {
         textes = TextesModele(magasin: magasin, contenus: contenus, horloge: horloge, langue: langue,
                               signalMusique: SignalMusiqueSeance(lecteur: musique), relecture: false)
         chemin = CheminModele(magasin: magasin, horloge: horloge)
-        zmanim = ZmanimModele(magasin: magasin, horloge: horloge, contenus: contenus, traducteur: traducteur)
+        zmanim = ZmanimModele(magasin: magasin, horloge: horloge, contenus: contenus, hilloulot: tableHilloulot,
+                              localisation: lieu, autorisation: lieu, traducteur: traducteur)
         reglages = ReglagesModele(magasin: magasin, contenus: contenus, horloge: horloge, notificateur: notificateur,
-                                  tempsEcran: tempsEcran, activite: ActiviteAbsente(), barriere: tempsEcran,
-                                  icone: IconeSysteme(), effets: EffetsAbsents(), avecBarriere: barriere, langue: langue,
-                                  version: ModelesApp.version())
+                                  tempsEcran: tempsEcran, activite: activite, barriere: tempsEcran,
+                                  icone: IconeSysteme(), effets: EffetsSysteme(planificateur: planificateur),
+                                  avecBarriere: barriere, langue: langue, version: ModelesApp.version())
     }
 
     /// Le magasin lu sur les fichiers du dossier de l'app (le conteneur du groupe d'apps quand la signature le donne,
     /// sinon Application Support). Une lecture impossible (une copie de côté refusée) laisse l'app en mémoire plutôt
     /// que de ne pas s'ouvrir.
     static func charger(paquet: URL, traducteur: Traducteur) async -> ModelesApp {
-        let groupe = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.myhitbodedut")
-        let dossier = groupe ?? URL.applicationSupportDirectory.appending(path: "MyHitbodedut")
         let magasin: Magasin
         if let demo = await Captures.magasinDemo(paquet: paquet, langue: traducteur.langue) {
             // Les captures d'écran de la CI (Captures.swift) : la démonstration, en mémoire.
             magasin = demo
         } else {
             do {
-                magasin = try await Magasin.charger(PersistanceFichiers(dossier: dossier))
+                magasin = try await Magasin.charger(PersistanceFichiers(dossier: DossierApp.app))
             } catch {
                 magasin = Magasin.enMemoire()
             }
@@ -115,6 +132,15 @@ final class ModelesApp {
         // Les fins de morceau et les interruptions, le temps de l'app (MusiqueLecteur.ecouter).
         let musique = modeles.musique
         Task { await musique.ecouter() }
+        // « Terminer maintenant » de la Live Activity et du widget de la série (TerminerSeanceIntent).
+        let seance = modeles.seance
+        PontSeance.terminer = { try? await seance.terminer() }
+        // Les boutons du rappel, puis les notifications d'après le plan (BootReceiver : au lancement).
+        CentreNotificationsSysteme.enregistrerCategories(traducteur)
+        DossierApp.retenirLangue(traducteur.langue)
+        let planificateur = modeles.planificateur
+        ReportDuRappel.planificateur = planificateur
+        Task { await planificateur.replanifier() }
         return modeles
     }
 
@@ -204,16 +230,54 @@ final class ModelesApp {
     }
 
     func presentation() -> PresentationModele {
-        PresentationModele(magasin: magasin, notificateur: notificateur, rappels: RappelsAbsents(),
+        PresentationModele(magasin: magasin, notificateur: notificateur, rappels: planificateur,
                            avecBarriere: barriere)
     }
 
-    /// Le vol, hors ligne : le billet lu sur le téléphone (Vision, App/Services/Billet.swift) ; ni relais, ni relevé de
-    /// position tant que leurs adaptateurs ne sont pas écrits.
+    /// Le vol, hors ligne (décision D10 : ni relais ni services en ligne) : le billet lu sur le téléphone (Vision,
+    /// App/Services/Billet.swift), le relevé GPS, qui marche en mode avion ; ses rappels passent par le planificateur
+    /// des notifications.
     func vol() -> VolModele {
         VolModele(magasin: magasin, horloge: horloge, aeroports: VolModele.lireAeroports(lecteur: lecteur),
-                  notificateur: notificateur, lecteurBillet: LecteurBilletSysteme(), traducteur: traducteur,
-                  formats: .langue(langue))
+                  notificateur: NotificateurDuPlan(systeme: notificateur, planificateur: planificateur),
+                  retrait: planificateur, localisation: LieuSysteme(precision: .gps),
+                  lecteurBillet: LecteurBilletSysteme(), traducteur: traducteur, formats: .langue(langue))
+    }
+
+    // MARK: Le ciel : le calendrier, la boussole ; les rappels
+
+    /// Le calendrier : le choix du lieu est celui de Zmanim.
+    func calendrier() -> CalendrierModele {
+        CalendrierModele(magasin: magasin, horloge: horloge, contenus: contenus, hilloulot: tableHilloulot,
+                         choixLieu: zmanim.choixLieu, langue: langue)
+    }
+
+    /// La boussole de Jérusalem : CoreMotion, la position approximative, et son widget redessiné.
+    func boussole() -> BoussoleModele {
+        BoussoleModele(magasin: magasin, contenus: contenus, horloge: horloge, traducteur: traducteur,
+                       tableaux: tableauxBoussole(), capteur: BoussoleCapteurSysteme(), localisation: lieu,
+                       autorisationLieu: lieu, rafraichissement: BoussoleRafraichissementSysteme())
+    }
+
+    /// Les points cardinaux de la langue (Tableaux.json) ; ceux du français si le fichier manque.
+    private func tableauxBoussole() -> BoussoleTableaux {
+        if let donnees = try? Data(contentsOf: paquet.appending(path: "Chaines/Tableaux.json")),
+           let tableaux = try? BoussoleTableaux(donnees: donnees, langue: langue) {
+            return tableaux
+        }
+        return BoussoleTableaux(points: ["N", "NE", "E", "SE", "S", "SO", "O", "NO"], cardinaux: ["N", "E", "S", "O"])
+    }
+
+    func rappels() -> RappelsModele {
+        let planificateur = self.planificateur
+        return RappelsModele(magasin: magasin, notificateur: notificateur, rappels: planificateur,
+                             plan: { planificateur.plan })
+    }
+
+    /// Ajouter du temps à un jour (AjoutTemps.kt) ; nil pour un jour à venir.
+    func ajoutTemps(_ jour: JourCivil) -> AjoutTempsModele? {
+        AjoutTempsModele(magasin: magasin, horloge: horloge, systeme: AjoutTempsSystemeApp(planificateur: planificateur),
+                         date: jour)
     }
 
     /// L'écran Musique : l'écoute d'essai et l'aperçu d'ambiance ont leurs propres sorties, à côté de la séance.

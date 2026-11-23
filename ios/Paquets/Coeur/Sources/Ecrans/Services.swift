@@ -31,10 +31,23 @@ public struct NotificationPrevue: Sendable, Hashable, Identifiable {
     }
 }
 
+/// Où en est l'autorisation de notifier (`UNAuthorizationStatus`) : la demande partagée de DemandeNotifications.kt
+/// pose la question tant qu'iOS ne l'a pas posée, et mène aux Réglages d'iOS une fois la réponse donnée.
+public enum EtatNotifications: Sendable, Hashable {
+    case accordee
+    /// iOS a déjà eu la réponse : une nouvelle demande ne montrerait rien (`PermissionRules.refusSansQuestion`).
+    case refusee
+    /// iOS n'a pas encore posé la question.
+    case aDemander
+}
+
 /// Les notifications locales (`UNUserNotificationCenter` dans l'app).
 public protocol Notificateur: Sendable {
     /// L'autorisation de notifier est-elle accordée ? Sans rien demander.
     func autorisation() async -> Bool
+    /// Où en est l'autorisation, sans rien demander ; d'origine, d'après `autorisation()` (une autorisation
+    /// manquante est alors à demander).
+    func etatAutorisation() async -> EtatNotifications
     /// Demande l'autorisation (iOS ne pose la question qu'une fois) ; vrai si elle est accordée.
     func demanderAutorisation() async -> Bool
     /// Programme ces notifications ; une notification déjà prévue sous le même identifiant est remplacée, les
@@ -44,6 +57,12 @@ public protocol Notificateur: Sendable {
     func annulerTout() async
 }
 
+extension Notificateur {
+    public func etatAutorisation() async -> EtatNotifications {
+        await autorisation() ? .accordee : .aDemander
+    }
+}
+
 /// Un notificateur qui garde ce qu'on lui confie.
 public actor FauxNotificateur: Notificateur {
     /// Les notifications prévues, dans l'ordre où elles ont été programmées.
@@ -51,13 +70,22 @@ public actor FauxNotificateur: Notificateur {
     public private(set) var demandes = 0
     public private(set) var annulations = 0
     private let accordee: Bool
+    private let dejaRefusee: Bool
 
-    public init(accordee: Bool = true) {
+    /// `dejaRefusee` : iOS a déjà eu la réponse, une demande ne montrerait rien.
+    public init(accordee: Bool = true, dejaRefusee: Bool = false) {
         self.accordee = accordee
+        self.dejaRefusee = dejaRefusee
     }
 
     public func autorisation() -> Bool {
         accordee
+    }
+
+    /// Accordée, ou refusée dès qu'iOS a posé la question une fois.
+    public func etatAutorisation() -> EtatNotifications {
+        if accordee { return .accordee }
+        return dejaRefusee || demandes > 0 ? .refusee : .aDemander
     }
 
     public func demanderAutorisation() -> Bool {
@@ -95,6 +123,9 @@ public struct PositionApprochee: Sendable, Hashable {
 /// Ce qu'une demande de position rend.
 public enum ReponseLocalisation: Sendable, Hashable {
     case position(PositionApprochee)
+    /// Pas de position fraîche à temps : la dernière connue du téléphone, vieille de `age` millisecondes
+    /// (ChoixLieu.ancienne : « Pas de position fraîche : la dernière connue est utilisée. »).
+    case ancienne(PositionApprochee, age: Int64)
     /// L'autorisation est refusée : l'écran propose de choisir une ville.
     case refusee
     /// Aucune position en un temps raisonnable (hors ligne, à l'intérieur).
@@ -185,18 +216,64 @@ public actor FauxTempsEcran: TempsEcran {
 
 // MARK: Live Activity
 
+/// La séance telle que la Live Activity la montre, comme la notification de SessionService.kt : « Hitbodedout en
+/// cours », puis le temps qui reste (séance minutée), le temps passé (séance sans durée), ou, compteur masqué, une
+/// phrase sans chiffre (runningText, audit FSEANCE-05) ; et « Terminer maintenant ».
+public struct SeanceAffichee: Sendable, Hashable {
+    /// Le début et la fin prévue, en millisecondes Unix ; sans durée, la fin est le plafond de 240 minutes, où la
+    /// séance sera close.
+    public let debut: Int64
+    public let fin: Int64
+    /// Store.sessionCounter : reste, écoulé ou masqué.
+    public let compteur: SessionRule.Compteur
+    /// Une séance sans durée (Store.isSessionOpen).
+    public let ouverte: Bool
+
+    public init(debut: Int64, fin: Int64, compteur: SessionRule.Compteur, ouverte: Bool) {
+        self.debut = debut
+        self.fin = fin
+        self.compteur = compteur
+        self.ouverte = ouverte
+    }
+
+    /// « Hitbodedout en cours ».
+    public var titre: Libelle { Libelle("session_running_title") }
+
+    /// La phrase du compteur masqué ; nil quand le minuteur s'affiche (le temps qui reste, ou le temps passé).
+    public var texteMasque: Libelle? {
+        guard compteur == .masque else { return nil }
+        return Libelle(ouverte ? "session_running_open_hidden" : "session_running_hidden")
+    }
+
+    /// Le minuteur descend vers la fin (séance minutée) ou monte depuis le début (séance sans durée).
+    public var decompte: Bool { compteur == .reste }
+
+    /// « Terminer maintenant » (SessionService.ACTION_FINISH).
+    public var terminer: Libelle { Libelle("session_finish_now") }
+}
+
 /// La séance en cours sur l'écran verrouillé et dans l'île dynamique (ActivityKit dans l'app,
 /// PORTAGE.md § 2.2.1).
 public protocol ActiviteEnDirect: Sendable {
     /// Montre la séance : son début et sa fin prévue, en millisecondes Unix.
     func commencer(debut: Int64, fin: Int64) async throws
+    /// Montre la séance avec son compteur ; d'origine, `commencer(debut:fin:)`.
+    func commencer(_ seance: SeanceAffichee) async throws
     /// La retire : la séance est finie ou abandonnée.
     func terminer() async
+}
+
+extension ActiviteEnDirect {
+    public func commencer(_ seance: SeanceAffichee) async throws {
+        try await commencer(debut: seance.debut, fin: seance.fin)
+    }
 }
 
 public actor FausseActiviteEnDirect: ActiviteEnDirect {
     /// La séance montrée (début, fin) ; nil sans séance.
     public private(set) var seance: (debut: Int64, fin: Int64)?
+    /// Ce qu'elle montre ; nil sans séance.
+    public private(set) var affichee: SeanceAffichee?
 
     public init() {}
 
@@ -204,7 +281,13 @@ public actor FausseActiviteEnDirect: ActiviteEnDirect {
         seance = (debut: debut, fin: fin)
     }
 
+    public func commencer(_ seance: SeanceAffichee) {
+        self.seance = (debut: seance.debut, fin: seance.fin)
+        affichee = seance
+    }
+
     public func terminer() {
         seance = nil
+        affichee = nil
     }
 }

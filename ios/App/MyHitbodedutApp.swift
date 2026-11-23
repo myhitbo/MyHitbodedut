@@ -11,6 +11,8 @@ import Vues
 /// reçoivent ce qu'il en tire.
 @main
 struct MyHitbodedutApp: App {
+    /// Le délégué des notifications, posé dès le lancement : une notification touchée qui lance l'app ne se perd pas.
+    @UIApplicationDelegateAdaptor(DelegueApp.self) private var delegue
     @State private var modeles: ModelesApp? = nil
     private let paquet: URL
     private let traducteur: Traducteur
@@ -56,6 +58,11 @@ struct MyHitbodedutApp: App {
             .environment(\.layoutDirection,
                          Traducteur.deDroiteAGauche(traducteur.langue) ? .rightToLeft : .leftToRight)
         }
+        // Le rafraîchissement que iOS accorde en arrière-plan, sans garantie : les notifications des dix jours
+        // suivants et les widgets (PORTAGE.md § 2.2.2, BootReceiver).
+        .backgroundTask(.appRefresh(ReplanificationFond.identifiant)) { [modeles, paquet, traducteur] in
+            await ReplanificationFond.executer(modeles: modeles, paquet: paquet, traducteur: traducteur)
+        }
     }
 
     /// Le traducteur des `Libelle`, dans la langue de l'app : la première des langues préférées que l'app livre (la
@@ -63,7 +70,7 @@ struct MyHitbodedutApp: App {
     /// et l'arabe de Tunisie seulement ; sinon l'anglais (Traducteur.langueDuTelephone, LangueApp d'Android). Il
     /// lit les catalogues copiés tels quels sous Chaines/ : celui d'Android, puis celui des chaînes propres à iOS.
     /// Sans catalogue lisible, chaque libellé montre sa clé : ce qui se voit, au lieu de se taire.
-    private static func traducteur(paquet: URL) -> Traducteur {
+    static func traducteur(paquet: URL) -> Traducteur {
         let langue = Traducteur.langueDuTelephone(Locale.preferredLanguages)
         let chaines = paquet.appending(path: "Chaines")
         let catalogues = ["Localizable.xcstrings", "ios.xcstrings"].compactMap { nom in

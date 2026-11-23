@@ -16,6 +16,9 @@ targets:
           - Vues
           # L'état de Temps d'écran que l'app constate (Constat), pour les adaptateurs d'App/Services.
           - Barriere
+      # Lié explicitement : sans lui, l'extraction des métadonnées d'AppIntents est sautée, et l'action « Terminer
+      # maintenant » de la Live Activity (TerminerSeanceIntent) ne serait pas trouvée.
+      - sdk: AppIntents.framework
       - target: Widgets
     settings:
       base:

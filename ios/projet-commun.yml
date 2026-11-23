@@ -31,6 +31,9 @@ targetTemplates:
     platform: iOS
     sources:
       - App
+      # Ce que l'app partage avec l'extension des widgets : le dossier du groupe, les attributs de la Live Activity
+      # et l'action « Terminer maintenant » (Widgets/Commun, compilé dans les deux cibles).
+      - Widgets/Commun
       # Les ressources exportées par tools/export_contenu (PORTAGE.md § 4.2), en dossiers : le paquet de l'app
       # garde leur arborescence (Contenu/livres/<id>/…, Images/<nom>.webp, Polices/licences/…).
       - path: Ressources/Contenu
@@ -65,6 +68,21 @@ targetTemplates:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
+        # La position du téléphone (PORTAGE.md § 2.2.5) : approximative par défaut, comme ACCESS_COARSE_LOCATION ;
+        # précise pour une fois au relevé GPS du vol. Les phrases sont traduites dans Chaines/InfoPlist.xcstrings.
+        NSLocationWhenInUseUsageDescription: "Your location is only used for zmanim, the direction of Jerusalem and, in flight, the times below the plane. It stays on the device."
+        NSLocationDefaultAccuracyReduced: true
+        NSLocationTemporaryUsageDescriptionDictionary:
+          vol: "A precise GPS fix realigns the plane's route and the in-flight zmanim."
+        # La séance sur l'écran verrouillé et dans l'île dynamique (tâche 17).
+        NSSupportsLiveActivities: true
+        # Les adresses des widgets, de la Live Activity et des notifications (LienApp).
+        CFBundleURLTypes:
+          - CFBundleURLName: com.myhitbodedut
+            CFBundleURLSchemes: [myhitbodedut]
+        # Le rafraîchissement d'arrière-plan qui replanifie les notifications (ReplanificationFond, tâche 19).
+        BGTaskSchedulerPermittedIdentifiers: [com.myhitbodedut.replanifier]
+        UIBackgroundModes: [fetch]
         # Toutes les orientations, comme Android (aucun screenOrientation, layout-land) ; l'iPad les quatre, pour le
         # partage d'écran (tâche 29).
         UISupportedInterfaceOrientations:
@@ -113,10 +131,25 @@ targets:
         # XCTest et ses fermetures d'audit, sans le contrôle strict de Swift 6 : un test, pas du code livré.
         SWIFT_VERSION: "5.0"
 
+  # Les widgets (tâche 25) et la Live Activity de la séance (tâche 17). Ils lisent le journal et les réglages dans le
+  # conteneur du groupe d'apps (Depot), calculent comme l'app (Coeur), traduisent avec ses catalogues (Chaines/), et
+  # prennent les couleurs choisies dans palettes.json.
   Widgets:
     type: app-extension
     platform: iOS
-    sources: [Widgets]
+    sources:
+      - Widgets
+      - path: Ressources/Chaines
+        type: folder
+      - path: Ressources/Contenu/palettes.json
+        buildPhase: resources
+    dependencies:
+      - package: Coeur
+        products:
+          - Coeur
+          - Ecrans
+      # Les boutons « Terminer maintenant » (TerminerSeanceIntent) : l'extraction des métadonnées d'AppIntents le veut.
+      - sdk: AppIntents.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.widgets
@@ -126,6 +159,8 @@ targets:
         CFBundleDisplayName: MyHitbodedut
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [fr, en, he, es, ar-TN]
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
