@@ -148,6 +148,8 @@ targets:
         products:
           - Coeur
           - Ecrans
+      # Les boutons « Terminer maintenant » (TerminerSeanceIntent) : l'extraction des métadonnées d'AppIntents le veut.
+      - sdk: AppIntents.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.widgets
