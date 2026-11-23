@@ -1,0 +1,167 @@
+== exam-01-bienvenue
+== exam-03-choix-version
+== exam-04-today
+PETIT 363x32dp Button today_offline «Done without the phone»
+== exam-05-settings
+PETIT 88x41dp Button ouverture_button «Opening screen: Today»
+== exam-06-carte-etat
+== exam-09-retour-reglages
+== exam-10-apercu
+== exam-11-apercu-bas
+== exam-13-carte-autorisations
+PETIT 344x33dp Button dedicace_button «Dedicate»
+== exam-16-autorisations-accordees
+PETIT 344x33dp Button dedicace_button «Dedicate»
+== exam-17-carte-mode
+== exam-18-liste-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== exam-19-application-choisie
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== exam-20-plage
+PETIT 344x29dp Button preview_gate «Preview the “I am with Hashem”»
+PETIT 52x30dp Switch hide_countdown_switch «Hide the countdown»
+== exam-21-etat-arme
+PETIT 52x42dp Switch hilloulot_switch «Show hillulot»
+PETIT 94x47dp Button name_button «First name: Not set»
+== exam-22-barriere-reelle
+== exam-23-barriere-reelle-bas
+== exam-25-rythme
+PETIT 101x35dp Button window_start «“I am with Hashem” hours: 6:00»
+PETIT 110x35dp Button window_end «“I am with Hashem” hours: 11:0»
+== exam-26-mode-coupe
+PETIT 104x40dp Button region_button «Region: Diaspora»
+== fr-gestes-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-gestes-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-gestes-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-gestes-version-pile-4
+== fr-gestes-version-bento
+== fr-gestes-version-bento-bas
+== fr-gestes-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x12dp LinearLayout  «»
+MUET LinearLayout  (42, 2305, 1038, 2337)
+== fr-gestes-version-instant-bas
+== fr-gestes-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== fr-gestes-version-serenite-bas
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x40dp TextView  «Tout voir»
+PETIT 54x40dp TextView  «Tout voir»
+== fr-boutons-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-boutons-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-boutons-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-boutons-version-pile-4
+== fr-boutons-version-bento
+== fr-boutons-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+== fr-boutons-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== gestes-seance-en-cours
+== gestes-seance-calme
+== gestes-seance-apres
+== boutons-seance-en-cours
+== boutons-seance-calme
+== boutons-seance-apres
+== gestes-barriere-etat
+PETIT 96x7dp Button ouverture_button «Écran d’ouverture : Le Jour»
+PETIT 52x19dp Switch enable_switch «Je suis avec Hachem»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+PETIT 363x38dp Button blocker_snooze «Plus tard (15 min)»
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 52x30dp Switch levana_switch «Afficher Birkat haLevana»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+PETIT 363x14dp Button blocker_snooze «Plus tard (15 min)»
+== boutons-barriere-reelle-bas
+== gestes-barriere-apres-redemarrage
+PETIT 363x38dp Button blocker_snooze «Plus tard (15 min)»
+== fr-presentation-1
+== fr-presentation-2
+== fr-presentation-3
+== fr-presentation-4
+== fr-presentation-5
+== fr-presentation-6
+== fr-presentation-7
+== fr-presentation-8
+== fr-presentation-9
+PETIT 363x32dp Button today_offline «Je l’ai faite sans le téléphon»
+== en-presentation-1
+== en-presentation-2
+== en-presentation-3
+== en-presentation-4
+== en-presentation-5
+== en-presentation-6
+== en-presentation-7
+== en-presentation-8
+== en-presentation-9
+PETIT 363x32dp Button today_offline «Done without the phone»
+== he-presentation-1
+== he-presentation-2
+== he-presentation-3
+== he-presentation-4
+== he-presentation-5
+== he-presentation-6
+== he-presentation-7
+== he-presentation-8
+== he-presentation-9
+PETIT 363x32dp Button today_offline «התבודדתי בלי הטלפון»
+== es-presentation-1
+== es-presentation-2
+== es-presentation-3
+== es-presentation-4
+== es-presentation-5
+== es-presentation-6
+== es-presentation-7
+== es-presentation-8
+== es-presentation-9
+PETIT 363x32dp Button today_offline «La hice sin el teléfono»
+== ar-presentation-1
+== ar-presentation-2
+== ar-presentation-3
+== ar-presentation-4
+== ar-presentation-5
+== ar-presentation-6
+== ar-presentation-7
+== ar-presentation-8
+== ar-presentation-9
+PETIT 363x32dp Button today_offline «عملتها من غير التليفون»
