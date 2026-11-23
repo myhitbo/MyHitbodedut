@@ -88,8 +88,8 @@ version tant qu'aucune n'est retenue (`AccueilRoute.choixVersion`, MainActivity.
 Un modèle ne pousse rien lui-même : il ajoute une route à sa file (`routes`), ou la vue reçoit une fermeture
 `ouvrir(route)` ; la racine (`ios/App/Racine.swift`) traduit la route en `Ecran`, qu'elle pousse dans la pile de
 l'onglet choisi (les trois piles partagent leurs destinations), ou en feuille par-dessus (`Pardessus` : la
-présentation, le bravo, la note, les marque-pages). Une route dont l'écran n'est pas encore porté est retirée sans
-rien ouvrir. Une vue qui pousse ses propres valeurs (`BibliothequeRoute`, `TehilimRoute`) pose leur
+présentation, le bravo, la note, les marque-pages, l'ajout de temps). Une route dont l'écran n'est pas encore porté est
+retirée sans rien ouvrir. Une vue qui pousse ses propres valeurs (`BibliothequeRoute`, `TehilimRoute`) pose leur
 `navigationDestination` elle-même : la pile, typée-effacée, les accepte.
 
 Les modèles partagés (le magasin, la séance en cours, sa musique et son mini-lecteur, l'accueil et celui des
@@ -98,8 +98,23 @@ construits une fois par `ios/App/ModelesApp.swift`, sur le magasin des fichiers 
 (`PersistanceFichiers`, l'acteur `Depot`) ; les autres, à l'ouverture de leur écran, gardés le temps de l'écran par
 `Garde` (Racine.swift) : la destination de la pile est recalculée à chaque dessin, le modèle ne doit pas l'être. Les
 services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance, lecture
-du billet du vol par Vision ;
-Temps d'écran, Live Activity et répercussions des réglages sont encore des adaptateurs vides, qui le disent).
+du billet du vol par Vision ; la position par CoreLocation et la boussole par CoreMotion, `Lieu.swift`,
+`Boussole.swift` ; le planificateur des notifications posé dans le centre d'iOS et les répercussions des réglages,
+`Notifications.swift` ; la Live Activity, `Activite.swift` ; Temps d'écran, avec la barrière).
+
+Ce qui vient d'hors de l'app passe par une adresse « myhitbodedut:// » (`LienApp`, Ecrans, testé sous Linux) : les
+widgets et la Live Activity l'ouvrent (`onOpenURL`), une notification la garde dans son `userInfo`. Le délégué des
+notifications (posé dès le lancement par `DelegueApp`) et `onOpenURL` la confient à `Aiguillage`, que la racine vide
+une à une (`GestesExterieurs`, `ios/App/Gestes.swift`) : l'écran demandé s'ouvre sur le Jour, « Plus tard » reporte
+le rappel, « Terminer maintenant » clôt la séance. Le même modificateur fait repasser le planificateur des
+notifications (`PlanificateurNotifications`, sur `PlanNotifications`) et redessiner les widgets au retour au premier
+plan, en partant en arrière-plan, au début et à la fin d'une séance.
+
+Les widgets (`ios/Widgets`) lisent le journal et les réglages dans le conteneur du groupe d'apps (`Depot`, en lecture),
+calculent avec Coeur (`Chronologies`, `Store`, `DirectionJerusalem`) et traduisent avec les catalogues de l'app
+(copiés dans l'extension ; la langue de l'app est retenue dans les préférences du groupe). `ios/Widgets/Commun` est
+compilé dans l'app et dans l'extension : le dossier du groupe, les genres des widgets, les attributs de la Live
+Activity et `TerminerSeanceIntent`.
 
 La langue de l'app est la première des langues préférées qu'elle livre (`Traducteur.langueDuTelephone`) ; la
 racine pose `\.locale` (l'arabe est `ar-TN`) et `\.layoutDirection` (l'hébreu et l'arabe de droite à gauche). Le

@@ -189,6 +189,7 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 - **Sources** : `SessionService.kt`, `Notifications.kt` ; § 2.2.1.
 - **Livrable** : Live Activity et Dynamic Island, notification de fin, option « minuterie système », actions « Commencer » et « Terminer », réconciliation au retour.
 - **Critère de fin** : tests : une séance de 20 minutes constatée trois heures plus tard inscrit 20 minutes au jour de son début ; une séance sans durée oubliée est plafonnée à 240 ; « Terminer » avant une minute pleine n'inscrit rien. Captures de la Live Activity dans ses trois états (reste, écoulé, masqué).
+- **État (23/11)** : fait, compilé par la CI, pas encore vu sur un téléphone. La réconciliation et ses trois tests (SeanceEnCoursTests) ; la Live Activity sur ActivityKit (`App/Services/Activite.swift`, attributs dans `Widgets/Commun`, `NSSupportsLiveActivities`), posée et retirée par `SeanceEnCours`, ce qu'elle montre testé (`SeanceAffichee` : reste, écoulé, masqué) ; l'écran verrouillé et l'île dynamique (`Widgets/SeanceActivite.swift`, minuteur `Text(timerInterval:)`) ; « Terminer maintenant » sans ouvrir l'app (`TerminerSeanceIntent`, aussi sur le widget de la série) ; la notification de fin posée par le planificateur (tâche 19). Restent les captures (la CI ne montre pas l'écran verrouillé) et l'option « minuterie système ».
 
 ### 18. Musique et ambiances
 
@@ -201,6 +202,7 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 - **Livrable** : le planificateur branché sur les notifications du système, les actions « Commencer » et « Plus tard », l'écran des rappels, la tâche de rafraîchissement, un écran de diagnostic qui liste les notifications en attente ; la construction `SANS_BARRIERE` en TestFlight interne.
 - **Critère de fin** : sur simulateur, les demandes en attente sont exactement celles du plan ; **recette R3** réussie.
 - **Où** : macOS, iPhone.
+- **État (23/11)** : le planificateur branché (`PlanificateurNotifications`, Ecrans : l'attente égale le plan, testé sous Linux sur un faux centre ; `App/Services/Notifications.swift` sur `UNUserNotificationCenter`, 56 notifications au plus), repassé au lancement, au premier plan, en arrière-plan, au début et à la fin d'une séance et après chaque réglage, présentation, rappel ou vol ; « Commencer » et « Plus tard » ; un toucher ouvre la séance, Birkat haLevana ou la prière du vol (`LienApp`) ; le trophée annoncé noté une fois ; l'écran des rappels (`RappelsModele`, `RappelsVue`, ouvert depuis les Livres) avec la demande partagée des notifications. Restent : la tâche de rafraîchissement en arrière-plan (`BGAppRefreshTask`), l'écran de diagnostic des notifications en attente, la construction TestFlight et la recette R3, qui demandent un téléphone.
 
 ### 20. Paliers et trophées à l'écran
 
@@ -230,16 +232,19 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 
 - **Sources** : `ZmanimActivity.kt`, `VueJour.kt`, `CalendrierActivity.kt`, `ChoixLieu.kt`, `Levana.kt` (dessin), `PartageJour.kt`.
 - **Critère de fin** : captures des mêmes jours que `captures-calendrier/zmanim-*.png`, mêmes ajouts, mêmes horaires à la minute ; avec la position simulée, le lieu devient « Ma position · près de … » en précision approximative ; l'image de partage est engendrée par un test.
+- **État (23/11)** : la position du téléphone (`App/Services/Lieu.swift` : CoreLocation, approximative par défaut, `NSLocationDefaultAccuracyReduced`, raison traduite dans `Chaines/InfoPlist.xcstrings`) branchée sur `LieuModele` : « Ma position · près de … » d'après la ville la plus proche, coordonnées exactes pour le calcul, reprise sans bruit quand elle est permise, et ses messages ; le choix d'une ville reste. Le calendrier (`CalendrierVue`, ouvert depuis Zmanim) et l'ajout de temps (`AjoutTempsVue`) ; le partage du jour (`PartageJourLien` : l'image de `PartageImage` rendue au moment de partager). Restent les captures des jours de `captures-calendrier/` et l'essai de la position simulée.
 
 ### 25. Boussole et widgets
 
 - **Sources** : `BoussoleActivity.kt`, `BoussoleDessin.kt`, `BoussoleView.kt`, `BoussoleWidget.kt`, `StreakWidget.kt`, `VignetteDecor.kt`, `ZmanimVignette.kt` ; § 2.2.3, § 2.2.5.
 - **Critère de fin** : captures des widgets dans les trois familles et sur l'écran verrouillé, en clair, sombre et teinté ; captures de la boussole pour six caps. La boussole réelle se voit en recette R4.
+- **État (23/11)** : la boussole branchée (`App/Services/Boussole.swift` : CoreMotion, la gravité et le champ calibré, la matrice de `getRotationMatrix` et `remapCoordinateSystem` portée et testée, `Boussole.matriceCoreMotion` et `remapper` ; la calibration de `CMMagneticFieldCalibrationAccuracy`), ouverte depuis Zmanim et son widget. Les widgets réels (`ios/Widgets`) : la série en trois tailles, les trois vignettes des zmanim sur `Chronologies` (une entrée par zman et toutes les dix minutes), leur pendant de l'écran verrouillé, la boussole ; ils lisent le conteneur du groupe d'apps, dans la langue de l'app, aux couleurs choisies. Restent les captures (la CI ne pose pas de widget) et la recette R4.
 
 ### 26. Vol à l'écran
 
 - **Sources** : `VolActivity.kt`, `LecteurBillet.kt`, `VolAlerte.kt`.
 - **Critère de fin** : un test d'interface saisit « El Al Lyon TLV demain 11h » et obtient la carte du vol puis la frise ; un billet PDF d'essai est lu par Vision ; les notifications du vol posées égalent le plan ; sans adresse de relais, aucun élément des services en ligne n'apparaît et aucune requête ne part.
+- **État (23/11), la part du lieu** : le relevé GPS (`LieuSysteme(precision: .gps)` : la position précise demandée pour une fois, clé « vol » de `NSLocationTemporaryUsageDescriptionDictionary`, 2 min 30 d'attente, sans réseau) recale la route ; les rappels du vol passent par le planificateur (les quatorze places du plan, le texte du siddour à ouvrir). Les services en ligne restent hors du port (D10).
 
 ## F. La barrière
 
@@ -343,10 +348,10 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 | Pastille « Avec Hachem » | `GateStatus.pastilleDe`, `GateRule.geste` d'après Temps d'écran | — |
 | Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele` (et l'aperçu des trois couleurs), ligne des réglages, le choix proposé au retour de la présentation (`AccueilRoute.choixVersion`) ; les accueils Sérénité, Bento et Pile (`AccueilVersionModele`, `SereniteVue` et son paysage du ciel, `BentoVue` et ses tuiles vivantes, `PileVue` et ses quatre cartes), posés par la racine à la place des onglets ; leurs polices (Bellefair, Heebo, Secular One, Rubik) | — |
 | Espagnol, arabe de Tunisie | localisations es et ar-TN déclarées (`CFBundleLocalizations`, catalogues `Catalogue/` en « ar-TN ») ; `Traducteur.langueDuTelephone` (LangueApp.livree) ; l'app de droite à gauche en arabe | le choix de la langue reste dans les Réglages d'iOS (§ 2.2.7) : iOS n'a pas d'équivalent sûr au sélecteur d'Android dans l'app |
-| Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot ; leurs cartes dans `ZmanimVue`, avec le choix du lieu par les villes | la position du téléphone (adaptateur de `Localisation`), le calendrier, la boussole et le partage depuis Zmanim |
+| Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot ; leurs cartes dans `ZmanimVue`, avec le choix du lieu par les villes ou la position du téléphone (`LieuSysteme`) ; le calendrier, la boussole et le partage du jour depuis Zmanim | — |
 | Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`) ; les vues du lecteur compilées et ouvertes depuis les Livres, la recherche et le Jour | — |
 | Audit : journal, durées | corriger ou retirer un jour (`Store.corrigerJour`), durée réglable refusée sans être ramenée (`DureeSeance.valide`) | — |
-| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim ; le billet (`VolBilletBouton` : l'appareil photo par VisionKit, une photo ou un PDF lus par Vision dans `LecteurBilletSysteme`, puis `CarteEmbarquement`) | le relevé GPS et les services en ligne (leurs adaptateurs), le test d'interface de la tâche 26 ; la lecture du billet par l'appareil photo reste à essayer sur un téléphone |
+| Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim ; le billet (`VolBilletBouton` : l'appareil photo par VisionKit, une photo ou un PDF lus par Vision dans `LecteurBilletSysteme`, puis `CarteEmbarquement`) | les services en ligne (D10), le test d'interface de la tâche 26 ; la lecture du billet par l'appareil photo et le relevé GPS (`LieuSysteme`, branché) restent à essayer sur un téléphone |
 | Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture, historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
 | Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit | le code des trois extensions (tâches 27 et 28) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
 
@@ -356,20 +361,22 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 | --- | --- | --- |
 | Le Jour | `AccueilVue`, `BarreDepart`, `feuilleDepart`, `feteDesTrophees` | réel, avec la fête des trophées neufs |
 | Les accueils des versions | `AccueilVersionVue` : `SereniteVue`, `BentoVue`, `PileVue` ; `ChoixVersionVue` | réels : la version choisie remplace aussitôt les onglets |
-| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels, avec la musique, l'ambiance et le mini-lecteur ; sans Live Activity (tâche 17) |
+| La séance, le bravo, la note | `SeanceVue`, `CelebrationEcran`, `JournalNoteVue` | réels, avec la musique, l'ambiance et le mini-lecteur ; la Live Activity et l'île dynamique (`Widgets/SeanceActivite.swift`) |
 | La musique | `MusiqueVue` sur `MusiqueLecteur`, ouverte depuis le volet ; `App/Services/Musique.swift` (AVAudioPlayer, AVAudioEngine, copie des morceaux ajoutés, pochettes) | réelle ; le mini-lecteur (`MusiqueMiniLecteurVue`) posé sur l'écran de séance |
 | Les Livres | `TextesVue` ; siddour, lecteur, Tehilim, Tikoun, Tefilot, sources et livres, halakha, hilloulot, recherche, 'hizouk, conseils | réels |
 | Le Chemin | `CheminVue` (et le mois en barres), `JournalVue`, `ParcoursVue`, `PaliersVue` | réels |
 | Les réglages | `ReglagesVue`, `ChoixVersionVue` | réels ; l'aperçu du bouclier, le choix des applications et la dédicace disent « écran introuvable » (tâches 27, 28) |
-| Zmanim | `ZmanimVue` | réel, sans position du téléphone |
-| Le vol | `VolVue`, `VolBilletBouton` | réel, hors ligne, avec le billet (appareil photo, photo, PDF) ; sans GPS |
+| Zmanim | `ZmanimVue`, `CalendrierVue`, `AjoutTempsVue`, `PartageJourLien` | réels, avec la position du téléphone, le calendrier, l'ajout de temps et le partage du jour |
+| Le vol | `VolVue`, `VolBilletBouton` | réel, hors ligne, avec le billet (appareil photo, photo, PDF) et le relevé GPS |
 | La présentation | `PresentationVue` | réelle |
-| La boussole, le calendrier, les rappels | `BoussoleVue` compilée ; ses capteurs, et les écrans du calendrier et des rappels manquent | en attente |
+| La boussole, les rappels | `BoussoleVue` sur CoreMotion, `RappelsVue` | réels |
+| Les widgets, la Live Activity | `ios/Widgets` : la série, les trois vignettes des zmanim et l'écran verrouillé, la boussole, la séance | réels ; les notifications et leurs boutons, par le planificateur |
 
 Le journal et les réglages vivent dans les fichiers du dossier de l'app (`PersistanceFichiers` sur l'acteur
-`Depot`) ; les notifications locales, l'icône et la musique ont leurs adaptateurs (`ios/App/Services`). Temps d'écran, la Live
-Activity, le planificateur des rappels et les widgets restent à brancher. Rien de tout cela n'a encore été vu sur un
-téléphone : la CI compile et teste sur simulateur, sans lancer l'app.
+`Depot`) ; les notifications locales et leur planificateur, l'icône, la musique, la position, la boussole, la Live
+Activity et les widgets ont leurs adaptateurs (`ios/App/Services`, `ios/Widgets`). Rien de ce qui touche le téléphone
+(la position réelle, une notification qui paraît, un widget posé, la Live Activity) n'a encore été vu sur un appareil :
+la CI compile et teste sur simulateur.
 
 ## Hors de ces trente tâches
 
