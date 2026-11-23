@@ -34,7 +34,7 @@ Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
 | Recette sur émulateurs, Android 13 à 16 | 22/11 | ci-dessous |
 | Six corrections trouvées par la recette | 22/11 | PR #50 « Recette avant Google Play », reprise dans la branche du 23/11 (§ 1) |
 | PR #48, #49 et #50 réunies, relecture du code, vingt et une corrections | 23/11 | branche `ccr-95e5794e-1ej68l` ; ci-dessous |
-| AAB signé `play-6` (versionCode 7, version 1.6) | 23/11 | construit sur cette branche, avec toutes les corrections : § 1. **Ne pas envoyer** `play-3` (17/11, aucune correction), ni `play-4` et `play-5` (23/11, construits avant la contre-relecture) |
+| AAB signé `play-7` (versionCode 8, version 1.7) | 23/11 | construit sur cette branche, avec toutes les corrections : § 1. **Ne pas envoyer** `play-3` (17/11, aucune correction), `play-4` et `play-5` (23/11, construits avant la contre-relecture), ni `play-6` (23/11, construit sur `main` : les trois PR, mais **aucune** des corrections du 23/11, dont les trois plantages) |
 | Note aux examinateurs, rejouée mot pour mot | 22/11 | `play/CONSOLE.md` § 3.2 |
 | Vidéo des services de premier plan | 22/11 | `MyHitbodedut-foreground-services.mp4`, `play/CONSOLE.md` § 3.9 |
 
@@ -48,7 +48,8 @@ dépôt. Avec *Play App Signing*, une clé d'envoi perdue se remplace sur demand
 ### La relecture du 23/11
 
 Les PR #48 (check-up du 11/11), #49 (rond du hassid, הרחמן) et #50 (recette)
-sont réunies sur la branche `ccr-95e5794e-1ej68l`, sans conflit. Le code a
+sont réunies sur la branche `ccr-95e5794e-1ej68l`, sans conflit, et
+fusionnées dans `main` le même jour. Le code a
 ensuite été relu en quatre passes (services et arrière-plan ; données et
 réglages ; accueils et séance ; vol, lieu, zmanim et textes), à la recherche
 de ce qu'un parcours d'émulateur ne voit pas. Chaque constat a été vérifié
@@ -104,7 +105,7 @@ Comportement :
 Ces corrections ont ensuite été relues par un relecteur qui ne les avait pas
 écrites, à la recherche de ce qu'elles auraient cassé. Il n'a trouvé ni
 plantage ni perte de données, et trois retouches à faire, faites dans
-`play-6` :
+`play-7` :
 
 - la correction 4 fermait la page du carnet en pleine saisie quand l'écran du
   bravo était recréé (passage au thème sombre, taille du texte, application
@@ -187,7 +188,7 @@ tests à l'appui :
 quel : le premier lancement propose les cinq versions de l'application, et les
 tests de Google peuvent passer par des appareils virtuels (Firebase Test Lab,
 qui fait tourner le rapport de pré-lancement, en propose). Elles sont toutes
-dans `play-6`.
+dans `play-7`.
 
 Ce que la recette ne remplace pas : un vrai téléphone — le son, la veille
 profonde, les surcouches Samsung et Xiaomi qui arrêtent les services — et,
@@ -197,21 +198,23 @@ dit rien d'un vrai processeur graphique, dans un sens comme dans l'autre.
 
 ## 1. Récupérer le paquet et fusionner (≈ 10 min)
 
-1. **Le paquet à envoyer** : GitHub → *Actions → Play* → l'exécution n° 6 →
-   artefact `play-6` : `MyHitbodedut-6.aab` (versionCode 7, version 1.6) et
-   `mapping-6.txt`. Il est construit sur la branche `ccr-95e5794e-1ej68l`, qui
+1. **Le paquet à envoyer** : GitHub → *Actions → Play* → l'exécution n° 7 →
+   artefact `play-7` : `MyHitbodedut-7.aab` (versionCode 8, version 1.7) et
+   `mapping-7.txt`. Il est construit sur la branche `ccr-95e5794e-1ej68l`, qui
    réunit les PR #48, #49 et #50 et les corrections du 23/11 ; le flux a refait
    les tests et signé avec la clé d'envoi. Un artefact se garde 30 jours.
 2. **Fusionner cette branche dans `main`**, pour que `main` soit le code de la
-   version envoyée (les PR #48, #49 et #50 se ferment alors d'elles-mêmes, et
-   le site se redéploie avec les mêmes corrections).
+   version envoyée. Les PR #48, #49 et #50 y sont fusionnées depuis le 23/11 ;
+   les corrections du 23/11, elles, ne sont encore que sur cette branche. Tant
+   qu'elle n'est pas fusionnée, une construction lancée sur `main` ne les a
+   pas : c'est le cas de `play-6`.
 3. Avant de l'envoyer en production, lire le bilan de la recette du 23/11 sur
    émulateurs (branches `claude/qa-api33-relecture` à
    `claude/qa-api36-relecture`, fichier `fautes.txt`).
 
-Pour reconstruire plus tard : *Actions → Play → Run workflow* sur `main`. Le
-numéro de version suit celui de l'exécution ; ne jamais renvoyer un
-versionCode déjà envoyé à Google.
+Pour reconstruire plus tard : *Actions → Play → Run workflow* sur `main`,
+une fois cette branche fusionnée. Le numéro de version suit celui de
+l'exécution ; ne jamais renvoyer un versionCode déjà envoyé à Google.
 
 ## 2. Finir le compte (côté Google, 1 à 3 jours)
 
