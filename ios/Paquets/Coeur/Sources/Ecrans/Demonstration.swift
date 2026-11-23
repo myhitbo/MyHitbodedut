@@ -69,6 +69,8 @@ public enum Demonstration {
 
         var reglages = Reglages()
         reglages.setOnboarded()
+        // La version déjà choisie : l'accueil Classique, sans l'écran du choix par-dessus (MainActivity.onResume).
+        reglages.setVersionApp(.classique)
         reglages.setAdresse("m")
         reglages.setTargetMinutes(20)
         reglages.setReminderEnabled(true)

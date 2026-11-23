@@ -398,6 +398,9 @@ public enum AccueilRoute: Sendable, Hashable {
     /// SettingsActivity ; `carteBarriere` (EXTRA_CARTE_BARRIERE) : l'écran défile jusqu'à la carte du mode, quand
     /// la pastille « Avec Hachem » demande un réglage (GesteBarriere.REGLER).
     case reglages(carteBarriere: Bool)
+    /// ChoixVersionActivity : au retour de la présentation, ou à la première ouverture après la mise à jour, tant
+    /// qu'aucune version n'est choisie (MainActivity.onResume).
+    case choixVersion
 }
 
 // MARK: L'en-tête du Jour
