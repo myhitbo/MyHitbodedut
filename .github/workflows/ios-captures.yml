@@ -5,8 +5,8 @@ name: iOS (captures, macOS)
 # iPad (tâche 29). L'app ouvre l'écran demandé d'elle-même sur un journal de démonstration (« -capture <écran>
 # -captureDemo », ios/App/Captures.swift) ; tools/captures_ios/capturer.sh la lance, photographie et relève les
 # plantages. Les captures (JPEG réduits) sont dans l'artefact « captures-ios » ; les plantages dans le résumé.
-# Lancé à la main (une quarantaine de minutes de macOS) ou quand ce flux et son script changent, jamais à chaque
-# envoi. Même runner et même Xcode qu'ios-app.yml.
+# Lancé à la main seulement (« Run workflow », ou l'API workflow_dispatch : de quarante minutes à deux heures de
+# macOS selon les langues et les passes demandées), jamais à chaque envoi. Même runner et même Xcode qu'ios-app.yml.
 
 on:
   workflow_dispatch:
@@ -27,22 +27,20 @@ on:
         description: "Audit d'accessibilité (oui, non)"
         required: false
         default: 'oui'
-  push:
-    paths:
-      - '.github/workflows/ios-captures.yml'
-      - 'tools/captures_ios/**'
 
 permissions:
   contents: read
 
+# Une passe lancée à la main ne remplace que la même passe (mêmes langues, mêmes passes) : on peut partager une
+# capture complète entre plusieurs travaux qui tournent ensemble.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.langues }}-${{ inputs.passes }}-${{ inputs.ecrans }}
   cancel-in-progress: true
 
 jobs:
   captures:
     runs-on: macos-26-intel
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - name: Xcode 26.6
@@ -72,6 +70,18 @@ jobs:
           PASSES: ${{ inputs.passes || 'iphone sombre grand ipad paysage' }}
         run: |
           RESUME="$GITHUB_STEP_SUMMARY" bash tools/captures_ios/capturer.sh
+      # Les captures, dès qu'elles sont faites : un artefact v4 se télécharge avant la fin du travail.
+      - name: Captures et journaux
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: captures-ios
+          path: |
+            captures/jpg
+            captures/journaux
+            app.log
+          retention-days: 14
+          if-no-files-found: ignore
       # L'audit d'accessibilité d'Xcode sur chaque écran, en français (ios/UITests, tâche 29) : la liste des défauts
       # dans le résumé ; il ne fait pas échouer le travail tant qu'elle n'est pas vide (AUDIT_RELEVE).
       - name: Audit d'accessibilité (XCUITest)
@@ -94,15 +104,11 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           grep -q "TEST SUCCEEDED" audit.log
-      - name: Captures et journaux
+      - name: Journal de l'audit
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: captures-ios
-          path: |
-            captures/jpg
-            captures/journaux
-            app.log
-            audit.log
+          name: audit-ios
+          path: audit.log
           retention-days: 14
           if-no-files-found: ignore

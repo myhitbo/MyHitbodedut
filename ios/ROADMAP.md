@@ -57,7 +57,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 | 26 | Vol à l'écran | macOS | 13, 24 | phrase → frise ; billet lu |
 | 27 | Barrière I : l'app, le bouclier, l'action | macOS, iPhone | 4, 12, 16 | trois visages × trois langues |
 | 28 | Barrière II : la surveillance, le diagnostic | iPhone | 27 | recette R4 |
-| 29 | Accessibilité, iPad, performance | macOS | 21 à 28 | audit sans défaut ; mesures tenues |
+| 29 | Accessibilité, iPad, performance | macOS | 21 à 28 | audit sans défaut ; mesures tenues (en cours : captures, iPad, audit relevé) |
 | 30 | TestFlight externe, fiche, soumission | macOS | 29, P3, P6 | construction acceptée ; dossier des droits complet |
 
 ## Jalons
@@ -282,6 +282,17 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 
 - **Critère de fin** : l'audit d'accessibilité des tests d'interface passe sans défaut sur chaque écran ; chaque élément de l'accueil, de la séance et d'un texte du siddour porte un libellé d'accessibilité dans les trois langues (vérifié par test) ; captures iPad en deux colonnes ; mesures tenues : premier écran en moins de 400 ms, défilement du plus long livre sans image perdue ; l'app pèse moins de 200 Mo.
 - **Où** : macOS.
+- **Fait (23/11)** : l'app est lancée et photographiée sur le simulateur (`ios-captures.yml`, ECRANS.md « Les captures ») :
+  chaque écran dans les cinq langues, puis en sombre, aux tailles d'accessibilité de Dynamic Type, sur iPad debout et
+  couché ; un plantage fait échouer le travail, avec son rapport. L'app tourne sur iPad (`TARGETED_DEVICE_FAMILY`
+  1,2, toutes les orientations) ; les marges des grands écrans d'Android (`GrandEcran` : values-w600dp à w1200dp)
+  écartent le contenu des bords, la barre de départ comprise ; le Jour couché se met en deux colonnes, les anneaux à
+  côté de l'en-tête (layout-land). L'audit d'accessibilité d'Xcode (`UITests/AuditAccessibiliteTests.swift`) passe
+  sur chaque écran et liste ses défauts dans le résumé du travail. Les humeurs de la note se disent comme sur Android
+  (`journal_humeur_n`).
+- **Reste** : vider la liste de l'audit (il relève, il ne fait pas encore échouer) ; le test des libellés dans les
+  trois langues ; les mesures (premier écran, défilement, poids) ; l'iPad n'a pas de vraie mise en page à deux
+  colonnes ailleurs qu'au Jour.
 
 ### 30. TestFlight externe, fiche, soumission
 
@@ -392,7 +403,10 @@ Le journal et les réglages vivent dans les fichiers du dossier de l'app (`Persi
 `Depot`) ; les notifications locales et leur planificateur, l'icône, la musique, Temps d'écran, la position, la
 boussole, la Live Activity et les widgets ont leurs adaptateurs (`ios/App/Services`, `ios/Widgets`). Rien de ce qui
 touche le téléphone (la position réelle, une notification qui paraît, un widget posé, la Live Activity, Temps d'écran)
-n'a encore été vu sur un appareil : la CI compile et teste sur simulateur.
+n'a encore été vu sur un appareil : la CI compile et teste sur simulateur. Depuis le 23/11, elle lance aussi l'app sur
+le simulateur et photographie chaque écran de ce tableau, sur iPhone et iPad, dans les cinq langues (`ios-captures.yml`,
+ECRANS.md « Les captures », tâche 29) : chaque écran est vu tourner, sans plantage ; ce qui ne tourne que sur un
+appareil (Temps d'écran, capteurs, notifications, widgets) n'y paraît que par ce que l'app en montre.
 
 ## Hors de ces trente tâches
 

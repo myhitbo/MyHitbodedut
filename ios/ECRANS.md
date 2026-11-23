@@ -134,9 +134,10 @@ traducteur lit les deux catalogues (`Traducteur(catalogues:)`) : celui d'Android
 ## Les captures : l'app lancée pour de vrai
 
 La CI qui compile ne lance pas l'app ; `.github/workflows/ios-captures.yml` (macOS, une quarantaine de minutes) la
-lance sur le simulateur et la photographie. Il part à la main (« Run workflow » sur la branche, ou l'API :
-`workflow_dispatch`, entrées `langues`, `ecrans`, `passes`, `audit`), et quand ce flux ou son script changent,
-jamais à chaque envoi.
+lance sur le simulateur et la photographie. Il part à la main seulement (« Run workflow » sur la branche, ou l'API :
+`workflow_dispatch`, entrées `langues`, `ecrans`, `passes`, `audit`), jamais à chaque envoi. Deux lancements aux
+entrées différentes tournent ensemble (le groupe de concurrence les porte) : une capture complète se partage, par
+exemple, entre la passe « iphone » des cinq langues et les passes « sombre grand ipad paysage ».
 
 - **Ouvrir un écran sans le toucher** : lancée avec `-capture <écran>`, l'app s'ouvre d'elle-même sur cet écran
   (`ios/App/Captures.swift` : l'onglet, puis la pile, puis la feuille, par deux crochets, dans `ModelesApp.charger`
@@ -146,7 +147,8 @@ jamais à chaque envoi.
   s'ajoute à `Captures.ecrans`, au `switch` de `Captures.ouvrir`, et à la liste du script.
 - **Le script** (`tools/captures_ios/capturer.sh`) : pour chaque langue (fr, en, he, es, ar-TN, par
   `-AppleLanguages` et `-AppleLocale`, le fuseau de la ville de la démonstration par `SIMCTL_CHILD_TZ`) et chaque
-  écran, il lance l'app, attend, photographie (`simctl io screenshot`, la barre d'état fixée à 9:41). Puis les
+  écran, il lance l'app, attend qu'elle dise « CAPTURE PRETE » sur sa sortie d'erreur (l'écran ouvert, sans
+  animation), photographie (`simctl io screenshot`, la barre d'état fixée à 9:41). Puis les
   passes « sombre » (fr, he), « grand » (Dynamic Type `accessibility-extra-large` ; fr, ar-TN), « ipad » et
   « paysage » (iPad couché ; fr, he), sur une partie des écrans.
 - **Les plantages** : une app qui ne tourne plus après son lancement est un plantage ; son rapport
@@ -154,7 +156,8 @@ jamais à chaque envoi.
   sa sortie d'erreur et son journal système vont dans le résumé du travail, qui échoue.
 - **L'audit d'accessibilité** : `ios/UITests/AuditAccessibiliteTests.swift` passe `performAccessibilityAudit`
   d'Xcode sur chaque écran (en français) ; chaque défaut, une ligne du résumé.
-- **Les images** : l'artefact « captures-ios » (JPEG réduits à 1 400 points, journaux, `audit.log`), nommées
+- **Les images** : l'artefact « captures-ios » (JPEG réduits à 1 400 points, journaux), posé avant l'audit, dont le
+  journal est l'artefact « audit-ios » ; les images sont nommées
   `<langue>-<écran>.jpg`, et `<passe>-<langue>-<écran>.jpg` pour les autres passes. Sans compte GitHub, le lien
   signé de l'artefact se demande par l'API (`actions/artifacts/<id>/zip`, ou l'outil MCP
   `download_workflow_run_artifact`), puis `curl` le télécharge.
