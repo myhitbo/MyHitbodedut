@@ -15,8 +15,6 @@ enum Captures {
     static let ecran: String? = valeur(apres: "-capture")
     /// « -captureDemo » : le journal et les réglages de démonstration.
     static let demo = ProcessInfo.processInfo.arguments.contains("-captureDemo")
-    /// « -captureOrientation paysage » : l'app se couche d'elle-même (simctl ne sait pas tourner l'appareil).
-    static let paysage = valeur(apres: "-captureOrientation") == "paysage"
 
     /// Les écrans que la CI sait demander, dans l'ordre de ses captures (ios-captures.yml les reprend).
     static let ecrans = [
@@ -70,10 +68,6 @@ enum Captures {
                        feuille: Binding<Pardessus?>, plein: Binding<Pardessus?>) async {
         guard let ecran else { return }
         UIView.setAnimationsEnabled(false)
-        if paysage, let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeLeft))
-            try? await Task.sleep(for: .milliseconds(600))
-        }
         let aujourdhui = app.horloge.aujourdhui
         // L'onglet, et ce qui s'ouvre au-dessus de lui.
         let depart: (Onglet, [Ecran], Pardessus?, Pardessus?)

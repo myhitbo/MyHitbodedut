@@ -4,7 +4,8 @@ import XCTest
 /// « l'audit d'accessibilité des tests d'interface passe sans défaut sur chaque écran »). L'app s'ouvre sur l'écran
 /// par « -capture <écran> -captureDemo » (App/Captures.swift), comme pour les captures ; chaque défaut relevé
 /// s'écrit sur une ligne « AUDIT », que la CI (ios-captures.yml) recopie dans son résumé. Le test échoue s'il en
-/// reste, sauf `AUDIT_RELEVE=1` (la CI le pose pour avoir la liste entière d'un coup).
+/// reste, sauf `AUDIT_RELEVE=1` (la CI le pose pour avoir la liste entière d'un coup). Le même fichier photographie
+/// les écrans couchés (`testCapturesCouchees`), que `simctl` ne sait pas tourner.
 final class AuditAccessibiliteTests: XCTestCase {
 
     /// Les écrans de Captures.ecrans, la présentation à part (elle se feuillette).
@@ -51,6 +52,39 @@ final class AuditAccessibiliteTests: XCTestCase {
         if !releve {
             XCTAssertTrue(defauts.isEmpty, defauts.joined(separator: "\n"))
         }
+    }
+
+    /// Les écrans couchés (tâche 29 : le Jour en deux colonnes, l'iPad en paysage) : `simctl` ne sait pas tourner le
+    /// simulateur, `XCUIDevice` le peut. Chaque écran de CAPTURES_ECRANS, dans chaque langue de CAPTURES_LANGUES, est
+    /// photographié couché ; l'image va dans le dossier CAPTURES_COUCHEES (le simulateur écrit dans les fichiers du
+    /// Mac), nommée « <préfixe>-<langue>-<écran>.png ». Sans CAPTURES_COUCHEES, le test ne fait rien.
+    @MainActor
+    func testCapturesCouchees() throws {
+        let environnement = ProcessInfo.processInfo.environment
+        guard let dossier = environnement["CAPTURES_COUCHEES"], !dossier.isEmpty else {
+            throw XCTSkip("CAPTURES_COUCHEES absent : rien à photographier")
+        }
+        let prefixe = environnement["CAPTURES_PREFIXE"] ?? "paysage"
+        let langues = (environnement["CAPTURES_LANGUES"] ?? "fr he").split(separator: " ").map(String.init)
+        let ecrans = (environnement["CAPTURES_ECRANS"] ?? "jour livres chemin zmanim lecteur reglages")
+            .split(separator: " ").map(String.init)
+        try FileManager.default.createDirectory(atPath: dossier, withIntermediateDirectories: true)
+        for langue in langues {
+            for ecran in ecrans {
+                XCUIDevice.shared.orientation = .landscapeLeft
+                let app = XCUIApplication()
+                app.launchArguments = ["-capture", ecran, "-captureDemo", "-AppleLanguages", "(\(langue))"]
+                app.launch()
+                _ = app.wait(for: .runningForeground, timeout: 20)
+                XCUIDevice.shared.orientation = .landscapeLeft
+                Thread.sleep(forTimeInterval: 5)
+                let image = XCUIScreen.main.screenshot().pngRepresentation
+                let fichier = URL(fileURLWithPath: dossier).appendingPathComponent("\(prefixe)-\(langue)-\(ecran).png")
+                try image.write(to: fichier)
+                app.terminate()
+            }
+        }
+        XCUIDevice.shared.orientation = .portrait
     }
 
     /// Le nom d'une sorte de défaut, pour le résumé.

@@ -143,14 +143,18 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   (`ios/App/Captures.swift` : l'onglet, puis la pile, puis la feuille, par deux crochets, dans `ModelesApp.charger`
   et `Racine`) ; avec `-captureDemo`, sur le journal de démonstration (`Ecrans/Demonstration.swift`, celui des
   captures d'Android : douze jours de suite, des notes, la présentation vue, une ville par langue), tenu en
-  mémoire ; avec `-captureOrientation paysage`, couchée. Sans ces arguments, rien ne change. Un écran nouveau
+  mémoire. Sans ces arguments, rien ne change. Un écran nouveau
   s'ajoute à `Captures.ecrans`, au `switch` de `Captures.ouvrir`, et à la liste du script.
 - **Le script** (`tools/captures_ios/capturer.sh`) : pour chaque langue (fr, en, he, es, ar-TN, par
   `-AppleLanguages` et `-AppleLocale`, le fuseau de la ville de la démonstration par `SIMCTL_CHILD_TZ`) et chaque
   écran, il lance l'app, attend qu'elle dise « CAPTURE PRETE » sur sa sortie d'erreur (l'écran ouvert, sans
   animation), photographie (`simctl io screenshot`, la barre d'état fixée à 9:41). Puis les
-  passes « sombre » (fr, he), « grand » (Dynamic Type `accessibility-extra-large` ; fr, ar-TN), « ipad » et
-  « paysage » (iPad couché ; fr, he), sur une partie des écrans.
+  passes « sombre » (fr, he), « grand » (Dynamic Type `accessibility-extra-large` ; fr, ar-TN) et « ipad » (fr,
+  he), sur une partie des écrans.
+- **Couché** : `simctl` ne sait pas tourner le simulateur, ni l'app le demander au simulateur
+  (`requestGeometryUpdate` y est sans effet) ; la passe « paysage » passe donc par le test d'interface
+  (`testCapturesCouchees`, `XCUIDevice.orientation`), sur l'iPhone et l'iPad, quelques écrans en fr et he ; ses
+  images sont l'artefact « captures-couchees-ios ».
 - **Les plantages** : une app qui ne tourne plus après son lancement est un plantage ; son rapport
   (`~/Library/Logs/DiagnosticReports`, résumé par `rapport.py` : l'exception, le message de Swift, le fil fautif),
   sa sortie d'erreur et son journal système vont dans le résumé du travail, qui échoue.

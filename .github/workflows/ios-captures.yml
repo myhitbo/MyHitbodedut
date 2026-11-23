@@ -104,6 +104,39 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           grep -q "TEST SUCCEEDED" audit.log
+      # Les écrans couchés, sur l'iPhone puis l'iPad de la passe « paysage » : le test d'interface tourne l'appareil
+      # (XCUIDevice), ce que simctl ne sait pas faire, et pose ses images dans captures/couchees.
+      - name: Captures couchées (XCUITest)
+        if: ${{ !cancelled() && hashFiles('captures/iphone.txt') != '' && contains(inputs.passes || 'paysage', 'paysage') }}
+        continue-on-error: true
+        env:
+          TEST_RUNNER_CAPTURES_COUCHEES: ${{ github.workspace }}/captures/couchees
+          TEST_RUNNER_CAPTURES_LANGUES: fr he
+        run: |
+          couchees() {
+            TEST_RUNNER_CAPTURES_PREFIXE=$2 xcodebuild test -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut \
+              -destination "id=$1" -derivedDataPath "$RUNNER_TEMP/app" ARCHS=x86_64 CODE_SIGNING_ALLOWED=NO \
+              -only-testing:MyHitbodedutUITests/AuditAccessibiliteTests/testCapturesCouchees 2>&1 \
+              | tee -a couchees.log | grep -E "error:|TEST (SUCCEEDED|FAILED)" || true
+          }
+          couchees "$(cat captures/iphone.txt)" paysage-iphone
+          if [ -f captures/ipad.txt ]; then couchees "$(cat captures/ipad.txt)" paysage-ipad; fi
+          mkdir -p captures/couchees-jpg
+          for f in captures/couchees/*.png; do
+            test -f "$f" || continue
+            sips -Z 1400 -s format jpeg -s formatOptions 70 "$f" --out "captures/couchees-jpg/$(basename "${f%.png}").jpg" >/dev/null
+          done
+          echo "## Captures couchées : $(ls captures/couchees-jpg | wc -l | tr -d ' ')" >> "$GITHUB_STEP_SUMMARY"
+      - name: Captures couchées et leur journal
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: captures-couchees-ios
+          path: |
+            captures/couchees-jpg
+            couchees.log
+          retention-days: 14
+          if-no-files-found: ignore
       - name: Journal de l'audit
         if: always()
         uses: actions/upload-artifact@v4

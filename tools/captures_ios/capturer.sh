@@ -7,7 +7,8 @@
 # journal système vont dans le résumé, et le script finit en échec une fois toutes les captures faites.
 #
 # Variables : APP (le .app compilé pour le simulateur), SORTIE (le dossier des captures), LANGUES, ECRANS (vide :
-# tous), PASSES (iphone, sombre, grand, ipad, paysage : l'iPad couché), RESUME (le fichier du résumé, $GITHUB_STEP_SUMMARY dans la CI).
+# tous), PASSES (iphone, sombre, grand, ipad ; « paysage » : l'iPad noté pour les captures couchées du test
+# d'interface), RESUME (le fichier du résumé, $GITHUB_STEP_SUMMARY dans la CI).
 set -uo pipefail
 
 APP=${APP:?le .app à installer}
@@ -17,8 +18,6 @@ ECRANS=${ECRANS:-}
 PASSES=${PASSES:-"iphone sombre grand ipad"}
 RESUME=${RESUME:-/dev/stdout}
 ATTENTE=${ATTENTE:-2}
-# Des arguments de lancement en plus, pour une passe (« -captureOrientation paysage »).
-EN_PLUS=""
 ID_APP=com.myhitbodedut
 ICI=$(cd "$(dirname "$0")" && pwd)
 
@@ -128,7 +127,7 @@ capturer() {
   # Le fuseau de la ville de la démonstration (Demonstration.ville) : SIMCTL_CHILD_ passe la variable à l'app.
   lance=$(SIMCTL_CHILD_TZ=$fuseau xcrun simctl launch --stdout="$SORTIE/journaux/$nom.out" \
     --stderr="$SORTIE/journaux/$nom.err" "$udid" "$ID_APP" \
-    -AppleLanguages "($langue)" -AppleLocale "$locale" -capture "$ecran" -captureDemo $EN_PLUS 2>&1)
+    -AppleLanguages "($langue)" -AppleLocale "$locale" -capture "$ecran" -captureDemo 2>&1)
   pid=${lance##*: }
   case $pid in
     ''|*[!0-9]*) echo "lancement refusé ($nom) : $lance"; pid="" ;;
@@ -208,13 +207,9 @@ case " $PASSES " in
       case " $PASSES " in
         *" ipad "*) passe "$IPAD" "ipad-" "$(parmi "fr he" "$LANGUES")" "$(parmi "$ECRANS_COURTS" "$ECRANS")" ;;
       esac
-      case " $PASSES " in
-        *" paysage "*)
-          # L'iPad couché : l'app le demande elle-même (Captures.swift), simctl ne sait pas tourner l'appareil.
-          EN_PLUS="-captureOrientation paysage"
-          passe "$IPAD" "paysage-" "$(parmi "fr he" "$LANGUES")" "$(parmi "$ECRANS_COURTS" "$ECRANS")"
-          EN_PLUS="" ;;
-      esac
+      # L'iPad couché : simctl ne sait pas tourner l'appareil ; le test d'interface le fait (XCUIDevice), dans
+      # l'étape qui suit ce script (ios-captures.yml), sur cet iPad.
+      echo "$IPAD" > "$SORTIE/ipad.txt"
     else
       echo "::warning::aucun iPad simulé d'iOS 26.5"
     fi ;;
