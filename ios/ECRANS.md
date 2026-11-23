@@ -100,7 +100,7 @@ construits une fois par `ios/App/ModelesApp.swift`, sur le magasin des fichiers 
 services du système ont leurs adaptateurs dans `ios/App/Services/` (notifications, icône, musique et ambiance, lecture
 du billet du vol par Vision ; la position par CoreLocation et la boussole par CoreMotion, `Lieu.swift`,
 `Boussole.swift` ; le planificateur des notifications posé dans le centre d'iOS et les répercussions des réglages,
-`Notifications.swift` ; la Live Activity, `Activite.swift` ; Temps d'écran, avec la barrière).
+`Notifications.swift` ; la Live Activity, `Activite.swift` ; Temps d'écran, `TempsEcran.swift`).
 
 Ce qui vient d'hors de l'app passe par une adresse « myhitbodedut:// » (`LienApp`, Ecrans, testé sous Linux) : les
 widgets et la Live Activity l'ouvrent (`onOpenURL`), une notification la garde dans son `userInfo`. Le délégué des
@@ -115,6 +115,16 @@ calculent avec Coeur (`Chronologies`, `Store`, `DirectionJerusalem`) et traduise
 (copiés dans l'extension ; la langue de l'app est retenue dans les préférences du groupe). `ios/Widgets/Commun` est
 compilé dans l'app et dans l'extension : le dossier du groupe, les genres des widgets, les attributs de la Live
 Activity et `TerminerSeanceIntent`.
+
+La barrière (tâches 27 et 28) : la règle est dans `Barriere` (l'instantané, la boîte, `PlanBouclier` pour le visage et
+les boutons du bouclier, `Planification` pour les rendez-vous et les magasins), que l'app et les trois extensions
+partagent ; `Coeur` remplit l'instantané (`EtatBarriere`). L'app tient `TempsEcranApp` (`App/Services/TempsEcran.swift`,
+un seul objet pour `TempsEcran`, `ReglagesBarriereSysteme` et `BarriereSysteme`, vide dans la construction
+SANS_BARRIERE) : à chaque changement du journal ou des réglages et à chaque retour au premier plan, il verse la boîte au
+journal, réécrit `barriere/etat.json`, met les magasins d'accord et refait les rendez-vous. `App/Services/TempsEcranCommun.swift`
+(magasins, sélection, `DeviceActivitySchedule`) est compilé aussi dans `Surveillance` et `BouclierAction`. Les écrans de
+la barrière et la dédicace passent par une seule route de la pile, `Ecran.barriere` (`App/Barriere/BarriereEcrans.swift`),
+le sélecteur d'Apple et `Label(jeton)` restant dans l'app, autour de `ChoixApplicationsVue`.
 
 La langue de l'app est la première des langues préférées qu'elle livre (`Traducteur.langueDuTelephone`) ; la
 racine pose `\.locale` (l'arabe est `ar-TN`) et `\.layoutDirection` (l'hébreu et l'arabe de droite à gauche). Le

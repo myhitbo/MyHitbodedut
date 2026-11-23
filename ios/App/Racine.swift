@@ -34,6 +34,8 @@ enum Ecran: Hashable {
     case calendrier
     case boussole
     case rappels
+    /// L'aperçu du bouclier, le choix des applications, la dédicace, le journal de la barrière (Barriere/BarriereEcrans.swift).
+    case barriere(EcranBarriere)
 }
 
 /// Une feuille ou un écran plein posé par-dessus les onglets.
@@ -353,9 +355,9 @@ struct Racine: View {
             pileDuChemin = NavigationPath()
             onglet = .aujourdhui
             plein = .presentation
-        case .apercuBarriere, .choixApplications, .dedicace:
-            // Tâches 27 et 28, et la dédicace : pas encore d'écran sur iOS.
-            app.reglages.routeImpossible()
+        case .apercuBarriere, .choixApplications, .dedicace, .journalBarriere:
+            // Les écrans de la barrière et la dédicace (Barriere/BarriereEcrans.swift).
+            if let ecran = EcranBarriere(route) { pousser(.barriere(ecran)) }
         case .reglagesApp, .reglagesNotifications, .navigateur, .aideConcentration:
             // Ouvertes par la vue des réglages elle-même.
             break
@@ -446,6 +448,8 @@ struct Racine: View {
             Garde(app.boussole) { BoussoleVue(modele: $0) }
         case .rappels:
             Garde(app.rappels) { RappelsVue(modele: $0) }
+        case .barriere(let ecran):
+            BarriereDestination(app: app, ecran: ecran)
         }
     }
 

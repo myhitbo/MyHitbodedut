@@ -82,6 +82,10 @@ public enum PlanBouclier {
     /// Après « Autre réponse », la deuxième page reste le temps de choisir : cinq minutes, puis l'invite revient.
     public static let dureeDeuxiemePage: Int64 = 5 * 60_000
 
+    /// L'identifiant de la notification de repli de « Commencer » et de « Revenir » (§ 2.1.4) : l'extension d'action la
+    /// pose, l'app la retire en s'ouvrant.
+    public static let notification = "barriere-commencer"
+
     /// Le visage à montrer à `maintenant`, d'après l'instantané et la boîte (non encore versée par l'app). L'essai
     /// passe devant : il se voit sur les applications choisies à toute heure. Sinon la règle d'Android (GateRule.ecran) :
     /// l'invite dans la veille, la séance pendant une hitbodedout ; rien d'autre ne pose de bouclier.

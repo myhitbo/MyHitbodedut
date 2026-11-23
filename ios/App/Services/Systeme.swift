@@ -6,9 +6,9 @@ import UIKit
 import UserNotifications
 
 // Les adaptateurs des services d'Ecrans (ECRANS.md, « Ce qui parle au système ») : les notifications locales et
-// l'icône de l'app, branchées sur iOS ; Temps d'écran, encore absent (tâches 27 et 28) : il ne fait rien et le dit.
-// Les autres sont à côté : le lieu et la boussole (Lieu.swift, Boussole.swift), le planificateur des notifications
-// et les répercussions des réglages (Notifications.swift), la Live Activity (Activite.swift), la musique.
+// l'icône de l'app. Les autres sont à côté : Temps d'écran (TempsEcran.swift), le lieu et la boussole (Lieu.swift,
+// Boussole.swift), le planificateur des notifications et les répercussions des réglages (Notifications.swift), la Live
+// Activity (Activite.swift), la musique.
 
 /// Les notifications locales (`UNUserNotificationCenter`) ; les textes, des `Libelle`, se résolvent dans la langue de
 /// l'app au moment de programmer.

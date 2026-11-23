@@ -254,12 +254,27 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
 - **Livrable** : l'écran et sa carte d'état, l'explication avant l'autorisation, le sélecteur, les deux magasins, l'extension du bouclier (trois visages, textes lus dans `etat.json`), l'extension d'action (commencer, déjà faite, plus tard), la boîte, l'aide-mémoire de la liste d'Android.
 - **Critère de fin** : la réplique du bouclier en captures, trois visages × trois langues ; les tests du paquet `Barriere` restent verts ; la construction de développement s'installe sur l'iPhone et le bouclier « rien de fait » paraît.
 - **Où** : macOS, iPhone.
+- **Fait (23/11, vérifié sous Linux et compilé par la CI macOS, jamais vu sur un iPhone)** : la règle du bouclier dans
+  `Barriere` (`PlanBouclier` : invite et son sous-menu, deuxième page, séance, essai, bouclier resté posé à tort ; les
+  gestes de GateService), le dossier partagé (`FichiersBarriere` : instantané, boîte, journal, sélection et son
+  appareil), l'instantané vu avec la boîte ; dans `Coeur`, les textes, l'apparence (palette, personnage du jour) et la
+  boîte versée au journal (`EtatBarriere.verser`) ; l'adaptateur de l'app (`App/Services/TempsEcran.swift` :
+  FamilyControls, les magasins, la synchronisation à chaque changement et à chaque retour) ; les écrans de l'aperçu (la
+  réplique, l'essai réel), du choix des applications (`FamilyActivityPicker`, `Label(jeton)`, limite de 50,
+  aide-mémoire d'Android) et de la dédicace ; les extensions `Bouclier` et `BouclierAction` (« Commencer » ouvre l'app
+  par `.openParentalControlsApp`, avec une notification de repli). Reste à l'iPhone : les captures et le critère.
 
 ### 28. Barrière II : la surveillance, le diagnostic
 
 - **Livrable** : l'extension de surveillance et ses cinq activités, l'essai réel, le journal de la barrière, les états propres à iOS, la mise à jour de `etat.json` à chaque changement.
 - **Critère de fin** : **recette R4** réussie.
 - **Où** : iPhone.
+- **Fait (23/11, même réserve)** : l'extension `Surveillance` et ses cinq activités (`Planification` : fenêtre, minuit,
+  report, séance, essai ; un rendez-vous unique planifié à la minute pleine qui suit, avec son jour), l'essai réel de
+  deux minutes, le journal de la barrière (`JournalBarriereVue`, à partager), les cinq états d'iOS sur la carte d'état et
+  leur geste (rendre l'accès, choisir de nouveau, relancer la surveillance ; le bouclier désaccordé corrigé et noté),
+  `etat.json` réécrit à chaque changement du journal ou des réglages. Le magasin `seance` du § 2.1.2 est fondu dans
+  `barriere` : le visage se choisit à l'affichage. Reste la recette R4.
 
 ## G. Finir
 
@@ -353,7 +368,7 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 | Audit : journal, durées | corriger ou retirer un jour (`Store.corrigerJour`), durée réglable refusée sans être ramenée (`DureeSeance.valide`) | — |
 | Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim ; le billet (`VolBilletBouton` : l'appareil photo par VisionKit, une photo ou un PDF lus par Vision dans `LecteurBilletSysteme`, puis `CarteEmbarquement`) | les services en ligne (D10), le test d'interface de la tâche 26 ; la lecture du billet par l'appareil photo et le relevé GPS (`LieuSysteme`, branché) restent à essayer sur un téléphone |
 | Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture, historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
-| Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit | le code des trois extensions (tâches 27 et 28) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
+| Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit ; les trois extensions, l'adaptateur de Temps d'écran, l'aperçu, le choix des applications, le journal de la barrière (tâches 27 et 28) | l'essai sur un iPhone (recettes R2 et R4) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
 
 ## Phase 3 : l'app utilisable (22/11)
 
@@ -365,7 +380,8 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 | La musique | `MusiqueVue` sur `MusiqueLecteur`, ouverte depuis le volet ; `App/Services/Musique.swift` (AVAudioPlayer, AVAudioEngine, copie des morceaux ajoutés, pochettes) | réelle ; le mini-lecteur (`MusiqueMiniLecteurVue`) posé sur l'écran de séance |
 | Les Livres | `TextesVue` ; siddour, lecteur, Tehilim, Tikoun, Tefilot, sources et livres, halakha, hilloulot, recherche, 'hizouk, conseils | réels |
 | Le Chemin | `CheminVue` (et le mois en barres), `JournalVue`, `ParcoursVue`, `PaliersVue` | réels |
-| Les réglages | `ReglagesVue`, `ChoixVersionVue` | réels ; l'aperçu du bouclier, le choix des applications et la dédicace disent « écran introuvable » (tâches 27, 28) |
+| Les réglages | `ReglagesVue`, `ChoixVersionVue`, `DedicaceVue` | réels, avec la dédicace |
+| La barrière | `ApercuBouclierVue` (la réplique et l'essai réel), `ChoixApplicationsVue` (le sélecteur d'Apple), `JournalBarriereVue` ; `App/Services/TempsEcran.swift` ; les extensions `Bouclier`, `BouclierAction`, `Surveillance` | réels, compilés ; Temps d'écran ne tourne pas sur le simulateur : rien n'est vu avant l'iPhone (recette R4) |
 | Zmanim | `ZmanimVue`, `CalendrierVue`, `AjoutTempsVue`, `PartageJourLien` | réels, avec la position du téléphone, le calendrier, l'ajout de temps et le partage du jour |
 | Le vol | `VolVue`, `VolBilletBouton` | réel, hors ligne, avec le billet (appareil photo, photo, PDF) et le relevé GPS |
 | La présentation | `PresentationVue` | réelle |
@@ -373,10 +389,10 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 | Les widgets, la Live Activity | `ios/Widgets` : la série, les trois vignettes des zmanim et l'écran verrouillé, la boussole, la séance | réels ; les notifications et leurs boutons, par le planificateur |
 
 Le journal et les réglages vivent dans les fichiers du dossier de l'app (`PersistanceFichiers` sur l'acteur
-`Depot`) ; les notifications locales et leur planificateur, l'icône, la musique, la position, la boussole, la Live
-Activity et les widgets ont leurs adaptateurs (`ios/App/Services`, `ios/Widgets`). Rien de ce qui touche le téléphone
-(la position réelle, une notification qui paraît, un widget posé, la Live Activity) n'a encore été vu sur un appareil :
-la CI compile et teste sur simulateur.
+`Depot`) ; les notifications locales et leur planificateur, l'icône, la musique, Temps d'écran, la position, la
+boussole, la Live Activity et les widgets ont leurs adaptateurs (`ios/App/Services`, `ios/Widgets`). Rien de ce qui
+touche le téléphone (la position réelle, une notification qui paraît, un widget posé, la Live Activity, Temps d'écran)
+n'a encore été vu sur un appareil : la CI compile et teste sur simulateur.
 
 ## Hors de ces trente tâches
 

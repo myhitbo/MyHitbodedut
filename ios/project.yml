@@ -25,10 +25,14 @@ targets:
         com.apple.security.application-groups: [group.com.myhitbodedut]
         com.apple.developer.family-controls: true
 
+  # Les trois extensions de la barrière lisent l'instantané par Barriere ; la surveillance et l'action partagent avec
+  # l'app ce qui parle aux magasins et aux rendez-vous (App/Services/TempsEcranCommun.swift).
   Surveillance:
     type: app-extension
     platform: iOS
-    sources: [Surveillance]
+    sources:
+      - Surveillance
+      - App/Services/TempsEcranCommun.swift
     dependencies:
       - package: Coeur
         product: Barriere
@@ -76,7 +80,9 @@ targets:
   BouclierAction:
     type: app-extension
     platform: iOS
-    sources: [BouclierAction]
+    sources:
+      - BouclierAction
+      - App/Services/TempsEcranCommun.swift
     dependencies:
       - package: Coeur
         product: Barriere
