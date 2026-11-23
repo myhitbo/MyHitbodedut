@@ -1,5 +1,6 @@
 package com.myhitbodedut
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -43,6 +44,16 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Lancée par l'icône alors que la tâche existe déjà sous une autre intention (ouverte la
+        // première fois par une notification ou une vignette) : Android pose alors un accueil de
+        // plus au lieu de ramener la tâche. On se retire, et l'écran laissé revient (23/11).
+        if (!isTaskRoot && intent?.action == Intent.ACTION_MAIN && intent?.hasCategory(Intent.CATEGORY_LAUNCHER) == true) {
+            finish()
+            return
+        }
+        // Rouverte depuis les Récents : Android rejoue l'intention d'origine, extras compris, et la
+        // note d'une ancienne séance se reproposait à chaque fois (comme SessionActivity.lireDemande).
+        if (intent != null && intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) intent.removeExtra(EXTRA_ASK_NOTE)
         // Une autre version que Classique est choisie (VersionApp, 17/11) : son accueil prend la place.
         if (VersionApp.rediriger(this)) return
         setContentView(R.layout.activity_main)
@@ -1235,6 +1246,14 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
         /** Le jour de la séance dont la note est proposée (AAAA-MM-JJ). */
         const val EXTRA_ASK_NOTE = "ask_note"
+
+        /**
+         * L'accueil ouvert depuis une notification ou une vignette (relecture du 23/11). Sans
+         * CLEAR_TOP, chaque toucher posait un accueil de plus sur ceux de la tâche déjà ouverte :
+         * la touche retour ramenait alors à un second accueil, ou à l'écran de séance resté dessous.
+         */
+        fun depuisDehors(context: Context): Intent = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         /** Survit à une rotation ou au redimensionnement d'une fenêtre. */
         private const val ETAT_RELANCE = "relance_tiree"

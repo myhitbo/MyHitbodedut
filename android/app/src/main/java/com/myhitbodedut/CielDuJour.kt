@@ -51,7 +51,7 @@ object CielDuJour {
     fun maintenant(context: Context): Phase = runCatching {
         val lieu = Store.lieuZmanim(context) ?: return@runCatching parHeure(LocalTime.now())
         val ici = ZonedDateTime.now(runCatching { ZoneId.of(lieu.fuseau) }.getOrNull() ?: ZoneId.systemDefault())
-        val z = Zmanim.jour(lieu, ici.toLocalDate()).associate { it.cle to it.local }
+        val z = Zmanim.jour(lieu, ici.toLocalDate(), Store.siddurNusah(context).cle).associate { it.cle to it.local }
         phase(ici, z["alot"], z["netz"], z["chkia"], z["tset"])
     }.getOrElse { parHeure(LocalTime.now()) }
 

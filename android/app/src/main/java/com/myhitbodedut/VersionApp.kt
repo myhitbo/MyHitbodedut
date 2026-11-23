@@ -50,7 +50,12 @@ enum class VersionApp(
          */
         fun rediriger(activite: Activity): Boolean {
             val cible = courante(activite).accueil ?: return false
-            activite.startActivity(Intent(activite, cible).apply { activite.intent?.extras?.let(::putExtras) })
+            // CLEAR_TOP : l'accueil de cette version déjà ouvert dans la tâche est repris à neuf, avec
+            // l'intention reçue, au lieu d'en recevoir un second par-dessus (relecture du 23/11).
+            activite.startActivity(
+                Intent(activite, cible).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .apply { activite.intent?.extras?.let(::putExtras) }
+            )
             activite.overridePendingTransition(0, 0)
             activite.finish()
             return true

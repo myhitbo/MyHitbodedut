@@ -149,7 +149,7 @@ class ReminderReceiver : BroadcastReceiver() {
 
         val ouvrir = PendingIntent.getActivity(
             context, REQUETE_OUVRIR,
-            Intent(context, MainActivity::class.java),
+            MainActivity.depuisDehors(context),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         // « Commencer » ouvre l'écran de séance lui-même. Passer par un

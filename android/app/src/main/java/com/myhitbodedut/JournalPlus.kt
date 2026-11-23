@@ -31,8 +31,20 @@ object JournalPlus {
     private fun tout(context: Context): JSONObject =
         runCatching { JSONObject(Store.journalPlusBrut(context) ?: "{}") }.getOrDefault(JSONObject())
 
-    fun lire(context: Context, date: String): Plus {
-        val o = tout(context).optJSONObject(date) ?: return Plus()
+    fun lire(context: Context, date: String): Plus = page(tout(context), date)
+
+    /**
+     * Pour qui parcourt toute l'année (« Mon parcours ») : le fichier est lu une seule fois, puis
+     * chaque jour s'y cherche. [lire] le relisait en entier à chaque jour demandé, soit autant de
+     * lectures que de jours, sur le fil de l'écran (relecture du 23/11).
+     */
+    fun lecteur(context: Context): (String) -> Plus {
+        val pages = tout(context)
+        return { date -> page(pages, date) }
+    }
+
+    private fun page(pages: JSONObject, date: String): Plus {
+        val o = pages.optJSONObject(date) ?: return Plus()
         return Plus(o.optInt("avant", 0).coerceIn(0, 5), o.optInt("apres", 0).coerceIn(0, 5), o.optString("gratitude", "").take(GRATITUDE_MAX),
             o.optString("travail", "").take(GRATITUDE_MAX))
     }

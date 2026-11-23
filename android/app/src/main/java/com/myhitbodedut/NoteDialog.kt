@@ -297,7 +297,7 @@ class NoteDialog : DialogFragment() {
         }
 
         /** Le jour a déjà du texte, enregistré ou en brouillon : c'est lui que le verrou garde. */
-        private fun dejaEcrit(activity: FragmentActivity, date: String): Boolean {
+        fun dejaEcrit(activity: android.content.Context, date: String): Boolean {
             val plus = JournalPlus.lire(activity, date)
             return Store.record(activity, date)?.note.orEmpty().isNotBlank() || NoteBrouillon.lire(activity, date) != null ||
                 plus.gratitude.isNotBlank() || plus.travail.isNotBlank() || plus.avant != 0 || plus.apres != 0
