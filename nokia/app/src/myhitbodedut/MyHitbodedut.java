@@ -109,6 +109,10 @@ public final class MyHitbodedut extends MIDlet implements CommandListener, Minut
             journal.ajoute(jourDebut, m.coupe());
             journal.ecrit();
         }
+        // Le cran du défilement automatique changé sur un texte, puis l'application fermée de là
+        // (touche rouge) : l'écran de lecture ne reçoit pas toujours hideNotify, qui l'écrit
+        // d'ordinaire ; sans cela, le cran était perdu au lancement suivant (vérification du 24/11).
+        Defilement.enregistre();
         if (musique != null) musique.arrete();
     }
 
