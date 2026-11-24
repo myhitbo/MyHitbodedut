@@ -98,7 +98,10 @@ public struct ZmanimOngletVue: View {
                     Task { await modele.apparaitre() }
                 }
             case .background:
-                modele.disparaitre()
+                // Seul l'écran du dessus reçoit onPause : sous le calendrier, l'onglet garde le jour de sa sortie.
+                if auPremierPlan {
+                    modele.disparaitre()
+                }
             default:
                 break
             }

@@ -31,7 +31,7 @@ struct PartageJourLien: View {
         let etiquette = ZmanimEtiquetteLien(texte: Text(verbatim: titre + " ↗"))
         Group {
             if let rendu {
-                ShareLink(item: rendu.fichier, preview: SharePreview("\(titre)", image: rendu.apercu)) {
+                ShareLink(item: rendu.fichier, preview: SharePreview(Text(verbatim: titre), image: rendu.apercu)) {
                     etiquette
                 }
                 .buttonStyle(.plain)
