@@ -1226,10 +1226,10 @@ def main():
             pause(ecart)
         log(f"  rafale {nom} : {images} images")
 
-    def jour_du_ciel(prefixe, langues, modes, deux_fois):
+    def jour_du_ciel(prefixe, langues, modes, deux_fois, palette=None):
         for lg in langues:
             for mode in modes:
-                regler({"apparence_mode": ("string", mode), "langue_app": ("string", lg), "version_app": ("string", "classique")})
+                regler({"apparence_mode": ("string", mode), "langue_app": ("string", lg), "version_app": ("string", "classique"), **(palette or {})})
                 langue(lg)
                 for phase, heure in PHASES_CIEL:
                     log("  date :", sh(f"date 1124{heure}2026.00").strip())
@@ -1323,6 +1323,38 @@ def main():
             animations(False)
             regler({"version_app": ("string", "classique")})
     etape("33 paysages animes", s33)
+
+    # Le ciel avec les couleurs du telephone du proprietaire (captures du 24/11 : fond bleu nuit,
+    # boutons turquoise) : « Fond bleu » et « Boutons turquoise », en hebreu, clair et sombre, sur le
+    # petit telephone au texte agrandi puis sur le Pixel 6, avec le bas de la page en sombre.
+    BLEU_TURQUOISE = {"apparence_fond": ("string", "bleu"), "apparence_accent": ("string", "turquoise")}
+
+    def s34():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            sh("settings put system font_scale 1.3")
+            appliquer_taille("480x854", 240, False)
+            pause(4)
+            jour_du_ciel("34-petit-bleu", ("he",), ("sombre", "clair"), False, BLEU_TURQUOISE)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            pause(4)
+            jour_du_ciel("34-pixel6-bleu", ("he",), ("sombre", "clair"), False, BLEU_TURQUOISE)
+            regler({"apparence_mode": ("string", "sombre"), **BLEU_TURQUOISE})
+            sh("date 112414592026.00")
+            lancer(attente=6)
+            capture("34-pixel6-bleu-he-sombre-1459", attente=0.5)
+            defiler(True)
+            capture("34-pixel6-bleu-he-sombre-1459-bas", attente=1.0)
+        finally:
+            animations(False)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            regler({"apparence_mode": ("string", "auto"), "apparence_fond": ("string", "vert"), "apparence_accent": ("string", "vert"),
+                    "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("34 ciel du Jour, fond bleu et boutons turquoise", s34)
 
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
