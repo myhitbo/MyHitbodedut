@@ -1,0 +1,273 @@
+== exam-01-bienvenue
+== exam-03-choix-version
+== exam-04-today
+== exam-05-settings
+== exam-06-carte-etat
+== exam-09-retour-reglages
+== exam-10-apercu
+== exam-11-apercu-bas
+== exam-13-carte-autorisations
+PETIT 344x12dp Button dedicace_button «Dedicate»
+== exam-16-autorisations-accordees
+PETIT 344x12dp Button dedicace_button «Dedicate»
+== exam-17-carte-mode
+== exam-18-liste-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== exam-19-application-choisie
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== exam-20-plage
+PETIT 52x33dp Switch hide_countdown_switch «Hide the countdown»
+== exam-21-etat-arme
+PETIT 52x47dp Switch hilloulot_switch «Show hillulot»
+PETIT 91x4dp Button target_length «Hitbodedut length: 15 min»
+== exam-22-barriere-reelle
+== exam-23-barriere-reelle-bas
+== exam-25-rythme
+PETIT 101x42dp Button window_start «“I am with Hashem” hours: 6:00»
+PETIT 109x42dp Button window_end «“I am with Hashem” hours: 11:0»
+PETIT 52x1dp Switch exempt_today_switch «Rest day today»
+== exam-26-mode-coupe
+== fr-gestes-accueil
+== fr-gestes-accueil-bas
+== fr-gestes-accueil-volet
+MUET Switch music_switch_main (796, 1536, 933, 1662)
+== fr-gestes-livres
+== fr-gestes-livres-bas
+== fr-gestes-chemin
+== fr-gestes-chemin-bas
+== fr-gestes-reglages
+PETIT 96x34dp Button ouverture_button «Écran d’ouverture : Le Jour»
+== fr-gestes-reglages-bas
+PETIT 106x20dp Button permission_grant «Accorder»
+== fr-gestes-choix-version
+== fr-gestes-choix-version-bas
+== fr-gestes-seance
+== fr-gestes-seance-bas
+PETIT 118x46dp Button duration_5 «5 min»
+PETIT 118x46dp Button duration_10 «10 min»
+PETIT 118x46dp Button duration_15 «15 min»
+== fr-gestes-bravo
+== fr-gestes-bravo-bas
+== fr-gestes-journal
+== fr-gestes-journal-bas
+== fr-gestes-parcours
+== fr-gestes-parcours-bas
+== fr-gestes-hizouk
+== fr-gestes-hizouk-bas
+== fr-gestes-conseils
+== fr-gestes-conseils-bas
+== fr-gestes-rappels
+MUET Switch reminders_switch (854, 582, 991, 708)
+== fr-gestes-rappels-bas
+MUET Switch reminders_switch (854, 582, 991, 708)
+== fr-gestes-musique
+MUET Switch music_switch (854, 477, 991, 603)
+MUET Switch music_shuffle (854, 890, 991, 1016)
+PETIT 344x40dp LinearLayout music_ambiance «Ambiance Silence»
+MUET RadioButton track_radio (74, 1465, 200, 1591)
+MUET RadioButton track_radio (74, 1654, 200, 1780)
+MUET RadioButton track_radio (74, 1843, 200, 1969)
+MUET RadioButton track_radio (74, 2032, 200, 2158)
+== fr-gestes-musique-bas
+PETIT 48x45dp RadioButton track_radio «»
+MUET RadioButton track_radio (74, 128, 200, 247)
+PETIT 48x45dp ImageButton track_rename «Renommer»
+PETIT 48x45dp ImageButton track_play «Écouter»
+MUET RadioButton track_radio (74, 310, 200, 436)
+MUET RadioButton track_radio (74, 499, 200, 625)
+MUET RadioButton track_radio (74, 688, 200, 814)
+MUET RadioButton track_radio (74, 877, 200, 1003)
+MUET RadioButton track_radio (74, 1066, 200, 1192)
+MUET RadioButton track_radio (74, 1255, 200, 1381)
+MUET RadioButton track_radio (74, 1444, 200, 1570)
+MUET RadioButton track_radio (74, 1633, 200, 1759)
+MUET RadioButton track_radio (74, 1822, 200, 1948)
+MUET RadioButton track_radio (74, 2011, 200, 2137)
+== fr-gestes-siddour
+PETIT 272x36dp TextView siddur_heading_nusah «Noussa’h séfarade (Edot HaMizr»
+== fr-gestes-siddour-bas
+== fr-gestes-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x7dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+== fr-gestes-tefilot
+== fr-gestes-tefilot-bas
+== fr-gestes-tehilim
+PETIT 70x34dp TextView  «46»
+PETIT 70x34dp TextView  «47»
+PETIT 70x34dp TextView  «48»
+PETIT 70x34dp TextView  «49»
+PETIT 70x34dp TextView  «50»
+== fr-gestes-tehilim-bas
+PETIT 70x3dp TextView  «71»
+PETIT 70x3dp TextView  «72»
+PETIT 70x3dp TextView  «73»
+PETIT 70x3dp TextView  «74»
+PETIT 70x3dp TextView  «75»
+== fr-gestes-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-tehilim-lecture-bas
+PETIT 379x19dp LinearLayout  «Heureux l’homme qui ne suit po»
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-tikkun
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-tikkun-bas
+== fr-gestes-bibliotheque
+== fr-gestes-bibliotheque-bas
+== fr-gestes-livres
+== fr-gestes-livres-bas
+== fr-gestes-source
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-source-bas
+== fr-gestes-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diaspora»
+== fr-gestes-zmanim-bas
+== fr-gestes-vol
+PETIT 379x44dp LinearLayout  «Méthode et sources»
+== fr-gestes-vol-clavier
+PETIT 347x2dp LinearLayout  «Départ, Choisir un aéroport»
+== fr-gestes-vol-bas
+PETIT 379x44dp LinearLayout  «Méthode et sources»
+== fr-gestes-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+== fr-gestes-boussole-bas
+== fr-gestes-calendrier
+PETIT 95x26dp TextView  «Hébraïque»
+PETIT 92x26dp TextView  «Grégorien»
+PETIT 347x28dp TextView  «Aujourd’hui»
+== fr-gestes-calendrier-bas
+== fr-gestes-halakha
+PETIT 347x45dp EditText  «Rechercher dans la halakha»
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-halakha-bas
+PETIT 48x32dp TextView  «‹»
+PETIT 48x32dp TextView  «›»
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-hilloulot
+PETIT 48x38dp Switch  «Afficher les hilloulot»
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-hilloulot-clavier
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-hilloulot-bas
+PETIT 326x13dp EditText  «Rechercher un tsadik»
+PETIT 56x36dp TextView  «Aa»
+== fr-gestes-recherche
+PETIT 347x45dp EditText recherche_champ «Rechercher dans le siddour, le»
+== fr-gestes-recherche-clavier
+PETIT 347x45dp EditText recherche_champ «Rechercher dans le siddour, le»
+== fr-gestes-recherche-bas
+PETIT 347x45dp EditText recherche_champ «Rechercher dans le siddour, le»
+== fr-gestes-paliers
+PETIT 379x35dp LinearLayout  «15 minutes en un jour, Gagné l»
+== fr-gestes-paliers-bas
+PETIT 379x11dp LinearLayout  «2 heures en tout, 1 / 2»
+== fr-gestes-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== fr-gestes-applications-bas
+MUET CheckBox app_check (912, 532, 1038, 658)
+MUET CheckBox app_check (912, 722, 1038, 848)
+MUET CheckBox app_check (912, 912, 1038, 1038)
+MUET CheckBox app_check (912, 1102, 1038, 1228)
+MUET CheckBox app_check (912, 1292, 1038, 1418)
+MUET CheckBox app_check (912, 1482, 1038, 1608)
+MUET CheckBox app_check (912, 1672, 1038, 1798)
+MUET CheckBox app_check (912, 1862, 1038, 1988)
+MUET CheckBox app_check (912, 2052, 1038, 2178)
+MUET CheckBox app_check (912, 2242, 1038, 2368)
+== fr-gestes-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-gestes-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-gestes-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-gestes-version-pile-4
+== fr-gestes-version-bento
+PETIT 185x21dp FrameLayout  «Siddour»
+PETIT 185x21dp FrameLayout  «Tehilim»
+== fr-gestes-version-bento-bas
+PETIT 48x16dp FrameLayout  «Réglages»
+== fr-gestes-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x36dp LinearLayout  «’HIZOUK DU JOUR»
+== fr-gestes-version-instant-bas
+== fr-gestes-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x2dp TextView  «Tout voir»
+== fr-gestes-version-serenite-bas
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x40dp TextView  «Tout voir»
+PETIT 54x40dp TextView  «Tout voir»
+== fr-boutons-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-boutons-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-boutons-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-boutons-version-pile-4
+== fr-boutons-version-bento
+PETIT 185x21dp FrameLayout  «Siddour»
+PETIT 185x21dp FrameLayout  «Tehilim»
+== fr-boutons-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x36dp LinearLayout  «’HIZOUK DU JOUR»
+== fr-boutons-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x2dp TextView  «Tout voir»
+== gestes-seance-en-cours
+== gestes-seance-calme
+== gestes-seance-apres
+== boutons-seance-en-cours
+== boutons-seance-calme
+== boutons-seance-apres
+== gestes-barriere-etat
+PETIT 91x17dp Button snooze_length «Durée du report : 15 min»
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+PETIT 363x43dp Button blocker_snooze «Plus tard (15 min)»
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+== boutons-barriere-reelle-bas
