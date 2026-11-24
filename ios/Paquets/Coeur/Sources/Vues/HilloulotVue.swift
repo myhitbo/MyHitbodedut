@@ -337,9 +337,8 @@ private struct HilloulotLigneVue: View {
                 contenuTete
             }
             .buttonStyle(.plain)
-            .accessibilityElement(children: .ignore)
+            // Le bouton est déjà un seul élément, avec son trait : l'étiquette d'Android remplace ses textes.
             .accessibilityLabel(Text(verbatim: etiquette))
-            .accessibilityAddTraits(.isButton)
         } else {
             contenuTete
                 .accessibilityElement(children: .combine)

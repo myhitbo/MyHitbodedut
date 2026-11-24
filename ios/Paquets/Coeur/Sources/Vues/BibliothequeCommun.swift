@@ -503,8 +503,8 @@ struct BibliothequeAnnonceMasque: View {
     }
 }
 
-/// Un message bref (Toast.LENGTH_SHORT) : « Cet écran n'existe pas sur ce téléphone ». Il s'efface au bout de 2 s
-/// (`fin`), et VoiceOver l'annonce.
+/// Un message bref (Toast.LENGTH_LONG de LibraryEntryActivity.linkButton) : « Cet écran n'existe pas sur ce
+/// téléphone ». Il s'efface au bout de 3,5 s (`fin`), et VoiceOver l'annonce.
 struct BibliothequeMessageBref: View {
     let message: Libelle
     let fin: @MainActor () -> Void
@@ -529,7 +529,7 @@ struct BibliothequeMessageBref: View {
             .task(id: message) {
                 AccessibilityNotification.Announcement(traducteur.texte(message)).post()
                 do {
-                    try await Task.sleep(for: .seconds(2))
+                    try await Task.sleep(for: .milliseconds(3500))
                     fin()
                 } catch {
                     // Un autre message l'a remplacé : c'est lui qui s'effacera.

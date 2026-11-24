@@ -285,8 +285,9 @@ struct TehilimFeuilleSignets: View {
             // l'icône (en fin de vue) suivent le sens de l'app.
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
+                    // PoliceHebraique.appliquer d'Android : la police de lecture, comme l'aperçu dessous.
                     Text(ligne.titre, traducteur: traducteur)
-                        .font(.footnote)
+                        .policeHebraique(.serif, taille: 13, relativeA: .footnote)
                         .foregroundStyle(Teinte(.muted))
                         .environment(\.layoutDirection, .rightToLeft)
                         .frame(maxWidth: .infinity, alignment: .leading)

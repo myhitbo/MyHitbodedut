@@ -15,6 +15,8 @@ public struct RechercheVue: View {
     private let ouvrir: @MainActor (RechercheRoute) -> Void
     @Environment(\.traducteur) private var traducteur
     @FocusState private var champActif: Bool
+    /// Le focus est posé une fois, à l'ouverture (requestFocus de onCreate) : pas au retour d'un résultat.
+    @State private var focusPose = false
 
     public init(modele: RechercheModele, ouvrir: @escaping @MainActor (RechercheRoute) -> Void) {
         self.modele = modele
@@ -37,8 +39,13 @@ public struct RechercheVue: View {
         .navigationTitle(Text(Libelle("recherche_titre"), traducteur: traducteur))
         // L'index se prépare (des secondes la première fois) ; le champ s'utilise déjà.
         .task { await modele.charger() }
-        // requestFocus() d'Android.
-        .onAppear { champActif = true }
+        // requestFocus() d'Android, dans onCreate seulement.
+        .onAppear {
+            if !focusPose {
+                focusPose = true
+                champActif = true
+            }
+        }
     }
 
     // MARK: Le champ

@@ -309,49 +309,51 @@ struct MusiqueTitreDefilantVue: View {
     /// La vitesse du défilement, en points par seconde.
     private let vitesse: Double = 30
 
+    /// La place du titre est toujours celle du texte tronqué (au plus la largeur offerte) : la ligne qui défile,
+    /// plus large, est dessinée en surimpression et ne change jamais la mise en page (un `frame(maxWidth:)`
+    /// autour d'un `fixedSize()` prendrait sa largeur, et le cadre mesuré grandirait avec lui).
     var body: some View {
         let defile = !reduireAnimations && largeurCadre > 0 && largeurTexte > largeurCadre
-        ZStack(alignment: .leading) {
-            if defile {
-                TimelineView(.animation) { contexte in
-                    HStack(spacing: ecart) {
-                        Text(verbatim: texte)
-                            .lineLimit(1)
-                            .fixedSize()
-                        Text(verbatim: texte)
-                            .lineLimit(1)
-                            .fixedSize()
+        Text(verbatim: texte)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .opacity(defile ? 0 : 1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .leading) {
+                if defile {
+                    TimelineView(.animation) { contexte in
+                        HStack(spacing: ecart) {
+                            Text(verbatim: texte)
+                                .lineLimit(1)
+                                .fixedSize()
+                            Text(verbatim: texte)
+                                .lineLimit(1)
+                                .fixedSize()
+                        }
+                        .fixedSize()
+                        .offset(x: -decalage(contexte.date))
                     }
-                    .fixedSize()
-                    .offset(x: -decalage(contexte.date))
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-            } else {
+            }
+            .clipped()
+            .onGeometryChange(for: CGFloat.self) { geometrie in
+                geometrie.size.width
+            } action: { largeur in
+                largeurCadre = largeur
+            }
+            .background(alignment: .leading) {
                 Text(verbatim: texte)
                     .lineLimit(1)
-                    .truncationMode(.tail)
+                    .fixedSize()
+                    .hidden()
+                    .onGeometryChange(for: CGFloat.self) { geometrie in
+                        geometrie.size.width
+                    } action: { largeur in
+                        largeurTexte = largeur
+                    }
             }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .clipped()
-        .onGeometryChange(for: CGFloat.self) { geometrie in
-            geometrie.size.width
-        } action: { largeur in
-            largeurCadre = largeur
-        }
-        .background(alignment: .leading) {
-            Text(verbatim: texte)
-                .lineLimit(1)
-                .fixedSize()
-                .hidden()
-                .onGeometryChange(for: CGFloat.self) { geometrie in
-                    geometrie.size.width
-                } action: { largeur in
-                    largeurTexte = largeur
-                }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: texte))
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(verbatim: texte))
     }
 
     private func decalage(_ date: Date) -> CGFloat {
