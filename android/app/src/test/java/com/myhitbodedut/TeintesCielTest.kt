@@ -149,6 +149,14 @@ class TeintesCielTest {
             if (sombre) assertTrue("la nuit n'est pas la plus sombre", TeintesCiel.luminance(nuit.haut) <= TeintesCiel.luminance(jour.haut))
             // En thème sombre, le corps des nuages est une silhouette plus sombre que le ciel.
             if (sombre) assertTrue(TeintesCiel.luminance(jour.corps) < TeintesCiel.luminance(jour.haut))
+            // Et jamais de kaki : l'horizon assombri de +6° à +12° virait au vert-de-gris.
+            if (sombre) for (e in -20..60) for (matin in listOf(true, false)) {
+                val t = ciel(e.toDouble(), matin)
+                listOf(t.haut, t.milieu, t.bas, t.collineLoin, t.collinePres).forEach { c ->
+                    val (h, sat) = TeintesCiel.hsl(c).let { it[0] * 360 to it[1] }
+                    assertTrue("kaki à $e° ${if (matin) "le matin" else "le soir"} : ${CielContinu.hexa(c)}", h !in 60.0..170.0 || sat <= 0.04)
+                }
+            }
         }
     }
 

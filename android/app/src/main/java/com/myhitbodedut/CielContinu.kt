@@ -151,8 +151,13 @@ object CielContinu {
         return FloatArray(3) { (a[it] + (b[it] - a[it]) * t).toFloat() }
     }
 
-    /** Le poids des couleurs chaudes de l'aube et du coucher, de 0 (nuit, jour) à 1 (−6° à +6°). */
-    fun chaleur(e: Double): Double = rampe(e, -12.0, -6.0) * (1 - rampe(e, 6.0, 12.0))
+    /**
+     * Le poids des couleurs chaudes de l'aube et du coucher, de 0 (nuit, jour) à 1 (−6° à +10°,
+     * jusqu'au bout de l'heure dorée), nul à +16° : en thème sombre, ce qu'elles prennent du haut
+     * du ciel (TeintesCiel). Il s'arrêtait à +12° : l'horizon de +6° à +12°, crème puis blanc
+     * bleuté, passait par un vert-de-gris pâle qui, assombri, virait au kaki.
+     */
+    fun chaleur(e: Double): Double = rampe(e, -12.0, -6.0) * (1 - rampe(e, 10.0, 16.0))
 
     /** Les étoiles s'allument avec la profondeur du crépuscule : aucune à −4°, toutes à −14°. */
     fun etoiles(e: Double): Double = rampe(e, -4.0, -14.0)

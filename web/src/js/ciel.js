@@ -223,7 +223,8 @@ export function partsSombre(e) {
   const [a, b, t] = e <= -12 ? [nuit, nuit, 0] : e < -3 ? [nuit, crepuscule, (e + 12) / 9] : e < 6 ? [crepuscule, crepuscule, 0] : e < 12 ? [crepuscule, jour, (e - 6) / 6] : [jour, jour, 0];
   return a.map((v, i) => v + (b[i] - v) * t);
 }
-export const chaleur = (e) => rampe(e, -12, -6) * (1 - rampe(e, 6, 12));
+/** Le poids des couleurs chaudes, jusqu'au bout de l'heure dorée : en thème sombre, l'horizon tire vers le haut du ciel (sinon kaki). */
+export const chaleur = (e) => rampe(e, -12, -6) * (1 - rampe(e, 10, 16));
 export const allumage = (e) => rampe(e, -4, -14);
 export const presenceNuages = (e) => 0.15 + 0.85 * rampe(e, -14, -6);
 export const rayonsDores = (e) => rampe(e, -2, 2.5) * (1 - rampe(e, 6, 10));

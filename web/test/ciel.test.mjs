@@ -108,6 +108,8 @@ test('les clés, le plan et les mouvements sont ceux d’Android', () => {
   }
   // Les nuages pâles du thème clair, à la même borne qu'Android.
   assert.ok(teintes.includes('if (luminance(bord) < borne + 0.03) bord = aLuminance(bord, minOf(borne + 0.03, 1.0))'));
+  // La chaleur prolongée jusqu'au bout de l'heure dorée : en thème sombre, l'horizon ne vire plus au kaki.
+  assert.ok(continu.includes('fun chaleur(e: Double): Double = rampe(e, -12.0, -6.0) * (1 - rampe(e, 10.0, 16.0))'));
 });
 
 // --- Le soleil (Soleil.kt, SoleilTest.kt) ------------------------------------------------------

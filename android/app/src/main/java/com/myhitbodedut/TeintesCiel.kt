@@ -185,8 +185,9 @@ object TeintesCiel {
             if (sombre) {
                 val cible = borne * parts[i] * 0.9.pow(reserve)
                 if (luminance(c) > cible) {
-                    // L'orangé sombre devient brun : à l'aube et au coucher, le milieu et l'horizon
-                    // tirent vers le violet de leur haut, saturation bornée.
+                    // L'orangé sombre devient brun, le vert-de-gris kaki : à l'aube, au coucher et
+                    // jusqu'au bout de l'heure dorée, le milieu et l'horizon tirent vers le violet ou
+                    // le bleu de leur haut, saturation bornée.
                     if (i > 0 && chaleur > 0) {
                         c = melange(c, departs[0], 0.45 * chaleur)
                         val h = hsl(c)
