@@ -125,6 +125,8 @@ async function capture(nom, { langue, mode = 'clair', fond = 'vert', accent = 'v
     for (const e of document.querySelectorAll('#app *')) {
       const r = e.getBoundingClientRect();
       if (!r.width || !r.height || getComputedStyle(e).visibility === 'hidden') continue;
+      // Le décor du ciel du Jour (24/11) : rogné par construction au bord de la page, sans texte ni bouton.
+      if (e.closest('.ciel-decor')) continue;
       // Une rangée qui défile de côté (les pastilles de l'accueil) déborde par construction.
       let defile = false;
       for (let a = e.parentElement; a && !defile; a = a.parentElement) defile = ['auto', 'scroll'].includes(getComputedStyle(a).overflowX);
@@ -176,13 +178,15 @@ await capture('accueil-fr-durees', { langue: 'fr', actions: async (p) => { const
 await capture('accueil-fr-ajout-temps', { langue: 'fr', actions: (p) => p.locator('button.jour:not(.fait)').first().click() });
 await capture('accueil-fr-sable-violet', { langue: 'fr', fond: 'sable', accent: 'violet', prenom: 'Hillel' });
 await capture('textes-he', { langue: 'he', onglet: 'textes' });
-// Le Jour suit le ciel (14/11) : sans lieu, l'heure du téléphone choisit l'aube, le jour, le coucher ou la nuit.
+// Le Jour suit le ciel (14/11), sur toute la page (24/11) : sans lieu, l'heure du téléphone choisit l'aube, le jour, le coucher ou la nuit.
 for (const [nom, heure, ciel, options] of [['accueil-aube-fr', '06:40', 'aube', {}], ['accueil-coucher-he', '18:30', 'coucher', { langue: 'he' }],
   ['accueil-nuit-fr-sombre', '21:30', 'nuit', { mode: 'sombre' }], ['accueil-nuit-en', '23:10', 'nuit', { langue: 'en' }]]) {
   await capture(nom, { langue: 'fr', heure, ...options, actions: async (p) => {
     const vu = await p.evaluate(() => ({ ecran: document.querySelector('.ecran[data-ciel]')?.dataset.ciel,
-      plaque: document.querySelector('.plaque.avec-ciel svg.ciel') !== null, lanternes: document.querySelectorAll('.semaine .lanterne').length }));
-    if (vu.ecran !== ciel || !vu.plaque || vu.lanternes !== 7) erreurs.push(`${nom} : ${JSON.stringify(vu)}, attendu ${ciel}`);
+      // Le ciel sur toute la page (24/11), plus dans la plaque.
+      page: document.querySelector('.ecran.avec-ciel-page .ciel-decor') !== null, plaque: document.querySelector('.plaque svg') === null,
+      lanternes: document.querySelectorAll('.semaine .lanterne').length }));
+    if (vu.ecran !== ciel || !vu.page || !vu.plaque || vu.lanternes !== 7) erreurs.push(`${nom} : ${JSON.stringify(vu)}, attendu ${ciel}`);
   } });
 }
 // La refonte du 13/11 : les rayons des Livres, Le Chemin, et le volet de la barre de départ.

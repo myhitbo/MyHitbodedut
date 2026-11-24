@@ -454,12 +454,11 @@ function compter(el, cible, texte) {
 function remplirPlaque(btn) {
   if (facePlaque === 'hassid') {
     btn.setAttribute('aria-label', tr.t('rings_character_hint'));
-    // Le hassid se tient dans le ciel du moment (14/11) ; les chiffres gardent le disque clair.
-    btn.classList.add('avec-ciel');
-    btn.replaceChildren(fenetreCiel(cielMaintenant()), h('img', { src: `img/${salutation(store.record()?.faite === true)}.webp`, alt: '' }));
+    // Le disque clair, sous le hassid comme sous les chiffres : le ciel du moment est passé
+    // derrière toute la page (24/11, poserCiel).
+    btn.replaceChildren(h('img', { src: `img/${salutation(store.record()?.faite === true)}.webp`, alt: '' }));
     return;
   }
-  btn.classList.remove('avec-ciel');
   const c = contenuFace(facePlaque);
   const anneau = Plaque.anneau(facePlaque);
   const valeur = h('div', { class: `face-valeur${anneau ? ` valeur-${anneau}` : ''}` }, c.texte(c.cible));
@@ -503,7 +502,7 @@ function tournerPlaque(vers) {
   apresAnimation(btn, 'plaque-sortie', changer);
 }
 
-// --- Le ciel du Jour (étape 3 de la refonte, 14/11 ; CielDuJour.kt, CielDessin.kt) -------
+// --- Le ciel du Jour (étape 3 de la refonte, 14/11 ; sur toute la page le 24/11) ----------
 
 /** Le ciel du moment : à l'heure du lieu des zmanim s'il est réglé, sinon à celle du téléphone. */
 function cielMaintenant() {
@@ -519,48 +518,95 @@ function cielMaintenant() {
 }
 
 /**
- * La fenêtre ronde au creux des anneaux : le ciel du moment, l'astre, la colline du champ où
- * l'on sort, et la nuit le rond de lumière de la lanterne où se tient le hassid (la lueur
- * cache aussi le liseré clair du détourage sur le sombre).
+ * Le ciel du moment sur toute la page du Jour (24/11 ; CielPage.kt, TeintesCiel.kt,
+ * CielVivant.kt). Le propriétaire : « s'affiche dans l'arrière-plan de la première page sur
+ * toute la page, pas dans le logo dans les anneaux ».
+ *
+ * Le dégradé (Ciel.teintesPage : les couleurs du ciel, assombries en thème sombre, pâlies en
+ * thème clair, juste assez pour que chaque texte garde son contraste) monte avec la page sur la
+ * hauteur de l'écran, sa couleur du bas continue au-delà et sous la barre de départ. Par-dessus,
+ * dans .ciel-decor : l'astre à côté des anneaux avec sa couronne et sa lueur, les étoiles la nuit
+ * (jamais sous un texte), deux nuages pâles le jour, un voile à l'aube et au coucher. Les
+ * mouvements sont en CSS (app.css, « Le ciel vivant »), coupés par prefers-reduced-motion.
+ * Avec « Contraste élevé », pas de ciel.
  */
-let numeroCiel = 0;
-function fenetreCiel(phase) {
-  const c = Ciel.PALETTES[phase];
-  // Des identifiants propres à chaque dessin : la plaque se redessine, l'ancien peut traîner.
-  const n = ++numeroCiel;
-  const svg = s('svg', { class: 'ciel', viewBox: '0 0 188 188', preserveAspectRatio: 'xMidYMid slice', 'aria-hidden': 'true' });
-  const defs = s('defs');
-  const degrade = s('linearGradient', { id: `ciel-${n}`, x1: 0, y1: 0, x2: 0, y2: 1 });
-  [[0, c.haut], [0.55, c.milieu], [1, c.horizon]].forEach(([o, couleur]) => degrade.append(s('stop', { offset: o, 'stop-color': couleur })));
-  defs.append(degrade);
-  svg.append(defs, s('rect', { width: 188, height: 188, fill: `url(#ciel-${n})` }));
-  if (phase === 'nuit') {
-    const etoiles = s('g', { fill: '#FFFDF0' });
-    Ciel.ETOILES.forEach(([x, y, r]) => etoiles.append(s('circle', { cx: x, cy: y, r })));
-    const masque = s('mask', { id: `croissant-${n}` });
-    masque.append(s('rect', { width: 188, height: 188, fill: '#FFFFFF' }), s('circle', { cx: 146.7, cy: 34.5, r: 14, fill: '#000000' }));
-    defs.append(masque);
-    svg.append(etoiles, s('circle', { cx: 139, cy: 38, r: 14, fill: c.astre, mask: `url(#croissant-${n})` }));
-  } else {
-    const [x, y, r, lueur] = Ciel.ASTRES[phase];
-    const halo = s('radialGradient', { id: `astre-${n}` });
-    halo.append(s('stop', { offset: 0, 'stop-color': c.lueur, 'stop-opacity': 0.85 }), s('stop', { offset: 1, 'stop-color': c.lueur, 'stop-opacity': 0 }));
-    defs.append(halo);
-    svg.append(s('circle', { cx: x, cy: y, r: lueur, fill: `url(#astre-${n})` }), s('circle', { cx: x, cy: y, r, fill: c.astre }));
-    if (phase === 'jour') {
-      const nuages = s('g', { fill: '#FFFFFF', 'fill-opacity': 0.85 });
-      Ciel.NUAGES.forEach(([cx, cy, rx, ry]) => nuages.append(s('ellipse', { cx, cy, rx, ry })));
-      svg.append(nuages);
+let cielCalcule = null;
+function poserCiel() {
+  const ecranJour = app.querySelector('.ecran[data-ciel]');
+  const defile = ecranJour?.querySelector('.defile');
+  if (!ecranJour || !defile) return;
+  defile.querySelector('.ciel-decor')?.remove();
+  if (document.documentElement.dataset.fond === 'contraste') { ecranJour.classList.remove('avec-ciel-page'); return; }
+  const phase = ecranJour.dataset.ciel;
+  // Les couleurs que la page montre vraiment (palette choisie, mode sombre compris).
+  const temoin = h('span', { hidden: true });
+  ecranJour.append(temoin);
+  const couleur = (nom) => { temoin.style.color = `var(${nom})`; return (getComputedStyle(temoin).color.match(/[\d.]+/g) ?? [0, 0, 0]).slice(0, 3).map((v) => Math.round(Number(v))); };
+  const papier = couleur('--paper');
+  const sombre = Ciel.luminance(papier) < 0.3;
+  // Les seuils de PaletteTest (jamais plus que ce que l'encre tient déjà sur le papier).
+  const encres = [['--ink', 7], ['--muted', 4.5], ['--brand', 4.5], ['--ring-week-text', 4.5], ['--ring-streak-text', 4.5]]
+    .map(([nom, seuil]) => { const c = couleur(nom); return { couleur: c, seuil: Math.min(seuil, Ciel.contraste(c, papier)) }; });
+  temoin.remove();
+  const cle = JSON.stringify([phase, papier, encres]);
+  if (cielCalcule?.cle !== cle) cielCalcule = { cle, t: Ciel.teintesPage(phase, sombre, encres, Ciel.hex(papier)) };
+  const t = cielCalcule.t;
+  const css = (c, a = 1) => `rgb(${c[0]} ${c[1]} ${c[2]} / ${Math.round(a * 1000) / 1000})`;
+  const vue = defile.clientHeight, largeur = defile.clientWidth;
+  ecranJour.classList.add('avec-ciel-page');
+  for (const [k, v] of [['--ciel-haut', css(t.haut)], ['--ciel-milieu', css(t.milieu)], ['--ciel-bas', css(t.bas)], ['--ciel-vue', `${vue}px`]]) ecranJour.style.setProperty(k, v);
+
+  // Le plan : les anneaux et tout ce qui porte du texte, en px dans le contenu qui défile.
+  const base = defile.getBoundingClientRect();
+  const zone = (el) => { const r = el.getBoundingClientRect(); return { gauche: r.left - base.left, haut: r.top - base.top + defile.scrollTop, droite: r.right - base.left, bas: r.bottom - base.top + defile.scrollTop }; };
+  const jauge = defile.querySelector('.jauge');
+  const zones = [];
+  const parcourir = (el) => {
+    for (const e of el.children) {
+      if (e === jauge || e.offsetParent === null && getComputedStyle(e).position !== 'fixed') continue;
+      const texte = [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+      if (texte || /^(BUTTON|IMG|SVG|INPUT|A)$/i.test(e.tagName) || e.classList.contains('carte')) zones.push(zone(e));
+      else parcourir(e);
+    }
+  };
+  const contenu = defile.querySelector('.contenu');
+  if (contenu) parcourir(contenu);
+  const j = jauge ? zone(jauge) : null;
+
+  const decor = h('div', { class: 'ciel-decor', 'aria-hidden': 'true' });
+  const astre = j ? Ciel.placeAstre(phase, j, largeur, zones) : null;
+  if (astre) {
+    const r = Ciel.RAYON[phase], cote = 2 * r * Ciel.LUEUR, a = t.lueurAlpha;
+    decor.append(h('div', { class: 'ciel-halo', style: `left:${astre[0]}px;top:${astre[1]}px;width:${cote}px;height:${cote}px;`
+      + `--couronne:${css(t.couronne, 0.55)};--couronne-bas:${css(t.couronne, 0.18)};`
+      + `--lueur:${css(t.lueur, a)};--lueur-mi:${css(t.lueur, a * 0.55)};--lueur-bas:${css(t.lueur, a * 0.18)}` }),
+    h('div', { class: `ciel-astre${phase === 'nuit' ? ' lune' : ''}`, style: `left:${astre[0]}px;top:${astre[1]}px;width:${2 * r}px;height:${2 * r}px;--r:${r}px;background:${css(t.astre)}` }));
+  }
+  const [nombre, limite, eclat] = Ciel.planEtoiles(phase, sombre, largeur, vue);
+  if (nombre) {
+    const liste = Ciel.etoiles(nombre, 29, sombre ? 0.7 : 1.0, sombre ? 1.7 : 2.0);
+    const libres = Ciel.etoilesLibres(liste, largeur, vue * limite, j ? [...zones, j] : zones);
+    const champ = h('div', { class: 'ciel-champ' });
+    liste.forEach(([x, y, r, cycle, decalage], i) => {
+      if (!libres[i]) return;
+      const cote = 2 * r * 1.6;
+      champ.append(h('i', { class: 'ciel-etoile', style: `left:${x * largeur - cote / 2}px;top:${y * vue * limite - cote / 2}px;width:${cote}px;height:${cote}px;`
+        + `--etoile:${css(t.etoile, t.etoileAlpha * eclat * (1 - 0.6 * y))};animation-duration:${cycle}s;animation-delay:${-decalage * cycle}s` }));
+    });
+    decor.append(h('div', { class: 'ciel-champ-x' }, champ));
+  }
+  if (t.nuageAlpha > 0 && phase !== 'nuit') {
+    const jour = phase === 'jour';
+    const [l0, h0] = jour ? Ciel.TAILLE_NUAGE : Ciel.TAILLE_VOILE;
+    const vitesse = jour ? Ciel.VIVANT.nuageVitesse : Ciel.VIVANT.voileVitesse;
+    for (const [x0, y0, e] of jour ? Ciel.NUAGES : Ciel.VOILES) {
+      const l = l0 * e, x = x0 * largeur, duree = (largeur + l) / vitesse;
+      decor.append(h('div', { class: `ciel-nuage${jour ? '' : ' voile'}`, style: `left:${x}px;top:${y0 * vue}px;width:${l}px;height:${h0 * e}px;`
+        + `opacity:${Math.round(t.nuageAlpha * 1000) / 1000};--nuage:${css(t.nuage)};--depart:${-(x + l)}px;--arrivee:${largeur - x}px;`
+        + `animation-duration:${duree}s;animation-delay:${-((x + l) / vitesse)}s` }));
     }
   }
-  svg.append(s('path', { d: Ciel.COLLINE, fill: c.colline }));
-  if (phase === 'nuit') {
-    const lanterne = s('radialGradient', { id: `lanterne-${n}` });
-    [[0, 1], [0.5, 0.8], [1, 0]].forEach(([o, a]) => lanterne.append(s('stop', { offset: o, 'stop-color': '#FFECBA', 'stop-opacity': a })));
-    defs.append(lanterne);
-    svg.append(s('circle', { cx: 94, cy: 94, r: 117, fill: `url(#lanterne-${n})` }));
-  }
-  return svg;
+  defile.prepend(decor);
 }
 
 /**
@@ -5334,6 +5380,10 @@ function ajusteLesTextes() {
 document.fonts?.ready?.then(ajusteLesTextes);
 document.fonts?.addEventListener?.('loadingdone', ajusteLesTextes);
 window.addEventListener('resize', ajusteLesTextes);
+// Le ciel du Jour se replace (anneaux, textes, hauteur de l'écran) quand la fenêtre change, et une fois les polices chargées.
+let cielAReposer = 0;
+window.addEventListener('resize', () => { cancelAnimationFrame(cielAReposer); cielAReposer = requestAnimationFrame(poserCiel); });
+document.fonts?.ready.then(() => requestAnimationFrame(poserCiel));
 
 // --- La séance (SessionActivity, SessionService) ----------------------------------------
 let tic = null;
@@ -6125,6 +6175,7 @@ function rendre() {
   // En quittant la lecture, le bouton se replie ; l'écran suivant le retrouve en pastille.
   if (!ECRANS_LUS.includes(ecran)) { reglagesOuverts = false; choixNusahOuvert = false; }
   ajusteLesTextes();
+  if (accueil) requestAnimationFrame(poserCiel);
   if (ecran === 'seance' || store.isSessionRunning()) demarreTic();
   if (ecran === 'seance' && store.isSessionRunning()) attendreCalme(); else arreteCalme();
   if (ecran === 'bravo') danse();
