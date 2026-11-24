@@ -235,7 +235,10 @@ private struct BibliothequeEnteteEntree: View {
         VStack(alignment: .leading, spacing: 0) {
             if let nature = modele.nature {
                 Text(nature, traducteur: traducteur)
-                    .font(.caption2)
+                    // 11 points qui suivent chaque pas de la taille du texte (comme `Etiquette`) : `.caption2` reste à
+                    // 11 points de la plus petite taille à la taille ordinaire, et l'audit d'accessibilité disait ce
+                    // badge suivi « en partie » à chaque passage (tâche 29).
+                    .tailleSp(11, relativeA: .footnote)
                     .foregroundStyle(Color.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 4)

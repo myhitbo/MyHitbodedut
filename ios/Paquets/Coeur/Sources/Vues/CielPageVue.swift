@@ -42,13 +42,26 @@ struct CielPageVue: View {
                                     hauteurVue: hv)
         // La couche animée ne couvre que le premier écran et la bande des anneaux, même si la page est longue.
         let hauteurAnimee = min(max(hauteur, hv), max(hv, (jauge?.bas ?? 0) + 60))
+        // Les nuages et les rayons flous, peints une fois en images quand le ciel change (les bitmaps d'Android) :
+        // chaque image de l'animation ne fait que les poser, sans flou à refaire.
+        let images = CielImages.partage
+        let nuages = PlanCiel.nuages.enumerated().map { i, n in
+            let vif = trace.nuagesVifs[i]
+            let w = PlanCiel.tailles[n.forme].largeur * n.echelle
+            let h = PlanCiel.tailles[n.forme].hauteur * n.echelle
+            return CielImages.Nuage(
+                corps: images.nuage(forme: n.forme, couleur: vif ? teintes.corpsVif : teintes.corps, largeur: w, hauteur: h),
+                bord: images.nuage(forme: n.forme, couleur: vif ? teintes.bordVif : teintes.bord, largeur: w, hauteur: h))
+        }
+        let rayons = trace.estSoleil && CielContinu.rayons(etat.hauteur) > 0
+            ? images.rayons(couleur: teintes.couronne, r: trace.rayon) : nil
         ZStack(alignment: .topLeading) {
             Canvas { contexte, taille in
                 peindreFond(contexte, taille, hv)
             }
             CielVivantHorloge { secondes in
                 Canvas { contexte, taille in
-                    peindreMotifs(contexte, taille, hv, trace, secondes)
+                    peindreMotifs(contexte, taille, hv, trace, nuages, rayons, secondes)
                 }
             }
             .frame(height: hauteurAnimee)
@@ -115,7 +128,7 @@ struct CielPageVue: View {
     /// Les étoiles, puis, derrière les anneaux (le cercle qu'ils occupent ne laisse rien passer), l'astre et les
     /// nuages qui passent devant lui. `secondes` : nil au repos.
     private func peindreMotifs(_ c: GraphicsContext, _ taille: CGSize, _ hv: Double, _ trace: PlanCiel.Trace,
-                               _ secondes: Double?) {
+                               _ nuages: [CielImages.Nuage], _ rayons: CGImage?, _ secondes: Double?) {
         let t = teintes
         let w = taille.width
         let e = etat.hauteur
@@ -168,9 +181,13 @@ struct CielPageVue: View {
                 peindreHalo(couche, x, y, r, k, trace.estSoleil)
             }
             let doux = trace.estSoleil ? CielContinu.rayons(e) : 0
-            if doux > 0 {
-                peindreRayons(dedans, x, y, r, angle: marche ? (s * CielVivant.rayonsDegS).truncatingRemainder(dividingBy: 360) : 0,
-                              opacite: doux * trace.astreAlpha)
+            if doux > 0, let rayons {
+                // Ils font un tour en trois minutes.
+                var k = dedans
+                k.opacity = min(max(doux * trace.astreAlpha, 0), 1)
+                k.translateBy(x: x, y: y)
+                k.rotate(by: .degrees(marche ? (s * CielVivant.rayonsDegS).truncatingRemainder(dividingBy: 360) : 0))
+                CielDessin.poser(k, rayons, centre: .zero)
             }
             var disque = dedans
             disque.opacity = min(max(trace.astreAlpha, 0), 1)
@@ -196,11 +213,9 @@ struct CielPageVue: View {
                     ? CielVivant.nuageX(depart: x0, vitesse: vitesse, secondes: s, largeurCiel: w, largeurNuage: lw)
                     : x0
                 let y = trace.nuagesY[i]
-                CielDessin.nuage(dedans, forme: n.forme, CGRect(x: x, y: y + PlanCiel.bordNuage, width: lw, height: lh),
-                                 couleur: couleur(vif ? t.bordVif : t.bord),
+                CielDessin.nuage(dedans, nuages[i].bord, CGRect(x: x, y: y + PlanCiel.bordNuage, width: lw, height: lh),
                                  opacite: (vif ? PlanCiel.nuageVif : Double(t.bordAlpha)) * presence)
-                CielDessin.nuage(dedans, forme: n.forme, CGRect(x: x, y: y, width: lw, height: lh),
-                                 couleur: couleur(vif ? t.corpsVif : t.corps),
+                CielDessin.nuage(dedans, nuages[i].corps, CGRect(x: x, y: y, width: lw, height: lh),
                                  opacite: (vif ? PlanCiel.nuageVif : Double(t.corpsAlpha)) * presence)
             }
         }
@@ -231,33 +246,6 @@ struct CielPageVue: View {
                    Gradient.Stop(color: couleur(teinte, fort / 3), location: bord + (1 - bord) * 0.45),
                    Gradient.Stop(color: couleur(teinte, 0), location: 1),
                ]), center: centre, startRadius: 0, endRadius: couronne))
-    }
-
-    /// Les rayons doux de l'heure dorée : douze pointes floues, dans la couronne, tournées de `angle` degrés.
-    private func peindreRayons(_ c: GraphicsContext, _ x: Double, _ y: Double, _ r: Double, angle: Double,
-                               opacite: Double) {
-        let couronne = r * PlanCiel.couronne
-        var k = c
-        k.clip(to: Path(CGRect(x: x - couronne - 4, y: y - couronne - 4, width: 2 * couronne + 8,
-                               height: 2 * couronne + 8)))
-        k.opacity = min(max(opacite, 0), 1)
-        k.translateBy(x: x, y: y)
-        k.rotate(by: .degrees(angle))
-        let teinte = couleur(teintes.couronne, 120.0 / 255)
-        k.drawLayer { couche in
-            couche.addFilter(.blur(radius: 1))
-            var pointes = Path()
-            for i in 0..<PlanCiel.rayons {
-                let a = 2 * Double.pi * Double(i) / Double(PlanCiel.rayons)
-                let l = i % 2 == 0 ? couronne * 0.96 : couronne * 0.78
-                let large = 0.09
-                pointes.move(to: CGPoint(x: r * 1.05 * cos(a - large), y: r * 1.05 * sin(a - large)))
-                pointes.addLine(to: CGPoint(x: l * cos(a), y: l * sin(a)))
-                pointes.addLine(to: CGPoint(x: r * 1.05 * cos(a + large), y: r * 1.05 * sin(a + large)))
-                pointes.closeSubpath()
-            }
-            couche.fill(pointes, with: .color(teinte))
-        }
     }
 }
 
@@ -291,24 +279,124 @@ enum CielDessin {
         c.fill(p, with: .color(couleur))
     }
 
-    /// Un nuage (`forme` 0 : bombé ; 1 : long) dans `cadre`, flou, d'une seule couche à l'opacité `opacite`.
-    static func nuage(_ c: GraphicsContext, forme: Int, _ cadre: CGRect, couleur: Color, opacite: Double) {
-        guard opacite > 0, cadre.width > 0, cadre.height > 0 else { return }
+    /// Un nuage déjà peint (`CielImages.nuage`) posé dans `cadre`, d'une seule couche à l'opacité `opacite`.
+    static func nuage(_ c: GraphicsContext, _ image: CGImage?, _ cadre: CGRect, opacite: Double) {
+        guard let image, opacite > 0, cadre.width > 0, cadre.height > 0 else { return }
         var k = c
-        k.clip(to: Path(cadre.insetBy(dx: -12, dy: -12)))
         k.opacity = min(opacite, 1)
-        k.drawLayer { couche in
-            couche.addFilter(.blur(radius: flou))
-            var p = Path()
-            for o in (forme == 0 ? PlanCiel.formeNuage : PlanCiel.formeVoile) {
-                p.addEllipse(in: CGRect(x: cadre.minX + (o.cx - o.rx) * cadre.width,
-                                        y: cadre.minY + (o.cy - o.ry) * cadre.height,
-                                        width: 2 * o.rx * cadre.width, height: 2 * o.ry * cadre.height))
-            }
-            couche.fill(p, with: .color(couleur))
-        }
+        let m = CielImages.marge
+        k.draw(Image(decorative: image, scale: CielImages.echelle),
+               in: CGRect(x: cadre.minX - m, y: cadre.minY - m, width: cadre.width + 2 * m, height: cadre.height + 2 * m))
+    }
+
+    /// Une image déjà peinte, centrée sur `centre`, à sa taille.
+    static func poser(_ c: GraphicsContext, _ image: CGImage, centre: CGPoint) {
+        let w = Double(image.width) / CielImages.echelle
+        let h = Double(image.height) / CielImages.echelle
+        c.draw(Image(decorative: image, scale: CielImages.echelle),
+               in: CGRect(x: centre.x - w / 2, y: centre.y - h / 2, width: w, height: h))
     }
 
     /// Le flou des nuages, en points : celui du masque d'Android (5 dp de rayon, soit un écart type de 3 dp environ).
     static let flou = 3.3
+}
+
+/// Les motifs flous des ciels, peints une fois en images (les bitmaps des nuages et des rayons de CielPage.kt et de
+/// PaysageCiel.kt) : un nuage d'une forme, d'une taille et d'une couleur, les rayons de l'heure dorée d'un soleil. Le
+/// flou se calcule à la peinture, au plus une fois par couleur (le ciel change au plus chaque minute) ; chaque image
+/// de l'animation ne fait que poser l'image, ce que le simulateur sans processeur graphique de la CI fait aussi vite.
+@MainActor
+final class CielImages {
+    static let partage = CielImages()
+
+    /// Un nuage : son corps et son bord éclairé.
+    struct Nuage {
+        let corps: CGImage?
+        let bord: CGImage?
+    }
+
+    /// Les images sont à l'échelle 2 (les nuages d'Android sont peints à moitié de leur taille) ; le flou déborde de
+    /// `marge` points autour du cadre.
+    nonisolated static let echelle = 2.0
+    nonisolated static let marge = 12.0
+
+    private struct Cle: Hashable {
+        let sorte: Int
+        let couleur: UInt32
+        let largeur: Double
+        let hauteur: Double
+    }
+
+    private var images: [Cle: CGImage] = [:]
+
+    private func garder(_ cle: Cle, _ peindre: () -> CGImage?) -> CGImage? {
+        if let deja = images[cle] { return deja }
+        // Une trentaine au plus : les couleurs du moment, pour le Jour et Sérénité.
+        if images.count >= 32 { images.removeAll() }
+        let image = peindre()
+        if let image { images[cle] = image }
+        return image
+    }
+
+    /// Un nuage (`forme` 0 : bombé ; 1 : long) de `largeur` × `hauteur` points, flou, dans la couleur donnée.
+    func nuage(forme: Int, couleur: UInt32, largeur: Double, hauteur: Double) -> CGImage? {
+        garder(Cle(sorte: forme, couleur: couleur, largeur: largeur, hauteur: hauteur)) {
+            let rendu = ImageRenderer(content: NuageForme(forme: forme)
+                .fill(CielCouleur.couleur(couleur))
+                .frame(width: largeur, height: hauteur)
+                .padding(CielImages.marge)
+                .blur(radius: CielDessin.flou))
+            rendu.scale = CielImages.echelle
+            return rendu.cgImage
+        }
+    }
+
+    /// Les rayons doux de l'heure dorée autour d'un soleil de rayon `r` : douze pointes floues dans la couronne, la
+    /// couleur de la couronne à 120/255 (CielPage.peindreRayons).
+    func rayons(couleur: UInt32, r: Double) -> CGImage? {
+        garder(Cle(sorte: 10, couleur: couleur, largeur: r, hauteur: r)) {
+            let cote = 2 * r * PlanCiel.couronne + 8
+            let rendu = ImageRenderer(content: RayonsForme(r: r)
+                .fill(CielCouleur.couleur(couleur, opacite: 120.0 / 255))
+                .frame(width: cote, height: cote)
+                .blur(radius: 1))
+            rendu.scale = CielImages.echelle
+            return rendu.cgImage
+        }
+    }
+}
+
+/// Les ovales d'un nuage, en parts de son cadre (PlanCiel.formeNuage, formeVoile).
+private struct NuageForme: Shape {
+    let forme: Int
+
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        for o in (forme == 0 ? PlanCiel.formeNuage : PlanCiel.formeVoile) {
+            p.addEllipse(in: CGRect(x: rect.minX + (o.cx - o.rx) * rect.width, y: rect.minY + (o.cy - o.ry) * rect.height,
+                                    width: 2 * o.rx * rect.width, height: 2 * o.ry * rect.height))
+        }
+        return p
+    }
+}
+
+/// Les douze pointes des rayons, autour du centre du cadre : longues et courtes en alternance.
+private struct RayonsForme: Shape {
+    let r: Double
+
+    func path(in rect: CGRect) -> Path {
+        let m = CGPoint(x: rect.midX, y: rect.midY)
+        let couronne = r * PlanCiel.couronne
+        var p = Path()
+        for i in 0..<PlanCiel.rayons {
+            let a = 2 * Double.pi * Double(i) / Double(PlanCiel.rayons)
+            let l = i % 2 == 0 ? couronne * 0.96 : couronne * 0.78
+            let large = 0.09
+            p.move(to: CGPoint(x: m.x + r * 1.05 * cos(a - large), y: m.y + r * 1.05 * sin(a - large)))
+            p.addLine(to: CGPoint(x: m.x + l * cos(a), y: m.y + l * sin(a)))
+            p.addLine(to: CGPoint(x: m.x + r * 1.05 * cos(a + large), y: m.y + r * 1.05 * sin(a + large)))
+            p.closeSubpath()
+        }
+        return p
+    }
 }

@@ -425,9 +425,18 @@ struct SereniteCiel: View {
 
     var body: some View {
         let paysage = PaysageCiel(etat: ciel, nuages: true, arc: true)
+        // Le nuage, peint une fois en images dans la lumière du moment (CielImages).
+        let largeurNuage = PlanCiel.tailles[0].largeur
+        let hauteurNuage = PlanCiel.tailles[0].hauteur
+        let nuage = paysage.avecNuage
+            ? CielImages.Nuage(corps: CielImages.partage.nuage(forme: 0, couleur: paysage.nuageCorps, largeur: largeurNuage,
+                                                               hauteur: hauteurNuage),
+                               bord: CielImages.partage.nuage(forme: 0, couleur: paysage.nuageBord, largeur: largeurNuage,
+                                                              hauteur: hauteurNuage))
+            : nil
         CielVivantHorloge { secondes in
             Canvas { c, taille in
-                peindre(c, taille, paysage, secondes)
+                peindre(c, taille, paysage, nuage, secondes)
             }
         }
         .environment(\.layoutDirection, .leftToRight)
@@ -439,7 +448,8 @@ struct SereniteCiel: View {
     }
 
     /// Le paysage, immobile (`secondes` nil) ou à un instant de son animation.
-    private func peindre(_ c: GraphicsContext, _ taille: CGSize, _ p: PaysageCiel, _ secondes: Double?) {
+    private func peindre(_ c: GraphicsContext, _ taille: CGSize, _ p: PaysageCiel, _ nuage: CielImages.Nuage?,
+                         _ secondes: Double?) {
         let w = taille.width
         let h = taille.height
         let marche = secondes != nil
@@ -487,16 +497,16 @@ struct SereniteCiel: View {
             }
         }
         // Le nuage, animé seulement : il prend la lumière du moment et passe dans le haut du ciel, loin du texte.
-        if marche && p.avecNuage {
+        if marche, let nuage {
             let lw = PlanCiel.tailles[0].largeur
             let lh = PlanCiel.tailles[0].hauteur
             let x = CielVivant.nuageX(depart: 0.18 * w, vitesse: Double(CielVivant.nuageDpS), secondes: s,
                                       largeurCiel: w, largeurNuage: lw)
             let y = h * 0.24
-            CielDessin.nuage(c, forme: 0, CGRect(x: x, y: y + PlanCiel.bordNuage, width: lw, height: lh),
-                             couleur: couleur(p.nuageBord), opacite: 110.0 / 255 * p.presenceNuage)
-            CielDessin.nuage(c, forme: 0, CGRect(x: x, y: y, width: lw, height: lh),
-                             couleur: couleur(p.nuageCorps), opacite: 90.0 / 255 * p.presenceNuage)
+            CielDessin.nuage(c, nuage.bord, CGRect(x: x, y: y + PlanCiel.bordNuage, width: lw, height: lh),
+                             opacite: 110.0 / 255 * p.presenceNuage)
+            CielDessin.nuage(c, nuage.corps, CGRect(x: x, y: y, width: lw, height: lh),
+                             opacite: 90.0 / 255 * p.presenceNuage)
         }
         // Deux collines : la plus lointaine plus claire, et la brume entre elles, du jour à la nuit.
         var loin = Path()
