@@ -338,7 +338,9 @@ public struct SeanceVue: View {
                 }
             }
             .padding(.horizontal, marge)
-            .frame(maxWidth: .infinity, minHeight: 400)
+            // fillViewport et gravity="center" : en portrait, la colonne (400 au moins) est centrée dans la hauteur
+            // visible ; en paysage, elle reste en haut.
+            .frame(maxWidth: .infinity, minHeight: hauteurColonne)
         }
         .scrollBounceBehavior(.basedOnSize)
         .onScrollPhaseChange { _, phase in
@@ -693,6 +695,13 @@ public struct SeanceVue: View {
         SeanceMesures.marge(largeur: taille.width)
     }
 
+    /// La hauteur minimale de la colonne : en portrait, la hauteur visible (fillViewport), 400 au moins ; en
+    /// paysage, aucune.
+    private var hauteurColonne: CGFloat? {
+        guard classeVerticale != .compact else { return nil }
+        return max(400, taille.height)
+    }
+
     /// La hauteur de l'image de la scène (dimen art_height) : 190 sur un écran d'au moins 480 de haut, 130 sinon.
     private var hauteurScene: CGFloat {
         taille.height >= 480 || taille.height == 0 ? 190 : 130
@@ -736,7 +745,8 @@ struct SeanceEffacable: ViewModifier {
     }
 }
 
-/// Le grand chiffre (session_countdown) : blanc, 56 sp gras, chiffres de même chasse, toujours de gauche à droite.
+/// Le grand chiffre (session_countdown) : blanc, 56 sp gras, chiffres de même chasse. Pas de sens forcé, comme
+/// Android : « 12:34 » se lit pareil dans les deux sens, et la durée hébraïque (« 15 דק׳ ») garde son ordre.
 private struct SeanceGrandChiffre<Contenu: View>: View {
     let contenu: Contenu
     @ScaledMetric(relativeTo: .largeTitle) private var taille: CGFloat = 56
@@ -751,7 +761,6 @@ private struct SeanceGrandChiffre<Contenu: View>: View {
             .foregroundStyle(SeanceBlanc.plein)
             .lineLimit(1)
             .minimumScaleFactor(0.5)
-            .environment(\.layoutDirection, .leftToRight)
     }
 }
 

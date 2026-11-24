@@ -79,7 +79,7 @@ struct ReglagesCarteApparence: View {
                     .font(.footnote)
                     .foregroundStyle(Teinte(.muted))
                     .multilineTextAlignment(.trailing)
-                    .frame(maxWidth: largeurValeur, alignment: .trailing)
+                    .reglagesLargeurMax(largeurValeur)
             } else {
                 Button {
                     Task.immediate { @MainActor [modele] in
@@ -90,9 +90,9 @@ struct ReglagesCarteApparence: View {
                         .lineLimit(2)
                 }
                 .buttonStyle(.secondaire)
-                .frame(maxWidth: largeurValeur)
                 .accessibilityLabel(intitule)
                 .accessibilityValue(t("reglages_icone_appliquer"))
+                .reglagesLargeurMax(largeurValeur)
             }
         }
     }
@@ -243,7 +243,8 @@ struct ReglagesCarteMode: View {
     /// Le début et la fin de la fenêtre, deux boutons de valeur côte à côte.
     private var fenetre: some View {
         let intitule = t("settings_window")
-        return ReglagesLigne(intitule) {
+        // Juste sous le séparateur : sans marge haute (layout_marginTop="0dp").
+        return ReglagesLigne(intitule, margeHaute: false) {
             HStack(spacing: 8) {
                 bouton(.debut, intitule: intitule)
                 bouton(.fin, intitule: intitule)
@@ -395,9 +396,9 @@ struct ReglagesCarteAutorisations: View {
                     .frame(minWidth: 44)
             }
             .buttonStyle(.secondaire)
-            .frame(maxWidth: largeurValeur)
             .disabled(!ligne.boutonActif)
             .accessibilityHint(Text(ligne.titre, traducteur: traducteur))
+            .reglagesLargeurMax(largeurValeur)
             .layoutPriority(1)
         }
         .padding(.top, 12)

@@ -165,9 +165,41 @@ struct ReglagesBoutonValeur: View {
                 .frame(minWidth: 44)
         }
         .buttonStyle(.secondaire)
-        .frame(maxWidth: largeurMax)
         .accessibilityLabel(intitule)
         .accessibilityValue(valeur)
+        .reglagesLargeurMax(largeurMax)
+    }
+}
+
+/// Un enfant unique qui garde sa taille (wrap_content), sans dépasser `largeur` (maxWidth d'Android) ; nil : sans
+/// borne. Un `.frame(maxWidth:)` prendrait toute la place offerte jusqu'à la borne : le bouton flotterait au
+/// milieu de 45 % de l'écran, et l'intitulé perdrait cette place.
+struct ReglagesLargeurMax: Layout {
+    let largeur: CGFloat?
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard let vue = subviews.first else { return .zero }
+        return vue.sizeThatFits(bornee(proposal))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        guard let vue = subviews.first else { return }
+        vue.place(at: CGPoint(x: bounds.minX, y: bounds.midY), anchor: .leading,
+                  proposal: ProposedViewSize(width: bounds.width, height: bounds.height))
+    }
+
+    private func bornee(_ proposal: ProposedViewSize) -> ProposedViewSize {
+        guard let largeur else { return proposal }
+        return ProposedViewSize(width: min(proposal.width ?? largeur, largeur), height: proposal.height)
+    }
+}
+
+extension View {
+    /// La vue à sa taille, jamais plus large que `largeur` (ReglagesLargeurMax).
+    func reglagesLargeurMax(_ largeur: CGFloat?) -> some View {
+        ReglagesLargeurMax(largeur: largeur) {
+            self
+        }
     }
 }
 

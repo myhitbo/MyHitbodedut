@@ -19,6 +19,9 @@ public struct MusiqueMiniLecteurVue: View {
     @AccessibilityFocusState private var focusDisque: Bool
     /// Le tour des deux disques, commun : sur Android, ils tournent ensemble, et s'arrêtent où ils sont.
     @State private var tour = MusiqueTour()
+    /// La position montrée par la barre. Un Binding(get:set:) sur un Double fait planter le compilateur de
+    /// Xcode 26.6 (thunk d'une fermeture @isolated(any)) : la barre lit cette copie, tenue à jour par onChange.
+    @State private var positionBarre: Double = 0
 
     /// Le noir vert du panneau (0xF2121A17 : 95 %), écrit en dur par Android.
     private static let sombre = Color(.sRGB, red: 18.0 / 255, green: 26.0 / 255, blue: 23.0 / 255, opacity: 1)
@@ -118,7 +121,7 @@ public struct MusiqueMiniLecteurVue: View {
 
     /// La barre de position : elle suit le doigt pendant qu'il glisse, la lecture va là quand il se lève.
     private var barre: some View {
-        Slider(value: liaisonPosition, in: 0...Double(mini.maximum), onEditingChanged: { [mini] enCours in
+        Slider(value: $positionBarre, in: 0...Double(mini.maximum), onEditingChanged: { [mini] enCours in
             if enCours {
                 mini.commencerGlisse()
             } else {
@@ -129,17 +132,17 @@ public struct MusiqueMiniLecteurVue: View {
         })
         .tint(Teinte(.mint))
         .frame(height: 32)
+        .onAppear { positionBarre = Double(mini.position) }
+        .onChange(of: mini.position) { _, position in
+            if Double(position) != positionBarre { positionBarre = Double(position) }
+        }
+        .onChange(of: positionBarre) { _, valeur in
+            if Int(valeur) != mini.position { mini.glisser(a: Int(valeur)) }
+        }
         .accessibilityLabel(Text("lecteur_position"))
         .accessibilityValue(Text(verbatim: mini.ecoule))
     }
 
-    private var liaisonPosition: Binding<Double> {
-        Binding(get: { @MainActor [mini] in
-            Double(mini.position)
-        }, set: { @MainActor [mini] valeur in
-            mini.glisser(a: Int(valeur))
-        })
-    }
 
     /// Le temps écoulé au début, la durée à la fin, en chiffres de même chasse.
     private var temps: some View {

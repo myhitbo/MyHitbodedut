@@ -50,7 +50,9 @@ public struct ReglagesVue: View {
     public var body: some View {
         pageAvecFichiers
             .overlay(alignment: .bottom) {
+                // La transition du Toast ne joue que sous une animation ; aucune si on les a réduites.
                 messagePassager
+                    .animation(reduireAnimations ? nil : .default, value: modele.message)
             }
             .sheet(item: listeOuverte) { liste in
                 feuilleChoix(liste)

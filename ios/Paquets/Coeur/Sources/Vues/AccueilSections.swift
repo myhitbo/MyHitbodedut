@@ -146,7 +146,8 @@ struct AccueilLigneTropheeVue: View {
         guard fete.etincelles != nil, !reduire else { return }
         guard await TropheeAttente.ms(TropheeFeteModele.retardEtincelles) else { return }
         etincelles = true
-        guard await TropheeAttente.ms(1150) else { return }
+        // Interrompues (l'onglet quitté), elles ne restent pas affichées au retour.
+        _ = await TropheeAttente.ms(1150)
         etincelles = false
     }
 }

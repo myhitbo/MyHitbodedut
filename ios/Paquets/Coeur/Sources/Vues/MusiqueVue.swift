@@ -25,6 +25,9 @@ public struct MusiqueVue: View {
     /// Le bandeau s'efface quand on fait défiler la page, et revient en haut (BandeauDefilant.kt).
     @State private var bandeauCache = false
     @State private var hauteurBandeau: CGFloat = 0
+    /// Le volume montré par la barre. Un Binding(get:set:) sur un Double fait planter le compilateur de
+    /// Xcode 26.6 (thunk d'une fermeture @isolated(any)) : la barre lit cette copie, tenue à jour par onChange.
+    @State private var volumeBarre: Double = 0
 
     public init(modele: MusiqueModele) {
         _modele = Bindable(modele)
@@ -134,9 +137,20 @@ public struct MusiqueVue: View {
                 .font(.subheadline)
                 .foregroundStyle(Teinte(.ink))
                 .accessibilityHidden(true)
-            Slider(value: liaisonVolume, in: 0...100, step: 1)
+            Slider(value: $volumeBarre, in: 0...100, step: 1)
                 .tint(Teinte(.brand))
                 .padding(.top, 4)
+                .onAppear { volumeBarre = Double(modele.volume) }
+                .onChange(of: modele.volume) { _, volume in
+                    if Double(volume) != volumeBarre { volumeBarre = Double(volume) }
+                }
+                .onChange(of: volumeBarre) { _, valeur in
+                    if Int(valeur) != modele.volume {
+                        Task.immediate { @MainActor [modele] in
+                            await modele.choisirVolume(Int(valeur))
+                        }
+                    }
+                }
                 .accessibilityLabel(Text("music_volume"))
             MusiqueSeparateur()
             Toggle(isOn: liaisonAleatoire) {
@@ -183,15 +197,6 @@ public struct MusiqueVue: View {
     }
 
     /// La barre du volume, de 0 à 100 par pas de 1 : chaque pas est enregistré (onProgressChanged).
-    private var liaisonVolume: Binding<Double> {
-        Binding(get: { @MainActor [modele] in
-            Double(modele.volume)
-        }, set: { @MainActor [modele] valeur in
-            Task.immediate { @MainActor in
-                await modele.choisirVolume(Int(valeur))
-            }
-        })
-    }
 
     // MARK: Le bouton fixe
 

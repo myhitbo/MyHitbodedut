@@ -326,6 +326,7 @@ struct SeanceGuideVue: View {
                 Text(verbatim: sujet)
                     .font(.subheadline)
                     .foregroundStyle(Teinte(.ink))
+                    .lineSpacing(2)
                     .multilineTextAlignment(.leading)
                     .padding(.top, 6)
             }
@@ -346,7 +347,7 @@ struct SeanceGuideVue: View {
     }
 
     private var entete: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(spacing: 12) {
             BibliothequeCadre(image: guide.image, largeur: 54, hauteur: 64, fond: .stageSoft)
             VStack(alignment: .leading, spacing: 4) {
                 Etiquette(Text(guide.rang, traducteur: traducteur))

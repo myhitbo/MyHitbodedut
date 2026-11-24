@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 import Coeur
 import Ecrans
 
@@ -72,8 +73,10 @@ public struct AccueilVue: View {
             .onChange(of: reduire) { _, valeur in
                 modele.reduireAnimations = valeur
             }
-            .onChange(of: modele.routes.first, initial: true) { _, route in
-                guard let route else { return }
+            // Toute la file est observée, pas sa tête seule : deux routes égales à la suite (un double toucher sur
+            // « Trophées ») laisseraient `routes.first` inchangé après `routeOuverte()`, et la file resterait bloquée.
+            .onChange(of: modele.routes, initial: true) { _, routes in
+                guard let route = routes.first else { return }
                 ouvrir(route)
                 modele.routeOuverte()
             }
@@ -230,12 +233,27 @@ public struct AccueilVue: View {
     // MARK: Les boîtes
 
     /// Les boîtes sont posées sur des vues distinctes : une boîte peut en ouvrir une autre (la liste des durées
-    /// ouvre la durée réglable, le jour ouvre la liste des durées).
+    /// ouvre la durée réglable, le jour ouvre la liste des durées, « Aujourd'hui / Hier » ouvre la liste des
+    /// durées). Chaque liste a la sienne : posées sur une seule, « Hier » puis la liste des durées garderaient la
+    /// même boîte, que sa fermeture par SwiftUI refermerait aussitôt.
     private var avecDialogues: some View {
         page
             .background {
                 Color.clear
-                    .confirmationDialog(titreDialogue, isPresented: ouverte(.liste), titleVisibility: .visible) {
+                    .confirmationDialog(titreDialogue, isPresented: ouverte(.duree), titleVisibility: .visible) {
+                        actionsListe
+                    }
+            }
+            .background {
+                Color.clear
+                    .confirmationDialog(titreDialogue, isPresented: ouverte(.sujet), titleVisibility: .visible) {
+                        actionsListe
+                    }
+            }
+            .background {
+                Color.clear
+                    .confirmationDialog(titreDialogue, isPresented: ouverte(.jourHorsTelephone),
+                                        titleVisibility: .visible) {
                         actionsListe
                     }
             }
@@ -496,15 +514,19 @@ private struct AccueilMesures {
     }
 }
 
-/// Les trois sortes de boîtes, chacune posée à part.
+/// Les sortes de boîtes, chacune posée à part.
 private enum AccueilGenreBoite: Equatable {
-    case liste
+    case duree
+    case sujet
+    case jourHorsTelephone
     case dureeLibre
     case jour
 
     init(_ dialogue: AccueilDialogue) {
         switch dialogue {
-        case .duree, .sujet, .jourHorsTelephone: self = .liste
+        case .duree: self = .duree
+        case .sujet: self = .sujet
+        case .jourHorsTelephone: self = .jourHorsTelephone
         case .dureeLibre: self = .dureeLibre
         case .jour: self = .jour
         }
