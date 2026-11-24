@@ -67,16 +67,14 @@ public struct DeuxColonnes<Premiere: View, Seconde: View>: View {
 }
 
 /// La mise en page de `DeuxColonnes` : ses deux moitiés côte à côte, séparées de `espacement`, quand la largeur
-/// proposée (la place entre les marges de l'écran) en tient deux ; l'une sous l'autre sinon, par une
-/// `VStackLayout(alignment: .leading, spacing: espacement)`, celle d'une `VStack`.
+/// proposée (la place entre les marges de l'écran) en tient deux ; l'une sous l'autre sinon, comme une
+/// `VStack(alignment: .leading, spacing: espacement)` dans un défilement : chacune à la largeur proposée et à sa
+/// hauteur, au début de la ligne, `espacement` entre elles. (`VStackLayout` ne se laisse pas appeler d'une autre mise
+/// en page : ses méthodes de `Layout` ne sont pas publiques.)
 struct DispositionColonnes: Layout {
     let texteAccessible: Bool
     let hauteurCompacte: Bool
     let espacement: CGFloat
-
-    private var pile: VStackLayout {
-        VStackLayout(alignment: .leading, spacing: espacement)
-    }
 
     /// La largeur d'une colonne, ou nil pour une seule colonne.
     private func largeurColonne(_ proposition: ProposedViewSize, _ elements: Subviews) -> CGFloat? {
@@ -86,25 +84,36 @@ struct DispositionColonnes: Layout {
         return (largeur - espacement) / 2
     }
 
+    /// Ce que reçoit chaque moitié : la largeur d'une colonne, ou toute la largeur proposée ; et sa hauteur.
+    private func pourChacune(_ proposition: ProposedViewSize, _ elements: Subviews) -> ProposedViewSize {
+        ProposedViewSize(width: largeurColonne(proposition, elements) ?? proposition.width, height: nil)
+    }
+
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        guard let colonne = largeurColonne(proposal, subviews) else {
-            var cachePile = pile.makeCache(subviews: subviews)
-            return pile.sizeThatFits(proposal: proposal, subviews: subviews, cache: &cachePile)
+        let tailles = subviews.map { $0.sizeThatFits(pourChacune(proposal, subviews)) }
+        if let colonne = largeurColonne(proposal, subviews) {
+            return CGSize(width: colonne * 2 + espacement, height: tailles.map(\.height).max() ?? 0)
         }
-        let hauteur = subviews.map { $0.sizeThatFits(ProposedViewSize(width: colonne, height: nil)).height }.max() ?? 0
-        return CGSize(width: colonne * 2 + espacement, height: hauteur)
+        // L'une sous l'autre : `espacement` entre deux moitiés qui ont une hauteur ; une moitié vide n'en ajoute pas,
+        // comme un élément absent d'une VStack.
+        let pleines = tailles.map(\.height).filter { $0 > 0 }
+        let hauteur = pleines.reduce(0, +) + espacement * CGFloat(max(pleines.count - 1, 0))
+        return CGSize(width: tailles.map(\.width).max() ?? 0, height: hauteur)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        guard let colonne = largeurColonne(proposal, subviews) else {
-            var cachePile = pile.makeCache(subviews: subviews)
-            pile.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &cachePile)
-            return
-        }
-        // De gauche à droite ; SwiftUI retourne les positions en hébreu et en arabe.
-        for (rang, element) in subviews.enumerated() {
-            element.place(at: CGPoint(x: bounds.minX + CGFloat(rang) * (colonne + espacement), y: bounds.minY),
-                          anchor: .topLeading, proposal: ProposedViewSize(width: colonne, height: nil))
+        let chacune = pourChacune(proposal, subviews)
+        let colonne = largeurColonne(proposal, subviews)
+        // De gauche à droite, ou de haut en bas ; SwiftUI retourne les positions en hébreu et en arabe.
+        var point = bounds.origin
+        for element in subviews {
+            element.place(at: point, anchor: .topLeading, proposal: chacune)
+            if let colonne {
+                point.x += colonne + espacement
+            } else {
+                let hauteur = element.sizeThatFits(chacune).height
+                if hauteur > 0 { point.y += hauteur + espacement }
+            }
         }
     }
 }
