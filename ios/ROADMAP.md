@@ -323,11 +323,43 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   peu moins que l'iPhone 17 Pro : « Calendrier » s'y coupe sur deux lignes dans les boutons de Zmanim), et sur
   l'iPhone, debout et couché, au pixel près comme avant. Les autres écrans gardent une colonne (les Livres et les Tehilim sont déjà
   des grilles, les textes se lisent sur une colonne).
+  Les libellés et les mesures, à chaque envoi (`ios-interface.yml`, ECRANS.md « Les libellés et les mesures ») :
+  l'app compilée une fois en Release pour le simulateur, puis deux tests d'interface. `LibellesTests` ouvre
+  l'accueil, la séance et Cha'harit en fr, en, he, es et ar-TN et juge ce que VoiceOver lit : l'audit des
+  descriptions d'Xcode dans chaque langue, chaque bouton, onglet ou champ sans libellé, toute clé ou gabarit non
+  résolus, tout libellé anglais ou espagnol identique au français, tout mot latin en hébreu ou en arabe ; tolérés,
+  chacun avec sa raison : « Sections » (le même mot en anglais, comme Android), la référence d'une source en espagnol
+  et en arabe (`Reference.localise` ne la rend qu'en anglais et en hébreu, comme Android). Relevé sur la CI (runs
+  45401611745 et 45410886554) : un seul défaut, dans les cinq langues, l'image de la hitbodedout guidée de la séance
+  (décorative, mais atteinte par VoiceOver sans description dans l'app en Release, pas en Debug) : corrigé
+  (`Illustration` décorative dès l'image, `Image(decorative:)`) ; le test échoue désormais au premier défaut.
+  `MesuresTests` mesure, l'app écrivant elle-même ses temps (« -mesures », App/Mesures.swift) : chaque étape du
+  lancement depuis le démarrage du processus, avec son temps de calcul ; l'ouverture du plus long livre (le
+  Kitsour Yalkout Yossef, 1 048 chapitres, 15 440 lignes, `LectureModele.mesure`) ; son défilement, que l'app fait
+  elle-même en comptant ses images (`DefilementMesure`) ; `XCTApplicationLaunchMetric`. Le poids : **155,5 Mo**
+  (155 452 773 octets, le .app en Release pour le simulateur, x86_64, sans signature : la musique 64,4 Mo, les
+  contenus 43,5 Mo, le binaire 27,5 Mo, les extensions 14,7 Mo dont les widgets 11,3 Mo), sous les 200 Mo ; le
+  travail échoue au-delà. Au simulateur de la CI (iPhone 17 Pro, iOS 26.5, sur un Mac Intel virtualisé), rapporté
+  tel quel, sans seuil (ios-interface.yml dit pourquoi) : premier écran à 12,9 s du démarrage (médiane de huit
+  lancements, de 11,3 à 15,0 s), l'accueil prêt à 13,9 s ; le détail, sur deux lancements du passage suivant :
+  `main` à 3,1–3,7 s, les modèles faits à 6,5–6,7 s, la première image à 10,0–10,3 s, le temps de calcul suivant le
+  temps écoulé (6,6 à 7,2 s de calcul à la première image) ; le plus long livre : texte lu en 1,2–1,3 s, lignes
+  faites en 45–49 ms, première image 3,2 s plus tard. Au doigt, chaque geste d'un test d'interface faisait
+  photographier tout l'arbre d'accessibilité du livre ouvert, sur le fil principal de l'app (15 à 30 s par geste) :
+  ce défilement-là ne mesurait que ces photographies ; d'où le défilement fait par l'app.
 - **Reste** : sur le simulateur lent de la CI, l'audit des tailles du texte ne finit pas toujours à temps sur les
   écrans de texte long (le Tikkoun, les trophées, le calendrier, parfois d'autres) : toléré et dit à part, ces
-  écrans se voient sur les captures « grand » ; l'audit ne passe qu'en français (les
-  captures montrent he et ar) ; le test des libellés dans les trois langues ; les mesures (premier écran,
-  défilement, poids).
+  écrans se voient sur les captures « grand » ; l'audit complet ne passe qu'en français (les captures montrent he
+  et ar ; l'audit des descriptions passe dans les cinq langues, `LibellesTests`). À voir passer sur la CI : la
+  correction de l'image de la hitbodedout guidée, le test des libellés qui échoue au premier défaut, et le premier
+  compte du défilement fait par l'app (`testDefilementDuPlusLongLivre`). À mesurer sur un iPhone, en Release
+  (`MesuresTests` depuis Xcode, `XCTHitchMetric` compris) : les 400 ms du premier écran (au simulateur, dix à
+  quinze secondes, presque tout en calcul de l'app : rien n'en dit encore la part sur l'appareil) et le défilement
+  du plus long livre sans image perdue ; le simulateur de la CI ne prouve ni l'un ni l'autre. La bande des
+  signets d'un long livre : Android la remplace au-delà de 40 sections par « Chapitres (n) ▾ » et une liste
+  filtrable (FLECTURE-03, déjà dans `LectureModele` : `boutonChapitres`, `chapitresFiltres`, `ouvrirChapitre`) ;
+  la vue iOS pose encore un bouton par chapitre, d'un coup (1 048 pour le Kitsour Yalkout Yossef), ce qui pèse sur
+  la première image du livre et sur son arbre d'accessibilité.
 
 ### 30. TestFlight externe, fiche, soumission
 

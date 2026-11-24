@@ -196,6 +196,35 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   signé de l'artefact se demande par l'API (`actions/artifacts/<id>/zip`, ou l'outil MCP
   `download_workflow_run_artifact`), puis `curl` le télécharge.
 
+## Les libellés et les mesures
+
+`.github/workflows/ios-interface.yml` (macOS, à chaque envoi qui touche ios/, et à la main) compile l'app une fois en
+Release pour le simulateur (`build-for-testing`), puis lance sans recompiler (`test-without-building`) :
+
+- **Le poids** : le .app en octets, ses entrées et ses plus gros fichiers dans le résumé ; le travail échoue à
+  200 Mo (155,5 Mo le 24/11).
+- **Les libellés** (`ios/UITests/LibellesTests.swift`) : l'accueil, la séance et Cha'harit, en fr, en, he, es et
+  ar-TN. Ce que VoiceOver lit est jugé : l'audit des descriptions d'Xcode dans chaque langue, chaque bouton, onglet
+  ou champ sans libellé, une clé ou un gabarit non résolus, un symbole nommé, un libellé anglais ou espagnol
+  identique au français, un mot latin en hébreu ou en arabe. Ce qu'un porteur de libellé contient (l'icône d'un
+  bouton, les images d'un onglet, un texte regroupé) est lu par lui et n'est pas jugé à part : l'arbre d'un test
+  d'interface le montre, VoiceOver non. Chaque défaut, une ligne « DEFAUT » du résumé, et le travail échoue ; un
+  faux positif ne se tolère qu'avec sa raison (`tolerance`, lignes « TOLERE »). Relever sans échouer :
+  `TEST_RUNNER_LIBELLES_RELEVE=1`.
+- **Les mesures** (`ios/UITests/MesuresTests.swift`) : lancée avec « -mesures », l'app écrit ses temps
+  (`ios/App/Mesures.swift`) dans le fichier que le test lui donne (MESURES_FICHIER) : chaque étape du lancement
+  depuis le démarrage du processus (main, fin d'init, modèles, première image de l'accueil, accueil prêt) avec son
+  temps de calcul, l'ouverture d'un texte du lecteur (`LectureModele.mesure`), et avec « -mesuresDefilement » le
+  défilement du texte ouvert, que l'app fait elle-même en comptant ses images (`DefilementMesure`) ; le plus long
+  livre s'ouvre par « -capture plus-long-livre ». Un test qui mesure le défilement ne touche pas l'écran : chaque
+  geste d'un test d'interface fait photographier tout l'arbre d'accessibilité sur le fil principal de l'app.
+  Au simulateur de la CI, rien n'est jugé sur les temps : ils sont rapportés ; les seuils (400 ms, aucune image
+  perdue) se vérifient sur un iPhone, depuis Xcode, où `testDefilementSignposts` et `testDefilementAccrocs`
+  (`XCTHitchMetric`, au doigt) ont leur sens.
+- **Le résumé et les journaux** : les lignes MESURE, les mesures d'XCTest (lues dans le paquet de résultats par
+  `xcresulttool`), les défauts et les tolérés ; l'artefact « interface-ios » garde les journaux et les fichiers
+  des mesures.
+
 ## Style
 
 Celui de `Coeur` : identifiants et commentaires en français, un commentaire dit le pourquoi ou renvoie au fichier
