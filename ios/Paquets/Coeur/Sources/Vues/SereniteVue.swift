@@ -285,6 +285,31 @@ private struct SereniteCartePaysage: View {
     let modele: AccueilVersionModele
     let ecran: SereniteEcran
     @Environment(\.traducteur) private var traducteur
+    /// La hauteur du bloc de texte, qui grandit avec Dynamic Type : elle décide du voile et de la silhouette.
+    @State private var hauteurTexte: CGFloat = 0
+
+    /// Du bas de la carte au haut du texte (le texte, sa marge du bas).
+    private var basTexte: CGFloat { hauteurTexte + 22 }
+
+    /// Les pieds de la silhouette, à 112 pt du bas : sur la colline.
+    private static let piedsSilhouette: CGFloat = 112
+
+    /// La silhouette tient au-dessus du texte à la taille de la maquette ; quand le texte grandit jusqu'à elle, elle
+    /// s'efface plutôt que de passer sous le titre (elle est décorative, la colline ne monte pas avec le texte).
+    private var silhouetteVisible: Bool { basTexte <= SereniteCartePaysage.piedsSilhouette + 4 }
+
+    /// Le voile du bas : 190 pt à la taille de la maquette ; plus haut quand le texte grandit, pour que l'étiquette du
+    /// haut reste sur du sombre et pas sur le ciel clair du jour, sans jamais agrandir la carte à lui seul.
+    private var hauteurVoile: CGFloat {
+        min(max(190, basTexte + 91), max(380, basTexte))
+    }
+
+    /// Le fondu du voile, du transparent au sombre : 190 pt quand le voile garde sa hauteur ; quand il monte, assez
+    /// court pour que le haut du texte soit au moins aussi sombre qu'à la taille de la maquette.
+    private var fonduVoile: CGFloat {
+        let voile = hauteurVoile
+        return voile <= 190 ? voile : min(190, 2 * (voile - basTexte))
+    }
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -294,18 +319,28 @@ private struct SereniteCartePaysage: View {
                 ZStack(alignment: .bottomLeading) {
                     SereniteCiel(phase: ecran.phase)
                     // La silhouette du hassid, posée sur la colline.
-                    Illustration(decorative: "char_debout")
-                        .colorMultiply(.black)
-                        .opacity(0.88)
-                        .frame(width: 56, height: 84, alignment: .bottom)
-                        .padding(.trailing, 96)
-                        .padding(.bottom, 112)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    if silhouetteVisible {
+                        Illustration(decorative: "char_debout")
+                            .colorMultiply(.black)
+                            .opacity(0.88)
+                            .frame(width: 56, height: 84, alignment: .bottom)
+                            .padding(.trailing, 96)
+                            .padding(.bottom, SereniteCartePaysage.piedsSilhouette)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    }
                     // Le voile du bas, sous le texte.
-                    LinearGradient(colors: [.clear, VersionCouleur.argb(0xE614111F)], startPoint: .top, endPoint: .bottom)
-                        .frame(height: 190)
+                    LinearGradient(stops: [
+                        Gradient.Stop(color: .clear, location: 0),
+                        Gradient.Stop(color: VersionCouleur.argb(0xE614111F), location: fonduVoile / hauteurVoile),
+                    ], startPoint: .top, endPoint: .bottom)
+                        .frame(height: hauteurVoile)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                     texte
+                        .onGeometryChange(for: CGFloat.self) { geometrie in
+                            geometrie.size.height
+                        } action: { hauteur in
+                            hauteurTexte = hauteur
+                        }
                         .padding(.leading, 20)
                         .padding(.trailing, 92)
                         .padding(.bottom, 22)
