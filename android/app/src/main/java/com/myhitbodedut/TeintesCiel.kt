@@ -60,9 +60,9 @@ object TeintesCiel {
 
     /** Thème sombre : la luminance de chaque arrêt (haut, milieu, bas), en part de la plus haute permise. */
     private val PART_SOMBRE = mapOf(
-        CielDuJour.Phase.AUBE to floatArrayOf(0.40f, 0.52f, 0.62f),
-        CielDuJour.Phase.JOUR to floatArrayOf(0.45f, 0.52f, 0.60f),
-        CielDuJour.Phase.COUCHER to floatArrayOf(0.38f, 0.52f, 0.62f),
+        CielDuJour.Phase.AUBE to floatArrayOf(0.38f, 0.48f, 0.56f),
+        CielDuJour.Phase.JOUR to floatArrayOf(0.38f, 0.44f, 0.52f),
+        CielDuJour.Phase.COUCHER to floatArrayOf(0.36f, 0.48f, 0.56f),
         CielDuJour.Phase.NUIT to floatArrayOf(0.25f, 0.40f, 0.55f),
     )
 
@@ -101,17 +101,19 @@ object TeintesCiel {
         val sansHalo = Page(arrets[0], arrets[1], arrets[2], 0, 0f, 0, 0, 0, 0f, 0, 0f)
         val echantillons = FloatArray(ECHANTILLONS + 1) { it / ECHANTILLONS.toFloat() }.map { sansHalo.degrade(it) }
 
-        // La lueur large : la couleur du ciel le jour (claire, éclaircie encore en thème clair).
+        // Les nuages d'abord, sur tout le dégradé : ils passent partout. La lueur large (la couleur
+        // du ciel le jour, éclaircie encore en thème clair) prend ce qui reste, nuage par-dessus
+        // compris, dans l'ordre du dessin : la lueur, puis le nuage.
+        val nuage = if (phase == CielDuJour.Phase.JOUR) BLANC else BLANC_CHAUD
+        val nuageAlpha = if (phase == CielDuJour.Phase.NUIT) 0f
+        else opaciteMax(if (sombre) 0.5f else 0.75f) { a -> echantillons.all { lisible(melange(it, nuage, a), encres) } }
         var lueur = p.lueur
         if (!sombre && luminance(lueur) < borne + 0.06) lueur = aLuminance(lueur, borne + 0.06)
-        val lueurAlpha = opaciteMax(echantillons, lueur, encres, if (sombre) 0.9f else 0.85f)
-
-        // Les nuages passent aussi devant la lueur : vérifiés sur le dégradé seul et sous la lueur entière.
-        val nuage = if (phase == CielDuJour.Phase.JOUR) BLANC else BLANC_CHAUD
-        val sousLueur = echantillons + echantillons.map { melange(it, lueur, lueurAlpha.toDouble()) }
-        val nuageAlpha = when (phase) {
-            CielDuJour.Phase.NUIT -> 0f
-            else -> opaciteMax(sousLueur, nuage, encres, if (sombre) 0.5f else 0.75f)
+        val lueurAlpha = opaciteMax(if (sombre) 0.9f else 0.85f) { a ->
+            echantillons.all {
+                val sous = melange(it, lueur, a)
+                lisible(sous, encres) && lisible(melange(sous, nuage, nuageAlpha.toDouble()), encres)
+            }
         }
 
         // L'astre : tel quel sur un ciel sombre ; plus soutenu sur un ciel pâle, pour s'y détacher.
@@ -164,11 +166,10 @@ object TeintesCiel {
     fun lisible(fond: Int, encres: List<Encre>): Boolean = encres.all { contraste(it.couleur, fond) >= it.seuil + MARGE }
 
     /**
-     * La plus forte opacité (au plus [plafond]) à laquelle [couleur] peut se poser sur chacun des
-     * [fonds] sans qu'une encre perde son seuil ; 0 si même un voile ténu est de trop.
+     * La plus forte opacité (au plus [plafond]) pour laquelle [tient] ; 0 si même un voile ténu
+     * est de trop.
      */
-    fun opaciteMax(fonds: List<Int>, couleur: Int, encres: List<Encre>, plafond: Float): Float {
-        fun tient(a: Double) = fonds.all { lisible(melange(it, couleur, a), encres) }
+    fun opaciteMax(plafond: Float, tient: (Double) -> Boolean): Float {
         if (tient(plafond.toDouble())) return plafond
         if (!tient(0.0)) return 0f
         var bas = 0.0

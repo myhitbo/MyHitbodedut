@@ -280,8 +280,9 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     /** La barre de départ prend la couleur du bas du ciel quand le Jour est devant ; le papier ailleurs. */
     private fun fondBarreDepart() {
-        val jour = findViewById<View>(R.id.main_scroll).visibility == View.VISIBLE
-        val ciel = findViewById<View>(R.id.main_scroll).background === cielPage
+        val scroll = findViewById<View>(R.id.main_scroll)
+        val jour = scroll.visibility == View.VISIBLE
+        val ciel = scroll.background === cielPage
         findViewById<View>(R.id.depart_barre).setBackgroundColor(
             cielPage.teintes?.bas?.takeIf { jour && ciel } ?: Apparence.couleur(this, R.color.paper))
     }
