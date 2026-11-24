@@ -156,6 +156,11 @@ class TeintesCielTest {
                 val vif = ciel(e.toDouble(), true).bordVif
                 assertTrue("bord avivé à $e° : ${CielContinu.hexa(brut)} → ${CielContinu.hexa(vif)}", TeintesCiel.chroma(vif) <= TeintesCiel.chroma(brut) + 2 / 255.0)
                 assertTrue("$e°", TeintesCiel.luminance(vif) <= 0.36)
+                // Le corps, à contre-jour, prend la couleur du haut du ciel sans s'aviver : plus de tache brune.
+                val t = ciel(e.toDouble(), true)
+                val corps = CielContinu.NUAGE_CORPS.a(e.toDouble())
+                assertTrue("corps avivé à $e° : ${CielContinu.hexa(t.corpsVif)}", TeintesCiel.chroma(t.corpsVif) <= maxOf(TeintesCiel.chroma(corps), TeintesCiel.chroma(t.haut)) + 2 / 255.0)
+                assertTrue("$e°", TeintesCiel.luminance(t.corpsVif) <= 0.11)
             }
             // Et jamais de kaki : l'horizon assombri de +6° à +12° virait au vert-de-gris.
             if (sombre) for (e in -20..60) for (matin in listOf(true, false)) {

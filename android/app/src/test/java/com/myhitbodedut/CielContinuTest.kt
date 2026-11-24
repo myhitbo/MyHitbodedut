@@ -263,6 +263,25 @@ class CielContinuTest {
     }
 
     @Test
+    fun `il longe les anneaux au lieu de s y cacher, sauf vers midi`() {
+        // Un jour sans lieu (levé à 6 h 30, couché à 18 h 30), minute par minute : le centre du
+        // soleil n'entre dans le disque des anneaux qu'une heure et demie au plus, autour de midi ;
+        // à 10 h, 11 h 30, 13 h 30 et 15 h, on le voit (il y était caché de 10 h à 15 h).
+        val cx = (jauge.gauche + jauge.droite) / 2
+        val cy = (jauge.haut + jauge.bas) / 2
+        val rayonAnneaux = (jauge.droite - jauge.gauche) / 2
+        fun dehors(heure: Double): Boolean {
+            val p = Soleil.parHeure(heure)
+            val rr = CielContinu.rayonSoleil(p.hauteur) * d
+            val a = PlanCiel.arc(p.progresJour, CielContinu.elevationDessinee(p.hauteur), jauge, largeur, rr, rr * PlanCiel.COURONNE, textes, d)!!
+            return hypot(a[0] - cx, a[1] - cy) > rayonAnneaux
+        }
+        val caches = (6 * 60 + 35..18 * 60 + 25).filter { !dehors(it / 60.0) }
+        assertTrue("caché ${caches.size} minutes", caches.size <= 90 && caches.all { abs(it - 12 * 60 - 30) <= 45 })
+        assertTrue(dehors(10.0) && dehors(15.0) && dehors(11.5) && dehors(13.5))
+    }
+
+    @Test
     fun `sur un ecran etroit, l astre s arrete au bord au lieu de disparaitre`() {
         // 320 dp de large, des anneaux de 290 dp : 15 dp de marge, moins que le disque.
         val etroit = PlanCiel.Zone(15 * d, 180 * d, 305 * d, 440 * d)

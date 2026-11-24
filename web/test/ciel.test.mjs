@@ -114,6 +114,8 @@ test('les clés, le plan et les mouvements sont ceux d’Android', () => {
     const brut = Ciel.suite(Ciel.NUAGE_BORD, e), vif = Ciel.nuageVif(brut, true, false);
     assert.ok(Ciel.chroma(vif) <= Ciel.chroma(brut) + 2 / 255 && Ciel.luminance(vif) <= 0.36, `${e}° : ${Ciel.hex(brut)} → ${Ciel.hex(vif)}`);
   }
+  // Le corps des nuages vifs, en thème sombre : à contre-jour, à moitié la couleur du haut du ciel.
+  assert.ok(teintes.includes('sombre && corps -> melange(c, haut, 0.5).let { if (luminance(it) > 0.10) assombrirSansAviver(it, 0.10) else it }'));
   // La chaleur prolongée jusqu'au bout de l'heure dorée : en thème sombre, l'horizon ne vire plus au kaki.
   assert.ok(continu.includes('fun chaleur(e: Double): Double = rampe(e, -12.0, -6.0) * (1 - rampe(e, 10.0, 16.0))'));
 });
@@ -331,6 +333,15 @@ test('l’astre sur son arc, aucune étoile sous un texte', () => {
     x = p[0];
   }
   assert.ok(Math.abs(Ciel.arc(0, 0, etroit, 320, r, c, [])[0] - r) < 0.01);
+  // Il longe les anneaux au lieu de s'y cacher : un jour sans lieu, une heure et demie au plus derrière eux, autour de midi.
+  assert.ok(kotlin('CielPage').includes(`const val LONGE = ${Ciel.LONGE}`));
+  const caches = [];
+  for (let m = 6 * 60 + 35; m <= 18 * 60 + 25; m++) {
+    const p = Ciel.soleilParHeure(m / 60), rr = Ciel.rayonSoleil(p.hauteur);
+    const [x, y] = Ciel.arc(p.progresJour, Ciel.elevationDessinee(p.hauteur), jauge, 411, rr, rr * Ciel.COURONNE, textes);
+    if (Math.hypot(x - 205.5, y - 310) <= 130) caches.push(m);
+  }
+  assert.ok(caches.length <= 90 && caches.every((m) => Math.abs(m - 750) <= 45), `${caches.length} minutes`);
   const liste = Ciel.etoiles(60, 29, 0.7, 1.7);
   const libres = Ciel.etoilesLibres(liste, 411, 546, [...textes, jauge]);
   assert.ok(libres.filter(Boolean).length >= 15);

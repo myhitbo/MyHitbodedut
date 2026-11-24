@@ -155,7 +155,7 @@ object TeintesCiel {
             lueur = lueur, lueurAlpha = lueurAlpha,
             couronne = CielContinu.LUEUR.a(e), astre = detache(CielContinu.ASTRE.a(e)), lune = detache(CielContinu.LUNE),
             corps = corps, corpsAlpha = corpsAlpha, bord = bord, bordAlpha = bordAlpha,
-            corpsVif = nuageVif(CielContinu.NUAGE_CORPS.a(e), sombre, corps = true), bordVif = nuageVif(CielContinu.NUAGE_BORD.a(e), sombre, corps = false),
+            corpsVif = nuageVif(CielContinu.NUAGE_CORPS.a(e), sombre, corps = true, haut = arrets[0]), bordVif = nuageVif(CielContinu.NUAGE_BORD.a(e), sombre, corps = false),
             etoile = if (sombre) ETOILE_SOMBRE else ETOILE_CLAIRE,
             etoileAlpha = if (sombre) 0.9f else 0.8f,
             collineLoin = lisibleAjuste(aLuminance(loin, luminance(arrets[2]) * (if (sombre) 0.8 else 0.94))), collinePres = lisibleAjuste(pres),
@@ -164,12 +164,14 @@ object TeintesCiel {
 
     /**
      * Les couleurs d'un nuage qui ne passe sous aucun texte (dans la bande des anneaux,
-     * PlanCiel.nuages) : vives, sans borne de lisibilité. En thème sombre, le corps est atténué
-     * (luminance 0,10 au plus) et le bord garde sa lumière (0,35 au plus) sans s'aviver ; en
-     * thème clair, le corps est pâle (0,8 au moins), le bord tel quel.
+     * PlanCiel.nuages) : vives, sans borne de lisibilité. En thème sombre, le corps est à
+     * contre-jour : à moitié la couleur du [haut] du ciel, atténué (luminance 0,10 au plus), sans
+     * s'aviver — assombri seul, le corps pêche de l'aube devenait une tache brune ; le bord garde
+     * sa lumière (0,35 au plus), sans s'aviver non plus. En thème clair, le corps est pâle (0,8
+     * au moins), le bord tel quel.
      */
-    fun nuageVif(c: Int, sombre: Boolean, corps: Boolean): Int = when {
-        sombre && corps -> if (luminance(c) > 0.10) aLuminance(c, 0.10) else c
+    fun nuageVif(c: Int, sombre: Boolean, corps: Boolean, haut: Int = c): Int = when {
+        sombre && corps -> melange(c, haut, 0.5).let { if (luminance(it) > 0.10) assombrirSansAviver(it, 0.10) else it }
         sombre -> if (luminance(c) > 0.35) assombrirSansAviver(c, 0.35) else c
         corps -> if (luminance(c) < 0.8) aLuminance(c, 0.8) else c
         else -> c

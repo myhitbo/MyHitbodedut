@@ -489,22 +489,38 @@ object PlanCiel {
      * plus mince que le disque, il s'arrête au bord de l'écran (il y disparaissait, puis surgissait
      * d'un coup une heure après le lever).
      *
-     * L'abscisse s'attarde dans les marges : x = centre ∓ écart × |cos(π·progres)|^0,4.
+     * L'abscisse s'attarde dans les marges : x = centre ∓ écart × |cos(π·progres)|^0,4. Et il longe
+     * le disque des anneaux sans s'y cacher : son centre en reste à la demi-largeur du disque à
+     * sa hauteur plus 0,6 rayon (il est aux quatre cinquièmes visible), jusqu'à trois quarts
+     * d'heure environ de midi (|cos(π·progres)| < [LONGE]), où il glisse derrière, puis ressort de
+     * l'autre côté. Il passait derrière les anneaux de 10 h à 15 h, un jour de douze heures.
      */
     fun arc(progres: Double, hauteur: Double, jauge: Zone, largeur: Float, r: Float, couronne: Float, zones: List<Zone>, d: Float): FloatArray? {
         if (largeur < 2 * r) return null
         val cx = (jauge.gauche + jauge.droite) / 2f
+        val cy = (jauge.haut + jauge.bas) / 2f
+        val rayonAnneaux = minOf(jauge.droite - jauge.gauche, jauge.bas - jauge.haut) / 2f
         val gauche = jauge.gauche / 2f
         val droite = (jauge.droite + largeur) / 2f
         val u = kotlin.math.cos(Math.PI * progres.coerceIn(0.0, 1.0))
         val pousse = Math.pow(kotlin.math.abs(u), 0.4).toFloat()
-        val x = (if (u >= 0) cx - (cx - gauche) * pousse else cx + (droite - cx) * pousse).coerceIn(r, largeur - r)
         val bas = jauge.bas - couronne
         val hautArc = jauge.haut + couronne
         val y = bas - (bas - hautArc).coerceAtLeast(0f) * hauteur.coerceIn(0.0, 1.0).toFloat()
+        val demi = kotlin.math.sqrt((rayonAnneaux * rayonAnneaux - (y - cy) * (y - cy)).coerceAtLeast(0f))
+        val longe = (demi + 0.6f * r) * (kotlin.math.abs(u) / LONGE).coerceAtMost(1.0).toFloat()
+        val ecart = maxOf((if (u >= 0) cx - gauche else droite - cx) * pousse, longe)
+        val x = (if (u >= 0) cx - ecart else cx + ecart).coerceIn(r, largeur - r)
         if (zones.any { it.touche(x, y, couronne) }) return null
         return floatArrayOf(x, y)
     }
+
+    /**
+     * Près de midi (|cos(π·progres)| sous ce seuil : 45 minutes d'un jour de douze heures),
+     * l'astre cesse de longer les anneaux et glisse derrière ; plus court, il y glissait trop vite
+     * les jours brefs du nord (CielContinuTest).
+     */
+    const val LONGE = 0.2
 
     /** Combien d'étoiles (une pour 4 600 dp², 24 à 72) et jusqu'où (les quatre cinquièmes du haut). */
     fun etoiles(largeurDp: Float, hauteurDp: Float): Pair<Int, Float> =

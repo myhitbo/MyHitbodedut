@@ -286,8 +286,9 @@ export function assombrirSansAviver(c, cible) {
 }
 
 /** Les couleurs d'un nuage qui ne passe sous aucun texte, dans la bande des anneaux (TeintesCiel.nuageVif). */
-export function nuageVif(c, sombre, corps) {
-  if (sombre && corps) return luminance(c) > 0.10 ? aLuminance(c, 0.10) : c;
+export function nuageVif(c, sombre, corps, haut = c) {
+  // En thème sombre, le corps est à contre-jour : à moitié la couleur du haut du ciel, sans s'aviver.
+  if (sombre && corps) { const m = melange(c, haut, 0.5); return luminance(m) > 0.10 ? assombrirSansAviver(m, 0.10) : m; }
   if (sombre) return luminance(c) > 0.35 ? assombrirSansAviver(c, 0.35) : c;
   if (corps) return luminance(c) < 0.8 ? aLuminance(c, 0.8) : c;
   return c;
@@ -340,7 +341,7 @@ export function teintesCiel(e, matin, sombre, encres, papier) {
   return {
     ...t, lueur, lueurAlpha, couronne: suite(LUEUR, e), astre: detache(suite(ASTRE, e)), lune: detache(rgb(LUNE)),
     corps, corpsAlpha, bord, bordAlpha,
-    corpsVif: nuageVif(suite(NUAGE_CORPS, e), sombre, true), bordVif: nuageVif(suite(NUAGE_BORD, e), sombre, false),
+    corpsVif: nuageVif(suite(NUAGE_CORPS, e), sombre, true, a[0]), bordVif: nuageVif(suite(NUAGE_BORD, e), sombre, false),
     etoile: sombre ? [255, 246, 236] : [120, 132, 196], etoileAlpha: sombre ? 0.9 : 0.8,
     collineLoin: lisibleAjuste(aLuminance(loin, luminance(a[2]) * (sombre ? 0.8 : 0.94))),
     collinePres: lisibleAjuste(aLuminance(pres0, luminance(a[2]) * (sombre ? 0.55 : 0.86))),
@@ -408,17 +409,24 @@ const touche = (z, cx, cy, r) => cx + r > z.gauche && cx - r < z.droite && cy + 
 /**
  * Le centre de l'astre sur son arc (PlanCiel.arc) : de la marge gauche des anneaux (progrès 0) à
  * la droite (1), derrière eux vers midi ; la hauteur (0 à 1) dans la hauteur des anneaux. Null
- * sous un texte ; au bord de l'écran étroit, il s'arrête. Zones : { gauche, haut, droite, bas }.
+ * sous un texte ; au bord de l'écran étroit, il s'arrête ; il longe les anneaux sans s'y cacher, sauf
+ * vers midi. Zones : { gauche, haut, droite, bas }.
  */
+export const LONGE = 0.2;
 export function arc(progres, hauteur, jauge, largeur, r, couronne, zones) {
   if (largeur < 2 * r) return null;
-  const cx = (jauge.gauche + jauge.droite) / 2, gauche = jauge.gauche / 2, droite = (jauge.droite + largeur) / 2;
+  const cx = (jauge.gauche + jauge.droite) / 2, cy = (jauge.haut + jauge.bas) / 2, gauche = jauge.gauche / 2, droite = (jauge.droite + largeur) / 2;
+  const rayonAnneaux = Math.min(jauge.droite - jauge.gauche, jauge.bas - jauge.haut) / 2;
   const u = Math.cos(Math.PI * Math.min(1, Math.max(0, progres)));
   const pousse = Math.abs(u) ** 0.4;
-  // Sur un écran étroit, le disque s'arrête au bord au lieu d'y disparaître.
-  const x = Math.min(largeur - r, Math.max(r, u >= 0 ? cx - (cx - gauche) * pousse : cx + (droite - cx) * pousse));
   const bas = jauge.bas - couronne, hautArc = jauge.haut + couronne;
   const y = bas - Math.max(0, bas - hautArc) * Math.min(1, Math.max(0, hauteur));
+  // Il longe le disque des anneaux (aux quatre cinquièmes visible) jusqu'à trois quarts d'heure de midi, puis glisse derrière.
+  const demi = Math.sqrt(Math.max(0, rayonAnneaux * rayonAnneaux - (y - cy) * (y - cy)));
+  const longe = (demi + 0.6 * r) * Math.min(1, Math.abs(u) / LONGE);
+  const ecart = Math.max((u >= 0 ? cx - gauche : droite - cx) * pousse, longe);
+  // Sur un écran étroit, le disque s'arrête au bord au lieu d'y disparaître.
+  const x = Math.min(largeur - r, Math.max(r, u >= 0 ? cx - ecart : cx + ecart));
   if (zones.some((z) => touche(z, x, y, couronne))) return null;
   return [x, y];
 }
