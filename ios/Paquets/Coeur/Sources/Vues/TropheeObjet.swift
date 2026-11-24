@@ -62,7 +62,7 @@ public struct TropheeObjet: View {
     private func remplissage(_ peinture: TropheePeinture) -> GraphicsContext.Shading {
         switch peinture {
         case .diagonale(let de, let a):
-            return .linearGradient(AnyGradient(Gradient(colors: [de.couleurSwiftUI, a.couleurSwiftUI])),
+            return .linearGradient(Gradient(colors: [de.couleurSwiftUI, a.couleurSwiftUI]),
                                    startPoint: CGPoint(x: 0, y: 0),
                                    endPoint: CGPoint(x: TropheeFormes.boite, y: TropheeFormes.boite))
         case .bombee(let couleurs, let arrets, let centre, let rayon):
@@ -70,7 +70,7 @@ public struct TropheeObjet: View {
             for (i, couleur) in couleurs.enumerated() where i < arrets.count {
                 points.append(Gradient.Stop(color: couleur.couleurSwiftUI, location: CGFloat(arrets[i])))
             }
-            return .radialGradient(AnyGradient(Gradient(stops: points)),
+            return .radialGradient(Gradient(stops: points),
                                    center: CGPoint(x: centre.x, y: centre.y),
                                    startRadius: 0, endRadius: CGFloat(rayon))
         case .unie(let couleur):

@@ -20,6 +20,19 @@ let enChantierEcrans: [String] = [
 let enChantierEcransTests: [String] = [
 ]
 let enChantierVues: [String] = [
+    "AccueilJauge.swift",
+    "AccueilOutils.swift",
+    "AjoutTempsVue.swift",
+    "JournalGraphiqueVue.swift",
+    "JournalNoteVue.swift",
+    "JournalVue.swift",
+    "ParcoursVue.swift",
+    "ReglagesCartes.swift",
+    "ReglagesComposants.swift",
+    "ReglagesFenetres.swift",
+    "SeanceCartes.swift",
+    "TextesSourceDuJourVue.swift",
+    "TextesVue.swift",
 ]
 
 let package = Package(
