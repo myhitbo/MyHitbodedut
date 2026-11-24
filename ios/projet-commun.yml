@@ -46,7 +46,7 @@ targetTemplates:
       - path: Ressources/Catalogue
         includes: ["*.xcstrings"]
       - path: Ressources/Chaines
-        includes: ["ios.xcstrings"]
+        includes: ["ios.xcstrings", "InfoPlist.xcstrings"]
       # Les mêmes fichiers tels quels, sous Chaines/ : le Traducteur d'Ecrans lit le JSON du catalogue, les
       # écrans les tableaux de chaînes (Tableaux.json).
       - path: Ressources/Chaines
@@ -66,6 +66,14 @@ targetTemplates:
         # Trois langues ; un téléphone dans une autre langue a l'anglais (LangueApp, PORTAGE.md § 2.2.7).
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [fr, en, he]
+        # La position approximative des zmanim et de la boussole (App/Services/SystemeLocalisation.swift) : la
+        # précision réduite par défaut (ChoixLieu, 31/10). Le texte est traduit par Chaines/InfoPlist.xcstrings.
+        NSLocationWhenInUseUsageDescription: >-
+          MyHitbodedut uses your approximate location to calculate the zmanim and the direction of Jerusalem.
+          It stays on your iPhone.
+        NSLocationDefaultAccuracyReduced: true
+        # La musique et les ambiances de la séance continuent l'écran éteint (App/Services/SystemeSortieAudio.swift).
+        UIBackgroundModes: [audio]
         # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).
         UIAppFonts:
           - Polices/hebreu_serif_regular.ttf

@@ -14,9 +14,8 @@ public struct Enregistrement: Sendable, Equatable {
     }
 }
 
-/// Où le `Magasin` lit et écrit. Dans l'app, les fichiers du groupe d'apps (l'acteur `Depot` de Coeur, par un
-/// adaptateur qui viendra à son intégration) ; dans les tests et les aperçus, la mémoire. Une écriture ne rend
-/// la main qu'une fois faite, ou en levant.
+/// Où le `Magasin` lit et écrit. Dans l'app, les fichiers de l'acteur `Depot` de Coeur (`PersistanceDepot`) ;
+/// dans les tests et les aperçus, la mémoire. Une écriture ne rend la main qu'une fois faite, ou en levant.
 public protocol Persistance: Sendable {
     func lire() async throws -> Enregistrement
     func enregistrer(journal: Journal) async throws
