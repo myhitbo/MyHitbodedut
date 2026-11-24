@@ -27,6 +27,7 @@ struct MyHitbodedutApp: App {
                 }
             }
             .environment(\.traducteur, lancement.traducteur)
+            .onOpenURL { url in lancement.recevoir(url) }
             .task { await lancement.charger() }
         }
     }
@@ -52,6 +53,8 @@ final class Lancement {
     /// avant que l'interface soit prête ; il garde les réponses jusqu'au branchement (`PartageApp.demarrer`).
     private let reponses: SystemeReponsesNotifications
     @ObservationIgnored private var enCours = false
+    /// Un lien reçu avant que le magasin soit lu (le toucher du widget qui lance l'app) : ouvert dès qu'il l'est.
+    @ObservationIgnored private var lienEnAttente: LienApp?
 
     init(paquet: URL) {
         self.paquet = paquet
@@ -78,6 +81,20 @@ final class Lancement {
                                  palettes: palettes, contenus: contenus, lecteur: lecteur, paquet: paquet)
         app = partage
         partage.demarrer(reponses: reponses)
+        if let lien = lienEnAttente {
+            lienEnAttente = nil
+            partage.ouvrir(lien)
+        }
+    }
+
+    /// Un lien profond (`myhitbodedut://…`, LienApp) : ouvert tout de suite, ou dès que l'app est prête.
+    func recevoir(_ url: URL) {
+        guard let lien = LienApp(url) else { return }
+        if let app {
+            app.ouvrir(lien)
+        } else {
+            lienEnAttente = lien
+        }
     }
 
     /// Le traducteur des `Libelle`, dans la langue que iOS a choisie pour l'app parmi fr, en et he (réglage de

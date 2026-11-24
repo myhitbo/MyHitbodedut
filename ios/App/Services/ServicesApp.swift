@@ -61,7 +61,7 @@ final class ServicesApp {
         rappels = SystemeRappels(magasin: magasin, notificateur: notificateur, traducteur: traducteur,
                                  horloge: horloge, aeroports: VolModele.lireAeroports(lecteur: lecteur))
         localisation = SystemeLocalisation()
-        widgets = SystemeWidgets()
+        widgets = SystemeWidgets(magasin: magasin, traducteur: traducteur)
         accueil = SystemeAccueil(rappels: rappels, widgets: widgets, notificateur: notificateur)
         ajoutTemps = SystemeAjoutTemps(widgets: widgets, notificateur: notificateur)
         effetsReglages = SystemeEffetsReglages(rappels: rappels, widgets: widgets)

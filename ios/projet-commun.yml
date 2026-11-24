@@ -72,6 +72,10 @@ targetTemplates:
           MyHitbodedut uses your approximate location to calculate the zmanim and the direction of Jerusalem.
           It stays on your iPhone.
         NSLocationDefaultAccuracyReduced: true
+        # Les liens profonds (App/Liens.swift) : le widget de la boussole ouvre myhitbodedut://boussole.
+        CFBundleURLTypes:
+          - CFBundleURLName: com.myhitbodedut
+            CFBundleURLSchemes: [myhitbodedut]
         # La musique et les ambiances de la séance continuent l'écran éteint (App/Services/SystemeSortieAudio.swift).
         UIBackgroundModes: [audio]
         # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).

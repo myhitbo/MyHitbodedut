@@ -204,6 +204,13 @@ struct Veilleur: ViewModifier {
             }
             .onChange(of: app.magasin.reglages.lieuDepuis) { _, _ in
                 app.replanifier()
+                // Le widget de la boussole suit le lieu (BoussoleWidget.refresh après ChoixLieu).
+                let widgets = app.services.widgets
+                Task { await widgets.rafraichir() }
+            }
+            .onChange(of: app.magasin.reglages.boussoleCarte) { _, _ in
+                let widgets = app.services.widgets
+                Task { await widgets.rafraichir() }
             }
     }
 }

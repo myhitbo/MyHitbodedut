@@ -122,6 +122,8 @@ final class PartageApp {
         // ouvert (SessionService.reconcilier, START_STICKY) : la musique repart avec elle.
         actualiserSeance()
         replanifier()
+        // Ce que montre le widget de la boussole, dans la langue de l'app, dès le lancement.
+        services.widgets.deposerBoussole()
     }
 
     /// Le tour de la séance (SeanceEnCours.actualiser), au lancement et au retour au premier plan : une séance
