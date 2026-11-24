@@ -26,10 +26,11 @@ concurrency:
 
 jobs:
   app:
-    # macos-26 (arm64), comme les iPhone et les Mac Apple Silicon. Sur x64 (macos-26-intel, essayé le 16/11/2026
-    # quand l'arm64 manquait), Swift 6.3.3 plante en IRGen x86_64 sur les Binding(get:set:) à fermetures
-    # @isolated(any) des vues ; l'arm64 les compile.
-    runs-on: macos-26
+    # macos-26-intel : les runners arm64 (macos-26) n'acquièrent pas les travaux depuis le 16/11/2026 (« capacity
+    # constraints »). Swift 6.3.3 plante en génération de code x86_64 sur les Binding(get:set:) à fermetures
+    # @isolated(any) des vues : l'app se compile donc pour le simulateur en arm64 seulement (un Mac Intel sait le
+    # produire sans l'exécuter), et les tests du paquet tournent sur le simulateur x86_64 sans la cible Vues.
+    runs-on: macos-26-intel
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -62,10 +63,12 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
-            -destination "id=$SIMULATEUR" CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
+            -destination "generic/platform=iOS Simulator" ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
           grep -q "BUILD SUCCEEDED" app.log
       - name: Tests de Coeur sur le simulateur
         working-directory: ios/Paquets/Coeur
+        env:
+          COEUR_SANS_VUES: "1"
         run: |
           set -o pipefail
           xcodebuild test -scheme Coeur-Package -destination "id=$SIMULATEUR" 2>&1 | tee tests.log | grep -E "error:|✘|failed|Test run with|TEST (SUCCEEDED|FAILED)" || true
