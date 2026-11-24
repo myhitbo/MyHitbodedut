@@ -310,8 +310,9 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   plus une ligne, couché comme debout ; les onglets de Sérénité et la grille du calendrier passent au visualiseur
   de grand contenu ; 44 points de toucher partout ; le gris discret prend un quart d'encre et les jours à venir de
   la semaine ne sont plus estompés (contraste). Vues/Accessibilite.swift rassemble ces outils.
-- **Reste** : l'audit des tailles du texte ne finit pas à temps sur trois écrans de texte long (le Tikkoun, les
-  trophées, le calendrier : `tropLongs`), vus sur les captures « grand » ; l'audit ne passe qu'en français (les
+- **Reste** : sur le simulateur lent de la CI, l'audit des tailles du texte ne finit pas toujours à temps sur les
+  écrans de texte long (le Tikkoun, les trophées, le calendrier, parfois d'autres) : toléré et dit à part, ces
+  écrans se voient sur les captures « grand » ; l'audit ne passe qu'en français (les
   captures montrent he et ar) ; le test des libellés dans les trois langues ; les mesures (premier écran,
   défilement, poids) ; l'iPad n'a de mise en page à deux colonnes qu'au Jour couché.
 

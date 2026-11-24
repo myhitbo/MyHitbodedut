@@ -169,15 +169,16 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   sa sortie d'erreur et son journal système vont dans le résumé du travail, qui échoue.
 - **L'audit d'accessibilité** : `ios/UITests/AuditAccessibiliteTests.swift` passe `performAccessibilityAudit`
   d'Xcode sur chaque écran (en français), sorte par sorte (le contraste d'abord, les tailles du texte en dernier ;
-  trois essais chacune : l'audit entier ne finissait pas à temps sur le simulateur de la CI) ; chaque défaut, une
+  cinq essais chacune : l'audit entier ne finissait pas à temps sur le simulateur de la CI) ; chaque défaut, une
   ligne « AUDIT » du résumé, et le travail échoue s'il en reste un. Les faux positifs connus sont tolérés, chacun
   avec sa raison (`tolerance`, lignes « TOLERE ») : ce qui dépasse la zone visible (sous une barre — de
   navigation, d'onglets, ou marquée `barre-bas` comme la barre de départ —, hors de la fenêtre, hors de son
   défilement), un composant inactif, le clavier du système, le texte des demi-feuilles, la grille du calendrier
   (plafonnée à AX1, visualiseur de grand contenu), l'écran voilé sous la fiche d'un trophée, les paragraphes d'une
-  liste paresseuse de texte long, un texte qu'aucun élément ne porte ; `tropLongs` : les audits qui ne finissent
-  pas à temps, même seuls (Tikkoun, trophées, calendrier). Un défaut nouveau ne s'ajoute à ces listes qu'avec sa
-  raison, et après l'avoir vu sur les captures « grand ». Relever sans échouer : `TEST_RUNNER_AUDIT_RELEVE=1`.
+  liste paresseuse de texte long, un texte qu'aucun élément ne porte ou de plusieurs paragraphes ; un audit
+  inachevé (cinq essais, l'audit d'Xcode s'arrêtant au bout de 15 s environ sur le simulateur lent de la CI) n'est
+  pas un défaut et se dit à part (« Refaits sorte par sorte »). Un défaut nouveau ne se tolère qu'avec sa raison, et
+  après l'avoir vu sur les captures « grand ». Relever sans échouer : `TEST_RUNNER_AUDIT_RELEVE=1`.
 - **Les grandes tailles du texte** : aucune police à taille fixe (`tailleSp`, `policeHebraique`, `@ScaledMetric`
   au centième) ; `Vues/Accessibilite.swift` : `lignesAuPlus`/`uneLigne` (la limite de lignes d'Android à la taille
   ordinaire, aucune au-delà), `RangeeAdaptable` (en colonne aux tailles d'accessibilité), `TuileExtensible`,
