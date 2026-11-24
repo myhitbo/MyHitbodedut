@@ -1,0 +1,689 @@
+== he-boutons-accueil
+== he-boutons-accueil-bas
+PETIT 228x34dp FrameLayout hero_plate «הקישו כדי לראות את המספרים שלכ»
+== he-boutons-accueil-volet
+MUET Switch music_switch_main (147, 1536, 284, 1662)
+== he-boutons-livres
+== he-boutons-livres-bas
+== he-boutons-chemin
+== he-boutons-chemin-bas
+== he-boutons-reglages
+== he-boutons-reglages-bas
+PETIT 88x42dp Button permission_grant «אישור»
+== he-boutons-choix-version
+== he-boutons-choix-version-bas
+== he-boutons-seance
+== he-boutons-seance-bas
+== he-boutons-bravo
+== he-boutons-bravo-bas
+== he-boutons-journal
+== he-boutons-journal-bas
+== he-boutons-parcours
+== he-boutons-parcours-bas
+== he-boutons-hizouk
+== he-boutons-hizouk-bas
+== he-boutons-conseils
+== he-boutons-conseils-bas
+== he-boutons-rappels
+MUET Switch reminders_switch (89, 585, 226, 711)
+== he-boutons-rappels-bas
+MUET Switch reminders_switch (89, 585, 226, 711)
+== he-boutons-musique
+MUET Switch music_switch (89, 464, 226, 590)
+MUET Switch music_shuffle (89, 867, 226, 993)
+PETIT 344x40dp LinearLayout music_ambiance «אווירה שקט»
+MUET RadioButton track_radio (880, 1445, 1006, 1571)
+MUET RadioButton track_radio (880, 1634, 1006, 1760)
+MUET RadioButton track_radio (880, 1823, 1006, 1949)
+MUET RadioButton track_radio (880, 2012, 1006, 2138)
+PETIT 379x4dp LinearLayout  «»
+MUET LinearLayout  (42, 2180, 1038, 2190)
+== he-boutons-musique-bas
+PETIT 48x45dp RadioButton track_radio «»
+MUET RadioButton track_radio (880, 128, 1006, 247)
+PETIT 48x45dp ImageButton track_rename «שינוי שם»
+PETIT 48x45dp ImageButton track_play «האזנה»
+MUET RadioButton track_radio (880, 310, 1006, 436)
+MUET RadioButton track_radio (880, 499, 1006, 625)
+MUET RadioButton track_radio (880, 688, 1006, 814)
+MUET RadioButton track_radio (880, 877, 1006, 1003)
+MUET RadioButton track_radio (880, 1066, 1006, 1192)
+MUET RadioButton track_radio (880, 1255, 1006, 1381)
+MUET RadioButton track_radio (880, 1444, 1006, 1570)
+MUET RadioButton track_radio (880, 1633, 1006, 1759)
+MUET RadioButton track_radio (880, 1822, 1006, 1948)
+MUET RadioButton track_radio (880, 2011, 1006, 2137)
+== he-boutons-siddour
+PETIT 205x36dp TextView siddur_heading_nusah «נוסח ספרדי – עדות המזרח»
+== he-boutons-siddour-bas
+== he-boutons-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x30dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+== he-boutons-tefilot
+== he-boutons-tefilot-bas
+== he-boutons-tehilim
+PETIT 70x34dp TextView  «מ״ו»
+PETIT 70x34dp TextView  «מ״ז»
+PETIT 70x34dp TextView  «מ״ח»
+PETIT 70x34dp TextView  «מ״ט»
+PETIT 70x34dp TextView  «נ׳»
+== he-boutons-tehilim-bas
+PETIT 70x3dp TextView  «ע״א»
+PETIT 70x3dp TextView  «ע״ב»
+PETIT 70x3dp TextView  «ע״ג»
+PETIT 70x3dp TextView  «ע״ד»
+PETIT 70x3dp TextView  «ע״ה»
+== he-boutons-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tehilim-lecture-bas
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tikkun
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-tikkun-bas
+== he-boutons-bibliotheque
+== he-boutons-bibliotheque-bas
+== he-boutons-livres
+== he-boutons-livres-bas
+PETIT 411x10dp TextView  «מאת הגאון הינוקא רבנו שלמה יהו»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-source
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-source-bas
+== he-boutons-zmanim
+PETIT 120x36dp TextView zmanim_lieu «Paris · חו״ל»
+== he-boutons-zmanim-bas
+== he-boutons-vol
+PETIT 379x44dp LinearLayout  «שיטה ומקורות»
+== he-boutons-vol-clavier
+PETIT 347x44dp LinearLayout  «יציאה, בחירת שדה תעופה»
+== he-boutons-vol-bas
+PETIT 379x44dp LinearLayout  «שיטה ומקורות»
+== he-boutons-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+PETIT 379x6dp LinearLayout  «»
+MUET LinearLayout  (42, 2384, 1038, 2400)
+== he-boutons-boussole-bas
+== he-boutons-calendrier
+PETIT 61x27dp TextView  «עברי»
+PETIT 59x27dp TextView  «לועזי»
+PETIT 347x28dp TextView  «היום»
+== he-boutons-calendrier-bas
+== he-boutons-halakha
+PETIT 347x46dp EditText  «חיפוש בהלכה»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-halakha-bas
+PETIT 48x30dp TextView  «›»
+PETIT 48x30dp TextView  «‹»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot-clavier
+PETIT 347x9dp LinearLayout  «רבי יהודה אריה ליב, להמשך קריא»
+PETIT 56x36dp TextView  «Aa»
+== he-boutons-hilloulot-bas
+PETIT 52x31dp TextView  «›»
+PETIT 52x31dp TextView  «‹»
+== he-boutons-recherche
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-recherche-clavier
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-recherche-bas
+PETIT 347x46dp EditText recherche_champ «חיפוש בסידור, בספרים, בהלכה וב»
+== he-boutons-paliers
+PETIT 379x35dp LinearLayout  «15 דקות ביום אחד, הושג ב־11 בנ»
+== he-boutons-paliers-bas
+PETIT 379x11dp LinearLayout  «2 שעות בסך הכול, 1 מתוך 2»
+== he-boutons-applications
+MUET CheckBox app_check (42, 558, 168, 684)
+MUET CheckBox app_check (42, 748, 168, 874)
+MUET CheckBox app_check (42, 938, 168, 1064)
+MUET CheckBox app_check (42, 1128, 168, 1254)
+MUET CheckBox app_check (42, 1318, 168, 1444)
+MUET CheckBox app_check (42, 1508, 168, 1634)
+MUET CheckBox app_check (42, 1698, 168, 1824)
+MUET CheckBox app_check (42, 1888, 168, 2014)
+MUET CheckBox app_check (42, 2078, 168, 2204)
+MUET CheckBox app_check (42, 2268, 168, 2394)
+== he-boutons-applications-bas
+MUET CheckBox app_check (42, 532, 168, 658)
+MUET CheckBox app_check (42, 722, 168, 848)
+MUET CheckBox app_check (42, 912, 168, 1038)
+MUET CheckBox app_check (42, 1102, 168, 1228)
+MUET CheckBox app_check (42, 1292, 168, 1418)
+MUET CheckBox app_check (42, 1482, 168, 1608)
+MUET CheckBox app_check (42, 1672, 168, 1798)
+MUET CheckBox app_check (42, 1862, 168, 1988)
+MUET CheckBox app_check (42, 2052, 168, 2178)
+MUET CheckBox app_check (42, 2242, 168, 2368)
+== he-boutons-version-pile
+== he-boutons-version-pile-2
+PETIT 12x49dp TextView  «להתחיל · 15 דק׳»
+PETIT 12x49dp TextView  «משך, נושא, מוזיקה»
+== he-boutons-version-pile-3
+PETIT 12x49dp TextView  «עוד חיזוק»
+== he-boutons-version-pile-4
+PETIT 12x49dp TextView  «כל הזמנים»
+== he-boutons-version-bento
+PETIT 185x46dp FrameLayout  «סידור»
+PETIT 185x46dp FrameLayout  «תהילים»
+== he-boutons-version-instant
+PETIT 146x44dp TextView  «להתחיל · 15 דק׳»
+PETIT 379x36dp LinearLayout  «חיזוק יומי»
+== he-boutons-version-serenite
+PETIT 69x44dp TextView  «עריכה»
+PETIT 39x40dp TextView  «לקרוא»
+PETIT 29x40dp TextView  «הכול»
+== ar-gestes-accueil
+PETIT 363x34dp Button today_offline «عملتها من غير التليفون»
+== ar-gestes-accueil-bas
+PETIT 228x11dp FrameLayout hero_plate «انقر باش تشوف أرقامك»
+== ar-gestes-accueil-volet
+PETIT 363x34dp Button today_offline «عملتها من غير التليفون»
+MUET Switch music_switch_main (147, 1504, 284, 1630)
+== ar-gestes-livres
+== ar-gestes-livres-bas
+== ar-gestes-chemin
+== ar-gestes-chemin-bas
+== ar-gestes-reglages
+== ar-gestes-reglages-bas
+PETIT 52x16dp Switch ne_pas_deranger_switch «ما تقلقنيش وقت الهتبوديدوت»
+== ar-gestes-choix-version
+== ar-gestes-choix-version-bas
+== ar-gestes-seance
+== ar-gestes-seance-bas
+== ar-gestes-bravo
+== ar-gestes-bravo-bas
+== ar-gestes-journal
+== ar-gestes-journal-bas
+== ar-gestes-parcours
+== ar-gestes-parcours-bas
+== ar-gestes-hizouk
+== ar-gestes-hizouk-bas
+== ar-gestes-conseils
+== ar-gestes-conseils-bas
+== ar-gestes-rappels
+MUET Switch reminders_switch (89, 605, 226, 731)
+== ar-gestes-rappels-bas
+MUET Switch reminders_switch (89, 605, 226, 731)
+== ar-gestes-musique
+MUET Switch music_switch (89, 505, 226, 631)
+MUET Switch music_shuffle (89, 948, 226, 1074)
+MUET RadioButton track_radio (880, 1599, 1006, 1725)
+MUET RadioButton track_radio (880, 1788, 1006, 1914)
+MUET RadioButton track_radio (880, 1977, 1006, 2103)
+PETIT 379x15dp LinearLayout  «أفيلو (حتى) — Noam Shpayer بدّ»
+PETIT 48x7dp RadioButton track_radio «»
+MUET RadioButton track_radio (880, 2166, 1006, 2185)
+PETIT 48x7dp ImageButton track_rename «بدّل الاسم»
+PETIT 48x7dp ImageButton track_play «اسمع»
+== ar-gestes-musique-bas
+PETIT 48x43dp RadioButton track_radio «»
+MUET RadioButton track_radio (880, 128, 1006, 242)
+PETIT 48x43dp ImageButton track_rename «بدّل الاسم»
+PETIT 48x43dp ImageButton track_play «اسمع»
+MUET RadioButton track_radio (880, 305, 1006, 431)
+MUET RadioButton track_radio (880, 494, 1006, 620)
+MUET RadioButton track_radio (880, 683, 1006, 809)
+MUET RadioButton track_radio (880, 872, 1006, 998)
+MUET RadioButton track_radio (880, 1061, 1006, 1187)
+MUET RadioButton track_radio (880, 1250, 1006, 1376)
+MUET RadioButton track_radio (880, 1439, 1006, 1565)
+MUET RadioButton track_radio (880, 1628, 1006, 1754)
+MUET RadioButton track_radio (880, 1817, 1006, 1943)
+MUET RadioButton track_radio (880, 2006, 1006, 2132)
+== ar-gestes-siddour
+PETIT 205x36dp TextView siddur_heading_nusah «נוסח ספרדי – עדות המזרח»
+== ar-gestes-siddour-bas
+== ar-gestes-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x37dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+== ar-gestes-tefilot
+== ar-gestes-tefilot-bas
+PETIT 379x35dp LinearLayout  «Likoutei Tefilot I, 142
+الدرس »
+== ar-gestes-tehilim
+PETIT 70x10dp TextView  «46»
+PETIT 70x10dp TextView  «47»
+PETIT 70x10dp TextView  «48»
+PETIT 70x10dp TextView  «49»
+PETIT 70x10dp TextView  «50»
+== ar-gestes-tehilim-bas
+PETIT 70x3dp TextView  «71»
+PETIT 70x3dp TextView  «72»
+PETIT 70x3dp TextView  «73»
+PETIT 70x3dp TextView  «74»
+PETIT 70x3dp TextView  «75»
+== ar-gestes-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-tehilim-lecture-bas
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-tikkun
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-tikkun-bas
+== ar-gestes-bibliotheque
+== ar-gestes-bibliotheque-bas
+== ar-gestes-livres
+== ar-gestes-livres-bas
+== ar-gestes-source
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-source-bas
+== ar-gestes-zmanim
+PETIT 126x36dp TextView zmanim_lieu «Paris · الشتات»
+== ar-gestes-zmanim-bas
+== ar-gestes-vol
+PETIT 379x44dp LinearLayout  «الطريقة والمصادر»
+== ar-gestes-vol-clavier
+PETIT 347x38dp EditText  «نومرو الرحلة (اختياري)»
+PETIT 48x34dp ImageButton  «لقى الوصول بالنومرو»
+== ar-gestes-vol-bas
+PETIT 379x44dp LinearLayout  «الطريقة والمصادر»
+== ar-gestes-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+== ar-gestes-boussole-bas
+== ar-gestes-calendrier
+PETIT 58x31dp TextView  «عبري»
+PETIT 66x31dp TextView  «ميلادي»
+PETIT 347x33dp TextView  «اليوم»
+== ar-gestes-calendrier-bas
+== ar-gestes-halakha
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-halakha-bas
+PETIT 48x18dp TextView  «›»
+PETIT 48x18dp TextView  «‹»
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-hilloulot
+PETIT 48x16dp Switch  «ورّي الهيلولوت»
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-hilloulot-clavier
+PETIT 347x44dp LinearLayout  «חכם יחזקאל משה הלוי, كمّل القر»
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-hilloulot-bas
+PETIT 326x1dp EditText  «لوّج على صدّيق»
+PETIT 56x36dp TextView  «Aa»
+== ar-gestes-recherche
+== ar-gestes-recherche-clavier
+== ar-gestes-recherche-bas
+== ar-gestes-paliers
+PETIT 379x26dp LinearLayout  «15 دقيقة في نهار, ربحتو نهار 1»
+PETIT 379x37dp LinearLayout  «ساعتين في المجموع, 1 / 2»
+== ar-gestes-paliers-bas
+PETIT 379x42dp LinearLayout  «جمعة كاملة، من الأحد للجمعة»
+== ar-gestes-applications
+MUET CheckBox app_check (42, 590, 168, 716)
+MUET CheckBox app_check (42, 780, 168, 906)
+MUET CheckBox app_check (42, 970, 168, 1096)
+MUET CheckBox app_check (42, 1160, 168, 1286)
+MUET CheckBox app_check (42, 1350, 168, 1476)
+MUET CheckBox app_check (42, 1540, 168, 1666)
+MUET CheckBox app_check (42, 1730, 168, 1856)
+MUET CheckBox app_check (42, 1920, 168, 2046)
+MUET CheckBox app_check (42, 2110, 168, 2236)
+PETIT 48x38dp CheckBox app_check «»
+MUET CheckBox app_check (42, 2300, 168, 2400)
+== ar-gestes-applications-bas
+PETIT 48x38dp CheckBox app_check «»
+MUET CheckBox app_check (42, 558, 168, 658)
+MUET CheckBox app_check (42, 722, 168, 848)
+MUET CheckBox app_check (42, 912, 168, 1038)
+MUET CheckBox app_check (42, 1102, 168, 1228)
+MUET CheckBox app_check (42, 1292, 168, 1418)
+MUET CheckBox app_check (42, 1482, 168, 1608)
+MUET CheckBox app_check (42, 1672, 168, 1798)
+MUET CheckBox app_check (42, 1862, 168, 1988)
+MUET CheckBox app_check (42, 2052, 168, 2178)
+MUET CheckBox app_check (42, 2242, 168, 2368)
+== ar-gestes-version-pile
+== ar-gestes-version-pile-2
+PETIT 12x48dp TextView  «ابدا · 15 دق»
+PETIT 12x49dp TextView  «المدّة، الموضوع، الموسيقى»
+== ar-gestes-version-pile-3
+PETIT 12x49dp TextView  «حيزوق أكثر»
+== ar-gestes-version-pile-4
+PETIT 12x49dp TextView  «الزمانيم الكل»
+== ar-gestes-version-bento
+PETIT 185x37dp FrameLayout  «سيدور»
+PETIT 185x37dp FrameLayout  «تهيليم»
+== ar-gestes-version-instant
+PETIT 104x44dp TextView  «ابدا · 15 دق»
+PETIT 379x3dp LinearLayout  «»
+MUET LinearLayout  (42, 2392, 1038, 2400)
+== ar-gestes-version-serenite
+PETIT 51x44dp TextView  «بدّل»
+PETIT 19x40dp TextView  «إقرا»
+PETIT 53x40dp TextView  «شوف الكل»
+== es-gestes-accueil
+== es-gestes-accueil-bas
+PETIT 228x19dp FrameLayout hero_plate «Toca para ver tus números»
+== es-gestes-accueil-volet
+MUET Switch music_switch_main (796, 1525, 933, 1651)
+== es-gestes-livres
+== es-gestes-livres-bas
+== es-gestes-chemin
+== es-gestes-chemin-bas
+== es-gestes-reglages
+PETIT 88x43dp Button ouverture_button «Pantalla de inicio: El Día»
+== es-gestes-reglages-bas
+PETIT 109x12dp Button permission_grant «Conceder»
+== es-gestes-choix-version
+== es-gestes-choix-version-bas
+== es-gestes-seance
+== es-gestes-seance-bas
+== es-gestes-bravo
+== es-gestes-bravo-bas
+== es-gestes-journal
+== es-gestes-journal-bas
+== es-gestes-parcours
+== es-gestes-parcours-bas
+== es-gestes-hizouk
+== es-gestes-hizouk-bas
+== es-gestes-conseils
+== es-gestes-conseils-bas
+== es-gestes-rappels
+MUET Switch reminders_switch (854, 582, 991, 708)
+== es-gestes-rappels-bas
+MUET Switch reminders_switch (854, 582, 991, 708)
+== es-gestes-musique
+MUET Switch music_switch (854, 477, 991, 603)
+MUET Switch music_shuffle (854, 890, 991, 1016)
+PETIT 344x40dp LinearLayout music_ambiance «Ambiente Silencio»
+MUET RadioButton track_radio (74, 1465, 200, 1591)
+MUET RadioButton track_radio (74, 1654, 200, 1780)
+MUET RadioButton track_radio (74, 1843, 200, 1969)
+MUET RadioButton track_radio (74, 2032, 200, 2158)
+== es-gestes-musique-bas
+PETIT 48x45dp RadioButton track_radio «»
+MUET RadioButton track_radio (74, 128, 200, 247)
+PETIT 48x45dp ImageButton track_rename «Renombrar»
+PETIT 48x45dp ImageButton track_play «Escuchar»
+MUET RadioButton track_radio (74, 310, 200, 436)
+MUET RadioButton track_radio (74, 499, 200, 625)
+MUET RadioButton track_radio (74, 688, 200, 814)
+MUET RadioButton track_radio (74, 877, 200, 1003)
+MUET RadioButton track_radio (74, 1066, 200, 1192)
+MUET RadioButton track_radio (74, 1255, 200, 1381)
+MUET RadioButton track_radio (74, 1444, 200, 1570)
+MUET RadioButton track_radio (74, 1633, 200, 1759)
+MUET RadioButton track_radio (74, 1822, 200, 1948)
+MUET RadioButton track_radio (74, 2011, 200, 2137)
+== es-gestes-siddour
+PETIT 205x36dp TextView siddur_heading_nusah «נוסח ספרדי – עדות המזרח»
+== es-gestes-siddour-bas
+== es-gestes-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x32dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+PETIT 411x25dp TextView  «וַיְהִ֗י אַחַר֙ הַדְּבָרִ֣ים ה»
+PETIT 411x43dp TextView  «יש נוהגים לומר את הקטע הבא»
+== es-gestes-tefilot
+== es-gestes-tefilot-bas
+== es-gestes-tehilim
+PETIT 70x34dp TextView  «46»
+PETIT 70x34dp TextView  «47»
+PETIT 70x34dp TextView  «48»
+PETIT 70x34dp TextView  «49»
+PETIT 70x34dp TextView  «50»
+== es-gestes-tehilim-bas
+PETIT 70x3dp TextView  «71»
+PETIT 70x3dp TextView  «72»
+PETIT 70x3dp TextView  «73»
+PETIT 70x3dp TextView  «74»
+PETIT 70x3dp TextView  «75»
+== es-gestes-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-tehilim-lecture-bas
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-tikkun
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-tikkun-bas
+== es-gestes-bibliotheque
+== es-gestes-bibliotheque-bas
+== es-gestes-livres
+== es-gestes-livres-bas
+PETIT 47x48dp TextView  «פרק ב»
+PETIT 45x48dp TextView  «פרק ג»
+PETIT 46x48dp TextView  «פרק ד»
+PETIT 44x48dp TextView  «פרק ו»
+== es-gestes-source
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-source-bas
+== es-gestes-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diáspora»
+== es-gestes-zmanim-bas
+== es-gestes-vol
+PETIT 379x44dp LinearLayout  «Método y fuentes»
+== es-gestes-vol-bas
+PETIT 379x44dp LinearLayout  «Método y fuentes»
+== es-gestes-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+== es-gestes-boussole-bas
+== es-gestes-calendrier
+PETIT 76x26dp TextView  «Hebreo»
+PETIT 100x26dp TextView  «Gregoriano»
+PETIT 347x28dp TextView  «Hoy»
+== es-gestes-calendrier-bas
+== es-gestes-halakha
+PETIT 347x45dp EditText  «Buscar en la halajá»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-halakha-bas
+PETIT 48x32dp TextView  «‹»
+PETIT 48x32dp TextView  «›»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-hilloulot
+PETIT 48x38dp Switch  «Mostrar las hilulot»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-hilloulot-bas
+PETIT 326x13dp EditText  «Buscar un tzadik»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-recherche
+PETIT 347x45dp EditText recherche_champ «Buscar en el sidur, los libros»
+== es-gestes-recherche-bas
+PETIT 347x45dp EditText recherche_champ «by by by y by FL»
+== es-gestes-paliers
+PETIT 379x35dp LinearLayout  «15 minutos en un día, Ganado e»
+== es-gestes-paliers-bas
+PETIT 379x11dp LinearLayout  «2 horas en total, 1 / 2»
+== es-gestes-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== es-gestes-applications-bas
+MUET CheckBox app_check (912, 532, 1038, 658)
+MUET CheckBox app_check (912, 722, 1038, 848)
+MUET CheckBox app_check (912, 912, 1038, 1038)
+MUET CheckBox app_check (912, 1102, 1038, 1228)
+MUET CheckBox app_check (912, 1292, 1038, 1418)
+MUET CheckBox app_check (912, 1482, 1038, 1608)
+MUET CheckBox app_check (912, 1672, 1038, 1798)
+MUET CheckBox app_check (912, 1862, 1038, 1988)
+MUET CheckBox app_check (912, 2052, 1038, 2178)
+MUET CheckBox app_check (912, 2242, 1038, 2368)
+== es-gestes-version-pile
+PETIT 12x49dp TextView  «Más jizuk»
+== es-gestes-version-pile-2
+PETIT 12x49dp TextView  «Todos los zmanim»
+== es-gestes-version-pile-3
+PETIT 12x49dp TextView  «Escribir la nota del día»
+PETIT 12x49dp TextView  «Todo el diario»
+PETIT 12x49dp TextView  «Mi recorrido»
+== es-gestes-version-pile-4
+== es-gestes-version-bento
+PETIT 185x46dp FrameLayout  «Sidur»
+PETIT 185x46dp FrameLayout  «Tehilim»
+== es-gestes-version-instant
+PETIT 152x44dp TextView  «Empezar · 15 min»
+PETIT 379x36dp LinearLayout  «JIZUK DEL DÍA»
+== es-gestes-version-serenite
+PETIT 68x44dp TextView  «Editar»
+PETIT 27x40dp TextView  «Leer»
+PETIT 52x40dp TextView  «Ver todo»
+== nuit-accueil
+== nuit-accueil-volet
+MUET Switch music_switch_main (796, 1525, 933, 1651)
+== nuit-livres
+== nuit-chemin
+== nuit-reglages
+PETIT 96x34dp Button ouverture_button «Écran d’ouverture : Le Jour»
+== nuit-choix-version
+== nuit-seance
+== nuit-bravo
+== nuit-journal
+== nuit-parcours
+== nuit-hizouk
+== nuit-conseils
+== nuit-rappels
+MUET Switch reminders_switch (854, 582, 991, 708)
+== nuit-musique
+MUET Switch music_switch (854, 520, 991, 646)
+MUET Switch music_shuffle (854, 933, 991, 1059)
+PETIT 344x40dp LinearLayout music_ambiance «Ambiance Silence»
+MUET RadioButton track_radio (74, 1508, 200, 1634)
+MUET RadioButton track_radio (74, 1697, 200, 1823)
+MUET RadioButton track_radio (74, 1886, 200, 2012)
+PETIT 48x44dp RadioButton track_radio «»
+MUET RadioButton track_radio (74, 2075, 200, 2190)
+PETIT 48x44dp ImageButton track_rename «Renommer»
+PETIT 48x44dp ImageButton track_play «Écouter»
+== nuit-siddour
+PETIT 272x36dp TextView siddur_heading_nusah «Noussa’h séfarade (Edot HaMizr»
+== nuit-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x7dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== nuit-tefilot
+== nuit-tehilim
+PETIT 70x34dp TextView  «46»
+PETIT 70x34dp TextView  «47»
+PETIT 70x34dp TextView  «48»
+PETIT 70x34dp TextView  «49»
+PETIT 70x34dp TextView  «50»
+== nuit-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== nuit-tikkun
+PETIT 56x36dp TextView  «Aa»
+== nuit-bibliotheque
+== nuit-livres
+== nuit-source
+PETIT 56x36dp TextView  «Aa»
+== nuit-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diaspora»
+== nuit-vol
+PETIT 379x44dp LinearLayout  «Méthode et sources»
+== nuit-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+== nuit-calendrier
+PETIT 95x26dp TextView  «Hébraïque»
+PETIT 92x26dp TextView  «Grégorien»
+PETIT 347x28dp TextView  «Aujourd’hui»
+== nuit-halakha
+PETIT 347x45dp EditText  «Rechercher dans la halakha»
+PETIT 56x36dp TextView  «Aa»
+== nuit-hilloulot
+PETIT 48x38dp Switch  «Afficher les hilloulot»
+PETIT 56x36dp TextView  «Aa»
+== nuit-recherche
+PETIT 347x45dp EditText recherche_champ «Rechercher dans le siddour, le»
+== nuit-paliers
+PETIT 379x35dp LinearLayout  «15 minutes en un jour, Gagné l»
+== nuit-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+MUET CheckBox app_check (912, 2267, 1038, 2393)
+== nuit-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== nuit-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== nuit-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== nuit-version-pile-4
+== nuit-version-bento
+PETIT 185x21dp FrameLayout  «Siddour»
+PETIT 185x21dp FrameLayout  «Tehilim»
+== nuit-version-instant
+PETIT 175x44dp TextView  «Commencer · 15 min»
+PETIT 379x36dp LinearLayout  «’HIZOUK DU JOUR»
+== nuit-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x2dp TextView  «Tout voir»
+== fr-presentation-1
+== fr-presentation-2
+== fr-presentation-3
+== fr-presentation-4
+== fr-presentation-5
+== fr-presentation-6
+== fr-presentation-7
+== fr-presentation-8
+== fr-presentation-9
+== en-presentation-1
+== en-presentation-2
+== en-presentation-3
+== en-presentation-4
+== en-presentation-5
+== en-presentation-6
+== en-presentation-7
+== en-presentation-8
+== en-presentation-9
+== he-presentation-1
+== he-presentation-2
+== he-presentation-3
+== he-presentation-4
+== he-presentation-5
+== he-presentation-6
+== he-presentation-7
+== he-presentation-8
+== he-presentation-9
+== es-presentation-1
+== es-presentation-2
+== es-presentation-3
+== es-presentation-4
+== es-presentation-5
+== es-presentation-6
+== es-presentation-7
+== es-presentation-8
+== es-presentation-9
+== ar-presentation-1
+== ar-presentation-2
+== ar-presentation-3
+== ar-presentation-4
+== ar-presentation-5
+== ar-presentation-6
+== ar-presentation-7
+== ar-presentation-8
+== ar-presentation-9
+PETIT 363x34dp Button today_offline «عملتها من غير التليفون»
