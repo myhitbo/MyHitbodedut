@@ -5,10 +5,12 @@ import Coeur
 
 /// Le défilement automatique des écrans de lecture (ReglagesLecture.kt, 16/11) : le niveau de 1 à 10 gardé sous
 /// `lecture_defilement_vitesse`, la vitesse de chaque niveau, le pas de chaque image, l'arrêt au bout et au
-/// masquage du bouton, et le même défilement dans le siddour, les Tehilim et le Tikoun.
+/// masquage du bouton, et le même défilement dans le siddour, les Tehilim, le Tikoun, les sources de la
+/// bibliothèque, la halakha et les hilloulot (ces deux-là sans lune ni langues, comme Android) ; l'écran allumé
+/// tant qu'un écran le demande (`EcranAllumeDemandes`).
 ///
-/// Restent au test d'interface : le texte qui défile vraiment (TimelineView, ScrollPosition), le doigt sur le
-/// texte qui l'arrête (la phase du ScrollView), l'écran qui reste allumé.
+/// Restent au test d'interface et à l'iPhone : le texte qui défile vraiment (TimelineView, ScrollPosition), le doigt
+/// sur le texte qui l'arrête (`ToucherDuTexte`, la phase du ScrollView), `isIdleTimerDisabled` lui-même.
 @Suite("Le défilement automatique")
 @MainActor
 struct DefilementAutoTests {
@@ -212,5 +214,129 @@ struct DefilementAutoTests {
         tehilim.defilementAuto.lancer()
         try await tehilim.masquer()
         #expect(!tehilim.defilementAuto.actif && !tehilim.defilementAuto.commandeVisible)
+        let source = BibliothequeBarreLecture(magasin: magasin, langue: "fr")
+        source.defilementAuto.lancer()
+        try await source.masquer()
+        #expect(!source.defilementAuto.actif && !source.defilementAuto.commandeVisible)
+    }
+
+    // MARK: La halakha, les hilloulot, les sources (24/11)
+
+    /// Comme HalakhaActivity et HilloulotActivity (ReglagesLecture.installer, `avecNuit` et `avecLangues` faux) :
+    /// A−, %, A+, la police, le défilement automatique, masquer, replier ; le niveau commun aux écrans de lecture.
+    @Test func laHalakhaEtLesHilloulotDefilentSansLuneNiLangues() async throws {
+        let magasin = Magasin.enMemoire()
+        let horloge = HorlogeFixe(maintenant: 0)
+        let halakha = HalakhaModele(magasin: magasin, contenus: ContenusApp(dossier: Fichiers.contenu),
+                                    horloge: horloge, langue: "fr")
+        let hilloulot = HilloulotModele(magasin: magasin, contenus: HilloulotContenus(dossier: Fichiers.contenu),
+                                        horloge: horloge, langue: "fr")
+        for barre in [halakha.barre, hilloulot.barre] {
+            #expect(!barre.avecNuit && !barre.avecLangues)
+            #expect(barre.pastilleVisible && !barre.barreVisible)
+            #expect(!barre.defilementAuto.actif)
+        }
+        let tehilim = TehilimBarreLecture(magasin: magasin, langue: "fr")
+        #expect(tehilim.avecNuit && tehilim.avecLangues)
+        try await halakha.barre.defilementAuto.plusVite()
+        #expect(hilloulot.barre.defilementAuto.niveau == 4)
+        #expect(tehilim.defilementAuto.niveau == 4)
+        // La taille des lettres de la barre est celle que la halakha et les hilloulot appliquent.
+        try await hilloulot.barre.changerTaille(plus: true)
+        #expect(halakha.echelle == 1.1)
+        #expect(hilloulot.echelle == 1.1)
+        // Masquer arrête le défilement ; deux touchers (retrouver) rendent la barre dépliée.
+        halakha.barre.defilementAuto.lancer()
+        try await halakha.barre.masquer()
+        #expect(!halakha.barre.defilementAuto.actif)
+        #expect(!halakha.barre.pastilleVisible && !halakha.barre.barreVisible)
+        try await halakha.barre.retrouver()
+        #expect(halakha.barre.barreVisible)
+    }
+
+    /// La source d'une entrée de la bibliothèque (LibraryEntryActivity) a le défilement automatique dans sa barre, au
+    /// niveau commun.
+    @Test func uneSourceDeLaBibliothequeDefileAussi() async throws {
+        let magasin = Magasin.enMemoire()
+        let entree = BibliothequeEntreeModele(magasin: magasin, contenus: ContenusApp(dossier: Fichiers.contenu),
+                                              langue: "fr", id: "src-lm2-25")
+        await entree.charger()
+        #expect(entree.barreLectureVisible)
+        let siddour = LectureModele(magasin: magasin, contenus: ContenusApp(dossier: Fichiers.contenu),
+                                    horloge: HorlogeFixe(maintenant: 0), langue: "fr", cible: .siddour("chaharit"))
+        try await siddour.defilementAuto.plusVite()
+        #expect(entree.barre.defilementAuto.niveau == 4)
+        entree.barre.defilementAuto.basculer()
+        #expect(entree.barre.defilementAuto.actif && entree.barre.defilementAuto.garderEcranAllume)
+        #expect(!siddour.defilementAuto.actif)
+    }
+
+    // MARK: L'écran allumé
+
+    /// Le défilement qui s'arrête rend l'écran à ce qu'il était : allumé si la séance le demande encore, à la veille
+    /// du téléphone sinon (keepScreenOn d'Android, qui s'ajoute au drapeau de la fenêtre sans y toucher).
+    @Test func lEcranResteAllumeTantQuUnEcranLeDemande() {
+        let demandes = EcranAllumeDemandes()
+        #expect(!demandes.allume)
+        #expect(demandes.garder(true, pour: "seance"))
+        #expect(demandes.garder(true, pour: "defilement-1"))
+        #expect(demandes.garder(false, pour: "defilement-1"))
+        #expect(demandes.allume)
+        #expect(!demandes.garder(false, pour: "seance"))
+        // Sans la séance : le défilement seul, puis plus rien.
+        #expect(demandes.garder(true, pour: "defilement-2"))
+        #expect(demandes.garder(true, pour: "defilement-2"))
+        #expect(!demandes.garder(false, pour: "defilement-2"))
+        // Retirer une demande absente ne change rien.
+        #expect(!demandes.garder(false, pour: "defilement-3"))
+        #expect(demandes.demandeurs.isEmpty)
+    }
+
+    /// VeilleLecture.kt (FLECTURE-01) : dix minutes après le dernier toucher, la veille du téléphone reprend ; le
+    /// réglage « Garder l'écran allumé pendant la lecture », allumé d'origine, le coupe, même entre deux touchers.
+    @Test func laVeilleDeLectureDureDixMinutesApresLeDernierToucher() async throws {
+        let magasin = Magasin.enMemoire()
+        let veille = VeilleLecture(magasin: magasin)
+        #expect(veille.permise)
+        #expect(VeilleLecture.delai == 600_000)
+        #expect(!veille.allume(1_000))
+        #expect(veille.toucher(1_000) == 601_000)
+        #expect(veille.allume(600_999))
+        #expect(!veille.allume(601_000))
+        // Un toucher repousse l'échéance.
+        veille.toucher(300_000)
+        #expect(veille.allume(899_999))
+        // L'écran quitté : plus rien.
+        veille.arreter()
+        #expect(veille.jusqua == nil)
+        #expect(!veille.allume(300_001))
+        // Le réglage coupé : rien à garder, ni au toucher, ni pour une échéance déjà posée.
+        veille.toucher(0)
+        try await magasin.modifierReglages { $0.setLectureEcranAllume(false) }
+        #expect(!veille.permise)
+        #expect(!veille.allume(1))
+        #expect(veille.toucher(2) == nil)
+        #expect(!veille.allume(3))
+    }
+
+    /// Les quatre écrans de lecture d'Android ont la veille (le lecteur, les Tehilim et le Tikoun par leur barre, une
+    /// entrée de la bibliothèque), sur le même réglage.
+    @Test func lesQuatreEcransDeLectureOntLaVeille() async throws {
+        var reglages = Reglages()
+        reglages.setLectureEcranAllume(false)
+        let magasin = Magasin.enMemoire(Enregistrement(reglages: reglages))
+        let lecteur = LectureModele(magasin: magasin, contenus: ContenusApp(dossier: Fichiers.contenu),
+                                    horloge: HorlogeFixe(maintenant: 0), langue: "fr", cible: .siddour("chaharit"))
+        let tehilim = TehilimBarreLecture(magasin: magasin, langue: "fr")
+        let entree = BibliothequeEntreeModele(magasin: magasin, contenus: ContenusApp(dossier: Fichiers.contenu),
+                                              langue: "fr", id: "src-lm2-25")
+        for veille in [lecteur.veille, tehilim.veille, entree.veille] {
+            #expect(!veille.permise)
+            #expect(veille.toucher(0) == nil)
+        }
+        try await magasin.modifierReglages { $0.setLectureEcranAllume(true) }
+        for veille in [lecteur.veille, tehilim.veille, entree.veille] {
+            #expect(veille.toucher(0) == VeilleLecture.delai)
+        }
     }
 }

@@ -317,10 +317,17 @@ struct LectureModeleTests {
         // 411 chapitres : un bouton « Chapitres (411) » et une liste filtrable, non une bande (FLECTURE-03).
         #expect(m.enChapitres)
         #expect(m.boutonChapitres?.nombre == 411)
+        #expect(m.boutonChapitres?.titre == Libelle("siddur_chapitres"))
+        #expect(!m.feuilleChapitres)
+        m.ouvrirListeChapitres()
+        #expect(m.feuilleChapitres)
+        #expect(m.chapitresFiltres.count == 411)
         m.filtreChapitres = "תנינא תורה טו"
         let trouves = m.chapitresFiltres.map(\.id)
         #expect(trouves.contains(300))
         m.ouvrirChapitre(300)
+        // Le chapitre touché ferme la liste, et la prochaine s'ouvre entière.
+        #expect(!m.feuilleChapitres)
         #expect(m.filtreChapitres.isEmpty)
         let demande = try #require(m.defilement)
         #expect(demande.ligne == signets[300].ligne)
@@ -364,6 +371,44 @@ struct LectureModeleTests {
         await rouvert.charger()
         #expect(rouvert.defilement?.ligne == tete)
         #expect(rouvert.ligneDeTete?.id == tete)
+    }
+
+    /// Le plus long livre (le Kitsour Yalkout Yossef, `Captures.plusLongLivre`) : 1 048 chapitres derrière un seul
+    /// bouton, et non 1 048 signets posés d'un coup ; la liste rouverte après un filtre repart entière, et un mot
+    /// trouve son chapitre (Chapitres.filtrer), le dernier compris.
+    @Test func lePlusLongLivreNOuvreQuUnBoutonDeChapitres() async throws {
+        let (m, _) = try fabriquer(.livre("yalkut_yosef_kitsour"))
+        await m.charger()
+        #expect(m.etat == .pret)
+        #expect(m.enChapitres)
+        #expect(m.boutonChapitres?.nombre == 1_048)
+        #expect(m.signetActif == nil)
+        m.ouvrirListeChapitres()
+        m.filtreChapitres = "zzz introuvable"
+        #expect(m.chapitresFiltres.isEmpty)
+        m.feuilleChapitres = false
+        m.ouvrirListeChapitres()
+        #expect(m.filtreChapitres.isEmpty)
+        #expect(m.chapitresFiltres.count == 1_048)
+        m.filtreChapitres = "הלכות חליצה ויבום"
+        let dernier = try #require(m.chapitresFiltres.last)
+        #expect(dernier.id == 1_047)
+        #expect(dernier.texte.contains("חליצה"))
+        m.ouvrirChapitre(dernier.id)
+        #expect(m.defilement?.ligne == dernier.ligne)
+        #expect(!m.feuilleChapitres)
+    }
+
+    /// Un texte de quarante sections au plus garde sa bande de signets : ni bouton ni liste.
+    @Test func unTexteCourtGardeSaBandeDeSignets() async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"))
+        await m.charger()
+        #expect(!m.signets.isEmpty)
+        #expect(m.signets.count <= LectureModele.seuilChapitres)
+        #expect(!m.enChapitres)
+        #expect(m.boutonChapitres == nil)
+        m.ouvrirListeChapitres()
+        #expect(!m.feuilleChapitres)
     }
 
     @Test func unLivreNAPasDeNusahNiDAjouts() async throws {

@@ -2,19 +2,24 @@ import Foundation
 import SwiftUI
 #if canImport(UIKit)
 import UIKit
+import UIKit.UIGestureRecognizerSubclass
 #endif
 import Coeur
 import Ecrans
 
 // Le défilement automatique des écrans de lecture (ReglagesLecture.kt, 16/11), commun au siddour (LectureVue),
-// aux Tehilim (TehilimLectureVue) et au Tikoun (TikkunVue) : le bouton ▶︎/❚❚ de la barre de lecture, la commande
-// flottante [−] [N] [+] [❚❚] tant que le texte défile, et le moteur qui fait avancer la liste à chaque image. Ce
-// qui se montre, la vitesse et le pas de chaque image se décident dans DefilementAuto (cible Ecrans).
+// aux Tehilim (TehilimLectureVue), au Tikoun (TikkunVue), aux sources de la bibliothèque (BibliothequeEntreeVue), à
+// la halakha (HalakhaVue, le Ben Ish 'Haï compris) et aux hilloulot (HilloulotVue) : le bouton ▶︎/❚❚ de la barre de
+// lecture, la commande flottante [−] [N] [+] [❚❚] tant que le texte défile, et le moteur qui fait avancer la liste à
+// chaque image. Ce qui se montre, la vitesse et le pas de chaque image se décident dans DefilementAuto (cible
+// Ecrans).
 //
 // Le moteur : un TimelineView(.animation), présent seulement pendant le défilement, donne l'intervalle entre deux
-// images ; `avancer` dit où mettre le texte, `ScrollPosition.scrollTo(y:)` l'y met. Un doigt sur le texte
-// (phase `tracking` ou `interacting`) l'arrête ; le bouton le relance.
-// L'écran reste allumé tant qu'il défile (`isIdleTimerDisabled`, comme la séance).
+// images ; `avancer` dit où mettre le texte, `ScrollPosition.scrollTo(y:)` l'y met. Un doigt posé n'importe où sur
+// le texte l'arrête, sur une partie qui se touche aussi (la tête d'un tsadik, une flèche de la halakha, le bouton de
+// Sefaria) : `ToucherDuTexte` voit l'appui avant tout autre geste et le laisse passer, comme l'indicateur de
+// défilement d'Android (vérification du 24/11) ; le glissé (phase `tracking` ou `interacting`) aussi. Le bouton le
+// relance. L'écran reste allumé tant qu'il défile, puis revient à ce qu'il était (`EcranAllume`).
 
 /// Ce que le moteur lit de la liste : où est le texte et jusqu'où il peut descendre, en points depuis le haut du
 /// contenu (les marges du conteneur comprises, pour parler comme `scrollTo(y:)`).
@@ -38,6 +43,7 @@ struct DefilementMoteur: ViewModifier {
     /// premier pas fait bouger la liste, qui se mesure alors.
     @State private var haut: Double = 0
     @State private var fin: Double = .infinity
+    @Environment(\.scenePhase) private var phase
 
     func body(content: Content) -> some View {
         content
@@ -49,9 +55,12 @@ struct DefilementMoteur: ViewModifier {
             // on reprend la main, et le bouton le relance.
             .onScrollPhaseChange { _, phase in
                 if phase == .tracking || phase == .interacting {
-                    defilement.arreter()
+                    arreter()
                 }
             }
+            #if canImport(UIKit)
+            .gesture(ToucherDuTexte { arreter() })
+            #endif
             .background {
                 if defilement.actif {
                     TimelineView(.animation) { contexte in
@@ -64,12 +73,25 @@ struct DefilementMoteur: ViewModifier {
                 }
             }
             .onChange(of: defilement.garderEcranAllume, initial: true) { _, allume in
-                EcranAllume.garder(allume)
+                EcranAllume.garder(allume, pour: demandeur)
+            }
+            // L'écran s'en va (une autre app, l'écran verrouillé) : le défilement s'arrête.
+            .onChange(of: phase) { _, nouvelle in
+                if nouvelle == .background { arreter() }
             }
             .onDisappear {
                 defilement.arreter()
-                EcranAllume.garder(false)
+                EcranAllume.garder(false, pour: demandeur)
             }
+    }
+
+    /// Le nom de ce défilement parmi ceux qui demandent l'écran allumé.
+    private var demandeur: String {
+        "defilement-" + String(UInt(bitPattern: ObjectIdentifier(defilement).hashValue))
+    }
+
+    private func arreter() {
+        if defilement.actif { defilement.arreter() }
     }
 
     /// Une image : le texte avance des points entiers que la vitesse a faits depuis la précédente.
@@ -89,15 +111,134 @@ extension View {
     }
 }
 
-/// L'écran qui ne s'éteint pas (FLAG_KEEP_SCREEN_ON d'Android).
+/// L'écran qui ne s'éteint pas (FLAG_KEEP_SCREEN_ON d'Android) : allumé tant qu'un écran le demande
+/// (`EcranAllumeDemandes`, cible Ecrans) ; la dernière demande retirée, la veille du téléphone reprend.
 @MainActor
 enum EcranAllume {
-    static func garder(_ allume: Bool) {
+    static func garder(_ allume: Bool, pour qui: String) {
+        let reste = EcranAllumeDemandes.app.garder(allume, pour: qui)
         #if canImport(UIKit)
-        UIApplication.shared.isIdleTimerDisabled = allume
+        if UIApplication.shared.isIdleTimerDisabled != reste {
+            UIApplication.shared.isIdleTimerDisabled = reste
+        }
         #endif
     }
 }
+
+// MARK: L'écran allumé pendant qu'on lit
+
+/// VeilleLecture.kt à l'écran (FLECTURE-01), sur un écran de lecture entier : chaque toucher (`ToucherDuTexte`, la
+/// barre comprise, comme onUserInteraction), l'apparition de l'écran et son retour au premier plan repoussent la
+/// veille de dix minutes, si le réglage le veut ; son départ la relâche. Le défilement automatique qui s'arrête
+/// compte comme un toucher. L'écran allumé se demande à `EcranAllume`, sous le nom de cette veille.
+struct VeilleLectureVue: ViewModifier {
+    let veille: VeilleLecture
+    /// Le texte défile tout seul : son arrêt repousse la veille.
+    let defilant: Bool
+
+    @Environment(\.scenePhase) private var phase
+    /// Change à chaque toucher : la tâche qui attend l'échéance repart.
+    @State private var jeton = 0
+
+    func body(content: Content) -> some View {
+        content
+            #if canImport(UIKit)
+            .gesture(ToucherDuTexte { toucher() })
+            #endif
+            .onAppear { toucher() }
+            .onChange(of: phase) { _, nouvelle in
+                switch nouvelle {
+                case .active: toucher()
+                case .background: relacher()
+                default: break
+                }
+            }
+            .onChange(of: defilant) { _, actif in
+                if !actif { toucher() }
+            }
+            // Le réglage changé ailleurs : la veille suit aussitôt.
+            .onChange(of: veille.permise) {
+                toucher()
+            }
+            .onDisappear { relacher() }
+            .task(id: jeton) {
+                await attendre()
+            }
+    }
+
+    private var demandeur: String {
+        "veille-" + String(UInt(bitPattern: ObjectIdentifier(veille).hashValue))
+    }
+
+    private static func maintenant() -> Int64 {
+        Int64((Date().timeIntervalSince1970 * 1000).rounded())
+    }
+
+    private func toucher() {
+        veille.toucher(VeilleLectureVue.maintenant())
+        jeton &+= 1
+    }
+
+    private func relacher() {
+        veille.arreter()
+        EcranAllume.garder(false, pour: demandeur)
+    }
+
+    /// Allumé jusqu'à l'échéance du dernier toucher, puis la veille du téléphone ; un toucher entre-temps relance.
+    private func attendre() async {
+        let debut = VeilleLectureVue.maintenant()
+        guard let jusqua = veille.jusqua, veille.allume(debut) else {
+            EcranAllume.garder(false, pour: demandeur)
+            return
+        }
+        EcranAllume.garder(true, pour: demandeur)
+        try? await Task.sleep(for: .milliseconds(jusqua - debut))
+        guard !Task.isCancelled else { return }
+        EcranAllume.garder(veille.allume(VeilleLectureVue.maintenant()), pour: demandeur)
+    }
+}
+
+extension View {
+    /// L'écran allumé pendant qu'on lit (VeilleLecture.kt), sur la racine d'un écran de lecture.
+    func veilleDeLecture(_ veille: VeilleLecture, defilant: Bool) -> some View {
+        modifier(VeilleLectureVue(veille: veille, defilant: defilant))
+    }
+}
+
+#if canImport(UIKit)
+/// Un doigt posé sur le texte, où que ce soit : `toucher` est appelé dès l'appui, puis le geste échoue aussitôt et
+/// laisse le toucher aux boutons, aux liens et au défilement, sans rien retarder ni annuler (IndicateurDefilement
+/// d'Android, qui voit passer chaque appui et le rend).
+struct ToucherDuTexte: UIGestureRecognizerRepresentable {
+    let toucher: @MainActor () -> Void
+
+    func makeUIGestureRecognizer(context: Context) -> Reconnaisseur {
+        let reconnaisseur = Reconnaisseur()
+        reconnaisseur.cancelsTouchesInView = false
+        reconnaisseur.delaysTouchesBegan = false
+        reconnaisseur.delaysTouchesEnded = false
+        reconnaisseur.toucher = toucher
+        return reconnaisseur
+    }
+
+    func updateUIGestureRecognizer(_ reconnaisseur: Reconnaisseur, context: Context) {
+        reconnaisseur.toucher = toucher
+    }
+
+    /// Jamais appelé : le geste n'est jamais reconnu.
+    func handleUIGestureRecognizerAction(_ reconnaisseur: Reconnaisseur, context: Context) {}
+
+    final class Reconnaisseur: UIGestureRecognizer {
+        var toucher: (@MainActor () -> Void)?
+
+        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+            toucher?()
+            // Jamais reconnu : rien n'attend ce geste, rien ne lui cède.
+            state = .failed
+        }
+    }
+}
+#endif
 
 // MARK: Le bouton de la barre
 

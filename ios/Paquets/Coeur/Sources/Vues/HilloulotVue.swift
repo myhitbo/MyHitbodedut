@@ -5,42 +5,43 @@ import Ecrans
 
 /// Les hilloulot (HilloulotActivity.kt, activity_hilloulot.xml) : en haut la recherche ; puis le jour (flèches,
 /// retour à aujourd'hui) et ses tsadikim, ou les résultats rangés par date ; en bas l'interrupteur de la carte du
-/// jour. Un nom touché déplie sa fiche. La vue ne décide rien : elle lit HilloulotModele (cible Ecrans).
+/// jour, et le bouton de lecture (ReglagesLecture.installer, sans lune ni langues : la taille, la police, le
+/// défilement automatique). Un nom touché déplie sa fiche. La vue ne décide rien : elle lit HilloulotModele (cible
+/// Ecrans).
 ///
 /// Le bandeau d'Android (sans image) est la barre de navigation d'iOS (PORTAGE.md § 2.3).
 public struct HilloulotVue: View {
     private let modele: HilloulotModele
     @Environment(\.traducteur) private var traducteur
     @Environment(\.accessibilityReduceMotion) private var reduireAnimations
-
-    /// Le haut de la liste, où « Voir ce jour » la ramène.
-    private static let haut = "hilloulot.haut"
+    /// La place de la liste : « Voir ce jour » la ramène en haut, le défilement automatique la fait avancer.
+    @State private var position = ScrollPosition()
 
     public init(modele: HilloulotModele) {
         self.modele = modele
     }
 
     public var body: some View {
-        ScrollViewReader { defilement in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    recherche
-                        .id(HilloulotVue.haut)
-                    liste
-                    reglage
-                }
-                .padding(.bottom, 24)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                recherche
+                liste
+                    .gestesLecture(modele.barre)
+                reglage
             }
-            .onChange(of: modele.retourEnHaut) {
-                if reduireAnimations {
-                    defilement.scrollTo(HilloulotVue.haut, anchor: .top)
-                } else {
-                    withAnimation {
-                        defilement.scrollTo(HilloulotVue.haut, anchor: .top)
-                    }
+            .padding(.bottom, 24)
+        }
+        .scrollPosition($position)
+        .onChange(of: modele.retourEnHaut) {
+            if reduireAnimations {
+                position.scrollTo(edge: .top)
+            } else {
+                withAnimation {
+                    position.scrollTo(edge: .top)
                 }
             }
         }
+        .lectureAvecBarre(modele.barre, position: $position, fond: Teinte(.paper))
         .scrollDismissesKeyboard(.interactively)
         .background(Teinte(.paper))
         .navigationTitle(texte("hilloulot_title"))

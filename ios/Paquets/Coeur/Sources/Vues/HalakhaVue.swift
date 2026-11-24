@@ -4,14 +4,17 @@ import Coeur
 import Ecrans
 
 /// La halakha du jour (HalakhaActivity.kt, activity_halakha.xml) : la carte des réglages (l'interrupteur de la carte
-/// du jour, le livre, le champ de recherche), puis le jour et ses halakhot, ou les résultats de la recherche. La
-/// vue ne décide rien : elle lit HalakhaModele (cible Ecrans) et appelle ses actions.
+/// du jour, le livre, le champ de recherche), puis le jour et ses halakhot, ou les résultats de la recherche ; en
+/// bas, le bouton de lecture (ReglagesLecture.installer, sans lune ni langues : la taille, la police, le défilement
+/// automatique). La vue ne décide rien : elle lit HalakhaModele (cible Ecrans) et appelle ses actions.
 ///
 /// Le bandeau d'Android (bg_hero, sans image : on lit) est la barre de navigation d'iOS, qui se réduit en
 /// défilant (PORTAGE.md § 2.3). L'écran se pousse dans la pile de son onglet : il n'en ouvre pas une seconde.
 public struct HalakhaVue: View {
     private let modele: HalakhaModele
     @Environment(\.traducteur) private var traducteur
+    /// La place de la liste, que le défilement automatique fait avancer.
+    @State private var position = ScrollPosition()
 
     public init(modele: HalakhaModele) {
         self.modele = modele
@@ -22,10 +25,13 @@ public struct HalakhaVue: View {
             VStack(alignment: .leading, spacing: 0) {
                 reglages
                 liste
+                    .gestesLecture(modele.barre)
             }
             .padding(.bottom, 24)
         }
         .scrollDismissesKeyboard(.interactively)
+        .scrollPosition($position)
+        .lectureAvecBarre(modele.barre, position: $position, fond: Teinte(.paper))
         .background(Teinte(.paper))
         .navigationTitle(texte("halakha_title"))
         .task { await modele.charger() }

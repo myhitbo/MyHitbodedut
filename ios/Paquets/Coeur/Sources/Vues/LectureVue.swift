@@ -5,7 +5,8 @@ import Coeur
 import Ecrans
 
 // Le lecteur des textes (SiddurLectureActivity.kt, activity_siddur_lecture.xml) : le bandeau (marque-pages,
-// favori, titre, étiquettes, horaire), la bande des signets, le texte en liste paresseuse, et le bouton de
+// favori, titre, étiquettes, horaire), la bande des signets (ou, pour un livre de plus de quarante chapitres, le
+// bouton « Chapitres (n) ▾ » et leur liste filtrable, FLECTURE-03), le texte en liste paresseuse, et le bouton de
 // lecture (LectureBarreVue.swift). La vue dit au modèle ce qu'elle montre (`visibles`) et suit ce qu'il demande
 // (`defilement`) ; tout le reste se décide dans LectureModele (cible Ecrans).
 //
@@ -43,7 +44,9 @@ public struct LectureVue: View {
     public var body: some View {
         VStack(spacing: 0) {
             LectureBandeau(modele: modele, bord: SiddourMesures.bord(largeur: largeur))
-            if !modele.signets.isEmpty {
+            if let chapitres = modele.boutonChapitres {
+                LectureBoutonChapitres(modele: modele, rendu: rendu, titre: chapitres.titre, nombre: chapitres.nombre)
+            } else if !modele.signets.isEmpty {
                 LectureBandeSignets(modele: modele, rendu: rendu)
             }
             texte
@@ -58,6 +61,9 @@ public struct LectureVue: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $modele.feuilleMarques) {
             LectureFeuilleMarquesTexte(modele: modele)
+        }
+        .sheet(isPresented: $modele.feuilleChapitres) {
+            LectureFeuilleChapitres(modele: modele)
         }
         // onCreate : une seule fois (le modèle ignore les appels suivants) ; onRestart à chaque retour.
         .task { await modele.charger() }
@@ -74,6 +80,8 @@ public struct LectureVue: View {
         .onChange(of: modele.etat) { _, etat in
             if etat == .introuvable { fermer() }
         }
+        // L'écran allumé pendant qu'on lit, dix minutes après le dernier toucher (FLECTURE-01).
+        .veilleDeLecture(modele.veille, defilant: modele.defilementAuto.actif)
     }
 
     /// onPause : la place est gardée.
@@ -343,6 +351,92 @@ private struct LectureBandeSignets: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(actif ? .isSelected : [])
+    }
+}
+
+// MARK: Les chapitres d'un long livre
+
+/// « Chapitres (1048)  ▾ » à la place de la bande des signets, au-delà de quarante sections
+/// (SiddurLectureActivity.bande, audit du 12/11, FLECTURE-03) : un bouton, et non mille boutons à poser d'un coup dans
+/// la première image du livre et dans son arbre d'accessibilité. Il ouvre la liste filtrable
+/// (`LectureFeuilleChapitres`).
+private struct LectureBoutonChapitres: View {
+    let modele: LectureModele
+    let rendu: LectureRendu
+    let titre: Libelle
+    let nombre: Int
+
+    @Environment(\.traducteur) private var traducteur
+    @Environment(\.layoutDirection) private var sens
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Button {
+                modele.ouvrirListeChapitres()
+            } label: {
+                // 14 sp, gras, à la couleur des titres, comme Android ; ▾ n'est pas lu.
+                Text(verbatim: traducteur.texte(titre) + " (\(nombre))  \u{25BE}")
+                    .font(Font.subheadline.bold())
+                    .foregroundStyle(rendu.titre)
+                    .lineLimit(1)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .frame(minHeight: 48)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text(verbatim: traducteur.texte(titre) + " (\(nombre))"))
+            // À droite dans toutes les langues, au début de la bande des signets (layoutDirection="rtl") ; le libellé
+            // garde le sens de la langue de l'app (« Chapitres (411)  ▾ », « פרקים (411)  ▾ »).
+            .frame(maxWidth: .infinity, alignment: sens == .rightToLeft ? .leading : .trailing)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(rendu.fond)
+            Rectangle()
+                .fill(rendu.discret.opacity(SiddourMesures.alpha(0x40)))
+                .frame(height: 1)
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+/// La liste des chapitres d'un long livre (SiddurLectureActivity.listeChapitres) : « Numéro ou mot » filtre (un
+/// nombre cherche le chiffre, un mot sans voyelles ni casse, `Chapitres.filtrer`) ; un chapitre touché passe en tête
+/// du texte et la liste se ferme. Les titres en hébreu, de droite à gauche, dans la police de lecture ; la liste est
+/// paresseuse (1 048 chapitres au Kitsour Yalkout Yossef).
+private struct LectureFeuilleChapitres: View {
+    @Bindable var modele: LectureModele
+
+    @Environment(\.traducteur) private var traducteur
+
+    var body: some View {
+        NavigationStack {
+            List(modele.chapitresFiltres) { chapitre in
+                Button {
+                    modele.ouvrirChapitre(chapitre.id)
+                } label: {
+                    Text(verbatim: chapitre.texte)
+                        .policeHebraique(modele.police, taille: 17)
+                        .foregroundStyle(Teinte(.ink))
+                        .siddourHebreuAuDebut()
+                        .contentShape(Rectangle())
+                }
+            }
+            .listStyle(.plain)
+            .searchable(text: $modele.filtreChapitres, placement: .navigationBarDrawer(displayMode: .always),
+                        prompt: Text(modele.indicationFiltre, traducteur: traducteur))
+            .autocorrectionDisabled()
+            .navigationTitle(Text(Libelle("siddur_chapitres"), traducteur: traducteur))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .cancel) {
+                        modele.feuilleChapitres = false
+                    }
+                }
+            }
+        }
+        .hauteursDeFeuille([.large])
     }
 }
 

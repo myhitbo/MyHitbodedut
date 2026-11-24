@@ -45,6 +45,8 @@ public struct TikkunVue: View {
             // `finish()` d'Android : le Tikoun dit, l'écran se ferme.
             if fini { fermer() }
         }
+        // L'écran allumé pendant qu'on lit, dix minutes après le dernier toucher (FLECTURE-01).
+        .veilleDeLecture(modele.barre.veille, defilant: modele.barre.defilementAuto.actif)
     }
 
     // MARK: Les mesures

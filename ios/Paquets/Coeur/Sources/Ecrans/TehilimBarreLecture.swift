@@ -2,11 +2,13 @@ import Foundation
 import Observation
 import Coeur
 
-// Le bouton de lecture (ReglagesLecture.kt) de la lecture des Tehilim (TehilimLectureActivity.kt) et du Tikoun
-// (TikkunFlowActivity.kt) : la pastille « Aa », et dépliée, la barre A−, %, A+, lune, police (« אב »), langues
+// Le bouton de lecture (ReglagesLecture.kt) de la lecture des Tehilim (TehilimLectureActivity.kt), du Tikoun
+// (TikkunFlowActivity.kt), de la halakha (HalakhaActivity.kt, le Ben Ish 'Haï compris) et des hilloulot
+// (HilloulotActivity.kt) : la pastille « Aa », et dépliée, la barre A−, %, A+, lune, police (« אב »), langues
 // (« אA »), défilement automatique (DefilementAuto.swift), masquer, replier. Ni nusah ici (`avecNusah` faux sur
-// Android). Les réglages valent pour tous les écrans de lecture : ils vivent dans le `Magasin`, sous les clés
-// d'Android (Reglages.lecture…).
+// Android) ; ni lune ni langues à la halakha et aux hilloulot (`avecNuit` et `avecLangues` faux, comme Android tant
+// que ces écrans n'appliquent ni le fond noir ni les traductions, FLECTURE-11). Les réglages valent pour tous les
+// écrans de lecture : ils vivent dans le `Magasin`, sous les clés d'Android (Reglages.lecture…).
 //
 // Le lecteur du siddour a les mêmes règles dans LectureModele.swift ; celles-ci en sont une copie pour ne
 // dépendre que des fondations et de Coeur. Les deux s'écrivent dans les mêmes clés : un choix fait dans l'un se
@@ -41,11 +43,22 @@ public final class TehilimBarreLecture {
     @ObservationIgnored var surChangement: (@MainActor () -> Void)? = nil
     /// Le défilement automatique : le bouton de la barre, et la commande flottante tant qu'il défile.
     public let defilementAuto: DefilementAuto
+    /// La lune dans la barre (la lecture sur fond noir) ; pas à la halakha ni aux hilloulot.
+    public let avecNuit: Bool
+    /// « אA » dans la barre (les langues du texte) ; pas à la halakha ni aux hilloulot.
+    public let avecLangues: Bool
+    /// L'écran allumé pendant qu'on lit (VeilleLecture.kt, FLECTURE-01) : aux Tehilim et au Tikoun, pas à la
+    /// halakha ni aux hilloulot (Android ne l'y pose pas).
+    public let veille: VeilleLecture
 
-    public init(magasin: Magasin, langue: String) {
+    public init(magasin: Magasin, langue: String, avecNuit: Bool = true, avecLangues: Bool = true) {
         self.magasin = magasin
         self.langue = ChizukCard.language(langue)
+        self.avecNuit = avecNuit
+        self.avecLangues = avecLangues
         defilementAuto = DefilementAuto(magasin: magasin)
+        veille = VeilleLecture(magasin: magasin)
+        barreDepliee = LectureCaptures.barreDepliee
     }
 
     // MARK: Les réglages

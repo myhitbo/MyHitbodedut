@@ -482,9 +482,11 @@ public final class BibliothequeEntreeModele {
     /// L'identifiant de l'entrée (`EXTRA_ID`).
     public let id: String
 
-    /// Le bouton de lecture (taille, fond noir, police, langues), posé sur la page d'une source seulement
-    /// (`barreLectureVisible`).
+    /// Le bouton de lecture (taille, fond noir, police, langues, défilement automatique), posé sur la page d'une
+    /// source seulement (`barreLectureVisible`).
     public let barre: BibliothequeBarreLecture
+    /// L'écran allumé pendant qu'on lit (VeilleLecture.kt, FLECTURE-01), une source comme un article.
+    public let veille: VeilleLecture
 
     public private(set) var etat: BibliothequeEtat = .chargement
     /// Le message à montrer quand l'adresse n'a pu s'ouvrir (le Toast d'Android) ; nil sinon.
@@ -498,6 +500,7 @@ public final class BibliothequeEntreeModele {
         self.langue = ChizukCard.language(langue)
         self.id = id
         barre = BibliothequeBarreLecture(magasin: magasin, langue: langue)
+        veille = VeilleLecture(magasin: magasin)
     }
 
     public func charger() async {
@@ -673,10 +676,12 @@ public final class BibliothequeEntreeModele {
 // MARK: - Le bouton de lecture
 
 /// Le bouton de lecture des textes saints (ReglagesLecture.kt), tel que l'entrée d'une source le pose : la taille
-/// des lettres, la lecture sur fond noir, la police hébraïque, les langues du texte, et le bouton qu'on masque.
+/// des lettres, la lecture sur fond noir, la police hébraïque, les langues du texte, le défilement automatique, et
+/// le bouton qu'on masque.
 ///
 /// Replié, une pastille « Aa » au milieu du bas de l'écran ; déplié, une barre : A−, la taille en pour cent (un
-/// toucher la remet à 100 %), A+, la lune, « אב » (la police), « אA » (les langues), masquer, replier. Masqué,
+/// toucher la remet à 100 %), A+, la lune, « אב » (la police), « אA » (les langues), le défilement automatique
+/// (DefilementAuto.swift : tant qu'il défile, la commande [−] [N] [+] [❚❚] au-dessus), masquer, replier. Masqué,
 /// plus rien : deux touchers sur le texte le font revenir, déplié.
 ///
 /// Les réglages valent pour tous les écrans de lecture : ils vivent dans le `Magasin`, sous les clés d'Android
@@ -697,10 +702,14 @@ public final class BibliothequeBarreLecture {
     public private(set) var deplie = false
     /// Le message du masquage (le Snackbar d'Android, « Bouton masqué… », avec « Annuler ») ; nil sinon.
     public private(set) var messageMasque: Libelle? = nil
+    /// Le défilement automatique : le bouton de la barre, et la commande flottante tant qu'il défile.
+    public let defilementAuto: DefilementAuto
 
     public init(magasin: Magasin, langue: String) {
         self.magasin = magasin
         self.langue = ChizukCard.language(langue)
+        defilementAuto = DefilementAuto(magasin: magasin)
+        deplie = LectureCaptures.barreDepliee
     }
 
     // MARK: Ce que la barre montre
@@ -807,8 +816,10 @@ public final class BibliothequeBarreLecture {
         try await magasin.modifierReglages { $0.setLectureLangues(mode.cle) }
     }
 
-    /// « Masquer le bouton » : plus rien à l'écran, et le message dit comment le retrouver.
+    /// « Masquer le bouton » : plus rien à l'écran, et le message dit comment le retrouver. Le défilement
+    /// automatique s'arrête, comme sur Android (ReglagesLecture.masquer) : sa commande serait restée seule.
     public func masquer() async throws {
+        defilementAuto.arreter()
         deplie = false
         messageMasque = Libelle("lecture_masque_info")
         try await magasin.modifierReglages { $0.setLectureMasquee(true) }

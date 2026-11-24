@@ -217,13 +217,67 @@ extension View {
     func gestesTehilim(_ barre: TehilimBarreLecture) -> some View {
         modifier(TehilimGestesTexte(barre: barre))
     }
+
+    /// Les gestes d'une liste de cartes lue (la halakha, les hilloulot : `suivreDefilement` d'Android, le toucher
+    /// vu par la vue qui défile) : un toucher rend la pastille, deux touchers font revenir le bouton masqué. Les
+    /// boutons des cartes gardent leur toucher ; l'action d'accessibilité est sur la liste (`lectureAvecBarre`).
+    func gestesLecture(_ barre: TehilimBarreLecture) -> some View {
+        contentShape(Rectangle())
+            .onTapGesture(count: 2) {
+                TehilimTache.lancer { try await barre.retrouver() }
+            }
+            .onTapGesture {
+                barre.toucherTexte()
+            }
+    }
+
+    /// Le bouton de lecture d'un écran de cartes qui défile (la halakha, les hilloulot : ReglagesLecture.installer
+    /// avec `avecNuit` et `avecLangues` faux), à poser sur son ScrollView, après `scrollPosition($position)` : le
+    /// défilement automatique, la pastille effacée en descendant, l'action « Réglages de lecture » qui fait revenir
+    /// le bouton masqué, la barre sous le texte et la barre du bas qui suit le masquage.
+    func lectureAvecBarre<Fond: ShapeStyle>(_ barre: TehilimBarreLecture, position: Binding<ScrollPosition>,
+                                            fond: Fond) -> some View {
+        modifier(LectureAvecBarre(barre: barre, position: position, fond: fond))
+    }
+}
+
+/// `lectureAvecBarre`.
+private struct LectureAvecBarre<Fond: ShapeStyle>: ViewModifier {
+    let barre: TehilimBarreLecture
+    @Binding var position: ScrollPosition
+    let fond: Fond
+    @Environment(\.traducteur) private var traducteur
+
+    func body(content: Content) -> some View {
+        content
+            .defilementAutomatique(barre.defilementAuto, position: $position)
+            .onScrollGeometryChange(for: Double.self, of: { geometrie in
+                Double(geometrie.contentOffset.y)
+            }, action: { ancien, nouveau in
+                barre.defilementVertical(nouveau - ancien)
+            })
+            .accessibilityAction(named: Text(Libelle("lecture_reglages"), traducteur: traducteur)) {
+                TehilimTache.lancer { try await barre.retrouver() }
+            }
+            // La barre de lecture sous le texte, jamais sur une ligne.
+            .boutonsDeLecture(fond: fond, visibles: (barre.pastilleVisible && !barre.pastilleEffacee)
+                              || barre.barreVisible || barre.defilementAuto.commandeVisible) {
+                TehilimBarreVue(barre: barre)
+            }
+            .overlay(alignment: .bottom) {
+                if barre.annonceMasque {
+                    TehilimAnnonceMasque(barre: barre)
+                }
+            }
+    }
 }
 
 // MARK: Le bouton de lecture
 
 /// La pastille « Aa » et, dépliée, la barre de lecture (ReglagesLecture.kt), centrées en bas de la zone de texte ;
 /// au-dessus, la commande du défilement automatique tant qu'il défile. La barre se lit toujours de gauche à
-/// droite : A− à gauche, A+ à droite, quelle que soit la langue.
+/// droite : A− à gauche, A+ à droite, quelle que soit la langue. Aux Tehilim et au Tikoun, et sans lune ni langues
+/// à la halakha et aux hilloulot (`avecNuit`, `avecLangues`).
 struct TehilimBarreVue: View {
     let barre: TehilimBarreLecture
     @Environment(\.traducteur) private var traducteur
@@ -285,9 +339,13 @@ struct TehilimBarreVue: View {
             boutonPourcent
             boutonPlus
             filet
-            boutonNuit
+            if barre.avecNuit {
+                boutonNuit
+            }
             menuPolice
-            menuLangues
+            if barre.avecLangues {
+                menuLangues
+            }
             DefilementBouton(defilement: barre.defilementAuto, cote: nil)
             filet
             boutonMasquer

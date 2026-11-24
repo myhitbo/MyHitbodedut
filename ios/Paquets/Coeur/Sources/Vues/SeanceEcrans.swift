@@ -142,8 +142,10 @@ public struct SeanceVue: View {
         .onChange(of: voiceOver, initial: true) { _, actif in
             modele.lecteurEcranChange(actif)
         }
-        .onAppear { UIApplication.shared.isIdleTimerDisabled = modele.garderEcranAllume }
-        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+        // Allumé tant que la séance est montrée ; en partant, l'écran revient à ce que demandent les autres
+        // (EcranAllume : un défilement automatique encore en marche derrière).
+        .onAppear { EcranAllume.garder(modele.garderEcranAllume, pour: "seance") }
+        .onDisappear { EcranAllume.garder(false, pour: "seance") }
     }
 
     /// Le grand chiffre : la durée de la prochaine, le temps qui reste ou le temps écoulé ; rien s'il est masqué.

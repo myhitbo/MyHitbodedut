@@ -207,6 +207,9 @@ public final class HilloulotModele {
     public private(set) var etat: HilloulotEtat = .chargement
     /// Augmente quand la liste doit revenir en haut (« Voir ce jour ») : la vue défile alors au début.
     public private(set) var retourEnHaut = 0
+    /// Le bouton de lecture (ReglagesLecture.installer, `avecNuit` et `avecLangues` faux) : la taille des lettres, la
+    /// police, le défilement automatique, masquer, replier.
+    public let barre: TehilimBarreLecture
 
     /// La table, avec les biographies des mois déjà lus ; nil tant qu'elle se lit.
     private var table: Hilloulot.Table?
@@ -239,6 +242,7 @@ public final class HilloulotModele {
         self.langue = langue
         jour = date ?? horloge.aujourdhui
         self.recherche = recherche ?? ""
+        barre = TehilimBarreLecture(magasin: magasin, langue: langue, avecNuit: false, avecLangues: false)
     }
 
     // MARK: Les réglages

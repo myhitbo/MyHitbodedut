@@ -18,12 +18,17 @@ enum Captures {
 
     /// Les écrans que la CI sait demander, dans l'ordre de ses captures (ios-captures.yml les reprend).
     static let ecrans = [
-        "presentation", "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre", "tehilim",
-        "tikkun", "tefilot", "bibliotheque", "halakha", "hilloulot", "recherche", "chizuk", "conseils", "chemin",
-        "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "apercu", "applications",
-        "dedicace", "journal-barriere", "serenite", "bento", "pile", "fete", "bilan", "calendrier", "boussole",
-        "rappels", "ajout-temps",
+        "presentation", "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre",
+        "chapitres", "tehilim", "tikkun", "tefilot", "bibliotheque", "source", "halakha", "hilloulot", "recherche",
+        "chizuk", "conseils", "chemin", "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol",
+        "musique", "apercu", "applications", "dedicace", "journal-barriere", "serenite", "bento", "pile", "fete",
+        "bilan", "calendrier", "boussole", "rappels", "ajout-temps",
     ]
+
+    /// Un écran de lecture suivi de « -barre » (« halakha-barre », « source-barre », « lecteur-barre »…) : le même,
+    /// sa barre de lecture dépliée (A−, %, A+, …, le défilement automatique) au lieu de la pastille « Aa ». Pas dans
+    /// `ecrans` : à demander à la main (ios-captures.yml, l'entrée « ecrans »).
+    static let suffixeBarre = "-barre"
 
     /// Le plus long livre que le lecteur ouvre : le Kitsour Yalkout Yossef, 1 048 chapitres, 14 390 blocs, 11,5 Mo
     /// de JSON (le Likoutei Moharan : 411 chapitres, 7 057 blocs ; PORTAGE.md § 2.2.9), d'une seule liste paresseuse.
@@ -72,8 +77,13 @@ enum Captures {
                        feuille: Binding<Pardessus?>, plein: Binding<Pardessus?>) async {
         // Les mesures du lancement (« -mesures », Mesures.swift), dès l'apparition de la racine ; sans, rien.
         Mesures.lancement(app)
-        guard let ecran else { return }
+        guard let demande = Captures.ecran else { return }
         UIView.setAnimationsEnabled(false)
+        // « -barre » : la barre de lecture dépliée dès l'ouverture (LectureCaptures).
+        let ecran = demande.hasSuffix(suffixeBarre) ? String(demande.dropLast(suffixeBarre.count)) : demande
+        LectureCaptures.barreDepliee = demande.hasSuffix(suffixeBarre)
+        // La liste des chapitres du plus long livre, ouverte (FLECTURE-03).
+        LectureCaptures.chapitresOuverts = ecran == "chapitres"
         let aujourdhui = app.horloge.aujourdhui
         // L'onglet, et ce qui s'ouvre au-dessus de lui.
         let depart: (Onglet, [Ecran], Pardessus?, Pardessus?)
@@ -93,6 +103,8 @@ enum Captures {
         case "siddour": depart = (.textes, [.siddour], nil, nil)
         case "lecteur": depart = (.textes, [.siddour, .lecture(.siddour("chaharit"))], nil, nil)
         case "livre": depart = (.textes, [.lecture(.livre("likoutei_moharan"))], nil, nil)
+        // La liste filtrable des 1 048 chapitres du plus long livre, ouverte par-dessus le livre.
+        case "chapitres": depart = (.textes, [.lecture(.livre(plusLongLivre))], nil, nil)
         // Le défilement mesuré du plus long livre (MesuresTests, tâche 29) ; pas dans `ecrans` : rien à photographier
         // de plus que « livre ».
         case "plus-long-livre": depart = (.textes, [.lecture(.livre(plusLongLivre))], nil, nil)
@@ -100,6 +112,8 @@ enum Captures {
         case "tikkun": depart = (.textes, [.tikkun], nil, nil)
         case "tefilot": depart = (.textes, [.tefilot], nil, nil)
         case "bibliotheque": depart = (.textes, [.bibliotheque(livresSeuls: false)], nil, nil)
+        // Une source de la bibliothèque (Likoutei Moharan II, 25), son texte et son bouton de lecture.
+        case "source": depart = (.textes, [.bibliotheque(livresSeuls: false), .entree("src-lm2-25")], nil, nil)
         case "halakha": depart = (.textes, [.halakha(recherche: nil)], nil, nil)
         case "hilloulot": depart = (.textes, [.hilloulot(recherche: nil)], nil, nil)
         case "recherche": depart = (.textes, [.recherche], nil, nil)

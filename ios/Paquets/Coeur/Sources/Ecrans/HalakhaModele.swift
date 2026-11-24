@@ -146,6 +146,9 @@ public final class HalakhaModele {
     /// Le texte du champ de recherche.
     public private(set) var recherche: String
     public private(set) var etat: HalakhaEtat = .chargement
+    /// Le bouton de lecture (ReglagesLecture.installer, `avecNuit` et `avecLangues` faux) : la taille des lettres, la
+    /// police, le défilement automatique, masquer, replier.
+    public let barre: TehilimBarreLecture
 
     /// Les deux livres ; nil tant qu'ils se lisent, ou s'ils n'ont pu l'être.
     private var yalkut: YalkutYosef.Livre?
@@ -168,6 +171,7 @@ public final class HalakhaModele {
         self.langue = langue
         jour = date ?? horloge.aujourdhui
         self.recherche = recherche ?? ""
+        barre = TehilimBarreLecture(magasin: magasin, langue: langue, avecNuit: false, avecLangues: false)
     }
 
     // MARK: Les réglages

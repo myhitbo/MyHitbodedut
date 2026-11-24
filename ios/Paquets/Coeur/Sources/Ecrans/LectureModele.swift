@@ -105,8 +105,12 @@ public final class LectureModele {
     public private(set) var annonceMasque = false
     /// La feuille des marque-pages de ce texte est ouverte (le bouton du bandeau).
     public var feuilleMarques = false
+    /// La liste des chapitres d'un long livre est ouverte (le bouton « Chapitres (n) ▾ », FLECTURE-03).
+    public var feuilleChapitres = false
     /// Le défilement automatique : le bouton de la barre, et la commande flottante tant qu'il défile.
     public let defilementAuto: DefilementAuto
+    /// L'écran allumé pendant qu'on lit (VeilleLecture.kt, FLECTURE-01).
+    public let veille: VeilleLecture
 
     public init(magasin: Magasin, contenus: ContenusApp, horloge: any Horloge, langue: String, cible: LectureCible) {
         self.magasin = magasin
@@ -115,6 +119,8 @@ public final class LectureModele {
         self.langue = ChizukCard.language(langue)
         self.cible = cible
         defilementAuto = DefilementAuto(magasin: magasin)
+        veille = VeilleLecture(magasin: magasin)
+        barreDepliee = LectureCaptures.barreDepliee
     }
 
     // MARK: Les mesures (tâche 29)
@@ -144,6 +150,7 @@ public final class LectureModele {
                   position < lignes.count {
             demander(lignes[position].id, anime: false)
         }
+        if LectureCaptures.chapitresOuverts, enChapitres { ouvrirListeChapitres() }
     }
 
     /// Lit le recueil et le texte, puis fait les lignes. Un nusah où le texte manque : `introuvable`.
@@ -507,11 +514,20 @@ public final class LectureModele {
         return rangs.map { tous[$0] }
     }
 
+    /// Le bouton « Chapitres (n) ▾ » : la liste s'ouvre, entière (le filtre vide, comme la boîte de dialogue neuve
+    /// d'Android à chaque toucher). Rien sans liste.
+    public func ouvrirListeChapitres() {
+        guard enChapitres else { return }
+        filtreChapitres = ""
+        feuilleChapitres = true
+    }
+
     /// Un chapitre touché dans la liste : il passe en tête ; la liste se ferme, rien ne reste marqué.
     public func ouvrirChapitre(_ i: Int) {
         guard i >= 0, i < debuts.count else { return }
         choisi = nil
         filtreChapitres = ""
+        feuilleChapitres = false
         demander(lignes[debuts[i]].id, anime: false)
     }
 

@@ -245,24 +245,34 @@ enum BibliothequeIcone {
 // MARK: Le bouton de lecture
 
 /// La pastille « Aa » et, dépliée, la barre de lecture (ReglagesLecture.kt), centrées en bas de la page d'une
-/// source. La barre se lit toujours de gauche à droite : A− à gauche, A+ à droite, quelle que soit la langue.
+/// source ; au-dessus, la commande du défilement automatique tant qu'il défile. La barre se lit toujours de gauche
+/// à droite : A− à gauche, A+ à droite, quelle que soit la langue.
 struct BibliothequeBarreVue: View {
     let barre: BibliothequeBarreLecture
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.accessibilityReduceMotion) private var reduireAnimations
 
     init(barre: BibliothequeBarreLecture) {
         self.barre = barre
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            if barre.pastilleVisible {
-                pastille
+        VStack(spacing: 12) {
+            // Tant que le texte défile tout seul : [−] [N] [+] [❚❚] (DefilementAutoVue.swift).
+            if barre.defilementAuto.commandeVisible {
+                DefilementCommande(defilement: barre.defilementAuto)
+                    .transition(.opacity)
             }
-            if barre.barreVisible {
-                barreDepliee
+            ZStack(alignment: .bottom) {
+                if barre.pastilleVisible {
+                    pastille
+                }
+                if barre.barreVisible {
+                    barreDepliee
+                }
             }
         }
+        .animation(reduireAnimations ? nil : .easeOut(duration: 0.18), value: barre.defilementAuto.commandeVisible)
     }
 
     // MARK: La pastille
@@ -295,6 +305,7 @@ struct BibliothequeBarreVue: View {
             boutonNuit
             menuPolice
             menuLangues
+            DefilementBouton(defilement: barre.defilementAuto, cote: nil)
             filet
             boutonMasquer
             boutonReplier

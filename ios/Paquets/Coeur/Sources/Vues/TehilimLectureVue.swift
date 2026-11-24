@@ -44,6 +44,8 @@ public struct TehilimLectureVue: View {
         .navigationTitle(Text(modele.titre, traducteur: traducteur))
         .navigationBarTitleDisplayMode(.inline)
         .task { await modele.charger() }
+        // L'écran allumé pendant qu'on lit, dix minutes après le dernier toucher (FLECTURE-01).
+        .veilleDeLecture(modele.barre.veille, defilant: modele.barre.defilementAuto.actif)
     }
 
     // MARK: Les mesures

@@ -6,7 +6,7 @@ import Ecrans
 /// Une entrée de la bibliothèque (LibraryEntryActivity.kt, activity_library_entry.xml) : le bandeau sans image (pas
 /// d'image pendant une lecture), puis les paragraphes d'une source, ou la fiche d'un article (résumé, texte
 /// intégral), et le bouton vers Sefaria ou le site. Une source a le bouton de lecture (taille, nuit, police,
-/// langues). Tout se lit dans `BibliothequeEntreeModele`.
+/// langues, défilement automatique). Tout se lit dans `BibliothequeEntreeModele`.
 public struct BibliothequeEntreeVue: View {
     let modele: BibliothequeEntreeModele
 
@@ -17,6 +17,8 @@ public struct BibliothequeEntreeVue: View {
     /// En centièmes : `@ScaledMetric` arrondit sa valeur, et sur 1 il n'avançait que par sauts entiers (la police
     /// restait la même d'une taille du texte à la suivante : l'audit la disait suivie « en partie »).
     @ScaledMetric(relativeTo: .body) private var centiemes: CGFloat = 100
+    /// La place de la page, que le défilement automatique fait avancer.
+    @State private var position = ScrollPosition()
 
     private var dynamique: CGFloat { centiemes / 100 }
 
@@ -30,6 +32,10 @@ public struct BibliothequeEntreeVue: View {
                 contenu
             }
         }
+        .scrollPosition($position)
+        // Le défilement automatique d'une source (LibraryEntryActivity : ReglagesLecture.installer) ; un article n'a
+        // pas de barre, rien ne le lance.
+        .defilementAutomatique(modele.barre.defilementAuto, position: $position)
         .background(Teinte(.paper))
         // Le bouton de lecture sous le texte, jamais sur une ligne (boutonsDeLecture).
         .boutonsDeLecture(fond: Teinte(.paper), visibles: modele.barreLectureVisible) {
@@ -47,6 +53,8 @@ public struct BibliothequeEntreeVue: View {
             // finish() d'Android : l'identifiant ne désigne rien.
             if etat == .introuvable { dismiss() }
         }
+        // L'écran allumé pendant qu'on lit, dix minutes après le dernier toucher (FLECTURE-01).
+        .veilleDeLecture(modele.veille, defilant: modele.barre.defilementAuto.actif)
     }
 
     private var contenu: some View {
