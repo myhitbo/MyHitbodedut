@@ -3,7 +3,7 @@ import XCTest
 /// Les mesures de la tâche 29 (ROADMAP.md : « premier écran en moins de 400 ms, défilement du plus long livre sans
 /// image perdue »), lancées par la CI (ios-interface.yml) sur l'app compilée en Release pour le simulateur. Chaque
 /// mesure s'écrit sur une ligne « MESURE » (nom, valeur, détail), que la CI recopie dans son résumé ; celles
-/// d'XCTest (`measure`) sur les lignes « measured [ … ] » d'xcodebuild.
+/// d'XCTest (`measure`) vont dans le paquet de résultats (.xcresult), que la CI lit avec xcresulttool.
 ///
 /// Le simulateur de la CI tourne sur un Mac Intel virtualisé, sans processeur graphique à lui : ses temps et ses
 /// images perdues ne sont pas ceux d'un iPhone, et XCTest n'y rapporte du défilement que la durée (les accrocs ne
@@ -11,17 +11,23 @@ import XCTest
 /// (la chaîne de mesure cassée) : les seuils du critère se vérifient sur un iPhone (`MesuresTests` y tourne tel
 /// quel, depuis Xcode).
 ///
-/// - **premier écran** : l'app mesure elle-même (« -mesures », App/Mesures.swift) du démarrage de son processus à
-///   la première image de l'accueil, puis à l'accueil prêt (contenus lus, anneaux posés), sur le journal de
-///   démonstration ; `MESURES_LANCEMENTS` lancements, après un lancement à blanc. `XCTApplicationLaunchMetric`
-///   mesure de son côté, du lancement demandé à l'app réactive.
-/// - **défilement du plus long livre** (le Kitsour Yalkout Yossef, `Captures.plusLongLivre`) : l'app compte ses
+/// - **premier écran** : l'app mesure elle-même (« -mesures », App/Mesures.swift) chaque étape de son lancement
+///   depuis le démarrage de son processus, jusqu'à la première image de l'accueil puis à l'accueil prêt (contenus
+///   lus, anneaux posés), sur le journal de démonstration ; `MESURES_LANCEMENTS` lancements, après un lancement à
+///   blanc. `XCTApplicationLaunchMetric` mesure de son côté, du lancement demandé à l'app réactive.
+/// - **le plus long livre** (le Kitsour Yalkout Yossef, `Captures.plusLongLivre`) : son ouverture (lecture du texte,
+///   construction des lignes, première image ; `LectureModele.mesure`), puis son défilement : l'app compte ses
 ///   images (« -mesuresImages », `CompteurImages`) pendant des défilements rapides ; XCTest mesure le même
-///   défilement (`XCTOSSignpostMetric.scrollingAndDecelerationMetric`, `XCTHitchMetric`).
+///   défilement (`XCTOSSignpostMetric.scrollingAndDecelerationMetric`, `XCTHitchMetric`). Les défilements se font
+///   au doigt, par coordonnées : aucune requête de l'arbre d'accessibilité (qui passe par le fil principal de
+///   l'app) ne se mêle à ce qu'on mesure.
 ///
 /// Les fichiers des mesures de l'app vont dans MESURES_DOSSIER (l'app et le test tournent dans le simulateur, qui
 /// écrit dans les fichiers du Mac), sinon dans le dossier temporaire du test.
 final class MesuresTests: XCTestCase {
+
+    /// Les étapes du lancement que l'app écrit (Mesures.etape), dans l'ordre.
+    static let etapes = ["main", "init", "modeles", "premier-ecran", "accueil-pret"]
 
     private var dossier: String {
         ProcessInfo.processInfo.environment["MESURES_DOSSIER"] ?? NSTemporaryDirectory()
@@ -38,8 +44,9 @@ final class MesuresTests: XCTestCase {
     func testPremierEcran() throws {
         let nombre = Int(ProcessInfo.processInfo.environment["MESURES_LANCEMENTS"] ?? "") ?? 8
         aBlanc()
-        var premiers: [Int] = []
-        var prets: [Int] = []
+        // Étape → millisecondes depuis le démarrage, un lancement après l'autre ; et le temps de calcul.
+        var valeurs: [String: [Int]] = [:]
+        var calculs: [String: [Int]] = [:]
         for rang in 1...nombre {
             let fichier = "\(dossier)/lancement-\(rang).tsv"
             try? FileManager.default.removeItem(atPath: fichier)
@@ -47,22 +54,32 @@ final class MesuresTests: XCTestCase {
             app.launchArguments = ["-captureDemo", "-mesures", "-AppleLanguages", "(fr)"]
             app.launchEnvironment["MESURES_FICHIER"] = fichier
             app.launch()
-            let lu = attendre(fichier, que: { $0.contains { $0.first == "accueil-pret" || $0.first == "erreur" } })
+            let lu = attendre(fichier, secondes: 60) { lignes in
+                lignes.contains { $0.first == "accueil-pret" || $0.first == "erreur" }
+            }
             app.terminate()
             for champs in lu where champs.first == "erreur" {
                 XCTFail("lancement \(rang) : \(champs.dropFirst().joined(separator: " "))")
             }
-            guard let premier = valeur(lu, "premier-ecran"), let pret = valeur(lu, "accueil-pret") else {
-                XCTFail("lancement \(rang) : aucune mesure (\(fichier))")
-                continue
+            var detail: [String] = []
+            for etape in Self.etapes {
+                guard let champs = lu.first(where: { $0.first == etape }), champs.count >= 3,
+                      let ms = Int(champs[1]), let cpu = Int(champs[2]) else { continue }
+                valeurs[etape, default: []].append(ms)
+                calculs[etape, default: []].append(cpu)
+                detail.append("\(etape) \(ms) ms (calcul \(cpu) ms)")
             }
-            print("MESURE\tlancement \(rang)\t\(premier) ms\taccueil prêt à \(pret) ms")
-            premiers.append(premier)
-            prets.append(pret)
+            print("MESURE\tlancement \(rang)\t" + detail.joined(separator: ", "))
+            if !lu.contains(where: { $0.first == "accueil-pret" }) {
+                XCTFail("lancement \(rang) : l'accueil prêt n'a pas été mesuré (\(fichier))")
+            }
         }
-        guard !premiers.isEmpty else { return }
-        print("MESURE\tpremier-ecran\t\(Self.mediane(premiers)) ms\t" + Self.etendue(premiers))
-        print("MESURE\taccueil-pret\t\(Self.mediane(prets)) ms\t" + Self.etendue(prets))
+        for etape in Self.etapes {
+            guard let ms = valeurs[etape], !ms.isEmpty else { continue }
+            print("MESURE\t\(etape)\t\(Self.mediane(ms)) ms\tmédiane de \(ms.count) lancements, de \(ms.min() ?? 0) à "
+                  + "\(ms.max() ?? 0) ms ; le premier : \(ms[0]) ms ; temps de calcul médian : "
+                  + "\(Self.mediane(calculs[etape] ?? [])) ms")
+        }
     }
 
     /// `XCTApplicationLaunchMetric` : du lancement demandé à l'app réactive (le fil principal libre), cinq fois.
@@ -78,25 +95,25 @@ final class MesuresTests: XCTestCase {
         }
     }
 
-    // MARK: Le défilement du plus long livre
+    // MARK: Le plus long livre
 
-    /// Le compte des images de l'app pendant douze défilements rapides vers la fin du livre, puis deux vers son début.
+    /// L'ouverture du plus long livre, puis le compte des images de l'app pendant douze défilements rapides vers la
+    /// fin du livre et deux vers son début.
     @MainActor
     func testDefilementImagesPerdues() throws {
         let fichier = "\(dossier)/images.tsv"
-        try? FileManager.default.removeItem(atPath: fichier)
-        let (app, texte) = try ouvrirLePlusLongLivre(fichier: fichier)
-        Thread.sleep(forTimeInterval: 1)
+        let app = try ouvrirLePlusLongLivre(fichier: fichier, images: true)
         let debut = Date().timeIntervalSince1970
-        for _ in 0..<12 { texte.swipeUp(velocity: .fast) }
-        for _ in 0..<2 { texte.swipeDown(velocity: .fast) }
+        for _ in 0..<12 { glisser(app, versLeHaut: true) }
+        for _ in 0..<2 { glisser(app, versLeHaut: false) }
         let fin = Date().timeIntervalSince1970
         Thread.sleep(forTimeInterval: 1)
-        let comptes = Self.lire(fichier).filter { $0.first == "images" }.compactMap { champs -> [Double]? in
+        let lignes = Self.lire(fichier)
+        app.terminate()
+        let comptes = lignes.filter { $0.first == "images" }.compactMap { champs -> [Double]? in
             let nombres = champs.dropFirst().compactMap(Double.init)
             return nombres.count == 5 ? nombres : nil
         }
-        app.terminate()
         guard let avant = comptes.last(where: { $0[0] <= debut }) ?? comptes.first,
               let apres = comptes.first(where: { $0[0] >= fin }) ?? comptes.last, apres[0] > avant[0] else {
             XCTFail("aucun compte d'images (\(fichier))")
@@ -107,21 +124,27 @@ final class MesuresTests: XCTestCase {
         let accrocs = Int(apres[2] - avant[2])
         let perdues = Int(apres[3] - avant[3])
         let tempsAccroc = apres[4] - avant[4]
-        print("MESURE\tdefilement-images-perdues\t\(perdues)\t\(images) images en "
-              + String(format: "%.1f s", duree) + ", \(accrocs) accrocs, "
-              + String(format: "%.0f ms d'accroc, %.1f ms/s", tempsAccroc, tempsAccroc / duree))
+        let blocages = lignes.filter { $0.first == "blocage" && $0.count >= 3 }
+            .compactMap { champs -> (Double, Int)? in
+                guard let t = Double(champs[1]), let ms = Int(champs[2]) else { return nil }
+                return (t, ms)
+            }
+            .filter { $0.0 >= debut && $0.0 <= fin + 1 }
+        print("MESURE\tdefilement-images-perdues\t\(perdues)\t\(images) images en " + String(format: "%.1f s", duree)
+              + ", \(accrocs) accrocs, " + String(format: "%.0f ms d'accroc, %.1f ms/s", tempsAccroc, tempsAccroc / duree)
+              + " ; blocages de plus de 250 ms : \(blocages.count), le plus long \(blocages.map(\.1).max() ?? 0) ms")
     }
 
     /// `XCTOSSignpostMetric.scrollingAndDecelerationMetric` : un défilement rapide, cinq fois (au simulateur, la
     /// durée seule).
     @MainActor
     func testDefilementSignposts() throws {
-        let (app, texte) = try ouvrirLePlusLongLivre(fichier: nil)
+        let app = try ouvrirLePlusLongLivre(fichier: "\(dossier)/signposts.tsv", images: false)
         let options = XCTMeasureOptions()
         options.invocationOptions = [.manuallyStop]
         options.iterationCount = 5
         measure(metrics: [XCTOSSignpostMetric.scrollingAndDecelerationMetric], options: options) {
-            texte.swipeUp(velocity: .fast)
+            glisser(app, versLeHaut: true)
             stopMeasuring()
         }
         app.terminate()
@@ -130,12 +153,12 @@ final class MesuresTests: XCTestCase {
     /// `XCTHitchMetric` (Xcode 26) : les accrocs du même défilement, vus du serveur de rendu.
     @MainActor
     func testDefilementAccrocs() throws {
-        let (app, texte) = try ouvrirLePlusLongLivre(fichier: nil)
+        let app = try ouvrirLePlusLongLivre(fichier: "\(dossier)/accrocs.tsv", images: false)
         let options = XCTMeasureOptions()
         options.invocationOptions = [.manuallyStop]
         options.iterationCount = 5
         measure(metrics: [XCTHitchMetric(application: app)], options: options) {
-            texte.swipeUp(velocity: .fast)
+            glisser(app, versLeHaut: true)
             stopMeasuring()
         }
         app.terminate()
@@ -154,46 +177,46 @@ final class MesuresTests: XCTestCase {
         app.terminate()
     }
 
-    /// Ouvre le plus long livre (« -capture plus-long-livre ») et attend que son texte paraisse ; rend l'app et le
-    /// défilement du texte, le plus grand de l'écran. Avec `fichier`, l'app compte ses images.
+    /// Ouvre le plus long livre (« -capture plus-long-livre ») et attend que l'app dise son texte affiché
+    /// (« lecteur-affiche », sans interroger l'arbre d'accessibilité), puis que ses images reviennent ; écrit ce que
+    /// l'ouverture a pris. Avec `images`, l'app compte ses images.
     @MainActor
-    private func ouvrirLePlusLongLivre(fichier: String?) throws -> (XCUIApplication, XCUIElement) {
+    private func ouvrirLePlusLongLivre(fichier: String, images: Bool) throws -> XCUIApplication {
+        try? FileManager.default.removeItem(atPath: fichier)
         aBlanc()
         let app = XCUIApplication()
-        app.launchArguments = ["-capture", "plus-long-livre", "-captureDemo", "-AppleLanguages", "(fr)"]
-        if let fichier {
-            app.launchArguments += ["-mesures", "-mesuresImages"]
-            app.launchEnvironment["MESURES_FICHIER"] = fichier
-        }
+        app.launchArguments = ["-capture", "plus-long-livre", "-captureDemo", "-mesures", "-AppleLanguages", "(fr)"]
+        if images { app.launchArguments.append("-mesuresImages") }
+        app.launchEnvironment["MESURES_FICHIER"] = fichier
+        let lance = Date()
         app.launch()
-        _ = app.wait(for: .runningForeground, timeout: 20)
-        let debut = Date()
-        var texte: XCUIElement?
-        while texte == nil && Date().timeIntervalSince(debut) < 120 {
-            let defilements = app.scrollViews.allElementsBoundByIndex.filter { $0.exists && !$0.frame.isEmpty }
-            if let grand = defilements.max(by: { $0.frame.height < $1.frame.height }),
-               grand.staticTexts.firstMatch.exists {
-                texte = grand
-            } else {
-                Thread.sleep(forTimeInterval: 1)
-            }
+        let lu = attendre(fichier, secondes: 300) { lignes in lignes.contains { $0.first == "lecteur-affiche" } }
+        guard let pret = lu.first(where: { $0.first == "lecteur-pret" && $0.count >= 5 }),
+              let affiche = lu.first(where: { $0.first == "lecteur-affiche" && $0.count >= 3 }) else {
+            throw Manque(description: "le plus long livre n'a pas été affiché en 300 s (\(fichier))")
         }
-        let ouvert = Date().timeIntervalSince(debut)
-        guard let texte else {
-            throw Manque(description: "le texte du plus long livre n'a pas paru en 120 s")
-        }
-        print("MESURE\touverture-plus-long-livre\t" + String(format: "%.1f s", ouvert)
-              + "\tdu lancement au texte affiché, vu du test")
+        print("MESURE\touverture-plus-long-livre\t\(pret[2]) lignes\tlecture du texte \(pret[3]) ms, construction "
+              + "des lignes \(pret[4]) ms, première image \(affiche[2]) ms après ; "
+              + String(format: "%.1f s", Date().timeIntervalSince(lance)) + " du lancement à l'affichage, vu du test")
         // Le temps que les dernières lignes se posent.
-        Thread.sleep(forTimeInterval: 2)
-        return (app, texte)
+        Thread.sleep(forTimeInterval: 3)
+        return app
     }
 
-    /// Les lignes du fichier, une fois que `que` les accepte (30 s au plus).
-    private func attendre(_ fichier: String, que: ([[String]]) -> Bool) -> [[String]] {
+    /// Un défilement rapide du doigt, au milieu de l'écran, vers le haut (on descend dans le texte) ou vers le bas.
+    @MainActor
+    private func glisser(_ app: XCUIApplication, versLeHaut: Bool) {
+        let bas = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.72))
+        let haut = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+        let (depart, arrivee) = versLeHaut ? (bas, haut) : (haut, bas)
+        depart.press(forDuration: 0.05, thenDragTo: arrivee, withVelocity: .fast, thenHoldForDuration: 0)
+    }
+
+    /// Les lignes du fichier, une fois que `que` les accepte (`secondes` au plus).
+    private func attendre(_ fichier: String, secondes: TimeInterval, que: ([[String]]) -> Bool) -> [[String]] {
         let debut = Date()
         var lu = Self.lire(fichier)
-        while !que(lu) && Date().timeIntervalSince(debut) < 30 {
+        while !que(lu) && Date().timeIntervalSince(debut) < secondes {
             Thread.sleep(forTimeInterval: 0.2)
             lu = Self.lire(fichier)
         }
@@ -206,12 +229,9 @@ final class MesuresTests: XCTestCase {
         return texte.split(separator: "\n").map { $0.split(separator: "\t", omittingEmptySubsequences: false).map(String.init) }
     }
 
-    private func valeur(_ lignes: [[String]], _ nom: String) -> Int? {
-        lignes.first { $0.first == nom }.flatMap { $0.count > 1 ? Int($0[1]) : nil }
-    }
-
     /// La médiane, au demi près (rien n'est arrondi).
     static func mediane(_ valeurs: [Int]) -> String {
+        guard !valeurs.isEmpty else { return "?" }
         let triees = valeurs.sorted()
         let milieu = triees.count / 2
         if triees.count % 2 == 1 { return String(triees[milieu]) }
@@ -222,10 +242,5 @@ final class MesuresTests: XCTestCase {
     /// Une mesure qui manque : la chaîne de mesure est cassée, le test échoue.
     struct Manque: Error, CustomStringConvertible {
         let description: String
-    }
-
-    /// « min … max, n lancements ; le premier : … ».
-    static func etendue(_ valeurs: [Int]) -> String {
-        "de \(valeurs.min() ?? 0) à \(valeurs.max() ?? 0) ms sur \(valeurs.count) lancements ; le premier : \(valeurs.first ?? 0) ms"
     }
 }

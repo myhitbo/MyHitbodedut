@@ -117,6 +117,17 @@ public final class LectureModele {
         defilementAuto = DefilementAuto(magasin: magasin)
     }
 
+    // MARK: Les mesures (tâche 29)
+
+    /// Les mesures de la tâche 29 (App/Mesures.swift, l'app lancée avec « -mesures ») : appelé une fois les lignes
+    /// d'un texte faites, avec ce qu'on a ouvert, le nombre de lignes, les millisecondes de la lecture du texte puis
+    /// celles de la construction des lignes. Nil hors des mesures : rien n'est appelé.
+    public static var mesure: ((LectureCible, Int, Int, Int) -> Void)?
+
+    private nonisolated static func millisecondes(_ debut: Date, _ fin: Date) -> Int {
+        Int((fin.timeIntervalSince(debut) * 1000).rounded())
+    }
+
     // MARK: Le chargement
 
     /// Lit le texte et se place : au marque-page reçu, sinon à la place gardée (Store.positionLecture). À appeler
@@ -137,6 +148,7 @@ public final class LectureModele {
 
     /// Lit le recueil et le texte, puis fait les lignes. Un nusah où le texte manque : `introuvable`.
     private func lire(nusah: Nusah) async {
+        let debut = Date()
         do {
             if cible.livre {
                 let livre = try await contenus.livre(cible.id)
@@ -158,8 +170,12 @@ public final class LectureModele {
                 nusahAffiche = nusah
                 annotations = toutes[cible.id] ?? []
             }
+            let lu = Date()
             etat = .pret
             reconstruire()
+            if let mesure = LectureModele.mesure {
+                mesure(cible, lignes.count, LectureModele.millisecondes(debut, lu), LectureModele.millisecondes(lu, Date()))
+            }
         } catch let erreur as ErreurContenu {
             if case .absent = erreur {
                 etat = .introuvable
