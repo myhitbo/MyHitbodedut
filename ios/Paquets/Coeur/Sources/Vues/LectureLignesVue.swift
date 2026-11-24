@@ -299,7 +299,7 @@ struct LectureBlocVue: View {
         }
         .sensoryFeedback(.impact, trigger: appuis)
         .accessibilityElement(children: .combine)
-        .accessibilityAction(named: Text(Libelle("marques_titre"), traducteur: traducteur)) {
+        .accessibilityAction(named: Text(Libelle("lecture_marque_basculer"), traducteur: traducteur)) {
             basculerMarque()
         }
         .environment(\.layoutDirection, .rightToLeft)

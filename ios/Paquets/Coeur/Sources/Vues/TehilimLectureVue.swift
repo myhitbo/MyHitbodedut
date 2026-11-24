@@ -293,7 +293,7 @@ struct TehilimMarqueVerset: ViewModifier {
             .accessibilityAction {
                 basculer()
             } label: {
-                Text(Libelle("marques_titre"), traducteur: traducteur)
+                Text(Libelle("lecture_marque_basculer"), traducteur: traducteur)
             }
     }
 

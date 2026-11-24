@@ -1,0 +1,30 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSLocationWhenInUseUsageDescription": {
+      "comment": "Texte d'autorisation de l'Info.plist, propre à iOS (App/Services/SystemeLocalisation.swift) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "MyHitbodedut se sert de votre position approximative pour calculer les zmanim et la direction de Jérusalem. Elle reste sur votre iPhone."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "MyHitbodedut uses your approximate location to calculate the zmanim and the direction of Jerusalem. It stays on your iPhone."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "MyHitbodedut משתמשת במיקום המשוער שלך כדי לחשב את הזמנים ואת הכיוון לירושלים. המיקום נשאר באייפון שלך."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -16,10 +16,8 @@ let enChantierSources: [String] = [
 let enChantierTests: [String] = [
 ]
 let enChantierEcrans: [String] = [
-    "PersistanceDepot.swift",
 ]
 let enChantierEcransTests: [String] = [
-    "PersistanceDepotTests.swift",
 ]
 let enChantierVues: [String] = [
 ]

@@ -1,6 +1,30 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "action_ok": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Bouton OK de la durée réglable (accueil, ajout de temps, séance).",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "OK"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "OK"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אישור"
+          }
+        }
+      }
+    },
     "bouclier_autre_reponse": {
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
@@ -45,6 +69,30 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "געו כדי להתחיל את ההתבודדות"
+          }
+        }
+      }
+    },
+    "contenu_illisible": {
+      "comment": "Chaîne propre à iOS (Text(…, tableName: \"ios\")) : à relire par le propriétaire. État d'erreur de la lecture des Tehilim, du Tikoun et des Tfilot.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ce contenu n’a pu être lu."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "This content could not be read."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לא ניתן היה לקרוא את התוכן הזה."
           }
         }
       }
@@ -309,6 +357,318 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "בקרוב"
+          }
+        }
+      }
+    },
+    "ios_chargement": {
+      "comment": "Chaîne propre à iOS (Text(…, tableName: \"ios\")) : à relire par le propriétaire. Annonce de la vue d'attente, pendant la lecture du journal au lancement.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Chargement…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Loading…"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "טוען…"
+          }
+        }
+      }
+    },
+    "lecture_marque_basculer": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Action VoiceOver qui remplace l'appui long sur un paragraphe ou un verset.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Poser ou retirer un marque-page"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Add or remove a bookmark"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הוספה או הסרה של סימנייה"
+          }
+        }
+      }
+    },
+    "reglages_autorisation_temps_ecran": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Temps d’écran"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Screen Time"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "זמן מסך"
+          }
+        }
+      }
+    },
+    "reglages_autorisation_temps_ecran_pourquoi": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pour garder fermées les applications choisies tant que la hitbodedout n’est pas faite. Rien n’est enregistré ni envoyé."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "To keep the apps you chose closed until your hitbodedut is done. Nothing is recorded or sent."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כדי להשאיר סגורות את האפליקציות שבחרת עד שההתבודדות נעשית. דבר אינו נשמר או נשלח."
+          }
+        }
+      }
+    },
+    "reglages_concentration_hint": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS ne laisse pas une application couper les notifications. Créez un mode de concentration « Hitbodedout » qui s’active quand MyHitbodedut est ouverte."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS does not let an app silence notifications. Create a “Hitbodedut” Focus that turns on when MyHitbodedut is open."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS אינו מאפשר לאפליקציה להשתיק התראות. צרו מצב ריכוז „התבודדות” שמופעל כאשר MyHitbodedut פתוחה."
+          }
+        }
+      }
+    },
+    "reglages_divulgation_continuer": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Continuer"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Continue"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "המשך"
+          }
+        }
+      }
+    },
+    "reglages_divulgation_pas_maintenant": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pas maintenant"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Not now"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לא עכשיו"
+          }
+        }
+      }
+    },
+    "reglages_divulgation_texte": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "MyHitbodedut utilise Temps d’écran pour garder fermées, le matin, les applications que vous choisissez, jusqu’à votre hitbodedout. L’application ne voit pas ce que vous ouvrez ; rien ne quitte le téléphone. Vous pouvez couper le mode à tout moment dans les Réglages."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "MyHitbodedut uses Screen Time to keep the apps you choose closed in the morning until your hitbodedut. The app does not see what you open; nothing leaves the phone. You can turn the mode off at any time in Settings."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "MyHitbodedut משתמשת בזמן מסך כדי להשאיר סגורות בבוקר את האפליקציות שבחרת, עד ההתבודדות שלך. האפליקציה אינה רואה מה אתה פותח; דבר אינו יוצא מהטלפון. אפשר לכבות את המצב בכל עת בהגדרות."
+          }
+        }
+      }
+    },
+    "reglages_divulgation_titre": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Accès à Temps d’écran"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Screen Time access"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "גישה לזמן מסך"
+          }
+        }
+      }
+    },
+    "reglages_icone": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Icône de l’application"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "App icon"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "סמל האפליקציה"
+          }
+        }
+      }
+    },
+    "reglages_icone_a_jour": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’icône suit vos couleurs"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The icon matches your colors"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הסמל תואם לצבעים שלך"
+          }
+        }
+      }
+    },
+    "reglages_icone_appliquer": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mettre l’icône aux couleurs choisies"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Match the icon to my colors"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "להתאים את הסמל לצבעים שבחרתי"
+          }
+        }
+      }
+    },
+    "reglages_ok": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Bouton OK de la durée libre des réglages.",
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "OK"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "OK"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אישור"
           }
         }
       }

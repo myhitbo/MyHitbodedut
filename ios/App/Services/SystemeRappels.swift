@@ -26,6 +26,9 @@ final class SystemeRappels: PresentationRappels {
     /// aéroports, comme l'écran du vol les écrit. Lue au premier vol gardé, puis gardée.
     private let lireAeroports: (@Sendable () async throws -> [Vol.Aeroport])?
     private var aeroports: [Vol.Aeroport]?
+    /// Le numéro de la dernière replanification demandée : un plan calculé d'après un état dépassé n'est pas posé
+    /// (deux calculs hors du fil principal peuvent finir dans le désordre ; seul le plus récent compte).
+    private var generation = 0
 
     init(magasin: Magasin, notificateur: SystemeNotificateur, traducteur: Traducteur,
          horloge: any Horloge = HorlogeSysteme(),
@@ -54,6 +57,8 @@ final class SystemeRappels: PresentationRappels {
     /// Le plan d'après ce journal et ces réglages, calculé hors du fil principal (les zmanim de dix jours, les
     /// prochains Chabbat et la Levana), puis posé.
     func replanifier(journal: Journal, reglages: Reglages) async {
+        generation += 1
+        let numero = generation
         let maintenant = horloge.maintenant
         let fuseau = horloge.fuseau
         let formats = VolFormats.langue(traducteur.langue)
@@ -62,6 +67,8 @@ final class SystemeRappels: PresentationRappels {
             SystemeRappels.calculer(journal: journal, reglages: reglages, maintenant: maintenant, fuseau: fuseau,
                                     vol: vol, formats: formats)
         }.value
+        // Une replanification plus récente a été demandée pendant le calcul : c'est elle qui posera.
+        guard numero == generation else { return }
         await notificateur.poser(plan: plan)
     }
 
