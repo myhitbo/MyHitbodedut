@@ -1,0 +1,330 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['examinateur', 'video', 'ecrans-fr', 'versions', 'seance'] | Android 16 API 36
+
+=== examinateur ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  capture exam-01-bienvenue (389583 octets)
+  toucher text='Skip' -> (901,2279)
+  capture exam-03-choix-version (201870 octets)
+  toucher text='Classic' -> (410,534)
+  capture exam-04-today (338408 octets)
+  toucher desc='Settings' -> (954,212)
+  capture exam-05-settings (208740 octets)
+  capture exam-06-carte-etat (219959 octets)
+  toucher text='Preview the “I am with Hashem” screen now' -> (540,1254)
+  capture exam-07-divulgation-affichage (245399 octets)
+  toucher text='Continue' -> (788,1842)
+  photo exam-08-android-affichage-liste (173984 octets)
+  toucher text='MyHitbodedut' -> (359,1361)
+  photo exam-08-android-affichage-interrupteur (119551 octets)
+  photo exam-08-android-affichage-accorde (118938 octets)
+  capture exam-09-retour-reglages (219959 octets)
+  toucher text='Preview the “I am with Hashem” screen now' -> (540,1254)
+  capture exam-10-apercu (275007 octets)
+  capture exam-11-apercu-bas (275007 octets)
+  toucher text='Close the preview' -> (540,2146)
+  capture exam-12-apres-apercu (838958 octets)
+  toucher desc='Settings' -> (954,212)
+  capture exam-13-carte-autorisations (274186 octets)
+  capture exam-14-divulgation-usage (271368 octets)
+  toucher text='Continue' -> (788,1827)
+  photo exam-15-android-usage-liste (118885 octets)
+  toucher text='MyHitbodedut' -> (355,1293)
+  photo exam-15-android-usage-interrupteur (125334 octets)
+  photo exam-15-android-usage-accorde (124798 octets)
+  capture exam-16-autorisations-accordees (269949 octets)
+  capture exam-17-carte-mode (232478 octets)
+  toucher id='enable_switch' -> (922,584)
+  photo exam-17b-notifications (191009 octets)
+  toucher text='Allow' -> (540,1343)
+  toucher text='Choose apps' -> (540,1096)
+  capture exam-18-liste-applications (188291 octets)
+  toucher text='Chrome' -> (545,999)
+  capture exam-19-application-choisie (188220 octets)
+  applications proposees : ['Calendar', 'Camera', 'Chrome', 'Clock', 'Contacts', 'Drive', 'Files', 'Gmail', 'Google', 'Maps', 'Messages', 'Personal Safety', 'Photos', 'SIM Toolkit', 'YouTube', 'YouTube Music']
+  capture exam-20-plage (257702 octets)
+  capture exam-21-etat-arme (213747 octets)
+  services : * ServiceRecord{b01e80f u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  capture exam-22-barriere-reelle (227897 octets)
+  capture exam-23-barriere-reelle-bas (227897 octets)
+  toucher text='Done without the phone' -> (540,2102)
+  capture exam-24-apres-fait (150480 octets)
+  toucher desc='Settings' -> (954,212)
+  capture exam-25-rythme (297605 octets)
+  toucher id='enable_switch' -> (922,630)
+  capture exam-26-mode-coupe (228334 octets)
+  etapes de l'examinateur passees : ['1 (bienvenue)', '2 (choix de la version)', '3 (accueil)', '3 (reglages)', "4 (carte d'etat)", '5 (divulgation)', '7 (apercu)', '8 (autorisations)', "9 (divulgation de l'acces a l'utilisation)", '10 (carte du mode)', '10 (notifications demandees)', '12 (barriere)', '13 (Chabbat)']
+
+=== video seance ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.SYSTEM_ALERT_WINDOW: granted=false, flags=[ USER_SET] | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default; time=+2m37s549ms ago; duration=+16s268ms / GET_USAGE_STATS: default; time=+2m22s286ms ago
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="levana_rappel_soir">DERNIER</string>     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="levana_rappel_soir">DERNIER</string>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="levana_rappel_soir">DERNIER</string>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-seance-1 : debut
+  film video-seance-1 t=4.0 : accueil
+  toucher id='depart_regler' -> (938,2090)
+  film video-seance-1 t=8.6 : volet
+  toucher id='music_button' -> (540,1599)
+  film video-seance-1 t=13.7 : musique
+  toucher id='track_title' -> (482,1695)
+  film video-seance-1 t=20.3 : morceau choisi
+  film video-seance-1 t=25.4 : retour au volet
+  toucher id='start_session' -> (540,2090)
+  film video-seance-1 t=32.0 : seance lancee
+  services : * ServiceRecord{65aa04a u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  (le type lecture de media n'apparait pas dans dumpsys : voir la ligne ci-dessus)
+  photo video-seance-a-en-cours (147313 octets)
+  film video-seance-1 t=41.3 : notification
+  photo video-seance-b-notification (131534 octets)
+  film video-seance-1 t=48.5 : fin
+  film video-seance-1.mp4 (1040002 octets)
+  film video-seance-2 : debut
+  film video-seance-2 t=4.5 : ecran rallume
+  photo video-seance-c-rallume (148249 octets)
+  film video-seance-2 t=8.3 : seance toujours en cours
+  photo video-seance-d-toujours-en-cours (362813 octets)
+  film video-seance-2 t=12.6 : notification apres l'ecran eteint
+  photo video-seance-e-notification (131142 octets)
+  film video-seance-2 t=20.4 : fin
+  film video-seance-2.mp4 (355755 octets)
+  toucher id='session_secondary' -> (540,1431)
+  toucher id='button1' -> (822,1403)
+
+=== video barriere ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.SYSTEM_ALERT_WINDOW: granted=false, flags=[ USER_SET] | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default; time=-4m49s999ms ago; duration=+16s268ms / GET_USAGE_STATS: default; time=-5m5s264ms ago
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" /> </map> 
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">en</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" value="2988507" />     <long name="lieu_t" value="1794800000000" />     <boolean name="in_israel" value="false" />     <string 
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  film video-barriere-1 : debut
+  film video-barriere-1 t=3.5 : accueil
+  toucher desc='Settings' -> (954,212)
+  film video-barriere-1 t=8.6 : reglages
+  film video-barriere-1 t=10.1 : cherche
+  film video-barriere-1 t=12.8 : trouve
+  film video-barriere-1 t=12.8 : cherche
+  film video-barriere-1 t=26.3 : trouve
+  film video-barriere-1 t=26.3 : carte des autorisations : affichage
+  film video-barriere-1 t=33.4 : divulgation : affichage
+  photo video-barriere-1-divulgation (249262 octets)
+  toucher text='Continue' -> (788,1842)
+  film video-barriere-1 t=43.7 : ecran d'Android : affichage
+  toucher text='MyHitbodedut' -> (359,1361)
+  film video-barriere-1 t=58.2 : retour dans l'application : affichage
+  photo video-barriere-1-accorde (274210 octets)
+  film video-barriere-1 t=61.4 : fin
+  film video-barriere-1.mp4 (4001362 octets)
+  film video-barriere-2 : debut
+  film video-barriere-2 t=3.5 : cherche
+  film video-barriere-2 t=9.5 : trouve
+  film video-barriere-2 t=9.5 : carte des autorisations : usage
+  film video-barriere-2 t=16.6 : divulgation : usage
+  photo video-barriere-2-divulgation (254886 octets)
+  toucher text='Continue' -> (788,1827)
+  film video-barriere-2 t=26.9 : ecran d'Android : usage
+  toucher text='MyHitbodedut' -> (355,1293)
+  film video-barriere-2 t=41.4 : retour dans l'application : usage
+  photo video-barriere-2-accorde (267800 octets)
+  film video-barriere-2 t=44.6 : fin
+  film video-barriere-2.mp4 (1611325 octets)
+  film video-barriere-3 : debut
+  film video-barriere-3 t=3.0 : cherche
+  film video-barriere-3 t=23.2 : trouve
+  film video-barriere-3 t=23.2 : carte du mode
+  toucher id='enable_switch' -> (922,479)
+  film video-barriere-3 t=29.8 : mode allume
+  toucher text='Choose apps' -> (540,1122)
+  film video-barriere-3 t=37.3 : liste des applications
+  toucher text='Chrome' -> (545,999)
+  film video-barriere-3 t=44.0 : application choisie : Chrome
+  film video-barriere-3 t=48.5 : cherche
+  film video-barriere-3 t=54.2 : trouve
+  film video-barriere-3 t=54.2 : etat : le mode agit
+  photo video-barriere-3-arme (215820 octets)
+  services : * ServiceRecord{695527b u0 com.myhitbodedut/.GateService c:com.myhitbodedut}
+  film video-barriere-3 t=58.5 : notification du mode
+  photo video-barriere-3-notification (139865 octets)
+  film video-barriere-3 t=68.3 : fin
+  film video-barriere-3.mp4 (3018874 octets)
+  film video-barriere-4 : debut
+  film video-barriere-4 t=4.0 : application ouverte
+  film video-barriere-4 t=14.0 : ecran de garde
+  photo video-barriere-4-ecran (264740 octets)
+  toucher text='Done without the phone' -> (540,2106)
+  film video-barriere-4 t=24.4 : fait sans le telephone
+  photo video-barriere-4-apres (151873 octets)
+  film video-barriere-4 t=36.3 : retour dans MyHitbodedut
+  toucher desc='Settings' -> (954,212)
+  film video-barriere-4 t=41.3 : cherche
+  film video-barriere-4 t=62.5 : trouve
+  film video-barriere-4 t=62.5 : carte du mode, pour couper
+  toucher id='enable_switch' -> (922,755)
+  film video-barriere-4 t=68.6 : mode coupe
+  photo video-barriere-4-coupe (227985 octets)
+  film video-barriere-4 t=72.0 : plus de notification
+  photo video-barriere-4-sans-notification (114171 octets)
+  film video-barriere-4 t=80.3 : fin
+  film video-barriere-4.mp4 (3447932 octets)
+  application neuve : android.permission.POST_NOTIFICATIONS | android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.SYSTEM_ALERT_WINDOW: granted=false, flags=[ USER_SET] | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default; time=+1m15s807ms ago; duration=+10s440ms / GET_USAGE_STATS: default; time=+1m5s737ms ago
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== ecrans-fr ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" val
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  capture fr-gestes-accueil (379501 octets)
+  capture fr-gestes-accueil-bas (275725 octets)
+  toucher id='depart_regler' -> (938,2090)
+  capture fr-gestes-accueil-volet (292742 octets)
+  toucher id='depart_regler' -> (938,2090)
+  toucher id='nav_texts' -> (540,2295)
+  capture fr-gestes-livres (162231 octets)
+  capture fr-gestes-livres-bas (162056 octets)
+  toucher id='nav_journal' -> (900,2295)
+  capture fr-gestes-chemin (118910 octets)
+  capture fr-gestes-chemin-bas (118910 octets)
+  capture fr-gestes-reglages (230198 octets)
+  capture fr-gestes-reglages-bas (299682 octets)
+  capture fr-gestes-choix-version (202584 octets)
+  capture fr-gestes-choix-version-bas (202584 octets)
+  capture fr-gestes-seance (236119 octets)
+  capture fr-gestes-seance-bas (142311 octets)
+  capture fr-gestes-bravo (499871 octets)
+  capture fr-gestes-bravo-bas (499871 octets)
+  capture fr-gestes-journal (20439 octets)
+  capture fr-gestes-journal-bas (20439 octets)
+  capture fr-gestes-parcours (175636 octets)
+  capture fr-gestes-parcours-bas (175636 octets)
+  capture fr-gestes-hizouk (242375 octets)
+  capture fr-gestes-hizouk-bas (242375 octets)
+  capture fr-gestes-conseils (343750 octets)
+  capture fr-gestes-conseils-bas (325455 octets)
+  capture fr-gestes-rappels (162797 octets)
+  capture fr-gestes-rappels-bas (162797 octets)
+  capture fr-gestes-musique (278780 octets)
+  capture fr-gestes-musique-bas (344148 octets)
+  capture fr-gestes-siddour (289668 octets)
+  capture fr-gestes-siddour-bas (206286 octets)
+  capture fr-gestes-siddour-lecture (313888 octets)
+  capture fr-gestes-siddour-lecture-bas (391964 octets)
+  capture fr-gestes-tefilot (330076 octets)
+  capture fr-gestes-tefilot-bas (277228 octets)
+  capture fr-gestes-tehilim (172626 octets)
+  capture fr-gestes-tehilim-bas (125297 octets)
+  capture fr-gestes-tehilim-lecture (289335 octets)
+  capture fr-gestes-tehilim-lecture-bas (256210 octets)
+  capture fr-gestes-tikkun (332106 octets)
+  capture fr-gestes-tikkun-bas (326731 octets)
+  capture fr-gestes-bibliotheque (216174 octets)
+  capture fr-gestes-bibliotheque-bas (216150 octets)
+  capture fr-gestes-livres (372674 octets)
+  capture fr-gestes-livres-bas (326735 octets)
+  capture fr-gestes-source (380004 octets)
+  capture fr-gestes-source-bas (314196 octets)
+  capture fr-gestes-zmanim (275060 octets)
+  capture fr-gestes-zmanim-bas (221305 octets)
+  capture fr-gestes-vol (296536 octets)
+  capture fr-gestes-vol-clavier (315923 octets)
+  capture fr-gestes-vol-bas (281700 octets)
+  capture fr-gestes-boussole (292023 octets)
+  capture fr-gestes-boussole-bas (369669 octets)
+  capture fr-gestes-calendrier (238906 octets)
+  capture fr-gestes-calendrier-bas (275230 octets)
+  capture fr-gestes-halakha (276847 octets)
+  capture fr-gestes-halakha-bas (294406 octets)
+  capture fr-gestes-hilloulot (196152 octets)
+  capture fr-gestes-hilloulot-clavier (215898 octets)
+  capture fr-gestes-hilloulot-bas (178931 octets)
+  capture fr-gestes-recherche (132990 octets)
+  capture fr-gestes-recherche-clavier (132990 octets)
+  capture fr-gestes-recherche-bas (58442 octets)
+  capture fr-gestes-paliers (185084 octets)
+  capture fr-gestes-paliers-bas (173543 octets)
+  capture fr-gestes-applications (205541 octets)
+  capture fr-gestes-applications-bas (196184 octets)
+
+=== versions ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-gestes-version-pile (401322 octets)
+  capture fr-gestes-version-pile-2 (282605 octets)
+  capture fr-gestes-version-pile-3 (241463 octets)
+  capture fr-gestes-version-pile-4 (162735 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-gestes-version-bento (260501 octets)
+  capture fr-gestes-version-bento-bas (246169 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-gestes-version-instant (197429 octets)
+  capture fr-gestes-version-instant-bas (169498 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-gestes-version-serenite (270951 octets)
+  capture fr-gestes-version-serenite-bas (237686 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  navigation : boutons | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-boutons-version-pile (400834 octets)
+  capture fr-boutons-version-pile-2 (282005 octets)
+  capture fr-boutons-version-pile-3 (241088 octets)
+  capture fr-boutons-version-pile-4 (162201 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-boutons-version-bento (258894 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-boutons-version-instant (195062 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  capture fr-boutons-version-serenite (270310 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="chizuk_bag_lieu">shr-10-langue&#10;shr-10-grenier&#10;lm1-52-nuit&#10;tehilim-121-1-2&#10;lm2-11-champs&#10;sh-275-sous-le-talit&#10;sh-275-derriere-un-livre</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <string name="lieu_longitude">2.3488</string>     <long name="lieu_ville" value="2988507" />     <string name="chizuk_bag_ouverture">tehilim-142-3&#10;tehi
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+
+=== seance ===
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  capture gestes-seance-en-cours (149725 octets)
+  services : * ServiceRecord{83b6781 u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  photo gestes-seance-notification (131284 octets)
+  capture gestes-seance-calme (151101 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture gestes-seance-terminer-dialogue (231786 octets)
+  toucher id='button1' -> (676,1340)
+  capture gestes-seance-apres (438407 octets)
+  navigation : boutons | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+  capture boutons-seance-en-cours (147677 octets)
+  services : * ServiceRecord{12f217c u0 com.myhitbodedut/.SessionService c:com.myhitbodedut} |     isForeground=true foregroundId=2 types=0x40000002 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=ONGOING_EVENT|NO_CLEAR|FOREGROUND_SERVICE color=0x00000000 actions=1 vis=PRIVATE)
+  photo boutons-seance-notification (131284 octets)
+  capture boutons-seance-calme (151101 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture boutons-seance-terminer-dialogue (314606 octets)
+  toucher id='button1' -> (676,1340)
+  capture boutons-seance-apres (425564 octets)
+  navigation : gestes | cadres : (128, 2400, None)
+  barres du bas : (aucune)
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 144
