@@ -34,10 +34,10 @@ public enum GrandEcran {
         max(largeur - 2 * bord(largeur: largeur), 0)
     }
 
-    /// La place qu'il faut pour deux colonnes : deux colonnes d'au moins 340 points, la largeur d'un téléphone (370
-    /// sur l'iPhone 17 Pro, sa marge ôtée). L'iPad debout en a de 724 (11 pouces) à 792 (13 pouces), couché de 736
-    /// (13 pouces) à 940 ; l'iPad mini debout n'en a que 648, l'iPad Pro 11 pouces couché 570 (1 210 points de
-    /// large : la marge de values-w1200dp).
+    /// La place qu'il faut pour deux colonnes : deux colonnes de 343 points au moins (l'écart de 14 ôté), la place
+    /// qu'a déjà le plus petit iPhone, SE ou 16e (375 points, sa marge ôtée ; 370 sur l'iPhone 17 Pro). L'iPad
+    /// debout en a de 724 (11 pouces) à 792 (13 pouces), couché de 736 (13 pouces) à 940 ; l'iPad mini debout n'en
+    /// a que 648, l'iPad Pro 11 pouces couché 570 (1 210 points de large : la marge de values-w1200dp).
     public static let placeDeuxColonnes: Double = 700
 
     /// Deux colonnes côte à côte dans cette place (`DeuxColonnes`) : assez large, mais jamais aux tailles

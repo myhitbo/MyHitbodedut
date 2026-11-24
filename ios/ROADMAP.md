@@ -310,11 +310,24 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   plus une ligne, couché comme debout ; les onglets de Sérénité et la grille du calendrier passent au visualiseur
   de grand contenu ; 44 points de toucher partout ; le gris discret prend un quart d'encre et les jours à venir de
   la semaine ne sont plus estompés (contraste). Vues/Accessibilite.swift rassemble ces outils.
+  L'iPad en deux colonnes, quand la place entre les marges en tient deux de 343 points au moins, celle du plus
+  petit iPhone (`GrandEcran.deuxColonnes(place:)`, testé sous Linux : l'iPad debout sauf le mini, couché sauf le
+  Pro 11 pouces, à qui la marge de w1200dp ne laisse que 570 points ; jamais l'iPhone, même couché, ni aux tailles
+  d'accessibilité) : `DeuxColonnes` (Vues/GrandEcranVue.swift, un `Layout` qui lit la largeur proposée, sans état)
+  met côte à côte les deux moitiés de Zmanim (le jour et ses horaires | Levana, hilloula, halakha, réglages), du
+  calendrier (la grille, le jour, Levana, hilloula | halakha, horaires), du Chemin (chiffres et mois | cartes),
+  des réglages (langue, apparence, Zmanim, le mode | rythme et la suite) et de l'accueil Sérénité ; ailleurs, la
+  colonne de toujours, au point près. Le Jour se met aussi en deux colonnes debout sur l'iPad. Chaque colonne est
+  un conteneur d'accessibilité (VoiceOver lit la première, puis la seconde) ; en hébreu, elles s'inversent.
+  Photographié en fr et he sur l'iPad 13 pouces, debout et couché (couché, chaque colonne n'a que 361 points, un
+  peu moins que l'iPhone 17 Pro : « Calendrier » s'y coupe sur deux lignes dans les boutons de Zmanim), et sur
+  l'iPhone, debout et couché, au pixel près comme avant. Les autres écrans gardent une colonne (les Livres et les Tehilim sont déjà
+  des grilles, les textes se lisent sur une colonne).
 - **Reste** : sur le simulateur lent de la CI, l'audit des tailles du texte ne finit pas toujours à temps sur les
   écrans de texte long (le Tikkoun, les trophées, le calendrier, parfois d'autres) : toléré et dit à part, ces
   écrans se voient sur les captures « grand » ; l'audit ne passe qu'en français (les
   captures montrent he et ar) ; le test des libellés dans les trois langues ; les mesures (premier écran,
-  défilement, poids) ; l'iPad n'a de mise en page à deux colonnes qu'au Jour couché.
+  défilement, poids).
 
 ### 30. TestFlight externe, fiche, soumission
 
