@@ -14,7 +14,11 @@ public struct BibliothequeEntreeVue: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     /// Les tailles d'Android, en sp, suivent la taille du texte du téléphone (Dynamic Type) comme le corps du texte.
-    @ScaledMetric(relativeTo: .body) private var dynamique: CGFloat = 1
+    /// En centièmes : `@ScaledMetric` arrondit sa valeur, et sur 1 il n'avançait que par sauts entiers (la police
+    /// restait la même d'une taille du texte à la suivante : l'audit la disait suivie « en partie »).
+    @ScaledMetric(relativeTo: .body) private var centiemes: CGFloat = 100
+
+    private var dynamique: CGFloat { centiemes / 100 }
 
     public init(modele: BibliothequeEntreeModele) {
         self.modele = modele

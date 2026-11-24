@@ -577,14 +577,21 @@ private struct AccueilSemaineVue: View {
         // le jour au début et la marque au bout de chaque case.
         RangeeAdaptable(colonne: .leading, espacement: 6) {
             ForEach(modele.semaine) { jour in
-                Button {
-                    modele.ouvrirJour(jour.date)
-                } label: {
+                if jour.ouvrable {
+                    Button {
+                        modele.ouvrirJour(jour.date)
+                    } label: {
+                        caseDuJour(jour)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text(verbatim: accessibilite(jour)))
+                } else {
+                    // Un jour à venir ne s'ouvre pas : une case, pas un bouton inactif, qu'iOS estompait (Android ne
+                    // l'estompe pas, et le contraste de ses lettres ne suffisait plus).
                     caseDuJour(jour)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(Text(verbatim: accessibilite(jour)))
                 }
-                .buttonStyle(.plain)
-                .disabled(!jour.ouvrable)
-                .accessibilityLabel(Text(verbatim: accessibilite(jour)))
             }
         }
     }

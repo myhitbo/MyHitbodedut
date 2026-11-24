@@ -32,7 +32,20 @@ final class AuditAccessibiliteTests: XCTestCase {
     /// Les audits qui ne finissent pas à temps sur le simulateur de la CI, même seuls et en trois essais : des écrans
     /// de texte long, que l'audit relit à chaque taille du texte. Les captures aux grandes tailles (passe « grand »)
     /// les montrent ; ne s'y ajoute qu'un écran vu ainsi.
-    static let tropLongs: [String: Set<String>] = [:]
+    static let tropLongs: [String: Set<String>] = [
+        // Les dix psaumes du Tikkoun, d'un seul tenant ; la ligne verticale des paliers et leurs trophées dessinés ;
+        // le mois du calendrier et ses horaires : ces trois-là ne finissent pas l'audit des tailles du texte en
+        // 15 s (le 24/11, trois essais chacun). La passe « grand » des captures les montre sans texte coupé
+        // (calendrier, trophées ; le Tikkoun suit `TehilimCommun`, comme les Tehilim, qui passent).
+        "tikkun": ["Dynamic Type", "texte coupé"],
+        "trophees": ["Dynamic Type", "texte coupé"],
+        "calendrier": ["Dynamic Type", "texte coupé"],
+    ]
+
+    /// Les écrans ouverts en demi-feuille (`.medium`) : l'audit y dit « texte coupé » tout ce qui grandit au-delà
+    /// de la demi-hauteur ; leur contenu défile, et la feuille s'ouvre en grand aux tailles d'accessibilité
+    /// (`hauteursDeFeuille`, Vues/Accessibilite.swift).
+    static let demiFeuilles: Set<String> = ["depart", "ajout-temps", "bilan"]
 
     /// Un défaut relevé, et ce qu'on sait de son élément.
     struct Defaut {
@@ -43,6 +56,7 @@ final class AuditAccessibiliteTests: XCTestCase {
         let libelle: String
         let genre: String
         let cadre: CGRect?
+        let actif: Bool?
 
         var ligne: String {
             let position = cadre.map { "\(Int($0.minX)),\(Int($0.minY)),\(Int($0.width)),\(Int($0.height))" } ?? ""
@@ -52,8 +66,11 @@ final class AuditAccessibiliteTests: XCTestCase {
 
     /// Les défauts relevés, une ligne chacun.
     private var defauts: [String] = []
-    /// Le haut et le bas de ce qui se voit de l'écran ouvert, entre ses barres (`zoneVisible`).
+    /// Ce qui se voit de l'écran ouvert : la fenêtre, le haut et le bas entre ses barres (`zoneVisible`), et le
+    /// cadre de chacun de ses défilements.
     private var zone: (haut: CGFloat, bas: CGFloat) = (0, .greatestFiniteMagnitude)
+    private var fenetre: CGRect = .zero
+    private var defilements: [CGRect] = []
 
     @MainActor
     func testChaqueEcranPasseLAudit() throws {
@@ -78,7 +95,11 @@ final class AuditAccessibiliteTests: XCTestCase {
             // L'écran s'ouvre par étapes (Captures.ouvrir) ; les animations d'entrée finissent.
             Thread.sleep(forTimeInterval: 4)
             zone = Self.zoneVisible(app)
-            print("ZONE\t\(ecran)\t\(Int(zone.haut))\t\(Int(zone.bas))")
+            fenetre = app.windows.firstMatch.frame
+            defilements = (app.scrollViews.allElementsBoundByIndex + app.collectionViews.allElementsBoundByIndex
+                           + app.tables.allElementsBoundByIndex)
+                .filter { $0.exists }.map(\.frame).filter { !$0.isEmpty }
+            print("ZONE\t\(ecran)\t\(Int(zone.haut))\t\(Int(zone.bas))\t\(defilements.count) défilement(s)")
             for sorte in Self.sortes {
                 var fini = false
                 for _ in 0..<Self.essais where !fini {
@@ -135,7 +156,7 @@ final class AuditAccessibiliteTests: XCTestCase {
                                     .joined(separator: " ¶ "),
                                 libelle: photo?.label ?? "",
                                 genre: photo.map { String(describing: $0.elementType) } ?? "",
-                                cadre: photo?.frame)
+                                cadre: photo?.frame, actif: photo?.isEnabled)
             if let raison = tolerance(defaut) {
                 print("TOLERE\t" + defaut.ligne + "\t" + raison)
             } else {
@@ -154,9 +175,13 @@ final class AuditAccessibiliteTests: XCTestCase {
             return "le clavier du système, pas l'app"
         }
         // Un bouton inactif : WCAG 1.4.3 n'exige pas de contraste d'un composant inactif ; il s'efface à 38 % comme
-        // sur Android (Material) pour se dire inactif.
-        if d.ecran == "apercu" && d.sorte == "contraste" && d.libelle.hasPrefix("Faire un essai") {
-            return "bouton inactif (Temps d'écran non autorisé) : un composant inactif n'a pas d'exigence de contraste"
+        // sur Android (Material) pour se dire inactif (l'essai de la barrière, le choix des applications sans
+        // l'autorisation de Temps d'écran).
+        if d.sorte == "contraste" && d.actif == false {
+            return "composant inactif : WCAG 1.4.3 n'exige pas de contraste d'un composant inactif"
+        }
+        if d.sorte == "texte coupé" && Self.demiFeuilles.contains(d.ecran) {
+            return "demi-feuille : son contenu défile, et elle s'ouvre en grand aux tailles d'accessibilité"
         }
         // Un élément qui dépasse ce qui se voit de l'écran (sous une barre, ou au-delà du bas, dans un défilement) :
         // l'audit mesure alors la barre ou le bord, pas lui. Le défilement l'amène en entier dans la zone visible.
@@ -164,9 +189,19 @@ final class AuditAccessibiliteTests: XCTestCase {
         // une police fixe, une zone de toucher, une description ou un élément manquant.
         let mesureALImage = d.sorte == "contraste" || d.sorte == "texte coupé"
             || (d.sorte == "Dynamic Type" && d.compact.contains("partially"))
-        if mesureALImage, let cadre = d.cadre, !cadre.isEmpty,
-           cadre.minY < zone.haut - 1 || cadre.maxY > zone.bas + 1 {
+        guard mesureALImage, let cadre = d.cadre, !cadre.isEmpty else { return nil }
+        // Sous la barre du haut, l'effet de bord du défilement d'iOS 26 (un fondu d'une quinzaine de points) estompe
+        // aussi la première ligne.
+        if cadre.minY < zone.haut + 16 || cadre.maxY > zone.bas + 1 {
             return "dépasse la zone visible (\(Int(zone.haut))–\(Int(zone.bas))) : sous une barre ou hors de l'écran, dans un défilement"
+        }
+        if cadre.minX < fenetre.minX - 1 || cadre.maxX > fenetre.maxX + 1 {
+            return "dépasse la fenêtre sur le côté : une page voisine, une bande qui défile de côté"
+        }
+        let centre = CGPoint(x: cadre.midX, y: cadre.midY)
+        if let defilement = defilements.first(where: { $0.contains(centre) }),
+           !defilement.insetBy(dx: -1, dy: -1).contains(cadre) {
+            return "dépasse le cadre de son défilement : le défilement l'amène en entier"
         }
         return nil
     }

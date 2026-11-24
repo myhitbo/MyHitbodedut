@@ -107,7 +107,7 @@ public struct MusiqueVue: View {
     }
 
     private var bibliotheque: some View {
-        LazyVStack(spacing: 0) {
+        VStack(spacing: 0) {
             ForEach(modele.lignes) { ligne in
                 MusiqueLigneVue(ligne: ligne, modele: modele)
                     .padding(.horizontal, 16)

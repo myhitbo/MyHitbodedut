@@ -332,7 +332,11 @@ private struct ChizukTexteAjuste: View {
     let tailleMin: CGFloat
     let hauteur: CGFloat
     let style: Jeton
-    @ScaledMetric(relativeTo: .body) private var dynamique: CGFloat = 1
+    /// En centièmes : `@ScaledMetric` arrondit sa valeur, et sur 1 il n'avançait que par sauts entiers (la police
+    /// restait la même d'une taille du texte à la suivante : l'audit la disait suivie « en partie »).
+    @ScaledMetric(relativeTo: .body) private var centiemes: CGFloat = 100
+
+    private var dynamique: CGFloat { centiemes / 100 }
 
     init(texte: String, police: PoliceHebraique.Police?, tailleMax: CGFloat, tailleMin: CGFloat, hauteur: CGFloat,
          style: Jeton) {

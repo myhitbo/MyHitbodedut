@@ -140,7 +140,6 @@ private struct JournalLigneVue: View {
             }
         }
         .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -334,12 +333,18 @@ public struct ParcoursVue: View {
                         .font(.subheadline)
                         .foregroundStyle(Teinte(.muted))
                 }
-                // Deux tuiles par rangée ; une aux tailles d'accessibilité.
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12),
-                                         count: tailleTexte.isAccessibilitySize ? 1 : 2),
-                          spacing: 12) {
-                    ForEach(modele.tuiles) { tuile in
-                        ParcoursTuileVue(tuile: tuile)
+                // Deux tuiles par rangée ; une aux tailles d'accessibilité. Une grille simple, pas paresseuse.
+                let parRangee = tailleTexte.isAccessibilitySize ? 1 : 2
+                VStack(spacing: 12) {
+                    ForEach(Array(stride(from: 0, to: modele.tuiles.count, by: parRangee)), id: \.self) { debut in
+                        HStack(alignment: .top, spacing: 12) {
+                            ForEach(Array(modele.tuiles[debut..<min(debut + parRangee, modele.tuiles.count)])) { tuile in
+                                ParcoursTuileVue(tuile: tuile)
+                            }
+                            if parRangee == 2 && debut + 1 >= modele.tuiles.count {
+                                Color.clear.frame(maxWidth: .infinity)
+                            }
+                        }
                     }
                 }
                 if let moyenne = modele.moyenne {

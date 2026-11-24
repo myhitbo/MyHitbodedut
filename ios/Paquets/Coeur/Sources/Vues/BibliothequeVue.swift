@@ -103,7 +103,8 @@ public struct BibliothequeVue: View {
     // MARK: La liste
 
     private var liste: some View {
-        LazyVStack(alignment: .leading, spacing: 0) {
+        // Pas paresseuse : une liste courte, dont l'audit d'accessibilité suit chaque ligne quand le texte grandit.
+        VStack(alignment: .leading, spacing: 0) {
             ForEach(modele.lignes) { ligne in
                 BibliothequeLigneVue(ligne: ligne, ouvrir: ouvrir)
             }
@@ -121,7 +122,11 @@ private struct BibliothequeLigneVue: View {
     let ligne: BibliothequeLigne
     let ouvrir: @MainActor (BibliothequeRoute) -> Void
     @Environment(\.traducteur) private var traducteur
-    @ScaledMetric(relativeTo: .body) private var dynamique: CGFloat = 1
+    /// En centièmes : `@ScaledMetric` arrondit sa valeur, et sur 1 il n'avançait que par sauts entiers (la police
+    /// restait la même d'une taille du texte à la suivante : l'audit la disait suivie « en partie »).
+    @ScaledMetric(relativeTo: .body) private var centiemes: CGFloat = 100
+
+    private var dynamique: CGFloat { centiemes / 100 }
 
     init(ligne: BibliothequeLigne, ouvrir: @escaping @MainActor (BibliothequeRoute) -> Void) {
         self.ligne = ligne

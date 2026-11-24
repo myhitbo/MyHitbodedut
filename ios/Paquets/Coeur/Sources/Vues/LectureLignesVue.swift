@@ -114,6 +114,7 @@ struct LectureLigneVue: View {
             // 44 de haut au moins : le texte entier se touche (un toucher rend la pastille), et l'audit
             // d'accessibilité relevait une zone de toucher trop petite.
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .accessibilityElement(children: .combine)
             .padding(.horizontal, 16)
     }
 

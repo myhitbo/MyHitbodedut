@@ -216,7 +216,7 @@ private struct TextesCouvertureVue: View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Text(couverture.titre, traducteur: traducteur)
-                    .policeHebraique(.frank, taille: 20, relativeA: .title3)
+                    .policeHebraique(.frank, taille: 20, gras: true, relativeA: .title3)
                     .minimumScaleFactor(tailleTexte.agrandie ? 1 : 0.55)
                     .lignesAuPlus(2)
                     .multilineTextAlignment(.center)

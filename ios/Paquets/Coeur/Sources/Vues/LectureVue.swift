@@ -324,7 +324,9 @@ private struct LectureBandeSignets: View {
         } label: {
             Text(verbatim: signet.texte)
                 .policeHebraique(modele.police, taille: 13, relativeA: .footnote)
-                .foregroundStyle(actif ? rendu.titre : rendu.discret)
+                // Le signet lu à l'encre du texte (la couleur des titres, sur sa pastille teintée, n'avait pas le
+                // contraste demandé) ; la pastille le distingue.
+                .foregroundStyle(actif ? rendu.texte : rendu.discret)
                 .lineLimit(1)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
