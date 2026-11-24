@@ -292,9 +292,9 @@ public struct AccueilVue: View {
     /// aucun bouton n'a déjà changé la boîte : le contrôle attend la fin du geste en cours.
     private func ouverte(_ genre: AccueilGenreBoite) -> Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in
+        return Binding.passerelle({ @MainActor in
             modele.dialogue.map { AccueilGenreBoite($0) == genre } ?? false
-        }, set: { @MainActor montree in
+        }, { @MainActor montree in
             guard !montree, let boite = modele.dialogue, AccueilGenreBoite(boite) == genre else { return }
             Task { @MainActor in
                 await Task.yield()
@@ -413,9 +413,9 @@ public struct AccueilVue: View {
     private var bilanOuvert: Binding<Bool> {
         let modele = self.modele
         let permis = fichesPermises
-        return Binding(get: { @MainActor in
+        return Binding.passerelle({ @MainActor in
             permis && modele.bilan != nil && modele.fete.ficheCourante == nil
-        }, set: { @MainActor ouvert in
+        }, { @MainActor ouvert in
             if !ouvert {
                 modele.fermerBilan()
             }

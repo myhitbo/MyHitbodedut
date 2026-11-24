@@ -102,8 +102,8 @@ struct LieuChoixModificateur: ViewModifier {
     private var ouvert: Binding<Bool> {
         let modele = self.modele
         let actif = self.actif
-        return Binding(get: { @MainActor in actif && (modele?.dialogueOuvert ?? false) },
-                       set: { @MainActor ouvert in
+        return Binding.passerelle({ @MainActor in actif && (modele?.dialogueOuvert ?? false) },
+                       { @MainActor ouvert in
                            if !ouvert { modele?.dialogueOuvert = false }
                        })
     }

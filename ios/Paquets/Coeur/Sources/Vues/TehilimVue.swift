@@ -67,8 +67,8 @@ public struct TehilimVue: View {
     /// La feuille suit le modèle ; la fermer d'un geste passe par `fermerSignets()`.
     private var feuilleOuverte: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.feuilleSignetsOuverte },
-                       set: { @MainActor _ in modele.fermerSignets() })
+        return Binding.passerelle({ @MainActor in modele.feuilleSignetsOuverte },
+                       { @MainActor _ in modele.fermerSignets() })
     }
 
     private func ouvrirSignetChoisi() {

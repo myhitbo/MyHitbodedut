@@ -339,8 +339,8 @@ private struct TextesLigneInterrupteur: View {
     /// dit rien, comme Android ; le modèle garde la position qu'il a lue.
     private var interrupteur: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.musiqueActive },
-                       set: { @MainActor actif in
+        return Binding.passerelle({ @MainActor in modele.musiqueActive },
+                       { @MainActor actif in
                            Task {
                                do {
                                    try await modele.basculerMusique(actif)

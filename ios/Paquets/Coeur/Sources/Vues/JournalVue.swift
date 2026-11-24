@@ -75,8 +75,8 @@ public struct JournalVue: View {
     /// La feuille suit le modèle ; le geste de retour, quand il est permis, passe par `fermerNote()`.
     private var noteOuverte: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.noteOuverte },
-                       set: { @MainActor ouverte in
+        return Binding.passerelle({ @MainActor in modele.noteOuverte },
+                       { @MainActor ouverte in
                            if !ouverte { modele.fermerNote() }
                        })
     }

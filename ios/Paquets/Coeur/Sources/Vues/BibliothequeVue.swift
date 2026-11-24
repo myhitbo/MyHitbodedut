@@ -59,8 +59,8 @@ public struct BibliothequeVue: View {
     /// La feuille suit le modèle ; la fermer d'un geste passe par `fermerSignets()`.
     private var feuilleOuverte: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.feuilleSignetsOuverte },
-                       set: { @MainActor ouverte in
+        return Binding.passerelle({ @MainActor in modele.feuilleSignetsOuverte },
+                       { @MainActor ouverte in
                            if !ouverte { modele.fermerSignets() }
                        })
     }

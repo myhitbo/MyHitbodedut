@@ -57,8 +57,8 @@ Il n'y a pas de compilateur Swift dans la session de travail : la CI tranche. Li
   `python3 tools/swiftui_papier/declarations.py swiftui/<symbole> --profondeur 3` (la documentation d'Apple).
 - Pièges vus par Xcode 26.6 : `GraphicsContext.Shading.linearGradient`/`radialGradient` prennent un `Gradient`, pas un
   `AnyGradient` ; `alert(item:)` ne prend qu'une `Alert` (pour un dialogue moderne : `alert(_:isPresented:presenting:actions:)`) ;
-  un `Binding<Double>(get:set:)` fait planter le compilateur (thunk `@isolated(any)`) : pour un `Slider`, une copie `@State`
-  tenue à jour par `onChange`.
+  `Binding(get:set:)` à fermetures `@MainActor` fait planter le compilateur (thunk `@isolated(any)`) : écrire
+  `Binding.passerelle({ @MainActor in … }, { @MainActor v in … })` (Vues/Liaison.swift), qui passe par un chemin de clé.
 
 ## Style
 

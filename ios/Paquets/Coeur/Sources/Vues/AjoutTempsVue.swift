@@ -71,8 +71,8 @@ public struct AjoutTempsFenetres: ViewModifier {
     private func ouverte(_ etape: AjoutTempsEtape) -> Binding<Bool> {
         let modele = self.modele
         let fermee = $fermeeParSwiftUI
-        return Binding(get: { @MainActor in modele?.etape == etape && fermee.wrappedValue != etape },
-                       set: { @MainActor montree in
+        return Binding.passerelle({ @MainActor in modele?.etape == etape && fermee.wrappedValue != etape },
+                       { @MainActor montree in
                            if !montree {
                                fermee.wrappedValue = etape
                            }
@@ -188,8 +188,8 @@ public struct AjoutTempsFenetres: ViewModifier {
     }
 
     private func liaisonSaisie(_ modele: AjoutTempsModele) -> Binding<String> {
-        Binding(get: { @MainActor in modele.saisie },
-                set: { @MainActor texte in modele.saisie = texte })
+        Binding.passerelle({ @MainActor in modele.saisie },
+                { @MainActor texte in modele.saisie = texte })
     }
 
     // MARK: Le message bref

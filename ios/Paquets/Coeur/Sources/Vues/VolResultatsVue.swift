@@ -408,8 +408,8 @@ struct VolCarteRappelsVue: View {
     private var interrupteur: Binding<Bool> {
         let modele = self.modele
         let actifs = carte.actifs
-        return Binding(get: { @MainActor in actifs },
-                       set: { @MainActor nouveau in
+        return Binding.passerelle({ @MainActor in actifs },
+                       { @MainActor nouveau in
                            Task.immediate { @MainActor in
                                await modele.basculerRappels(nouveau)
                            }
@@ -549,8 +549,8 @@ struct VolCarteFiabiliteVue: View {
     /// L'interrupteur des services en ligne : il lit la carte et écrit par le modèle, dans le geste même.
     private func interrupteurDirect(_ actif: Bool) -> Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in actif },
-                       set: { @MainActor nouveau in
+        return Binding.passerelle({ @MainActor in actif },
+                       { @MainActor nouveau in
                            Task.immediate { @MainActor in
                                await modele.basculerEnLigne(nouveau)
                            }

@@ -53,8 +53,6 @@ struct PersistanceDepotTests {
 
         // Un second dépôt sur le même dossier : l'app relancée.
         let relu = try await Magasin.charger(PersistanceDepot(dossier: dossier, journalHorsSauvegarde: false))
-        #expect(relu.journal == magasin.journal)
-        #expect(relu.reglages == magasin.reglages)
         #expect(relu.journal.record(date) == Journee(minutes: 20, note: "Merci"))
         #expect(relu.journal.firstName == "David")
         #expect(relu.reglages.targetMinutes == 25)

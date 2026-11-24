@@ -349,8 +349,8 @@ public struct PaliersVue: View {
     /// La fête suit le modèle ; la fermer passe par `fermerFeteGrade()`.
     private var feteOuverte: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.feteGrade != nil },
-                       set: { @MainActor ouverte in
+        return Binding.passerelle({ @MainActor in modele.feteGrade != nil },
+                       { @MainActor ouverte in
                            if !ouverte { modele.fermerFeteGrade() }
                        })
     }

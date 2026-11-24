@@ -80,16 +80,16 @@ public struct HalakhaVue: View {
     /// Le champ : chaque frappe passe au modèle, qui cherche ou revient au jour.
     private var champ: Binding<String> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.recherche },
-                       set: { @MainActor nouveau in modele.chercher(nouveau) })
+        return Binding.passerelle({ @MainActor in modele.recherche },
+                       { @MainActor nouveau in modele.chercher(nouveau) })
     }
 
     /// L'interrupteur, lu dans les réglages. Une écriture qui échoue ne dit rien, comme Store.setHalakhaAffichee :
     /// l'interrupteur revient alors à ce que gardent les réglages.
     private var interrupteur: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.afficheeSurLaCarteDuJour },
-                       set: { @MainActor oui in
+        return Binding.passerelle({ @MainActor in modele.afficheeSurLaCarteDuJour },
+                       { @MainActor oui in
                            Task {
                                do {
                                    try await modele.afficherSurLaCarteDuJour(oui)

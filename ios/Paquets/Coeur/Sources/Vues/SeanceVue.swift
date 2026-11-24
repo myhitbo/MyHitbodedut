@@ -186,8 +186,8 @@ public struct SeanceVue: View {
     /// Un dialogue suit `modele.dialogue` ; le fermer (« Retour », un geste) le remet à nil.
     private func dialogueOuvert(_ dialogue: SeanceDialogue) -> Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.dialogue == dialogue },
-                       set: { @MainActor montre in
+        return Binding.passerelle({ @MainActor in modele.dialogue == dialogue },
+                       { @MainActor montre in
                            if !montre && modele.dialogue == dialogue {
                                modele.dialogue = nil
                            }

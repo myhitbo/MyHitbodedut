@@ -98,20 +98,20 @@ public struct JournalNoteVue: View {
 
     private var liaisonNote: Binding<String> {
         let note = self.note
-        return Binding(get: { @MainActor in note.note },
-                       set: { @MainActor texte in note.modifierNote(texte) })
+        return Binding.passerelle({ @MainActor in note.note },
+                       { @MainActor texte in note.modifierNote(texte) })
     }
 
     private var liaisonGratitude: Binding<String> {
         let note = self.note
-        return Binding(get: { @MainActor in note.gratitude },
-                       set: { @MainActor texte in note.modifierGratitude(texte) })
+        return Binding.passerelle({ @MainActor in note.gratitude },
+                       { @MainActor texte in note.modifierGratitude(texte) })
     }
 
     private var liaisonTravail: Binding<String> {
         let note = self.note
-        return Binding(get: { @MainActor in note.travail },
-                       set: { @MainActor texte in note.modifierTravail(texte) })
+        return Binding.passerelle({ @MainActor in note.travail },
+                       { @MainActor texte in note.modifierTravail(texte) })
     }
 }
 

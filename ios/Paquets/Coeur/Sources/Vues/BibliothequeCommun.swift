@@ -379,8 +379,8 @@ struct BibliothequeBarreVue: View {
     /// Le choix de la police : un sélecteur dans un menu, qui coche la police choisie.
     private var choixPolice: Binding<PoliceHebraique.Police> {
         let barre = self.barre
-        return Binding(get: { @MainActor in barre.police },
-                       set: { @MainActor police in
+        return Binding.passerelle({ @MainActor in barre.police },
+                       { @MainActor police in
                            BibliothequeTache.lancer { try await barre.choisirPolice(police) }
                        })
     }
@@ -388,8 +388,8 @@ struct BibliothequeBarreVue: View {
     /// Le choix des langues du texte, de même.
     private var choixLangues: Binding<LanguesTexte.Mode> {
         let barre = self.barre
-        return Binding(get: { @MainActor in barre.mode },
-                       set: { @MainActor mode in
+        return Binding.passerelle({ @MainActor in barre.mode },
+                       { @MainActor mode in
                            BibliothequeTache.lancer { try await barre.choisirLangues(mode) }
                        })
     }

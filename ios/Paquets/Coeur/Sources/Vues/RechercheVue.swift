@@ -72,8 +72,8 @@ public struct RechercheVue: View {
 
     private var champ: Binding<String> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.texte },
-                       set: { @MainActor nouveau in modele.chercher(nouveau) })
+        return Binding.passerelle({ @MainActor in modele.texte },
+                       { @MainActor nouveau in modele.chercher(nouveau) })
     }
 
     // MARK: La portée

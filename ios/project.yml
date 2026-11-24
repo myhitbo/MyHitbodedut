@@ -13,8 +13,6 @@ targets:
           - Coeur
           - Ecrans
           - Vues
-          # Le constat de Temps d'écran (`Constat`) que l'app rend à l'écran des réglages (App/Services).
-          - Barriere
       - target: Widgets
       - target: Surveillance
       - target: Bouclier

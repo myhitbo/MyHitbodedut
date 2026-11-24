@@ -17,8 +17,8 @@ extension View {
     /// `TropheeTransaction.sansAnimation { … }`.
     public func tropheeFiche(_ fiche: TropheeFiche?, formes: TropheeFormes,
                              fermer: @escaping @MainActor () -> Void) -> some View {
-        fullScreenCover(item: Binding(get: { @MainActor in fiche },
-                                      set: { @MainActor nouvelle in
+        fullScreenCover(item: Binding.passerelle({ @MainActor in fiche },
+                                      { @MainActor nouvelle in
                                           if nouvelle == nil { fermer() }
                                       })) { montree in
             TropheeFicheVue(fiche: montree, formes: formes, fermer: fermer)

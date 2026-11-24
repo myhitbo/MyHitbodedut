@@ -124,20 +124,20 @@ public struct NoteVue: View {
 
     private var liaisonNote: Binding<String> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.texte },
-                       set: { @MainActor nouveau in modele.ecrire(nouveau) })
+        return Binding.passerelle({ @MainActor in modele.texte },
+                       { @MainActor nouveau in modele.ecrire(nouveau) })
     }
 
     private var liaisonGratitude: Binding<String> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.gratitude },
-                       set: { @MainActor nouveau in modele.ecrireGratitude(nouveau) })
+        return Binding.passerelle({ @MainActor in modele.gratitude },
+                       { @MainActor nouveau in modele.ecrireGratitude(nouveau) })
     }
 
     private var liaisonTravail: Binding<String> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.travail },
-                       set: { @MainActor nouveau in modele.ecrireTravail(nouveau) })
+        return Binding.passerelle({ @MainActor in modele.travail },
+                       { @MainActor nouveau in modele.ecrireTravail(nouveau) })
     }
 
     // MARK: Les gestes

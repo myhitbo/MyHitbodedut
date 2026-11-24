@@ -474,11 +474,11 @@ struct VolDialogues: ViewModifier {
     /// L'alerte d'un message est ouverte ; fermée par son « OK », elle ferme le dialogue.
     private var messageOuvert: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in
+        return Binding.passerelle({ @MainActor in
                            if case .message(_)? = modele.dialogue { return true }
                            return false
                        },
-                       set: { @MainActor ouverte in
+                       { @MainActor ouverte in
                            guard !ouverte, case .message(_)? = modele.dialogue else { return }
                            modele.fermerDialogue()
                        })
@@ -488,15 +488,15 @@ struct VolDialogues: ViewModifier {
     /// signale SwiftUI ensuite n'ajoute rien (« Activer et chercher » trouverait sinon le dialogue déjà fermé).
     private var enLigneOuvert: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele.dialogue == .enLigne },
-                       set: { @MainActor _ in })
+        return Binding.passerelle({ @MainActor in modele.dialogue == .enLigne },
+                       { @MainActor _ in })
     }
 
     /// La feuille ouverte. Glissée vers le bas, elle ferme le dialogue s'il est encore le sien.
     private var feuille: Binding<VolFeuilleOuverte?> {
         let modele = self.modele
-        return Binding(get: { @MainActor in VolFeuilleOuverte.de(modele.dialogue) },
-                       set: { @MainActor nouvelle in
+        return Binding.passerelle({ @MainActor in VolFeuilleOuverte.de(modele.dialogue) },
+                       { @MainActor nouvelle in
                            guard nouvelle == nil, VolFeuilleOuverte.de(modele.dialogue) != nil else { return }
                            modele.fermerDialogue()
                        })

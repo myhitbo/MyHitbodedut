@@ -326,10 +326,10 @@ public struct ReglagesVue: View {
     /// le modèle (qui peut ouvrir aussitôt la durée libre) : la fermeture que SwiftUI écrit alors n'a rien à faire.
     private var listeOuverte: Binding<ReglagesListe?> {
         let modele = self.modele
-        return Binding(get: { @MainActor in
+        return Binding.passerelle({ @MainActor in
             if case .choix(let liste)? = modele.dialogue { return liste }
             return nil
-        }, set: { @MainActor nouvelle in
+        }, { @MainActor nouvelle in
             guard nouvelle == nil, case .choix? = modele.dialogue else { return }
             modele.fermerDialogue()
         })
@@ -352,10 +352,10 @@ public struct ReglagesVue: View {
 
     private var heureOuverte: Binding<ReglagesHeureOuverte?> {
         let modele = self.modele
-        return Binding(get: { @MainActor in
+        return Binding.passerelle({ @MainActor in
             if case .heure(let borne)? = modele.dialogue { return ReglagesHeureOuverte(borne: borne) }
             return nil
-        }, set: { @MainActor nouvelle in
+        }, { @MainActor nouvelle in
             guard nouvelle == nil, case .heure? = modele.dialogue else { return }
             modele.fermerDialogue()
         })
@@ -387,14 +387,14 @@ public struct ReglagesVue: View {
     /// « Continuer » attend).
     private var alerteOuverte: Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in
+        return Binding.passerelle({ @MainActor in
             switch modele.dialogue {
             case .dureeLibre?, .prenom?, .divulgationTempsEcran?, .confirmationReinitialisation?:
                 return true
             case .choix?, .heure?, nil:
                 return false
             }
-        }, set: { @MainActor _ in
+        }, { @MainActor _ in
         })
     }
 

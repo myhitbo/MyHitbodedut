@@ -314,9 +314,9 @@ final class ReglagesAiguillage {
     /// route rendue est suivie. Une écriture refusée ne dit rien, comme Store sur Android.
     func liaison(_ interrupteur: ReglagesInterrupteur) -> Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in
+        return Binding.passerelle({ @MainActor in
             modele.estActif(interrupteur)
-        }, set: { @MainActor [self] actif in
+        }, { @MainActor [self] actif in
             Task.immediate { @MainActor in
                 do {
                     let route = try await modele.basculer(interrupteur, actif)

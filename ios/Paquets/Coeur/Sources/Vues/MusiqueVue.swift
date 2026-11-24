@@ -176,9 +176,9 @@ public struct MusiqueVue: View {
 
     /// L'interrupteur de la musique : la séance en cours suit (le modèle le fait).
     private var liaisonMusique: Binding<Bool> {
-        Binding(get: { @MainActor [modele] in
+        Binding.passerelle({ @MainActor [modele] in
             modele.musiqueActive
-        }, set: { @MainActor [modele] oui in
+        }, { @MainActor [modele] oui in
             Task.immediate { @MainActor in
                 await modele.activerMusique(oui)
             }
@@ -187,9 +187,9 @@ public struct MusiqueVue: View {
 
     /// L'interrupteur de la lecture aléatoire.
     private var liaisonAleatoire: Binding<Bool> {
-        Binding(get: { @MainActor [modele] in
+        Binding.passerelle({ @MainActor [modele] in
             modele.aleatoire
-        }, set: { @MainActor [modele] oui in
+        }, { @MainActor [modele] oui in
             Task.immediate { @MainActor in
                 await modele.activerAleatoire(oui)
             }
@@ -230,9 +230,9 @@ public struct MusiqueVue: View {
 
     /// Le dialogue des ambiances : fermé par « Retour », par le geste qui baisse la feuille, ou par un choix.
     private var choixAmbianceOuvert: Binding<Bool> {
-        Binding(get: { @MainActor [modele] in
+        Binding.passerelle({ @MainActor [modele] in
             modele.choixAmbianceOuvert
-        }, set: { @MainActor [modele] ouvert in
+        }, { @MainActor [modele] ouvert in
             if !ouvert {
                 modele.fermerChoixAmbiance()
             }
@@ -244,9 +244,9 @@ public struct MusiqueVue: View {
     /// qui effacerait le dialogue avant que « Enregistrer » ne le lise.
     /// Le dialogue est ouvert tant que le modèle porte un renommage ; ses boutons le ferment par le modèle.
     private var renommageOuvert: Binding<Bool> {
-        Binding(get: { @MainActor [modele] in
+        Binding.passerelle({ @MainActor [modele] in
             modele.renommage != nil
-        }, set: { @MainActor _ in
+        }, { @MainActor _ in
         })
     }
 
