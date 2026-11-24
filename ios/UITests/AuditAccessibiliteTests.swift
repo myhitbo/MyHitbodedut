@@ -159,8 +159,10 @@ final class AuditAccessibiliteTests: XCTestCase {
     /// La raison pour laquelle ce défaut n'en est pas un, ou nil. Chaque règle est étroite : un défaut qu'elle ne
     /// décrit pas exactement compte.
     private func tolerance(_ d: Defaut) -> String? {
-        // Le clavier du système (sa barre de prédictions) : rien de l'app.
-        if d.detail.contains("TUIPredictionViewCell") || d.detail.contains("UIKeyboard") {
+        // Le clavier du système (sa barre de prédictions) : rien de l'app. La recherche s'ouvre clavier levé ; un
+        // UILabel sans élément y est l'une de ses étiquettes.
+        if d.detail.contains("TUIPredictionViewCell") || d.detail.contains("UIKeyboard")
+            || (d.ecran == "recherche" && d.cadre == nil && d.detail.contains("UILabel")) {
             return "le clavier du système, pas l'app"
         }
         // Un bouton inactif : WCAG 1.4.3 n'exige pas de contraste d'un composant inactif ; il s'efface à 38 % comme
