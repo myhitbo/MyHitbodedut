@@ -26,9 +26,10 @@ concurrency:
 
 jobs:
   app:
-    # macos-26-intel : même image (Xcode 26.6, simulateur iOS 26.5) sur x64. Les runners arm64 (macos-26) ne
-    # prenaient plus les travaux le 16/11/2026 (« capacity constraints », annulés après 15 min d'attente).
-    runs-on: macos-26-intel
+    # macos-26 (arm64), comme les iPhone et les Mac Apple Silicon. Sur x64 (macos-26-intel, essayé le 16/11/2026
+    # quand l'arm64 manquait), Swift 6.3.3 plante en IRGen x86_64 sur les Binding(get:set:) à fermetures
+    # @isolated(any) des vues ; l'arm64 les compile.
+    runs-on: macos-26
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +62,7 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
-            -destination "generic/platform=iOS Simulator" CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
+            -destination "id=$SIMULATEUR" CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
           grep -q "BUILD SUCCEEDED" app.log
       - name: Tests de Coeur sur le simulateur
         working-directory: ios/Paquets/Coeur

@@ -441,7 +441,11 @@ struct VolDialogues: ViewModifier {
             }
             .alert(t("vol_en_ligne_titre"), isPresented: enLigneOuvert) {
                 Button {
-                    Task { await modele.confirmerEnLigne() }
+                    // Tout de suite (comme MusiqueVue) : le modèle ferme le dialogue avant que SwiftUI ne relise
+                    // l'alerte, qui ne se rouvre donc pas.
+                    Task.immediate { @MainActor in
+                        await modele.confirmerEnLigne()
+                    }
                 } label: {
                     t("vol_en_ligne_oui")
                 }

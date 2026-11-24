@@ -12,11 +12,12 @@ import Ecrans
 /// Les couleurs que l'écran du vol mêle ou écrit en dur (VolActivity.kt).
 enum VolCouleurs {
 
-    /// `ColorUtils.blendARGB(a, b, part)` d'Android : `part` de `b` dans `a`, composante par composante.
+    /// `ColorUtils.blendARGB(a, b, part)` d'Android : `part` de `b` dans `a`, composante par composante, tronquée
+    /// à l'entier comme le `(int)` d'Android.
     static func melange(_ a: Couleur, _ b: Couleur, part: Double) -> Couleur {
         func canal(_ x: UInt8, _ y: UInt8) -> UInt8 {
             let v = Double(x) * (1 - part) + Double(y) * part
-            return UInt8(min(max(v.rounded(), 0), 255))
+            return UInt8(min(max(v.rounded(.down), 0), 255))
         }
         return Couleur(rouge: canal(a.rouge, b.rouge), vert: canal(a.vert, b.vert), bleu: canal(a.bleu, b.bleu))
     }

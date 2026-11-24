@@ -96,6 +96,7 @@ struct VolCartePriereVue: View {
             Text(message, traducteur: traducteur)
                 .font(.subheadline)
                 .foregroundStyle(Color.white.opacity(225.0 / 255))
+                .padding(.top, 4)
         } else {
             if let compte = carte.compte {
                 Text(compte, traducteur: traducteur)
@@ -107,6 +108,7 @@ struct VolCartePriereVue: View {
                 Text(jusqua, traducteur: traducteur)
                     .font(Font.subheadline.monospacedDigit())
                     .foregroundStyle(Color.white.opacity(215.0 / 255))
+                    .padding(.top, 4)
             }
             if let ecart = carte.ecart {
                 Text(ecart, traducteur: traducteur)
@@ -145,6 +147,7 @@ struct VolCarteFriseVue: View {
                 t("vol_aucun_zman")
                     .font(.subheadline)
                     .foregroundStyle(Teinte(.ink))
+                    .padding(.top, 4)
             } else {
                 if frise.noteRetard {
                     t("vol_frise_retard")
@@ -252,11 +255,13 @@ struct VolLigneFriseVue: View {
                 if let ligneHeures = heures {
                     ligneHeures
                         .font(Font.callout.monospacedDigit())
+                        .padding(.top, 2)
                 }
                 if let detail = point.detail {
                     Text(detail, traducteur: traducteur)
                         .font(.caption)
                         .foregroundStyle(Teinte(.muted))
+                        .padding(.top, 1)
                 }
             }
             .multilineTextAlignment(.leading)
@@ -381,6 +386,7 @@ struct VolCarteRappelsVue: View {
                     Text(verbatim: ligne.heure)
                         .font(Font.footnote.monospacedDigit())
                         .foregroundStyle(Teinte(.ink))
+                        .padding(.top, 2)
                 }
                 .multilineTextAlignment(.leading)
                 .padding(.top, 10)
@@ -485,6 +491,7 @@ struct VolCarteFiabiliteVue: View {
                 VolLien(texte: t("vol_gps_oublier")) {
                     Task { await modele.oublierReleve() }
                 }
+                .frame(maxWidth: .infinity)
             }
             if let direct = carte.direct {
                 suivi(direct)

@@ -126,6 +126,7 @@ struct VolFeuilleAeroport: View {
                         .font(.footnote)
                         .foregroundStyle(Teinte(.muted))
                         .lineLimit(1)
+                        .padding(.top, 2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
