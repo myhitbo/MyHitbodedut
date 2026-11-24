@@ -421,9 +421,9 @@ export function arc(progres, hauteur, jauge, largeur, r, couronne, zones) {
   const pousse = Math.abs(u) ** 0.4;
   const bas = jauge.bas - couronne, hautArc = jauge.haut + couronne;
   const y = bas - Math.max(0, bas - hautArc) * Math.min(1, Math.max(0, hauteur));
-  // Il longe le disque des anneaux (aux quatre cinquièmes visible) jusqu'à trois quarts d'heure de midi, puis glisse derrière.
-  const demi = Math.sqrt(Math.max(0, rayonAnneaux * rayonAnneaux - (y - cy) * (y - cy)));
-  const longe = (demi + 0.6 * r) * Math.min(1, Math.abs(u) / LONGE);
+  // Il longe le disque des anneaux, tout entier dehors, jusqu'à trois quarts d'heure de midi, puis glisse derrière.
+  const loin = rayonAnneaux + r;
+  const longe = Math.sqrt(Math.max(0, loin * loin - (y - cy) * (y - cy))) * Math.min(1, Math.abs(u) / LONGE);
   const ecart = Math.max((u >= 0 ? cx - gauche : droite - cx) * pousse, longe);
   // Sur un écran étroit, le disque s'arrête au bord au lieu d'y disparaître.
   const x = Math.min(largeur - r, Math.max(r, u >= 0 ? cx - ecart : cx + ecart));

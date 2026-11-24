@@ -127,9 +127,10 @@ class CielContinuTest {
     @Test
     fun `l astre ne saute pas d un bord a l autre`() {
         // Le Pixel 6 de la fin du fichier, sans texte à côté des anneaux : l'astre visible, hors du
-        // disque des anneaux, avance d'au plus quelques dp par minute ; 4 dp sous nos latitudes,
-        // le double les jours d'une heure ou deux du grand nord (Tromsø fin novembre), où il
-        // traverse tout son arc en une heure.
+        // disque des anneaux, avance d'au plus 8 dp par minute ; plus vite seulement quand tout son
+        // arc dure une heure ou deux (Tromsø fin novembre), où il glisse derrière les anneaux, vers
+        // midi, en quelques minutes : au plus 2 500 dp par arc entier (3,5 dp par minute un jour de
+        // douze heures).
         val fautes = mutableListOf<String>()
         val cx = (jauge.gauche + jauge.droite) / 2
         val cy = (jauge.haut + jauge.bas) / 2
@@ -151,7 +152,8 @@ class CielContinuTest {
                     val pa = place(a) ?: continue
                     val pb = place(b) ?: continue
                     val pas = hypot(pb[0] - pa[0], pb[1] - pa[1]) / d
-                    if (pas > 8f) fautes += "${l.nom} $jour ${m / 60} h ${m % 60} : ${if (a.estSoleil) "le soleil" else "la lune"} fait %.1f dp".format(pas)
+                    val arcEntier = if (a.estSoleil) abs(b.progresJour - a.progresJour) else abs(b.progresNuit - a.progresNuit)
+                    if (pas > maxOf(8.0, 2500 * arcEntier)) fautes += "${l.nom} $jour ${m / 60} h ${m % 60} : ${if (a.estSoleil) "le soleil" else "la lune"} fait %.1f dp".format(pas)
                 }
             }
         }
