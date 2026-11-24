@@ -1192,6 +1192,167 @@ def main():
         regler({"version_app": ("string", "classique")})
     etape("30 ciel de nuit", s28n)
 
+    # Le defilement automatique des textes (verification du 24/11) : il part de la barre de lecture,
+    # monte a la vitesse choisie (mesuree sur deux captures), change de vitesse en marche, garde la
+    # vitesse d'un ecran et d'un lancement a l'autre, attend quand une autre fenetre passe devant,
+    # garde l'ecran allume, et s'arrete au bouton, au toucher du texte (meme sur une carte qui prend
+    # le toucher pour elle) et au bout du texte ; la barre et la commande en hebreu.
+    def s31():
+        regler({"lecture_sombre": ("boolean", "false"), "lecture_masquee": ("boolean", "false"),
+                "lecture_echelle": ("float", "1.0"), "lecture_defilement_vitesse": ("int", 3),
+                "langue_app": ("string", "fr")})
+        langue("fr")
+        log("  densite :", densite_ecran())
+
+        # Le siddour (une liste recyclee) : vitesse 3, puis 10, puis 1 ; le bouton d'arret.
+        activite("SiddurLectureActivity", "--es id chaharit")
+        pause(2.0)
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        capture("31a-siddour-barre", ok=icone is not None)
+        if icone is None:
+            return
+        touches = touches_commande(icone)
+        log("  commande :", touches)
+        lancer_defilement(icone)
+        photo("31b-siddour-commande-vitesse-3")
+        comparer_vitesse("siddour, vitesse 3", vitesse_mesuree(4.0), vitesse_attendue(3))
+        taper(touches["plus"], 7)
+        photo("31c-siddour-vitesse-10")
+        comparer_vitesse("siddour, vitesse 10", vitesse_mesuree(1.5), vitesse_attendue(10))
+        taper(touches["moins"], 12)
+        photo("31d-siddour-vitesse-1")
+        comparer_vitesse("siddour, vitesse 1 (douze fois moins)", vitesse_mesuree(4.0), vitesse_attendue(1))
+        taper(touches["arret"])
+        pause(1.0)
+        if not immobile():
+            faute("defilement siddour : le bouton d'arret ne l'arrete pas")
+        if trouver(desc="Réglages de lecture") is None or trouver(desc="Arrêter le défilement") is not None:
+            faute("defilement siddour : la pastille n'est pas revenue a l'arret")
+        capture("31e-siddour-arrete")
+        gardee = vitesse_gardee()
+        log("  vitesse gardee :", gardee)
+        if gardee != 1:
+            faute(f"defilement : vitesse gardee {gardee} au lieu de 1")
+
+        # Les Tehilim, application relancee : la vitesse 1 est restee ; une fenetre devant le met en
+        # attente ; un doigt sur un verset (qui garde l'appui long des marque-pages) l'arrete.
+        arreter()
+        activite("TehilimLectureActivity", "--ei debut 119 --ei fin 119")
+        pause(2.0)
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        if icone is None:
+            capture("31f-tehilim", ok=False)
+            return
+        touches = touches_commande(icone)
+        lancer_defilement(icone)
+        photo("31f-tehilim-vitesse-1-gardee")
+        comparer_vitesse("Tehilim, vitesse 1 gardee", vitesse_mesuree(3.0), vitesse_attendue(1))
+        taper(touches["plus"], 2)
+        comparer_vitesse("Tehilim, vitesse 3", vitesse_mesuree(3.0), vitesse_attendue(3))
+        # Le volet des notifications devant : rien ne bouge tant qu'il est la, puis le texte repart.
+        avant = ecran_brut()
+        sh("cmd statusbar expand-notifications")
+        pause(4.0)
+        sh("cmd statusbar collapse")
+        pause(0.3)
+        apres = ecran_brut()
+        if avant and apres:
+            d = montee(avant, apres, int(H * 0.35))
+            attendu = vitesse_attendue(3) * (apres[0] - avant[0])
+            log(f"  volet ouvert {apres[0] - avant[0]:.1f} s : le texte a monte de {d} px ({attendu:.0f} sans attente)")
+            if d is None or d > attendu * 0.5:
+                faute(f"defilement Tehilim : il a continue derriere le volet ({d} px)")
+        comparer_vitesse("Tehilim, reprise apres le volet", vitesse_mesuree(3.0), vitesse_attendue(3))
+        sh(f"input tap {W // 2} {int(H * 0.40)}")
+        pause(1.0)
+        if not immobile():
+            faute("defilement Tehilim : un doigt sur un verset ne l'arrete pas")
+        capture("31g-tehilim-arrete-au-toucher")
+        if trouver(desc="Arrêter le défilement") is not None:
+            faute("defilement Tehilim : la commande reste apres le toucher")
+
+        # Le bout du texte : presque en bas, a la vitesse 10, il s'arrete seul ; la fin se lit au-dessus
+        # de la pastille revenue.
+        for _ in range(30):
+            sh(f"input swipe {W // 2} {int(H * 0.8)} {W // 2} {int(H * 0.2)} 60")
+        pause(1.5)
+        sh(f"input swipe {W // 2} {int(H * 0.35)} {W // 2} {int(H * 0.75)} 300")
+        pause(1.5)
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        if icone is not None:
+            touches = touches_commande(icone)
+            lancer_defilement(icone)
+            taper(touches["plus"], 7)
+            if not attendre_arret(25):
+                faute("defilement Tehilim : il ne s'arrete pas au bout du texte")
+            pause(1.0)
+            capture("31h-tehilim-fin-du-texte")
+            if trouver(desc="Réglages de lecture") is None:
+                faute("defilement Tehilim : pas de pastille au bout du texte")
+            # Revenu a 3 pour la suite.
+            regler({"lecture_defilement_vitesse": ("int", 3)})
+
+        # Les hilloulot : pas de VeilleLecture, et des cartes qui prennent le toucher.
+        activite("HilloulotActivity")
+        pause(2.5)
+        # Deux cartes depliees : le texte depasse alors l'ecran.
+        for _ in range(2):
+            toucher(desc="Lire la suite", contains=True, attente=1.5)
+        sh(f"input swipe {W // 2} {int(H * 0.30)} {W // 2} {int(H * 0.75)} 200")
+        pause(1.0)
+        allume_avant = ecran_garde_allume()
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        racine = dump()
+        carte = None
+        for n in (racine.iter("node") if racine is not None else []):
+            b = bornes(n)
+            if b and n.get("clickable") == "true" and H * 0.30 < (b[1] + b[3]) / 2 < H * 0.60 \
+                    and (b[3] - b[1]) > 120 and ("Lire la suite" in (n.get("content-desc") or "")
+                                                 or "Réduire" in (n.get("content-desc") or "")):
+                carte = b
+                break
+        log("  carte a toucher :", carte, "| ecran allume avant :", allume_avant)
+        if icone is None or carte is None:
+            capture("31i-hilloulot", ok=False)
+            return
+        lancer_defilement(icone)
+        t0 = time.time()
+        allume = ecran_garde_allume()
+        photo("31i-hilloulot-defile")
+        if not allume:
+            faute("defilement hilloulot : l'ecran n'est pas garde allume pendant qu'il defile")
+        # La carte a monte depuis le depart (une seconde avant t0) : on la suit, le temps du toucher compris.
+        y = int((carte[1] + carte[3]) / 2 - vitesse_attendue(3) * (time.time() - t0 + 1.4))
+        log(f"  toucher de la carte a y={y}")
+        sh(f"input tap {W // 2} {y}")
+        pause(1.0)
+        if not immobile():
+            faute("defilement hilloulot : un doigt sur une carte ne l'arrete pas")
+        capture("31j-hilloulot-arrete-sur-une-carte")
+        log("  ecran allume apres l'arret :", ecran_garde_allume())
+
+        # En hebreu, lettres a 150 % : la barre, la commande, la vitesse en lignes ; le bouton d'arret.
+        regler({"lecture_echelle": ("float", "1.5")})
+        langue("he")
+        activite("SiddurLectureActivity", "--es id chaharit")
+        pause(2.0)
+        icone = preparer_defilement("הגדרות קריאה", "גלילה אוטומטית")
+        capture("31k-he-barre", ok=icone is not None)
+        if icone is not None:
+            touches = touches_commande(icone)
+            lancer_defilement(icone)
+            photo("31l-he-commande")
+            comparer_vitesse("hebreu, vitesse 3 a 150 %", vitesse_mesuree(4.0), vitesse_attendue(3, 1.5))
+            taper(touches["arret"])
+            pause(1.0)
+            if not immobile():
+                faute("defilement hebreu : le bouton d'arret ne l'arrete pas")
+            if trouver(desc="הגדרות קריאה") is None:
+                faute("defilement hebreu : la pastille n'est pas revenue a l'arret")
+        regler({"lecture_echelle": ("float", "1.0"), "lecture_defilement_vitesse": ("int", 3)})
+        langue("fr")
+    etape("31 defilement automatique", s31)
+
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
 
@@ -1256,6 +1417,181 @@ def faute(texte):
     """Une faute de mise en page : dans le bilan, et tout de suite au journal."""
     FAUTES.append(texte)
     log("  FAUTE : " + texte)
+
+
+# --- Le defilement automatique (verification du 24/11) ---------------------------------
+# Pendant que le texte defile, uiautomator ne lit pas l'ecran : il attend un ecran immobile (une
+# seconde sans evenement d'accessibilite), et chaque pas en envoie un. On mesure donc sur des
+# captures brutes, et on touche la commande a des places deduites de la barre depliee, lue avant.
+
+def ecran_brut():
+    """L'instant, puis l'ecran en pixels : screencap sans -p (un en-tete de 12 ou 16 octets, puis RGBA)."""
+    t = time.time()
+    b = adb("exec-out", "screencap", binary=True, timeout=60)
+    if len(b) < 16:
+        return None
+    w, h = int.from_bytes(b[0:4], "little"), int.from_bytes(b[4:8], "little")
+    entete = len(b) - w * h * 4
+    if w <= 0 or h <= 0 or entete not in (12, 16):
+        log(f"  screencap brut illisible ({len(b)} octets, {w}x{h})")
+        return None
+    return t, w, h, b[entete:]
+
+
+def empreintes(image):
+    """Une empreinte par ligne de pixels, prise entre 10 et 80 % de la largeur (ni les marges, ni le
+    niveau de lecture du bord droit) ; None pour une ligne presque unie, qui irait avec toute autre."""
+    _, w, h, px = image
+    x0, x1 = int(w * 0.10), int(w * 0.80)
+    lignes = []
+    for y in range(h):
+        rangee = px[(y * w + x0) * 4:(y * w + x1) * 4:12]  # le rouge d'un pixel sur trois
+        lignes.append(hash(rangee) if len(set(rangee)) > 2 else None)
+    return lignes
+
+
+def montee(avant, apres, plus_loin):
+    """De combien de pixels le texte est monte entre deux images : l'ecart d pour lequel le plus de
+    lignes de « apres » (entre 25 et 60 % de la hauteur) valent celles de « avant » d plus bas.
+    None si rien ne s'accorde assez."""
+    a, b = empreintes(avant), empreintes(apres)
+    h = len(a)
+    bas = int(h * 0.60)
+    lignes = [y for y in range(int(h * 0.25), bas) if b[y] is not None]
+    if len(lignes) < 20:
+        log(f"  trop peu de lignes de texte pour mesurer ({len(lignes)})")
+        return None
+    meilleur, score = None, 0
+    for d in range(0, max(1, min(plus_loin, h - bas))):
+        n = sum(1 for y in lignes if a[y + d] == b[y])
+        if n > score:
+            meilleur, score = d, n
+    if score < len(lignes) * 0.5:
+        log(f"  ecart incertain : {score}/{len(lignes)} lignes pour {meilleur} px")
+        return None
+    return meilleur
+
+
+def vitesse_mesuree(duree):
+    """Les pixels par seconde dont le texte monte, sur deux captures brutes a « duree » secondes."""
+    a = ecran_brut()
+    pause(duree)
+    b = ecran_brut()
+    if not a or not b:
+        return None
+    d = montee(a, b, int(a[2] * 0.35))
+    return None if d is None else d / max(0.1, b[0] - a[0])
+
+
+def densite_ecran():
+    m = re.search(r"(\d+)\s*$", sh("wm density").strip())
+    return int(m.group(1)) / 160.0 if m else 2.625
+
+
+def vitesse_attendue(niveau, echelle=1.0):
+    """DefilementAuto.vitesse : 6 dp par seconde fois 1,4^(n-1), fois la taille des lettres, en pixels."""
+    return 6 * 1.4 ** (niveau - 1) * echelle * densite_ecran()
+
+
+def comparer_vitesse(quoi, mesuree, attendue):
+    if mesuree is None:
+        faute(f"defilement {quoi} : vitesse non mesuree")
+        return
+    ecart = abs(mesuree - attendue) / attendue
+    log(f"  vitesse {quoi} : {mesuree:.1f} px/s mesures, {attendue:.1f} attendus ({ecart:.0%} d'ecart)")
+    if ecart > 0.35:
+        faute(f"defilement {quoi} : {mesuree:.1f} px/s au lieu de {attendue:.1f}")
+
+
+def immobile(duree=1.5):
+    """Vrai si le texte n'a pas bouge pendant « duree » secondes."""
+    a = ecran_brut()
+    pause(duree)
+    b = ecran_brut()
+    if not a or not b:
+        return None
+    return montee(a, b, 80) == 0
+
+
+def attendre_arret(au_plus):
+    fin = time.time() + au_plus
+    while time.time() < fin:
+        if immobile(1.0):
+            return True
+    return False
+
+
+def photo(nom):
+    """Une capture sans lire l'ecran (uiautomator ne le lit pas pendant le defilement)."""
+    png = adb("exec-out", "screencap", "-p", binary=True)
+    chemin = os.path.join(OUT, nom + ".png")
+    with open(chemin, "wb") as f:
+        f.write(png)
+    log(f"  capture {chemin} ({len(png)} octets)")
+
+
+def touches_commande(icone_defiler):
+    """Les centres de « moins vite », « plus vite » et « arreter » de la commande du defilement, d'apres
+    le bouton du defilement dans la barre depliee (ReglagesLecture) : la commande a le bas et la hauteur
+    de la barre, elle est centree, et elle aligne 4 dp, « − » (48), la vitesse (40), « + » (48), un filet
+    (1 + 2 x 4), l'icone d'arret (de la largeur de celles de la barre), 4 dp."""
+    x1, y1, x2, y2 = icone_defiler
+    d = densite_ecran()
+
+    def dp(v):
+        return int(v * d + 0.5)
+    icone = x2 - x1
+    largeur = dp(4) + dp(48) + dp(40) + dp(48) + dp(1) + 2 * dp(4) + icone + dp(4)
+    gauche = (W - largeur) // 2
+    y = (y1 + y2) // 2
+    return {
+        "moins": (gauche + dp(4) + dp(48) // 2, y),
+        "plus": (gauche + dp(4) + dp(48) + dp(40) + dp(48) // 2, y),
+        "arret": (gauche + dp(4) + dp(48) + dp(40) + dp(48) + dp(1) + 2 * dp(4) + icone // 2, y),
+    }
+
+
+def taper(xy, fois=1, attente=0.35):
+    for _ in range(fois):
+        sh(f"input tap {xy[0]} {xy[1]}")
+        pause(attente)
+
+
+def vitesse_gardee():
+    m = re.search(r'name="lecture_defilement_vitesse" value="(-?\d+)"', lire_prefs())
+    return int(m.group(1)) if m else None
+
+
+def ecran_garde_allume():
+    """Le drapeau KEEP_SCREEN_ON de la fenetre au premier plan (dumpsys window), None si introuvable."""
+    sortie = sh("dumpsys window windows", timeout=60)
+    m = re.search(r"mCurrentFocus=Window\{(\w+) ", sortie)
+    if not m:
+        log("  fenetre au premier plan introuvable")
+        return None
+    i = sortie.find("Window{" + m.group(1))
+    fin = sortie.find("Window #", i + 10)
+    bloc = sortie[i:fin if fin > 0 else i + 4000]
+    fl = re.search(r"\bfl=([A-Z_0-9 ]+)", bloc)
+    log("  fenetre", bloc.split("\n", 1)[0][:120], "| fl=", fl.group(1).strip() if fl else "?")
+    return "KEEP_SCREEN_ON" in bloc
+
+
+def preparer_defilement(desc_reglages, desc_defiler):
+    """Deplie la barre et rend la place du bouton du defilement, sans le toucher encore."""
+    if not toucher(desc=desc_reglages, attente=1.2):
+        return None
+    b = trouver(desc=desc_defiler)
+    if b is None:
+        journal_ecran("bouton du defilement introuvable")
+    return b
+
+
+def lancer_defilement(icone):
+    x, y = (icone[0] + icone[2]) // 2, (icone[1] + icone[3]) // 2
+    log(f"  defilement lance ({x},{y})")
+    sh(f"input tap {x} {y}")
+    pause(1.0)
 
 # Chaque activite de l'application (AndroidManifest.xml), avec ce qu'il lui
 # faut pour s'ouvrir sur un contenu reel.
