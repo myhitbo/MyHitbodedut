@@ -1,0 +1,144 @@
+paquets installes : ['com.myhitbodedut.debug']
+paquet : com.myhitbodedut.debug
+ecran : 1080 2400
+adb root : restarting adbd as root
+root : True
+debogable : True
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut.debug for user 0 are [fr]
+
+=== 34 ciel du Jour, fond bleu et boutons turquoise ===
+  ecran : 480x854, densite Physical density: 420
+Override density: 240
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <boolean name="in_israel" value="false" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string> </map> 
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  date : Tue Nov 24 06:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-sombre-aube.png (95528 octets)
+  date : Tue Nov 24 12:00:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-sombre-jour.png (84369 octets)
+  date : Tue Nov 24 18:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-sombre-coucher.png (91629 octets)
+  date : Tue Nov 24 21:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-sombre-nuit.png (88262 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">clair</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string> 
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  date : Tue Nov 24 06:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-clair-aube.png (98021 octets)
+  date : Tue Nov 24 12:00:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-clair-jour.png (80076 octets)
+  date : Tue Nov 24 18:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-clair-coucher.png (94303 octets)
+  date : Tue Nov 24 21:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-petit-bleu-he-clair-nuit.png (88638 octets)
+  ecran : 1080x2400, densite Physical density: 420
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string>
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  date : Tue Nov 24 06:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-sombre-aube.png (384481 octets)
+  date : Tue Nov 24 12:00:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-sombre-jour.png (351515 octets)
+  date : Tue Nov 24 18:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-sombre-coucher.png (378128 octets)
+  date : Tue Nov 24 21:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-sombre-nuit.png (371720 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">clair</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string> 
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  date : Tue Nov 24 06:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-clair-aube.png (407376 octets)
+  date : Tue Nov 24 12:00:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-clair-jour.png (341459 octets)
+  date : Tue Nov 24 18:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-clair-coucher.png (393187 octets)
+  date : Tue Nov 24 21:30:00 UTC 2026
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-clair-nuit.png (370051 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <string name="version_app">classique</string>     <string name="langue_app">he</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">sombre</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string>
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-sombre-1459.png (368090 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/34-pixel6-bleu-he-sombre-1459-bas.png (278802 octets)
+  ecran : 1080x2400, densite Physical density: 420
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">auto</string>     <string name="apparence_fond">vert</string>     <string name="apparence_accent">vert</string>     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map>
+  langue : Locales for com.myhitbodedut.debug for user 0 are [fr]
+
+=== 35 ciel continu ===
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string>
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-m-20.png (372341 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-m-12.png (370246 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-m-04.png (360251 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-m+00.png (385698 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-m+03.png (384804 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-m+10.png (367221 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-m+40.png (366566 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-s+40.png (366676 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-s+10.png (374257 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-s+03.png (380255 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-s+00.png (378713 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-s-04.png (361175 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-s-12.png (369700 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-sombre-s-20.png (374038 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">clair</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string> 
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-m-20.png (362955 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-m-12.png (379683 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-m-04.png (358534 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-m+00.png (404088 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-m+03.png (401478 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-m+10.png (385323 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-m+40.png (374436 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-s+40.png (378410 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-s+10.png (382247 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-s+03.png (395173 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-s+00.png (397413 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-s-04.png (359290 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-s-12.png (378293 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-pixel6-clair-s-20.png (368903 octets)
+  ecran : 480x854, densite Physical density: 420
+Override density: 240
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string>
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-m-20.png (88667 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-m-12.png (88660 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-m-04.png (85355 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-m+00.png (94973 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-m+03.png (94699 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-m+10.png (90711 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-m+40.png (90749 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-s+40.png (91288 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-s+10.png (88184 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-s+03.png (90117 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-s+00.png (91180 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-s-04.png (87940 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-s-12.png (88981 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-sombre-s-20.png (88766 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">clair</string>     <string name="langue_app">he</string>     <string name="version_app">classique</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string> 
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-m-20.png (87594 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-m-12.png (88039 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-m-04.png (82883 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-m+00.png (95086 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-m+03.png (95283 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-m+10.png (94191 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-m+40.png (94523 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-s+40.png (93968 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-s+10.png (90959 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-s+03.png (91165 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-s+00.png (91869 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-s-04.png (84723 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-s-12.png (90256 octets)
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-petit-clair-s-20.png (90580 octets)
+  ecran : 1080x2400, densite Physical density: 420
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <string name="version_app">classique</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <string name="apparence_fond">bleu</string>     <string name="apparence_accent">turquoise</string>
+  langue : Locales for com.myhitbodedut.debug for user 0 are [he]
+  rafale 35-rafale-doree : 16 images
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="apparence_accent">turquoise</string>     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_fond">bleu</string>     <string name="version_app">serenite</string> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-serenite-0644.png (202939 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="apparence_accent">turquoise</string>     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_fond">bleu</string>     <string name="version_app">serenite</string> 
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-serenite-1926.png (201182 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="apparence_accent">turquoise</string>     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_fond">bleu</string>     <string name="version_app">instant</string> <
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-instant-1002.png (172999 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <string name="apparence_mode">sombre</string>     <string name="langue_app">he</string>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="apparence_accent">turquoise</string>     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_fond">bleu</string>     <string name="version_app">instant</string> <
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/35-instant-2004.png (152626 octets)
+  ecran : 1080x2400, densite Physical density: 420
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <set name="anneaux_fetes" />     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">PREMIER</string>     <string name="bilan_vu">2026-11-15</string>     <string name="apparence_mode">auto</string>     <string name="apparence_fond">vert</string>     <string name="apparence_accent">vert</string>     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map>
+  langue : Locales for com.myhitbodedut.debug for user 0 are [fr]
+
+captures : ['34-petit-bleu-he-clair-aube.png', '34-petit-bleu-he-clair-coucher.png', '34-petit-bleu-he-clair-jour.png', '34-petit-bleu-he-clair-nuit.png', '34-petit-bleu-he-sombre-aube.png', '34-petit-bleu-he-sombre-coucher.png', '34-petit-bleu-he-sombre-jour.png', '34-petit-bleu-he-sombre-nuit.png', '34-pixel6-bleu-he-clair-aube.png', '34-pixel6-bleu-he-clair-coucher.png', '34-pixel6-bleu-he-clair-jour.png', '34-pixel6-bleu-he-clair-nuit.png', '34-pixel6-bleu-he-sombre-1459-bas.png', '34-pixel6-bleu-he-sombre-1459.png', '34-pixel6-bleu-he-sombre-aube.png', '34-pixel6-bleu-he-sombre-coucher.png', '34-pixel6-bleu-he-sombre-jour.png', '34-pixel6-bleu-he-sombre-nuit.png', '35-instant-1002.png', '35-instant-2004.png', '35-journee-00-0400.png', '35-journee-01-0420.png', '35-journee-02-0440.png', '35-journee-03-0500.png', '35-journee-04-0520.png', '35-journee-05-0540.png', '35-journee-06-0600.png', '35-journee-07-0620.png', '35-journee-08-0640.png', '35-journee-09-0700.png', '35-journee-10-0720.png', '35-journee-11-0740.png', '35-journee-12-0800.png', '35-journee-13-0820.png', '35-journee-14-0840.png', '35-journee-15-0900.png', '35-journee-16-0920.png', '35-journee-17-0940.png', '35-journee-18-1000.png', '35-journee-19-1020.png', '35-journee-20-1040.png', '35-journee-21-1100.png', '35-journee-22-1120.png', '35-journee-23-1140.png', '35-journee-24-1200.png', '35-journee-25-1220.png', '35-journee-26-1240.png', '35-journee-27-1300.png', '35-journee-28-1320.png', '35-journee-29-1340.png', '35-journee-30-1400.png', '35-journee-31-1420.png', '35-journee-32-1440.png', '35-journee-33-1500.png', '35-journee-34-1520.png', '35-journee-35-1540.png', '35-journee-36-1600.png', '35-journee-37-1620.png', '35-journee-38-1640.png', '35-journee-39-1700.png', '35-journee-40-1720.png', '35-journee-41-1740.png', '35-journee-42-1800.png', '35-journee-43-1820.png', '35-journee-44-1840.png', '35-journee-45-1900.png', '35-journee-46-1920.png', '35-journee-47-1940.png', '35-journee-48-2000.png', '35-journee-49-2020.png', '35-journee-50-2040.png', '35-journee-51-2100.png', '35-petit-clair-m+00.png', '35-petit-clair-m+03.png', '35-petit-clair-m+10.png', '35-petit-clair-m+40.png', '35-petit-clair-m-04.png', '35-petit-clair-m-12.png', '35-petit-clair-m-20.png', '35-petit-clair-s+00.png', '35-petit-clair-s+03.png', '35-petit-clair-s+10.png', '35-petit-clair-s+40.png', '35-petit-clair-s-04.png', '35-petit-clair-s-12.png', '35-petit-clair-s-20.png', '35-petit-sombre-m+00.png', '35-petit-sombre-m+03.png', '35-petit-sombre-m+10.png', '35-petit-sombre-m+40.png', '35-petit-sombre-m-04.png', '35-petit-sombre-m-12.png', '35-petit-sombre-m-20.png', '35-petit-sombre-s+00.png', '35-petit-sombre-s+03.png', '35-petit-sombre-s+10.png', '35-petit-sombre-s+40.png', '35-petit-sombre-s-04.png', '35-petit-sombre-s-12.png', '35-petit-sombre-s-20.png', '35-pixel6-clair-m+00.png', '35-pixel6-clair-m+03.png', '35-pixel6-clair-m+10.png', '35-pixel6-clair-m+40.png', '35-pixel6-clair-m-04.png', '35-pixel6-clair-m-12.png', '35-pixel6-clair-m-20.png', '35-pixel6-clair-s+00.png', '35-pixel6-clair-s+03.png', '35-pixel6-clair-s+10.png', '35-pixel6-clair-s+40.png', '35-pixel6-clair-s-04.png', '35-pixel6-clair-s-12.png', '35-pixel6-clair-s-20.png', '35-pixel6-sombre-m+00.png', '35-pixel6-sombre-m+03.png', '35-pixel6-sombre-m+10.png', '35-pixel6-sombre-m+40.png', '35-pixel6-sombre-m-04.png', '35-pixel6-sombre-m-12.png', '35-pixel6-sombre-m-20.png', '35-pixel6-sombre-s+00.png', '35-pixel6-sombre-s+03.png', '35-pixel6-sombre-s+10.png', '35-pixel6-sombre-s+40.png', '35-pixel6-sombre-s-04.png', '35-pixel6-sombre-s-12.png', '35-pixel6-sombre-s-20.png', '35-rafale-doree-00.png', '35-rafale-doree-01.png', '35-rafale-doree-02.png', '35-rafale-doree-03.png', '35-rafale-doree-04.png', '35-rafale-doree-05.png', '35-rafale-doree-06.png', '35-rafale-doree-07.png', '35-rafale-doree-08.png', '35-rafale-doree-09.png', '35-rafale-doree-10.png', '35-rafale-doree-11.png', '35-rafale-doree-12.png', '35-rafale-doree-13.png', '35-rafale-doree-14.png', '35-rafale-doree-15.png', '35-serenite-0644.png', '35-serenite-1926.png', 'accessibilite.txt', 'journal.txt']
