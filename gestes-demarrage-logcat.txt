@@ -1,0 +1,5 @@
+11-24 13:59:30.372   542   601 D SystemServerTimingAsync: InitThreadPoolExec:Update app-ops uidState in case package com.myhitbodedut changed
+11-24 13:59:30.372   542   601 D SystemServerInitThreadPool: Started executing Update app-ops uidState in case package com.myhitbodedut changed
+11-24 13:59:30.380   542   601 D SystemServerInitThreadPool: Finished executing Update app-ops uidState in case package com.myhitbodedut changed
+11-24 13:59:30.380   542   601 V SystemServerTimingAsync: InitThreadPoolExec:Update app-ops uidState in case package com.myhitbodedut changed took to complete: 7ms
+11-24 13:59:30.918   542   542 V StorageManagerService: Package com.myhitbodedut does not have legacy storage

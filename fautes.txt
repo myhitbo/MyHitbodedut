@@ -1,0 +1,1 @@
+gestes : BARRIERE apres un redemarrage, l'ecran de garde ne se pose pas sur com.android.chrome [horloge 2026-11-17 09:30 2]
