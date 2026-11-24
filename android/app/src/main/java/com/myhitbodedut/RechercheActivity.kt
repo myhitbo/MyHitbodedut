@@ -72,6 +72,9 @@ class RechercheActivity : AppCompatActivity() {
         })
         liste = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         contenu.addView(liste)
+        // L'index des livres s'écrit pendant qu'on tape, une fois par version de l'application (24/11).
+        val c = applicationContext
+        fil.execute { IndexLivres.pret(c) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -103,13 +106,18 @@ class RechercheActivity : AppCompatActivity() {
                 val r = runCatching {
                     // Seules les sources de la portée se chargent : « Hilloulot » ne lit pas les douze livres.
                     val s = ou.sortes
+                    // Les livres se cherchent dans leur index, écrit une fois (24/11) ; sans index, relus comme avant.
+                    val indexes: ((String) -> List<RechercheGlobale.Resultat>)? =
+                        if (RechercheGlobale.Sorte.LIVRE in s && IndexLivres.pret(c) != null) {
+                            { q -> IndexLivres.chercher(c, q, langue) { n != demande }.orEmpty() }
+                        } else null
                     RechercheGlobale.chercher(texte, langue,
                         if (RechercheGlobale.Sorte.SIDDOUR in s) Data.siddur(c) else Siddur(emptyList(), emptyList()),
-                        if (RechercheGlobale.Sorte.LIVRE in s) Data.livres(c) else null,
+                        if (RechercheGlobale.Sorte.LIVRE in s && indexes == null) Data.livres(c) else null,
                         if (RechercheGlobale.Sorte.HALAKHA in s) YalkutYosef.livre(c) else null,
                         if (RechercheGlobale.Sorte.HALAKHA in s) Halakha.livre(c) else null,
                         if (RechercheGlobale.Sorte.HILLOULA in s) Hilloulot.table(c) else null,
-                        ou, annule = { n != demande })
+                        ou, annule = { n != demande }, livresIndexes = indexes)
                 }.getOrDefault(emptyList())
                 principal.post { if (n == demande && !isFinishing) afficher(texte, r) }
             }

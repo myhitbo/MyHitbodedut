@@ -125,7 +125,7 @@ class BoussoleActivity : AppCompatActivity(), SensorEventListener {
         val gc = DirectionJerusalem.grandCercle(lieu.latitude, lieu.longitude)
         val rh = DirectionJerusalem.carte(lieu.latitude, lieu.longitude)
         val points = resources.getStringArray(R.array.boussole_points)
-        val km = NumberFormat.getIntegerInstance(Locale.forLanguageTag(ChizukCard.language(this)))
+        val km = NumberFormat.getIntegerInstance(Chiffres.locale(ChizukCard.language(this)))
             .format(Math.round(DirectionJerusalem.distanceKm(lieu.latitude, lieu.longitude)))
         contenu.addView(VueJour.carte(this).apply {
             // Celle que suit le hassid en premier, en vert et en gras ; l'autre dessous.

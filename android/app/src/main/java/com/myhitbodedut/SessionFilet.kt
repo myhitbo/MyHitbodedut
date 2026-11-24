@@ -35,7 +35,7 @@ class SessionFiletReceiver : BroadcastReceiver() {
 
         /** Pose le filet au terme de la séance inscrite ; le retire s'il n'y a pas de terme. */
         fun poser(context: Context) {
-            val fin = Store.sessionEndsAt(context)
+            val fin = Store.sessionFinMurale(context)
             if (fin <= 0L || Store.isSessionOpen(context)) {
                 annuler(context)
                 return

@@ -1731,6 +1731,7 @@
     <string name="version_tous_zmanim">الزمانيم الكل</string>
     <string name="version_journal_vide">مازال ما كتبت شي. بعد هتبوديدوت، سطر واحد يكفي.</string>
     <string name="version_note_sans_texte">بلا ملاحظة.</string>
+    <string name="version_note_ecrite">فما ملاحظة، تقراها في اليومية.</string>
     <string name="version_ecrire_note">أكتب ملاحظة النهار</string>
     <string name="version_tout_journal">اليومية الكل</string>
     <string name="version_parcours">الطريق متاعي</string>
@@ -1802,4 +1803,16 @@
     <string name="instant_total">%1$s في المجموع</string>
     <string name="instant_minutes">آخر 7 أيّام متاعك</string>
     <string name="instant_moyenne">المعدّل في النهارات اللي تعملو: %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">اسألني 10 ثواني قبل الآخر إذا نكمّل</string>
+    <string name="session_suite_titre">نكمّلو الهتبوديدوت؟</string>
+    <string name="session_suite_texte">توفى بعد 10 ثواني. كان ما جاوبتش، تحبس وتتسجّل في اليومية.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">بلا آخر</string>
+    <string name="session_suite_non_court">لا</string>
+    <string name="session_suite_oui_plus">إيه، %1$s زيادة</string>
+    <string name="session_suite_oui_sans_fin">إيه، بلا آخر</string>
+    <string name="session_suite_non">لا، نوفّي</string>
+    <string name="channel_suite">نكمّلو الهتبوديدوت</string>
+    <string name="channel_suite_description">السؤال اللي يجي 10 ثواني قبل آخر هتبوديدوت بوقت محدّد.</string>
 </resources>

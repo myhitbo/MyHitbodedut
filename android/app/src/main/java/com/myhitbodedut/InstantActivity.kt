@@ -237,7 +237,7 @@ class InstantActivity : AccueilVersion() {
         addView(VueVersion.texte(context,
             n?.let { DonneesAccueil.jour(context, it.date) + " · " + DonneesAccueil.duree(context, it.minutes) } ?: getString(R.string.version_journal_vide),
             13f, DOUX, haut = 4))
-        n?.texte?.let { addView(VueVersion.texte(context, it, 15f, ENCRE, haut = 6).apply { maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END }) }
+        if (n?.ecrite == true) addView(VueVersion.texte(context, getString(R.string.version_note_ecrite), 15f, DOUX, haut = 6))
         addView(VueVersion.bouton(context, getString(R.string.version_ecrire_note), OLIVE, OLIVE_ENCRE, taille = 15f) { ecrireNote() }.apply {
             (layoutParams as LinearLayout.LayoutParams).topMargin = dp(14)
         })

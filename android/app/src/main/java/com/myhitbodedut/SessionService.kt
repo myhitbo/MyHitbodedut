@@ -74,7 +74,12 @@ class SessionService : Service() {
     private fun delaiTick(): Long {
         val fin = Store.sessionEndsAt(this)
         if (fin <= 0L) return TICK_MS
-        return (fin - System.currentTimeMillis() + 30L).coerceIn(30L, TICK_MS)
+        val reste = fin - Store.maintenantSeance(this)
+        val delai = (reste + 30L).coerceIn(30L, TICK_MS)
+        // « Continuer ? » tombe à dix secondes de la fin, pas au tour de 5 s suivant (24/11).
+        val avantQuestion = reste - SessionRule.AVANT_FIN_SUITE_MS
+        return if (Store.proposerSuite(this) && Store.suiteEtat(this) == Store.SUITE_AUCUNE && avantQuestion > 0L)
+            minOf(delai, avantQuestion + 30L) else delai
     }
 
     override fun onCreate() {
@@ -103,6 +108,27 @@ class SessionService : Service() {
             ACTION_FINISH -> {
                 finishSession(early = true)
                 return START_NOT_STICKY
+            }
+            // « Continuer ? » (24/11) : oui, de tant de minutes, ou sans fin.
+            ACTION_SUITE -> {
+                val minutes = intent.getIntExtra(EXTRA_MINUTES, -1)
+                if (Store.isSessionRunning(this) && minutes >= SessionRule.OUVERTE) Store.prolongerSession(this, minutes)
+                retirerQuestion()
+                if (enMarche) {
+                    garderEveille()
+                    SessionFiletReceiver.poser(this)
+                    startForegroundNow()
+                    handler.removeCallbacks(tick)
+                    handler.post(tick)
+                    return START_STICKY
+                }
+                // Processus relancé entre-temps : le chemin ordinaire ci-dessous reprend la séance prolongée.
+            }
+            // « Non » : la séance va à son terme et s'inscrit, comme sans réponse.
+            ACTION_SUITE_NON -> {
+                if (Store.hasSessionRecord(this)) Store.setSuiteEtat(this, Store.SUITE_NON)
+                retirerQuestion()
+                if (enMarche) return START_STICKY
             }
             ACTION_LECTEUR -> {
                 if (Store.isSessionRunning(this) && enMarche) {
@@ -180,7 +206,7 @@ class SessionService : Service() {
     private fun garderEveille() {
         val fin = Store.sessionEndsAt(this)
         if (Store.isSessionOpen(this) || fin <= 0L) return
-        val duree = (fin - System.currentTimeMillis()).coerceAtLeast(0L) + MARGE_EVEIL_MS
+        val duree = (fin - Store.maintenantSeance(this)).coerceAtLeast(0L) + MARGE_EVEIL_MS
         relacherEveil()
         eveil = (getSystemService(Context.POWER_SERVICE) as PowerManager)
             .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myhitbodedut:seance")
@@ -201,21 +227,76 @@ class SessionService : Service() {
     private fun refresh(): Boolean {
         // Une séance sans durée oubliée en marche se clôt ici au plafond, comme le fait
         // reconcilier() : le mode « Ne pas déranger » ne reste pas posé indéfiniment.
+        val maintenant = Store.maintenantSeance(this)
         val plafond = SessionRule.estEchue(
-            Store.sessionStartedAt(this), Store.sessionEndsAt(this), Store.sessionTarget(this), System.currentTimeMillis()
+            Store.sessionStartedAt(this), Store.sessionEndsAt(this), Store.sessionTarget(this), maintenant
         )
         if (!Store.isSessionRunning(this) || plafond) {
             finishSession(early = false)
             return false
         }
+        if (SessionRule.questionDue(Store.sessionEndsAt(this), maintenant, Store.proposerSuite(this),
+                Store.suiteEtat(this) != Store.SUITE_AUCUNE)) {
+            Store.setSuiteEtat(this, Store.SUITE_POSEE)
+            poserQuestion()
+        }
         startForegroundNow()
         return true
     }
 
+    /**
+     * « Continuer la hitbodedout ? » (demande du 24/11), dix secondes avant la fin d'une séance
+     * minutée, si l'option est allumée sur l'écran de séance. Trois réponses tiennent dans une
+     * notification : 5 minutes de plus, la même durée encore, sans fin. Sans réponse — ou
+     * « Non », sur l'écran de séance — elle va à son terme et s'inscrit comme d'habitude.
+     */
+    private fun poserQuestion() {
+        val pas = Store.sessionPas(this)
+        fun suite(requete: Int, minutes: Int) = PendingIntent.getService(
+            this, requete,
+            Intent(this, SessionService::class.java).setAction(ACTION_SUITE).putExtra(EXTRA_MINUTES, minutes),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+        fun action(titre: String, pi: PendingIntent) =
+            Notification.Action.Builder(Icon.createWithResource(this, R.drawable.ic_notification), titre, pi).build()
+        val ouvrir = PendingIntent.getActivity(
+            this, REQUETE_QUESTION, Intent(this, SessionActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
+        )
+        val texte = getString(R.string.session_suite_texte)
+        val b = Notification.Builder(this, Notifications.CHANNEL_SUITE)
+            .setContentTitle(getString(R.string.session_suite_titre))
+            .setContentText(texte)
+            .setStyle(Notification.BigTextStyle().bigText(texte))
+            .setSmallIcon(R.drawable.ic_notification)
+            .setCategory(Notification.CATEGORY_REMINDER)
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
+            .setContentIntent(ouvrir)
+            .setAutoCancel(true)
+            // Après la fin, la question n'a plus d'objet.
+            .setTimeoutAfter(SessionRule.AVANT_FIN_SUITE_MS + 5_000L)
+            .addAction(action(getString(R.string.session_suite_plus, Store.formatDuration(this, 5)), suite(REQUETE_SUITE_5, 5)))
+        if (pas > 0 && pas != 5) {
+            b.addAction(action(getString(R.string.session_suite_plus, Store.formatDuration(this, pas)), suite(REQUETE_SUITE_PAS, pas)))
+        }
+        b.addAction(action(getString(R.string.session_suite_sans_fin), suite(REQUETE_SUITE_OUVERTE, SessionRule.OUVERTE)))
+        if (pas <= 0 || pas == 5) {
+            b.addAction(action(getString(R.string.session_suite_non_court), PendingIntent.getService(
+                this, REQUETE_SUITE_NON, Intent(this, SessionService::class.java).setAction(ACTION_SUITE_NON),
+                PendingIntent.FLAG_IMMUTABLE,
+            )))
+        }
+        runCatching { (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(Notifications.ID_SUITE, b.build()) }
+    }
+
+    private fun retirerQuestion() {
+        runCatching { (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(Notifications.ID_SUITE) }
+    }
+
     private fun remainingMinutes(): Int =
-        SessionRule.minutesRestantes(Store.sessionEndsAt(this), System.currentTimeMillis())
+        SessionRule.minutesRestantes(Store.sessionEndsAt(this), Store.maintenantSeance(this))
 
     private fun finishSession(early: Boolean) {
+        retirerQuestion()
         // Rien d'inscrit : rien à clore (séance déjà close ailleurs).
         if (!Store.hasSessionRecord(this)) {
             stopSelfAndClear()
@@ -372,6 +453,7 @@ class SessionService : Service() {
     }
 
     private fun stopSelfAndClear() {
+        retirerQuestion()
         relacherEveil()
         SessionFiletReceiver.annuler(this)
         NePasDeranger.retablir(this)
@@ -502,6 +584,11 @@ class SessionService : Service() {
         /** Le temps laissé au son de fin, service au premier plan (une sonnerie de notification dure moins). */
         private const val DUREE_SON_MS = 4_000L
         private const val REQUETE_FIN = 30
+        private const val REQUETE_QUESTION = 31
+        private const val REQUETE_SUITE_5 = 32
+        private const val REQUETE_SUITE_PAS = 33
+        private const val REQUETE_SUITE_OUVERTE = 34
+        private const val REQUETE_SUITE_NON = 35
 
         /**
          * Le service tourne dans ce processus. Un processus tué repart à
@@ -534,7 +621,7 @@ class SessionService : Service() {
                 NePasDeranger.retablir(context)
                 return
             }
-            val maintenant = System.currentTimeMillis()
+            val maintenant = Store.maintenantSeance(context)
             val echue = SessionRule.estEchue(
                 Store.sessionStartedAt(context),
                 Store.sessionEndsAt(context),
@@ -557,6 +644,9 @@ class SessionService : Service() {
         const val ACTION_FINISH = "com.myhitbodedut.FINISH_SESSION"
         const val ACTION_MUSIC = "com.myhitbodedut.MUSIC_CHANGED"
         const val ACTION_LECTEUR = "com.myhitbodedut.LECTEUR"
+        const val ACTION_SUITE = "com.myhitbodedut.SUITE_SESSION"
+        const val ACTION_SUITE_NON = "com.myhitbodedut.SUITE_SESSION_NON"
+        const val EXTRA_MINUTES = "minutes"
         const val EXTRA_COMMANDE = "commande"
         const val EXTRA_POSITION = "position"
         const val CMD_PAUSE = "pause"
@@ -602,7 +692,7 @@ class SessionService : Service() {
             if (!Store.hasSessionRecord(context)) return
             val echue = SessionRule.estEchue(
                 Store.sessionStartedAt(context), Store.sessionEndsAt(context),
-                Store.sessionTarget(context), System.currentTimeMillis()
+                Store.sessionTarget(context), Store.maintenantSeance(context)
             )
             val theme = Store.sessionTheme(context)
             val close = Store.endSession(context)
@@ -614,6 +704,19 @@ class SessionService : Service() {
             context.startService(
                 Intent(context, SessionService::class.java).setAction(ACTION_CANCEL)
             )
+        }
+
+        /** « Continuer ? » : oui, de [minutes] (SessionRule.OUVERTE : sans fin). */
+        fun continuer(context: Context, minutes: Int) {
+            runCatching {
+                context.startService(Intent(context, SessionService::class.java).setAction(ACTION_SUITE).putExtra(EXTRA_MINUTES, minutes))
+            }
+        }
+
+        /** « Continuer ? » : non, la séance va à son terme. */
+        fun nePasContinuer(context: Context) {
+            if (Store.hasSessionRecord(context)) Store.setSuiteEtat(context, Store.SUITE_NON)
+            runCatching { context.startService(Intent(context, SessionService::class.java).setAction(ACTION_SUITE_NON)) }
         }
 
         fun finishNow(context: Context) {

@@ -186,6 +186,11 @@ class SessionActivity : AppCompatActivity() {
             button.text = Store.formatDuration(this, minutes)
             button.setOnClickListener { commencer(minutes) }
         }
+        // « Continuer ? » dix secondes avant la fin (24/11) : l'option se choisit avant de commencer.
+        findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.session_suite).apply {
+            isChecked = Store.proposerSuite(this@SessionActivity)
+            setOnCheckedChangeListener { _, oui -> Store.setProposerSuite(this@SessionActivity, oui) }
+        }
         // Un temps choisi, entre 1 et 240 minutes.
         findViewById<Button>(R.id.session_custom).setOnClickListener {
             DureeSeance.saisir(this) { commencer(it) }
@@ -286,6 +291,7 @@ class SessionActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        fermerQuestionSuite()
         calme.liberer()
         miniLecteur.fermer()
         super.onDestroy()
@@ -344,10 +350,11 @@ class SessionActivity : AppCompatActivity() {
             countdown.visibility =
                 if (counter == SessionRule.Compteur.MASQUE) View.GONE else View.VISIBLE
             if (counter != SessionRule.Compteur.MASQUE) {
+                val maintenant = Store.maintenantSeance(this)
                 val millis = if (counter == SessionRule.Compteur.ECOULE) {
-                    (System.currentTimeMillis() - Store.sessionStartedAt(this)).coerceAtLeast(0)
+                    (maintenant - Store.sessionStartedAt(this)).coerceAtLeast(0)
                 } else {
-                    (Store.sessionEndsAt(this) - System.currentTimeMillis()).coerceAtLeast(0)
+                    (Store.sessionEndsAt(this) - maintenant).coerceAtLeast(0)
                 }
                 countdown.text = String.format(
                     Locale.US, "%02d:%02d", millis / 60_000L, (millis / 1_000L) % 60
@@ -367,6 +374,8 @@ class SessionActivity : AppCompatActivity() {
             }
             durations.visibility = View.GONE
             openSession.visibility = View.GONE
+            findViewById<View>(R.id.session_suite).visibility = View.GONE
+            questionSuite()
             findViewById<View>(R.id.session_custom).visibility = View.GONE
             stuck.visibility = if (hasBlocage) View.VISIBLE else View.GONE
             findViewById<View>(R.id.session_simplement).visibility = View.GONE
@@ -391,8 +400,10 @@ class SessionActivity : AppCompatActivity() {
             caption.text = if (Store.isDone(this))
                 getString(R.string.session_idle_done, Store.formatDuration(this, Store.record(this)?.minutes ?: 0))
             else getString(R.string.session_idle_caption)
+            fermerQuestionSuite()
             durations.visibility = View.VISIBLE
             openSession.visibility = View.VISIBLE
+            findViewById<View>(R.id.session_suite).visibility = View.VISIBLE
             findViewById<View>(R.id.session_custom).visibility = View.VISIBLE
             stuck.visibility = View.GONE
             findViewById<View>(R.id.session_simplement).visibility = View.VISIBLE
@@ -500,12 +511,49 @@ class SessionActivity : AppCompatActivity() {
         }
     }
 
+    /** La fenêtre « Continuer ? » ouverte sur cet écran, s'il y en a une. */
+    private var suiteDialogue: AlertDialog? = null
+
+    /**
+     * « Continuer la hitbodedout ? » (24/11) : quand le service a posé la question et que cet écran
+     * est devant les yeux, la même question ici, avec ses quatre réponses — la notification n'en
+     * porte que trois. Elle se ferme si l'on répond dans la notification, ou à la fin.
+     */
+    private fun questionSuite() {
+        val posee = Store.suiteEtat(this) == Store.SUITE_POSEE && !Store.isSessionOpen(this)
+        if (!posee) { fermerQuestionSuite(); return }
+        if (suiteDialogue?.isShowing == true) return
+        val pas = Store.sessionPas(this)
+        val choix = buildList {
+            add(getString(R.string.session_suite_oui_plus, Store.formatDuration(this@SessionActivity, 5)) to 5)
+            if (pas > 0 && pas != 5) add(getString(R.string.session_suite_oui_plus, Store.formatDuration(this@SessionActivity, pas)) to pas)
+            add(getString(R.string.session_suite_oui_sans_fin) to SessionRule.OUVERTE)
+            add(getString(R.string.session_suite_non) to -1)
+        }
+        suiteDialogue = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.session_suite_titre)
+            .setItems(choix.map { it.first }.toTypedArray()) { _, i ->
+                val minutes = choix[i].second
+                if (minutes < 0) SessionService.nePasContinuer(this) else SessionService.continuer(this, minutes)
+                suiteDialogue = null
+                handler.postDelayed({ if (!isFinishing) render() }, 300L)
+            }
+            // Fermée sans choix : comme « Non », la séance va à son terme.
+            .setOnCancelListener { SessionService.nePasContinuer(this); suiteDialogue = null }
+            .show()
+    }
+
+    private fun fermerQuestionSuite() {
+        suiteDialogue?.let { if (it.isShowing) runCatching { it.dismiss() } }
+        suiteDialogue = null
+    }
+
     private fun confirmFinish() {
         AlertDialog.Builder(this)
             .setTitle(R.string.session_finish_title)
             .setMessage(
                 // Avant une minute pleine, rien n'est inscrit (FSEANCE-12).
-                if (SessionRule.minutesEcoulees(Store.sessionStartedAt(this), System.currentTimeMillis()) < 1) {
+                if (SessionRule.minutesEcoulees(Store.sessionStartedAt(this), Store.maintenantSeance(this)) < 1) {
                     R.string.session_finish_short
                 } else {
                     R.string.session_finish_message

@@ -185,6 +185,18 @@
                 android:text="@string/duration_custom"
                 android:textColor="?attr/mhMint" />
 
+            <!-- « Continuer ? » dix secondes avant la fin (demande du 24/11) : la séance minutée peut
+                 repartir de 5 minutes, de la même durée, ou sans fin. -->
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/session_suite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="@string/session_suite_option"
+                android:textColor="?attr/mhMint" />
+
             <!-- La séance sans durée : on s'arrête quand on s'arrête. -->
             <Button
                 android:id="@+id/session_open"

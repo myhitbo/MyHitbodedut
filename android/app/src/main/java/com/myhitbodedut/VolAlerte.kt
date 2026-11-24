@@ -65,7 +65,7 @@ object VolAlerte {
 
     /** Le titre et le texte d'un rappel ; [plan] donne les heures des deux aéroports. */
     fun textes(c: Context, r: VolRappels.Rappel, plan: Vol.Plan?): Pair<String, String> {
-        val locale = Locale.forLanguageTag(ChizukCard.language(c))
+        val locale = Chiffres.locale(ChizukCard.language(c))
         val heure = { t: Instant -> plan?.let { deuxHeures(it, t, locale) } ?: t.toString() }
         return when (r.type) {
             VolRappels.Type.TEFILAT_HADEREKH -> c.getString(R.string.vol_rappel_derekh_titre) to

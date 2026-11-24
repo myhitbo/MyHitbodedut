@@ -47,7 +47,7 @@ class BlockerView(
             R.string.blocker_session_subtitle,
             Store.formatDuration(context,
                 SessionRule.minutesRestantes(
-                    Store.sessionEndsAt(context), System.currentTimeMillis()
+                    Store.sessionEndsAt(context), Store.maintenantSeance(context)
                 )
             )
         )

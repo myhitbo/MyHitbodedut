@@ -64,6 +64,8 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         // sans cela il n'était jamais fêté, et un retour au Classique les ouvrait tous à la suite
         // (relecture du 23/11). Tant qu'un bravo attend, il passe d'abord ; la fiche vient au retour.
         if (!Store.hasPendingCelebration(this)) Celebrations.ecran(this)
+        // Le bilan de la semaine, comme au Classique (décision du 24/11) ; un bravo qui attend passe d'abord.
+        if (!NoteDialog.ouverte(this) && !Store.hasPendingCelebration(this)) BilanSemaineVue.montrerSiDu(this)
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
@@ -139,7 +141,12 @@ data class DonneesAccueil(
      */
     val dernierDuJour: ZmanAffiche? get() = if (prochain == null) zmanim.lastOrNull() else null
     data class PenseeAffichee(val hebreu: String, val traduction: String?, val reference: String)
-    data class NoteAffichee(val date: LocalDate, val minutes: Int, val texte: String?)
+    /**
+     * La dernière journée du journal, sans le texte de sa note : un accueil se voit dans les
+     * captures d'écran et l'aperçu des applications récentes, que l'écran du journal interdit
+     * (décision du 24/11). [ecrite] dit seulement qu'une note existe.
+     */
+    data class NoteAffichee(val date: LocalDate, val minutes: Int, val ecrite: Boolean)
 
     /** « dans 1 h 12 » jusqu'au prochain zman. */
     fun dans(context: Context, z: ZmanAffiche, maintenant: ZonedDateTime = ZonedDateTime.now(z.instant.zone)): String {
@@ -194,11 +201,10 @@ data class DonneesAccueil(
                     Reference.localise(c, p.source.ref),
                 )
             }.getOrNull()
-            val verrou = VerrouJournal.actif(c)
             val note = Store.days(c).values
                 .filter { it.faite || it.note.isNotBlank() }
                 .maxByOrNull { it.date }
-                ?.let { r -> NoteAffichee(Store.parse(r.date), r.minutes, r.note.takeIf { it.isNotBlank() && !verrou }) }
+                ?.let { r -> NoteAffichee(Store.parse(r.date), r.minutes, r.note.isNotBlank()) }
             return DonneesAccueil(
                 prenom = Store.firstName(c),
                 dateCivile = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMMM", langue(c)))

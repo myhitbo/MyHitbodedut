@@ -276,11 +276,8 @@ class PileActivity : AccueilVersion() {
         } else {
             addView(VueVersion.texte(context, listOf(DonneesAccueil.jour(context, n.date), DonneesAccueil.duree(context, n.minutes)).joinToString(", "),
                 20f, JR_ENCRE, titre, haut = 14))
-            addView(VueVersion.texte(context, n.texte ?: getString(R.string.version_note_sans_texte), 16f, if (n.texte != null) JR_ENCRE else JR_DOUCE, corps, haut = 10).apply {
-                setLineSpacing(dp(4).toFloat(), 1f)
-                maxLines = 9
-                ellipsize = android.text.TextUtils.TruncateAt.END
-            })
+            addView(VueVersion.texte(context, getString(if (n.ecrite) R.string.version_note_ecrite else R.string.version_note_sans_texte),
+                16f, JR_DOUCE, corps, haut = 10))
         }
         ressort()
         addView(VueVersion.bouton(context, getString(R.string.version_ecrire_note), JR_ACCENT, JR_BOUTON_ENCRE, corpsGras) { ecrireNote() }.apply {
