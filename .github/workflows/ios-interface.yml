@@ -1,0 +1,210 @@
+name: iOS (interface, macOS)
+
+# Les tests d'interface de la tâche 29 qui tournent à chaque envoi (ROADMAP.md) : les libellés d'accessibilité de
+# l'accueil, de la séance et d'un texte du siddour dans les cinq langues (ios/UITests/LibellesTests.swift), les
+# mesures (premier écran, défilement du plus long livre : MesuresTests.swift) et le poids de l'app. L'app est
+# compilée une seule fois, en Release pour le simulateur (build-for-testing), comme on la livre : ses mesures et son
+# poids sont ceux du code optimisé, pas de Debug ; les tests tournent ensuite sur l'iPhone simulé sans recompiler
+# (test-without-building). Même runner et même Xcode qu'ios-app.yml.
+#
+# Le simulateur de cette CI tourne sur un Mac Intel virtualisé, sans processeur graphique à lui : ce n'est pas un
+# iPhone. Les temps et les images perdues y sont mesurés et rapportés tels quels dans le résumé ; les seuils du
+# critère (400 ms, aucune image perdue) se vérifient sur un appareil. Le travail échoue sur un libellé en défaut, une
+# mesure qui manque (la chaîne de mesure cassée) ou une app de 200 Mo et plus.
+
+on:
+  push:
+    paths:
+      - 'ios/**'
+      - '!ios/**/*.md'
+      - 'tools/export_contenu/**'
+      - '.github/workflows/ios-interface.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  interface:
+    runs-on: macos-26-intel
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode 26.6
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.6.app
+          xcodebuild -version
+      # Le simulateur démarre pendant la compilation : il lui faut quatre minutes sur ce runner (capturer.sh).
+      - name: Simulateur iPhone (iOS 26.5), démarré pendant la compilation
+        run: |
+          id=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          appareils = [a for runtime, liste in sorted(json.load(sys.stdin)["devices"].items()) if "iOS-26-5" in runtime
+                       for a in liste if a["name"].startswith("iPhone")]
+          for nom in ("iPhone 17 Pro", "iPhone 16 Pro", "iPhone 17"):
+              for a in appareils:
+                  if a["name"] == nom:
+                      print(a["udid"], a["name"], sep="\t"); sys.exit()
+          if appareils:
+              print(appareils[0]["udid"], appareils[0]["name"], sep="\t")
+          ')
+          test -n "$id"
+          echo "SIMULATEUR=$(echo "$id" | cut -f1)" >> "$GITHUB_ENV"
+          echo "APPAREIL=$(echo "$id" | cut -f2)" >> "$GITHUB_ENV"
+          echo "simulateur : $id"
+          xcrun simctl boot "$(echo "$id" | cut -f1)"
+      - name: Contenus exportés
+        run: python3 tools/export_contenu/export.py
+      - name: Projet Xcode (XcodeGen)
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate --spec project.yml
+      - name: Compilation pour les tests (Release, simulateur, sans signature)
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Release \
+            -destination "generic/platform=iOS Simulator" -derivedDataPath "$RUNNER_TEMP/build" \
+            ARCHS=x86_64 CODE_SIGNING_ALLOWED=NO 2>&1 | tee build.log | grep -E "error:|BUILD" || true
+          grep -q "TEST BUILD SUCCEEDED" build.log
+          ls "$RUNNER_TEMP"/build/Build/Products/
+          echo "XCTESTRUN=$(ls "$RUNNER_TEMP"/build/Build/Products/*.xctestrun | head -1)" >> "$GITHUB_ENV"
+      # Le poids du .app compilé en Release pour le simulateur (x86_64, sans signature) : l'app, ses ressources, ses
+      # quatre extensions. Une mesure approchée de l'app livrée (arm64, signée, puis amincie par l'App Store), dont le
+      # poids tient surtout aux ressources, les mêmes. Les octets des fichiers comptent (200 Mo = 200 000 000
+      # octets) ; l'occupation du disque (du) est dite à côté.
+      - name: Poids de l'app
+        id: poids
+        continue-on-error: true
+        run: |
+          app="$RUNNER_TEMP/build/Build/Products/Release-iphonesimulator/MyHitbodedut.app"
+          test -d "$app"
+          python3 - "$app" > poids.txt <<'EOF'
+          import os, sys
+          app = sys.argv[1]
+          def taille(chemin):
+              if os.path.isfile(chemin) and not os.path.islink(chemin):
+                  return os.path.getsize(chemin)
+              total = 0
+              for dossier, _, fichiers in os.walk(chemin):
+                  for f in fichiers:
+                      p = os.path.join(dossier, f)
+                      if not os.path.islink(p):
+                          total += os.path.getsize(p)
+              return total
+          mo = lambda o: f"{o / 1_000_000:7.1f} Mo"
+          total = taille(app)
+          print(f"TOTAL\t{total}")
+          print(f"MyHitbodedut.app : {mo(total)} ({total} octets)")
+          print("--- par entrée")
+          for nom, o in sorted(((n, taille(os.path.join(app, n))) for n in os.listdir(app)), key=lambda x: -x[1])[:15]:
+              print(f"{mo(o)}  {nom}")
+          print("--- les plus gros fichiers")
+          fichiers = []
+          for dossier, _, noms in os.walk(app):
+              for n in noms:
+                  p = os.path.join(dossier, n)
+                  if not os.path.islink(p):
+                      fichiers.append((os.path.getsize(p), os.path.relpath(p, app)))
+          for o, p in sorted(fichiers, reverse=True)[:15]:
+              print(f"{mo(o)}  {p}")
+          EOF
+          octets=$(grep "^TOTAL" poids.txt | cut -f2)
+          mo=$(python3 -c "print(f'{$octets / 1e6:.1f}')")
+          du=$(du -sk "$app" | cut -f1)
+          {
+            echo "## Poids de l'app : $mo Mo (critère : moins de 200 Mo)"
+            echo "Le .app compilé en Release pour le simulateur (x86_64, sans signature) : $octets octets ; $du Kio occupés sur le disque (du)."
+            echo '```'
+            grep -v "^TOTAL" poids.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat poids.txt
+          test "$octets" -lt 200000000
+      - name: Simulateur prêt
+        run: |
+          xcrun simctl bootstatus "$SIMULATEUR" -b >/dev/null
+          xcrun simctl ui "$SIMULATEUR" appearance light || true
+          xcrun simctl ui "$SIMULATEUR" content_size large || true
+          echo "démarré : $APPAREIL"
+      # Chaque libellé en défaut, une ligne du résumé ; les faux positifs connus (LibellesTests.tolerance), chacun
+      # avec sa raison. Pour relever sans échouer : TEST_RUNNER_LIBELLES_RELEVE: '1'.
+      - name: Libellés d'accessibilité (fr, en, he, es, ar-TN)
+        id: libelles
+        continue-on-error: true
+        env:
+          TEST_RUNNER_LIBELLES_RELEVE: '1'
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$SIMULATEUR" \
+            -only-testing:MyHitbodedutUITests/LibellesTests 2>&1 | tee libelles.log \
+            | grep -E "^(DEFAUT|ELEMENTS)|error:|TEST EXECUTE (SUCCEEDED|FAILED)" || true
+          n=$(grep -c "^DEFAUT" libelles.log || true)
+          t=$(grep -c "^TOLERE" libelles.log || true)
+          { grep "^DEFAUT" libelles.log || true; } | cut -f2- | sed -n '1,400p' > libelles-defauts.txt
+          { grep "^TOLERE" libelles.log || true; } | cut -f2- | sort | uniq -c | sed -n '1,200p' > libelles-toleres.txt
+          {
+            echo "## Libellés d'accessibilité : $n défaut(s)"
+            echo "Langue, écran, éléments vérifiés, éléments lus :"
+            echo '```'
+            { grep "^ELEMENTS" libelles.log || true; } | cut -f2-
+            echo '```'
+            echo '```'
+            cat libelles-defauts.txt
+            echo '```'
+            echo "### Tolérés : $t"
+            echo '```'
+            cat libelles-toleres.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          grep -q "TEST EXECUTE SUCCEEDED" libelles.log
+          # Les trois écrans dans les cinq langues ont bien été lus.
+          test "$(grep -c "^ELEMENTS" libelles.log)" -eq 15
+      # Les mesures de l'app (lignes MESURE) et d'XCTest (lignes « measured [ … ] »), telles qu'elles sortent.
+      - name: Mesures (premier écran, défilement du plus long livre)
+        id: mesures
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          TEST_RUNNER_MESURES_DOSSIER: ${{ runner.temp }}/mesures
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/mesures"
+          xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$SIMULATEUR" \
+            -only-testing:MyHitbodedutUITests/MesuresTests 2>&1 | tee mesures.log \
+            | grep -E "^MESURE|measured \[|error:|TEST EXECUTE (SUCCEEDED|FAILED)" || true
+          {
+            echo "## Mesures, sur le simulateur de la CI ($APPAREIL, iOS 26.5, Mac Intel virtualisé : pas un iPhone)"
+            echo "L'app en Release. Critère, à vérifier sur un iPhone : premier écran en moins de 400 ms, défilement du plus long livre sans image perdue."
+            echo '```'
+            { grep "^MESURE" mesures.log || true; } | cut -f2- | tr '\t' ' '
+            echo '```'
+            echo "### XCTest"
+            echo '```'
+            { grep "measured \[" mesures.log || true; } | sed -E "s/^.*Test Case '-\[MyHitbodedutUITests\.MesuresTests ([^]]*)\]' measured /\1 : /; s/, performanceMetricID.*$//"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          grep -q "TEST EXECUTE SUCCEEDED" mesures.log
+      - name: Journaux
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interface-ios
+          path: |
+            build.log
+            poids.txt
+            libelles.log
+            mesures.log
+            ${{ runner.temp }}/mesures
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Verdict
+        if: always()
+        run: |
+          test "${{ steps.poids.outcome }}" = success
+          test "${{ steps.libelles.outcome }}" = success
+          test "${{ steps.mesures.outcome }}" = success

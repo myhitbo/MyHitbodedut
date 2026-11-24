@@ -25,6 +25,10 @@ enum Captures {
         "rappels", "ajout-temps",
     ]
 
+    /// Le plus long livre que le lecteur ouvre : le Kitsour Yalkout Yossef, 1 048 chapitres, 14 390 blocs, 11,5 Mo
+    /// de JSON (le Likoutei Moharan : 411 chapitres, 7 057 blocs ; PORTAGE.md § 2.2.9), d'une seule liste paresseuse.
+    static let plusLongLivre = "yalkut_yosef_kitsour"
+
     private static func valeur(apres argument: String) -> String? {
         let arguments = ProcessInfo.processInfo.arguments
         guard let i = arguments.firstIndex(of: argument), arguments.indices.contains(i + 1) else { return nil }
@@ -66,6 +70,8 @@ enum Captures {
     static func ouvrir(_ app: ModelesApp, onglet: Binding<Onglet>, jour: Binding<NavigationPath>,
                        livres: Binding<NavigationPath>, chemin: Binding<NavigationPath>,
                        feuille: Binding<Pardessus?>, plein: Binding<Pardessus?>) async {
+        // Les mesures du lancement (« -mesures », Mesures.swift), dès l'apparition de la racine ; sans, rien.
+        Mesures.lancement(app)
         guard let ecran else { return }
         UIView.setAnimationsEnabled(false)
         let aujourdhui = app.horloge.aujourdhui
@@ -87,6 +93,9 @@ enum Captures {
         case "siddour": depart = (.textes, [.siddour], nil, nil)
         case "lecteur": depart = (.textes, [.siddour, .lecture(.siddour("chaharit"))], nil, nil)
         case "livre": depart = (.textes, [.lecture(.livre("likoutei_moharan"))], nil, nil)
+        // Le défilement mesuré du plus long livre (MesuresTests, tâche 29) ; pas dans `ecrans` : rien à photographier
+        // de plus que « livre ».
+        case "plus-long-livre": depart = (.textes, [.lecture(.livre(plusLongLivre))], nil, nil)
         case "tehilim": depart = (.textes, [.tehilim], nil, nil)
         case "tikkun": depart = (.textes, [.tikkun], nil, nil)
         case "tefilot": depart = (.textes, [.tefilot], nil, nil)

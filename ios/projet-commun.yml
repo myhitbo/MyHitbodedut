@@ -54,7 +54,8 @@ targetTemplates:
       # écrans les tableaux de chaînes (Tableaux.json).
       - path: Ressources/Chaines
         type: folder
-    # Le test d'interface de l'audit d'accessibilité (tâche 29), lancé par ios-captures.yml seulement.
+    # Les tests d'interface (tâche 29) : l'audit d'accessibilité, lancé par ios-captures.yml ; les libellés et les
+    # mesures, par ios-interface.yml à chaque envoi.
     scheme:
       testTargets: [MyHitbodedutUITests]
     settings:
@@ -121,7 +122,8 @@ targetTemplates:
           - Polices/rubik.ttf
 
 targets:
-  # L'audit d'accessibilité d'Xcode sur chaque écran (UITests/, tâche 29), ouvert par « -capture » (App/Captures.swift).
+  # Les tests d'interface (UITests/, tâche 29) : l'audit d'accessibilité d'Xcode sur chaque écran, les libellés dans
+  # chaque langue, les mesures ; l'écran ouvert par « -capture » (App/Captures.swift).
   MyHitbodedutUITests:
     type: bundle.ui-testing
     platform: iOS
