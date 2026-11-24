@@ -19,7 +19,8 @@ public struct AccueilVue: View {
     @Environment(\.accessibilityReduceMotion) private var reduire
     @Environment(\.scenePhase) private var phase
     @Environment(\.tropheeFormes) private var formes
-    /// La place de l'écran : couché, le Jour se met en deux colonnes (GrandEcran.deuxColonnes).
+    @Environment(\.dynamicTypeSize) private var tailleTexte
+    /// La place de l'écran : couché, ou debout sur l'iPad, le Jour se met en deux colonnes (GrandEcran.deuxColonnes).
     @State private var taille: CGSize = .zero
 
     /// La barre de départ et son volet sont posés par la racine sur les trois onglets (`BarreDepart`,
@@ -31,18 +32,22 @@ public struct AccueilVue: View {
     public var body: some View {
         ScrollView {
             Group {
-                if GrandEcran.deuxColonnes(largeur: Double(taille.width), hauteur: Double(taille.height)) {
-                    // Couché (layout-land/activity_main.xml) : les anneaux à part, au début de la ligne (à droite en
-                    // hébreu), l'en-tête, la semaine et la suite à côté d'eux.
+                if GrandEcran.deuxColonnes(largeur: Double(taille.width), hauteur: Double(taille.height),
+                                           texteAccessible: tailleTexte.isAccessibilitySize) {
+                    // Couché (layout-land/activity_main.xml), ou debout sur l'iPad : les anneaux à part, au début de
+                    // la ligne (à droite en hébreu), l'en-tête, la semaine et la suite à côté d'eux. Chaque colonne
+                    // est un conteneur d'accessibilité : VoiceOver lit l'une, puis l'autre, et non ligne à ligne.
                     HStack(alignment: .top, spacing: 24) {
                         VStack(spacing: 0) {
                             anneaux
                         }
                         .frame(width: 300)
+                        .accessibilityElement(children: .contain)
                         VStack(alignment: .leading, spacing: 0) {
                             tete
                             suite
                         }
+                        .accessibilityElement(children: .contain)
                     }
                 } else {
                     VStack(alignment: .leading, spacing: 0) {

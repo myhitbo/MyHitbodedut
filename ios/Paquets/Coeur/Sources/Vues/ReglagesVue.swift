@@ -40,18 +40,23 @@ public struct ReglagesVue: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     entete
-                    carteLangue
-                    carteApparence
-                    carteZmanim
-                    if modele.avecBarriere {
-                        carteEtatBarriere
-                        carteBarriereReglages
+                    // Sur l'iPad, deux colonnes (DeuxColonnes) : l'app, son apparence, Zmanim et le mode ; à côté, le
+                    // rythme et le reste.
+                    DeuxColonnes(espacement: 14) {
+                        carteLangue
+                        carteApparence
+                        carteZmanim
+                        if modele.avecBarriere {
+                            carteEtatBarriere
+                            carteBarriereReglages
+                        }
+                    } seconde: {
+                        carteRythme
+                        carteAutorisations
+                        carteDedicace
+                        carteDonnees
+                        carteReinitialisation
                     }
-                    carteRythme
-                    carteAutorisations
-                    carteDedicace
-                    carteDonnees
-                    carteReinitialisation
                     Text(modele.texteVersion, traducteur: traducteur)
                         .font(.caption)
                         .foregroundStyle(Teinte(.muted))

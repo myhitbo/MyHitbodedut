@@ -26,57 +26,15 @@ public struct CheminVue: View {
                     .foregroundStyle(Teinte(.ink))
                     .accessibilityAddTraits(.isHeader)
                     .padding(.top, 2)
-                Carte {
-                    // Trois colonnes ; aux tailles d'accessibilité, trois lignes (le chiffre, puis son libellé), où
-                    // les mots se coupaient lettre à lettre.
-                    RangeeAdaptable(alignement: .top, espacement: tailleTexte.isAccessibilitySize ? 12 : 8) {
-                        ForEach(modele.chiffres) { chiffre in
-                            let disposition = tailleTexte.isAccessibilitySize
-                                ? AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 10))
-                                : AnyLayout(VStackLayout(spacing: 4))
-                            disposition {
-                                valeur(chiffre.valeur)
-                                    .font(Font.title2.bold())
-                                    .monospacedDigit()
-                                    .foregroundStyle(Teinte(.brand))
-                                    // Une ligne (CheminValeur : maxLines 1), « 18 שע׳ 30 דק׳ » rapetissé plutôt que coupé.
-                                    .uneLigne(retrecie: 0.5)
-                                Text(chiffre.libelle, traducteur: traducteur)
-                                    .font(.caption)
-                                    .foregroundStyle(Teinte(.muted))
-                                    .multilineTextAlignment(tailleTexte.isAccessibilitySize ? .leading : .center)
-                            }
-                            .frame(maxWidth: .infinity, alignment: tailleTexte.isAccessibilitySize ? .leading : .center)
-                            .accessibilityElement(children: .combine)
-                        }
+                // Sur l'iPad, deux colonnes (DeuxColonnes) : les chiffres et le mois, les cartes à côté.
+                DeuxColonnes(espacement: 14) {
+                    chiffres
+                    // Le mois en cours, en barres (chemin_mois).
+                    Carte {
+                        GraphiqueMois(graphique: modele.graphique, sombre: false)
                     }
-                }
-                // Le mois en cours, en barres (chemin_mois).
-                Carte {
-                    GraphiqueMois(graphique: modele.graphique, sombre: false)
-                }
-                Carte {
-                    Button {
-                        modele.ouvrir(.journal)
-                    } label: {
-                        LigneSection(titre: Text(modele.libelleJournal, traducteur: traducteur),
-                                     etat: Text(modele.etatJournal, traducteur: traducteur))
-                    }
-                    .buttonStyle(.plain)
-                    Button {
-                        modele.ouvrir(.parcours)
-                    } label: {
-                        LigneSection(titre: Text(modele.libelleParcours, traducteur: traducteur),
-                                     etat: Text(modele.indicationParcours, traducteur: traducteur))
-                    }
-                    .buttonStyle(.plain)
-                    Button {
-                        modele.ouvrir(.paliers)
-                    } label: {
-                        LigneSection(titre: Text(modele.libelleTrophees, traducteur: traducteur),
-                                     etat: Text(modele.etatTrophees, traducteur: traducteur))
-                    }
-                    .buttonStyle(.plain)
+                } seconde: {
+                    liens
                 }
             }
             .padding(.horizontal, 16)
@@ -85,6 +43,62 @@ public struct CheminVue: View {
         .background(Teinte(.paper))
         .navigationTitle(Text(modele.titre, traducteur: traducteur))
         .toolbar(.hidden, for: .navigationBar)
+    }
+
+    /// La série, la meilleure série et le temps total.
+    private var chiffres: some View {
+        Carte {
+            // Trois colonnes ; aux tailles d'accessibilité, trois lignes (le chiffre, puis son libellé), où les mots se
+            // coupaient lettre à lettre.
+            RangeeAdaptable(alignement: .top, espacement: tailleTexte.isAccessibilitySize ? 12 : 8) {
+                ForEach(modele.chiffres) { chiffre in
+                    let disposition = tailleTexte.isAccessibilitySize
+                        ? AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 10))
+                        : AnyLayout(VStackLayout(spacing: 4))
+                    disposition {
+                        valeur(chiffre.valeur)
+                            .font(Font.title2.bold())
+                            .monospacedDigit()
+                            .foregroundStyle(Teinte(.brand))
+                            // Une ligne (CheminValeur : maxLines 1), « 18 שע׳ 30 דק׳ » rapetissé plutôt que coupé.
+                            .uneLigne(retrecie: 0.5)
+                        Text(chiffre.libelle, traducteur: traducteur)
+                            .font(.caption)
+                            .foregroundStyle(Teinte(.muted))
+                            .multilineTextAlignment(tailleTexte.isAccessibilitySize ? .leading : .center)
+                    }
+                    .frame(maxWidth: .infinity, alignment: tailleTexte.isAccessibilitySize ? .leading : .center)
+                    .accessibilityElement(children: .combine)
+                }
+            }
+        }
+    }
+
+    /// Le journal, « Mon parcours », les trophées.
+    private var liens: some View {
+        Carte {
+            Button {
+                modele.ouvrir(.journal)
+            } label: {
+                LigneSection(titre: Text(modele.libelleJournal, traducteur: traducteur),
+                             etat: Text(modele.etatJournal, traducteur: traducteur))
+            }
+            .buttonStyle(.plain)
+            Button {
+                modele.ouvrir(.parcours)
+            } label: {
+                LigneSection(titre: Text(modele.libelleParcours, traducteur: traducteur),
+                             etat: Text(modele.indicationParcours, traducteur: traducteur))
+            }
+            .buttonStyle(.plain)
+            Button {
+                modele.ouvrir(.paliers)
+            } label: {
+                LigneSection(titre: Text(modele.libelleTrophees, traducteur: traducteur),
+                             etat: Text(modele.etatTrophees, traducteur: traducteur))
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     private func valeur(_ texte: AccueilTexte) -> Text {

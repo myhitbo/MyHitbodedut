@@ -22,12 +22,15 @@ struct SereniteVue: View {
                     entete(e, k)
                     SereniteCartePaysage(modele: modele, ecran: e)
                         .padding(.top, 18)
-                    carteHizouk(e, k)
-                        .padding(.top, 18)
-                    carteZman(e, k)
-                        .padding(.top, 14)
-                    semaine(e, k)
-                        .padding(.top, 14)
+                    // Sur l'iPad, deux colonnes (DeuxColonnes) sous le paysage : le hizouk et le zman, les derniers
+                    // jours à côté.
+                    DeuxColonnes(espacement: 14) {
+                        carteHizouk(e, k)
+                        carteZman(e, k)
+                    } seconde: {
+                        semaine(e, k)
+                    }
+                    .padding(.top, 18)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
