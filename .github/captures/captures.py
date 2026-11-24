@@ -1249,7 +1249,9 @@ def main():
         photo("31f-tehilim-vitesse-1-gardee")
         comparer_vitesse("Tehilim, vitesse 1 gardee", vitesse_mesuree(3.0), vitesse_attendue(1))
         taper(touches["plus"], 2)
-        comparer_vitesse("Tehilim, vitesse 3", vitesse_mesuree(3.0), vitesse_attendue(3))
+        # Pas de mesure ici : le bandeau des Tehilim se replie a ce moment-la et fait monter le texte
+        # de sa hauteur (68 px/s mesures au lieu de 31, run 45405775442) ; la vitesse 3 se mesure apres le volet.
+        pause(3.0)
         # Le volet des notifications devant : rien ne bouge tant qu'il est la, puis le texte repart.
         avant = ecran_brut()
         sh("cmd statusbar expand-notifications")
