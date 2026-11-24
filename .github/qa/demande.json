@@ -2,14 +2,11 @@
   "parcours": "recette",
   "variante": "release",
   "cibles": [
-    { "api": 36, "nom": "api36-a", "passes": "examinateur,video,ecrans-fr,versions,seance" },
-    { "api": 36, "nom": "api36-b", "passes": "ecrans-he,ecrans-ar,ecrans-es,nuit,barriere,presentation" },
-    { "api": 36, "nom": "api36-c", "passes": "tablette,ciel-de-nuit,redemarrage" },
-    { "api": 35, "nom": "api35-a", "passes": "examinateur,ecrans-fr,versions,seance,barriere" },
-    { "api": 35, "nom": "api35-b", "passes": "ecrans-he,nuit,presentation,tablette,ciel-de-nuit,redemarrage" },
-    { "api": 34, "nom": "api34-a", "passes": "examinateur,ecrans-fr,versions,seance,barriere" },
-    { "api": 34, "nom": "api34-b", "passes": "ecrans-he,nuit,presentation,tablette,redemarrage" },
-    { "api": 33, "nom": "api33-a", "passes": "examinateur,ecrans-fr,versions,seance,barriere,redemarrage" },
-    { "api": 33, "nom": "api33-b", "passes": "ecrans-he,nuit,presentation,tablette" }
+    { "api": 36, "nom": "api36-dec-a", "passes": "suite,examinateur,seance,versions" },
+    { "api": 36, "nom": "api36-dec-b", "passes": "ecrans-ar,ecrans-he,couche,redemarrage" },
+    { "api": 35, "nom": "api35-dec-a", "passes": "suite,seance,versions,barriere" },
+    { "api": 34, "nom": "api34-dec-a", "passes": "suite,examinateur,seance,versions,ecrans-fr" },
+    { "api": 33, "nom": "api33-dec-a", "passes": "suite,seance,versions,ecrans-es,redemarrage" },
+    { "api": 33, "nom": "api33-dec-b", "passes": "ecrans-ar,nuit,tablette" }
   ]
 }
