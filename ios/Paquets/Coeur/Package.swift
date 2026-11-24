@@ -22,25 +22,6 @@ let enChantierEcransTests: [String] = [
     "PersistanceDepotTests.swift",
 ]
 let enChantierVues: [String] = [
-    "AccueilCartes.swift",
-    "AccueilJauge.swift",
-    "AccueilOutils.swift",
-    "AccueilSections.swift",
-    "CalendrierVue.swift",
-    "CelebrationVue.swift",
-    "JournalGraphiqueVue.swift",
-    "ParcoursVue.swift",
-    "PartageJourVue.swift",
-    "ReglagesCartes.swift",
-    "ReglagesFenetres.swift",
-    "SeanceCartes.swift",
-    "TextesSourceDuJourVue.swift",
-    "VolCommun.swift",
-    "VolFeuilles.swift",
-    "ZmanimBlocs.swift",
-    "ZmanimCommun.swift",
-    "ZmanimLune.swift",
-    "ZmanimOngletVue.swift",
 ]
 
 let package = Package(
