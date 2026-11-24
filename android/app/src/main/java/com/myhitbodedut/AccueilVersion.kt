@@ -27,6 +27,24 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         ZmanimWidget.refresh(this)
     }
 
+    /**
+     * Les petites animations du paysage (CielVivant, 24/11) : permises par le téléphone et l'écran
+     * devant, sinon le paysage reste immobile. [paysage] pose le ciel de la carte avec cet état.
+     */
+    private var cielPermis = false
+    private var paysageCourant: PaysageCiel? = null
+    private val gardeCiel = GardeCiel(this) { permis ->
+        cielPermis = permis
+        paysageCourant?.anime = permis
+    }
+
+    /** Le paysage du ciel de la carte, animé si c'est permis ; [nuages] seulement là où le haut du ciel est libre de texte. */
+    fun paysage(phase: CielDuJour.Phase, nuages: Boolean = false): PaysageCiel =
+        PaysageCiel(phase, resources.displayMetrics.density, nuages).also {
+            it.anime = cielPermis
+            paysageCourant = it
+        }
+
     /** La version que cet écran représente : si elle n'est plus la version choisie, on repart de MainActivity. */
     abstract val version: VersionApp
 
@@ -53,6 +71,7 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
     override fun onResume() {
         super.onResume()
         if (isFinishing) return
+        gardeCiel.reprendre()
         SessionService.reconcilier(this)
         appliquerServices()
         Data.prechauffer(this) {
@@ -63,6 +82,11 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
+    }
+
+    override fun onPause() {
+        gardeCiel.suspendre()
+        super.onPause()
     }
 
     override fun noteEnregistree(date: String) = dessiner()

@@ -1192,6 +1192,121 @@ def main():
         regler({"version_app": ("string", "classique")})
     etape("30 ciel de nuit", s28n)
 
+    # Le ciel du moment sur toute la page du Jour, et ses petites animations (24/11, CielPage,
+    # CielVivant). Les animations du systeme, coupees pour tout le parcours, sont retablies le
+    # temps de ces etapes : chaque ciel anime est pris deux fois, a six secondes d'ecart (le halo
+    # est alors au creux de son souffle, les nuages ont avance de 18 dp, les etoiles ont change
+    # d'eclat). Les heures sans lieu choisi (CielDuJour.parHeure) : aube 6 h 30, jour 12 h,
+    # coucher 18 h 30, nuit 21 h 30.
+    PHASES_CIEL = (("aube", "0630"), ("jour", "1200"), ("coucher", "1830"), ("nuit", "2130"))
+
+    def animations(actives):
+        for k in ("window_animation_scale", "transition_animation_scale", "animator_duration_scale"):
+            sh(f"settings put global {k} {1 if actives else 0}")
+
+    def jour_du_ciel(prefixe, langues, modes, deux_fois):
+        for lg in langues:
+            for mode in modes:
+                regler({"apparence_mode": ("string", mode), "langue_app": ("string", lg), "version_app": ("string", "classique")})
+                langue(lg)
+                for phase, heure in PHASES_CIEL:
+                    log("  date :", sh(f"date 1124{heure}2026.00").strip())
+                    lancer(attente=6)
+                    capture(f"{prefixe}-{lg}-{mode}-{phase}", attente=0.5)
+                    if deux_fois:
+                        capture(f"{prefixe}-{lg}-{mode}-{phase}-t6", attente=6.0)
+
+    def s31():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            jour_du_ciel("31", ("fr",), ("clair", "sombre"), True)
+            jour_du_ciel("31", ("he",), ("clair", "sombre"), False)
+            # Le bas de la page : la couleur du bas du ciel continue sous la barre de depart.
+            regler({"apparence_mode": ("string", "sombre"), "langue_app": ("string", "fr")})
+            langue("fr")
+            sh("date 112406302026.00")
+            lancer(attente=6)
+            defiler(True)
+            capture("31-fr-sombre-aube-bas", attente=1.0)
+            # Un court film, la nuit puis le jour, en theme sombre (ce que le proprietaire voit chaque jour).
+            for phase, heure in (("nuit", "2130"), ("jour", "1200")):
+                sh(f"date 1124{heure}2026.00")
+                lancer(attente=6)
+                sh("rm -f /sdcard/ciel.mp4")
+                sh("screenrecord --time-limit 8 /sdcard/ciel.mp4", timeout=30)
+                pause(1.0)
+                video = adb("exec-out", "cat", "/sdcard/ciel.mp4", binary=True)
+                with open(os.path.join(OUT, f"31-film-{phase}.mp4"), "wb") as f:
+                    f.write(video)
+                log(f"  film {phase} : {len(video)} octets")
+            # Animations coupees, puis economie de batterie : le ciel immobile, identique a six secondes d'ecart.
+            sh("date 112421302026.00")
+            animations(False)
+            lancer(attente=6)
+            capture("31-fr-sombre-nuit-immobile", attente=0.5)
+            capture("31-fr-sombre-nuit-immobile-t6", attente=6.0)
+            animations(True)
+            sh("cmd battery unplug")
+            sh("settings put global low_power 1")
+            lancer(attente=6)
+            capture("31-fr-sombre-nuit-economie", attente=0.5)
+            capture("31-fr-sombre-nuit-economie-t6", attente=6.0)
+            sh("settings put global low_power 0")
+            sh("cmd battery reset")
+        finally:
+            animations(False)
+            regler({"apparence_mode": ("string", "auto"), "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("31 ciel du Jour", s31)
+
+    # Le meme ciel sur un petit telephone, texte agrandi (480x854, 240 dpi, police 1,3) : les quatre
+    # phases en francais et en hebreu, clair et sombre. Pas de geste apres le changement de taille.
+    def s32():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            sh("settings put system font_scale 1.3")
+            appliquer_taille("480x854", 240, False)
+            pause(4)
+            jour_du_ciel("32-petit", ("fr", "he"), ("clair", "sombre"), False)
+        finally:
+            animations(False)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            regler({"apparence_mode": ("string", "auto"), "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("32 ciel du Jour sur petit ecran", s32)
+
+    # Les paysages des accueils Serenite (avec son nuage ou son voile) et Instant, animes.
+    def s33():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            for version in ("serenite", "instant"):
+                regler({"version_app": ("string", version), "langue_app": ("string", "fr")})
+                langue("fr")
+                for phase, heure in PHASES_CIEL:
+                    if version == "instant" and phase in ("aube", "coucher"):
+                        continue
+                    sh(f"date 1124{heure}2026.00")
+                    lancer(attente=6)
+                    capture(f"33-{version}-{phase}", attente=0.5)
+                    capture(f"33-{version}-{phase}-t6", attente=6.0)
+            sh("date 112412002026.00")
+            regler({"version_app": ("string", "serenite")})
+            lancer(attente=6)
+            sh("rm -f /sdcard/paysage.mp4")
+            sh("screenrecord --time-limit 8 /sdcard/paysage.mp4", timeout=30)
+            pause(1.0)
+            video = adb("exec-out", "cat", "/sdcard/paysage.mp4", binary=True)
+            with open(os.path.join(OUT, "33-film-serenite-jour.mp4"), "wb") as f:
+                f.write(video)
+        finally:
+            animations(False)
+            regler({"version_app": ("string", "classique")})
+    etape("33 paysages animes", s33)
+
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
 

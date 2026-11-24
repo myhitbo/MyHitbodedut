@@ -70,19 +70,22 @@ class CielDuJourTest {
     }
 
     @Test
-    fun `l accueil met le ciel dans la plaque et les lanternes dans la semaine`() {
+    fun `l accueil met le ciel sur toute la page et les lanternes dans la semaine`() {
         val accueil = File("src/main/java/com/myhitbodedut/MainActivity.kt").readText()
-        // Le ciel derrière le hassid, le disque clair derrière les chiffres.
-        assertTrue(accueil.contains("plaque.background = cielDessin"))
+        // Le ciel en fond de tout le Jour (24/11), plus dans la plaque : le disque clair sous le hassid comme sous les chiffres.
+        assertTrue(accueil.contains("scroll.background = cielPage"))
         assertTrue(accueil.contains("plaque.setBackgroundResource(R.drawable.bg_gauge_plate)"))
-        // Revu chaque minute tant que l'accueil est devant, arrêté en le quittant.
+        assertTrue("la plaque ne doit plus porter de ciel", !accueil.contains("plaque.background ="))
+        assertTrue("CielDessin.kt ne sert plus", !File("src/main/java/com/myhitbodedut/CielDessin.kt").exists())
+        // Revu chaque minute tant que l'accueil est devant, arrêté en le quittant ; ses animations aussi.
         assertTrue(accueil.contains("postDelayed(veilleCiel, CIEL_MS)") && accueil.contains("removeCallbacks(veilleCiel)"))
+        assertTrue(accueil.contains("gardeCiel.reprendre()") && accueil.contains("gardeCiel.suspendre()"))
+        // La barre de départ prend la couleur du bas du ciel, sans couture.
+        assertTrue(accueil.contains("cielPage.teintes?.bas"))
         listOf("lanterne_allumee", "lanterne_eteinte", "lanterne_aujourdhui", "bougies_chabbat").forEach {
             assertTrue("$it n'est pas employée", accueil.contains("R.drawable.$it"))
         }
         val cellule = File("src/main/res/layout/item_day.xml").readText()
         assertTrue(cellule.contains("@+id/day_lanterne\"") && cellule.contains("android:importantForAccessibility=\"no\""))
-        // La plaque reste ronde : le dessin du ciel donne un contour ovale.
-        assertTrue(File("src/main/java/com/myhitbodedut/CielDessin.kt").readText().contains("outline.setOval(bounds)"))
     }
 }

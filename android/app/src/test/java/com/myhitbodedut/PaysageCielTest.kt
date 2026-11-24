@@ -54,19 +54,42 @@ class PaysageCielTest {
     }
 
     @Test
-    fun `tous les degrades sont dans la peinture de l image`() {
+    fun `tous les degrades sont peints dans des images, jamais a l ecran`() {
+        // Les dégradés ne vivent que dans les fonctions qui peignent une image (peindre…).
+        val fonctions = Regex("""private fun (\w+)\(""").findAll(code).map { it.groupValues[1] }.toList()
+        val avecDegrade = fonctions.filter { Regex("(Linear|Radial)Gradient\\(").containsMatchIn(corps("private fun $it(")) }
+        assertTrue("aucun dégradé trouvé", avecDegrade.isNotEmpty())
+        avecDegrade.forEach { assertTrue("dégradé hors d'une peinture d'image : $it", it.startsWith("peindre")) }
+        assertEquals("un dégradé hors des fonctions de peinture",
+            Regex("(Linear|Radial)Gradient\\(").findAll(code).count(),
+            avecDegrade.sumOf { Regex("(Linear|Radial)Gradient\\(").findAll(corps("private fun $it(")).count() })
+        // Animé (24/11), chaque trame ne fait que poser des images déjà peintes.
+        val anime = corps("private fun dessinerAnime(")
+        assertTrue(anime.contains("canvas.drawBitmap("))
+        traces.forEach { trace -> assertFalse("l'animation peint directement à l'écran ($trace)", anime.contains(trace)) }
+    }
+
+    /** Immobile (animations coupées, économie de batterie, écran quitté), l'image d'avant les animations. */
+    @Test
+    fun `immobile, le paysage reste celui d avant`() {
+        val draw = corps("override fun draw(canvas: Canvas)")
+        assertTrue(draw.contains("if (horloge.enMarche && dessinerAnime(canvas, largeur, hauteur))"))
         val peindre = corps("private fun peindre(")
-        assertTrue(peindre.contains("LinearGradient("))
-        assertEquals("un dégradé hors de peindre()", Regex("(Linear|Radial)Gradient\\(").findAll(code).count(),
-            Regex("(Linear|Radial)Gradient\\(").findAll(peindre).count())
+        listOf("peindreCiel(canvas, w, h)", "canvas.drawCircle(x * w, y * h, t * d * 0.8f, etoile)", "peindreHalo(canvas, cx, cy, rayon)",
+            "canvas.drawCircle(cx, cy, rayon, astre)", "peindreCollines(canvas, w, h)").forEach {
+            assertTrue("la peinture immobile a changé : $it", peindre.contains(it))
+        }
     }
 
     /** Les deux accueils qui montrent le ciel passent par ce paysage, pas par un dégradé à eux. */
     @Test
     fun `Instant et Serenite posent ce paysage en fond de carte`() {
-        listOf("InstantActivity", "SereniteActivity").forEach { ecran ->
+        // AccueilVersion.paysage crée le PaysageCiel et lui donne l'état de ses animations (GardeCiel).
+        assertTrue(File("src/main/java/com/myhitbodedut/AccueilVersion.kt").readText()
+            .contains("PaysageCiel(phase, resources.displayMetrics.density, nuages)"))
+        listOf("InstantActivity" to "background = paysage(phase)", "SereniteActivity" to "background = paysage(phase, nuages = true)").forEach { (ecran, pose) ->
             val source = File("src/main/java/com/myhitbodedut/$ecran.kt").readText()
-            assertTrue("$ecran ne pose plus PaysageCiel", source.contains("background = PaysageCiel(phase, resources.displayMetrics.density)"))
+            assertTrue("$ecran ne pose plus PaysageCiel", source.contains(pose))
         }
     }
 }

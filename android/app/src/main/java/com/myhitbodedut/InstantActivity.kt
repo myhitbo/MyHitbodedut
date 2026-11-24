@@ -93,7 +93,7 @@ class InstantActivity : AccueilVersion() {
         // faire chevaucher le titre et les zmanim (petits écrans, 17/11).
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) }
         minimumHeight = dp(300)
-        background = PaysageCiel(phase, resources.displayMetrics.density)
+        background = paysage(phase)
         outlineProvider = object : android.view.ViewOutlineProvider() {
             override fun getOutline(view: View, outline: android.graphics.Outline) = outline.setRoundRect(0, 0, view.width, view.height, dp(28).toFloat())
         }

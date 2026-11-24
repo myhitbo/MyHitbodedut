@@ -101,7 +101,8 @@ class SereniteActivity : AccueilVersion() {
         // Sans dépasser la hauteur visible sous l'en-tête et au-dessus des onglets (texte agrandi).
         val haut = minOf((c.screenHeightDp / 2).coerceIn(300, 380) * c.fontScale.coerceIn(1f, 1.4f), (c.screenHeightDp - 200).coerceAtLeast(280).toFloat())
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(haut.toInt())).apply { topMargin = dp(18) }
-        background = PaysageCiel(phase, resources.displayMetrics.density)
+        // Le haut du ciel est libre de texte : un nuage pâle le jour, un voile à l'aube et au coucher.
+        background = paysage(phase, nuages = true)
         outlineProvider = object : android.view.ViewOutlineProvider() {
             override fun getOutline(view: View, outline: android.graphics.Outline) = outline.setRoundRect(0, 0, view.width, view.height, dp(32).toFloat())
         }
