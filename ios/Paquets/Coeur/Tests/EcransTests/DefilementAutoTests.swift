@@ -4,11 +4,11 @@ import Coeur
 @testable import Ecrans
 
 /// Le défilement automatique des écrans de lecture (ReglagesLecture.kt, 16/11) : le niveau de 1 à 10 gardé sous
-/// `lecture_defilement_vitesse`, la vitesse de chaque niveau, le pas de chaque image, l'arrêt au bout, le doigt
-/// qui suspend, et le même défilement dans le siddour, les Tehilim et le Tikoun.
+/// `lecture_defilement_vitesse`, la vitesse de chaque niveau, le pas de chaque image, l'arrêt au bout et au
+/// masquage du bouton, et le même défilement dans le siddour, les Tehilim et le Tikoun.
 ///
-/// Restent au test d'interface : le texte qui défile vraiment (TimelineView, ScrollPosition), le glissé qui
-/// suspend, l'écran qui reste allumé.
+/// Restent au test d'interface : le texte qui défile vraiment (TimelineView, ScrollPosition), le doigt sur le
+/// texte qui l'arrête (la phase du ScrollView), l'écran qui reste allumé.
 @Suite("Le défilement automatique")
 @MainActor
 struct DefilementAutoTests {
@@ -141,8 +141,6 @@ struct DefilementAutoTests {
         var position = 0.0
         for _ in 0..<5 {
             position = d.avancer(position: position, ecoule: 1.0 / 60, fin: 1000).position
-            // Le défilement redevenu immobile sans doigt (la phase « idle ») ne perd pas les fractions.
-            d.repriseUtilisateur()
         }
         #expect(position == 0)
         position = d.avancer(position: position, ecoule: 1.0 / 60, fin: 1000).position
@@ -165,25 +163,6 @@ struct DefilementAutoTests {
         let court = d.avancer(position: 0, ecoule: 1, fin: 0)
         #expect(court.position == 0 && court.finAtteinte)
         #expect(!d.actif)
-    }
-
-    @Test func leDoigtSuspendLeDefilementQuiRepartEnsuite() {
-        let (d, _) = Self.defilement()
-        d.lancer()
-        _ = d.avancer(position: 0, ecoule: 1.0 / 60, fin: 1000)
-        d.pauseUtilisateur()
-        #expect(d.actif && d.suspendu)
-        #expect(d.commandeVisible)
-        let tenu = d.avancer(position: 300, ecoule: 1, fin: 1000)
-        #expect(tenu.position == 300 && !tenu.finAtteinte)
-        // Lâché : il repart d'où le doigt l'a laissé, sans les fractions d'avant.
-        d.repriseUtilisateur()
-        #expect(!d.suspendu)
-        #expect(d.avancer(position: 300, ecoule: 1, fin: 1000).position == 311)
-        // À l'arrêt, le doigt ne change rien.
-        d.arreter()
-        d.pauseUtilisateur()
-        #expect(!d.suspendu)
     }
 
     // MARK: Les boutons et leurs noms
@@ -219,5 +198,19 @@ struct DefilementAutoTests {
         siddour.defilementAuto.lancer()
         try await siddour.quitter()
         #expect(!siddour.defilementAuto.actif)
+    }
+
+    @Test func masquerLeBoutonArreteLeDefilement() async throws {
+        // Comme ReglagesLecture.masquer d'Android (24/11) : plus rien à l'écran, pas même la commande.
+        let magasin = Magasin.enMemoire()
+        let siddour = LectureModele(magasin: magasin, contenus: ContenusApp(dossier: Fichiers.contenu),
+                                    horloge: HorlogeFixe(maintenant: 0), langue: "fr", cible: .siddour("chaharit"))
+        siddour.defilementAuto.lancer()
+        try await siddour.masquer()
+        #expect(!siddour.defilementAuto.actif && !siddour.defilementAuto.commandeVisible)
+        let tehilim = TehilimBarreLecture(magasin: magasin, langue: "fr")
+        tehilim.defilementAuto.lancer()
+        try await tehilim.masquer()
+        #expect(!tehilim.defilementAuto.actif && !tehilim.defilementAuto.commandeVisible)
     }
 }

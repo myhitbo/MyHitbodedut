@@ -22,7 +22,9 @@ public struct CalendrierVue: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
+            // Sur l'iPad, deux colonnes (DeuxColonnes) : la grille et le jour touché, puis sa halakha et ses horaires
+            // à côté.
+            DeuxColonnes(espacement: 14) {
                 grille
                 ZmanimCarteJourVue(carte: modele.carte, estAujourdhui: true, precedent: nil, suivant: nil,
                                    aujourdhui: nil, partage: modele.partage)
@@ -32,6 +34,7 @@ public struct CalendrierVue: View {
                 if let hilloula = modele.hilloula {
                     hilloulaVue(hilloula)
                 }
+            } seconde: {
                 if let halakha = modele.halakha {
                     halakhaVue(halakha)
                 }

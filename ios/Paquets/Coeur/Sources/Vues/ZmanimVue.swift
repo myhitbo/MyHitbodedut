@@ -22,7 +22,8 @@ public struct ZmanimVue: View {
 
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
+            // Sur l'iPad, deux colonnes (DeuxColonnes) : le jour et ses horaires, puis le reste du jour à côté.
+            DeuxColonnes(espacement: 14) {
                 lieu
                 ZmanimCarteJourVue(carte: modele.carte, estAujourdhui: modele.estAujourdhui,
                                    precedent: { modele.jourPrecedent() }, suivant: { modele.jourSuivant() },
@@ -37,6 +38,7 @@ public struct ZmanimVue: View {
                         .foregroundStyle(Teinte(.brand))
                 }
                 horaires
+            } seconde: {
                 if let levana = modele.levana {
                     ZmanimLevanaVue(levana: levana) { ouvrir(levana.route) }
                 }

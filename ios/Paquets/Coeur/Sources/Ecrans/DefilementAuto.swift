@@ -9,8 +9,8 @@ import Coeur
 //
 // La vue donne l'horloge (chaque image d'un TimelineView(.animation)) : à chaque image, elle demande à `avancer` où mettre
 // le texte. Les fractions de point s'accumulent d'une image à l'autre, comme le `scrollBy(0, Int)` d'Android :
-// mille petites images font le même chemin qu'une grande. Un doigt sur le texte suspend le défilement, qui repart
-// d'où le doigt l'a laissé ; le bout du texte l'arrête.
+// mille petites images font le même chemin qu'une grande. Un doigt sur le texte l'arrête, comme sur Android, le
+// site et le Nokia (la vue, DefilementAutoVue.swift) ; le bout du texte, le bouton ❚❚ et « Masquer » aussi.
 
 /// Le défilement automatique d'un écran de lecture.
 @MainActor
@@ -20,8 +20,6 @@ public final class DefilementAuto {
 
     /// Le texte défile tout seul (le bouton de la barre, ou la commande flottante).
     public private(set) var actif = false
-    /// Un doigt tient le texte : le défilement attend qu'il le lâche.
-    public private(set) var suspendu = false
     /// Les fractions de point pas encore parcourues, gardées pour l'image suivante.
     @ObservationIgnored private var reste: Double = 0
 
@@ -80,14 +78,13 @@ public final class DefilementAuto {
     /// Lance le défilement, d'où est le texte.
     public func lancer() {
         actif = true
-        suspendu = false
         reste = 0
     }
 
-    /// [pause] de la commande, le bout du texte, ou l'écran quitté : le défilement s'arrête.
+    /// [pause] de la commande, le bout du texte, un doigt sur le texte, « Masquer » ou l'écran quitté : le
+    /// défilement s'arrête.
     public func arreter() {
         actif = false
-        suspendu = false
         reste = 0
     }
 
@@ -107,26 +104,11 @@ public final class DefilementAuto {
         try await magasin.modifierReglages { $0.setLectureDefilementVitesse(nouveau) }
     }
 
-    /// Un doigt prend le texte (le glissé commence) : le défilement l'attend, sans s'arrêter.
-    public func pauseUtilisateur() {
-        guard actif, !suspendu else { return }
-        suspendu = true
-        reste = 0
-    }
-
-    /// Le doigt a lâché le texte (le défilement de l'inertie fini) : le défilement repart d'où il est.
-    public func repriseUtilisateur() {
-        guard actif, suspendu else { return }
-        suspendu = false
-        reste = 0
-    }
-
     /// Une image : où mettre le texte, à `position` (en points, du haut), après `ecoule` secondes, sans dépasser
     /// `fin` (le plus bas où le texte peut aller). Seuls des points entiers s'ajoutent ; les fractions attendent
-    /// l'image suivante. Au bout, le défilement s'arrête et `finAtteinte` le dit. Rien ne bouge à l'arrêt ou
-    /// suspendu.
+    /// l'image suivante. Au bout, le défilement s'arrête et `finAtteinte` le dit. Rien ne bouge à l'arrêt.
     public func avancer(position: Double, ecoule: TimeInterval, fin: Double) -> (position: Double, finAtteinte: Bool) {
-        guard actif, !suspendu else { return (position, false) }
+        guard actif else { return (position, false) }
         if position >= fin {
             arreter()
             return (max(position, fin), true)

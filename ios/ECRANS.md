@@ -58,6 +58,11 @@ Et regarder l'écran : `ios-captures.yml` lance l'app sur le simulateur et la ph
   chaîne propre à iOS : `Text("cle", tableName: "ios")` (`Ressources/Chaines/ios.xcstrings`).
 - L'hébreu de droite à gauche vient de l'environnement (`layoutDirection`) ; une image ou un sens qui doivent se
   retourner le disent explicitement.
+- Les grands écrans (`Ecrans/GrandEcran.swift`, `Vues/GrandEcranVue.swift`) : la racine écarte le contenu des
+  bords (`margesLarges`, les marges de values-w600dp à w1200dp d'Android) ; un écran long se coupe en deux moitiés
+  dans `DeuxColonnes(espacement:)`, côte à côte sur l'iPad quand la place entre les marges en tient deux, l'une
+  sous l'autre sinon (au point près comme une `VStack(alignment: .leading)` du même espacement : l'iPhone ne
+  change pas). On coupe là où les hauteurs s'équilibrent, en gardant l'ordre de lecture.
 - Pas d'image pendant la prière (règle d'Android) ; « Réduire les animations » respecté.
 - Un champ, un interrupteur, une feuille qui suivent le modèle : une propriété calculée lue et écrite, dans une
   extension du modèle sous `Vues` (`Vues/Liaisons.swift`, ou au bas de la vue), prise par
