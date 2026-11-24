@@ -1,0 +1,16 @@
+11-24 15:25:26.000   511   572 D SystemServerTimingAsync: InitThreadPoolExec:Update app-ops uidState in case package com.myhitbodedut changed
+11-24 15:25:26.001   511   572 D SystemServerInitThreadPool: Started executing Update app-ops uidState in case package com.myhitbodedut changed
+11-24 15:25:26.001   511   572 D SystemServerInitThreadPool: Finished executing Update app-ops uidState in case package com.myhitbodedut changed
+11-24 15:25:26.001   511   572 V SystemServerTimingAsync: InitThreadPoolExec:Update app-ops uidState in case package com.myhitbodedut changed took to complete: 0ms
+11-24 15:25:26.453   511   511 V StorageManagerService: Package com.myhitbodedut does not have legacy storage
+11-24 15:25:37.079  1476  2420 I AiAiCaptions: Would disable com.google.android.apps.miphone.aiai.captions.CaptionsForegroundService (reason: Captions is disabled in device config) but already disabled
+11-24 15:25:51.393   511   543 I ActivityManager: Start proc 3908:com.myhitbodedut/u0a174 for broadcast {com.myhitbodedut/com.myhitbodedut.BootReceiver}
+11-24 15:25:51.407  3908  3908 I om.myhitbodedut: Using CollectorTypeCC GC.
+11-24 15:25:51.408  3908  3908 W om.myhitbodedut: Unexpected CPU variant for x86: x86_64.
+11-24 15:25:51.408  3908  3908 W om.myhitbodedut: Known variants: atom, sandybridge, silvermont, kabylake, default
+11-24 15:25:51.498  3908  3908 D nativeloader: Configuring classloader-namespace for other apk /data/app/~~UveDaXxmajv3t7haF93f4Q==/com.myhitbodedut-oT7Ye8PnqJ6y_bevphhtFw==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~UveDaXxmajv3t7haF93f4Q==/com.myhitbodedut-oT7Ye8PnqJ6y_bevphhtFw==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.myhitbodedut
+11-24 15:25:51.523  3908  3908 V GraphicsEnvironment: ANGLE Developer option for 'com.myhitbodedut' set to: 'default'
+11-24 15:25:51.528  3908  3908 V GraphicsEnvironment: ANGLE GameManagerService for com.myhitbodedut: false
+11-24 15:25:51.554   511  2302 I ActivityManager: Background started FGS: Allowed [callingPackage: com.myhitbodedut; callingUid: 10174; uidState: RCVR; intent: Intent { cmp=com.myhitbodedut/.GateService }; code:SYSTEM_ALERT_WINDOW_PERMISSION; tempAllowListReason:<broadcast:1000:android.intent.action.BOOT_COMPLETED,reason:,reasonCode:BOOT_COMPLETED,duration:20000,callingUid:1000>; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null]
+11-24 15:25:51.604   511  2179 W ActivityManager: Foreground service started from background can not have location/camera/microphone access: service com.myhitbodedut/.GateService
+11-24 15:25:56.889  3908  4262 D ProfileInstaller: Skipping profile installation for com.myhitbodedut
