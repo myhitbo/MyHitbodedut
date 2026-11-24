@@ -17,21 +17,11 @@ let enChantierTests: [String] = [
     "TablesTests.swift",
 ]
 let enChantierEcrans: [String] = [
-    "CalendrierModele.swift",
-    "LieuModele.swift",
-    "PartageJour.swift",
-    "ReglagesModele.swift",
     "VolModele.swift",
     "VolServices.swift",
-    "ZmanimJour.swift",
 ]
 let enChantierEcransTests: [String] = [
-    "CalendrierModeleTests.swift",
-    "LieuModeleTests.swift",
-    "PartageJourTests.swift",
-    "ReglagesModeleTests.swift",
     "VolModeleTests.swift",
-    "ZmanimEcranTests.swift",
 ]
 let enChantierVues: [String] = [
     "BibliothequeCommun.swift",
