@@ -142,7 +142,7 @@ jobs:
           set -o pipefail
           xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$SIMULATEUR" \
             -only-testing:MyHitbodedutUITests/LibellesTests 2>&1 | tee libelles.log \
-            | grep -E "^(DEFAUT|ELEMENTS)|error:|TEST EXECUTE (SUCCEEDED|FAILED)" || true
+            | grep -E "^(DEFAUT|ELEMENTS|LENT)|error:|TEST EXECUTE (SUCCEEDED|FAILED)" || true
           n=$(grep -c "^DEFAUT" libelles.log || true)
           t=$(grep -c "^TOLERE" libelles.log || true)
           { grep "^DEFAUT" libelles.log || true; } | cut -f2- | sed -n '1,400p' > libelles-defauts.txt
@@ -164,7 +164,7 @@ jobs:
           grep -q "TEST EXECUTE SUCCEEDED" libelles.log
           # Les trois écrans dans les cinq langues ont bien été lus.
           test "$(grep -c "^ELEMENTS" libelles.log)" -eq 15
-      # Les mesures de l'app (lignes MESURE) et d'XCTest (lignes « measured [ … ] »), telles qu'elles sortent.
+      # Les mesures de l'app (lignes MESURE), puis celles d'XCTest (measure), lues dans le paquet de résultats.
       - name: Mesures (premier écran, défilement du plus long livre)
         id: mesures
         if: ${{ !cancelled() }}
@@ -175,8 +175,34 @@ jobs:
           set -o pipefail
           mkdir -p "$RUNNER_TEMP/mesures"
           xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$SIMULATEUR" \
+            -resultBundlePath "$RUNNER_TEMP/mesures.xcresult" \
             -only-testing:MyHitbodedutUITests/MesuresTests 2>&1 | tee mesures.log \
-            | grep -E "^MESURE|measured \[|error:|TEST EXECUTE (SUCCEEDED|FAILED)" || true
+            | grep -E "^MESURE|error:|TEST EXECUTE (SUCCEEDED|FAILED)" || true
+          xcrun xcresulttool get test-results metrics --path "$RUNNER_TEMP/mesures.xcresult" > metriques.json || true
+          python3 - metriques.json > metriques.txt <<'EOF'
+          import json, sys
+          try:
+              donnees = json.load(open(sys.argv[1]))
+          except Exception as e:
+              print(f"(métriques illisibles : {e})")
+              sys.exit()
+          def parcourir(x, test=""):
+              if isinstance(x, dict):
+                  test = x.get("testIdentifier", test)
+                  if "displayName" in x and "measurements" in x:
+                      m = [v for v in x["measurements"] if isinstance(v, (int, float))]
+                      if m:
+                          unite = x.get("unitOfMeasurement", "")
+                          moyenne = sum(m) / len(m)
+                          valeurs = ", ".join(f"{v:.4g}" for v in m)
+                          print(f"{test} : {x['displayName']} : moyenne {moyenne:.4g} {unite} [{valeurs}]")
+                  for v in x.values():
+                      parcourir(v, test)
+              elif isinstance(x, list):
+                  for v in x:
+                      parcourir(v, test)
+          parcourir(donnees)
+          EOF
           {
             echo "## Mesures, sur le simulateur de la CI ($APPAREIL, iOS 26.5, Mac Intel virtualisé : pas un iPhone)"
             echo "L'app en Release. Critère, à vérifier sur un iPhone : premier écran en moins de 400 ms, défilement du plus long livre sans image perdue."
@@ -185,9 +211,10 @@ jobs:
             echo '```'
             echo "### XCTest"
             echo '```'
-            { grep "measured \[" mesures.log || true; } | sed -E "s/^.*Test Case '-\[MyHitbodedutUITests\.MesuresTests ([^]]*)\]' measured /\1 : /; s/, performanceMetricID.*$//"
+            cat metriques.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          cat metriques.txt
           grep -q "TEST EXECUTE SUCCEEDED" mesures.log
       - name: Journaux
         if: always()
@@ -199,6 +226,7 @@ jobs:
             poids.txt
             libelles.log
             mesures.log
+            metriques.json
             ${{ runner.temp }}/mesures
           retention-days: 14
           if-no-files-found: ignore

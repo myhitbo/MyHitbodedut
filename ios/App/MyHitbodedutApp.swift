@@ -20,6 +20,8 @@ struct MyHitbodedutApp: App {
     private let formes: TropheeFormes?
 
     init() {
+        // Les étapes du lancement, mesurées avec « -mesures » seulement (Mesures.swift).
+        Mesures.etape("main")
         let paquet = Bundle.main.bundleURL
         self.paquet = paquet
         // UIAppFonts les a déjà fait connaître du système ; l'enregistrement explicite couvre le reste (un
@@ -32,6 +34,7 @@ struct MyHitbodedutApp: App {
         palettes = (try? lecteur("palettes.json")).flatMap { try? Palettes.lire($0) }
         formes = try? TropheeFormes.lire(lecteur)
         traducteur = MyHitbodedutApp.traducteur(paquet: paquet)
+        Mesures.etape("init")
     }
 
     var body: some Scene {
@@ -48,6 +51,7 @@ struct MyHitbodedutApp: App {
             .task {
                 if modeles == nil {
                     modeles = await ModelesApp.charger(paquet: paquet, traducteur: traducteur)
+                    Mesures.etape("modeles")
                 }
             }
             .environment(\.traducteur, traducteur)
