@@ -159,10 +159,13 @@ final class AuditAccessibiliteTests: XCTestCase {
     /// La raison pour laquelle ce défaut n'en est pas un, ou nil. Chaque règle est étroite : un défaut qu'elle ne
     /// décrit pas exactement compte.
     private func tolerance(_ d: Defaut) -> String? {
+        // Un écran de lecture photographié barre dépliée (« halakha-barre », Captures.suffixeBarre) a les tolérances
+        // de son écran.
+        let ecran = d.ecran.hasSuffix("-barre") ? String(d.ecran.dropLast("-barre".count)) : d.ecran
         // Le clavier du système (sa barre de prédictions) : rien de l'app. La recherche s'ouvre clavier levé ; un
         // UILabel sans élément y est l'une de ses étiquettes.
         if d.detail.contains("TUIPredictionViewCell") || d.detail.contains("UIKeyboard")
-            || (d.ecran == "recherche" && d.cadre == nil && d.detail.contains("UILabel")) {
+            || (ecran == "recherche" && d.cadre == nil && d.detail.contains("UILabel")) {
             return "le clavier du système, pas l'app"
         }
         // Un bouton inactif : WCAG 1.4.3 n'exige pas de contraste d'un composant inactif ; il s'efface à 38 % comme
@@ -171,20 +174,20 @@ final class AuditAccessibiliteTests: XCTestCase {
         if d.sorte == "contraste" && d.actif == false {
             return "composant inactif : WCAG 1.4.3 n'exige pas de contraste d'un composant inactif"
         }
-        if d.sorte == "texte coupé" && Self.demiFeuilles.contains(d.ecran) {
+        if d.sorte == "texte coupé" && Self.demiFeuilles.contains(ecran) {
             return "demi-feuille : son contenu défile, et elle s'ouvre en grand aux tailles d'accessibilité"
         }
         // La grille du mois : sept colonnes, dont les chiffres grandissent jusqu'à la première taille
         // d'accessibilité (au-delà ils ne tiendraient plus dans leur case) ; chaque case se montre alors en grand sous
         // un appui long (visualiseur de grand contenu), comme le calendrier d'iOS.
-        if d.ecran == "calendrier" && d.sorte == "Dynamic Type" && d.compact.contains("partially")
+        if ecran == "calendrier" && d.sorte == "Dynamic Type" && d.compact.contains("partially")
             && d.libelle.count <= 6 {
             return "case de la grille du mois, plafonnée à AX1, montrée en grand par le visualiseur de grand contenu"
         }
         // La fiche d'un trophée neuf, sur le Jour voilé à 60 % (le voile d'Android, voulu) : l'écran dessous est
         // caché à VoiceOver (accessibilityHidden) mais l'audit le mesure à travers le voile, et la fiche avec lui ;
         // la même carte blanche (encre, gris discret, accent) passe partout ailleurs.
-        if d.ecran == "fete" && d.sorte == "contraste" {
+        if ecran == "fete" && d.sorte == "contraste" {
             return "écran voilé sous la fiche d'un trophée (caché à VoiceOver) ; la fiche a les couleurs des cartes"
         }
         // Un texte de plusieurs paragraphes (retours à la ligne : la note du journal et son sujet, le sous-titre du
@@ -192,16 +195,17 @@ final class AuditAccessibiliteTests: XCTestCase {
         if d.sorte == "texte coupé" && d.libelle.contains("\n") {
             return "texte de plusieurs paragraphes, que l'audit mesure d'un tenant ; entier sur les captures « grand »"
         }
-        // Une ligne de texte du lecteur : le toucher qui rend la pastille « Aa » vaut pour toute la page (le
-        // défilement, et son action nommée pour VoiceOver), pas pour cette ligne, qui n'est pas un bouton.
-        if (d.ecran == "lecteur" || d.ecran == "livre") && d.sorte == "zone de toucher"
+        // Une ligne de texte du lecteur, de la halakha ou des hilloulot : le toucher qui rend la pastille « Aa » vaut
+        // pour toute la page (le défilement, et son action nommée pour VoiceOver), pas pour cette ligne, qui n'est pas
+        // un bouton.
+        if ["lecteur", "livre", "halakha", "hilloulot"].contains(ecran) && d.sorte == "zone de toucher"
             && d.genre.contains("48") {
             return "texte statique : le toucher vaut pour toute la page, pas pour cette ligne"
         }
         // Le texte d'un livre ouvert, en liste paresseuse (indispensable : des milliers de lignes) : quand la
         // taille du texte monte, ses paragraphes se refont et l'audit les perd ; ils suivent Dynamic Type
         // (`LectureLigneVue.unite`, @ScaledMetric au centième).
-        if (d.ecran == "lecteur" || d.ecran == "livre") && d.sorte == "Dynamic Type"
+        if (ecran == "lecteur" || ecran == "livre") && d.sorte == "Dynamic Type"
             && d.compact.contains("partially") {
             return "ligne d'une liste paresseuse de texte long : elle suit Dynamic Type, l'audit la perd en route"
         }
@@ -213,8 +217,8 @@ final class AuditAccessibiliteTests: XCTestCase {
         // Deux titres sans limite de lignes : l'en-tête de Pile, page sans défilement dont l'en-tête garde sa
         // hauteur (fixedSize : c'est la pile de cartes qui cède la place), et le titre de la carte du 'hizouk de
         // Sérénité, vu entier sur deux lignes sur la capture grand-fr-serenite.
-        if d.sorte == "texte coupé" && ((d.ecran == "pile" && d.libelle == "Votre journée")
-            || (d.ecran == "serenite" && d.libelle.uppercased().hasSuffix("HIZOUK DU JOUR"))) {
+        if d.sorte == "texte coupé" && ((ecran == "pile" && d.libelle == "Votre journée")
+            || (ecran == "serenite" && d.libelle.uppercased().hasSuffix("HIZOUK DU JOUR"))) {
             return "titre sans limite de lignes, qui garde toute sa hauteur"
         }
         // Un élément qui dépasse ce qui se voit de l'écran (sous une barre, ou au-delà du bas, dans un défilement) :
@@ -252,6 +256,12 @@ final class AuditAccessibiliteTests: XCTestCase {
         for barre in app.navigationBars.allElementsBoundByIndex
             where barre.exists && !barre.frame.isEmpty && barre.frame.maxY < fenetre.midY - fenetre.height / 6 {
             haut = max(haut, barre.frame.maxY)
+        }
+        // Le champ de recherche posé sous le titre (`searchable`, la liste des chapitres) : il fait partie de la barre
+        // du haut, et l'effet de bord du défilement court sous lui.
+        for champ in app.searchFields.allElementsBoundByIndex
+            where champ.exists && !champ.frame.isEmpty && champ.frame.maxY < fenetre.midY - fenetre.height / 6 {
+            haut = max(haut, champ.frame.maxY)
         }
         for barre in app.tabBars.allElementsBoundByIndex
             where barre.exists && barre.isHittable && barre.frame.minY > fenetre.midY {

@@ -150,6 +150,11 @@ extension View {
                         .opacity(visibles ? 1 : 0)
                         .ignoresSafeArea(edges: .bottom)
                 }
+                // Un conteneur, pour que la bande entière (ses marges comprises) porte l'identifiant : l'audit des
+                // captures y lit le bas de ce qui se voit du texte (AuditAccessibiliteTests.zoneVisible). Sans lui,
+                // la bande se mesurait aux boutons, huit points plus bas que son bord, et une ligne à demi couverte
+                // passait pour un défaut de contraste (hilloulot-barre, run 45470677593).
+                .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("barre-bas")
         }
     }
