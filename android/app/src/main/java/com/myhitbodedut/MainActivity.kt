@@ -245,9 +245,10 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     }
 
     /**
-     * Le ciel du moment (CielDuJour) : en fond de tout le Jour (CielPage, teintes adaptées au
-     * thème par TeintesCiel pour que chaque texte reste lisible), sous la barre de départ quand
-     * le Jour est devant, et devant la date hébraïque. Avec la palette « Contraste élevé », pas
+     * Le ciel du moment : en fond de tout le Jour (CielPage, ciel continu d'après la hauteur du
+     * soleil, CielContinu, teintes adaptées au thème par TeintesCiel pour que chaque texte reste
+     * lisible), son sol sous la barre de départ quand le Jour est devant, et l'icône de sa phase
+     * (CielDuJour) devant la date hébraïque. Avec la palette « Contraste élevé », pas
      * de ciel : on l'a choisie pour le plus fort contraste, le papier uni reste.
      */
     private fun renderCiel() {
@@ -258,7 +259,9 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         } else {
             val sombre = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
                 android.content.res.Configuration.UI_MODE_NIGHT_YES
-            cielPage.regler(phase, TeintesCiel.pourPage(phase, sombre, encresDuJour(), Apparence.couleur(this, R.color.paper)), sombre)
+            // Le ciel continu (24/11) : la hauteur du vrai soleil au lieu choisi, revue chaque minute (veilleCiel).
+            val etat = CielDuJour.etat(this)
+            cielPage.regler(etat, TeintesCiel.pourCiel(etat.hauteur, etat.matin, sombre, encresDuJour(), Apparence.couleur(this, R.color.paper)), sombre)
             if (scroll.background !== cielPage) scroll.background = cielPage
         }
         fondBarreDepart()
@@ -278,13 +281,13 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         TeintesCiel.Encre(getColor(R.color.ring_streak_text), 4.5),
     )
 
-    /** La barre de départ prend la couleur du bas du ciel quand le Jour est devant ; le papier ailleurs. */
+    /** La barre de départ prend la couleur du sol, au pied des collines, quand le Jour est devant ; le papier ailleurs. */
     private fun fondBarreDepart() {
         val scroll = findViewById<View>(R.id.main_scroll)
         val jour = scroll.visibility == View.VISIBLE
         val ciel = scroll.background === cielPage
         findViewById<View>(R.id.depart_barre).setBackgroundColor(
-            cielPage.teintes?.bas?.takeIf { jour && ciel } ?: Apparence.couleur(this, R.color.paper))
+            cielPage.teintes?.collinePres?.takeIf { jour && ciel } ?: Apparence.couleur(this, R.color.paper))
     }
 
     /**

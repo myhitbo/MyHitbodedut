@@ -56,6 +56,22 @@ object CielDuJour {
     }.getOrElse { parHeure(LocalTime.now()) }
 
     /**
+     * Le ciel continu de maintenant (24/11, CielContinu) : la hauteur du soleil au lieu des
+     * zmanim s'il est réglé (Soleil, NOAA), sinon le soleil moyen de l'heure du téléphone
+     * (Soleil.parHeure) ; et le jour du mois hébreu affiché, qui donne la lune.
+     */
+    fun etat(context: Context): EtatCiel = runCatching {
+        val lieu = Store.lieuZmanim(context)
+        val zone = lieu?.let { runCatching { ZoneId.of(it.fuseau) }.getOrNull() } ?: ZoneId.systemDefault()
+        val ici = ZonedDateTime.now(zone)
+        val position = if (lieu != null) Soleil.position(ici.toInstant().toEpochMilli(), lieu.latitude, lieu.longitude)
+        else Soleil.parHeure(ici.toLocalTime().toSecondOfDay() / 3600.0)
+        val tset = lieu?.let { l -> runCatching { Zmanim.jour(l, ici.toLocalDate()).firstOrNull { it.cle == "tset" }?.local }.getOrNull() }
+        val jour = runCatching { CalendrierJuif.jour(ZmanimVignette.jourHebreuAffiche(ici, tset), Store.inIsrael(context)).jourHebreu }.getOrDefault(15)
+        EtatCiel.de(position, jour)
+    }.getOrElse { EtatCiel.de(Soleil.parHeure(LocalTime.now().toSecondOfDay() / 3600.0), 15) }
+
+    /**
      * Les couleurs d'un ciel : le dégradé (haut, milieu, horizon), la colline, l'astre et sa
      * lueur, et le voile que prend le haut de l'écran. Ce sont celles du ciel, pas du thème :
      * les mêmes de jour comme de nuit, et les mêmes côté web (ciel.js).

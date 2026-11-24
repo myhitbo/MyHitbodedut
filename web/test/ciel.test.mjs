@@ -62,29 +62,65 @@ const RES = join(ICI, '..', '..', 'android', 'app', 'src', 'main', 'res');
 const kotlin = (nom) => readFileSync(join(ANDROID, `${nom}.kt`), 'utf8');
 const nombres = (texte) => [...texte.matchAll(/-?\d+(?:\.\d+)?/g)].map((x) => Number(x[0]));
 
-test('les teintes, le plan et les mouvements sont ceux d’Android', () => {
-  const teintes = kotlin('TeintesCiel');
-  for (const p of Ciel.PHASES) {
-    const ligne = teintes.match(new RegExp(`Phase\\.${p.toUpperCase()} to floatArrayOf\\(([^)]*)\\)`));
-    assert.ok(ligne, `PART_SOMBRE ${p}`);
-    assert.deepEqual(nombres(ligne[1]), Ciel.PART_SOMBRE[p], p);
+test('les clés, le plan et les mouvements sont ceux d’Android', () => {
+  const continu = kotlin('CielContinu');
+  const cles = (nom) => {
+    const bloc = continu.slice(continu.indexOf(`val ${nom} = listOf(`));
+    return [...bloc.slice(0, bloc.indexOf('\n    )')).matchAll(/Cle\((-?[\d.]+), c\(0xFF([0-9A-F]{6})\), c\(0xFF([0-9A-F]{6})\), c\(0xFF([0-9A-F]{6})\)\)/g)]
+      .map((m) => [Number(m[1]), `#${m[2]}`, `#${m[3]}`, `#${m[4]}`]);
+  };
+  assert.deepEqual(cles('MATIN'), Ciel.MATIN.map((k) => [...k]));
+  assert.deepEqual(cles('SOIR'), Ciel.SOIR.map((k) => [...k]));
+  for (const [nom, liste] of [['ASTRE', Ciel.ASTRE], ['LUEUR', Ciel.LUEUR], ['NUAGE_CORPS', Ciel.NUAGE_CORPS], ['NUAGE_BORD', Ciel.NUAGE_BORD]]) {
+    const ligne = continu.match(new RegExp(`val ${nom} = suite\\(([^\\n]*)\\)`))[1];
+    assert.deepEqual([...ligne.matchAll(/(-?[\d.]+) to 0xFF([0-9A-F]{6})/g)].map((m) => [Number(m[1]), `#${m[2]}`]), liste.map((k) => [...k]), nom);
   }
+  const teintes = kotlin('TeintesCiel');
   assert.deepEqual(nombres(teintes.match(/ECART_CLAIR = floatArrayOf\(([^)]*)\)/)[1]), Ciel.ECART_CLAIR);
   assert.ok(teintes.includes(`const val MARGE = ${Ciel.MARGE}`) && teintes.includes(`const val MILIEU = ${Ciel.MILIEU}f`));
   const vivant = kotlin('CielVivant');
   for (const [cle, nom] of [['scintillementMin', 'SCINTILLEMENT_MIN_S'], ['scintillementMax', 'SCINTILLEMENT_MAX_S'], ['scintillementBas', 'SCINTILLEMENT_BAS'],
     ['deriveX', 'DERIVE_X_DP'], ['deriveXS', 'DERIVE_X_S'], ['deriveY', 'DERIVE_Y_DP'], ['deriveYS', 'DERIVE_Y_S'], ['souffleS', 'SOUFFLE_S'],
-    ['souffleTaille', 'SOUFFLE_TAILLE'], ['souffleEclat', 'SOUFFLE_ECLAT'], ['nuageVitesse', 'NUAGE_DP_S'], ['voileVitesse', 'VOILE_DP_S']]) {
+    ['souffleTaille', 'SOUFFLE_TAILLE'], ['souffleEclat', 'SOUFFLE_ECLAT'], ['nuageVitesse', 'NUAGE_DP_S'], ['voileVitesse', 'VOILE_DP_S'], ['rayonsDegS', 'RAYONS_DEG_S']]) {
     const m = vivant.match(new RegExp(`const val ${nom} = (-?[\\d.]+)f?`));
     assert.ok(m, nom);
     assert.equal(Number(m[1]), Ciel.VIVANT[cle], nom);
   }
   const page = kotlin('CielPage');
-  for (const p of Ciel.PHASES) assert.ok(page.includes(`CielDuJour.Phase.${p.toUpperCase()} -> ${Ciel.RAYON[p]}f`), `rayon ${p}`);
-  assert.ok(page.includes(`const val COURONNE = ${Ciel.COURONNE}f`) && page.includes(`const val LUEUR = ${Ciel.LUEUR}f`));
+  assert.ok(page.includes(`const val COURONNE = ${Ciel.COURONNE}f`) && page.includes(`const val LUEUR = ${Ciel.LUEUR_RAYONS}f`) && page.includes(`const val RAYONS = ${Ciel.RAYONS}`));
   assert.deepEqual(nombres(page.match(/val NUAGES = floatArrayOf\(([^)]*)\)/)[1]), Ciel.NUAGES.flat());
-  assert.deepEqual(nombres(page.match(/val VOILES = floatArrayOf\(([^)]*)\)/)[1]), Ciel.VOILES.flat());
-  assert.ok(page.includes(`const val NUAGE_L = ${Ciel.TAILLE_NUAGE[0]}f`) && page.includes(`const val VOILE_H = ${Ciel.TAILLE_VOILE[1]}f`));
+  assert.ok(page.includes(`const val COLLINES_DP = ${Ciel.COLLINES}f`) && page.includes(`const val BORD_DP = ${Ciel.BORD}f`) && page.includes(`const val NUAGE_VIF = ${Ciel.NUAGE_VIF}f`));
+  // Les dosages, aux mêmes hauteurs.
+  for (const e of [-20, -12, -6, -3, -1, 0, 1, 2.5, 5, 8, 12, 30]) {
+    assert.ok(continu.includes('fun etoiles(e: Double): Double = rampe(e, -4.0, -14.0)') && Math.abs(Ciel.allumage(e) - Ciel.rampe(e, -4, -14)) < 1e-12);
+  }
+  for (const [nom, js] of [['rayons(e: Double): Double = rampe(e, -2.0, 2.5) * (1 - rampe(e, 6.0, 10.0))', 'rayonsDores'], ['soleilVisible(e: Double): Double = rampe(e, -3.0, 1.0)', 'soleilVisible'],
+    ['luneVisible(e: Double): Double = rampe(e, -3.0, -7.0)', 'luneVisible'], ['nuages(e: Double): Double = 0.15 + 0.85 * rampe(e, -14.0, -6.0)', 'presenceNuages']]) {
+    assert.ok(continu.includes(`fun ${nom}`), nom);
+    assert.equal(typeof Ciel[js], 'function');
+  }
+});
+
+test('le soleil : la NOAA, et le soleil moyen sans lieu', () => {
+  // Jérusalem, 24 novembre 2026 (UTC+2) : 37,6° à midi vrai, levé vers 6 h 20, couché vers 16 h 32.
+  const j = (h, m) => Ciel.soleil(Date.UTC(2026, 10, 24, h - 2, m), 31.778, 35.235);
+  assert.ok(Math.abs(j(6, 20).hauteur) < 1.5 && j(6, 20).matin);
+  assert.ok(j(11, 33).hauteur > 36 && j(11, 33).hauteur < 39 && Math.abs(j(11, 33).progresJour - 0.5) < 0.02);
+  assert.ok(Math.abs(j(16, 32).hauteur) < 2 && !j(16, 32).matin);
+  assert.ok(Math.abs(j(23, 33).progresNuit - 0.5) < 0.03);
+  assert.equal(Ciel.soleilParHeure(12.5).hauteur, 50);
+  assert.ok(Math.abs(Ciel.soleilParHeure(5).hauteur + 19.1) < 0.2 && Math.abs(Ciel.soleilParHeure(20).hauteur + 19.1) < 0.2);
+  // Aucune minute ne saute.
+  for (const matin of [true, false]) {
+    let avant = Ciel.brutes(-30, matin);
+    for (let e = -30; e <= 70; e += 0.25) {
+      const c = Ciel.brutes(e, matin);
+      c.forEach((x, i) => x.forEach((v, k) => assert.ok(Math.abs(v - avant[i][k]) <= 8, `${matin} ${e}`)));
+      avant = c;
+    }
+  }
+  // La lune du mois hébreu.
+  assert.ok(Ciel.lune(2).eclairee < 0.06 && Ciel.lune(2).croissante && Ciel.lune(15).eclairee > 0.98 && !Ciel.lune(22).croissante);
 });
 
 test('les mêmes étoiles qu’Android (java.util.Random, graine 29)', () => {
@@ -123,35 +159,37 @@ test('chaque texte reste lisible sur le ciel, lueur et nuages compris', () => {
   const tout = combinaisons();
   assert.ok(tout.length >= 72);
   for (const k of tout) {
-    for (const p of Ciel.PHASES) {
-      const t = Ciel.teintesPage(p, k.sombre, k.encres, k.papier);
-      for (let i = 0; i <= 200; i++) {
-        const fond = Ciel.degrade(t, i / 160);
+    for (const e of [-24, -16, -8, -4, -1, 0, 2, 5, 10, 20, 40]) for (const matin of [true, false]) {
+      const t = Ciel.teintesCiel(e, matin, k.sombre, k.encres, k.papier);
+      const fonds = [t.collineLoin, t.collinePres];
+      for (let i = 0; i <= 50; i++) {
+        const fond = Ciel.degrade(t, i / 40);
         const sousLueur = Ciel.melange(fond, t.lueur, t.lueurAlpha);
-        for (const c of [fond, sousLueur, Ciel.melange(fond, t.nuage, t.nuageAlpha), Ciel.melange(sousLueur, t.nuage, t.nuageAlpha)]) {
-          for (const e of k.encres) if (Ciel.contraste(e.couleur, c) < e.seuil) fautes.push(`${k.nom} ${p} : ${Ciel.hex(e.couleur)} sur ${Ciel.hex(c)}`);
+        for (const f of [fond, sousLueur]) {
+          const bord = Ciel.melange(f, t.bord, t.bordAlpha);
+          fonds.push(f, bord, Ciel.melange(f, t.corps, t.corpsAlpha), Ciel.melange(bord, t.corps, t.corpsAlpha));
         }
       }
+      for (const c of fonds) for (const en of k.encres) if (Ciel.contraste(en.couleur, c) < en.seuil) fautes.push(`${k.nom} ${e}° : ${Ciel.hex(en.couleur)} sur ${Ciel.hex(c)}`);
     }
   }
   assert.deepEqual([...new Set(fautes)].slice(0, 20), []);
 });
 
-test('l’astre à côté des anneaux, aucune étoile sous un texte', () => {
+test('l’astre sur son arc, aucune étoile sous un texte', () => {
   const jauge = { gauche: 75.5, haut: 180, droite: 335.5, bas: 440 };
-  const textes = [{ gauche: 24, haut: 8, droite: 200, bas: 56 }, { gauche: 24, haut: 64, droite: 387, bas: 160 }, { gauche: 24, haut: 444, droite: 387, bas: 520 }];
-  for (const p of Ciel.PHASES) {
-    const a = Ciel.placeAstre(p, jauge, 411, textes);
-    assert.ok(a, p);
-    assert.equal(a[0] < jauge.gauche, p === 'aube', p);
-  }
-  assert.equal(Ciel.placeAstre('jour', { gauche: 16, haut: 4, droite: 252, bas: 240 }, 820, [{ gauche: 268, haut: 4, droite: 800, bas: 400 }]), null);
+  const textes = [{ gauche: 24, haut: 64, droite: 387, bas: 160 }, { gauche: 24, haut: 444, droite: 387, bas: 520 }];
+  const r = 14, c = r * Ciel.COURONNE;
+  const lever = Ciel.arc(0, 0, jauge, 411, r, c, textes), coucher = Ciel.arc(1, 0, jauge, 411, r, c, textes), midi = Ciel.arc(0.5, 0.6, jauge, 411, r, c, textes);
+  assert.ok(lever[0] < jauge.gauche && coucher[0] > jauge.droite && Math.abs(midi[0] - 205.5) < 0.5);
+  assert.equal(Ciel.arc(0, 0.3, jauge, 411, r, c, [...textes, { gauche: 0, haut: 300, droite: 70, bas: 340 }]), null);
   const liste = Ciel.etoiles(60, 29, 0.7, 1.7);
   const libres = Ciel.etoilesLibres(liste, 411, 546, [...textes, jauge]);
   assert.ok(libres.filter(Boolean).length >= 15);
   liste.forEach(([x, y], i) => {
     if (libres[i]) assert.ok(![...textes, jauge].some((z) => x * 411 > z.gauche - 9 && x * 411 < z.droite + 9 && y * 546 > z.haut - 9 && y * 546 < z.bas + 9), `étoile ${i}`);
   });
+  assert.deepEqual(Ciel.planEtoiles(320, 300), [24, 0.78]);
 });
 
 test('le ciel vivant ne bouge que si le système le permet', () => {
@@ -159,7 +197,7 @@ test('le ciel vivant ne bouge que si le système le permet', () => {
   const bloc = css.slice(css.indexOf('@media (prefers-reduced-motion: no-preference) {\n  .ciel-etoile'));
   const fin = bloc.indexOf('\n}\n');
   const anime = bloc.slice(0, fin);
-  for (const n of ['ciel-scintille', 'ciel-derive-x', 'ciel-derive-y', 'ciel-souffle', 'ciel-nuage']) {
+  for (const n of ['ciel-scintille', 'ciel-derive-x', 'ciel-derive-y', 'ciel-souffle', 'ciel-rayons', 'ciel-nuage']) {
     assert.ok(anime.includes(n), `${n} hors de prefers-reduced-motion: no-preference`);
     // Nulle part ailleurs une animation ne lance ces mouvements.
     assert.equal(css.split(`animation: ${n}`).length - 1, 1, n);

@@ -1356,6 +1356,63 @@ def main():
             langue("fr")
     etape("34 ciel du Jour, fond bleu et boutons turquoise", s34)
 
+    # Le ciel continu (24/11) : une journee simulee, sans lieu (le soleil moyen de Soleil.parHeure :
+    # leve a 6 h 30, couche a 18 h 30, ±50°), aux hauteurs −20, −12, −4, 0, +3, +10 et +40° le matin
+    # puis le soir ; avec les couleurs du telephone du proprietaire (fond bleu, boutons turquoise),
+    # en hebreu, sombre et clair, sur le Pixel 6 puis sur le petit telephone au texte agrandi. Puis
+    # une journee en accelere (une capture toutes les 20 minutes, de 4 h a 21 h), une rafale a
+    # l'heure doree, et les paysages de Serenite et d'Instant.
+    HEURES_CIEL = (("m-20", "0456"), ("m-12", "0534"), ("m-04", "0612"), ("m+00", "0630"), ("m+03", "0644"),
+                   ("m+10", "0716"), ("m+40", "1002"), ("s+40", "1458"), ("s+10", "1744"), ("s+03", "1816"),
+                   ("s+00", "1830"), ("s-04", "1848"), ("s-12", "1926"), ("s-20", "2004"))
+
+    def s35():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            for taille in ("pixel6", "petit"):
+                if taille == "petit":
+                    sh("settings put system font_scale 1.3")
+                    appliquer_taille("480x854", 240, False)
+                    pause(4)
+                for mode in ("sombre", "clair"):
+                    regler({"apparence_mode": ("string", mode), "langue_app": ("string", "he"), "version_app": ("string", "classique"), **BLEU_TURQUOISE})
+                    langue("he")
+                    for nom, heure in HEURES_CIEL:
+                        sh(f"date 1124{heure}2026.00")
+                        lancer(attente=5)
+                        capture(f"35-{taille}-{mode}-{nom}", attente=0.3)
+                if taille == "petit":
+                    sh("settings put system font_scale 1.0")
+                    appliquer_taille(None, None, False)
+                    pause(4)
+            # La journee en accelere, en sombre sur le Pixel 6 : des captures seules, sans l'arbre de l'ecran.
+            regler({"apparence_mode": ("string", "sombre"), "langue_app": ("string", "he"), **BLEU_TURQUOISE})
+            langue("he")
+            for i, minute in enumerate(range(4 * 60, 21 * 60 + 1, 20)):
+                sh(f"date 1124{minute // 60:02d}{minute % 60:02d}2026.00")
+                lancer(attente=3.5)
+                png = adb("exec-out", "screencap", "-p", binary=True)
+                with open(os.path.join(OUT, f"35-journee-{i:02d}-{minute // 60:02d}{minute % 60:02d}.png"), "wb") as f:
+                    f.write(png)
+            # L'heure doree en temps reel : les rayons qui tournent, le halo, les nuages eclaires.
+            sh("date 112406462026.00")
+            lancer(attente=5)
+            rafale("35-rafale-doree")
+            for version, heure in (("serenite", "0644"), ("serenite", "1926"), ("instant", "1002"), ("instant", "2004")):
+                regler({"version_app": ("string", version)})
+                sh(f"date 1124{heure}2026.00")
+                lancer(attente=6)
+                capture(f"35-{version}-{heure}", attente=0.5)
+        finally:
+            animations(False)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            regler({"apparence_mode": ("string", "auto"), "apparence_fond": ("string", "vert"), "apparence_accent": ("string", "vert"),
+                    "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("35 ciel continu", s35)
+
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
 

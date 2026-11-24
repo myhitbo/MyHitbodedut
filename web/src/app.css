@@ -1830,36 +1830,37 @@ textarea.carnet-champ { resize: none; line-height: 1.4; }
   .bravo .principal, .bravo .carnet + .principal { margin-top: 8px; }
 }
 
-/* --- Le ciel du Jour (étape 3, 14/11 ; sur toute la page le 24/11 : CielPage.kt) --------------- */
+/* --- Le ciel du Jour (étape 3, 14/11 ; sur toute la page et continu le 24/11 : CielPage.kt) ------ */
 /* Le ciel du moment couvre toute la page du Jour (app.js, poserCiel) : son dégradé monte avec la
-   page sur la hauteur de l'écran (--ciel-vue), sa couleur du bas continue au-delà et sous la barre
-   de départ. La plaque du hassid garde son disque clair. */
+   page sur la hauteur de l'écran (--ciel-vue), deux collines ferment l'horizon, leur couleur (le
+   sol, --ciel-sol) continue au-delà et sous la barre de départ. La plaque du hassid garde son
+   disque clair. */
 .ecran.avec-ciel-page .defile {
   position: relative;
-  background: linear-gradient(to bottom, var(--ciel-haut), var(--ciel-milieu) 55%, var(--ciel-bas)) 0 0 / 100% var(--ciel-vue) no-repeat local, var(--ciel-bas);
+  background: linear-gradient(to bottom, var(--ciel-haut), var(--ciel-milieu) 55%, var(--ciel-bas)) 0 0 / 100% var(--ciel-vue) no-repeat local, var(--ciel-sol);
 }
 .ecran.avec-ciel-page .defile > .contenu { position: relative; z-index: 1; }
-.ecran.avec-ciel-page .depart { background: var(--ciel-bas); }
+.ecran.avec-ciel-page .depart { background: var(--ciel-sol); }
 .ciel-decor { position: absolute; inset: 0 0 auto; height: var(--ciel-vue); overflow: hidden; pointer-events: none; z-index: 0; }
 .ciel-decor > * { position: absolute; }
-/* L'astre : sa lueur large (opacité bornée, Ciel.teintesPage) et sa couronne vive, puis le disque ;
-   la lune en croissant (le disque moins le même disque décalé de 0,55 rayon à droite et 0,25 en haut). */
+/* L'astre passe derrière les anneaux : le cercle qu'ils occupent est retiré de sa couche. */
+.ciel-astres { inset: 0; -webkit-mask: var(--trou); mask: var(--trou); }
+.ciel-astres > * { position: absolute; }
+/* Sa lueur large (opacité bornée, Ciel.teintesCiel) et sa couronne vive ; ses rayons à l'heure dorée. */
 .ciel-halo {
   transform: translate(-50%, -50%); border-radius: 50%;
   background:
     radial-gradient(closest-side, var(--couronne) 0 23.8%, var(--couronne-bas) 36.7%, transparent 52.4%),
     radial-gradient(closest-side, var(--lueur) 0, var(--lueur-mi) 35%, var(--lueur-bas) 70%, transparent 100%);
 }
+.ciel-rayons { transform: translate(-50%, -50%); filter: blur(1.5px); overflow: visible; }
 .ciel-astre { transform: translate(-50%, -50%); border-radius: 50%; }
-.ciel-astre.lune {
-  -webkit-mask: radial-gradient(circle var(--r) at 77.5% 37.5%, transparent calc(var(--r) - 0.5px), #000 calc(var(--r) + 0.5px));
-  mask: radial-gradient(circle var(--r) at 77.5% 37.5%, transparent calc(var(--r) - 0.5px), #000 calc(var(--r) + 0.5px));
-}
 .ciel-champ-x, .ciel-champ { position: absolute; inset: 0; }
 .ciel-etoile { position: absolute; display: block; border-radius: 50%; background: radial-gradient(closest-side, var(--etoile) 50%, transparent); }
-/* Les nuages du jour, le long voile de l'aube et du coucher : des ovales flous. */
+/* Les nuages prennent la lumière du moment : le bord éclairé, 3 px plus bas, sous le corps. */
+.ciel-route { position: absolute; }
 .ciel-nuage {
-  filter: blur(6px);
+  position: absolute; left: 0; right: 0; filter: blur(5px);
   background:
     radial-gradient(22% 22% at 30% 62%, var(--nuage) 98%, transparent),
     radial-gradient(20% 30% at 50% 45%, var(--nuage) 98%, transparent),
@@ -1872,21 +1873,25 @@ textarea.carnet-champ { resize: none; line-height: 1.4; }
     radial-gradient(30% 18% at 55% 48%, var(--nuage) 98%, transparent),
     radial-gradient(18% 14% at 78% 52%, var(--nuage) 98%, transparent);
 }
+.ciel-collines { left: 0; width: 100%; display: block; }
 /* Le ciel vivant (CielVivant.kt) : les étoiles scintillent (8 à 16 s, de 100 à 45 % de leur éclat)
    et dérivent de ±3 px sur 40 s (±1,5 px sur 31 s en hauteur) ; le halo respire sur 12 s (−6 % de
-   taille, −18 % d'éclat) ; les nuages passent à 3 px/s, le voile à 2 px/s. Sans animations (réglage
-   du système), le ciel immobile : étoiles pleines, halo entier, nuages à leur place de départ. */
+   taille, −18 % d'éclat) ; les rayons de l'heure dorée font un tour en trois minutes ; les nuages
+   passent à 3 px/s (le long, à 2,1 px/s). Sans animations (réglage du système), le ciel immobile :
+   étoiles pleines, halo entier, nuages à leur place de départ. */
 @media (prefers-reduced-motion: no-preference) {
   .ciel-etoile { animation: ciel-scintille 12s ease-in-out infinite; }
   .ciel-champ-x { animation: ciel-derive-x 20s ease-in-out -10s infinite alternate; }
   .ciel-champ { animation: ciel-derive-y 15.5s ease-in-out -4.6s infinite alternate; }
   .ciel-halo { animation: ciel-souffle 12s ease-in-out infinite; }
-  .ciel-nuage { animation: ciel-nuage 60s linear infinite; will-change: transform; }
+  .ciel-rayons { animation: ciel-rayons 180s linear infinite; }
+  .ciel-route { animation: ciel-nuage 60s linear infinite; will-change: transform; }
 }
 @keyframes ciel-scintille { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
 @keyframes ciel-derive-x { from { transform: translateX(-3px); } to { transform: translateX(3px); } }
 @keyframes ciel-derive-y { from { transform: translateY(-1.5px); } to { transform: translateY(1.5px); } }
-@keyframes ciel-souffle { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 50% { transform: translate(-50%, -50%) scale(0.94); opacity: 0.82; } }
+@keyframes ciel-souffle { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(0.94); filter: brightness(1) opacity(0.82); } }
+@keyframes ciel-rayons { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes ciel-nuage { from { transform: translateX(var(--depart)); } to { transform: translateX(var(--arrivee)); } }
 /* L'icône devant la date hébraïque suit la phase. */
 .puce-ciel[data-ciel="aube"] .icone-ciel { --icone: url(icones/ic_ciel_aube.svg); }

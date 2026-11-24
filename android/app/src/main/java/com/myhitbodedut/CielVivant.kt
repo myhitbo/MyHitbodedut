@@ -29,8 +29,12 @@ import kotlin.math.sin
  *    sur 31 s ;
  *  - le halo du soleil ou de la lune respire : sur 12 s, il se resserre de 6 % et pâlit de 18 %,
  *    puis revient ; son plus grand et son plus clair sont ceux du ciel immobile ;
- *  - le jour, deux nuages très pâles passent de gauche à droite à 3 dp/s ; à l'aube et au
- *    coucher, un long voile de lumière à 2 dp/s ; sortis d'un côté, ils reviennent de l'autre.
+ *  - les nuages (ciel continu : trois, dans la bande des anneaux, qui prennent la lumière du
+ *    moment) passent de gauche à droite à 3 dp/s, le long à 2,1 dp/s ; sortis d'un côté, ils
+ *    reviennent de l'autre ;
+ *  - à l'heure dorée, les rayons doux du soleil bas font un tour en trois minutes.
+ * Le soleil et la lune, eux, avancent sur leur arc avec l'heure réelle (CielContinu, revu chaque
+ * minute), pas avec l'horloge des animations.
  *
  * Ce qui ne bouge jamais : les écrans de lecture (siddour, Tehilim, livres, halakha…), la séance
  * (sa lueur qui respire, SouffleView, est d'avant et reste seule), les fonds unis.
@@ -67,6 +71,9 @@ object CielVivant {
     const val SOUFFLE_ECLAT = 0.18f
 
     // --- Les nuages ----------------------------------------------------------------------
+
+    /** Les rayons doux de l'heure dorée tournent d'un tour en trois minutes. */
+    const val RAYONS_DEG_S = 2.0
 
     /** Vitesse des nuages du jour, et du voile de l'aube et du coucher, en dp par seconde. */
     const val NUAGE_DP_S = 3f

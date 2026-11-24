@@ -17,7 +17,15 @@ import android.graphics.drawable.Drawable
 /**
  * Le paysage de la carte : le ciel du moment en dégradé, le soleil (ou la lune) dans son
  * halo, les étoiles la nuit, deux collines et une brume. Dessiné, pas une image livrée : il
- * suit la taille de la carte et la phase du ciel.
+ * suit la taille de la carte et le ciel.
+ *
+ * Le ciel est continu depuis le 24/11 ([etat], CielContinu) : ses couleurs passent sans
+ * à-coup entre les quatre ciels peints d'avant (nuit, aube, jour, coucher), selon la hauteur
+ * du vrai soleil — l'aube et le jour le matin, le jour et le coucher le soir ; les collines
+ * passent du jour à la nuit, les étoiles s'allument avec le crépuscule, la lune a sa phase du
+ * mois hébreu. Avec [arc] (Sérénité), le soleil puis la lune suivent un arc de la gauche à la
+ * droite dans le haut du ciel, libre de texte ; sans (Instant, dont le texte couvre la carte),
+ * l'astre garde les places des quatre ciels d'avant, de l'une à l'autre en douceur.
  *
  * Immobile, il est peint une seule fois, dans une image à la taille de la carte, et c'est
  * cette image qui est posée à l'écran à chaque trame. Ses dégradés ne passent donc jamais par
@@ -28,15 +36,15 @@ import android.graphics.drawable.Drawable
  * Animé (24/11, CielVivant ; [anime], tenu par l'écran et GardeCiel), il est peint en deux
  * images : le ciel seul (arrière), les collines et la brume (avant). Entre les deux, à chaque
  * trame, seulement des motifs déjà peints : les étoiles qui scintillent et dérivent d'un rien,
- * le halo qui respire, l'astre, et sur la carte de Sérénité ([nuages]) un nuage pâle le jour,
- * un voile de lumière à l'aube et au coucher, qui passent dans le haut du ciel, loin du texte.
- * Étoiles et halo ne dépassent jamais l'éclat du paysage immobile : le texte posé dessus
- * (Instant) n'y perd rien. Immobile, l'image est celle d'avant, au pixel près.
+ * le halo qui respire, l'astre, et sur la carte de Sérénité ([nuages]) un nuage qui prend la
+ * lumière du moment, dans le haut du ciel, loin du texte. Étoiles et halo ne dépassent jamais
+ * l'éclat du paysage immobile : le texte posé dessus (Instant) n'y perd rien.
  */
 class PaysageCiel(
-    private val phase: CielDuJour.Phase,
+    private val etat: EtatCiel,
     private val d: Float,
     private val nuages: Boolean = false,
+    private val arc: Boolean = false,
 ) : Drawable() {
     private val ciel = Paint()
     private val astre = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -50,12 +58,26 @@ class PaysageCiel(
     /** Le rythme de chaque étoile (cycle, décalage), au même rang que [etoiles]. */
     private val rythmes = CielVivant.etoiles(etoiles.size, 31L, 0f, 0f)
 
-    private val couleurs: IntArray = when (phase) {
-        CielDuJour.Phase.NUIT -> intArrayOf(0xFF0B0A1F.toInt(), 0xFF1D1838.toInt(), 0xFF2E2366.toInt(), 0xFF4E3486.toInt())
-        CielDuJour.Phase.COUCHER -> intArrayOf(0xFF0E0B1D.toInt(), 0xFF241C52.toInt(), 0xFF4E3486.toInt(), 0xFF9A5C97.toInt(), 0xFFE3957A.toInt(), 0xFFF7CDA8.toInt())
-        CielDuJour.Phase.AUBE -> intArrayOf(0xFF2A2357.toInt(), 0xFF6A4C9C.toInt(), 0xFFC98AA0.toInt(), 0xFFF2C6A0.toInt(), 0xFFFBE3C8.toInt())
-        CielDuJour.Phase.JOUR -> intArrayOf(0xFF4F86C6.toInt(), 0xFF7FAEDC.toInt(), 0xFFB3D2EA.toInt(), 0xFFDCE9EC.toInt(), 0xFFF4E6CB.toInt())
+    private val e = etat.hauteur
+
+    /** Les poids des quatre ciels peints, dans l'ordre nuit, aube, jour, coucher. */
+    private val poids: DoubleArray = poidsDesCiels(e, etat.matin)
+
+    /** Le dégradé : les quatre ciels ramenés à six arrêts, mêlés selon leurs poids. */
+    private val couleurs: IntArray = IntArray(6) { i ->
+        var r = 0.0; var g = 0.0; var b = 0.0
+        CIELS.forEachIndexed { k, ciel ->
+            val c = ciel.echantillon(i / 5f)
+            r += poids[k] * ((c shr 16) and 0xFF); g += poids[k] * ((c shr 8) and 0xFF); b += poids[k] * (c and 0xFF)
+        }
+        (0xFF shl 24) or (r.toInt().coerceIn(0, 255) shl 16) or (g.toInt().coerceIn(0, 255) shl 8) or b.toInt().coerceIn(0, 255)
     }
+
+    /** La nuit des collines : 0 de jour et à l'aube, 1 la nuit et au coucher. */
+    private val nuit = if (etat.matin) CielContinu.rampe(e, -3.0, -12.0) else CielContinu.rampe(e, 12.0, 3.0)
+
+    /** Le soleil suit son arc jusqu'à 3° sous l'horizon, puis la lune. */
+    private val estSoleil = if (arc) CielContinu.soleilPlutotQueLune(e) else poids[0] < 0.5
 
     val horloge = HorlogeCiel(this)
 
@@ -72,7 +94,7 @@ class PaysageCiel(
     private var avant: Bitmap? = null
     private var motifs: Motifs? = null
 
-    private class Motifs(val etoile: Bitmap, val halo: Bitmap, val astre: Bitmap, val nuage: Bitmap?)
+    private class Motifs(val etoile: Bitmap, val halo: Bitmap, val astre: Bitmap, val nuage: Bitmap?, val bord: Bitmap?)
 
     override fun onBoundsChange(bounds: Rect) {
         image = null
@@ -133,34 +155,42 @@ class PaysageCiel(
         val retour = canvas.save()
         canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
         canvas.drawBitmap(ar, 0f, 0f, null)
-        if (phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER) {
-            val visibles = if (phase == CielDuJour.Phase.NUIT) etoiles.size else 18
+        val lueur = eclatEtoiles()
+        if (lueur > 0f) {
             val dx = CielVivant.deriveX(s) * d
             val dy = CielVivant.deriveY(s) * d
-            for (i in 0 until visibles) {
+            for (i in etoiles.indices) {
                 val e = etoiles[i]
                 val r = e[2] * d * 0.8f
                 val x = e[0] * w + dx
                 val y = e[1] * h + dy
-                pose.alpha = (255 * CielVivant.scintillement(s, rythmes[i * CielVivant.CHAMPS + 3].toDouble(),
+                pose.alpha = (255 * lueur * CielVivant.scintillement(s, rythmes[i * CielVivant.CHAMPS + 3].toDouble(),
                     rythmes[i * CielVivant.CHAMPS + 4].toDouble())).toInt()
                 cadre.set(x - r, y - r, x + r, y + r)
                 canvas.drawBitmap(m.etoile, null, cadre, pose)
             }
         }
         val (cx, cy, rayon) = astrePlace(w, h)
-        val k = CielVivant.tailleHalo(s)
-        val demi = rayon * HALO * k
-        cadre.set(cx - demi, cy - demi, cx + demi, cy + demi)
-        pose.alpha = (255 * CielVivant.eclatHalo(s)).toInt()
-        canvas.drawBitmap(m.halo, null, cadre, pose)
-        pose.alpha = 255
-        canvas.drawBitmap(m.astre, cx - m.astre.width / 2f, cy - m.astre.height / 2f, pose)
-        m.nuage?.let { n ->
-            val jour = phase == CielDuJour.Phase.JOUR
+        val visible = astreVisible()
+        if (visible > 0f) {
+            val k = CielVivant.tailleHalo(s)
+            val demi = rayon * HALO * k
+            cadre.set(cx - demi, cy - demi, cx + demi, cy + demi)
+            pose.alpha = (255 * CielVivant.eclatHalo(s) * visible).toInt()
+            canvas.drawBitmap(m.halo, null, cadre, pose)
+            pose.alpha = (255 * visible).toInt()
+            canvas.drawBitmap(m.astre, cx - m.astre.width / 2f, cy - m.astre.height / 2f, pose)
+        }
+        val n = m.nuage
+        val b = m.bord
+        if (n != null && b != null) {
             val lw = n.width * 2f
-            val x = CielVivant.nuageX(0.18f * w, (if (jour) CielVivant.NUAGE_DP_S else CielVivant.VOILE_DP_S) * d, s, w, lw)
-            pose.alpha = if (jour) 90 else 70
+            val x = CielVivant.nuageX(0.18f * w, CielVivant.NUAGE_DP_S * d, s, w, lw)
+            val presence = CielContinu.nuages(e).toFloat()
+            pose.alpha = (110 * presence).toInt()
+            cadre.set(x, h * 0.24f + PlanCiel.BORD_DP * d, x + lw, h * 0.24f + n.height * 2f + PlanCiel.BORD_DP * d)
+            canvas.drawBitmap(b, null, cadre, pose)
+            pose.alpha = (90 * presence).toInt()
             cadre.set(x, h * 0.24f, x + lw, h * 0.24f + n.height * 2f)
             canvas.drawBitmap(n, null, cadre, pose)
         }
@@ -185,28 +215,26 @@ class PaysageCiel(
             peindreHalo(Canvas(it), m, m, r0)
         }
         val ca = (2 * r0 + 4).toInt()
-        val a = Bitmap.createBitmap(ca, ca, Bitmap.Config.ARGB_8888).also {
-            astre.color = astreCouleur()
-            Canvas(it).drawCircle(ca / 2f, ca / 2f, r0, astre)
-        }
-        Motifs(e, hl, a, if (nuages && phase != CielDuJour.Phase.NUIT) peindreNuage() else null)
+        val a = Bitmap.createBitmap(ca, ca, Bitmap.Config.ARGB_8888).also { peindreAstre(Canvas(it), ca / 2f, ca / 2f, r0) }
+        val avecNuage = nuages && CielContinu.nuages(this.e) > 0.2
+        Motifs(e, hl, a, if (avecNuage) peindreNuage(CielContinu.NUAGE_CORPS.a(this.e)) else null,
+            if (avecNuage) peindreNuage(CielContinu.NUAGE_BORD.a(this.e)) else null)
     } catch (e: OutOfMemoryError) {
         null
     }
 
-    /** Le nuage (le jour) ou le voile (aube, coucher), flou, à moitié taille. */
-    private fun peindreNuage(): Bitmap {
+    /** Le nuage, dans la lumière du moment, flou, à moitié taille. */
+    private fun peindreNuage(couleur: Int): Bitmap {
         val e = d / 2f
-        val jour = phase == CielDuJour.Phase.JOUR
-        val lw = (if (jour) PlanCiel.NUAGE_L else PlanCiel.VOILE_L) * e
-        val lh = (if (jour) PlanCiel.NUAGE_H else PlanCiel.VOILE_H) * e
+        val lw = PlanCiel.NUAGE_L * e
+        val lh = PlanCiel.NUAGE_H * e
         return Bitmap.createBitmap(lw.toInt().coerceAtLeast(2), lh.toInt().coerceAtLeast(2), Bitmap.Config.ARGB_8888).also { b ->
             val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = if (jour) 0xFFFFFFFF.toInt() else 0xFFFFF1E0.toInt()
-                maskFilter = BlurMaskFilter(6f * e, BlurMaskFilter.Blur.NORMAL)
+                color = couleur
+                maskFilter = BlurMaskFilter(5f * e, BlurMaskFilter.Blur.NORMAL)
             }
             val c = Canvas(b)
-            val formes = if (jour) PlanCiel.FORME_NUAGE else PlanCiel.FORME_VOILE
+            val formes = PlanCiel.FORME_NUAGE
             var i = 0
             while (i < formes.size) {
                 val cx = formes[i] * lw; val cy = formes[i + 1] * lh
@@ -222,14 +250,20 @@ class PaysageCiel(
     /** Le paysage, de (0, 0) à ([w], [h]). */
     private fun peindre(canvas: Canvas, w: Float, h: Float) {
         peindreCiel(canvas, w, h)
-        if (phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER) {
-            val visibles = if (phase == CielDuJour.Phase.NUIT) etoiles else etoiles.take(18)
-            visibles.forEach { (x, y, t) -> canvas.drawCircle(x * w, y * h, t * d * 0.8f, etoile) }
+        val lueur = eclatEtoiles()
+        if (lueur > 0f) {
+            etoile.alpha = (255 * lueur).toInt()
+            etoiles.forEach { (x, y, t) -> canvas.drawCircle(x * w, y * h, t * d * 0.8f, etoile) }
+            etoile.alpha = 255
         }
         val (cx, cy, rayon) = astrePlace(w, h)
-        peindreHalo(canvas, cx, cy, rayon)
-        astre.color = astreCouleur()
-        canvas.drawCircle(cx, cy, rayon, astre)
+        val visible = astreVisible()
+        if (visible > 0f) {
+            val calque = canvas.saveLayerAlpha(0f, 0f, w, h, (255 * visible).toInt())
+            peindreHalo(canvas, cx, cy, rayon)
+            peindreAstre(canvas, cx, cy, rayon)
+            canvas.restoreToCount(calque)
+        }
         peindreCollines(canvas, w, h)
     }
 
@@ -243,19 +277,30 @@ class PaysageCiel(
         canvas.drawCircle(cx, cy, rayon * HALO, halo)
     }
 
-    /** Deux collines, la plus lointaine plus claire, et la brume entre elles. */
+    /** Le soleil en disque, la lune avec sa phase du mois hébreu. */
+    private fun peindreAstre(canvas: Canvas, cx: Float, cy: Float, rayon: Float) {
+        if (estSoleil) {
+            astre.color = astreCouleur()
+            canvas.drawCircle(cx, cy, rayon, astre)
+        } else {
+            PlanCiel.peindreLune(canvas, cx, cy, rayon, LUNE, CielContinu.lune(etat.jourHebreu))
+        }
+    }
+
+    /** Deux collines, la plus lointaine plus claire, et la brume entre elles : du jour à la nuit. */
     private fun peindreCollines(canvas: Canvas, w: Float, h: Float) {
-        val nuit = phase == CielDuJour.Phase.NUIT || phase == CielDuJour.Phase.COUCHER
-        loin.color = if (nuit) 0xFF2A2350.toInt() else 0xFF8FA9C4.toInt()
-        pres.color = if (nuit) 0xFF151026.toInt() else 0xFF4D6B5C.toInt()
+        loin.color = TeintesCiel.melange(0xFF8FA9C4.toInt(), 0xFF2A2350.toInt(), nuit)
+        pres.color = TeintesCiel.melange(0xFF4D6B5C.toInt(), 0xFF151026.toInt(), nuit)
         canvas.drawPath(Path().apply {
             moveTo(0f, h * 0.7f)
             cubicTo(w * 0.25f, h * 0.6f, w * 0.45f, h * 0.66f, w * 0.62f, h * 0.62f)
             cubicTo(w * 0.8f, h * 0.58f, w * 0.92f, h * 0.64f, w, h * 0.63f)
             lineTo(w, h); lineTo(0f, h); close()
         }, loin)
+        val voile = TeintesCiel.melange(0xFFFFFFFF.toInt(), 0xFFF7CDA8.toInt(), nuit)
+        val opacite = (0x99 + (0x80 - 0x99) * nuit).toInt()
         brume.shader = RadialGradient(w / 2, h * 0.76f, w * 0.7f,
-            intArrayOf(if (nuit) 0x80F7CDA8.toInt() else 0x99FFFFFF.toInt(), 0x00FFFFFF), null, Shader.TileMode.CLAMP)
+            intArrayOf((opacite shl 24) or (voile and 0xFFFFFF), 0x00FFFFFF), null, Shader.TileMode.CLAMP)
         canvas.drawOval(-w * 0.2f, h * 0.7f, w * 1.2f, h * 0.84f, brume)
         canvas.drawPath(Path().apply {
             moveTo(0f, h * 0.8f)
@@ -265,19 +310,42 @@ class PaysageCiel(
         }, pres)
     }
 
-    /** L'astre : la lune haut dans la nuit, le soleil bas au couchant et à l'aube, haut le jour. */
-    private fun astrePlace(w: Float, h: Float): Triple<Float, Float, Float> = when (phase) {
-        CielDuJour.Phase.NUIT -> Triple(w * 0.72f, h * 0.2f, 22 * d)
-        CielDuJour.Phase.COUCHER -> Triple(w * 0.4f, h * 0.62f, 34 * d)
-        CielDuJour.Phase.AUBE -> Triple(w * 0.6f, h * 0.6f, 30 * d)
-        CielDuJour.Phase.JOUR -> Triple(w * 0.3f, h * 0.24f, 30 * d)
+    /** Les étoiles : toutes la nuit, s'allumant avec le crépuscule (presque rien à +2°, toutes à −10°). */
+    private fun eclatEtoiles(): Float = CielContinu.rampe(e, 2.0, -10.0).toFloat()
+
+    /** L'astre paraît et s'efface à l'horizon (arc) ; sans arc il est toujours là, comme avant. */
+    private fun astreVisible(): Float = when {
+        !arc -> 1f
+        estSoleil -> CielContinu.soleilVisible(e).toFloat()
+        else -> CielContinu.luneVisible(e).toFloat()
     }
 
-    private fun astreCouleur(): Int = when (phase) {
-        CielDuJour.Phase.NUIT -> 0xFFF3EBD2.toInt()
-        CielDuJour.Phase.COUCHER -> 0xFFFFE6CC.toInt()
-        CielDuJour.Phase.AUBE -> 0xFFFFF1DC.toInt()
-        CielDuJour.Phase.JOUR -> 0xFFFFF8E6.toInt()
+    /**
+     * L'astre : sur son arc (Sérénité), de 12 % à 88 % de la largeur selon la part du jour (ou de
+     * la nuit), de 56 % de la hauteur (l'horizon, derrière les collines) à 24 % selon sa hauteur ;
+     * sinon aux places des quatre ciels d'avant, mêlées selon leurs poids.
+     */
+    private fun astrePlace(w: Float, h: Float): Triple<Float, Float, Float> {
+        val rayon = if (estSoleil) (RAYONS.zip(poids.toList()).sumOf { (r, p) -> r * p } / (1 - poids[0]).coerceAtLeast(0.01)).toFloat() * d
+        else 22 * d
+        if (arc) {
+            val progres = if (estSoleil) etat.progresJour else etat.progresNuit
+            val haut = CielContinu.elevationDessinee(if (estSoleil) e else -e)
+            return Triple(w * (0.12f + 0.76f * progres.toFloat()), h * (0.56f - 0.32f * haut.toFloat()), rayon.coerceAtMost(26 * d))
+        }
+        var x = 0.0; var y = 0.0
+        PLACES.forEachIndexed { k, (px, py) -> x += poids[k] * px; y += poids[k] * py }
+        return Triple(w * x.toFloat(), h * y.toFloat(), rayon)
+    }
+
+    private fun astreCouleur(): Int {
+        var r = 0.0; var g = 0.0; var b = 0.0
+        val total = (1 - poids[0]).coerceAtLeast(0.01)
+        ASTRES.forEachIndexed { k, c ->
+            if (k == 0) return@forEachIndexed
+            r += poids[k] * ((c shr 16) and 0xFF); g += poids[k] * ((c shr 8) and 0xFF); b += poids[k] * (c and 0xFF)
+        }
+        return (0xFF shl 24) or ((r / total).toInt().coerceIn(0, 255) shl 16) or ((g / total).toInt().coerceIn(0, 255) shl 8) or (b / total).toInt().coerceIn(0, 255)
     }
 
     override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
@@ -291,8 +359,48 @@ class PaysageCiel(
     @Deprecated("Deprecated in Java")
     override fun getOpacity(): Int = PixelFormat.OPAQUE
 
-    private companion object {
+    /** Un des quatre ciels peints : ses arrêts, également espacés. */
+    private class Peint(val arrets: IntArray) {
+        fun echantillon(u: Float): Int {
+            val x = u * (arrets.size - 1)
+            val i = x.toInt().coerceAtMost(arrets.size - 2)
+            return TeintesCiel.melange(arrets[i], arrets[i + 1], (x - i).toDouble())
+        }
+    }
+
+    companion object {
         /** Le rayon du halo, en rayons de l'astre. */
-        const val HALO = 3.6f
+        private const val HALO = 3.6f
+        private const val LUNE = 0xFFF3EBD2.toInt()
+
+        /** Les quatre ciels peints d'avant, dans l'ordre nuit, aube, jour, coucher. */
+        private val CIELS = listOf(
+            Peint(intArrayOf(0xFF0B0A1F.toInt(), 0xFF1D1838.toInt(), 0xFF2E2366.toInt(), 0xFF4E3486.toInt())),
+            Peint(intArrayOf(0xFF2A2357.toInt(), 0xFF6A4C9C.toInt(), 0xFFC98AA0.toInt(), 0xFFF2C6A0.toInt(), 0xFFFBE3C8.toInt())),
+            Peint(intArrayOf(0xFF4F86C6.toInt(), 0xFF7FAEDC.toInt(), 0xFFB3D2EA.toInt(), 0xFFDCE9EC.toInt(), 0xFFF4E6CB.toInt())),
+            Peint(intArrayOf(0xFF0E0B1D.toInt(), 0xFF241C52.toInt(), 0xFF4E3486.toInt(), 0xFF9A5C97.toInt(), 0xFFE3957A.toInt(), 0xFFF7CDA8.toInt())),
+        )
+        /** Leurs astres : la lune, puis les soleils de l'aube, du jour et du coucher ; places et rayons. */
+        private val ASTRES = intArrayOf(LUNE, 0xFFFFF1DC.toInt(), 0xFFFFF8E6.toInt(), 0xFFFFE6CC.toInt())
+        private val PLACES = listOf(0.72 to 0.2, 0.6 to 0.6, 0.3 to 0.24, 0.4 to 0.62)
+        private val RAYONS = listOf(0.0, 30.0, 30.0, 34.0)
+
+        /**
+         * Les poids des quatre ciels peints (nuit, aube, jour, coucher) pour un soleil à [e]
+         * degrés : le matin la nuit jusqu'à −12°, vers l'aube jusqu'à −3°, l'aube jusqu'à +3°, vers
+         * le jour jusqu'à +12° ; le soir l'inverse, par le coucher.
+         */
+        fun poidsDesCiels(e: Double, matin: Boolean): DoubleArray {
+            val p = DoubleArray(4)
+            val chaud = if (matin) 1 else 3
+            when {
+                e <= -12 -> p[0] = 1.0
+                e < -3 -> { val t = (e + 12) / 9; p[0] = 1 - t; p[chaud] = t }
+                e <= 3 -> p[chaud] = 1.0
+                e < 12 -> { val t = (e - 3) / 9; p[chaud] = 1 - t; p[2] = t }
+                else -> p[2] = 1.0
+            }
+            return p
+        }
     }
 }

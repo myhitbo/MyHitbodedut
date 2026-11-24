@@ -1,18 +1,15 @@
 package com.myhitbodedut
 
-import com.myhitbodedut.CielDuJour.Phase
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 
 /**
  * Le ciel en fond du Jour (24/11, TeintesCiel, PlanCiel) : chaque texte de la page garde les
- * seuils de PaletteTest dans les quatre phases, de jour comme de nuit, pour chaque palette
- * « Fond » et « Accent » ; lueur et nuages à leur plus fort compris. L'astre se pose à côté des
- * anneaux, les étoiles jamais sous un texte.
+ * seuils de PaletteTest à toute heure, de jour comme de nuit, pour chaque palette
+ * « Fond » et « Accent », à toute hauteur du soleil ; lueur, nuages et collines compris. Les
+ * étoiles jamais sous un texte (l'arc de l'astre : CielContinuTest).
  */
 class TeintesCielTest {
 
@@ -55,24 +52,30 @@ class TeintesCielTest {
         }
     }
 
+    /** Les hauteurs du soleil parcourues : de la nuit noire au plein jour, tous les 4°. */
+    private val hauteurs = (-24..60 step 4).map { it.toDouble() } + listOf(-1.0, 1.0, 2.0, 5.0)
+
     @Test
-    fun `chaque texte reste lisible sur le ciel, lueur et nuages compris`() {
+    fun `chaque texte reste lisible sur le ciel, a toute heure, lueur nuages et collines compris`() {
         val fautes = mutableListOf<String>()
         val tous = cas()
         assertTrue("palettes introuvables", tous.size >= 2 * 6 * 6)
         tous.forEach { k ->
-            Phase.values().forEach { phase ->
-                val t = TeintesCiel.pourPage(phase, k.sombre, k.encres, k.papier)
-                // Tout le dégradé, et au-delà (la couleur du bas continue sous la page).
-                (0..200).map { t.degrade(it / 160f) }.forEach { fond ->
-                    // Sous la lueur au plus fort, puis sous un nuage au plus fort par-dessus.
-                    val sousLueur = TeintesCiel.melange(fond, t.lueur, t.lueurAlpha.toDouble())
-                    listOf(fond, sousLueur,
-                        TeintesCiel.melange(fond, t.nuage, t.nuageAlpha.toDouble()),
-                        TeintesCiel.melange(sousLueur, t.nuage, t.nuageAlpha.toDouble())).forEach { c ->
-                        k.encres.forEach { e ->
-                            val r = TeintesCiel.contraste(e.couleur, c)
-                            if (r < e.seuil) fautes += "${k.nom} $phase : %06X sur %06X = %.2f < %.1f".format(e.couleur and 0xFFFFFF, c and 0xFFFFFF, r, e.seuil)
+            hauteurs.forEach { e ->
+                listOf(true, false).forEach { matin ->
+                    val t = TeintesCiel.pourCiel(e, matin, k.sombre, k.encres, k.papier)
+                    // Tout le dégradé, et au-delà ; sous la lueur au plus fort, puis le bord et le corps des nuages.
+                    val fonds = (0..64).map { t.degrade(it / 50f) }.flatMap { fond ->
+                        val sousLueur = TeintesCiel.melange(fond, t.lueur, t.lueurAlpha.toDouble())
+                        listOf(fond, sousLueur).flatMap { f ->
+                            val bord = TeintesCiel.melange(f, t.bord, t.bordAlpha.toDouble())
+                            listOf(f, bord, TeintesCiel.melange(f, t.corps, t.corpsAlpha.toDouble()), TeintesCiel.melange(bord, t.corps, t.corpsAlpha.toDouble()))
+                        }
+                    } + listOf(t.collineLoin, t.collinePres)
+                    fonds.forEach { c ->
+                        k.encres.forEach { en ->
+                            val r = TeintesCiel.contraste(en.couleur, c)
+                            if (r < en.seuil) fautes += "${k.nom} $e° ${if (matin) "matin" else "soir"} : %06X sur %06X = %.2f < %.1f".format(en.couleur and 0xFFFFFF, c and 0xFFFFFF, r, en.seuil)
                         }
                     }
                 }
@@ -81,28 +84,27 @@ class TeintesCielTest {
         assertTrue("contrastes insuffisants sur le ciel :\n" + fautes.distinct().take(40).joinToString("\n"), fautes.isEmpty())
     }
 
-    /** La palette d'origine, vert : le ciel s'y voit bien, et chaque phase a sa couleur. */
+    /** La palette d'origine, vert : le ciel s'y voit bien, et chaque moment a sa couleur. */
     @Test
     fun `un vrai ciel dans les deux themes`() {
         val k = cas()
         listOf(false, true).forEach { sombre ->
             val origine = k.first { it.nom.startsWith("Fond.Vert × Accent.Vert") && it.sombre == sombre }
-            val ciels = Phase.values().associateWith { TeintesCiel.pourPage(it, sombre, origine.encres, origine.papier) }
-            ciels.forEach { (phase, t) ->
-                assertTrue("$phase $sombre : le ciel est resté le papier", t.haut != origine.papier || t.bas != origine.papier)
-                if (sombre) assertTrue("$phase : un ciel sombre", TeintesCiel.luminance(t.haut) < 0.06)
-                else assertTrue("$phase : un ciel pâle", TeintesCiel.luminance(t.haut) > 0.8)
+            fun ciel(e: Double, matin: Boolean) = TeintesCiel.pourCiel(e, matin, sombre, origine.encres, origine.papier)
+            val nuit = ciel(-24.0, true)
+            val jour = ciel(30.0, true)
+            val coucher = ciel(0.0, false)
+            listOf(nuit, jour, coucher, ciel(0.0, true)).forEach { t ->
+                assertTrue("le ciel est resté le papier", t.haut != origine.papier || t.bas != origine.papier)
+                if (sombre) assertTrue("un ciel sombre", TeintesCiel.luminance(t.haut) < 0.06)
+                else assertTrue("un ciel pâle", TeintesCiel.luminance(t.haut) > 0.8)
             }
-            // Le jour est bleu, l'aube et le coucher tirent vers le rose et le violet, la nuit est la plus sombre.
-            val jour = ciels.getValue(Phase.JOUR).haut
-            assertTrue("le jour n'est pas bleu", (jour and 0xFF) > ((jour shr 16) and 0xFF))
-            val coucher = ciels.getValue(Phase.COUCHER).milieu
-            assertTrue("le coucher n'est pas rosé", ((coucher shr 16) and 0xFF) > ((coucher shr 8) and 0xFF))
-            if (sombre) assertTrue("la nuit n'est pas la plus sombre",
-                Phase.values().all { TeintesCiel.luminance(ciels.getValue(Phase.NUIT).haut) <= TeintesCiel.luminance(ciels.getValue(it).haut) })
-            // La nuit n'a pas de nuages ; le jour en a, pâles.
-            assertEquals(0f, ciels.getValue(Phase.NUIT).nuageAlpha)
-            assertTrue(ciels.getValue(Phase.JOUR).nuageAlpha in 0f..0.75f)
+            // Le jour est bleu, le coucher rosé ou orangé à l'horizon, la nuit la plus sombre en thème sombre.
+            assertTrue("le jour n'est pas bleu", (jour.haut and 0xFF) > ((jour.haut shr 16) and 0xFF))
+            assertTrue("le coucher n'est pas chaud", ((coucher.bas shr 16) and 0xFF) > (coucher.bas and 0xFF))
+            if (sombre) assertTrue("la nuit n'est pas la plus sombre", TeintesCiel.luminance(nuit.haut) <= TeintesCiel.luminance(jour.haut))
+            // En thème sombre, le corps des nuages est une silhouette plus sombre que le ciel.
+            if (sombre) assertTrue(TeintesCiel.luminance(jour.corps) < TeintesCiel.luminance(jour.haut))
         }
     }
 
@@ -110,11 +112,11 @@ class TeintesCielTest {
     fun `des encres impossibles laissent le papier`() {
         // Un gris moyen ne tient 7:1 sur aucun ciel : le papier reste, sans lueur ni nuage.
         val papier = 0xFF101A16.toInt()
-        val t = TeintesCiel.pourPage(Phase.JOUR, true, listOf(TeintesCiel.Encre(0xFF777777.toInt(), 7.0)), papier)
+        val t = TeintesCiel.pourCiel(30.0, true, true, listOf(TeintesCiel.Encre(0xFF777777.toInt(), 7.0)), papier)
         assertEquals(papier, t.haut)
         assertEquals(papier, t.bas)
         assertEquals(0f, t.lueurAlpha)
-        assertEquals(0f, t.nuageAlpha)
+        assertEquals(0f, t.bordAlpha)
     }
 
     @Test
@@ -141,31 +143,6 @@ class TeintesCielTest {
     )
 
     @Test
-    fun `l astre se pose a cote des anneaux, loin des textes`() {
-        Phase.values().forEach { phase ->
-            val p = PlanCiel.astre(phase, jauge, largeur, textes, d)
-            assertNotNull("$phase sans astre", p)
-            val (x, y) = p!![0] to p[1]
-            val couronne = PlanCiel.rayon(phase) * d * PlanCiel.COURONNE
-            assertTrue("$phase : pas à côté des anneaux", x + PlanCiel.rayon(phase) * d <= jauge.gauche || x - PlanCiel.rayon(phase) * d >= jauge.droite)
-            assertTrue("$phase : sur un texte", textes.none { it.touche(x, y, couronne) })
-            assertTrue("$phase : hors de l'écran", x - PlanCiel.rayon(phase) * d >= 0 && x + PlanCiel.rayon(phase) * d <= largeur)
-            // L'aube à gauche, le reste à droite.
-            assertEquals("$phase : mauvais côté", phase == Phase.AUBE, x < jauge.gauche)
-        }
-        // Le jour et la nuit haut, l'aube et le coucher bas.
-        assertTrue(PlanCiel.astre(Phase.JOUR, jauge, largeur, textes, d)!![1] < PlanCiel.astre(Phase.COUCHER, jauge, largeur, textes, d)!![1])
-    }
-
-    @Test
-    fun `sans place a cote des anneaux, pas d astre`() {
-        // Accueil couché : les anneaux au bord, le texte juste à côté d'eux.
-        val couche = PlanCiel.Zone(16 * d, 4 * d, 252 * d, 240 * d)
-        val colonne = listOf(PlanCiel.Zone(268 * d, 4 * d, 800 * d, 400 * d))
-        assertNull(PlanCiel.astre(Phase.JOUR, couche, 820 * d, colonne, d))
-    }
-
-    @Test
     fun `aucune etoile sous un texte ni sur les anneaux`() {
         val etoiles = CielVivant.etoiles(60, 29L, 0.7f, 1.7f)
         val hauteur = 700 * d * 0.78f
@@ -179,10 +156,8 @@ class TeintesCielTest {
             val y = etoiles[i * CielVivant.CHAMPS + 1] * hauteur
             assertTrue("étoile $i sous un texte", zones.none { it.touche(x, y, ecart) })
         }
-        // La nuit, de 24 à 72 étoiles selon la taille de l'écran ; le jour, aucune.
-        assertEquals(24, PlanCiel.etoiles(Phase.NUIT, true, 320f, 300f).first)
-        assertEquals(72, PlanCiel.etoiles(Phase.NUIT, true, 1280f, 800f).first)
-        assertEquals(0, PlanCiel.etoiles(Phase.JOUR, true, 411f, 700f).first)
-        assertEquals(0, PlanCiel.etoiles(Phase.AUBE, false, 411f, 700f).first)
+        // De 24 à 72 étoiles selon la taille de l'écran (elles s'allument avec le crépuscule, CielContinu.etoiles).
+        assertEquals(24, PlanCiel.etoiles(320f, 300f).first)
+        assertEquals(72, PlanCiel.etoiles(1280f, 800f).first)
     }
 }

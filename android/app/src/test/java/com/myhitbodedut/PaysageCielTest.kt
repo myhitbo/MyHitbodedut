@@ -69,16 +69,36 @@ class PaysageCielTest {
         traces.forEach { trace -> assertFalse("l'animation peint directement à l'écran ($trace)", anime.contains(trace)) }
     }
 
-    /** Immobile (animations coupées, économie de batterie, écran quitté), l'image d'avant les animations. */
+    /** Immobile (animations coupées, économie de batterie, écran quitté), une seule image, même ordre de peinture. */
     @Test
-    fun `immobile, le paysage reste celui d avant`() {
+    fun `immobile, le paysage est peint en une image, dans l ordre du ciel anime`() {
         val draw = corps("override fun draw(canvas: Canvas)")
         assertTrue(draw.contains("if (horloge.enMarche && dessinerAnime(canvas, largeur, hauteur))"))
         val peindre = corps("private fun peindre(")
-        listOf("peindreCiel(canvas, w, h)", "canvas.drawCircle(x * w, y * h, t * d * 0.8f, etoile)", "peindreHalo(canvas, cx, cy, rayon)",
-            "canvas.drawCircle(cx, cy, rayon, astre)", "peindreCollines(canvas, w, h)").forEach {
-            assertTrue("la peinture immobile a changé : $it", peindre.contains(it))
+        val ordre = listOf("peindreCiel(canvas, w, h)", "etoiles.forEach", "peindreHalo(canvas, cx, cy, rayon)",
+            "peindreAstre(canvas, cx, cy, rayon)", "peindreCollines(canvas, w, h)").map { peindre.indexOf(it) }
+        assertTrue("la peinture immobile a changé : $ordre", ordre.all { it >= 0 } && ordre == ordre.sorted())
+    }
+
+    /** Le ciel continu (24/11) : les quatre ciels peints d'avant, mêlés selon la hauteur du soleil. */
+    @Test
+    fun `les quatre ciels d avant se melent sans a-coup`() {
+        listOf(true, false).forEach { matin ->
+            var avant = PaysageCiel.poidsDesCiels(-30.0, matin)
+            var e = -30.0
+            while (e <= 60.0) {
+                val p = PaysageCiel.poidsDesCiels(e, matin)
+                assertEquals(1.0, p.sum(), 1e-9)
+                assertTrue("saut à $e° : ${avant.toList()} → ${p.toList()}", p.indices.all { kotlin.math.abs(p[it] - avant[it]) <= 0.03 })
+                avant = p
+                e += 0.25
+            }
         }
+        // Le matin passe par l'aube, le soir par le coucher.
+        assertEquals(1.0, PaysageCiel.poidsDesCiels(0.0, true)[1], 1e-9)
+        assertEquals(1.0, PaysageCiel.poidsDesCiels(0.0, false)[3], 1e-9)
+        assertEquals(1.0, PaysageCiel.poidsDesCiels(-20.0, true)[0], 1e-9)
+        assertEquals(1.0, PaysageCiel.poidsDesCiels(30.0, false)[2], 1e-9)
     }
 
     /** Les deux accueils qui montrent le ciel passent par ce paysage, pas par un dégradé à eux. */
@@ -86,8 +106,8 @@ class PaysageCielTest {
     fun `Instant et Serenite posent ce paysage en fond de carte`() {
         // AccueilVersion.paysage crée le PaysageCiel et lui donne l'état de ses animations (GardeCiel).
         assertTrue(File("src/main/java/com/myhitbodedut/AccueilVersion.kt").readText()
-            .contains("PaysageCiel(phase, resources.displayMetrics.density, nuages)"))
-        listOf("InstantActivity" to "background = paysage(phase)", "SereniteActivity" to "background = paysage(phase, nuages = true)").forEach { (ecran, pose) ->
+            .contains("PaysageCiel(CielDuJour.etat(this), resources.displayMetrics.density, nuages, arc)"))
+        listOf("InstantActivity" to "background = paysage()", "SereniteActivity" to "background = paysage(nuages = true, arc = true)").forEach { (ecran, pose) ->
             val source = File("src/main/java/com/myhitbodedut/$ecran.kt").readText()
             assertTrue("$ecran ne pose plus PaysageCiel", source.contains(pose))
         }

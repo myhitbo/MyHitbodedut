@@ -9,18 +9,19 @@ import kotlin.math.roundToInt
  * mode jour nuit au coucher du soleil ou lever du soleil s'affiche dans l'arrière-plan de la
  * première page sur toute la page, pas dans le logo dans les anneaux ».
  *
- * Le ciel est celui de CielDuJour (mêmes phases, mêmes couleurs de départ : haut, milieu,
- * horizon, astre, lueur), adapté au thème pour que chaque texte de la page garde les seuils de
- * PaletteTest, quelle que soit la phase, la palette « Fond » et la palette « Accent » :
+ * Le ciel est celui de CielContinu (couleurs brutes selon la hauteur du soleil, le matin ou le
+ * soir), adapté au thème pour que chaque texte de la page garde les seuils de PaletteTest, à
+ * toute heure, pour chaque palette « Fond » et « Accent » :
  *  - thème sombre : chaque couleur est assombrie, teinte et saturation gardées, jusqu'à une
  *    luminance où les encres claires (encre 7:1, texte secondaire, accent, légendes des
  *    anneaux 4,5:1) tiennent encore ; l'aube et le coucher tirent vers le violet de leur haut,
  *    saturation bornée à 55 %, faute de quoi l'orangé sombre devient brun ;
  *  - thème clair : chaque couleur est éclaircie de la même façon, jusqu'à la luminance où les
  *    encres sombres tiennent : un ciel pastel.
- * La lueur large du halo et les nuages ont une opacité bornée par le même calcul, sur tout le
- * dégradé ; les étoiles, le disque de l'astre et sa couronne, eux, ne sont jamais posés sous un
- * texte (CielPage les écarte des zones de texte).
+ * La lueur large du halo et les nuages (bord éclairé et corps) ont une opacité bornée par le
+ * même calcul, sur tout le dégradé ; en thème sombre, le corps des nuages est une silhouette
+ * plus sombre que le ciel. Les étoiles, le disque de l'astre, sa couronne et ses rayons ne sont
+ * jamais posés sous un texte (CielPage, PlanCiel).
  *
  * Le calcul est pur (des entiers ARGB, pas d'android.graphics) : TeintesCielTest le refait pour
  * chaque palette de l'application. Les mêmes règles côté web (ciel.js).
@@ -31,17 +32,20 @@ object TeintesCiel {
     data class Encre(val couleur: Int, val seuil: Double)
 
     /**
-     * Le ciel d'une phase, pour un thème : le dégradé du haut de la page (0) au bas de l'écran
+     * Le ciel d'un moment, pour un thème : le dégradé du haut de la page (0) au bas de l'écran
      * (1), arrêt du milieu à [MILIEU] ; la lueur large du halo et son opacité au plus fort ; la
-     * couronne et le disque de l'astre ; les nuages (ou le voile) et leur opacité au plus fort ;
-     * les étoiles et la leur.
+     * couronne (et les rayons de l'heure dorée) et le disque du soleil ; la lune ; le corps et le
+     * bord éclairé des nuages et leurs opacités au plus fort ; les étoiles ; les deux collines du
+     * bas de l'écran, sous la barre de départ.
      */
     data class Page(
         val haut: Int, val milieu: Int, val bas: Int,
         val lueur: Int, val lueurAlpha: Float,
-        val couronne: Int, val astre: Int,
-        val nuage: Int, val nuageAlpha: Float,
+        val couronne: Int, val astre: Int, val lune: Int,
+        val corps: Int, val corpsAlpha: Float, val bord: Int, val bordAlpha: Float,
+        val corpsVif: Int, val bordVif: Int,
         val etoile: Int, val etoileAlpha: Float,
+        val collineLoin: Int, val collinePres: Int,
     ) {
         /** La couleur du dégradé à la hauteur [u] (0 en haut, 1 en bas de l'écran et au-delà). */
         fun degrade(u: Float): Int = when {
@@ -58,91 +62,128 @@ object TeintesCiel {
     /** Ce que le calcul garde en réserve au-dessus de chaque seuil : l'arrondi à 8 bits et le tramage du dégradé. */
     const val MARGE = 0.05
 
-    /** Thème sombre : la luminance de chaque arrêt (haut, milieu, bas), en part de la plus haute permise. */
-    private val PART_SOMBRE = mapOf(
-        CielDuJour.Phase.AUBE to floatArrayOf(0.38f, 0.48f, 0.56f),
-        CielDuJour.Phase.JOUR to floatArrayOf(0.38f, 0.44f, 0.52f),
-        CielDuJour.Phase.COUCHER to floatArrayOf(0.36f, 0.48f, 0.56f),
-        CielDuJour.Phase.NUIT to floatArrayOf(0.25f, 0.40f, 0.55f),
-    )
-
     /** Thème clair : la luminance de chaque arrêt, au-dessus de la plus basse permise. */
     private val ECART_CLAIR = floatArrayOf(0.012f, 0.03f, 0.05f)
 
-    /** Les nuages blancs du jour ; le voile, à peine chaud, de l'aube et du coucher. */
-    private const val BLANC = 0xFFFFFFFF.toInt()
-    private const val BLANC_CHAUD = 0xFFFFF8F0.toInt()
+    private const val ECHANTILLONS = 48
+    private const val ASTRE_CLAIR = 0.55
+    private const val ETOILE_SOMBRE = 0xFFFFF6EC.toInt()
+    private const val ETOILE_CLAIRE = 0xFF7884C4.toInt()
 
     /**
-     * Le ciel de [phase] sous des encres [encres] (claires si [sombre], sombres sinon). Si aucune
-     * teinte ne les laisse lisibles (palette future trop exigeante), le ciel reste le [papier].
+     * Le ciel quand le soleil est à [hauteur] degrés, le [matin] ou le soir (CielContinu), sous
+     * des encres [encres] (claires si [sombre], sombres sinon). Si aucune teinte ne les laisse
+     * lisibles (palette future trop exigeante), le ciel reste le [papier].
      */
-    fun pourPage(phase: CielDuJour.Phase, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
-        val cle = Cle(phase, sombre, encres, papier)
-        return memoire[cle] ?: calculer(phase, sombre, encres, papier).also {
-            if (memoire.size >= 8) memoire.clear()
+    fun pourCiel(hauteur: Double, matin: Boolean, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
+        val cle = Cle(CielContinu.arrondi(hauteur), matin, sombre, encres, papier)
+        return memoire[cle] ?: calculer(cle.hauteur, matin, sombre, encres, papier).also {
+            if (memoire.size >= 16) memoire.clear()
             memoire[cle] = it
         }
     }
 
-    /** Les ciels déjà calculés : l'accueil revoit le sien à chaque retour et chaque minute. */
-    private data class Cle(val phase: CielDuJour.Phase, val sombre: Boolean, val encres: List<Encre>, val papier: Int)
+    /** Les ciels déjà calculés : l'accueil revoit le sien chaque minute, au quart de degré. */
+    private data class Cle(val hauteur: Double, val matin: Boolean, val sombre: Boolean, val encres: List<Encre>, val papier: Int)
     private val memoire = HashMap<Cle, Page>()
 
-    private fun calculer(phase: CielDuJour.Phase, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
-        val p = CielDuJour.PALETTES.getValue(phase)
+    private fun calculer(e: Double, matin: Boolean, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
         val borne = borne(encres, sombre)
         // Les arrêts, puis la vérification sur tout le dégradé : entre deux arrêts lisibles, le
         // mélange peut perdre un rien de luminance. On reprend alors avec plus de réserve.
         var reserve = 0
-        var arrets = calculerArrets(phase, sombre, borne, 0)
-        while (!degradeLisible(arrets, encres) && reserve < 12) arrets = calculerArrets(phase, sombre, borne, ++reserve)
+        var arrets = calculerArrets(e, matin, sombre, borne, 0)
+        while (!degradeLisible(arrets, encres) && reserve < 12) arrets = calculerArrets(e, matin, sombre, borne, ++reserve)
         if (!degradeLisible(arrets, encres)) arrets = intArrayOf(papier, papier, papier)
-        val sansHalo = Page(arrets[0], arrets[1], arrets[2], 0, 0f, 0, 0, 0, 0f, 0, 0f)
-        val echantillons = FloatArray(ECHANTILLONS + 1) { it / ECHANTILLONS.toFloat() }.map { sansHalo.degrade(it) }
+        val nu = Page(arrets[0], arrets[1], arrets[2], 0, 0f, 0, 0, 0, 0, 0f, 0, 0f, 0, 0, 0, 0f, 0, 0)
+        val echantillons = (0..ECHANTILLONS).map { nu.degrade(it / ECHANTILLONS.toFloat()) }
+        fun tous(fonds: List<Int>, couche: Int, a: Double) = fonds.all { lisible(melange(it, couche, a), encres) }
 
-        // Les nuages d'abord, sur tout le dégradé : ils passent partout. La lueur large (la couleur
-        // du ciel le jour, éclaircie encore en thème clair) prend ce qui reste, nuage par-dessus
-        // compris, dans l'ordre du dessin : la lueur, puis le nuage.
-        val nuage = if (phase == CielDuJour.Phase.JOUR) BLANC else BLANC_CHAUD
-        val nuageAlpha = if (phase == CielDuJour.Phase.NUIT) 0f
-        else opaciteMax(if (sombre) 0.5f else 0.75f) { a -> echantillons.all { lisible(melange(it, nuage, a), encres) } }
-        var lueur = p.lueur
-        if (!sombre && luminance(lueur) < borne + 0.06) lueur = aLuminance(lueur, borne + 0.06)
+        // Les nuages d'abord, ils passent partout : le bord éclairé (dessous), puis le corps
+        // par-dessus. En thème sombre le corps est une silhouette plus sombre que le ciel, seul
+        // son bord s'allume ; en thème clair il est pâle.
+        var bord = CielContinu.NUAGE_BORD.a(e)
+        var corps = CielContinu.NUAGE_CORPS.a(e)
+        val plusSombre = echantillons.minOf { luminance(it) }
+        if (sombre) corps = aLuminance(corps, plusSombre * 0.6)
+        else {
+            if (luminance(corps) < borne + 0.08) corps = aLuminance(corps, minOf(borne + 0.08, 1.0))
+            if (luminance(bord) < borne - 0.25) bord = aLuminance(bord, borne - 0.25)
+        }
+        val bordAlpha = opaciteMax(if (sombre) 0.5f else 0.8f) { a -> tous(echantillons, bord, a) }
+        val sousBord = echantillons.map { melange(it, bord, bordAlpha.toDouble()) }
+        val corpsAlpha = opaciteMax(if (sombre) 0.6f else 0.8f) { a -> tous(echantillons, corps, a) && tous(sousBord, corps, a) }
+
+        // La lueur large prend ce qui reste, nuages par-dessus compris, dans l'ordre du dessin.
+        var lueur = CielContinu.LUEUR.a(e)
+        if (e < 0) lueur = melange(lueur, CielContinu.LUNE, CielContinu.rampe(e, 0.0, -12.0))
+        if (!sombre && luminance(lueur) < borne + 0.06) lueur = aLuminance(lueur, minOf(borne + 0.06, 1.0))
         val lueurAlpha = opaciteMax(if (sombre) 0.9f else 0.85f) { a ->
             echantillons.all {
                 val sous = melange(it, lueur, a)
-                lisible(sous, encres) && lisible(melange(sous, nuage, nuageAlpha.toDouble()), encres)
+                val bordDessus = melange(sous, bord, bordAlpha.toDouble())
+                lisible(sous, encres) && lisible(bordDessus, encres) &&
+                    lisible(melange(sous, corps, corpsAlpha.toDouble()), encres) && lisible(melange(bordDessus, corps, corpsAlpha.toDouble()), encres)
             }
         }
 
-        // L'astre : tel quel sur un ciel sombre ; plus soutenu sur un ciel pâle, pour s'y détacher.
-        val astre = if (!sombre && luminance(p.astre) > ASTRE_CLAIR) aLuminance(p.astre, ASTRE_CLAIR) else p.astre
+        // Le soleil tel quel sur un ciel sombre ; plus soutenu sur un ciel pâle, pour s'y détacher. De même la lune.
+        fun detache(c: Int) = if (!sombre && luminance(c) > ASTRE_CLAIR) aLuminance(c, ASTRE_CLAIR) else c
+        // Les collines du bas : la couleur du bas tirée vers le haut du ciel, la plus proche plus sombre.
+        val loin = melange(arrets[2], arrets[0], 0.5)
+        val pres0 = melange(arrets[2], arrets[0], 0.9)
+        val pres = aLuminance(pres0, luminance(arrets[2]) * (if (sombre) 0.55 else 0.86))
+        // Du texte peut passer sur les collines et le sol : ils restent lisibles eux aussi.
+        fun lisibleAjuste(c0: Int): Int {
+            var c = c0
+            var n = 0
+            while (!lisible(c, encres) && n++ < 40) {
+                val l = luminance(c)
+                c = aLuminance(c, if (sombre) l * 0.9 else minOf(l + 0.01, 1.0))
+            }
+            return c
+        }
         return Page(
             haut = arrets[0], milieu = arrets[1], bas = arrets[2],
             lueur = lueur, lueurAlpha = lueurAlpha,
-            couronne = p.lueur, astre = astre,
-            nuage = nuage, nuageAlpha = nuageAlpha,
+            couronne = CielContinu.LUEUR.a(e), astre = detache(CielContinu.ASTRE.a(e)), lune = detache(CielContinu.LUNE),
+            corps = corps, corpsAlpha = corpsAlpha, bord = bord, bordAlpha = bordAlpha,
+            corpsVif = nuageVif(CielContinu.NUAGE_CORPS.a(e), sombre, corps = true), bordVif = nuageVif(CielContinu.NUAGE_BORD.a(e), sombre, corps = false),
             etoile = if (sombre) ETOILE_SOMBRE else ETOILE_CLAIRE,
             etoileAlpha = if (sombre) 0.9f else 0.8f,
+            collineLoin = lisibleAjuste(aLuminance(loin, luminance(arrets[2]) * (if (sombre) 0.8 else 0.94))), collinePres = lisibleAjuste(pres),
         )
     }
 
-    private const val ECHANTILLONS = 48
+    /**
+     * Les couleurs d'un nuage qui ne passe sous aucun texte (dans la bande des anneaux,
+     * PlanCiel.nuages) : vives, sans borne de lisibilité. En thème sombre, le corps est atténué
+     * (luminance 0,10 au plus) et le bord garde sa lumière (0,35 au plus) ; en thème clair, le
+     * corps est pâle (0,8 au moins), le bord tel quel.
+     */
+    fun nuageVif(c: Int, sombre: Boolean, corps: Boolean): Int = when {
+        sombre && corps -> if (luminance(c) > 0.10) aLuminance(c, 0.10) else c
+        sombre -> if (luminance(c) > 0.35) aLuminance(c, 0.35) else c
+        corps -> if (luminance(c) < 0.8) aLuminance(c, 0.8) else c
+        else -> c
+    }
 
     /** Les trois arrêts du dégradé ; chaque cran de [reserve] les éloigne un peu plus de la borne. */
-    private fun calculerArrets(phase: CielDuJour.Phase, sombre: Boolean, borne: Double, reserve: Int): IntArray {
-        val p = CielDuJour.PALETTES.getValue(phase)
-        val departs = intArrayOf(p.haut, p.milieu, p.horizon)
+    private fun calculerArrets(e: Double, matin: Boolean, sombre: Boolean, borne: Double, reserve: Int): IntArray {
+        val departs = CielContinu.brutes(e, matin)
+        val parts = CielContinu.partsSombre(e)
+        val chaleur = CielContinu.chaleur(e)
         return IntArray(3) { i ->
             var c = departs[i]
             if (sombre) {
-                val cible = borne * PART_SOMBRE.getValue(phase)[i] * 0.9.pow(reserve)
+                val cible = borne * parts[i] * 0.9.pow(reserve)
                 if (luminance(c) > cible) {
-                    if (i > 0 && (phase == CielDuJour.Phase.AUBE || phase == CielDuJour.Phase.COUCHER)) {
-                        c = melange(c, p.haut, 0.45)
+                    // L'orangé sombre devient brun : à l'aube et au coucher, le milieu et l'horizon
+                    // tirent vers le violet de leur haut, saturation bornée.
+                    if (i > 0 && chaleur > 0) {
+                        c = melange(c, departs[0], 0.45 * chaleur)
                         val h = hsl(c)
-                        c = deHsl(h[0], minOf(h[1], 0.55), h[2])
+                        c = deHsl(h[0], minOf(h[1], 1.0 - 0.45 * chaleur), h[2])
                     }
                     c = aLuminance(c, cible)
                 }
@@ -155,12 +196,9 @@ object TeintesCiel {
     }
 
     private fun degradeLisible(arrets: IntArray, encres: List<Encre>): Boolean {
-        val page = Page(arrets[0], arrets[1], arrets[2], 0, 0f, 0, 0, 0, 0f, 0, 0f)
+        val page = Page(arrets[0], arrets[1], arrets[2], 0, 0f, 0, 0, 0, 0, 0f, 0, 0f, 0, 0, 0, 0f, 0, 0)
         return (0..ECHANTILLONS).all { lisible(page.degrade(it / ECHANTILLONS.toFloat()), encres) }
     }
-    private const val ASTRE_CLAIR = 0.55
-    private const val ETOILE_SOMBRE = 0xFFFFF6EC.toInt()
-    private const val ETOILE_CLAIRE = 0xFF7884C4.toInt()
 
     /** Chaque encre garde son seuil (plus la marge) sur [fond]. */
     fun lisible(fond: Int, encres: List<Encre>): Boolean = encres.all { contraste(it.couleur, fond) >= it.seuil + MARGE }

@@ -54,8 +54,6 @@ export const PALETTES = Object.freeze({
 /** L'arrêt du milieu du dégradé, et la réserve gardée au-dessus de chaque seuil. */
 export const MILIEU = 0.55;
 export const MARGE = 0.05;
-/** Thème sombre : la luminance de chaque arrêt (haut, milieu, bas), en part de la plus haute permise. */
-export const PART_SOMBRE = Object.freeze({ aube: [0.38, 0.48, 0.56], jour: [0.38, 0.44, 0.52], coucher: [0.36, 0.48, 0.56], nuit: [0.25, 0.40, 0.55] });
 /** Thème clair : la luminance de chaque arrêt, au-dessus de la plus basse permise. */
 export const ECART_CLAIR = Object.freeze([0.012, 0.03, 0.05]);
 const ECHANTILLONS = 48;
@@ -120,17 +118,119 @@ export function degrade(t, u) {
   return t.bas;
 }
 
-function arrets(phase, sombre, b, reserve) {
-  const p = PALETTES[phase];
-  return [p.haut, p.milieu, p.horizon].map((depart, i) => {
-    let c = rgb(depart);
+// --- Le ciel continu (CielContinu.kt, Soleil.kt ; 24/11) ---------------------------------------
+//
+// Plus quatre ciels fixes : un ciel qui suit la hauteur du vrai soleil au lieu choisi (sinon un
+// soleil moyen d'après l'heure), et passe sans à-coup par la nuit noire, le bleu du crépuscule, le
+// violet, les rouges et les jaunes du lever, l'heure dorée, le bleu du jour, l'orange et le violet
+// du soir.
+
+const rad = (d) => d * Math.PI / 180;
+const deg = (r) => r * 180 / Math.PI;
+
+/** Le soleil à l'instant [ms] (UTC) pour [latitude], [longitude] : formules de la NOAA (Soleil.kt). */
+export function soleil(ms, latitude, longitude) {
+  const jd = ms / 86400000 + 2440587.5, t = (jd - 2451545) / 36525;
+  const l0 = ((280.46646 + t * (36000.76983 + 0.0003032 * t)) % 360 + 360) % 360;
+  const m = 357.52911 + t * (35999.05029 - 0.0001537 * t);
+  const e = 0.016708634 - t * (0.000042037 + 0.0000001267 * t);
+  const c = Math.sin(rad(m)) * (1.914602 - t * (0.004817 + 0.000014 * t)) + Math.sin(rad(2 * m)) * (0.019993 - 0.000101 * t) + Math.sin(rad(3 * m)) * 0.000289;
+  const omega = 125.04 - 1934.136 * t;
+  const lambda = l0 + c - 0.00569 - 0.00478 * Math.sin(rad(omega));
+  const eps = 23 + (26 + (21.448 - t * (46.815 + t * (0.00059 - t * 0.001813))) / 60) / 60 + 0.00256 * Math.cos(rad(omega));
+  const declinaison = deg(Math.asin(Math.sin(rad(eps)) * Math.sin(rad(lambda))));
+  const y = Math.tan(rad(eps / 2)) ** 2;
+  const equation = 4 * deg(y * Math.sin(2 * rad(l0)) - 2 * e * Math.sin(rad(m)) + 4 * e * y * Math.sin(rad(m)) * Math.cos(2 * rad(l0))
+    - 0.5 * y * y * Math.sin(4 * rad(l0)) - 1.25 * e * e * Math.sin(2 * rad(m)));
+  const minutes = ((ms % 86400000) + 86400000) % 86400000 / 60000;
+  let h = (minutes + equation + 4 * longitude) / 4 - 180;
+  h = ((h + 180) % 360 + 360) % 360 - 180;
+  const phi = rad(latitude), delta = rad(declinaison);
+  const hauteur = 90 - deg(Math.acos(Math.min(1, Math.max(-1, Math.sin(phi) * Math.sin(delta) + Math.cos(phi) * Math.cos(delta) * Math.cos(rad(h))))));
+  const cosLever = (Math.sin(rad(-0.833)) - Math.sin(phi) * Math.sin(delta)) / (Math.cos(phi) * Math.cos(delta));
+  return positionSoleil(hauteur, h, cosLever >= 1 ? 0 : cosLever <= -1 ? 180 : deg(Math.acos(cosLever)));
+}
+
+/** Sans lieu : levé à 6 h 30, couché à 18 h 30, ±50° (Soleil.parHeure). [heure] décimale. */
+export function soleilParHeure(heure) {
+  const h = (((heure - 12.5) * 15 + 180) % 360 + 360) % 360 - 180;
+  return positionSoleil(50 * Math.sin(Math.PI * (heure - 6.5) / 12), h, 90);
+}
+
+function positionSoleil(hauteur, angleHoraire, angleLever) {
+  const nuit = 360 - 2 * angleLever;
+  return {
+    hauteur, angleHoraire, angleLever,
+    matin: angleHoraire < 0,
+    progresJour: angleLever <= 0 ? 0.5 : Math.min(1, Math.max(0, (angleHoraire + angleLever) / (2 * angleLever))),
+    progresNuit: nuit <= 0 ? 0.5 : Math.min(1, Math.max(0, (((angleHoraire - angleLever) % 360 + 360) % 360) / nuit)),
+  };
+}
+
+/** Les clés du matin et du soir : [hauteur, haut, milieu, horizon] (CielContinu.MATIN, SOIR). */
+export const MATIN = Object.freeze([
+  [-18, '#0A0E24', '#111839', '#1B2550'], [-12, '#121C44', '#22336C', '#3A4E8E'], [-6, '#222E69', '#56579A', '#B07898'],
+  [-2, '#36408A', '#A86A92', '#F08870'], [0, '#4B5DA6', '#E2958A', '#FFAE76'], [3, '#5A80C4', '#EEC29C', '#FFDDA0'],
+  [6, '#5994D6', '#B9D6EC', '#FBE5B6'], [12, '#5AA5E6', '#A4D5F4', '#E2F3FB'], [40, '#4E9BE2', '#96CDF2', '#DDF1FB'],
+]);
+export const SOIR = Object.freeze([
+  [-18, '#0A0E22', '#101733', '#18224A'], [-12, '#131B46', '#23336C', '#3B4D8C'], [-6, '#2C2A6C', '#5B4891', '#A2698C'],
+  [-3, '#463D8A', '#985C9C', '#DE7D78'], [0, '#675FA6', '#E6826E', '#FF8A50'], [2, '#6B7DC0', '#F0A472', '#FF9E5A'],
+  [6, '#6395D2', '#E4D2B0', '#FFD79E'], [12, '#5AA5E6', '#A4D5F4', '#E2F3FB'], [40, '#4E9BE2', '#96CDF2', '#DDF1FB'],
+]);
+/** Les couleurs qui suivent la hauteur du soleil : [hauteur, couleur]. */
+export const ASTRE = Object.freeze([[0, '#FF8C4E'], [3, '#FFB566'], [8, '#FFDB8A'], [20, '#FFF0B8'], [40, '#FFF6CE']]);
+export const LUEUR = Object.freeze([[0, '#FF9A5C'], [3, '#FFBE7E'], [8, '#FFDFA0'], [20, '#FFF6C8']]);
+export const NUAGE_CORPS = Object.freeze([[-12, '#5E6A8E'], [-6, '#6E6E9E'], [0, '#E8A9A0'], [4, '#F6D2B8'], [10, '#FFFFFF']]);
+export const NUAGE_BORD = Object.freeze([[-12, '#7A86A8'], [-6, '#C88AA8'], [0, '#FFB070'], [4, '#FFD27A'], [10, '#FFF4DC']]);
+export const LUNE = '#F6F0D6';
+
+export function suite(liste, e) {
+  if (e <= liste[0][0]) return rgb(liste[0][1]);
+  if (e >= liste.at(-1)[0]) return rgb(liste.at(-1)[1]);
+  const i = liste.findIndex(([h]) => h > e);
+  return melange(liste[i - 1][1], liste[i][1], (e - liste[i - 1][0]) / (liste[i][0] - liste[i - 1][0]));
+}
+export function brutes(e, matin) {
+  const cles = matin ? MATIN : SOIR;
+  if (e <= cles[0][0]) return cles[0].slice(1).map(rgb);
+  if (e >= cles.at(-1)[0]) return cles.at(-1).slice(1).map(rgb);
+  const i = cles.findIndex(([h]) => h > e), a = cles[i - 1], b = cles[i], t = (e - a[0]) / (b[0] - a[0]);
+  return [1, 2, 3].map((k) => melange(a[k], b[k], t));
+}
+export function rampe(x, de, a) { const t = Math.min(1, Math.max(0, (x - de) / (a - de))); return t * t * (3 - 2 * t); }
+export function partsSombre(e) {
+  const nuit = [0.25, 0.40, 0.55], crepuscule = [0.36, 0.48, 0.56], jour = [0.38, 0.44, 0.52];
+  const [a, b, t] = e <= -12 ? [nuit, nuit, 0] : e < -3 ? [nuit, crepuscule, (e + 12) / 9] : e < 6 ? [crepuscule, crepuscule, 0] : e < 12 ? [crepuscule, jour, (e - 6) / 6] : [jour, jour, 0];
+  return a.map((v, i) => v + (b[i] - v) * t);
+}
+export const chaleur = (e) => rampe(e, -12, -6) * (1 - rampe(e, 6, 12));
+export const allumage = (e) => rampe(e, -4, -14);
+export const presenceNuages = (e) => 0.15 + 0.85 * rampe(e, -14, -6);
+export const rayonsDores = (e) => rampe(e, -2, 2.5) * (1 - rampe(e, 6, 10));
+export const soleilVisible = (e) => rampe(e, -3, 1);
+export const soleilPlutotQueLune = (e) => e >= -3;
+export const luneVisible = (e) => rampe(e, -3, -7);
+export const elevationDessinee = (e) => Math.min(1, Math.max(0, Math.sin(rad(e)) / Math.sin(Math.PI / 3)));
+export const rayonSoleil = (e) => 14 + 3 * (1 - rampe(e, 0, 15));
+export const RAYON_LUNE = 12;
+export const MOIS_LUNAIRE = 29.530589;
+export function lune(jourDuMois) {
+  const age = Math.min(30, Math.max(1, jourDuMois)) - 0.5;
+  return { age, eclairee: (1 - Math.cos(2 * Math.PI * age / MOIS_LUNAIRE)) / 2, croissante: age < MOIS_LUNAIRE / 2 };
+}
+
+function calculerArrets(e, matin, sombre, b, reserve) {
+  const departs = brutes(e, matin), parts = partsSombre(e), w = chaleur(e);
+  return departs.map((depart, i) => {
+    let c = depart;
     if (sombre) {
-      const cible = b * PART_SOMBRE[phase][i] * 0.9 ** reserve;
+      const cible = b * parts[i] * 0.9 ** reserve;
       if (luminance(c) > cible) {
-        if (i > 0 && (phase === 'aube' || phase === 'coucher')) {
-          c = melange(c, p.haut, 0.45);
+        if (i > 0 && w > 0) {
+          c = melange(c, departs[0], 0.45 * w);
           const [h, s, l] = hsl(c);
-          c = deHsl(h, Math.min(s, 0.55), l);
+          c = deHsl(h, Math.min(s, 1 - 0.45 * w), l);
         }
         c = aLuminance(c, cible);
       }
@@ -142,32 +242,63 @@ function arrets(phase, sombre, b, reserve) {
   });
 }
 
+/** Les couleurs d'un nuage qui ne passe sous aucun texte, dans la bande des anneaux (TeintesCiel.nuageVif). */
+export function nuageVif(c, sombre, corps) {
+  if (sombre && corps) return luminance(c) > 0.10 ? aLuminance(c, 0.10) : c;
+  if (sombre) return luminance(c) > 0.35 ? aLuminance(c, 0.35) : c;
+  if (corps) return luminance(c) < 0.8 ? aLuminance(c, 0.8) : c;
+  return c;
+}
+
 /**
- * Le ciel de [phase] sous des encres ([{ couleur, seuil }], claires si [sombre]) ; le papier si
- * aucune teinte ne les laisse lisibles. Les couleurs sont des [r, g, b].
+ * Le ciel quand le soleil est à [e] degrés, le [matin] ou le soir, sous des encres
+ * ([{ couleur, seuil }], claires si [sombre]) ; le papier si aucune teinte ne les laisse lisibles
+ * (TeintesCiel.pourCiel). Les couleurs sont des [r, g, b].
  */
-export function teintesPage(phase, sombre, encres, papier) {
-  const p = PALETTES[phase];
+export function teintesCiel(e, matin, sombre, encres, papier) {
   const b = borne(encres, sombre);
   const lisibles = ([haut, milieu, bas]) => Array.from({ length: ECHANTILLONS + 1 }, (_, i) => degrade({ haut, milieu, bas }, i / ECHANTILLONS)).every((c) => lisible(c, encres));
   let reserve = 0;
-  let a = arrets(phase, sombre, b, 0);
-  while (!lisibles(a) && reserve < 12) a = arrets(phase, sombre, b, ++reserve);
+  let a = calculerArrets(e, matin, sombre, b, 0);
+  while (!lisibles(a) && reserve < 12) a = calculerArrets(e, matin, sombre, b, ++reserve);
   if (!lisibles(a)) a = [rgb(papier), rgb(papier), rgb(papier)];
   const t = { haut: a[0], milieu: a[1], bas: a[2] };
   const echantillons = Array.from({ length: ECHANTILLONS + 1 }, (_, i) => degrade(t, i / ECHANTILLONS));
-  // Les nuages d'abord, sur tout le dégradé ; la lueur large prend ce qui reste, nuage par-dessus compris.
-  const nuage = phase === 'jour' ? [255, 255, 255] : [255, 248, 240];
-  const nuageAlpha = phase === 'nuit' ? 0 : opaciteMax(sombre ? 0.5 : 0.75, (a) => echantillons.every((e) => lisible(melange(e, nuage, a), encres)));
-  let lueur = rgb(p.lueur);
-  if (!sombre && luminance(lueur) < b + 0.06) lueur = aLuminance(lueur, b + 0.06);
-  const lueurAlpha = opaciteMax(sombre ? 0.9 : 0.85, (a) => echantillons.every((e) => {
-    const sous = melange(e, lueur, a);
-    return lisible(sous, encres) && lisible(melange(sous, nuage, nuageAlpha), encres);
+  const tous = (fonds, couche, x) => fonds.every((f) => lisible(melange(f, couche, x), encres));
+  // Les nuages d'abord : le bord éclairé, puis le corps (en thème sombre, une silhouette plus sombre que le ciel).
+  let bord = suite(NUAGE_BORD, e), corps = suite(NUAGE_CORPS, e);
+  const plusSombre = Math.min(...echantillons.map(luminance));
+  if (sombre) corps = aLuminance(corps, plusSombre * 0.6);
+  else {
+    if (luminance(corps) < b + 0.08) corps = aLuminance(corps, Math.min(b + 0.08, 1));
+    if (luminance(bord) < b - 0.25) bord = aLuminance(bord, b - 0.25);
+  }
+  const bordAlpha = opaciteMax(sombre ? 0.5 : 0.8, (x) => tous(echantillons, bord, x));
+  const sousBord = echantillons.map((f) => melange(f, bord, bordAlpha));
+  const corpsAlpha = opaciteMax(sombre ? 0.6 : 0.8, (x) => tous(echantillons, corps, x) && tous(sousBord, corps, x));
+  // La lueur large prend ce qui reste, nuages par-dessus compris.
+  let lueur = suite(LUEUR, e);
+  if (e < 0) lueur = melange(lueur, LUNE, rampe(e, 0, -12));
+  if (!sombre && luminance(lueur) < b + 0.06) lueur = aLuminance(lueur, Math.min(b + 0.06, 1));
+  const lueurAlpha = opaciteMax(sombre ? 0.9 : 0.85, (x) => echantillons.every((f) => {
+    const sous = melange(f, lueur, x), bordDessus = melange(sous, bord, bordAlpha);
+    return lisible(sous, encres) && lisible(bordDessus, encres) && lisible(melange(sous, corps, corpsAlpha), encres) && lisible(melange(bordDessus, corps, corpsAlpha), encres);
   }));
-  const astre = !sombre && luminance(p.astre) > ASTRE_CLAIR ? aLuminance(rgb(p.astre), ASTRE_CLAIR) : rgb(p.astre);
-  return { ...t, lueur, lueurAlpha, couronne: rgb(p.lueur), astre, nuage, nuageAlpha,
-    etoile: sombre ? [255, 246, 236] : [120, 132, 196], etoileAlpha: sombre ? 0.9 : 0.8 };
+  const detache = (c) => (!sombre && luminance(c) > ASTRE_CLAIR ? aLuminance(c, ASTRE_CLAIR) : c);
+  const lisibleAjuste = (c0) => {
+    let c = c0;
+    for (let n = 0; n < 40 && !lisible(c, encres); n++) { const l = luminance(c); c = aLuminance(c, sombre ? l * 0.9 : Math.min(l + 0.01, 1)); }
+    return c;
+  };
+  const loin = melange(a[2], a[0], 0.5), pres0 = melange(a[2], a[0], 0.9);
+  return {
+    ...t, lueur, lueurAlpha, couronne: suite(LUEUR, e), astre: detache(suite(ASTRE, e)), lune: detache(rgb(LUNE)),
+    corps, corpsAlpha, bord, bordAlpha,
+    corpsVif: nuageVif(suite(NUAGE_CORPS, e), sombre, true), bordVif: nuageVif(suite(NUAGE_BORD, e), sombre, false),
+    etoile: sombre ? [255, 246, 236] : [120, 132, 196], etoileAlpha: sombre ? 0.9 : 0.8,
+    collineLoin: lisibleAjuste(aLuminance(loin, luminance(a[2]) * (sombre ? 0.8 : 0.94))),
+    collinePres: lisibleAjuste(aLuminance(pres0, luminance(a[2]) * (sombre ? 0.55 : 0.86))),
+  };
 }
 
 // --- Le plan et les mouvements (CielPage.kt, PlanCiel ; CielVivant.kt) -------------------------
@@ -177,16 +308,25 @@ export const VIVANT = Object.freeze({
   scintillementMin: 8, scintillementMax: 16, scintillementBas: 0.45,
   deriveX: 3, deriveXS: 40, deriveY: 1.5, deriveYS: 31,
   souffleS: 12, souffleTaille: 0.06, souffleEclat: 0.18,
-  nuageVitesse: 3, voileVitesse: 2,
+  nuageVitesse: 3, voileVitesse: 2, rayonsDegS: 2,
 });
-/** Le rayon du disque (px), et la couronne et la lueur en rayons du disque. */
-export const RAYON = Object.freeze({ jour: 14, nuit: 12, aube: 16, coucher: 17 });
+/** La couronne et la lueur en rayons du disque ; les rayons de l'heure dorée ; les étoiles loin du texte. */
 export const COURONNE = 2.2;
-export const LUEUR = 4.2;
+export const LUEUR_RAYONS = 4.2;
+export const RAYONS = 12;
 export const MARGE_ETOILE = 6;
-/** Les nuages du jour et le voile de l'aube et du coucher : départ (part de la largeur), hauteur (part de l'écran), échelle. */
-export const NUAGES = Object.freeze([[0.08, 0.10, 1], [0.58, 0.42, 0.8]]);
-export const VOILES = Object.freeze([[0.30, 0.20, 1]]);
+/** Les collines du bas du premier écran (px) ; le bord éclairé des nuages (px). */
+export const COLLINES = 72;
+export const BORD = 3;
+/** Les trois nuages : départ (part de la largeur), place dans la hauteur des anneaux, échelle, forme (0 bombé, 1 long). */
+export const NUAGES = Object.freeze([[0.08, 0.06, 0.9, 0], [0.30, 0.52, 0.8, 1], [0.62, 0.86, 0.75, 0]]);
+export const NUAGE_VIF = 0.85;
+/** La hauteur du nuage [i] de hauteur [haut] (PlanCiel.nuageY), et si sa bande est libre de texte (bandeLibre). */
+export function nuageY(i, jauge, vue, haut) {
+  const f = NUAGES[i][1];
+  return jauge ? jauge.haut + f * Math.max(0, jauge.bas - jauge.haut - haut) : vue * (0.1 + 0.4 * f);
+}
+export const bandeLibre = (haut, bas, zones) => !zones.some((z) => z.bas > haut && z.haut < bas);
 export const TAILLE_NUAGE = Object.freeze([128, 48]);
 export const TAILLE_VOILE = Object.freeze([240, 30]);
 
@@ -212,28 +352,28 @@ export function etoiles(nombre, graine, rayonMin, rayonMax) {
   });
 }
 
-/** Combien d'étoiles, jusqu'où, à quel éclat (PlanCiel.etoiles). */
-export function planEtoiles(phase, sombre, largeur, hauteur) {
-  if (phase === 'nuit') return [Math.min(72, Math.max(24, Math.floor(largeur * hauteur / 4600))), 0.78, 1];
-  if (sombre && (phase === 'aube' || phase === 'coucher')) return [12, 0.3, 0.55];
-  return [0, 0, 0];
+/** Combien d'étoiles et jusqu'où (PlanCiel.etoiles) : une pour 4 600 px², de 24 à 72, les quatre cinquièmes du haut. */
+export function planEtoiles(largeur, hauteur) {
+  return [Math.min(72, Math.max(24, Math.floor(largeur * hauteur / 4600))), 0.78];
 }
 
 const touche = (z, cx, cy, r) => cx + r > z.gauche && cx - r < z.droite && cy + r > z.haut && cy - r < z.bas;
 
-/** Le centre de l'astre à côté des anneaux, ou null (PlanCiel.astre). Zones : { gauche, haut, droite, bas }. */
-export function placeAstre(phase, jauge, largeur, zones) {
-  const r = RAYON[phase], couronne = r * COURONNE;
-  const bas = phase === 'aube' || phase === 'coucher';
-  const cy = jauge.haut + (jauge.bas - jauge.haut) * (bas ? 0.72 : 0.2);
-  const droite = phase !== 'aube';
-  for (const aDroite of [droite, !droite]) {
-    const libre = aDroite ? largeur - jauge.droite : jauge.gauche;
-    if (libre < 2 * r + 8) continue;
-    const cx = aDroite ? (jauge.droite + largeur) / 2 : jauge.gauche / 2;
-    if (!zones.some((z) => touche(z, cx, cy, couronne))) return [cx, cy];
-  }
-  return null;
+/**
+ * Le centre de l'astre sur son arc (PlanCiel.arc) : de la marge gauche des anneaux (progrès 0) à
+ * la droite (1), derrière eux vers midi ; la hauteur (0 à 1) dans la hauteur des anneaux. Null
+ * sous un texte ou hors de l'écran. Zones : { gauche, haut, droite, bas }.
+ */
+export function arc(progres, hauteur, jauge, largeur, r, couronne, zones) {
+  const cx = (jauge.gauche + jauge.droite) / 2, gauche = jauge.gauche / 2, droite = (jauge.droite + largeur) / 2;
+  const u = Math.cos(Math.PI * Math.min(1, Math.max(0, progres)));
+  const pousse = Math.abs(u) ** 0.4;
+  const x = u >= 0 ? cx - (cx - gauche) * pousse : cx + (droite - cx) * pousse;
+  const bas = jauge.bas - couronne, hautArc = jauge.haut + couronne;
+  const y = bas - Math.max(0, bas - hautArc) * Math.min(1, Math.max(0, hauteur));
+  if (x - r < 0 || x + r > largeur) return null;
+  if (zones.some((z) => touche(z, x, y, couronne))) return null;
+  return [x, y];
 }
 
 /** Les étoiles qui se montrent : aucune près d'un texte, d'une icône ou des anneaux (PlanCiel.libres). */

@@ -80,8 +80,9 @@ class CielDuJourTest {
         // Revu chaque minute tant que l'accueil est devant, arrêté en le quittant ; ses animations aussi.
         assertTrue(accueil.contains("postDelayed(veilleCiel, CIEL_MS)") && accueil.contains("removeCallbacks(veilleCiel)"))
         assertTrue(accueil.contains("gardeCiel.reprendre()") && accueil.contains("gardeCiel.suspendre()"))
-        // La barre de départ prend la couleur du bas du ciel, sans couture.
-        assertTrue(accueil.contains("cielPage.teintes?.bas"))
+        // La barre de départ prend la couleur du sol, au pied des collines, sans couture.
+        assertTrue(accueil.contains("CielDuJour.etat(this)") && accueil.contains("TeintesCiel.pourCiel("))
+        assertTrue(accueil.contains("cielPage.teintes?.collinePres"))
         listOf("lanterne_allumee", "lanterne_eteinte", "lanterne_aujourdhui", "bougies_chabbat").forEach {
             assertTrue("$it n'est pas employée", accueil.contains("R.drawable.$it"))
         }

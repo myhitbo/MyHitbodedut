@@ -38,12 +38,29 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         paysageCourant?.anime = permis
     }
 
-    /** Le paysage du ciel de la carte, animé si c'est permis ; [nuages] seulement là où le haut du ciel est libre de texte. */
-    fun paysage(phase: CielDuJour.Phase, nuages: Boolean = false): PaysageCiel =
-        PaysageCiel(phase, resources.displayMetrics.density, nuages).also {
+    /**
+     * Le paysage du ciel de la carte, continu (CielContinu), animé si c'est permis ; [nuages] et
+     * [arc] (le soleil et la lune qui traversent le ciel) seulement là où le haut du ciel est
+     * libre de texte.
+     */
+    fun paysage(nuages: Boolean = false, arc: Boolean = false): PaysageCiel =
+        PaysageCiel(CielDuJour.etat(this), resources.displayMetrics.density, nuages, arc).also {
             it.anime = cielPermis
             paysageCourant = it
+            paysageNuages = nuages
+            paysageArc = arc
         }
+
+    private var paysageNuages = false
+    private var paysageArc = false
+
+    /** Le ciel continu se revoit chaque minute tant que l'accueil est devant : seul le paysage change. */
+    private val veilleCiel = object : Runnable {
+        override fun run() {
+            (paysageCourant?.callback as? android.view.View)?.background = paysage(paysageNuages, paysageArc)
+            window.decorView.postDelayed(this, 60_000L)
+        }
+    }
 
     /** La version que cet écran représente : si elle n'est plus la version choisie, on repart de MainActivity. */
     abstract val version: VersionApp
@@ -72,6 +89,8 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         super.onResume()
         if (isFinishing) return
         gardeCiel.reprendre()
+        window.decorView.removeCallbacks(veilleCiel)
+        window.decorView.postDelayed(veilleCiel, 60_000L)
         SessionService.reconcilier(this)
         appliquerServices()
         Data.prechauffer(this) {
@@ -85,6 +104,7 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
     }
 
     override fun onPause() {
+        window.decorView.removeCallbacks(veilleCiel)
         gardeCiel.suspendre()
         super.onPause()
     }
