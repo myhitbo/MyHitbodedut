@@ -85,4 +85,26 @@ struct CielDuJourTests {
         let sans = CielDuJour.phase(maintenant: Self.a(6, 0), lieu: nil)
         #expect(sans == .aube)
     }
+
+    /// Le ciel continu (24/11, CielDuJour.etat) : au lieu, la hauteur du vrai soleil et le jour hébreu affiché, qui
+    /// bascule à tsét ; sans lieu, le soleil moyen de l'heure et la pleine lune.
+    @Test func leCielContinuSuitLeSoleilDuLieu() throws {
+        let lieu = Zmanim.Lieu(nom: "Jérusalem", latitude: 31.778, longitude: 35.2354, altitude: 754,
+                               fuseau: "Asia/Jerusalem")
+        let zone = try #require(Fuseau("Asia/Jerusalem"))
+        let jour = try #require(JourCivil(iso: "2026-11-24"))
+        func a(_ h: Int, _ m: Int) -> DateHeureZonee { DateHeureZonee(DateHeure(jour, heure: h, minute: m), fuseau: zone) }
+        let midi = CielDuJour.etat(maintenant: a(11, 33), lieu: lieu, enIsrael: true)
+        #expect(midi.hauteur > 36 && midi.hauteur < 39 && midi.estSoleil)
+        let p = Soleil.position(millis: a(11, 33).millis, latitude: lieu.latitude, longitude: lieu.longitude)
+        #expect(midi == EtatCiel.de(p, jourHebreu: midi.jourHebreu))
+        // Le 24/11/2026 est le 14 Kislev ; le soir, après tsét, le 15 : la pleine lune.
+        #expect(midi.jourHebreu == 14)
+        let soir = CielDuJour.etat(maintenant: a(21, 0), lieu: lieu, enIsrael: true)
+        #expect(soir.jourHebreu == 15 && !soir.estSoleil && soir.hauteur < -30)
+        // Sans lieu : le soleil moyen de l'heure du téléphone.
+        let sans = CielDuJour.etat(maintenant: a(6, 30), lieu: nil, enIsrael: true)
+        #expect(abs(sans.hauteur) < 1e-9 && sans.matin == 1)
+        #expect(CielDuJour.etat(heure: 12.5) == EtatCiel.de(Soleil.parHeure(12.5), jourHebreu: 15))
+    }
 }

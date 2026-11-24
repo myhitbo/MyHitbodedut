@@ -56,6 +56,34 @@ public enum CielDuJour {
         return phase(maintenant: maintenant, alot: z["alot"], lever: z["netz"], chkia: z["chkia"], tset: z["tset"])
     }
 
+    /// Le ciel continu de `maintenant` (24/11, `CielContinu`) : la hauteur du soleil au `lieu` des zmanim s'il est
+    /// réglé (`Soleil`, NOAA), sinon le soleil moyen de l'heure du téléphone (`Soleil.parHeure`) ; et le jour du mois
+    /// hébreu affiché (il bascule à tsét, comme la vignette), qui donne la lune. `maintenant` est déjà dans le fuseau
+    /// du lieu quand il y en a un (CielDuJour.etat).
+    public static func etat(maintenant: DateHeureZonee, lieu: Zmanim.Lieu?, enIsrael: Bool) -> EtatCiel {
+        let position: Soleil.Position
+        if let lieu {
+            position = Soleil.position(millis: maintenant.millis, latitude: lieu.latitude, longitude: lieu.longitude)
+        } else {
+            position = Soleil.parHeure(Double(maintenant.civile.millisDuJour) / 3_600_000)
+        }
+        var tset: DateHeureZonee? = nil
+        if let lieu, let instant = Zmanim.jour(lieu: lieu, date: maintenant.jour).first(where: { $0.cle == "tset" })?
+            .instant {
+            tset = DateHeureZonee(millis: Kotlin.versLong((instant.timeIntervalSince1970 * 1000).rounded()),
+                                  fuseau: maintenant.fuseau)
+        }
+        let jour = CalendrierJuif.jour(ZmanimVignette.jourHebreuAffiche(maintenant: maintenant, tset: tset),
+                                       enIsrael: enIsrael).jourHebreu
+        return EtatCiel.de(position, jourHebreu: jour > 0 ? jour : 15)
+    }
+
+    /// Sans lieu ni calendrier : le soleil moyen d'une `heure` décimale du téléphone, la pleine lune (le repli
+    /// d'Android, et les captures du ciel à heure fixe).
+    public static func etat(heure: Double) -> EtatCiel {
+        EtatCiel.de(Soleil.parHeure(heure), jourHebreu: 15)
+    }
+
     /// Les couleurs d'un ciel (ARGB) : le dégradé (haut, milieu, horizon), la colline, l'astre et sa lueur, et le
     /// voile que prend le haut de l'écran. Celles du ciel, pas du thème : les mêmes de jour comme de nuit.
     public struct Palette: Sendable, Equatable {

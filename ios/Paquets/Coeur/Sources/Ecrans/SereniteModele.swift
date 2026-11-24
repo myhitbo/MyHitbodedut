@@ -44,8 +44,10 @@ public enum SereniteOnglet: String, Sendable, CaseIterable, Identifiable {
 
 /// Ce que montre l'accueil Sérénité.
 public struct SereniteEcran: Sendable, Hashable {
-    /// Le ciel du moment, que la carte-paysage peint.
+    /// Le ciel du moment : sa phase (l'étiquette, la palette de nuit).
     public let phase: CielDuJour.Phase
+    /// Le ciel continu, que la carte-paysage peint (24/11).
+    public let ciel: EtatCiel
     /// La palette de nuit (la nuit et le soir) ; celle du jour le jour et à l'aube.
     public let nuit: Bool
     /// « Bonjour, Avraham » ou « Votre journée » (32 pt, Bellefair).
@@ -99,7 +101,7 @@ extension AccueilVersionModele {
         }
         let initiale = d.prenom.first.map { String($0).uppercased() }
         return SereniteEcran(
-            phase: phase, nuit: nuit, titre: d.salutation, initiale: initiale,
+            phase: phase, ciel: etatCiel, nuit: nuit, titre: d.salutation, initiale: initiale,
             ligne: d.ligneDate + [.libelle(d.libelleSerie)],
             etiquette: etiquette, titreCarte: titreCarte,
             accessibiliteCarte: Libelle("serenite_ouvrir", .libelle(objectif)),

@@ -57,6 +57,10 @@ public final class AccueilModele {
     /// « Réduire les animations », que la vue recopie de l'environnement (`accessibilityReduceMotion`).
     public var reduireAnimations = false
 
+    /// Les captures du ciel à heure fixe (ios/App/Captures.swift, « -capture ciel-m-20 ») : l'heure décimale du
+    /// soleil moyen, sans lieu, comme les captures d'Android ; nil : le vrai soleil du lieu, maintenant.
+    public var heureDuCiel: Double? = nil
+
     // MARK: L'état
 
     private var siddur: Siddur? = nil
@@ -221,8 +225,28 @@ public final class AccueilModele {
         let nom: Libelle.Argument = date.isEmpty ? .libelle(Libelle("nav_zmanim")) : .texte(date)
         return AccueilEntete(dateHebraique: date.isEmpty ? nil : date, titre: titre,
                              accessibilite: Libelle("jour_ciel", nom),
-                             ciel: CielDuJour.phase(maintenant: maintenant, lieu: lieu),
+                             ciel: phaseDuCiel(maintenant: maintenant, lieu: lieu),
                              reglages: Libelle("settings_title"))
+    }
+
+    /// La phase du ciel, pour l'icône devant la date : celle du lieu, ou celle de l'heure fixée des captures.
+    private func phaseDuCiel(maintenant: DateHeureZonee, lieu: Zmanim.Lieu?) -> CielDuJour.Phase {
+        if let heureDuCiel {
+            let minutes = Kotlin.versInt(heureDuCiel * 60)
+            return CielDuJour.parHeure(heure: minutes / 60, minute: minutes % 60)
+        }
+        return CielDuJour.phase(maintenant: maintenant, lieu: lieu)
+    }
+
+    /// Le ciel continu du Jour (24/11, CielDuJour.etat) : la hauteur du vrai soleil au lieu des zmanim (sinon le
+    /// soleil moyen de l'heure du téléphone) et le jour du mois hébreu affiché, qui donne la lune. La vue le relit
+    /// chaque minute ; les teintes, le dessin et les animations sont à elle (CielPageVue).
+    public var etatCiel: EtatCiel {
+        if let heureDuCiel { return CielDuJour.etat(heure: heureDuCiel) }
+        let lieu = reglages.lieuZmanim
+        let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
+        return CielDuJour.etat(maintenant: DateHeureZonee(millis: horloge.maintenant, fuseau: zone), lieu: lieu,
+                               enIsrael: enIsrael)
     }
 
     /// La date hébraïque touchée : le ciel (zmanim, calendrier, hilloulot, boussole).
@@ -341,9 +365,15 @@ public final class AccueilModele {
         }
     }
 
-    /// La couleur de la légende : celle de l'anneau mis en avant, atténuée sinon.
+    /// La couleur de la légende : celle de l'anneau mis en avant, atténuée sinon. Pour la semaine et la série, leur
+    /// encre de texte (ring_week_text, ring_streak_text, MainActivity.renderLegende), plus sombre que le trait de
+    /// l'anneau : 4,5:1 sur le papier comme sur le ciel du Jour (24/11), où le trait n'atteignait pas 4,5.
     public var couleurLegende: AccueilCouleur {
-        accueilCouleur(misEnAvant, sinon: .muted)
+        switch misEnAvant {
+        case .semaine: .ringWeekText
+        case .serie: .ringStreakText
+        default: accueilCouleur(misEnAvant, sinon: .muted)
+        }
     }
 
     /// Un anneau touché : mis en avant, ou remis avec les autres s'il l'était (AnneauxView.onTouchEvent). Sa face

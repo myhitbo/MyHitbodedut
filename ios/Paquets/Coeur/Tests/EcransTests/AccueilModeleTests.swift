@@ -544,7 +544,8 @@ struct AccueilModeleTests {
         m.toucherAnneau(.serie)
         #expect(m.face == .serie)
         #expect(m.legende == Libelle.pluriel("ring_streak_detail", quantite: 1, .entier(1), .entier(7)))
-        #expect(m.couleurLegende == .ringStreak)
+        // L'encre de texte de la série (ring_streak_text), pas le trait de l'anneau.
+        #expect(m.couleurLegende == .ringStreakText)
     }
 
     @Test func descriptionDesAnneaux() throws {

@@ -183,6 +183,10 @@ public final class AccueilVersionModele {
     /// « Réduire les animations », que la vue recopie de l'environnement.
     public var reduireAnimations = false
 
+    /// Les captures du ciel à heure fixe (ios/App/Captures.swift, « -capture serenite-m+03 ») : l'heure décimale du
+    /// soleil moyen, sans lieu ; nil : le vrai soleil du lieu, maintenant.
+    public var heureDuCiel: Double? = nil
+
     /// Le verrou du journal, posé par l'app (AccueilVersion.kt : `VerrouJournal.actif`) : actif, la dernière note et les
     /// derniers jours de Sérénité ne montrent pas le texte du journal.
     public var verrou: VerrouJournal? = nil
@@ -402,9 +406,25 @@ public final class AccueilVersionModele {
 
     /// Le ciel du moment (CielDuJour.maintenant), d'après les zmanim du lieu ; sans lieu, l'heure du téléphone.
     var ciel: CielDuJour.Phase {
+        if let heureDuCiel {
+            let minutes = Kotlin.versInt(heureDuCiel * 60)
+            return CielDuJour.parHeure(heure: minutes / 60, minute: minutes % 60)
+        }
         let lieu = magasin.reglages.lieuZmanim
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
         return CielDuJour.phase(maintenant: DateHeureZonee(millis: horloge.maintenant, fuseau: zone), lieu: lieu)
+    }
+
+    /// Le ciel continu de la carte-paysage (24/11, CielDuJour.etat, AccueilVersion.paysage) : la hauteur du vrai
+    /// soleil au lieu des zmanim, sinon le soleil moyen de l'heure du téléphone ; le jour du mois hébreu, qui donne la
+    /// lune.
+    public var etatCiel: EtatCiel {
+        if let heureDuCiel { return CielDuJour.etat(heure: heureDuCiel) }
+        let reglages = magasin.reglages
+        let lieu = reglages.lieuZmanim
+        let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
+        return CielDuJour.etat(maintenant: DateHeureZonee(millis: horloge.maintenant, fuseau: zone), lieu: lieu,
+                               enIsrael: reglages.inIsrael(fuseauTelephone: horloge.fuseau.identifiant))
     }
 
     /// Le réglage de la musique de la séance, tel que les accueils le nomment : l'ambiance choisie, et le morceau

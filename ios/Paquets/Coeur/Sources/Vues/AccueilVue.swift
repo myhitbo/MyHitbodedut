@@ -245,6 +245,9 @@ enum AccueilTeintes {
         case .white: AnyShapeStyle(Color.white)
         case .ringWeek: AnyShapeStyle(AccueilFixe(jour: 0x2E7DB3, nuit: 0x6FB7E8))
         case .ringStreak: AnyShapeStyle(AccueilFixe(jour: 0xB8780F, nuit: 0xE8B45C))
+        // Les encres de texte des anneaux (ring_week_text, ring_streak_text), pour la légende posée sur le ciel.
+        case .ringWeekText: AnyShapeStyle(AccueilFixe(jour: 0x256A9A, nuit: 0x6FB7E8))
+        case .ringStreakText: AnyShapeStyle(AccueilFixe(jour: 0x8A5A00, nuit: 0xE8B45C))
         }
     }
 

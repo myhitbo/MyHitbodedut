@@ -16,11 +16,14 @@ public enum AccueilTexte: Sendable, Hashable {
 
 /// Les couleurs de l'accueil. `brand`, `ink` et `muted` sont des jetons de la palette (`Jeton`) ; `ringWeek`,
 /// `ringStreak` et `white` sont des couleurs fixes de res/values/colors.xml (#2E7DB3, #B8780F, #FFFFFF ; la nuit,
-/// values-night : #6FB7E8, #E8B45C), que la palette n'a pas encore.
+/// values-night : #6FB7E8, #E8B45C), que la palette n'a pas encore ; `ringWeekText` et `ringStreakText`, leurs encres
+/// de texte, pour la légende (#256A9A, #8A5A00 ; la nuit, les mêmes que le trait : TeintesCiel.legendeSemaine).
 public enum AccueilCouleur: String, Sendable, CaseIterable {
     case brand
     case ringWeek = "ring_week"
     case ringStreak = "ring_streak"
+    case ringWeekText = "ring_week_text"
+    case ringStreakText = "ring_streak_text"
     case ink
     case muted
     case white
