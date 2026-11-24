@@ -85,10 +85,13 @@ public struct TehilimVue: View {
                 modele.ouvrirSignets()
             } label: {
                 HStack(spacing: 8) {
+                    // textDirection RTL, mais textAlignment VIEW_START et l'icône en fin de vue : seul le sens du
+                    // texte est de droite à gauche ; l'alignement et l'icône suivent le sens de l'app.
                     Text(verbatim: traducteur.texte(ligne.titre) + " · " + String(ligne.nombre) + "  ›")
                         .policeHebraique(.serif, taille: 19)
                         .foregroundStyle(Teinte(.ink))
                         .multilineTextAlignment(.leading)
+                        .environment(\.layoutDirection, .rightToLeft)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, 4)
                     // ic_marque_priere : un ruban en contour.
@@ -97,7 +100,6 @@ public struct TehilimVue: View {
                         .foregroundStyle(Teinte(.brand))
                         .accessibilityHidden(true)
                 }
-                .environment(\.layoutDirection, .rightToLeft)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -279,11 +281,15 @@ struct TehilimFeuilleSignets: View {
         Button {
             choisir(modele.choisirSignet(ligne))
         } label: {
+            // Comme la ligne des marque-pages : le sens du texte est de droite à gauche, l'alignement (VIEW_START) et
+            // l'icône (en fin de vue) suivent le sens de l'app.
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(ligne.titre, traducteur: traducteur)
                         .font(.footnote)
                         .foregroundStyle(Teinte(.muted))
+                        .environment(\.layoutDirection, .rightToLeft)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     Image(systemName: "bookmark")
                         .font(.system(size: 14))
                         .foregroundStyle(Teinte(.brand))
@@ -294,10 +300,11 @@ struct TehilimFeuilleSignets: View {
                     .foregroundStyle(Teinte(.ink))
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    .environment(\.layoutDirection, .rightToLeft)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
             .padding(.vertical, 10)
-            .environment(\.layoutDirection, .rightToLeft)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

@@ -52,6 +52,7 @@ let enChantierVues: [String] = [
     "LectureVue.swift",
     "MusiqueMiniLecteurVue.swift",
     "MusiqueVue.swift",
+    "PaliersFeteVue.swift",
     "PresentationVue.swift",
     "RechercheVue.swift",
     "SiddourVue.swift",
@@ -61,6 +62,7 @@ let enChantierVues: [String] = [
     "TehilimVue.swift",
     "TikkunVue.swift",
     "TropheeEffets.swift",
+    "TropheeFicheVue.swift",
     "TropheeObjet.swift",
 ]
 
