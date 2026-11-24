@@ -20,8 +20,13 @@ public struct AccueilVue: View {
     @Environment(\.scenePhase) private var phase
     @Environment(\.tropheeFormes) private var formes
     @Environment(\.dynamicTypeSize) private var tailleTexte
+    @Environment(\.paletteApp) private var palette
+    @Environment(\.colorScheme) private var schema
     /// La place de l'écran : couché, ou debout sur l'iPad, le Jour se met en deux colonnes (GrandEcran.deuxColonnes).
     @State private var taille: CGSize = .zero
+    /// La hauteur du premier écran, sous la barre d'état et au-dessus de la barre de départ : le ciel y descend
+    /// jusqu'aux collines (CielPageVue).
+    @State private var hauteurVue: CGFloat = 0
 
     /// La barre de départ et son volet sont posés par la racine sur les trois onglets (`BarreDepart`,
     /// `feuilleDepart`), comme la fiche des trophées neufs (`feteDesTrophees`).
@@ -30,41 +35,10 @@ public struct AccueilVue: View {
     }
 
     public var body: some View {
-        ScrollView {
-            Group {
-                if GrandEcran.deuxColonnes(largeur: Double(taille.width), hauteur: Double(taille.height),
-                                           texteAccessible: tailleTexte.isAccessibilitySize) {
-                    // Couché (layout-land/activity_main.xml), ou debout sur l'iPad : les anneaux à part, au début de
-                    // la ligne (à droite en hébreu), l'en-tête, la semaine et la suite à côté d'eux. Chaque colonne
-                    // est un conteneur d'accessibilité : VoiceOver lit l'une, puis l'autre, et non ligne à ligne.
-                    HStack(alignment: .top, spacing: 24) {
-                        VStack(spacing: 0) {
-                            anneaux
-                        }
-                        .frame(width: 300)
-                        .accessibilityElement(children: .contain)
-                        VStack(alignment: .leading, spacing: 0) {
-                            tete
-                            suite
-                        }
-                        .accessibilityElement(children: .contain)
-                    }
-                } else {
-                    VStack(alignment: .leading, spacing: 0) {
-                        tete
-                        anneaux
-                        suite
-                    }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 24)
+        // Le ciel du Jour suit le vrai soleil : revu chaque minute (MainActivity.veilleCiel).
+        TimelineView(.everyMinute) { _ in
+            defilement(modele.etatCiel)
         }
-        .onGeometryChange(for: CGSize.self, of: { $0.size }) { nouvelle in
-            taille = nouvelle
-        }
-        .background(Teinte(.paper))
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: Bindable(modele).bilanLie) {
             if let bilan = modele.bilan {
@@ -109,6 +83,85 @@ public struct AccueilVue: View {
         }
     }
 
+    /// La page qui défile, sur le ciel du moment (CielPageVue) ; le papier uni avec « Contraste élevé ». Au-delà du
+    /// contenu (le rebond du haut, le dessous de la barre de départ), le haut du ciel et son sol.
+    private func defilement(_ etat: EtatCiel) -> some View {
+        let sombre = schema == .dark
+        let teintes = CielDuJourTeintes.teintes(etat, palette: palette, sombre: sombre)
+        let fond: AnyShapeStyle
+        if let t = teintes {
+            fond = AnyShapeStyle(LinearGradient(stops: [
+                Gradient.Stop(color: CielCouleur.couleur(t.haut), location: 0),
+                Gradient.Stop(color: CielCouleur.couleur(t.haut), location: 0.5),
+                Gradient.Stop(color: CielCouleur.couleur(t.collinePres), location: 0.5),
+                Gradient.Stop(color: CielCouleur.couleur(t.collinePres), location: 1),
+            ], startPoint: .top, endPoint: .bottom))
+        } else {
+            fond = AnyShapeStyle(Teinte(.paper))
+        }
+        return ScrollView {
+            Group {
+                if GrandEcran.deuxColonnes(largeur: Double(taille.width), hauteur: Double(taille.height),
+                                           texteAccessible: tailleTexte.isAccessibilitySize) {
+                    // Couché (layout-land/activity_main.xml), ou debout sur l'iPad : les anneaux à part, au début de
+                    // la ligne (à droite en hébreu), l'en-tête, la semaine et la suite à côté d'eux. Chaque colonne
+                    // est un conteneur d'accessibilité : VoiceOver lit l'une, puis l'autre, et non ligne à ligne.
+                    HStack(alignment: .top, spacing: 24) {
+                        VStack(spacing: 0) {
+                            anneaux
+                        }
+                        .frame(width: 300)
+                        .accessibilityElement(children: .contain)
+                        VStack(alignment: .leading, spacing: 0) {
+                            tete
+                            suite
+                        }
+                        .accessibilityElement(children: .contain)
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 0) {
+                        tete
+                        anneaux
+                        suite
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 24)
+            // Le ciel couvre au moins le premier écran, même quand la page est courte (l'iPad).
+            .frame(minHeight: hauteurVue, alignment: .top)
+            .backgroundPreferenceValue(PlanDuCielCle.self) { plan in
+                if let teintes {
+                    // De gauche à droite quelle que soit la langue : le soleil se lève à gauche, comme sur Android.
+                    // Les ancres des textes et des anneaux se lisent dans ce même repère.
+                    GeometryReader { g in
+                        CielPageVue(etat: etat, teintes: teintes, sombre: sombre,
+                                    jauge: plan.jauge.map { AccueilVue.zone(g[$0]) },
+                                    zones: plan.zones.map { AccueilVue.zone(g[$0]) },
+                                    largeur: Double(g.size.width), hauteur: Double(g.size.height),
+                                    hauteurVue: Double(hauteurVue))
+                    }
+                    .environment(\.layoutDirection, .leftToRight)
+                }
+            }
+        }
+        .onGeometryChange(for: CGSize.self, of: { $0.size }) { nouvelle in
+            taille = nouvelle
+        }
+        // Le premier écran : ce qui se voit entre la barre d'état et la barre de départ (le bas des collines).
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.height - $0.safeAreaInsets.top - $0.safeAreaInsets.bottom }) {
+            nouvelle in
+            hauteurVue = max(nouvelle, 0)
+        }
+        .background(fond)
+    }
+
+    /// Un rectangle de la page, pour le plan du ciel.
+    static func zone(_ r: CGRect) -> PlanCiel.Zone {
+        PlanCiel.Zone(gauche: Double(r.minX), haut: Double(r.minY), droite: Double(r.maxX), bas: Double(r.maxY))
+    }
+
     /// L'en-tête (la date hébraïque, la roue) et l'état du jour.
     @ViewBuilder private var tete: some View {
         EnteteJour(modele: modele)
@@ -125,6 +178,7 @@ public struct AccueilVue: View {
             .foregroundStyle(AccueilTeintes.style(modele.couleurLegende))
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
+            .zoneDuCiel()
             .padding(.top, 4)
         ligneTrophee
     }
@@ -132,9 +186,11 @@ public struct AccueilVue: View {
     /// La bande de la semaine, le mot de relance, les boutons du jour et les cartes du moment.
     @ViewBuilder private var suite: some View {
         AccueilSemaineVue(modele: modele)
+            .zoneDuCiel()
             .padding(.top, 16)
         if let relance = modele.relance {
             ChizukCarteVue(carte: relance)
+                .zoneDuCiel()
                 .padding(.top, 12)
         }
         boutonsDuJour
@@ -142,6 +198,7 @@ public struct AccueilVue: View {
             AccueilCarteVue(carte: carte, police: modele.police) { route in
                 modele.ouvrir(route)
             }
+            .zoneDuCiel()
             .padding(.top, 14)
         }
     }
@@ -174,6 +231,7 @@ public struct AccueilVue: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(verbatim: ligne.accessibilite.map { traducteur.texte($0) }.joined(separator: ". ")))
+        .zoneDuCiel()
         .padding(.top, 4)
     }
 
@@ -202,6 +260,7 @@ public struct AccueilVue: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .zoneDuCiel()
     }
 }
 
@@ -348,15 +407,24 @@ private struct AccueilEtatVue: View {
                 Text(salutation, traducteur: traducteur)
                     .tailleSp(26, poids: .bold, relativeA: .title)
                     .foregroundStyle(Teinte(.ink))
+                    // Toute la largeur, comme le texte d'Android (match_parent), pour le plan du ciel.
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .zoneDuCiel()
             }
             if modele.etatEstTitre {
                 Text(modele.titreEtat, traducteur: traducteur)
                     .tailleSp(20, poids: .bold, relativeA: .title3)
                     .foregroundStyle(Teinte(.ink))
+                    // Toute la largeur, comme le texte d'Android (match_parent), pour le plan du ciel.
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .zoneDuCiel()
             } else {
                 Text(modele.titreEtat, traducteur: traducteur)
                     .policeHebraique(.arrondie, taille: 15, relativeA: .subheadline)
                     .foregroundStyle(Teinte(.muted))
+                    // Toute la largeur, comme le texte d'Android (match_parent), pour le plan du ciel.
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .zoneDuCiel()
             }
             // La série et le total côte à côte ; l'un sous l'autre aux tailles d'accessibilité, sans le point.
             RangeeAdaptable(alignement: .firstTextBaseline, espacement: 8) {
@@ -374,10 +442,15 @@ private struct AccueilEtatVue: View {
             }
             .policeHebraique(.arrondie, taille: 15, relativeA: .subheadline)
             .foregroundStyle(Teinte(.muted))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .zoneDuCiel()
             if let detail = modele.detailDuJour {
                 Text(detail, traducteur: traducteur)
                     .policeHebraique(.arrondie, taille: 16, relativeA: .callout)
                     .foregroundStyle(Teinte(.brand))
+                    // Toute la largeur, comme le texte d'Android (match_parent), pour le plan du ciel.
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .zoneDuCiel()
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -420,7 +493,11 @@ private struct AccueilAnneauxVue: View {
                 .accessibilityLabel(Text(modele.descriptionAnneaux, traducteur: traducteur))
             plaque
                 .frame(width: cote - 2 * marge, height: cote - 2 * marge)
+                // La plaque claire : un fond, que l'astre ne touche pas (hero_plate, MainActivity.placerCiel).
+                .zoneDuCiel()
         }
+        // Le carré des anneaux : l'astre passe à côté d'eux, et derrière eux vers midi (CielPageVue).
+        .jaugeDuCiel()
         .scaleEffect(battement)
         .sensoryFeedback(.impact(weight: .light), trigger: modele.touches)
         .task(id: modele.remplissage) {
@@ -769,16 +846,30 @@ private struct AccueilCarteVue: View {
 /// par-dessus les onglets (`feuilleDepart`).
 public struct BarreDepart: View {
     private let modele: AccueilModele
+    /// Posée sous le Jour : elle prend la couleur du sol, au pied des collines du ciel (MainActivity.fondBarreDepart).
+    private let surLeCiel: Bool
     @Environment(\.traducteur) private var traducteur
     /// La largeur de la barre : ses marges sont « edge » d'Android (16 sur un téléphone, jusqu'à 320 sur une
     /// tablette couchée, GrandEcran.bord).
     @State private var largeur: Double = 0
 
-    public init(modele: AccueilModele) {
+    public init(modele: AccueilModele, surLeCiel: Bool = false) {
         self.modele = modele
+        self.surLeCiel = surLeCiel
     }
 
     public var body: some View {
+        if surLeCiel {
+            // Le sol du ciel suit le vrai soleil, comme le ciel du Jour : revu chaque minute.
+            TimelineView(.everyMinute) { _ in
+                barre(SolDuCiel(etat: modele.etatCiel))
+            }
+        } else {
+            barre(SolDuCiel(etat: nil))
+        }
+    }
+
+    private func barre(_ fond: SolDuCiel) -> some View {
         Button {
             modele.commencer()
         } label: {
@@ -809,12 +900,26 @@ public struct BarreDepart: View {
         .padding(.horizontal, GrandEcran.bord(largeur: largeur))
         .padding(.top, 6)
         .padding(.bottom, 8)
-        .background(Teinte(.paper))
+        .background(fond)
         // Pour l'audit d'accessibilité : ce qui défile dessous ne se voit pas (UITests, zoneVisible).
         .accessibilityIdentifier("barre-bas")
         .onGeometryChange(for: Double.self, of: { Double($0.size.width) }) { nouvelle in
             largeur = nouvelle
         }
+    }
+}
+
+/// Le fond de la barre de départ : sous le Jour, la couleur du sol au pied des collines du ciel (`CielPageVue`), sans
+/// couture ; ailleurs, ou avec « Contraste élevé », le papier.
+struct SolDuCiel: ShapeStyle {
+    let etat: EtatCiel?
+
+    func resolve(in environment: EnvironmentValues) -> Color {
+        if let etat, let t = CielDuJourTeintes.teintes(etat, palette: environment.paletteApp,
+                                                        sombre: environment.colorScheme == .dark) {
+            return CielCouleur.couleur(t.collinePres)
+        }
+        return environment.paletteApp.couleur(.paper, schema: environment.colorScheme)
     }
 }
 

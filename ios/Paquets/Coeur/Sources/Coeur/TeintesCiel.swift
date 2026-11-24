@@ -86,10 +86,17 @@ public enum TeintesCiel {
     /// (MainActivity.encresDuJour) : le titre (7:1), le texte secondaire, l'accent (palier, boutons-liens) et les
     /// légendes des anneaux (4,5:1).
     public static func encresDuJour(_ palette: Palette, nuit: Bool) -> [Encre] {
+        encresDuJour(encre: palette[.ink], discret: palette[.muted], accent: palette[.brand], nuit: nuit)
+    }
+
+    /// Les mêmes, d'après les trois jetons de la palette (l'encre, le texte discret, l'accent). Le texte discret
+    /// d'iOS est mêlé d'un quart de l'encre (PaletteApp.renfortDiscret) : plus contrasté que le jeton, il tient
+    /// d'autant mieux le seuil que le jeton seul tient.
+    public static func encresDuJour(encre: Couleur, discret: Couleur, accent: Couleur, nuit: Bool) -> [Encre] {
         [
-            Encre(couleur: argb(palette[.ink]), seuil: 7),
-            Encre(couleur: argb(palette[.muted]), seuil: 4.5),
-            Encre(couleur: argb(palette[.brand]), seuil: 4.5),
+            Encre(couleur: argb(encre), seuil: 7),
+            Encre(couleur: argb(discret), seuil: 4.5),
+            Encre(couleur: argb(accent), seuil: 4.5),
             Encre(couleur: nuit ? legendeSemaine.nuit : legendeSemaine.jour, seuil: 4.5),
             Encre(couleur: nuit ? legendeSerie.nuit : legendeSerie.jour, seuil: 4.5),
         ]

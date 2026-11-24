@@ -130,7 +130,7 @@ struct CielVivantTests {
         var avecCiel: Set<String> = []
         for f in fichiers {
             let texte = String(decoding: try Data(contentsOf: dossier.appendingPathComponent(f)), as: UTF8.self)
-            if ["CielPageVue(", "SereniteCiel(", "CielVivantHorloge("].contains(where: texte.contains) {
+            if ["CielPageVue", "SereniteCiel", "CielVivantHorloge"].contains(where: texte.contains) {
                 avecCiel.insert(String(f.dropLast(".swift".count)))
             }
         }

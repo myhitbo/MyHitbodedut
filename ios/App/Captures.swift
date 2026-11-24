@@ -30,6 +30,29 @@ enum Captures {
     /// `ecrans` : à demander à la main (ios-captures.yml, l'entrée « ecrans »).
     static let suffixeBarre = "-barre"
 
+    /// Le ciel du Jour à heure fixe (24/11, CielPageVue) : « ciel-m+03 » ouvre le Jour, « serenite-m+03 » l'accueil
+    /// Sérénité, le soleil à la hauteur que nomme la clé, sans lieu (le soleil moyen de `Soleil.parHeure`, levé à
+    /// 6 h 30, couché à 18 h 30) — les heures des captures d'Android (captures.py, étape 35) : le matin (m) puis le
+    /// soir (s), de −20° à +40°. « ciel-0644 » : une heure quelconque, en quatre chiffres. Pas dans `ecrans` : à
+    /// demander à la main (ios-captures.yml, l'entrée « ecrans »).
+    static let heuresDuCiel: [String: String] = [
+        "m-20": "0456", "m-12": "0534", "m-04": "0612", "m+00": "0630", "m+03": "0644", "m+10": "0716",
+        "m+40": "1002", "s+40": "1458", "s+10": "1744", "s+03": "1816", "s+00": "1830", "s-04": "1848",
+        "s-12": "1926", "s-20": "2004",
+    ]
+
+    /// L'écran d'une capture du ciel (« ciel-m+03 » : le Jour, « serenite-m+03 » : Sérénité) et l'heure décimale de
+    /// son soleil ; nil pour les autres.
+    static func cielAHeure(_ demande: String) -> (ecran: String, heure: Double)? {
+        for (prefixe, ecran) in [("ciel-", "jour"), ("serenite-", "serenite")] where demande.hasPrefix(prefixe) {
+            let cle = String(demande.dropFirst(prefixe.count))
+            let chiffres = heuresDuCiel[cle] ?? cle
+            guard chiffres.count == 4, let hhmm = Int(chiffres) else { return nil }
+            return (ecran, Double(hhmm / 100) + Double(hhmm % 100) / 60)
+        }
+        return nil
+    }
+
     /// Le plus long livre que le lecteur ouvre : le Kitsour Yalkout Yossef, 1 048 chapitres, 14 390 blocs, 11,5 Mo
     /// de JSON (le Likoutei Moharan : 411 chapitres, 7 057 blocs ; PORTAGE.md § 2.2.9), d'une seule liste paresseuse.
     static let plusLongLivre = "yalkut_yosef_kitsour"
@@ -59,8 +82,10 @@ enum Captures {
             // Le bilan de la semaine passée, pas encore lu.
             enregistrement.reglages.setBilanVu("")
         case let autre?:
-            // Les autres accueils (Sérénité, Bento, Pile) : la version choisie.
-            if let version = VersionApp(rawValue: autre) { enregistrement.reglages.setVersionApp(version) }
+            // Les autres accueils (Sérénité, Bento, Pile) : la version choisie ; Sérénité aussi pour son ciel à heure
+            // fixe (« serenite-m+03 »).
+            let version = cielAHeure(autre)?.ecran ?? autre
+            if let version = VersionApp(rawValue: version) { enregistrement.reglages.setVersionApp(version) }
         case nil:
             break
         }
@@ -80,7 +105,13 @@ enum Captures {
         guard let demande = Captures.ecran else { return }
         UIView.setAnimationsEnabled(false)
         // « -barre » : la barre de lecture dépliée dès l'ouverture (LectureCaptures).
-        let ecran = demande.hasSuffix(suffixeBarre) ? String(demande.dropLast(suffixeBarre.count)) : demande
+        var ecran = demande.hasSuffix(suffixeBarre) ? String(demande.dropLast(suffixeBarre.count)) : demande
+        // Le ciel à heure fixe : le Jour ou Sérénité, le soleil moyen de l'heure de la clé.
+        if let ciel = cielAHeure(ecran) {
+            ecran = ciel.ecran
+            app.accueil.heureDuCiel = ciel.heure
+            app.accueilVersion.heureDuCiel = ciel.heure
+        }
         LectureCaptures.barreDepliee = demande.hasSuffix(suffixeBarre)
         // La liste des chapitres du plus long livre, ouverte (FLECTURE-03).
         LectureCaptures.chapitresOuverts = ecran == "chapitres"

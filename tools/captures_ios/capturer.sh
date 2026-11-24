@@ -28,6 +28,10 @@ vol musique apercu applications dedicace journal-barriere serenite bento pile fe
 ajout-temps"
 ECRANS_COURTS="jour depart seance bravo livres lecteur chapitres tehilim recherche chemin journal trophees reglages zmanim vol
 musique calendrier boussole rappels serenite apercu"
+# Le ciel du Jour et de Sérénité à heure fixe (Captures.swift, heuresDuCiel), seulement quand on les demande (l'entrée
+# « ecrans ») : ils passent alors aussi en sombre, en grand et sur l'iPad.
+CIEL="m-20 m-12 m-04 m+00 m+03 m+10 m+40 s+40 s+10 s+03 s+00 s-04 s-12 s-20"
+for c in $CIEL; do ECRANS_COURTS="$ECRANS_COURTS ciel-$c serenite-$c"; done
 test -n "$ECRANS" || ECRANS=$ECRANS_TOUS
 
 mkdir -p "$SORTIE/png" "$SORTIE/jpg" "$SORTIE/journaux"

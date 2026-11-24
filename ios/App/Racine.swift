@@ -177,7 +177,7 @@ struct Racine: View {
             Tab(LocalizedStringKey(Onglet.aujourdhui.cle), systemImage: Onglet.aujourdhui.symbole,
                 value: Onglet.aujourdhui) {
                 NavigationStack(path: $pileDuJour) {
-                    racineDeLOnglet(AccueilVue(modele: app.accueil))
+                    racineDeLOnglet(AccueilVue(modele: app.accueil), surLeCiel: true)
                 }
             }
             Tab(LocalizedStringKey(Onglet.textes.cle), systemImage: Onglet.textes.symbole, value: Onglet.textes) {
@@ -195,11 +195,12 @@ struct Racine: View {
         .feteDesTrophees(app.accueil.fete)
     }
 
-    /// La racine d'un onglet : la barre de départ en bas, et les destinations de la pile.
-    private func racineDeLOnglet<Contenu: View>(_ contenu: Contenu) -> some View {
+    /// La racine d'un onglet : la barre de départ en bas, et les destinations de la pile. Sous le Jour (`surLeCiel`),
+    /// la barre prend la couleur du sol du ciel.
+    private func racineDeLOnglet<Contenu: View>(_ contenu: Contenu, surLeCiel: Bool = false) -> some View {
         contenu
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                BarreDepart(modele: app.accueil)
+                BarreDepart(modele: app.accueil, surLeCiel: surLeCiel)
             }
             .navigationDestination(for: Ecran.self) { ecran in
                 // Hors des trois racines, pas de barre d'onglets : sur Android, chaque autre écran est une activité à

@@ -320,7 +320,10 @@ private struct SereniteCartePaysage: View {
                 modele.commencerSeance()
             } label: {
                 ZStack(alignment: .bottomLeading) {
-                    SereniteCiel(phase: ecran.phase)
+                    // Le ciel continu suit le vrai soleil : revu chaque minute (AccueilVersion.veilleCiel).
+                    TimelineView(.everyMinute) { _ in
+                        SereniteCiel(ciel: modele.etatCiel)
+                    }
                     // La silhouette du hassid, posée sur la colline.
                     if silhouetteVisible {
                         Illustration(decorative: "char_debout")
@@ -407,75 +410,95 @@ private struct SereniteCartePaysage: View {
     }
 }
 
-/// Le paysage de la carte (SereniteActivity.Paysage) : le ciel du moment en dégradé, l'astre dans son halo, les
-/// étoiles la nuit, deux collines et une brume. Peint, pas une image : il suit la taille de la carte et la phase du
-/// ciel. Il ne se retourne pas en hébreu, comme le dessin d'Android.
+/// Le paysage de la carte (PaysageCiel.kt, avec son nuage et son arc) : le ciel du moment en dégradé, l'astre dans
+/// son halo, les étoiles la nuit, deux collines et une brume. Peint, pas une image : il suit la taille de la carte et
+/// le ciel continu (24/11, `PaysageCiel`) — ses couleurs passent sans à-coup entre les quatre ciels peints d'avant
+/// selon la hauteur du vrai soleil, le soleil puis la lune traversent le haut du ciel de la gauche à la droite (la
+/// lune avec sa phase du mois hébreu), les étoiles s'allument avec le crépuscule.
+///
+/// Animé (`CielVivantHorloge`) : les étoiles scintillent et dérivent d'un rien, le halo respire, un nuage qui prend
+/// la lumière du moment passe dans le haut du ciel, loin du texte. Immobile (« Réduire les animations », Économie
+/// d'énergie, écran quitté) : la peinture d'avant ces animations, sans nuage. Il ne se retourne pas en hébreu, comme
+/// le dessin d'Android ; décoratif, VoiceOver ne le voit pas.
 struct SereniteCiel: View {
-    let phase: CielDuJour.Phase
-
-    /// Quarante étoiles tirées une fois, toujours les mêmes (java.util.Random(29) d'Android en tient lieu) : x, y
-    /// (sur le haut du ciel), taille.
-    private static let etoiles: [(Double, Double, Double)] = {
-        var graine: UInt64 = 29
-        func suivant() -> Double {
-            graine = graine &* 6_364_136_223_846_793_005 &+ 1_442_695_040_888_963_407
-            return Double(graine >> 11) / Double(UInt64(1) << 53)
-        }
-        return (0..<40).map { _ in (suivant(), suivant() * 0.55, 1 + suivant() * 1.6) }
-    }()
+    let ciel: EtatCiel
 
     var body: some View {
-        Canvas { c, taille in
-            peindre(c, taille)
+        let paysage = PaysageCiel(etat: ciel, nuages: true, arc: true)
+        CielVivantHorloge { secondes in
+            Canvas { c, taille in
+                peindre(c, taille, paysage, secondes)
+            }
         }
         .environment(\.layoutDirection, .leftToRight)
         .accessibilityHidden(true)
     }
 
-    private var couleurs: [Color] {
-        let c = VersionCouleur.argb
-        switch phase {
-        case .nuit: return [c(0xFF0B0A1F), c(0xFF1D1838), c(0xFF2E2366), c(0xFF4E3486)]
-        case .coucher: return [c(0xFF0E0B1D), c(0xFF241C52), c(0xFF4E3486), c(0xFF9A5C97), c(0xFFE3957A), c(0xFFF7CDA8)]
-        case .aube: return [c(0xFF2A2357), c(0xFF6A4C9C), c(0xFFC98AA0), c(0xFFF2C6A0), c(0xFFFBE3C8)]
-        case .jour: return [c(0xFF4F86C6), c(0xFF7FAEDC), c(0xFFB3D2EA), c(0xFFDCE9EC), c(0xFFF4E6CB)]
-        }
+    private func couleur(_ argb: UInt32, _ opacite: Double = 1) -> Color {
+        CielCouleur.couleur(argb, opacite: opacite)
     }
 
-    private func peindre(_ c: GraphicsContext, _ taille: CGSize) {
+    /// Le paysage, immobile (`secondes` nil) ou à un instant de son animation.
+    private func peindre(_ c: GraphicsContext, _ taille: CGSize, _ p: PaysageCiel, _ secondes: Double?) {
         let w = taille.width
         let h = taille.height
-        let toile = CGRect(origin: .zero, size: taille)
-        c.fill(Path(toile), with: .linearGradient(Gradient(colors: couleurs), startPoint: .zero,
-                                                   endPoint: CGPoint(x: 0, y: h * 0.85)))
-        let nuit = phase == .nuit || phase == .coucher
-        if nuit {
-            let visibles = phase == .nuit ? SereniteCiel.etoiles : Array(SereniteCiel.etoiles.prefix(18))
-            for (x, y, t) in visibles {
-                let r = t * 0.8
-                c.fill(Path(ellipseIn: CGRect(x: x * w - r, y: y * h - r, width: r * 2, height: r * 2)),
-                       with: .color(VersionCouleur.argb(0xFFFFF6EC)))
+        let marche = secondes != nil
+        let s = secondes ?? 0
+        c.fill(Path(CGRect(origin: .zero, size: taille)), with: .linearGradient(
+            Gradient(colors: p.couleurs.map { couleur($0) }), startPoint: .zero, endPoint: CGPoint(x: 0, y: h * 0.85)))
+        // Les étoiles : toutes la nuit, s'allumant avec le crépuscule ; animées, chacune scintille à son rythme et le
+        // champ dérive d'un rien.
+        let lueur = p.eclatEtoiles
+        if lueur > 0 {
+            let dx = marche ? Double(CielVivant.deriveX(s)) : 0
+            let dy = marche ? Double(CielVivant.deriveY(s)) : 0
+            for (i, etoile) in PaysageCiel.etoiles.enumerated() {
+                let r = Double(etoile.taille) * 0.8
+                let x = Double(etoile.x) * w + dx
+                let y = Double(etoile.y) * h + dy
+                let vif = marche
+                    ? Double(CielVivant.scintillement(s, periode: Double(PaysageCiel.rythmes[i * CielVivant.champs + 3]),
+                                                      phase: Double(PaysageCiel.rythmes[i * CielVivant.champs + 4])))
+                    : 1
+                c.fill(Path(ellipseIn: CGRect(x: x - r, y: y - r, width: 2 * r, height: 2 * r)),
+                       with: .color(couleur(PaysageCiel.etoile, min(lueur * vif, 1))))
             }
         }
-        // L'astre : la lune haut dans la nuit, le soleil bas au couchant et à l'aube, haut le jour.
-        let (cx, cy, rayon, couleur): (CGFloat, CGFloat, CGFloat, UInt32) = {
-            switch phase {
-            case .nuit: return (w * 0.72, h * 0.2, 22, 0xFFF3EBD2)
-            case .coucher: return (w * 0.4, h * 0.62, 34, 0xFFFFE6CC)
-            case .aube: return (w * 0.6, h * 0.6, 30, 0xFFFFF1DC)
-            case .jour: return (w * 0.3, h * 0.24, 30, 0xFFFFF8E6)
+        // L'astre dans son halo, qui paraît et s'efface à l'horizon ; animé, le halo respire.
+        let (cx, cy, rayon) = p.astrePlace(largeur: w, hauteur: h)
+        let visible = p.astreVisible
+        if visible > 0 {
+            let k = marche ? Double(CielVivant.tailleHalo(s)) : 1
+            var halo = c
+            halo.opacity = min(max((marche ? Double(CielVivant.eclatHalo(s)) : 1) * visible, 0), 1)
+            let grand = rayon * PaysageCiel.halo * k
+            halo.fill(Path(ellipseIn: CGRect(x: cx - grand, y: cy - grand, width: 2 * grand, height: 2 * grand)),
+                      with: .radialGradient(Gradient(stops: PaysageCiel.haloArrets.map {
+                          Gradient.Stop(color: couleur($0.couleur), location: $0.position)
+                      }), center: CGPoint(x: cx, y: cy), startRadius: 0, endRadius: grand))
+            var astre = c
+            astre.opacity = min(visible, 1)
+            if p.estSoleil {
+                astre.fill(Path(ellipseIn: CGRect(x: cx - rayon, y: cy - rayon, width: 2 * rayon, height: 2 * rayon)),
+                           with: .color(couleur(p.astreCouleur)))
+            } else {
+                CielDessin.lune(astre, cx, cy, rayon, couleur: couleur(PaysageCiel.lune),
+                                CielContinu.lune(p.etat.jourHebreu))
             }
-        }()
-        let halo = rayon * 3.6
-        c.fill(Path(ellipseIn: CGRect(x: cx - halo, y: cy - halo, width: halo * 2, height: halo * 2)),
-               with: .radialGradient(Gradient(stops: [
-                   Gradient.Stop(color: VersionCouleur.argb(0xB0FFD6AA), location: 0),
-                   Gradient.Stop(color: VersionCouleur.argb(0x47FFBE96), location: 0.32),
-                   Gradient.Stop(color: VersionCouleur.argb(0x00FFBE96), location: 0.64),
-               ]), center: CGPoint(x: cx, y: cy), startRadius: 0, endRadius: halo))
-        c.fill(Path(ellipseIn: CGRect(x: cx - rayon, y: cy - rayon, width: rayon * 2, height: rayon * 2)),
-               with: .color(VersionCouleur.argb(couleur)))
-        // Deux collines : la plus lointaine plus claire, et la brume entre elles.
+        }
+        // Le nuage, animé seulement : il prend la lumière du moment et passe dans le haut du ciel, loin du texte.
+        if marche && p.avecNuage {
+            let lw = PlanCiel.tailles[0].largeur
+            let lh = PlanCiel.tailles[0].hauteur
+            let x = CielVivant.nuageX(depart: 0.18 * w, vitesse: Double(CielVivant.nuageDpS), secondes: s,
+                                      largeurCiel: w, largeurNuage: lw)
+            let y = h * 0.24
+            CielDessin.nuage(c, forme: 0, CGRect(x: x, y: y + PlanCiel.bordNuage, width: lw, height: lh),
+                             couleur: couleur(p.nuageBord), opacite: 110.0 / 255 * p.presenceNuage)
+            CielDessin.nuage(c, forme: 0, CGRect(x: x, y: y, width: lw, height: lh),
+                             couleur: couleur(p.nuageCorps), opacite: 90.0 / 255 * p.presenceNuage)
+        }
+        // Deux collines : la plus lointaine plus claire, et la brume entre elles, du jour à la nuit.
         var loin = Path()
         loin.move(to: CGPoint(x: 0, y: h * 0.7))
         loin.addCurve(to: CGPoint(x: w * 0.62, y: h * 0.62), control1: CGPoint(x: w * 0.25, y: h * 0.6),
@@ -485,10 +508,10 @@ struct SereniteCiel: View {
         loin.addLine(to: CGPoint(x: w, y: h))
         loin.addLine(to: CGPoint(x: 0, y: h))
         loin.closeSubpath()
-        c.fill(loin, with: .color(VersionCouleur.argb(nuit ? 0xFF2A2350 : 0xFF8FA9C4)))
+        c.fill(loin, with: .color(couleur(p.collineLoin)))
         let brume = CGRect(x: -w * 0.2, y: h * 0.7, width: w * 1.4, height: h * 0.14)
         c.fill(Path(ellipseIn: brume), with: .radialGradient(
-            Gradient(colors: [VersionCouleur.argb(nuit ? 0x80F7CDA8 : 0x99FFFFFF), VersionCouleur.argb(0x00FFFFFF)]),
+            Gradient(colors: [couleur(p.brume), couleur(0x00FF_FFFF)]),
             center: CGPoint(x: w / 2, y: h * 0.76), startRadius: 0, endRadius: w * 0.7))
         var pres = Path()
         pres.move(to: CGPoint(x: 0, y: h * 0.8))
@@ -499,6 +522,6 @@ struct SereniteCiel: View {
         pres.addLine(to: CGPoint(x: w, y: h))
         pres.addLine(to: CGPoint(x: 0, y: h))
         pres.closeSubpath()
-        c.fill(pres, with: .color(VersionCouleur.argb(nuit ? 0xFF151026 : 0xFF4D6B5C)))
+        c.fill(pres, with: .color(couleur(p.collinePres)))
     }
 }

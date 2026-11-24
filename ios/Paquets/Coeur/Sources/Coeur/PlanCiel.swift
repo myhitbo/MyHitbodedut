@@ -152,4 +152,64 @@ public enum PlanCiel {
 
     /// L'opacité du disque entier de la lune, sous sa part éclairée (36 sur 255).
     public static let luneDisque = 36.0 / 255
+
+    // MARK: Le tracé d'un moment
+
+    /// Le plan pour une taille de page et un moment (CielPage.tracer) : l'astre, les étoiles retenues, le disque des
+    /// anneaux, la hauteur des nuages et ceux qui restent loin de tout texte (couleurs vives).
+    public struct Trace: Sendable {
+        /// Le centre de l'astre ; nil s'il toucherait un texte, ou sans anneaux.
+        public let astre: (x: Double, y: Double)?
+        public let estSoleil: Bool
+        /// Le rayon du disque, en points.
+        public let rayon: Double
+        /// L'opacité du disque (il paraît et s'efface à l'horizon) et celle de sa lueur.
+        public let astreAlpha: Double
+        public let lueurAlpha: Double
+        /// Les étoiles (`CielVivant.etoiles`), celles qui se montrent, et la part du premier écran qu'elles occupent.
+        public let etoiles: [Float]
+        public let libres: [Bool]
+        public let limite: Double
+        /// Le disque des anneaux, qui ne laisse rien passer de l'astre ni des nuages : centre et rayon.
+        public let anneaux: (cx: Double, cy: Double, r: Double)?
+        /// Pour chaque nuage : sa hauteur (points) et s'il reste loin de tout texte (couleurs vives).
+        public let nuagesY: [Double]
+        public let nuagesVifs: [Bool]
+    }
+
+    /// Le tracé du ciel du Jour : `etat` le moment, `sombre` le thème, `jauge` le carré des anneaux et `zones` ce qui
+    /// porte du texte (points, dans le contenu qui défile), `largeur` celle de la page, `hauteurVue` celle du premier
+    /// écran.
+    public static func tracer(etat: EtatCiel, sombre: Bool, jauge: Zone?, zones: [Zone], largeur: Double,
+                              hauteurVue: Double) -> Trace {
+        let e = etat.hauteur
+        // Le soleil jusqu'à 3° sous l'horizon ; ensuite la lune, à la hauteur inversée du soleil.
+        let estSoleil = etat.estSoleil
+        let r = Double(estSoleil ? CielContinu.rayonSoleil(e) : CielContinu.rayonLune)
+        let progres = estSoleil ? etat.progresJour : etat.progresNuit
+        let haut = CielContinu.elevationDessinee(estSoleil ? e : -e)
+        let place = jauge.flatMap {
+            arc(progres: progres, hauteur: haut, jauge: $0, largeur: largeur, r: r, couronne: r * couronne,
+                zones: zones)
+        }
+        let (nombre, limite) = etoiles(largeur: largeur, hauteur: hauteurVue)
+        let liste = CielVivant.etoiles(nombre, graine: CielVivant.graine, rayonMin: sombre ? 0.7 : 1.0,
+                                       rayonMax: sombre ? 1.7 : 2.0)
+        let libres = libres(liste, largeur: largeur, hauteur: hauteurVue * limite,
+                            zones: zones + (jauge.map { [$0] } ?? []))
+        let anneaux = jauge.map { j in
+            ((j.gauche + j.droite) / 2, (j.haut + j.bas) / 2, min(j.largeur, j.hauteur) / 2)
+        }
+        var nuagesY: [Double] = []
+        var nuagesVifs: [Bool] = []
+        for (i, n) in nuages.enumerated() {
+            let h = tailles[n.forme].hauteur * n.echelle
+            let y = nuageY(i, jauge: jauge, hauteurVue: hauteurVue, haut: h)
+            nuagesY.append(y)
+            nuagesVifs.append(jauge != nil && bandeLibre(haut: y, bas: y + h + bordNuage, zones: zones))
+        }
+        return Trace(astre: place, estSoleil: estSoleil, rayon: r, astreAlpha: etat.astreVisible,
+                     lueurAlpha: etat.lueurVisible, etoiles: liste, libres: libres, limite: limite,
+                     anneaux: anneaux, nuagesY: nuagesY, nuagesVifs: nuagesVifs)
+    }
 }

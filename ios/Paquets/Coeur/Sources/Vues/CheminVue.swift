@@ -155,6 +155,9 @@ public struct EnteteJour: View {
             .buttonStyle(.plain)
             .accessibilityLabel(Text(entete.reglages, traducteur: traducteur))
         }
+        // Toute la ligne, de la date à la roue (nav_zmanim s'étend jusqu'à nav_settings) : sur le Jour, le ciel n'y
+        // pose ni étoile ni astre (le plan du ciel, AccueilVue) ; ailleurs, rien.
+        .zoneDuCiel()
     }
 
     private func titre(_ texte: AccueilTexte) -> Text {
