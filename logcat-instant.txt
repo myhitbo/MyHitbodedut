@@ -1,0 +1,1091 @@
+--------- beginning of main
+11-17 09:30:48.731 12823 12824 I Gralloc4: mapper 4.x is not supported
+--------- beginning of kernel
+11-17 09:40:53.937     0     0 I logd    : logdr: UID=0 GID=0 PID=12825 b tail=1 logMask=99 pid=0 start=0ns deadline=0ns
+11-17 09:40:53.968     0     0 W binder_debug: 619 callbacks suppressed
+11-17 09:40:53.968     0     0 I binder  : undelivered transaction 847504, process died.
+--------- beginning of system
+11-17 09:30:48.931   546   560 I ActivityManager: Killing 12567:com.myhitbodedut/u0a192 (adj 0): stop com.myhitbodedut due to from pid 12830
+11-17 09:30:48.931   546   564 D DisplayManagerService: Drop pending events for gone uid 10192
+11-17 09:30:48.931   546   560 W ActivityTaskManager: Force removing ActivityRecord{1d2b31f u0 com.myhitbodedut/.MainActivity t15 f}}: app died, no saved state
+11-17 09:30:48.934  4995  5061 V WindowManagerShell: Transition requested: android.os.BinderProxy@eb177f9 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=15 displayId=0 isRunning=false baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=0 lastActiveTime=695980 supportsMultiWindow=false resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@7b4233e} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+11-17 09:30:48.950   546   618 I WindowManager: WIN DEATH: Window{9e82cff u0 com.myhitbodedut/com.myhitbodedut.MainActivity}
+11-17 09:30:48.956   357   357 I Zygote  : Process 12567 exited due to signal 9 (Killed)
+11-17 09:30:48.956   546   618 W InputManager-JNI: Input channel object '9e82cff com.myhitbodedut/com.myhitbodedut.MainActivity (client)' was disposed without first being removed with the input manager!
+11-17 09:30:48.956   546  2547 I ImeTracker: com.myhitbodedut:20cb7b68: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+11-17 09:30:48.956   546  2547 I ImeTracker: com.myhitbodedut:20cb7b68: onCancelled at PHASE_SERVER_SHOULD_HIDE
+11-17 09:30:48.960   423   423 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+11-17 09:30:48.984   546   566 V WindowManager: Unknown focus tokens, dropping reportFocusChanged
+11-17 09:30:48.985  1127  1127 D CarrierSvcBindHelper: onHandleForceStop: [com.myhitbodedut]
+11-17 09:30:48.985   546  2484 V ActivityManager: Got obituary of 12567:com.myhitbodedut
+11-17 09:30:48.986  1127  1127 D CarrierSvcBindHelper: No carrier app for: 0
+11-17 09:30:48.988   546  2518 D ConnectivityService: requestNetwork for uid/pid:10149/3028 activeRequest: null callbackRequest: 171 [NetworkRequest [ REQUEST id=172, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10149 RequestorUid: 10149 RequestorPkg: com.android.chrome UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647
+11-17 09:30:48.990   546   831 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=172, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10149 RequestorUid: 10149 RequestorPkg: com.android.chrome UnderlyingNetworks: Null] ]
+11-17 09:30:48.990   546   831 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=172, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10149 RequestorUid: 10149 RequestorPkg: com.android.chrome UnderlyingNetworks: Null] ]
+11-17 09:30:48.990   546   831 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=172, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10149 RequestorUid: 10149 RequestorPkg: com.android.chrome UnderlyingNetworks: Null] ]
+11-17 09:30:48.990   546   838 D ConnectivityService: NetReassign [172 : null → 101] [c 0] [a 1] [i 0]
+11-17 09:30:48.991   546  2518 D CoreBackPreview: Window{119e8a1 u0 com.android.chrome/org.chromium.chrome.browser.firstrun.FirstRunActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@8a48c44, mPriority=0, mIsAnimationCallback=false}
+11-17 09:30:48.992   546   838 D ConnectivityService: NetReassign [no changes] [c 0] [a 0] [i 1]
+11-17 09:30:48.992   546   831 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=172, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10149 RequestorUid: 10149 RequestorPkg: com.android.chrome UnderlyingNetworks: Null] ]
+11-17 09:30:49.011   546   567 W WindowManager: Failed to deliver inset control state change to w=Window{9e82cff u0 com.myhitbodedut/com.myhitbodedut.MainActivity EXITING}
+11-17 09:30:49.011   546   567 W WindowManager: android.os.DeadObjectException
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.os.BinderProxy.transactNative(Native Method)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.os.BinderProxy.transact(BinderProxy.java:584)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.view.IWindow$Stub$Proxy.insetsControlChanged(IWindow.java:479)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.WindowState.notifyInsetsControlChanged(WindowState.java:3802)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.InsetsStateController.lambda$notifyPendingInsetsControlChanged$3(InsetsStateController.java:343)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.InsetsStateController.$r8$lambda$8yykPRG1GyNq_J17QvL9d5xANMc(InsetsStateController.java:0)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.InsetsStateController$$ExternalSyntheticLambda2.run(R8$$SyntheticClass:0)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.WindowAnimator.executeAfterPrepareSurfacesRunnables(WindowAnimator.java:294)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.WindowAnimator.animate(WindowAnimator.java:202)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.WindowAnimator.lambda$new$1(WindowAnimator.java:99)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.WindowAnimator.$r8$lambda$aHNu1uhcqxihX5NZc4McDDQPAyw(WindowAnimator.java:0)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.wm.WindowAnimator$$ExternalSyntheticLambda1.doFrame(R8$$SyntheticClass:0)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1337)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1348)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.view.Choreographer.doCallbacks(Choreographer.java:952)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.view.Choreographer.doFrame(Choreographer.java:878)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1322)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.os.Handler.handleCallback(Handler.java:958)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.os.Handler.dispatchMessage(Handler.java:99)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.os.Looper.loopOnce(Looper.java:205)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.os.Looper.loop(Looper.java:294)
+11-17 09:30:49.011   546   567 W WindowManager: 	at android.os.HandlerThread.run(HandlerThread.java:67)
+11-17 09:30:49.011   546   567 W WindowManager: 	at com.android.server.ServiceThread.run(ServiceThread.java:46)
+11-17 09:30:49.057  4995  5061 V WindowManagerShell: onTransitionReady android.os.BinderProxy@eb177f9: {id=37 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@e4b354a} m=CLOSE f=NONE leash=Surface(name=Task=15)/@0xa64159f sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{android.window.IWindowContainerToken$Stub$Proxy@17e6cbb} m=TO_FRONT f=NONE leash=Surface(name=Task=13)/@0x32dd6ec sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:49.057   546   563 V WindowManager: Sent Transition #37 createdAt=11-17 09:30:48.931 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=15 displayId=0 isRunning=false baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=0 lastActiveTime=695980 supportsMultiWindow=false resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{RemoteToken{bc3ddb3 Task{243e66c #15 type=standard A=10192:com.myhitbodedut}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+11-17 09:30:49.057  4995  5061 V WindowManagerShell: Playing animation for (#37)android.os.BinderProxy@eb177f9@0
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.transition.DefaultMixedHandler@1735896
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.keyguard.KeyguardTransitionHandler@d1e9c17
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.activityembedding.ActivityEmbeddingController@a61a804
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.recents.RecentsTransitionHandler@3ddf1ed
+11-17 09:30:49.057  4995  5061 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.pip.PipTransition@f846822
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.splitscreen.StageCoordinator@f66e2b3
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.transition.RemoteTransitionHandler@1534070
+11-17 09:30:49.057  4995  5061 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=37 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@e4b354a} m=CLOSE f=NONE leash=Surface(name=Task=15)/@0xa64159f sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{android.window.IWindowContainerToken$Stub$Proxy@17e6cbb} m=TO_FRONT f=NONE leash=Surface(name=Task=13)/@0x32dd6ec sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  Delegate animation for #37 to null
+11-17 09:30:49.057  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.transition.DefaultTransitionHandler@4b4bfe9
+11-17 09:30:49.057  4995  5061 V WindowManagerShell: start default transition animation, info = {id=37 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@e4b354a} m=CLOSE f=NONE leash=Surface(name=Task=15)/@0xa64159f sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{android.window.IWindowContainerToken$Stub$Proxy@17e6cbb} m=TO_FRONT f=NONE leash=Surface(name=Task=13)/@0x32dd6ec sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:49.057   546   563 V WindowManager:     startWCT=WindowContainerTransaction { changes = {} hops = [] errorCallbackToken=null taskFragmentOrganizer=null }
+11-17 09:30:49.057   546   563 V WindowManager:     info={id=37 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{bc3ddb3 Task{243e66c #15 type=standard A=10192:com.myhitbodedut}}} m=CLOSE f=NONE leash=Surface(name=Task=15)/@0xcd29704 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{2c35131 Task{7dd31de #13 type=standard A=10149:com.android.chrome}}} m=TO_FRONT f=NONE leash=Surface(name=Task=13)/@0xeaef0bb sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:49.058  4995  5061 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@48f5c16 animAttr=0xa type=CLOSE isEntrance=true
+11-17 09:30:49.058  4995  5061 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@1fa1784 animAttr=0xb type=CLOSE isEntrance=false
+11-17 09:30:49.061  4995  5061 V WindowManagerShell:  animated by com.android.wm.shell.transition.DefaultTransitionHandler@4b4bfe9
+11-17 09:30:49.078  4995  5061 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#37)android.os.BinderProxy@eb177f9@0
+11-17 09:30:49.095   546   563 V WindowManager: Finish Transition #37: created at 11-17 09:30:48.931 collect-started=0.023ms request-sent=0.076ms started=3.587ms ready=3.578ms sent=121.393ms finished=163.493ms
+11-17 09:30:49.098   546  2518 W WindowManager: Exception thrown during dispatchAppVisibility Window{9e82cff u0 com.myhitbodedut/com.myhitbodedut.MainActivity EXITING}
+11-17 09:30:49.098   546  2518 W WindowManager: android.os.DeadObjectException
+11-17 09:30:49.098   546  2518 W WindowManager: 	at android.os.BinderProxy.transactNative(Native Method)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at android.os.BinderProxy.transact(BinderProxy.java:584)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at android.view.IWindow$Stub$Proxy.dispatchAppVisibility(IWindow.java:546)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.WindowState.sendAppVisibilityToClients(WindowState.java:3271)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.WindowContainer.sendAppVisibilityToClients(WindowContainer.java:1221)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.WindowToken.setClientVisible(WindowToken.java:409)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.ActivityRecord.setClientVisible(ActivityRecord.java:6946)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.ActivityRecord.postApplyAnimation(ActivityRecord.java:5637)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.ActivityRecord.commitVisibility(ActivityRecord.java:5580)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.Transition.finishTransition(Transition.java:1151)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.TransitionController.finishTransition(TransitionController.java:868)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.WindowOrganizerController.finishTransition(WindowOrganizerController.java:396)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at android.window.IWindowOrganizerController$Stub.onTransact(IWindowOrganizerController.java:286)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at com.android.server.wm.WindowOrganizerController.onTransact(WindowOrganizerController.java:181)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at android.os.Binder.execTransactInternal(Binder.java:1344)
+11-17 09:30:49.098   546  2518 W WindowManager: 	at android.os.Binder.execTransact(Binder.java:1275)
+11-17 09:30:49.100   546  2518 I Process : Sending signal. PID: 12567 SIG: 9
+11-17 09:30:49.118  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3227 
+11-17 09:30:49.118   546   566 W ActivityManager: setHasOverlayUi called on unknown pid: 12567
+11-17 09:30:49.121  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2087 repeatCheckTimes = 0, unlocked = true
+11-17 09:30:49.121  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=com.android.chrome fieldId=0 fieldName=null extras=null}, false)
+11-17 09:30:49.121  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.shouldHideHeaderOnInitialState():4008 ShouldHideHeaderOnInitialState = false
+11-17 09:30:49.121  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2087 repeatCheckTimes = 2, unlocked = true
+11-17 09:30:49.128  4995  5061 V WindowManagerShell: Track 0 became idle
+11-17 09:30:49.128  4995  5061 V WindowManagerShell: All active transition animations finished
+11-17 09:30:49.128  4995  5061 W Looper  : Slow dispatch took 50ms wmshell.main h=android.os.Handler c=com.android.wm.shell.transition.DefaultTransitionHandler$$ExternalSyntheticLambda0@2e35169 m=0
+11-17 09:30:49.166   423   423 E BpTransactionCompletedListener: Failed to transact (-32)
+11-17 09:30:49.213  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:49.213  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:49.231  4995  5087 D EGL_emulation: app_time_stats: avg=842.49ms min=1.91ms max=6599.60ms count=8
+11-17 09:30:49.339   546   555 I system_server: NativeAlloc concurrent copying GC freed 517666(21MB) AllocSpace objects, 27(504KB) LOS objects, 48% free, 25MB/49MB, paused 51us,30us total 111.937ms
+11-17 09:30:49.350   546   556 W JavaBinder: BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: com.android.server.am.ActivityManagerService$14
+11-17 09:30:49.350   546   556 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+11-17 09:30:49.357   546   556 W JavaBinder: BinderProxy is being destroyed but the application did not call unlinkToDeath to unlink all of its death recipients beforehand.  Releasing leaked death recipient: com.android.server.am.ActivityManagerService$14
+11-17 09:30:49.357   546   556 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+11-17 09:30:49.714  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:49.714  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:50.093   546  2518 D CompatibilityChangeReporter: Compat change id reported: 265464455; UID 10192; state: DISABLED
+11-17 09:30:50.093   546  2518 D CompatibilityChangeReporter: Compat change id reported: 265452344; UID 10192; state: DISABLED
+11-17 09:30:50.093   546  2518 D CompatibilityChangeReporter: Compat change id reported: 266124927; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 265451093; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 265456536; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 255940284; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 236283604; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 263959004; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 264304459; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 264301586; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 254631730; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 273509367; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 263259275; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 174042980; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 174042936; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 181136395; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 184838306; UID 10192; state: DISABLED
+11-17 09:30:50.094   546  2518 D CompatibilityChangeReporter: Compat change id reported: 185004937; UID 10192; state: DISABLED
+11-17 09:30:50.095   546  2518 D CompatibilityChangeReporter: Compat change id reported: 194480991; UID 10192; state: ENABLED
+11-17 09:30:50.097   546  2518 D CompatibilityChangeReporter: Compat change id reported: 205907456; UID 10192; state: ENABLED
+11-17 09:30:50.099  4995  5061 V WindowManagerShell: Transition requested: android.os.BinderProxy@31ffaab TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=16 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=1 lastActiveTime=724154 supportsMultiWindow=false resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@e400508} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{efac4a1 com.myhitbodedut.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+11-17 09:30:50.099  4995  5082 D SplashScreenView: Build android.window.SplashScreenView{e34f6c6 V.E...... ......ID 0,0-0,0}
+11-17 09:30:50.099  4995  5082 D SplashScreenView: Icon: view: android.widget.ImageView{2e19687 V.ED..... ......I. 0,0-0,0 #10204f0 android:id/splashscreen_icon_view} drawable: com.android.wm.shell.startingsurface.SplashscreenIconDrawableFactory$ImmobileIconDrawable@95469b4 size: 504
+11-17 09:30:50.099  4995  5082 D SplashScreenView: Branding: view: android.view.View{65e09dd G.ED..... ......I. 0,0-0,0 #10204ef android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+11-17 09:30:50.099   546  2518 I ActivityTaskManager: START u0 {flg=0x14000000 cmp=com.myhitbodedut/.MainActivity} with LAUNCH_MULTIPLE from uid 0 (BAL_ALLOW_ALLOWLISTED_UID) result code=0
+11-17 09:30:50.101   546   566 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10192; state: DISABLED
+11-17 09:30:50.101   546   566 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10192; state: DISABLED
+11-17 09:30:50.101   546   566 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10192; state: DISABLED
+11-17 09:30:50.101   546   566 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10192; state: ENABLED
+11-17 09:30:50.101   546   575 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10192; state: ENABLED
+11-17 09:30:50.105   546   560 D CoreBackPreview: Window{7f0380c u0 Splash Screen com.myhitbodedut}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@ae0985b, mPriority=0, mIsAnimationCallback=false}
+11-17 09:30:50.109   357   357 D Zygote  : Forked child process 12858
+11-17 09:30:50.110   546   630 D CompatibilityChangeReporter: Compat change id reported: 265195908; UID 10192; state: ENABLED
+11-17 09:30:50.110   546   575 I ActivityManager: Start proc 12858:com.myhitbodedut/u0a192 for next-top-activity {com.myhitbodedut/com.myhitbodedut.MainActivity}
+11-17 09:30:50.122   423   423 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+11-17 09:30:50.151 12858 12858 I om.myhitbodedut: Using CollectorTypeCC GC.
+11-17 09:30:50.152 12858 12858 W om.myhitbodedut: Unexpected CPU variant for x86: x86_64.
+11-17 09:30:50.152 12858 12858 W om.myhitbodedut: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+11-17 09:30:50.168 12858 12858 E om.myhitbodedut: Not starting debugger since process cannot load the jdwp agent.
+11-17 09:30:50.183  3028 10402 D EGL_emulation: app_time_stats: avg=293.55ms min=25.39ms max=959.11ms count=4
+11-17 09:30:50.186  4995  5061 V WindowManagerShell: onTransitionReady android.os.BinderProxy@31ffaab: {id=38 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@582c038} m=OPEN f=NONE leash=Surface(name=Task=16)/@0x9d9795 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{android.window.IWindowContainerToken$Stub$Proxy@28d1811} m=TO_BACK f=NONE leash=Surface(name=Task=13)/@0x98720aa sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:50.186  4995  5061 V WindowManagerShell: Playing animation for (#38)android.os.BinderProxy@31ffaab@0
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.transition.DefaultMixedHandler@1735896
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.keyguard.KeyguardTransitionHandler@d1e9c17
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.activityembedding.ActivityEmbeddingController@a61a804
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.recents.RecentsTransitionHandler@3ddf1ed
+11-17 09:30:50.186  4995  5061 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.pip.PipTransition@f846822
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.splitscreen.StageCoordinator@f66e2b3
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.transition.RemoteTransitionHandler@1534070
+11-17 09:30:50.186  4995  5061 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=38 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@582c038} m=OPEN f=NONE leash=Surface(name=Task=16)/@0x9d9795 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{android.window.IWindowContainerToken$Stub$Proxy@28d1811} m=TO_BACK f=NONE leash=Surface(name=Task=13)/@0x98720aa sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  Delegate animation for #38 to null
+11-17 09:30:50.186  4995  5061 V WindowManagerShell:  try handler com.android.wm.shell.transition.DefaultTransitionHandler@4b4bfe9
+11-17 09:30:50.186  4995  5061 V WindowManagerShell: start default transition animation, info = {id=38 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@582c038} m=OPEN f=NONE leash=Surface(name=Task=16)/@0x9d9795 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{android.window.IWindowContainerToken$Stub$Proxy@28d1811} m=TO_BACK f=NONE leash=Surface(name=Task=13)/@0x98720aa sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:50.190  4995  5061 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@cf72f77 animAttr=0x9 type=OPEN isEntrance=false
+11-17 09:30:50.190   546   563 V WindowManager: Sent Transition #38 createdAt=11-17 09:30:50.095 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=16 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=1 lastActiveTime=724154 supportsMultiWindow=false resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{RemoteToken{98e3a0d Task{7622899 #16 type=standard A=10192:com.myhitbodedut}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{a4cddc2 com.myhitbodedut.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+11-17 09:30:50.190   546   563 V WindowManager:     startWCT=WindowContainerTransaction { changes = {} hops = [] errorCallbackToken=null taskFragmentOrganizer=null }
+11-17 09:30:50.190   546   563 V WindowManager:     info={id=38 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{98e3a0d Task{7622899 #16 type=standard A=10192:com.myhitbodedut}}} m=OPEN f=NONE leash=Surface(name=Task=16)/@0x53751d1 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{2c35131 Task{7dd31de #13 type=standard A=10149:com.android.chrome}}} m=TO_BACK f=NONE leash=Surface(name=Task=13)/@0xeaef0bb sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:50.190  4995  5061 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@f1a244d animAttr=0x8 type=OPEN isEntrance=true
+11-17 09:30:50.202  4995  5061 V WindowManagerShell:  animated by com.android.wm.shell.transition.DefaultTransitionHandler@4b4bfe9
+11-17 09:30:50.235  4995  5061 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#38)android.os.BinderProxy@31ffaab@0
+11-17 09:30:50.237  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:50.237  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:50.240   546   563 V WindowManager: Finish Transition #38: created at 11-17 09:30:50.095 collect-started=0.025ms request-sent=3.239ms started=5.198ms ready=38.61ms sent=89.712ms finished=145.174ms
+11-17 09:30:50.241  4995  5061 V WindowManagerShell: Track 0 became idle
+11-17 09:30:50.241  4995  5061 V WindowManagerShell: All active transition animations finished
+11-17 09:30:50.262 12858 12858 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10192; state: ENABLED
+11-17 09:30:50.262 12858 12858 D CompatibilityChangeReporter: Compat change id reported: 242716250; UID 10192; state: ENABLED
+11-17 09:30:50.264   546  2484 D CompatibilityChangeReporter: Compat change id reported: 170503758; UID 10192; state: ENABLED
+11-17 09:30:50.275 12858 12858 D nativeloader: Configuring clns-6 for other apk /data/app/~~3G6o0ucAr24gILdQw6XKUw==/com.myhitbodedut-p5fNWDQhMVgff8Ib0dnsYA==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~3G6o0ucAr24gILdQw6XKUw==/com.myhitbodedut-p5fNWDQhMVgff8Ib0dnsYA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.myhitbodedut
+11-17 09:30:50.280 12858 12858 V GraphicsEnvironment: Currently set values for:
+11-17 09:30:50.280 12858 12858 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+11-17 09:30:50.280 12858 12858 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+11-17 09:30:50.280 12858 12858 V GraphicsEnvironment: ANGLE GameManagerService for com.myhitbodedut: false
+11-17 09:30:50.280 12858 12858 V GraphicsEnvironment: com.myhitbodedut is not listed in per-application setting
+11-17 09:30:50.280 12858 12858 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+11-17 09:30:50.286   546  2484 I ActivityManager: Flag disabled. Ignoring finishAttachApplication from uid: 10192. pid: 12858
+11-17 09:30:50.289  4995  5087 D EGL_emulation: app_time_stats: avg=1058.46ms min=1058.46ms max=1058.46ms count=1
+11-17 09:30:50.300 12858 12880 D libEGL  : loaded /vendor/lib64/egl/libEGL_emulation.so
+11-17 09:30:50.305 12858 12880 D libEGL  : loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+11-17 09:30:50.312 12858 12880 D libEGL  : loaded /vendor/lib64/egl/libGLESv2_emulation.so
+11-17 09:30:50.332  4995  5061 V WindowManagerShell: Transition requested: android.os.BinderProxy@201085a TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=16 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.InstantActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=2 lastActiveTime=724387 supportsMultiWindow=false resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@a982a8b} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{242a768 com.myhitbodedut.InstantActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+11-17 09:30:50.334   546  2484 I ActivityTaskManager: START u0 {flg=0x4000000 cmp=com.myhitbodedut/.InstantActivity} with LAUNCH_MULTIPLE from uid 10192 (BAL_ALLOW_VISIBLE_WINDOW) result code=0
+11-17 09:30:50.345 12858 12858 D CompatibilityChangeReporter: Compat change id reported: 171228096; UID 10192; state: ENABLED
+11-17 09:30:50.350 12858 12858 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10192; state: ENABLED
+11-17 09:30:50.358   546  2551 D CompatibilityChangeReporter: Compat change id reported: 171306433; UID 10192; state: ENABLED
+11-17 09:30:50.379 12858 12858 D CompatibilityChangeReporter: Compat change id reported: 210923482; UID 10192; state: ENABLED
+11-17 09:30:50.383   546   563 V WindowManager: Sent Transition #39 createdAt=11-17 09:30:50.326 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=16 displayId=0 isRunning=true baseIntent=Intent { flg=0x14000000 cmp=com.myhitbodedut/.MainActivity } baseActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} topActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.InstantActivity} origActivity=null realActivity=ComponentInfo{com.myhitbodedut/com.myhitbodedut.MainActivity} numActivities=2 lastActiveTime=724387 supportsMultiWindow=false resizeMode=2 isResizeable=true minWidth=840 minHeight=840 defaultMinSize=220 token=WCT{RemoteToken{98e3a0d Task{7622899 #16 type=standard A=10192:com.myhitbodedut}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{ec0ac6c com.myhitbodedut.InstantActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+11-17 09:30:50.383   546   563 V WindowManager:     startWCT=WindowContainerTransaction { changes = {} hops = [] errorCallbackToken=null taskFragmentOrganizer=null }
+11-17 09:30:50.383   546   563 V WindowManager:     info={id=39 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{null m=OPEN f=STARTING_WINDOW_TRANSFER|FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{7f78427 u0 com.myhitbodedut/.InstantActivity)/@0xf6e9cbe sb=Rect(0, 0 - 0, 0) eb=Rect(0, 0 - 1080, 2400) d=-1->0 r=-1->0:-1},{null m=CLOSE f=FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{6071de0 u0 com.myhitbodedut/.MainActivity)/@0x64be779 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:50.383  4995  5061 V WindowManagerShell: onTransitionReady android.os.BinderProxy@201085a: {id=39 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{null m=OPEN f=STARTING_WINDOW_TRANSFER|FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{7f78427 u0 com.myhitbodedut/.InstantActivity)/@0xa4ed214 sb=Rect(0, 0 - 0, 0) eb=Rect(0, 0 - 1080, 2400) d=-1->0 r=-1->0:-1},{null m=CLOSE f=FILLS_TASK|IS_BEHIND_STARTING_WINDOW leash=Surface(name=ActivityRecord{6071de0 u0 com.myhitbodedut/.MainActivity)/@0x709babd sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+11-17 09:30:50.383  4995  5061 V WindowManagerShell: Non-visible anim so abort: (#39)android.os.BinderProxy@201085a@0
+11-17 09:30:50.385  4995  5061 V WindowManagerShell: Transition animation finished (aborted=true), notifying core (#39)android.os.BinderProxy@201085a@0
+11-17 09:30:50.389  4995  5061 V WindowManagerShell: Track 0 became idle
+11-17 09:30:50.389  4995  5061 V WindowManagerShell: All active transition animations finished
+11-17 09:30:50.390   546   563 V WindowManager: Finish Transition #39: created at 11-17 09:30:50.326 collect-started=0.021ms request-sent=5.309ms started=8.552ms ready=11.745ms sent=56.117ms finished=61.854ms
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.android.chrome/com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.searchwidget.SearchWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.apps.maps/com.google.android.apps.gmm.widget.SearchWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.apps.maps/com.google.android.apps.gmm.widget.traffic.TrafficWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.apps.wellbeing/com.google.android.apps.wellbeing.widget.screentime.ScreenTimeWidgetProviderReceiver_Receiver} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.googlequicksearchbox/com.google.android.googlequicksearchbox.SearchWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.googlequicksearchbox/com.google.android.apps.gsa.staticplugins.smartspace.widget.SmartspaceWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.settings.intelligence/com.google.android.settings.intelligence.modules.batterywidget.impl.BatteryAppWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.youtube/com.google.android.apps.youtube.app.widget.YtQuickActionsWidgetProvider} won't be persisted.
+11-17 09:30:50.424   546   573 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.google.android.youtube/com.google.android.apps.youtube.app.widget.YtSearchWidgetProvider} won't be persisted.
+11-17 09:30:50.427 12858 12858 D CompatibilityChangeReporter: Compat change id reported: 237531167; UID 10192; state: DISABLED
+11-17 09:30:50.432 12858 12858 W OpenGLRenderer: Unknown dataspace 0
+11-17 09:30:50.439 12858 12858 D CompatibilityChangeReporter: Compat change id reported: 247079863; UID 10192; state: ENABLED
+11-17 09:30:50.457   546   560 D CoreBackPreview: Window{6ef8596 u0 com.myhitbodedut/com.myhitbodedut.InstantActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@7621d04, mPriority=0, mIsAnimationCallback=false}
+11-17 09:30:50.487 12858 12878 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+11-17 09:40:55.541     0     0 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+11-17 09:30:50.526   152   152 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+11-17 09:30:50.526 12858 12878 I Gralloc4: mapper 4.x is not supported
+11-17 09:30:50.740  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:50.740  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:51.197 12858 12858 I Choreographer: Skipped 44 frames!  The application may be doing too much work on its main thread.
+11-17 09:30:51.205   546   563 I ActivityTaskManager: Displayed com.myhitbodedut/.InstantActivity for user 0: +1s107ms
+11-17 09:30:51.241  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:51.241  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:51.242  1112  1423 D BtGatt.ScanManager: uid 10128 isForeground true scanMode -1
+11-17 09:30:51.242  1112  1423 D BtGatt.ScanManager: uid 10128 isForeground true scanMode -1
+11-17 09:30:51.243  5668  6328 I FontLog : Received query Noto Color Emoji Compat, URI content://com.google.android.gms.fonts [CONTEXT service_id=132 ]
+11-17 09:30:51.244 12858 12873 I OpenGLRenderer: Davey! duration=770ms; Flags=1, FrameTimelineVsyncId=146017, IntendedVsync=724493844109, Vsync=724493844109, InputEventId=0, HandleInputStart=724504214006, AnimationStart=724504214479, PerformTraversalsStart=724504214707, DrawStart=724597286054, FrameDeadline=724510510775, FrameInterval=724504209990, FrameStartTime=16666666, SyncQueued=724611948063, SyncStart=724612209165, IssueDrawCommandsStart=724613571225, SwapBuffers=725186618784, FrameCompleted=725264518275, DequeueBufferDuration=3791, QueueBufferDuration=220975, GpuCompleted=725264518275, SwapBuffersCompleted=725250495952, DisplayPresentTime=0, CommandSubmissionCompleted=725186618784, 
+11-17 09:30:51.244  5668  6328 I FontLog : Query [emojicompat-emoji-font] resolved to {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-17 09:30:51.247  5668  6328 I FontLog : Fetch {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} end status Status{statusCode=SUCCESS, resolution=null} [CONTEXT service_id=132 ]
+11-17 09:30:51.249   546   560 D CompatibilityChangeReporter: Compat change id reported: 214016041; UID 10192; state: ENABLED
+11-17 09:30:51.249  5668  6014 I FontLog : Pulling font file for id = 4, cache size = 3 [CONTEXT service_id=132 ]
+11-17 09:30:51.249   546   560 I ImeTracker: com.myhitbodedut:c4060cd0: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+11-17 09:30:51.249   546   560 I ImeTracker: com.myhitbodedut:c4060cd0: onCancelled at PHASE_SERVER_SHOULD_HIDE
+11-17 09:30:51.253  5668  6014 I FontLog : Pulling font file for id = 4, cache size = 3 [CONTEXT service_id=132 ]
+11-17 09:30:51.261  3028  3028 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=falsecallback=SX1@fee58d1
+11-17 09:30:51.266  4995  5081 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=falsecallback=android.view.ViewRootImpl$$ExternalSyntheticLambda17@7a86d20
+11-17 09:30:51.266   546  2484 D CoreBackPreview: Window{7f0380c u0 Splash Screen com.myhitbodedut EXITING}: Setting back callback null
+11-17 09:30:51.266 12858 12872 I OpenGLRenderer: Davey! duration=803ms; Flags=0, FrameTimelineVsyncId=146031, IntendedVsync=724510510775, Vsync=725243844079, InputEventId=0, HandleInputStart=725253653586, AnimationStart=725253654093, PerformTraversalsStart=725253712520, DrawStart=725253790692, FrameDeadline=725293844077, FrameInterval=725253481668, FrameStartTime=16666666, SyncQueued=725254006143, SyncStart=725254175278, IssueDrawCommandsStart=725254291345, SwapBuffers=725257299243, FrameCompleted=725314002071, DequeueBufferDuration=5438, QueueBufferDuration=4220535, GpuCompleted=725314002071, SwapBuffersCompleted=725285158635, DisplayPresentTime=0, CommandSubmissionCompleted=725257299243, 
+11-17 09:30:51.267   546  2108 W InputManager-JNI: Input channel object '7f0380c Splash Screen com.myhitbodedut (client)' was disposed without first being removed with the input manager!
+11-17 09:30:51.272  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3227 
+11-17 09:30:51.274  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2087 repeatCheckTimes = 0, unlocked = true
+11-17 09:30:51.274  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=com.myhitbodedut fieldId=0 fieldName=null extras=null}, false)
+11-17 09:30:51.274  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.shouldHideHeaderOnInitialState():4008 ShouldHideHeaderOnInitialState = false
+11-17 09:30:51.274  1658  1658 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2087 repeatCheckTimes = 2, unlocked = true
+11-17 09:30:51.276   546   899 D CoreBackPreview: Window{119e8a1 u0 com.android.chrome/org.chromium.chrome.browser.firstrun.FirstRunActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@a7daaa0, mPriority=-1, mIsAnimationCallback=false}
+11-17 09:30:51.742  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:51.743  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:52.241 12858 12878 D EGL_emulation: app_time_stats: avg=148.43ms min=34.65ms max=769.72ms count=7
+11-17 09:30:52.245  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:52.245  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:52.746  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:52.747  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:52.938   546  3301 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+11-17 09:30:52.953   546   638 D ActivityManager: freezing 5816 com.google.android.gms
+11-17 09:30:52.983   546   638 D ActivityManager: freezing 12237 com.android.providers.calendar
+11-17 09:30:53.248  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:53.248  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:53.749  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:53.750  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:54.220  4995  4995 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+11-17 09:30:54.223  4995  5087 D EGL_emulation: app_time_stats: avg=31050.77ms min=31050.77ms max=31050.77ms count=1
+11-17 09:30:54.257  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:54.258  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:54.759  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:54.759  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:55.260  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:55.260  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:55.476 12858 12894 D ProfileInstaller: Skipping profile installation for com.myhitbodedut
+11-17 09:30:55.634   546   638 D ActivityManager: freezing 12190 com.android.externalstorage
+11-17 09:30:55.634   546   638 D ActivityManager: freezing 1896 com.google.android.apps.youtube.music
+11-17 09:30:55.635   546   638 D ActivityManager: freezing 3027 com.google.android.dialer
+11-17 09:30:55.635   546   638 D ActivityManager: freezing 4899 com.google.android.gm
+11-17 09:30:55.636   546   638 D ActivityManager: freezing 3911 com.google.android.rkpdapp
+11-17 09:30:55.636   546   638 D ActivityManager: freezing 2580 com.google.android.tts
+11-17 09:30:55.636   546   638 D ActivityManager: freezing 1918 com.google.android.youtube
+11-17 09:30:55.636   546   638 D ActivityManager: freezing 12235 com.google.android.apps.wellbeing
+11-17 09:30:55.637   546   638 D ActivityManager: freezing 2506 com.google.android.contacts
+11-17 09:30:55.637   546   638 D ActivityManager: freezing 4428 com.google.android.apps.messaging
+11-17 09:30:55.637   546   638 D ActivityManager: freezing 915 com.google.android.permissioncontroller
+11-17 09:30:55.638   546   638 D ActivityManager: freezing 12125 com.google.android.documentsui
+11-17 09:30:55.761  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:55.762  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:56.263  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:56.263  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:56.583     0     0 W healthd : battery l=100 v=5000 t=25.0 h=2 st=2 c=900000 fc=3000000 cc=10 chg=a
+11-17 09:30:56.765  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:56.765  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:57.267  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:57.267  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:57.360  1112  1423 D BtGatt.ScanManager: uid 10128 isForeground true scanMode -1
+11-17 09:30:57.360  1112  1423 D BtGatt.ScanManager: uid 10128 isForeground true scanMode -1
+11-17 09:30:57.768  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:57.769  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:57.863  1906  2493 I WorkerManager: dispose()
+11-17 09:30:57.863  1906  2493 W A       : Queue length for executor EventBus is now 11. Perhaps some tasks are too long, or the pool is too small.
+11-17 09:30:57.875   546   638 D ActivityManager: freezing 1906 com.google.android.googlequicksearchbox:search
+11-17 09:30:57.955   546  2550 D ActivityManager: sync unfroze 5816 com.google.android.gms for 6
+11-17 09:30:57.959  5816  5816 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-17 09:30:57.959  5816  5816 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-17 09:30:58.270  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:58.270  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:58.771  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:58.771  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:59.272  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:59.272  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:59.340   546   560 D ActivityManager: freezer override set to true
+11-17 09:30:59.340   546   560 D ActivityManager: sync unfroze 12190 com.android.externalstorage for 19
+11-17 09:30:59.341   546   560 D ActivityManager: sync unfroze 1896 com.google.android.apps.youtube.music for 19
+11-17 09:30:59.341   546   560 D ActivityManager: sync unfroze 3027 com.google.android.dialer for 19
+11-17 09:30:59.341   546   560 D ActivityManager: sync unfroze 4899 com.google.android.gm for 19
+11-17 09:30:59.341   546   560 D ActivityManager: sync unfroze 12237 com.android.providers.calendar for 19
+11-17 09:30:59.341   546   560 D ActivityManager: sync unfroze 3911 com.google.android.rkpdapp for 19
+11-17 09:30:59.341   546   560 D ActivityManager: sync unfroze 2580 com.google.android.tts for 19
+11-17 09:30:59.342   546   560 D ActivityManager: sync unfroze 1918 com.google.android.youtube for 19
+11-17 09:30:59.342   546   560 D ActivityManager: sync unfroze 12235 com.google.android.apps.wellbeing for 19
+11-17 09:30:59.342   546   560 D ActivityManager: sync unfroze 2506 com.google.android.contacts for 19
+11-17 09:30:59.342   546   560 D ActivityManager: sync unfroze 4428 com.google.android.apps.messaging for 19
+11-17 09:30:59.342   546   560 D ActivityManager: sync unfroze 915 com.google.android.permissioncontroller for 19
+11-17 09:30:59.342   546   560 D ActivityManager: sync unfroze 12125 com.google.android.documentsui for 19
+11-17 09:30:59.342   546   560 D ActivityManager: sync unfroze 1906 com.google.android.googlequicksearchbox:search for 19
+11-17 09:30:59.348   546   560 D ActivityManager: freezer override set to false
+11-17 09:30:59.349  4428  4523 W Bugle   : TextClassifierLibManagerImpl: Reclaiming memory at level: 40
+11-17 09:30:59.417 12906 12906 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+11-17 09:30:59.420 12906 12906 I AndroidRuntime: Using default boot image
+11-17 09:30:59.420 12906 12906 I AndroidRuntime: Leaving lock profiling enabled
+11-17 09:30:59.422 12906 12906 I app_process: Core platform API reporting enabled, enforcing=false
+11-17 09:30:59.422 12906 12906 I app_process: Using CollectorTypeCC GC.
+11-17 09:30:59.474 12906 12906 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+11-17 09:30:59.481 12906 12906 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-17 09:30:59.481 12906 12906 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt72l.dat
+11-17 09:30:59.485 12906 12906 W app_process: Unexpected CPU variant for x86: x86_64.
+11-17 09:30:59.485 12906 12906 W app_process: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+11-17 09:30:59.486 12906 12906 W app_process: ClassLoaderContext shared library size mismatch. Expected=2, found=0 (PCL[]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]} | PCL[])
+11-17 09:30:59.487 12906 12906 W app_process: ClassLoaderContext classpath size mismatch. expected=0, found=1 (PCL[]{PCL[/system/framework/android.test.runner.jar*4168958247]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]}#PCL[/system/framework/android.test.base.jar*836642756]} | PCL[/system/framework/android.test.runner.jar*4168958247])
+11-17 09:30:59.500 12906 12906 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-17 09:30:59.502 12906 12906 D UiAutomationConnection: Created on user UserHandle{0}
+11-17 09:30:59.502 12906 12906 I UiAutomation: Initialized for user 0 on display 0
+11-17 09:30:59.502 12906 12906 W UiAutomation: Created with deprecatead constructor, assumes DEFAULT_DISPLAY
+11-17 09:30:59.502   546   560 D AccessibilityManagerService: changeCurrentUserForTestAutomationIfNeededLocked(0): ignoring because device doesn't support visible background users
+11-17 09:30:59.502   546   560 I UiAutomationManager: Registering UiTestAutomationService (id=com.android.server.accessibility/UiAutomation) when called by user 0
+11-17 09:30:59.504   546   560 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:30:59.505   546   546 D BatterySaverPolicy: accessibility changed to true, updating policy.
+11-17 09:30:59.505  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:30:59.505  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:30:59.505  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:30:59.505  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:30:59.505  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:30:59.505  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:30:59.505  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:30:59.505  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:30:59.505  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:30:59.506  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:30:59.506  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:30:59.506  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:30:59.509  1906  2425 I A       : NGA disabled since it's running Panthera and at least one a11y feature is on.
+11-17 09:30:59.509  1906  2425 I A       : Nga state changed to NgaStateDetails{state=DISABLED, isSpecialExperience=false}
+11-17 09:30:59.512 12906 12922 V UiAutomation: Init UiAutomation@98b13a2[id=176, displayId=0, flags=0]
+11-17 09:30:59.512   546   992 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:30:59.513  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:30:59.513  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:30:59.513  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:30:59.513  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:30:59.513  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:30:59.513  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:30:59.513  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:30:59.513  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:30:59.513  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:30:59.514  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:30:59.514  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:30:59.515  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:30:59.515  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:30:59.515  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:30:59.517   546   899 D SafetySourceDataValidator: No cert check requested for package com.google.android.permissioncontroller
+11-17 09:30:59.519  1799  7634 I A       : APA or Classic session decision: SessionDecision(sessionVariance=CLASSIC, platformVariance=CLASSIC, justification=CURRENT_PLATFORM_VARIANCE).
+11-17 09:30:59.519  1799  7634 I A       : [Memory] eligibility: StashEligibility{4}
+11-17 09:30:59.521  1799  2443 I A       : Unsubscribed to apa or classic variant change.
+11-17 09:30:59.773  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:30:59.773  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:00.002  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:00.003  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:00.003  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:00.003  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:00.003  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:00.007  4995  5087 D EGL_emulation: app_time_stats: avg=5783.15ms min=5783.15ms max=5783.15ms count=1
+11-17 09:31:00.007  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:00.028  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:00.028  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:00.028  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:00.028  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:00.029  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:00.039  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:00.042  4428  4511 W TimedProcessReaper: Memory state is: 400
+11-17 09:31:00.042  4428  4511 W TimedProcessReaper: Killing process to refresh configuration
+11-17 09:31:00.042  4428  4511 I Process : Sending signal. PID: 4428 SIG: 9
+11-17 09:31:00.051   546   838 D ConnectivityService: releasing NetworkRequest [ REQUEST id=138, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10131 RequestorUid: 10131 RequestorPkg: com.google.android.apps.messaging UnderlyingNetworks: Null] ] (release request)
+11-17 09:31:00.051   357   357 I Zygote  : Process 4428 exited due to signal 9 (Killed)
+11-17 09:31:00.051   546   992 I ActivityManager: Process com.google.android.apps.messaging (pid 4428) has died: cch+5 CEM 
+11-17 09:31:00.052   546   576 I libprocessgroup: Successfully killed process cgroup uid 10131 pid 4428 in 0ms
+11-17 09:31:00.061  3027  3183 W TimedProcessReaper: Memory state is: 400
+11-17 09:31:00.061  3027  3183 W TimedProcessReaper: Killing process to refresh configuration
+11-17 09:31:00.061  3027  3183 I Process : Sending signal. PID: 3027 SIG: 9
+11-17 09:31:00.066   546   992 I ActivityManager: Process com.google.android.dialer (pid 3027) has died: cch+55 CEM 
+11-17 09:31:00.067   357   357 I Zygote  : Process 3027 exited due to signal 9 (Killed)
+11-17 09:31:00.067   546   564 D DisplayManagerService: Drop pending events for gone uid 10130
+11-17 09:31:00.067   546   576 I libprocessgroup: Successfully killed process cgroup uid 10130 pid 3027 in 0ms
+11-17 09:31:00.274  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:00.274  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:00.522 12906 12906 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@112e6; boundsInParent: Rect(0, 0 - 278, 39); boundsInScreen: Rect(89, 2347 - 367, 2337); boundsInWindow: Rect(89, 2347 - 367, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: ’HIZOUK DU JOUR; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:00.522 12906 12906 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@116a7; boundsInParent: Rect(0, 0 - 902, 198); boundsInScreen: Rect(89, 2401 - 991, 2337); boundsInWindow: Rect(89, 2401 - 991, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: וּבִלְשׁוֹן אַשְׁכְּנַז יָכוֹל לְפָרֵשׁ כָּל שִׂיחָתוֹ. וְאֶת כָּל אֲשֶׁר עִם לְבָבוֹ יָשִׂיחַ וִיסַפֵּר לְפָנָיו יִתְבָּרַךְ, הֵן חֲרָטָה וּתְשׁוּבָה עַל הֶעָבָר, וְהֵן בַּקָּשַׁת תַחֲנוּנִים לִזְכּוֹת לְהִתְקָרֵב אֵלָיו יִתְבָּרַךְ מֵהַיּוֹם וְהָלְאָה בֶּאֱמֶת, וְכַיּוֹצֵא בָּזֶה כָּל חַד לְפוּם דַּרְגֵּהּ.; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:00.522 12906 12906 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@11a68; boundsInParent: Rect(0, 0 - 314, 43); boundsInScreen: Rect(89, 2614 - 403, 2337); boundsInWindow: Rect(89, 2614 - 403, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: Likoutei Moharan II, 25; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:00.522 12906 12906 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@11e29; boundsInParent: Rect(0, 0 - 996, 371); boundsInScreen: Rect(42, 2735 - 1038, 2337); boundsInWindow: Rect(42, 2735 - 1038, 2337); packageName: com.myhitbodedut; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:00.523 12906 12906 W AccessibilityNodeInfoDumper: Fetch time: 3ms
+11-17 09:31:00.524  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:00.524   546  2108 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:00.524   546  2108 D AccessibilityManagerService: restoreCurrentUserForTestAutomationIfNeededLocked(): ignoring because device doesn't support visible background users
+11-17 09:31:00.525  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:00.525  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:00.525  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:00.526 12906 12906 D AndroidRuntime: Shutting down VM
+11-17 09:31:00.527   546   546 D BatterySaverPolicy: accessibility changed to false, updating policy.
+11-17 09:31:00.528  1906  2424 I A       : NGA enabled in interactor.
+11-17 09:31:00.528  1906  2424 I A       : Nga state changed to NgaStateDetails{state=ENABLED, isSpecialExperience=false}
+11-17 09:31:00.531  1799  1833 I A       : Initializing all components
+11-17 09:31:00.531  1799  1833 I A       : APA or Classic session decision: SessionDecision(sessionVariance=CLASSIC, platformVariance=CLASSIC, justification=CURRENT_PLATFORM_VARIANCE).
+11-17 09:31:00.531  1799  1833 I A       : [Memory] eligibility: StashEligibility{6}
+11-17 09:31:00.531  1799  2444 I A       : onIsEnabledChanged, isEnabled: false
+11-17 09:31:00.531  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.531  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.531  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.531  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.531  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.531  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.531  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.531  1799  2443 I A       : on opa visibility changed false
+11-17 09:31:00.531  1799  2443 I A       : State changed: IDLE => IDLE by NGA_STATE_CHANGED and N/A with Optional.empty
+11-17 09:31:00.532  1799  2443 I A       : Recognizer choice: (recognizer_type: 1, recognizer_mode: 1, choice_reason: 4)
+11-17 09:31:00.532  1799  2443 I A       : onActiveStateChangeEvent: IDLE => IDLE
+11-17 09:31:00.532  1799  2443 I A       : #onActiveStateChangeEvent, newState: IDLE, previousState: IDLE.
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 I A       : onOpaVisibilityChanged: false
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 I A       : Setting session to type: NO_SESSION
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.532  1799  2444 I A       : setNavBarVisible: GestureNavBarVisible{navbarVisible=true}
+11-17 09:31:00.533  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.533  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.533  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.533  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.533  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.533  1799  2444 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:00.533  1799  2444 I A       : onDisabled. Registered: false
+11-17 09:31:00.533   546  1291 D CompatibilityChangeReporter: Compat change id reported: 197654537; UID 10192; state: ENABLED
+11-17 09:31:00.534  1799  2443 I A       : on opa visibility changed false
+11-17 09:31:00.534  1799  2443 I A       : stopListening(NGA_PAUSED_UNKNOWN_REASON, NGA_CREATE), idleOverride=NOT_LISTENING
+11-17 09:31:00.534  1799  2444 I A       : Initialize
+11-17 09:31:00.534  1799  2444 I NgaEntryPointEventSendr: setupConnection
+11-17 09:31:00.535   546   992 W ProcessStats: Tracking association SourceState{31710f3 com.google.android.googlequicksearchbox:interactor/10132 BFgs #13594} whose proc state 4 is better than process ProcessState{b330b1c com.google.android.googlequicksearchbox:search/10132 pkg=com.google.android.googlequicksearchbox} proc state 14 (11 skipped)
+11-17 09:31:00.536  1799  2444 I NgaEntryPointEventSendr: State changed: Disconnected => Connecting
+11-17 09:31:00.538  1799  2444 I A       : Successfully initialized all components
+11-17 09:31:00.538  1906  1906 I A       : Creating pss binder().
+11-17 09:31:00.539  1799  2443 I NgaEntryPointEventSendr: onServiceConnected
+11-17 09:31:00.539  1906  5666 I A       : Calling beginBinderSession().
+11-17 09:31:00.539  1906  5666 I A       : beginBinderSession(): calling binder
+11-17 09:31:00.542  1799  2443 I NgaEntryPointEventSendr: State changed: Connecting => Ready
+11-17 09:31:00.543 12858 12867 W om.myhitbodedut: Cleared Reference was only reachable from finalizer (only reported once)
+11-17 09:31:00.550  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:00.550  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:00.566  1799  2444 I NgaEntryPointEventSendr: State changed: Ready => Disconnected (onOpaDisconnected)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: Invalid input from icing corpus JSON flag.
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at android.util.JsonReader.checkLenient(JsonReader.java:840)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at android.util.JsonReader.nextInArray(JsonReader.java:615)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at android.util.JsonReader.peek(JsonReader.java:345)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at android.util.JsonReader.hasNext(JsonReader.java:321)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.searchbox.c.b.b.k.c(PG:7)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.searchbox.c.b.b.k.<init>(PG:5)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.staticplugins.searchboxroot.features.n.a.c.<init>(PG:16)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.staticplugins.searchboxroot.b.a(PG:14)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.staticplugins.searchboxroot.x.<init>(PG:7)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.binaries.velvet.app.akd.b(PG:15)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at dagger.a.e.b(PG:1)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.staticplugins.searchboxroot.a.a.a(PG:3)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.binaries.velvet.app.ok.f(Unknown Source:2541)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.binaries.velvet.app.ok.b(PG:1)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.apps.gsa.search.core.service.g.a.c.a(PG:2)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.libraries.gsa.k.a.f.a(PG:2)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.common.util.concurrent.dx.a(PG:1)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.common.util.concurrent.cv.run(PG:4)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.common.util.concurrent.dz.run(PG:1)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.libraries.i.ae.run(PG:1)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.libraries.i.k.run(PG:2)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at com.google.android.libraries.i.p.run(PG:4)
+11-17 09:31:00.569  1906  2433 W CorpusConfigHelper: 	at java.lang.Thread.run(Thread.java:1012)
+11-17 09:31:00.581  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.583  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.584  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.584  1906  2493 I A       : Merging legacy hotword config map with new proto.
+11-17 09:31:00.584  1906  2493 I A       : Adding from config to map. Locale: cmn-Hant-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-17 09:31:00.584  1906  2493 I A       : Adding from config to map. Locale: id-ID modelPrefix: x_google Location:cfffcc1a4c1c084c003c8eb27f73d770 isSpeakerIdSupported: true
+11-17 09:31:00.584  1906  2493 I A       : Adding from config to map. Locale: ko-KR modelPrefix: x_google Location:0b132163a2eb2c1194b202067475724b isSpeakerIdSupported: true
+11-17 09:31:00.584  1906  2493 I A       : Skipping. Expected model: 2 Found: 1
+11-17 09:31:00.584  1906  2493 I A       : Adding from config to map. Locale: zh-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-17 09:31:00.584  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.584  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.584  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.589  1906  3294 I PBSessionCacheImpl: Deleted sessionId[8384472182291222] from persistence.
+11-17 09:31:00.593  1906  2493 W SearchServiceCore: Abort, client detached.
+11-17 09:31:00.593   546  1291 W ActivityManager: Unable to start service Intent { cmp=com.google.android.apps.tachyon/.clientapi.ClientApiService } U=0: not found
+11-17 09:31:00.595  1906  2493 I MicroDetectionState: Should stop hotword detection immediately - true
+11-17 09:31:00.595  1906  2493 I MicroDetectionState: Should stop hotword detection immediately - true
+11-17 09:31:00.595  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.595  1906  2493 I A       : Using proto config with mendel
+11-17 09:31:00.612  5816  5929 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.googlequicksearchbox componentName=null serviceId=36
+11-17 09:31:00.616  5816  5816 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+11-17 09:31:00.616  5816  5816 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+11-17 09:31:00.619   546  1291 E ShortcutService: Default launcher not found. user: 0
+11-17 09:31:00.622   546  1291 D CompatibilityChangeReporter: Compat change id reported: 161252188; UID 10149; state: DISABLED
+11-17 09:31:00.626   546  1291 D CompatibilityChangeReporter: Compat change id reported: 161252188; UID 10192; state: DISABLED
+11-17 09:31:00.628  5816  5907 I Icing   : Usage reports ok 4, Failed Usage reports 0, indexed 0, rejected 0
+11-17 09:31:00.630  5816  5929 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=null serviceId=30
+11-17 09:31:00.632   546  1291 E ShortcutService: Default launcher not found. user: 0
+11-17 09:31:00.633  5816  5907 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+11-17 09:31:00.774  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:00.774  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:01.275  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:01.275  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:01.776  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:01.776  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:01.889  4995  4995 D StatusBarIconController: ignoring old pipeline callback because the new wifi icon is enabled
+11-17 09:31:02.277  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:02.277  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:02.429 12929 12929 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+11-17 09:31:02.432 12929 12929 I AndroidRuntime: Using default boot image
+11-17 09:31:02.432 12929 12929 I AndroidRuntime: Leaving lock profiling enabled
+11-17 09:31:02.434 12929 12929 I app_process: Core platform API reporting enabled, enforcing=false
+11-17 09:31:02.434 12929 12929 I app_process: Using CollectorTypeCC GC.
+11-17 09:31:02.486 12929 12929 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+11-17 09:31:02.494 12929 12929 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-17 09:31:02.494 12929 12929 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt72l.dat
+11-17 09:31:02.498 12929 12929 W app_process: Unexpected CPU variant for x86: x86_64.
+11-17 09:31:02.498 12929 12929 W app_process: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+11-17 09:31:02.499 12929 12929 W app_process: ClassLoaderContext shared library size mismatch. Expected=2, found=0 (PCL[]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]} | PCL[])
+11-17 09:31:02.500 12929 12929 W app_process: ClassLoaderContext classpath size mismatch. expected=0, found=1 (PCL[]{PCL[/system/framework/android.test.runner.jar*4168958247]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]}#PCL[/system/framework/android.test.base.jar*836642756]} | PCL[/system/framework/android.test.runner.jar*4168958247])
+11-17 09:31:02.510 12929 12929 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-17 09:31:02.512 12929 12929 D UiAutomationConnection: Created on user UserHandle{0}
+11-17 09:31:02.512 12929 12929 I UiAutomation: Initialized for user 0 on display 0
+11-17 09:31:02.512 12929 12929 W UiAutomation: Created with deprecatead constructor, assumes DEFAULT_DISPLAY
+11-17 09:31:02.513   546   992 D AccessibilityManagerService: changeCurrentUserForTestAutomationIfNeededLocked(0): ignoring because device doesn't support visible background users
+11-17 09:31:02.513   546   992 I UiAutomationManager: Registering UiTestAutomationService (id=com.android.server.accessibility/UiAutomation) when called by user 0
+11-17 09:31:02.515   546   992 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:02.516  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:02.516   546   546 D BatterySaverPolicy: accessibility changed to true, updating policy.
+11-17 09:31:02.517  1906  2423 I A       : NGA disabled since it's running Panthera and at least one a11y feature is on.
+11-17 09:31:02.517  1906  2423 I A       : Nga state changed to NgaStateDetails{state=DISABLED, isSpecialExperience=false}
+11-17 09:31:02.518  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:02.518  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:02.518  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:02.518 12929 12945 V UiAutomation: Init UiAutomation@172e2dd[id=177, displayId=0, flags=0]
+11-17 09:31:02.519  1799  8759 I A       : APA or Classic session decision: SessionDecision(sessionVariance=CLASSIC, platformVariance=CLASSIC, justification=CURRENT_PLATFORM_VARIANCE).
+11-17 09:31:02.519  1799  2444 I A       : Unsubscribed to apa or classic variant change.
+11-17 09:31:02.519  1799  8759 I A       : [Memory] eligibility: StashEligibility{4}
+11-17 09:31:02.519   546   992 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:02.520  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:02.524   546  1291 D SafetySourceDataValidator: No cert check requested for package com.google.android.permissioncontroller
+11-17 09:31:02.524  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:02.524  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:02.524  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:02.524  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:02.525  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:02.525  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:02.525  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:02.525  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:02.525  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:02.526  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:02.527  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:02.527  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:02.527  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:02.527  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:02.778  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:02.778  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:03.278  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:03.280  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:03.522 12929 12929 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@112ee; boundsInParent: Rect(0, 0 - 278, 39); boundsInScreen: Rect(89, 2347 - 367, 2337); boundsInWindow: Rect(89, 2347 - 367, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: ’HIZOUK DU JOUR; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:03.522 12929 12929 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@116af; boundsInParent: Rect(0, 0 - 902, 198); boundsInScreen: Rect(89, 2401 - 991, 2337); boundsInWindow: Rect(89, 2401 - 991, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: וּבִלְשׁוֹן אַשְׁכְּנַז יָכוֹל לְפָרֵשׁ כָּל שִׂיחָתוֹ. וְאֶת כָּל אֲשֶׁר עִם לְבָבוֹ יָשִׂיחַ וִיסַפֵּר לְפָנָיו יִתְבָּרַךְ, הֵן חֲרָטָה וּתְשׁוּבָה עַל הֶעָבָר, וְהֵן בַּקָּשַׁת תַחֲנוּנִים לִזְכּוֹת לְהִתְקָרֵב אֵלָיו יִתְבָּרַךְ מֵהַיּוֹם וְהָלְאָה בֶּאֱמֶת, וְכַיּוֹצֵא בָּזֶה כָּל חַד לְפוּם דַּרְגֵּהּ.; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:03.522 12929 12929 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@11a70; boundsInParent: Rect(0, 0 - 314, 43); boundsInScreen: Rect(89, 2614 - 403, 2337); boundsInWindow: Rect(89, 2614 - 403, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: Likoutei Moharan II, 25; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:03.522 12929 12929 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@11e31; boundsInParent: Rect(0, 0 - 996, 371); boundsInScreen: Rect(42, 2735 - 1038, 2337); boundsInWindow: Rect(42, 2735 - 1038, 2337); packageName: com.myhitbodedut; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:03.523 12929 12929 W AccessibilityNodeInfoDumper: Fetch time: 3ms
+11-17 09:31:03.524   546  1291 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:03.524   546  1291 D AccessibilityManagerService: restoreCurrentUserForTestAutomationIfNeededLocked(): ignoring because device doesn't support visible background users
+11-17 09:31:03.524  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:03.524  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:03.524  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:03.524  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:03.524 12929 12929 D AndroidRuntime: Shutting down VM
+11-17 09:31:03.525  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:03.525  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:03.525  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:03.525  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:03.525  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:03.525  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:03.527   546   546 D BatterySaverPolicy: accessibility changed to false, updating policy.
+11-17 09:31:03.527  1906  2424 I A       : NGA enabled in interactor.
+11-17 09:31:03.527  1906  2424 I A       : Nga state changed to NgaStateDetails{state=ENABLED, isSpecialExperience=false}
+11-17 09:31:03.527  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:03.528  1799  7634 I A       : Initializing all components
+11-17 09:31:03.529  1799  2443 I A       : onIsEnabledChanged, isEnabled: false
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 I A       : onOpaVisibilityChanged: false
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 I A       : Setting session to type: NO_SESSION
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.529  1799  7634 I A       : APA or Classic session decision: SessionDecision(sessionVariance=CLASSIC, platformVariance=CLASSIC, justification=CURRENT_PLATFORM_VARIANCE).
+11-17 09:31:03.530  1799  2444 I A       : State changed: IDLE => IDLE by NGA_STATE_CHANGED and N/A with Optional.empty
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  7634 I A       : [Memory] eligibility: StashEligibility{6}
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2444 I A       : Recognizer choice: (recognizer_type: 1, recognizer_mode: 1, choice_reason: 4)
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2443 I A       : setNavBarVisible: GestureNavBarVisible{navbarVisible=true}
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:03.530  1799  2443 I A       : onDisabled. Registered: false
+11-17 09:31:03.530  1799  2444 I A       : onActiveStateChangeEvent: IDLE => IDLE
+11-17 09:31:03.530  1799  2444 I A       : #onActiveStateChangeEvent, newState: IDLE, previousState: IDLE.
+11-17 09:31:03.531  1799  2444 I A       : on opa visibility changed false
+11-17 09:31:03.531  1799  2443 I A       : Initialize
+11-17 09:31:03.531  1799  2444 I A       : on opa visibility changed false
+11-17 09:31:03.531  1799  2444 I A       : stopListening(NGA_PAUSED_UNKNOWN_REASON, NGA_CREATE), idleOverride=NOT_LISTENING
+11-17 09:31:03.532  1799  2443 I NgaEntryPointEventSendr: setupConnection
+11-17 09:31:03.534  1799  2443 I NgaEntryPointEventSendr: State changed: Disconnected => Connecting
+11-17 09:31:03.534  1906  1906 I A       : Creating pss binder().
+11-17 09:31:03.534  1799  2443 I NgaEntryPointEventSendr: onServiceConnected
+11-17 09:31:03.534  1906  5661 I A       : Calling beginBinderSession().
+11-17 09:31:03.535  1906  5661 I A       : beginBinderSession(): calling binder
+11-17 09:31:03.535  1799  2444 I A       : Successfully initialized all components
+11-17 09:31:03.535  1799  2443 I NgaEntryPointEventSendr: State changed: Connecting => Ready
+11-17 09:31:03.537   546   992 W ActivityManager: Unable to start service Intent { cmp=com.google.android.apps.tachyon/.clientapi.ClientApiService } U=0: not found
+11-17 09:31:03.539  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:03.539  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:03.552  1906  2493 W A       : UiCallbackStub-onGenericEvent[ServiceEvent = 60] task was not run. Callback from Service received after client was disposed.
+11-17 09:31:03.553  1906  2493 W SearchServiceCore: Abort, client detached.
+11-17 09:31:03.558  1906  3293 I PBSessionCacheImpl: Deleted sessionId[8384472182291225] from persistence.
+11-17 09:31:03.559  1799  2444 I NgaEntryPointEventSendr: State changed: Ready => Disconnected (onOpaDisconnected)
+11-17 09:31:03.779  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:03.781  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:04.222  4995  4995 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+11-17 09:31:04.280  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:04.282  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:04.427 12954 12954 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+11-17 09:31:04.427 12954 12954 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+11-17 09:31:04.438   152   152 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+11-17 09:31:04.438 12954 12955 I Gralloc4: mapper 4.x is not supported
+11-17 09:31:04.709     0     0 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+11-17 09:31:04.677 12858 12878 D EGL_emulation: app_time_stats: avg=2483.55ms min=29.15ms max=12253.80ms count=5
+11-17 09:31:04.784  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:04.790  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:04.912  4995  4995 D StatusBarIconController: ignoring old pipeline callback because the new wifi icon is enabled
+11-17 09:31:05.285  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:05.291  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:05.696 12858 12878 D EGL_emulation: app_time_stats: avg=58.86ms min=23.48ms max=338.28ms count=16
+11-17 09:31:05.788  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:05.794  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:06.289  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:06.295  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:06.791  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:06.795  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:07.292  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:07.295  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:07.477 12978 12978 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+11-17 09:31:07.480 12978 12978 I AndroidRuntime: Using default boot image
+11-17 09:31:07.480 12978 12978 I AndroidRuntime: Leaving lock profiling enabled
+11-17 09:31:07.482 12978 12978 I app_process: Core platform API reporting enabled, enforcing=false
+11-17 09:31:07.483 12978 12978 I app_process: Using CollectorTypeCC GC.
+11-17 09:31:07.534 12978 12978 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+11-17 09:31:07.540 12978 12978 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-17 09:31:07.540 12978 12978 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt72l.dat
+11-17 09:31:07.544 12978 12978 W app_process: Unexpected CPU variant for x86: x86_64.
+11-17 09:31:07.544 12978 12978 W app_process: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+11-17 09:31:07.546 12978 12978 W app_process: ClassLoaderContext shared library size mismatch. Expected=2, found=0 (PCL[]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]} | PCL[])
+11-17 09:31:07.546 12978 12978 W app_process: ClassLoaderContext classpath size mismatch. expected=0, found=1 (PCL[]{PCL[/system/framework/android.test.runner.jar*4168958247]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]}#PCL[/system/framework/android.test.base.jar*836642756]} | PCL[/system/framework/android.test.runner.jar*4168958247])
+11-17 09:31:07.557 12978 12978 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-17 09:31:07.559 12978 12978 D UiAutomationConnection: Created on user UserHandle{0}
+11-17 09:31:07.559 12978 12978 I UiAutomation: Initialized for user 0 on display 0
+11-17 09:31:07.559 12978 12978 W UiAutomation: Created with deprecatead constructor, assumes DEFAULT_DISPLAY
+11-17 09:31:07.560   546  1291 D AccessibilityManagerService: changeCurrentUserForTestAutomationIfNeededLocked(0): ignoring because device doesn't support visible background users
+11-17 09:31:07.560   546  1291 I UiAutomationManager: Registering UiTestAutomationService (id=com.android.server.accessibility/UiAutomation) when called by user 0
+11-17 09:31:07.561   546  1291 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:07.562  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:07.563  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:07.563  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:07.563  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:07.564   546   546 D BatterySaverPolicy: accessibility changed to true, updating policy.
+11-17 09:31:07.564  1906  2424 I A       : NGA disabled since it's running Panthera and at least one a11y feature is on.
+11-17 09:31:07.564  1906  2424 I A       : Nga state changed to NgaStateDetails{state=DISABLED, isSpecialExperience=false}
+11-17 09:31:07.565 12978 12994 V UiAutomation: Init UiAutomation@e9fe6ea[id=178, displayId=0, flags=0]
+11-17 09:31:07.566  1799  6875 I A       : APA or Classic session decision: SessionDecision(sessionVariance=CLASSIC, platformVariance=CLASSIC, justification=CURRENT_PLATFORM_VARIANCE).
+11-17 09:31:07.566  1799  6875 I A       : [Memory] eligibility: StashEligibility{4}
+11-17 09:31:07.566  1799  2443 I A       : Unsubscribed to apa or classic variant change.
+11-17 09:31:07.568  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:07.568  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:07.570  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:07.570  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:07.570  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:07.570  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:07.570  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:07.570  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:07.570  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:07.570  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:07.570  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:07.570   546  1291 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:07.571  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:07.571  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:07.572  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:07.578  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:07.578   546  2182 D SafetySourceDataValidator: No cert check requested for package com.google.android.permissioncontroller
+11-17 09:31:07.794  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:07.796  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:07.870  4995  4995 D StatusBarIconController: ignoring old pipeline callback because the new wifi icon is enabled
+11-17 09:31:08.295  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:08.297  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:08.568 12978 12978 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@9ada; boundsInParent: Rect(0, 0 - 996, 147); boundsInScreen: Rect(42, 128 - 1038, -526); boundsInWindow: Rect(42, 128 - 1038, -526); packageName: com.myhitbodedut; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:08.568 12978 12978 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@b521; boundsInParent: Rect(0, 0 - 996, 344); boundsInScreen: Rect(42, 128 - 1038, -172); boundsInWindow: Rect(42, 128 - 1038, -172); packageName: com.myhitbodedut; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:08.568 12978 12978 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@c425; boundsInParent: Rect(0, 0 - 1, 213); boundsInScreen: Rect(42, 128 - 43, 93); boundsInWindow: Rect(42, 128 - 43, 93); packageName: com.myhitbodedut; className: android.view.View; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:08.570 12978 12978 W AccessibilityNodeInfoDumper: Fetch time: 3ms
+11-17 09:31:08.571   546  2182 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:08.571   546  2182 D AccessibilityManagerService: restoreCurrentUserForTestAutomationIfNeededLocked(): ignoring because device doesn't support visible background users
+11-17 09:31:08.571  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:08.571  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:08.571  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:08.571  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:08.571  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:08.571  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:08.571  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:08.571  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:08.572  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:08.572  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:08.572  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:08.572 12978 12978 D AndroidRuntime: Shutting down VM
+11-17 09:31:08.572  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:08.572  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:08.575   546   546 D BatterySaverPolicy: accessibility changed to false, updating policy.
+11-17 09:31:08.576  1906  2390 I A       : NGA enabled in interactor.
+11-17 09:31:08.576  1906  2390 I A       : Nga state changed to NgaStateDetails{state=ENABLED, isSpecialExperience=false}
+11-17 09:31:08.577  1799  6875 I A       : Initializing all components
+11-17 09:31:08.577  1799  6875 I A       : APA or Classic session decision: SessionDecision(sessionVariance=CLASSIC, platformVariance=CLASSIC, justification=CURRENT_PLATFORM_VARIANCE).
+11-17 09:31:08.577  1799  6875 I A       : [Memory] eligibility: StashEligibility{6}
+11-17 09:31:08.578  1799  2443 I A       : onIsEnabledChanged, isEnabled: false
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 I A       : onOpaVisibilityChanged: false
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.578  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.579  1799  2444 I A       : on opa visibility changed false
+11-17 09:31:08.579  1799  2444 I A       : on opa visibility changed false
+11-17 09:31:08.579  1799  2444 I A       : State changed: IDLE => IDLE by NGA_STATE_CHANGED and N/A with Optional.empty
+11-17 09:31:08.579  1799  2444 I A       : Recognizer choice: (recognizer_type: 1, recognizer_mode: 1, choice_reason: 4)
+11-17 09:31:08.580  1799  2444 I A       : onActiveStateChangeEvent: IDLE => IDLE
+11-17 09:31:08.580  1799  2444 I A       : #onActiveStateChangeEvent, newState: IDLE, previousState: IDLE.
+11-17 09:31:08.580  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 I A       : Setting session to type: NO_SESSION
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 I A       : setNavBarVisible: GestureNavBarVisible{navbarVisible=true}
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 W A       : Disposing empty manager. Did you forgot to subscribe observables?
+11-17 09:31:08.581  1799  2443 I A       : onDisabled. Registered: false
+11-17 09:31:08.582  1799  2444 I A       : stopListening(NGA_PAUSED_UNKNOWN_REASON, NGA_CREATE), idleOverride=NOT_LISTENING
+11-17 09:31:08.583  1799  2444 I NgaEntryPointEventSendr: setupConnection
+11-17 09:31:08.583  1799  2443 I A       : Initialize
+11-17 09:31:08.585  1799  2444 I NgaEntryPointEventSendr: State changed: Disconnected => Connecting
+11-17 09:31:08.585  1906  1906 I A       : Creating pss binder().
+11-17 09:31:08.586  1799  2444 I NgaEntryPointEventSendr: onServiceConnected
+11-17 09:31:08.586  1906  5666 I A       : Calling beginBinderSession().
+11-17 09:31:08.586  1906  5666 I A       : beginBinderSession(): calling binder
+11-17 09:31:08.586  1799  2443 I A       : Successfully initialized all components
+11-17 09:31:08.586  1799  2444 I NgaEntryPointEventSendr: State changed: Connecting => Ready
+11-17 09:31:08.588   546  2182 W ActivityManager: Unable to start service Intent { cmp=com.google.android.apps.tachyon/.clientapi.ClientApiService } U=0: not found
+11-17 09:31:08.599  1799  2443 I NgaEntryPointEventSendr: State changed: Ready => Disconnected (onOpaDisconnected)
+11-17 09:31:08.600  1906  2493 W A       : UiCallbackStub-onGenericEvent[ServiceEvent = 60] task was not run. Callback from Service received after client was disposed.
+11-17 09:31:08.600  1906  3293 I PBSessionCacheImpl: Deleted sessionId[8384472182291228] from persistence.
+11-17 09:31:08.601  1906  2493 W SearchServiceCore: Abort, client detached.
+11-17 09:31:08.796  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:08.796  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:09.297  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:09.297  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:09.386   546   638 D ActivityManager: freezing 12190 com.android.externalstorage
+11-17 09:31:09.386   546   638 D ActivityManager: freezing 1896 com.google.android.apps.youtube.music
+11-17 09:31:09.387   546   638 D ActivityManager: freezing 4899 com.google.android.gm
+11-17 09:31:09.387   546   638 D ActivityManager: freezing 12237 com.android.providers.calendar
+11-17 09:31:09.388   546   638 D ActivityManager: freezing 3911 com.google.android.rkpdapp
+11-17 09:31:09.388   546   638 D ActivityManager: freezing 2580 com.google.android.tts
+11-17 09:31:09.388   546   638 D ActivityManager: freezing 1918 com.google.android.youtube
+11-17 09:31:09.389   546   638 D ActivityManager: freezing 12235 com.google.android.apps.wellbeing
+11-17 09:31:09.389   546   638 D ActivityManager: freezing 2506 com.google.android.contacts
+11-17 09:31:09.390   546   638 D ActivityManager: freezing 915 com.google.android.permissioncontroller
+11-17 09:31:09.390   546   638 D ActivityManager: freezing 12125 com.google.android.documentsui
+11-17 09:31:09.472 13003 13003 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+11-17 09:31:09.472 13003 13003 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+11-17 09:31:09.756     0     0 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+11-17 09:31:09.484   152   152 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+11-17 09:31:09.487 13003 13004 I Gralloc4: mapper 4.x is not supported
+11-17 09:31:09.688 12858 12878 D EGL_emulation: app_time_stats: avg=565.54ms min=17.93ms max=3737.13ms count=7
+11-17 09:31:09.798  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:09.799  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:10.301  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:10.301  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:10.598   546  2182 W ProcessStats: Tracking association SourceState{f65782d com.google.android.gms.persistent/10128 BFgs #13630} whose proc state 4 is better than process ProcessState{8bdb95a com.google.android.gms/10128 pkg=com.google.android.gms} proc state 8 (67 skipped)
+11-17 09:31:10.740 12858 12878 D EGL_emulation: app_time_stats: avg=60.23ms min=25.00ms max=321.41ms count=16
+11-17 09:31:10.804  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:10.804  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:10.879  4995  4995 D StatusBarIconController: ignoring old pipeline callback because the new wifi icon is enabled
+11-17 09:31:11.305  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:11.305  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:11.806  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:11.807  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:12.308  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:12.309  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:12.810  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:12.811  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:13.002  5816  5816 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-17 09:31:13.312  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:13.313  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:13.813  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:13.813  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:14.219  4995  4995 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+11-17 09:31:14.314  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:14.315  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:14.816  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:14.816  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:15.317  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:15.317  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:15.678  5816  5816 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+11-17 09:31:15.818  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:15.819  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:16.320  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:16.321  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:16.822  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:16.822  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:17.323  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:17.324  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:17.825  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:17.825  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:18.326  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:18.326  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:18.827  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:18.827  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:19.328  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:19.329  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:19.830  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:19.830  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:20.331  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:20.331  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:20.600  1906  2493 I WorkerManager: dispose()
+11-17 09:31:20.601  1906  2493 W A       : Queue length for executor EventBus is now 11. Perhaps some tasks are too long, or the pool is too small.
+11-17 09:31:20.647   546   638 D ActivityManager: freezing 1906 com.google.android.googlequicksearchbox:search
+11-17 09:31:20.833  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:20.833  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:21.335  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:21.335  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:21.837  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:21.837  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:22.338  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:22.339  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:22.840  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:22.840  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:23.341  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:23.342  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:23.843  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:23.843  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:24.219  4995  4995 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+11-17 09:31:24.223  4995  5087 D EGL_emulation: app_time_stats: avg=24216.63ms min=24216.63ms max=24216.63ms count=1
+11-17 09:31:24.344  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:24.344  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:24.845  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:24.845  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:25.346  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:25.347  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:25.700   546   638 D ActivityManager: freezing 5816 com.google.android.gms
+11-17 09:31:25.848  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:25.849  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:25.901  4995  4995 D StatusBarIconController: ignoring old pipeline callback because the new wifi icon is enabled
+11-17 09:31:26.349  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:26.349  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:26.850  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:26.850  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:27.352  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:27.352  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:27.854  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:27.854  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:27.961   546  2182 D ActivityManager: sync unfroze 5816 com.google.android.gms for 6
+11-17 09:31:27.965  5816  5816 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-17 09:31:27.965  5816  5816 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+11-17 09:31:28.355  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:28.356  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:28.856  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:28.856  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:28.905  4995  4995 D StatusBarIconController: ignoring old pipeline callback because the new wifi icon is enabled
+11-17 09:31:29.357  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:29.357  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:29.858  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:29.858  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:30.359  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:30.360  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:30.861  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:30.861  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:31.362  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:31.362  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:31.863  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:31.863  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:31.910  4995  4995 D StatusBarIconController: ignoring old pipeline callback because the new wifi icon is enabled
+11-17 09:31:32.364  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:32.365  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:32.660 13029 13029 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+11-17 09:31:32.663 13029 13029 I AndroidRuntime: Using default boot image
+11-17 09:31:32.663 13029 13029 I AndroidRuntime: Leaving lock profiling enabled
+11-17 09:31:32.664 13029 13029 I app_process: Core platform API reporting enabled, enforcing=false
+11-17 09:31:32.665 13029 13029 I app_process: Using CollectorTypeCC GC.
+11-17 09:31:32.716 13029 13029 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+11-17 09:31:32.723 13029 13029 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-17 09:31:32.723 13029 13029 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt72l.dat
+11-17 09:31:32.727 13029 13029 W app_process: Unexpected CPU variant for x86: x86_64.
+11-17 09:31:32.727 13029 13029 W app_process: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+11-17 09:31:32.728 13029 13029 W app_process: ClassLoaderContext shared library size mismatch. Expected=2, found=0 (PCL[]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]} | PCL[])
+11-17 09:31:32.729 13029 13029 W app_process: ClassLoaderContext classpath size mismatch. expected=0, found=1 (PCL[]{PCL[/system/framework/android.test.runner.jar*4168958247]{PCL[/system/framework/android.test.base.jar*836642756]#PCL[/system/framework/android.test.mock.jar*3186112116]}#PCL[/system/framework/android.test.base.jar*836642756]} | PCL[/system/framework/android.test.runner.jar*4168958247])
+11-17 09:31:32.739 13029 13029 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-17 09:31:32.741 13029 13029 D UiAutomationConnection: Created on user UserHandle{0}
+11-17 09:31:32.741 13029 13029 I UiAutomation: Initialized for user 0 on display 0
+11-17 09:31:32.741 13029 13029 W UiAutomation: Created with deprecatead constructor, assumes DEFAULT_DISPLAY
+11-17 09:31:32.742   546  2551 D AccessibilityManagerService: changeCurrentUserForTestAutomationIfNeededLocked(0): ignoring because device doesn't support visible background users
+11-17 09:31:32.742   546  2551 I UiAutomationManager: Registering UiTestAutomationService (id=com.android.server.accessibility/UiAutomation) when called by user 0
+11-17 09:31:32.743   546  2551 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:32.744  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:32.744  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:32.744  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:32.744  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:32.744  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:32.745  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:32.745  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:32.745  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:32.745  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:32.745   546   546 D BatterySaverPolicy: accessibility changed to true, updating policy.
+11-17 09:31:32.745  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:32.745  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:32.747 13029 13045 V UiAutomation: Init UiAutomation@80fb2b[id=179, displayId=0, flags=0]
+11-17 09:31:32.748  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:32.748  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:32.748   546   992 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:32.748  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:32.749  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:32.749  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:32.749  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:32.749  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:32.749  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:32.866  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:32.866  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:33.367  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:33.368  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:33.752 13029 13029 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@1130a; boundsInParent: Rect(0, 0 - 278, 39); boundsInScreen: Rect(89, 2347 - 367, 2337); boundsInWindow: Rect(89, 2347 - 367, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: ’HIZOUK DU JOUR; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:33.752 13029 13029 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@116cb; boundsInParent: Rect(0, 0 - 902, 198); boundsInScreen: Rect(89, 2401 - 991, 2337); boundsInWindow: Rect(89, 2401 - 991, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: וּבִלְשׁוֹן אַשְׁכְּנַז יָכוֹל לְפָרֵשׁ כָּל שִׂיחָתוֹ. וְאֶת כָּל אֲשֶׁר עִם לְבָבוֹ יָשִׂיחַ וִיסַפֵּר לְפָנָיו יִתְבָּרַךְ, הֵן חֲרָטָה וּתְשׁוּבָה עַל הֶעָבָר, וְהֵן בַּקָּשַׁת תַחֲנוּנִים לִזְכּוֹת לְהִתְקָרֵב אֵלָיו יִתְבָּרַךְ מֵהַיּוֹם וְהָלְאָה בֶּאֱמֶת, וְכַיּוֹצֵא בָּזֶה כָּל חַד לְפוּם דַּרְגֵּהּ.; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:33.752 13029 13029 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@11a8c; boundsInParent: Rect(0, 0 - 314, 43); boundsInScreen: Rect(89, 2614 - 403, 2337); boundsInWindow: Rect(89, 2614 - 403, 2337); packageName: com.myhitbodedut; className: android.widget.TextView; text: Likoutei Moharan II, 25; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:33.753 13029 13029 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@11e4d; boundsInParent: Rect(0, 0 - 996, 371); boundsInScreen: Rect(42, 2735 - 1038, 2337); boundsInWindow: Rect(42, 2735 - 1038, 2337); packageName: com.myhitbodedut; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; containerTitle: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+11-17 09:31:33.753 13029 13029 W AccessibilityNodeInfoDumper: Fetch time: 2ms
+11-17 09:31:33.754   546   992 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+11-17 09:31:33.754   546   992 D AccessibilityManagerService: restoreCurrentUserForTestAutomationIfNeededLocked(): ignoring because device doesn't support visible background users
+11-17 09:31:33.755  1768  3561 I AiAiEcho: Settings changed for uri: content://settings/secure/accessibility_enabled
+11-17 09:31:33.755 13029 13029 D AndroidRuntime: Shutting down VM
+11-17 09:31:33.756  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:33.756  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:33.756  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:33.756  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:33.756  1768  2023 I AiAiEcho: Predicting[0]: 
+11-17 09:31:33.756  1768  2023 I AiAiEcho: EchoTargets: 
+11-17 09:31:33.756  1768  2023 I AiAiEcho: Filtered by AiAi flag check: 
+11-17 09:31:33.756  1768  2023 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-17 09:31:33.756   546   546 D BatterySaverPolicy: accessibility changed to false, updating policy.
+11-17 09:31:33.756  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface media_data_manager with targets# 0 (types=[])
+11-17 09:31:33.756  1768  2023 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+11-17 09:31:33.758  4995  4995 D SsMediaDataProvider: Forwarding Smartspace updates []
+11-17 09:31:33.758  4995  4995 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+11-17 09:31:33.869  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:33.869  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:34.219  4995  4995 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+11-17 09:31:34.370  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:34.371  1144  1144 D FallbackHome: User unlocked but no home; let's hope someone enables one soon?
+11-17 09:31:34.654 13054 13054 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+11-17 09:31:34.654 13054 13054 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+11-17 09:31:34.668   152   152 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+11-17 09:31:34.668 13054 13055 I Gralloc4: mapper 4.x is not supported
+11-17 09:31:34.936     0     0 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
