@@ -443,10 +443,11 @@ public final class SeanceModele {
         return Personnage.pour(adresse, pose)
     }
 
-    /// Le grand chiffre.
+    /// Le grand chiffre. Le filtre du mode de concentration (`ConcentrationFiltre`, propre à iOS) le masque aussi.
     public var decompte: SeanceDecompte {
         let reglages = magasin.reglages
         guard enCours else { return .duree(Store.formatDuration(reglages.targetMinutes)) }
+        if masqueParConcentration { return .masque }
         switch Store.sessionCounter(reglages: reglages) {
         case .masque: return .masque
         case .ecoule: return .ecoule(debut: Store.sessionStartedAt(reglages: reglages))
@@ -466,7 +467,14 @@ public final class SeanceModele {
 
     /// Ce que VoiceOver dit du chiffre pendant la séance (« Il reste 12 min », « Depuis 5 min ») ; nil à l'arrêt.
     public var decompteAccessible: Libelle? {
-        enCours ? seance.texteEnCours : nil
+        guard enCours else { return nil }
+        return masqueParConcentration ? Libelle("session_running_hidden") : seance.texteEnCours
+    }
+
+    /// Le décompte est masqué par le filtre du mode de concentration (propre à iOS, PORTAGE.md § 2.2.6), et non
+    /// par le réglage « Masquer le décompte » : sans le son de fin de ce réglage.
+    private var masqueParConcentration: Bool {
+        enCours && ConcentrationFiltre.masqueDecompte(magasin.reglages)
     }
 
     /// « %02d:%02d » des minutes et des secondes (Locale.US) ; les minutes au-delà de 99 s'écrivent en entier.
@@ -478,6 +486,10 @@ public final class SeanceModele {
     public var legende: Libelle {
         let reglages = magasin.reglages
         if enCours {
+            // Masqué par le seul filtre de concentration : aucun son ne préviendra (session_hidden_caption le promet).
+            if masqueParConcentration && Store.sessionCounter(reglages: reglages) != .masque {
+                return Libelle("session_running_hidden")
+            }
             switch Store.sessionCounter(reglages: reglages) {
             case .masque: return Libelle("session_hidden_caption")
             case .ecoule: return Libelle("session_open_caption")
@@ -613,7 +625,7 @@ public final class SeanceModele {
 
     /// La lueur du souffle respire : pendant la séance, derrière un minuteur visible.
     public var souffleActif: Bool {
-        enCours && Store.sessionCounter(reglages: magasin.reglages) != .masque
+        enCours && Store.sessionCounter(reglages: magasin.reglages) != .masque && !masqueParConcentration
     }
 
     /// L'opacité de ce qui s'efface au calme (titre, scène, légende, musique, « Abandonner », sujet, carte de

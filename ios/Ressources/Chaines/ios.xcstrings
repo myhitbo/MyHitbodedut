@@ -5,13 +5,13 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Bouton OK de la durée réglable (accueil, ajout de temps, séance).",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
+        "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "OK"
           }
         },
-        "en": {
+        "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "OK"
@@ -25,20 +25,404 @@
         }
       }
     },
+    "applications_android_aide": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. L’aide-mémoire de la liste venue d’Android (blocked_apps d’une sauvegarde importée) ; %1$@ : les noms de paquets, séparés par des virgules.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "On Android, you held back: %1$@. These choices do not move from one phone to another: choose these apps again here."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sur Android, vous reteniez : %1$@. Ces choix ne passent pas d’un téléphone à l’autre : choisissez de nouveau ces applications ici."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "באנדרואיד חסמתם: %1$@. הבחירות האלה אינן עוברות מטלפון לטלפון: בחרו שוב את האפליקציות האלה כאן."
+          }
+        }
+      }
+    },
+    "applications_autorisation_a_demander": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Temps d’écran jamais demandé.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "To block apps, MyHitbodedut needs access to Screen Time. iOS will ask you for it (Face ID or passcode). Nothing is recorded or sent."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pour bloquer des applications, MyHitbodedut a besoin de l’accès à Temps d’écran. iOS vous le demandera (Face ID ou code). Rien n’est enregistré ni envoyé."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כדי לחסום אפליקציות, MyHitbodedut צריכה גישה לזמן מסך. iOS יבקש את אישורכם (Face ID או קוד). דבר אינו נשמר ואינו נשלח."
+          }
+        }
+      }
+    },
+    "applications_autorisation_accordee": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Temps d’écran autorisé.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Screen Time access is granted."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’accès à Temps d’écran est accordé."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הגישה לזמן מסך אושרה."
+          }
+        }
+      }
+    },
+    "applications_autorisation_attente": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. La feuille de Temps d’écran est ouverte.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Waiting for your answer to iOS…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "En attente de votre réponse à iOS…"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ממתין לתשובתך ל־iOS…"
+          }
+        }
+      }
+    },
+    "applications_autorisation_echec": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. La demande a échoué : sans l’entitlement Family Controls accordé par Apple (décision D3), iOS refuse.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS refused Screen Time access. This version of MyHitbodedut has probably not yet received Apple’s “Family Controls” permission: without it, no app can be blocked. Also check that the iPhone has a passcode."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS a refusé l’accès à Temps d’écran. Cette version de MyHitbodedut n’a sans doute pas encore reçu d’Apple l’autorisation « Family Controls » : sans elle, aucune application ne peut être bloquée. Vérifiez aussi qu’un code protège l’iPhone."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS סירב לגשת לזמן מסך. גרסה זו של MyHitbodedut כנראה עדיין לא קיבלה מ־Apple את ההרשאה „Family Controls”: בלעדיה לא ניתן לחסום אף אפליקציה. בדקו גם שהאייפון מוגן בקוד."
+          }
+        }
+      }
+    },
+    "applications_autorisation_refusee": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Temps d’écran refusé : expliquer, proposer les Réglages.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Screen Time access was declined: nothing can be blocked. You can ask again, or allow it in the iPhone’s Settings, under Screen Time."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’accès à Temps d’écran a été refusé : rien ne peut être bloqué. Vous pouvez reposer la question, ou rendre l’accès dans les Réglages de l’iPhone, rubrique Temps d’écran."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הגישה לזמן מסך נדחתה: לא ניתן לחסום דבר. אפשר לשאול שוב, או לאפשר את הגישה בהגדרות האייפון, תחת זמן מסך."
+          }
+        }
+      }
+    },
+    "applications_autorisation_restreinte": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. FamilyControlsError.restricted.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Screen Time is restricted on this iPhone (parental controls or device management): MyHitbodedut cannot use it, and nothing will be blocked."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Temps d’écran est restreint sur cet iPhone (contrôle parental ou gestion de l’appareil) : MyHitbodedut ne peut pas s’en servir, et rien ne sera bloqué."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "זמן מסך מוגבל באייפון הזה (בקרת הורים או ניהול מכשיר): MyHitbodedut אינה יכולה להשתמש בו, ודבר לא ייחסם."
+          }
+        }
+      }
+    },
+    "applications_categories": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Le nombre de catégories entières retenues (pas de pluriel : la forme évite les variations).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Whole categories: %1$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Catégories entières : %1$lld"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "קטגוריות שלמות: %1$lld"
+          }
+        }
+      }
+    },
+    "applications_echec_ecriture": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. L’écriture de la sélection dans le groupe d’apps a échoué.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The selection could not be saved on the iPhone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La sélection n’a pas pu être enregistrée sur l’iPhone."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לא ניתן היה לשמור את הבחירה באייפון."
+          }
+        }
+      }
+    },
+    "applications_indication": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Sous le titre de l’écran.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The iOS picker offers apps, whole categories and websites. MyHitbodedut sees neither their names nor what you open: iOS hands them over as anonymous tokens."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le sélecteur d’iOS propose les applications, des catégories entières et des sites web. MyHitbodedut ne voit ni leurs noms ni ce que vous ouvrez : iOS les lui donne en jetons anonymes."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הבורר של iOS מציע אפליקציות, קטגוריות שלמות ואתרים. MyHitbodedut אינה רואה את שמותיהם ולא את מה שאתם פותחים: iOS מוסר לה אותם כאסימונים אנונימיים."
+          }
+        }
+      }
+    },
+    "applications_limite": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Exactement 50 applications (%1$lld vaut 50).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "You have reached %1$lld apps, the most iOS can block at once. To hold back more, choose a whole category instead: it has no such limit."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vous avez atteint %1$lld applications, le plus qu’iOS sait bloquer à la fois. Pour en retenir davantage, choisissez plutôt une catégorie entière, qui n’a pas cette limite."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הגעתם ל־%1$lld אפליקציות, המספר הגבוה ביותר ש־iOS יכול לחסום בבת אחת. כדי לחסום עוד, בחרו במקום זאת קטגוריה שלמה, שאין לה מגבלה כזו."
+          }
+        }
+      }
+    },
+    "applications_ouvrir_reglages": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Bouton : les Réglages d’iOS, après un refus.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Open Settings"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ouvrir les Réglages"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "פתיחת ההגדרות"
+          }
+        }
+      }
+    },
+    "applications_reessayer": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Bouton : reposer la question après un échec.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Try again"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Réessayer"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לנסות שוב"
+          }
+        }
+      }
+    },
+    "applications_selection_titre": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Titre de la carte de la sélection.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Your selection"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Votre sélection"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הבחירה שלכם"
+          }
+        }
+      }
+    },
+    "applications_sites": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Le nombre de sites web retenus.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Websites: %1$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sites web : %1$lld"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אתרים: %1$lld"
+          }
+        }
+      }
+    },
+    "applications_trop": {
+      "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. Plus de 50 applications : %1$lld le nombre choisi, %2$lld la limite (50).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld apps chosen: iOS blocks only %2$lld at once, and beyond that it blocks nothing at all, without warning. Remove some, or choose a whole category instead: it has no such limit."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld applications choisies : iOS n’en bloque que %2$lld à la fois, et au-delà il ne bloque plus rien, sans prévenir. Retirez-en, ou choisissez plutôt une catégorie entière, qui n’a pas cette limite."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "נבחרו %1$lld אפליקציות: iOS חוסם רק %2$lld בבת אחת, ומעבר לכך אינו חוסם דבר, בלי להודיע. הסירו חלק מהן, או בחרו במקום זאת קטגוריה שלמה, שאין לה מגבלה כזו."
+          }
+        }
+      }
+    },
     "bouclier_autre_reponse": {
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Autre réponse"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Other answer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Autre réponse"
           }
         },
         "he": {
@@ -53,16 +437,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Touchez pour commencer votre hitbodedout"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Tap to start your hitbodedut"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touchez pour commencer votre hitbodedout"
           }
         },
         "he": {
@@ -73,20 +457,452 @@
         }
       }
     },
+    "concentration_etape_app": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Étape 5.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choose MyHitbodedut. The Focus will turn on every time you open the app."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choisissez MyHitbodedut. Le mode s’activera chaque fois que vous ouvrirez l’app."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "בחרו את MyHitbodedut. המצב יופעל בכל פעם שתפתחו את האפליקציה."
+          }
+        }
+      }
+    },
+    "concentration_etape_autoriser": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Étape 3.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choose the people and apps that can still reach you. Add MyHitbodedut to the allowed apps so the end-of-session notification comes through."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Choisissez les personnes et les apps qui pourront encore vous joindre. Ajoutez MyHitbodedut aux apps autorisées : la notification de fin de séance passera."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "בחרו את האנשים והאפליקציות שעדיין יוכלו להגיע אליכם. הוסיפו את MyHitbodedut לאפליקציות המורשות, כדי שההתראה על סיום ההתבודדות תגיע."
+          }
+        }
+      }
+    },
+    "concentration_etape_creer": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Étape 2.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tap + at the top, then Custom. Name the Focus “Hitbodedut”, choose a color and an icon, then tap Next."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touchez + en haut, puis Personnalisé. Nommez le mode « Hitbodedout », choisissez une couleur et une icône, puis touchez Suivant."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הקישו על + למעלה, ואז על „מותאם אישית”. קראו למצב „התבודדות”, בחרו צבע וסמל, ואז הקישו על „הבא”."
+          }
+        }
+      }
+    },
+    "concentration_etape_ouvrir": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Étape 1.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Open the iPhone Settings app, then tap Focus."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ouvrez l’app Réglages de l’iPhone, puis touchez Concentration."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "פתחו את אפליקציית ההגדרות באייפון, ואז הקישו על „ריכוז”."
+          }
+        }
+      }
+    },
+    "concentration_etape_planifier": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Étape 4.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Further down, tap “Add Schedule”, then “App”."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Plus bas, touchez « Ajouter une planification », puis « App »."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "בהמשך, הקישו על „הוספת תזמון”, ואז על „אפליקציה”."
+          }
+        }
+      }
+    },
+    "concentration_etapes_titre": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Titre de la carte des étapes.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Create the “Hitbodedut” Focus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Créer le mode « Hitbodedout »"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "יצירת מצב הריכוז „התבודדות”"
+          }
+        }
+      }
+    },
+    "concentration_filtre_carte_texte": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Comment ajouter le filtre de l'app au mode.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "In the “Hitbodedut” Focus, under “Focus Filters”, tap “Add Filter”, then MyHitbodedut, and turn on “Hide the session countdown”. While the Focus is on, the session screen no longer shows the time."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dans le mode « Hitbodedout », sous « Filtres de concentration », touchez « Ajouter un filtre », puis MyHitbodedut, et activez « Masquer le décompte de la séance ». Tant que le mode est actif, l’écran de séance ne montre plus le temps."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "במצב „התבודדות”, תחת „מסנני ריכוז”, הקישו על „הוספת מסנן”, ואז על MyHitbodedut, והפעילו את „הסתרת הספירה של ההתבודדות”. כל עוד המצב פעיל, מסך ההתבודדות אינו מציג את הזמן."
+          }
+        }
+      }
+    },
+    "concentration_filtre_carte_titre": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Titre de la carte du filtre.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hide the countdown during this Focus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Masquer le décompte pendant ce mode"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הסתרת הספירה במצב הזה"
+          }
+        }
+      }
+    },
+    "concentration_filtre_etat_libre": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). État du filtre : rien n'est masqué en ce moment.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Right now, no Focus is hiding the countdown."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "En ce moment, aucun mode de concentration ne masque le décompte."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כרגע אף מצב ריכוז אינו מסתיר את הספירה."
+          }
+        }
+      }
+    },
+    "concentration_filtre_etat_masque": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). État du filtre : il masque le décompte en ce moment.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Right now, a Focus is hiding the countdown."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "En ce moment, un mode de concentration masque le décompte."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "כרגע מצב ריכוז מסתיר את הספירה."
+          }
+        }
+      }
+    },
+    "concentration_filtre_intention_description": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Filtre de mode de concentration (App/ConcentrationFiltreIntention.swift, LocalizedStringResource de la table « ios »). Description du filtre.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "What MyHitbodedut shows during a session while this Focus is on."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ce que MyHitbodedut montre pendant la séance quand ce mode est actif."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מה MyHitbodedut מציגה בזמן ההתבודדות כשמצב הריכוז הזה פעיל."
+          }
+        }
+      }
+    },
+    "concentration_filtre_intention_titre": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Filtre de mode de concentration (App/ConcentrationFiltreIntention.swift, LocalizedStringResource de la table « ios »). Titre du filtre dans les Réglages d'iOS.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Session screen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Écran de séance"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מסך ההתבודדות"
+          }
+        }
+      }
+    },
+    "concentration_filtre_masquer": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Filtre de mode de concentration (App/ConcentrationFiltreIntention.swift, LocalizedStringResource de la table « ios »). Le paramètre du filtre (un interrupteur).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hide the session countdown"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Masquer le décompte de la séance"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הסתרת הספירה של ההתבודדות"
+          }
+        }
+      }
+    },
+    "concentration_filtre_resume_libre": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Filtre de mode de concentration (App/ConcentrationFiltreIntention.swift, LocalizedStringResource de la table « ios »). Résumé du filtre réglé, sous son titre : décompte visible.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Countdown shown"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Décompte visible"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הספירה מוצגת"
+          }
+        }
+      }
+    },
+    "concentration_filtre_resume_masque": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Filtre de mode de concentration (App/ConcentrationFiltreIntention.swift, LocalizedStringResource de la table « ios »). Résumé du filtre réglé, sous son titre : décompte masqué.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Countdown hidden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Décompte masqué"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הספירה מוסתרת"
+          }
+        }
+      }
+    },
+    "concentration_ouvrir_reglages": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Bouton qui ouvre les Réglages d'iOS (UIApplication.openSettingsURLString).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Open Settings"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ouvrir les Réglages"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "פתיחת ההגדרות"
+          }
+        }
+      }
+    },
+    "concentration_ouvrir_reglages_note": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Sous le bouton : ce qu'il ouvre vraiment.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "This button opens MyHitbodedut’s page in Settings: iOS does not let an app open Focus directly. Go back to the main Settings menu to find it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ce bouton ouvre la page de MyHitbodedut dans les Réglages : iOS ne laisse pas une app ouvrir directement Concentration. Revenez en arrière jusqu’au menu principal des Réglages pour la trouver."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הכפתור הזה פותח את העמוד של MyHitbodedut בהגדרות: iOS אינו מאפשר לאפליקציה לפתוח ישירות את „ריכוז”. חזרו לתפריט הראשי של ההגדרות כדי למצוא אותו."
+          }
+        }
+      }
+    },
+    "concentration_resultat": {
+      "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Aide à la concentration (ConcentrationModele, PORTAGE.md § 2.2.6). Sous les étapes.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The “Hitbodedut” Focus turns on as soon as MyHitbodedut is on screen, and turns off when you leave it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le mode « Hitbodedout » s’active dès que MyHitbodedut est à l’écran, et s’arrête quand vous la quittez."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מצב הריכוז „התבודדות” מופעל כאשר MyHitbodedut פתוחה על המסך, ונכבה כשיוצאים ממנה."
+          }
+        }
+      }
+    },
     "contenu_illisible": {
       "comment": "Chaîne propre à iOS (Text(…, tableName: \"ios\")) : à relire par le propriétaire. État d'erreur de la lecture des Tehilim, du Tikoun et des Tfilot.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Ce contenu n’a pu être lu."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "This content could not be read."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ce contenu n’a pu être lu."
           }
         },
         "he": {
@@ -101,16 +917,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Le bouclier ne suivait pas la règle du moment. L’app l’a remis d’accord et l’a noté au journal."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "The shield was not following the current rule. The app has put it right and noted it in the log."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le bouclier ne suivait pas la règle du moment. L’app l’a remis d’accord et l’a noté au journal."
           }
         },
         "he": {
@@ -125,16 +941,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Bouclier désaccordé"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Shield out of step"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bouclier désaccordé"
           }
         },
         "he": {
@@ -149,16 +965,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Les heures du mode ne sont plus inscrites auprès d’iOS. L’app les inscrit de nouveau ; si ce message reste, éteignez puis rallumez le mode."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "The mode’s hours are no longer registered with iOS. The app registers them again; if this message stays, switch the mode off and on."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les heures du mode ne sont plus inscrites auprès d’iOS. L’app les inscrit de nouveau ; si ce message reste, éteignez puis rallumez le mode."
           }
         },
         "he": {
@@ -173,16 +989,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Surveillance absente"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Schedule missing"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Surveillance absente"
           }
         },
         "he": {
@@ -197,16 +1013,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "iOS n’a pas réveillé la surveillance depuis hier. Ouvrir l’app le matin la relance."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "iOS has not woken the schedule since yesterday. Opening the app in the morning restarts it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS n’a pas réveillé la surveillance depuis hier. Ouvrir l’app le matin la relance."
           }
         },
         "he": {
@@ -221,16 +1037,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Surveillance muette"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Schedule silent"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Surveillance muette"
           }
         },
         "he": {
@@ -245,16 +1061,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Les applications choisies ne sont plus reconnues sur cet iPhone. Choisissez-les de nouveau."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "The chosen apps are no longer recognised on this iPhone. Choose them again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les applications choisies ne sont plus reconnues sur cet iPhone. Choisissez-les de nouveau."
           }
         },
         "he": {
@@ -269,16 +1085,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Sélection à refaire"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Choose the apps again"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sélection à refaire"
           }
         },
         "he": {
@@ -293,16 +1109,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "iOS a retiré l’accès à Temps d’écran : plus rien n’est retenu. Le rendre ?"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "iOS removed Screen Time access: nothing is held back any more. Give it back?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS a retiré l’accès à Temps d’écran : plus rien n’est retenu. Le rendre ?"
           }
         },
         "he": {
@@ -317,16 +1133,16 @@
       "comment": "Barrière, état propre à iOS (PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Accès retiré par iOS"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Access removed by iOS"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Accès retiré par iOS"
           }
         },
         "he": {
@@ -341,16 +1157,16 @@
       "comment": "Propre à iOS (PORTAGE.md § 4.2), à relire par le propriétaire : sous le titre d'un onglet dont l'écran n'est pas encore porté.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Bientôt"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Coming soon"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bientôt"
           }
         },
         "he": {
@@ -365,16 +1181,16 @@
       "comment": "Chaîne propre à iOS (Text(…, tableName: \"ios\")) : à relire par le propriétaire. Annonce de la vue d'attente, pendant la lecture du journal au lancement.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Chargement…"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Loading…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Chargement…"
           }
         },
         "he": {
@@ -389,16 +1205,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Action VoiceOver qui remplace l'appui long sur un paragraphe ou un verset.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Poser ou retirer un marque-page"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Add or remove a bookmark"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Poser ou retirer un marque-page"
           }
         },
         "he": {
@@ -413,16 +1229,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Temps d’écran"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Screen Time"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Temps d’écran"
           }
         },
         "he": {
@@ -437,16 +1253,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Pour garder fermées les applications choisies tant que la hitbodedout n’est pas faite. Rien n’est enregistré ni envoyé."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "To keep the apps you chose closed until your hitbodedut is done. Nothing is recorded or sent."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pour garder fermées les applications choisies tant que la hitbodedout n’est pas faite. Rien n’est enregistré ni envoyé."
           }
         },
         "he": {
@@ -461,16 +1277,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "iOS ne laisse pas une application couper les notifications. Créez un mode de concentration « Hitbodedout » qui s’active quand MyHitbodedut est ouverte."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "iOS does not let an app silence notifications. Create a “Hitbodedut” Focus that turns on when MyHitbodedut is open."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iOS ne laisse pas une application couper les notifications. Créez un mode de concentration « Hitbodedout » qui s’active quand MyHitbodedut est ouverte."
           }
         },
         "he": {
@@ -485,16 +1301,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Continuer"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Continue"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Continuer"
           }
         },
         "he": {
@@ -509,16 +1325,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Pas maintenant"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Not now"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pas maintenant"
           }
         },
         "he": {
@@ -533,16 +1349,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "MyHitbodedut utilise Temps d’écran pour garder fermées, le matin, les applications que vous choisissez, jusqu’à votre hitbodedout. L’application ne voit pas ce que vous ouvrez ; rien ne quitte le téléphone. Vous pouvez couper le mode à tout moment dans les Réglages."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "MyHitbodedut uses Screen Time to keep the apps you choose closed in the morning until your hitbodedut. The app does not see what you open; nothing leaves the phone. You can turn the mode off at any time in Settings."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "MyHitbodedut utilise Temps d’écran pour garder fermées, le matin, les applications que vous choisissez, jusqu’à votre hitbodedout. L’application ne voit pas ce que vous ouvrez ; rien ne quitte le téléphone. Vous pouvez couper le mode à tout moment dans les Réglages."
           }
         },
         "he": {
@@ -557,16 +1373,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Accès à Temps d’écran"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Screen Time access"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Accès à Temps d’écran"
           }
         },
         "he": {
@@ -581,16 +1397,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Icône de l’application"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "App icon"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Icône de l’application"
           }
         },
         "he": {
@@ -605,16 +1421,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "L’icône suit vos couleurs"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "The icon matches your colors"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’icône suit vos couleurs"
           }
         },
         "he": {
@@ -629,16 +1445,16 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Mettre l’icône aux couleurs choisies"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Match the icon to my colors"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mettre l’icône aux couleurs choisies"
           }
         },
         "he": {
@@ -653,13 +1469,13 @@
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Bouton OK de la durée libre des réglages.",
       "extractionState": "manual",
       "localizations": {
-        "fr": {
+        "en": {
           "stringUnit": {
             "state": "needs_review",
             "value": "OK"
           }
         },
-        "en": {
+        "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "OK"

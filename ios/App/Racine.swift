@@ -167,6 +167,12 @@ struct Presentations: ViewModifier {
                                 ouvrir: { route in app.ouvrirLecture(route) })
         case .note(let jour):
             NotePage(date: jour, fabrique: { jour in app.note(jour) })
+        case .dedicace:
+            Garde {
+                DedicaceModele(traducteur: app.traducteur)
+            } contenu: { modele in
+                DedicaceVue(modele: modele)
+            }
         }
     }
 

@@ -163,7 +163,7 @@ public enum ReglagesRoute: Sendable, Hashable {
     case apercuBarriere
     /// Le choix des applications à retenir (AppPickerActivity ; `FamilyActivityPicker` sur iOS).
     case choixApplications
-    /// La dédicace (Dedicace.ouvrir) : un écran à venir.
+    /// La dédicace (Dedicace.ouvrir) : une feuille, l'e-mail composé et ouvert dans la messagerie (DedicaceModele).
     case dedicace
     /// Une page dans le navigateur (les règles de confidentialité).
     case navigateur(String)

@@ -58,7 +58,7 @@ enum Ecran: Hashable {
     /// BoussoleActivity.
     case boussole
 
-    /// Un écran d'Android pas encore porté (la relecture, la dédicace, l'aperçu de la barrière…) : son titre (une
+    /// Un écran d'Android pas encore porté (la relecture, l'aperçu de la barrière…) : son titre (une
     /// clé du catalogue) et « Bientôt », sans rien faire semblant.
     case bientot(cle: String)
 }
@@ -70,6 +70,8 @@ enum Feuille: Hashable, Identifiable {
     case marquesPages(recueil: String?)
     /// La note d'un jour (NoteDialog).
     case note(JourCivil)
+    /// La dédicace (Dedicace.ouvrir), depuis les réglages : l'e-mail composé et ouvert dans la messagerie.
+    case dedicace
 
     var id: Self { self }
 }
