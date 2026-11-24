@@ -402,13 +402,17 @@ struct VolCarteRappelsVue: View {
         .volPlace()
     }
 
-    /// L'interrupteur lit la carte et écrit par le modèle (les réglages, l'autorisation, les notifications).
+    /// L'interrupteur lit la carte et écrit par le modèle (les réglages, l'autorisation, les notifications). Le
+    /// réglage change dans le geste même (`Task.immediate`, comme MusiqueVue) : l'interrupteur ne revient pas un
+    /// instant en arrière.
     private var interrupteur: Binding<Bool> {
         let modele = self.modele
         let actifs = carte.actifs
         return Binding(get: { @MainActor in actifs },
                        set: { @MainActor nouveau in
-                           Task { await modele.basculerRappels(nouveau) }
+                           Task.immediate { @MainActor in
+                               await modele.basculerRappels(nouveau)
+                           }
                        })
     }
 
@@ -542,12 +546,14 @@ struct VolCarteFiabiliteVue: View {
         .multilineTextAlignment(.leading)
     }
 
-    /// L'interrupteur des services en ligne : il lit la carte et écrit par le modèle.
+    /// L'interrupteur des services en ligne : il lit la carte et écrit par le modèle, dans le geste même.
     private func interrupteurDirect(_ actif: Bool) -> Binding<Bool> {
         let modele = self.modele
         return Binding(get: { @MainActor in actif },
                        set: { @MainActor nouveau in
-                           Task { await modele.basculerEnLigne(nouveau) }
+                           Task.immediate { @MainActor in
+                               await modele.basculerEnLigne(nouveau)
+                           }
                        })
     }
 
