@@ -161,6 +161,14 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   ouvrirait passe par `LectureCaptures` (Ecrans) : « chapitres » ouvre la liste des 1 048 chapitres du plus long
   livre ; tout écran de lecture suivi de « -barre » (« halakha-barre », « source-barre », « lecteur-barre »…),
   demandé à la main dans l'entrée `ecrans`, s'ouvre sa barre de lecture dépliée.
+- **Le ciel à heure fixe** (24/11) : « ciel-<clé> » ouvre le Jour et « serenite-<clé> » l'accueil Sérénité, le ciel
+  au soleil que nomme la clé, sans lieu (le soleil moyen de `Soleil.parHeure`, levé à 6 h 30, couché à 18 h 30) :
+  `m-20`, `m-12`, `m-04`, `m+00`, `m+03`, `m+10`, `m+40` le matin, `s+40` … `s-20` le soir, les heures des captures
+  d'Android (captures.py, étape 35 ; `Captures.heuresDuCiel`) ; « ciel-0644 » prend une heure quelconque. Seule
+  l'heure du ciel est fixée (`AccueilModele.heureDuCiel`, `AccueilVersionModele.heureDuCiel`), pas celle du journal.
+  Pas dans la liste complète : on les demande dans l'entrée `ecrans`, et ils passent alors aussi en sombre, en grand
+  et sur l'iPad (le script les compte parmi ses écrans courts). Le ciel reste animé pendant la capture, comme sur
+  Android.
 - **Le script** (`tools/captures_ios/capturer.sh`) : pour chaque langue (fr, en, he, es, ar-TN, par
   `-AppleLanguages` et `-AppleLocale`, le fuseau de la ville de la démonstration par `SIMCTL_CHILD_TZ`) et chaque
   écran, il lance l'app, attend qu'elle dise « CAPTURE PRETE » sur sa sortie d'erreur (l'écran ouvert, sans

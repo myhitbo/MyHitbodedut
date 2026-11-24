@@ -149,11 +149,15 @@ public struct AccueilVue: View {
         .onGeometryChange(for: CGSize.self, of: { $0.size }) { nouvelle in
             taille = nouvelle
         }
-        // Le premier écran : ce qui se voit entre la barre d'état et la barre de départ (le bas des collines).
-        .onGeometryChange(for: CGFloat.self, of: { $0.size.height - $0.safeAreaInsets.top - $0.safeAreaInsets.bottom }) {
-            nouvelle in
+        // Le premier écran : ce qui se voit du contenu entre la barre d'état et la barre de départ, au-dessus de la
+        // barre d'onglets (le bas des collines). Lu dans le défilement lui-même : sa taille, moins les marges qu'il
+        // laisse à son contenu (la zone sûre, la barre de départ). La géométrie de la vue comptait la barre deux fois
+        // (captures du 25/11 : les collines au milieu des anneaux).
+        .onScrollGeometryChange(for: CGFloat.self, of: { geometrie in
+            geometrie.containerSize.height - geometrie.contentInsets.top - geometrie.contentInsets.bottom
+        }, action: { _, nouvelle in
             hauteurVue = max(nouvelle, 0)
-        }
+        })
         .background(fond)
     }
 

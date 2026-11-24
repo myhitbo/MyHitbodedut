@@ -101,6 +101,7 @@ Une ligne par écran, service, récepteur, widget, règle et réglage. Les fichi
 | Source du jour (même paragraphe pour tous) | `SourceDuJour.kt` | règle pure : même ordre des candidats, même indice | ② |
 | Carte de 'hizouk « relance » après une série rompue | `MainActivity.kt:747-762`, `ChizukCard.kt` | carte | ② |
 | Prochain trophée, boutons Trophées et Mon parcours | `MainActivity.kt:565-581` | liens | ① |
+| Le ciel du moment sur toute la page du Jour, continu (24/11) : le vrai soleil du lieu, teintes lisibles sous chaque texte, lune du mois hébreu, étoiles, nuages, collines et sol sous la barre de départ ; petites animations discrètes ; le paysage de Sérénité continu | `Soleil.kt`, `CielContinu.kt`, `TeintesCiel.kt`, `CielPage.kt` (`PlanCiel`), `CielVivant.kt`, `PaysageCiel.kt`, `MainActivity.renderCiel` (branche `claude/arriere-plans-animes`) | règles pures au bit près (`Soleil`, `CielContinu`, `TeintesCiel`, `PlanCiel`, `CielVivant`, `PaysageCiel`) ; `CielPageVue` (`Canvas`, `TimelineView`), `CielVivantHorloge`, `SereniteCiel` | ② |
 | Présentation en 7 écrans, versionnée | `Onboarding.kt`, `OnboardingActivity.kt` | `TabView` paginé ; premier écran : « Je viens d'Android » (§ 3.8) | ② |
 | Dix conseils | `Tips.kt`, `TipsActivity.kt` | liste | ① |
 | Demander une dédicace (compose un courriel) | `Dedicace.kt` | `openURL("mailto:")` | ① |
@@ -622,6 +623,10 @@ Android relit et normalise tout à chaque frappe : 28 Mo de JSON analysés et ga
 | Glyphes ‹ › permutés à la main en RTL | `HalakhaActivity.kt:135-145` | miroir automatique |
 | Divulgation avant les accès spéciaux | exigence de Google Play | gardée comme bonne pratique : expliquer avant la feuille du système |
 | Écran de relecture | édition d'essai | construction interne |
+| Ce qui arrête les animations du ciel | animations du système coupées, économiseur de batterie, page invisible (`HorlogeCiel`, `GardeCiel`) | « Réduire les animations », mode Économie d'énergie, scène inactive ou en arrière-plan, écran hors de vue (`CielVivantHorloge`) ; au plus 20 images par seconde ; immobile, le ciel garde sa pose de repos |
+| Peinture du ciel | bitmaps peints une fois (le dégradé au quart, les nuages à moitié, `BlurMaskFilter`) | `Canvas` : le dégradé et les collines dans des couches qui ne bougent pas, la couche du milieu seule redessinée ; les nuages et les rayons flous peints une fois en images (`CielImages`, `ImageRenderer`, flou de 3,3 points) |
+| Le texte discret sur le ciel | `muted` de la palette | le gris discret d'iOS est renforcé d'un quart d'encre (`PaletteApp.renfortDiscret`) ; le ciel est borné sur le jeton seul, plus exigeant |
+| Le témoin du soleil | `NOAACalculator.getSolarElevation` de KosherJava dans SoleilTest | les mêmes réponses, produites par KosherJava sur la JVM (`tools/vecteurs_ios/VecteursSoleil.kt`, `soleil.json`) : le `getSolarElevation` de KosherSwift compte les minutes comme des secondes et lit son fuseau dans une variable partagée |
 
 ### 2.4 Ce qu'iOS apporte, sans rien retirer
 
