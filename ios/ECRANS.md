@@ -177,8 +177,9 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   (plafonnée à AX1, visualiseur de grand contenu), l'écran voilé sous la fiche d'un trophée, les paragraphes d'une
   liste paresseuse de texte long, un texte qu'aucun élément ne porte ou de plusieurs paragraphes ; un audit
   inachevé (cinq essais, l'audit d'Xcode s'arrêtant au bout de 15 s environ sur le simulateur lent de la CI) n'est
-  pas un défaut et se dit à part (« Refaits sorte par sorte »). Un défaut nouveau ne se tolère qu'avec sa raison, et
-  après l'avoir vu sur les captures « grand ». Relever sans échouer : `TEST_RUNNER_AUDIT_RELEVE=1`.
+  pas un défaut et se dit à part (« Refaits faute d'avoir fini à temps »). Un défaut nouveau ne se tolère
+  qu'avec sa raison, et après l'avoir vu sur les captures « grand ». Relever sans échouer :
+  `TEST_RUNNER_AUDIT_RELEVE=1`.
 - **Les grandes tailles du texte** : aucune police à taille fixe (`tailleSp`, `policeHebraique`, `@ScaledMetric`
   au centième) ; `Vues/Accessibilite.swift` : `lignesAuPlus`/`uneLigne` (la limite de lignes d'Android à la taille
   ordinaire, aucune au-delà), `RangeeAdaptable` (en colonne aux tailles d'accessibilité), `TuileExtensible`,

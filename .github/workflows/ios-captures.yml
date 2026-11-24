@@ -98,20 +98,25 @@ jobs:
             -only-testing:MyHitbodedutUITests 2>&1 | tee audit.log | grep -E "^AUDIT|error:|TEST (SUCCEEDED|FAILED)" || true
           n=$(grep -c "^AUDIT" audit.log || true)
           t=$(grep -c "^TOLERE" audit.log || true)
+          # Chaque liste à part, sans faire échouer l'étape : une liste vide (grep ne trouve rien) ou coupée (head
+          # ferme le tube) sortait en erreur sous pipefail, et l'étape échouait même sans défaut (le 24/11).
+          { grep "^AUDIT" audit.log || true; } | cut -f2- | sort | sed -n '1,400p' > audit-defauts.txt
+          { grep "^TOLERE" audit.log || true; } | cut -f2- | sort | sed -n '1,200p' > audit-toleres.txt
+          { grep "^LENT" audit.log || true; } | cut -f2,3 | sort | sed -n '1,100p' > audit-lents.txt
           {
             echo "## Audit d'accessibilité : $n défaut(s)"
             echo '```'
-            grep "^AUDIT" audit.log | cut -f2- | sort | head -400
+            cat audit-defauts.txt
             echo '```'
-            # Les faux positifs connus (AuditAccessibiliteTests.toleres), chacun avec sa raison ; les audits refaits
-            # sorte par sorte faute d'avoir fini à temps.
+            # Les faux positifs connus (AuditAccessibiliteTests.tolerance), chacun avec sa raison, et les audits
+            # inachevés ; les audits refaits faute d'avoir fini à temps.
             echo "### Tolérés : $t"
             echo '```'
-            grep "^TOLERE" audit.log | cut -f2- | sort | head -100
+            cat audit-toleres.txt
             echo '```'
-            echo "### Refaits sorte par sorte : $(grep -c '^LENT' audit.log || true)"
+            echo "### Refaits faute d'avoir fini à temps : $(wc -l < audit-lents.txt | tr -d ' ')"
             echo '```'
-            grep "^LENT" audit.log | cut -f2,3 | sort | head -100
+            cat audit-lents.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           grep -q "TEST SUCCEEDED" audit.log

@@ -32,8 +32,8 @@ final class AuditAccessibiliteTests: XCTestCase {
     /// Un audit qui n'a pas fini à temps, même seul et en cinq essais, n'est pas un défaut de l'app : l'audit d'Xcode
     /// s'arrête au bout de 15 s environ, et le simulateur de la CI est lent, plus ou moins d'un passage à l'autre
     /// (le 24/11 : le Tikkoun, les trophées et le calendrier pour les tailles du texte, les plus longs ; d'autres,
-    /// un passage sur deux). Il est toléré, et dit à part dans le résumé (« Refaits sorte par sorte », lignes
-    /// « TOLERE … audit inachevé ») ; les captures « grand » montrent ces écrans aux grandes tailles du texte.
+    /// un passage sur deux). Il est toléré, et dit à part dans le résumé (« Refaits faute d'avoir fini à temps »,
+    /// lignes « TOLERE … audit inachevé ») ; les captures « grand » montrent ces écrans aux grandes tailles du texte.
 
     /// Les écrans ouverts en demi-feuille (`.medium`) : l'audit y dit « texte coupé » tout ce qui grandit au-delà
     /// de la demi-hauteur ; leur contenu défile, et la feuille s'ouvre en grand aux tailles d'accessibilité
