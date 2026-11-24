@@ -1,6 +1,7 @@
 package com.myhitbodedut
 
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -81,9 +82,23 @@ object CielContinu {
     val NUAGE_CORPS = suite(-12.0 to 0xFF5E6A8E, -6.0 to 0xFF6E6E9E, 0.0 to 0xFFE8A9A0, 4.0 to 0xFFF6D2B8, 10.0 to 0xFFFFFFFF)
     val NUAGE_BORD = suite(-12.0 to 0xFF7A86A8, -6.0 to 0xFFC88AA8, 0.0 to 0xFFFFB070, 4.0 to 0xFFFFD27A, 10.0 to 0xFFFFF4DC)
 
-    /** Les trois couleurs brutes du ciel pour [hauteur], le [matin] ou le soir. */
-    fun brutes(hauteur: Double, matin: Boolean): IntArray {
-        val cles = if (matin) MATIN else SOIR
+    /**
+     * Les trois couleurs brutes du ciel pour [hauteur] : celles du matin et du soir mêlées selon
+     * la part du [matin] (1 le matin, 0 le soir, entre les deux autour de midi et de minuit,
+     * [partMatin]).
+     */
+    fun brutes(hauteur: Double, matin: Double): IntArray {
+        if (matin >= 1.0) return selon(MATIN, hauteur)
+        if (matin <= 0.0) return selon(SOIR, hauteur)
+        val m = selon(MATIN, hauteur)
+        val s = selon(SOIR, hauteur)
+        return IntArray(3) { TeintesCiel.melange(s[it], m[it], matin) }
+    }
+
+    /** Le [matin] ou le soir, sans passage. */
+    fun brutes(hauteur: Double, matin: Boolean): IntArray = brutes(hauteur, if (matin) 1.0 else 0.0)
+
+    private fun selon(cles: List<Cle>, hauteur: Double): IntArray {
         if (hauteur <= cles.first().hauteur) return cles.first().let { intArrayOf(it.haut, it.milieu, it.horizon) }
         if (hauteur >= cles.last().hauteur) return cles.last().let { intArrayOf(it.haut, it.milieu, it.horizon) }
         val i = cles.indexOfFirst { it.hauteur > hauteur }
@@ -92,6 +107,28 @@ object CielContinu {
         val t = (hauteur - a.hauteur) / (b.hauteur - a.hauteur)
         return intArrayOf(TeintesCiel.melange(a.haut, b.haut, t), TeintesCiel.melange(a.milieu, b.milieu, t), TeintesCiel.melange(a.horizon, b.horizon, t))
     }
+
+    /**
+     * La part du matin dans les couleurs, d'après l'angle horaire du soleil (degrés, négatif le
+     * matin) : 1 le matin, 0 l'après-midi et le soir, et un passage d'une heure environ de part
+     * et d'autre de midi et de minuit (le sinus de l'angle horaire de −0,25 à 0,25, soit 14,5°
+     * du méridien). Là où le soleil reste bas à midi (le nord en hiver : 7° à Stockholm le 21/12)
+     * ou haut à minuit (en été), les clés du matin et du soir ne se rejoignent pas : sans ce
+     * passage, le ciel sautait d'un coup à midi ou à minuit (CielContinuTest). Ailleurs, rien ne
+     * change : à midi le soleil est au-dessus de 12° et à minuit sous −18°, où les deux suites
+     * sont les mêmes.
+     */
+    fun partMatin(angleHoraire: Double): Double = rampe(sin(angleHoraire * PI / 180), PASSAGE, -PASSAGE)
+    const val PASSAGE = 0.25
+
+    /**
+     * L'astre s'efface là où son arc recommence, faute de quoi il sauterait d'un bord de l'écran à
+     * l'autre : le soleil autour de minuit (il ne s'y montre que là où il ne se couche pas, au
+     * jour polaire), la lune autour de midi (à la nuit polaire). Une heure de part et d'autre
+     * (15° d'angle horaire) ; ailleurs, l'astre y est sous l'horizon et rien ne change.
+     */
+    fun fonduArc(angleHoraire: Double, soleil: Boolean): Double =
+        if (soleil) rampe(abs(angleHoraire), 180.0, 165.0) else rampe(abs(angleHoraire), 0.0, 15.0)
 
     /** Une rampe douce : 0 à [de], 1 à [a] (de > a permis : la rampe descend). */
     fun rampe(x: Double, de: Double, a: Double): Double {
@@ -133,8 +170,11 @@ object CielContinu {
     fun soleilPlutotQueLune(e: Double): Boolean = e >= -3.0
     fun luneVisible(e: Double): Double = rampe(e, -3.0, -7.0)
 
-    /** La lueur large demeure un peu sous l'horizon (−6° à 0°). */
-    fun lueurVisible(e: Double): Double = rampe(e, -6.0, 0.0)
+    /**
+     * La lueur large demeure un peu sous l'horizon, jusqu'à ce que la lune prenne le relais (de
+     * 0° à −3° ; elle allait jusqu'à −6° et s'éteignait d'un coup à −3°, CielContinuTest).
+     */
+    fun lueurVisible(e: Double): Double = rampe(e, -3.0, 0.0)
 
     /** La hauteur dessinée, de 0 (l'horizon) à 1 (60° et plus) : le sinus de la hauteur. */
     fun elevationDessinee(e: Double): Double = (sin(e * PI / 180) / sin(PI / 3)).coerceIn(0.0, 1.0)
@@ -166,13 +206,25 @@ object CielContinu {
 }
 
 /**
- * Où en est le ciel : la hauteur du soleil (degrés), le matin ou le soir, la part du jour
- * écoulée (0 au lever, 1 au coucher) et celle de la nuit (0 au coucher, 1 au lever), le jour du
- * mois hébreu (la lune).
+ * Où en est le ciel : la hauteur du soleil (degrés), son angle horaire (degrés, négatif le
+ * matin), la part du jour écoulée (0 au lever, 1 au coucher) et celle de la nuit (0 au coucher,
+ * 1 au lever), le jour du mois hébreu (la lune).
  */
-data class EtatCiel(val hauteur: Double, val matin: Boolean, val progresJour: Double, val progresNuit: Double, val jourHebreu: Int) {
+data class EtatCiel(val hauteur: Double, val angleHoraire: Double, val progresJour: Double, val progresNuit: Double, val jourHebreu: Int) {
+    /** La part du matin dans les couleurs (CielContinu.partMatin). */
+    val matin: Double get() = CielContinu.partMatin(angleHoraire)
+
+    /** L'astre du moment (le soleil jusqu'à 3° sous l'horizon, puis la lune) et son opacité. */
+    val estSoleil: Boolean get() = CielContinu.soleilPlutotQueLune(hauteur)
+    val astreVisible: Double get() =
+        (if (estSoleil) CielContinu.soleilVisible(hauteur) else CielContinu.luneVisible(hauteur)) * CielContinu.fonduArc(angleHoraire, estSoleil)
+
+    /** La lueur large du soleil demeure un peu sous l'horizon (CielContinu.lueurVisible). */
+    val lueurVisible: Double get() =
+        if (estSoleil) maxOf(CielContinu.soleilVisible(hauteur), CielContinu.lueurVisible(hauteur)) * CielContinu.fonduArc(angleHoraire, true) else astreVisible
+
     companion object {
         fun de(position: Soleil.Position, jourHebreu: Int) =
-            EtatCiel(position.hauteur, position.matin, position.progresJour, position.progresNuit, jourHebreu)
+            EtatCiel(position.hauteur, position.angleHoraire, position.progresJour, position.progresNuit, jourHebreu)
     }
 }

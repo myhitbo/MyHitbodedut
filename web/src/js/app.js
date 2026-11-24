@@ -547,8 +547,14 @@ function poserCiel() {
   const heure = heureLieu(maintenant);
   const soleil = lieu ? Ciel.soleil(maintenant.getTime(), lieu.latitude, lieu.longitude) : Ciel.soleilParHeure(heure.heures + heure.minutes / 60);
   const e = soleil.hauteur;
+  // Le jour hébreu affiché, qui commence à la tombée de la nuit (ZmanimVignette.jourHebreuAffiche).
   let jourDuMois = 15;
-  try { jourDuMois = jourJuif(isoLocal(maintenant), store.inIsrael(), mukafChoma()).jourHebreu; } catch { /* 15 */ }
+  try {
+    const iso = jourLieu(maintenant);
+    const tset = lieu ? zmanimDuJour(lieu, iso, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant : null;
+    const isoLune = tset && maintenant >= tset ? ajouteJours(iso, 1) : iso;
+    jourDuMois = jourJuif(isoLune, store.inIsrael(), mukafChoma()).jourHebreu;
+  } catch { /* 15 */ }
   // Les couleurs que la page montre vraiment (palette choisie, mode sombre compris).
   const temoin = h('span', { hidden: true });
   ecranJour.append(temoin);
@@ -559,9 +565,10 @@ function poserCiel() {
   const encres = [['--ink', 7], ['--muted', 4.5], ['--brand', 4.5], ['--ring-week-text', 4.5], ['--ring-streak-text', 4.5]]
     .map(([nom, seuil]) => { const c = couleur(nom); return { couleur: c, seuil: Math.min(seuil, Ciel.contraste(c, papier)) }; });
   temoin.remove();
-  const quart = Math.round(e * 4) / 4;
-  const cle = JSON.stringify([quart, soleil.matin, papier, encres]);
-  if (cielCalcule?.cle !== cle) cielCalcule = { cle, t: Ciel.teintesCiel(quart, soleil.matin, sombre, encres, Ciel.hex(papier)) };
+  // Au quart de degré et au vingtième du matin, comme TeintesCiel.pourCiel.
+  const quart = Math.round(e * 4) / 4, matin = Math.round(Ciel.partMatin(soleil.angleHoraire) * 20) / 20;
+  const cle = JSON.stringify([quart, matin, papier, encres]);
+  if (cielCalcule?.cle !== cle) cielCalcule = { cle, t: Ciel.teintesCiel(quart, matin, sombre, encres, Ciel.hex(papier)) };
   const t = cielCalcule.t;
   const css = (c, a = 1) => `rgb(${c[0]} ${c[1]} ${c[2]} / ${Math.round(a * 1000) / 1000})`;
   const vue = defile.clientHeight, largeur = defile.clientWidth;
@@ -608,13 +615,13 @@ function poserCiel() {
     const rayon = Math.min(j.droite - j.gauche, j.bas - j.haut) / 2, cx = (j.gauche + j.droite) / 2, cy = (j.haut + j.bas) / 2;
     astres.style.setProperty('--trou', `radial-gradient(circle ${rayon}px at ${cx}px ${cy}px, transparent ${rayon - 0.5}px, #000 ${rayon + 0.5}px)`);
   }
-  const estSoleil = Ciel.soleilPlutotQueLune(e);
+  // L'astre paraît et s'efface à l'horizon, et là où son arc recommence (jour et nuit polaires).
+  const { estSoleil, astre: visible, lueur } = Ciel.visibilites(e, soleil.angleHoraire);
   const r = estSoleil ? Ciel.rayonSoleil(e) : Ciel.RAYON_LUNE;
   const place = j ? Ciel.arc(estSoleil ? soleil.progresJour : soleil.progresNuit, Ciel.elevationDessinee(estSoleil ? e : -e), j, largeur, r, r * Ciel.COURONNE, zones) : null;
-  const visible = estSoleil ? Ciel.soleilVisible(e) : Ciel.luneVisible(e);
-  if (place && visible > 0) {
+  if (place && lueur > 0) {
     const [x, y] = place;
-    const cote = 2 * r * Ciel.LUEUR_RAYONS, lueur = estSoleil ? Math.max(visible, Ciel.rampe(e, -6, 0)) : visible;
+    const cote = 2 * r * Ciel.LUEUR_RAYONS;
     const couronne = estSoleil ? t.couronne : t.lune, fort = estSoleil ? 0.55 : 0.31;
     astres.append(h('div', { class: 'ciel-halo', style: `left:${x}px;top:${y}px;width:${cote}px;height:${cote}px;opacity:${Math.round(lueur * 1000) / 1000};`
       + `--couronne:${css(couronne, fort)};--couronne-bas:${css(couronne, fort / 3)};`

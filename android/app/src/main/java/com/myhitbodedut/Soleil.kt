@@ -32,10 +32,14 @@ object Soleil {
         val progresJour: Double get() =
             if (angleLever <= 0.0) 0.5 else ((angleHoraire + angleLever) / (2 * angleLever)).coerceIn(0.0, 1.0)
 
-        /** La part de la nuit écoulée, de 0 au coucher à 1 au lever ; de jour, la plus proche borne. */
+        /**
+         * La part de la nuit écoulée, de 0 au coucher à 1 au lever ; de jour, la plus proche borne
+         * (1 le matin, 0 l'après-midi : la nuit tout juste finie, ou sur le point de commencer).
+         */
         val progresNuit: Double get() {
             val nuit = 360.0 - 2 * angleLever
             if (nuit <= 0.0) return 0.5
+            if (jour) return if (matin) 1.0 else 0.0
             val depuis = ((angleHoraire - angleLever) % 360.0 + 360.0) % 360.0
             return (depuis / nuit).coerceIn(0.0, 1.0)
         }

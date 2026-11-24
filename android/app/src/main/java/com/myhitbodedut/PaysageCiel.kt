@@ -73,11 +73,11 @@ class PaysageCiel(
         (0xFF shl 24) or (r.toInt().coerceIn(0, 255) shl 16) or (g.toInt().coerceIn(0, 255) shl 8) or b.toInt().coerceIn(0, 255)
     }
 
-    /** La nuit des collines : 0 de jour et à l'aube, 1 la nuit et au coucher. */
-    private val nuit = if (etat.matin) CielContinu.rampe(e, -3.0, -12.0) else CielContinu.rampe(e, 12.0, 3.0)
+    /** La nuit des collines : 0 de jour et à l'aube, 1 la nuit et au coucher (le matin et le soir mêlés comme le ciel). */
+    private val nuit = etat.matin * CielContinu.rampe(e, -3.0, -12.0) + (1 - etat.matin) * CielContinu.rampe(e, 12.0, 3.0)
 
     /** Le soleil suit son arc jusqu'à 3° sous l'horizon, puis la lune. */
-    private val estSoleil = if (arc) CielContinu.soleilPlutotQueLune(e) else poids[0] < 0.5
+    private val estSoleil = if (arc) etat.estSoleil else poids[0] < 0.5
 
     val horloge = HorlogeCiel(this)
 
@@ -313,12 +313,8 @@ class PaysageCiel(
     /** Les étoiles : toutes la nuit, s'allumant avec le crépuscule (presque rien à +2°, toutes à −10°). */
     private fun eclatEtoiles(): Float = CielContinu.rampe(e, 2.0, -10.0).toFloat()
 
-    /** L'astre paraît et s'efface à l'horizon (arc) ; sans arc il est toujours là, comme avant. */
-    private fun astreVisible(): Float = when {
-        !arc -> 1f
-        estSoleil -> CielContinu.soleilVisible(e).toFloat()
-        else -> CielContinu.luneVisible(e).toFloat()
-    }
+    /** L'astre paraît et s'efface à l'horizon, et là où son arc recommence (arc) ; sans arc il est toujours là, comme avant. */
+    private fun astreVisible(): Float = if (arc) etat.astreVisible.toFloat() else 1f
 
     /**
      * L'astre : sur son arc (Sérénité), de 12 % à 88 % de la largeur selon la part du jour (ou de
@@ -388,8 +384,17 @@ class PaysageCiel(
         /**
          * Les poids des quatre ciels peints (nuit, aube, jour, coucher) pour un soleil à [e]
          * degrés : le matin la nuit jusqu'à −12°, vers l'aube jusqu'à −3°, l'aube jusqu'à +3°, vers
-         * le jour jusqu'à +12° ; le soir l'inverse, par le coucher.
+         * le jour jusqu'à +12° ; le soir l'inverse, par le coucher ; autour de midi et de minuit,
+         * les deux mêlés selon la part du [matin] (CielContinu.partMatin).
          */
+        fun poidsDesCiels(e: Double, matin: Double): DoubleArray {
+            if (matin >= 1.0) return poidsDesCiels(e, true)
+            if (matin <= 0.0) return poidsDesCiels(e, false)
+            val m = poidsDesCiels(e, true)
+            val s = poidsDesCiels(e, false)
+            return DoubleArray(4) { matin * m[it] + (1 - matin) * s[it] }
+        }
+
         fun poidsDesCiels(e: Double, matin: Boolean): DoubleArray {
             val p = DoubleArray(4)
             val chaud = if (matin) 1 else 3

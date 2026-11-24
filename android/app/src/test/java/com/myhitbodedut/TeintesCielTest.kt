@@ -52,8 +52,14 @@ class TeintesCielTest {
         }
     }
 
-    /** Les hauteurs du soleil parcourues : de la nuit noire au plein jour, tous les 4°. */
-    private val hauteurs = (-24..60 step 4).map { it.toDouble() } + listOf(-1.0, 1.0, 2.0, 5.0)
+    /**
+     * Les hauteurs du soleil parcourues : de la nuit noire (−20°) au plein jour (+60°), degré par
+     * degré ; et quelques quarts de degré autour du lever, où tout change vite.
+     */
+    private val hauteurs = (-20..60).map { it.toDouble() } + listOf(-3.25, -2.75, -0.75, -0.25, 0.25, 0.75, 1.25, 2.75)
+
+    /** Le matin, le soir, et leur passage autour de midi et de minuit (CielContinu.partMatin). */
+    private val matins = listOf(1.0, 0.0, 0.5)
 
     @Test
     fun `chaque texte reste lisible sur le ciel, a toute heure, lueur nuages et collines compris`() {
@@ -62,7 +68,7 @@ class TeintesCielTest {
         assertTrue("palettes introuvables", tous.size >= 2 * 6 * 6)
         tous.forEach { k ->
             hauteurs.forEach { e ->
-                listOf(true, false).forEach { matin ->
+                matins.forEach { matin ->
                     val t = TeintesCiel.pourCiel(e, matin, k.sombre, k.encres, k.papier)
                     // Tout le dégradé, et au-delà ; sous la lueur au plus fort, puis le bord et le corps des nuages.
                     val fonds = (0..64).map { t.degrade(it / 50f) }.flatMap { fond ->
@@ -75,13 +81,51 @@ class TeintesCielTest {
                     fonds.forEach { c ->
                         k.encres.forEach { en ->
                             val r = TeintesCiel.contraste(en.couleur, c)
-                            if (r < en.seuil) fautes += "${k.nom} $e° ${if (matin) "matin" else "soir"} : %06X sur %06X = %.2f < %.1f".format(en.couleur and 0xFFFFFF, c and 0xFFFFFF, r, en.seuil)
+                            if (r < en.seuil) fautes += "${k.nom} $e° matin $matin : %06X sur %06X = %.2f < %.1f".format(en.couleur and 0xFFFFFF, c and 0xFFFFFF, r, en.seuil)
                         }
                     }
                 }
             }
         }
         assertTrue("contrastes insuffisants sur le ciel :\n" + fautes.distinct().take(40).joinToString("\n"), fautes.isEmpty())
+    }
+
+    /**
+     * Les teintes adaptées au thème glissent elles aussi d'une minute à l'autre : des journées
+     * entières, minute par minute, aux couleurs d'origine et à celles du téléphone du
+     * propriétaire (fond bleu, boutons turquoise), dans les deux thèmes.
+     */
+    @Test
+    fun `les teintes glissent minute par minute, dans les deux themes`() {
+        val k = cas().filter { it.nom.startsWith("Fond.Vert × Accent.Vert") || it.nom.startsWith("Fond.Bleu × Accent.Turquoise") }
+        assertEquals(4, k.size)
+        fun saut(a: Int, b: Int) = intArrayOf(0, 8, 16).maxOf { kotlin.math.abs(((a shr it) and 0xFF) - ((b shr it) and 0xFF)) }
+        val fautes = mutableListOf<String>()
+        val jours = listOf(
+            Triple("Jérusalem", doubleArrayOf(31.778, 35.235), java.time.LocalDate.of(2026, 11, 24)),
+            Triple("Paris", doubleArrayOf(48.857, 2.352), java.time.LocalDate.of(2026, 6, 21)),
+            Triple("Stockholm", doubleArrayOf(59.33, 18.07), java.time.LocalDate.of(2026, 12, 21)),
+            Triple("Tromsø", doubleArrayOf(69.649, 18.955), java.time.LocalDate.of(2026, 6, 21)),
+        )
+        jours.forEach { (nom, ll, jour) ->
+            val debut = jour.atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
+            val etats = (0..24 * 60).map { EtatCiel.de(Soleil.position(debut + it * 60_000L, ll[0], ll[1]), 15) }
+            k.forEach { c ->
+                var avant: TeintesCiel.Page? = null
+                etats.forEachIndexed { m, e ->
+                    val t = TeintesCiel.pourCiel(e.hauteur, e.matin, c.sombre, c.encres, c.papier)
+                    val a = avant
+                    if (a != null) {
+                        val s = listOf(saut(a.haut, t.haut), saut(a.milieu, t.milieu), saut(a.bas, t.bas), saut(a.collineLoin, t.collineLoin), saut(a.collinePres, t.collinePres)).max()
+                        if (s > 12) fautes += "$nom $jour ${c.nom} ${m / 60} h ${m % 60} UTC, %.2f° : saut de $s".format(e.hauteur)
+                        val o = maxOf(kotlin.math.abs(a.lueurAlpha - t.lueurAlpha), kotlin.math.abs(a.bordAlpha - t.bordAlpha), kotlin.math.abs(a.corpsAlpha - t.corpsAlpha))
+                        if (o > 0.1f) fautes += "$nom $jour ${c.nom} ${m / 60} h ${m % 60} UTC, %.2f° : opacités sautent de %.2f".format(e.hauteur, o)
+                    }
+                    avant = t
+                }
+            }
+        }
+        assertTrue("à-coups des teintes :\n" + fautes.take(30).joinToString("\n"), fautes.isEmpty())
     }
 
     /** La palette d'origine, vert : le ciel s'y voit bien, et chaque moment a sa couleur. */

@@ -71,23 +71,28 @@ object TeintesCiel {
     private const val ETOILE_CLAIRE = 0xFF7884C4.toInt()
 
     /**
-     * Le ciel quand le soleil est à [hauteur] degrés, le [matin] ou le soir (CielContinu), sous
-     * des encres [encres] (claires si [sombre], sombres sinon). Si aucune teinte ne les laisse
-     * lisibles (palette future trop exigeante), le ciel reste le [papier].
+     * Le ciel quand le soleil est à [hauteur] degrés, avec la part du [matin] (1 le matin, 0 le
+     * soir, CielContinu.partMatin), sous des encres [encres] (claires si [sombre], sombres
+     * sinon). Si aucune teinte ne les laisse lisibles (palette future trop exigeante), le ciel
+     * reste le [papier].
      */
-    fun pourCiel(hauteur: Double, matin: Boolean, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
-        val cle = Cle(CielContinu.arrondi(hauteur), matin, sombre, encres, papier)
-        return memoire[cle] ?: calculer(cle.hauteur, matin, sombre, encres, papier).also {
+    fun pourCiel(hauteur: Double, matin: Double, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
+        val cle = Cle(CielContinu.arrondi(hauteur), (matin.coerceIn(0.0, 1.0) * 20).roundToInt() / 20.0, sombre, encres, papier)
+        return memoire[cle] ?: calculer(cle.hauteur, cle.matin, sombre, encres, papier).also {
             if (memoire.size >= 16) memoire.clear()
             memoire[cle] = it
         }
     }
 
-    /** Les ciels déjà calculés : l'accueil revoit le sien chaque minute, au quart de degré. */
-    private data class Cle(val hauteur: Double, val matin: Boolean, val sombre: Boolean, val encres: List<Encre>, val papier: Int)
+    /** Le [matin] ou le soir, sans passage. */
+    fun pourCiel(hauteur: Double, matin: Boolean, sombre: Boolean, encres: List<Encre>, papier: Int): Page =
+        pourCiel(hauteur, if (matin) 1.0 else 0.0, sombre, encres, papier)
+
+    /** Les ciels déjà calculés : l'accueil revoit le sien chaque minute, au quart de degré et au vingtième du matin. */
+    private data class Cle(val hauteur: Double, val matin: Double, val sombre: Boolean, val encres: List<Encre>, val papier: Int)
     private val memoire = HashMap<Cle, Page>()
 
-    private fun calculer(e: Double, matin: Boolean, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
+    private fun calculer(e: Double, matin: Double, sombre: Boolean, encres: List<Encre>, papier: Int): Page {
         val borne = borne(encres, sombre)
         // Les arrêts, puis la vérification sur tout le dégradé : entre deux arrêts lisibles, le
         // mélange peut perdre un rien de luminance. On reprend alors avec plus de réserve.
@@ -101,14 +106,16 @@ object TeintesCiel {
 
         // Les nuages d'abord, ils passent partout : le bord éclairé (dessous), puis le corps
         // par-dessus. En thème sombre le corps est une silhouette plus sombre que le ciel, seul
-        // son bord s'allume ; en thème clair il est pâle.
+        // son bord s'allume ; en thème clair, corps et bord sont pâles, assez pour se poser
+        // pleinement sous les encres sombres (le bord doré plus sombre, de quelques centièmes
+        // d'opacité seulement, passait d'un coup à 0,8 vers 8°, TeintesCielTest).
         var bord = CielContinu.NUAGE_BORD.a(e)
         var corps = CielContinu.NUAGE_CORPS.a(e)
         val plusSombre = echantillons.minOf { luminance(it) }
         if (sombre) corps = aLuminance(corps, plusSombre * 0.6)
         else {
             if (luminance(corps) < borne + 0.08) corps = aLuminance(corps, minOf(borne + 0.08, 1.0))
-            if (luminance(bord) < borne - 0.25) bord = aLuminance(bord, borne - 0.25)
+            if (luminance(bord) < borne + 0.03) bord = aLuminance(bord, minOf(borne + 0.03, 1.0))
         }
         val bordAlpha = opaciteMax(if (sombre) 0.5f else 0.8f) { a -> tous(echantillons, bord, a) }
         val sousBord = echantillons.map { melange(it, bord, bordAlpha.toDouble()) }
@@ -169,7 +176,7 @@ object TeintesCiel {
     }
 
     /** Les trois arrêts du dégradé ; chaque cran de [reserve] les éloigne un peu plus de la borne. */
-    private fun calculerArrets(e: Double, matin: Boolean, sombre: Boolean, borne: Double, reserve: Int): IntArray {
+    private fun calculerArrets(e: Double, matin: Double, sombre: Boolean, borne: Double, reserve: Int): IntArray {
         val departs = CielContinu.brutes(e, matin)
         val parts = CielContinu.partsSombre(e)
         val chaleur = CielContinu.chaleur(e)

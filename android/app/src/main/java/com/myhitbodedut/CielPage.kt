@@ -52,7 +52,7 @@ class CielPage(private val d: Float) : Drawable() {
     var defilement = 0
         set(v) { if (field != v) { field = v; invalidateSelf() } }
 
-    var etat: EtatCiel = EtatCiel(30.0, true, 0.3, 0.5, 15)
+    var etat: EtatCiel = EtatCiel(30.0, -45.0, 0.3, 0.5, 15)
         private set
     var teintes: TeintesCiel.Page? = null
         private set
@@ -108,7 +108,7 @@ class CielPage(private val d: Float) : Drawable() {
     private var plan: Plan? = null
 
     private class Plan(
-        val astreX: Float, val astreY: Float, val avecAstre: Boolean, val estSoleil: Boolean, val astreAlpha: Float,
+        val astreX: Float, val astreY: Float, val avecAstre: Boolean, val estSoleil: Boolean, val astreAlpha: Float, val lueurAlpha: Float,
         val etoiles: FloatArray, val libres: BooleanArray, val limite: Float,
         val anneaux: Path?,
         /** Pour chaque nuage : sa hauteur (px) et s'il reste loin de tout texte (couleurs vives). */
@@ -155,12 +155,11 @@ class CielPage(private val d: Float) : Drawable() {
         val j = jauge
         val e = etat.hauteur
         // Le soleil jusqu'à 3° sous l'horizon ; ensuite la lune, à la hauteur inversée du soleil.
-        val estSoleil = CielContinu.soleilPlutotQueLune(e)
+        val estSoleil = etat.estSoleil
         val r = rayonAstre(estSoleil)
         val progres = if (estSoleil) etat.progresJour else etat.progresNuit
         val haut = CielContinu.elevationDessinee(if (estSoleil) e else -e)
         val place = if (j != null) PlanCiel.arc(progres, haut, j, w, r, r * PlanCiel.COURONNE, zones, d) else null
-        val alpha = if (estSoleil) CielContinu.soleilVisible(e) else CielContinu.luneVisible(e)
         val (nombre, limite) = PlanCiel.etoiles(w / d, hv / d)
         val etoiles = CielVivant.etoiles(nombre, GRAINE, if (sombre) 0.7f else 1.0f, if (sombre) 1.7f else 2.0f)
         val libres = PlanCiel.libres(etoiles, w, hv * limite, zones + listOfNotNull(j), d)
@@ -176,7 +175,8 @@ class CielPage(private val d: Float) : Drawable() {
             nuagesY[i] = y
             nuagesVifs[i] = j != null && PlanCiel.bandeLibre(y, y + haut + PlanCiel.BORD_DP * d, zones)
         }
-        return Plan(place?.get(0) ?: 0f, place?.get(1) ?: 0f, place != null, estSoleil, alpha.toFloat(), etoiles, libres, limite, anneaux, nuagesY, nuagesVifs)
+        return Plan(place?.get(0) ?: 0f, place?.get(1) ?: 0f, place != null, estSoleil, etat.astreVisible.toFloat(), etat.lueurVisible.toFloat(),
+            etoiles, libres, limite, anneaux, nuagesY, nuagesVifs)
     }
 
     /** Le dégradé, au quart de la taille : il n'a que des transitions douces, l'agrandissement filtré ne se voit pas. */
@@ -376,7 +376,7 @@ class CielPage(private val d: Float) : Drawable() {
         // le disque ; puis les nuages, qui passent devant lui.
         val dedans = canvas.save()
         plan.anneaux?.let { canvas.clipOutPath(it) }
-        if (plan.avecAstre && plan.astreAlpha > 0f) {
+        if (plan.avecAstre && plan.lueurAlpha > 0f) {
             val x = plan.astreX
             val y = plan.astreY
             val h = halo
@@ -384,8 +384,7 @@ class CielPage(private val d: Float) : Drawable() {
                 val k = if (marche) CielVivant.tailleHalo(s) else 1f
                 val demi = h.width / 2f * k
                 cadre.set(x - demi, y - demi, x + demi, y + demi)
-                val visible = if (plan.estSoleil) maxOf(plan.astreAlpha, CielContinu.lueurVisible(e).toFloat()) else plan.astreAlpha
-                motif.alpha = ((if (marche) CielVivant.eclatHalo(s) else 1f) * visible * 255).toInt()
+                motif.alpha = ((if (marche) CielVivant.eclatHalo(s) else 1f) * plan.lueurAlpha * 255).toInt()
                 canvas.drawBitmap(h, null, cadre, motif)
             }
             val rr = rayons
@@ -486,21 +485,23 @@ object PlanCiel {
      * 0, le lever) à celle de droite ([progres] 1, le coucher), en passant derrière les anneaux
      * vers le milieu du jour ; la hauteur ([hauteur] 0 : l'horizon, au bas des anneaux ; 1 : le
      * haut des anneaux) suit celle du soleil. La couronne ([couronne]) reste dans la hauteur des
-     * anneaux. Null si elle toucherait un texte, ou si le disque sortirait de l'écran.
+     * anneaux. Null si elle toucherait un texte. Sur un écran étroit, où la marge des anneaux est
+     * plus mince que le disque, il s'arrête au bord de l'écran (il y disparaissait, puis surgissait
+     * d'un coup une heure après le lever).
      *
      * L'abscisse s'attarde dans les marges : x = centre ∓ écart × |cos(π·progres)|^0,4.
      */
     fun arc(progres: Double, hauteur: Double, jauge: Zone, largeur: Float, r: Float, couronne: Float, zones: List<Zone>, d: Float): FloatArray? {
+        if (largeur < 2 * r) return null
         val cx = (jauge.gauche + jauge.droite) / 2f
         val gauche = jauge.gauche / 2f
         val droite = (jauge.droite + largeur) / 2f
         val u = kotlin.math.cos(Math.PI * progres.coerceIn(0.0, 1.0))
         val pousse = Math.pow(kotlin.math.abs(u), 0.4).toFloat()
-        val x = if (u >= 0) cx - (cx - gauche) * pousse else cx + (droite - cx) * pousse
+        val x = (if (u >= 0) cx - (cx - gauche) * pousse else cx + (droite - cx) * pousse).coerceIn(r, largeur - r)
         val bas = jauge.bas - couronne
         val hautArc = jauge.haut + couronne
         val y = bas - (bas - hautArc).coerceAtLeast(0f) * hauteur.coerceIn(0.0, 1.0).toFloat()
-        if (x - r < 0 || x + r > largeur) return null
         if (zones.any { it.touche(x, y, couronne) }) return null
         return floatArrayOf(x, y)
     }

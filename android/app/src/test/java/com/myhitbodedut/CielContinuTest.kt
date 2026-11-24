@@ -1,67 +1,28 @@
 package com.myhitbodedut
 
-import com.kosherjava.zmanim.util.NOAACalculator
+import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.util.Calendar
-import java.util.TimeZone
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.math.abs
+import kotlin.math.hypot
 
 /**
- * Le ciel continu (24/11) : le soleil (Soleil, contre NOAACalculator de KosherJava), les clés de
- * couleurs (CielContinu) sans saut d'une minute à l'autre, les étapes du jour (nuit noire, bleu du
- * crépuscule, rouges, jaunes, heure dorée, bleu du jour, orange, violet), la lune du mois hébreu,
- * et l'arc de l'astre (PlanCiel.arc). Les mêmes cas côté web (ciel.test.mjs).
+ * Le ciel continu (24/11) : les clés de couleurs (CielContinu) sans saut d'une minute à l'autre,
+ * sur des journées entières simulées minute par minute (y compris là où le soleil reste bas à
+ * midi ou haut à minuit, au nord), le matin et le soir et leur passage, les étapes du jour (nuit
+ * noire, bleu du crépuscule, rouges, jaunes, heure dorée, bleu du jour, orange, violet), la lune
+ * du mois hébreu contre le molad et la lune vraie, et l'arc de l'astre (PlanCiel.arc). Le soleil
+ * lui-même : SoleilTest. Les mêmes cas côté web (ciel.test.mjs).
  */
 class CielContinuTest {
 
     private fun canal(c: Int, d: Int) = (c shr d) and 0xFF
-
-    @Test
-    fun `la hauteur du soleil est celle de KosherJava`() {
-        val lieux = listOf(31.778 to 35.235, 48.857 to 2.352, 40.713 to -74.006, -33.869 to 151.209, 59.33 to 18.07)
-        val utc = TimeZone.getTimeZone("UTC")
-        lieux.forEach { (lat, lon) ->
-            for (jour in listOf(15, 100, 172, 265, 355)) {
-                for (heure in 0 until 24 step 3) {
-                    val cal = Calendar.getInstance(utc).apply { clear(); set(2026, Calendar.JANUARY, 1, heure, 17, 0); add(Calendar.DAY_OF_YEAR, jour) }
-                    val attendu = NOAACalculator.getSolarElevation(cal, lat, lon)
-                    val calcule = Soleil.position(cal.timeInMillis, lat, lon).hauteur
-                    assertTrue("$lat,$lon jour $jour $heure h : $calcule au lieu de $attendu", abs(calcule - attendu) < 0.6)
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `le soleil se leve, passe au meridien et se couche`() {
-        // Jérusalem, 24 novembre 2026 (UTC+2) : lever vers 6 h 20, midi vers 11 h 33 (37,6°), coucher vers 16 h 32.
-        val jerusalem = { h: Int, m: Int -> Soleil.position(java.time.ZonedDateTime.of(2026, 11, 24, h, m, 0, 0, java.time.ZoneId.of("Asia/Jerusalem")).toInstant().toEpochMilli(), 31.778, 35.235) }
-        val matin = jerusalem(6, 20)
-        assertTrue(abs(matin.hauteur) < 1.5 && matin.matin && matin.progresJour < 0.03)
-        val midi = jerusalem(11, 33)
-        assertTrue(midi.hauteur in 36.0..39.0 && abs(midi.progresJour - 0.5) < 0.02)
-        val soir = jerusalem(16, 32)
-        assertTrue(abs(soir.hauteur) < 1.5 && !soir.matin && soir.progresJour > 0.97)
-        val minuit = jerusalem(23, 33)
-        assertTrue(minuit.hauteur < -60 && !minuit.jour && abs(minuit.progresNuit - 0.5) < 0.03)
-    }
-
-    @Test
-    fun `sans lieu, un soleil moyen sur les heures d avant`() {
-        assertEquals(0.0, Soleil.parHeure(6.5).hauteur, 1e-9)
-        assertEquals(0.0, Soleil.parHeure(18.5).hauteur, 1e-9)
-        assertEquals(50.0, Soleil.parHeure(12.5).hauteur, 1e-9)
-        // L'aube commençait à 5 h et le coucher finissait à 20 h : le soleil y est vers −19°.
-        assertEquals(-19.1, Soleil.parHeure(5.0).hauteur, 0.2)
-        assertEquals(-19.1, Soleil.parHeure(20.0).hauteur, 0.2)
-        assertTrue(Soleil.parHeure(9.0).matin && !Soleil.parHeure(15.0).matin)
-        assertEquals(0.5, Soleil.parHeure(12.5).progresJour, 1e-9)
-        assertEquals(0.5, Soleil.parHeure(0.5).progresNuit, 1e-9)
-    }
 
     @Test
     fun `aucune minute ne saute`() {
@@ -77,14 +38,124 @@ class CielContinuTest {
                 e += 0.25
             }
         }
-        // Un quart de degré, c'est une minute ou deux de soleil : les dosages aussi glissent.
+        // Un quart de degré, c'est une minute ou deux de soleil : les dosages aussi glissent (la
+        // lueur, la plus vive, s'éteint en 3° : 0,125 par quart de degré au plus).
         var e = -30.0
         while (e <= 70.0) {
-            listOf(CielContinu::etoiles, CielContinu::nuages, CielContinu::rayons, CielContinu::soleilVisible, CielContinu::luneVisible, CielContinu::chaleur).forEach { f ->
-                assertTrue("$e°", abs(f(e + 0.25) - f(e)) < 0.1)
+            listOf(CielContinu::etoiles, CielContinu::nuages, CielContinu::rayons, CielContinu::soleilVisible, CielContinu::luneVisible, CielContinu::lueurVisible, CielContinu::chaleur).forEach { f ->
+                assertTrue("$e°", abs(f(e + 0.25) - f(e)) <= 0.13)
             }
             e += 0.25
         }
+    }
+
+    @Test
+    fun `le matin et le soir se rejoignent a midi et a minuit`() {
+        // Le matin, tout le matin ; le soir, tout le soir ; moitié-moitié au méridien.
+        assertEquals(1.0, CielContinu.partMatin(-90.0), 1e-12)
+        assertEquals(1.0, CielContinu.partMatin(-15.0), 1e-12)
+        assertEquals(0.0, CielContinu.partMatin(90.0), 1e-12)
+        assertEquals(0.0, CielContinu.partMatin(15.0), 1e-12)
+        listOf(0.0, 180.0, -180.0).forEach { assertEquals(0.5, CielContinu.partMatin(it), 1e-12) }
+        assertEquals(1.0, CielContinu.partMatin(-165.0), 1e-12)
+        assertEquals(0.0, CielContinu.partMatin(165.0), 1e-12)
+        // Sans saut de −180° à 180° (minuit), ni d'un dixième de degré à l'autre.
+        var h = -180.0
+        while (h < 180.0) {
+            assertTrue("$h", abs(CielContinu.partMatin(h + 0.1) - CielContinu.partMatin(h)) < 0.01)
+            h += 0.1
+        }
+        assertEquals(CielContinu.partMatin(-179.99), CielContinu.partMatin(179.99), 2e-3)
+        // Le mélange passe entre les deux suites ; aux bouts, ce sont elles.
+        for (e in listOf(-10.0, -4.0, 0.0, 3.0, 7.0)) {
+            val m = CielContinu.brutes(e, true)
+            val s = CielContinu.brutes(e, false)
+            val mi = CielContinu.brutes(e, 0.5)
+            for (i in 0..2) for (d in intArrayOf(0, 8, 16)) {
+                assertTrue(canal(mi[i], d) in minOf(canal(m[i], d), canal(s[i], d))..maxOf(canal(m[i], d), canal(s[i], d)))
+            }
+            assertTrue(CielContinu.brutes(e, 1.0).contentEquals(m) && CielContinu.brutes(e, 0.0).contentEquals(s))
+        }
+    }
+
+    // --- Des journées entières, minute par minute --------------------------------------------
+
+    private class Lieu(val nom: String, val lat: Double, val lon: Double, val fuseau: String)
+
+    private val lieux = listOf(
+        Lieu("Jérusalem", 31.778, 35.235, "Asia/Jerusalem"), Lieu("Paris", 48.857, 2.352, "Europe/Paris"),
+        Lieu("New York", 40.713, -74.006, "America/New_York"), Lieu("Sydney", -33.869, 151.209, "Australia/Sydney"),
+        // Au nord : le soleil de midi reste sous 12° l'hiver, celui de minuit au-dessus de −18° l'été.
+        Lieu("Stockholm", 59.33, 18.07, "Europe/Stockholm"), Lieu("Moscou", 55.756, 37.617, "Europe/Moscow"),
+        // Nuit polaire et jour polaire.
+        Lieu("Tromsø", 69.649, 18.955, "Europe/Oslo"),
+    )
+    private val jours = listOf(LocalDate.of(2026, 3, 20), LocalDate.of(2026, 6, 21), LocalDate.of(2026, 11, 24), LocalDate.of(2026, 12, 21))
+
+    /** Chaque minute d'un jour local, de minuit à minuit. */
+    private fun journee(l: Lieu, jour: LocalDate): List<EtatCiel> {
+        val debut = jour.atStartOfDay(ZoneId.of(l.fuseau)).toInstant().toEpochMilli()
+        return (0..24 * 60).map { EtatCiel.de(Soleil.position(debut + it * 60_000L, l.lat, l.lon), 15) }
+    }
+
+    private fun saut(a: Int, b: Int) = intArrayOf(0, 8, 16).maxOf { abs(canal(a, it) - canal(b, it)) }
+
+    @Test
+    fun `des journees entieres sans a-coup, au nord comme au sud`() {
+        val fautes = mutableListOf<String>()
+        lieux.forEach { l ->
+            jours.forEach { jour ->
+                val etats = journee(l, jour)
+                for (m in 1 until etats.size) {
+                    val a = etats[m - 1]
+                    val b = etats[m]
+                    val ca = CielContinu.brutes(a.hauteur, a.matin)
+                    val cb = CielContinu.brutes(b.hauteur, b.matin)
+                    val s = (0..2).maxOf { saut(ca[it], cb[it]) }
+                    if (s > 8) fautes += "${l.nom} $jour ${m / 60} h ${m % 60} : %.2f° → %.2f°, matin %.2f → %.2f, saut de $s".format(a.hauteur, b.hauteur, a.matin, b.matin)
+                    // L'astre paraît et s'efface en douceur, même au jour et à la nuit polaires (le
+                    // soleil le plus rapide, à l'équateur, monte d'un quart de degré par minute).
+                    if (abs(a.astreVisible - b.astreVisible) > 0.13 || abs(a.lueurVisible - b.lueurVisible) > 0.13) {
+                        fautes += "${l.nom} $jour ${m / 60} h ${m % 60} : l'astre %.2f → %.2f, sa lueur %.2f → %.2f".format(a.astreVisible, b.astreVisible, a.lueurVisible, b.lueurVisible)
+                    }
+                }
+            }
+        }
+        assertTrue("à-coups :\n" + fautes.take(30).joinToString("\n"), fautes.isEmpty())
+    }
+
+    @Test
+    fun `l astre ne saute pas d un bord a l autre`() {
+        // Le Pixel 6 de la fin du fichier, sans texte à côté des anneaux : l'astre visible, hors du
+        // disque des anneaux, avance d'au plus quelques dp par minute ; 4 dp sous nos latitudes,
+        // le double les jours d'une heure ou deux du grand nord (Tromsø fin novembre), où il
+        // traverse tout son arc en une heure.
+        val fautes = mutableListOf<String>()
+        val cx = (jauge.gauche + jauge.droite) / 2
+        val cy = (jauge.haut + jauge.bas) / 2
+        val rayonAnneaux = (jauge.droite - jauge.gauche) / 2
+        fun place(e: EtatCiel): FloatArray? {
+            val soleil = e.estSoleil
+            val p = PlanCiel.arc(if (soleil) e.progresJour else e.progresNuit, CielContinu.elevationDessinee(if (soleil) e.hauteur else -e.hauteur),
+                jauge, largeur, r, couronne, textes, d) ?: return null
+            // Caché derrière les anneaux, il peut passer vite : on ne le voit pas.
+            return if (hypot(p[0] - cx, p[1] - cy) + r < rayonAnneaux) null else p
+        }
+        lieux.forEach { l ->
+            jours.forEach { jour ->
+                val etats = journee(l, jour)
+                for (m in 1 until etats.size) {
+                    val a = etats[m - 1]
+                    val b = etats[m]
+                    if (a.astreVisible < 0.05 || b.astreVisible < 0.05 || a.estSoleil != b.estSoleil) continue
+                    val pa = place(a) ?: continue
+                    val pb = place(b) ?: continue
+                    val pas = hypot(pb[0] - pa[0], pb[1] - pa[1]) / d
+                    if (pas > 8f) fautes += "${l.nom} $jour ${m / 60} h ${m % 60} : ${if (a.estSoleil) "le soleil" else "la lune"} fait %.1f dp".format(pas)
+                }
+            }
+        }
+        assertTrue("sauts de l'astre :\n" + fautes.take(30).joinToString("\n"), fautes.isEmpty())
     }
 
     @Test
@@ -117,6 +188,35 @@ class CielContinuTest {
         assertEquals(0xFFFFFFFF.toInt(), CielContinu.NUAGE_CORPS.a(30.0))
         val dore = CielContinu.NUAGE_BORD.a(3.0)
         assertTrue(canal(dore, 16) > canal(dore, 0) + 80)
+    }
+
+    @Test
+    fun `la lune du mois hebreu est celle du molad, et a peu pres la vraie`() {
+        // Chaque soir de 2026 et 2027 à 21 h à Jérusalem : le jour hébreu affiché (celui qui a
+        // commencé à la tombée de la nuit, ZmanimVignette.jourHebreuAffiche), l'âge que la lune en
+        // reçoit, l'âge depuis le molad du mois (KosherJava) et celui de la lune moyenne (nouvelle
+        // lune du 6/1/2000 à 18 h 14 UTC, lunaison de 29,530589 jours).
+        val zone = ZoneId.of("Asia/Jerusalem")
+        var jour = LocalDate.of(2026, 1, 1)
+        while (jour.year < 2028) {
+            val soir = ZonedDateTime.of(jour.atTime(21, 0), zone)
+            val hebreu = jour.plusDays(1)
+            val l = CielContinu.lune(CalendrierJuif.jour(hebreu, true).jourHebreu)
+            val molad = JewishCalendar(hebreu).moladAsDate.time
+            val depuisMolad = (soir.toInstant().toEpochMilli() - molad) / 86_400_000.0
+            val vraie = ((soir.toInstant().toEpochMilli() / 86_400_000.0 + 2440587.5 - 2451550.26) % CielContinu.MOIS_LUNAIRE + CielContinu.MOIS_LUNAIRE) % CielContinu.MOIS_LUNAIRE
+            fun ecart(x: Double, y: Double) = abs(x - y).let { minOf(it, CielContinu.MOIS_LUNAIRE - it) }
+            // Roch 'Hodech tombe le jour du molad ou jusqu'à deux jours après ; la lune moyenne
+            // s'écarte de la vraie d'une demi-journée environ : deux jours d'âge au plus, la part
+            // éclairée à 0,2 près.
+            assertTrue("$jour : âge ${l.age} pour ${"%.2f".format(depuisMolad)} jours depuis le molad", ecart(l.age, depuisMolad) <= 2.1)
+            assertTrue("$jour : âge ${l.age} pour une lune moyenne de ${"%.2f".format(vraie)} jours", ecart(l.age, vraie) <= 2.1)
+            jour = jour.plusDays(1)
+        }
+        // La pleine lune du 24 novembre 2026 (vers 15 h UTC) : le soir, 15 Kislev, la lune est pleine.
+        val ce = CalendrierJuif.jour(LocalDate.of(2026, 11, 25), true)
+        assertEquals(15, ce.jourHebreu)
+        assertTrue(CielContinu.lune(ce.jourHebreu).eclairee > 0.98)
     }
 
     @Test
@@ -160,6 +260,20 @@ class CielContinuTest {
         // De gauche à droite, toujours.
         var x = -1f
         for (k in 0..40) { val n = arc(k / 40.0, 0.3)!![0]; assertTrue(n >= x); x = n }
+    }
+
+    @Test
+    fun `sur un ecran etroit, l astre s arrete au bord au lieu de disparaitre`() {
+        // 320 dp de large, des anneaux de 290 dp : 15 dp de marge, moins que le disque.
+        val etroit = PlanCiel.Zone(15 * d, 180 * d, 305 * d, 440 * d)
+        var x = -1f
+        for (k in 0..40) {
+            val p = PlanCiel.arc(k / 40.0, 0.2, etroit, 320 * d, r, couronne, emptyList(), d)
+            assertNotNull("progrès ${k / 40.0}", p)
+            assertTrue(p!![0] >= r - 0.01f && p[0] <= 320 * d - r + 0.01f && p[0] >= x)
+            x = p[0]
+        }
+        assertEquals(r, PlanCiel.arc(0.0, 0.0, etroit, 320 * d, r, couronne, emptyList(), d)!![0], 0.01f)
     }
 
     @Test
