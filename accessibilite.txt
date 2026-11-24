@@ -1,0 +1,366 @@
+== fr-tablette-accueil
+== fr-tablette-accueil-volet
+MUET Switch music_switch_main (1336, 1901, 1440, 1997)
+== fr-tablette-livres
+== fr-tablette-chemin
+== fr-tablette-reglages
+PETIT 52x32dp Switch hilloulot_switch «Afficher les hilloulot»
+== fr-tablette-choix-version
+== fr-tablette-seance
+== fr-tablette-bravo
+== fr-tablette-journal
+== fr-tablette-parcours
+== fr-tablette-hizouk
+== fr-tablette-conseils
+== fr-tablette-rappels
+MUET Switch reminders_switch (1428, 473, 1532, 569)
+== fr-tablette-musique
+MUET Switch music_switch (1428, 392, 1532, 488)
+MUET Switch music_shuffle (1428, 689, 1532, 785)
+PETIT 732x40dp LinearLayout music_ambiance «Ambiance Silence»
+MUET RadioButton track_radio (56, 1122, 152, 1218)
+MUET RadioButton track_radio (56, 1266, 152, 1362)
+MUET RadioButton track_radio (56, 1410, 152, 1506)
+MUET RadioButton track_radio (56, 1554, 152, 1650)
+MUET RadioButton track_radio (56, 1698, 152, 1794)
+MUET RadioButton track_radio (56, 1842, 152, 1938)
+MUET RadioButton track_radio (56, 1986, 152, 2082)
+MUET RadioButton track_radio (56, 2130, 152, 2226)
+MUET RadioButton track_radio (56, 2274, 152, 2370)
+== fr-tablette-siddour
+PETIT 270x36dp TextView siddur_heading_nusah «Noussa’h séfarade (Edot HaMizr»
+== fr-tablette-siddour-lecture
+PETIT 38x48dp TextView  «הודו»
+PETIT 21x48dp TextView  «עמידה»
+PETIT 800x44dp TextView  «פתיחת אליהו»
+PETIT 800x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-tefilot
+== fr-tablette-tehilim
+PETIT 134x38dp TextView  «76»
+PETIT 134x38dp TextView  «77»
+PETIT 134x38dp TextView  «78»
+PETIT 134x38dp TextView  «79»
+PETIT 134x38dp TextView  «80»
+== fr-tablette-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-tikkun
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-bibliotheque
+== fr-tablette-livres
+== fr-tablette-source
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-zmanim
+PETIT 145x36dp TextView zmanim_lieu «Paris · Diaspora»
+== fr-tablette-vol
+PETIT 704x44dp LinearLayout  «Méthode et sources»
+== fr-tablette-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+PETIT 704x44dp LinearLayout  «Affichage de la boussole Le pe»
+== fr-tablette-calendrier
+PETIT 98x27dp TextView  «Hébraïque»
+PETIT 92x27dp TextView  «Grégorien»
+PETIT 672x28dp TextView  «Aujourd’hui»
+== fr-tablette-halakha
+PETIT 672x46dp EditText  «Rechercher dans la halakha»
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-hilloulot
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-recherche
+PETIT 672x46dp EditText recherche_champ «Rechercher dans le siddour, le»
+== fr-tablette-paliers
+PETIT 704x6dp LinearLayout  «5 premiers jours de hitbodedou»
+== fr-tablette-applications
+MUET CheckBox app_check (1472, 462, 1568, 558)
+MUET CheckBox app_check (1472, 606, 1568, 702)
+MUET CheckBox app_check (1472, 750, 1568, 846)
+MUET CheckBox app_check (1472, 894, 1568, 990)
+MUET CheckBox app_check (1472, 1038, 1568, 1134)
+MUET CheckBox app_check (1472, 1182, 1568, 1278)
+MUET CheckBox app_check (1472, 1326, 1568, 1422)
+MUET CheckBox app_check (1472, 1470, 1568, 1566)
+MUET CheckBox app_check (1472, 1614, 1568, 1710)
+MUET CheckBox app_check (1472, 1758, 1568, 1854)
+MUET CheckBox app_check (1472, 1902, 1568, 1998)
+MUET CheckBox app_check (1472, 2046, 1568, 2142)
+MUET CheckBox app_check (1472, 2190, 1568, 2286)
+MUET CheckBox app_check (1472, 2334, 1568, 2430)
+PETIT 48x41dp CheckBox app_check «»
+MUET CheckBox app_check (1472, 2478, 1568, 2560)
+== fr-tablette-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x48dp TextView  «Plus de ’hizouk»
+== fr-tablette-version-pile-2
+PETIT 12x48dp TextView  «Tous les zmanim»
+== fr-tablette-version-pile-3
+PETIT 12x49dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x48dp TextView  «Mon parcours»
+== fr-tablette-version-pile-4
+== fr-tablette-version-bento
+== fr-tablette-version-instant
+PETIT 176x44dp TextView  «Commencer · 15 min»
+== fr-tablette-version-serenite
+PETIT 85x44dp TextView  «Modifier»
+PETIT 24x40dp TextView  «Lire»
+PETIT 55x40dp TextView  «Tout voir»
+PETIT 55x40dp TextView  «Tout voir»
+== fr-tablette-couchee-accueil
+PETIT 40x77dp LinearLayout  «dimanche 15, faite · 15 min»
+PETIT 40x77dp LinearLayout  «lundi 16, faite · 20 min»
+PETIT 40x77dp LinearLayout  «mardi 17, à faire»
+== fr-tablette-couchee-accueil-volet
+PETIT 40x77dp LinearLayout  «dimanche 15, faite · 15 min»
+PETIT 40x77dp LinearLayout  «lundi 16, faite · 20 min»
+PETIT 40x77dp LinearLayout  «mardi 17, à faire»
+MUET Switch music_switch_main (1752, 941, 1856, 1037)
+== fr-tablette-couchee-livres
+PETIT 135x44dp LinearLayout chizuk_button «חיזוק»
+PETIT 136x44dp LinearLayout tips_button «עצות»
+== fr-tablette-couchee-chemin
+== fr-tablette-couchee-reglages
+PETIT 52x47dp Switch ecran_allume_switch «Garder l’écran allumé pendant »
+== fr-tablette-couchee-choix-version
+== fr-tablette-couchee-seance
+== fr-tablette-couchee-bravo
+== fr-tablette-couchee-journal
+== fr-tablette-couchee-parcours
+== fr-tablette-couchee-hizouk
+== fr-tablette-couchee-conseils
+== fr-tablette-couchee-rappels
+MUET Switch reminders_switch (2388, 384, 2492, 480)
+== fr-tablette-couchee-musique
+MUET Switch music_switch (2388, 303, 2492, 399)
+MUET Switch music_shuffle (2388, 600, 2492, 696)
+PETIT 1144x40dp LinearLayout music_ambiance «Ambiance Silence»
+MUET RadioButton track_radio (193, 1033, 289, 1129)
+MUET RadioButton track_radio (193, 1177, 289, 1273)
+MUET RadioButton track_radio (193, 1321, 289, 1417)
+== fr-tablette-couchee-siddour
+PETIT 270x36dp TextView siddur_heading_nusah «Noussa’h séfarade (Edot HaMizr»
+PETIT 544x39dp LinearLayout  «קְרִיאַת שְׁמַע שֶׁעַל הַמִּטָ»
+== fr-tablette-couchee-siddour-lecture
+PETIT 38x48dp TextView  «הודו»
+PETIT 38x48dp TextView  «וידוי»
+PETIT 44x48dp TextView  «אשרי»
+PETIT 12x48dp TextView  «קוה»
+PETIT 1212x44dp TextView  «פתיחת אליהו»
+PETIT 1212x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-couchee-tefilot
+PETIT 1180x16dp LinearLayout  «»
+MUET LinearLayout  (169, 1568, 2528, 1600)
+== fr-tablette-couchee-tehilim
+== fr-tablette-couchee-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-couchee-tikkun
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-couchee-bibliotheque
+== fr-tablette-couchee-livres
+== fr-tablette-couchee-source
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-couchee-zmanim
+PETIT 145x36dp TextView zmanim_lieu «Paris · Diaspora»
+== fr-tablette-couchee-vol
+PETIT 572x38dp LinearLayout  «Méthode et sources»
+== fr-tablette-couchee-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+PETIT 198x36dp Button  «Actualiser ma position»
+== fr-tablette-couchee-calendrier
+PETIT 98x27dp TextView  «Hébraïque»
+PETIT 92x27dp TextView  «Grégorien»
+PETIT 540x28dp TextView  «Aujourd’hui»
+== fr-tablette-couchee-halakha
+PETIT 540x46dp EditText  «Rechercher dans la halakha»
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-couchee-hilloulot
+PETIT 604x34dp TextView  «Les sages du jour sur hyomi.or»
+PETIT 56x36dp TextView  «Aa»
+== fr-tablette-couchee-recherche
+PETIT 540x46dp EditText recherche_champ «Rechercher dans le siddour, le»
+== fr-tablette-couchee-paliers
+PETIT 572x4dp LinearLayout  «15 minutes en un jour, Gagné l»
+== fr-tablette-couchee-applications
+MUET CheckBox app_check (2432, 373, 2528, 469)
+MUET CheckBox app_check (2432, 517, 2528, 613)
+MUET CheckBox app_check (2432, 661, 2528, 757)
+MUET CheckBox app_check (2432, 805, 2528, 901)
+MUET CheckBox app_check (2432, 949, 2528, 1045)
+MUET CheckBox app_check (2432, 1093, 2528, 1189)
+MUET CheckBox app_check (2432, 1237, 2528, 1333)
+MUET CheckBox app_check (2432, 1381, 2528, 1477)
+PETIT 48x38dp CheckBox app_check «»
+MUET CheckBox app_check (2432, 1525, 2528, 1600)
+== fr-tablette-couchee-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x48dp TextView  «Plus de ’hizouk»
+== fr-tablette-couchee-version-pile-2
+PETIT 12x48dp TextView  «Tous les zmanim»
+== fr-tablette-couchee-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x48dp TextView  «Mon parcours»
+== fr-tablette-couchee-version-pile-4
+== fr-tablette-couchee-version-bento
+== fr-tablette-couchee-version-instant
+PETIT 176x44dp TextView  «Commencer · 15 min»
+== fr-tablette-couchee-version-serenite
+PETIT 85x44dp TextView  «Modifier»
+PETIT 24x40dp TextView  «Lire»
+== fr-pliant-accueil
+PETIT 780x36dp Button start_prepare «Sans durée ou autre façon de c»
+== fr-pliant-accueil-volet
+PETIT 780x36dp Button start_prepare «Sans durée ou autre façon de c»
+MUET Switch music_switch_main (1465, 1312, 1602, 1438)
+== fr-pliant-livres
+== fr-pliant-chemin
+== fr-pliant-reglages
+== fr-pliant-choix-version
+== fr-pliant-seance
+== fr-pliant-bravo
+== fr-pliant-journal
+== fr-pliant-parcours
+== fr-pliant-hizouk
+== fr-pliant-conseils
+== fr-pliant-rappels
+MUET Switch reminders_switch (1586, 557, 1723, 683)
+== fr-pliant-musique
+MUET Switch music_switch (1586, 452, 1723, 578)
+MUET Switch music_shuffle (1586, 843, 1723, 969)
+MUET RadioButton track_radio (74, 1409, 200, 1535)
+MUET RadioButton track_radio (74, 1598, 200, 1724)
+MUET RadioButton track_radio (74, 1787, 200, 1913)
+PETIT 864x6dp LinearLayout  «»
+MUET LinearLayout  (42, 1955, 1770, 1966)
+== fr-pliant-siddour
+== fr-pliant-siddour-lecture
+PETIT 8x63dp TextView  «ק״ש וברכותיה»
+== fr-pliant-tefilot
+PETIT 864x35dp LinearLayout  «Ouman, Roch Hachana»
+== fr-pliant-tehilim
+PETIT 148x12dp TextView  «41»
+PETIT 148x12dp TextView  «42»
+PETIT 148x12dp TextView  «43»
+PETIT 148x12dp TextView  «44»
+PETIT 148x12dp TextView  «45»
+== fr-pliant-tehilim-lecture
+== fr-pliant-tikkun
+== fr-pliant-bibliotheque
+== fr-pliant-livres
+== fr-pliant-source
+== fr-pliant-zmanim
+== fr-pliant-vol
+== fr-pliant-boussole
+PETIT 259x30dp Button  «Actualiser ma position»
+== fr-pliant-calendrier
+PETIT 124x34dp TextView  «Hébraïque»
+PETIT 120x34dp TextView  «Grégorien»
+PETIT 738x36dp TextView  «Aujourd’hui»
+== fr-pliant-halakha
+== fr-pliant-hilloulot
+== fr-pliant-recherche
+== fr-pliant-paliers
+PETIT 780x11dp LinearLayout  «15 minutes en un jour, Gagné l»
+== fr-pliant-applications
+MUET CheckBox app_check (1644, 545, 1770, 671)
+MUET CheckBox app_check (1644, 735, 1770, 861)
+MUET CheckBox app_check (1644, 925, 1770, 1051)
+MUET CheckBox app_check (1644, 1115, 1770, 1241)
+MUET CheckBox app_check (1644, 1305, 1770, 1431)
+MUET CheckBox app_check (1644, 1495, 1770, 1621)
+MUET CheckBox app_check (1644, 1685, 1770, 1811)
+MUET CheckBox app_check (1644, 1875, 1770, 2001)
+MUET CheckBox app_check (1644, 2065, 1770, 2176)
+== fr-pliant-version-pile
+PETIT 16x64dp TextView  «Voir la traduction»
+PETIT 16x64dp TextView  «Plus de ’hizouk»
+== fr-pliant-version-pile-2
+PETIT 16x64dp TextView  «Tous les zmanim»
+== fr-pliant-version-pile-3
+PETIT 16x64dp TextView  «Écrire la note du jour»
+PETIT 16x64dp TextView  «Tout le journal»
+PETIT 16x64dp TextView  «Mon parcours»
+== fr-pliant-version-pile-4
+== fr-pliant-version-bento
+== fr-pliant-version-instant
+== fr-pliant-version-serenite
+PETIT 30x52dp TextView  «Lire»
+== fr-couche-accueil
+PETIT 220x40dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 569x38dp Button start_prepare «Sans durée ou autre façon de c»
+== fr-couche-accueil-volet
+PETIT 220x40dp TextView paliers_line «Prochain trophée : 40 minutes »
+PETIT 569x38dp Button start_prepare «Sans durée ou autre façon de c»
+MUET Switch music_switch_main (1864, 492, 2001, 618)
+PETIT 821x16dp LinearLayout start_focus «»
+MUET LinearLayout start_focus (443, 644, 2085, 675)
+== fr-couche-livres
+== fr-couche-chemin
+== fr-couche-reglages
+PETIT 146x34dp Button version_button «Version de l’app : Classique»
+== fr-couche-choix-version
+PETIT 1084x40dp LinearLayout  «Bento. Un tableau de tuiles vi»
+== fr-couche-seance
+PETIT 198x41dp Button simplement_parler «Parler»
+PETIT 198x41dp Button simplement_ecrire «Écrire»
+== fr-couche-bravo
+PETIT 821x42dp Button celebration_share «Partager ma hitbodedout»
+== fr-couche-musique
+MUET Switch music_switch (2174, 388, 2311, 514)
+PETIT 68x46dp Switch music_shuffle «»
+MUET Switch music_shuffle (2174, 779, 2311, 870)
+== fr-couche-siddour-lecture
+PETIT 2x63dp TextView  «קריאת התורה»
+PETIT 1136x1dp TextView  «אחר המזמורים של תיקון לאה המנה»
+== fr-couche-zmanim
+PETIT 405x29dp Button  «✈  En vol»
+PETIT 406x29dp Button  «🧭  Boussole prière»
+== fr-couche-applications
+MUET CheckBox app_check (2232, 471, 2358, 597)
+MUET CheckBox app_check (2232, 661, 2358, 787)
+MUET CheckBox app_check (2232, 851, 2358, 977)
+PETIT 1136x36dp LinearLayout  «Chrome»
+PETIT 63x20dp CheckBox app_check «»
+MUET CheckBox app_check (2232, 1041, 2358, 1080)
+== fr-couche-version-pile
+PETIT 16x64dp TextView  «Voir la traduction»
+== fr-couche-version-pile-2
+== fr-couche-version-pile-3
+PETIT 16x64dp TextView  «Écrire la note du jour»
+PETIT 16x64dp TextView  «Tout le journal»
+== fr-couche-version-pile-4
+== fr-couche-version-bento
+== fr-couche-version-instant
+PETIT 540x6dp LinearLayout  «»
+MUET LinearLayout  (1279, 1069, 2358, 1080)
+== fr-couche-version-serenite
+== soir-version-pile
+PETIT 16x64dp TextView  «Voir la traduction»
+PETIT 16x64dp TextView  «Plus de ’hizouk»
+== soir-version-pile-2
+PETIT 16x64dp TextView  «Tous les zmanim»
+== soir-version-pile-3
+PETIT 16x64dp TextView  «Écrire la note du jour»
+PETIT 16x64dp TextView  «Tout le journal»
+PETIT 16x64dp TextView  «Mon parcours»
+== soir-version-pile-4
+== soir-version-bento
+PETIT 242x28dp FrameLayout  «Siddour»
+PETIT 242x28dp FrameLayout  «Tehilim»
+== soir-version-instant
+== soir-version-serenite
+PETIT 30x52dp TextView  «Lire»
+PETIT 70x2dp TextView  «Tout voir»
+== soir-accueil
+== gestes-barriere-etat
+== gestes-barriere-apercu
+== gestes-barriere-apercu-bas
+== gestes-barriere-reelle
+== gestes-barriere-reelle-bas
+== boutons-barriere-etat
+PETIT 119x32dp Button snooze_length «Durée du report : 15 min»
+== boutons-barriere-apercu
+== boutons-barriere-apercu-bas
+== boutons-barriere-reelle
+== boutons-barriere-reelle-bas
+== gestes-barriere-apres-redemarrage
