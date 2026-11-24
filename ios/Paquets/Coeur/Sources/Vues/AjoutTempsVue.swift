@@ -32,6 +32,9 @@ public struct AjoutTempsFenetres: ViewModifier {
     @Binding private var modele: AjoutTempsModele?
     private let fin: @MainActor (AjoutTempsIssue) -> Void
     @Environment(\.traducteur) private var traducteur
+    /// L'étape dont SwiftUI vient de fermer la fenêtre (un bouton touché) alors que le modèle y est encore, le
+    /// temps d'une écriture : sa fenêtre ne se rouvre pas. Oubliée dès que l'étape change.
+    @State private var fermeeParSwiftUI: AjoutTempsEtape? = nil
 
     public init(modele: Binding<AjoutTempsModele?>, fin: @escaping @MainActor (AjoutTempsIssue) -> Void) {
         _modele = modele
@@ -62,16 +65,24 @@ public struct AjoutTempsFenetres: ViewModifier {
     // MARK: L'étape
 
     /// La fenêtre de cette étape est ouverte. Chaque fenêtre ne se ferme que par ses boutons, qui disent tous au
-    /// modèle quoi faire ; la fermeture que signale SwiftUI après un bouton n'ajoute donc rien.
+    /// modèle quoi faire ; la fermeture que signale SwiftUI après un bouton ne change donc pas le modèle. Elle est
+    /// seulement retenue : une durée choisie s'écrit (await) avant que l'étape change, et une liaison restée vraie
+    /// ferait rouvrir la fenêtre par SwiftUI pendant ce temps.
     private func ouverte(_ etape: AjoutTempsEtape) -> Binding<Bool> {
         let modele = self.modele
-        return Binding(get: { @MainActor in modele?.etape == etape },
-                       set: { @MainActor _ in })
+        let fermee = $fermeeParSwiftUI
+        return Binding(get: { @MainActor in modele?.etape == etape && fermee.wrappedValue != etape },
+                       set: { @MainActor montree in
+                           if !montree {
+                               fermee.wrappedValue = etape
+                           }
+                       })
     }
 
     /// Toutes les fenêtres sont fermées : l'écran qui les a ouvertes reçoit l'issue ; le modèle est rendu tout
     /// de suite, ou après le message bref.
     private func fermees(_ etape: AjoutTempsEtape?) {
+        fermeeParSwiftUI = nil
         guard etape == nil, let ouvert = modele, let issue = ouvert.issue else { return }
         fin(issue)
         if ouvert.confirmation == nil {

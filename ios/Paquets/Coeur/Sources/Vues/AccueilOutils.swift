@@ -116,7 +116,7 @@ enum AccueilDates {
     static func jourEnLettres(_ jour: JourCivil, langue: String) -> String {
         let texte = ecrire(jour, langue: langue) { $0.dateFormat = "EEEE" }
         guard let premiere = texte.first else { return texte }
-        return String(premiere).capitalized(with: Locale(identifier: langue)) + texte.dropFirst()
+        return String(premiere).capitalized(with: Locale(identifier: langue)) + String(texte.dropFirst())
     }
 
     /// « mardi 24 novembre 2026 » : la date en entier (`FormatStyle.FULL`), titre de la boîte d'un jour.

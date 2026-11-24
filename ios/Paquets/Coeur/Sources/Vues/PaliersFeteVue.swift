@@ -169,6 +169,6 @@ struct PaliersRayons: View {
             Gradient.Stop(color: couleur, location: 0.35),
             Gradient.Stop(color: couleur.opacity(0), location: 1),
         ])
-        c.fill(secteurs, with: .radialGradient(AnyGradient(degrade), center: centre, startRadius: 0, endRadius: r))
+        c.fill(secteurs, with: .radialGradient(degrade, center: centre, startRadius: 0, endRadius: r))
     }
 }

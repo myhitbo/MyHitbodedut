@@ -243,7 +243,7 @@ struct ReglagesCarteMode: View {
     /// Le début et la fin de la fenêtre, deux boutons de valeur côte à côte.
     private var fenetre: some View {
         let intitule = t("settings_window")
-        return ReglagesLigne(intitule, margeHaute: false) {
+        return ReglagesLigne(intitule) {
             HStack(spacing: 8) {
                 bouton(.debut, intitule: intitule)
                 bouton(.fin, intitule: intitule)
@@ -384,8 +384,9 @@ struct ReglagesCarteAutorisations: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             // VoiceOver : le titre, l'état, puis la raison.
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(verbatim: traducteur.texte(ligne.titre) + ", " + traducteur.texte(ligne.etat)
-                                     + ", " + traducteur.texte(ligne.pourquoi)))
+            .accessibilityLabel(Text(verbatim: [ligne.titre, ligne.etat, ligne.pourquoi]
+                .map { traducteur.texte($0) }
+                .joined(separator: ", ")))
             Button {
                 accorder(ligne.autorisation)
             } label: {

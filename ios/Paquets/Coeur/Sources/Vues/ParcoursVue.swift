@@ -360,6 +360,7 @@ struct ParcoursHumeurVue: View {
                 .font(.subheadline)
                 .foregroundStyle(Teinte(.muted))
                 .multilineTextAlignment(.center)
+                .padding(.vertical, 8)
         }
         .frame(maxWidth: .infinity)
         .parcoursCarte()

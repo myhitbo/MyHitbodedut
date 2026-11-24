@@ -20,19 +20,33 @@ let enChantierEcrans: [String] = [
 let enChantierEcransTests: [String] = [
 ]
 let enChantierVues: [String] = [
+    "AccueilCartes.swift",
     "AccueilJauge.swift",
     "AccueilOutils.swift",
+    "AccueilSections.swift",
+    "AccueilVue.swift",
     "AjoutTempsVue.swift",
+    "CalendrierVue.swift",
+    "CelebrationVue.swift",
     "JournalGraphiqueVue.swift",
     "JournalNoteVue.swift",
     "JournalVue.swift",
+    "LieuChoixVue.swift",
+    "NoteVue.swift",
     "ParcoursVue.swift",
+    "PartageJourVue.swift",
     "ReglagesCartes.swift",
     "ReglagesComposants.swift",
     "ReglagesFenetres.swift",
+    "ReglagesVue.swift",
     "SeanceCartes.swift",
+    "SeanceVue.swift",
     "TextesSourceDuJourVue.swift",
     "TextesVue.swift",
+    "ZmanimBlocs.swift",
+    "ZmanimCommun.swift",
+    "ZmanimLune.swift",
+    "ZmanimOngletVue.swift",
 ]
 
 let package = Package(

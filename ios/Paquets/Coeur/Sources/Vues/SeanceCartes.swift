@@ -32,6 +32,19 @@ enum SeanceTemps {
     }
 }
 
+/// Les mesures d'Android qui dépendent de l'écran (values-w…dp).
+enum SeanceMesures {
+    /// La marge des côtés (dimen edge) : 16 sous 360 points de large, 24 sur un téléphone, 48 dès 600, 120 dès 840,
+    /// 320 dès 1200 ; 24 tant que la largeur n'est pas mesurée.
+    static func marge(largeur: CGFloat) -> CGFloat {
+        if largeur >= 1200 { return 320 }
+        if largeur >= 840 { return 120 }
+        if largeur >= 600 { return 48 }
+        if largeur >= 360 || largeur == 0 { return 24 }
+        return 16
+    }
+}
+
 // MARK: Le bouton à contour menthe
 
 /// Le bouton à contour de la séance (Widget.Material3.Button.OutlinedButton, DurationButton) : une pilule cerclée
