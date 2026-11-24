@@ -56,7 +56,8 @@ struct RechercheModeleTests {
         #expect(modele.etat == .pret)
 
         // La meilleure de cinq mesures : les autres suites tournent en même temps, sur le même acteur principal,
-        // et une seule mesure jugerait leur charge plutôt que la recherche.
+        // et une seule mesure jugerait leur charge plutôt que la recherche. Au simulateur de la CI, cette suite
+        // tourne seule (ios-app.yml) : au milieu des autres, même la meilleure de cinq dépassait 300 ms.
         let horloge = ContinuousClock()
         var meilleure = Duration.seconds(3600)
         for _ in 0..<5 {

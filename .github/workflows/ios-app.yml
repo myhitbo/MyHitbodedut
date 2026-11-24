@@ -63,12 +63,25 @@ jobs:
           xcodebuild -project ios/MyHitbodedut.xcodeproj -scheme MyHitbodedut -configuration Debug \
             -destination "generic/platform=iOS Simulator" CODE_SIGNING_ALLOWED=NO build 2>&1 | tee app.log | grep -E "error:|warning:|BUILD" || true
           grep -q "BUILD SUCCEEDED" app.log
+      # La recherche globale se mesure seule (critère : 300 ms, l'index prêt) : au milieu des 1800 autres tests,
+      # qui tournent en même temps dans le même processus, chaque retour sur le fil principal attendait son tour
+      # (312 à 720 ms au simulateur pour 2,4 ms de recherche sous Linux).
       - name: Tests de Coeur sur le simulateur
         working-directory: ios/Paquets/Coeur
         run: |
           set -o pipefail
-          xcodebuild test -scheme Coeur-Package -destination "id=$SIMULATEUR" 2>&1 | tee tests.log | grep -E "error:|✘|failed|Test run with|TEST (SUCCEEDED|FAILED)" || true
+          xcodebuild test -scheme Coeur-Package -destination "id=$SIMULATEUR" \
+            -skip-testing:EcransTests/RechercheModeleTests 2>&1 | tee tests.log | grep -E "error:|✘|failed|Test run with|TEST (SUCCEEDED|FAILED)" || true
           grep -q "TEST SUCCEEDED" tests.log
+      - name: La recherche globale, mesurée seule
+        working-directory: ios/Paquets/Coeur
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building -scheme Coeur-Package -destination "id=$SIMULATEUR" \
+            -only-testing:EcransTests/RechercheModeleTests 2>&1 | tee recherche.log | grep -E "error:|✘|failed|Test run with|TEST (SUCCEEDED|FAILED)" || true
+          grep -q "TEST SUCCEEDED" recherche.log
+          # La suite a bien tourné (un filtre qui ne trouve rien réussirait sans rien tester).
+          grep -q 'Test uneRechercheRendSesResultatsGroupesEnMoinsDe300ms() passed' recherche.log
       - name: Journaux
         if: always()
         uses: actions/upload-artifact@v4
@@ -77,4 +90,5 @@ jobs:
           path: |
             app.log
             ios/Paquets/Coeur/tests.log
+            ios/Paquets/Coeur/recherche.log
           if-no-files-found: ignore
