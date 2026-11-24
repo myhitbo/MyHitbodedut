@@ -39,7 +39,8 @@ import kotlin.math.roundToInt
  *
  * Le défilement automatique (16/11, DefilementAuto) : un bouton de la barre fait monter le
  * texte tout seul ; pendant qu'il défile, une petite commande remplace la pastille :
- * moins vite, la vitesse, plus vite, arrêter. Toucher le texte l'arrête aussi.
+ * moins vite, la vitesse, plus vite, arrêter. Toucher le texte l'arrête aussi, où que le
+ * doigt se pose (l'indicateur de défilement, par-dessus le texte, voit passer l'appui).
  *
  * Les réglages valent pour tous les écrans de lecture (Store) ; chaque
  * écran redessine son texte dans surChangement, ou laisse [appliquer]
@@ -296,7 +297,10 @@ class ReglagesLecture private constructor(
         }
     }
 
-    /** Un toucher posé sur le texte arrête le défilement : on reprend la main. */
+    /**
+     * Un toucher posé sur le texte arrête le défilement : on reprend la main. Vu par l'indicateur,
+     * par-dessus le texte, avant toute vue du texte qui le prendrait pour elle ([installer]).
+     */
     private fun arreterAuToucher(e: MotionEvent) {
         if (e.actionMasked == MotionEvent.ACTION_DOWN) defilementAuto?.arreter()
     }
@@ -441,7 +445,6 @@ class ReglagesLecture private constructor(
 
     /** Pour un texte qui prend lui-même les touchers (les versets des Tehilim) : il les montre ici. */
     fun toucher(e: MotionEvent) {
-        arreterAuToucher(e)
         toucher.onTouchEvent(e)
     }
 
@@ -454,7 +457,6 @@ class ReglagesLecture private constructor(
         })
         liste.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                arreterAuToucher(e)
                 toucher.onTouchEvent(e)
                 return false
             }
@@ -470,7 +472,6 @@ class ReglagesLecture private constructor(
         // Le texte ne prend pas les touchers : ils arrivent à la vue qui défile,
         // qui les laisse passer (false) après les avoir montrés au détecteur.
         defilement.setOnTouchListener { _, e ->
-            arreterAuToucher(e)
             toucher.onTouchEvent(e)
             false
         }
@@ -522,7 +523,9 @@ class ReglagesLecture private constructor(
             }
             val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, garderPlace)
             reglages.defilementAuto = DefilementAuto(activite, defilement) { reglages.surDefilement(it) }
-            reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement)
+            reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement).apply {
+                surToucher = { reglages.arreterAuToucher(it) }
+            }
             if (defilement is RecyclerView) reglages.suivreListe(defilement) else reglages.suivreDefilement(defilement)
             // De quoi lire la fin du texte au-dessus de la barre ouverte.
             val d = activite.resources.displayMetrics.density

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -19,6 +20,10 @@ import androidx.recyclerview.widget.RecyclerView
  * Posé par-dessus la vue qui défile, dans le cadre de l'activité, à sa place exacte
  * (suivie à chaque mise en page). Une RecyclerView donne sa propre estimation de
  * position ; une ScrollView, sa position et la hauteur de son contenu.
+ *
+ * Par-dessus le texte, il voit passer chaque toucher avant lui ([surToucher]), sans le
+ * prendre : le défilement automatique s'arrête ainsi au doigt posé n'importe où sur le
+ * texte, même sur une vue qui prend le toucher pour elle (vérification du 24/11).
  */
 class IndicateurDefilement(context: Context, private val defilement: View) : View(context) {
 
@@ -34,6 +39,20 @@ class IndicateurDefilement(context: Context, private val defilement: View) : Vie
         isFocusable = false
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
         alpha = 0f
+    }
+
+    /** Montré de chaque toucher posé sur le texte, avant le texte lui-même. */
+    var surToucher: ((MotionEvent) -> Unit)? = null
+
+    /**
+     * Le toucher est montré, puis rendu (false) : le cadre le passe aux vues de dessous, comme
+     * si l'indicateur n'était pas là. La vue qui défile, elle, ne voit pas l'appui qu'une vue
+     * touchable du texte a pris (une carte dépliable des hilloulot, un bouton de la halakha, un
+     * lien) : le défilement automatique continuait sous le doigt, même pendant qu'il glissait.
+     */
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        surToucher?.invoke(event)
+        return false
     }
 
     /** offset, étendue visible, étendue totale ; null si rien ne défile. */
