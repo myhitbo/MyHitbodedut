@@ -78,8 +78,9 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild test-without-building -scheme Coeur-Package -destination "id=$SIMULATEUR" \
-            -only-testing:EcransTests/RechercheModeleTests 2>&1 | tee recherche.log | grep -E "error:|✘|failed|Test run with|TEST (SUCCEEDED|FAILED)" || true
-          grep -q "TEST SUCCEEDED" recherche.log
+            -only-testing:EcransTests/RechercheModeleTests 2>&1 | tee recherche.log | grep -E "error:|✘|failed|Test run with|TEST EXECUTE (SUCCEEDED|FAILED)" || true
+          # test-without-building finit par « TEST EXECUTE SUCCEEDED ».
+          grep -q "TEST EXECUTE SUCCEEDED" recherche.log
           # La suite a bien tourné (un filtre qui ne trouve rien réussirait sans rien tester).
           grep -q 'Test uneRechercheRendSesResultatsGroupesEnMoinsDe300ms() passed' recherche.log
       - name: Journaux
