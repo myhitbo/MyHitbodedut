@@ -1089,6 +1089,131 @@ def seance_en_cours(prefixe):
     c.retour(2)
 
 
+def prefs_seance():
+    """Debut, fin et duree de la seance en cours, lus dans les preferences de l'application."""
+    x = c.lire_prefs()
+    def lire(nom):
+        m = re.search(r'name="%s" value="(-?\d+)"' % nom, x)
+        return int(m.group(1)) if m else None
+    return lire("session_started_at"), lire("session_ends_at"), lire("session_target"), lire("session_suite_etat")
+
+
+def notification_suite():
+    """La notification « Continuer ? », telle que dumpsys la decrit, ou une chaine vide."""
+    d = c.sh(f"dumpsys notification --noredact | grep -A40 'pkg={c.PKG}' | grep -B2 -A30 'session_suite'")
+    return d
+
+
+def suite(prefixe="suite"):
+    """« Continuer ? » dix secondes avant la fin (demande du 24/11), sur l'ecran et dans la
+    notification ; et la duree d'une seance qui ne suit plus l'heure du telephone (decision 5)."""
+    parler("en")
+    c.regler({"target_minutes": ("int", 1), "proposer_suite": ("boolean", "true"),
+              "hide_countdown": ("boolean", "false")})
+    # 1. L'option, avant de commencer.
+    c.arreter()
+    c.activite("SessionActivity")
+    c.pause(2.0)
+    racine = prise(f"{prefixe}-option", attente=1.0)
+    option = c.trouver(rid="session_suite", defilements=4)
+    if option is None:
+        faute(f"{prefixe} : SUITE l'option « continuer ? » n'est pas sur l'ecran de seance")
+    elif option.get("checked") != "true":
+        faute(f"{prefixe} : SUITE l'option n'est pas allumee par defaut")
+    else:
+        prise(f"{prefixe}-option-vue", attente=0.5)
+
+    # 2. Sur l'ecran : la question, puis « Oui, 5 min de plus ».
+    c.arreter()
+    c.activite("SessionActivity", "--ez start_now true")
+    c.pause(3.0)
+    debut, fin, _, _ = prefs_seance()
+    c.log("  seance 1 :", debut, fin)
+    c.pause(49.0)
+    racine = prise(f"{prefixe}-question-ecran", attente=0.5, verifier=False)
+    textes_vus = " | ".join(textes(racine)) if racine is not None else ""
+    c.log("  ecran :", textes_vus[:400])
+    if "Continue the hitbodedut?" not in textes_vus:
+        faute(f"{prefixe} : SUITE la question n'est pas venue sur l'ecran de seance a 10 s de la fin")
+    for attendu in ("Yes, 5 min more", "Yes, 1 min more", "Yes, with no end", "No, finish"):
+        if attendu not in textes_vus:
+            faute(f"{prefixe} : SUITE il manque la reponse « {attendu} » sur l'ecran")
+    if not notification_suite():
+        faute(f"{prefixe} : SUITE pas de notification « Continuer ? »")
+    c.toucher(text="Yes, 5 min more", attente=2.0)
+    _, fin2, cible2, etat2 = prefs_seance()
+    c.log("  apres « 5 min de plus » : fin", fin2, "cible", cible2, "etat", etat2)
+    if not (fin and fin2 and 4.9 * 60_000 <= fin2 - fin <= 5.1 * 60_000):
+        faute(f"{prefixe} : SUITE « 5 min de plus » n'a pas prolonge la seance de 5 min ({fin} -> {fin2})")
+    if c.trouver(text="Continue the hitbodedut?") is not None:
+        faute(f"{prefixe} : SUITE la question reste ouverte apres la reponse")
+    prise(f"{prefixe}-prolongee", attente=1.0)
+    c.pause(12.0)
+    if prefs_seance()[0] is None:
+        faute(f"{prefixe} : SUITE la seance prolongee s'est arretee a la fin prevue d'abord")
+
+    # 3. Decision 5 : l'heure du telephone avance d'une heure, la seance n'en est pas changee.
+    avant = prefs_seance()
+    c.sh("date $(date -d @$(( $(date +%s) + 3600 )) +%m%d%H%M%Y.%S) >/dev/null 2>&1 || true")
+    c.pause(7.0)
+    apres = prefs_seance()
+    racine = prise(f"{prefixe}-heure-avancee", attente=0.5, verifier=False)
+    c.log("  heure avancee d'une heure :", c.sh("date").strip(), "| seance :", apres, "| ecran :", " | ".join(textes(racine))[:200] if racine is not None else "")
+    if apres[0] is None:
+        faute(f"{prefixe} : SUITE la seance s'est terminee quand l'heure du telephone a avance d'une heure")
+    mardi_matin()
+    # Terminer la seance 1, a la main.
+    if c.toucher(rid="session_secondary", defilements=2, attente=1.0):
+        c.toucher(rid="button1", attente=2.0)
+
+    # 4. Dans la notification, l'application en arriere-plan : « Sans fin ».
+    c.arreter()
+    c.activite("SessionActivity", "--ez start_now true")
+    c.pause(3.0)
+    c.sh("input keyevent KEYCODE_HOME")
+    c.pause(48.0)
+    n = notification_suite()
+    c.log("  notification :", n.replace("\n", " ")[:900])
+    if "Continue the hitbodedut?" not in n:
+        faute(f"{prefixe} : SUITE pas de notification « Continuer ? » application fermee")
+    c.sh("cmd statusbar expand-notifications")
+    c.pause(1.5)
+    photo(f"{prefixe}-notification")
+    if c.toucher(text="No end", attente=2.0) or c.toucher(text="NO END", attente=2.0):
+        c.pause(3.0)
+        _, fin3, cible3, _ = prefs_seance()
+        c.log("  apres « sans fin » : fin", fin3, "cible", cible3)
+        if fin3 not in (None, 0) or cible3 not in (None, 0):
+            faute(f"{prefixe} : SUITE « Sans fin » n'a pas rendu la seance ouverte (fin {fin3}, cible {cible3})")
+        c.pause(15.0)
+        if prefs_seance()[0] is None:
+            faute(f"{prefixe} : SUITE la seance « sans fin » s'est arretee a la fin prevue")
+    else:
+        faute(f"{prefixe} : SUITE le bouton « No end » n'est pas dans la notification")
+    c.sh("cmd statusbar collapse")
+    c.arreter()
+    c.activite("SessionActivity")
+    c.pause(2.0)
+    if c.toucher(rid="session_secondary", defilements=2, attente=1.0):
+        c.toucher(rid="button1", attente=2.0)
+
+    # 5. « Non, terminer » : la seance va a son terme et s'inscrit.
+    c.arreter()
+    c.activite("SessionActivity", "--ez start_now true")
+    c.pause(50.0)
+    c.toucher(text="No, finish", attente=1.0)
+    c.pause(14.0)
+    reste = prefs_seance()
+    prise(f"{prefixe}-non-fin", attente=1.0, verifier=False)
+    c.log("  apres « non » et la fin :", reste)
+    if reste[0] is not None:
+        faute(f"{prefixe} : SUITE apres « Non », la seance ne s'est pas terminee a son terme")
+    if notification_suite():
+        faute(f"{prefixe} : SUITE la notification « Continuer ? » reste apres la fin")
+    c.retour(3)
+    parler("fr")
+
+
 def armer():
     """Le mode allume, deux ou trois applications choisies, les deux acces accordes, la plage autour de maintenant."""
     presentes = [l.split(":", 1)[1].strip() for l in c.sh("pm list packages").splitlines() if ":" in l]
@@ -1469,7 +1594,7 @@ def main():
     table = {"ecrans-fr": p_fr, "ecrans-he": p_he, "ecrans-ar": p_ar, "ecrans-es": p_es, "versions": p_versions,
              "nuit": p_nuit, "seance": p_seance, "barriere": p_barriere, "presentation": p_presentation,
              "tablette": p_tablette, "couche": p_couche, "ciel-de-nuit": p_ciel, "redemarrage": p_redemarrage,
-             "rendu-gl": p_rendu_gl}
+             "rendu-gl": p_rendu_gl, "suite": lambda: suite()}
     for v in ("pile", "bento", "instant", "serenite"):
         table[v] = (lambda v=v: version_seule(v))
     for nom in passes:
