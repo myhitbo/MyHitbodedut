@@ -83,8 +83,11 @@ public struct SeanceVue: View {
                     }
                 }
                 .opacity(modele.opaciteEffacable)
-                // Effacé au calme, il sort aussi de l'accessibilité (VoiceOver allumé, le calme ne vient pas).
-                .accessibilityHidden(modele.calme)
+                // Effacé au calme, il sort aussi de l'accessibilité (VoiceOver allumé, le calme ne vient pas). Hors du
+                // calme, rien n'est posé (`isEnabled`) : `accessibilityHidden(false)` sur ce conteneur l'emportait sur
+                // le `accessibilityHidden(true)` de ses enfants, et l'image décorative de la hitbodedout guidée
+                // revenait à VoiceOver, sans description (LibellesTests, runs 45410886554 et 45457864463).
+                .accessibilityHidden(true, isEnabled: modele.calme)
                 .animation(.easeInOut(duration: Double(modele.calme ? SeanceModele.fonduCalme : SeanceModele.fonduReveil) / 1000),
                            value: modele.calme)
             }

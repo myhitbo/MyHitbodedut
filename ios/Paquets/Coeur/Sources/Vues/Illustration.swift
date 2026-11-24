@@ -42,9 +42,10 @@ public struct Illustration: View {
                     .frame(height: hauteur)
                     .accessibilityLabel(libelle)
             } else {
-                // Décorative dès l'image (`Image(decorative:)`), et cachée en plus : le seul `accessibilityHidden`
-                // laissait à VoiceOver l'image de la hitbodedout guidée de la séance, sans description, dans l'app
-                // compilée en Release (l'audit des descriptions de LibellesTests, 24/11 ; pas en Debug).
+                // Décorative dès l'image (`Image(decorative:)`), et cachée en plus. Un conteneur qui pose
+                // `accessibilityHidden(false)` l'emporte sur les deux : c'est ce qui rendait à VoiceOver l'image de la
+                // hitbodedout guidée (la séance, hors du calme ; LibellesTests, 24/11). Un conteneur qui ne cache que
+                // parfois passe par `accessibilityHidden(true, isEnabled:)`.
                 Illustration.decorative(image)
                     .resizable()
                     .scaledToFit()

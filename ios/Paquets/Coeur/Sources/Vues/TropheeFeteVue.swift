@@ -18,8 +18,9 @@ extension View {
     /// La fiche des trophées neufs, posée par la racine par-dessus les onglets (le voile couvre aussi la barre des
     /// onglets et la barre de départ, comme le Dialog d'Android couvre l'activité).
     public func feteDesTrophees(_ fete: TropheeFeteModele) -> some View {
-        // Sous une fiche, l'écran voilé sort de l'accessibilité : VoiceOver et l'audit ne lisent que la fiche.
-        accessibilityHidden(fete.ficheCourante != nil)
+        // Sous une fiche, l'écran voilé sort de l'accessibilité : VoiceOver et l'audit ne lisent que la fiche. Sans
+        // fiche, rien n'est posé (`isEnabled`) : un `accessibilityHidden(false)` l'emporterait sur celui des enfants.
+        accessibilityHidden(true, isEnabled: fete.ficheCourante != nil)
             .overlay {
                 TropheeFeteCouche(fete: fete)
             }
