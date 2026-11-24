@@ -16,6 +16,7 @@ let enChantierSources: [String] = [
 let enChantierTests: [String] = [
 ]
 let enChantierEcrans: [String] = [
+    "DedicaceModele.swift",
 ]
 let enChantierEcransTests: [String] = [
 ]
