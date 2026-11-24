@@ -1196,7 +1196,7 @@ def main():
     # CielVivant). Les animations du systeme, coupees pour tout le parcours, sont retablies le
     # temps de ces etapes : chaque ciel anime est pris deux fois, a six secondes d'ecart (le halo
     # est alors au creux de son souffle, les nuages ont avance de 18 dp, les etoiles ont change
-    # d'eclat). Les heures sans lieu choisi (CielDuJour.parHeure) : aube 6 h 30, jour 12 h,
+    # d'eclat), et en rafale pour un petit film. Les heures sans lieu choisi (CielDuJour.parHeure) : aube 6 h 30, jour 12 h,
     # coucher 18 h 30, nuit 21 h 30.
     PHASES_CIEL = (("aube", "0630"), ("jour", "1200"), ("coucher", "1830"), ("nuit", "2130"))
 
@@ -1214,6 +1214,17 @@ def main():
         log(f"  cadence {nom} ({secondes} s) :", " | ".join(garde))
         with open(os.path.join(OUT, f"{nom}-cadence.txt"), "w") as f:
             f.write(f"{secondes} s\n" + "\n".join(garde) + "\n\n" + stats)
+
+    def rafale(nom, images=16, ecart=0.3):
+        """Des captures a la suite (une toutes les 0,7 s environ), pour en faire un petit film :
+        sur l'emulateur, screenrecord ne recoit plus d'image apres deux secondes, alors que
+        l'application dessine bien ses 20 images par seconde (cadence, 24/11)."""
+        for i in range(images):
+            png = adb("exec-out", "screencap", "-p", binary=True)
+            with open(os.path.join(OUT, f"{nom}-{i:02d}.png"), "wb") as f:
+                f.write(png)
+            pause(ecart)
+        log(f"  rafale {nom} : {images} images")
 
     def jour_du_ciel(prefixe, langues, modes, deux_fois):
         for lg in langues:
@@ -1240,18 +1251,13 @@ def main():
             lancer(attente=6)
             defiler(True)
             capture("31-fr-sombre-aube-bas", attente=1.0)
-            # Un court film, la nuit puis le jour, en theme sombre (ce que le proprietaire voit chaque jour).
+            # La nuit puis le jour en theme sombre (ce que le proprietaire voit chaque jour) : la cadence
+            # de dessin, puis une rafale de captures pour un petit film.
             for phase, heure in (("nuit", "2130"), ("jour", "1200")):
                 sh(f"date 1124{heure}2026.00")
                 lancer(attente=6)
                 cadence(f"31-{phase}")
-                sh("rm -f /sdcard/ciel.mp4")
-                sh("screenrecord --time-limit 8 /sdcard/ciel.mp4", timeout=30)
-                pause(1.0)
-                video = adb("exec-out", "cat", "/sdcard/ciel.mp4", binary=True)
-                with open(os.path.join(OUT, f"31-film-{phase}.mp4"), "wb") as f:
-                    f.write(video)
-                log(f"  film {phase} : {len(video)} octets")
+                rafale(f"31-rafale-{phase}")
             # Animations coupees, puis economie de batterie : le ciel immobile, identique a six secondes d'ecart.
             sh("date 112421302026.00")
             animations(False)
@@ -1312,12 +1318,7 @@ def main():
             sh("date 112412002026.00")
             regler({"version_app": ("string", "serenite")})
             lancer(attente=6)
-            sh("rm -f /sdcard/paysage.mp4")
-            sh("screenrecord --time-limit 8 /sdcard/paysage.mp4", timeout=30)
-            pause(1.0)
-            video = adb("exec-out", "cat", "/sdcard/paysage.mp4", binary=True)
-            with open(os.path.join(OUT, "33-film-serenite-jour.mp4"), "wb") as f:
-                f.write(video)
+            rafale("33-rafale-serenite-jour")
         finally:
             animations(False)
             regler({"version_app": ("string", "classique")})
