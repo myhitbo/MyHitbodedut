@@ -1115,12 +1115,16 @@ def suite(prefixe="suite"):
     c.activite("SessionActivity")
     c.pause(2.0)
     racine = prise(f"{prefixe}-option", attente=1.0)
-    option = c.trouver(rid="session_suite", defilements=4)
+    option = None
+    if c.trouver(rid="session_suite", defilements=4) is not None:
+        racine = c.dump()
+        option = next((n for n in racine.iter("node") if (n.get("resource-id") or "").endswith(":id/session_suite")), None) if racine is not None else None
     if option is None:
         faute(f"{prefixe} : SUITE l'option « continuer ? » n'est pas sur l'ecran de seance")
-    elif option.get("checked") != "true":
-        faute(f"{prefixe} : SUITE l'option n'est pas allumee par defaut")
     else:
+        c.log("  option :", option.get("text"), "| cochee :", option.get("checked"))
+        if option.get("checked") != "true":
+            faute(f"{prefixe} : SUITE l'option n'est pas allumee par defaut")
         prise(f"{prefixe}-option-vue", attente=0.5)
 
     # 2. Sur l'ecran : la question, puis « Oui, 5 min de plus ».
