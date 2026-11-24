@@ -169,6 +169,17 @@ struct VolModeleTests {
         #expect(identifiants == attendus)
         let plan = modele.notificationsPrevues.map { $0.prevue }
         #expect(prevues == plan)
+        // La règle est celle du planificateur de Coeur (PlanNotifications.vol) : mêmes identifiants, instants,
+        // titres, textes et secondes lignes.
+        let trajet = try #require(modele.plan)
+        let coeur = PlanNotifications.vol(reglages: banc.magasin.reglages, rappels: gardes, maintenant: modele.maintenant,
+                                          heure: { t in VolMiseEnPage.texteDeuxHeures(trajet, t, .neutre) })
+        let deCoeur = coeur.map { NotificationPrevue(identifiant: $0.identifiant, instant: $0.instant, titre: $0.titre,
+                                                     corps: $0.texte) }
+        #expect(prevues == deCoeur)
+        let suites = modele.notificationsPrevues.map { $0.suite }
+        let suitesCoeur = coeur.map { $0.suite }
+        #expect(suites == suitesCoeur)
         // Tefilat haDerekh, cinq minutes après le décollage.
         let premiere = try #require(prevues.first)
         #expect(premiere.titre == Libelle("vol_rappel_derekh_titre"))
@@ -222,15 +233,21 @@ struct VolModeleTests {
             #expect(modele.sources == [Libelle("zmanim_a_valider"), Libelle("vol_source_aeroports")])
             let fiabilite = try cartes(modele).fiabilite
             #expect(fiabilite.direct == nil)
-            // La loupe, un numéro sans route, la position en direct : rien ne part.
-            modele.modifierVol()
-            modele.phrase = "LY81"
-            await modele.remplir()
-            await modele.loupe()
+            // La position en direct, en plein vol : rien ne part.
             modele.indicatifSaisi = "ELY81"
             await modele.demanderDirect()
             #expect(modele.dialogue == nil)
+            #expect(modele.plan?.releve == nil)
+            // Puis, le vol effacé, un numéro sans route (que la loupe chercherait avec un relais), et la loupe.
+            await modele.effacer()
+            modele.phrase = "LY81"
+            await modele.remplir()
+            #expect(modele.numeroSaisi == "LY81")
+            #expect(modele.depart == nil)
+            await modele.loupe()
+            #expect(modele.dialogue == nil)
             #expect(modele.routeTexte == nil)
+            #expect(!modele.routeEnCours)
         }
         let demandes = await reseau.demandes
         #expect(demandes.isEmpty)
@@ -525,6 +542,39 @@ struct VolModeleTests {
         let aVenir = VolRappels.rappels(calcul, enIsrael: false).filter { $0.instant > modele.maintenant }
         #expect(c.rappels.lignes.count == aVenir.count)
         #expect(c.rappels.aucun == aVenir.isEmpty)
+    }
+
+    @Test func chabbatPendantLeVolLaCarteDesJalons() async throws {
+        // Londres → Tel-Aviv le vendredi 20 novembre 2026, de 9 h (Londres) à 18 h 30 (Israël) : la chki'a passe
+        // sous l'avion vers la Méditerranée orientale, la veille de Chabbat.
+        let lhr = try aeroport("LHR")
+        let tlv = try aeroport("TLV")
+        let vendredi = try #require(JourCivil(iso: "2026-11-20"))
+        let t1 = try #require(Vol.instant(DateHeure(vendredi, heure: 9), lhr))
+        let t2 = try #require(Vol.instant(DateHeure(vendredi, heure: 18, minute: 30), tlv))
+        let reglages = VolStockage.avecPlan(Reglages(), Vol.Plan(numero: "LY318", depart: lhr, arrivee: tlv,
+                                                                 decollage: t1, atterrissage: t2))
+        let banc = try fabriquer("2026-11-19", heure: 8, reglages: reglages)
+        let modele = banc.modele
+        await modele.apparaitre()
+        let calcul = try #require(modele.calcul)
+        let minutes = Reglages().allumage
+        // Diaspora (téléphone à Paris) : les jalons de VolCalendrier, une ligne chacun, dans l'ordre.
+        let attendus = VolCalendrier.jalons(calcul, enIsrael: false, minutes: minutes)
+        let entree = try #require(attendus.first)
+        #expect(entree.type == .entree)
+        #expect(entree.chabbat)
+        let lesCartes = try cartes(modele)
+        let carte = try #require(lesCartes.jalons)
+        #expect(carte.lignes.count == attendus.count)
+        let premiere = try #require(carte.lignes.first)
+        let heure = VolMiseEnPage.texteDeuxHeures(calcul.plan, entree.instant, .neutre)
+        #expect(premiere.texte == Libelle("vol_jalon_entree", .texte("Chabbat"), .texte(heure)))
+        let allumage = try #require(entree.allumage)
+        let heureAllumage = VolMiseEnPage.texteDeuxHeures(calcul.plan, allumage, .neutre)
+        #expect(premiere.allumage == Libelle("vol_jalon_allumage", .texte(String(minutes)), .texte(heureAllumage)))
+        #expect(premiere.position == VolMiseEnPage.position(entree.latitude, entree.longitude, .neutre))
+        #expect(carte.note == Libelle("vol_jalons_note", .libelle(Libelle("vol_jalons_diaspora"))))
     }
 
     @Test func leReleveGpsRecaleLaRoute() async throws {

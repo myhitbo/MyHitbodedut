@@ -228,10 +228,11 @@ struct LectureLigneVue: View {
                     .font(Font.subheadline.bold())
             }
             .foregroundStyle(rendu.titre)
-            .frame(maxWidth: .infinity, minHeight: 56)
             .padding(.horizontal, 24)
             .padding(.top, 8)
             .padding(.bottom, 18)
+            // minHeight d'Android : marges comprises.
+            .frame(maxWidth: .infinity, minHeight: 56)
             .background {
                 LecturePanneau(couleur: rendu.teinte(0x10), haut: false, bas: true, trait: nil)
                     .padding(.horizontal, 8)
@@ -371,9 +372,7 @@ struct LectureRepliVue: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: traducteur.texte(repli.nom) + ", " + traducteur.texte(repli.etat)))
-        .accessibilityAddTraits(.isButton)
     }
 
     /// Le chevron tourne et les lignes glissent en place (260 ms) ; sans animation si « Réduire les animations ».

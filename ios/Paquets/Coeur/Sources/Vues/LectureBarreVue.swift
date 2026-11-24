@@ -86,6 +86,8 @@ private struct LectureBarre: View {
         .background(Teinte(.brand).opacity(SiddourMesures.alpha(0xF2)),
                     in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 2)
+        // Les choix des menus dans l'ordre d'Android (PopupMenu), même ouverts au-dessus du bouton.
+        .menuOrder(.fixed)
         // A− à gauche et A+ à droite, quelle que soit la langue.
         .environment(\.layoutDirection, .leftToRight)
     }

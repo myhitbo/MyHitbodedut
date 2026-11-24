@@ -14,46 +14,12 @@ let avecVues = ProcessInfo.processInfo.environment["COEUR_SANS_VUES"] == nil
 let enChantierSources: [String] = [
 ]
 let enChantierTests: [String] = [
-    "TablesTests.swift",
 ]
 let enChantierEcrans: [String] = [
-    "VolModele.swift",
-    "VolServices.swift",
 ]
 let enChantierEcransTests: [String] = [
-    "VolModeleTests.swift",
 ]
 let enChantierVues: [String] = [
-    "BibliothequeCommun.swift",
-    "BibliothequeEntreeVue.swift",
-    "BibliothequeVue.swift",
-    "BoussoleFeuille.swift",
-    "BoussoleToile.swift",
-    "BoussoleVue.swift",
-    "ChizukVue.swift",
-    "ConseilsVue.swift",
-    "HalakhaCommun.swift",
-    "HalakhaVue.swift",
-    "HilloulotVue.swift",
-    "LectureBarreVue.swift",
-    "LectureEcrans.swift",
-    "LectureLignesVue.swift",
-    "LectureMarquesVue.swift",
-    "LectureVue.swift",
-    "MusiqueMiniLecteurVue.swift",
-    "MusiqueVue.swift",
-    "PaliersFeteVue.swift",
-    "PresentationVue.swift",
-    "RechercheVue.swift",
-    "SiddourVue.swift",
-    "TefilotVue.swift",
-    "TehilimCommun.swift",
-    "TehilimLectureVue.swift",
-    "TehilimVue.swift",
-    "TikkunVue.swift",
-    "TropheeEffets.swift",
-    "TropheeFicheVue.swift",
-    "TropheeObjet.swift",
 ]
 
 let package = Package(

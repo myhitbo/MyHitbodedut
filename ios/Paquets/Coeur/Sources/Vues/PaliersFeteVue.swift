@@ -25,6 +25,12 @@ struct PaliersFeteGradeVue: View {
     /// Les étincelles du nouveau métal, à 1,5 s.
     @State private var etincelles = false
 
+    init(fete: PaliersFeteGrade, formes: TropheeFormes, fermer: @escaping @MainActor () -> Void) {
+        self.fete = fete
+        self.formes = formes
+        self.fermer = fermer
+    }
+
     var body: some View {
         ZStack {
             // Le voile d'un dialogue de Material (scrim à 32 %).

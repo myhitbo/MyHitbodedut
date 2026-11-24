@@ -131,6 +131,13 @@ struct TropheeBarre<Couleur: ShapeStyle>: View {
     @Environment(\.accessibilityReduceMotion) private var reduire
     @State private var montree: Double = 0
 
+    init(fraction: Double, hauteur: CGFloat, couleur: Couleur, monte: Bool) {
+        self.fraction = fraction
+        self.hauteur = hauteur
+        self.couleur = couleur
+        self.monte = monte
+    }
+
     var body: some View {
         Capsule()
             .fill(couleur.opacity(Double(0x30) / 255))
@@ -149,6 +156,10 @@ struct TropheeBarre<Couleur: ShapeStyle>: View {
                 withAnimation(.easeInOut(duration: 0.7)) {
                     montree = fraction
                 }
+            }
+            .onChange(of: fraction) { _, nouvelle in
+                // Une valeur recalculée sans que la barre soit recréée (retour du second plan) : elle la suit.
+                montree = nouvelle
             }
     }
 

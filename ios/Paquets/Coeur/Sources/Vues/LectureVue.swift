@@ -29,6 +29,9 @@ public struct LectureVue: View {
     @State private var vus: [String] = []
     @State private var enBas = false
     @State private var largeur: CGFloat = 390
+    /// Quitté (onPause, onStop) : seul le retour qui suit est un onRestart. Sans lui, un passage par l'état
+    /// inactif (centre de contrôle, appel) referait `revenir()` avec l'instant d'une pause ancienne.
+    @State private var arrete = false
 
     /// `ouvrir` : un renvoi du jour (`.lecture`), ouvert par la pile de navigation de l'app.
     public init(modele: LectureModele, ouvrir: @escaping @MainActor (LectureRoute) -> Void) {
@@ -61,12 +64,12 @@ public struct LectureVue: View {
         }
         // onCreate : une seule fois (le modèle ignore les appels suivants) ; onRestart à chaque retour.
         .task { await modele.charger() }
-        .onAppear { modele.revenir() }
+        .onAppear { revenir() }
         .onDisappear { quitter() }
         .onChange(of: phase) { _, nouvelle in
             switch nouvelle {
             case .background: quitter()
-            case .active: modele.revenir()
+            case .active: revenir()
             default: break
             }
         }
@@ -78,8 +81,16 @@ public struct LectureVue: View {
 
     /// onPause : la place est gardée.
     private func quitter() {
+        arrete = true
         let modele = self.modele
         SiddourTache.lancer { try await modele.quitter() }
+    }
+
+    /// onRestart : seulement au retour d'un arrêt.
+    private func revenir() {
+        guard arrete else { return }
+        arrete = false
+        modele.revenir()
     }
 
     // MARK: Le texte
@@ -194,8 +205,8 @@ private struct LectureBandeau: View {
                 }
             }
             Text(verbatim: modele.titre)
-                .policeHebraique(modele.police, taille: 28, relativeA: .title)
                 .bold()
+                .policeHebraique(modele.police, taille: 28, relativeA: .title)
                 .foregroundStyle(Color.white)
                 .accessibilityAddTraits(.isHeader)
                 .siddourHebreuAuDebut()
@@ -217,22 +228,15 @@ private struct LectureBandeau: View {
         .background { SiddourBandeauFond() }
     }
 
-    /// Les étiquettes en pastilles, de droite à gauche ; VoiceOver lit leur phrase, pas chaque pastille.
+    /// Les étiquettes en pastilles, de droite à gauche ; VoiceOver lit leur phrase, pas chaque pastille. Sur une
+    /// ligne si elles y tiennent, sinon l'une sous l'autre (le ChipGroup d'Android passe à la ligne).
     private var etiquettes: some View {
-        HStack(spacing: 6) {
-            ForEach(Array(modele.etiquettes.enumerated()), id: \.offset) { _, etiquette in
-                Text(verbatim: etiquette)
-                    .font(.footnote)
-                    .foregroundStyle(Color.white)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 4)
-                    .frame(minHeight: 28)
-                    .background(Color.white.opacity(SiddourMesures.alpha(0x26)), in: Capsule())
-                    .overlay {
-                        Capsule().strokeBorder(Color.white.opacity(SiddourMesures.alpha(0x55)), lineWidth: 1)
-                    }
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 6) {
+                pastilles
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                pastilles
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -240,6 +244,23 @@ private struct LectureBandeau: View {
         .environment(\.layoutDirection, .rightToLeft)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: modele.etiquettesDescription))
+    }
+
+    private var pastilles: some View {
+        ForEach(Array(modele.etiquettes.enumerated()), id: \.offset) { _, etiquette in
+            Text(verbatim: etiquette)
+                .font(.footnote)
+                .foregroundStyle(Color.white)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .frame(minHeight: 28)
+                .background(Color.white.opacity(SiddourMesures.alpha(0x26)), in: Capsule())
+                .overlay {
+                    Capsule().strokeBorder(Color.white.opacity(SiddourMesures.alpha(0x55)), lineWidth: 1)
+                }
+        }
     }
 
     /// Un bouton rond de 48 (drawable/bg_rond_bandeau.xml) : blanc à 12 %, cerclé de blanc à 22 %.
@@ -312,7 +333,7 @@ private struct LectureBandeSignets: View {
             modele.allerAuSignet(signet.id)
         } label: {
             Text(verbatim: signet.texte)
-                .font(.hebreu(modele.police, taille: 13))
+                .policeHebraique(modele.police, taille: 13, relativeA: .footnote)
                 .foregroundStyle(actif ? rendu.titre : rendu.discret)
                 .lineLimit(1)
                 .padding(.horizontal, 8)

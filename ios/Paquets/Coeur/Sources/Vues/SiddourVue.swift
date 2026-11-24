@@ -132,7 +132,9 @@ public struct SiddourVue: View {
         }
     }
 
-    /// « סימניות · n › » et l'icône des prières : la feuille des marque-pages du siddour.
+    /// « סימניות · n › » et l'icône des prières : la feuille des marque-pages du siddour. Le texte s'écrit de
+    /// droite à gauche, mais se cale au début de l'écran et l'icône à sa fin, dans le sens de l'app
+    /// (RepriseFavoris.ligne : TEXT_DIRECTION_RTL, TEXT_ALIGNMENT_VIEW_START, icône relative de fin).
     private func ligneSignets(_ signets: SiddourSignets) -> some View {
         Button {
             ouvrir(signets.route)
@@ -141,13 +143,13 @@ public struct SiddourVue: View {
                 Text(verbatim: traducteur.texte(signets.titre) + " \u{00B7} " + String(signets.nombre) + "  \u{203A}")
                     .policeHebraique(modele.police, taille: 19)
                     .foregroundStyle(Teinte(.ink))
+                    .environment(\.layoutDirection, .rightToLeft)
                     .padding(.vertical, 4)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 SiddourIcone(signets.icone, taille: 18)
                     .foregroundStyle(Teinte(.brand))
             }
             .contentShape(Rectangle())
-            .environment(\.layoutDirection, .rightToLeft)
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 16)
@@ -264,9 +266,10 @@ public struct SiddourVue: View {
     @ViewBuilder
     private func enTeteGroupe(_ groupe: SiddourGroupe) -> some View {
         if groupe.hebreuPolice {
+            // Le gras sur le Text lui-même : il vaut pour la police posée ensuite (Noto Serif Hebrew 700).
             Text(verbatim: groupe.hebreu)
-                .policeHebraique(modele.police, taille: 17)
                 .bold()
+                .policeHebraique(modele.police, taille: 17)
                 .foregroundStyle(Teinte(.brand))
         } else {
             Text(verbatim: groupe.hebreu)
@@ -301,9 +304,7 @@ public struct SiddourVue: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: texte.detail.map { texte.hebreu + ", " + $0 } ?? texte.hebreu))
-        .accessibilityAddTraits(.isButton)
     }
 }
 

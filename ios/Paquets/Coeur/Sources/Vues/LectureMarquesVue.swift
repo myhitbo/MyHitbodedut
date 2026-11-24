@@ -96,7 +96,9 @@ public struct LectureMarquesVue: View {
 
     // MARK: Les lignes
 
-    /// Le texte en petit avec l'icône du recueil au bout, et les premiers mots dessous, de droite à gauche.
+    /// Le texte en petit avec l'icône du recueil au bout de la ligne, et les premiers mots dessous : écrits de
+    /// droite à gauche, calés au début de l'écran dans le sens de l'app (RepriseFavoris.signet :
+    /// TEXT_DIRECTION_RTL, TEXT_ALIGNMENT_VIEW_START, icône relative de fin).
     private func ligneVue(_ ligne: LectureMarquesLigne) -> some View {
         Button {
             fermer()
@@ -106,21 +108,22 @@ public struct LectureMarquesVue: View {
                 HStack(spacing: 6) {
                     nom(ligne.titre, taille: 13, style: .footnote)
                         .foregroundStyle(Teinte(.muted))
+                        .environment(\.layoutDirection, .rightToLeft)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     SiddourIcone(ligne.icone, taille: 14)
                         .foregroundStyle(Teinte(.brand))
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
                 Text(verbatim: ligne.apercu)
                     .policeHebraique(police, taille: 17)
                     .foregroundStyle(Teinte(.ink))
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    .environment(\.layoutDirection, .rightToLeft)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.vertical, 10)
             .frame(minHeight: 48)
             .contentShape(Rectangle())
-            .environment(\.layoutDirection, .rightToLeft)
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)

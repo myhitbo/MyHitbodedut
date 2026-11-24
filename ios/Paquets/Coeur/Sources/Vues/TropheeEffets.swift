@@ -106,6 +106,10 @@ struct TropheeEtincelles: View {
     @State private var points = TropheeEtincelle.tirer()
     @State private var fini = false
 
+    init(teintes: TropheeTeintes) {
+        self.teintes = teintes
+    }
+
     var body: some View {
         TimelineView(.animation(minimumInterval: nil, paused: fini)) { contexte in
             Canvas { c, taille in
@@ -166,6 +170,8 @@ struct TropheeConfettis: View {
     @State private var debut = Date()
     @State private var pieces = TropheeConfetti.tirer()
     @State private var fini = false
+
+    init() {}
 
     var body: some View {
         TimelineView(.animation(minimumInterval: nil, paused: fini)) { contexte in
