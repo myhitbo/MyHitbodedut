@@ -336,7 +336,7 @@ class StreakWidget : AppWidgetProvider() {
             views.setOnClickPendingIntent(
                 R.id.widget_body,
                 if (etat.running) activity(context, 3, Intent(context, SessionActivity::class.java))
-                else activity(context, 2, Intent(context, MainActivity::class.java))
+                else activity(context, 2, MainActivity.depuisDehors(context))
             )
 
             if (taille == WidgetTaille.PETITE) return views

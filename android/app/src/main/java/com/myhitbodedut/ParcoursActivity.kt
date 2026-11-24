@@ -54,7 +54,7 @@ class ParcoursActivity : AppCompatActivity() {
         setContentView(R.layout.activity_parcours)
         val jours = Store.days(this)
         val bilan = Parcours.bilan(jours.values)
-        val humeur = Parcours.humeur(jours.keys.map { JournalPlus.lire(this, it) })
+        val humeur = Parcours.humeur(jours.keys.map(JournalPlus.lecteur(this)))
         val contenu = findViewById<LinearLayout>(R.id.parcours_contenu).apply { setPadding(dp(16), dp(8), dp(16), dp(24)) }
 
         // Les chiffres, en quatre tuiles.

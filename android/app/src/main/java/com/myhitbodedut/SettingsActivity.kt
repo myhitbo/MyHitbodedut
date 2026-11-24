@@ -223,6 +223,9 @@ class SettingsActivity : AppCompatActivity() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     getSystemService(android.app.LocaleManager::class.java).applicationLocales = android.os.LocaleList.getEmptyLocaleList()
                 else AppCompatDelegate.setApplicationLocales(androidx.core.os.LocaleListCompat.getEmptyLocaleList())
+                // Le repli en anglais d'un téléphone dont la langue n'est pas livrée ne se posait
+                // qu'au lancement du processus : jusque-là tout s'affichait en français (23/11).
+                LangueApp.appliquerRepli(applicationContext)
                 startActivity(Intent(this, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
                 finish()
@@ -513,7 +516,12 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<Button>(R.id.fond_button).setText(Store.fond(this).nom)
         findViewById<Button>(R.id.accent_button).setText(Store.accent(this).nom)
         findViewById<Button>(R.id.police_button).setText(Store.lecturePolice(this).libelle)
-        findViewById<Button>(R.id.ouverture_button).setText(Store.ouverture(this).libelle)
+        findViewById<Button>(R.id.ouverture_button).apply {
+            setText(Store.ouverture(this@SettingsActivity).libelle)
+            // Seul l'accueil Classique lit ce réglage (MainActivity.onCreate) : sur les autres
+            // versions il s'affichait, s'enregistrait et ne faisait rien (relecture du 23/11).
+            (parent as View).visibility = if (VersionApp.courante(this@SettingsActivity) == VersionApp.CLASSIQUE) View.VISIBLE else View.GONE
+        }
         findViewById<Button>(R.id.halakha_source_button).setText(Store.sourceHalakha(this).libelle)
         findViewById<Button>(R.id.levana_usage_button).text = Store.levanaUsage(this)?.let { getString(it.libelle) }
             ?: getString(R.string.levana_usage_auto) + " · " + getString(VueJour.usageLevana(this).libelle)

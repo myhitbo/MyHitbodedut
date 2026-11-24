@@ -61,22 +61,35 @@ object Aeroports {
     /** Les champs d'un aéroport, déjà pliés. */
     private class Plie(val iata: String, val ville: String, val nom: String, val alias: List<String>)
 
+    /** Les champs pliés, et pour chaque ville ou alias le rang du premier aéroport qui le porte. */
+    private class Index(val plies: List<Plie>, val exacts: Map<String, Int>)
+
     @Volatile
-    private var cache: Pair<List<Vol.Aeroport>, List<Plie>>? = null
+    private var cache: Pair<List<Vol.Aeroport>, Index>? = null
 
-    private fun index(aeroports: List<Vol.Aeroport>): List<Plie> {
-        cache?.let { (liste, plies) -> if (liste === aeroports) return plies }
+    private fun indexComplet(aeroports: List<Vol.Aeroport>): Index {
+        cache?.let { (liste, idx) -> if (liste === aeroports) return idx }
         val plies = aeroports.map { Plie(plier(it.iata), plier(it.ville), plier(it.nom), it.alias.map(::plier)) }
-        cache = aeroports to plies
-        return plies
+        val exacts = HashMap<String, Int>(plies.size * 4)
+        plies.forEachIndexed { i, p ->
+            exacts.putIfAbsent(p.ville, i)
+            p.alias.forEach { exacts.putIfAbsent(it, i) }
+        }
+        val idx = Index(plies, exacts)
+        cache = aeroports to idx
+        return idx
     }
 
-    /** L'aéroport dont la ville (ou un autre nom) est exactement `texte`, déjà plié ; null sinon. */
-    fun exact(aeroports: List<Vol.Aeroport>, texte: String): Vol.Aeroport? {
-        val idx = index(aeroports)
-        for (i in idx.indices) if (idx[i].ville == texte || idx[i].alias.any { it == texte }) return aeroports[i]
-        return null
-    }
+    private fun index(aeroports: List<Vol.Aeroport>): List<Plie> = indexComplet(aeroports).plies
+
+    /**
+     * L'aéroport dont la ville (ou un autre nom) est exactement `texte`, déjà plié ; null sinon.
+     * Le premier de la liste qui le porte, lu dans une table (relecture du 23/11) : la lecture d'un
+     * billet collé (SaisieVol) appelle ceci pour chaque groupe de mots, et parcourir les 3 226
+     * aéroports et leurs alias à chaque fois figeait l'écran sur un long courriel.
+     */
+    fun exact(aeroports: List<Vol.Aeroport>, texte: String): Vol.Aeroport? =
+        indexComplet(aeroports).exacts[texte]?.let { aeroports[it] }
 
     /** Prépare l'index hors du fil de l'interface, pour que la première lettre réponde aussitôt. */
     fun preparer(aeroports: List<Vol.Aeroport>) { index(aeroports) }

@@ -84,6 +84,24 @@ class CheckupTest {
         for (f in listOf("Reminder.kt", "ChabbatAlerte.kt", "LevanaAlerte.kt")) assertTrue(f, lire(f).contains("Alarme.aTraiter("))
     }
 
+    /**
+     * Relecture du 23/11 : le service tué avant le terme (surcouche, bouton « Arrêter »), « Ne pas
+     * déranger » restait posé jusqu'à la prochaine ouverture. Une alarme au terme reprend la séance.
+     */
+    @Test
+    fun `la fin de seance a son filet quand le service est tue`() {
+        val service = lire("SessionService.kt")
+        assertTrue(service.substringAfter("enMarche = true").substringBefore("return START_STICKY").contains("SessionFiletReceiver.poser(this)"))
+        assertTrue(service.substringAfter("private fun stopSelfAndClear()").substringBefore("stopSelf()").contains("SessionFiletReceiver.annuler(this)"))
+        val filet = lire("SessionFilet.kt")
+        // Dans la langue de l'application avant Android 13 : la séance inscrite peut annoncer un trophée.
+        assertTrue(filet.contains("SessionService.reconcilier(LangueApp.envelopper(context))"))
+        assertTrue(filet.contains("Alarme.poser(") && filet.contains("Alarme.annuler("))
+        assertTrue(java.io.File("src/main/AndroidManifest.xml").readText().contains("android:name=\".SessionFiletReceiver\""))
+        // reconcilier ne fait rien tant que le service vit : l'alarme d'une séance prolongée est sans effet.
+        assertTrue(service.substringAfter("fun reconcilier(context: Context) {").trimStart().startsWith("if (enMarche) return"))
+    }
+
     @Test
     fun `la seconde alarme du meme rappel est ecartee`() {
         val heure = 1_000_000_000L

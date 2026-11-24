@@ -57,7 +57,7 @@ class ChabbatAlerteReceiver : BroadcastReceiver() {
         if (!Alarme.aTraiter(context, ChabbatAlerte.REQUETE)) return
         Notifications.ensureChannels(context)
         val ouvrir = PendingIntent.getActivity(
-            context, 141, Intent(context, MainActivity::class.java),
+            context, 141, MainActivity.depuisDehors(context),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         if (!aAnnoncer(context)) {

@@ -48,6 +48,22 @@ class VersionAppTest {
         assertTrue(lire("../../.github/captures/captures.py").contains("\"version_app\": (\"string\", \"classique\")"))
     }
 
+    /**
+     * Relecture du 23/11 : une notification reprend l'accueil de la version à neuf (CLEAR_TOP), sans
+     * en empiler un second. L'icône, elle, ne ferme rien : sur une tâche ouverte par une notification,
+     * Android repose MainActivity au-dessus de l'écran en cours, qui aurait été fermé avec sa saisie.
+     */
+    @Test
+    fun `l icone ne ferme pas l ecran en cours quand elle renvoie vers la version choisie`() {
+        val rediriger = lire("src/main/java/com/myhitbodedut/VersionApp.kt")
+            .substringAfter("fun rediriger(activite: Activity): Boolean {").substringBefore("fun appliquer(")
+        assertTrue(rediriger.contains("recue?.action == Intent.ACTION_MAIN && recue.hasCategory(Intent.CATEGORY_LAUNCHER)"))
+        assertTrue(rediriger.contains("if (!icone) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)"))
+        val main = lire("src/main/java/com/myhitbodedut/MainActivity.kt")
+        assertTrue(main.substringAfter("fun depuisDehors(context: Context): Intent").substringBefore("\n\n")
+            .contains("Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP"))
+    }
+
     @Test
     fun `les polices des versions ont leur licence`() {
         listOf("OFL-SecularOne.txt", "OFL-Rubik.txt", "OFL-Heebo.txt", "OFL-Bellefair.txt").forEach {

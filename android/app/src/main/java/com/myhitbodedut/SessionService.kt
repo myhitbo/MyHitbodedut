@@ -151,6 +151,8 @@ class SessionService : Service() {
         enMarche = true
         lecteur = music
         garderEveille()
+        // Si le service est tué avant le terme, une alarme clôt la séance à sa place (SessionFilet).
+        SessionFiletReceiver.poser(this)
         // Ne pas déranger pendant la séance (14/10), si choisi.
         NePasDeranger.activer(this)
         ensureMusic()
@@ -163,6 +165,10 @@ class SessionService : Service() {
 
     override fun onDestroy() {
         ambiance.stop()
+        // Arrêté du dehors (« Tout effacer », stopService) sans passer par la fin de séance : le
+        // morceau encore chargé continuait de tourner, sans plus rien pour l'arrêter (relecture du
+        // 23/11). Après une fin normale il n'est plus chargé : son fondu se termine seul.
+        if (music.charge) music.stop(fade = false)
         lecteur = null
         handler.removeCallbacks(tick)
         handler.removeCallbacks(finDuSon)
@@ -367,6 +373,7 @@ class SessionService : Service() {
 
     private fun stopSelfAndClear() {
         relacherEveil()
+        SessionFiletReceiver.annuler(this)
         NePasDeranger.retablir(this)
         music.stop()
         ambiance.stop()
@@ -384,7 +391,7 @@ class SessionService : Service() {
         val open = PendingIntent.getActivity(
             this,
             REQUETE_FIN,
-            Intent(this, MainActivity::class.java).putExtra(MainActivity.EXTRA_ASK_NOTE, close.date),
+            MainActivity.depuisDehors(this).putExtra(MainActivity.EXTRA_ASK_NOTE, close.date),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         // Le canal « séance » est de faible importance : sans son ni vibration.

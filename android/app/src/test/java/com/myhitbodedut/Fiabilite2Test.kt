@@ -105,6 +105,22 @@ class Fiabilite2Test {
         assertTrue(creation.indexOf("R.id.celebration_share") in 0 until creation.indexOf("carnet(savedInstanceState)"))
     }
 
+    /**
+     * Relecture du 23/11 : journal verrouillé, la page du carnet n'est pas proposée quand le jour
+     * porte déjà un écrit. Le brouillon que la page écrit à chaque frappe en est un : la question
+     * n'est donc posée qu'à la première création, et l'écran recréé reprend la réponse de l'état gardé.
+     */
+    @Test
+    fun `le bravo decide une fois de sa page de carnet`() {
+        val source = lire("CelebrationActivity.kt")
+        val creation = source.substringAfter("override fun onCreate(").substringBefore("setContentView(")
+        assertTrue(creation.contains("if (savedInstanceState != null) savedInstanceState.getString(ETAT_DATE)"))
+        assertTrue(creation.contains("VerrouJournal.actif(this) && NoteDialog.dejaEcrit(this, it)"))
+        val garde = source.substringAfter("override fun onSaveInstanceState(").substringBefore("private fun carnet(")
+        assertTrue(garde.contains("outState.putString(ETAT_DATE, dateNote)"))
+        assertFalse(source.contains("val dateNote: String? by lazy"))
+    }
+
     @Test
     fun `la vignette se met a jour apres minuit et apres un import`() {
         assertTrue(lire("StreakWidget.kt").contains("private fun programmerMinuit"))

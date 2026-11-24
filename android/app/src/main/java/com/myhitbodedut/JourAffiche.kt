@@ -229,7 +229,7 @@ object JourAffiche {
      * (Zmanim.jour, audit du 16/11, horaires) et le Tikoun Ra'hel de midi (tikounRahelDeMidi).
      */
     fun momentDuSiddour(lieu: Zmanim.Lieu, maintenant: java.time.Instant, enIsrael: Boolean = true, nusah: String = Zmanim.NUSAH_COMMUN): String? {
-        val zone = java.time.ZoneId.of(lieu.fuseau)
+        val zone = Zmanim.fuseau(lieu.fuseau)
         val local = maintenant.atZone(zone)
         val date = local.toLocalDate()
         // La nuit appartient au jour hébreu civil après minuit, au lendemain avant minuit (audit du 16/11).

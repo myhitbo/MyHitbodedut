@@ -60,6 +60,10 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         }
         dessiner()
         if (!NoteDialog.ouverte(this)) CelebrationActivity.showIfPending(this)
+        // Un trophée neuf ouvre sa fiche ici aussi, comme au Classique (MainActivity.renderPaliers) :
+        // sans cela il n'était jamais fêté, et un retour au Classique les ouvrait tous à la suite
+        // (relecture du 23/11). Tant qu'un bravo attend, il passe d'abord ; la fiche vient au retour.
+        if (!Store.hasPendingCelebration(this)) Celebrations.ecran(this)
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
@@ -160,7 +164,9 @@ data class DonneesAccueil(
             val lieu = runCatching { Store.lieuZmanim(c) }.getOrNull()
             val fuseau = lieu?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
             val maintenant = ZonedDateTime.now(fuseau)
-            val jour = lieu?.let { l -> runCatching { Zmanim.jour(l, maintenant.toLocalDate()) }.getOrNull() }.orEmpty()
+            // Le profil du rite, comme l'écran des zmanim, les vignettes et l'accueil Classique : sans lui, les
+            // Edot (rite par défaut) lisaient ici un tsét à 8,5° et ailleurs le leur (relecture du 23/11).
+            val jour = lieu?.let { l -> runCatching { Zmanim.jour(l, maintenant.toLocalDate(), Store.siddurNusah(c).cle) }.getOrNull() }.orEmpty()
             val tset = jour.firstOrNull { it.cle == "tset" }?.local
             val hebraique = runCatching {
                 CalendrierJuif.jour(ZmanimVignette.jourHebreuAffiche(maintenant, tset), Store.inIsrael(c)).dateHebraique
@@ -175,11 +181,13 @@ data class DonneesAccueil(
             // l'accueil se redessine quand elle est faite.
             val pensee = if (!Data.pret) null else runCatching {
                 val p = SourceDuJour.choix(Data.library(c), LocalDate.now()) ?: return@runCatching null
-                val traduction = when (ChizukCard.language(c)) {
-                    "en" -> p.source.paragraphesEn.getOrNull(p.indice)
-                    "he" -> null
-                    else -> p.source.paragraphesFr.getOrNull(p.indice) ?: p.source.paragraphesEn.getOrNull(p.indice)
-                }
+                // Les langues de lecture (LanguesTexte), comme la carte du Classique : en espagnol et en
+                // arabe tunisien l'hébreu seul, et non plus le français ; un choix « hébreu seul » est
+                // respecté (relecture du 23/11).
+                val traduction = LanguesTexte.textes(
+                    LanguesTexte.mode(c), p.texte,
+                    p.source.paragraphesFr.getOrNull(p.indice), p.source.paragraphesEn.getOrNull(p.indice),
+                ).firstOrNull { it.first != "he" }?.second
                 PenseeAffichee(
                     SourceDuJour.extrait(SourceDuJour.sansBalises(p.texte), 420),
                     traduction?.let { SourceDuJour.extrait(SourceDuJour.sansBalises(it), 420) },

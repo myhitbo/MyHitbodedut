@@ -317,7 +317,7 @@ class GateService : Service() {
         val open = PendingIntent.getActivity(
             this,
             0,
-            Intent(this, MainActivity::class.java),
+            MainActivity.depuisDehors(this),
             PendingIntent.FLAG_IMMUTABLE
         )
         return Notification.Builder(this, Notifications.CHANNEL_GATE)
