@@ -63,8 +63,8 @@ public struct RechercheIndex: Sendable {
 
     private let siddour: RechercheRecueil
     private let livres: RechercheRecueil?
-    private let yalkut: RechercheListe<YalkutYosef.Seif>?
-    private let benIshHai: RechercheListe<Halakha.Choisie>?
+    private let yalkut: RechercheListe<RechercheHalakha<YalkutYosef.Seif>>?
+    private let benIshHai: RechercheListe<RechercheHalakha<Halakha.Choisie>>?
     private let hilloulot: RechercheListe<Hilloulot.Hilloula>?
 
     /// Met chaque source à nu : des secondes sur un téléphone ancien, à faire hors du fil principal.
@@ -115,13 +115,16 @@ public struct RechercheIndex: Sendable {
             let h = RechercheIndex.nuHalakha(texte.rogne)
             if h.count >= 2 {
                 let motifHalakha = Data(String(decoding: h, as: UTF16.self).utf8)
+                // L'extrait de `RechercheGlobale.extrait(texte, q)`, sur le texte mis à nu à la préparation.
                 for seif in yalkut?.trouves(motifHalakha) ?? [] {
-                    resultats.append(RechercheGlobale.Resultat(sorte: .halakha, id: texte, titre: YalkutYosef.source(seif),
-                                                               extrait: RechercheGlobale.extrait(seif.texte, q)))
+                    resultats.append(RechercheGlobale.Resultat(sorte: .halakha, id: texte,
+                                                               titre: YalkutYosef.source(seif.element),
+                                                               extrait: RechercheGlobale.extrait(nu: seif.nu, q)))
                 }
                 for choisie in benIshHai?.trouves(motifHalakha) ?? [] {
-                    resultats.append(RechercheGlobale.Resultat(sorte: .halakha, id: texte, titre: Halakha.source(choisie),
-                                                               extrait: RechercheGlobale.extrait(choisie.texte, q)))
+                    resultats.append(RechercheGlobale.Resultat(sorte: .halakha, id: texte,
+                                                               titre: Halakha.source(choisie.element),
+                                                               extrait: RechercheGlobale.extrait(nu: choisie.nu, q)))
                 }
             }
         }
@@ -137,16 +140,16 @@ public struct RechercheIndex: Sendable {
 
     /// Les se'ifim de `YalkutYosef.recherche` : chacun une fois (le premier, égal unité pour unité), dans
     /// l'ordre des périodes ; trouvé si son texte ou son siman contient la requête.
-    private static func listeSeifs(_ livre: YalkutYosef.Livre) -> RechercheListe<YalkutYosef.Seif> {
+    private static func listeSeifs(_ livre: YalkutYosef.Livre) -> RechercheListe<RechercheHalakha<YalkutYosef.Seif>> {
         var vus = Set<[[UInt16]]>()
-        var elements: [YalkutYosef.Seif] = []
+        var elements: [RechercheHalakha<YalkutYosef.Seif>] = []
         var textes: [[String]] = []
         for p in livre.ordre {
             for s in livre.periodes[p] ?? [] {
                 guard vus.insert([Array(s.siman.utf16), Array(s.lettre.utf16), Array(s.texte.utf16)]).inserted else {
                     continue
                 }
-                elements.append(s)
+                elements.append(RechercheHalakha(s, texte: s.texte))
                 textes.append([nuHalakhaTexte(s.texte), nuHalakhaTexte(s.siman)])
             }
         }
@@ -155,7 +158,7 @@ public struct RechercheIndex: Sendable {
 
     /// Les halakhot de `Halakha.recherche` : les années dans l'ordre de leur nom, chacune dans l'ordre du
     /// fichier, puis 'Hanouka.
-    private static func listeHalakhot(_ livre: Halakha.Livre) -> RechercheListe<Halakha.Choisie> {
+    private static func listeHalakhot(_ livre: Halakha.Livre) -> RechercheListe<RechercheHalakha<Halakha.Choisie>> {
         var elements: [Halakha.Choisie] = []
         for a in livre.annees.keys.sorted(by: { $0.utf16.lexicographicallyPrecedes($1.utf16) }) {
             guard let sections = livre.annees[a] else { continue }
@@ -172,7 +175,8 @@ public struct RechercheIndex: Sendable {
                 elements.append(Halakha.Choisie(texte: t, numero: i + 1, section: h.he, annee: 1))
             }
         }
-        return RechercheListe(elements: elements, textes: elements.map { [nuHalakhaTexte($0.texte)] })
+        return RechercheListe(elements: elements.map { RechercheHalakha($0, texte: $0.texte) },
+                              textes: elements.map { [nuHalakhaTexte($0.texte)] })
     }
 
     /// Les hilloulot de `Hilloulot.recherche` : par rang dans l'année, de Tichri à Eloul, puis par clé, puis dans
@@ -290,6 +294,19 @@ extension RechercheTampon {
                 return base.distance(to: UnsafeRawPointer(trouve))
             }
         }
+    }
+}
+
+/// Un se'if ou une halakha, avec son texte déjà mis à nu pour l'extrait (`RechercheGlobale.nu`) : une halakha du
+/// Ben Ish 'Haï fait souvent plus d'un kilo-octet, et la remettre à nu à chaque frappe, pour chacun des soixante
+/// résultats, prenait les trois quarts d'une recherche.
+struct RechercheHalakha<Element: Sendable>: Sendable {
+    let element: Element
+    let nu: String
+
+    init(_ element: Element, texte: String) {
+        self.element = element
+        nu = RechercheGlobale.nu(texte)
     }
 }
 
