@@ -1234,6 +1234,9 @@ const ICONES_LECTURE = {
   masquer: ['M3,12 C5,8 8.2,6 12,6 C15.8,6 19,8 21,12 C19,16 15.8,18 12,18 C8.2,18 5,16 3,12 Z', 'M9.2,12 a2.8,2.8 0 1,0 5.6,0 a2.8,2.8 0 1,0 -5.6,0', 'M4,4 L20,20'],
   replier: ['M6.5,9.5 L12,15 L17.5,9.5'],
   coche: ['M5,12.5 L10,17 L19,7.5'],
+  // Changer de nusah (ic_lecture_nusah d'Android) : un livre et deux flèches qui tournent.
+  nusah: ['M5,4.5 A1.5,1.5 0 0,1 6.5,3 L19,3 L19,17 L6.5,17 A1.5,1.5 0 0,0 5,18.5 Z M5,18.5 A1.5,1.5 0 0,0 6.5,20 L11,20',
+    'M13.5,19.5 A3,3 0 0,1 19.4,18.4 M19.6,16.6 L19.6,18.6 L17.6,18.6 M20.5,21.5 A3,3 0 0,1 14.6,22.6'],
   // Le défilement automatique (16/11) : lancer, arrêter.
   lecture: ['M8.5,5.5 L18.5,12 L8.5,18.5 Z'],
   pause: ['M9,6 L9,18', 'M15,6 L15,18'],
@@ -1343,7 +1346,8 @@ function reglagesLecture({ avecNusah, sansNuit = false }) {
         onclick: () => { store.setSiddurNusah(cle); choixNusahOuvert = false; rendreEtViser('.lecture-nusah-bouton'); },
       }, h('span', { class: 'coche' }, courant ? icone('coche') : null), tr.t(nom));
     })) : null,
-    h('div', { class: 'lecture-barre', role: 'toolbar', 'aria-label': tl('lecture_reglages') },
+    // --n : les boutons de taille fixe, qui se serrent pour que la barre tienne entière (app.css, 24/11).
+    h('div', { class: 'lecture-barre', role: 'toolbar', 'aria-label': tl('lecture_reglages'), style: `--n: ${7 + (sansNuit ? 0 : 1) + (avecNusah ? 1 : 0)}` },
       bouton({ class: 'lettres', lang: 'en', dir: 'ltr', 'aria-label': tl('lecture_moins'), disabled: e <= 0.8, onclick: () => echelle(e - 0.1) }, 'A−'),
       bouton({ class: 'taille', 'aria-label': tl('lecture_taille', pourcent), onclick: () => echelle(1) },
         new Intl.NumberFormat(tr.locale, { style: 'percent' }).format(pourcent / 100)),
@@ -1355,10 +1359,13 @@ function reglagesLecture({ avecNusah, sansNuit = false }) {
       bouton({ class: 'lecture-police', lang: 'he', dir: 'rtl', 'aria-label': `${tl('lecture_police')} : ${tl(`police_${store.lecturePolice()}`)}`, title: tl(`police_${store.lecturePolice()}`),
         onclick: choisirPolice }, 'אב'),
       sansNuit ? null : bouton({ class: 'icone-bouton', 'aria-label': tl('lecture_nuit'), 'aria-pressed': String(nuit), onclick: () => { store.setLectureSombre(!nuit); rendreEtViser('.lecture-barre [aria-pressed]'); } }, icone('lune')),
+      // Le nusah en icône, comme sur Android (24/11) : son nom en toutes lettres (« Noussa’h », 80 px)
+      // poussait hors de la barre le défilement automatique, Masquer et Replier.
       avecNusah ? bouton({
-        class: 'lecture-nusah-bouton', 'aria-haspopup': 'menu', 'aria-expanded': String(choixNusahOuvert),
+        class: 'icone-bouton lecture-nusah-bouton', 'aria-label': tl('siddur_choose'), title: tl('siddur_choose'),
+        'aria-haspopup': 'menu', 'aria-expanded': String(choixNusahOuvert),
         onclick: () => { choixNusahOuvert = !choixNusahOuvert; rendreEtViser(choixNusahOuvert ? '.lecture-nusah [aria-checked="true"]' : '.lecture-nusah-bouton'); },
-      }, tr.t('siddur_choose')) : null,
+      }, icone('nusah')) : null,
       // Le défilement automatique (16/11) : il part sans rien fermer ; sa commande prend la place de la barre.
       bouton({ class: 'icone-bouton lecture-defiler', 'aria-label': tl('lecture_defiler'), 'aria-pressed': 'false', onclick: demarreDefilement }, icone('lecture')),
       separateur(),

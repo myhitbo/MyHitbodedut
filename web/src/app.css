@@ -661,7 +661,7 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .lu-zone .lecture, .lu-zone.reglable .contenu { padding-bottom: 84px; }
 .lecture-ctrl {
   position: absolute; left: 50%; bottom: 16px; z-index: 5; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; max-width: calc(100% - 16px);
+  display: flex; flex-direction: column; align-items: center; max-width: calc(100% - 8px);
 }
 .lu-zone.sans-pied .lecture-ctrl { bottom: calc(16px + env(safe-area-inset-bottom)); }
 .lecture-pastille, .lecture-barre {
@@ -694,8 +694,15 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .lecture-barre .icone-bouton { padding: 0; width: 40px; }
 .lecture-barre svg { width: 22px; height: 22px; }
 .lecture-barre button[aria-pressed="true"] { background: var(--on-brand); color: var(--brand); }
-.lecture-barre .lecture-nusah-bouton { font-weight: 600; font-size: 14px; padding: 0 8px; }
 .lecture-barre .lecture-nusah-bouton[aria-expanded="true"] { background: color-mix(in srgb, var(--on-brand) 20%, transparent); }
+/* La barre tient entière sur un téléphone, « Replier » compris, comme sur Android (ReglagesLecture.bouton) :
+   ses --n boutons de taille fixe se serrent de 40 à 30 px selon la largeur, à côté de la taille (56 px), des
+   deux filets et des marges. Le bouton du défilement automatique (16/11) avait poussé hors de vue, dans une
+   barre qui défile sans le montrer, Masquer et Replier, et au siddour lui-même (vérification du 24/11). */
+.lecture-barre:not(.lecture-defil) { --cote: clamp(30px, calc((100vw - 8px - 8px - 18px - 56px) / var(--n, 8)), 40px); }
+.lecture-barre:not(.lecture-defil) .lettres, .lecture-barre:not(.lecture-defil) .icone-bouton,
+.lecture-barre:not(.lecture-defil) .lecture-langues, .lecture-barre:not(.lecture-defil) .lecture-police { width: var(--cote); min-width: 0; padding: 0; }
+.lecture-barre:not(.lecture-defil) .taille { min-width: 56px; padding: 0 4px; font-size: 14px; }
 .lecture-sep { flex: none; width: 1px; height: 22px; margin: 0 4px; background: var(--on-brand); opacity: 0.35; }
 .lecture-barre button:focus-visible, .lecture-pastille:focus-visible { outline: 2px solid var(--on-brand); outline-offset: -4px; }
 /* Le défilement automatique (16/11) : la commande compacte, aux couleurs de la barre. */
