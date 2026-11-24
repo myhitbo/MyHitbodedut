@@ -149,6 +149,14 @@ class TeintesCielTest {
             if (sombre) assertTrue("la nuit n'est pas la plus sombre", TeintesCiel.luminance(nuit.haut) <= TeintesCiel.luminance(jour.haut))
             // En thème sombre, le corps des nuages est une silhouette plus sombre que le ciel.
             if (sombre) assertTrue(TeintesCiel.luminance(jour.corps) < TeintesCiel.luminance(jour.haut))
+            // Le bord des nuages vifs, assombri, ne s'avive pas (le blanc crème du plein jour
+            // devenait un or kaki, #D69200).
+            if (sombre) for (e in -20..60) {
+                val brut = CielContinu.NUAGE_BORD.a(e.toDouble())
+                val vif = ciel(e.toDouble(), true).bordVif
+                assertTrue("bord avivé à $e° : ${CielContinu.hexa(brut)} → ${CielContinu.hexa(vif)}", TeintesCiel.chroma(vif) <= TeintesCiel.chroma(brut) + 2 / 255.0)
+                assertTrue("$e°", TeintesCiel.luminance(vif) <= 0.36)
+            }
             // Et jamais de kaki : l'horizon assombri de +6° à +12° virait au vert-de-gris.
             if (sombre) for (e in -20..60) for (matin in listOf(true, false)) {
                 val t = ciel(e.toDouble(), matin)

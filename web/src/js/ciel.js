@@ -270,10 +270,25 @@ function calculerArrets(e, matin, sombre, b, reserve) {
   });
 }
 
+/** Ce qu'une couleur a de couleur : l'écart entre son plus fort et son plus faible canal, de 0 à 1. */
+export const chroma = ([r, g, b]) => (Math.max(r, g, b) - Math.min(r, g, b)) / 255;
+/** [c] assombrie à [cible] sans gagner de couleur : un blanc crème assombri devenait kaki (TeintesCiel.assombrirSansAviver). */
+export function assombrirSansAviver(c, cible) {
+  let r = aLuminance(c, cible);
+  const avant = chroma(c);
+  for (let i = 0; i < 3; i++) {
+    const apres = chroma(r);
+    if (apres <= avant + 1 / 255) return r;
+    const [h, s, l] = hsl(r);
+    r = aLuminance(deHsl(h, s * avant / apres, l), cible);
+  }
+  return r;
+}
+
 /** Les couleurs d'un nuage qui ne passe sous aucun texte, dans la bande des anneaux (TeintesCiel.nuageVif). */
 export function nuageVif(c, sombre, corps) {
   if (sombre && corps) return luminance(c) > 0.10 ? aLuminance(c, 0.10) : c;
-  if (sombre) return luminance(c) > 0.35 ? aLuminance(c, 0.35) : c;
+  if (sombre) return luminance(c) > 0.35 ? assombrirSansAviver(c, 0.35) : c;
   if (corps) return luminance(c) < 0.8 ? aLuminance(c, 0.8) : c;
   return c;
 }

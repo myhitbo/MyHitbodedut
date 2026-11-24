@@ -108,6 +108,12 @@ test('les clés, le plan et les mouvements sont ceux d’Android', () => {
   }
   // Les nuages pâles du thème clair, à la même borne qu'Android.
   assert.ok(teintes.includes('if (luminance(bord) < borne + 0.03) bord = aLuminance(bord, minOf(borne + 0.03, 1.0))'));
+  // Le bord des nuages vifs, assombri sans s'aviver (TeintesCiel.assombrirSansAviver).
+  assert.ok(teintes.includes('sombre -> if (luminance(c) > 0.35) assombrirSansAviver(c, 0.35) else c'));
+  for (let e = -20; e <= 60; e++) {
+    const brut = Ciel.suite(Ciel.NUAGE_BORD, e), vif = Ciel.nuageVif(brut, true, false);
+    assert.ok(Ciel.chroma(vif) <= Ciel.chroma(brut) + 2 / 255 && Ciel.luminance(vif) <= 0.36, `${e}° : ${Ciel.hex(brut)} → ${Ciel.hex(vif)}`);
+  }
   // La chaleur prolongée jusqu'au bout de l'heure dorée : en thème sombre, l'horizon ne vire plus au kaki.
   assert.ok(continu.includes('fun chaleur(e: Double): Double = rampe(e, -12.0, -6.0) * (1 - rampe(e, 10.0, 16.0))'));
 });

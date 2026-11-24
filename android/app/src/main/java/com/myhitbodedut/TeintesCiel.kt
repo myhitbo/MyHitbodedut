@@ -165,14 +165,34 @@ object TeintesCiel {
     /**
      * Les couleurs d'un nuage qui ne passe sous aucun texte (dans la bande des anneaux,
      * PlanCiel.nuages) : vives, sans borne de lisibilité. En thème sombre, le corps est atténué
-     * (luminance 0,10 au plus) et le bord garde sa lumière (0,35 au plus) ; en thème clair, le
-     * corps est pâle (0,8 au moins), le bord tel quel.
+     * (luminance 0,10 au plus) et le bord garde sa lumière (0,35 au plus) sans s'aviver ; en
+     * thème clair, le corps est pâle (0,8 au moins), le bord tel quel.
      */
     fun nuageVif(c: Int, sombre: Boolean, corps: Boolean): Int = when {
         sombre && corps -> if (luminance(c) > 0.10) aLuminance(c, 0.10) else c
-        sombre -> if (luminance(c) > 0.35) aLuminance(c, 0.35) else c
+        sombre -> if (luminance(c) > 0.35) assombrirSansAviver(c, 0.35) else c
         corps -> if (luminance(c) < 0.8) aLuminance(c, 0.8) else c
         else -> c
+    }
+
+    /** L'écart entre le plus fort et le plus faible canal, de 0 (un gris) à 1 : ce qu'une couleur a de couleur. */
+    fun chroma(c: Int): Double = (maxOf(canal(c, 16), canal(c, 8), canal(c, 0)) - minOf(canal(c, 16), canal(c, 8), canal(c, 0))) / 255.0
+
+    /**
+     * [c] assombrie à la luminance [cible] comme par aLuminance, sans gagner de couleur : à
+     * saturation gardée, un blanc crème assombri devenait un kaki vif (le bord des nuages du plein
+     * jour, en thème sombre). Sa saturation baisse d'autant que sa couleur aurait crû.
+     */
+    fun assombrirSansAviver(c: Int, cible: Double): Int {
+        var r = aLuminance(c, cible)
+        val avant = chroma(c)
+        repeat(3) {
+            val apres = chroma(r)
+            if (apres <= avant + 1.0 / 255) return r
+            val h = hsl(r)
+            r = aLuminance(deHsl(h[0], h[1] * avant / apres, h[2]), cible)
+        }
+        return r
     }
 
     /** Les trois arrêts du dégradé ; chaque cran de [reserve] les éloigne un peu plus de la borne. */
