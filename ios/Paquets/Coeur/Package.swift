@@ -16,20 +16,10 @@ let enChantierSources: [String] = [
 let enChantierTests: [String] = [
 ]
 let enChantierEcrans: [String] = [
-    "ApplicationsModele.swift",
-    "ConcentrationFiltre.swift",
-    "ConcentrationModele.swift",
-    "DedicaceModele.swift",
 ]
 let enChantierEcransTests: [String] = [
-    "ApplicationsModeleTests.swift",
-    "ConcentrationModeleTests.swift",
-    "DedicaceModeleTests.swift",
 ]
 let enChantierVues: [String] = [
-    "ApplicationsVue.swift",
-    "ConcentrationVue.swift",
-    "DedicaceVue.swift",
 ]
 
 let package = Package(
