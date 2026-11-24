@@ -91,6 +91,8 @@ class CielVivantTest {
         val code = File("src/main/java/com/myhitbodedut/CielVivant.kt").readText()
         assertTrue(code.contains("val enMarche: Boolean get() = permis && visible && ValueAnimator.areAnimatorsEnabled()"))
         assertTrue(code.contains("PowerManager.ACTION_POWER_SAVE_MODE_CHANGED") && code.contains("isPowerSaveMode"))
+        // Un dessin animé avant d'être posé en fond repart à son premier dessin (captures du 24/11).
+        assertTrue(code.contains("if (dessin.callback == null) return") && code.contains("fun relancerSiBesoin()"))
         // Les deux dessins animés suivent leur visibilité (onglet caché, écran quitté, vue détachée).
         listOf("CielPage", "PaysageCiel").forEach {
             val dessin = File("src/main/java/com/myhitbodedut/$it.kt").readText()

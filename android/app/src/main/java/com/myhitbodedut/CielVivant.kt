@@ -165,7 +165,13 @@ class HorlogeCiel(private val dessin: Drawable) : Runnable {
         dessin.invalidateSelf()
     }
 
+    /**
+     * Sans vue pour le porter (dessin pas encore posé en fond), rien n'est programmé : le premier
+     * dessin le relancera. Captures du 24/11 : le paysage, animé avant d'être posé sur sa carte,
+     * se croyait programmé et ne bougeait jamais.
+     */
     private fun programmer() {
+        if (dessin.callback == null) return
         programme = true
         dessin.scheduleSelf(this, SystemClock.uptimeMillis() + CielVivant.IMAGE_MS)
     }

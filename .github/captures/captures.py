@@ -1204,6 +1204,17 @@ def main():
         for k in ("window_animation_scale", "transition_animation_scale", "animator_duration_scale"):
             sh(f"settings put global {k} {1 if actives else 0}")
 
+    def cadence(nom, secondes=10):
+        """Les images que l'application dessine en [secondes] (dumpsys gfxinfo) : le ciel anime en
+        demande une toutes les 50 ms au plus, soit 200 en dix secondes ; immobile, presque aucune."""
+        sh(f"dumpsys gfxinfo {PKG} reset")
+        pause(secondes)
+        stats = sh(f"dumpsys gfxinfo {PKG}")
+        garde = [l.strip() for l in stats.splitlines() if any(m in l for m in ("Total frames", "Janky frames", "50th percentile", "90th percentile"))]
+        log(f"  cadence {nom} ({secondes} s) :", " | ".join(garde))
+        with open(os.path.join(OUT, f"{nom}-cadence.txt"), "w") as f:
+            f.write(f"{secondes} s\n" + "\n".join(garde) + "\n\n" + stats)
+
     def jour_du_ciel(prefixe, langues, modes, deux_fois):
         for lg in langues:
             for mode in modes:
@@ -1233,6 +1244,7 @@ def main():
             for phase, heure in (("nuit", "2130"), ("jour", "1200")):
                 sh(f"date 1124{heure}2026.00")
                 lancer(attente=6)
+                cadence(f"31-{phase}")
                 sh("rm -f /sdcard/ciel.mp4")
                 sh("screenrecord --time-limit 8 /sdcard/ciel.mp4", timeout=30)
                 pause(1.0)
@@ -1244,12 +1256,14 @@ def main():
             sh("date 112421302026.00")
             animations(False)
             lancer(attente=6)
+            cadence("31-nuit-immobile")
             capture("31-fr-sombre-nuit-immobile", attente=0.5)
             capture("31-fr-sombre-nuit-immobile-t6", attente=6.0)
             animations(True)
             sh("cmd battery unplug")
             sh("settings put global low_power 1")
             lancer(attente=6)
+            cadence("31-nuit-economie")
             capture("31-fr-sombre-nuit-economie", attente=0.5)
             capture("31-fr-sombre-nuit-economie-t6", attente=6.0)
             sh("settings put global low_power 0")
@@ -1291,6 +1305,8 @@ def main():
                         continue
                     sh(f"date 1124{heure}2026.00")
                     lancer(attente=6)
+                    if phase in ("jour", "nuit"):
+                        cadence(f"33-{version}-{phase}")
                     capture(f"33-{version}-{phase}", attente=0.5)
                     capture(f"33-{version}-{phase}-t6", attente=6.0)
             sh("date 112412002026.00")
