@@ -35,14 +35,21 @@ public struct Illustration: View {
 
     public var body: some View {
         if let image = Illustration.image(apparence.image(nom)) {
-            let dessin = Image(uiImage: image)
-                .resizable()
-                .scaledToFit()
-                .frame(height: hauteur)
             if let libelle {
-                dessin.accessibilityLabel(libelle)
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: hauteur)
+                    .accessibilityLabel(libelle)
             } else {
-                dessin.accessibilityHidden(true)
+                // Décorative dès l'image (`Image(decorative:)`), et cachée en plus : le seul `accessibilityHidden`
+                // laissait à VoiceOver l'image de la hitbodedout guidée de la séance, sans description, dans l'app
+                // compilée en Release (l'audit des descriptions de LibellesTests, 24/11 ; pas en Debug).
+                Illustration.decorative(image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: hauteur)
+                    .accessibilityHidden(true)
             }
         } else {
             // Une image absente du paquet (un export incomplet) laisse sa place vide plutôt que d'arrêter l'app.
@@ -50,6 +57,12 @@ public struct Illustration: View {
                 .frame(height: hauteur)
                 .accessibilityHidden(true)
         }
+    }
+
+    /// Une image que l'accessibilité ignore ; l'image telle quelle si elle n'a pas de bitmap.
+    private static func decorative(_ image: UIImage) -> Image {
+        guard let bitmap = image.cgImage else { return Image(uiImage: image) }
+        return Image(decorative: bitmap, scale: image.scale, orientation: .up)
     }
 
     /// L'image `Images/<nom>.webp` du paquet de l'app ; iOS lit le WebP (ImageIO).
