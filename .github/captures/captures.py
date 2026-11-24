@@ -1218,7 +1218,8 @@ def main():
         comparer_vitesse("siddour, vitesse 3", vitesse_mesuree(4.0), vitesse_attendue(3))
         taper(touches["plus"], 7)
         photo("31c-siddour-vitesse-10")
-        comparer_vitesse("siddour, vitesse 10", vitesse_mesuree(0.3), vitesse_attendue(10))
+        # A 325 px/s, la seule duree d'une capture brute (deux secondes et demie) suffit.
+        comparer_vitesse("siddour, vitesse 10", vitesse_mesuree(0.0), vitesse_attendue(10))
         taper(touches["moins"], 12)
         photo("31d-siddour-vitesse-1")
         comparer_vitesse("siddour, vitesse 1 (douze fois moins)", vitesse_mesuree(4.0), vitesse_attendue(1))
@@ -1455,7 +1456,8 @@ def empreintes(image):
 def montee(avant, apres, plus_loin):
     """De combien de pixels le texte est monte entre deux images : l'ecart d pour lequel le plus de
     lignes de « apres » (entre 25 et 60 % de la hauteur) valent celles de « avant » d plus bas.
-    None si rien ne s'accorde assez."""
+    None si rien ne s'accorde assez. Le bandeau du haut qui se replie pendant la mesure deplace une
+    partie du texte de plus : un tiers des lignes suffit (run 45403918238, 46 a 50 % au bon ecart)."""
     a, b = empreintes(avant), empreintes(apres)
     h = len(a)
     bas = int(h * 0.60)
@@ -1468,7 +1470,7 @@ def montee(avant, apres, plus_loin):
         n = sum(1 for y in lignes if a[y + d] == b[y])
         if n > score:
             meilleur, score = d, n
-    if score < len(lignes) * 0.5:
+    if score < len(lignes) * 0.3:
         log(f"  ecart incertain : {score}/{len(lignes)} lignes pour {meilleur} px")
         return None
     return meilleur
