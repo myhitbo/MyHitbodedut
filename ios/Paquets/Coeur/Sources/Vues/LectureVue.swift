@@ -213,6 +213,8 @@ private struct LectureBandeau: View {
                 Text(verbatim: "\u{25F7} " + traducteur.texte(horaire))
                     .font(.subheadline)
                     .foregroundStyle(Color.white)
+                    // Toute sa hauteur : le bandeau ne la tasse pas sur une ligne aux grandes tailles du texte.
+                    .fixedSize(horizontal: false, vertical: true)
                     // gravity="right" : à droite, en français comme en hébreu.
                     .frame(maxWidth: .infinity, alignment: sens == .rightToLeft ? .leading : .trailing)
                     .padding(.top, 4)

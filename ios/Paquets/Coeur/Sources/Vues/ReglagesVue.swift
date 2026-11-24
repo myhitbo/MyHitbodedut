@@ -489,6 +489,8 @@ public struct ReglagesVue: View {
                     .accessibilityHidden(true)
             }
             .frame(minHeight: 52)
+            // En colonne aux tailles d'accessibilité : un peu d'air entre deux lignes.
+            .padding(.vertical, tailleTexte.isAccessibilitySize ? 6 : 0)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
