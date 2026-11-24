@@ -9,8 +9,11 @@ name: iOS (interface, macOS)
 #
 # Le simulateur de cette CI tourne sur un Mac Intel virtualisé, sans processeur graphique à lui : ce n'est pas un
 # iPhone. Les temps et les images perdues y sont mesurés et rapportés tels quels dans le résumé ; les seuils du
-# critère (400 ms, aucune image perdue) se vérifient sur un appareil. Le travail échoue sur un libellé en défaut, une
-# mesure qui manque (la chaîne de mesure cassée) ou une app de 200 Mo et plus.
+# critère (400 ms, aucune image perdue) se vérifient sur un appareil. Aucun seuil de temps n'est posé ici : au
+# simulateur, le premier écran vient dix à quinze secondes après le démarrage (11,3 à 15,0 s d'un lancement à
+# l'autre dans le même travail, le 24/11), et la compilation passe de 13 à 20 minutes quand deux travaux se
+# partagent la machine ; un seuil assez large pour ne pas échouer au hasard ne dirait rien de l'iPhone. Le travail
+# échoue sur un libellé en défaut, une mesure qui manque (la chaîne de mesure cassée) ou une app de 200 Mo et plus.
 
 on:
   push:
@@ -131,13 +134,11 @@ jobs:
           xcrun simctl ui "$SIMULATEUR" appearance light || true
           xcrun simctl ui "$SIMULATEUR" content_size large || true
           echo "démarré : $APPAREIL"
-      # Chaque libellé en défaut, une ligne du résumé ; les faux positifs connus (LibellesTests.tolerance), chacun
-      # avec sa raison. Pour relever sans échouer : TEST_RUNNER_LIBELLES_RELEVE: '1'.
+      # Chaque libellé en défaut, une ligne du résumé, et l'étape échoue ; les faux positifs connus
+      # (LibellesTests.tolerance), chacun avec sa raison. Pour relever sans échouer : TEST_RUNNER_LIBELLES_RELEVE: '1'.
       - name: Libellés d'accessibilité (fr, en, he, es, ar-TN)
         id: libelles
         continue-on-error: true
-        env:
-          TEST_RUNNER_LIBELLES_RELEVE: '1'
         run: |
           set -o pipefail
           xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$SIMULATEUR" \
@@ -164,7 +165,11 @@ jobs:
           grep -q "TEST EXECUTE SUCCEEDED" libelles.log
           # Les trois écrans dans les cinq langues ont bien été lus.
           test "$(grep -c "^ELEMENTS" libelles.log)" -eq 15
-      # Les mesures de l'app (lignes MESURE), puis celles d'XCTest (measure), lues dans le paquet de résultats.
+      # Les mesures de l'app (lignes MESURE), puis celles d'XCTest (measure), lues dans le paquet de résultats. Les
+      # défilements au doigt d'XCTest (testDefilementSignposts, testDefilementAccrocs) sont pour un iPhone : au
+      # simulateur, XCTest n'en rapporte que la durée, et chaque geste fait photographier tout l'arbre
+      # d'accessibilité de l'app sur son fil principal (quinze à trente secondes sur le plus long livre, le 24/11) ;
+      # l'app y fait défiler le livre elle-même (testDefilementDuPlusLongLivre).
       - name: Mesures (premier écran, défilement du plus long livre)
         id: mesures
         if: ${{ !cancelled() }}
@@ -176,7 +181,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/mesures"
           xcodebuild test-without-building -xctestrun "$XCTESTRUN" -destination "id=$SIMULATEUR" \
             -resultBundlePath "$RUNNER_TEMP/mesures.xcresult" \
-            -only-testing:MyHitbodedutUITests/MesuresTests 2>&1 | tee mesures.log \
+            -only-testing:MyHitbodedutUITests/MesuresTests \
+            -skip-testing:MyHitbodedutUITests/MesuresTests/testDefilementSignposts \
+            -skip-testing:MyHitbodedutUITests/MesuresTests/testDefilementAccrocs 2>&1 | tee mesures.log \
             | grep -E "^MESURE|error:|TEST EXECUTE (SUCCEEDED|FAILED)" || true
           xcrun xcresulttool get test-results metrics --path "$RUNNER_TEMP/mesures.xcresult" > metriques.json || true
           python3 - metriques.json > metriques.txt <<'EOF'

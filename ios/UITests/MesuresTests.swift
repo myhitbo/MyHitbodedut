@@ -16,11 +16,13 @@ import XCTest
 ///   lus, anneaux posés), sur le journal de démonstration ; `MESURES_LANCEMENTS` lancements, après un lancement à
 ///   blanc. `XCTApplicationLaunchMetric` mesure de son côté, du lancement demandé à l'app réactive.
 /// - **le plus long livre** (le Kitsour Yalkout Yossef, `Captures.plusLongLivre`) : son ouverture (lecture du texte,
-///   construction des lignes, première image ; `LectureModele.mesure`), puis son défilement : l'app compte ses
-///   images (« -mesuresImages », `CompteurImages`) pendant des défilements rapides ; XCTest mesure le même
-///   défilement (`XCTOSSignpostMetric.scrollingAndDecelerationMetric`, `XCTHitchMetric`). Les défilements se font
-///   au doigt, par coordonnées : aucune requête de l'arbre d'accessibilité (qui passe par le fil principal de
-///   l'app) ne se mêle à ce qu'on mesure.
+///   construction des lignes, première image ; `LectureModele.mesure`), puis son défilement, que l'app fait
+///   elle-même et dont elle compte les images (« -mesuresDefilement », `DefilementMesure`) : le test ne fait que
+///   lire le fichier des mesures. Chaque geste d'un test d'interface fait d'abord photographier tout l'arbre
+///   d'accessibilité de l'app, sur son fil principal : quinze à trente secondes par geste sur ce livre, au simulateur
+///   de la CI (run 45410886554), qui faussaient tout compte. Les mesures d'XCTest au doigt
+///   (`XCTOSSignpostMetric.scrollingAndDecelerationMetric`, `XCTHitchMetric`) restent pour un iPhone, depuis Xcode :
+///   la CI les saute (ios-interface.yml), le simulateur n'en rapportant que la durée.
 ///
 /// Les fichiers des mesures de l'app vont dans MESURES_DOSSIER (l'app et le test tournent dans le simulateur, qui
 /// écrit dans les fichiers du Mac), sinon dans le dossier temporaire du test.
@@ -97,49 +99,35 @@ final class MesuresTests: XCTestCase {
 
     // MARK: Le plus long livre
 
-    /// L'ouverture du plus long livre, puis le compte des images de l'app pendant douze défilements rapides vers la
-    /// fin du livre et deux vers son début.
+    /// L'ouverture du plus long livre, puis son défilement par l'app elle-même (DefilementMesure : dix secondes vers
+    /// la fin à 3 000 points par seconde, trois vers le début) et les images qu'elle y perd.
     @MainActor
-    func testDefilementImagesPerdues() throws {
-        let fichier = "\(dossier)/images.tsv"
-        let app = try ouvrirLePlusLongLivre(fichier: fichier, images: true)
-        let debut = Date().timeIntervalSince1970
-        for _ in 0..<12 { glisser(app, versLeHaut: true) }
-        for _ in 0..<2 { glisser(app, versLeHaut: false) }
-        let fin = Date().timeIntervalSince1970
-        Thread.sleep(forTimeInterval: 1)
-        let lignes = Self.lire(fichier)
-        app.terminate()
-        let comptes = lignes.filter { $0.first == "images" }.compactMap { champs -> [Double]? in
-            let nombres = champs.dropFirst().compactMap(Double.init)
-            return nombres.count == 5 ? nombres : nil
+    func testDefilementDuPlusLongLivre() throws {
+        let fichier = "\(dossier)/defilement.tsv"
+        let app = try ouvrirLePlusLongLivre(fichier: fichier, defilement: true)
+        let lu = attendre(fichier, secondes: 120) { lignes in
+            lignes.contains { $0.first == "defilement" || $0.first == "erreur" }
         }
-        guard let avant = comptes.last(where: { $0[0] <= debut }) ?? comptes.first,
-              let apres = comptes.first(where: { $0[0] >= fin }) ?? comptes.last, apres[0] > avant[0] else {
-            XCTFail("aucun compte d'images (\(fichier))")
+        app.terminate()
+        for champs in lu where champs.first == "erreur" {
+            XCTFail("défilement : \(champs.dropFirst().joined(separator: " "))")
+        }
+        guard let d = lu.first(where: { $0.first == "defilement" && $0.count >= 8 }) else {
+            XCTFail("le défilement n'a pas été mesuré (\(fichier))")
             return
         }
-        let duree = apres[0] - avant[0]
-        let images = Int(apres[1] - avant[1])
-        let accrocs = Int(apres[2] - avant[2])
-        let perdues = Int(apres[3] - avant[3])
-        let tempsAccroc = apres[4] - avant[4]
-        let blocages = lignes.filter { $0.first == "blocage" && $0.count >= 3 }
-            .compactMap { champs -> (Double, Int)? in
-                guard let t = Double(champs[1]), let ms = Int(champs[2]) else { return nil }
-                return (t, ms)
-            }
-            .filter { $0.0 >= debut && $0.0 <= fin + 1 }
-        print("MESURE\tdefilement-images-perdues\t\(perdues)\t\(images) images en " + String(format: "%.1f s", duree)
-              + ", \(accrocs) accrocs, " + String(format: "%.0f ms d'accroc, %.1f ms/s", tempsAccroc, tempsAccroc / duree)
-              + " ; blocages de plus de 250 ms : \(blocages.count), le plus long \(blocages.map(\.1).max() ?? 0) ms")
+        let duree = Double(d[6]) ?? 0
+        let tempsAccroc = Double(d[4]) ?? 0
+        print("MESURE\tdefilement-plus-long-livre\t\(d[3]) images perdues\t\(d[1]) images en \(d[6]) s sur \(d[7]) points, "
+              + "\(d[2]) accrocs, \(d[4]) ms d'accroc (" + String(format: "%.1f", duree > 0 ? tempsAccroc / duree : 0)
+              + " ms/s), le plus long \(d[5]) ms")
     }
 
     /// `XCTOSSignpostMetric.scrollingAndDecelerationMetric` : un défilement rapide, cinq fois (au simulateur, la
     /// durée seule).
     @MainActor
     func testDefilementSignposts() throws {
-        let app = try ouvrirLePlusLongLivre(fichier: "\(dossier)/signposts.tsv", images: false)
+        let app = try ouvrirLePlusLongLivre(fichier: "\(dossier)/signposts.tsv", defilement: false)
         let options = XCTMeasureOptions()
         options.invocationOptions = [.manuallyStop]
         options.iterationCount = 5
@@ -153,7 +141,7 @@ final class MesuresTests: XCTestCase {
     /// `XCTHitchMetric` (Xcode 26) : les accrocs du même défilement, vus du serveur de rendu.
     @MainActor
     func testDefilementAccrocs() throws {
-        let app = try ouvrirLePlusLongLivre(fichier: "\(dossier)/accrocs.tsv", images: false)
+        let app = try ouvrirLePlusLongLivre(fichier: "\(dossier)/accrocs.tsv", defilement: false)
         let options = XCTMeasureOptions()
         options.invocationOptions = [.manuallyStop]
         options.iterationCount = 5
@@ -178,15 +166,15 @@ final class MesuresTests: XCTestCase {
     }
 
     /// Ouvre le plus long livre (« -capture plus-long-livre ») et attend que l'app dise son texte affiché
-    /// (« lecteur-affiche », sans interroger l'arbre d'accessibilité), puis que ses images reviennent ; écrit ce que
-    /// l'ouverture a pris. Avec `images`, l'app compte ses images.
+    /// (« lecteur-affiche », lu dans le fichier des mesures, sans interroger l'arbre d'accessibilité) ; écrit ce que
+    /// l'ouverture a pris. Avec `defilement`, l'app fait ensuite défiler le livre et compte ses images.
     @MainActor
-    private func ouvrirLePlusLongLivre(fichier: String, images: Bool) throws -> XCUIApplication {
+    private func ouvrirLePlusLongLivre(fichier: String, defilement: Bool) throws -> XCUIApplication {
         try? FileManager.default.removeItem(atPath: fichier)
         aBlanc()
         let app = XCUIApplication()
         app.launchArguments = ["-capture", "plus-long-livre", "-captureDemo", "-mesures", "-AppleLanguages", "(fr)"]
-        if images { app.launchArguments.append("-mesuresImages") }
+        if defilement { app.launchArguments.append("-mesuresDefilement") }
         app.launchEnvironment["MESURES_FICHIER"] = fichier
         let lance = Date()
         app.launch()

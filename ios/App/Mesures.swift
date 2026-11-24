@@ -2,6 +2,7 @@ import Darwin
 import Ecrans
 import Foundation
 import QuartzCore
+import UIKit
 
 /// Les mesures de la tâche 29 (ROADMAP.md : « premier écran en moins de 400 ms, défilement du plus long livre sans
 /// image perdue »), prises par l'app elle-même pour le test d'interface `MesuresTests` (UITests/) et la CI
@@ -24,13 +25,13 @@ import QuartzCore
 ///
 /// Un texte ouvert dans le lecteur donne **lecteur-pret** (ses lignes faites : leur nombre, la lecture du texte et
 /// la construction des lignes, en millisecondes) puis **lecteur-affiche** (la première image d'après). Avec
-/// « -mesuresImages » en plus, l'app compte ses images (`CompteurImages`).
+/// « -mesuresDefilement » en plus, l'app fait ensuite défiler ce texte et compte ses images (`DefilementMesure`).
 enum Mesures {
 
     /// « -mesures » : l'app mesure.
     static let actives = ProcessInfo.processInfo.arguments.contains("-mesures")
-    /// « -mesuresImages » : l'app compte aussi ses images, image par image.
-    static let images = ProcessInfo.processInfo.arguments.contains("-mesuresImages")
+    /// « -mesuresDefilement » : l'app fait défiler le premier texte ouvert et compte ses images.
+    static let defilement = ProcessInfo.processInfo.arguments.contains("-mesuresDefilement")
     /// Le fichier où le test lit les mesures (l'app et le test tournent dans le simulateur, qui écrit dans les
     /// fichiers du Mac).
     static let fichier: String? = ProcessInfo.processInfo.environment["MESURES_FICHIER"]
@@ -47,18 +48,21 @@ enum Mesures {
         ecrire([nom, millisecondes(depuis: debut), String(tempsDeCalcul())])
     }
 
-    /// Mesure le premier écran et l'accueil prêt, l'ouverture des textes du lecteur, puis compte les images si on le
+    /// Mesure le premier écran et l'accueil prêt, l'ouverture des textes du lecteur, puis le défilement si on le
     /// demande ; à appeler à l'apparition de la racine. Sans « -mesures », ne fait rien.
     @MainActor
     static func lancement(_ app: ModelesApp) {
         guard actives else { return }
-        if images { CompteurImages.demarrer() }
         LectureModele.mesure = { cible, lignes, lecture, construction in
             let pret = Date()
             ecrire(["lecteur-pret", cible.id, String(lignes), String(lecture), String(construction)])
             Task { @MainActor in
                 await ProchaineImage().attendre()
                 ecrire(["lecteur-affiche", cible.id, millisecondes(depuis: pret)])
+                guard defilement else { return }
+                // Le temps que les dernières lignes se posent, puis le défilement.
+                try? await Task.sleep(for: .seconds(3))
+                DefilementMesure.lancer()
             }
         }
         Task { @MainActor in
@@ -143,58 +147,106 @@ private final class ProchaineImage: NSObject {
     }
 }
 
-/// Le compte des images (« -mesuresImages ») : à chaque image, l'écart avec la précédente ; un écart de plus d'une
-/// image et demie est un accroc (une image au moins n'a pas été prête à temps : le fil principal tenu, la mise en
-/// page d'une ligne du lecteur trop longue). Tous les quarts de seconde, les comptes depuis le lancement s'écrivent
-/// sur une ligne « images » (l'instant, en secondes depuis 1970 : le test, sur la même horloge, lit les comptes de
-/// part et d'autre de son défilement) : images, accrocs, images perdues, millisecondes d'accroc (ce que chaque
-/// accroc a duré au-delà d'une image). Un écart de plus d'un quart de seconde s'écrit aussi seul, sur une ligne
-/// « blocage » (sa fin, sa durée en millisecondes). Ce compte ne voit que le fil principal de l'app, pas le serveur
-/// de rendu ; `XCTHitchMetric` voit les deux, sur un iPhone.
+/// Le défilement mesuré du texte ouvert (« -mesuresDefilement ») : l'app fait défiler elle-même le texte du lecteur,
+/// à 3 000 points par seconde, dix secondes vers la fin puis trois vers le début (une lecture qu'on survole, une
+/// quarantaine d'écrans), et compte ses images pendant ce temps. Le test n'y touche pas : chaque geste d'un test
+/// d'interface fait d'abord photographier tout l'arbre d'accessibilité de l'app, sur son fil principal (quinze
+/// secondes sur le plus long livre, au simulateur de la CI), ce qui fausserait le compte.
+///
+/// À chaque image, l'écart avec la précédente ; un écart de plus d'une image et demie est un accroc (une image au
+/// moins n'a pas été prête à temps : le fil principal tenu par la mise en page des lignes qui entrent). La distance
+/// suit le temps écoulé, comme un doigt : un accroc ne ralentit pas le défilement, il le saccade. À la fin, une
+/// ligne « defilement » : images, accrocs, images perdues, millisecondes d'accroc (ce que chaque accroc a duré
+/// au-delà d'une image), le plus long accroc, la durée, les points parcourus. Ce compte ne voit que le fil principal
+/// de l'app, pas le serveur de rendu ; `XCTHitchMetric` voit les deux, sur un iPhone (MesuresTests).
 @MainActor
-final class CompteurImages: NSObject {
-    private static var compteur: CompteurImages?
+final class DefilementMesure: NSObject {
+    private static var encours: DefilementMesure?
+    static let vitesse: CGFloat = 3_000
+    static let descente: CFTimeInterval = 10
+    static let remontee: CFTimeInterval = 3
+
+    private let vue: UIScrollView
     private var lien: CADisplayLink?
+    private var debut: CFTimeInterval = 0
     private var precedente: CFTimeInterval = 0
-    private var ecrite: CFTimeInterval = 0
-    private var nombre = 0
+    private var images = 0
     private var accrocs = 0
     private var perdues = 0
     private var tempsAccroc: Double = 0
+    private var plusLong: Double = 0
+    private var parcouru: CGFloat = 0
 
-    static func demarrer() {
-        guard compteur == nil else { return }
-        let nouveau = CompteurImages()
-        let lien = CADisplayLink(target: nouveau, selector: #selector(CompteurImages.image(_:)))
+    private init(vue: UIScrollView) {
+        self.vue = vue
+    }
+
+    /// Lance le défilement du plus grand défilement vertical de l'écran (le texte du lecteur), une fois.
+    static func lancer() {
+        guard encours == nil else { return }
+        guard let vue = texteDuLecteur() else {
+            Mesures.ecrire(["erreur", "aucun texte à faire défiler"])
+            return
+        }
+        let mesure = DefilementMesure(vue: vue)
+        let lien = CADisplayLink(target: mesure, selector: #selector(DefilementMesure.image(_:)))
         lien.add(to: .main, forMode: .common)
-        nouveau.lien = lien
-        compteur = nouveau
+        mesure.lien = lien
+        encours = mesure
+    }
+
+    /// Le défilement vertical au plus long contenu, dans les fenêtres de l'app.
+    private static func texteDuLecteur() -> UIScrollView? {
+        var trouves: [UIScrollView] = []
+        func chercher(_ vue: UIView) {
+            if let defilement = vue as? UIScrollView, defilement.contentSize.height > defilement.bounds.height * 2 {
+                trouves.append(defilement)
+            }
+            vue.subviews.forEach(chercher)
+        }
+        for scene in UIApplication.shared.connectedScenes {
+            (scene as? UIWindowScene)?.windows.forEach(chercher)
+        }
+        return trouves.max { $0.contentSize.height < $1.contentSize.height }
     }
 
     @objc private func image(_ lien: CADisplayLink) {
         let instant = lien.timestamp
-        defer { precedente = instant }
-        guard precedente > 0 else {
-            ecrite = instant
+        guard debut > 0 else {
+            debut = instant
+            precedente = instant
             return
         }
         // La durée d'une image à la cadence de l'écran (1/60 s au simulateur ; un iPhone ProMotion varie).
         let duree = max(lien.duration, 1.0 / 120)
         let ecart = instant - precedente
-        nombre += 1
+        precedente = instant
+        images += 1
         if ecart > duree * 1.5 {
             accrocs += 1
             perdues += max(1, Int((ecart / duree).rounded()) - 1)
             tempsAccroc += (ecart - duree) * 1000
+            plusLong = max(plusLong, ecart * 1000)
         }
-        let maintenant = String(format: "%.3f", Date().timeIntervalSince1970)
-        if ecart > 0.25 {
-            Mesures.ecrire(["blocage", maintenant, String(Int((ecart * 1000).rounded()))])
+        let ecoule = instant - debut
+        guard ecoule < Self.descente + Self.remontee else {
+            finir(ecoule)
+            return
         }
-        if instant - ecrite >= 0.25 {
-            ecrite = instant
-            Mesures.ecrire(["images", maintenant, String(nombre), String(accrocs), String(perdues),
-                            String(format: "%.1f", tempsAccroc)])
-        }
+        let sens: CGFloat = ecoule < Self.descente ? 1 : -1
+        let haut = -vue.adjustedContentInset.top
+        let bas = max(haut, vue.contentSize.height - vue.bounds.height + vue.adjustedContentInset.bottom)
+        let avant = vue.contentOffset.y
+        let apres = min(max(avant + sens * Self.vitesse * CGFloat(ecart), haut), bas)
+        parcouru += abs(apres - avant)
+        vue.contentOffset = CGPoint(x: vue.contentOffset.x, y: apres)
+    }
+
+    private func finir(_ duree: CFTimeInterval) {
+        lien?.invalidate()
+        lien = nil
+        Mesures.ecrire(["defilement", String(images), String(accrocs), String(perdues),
+                        String(format: "%.1f", tempsAccroc), String(format: "%.1f", plusLong),
+                        String(format: "%.2f", duree), String(Int(parcouru))])
     }
 }
