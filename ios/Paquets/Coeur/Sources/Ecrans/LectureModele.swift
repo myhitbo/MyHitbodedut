@@ -723,8 +723,11 @@ public final class LectureModele {
         parcouru = 0
     }
 
-    /// « Masquer » : plus rien à l'écran ; la barre du bas dit comment le retrouver.
+    /// « Masquer » : plus rien à l'écran ; la barre du bas dit comment le retrouver. Le défilement automatique
+    /// s'arrête, comme sur Android (ReglagesLecture.masquer) : sa commande serait restée seule, sous la barre du
+    /// bas (vérification du 24/11).
     public func masquer() async throws {
+        defilementAuto.arreter()
         barreDepliee = false
         annonceMasque = true
         try await magasin.modifierReglages { $0.setLectureMasquee(true) }

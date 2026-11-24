@@ -13,7 +13,7 @@ import Ecrans
 //
 // Le moteur : un TimelineView(.animation), présent seulement pendant le défilement, donne l'intervalle entre deux
 // images ; `avancer` dit où mettre le texte, `ScrollPosition.scrollTo(y:)` l'y met. Un doigt sur le texte
-// (phase `tracking` ou `interacting`) suspend le défilement ; il repart quand la liste s'immobilise (`idle`).
+// (phase `tracking` ou `interacting`) l'arrête ; le bouton le relance.
 // L'écran reste allumé tant qu'il défile (`isIdleTimerDisabled`, comme la séance).
 
 /// Ce que le moteur lit de la liste : où est le texte et jusqu'où il peut descendre, en points depuis le haut du
@@ -54,7 +54,7 @@ struct DefilementMoteur: ViewModifier {
             }
             .background {
                 if defilement.actif {
-                    TimelineView(.animation(minimumInterval: nil, paused: defilement.suspendu)) { contexte in
+                    TimelineView(.animation) { contexte in
                         Color.clear
                             .onChange(of: contexte.date) { avant, apres in
                                 image(apres.timeIntervalSince(avant))
