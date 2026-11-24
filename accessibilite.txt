@@ -1,0 +1,236 @@
+== suite-option
+== suite-ERREUR
+== gestes-seance-en-cours
+== gestes-seance-calme
+== gestes-seance-apres
+PETIT 363x24dp Button celebration_continue «Continue»
+== boutons-seance-en-cours
+== boutons-seance-calme
+== boutons-seance-apres
+== fr-gestes-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-gestes-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-gestes-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-gestes-version-pile-4
+== fr-gestes-version-bento
+== fr-gestes-version-bento-bas
+== fr-gestes-version-instant
+PETIT 167x44dp TextView  «Commencer · 1 min»
+PETIT 379x12dp LinearLayout  «»
+MUET LinearLayout  (42, 2305, 1038, 2337)
+== fr-gestes-version-instant-bas
+== fr-gestes-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== fr-gestes-version-serenite-bas
+PETIT 23x40dp TextView  «Lire»
+PETIT 54x40dp TextView  «Tout voir»
+PETIT 54x40dp TextView  «Tout voir»
+== fr-boutons-version-pile
+PETIT 12x49dp TextView  «Voir la traduction»
+PETIT 12x49dp TextView  «Plus de ’hizouk»
+== fr-boutons-version-pile-2
+PETIT 12x49dp TextView  «Tous les zmanim»
+== fr-boutons-version-pile-3
+PETIT 12x48dp TextView  «Écrire la note du jour»
+PETIT 12x49dp TextView  «Tout le journal»
+PETIT 12x49dp TextView  «Mon parcours»
+== fr-boutons-version-pile-4
+== fr-boutons-version-bento
+== fr-boutons-version-instant
+PETIT 167x44dp TextView  «Commencer · 1 min»
+== fr-boutons-version-serenite
+PETIT 84x44dp TextView  «Modifier»
+PETIT 23x40dp TextView  «Lire»
+== es-gestes-accueil
+PETIT 363x32dp Button today_offline «La hice sin el teléfono»
+== es-gestes-accueil-bas
+== es-gestes-accueil-volet
+PETIT 363x32dp Button today_offline «La hice sin el teléfono»
+MUET Switch music_switch_main (796, 1473, 933, 1599)
+== es-gestes-livres
+== es-gestes-livres-bas
+== es-gestes-chemin
+== es-gestes-chemin-bas
+== es-gestes-reglages
+PETIT 88x19dp Button ouverture_button «Pantalla de inicio: El Día»
+== es-gestes-reglages-bas
+== es-gestes-choix-version
+== es-gestes-choix-version-bas
+== es-gestes-seance
+== es-gestes-seance-bas
+== es-gestes-bravo
+== es-gestes-bravo-bas
+== es-gestes-journal
+== es-gestes-journal-bas
+== es-gestes-parcours
+== es-gestes-parcours-bas
+== es-gestes-hizouk
+== es-gestes-hizouk-bas
+== es-gestes-conseils
+== es-gestes-conseils-bas
+== es-gestes-rappels
+MUET Switch reminders_switch (854, 582, 991, 708)
+== es-gestes-rappels-bas
+MUET Switch reminders_switch (854, 582, 991, 708)
+== es-gestes-musique
+MUET Switch music_switch (854, 477, 991, 603)
+MUET Switch music_shuffle (854, 890, 991, 1016)
+PETIT 344x40dp LinearLayout music_ambiance «Ambiente Silencio»
+MUET RadioButton track_radio (74, 1465, 200, 1591)
+MUET RadioButton track_radio (74, 1654, 200, 1780)
+MUET RadioButton track_radio (74, 1843, 200, 1969)
+PETIT 379x44dp LinearLayout  «Afilu (Incluso) — Noam Shpayer»
+PETIT 48x36dp RadioButton track_radio «»
+MUET RadioButton track_radio (74, 2032, 200, 2127)
+PETIT 48x36dp ImageButton track_rename «Renombrar»
+PETIT 48x36dp ImageButton track_play «Escuchar»
+== es-gestes-musique-bas
+PETIT 379x29dp LinearLayout  «Incluida con la aplicación Ren»
+PETIT 48x21dp RadioButton track_radio «»
+MUET RadioButton track_radio (74, 128, 200, 184)
+PETIT 48x21dp ImageButton track_rename «Renombrar»
+PETIT 48x21dp ImageButton track_play «Escuchar»
+MUET RadioButton track_radio (74, 247, 200, 373)
+MUET RadioButton track_radio (74, 436, 200, 562)
+MUET RadioButton track_radio (74, 625, 200, 751)
+MUET RadioButton track_radio (74, 814, 200, 940)
+MUET RadioButton track_radio (74, 1003, 200, 1129)
+MUET RadioButton track_radio (74, 1192, 200, 1318)
+MUET RadioButton track_radio (74, 1381, 200, 1507)
+MUET RadioButton track_radio (74, 1570, 200, 1696)
+MUET RadioButton track_radio (74, 1759, 200, 1885)
+MUET RadioButton track_radio (74, 1948, 200, 2074)
+== es-gestes-siddour
+PETIT 205x36dp TextView siddur_heading_nusah «נוסח ספרדי – עדות המזרח»
+PETIT 352x47dp LinearLayout  «תִּקּוּן חֲצוֹת»
+== es-gestes-siddour-bas
+PETIT 352x30dp LinearLayout  «הַפְרָשַׁת חַלָּה»
+== es-gestes-siddour-lecture
+PETIT 26x48dp TextView  «תפילת שחרית»
+PETIT 411x43dp TextView  «פתיחת אליהו»
+PETIT 411x43dp TextView  «אחר המזמורים של תיקון לאה המנה»
+PETIT 411x8dp TextView  «וְאִלֵּין עֶ͏שֶׂר סְפִירָן אִנ»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-siddour-lecture-bas
+PETIT 39x48dp TextView  «הודו»
+PETIT 34x48dp TextView  «פסוקי דזמרה»
+== es-gestes-tefilot
+== es-gestes-tefilot-bas
+== es-gestes-tehilim
+PETIT 70x10dp TextView  «46»
+PETIT 70x10dp TextView  «47»
+PETIT 70x10dp TextView  «48»
+PETIT 70x10dp TextView  «49»
+PETIT 70x10dp TextView  «50»
+== es-gestes-tehilim-bas
+PETIT 70x35dp TextView  «76»
+PETIT 70x35dp TextView  «77»
+PETIT 70x35dp TextView  «78»
+PETIT 70x35dp TextView  «79»
+PETIT 70x35dp TextView  «80»
+== es-gestes-tehilim-lecture
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-tehilim-lecture-bas
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-tikkun
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-tikkun-bas
+== es-gestes-bibliotheque
+== es-gestes-bibliotheque-bas
+== es-gestes-livres
+== es-gestes-livres-bas
+PETIT 379x46dp LinearLayout  «10 capítulos»
+== es-gestes-source
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-source-bas
+== es-gestes-zmanim
+PETIT 147x36dp TextView zmanim_lieu «Paris · Diáspora»
+== es-gestes-zmanim-bas
+PETIT 48x14dp Switch  «Mostrar las hilulot»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-vol
+PETIT 379x44dp LinearLayout  «Método y fuentes»
+== es-gestes-vol-bas
+PETIT 379x44dp LinearLayout  «Método y fuentes»
+== es-gestes-boussole
+PETIT 56x36dp TextView boussole_lieu «Paris»
+== es-gestes-boussole-bas
+== es-gestes-calendrier
+PETIT 76x26dp TextView  «Hebreo»
+PETIT 100x26dp TextView  «Gregoriano»
+PETIT 347x28dp TextView  «Hoy»
+== es-gestes-calendrier-bas
+== es-gestes-halakha
+PETIT 347x45dp EditText  «Buscar en la halajá»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-halakha-bas
+PETIT 48x8dp TextView  «‹»
+PETIT 48x8dp TextView  «›»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-hilloulot
+PETIT 48x14dp Switch  «Mostrar las hilulot»
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-hilloulot-bas
+PETIT 56x36dp TextView  «Aa»
+== es-gestes-recherche
+PETIT 347x45dp EditText recherche_champ «Buscar en el sidur, los libros»
+== es-gestes-recherche-bas
+PETIT 347x45dp EditText recherche_champ «by g GG by GG»
+== es-gestes-paliers
+PETIT 379x27dp LinearLayout  «15 minutos en un día, Ganado e»
+PETIT 379x37dp LinearLayout  «2 horas en total, 1 / 2»
+== es-gestes-paliers-bas
+== es-gestes-applications
+MUET CheckBox app_check (912, 557, 1038, 683)
+MUET CheckBox app_check (912, 747, 1038, 873)
+MUET CheckBox app_check (912, 937, 1038, 1063)
+MUET CheckBox app_check (912, 1127, 1038, 1253)
+MUET CheckBox app_check (912, 1317, 1038, 1443)
+MUET CheckBox app_check (912, 1507, 1038, 1633)
+MUET CheckBox app_check (912, 1697, 1038, 1823)
+MUET CheckBox app_check (912, 1887, 1038, 2013)
+MUET CheckBox app_check (912, 2077, 1038, 2203)
+PETIT 411x39dp LinearLayout  «Maps»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 2267, 1038, 2337)
+== es-gestes-applications-bas
+PETIT 411x39dp LinearLayout  «Drive»
+PETIT 48x27dp CheckBox app_check «»
+MUET CheckBox app_check (912, 525, 1038, 595)
+MUET CheckBox app_check (912, 659, 1038, 785)
+MUET CheckBox app_check (912, 849, 1038, 975)
+MUET CheckBox app_check (912, 1039, 1038, 1165)
+MUET CheckBox app_check (912, 1229, 1038, 1355)
+MUET CheckBox app_check (912, 1419, 1038, 1545)
+MUET CheckBox app_check (912, 1609, 1038, 1735)
+MUET CheckBox app_check (912, 1799, 1038, 1925)
+MUET CheckBox app_check (912, 1989, 1038, 2115)
+MUET CheckBox app_check (912, 2179, 1038, 2305)
+== es-gestes-version-pile
+PETIT 12x49dp TextView  «Más jizuk»
+== es-gestes-version-pile-2
+PETIT 12x49dp TextView  «Todos los zmanim»
+== es-gestes-version-pile-3
+PETIT 12x48dp TextView  «Escribir la nota del día»
+PETIT 12x49dp TextView  «Todo el diario»
+PETIT 12x49dp TextView  «Mi recorrido»
+== es-gestes-version-pile-4
+== es-gestes-version-bento
+PETIT 185x22dp FrameLayout  «Sidur»
+PETIT 185x22dp FrameLayout  «Tehilim»
+== es-gestes-version-instant
+PETIT 144x44dp TextView  «Empezar · 1 min»
+PETIT 379x12dp LinearLayout  «»
+MUET LinearLayout  (42, 2305, 1038, 2337)
+== es-gestes-version-serenite
+PETIT 68x44dp TextView  «Editar»
+PETIT 27x40dp TextView  «Leer»
+PETIT 52x40dp TextView  «Ver todo»
+== gestes-barriere-apres-redemarrage
+PETIT 363x19dp Button blocker_snooze «Plus tard (15 min)»

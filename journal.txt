@@ -1,0 +1,220 @@
+paquets installes : ['com.myhitbodedut']
+paquet : com.myhitbodedut
+ecran : 1080 2400
+adb root : 
+root : True
+  adb shell run-as com.myhitbodedut id -> 1 run-as: package not debuggable: com.myhitbodedut
+debogable : False
+passes : ['suite', 'seance', 'versions', 'ecrans-es', 'redemarrage'] | Android 13 API 33
+  application neuve : android.permission.SYSTEM_ALERT_WINDOW | android.permission.PACKAGE_USAGE_STATS | android.permission.POST_NOTIFICATIONS | android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED] | appops : SYSTEM_ALERT_WINDOW: default / GET_USAGE_STATS: default
+  date : Tue Nov 17 09:30:00 UTC 2026
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="levana_rappel_soir">DERNIER</string>     <boolean name="in_israel" value="false" />     <int name="onboarded_version" value="2" />     <string name="langue_app">fr</string>     <string name="version_app">classique</string> </map> 
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="langue_app"></string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris<
+
+=== suite ===
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" val
+  langue : Locales for com.myhitbodedut for user 0 are [en]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <int name="onboarded_version" value="2" />     <set name="paliers_vus" />     <set name="trophees_vus" />     <string name="levana_rappel_soir">DERNIER</string>     <string name="bilan_vu">2026-11-08</string>     <string name="version_app">classique</string>     <string name="lieu_nom">Paris</string>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_longitude">2.3488</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_fuseau">Europe/Paris</string>     <long name="lieu_ville" val
+  capture suite-option (210059 octets)
+  ERREUR dans suite : AttributeError("'tuple' object has no attribute 'get'")
+---- ecran (erreur) ----
+  [LinearLayout] id=action_bar_root text='' desc='' [0,0][1080,2400]
+  [FrameLayout] id=content text='' desc='' [0,0][1080,2400]
+  [ScrollView] id=session_fond text='' desc='' [0,128][1080,2337]
+  [View] id=session_souffle text='' desc='' [0,128][1080,2337]
+  [TextView] id=session_titre text='HITBODEDUT' desc='' [415,191][665,237]
+  [FrameLayout] id=session_scene text='' desc='' [63,279][1017,820]
+  [ImageView] id=session_character text='' desc='' [84,300][996,799]
+  [TextView] id=session_countdown text='1 min' desc='' [355,862][724,1058]
+  [TextView] id=session_caption text='Pick a length, then put the phone down.' desc='' [63,1079][1017,1132]
+  [TextView] id=session_music text='Music: HaMelech BaSadeh (המלך בשדה)' desc='' [63,1143][1017,1189]
+  [Button] id=session_primary text='Start, 1 min' desc='' [63,1231][1017,1357] clickable
+  [Button] id=session_theme text='Subject: none (optional)' desc='' [63,1389][1017,1515] clickable
+  [LinearLayout] id=session_durations text='' desc='' [63,1557][1017,1820]
+  [Button] id=duration_5 text='5 min' desc='' [63,1557][373,1683] clickable
+  [Button] id=duration_10 text='10 min' desc='' [384,1557][695,1683] clickable
+  [Button] id=duration_15 text='15 min' desc='' [706,1557][1017,1683] clickable
+  [Button] id=duration_30 text='30 min' desc='' [63,1694][373,1820] clickable
+  [Button] id=duration_60 text='1 h' desc='' [384,1694][695,1820] clickable
+  [Button] id=duration_90 text='1 h 30 min' desc='' [706,1694][1017,1820] clickable
+  [Button] id=session_custom text='Other length…' desc='' [63,1820][1017,1946] clickable
+  [Switch] id=session_suite text='Ask me 10 s before the end whether to continue' desc='' [63,1946][1017,2072] clickable
+  [Button] id=session_open text='No set length' desc='' [63,2072][1017,2198] clickable
+  [LinearLayout] id=session_simplement text='' desc='' [63,2198][1017,2324]
+  [Button] id=simplement_parler text='Speak' desc='' [63,2198][270,2324] clickable
+  [Button] id=simplement_ecrire text='Write' desc='' [270,2198][508,2324] clickable
+  [Button] id=simplement_prier text='Pray' desc='' [508,2198][715,2324] clickable
+  [Button] id=simplement_question text='A question' desc='' [715,2198][1016,2324] clickable
+  [View] id=statusBarBackground text='' desc='' [0,0][1080,128]
+  [View] id=navigationBarBackground text='' desc='' [0,2337][1080,2400]
+---- xml brut ----
+<hierarchy rotation="0"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="com.myhitbodedut:id/action_bar_root" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="android:id/content" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,2400]"><node index="0" text="" resource-id="com.myhitbodedut:id/session_fond" class="android.widget.ScrollView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="true" focused="false" scrollable="true" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]"><node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]"><node index="0" text="" resource-id="com.myhitbodedut:id/session_souffle" class="android.view.View" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]" /><node index="1" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,128][1080,2337]"><node index="0" text="HITBODEDUT" resource-id="com.myhitbodedut:id/session_titre" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[415,191][665,237]" /><node index="1" text="" resource-id="com.myhitbodedut:id/session_scene" class="android.widget.FrameLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,279][1017,820]"><node index="0" text="" resource-id="com.myhitbodedut:id/session_character" class="android.widget.ImageView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[84,300][996,799]" /></node><node index="2" text="1 min" resource-id="com.myhitbodedut:id/session_countdown" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[355,862][724,1058]" /><node index="3" text="Pick a length, then put the phone down." resource-id="com.myhitbodedut:id/session_caption" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1079][1017,1132]" /><node index="4" text="Music: HaMelech BaSadeh (המלך בשדה)" resource-id="com.myhitbodedut:id/session_music" class="android.widget.TextView" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1143][1017,1189]" /><node index="5" text="Start, 1 min" resource-id="com.myhitbodedut:id/session_primary" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1231][1017,1357]" /><node index="6" text="Subject: none (optional)" resource-id="com.myhitbodedut:id/session_theme" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1389][1017,1515]" /><node index="7" text="" resource-id="com.myhitbodedut:id/session_durations" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1557][1017,1820]"><node index="0" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1557][1017,1683]"><node index="0" text="5 min" resource-id="com.myhitbodedut:id/duration_5" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1557][373,1683]" /><node index="1" text="10 min" resource-id="com.myhitbodedut:id/duration_10" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[384,1557][695,1683]" /><node index="2" text="15 min" resource-id="com.myhitbodedut:id/duration_15" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[706,1557][1017,1683]" /></node><node index="1" text="" resource-id="" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1694][1017,1820]"><node index="0" text="30 min" resource-id="com.myhitbodedut:id/duration_30" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1694][373,1820]" /><node index="1" text="1 h" resource-id="com.myhitbodedut:id/duration_60" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[384,1694][695,1820]" /><node index="2" text="1 h 30 min" resource-id="com.myhitbodedut:id/duration_90" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[706,1694][1017,1820]" /></node></node><node index="8" text="Other length…" resource-id="com.myhitbodedut:id/session_custom" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1820][1017,1946]" /><node index="9" text="Ask me 10 s before the end whether to continue" resource-id="com.myhitbodedut:id/session_suite" class="android.widget.Switch" package="com.myhitbodedut" content-desc="" checkable="true" checked="true" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,1946][1017,2072]" /><node index="10" text="No set length" resource-id="com.myhitbodedut:id/session_open" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,2072][1017,2198]" /><node index="11" text="" resource-id="com.myhitbodedut:id/session_simplement" class="android.widget.LinearLayout" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,2198][1017,2324]"><node index="0" text="Speak" resource-id="com.myhitbodedut:id/simplement_parler" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[63,2198][270,2324]" /><node index="1" text="Write" resource-id="com.myhitbodedut:id/simplement_ecrire" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[270,2198][508,2324]" /><node index="2" text="Pray" resource-id="com.myhitbodedut:id/simplement_prier" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[508,2198][715,2324]" /><node index="3" text="A question" resource-id="com.myhitbodedut:id/simplement_question" class="android.widget.Button" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[715,2198][1016,2324]" /></node></node></node></node></node></node></node></node><node index="1" text="" resource-id="android:id/statusBarBackground" class="android.view.View" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][1080,128]" /><node index="2" text="" resource-id="android:id/navigationBarBackground" class="android.view.View" package="com.myhitbodedut" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,2337][1080,2400]" /></node></hierarchy>
+---- fin ----
+  capture /home/runner/work/MyHitbodedut/MyHitbodedut/out/suite-ERREUR.png (210059 octets)
+
+=== seance ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{6f25b14 u0 com.myhitbodedut/com.myhitbodedut.SessionActivity} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=57e59f4 NavigationBar0)/@0xbe217b5 - animation-leash of insets_animation)/@0xdc808
+  capture gestes-seance-en-cours (149952 octets)
+  services : * ServiceRecord{a67dce1 u0 com.myhitbodedut/.SessionService} |     isForeground=true foregroundId=2 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 actions=1 vis=PRIVATE)
+  photo gestes-seance-notification (105573 octets)
+  capture gestes-seance-calme (151216 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture gestes-seance-terminer-dialogue (301788 octets)
+  toucher id='button1' -> (821,1371)
+  capture gestes-seance-apres (365195 octets)
+  navigation : boutons | cadres : (128, 2274, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2274][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{7c4ce96 u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2274][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=57e59f4 NavigationBar0)/@0xbe217b5 - animation-leash of insets_animation)/@0x26a3c
+  capture boutons-seance-en-cours (149952 octets)
+  services : * ServiceRecord{ffc7c30 u0 com.myhitbodedut/.SessionService} |     isForeground=true foregroundId=2 foregroundNoti=Notification(channel=session shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 actions=1 vis=PRIVATE)
+  photo boutons-seance-notification (108331 octets)
+  capture boutons-seance-calme (151216 octets)
+  toucher id='session_secondary' -> (540,1431)
+  capture boutons-seance-terminer-dialogue (273266 octets)
+  toucher id='button1' -> (821,1340)
+  capture boutons-seance-apres (426512 octets)
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{2dd084 u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=57e59f4 NavigationBar0)/@0xbe217b5 - animation-leash of insets_animation)/@0x9a8fe
+
+=== versions ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{2dd084 u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=57e59f4 NavigationBar0)/@0xbe217b5 - animation-leash of insets_animation)/@0x9a8fe
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-gestes-version-pile (378804 octets)
+  capture fr-gestes-version-pile-2 (283368 octets)
+  capture fr-gestes-version-pile-3 (235779 octets)
+  capture fr-gestes-version-pile-4 (160799 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-gestes-version-bento (261429 octets)
+  capture fr-gestes-version-bento-bas (240262 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-gestes-version-instant (194625 octets)
+  capture fr-gestes-version-instant-bas (155916 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-gestes-version-serenite (268506 octets)
+  capture fr-gestes-version-serenite-bas (223801 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  navigation : boutons | cadres : (128, 2274, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2274][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{a25715d u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2274][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=57e59f4 NavigationBar0)/@0xbe217b5 - animation-leash of insets_animation)/@0x57f84
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-boutons-version-pile (357154 octets)
+  capture fr-boutons-version-pile-2 (282277 octets)
+  capture fr-boutons-version-pile-3 (229391 octets)
+  capture fr-boutons-version-pile-4 (157559 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-boutons-version-bento (259562 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-boutons-version-instant (195559 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  capture fr-boutons-version-serenite (268746 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{f27e74d u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=57e59f4 NavigationBar0)/@0xbe217b5 - animation-leash of insets_animation)/@0xc5990
+
+=== ecrans-es ===
+  navigation : gestes | cadres : (128, 2337, None)
+  barres du bas : InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | ITYPE_NAVIGATION_BAR -> Window{f27e74d u0 com.android.settings/com.android.settings.FallbackHome} | mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,2337][1080,2400] visible=true insetsRoundedCornerFrame=false | mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=57e59f4 NavigationBar0)/@0xbe217b5 - animation-leash of insets_animation)/@0xc5990
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <long name="lieu_t" value="1794800000000" />     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <boolean name="in_israel" value="false" />     <boolean name="hide_countdown" value="false" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#
+  langue : Locales for com.myhitbodedut for user 0 are [es]
+  capture es-gestes-accueil (351605 octets)
+  capture es-gestes-accueil-bas (243450 octets)
+  toucher id='depart_regler' -> (938,2027)
+  capture es-gestes-accueil-volet (278367 octets)
+  toucher id='depart_regler' -> (938,2027)
+  toucher id='nav_texts' -> (540,2232)
+  capture es-gestes-livres (148208 octets)
+  capture es-gestes-livres-bas (152399 octets)
+  toucher id='nav_journal' -> (900,2232)
+  capture es-gestes-chemin (117588 octets)
+  capture es-gestes-chemin-bas (117588 octets)
+  capture es-gestes-reglages (216256 octets)
+  capture es-gestes-reglages-bas (274389 octets)
+  capture es-gestes-choix-version (210876 octets)
+  capture es-gestes-choix-version-bas (210876 octets)
+  capture es-gestes-seance (209575 octets)
+  capture es-gestes-seance-bas (199477 octets)
+  capture es-gestes-bravo (476595 octets)
+  capture es-gestes-bravo-bas (476595 octets)
+  capture es-gestes-journal (22309 octets)
+  capture es-gestes-journal-bas (22309 octets)
+  capture es-gestes-parcours (167978 octets)
+  capture es-gestes-parcours-bas (167978 octets)
+  capture es-gestes-hizouk (138293 octets)
+  capture es-gestes-hizouk-bas (138293 octets)
+  capture es-gestes-conseils (382818 octets)
+  capture es-gestes-conseils-bas (303828 octets)
+  capture es-gestes-rappels (174900 octets)
+  capture es-gestes-rappels-bas (174900 octets)
+  capture es-gestes-musique (244419 octets)
+  capture es-gestes-musique-bas (317036 octets)
+  capture es-gestes-siddour (255687 octets)
+  capture es-gestes-siddour-bas (147598 octets)
+  capture es-gestes-siddour-lecture (301394 octets)
+  capture es-gestes-siddour-lecture-bas (349200 octets)
+  capture es-gestes-tefilot (312821 octets)
+  capture es-gestes-tefilot-bas (313472 octets)
+  capture es-gestes-tehilim (170761 octets)
+  capture es-gestes-tehilim-bas (127093 octets)
+  capture es-gestes-tehilim-lecture (183493 octets)
+  capture es-gestes-tehilim-lecture-bas (183493 octets)
+  capture es-gestes-tikkun (271151 octets)
+  capture es-gestes-tikkun-bas (270296 octets)
+  capture es-gestes-bibliotheque (198971 octets)
+  capture es-gestes-bibliotheque-bas (198971 octets)
+  capture es-gestes-livres (334692 octets)
+  capture es-gestes-livres-bas (294352 octets)
+  capture es-gestes-source (328264 octets)
+  capture es-gestes-source-bas (273017 octets)
+  capture es-gestes-zmanim (269177 octets)
+  capture es-gestes-zmanim-bas (187769 octets)
+  capture es-gestes-vol (297081 octets)
+  capture es-gestes-vol-bas (297081 octets)
+  capture es-gestes-boussole (296754 octets)
+  capture es-gestes-boussole-bas (365675 octets)
+  capture es-gestes-calendrier (239215 octets)
+  capture es-gestes-calendrier-bas (269082 octets)
+  capture es-gestes-halakha (264261 octets)
+  capture es-gestes-halakha-bas (288490 octets)
+  capture es-gestes-hilloulot (187769 octets)
+  capture es-gestes-hilloulot-bas (181753 octets)
+  capture es-gestes-recherche (138160 octets)
+  capture es-gestes-recherche-bas (137967 octets)
+  capture es-gestes-paliers (189524 octets)
+  capture es-gestes-paliers-bas (178387 octets)
+  capture es-gestes-applications (198010 octets)
+  capture es-gestes-applications-bas (197335 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;michle-24-16&#10;by-38-1&#10;by-47-1&#10;by-3-
+  capture es-gestes-version-pile (404606 octets)
+  capture es-gestes-version-pile-2 (263468 octets)
+  capture es-gestes-version-pile-3 (230891 octets)
+  capture es-gestes-version-pile-4 (155756 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;michle-24-16&#10;by-38-1&#10;by-47-1&#10;by-3-
+  capture es-gestes-version-bento (253898 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;michle-24-16&#10;by-38-1&#10;by-47-1&#10;by-3-
+  capture es-gestes-version-instant (195944 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;michle-24-16&#10;by-38-1&#10;by-47-1&#10;by-3-
+  capture es-gestes-version-serenite (241382 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;michle-24-16&#10;by-38-1&#10;by-47-1&#10;by-3-
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;michle-24-16&#10;by-38-1&#10;by-47-1&#10;by-3-
+  langue : Locales for com.myhitbodedut for user 0 are [fr]
+
+=== redemarrage ===
+  applications bloquees : ['com.android.chrome', 'com.google.android.youtube', 'com.google.android.apps.messaging']
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;michle-24-16&#10;by-38-1&#10;by-47-1&#10;by-3-
+  avant : * ServiceRecord{66b706f u0 com.myhitbodedut/.GateService} | acces : SYSTEM_ALERT_WINDOW: allow / GET_USAGE_STATS: allow; time=+709ms ago
+  apres : * ServiceRecord{cb2852 u0 com.myhitbodedut/.GateService} | attendu 0 s de plus | refus :  | acces : SYSTEM_ALERT_WINDOW: allow; time=+36s617ms ago / GET_USAGE_STATS: allow; time=+7d7h28m24s314ms ago
+  etat du paquet : User 0: ceDataInode=132883 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  journal du demarrage : 11-24 17:12:50.976 I/ActivityManager(  516): Start proc 3853:com.myhitbodedut/u0a174 for broadcast {com.myhitbodedut/com.myhitbodedut.BootReceiver} | 11-24 17:12:51.159 I/ActivityManager(  516): Background started FGS: Allowed [callingPackage: com.myhitbodedut; callingUid: 10174; uidState: RCVR; intent: Intent { cmp=com.myhitbodedut/.GateService }; code:SYSTEM_ALERT_WINDOW_PERM | 11-24 17:12:51.207 W/ActivityManager(  516): Foreground service started from background can not have location/camera/microphone access: service com.myhitbodedut/.GateService
+  horloge au retour : 2026-11-24 17:13 2
+  date : Tue Nov 17 09:30:00 UTC 2026
+  horloge remise : 2026-11-17 09:30 2 | services : * ServiceRecord{cb2852 u0 com.myhitbodedut/.GateService}
+  capture gestes-barriere-apres-redemarrage (280156 octets)
+  preferences : <?xml version='1.0' encoding='utf-8' standalone='yes' ?> <map>     <string name="lieu_latitude">48.85341</string>     <string name="lieu_altitude">0.0</string>     <int name="window_end" value="704" />     <string name="lieu_longitude">2.3488</string>     <string name="chizuk_bag_relance">lm2-112-reparer&#10;by-48-1&#10;by-2-1&#10;by-52-1&#10;by-20-1&#10;by-42-5&#10;le-hitchazkut-5-descente&#10;by-45-3&#10;lm2-78-desespoir&#10;sh-75-un-morceau-de-priere&#10;by-5-1&#10;by-14-1&#10;by-21-2&#10;by-20-2&#10;by-1-1&#10;le-hitchazkut-42-cri&#10;cm-437-commencer&#10;by-11-1&#10;tehilim-34-19&#10;mich
+
+=== bilan de la recette ===
+aucune faute relevee par les controles automatiques
+
+captures : 101
