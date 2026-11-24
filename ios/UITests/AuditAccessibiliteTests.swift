@@ -88,6 +88,12 @@ final class AuditAccessibiliteTests: XCTestCase {
             _ = app.wait(for: .runningForeground, timeout: 20)
             // L'écran s'ouvre par étapes (Captures.ouvrir) ; les animations d'entrée finissent.
             Thread.sleep(forTimeInterval: 4)
+            // La liste des chapitres ne s'ouvre qu'une fois le plus long livre lu (11,5 Mo) : la zone se mesure sous
+            // son champ de recherche, pas sous la barre du livre (run 45480057201).
+            if ecran == "chapitres" {
+                _ = app.searchFields.firstMatch.waitForExistence(timeout: 30)
+                Thread.sleep(forTimeInterval: 1)
+            }
             zone = Self.zoneVisible(app)
             fenetre = app.windows.firstMatch.frame
             defilements = (app.scrollViews.allElementsBoundByIndex + app.collectionViews.allElementsBoundByIndex
