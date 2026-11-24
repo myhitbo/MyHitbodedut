@@ -180,14 +180,14 @@ extension PartageApp {
             // L'aperçu du bouclier (GateService.preview) : tâche 27.
             navigation.pousser(.bientot(cle: "action_preview_gate"))
         case .choixApplications:
-            // FamilyActivityPicker : il attend l'autorisation Family Controls (décision D3).
-            navigation.pousser(.bientot(cle: "apps_title"))
+            // FamilyActivityPicker (AppPickerActivity), après l'autorisation de Temps d'écran.
+            navigation.pousser(.applications)
         case .dedicace:
             // La boîte de Dedicace.kt : une feuille, l'e-mail composé et ouvert dans la messagerie.
             navigation.feuille = .dedicace
         case .aideConcentration:
-            // L'aide qui remplace « Ne pas déranger » (§ 2.2.6) n'est pas encore écrite.
-            navigation.pousser(.bientot(cle: "settings_ne_pas_deranger"))
+            // L'aide qui remplace « Ne pas déranger » (§ 2.2.6) : créer un mode de concentration dans les Réglages.
+            navigation.pousser(.concentration)
         case .recommencer:
             recommencer()
         }

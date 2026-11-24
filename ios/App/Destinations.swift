@@ -73,9 +73,31 @@ extension PartageApp {
             return vueBibliotheque(ecran)
         case .halakha, .hilloulot, .calendrier, .vol, .boussole:
             return vueZmanim(ecran)
+        case .applications:
+            return vueApplications()
+        case .concentration:
+            let magasin = self.magasin
+            return AnyView(Garde {
+                ConcentrationModele(magasin: magasin)
+            } contenu: { modele in
+                ConcentrationVue(modele: modele)
+            })
         case .bientot(let cle):
             return AnyView(Bientot(cle: cle))
         }
+    }
+
+    // MARK: Le choix des applications de la barrière
+
+    /// SystemeFamilyControls n'a pas d'état : un par ouverture. ReglagesVue relit la sélection au retour.
+    private func vueApplications() -> AnyView {
+        let magasin = self.magasin
+        let systeme = SystemeFamilyControls()
+        return AnyView(Garde {
+            ApplicationsModele(magasin: magasin, autorisation: systeme, stock: systeme)
+        } contenu: { modele in
+            ApplicationsChoixVue(modele: modele)
+        })
     }
 
     // MARK: La séance

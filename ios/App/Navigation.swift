@@ -58,7 +58,13 @@ enum Ecran: Hashable {
     /// BoussoleActivity.
     case boussole
 
-    /// Un écran d'Android pas encore porté (la relecture, l'aperçu de la barrière…) : son titre (une
+    // L'onglet Réglages.
+    /// AppPickerActivity : le choix des applications de la barrière (FamilyActivityPicker).
+    case applications
+    /// L'aide à la concentration, qui remplace « Ne pas déranger » (NePasDeranger.kt, PORTAGE.md § 2.2.6).
+    case concentration
+
+    /// Un écran d'Android pas encore porté (la relecture, l'aperçu du bouclier) : son titre (une
     /// clé du catalogue) et « Bientôt », sans rien faire semblant.
     case bientot(cle: String)
 }

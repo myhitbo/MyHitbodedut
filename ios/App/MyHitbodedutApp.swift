@@ -80,6 +80,8 @@ final class Lancement {
         let partage = PartageApp(magasin: charge.magasin, enMemoire: charge.enMemoire, traducteur: traducteur,
                                  palettes: palettes, contenus: contenus, lecteur: lecteur, paquet: paquet)
         app = partage
+        // Le filtre de mode de concentration écrit son choix dans ce magasin (App/ConcentrationFiltreIntention.swift).
+        ConcentrationRelais.magasin = charge.magasin
         partage.demarrer(reponses: reponses)
         if let lien = lienEnAttente {
             lienEnAttente = nil
