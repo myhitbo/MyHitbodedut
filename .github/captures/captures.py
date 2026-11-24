@@ -1218,7 +1218,7 @@ def main():
         comparer_vitesse("siddour, vitesse 3", vitesse_mesuree(4.0), vitesse_attendue(3))
         taper(touches["plus"], 7)
         photo("31c-siddour-vitesse-10")
-        comparer_vitesse("siddour, vitesse 10", vitesse_mesuree(1.5), vitesse_attendue(10))
+        comparer_vitesse("siddour, vitesse 10", vitesse_mesuree(0.3), vitesse_attendue(10))
         taper(touches["moins"], 12)
         photo("31d-siddour-vitesse-1")
         comparer_vitesse("siddour, vitesse 1 (douze fois moins)", vitesse_mesuree(4.0), vitesse_attendue(1))
@@ -1300,7 +1300,7 @@ def main():
             toucher(desc="Lire la suite", contains=True, attente=1.5)
         sh(f"input swipe {W // 2} {int(H * 0.30)} {W // 2} {int(H * 0.75)} 200")
         pause(1.0)
-        allume_avant = ecran_garde_allume()
+        allume_avant = ecran_garde_allume("HilloulotActivity")
         icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
         racine = dump()
         carte = None
@@ -1317,9 +1317,11 @@ def main():
             return
         lancer_defilement(icone)
         t0 = time.time()
-        allume = ecran_garde_allume()
+        allume = ecran_garde_allume("HilloulotActivity")
         photo("31i-hilloulot-defile")
-        if not allume:
+        if allume is None:
+            faute("defilement hilloulot : drapeau de la fenetre non lu")
+        elif not allume:
             faute("defilement hilloulot : l'ecran n'est pas garde allume pendant qu'il defile")
         # La carte a monte depuis le depart (une seconde avant t0) : on la suit, le temps du toucher compris.
         y = int((carte[1] + carte[3]) / 2 - vitesse_attendue(3) * (time.time() - t0 + 1.4))
@@ -1329,7 +1331,7 @@ def main():
         if not immobile():
             faute("defilement hilloulot : un doigt sur une carte ne l'arrete pas")
         capture("31j-hilloulot-arrete-sur-une-carte")
-        log("  ecran allume apres l'arret :", ecran_garde_allume())
+        log("  ecran allume apres l'arret :", ecran_garde_allume("HilloulotActivity"))
 
         # En hebreu, lettres a 150 % : la barre, la commande, la vitesse en lignes ; le bouton d'arret.
         regler({"lecture_echelle": ("float", "1.5")})
@@ -1479,7 +1481,7 @@ def vitesse_mesuree(duree):
     b = ecran_brut()
     if not a or not b:
         return None
-    d = montee(a, b, int(a[2] * 0.35))
+    d = montee(a, b, int(a[2] * 0.40))
     return None if d is None else d / max(0.1, b[0] - a[0])
 
 
@@ -1562,18 +1564,18 @@ def vitesse_gardee():
     return int(m.group(1)) if m else None
 
 
-def ecran_garde_allume():
-    """Le drapeau KEEP_SCREEN_ON de la fenetre au premier plan (dumpsys window), None si introuvable."""
+def ecran_garde_allume(classe):
+    """Le drapeau KEEP_SCREEN_ON de la fenetre de l'activite « classe » (dumpsys window), None si introuvable."""
     sortie = sh("dumpsys window windows", timeout=60)
-    m = re.search(r"mCurrentFocus=Window\{(\w+) ", sortie)
-    if not m:
-        log("  fenetre au premier plan introuvable")
+    nom = f"{PKG}/com.myhitbodedut.{classe}"
+    blocs = [b for b in re.split(r"\n\s*Window #\d+ ", sortie) if nom in b.split("\n", 1)[0]]
+    if not blocs:
+        log(f"  fenetre de {classe} introuvable ; focus :",
+            [l.strip() for l in sortie.splitlines() if "Focus" in l][:4])
         return None
-    i = sortie.find("Window{" + m.group(1))
-    fin = sortie.find("Window #", i + 10)
-    bloc = sortie[i:fin if fin > 0 else i + 4000]
+    bloc = blocs[0]
     fl = re.search(r"\bfl=([A-Z_0-9 ]+)", bloc)
-    log("  fenetre", bloc.split("\n", 1)[0][:120], "| fl=", fl.group(1).strip() if fl else "?")
+    log("  fenetre", bloc.split("\n", 1)[0][:100], "| fl=", fl.group(1).strip() if fl else "?")
     return "KEEP_SCREEN_ON" in bloc
 
 
