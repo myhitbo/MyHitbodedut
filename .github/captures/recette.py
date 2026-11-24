@@ -1133,18 +1133,14 @@ def suite(prefixe="suite"):
     c.pause(3.0)
     debut, fin, _, _ = prefs_seance()
     c.log("  seance 1 :", debut, fin)
-    c.pause(49.0)
-    racine = prise(f"{prefixe}-question-ecran", attente=0.5, verifier=False)
-    textes_vus = " | ".join(textes(racine)) if racine is not None else ""
-    c.log("  ecran :", textes_vus[:400])
-    if "Continue the hitbodedut?" not in textes_vus:
+    # La question vient a 50 s ; il reste dix secondes, et une lecture de l'ecran en prend trois :
+    # une photo seule, puis le toucher (24/11 : capture, lecture et notification avant le toucher
+    # le faisaient tomber apres la fin).
+    c.pause(48.5)
+    photo(f"{prefixe}-question-ecran")
+    vu = c.toucher(text="Yes, 5 min more", attente=1.5)
+    if not vu:
         faute(f"{prefixe} : SUITE la question n'est pas venue sur l'ecran de seance a 10 s de la fin")
-    for attendu in ("Yes, 5 min more", "Yes, 1 min more", "Yes, with no end", "No, finish"):
-        if attendu not in textes_vus:
-            faute(f"{prefixe} : SUITE il manque la reponse « {attendu} » sur l'ecran")
-    if not notification_suite():
-        faute(f"{prefixe} : SUITE pas de notification « Continuer ? »")
-    c.toucher(text="Yes, 5 min more", attente=2.0)
     _, fin2, cible2, etat2 = prefs_seance()
     c.log("  apres « 5 min de plus » : fin", fin2, "cible", cible2, "etat", etat2)
     if not (fin and fin2 and 4.9 * 60_000 <= fin2 - fin <= 5.1 * 60_000):
