@@ -189,7 +189,9 @@ public struct Etiquette: View {
 
     public var body: some View {
         texte
-            .font(.caption2)
+            // 11 points (caption2), qui suivent chaque pas de la taille du texte : caption2 reste à 11 points sous la
+            // taille ordinaire, et l'audit d'accessibilité la disait suivie « en partie ».
+            .tailleSp(11, relativeA: .footnote)
             .foregroundStyle(Teinte(.onPlate))
             .padding(.horizontal, 8)
             .padding(.vertical, 4)

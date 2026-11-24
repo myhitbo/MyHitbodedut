@@ -82,13 +82,13 @@ jobs:
             app.log
           retention-days: 14
           if-no-files-found: ignore
-      # L'audit d'accessibilité d'Xcode sur chaque écran, en français (ios/UITests, tâche 29) : la liste des défauts
-      # dans le résumé ; il ne fait pas échouer le travail tant qu'elle n'est pas vide (AUDIT_RELEVE).
+      # L'audit d'accessibilité d'Xcode sur chaque écran, en français (ios/UITests, tâche 29), sorte par sorte : la
+      # liste des défauts dans le résumé, et le travail échoue au premier défaut qui n'est pas un faux positif connu
+      # (AuditAccessibiliteTests.tolerance, chacun avec sa raison, et la liste « Tolérés » du résumé). Pour relever
+      # sans échouer : TEST_RUNNER_AUDIT_RELEVE: '1'.
       - name: Audit d'accessibilité (XCUITest)
         if: ${{ !cancelled() && hashFiles('captures/iphone.txt') != '' && (inputs.audit || 'oui') == 'oui' }}
-        continue-on-error: true
         env:
-          TEST_RUNNER_AUDIT_RELEVE: '1'
           TEST_RUNNER_AUDIT_LANGUE: fr
           TEST_RUNNER_AUDIT_ECRANS: ${{ inputs.ecrans }}
         run: |

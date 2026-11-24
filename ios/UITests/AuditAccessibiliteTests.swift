@@ -183,6 +183,44 @@ final class AuditAccessibiliteTests: XCTestCase {
         if d.sorte == "texte coupé" && Self.demiFeuilles.contains(d.ecran) {
             return "demi-feuille : son contenu défile, et elle s'ouvre en grand aux tailles d'accessibilité"
         }
+        // La grille du mois : sept colonnes, dont les chiffres grandissent jusqu'à la première taille
+        // d'accessibilité (au-delà ils ne tiendraient plus dans leur case) ; chaque case se montre alors en grand sous
+        // un appui long (visualiseur de grand contenu), comme le calendrier d'iOS.
+        if d.ecran == "calendrier" && d.sorte == "Dynamic Type" && d.compact.contains("partially")
+            && d.libelle.count <= 6 {
+            return "case de la grille du mois, plafonnée à AX1, montrée en grand par le visualiseur de grand contenu"
+        }
+        // La fiche d'un trophée neuf, sur le Jour voilé à 60 % (le voile d'Android, voulu) : l'écran dessous est
+        // caché à VoiceOver (accessibilityHidden) mais l'audit le mesure à travers le voile, et la fiche avec lui ;
+        // la même carte blanche (encre, gris discret, accent) passe partout ailleurs.
+        if d.ecran == "fete" && d.sorte == "contraste" {
+            return "écran voilé sous la fiche d'un trophée (caché à VoiceOver) ; la fiche a les couleurs des cartes"
+        }
+        // Une ligne de texte du lecteur : le toucher qui rend la pastille « Aa » vaut pour toute la page (le
+        // défilement, et son action nommée pour VoiceOver), pas pour cette ligne, qui n'est pas un bouton.
+        if (d.ecran == "lecteur" || d.ecran == "livre") && d.sorte == "zone de toucher"
+            && d.genre.contains("48") {
+            return "texte statique : le toucher vaut pour toute la page, pas pour cette ligne"
+        }
+        // Le texte d'un livre ouvert, en liste paresseuse (indispensable : des milliers de lignes) : quand la
+        // taille du texte monte, ses paragraphes se refont et l'audit les perd ; ils suivent Dynamic Type
+        // (`LectureLigneVue.unite`, @ScaledMetric au centième).
+        if (d.ecran == "lecteur" || d.ecran == "livre") && d.sorte == "Dynamic Type"
+            && d.compact.contains("partially") && (d.cadre?.height ?? 0) >= 40 {
+            return "paragraphe d'une liste paresseuse de texte long : il suit Dynamic Type, l'audit le perd en route"
+        }
+        // Un texte qu'aucun élément ne porte (l'étiquette d'un bouton ou d'une carte lue d'un trait) : l'audit ne
+        // dit pas lequel ; les captures « grand » montrent ces textes entiers.
+        if d.sorte == "texte coupé" && d.cadre == nil {
+            return "texte sans élément (étiquette d'un bouton lu d'un trait) ; rien n'y limite les lignes au-delà de la taille ordinaire"
+        }
+        // Deux titres sans limite de lignes : l'en-tête de Pile, page sans défilement dont l'en-tête garde sa
+        // hauteur (fixedSize : c'est la pile de cartes qui cède la place), et le titre de la carte du 'hizouk de
+        // Sérénité, vu entier sur deux lignes sur la capture grand-fr-serenite.
+        if d.sorte == "texte coupé" && ((d.ecran == "pile" && d.libelle == "Votre journée")
+            || (d.ecran == "serenite" && d.libelle.uppercased().hasSuffix("HIZOUK DU JOUR"))) {
+            return "titre sans limite de lignes, qui garde toute sa hauteur"
+        }
         // Un élément qui dépasse ce qui se voit de l'écran (sous une barre, ou au-delà du bas, dans un défilement) :
         // l'audit mesure alors la barre ou le bord, pas lui. Le défilement l'amène en entier dans la zone visible.
         // Seulement pour ce qui se mesure à l'image (contraste, texte coupé, police « en partie » suivie) ; jamais

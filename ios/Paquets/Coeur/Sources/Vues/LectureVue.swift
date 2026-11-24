@@ -283,7 +283,8 @@ private struct LectureBandeSignets: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView(.horizontal) {
-                LazyHStack(spacing: 0) {
+                // Pas paresseuse : une vingtaine de signets au plus, que l'audit suit quand la taille du texte monte.
+                HStack(spacing: 0) {
                     ForEach(modele.signets) { signet in
                         bouton(signet)
                     }

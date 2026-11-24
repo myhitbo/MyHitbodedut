@@ -35,6 +35,8 @@ public struct MusiqueVue: View {
             if !bandeauCache {
                 MusiqueBandeauVue(titre: Text(modele.titre, traducteur: traducteur),
                                   resume: Text(modele.resume, traducteur: traducteur))
+                    // Toute sa hauteur : c'est la liste qui cède la place quand le texte grandit.
+                    .fixedSize(horizontal: false, vertical: true)
                     .onGeometryChange(for: CGFloat.self) { geometrie in
                         geometrie.size.height
                     } action: { hauteur in

@@ -355,7 +355,25 @@ private struct ChizukTexteAjuste: View {
         return Font.system(size: taille * dynamique)
     }
 
+    @Environment(\.dynamicTypeSize) private var tailleTexte
+
     var body: some View {
+        if tailleTexte.agrandie {
+            // Au-delà de la taille ordinaire du texte, plus d'ajustement : le texte au plus petit corps, entier, qui
+            // fait grandir le bloc (le texte ajusté dans son cadre, l'audit d'accessibilité le disait coupé).
+            Text(verbatim: texte)
+                .font(corps(tailleMin))
+                .lineSpacing(2)
+                .foregroundStyle(Teinte(style))
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, minHeight: hauteur * dynamique, alignment: .topLeading)
+        } else {
+            ajuste
+        }
+    }
+
+    private var ajuste: some View {
         Text(verbatim: texte)
             .font(corps(tailleMin))
             .lineSpacing(2)

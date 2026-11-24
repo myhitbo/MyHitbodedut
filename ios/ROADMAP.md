@@ -57,7 +57,7 @@ Trente tâches, dans l'ordre. Chacune tient en une session de travail (une branc
 | 26 | Vol à l'écran | macOS | 13, 24 | phrase → frise ; billet lu |
 | 27 | Barrière I : l'app, le bouclier, l'action | macOS, iPhone | 4, 12, 16 | trois visages × trois langues |
 | 28 | Barrière II : la surveillance, le diagnostic | iPhone | 27 | recette R4 |
-| 29 | Accessibilité, iPad, performance | macOS | 21 à 28 | audit sans défaut ; mesures tenues (en cours : captures et iPad faits, audit relevé, mesures à faire) |
+| 29 | Accessibilité, iPad, performance | macOS | 21 à 28 | audit sans défaut ; mesures tenues (en cours : captures, iPad et audit faits, l'audit fait échouer la CI ; mesures à faire) |
 | 30 | TestFlight externe, fiche, soumission | macOS | 29, P3, P6 | construction acceptée ; dossier des droits complet |
 
 ## Jalons
@@ -298,11 +298,22 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   coupé ; « English » au lieu de « تونسي » dans les réglages en arabe ; « Monday » dans les Tehilim en espagnol ;
   les titres des Livres, du bravo et du volet suivent Dynamic Type ; les humeurs de la note se disent comme sur
   Android (`journal_humeur_n`).
-- **Reste** : vider la liste de l'audit (174 défauts relevés le 23/11 sur l'iPhone en français, surtout des tailles
-  fixes : le dos des livres, la bande des signets, les cartes de Sérénité et de Bento ; quelques contrastes et
-  textes coupés ; 17 écrans dont l'audit n'a pas fini à temps sur le simulateur de la CI) ; le test des libellés
-  dans les trois langues ; les mesures (premier écran, défilement, poids) ; l'iPad n'a de mise en page à deux
-  colonnes qu'au Jour couché.
+- **Fait (24/11)** : l'audit d'accessibilité fait échouer le travail des captures (`ios-captures.yml`) au premier
+  défaut. Des 174 défauts du 23/11 (dont 17 écrans à l'audit inachevé), il n'en reste aucun hors des faux positifs
+  connus, tolérés chacun avec sa raison (`AuditAccessibiliteTests.tolerance`, liste « Tolérés » du résumé) : aucune
+  taille de police fixe (`tailleSp`, `policeHebraique`, @ScaledMetric au centième) ; au-delà de la taille ordinaire
+  du texte, rien ne se tronque (`lignesAuPlus`, `uneLigne`) ; aux tailles d'accessibilité les rangées se mettent en
+  colonne (`RangeeAdaptable` : semaine du Jour, chiffres du Chemin, réglages, boutons de Zmanim, choix du
+  calendrier, tuiles de Bento et de Mon parcours), les étagères des Livres prennent deux couvertures, la grille des
+  Tehilim trois cases, les tuiles de Bento et les couvertures grandissent avec leur texte, les feuilles s'ouvrent en
+  grand ; les bandeaux défilent avec leur page ; les boutons de lecture (« Aa ») sont sous le texte et n'en couvrent
+  plus une ligne, couché comme debout ; les onglets de Sérénité et la grille du calendrier passent au visualiseur
+  de grand contenu ; 44 points de toucher partout ; le gris discret prend un quart d'encre et les jours à venir de
+  la semaine ne sont plus estompés (contraste). Vues/Accessibilite.swift rassemble ces outils.
+- **Reste** : l'audit des tailles du texte ne finit pas à temps sur trois écrans de texte long (le Tikkoun, les
+  trophées, le calendrier : `tropLongs`), vus sur les captures « grand » ; l'audit ne passe qu'en français (les
+  captures montrent he et ar) ; le test des libellés dans les trois langues ; les mesures (premier écran,
+  défilement, poids) ; l'iPad n'a de mise en page à deux colonnes qu'au Jour couché.
 
 ### 30. TestFlight externe, fiche, soumission
 

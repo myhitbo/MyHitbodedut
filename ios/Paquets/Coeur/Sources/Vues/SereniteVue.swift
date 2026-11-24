@@ -111,11 +111,11 @@ struct SereniteVue: View {
                 VersionHebreu(texte: p.hebreu, taille: 20, couleur: k.texte, police: modele.police, lignes: 3)
                     .padding(.top, 6)
                 if let traduction = p.traduction {
-                    Text(verbatim: traduction)
+                    // Un extrait coupé aux mots (environ trois lignes), pas un texte tronqué.
+                    Text(verbatim: VersionHebreu.extrait(traduction, mots: 20))
                         .font(VersionPolice.bellefair(17))
                         .foregroundStyle(k.texte)
                         .lineSpacing(3)
-                        .lignesAuPlus(3)
                         .padding(.top, 8)
                 }
                 Text(verbatim: p.reference)

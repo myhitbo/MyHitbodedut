@@ -120,18 +120,26 @@ struct VersionHebreu: View {
     let couleur: Color
     let police: PoliceHebraique.Police
     var lignes: Int? = nil
-    @Environment(\.dynamicTypeSize) private var tailleTexte
 
     var body: some View {
-        Text(verbatim: texte)
+        // Un extrait coupé aux mots, environ `lignes` lignes de la maquette, plutôt qu'un texte tronqué par le nombre
+        // de lignes (l'audit d'accessibilité dit coupé un texte tronqué) ; tout le texte se lit sur l'écran du 'hizouk.
+        Text(verbatim: lignes.map { VersionHebreu.extrait(texte, mots: $0 * 5) } ?? texte)
             .policeHebraique(police, taille: taille)
             .foregroundStyle(couleur)
             .lineSpacing(5)
-            // Le nombre de lignes de la maquette à la taille ordinaire du texte ; tout le texte au-delà.
-            .lineLimit(tailleTexte.agrandie ? nil : lignes)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.layoutDirection, .rightToLeft)
+    }
+}
+
+extension VersionHebreu {
+    /// Les `mots` premiers mots, et « … » s'il en reste.
+    static func extrait(_ texte: String, mots: Int) -> String {
+        let tous = texte.split(whereSeparator: \.isWhitespace)
+        guard tous.count > mots else { return texte }
+        return tous.prefix(mots).joined(separator: " ") + "\u{2026}"
     }
 }
 
