@@ -330,9 +330,14 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   résolus, tout libellé anglais ou espagnol identique au français, tout mot latin en hébreu ou en arabe ; tolérés,
   chacun avec sa raison : « Sections » (le même mot en anglais, comme Android), la référence d'une source en espagnol
   et en arabe (`Reference.localise` ne la rend qu'en anglais et en hébreu, comme Android). Relevé sur la CI (runs
-  45401611745 et 45410886554) : un seul défaut, dans les cinq langues, l'image de la hitbodedout guidée de la séance
-  (décorative, mais atteinte par VoiceOver sans description dans l'app en Release, pas en Debug) : corrigé
-  (`Illustration` décorative dès l'image, `Image(decorative:)`) ; le test échoue désormais au premier défaut.
+  45401611745, 45410886554 et 45457864463) : un seul défaut, dans les cinq langues, l'image de la hitbodedout guidée
+  de la séance (décorative, mais atteinte par VoiceOver sans description). `Image(decorative:)` n'y a rien fait : le
+  contenu de la séance portait `accessibilityHidden(modele.calme)`, et hors du calme ce false l'emportait sur le true
+  de ses enfants ; corrigé par `accessibilityHidden(true, isEnabled: modele.calme)`, qui ne pose rien hors du calme
+  (de même pour le voile des trophées neufs). Runs 45468876947 et 45490166257 : **aucun défaut** dans les cinq
+  langues (accueil, séance, Cha'harit : de 44 à 65 éléments vérifiés par écran), six tolérés, chacun avec sa raison
+  (« Sections » en anglais ; la référence d'une source, deux fois en espagnol, trois en arabe) ; le test échoue au
+  premier défaut.
   `MesuresTests` mesure, l'app écrivant elle-même ses temps (« -mesures », App/Mesures.swift) : chaque étape du
   lancement depuis le démarrage du processus, avec son temps de calcul ; l'ouverture du plus long livre (le
   Kitsour Yalkout Yossef, 1 048 chapitres, 15 440 lignes, `LectureModele.mesure`) ; son défilement, que l'app fait
@@ -347,19 +352,58 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   faites en 45–49 ms, première image 3,2 s plus tard. Au doigt, chaque geste d'un test d'interface faisait
   photographier tout l'arbre d'accessibilité du livre ouvert, sur le fil principal de l'app (15 à 30 s par geste) :
   ce défilement-là ne mesurait que ces photographies ; d'où le défilement fait par l'app.
+  Le 24/11 au soir, avant puis après la liste des chapitres (run 45457864463, puis 45468876947 et 45490166257, même
+  simulateur) : le poids, **155,5 puis 155,8 Mo** (155 849 821 octets : la musique 64,4 Mo, les contenus 43,5 Mo, le
+  binaire 27,9 Mo, les extensions 14,7 Mo dont les widgets 11,3 Mo, les images 1,6 Mo, les chaînes 1,6 Mo, les
+  polices 1,4 Mo) ; le premier écran à **8,3 s, puis 11,1 et 8,0 s** du démarrage (médianes de huit lancements ; le
+  run 45468876947 partageait la machine avec deux travaux de captures, et le temps de calcul a suivi : 9,4 s à la
+  première image contre 6,1 et 5,7 : le simulateur ne dit rien de l'iPhone) ; l'ouverture du plus long livre, avec
+  la bande de 1 048 signets : texte lu en 2,4 s, lignes faites en 78 ms, **première image 12,1 s plus tard** (29,7 s
+  du lancement à l'affichage) ; avec la liste des chapitres : texte lu en 1,5 puis 2,0 s, lignes en 48–50 ms,
+  **première image 0,9 puis 1,4 s plus tard** (15,1 puis 17,0 s du lancement à l'affichage) ; son défilement par
+  l'app (dix secondes vers la fin à 3 000 points par seconde, trois vers le début, environ 38 400 points) : avec la
+  bande, 158 images en 13,05 s, 111 accrocs, **631 images perdues**, 796 ms d'accroc par seconde, le plus long
+  361 ms ; avec la liste, 746–747 images en 13,0 s, 21–23 accrocs, **33–34 images perdues**, 42–44 ms d'accroc par
+  seconde, le plus long 107–158 ms.
+  Les mesures d'XCTest (`XCTApplicationLaunchMetric`) ne sortent pas du paquet de résultats (liste vide).
+  La liste des chapitres (FLECTURE-03, comme SiddurLectureActivity) : au-delà de quarante sections, « Chapitres (n)
+  ▾ » à la place de la bande, à droite dans toutes les langues, qui ouvre la liste filtrable (« Numéro ou mot »,
+  `Chapitres.filtrer`, paresseuse) ; un chapitre touché passe en tête et la liste se ferme, rouverte elle repart
+  entière (`LectureModele.feuilleChapitres`, `ouvrirListeChapitres` ; testé sous Linux sur le Kitsour Yalkout
+  Yossef et un texte court qui garde sa bande). Photographiée en fr, he et ar, en sombre et aux tailles
+  d'accessibilité (runs 45470677593 et 45470817665, captures « chapitres »).
+  Le défilement automatique partout où Android l'a : la barre des sources de la bibliothèque, et une barre de lecture
+  à la halakha (le Ben Ish 'Haï compris) et aux hilloulot, sans lune ni langues comme Android (A−, %, A+, la police,
+  le défilement, masquer, replier ; `TehilimBarreLecture` avec `avecNuit` et `avecLangues` faux) ; dix vitesses, la
+  troisième d'origine, le niveau commun aux écrans de lecture. Il s'arrête au bout, à la pause, au masquage, l'écran
+  parti, l'app en arrière-plan, et au doigt posé n'importe où sur le texte, sur une partie qui se touche aussi
+  (`ToucherDuTexte` voit l'appui et le laisse passer, comme l'indicateur de défilement d'Android). L'écran allumé se
+  demande sous un nom (`EcranAllumeDemandes`) : le défilement qui s'arrête rend l'écran à ce qu'il était. Le réglage
+  « Garder l'écran allumé pendant la lecture » ne faisait rien sur iOS : `VeilleLecture` (FLECTURE-01) garde l'écran
+  allumé dix minutes après le dernier toucher au lecteur, aux Tehilim, au Tikoun et à une entrée de la
+  bibliothèque, si le réglage le veut. Photographié en fr et he, barres dépliées (« halakha-barre »,
+  « hilloulot-barre », « source-barre », run 45470677593). L'audit des captures couvre deux écrans de plus,
+  « chapitres » et « source » (Likoutei Moharan II, 25) ; ce qu'il a relevé sur les écrans touchés (runs 45470677593,
+  45480057201, 45490172262, 45495089938) est corrigé : la bande des boutons de lecture se mesure entière (un
+  conteneur, « barre-bas » avec ses marges), la zone visible de la liste des chapitres se mesure une fois la liste
+  ouverte, sous son champ de recherche, et les textes courts de la halakha ont la tolérance du lecteur (le toucher
+  et l'action « Réglages de lecture » valent pour toute la page) ; un écran « -barre » a les tolérances de son
+  écran. Chapitres, halakha, hilloulot, Tehilim, Tikoun : aucun défaut.
 - **Reste** : sur le simulateur lent de la CI, l'audit des tailles du texte ne finit pas toujours à temps sur les
   écrans de texte long (le Tikkoun, les trophées, le calendrier, parfois d'autres) : toléré et dit à part, ces
   écrans se voient sur les captures « grand » ; l'audit complet ne passe qu'en français (les captures montrent he
-  et ar ; l'audit des descriptions passe dans les cinq langues, `LibellesTests`). À voir passer sur la CI : la
-  correction de l'image de la hitbodedout guidée, le test des libellés qui échoue au premier défaut, et le premier
-  compte du défilement fait par l'app (`testDefilementDuPlusLongLivre`). À mesurer sur un iPhone, en Release
-  (`MesuresTests` depuis Xcode, `XCTHitchMetric` compris) : les 400 ms du premier écran (au simulateur, dix à
-  quinze secondes, presque tout en calcul de l'app : rien n'en dit encore la part sur l'appareil) et le défilement
-  du plus long livre sans image perdue ; le simulateur de la CI ne prouve ni l'un ni l'autre. La bande des
-  signets d'un long livre : Android la remplace au-delà de 40 sections par « Chapitres (n) ▾ » et une liste
-  filtrable (FLECTURE-03, déjà dans `LectureModele` : `boutonChapitres`, `chapitresFiltres`, `ouvrirChapitre`) ;
-  la vue iOS pose encore un bouton par chapitre, d'un coup (1 048 pour le Kitsour Yalkout Yossef), ce qui pèse sur
-  la première image du livre et sur son arbre d'accessibilité.
+  et ar ; l'audit des descriptions passe dans les cinq langues, `LibellesTests`). À mesurer sur un iPhone, en
+  Release (`MesuresTests` depuis Xcode, `XCTHitchMetric` compris) : les 400 ms du premier écran (au simulateur,
+  huit à treize secondes, presque tout en calcul de l'app : rien n'en dit encore la part sur l'appareil) et le
+  défilement du plus long livre sans image perdue (33 perdues au simulateur, sans processeur graphique) ; le
+  simulateur de la CI ne prouve ni l'un ni l'autre. À essayer sur un iPhone, ce qu'aucune capture ne montre : le
+  doigt qui arrête le défilement automatique sur une tête de tsadik, une flèche de la halakha ou le bouton de
+  Sefaria (sans retarder ni manger leur toucher), l'écran qui ne s'éteint pas pendant le défilement ni dix minutes
+  après le dernier toucher, puis s'éteint, et la liste des chapitres sous VoiceOver. L'audit de « source », nouveau
+  le 24/11, échoue : le badge « Source » de l'en-tête est relevé « Dynamic Type en partie » à chaque passage (runs
+  45470677593, 45480057201, 45490172262, 45495089938), et une fois sur deux le titre, la référence et les premiers
+  paragraphes avec lui ; la cause n'est pas trouvée (le badge est en `.caption2`, l'en-tête lu d'un trait comme celui
+  des Tehilim, qui passe) : à comprendre et corriger, sans tolérance.
 
 ### 30. TestFlight externe, fiche, soumission
 
@@ -442,10 +486,10 @@ macOS (`ios-vues.yml`, puis `ios-app.yml`) : plus aucune n'est en chantier.
 | Versions de l'app (VersionApp, ChoixVersionActivity) | `VersionApp`, réglage « version_app », `ChoixVersionModele` (et l'aperçu des trois couleurs), ligne des réglages, le choix proposé au retour de la présentation (`AccueilRoute.choixVersion`) ; les accueils Sérénité, Bento et Pile (`AccueilVersionModele`, `SereniteVue` et son paysage du ciel, `BentoVue` et ses tuiles vivantes, `PileVue` et ses quatre cartes), posés par la racine à la place des onglets ; leurs polices (Bellefair, Heebo, Secular One, Rubik) | — |
 | Espagnol, arabe de Tunisie | localisations es et ar-TN déclarées (`CFBundleLocalizations`, catalogues `Catalogue/` en « ar-TN ») ; `Traducteur.langueDuTelephone` (LangueApp.livree) ; l'app de droite à gauche en arabe | le choix de la langue reste dans les Réglages d'iOS (§ 2.2.7) : iOS n'a pas d'équivalent sûr au sélecteur d'Android dans l'app |
 | Audit : Zmanim | question de la région, note du Yom tov chéni, ligne de date, jour hébreu depuis tsét, allumage par rite, « Pas de Ta'hanoun aujourd'hui », deux sorties des Edot ; leurs cartes dans `ZmanimVue`, avec le choix du lieu par les villes ou la position du téléphone (`LieuSysteme`) ; le calendrier, la boussole et le partage du jour depuis Zmanim | — |
-| Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`) ; les vues du lecteur compilées et ouvertes depuis les Livres, la recherche et le Jour | — |
+| Audit : lecteur | condition « nuit », Ta'hanoun du jour, notes de traduction (partielle, automatique, siddour), office de semaine un Chabbat, liste filtrée des chapitres (`Chapitres.filtrer`, à l'écran au-delà de quarante sections depuis le 24/11 : « Chapitres (n) ▾ ») ; le défilement automatique aussi aux sources, à la halakha et aux hilloulot (24/11) ; les vues du lecteur compilées et ouvertes depuis les Livres, la recherche et le Jour | — |
 | Audit : journal, durées | corriger ou retirer un jour (`Store.corrigerJour`), durée réglable refusée sans être ramenée (`DureeSeance.valide`) ; le verrou du journal (VerrouJournal.kt, 23/11 : `VerrouJournal`, `JournalVerrouille`, Ecrans, testés ; LocalAuthentication `.deviceOwnerAuthentication` dans `App/Services/CodeDuTelephone.swift`, `NSFaceIDUsageDescription`) : l'écran du journal, refermé à l'arrière-plan, la note déjà écrite ouverte hors du journal, l'export, la désactivation du verrou, et les notes des accueils Sérénité, Bento et Pile | la vraie demande de Face ID ou du code, sur un téléphone ; le clavier qui n'apprend pas les mots du journal verrouillé (IME_FLAG_NO_PERSONALIZED_LEARNING) n'a pas d'équivalent sur iOS |
 | Audit : vol | durée invraisemblable, zmanim absents, ligne de date et Omer, repli polaire, HaGomel ; `VolVue` (saisie rapide, tuiles, prière du moment, frise, jalons, rappels, fiabilité), ouverte depuis Zmanim ; le billet (`VolBilletBouton` : l'appareil photo par VisionKit, une photo ou un PDF lus par Vision dans `LecteurBilletSysteme`, puis `CarteEmbarquement`) | les services en ligne (D10), le test d'interface de la tâche 26 ; la lecture du billet par l'appareil photo et le relevé GPS (`LieuSysteme`, branché) restent à essayer sur un téléphone |
-| Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture, historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
+| Audit : réglages, présentation | alerte de Chabbat, écran allumé en lecture (le réglage, et depuis le 24/11 `VeilleLecture` aux quatre écrans de lecture), historique de Chabbat daté, présentation sans la page de la barrière en construction SANS_BARRIERE | — |
 | Barrière (GateService) | `Evaluation.bouclier` (invite, séance), `activiteSeance`, séance minutée finie qui honore la fenêtre, pause du soir jusqu'à la fin de la fenêtre de nuit ; les trois extensions, l'adaptateur de Temps d'écran, l'aperçu, le choix des applications, le journal de la barrière (tâches 27 et 28) | l'essai sur un iPhone (recettes R2 et R4) ; sur iOS, le bouclier ne se pose que sur les applications choisies, et la surveillance ne se réveille qu'à ses rendez-vous : le bouclier de la séance part de l'app, qui est devant quand la séance commence |
 
 ## Phase 3 : l'app utilisable (22/11)

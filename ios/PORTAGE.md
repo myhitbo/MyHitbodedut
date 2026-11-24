@@ -528,6 +528,7 @@ Android fait vivre la séance dans un service au premier plan. iOS suspend l'app
 | Signal de fin sûr, téléphone en silencieux | — | réglage « minuterie système » : **AlarmKit** (iOS 26) sonne malgré le silencieux et le mode de concentration |
 | Inscrire la journée à la fin | le service | au retour dans l'app, ou par l'extension de surveillance si la barrière est active (§ 2.1.10) ; toujours pour la durée choisie et au jour du début |
 | Garder l'écran allumé sur l'écran de séance | `FLAG_KEEP_SCREEN_ON` | `isIdleTimerDisabled` |
+| Garder l'écran allumé pendant la lecture (VeilleLecture, dix minutes après le dernier toucher) et pendant le défilement automatique (keepScreenOn) | `FLAG_KEEP_SCREEN_ON` de la fenêtre, `keepScreenOn` de la vue | un seul `isIdleTimerDisabled` pour l'app : chaque écran le demande sous son nom (`EcranAllumeDemandes`), allumé tant qu'une demande reste |
 | Musique écran éteint | service `mediaPlayback` | mode d'arrière-plan audio, seulement quand un son joue réellement (règle 2.5.4 de l'App Store) |
 | Fête d'un trophée gagné pendant la séance | notification « Mazal tov ! » émise par le service | montrée au retour dans l'app ; aucune notification ne peut être calculée pendant que l'app dort |
 

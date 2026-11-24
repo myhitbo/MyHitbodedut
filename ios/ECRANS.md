@@ -157,7 +157,10 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   et `Racine`) ; avec `-captureDemo`, sur le journal de démonstration (`Ecrans/Demonstration.swift`, celui des
   captures d'Android : douze jours de suite, des notes, la présentation vue, une ville par langue), tenu en
   mémoire. Sans ces arguments, rien ne change. Un écran nouveau
-  s'ajoute à `Captures.ecrans`, au `switch` de `Captures.ouvrir`, et à la liste du script.
+  s'ajoute à `Captures.ecrans`, au `switch` de `Captures.ouvrir`, et à la liste du script. Ce qu'un toucher
+  ouvrirait passe par `LectureCaptures` (Ecrans) : « chapitres » ouvre la liste des 1 048 chapitres du plus long
+  livre ; tout écran de lecture suivi de « -barre » (« halakha-barre », « source-barre », « lecteur-barre »…),
+  demandé à la main dans l'entrée `ecrans`, s'ouvre sa barre de lecture dépliée.
 - **Le script** (`tools/captures_ios/capturer.sh`) : pour chaque langue (fr, en, he, es, ar-TN, par
   `-AppleLanguages` et `-AppleLocale`, le fuseau de la ville de la démonstration par `SIMCTL_CHILD_TZ`) et chaque
   écran, il lance l'app, attend qu'elle dise « CAPTURE PRETE » sur sa sortie d'erreur (l'écran ouvert, sans
@@ -202,7 +205,7 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
 Release pour le simulateur (`build-for-testing`), puis lance sans recompiler (`test-without-building`) :
 
 - **Le poids** : le .app en octets, ses entrées et ses plus gros fichiers dans le résumé ; le travail échoue à
-  200 Mo (155,5 Mo le 24/11).
+  200 Mo (155,8 Mo le 24/11 au soir).
 - **Les libellés** (`ios/UITests/LibellesTests.swift`) : l'accueil, la séance et Cha'harit, en fr, en, he, es et
   ar-TN. Ce que VoiceOver lit est jugé : l'audit des descriptions d'Xcode dans chaque langue, chaque bouton, onglet
   ou champ sans libellé, une clé ou un gabarit non résolus, un symbole nommé, un libellé anglais ou espagnol
