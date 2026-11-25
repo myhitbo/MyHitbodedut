@@ -82,6 +82,9 @@ final class Lancement {
         app = partage
         // Le filtre de mode de concentration écrit son choix dans ce magasin (App/ConcentrationFiltreIntention.swift).
         ConcentrationRelais.magasin = charge.magasin
+        // « Terminer maintenant » sur la Live Activity et le widget de la série passe par la séance partagée
+        // (App/Services/SystemeActiviteEnDirect.swift, ActiviteSeanceRelais).
+        ActiviteSeanceRelais.seance = partage.seance
         partage.demarrer(reponses: reponses)
         if let lien = lienEnAttente {
             lienEnAttente = nil

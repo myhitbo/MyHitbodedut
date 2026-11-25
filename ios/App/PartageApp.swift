@@ -122,8 +122,10 @@ final class PartageApp {
         // ouvert (SessionService.reconcilier, START_STICKY) : la musique repart avec elle.
         actualiserSeance()
         replanifier()
-        // Ce que montre le widget de la boussole, dans la langue de l'app, dès le lancement.
-        services.widgets.deposerBoussole()
+        // Ce que montrent les widgets (la boussole, la série, les zmanim), dans la langue de l'app, dès le lancement :
+        // rafraichir() dépose la boussole, la copie du journal et des réglages, la langue, puis recharge les widgets.
+        let widgets = services.widgets
+        Task { await widgets.rafraichir() }
     }
 
     /// Le tour de la séance (SeanceEnCours.actualiser), au lancement et au retour au premier plan : une séance

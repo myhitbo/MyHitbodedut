@@ -485,6 +485,9 @@ struct SerieJauge: View {
                                                    cotePixels: Int((s - 2 * marge) * 1.4 * echelle)) {
                 Image(decorative: image, scale: echelle)
                     .resizable()
+                    // Rendu teinté ou transparent d'iOS 26 (PORTAGE.md § 2.2.3) : sans cela, l'image prend la teinte
+                    // pleine de la plaque qu'elle recouvre et le hassid disparaît dans un disque uni.
+                    .widgetAccentedRenderingMode(.desaturated)
                     .scaledToFill()
                     // Le plan rapproché : de la tête aux genoux, la tête juste sous le bord de la plaque.
                     .frame(width: s - 2 * marge, height: (s - 2 * marge) * 1.3, alignment: .top)

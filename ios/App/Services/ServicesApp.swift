@@ -28,7 +28,7 @@ final class ServicesApp {
     let effetsReglages: SystemeEffetsReglages
     /// `TempsEcran`, `ReglagesBarriereSysteme` : vide, Family Controls n'est pas accordé.
     let tempsEcran: SystemeTempsEcran
-    /// `ActiviteEnDirect` : vide, l'extension de la Live Activity n'existe pas encore.
+    /// `ActiviteEnDirect` : la Live Activity de la séance (ActivityKit), dans la langue de l'app.
     let activite: SystemeActiviteEnDirect
     /// `ReglagesIcone`.
     let icone: SystemeIcone
@@ -66,7 +66,7 @@ final class ServicesApp {
         ajoutTemps = SystemeAjoutTemps(widgets: widgets, notificateur: notificateur)
         effetsReglages = SystemeEffetsReglages(rappels: rappels, widgets: widgets)
         tempsEcran = SystemeTempsEcran()
-        activite = SystemeActiviteEnDirect()
+        activite = SystemeActiviteEnDirect(magasin: magasin, traducteur: traducteur)
         icone = SystemeIcone()
         son = SystemeLecteurSon()
         boussole = SystemeBoussoleCapteur()

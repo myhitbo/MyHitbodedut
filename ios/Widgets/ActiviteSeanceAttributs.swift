@@ -7,8 +7,9 @@ import Foundation
 // ActivityKit exige le même type d'attributs des deux côtés, et le bouton « Terminer » de l'extension nomme une
 // intention que le système exécute dans le processus de l'app.
 //
-// L'extension n'a ni Coeur, ni Ecrans, ni le catalogue des chaînes : l'app lui donne des textes déjà traduits, dans
-// sa langue (`SystemeActiviteEnDirect`, d'après la règle `SeanceActivite` d'Ecrans), comme pour la boussole.
+// Ce fichier est compilé dans l'app et dans l'extension (Foundation, ActivityKit, AppIntents seulement). Les textes
+// arrivent déjà traduits, dans la langue de l'app (`SystemeActiviteEnDirect`, d'après la règle `SeanceActivite`
+// d'Ecrans) : la Live Activity se dessine sans relire le catalogue.
 
 /// Les attributs de la Live Activity de la séance. Rien de fixe : tout ce qui se montre peut changer pendant la
 /// séance (le filtre de concentration, la langue de l'app au retour), et vit donc dans l'état.

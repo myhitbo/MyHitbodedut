@@ -201,12 +201,23 @@ struct Veilleur: ViewModifier {
                     app.actualiserSeance()
                     app.replanifier()
                 }
+                // En quittant l'app, les widgets de la série et des zmanim reçoivent le dernier état (prénom, pauses,
+                // objectif, palette… que rien d'autre ne leur dépose).
+                if nouvelle == .background {
+                    let widgets = app.services.widgets
+                    Task { await widgets.rafraichir() }
+                }
             }
             .onChange(of: app.seance.suivie) { _, _ in
                 app.replanifier()
+                // Le widget de la série montre la séance en cours, puis le jour fait (StreakWidget.refresh).
+                let widgets = app.services.widgets
+                Task { await widgets.rafraichir() }
             }
             .onChange(of: app.seance.inscriptions) { _, _ in
                 app.replanifier()
+                let widgets = app.services.widgets
+                Task { await widgets.rafraichir() }
             }
             .onChange(of: app.magasin.reglages.lieuDepuis) { _, _ in
                 app.replanifier()

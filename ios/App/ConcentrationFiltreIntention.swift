@@ -53,6 +53,9 @@ enum ConcentrationRelais {
     static var magasin: Magasin?
 
     static func ecrire(_ masquer: Bool) async throws {
+        // La Live Activity montrée masque ou rend son décompte tout de suite, même quand iOS lance l'app pour le seul
+        // filtre.
+        await ActiviteSeanceKit.concentration(masquer)
         if let magasin {
             try await ConcentrationFiltre.ecrire(masquer, dans: magasin)
             return
