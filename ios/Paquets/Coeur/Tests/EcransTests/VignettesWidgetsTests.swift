@@ -256,7 +256,7 @@ struct VignettesWidgetsTests {
     }
 
     @Test func zmanimLaNuit() throws {
-        // Après minuit du lieu passé de la nuit : Arvit, sans limite affichée ; la journée est celle de demain.
+        // Le milieu de la nuit (23 h 45) passé, avant minuit : Arvit, sans limite affichée ; la journée est celle de demain.
         let nuit = try Self.instant(Self.lundi, 23, 50)
         let v = VignetteZmanim.affichage(Self.chrono(.moyenne, lieu: Self.lieu, nuit), famille: .moyenne,
                                          maintenant: nuit, fuseau: .utc, serie: nil)

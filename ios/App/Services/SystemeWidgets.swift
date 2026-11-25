@@ -7,14 +7,8 @@ import WidgetKit
 /// `WidgetCenter`. C'est le `BoussoleRafraichissement` de la boussole ; l'accueil, l'ajout de temps et les
 /// réglages s'en servent aussi.
 ///
-/// Avant de recharger, il dépose dans le groupe d'apps ce que les widgets lisent :
-/// - pour la boussole, la direction et ses textes (`BoussolePartagee`) : ce widget dessine ce que l'app a calculé ;
-/// - pour la série et les zmanim, une copie du journal et des réglages (`WidgetsPartage.dossier`, écrite par un
-///   `Depot` comme les fichiers de l'app) et la langue de l'app (`WidgetsPartage.langue`) : ces widgets calculent
-///   eux-mêmes leur chronologie avec Coeur (la série change à minuit, la prière à chaque zman), sans réveiller l'app.
-///
-/// Le conteneur du groupe n'existe qu'une fois le groupe d'apps accordé à la signature (SIGNATURE.md) : sans lui,
-/// rien n'est déposé, et les widgets de la série et des zmanim montrent un journal neuf et « Choisir le lieu ».
+/// Avant de recharger, il dépose dans le groupe d'apps ce que le widget de la boussole montre (`BoussolePartagee`) :
+/// le widget n'a ni le journal ni les règles, il dessine la direction que l'app a calculée, dans sa langue.
 @MainActor
 final class SystemeWidgets: BoussoleRafraichissement {
 
@@ -28,25 +22,7 @@ final class SystemeWidgets: BoussoleRafraichissement {
 
     func rafraichir() async {
         deposerBoussole()
-        await deposerPratique()
         WidgetCenter.shared.reloadAllTimelines()
-    }
-
-    /// StreakWidget.Etat.lire et ZmanimVignette.vues lisaient les préférences d'Android ; l'extension ne voit pas les
-    /// fichiers de l'app : sa copie, dans le conteneur du groupe. Le dépôt n'écrit que ce qui a changé.
-    func deposerPratique() async {
-        UserDefaults(suiteName: WidgetsPartage.groupe)?.set(traducteur.langue, forKey: WidgetsPartage.langue)
-        guard let conteneur = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: WidgetsPartage.groupe) else { return }
-        let copie = Depot(dossier: conteneur.appending(path: WidgetsPartage.dossier, directoryHint: .isDirectory))
-        let journal = magasin.journal
-        let reglages = magasin.reglages
-        do {
-            try await copie.modifier { $0 = journal }
-            try await copie.modifierReglages { $0 = reglages }
-        } catch {
-            // Les widgets gardent la copie précédente jusqu'au prochain dépôt ; rien d'autre à faire ni à montrer.
-        }
     }
 
     /// BoussoleWidget.vues : la direction principale de Jérusalem depuis le lieu des zmanim (selon la carte si le

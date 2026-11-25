@@ -1,15 +1,12 @@
 import SwiftUI
 import WidgetKit
 
-/// Les widgets de l'app (tâche 25) : la série (StreakWidget.kt, WidgetsSerie.swift), les zmanim (ZmanimVignette.kt,
-/// WidgetsZmanim.swift), la boussole (BoussoleWidget.kt), et la Live Activity de la séance (ActiviteSeance.swift).
+/// Les widgets de l'app. Pour l'instant, celui de la boussole (BoussoleWidget.kt) ; les autres viendront avec la
+/// tâche 25 (la série, les zmanim).
 @main
 struct WidgetsMyHitbodedut: WidgetBundle {
     var body: some Widget {
-        WidgetSerie()
-        WidgetZmanim()
         WidgetBoussole()
-        ActiviteSeanceWidget()
     }
 }
 
