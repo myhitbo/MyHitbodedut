@@ -538,7 +538,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     private fun renderChemin() {
         val total = Store.totalMinutes(this)
         val faites = Store.joursFaits(this).size
-        val langue = resources.configuration.locales[0]
+        val langue = Chiffres.locale(resources.configuration.locales[0])
         findViewById<TextView>(R.id.chemin_serie).text = String.format(langue, "%d", Store.streak(this))
         findViewById<TextView>(R.id.chemin_meilleure).text = String.format(langue, "%d", Store.meilleureSerie(this))
         findViewById<TextView>(R.id.chemin_total).text = Store.formatDuration(this, total)
@@ -802,44 +802,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         }
         // Un palier ou un trophée neuf : des étincelles du grade (16/10, animation E).
         Celebrations.ecran(this)
-        bilanDeLaSemaine()
-    }
-
-    /** Le bilan de la semaine écoulée (16/10, point 7) : à la première ouverture de la semaine, une fois. */
-    private fun bilanDeLaSemaine() {
-        // Rien à calculer quand le bilan de cette semaine a déjà été montré.
-        val debut = BilanSemaine.debutSemaine(java.time.LocalDate.now()).minusDays(7)
-        if (Store.bilanVu(this) == debut.toString()) return
-        val minutes = Store.bilan(this).minutes
-        val b = BilanSemaine.precedente(java.time.LocalDate.now(), minutes, Store.datesTrophees(this))
-        if (b == null) { Store.setBilanVu(this, debut.toString()); return }
-        Store.setBilanVu(this, b.debut.toString())
-        val d = resources.displayMetrics.density
-        val vue = android.widget.LinearLayout(this).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding((24 * d).toInt(), (8 * d).toInt(), (24 * d).toInt(), 0)
-            addView(VueJour.texte(context, getString(R.string.bilan_minutes, Store.formatDuration(context, b.minutes),
-                resources.getQuantityString(R.plurals.palier_n_jours, b.jours, b.jours)), 17f, R.color.ink, gras = true))
-            if (b.ecart > 0 && b.precedente > 0) addView(VueJour.texte(context, getString(R.string.bilan_plus, Store.formatDuration(context, b.ecart)), 15f, R.color.muted, haut = 6))
-            if (b.record) addView(VueJour.texte(context, getString(R.string.bilan_record), 15f, R.color.brand, gras = true, haut = 6))
-            if (b.trophees.isNotEmpty()) {
-                addView(VueJour.texte(context, getString(R.string.bilan_trophees), 15f, R.color.muted, haut = 10))
-                // La pratique lue une fois, pas une fois par niveau (04/11).
-                val pratique = Store.pratique(context)
-                val faits = Trophees.chemin.filter { Trophees.gagne(pratique, it) }
-                addView(android.widget.LinearLayout(context).apply {
-                    orientation = android.widget.LinearLayout.HORIZONTAL
-                    b.trophees.take(6).forEach { t ->
-                        addView(View(context).apply {
-                            background = TropheeDessin(context, t.famille.forme, Trophees.grade(faits.indexOf(t) + 1), t.famille.icone)
-                            contentDescription = TropheesVue.description(context, t.famille, t.seuil)
-                        }, android.widget.LinearLayout.LayoutParams((40 * d).toInt(), (40 * d).toInt()).apply { marginEnd = (6 * d).toInt() })
-                    }
-                })
-            }
-        }
-        com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle(R.string.bilan_titre).setView(vue)
-            .setPositiveButton(R.string.celebration_continue, null).show()
+        BilanSemaineVue.montrerSiDu(this)
     }
 
     /** Le compteur qui fait monter le chiffre de la face ; arrêté quand la face change. */

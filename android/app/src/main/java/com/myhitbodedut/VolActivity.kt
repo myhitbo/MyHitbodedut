@@ -167,7 +167,7 @@ class VolActivity : AppCompatActivity() {
     }
 
     private val contenu get() = findViewById<LinearLayout>(R.id.vol_contenu)
-    private val locale get() = Locale.forLanguageTag(ChizukCard.language(this))
+    private val locale get() = Chiffres.locale(ChizukCard.language(this))
 
     /** Le formulaire rouvert pour modifier le vol calculé ; replié en résumé sinon (29/10). */
     private var modifier = false

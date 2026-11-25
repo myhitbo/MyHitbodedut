@@ -253,6 +253,9 @@ object Data {
         return SiddurLoader.parse(Json.readRaw(context.applicationContext, brut))
     }
 
+    /** Un livre entier pour l'index de recherche (IndexLivres) : lu, puis oublié. */
+    fun livreSeul(context: Context, id: String): SiddurTexte? = livrePasse(context, id)?.texte(id)
+
     /** Tous les livres entiers, dans l'ordre de l'index : pour la recherche, hors du fil principal. */
     fun livres(context: Context): Siddur {
         val index = livresIndex(context)

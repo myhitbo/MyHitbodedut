@@ -28,7 +28,7 @@ class TehilimActivity : AppCompatActivity() {
             getString(
                 R.string.tehilim_count, Tehilim.PSAUMES,
                 // « 2,527 » en anglais, « 2 527 » en français : le séparateur de la langue.
-                java.text.NumberFormat.getIntegerInstance(resources.configuration.locales[0]).format(livre.versetsTotal)
+                java.text.NumberFormat.getIntegerInstance(Chiffres.locale(resources.configuration.locales[0])).format(livre.versetsTotal)
             )
         construireGrille()
     }

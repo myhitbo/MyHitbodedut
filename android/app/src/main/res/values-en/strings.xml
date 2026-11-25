@@ -1655,6 +1655,7 @@
     <string name="version_tous_zmanim">All zmanim</string>
     <string name="version_journal_vide">Nothing written yet. After a hitbodedut, one line is enough.</string>
     <string name="version_note_sans_texte">No note.</string>
+    <string name="version_note_ecrite">A note, to read in your journal.</string>
     <string name="version_ecrire_note">Write today’s note</string>
     <string name="version_tout_journal">The whole journal</string>
     <string name="version_parcours">My journey</string>
@@ -1721,4 +1722,16 @@
     <string name="instant_total">%1$s in total</string>
     <string name="instant_minutes">Your last 7 days</string>
     <string name="instant_moyenne">Average on days done: %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">Ask me 10 s before the end whether to continue</string>
+    <string name="session_suite_titre">Continue the hitbodedut?</string>
+    <string name="session_suite_texte">It ends in 10 seconds. Without an answer, it stops and is saved to your journal.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">No end</string>
+    <string name="session_suite_non_court">No</string>
+    <string name="session_suite_oui_plus">Yes, %1$s more</string>
+    <string name="session_suite_oui_sans_fin">Yes, with no end</string>
+    <string name="session_suite_non">No, finish</string>
+    <string name="channel_suite">Continue the hitbodedut</string>
+    <string name="channel_suite_description">The question asked 10 seconds before a timed hitbodedut ends.</string>
 </resources>

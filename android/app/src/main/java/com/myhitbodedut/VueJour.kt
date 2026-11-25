@@ -67,7 +67,7 @@ object VueJour {
     fun espace(v: Int): Int = if (v in 1..3) 4 else ECHELLE.minByOrNull { kotlin.math.abs(it - v) * 100 + ECHELLE.indexOf(it) }!!
     private val ECHELLE = intArrayOf(0, 4, 8, 12, 16, 24, 32, 40)
 
-    private fun locale(langue: String): Locale = Locale.forLanguageTag(langue)
+    private fun locale(langue: String): Locale = Chiffres.locale(langue)
 
     /** La date civile en toutes lettres, dans la langue de l'application : « lundi 2 novembre 2026 ». */
     fun dateCivile(c: Context, date: LocalDate): String =

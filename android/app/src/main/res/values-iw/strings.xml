@@ -1699,6 +1699,7 @@
     <string name="version_tous_zmanim">כל הזמנים</string>
     <string name="version_journal_vide">עדיין לא נכתב דבר. אחרי התבודדות, שורה אחת מספיקה.</string>
     <string name="version_note_sans_texte">ללא הערה.</string>
+    <string name="version_note_ecrite">יש הערה, לקריאה ביומן.</string>
     <string name="version_ecrire_note">לכתוב את הערת היום</string>
     <string name="version_tout_journal">כל היומן</string>
     <string name="version_parcours">המסלול שלי</string>
@@ -1767,4 +1768,16 @@
     <string name="instant_total">%1$s בסך הכול</string>
     <string name="instant_minutes">7 הימים האחרונים שלכם</string>
     <string name="instant_moyenne">ממוצע בימים שנעשו: %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">לשאול אותי 10 שניות לפני הסוף אם להמשיך</string>
+    <string name="session_suite_titre">להמשיך את ההתבודדות?</string>
+    <string name="session_suite_texte">היא מסתיימת בעוד 10 שניות. בלי תשובה, היא נעצרת ונרשמת ביומן.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">בלי סוף</string>
+    <string name="session_suite_non_court">לא</string>
+    <string name="session_suite_oui_plus">כן, עוד %1$s</string>
+    <string name="session_suite_oui_sans_fin">כן, בלי סוף</string>
+    <string name="session_suite_non">לא, לסיים</string>
+    <string name="channel_suite">להמשיך את ההתבודדות</string>
+    <string name="channel_suite_description">השאלה שנשאלת 10 שניות לפני סוף התבודדות עם זמן קבוע.</string>
 </resources>

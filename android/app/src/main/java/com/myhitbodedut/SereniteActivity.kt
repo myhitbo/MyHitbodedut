@@ -240,7 +240,6 @@ class SereniteActivity : AccueilVersion() {
 
     private fun semaine(d: DonneesAccueil): View = carte {
         titreSection(getString(R.string.serenite_cette_semaine), getString(R.string.serenite_tout_voir)) { ouvrirJournal() }
-        val verrou = VerrouJournal.actif(context)
         val jours = Store.days(context).values.filter { it.faite }.sortedByDescending { it.date }.take(3)
         if (jours.isEmpty()) {
             addView(VueVersion.texte(context, getString(R.string.version_journal_vide), 15f, k.texte2, haut = 6))
@@ -254,10 +253,9 @@ class SereniteActivity : AccueilVersion() {
                     })
                     addView(VueVersion.texte(context, DonneesAccueil.duree(context, r.minutes), 15f, k.texte2))
                 })
-                if (r.note.isNotBlank() && !verrou) addView(VueVersion.texte(context, r.note, 14f, k.texte2, haut = 2).apply {
-                    maxLines = 1
-                    ellipsize = android.text.TextUtils.TruncateAt.END
-                })
+                // Le texte de la note reste dans le journal : un accueil se voit dans les captures
+                // d'écran et l'aperçu des applications récentes (décision du 24/11).
+                if (r.note.isNotBlank()) addView(VueVersion.texte(context, getString(R.string.version_note_ecrite), 14f, k.texte2, haut = 2))
             })
         }
         addView(VueVersion.bouton(context, getString(R.string.version_ecrire_note), k.accent, k.accent, trait = true, taille = 15f) { ecrireNote() }.apply {

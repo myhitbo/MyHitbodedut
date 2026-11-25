@@ -11,6 +11,7 @@ object Notifications {
     const val CHANNEL_SESSION = "session"
     const val CHANNEL_REMINDER = "reminder"
     const val CHANNEL_CELEBRATION = "celebration"
+    const val CHANNEL_SUITE = "session_suite"
 
     const val ID_GATE = 1
     const val ID_SESSION = 2
@@ -21,6 +22,7 @@ object Notifications {
     const val ID_LEVANA = 7
     const val ID_VOL = 8
     const val ID_VOL_OMER = 9
+    const val ID_SUITE = 10
 
     fun ensureChannels(context: Context) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -55,6 +57,23 @@ object Notifications {
                 context.getString(R.string.channel_celebration),
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply { description = context.getString(R.string.channel_celebration_description) }
+        )
+
+        // « Continuer la hitbodedout ? » (24/11) : elle doit apparaître en haut de l'écran et se
+        // faire entendre, le téléphone posé — d'où une importance haute, à part du décompte.
+        manager.createNotificationChannel(
+            NotificationChannel(
+                CHANNEL_SUITE,
+                context.getString(R.string.channel_suite),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = context.getString(R.string.channel_suite_description)
+                // « Ne pas déranger », posé par la séance elle-même, ne doit pas faire taire sa
+                // question. Android ne l'accorde qu'à une application qui a l'accès à ce mode —
+                // celle qui l'a demandé pour la séance justement ; sinon il l'ignore.
+                setBypassDnd(true)
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+            }
         )
     }
 }

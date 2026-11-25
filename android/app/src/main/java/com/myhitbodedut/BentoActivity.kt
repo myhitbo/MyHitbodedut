@@ -294,7 +294,8 @@ class BentoActivity : AccueilVersion() {
                 if (n == null) getString(R.string.pile_journal)
                 else getString(R.string.bento_journal_quand, DonneesAccueil.jour(context, n.date).lowercase(), DonneesAccueil.duree(context, n.minutes)),
                 13f, DOUX, heebo).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
-            addView(VueVersion.texte(context, n?.texte ?: getString(R.string.version_ecrire_note), 15f, if (n?.texte != null) ENCRE else DOUX, heebo, haut = 4).apply {
+            addView(VueVersion.texte(context, getString(if (n?.ecrite == true) R.string.version_note_ecrite else R.string.version_ecrire_note),
+                15f, DOUX, heebo, haut = 4).apply {
                 maxLines = 3
                 ellipsize = android.text.TextUtils.TruncateAt.END
             })

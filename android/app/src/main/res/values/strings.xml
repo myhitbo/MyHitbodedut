@@ -1716,6 +1716,7 @@
     <string name="version_tous_zmanim">Tous les zmanim</string>
     <string name="version_journal_vide">Rien d’écrit encore. Après une hitbodedout, une ligne suffit.</string>
     <string name="version_note_sans_texte">Sans note.</string>
+    <string name="version_note_ecrite">Une note, à lire dans le journal.</string>
     <string name="version_ecrire_note">Écrire la note du jour</string>
     <string name="version_tout_journal">Tout le journal</string>
     <string name="version_parcours">Mon parcours</string>
@@ -1782,4 +1783,16 @@
     <string name="instant_total">%1$s au total</string>
     <string name="instant_minutes">Vos 7 derniers jours</string>
     <string name="instant_moyenne">Moyenne des jours faits : %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">Me demander 10 s avant la fin si je continue</string>
+    <string name="session_suite_titre">Continuer la hitbodedout ?</string>
+    <string name="session_suite_texte">Elle se termine dans 10 secondes. Sans réponse, elle s’arrête et s’inscrit au journal.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">Sans fin</string>
+    <string name="session_suite_non_court">Non</string>
+    <string name="session_suite_oui_plus">Oui, %1$s de plus</string>
+    <string name="session_suite_oui_sans_fin">Oui, sans fin</string>
+    <string name="session_suite_non">Non, terminer</string>
+    <string name="channel_suite">Continuer la hitbodedout</string>
+    <string name="channel_suite_description">La question posée 10 secondes avant la fin d’une hitbodedout minutée.</string>
 </resources>

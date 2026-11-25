@@ -1602,6 +1602,7 @@
     <string name="version_tous_zmanim">Todos los zmanim</string>
     <string name="version_journal_vide">Aún no hay nada escrito. Después de una hitbodedut, basta con una línea.</string>
     <string name="version_note_sans_texte">Sin nota.</string>
+    <string name="version_note_ecrite">Una nota, para leer en el diario.</string>
     <string name="version_ecrire_note">Escribir la nota del día</string>
     <string name="version_tout_journal">Todo el diario</string>
     <string name="version_parcours">Mi recorrido</string>
@@ -1667,4 +1668,16 @@
     <string name="instant_total">%1$s en total</string>
     <string name="instant_minutes">Tus últimos 7 días</string>
     <string name="instant_moyenne">Media de los días hechos: %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">Preguntarme 10 s antes del final si continúo</string>
+    <string name="session_suite_titre">¿Continuar la hitbodedut?</string>
+    <string name="session_suite_texte">Termina en 10 segundos. Sin respuesta, se detiene y se guarda en el diario.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">Sin fin</string>
+    <string name="session_suite_non_court">No</string>
+    <string name="session_suite_oui_plus">Sí, %1$s más</string>
+    <string name="session_suite_oui_sans_fin">Sí, sin fin</string>
+    <string name="session_suite_non">No, terminar</string>
+    <string name="channel_suite">Continuar la hitbodedut</string>
+    <string name="channel_suite_description">La pregunta que llega 10 segundos antes del final de una hitbodedut con tiempo.</string>
 </resources>

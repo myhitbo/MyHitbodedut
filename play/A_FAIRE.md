@@ -1,6 +1,6 @@
 # Publier sur Google Play — ce qui reste à faire, dans l'ordre
 
-État au 23/11/2026. L'application, la fiche, les déclarations, la page des
+État au 24/11/2026. L'application, la fiche, les déclarations, la page des
 règles de confidentialité, la clé d'envoi, le compte et la vidéo sont prêts.
 Il reste les gestes que seul le propriétaire peut faire, presque tous dans la
 Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
@@ -35,7 +35,8 @@ Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
 | Recette des corrections du 23/11, Android 13 à 16 | 23/11 | sans faute, y compris sur le code de `play-7` : ci-dessous |
 | Six corrections trouvées par la recette | 22/11 | PR #50 « Recette avant Google Play », reprise dans la branche du 23/11 (§ 1) |
 | PR #48, #49 et #50 réunies, relecture du code, vingt et une corrections | 23/11 | branche `ccr-95e5794e-1ej68l` ; ci-dessous |
-| AAB signé `play-7` (versionCode 8, version 1.7) | 23/11 | construit sur cette branche, avec toutes les corrections : § 1. **Ne pas envoyer** `play-3` (17/11, aucune correction), `play-4` et `play-5` (23/11, construits avant la contre-relecture), ni `play-6` (23/11, construit sur `main` : les trois PR, mais **aucune** des corrections du 23/11, dont les trois plantages) |
+| Décisions du 24/11 et « Continuer ? » | 24/11 | PR « Décisions du 24/11 », **à fusionner** ; ci-dessous |
+| AAB signé `play-7` (versionCode 8, version 1.7) | 23/11 | code de `main` au 24/11, **sans** les décisions du 24/11 ni « Continuer ? » : à remplacer par l'AAB construit après la fusion (§ 1). **Ne pas envoyer** `play-3` (17/11, aucune correction), `play-4` et `play-5` (23/11, construits avant la contre-relecture), ni `play-6` (23/11, construit sur `main` : les trois PR, mais **aucune** des corrections du 23/11, dont les trois plantages) |
 | Note aux examinateurs, rejouée mot pour mot | 22/11 | `play/CONSOLE.md` § 3.2 |
 | Vidéo des services de premier plan | 22/11 | `MyHitbodedut-foreground-services.mp4`, `play/CONSOLE.md` § 3.9 |
 
@@ -121,22 +122,36 @@ plantage ni perte de données, et trois retouches à faire, faites dans
 - la correction 15 annonçait un trophée dans la langue du téléphone, et non
   celle de l'application, avant Android 13.
 
-Relevé, **non corrigé** : décisions du propriétaire, ou trop peu sûr pour un
-changement de dernière heure.
+Relevé sans être corrigé le 23/11, **tranché par le propriétaire le 24/11 et
+fait** (PR « Décisions du 24/11 ») :
 
-- Les accueils Sérénité, Bento, Instant et Pile affichent le texte de la
-  dernière note quand le journal n'est pas verrouillé : elle paraît donc dans
-  les captures d'écran et l'aperçu des applications récentes, ce que l'écran
-  du journal interdit. Soit ne plus l'afficher, soit interdire la capture de
-  ces accueils.
-- Le bilan de la semaine ne s'ouvre que sur l'accueil Classique.
-- En arabe tunisien, quelques nombres (coordonnées, kilomètres de la boussole
-  et du vol) peuvent s'écrire en chiffres arabes orientaux. À voir sur un
-  téléphone.
-- La recherche dans tous les livres relit 28 Mo de textes à chaque requête :
-  lente, et peut-être vide de résultats sur un téléphone très modeste.
-- La durée d'une séance suit l'horloge du téléphone : la changer en cours de
-  séance la raccourcit ou l'allonge.
+- Les accueils Sérénité, Bento, Instant et Pile affichaient le texte de la
+  dernière note : il paraissait dans les captures d'écran et l'aperçu des
+  applications récentes. **Ils ne montrent plus que l'existence d'une note**
+  (« Une note, à lire dans le journal »).
+- Le bilan de la semaine ne s'ouvrait que sur l'accueil Classique : **il
+  s'ouvre sur tous les accueils**.
+- En arabe, quelques nombres pouvaient s'écrire en chiffres arabes orientaux :
+  **toujours 0 à 9** (boussole, vol, Tehilim, chemin, lune).
+- La recherche dans tous les livres relisait 28 Mo de textes à chaque requête :
+  **elle lit un index écrit une fois par version** ; mêmes résultats.
+- La durée d'une séance suivait l'horloge du téléphone : **elle se mesure sur
+  le temps réellement écoulé** ; changer l'heure ne la change plus.
+
+### « Continuer ? » à la fin d'une séance (demande du 24/11)
+
+Sur toutes les versions de l'accueil (l'écran de séance leur est commun) :
+une option avant de commencer, allumée par défaut, « Me demander 10 s avant
+la fin si je continue ». Dix secondes avant la fin d'une séance minutée, une
+notification propose **+ 5 min**, **+ la même durée** ou **sans fin** ; sur
+l'écran de séance, la même question avec aussi **Non, terminer**. Sans
+réponse, la séance va à son terme et s'inscrit comme avant. Prolongée, elle
+s'inscrit pour toute sa durée, et la question revient avant la nouvelle fin.
+
+Ce qui reste à voir sur un vrai téléphone : que la notification s'entende
+quand la séance a mis le téléphone en « Ne pas déranger » (Android ne laisse
+passer la question que si l'application a l'accès à ce mode, celui-là même
+que l'option « Ne pas déranger » de la séance demande).
 
 ### La recette du 23/11
 
@@ -223,20 +238,17 @@ pour le point 6, l'accueil Instant vu une fois sur un téléphone Android 15 ou
 16 (*Réglages › Version de l'app › Instant*) : un émulateur qui s'arrête ne
 dit rien d'un vrai processeur graphique, dans un sens comme dans l'autre.
 
-## 1. Récupérer le paquet et fusionner (≈ 10 min)
+## 1. Fusionner et reconstruire le paquet (≈ 20 min)
 
-1. **Le paquet à envoyer** : GitHub → *Actions → Play* → l'exécution n° 7 →
-   artefact `play-7` : `MyHitbodedut-7.aab` (versionCode 8, version 1.7) et
-   `mapping-7.txt`. Il est construit sur la branche `ccr-95e5794e-1ej68l`, qui
-   réunit les PR #48, #49 et #50 et les corrections du 23/11 ; le flux a refait
-   les tests et signé avec la clé d'envoi. Un artefact se garde 30 jours.
-2. **Fusionner cette branche dans `main`**, pour que `main` soit le code de la
-   version envoyée. Les PR #48, #49 et #50 y sont fusionnées depuis le 23/11 ;
-   les corrections du 23/11, elles, ne sont encore que sur cette branche. Tant
-   qu'elle n'est pas fusionnée, une construction lancée sur `main` ne les a
-   pas : c'est le cas de `play-6`.
-3. La recette du 23/11 sur émulateurs est faite, sans faute (ci-dessus) : rien
-   n'empêche d'envoyer `play-7`.
+Les PR #48 à #51 sont dans `main` depuis le 24/11 ; `play-7` est construit
+sur ce code. Les décisions du 24/11 et « Continuer ? » sont dans la PR
+« Décisions du 24/11 ».
+
+1. **Fusionner la PR « Décisions du 24/11 »** dans `main`.
+2. GitHub → *Actions → Play → Run workflow* sur `main`. Le flux refait les
+   tests, signe avec la clé d'envoi et dépose l'artefact `play-N` :
+   `MyHitbodedut-N.aab` et `mapping-N.txt`. **C'est ce paquet-là qu'on
+   envoie**, plus `play-7`. Un artefact se garde 30 jours.
 
 Pour reconstruire plus tard : *Actions → Play → Run workflow* sur `main`,
 une fois cette branche fusionnée. Le numéro de version suit celui de
