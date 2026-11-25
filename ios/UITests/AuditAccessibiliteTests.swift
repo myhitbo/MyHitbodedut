@@ -51,6 +51,12 @@ final class AuditAccessibiliteTests: XCTestCase {
         let cadre: CGRect?
         let actif: Bool?
 
+        /// « Dynamic Type en partie » : une police qui ne suit pas toutes les tailles du texte, ou une mesure prise
+        /// avant que l'écran ait fini de grandir.
+        var enPartie: Bool { sorte == "Dynamic Type" && compact.contains("partially") }
+        /// Le même élément d'un passage à l'autre (son cadre peut bouger d'un point).
+        var cle: String { [sorte, compact, libelle, genre].joined(separator: "\t") }
+
         var ligne: String {
             let position = cadre.map { "\(Int($0.minX)),\(Int($0.minY)),\(Int($0.width)),\(Int($0.height))" } ?? ""
             let unLibelle = libelle.split(whereSeparator: \.isNewline).joined(separator: " ¶ ")
@@ -107,14 +113,31 @@ final class AuditAccessibiliteTests: XCTestCase {
                 .filter { $0.exists }.map(\.frame).filter { !$0.isEmpty }
             print("ZONE\t\(ecran)\t\(Int(zone.haut))\t\(Int(zone.bas))\t\(defilements.count) défilement(s)")
             for sorte in Self.sortes {
-                var fini = false
-                for essai in 0..<Self.essais where !fini {
-                    if essai > 0 { Thread.sleep(forTimeInterval: 2) }
-                    fini = auditer(app, ecran: ecran, sorte: sorte)
-                }
-                if !fini {
+                guard var trouves = auditerEnEssais(app, ecran: ecran, sorte: sorte) else {
                     let ligne = [ecran, "inachevé", "audit inachevé : \(Self.nom(sorte))"].joined(separator: "\t")
                     print("TOLERE\t" + ligne + "\tl'audit n'a pas fini à temps sur le simulateur de la CI (\(Self.essais) essais)")
+                    continue
+                }
+                // « Dynamic Type en partie » : un second passage, et seul compte ce qu'il relève encore. Une police
+                // fixe l'est à chaque passage (le badge « Source » en .caption2, le 24/11) ; l'autre relevé tombe
+                // sur un écran à la fois, tout son texte d'un coup, un audit complet sur deux, styles du système
+                // compris : la note et la présentation (run 45538900389), puis Bravo et la source (run
+                // 45554544337), chaque fois sans rien à l'audit suivant ni sur les captures « grand ».
+                if sorte == .dynamicType, trouves.contains(where: \.enPartie) {
+                    Thread.sleep(forTimeInterval: 3)
+                    if let revus = auditerEnEssais(app, ecran: ecran, sorte: sorte, muet: true) {
+                        let encore = Set(revus.map(\.cle))
+                        trouves = trouves.filter { d in
+                            guard d.enPartie, !encore.contains(d.cle) else { return true }
+                            print("TOLERE\t" + d.ligne
+                                  + "\tDynamic Type « en partie » à un seul de deux passages de suite : pas une police fixe")
+                            return false
+                        }
+                    }
+                }
+                for d in trouves {
+                    print("AUDIT\t" + d.ligne)
+                    defauts.append(d.ligne)
                 }
             }
             app.terminate()
@@ -124,11 +147,24 @@ final class AuditAccessibiliteTests: XCTestCase {
         }
     }
 
+    /// L'audit d'une sorte, en `essais` au plus : les défauts non tolérés, ou nil s'il n'a jamais fini à temps.
+    @MainActor
+    private func auditerEnEssais(_ app: XCUIApplication, ecran: String, sorte: XCUIAccessibilityAuditType,
+                                 muet: Bool = false) -> [Defaut]? {
+        for essai in 0..<Self.essais {
+            if essai > 0 { Thread.sleep(forTimeInterval: 2) }
+            if let trouves = auditer(app, ecran: ecran, sorte: sorte, muet: muet) { return trouves }
+        }
+        return nil
+    }
+
     /// Un audit de l'écran ouvert, pour une sorte de défaut. Le gestionnaire ne fait que garder les défauts : leurs
     /// éléments se lisent après l'audit, d'une seule photographie chacun (lus pendant l'audit, ils l'allongeaient
-    /// d'une seconde par défaut). Rend false si l'audit n'a pas fini à temps ; une autre erreur compte comme un défaut.
+    /// d'une seconde par défaut). Rend les défauts non tolérés (les tolérés s'écrivent, sauf `muet`), ou nil si
+    /// l'audit n'a pas fini à temps ; une autre erreur compte comme un défaut.
     @MainActor
-    private func auditer(_ app: XCUIApplication, ecran: String, sorte: XCUIAccessibilityAuditType) -> Bool {
+    private func auditer(_ app: XCUIApplication, ecran: String, sorte: XCUIAccessibilityAuditType,
+                         muet: Bool) -> [Defaut]? {
         let debut = Date()
         var releves: [XCUIAccessibilityAuditIssue] = []
         defer {
@@ -143,13 +179,12 @@ final class AuditAccessibiliteTests: XCTestCase {
         } catch let erreur as NSError where erreur.domain == "com.apple.xcode.xctest.accessibilityAudit"
                     && erreur.code == -56 {
             print("LENT\t\(ecran)\t\(Self.nom(sorte))\t\(erreur.localizedDescription)")
-            return false
+            return nil
         } catch {
-            let ligne = [ecran, "erreur", "\(error)"].joined(separator: "\t")
-            print("AUDIT\t" + ligne)
-            defauts.append(ligne)
-            return true
+            return [Defaut(ecran: ecran, sorte: "erreur", compact: "\(error)", detail: "", libelle: "", genre: "",
+                           cadre: nil, actif: nil)]
         }
+        var gardes: [Defaut] = []
         for probleme in releves {
             let photo = try? probleme.element?.snapshot()
             let defaut = Defaut(ecran: ecran, sorte: Self.nom(probleme.auditType), compact: probleme.compactDescription,
@@ -159,13 +194,12 @@ final class AuditAccessibiliteTests: XCTestCase {
                                 genre: photo.map { String(describing: $0.elementType) } ?? "",
                                 cadre: photo?.frame, actif: photo?.isEnabled)
             if let raison = tolerance(defaut) {
-                print("TOLERE\t" + defaut.ligne + "\t" + raison)
+                if !muet { print("TOLERE\t" + defaut.ligne + "\t" + raison) }
             } else {
-                print("AUDIT\t" + defaut.ligne)
-                defauts.append(defaut.ligne)
+                gardes.append(defaut)
             }
         }
-        return true
+        return gardes
     }
 
     /// La raison pour laquelle ce défaut n'en est pas un, ou nil. Chaque règle est étroite : un défaut qu'elle ne

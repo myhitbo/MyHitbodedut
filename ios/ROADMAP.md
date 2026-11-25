@@ -416,7 +416,12 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   d'Xcode. L'audit complet suivant (run 45538900389, sur 73fd05cb) a relevé tout le texte de la note et de la
   présentation « Dynamic Type en partie », le bouton « Enregistrer » du système compris, sur des passages lents (13 s
   et 10 s, contre 7 s) : la même marque que la source plus haut ; ces deux écrans, que le ciel ne touche pas, repassés
-  seuls avec le Jour, Sérénité et la source, n'ont plus rien (run 45547024927). Sans tolérance ajoutée.
+  seuls avec le Jour, Sérénité et la source, n'ont plus rien (run 45547024927). Sans tolérance ajoutée. L'audit
+  complet suivant (run 45554544337, sur 957d3ae4) a relevé de même tout le texte de Bravo et de la source, et rien à
+  la note ni à la présentation, sur des passages qui n'étaient pas les plus lents (11 s et 13 s ; la note, à 13 s,
+  sans rien) : un écran au hasard, un audit complet sur deux. L'audit refait donc un second passage des tailles du
+  texte quand il relève « Dynamic Type en partie », et seul compte ce qu'il relève les deux fois : une police fixe
+  l'est à chaque passage (le badge « Source », le 24/11), ce relevé-là non.
 
 ### 30. TestFlight externe, fiche, soumission
 
