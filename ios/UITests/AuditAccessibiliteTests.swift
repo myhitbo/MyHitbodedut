@@ -203,10 +203,11 @@ final class AuditAccessibiliteTests: XCTestCase {
             return "écran voilé sous la fiche d'un trophée (caché à VoiceOver) ; la fiche a les couleurs des cartes"
         }
         // Le titre de la carte-paysage de Sérénité : blanc, sur le voile sombre du bas de la carte (0xE614111F) posé
-        // sur la colline proche, d'une seule couleur à toute heure. Relevé une fois (25/11, 02 h 54 UTC, run
-        // 45530323926), pas aux audits du 24/11 ; sur la capture du même passage, le titre est à 18:1 de son fond
-        // (blanc sur 21,17,34, uni sur toute la hauteur du titre). L'étiquette « Ce soir » et la ligne du réglage,
-        // plus petites et sur le même fond, n'ont jamais été relevées.
+        // sur la colline proche, d'une seule couleur à toute heure. Relevé à chaque audit depuis le paysage continu
+        // (25/11, runs 45530323926, 45538900389 et 45547024927), jamais avant ; sur les captures de ces passages, le
+        // titre est à 18:1 de son fond (blanc sur 21,17,34, uni sur toute la hauteur du titre).
+        // L'étiquette « Ce soir » et la ligne du réglage, plus petites et sur le même fond, ne sont pas relevées. Ce
+        // qui trompe l'audit n'est pas trouvé : à regarder avec l'inspecteur d'accessibilité d'Xcode.
         if ecran == "serenite" && d.sorte == "contraste" && d.genre.contains("48")
             && d.libelle.hasPrefix("Hitbodedout ·") {
             return "titre blanc de la carte-paysage sur son voile sombre : 18:1 mesuré sur la capture"
