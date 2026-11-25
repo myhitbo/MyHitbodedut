@@ -17,7 +17,7 @@ import Coeur
 struct CielVivantHorloge<Contenu: View>: View {
     @ViewBuilder let contenu: (Double?) -> Contenu
 
-    @Environment(\.accessibilityReduceMotion) private var reduire
+    @Environment(\.accessibilityReduceMotion) private var reduireSysteme
     @Environment(\.scenePhase) private var scene
     /// Le mode Économie d'énergie, suivi pendant que le ciel est à l'écran.
     @State private var economie = ProcessInfo.processInfo.isLowPowerModeEnabled
@@ -25,6 +25,9 @@ struct CielVivantHorloge<Contenu: View>: View {
     @State private var visible = false
     /// Le temps du ciel part de son apparition.
     @State private var origine = Date()
+
+    /// « Réduire les animations », ou le ciel immobile que demandent les tests d'interface (`CielImmobile`).
+    private var reduire: Bool { reduireSysteme || CielImmobile.demande }
 
     var body: some View {
         let enMarche = CielVivant.enMarche(permis: CielVivant.permis(reduireAnimations: reduire, economieDEnergie: economie),
@@ -42,6 +45,15 @@ struct CielVivantHorloge<Contenu: View>: View {
             economie = ProcessInfo.processInfo.isLowPowerModeEnabled
         }
     }
+}
+
+/// Le ciel immobile des tests d'interface (« -cielImmobile », l'audit d'accessibilité) : sa pose de repos, comme avec
+/// « Réduire les animations ». XCTest attend que l'app soit au repos avant chaque mesure, et un ciel qui bouge ne
+/// l'est jamais : sur le simulateur de la CI, l'audit des tailles du texte du Jour ne finissait plus (le 25/11). La
+/// pose de repos est aussi la plus exigeante pour le contraste : les animations ne font que pâlir le ciel (halo,
+/// étoiles), jamais l'aviver.
+enum CielImmobile {
+    static let demande = ProcessInfo.processInfo.arguments.contains("-cielImmobile")
 }
 
 /// Une couleur ARGB des ciels (les entiers de `TeintesCiel` et de `PaysageCiel`), dans l'espace sRGB d'Android.

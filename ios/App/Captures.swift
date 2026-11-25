@@ -145,6 +145,8 @@ enum Captures {
         case "bibliotheque": depart = (.textes, [.bibliotheque(livresSeuls: false)], nil, nil)
         // Une source de la bibliothèque (Likoutei Moharan II, 25), son texte et son bouton de lecture.
         case "source": depart = (.textes, [.bibliotheque(livresSeuls: false), .entree("src-lm2-25")], nil, nil)
+        // Diagnostic de l'audit (tâche 29) : la même source, sans la bibliothèque dessous.
+        case "source-seule": depart = (.textes, [.entree("src-lm2-25")], nil, nil)
         case "halakha": depart = (.textes, [.halakha(recherche: nil)], nil, nil)
         case "hilloulot": depart = (.textes, [.hilloulot(recherche: nil)], nil, nil)
         case "recherche": depart = (.textes, [.recherche], nil, nil)
