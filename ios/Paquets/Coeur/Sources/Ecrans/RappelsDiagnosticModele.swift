@@ -328,7 +328,7 @@ public final class RappelsDiagnosticModele {
         var silence = false
         if let instant {
             let civile = fuseau.dateHeure(millis: instant)
-            quand = TehilimModele.nomDuJour(civile.jour.jourDeSemaine, langue: langue) + " " + civile.jour.iso + " "
+            quand = TehilimTexte.nomDuJour(civile.jour.jourDeSemaine, langue: langue) + " " + civile.jour.iso + " "
                 + Store.formatMinutes(civile.minutesDuJour)
             if categorie == .rappel {
                 silence = !RappelsDiagnosticModele.permis(civile, reglages: reglages, journal: journal, fuseau: fuseau)
