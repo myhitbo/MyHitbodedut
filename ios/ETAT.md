@@ -1,6 +1,6 @@
-# État du portage iOS — 24/11/2026 (mis à jour le soir)
+# État du portage iOS — 25/11/2026
 
-L'app iOS est écrite, câblée et verte dans la CI. Elle **compile avec le vrai Xcode** (26.6, iOS 26.5) et **passe ses tests**, sous Linux et sur le simulateur iOS, au commit 28e8b48. Personne ne l'a encore lancée sur un iPhone : il faut pour cela le compte Apple (voir « Ce qui vous attend »).
+L'app iOS est écrite, câblée et verte dans la CI. Elle **compile avec le vrai Xcode** (26.6, iOS 26.5) et **passe ses tests**, sous Linux et sur le simulateur iOS, au commit d895864, extensions comprises. Personne ne l'a encore lancée sur un iPhone : il faut pour cela le compte Apple (voir « Ce qui vous attend »).
 
 ## Ce qui est fait
 
@@ -19,11 +19,21 @@ L'app iOS est écrite, câblée et verte dans la CI. Elle **compile avec le vrai
 - **La CI macOS** tourne sur un runner Intel (`macos-26-intel`) : depuis le 16/11/2026, les runners arm64 de GitHub ne prennent plus les travaux. L'app y est compilée pour le simulateur arm64, et les tests du paquet tournent sur le simulateur x86_64 sans la cible des vues. Swift 6.3.3 plante en effet sur les `Binding(get:set:)` à fermetures `@MainActor` : les vues passent par `Binding.passerelle` (`Vues/Liaison.swift`, voir `ECRANS.md`).
 - **Les catalogues de chaînes** : Xcode compile une copie (`Ressources/Catalogue`) où deux pluriels sans nombre (« jour » / « jours ») deviennent des chaînes simples ; le Traducteur lit le catalogue fidèle à Android.
 
+## Écrit depuis le 24/11
+
+- **La barrière** : les trois extensions (surveillance DeviceActivity qui pose et lève les boucliers des magasins nommés, bouclier à trois visages, actions « Commencer », « Déjà faite », « Plus tard »), l'état écrit pour elles à chaque changement, la relève de leur boîte, l'aperçu du bouclier et le choix des applications. Règles communes dans `Barriere/Pilotage`, testées sous Linux.
+- **Les rappels** : l'écran des heures (depuis les Textes et une ligne des Réglages, propre à iOS) et le diagnostic des notifications en attente.
+- **Les widgets** : la série, les zmanim (petit, moyen, grand, écran verrouillé) et la boussole ; la chronologie se calcule dans l'extension avec Coeur, d'après la copie du journal et des réglages que l'app dépose dans le groupe d'apps.
+- **La Live Activity de la séance** : écran verrouillé et Dynamic Island, décompte (masqué par le filtre de concentration), « Terminer ».
+- **La présentation** : l'écran « Je viens d'Android » (import de la sauvegarde, série retrouvée).
+- **Les réglages** : la dédicace, l'aide à la concentration (et son filtre de concentration qui masque le décompte).
+
 ## Ce qui n'est pas fait
 
-- **La barrière (Temps d'écran)** : l'autorisation et le choix des applications (FamilyActivityPicker) sont écrits ; le bouclier et la surveillance demandent votre compte Apple et les trois extensions (ROADMAP tâches 4, 27, 28). Sans l'entitlement Family Controls accordé par Apple, iOS refuse l'autorisation, et l'écran le dit.
-- **La Live Activity, les widgets de la série et des zmanim, l'écran des rappels** : à écrire (tâches 17, 19, 25). Les règles (chronologies, planificateur) sont prêtes. Le widget de la boussole est fait : il ouvre la boussole par `myhitbodedut://boussole`.
-- **Deux entrées mènent encore à « Bientôt »** : l'aperçu du bouclier (il dépend des extensions de la barrière) et l'écran de relecture (un outil de débogage d'Android). La dédicace, l'aide à la concentration (avec son filtre de concentration qui masque le décompte) et le choix des applications sont faits.
+- **Éprouver sur un iPhone** tout ce qui dépend du compte Apple : la barrière (entitlement Family Controls, recettes R2 et R4), la Live Activity, le groupe d'apps des widgets (sans lui, ils montrent un journal neuf et « Choisir le lieu »).
+- **Le reste de la tâche 17** : la notification de fin programmée au début de la séance, l'option « minuterie système ».
+- **L'écran « Journal de la barrière »** (`SystemeBarriere.historique()` fournit déjà les 50 derniers événements).
+- **Une entrée mène encore à « Bientôt »** : la relecture, un outil de débogage d'Android.
 - **Aucun test d'interface ni capture** encore (critères visuels des tâches 14 à 26) ; la galerie de la tâche 14 est à faire.
 - **Les chaînes neuves propres à iOS** (`Ressources/Chaines/ios.xcstrings`, `InfoPlist.xcstrings`) sont en `needs_review` : à relire.
 
