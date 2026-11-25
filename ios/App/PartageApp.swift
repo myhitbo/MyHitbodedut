@@ -142,9 +142,12 @@ final class PartageApp {
     }
 
     /// La présentation, à la page 0, en plein écran par-dessus les onglets.
+    /// Sur un téléphone sans journée, l'écran « Je viens d'Android » précède la présentation (PORTAGE.md § 3.8).
+    /// L'import passe par l'onglet Réglages : une seule fusion, et les mêmes répercussions.
     func montrerPresentation() {
+        let android = PresentationAndroid(importeur: reglages, horloge: horloge, avecBarriere: PartageApp.avecBarriere)
         let modele = PresentationModele(magasin: magasin, notificateur: services.notificateur,
-                                        rappels: services.rappels, index: 0)
+                                        rappels: services.rappels, index: 0, android: android)
         navigation.presentation = PresentationOuverte(modele: modele)
     }
 

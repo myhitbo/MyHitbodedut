@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UniformTypeIdentifiers
 import Coeur
 import Ecrans
 
@@ -12,6 +13,10 @@ import Ecrans
 /// modèle est `termine`. Présentée en feuille, l'app appelle `terminer()` dans son `onDismiss` (idempotent).
 ///
 /// Changer de page ne joue aucune animation, comme sur Android (`render()` remplace le contenu).
+///
+/// Propre à iOS (PORTAGE.md § 3.8) : sur un téléphone neuf, l'écran « Je viens d'Android » vient avant les pages
+/// (`montreAndroid`) ; le sélecteur de fichiers (`fileImporter`) y remet la sauvegarde au modèle, qui la fait
+/// fusionner par l'import des réglages.
 public struct PresentationVue: View {
     private let modele: PresentationModele
     @Environment(\.traducteur) private var traducteur
@@ -27,7 +32,9 @@ public struct PresentationVue: View {
     public var body: some View {
         GeometryReader { geo in
             let mesures = PresentationMesures(taille: geo.size)
-            if mesures.couchee {
+            if modele.montreAndroid {
+                pageAndroid(mesures)
+            } else if mesures.couchee {
                 couchee(mesures)
             } else {
                 debout(mesures)
@@ -36,6 +43,9 @@ public struct PresentationVue: View {
         .background(Teinte(.paper))
         .sheet(isPresented: choixHeure) {
             feuilleHeure
+        }
+        .fileImporter(isPresented: importOuvert, allowedContentTypes: [.json, .plainText, .data]) { resultat in
+            fichierChoisi(resultat)
         }
         .onChange(of: modele.termine) { _, fini in
             if fini { fermer() }
@@ -106,6 +116,185 @@ public struct PresentationVue: View {
             choix
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // MARK: « Je viens d'Android »
+
+    /// L'écran qui précède les pages sur un téléphone neuf (PORTAGE.md § 3.8) : la scène, la question et où trouver
+    /// l'export d'Android, puis « Importer ma sauvegarde » et « Non, je commence ici » ; la sauvegarde importée,
+    /// « N journées importées », la série retrouvée et « Suivant ». Debout, tout défile si la hauteur manque ;
+    /// couchée, la scène au début et la colonne du texte à côté, comme les pages.
+    @ViewBuilder
+    private func pageAndroid(_ m: PresentationMesures) -> some View {
+        if m.couchee {
+            let disponible = max(m.largeur - 2 * m.bord - 16, 0)
+            HStack(spacing: 16) {
+                sceneAndroid(m)
+                    .frame(width: disponible / 2.25)
+                VStack(alignment: .leading, spacing: 0) {
+                    ViewThatFits(in: .vertical) {
+                        textesAndroid(m)
+                        ScrollView {
+                            textesAndroid(m)
+                        }
+                        .scrollBounceBehavior(.basedOnSize)
+                    }
+                    boutonsAndroid(m)
+                }
+                .frame(width: disponible * 1.25 / 2.25)
+                .frame(maxHeight: .infinity)
+            }
+            .padding(.horizontal, m.bord)
+            .padding(.vertical, m.margeVerticale)
+        } else {
+            ViewThatFits(in: .vertical) {
+                colonneAndroid(m)
+                ScrollView {
+                    colonneAndroid(m)
+                }
+                .scrollBounceBehavior(.basedOnSize)
+            }
+        }
+    }
+
+    private func colonneAndroid(_ m: PresentationMesures) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sceneAndroid(m)
+            textesAndroid(m)
+            boutonsAndroid(m)
+        }
+        .padding(.horizontal, m.bord)
+        .padding(.vertical, m.margeVerticale)
+    }
+
+    /// La scène des pages, avec l'image de l'écran (l'accueil, puis le pouce levé).
+    private func sceneAndroid(_ m: PresentationMesures) -> some View {
+        Illustration(decorative: modele.illustrationAndroid)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(12)
+            .frame(minHeight: m.imageMin, idealHeight: m.imageMin, maxHeight: .infinity)
+            .background(Teinte(.mint), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
+    /// Le titre, le texte, puis ce que l'import a dit : le bilan et la série, l'avis sur les applications, ou
+    /// le refus du fichier.
+    private func textesAndroid(_ m: PresentationMesures) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(modele.titreAndroid, traducteur: traducteur)
+                .font(m.policeTitre)
+                .foregroundStyle(Teinte(.ink))
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+                .padding(.top, m.ecartTitre)
+            if let bilan = modele.bilanAndroid {
+                Text(bilan, traducteur: traducteur)
+                    .font(Font.headline)
+                    .foregroundStyle(Teinte(.brand))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, m.ecartCorps)
+            }
+            if let serie = modele.serieAndroid {
+                Text(serie, traducteur: traducteur)
+                    .font(Font.subheadline.weight(.medium))
+                    .foregroundStyle(Teinte(.ink))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 4)
+            }
+            Text(modele.corpsAndroid, traducteur: traducteur)
+                .font(.subheadline)
+                .foregroundStyle(Teinte(.muted))
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, m.ecartCorps)
+            if let applications = modele.applicationsAndroid {
+                Text(applications, traducteur: traducteur)
+                    .font(.footnote)
+                    .foregroundStyle(Teinte(.muted))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 8)
+            }
+            if let refus = modele.refusAndroid {
+                Text(refus, traducteur: traducteur)
+                    .font(Font.subheadline.weight(.medium))
+                    .foregroundStyle(ReglagesTeinteFixe.avertissement)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 12)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .multilineTextAlignment(.leading)
+    }
+
+    /// Avant l'import : « Importer ma sauvegarde » (le grand bouton) et « Non, je commence ici » ; pendant,
+    /// l'indicateur à la place du grand bouton ; après, « Suivant ».
+    @ViewBuilder
+    private func boutonsAndroid(_ m: PresentationMesures) -> some View {
+        if modele.importReussi {
+            Button {
+                modele.quitterAndroid()
+            } label: {
+                Text(modele.libelleContinuerAndroid, traducteur: traducteur)
+                    .font(Font.callout.weight(.medium))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, m.margeSuivant)
+            }
+            .buttonStyle(.principal)
+            .padding(.top, m.ecartSuivant)
+        } else {
+            Group {
+                if modele.importEnCours {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                        .accessibilityLabel(Text(modele.libelleImportEnCours, traducteur: traducteur))
+                } else {
+                    Button {
+                        modele.ouvrirImport()
+                    } label: {
+                        Text(modele.libelleImporterAndroid, traducteur: traducteur)
+                            .font(Font.callout.weight(.medium))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, m.margeSuivant)
+                    }
+                    .buttonStyle(.principal)
+                }
+            }
+            .padding(.top, m.ecartSuivant)
+            Button {
+                modele.quitterAndroid()
+            } label: {
+                Text(modele.libelleIgnorerAndroid, traducteur: traducteur)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(PresentationBoutonTexte())
+            .disabled(modele.importEnCours)
+        }
+    }
+
+    /// Le fichier choisi : ses octets, lus sous l'accès que le système accorde (comme « Importer » des réglages),
+    /// nil s'ils n'ont pu l'être ; le modèle dit pourquoi. Un échec du sélecteur se lit comme un fichier illisible.
+    private func fichierChoisi(_ resultat: Result<URL, any Error>) {
+        let donnees: Data?
+        switch resultat {
+        case .success(let url):
+            donnees = PresentationVue.lire(url)
+        case .failure:
+            donnees = nil
+        }
+        Task.immediate { @MainActor [modele] in
+            await modele.importer(donnees)
+        }
+    }
+
+    private static func lire(_ url: URL) -> Data? {
+        let acces = url.startAccessingSecurityScopedResource()
+        defer {
+            if acces { url.stopAccessingSecurityScopedResource() }
+        }
+        do {
+            return try Data(contentsOf: url)
+        } catch {
+            return nil
+        }
     }
 
     // MARK: Les éléments de la page
@@ -303,6 +492,16 @@ public struct PresentationVue: View {
             { @MainActor in modele.choixHeureOuvert },
             { @MainActor ouvert in
                 if !ouvert { modele.fermerChoixHeure() }
+            })
+    }
+
+    /// Le sélecteur de fichiers suit `importOuvert` ; fermé sans fichier, rien ne change.
+    private var importOuvert: Binding<Bool> {
+        let modele = modele
+        return Binding.passerelle(
+            { @MainActor in modele.importOuvert },
+            { @MainActor ouvert in
+                if !ouvert { modele.fermerImport() }
             })
     }
 

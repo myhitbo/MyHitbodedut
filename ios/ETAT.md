@@ -1,6 +1,6 @@
-# État du portage iOS — 24/11/2026 (mis à jour le soir)
+# État du portage iOS — 24/11/2026
 
-L'app iOS est écrite, câblée et verte dans la CI. Elle **compile avec le vrai Xcode** (26.6, iOS 26.5) et **passe ses tests**, sous Linux et sur le simulateur iOS, au commit 28e8b48. Personne ne l'a encore lancée sur un iPhone : il faut pour cela le compte Apple (voir « Ce qui vous attend »).
+L'app iOS est écrite, câblée et verte dans la CI. Elle **compile avec le vrai Xcode** (26.6, iOS 26.5) et **passe ses tests**, sous Linux et sur le simulateur iOS, au commit 6a8881d. Personne ne l'a encore lancée sur un iPhone : il faut pour cela le compte Apple (voir « Ce qui vous attend »).
 
 ## Ce qui est fait
 
@@ -21,9 +21,9 @@ L'app iOS est écrite, câblée et verte dans la CI. Elle **compile avec le vrai
 
 ## Ce qui n'est pas fait
 
-- **La barrière (Temps d'écran)** : l'autorisation et le choix des applications (FamilyActivityPicker) sont écrits ; le bouclier et la surveillance demandent votre compte Apple et les trois extensions (ROADMAP tâches 4, 27, 28). Sans l'entitlement Family Controls accordé par Apple, iOS refuse l'autorisation, et l'écran le dit.
-- **La Live Activity, les widgets de la série et des zmanim, l'écran des rappels** : à écrire (tâches 17, 19, 25). Les règles (chronologies, planificateur) sont prêtes. Le widget de la boussole est fait : il ouvre la boussole par `myhitbodedut://boussole`.
-- **Deux entrées mènent encore à « Bientôt »** : l'aperçu du bouclier (il dépend des extensions de la barrière) et l'écran de relecture (un outil de débogage d'Android). La dédicace, l'aide à la concentration (avec son filtre de concentration qui masque le décompte) et le choix des applications sont faits.
+- **La barrière (Temps d'écran)** : le paquet de règles est prêt, mais l'autorisation Family Controls, le sélecteur d'apps, le bouclier et la surveillance demandent votre compte Apple et les trois extensions (ROADMAP tâches 4, 27, 28). Le service est une réalisation vide, documentée.
+- **La Live Activity, les widgets, l'écran des rappels** : à écrire (tâches 17, 19, 25). Les règles (chronologies, planificateur) sont prêtes.
+- **Quelques entrées mènent à « Bientôt »** : le choix des apps de la barrière, la dédicace, l'aide à la concentration, le lien du widget de la boussole.
 - **Aucun test d'interface ni capture** encore (critères visuels des tâches 14 à 26) ; la galerie de la tâche 14 est à faire.
 - **Les chaînes neuves propres à iOS** (`Ressources/Chaines/ios.xcstrings`, `InfoPlist.xcstrings`) sont en `needs_review` : à relire.
 

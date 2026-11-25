@@ -25,6 +25,222 @@
         }
       }
     },
+    "apercu_bouclier_essai_bouton": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Bouton qui lance l’essai réel.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Try it (2 min)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Faire un essai (2 min)"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לנסות (2 דק׳)"
+          }
+        }
+      }
+    },
+    "apercu_bouclier_essai_detail": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Explication de l’essai réel.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "For two minutes, at any time of day, the chosen apps show the real shield, marked “PREVIEW, NO EFFECT”. Open one of them to see it, then tap “Close the preview”."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pendant deux minutes, à n’importe quelle heure, les applications choisies montrent le vrai bouclier, marqué « APERÇU, AUCUN EFFET ». Ouvrez-en une pour le voir, puis touchez « Fermer l’aperçu »."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "במשך שתי דקות, בכל שעה, האפליקציות שנבחרו מציגות את המגן האמיתי, עם הכיתוב „תצוגה מקדימה, ללא השפעה”. פתחו אחת מהן כדי לראות אותו, ואז הקישו על „לסגור את התצוגה”."
+          }
+        }
+      }
+    },
+    "apercu_bouclier_essai_en_cours": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Après le lancement de l’essai ; %1$@ : l’heure de fin (« 14:02 »).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Trial running until %1$@: open one of the chosen apps."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essai lancé jusqu’à %1$@ : ouvrez une application choisie."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הניסיון פעיל עד %1$@: פתחו אחת מהאפליקציות שנבחרו."
+          }
+        }
+      }
+    },
+    "apercu_bouclier_essai_impossible": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. L’essai n’a pu commencer.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The trial could not start. It needs Screen Time access, granted to the app by Apple, and at least one chosen app."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’essai n’a pas pu commencer. Il demande l’accès à Temps d’écran, accordé par Apple à l’app, et au moins une application choisie."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לא ניתן היה להתחיל את הניסיון. הוא דורש גישה לזמן מסך, שאפל מעניקה לאפליקציה, ולפחות אפליקציה אחת שנבחרה."
+          }
+        }
+      }
+    },
+    "apercu_bouclier_essai_titre": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Titre de la carte de l’essai réel.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "The real trial"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’essai réel"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הניסיון האמיתי"
+          }
+        }
+      }
+    },
+    "apercu_bouclier_intro": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Introduction de l’écran.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "This is the shield iOS will show on the chosen apps, in its three versions. iOS draws it itself: on the iPhone, the layout may differ slightly."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voici le bouclier tel qu’iOS le montrera sur les applications choisies, dans ses trois visages. iOS le dessine lui-même : sur l’iPhone, la mise en page peut différer un peu."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "זה המגן ש־iOS יציג על האפליקציות שנבחרו, בשלוש צורותיו. iOS מצייר אותו בעצמו: באייפון הפריסה עשויה להיות מעט שונה."
+          }
+        }
+      }
+    },
+    "apercu_bouclier_visage_essai": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Visage du bouclier pendant l’essai réel (sélecteur).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Trial"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Essai"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ניסיון"
+          }
+        }
+      }
+    },
+    "apercu_bouclier_visage_invite": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Visage du bouclier quand rien n’est fait aujourd’hui (sélecteur).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Not done yet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rien de fait"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "טרם נעשה"
+          }
+        }
+      }
+    },
+    "apercu_bouclier_visage_seance": {
+      "comment": "Chaîne propre à iOS, aperçu du bouclier de la barrière (ApercuBouclierModele ; PORTAGE.md § 2.1.4, § 2.1.8) : à relire par le propriétaire. Visage du bouclier pendant une séance (sélecteur).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Session running"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Séance en cours"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מפגש פעיל"
+          }
+        }
+      }
+    },
     "applications_android_aide": {
       "comment": "Chaîne propre à iOS, choix des applications de la barrière (ApplicationsModele ; PORTAGE.md § 2.1.3, § 3.7) : à relire par le propriétaire. L’aide-mémoire de la liste venue d’Android (blocked_apps d’une sauvegarde importée) ; %1$@ : les noms de paquets, séparés par des virgules.",
       "extractionState": "manual",
@@ -1201,6 +1417,54 @@
         }
       }
     },
+    "ios_seance_activite_echue": {
+      "comment": "Chaîne propre à iOS, Live Activity de la séance (Ecrans/SeanceActivite.swift, Widgets/ActiviteSeance.swift) : à relire par le propriétaire. Montrée sur l'écran verrouillé quand la fin de la séance est passée sans que l'app soit revenue la clore ; toucher rouvre l'app, qui l'inscrit au journal.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Time is up. Tap to record it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le temps est écoulé. Touchez pour l’inscrire."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הזמן הסתיים. געו כדי לרשום."
+          }
+        }
+      }
+    },
+    "ios_seance_terminer_intention": {
+      "comment": "Chaîne propre à iOS, titre de l'intention « Terminer » de la Live Activity (Widgets/ActiviteSeanceAttributs.swift, ActiviteSeanceTerminer) : à relire par le propriétaire. Les métadonnées d'App Intents la lisent ; le bouton lui-même montre session_finish_now.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Finish the hitbodedut"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Terminer la hitbodedout"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לסיים את ההתבודדות"
+          }
+        }
+      }
+    },
     "lecture_marque_basculer": {
       "comment": "Chaîne propre à iOS, lue par le Traducteur de l'app (App/MyHitbodedutApp.swift fusionne ce catalogue au sien) : à relire par le propriétaire. Action VoiceOver qui remplace l'appui long sur un paragraphe ou un verset.",
       "extractionState": "manual",
@@ -1221,6 +1485,630 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "הוספה או הסרה של סימנייה"
+          }
+        }
+      }
+    },
+    "presentation_android_applications": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Après l’import d’une sauvegarde qui retenait des applications (blocked_apps) : elles ne migrent pas (PORTAGE.md § 3.7) ; %1$@ : « Je suis avec Hachem » (section_gate).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apps held back on Android do not carry over to the iPhone: you will choose them again in “%1$@”."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les applications retenues sur Android ne passent pas sur l’iPhone : vous les choisirez de nouveau dans « %1$@ »."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "האפליקציות שנחסמו באנדרואיד אינן עוברות לאייפון: תבחרו אותן מחדש ב„%1$@”."
+          }
+        }
+      }
+    },
+    "presentation_android_corps": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Où trouver l’export sur Android ; %1$@ : « Réglages » (settings_title), %2$@ : « Mes données » (section_data), %3$@ : « Exporter » (action_export).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "On Android, open “%1$@”, then “%2$@”, and tap “%3$@”. Then choose the saved file here: your days, your streak and your settings will come with you."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sur Android, ouvrez « %1$@ », puis « %2$@ », et touchez « %3$@ ». Choisissez ensuite ici le fichier enregistré : vos journées, votre série et vos réglages vous suivront."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "באנדרואיד, פתחו את „%1$@”, אחר כך את „%2$@”, והקישו על „%3$@”. אחר כך בחרו כאן את הקובץ השמור: הימים, הרצף וההגדרות שלכם יעברו איתכם."
+          }
+        }
+      }
+    },
+    "presentation_android_en_cours": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Lu par VoiceOver pendant l’import.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Importing…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Import en cours…"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הייבוא מתבצע…"
+          }
+        }
+      }
+    },
+    "presentation_android_ignorer": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Bouton texte : passe l’import et ouvre la première page de la présentation.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No, I’m starting here"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Non, je commence ici"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "לא, מתחילים כאן"
+          }
+        }
+      }
+    },
+    "presentation_android_importer": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Grand bouton : ouvre le sélecteur de fichiers.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Import my backup"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Importer ma sauvegarde"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ייבוא הגיבוי שלי"
+          }
+        }
+      }
+    },
+    "presentation_android_retrouve": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Titre de l’écran après un import réussi.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Your practice came with you"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Votre pratique vous a suivi"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "התרגול שלכם עבר איתכם"
+          }
+        }
+      }
+    },
+    "presentation_android_suite": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Texte après un import réussi, sous « N journées importées » et la série.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Your settings have been restored. The introduction continues: you can change anything later in the settings."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vos réglages sont repris. La présentation continue : vous pourrez tout changer ensuite dans les réglages."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ההגדרות שלכם שוחזרו. ההיכרות ממשיכה: תוכלו לשנות הכול אחר כך בהגדרות."
+          }
+        }
+      }
+    },
+    "presentation_android_titre": {
+      "comment": "Chaîne propre à iOS, écran « Je viens d’Android » de la présentation (PresentationModele ; PORTAGE.md § 3.8) : à relire par le propriétaire. Titre de l’écran avant l’import.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Coming from Android?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vous venez d’Android ?"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "עברתם מאנדרואיד?"
+          }
+        }
+      }
+    },
+    "rappels_categorie_autre": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Les notifications posées hors du plan.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Outside the plan"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hors du plan"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מחוץ לתוכנית"
+          }
+        }
+      }
+    },
+    "rappels_categorie_chabbat": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Catégorie du plan : « Chabbat dans 3 h ».",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Shabbat"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Chabbat"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "שבת"
+          }
+        }
+      }
+    },
+    "rappels_categorie_levana": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Catégorie du plan : Birkat haLevana.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Birkat HaLevana"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Birkat haLevana"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ברכת הלבנה"
+          }
+        }
+      }
+    },
+    "rappels_categorie_rappel": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Catégorie du plan : les rappels de hitbodedout.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hitbodedut reminders"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rappels de hitbodedout"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "תזכורות התבודדות"
+          }
+        }
+      }
+    },
+    "rappels_categorie_seance": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Catégorie du plan : la fin de la séance et le rappel reporté (« Plus tard »).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Session and snoozed reminder"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Séance et rappel reporté"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מפגש ותזכורת שנדחתה"
+          }
+        }
+      }
+    },
+    "rappels_categorie_vol": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Catégorie du plan : les rappels du vol.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Flight"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vol"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "טיסה"
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_absente": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. État d’une ligne : dans le plan calculé maintenant, mais pas en attente.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "In the plan, but not scheduled: the plan has not been set again yet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dans le plan, mais pas prévue : le plan n’a pas encore été reposé."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "בתוכנית, אך לא מתוזמנת: התוכנית טרם נקבעה מחדש."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_actualiser": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Bouton qui relit les notifications en attente.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Refresh"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Actualiser"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "רענון"
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_conforme": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. État d’une ligne : en attente, dans le plan, à son heure.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scheduled, at the planned time."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prévue, à l’heure du plan."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מתוזמנת, בשעה שבתוכנית."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_gardee": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. État d’une ligne : la notification de fin de séance, voulue hors du plan.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scheduled outside the plan, on purpose: the end of the hitbodedut."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prévue hors du plan, comme voulu : la fin de la hitbodedout."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מתוזמנת מחוץ לתוכנית, במכוון: סיום ההתבודדות."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_horsPlan": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. État d’une ligne : en attente, absente du plan (une pose ancienne non retirée).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scheduled, but not in the plan."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prévue, mais absente du plan."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מתוזמנת, אך אינה בתוכנית."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_instantDifferent": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. État d’une ligne : en attente et dans le plan, mais à une autre heure.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scheduled, but not at the planned time."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prévue, mais pas à l’heure du plan."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "מתוזמנת, אך לא בשעה שבתוכנית."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_resume": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Résumé : %1$lld le nombre en attente, %2$lld la limite d’iOS (64).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld pending notifications, out of the %2$lld iOS allows."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld notifications en attente, sur %2$lld permises par iOS."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld התראות ממתינות, מתוך %2$lld ש־iOS מתיר."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_silence": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Un rappel de hitbodedout qui tomberait un jour fait, un jour de repos ou une veille après midi (ReminderRule).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "This reminder falls on a day already done, a rest day or the afternoon before one: it should not ring."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ce rappel tombe un jour fait, un jour de repos ou une veille après midi : il ne devrait pas sonner."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "תזכורת זו חלה ביום שכבר נעשה, ביום מנוחה או בערבו אחר הצהריים: היא לא אמורה לצלצל."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_titre": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Titre de l’écran de diagnostic et du bouton qui l’ouvre depuis l’écran des rappels.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scheduled notifications"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Notifications prévues"
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "התראות מתוזמנות"
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_verdict_conforme": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Aucun écart entre les notifications en attente et le plan.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Everything matches the plan."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tout est conforme au plan."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "הכול תואם לתוכנית."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_verdict_ecarts": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. %1$lld : le nombre de lignes à signaler.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Differences from the plan: %1$lld."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Écarts avec le plan : %1$lld."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "פערים מהתוכנית: %1$lld."
+          }
+        }
+      }
+    },
+    "rappels_diagnostic_vide": {
+      "comment": "Chaîne propre à iOS, écran des rappels et diagnostic des notifications en attente (RappelsModele, RappelsDiagnosticModele ; ROADMAP tâche 19) : à relire par le propriétaire. Aucune notification en attente.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No pending notifications."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aucune notification en attente."
+          }
+        },
+        "he": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "אין התראות ממתינות."
           }
         }
       }

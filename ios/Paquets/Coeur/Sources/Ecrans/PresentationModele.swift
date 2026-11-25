@@ -9,6 +9,12 @@ import Coeur
 // On y choisit l'adresse (le seul endroit avec les réglages), la durée habituelle et le rappel quotidien. Le
 // rappel demande l'autorisation des notifications (le Notificateur des Services), puis fait replanifier les
 // rappels (`PresentationRappels`, Reminder.reschedule d'Android).
+//
+// Propre à iOS (PORTAGE.md § 3.8) : sur un téléphone neuf, un écran « Je viens d'Android » précède les pages. Il
+// importe la sauvegarde exportée d'Android (ou du site) par l'import des réglages (`PresentationImport`, auquel
+// `ReglagesModele` se conforme : une seule fusion, Sauvegarde.importer), dit « N journées importées » et la série
+// retrouvée, puis mène aux pages, les réglages repris. Les applications retenues sur Android ne migrent pas
+// (§ 3.7) : l'écran le dit.
 
 // MARK: La replanification des rappels
 
@@ -29,6 +35,71 @@ public actor PresentationRappelsEnMemoire: PresentationRappels {
 
     public func replanifier(_ reglages: Reglages) {
         replanifications.append(reglages)
+    }
+}
+
+// MARK: « Je viens d'Android »
+
+/// Ce que l'import d'une sauvegarde a donné (PORTAGE.md § 3.8) : les journées lues et le message « N journées
+/// importées » (`import_ok`), ou le refus et sa raison (`import_invalid`, `import_failed`), rien n'ayant changé.
+public enum PresentationImportResultat: Sendable, Hashable {
+    case importe(journees: Int, message: Libelle)
+    case refuse(Libelle)
+}
+
+/// Ce qui fusionne la sauvegarde choisie dans le journal et les réglages : l'import des réglages
+/// (`ReglagesModele.importer`, Store.importJson d'Android), qui en fait aussi tout ce qui suit (la barrière, les
+/// notifications et les widgets réécrits, `ReglagesEffets`). La présentation ne refait pas la fusion : elle la
+/// demande par ce protocole, auquel `ReglagesModele` se conforme plus bas.
+@MainActor
+public protocol PresentationImport: Sendable {
+    /// Les octets du fichier choisi, nil s'il n'a pu être lu.
+    func importerDepuisAndroid(_ donnees: Data?) async -> PresentationImportResultat
+}
+
+/// L'écran « Je viens d'Android » : qui importe, l'horloge qui dit la série retrouvée, et l'édition (sans la
+/// barrière, rien à dire des applications retenues sur Android).
+public struct PresentationAndroid: Sendable {
+    public let importeur: any PresentationImport
+    public let horloge: any Horloge
+    public let avecBarriere: Bool
+
+    public init(importeur: any PresentationImport, horloge: any Horloge, avecBarriere: Bool) {
+        self.importeur = importeur
+        self.horloge = horloge
+        self.avecBarriere = avecBarriere
+    }
+}
+
+/// L'import des réglages, tel quel : le même chemin que « Importer » de l'onglet Réglages (la fusion de
+/// Sauvegarde.importer, les écritures, les répercussions). Son message est rendu à la présentation, puis effacé
+/// des réglages, pour qu'il ne s'y montre pas une seconde fois.
+extension ReglagesModele: PresentationImport {
+    public func importerDepuisAndroid(_ donnees: Data?) async -> PresentationImportResultat {
+        await importer(donnees)
+        // `importer` dit toujours quelque chose ; une lecture ratée à défaut.
+        let dit = message ?? Libelle("import_failed")
+        messageVu()
+        if dit.cle == "import_ok", let journees = dit.quantite {
+            return .importe(journees: journees, message: dit)
+        }
+        return .refuse(dit)
+    }
+}
+
+/// Un import qui rend ce qu'on lui a dit de rendre et retient ce qu'il a reçu : pour les aperçus et les tests.
+@MainActor
+public final class PresentationFauxImport: PresentationImport {
+    public private(set) var recus: [Data?] = []
+    private let resultat: PresentationImportResultat
+
+    public init(resultat: PresentationImportResultat) {
+        self.resultat = resultat
+    }
+
+    public func importerDepuisAndroid(_ donnees: Data?) async -> PresentationImportResultat {
+        recus.append(donnees)
+        return resultat
     }
 }
 
@@ -75,6 +146,18 @@ public final class PresentationModele {
     private let magasin: Magasin
     private let notificateur: any Notificateur
     private let rappels: any PresentationRappels
+    /// L'écran « Je viens d'Android », s'il est offert.
+    private let android: PresentationAndroid?
+
+    /// L'écran « Je viens d'Android » se montre à la place des pages (PORTAGE.md § 3.8) : avant la première
+    /// page, sur un téléphone encore sans journée. Importer ou passer mène aux pages.
+    public private(set) var montreAndroid: Bool
+    /// Le sélecteur de fichiers (`fileImporter`) est ouvert.
+    public private(set) var importOuvert = false
+    /// La sauvegarde choisie est en train d'être lue et fusionnée.
+    public private(set) var importEnCours = false
+    /// Ce que le dernier import a donné ; nil avant le premier.
+    public private(set) var resultatImport: PresentationImportResultat? = nil
 
     /// Le rang de la page montrée, de 0 à `Onboarding.dernier`. Il dure autant que l'écran : sur Android, une
     /// rotation ne ramenait pas à la première page (ETAT_INDEX).
@@ -89,20 +172,35 @@ public final class PresentationModele {
     public private(set) var notificationsRefusees = false
 
     /// `index` : la page où reprendre (une restauration d'état), ramenée dans les bornes ; la première sinon.
-    public init(magasin: Magasin, notificateur: any Notificateur, rappels: any PresentationRappels, index: Int = 0) {
+    /// `android` : de quoi offrir « Je viens d'Android » ; l'écran ne se montre qu'au départ (page 0) d'un
+    /// téléphone sans aucune journée, pas à qui revoit la présentation avec un journal déjà rempli.
+    public init(magasin: Magasin, notificateur: any Notificateur, rappels: any PresentationRappels, index: Int = 0,
+                android: PresentationAndroid? = nil) {
         self.magasin = magasin
         self.notificateur = notificateur
         self.rappels = rappels
-        self.index = min(max(index, 0), Onboarding.dernier)
+        self.android = android
+        let rang = min(max(index, 0), Onboarding.dernier)
+        self.index = rang
+        montreAndroid = android != nil && rang == 0 && magasin.journal.dates.isEmpty
     }
 
     /// Une présentation sur des réglages donnés d'avance, dans un magasin en mémoire, avec un notificateur qui
     /// accorde tout et des rappels qui ne programment rien : pour les aperçus.
-    public static func apercu(reglages: Reglages = Reglages(), index: Int = 0) -> PresentationModele {
-        PresentationModele(magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)),
-                           notificateur: FauxNotificateur(),
-                           rappels: PresentationRappelsEnMemoire(),
-                           index: index)
+    /// `importAndroid` : ce que rendrait l'import, pour voir l'écran « Je viens d'Android » ; nil, il ne se
+    /// montre pas.
+    public static func apercu(reglages: Reglages = Reglages(), index: Int = 0,
+                              importAndroid: PresentationImportResultat? = nil) -> PresentationModele {
+        var android: PresentationAndroid? = nil
+        if let importAndroid {
+            android = PresentationAndroid(importeur: PresentationFauxImport(resultat: importAndroid),
+                                          horloge: HorlogeSysteme(), avecBarriere: true)
+        }
+        return PresentationModele(magasin: Magasin.enMemoire(Enregistrement(reglages: reglages)),
+                                  notificateur: FauxNotificateur(),
+                                  rappels: PresentationRappelsEnMemoire(),
+                                  index: index,
+                                  android: android)
     }
 
     // MARK: Quand la montrer
@@ -113,6 +211,122 @@ public final class PresentationModele {
     /// (« onboarded ») ne la cachant plus.
     nonisolated public static func aMontrer(_ reglages: Reglages) -> Bool {
         !reglages.hasOnboarded
+    }
+
+    // MARK: « Je viens d'Android »
+
+    /// L'import a fusionné une sauvegarde : l'écran dit ce qui a été retrouvé et mène aux pages.
+    public var importReussi: Bool {
+        if case .importe? = resultatImport { return true }
+        return false
+    }
+
+    /// Le titre : la question, puis, la sauvegarde importée, ce qui a été retrouvé.
+    public var titreAndroid: Libelle {
+        Libelle(importReussi ? "presentation_android_retrouve" : "presentation_android_titre")
+    }
+
+    /// Le texte : où trouver l'export sur Android, avec les noms de ses écrans dans la langue de l'app
+    /// (Réglages → Mes données → Exporter) ; la sauvegarde importée, ce qui suit.
+    public var corpsAndroid: Libelle {
+        if importReussi { return Libelle("presentation_android_suite") }
+        return Libelle("presentation_android_corps", .libelle(Libelle("settings_title")),
+                       .libelle(Libelle("section_data")), .libelle(Libelle("action_export")))
+    }
+
+    /// « N journées importées » (import_ok), une fois la sauvegarde importée.
+    public var bilanAndroid: Libelle? {
+        if case .importe(_, let message)? = resultatImport { return message }
+        return nil
+    }
+
+    /// La série retrouvée, « 9 jours d'affilée » (status_streak, Store.streak), une fois la sauvegarde importée ;
+    /// nil sans série en cours.
+    public var serieAndroid: Libelle? {
+        guard importReussi, let android else { return nil }
+        let serie = Store.streak(journal: magasin.journal, reglages: magasin.reglages,
+                                 aujourdhui: android.horloge.aujourdhui,
+                                 fuseauTelephone: android.horloge.fuseau.identifiant)
+        guard serie > 0 else { return nil }
+        return Libelle.pluriel("status_streak", quantite: serie, .entier(serie))
+    }
+
+    /// Les applications retenues sur Android ne migrent pas (PORTAGE.md § 3.7) : l'écran le dit, s'il y en
+    /// avait et que l'édition a la barrière. L'écran des applications en montre la liste en aide-mémoire.
+    public var applicationsAndroid: Libelle? {
+        guard importReussi, let android, android.avecBarriere, !magasin.reglages.blockedApps.isEmpty else { return nil }
+        return Libelle("presentation_android_applications", .libelle(Libelle("section_gate")))
+    }
+
+    /// Le refus du dernier fichier choisi : « Ce fichier n'est pas une sauvegarde MyHitbodedut. », « Le fichier
+    /// n'a pas pu être lu. » ; l'écran reste, pour en choisir un autre ou passer.
+    public var refusAndroid: Libelle? {
+        if case .refuse(let raison)? = resultatImport { return raison }
+        return nil
+    }
+
+    /// L'image : l'accueil, puis le pouce levé ; au féminin dès que l'adresse est connue (celle de la sauvegarde).
+    public var illustrationAndroid: String {
+        Personnage.pour(adresse, importReussi ? "char_thumbs_up" : "char_welcome")
+    }
+
+    /// Le grand bouton avant l'import : « Importer ma sauvegarde ».
+    public var libelleImporterAndroid: Libelle {
+        Libelle("presentation_android_importer")
+    }
+
+    /// Le bouton qui passe l'import : « Non, je commence ici ».
+    public var libelleIgnorerAndroid: Libelle {
+        Libelle("presentation_android_ignorer")
+    }
+
+    /// Le grand bouton après l'import : « Suivant », vers la première page.
+    public var libelleContinuerAndroid: Libelle {
+        Libelle("onboarding_next")
+    }
+
+    /// Ce que VoiceOver dit pendant l'import.
+    public var libelleImportEnCours: Libelle {
+        Libelle("presentation_android_en_cours")
+    }
+
+    /// « Importer ma sauvegarde » : le sélecteur de fichiers s'ouvre (rien pendant un import).
+    public func ouvrirImport() {
+        guard montreAndroid, !importEnCours else { return }
+        importOuvert = true
+    }
+
+    /// Le sélecteur s'est fermé sans fichier : rien ne change.
+    public func fermerImport() {
+        importOuvert = false
+    }
+
+    /// Le fichier choisi (ses octets, nil s'il n'a pu être lu) : il se fusionne par l'import des réglages. Réussi,
+    /// l'écran dit les journées et la série retrouvées, et les pages suivent avec les réglages repris ; refusé,
+    /// il dit pourquoi, rien n'ayant changé. Un second fichier pendant l'import est ignoré.
+    /// Un rappel repris allumé demande l'autorisation des notifications, comme l'interrupteur de la page « jours »
+    /// (sans elle, iOS ne montrerait aucun rappel alors que la page le dit allumé), puis les rappels se
+    /// replanifient.
+    public func importer(_ donnees: Data?) async {
+        importOuvert = false
+        guard let android, montreAndroid, !importEnCours, !importReussi else { return }
+        importEnCours = true
+        let resultat = await android.importeur.importerDepuisAndroid(donnees)
+        importEnCours = false
+        resultatImport = resultat
+        guard case .importe = resultat, rappelActif else { return }
+        if await notificateur.autorisation() { return }
+        let accordee = await notificateur.demanderAutorisation()
+        notificationsRefusees = !accordee
+        await rappels.replanifier(magasin.reglages)
+    }
+
+    /// « Non, je commence ici », ou « Suivant » après l'import : la première page de la présentation.
+    public func quitterAndroid() {
+        guard montreAndroid, !importEnCours else { return }
+        montreAndroid = false
+        importOuvert = false
+        index = 0
     }
 
     // MARK: La page montrée

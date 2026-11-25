@@ -1,0 +1,99 @@
+{
+  "format": "myhitbodedut",
+  "version": 1,
+  "exported_at": "2026-11-24T19:42:07.318Z",
+  "days": {
+    "2026-11-10": {
+      "minutes": 15,
+      "note": ""
+    },
+    "2026-11-12": {
+      "minutes": 20,
+      "note": "Pour la santé de Maman"
+    },
+    "2026-11-13": {
+      "minutes": 0,
+      "note": "Pas eu le temps, mais je pense à Toi",
+      "note_seule": true
+    },
+    "2026-11-15": {
+      "minutes": 30,
+      "note": "",
+      "themes": [
+        "famille",
+        "parnassa"
+      ]
+    },
+    "2026-11-16": {
+      "minutes": 15,
+      "note": ""
+    },
+    "2026-11-17": {
+      "minutes": 45,
+      "note": "Un long moment dans le parc"
+    },
+    "2026-11-18": {
+      "minutes": 15,
+      "note": ""
+    },
+    "2026-11-19": {
+      "minutes": 20,
+      "note": "",
+      "themes": [
+        "gratitude"
+      ]
+    },
+    "2026-11-20": {
+      "minutes": 10,
+      "note": "Avant Chabbat"
+    },
+    "2026-11-22": {
+      "minutes": 30,
+      "note": "שבוע טוב"
+    },
+    "2026-11-23": {
+      "minutes": 15,
+      "note": ""
+    },
+    "2026-11-24": {
+      "minutes": 25,
+      "note": "",
+      "themes": [
+        "emotions"
+      ]
+    }
+  },
+  "settings": {
+    "window_start": 360,
+    "window_end": 660,
+    "snooze_minutes": 10,
+    "target_minutes": 30,
+    "daily_goal_minutes": 0,
+    "pause_shabbat": true,
+    "in_israel": false,
+    "reminder_enabled": true,
+    "reminder_minutes": 450,
+    "reminder_times": [
+      450,
+      1260
+    ],
+    "first_name": "Myriam",
+    "hide_countdown": false,
+    "guided_hitbodedut": true,
+    "music_enabled": true,
+    "music_volume": 60,
+    "music_shuffle": false,
+    "music_track": "hamelech_basade",
+    "adresse": "f",
+    "apparence_mode": "sombre",
+    "apparence_fond": "sable",
+    "apparence_accent": "violet"
+  },
+  "paused_dates": [
+    "2026-10-05"
+  ],
+  "blocked_apps": [
+    "com.instagram.android",
+    "com.whatsapp"
+  ]
+}
