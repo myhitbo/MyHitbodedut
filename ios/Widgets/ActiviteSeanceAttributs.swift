@@ -37,9 +37,9 @@ struct ActiviteSeanceAttributs: ActivityAttributes {
         var fin: Date
         /// « Hitbodedout en cours ».
         var titre: String
-        /// La légende de l'écran de séance, hors filtre.
+        /// La légende sous le titre, hors filtre (`SeanceActivite.legende`).
         var legende: String
-        /// « Le décompte est masqué. », la légende d'un décompte masqué par le seul filtre.
+        /// « Le décompte est masqué. », la légende d'un décompte masqué (aussi par le seul filtre).
         var legendeConcentration: String
         /// « Terminer maintenant ».
         var terminer: String

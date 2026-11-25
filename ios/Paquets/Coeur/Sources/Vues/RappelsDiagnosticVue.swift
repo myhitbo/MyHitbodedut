@@ -19,7 +19,10 @@ public struct RappelsDiagnosticVue: View {
         let modele = modele
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 10) {
-                carteResume
+                // Avant la première lecture, rien à résumer : « 0 en attente » serait faux.
+                if modele.charge {
+                    carteResume
+                }
                 if modele.charge, modele.lignes.isEmpty {
                     Text(modele.libelleVide, traducteur: traducteur)
                         .font(.subheadline)
@@ -74,14 +77,13 @@ public struct RappelsDiagnosticVue: View {
             Text(modele.resume, traducteur: traducteur)
                 .titreCarte()
                 .multilineTextAlignment(.leading)
-            if modele.charge {
-                Text(modele.verdict, traducteur: traducteur)
-                    .font(Font.subheadline.weight(.medium))
-                    .foregroundStyle(modele.nombreDeProblemes == 0
-                                     ? AnyShapeStyle(Teinte(.brand)) : AnyShapeStyle(ReglagesTeinteFixe.avertissement))
-                    .multilineTextAlignment(.leading)
-                    .padding(.top, 6)
-            }
+            // La carte ne se montre qu'une fois la lecture faite (body) : le verdict est toujours établi.
+            Text(modele.verdict, traducteur: traducteur)
+                .font(Font.subheadline.weight(.medium))
+                .foregroundStyle(modele.nombreDeProblemes == 0
+                                 ? AnyShapeStyle(Teinte(.brand)) : AnyShapeStyle(ReglagesTeinteFixe.avertissement))
+                .multilineTextAlignment(.leading)
+                .padding(.top, 6)
             if let avertissement = modele.avertissement {
                 Text(avertissement, traducteur: traducteur)
                     .font(.footnote)

@@ -75,13 +75,14 @@ struct ActiviteSeanceWidget: Widget {
     }
 }
 
-/// Les couleurs fixes de la Live Activity : la marque d'Android (brand), un fond sombre lisible sur tous les écrans
-/// verrouillés, la menthe de l'écran de séance.
+/// Les couleurs fixes de la Live Activity, celles de l'écran de séance d'Android (activity_session.xml, palette par
+/// défaut) : le fond brand_dark (#173C32), sombre et lisible sur tous les écrans verrouillés, le texte blanc, la
+/// menthe mint (#DFF5E8).
 enum ActiviteSeanceCouleurs {
-    static let fond = Color(red: 0.10, green: 0.43, blue: 0.36)
+    static let fond = Color(red: 0x17 / 255.0, green: 0x3C / 255.0, blue: 0x32 / 255.0)
     static let texte = Color.white
     static let pale = Color.white.opacity(0.78)
-    static let menthe = Color(red: 0.66, green: 0.88, blue: 0.80)
+    static let menthe = Color(red: 0xDF / 255.0, green: 0xF5 / 255.0, blue: 0xE8 / 255.0)
 }
 
 /// L'écran verrouillé (et la bannière des iPhone sans île) : le signe, le titre et la phrase, le chiffre ; dessous,

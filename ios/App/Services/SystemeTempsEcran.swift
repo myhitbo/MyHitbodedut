@@ -2,10 +2,10 @@ import Barriere
 import Ecrans
 import Foundation
 
-/// La barrière « Je suis avec Hachem » côté app (Family Controls, PORTAGE.md § 2.1) : l'autorisation de Temps
-/// d'écran et la sélection des applications passent par SystemeFamilyControls (l'écran du choix des applications).
-/// Le bouclier et la surveillance, eux, vivent dans les extensions (tâches 27 et 28) : l'app ne lève aucun
-/// bouclier elle-même.
+/// La barrière « Je suis avec Hachem » côté app (Family Controls, PORTAGE.md § 2.1), pour l'écran des réglages :
+/// l'autorisation de Temps d'écran (SystemeFamilyControls), la levée de tout (« Tout effacer ») et le constat de la
+/// carte d'état. Le dépôt pour les extensions, les magasins nommés et la surveillance sont dans `SystemeBarriere`,
+/// que ce service reçoit ; sans lui (`SystemeTempsEcran()`), il ne fait que l'autorisation et le compte des jetons.
 ///
 /// Temps d'écran demande l'entitlement `com.apple.developer.family-controls`, qu'Apple n'accorde en distribution
 /// qu'à un compte de développeur, sur demande (décision D3) ; sans lui, `AuthorizationCenter` refuse, et l'écran des
@@ -13,25 +13,39 @@ import Foundation
 @MainActor
 final class SystemeTempsEcran: TempsEcran, ReglagesBarriereSysteme {
 
-    init() {}
+    private let barriere: SystemeBarriere?
+
+    init(barriere: SystemeBarriere? = nil) {
+        self.barriere = barriere
+    }
 
     // MARK: TempsEcran
 
     /// La demande d'autorisation de Temps d'écran (`AuthorizationCenter`, SystemeFamilyControls) : vrai si elle
-    /// est accordée. Sans l'entitlement accordé par Apple, iOS refuse et c'est faux.
+    /// est accordée, et la barrière est alors redéposée (les magasins ne retenaient rien sans elle). Sans
+    /// l'entitlement accordé par Apple, iOS refuse et c'est faux.
     func demanderAutorisation() async -> Bool {
-        await SystemeFamilyControls().demander() == .accordee
+        let accordee = await SystemeFamilyControls().demander() == .accordee
+        if accordee {
+            await barriere?.deposer()
+        }
+        return accordee
     }
 
-    /// Aucun bouclier n'est posé par l'app : il n'y a rien à lever.
-    func leverBoucliers() async {}
+    /// « Tout effacer » : les magasins vidés, la surveillance arrêtée (SystemeBarriere.toutLever).
+    func leverBoucliers() async {
+        await barriere?.toutLever()
+    }
 
     // MARK: ReglagesBarriereSysteme
 
-    /// Ce que l'app constate : l'autorisation de Temps d'écran telle qu'iOS la donne ; le reste (surveillance,
-    /// bouclier) n'est pas encore connu de l'app (tâches 27 et 28).
+    /// Ce que l'app constate (SystemeBarriere.constat) : l'autorisation, la surveillance inscrite, son dernier réveil,
+    /// le magasin `barriere`. Sans `SystemeBarriere`, l'autorisation seule.
     func constat() async -> Constat {
-        Constat(autorise: await SystemeFamilyControls().etat() == .accordee)
+        if let barriere {
+            return await barriere.constat()
+        }
+        return Constat(autorise: await SystemeFamilyControls().etat() == .accordee)
     }
 
     /// Le nombre de jetons de la sélection gardée par l'écran du choix des applications.

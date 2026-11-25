@@ -275,9 +275,10 @@ final class RappelsAiguillage {
 
 // MARK: La feuille de l'heure
 
-/// Le choix d'une heure de rappel : une roue des heures et des minutes, au format 12 ou 24 heures du téléphone, avec
-/// « Annuler » et « Valider » du système. L'heure est tenue comme un instant de la journée de référence en temps
-/// universel (2001-01-01 UTC), pour qu'aucun fuseau ni changement d'heure ne la décale (comme la présentation).
+/// Le choix d'une heure de rappel : une roue des heures et des minutes en 24 h dans toutes les langues
+/// (TimePickerDialog de RemindersActivity, is24HourView), avec « Annuler » et « Valider » du système, comme
+/// `ReglagesFeuilleHeure`. L'heure est tenue comme un instant de la journée de référence en temps universel
+/// (2001-01-01 UTC), pour qu'aucun fuseau ni changement d'heure ne la décale.
 struct RappelsChoixHeure: View {
     private let libelle: Text
     private let valider: @MainActor (Int, Int) -> Void
@@ -301,7 +302,11 @@ struct RappelsChoixHeure: View {
             .datePickerStyle(.wheel)
             .labelsHidden()
             .environment(\.timeZone, .gmt)
+            // Des chiffres seuls, sur 24 heures, comme Android (is24HourView, Store.formatMinutes).
+            .environment(\.locale, Locale(identifier: "en_GB"))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .navigationTitle(libelle)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(role: .cancel) {

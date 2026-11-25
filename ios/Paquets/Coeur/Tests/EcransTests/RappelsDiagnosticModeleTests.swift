@@ -88,7 +88,8 @@ struct RappelsDiagnosticModeleTests {
 
     @Test func lesEcartsAvecLePlan() async throws {
         let plan = try Self.plan()
-        #expect(plan.count >= 3)
+        // #require : sans trois notifications, plan[1] arrêterait tout le processus des tests.
+        try #require(plan.count >= 3)
         let absente = plan[0]
         let decalee = plan[1]
         var attente = [Self.enAttente(decalee, decalage: 60_000)]
@@ -163,7 +164,7 @@ struct RappelsDiagnosticModeleTests {
     }
 
     /// Un rappel un jour déjà fait : signalé.
-    @Test func unRappelUnJourFaitEstSignale() throws {
+    @Test func unRappelUnJourFaitEstSignale() async throws {
         let lundi = try #require(JourCivil(annee: 2026, mois: 11, jour: 23))
         var journal = Journal()
         var reglages = Self.reglages()
@@ -174,6 +175,19 @@ struct RappelsDiagnosticModeleTests {
         #expect(!fait)
         let libre = RappelsDiagnosticModele.permis(soir, reglages: reglages, journal: Journal(), fuseau: .utc)
         #expect(libre)
+        // Le rappel de ce soir, posé avant la séance, est resté en attente : l'écran le signale.
+        let instant = Fuseau.utc.millis(soir)
+        let identifiant = "rappel-" + String(instant)
+        let attente = [RappelsNotificationEnAttente(identifiant: identifiant, titre: "t", corps: "c", instant: instant,
+                                                    instantFixe: true, categorie: "rappel")]
+        let magasin = Magasin.enMemoire(Enregistrement(journal: journal, reglages: reglages))
+        let m = RappelsDiagnosticModele(magasin: magasin, horloge: h, notificateur: FauxNotificateur(),
+                                        centre: RappelsFauxCentreNotifications(attente), langue: "fr")
+        await m.charger()
+        let trouvee = m.lignes.first { $0.identifiant == identifiant }
+        let ligne = try #require(trouvee)
+        #expect(ligne.ecart == .horsPlan)
+        #expect(ligne.silenceEnfreint)
     }
 
     // MARK: Le résumé
