@@ -26,7 +26,9 @@ final class ServicesApp {
     let ajoutTemps: SystemeAjoutTemps
     /// `ReglagesEffets`.
     let effetsReglages: SystemeEffetsReglages
-    /// `TempsEcran`, `ReglagesBarriereSysteme` : vide, Family Controls n'est pas accordé.
+    /// La barrière : etat.json et le décor des extensions, les magasins nommés, la surveillance, l'essai réel.
+    let barriere: SystemeBarriere
+    /// `TempsEcran`, `ReglagesBarriereSysteme` (sur `barriere`).
     let tempsEcran: SystemeTempsEcran
     /// `ActiviteEnDirect` : la Live Activity de la séance (ActivityKit), dans la langue de l'app.
     let activite: SystemeActiviteEnDirect
@@ -53,7 +55,7 @@ final class ServicesApp {
 
     /// `lecteur` : celui des contenus de l'app (`ContenusApp.lecteur(dossier:)`), d'où les heures du vol tirent
     /// les aéroports.
-    init(magasin: Magasin, traducteur: Traducteur, lecteur: @escaping ContenusApp.Lecteur,
+    init(magasin: Magasin, traducteur: Traducteur, lecteur: @escaping ContenusApp.Lecteur, palettes: Palettes?,
          horloge: HorlogeSysteme = HorlogeSysteme()) {
         self.magasin = magasin
         self.horloge = horloge
@@ -65,7 +67,9 @@ final class ServicesApp {
         accueil = SystemeAccueil(rappels: rappels, widgets: widgets, notificateur: notificateur)
         ajoutTemps = SystemeAjoutTemps(widgets: widgets, notificateur: notificateur)
         effetsReglages = SystemeEffetsReglages(rappels: rappels, widgets: widgets)
-        tempsEcran = SystemeTempsEcran()
+        barriere = SystemeBarriere(magasin: magasin, traducteur: traducteur, horloge: horloge, palettes: palettes,
+                                   paquet: SystemeDossiers.paquet)
+        tempsEcran = SystemeTempsEcran(barriere: barriere)
         activite = SystemeActiviteEnDirect(magasin: magasin, traducteur: traducteur)
         icone = SystemeIcone()
         son = SystemeLecteurSon()

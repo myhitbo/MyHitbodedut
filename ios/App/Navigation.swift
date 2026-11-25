@@ -63,8 +63,14 @@ enum Ecran: Hashable {
     case applications
     /// L'aide à la concentration, qui remplace « Ne pas déranger » (NePasDeranger.kt, PORTAGE.md § 2.2.6).
     case concentration
+    /// L'aperçu du bouclier (GateService.preview) : la réplique des trois visages et l'essai réel.
+    case apercuBouclier
+    /// RemindersActivity : les heures de rappel (poussé depuis les Textes et depuis les Réglages).
+    case rappels
+    /// Le diagnostic des notifications en attente (propre à iOS, ROADMAP tâche 19).
+    case diagnosticRappels
 
-    /// Un écran d'Android pas encore porté (la relecture, l'aperçu du bouclier) : son titre (une
+    /// Un écran d'Android pas encore porté (la relecture) : son titre (une
     /// clé du catalogue) et « Bientôt », sans rien faire semblant.
     case bientot(cle: String)
 }

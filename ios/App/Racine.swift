@@ -200,6 +200,7 @@ struct Veilleur: ViewModifier {
                 if nouvelle == .active {
                     app.actualiserSeance()
                     app.replanifier()
+                    app.actualiserBarriere()
                 }
                 // En quittant l'app, les widgets de la série et des zmanim reçoivent le dernier état (prénom, pauses,
                 // objectif, palette… que rien d'autre ne leur dépose).

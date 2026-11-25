@@ -304,7 +304,7 @@ final class ReglagesAiguillage {
             ouvrirAdresse(UIApplication.openNotificationSettingsURLString)
         case .navigateur(let adresse):
             ouvrirAdresse(adresse)
-        case .presentation, .apercuBarriere, .choixApplications, .dedicace, .aideConcentration, .recommencer:
+        case .presentation, .apercuBarriere, .choixApplications, .dedicace, .aideConcentration, .recommencer, .rappels:
             ouvrir(route)
         }
     }

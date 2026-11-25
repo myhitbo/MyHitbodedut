@@ -250,10 +250,11 @@ extension VisageBouclier {
                                    lignes: [texte(.sousTitre), texte(.serie)], principal: texte(.commencer),
                                    secondaire: texte(.autreReponse), sousMenu: [texte(.dejaFaite), texte(.plusTard)])
         case .seance:
-            // Le bouclier est figé à son apparition : la phrase sans décompte (EtatBarriere.libelles).
+            // Le bouclier est figé à son apparition : la phrase sans décompte (EtatBarriere.libelles). La série reste,
+            // comme `blocker_streak` de BlockerView, que SESSION_RUNNING ne cache pas.
             return ContenuBouclier(pose: .priere, badge: nil, titre: texte(.seanceTitre),
-                                   lignes: [texte(.seanceSousTitre)], principal: texte(.revenir), secondaire: nil,
-                                   sousMenu: [])
+                                   lignes: [texte(.seanceSousTitre), texte(.serie)], principal: texte(.revenir),
+                                   secondaire: nil, sousMenu: [])
         case .apercu:
             // L'écran tel qu'il sera, sans ses issues : PREVIEW de BlockerView.
             return ContenuBouclier(pose: .appel, badge: texte(.apercu), titre: texte(.question),
@@ -409,7 +410,7 @@ public enum PilotageBarriere {
     /// L'état voulu des magasins à `millis`. Sans etat.json (l'app ne l'a jamais écrit), ni barrière ni séance.
     ///
     /// La barrière veille quand la règle d'Android le dit (`Evaluation.regle`, sur l'état vu) et qu'aucune séance
-    /// ne court : pendant une séance, c'est le magasin `seance` qui retient, à toute heure (§ 2.1.10).
+    /// ne court : pendant une séance, c'est le magasin `seance` qui retient, à toute heure (§ 2.1.10), mode allumé.
     ///
     /// Un rendez-vous compte à sa borne, même reçu un peu avant : au début de `fenetre`, la fenêtre est ouverte ;
     /// au début de `report`, le report est fini ; au début de `seance`, la séance est close ; au début d'`essai`,
@@ -436,7 +437,8 @@ public enum PilotageBarriere {
                 break
             }
         }
-        let seance = vu.seance != nil
+        // GateService : `running && shouldRunService`, le mode allumé ; sans application choisie, rien à retenir.
+        let seance = vu.seance != nil && vu.enabled && vu.nombreDeJetons > 0
         var barriere = !seance && Evaluation.regle(vu, maintenant: maintenant) == .armed
         if rendezVous == RendezVous(.fenetre, .fin) { barriere = false }
         return ConsigneMagasins(barriere: barriere, seance: seance, essai: essai)

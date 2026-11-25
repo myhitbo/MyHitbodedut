@@ -81,7 +81,8 @@ final class PartageApp {
         formes = (try? TropheeFormes.lire(lecteur)) ?? TropheeFormes(formes: [:], icones: [:])
         tableaux = PartageApp.tableaux(paquet: paquet, langue: langue)
 
-        let services = ServicesApp(magasin: magasin, traducteur: traducteur, lecteur: lecteur, horloge: horloge)
+        let services = ServicesApp(magasin: magasin, traducteur: traducteur, lecteur: lecteur, palettes: palettes,
+                                   horloge: horloge)
         self.services = services
         let musique = MusiqueLecteur(magasin: magasin, contenus: contenus, sortie: services.sortieAudio,
                                      ambiance: services.sortieAmbiance)
@@ -122,10 +123,31 @@ final class PartageApp {
         // ouvert (SessionService.reconcilier, START_STICKY) : la musique repart avec elle.
         actualiserSeance()
         replanifier()
+        // La barrière suit le journal et les réglages (etat.json à chaque changement) ; la boîte des extensions est
+        // relevée, et un « Commencer » du bouclier ouvre la séance.
+        services.barriere.demarrer()
+        actualiserBarriere()
         // Ce que montrent les widgets (la boussole, la série, les zmanim), dans la langue de l'app, dès le lancement :
         // rafraichir() dépose la boussole, la copie du journal et des réglages, la langue, puis recharge les widgets.
         let widgets = services.widgets
         Task { await widgets.rafraichir() }
+    }
+
+    /// La barrière au lancement et au retour au premier plan : la boîte des extensions relevée (« déjà faite » au
+    /// journal, « plus tard » aux réglages), tout redéposé ; un « Commencer » du bouclier récent ouvre l'écran de
+    /// séance, la séance lancée (onStartSession de BlockerView).
+    func actualiserBarriere() {
+        let barriere = services.barriere
+        Task { @MainActor [weak self] in
+            await barriere.actualiser()
+            guard barriere.demandeDeCommencer(), let self else { return }
+            self.navigation.feuille = nil
+            self.navigation.couverture = nil
+            self.navigation.ajout = nil
+            self.navigation.onglet = .aujourdhui
+            self.navigation.vider(.aujourdhui)
+            self.navigation.pousser(.seance(commencer: true), dans: .aujourdhui)
+        }
     }
 
     /// Le tour de la séance (SeanceEnCours.actualiser), au lancement et au retour au premier plan : une séance

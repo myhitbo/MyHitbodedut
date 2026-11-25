@@ -97,6 +97,16 @@ struct ReglagesCarteApparence: View {
         }
     }
 
+    /// RemindersActivity : la ligne mène à l'écran des rappels ; dessous, leur état.
+    private var ligneRappels: some View {
+        let intitule = t("reminders_title")
+        return ReglagesLigne(intitule, indication: Text(modele.etatRappels, traducteur: traducteur)) {
+            ReglagesBoutonValeur(t("reminders_open"), intitule: intitule, largeurMax: largeurValeur) {
+                aiguillage.suivre(modele.routeRappels)
+            }
+        }
+    }
+
     private func ligneChoix(_ cle: String, _ valeur: Libelle, _ liste: ReglagesListe) -> some View {
         let intitule = t(cle)
         return ReglagesLigne(intitule) {
@@ -289,6 +299,7 @@ struct ReglagesCarteRythme: View {
             ReglagesLigneInterrupteur(t("settings_hide_countdown"), indication: t("settings_hide_countdown_hint"),
                                       actif: aiguillage.liaison(.masquerDecompte))
             ligneConcentration
+            ligneRappels
             ReglagesLigneInterrupteur(t("settings_hitbodedut"), indication: t("settings_hitbodedut_hint"),
                                       actif: aiguillage.liaison(.guidee))
             ReglagesLigneInterrupteur(t("settings_exempt_today"), indication: t("settings_exempt_today_hint"),

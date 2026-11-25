@@ -41,8 +41,8 @@ final class SystemeBarriere: BouclierEssai {
     /// Les illustrations du paquet de l'app (`Images/<nom>.webp`).
     private let images: URL
 
-    /// Un « Commencer » du bouclier, relevé dans la boîte, que l'app n'a pas encore suivi.
-    private var commencerDemande = false
+    /// L'instant d'un « Commencer » du bouclier, relevé dans la boîte, que l'app n'a pas encore suivi.
+    private var commencerDemande: Int64?
     /// L'essai réel en cours, déposé dans bouclier.json.
     private var essai: DecorBouclier.Essai?
     /// Le dernier instantané écrit, sans son heure d'écriture : un instantané identique ne se réécrit pas.
@@ -87,11 +87,13 @@ final class SystemeBarriere: BouclierEssai {
         await deposer()
     }
 
-    /// Un « Commencer » du bouclier attend : l'app doit ouvrir l'écran de séance, la séance lancée. Rendu une fois.
+    /// Un « Commencer » du bouclier attend : l'app doit ouvrir l'écran de séance, la séance lancée. Rendu une fois,
+    /// et seulement s'il est encore frais : une relève faite par `constat` peut le laisser là jusqu'au prochain
+    /// retour au premier plan, qui ne doit pas ouvrir une séance demandée des heures plus tôt.
     func demandeDeCommencer() -> Bool {
-        let demande = commencerDemande
-        commencerDemande = false
-        return demande
+        guard let demande = commencerDemande else { return false }
+        commencerDemande = nil
+        return demande + SystemeBarriere.fraicheurCommencer >= horloge.maintenant
     }
 
     /// Un changement du journal ou des réglages (une lecture dans `apply` suffit à l'observer) : un dépôt prévu,
@@ -297,7 +299,7 @@ final class SystemeBarriere: BouclierEssai {
                 }
             case .commencer?:
                 if instant + SystemeBarriere.fraicheurCommencer >= maintenant {
-                    commencerDemande = true
+                    commencerDemande = instant
                 }
             case .essai?:
                 if evenement.detail == PilotageBarriere.finEssai, let courant = essai, instant >= courant.debut {

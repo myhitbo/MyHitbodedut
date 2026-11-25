@@ -58,8 +58,8 @@ extension PartageApp {
         case .musique:
             navigation.pousser(.musique)
         case .rappels:
-            // RemindersActivity : sur iOS, les rappels se règlent dans l'onglet Réglages.
-            navigation.onglet = .reglages
+            // RemindersActivity (reminders_button).
+            navigation.pousser(.rappels)
         case .lecture(let id, let livre):
             navigation.pousser(.lecture(LectureCible(id: id, livre: livre)))
         case .marquesPages(let recueil):
@@ -177,8 +177,11 @@ extension PartageApp {
         case .presentation:
             montrerPresentation()
         case .apercuBarriere:
-            // L'aperçu du bouclier (GateService.preview) : tâche 27.
-            navigation.pousser(.bientot(cle: "action_preview_gate"))
+            // L'aperçu du bouclier (GateService.preview) : la réplique des trois visages, et l'essai réel.
+            navigation.pousser(.apercuBouclier)
+        case .rappels:
+            // RemindersActivity, depuis la carte Rythme.
+            navigation.pousser(.rappels)
         case .choixApplications:
             // FamilyActivityPicker (AppPickerActivity), après l'autorisation de Temps d'écran.
             navigation.pousser(.applications)
@@ -190,6 +193,16 @@ extension PartageApp {
             navigation.pousser(.concentration)
         case .recommencer:
             recommencer()
+        }
+    }
+
+    /// L'écran des rappels : seul le diagnostic arrive ici, les Réglages d'iOS s'ouvrent dans la vue (RappelsAiguillage).
+    func ouvrirRappels(_ route: RappelsRoute) {
+        switch route {
+        case .diagnostic:
+            navigation.pousser(.diagnosticRappels)
+        case .reglagesNotifications:
+            break
         }
     }
 

@@ -66,7 +66,7 @@ struct ApercuBouclierModeleTests {
         let seance = m.visage.contenu
         #expect(seance.pose == .priere)
         #expect(seance.titre == Libelle("blocker_session_title"))
-        #expect(seance.lignes == [Libelle("blocker_session_hidden_subtitle")])
+        #expect(seance.lignes == [Libelle("blocker_session_hidden_subtitle"), Libelle("blocker_streak_none")])
         #expect(seance.principal == Libelle("blocker_back_to_session"))
         #expect(seance.secondaire == nil)
         m.choisi = .apercu

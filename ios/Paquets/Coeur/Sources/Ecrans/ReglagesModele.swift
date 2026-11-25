@@ -169,6 +169,8 @@ public enum ReglagesRoute: Sendable, Hashable {
     case navigateur(String)
     /// L'aide qui remplace « Ne pas déranger » : créer un mode de concentration (§ 2.2.6).
     case aideConcentration
+    /// L'écran des rappels (RemindersActivity) : les heures, l'interrupteur, le trophée tout proche.
+    case rappels
     /// Tout a été effacé : l'app repart de zéro, présentation comprise (MainActivity, tâche vidée).
     case recommencer
 }
@@ -756,6 +758,19 @@ public final class ReglagesModele {
 
     /// « Ne pas déranger » n'existe pas sur iOS : la ligne mène à l'aide (§ 2.2.6).
     public var routeConcentration: ReglagesRoute { .aideConcentration }
+
+    /// La ligne « Rappels » mène à leur écran (RappelsModele).
+    public var routeRappels: ReglagesRoute { .rappels }
+
+    /// L'état des rappels sous la ligne : éteints, sans heure, ou le nombre d'heures (TextesModele.etatRappels,
+    /// renderReminders d'Android).
+    public var etatRappels: Libelle {
+        let r = magasin.reglages
+        if !r.reminderEnabled { return Libelle("reminders_off") }
+        let n = r.reminderTimes.count
+        if n == 0 { return Libelle("reminders_none") }
+        return Libelle.pluriel("reminders_count", quantite: n, .entier(n))
+    }
 
     // MARK: Les interrupteurs
 

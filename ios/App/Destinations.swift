@@ -82,9 +82,56 @@ extension PartageApp {
             } contenu: { modele in
                 ConcentrationVue(modele: modele)
             })
+        case .apercuBouclier:
+            return vueApercuBouclier()
+        case .rappels:
+            return vueRappels()
+        case .diagnosticRappels:
+            return vueDiagnosticRappels()
         case .bientot(let cle):
             return AnyView(Bientot(cle: cle))
         }
+    }
+
+    // MARK: L'aperçu du bouclier
+
+    /// La réplique des trois visages du bouclier, et l'essai réel (absent de la construction sans barrière).
+    private func vueApercuBouclier() -> AnyView {
+        let magasin = self.magasin
+        let horloge = self.horloge
+        let essai: (any BouclierEssai)? = PartageApp.avecBarriere ? services.barriere : nil
+        return AnyView(Garde {
+            ApercuBouclierModele(magasin: magasin, horloge: horloge, essai: essai)
+        } contenu: { modele in
+            ApercuBouclierVue(modele: modele)
+        })
+    }
+
+    // MARK: Les rappels
+
+    /// RemindersActivity : un modèle par ouverture ; chaque changement fait replanifier tout le plan (SystemeRappels).
+    private func vueRappels() -> AnyView {
+        let magasin = self.magasin
+        let services = self.services
+        return AnyView(Garde {
+            RappelsModele(magasin: magasin, notificateur: services.notificateur, rappels: services.rappels)
+        } contenu: { modele in
+            RappelsVue(modele: modele, ouvrir: { route in self.ouvrirRappels(route) })
+        })
+    }
+
+    /// Le diagnostic des notifications en attente (UNUserNotificationCenter), comparé au plan.
+    private func vueDiagnosticRappels() -> AnyView {
+        let magasin = self.magasin
+        let horloge = self.horloge
+        let services = self.services
+        let langue = self.langue
+        return AnyView(Garde {
+            RappelsDiagnosticModele(magasin: magasin, horloge: horloge, notificateur: services.notificateur,
+                                    centre: SystemeRappelsCentre(), langue: langue)
+        } contenu: { modele in
+            RappelsDiagnosticVue(modele: modele)
+        })
     }
 
     // MARK: Le choix des applications de la barrière

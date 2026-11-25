@@ -109,7 +109,8 @@ private func essai(_ debut: Int64) -> DecorBouclier {
         let seance = VisageBouclier.seance.contenu { textes[$0] }
         #expect(seance.pose == .priere)
         #expect(seance.titre == "En cours")
-        #expect(seance.sousTitre == "Attendre")
+        #expect(seance.lignes == ["Attendre", "Série"])
+        #expect(seance.sousTitre == "Attendre\nSérie")
         #expect(seance.principal == "Revenir")
         #expect(seance.secondaire == nil)
         #expect(seance.sousMenu.isEmpty)
@@ -268,6 +269,12 @@ private func essai(_ debut: Int64) -> DecorBouclier {
                                              fuseau: universel, rendezVous: RendezVous(.seance, .debut))
         #expect(fini == ConsigneMagasins(barriere: false, seance: false, essai: false))
         #expect(PilotageBarriere.aArreter(RendezVous(.seance, .debut)))
+        // Mode éteint, la séance ne retient rien (`shouldRunService` de GateStatus).
+        var eteinte = matin
+        eteinte.enabled = false
+        let sansMode = PilotageBarriere.consigne(etat: eteinte, decor: nil, evenements: [], millis: tot + 60_000,
+                                                 fuseau: universel)
+        #expect(sansMode == ConsigneMagasins(barriere: false, seance: false, essai: false))
     }
 
     @Test func lEssaiEtSaFin() {

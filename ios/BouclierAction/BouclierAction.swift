@@ -81,7 +81,15 @@ enum BouclierReponse {
             try? Boite.ajouter(Evenement(quand: quand, genre: genre, detail: detail), a: boite)
         }
 
-        switch visage.action(bouton) {
+        var action = visage.action(bouton)
+        // Un essai fini dont le magasin retient encore (ni l'app endormie ni la surveillance ne l'ont levé) : le
+        // bouclier touché est celui de l'essai, montré « APERÇU » ou déjà sans badge. L'appui le lève, sans inscrire
+        // de séance ni en démarrer une : « Fermer l'aperçu » ne doit pas devenir « Commencer ».
+        if action != .aucune, visage != .apercu, decor?.essai != nil,
+           ManagedSettingsStore(named: ManagedSettingsStore.Name(PilotageBarriere.magasinEssai)).isActive {
+            action = .fermerApercu
+        }
+        switch action {
         case .commencer:
             ajouter(.commencer)
             return ouvrirLApp(etat: etat)
