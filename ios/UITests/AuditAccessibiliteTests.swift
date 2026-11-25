@@ -305,7 +305,7 @@ final class AuditAccessibiliteTests: XCTestCase {
             for ecran in ecrans {
                 XCUIDevice.shared.orientation = .landscapeLeft
                 let app = XCUIApplication()
-                app.launchArguments = ["-capture", ecran, "-captureDemo", "-AppleLanguages", "(\(langue))"]
+                app.launchArguments = ["-capture", ecran, "-captureDemo", "-cielImmobile", "-AppleLanguages", "(\(langue))"]
                 app.launch()
                 _ = app.wait(for: .runningForeground, timeout: 20)
                 XCUIDevice.shared.orientation = .landscapeLeft

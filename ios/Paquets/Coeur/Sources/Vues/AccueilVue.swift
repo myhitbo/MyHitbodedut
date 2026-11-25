@@ -150,29 +150,15 @@ public struct AccueilVue: View {
             taille = nouvelle
         }
         // Le premier écran : ce qui se voit du contenu entre la barre d'état et la barre de départ, au-dessus de la
-        // barre d'onglets (le bas des collines). Lu dans le défilement lui-même : sa taille, moins les marges qu'il
-        // laisse à son contenu (la zone sûre, la barre de départ). La géométrie de la vue comptait la barre deux fois
-        // (captures du 25/11 : les collines au milieu des anneaux).
+        // barre d'onglets (le bas des collines). C'est la taille du conteneur du défilement, déjà sans les marges qu'il
+        // laisse à son contenu (la zone sûre, la barre de départ) : les retirer encore les comptait deux fois (relevé
+        // des captures du 25/11 : conteneur de 655 points, marges de 62 et 157, sur un écran de 874 ; les collines
+        // passaient au milieu des anneaux).
         .onScrollGeometryChange(for: CGFloat.self, of: { geometrie in
-            geometrie.containerSize.height - geometrie.contentInsets.top - geometrie.contentInsets.bottom
+            geometrie.containerSize.height
         }, action: { _, nouvelle in
             hauteurVue = max(nouvelle, 0)
         })
-        // Diagnostic temporaire des captures du ciel (25/11) : ce que mesure le défilement.
-        .onScrollGeometryChange(for: String.self, of: { g in
-            "conteneur \(g.containerSize) marges \(g.contentInsets) contenu \(g.contentSize) visible \(g.visibleRect)"
-        }, action: { _, texte in
-            if ProcessInfo.processInfo.arguments.contains("-captureDemo") {
-                FileHandle.standardError.write(Data("CIEL \(texte)\n".utf8))
-            }
-        })
-        .onGeometryChange(for: String.self, of: { g in
-            "vue \(g.size) zone sure \(g.safeAreaInsets) global \(g.frame(in: .global))"
-        }) { texte in
-            if ProcessInfo.processInfo.arguments.contains("-captureDemo") {
-                FileHandle.standardError.write(Data("CIEL \(texte)\n".utf8))
-            }
-        }
         .background(fond)
     }
 

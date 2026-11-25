@@ -167,8 +167,10 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   d'Android (captures.py, étape 35 ; `Captures.heuresDuCiel`) ; « ciel-0644 » prend une heure quelconque. Seule
   l'heure du ciel est fixée (`AccueilModele.heureDuCiel`, `AccueilVersionModele.heureDuCiel`), pas celle du journal.
   Pas dans la liste complète : on les demande dans l'entrée `ecrans`, et ils passent alors aussi en sombre, en grand
-  et sur l'iPad (le script les compte parmi ses écrans courts). Le ciel reste animé pendant la capture, comme sur
-  Android.
+  et sur l'iPad (le script les compte parmi ses écrans courts). Comme pour l'audit, l'app est lancée avec
+  « -cielImmobile » : le ciel est photographié dans sa pose de repos, la même d'un passage à l'autre, et le
+  simulateur de la CI, sans processeur graphique, n'a pas à le redessiner vingt fois par seconde pendant qu'il ouvre
+  l'écran demandé (le 25/11, la source de la bibliothèque ne s'ouvrait plus à temps).
 - **Le script** (`tools/captures_ios/capturer.sh`) : pour chaque langue (fr, en, he, es, ar-TN, par
   `-AppleLanguages` et `-AppleLocale`, le fuseau de la ville de la démonstration par `SIMCTL_CHILD_TZ`) et chaque
   écran, il lance l'app, attend qu'elle dise « CAPTURE PRETE » sur sa sortie d'erreur (l'écran ouvert, sans

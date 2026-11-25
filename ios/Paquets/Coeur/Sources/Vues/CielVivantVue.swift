@@ -47,11 +47,11 @@ struct CielVivantHorloge<Contenu: View>: View {
     }
 }
 
-/// Le ciel immobile des tests d'interface (« -cielImmobile », l'audit d'accessibilité) : sa pose de repos, comme avec
+/// Le ciel immobile des tests d'interface et des captures de la CI (« -cielImmobile ») : sa pose de repos, comme avec
 /// « Réduire les animations ». XCTest attend que l'app soit au repos avant chaque mesure, et un ciel qui bouge ne
-/// l'est jamais : sur le simulateur de la CI, l'audit des tailles du texte du Jour ne finissait plus (le 25/11). La
-/// pose de repos est aussi la plus exigeante pour le contraste : les animations ne font que pâlir le ciel (halo,
-/// étoiles), jamais l'aviver.
+/// l'est jamais : sur le simulateur de la CI, sans processeur graphique, l'audit des tailles du texte du Jour ne
+/// finissait plus (le 25/11). La pose de repos est aussi la plus exigeante pour le contraste : les animations ne font
+/// que pâlir le ciel (halo, étoiles), jamais l'aviver ; et une capture la montre la même d'un passage à l'autre.
 enum CielImmobile {
     static let demande = ProcessInfo.processInfo.arguments.contains("-cielImmobile")
 }

@@ -78,6 +78,9 @@ demarrer() {
   xcrun simctl install "$udid" "$APP" || echo "::error::installation refusée"
   xcrun simctl get_app_container "$udid" "$ID_APP" || echo "::error::l'app n'est pas installée"
   barre "$udid"
+  # Le ciel du Jour et de Sérénité est photographié dans sa pose de repos (« -cielImmobile », CielImmobile) : la
+  # même image d'un passage à l'autre, et le simulateur sans processeur graphique n'a pas à le redessiner vingt fois
+  # par seconde pendant que l'app ouvre l'écran demandé.
   # Un premier lancement, à blanc : le premier est lent (caches du simulateur). Sur la recherche, pour que la
   # présentation du clavier glissé, qu'iOS montre au premier clavier ouvert, passe là et pas sur une capture.
   echo "premier lancement : $(xcrun simctl launch "$udid" "$ID_APP" -capture recherche -captureDemo 2>&1)"
@@ -132,7 +135,7 @@ capturer() {
   # Le fuseau de la ville de la démonstration (Demonstration.ville) : SIMCTL_CHILD_ passe la variable à l'app.
   lance=$(SIMCTL_CHILD_TZ=$fuseau xcrun simctl launch --stdout="$SORTIE/journaux/$nom.out" \
     --stderr="$SORTIE/journaux/$nom.err" "$udid" "$ID_APP" \
-    -AppleLanguages "($langue)" -AppleLocale "$locale" -capture "$ecran" -captureDemo 2>&1)
+    -AppleLanguages "($langue)" -AppleLocale "$locale" -capture "$ecran" -captureDemo -cielImmobile 2>&1)
   pid=${lance##*: }
   case $pid in
     ''|*[!0-9]*) echo "lancement refusé ($nom) : $lance"; pid="" ;;
