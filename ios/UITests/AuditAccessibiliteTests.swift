@@ -202,6 +202,15 @@ final class AuditAccessibiliteTests: XCTestCase {
         if ecran == "fete" && d.sorte == "contraste" {
             return "écran voilé sous la fiche d'un trophée (caché à VoiceOver) ; la fiche a les couleurs des cartes"
         }
+        // Le titre de la carte-paysage de Sérénité : blanc, sur le voile sombre du bas de la carte (0xE614111F) posé
+        // sur la colline proche, d'une seule couleur à toute heure. Relevé une fois (25/11, 02 h 54 UTC, run
+        // 45530323926), pas aux audits du 24/11 ; sur la capture du même passage, le titre est à 18:1 de son fond
+        // (blanc sur 21,17,34, uni sur toute la hauteur du titre). L'étiquette « Ce soir » et la ligne du réglage,
+        // plus petites et sur le même fond, n'ont jamais été relevées.
+        if ecran == "serenite" && d.sorte == "contraste" && d.genre.contains("48")
+            && d.libelle.hasPrefix("Hitbodedout ·") {
+            return "titre blanc de la carte-paysage sur son voile sombre : 18:1 mesuré sur la capture"
+        }
         // Un texte de plusieurs paragraphes (retours à la ligne : la note du journal et son sujet, le sous-titre du
         // bouclier) : l'audit le mesure d'un seul tenant et le dit coupé ; il est entier sur les captures « grand ».
         if d.sorte == "texte coupé" && d.libelle.contains("\n") {
