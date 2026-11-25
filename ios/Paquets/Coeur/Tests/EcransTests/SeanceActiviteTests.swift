@@ -72,17 +72,19 @@ struct SeanceActiviteTests {
         #expect(etat.legendeMontree == Libelle("session_open_caption"))
     }
 
-    /// « Masquer le décompte » : rien, et la promesse du son de fin (session_hidden_caption), minutée ou non.
+    /// « Masquer le décompte » : rien, et la légende de la notification d'Android (runningText : session_running_hidden),
+    /// sans la promesse du son de l'écran de séance (session_hidden_caption), minutée ou non.
     @Test func leDecompteMasqueNeMontreRien() throws {
         let minutee = try #require(SeanceActivite.pour(reglages: Self.seance(minutes: 30, masquer: true),
                                                        debut: Self.debut, fin: Self.debut + 30 * Self.minute))
         #expect(minutee.decompte == .masque)
         #expect(minutee.montre == .masque)
-        #expect(minutee.legendeMontree == Libelle("session_hidden_caption"))
+        #expect(minutee.legende == Libelle("session_running_hidden"))
+        #expect(minutee.legendeMontree == Libelle("session_running_hidden"))
         let ouverte = try #require(SeanceActivite.pour(reglages: Self.seance(minutes: SessionRule.ouverte, masquer: true),
                                                        debut: Self.debut, fin: Self.plafond))
         #expect(ouverte.decompte == .masque)
-        #expect(ouverte.legendeMontree == Libelle("session_hidden_caption"))
+        #expect(ouverte.legendeMontree == Libelle("session_running_hidden"))
     }
 
     /// L'état suit le compteur de `SeanceEnCours` (le texte de la notification d'Android) dans les trois cas.
@@ -120,13 +122,13 @@ struct SeanceActiviteTests {
         #expect(etat.legendeMontree == Libelle("session_running_hidden"))
     }
 
-    /// Le filtre et « Masquer le décompte » ensemble : le son de fin reste promis, puisque le réglage le fait entendre.
-    @Test func leFiltreSurUnDecompteDejaMasqueGardeLaPromesseDuSon() throws {
+    /// Le filtre et « Masquer le décompte » ensemble : un décompte masqué, la même légende.
+    @Test func leFiltreSurUnDecompteDejaMasqueGardeSaLegende() throws {
         let etat = try #require(SeanceActivite.pour(reglages: Self.seance(minutes: 20, masquer: true,
                                                                           concentration: true),
                                                     debut: Self.debut, fin: Self.debut + 20 * Self.minute))
         #expect(etat.montre == .masque)
-        #expect(etat.legendeMontree == Libelle("session_hidden_caption"))
+        #expect(etat.legendeMontree == Libelle("session_running_hidden"))
     }
 
     /// Le filtre qui s'éteint rend le décompte : l'état change, et l'app le renvoie à la Live Activity.
@@ -170,7 +172,7 @@ struct SeanceActiviteTests {
         let ios = try JSONDecoder().decode(CatalogueBrut.self,
                                            from: Fichiers.donnees("ios/Ressources/Chaines/ios.xcstrings"))
         let deAndroid = [SeanceActivite.titre.cle, SeanceActivite.terminer.cle, SeanceActivite.legendeConcentration.cle,
-                         "session_hidden_caption", "session_open_caption", "session_target", "duration_minutes"]
+                         "session_open_caption", "session_target", "duration_minutes"]
         let neuves = [SeanceActivite.echue.cle, "ios_seance_terminer_intention"]
         for cle in deAndroid {
             for langue in Traducteur.langues {
