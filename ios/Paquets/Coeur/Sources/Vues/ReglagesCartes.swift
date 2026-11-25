@@ -97,16 +97,6 @@ struct ReglagesCarteApparence: View {
         }
     }
 
-    /// RemindersActivity : la ligne mène à l'écran des rappels ; dessous, leur état.
-    private var ligneRappels: some View {
-        let intitule = t("reminders_title")
-        return ReglagesLigne(intitule, indication: Text(modele.etatRappels, traducteur: traducteur)) {
-            ReglagesBoutonValeur(t("reminders_open"), intitule: intitule, largeurMax: largeurValeur) {
-                aiguillage.suivre(modele.routeRappels)
-            }
-        }
-    }
-
     private func ligneChoix(_ cle: String, _ valeur: Libelle, _ liste: ReglagesListe) -> some View {
         let intitule = t(cle)
         return ReglagesLigne(intitule) {
@@ -340,6 +330,16 @@ struct ReglagesCarteRythme: View {
         return ReglagesLigne(intitule, indication: t("reglages_concentration_hint")) {
             ReglagesBoutonValeur(t("action_open"), intitule: intitule, largeurMax: largeurValeur) {
                 aiguillage.suivre(modele.routeConcentration)
+            }
+        }
+    }
+
+    /// RemindersActivity : la ligne mène à l'écran des rappels ; dessous, leur état.
+    private var ligneRappels: some View {
+        let intitule = t("reminders_title")
+        return ReglagesLigne(intitule, indication: Text(modele.etatRappels, traducteur: traducteur)) {
+            ReglagesBoutonValeur(t("reminders_open"), intitule: intitule, largeurMax: largeurValeur) {
+                aiguillage.suivre(modele.routeRappels)
             }
         }
     }
