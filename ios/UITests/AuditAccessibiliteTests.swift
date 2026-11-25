@@ -83,9 +83,13 @@ final class AuditAccessibiliteTests: XCTestCase {
         premier.terminate()
         for ecran in voulus {
             let app = XCUIApplication()
-            // Le ciel du Jour et de Sérénité dans sa pose de repos (CielImmobile) : XCTest attend que l'app soit au
-            // repos avant chaque mesure, ce qu'un ciel animé n'est jamais.
-            app.launchArguments = ["-capture", ecran, "-captureDemo", "-cielImmobile", "-AppleLanguages", "(\(langue))"]
+            // Le ciel de Sérénité dans sa pose de repos (CielImmobile) : XCTest attend que l'app soit au repos avant
+            // chaque mesure, ce qu'un ciel animé n'est jamais. Le Jour sur son papier (CielPapier) : le contraste des
+            // textes posés sur son ciel est celui de TeintesCielTests ; l'audit y prenait le bord d'une colline pour
+            // le texte (« Sans durée ou autre façon de commencer » : 5,7:1 mesuré sur la capture, « Contrast
+            // failed » pour l'audit, le 25/11).
+            app.launchArguments = ["-capture", ecran, "-captureDemo", "-cielImmobile", "-cielPapier",
+                                   "-AppleLanguages", "(\(langue))"]
             app.launch()
             _ = app.wait(for: .runningForeground, timeout: 20)
             // L'écran s'ouvre par étapes (Captures.ouvrir) ; les animations d'entrée finissent.

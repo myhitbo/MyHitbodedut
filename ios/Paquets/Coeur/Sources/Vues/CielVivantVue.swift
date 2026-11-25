@@ -56,6 +56,15 @@ enum CielImmobile {
     static let demande = ProcessInfo.processInfo.arguments.contains("-cielImmobile")
 }
 
+/// Le Jour sur son papier uni, sans ciel, pour l'audit d'accessibilité (« -cielPapier ») : le contraste des textes
+/// posés sur le ciel est garanti par TeintesCielTests (chaque palette, chaque hauteur du soleil, sous la lueur, les
+/// nuages et sur les collines, aux seuils de PaletteTests plus 0,05) ; l'audit d'Xcode, qui cherche dans le cadre d'un
+/// texte les deux couleurs les plus présentes, prenait le bord d'une colline ou le dégradé pour le texte et disait
+/// « Contrast failed » là où la capture mesure 5,7:1 (le 25/11). Il mesure ainsi le reste de la page tel quel.
+enum CielPapier {
+    static let demande = ProcessInfo.processInfo.arguments.contains("-cielPapier")
+}
+
 /// Une couleur ARGB des ciels (les entiers de `TeintesCiel` et de `PaysageCiel`), dans l'espace sRGB d'Android.
 enum CielCouleur {
     static func couleur(_ argb: UInt32, opacite: Double = 1) -> Color {
@@ -69,7 +78,7 @@ enum CielCouleur {
 /// « Contraste élevé » : on l'a choisie pour le plus fort contraste, le papier uni reste.
 enum CielDuJourTeintes {
     static func teintes(_ etat: EtatCiel, palette: PaletteApp, sombre: Bool) -> TeintesCiel.Page? {
-        guard palette.fond != .contraste else { return nil }
+        guard palette.fond != .contraste, !CielPapier.demande else { return nil }
         let encres = TeintesCiel.encresDuJour(encre: palette.couleur(.ink, nuit: sombre),
                                               discret: palette.couleur(.muted, nuit: sombre),
                                               accent: palette.couleur(.brand, nuit: sombre), nuit: sombre)

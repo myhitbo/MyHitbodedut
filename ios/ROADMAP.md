@@ -399,11 +399,16 @@ Les critères se vérifient par des tests d'interface sur simulateur et par les 
   simulateur de la CI ne prouve ni l'un ni l'autre. À essayer sur un iPhone, ce qu'aucune capture ne montre : le
   doigt qui arrête le défilement automatique sur une tête de tsadik, une flèche de la halakha ou le bouton de
   Sefaria (sans retarder ni manger leur toucher), l'écran qui ne s'éteint pas pendant le défilement ni dix minutes
-  après le dernier toucher, puis s'éteint, et la liste des chapitres sous VoiceOver. L'audit de « source », nouveau
-  le 24/11, échoue : le badge « Source » de l'en-tête est relevé « Dynamic Type en partie » à chaque passage (runs
-  45470677593, 45480057201, 45490172262, 45495089938), et une fois sur deux le titre, la référence et les premiers
-  paragraphes avec lui ; la cause n'est pas trouvée (le badge est en `.caption2`, l'en-tête lu d'un trait comme celui
-  des Tehilim, qui passe) : à comprendre et corriger, sans tolérance.
+  après le dernier toucher, puis s'éteint, et la liste des chapitres sous VoiceOver. L'audit de « source » (25/11) : le
+  badge « Source » de l'en-tête était relevé « Dynamic Type en partie » à chaque passage parce qu'il était en
+  `.caption2`, qui reste à 11 points de la plus petite taille du texte à la taille ordinaire : il prend 11 points qui
+  suivent chaque pas (`tailleSp(11, relativeA: .footnote)`, comme `Etiquette`, qui avait eu le même défaut). Depuis,
+  quatre passages de suite sans défaut (run 45527024520, l'écran ouvert depuis la bibliothèque ou directement), et un
+  dans le run 45511600916. Le titre, la référence et les premiers paragraphes, relevés avec lui « une fois sur
+  deux », ne l'étaient que sur les passages lents (l'audit des tailles du texte à 11 s et plus, contre 7 s) : tout le
+  texte visible à la fois, la référence en `.footnote` (un style du système) comprise, ce qui est la marque d'une
+  mesure prise avant que l'écran ait fini de grandir, pas d'une police fixe ; sans tolérance ajoutée, à surveiller sur
+  les prochains audits complets.
 
 ### 30. TestFlight externe, fiche, soumission
 
