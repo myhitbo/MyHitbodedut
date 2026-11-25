@@ -158,6 +158,21 @@ public struct AccueilVue: View {
         }, action: { _, nouvelle in
             hauteurVue = max(nouvelle, 0)
         })
+        // Diagnostic temporaire des captures du ciel (25/11) : ce que mesure le défilement.
+        .onScrollGeometryChange(for: String.self, of: { g in
+            "conteneur \(g.containerSize) marges \(g.contentInsets) contenu \(g.contentSize) visible \(g.visibleRect)"
+        }, action: { _, texte in
+            if ProcessInfo.processInfo.arguments.contains("-captureDemo") {
+                FileHandle.standardError.write(Data("CIEL \(texte)\n".utf8))
+            }
+        })
+        .onGeometryChange(for: String.self, of: { g in
+            "vue \(g.size) zone sure \(g.safeAreaInsets) global \(g.frame(in: .global))"
+        }) { texte in
+            if ProcessInfo.processInfo.arguments.contains("-captureDemo") {
+                FileHandle.standardError.write(Data("CIEL \(texte)\n".utf8))
+            }
+        }
         .background(fond)
     }
 

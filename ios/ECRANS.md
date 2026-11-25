@@ -195,7 +195,10 @@ exemple, entre la passe « iphone » des cinq langues et les passes « sombre gr
   inachevé (cinq essais, l'audit d'Xcode s'arrêtant au bout de 15 s environ sur le simulateur lent de la CI) n'est
   pas un défaut et se dit à part (« Refaits faute d'avoir fini à temps »). Un défaut nouveau ne se tolère
   qu'avec sa raison, et après l'avoir vu sur les captures « grand ». Relever sans échouer :
-  `TEST_RUNNER_AUDIT_RELEVE=1`.
+  `TEST_RUNNER_AUDIT_RELEVE=1`. L'app y est lancée avec « -cielImmobile » (`CielImmobile`) : le ciel du Jour et de
+  Sérénité dans sa pose de repos, comme avec Réduire les animations ; XCTest attend que l'app soit au repos avant
+  chaque mesure, ce qu'un ciel animé n'est jamais (le 25/11, l'audit des tailles du texte du Jour ne finissait plus),
+  et la pose de repos est la plus exigeante pour le contraste.
 - **Les grandes tailles du texte** : aucune police à taille fixe (`tailleSp`, `policeHebraique`, `@ScaledMetric`
   au centième) ; `Vues/Accessibilite.swift` : `lignesAuPlus`/`uneLigne` (la limite de lignes d'Android à la taille
   ordinaire, aucune au-delà), `RangeeAdaptable` (en colonne aux tailles d'accessibilité), `TuileExtensible`,
