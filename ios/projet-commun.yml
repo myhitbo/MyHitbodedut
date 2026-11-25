@@ -31,6 +31,9 @@ targetTemplates:
     platform: iOS
     sources:
       - App
+      # Les attributs et l'intention « Terminer » de la Live Activity de la séance, compilés aussi par l'extension
+      # Widgets (son dossier) : ActivityKit veut le même type des deux côtés (Widgets/ActiviteSeanceAttributs.swift).
+      - Widgets/ActiviteSeanceAttributs.swift
       # Les ressources exportées par tools/export_contenu (PORTAGE.md § 4.2), en dossiers : le paquet de l'app
       # garde leur arborescence (Contenu/livres/<id>/…, Images/<nom>.webp, Polices/licences/…).
       - path: Ressources/Contenu
@@ -78,6 +81,9 @@ targetTemplates:
             CFBundleURLSchemes: [myhitbodedut]
         # La musique et les ambiances de la séance continuent l'écran éteint (App/Services/SystemeSortieAudio.swift).
         UIBackgroundModes: [audio]
+        # La séance sur l'écran verrouillé et dans l'île dynamique (App/Services/SystemeActiviteEnDirect.swift,
+        # Widgets/ActiviteSeance.swift).
+        NSSupportsLiveActivities: true
         # Les polices des textes saints, sous Polices/ dans le paquet (Vues/Polices.swift, Polices.fichiers).
         UIAppFonts:
           - Polices/hebreu_serif_regular.ttf
@@ -92,10 +98,29 @@ targets:
   Widgets:
     type: app-extension
     platform: iOS
-    sources: [Widgets]
+    sources:
+      - Widgets
+      # Les widgets de la série et des zmanim calculent leur chronologie avec Coeur et Ecrans (Widgets/WidgetsCommun.swift)
+      # et traduisent leurs textes dans la langue de l'app : le catalogue d'Android tel quel sous Chaines/ (lu par le
+      # Traducteur), les illustrations sous Images/ (le hassid au creux des anneaux), et à la racine palettes.json (les
+      # couleurs choisies) et chizuk.json (le texte du jour de la grande vignette).
+      - path: Ressources/Chaines
+        type: folder
+      - path: Ressources/Images
+        type: folder
+      - path: Ressources/Contenu
+        includes: ["palettes.json", "chizuk.json"]
+    dependencies:
+      - package: Coeur
+        products:
+          - Coeur
+          - Ecrans
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.myhitbodedut.widgets
+        # Widgets/ActiviteSeanceAttributs.swift est compilé ici et dans l'app : dans l'extension, l'intention
+        # « Terminer » ne fait que nommer son bouton, le système l'exécute dans l'app.
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) EXTENSION_WIDGETS
     info:
       path: Widgets/Info.plist
       properties:
