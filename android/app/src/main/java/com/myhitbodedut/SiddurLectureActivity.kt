@@ -735,6 +735,8 @@ class SiddurLectureActivity : AppCompatActivity() {
                 setLineSpacing(0f, 1f)
                 typeface = android.graphics.Typeface.DEFAULT
             }
+            // Lu une fois ici (lint RecyclerView : la position ne se garde pas dans les lambdas).
+            val dansLePanneau = position in dansPanneau
             when (val ligne = lignes[position]) {
                 is QuestionRegion -> vue.apply {
                     // Israël ou diaspora ? (26/11, Q7) : une carte, un toucher pose la question.
@@ -959,7 +961,7 @@ class SiddurLectureActivity : AppCompatActivity() {
                     setLineSpacing(dp(8).toFloat() * e, 1f)
                     setTextColor(rendu.texte)
                     setPadding(dp(24), dp(14), dp(24), dp(18))
-                    if (position in dansPanneau) background = panneau(voile, haut = false, bas = false)
+                    if (dansLePanneau) background = panneau(voile, haut = false, bas = false)
                 }
                 is SiddurJour.Ligne.Seul -> vue.apply {
                     // Qui prie seul (19/10) : une carte à part, jamais repliée ; la consigne petite, la braïta en grand.
