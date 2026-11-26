@@ -29,7 +29,7 @@ Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
 | Règles de confidentialité en ligne | 16/11 | https://myhitbodedut.pages.dev/confidentialite.html#en (« Last updated: 16 November 2026 ») |
 | Clé d'envoi et secrets `PLAY_*` | 15/11 | flux *Vérification des secrets* vert ; empreinte ci-dessous |
 | Compte développeur **organisation** | 16/11 | HACHIVEINOU LÉTORATEKHA, n° 8221232760929604341 |
-| Droits sur la musique | 16/11 | la version Play livre 23 morceaux (`MusiquePlay.kt`) |
+| Droits sur la musique | 26/11 | la version Play livre 42 morceaux (`MusiquePlay.kt`) : 19 ajoutés le 26/11, dix de Shneor Lerer (accord écrit) et neuf du Yanuka (accord **oral** : écrit à obtenir, `PUBLICATION_PLAY_STORE.md` § 3.2) |
 | Fiche en-US et iw-IL, 8 visuels par langue | 17/11 | `play/fiche/`, `play/visuels/` |
 | Recette sur émulateurs, Android 13 à 16 | 22/11 | ci-dessous |
 | Recette des corrections du 23/11, Android 13 à 16 | 23/11 | sans faute, y compris sur le code de `play-7` : ci-dessous |

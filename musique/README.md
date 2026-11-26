@@ -20,7 +20,9 @@ L'audio embarqué a atteint le plafond de **130 Mo** — le chiffre exact est
 au tableau plus bas — contre 12 Mo pour tout le reste de l'application après
 R8. **Mise à jour du 03/11** : le propriétaire a relevé le plafond à **150 Mo**
 pour faire entrer les 23 morceaux de נעם שפייר et de Ianir (environ 146 Mo au
-total). Ce qui suit décrit l'état antérieur. Le garde-fou du test, relevé trois fois (40 → 80 → 110 → 130), était
+total). **Mise à jour du 26/11** : il l'a relevé à **230 Mo** pour dix
+morceaux de Shneor Lerer et neuf du Yanuka (224,2 Mo au total). Ce qui suit
+décrit l'état antérieur. Le garde-fou du test, relevé trois fois (40 → 80 → 110 → 130), était
 au bout. Il n'a pas bougé depuis, et ne bougera pas sans décision explicite.
 
 ## Ce que contient ce dossier aujourd'hui : un échange en cours
@@ -61,15 +63,8 @@ prochain échange, quand les autres auront un nom.
 
 | fichier | poids |
 |---|---|
-| `ani_maamin` | 2,0 Mo |
-| `anim_zemirot` | 2,1 Mo |
 | `bratslav_melodies_piano` | 3,3 Mo |
 | `breslov_playing_field_sea_waves` | 4,8 Mo |
-| `chabad_shabbos_shneor_lerer` | 4,7 Mo |
-| `chabad_yamim_noraim_shneor_lerer` | 8,6 Mo |
-| `nigun_abaal_shem_tov_for_babies` | 6,7 Mo |
-| `nigunim_for_neshama_shneor_lerer` | 27,8 Mo |
-| `relaxing_chabad_melodies_shneor_lerer` | 7,5 Mo |
 | `ribo_ata_zocher` | 5,6 Mo |
 | `ribo_halev_sheli` | 5,6 Mo |
 | `ribo_nafshi` | 6,1 Mo |
@@ -80,22 +75,10 @@ prochain échange, quand les autres auront un nom.
 | `shmuel_one_prayer` | 2,6 Mo |
 | `tremendous_threat_breslau_piano` | 9,5 Mo |
 | `tzama_with_orchestra` | 2,4 Mo |
-| `tzomo_lecho_s_lerer` | 2,4 Mo |
-| `vehi_sheamda_piano_shneor_lerer` | 2,0 Mo |
-| `vehi_sheamda_s_lerer` | 2,1 Mo |
-| `yanuka_a_part_of_me` | 4,0 Mo |
-| `yanuka_anticipation` | 1,4 Mo |
-| `yanuka_harping_his_praise` | 7,1 Mo |
-| `yanuka_listening_to_the_heart` | 2,3 Mo |
-| `yanuka_shlomo_yehuda` | 5,8 Mo |
-| `yanuka_shlomo_yehuda_2` | 4,2 Mo |
-| `yanuka_the_king_will_return` | 2,7 Mo |
-| `yanuka_the_truth_will_rise` | 2,4 Mo |
-| `yanuka_yearning` | 5,6 Mo |
 | `yosef_karduner` | 6,6 Mo |
 | `niggoun_08`, `niggoun_09`, `niggoun_16` *(3 sans titre)* | 27,4 Mo |
 
-**35 morceaux, 197,6 Mo.** L'APK est à 61,4 Mo d'audio sur 23 morceaux.
+**16 morceaux, 96,4 Mo.** L'APK est à 139,4 Mo d'audio sur 42 morceaux.
 
 > Cet inventaire est régénéré depuis les fichiers, pas tenu à la main.
 
@@ -128,7 +111,9 @@ jour — voir `FEUILLE_DE_ROUTE.md`.
 **Depuis le 26/11** : l'accord de Shneor Lerer est écrit (courriel du 21/11,
 conservé hors dépôt) et déclaré étendu à tous ses morceaux — son nom à côté
 de la musique, application gratuite, pas de téléchargement des fichiers.
-Dix fichiers d'ici sont de lui : les sept `*_lerer`, plus `ani_maamin`,
-`anim_zemirot` et `nigun_abaal_shem_tov_for_babies`. L'accord du Yanuka est
-**oral** ; les neuf `yanuka_*` d'ici ont été confirmés un par un comme étant
-bien de lui.
+L'accord du Yanuka est **oral**. Sur décision du propriétaire, les dix
+morceaux de Lerer qui étaient ici et les neuf `yanuka_*` sont entrés dans
+l'application le même jour, version Play et site compris ; ils ne sont
+donc plus dans ce dossier. Trois ont pris le préfixe de leur auteur au
+passage : `ani_maamin`, `anim_zemirot` et `nigun_abaal_shem_tov_for_babies`
+sont devenus `lerer_*`.

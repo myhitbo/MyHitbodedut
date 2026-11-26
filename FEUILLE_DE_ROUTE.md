@@ -269,7 +269,7 @@ qu'elles ne portent pas sur les mêmes ayants droit :
 | déclaration du 26/11 | porte sur | forme de l'accord | morceaux |
 |---|---|---|---|
 | « J'ai eu son autorisation à l'oral du Yenuka » | le Yanuka | **orale** — aucun écrit | les 10 `yanuka_*`, confirmés un par un le même jour comme étant bien du Yanuka (aucun n'est d'Ianir) |
-| « j'ai eu son autorisation explicite », puis « לרר m'a confirmé tous ses sons » | Shneor Lerer | **écrite** : courriel du 21/11, conservé hors dépôt. La confirmation « tous ses morceaux » est déclarée ; sa forme n'a pas été précisée | les 10 fichiers de `musique/` qui sont de lui : les sept `*_lerer`, plus `ani_maamin`, `anim_zemirot` et `nigun_abaal_shem_tov_for_babies` (rattachés par le titre et la durée) |
+| « j'ai eu son autorisation explicite », puis « לרר m'a confirmé tous ses sons » | Shneor Lerer | **écrite** : courriel du 21/11, conservé hors dépôt. La confirmation « tous ses morceaux » est déclarée ; sa forme n'a pas été précisée | dix morceaux : les sept `*_lerer`, plus `ani_maamin`, `anim_zemirot` et `nigun_abaal_shem_tov_for_babies`, devenus `lerer_*`. Neuf sont vérifiés contre les extraits officiels de son catalogue (même enregistrement) ; `vehi_sheamda_piano_shneor_lerer` n'y figure pas et ne lui est attribué que par le nom du fichier reçu |
 
 Le courriel de Shneor Lerer pose des conditions : son nom à côté de la
 musique ; l'application reste gratuite ; pas de téléchargement des fichiers ;
@@ -288,10 +288,26 @@ perdre :
    de Shneor Lerer rangés dans `musique/` sont téléchargeables par n'importe
    qui, et le site sert l'audio en fichiers statiques. À régler avant de lui
    confirmer cette condition.
-3. **Aucun morceau n'est entré dans l'application le 26/11.** Les dix de
-   Lerer et les neuf du Yanuka encore dans `musique/` pèsent environ 77 Mo en
-   AAC ; l'APK GitHub est à 146,2 Mo pour un plafond de 150. Y faire entrer
-   quoi que ce soit demande une décision du propriétaire sur le poids.
+3. **Le reste du catalogue de Shneor Lerer.** Le propriétaire a demandé
+   « tout Lerer, cherche sur internet ». Une vingtaine de sorties manquent,
+   et elles n'ont pas pu être récupérées : il n'existe pas de téléchargement
+   officiel, YouTube refuse les requêtes de l'environnement de travail, et
+   contourner ce refus n'est pas permis. Lui-même propose d'envoyer ses MP3
+   sur demande ; iTunes en vend dix-neuf sur vingt.
+
+**Décisions du 26/11**, prises par le propriétaire à qui chaque question a
+été posée avec ses conséquences :
+
+| question | décision | ce qui a été fait |
+|---|---|---|
+| quoi ajouter | « Tout Lerer, cherche sur internet » | les dix morceaux déjà dans le dépôt entrent dans l'application ; les autres attendent leurs fichiers (point 3) |
+| le poids : sortir les 30 sans-titre, ou relever le plafond | « Relever le plafond » | 150 → 230 Mo ; l'audio de la version GitHub est à 224,2 Mo sur 75 morceaux |
+| le Yanuka, accord oral : version GitHub seule, ou Play et site aussi | « Play et site aussi » | ses neuf autres niggounim rejoignent `yanuka_nigoun_3` dans la version Play et le site : 42 morceaux, 139,4 Mo |
+
+J'avais recommandé l'inverse sur les deux derniers points — sortir les
+sans-titre, et garder le Yanuka hors de Play tant qu'il n'y a pas d'écrit.
+C'est son projet et son appel ; le désaccord est écrit ici pour la même
+raison que les précédents. Les points 1 et 2 ci-dessus restent ouverts.
 
 La seconde a été demandée avant d'ajouter quoi que ce soit : ces cinq-là sont
 des enregistrements commerciaux d'artistes sous label, hors du périmètre de la

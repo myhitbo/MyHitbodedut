@@ -110,25 +110,31 @@ class MusicFilesTest {
      * vingtaine de Mo, sans permission nouvelle, sans hébergement, sans
      * question de droits supplémentaire.
      *
-     * Le seuil a été relevé quatre fois (40 → 80 → 110 → 130 → 150). La
+     * Le seuil a été relevé cinq fois (40 → 80 → 110 → 130 → 150 → 230). La
      * quatrième, le 03/11, sur décision explicite du propriétaire, pour les
      * 23 morceaux de נעם שפייר et de Ianir, autorisés par écrit et livrés aussi
      * par la version Play (environ 146 Mo au total). 150 n'est pas une réserve
      * à remplir : c'est le point où la sélection doit remplacer l'accumulation.
+     *
+     * La cinquième, le 26/11, encore sur décision explicite du propriétaire
+     * (« Relever le plafond »), pour dix morceaux de Shneor Lerer et neuf du
+     * Yanuka : 224,2 Mo au total, 139,4 pour la version Play. 230 n'est pas
+     * davantage une réserve. Et la version Play a sa propre limite de taille,
+     * qui ne se relève pas d'ici (PUBLICATION_PLAY_STORE.md § 2, ligne « Taille »).
      */
     @Test
     fun `le poids embarque reste sous les yeux`() {
         val octets = embarques().sumOf { it.length() }
         val mo = octets / 1_048_576.0
         assertTrue(
-            "audio embarqué : %.1f Mo. Seuil relevé quatre fois ".format(mo) +
-                "(40 → 80 → 110 → 130 → 150). Le correctif est de n'embarquer qu'une " +
+            "audio embarqué : %.1f Mo. Seuil relevé cinq fois ".format(mo) +
+                "(40 → 80 → 110 → 130 → 150 → 230). Le correctif est de n'embarquer qu'une " +
                 "sélection et de laisser le reste dans musique/, que " +
                 "MusicActivity sait déjà ouvrir depuis le téléphone — pas de " +
-                "relever une quatrième fois, et surtout pas de télécharger à " +
+                "relever une sixième fois, et surtout pas de télécharger à " +
                 "la demande : l'édition complète ne déclare INTERNET que pour le " +
                 "vol en ligne, et c'est une propriété revendiquée.",
-            mo < 150.0,
+            mo < 230.0,
         )
     }
 
@@ -198,7 +204,11 @@ class MusicFilesTest {
     fun `la version Play ne livre que les morceaux autorises`() {
         // Yanuka, המלך בשדה, נעם שפייר et יניר קילינסקי (Ianir) : § 3.2. Liste écrite en
         // entier, pas un préfixe : chaque morceau ajouté à Play passe par ici.
+        // 26/11 : neuf niggounim du Yanuka (accord oral) et dix morceaux de Shneor Lerer
+        // (accord écrit du 21/11), sur décision du propriétaire.
         val autorises = listOf(
+            "chabad_shabbos_shneor_lerer",
+            "chabad_yamim_noraim_shneor_lerer",
             "hamelech_basade",
             "ianir_al_harega",
             "ianir_baal_shem_tov",
@@ -213,6 +223,11 @@ class MusicFilesTest {
             "ianir_kol_bayaar",
             "ianir_mirage",
             "ianir_yohanan_hasandlar",
+            "lerer_ani_maamin",
+            "lerer_anim_zemirot",
+            "lerer_nigun_abaal_shem_tov_for_babies",
+            "nigunim_for_neshama_shneor_lerer",
+            "relaxing_chabad_melodies_shneor_lerer",
             "shpayer_afilou",
             "shpayer_beyond",
             "shpayer_esh_kamanche",
@@ -221,7 +236,19 @@ class MusicFilesTest {
             "shpayer_ki_hine_kahomer",
             "shpayer_pnima",
             "shpayer_tunnels_end",
+            "tzomo_lecho_s_lerer",
+            "vehi_sheamda_piano_shneor_lerer",
+            "vehi_sheamda_s_lerer",
+            "yanuka_a_part_of_me",
+            "yanuka_anticipation",
+            "yanuka_harping_his_praise",
+            "yanuka_listening_to_the_heart",
             "yanuka_nigoun_3",
+            "yanuka_shlomo_yehuda",
+            "yanuka_shlomo_yehuda_2",
+            "yanuka_the_king_will_return",
+            "yanuka_the_truth_will_rise",
+            "yanuka_yearning",
         )
         assertEquals(
             "res/raw de main est livré par la version Play : n'y mettre qu'un morceau dont la " +
