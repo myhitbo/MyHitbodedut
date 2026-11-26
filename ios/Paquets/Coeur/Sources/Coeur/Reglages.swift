@@ -193,6 +193,13 @@ public struct Reglages: Sendable, Equatable {
         poseChaine("region_proposee", valeur.map { $0 ? "israel" : "diaspora" })
     }
 
+    /// Le statut Israël ou diaspora est-il confirmé (26/11, Q7) ? Choisi à la main (réglages, question d'un lieu,
+    /// question du siddour), ou réglé par un lieu sans question en attente. Déduit du seul fuseau, ou contredit par le
+    /// lieu : non, et le siddour le demande quand un texte en dépend (Store.regionConfirmee).
+    public var regionConfirmee: Bool {
+        inIsraelManuel || (lieuZmanim != nil && regionProposee == nil)
+    }
+
     /// Les dates mises en pause à la main, telles qu'écrites (une date mal formée y reste).
     public var pausedDates: Set<String> { ensemble("paused_dates") ?? [] }
 
@@ -707,6 +714,13 @@ public struct Reglages: Sendable, Equatable {
 
     public mutating func setSansTahanounLe(_ date: JourCivil, sans: Bool) {
         poseChaine("sans_tahanoun_jour", sans ? date.iso : nil)
+    }
+
+    /// Les conditions d'un jour (Store.conditionsDuJour), avec « Pas de Ta'hanoun aujourd'hui » si on l'a choisi pour ce
+    /// jour-là, et le réglage צדיק / צדקת (26/11, Q12) : seule la forme de l'homme ou de la femme se lit ; sans
+    /// réglage, les deux.
+    public func conditionsDuJour(_ jour: CalendrierJuif.Jour) -> Set<String> {
+        SiddurJour.avecAdresse(SiddurJour.avecSansTahanoun(jour.conditions, sansTahanounLe(jour.date)), adresse)
     }
 
     /// L'alerte « Chabbat dans 3 h » (audit du 12/11, FCALENDRIER-07) : allumée d'origine.

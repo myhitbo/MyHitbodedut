@@ -7,10 +7,14 @@
 // - vrai, libelle et libelleJour sur toutes les conditions, empreinte sur des textes écrits pour
 //   l'occasion et sur chaque titre et chaque bloc des siddourim ;
 // - SiddurMoment (Siddur.kt) : megila autour de Pourim, ilanot au nord et au sud, illustration.
+// Les deux catégories du 26/11 (calendrier retiré hors du jour, occasion repliée) : le jour voisin du Birkat haMazon,
+// la lecture de la Torah à sa place (LectureTorah, sur le vrai fichier de lectures), צדיק / צדקת, « Pas de Ta'hanoun
+// aujourd'hui », la nuit ; decision et texteDuJour sur un texte écrit ; dependDeLaRegion sur les vrais textes.
 //
 // L'empreinte d'un texte est son hashCode de Java (Kotlin.hashCode en Swift), « ∅ » pour null.
 
 import com.myhitbodedut.CalendrierJuif
+import com.myhitbodedut.LectureTorah
 import com.myhitbodedut.Nusah
 import com.myhitbodedut.Siddur
 import com.myhitbodedut.SiddurJour
@@ -26,6 +30,7 @@ object VecteursSiddurJour : Generateur {
     private const val RIEN = "∅"
 
     private val json = File(RES, "raw/siddur_annotations.json").readText()
+    private val lectures = LectureTorah.parse(File(RES, "raw/lecture_torah.json").readText())
     private val siddourim: List<Pair<Nusah, Siddur>> =
         Nusah.entries.map { it to SiddurLoader.parse(File(RES, "raw/siddur_${it.cle}.json").readText()) }
 
@@ -47,6 +52,12 @@ object VecteursSiddurJour : Generateur {
         val sud: Boolean = false,
         val finTichri: Boolean? = null,
         val alternes: Boolean = false,
+        /** Le jour voisin du Birkat haMazon et de Méèn chaloch (26/11, Q6), sinon null. */
+        val voisin: String? = null,
+        /** Le réglage צדיק / צדקת (« m », « f »), « Pas de Ta'hanoun aujourd'hui », la nuit (26/11). */
+        val adresse: String? = null,
+        val sansTahanoun: Boolean = false,
+        val nuit: Boolean = false,
     )
 
     private val cas = listOf(
@@ -79,10 +90,38 @@ object VecteursSiddurJour : Generateur {
         Cas("été, diaspora", "2027-06-01", false),
         Cas("été, Israël", "2027-06-01", true),
         Cas("été, hémisphère sud", "2027-06-01", false, sud = true),
+        // Les deux catégories du 26/11.
+        Cas("vendredi soir, le Chabbat voisin", "2026-11-20", false, voisin = "2026-11-21", alternes = true),
+        Cas("samedi soir, le Chabbat qui finit", "2026-11-22", false, voisin = "2026-11-21", nuit = true),
+        Cas("jeudi, lecture de Vayichla'h", "2026-11-26", false, adresse = "m"),
+        Cas("lundi, pas de Ta'hanoun aujourd'hui", "2026-11-16", true, sansTahanoun = true, adresse = "f"),
+        Cas("30 Av, Ledavid", "2026-08-13", false),
+        Cas("le soir du 8ᵉ jour de l'omer", "2027-04-30", false),
+        Cas("mardi d'hiver, le voyageur", "2026-11-17", false, alternes = true),
+        Cas("9 Av, lecture du matin et de Min'ha", "2026-07-23", false),
+        Cas("Roch 'Hodech Tévèt, 'Hanouka", "2026-12-11", true, voisin = "2026-12-12"),
+        Cas("'Hol hamoed Soukkot en Israël, lecture", "2026-09-27", true),
+        Cas("22 Nissan, Isrou 'hag ou 8ᵉ jour", "2027-04-29", true),
     )
 
-    private val conditionsDuCas: List<Set<String>> =
-        cas.map { CalendrierJuif.jour(LocalDate.parse(it.date), it.israel, it.muree).conditions }
+    /** Les conditions d'un jour comme Store.conditionsDuJour, et la nuit comme SiddurLectureActivity. */
+    private fun conditions(iso: String, c: Cas): Set<String> {
+        val j = CalendrierJuif.jour(LocalDate.parse(iso), c.israel, c.muree)
+        val avec = SiddurJour.avecAdresse(SiddurJour.avecSansTahanoun(j.conditions, c.sansTahanoun), c.adresse)
+        return if (c.nuit) avec + CalendrierJuif.C.NUIT else avec
+    }
+
+    private val conditionsDuCas: List<Set<String>> = cas.map { conditions(it.date, it) }
+
+    /** Celles du jour voisin, sans la nuit (SiddurLectureActivity.voisinPour) ; vides sans voisin. */
+    private val voisinsDuCas: List<Set<String>> = cas.map { c ->
+        c.voisin?.let { v -> conditions(v, c.copy(nuit = false)) } ?: emptySet()
+    }
+
+    /** La lecture de la Torah d'un office ce jour-là (LectureTorah.lecturesOffice), vide pour les autres textes. */
+    private fun lecturesDe(t: SiddurTexte, ci: Int, n: Nusah): List<LectureTorah.Lecture> =
+        if (t.id !in LectureTorah.OFFICES) emptyList()
+        else LectureTorah.lecturesOffice(lectures, LocalDate.parse(cas[ci].date), t.id, cas[ci].israel, cas[ci].muree, n.cle)
 
     private fun finTichri(c: Cas, n: Nusah): Boolean = c.finTichri ?: (n == Nusah.EDOT)
 
@@ -97,11 +136,14 @@ object VecteursSiddurJour : Generateur {
         is SiddurJour.Ligne.Renvoi -> "renvoi|${l.condition}|${l.cible}"
         is SiddurJour.Ligne.Rappel -> "rappel|${l.condition}|${l.libelle}"
         is SiddurJour.Ligne.Seul -> "seul|${h(l.texte)}|${h(l.consigne)}|${l.note}"
-        is SiddurJour.Ligne.Replie -> "replie|${l.cle}|${l.condition}|${l.ouvert}|${l.libelle}"
+        is SiddurJour.Ligne.Replie -> "replie|${l.cle}|${l.condition}|${l.ouvert}|${l.libelle}|${l.pasAujourdhui}"
         is SiddurJour.Ligne.Fin -> "fin|${l.cle}"
+        is SiddurJour.Ligne.Lecture -> "lecture|${l.cle}|${l.lecture.cle}|${l.ouvert}|${h(l.lecture.titre.he)}|${l.lecture.montees.size}"
+        is SiddurJour.Ligne.Passage -> "passage|${l.montee.cle}|${l.montee.livre}|${l.montee.debut}|${l.montee.fin}|${h(l.montee.libelle.fr)}"
     }
 
-    /** Titres, blocs (normaux, du jour, hors du jour), étiquettes, indices, renvois, cartes « seul », replis. */
+    /** Titres, blocs (normaux, du jour, hors du jour), étiquettes, indices, renvois, cartes « seul », replis, rappels,
+     * fins, lectures, passages. */
     private fun genres(lignes: List<SiddurJour.Ligne>): List<Int> = listOf(
         lignes.count { it is SiddurJour.Ligne.Titre },
         lignes.count { it is SiddurJour.Ligne.Bloc && it.style == SiddurJour.Style.NORMAL },
@@ -114,14 +156,28 @@ object VecteursSiddurJour : Generateur {
         lignes.count { it is SiddurJour.Ligne.Replie },
         lignes.count { it is SiddurJour.Ligne.Rappel },
         lignes.count { it is SiddurJour.Ligne.Fin },
+        lignes.count { it is SiddurJour.Ligne.Lecture },
+        lignes.count { it is SiddurJour.Ligne.Passage },
     )
 
     private fun lignes(n: Nusah, t: SiddurTexte, a: List<SiddurJour.Annotation>, ci: Int, ouverts: Set<String>) =
-        SiddurJour.lignes(t, a, conditionsDuCas[ci], ouverts, n.cle, cas[ci].israel, finTichri(cas[ci], n), cas[ci].sud)
+        SiddurJour.lignes(t, a, conditionsDuCas[ci], ouverts, n.cle, cas[ci].israel, finTichri(cas[ci], n), cas[ci].sud,
+            voisinsDuCas[ci], lecturesDe(t, ci, n))
+
+    /** Les replis et les lectures d'une lecture fermée : ce que « tous » et « alternes » ouvrent. */
+    private fun cles(l: List<SiddurJour.Ligne>): List<String> = l.mapNotNull {
+        when (it) {
+            is SiddurJour.Ligne.Replie -> it.cle
+            is SiddurJour.Ligne.Lecture -> it.cle
+            else -> null
+        }
+    }
 
     private fun releve(n: Nusah, t: SiddurTexte, ci: Int, mode: String, l: List<SiddurJour.Ligne>): Map<String, Any?> =
         linkedMapOf("n" to n.cle, "t" to t.id, "c" to ci, "o" to mode,
             "h" to l.joinToString("\n") { signature(it) }.hashCode(), "s" to genres(l),
+            // Les lectures de la Torah de cet office ce jour-là (leurs clés), que le Swift calcule de son côté.
+            "l" to lecturesDe(t, ci, n).map { it.cle },
             // Les places lues dans le panneau d'un repli déplié (SiddurJour.panneaux), en empreinte.
             "p" to SiddurJour.panneaux(l).sorted().hashCode())
 
@@ -134,7 +190,7 @@ object VecteursSiddurJour : Generateur {
             if (a.isEmpty()) listOf(releve(n, t, 0, "aucun", lignes(n, t, a, 0, emptySet())))
             else cas.indices.flatMap { ci ->
                 val fermees = lignes(n, t, a, ci, emptySet())
-                val cles = fermees.filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }
+                val cles = cles(fermees)
                 val sortie = mutableListOf(releve(n, t, ci, "aucun", fermees),
                     releve(n, t, ci, "tous", lignes(n, t, a, ci, cles.toSet())))
                 if (cas[ci].alternes) {
@@ -312,11 +368,146 @@ object VecteursSiddurJour : Generateur {
             "lectures" to lectures)
     }
 
+
+    // MARK: les deux catégories du 26/11, sur un texte écrit à la main
+
+    // Ce que les vrais siddourim n'atteignent pas tout à fait : la garde d'une occasion (quand), un ajout du calendrier
+    // gardé replié (replie_hors, avec ou sans libelle_hors), une variante remplacée (par, vide ou non), une occasion
+    // mêlée de lignes d'un jour (Q11), les « et » d'occasion et les autres, par suites de même libellé, le jour voisin,
+    // la place des lectures (avec ou sans office), les cartes « seul » repliées, une section vidée qui perd son titre.
+
+    private val siddurCategories = """{"groupes": [{"cle": "essai", "titre": {"he": "ניסיון"}}],""" +
+        """ "textes": [{"id": "cat", "groupe": "essai", "titre": {"he": "קטגוריות"}, "sections": [""" +
+        """{"titre": "א", "blocs": [{"t": "ד0"}, {"t": "ד1"}, {"t": "ד2"}, {"t": "ד3"}, {"t": "ד4"}, {"t": "ד5"}, {"t": "ד6"},""" +
+        """ {"t": "ד7"}, {"t": "ד8"}, {"t": "ד9"}, {"t": "ד10"}, {"t": "ד11"}]},""" +
+        """ {"titre": "ב", "blocs": [{"t": "ה0 XX ה ZZ סוף"}, {"t": "ה1"}, {"t": "ה2"}, {"t": "ה3 QQ"}]},""" +
+        """ {"titre": "ג", "blocs": [{"t": "ו0"}, {"t": "ו1"}]},""" +
+        """ {"titre": "ד", "blocs": [{"t": "ז0"}]},""" +
+        """ {"titre": "ה", "blocs": [{"t": "ח0"}]},""" +
+        """ {"titre": "ו", "blocs": [{"t": "ט0"}, {"t": "ט1"}]}]}]}"""
+
+    private val annotationsCategories = """{"edot": {"cat": [""" +
+        // Section 0 : un ajout du calendrier et sa variante, une occasion mêlée, deux replie_hors, une garde, des « et ».
+        """{"sorte": "bloc", "s": 0, "b": 0, "g": 1, "si": "chabbat", "racine": "chabbat", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 1, "g": 1, "si": "roch_hodech", "racine": "chabbat", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 2, "g": 2, "si": "zimun", "racine": "zimun", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 3, "g": 2, "si": "chabbat", "racine": "zimun", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 4, "g": 3, "si": "ledavid", "racine": "ledavid", "replie_hors": true, "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 5, "g": 4, "si": "jeune", "racine": "jeune", "replie_hors": true,""" +
+        """ "libelle_hors": "ajout_jeune_individuel", "libelle": "ajout_anenou_particulier", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 6, "g": 5, "si": "oubli", "racine": "oubli", "quand": "retse_ou_yaale", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 7, "g": 6, "si": "hallel", "racine": "hallel", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 8, "g": 6, "si": "hallel", "racine": "hallel", "et": "minyan", "et_libelle": "ajout_minyan",""" +
+        """ "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 9, "g": 6, "si": "hallel", "racine": "hallel", "et": "minyan", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 10, "g": 6, "si": "hallel", "racine": "hallel", "et": "!ticha_beav", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 0, "b": 11, "g": 7, "si": "!asseret_yemei_techouva", "racine": "!asseret_yemei_techouva",""" +
+        """ "libelle": "ajout_autres_jours", "quand": "!chabbat", "empreinte": "e"},""" +
+        """ {"sorte": "seul", "s": 0, "b": 11, "si": "!minyan", "empreinte": "e", "texte": "יחיד", "consigne": "c"},""" +
+        // Section 1 : des variantes remplacées ou retirées, deux places de lecture, des cartes « seul » et une note.
+        """ {"sorte": "indice", "s": 1, "b": 0, "si": "magdol", "empreinte": "e", "retire": "XX", "par": "YY"},""" +
+        """ {"sorte": "indice", "s": 1, "b": 0, "si": "!chabbat", "empreinte": "e", "retire": "ZZ ", "par": ""},""" +
+        """ {"sorte": "indice", "s": 1, "b": 0, "si": "roch_hodech", "empreinte": "e", "texte": "יום"},""" +
+        """ {"sorte": "lecture", "s": 1, "b": 0, "si": "kriat_hatorah", "office": "chaharit", "empreinte": "e"},""" +
+        """ {"sorte": "seul", "s": 1, "b": 1, "si": "!minyan", "empreinte": "e", "texte": "בָּרְכוּ", "consigne": "אומרים"},""" +
+        """ {"sorte": "note", "s": 1, "b": 1, "si": "chabbat", "empreinte": "e", "texte": "הערה"},""" +
+        """ {"sorte": "seul", "s": 1, "b": 1, "si": "chabbat", "empreinte": "e", "texte": "שני"},""" +
+        """ {"sorte": "lecture", "s": 1, "b": 2, "si": "!chabbat", "empreinte": "e"},""" +
+        """ {"sorte": "indice", "s": 1, "b": 3, "si": "chabbat", "empreinte": "e", "retire": "QQ"},""" +
+        // Section 2 : une section d'occasion ; 3 : un ajout du calendrier gardé replié, gardé lui-même ; 4 : retirée,
+        // son titre aussi ; 5 : un passage discret.
+        """ {"sorte": "section", "s": 2, "si": "usage", "empreinte": "e"},""" +
+        """ {"sorte": "section", "s": 3, "si": "omer", "replie_hors": true, "quand": "!kippour", "empreinte": "e"},""" +
+        """ {"sorte": "section", "s": 4, "si": "roch_hodech", "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 5, "b": 0, "g": 8, "si": "chabbat", "racine": "chabbat", "discret": true, "empreinte": "e"},""" +
+        """ {"sorte": "bloc", "s": 5, "b": 1, "g": 8, "si": "magdol", "racine": "chabbat", "empreinte": "e"}]}}"""
+
+    private val conditionsCategories: List<Set<String>> = listOf(
+        emptySet(),
+        setOf("chabbat", "retse_ou_yaale", "kriat_hatorah", "omer"),
+        setOf("roch_hodech", "yaale_veyavo", "retse_ou_yaale", "hallel", "ticha_beav", "jeune", "kriat_hatorah", "kippour"),
+        setOf("ledavid", "jeune", "omer", "hallel", "asseret_yemei_techouva", "magdol"),
+    )
+
+    private val voisinsCategories: List<Set<String>> = listOf(
+        emptySet(), setOf("chabbat", "retse_ou_yaale"), setOf("roch_hodech", "yaale_veyavo", "ticha_beav", "jeune"),
+    )
+
+    /** Aucune lecture ; celle du jeudi 26/11/2026 ; celle-là et celle de Roch 'Hodech Kislev (10/11/2026). */
+    private val lecturesCategories: List<List<LectureTorah.Lecture>> = listOf(
+        emptyList(),
+        LectureTorah.lectures(lectures, LocalDate.parse("2026-11-26"), LectureTorah.CHAHARIT, false),
+        LectureTorah.lectures(lectures, LocalDate.parse("2026-11-26"), LectureTorah.CHAHARIT, false) +
+            LectureTorah.lectures(lectures, LocalDate.parse("2026-11-10"), LectureTorah.CHAHARIT, false, nusah = "ashkenaz"),
+    )
+
+    private fun categories(): Map<String, Any?> {
+        val t = SiddurLoader.parse(siddurCategories).texte("cat")!!
+        val a = SiddurJour.parse(annotationsCategories, "edot").getValue("cat")
+        val sortie = mutableListOf<Map<String, Any?>>()
+        val reglages = listOf(Nusah.EDOT to false, Nusah.SEFARD to true, Nusah.ASHKENAZ to false)
+        for (ci in conditionsCategories.indices) for (vi in voisinsCategories.indices) for (li in lecturesCategories.indices) {
+            for ((ri, r) in reglages.withIndex()) {
+                fun lire(ouverts: Set<String>) = SiddurJour.lignes(t, a, conditionsCategories[ci], ouverts, r.first.cle, r.second,
+                    voisin = voisinsCategories[vi], lectures = lecturesCategories[li])
+                val fermees = lire(emptySet())
+                // Tous les replis ouverts, jusqu'aux replis imbriqués.
+                var tous = emptySet<String>()
+                while (true) {
+                    val plus = tous + cles(lire(tous))
+                    if (plus == tous) break
+                    tous = plus
+                }
+                val alternes = cles(fermees).filterIndexed { i, _ -> i % 2 == 0 }.toSet()
+                for ((mode, ouverts) in listOf("aucun" to emptySet(), "tous" to tous, "alternes" to alternes)) {
+                    val l = lire(ouverts)
+                    sortie += linkedMapOf("c" to ci, "v" to vi, "l" to li, "r" to ri, "o" to mode, "ouverts" to ouverts.sorted(),
+                        "h" to l.joinToString("\n") { signature(it) }.hashCode(), "s" to genres(l),
+                        "panneaux" to SiddurJour.panneaux(l).sorted(),
+                        "lignes" to if (vi == 0 && li == 0 && ri == 0) l.map(::signature) else null)
+                }
+            }
+        }
+        // decision, sur chaque annotation de bloc ou de section, chaque jour, chaque voisin.
+        val decisions = a.filter { it.sorte == SiddurJour.Sorte.BLOC || it.sorte == SiddurJour.Sorte.SECTION }.flatMap { x ->
+            conditionsCategories.indices.flatMap { ci ->
+                voisinsCategories.indices.map { vi ->
+                    val d = SiddurJour.decision(x, x.racine ?: x.condition, conditionsCategories[ci], voisinsCategories[vi])
+                    listOf(x.section, x.bloc, ci, vi, d.etat.name, d.pasAujourdhui, d.libelle, d.tous)
+                }
+            }
+        }
+        return linkedMapOf("siddur" to siddurCategories, "annotations" to annotationsCategories,
+            "conditions" to conditionsCategories.map { it.sorted() }, "voisins" to voisinsCategories.map { it.sorted() },
+            "lectures" to lecturesCategories.map { l -> l.map { it.cle } }, "releves" to sortie, "decisions" to decisions)
+    }
+
+    // MARK: dependDeLaRegion, sur les vrais textes
+
+    private fun region(): List<Map<String, Any?>> {
+        val dates = listOf("2027-04-29", "2027-01-19", "2026-11-17", "2027-06-01", "2026-09-27", "2026-11-20", "2026-11-26")
+        return siddourim.flatMap { (n, siddur) ->
+            val parTexte = SiddurJour.parse(json, n.cle)
+            listOf("chaharit", "minha", "arvit", "birkat_hamazon").mapNotNull { id -> siddur.texte(id)?.let { id to it } }.flatMap { (id, t) ->
+                dates.map { iso ->
+                    val d = LocalDate.parse(iso)
+                    fun c(il: Boolean) = CalendrierJuif.jour(d, il).conditions
+                    fun v(il: Boolean) = if (id == "birkat_hamazon") CalendrierJuif.jour(d.plusDays(1), il).conditions else emptySet()
+                    fun l(il: Boolean) = if (id in LectureTorah.OFFICES) LectureTorah.lecturesOffice(lectures, d, id, il, false, n.cle) else emptyList()
+                    linkedMapOf("n" to n.cle, "t" to id, "date" to iso, "voisin" to (id == "birkat_hamazon"),
+                        "r" to SiddurJour.dependDeLaRegion(t, parTexte.getValue(id), c(true), c(false), n.cle,
+                            voisinIsrael = v(true), voisinDiaspora = v(false), lecturesIsrael = l(true), lecturesDiaspora = l(false)))
+                }
+            }
+        }
+    }
+
     // MARK: parse
 
     private fun decrit(a: SiddurJour.Annotation): String = listOf(
         a.sorte.name, a.section.toString(), a.bloc?.toString(), a.condition, a.empreinte, a.texte, a.groupe?.toString(),
         a.racine, a.libelle, a.cible, a.consigne, a.retire, a.discret.toString(), a.et, a.etLibelle, a.fixe.toString(),
+        a.quand, a.replieHors.toString(), a.libelleHors, a.par, a.office,
     ).joinToString("|") { it ?: RIEN }
 
     private fun parSorte(a: List<SiddurJour.Annotation>): List<Int> =
@@ -357,6 +548,13 @@ object VecteursSiddurJour : Generateur {
         """{"edot": {"x": null}}""",
         """{"edot": null, "sefard": "texte", "ashkenaz": {"x": [], "x": [{"sorte": "renvoi", "s": 0, "si": "a", "empreinte": "e"}]}}""",
         """{"edot": {}} ]""",
+        // Les champs du 26/11 : par vide, nul, absent ; replie_hors écrit en chaîne ; une lecture, son office blanc.
+        """{"edot": {"x": [{"sorte": "indice", "s": 0, "b": 1, "si": "magdol", "empreinte": "e", "retire": "r", "par": ""},""" +
+            """ {"sorte": "indice", "s": 0, "b": 1, "si": "a", "empreinte": "e", "retire": "r", "par": null},""" +
+            """ {"sorte": "bloc", "s": 0, "b": 2, "g": 1, "si": "ledavid", "empreinte": "e", "replie_hors": "true", "libelle_hors": " ",""" +
+            """ "quand": "!chabbat"},""" +
+            """ {"sorte": "lecture", "s": 0, "b": 3, "si": "kriat_hatorah", "empreinte": "e", "office": "  "},""" +
+            """ {"sorte": "LECTURE", "s": 0, "b": 3, "si": "kriat_hatorah", "empreinte": "e", "office": "minha", "par": 5}]}}""",
     )
 
     private fun parse(): Map<String, Any?> = linkedMapOf(
@@ -477,7 +675,8 @@ object VecteursSiddurJour : Generateur {
         "_meta" to mapOf("source" to "tools/vecteurs_ios/VecteursSiddurJour.kt"),
         "cas" to cas.mapIndexed { ci, c ->
             linkedMapOf("nom" to c.nom, "date" to c.date, "israel" to c.israel, "muree" to c.muree, "sud" to c.sud,
-                "finTichri" to c.finTichri, "conditions" to conditionsDuCas[ci].sorted(),
+                "finTichri" to c.finTichri, "voisin" to c.voisin, "adresse" to c.adresse, "sansTahanoun" to c.sansTahanoun,
+                "nuit" to c.nuit, "conditions" to conditionsDuCas[ci].sorted(), "conditionsVoisin" to voisinsDuCas[ci].sorted(),
                 "pour" to Nusah.entries.map { n ->
                     SiddurJour.conditionsPour(n.cle, c.israel, conditionsDuCas[ci], finTichri(c, n), c.sud).sorted()
                 })
@@ -485,6 +684,8 @@ object VecteursSiddurJour : Generateur {
         "lignes" to toutesLesLignes(),
         "details" to details(),
         "ecrit" to ecrit(),
+        "categories" to categories(),
+        "region" to region(),
         "parse" to parse(),
         "libelles" to libelles(),
         "empreinte" to empreintes(),

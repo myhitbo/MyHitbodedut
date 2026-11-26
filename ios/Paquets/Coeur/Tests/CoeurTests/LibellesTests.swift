@@ -37,8 +37,9 @@ struct LibellesTests {
     @Test func laTableEstCelleDAndroid() throws {
         let v = try vecteurs()
         let n = Libelles.table.count
-        // 194 clés depuis les הרחמן de la table repliés (22/11) ; 192 après l'audit du 16/11, 124 avant.
-        #expect(n == 194)
+        // 214 clés depuis les deux catégories du siddour (26/11) ; 194 depuis les הרחמן de la table repliés (22/11) ;
+        // 192 après l'audit du 16/11, 124 avant.
+        #expect(n == 214)
         for (rang, (ici, lu)) in zip(Libelles.table, v.libelles).enumerated() {
             let chaine: String? = ici.chaine
             #expect(ici.cle == lu.cle, "rang \(rang)")

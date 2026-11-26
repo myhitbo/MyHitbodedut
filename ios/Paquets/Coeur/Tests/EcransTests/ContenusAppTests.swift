@@ -38,9 +38,9 @@ struct ContenusAppTests {
             let inconnus = Set(annotations.keys).subtracting(siddur.textes.map(\.id))
             #expect(inconnus.isEmpty, "\(nusah.rawValue) : \(inconnus.sorted())")
         }
-        // 21 textes annotés en Edot depuis l'audit du 16/11 d'Android (8 avant).
+        // 22 textes annotés en Edot depuis les deux catégories du 26/11 ; 21 depuis l'audit du 16/11 d'Android (8 avant).
         let edot = try await Self.contenus.annotations(.edot).count
-        #expect(edot == 21)
+        #expect(edot == 22)
     }
 
     // MARK: Les textes
@@ -134,7 +134,7 @@ struct ContenusAppTests {
         let premiere = villes.first?.nom.fr
         #expect(premiere == "Jérusalem")
         let morceaux = try await Self.contenus.musique()
-        #expect(morceaux.count == 23)  // trois retirés le 16/11 sur Android, sans accord écrit
+        #expect(morceaux.count == 42)  // trois retirés le 16/11 sur Android, sans accord écrit ; dix-neuf entrés le 26/11 (PR 53)
         let premier = morceaux.first?.id
         #expect(premier == "hamelech_basade")
         let palettes = try await Self.contenus.palettes()

@@ -31,6 +31,10 @@ public enum SiddurJour {
         // Edot : pas de Vidouï à Min'ha du 13 Iyar, veille de Pessa'h chéni (Kitsour Yalkout Yossef 131:38 ; audit
         // du 16/11).
         if nusah == .edot && c.contains(C.veillePessahCheni) { c.remove(C.tahanounMinha) }
+        // Le Ta'hanoun du calendrier et des coutumes, avant le réglage ponctuel (26/11, Q1) : ce que le siddour ne dit pas
+        // sans Ta'hanoun (למנצח Edot, תפלה לדוד, « רבונו של עולם » Sfard) reste quand on choisit de l'omettre.
+        if c.contains(C.tahanounChaharit) { c.insert(C.tahanounChaharitCalendrier) }
+        if c.contains(C.tahanounMinha) { c.insert(C.tahanounMinhaCalendrier) }
         // « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel, audit du 16/11) : maison en deuil, brit mila, 'hatan
         // (O.H. 131:4). למנצח et Avinou malkénou restent (Rema 602:1 pour la mila).
         if c.contains(C.sansTahanounPonctuel) {
@@ -43,6 +47,18 @@ public enum SiddurJour {
         let minha = conditions.contains(C.tahanounMinha) || conditions.contains(C.rochHachana) || conditions.contains(C.kippour)
         let vendredi = conditions.contains(C.joursSemaine[5]) || conditions.contains(C.erevKippourVendredi)
         if avinouMalkenou(conditions) && minha && !vendredi { c.insert(C.avinouMalkenouMinha) }
+        // 26/11 : en Israël (le psaume 121 d'Arvit Sfard, « בא״י קדישא ») ; « מגדול » à la fin du Birkat (Q8) : Edot, les
+        // jours de Moussaf, la nuit du motsaé Chabbat et Pourim (la consigne de leur siddour ; la brit mila, occasion, garde
+        // la consigne) ; Sfard et Ashkenaz, Chabbat, Yom tov et Roch 'Hodech (Michna Beroura 189:5).
+        if enIsrael { c.insert(C.israel) }
+        let magdol: Bool
+        if nusah == .edot {
+            magdol = [C.chabbat, C.rochHodech, C.moed, C.yomTov, C.pourim].contains(where: { c.contains($0) })
+                || (c.contains(C.motsaeChabbat) && c.contains(C.nuit))
+        } else {
+            magdol = [C.chabbat, C.yomTov, C.rochHodech].contains(where: { c.contains($0) })
+        }
+        if magdol { c.insert(C.magdol) }
         return c.union(ajoutsOffices(nusah, enIsrael: enIsrael, c))
     }
 
@@ -70,6 +86,16 @@ public enum SiddurJour {
     /// `conditions`, avec le réglage ponctuel « Pas de Ta'hanoun aujourd'hui » quand `sansTahanoun` (audit du 16/11).
     public static func avecSansTahanoun(_ conditions: Set<String>, _ sansTahanoun: Bool) -> Set<String> {
         sansTahanoun ? conditions.union([C.sansTahanounPonctuel]) : conditions
+    }
+
+    /// `conditions`, avec le réglage צדיק / צדקת (`adresse` : « m », « f » ou nil ; 26/11, Q12) : seule la forme de
+    /// l'homme ou de la femme se lit ; sans réglage, les deux.
+    public static func avecAdresse(_ conditions: Set<String>, _ adresse: String?) -> Set<String> {
+        switch adresse {
+        case "m"?: conditions.union([C.homme])
+        case "f"?: conditions.union([C.femme])
+        default: conditions
+        }
     }
 
     /// Avinou malkénou (Ashkenaz, Sfard) : les jeûnes publics sauf le 9 Av et les dix jours de
@@ -111,17 +137,25 @@ public enum SiddurMoment {
 
 // MARK: Les annotations et les lignes du jour (SiddurJour.kt, tâche 11)
 
-// Ce que le jour change à la lecture du siddour (demande du 10/10) : les ajouts du jour mis en
-// évidence, les autres repliés derrière une flèche, jamais retirés. Les annotations viennent de
-// siddur_annotations.json (tools/siddur_annotations.py) ; les conditions, de CalendrierJuif.
-// Jugé par `Tests/Vecteurs/siddur_jour.json` (tools/vecteurs_ios/VecteursSiddurJour.kt).
+// Ce que le jour change à la lecture du siddour (demande du 10/10) : les ajouts du jour mis en évidence. Depuis le
+// 26/11 (« les ajouts dépendant des zmanim… enlevés complètement hormis lorsque nécessaire ; ceux d'une occasion,
+// repliés mais visibles »), deux catégories :
+//  - un ajout du calendrier, que l'application calcule (Chabbat, Roch 'Hodech, 'Hanouka, Barekh alénou, Ta'hanoun…),
+//    ne s'affiche que le jour où il se dit ; les autres jours, il est retiré, sans bandeau replié ;
+//  - un ajout d'occasion, que l'application ne peut pas connaître (minyan, brit, invité, maison endeuillée, oubli…),
+//    reste replié, et se déplie d'un toucher.
+// Quelques exceptions, voulues par le propriétaire, restent repliées au lieu d'être retirées : le soir, au Birkat
+// haMazon, les ajouts du jour voisin (Q6) ; le Ledavid des Edot hors d'Eloul (Q10) ; l'Anénou du particulier hors des
+// jeûnes publics (Q2). Les annotations viennent de siddur_annotations.json (tools/siddur_annotations.py) ; les
+// conditions, de CalendrierJuif. Jugé par `Tests/Vecteurs/siddur_jour.json` (tools/vecteurs_ios/VecteursSiddurJour.kt).
 extension SiddurJour {
 
     /// Ce qu'une annotation désigne : un bloc d'un groupe, une section entière, une variante enchâssée
     /// dans un bloc (« המלך הקדוש »), un renvoi vers un autre texte, une carte pour qui prie seul.
     /// `note` (audit du 16/11) : une note de l'application sous un bloc, quand sa condition vaut ; jamais repliée.
+    /// `lecture` (26/11) : la place de la lecture de la Torah du jour, après le bloc (LectureTorah).
     public enum Sorte: String, Sendable, CaseIterable {
-        case bloc, section, indice, renvoi, seul, note
+        case bloc, section, indice, renvoi, seul, note, lecture
     }
 
     /// Une annotation de siddur_annotations.json.
@@ -144,22 +178,34 @@ extension SiddurJour {
         public let cible: String?
         /// Pour une carte « seul » : la consigne qui précède son texte.
         public let consigne: String?
-        /// Pour un indice : le passage brut du bloc, replié hors du jour (« המלך הקדוש », 28/10).
+        /// Pour un indice : le passage brut du bloc, retiré hors du jour (« המלך הקדוש », 28/10).
         public let retire: String?
-        /// Ce qui se dit presque tous les jours (12/11) : le jour dit, en clair sans étiquette ; les autres, replié.
+        /// Ce qui se dit presque tous les jours (12/11) : le jour dit, en clair sans étiquette.
         public let discret: Bool
         /// La double annotation (audit du 16/11) : ce que ce bloc demande en plus de son groupe (« minyan »,
-        /// « !ticha_beav ») ; faux, le bloc se replie à part dans son groupe, sous `etLibelle` (sinon le libellé
-        /// de la condition).
+        /// « !ticha_beav ») ; faux, le bloc se replie à part dans son groupe (une occasion, le jour voisin), sous
+        /// `etLibelle` (sinon le libellé de la condition), ou il est retiré.
         public let et: String?
         public let etLibelle: String?
         /// Une indication fixe du siddour (audit du 16/11) : affichée telle quelle, sans « Aujourd'hui : ».
         public let fixe: Bool
+        /// La garde d'un ajout d'occasion (26/11) : fausse, il est retiré ; vraie, il reste replié. Les consignes
+        /// d'oubli (Q5 : « מוריד הגשם » l'hiver seulement), les usages datés (Q14), le voyageur (Q3).
+        public let quand: String?
+        /// Un ajout du calendrier gardé replié hors de son jour au lieu d'être retiré (Q2, Q10, l'omer), sous
+        /// `libelleHors`.
+        public let replieHors: Bool
+        public let libelleHors: String?
+        /// Pour une variante enchâssée : ce qui remplace `retire` le jour où elle est fausse (« מגדול », « מוֹדָה »).
+        public let par: String?
+        /// Pour la place d'une lecture (26/11) : son office, « chaharit » ou « minha ».
+        public let office: String?
 
         public init(sorte: Sorte, section: Int, bloc: Int?, condition: String, empreinte: String, texte: String? = nil,
                     groupe: Int? = nil, racine: String? = nil, libelle: String? = nil, cible: String? = nil,
                     consigne: String? = nil, retire: String? = nil, discret: Bool = false, et: String? = nil,
-                    etLibelle: String? = nil, fixe: Bool = false) {
+                    etLibelle: String? = nil, fixe: Bool = false, quand: String? = nil, replieHors: Bool = false,
+                    libelleHors: String? = nil, par: String? = nil, office: String? = nil) {
             self.sorte = sorte
             self.section = section
             self.bloc = bloc
@@ -176,6 +222,11 @@ extension SiddurJour {
             self.et = et
             self.etLibelle = etLibelle
             self.fixe = fixe
+            self.quand = quand
+            self.replieHors = replieHors
+            self.libelleHors = libelleHors
+            self.par = par
+            self.office = office
         }
     }
 
@@ -216,6 +267,8 @@ extension SiddurJour {
             sorte = .seul
         } else if nom.egalUnites("note") {
             sorte = .note
+        } else if nom.egalUnites("lecture") {
+            sorte = .lecture
         } else {
             sorte = .bloc
         }
@@ -235,7 +288,13 @@ extension SiddurJour {
             discret: a.booleen("discret", defaut: false),
             et: texteOuNil(a, "et"),
             etLibelle: texteOuNil(a, "et_libelle"),
-            fixe: a.booleen("fixe", defaut: false))
+            fixe: a.booleen("fixe", defaut: false),
+            quand: texteOuNil(a, "quand"),
+            replieHors: a.booleen("replie_hors", defaut: false),
+            libelleHors: texteOuNil(a, "libelle_hors"),
+            // `if (a.has("par")) a.getString("par") else null` : une chaîne vide se garde (retirer sans remplacer).
+            par: a.a("par") ? chaineRequise(a, "par") : nil,
+            office: texteOuNil(a, "office"))
     }
 
     /// `getString` d'org.json : le texte de la valeur (« null » pour null) ; lève si la clé manque.
@@ -263,8 +322,17 @@ extension SiddurJour {
 
     /// Le libellé du texte ordinaire qu'une formule du jour remplace (audit du 12/11, TSIDDUR-06) : « האל
     /// הקדוש » pendant les dix jours. Sa condition est niée : quand elle est vraie, c'est le texte de tous les
-    /// jours, tel quel ; le jour où il est remplacé, il se replie sous « Les autres jours ».
+    /// jours, tel quel.
     public static let autresJours = "ajout_autres_jours"
+
+    /// Les conditions d'occasion (26/11), jamais vraies : ce qu'elles portent reste replié, dépliable. Les mêmes que
+    /// tools/siddur_annotations.py (OCCASIONS) et siddur-jour.js.
+    public static let occasions: Set<String> = [
+        "minyan", "sans_minyan", "beit_avel", "oubli", "cheva_berakhot", "zimun", "facultatif", "usage", "occasion",
+    ]
+
+    /// Qui prie seul (Q4) : les cartes « seul » et « יחיד אומר », sous « Sans minyan ».
+    public static let sansMinyan = "sans_minyan"
 
     /// La place d'un paragraphe dans son texte : la section et le rang du bloc (l'origine d'une ligne `.bloc`,
     /// que les marque-pages retrouvent ; FLECTURE-08).
@@ -297,11 +365,93 @@ extension SiddurJour {
         /// Qui prie seul (19/10) : la braïta à la place de Barekhou, ou où la dire ; `consigne` avant ; `note` : une
         /// note de l'application, même carte (audit du 16/11).
         case seul(texte: String, consigne: String?, note: Bool)
-        /// Un ajout hors du jour, replié ; `ouvert` quand on l'a déplié.
-        case replie(cle: String, condition: String, ouvert: Bool, libelle: String)
-        /// La fin d'un repli déplié (`cle` : celle de son `replie`), après tout ce qu'il contient, replis imbriqués
-        /// compris : l'écran y met « Replier ».
+        /// Un ajout replié ; `ouvert` quand on l'a déplié. `pasAujourdhui` : un ajout du calendrier gardé replié hors
+        /// de son jour (« Pas aujourd'hui · toucher pour lire ») ; sinon une occasion (« Toucher pour lire »).
+        case replie(cle: String, condition: String, ouvert: Bool, libelle: String, pasAujourdhui: Bool)
+        /// La fin d'un repli déplié (`cle` : celle de son `replie` ou de sa `lecture`), après tout ce qu'il contient,
+        /// replis imbriqués compris : l'écran y met « Replier ».
         case fin(cle: String)
+        /// La lecture de la Torah du jour (26/11), repliée sous « Lecture : Vayichla'h, 3 montées ». Ouverte, ses
+        /// montées suivent (`passage`), puis la `fin`.
+        case lecture(cle: String, lecture: LectureTorah.Lecture, ouvert: Bool)
+        /// Une montée d'une lecture ouverte : son libellé, sa référence, ses versets.
+        case passage(LectureTorah.Montee)
+    }
+
+    /// Les lignes de `lectures` (26/11), dans la lecture de Cha'harit ou de Min'ha d'un jeûne : pour chacune, son
+    /// bandeau replié (clé « `prefixe`:k ») et, ouverte, ses montées.
+    public static func lignesLecture(_ lectures: [LectureTorah.Lecture], prefixe: String, ouverts: Set<String>) -> [Ligne] {
+        var sortie: [Ligne] = []
+        for (k, l) in lectures.enumerated() {
+            let cle = prefixe + ":" + String(k)
+            let ouvert = ouverts.contains(cle)
+            sortie.append(.lecture(cle: cle, lecture: l, ouvert: ouvert))
+            if ouvert {
+                for m in l.montees { sortie.append(.passage(m)) }
+                sortie.append(.fin(cle: cle))
+            }
+        }
+        return sortie
+    }
+
+    /// L'état d'un ajout ce jour-là (26/11) : mis en évidence, tel quel, replié, ou retiré.
+    public enum Etat: Sendable, Equatable {
+        case duJour, ordinaire, replie, retire
+    }
+
+    /// `etat`, et pour un repli : « pas aujourd'hui » (un ajout du calendrier) ou une occasion, son libellé, tous ses
+    /// membres.
+    public struct Decision: Sendable, Equatable {
+        public let etat: Etat
+        public let pasAujourdhui: Bool
+        public let libelle: String?
+        public let tous: Bool
+
+        public init(_ etat: Etat, pasAujourdhui: Bool = false, libelle: String? = nil, tous: Bool = false) {
+            self.etat = etat
+            self.pasAujourdhui = pasAujourdhui
+            self.libelle = libelle
+            self.tous = tous
+        }
+    }
+
+    /// Ce qu'on fait d'un ajout (`a`, la condition `racine` de son groupe) le jour où valent `conditions` ; `voisin` :
+    /// les conditions du jour voisin au Birkat haMazon le soir (Q6), vide sinon.
+    ///  - sa garde (`Annotation.quand`) fausse, ce jour et au voisin : retiré ;
+    ///  - une occasion : replié ;
+    ///  - du jour : mis en évidence, ou tel quel (texte ordinaire, passage « discret ») ;
+    ///  - du jour voisin : replié, « pas aujourd'hui » ;
+    ///  - `Annotation.replieHors` : replié, tous ses membres dépliables ;
+    ///  - sinon : retiré.
+    public static func decision(_ a: Annotation, racine: String, _ conditions: Set<String>,
+                                voisin: Set<String> = []) -> Decision {
+        func voisinVrai(_ c: String) -> Bool { !voisin.isEmpty && vrai(c, voisin) }
+        if let q = a.quand, !vrai(q, conditions) && !voisinVrai(q) { return Decision(.retire) }
+        if occasions.contains(where: { $0.egalUnites(racine) }) { return Decision(.replie) }
+        if vrai(racine, conditions) {
+            let ordinaire = a.libelle.map { $0.egalUnites(autresJours) } ?? false
+            return Decision(ordinaire || a.discret ? .ordinaire : .duJour)
+        }
+        if voisinVrai(racine) { return Decision(.replie, pasAujourdhui: true) }
+        if a.replieHors { return Decision(.replie, pasAujourdhui: a.libelleHors == nil, libelle: a.libelleHors, tous: true) }
+        return Decision(.retire)
+    }
+
+    /// Le texte d'un bloc ce jour-là (26/11, Q8) : chaque variante enchâssée fausse (`Annotation.retire`) en est
+    /// retirée, ou remplacée (`Annotation.par`) ; celle d'un jour voisin (Q6) reste. Sans changement, le bloc lui-même
+    /// (les marque-pages le cherchent par identité sur Android).
+    public static func texteDuJour(_ bloc: SiddurBloc, _ indices: [Annotation], _ conditions: Set<String>,
+                                   voisin: Set<String> = []) -> SiddurBloc {
+        let faux = indices.filter {
+            $0.retire != nil && !vrai($0.condition, conditions) && !(!voisin.isEmpty && vrai($0.condition, voisin))
+        }
+        if faux.isEmpty { return bloc }
+        var t = bloc.texte
+        for v in faux {
+            if let passage = v.retire { t = remplacePremier(passage, par: v.par ?? "", dans: t) }
+        }
+        let reduit = t.rogne
+        return reduit.egalUnites(bloc.texte) ? bloc : SiddurBloc(texte: reduit, consigne: bloc.consigne, fr: bloc.fr, en: bloc.en)
     }
 
     /// Une place dans un texte : la section, et le bloc (nil pour la section entière).
@@ -310,8 +460,8 @@ extension SiddurJour {
         let bloc: Int?
     }
 
-    /// Les places de `lignes` qui se lisent dans le panneau d'un repli déplié : entre un `.replie` ouvert et sa
-    /// `.fin`, replis imbriqués compris. Ni le repli ni la fin n'y sont.
+    /// Les places de `lignes` qui se lisent dans le panneau d'un repli déplié : entre un `.replie` (ou une `.lecture`)
+    /// ouvert et sa `.fin`, replis imbriqués compris. Ni le repli ni la fin n'y sont.
     public static func panneaux(_ lignes: [Ligne]) -> Set<Int> {
         var dedans = Set<Int>()
         var ouverts: [String] = []
@@ -321,20 +471,29 @@ extension SiddurJour {
                 continue
             }
             if !ouverts.isEmpty { dedans.insert(k) }
-            if case .replie(let cle, _, true, _) = l { ouverts.append(cle) }
+            if case .replie(let cle, _, true, _, _) = l { ouverts.append(cle) }
+            if case .lecture(let cle, _, true) = l { ouverts.append(cle) }
         }
         return dedans
     }
 
-    /// Les lignes d'un texte le jour où valent `conditionsDuJour`. Un ajout du jour est précédé de son
-    /// étiquette ; un ajout hors du jour tient en une ligne repliée, et ses blocs suivent si sa clé est
-    /// dans `ouverts`. Dans un ajout du jour, une variante d'un autre jour (« בחוה״מ פסח » un Roch
-    /// 'Hodech) reste lisible, estompée. `sansTahanounFinTichri` : nil pour la coutume du nusah.
+    /// Les lignes d'un texte le jour où valent `conditionsDuJour` (règle du 26/11, voir l'en-tête) : un ajout du jour
+    /// est précédé de son étiquette, et seules ses lignes du jour s'y lisent (« seule la bonne formule ») ; un ajout du
+    /// calendrier hors de son jour est retiré ; une occasion tient en une ligne repliée, et ses blocs (ceux qui valent
+    /// ce jour-là, Q11) suivent si sa clé est dans `ouverts`. `voisin` : les conditions du jour voisin
+    /// (CalendrierJuif.jourVoisin), dont les ajouts restent repliés au lieu d'être retirés (Q6). `lectures` : la lecture
+    /// de la Torah de l'office, à sa place (26/11). Une section dont tout est retiré perd aussi son titre.
+    /// `sansTahanounFinTichri` : nil pour la coutume du nusah.
+    // swiftlint:disable:next function_body_length cyclomatic_complexity
     public static func lignes(_ texte: SiddurTexte, _ annotations: [Annotation], _ conditionsDuJour: Set<String>,
                               ouverts: Set<String> = [], nusah: Nusah = .edot, enIsrael: Bool = false,
-                              sansTahanounFinTichri: Bool? = nil, sud: Bool = false) -> [Ligne] {
+                              sansTahanounFinTichri: Bool? = nil, sud: Bool = false, voisin: Set<String> = [],
+                              lectures: [LectureTorah.Lecture] = []) -> [Ligne] {
         let conditions = conditionsPour(nusah, enIsrael: enIsrael, conditionsDuJour,
                                         sansTahanounFinTichri: sansTahanounFinTichri, sud: sud)
+        let autre: Set<String> = voisin.isEmpty ? [] : conditionsPour(nusah, enIsrael: enIsrael, voisin,
+                                                                       sansTahanounFinTichri: sansTahanounFinTichri, sud: sud)
+        func voisinVrai(_ c: String) -> Bool { !autre.isEmpty && vrai(c, autre) }
         func nom(_ a: Annotation, _ condition: String) -> String {
             libelleJour(a.libelle, condition, nusah, conditions)
         }
@@ -344,6 +503,7 @@ extension SiddurJour {
         var indices: [Place: [Annotation]] = [:]
         var renvois: [Place: [Annotation]] = [:]
         var seuls: [Place: [Annotation]] = [:]
+        var places: [Place: Annotation] = [:]
         for a in annotations {
             switch a.sorte {
             case .section:
@@ -358,17 +518,55 @@ extension SiddurJour {
                 if (a.cible != nil || a.libelle != nil) && vrai(a.condition, conditions) {
                     renvois[Place(section: a.section, bloc: a.bloc), default: []].append(a)
                 }
-            case .seul, .note:
-                // Les notes de l'application (audit du 16/11) suivent leur bloc comme les cartes « seul ».
+            case .seul:
+                // Les cartes « seul », toutes, repliées sous « Sans minyan » (Q4).
+                if a.texte != nil { seuls[Place(section: a.section, bloc: a.bloc), default: []].append(a) }
+            case .note:
+                // Les notes de l'application (audit du 16/11) suivent leur bloc, le jour où elles valent.
                 if a.texte != nil && vrai(a.condition, conditions) {
                     seuls[Place(section: a.section, bloc: a.bloc), default: []].append(a)
                 }
+            case .lecture:
+                // La place de la lecture du jour (26/11) : après son bloc.
+                if let b = a.bloc { places[Place(section: a.section, bloc: b)] = a }
             }
         }
         var sortie: [Ligne] = []
+        /// La lecture du jour après le bloc `bi`, le jour où elle vaut, si l'office a une lecture.
+        func lire(_ si: Int, _ bi: Int) {
+            guard let place = places[Place(section: si, bloc: bi)], !lectures.isEmpty, vrai(place.condition, conditions) else {
+                return
+            }
+            sortie += lignesLecture(lectures, prefixe: "lecture:" + (place.office ?? "office"), ouverts: ouverts)
+        }
+        func du(_ si: Int, _ bi: Int, _ b: SiddurBloc) -> SiddurBloc {
+            texteDuJour(b, indices[Place(section: si, bloc: bi)] ?? [], conditions, voisin: autre)
+        }
+        /// Les indices du jour d'un bloc, une fois chacun (« מגדול » vaut le Chabbat comme Roch 'Hodech, 12/11).
+        func reperes(_ si: Int, _ bi: Int) {
+            var vus: [String] = []
+            for v in indices[Place(section: si, bloc: bi)] ?? [] where v.retire == nil && vrai(v.condition, conditions) {
+                guard let t = v.texte, !vus.contains(where: { $0.egalUnites(t) }) else { continue }
+                vus.append(t)
+                sortie.append(.indice(t, fixe: v.fixe))
+            }
+        }
         func cartesSeul(_ si: Int, _ bi: Int) {
-            for a in seuls[Place(section: si, bloc: bi)] ?? [] {
-                if let t = a.texte { sortie.append(.seul(texte: t, consigne: a.consigne, note: a.sorte == .note)) }
+            for (k, a) in (seuls[Place(section: si, bloc: bi)] ?? []).enumerated() {
+                guard let t = a.texte else { continue }
+                if a.sorte == .note {
+                    sortie.append(.seul(texte: t, consigne: a.consigne, note: true))
+                    continue
+                }
+                // Qui prie seul (26/11, Q4) : la braïta, repliée sous « Sans minyan ».
+                let cle = "seul:\(si):\(bi):\(k)"
+                let ouvert = ouverts.contains(cle)
+                sortie.append(.replie(cle: cle, condition: sansMinyan, ouvert: ouvert, libelle: "ajout_sans_minyan",
+                                      pasAujourdhui: false))
+                if ouvert {
+                    sortie.append(.seul(texte: t, consigne: a.consigne, note: false))
+                    sortie.append(.fin(cle: cle))
+                }
             }
         }
         func renvoyer(_ si: Int, _ bi: Int?) {
@@ -380,141 +578,171 @@ extension SiddurJour {
                 }
             }
         }
-        /// Les indices du jour d'un bloc, une fois chacun (« מגדול » vaut le Chabbat comme Roch 'Hodech, 12/11).
-        func reperes(_ si: Int, _ bi: Int) {
-            var vus: [String] = []
-            for v in indices[Place(section: si, bloc: bi)] ?? [] where v.retire == nil && vrai(v.condition, conditions) {
-                guard let t = v.texte, !vus.contains(where: { $0.egalUnites(t) }) else { continue }
-                vus.append(t)
-                sortie.append(.indice(t, fixe: v.fixe))
-            }
-        }
         let plusieurs = texte.sections.count > 1
         for (si, s) in texte.sections.enumerated() {
-            // Une section seule porte déjà le nom du texte : pas de titre répété.
-            if plusieurs && !s.titre.estBlanc { sortie.append(.titre(texte: s.titre, fr: s.titreFr, en: s.titreEn)) }
+            // Une section seule porte déjà le nom du texte : pas de titre répété ; une section vide ce jour-là non plus.
+            let debut = sortie.count
+            let titre = !s.titre.estBlanc && plusieurs
+            if titre { sortie.append(.titre(texte: s.titre, fr: s.titreFr, en: s.titreEn)) }
             if let section = sections[si] {
-                if vrai(section.condition, conditions) {
+                let d = decision(section, racine: section.condition, conditions, voisin: autre)
+                switch d.etat {
+                case .duJour:
                     sortie.append(.etiquette(condition: section.condition, libelle: nom(section, section.condition)))
-                    for (bi, b) in s.blocs.enumerated() { sortie.append(.bloc(b, .duJour, origine: Origine(section: si, bloc: bi))) }
-                } else {
+                    for (bi, b) in s.blocs.enumerated() {
+                        sortie.append(.bloc(du(si, bi, b), .duJour, origine: Origine(section: si, bloc: bi)))
+                        lire(si, bi)
+                    }
+                case .ordinaire:
+                    for (bi, b) in s.blocs.enumerated() {
+                        sortie.append(.bloc(du(si, bi, b), .normal, origine: Origine(section: si, bloc: bi)))
+                        lire(si, bi)
+                    }
+                case .replie:
                     let cle = "\u{00A7}\(si)"
                     let ouvert = ouverts.contains(cle)
                     sortie.append(.replie(cle: cle, condition: section.condition, ouvert: ouvert,
-                                          libelle: nom(section, section.condition)))
+                                          libelle: d.libelle ?? nom(section, section.condition), pasAujourdhui: d.pasAujourdhui))
                     if ouvert {
-                        for (bi, b) in s.blocs.enumerated() { sortie.append(.bloc(b, .hors, origine: Origine(section: si, bloc: bi))) }
+                        for (bi, b) in s.blocs.enumerated() {
+                            sortie.append(.bloc(du(si, bi, b), .hors, origine: Origine(section: si, bloc: bi)))
+                        }
                         sortie.append(.fin(cle: cle))
                     }
+                case .retire:
+                    break
                 }
                 renvoyer(si, nil)
+                if titre && sortie.count == debut + 1 { sortie.remove(at: debut) }
                 continue
             }
             var i = 0
             while i < s.blocs.count {
-                if let a = blocs[Place(section: si, bloc: i)] {
-                    // Un groupe : les blocs qui suivent, tant qu'ils sont du même groupe.
-                    var membres: [(bloc: SiddurBloc, annotation: Annotation, rang: Int)] = []
-                    while i < s.blocs.count, let m = blocs[Place(section: si, bloc: i)], m.groupe == a.groupe {
-                        membres.append((bloc: s.blocs[i], annotation: m, rang: i))
-                        i += 1
-                    }
-                    let racine = a.racine ?? a.condition
-                    let groupe = a.groupe.map { String($0) } ?? "null"
-                    // La double annotation (audit du 16/11) : dans le groupe, un bloc dont le « et » est faux se
-                    // replie à part, avec ses voisins de même « et » ; un groupe lu garde ses repères du jour.
-                    func membresLus(_ style: (Annotation) -> Style, _ avecReperes: Bool) {
-                        var k = 0
-                        while k < membres.count {
-                            let m = membres[k]
-                            guard let et = m.annotation.et, !vrai(et, conditions) else {
-                                sortie.append(.bloc(m.bloc, style(m.annotation), origine: Origine(section: si, bloc: m.rang)))
-                                if avecReperes { reperes(si, m.rang) }
-                                k += 1
-                                continue
-                            }
-                            var suite: [(bloc: SiddurBloc, annotation: Annotation, rang: Int)] = []
-                            var n = k
-                            while n < membres.count, let e = membres[n].annotation.et, e.egalUnites(et) {
-                                suite.append(membres[n])
-                                n += 1
-                            }
-                            let bloc = m.annotation.bloc.map { String($0) } ?? "null"
-                            let cle = "\(si):\(groupe):\(bloc)"
-                            let ouvert = ouverts.contains(cle)
-                            sortie.append(.replie(cle: cle, condition: et, ouvert: ouvert, libelle: m.annotation.etLibelle ?? libelle(et)))
-                            if ouvert {
-                                for x in suite { sortie.append(.bloc(x.bloc, .hors, origine: Origine(section: si, bloc: x.rang))) }
-                                sortie.append(.fin(cle: cle))
-                            }
-                            k += suite.count
-                        }
-                    }
-                    if vrai(racine, conditions) && (a.libelle == autresJours || a.discret) {
-                        // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage « discret »
-                        // (12/11) : le jour dit, tel quel, sans étiquette.
-                        membresLus({ _ in .normal }, true)
-                    } else if vrai(racine, conditions) {
-                        sortie.append(.etiquette(condition: racine, libelle: nom(a, racine)))
-                        membresLus({ m in vrai(m.condition, conditions) ? .duJour : .hors }, true)
-                    } else {
-                        let cle = "\(si):\(groupe)"
-                        let ouvert = ouverts.contains(cle)
-                        sortie.append(.replie(cle: cle, condition: racine, ouvert: ouvert, libelle: nom(a, racine)))
-                        // Ouvert, un groupe replié distingue ses membres (audit du 16/11 : celui du jour en clair,
-                        // l'autre estompé).
-                        if ouvert {
-                            membresLus({ m in vrai(m.condition, conditions) ? .normal : .hors }, false)
-                            sortie.append(.fin(cle: cle))
-                        }
-                    }
-                    cartesSeul(si, i - 1)
-                } else {
-                    // Une variante enchâssée hors du jour (המלך הקדוש, מוריד הטל…) : retirée du bloc, et une
-                    // ligne repliée la rend d'un geste (demande du 28/10).
-                    let ind = indices[Place(section: si, bloc: i)] ?? []
-                    let horsJour = ind.filter { $0.retire != nil && !vrai($0.condition, conditions) }
-                    let cleVariante = "v\(si):\(i)"
-                    let ouverte = ouverts.contains(cleVariante)
-                    var bloc = s.blocs[i]
-                    var reduit = false
-                    // Sans variante hors du jour, le bloc reste lui-même (12/11) : une copie rognée de ses espaces
-                    // n'était plus retrouvée par les marque-pages.
-                    if !ouverte && !horsJour.isEmpty {
-                        var t = bloc.texte
-                        for v in horsJour {
-                            if let passage = v.retire { t = sansPremier(passage, dans: t) }
-                        }
-                        t = t.rogne
-                        if !t.egalUnites(bloc.texte) {
-                            bloc = SiddurBloc(texte: t, consigne: bloc.consigne, fr: bloc.fr, en: bloc.en)
-                            reduit = true
-                        }
-                    }
-                    sortie.append(.bloc(bloc, .normal, origine: Origine(section: si, bloc: i)))
-                    // Le texte du jour se lit dans le bloc même ; l'ancien « Aujourd'hui : … » ne reste que pour
-                    // les variantes qu'on ne sait pas replier.
+                guard let a = blocs[Place(section: si, bloc: i)] else {
+                    // Une variante enchâssée hors du jour (המלך הקדוש, מוריד הטל…) : retirée du bloc, sans repli (Q8).
+                    sortie.append(.bloc(du(si, i, s.blocs[i]), .normal, origine: Origine(section: si, bloc: i)))
+                    // Le texte du jour se lit dans le bloc même ; « Aujourd'hui : … » ne reste que pour les variantes
+                    // qu'on ne sait pas retirer.
                     reperes(si, i)
-                    if let v = horsJour.first, ouverte || reduit {
-                        sortie.append(.replie(cle: cleVariante, condition: v.condition, ouvert: ouverte, libelle: nom(v, v.condition)))
-                        if ouverte { sortie.append(.fin(cle: cleVariante)) }
-                    }
+                    lire(si, i)
                     cartesSeul(si, i)
                     renvoyer(si, i)
                     i += 1
+                    continue
                 }
+                // Un groupe : les blocs qui suivent, tant qu'ils sont du même groupe.
+                var membres: [(bloc: SiddurBloc, annotation: Annotation, rang: Int)] = []
+                while i < s.blocs.count, let m = blocs[Place(section: si, bloc: i)], m.groupe == a.groupe {
+                    membres.append((bloc: s.blocs[i], annotation: m, rang: i))
+                    i += 1
+                }
+                let racine = a.racine ?? a.condition
+                let groupe = a.groupe.map { String($0) } ?? "null"
+                let d = decision(a, racine: racine, conditions, voisin: autre)
+                // Les membres qui se lisent ce jour-là (Q8, Q11) : ceux de la racine, et les variantes vraies (ou du jour
+                // voisin) ; replié hors du jour (Q2, Q10), tous.
+                let lus = membres.filter { m in
+                    d.tous || m.annotation.condition.egalUnites(racine) || vrai(m.annotation.condition, conditions)
+                        || voisinVrai(m.annotation.condition)
+                }
+                // La double annotation (audit du 16/11) : dans le groupe, un bloc dont le « et » est faux se replie à
+                // part si c'est une occasion (le minyan, un Mi chébérakh) ou le jour voisin ; il est retiré sinon
+                // (« תתקבל » le 9 Av). Un groupe lu garde ses repères du jour (« Aujourd'hui : … »).
+                func membresLus(_ style: Style, _ avecReperes: Bool) {
+                    var k = 0
+                    while k < lus.count {
+                        let m = lus[k]
+                        guard let et = m.annotation.et, !vrai(et, conditions) else {
+                            sortie.append(.bloc(du(si, m.rang, m.bloc), style, origine: Origine(section: si, bloc: m.rang)))
+                            if avecReperes {
+                                reperes(si, m.rang)
+                                lire(si, m.rang)
+                            }
+                            k += 1
+                            continue
+                        }
+                        var suite: [(bloc: SiddurBloc, annotation: Annotation, rang: Int)] = []
+                        var n = k
+                        while n < lus.count, let e = lus[n].annotation.et, e.egalUnites(et),
+                              memeTexte(lus[n].annotation.etLibelle, m.annotation.etLibelle) {
+                            suite.append(lus[n])
+                            n += 1
+                        }
+                        let occasion = occasions.contains(where: { $0.egalUnites(et) })
+                        if occasion || voisinVrai(et) {
+                            let bloc = m.annotation.bloc.map { String($0) } ?? "null"
+                            let cle = "\(si):\(groupe):\(bloc)"
+                            let ouvert = ouverts.contains(cle)
+                            sortie.append(.replie(cle: cle, condition: et, ouvert: ouvert,
+                                                  libelle: m.annotation.etLibelle ?? libelle(et), pasAujourdhui: !occasion))
+                            if ouvert {
+                                for x in suite {
+                                    sortie.append(.bloc(du(si, x.rang, x.bloc), .hors, origine: Origine(section: si, bloc: x.rang)))
+                                }
+                                sortie.append(.fin(cle: cle))
+                            }
+                        }
+                        k += suite.count
+                    }
+                }
+                switch d.etat {
+                case .ordinaire:
+                    membresLus(.normal, true)
+                case .duJour:
+                    sortie.append(.etiquette(condition: racine, libelle: nom(a, racine)))
+                    membresLus(.duJour, true)
+                case .replie:
+                    if !lus.isEmpty {
+                        let cle = "\(si):\(groupe)"
+                        let ouvert = ouverts.contains(cle)
+                        sortie.append(.replie(cle: cle, condition: racine, ouvert: ouvert, libelle: d.libelle ?? nom(a, racine),
+                                              pasAujourdhui: d.pasAujourdhui))
+                        if ouvert {
+                            membresLus(d.pasAujourdhui ? .hors : .normal, false)
+                            sortie.append(.fin(cle: cle))
+                        }
+                    }
+                case .retire:
+                    break
+                }
+                cartesSeul(si, i - 1)
             }
             renvoyer(si, nil)
+            if titre && sortie.count == debut + 1 { sortie.remove(at: debut) }
         }
         return sortie
     }
 
-    /// `replaceFirst(motif, "")` de Kotlin : la première occurrence retirée, unité UTF-16 par unité.
-    private static func sansPremier(_ motif: String, dans texte: String) -> String {
+    /// `a == b` de Kotlin sur deux chaînes facultatives, unité UTF-16 par unité.
+    private static func memeTexte(_ a: String?, _ b: String?) -> Bool {
+        switch (a, b) {
+        case (nil, nil): true
+        case let (x?, y?): x.egalUnites(y)
+        default: false
+        }
+    }
+
+    /// Le texte dépend-il aujourd'hui du statut Israël ou diaspora (26/11, Q7) ? Ses lignes, calculées pour les deux,
+    /// diffèrent : deuxième jour de fête, Isrou 'hag, début de « ותן טל ומטר », מוריד הטל ashkénaze, la lecture de la
+    /// Torah… `israel`, `diaspora` : les conditions du jour pour chacun (CalendrierJuif.jour).
+    public static func dependDeLaRegion(_ texte: SiddurTexte, _ annotations: [Annotation], israel: Set<String>,
+                                        diaspora: Set<String>, nusah: Nusah, sansTahanounFinTichri: Bool? = nil,
+                                        sud: Bool = false, voisinIsrael: Set<String> = [], voisinDiaspora: Set<String> = [],
+                                        lecturesIsrael: [LectureTorah.Lecture] = [],
+                                        lecturesDiaspora: [LectureTorah.Lecture] = []) -> Bool {
+        lignes(texte, annotations, israel, nusah: nusah, enIsrael: true, sansTahanounFinTichri: sansTahanounFinTichri,
+               sud: sud, voisin: voisinIsrael, lectures: lecturesIsrael)
+            != lignes(texte, annotations, diaspora, nusah: nusah, enIsrael: false, sansTahanounFinTichri: sansTahanounFinTichri,
+                      sud: sud, voisin: voisinDiaspora, lectures: lecturesDiaspora)
+    }
+
+    /// `replaceFirst(motif, par)` de Kotlin (littéral) : la première occurrence remplacée, unité UTF-16 par unité.
+    private static func remplacePremier(_ motif: String, par remplacement: String, dans texte: String) -> String {
         let unites = Array(texte.utf16)
         let cherche = Array(motif.utf16)
         guard let debut = Unites.position(de: cherche, dans: unites) else { return texte }
         var reste = Array(unites[..<debut])
+        reste.append(contentsOf: remplacement.utf16)
         reste.append(contentsOf: unites[(debut + cherche.count)...])
         return Unites.texte(reste)
     }
@@ -553,6 +781,8 @@ extension SiddurJour {
         // « אומרים כאן הלל » : le Hallel, complet ou non selon le jour.
         if c.egalUnites("hallel") { return "ajout_hallel_annonce" }
         if c.commenceParUnites("embolismique") { return "ajout_embolismique" }
+        // Le compte d'un soir de l'omer (26/11) : « Compte de l'omer ».
+        if c.commenceParUnites("omer_") { return "ajout_omer" }
         for fete in fetesNommees where fete.egalUnites(c) { return "fete_" + c }
         return "ajout_" + c
     }
