@@ -355,7 +355,11 @@ struct Racine: View {
         case .presentation: plein = .presentation
         case .choixVersion: pousser(.choixVersion)
         case .recommencer:
-            // Tout a été effacé : l'app repart du Jour, présentation comprise.
+            // Tout a été effacé : la séance qui courait n'a plus rien à suivre, sa musique s'arrête avec elle
+            // (relecture du 23/11 : le morceau continuait sans plus rien pour l'arrêter). Puis l'app repart du Jour,
+            // présentation comprise.
+            let seance = app.seance
+            Task { try? await seance.actualiser() }
             pileDuJour = NavigationPath()
             pileDesLivres = NavigationPath()
             pileDuChemin = NavigationPath()

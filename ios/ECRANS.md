@@ -81,8 +81,8 @@ Jour les ouvre (`AccueilModele.entete`, `ouvrirZmanim`, `ouvrirReglages`), dans 
 (`BarreDepart`) est au bas des trois racines, et son volet posé une fois sur les onglets (`feuilleDepart`), comme la
 fiche des trophées neufs (`feteDesTrophees`, Vues/TropheeFeteVue.swift), qui voile aussi la barre des onglets.
 
-Ces trois onglets sont l'accueil de la version Classique. Les trois autres versions de l'app (`VersionApp` :
-Sérénité, Bento, Pile) ont chacune le leur (`AccueilVersionVue` : `SereniteVue`, `BentoVue`, `PileVue`, sur le
+Ces trois onglets sont l'accueil de la version Classique. Les quatre autres versions de l'app (`VersionApp` :
+Sérénité, Bento, Instant, Pile) ont chacune le leur (`AccueilVersionVue` : `SereniteVue`, `BentoVue`, `InstantVue`, `PileVue`, sur le
 modèle partagé `AccueilVersionModele`), que la racine pose à la place des onglets, avec la seule pile du Jour : sur
 Android, l'activité de la version remplace MainActivity et sa barre (VersionApp.rediriger). Leurs entrées poussent les
 mêmes écrans (`AccueilVersionRoute`). Choisir une version vide les piles et montre aussitôt son accueil

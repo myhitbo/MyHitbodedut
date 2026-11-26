@@ -219,6 +219,21 @@ struct SeanceEnCoursTests {
         #expect(b.magasin.journal.record(jour)?.minutes == 20)
     }
 
+    /// Relecture du 23/11 : « Tout effacer » pendant une séance ; le tour suivant ne trouve plus rien à suivre, la
+    /// musique s'arrête avec elle, rien ne s'inscrit.
+    @Test func toutEffacerPendantUneSeanceArreteSaMusique() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        let b = Self.banc(DateHeure(jour, heure: 10))
+        try await b.seance.commencer(minutes: 20)
+        #expect(b.musique.seanceEnCours)
+        try await b.magasin.modifierJournal { $0 = Journal() }
+        try await b.magasin.modifierReglages { $0 = Reglages() }
+        try await b.seance.actualiser()
+        #expect(!b.musique.seanceEnCours)
+        #expect(!b.seance.suivie)
+        #expect(b.magasin.journal.record(jour) == nil)
+    }
+
     // MARK: Une séance qui va à son terme
 
     @Test func uneSeanceDUneMinuteSInscritASonTerme() async throws {

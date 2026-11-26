@@ -117,6 +117,21 @@ struct ContenusTests {
         #expect(!villes.contains { $0.enIsrael && $0.fuseau != "Asia/Jerusalem" })
     }
 
+    /// VillesTest d'Android (relecture du 23/11) : aucune ville ne porte un fuseau créé ou renommé par l'IANA depuis 2017
+    /// (« Europe/Kyiv » faisait tomber Android 8 et 9) ; Kiev et Ouman reprennent « Europe/Kiev », valide partout. Sur
+    /// iOS, un fuseau inconnu ne lève jamais : `Fuseau` rend nil, et l'heure du téléphone le remplace.
+    @Test func aucuneVilleNePorteUnFuseauRenommeDepuis2017() throws {
+        let villes = try Villes.lire(Depot.contenu("villes.json"))
+        let recents: Set<String> = ["Europe/Kyiv", "America/Nuuk", "Asia/Qostanay", "Pacific/Kanton", "America/Ciudad_Juarez"]
+        for v in villes {
+            #expect(!recents.contains(v.fuseau), "\(v.id) \(v.fuseau)")
+        }
+        #expect(villes.first { $0.id == 690688 }?.fuseau == "Europe/Kiev")
+        #expect(Fuseau("Nulle/Part") == nil)
+        let hiver: Int64 = 1_768_478_400_000
+        #expect(Fuseau("Europe/Kiev")?.decalage(millis: hiver) == Fuseau("Europe/Kyiv")?.decalage(millis: hiver))
+    }
+
     @Test func laSourceDesVillesEstCiteeCommeCCBYLeDemande() throws {
         let json = String(decoding: try Depot.contenu("villes.json"), as: UTF8.self)
         #expect(json.contains("GeoNames") && json.contains("CC-BY 4.0"))

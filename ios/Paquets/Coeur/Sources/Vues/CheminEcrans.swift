@@ -32,12 +32,7 @@ public struct JournalVue: View {
                     vide
                 } else {
                     ForEach(modele.lignes) { ligne in
-                        Button {
-                            modele.ouvrirNote(ligne.date)
-                        } label: {
-                            JournalLigneVue(ligne: ligne)
-                        }
-                        .buttonStyle(.plain)
+                        JournalRangee(ligne: ligne) { modele.ouvrirNote(ligne.date) }
                     }
                 }
             }
@@ -114,10 +109,50 @@ extension JournalModele {
     }
 }
 
-/// Une journée du journal (item_journal) : la date, la durée, la note et le journal enrichi.
+/// Une journée du journal, que l'on touche pour ouvrir sa note. Une longue note occupait plusieurs écrans : elle se
+/// replie à six lignes, et « Lire la suite », sous la carte, la déplie (check-up du 11/11, JournalActivity).
+private struct JournalRangee: View {
+    /// Les lignes d'une note repliée (JournalActivity.LIGNES_REPLIEES).
+    static let lignesRepliees = 6
+
+    let ligne: JournalLigne
+    let ouvrir: @MainActor () -> Void
+    @Environment(\.traducteur) private var traducteur
+    @State private var deplie = false
+    @State private var tronquee = false
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            Button(action: ouvrir) {
+                JournalLigneVue(ligne: ligne, lignes: deplie ? nil : JournalRangee.lignesRepliees) { tronquee = $0 }
+            }
+            .buttonStyle(.plain)
+            if deplie || tronquee {
+                Button {
+                    deplie.toggle()
+                } label: {
+                    Text(Libelle(deplie ? "hilloula_reduire" : "hilloula_lire_plus"), traducteur: traducteur)
+                        .font(Font.subheadline.weight(.medium))
+                        .foregroundStyle(Teinte(.brand))
+                        .frame(minHeight: 44)
+                        .padding(.horizontal, 8)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
+/// Une journée du journal (item_journal) : la date, la durée, la note et le journal enrichi. `lignes` : la note
+/// repliée à tant de lignes ; nil, entière. `tronquee` dit si la note repliée cache une partie de son texte.
 private struct JournalLigneVue: View {
     let ligne: JournalLigne
+    var lignes: Int? = nil
+    var tronquee: (Bool) -> Void = { _ in }
     @Environment(\.traducteur) private var traducteur
+    @State private var hauteurVisible: CGFloat = 0
+    @State private var hauteurEntiere: CGFloat = 0
 
     var body: some View {
         Carte {
@@ -136,6 +171,25 @@ private struct JournalLigneVue: View {
                     .font(.subheadline)
                     .foregroundStyle(Teinte(.ink))
                     .multilineTextAlignment(.leading)
+                    .lineLimit(lignes)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { hauteur in
+                        hauteurVisible = hauteur
+                        tronquee(hauteurEntiere > hauteurVisible + 1)
+                    }
+                    // La note entière, invisible, à la même largeur : plus haute, la note repliée est coupée.
+                    .background(alignment: .topLeading) {
+                        Text(verbatim: note)
+                            .font(.subheadline)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .hidden()
+                            .accessibilityHidden(true)
+                            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { hauteur in
+                                hauteurEntiere = hauteur
+                                tronquee(hauteurEntiere > hauteurVisible + 1)
+                            }
+                    }
                     .padding(.top, 6)
             }
         }
@@ -232,13 +286,17 @@ public struct JournalNoteVue: View {
                 .textFieldStyle(.roundedBorder)
                 humeurs(Text(modele.titreAvant, traducteur: traducteur), choisie: modele.avant) { modele.toucherAvant($0) }
                 humeurs(Text(modele.titreApres, traducteur: traducteur), choisie: modele.apres) { modele.toucherApres($0) }
+                // Une gratitude et une chose à travailler, sur trois lignes au plus : jusqu'à 200 caractères, ni l'indice
+                // ni la réponse ne se relisaient sur une seule (check-up du 11/11, NoteDialog).
                 TextField(text: Bindable(modele).gratitudeSaisie, axis: .vertical) {
                     Text(modele.indicationGratitude, traducteur: traducteur)
                 }
+                .lineLimit(1...3)
                 .textFieldStyle(.roundedBorder)
                 TextField(text: Bindable(modele).travailSaisi, axis: .vertical) {
                     Text(modele.indicationTravail, traducteur: traducteur)
                 }
+                .lineLimit(1...3)
                 .textFieldStyle(.roundedBorder)
                 Button {
                     Task { await enregistrer() }
