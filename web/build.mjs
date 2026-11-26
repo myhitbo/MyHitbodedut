@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { litChaines } from './tools/chaines.mjs';
 import { TAILLE_MAX, morceauxLivres } from './tools/musique.mjs';
 import { palettesCss } from './tools/palettes.mjs';
+import { decoupeTexte } from './tools/lecture-torah.mjs';
 
 const ICI = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ICI, 'src');
@@ -97,7 +98,7 @@ for (const nom of [...onglets.flatMap((n) => [`${n}_off`, `${n}_on`]), 'ic_chevr
 }
 
 // --- Les textes vérifiés, tels quels ---------------------------------------
-for (const nom of ['chizuk.json', 'bibliotheque.json', 'tikkun_haklali.json', 'tehilim.json', 'siddur_edot.json', 'siddur_sefard.json', 'siddur_ashkenaz.json', 'villes.json', 'aeroports.json', 'aeroports_noms.json', 'siddur_annotations.json', 'hilloulot.json', 'ben_ish_hai.json', 'yalkut_yosef.json', 'guide_sujets.json']) {
+for (const nom of ['chizuk.json', 'bibliotheque.json', 'tikkun_haklali.json', 'tehilim.json', 'siddur_edot.json', 'siddur_sefard.json', 'siddur_ashkenaz.json', 'villes.json', 'aeroports.json', 'aeroports_noms.json', 'siddur_annotations.json', 'hilloulot.json', 'ben_ish_hai.json', 'yalkut_yosef.json', 'guide_sujets.json', 'lecture_torah.json']) {
   cpSync(join(RES, 'raw', nom), join(DIST, 'data', nom));
 }
 
@@ -133,6 +134,15 @@ for (const nom of ['chizuk.json', 'bibliotheque.json', 'tikkun_haklali.json', 't
     writeFileSync(join(DIST, 'data', 'livres', `${t.id}.json`), JSON.stringify({ id: t.id, sections }));
   }
   writeFileSync(join(DIST, 'data', 'livres', 'table.json'), JSON.stringify(table));
+}
+
+// --- La lecture de la Torah, un fichier par livre (26/11) ------------------------------
+// lecture_torah_texte.json pèse 2,2 Mo : le site ne lit que le livre de la lecture ouverte
+// (lecture-torah.js, chargeLivre), jamais au démarrage. Les versets restent ceux d'Android.
+{
+  mkdirSync(join(DIST, 'data', 'lecture_torah'), { recursive: true });
+  const parLivre = decoupeTexte(JSON.parse(readFileSync(join(RES, 'raw', 'lecture_torah_texte.json'), 'utf8')));
+  for (const [nom, contenu] of Object.entries(parLivre)) writeFileSync(join(DIST, 'data', 'lecture_torah', `${nom}.json`), JSON.stringify(contenu));
 }
 
 // --- Les illustrations -------------------------------------------------------
