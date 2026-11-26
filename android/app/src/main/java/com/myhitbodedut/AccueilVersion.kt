@@ -27,6 +27,41 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         ZmanimWidget.refresh(this)
     }
 
+    /**
+     * Les petites animations du paysage (CielVivant, 24/11) : permises par le téléphone et l'écran
+     * devant, sinon le paysage reste immobile. [paysage] pose le ciel de la carte avec cet état.
+     */
+    private var cielPermis = false
+    private var paysageCourant: PaysageCiel? = null
+    private val gardeCiel = GardeCiel(this) { permis ->
+        cielPermis = permis
+        paysageCourant?.anime = permis
+    }
+
+    /**
+     * Le paysage du ciel de la carte, continu (CielContinu), animé si c'est permis ; [nuages] et
+     * [arc] (le soleil et la lune qui traversent le ciel) seulement là où le haut du ciel est
+     * libre de texte.
+     */
+    fun paysage(nuages: Boolean = false, arc: Boolean = false): PaysageCiel =
+        PaysageCiel(CielDuJour.etat(this), resources.displayMetrics.density, nuages, arc).also {
+            it.anime = cielPermis
+            paysageCourant = it
+            paysageNuages = nuages
+            paysageArc = arc
+        }
+
+    private var paysageNuages = false
+    private var paysageArc = false
+
+    /** Le ciel continu se revoit chaque minute tant que l'accueil est devant : seul le paysage change. */
+    private val veilleCiel = object : Runnable {
+        override fun run() {
+            (paysageCourant?.callback as? android.view.View)?.background = paysage(paysageNuages, paysageArc)
+            window.decorView.postDelayed(this, 60_000L)
+        }
+    }
+
     /** La version que cet écran représente : si elle n'est plus la version choisie, on repart de MainActivity. */
     abstract val version: VersionApp
 
@@ -53,6 +88,9 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
     override fun onResume() {
         super.onResume()
         if (isFinishing) return
+        gardeCiel.reprendre()
+        window.decorView.removeCallbacks(veilleCiel)
+        window.decorView.postDelayed(veilleCiel, 60_000L)
         SessionService.reconcilier(this)
         appliquerServices()
         Data.prechauffer(this) {
@@ -69,6 +107,12 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
+    }
+
+    override fun onPause() {
+        window.decorView.removeCallbacks(veilleCiel)
+        gardeCiel.suspendre()
+        super.onPause()
     }
 
     override fun noteEnregistree(date: String) = dessiner()

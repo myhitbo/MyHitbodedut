@@ -242,6 +242,34 @@ object CalendrierJuif {
 
         /** Toujours vrai (audit du 16/11) : une indication fixe du siddour, sans condition du jour. */
         const val TOUJOURS = "toujours"
+
+        /**
+         * Les catégories du 26/11 (les ajouts du calendrier retirés hors de leur jour) :
+         *  - [VOYAGEUR_TAL_OUMATAR] : Israël et la diaspora diffèrent pour « ותן טל ומטר » (du 7 'Hechvan au
+         *    4 ou 5 décembre) ; la consigne du voyageur n'est repliée que ces jours-là, retirée les autres (Q3) ;
+         *  - [RETSE_OU_YAALE] : Chabbat ou jour de « יעלה ויבוא », les bénédictions de qui a oublié רצה ou
+         *    יעלה ויבוא au Birkat haMazon (Q5) ;
+         *  - [YAMIM_NORAIM] : Roch Hachana ou Kippour (une ligne des Mi chébérakh) ;
+         *  - [OMER_JOURS] : « omer_N », le compte du soir (Q12) ;
+         *  - [ISRAEL] : posée par SiddurJour.conditionsPour en Israël (le psaume 121 d'Arvit, « בא״י קדישא ») ;
+         *  - [MAGDOL] : « מגדול » à la fin du Birkat (SiddurJour.conditionsPour, selon le noussa'h) ;
+         *  - [HOMME], [FEMME] : le réglage צדיק / צדקת (Store.conditionsDuJour) ; sans réglage, ni l'un ni l'autre.
+         */
+        const val VOYAGEUR_TAL_OUMATAR = "voyageur_tal_oumatar"
+        const val RETSE_OU_YAALE = "retse_ou_yaale"
+        const val YAMIM_NORAIM = "yamim_noraim"
+        val OMER_JOURS = (1..49).map { "omer_$it" }
+        const val ISRAEL = "israel"
+        const val MAGDOL = "magdol"
+        const val HOMME = "homme"
+        const val FEMME = "femme"
+        /** Les occasions du 26/11, jamais du jour (SiddurJour.OCCASIONS) : qui prie seul, un usage, une occasion. */
+        const val SANS_MINYAN = "sans_minyan"
+        /** Le Ta'hanoun du calendrier, avant « Pas de Ta'hanoun aujourd'hui » (SiddurJour.conditionsPour, Q1). */
+        const val TAHANOUN_CHAHARIT_CALENDRIER = "tahanoun_chaharit_calendrier"
+        const val TAHANOUN_MINHA_CALENDRIER = "tahanoun_minha_calendrier"
+        const val USAGE = "usage"
+        const val OCCASION = "occasion"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
             listOf(TSOM_GUEDALIA_TEVET, LENDEMAIN_KIPPOUR, TICHA_BEAV_KIPPOUR, ESTHER_POURIM, CHIVA_ASSAR_TAMOUZ, BASCULE_PLUIE, EREV_KIPPOUR_VENDREDI,
                 LAMNATSEAH, LEDAVID, TECHOUVA_HOCHAANA, YOM_TOV, MOED, CHABBAT_ROCH_HODECH, YOM_TOV_CHABBAT, ROCH_HACHANA_CHABBAT,
@@ -251,7 +279,9 @@ object CalendrierJuif {
                 ROCH_HODECH_CHOL, HOL_HAMOED, HANOUKA_SANS_MOUSSAF, HANOUKA_HORS_ROCH_HODECH, LEIL_PESSAH, HALLEL_PARTIEL,
                 MIZMOR_LETODA, YOM_TOV_SEMAINE, LEIL_HASEDER, LENDEMAIN_ROCH_HODECH, CHOME, VIHI_NOAM, VEATA_KADOCH, TEFILIN,
                 TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT, POURIM_TRIPLE_VENDREDI, HAVDALA_NER, HAVDALA_BESSAMIM,
-                LENDEMAIN_TICHA_BEAV_DIMANCHE, LENDEMAIN_AJOUTS, BEIN_HAMETSARIM, TIKOUN_RAHEL, TOUJOURS)
+                LENDEMAIN_TICHA_BEAV_DIMANCHE, LENDEMAIN_AJOUTS, BEIN_HAMETSARIM, TIKOUN_RAHEL, TOUJOURS,
+                VOYAGEUR_TAL_OUMATAR, RETSE_OU_YAALE, YAMIM_NORAIM, ISRAEL, MAGDOL, HOMME, FEMME, SANS_MINYAN, USAGE, OCCASION,
+                TAHANOUN_CHAHARIT_CALENDRIER, TAHANOUN_MINHA_CALENDRIER) + OMER_JOURS
     }
 
     /**
@@ -430,7 +460,9 @@ object CalendrierJuif {
             val adar1415 = (mois == JewishDate.ADAR || mois == JewishDate.ADAR_II) && quantieme in 14..15
             if (!(regles.isRoshChodesh || regles.isChanukah || adar1415 || festinJerusalem || regles.isTishaBav || regles.isAssurBemelacha || regles.isCholHamoed ||
                     index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR)) add(C.LAMNATSEAH)
-            if (mois == JewishDate.ELUL || (mois == JewishDate.TISHREI && quantieme <= 21)) add(C.LEDAVID)
+            // Dès le 30 Av, premier jour de Roch 'Hodech Eloul (26/11, Q13 : « מראש חודש אלול », Kitsour Yalkut Yosef 581 ;
+            // Michna Beroura 581:2).
+            if (mois == JewishDate.ELUL || (mois == JewishDate.AV && quantieme == 30) || (mois == JewishDate.TISHREI && quantieme <= 21)) add(C.LEDAVID)
             if (regles.isAseresYemeiTeshuva || (mois == JewishDate.TISHREI && quantieme == 21)) add(C.TECHOUVA_HOCHAANA)
             val yomTov = regles.isYomTovAssurBemelacha
             if (yomTov) add(C.YOM_TOV)
@@ -495,6 +527,13 @@ object CalendrierJuif {
             if (!(regles.isRoshChodesh || (mois == JewishDate.TISHREI && quantieme <= (if (enIsrael) 22 else 23)) || regles.isChanukah || adar1415 ||
                     mois == JewishDate.NISSAN || regles.dayOfOmer > 0 || (enIsrael && regles.jewishYear % 7 == 0))) add(C.TIKOUN_RAHEL)
             add(C.TOUJOURS)
+            // Les catégories du 26/11 (C.VOYAGEUR_TAL_OUMATAR…).
+            val enIsraelCal = calendrier(date, true, modernes = false)
+            val enDiasporaCal = calendrier(date, false, modernes = false)
+            if (tefila.isVeseinTalUmatarRecited(enIsraelCal) != tefila.isVeseinTalUmatarRecited(enDiasporaCal)) add(C.VOYAGEUR_TAL_OUMATAR)
+            if (C.CHABBAT in this || C.YAALE_VEYAVO in this) add(C.RETSE_OU_YAALE)
+            if (regles.isRoshHashana || regles.isYomKippur) add(C.YAMIM_NORAIM)
+            if (regles.dayOfOmer > 0) add("omer_${regles.dayOfOmer}")
         }
 
         val fetes = buildList {
@@ -613,16 +652,34 @@ object CalendrierJuif {
      * Les autres textes (bénédictions du repas, Havdala…) passent au jour
      * suivant à la sortie des étoiles du lieu, quand on le connaît
      * ([apresSortie]) : samedi soir, Birkat haMazon n'a plus רצה en évidence
-     * (demande du 28/10) ; il reste ouvrable à la main pour qui a commencé
-     * son repas pendant Chabbat. Min'ha garde le jour civil. Sans lieu, le
-     * jour civil.
+     * (demande du 28/10) ; il reste replié pour qui a commencé son repas
+     * pendant Chabbat (26/11, [jourVoisin]). Min'ha garde le jour civil. Sans
+     * lieu, le jour civil.
      */
     fun jourDeLaPriere(texte: String, date: LocalDate, heure: LocalTime, apresSortie: Boolean = false): LocalDate = when (texte) {
-        "arvit", "chema_coucher" -> if (heure >= LocalTime.NOON) date.plusDays(1) else date
+        // Le compte de l'omer se fait le soir, avec Arvit (26/11, Q12 : le compte du soir).
+        "arvit", "chema_coucher", "sefirat_haomer" -> if (heure >= LocalTime.NOON) date.plusDays(1) else date
         // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
         "tikoun_hatsot" -> if (heure >= LocalTime.of(18, 0)) date.plusDays(1) else date
         "minha" -> date
         else -> if (apresSortie) date.plusDays(1) else date
+    }
+
+    /**
+     * Le jour voisin du Birkat haMazon et de Méèn chaloch (26/11, Q6) : entre le coucher du soleil et la
+     * sortie des étoiles, le jour qui commence ; après la sortie des étoiles et jusqu'à minuit, le jour qui
+     * finit (« le soir qui suit ») ; sans lieu ([apresCoucher] et [apresSortie] null), de 16 h à minuit, le
+     * jour qui commence. Ses ajouts (רצה, יעלה ויבוא, על הנסים…) restent repliés au lieu d'être retirés : un
+     * repas commencé avant la sortie des étoiles se conclut avec eux. null hors de ces heures et des deux textes.
+     */
+    fun jourVoisin(texte: String, date: LocalDate, heure: LocalTime, apresCoucher: Boolean?, apresSortie: Boolean?): LocalDate? {
+        if (texte != "birkat_hamazon" && texte != "meen_chaloch") return null
+        return when {
+            apresSortie == true -> date
+            apresCoucher == true -> date.plusDays(1)
+            apresCoucher == null && apresSortie == null && heure.hour >= 16 -> date.plusDays(1)
+            else -> null
+        }
     }
 
     /**

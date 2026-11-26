@@ -1059,14 +1059,15 @@ Aucun de ces points n'est un avis juridique : ce sont des lectures, comme dans l
 
 ### 6.1 Musique
 
-iOS livre **la liste de la version Play**, et elle seule (`MusiquePlay.kt`, 26 morceaux, 73,7 Mo). Il n'existe pas d'équivalent de l'édition GitHub : TestFlight est aussi une distribution par Apple.
+iOS livre **la liste de la version Play**, et elle seule (`MusiquePlay.kt`, 42 morceaux depuis le 26/11, 140 Mo). Il n'existe pas d'équivalent de l'édition GitHub : TestFlight est aussi une distribution par Apple.
 
 | Morceaux | Base du droit (d'après le dépôt) | Avant l'App Store |
 | --- | --- | --- |
-| `yanuka_nigoun_3` | accord du Yanuka, déclaré | l'avoir par écrit, toutes plateformes |
+| `yanuka_nigoun_3`, et depuis le 26/11 (PR 53) neuf autres `yanuka_*` | accord du Yanuka, déclaré (oral) | l'avoir par écrit, toutes plateformes |
+| dix morceaux de Shneor Lerer (26/11, PR 53) | accord écrit du 21/11 : son nom à côté de la musique, application gratuite, pas de téléchargement des fichiers | vérifier qu'il vaut pour l'App Store |
 | `shpayer_*` (10), `ianir_*` (14) | accord écrit du 29/10 de נעם שפייר et יניר קילינסקי, « toutes leurs musiques » | vérifier qu'il n'est pas limité à Google Play |
 | `hamelech_basade` | « déclaré libre de droits » | la réserve du cahier des charges demeure : une mélodie peut être libre et son **enregistrement** ne pas l'être ; noter l'interprète, la source, la date |
-| 30 niggounim sans titre, Ishay Ribo, MBD, Motty Steinmetz, Shmuel, Shneor Lerer | provenance inconnue ou autorisation non demandée | **absents d'iOS** ; l'utilisateur peut ajouter ses propres fichiers |
+| 30 niggounim sans titre, Ishay Ribo, MBD, Motty Steinmetz, Shmuel | provenance inconnue ou autorisation non demandée | **absents d'iOS** ; l'utilisateur peut ajouter ses propres fichiers |
 
 Deux remarques propres à Apple : les titres portent le nom des artistes (c'est un usage de leur nom, couvert par leur accord) ; le mode d'arrière-plan audio ne se justifie que par cette lecture, ce qui est le cas.
 

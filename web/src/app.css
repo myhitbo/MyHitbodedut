@@ -159,8 +159,10 @@ button { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) { .plaque img.salut { animation: none; } }
 .jauge-legende { margin-top: 4px; text-align: center; color: var(--muted); font-size: 16px; }
 .jauge-legende.legende-jour { color: var(--brand); }
-.jauge-legende.legende-semaine { color: var(--ring-week); }
-.jauge-legende.legende-serie { color: var(--ring-streak); }
+/* La légende en couleur d'anneau : l'encre de texte d'Android (ring_week_text, FACCUEIL-18), 4,5:1 sur le papier
+   comme sur le ciel du Jour (24/11) ; le trait de l'anneau, plus clair, n'y atteignait que 4:1. */
+.jauge-legende.legende-semaine { color: var(--ring-week-text); }
+.jauge-legende.legende-serie { color: var(--ring-streak-text); }
 
 .principal {
   display: block; width: 100%; margin-top: 16px; padding: 16px 16px;
@@ -661,7 +663,7 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .lu-zone .lecture, .lu-zone.reglable .contenu { padding-bottom: 84px; }
 .lecture-ctrl {
   position: absolute; left: 50%; bottom: 16px; z-index: 5; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; max-width: calc(100% - 16px);
+  display: flex; flex-direction: column; align-items: center; max-width: calc(100% - 8px);
 }
 .lu-zone.sans-pied .lecture-ctrl { bottom: calc(16px + env(safe-area-inset-bottom)); }
 .lecture-pastille, .lecture-barre {
@@ -694,8 +696,15 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .lecture-barre .icone-bouton { padding: 0; width: 40px; }
 .lecture-barre svg { width: 22px; height: 22px; }
 .lecture-barre button[aria-pressed="true"] { background: var(--on-brand); color: var(--brand); }
-.lecture-barre .lecture-nusah-bouton { font-weight: 600; font-size: 14px; padding: 0 8px; }
 .lecture-barre .lecture-nusah-bouton[aria-expanded="true"] { background: color-mix(in srgb, var(--on-brand) 20%, transparent); }
+/* La barre tient entière sur un téléphone, « Replier » compris, comme sur Android (ReglagesLecture.bouton) :
+   ses --n boutons de taille fixe se serrent de 40 à 30 px selon la largeur, à côté de la taille (56 px), des
+   deux filets et des marges. Le bouton du défilement automatique (16/11) avait poussé hors de vue, dans une
+   barre qui défile sans le montrer, Masquer et Replier, et au siddour lui-même (vérification du 24/11). */
+.lecture-barre:not(.lecture-defil) { --cote: clamp(30px, calc((100vw - 8px - 8px - 18px - 56px) / var(--n, 8)), 40px); }
+.lecture-barre:not(.lecture-defil) .lettres, .lecture-barre:not(.lecture-defil) .icone-bouton,
+.lecture-barre:not(.lecture-defil) .lecture-langues, .lecture-barre:not(.lecture-defil) .lecture-police { width: var(--cote); min-width: 0; padding: 0; }
+.lecture-barre:not(.lecture-defil) .taille { min-width: 56px; padding: 0 4px; font-size: 14px; }
 .lecture-sep { flex: none; width: 1px; height: 22px; margin: 0 4px; background: var(--on-brand); opacity: 0.35; }
 .lecture-barre button:focus-visible, .lecture-pastille:focus-visible { outline: 2px solid var(--on-brand); outline-offset: -4px; }
 /* Le défilement automatique (16/11) : la commande compacte, aux couleurs de la barre. */
@@ -823,10 +832,24 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .ecran.lu.nuit .ajout-corps { border-color: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 30%, transparent); background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 4%, transparent); }
 .ecran.lu.nuit .replie-bas { border-top-color: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 30%, transparent); }
 .ecran.lu.nuit .replie-nom { color: var(--lecture-nuit-texte, #F2F0EA); }
+/* La lecture de la Torah du jour (26/11) : repliée comme un ajout ; dépliée, chaque montée sous sa référence, puis
+   ses versets cantillés, numérotés, un paragraphe à chaque « פ ». */
+.lecture-passages { padding: 0 4px; }
+.lecture-reference { margin: 14px 0 6px; color: var(--brand); font-size: calc(12.5px * var(--echelle, 1)); font-weight: 700; letter-spacing: .02em; text-align: start; }
+.siddour .priere.lecture-versets { margin: 0 0 14px; line-height: 1.9; }
+.lecture-numero { color: var(--muted); font-family: system-ui, sans-serif; font-size: .55em; vertical-align: .35em; }
+.lecture-attente { margin: 8px 0 12px; color: var(--muted); font-size: 14px; text-align: start; }
+.ecran.lu.nuit .lecture-reference { color: var(--lecture-nuit-titre, #D6C28C); }
+.ecran.lu.nuit .lecture-numero, .ecran.lu.nuit .lecture-attente { color: var(--lecture-nuit-discret, #A3A8A5); }
 .renvoi-jour { display: block; width: 100%; margin: 4px 0 16px; padding: 12px 12px; border: 0; border-radius: 12px; text-align: start; cursor: pointer;
   font: inherit; font-family: var(--police-texte); font-size: calc(16px * var(--echelle, 1)); font-weight: 700;
   color: var(--brand); background: color-mix(in srgb, var(--brand) 11%, transparent); }
 .ecran.lu.nuit .renvoi-jour { color: var(--lecture-nuit-titre, #D6C28C); background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 15%, transparent); }
+/* Israël ou diaspora ? (26/11, Q7) : la question du siddour, une carte qu'on touche. */
+.question-region { display: block; width: 100%; margin: 8px 0 12px; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+  border-radius: 14px; text-align: start; cursor: pointer; font: inherit; font-weight: 700; color: var(--brand); background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.ecran.lu.nuit .question-region { color: var(--lecture-nuit-titre, #D6C28C); border-color: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 35%, transparent);
+  background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 12%, transparent); }
 .ecran.lu.nuit .indice-jour { color: var(--lecture-nuit-titre, #D6C28C); background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 15%, transparent); }
 .ecran.lu.nuit { background: var(--lecture-nuit-fond, #000); color: var(--lecture-nuit-texte, #F2F0EA); }
 .ecran.lu.nuit .barre h1 { color: var(--lecture-nuit-texte, #F2F0EA); }
@@ -1698,6 +1721,9 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
 .ecran.lu.nuit .lecture .traduction:not(.seule) { color: var(--lecture-nuit-discret, #A3A8A5); }
 .chizuk-latin { font-family: Georgia, 'Times New Roman', serif; }
 .lecture-langues { font-weight: 700; }
+/* « תחנון » de la barre de lecture (26/11, Q1) : barré quand « Pas de Ta'hanoun aujourd'hui » est actif. */
+.lecture-tahanoun { font-size: 12px; font-weight: 700; }
+.lecture-tahanoun[aria-pressed="true"] { text-decoration: line-through; }
 
 /* Les boutons, affinés (04/11) : une seule famille — pilule pleine, pilule cerclée, lien —,
    52 px de haut, texte medium, une ombre douce sous le principal, un anneau de focus net. */
@@ -1828,19 +1854,69 @@ textarea.carnet-champ { resize: none; line-height: 1.4; }
   .bravo .principal, .bravo .carnet + .principal { margin-top: 8px; }
 }
 
-/* --- Le ciel du Jour (étape 3, 14/11 ; CielDuJour.kt) ---------------------------------- */
-/* La plaque devient une fenêtre sur le ciel du moment ; le hassid passe devant. */
-.plaque.avec-ciel { background: transparent; }
-.plaque .ciel { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.plaque img { position: relative; }
-/* Le haut du Jour prend un voile de la couleur du ciel, qui s'efface vers le bas et défile avec la page. */
-.ecran[data-ciel] .defile {
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--ciel) 30%, transparent), transparent) top / 100% 420px no-repeat local;
+/* --- Le ciel du Jour (étape 3, 14/11 ; sur toute la page et continu le 24/11 : CielPage.kt) ------ */
+/* Le ciel du moment couvre toute la page du Jour (app.js, poserCiel) : son dégradé monte avec la
+   page sur la hauteur de l'écran (--ciel-vue), deux collines ferment l'horizon, leur couleur (le
+   sol, --ciel-sol) continue au-delà et sous la barre de départ. La plaque du hassid garde son
+   disque clair. */
+.ecran.avec-ciel-page .defile {
+  position: relative;
+  background: linear-gradient(to bottom, var(--ciel-haut), var(--ciel-milieu) 55%, var(--ciel-bas)) 0 0 / 100% var(--ciel-vue) no-repeat local, var(--ciel-sol);
 }
-.ecran[data-ciel="aube"] { --ciel: #E8A0B4; }
-.ecran[data-ciel="jour"] { --ciel: #6FB8EA; }
-.ecran[data-ciel="coucher"] { --ciel: #F08A5D; }
-.ecran[data-ciel="nuit"] { --ciel: #2C3E7A; }
+.ecran.avec-ciel-page .defile > .contenu { position: relative; z-index: 1; }
+.ecran.avec-ciel-page .depart { background: var(--ciel-sol); }
+.ciel-decor { position: absolute; inset: 0 0 auto; height: var(--ciel-vue); overflow: hidden; pointer-events: none; z-index: 0; }
+.ciel-decor > * { position: absolute; }
+/* L'astre passe derrière les anneaux : le cercle qu'ils occupent est retiré de sa couche. */
+.ciel-astres { inset: 0; -webkit-mask: var(--trou); mask: var(--trou); }
+.ciel-astres > * { position: absolute; }
+/* Sa lueur large (opacité bornée, Ciel.teintesCiel) et sa couronne vive ; ses rayons à l'heure dorée. */
+.ciel-halo {
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background:
+    radial-gradient(closest-side, var(--couronne) 0 23.8%, var(--couronne-bas) 36.7%, transparent 52.4%),
+    radial-gradient(closest-side, var(--lueur) 0, var(--lueur-mi) 35%, var(--lueur-bas) 70%, transparent 100%);
+}
+.ciel-rayons { transform: translate(-50%, -50%); filter: blur(1.5px); overflow: visible; }
+.ciel-astre { transform: translate(-50%, -50%); border-radius: 50%; }
+.ciel-champ-x, .ciel-champ { position: absolute; inset: 0; }
+.ciel-etoile { position: absolute; display: block; border-radius: 50%; background: radial-gradient(closest-side, var(--etoile) 50%, transparent); }
+/* Les nuages prennent la lumière du moment : le bord éclairé, 3 px plus bas, sous le corps. */
+.ciel-route { position: absolute; }
+.ciel-nuage {
+  position: absolute; left: 0; right: 0; filter: blur(5px);
+  background:
+    radial-gradient(22% 22% at 30% 62%, var(--nuage) 98%, transparent),
+    radial-gradient(20% 30% at 50% 45%, var(--nuage) 98%, transparent),
+    radial-gradient(20% 22% at 68% 60%, var(--nuage) 98%, transparent),
+    radial-gradient(38% 16% at 50% 70%, var(--nuage) 98%, transparent);
+}
+.ciel-nuage.voile {
+  background:
+    radial-gradient(24% 15% at 30% 50%, var(--nuage) 98%, transparent),
+    radial-gradient(30% 18% at 55% 48%, var(--nuage) 98%, transparent),
+    radial-gradient(18% 14% at 78% 52%, var(--nuage) 98%, transparent);
+}
+.ciel-collines { left: 0; width: 100%; display: block; }
+/* Le ciel vivant (CielVivant.kt) : les étoiles scintillent (8 à 16 s, de 100 à 45 % de leur éclat)
+   et dérivent de ±3 px sur 40 s (±1,5 px sur 31 s en hauteur) ; le halo respire sur 12 s (−6 % de
+   taille, −18 % d'éclat) ; les rayons de l'heure dorée font un tour en trois minutes ; les nuages
+   passent à 3 px/s (le long, à 2,1 px/s). Sans animations (réglage du système), le ciel immobile :
+   étoiles pleines, halo entier, nuages à leur place de départ. */
+@media (prefers-reduced-motion: no-preference) {
+  .ciel-etoile { animation: ciel-scintille 12s ease-in-out infinite; }
+  .ciel-champ-x { animation: ciel-derive-x 20s ease-in-out -10s infinite alternate; }
+  .ciel-champ { animation: ciel-derive-y 15.5s ease-in-out -4.6s infinite alternate; }
+  .ciel-halo { animation: ciel-souffle 12s ease-in-out infinite; }
+  .ciel-rayons { animation: ciel-rayons 180s linear infinite; }
+  .ciel-route { animation: ciel-nuage 60s linear infinite; will-change: transform; }
+}
+@keyframes ciel-scintille { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes ciel-derive-x { from { transform: translateX(-3px); } to { transform: translateX(3px); } }
+@keyframes ciel-derive-y { from { transform: translateY(-1.5px); } to { transform: translateY(1.5px); } }
+@keyframes ciel-souffle { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(0.94); filter: brightness(1) opacity(0.82); } }
+@keyframes ciel-rayons { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes ciel-nuage { from { transform: translateX(var(--depart)); } to { transform: translateX(var(--arrivee)); } }
 /* L'icône devant la date hébraïque suit la phase. */
 .puce-ciel[data-ciel="aube"] .icone-ciel { --icone: url(icones/ic_ciel_aube.svg); }
 .puce-ciel[data-ciel="jour"] .icone-ciel { --icone: url(icones/ic_ciel_jour.svg); }

@@ -29,7 +29,7 @@ En hébreu, les écrans se retournent : titre du bandeau, chiffre des cartes, pe
 
 ## La musique : un essai
 
-Les 146 Mo de musique de l'application ne tiennent pas dans un .jar. Le niggoun 33 (1 min 51) y est en deux versions, produites par `app/genere-musique.sh` et gardées dans `app/res/m` : MP3 mono 24 kb/s (334 Ko) et AMR-NB 12,2 kb/s (178 Ko). L'écran « Musique » essaie le MP3, puis l'AMR, et affiche celle qui joue, ou pourquoi aucune ne joue, avec la liste des formats audio que le téléphone déclare. Selon le résultat sur le 3310, on ajoute d'autres niggounim dans le format qui passe, ou on les laisse au lecteur de musique du téléphone.
+Les 224 Mo de musique de l'application ne tiennent pas dans un .jar. Le niggoun 33 (1 min 51) y est en deux versions, produites par `app/genere-musique.sh` et gardées dans `app/res/m` : MP3 mono 24 kb/s (334 Ko) et AMR-NB 12,2 kb/s (178 Ko). L'écran « Musique » essaie le MP3, puis l'AMR, et affiche celle qui joue, ou pourquoi aucune ne joue, avec la liste des formats audio que le téléphone déclare. Selon le résultat sur le 3310, on ajoute d'autres niggounim dans le format qui passe, ou on les laisse au lecteur de musique du téléphone.
 
 ## Téléphones
 

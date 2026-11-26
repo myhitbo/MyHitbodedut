@@ -8,6 +8,7 @@
     "test": "node --test test/*.test.mjs"
   },
   "devDependencies": {
-    "@hebcal/core": "6.14.1"
+    "@hebcal/core": "6.14.1",
+    "@hebcal/leyning": "10.1.0"
   }
 }

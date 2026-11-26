@@ -245,12 +245,13 @@ test('siddour : chaque annotation désigne encore son bloc, et chaque libellé e
   }
   assert.equal(vrai('!tahanoun_minha', new Set(['chabbat'])), true);
   assert.equal(vrai('!tahanoun_minha', new Set(['tahanoun_minha'])), false);
-  // Anénou (Rema OC 565:3) : l'officiant dans les trois noussa'him ; le
-  // particulier à Cha'harit seulement dans le siddour Edot.
+  // Anénou (Rema OC 565:3) : l'officiant dans les trois noussa'him, sous « Avec minyan » les jours de jeûne public
+  // (26/11, Q2 : si « minyan », quand « jeune ») ; le particulier à Cha'harit seulement dans le siddour Edot.
   const anenou = (nusah, id) => annotations[nusah][id].map((a) => a.libelle).filter((l) => l?.startsWith('ajout_anenou'));
+  const officiant = (nusah, id) => annotations[nusah][id].some((a) => a.si === 'minyan' && a.quand === 'jeune');
   for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
-    assert.ok(anenou(nusah, 'chaharit').includes('ajout_anenou_officiant'), nusah);
-    assert.ok(anenou(nusah, 'minha').includes('ajout_anenou_officiant') && anenou(nusah, 'minha').includes('ajout_anenou_particulier'), nusah);
+    assert.ok(officiant(nusah, 'chaharit'), nusah);
+    assert.ok(officiant(nusah, 'minha') && anenou(nusah, 'minha').includes('ajout_anenou_particulier'), nusah);
     assert.equal(anenou(nusah, 'chaharit').includes('ajout_anenou_particulier'), nusah === 'edot', nusah);
   }
   // Roch 'Hodech (12/10) : Cha'harit renvoie au Hallel puis au Moussaf, textes présents dans chaque siddour.

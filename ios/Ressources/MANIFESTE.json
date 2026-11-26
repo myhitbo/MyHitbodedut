@@ -52,8 +52,8 @@
   {
    "chemin": "Ressources/Catalogue/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
-   "octets": 1488037,
-   "sha256": "1b40ece5dba56f1f3c53cc122c54fd9ace4b567befc5bf1f91e849c1bbf709c1",
+   "octets": 1522462,
+   "sha256": "fa11fc18e93c4ef1470e20cdb9c32ef5b0660d1478456c4a75dcba595da6c649",
    "licence": "propre à l'app",
    "mention": ""
   },
@@ -68,8 +68,8 @@
   {
    "chemin": "Ressources/Chaines/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
-   "octets": 1494223,
-   "sha256": "5eb1d8285e366b3790f7d50382cba45378902daee8b451b1c4d85607716a5913",
+   "octets": 1528540,
+   "sha256": "eecaf90d7da5d3a7128541f736a19a90a81a6a72300ef17ff2f1b02b41914a79",
    "licence": "propre à l'app",
    "mention": ""
   },
@@ -248,6 +248,22 @@
    "sha256": "5e2eebfb003ce448d0eea4dc9dbf5d4f95f8fb3d78c4e37da78613b62a31554c",
    "licence": "reprise avec mention, accord déclaré",
    "mention": "MyTzadik et המאיר לארץ"
+  },
+  {
+   "chemin": "Ressources/Contenu/lecture_torah.json",
+   "source": "android/app/src/main/res/raw/lecture_torah.json",
+   "octets": 43029,
+   "sha256": "e61bdb6a71d1f398c3553dc9e61ca0510b17918bb9680a352966c693e61076ff",
+   "licence": "BSD 2-Clause",
+   "mention": "découpage des montées : @hebcal/leyning 10.1.0 (© 2020 hebcal, BSD 2-Clause, texte de la licence dans _meta)"
+  },
+  {
+   "chemin": "Ressources/Contenu/lecture_torah_texte.json",
+   "source": "android/app/src/main/res/raw/lecture_torah_texte.json",
+   "octets": 621008,
+   "sha256": "bb5eacf0721299c2f9f0ad4a197a1b9d09a2e2f9ffb454d03566580e63837b42",
+   "licence": "domaine public",
+   "mention": "Tanach with Ta'amei Hamikra, tanach.us (codex de Leningrad)"
   },
   {
    "chemin": "Ressources/Contenu/livre_chir_hachirim.json",
@@ -12468,8 +12484,8 @@
   {
    "chemin": "Ressources/Contenu/musique.json",
    "source": "android/app/src/main/java/com/myhitbodedut/MusiquePlay.kt",
-   "octets": 2746,
-   "sha256": "156943334002416df7ccd4eb8292d8ecf19fed6fefb95638908ba361e37718cd",
+   "octets": 5471,
+   "sha256": "b11ab80f402e8d4f7bfcb847953fa2e567bb4e314fe7cf2ff029cdacde2504c6",
    "licence": "accord écrit (PORTAGE.md § 6.1)",
    "mention": "voir chaque morceau"
   },
@@ -12484,32 +12500,32 @@
   {
    "chemin": "Ressources/Contenu/siddur_annotations.json",
    "source": "android/app/src/main/res/raw/siddur_annotations.json",
-   "octets": 507130,
-   "sha256": "534f324c8b2e633960527f71b5e405a356fe5c62f0c562e495407544808f28ae",
+   "octets": 658855,
+   "sha256": "8412dbe4aae9f1c2688207e4b9fc5bd526344c01bb5e19215064e71af38febff",
    "licence": "dérivé des siddourim",
    "mention": "dérivé des trois siddourim"
   },
   {
    "chemin": "Ressources/Contenu/siddur_ashkenaz.json",
    "source": "android/app/src/main/res/raw/siddur_ashkenaz.json",
-   "octets": 667936,
-   "sha256": "4d091febb593ac3a189333b58db8e3a9557df8a039ec3c5d3c68ea968d06c4c5",
+   "octets": 676063,
+   "sha256": "036a85e94ef8bb09a4bf44e6710e87d5ed97c388655ecce05c5431a63aa85fec",
    "licence": "domaine public, CC0, CC-BY, CC BY-SA",
    "mention": "Torat Emet 357 et Daat (domaine public), Shaliehsaboo (CC0), Metsudah 1981 (CC-BY), Wikipédia hébreu (CC BY-SA)"
   },
   {
    "chemin": "Ressources/Contenu/siddur_edot.json",
    "source": "android/app/src/main/res/raw/siddur_edot.json",
-   "octets": 753216,
-   "sha256": "4182852d3be5c8f0494c7a48d467f88e017613ae0e484ad0a6c85f858a2af4db",
+   "octets": 756684,
+   "sha256": "b2254841529b79fbc8c84aa0b6bdce77d49b4a558ab23a5ccc7feb79d99b5e8f",
    "licence": "domaine public, CC0, CC-BY, CC BY-SA",
    "mention": "Torat Emet 357 et Daat (domaine public), Shaliehsaboo (CC0), Metsudah 1981 (CC-BY), Wikipédia hébreu (CC BY-SA)"
   },
   {
    "chemin": "Ressources/Contenu/siddur_sefard.json",
    "source": "android/app/src/main/res/raw/siddur_sefard.json",
-   "octets": 774262,
-   "sha256": "330bfd24b11e887d36e865a2aeb4acc21556674f6cc4e491e81a8b11774b5aed",
+   "octets": 782472,
+   "sha256": "53be15595b7eca303fb1f7db98d67053da1447e8150cf0a8c98d950db74436b6",
    "licence": "domaine public, CC0, CC-BY, CC BY-SA",
    "mention": "Torat Emet 357 et Daat (domaine public), Shaliehsaboo (CC0), Metsudah 1981 (CC-BY), Wikipédia hébreu (CC BY-SA)"
   },
@@ -13298,6 +13314,22 @@
    "mention": ""
   },
   {
+   "chemin": "Ressources/Musique/chabad_shabbos_shneor_lerer.m4a",
+   "source": "android/app/src/main/res/raw/chabad_shabbos_shneor_lerer.m4a",
+   "octets": 5333848,
+   "sha256": "b28b8aa492ea80a373ee130fae2467e5318c750f30595dc68c8cf925aebdba01",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/chabad_yamim_noraim_shneor_lerer.m4a",
+   "source": "android/app/src/main/res/raw/chabad_yamim_noraim_shneor_lerer.m4a",
+   "octets": 9489842,
+   "sha256": "23300a215162b69679991f28702e433e54de9498eedb57d7242f877fdda9d228",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
    "chemin": "Ressources/Musique/hamelech_basade.m4a",
    "source": "android/app/src/main/res/raw/hamelech_basade.m4a",
    "octets": 2976053,
@@ -13410,6 +13442,46 @@
    "mention": "voir Contenu/musique.json"
   },
   {
+   "chemin": "Ressources/Musique/lerer_ani_maamin.m4a",
+   "source": "android/app/src/main/res/raw/lerer_ani_maamin.m4a",
+   "octets": 1938951,
+   "sha256": "10c1f85a620e8f1868e934fec8e006686d42bebd701552eebcde5f8f0da713df",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/lerer_anim_zemirot.m4a",
+   "source": "android/app/src/main/res/raw/lerer_anim_zemirot.m4a",
+   "octets": 2267811,
+   "sha256": "34448b4dc3d7de49928056fc0a937e7e14f17856472d5b8e2750a03536afbc74",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/lerer_nigun_abaal_shem_tov_for_babies.m4a",
+   "source": "android/app/src/main/res/raw/lerer_nigun_abaal_shem_tov_for_babies.m4a",
+   "octets": 3588482,
+   "sha256": "8e6657bed681368f7e427bb839b4979a659ef9055734065d801efc9291023db9",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/nigunim_for_neshama_shneor_lerer.m4a",
+   "source": "android/app/src/main/res/raw/nigunim_for_neshama_shneor_lerer.m4a",
+   "octets": 14831158,
+   "sha256": "324dc95315c6874f8b7cb6e240f667d8452379d25d2e87fd8417f9620b5e9c79",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/relaxing_chabad_melodies_shneor_lerer.m4a",
+   "source": "android/app/src/main/res/raw/relaxing_chabad_melodies_shneor_lerer.m4a",
+   "octets": 7596304,
+   "sha256": "c131514d349ad7ab97ade6f9211b51ffcef43b4933a2e342d70c7c23595543d9",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
    "chemin": "Ressources/Musique/shpayer_afilou.m4a",
    "source": "android/app/src/main/res/raw/shpayer_afilou.m4a",
    "octets": 2643233,
@@ -13474,10 +13546,106 @@
    "mention": "voir Contenu/musique.json"
   },
   {
+   "chemin": "Ressources/Musique/tzomo_lecho_s_lerer.m4a",
+   "source": "android/app/src/main/res/raw/tzomo_lecho_s_lerer.m4a",
+   "octets": 2466417,
+   "sha256": "d1962f128941b21a5937c4d532a6157daaad4da2594407c7d7d3c458c2f2e9da",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/vehi_sheamda_piano_shneor_lerer.m4a",
+   "source": "android/app/src/main/res/raw/vehi_sheamda_piano_shneor_lerer.m4a",
+   "octets": 2316894,
+   "sha256": "f4f48257d1b5edbb4521772e553b0034e55827e3e35a1528a9750bcaa133fff5",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/vehi_sheamda_s_lerer.m4a",
+   "source": "android/app/src/main/res/raw/vehi_sheamda_s_lerer.m4a",
+   "octets": 2087404,
+   "sha256": "29d66cbd897c0a622684c134cf4e7dff7c17202f393857adaca416004db0e8b3",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_a_part_of_me.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_a_part_of_me.m4a",
+   "octets": 3750342,
+   "sha256": "c53e7b3bd2b7aa9d02df6174c87a3f337c519bba5daf5120efb1b0a8ae8cfcb6",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_anticipation.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_anticipation.m4a",
+   "octets": 1830643,
+   "sha256": "bf3c4260a54b57927ab1832ccc2c8cfd807cb77d5c2d8e7a58b1f36ce9e33911",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_harping_his_praise.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_harping_his_praise.m4a",
+   "octets": 3773331,
+   "sha256": "6858b01274c7c134575b21f6f6d93839d278ee68ec7dae6fce1e38aad43277c4",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_listening_to_the_heart.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_listening_to_the_heart.m4a",
+   "octets": 2253185,
+   "sha256": "db1ddb51acd8cb3dde9cfc07e8a7e6f0b9a31f28835171bf7a1c4fb92158dd84",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
    "chemin": "Ressources/Musique/yanuka_nigoun_3.m4a",
    "source": "android/app/src/main/res/raw/yanuka_nigoun_3.m4a",
    "octets": 3433554,
    "sha256": "9fc79389f916b280e4c14ed04093ce4319be6378286ada32542f1d5eb71927d3",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_shlomo_yehuda.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_shlomo_yehuda.m4a",
+   "octets": 5488694,
+   "sha256": "8a08fa8e7de11875552efca545f331032b54e3411aac0a1867f3e17c0353ffd0",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_shlomo_yehuda_2.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_shlomo_yehuda_2.m4a",
+   "octets": 4403994,
+   "sha256": "66f1d007457fa5ff12b8c83c9156e72631858ece68a3ee6ed33d2d97ce206a07",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_the_king_will_return.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_the_king_will_return.m4a",
+   "octets": 2509735,
+   "sha256": "db387b20f93460d79e6dfcea99ac5af034f55dbf6009741ead9c8e0058e020a2",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_the_truth_will_rise.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_the_truth_will_rise.m4a",
+   "octets": 2855558,
+   "sha256": "3ddb3c56f9343409d6041e7bed2474f4f057a7d2a3e0ab61ac0e896883b4723f",
+   "licence": "accord écrit (PORTAGE.md § 6.1)",
+   "mention": "voir Contenu/musique.json"
+  },
+  {
+   "chemin": "Ressources/Musique/yanuka_yearning.m4a",
+   "source": "android/app/src/main/res/raw/yanuka_yearning.m4a",
+   "octets": 2993106,
+   "sha256": "dbc1291faa27a00cce371369bf5e0a11d84e14d6d2fc1e94ef8c631b1eaa6d61",
    "licence": "accord écrit (PORTAGE.md § 6.1)",
    "mention": "voir Contenu/musique.json"
   },

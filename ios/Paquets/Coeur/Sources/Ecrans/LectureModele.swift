@@ -68,6 +68,13 @@ public final class LectureModele {
     /// Le nusah du texte affiché (nil pour un livre) : un autre nusah n'a pas les mêmes paragraphes.
     private var nusahAffiche: Nusah? = nil
     private var annotations: [SiddurJour.Annotation] = []
+    /// La lecture de la Torah (26/11) : ses montées, lues avec un office qui en a la place (Cha'harit, Min'ha) ; son
+    /// texte (0,6 Mo), lu la première fois qu'une lecture se déplie.
+    @ObservationIgnored private var lectureDonnees: LectureTorah.Donnees? = nil
+    @ObservationIgnored private var lectureTexte: LectureTorah.Texte? = nil
+    @ObservationIgnored private var lectureEnChargement = false
+    /// Le jour hébreu du texte affiché, pour « Pas de Ta'hanoun aujourd'hui » de la barre (Q1).
+    @ObservationIgnored private var dateTahanoun: JourCivil? = nil
     /// Les ajouts repliés que l'on a ouverts, pour ce texte.
     private var ouverts: Set<String> = []
     /// L'id de chaque ligne, vers son rang.
@@ -105,6 +112,8 @@ public final class LectureModele {
     public private(set) var annonceMasque = false
     /// La feuille des marque-pages de ce texte est ouverte (le bouton du bandeau).
     public var feuilleMarques = false
+    /// La question « Israël ou diaspora ? » est posée (26/11, Q7) : la carte du texte touchée.
+    public var questionRegionOuverte = false
     /// La liste des chapitres d'un long livre est ouverte (le bouton « Chapitres (n) ▾ », FLECTURE-03).
     public var feuilleChapitres = false
     /// Le défilement automatique : le bouton de la barre, et la commande flottante tant qu'il défile.
@@ -176,6 +185,11 @@ public final class LectureModele {
                 nomRecueil = lu.nusah
                 nusahAffiche = nusah
                 annotations = toutes[cible.id] ?? []
+                // La lecture de la Torah (26/11) : seulement pour un office qui en a la place ; sans elle, l'office se lit
+                // sans lecture plutôt que pas du tout.
+                if lectureDonnees == nil && annotations.contains(where: { $0.sorte == .lecture }) {
+                    lectureDonnees = try? await contenus.lectureTorah()
+                }
             }
             let lu = Date()
             etat = .pret
@@ -211,32 +225,61 @@ public final class LectureModele {
         magasin.reglages.inIsrael(fuseauTelephone: horloge.fuseau.identifiant)
     }
 
-    /// Le jour hébreu dont relève cette prière maintenant : Arvit, l'après-midi, est déjà celui de demain ; après
-    /// la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
-    ///
-    /// La nuit (audit du 16/11 : la Méguila n'a pas les mêmes bénédictions le soir et le matin), la condition
-    /// `nuit` s'ajoute : après la sortie des étoiles ou avant l'aube du lieu, de 19 h à 6 h sans lieu. Les zmanim
-    /// sont ceux du noussa'h (les Edot sortent à 13,5 min zmaniyot).
-    public var jourDeLaPriere: CalendrierJuif.Jour {
+    /// Ce que l'heure et le lieu disent du jour de cette prière (SiddurLectureActivity.afficher) : le jour hébreu dont
+    /// elle relève, la nuit, et le jour voisin du Birkat haMazon et de Méèn chaloch (26/11, Q6).
+    private struct MomentPriere {
+        let date: JourCivil
+        let nuit: Bool
+        let voisin: JourCivil?
+    }
+
+    /// Arvit, l'après-midi, relève déjà de demain ; après la sortie des étoiles du lieu, les autres textes relèvent aussi
+    /// de demain (28/10). La nuit (audit du 16/11 : la Méguila n'a pas les mêmes bénédictions le soir et le matin) :
+    /// après la sortie des étoiles ou avant l'aube du lieu, de 19 h à 6 h sans lieu. Le jour voisin : entre le coucher
+    /// du soleil et minuit (de 16 h à minuit sans lieu). Les zmanim sont ceux du noussa'h (les Edot sortent à
+    /// 13,5 min zmaniyot).
+    private var momentPriere: MomentPriere {
         let reglages = magasin.reglages
         let aujourdhui = horloge.aujourdhui
         let heure = horloge.dateHeure.heure
+        let maintenant = horloge.maintenant
         var apresSortie: Bool? = nil
+        var apresCoucher: Bool? = nil
         var avantAube: Bool? = nil
         if let lieu = reglages.lieuZmanim {
             let zmanim = Zmanim.jour(lieu: lieu, date: aujourdhui, nusah: reglages.siddurNusah)
-            if let sortie = zmanim.first(where: { $0.cle == "tset" })?.instant {
-                apresSortie = horloge.maintenant >= Int64((sortie.timeIntervalSince1970 * 1000).rounded(.down))
+            func millis(_ cle: String) -> Int64? {
+                guard let instant = zmanim.first(where: { $0.cle == cle })?.instant else { return nil }
+                return Int64((instant.timeIntervalSince1970 * 1000).rounded(.down))
             }
-            if let aube = zmanim.first(where: { $0.cle == "alot" })?.instant {
-                avantAube = horloge.maintenant < Int64((aube.timeIntervalSince1970 * 1000).rounded(.down))
-            }
+            if let sortie = millis("tset") { apresSortie = maintenant >= sortie }
+            if let coucher = millis("chkia") { apresCoucher = maintenant >= coucher }
+            if let aube = millis("alot") { avantAube = maintenant < aube }
         }
-        let date = CalendrierJuif.jourDeLaPriere(cible.id, date: aujourdhui, heure: heure,
-                                                 apresSortie: apresSortie ?? false)
-        let jour = CalendrierJuif.jour(date, enIsrael: enIsrael, mukafChoma: reglages.mukafChoma)
-        guard CalendrierJuif.nuit(heure: heure, apresSortie: apresSortie, avantAube: avantAube) else { return jour }
+        return MomentPriere(
+            date: CalendrierJuif.jourDeLaPriere(cible.id, date: aujourdhui, heure: heure, apresSortie: apresSortie ?? false),
+            nuit: CalendrierJuif.nuit(heure: heure, apresSortie: apresSortie, avantAube: avantAube),
+            voisin: CalendrierJuif.jourVoisin(cible.id, date: aujourdhui, heure: heure, apresCoucher: apresCoucher,
+                                              apresSortie: apresSortie))
+    }
+
+    /// Le jour hébreu de la prière, en Israël ou en diaspora, avec la condition `nuit` la nuit.
+    private func jourPour(_ israel: Bool, _ m: MomentPriere) -> CalendrierJuif.Jour {
+        let jour = CalendrierJuif.jour(m.date, enIsrael: israel, mukafChoma: magasin.reglages.mukafChoma)
+        guard m.nuit else { return jour }
         return jour.avecConditions(jour.conditions.union([CalendrierJuif.C.nuit]))
+    }
+
+    /// Les conditions du jour voisin (Q6), vides hors du Birkat haMazon et de Méèn chaloch le soir.
+    private func voisinPour(_ israel: Bool, _ m: MomentPriere) -> Set<String> {
+        guard let date = m.voisin else { return [] }
+        return magasin.reglages.conditionsDuJour(CalendrierJuif.jour(date, enIsrael: israel, mukafChoma: magasin.reglages.mukafChoma))
+    }
+
+    /// Le jour hébreu dont relève cette prière maintenant (voir `momentPriere`), en Israël ou en diaspora selon le
+    /// réglage ; la nuit, avec la condition `nuit`.
+    public var jourDeLaPriere: CalendrierJuif.Jour {
+        jourPour(enIsrael, momentPriere)
     }
 
     /// Refait les lignes d'après le texte lu, le jour, les replis ouverts, les marque-pages et les réglages.
@@ -256,11 +299,14 @@ public final class LectureModele {
                                                  chapitres: texte.sections.count, auto: texte.traductionAuto,
                                                  langues: modeLangues)
         let jourLignes: [SiddurJour.Ligne]
+        var question: Libelle? = nil
         if cible.livre {
             jourLignes = SiddurJour.lignes(texte, [], [], nusah: reglages.siddurNusah)
         } else {
             let israel = enIsrael
-            let jour = jourDeLaPriere
+            let moment = momentPriere
+            dateTahanoun = moment.date
+            let jour = jourPour(israel, moment)
             // Un texte qui n'a que des notes de l'application (audit du 16/11) n'a pas d'ajouts du jour.
             if !annotations.allSatisfy({ $0.sorte == .note }) {
                 notes.append((id: "jour", libelle: Libelle("siddur_jour_ajouts", .texte(jour.dateHebraique),
@@ -270,12 +316,37 @@ public final class LectureModele {
             if JourAffiche.offices.contains(cible.id) && jour.chome {
                 notes.append((id: "semaine", libelle: Libelle("siddur_semaine_chabbat")))
             }
-            // « Pas de Ta'hanoun aujourd'hui » (ZmanimActivity) vaut pour la tefila du jour (Store.conditionsDuJour).
-            let conditions = SiddurJour.avecSansTahanoun(jour.conditions, reglages.sansTahanounLe(jour.date))
-            jourLignes = SiddurJour.lignes(texte, annotations, conditions, ouverts: ouverts,
-                                           nusah: reglages.siddurNusah, enIsrael: israel,
-                                           sansTahanounFinTichri: reglages.sansTahanounFinTichri,
-                                           sud: reglages.hemisphereSud)
+            let nusah = reglages.siddurNusah
+            let finTichri = reglages.sansTahanounFinTichri
+            let sud = reglages.hemisphereSud
+            // La lecture de la Torah du jour (26/11) : à Cha'harit les jours de lecture, à Min'ha les jours de jeûne,
+            // jamais un Chabbat ni un Yom tov (LectureTorah.lecturesOffice).
+            let id = cible.id
+            let avecLecture = lectureDonnees != nil && (LectureTorah.litDansLOffice(jourPour(true, moment), office: id)
+                || LectureTorah.litDansLOffice(jourPour(false, moment), office: id))
+            func lecturesPour(_ il: Bool) -> [LectureTorah.Lecture] {
+                guard avecLecture, let d = lectureDonnees else { return [] }
+                return (try? LectureTorah.lecturesOffice(d, date: moment.date, office: id, enIsrael: il,
+                                                         mukafChoma: reglages.mukafChoma, nusah: nusah.rawValue)) ?? []
+            }
+            // Israël ou diaspora non confirmé (26/11, Q7) : demandé quand le texte en dépend aujourd'hui.
+            if !annotations.isEmpty && !reglages.regionConfirmee
+                && SiddurJour.dependDeLaRegion(texte, annotations, israel: reglages.conditionsDuJour(jourPour(true, moment)),
+                                               diaspora: reglages.conditionsDuJour(jourPour(false, moment)), nusah: nusah,
+                                               sansTahanounFinTichri: finTichri, sud: sud,
+                                               voisinIsrael: voisinPour(true, moment), voisinDiaspora: voisinPour(false, moment),
+                                               lecturesIsrael: lecturesPour(true), lecturesDiaspora: lecturesPour(false)) {
+                question = Libelle("siddur_region_question")
+            }
+            // « Pas de Ta'hanoun aujourd'hui » et צדיק / צדקת valent pour la tefila du jour (Store.conditionsDuJour) ; le
+            // soir, au Birkat haMazon et à Méèn chaloch, les ajouts du jour voisin restent repliés (Q6).
+            jourLignes = SiddurJour.lignes(texte, annotations, reglages.conditionsDuJour(jour), ouverts: ouverts,
+                                           nusah: nusah, enIsrael: israel, sansTahanounFinTichri: finTichri, sud: sud,
+                                           voisin: voisinPour(israel, moment), lectures: lecturesPour(israel))
+            // Une lecture dépliée : son texte se lit à part, puis l'écran se refait (26/11).
+            if lectureTexte == nil && jourLignes.contains(where: { if case .passage = $0 { true } else { false } }) {
+                demanderTexteLecture()
+            }
         }
         var marquees = Set<LecturePlace>()
         for m in marquesDuTexte {
@@ -283,9 +354,10 @@ public final class LectureModele {
         }
         let recueil = siddur
         let police = self.police
+        let torah = lectureDonnees.map { LectureTorahRendu(donnees: $0, texte: lectureTexte, langue: langue) }
         let nouvelles = LectureLignes.lignes(texte: texte, annotations: annotations, jour: jourLignes, notes: notes,
-                                             marques: marquees, langues: modeLangues, police: police,
-                                             titreDe: { id in recueil?.texte(id)?.titre.he })
+                                             question: question, marques: marquees, langues: modeLangues, police: police,
+                                             torah: torah, titreDe: { id in recueil?.texte(id)?.titre.he })
         lignes = nouvelles
         var index: [String: Int] = [:]
         var titres: [Int] = []
@@ -436,6 +508,77 @@ public final class LectureModele {
             ouverts.insert(cle)
         }
         reconstruire()
+    }
+
+    /// Le texte des lectures n'est pas encore lu : lu une fois, puis l'écran se refait, à la même place
+    /// (SiddurLectureActivity.demanderTexteLecture).
+    private func demanderTexteLecture() {
+        if lectureEnChargement { return }
+        lectureEnChargement = true
+        let contenus = self.contenus
+        Task { @MainActor [weak self] in
+            let lu = try? await contenus.lectureTorahTexte()
+            guard let self else { return }
+            self.lectureEnChargement = false
+            guard let lu else { return }
+            self.lectureTexte = lu
+            if self.etat == .pret { self.reconstruireEnGardantLaPlace() }
+        }
+    }
+
+    /// Le texte des lectures est lu (pour les tests : la demande part de la construction des lignes).
+    public var texteLectureLu: Bool {
+        lectureTexte != nil
+    }
+
+    /// Attend la lecture du texte des lectures, si elle est en cours (pour les tests).
+    public func attendreTexteLecture() async {
+        while lectureEnChargement { await Task.yield() }
+    }
+
+    // MARK: Israël ou diaspora (26/11, Q7)
+
+    /// La carte « Israël ou diaspora ? » touchée : la question se pose.
+    public func poserQuestionRegion() {
+        questionRegionOuverte = true
+    }
+
+    /// La réponse confirme le statut, gardé comme s'il était choisi dans les réglages (Store.setInIsrael(…, manuel =
+    /// true)) ; le texte se refait, à la même place.
+    public func repondreRegion(israel: Bool) async throws {
+        questionRegionOuverte = false
+        let aujourdhui = horloge.aujourdhui, fuseau = horloge.fuseau.identifiant
+        defer { reconstruireEnGardantLaPlace() }
+        try await magasin.modifierReglages {
+            $0.setInIsrael(israel, manuel: true, aujourdhui: aujourdhui, fuseauTelephone: fuseau)
+        }
+    }
+
+    // MARK: Pas de Ta'hanoun aujourd'hui (26/11, Q1)
+
+    /// Le bouton « תחנון » de la barre : au siddour, à Cha'harit et à Min'ha.
+    public var avecTahanoun: Bool {
+        !cible.livre && (cible.id == "chaharit" || cible.id == "minha")
+    }
+
+    /// « Pas de Ta'hanoun aujourd'hui » est choisi pour le jour du texte affiché : le bouton est barré.
+    public var sansTahanoun: Bool {
+        magasin.reglages.sansTahanounLe(dateTahanoun ?? horloge.aujourdhui)
+    }
+
+    /// L'état du bouton, pour la lecture d'écran.
+    public var etatTahanoun: Libelle {
+        Libelle(sansTahanoun ? "lecture_tahanoun_oui" : "lecture_tahanoun_non")
+    }
+
+    /// Le bouton « תחנון » : le même réglage que l'écran des zmanim (Store.sansTahanounLe), pour le jour du texte ; il
+    /// retire le Ta'hanoun seul (למנצח et Avinou malkénou restent), et le texte se refait à la même place.
+    public func basculerTahanoun() async throws {
+        guard avecTahanoun else { return }
+        let date = dateTahanoun ?? momentPriere.date
+        let sans = !magasin.reglages.sansTahanounLe(date)
+        defer { reconstruireEnGardantLaPlace() }
+        try await magasin.modifierReglages { $0.setSansTahanounLe(date, sans: sans) }
     }
 
     /// Le pied « Replier » : l'ajout se referme, et l'on revient à son bandeau s'il est passé au-dessus de l'écran.

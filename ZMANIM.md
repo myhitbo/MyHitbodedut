@@ -242,12 +242,26 @@ qui dépendent du jour. Il les reconnaît à la consigne du siddour lui-même
 empreinte : si un siddour reconstruit bouge, les tests échouent. Les textes
 eux-mêmes ne sont jamais modifiés.
 
-- **Ajout du jour** : mis en évidence, avec son nom.
-- **Ajout hors du jour** : replié en une ligne ; une flèche l'ouvre et le
-  referme. Rien n'est retiré.
+Deux catégories depuis le 26/11 (demande du propriétaire, réponses Q1-Q15 ;
+`SiddurJour.kt`, `siddur-jour.js`) :
+
+- **Ajout du jour** : mis en évidence, avec son nom ; seules ses lignes du
+  jour s'y lisent.
+- **Ajout du calendrier hors du jour** : retiré, sans bandeau. Exceptions
+  voulues : au Birkat haMazon et à Méèn chaloch, entre le coucher du soleil et
+  la sortie des étoiles (sans lieu, de 16 h à minuit) et le soir qui suit, les
+  ajouts du jour voisin restent repliés (`CalendrierJuif.jourVoisin`) ; le
+  Ledavid des Edot hors d'Eloul et l'Anénou du particulier hors des jeûnes
+  publics restent repliés.
+- **Ajout d'occasion** (minyan, qui prie seul, brit, invité, maison endeuillée,
+  zimoun, oubli…) : replié en une ligne ; une flèche l'ouvre et le referme. Une
+  garde (« quand ») le retire les jours où il n'a pas lieu d'être (la consigne
+  d'oubli de « מוריד הגשם » l'été).
 - **Variante enchâssée dans un bloc** (« בעשרת ימי תשובה אומרים: המלך
-  הקדוש ») : la variante hors du jour est retirée du bloc, et une ligne repliée
-  la rend d'un geste.
+  הקדוש ») : la seule bonne formule se lit, l'autre est retirée, sans ligne
+  repliée.
+- **Israël ou diaspora** non confirmé : quand le texte en dépend ce jour-là,
+  la lecture demande le statut et le garde.
 
 Avinou malkénou (Sfard, Ashkenaz), le Ta'hanoun du siddour ashkénaze et le
 Chir chel yom sont annotés comme le reste. Dans le siddour Edot, Avinou malkénou

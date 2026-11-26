@@ -25,6 +25,8 @@ public actor ContenusApp {
 
     private var siddourim: [Nusah: Siddur] = [:]
     private var annotationsParNusah: [Nusah: [String: [SiddurJour.Annotation]]] = [:]
+    private var lectureTorahLue: LectureTorah.Donnees?
+    private var lectureTorahTexteLu: LectureTorah.Texte?
     private var tehilimLu: Tehilim?
     private var tikkunLu: Tikkun?
     private var bibliothequeLue: Bibliotheque?
@@ -60,6 +62,8 @@ public actor ContenusApp {
     public func oublier() {
         siddourim = [:]
         annotationsParNusah = [:]
+        lectureTorahLue = nil
+        lectureTorahTexteLu = nil
         tehilimLu = nil
         tikkunLu = nil
         bibliothequeLue = nil
@@ -92,6 +96,23 @@ public actor ContenusApp {
         let lues = try SiddurJour.parse(String(decoding: donnees, as: UTF8.self), nusah)
         annotationsParNusah[nusah] = lues
         return lues
+    }
+
+    /// La lecture de la Torah des offices de semaine (`lecture_torah.json`, 43 ko, LectureTorah.donnees) : les montées.
+    public func lectureTorah() throws -> LectureTorah.Donnees {
+        if let lectureTorahLue { return lectureTorahLue }
+        let donnees = try requis("lecture_torah.json")
+        let lue = try LectureTorah.parse(String(decoding: donnees, as: UTF8.self))
+        lectureTorahLue = lue
+        return lue
+    }
+
+    /// Le texte des lectures (`lecture_torah_texte.json`, 0,6 Mo, LectureTorah.texte) : lu quand une lecture se déplie.
+    public func lectureTorahTexte() throws -> LectureTorah.Texte {
+        if let lectureTorahTexteLu { return lectureTorahTexteLu }
+        let lu = try LectureTorah.Texte(requis("lecture_torah_texte.json"))
+        lectureTorahTexteLu = lu
+        return lu
     }
 
     // MARK: Les textes

@@ -41,7 +41,7 @@ EXCLUES = re.compile(r"^(divulgation_|permission_battery|permission_overlay)")
 COMPTES = {
     "textes par rite": 38, "psaumes": 150, "versets": 2527, "psaumes du Tikoun": 10,
     "textes de 'hizouk": 171, "livres": 12, "hilloulot": 3966, "villes": 51,
-    "aéroports": 3226, "morceaux": 23,
+    "aéroports": 3226, "morceaux": 42,
 }
 
 # Licence et mention de chaque fichier produit (PORTAGE.md § 4.1 et § 6) : un fichier sans
@@ -52,6 +52,12 @@ LICENCES = [
      "Torat Emet 357 et Daat (domaine public), Shaliehsaboo (CC0), Metsudah 1981 (CC-BY), "
      "Wikipédia hébreu (CC BY-SA)"),
     (r"Contenu/siddur_annotations\.json", "dérivé des siddourim", "dérivé des trois siddourim"),
+    # La lecture de la Torah des offices de semaine (26/11) : la licence BSD d'hebcal est livrée dans le `_meta` du
+    # fichier des lectures, que l'app embarque.
+    (r"Contenu/lecture_torah\.json", "BSD 2-Clause",
+     "découpage des montées : @hebcal/leyning 10.1.0 (© 2020 hebcal, BSD 2-Clause, texte de la licence dans _meta)"),
+    (r"Contenu/lecture_torah_texte\.json", "domaine public",
+     "Tanach with Ta'amei Hamikra, tanach.us (codex de Leningrad)"),
     (r"Contenu/tehilim\.json", "domaine public", "tanach.us, Bible du Rabbinat 1899, JPS 1917"),
     (r"Contenu/tikkun_haklali\.json", "domaine public ; liturgie fournie par le propriétaire",
      "psaumes du domaine public ; liturgie fournie par le propriétaire"),

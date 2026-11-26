@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { jour } from '../src/js/calendrier-juif.js';
-import { conditionsPour, index, plan } from '../src/js/siddur-jour.js';
+import { conditionsPour, enClair, index, plan } from '../src/js/siddur-jour.js';
 import { momentOuvrable } from '../src/js/jour-affiche.js';
 
 const raw = (f) => JSON.parse(readFileSync(new URL(`../../android/app/src/main/res/raw/${f}`, import.meta.url), 'utf8'));
@@ -15,7 +15,7 @@ const nu = (s) => s.replace(/<[^>]+>/g, ' ').replace(/[֑-ׇ]/g, '').replace(/\s
 const ISHEV = /^ישב( \(תהלים צא\))? בסתר/;
 const cond = (nusah, iso, israel = false) => conditionsPour(nusah, israel, jour(iso, israel).conditions);
 
-/** L'état (« du_jour », « replie », « ordinaire », « libre ») des parties dont un bloc répond à [motif]. */
+/** L'état (« du_jour », « replie », « retire », « ordinaire », « libre ») des parties dont un bloc répond à [motif]. */
 function etats(nusah, id, iso, motif, israel = false) {
   const texte = siddur[nusah].textes.find((t) => t.id === id);
   const idx = index(annotations[nusah][id]);
@@ -34,7 +34,7 @@ test('Mizmor létoda (Sfard, Ashkenaz) : replié le Chabbat, à Pessa\'h, la vei
   for (const nusah of ['sefard', 'ashkenaz']) {
     assert.deepEqual(etats(nusah, 'chaharit', '2026-11-18', /^מזמור לתודה/), ['ordinaire'], nusah);
     for (const iso of ['2026-04-01', '2026-04-05', '2026-09-20', '2026-11-21']) {
-      assert.deepEqual(etats(nusah, 'chaharit', iso, /^מזמור לתודה/), ['replie'], `${nusah} ${iso}`);
+      assert.deepEqual(etats(nusah, 'chaharit', iso, /^מזמור לתודה/), ['retire'], `${nusah} ${iso}`);
     }
   }
   assert.ok(cond('ashkenaz', '2025-10-09').has('mizmor_letoda')); // 'Hol hamoed Soukkot : on le dit
@@ -43,7 +43,7 @@ test('Mizmor létoda (Sfard, Ashkenaz) : replié le Chabbat, à Pessa\'h, la vei
 test('« שעשה לי כל צרכי » (Edot) : la bénédiction en clair le 9 Av, la consigne y donne l\'avis du Yalkut Yosef', () => {
   assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-07-23', /^ברוך.*שעשה לי/), ['libre']);
   assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-07-23', /^בתשעה באב ויום/), ['du_jour']);
-  assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-11-18', /^בתשעה באב ויום/), ['replie']);
+  assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-11-18', /^בתשעה באב ויום/), ['retire']);
 });
 
 test('Motsaé Chabbat : ויהי נועם replié avant un Yom tov dans la semaine (Sfard, Ashkenaz), pas en Edot', () => {
@@ -52,13 +52,13 @@ test('Motsaé Chabbat : ויהי נועם replié avant un Yom tov dans la semai
     assert.deepEqual(etats(nusah, 'arvit', '2026-11-15', ISHEV), ['du_jour'], nusah);
     assert.deepEqual(etats(nusah, 'arvit', '2026-11-15', /^ואתה קדוש/), ['du_jour'], nusah);
     for (const iso of ['2025-09-21', '2026-04-05']) {
-      const attendu = nusah === 'edot' ? 'du_jour' : 'replie';
+      const attendu = nusah === 'edot' ? 'du_jour' : 'retire';
       assert.deepEqual(etats(nusah, 'arvit', iso, ISHEV), [attendu], `${nusah} ${iso}`);
       assert.deepEqual(etats(nusah, 'arvit', iso, /^ואתה קדוש/), [attendu], `${nusah} ${iso}`);
     }
   }
   // Un samedi soir qui est Yom tov (Séder du 2025-04-12) : ni ויהי נועם ni אתה חוננתנו.
-  for (const nusah of ['sefard', 'ashkenaz', 'edot']) assert.deepEqual(etats(nusah, 'arvit', '2025-04-13', ISHEV), ['replie'], nusah);
+  for (const nusah of ['sefard', 'ashkenaz', 'edot']) assert.deepEqual(etats(nusah, 'arvit', '2025-04-13', ISHEV), ['retire'], nusah);
   assert.ok(!jour('2025-04-13', false).conditions.has('motsae_chabbat_yt'));
 });
 
@@ -67,8 +67,7 @@ test('Motsaé Chabbat (Sfard) : עלינו une seule fois', () => {
     const texte = siddur.sefard.textes.find((t) => t.id === 'arvit');
     const idx = index(annotations.sefard.arvit);
     const c = cond('sefard', iso);
-    return texte.sections.flatMap((s, si) => plan(s, si, idx, c).filter((p) => p.etat !== 'replie')
-      .flatMap((p) => p.blocs).filter((i) => nu(s.blocs[i].t ?? '').startsWith('עלינו לשבח'))).length;
+    return texte.sections.flatMap((s, si) => enClair(s, si, idx, c).filter((i) => nu(s.blocs[i].t ?? '').startsWith('עלינו לשבח'))).length;
   };
   assert.equal(alenou('2026-11-15'), 1);
   assert.equal(alenou('2026-11-18'), 1);
@@ -78,7 +77,7 @@ test('Motsaé Chabbat (Sfard) : עלינו une seule fois', () => {
 test('Le soir du 9 Av : ואתה קדוש sans ויהי נועם, même un motsaé Chabbat ; תתקבל estompé', () => {
   for (const nusah of ['sefard', 'ashkenaz', 'edot']) {
     for (const iso of ['2025-08-03', '2026-07-23']) {
-      assert.deepEqual(etats(nusah, 'arvit', iso, ISHEV), ['replie'], `${nusah} ${iso}`);
+      assert.deepEqual(etats(nusah, 'arvit', iso, ISHEV), ['retire'], `${nusah} ${iso}`);
       assert.deepEqual(etats(nusah, 'arvit', iso, /^ואתה קדוש/), ['du_jour'], `${nusah} ${iso}`);
     }
   }
@@ -89,25 +88,24 @@ test('Le soir du 9 Av : ואתה קדוש sans ויהי נועם, même un motsa
 test('Téfilin : pas à \'Hol hamoed chez les Edot ni en Israël ; sans bénédiction en Ashkenaz de diaspora ; pas le 9 Av au matin', () => {
   assert.deepEqual(etats('edot', 'chaharit', '2026-11-18', /להניח תפלין/), ['ordinaire']);
   for (const [iso, il] of [['2025-10-09', false], ['2025-10-09', true], ['2026-04-09', false], ['2026-11-21', false]]) {
-    assert.deepEqual(etats('edot', 'chaharit', iso, /להניח תפלין/, il), ['replie'], `${iso} ${il}`);
+    assert.deepEqual(etats('edot', 'chaharit', iso, /להניח תפלין/, il), ['retire'], `${iso} ${il}`);
   }
   assert.deepEqual(etats('edot', 'chaharit', '2026-07-23', /להניח תפלין/), ['ordinaire']); // Yalkut Yosef 555:1
   assert.deepEqual(etats('ashkenaz', 'chaharit', '2025-10-09', /להניח תפלין/), ['ordinaire']);
   assert.ok(indices('ashkenaz', 'chaharit', '2025-10-09').some((t) => t.includes('בלי ברכה')));
   assert.ok(!indices('ashkenaz', 'chaharit', '2025-10-09', true).some((t) => t.includes('בלי ברכה')));
-  assert.deepEqual(etats('ashkenaz', 'chaharit', '2025-10-09', /להניח תפלין/, true), ['replie']);
-  assert.deepEqual(etats('ashkenaz', 'chaharit', '2026-07-23', /להתעטף בציצית/), ['replie']);
+  assert.deepEqual(etats('ashkenaz', 'chaharit', '2025-10-09', /להניח תפלין/, true), ['retire']);
+  assert.deepEqual(etats('ashkenaz', 'chaharit', '2026-07-23', /להתעטף בציצית/), ['retire']);
   assert.deepEqual(etats('ashkenaz', 'chaharit', '2026-11-18', /להתעטף בציצית/), ['ordinaire']);
 });
 
-test('Min\'ha des jeûnes : la lecture de la Torah annoncée ; la haftara selon le rite', () => {
+test('Min\'ha des jeûnes : la place de la lecture de la Torah (26/11), à la place des repères qui l\'annonçaient', () => {
+  // La lecture elle-même : web/test/lecture-siddur.test.mjs.
   for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
-    assert.ok(indices(nusah, 'minha', '2025-12-30').some((t) => t.includes('ויחל')), nusah);
-    assert.ok(!indices(nusah, 'minha', '2026-11-18').some((t) => t.includes('ויחל')), nusah);
-    assert.equal(indices(nusah, 'minha', '2025-12-30').some((t) => t.includes('דרשו')), nusah !== 'edot', nusah);
+    const places = annotations[nusah].minha.filter((e) => e.sorte === 'lecture');
+    assert.deepEqual(places.map((e) => [e.si, e.office]), [['jeune', 'minha']], nusah);
+    assert.ok(!indices(nusah, 'minha', '2025-12-30').some((t) => t.includes('ויחל') || t.includes('דרשו') || t.includes('שובה ישראל')), nusah);
   }
-  assert.ok(indices('edot', 'minha', '2026-07-23').some((t) => t.includes('שובה ישראל')));
-  assert.ok(!indices('edot', 'minha', '2025-12-30').some((t) => t.includes('שובה ישראל')));
 });
 
 test('Cha\'harit du 9 Av : « ואני זאת בריתי » retiré ; פטום הקטורת (Ashkenaz) replié', () => {
@@ -115,7 +113,7 @@ test('Cha\'harit du 9 Av : « ואני זאת בריתי » retiré ; פטום �
     const a = annotations[nusah].chaharit.find((e) => e.sorte === 'indice' && e.si === '!ticha_beav');
     assert.ok(a && nu(a.retire).startsWith('ואני זאת בריתי') && /עולם[:׃]?$/.test(nu(a.retire)), nusah);
   }
-  assert.deepEqual(etats('ashkenaz', 'chaharit', '2026-07-23', /^פטום הקטרת/), ['replie']);
+  assert.deepEqual(etats('ashkenaz', 'chaharit', '2026-07-23', /^פטום הקטרת/), ['retire']);
   assert.deepEqual(etats('ashkenaz', 'chaharit', '2026-11-18', /^פטום הקטרת/), ['ordinaire']);
 });
 
@@ -123,6 +121,7 @@ test('לדוד ה׳ אורי : Chemini Atséret en Ashkenaz de diaspora ; Edot r
   assert.ok(cond('ashkenaz', '2025-10-14').has('ledavid'));
   assert.ok(!cond('ashkenaz', '2025-10-15').has('ledavid')); // Sim'hat Torah
   assert.ok(!cond('sefard', '2025-10-14').has('ledavid') && !cond('ashkenaz', '2025-10-14', true).has('ledavid'));
+  // 26/11, Q10 : le Ledavid des Edot (le 'Hida le dit toute l'année) reste replié, non retiré.
   assert.deepEqual(etats('edot', 'chaharit', '2026-01-15', /^לדוד.*יהוה אורי/), ['replie']);
   assert.deepEqual(etats('edot', 'chaharit', '2026-08-20', /^לדוד.*יהוה אורי/), ['ordinaire']);
   assert.ok(indices('ashkenaz', 'minha', '2026-08-20').some((t) => t.includes('משנה ברורה')));
@@ -130,7 +129,7 @@ test('לדוד ה׳ אורי : Chemini Atséret en Ashkenaz de diaspora ; Edot r
 
 test('Edot : ממעמקים à Hochaana Rabba ; Sefer Torah, psaume 22 de Pourim, renvoi à l\'Omer', () => {
   assert.deepEqual(etats('edot', 'chaharit', '2025-10-13', /^שיר המעלות.*ממעמקים/), ['du_jour']);
-  assert.deepEqual(etats('edot', 'chaharit', '2025-10-14', /^שיר המעלות.*ממעמקים/), ['replie']);
+  assert.deepEqual(etats('edot', 'chaharit', '2025-10-14', /^שיר המעלות.*ממעמקים/), ['retire']);
   assert.ok(indices('edot', 'chaharit', '2026-11-19').some((t) => t.includes('תכ״ג:ו')));
   assert.ok(indices('edot', 'arvit', '2026-03-03').some((t) => t.includes('אילת השחר')));
   assert.ok(!indices('edot', 'arvit', '2026-11-18').some((t) => t.includes('אילת השחר')));
@@ -150,11 +149,11 @@ test('Ashkenaz : la consigne des Seli\'hot n\'est plus repliée avec le Hallel ;
 test('Chema du coucher : Vidouï (Edot), nuit du Séder (Sfard, Ashkenaz), « יהי רצון » le Chabbat (Edot)', () => {
   assert.deepEqual(etats('edot', 'chema_coucher', '2026-11-18', /^אנא יהוה/), ['ordinaire']);
   for (const iso of ['2026-11-21', '2026-11-15', '2027-03-11', '2026-09-12']) {
-    assert.deepEqual(etats('edot', 'chema_coucher', iso, /^אנא יהוה/), ['replie'], iso);
+    assert.deepEqual(etats('edot', 'chema_coucher', iso, /^אנא יהוה/), ['retire'], iso);
   }
   for (const nusah of ['sefard', 'ashkenaz']) {
-    assert.deepEqual(etats(nusah, 'chema_coucher', '2027-04-22', /^ישב בסתר/), ['replie'], nusah);
-    assert.deepEqual(etats(nusah, 'chema_coucher', '2027-04-23', /^ישב בסתר/), ['replie'], nusah);
+    assert.deepEqual(etats(nusah, 'chema_coucher', '2027-04-22', /^ישב בסתר/), ['retire'], nusah);
+    assert.deepEqual(etats(nusah, 'chema_coucher', '2027-04-23', /^ישב בסתר/), ['retire'], nusah);
     assert.deepEqual(etats(nusah, 'chema_coucher', '2027-04-23', /^ישב בסתר/, true), ['ordinaire'], nusah);
     assert.deepEqual(etats(nusah, 'chema_coucher', '2026-11-18', /^ישב בסתר/), ['ordinaire'], nusah);
     assert.ok(indices(nusah, 'chema_coucher', '2026-11-18').some((t) => t.includes('ביאור הלכה')), nusah);
@@ -183,10 +182,10 @@ test('Méguila : שהחיינו la nuit seulement (Edot), « אשר הניא » 
       .filter((p) => p.blocs.some((i) => motif.test(nu(s.blocs[i].t ?? s.blocs[i].c)))).map((p) => p.etat)))];
   };
   assert.deepEqual(etat('edot', true, /שהחינו/), ['ordinaire']);
-  assert.deepEqual(etat('edot', false, /שהחינו/), ['replie']);
+  assert.deepEqual(etat('edot', false, /שהחינו/), ['retire']);
   for (const nusah of ['sefard', 'ashkenaz']) {
     assert.deepEqual(etat(nusah, true, /^א שר הניא/), ['ordinaire'], nusah);
-    assert.deepEqual(etat(nusah, false, /^א שר הניא/), ['replie'], nusah);
+    assert.deepEqual(etat(nusah, false, /^א שר הניא/), ['retire'], nusah);
     assert.deepEqual(etat(nusah, false, /שהחינו/), ['libre'], nusah); // Rema : aussi le jour
     assert.deepEqual(etat(nusah, false, /^ש ושנת יעקב/), ['libre'], nusah);
   }
@@ -206,20 +205,18 @@ test('Double annotation : Kaddich des ajouts du jour, תתקבל du 9 Av, fin du
     const c = cond(nusah, iso);
     return texte.sections.flatMap((s, si) => plan(s, si, idx, c).filter((p) => p.annotation?.sorte === 'bloc'
       && p.blocs.some((i) => nu(s.blocs[i].t ?? s.blocs[i].c).startsWith(debut)))
-      .map((p) => ({ etat: p.etat, segments: segments(p.blocs, si, idx, c).map((g) => g.et) })));
+      .map((p) => ({ etat: p.etat, segments: segments(p.lus, si, idx, c).map((g) => g.et), n: segments(p.lus, si, idx, c).flatMap((g) => g.blocs).length })));
   };
   // לדוד ה׳ אורי en Eloul (Ashkenaz) : le psaume en clair, son Kaddich replié sous le minyan.
   const ledavid = segs('ashkenaz', 'chaharit', '2026-08-20', 'לדוד יהוה אורי');
   assert.equal(ledavid[0].etat, 'du_jour');
   assert.deepEqual(ledavid[0].segments, [null, 'minyan']);
-  // « תתקבל » (Ashkenaz, fin de Cha'harit) : à part le 9 Av, dans le groupe du minyan.
-  const tit = (iso) => segs('ashkenaz', 'chaharit', iso, 'תתקבל')[0].segments;
-  assert.ok(tit('2026-07-23').includes('!ticha_beav'));
-  assert.ok(!tit('2026-11-18').includes('!ticha_beav'));
+  // « תתקבל » (Ashkenaz, fin de Cha'harit) : retiré le 9 Av (26/11, sans repli), dans le groupe du minyan.
+  const tit = (iso) => segs('ashkenaz', 'chaharit', iso, 'תתקבל')[0];
+  assert.ok(!tit('2026-07-23').segments.includes('!ticha_beav') && tit('2026-07-23').n === tit('2026-11-18').n - 1);
   assert.ok(annotations.edot.arvit.some((a) => a.et === '!ticha_beav' && a.empreinte.startsWith('תתקבל')));
-  // Ashkenaz, Arvit du motsaé Chabbat : la fin du Kaddich se replie, un repère la reprend après ואתה קדוש.
-  assert.ok(segs('ashkenaz', 'arvit', '2026-11-15', 'תתקבל')[0].segments.includes('!veata_kadoch'));
-  assert.ok(!segs('ashkenaz', 'arvit', '2026-11-18', 'תתקבל')[0].segments.includes('!veata_kadoch'));
+  // Ashkenaz, Arvit du motsaé Chabbat : la fin du Kaddich est retirée (26/11), un repère la reprend après ואתה קדוש.
+  assert.ok(segs('ashkenaz', 'arvit', '2026-11-15', 'תתקבל')[0].n < segs('ashkenaz', 'arvit', '2026-11-18', 'תתקבל')[0].n);
   assert.ok(annotations.ashkenaz.arvit.some((a) => a.sorte === 'indice' && a.si === 'vihi_noam' && a.texte.includes('תתקבל')));
   // Le Hallel et Birkat halevana : leurs Kaddich repliés (minyan).
   for (const nusah of ['edot', 'sefard']) {

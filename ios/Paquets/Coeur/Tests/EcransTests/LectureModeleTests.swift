@@ -150,11 +150,10 @@ struct LectureModeleTests {
         #expect(note.arguments.last == .libelle(Libelle("region_israel")))
         let lues = etiquettes(m)
         #expect(!lues.contains("ajout_yaale_veyavo"))
-        let yaale = replis(m).filter { $0.nom.cle == "ajout_yaale_veyavo" }
-        #expect(!yaale.isEmpty)
-        let tousReplies = yaale.allSatisfy { $0.etat.cle == "siddur_pas_aujourdhui" && !$0.ouvert }
-        #expect(tousReplies)
-        // Ce qui ne se dit qu'avec un minyan n'est jamais « du jour » : « toucher pour lire ».
+        // Règle du 26/11 : un ajout du calendrier hors de son jour est retiré, sans bandeau replié.
+        let yaale = replis(m).contains { $0.nom.cle == "ajout_yaale_veyavo" }
+        #expect(!yaale)
+        // Ce qui ne se dit qu'avec un minyan, une occasion, n'est jamais « du jour » : « toucher pour lire ».
         let toucher = replis(m).contains { $0.etat.cle == "siddur_toucher_lire" }
         #expect(toucher)
         let aucunRenvoi = renvois(m).isEmpty
@@ -187,7 +186,11 @@ struct LectureModeleTests {
         await m.charger()
         #expect(m.etat == .pret)
         let lues = etiquettes(m)
-        #expect(lues.contains("ajout_anenou_officiant"), "\(nusah.rawValue) : \(lues)")
+        // 26/11, Q2 : le particulier en évidence (Edot, à Cha'harit) ; l'officiant replié sous « Avec minyan ».
+        #expect(!lues.contains("ajout_anenou_officiant"), "\(nusah.rawValue) : \(lues)")
+        if nusah == .edot {
+            #expect(lues.contains("ajout_anenou_particulier"), "\(nusah.rawValue) : \(lues)")
+        }
         if nusah != .edot {
             // Avinou malkénou, les jeûnes publics (Ashkenaz, Sfard).
             #expect(lues.contains("ajout_avinou_malkenou"), "\(nusah.rawValue) : \(lues)")
@@ -197,8 +200,9 @@ struct LectureModeleTests {
     // MARK: La place de chaque paragraphe
 
     /// Sur tous les textes des trois siddourim, trois jours, tout replié puis tout déplié : chaque bloc montré a
-    /// la place du bloc du texte qu'il montre (le même, ou le même sans sa variante hors du jour), les places
-    /// croissent, et tout déplié, chaque bloc du texte est montré une fois.
+    /// la place du bloc du texte qu'il montre (le même, ou le même avec la seule formule du jour), les places
+    /// croissent, et tout déplié, aucun bloc n'est montré deux fois (depuis le 26/11, un ajout du calendrier hors de
+    /// son jour est retiré : tout déplié ne montre plus tout le texte).
     @Test func chaqueBlocMontreASaPlace() async throws {
         let jours = try [jourOrdinaire(), rochHodech(), jeune()]
         var echecs: [String] = []
@@ -217,7 +221,7 @@ struct LectureModeleTests {
                     while true {
                         var neuves = cles
                         for ligne in ouverts {
-                            if case .replie(let cle, _, _, _) = ligne { neuves.insert(cle) }
+                            if case .replie(let cle, _, _, _, _) = ligne { neuves.insert(cle) }
                         }
                         if neuves == cles { break }
                         cles = neuves
@@ -241,7 +245,7 @@ struct LectureModeleTests {
         var precedente: LecturePlace?
         var vues = Set<LecturePlace>()
         for (k, ligne) in lignes.enumerated() {
-            guard case .bloc(let bloc, let style, _) = ligne else {
+            guard case .bloc(let bloc, _, _) = ligne else {
                 if places[k] != nil { return "place hors d'un bloc à \(k)" }
                 continue
             }
@@ -250,17 +254,17 @@ struct LectureModeleTests {
                 return "place hors du texte \(p) à \(k)"
             }
             let original = texte.sections[p.section].blocs[p.bloc]
-            let reduit = style == .normal && original.consigne == bloc.consigne && original.fr == bloc.fr
-                && original.en == bloc.en && original.texte.utf16.count > bloc.texte.utf16.count
-            if original != bloc && !reduit { return "bloc différent à \(p)" }
+            // La seule formule du jour (26/11, Q8) : une variante retirée ou remplacée (« מגדול »), quel que soit le style.
+            let duJour = original.consigne == bloc.consigne && original.fr == bloc.fr && original.en == bloc.en
+                && !bloc.texte.estBlanc
+            if original != bloc && !duJour { return "bloc différent à \(p)" }
             if let q = precedente, (q.section, q.bloc) >= (p.section, p.bloc) { return "ordre à \(p)" }
             precedente = p
+            if vues.contains(p) { return "montré deux fois : \(p)" }
             vues.insert(p)
         }
-        if tout {
-            let total = texte.sections.reduce(0) { $0 + $1.blocs.count }
-            if vues.count != total { return "déplié : \(vues.count) blocs sur \(total)" }
-        }
+        // Tout déplié, au moins ce que montre le texte replié.
+        if tout && vues.isEmpty && !texte.sections.isEmpty { return "déplié : aucun bloc" }
         return nil
     }
 
@@ -301,6 +305,120 @@ struct LectureModeleTests {
         let (m, _) = try fabriquer(.siddour("chaharit"), reglages: r, jour: date, heure: 8)
         let conditions = SiddurJour.avecSansTahanoun(m.jourDeLaPriere.conditions, r.sansTahanounLe(date))
         #expect(conditions.contains(CalendrierJuif.C.sansTahanounPonctuel))
+    }
+
+    // MARK: Les deux catégories du 26/11 : la région, le bouton « תחנון », le jour voisin, la lecture de la Torah
+
+    /// Israël ou diaspora non confirmé (Q7) : une carte après les notes quand le texte en dépend ; la réponse confirme le
+    /// statut, à la main, et la carte s'en va.
+    @Test func laQuestionIsraelOuDiasporaQuandLeTexteEnDepend() async throws {
+        // Le mardi 17/11/2026 : « ותן טל ומטר » se dit en Israël, pas encore en diaspora.
+        let (m, magasin) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: JourCivil(iso: "2026-11-17"))
+        await m.charger()
+        let question = m.lignes.first { if case .questionRegion = $0.contenu { true } else { false } }
+        #expect(question?.contenu == .questionRegion(Libelle("siddur_region_question")))
+        #expect(question?.id == "question:region")
+        m.poserQuestionRegion()
+        #expect(m.questionRegionOuverte)
+        try await m.repondreRegion(israel: false)
+        #expect(!m.questionRegionOuverte)
+        #expect(magasin.reglages.inIsraelManuel)
+        #expect(!magasin.reglages.inIsrael(fuseauTelephone: "Asia/Jerusalem"))
+        #expect(magasin.reglages.regionConfirmee)
+        let encore = m.lignes.contains { if case .questionRegion = $0.contenu { true } else { false } }
+        #expect(!encore)
+        // Un jour où rien ne diffère (le 19/01/2027) : pas de question, même sans statut confirmé.
+        let (calme, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.edot), jour: JourCivil(iso: "2027-01-19"))
+        await calme.charger()
+        let aucune = calme.lignes.contains { if case .questionRegion = $0.contenu { true } else { false } }
+        #expect(!aucune)
+    }
+
+    /// « Pas de Ta'hanoun aujourd'hui » dans la barre (Q1) : à Cha'harit et à Min'ha seulement ; il retire le Ta'hanoun,
+    /// garde למנצח, et se dit à la lecture d'écran.
+    @Test func leBoutonTahanounDeLaBarre() async throws {
+        let date = try #require(JourCivil(iso: "2026-11-16"))  // un lundi
+        let (m, magasin) = try fabriquer(.siddour("chaharit"), reglages: reglages(.sefard), jour: date)
+        await m.charger()
+        #expect(m.avecTahanoun)
+        #expect(!m.sansTahanoun)
+        #expect(m.etatTahanoun == Libelle("lecture_tahanoun_non"))
+        let avant = m.lignes.count
+        try await m.basculerTahanoun()
+        #expect(m.sansTahanoun)
+        #expect(m.etatTahanoun == Libelle("lecture_tahanoun_oui"))
+        #expect(magasin.reglages.sansTahanounLe(date))
+        #expect(m.lignes.count < avant)
+        try await m.basculerTahanoun()
+        #expect(!magasin.reglages.sansTahanounLe(date))
+        let (arvit, _) = try fabriquer(.siddour("arvit"), reglages: reglages(.sefard), jour: date)
+        #expect(!arvit.avecTahanoun)
+        let (livre, _) = try fabriquer(.livre("likoutei_moharan"))
+        #expect(!livre.avecTahanoun)
+    }
+
+    /// Le soir (Q6) : au Birkat haMazon d'un vendredi, sans lieu dès 16 h, les ajouts du Chabbat qui vient restent
+    /// repliés, « pas aujourd'hui » ; le matin, ils sont retirés.
+    @Test func leJourVoisinAuBirkatHamazon() async throws {
+        let vendredi = try #require(JourCivil(iso: "2026-11-20"))
+        let (soir, _) = try fabriquer(.siddour("birkat_hamazon"), reglages: reglages(.ashkenaz, israel: false), jour: vendredi,
+                                      heure: 17)
+        await soir.charger()
+        let chabbat = replis(soir).filter { $0.nom.cle == "ajout_chabbat" }
+        #expect(!chabbat.isEmpty)
+        let pasAujourdhui = chabbat.allSatisfy { $0.etat.cle == "siddur_pas_aujourdhui" }
+        #expect(pasAujourdhui)
+        let (matin, _) = try fabriquer(.siddour("birkat_hamazon"), reglages: reglages(.ashkenaz, israel: false), jour: vendredi,
+                                       heure: 10)
+        await matin.charger()
+        let aucun = replis(matin).contains { $0.nom.cle == "ajout_chabbat" }
+        #expect(!aucun)
+    }
+
+    /// La lecture de la Torah (26/11) : un jeudi, repliée à sa place dans Cha'harit ; dépliée, ses trois montées, dont le
+    /// texte se lit à part (« Chargement… » d'abord), puis le pied « Replier ».
+    @Test func laLectureDeLaTorahUnJeudi() async throws {
+        let (m, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.ashkenaz, israel: false),
+                                   jour: JourCivil(iso: "2026-11-26"))
+        await m.charger()
+        let bandeaux = m.lignes.compactMap { l -> LectureTorahBandeau? in
+            if case .lecture(let b) = l.contenu { return b }
+            return nil
+        }
+        #expect(bandeaux.count == 1)
+        let bandeau = try #require(bandeaux.first)
+        #expect(bandeau.cle == "lecture:chaharit:0")
+        #expect(bandeau.titre == Libelle("lecture_titre", .texte("Vayichla\u{2019}h"),
+                                         .libelle(Libelle.pluriel("lecture_montees", quantite: 3, .entier(3)))))
+        #expect(bandeau.etat == Libelle("siddur_toucher_lire"))
+        #expect(!bandeau.ouvert)
+        m.basculer(bandeau.cle)
+        await m.attendreTexteLecture()
+        #expect(m.texteLectureLu)
+        let passages = m.lignes.compactMap { l -> LectureTorahPassage? in
+            if case .passage(let p) = l.contenu { return p }
+            return nil
+        }
+        #expect(passages.count == 3)
+        #expect(passages.first?.entete == "Cohen \u{00B7} Berèchit 32:4\u{2013}6")
+        let versets = passages.first?.versets ?? []
+        #expect(versets.map { $0.numero } == [4, 5, 6])
+        let dansPanneau = passages.allSatisfy { $0.dansPanneau }
+        #expect(dansPanneau)
+        let pied = m.lignes.contains { $0.contenu == .pied(cle: bandeau.cle) }
+        #expect(pied)
+        let ouvert = m.lignes.contains { if case .lecture(let b) = $0.contenu { b.ouvert } else { false } }
+        #expect(ouvert)
+        // Le pied replie la lecture.
+        m.replierDepuisLePied(bandeau.cle)
+        let replie = m.lignes.contains { if case .passage = $0.contenu { true } else { false } }
+        #expect(!replie)
+        // Un mardi, pas de lecture.
+        let (mardi, _) = try fabriquer(.siddour("chaharit"), reglages: reglages(.ashkenaz, israel: false),
+                                       jour: JourCivil(iso: "2026-11-24"))
+        await mardi.charger()
+        let aucune = mardi.lignes.contains { if case .lecture = $0.contenu { true } else { false } }
+        #expect(!aucune)
     }
 
     // MARK: Likoutei Moharan : le signet 300, la taille, la reprise (critère de la feuille de route)

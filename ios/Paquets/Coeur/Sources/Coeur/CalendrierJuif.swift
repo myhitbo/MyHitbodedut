@@ -148,6 +148,31 @@ public enum CalendrierJuif {
         /// Toujours vrai : une indication fixe du siddour, sans condition du jour.
         public static let toujours = "toujours"
 
+        // Les catégories du 26/11 (les ajouts du calendrier retirés hors de leur jour, CalendrierJuif.kt) :
+        /// Israël et la diaspora diffèrent pour « ותן טל ומטר » (du 7 'Hechvan au 4 ou 5 décembre) : la consigne du
+        /// voyageur n'est repliée que ces jours-là, retirée les autres (Q3).
+        public static let voyageurTalOumatar = "voyageur_tal_oumatar"
+        /// Chabbat ou jour de « יעלה ויבוא » : les bénédictions de qui a oublié רצה ou יעלה ויבוא au Birkat haMazon (Q5).
+        public static let retseOuYaale = "retse_ou_yaale"
+        /// Roch Hachana ou Kippour (une ligne des Mi chébérakh).
+        public static let yamimNoraim = "yamim_noraim"
+        /// « omer_N » : le compte du soir (Q12).
+        public static let omerJours = (1...49).map { "omer_\($0)" }
+        /// Posée par SiddurJour.conditionsPour en Israël (le psaume 121 d'Arvit, « בא״י קדישא »).
+        public static let israel = "israel"
+        /// « מגדול » à la fin du Birkat (SiddurJour.conditionsPour, selon le noussa'h).
+        public static let magdol = "magdol"
+        /// Le réglage צדיק / צדקת (Reglages.conditionsDuJour) ; sans réglage, ni l'un ni l'autre.
+        public static let homme = "homme"
+        public static let femme = "femme"
+        /// Les occasions du 26/11, jamais du jour (SiddurJour.occasions) : qui prie seul, un usage, une occasion.
+        public static let sansMinyan = "sans_minyan"
+        /// Le Ta'hanoun du calendrier, avant « Pas de Ta'hanoun aujourd'hui » (SiddurJour.conditionsPour, Q1).
+        public static let tahanounChaharitCalendrier = "tahanoun_chaharit_calendrier"
+        public static let tahanounMinhaCalendrier = "tahanoun_minha_calendrier"
+        public static let usage = "usage"
+        public static let occasion = "occasion"
+
         public static let derivees = [avinouMalkenou, avinouMalkenouMinha, kriatHatorah] + joursSemaine + [
             tsomGuedaliaTevet, lendemainKippour, tichaBeavKippour, estherPourim, chivaAssarTamouz, basculePluie, erevKippourVendredi,
             lamnatseah, ledavid, techouvaHochaana, yomTov, moed, chabbatRochHodech, yomTovChabbat, rochHachanaChabbat,
@@ -158,7 +183,9 @@ public enum CalendrierJuif {
             mizmorLetoda, yomTovSemaine, leilHaseder, lendemainRochHodech, chome, vihiNoam, veataKadoch, tefilin,
             tefilinSansBerakha, viduiCoucher, nuit, pourimTripleVendredi, havdalaNer, havdalaBessamim,
             lendemainTichaBeavDimanche, lendemainAjouts, beinHametsarim, tikounRahel, toujours,
-        ]
+            voyageurTalOumatar, retseOuYaale, yamimNoraim, israel, magdol, homme, femme, sansMinyan, usage, occasion,
+            tahanounChaharitCalendrier, tahanounMinhaCalendrier,
+        ] + omerJours
     }
 
     /// Les fêtes par l'index de `getYomTovIndex()` ; la clé donne le libellé « fete_<clé> ».
@@ -261,12 +288,27 @@ public enum CalendrierJuif {
     /// garde le jour civil.
     public static func jourDeLaPriere(_ texte: String, date: JourCivil, heure: Int, apresSortie: Bool = false) -> JourCivil {
         switch texte {
-        case "arvit", "chema_coucher": heure >= 12 ? date.plus(jours: 1) : date
+        // Le compte de l'omer se fait le soir, avec Arvit (26/11, Q12 : le compte du soir).
+        case "arvit", "chema_coucher", "sefirat_haomer": heure >= 12 ? date.plus(jours: 1) : date
         // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
         case "tikoun_hatsot": heure >= 18 ? date.plus(jours: 1) : date
         case "minha": date
         default: apresSortie ? date.plus(jours: 1) : date
         }
+    }
+
+    /// Le jour voisin du Birkat haMazon et de Méèn chaloch (26/11, Q6) : entre le coucher du soleil et la sortie des
+    /// étoiles, le jour qui commence ; après la sortie des étoiles et jusqu'à minuit, le jour qui finit (« le soir qui
+    /// suit ») ; sans lieu (`apresCoucher` et `apresSortie` nil), de 16 h à minuit, le jour qui commence. Ses ajouts
+    /// (רצה, יעלה ויבוא, על הנסים…) restent repliés au lieu d'être retirés : un repas commencé avant la sortie des
+    /// étoiles se conclut avec eux. nil hors de ces heures et des deux textes. `heure` : l'heure de la journée (0 à 23).
+    public static func jourVoisin(_ texte: String, date: JourCivil, heure: Int, apresCoucher: Bool?,
+                                  apresSortie: Bool?) -> JourCivil? {
+        guard texte == "birkat_hamazon" || texte == "meen_chaloch" else { return nil }
+        if apresSortie == true { return date }
+        if apresCoucher == true { return date.plus(jours: 1) }
+        if apresCoucher == nil && apresSortie == nil && heure >= 16 { return date.plus(jours: 1) }
+        return nil
     }
 
     /// La nuit, pour la lecture (audit du 16/11 : שהחיינו de la Méguila chez les Edot, « אשר הניא » en Sfard et en
@@ -345,13 +387,14 @@ public enum CalendrierJuif {
 
     // MARK: KosherSwift
 
-    private static let verrou = Mutex(())
+    /// Le verrou des calculs de KosherSwift, qui écrit dans une variable statique (aussi celui de LectureTorah).
+    static let verrou = Mutex(())
 
     /// Les noms de Pourim dans une ville murée (libellés « fete_<clé> »).
     private static let muree = ["pourim": "pourim_ailleurs", "chouchan_pourim": "pourim_jerusalem"]
 
     /// Le jour civil à midi UTC, lu en UTC : aucun fuseau ne peut le déplacer (comme Holidays).
-    private static func calendrier(_ date: JourCivil, enIsrael: Bool, modernes: Bool, mukafChoma: Bool = false) -> JewishCalendar {
+    static func calendrier(_ date: JourCivil, enIsrael: Bool, modernes: Bool, mukafChoma: Bool = false) -> JewishCalendar {
         let utc = TimeZone(identifier: "UTC") ?? TimeZone(secondsFromGMT: 0)!
         let midi = Date(timeIntervalSince1970: Double(date.jourJulien - 2_440_588) * 86_400 + 43_200)
         let c = JewishCalendar(workingDate: midi, timezone: utc, inIsrael: enIsrael, useModernHolidays: modernes)
@@ -443,7 +486,11 @@ public enum CalendrierJuif {
         let adar1415 = (mois == Mois.adar || mois == Mois.adarII) && (14...15).contains(quantieme)
         if !(roshChodesh || regles.isChanukah() || adar1415 || festinJerusalem || regles.isTishaBav() || regles.isAssurBemelacha()
              || regles.isCholHamoed() || index == JewishCalendar.EREV_PESACH || index == JewishCalendar.EREV_YOM_KIPPUR) { c.insert(C.lamnatseah) }
-        if mois == Mois.eloul || (mois == Mois.tichri && quantieme <= 21) { c.insert(C.ledavid) }
+        // Dès le 30 Av, premier jour de Roch 'Hodech Eloul (26/11, Q13 : « מראש חודש אלול », Kitsour Yalkut Yosef 581 ;
+        // Michna Beroura 581:2).
+        if mois == Mois.eloul || (mois == Mois.av && quantieme == 30) || (mois == Mois.tichri && quantieme <= 21) {
+            c.insert(C.ledavid)
+        }
         if regles.isAseresYemeiTeshuva() || (mois == Mois.tichri && quantieme == 21) { c.insert(C.techouvaHochaana) }
         let yomTov = regles.isYomTovAssurBemelacha()
         if yomTov { c.insert(C.yomTov) }
@@ -512,6 +559,15 @@ public enum CalendrierJuif {
             c.insert(C.tikounRahel)
         }
         c.insert(C.toujours)
+        // Les catégories du 26/11 (C.voyageurTalOumatar…).
+        let enIsraelCal = calendrier(date, enIsrael: true, modernes: false)
+        let enDiasporaCal = calendrier(date, enIsrael: false, modernes: false)
+        if tefila.isVeseinTalUmatarRecited(jewishCalendar: enIsraelCal) != tefila.isVeseinTalUmatarRecited(jewishCalendar: enDiasporaCal) {
+            c.insert(C.voyageurTalOumatar)
+        }
+        if c.contains(C.chabbat) || c.contains(C.yaaleVeyavo) { c.insert(C.retseOuYaale) }
+        if regles.isRoshHashana() || regles.isYomKippur() { c.insert(C.yamimNoraim) }
+        if regles.getDayOfOmer() > 0 { c.insert("omer_\(regles.getDayOfOmer())") }
 
         // Dans une ville murée, le 15 Adar est Pourim ; le 14 ne l'est qu'ailleurs.
         var fetesDuJour: [String] = []

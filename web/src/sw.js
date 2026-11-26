@@ -1,8 +1,10 @@
 // Hors connexion.
 //
-// La coquille (code, chaînes, textes, illustrations, livres et biographies : environ 48 Mo gardés, 15 Mo transférés) est gardée à
-// l'installation, pour que tout se lise hors connexion. La musique ne l'est pas d'office : chaque morceau est
-// gardé la première fois qu'on l'écoute, puis servi depuis le téléphone.
+// La coquille (code, chaînes, textes, illustrations, livres et biographies : environ 49 Mo gardés, 15 Mo transférés) est
+// gardée à l'installation, pour que tout se lise hors connexion. La lecture de la Torah des offices de semaine (26/11) y
+// est aussi : 0,66 Mo, 0,16 Mo transférés (data/lecture_torah.json et data/lecture_torah/<livre>.json), lus à la
+// demande. La musique ne l'est pas d'office : chaque morceau est gardé la première fois qu'on l'écoute, puis servi
+// depuis le téléphone.
 //
 // Safari lit un morceau par tranches (en-tête Range) et exige qu'on lui
 // réponde tranche par tranche (206) : un fichier entier en réponse à une

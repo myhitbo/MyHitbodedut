@@ -6,6 +6,8 @@ import Ecrans
 // Les lignes du lecteur (l'Adaptateur de SiddurLectureActivity.kt, onBindViewHolder) : une vue par sorte de
 // ligne (`LectureContenu`). Les lignes du texte sont de droite à gauche (LAYOUT_DIRECTION_RTL d'Android) ; les
 // notes, les étiquettes, les replis et les pieds suivent la langue de l'app. Aucune image : seulement des icônes.
+// Depuis le 26/11 : la carte « Israël ou diaspora ? », et la lecture de la Torah repliée à sa place, ses montées
+// dépliées (le texte cantillé, verset par verset).
 
 /// Les couleurs du rendu (ReglagesLecture.rendu) : la nuit, les quatre couleurs fixes d'Android
 /// (lecture_nuit_*) ; sinon le papier, l'encre, le gris et l'accent de la palette.
@@ -97,6 +99,13 @@ struct LectureLigneVue: View {
             seulVue(seul)
         case .pied(let cle):
             pied(cle)
+        case .questionRegion(let question):
+            questionRegion(question)
+        case .lecture(let bandeau):
+            LectureRepliVue(cle: bandeau.cle, nom: bandeau.titre, etat: bandeau.etat, ouvert: bandeau.ouvert, modele: modele,
+                            rendu: rendu)
+        case .passage(let passage):
+            LecturePassageVue(passage: passage, modele: modele, rendu: rendu, e: e)
         }
     }
 
@@ -224,6 +233,31 @@ struct LectureLigneVue: View {
         .environment(\.layoutDirection, .rightToLeft)
     }
 
+    /// Israël ou diaspora ? (26/11, Q7) : une carte, dans le sens de la langue de l'app ; un toucher pose la question.
+    private func questionRegion(_ question: Libelle) -> some View {
+        Button {
+            modele.poserQuestionRegion()
+        } label: {
+            Text(question, traducteur: traducteur)
+                .font(Font.subheadline.bold())
+                .foregroundStyle(rendu.titre)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
+                .background {
+                    LecturePanneau(couleur: rendu.teinte(0x12), haut: true, bas: true, trait: rendu.teinte(0x38))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                }
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(question, traducteur: traducteur))
+        .accessibilityAddTraits(.isButton)
+    }
+
     /// Le pied d'un ajout déplié : « Replier », un chevron vers le haut ; le toucher le referme.
     private func pied(_ cle: String) -> some View {
         Button {
@@ -339,11 +373,28 @@ struct LectureBlocVue: View {
 
 // MARK: Le repli
 
-/// Le bandeau d'un ajout replié ou déplié : le chevron, le nom en gras, et dessous ce que fait un toucher.
+/// Le bandeau d'un ajout replié ou déplié, ou d'une lecture de la Torah (26/11) : le chevron, le nom en gras, et
+/// dessous ce que fait un toucher.
 struct LectureRepliVue: View {
-    let repli: LectureRepli
+    let cle: String
+    let nom: Libelle
+    let etat: Libelle
+    let ouvert: Bool
     let modele: LectureModele
     let rendu: LectureRendu
+
+    init(repli: LectureRepli, modele: LectureModele, rendu: LectureRendu) {
+        self.init(cle: repli.cle, nom: repli.nom, etat: repli.etat, ouvert: repli.ouvert, modele: modele, rendu: rendu)
+    }
+
+    init(cle: String, nom: Libelle, etat: Libelle, ouvert: Bool, modele: LectureModele, rendu: LectureRendu) {
+        self.cle = cle
+        self.nom = nom
+        self.etat = etat
+        self.ouvert = ouvert
+        self.modele = modele
+        self.rendu = rendu
+    }
 
     @Environment(\.traducteur) private var traducteur
     @Environment(\.layoutDirection) private var sens
@@ -359,13 +410,13 @@ struct LectureRepliVue: View {
                     .foregroundStyle(rendu.titre)
                     .frame(width: 22, height: 22)
                     // Un quart de tour vers le bas une fois ouvert (le chevron d'hébreu pointe à gauche).
-                    .rotationEffect(.degrees(repli.ouvert ? (sens == .rightToLeft ? -90 : 90) : 0))
+                    .rotationEffect(.degrees(ouvert ? (sens == .rightToLeft ? -90 : 90) : 0))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(repli.nom, traducteur: traducteur)
+                    Text(nom, traducteur: traducteur)
                         .font(Font.subheadline.bold())
                         .foregroundStyle(rendu.texte)
-                    Text(repli.etat, traducteur: traducteur)
+                    Text(etat, traducteur: traducteur)
                         .font(.caption)
                         .foregroundStyle(rendu.discret)
                 }
@@ -374,32 +425,101 @@ struct LectureRepliVue: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, 18)
-            .padding(.bottom, repli.ouvert ? 12 : 18)
+            .padding(.bottom, ouvert ? 12 : 18)
             .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
             .background {
-                LecturePanneau(couleur: rendu.teinte(repli.ouvert ? 0x1E : 0x12), haut: true, bas: !repli.ouvert,
-                               trait: repli.ouvert ? nil : rendu.teinte(0x38))
+                LecturePanneau(couleur: rendu.teinte(ouvert ? 0x1E : 0x12), haut: true, bas: !ouvert,
+                               trait: ouvert ? nil : rendu.teinte(0x38))
                     .padding(.horizontal, 8)
                     .padding(.top, 6)
-                    .padding(.bottom, repli.ouvert ? 0 : 6)
+                    .padding(.bottom, ouvert ? 0 : 6)
             }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: traducteur.texte(repli.nom) + ", " + traducteur.texte(repli.etat)))
+        .accessibilityLabel(Text(verbatim: traducteur.texte(nom) + ", " + traducteur.texte(etat)))
         .accessibilityAddTraits(.isButton)
     }
 
     /// Le chevron tourne et les lignes glissent en place (260 ms) ; sans animation si « Réduire les animations ».
     private func basculer() {
         if sansAnimation {
-            modele.basculer(repli.cle)
+            modele.basculer(cle)
         } else {
             withAnimation(.easeOut(duration: 0.26)) {
-                modele.basculer(repli.cle)
+                modele.basculer(cle)
             }
         }
+    }
+}
+
+// MARK: La lecture de la Torah
+
+/// Une montée dépliée (SiddurLectureActivity.textePassage) : son libellé et sa référence en tête (gras, 0,62, couleur
+/// des titres), puis ses versets numérotés (le numéro petit et discret), un paragraphe à chaque « פ » ; « Chargement… »
+/// tant que le texte se lit. Dans le panneau de sa lecture, de droite à gauche.
+struct LecturePassageVue: View {
+    let passage: LectureTorahPassage
+    let modele: LectureModele
+    let rendu: LectureRendu
+    let e: CGFloat
+
+    @Environment(\.traducteur) private var traducteur
+    /// Le sens de la langue de l'app, lu au-dessus du panneau (qui se met de droite à gauche) : celui de l'en-tête.
+    @Environment(\.layoutDirection) private var sensApp
+
+    var body: some View {
+        let base = 19 * e
+        VStack(alignment: .leading, spacing: 6 * e) {
+            Text(verbatim: passage.entete)
+                .font(Font.system(size: base * 0.62).bold())
+                .foregroundStyle(rendu.titre)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, sensApp)
+            if let versets = passage.versets {
+                texte(versets, base: base)
+                    .foregroundStyle(rendu.texte)
+                    .lineSpacing(8 * e)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                Text(Libelle("lecture_chargement"), traducteur: traducteur)
+                    .font(.system(size: base))
+                    .foregroundStyle(rendu.discret)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 14)
+        .padding(.bottom, 18)
+        .background {
+            if passage.dansPanneau {
+                LecturePanneau(couleur: rendu.teinte(0x10), haut: false, bas: false, trait: nil)
+                    .padding(.horizontal, 8)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: passage.entete + ". " + passage.texteSuivi))
+        .environment(\.layoutDirection, .rightToLeft)
+    }
+
+    /// Les versets bout à bout : le numéro (0,55, discret) et une espace insécable, le verset, puis un saut de ligne après
+    /// un « פ », une espace sinon.
+    private func texte(_ versets: [LectureTorahVerset], base: CGFloat) -> Text {
+        var tout = AttributedString()
+        for (k, v) in versets.enumerated() {
+            var numero = AttributedString(String(v.numero) + "\u{00A0}")
+            numero.font = Font.system(size: base * 0.55)
+            numero.foregroundColor = rendu.discret
+            tout.append(numero)
+            var verset = AttributedString(v.texte)
+            verset.font = Font.hebreu(modele.police, taille: base)
+            tout.append(verset)
+            if k < versets.count - 1 { tout.append(AttributedString(v.finDeParagraphe ? "\n" : " ")) }
+        }
+        return Text(tout)
     }
 }
 

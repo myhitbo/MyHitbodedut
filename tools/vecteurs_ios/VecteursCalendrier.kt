@@ -165,11 +165,24 @@ object VecteursCalendrier : Generateur {
         "horaires" to horaires(),
         "moments" to moments(),
         // Le jour hébreu d'une prière : texte, heure (de 0 à 23), après la sortie des étoiles → décalage en jours.
-        "jourDeLaPriere" to listOf("arvit", "chema_coucher", "minha", "chaharit", "tikoun_hatsot", "birkat", "").flatMap { t ->
+        "jourDeLaPriere" to listOf("arvit", "chema_coucher", "minha", "chaharit", "tikoun_hatsot", "birkat", "", "sefirat_haomer").flatMap { t ->
             (0..23).flatMap { h ->
                 listOf(false, true).map { apres ->
                     val d = LocalDate.of(2026, 11, 17)
                     listOf(t, h, apres, CalendrierJuif.jourDeLaPriere(t, d, LocalTime.of(h, 30), apres).toEpochDay() - d.toEpochDay())
+                }
+            }
+        },
+        // Le jour voisin du Birkat haMazon et de Méèn chaloch (26/11, Q6) : texte, heure (de 0 à 23), après le coucher
+        // (null, faux, vrai), après la sortie (null, faux, vrai) → décalage en jours, ou null.
+        "jourVoisin" to listOf("birkat_hamazon", "meen_chaloch", "chaharit", "arvit", "").flatMap { t ->
+            (0..23).flatMap { h ->
+                listOf(null, false, true).flatMap { coucher ->
+                    listOf(null, false, true).map { sortie ->
+                        val d = LocalDate.of(2026, 11, 20)
+                        listOf(t, h, coucher, sortie,
+                            CalendrierJuif.jourVoisin(t, d, LocalTime.of(h, 30), coucher, sortie)?.let { it.toEpochDay() - d.toEpochDay() })
+                    }
                 }
             }
         },
