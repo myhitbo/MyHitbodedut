@@ -1314,8 +1314,8 @@ function ramenerLecture() {
   rendreEtViser('.lecture-barre button');
 }
 
-function reglagesLecture({ avecNusah, sansNuit = false, sansTahanoun = null, chnayimMikra = false }) {
-  optionsLecture = { avecNusah, sansNuit, sansTahanoun, chnayimMikra };
+function reglagesLecture({ avecNusah, sansNuit = false, sansTahanoun = null }) {
+  optionsLecture = { avecNusah, sansNuit, sansTahanoun };
   // Pendant le défilement automatique, sa commande remplace la barre (et la pastille).
   if (defilAuto) return commandeDefilement();
   if (store.lectureMasquee()) return null;
@@ -1366,12 +1366,6 @@ function reglagesLecture({ avecNusah, sansNuit = false, sansTahanoun = null, chn
         'aria-label': tl('reglage_sans_tahanoun_jour'), title: tl(store.sansTahanounLe(sansTahanoun) ? 'lecture_tahanoun_oui' : 'lecture_tahanoun_non'),
         onclick: () => { store.setSansTahanounLe(sansTahanoun, !store.sansTahanounLe(sansTahanoun)); rendreEtViser('.lecture-tahanoun'); },
       }, 'תחנון') : null,
-      // Chnayim mikra (26/11, ReglagesLecture) : dans le texte « Lecture de la Torah », l'hébreu deux fois (« ×2 », par
-      // défaut) ou une (« ×1 ») avant le Targoum ; sans redessiner, les lectures dépliées le restent.
-      chnayimMikra ? bouton({
-        class: 'lecture-fois', lang: 'en', dir: 'ltr', 'aria-pressed': String(store.lectureHebreuUneFois()), 'aria-label': tl('reglage_chnayim_mikra'),
-        title: tl(store.lectureHebreuUneFois() ? 'lecture_hebreu_une_fois' : 'lecture_hebreu_deux_fois'), onclick: (ev) => basculerHebreuUneFois(ev.currentTarget),
-      }, store.lectureHebreuUneFois() ? '×1' : '×2') : null,
       // Le défilement automatique (16/11) : il part sans rien fermer ; sa commande prend la place de la barre.
       bouton({ class: 'icone-bouton lecture-defiler', 'aria-label': tl('lecture_defiler'), 'aria-pressed': 'false', onclick: demarreDefilement }, icone('lecture')),
       separateur(),
@@ -1385,17 +1379,7 @@ function reglagesLecture({ avecNusah, sansNuit = false, sansTahanoun = null, chn
 // quitter l'écran, toucher le texte, ou arriver au bout l'arrête. (À ne pas confondre avec
 // dataset.defilementAuto, le défilement posé par un écran, plus bas.)
 let defilAuto = null; // { ecran, reste, dernier, image, vitesse, verrou }
-let optionsLecture = { avecNusah: false, sansNuit: false, sansTahanoun: null, chnayimMikra: false };
-
-/** « ×2 » / « ×1 » (Chnayim mikra) : le réglage, puis le texte et le bouton, sur place. */
-function basculerHebreuUneFois(b) {
-  const v = !store.lectureHebreuUneFois();
-  store.setLectureHebreuUneFois(v);
-  app.querySelector('.lecture-seule')?.classList.toggle('hebreu-une-fois', v);
-  b.textContent = v ? '×1' : '×2';
-  b.setAttribute('aria-pressed', String(v));
-  b.title = tl(v ? 'lecture_hebreu_une_fois' : 'lecture_hebreu_deux_fois');
-}
+let optionsLecture = { avecNusah: false, sansNuit: false, sansTahanoun: null };
 
 /** Le texte qui défile : celui de l'écran de lecture affiché. */
 function defileLu() {
@@ -1507,9 +1491,9 @@ for (const evt of ['touchstart', 'wheel', 'pointerdown', 'keydown']) document.ad
  * Un écran de lecture de texte saint : le texte à la taille choisie, de
  * nuit si demandé, et le bouton de lecture au-dessus du pied d'écran.
  */
-function ecranLu(titre, contenu, { avecNusah = false, pied = null, bande = null, entete = null, sansTahanoun = null, chnayimMikra = false } = {}) {
+function ecranLu(titre, contenu, { avecNusah = false, pied = null, bande = null, entete = null, sansTahanoun = null } = {}) {
   const defile = h('div', { class: 'defile' }, contenu);
-  const ctrl = reglagesLecture({ avecNusah, sansTahanoun, chnayimMikra });
+  const ctrl = reglagesLecture({ avecNusah, sansTahanoun });
   // Le niveau de lecture (IndicateurDefilement.kt, 28/10) : un trait fin au bord droit, montré pendant le défilement.
   const curseur = h('div', { class: 'niveau-curseur' });
   const niveau = h('div', { class: 'niveau', 'aria-hidden': 'true' }, curseur);
@@ -1696,63 +1680,17 @@ function ecranSiddur() {
         tuileLivre(tr.t('siddur_tikkun_he'), tr.t('tikkun_title'), 'char_torah', () => ouvrir('tikkun'))),
       ...(pret ? siddur.groupes.flatMap((g) => [
         enteteGroupe(g.titre.he, titreTexte(g.titre)),
-        h('div', { class: 'carte carte-sections' },
-          // La lecture de la Torah du jour (26/11, D1), en tête des textes de certains moments, dans les trois nusah.
-          g.cle === 'moments' ? ligneHebreu(LECTURE_TORAH.titre.he, titreTexte(LECTURE_TORAH.titre) !== LECTURE_TORAH.titre.he ? titreTexte(LECTURE_TORAH.titre) : '',
-            () => { priere = LECTURE_TORAH.id; ouvrir('priere'); }) : null,
-          siddur.textes.filter((x) => x.groupe === g.cle).map((x) =>
+        h('div', { class: 'carte carte-sections' }, siddur.textes.filter((x) => x.groupe === g.cle).map((x) =>
           // Un texte absent des sources de ce nusah, emprunté à un autre, le dit.
-            ligneHebreu(x.titre.he, [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, x.nusah ? titreTexte(x.nusah) : null].filter(Boolean).join(' · '),
-              () => { priere = x.id; ouvrir('priere'); }))),
+          ligneHebreu(x.titre.he, [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, x.nusah ? titreTexte(x.nusah) : null].filter(Boolean).join(' · '),
+            () => { priere = x.id; ouvrir('priere'); }))),
       ]) : []),
       // Les seules mentions que les licences demandent (CC-BY du siddour Metsudah, Wikipédia), sans Sefaria.
       pret && mentionsObligatoires(siddur._meta.sources).length
         ? h('p', { class: 'indice sources' }, tr.t('siddur_sources', mentionsObligatoires(siddur._meta.sources).join(' ; '))) : null)));
 }
 
-/** Israël ou diaspora non confirmé (26/11, Q7 ; SiddurLectureActivity.QuestionRegion) : la réponse confirme le statut. */
-function questionRegionSiddour() {
-  return h('button', { type: 'button', class: 'question-region', onclick: () => choisirDans(tr.t('siddur_region_titre'),
-    [tr.t('region_israel'), tr.t('region_diaspora')], -1, (k) => { store.setInIsrael(k === 0, true); rendre(); }) }, tr.t('siddur_region_question'));
-}
-
-/**
- * Le texte « Lecture de la Torah » (26/11 ; SiddurLectureActivity.lignesLectureSeule) : la paracha de la semaine,
- * pour Chnayim mikra véé'had targoum (lecture-torah.js, parachaSemaine), jamais une lecture de Yom tov. En tête, son
- * nom et la date de son Chabbat ; la question Israël ou diaspora tant que le statut n'est pas confirmé et que la
- * paracha en dépend ; puis la paracha repliée par montée (chaque verset deux fois, ou une, puis le Targoum Onkelos),
- * et sa haftara repliée à part.
- */
-function ecranLectureTorah() {
-  const titre = LECTURE_TORAH.titre;
-  const lecture = chargeLecture();
-  if (!lecture) return h('div', { class: 'ecran', 'data-attente': '' }, barre(titreTexte(titre)), h('div', { class: 'defile' }));
-  const { m, donnees } = lecture;
-  const maintenant = new Date();
-  const lieu = store.lieu();
-  const isoMaintenant = jourLieu(maintenant);
-  const tset = lieu ? zmanimDuJour(lieu, isoMaintenant, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant ?? null : null;
-  // Après la sortie des étoiles, le jour qui commence, comme Cha'harit : le samedi soir, la paracha qui vient.
-  const iso = jourDeLaPriere(LECTURE_TORAH.id, isoMaintenant, heureLieu(maintenant).heures, !!tset && maintenant >= tset);
-  const israel = store.inIsrael();
-  const options = (il) => ({ enIsrael: il, mukafChoma: mukafChoma(), nusah: store.siddurNusah() });
-  const p = m.parachaSemaine(donnees, iso, options(israel));
-  const depend = !store.regionConfirmee() && JSON.stringify(m.parachaSemaine(donnees, iso, options(true))) !== JSON.stringify(m.parachaSemaine(donnees, iso, options(false)));
-  const date = new Intl.DateTimeFormat(tr.locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${p.date}T12:00:00Z`));
-  const contenu = h('div', { class: `contenu lecture siddour lecture-seule${store.lectureHebreuUneFois() ? ' hebreu-une-fois' : ''}` },
-    h('div', { class: 'paracha-entete' },
-      h('p', { class: 'paracha-nom' }, tr.t('lecture_paracha_semaine', titreTexte(p.lecture.titre))),
-      h('p', { class: 'indice paracha-date' }, tr.t('lecture_paracha_chabbat', date, jourJuif(p.date, israel, mukafChoma()).dateHebraique,
-        tr.t(israel ? 'region_israel' : 'region_diaspora')))),
-    depend ? questionRegionSiddour() : null,
-    ...boitesLecture([p.lecture], { targoum: true }));
-  const etiquette = titreTexte(titre) !== titre.he ? [titreTexte(titre)] : [];
-  return ecranLu(titre.he, contenu, { avecNusah: true, chnayimMikra: true, entete: bandeauPriere(titre.he, etiquette, null) });
-}
-
 function ecranPriere() {
-  // Le texte « Lecture de la Torah » (26/11, D1) : les lectures du jour, pas des paragraphes du siddour.
-  if (priere === LECTURE_TORAH.id) return ecranLectureTorah();
   // Un livre de la bibliothèque (« livre:likoutei_etsot », 12/10) se lit comme une prière, sans nusah ni ajouts.
   const livre = priere?.startsWith('livre:') ?? false;
   const pret = livre ? chargeLivre(priere.slice(6)) : chargeSiddur();
@@ -1792,7 +1730,7 @@ function ecranPriere() {
   const c = pour(store.inIsrael(), duJour(jourDuTexte));
   const cv = voisinPour(store.inIsrael());
   // La lecture de la Torah du jour (26/11) : à Cha'harit les jours de lecture, à Min'ha les jours de jeûne, repliée à sa
-  // place (SiddurJour.Sorte.LECTURE), puis sa haftara ; le module et ses données ne se lisent que ces jours-là.
+  // place (SiddurJour.Sorte.LECTURE) ; le module et ses données ne se lisent que ces jours-là.
   // Jamais un Chabbat ni un Yom tov (LectureTorah.litDansLOffice : le siddour n'a pas leur office) ; la règle est
   // celle de lecture-torah.js, recopiée ici pour ne pas charger le module les autres jours.
   const litIci = (j) => !j.chome && j.conditions.has(x.id === 'chaharit' ? 'kriat_hatorah' : 'jeune');
@@ -1900,7 +1838,7 @@ function ecranPriere() {
   };
   const demandeRegion = !livre && annotations?.some((a) => a.sorte !== 'note') && !store.regionConfirmee()
     && (signatureAjouts(x, idx, pour(true, duJour(jourPour(true))), voisinPour(true)) !== signatureAjouts(x, idx, pour(false, duJour(jourPour(false))), voisinPour(false))
-      // Sa lecture aussi (Chemini Atsérèt, Sim'hat Torah, le second jour de fête en diaspora).
+      // Sa lecture aussi ('Hol hamoèd en Israël quand la diaspora fête son second jour, semaines aux parachiot décalées).
       || JSON.stringify(lecturesPour(true)) !== JSON.stringify(lecturesPour(false)));
   // Une section sans rien à lire ce jour-là (26/11) : tous ses ajouts retirés, ni renvoi ni note.
   const sectionVide = (s, si) => planSection(s, si, idx, c, cv).every((p) => p.etat === 'retire'
@@ -1926,7 +1864,8 @@ function ecranPriere() {
     traductionPartielle ? h('p', { class: 'indice' }, tl('lecture_traduction_partielle', chapitresTraduits, x.sections.length)) : null,
     traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     // Israël ou diaspora non confirmé (26/11, Q7 ; SiddurLectureActivity.QuestionRegion) : demandé quand le texte en dépend.
-    demandeRegion ? questionRegionSiddour() : null,
+    demandeRegion ? h('button', { type: 'button', class: 'question-region', onclick: () => choisirDans(tr.t('siddur_region_titre'),
+      [tr.t('region_israel'), tr.t('region_diaspora')], -1, (k) => { store.setInIsrael(k === 0, true); rendre(); }) }, tr.t('siddur_region_question')) : null,
     annotations?.some((a) => a.sorte !== 'note') ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
     // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
@@ -2400,16 +2339,12 @@ function chargeAnnotations() {
 }
 
 // --- La lecture de la Torah du jour (26/11, LectureTorah.kt) ----------------------------------------
-// Le module et ses données (117 ko) ne se lisent que les jours où un office a une lecture, ou au texte « Lecture de
-// la Torah » ; le texte, un livre à la fois, quand on déplie une lecture (lecture-torah.js, chargeLivre).
-// La clé et le titre du texte, ceux de lecture-torah.js (ID_TEXTE, TITRE) : la liste du siddour n'a pas à charger le module.
-const LECTURE_TORAH = { id: 'lecture_torah', titre: { he: 'קְרִיאַת הַתּוֹרָה', fr: 'Lecture de la Torah', en: 'Torah reading' } };
+// Le module et ses données (43 ko) ne se lisent que les jours où un office a une lecture ; le texte, un livre à la
+// fois, quand on déplie une lecture (lecture-torah.js, chargeLivre).
 let lectureTorah = null;
 let lectureDemandee = false;
 /** Les livres déjà lus (« Genesis » → { chapitres, paragraphes }) : déplier une seconde fois ne fait plus attendre. */
 const livresLecture = new Map();
-/** De même, le Targoum Onkelos des livres déjà lus (Chnayim mikra). */
-const targoumsLecture = new Map();
 
 /** { m, donnees } une fois le module et les données arrivés (l'écran se redessine alors), null en attendant. */
 function chargeLecture() {
@@ -2422,46 +2357,28 @@ function chargeLecture() {
   return null;
 }
 
-/** Le nom d'un passage dans la langue de l'interface : « Berèchit 32:4–13 » (LectureTorah.reference). */
+/** Le nom d'un passage dans la langue de l'interface : « Berèchit 32:4–6 » (LectureTorah.reference). */
 const referenceLecture = (p) => lectureTorah.m.reference(lectureTorah.donnees, p.livre, p.debut, p.fin, titreTexte);
 
-/**
- * Les lectures d'un office, chacune repliée (SiddurJour.lignesLecture) : « Lecture : Vayichla'h, 3 montées », ses
- * montées dépliées ; puis sa haftara, repliée à part. [targoum] : Chnayim mikra (le texte « Lecture de la Torah ») :
- * les montées avec le Targoum Onkelos, pas la haftara.
- */
-function boitesLecture(lectures, { targoum = false } = {}) {
-  return lectures.flatMap((l) => {
-    const n = l.montees.length;
-    const titre = [tr.t('lecture_titre', titreTexte(l.titre), tr.p('lecture_montees', n)), ...l.raisons.map(titreTexte)].join(' · ');
-    const boites = [boiteLecture(titre, l.montees.map((m) => ({ libelle: titreTexte(m.libelle), passage: m })), { targoum })];
-    if (l.haftara.length) {
-      boites.push(boiteLecture(tr.t('lecture_haftara', l.haftara.map(referenceLecture).join(' ; ')), l.haftara.map((p) => ({ libelle: null, passage: p }))));
-    }
-    return boites;
-  });
+/** Les lectures d'un office, chacune repliée (SiddurJour.lignesLecture) : « Lecture : Vayichla'h, 3 montées ». */
+function boitesLecture(lectures) {
+  return lectures.map((l) => boiteLecture(tr.t('lecture_titre', titreTexte(l.titre), tr.p('lecture_montees', l.montees.length)), l.montees));
 }
 
-/**
- * Une lecture repliée ; dépliée la première fois, ses livres se lisent (et leur Targoum, pour Chnayim mikra), puis
- * ses passages s'écrivent.
- */
-function boiteLecture(titre, passages, { targoum = false } = {}) {
+/** Une lecture repliée ; dépliée la première fois, ses livres se lisent, puis ses montées s'écrivent. */
+function boiteLecture(titre, montees) {
   const { m } = lectureTorah;
   const attente = (cle) => h('p', { class: 'lecture-attente' }, tr.t(cle));
   const zone = h('div', { class: 'lecture-passages' }, attente('lecture_chargement'));
-  const noms = [...new Set(passages.map((x) => x.passage.livre))];
-  const ecrire = () => zone.replaceChildren(...passages.flatMap((x) => passageLu(x, livresLecture.get(x.passage.livre),
-    targoum ? targoumsLecture.get(x.passage.livre) : null)));
-  const prets = () => noms.every((l) => livresLecture.has(l) && (!targoum || targoumsLecture.has(l)));
+  const noms = [...new Set(montees.map((x) => x.livre))];
+  const ecrire = () => zone.replaceChildren(...montees.flatMap((x) => passageLu(x, livresLecture.get(x.livre))));
   let demande = false;
   const remplir = () => {
     if (demande) return;
     demande = true;
     // Déjà lus : écrits avant que le panneau s'ouvre, à sa vraie hauteur.
-    if (prets()) { ecrire(); return; }
-    Promise.all(noms.flatMap((l) => [m.chargeLivre(l).then((t) => livresLecture.set(l, t)),
-      ...(targoum ? [m.chargeTargoum(l).then((t) => targoumsLecture.set(l, t))] : [])])).then(ecrire)
+    if (noms.every((l) => livresLecture.has(l))) { ecrire(); return; }
+    Promise.all(noms.map((l) => m.chargeLivre(l).then((t) => livresLecture.set(l, t)))).then(ecrire)
       .catch(() => { demande = false; zone.replaceChildren(attente('livres_echec_web')); });
   };
   const boite = ajout(titre, false, [zone], false, { avantOuvrir: remplir });
@@ -2469,25 +2386,9 @@ function boiteLecture(titre, passages, { targoum = false } = {}) {
   return boite;
 }
 
-/**
- * Un passage : la montée et sa référence, puis ses versets numérotés, un paragraphe à chaque « פ » (textePassage).
- * Avec [targoum] (Chnayim mikra) : verset par verset, l'hébreu deux fois puis le Targoum Onkelos, plus petit ; la
- * seconde fois se cache quand on a choisi « ×1 » (.hebreu-une-fois, basculerHebreuUneFois).
- */
-function passageLu({ libelle, passage: p }, texte, targoum = null) {
-  const sortie = [h('p', { class: 'lecture-reference' }, [libelle, referenceLecture(p)].filter(Boolean).join(' · '))];
-  if (targoum) {
-    const { m } = lectureTorah;
-    const lignes = m.chnayimMikra(m.versets(p.livre, p.debut, p.fin, texte), m.versets(p.livre, p.debut, p.fin, targoum));
-    let groupe = null;
-    lignes.forEach((l, k) => {
-      if (!groupe || (!l.targoum && lignes[k - 1]?.targoum)) { groupe = h('div', { class: 'lecture-mikra' }); sortie.push(groupe); }
-      const bis = !l.targoum && k > 0 && !lignes[k - 1].targoum;
-      groupe.append(h('p', { class: `priere ${l.targoum ? 'lecture-targoum' : `lecture-versets${bis ? ' lecture-bis' : ''}`}`, lang: l.targoum ? 'arc' : 'he', dir: 'rtl' },
-        h('span', { class: 'lecture-numero' }, String(l.v)), '\u00a0', l.t));
-    });
-    return sortie;
-  }
+/** Une montée : son libellé et sa référence, puis ses versets numérotés, un paragraphe à chaque « פ » (textePassage). */
+function passageLu(p, texte) {
+  const sortie = [h('p', { class: 'lecture-reference' }, `${titreTexte(p.libelle)} · ${referenceLecture(p)}`)];
   let courant = null;
   for (const v of lectureTorah.m.versets(p.livre, p.debut, p.fin, texte)) {
     courant ??= h('p', { class: 'priere lecture-versets', lang: 'he', dir: 'rtl' });

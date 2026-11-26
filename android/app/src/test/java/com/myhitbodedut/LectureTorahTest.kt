@@ -8,11 +8,11 @@ import java.io.File
 import java.time.LocalDate
 
 /**
- * La lecture de la Torah du jour (26/11). Le calcul est celui du web (web/src/js/lecture-torah.js),
- * que web/test/lecture-torah.test.mjs compare jour par jour à @hebcal/leyning, la référence, et dont
- * il garde la réponse dans web/test/vecteurs_lecture_torah.json : ici, chaque jour de ces vecteurs
- * (septembre 2025 à décembre 2031, six années hébraïques entières), en diaspora, en Israël et à
- * Jérusalem, aux deux offices et dans les trois noussa'h, doit donner exactement la même chose.
+ * La lecture de la Torah des offices de semaine (26/11). Le calcul est celui du web (web/src/js/lecture-torah.js),
+ * que web/test/lecture-torah.test.mjs compare jour par jour à @hebcal/leyning, la référence, et dont il garde la
+ * réponse dans web/test/vecteurs_lecture_torah.json : ici, chaque jour de ces vecteurs (septembre 2025 à décembre
+ * 2031, six années hébraïques entières), en diaspora, en Israël et à Jérusalem, aux deux offices et dans les trois
+ * noussa'h, doit donner exactement la même chose.
  */
 class LectureTorahTest {
 
@@ -21,8 +21,7 @@ class LectureTorahTest {
 
     /** La même ligne que resume() de web/tools/lecture-torah.mjs. */
     private fun resume(l: LectureTorah.Lecture) =
-        l.cle + "|" + l.montees.joinToString(",") { "${it.cle}:${it.livre} ${it.debut}-${it.fin}" } + "|" +
-            l.haftara.joinToString(",") { "${it.livre} ${it.debut}-${it.fin}" }
+        l.cle + "|" + l.montees.joinToString(",") { "${it.cle}:${it.livre} ${it.debut}-${it.fin}" }
 
     private val lieux = mapOf("dia" to (false to false), "il" to (true to false), "jer" to (true to true))
 
@@ -53,50 +52,49 @@ class LectureTorahTest {
             }
             date = date.plusDays(1)
         }
-        // 2 313 jours, trois lieux, deux offices, trois noussa'h : 13 866 lectures.
-        assertEquals(13_866, lectures)
+        // 2 313 jours, trois lieux, deux offices, trois noussa'h : 7 428 lectures, des seuls jours de semaine.
+        assertEquals(7_428, lectures)
     }
 
     @Test
     fun `quelques jours, comme le web`() {
-        // Aujourd'hui, jeudi 26/11/2026 : Vayichla'h, trois montées, le troisième « Israël ».
+        // Jeudi 26/11/2026 : Vayichla'h, trois montées, le troisième « Israël ».
         val l = une("2026-11-26")
         assertEquals("semaine:VAYISHLACH", l.cle)
         assertEquals("Vayichla’h", l.titre.fr)
         assertEquals(listOf("Cohen", "Lévi", "Israël"), l.montees.map { it.libelle.fr })
+        // Chabbat et Yom tov : rien, à aucun office.
+        for (iso in listOf("2026-11-28", "2026-04-02", "2026-10-03", "2026-09-21")) {
+            for (office in LectureTorah.OFFICES) assertTrue("$iso $office", LectureTorah.lectures(d, LocalDate.parse(iso), office, false).isEmpty())
+        }
         // 'Hanouka, premier jour en semaine : Edot depuis la bénédiction des cohanim (Kitsour Yalkout Yossef 684:1).
         assertEquals(listOf("6:22-7:3", "7:4-7:11", "7:12-7:17"), une("2025-12-15", nusah = "edot").montees.map { "${it.debut}-${it.fin}" })
         assertEquals(listOf("7:1-7:11", "7:12-7:14", "7:15-7:17"), une("2025-12-15").montees.map { "${it.debut}-${it.fin}" })
-        // 9 Av à Min'ha : Ashkenaz « דרשו », Edot « שובה ישראל » et « מי אל כמוך » ; un autre jeûne, Edot sans haftara.
-        assertEquals(listOf("Isaiah 55:6-56:8"), une("2026-07-23", office = LectureTorah.MINHA).haftara.map { "${it.livre} ${it.debut}-${it.fin}" })
-        assertEquals(listOf("Hosea 14:2-14:10", "Micah 7:18-7:20"),
-            une("2026-07-23", nusah = "edot", office = LectureTorah.MINHA).haftara.map { "${it.livre} ${it.debut}-${it.fin}" })
-        assertTrue(une("2026-12-20", nusah = "edot", office = LectureTorah.MINHA).haftara.isEmpty())
+        // Min'ha d'un jeûne : le troisième maftir chez Ashkenaz ; chez les Edot « Israël », sauf le 9 Av.
+        assertEquals("Maftir", une("2026-12-20", office = LectureTorah.MINHA).montees[2].libelle.fr)
+        assertEquals("Israël", une("2026-12-20", nusah = "edot", office = LectureTorah.MINHA).montees[2].libelle.fr)
+        assertEquals("Maftir", une("2026-07-23", nusah = "edot", office = LectureTorah.MINHA).montees[2].libelle.fr)
         // Pourim à Jérusalem le 15, ailleurs le 14.
         assertEquals("Shushan Purim", une("2027-03-24", il = true, muk = true).cle)
         assertTrue(LectureTorah.lectures(d, LocalDate.parse("2027-03-23"), LectureTorah.CHAHARIT, true, true, "edot").isEmpty())
         // 'Hol hamoèd Souccot en Israël : les quatre lisent le sacrifice du jour (Kitsour Yalkout Yossef 662:1).
         assertEquals(setOf("29:20-29:22"), une("2026-09-28", il = true).montees.map { "${it.debut}-${it.fin}" }.toSet())
-        // Chabbat Chekalim, Edot, veille de Roch 'Hodech un dimanche : « מחר חדש » en tête et en fin.
-        assertEquals("II Kings 11:17-12:17,I Samuel 20:18-20:18,I Samuel 20:42-20:42",
-            une("2028-02-26", nusah = "edot").haftara.joinToString(",") { "${it.livre} ${it.debut}-${it.fin}" })
-        assertEquals("Chabbat Chekalim", une("2028-02-26").raisons.single().fr)
     }
 
     @Test
-    fun `le texte des lectures`() {
-        // Le qere (ketiv הוצא), la numérotation d'hebcal (Bamidbar 25:19), la fin de paragraphe.
-        assertTrue(texte.versets("Genesis", "8:17", "8:17").single().texte.contains("הַיְצֵ֣א"))
+    fun `le texte des lectures, les seuls chapitres lus, la Torah seule`() {
+        // Le qere (ketiv גיים), la numérotation d'hebcal (Bamidbar 25:19).
+        assertTrue(texte.versets("Genesis", "25:23", "25:23").single().texte.contains("שְׁנֵ֤י גוֹיִם֙"))
         assertEquals("וַיְהִ֖י אַחֲרֵ֣י הַמַּגֵּפָ֑ה", texte.versets("Numbers", "25:19", "25:19").single().texte)
-        assertEquals("פ", texte.versets("Genesis", "2:3", "2:3").single().fin)
-        // La lecture d'aujourd'hui : trois montées, des versets vocalisés avec leurs teamim.
+        // La lecture de ce jeudi : trois montées, des versets vocalisés avec leurs teamim.
         val l = une("2026-11-26")
-        val versets = l.montees.flatMap { texte.versets(it.livre, it.debut, it.fin) }
+        val versets = l.montees.flatMap { texte.versets(it) }
         assertEquals(32, versets.first().chapitre)
         assertTrue(versets.all { v -> v.texte.any { it.code in 0x0591..0x05AF } && v.texte.any { it.code in 0x05B0..0x05BC } })
-        // Le texte d'une haftara à cheval sur deux livres des Douze (Chabbat Chouva, Edot).
-        val chouva = une("2026-09-19", nusah = "edot").haftara
-        assertEquals(listOf("Hosea", "Micah"), chouva.map { it.livre })
-        assertEquals(12, chouva.sumOf { texte.versets(it).size })
+        // Les cinq livres, et rien d'autre ; les seules lectures des jours de semaine.
+        val o = JSONObject(File("src/main/res/raw/lecture_torah_texte.json").readText()).getJSONObject("livres")
+        assertEquals(setOf("Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy"), o.keys().asSequence().toSet())
+        assertEquals(setOf("1", "2", "3", "3_israel", "4", "M"), d.montees.keys)
+        assertEquals(d.livres.keys, o.keys().asSequence().toSet())
     }
 }

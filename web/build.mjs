@@ -137,17 +137,12 @@ for (const nom of ['chizuk.json', 'bibliotheque.json', 'tikkun_haklali.json', 't
 }
 
 // --- La lecture de la Torah, un fichier par livre (26/11) ------------------------------
-// lecture_torah_texte.json pèse 2,2 Mo : le site ne lit que le livre de la lecture ouverte
+// lecture_torah_texte.json pèse 0,6 Mo : le site ne lit que le livre de la lecture ouverte
 // (lecture-torah.js, chargeLivre), jamais au démarrage. Les versets restent ceux d'Android.
 {
   mkdirSync(join(DIST, 'data', 'lecture_torah'), { recursive: true });
   const parLivre = decoupeTexte(JSON.parse(readFileSync(join(RES, 'raw', 'lecture_torah_texte.json'), 'utf8')));
   for (const [nom, contenu] of Object.entries(parLivre)) writeFileSync(join(DIST, 'data', 'lecture_torah', `${nom}.json`), JSON.stringify(contenu));
-  // Le Targoum Onkelos (1,3 Mo, tools/lecture_torah_targoum.py), pour Chnayim mikra : de même, un fichier par livre,
-  // lu par le seul texte « Lecture de la Torah » (lecture-torah.js, chargeTargoum).
-  mkdirSync(join(DIST, 'data', 'lecture_torah', 'targoum'), { recursive: true });
-  const targoum = decoupeTexte(JSON.parse(readFileSync(join(RES, 'raw', 'lecture_torah_targoum.json'), 'utf8')));
-  for (const [nom, contenu] of Object.entries(targoum)) writeFileSync(join(DIST, 'data', 'lecture_torah', 'targoum', `${nom}.json`), JSON.stringify(contenu));
 }
 
 // --- Les illustrations -------------------------------------------------------

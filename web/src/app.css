@@ -830,16 +830,6 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .siddour .priere.lecture-versets { margin: 0 0 14px; line-height: 1.9; }
 .lecture-numero { color: var(--muted); font-family: system-ui, sans-serif; font-size: .55em; vertical-align: .35em; }
 .lecture-attente { margin: 8px 0 12px; color: var(--muted); font-size: 14px; text-align: start; }
-/* Le texte « Lecture de la Torah » : la paracha de la semaine (Chnayim mikra véé'had targoum). */
-.paracha-entete { margin: 4px 0 14px; }
-.paracha-nom { margin: 0 0 4px; color: var(--brand); font-size: 19px; font-weight: 700; text-align: start; }
-.paracha-date { margin: 0; }
-.lecture-mikra { margin: 0 0 18px; }
-.siddour .lecture-mikra .priere { margin: 0 0 4px; }
-.siddour .priere.lecture-targoum { color: var(--muted); font-size: calc(16px * var(--echelle, 1)); line-height: 1.7; }
-.hebreu-une-fois .lecture-bis { display: none; }
-.ecran.lu.nuit .paracha-nom { color: var(--lecture-nuit-titre, #D6C28C); }
-.ecran.lu.nuit .siddour .priere.lecture-targoum { color: var(--lecture-nuit-discret, #A3A8A5); }
 .ecran.lu.nuit .lecture-reference { color: var(--lecture-nuit-titre, #D6C28C); }
 .ecran.lu.nuit .lecture-numero, .ecran.lu.nuit .lecture-attente { color: var(--lecture-nuit-discret, #A3A8A5); }
 .renvoi-jour { display: block; width: 100%; margin: 4px 0 16px; padding: 12px 12px; border: 0; border-radius: 12px; text-align: start; cursor: pointer;
@@ -1725,8 +1715,6 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
 /* « תחנון » de la barre de lecture (26/11, Q1) : barré quand « Pas de Ta'hanoun aujourd'hui » est actif. */
 .lecture-tahanoun { font-size: 12px; font-weight: 700; }
 .lecture-tahanoun[aria-pressed="true"] { text-decoration: line-through; }
-/* Chnayim mikra : « ×2 » / « ×1 », l'hébreu deux fois ou une avant le Targoum. */
-.lecture-fois { font-size: 14px; font-weight: 700; }
 
 /* Les boutons, affinés (04/11) : une seule famille — pilule pleine, pilule cerclée, lien —,
    52 px de haut, texte medium, une ombre douce sous le principal, un anneau de focus net. */

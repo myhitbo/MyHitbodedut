@@ -100,7 +100,7 @@ test('Téfilin : pas à \'Hol hamoed chez les Edot ni en Israël ; sans bénédi
 });
 
 test('Min\'ha des jeûnes : la place de la lecture de la Torah (26/11), à la place des repères qui l\'annonçaient', () => {
-  // La haftara selon le rite : web/test/lecture-siddur.test.mjs.
+  // La lecture elle-même : web/test/lecture-siddur.test.mjs.
   for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
     const places = annotations[nusah].minha.filter((e) => e.sorte === 'lecture');
     assert.deepEqual(places.map((e) => [e.si, e.office]), [['jeune', 'minha']], nusah);

@@ -8,16 +8,17 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 /**
- * La lecture de la Torah du jour (demande du 26/11 : « le texte de la paracha concordant le jour de
- * lecture de la Torah ») : quelle lecture à quel office, ses montées et sa haftara, selon Israël ou la
- * diaspora, Jérusalem (Pourim le 15) et le noussa'h.
+ * La lecture de la Torah des offices de semaine (demande du 26/11 : « le texte de la paracha concordant le jour de
+ * lecture de la Torah ») : à Cha'harit le lundi et le jeudi, à Roch 'Hodech, à 'Hol hamoèd, à 'Hanouka, à Pourim et
+ * aux jeûnes publics (9 Av compris), à Min'ha des jeûnes publics ; jamais Chabbat ni Yom tov, dont le siddour n'a pas
+ * l'office. Ses montées selon Israël ou la diaspora, Jérusalem (Pourim le 15) et le noussa'h.
  *
  * Les données (res/raw/lecture_torah.json, tools/lecture_torah_construction.py) viennent de
  * @hebcal/leyning 10.1.0 (BSD-2-Clause) et des écarts sourcés des Edot ; le calcul suit celui
- * d'hebcal (getLeyningOnDate, specialReadings2), sur KosherJava comme le reste du calendrier
- * (CalendrierJuif.kt). Le jumeau web est web/src/js/lecture-torah.js : web/test/lecture-torah.test.mjs
- * le compare jour par jour à hebcal et écrit web/test/vecteurs_lecture_torah.json, que
- * LectureTorahTest relit ici — les deux réponses sont identiques.
+ * d'hebcal (getLeyningOnDate), sur KosherJava comme le reste du calendrier (CalendrierJuif.kt).
+ * Le jumeau web est web/src/js/lecture-torah.js : web/test/lecture-torah.test.mjs le compare jour
+ * par jour à hebcal et écrit web/test/vecteurs_lecture_torah.json, que LectureTorahTest relit ici —
+ * les deux réponses sont identiques.
  *
  * Pas d'Android dans le calcul (seul [donnees] et [texte] lisent les ressources) : testable sur la
  * machine virtuelle seule.
@@ -30,21 +31,11 @@ object LectureTorah {
     val NUSAH = listOf("edot", "sefard", "ashkenaz")
 
     data class Montee(val cle: String, val libelle: LocalizedText, val livre: String, val debut: String, val fin: String)
-    data class Passage(val livre: String, val debut: String, val fin: String)
 
-    /**
-     * Une lecture : [cle] « parasha:VAYETZEI+… », « semaine:VAYETZEI » ou la clé d'hebcal d'une fête ;
-     * [raisons] les Chabbatot qui changent le maftir ou la haftara (Chabbat Chekalim…).
-     */
-    data class Lecture(
-        val cle: String,
-        val titre: LocalizedText,
-        val raisons: List<LocalizedText>,
-        val montees: List<Montee>,
-        val haftara: List<Passage>,
-    )
+    /** Une lecture : [cle] « semaine:VAYETZEI » (lundi et jeudi) ou la clé d'hebcal d'un jour (« Rosh Chodesh »…). */
+    data class Lecture(val cle: String, val titre: LocalizedText, val montees: List<Montee>)
 
-    /** « Berèchit 32:4–13 », « Yechayahou 61:10–63:9 » : un passage dans la langue [langue] (les livres de [d]). */
+    /** « Berèchit 32:4–13 » : un passage dans la langue [langue] (les livres de [d]). */
     fun reference(d: Donnees, livre: String, debut: String, fin: String, langue: String): String {
         val nom = d.livres[livre]?.forLanguage(langue) ?: livre
         val (c1, v1) = debut.split(":")
@@ -60,13 +51,11 @@ object LectureTorah {
     /** [fin] : « פ » ou « ס » quand le verset clôt un paragraphe. */
     data class Verset(val chapitre: Int, val verset: Int, val texte: String, val fin: String?)
 
-    /** Une entrée de lecture_torah.json : listes [montée, livre, début, fin] ou [livre, début, fin]. */
+    /** Une entrée de lecture_torah.json : listes [montée, livre, début, fin]. */
     class Entree(
         val titre: LocalizedText?,
         val alias: String?,
         val champs: Map<String, List<List<String>>>,
-        val maftir: Map<String, List<String>>,
-        val maftirIsrael: Map<String, List<String>>,
     )
 
     class Donnees(
@@ -80,16 +69,13 @@ object LectureTorah {
     fun parse(json: String): Donnees {
         val o = JSONObject(json)
         fun listes(a: JSONArray) = (0 until a.length()).map { i -> a.getJSONArray(i).let { x -> (0 until x.length()).map { x.getString(it) } } }
-        fun table(t: JSONObject?) = t?.keys()?.asSequence()?.associateWith { k -> t.getJSONArray(k).let { x -> (0 until x.length()).map { x.getString(it) } } }.orEmpty()
         fun entree(e: JSONObject): Entree {
             val champs = mutableMapOf<String, List<List<String>>>()
-            e.keys().forEach { k -> if (k.startsWith("alyot") || k.startsWith("haftara") || k == "semaine") champs[k] = listes(e.getJSONArray(k)) }
+            e.keys().forEach { k -> if (k.startsWith("alyot") || k == "semaine") champs[k] = listes(e.getJSONArray(k)) }
             return Entree(
                 titre = e.optJSONObject("titre")?.let { LocalizedText.parse(it) },
                 alias = Json.nullable(e, "alias"),
                 champs = champs,
-                maftir = table(e.optJSONObject("maftir")),
-                maftirIsrael = table(e.optJSONObject("maftir_israel")),
             )
         }
         fun entrees(t: JSONObject) = t.keys().asSequence().associateWith { entree(t.getJSONObject(it)) }
@@ -106,8 +92,6 @@ object LectureTorah {
     // --- Le calendrier --------------------------------------------------------------------------------
 
     private const val NISSAN = 1
-    private const val SIVAN = 3
-    private const val AV = 5
     private const val TISHREI = 7
 
     private fun cal(date: LocalDate, il: Boolean, muk: Boolean) = JewishCalendar(date).apply {
@@ -133,63 +117,41 @@ object LectureTorah {
         }
     }
 
-    /**
-     * Chabbat à Min'ha : le début de la paracha qui suit (Choul'han Aroukh O.H. 135:2 et 292:1, « ואפי'
-     * חל יו"ט להיות בשבת קוראין בפרשה הבאה » ; Kitsour Yalkout Yossef 292:5). De Kippour à Sim'hat
-     * Torah, Vézot haBérakha, la seule qui reste avant Berèchit.
-     */
-    fun parachaApres(date: LocalDate, il: Boolean): String {
-        val jc = cal(date, il, false)
-        val d = jc.jewishDayOfMonth
-        if (jc.jewishMonth == TISHREI && d >= 10 && d <= simhatTorah(il)) return "VZOS_HABERACHA"
-        return parachaDeLaSemaine(date.plusDays(7), il)
-    }
-
     private fun chabbatSuivant(date: LocalDate): LocalDate =
         date.plusDays(((DayOfWeek.SATURDAY.value - date.dayOfWeek.value + 7) % 7).toLong())
 
-    /** La clé de la lecture d'une fête (holiday-readings.json d'hebcal), en semaine ou un Chabbat sans paracha. */
+    /**
+     * La clé de la lecture d'un jour de semaine qui n'est pas un lundi ou un jeudi ordinaire (holiday-readings.json
+     * d'hebcal) : Roch 'Hodech, 'Hol hamoèd, 'Hanouka, Pourim, jeûnes ; null sinon. [jc] n'est ni Chabbat ni Yom tov.
+     */
     fun cleFete(jc: JewishCalendar, date: LocalDate, il: Boolean, muk: Boolean): String? {
         val m = jc.jewishMonth
         val d = jc.jewishDayOfMonth
-        val ch = jc.dayOfWeek == 7
-        fun sur(cle: String) = if (ch) "$cle (on Shabbat)" else cle
         val yt = jc.yomTovIndex
         if (m == TISHREI) {
-            if (d == 1) return sur("Rosh Hashana I")
-            if (d == 2) return "Rosh Hashana II"
-            if (d == 15) return sur("Sukkot I")
-            if (d == 16 && !il) return "Sukkot II"
             if (d >= (if (il) 16 else 17) && d <= 20) {
-                if (ch) return "Sukkot Shabbat Chol ha-Moed"
                 val n = d - (if (il) 15 else 16)
                 return if (il) "Sukkot Chol ha-Moed Day $n (Israel)" else "Sukkot Chol ha-Moed Day $n"
             }
             if (d == 21) return if (il) "Sukkot Final Day (Hoshana Raba) (Israel)" else "Sukkot Final Day (Hoshana Raba)"
-            if (d == 22) return if (il) sur("Simchat Torah") else sur("Shmini Atzeret")
-            if (d == 23 && !il) return "Simchat Torah"
         }
         if (yt == JewishCalendar.FAST_OF_GEDALYAH) return "Tzom Gedaliah"
-        if (yt == JewishCalendar.YOM_KIPPUR) return sur("Yom Kippur")
         if (jc.isChanukah) {
             val j = jc.dayOfChanukah
             val rc = jc.isRoshChodesh
-            if (ch && rc) return "Shabbat Rosh Chodesh Chanukah" // toujours le sixième jour
             if (rc && j == 7) return "Chanukah Day 7 (on Rosh Chodesh)"
             if (rc) return "Chanukah Day 6"
-            return if (ch) "Chanukah Day $j (on Shabbat)" else "Chanukah Day $j"
+            return "Chanukah Day $j"
         }
         if (yt == JewishCalendar.TENTH_OF_TEVES) return "Asara B'Tevet"
         if (yt == JewishCalendar.FAST_OF_ESTHER) return "Ta'anit Esther"
         if (yt == JewishCalendar.SEVENTEEN_OF_TAMMUZ) return "Tzom Tammuz"
         if (yt == JewishCalendar.TISHA_BEAV) return "Tish'a B'Av"
         // Pourim : le 14, ou le 15 dans une ville murée (Jérusalem), où il est « Chouchan Pourim ».
-        if (jc.isPurim && !ch) return if (muk) "Shushan Purim" else "Purim"
+        if (jc.isPurim) return if (muk) "Shushan Purim" else "Purim"
         if (m == NISSAN) {
-            if (d == 15) return sur("Pesach I")
-            if (d == 16) return if (il) "Pesach II (CH''M)" else "Pesach II"
+            if (d == 16) return "Pesach II (CH''M)" // en Israël ; en diaspora, Yom tov
             if (d in 17..20) {
-                if (ch) return "Pesach Shabbat Chol ha-Moed"
                 // Pessa'h un jeudi : « ראה אתה » (פסל) le Chabbat 17, puis קדש, בכספא, במדברא du dimanche au
                 // mardi (Choul'han Aroukh O.H. 490:5 ; Kitsour Yalkout Yossef 488:12, pour Israël aussi : hebcal
                 // y relit פסל le lundi et omet קדש, écart voulu).
@@ -197,147 +159,36 @@ object LectureTorah {
                 val n = if (jeudi) mapOf(18 to 1, 19 to 2, 20 to 4).getValue(d) else d - 16
                 return "Pesach Chol ha-Moed Day $n"
             }
-            if (d == 21) return sur("Pesach VII")
-            if (d == 22 && !il) return sur("Pesach VIII")
         }
-        if (m == SIVAN) {
-            if (d == 6) return if (il) "Shavuot" else "Shavuot I"
-            if (d == 7 && !il) return sur("Shavuot II")
-        }
-        if (jc.isRoshChodesh && !ch) return "Rosh Chodesh"
+        if (jc.isRoshChodesh) return "Rosh Chodesh"
         return null
-    }
-
-    /** Les lectures qui changent le maftir ou la haftara d'un Chabbat à paracha (specialReadings2 d'hebcal). */
-    fun speciales(jc: JewishCalendar, p: String, muk: Boolean): List<String> = buildList {
-        val rc = jc.isRoshChodesh
-        val sp = jc.specialShabbos
-        if (sp == JewishCalendar.Parsha.SHUVA) add("Shabbat Shuva (with ${if (p == "VAYEILECH") "Vayeilech" else "Ha'azinu"})")
-        if (jc.isChanukah) add(if (rc) "Shabbat Rosh Chodesh Chanukah" else "Chanukah Day ${jc.dayOfChanukah} (on Shabbat)")
-        if (sp == JewishCalendar.Parsha.SHKALIM) add(if (rc) "Shabbat Shekalim (on Rosh Chodesh)" else "Shabbat Shekalim")
-        if (sp == JewishCalendar.Parsha.ZACHOR) add("Shabbat Zachor")
-        if (sp == JewishCalendar.Parsha.PARA) add("Shabbat Parah")
-        if (sp == JewishCalendar.Parsha.HACHODESH) add(if (rc) "Shabbat HaChodesh (on Rosh Chodesh)" else "Shabbat HaChodesh")
-        if (sp == JewishCalendar.Parsha.HAGADOL) add("Shabbat HaGadol")
-        // Jérusalem, Pourim triple : le Chabbat 15 Adar (Choul'han Aroukh O.H. 688:6).
-        if (muk && jc.isPurim) add("Shushan Purim (on Shabbat)")
     }
 
     // --- Les lectures ----------------------------------------------------------------------------------
 
-    private class Resolue(val titre: LocalizedText?, val alyot: List<List<String>>?, val haftara: List<List<String>>?)
-
-    /** Les montées et la haftara d'une entrée pour un noussa'h, alias résolu. */
-    private fun entree(d: Donnees, cle: String, nusah: String): Resolue {
+    /** Les montées d'une entrée pour un noussa'h, alias résolu. */
+    private fun fete(d: Donnees, cle: String, nusah: String): Lecture {
         val e = d.lectures[cle] ?: error("lecture inconnue : $cle")
         val base = e.alias?.let { d.lectures.getValue(it) } ?: e
-        fun champ(nom: String) = e.champs["${nom}_$nusah"] ?: e.champs[nom] ?: base.champs["${nom}_$nusah"] ?: base.champs[nom]
-        return Resolue(e.titre ?: base.titre, champ("alyot"), champ("haftara"))
+        val alyot = e.champs["alyot_$nusah"] ?: e.champs["alyot"] ?: base.champs["alyot_$nusah"] ?: base.champs.getValue("alyot")
+        return lecture(d, cle, e.titre ?: base.titre ?: error("$cle sans titre"), alyot)
     }
 
-    /** Le sixième et le septième réunis quand une lecture spéciale prend le septième (mergeAliyotWithSpecial). */
-    private fun fusionne(alyot: List<List<String>>, special: List<List<String>>): List<List<String>> {
-        val a = alyot.toMutableList()
-        for (m in special) {
-            when (m[0]) {
-                "7" -> {
-                    val i6 = a.indexOfFirst { it[0] == "6" }
-                    val sept = a.first { it[0] == "7" }
-                    a[i6] = a[i6].toMutableList().also { it[3] = sept[3] }
-                    a.removeAll { it[0] == "7" }
-                    a.add(i6 + 1, m)
-                }
-                "M" -> {
-                    a.removeAll { it[0] == "M" }
-                    a.add(m)
-                }
-                else -> error("montée spéciale inattendue : ${m[0]}")
-            }
-        }
-        return a
-    }
-
-    private fun lecture(
-        d: Donnees,
-        cle: String,
-        titre: LocalizedText,
-        alyot: List<List<String>>,
-        haftara: List<List<String>>?,
-        raisons: List<LocalizedText> = emptyList(),
-    ): Lecture {
+    private fun lecture(d: Donnees, cle: String, titre: LocalizedText, alyot: List<List<String>>): Lecture {
         val trois = alyot.size == 3
-        return Lecture(
-            cle = cle,
-            titre = titre,
-            raisons = raisons,
-            montees = alyot.map { (c, livre, debut, fin) ->
-                Montee(c, d.montees.getValue(if (trois && c == "3") "3_israel" else c), livre, debut, fin)
-            },
-            haftara = haftara.orEmpty().map { (livre, debut, fin) -> Passage(livre, debut, fin) },
-        )
-    }
-
-    private fun fete(d: Donnees, cle: String, nusah: String, maftir: List<String>? = null): Lecture {
-        val e = entree(d, cle, nusah)
-        var alyot = e.alyot.orEmpty()
-        if (maftir != null) alyot = alyot + listOf(listOf("M") + maftir)
-        return lecture(d, cle, e.titre ?: error("$cle sans titre"), alyot, e.haftara)
+        return Lecture(cle, titre, alyot.map { (c, livre, debut, fin) ->
+            Montee(c, d.montees.getValue(if (trois && c == "3") "3_israel" else c), livre, debut, fin)
+        })
     }
 
     private fun semaine(d: Donnees, p: String): Lecture {
         val e = d.parachiot.getValue(p)
-        return lecture(d, "semaine:$p", e.titre!!, e.champs.getValue("semaine"), emptyList())
-    }
-
-    private fun chabbat(d: Donnees, jc: JewishCalendar, date: LocalDate, p: String, il: Boolean, muk: Boolean, nusah: String): Lecture {
-        val e = d.parachiot.getValue(p)
-        var alyot = e.champs["alyot_$nusah"] ?: e.champs.getValue("alyot")
-        var haftara = e.champs["haftara_$nusah"] ?: e.champs["haftara"]
-        val m = jc.jewishMonth
-        val jour = jc.jewishDayOfMonth
-        val cles = speciales(jc, p, muk)
-        val appliquees = cles.toMutableList()
-        var haftaraSpeciale: String? = null
-        fun applique(cle: String) {
-            val s = entree(d, cle, nusah)
-            if (s.haftara != null && haftaraSpeciale == null) haftaraSpeciale = cle
-            if (s.haftara != null && haftaraSpeciale == cle) haftara = s.haftara
-            if (s.alyot != null) alyot = fusionne(alyot, s.alyot)
-        }
-        cles.forEach { applique(it) }
-        val demain = cal(date.plusDays(1), il, false).jewishDayOfMonth
-        val ajout = entree(d, "Ajout Machar Chodesh", nusah).haftara
-        if (haftaraSpeciale == null) {
-            val cle = when {
-                p == "PINCHAS" && jour > 17 -> "Pinchas occurring after 17 Tammuz"
-                jour == 30 || jour == 1 -> when (p) {
-                    "MASEI", "MATOS_MASEI" -> "Masei on Shabbat Rosh Chodesh"
-                    "REEH" -> "Re'eh on Shabbat Rosh Chodesh"
-                    else -> "Shabbat Rosh Chodesh"
-                }
-                p == "KI_SEITZEI" && jour == 14 -> "Ki Teitzei with 3rd Haftarah of Consolation"
-                p == "KEDOSHIM" && (jour == 26 || jour == 28 || jour == 6) -> "Kedoshim following Special Shabbat"
-                m != AV && (demain == 30 || demain == 1) -> "Shabbat Machar Chodesh"
-                else -> null
-            }
-            if (cle != null) {
-                appliquees += cle
-                applique(cle)
-            }
-            // Edot : Roch 'Hodech Chabbat et dimanche, le premier et le dernier verset de « מחר חדש » après
-            // « השמים כסאי » (Choul'han Aroukh O.H. 425:2).
-            if (nusah == "edot" && cle == "Shabbat Rosh Chodesh" && jour == 30) haftara = haftara.orEmpty() + ajout.orEmpty()
-        }
-        // Edot : Chabbat Chekalim la veille d'un Roch 'Hodech dimanche, de même (Kitsour Yalkout Yossef, שקלים § 2).
-        if (nusah == "edot" && haftaraSpeciale == "Shabbat Shekalim" && (demain == 30 || demain == 1)) haftara = haftara.orEmpty() + ajout.orEmpty()
-        val raisons = appliquees.mapNotNull { d.lectures.getValue(it).titre }
-        val cle = "parasha:$p" + if (appliquees.isEmpty()) "" else "+" + appliquees.joinToString("+")
-        return lecture(d, cle, e.titre!!, alyot, haftara, raisons)
+        return lecture(d, "semaine:$p", e.titre!!, e.champs.getValue("semaine"))
     }
 
     /**
-     * Les lectures d'un office : vide s'il n'y en a pas. [date] : le jour civil de l'office (Cha'harit et
-     * Min'ha) ; [office] : [CHAHARIT] ou [MINHA] ; [nusah] : « edot », « sefard » ou « ashkenaz » ;
+     * Les lectures d'un office de semaine : vide s'il n'y en a pas, et toujours un Chabbat ou un Yom tov. [date] : le
+     * jour civil de l'office ; [office] : [CHAHARIT] ou [MINHA] ; [nusah] : « edot », « sefard » ou « ashkenaz » ;
      * [mukafChoma] : Jérusalem (Pourim le 15), en Israël seulement.
      */
     fun lectures(
@@ -351,53 +202,14 @@ object LectureTorah {
         val il = enIsrael
         val muk = mukafChoma && enIsrael
         val jc = cal(date, il, muk)
-        val jour = date.dayOfWeek
-        if (office == MINHA) {
-            if (jc.yomTovIndex == JewishCalendar.YOM_KIPPUR) return listOf(fete(d, "Yom Kippur (Mincha)", nusah))
-            if (jc.isTaanis) return listOf(fete(d, "${cleFete(jc, date, il, muk)} (Mincha)", nusah))
-            if (jour == DayOfWeek.SATURDAY) return listOf(semaine(d, parachaApres(date, il)))
-            return emptyList()
-        }
+        if (jc.isAssurBemelacha) return emptyList()
+        if (office == MINHA) return if (jc.isTaanis) listOf(fete(d, "${cleFete(jc, date, il, muk)} (Mincha)", nusah)) else emptyList()
         if (office != CHAHARIT) return emptyList()
-        if (jour == DayOfWeek.SATURDAY) {
-            val p = jc.parshah
-            if (p != JewishCalendar.Parsha.NONE) return listOf(chabbat(d, jc, date, p.name, il, muk, nusah))
-            val cle = cleFete(jc, date, il, muk) ?: return emptyList()
-            if (cle == "Sukkot Shabbat Chol ha-Moed") {
-                val n = (jc.jewishDayOfMonth - (if (il) 15 else 16)).toString()
-                val e = d.lectures.getValue(cle)
-                return listOf(fete(d, cle, nusah, (if (il) e.maftirIsrael else e.maftir).getValue(n)))
-            }
-            return listOf(fete(d, cle, nusah))
-        }
         val cle = cleFete(jc, date, il, muk)
         if (cle != null) return listOf(fete(d, cle, nusah))
+        val jour = date.dayOfWeek
         if (jour == DayOfWeek.MONDAY || jour == DayOfWeek.THURSDAY) return listOf(semaine(d, parachaDeLaSemaine(chabbatSuivant(date), il)))
         return emptyList()
-    }
-
-    // --- Le texte « Lecture de la Torah » (26/11, D1) -------------------------------------------------------
-
-    /** L'identifiant du texte « Lecture de la Torah » de la liste du siddour (groupe « Pour certains moments »). */
-    const val ID_TEXTE = "lecture_torah"
-
-    /** Son titre, dans les trois langues des titres du siddour. */
-    val TITRE = LocalizedText("קְרִיאַת הַתּוֹרָה", "Lecture de la Torah", "Torah reading")
-
-    /**
-     * Ce que montre le texte « Lecture de la Torah » (demande du 26/11 : « Pas de Yom Tov, on ne lit pas chnayim
-     * mikra pour Yom Tov ») : la paracha de la semaine, pour Chnayim mikra véé'had targoum. C'est la paracha lue le
-     * Chabbat qui vient ([date] même si c'est Chabbat), avec ses montées, son maftir et sa haftara (ceux d'un Chabbat
-     * spécial qui garde sa paracha restent : Chekalim, Zakhor, Roch 'Hodech, 'Hanouka…). Un Chabbat de Yom tov ou de
-     * 'Hol hamoed n'a pas de paracha : la suivante, au Chabbat qui en a une ([date] de ce Chabbat). Deux parachiot
-     * jointes : les deux, en une lecture. Jamais une lecture de fête, ni celle d'un lundi, d'un jeudi ou d'un jeûne.
-     */
-    data class ParachaSemaine(val date: LocalDate, val lecture: Lecture)
-
-    fun parachaSemaine(d: Donnees, date: LocalDate, enIsrael: Boolean, mukafChoma: Boolean = false, nusah: String = "edot"): ParachaSemaine {
-        var j = chabbatSuivant(date)
-        while (cal(j, enIsrael, mukafChoma && enIsrael).parshah == JewishCalendar.Parsha.NONE) j = j.plusDays(7)
-        return ParachaSemaine(j, lectures(d, j, CHAHARIT, enIsrael, mukafChoma, nusah).single())
     }
 
     /**
@@ -417,16 +229,13 @@ object LectureTorah {
 
     // --- Le texte ---------------------------------------------------------------------------------------
 
-    /**
-     * lecture_torah_texte.json : les versets lus, livre par livre ; lecture_torah_targoum.json, le Targoum Onkelos
-     * (tools/lecture_torah_targoum.py), de même forme et de même versification, sans marques de paragraphe.
-     */
+    /** lecture_torah_texte.json : les chapitres lus, livre par livre, et les fins de paragraphe. */
     class Texte(json: String) {
         private val o = JSONObject(json)
         private val livres = o.getJSONObject("livres")
         private val paragraphes = o.optJSONObject("paragraphes") ?: JSONObject()
 
-        fun versets(p: Passage): List<Verset> = versets(p.livre, p.debut, p.fin)
+        fun versets(m: Montee): List<Verset> = versets(m.livre, m.debut, m.fin)
 
         fun versets(livre: String, debut: String, fin: String): List<Verset> {
             val (c1, v1) = debut.split(":").map { it.toInt() }
@@ -444,21 +253,6 @@ object LectureTorah {
         }
     }
 
-    /** Une ligne de Chnayim mikra : un verset en hébreu ([targoum] faux) ou en araméen. */
-    data class LigneMikra(val chapitre: Int, val verset: Int, val texte: String, val targoum: Boolean)
-
-    /**
-     * Chnayim mikra véé'had targoum (26/11) : verset par verset, le texte hébreu deux fois ([uneFois] : une), puis le
-     * Targoum Onkelos du même verset. [hebreu] et [targoum] : les versets d'un même passage, alignés (même
-     * versification, tools/lecture_torah_targoum.py).
-     */
-    fun chnayimMikra(hebreu: List<Verset>, targoum: List<Verset>, uneFois: Boolean = false): List<LigneMikra> {
-        require(hebreu.map { it.chapitre to it.verset } == targoum.map { it.chapitre to it.verset }) { "Targoum non aligné" }
-        return hebreu.zip(targoum).flatMap { (h, t) ->
-            List(if (uneFois) 1 else 2) { LigneMikra(h.chapitre, h.verset, h.texte, false) } + LigneMikra(t.chapitre, t.verset, t.texte, true)
-        }
-    }
-
     // --- Les ressources ----------------------------------------------------------------------------------
 
     @Volatile
@@ -467,10 +261,7 @@ object LectureTorah {
     @Volatile
     private var texteLu: Texte? = null
 
-    @Volatile
-    private var targoumLu: Texte? = null
-
-    /** Les lectures (117 ko), lues une fois par processus. */
+    /** Les lectures (43 ko), lues une fois par processus. */
     fun donnees(context: Context): Donnees =
         donneesLues ?: synchronized(this) {
             donneesLues ?: parse(Json.readRaw(context.applicationContext, R.raw.lecture_torah)).also { donneesLues = it }
@@ -479,18 +270,9 @@ object LectureTorah {
     /** Le texte s'il est déjà lu, sans le lire : l'écran le demande hors du fil principal sinon. */
     fun texteEnMemoire(): Texte? = texteLu
 
-    /** Le texte (2,2 Mo) : hors du fil principal, une fois par processus. */
+    /** Le texte (0,6 Mo) : hors du fil principal, une fois par processus. */
     fun texte(context: Context): Texte =
         texteLu ?: synchronized(this) {
             texteLu ?: Texte(Json.readRaw(context.applicationContext, R.raw.lecture_torah_texte)).also { texteLu = it }
-        }
-
-    /** Le Targoum s'il est déjà lu. */
-    fun targoumEnMemoire(): Texte? = targoumLu
-
-    /** Le Targoum Onkelos (1,3 Mo), pour Chnayim mikra : hors du fil principal, une fois par processus. */
-    fun targoum(context: Context): Texte =
-        targoumLu ?: synchronized(this) {
-            targoumLu ?: Texte(Json.readRaw(context.applicationContext, R.raw.lecture_torah_targoum)).also { targoumLu = it }
         }
 }

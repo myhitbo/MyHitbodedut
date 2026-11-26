@@ -1,6 +1,6 @@
 // La lecture de la Torah (26/11) : ce que build.mjs et les tests partagent.
 //
-//  - decoupeTexte : lecture_torah_texte.json (2,2 Mo) en un fichier par livre, que le site lit à la
+//  - decoupeTexte : lecture_torah_texte.json (0,6 Mo) en un fichier par livre, que le site lit à la
 //    demande (data/lecture_torah/<livre>.json) ;
 //  - resume / vecteurs : la réponse de lecture-torah.js, jour par jour, sous la forme que
 //    web/test/vecteurs_lecture_torah.json garde et que LectureTorahTest.kt relit (même calcul côté
@@ -31,11 +31,9 @@ export function decoupeTexte(texte) {
   return sortie;
 }
 
-/** Une lecture en une ligne : clé | montées | haftara. */
+/** Une lecture en une ligne : clé | montées. */
 export function resume(l) {
-  const m = l.montees.map((x) => `${x.cle}:${x.livre} ${x.debut}-${x.fin}`).join(',');
-  const h = l.haftara.map((x) => `${x.livre} ${x.debut}-${x.fin}`).join(',');
-  return `${l.cle}|${m}|${h}`;
+  return `${l.cle}|${l.montees.map((x) => `${x.cle}:${x.livre} ${x.debut}-${x.fin}`).join(',')}`;
 }
 
 /**

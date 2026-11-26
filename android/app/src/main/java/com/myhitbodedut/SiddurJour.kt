@@ -181,40 +181,26 @@ object SiddurJour {
         data class Fin(val cle: String) : Ligne()
 
         /**
-         * La lecture de la Torah du jour (26/11), repliée sous « Lecture : Vayétsé, 3 montées » ; [haftara] : le
-         * bandeau de sa haftara, replié de même. Ouverte, ses passages suivent ([Passage]), puis la [Fin].
+         * La lecture de la Torah du jour (26/11), repliée sous « Lecture : Vayichla'h, 3 montées ». Ouverte, ses montées
+         * suivent ([Passage]), puis la [Fin].
          */
-        data class Lecture(val cle: String, val lecture: LectureTorah.Lecture, val ouvert: Boolean, val haftara: Boolean = false) : Ligne()
+        data class Lecture(val cle: String, val lecture: LectureTorah.Lecture, val ouvert: Boolean) : Ligne()
 
-        /**
-         * Un passage d'une lecture ouverte : une montée ([montee], son libellé) ou un morceau de haftara (null).
-         * [targoum] : Chnayim mikra véé'had targoum (le texte « Lecture de la Torah ») : chaque verset deux fois (ou une,
-         * selon le réglage), puis le Targoum Onkelos.
-         */
-        data class Passage(val montee: LectureTorah.Montee?, val passage: LectureTorah.Passage, val targoum: Boolean = false) : Ligne()
+        /** Une montée d'une lecture ouverte : son libellé, sa référence, ses versets. */
+        data class Passage(val montee: LectureTorah.Montee) : Ligne()
     }
 
     /**
-     * Les lignes de [lectures] (26/11) : pour chacune, son bandeau replié (clé « [prefixe]:k ») et, ouverte, ses
-     * montées ; puis, si elle en a une, sa haftara repliée à part (« [prefixe]:k:h »). Dans la lecture de
-     * Cha'harit, de Min'ha d'un jeûne, et dans le texte « Lecture de la Torah » ([targoum] : ses montées avec le
-     * Targoum, pas sa haftara).
+     * Les lignes de [lectures] (26/11), dans la lecture de Cha'harit ou de Min'ha d'un jeûne : pour chacune, son bandeau
+     * replié (clé « [prefixe]:k ») et, ouverte, ses montées.
      */
-    fun lignesLecture(lectures: List<LectureTorah.Lecture>, prefixe: String, ouverts: Set<String>, targoum: Boolean = false): List<Ligne> = buildList {
+    fun lignesLecture(lectures: List<LectureTorah.Lecture>, prefixe: String, ouverts: Set<String>): List<Ligne> = buildList {
         lectures.forEachIndexed { k, l ->
             val cle = "$prefixe:$k"
             add(Ligne.Lecture(cle, l, cle in ouverts))
             if (cle in ouverts) {
-                l.montees.forEach { m -> add(Ligne.Passage(m, LectureTorah.Passage(m.livre, m.debut, m.fin), targoum)) }
+                l.montees.forEach { add(Ligne.Passage(it)) }
                 add(Ligne.Fin(cle))
-            }
-            if (l.haftara.isNotEmpty()) {
-                val h = "$cle:h"
-                add(Ligne.Lecture(h, l, h in ouverts, haftara = true))
-                if (h in ouverts) {
-                    l.haftara.forEach { add(Ligne.Passage(null, it)) }
-                    add(Ligne.Fin(h))
-                }
             }
         }
     }

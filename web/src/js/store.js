@@ -431,9 +431,6 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
     setLecturePolice: (p) => set('lecture_police', p),
     lectureSombre: () => get('lecture_sombre', false) === true,
     setLectureSombre: (v) => set('lecture_sombre', !!v),
-    /** Chnayim mikra (26/11, Store.lectureHebreuUneFois) : l'hébreu une seule fois avant le Targoum ; deux par défaut. */
-    lectureHebreuUneFois: () => get('lecture_hebreu_une_fois', false) === true,
-    setLectureHebreuUneFois: (v) => set('lecture_hebreu_une_fois', !!v),
     /** Les langues de lecture (LanguesTexte, 04/11) ; null : celles de la langue de l'application. */
     lectureLangues: () => get('lecture_langues', null),
     setLectureLangues: (v) => set('lecture_langues', v),
@@ -616,7 +613,6 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
           lecture_echelle: store.lectureEchelle(),
           lecture_police: store.lecturePolice(),
           lecture_sombre: store.lectureSombre(),
-          lecture_hebreu_une_fois: store.lectureHebreuUneFois(),
           lecture_masquee: store.lectureMasquee(),
           ...(store.lectureLangues() ? { lecture_langues: store.lectureLangues() } : {}),
           // Barrière et rappels (Android seul) : écrits seulement s'ils sont venus d'un import, sinon
@@ -723,7 +719,7 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
         if (typeof s.lecture_echelle === 'number' && Number.isFinite(s.lecture_echelle)) store.setLectureEchelle(s.lecture_echelle);
         if (['serif', 'sans', 'arrondie', 'frank', 'david', 'rachi', 'miriam'].includes(s.lecture_police)) store.setLecturePolice(s.lecture_police);
         if (typeof s.lecture_langues === 'string' && ['he', 'fr', 'en', 'he+fr', 'he+en', 'fr+en'].includes(s.lecture_langues)) store.setLectureLangues(s.lecture_langues);
-        bool('lecture_sombre'); bool('lecture_masquee'); bool('lecture_hebreu_une_fois');
+        bool('lecture_sombre'); bool('lecture_masquee');
       }
       // Version 2 : réunis à ce que ce navigateur a déjà, sans rien retirer.
       const chaines = (a) => (Array.isArray(a) ? [...new Set(a.filter((x) => typeof x === 'string' && x.trim() !== ''))] : []);

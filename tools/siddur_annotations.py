@@ -22,7 +22,7 @@ Trois sortes d'annotations :
   - « section » : une section entière (Ta'hanoun, Barekhi nafchi…),
                   même traitement.
   - « lecture » : la place de la lecture de la Torah du jour (26/11, LectureTorah.kt) : après ce bloc, les
-                  jours où la condition vaut, la lecture de l'office (« office ») repliée, puis sa haftara.
+                  jours où la condition vaut, la lecture de l'office (« office ») repliée.
   - « indice »  : un bloc qui mêle le texte de tous les jours et une
                   variante (« בעשרת ימי תשובה אומרים: המלך הקדוש ») : le passage
                   « retire » disparaît le jour où la condition est fausse,
@@ -247,9 +247,8 @@ def reperes(texte_id, sections, nusah, sortie, note):
     if texte_id == "minha":
         # La lecture de la Torah des jeûnes publics, entre Achré (et le demi-Kaddich) et l'Amida (Choul'han
         # Aroukh O.H. 566:1 et Rema ; Kitsour Yalkut Yosef 550:39-40).
-        # Depuis le 26/11, la lecture elle-même (« lecture », LectureTorah.kt) : « ויחל », trois montées, et la haftara
-        # selon le rite (Ashkenaz et Sfard « דרשו », Rema 566:1 ; Edot à Min'ha du 9 Av seulement, « שובה ישראל »,
-        # Kitsour Yalkout Yossef 550:40), repliée à cette place ; les repères qui la décrivaient sont retirés.
+        # Depuis le 26/11, la lecture elle-même (« lecture », LectureTorah.kt) : « ויחל », trois montées, repliée à
+        # cette place ; les repères qui la décrivaient sont retirés.
         k = libre(0, premier_annote(0))
         if k is not None:
             note("lecture", 0, k, "jeune", {"office": "minha"})
@@ -381,7 +380,7 @@ def annoter(texte_id, sections, nusah):
                     continue
                 note("bloc", si, bi, mode, {"force": "kriat_hatorah"})
                 # La lecture du jour (26/11, LectureTorah.kt) : après la bénédiction qui la suit (« אשר נתן לנו תורת
-                # אמת »), avant les Mi chébérakh et le reste, repliée par office (lecture, puis haftara).
+                # אמת »), avant les Mi chébérakh et le reste, repliée.
                 if bi > 0 and "c" in sec["blocs"][bi - 1] and re.search(r"(אחר|לאחר) הקריאה", nu(sec["blocs"][bi - 1]["c"])) \
                         and x.startswith("ברוך אתה"):
                     note("lecture", si, bi, "kriat_hatorah", {"office": "chaharit"})

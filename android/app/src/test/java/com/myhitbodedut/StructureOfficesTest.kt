@@ -122,9 +122,9 @@ class StructureOfficesTest {
     }
 
     @Test
-    fun `minha des jeunes - la lecture de la torah et la haftara selon le rite`() {
-        // Depuis le 26/11, la lecture elle-même, à la place des repères qui l'annonçaient (LectureSiddurTest : la haftara
-        // selon le rite) : une place « lecture » les jours de jeûne, dans les trois nusah.
+    fun `minha des jeunes - la place de la lecture de la torah`() {
+        // Depuis le 26/11, la lecture elle-même, à la place des repères qui l'annonçaient (LectureSiddurTest) : une place
+        // « lecture » les jours de jeûne, dans les trois nusah.
         listOf("edot", "sefard", "ashkenaz").forEach { n ->
             val place = SiddurJour.parse(json, n).getValue("minha").single { it.sorte == SiddurJour.Sorte.LECTURE }
             assertEquals(n, "jeune", place.condition)
