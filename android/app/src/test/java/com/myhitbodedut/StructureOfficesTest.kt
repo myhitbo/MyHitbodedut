@@ -122,13 +122,15 @@ class StructureOfficesTest {
     }
 
     @Test
-    fun `minha des jeunes - la lecture de la torah et la haftara selon le rite`() {
+    fun `minha des jeunes - la place de la lecture de la torah`() {
+        // Depuis le 26/11, la lecture elle-même, à la place des repères qui l'annonçaient (LectureSiddurTest) : une place
+        // « lecture » les jours de jeûne, dans les trois nusah.
         listOf("edot", "sefard", "ashkenaz").forEach { n ->
-            assertTrue(n, indices(n, "minha", "2025-12-30").any { "ויחל" in it })
-            assertFalse(n, indices(n, "minha", "2026-11-18").any { "ויחל" in it })
-            assertEquals(n, n != "edot", indices(n, "minha", "2025-12-30").any { "דרשו" in it })
+            val place = SiddurJour.parse(json, n).getValue("minha").single { it.sorte == SiddurJour.Sorte.LECTURE }
+            assertEquals(n, "jeune", place.condition)
+            assertEquals(n, "minha", place.office)
+            assertFalse(n, indices(n, "minha", "2025-12-30").any { "ויחל" in it || "דרשו" in it || "שובה ישראל" in it })
         }
-        assertTrue(indices("edot", "minha", "2026-07-23").any { "שובה ישראל" in it })
     }
 
     @Test
@@ -219,12 +221,12 @@ class StructureOfficesTest {
         val psaume = l.indexOfFirst { it is SiddurJour.Ligne.Bloc && nu(it.bloc.texte).startsWith("לדוד יהוה אורי") }
         assertTrue(psaume >= 0)
         assertTrue((l[psaume + 1] as SiddurJour.Ligne.Replie).condition == C.MINYAN)
-        // « תתקבל » (Ashkenaz, fin de Cha'harit), dans le groupe du minyan ouvert : à part le 9 Av.
+        // « תתקבל » (Ashkenaz, fin de Cha'harit), dans le groupe du minyan ouvert : retiré le 9 Av (26/11, sans repli).
         fun tetkabal(iso: String): List<SiddurJour.Ligne> {
             val ann = SiddurJour.parse(json, "ashkenaz").getValue("chaharit").first { it.empreinte.startsWith("תתקבל") && it.section == 6 }
             return lignes("ashkenaz", "chaharit", iso, setOf("6:${ann.groupe}"))
         }
-        assertTrue(tetkabal("2026-07-23").any { it is SiddurJour.Ligne.Replie && it.libelle == "ajout_sauf_ticha_beav" })
+        assertTrue(tetkabal("2026-07-23").none { it is SiddurJour.Ligne.Replie && it.libelle == "ajout_sauf_ticha_beav" })
         assertFalse(tetkabal("2026-07-23").any { it is SiddurJour.Ligne.Bloc && nu(it.bloc.texte).startsWith("תתקבל") })
         assertTrue(tetkabal("2026-11-18").any { it is SiddurJour.Ligne.Bloc && nu(it.bloc.texte).startsWith("תתקבל") })
         // Ashkenaz, Arvit du motsaé Chabbat : un repère reprend la fin du Kaddich après ואתה קדוש.

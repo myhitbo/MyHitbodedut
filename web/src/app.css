@@ -832,10 +832,24 @@ input[type="range"] { width: 100%; accent-color: var(--brand); }
 .ecran.lu.nuit .ajout-corps { border-color: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 30%, transparent); background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 4%, transparent); }
 .ecran.lu.nuit .replie-bas { border-top-color: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 30%, transparent); }
 .ecran.lu.nuit .replie-nom { color: var(--lecture-nuit-texte, #F2F0EA); }
+/* La lecture de la Torah du jour (26/11) : repliée comme un ajout ; dépliée, chaque montée sous sa référence, puis
+   ses versets cantillés, numérotés, un paragraphe à chaque « פ ». */
+.lecture-passages { padding: 0 4px; }
+.lecture-reference { margin: 14px 0 6px; color: var(--brand); font-size: calc(12.5px * var(--echelle, 1)); font-weight: 700; letter-spacing: .02em; text-align: start; }
+.siddour .priere.lecture-versets { margin: 0 0 14px; line-height: 1.9; }
+.lecture-numero { color: var(--muted); font-family: system-ui, sans-serif; font-size: .55em; vertical-align: .35em; }
+.lecture-attente { margin: 8px 0 12px; color: var(--muted); font-size: 14px; text-align: start; }
+.ecran.lu.nuit .lecture-reference { color: var(--lecture-nuit-titre, #D6C28C); }
+.ecran.lu.nuit .lecture-numero, .ecran.lu.nuit .lecture-attente { color: var(--lecture-nuit-discret, #A3A8A5); }
 .renvoi-jour { display: block; width: 100%; margin: 4px 0 16px; padding: 12px 12px; border: 0; border-radius: 12px; text-align: start; cursor: pointer;
   font: inherit; font-family: var(--police-texte); font-size: calc(16px * var(--echelle, 1)); font-weight: 700;
   color: var(--brand); background: color-mix(in srgb, var(--brand) 11%, transparent); }
 .ecran.lu.nuit .renvoi-jour { color: var(--lecture-nuit-titre, #D6C28C); background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 15%, transparent); }
+/* Israël ou diaspora ? (26/11, Q7) : la question du siddour, une carte qu'on touche. */
+.question-region { display: block; width: 100%; margin: 8px 0 12px; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+  border-radius: 14px; text-align: start; cursor: pointer; font: inherit; font-weight: 700; color: var(--brand); background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.ecran.lu.nuit .question-region { color: var(--lecture-nuit-titre, #D6C28C); border-color: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 35%, transparent);
+  background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 12%, transparent); }
 .ecran.lu.nuit .indice-jour { color: var(--lecture-nuit-titre, #D6C28C); background: color-mix(in srgb, var(--lecture-nuit-titre, #D6C28C) 15%, transparent); }
 .ecran.lu.nuit { background: var(--lecture-nuit-fond, #000); color: var(--lecture-nuit-texte, #F2F0EA); }
 .ecran.lu.nuit .barre h1 { color: var(--lecture-nuit-texte, #F2F0EA); }
@@ -1707,6 +1721,9 @@ body.avec-mini .seance .contenu { padding-bottom: calc(104px + env(safe-area-ins
 .ecran.lu.nuit .lecture .traduction:not(.seule) { color: var(--lecture-nuit-discret, #A3A8A5); }
 .chizuk-latin { font-family: Georgia, 'Times New Roman', serif; }
 .lecture-langues { font-weight: 700; }
+/* « תחנון » de la barre de lecture (26/11, Q1) : barré quand « Pas de Ta'hanoun aujourd'hui » est actif. */
+.lecture-tahanoun { font-size: 12px; font-weight: 700; }
+.lecture-tahanoun[aria-pressed="true"] { text-decoration: line-through; }
 
 /* Les boutons, affinés (04/11) : une seule famille — pilule pleine, pilule cerclée, lien —,
    52 px de haut, texte medium, une ombre douce sous le principal, un anneau de focus net. */

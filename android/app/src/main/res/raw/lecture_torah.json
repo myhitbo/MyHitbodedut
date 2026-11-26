@@ -1,0 +1,3126 @@
+{
+ "_meta": {
+  "version": "1.0",
+  "date": "2026-11-26",
+  "outil": "tools/lecture_torah_construction.py",
+  "sources": {
+   "lectures": "@hebcal/leyning 10.1.0 (npm, BSD-2-Clause), aliyot.json et holiday-readings.json ; archive vérifiée (sha512-98sDjJDPQwrXEOLu…)",
+   "texte": "Tanach with Ta'amei Hamikra — tanach.us, Westminster Leningrad Codex (via l'export Sefaria), Public Domain",
+   "controle": "Miqra according to the Masorah — Codex d'Alep (export Sefaria), CC-BY-SA, comparaison seulement, rien n'est repris"
+  },
+  "licences": {
+   "@hebcal/leyning": "BSD 2-Clause License\n\nCopyright (c) 2020, hebcal\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n1. Redistributions of source code must retain the above copyright notice, this\n   list of conditions and the following disclaimer.\n\n2. Redistributions in binary form must reproduce the above copyright notice,\n   this list of conditions and the following disclaimer in the documentation\n   and/or other materials provided with the distribution.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\nFOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\nDAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\nSERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\nCAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\nOR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+  },
+  "perimetre": "Les offices de semaine : Cha'harit le lundi et le jeudi, à Roch 'Hodech, à 'Hol hamoèd, à 'Hanouka, à Pourim et aux jeûnes publics (9 Av compris) ; Min'ha des jeûnes publics. Jamais Chabbat ni Yom tov.",
+  "coutumes": {
+   "edot": "Choul'han Aroukh et Kitsour Yalkout Yossef : les écarts écrits dans l'outil, chacun avec sa source (alyot_edot).",
+   "sefard": "Noussa'h Sfard : les lectures d'Ashkenaz. Le noussa'h Sfard (Siddour Sefard, Metsoudah et Torat Emet, celui de l'application) est le siddour des communautés 'hassidiques, ashkénazes de coutume : il change le texte des prières, pas l'usage de la lecture (Encyclopédie Daat, « נוסח ספרד בתפילה » : « נוסח הוצאת ספר תורה והכנסת ספר תורה כמו בנוסח אשכנז »).",
+   "ashkenaz": "hebcal, sauf Israël à 'Hol hamoèd Souccot (les quatre montées lisent le sacrifice du jour) et Pessa'h commençant un jeudi en Israël (קדש, בכספא, במדברא du dimanche au mardi)."
+  },
+  "forme": "parachiot : clés de l'énumération Parsha de KosherJava, semaine : la lecture du lundi et du jeudi ; lectures : clés d'hebcal (holiday-readings.json) ; alyot/semaine : [montée, livre, début, fin] (Ashkenaz et Sfard), alyot_edot quand elle diffère ; alias : une autre lecture dont on reprend les montées."
+ },
+ "livres": {
+  "Genesis": {
+   "he": "בראשית",
+   "fr": "Berèchit",
+   "en": "Bereshit"
+  },
+  "Exodus": {
+   "he": "שמות",
+   "fr": "Chemot",
+   "en": "Shemot"
+  },
+  "Leviticus": {
+   "he": "ויקרא",
+   "fr": "Vayikra",
+   "en": "Vayikra"
+  },
+  "Numbers": {
+   "he": "במדבר",
+   "fr": "Bamidbar",
+   "en": "Bamidbar"
+  },
+  "Deuteronomy": {
+   "he": "דברים",
+   "fr": "Devarim",
+   "en": "Devarim"
+  }
+ },
+ "montees": {
+  "1": {
+   "he": "כהן",
+   "fr": "Cohen",
+   "en": "Kohen"
+  },
+  "2": {
+   "he": "לוי",
+   "fr": "Lévi",
+   "en": "Levi"
+  },
+  "3": {
+   "he": "שלישי",
+   "fr": "Chelichi",
+   "en": "Shlishi"
+  },
+  "3_israel": {
+   "he": "ישראל",
+   "fr": "Israël",
+   "en": "Yisrael"
+  },
+  "4": {
+   "he": "רביעי",
+   "fr": "Revi’i",
+   "en": "Revi'i"
+  },
+  "M": {
+   "he": "מפטיר",
+   "fr": "Maftir",
+   "en": "Maftir"
+  }
+ },
+ "parachiot": {
+  "BERESHIS": {
+   "hebcal": "Bereshit",
+   "titre": {
+    "he": "בראשית",
+    "fr": "Berèchit",
+    "en": "Bereshit"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "1:1",
+     "1:5"
+    ],
+    [
+     "2",
+     "Genesis",
+     "1:6",
+     "1:8"
+    ],
+    [
+     "3",
+     "Genesis",
+     "1:9",
+     "1:13"
+    ]
+   ]
+  },
+  "NOACH": {
+   "hebcal": "Noach",
+   "titre": {
+    "he": "נח",
+    "fr": "Noa’h",
+    "en": "Noach"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "6:9",
+     "6:16"
+    ],
+    [
+     "2",
+     "Genesis",
+     "6:17",
+     "6:19"
+    ],
+    [
+     "3",
+     "Genesis",
+     "6:20",
+     "6:22"
+    ]
+   ]
+  },
+  "LECH_LECHA": {
+   "hebcal": "Lech-Lecha",
+   "titre": {
+    "he": "לך לך",
+    "fr": "Lekh lekha",
+    "en": "Lech-Lecha"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "12:1",
+     "12:3"
+    ],
+    [
+     "2",
+     "Genesis",
+     "12:4",
+     "12:9"
+    ],
+    [
+     "3",
+     "Genesis",
+     "12:10",
+     "12:13"
+    ]
+   ]
+  },
+  "VAYERA": {
+   "hebcal": "Vayera",
+   "titre": {
+    "he": "וירא",
+    "fr": "Vayéra",
+    "en": "Vayera"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "18:1",
+     "18:5"
+    ],
+    [
+     "2",
+     "Genesis",
+     "18:6",
+     "18:8"
+    ],
+    [
+     "3",
+     "Genesis",
+     "18:9",
+     "18:14"
+    ]
+   ]
+  },
+  "CHAYEI_SARA": {
+   "hebcal": "Chayei Sara",
+   "titre": {
+    "he": "חיי שרה",
+    "fr": "’Hayé Sarah",
+    "en": "Chayei Sara"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "23:1",
+     "23:7"
+    ],
+    [
+     "2",
+     "Genesis",
+     "23:8",
+     "23:12"
+    ],
+    [
+     "3",
+     "Genesis",
+     "23:13",
+     "23:16"
+    ]
+   ]
+  },
+  "TOLDOS": {
+   "hebcal": "Toldot",
+   "titre": {
+    "he": "תולדות",
+    "fr": "Toledot",
+    "en": "Toldot"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "25:19",
+     "25:22"
+    ],
+    [
+     "2",
+     "Genesis",
+     "25:23",
+     "25:26"
+    ],
+    [
+     "3",
+     "Genesis",
+     "25:27",
+     "26:5"
+    ]
+   ]
+  },
+  "VAYETZEI": {
+   "hebcal": "Vayetzei",
+   "titre": {
+    "he": "ויצא",
+    "fr": "Vayétsé",
+    "en": "Vayetzei"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "28:10",
+     "28:12"
+    ],
+    [
+     "2",
+     "Genesis",
+     "28:13",
+     "28:17"
+    ],
+    [
+     "3",
+     "Genesis",
+     "28:18",
+     "28:22"
+    ]
+   ]
+  },
+  "VAYISHLACH": {
+   "hebcal": "Vayishlach",
+   "titre": {
+    "he": "וישלח",
+    "fr": "Vayichla’h",
+    "en": "Vayishlach"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "32:4",
+     "32:6"
+    ],
+    [
+     "2",
+     "Genesis",
+     "32:7",
+     "32:9"
+    ],
+    [
+     "3",
+     "Genesis",
+     "32:10",
+     "32:13"
+    ]
+   ]
+  },
+  "VAYESHEV": {
+   "hebcal": "Vayeshev",
+   "titre": {
+    "he": "וישב",
+    "fr": "Vayéchev",
+    "en": "Vayeshev"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "37:1",
+     "37:3"
+    ],
+    [
+     "2",
+     "Genesis",
+     "37:4",
+     "37:7"
+    ],
+    [
+     "3",
+     "Genesis",
+     "37:8",
+     "37:11"
+    ]
+   ]
+  },
+  "MIKETZ": {
+   "hebcal": "Miketz",
+   "titre": {
+    "he": "מקץ",
+    "fr": "Mikets",
+    "en": "Miketz"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "41:1",
+     "41:4"
+    ],
+    [
+     "2",
+     "Genesis",
+     "41:5",
+     "41:7"
+    ],
+    [
+     "3",
+     "Genesis",
+     "41:8",
+     "41:14"
+    ]
+   ]
+  },
+  "VAYIGASH": {
+   "hebcal": "Vayigash",
+   "titre": {
+    "he": "ויגש",
+    "fr": "Vayigach",
+    "en": "Vayigash"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "44:18",
+     "44:20"
+    ],
+    [
+     "2",
+     "Genesis",
+     "44:21",
+     "44:24"
+    ],
+    [
+     "3",
+     "Genesis",
+     "44:25",
+     "44:30"
+    ]
+   ]
+  },
+  "VAYECHI": {
+   "hebcal": "Vayechi",
+   "titre": {
+    "he": "ויחי",
+    "fr": "Vay’hi",
+    "en": "Vayechi"
+   },
+   "semaine": [
+    [
+     "1",
+     "Genesis",
+     "47:28",
+     "47:31"
+    ],
+    [
+     "2",
+     "Genesis",
+     "48:1",
+     "48:3"
+    ],
+    [
+     "3",
+     "Genesis",
+     "48:4",
+     "48:9"
+    ]
+   ]
+  },
+  "SHEMOS": {
+   "hebcal": "Shemot",
+   "titre": {
+    "he": "שמות",
+    "fr": "Chemot",
+    "en": "Shemot"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "1:1",
+     "1:7"
+    ],
+    [
+     "2",
+     "Exodus",
+     "1:8",
+     "1:12"
+    ],
+    [
+     "3",
+     "Exodus",
+     "1:13",
+     "1:17"
+    ]
+   ]
+  },
+  "VAERA": {
+   "hebcal": "Vaera",
+   "titre": {
+    "he": "וארא",
+    "fr": "Vaéra",
+    "en": "Vaera"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "6:2",
+     "6:5"
+    ],
+    [
+     "2",
+     "Exodus",
+     "6:6",
+     "6:9"
+    ],
+    [
+     "3",
+     "Exodus",
+     "6:10",
+     "6:13"
+    ]
+   ]
+  },
+  "BO": {
+   "hebcal": "Bo",
+   "titre": {
+    "he": "בא",
+    "fr": "Bo",
+    "en": "Bo"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "10:1",
+     "10:3"
+    ],
+    [
+     "2",
+     "Exodus",
+     "10:4",
+     "10:6"
+    ],
+    [
+     "3",
+     "Exodus",
+     "10:7",
+     "10:11"
+    ]
+   ]
+  },
+  "BESHALACH": {
+   "hebcal": "Beshalach",
+   "titre": {
+    "he": "בשלח",
+    "fr": "Bechala’h",
+    "en": "Beshalach"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "13:17",
+     "13:22"
+    ],
+    [
+     "2",
+     "Exodus",
+     "14:1",
+     "14:4"
+    ],
+    [
+     "3",
+     "Exodus",
+     "14:5",
+     "14:8"
+    ]
+   ]
+  },
+  "YISRO": {
+   "hebcal": "Yitro",
+   "titre": {
+    "he": "יתרו",
+    "fr": "Yitro",
+    "en": "Yitro"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "18:1",
+     "18:4"
+    ],
+    [
+     "2",
+     "Exodus",
+     "18:5",
+     "18:8"
+    ],
+    [
+     "3",
+     "Exodus",
+     "18:9",
+     "18:12"
+    ]
+   ]
+  },
+  "MISHPATIM": {
+   "hebcal": "Mishpatim",
+   "titre": {
+    "he": "משפטים",
+    "fr": "Michpatim",
+    "en": "Mishpatim"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "21:1",
+     "21:6"
+    ],
+    [
+     "2",
+     "Exodus",
+     "21:7",
+     "21:11"
+    ],
+    [
+     "3",
+     "Exodus",
+     "21:12",
+     "21:19"
+    ]
+   ]
+  },
+  "TERUMAH": {
+   "hebcal": "Terumah",
+   "titre": {
+    "he": "תרומה",
+    "fr": "Terouma",
+    "en": "Terumah"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "25:1",
+     "25:5"
+    ],
+    [
+     "2",
+     "Exodus",
+     "25:6",
+     "25:9"
+    ],
+    [
+     "3",
+     "Exodus",
+     "25:10",
+     "25:16"
+    ]
+   ]
+  },
+  "TETZAVEH": {
+   "hebcal": "Tetzaveh",
+   "titre": {
+    "he": "תצוה",
+    "fr": "Tetsavé",
+    "en": "Tetzaveh"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "27:20",
+     "28:5"
+    ],
+    [
+     "2",
+     "Exodus",
+     "28:6",
+     "28:9"
+    ],
+    [
+     "3",
+     "Exodus",
+     "28:10",
+     "28:12"
+    ]
+   ]
+  },
+  "KI_SISA": {
+   "hebcal": "Ki Tisa",
+   "titre": {
+    "he": "כי תשא",
+    "fr": "Ki tissa",
+    "en": "Ki Tisa"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "30:11",
+     "30:13"
+    ],
+    [
+     "2",
+     "Exodus",
+     "30:14",
+     "30:16"
+    ],
+    [
+     "3",
+     "Exodus",
+     "30:17",
+     "30:21"
+    ]
+   ]
+  },
+  "VAYAKHEL": {
+   "hebcal": "Vayakhel",
+   "titre": {
+    "he": "ויקהל",
+    "fr": "Vayakhel",
+    "en": "Vayakhel"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "35:1",
+     "35:3"
+    ],
+    [
+     "2",
+     "Exodus",
+     "35:4",
+     "35:10"
+    ],
+    [
+     "3",
+     "Exodus",
+     "35:11",
+     "35:20"
+    ]
+   ]
+  },
+  "PEKUDEI": {
+   "hebcal": "Pekudei",
+   "titre": {
+    "he": "פקודי",
+    "fr": "Pekoudé",
+    "en": "Pekudei"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "38:21",
+     "38:23"
+    ],
+    [
+     "2",
+     "Exodus",
+     "38:24",
+     "38:27"
+    ],
+    [
+     "3",
+     "Exodus",
+     "38:28",
+     "39:1"
+    ]
+   ]
+  },
+  "VAYIKRA": {
+   "hebcal": "Vayikra",
+   "titre": {
+    "he": "ויקרא",
+    "fr": "Vayikra",
+    "en": "Vayikra"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "1:1",
+     "1:4"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "1:5",
+     "1:9"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "1:10",
+     "1:13"
+    ]
+   ]
+  },
+  "TZAV": {
+   "hebcal": "Tzav",
+   "titre": {
+    "he": "צו",
+    "fr": "Tsav",
+    "en": "Tzav"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "6:1",
+     "6:3"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "6:4",
+     "6:6"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "6:7",
+     "6:11"
+    ]
+   ]
+  },
+  "SHMINI": {
+   "hebcal": "Shmini",
+   "titre": {
+    "he": "שמיני",
+    "fr": "Chemini",
+    "en": "Shmini"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "9:1",
+     "9:6"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "9:7",
+     "9:10"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "9:11",
+     "9:16"
+    ]
+   ]
+  },
+  "TAZRIA": {
+   "hebcal": "Tazria",
+   "titre": {
+    "he": "תזריע",
+    "fr": "Tazria",
+    "en": "Tazria"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "12:1",
+     "12:4"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "12:5",
+     "12:8"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "13:1",
+     "13:5"
+    ]
+   ]
+  },
+  "METZORA": {
+   "hebcal": "Metzora",
+   "titre": {
+    "he": "מצרע",
+    "fr": "Metsora",
+    "en": "Metzora"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "14:1",
+     "14:5"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "14:6",
+     "14:9"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "14:10",
+     "14:12"
+    ]
+   ]
+  },
+  "ACHREI_MOS": {
+   "hebcal": "Achrei Mot",
+   "titre": {
+    "he": "אחרי מות",
+    "fr": "A’haré mot",
+    "en": "Achrei Mot"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "16:1",
+     "16:6"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "16:7",
+     "16:11"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "16:12",
+     "16:17"
+    ]
+   ]
+  },
+  "KEDOSHIM": {
+   "hebcal": "Kedoshim",
+   "titre": {
+    "he": "קדושים",
+    "fr": "Kedochim",
+    "en": "Kedoshim"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "19:1",
+     "19:4"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "19:5",
+     "19:10"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "19:11",
+     "19:14"
+    ]
+   ]
+  },
+  "EMOR": {
+   "hebcal": "Emor",
+   "titre": {
+    "he": "אמור",
+    "fr": "Emor",
+    "en": "Emor"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "21:1",
+     "21:6"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "21:7",
+     "21:12"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "21:13",
+     "21:15"
+    ]
+   ]
+  },
+  "BEHAR": {
+   "hebcal": "Behar",
+   "titre": {
+    "he": "בהר",
+    "fr": "Behar",
+    "en": "Behar"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "25:1",
+     "25:3"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "25:4",
+     "25:7"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "25:8",
+     "25:13"
+    ]
+   ]
+  },
+  "BECHUKOSAI": {
+   "hebcal": "Bechukotai",
+   "titre": {
+    "he": "בחקתי",
+    "fr": "Be’houkotaï",
+    "en": "Bechukotai"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "26:3",
+     "26:5"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "26:6",
+     "26:9"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "26:10",
+     "26:13"
+    ]
+   ]
+  },
+  "BAMIDBAR": {
+   "hebcal": "Bamidbar",
+   "titre": {
+    "he": "במדבר",
+    "fr": "Bamidbar",
+    "en": "Bamidbar"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "1:1",
+     "1:4"
+    ],
+    [
+     "2",
+     "Numbers",
+     "1:5",
+     "1:16"
+    ],
+    [
+     "3",
+     "Numbers",
+     "1:17",
+     "1:19"
+    ]
+   ]
+  },
+  "NASSO": {
+   "hebcal": "Nasso",
+   "titre": {
+    "he": "נשא",
+    "fr": "Nasso",
+    "en": "Nasso"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "4:21",
+     "4:24"
+    ],
+    [
+     "2",
+     "Numbers",
+     "4:25",
+     "4:28"
+    ],
+    [
+     "3",
+     "Numbers",
+     "4:29",
+     "4:33"
+    ]
+   ]
+  },
+  "BEHAALOSCHA": {
+   "hebcal": "Beha'alotcha",
+   "titre": {
+    "he": "בהעלתך",
+    "fr": "Beha’alotekha",
+    "en": "Beha'alotcha"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "8:1",
+     "8:4"
+    ],
+    [
+     "2",
+     "Numbers",
+     "8:5",
+     "8:9"
+    ],
+    [
+     "3",
+     "Numbers",
+     "8:10",
+     "8:14"
+    ]
+   ]
+  },
+  "SHLACH": {
+   "hebcal": "Sh'lach",
+   "titre": {
+    "he": "שלח לך",
+    "fr": "Chela’h lekha",
+    "en": "Sh'lach"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "13:1",
+     "13:3"
+    ],
+    [
+     "2",
+     "Numbers",
+     "13:4",
+     "13:16"
+    ],
+    [
+     "3",
+     "Numbers",
+     "13:17",
+     "13:20"
+    ]
+   ]
+  },
+  "KORACH": {
+   "hebcal": "Korach",
+   "titre": {
+    "he": "קרח",
+    "fr": "Kora’h",
+    "en": "Korach"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "16:1",
+     "16:3"
+    ],
+    [
+     "2",
+     "Numbers",
+     "16:4",
+     "16:7"
+    ],
+    [
+     "3",
+     "Numbers",
+     "16:8",
+     "16:13"
+    ]
+   ]
+  },
+  "CHUKAS": {
+   "hebcal": "Chukat",
+   "titre": {
+    "he": "חוקת",
+    "fr": "’Houkat",
+    "en": "Chukat"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "19:1",
+     "19:6"
+    ],
+    [
+     "2",
+     "Numbers",
+     "19:7",
+     "19:9"
+    ],
+    [
+     "3",
+     "Numbers",
+     "19:10",
+     "19:17"
+    ]
+   ]
+  },
+  "BALAK": {
+   "hebcal": "Balak",
+   "titre": {
+    "he": "בלק",
+    "fr": "Balak",
+    "en": "Balak"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "22:2",
+     "22:4"
+    ],
+    [
+     "2",
+     "Numbers",
+     "22:5",
+     "22:7"
+    ],
+    [
+     "3",
+     "Numbers",
+     "22:8",
+     "22:12"
+    ]
+   ]
+  },
+  "PINCHAS": {
+   "hebcal": "Pinchas",
+   "titre": {
+    "he": "פינחס",
+    "fr": "Pin’has",
+    "en": "Pinchas"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "25:10",
+     "25:12"
+    ],
+    [
+     "2",
+     "Numbers",
+     "25:13",
+     "25:15"
+    ],
+    [
+     "3",
+     "Numbers",
+     "25:16",
+     "26:4"
+    ]
+   ]
+  },
+  "MATOS": {
+   "hebcal": "Matot",
+   "titre": {
+    "he": "מטות",
+    "fr": "Matot",
+    "en": "Matot"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "30:2",
+     "30:9"
+    ],
+    [
+     "2",
+     "Numbers",
+     "30:10",
+     "30:13"
+    ],
+    [
+     "3",
+     "Numbers",
+     "30:14",
+     "30:17"
+    ]
+   ]
+  },
+  "MASEI": {
+   "hebcal": "Masei",
+   "titre": {
+    "he": "מסעי",
+    "fr": "Masé",
+    "en": "Masei"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "33:1",
+     "33:3"
+    ],
+    [
+     "2",
+     "Numbers",
+     "33:4",
+     "33:6"
+    ],
+    [
+     "3",
+     "Numbers",
+     "33:7",
+     "33:10"
+    ]
+   ]
+  },
+  "DEVARIM": {
+   "hebcal": "Devarim",
+   "titre": {
+    "he": "דברים",
+    "fr": "Devarim",
+    "en": "Devarim"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "1:1",
+     "1:3"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "1:4",
+     "1:7"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "1:8",
+     "1:11"
+    ]
+   ]
+  },
+  "VAESCHANAN": {
+   "hebcal": "Vaetchanan",
+   "titre": {
+    "he": "ואתחנן",
+    "fr": "Vaèt’hanane",
+    "en": "Vaetchanan"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "3:23",
+     "3:25"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "3:26",
+     "4:4"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "4:5",
+     "4:8"
+    ]
+   ]
+  },
+  "EIKEV": {
+   "hebcal": "Eikev",
+   "titre": {
+    "he": "עקב",
+    "fr": "Ékev",
+    "en": "Eikev"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "7:12",
+     "7:21"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "7:22",
+     "8:3"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "8:4",
+     "8:10"
+    ]
+   ]
+  },
+  "REEH": {
+   "hebcal": "Re'eh",
+   "titre": {
+    "he": "ראה",
+    "fr": "Reé",
+    "en": "Re'eh"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "11:26",
+     "11:31"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "11:32",
+     "12:5"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "12:6",
+     "12:10"
+    ]
+   ]
+  },
+  "SHOFTIM": {
+   "hebcal": "Shoftim",
+   "titre": {
+    "he": "שופטים",
+    "fr": "Choftim",
+    "en": "Shoftim"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "16:18",
+     "16:20"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "16:21",
+     "17:10"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "17:11",
+     "17:13"
+    ]
+   ]
+  },
+  "KI_SEITZEI": {
+   "hebcal": "Ki Teitzei",
+   "titre": {
+    "he": "כי תצא",
+    "fr": "Ki tétsé",
+    "en": "Ki Teitzei"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "21:10",
+     "21:14"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "21:15",
+     "21:17"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "21:18",
+     "21:21"
+    ]
+   ]
+  },
+  "KI_SAVO": {
+   "hebcal": "Ki Tavo",
+   "titre": {
+    "he": "כי תבוא",
+    "fr": "Ki tavo",
+    "en": "Ki Tavo"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "26:1",
+     "26:3"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "26:4",
+     "26:11"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "26:12",
+     "26:15"
+    ]
+   ]
+  },
+  "NITZAVIM": {
+   "hebcal": "Nitzavim",
+   "titre": {
+    "he": "נצבים",
+    "fr": "Nitsavim",
+    "en": "Nitzavim"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "29:9",
+     "29:11"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "29:12",
+     "29:14"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "29:15",
+     "29:28"
+    ]
+   ]
+  },
+  "VAYEILECH": {
+   "hebcal": "Vayeilech",
+   "titre": {
+    "he": "וילך",
+    "fr": "Vayélekh",
+    "en": "Vayeilech"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "31:1",
+     "31:3"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "31:4",
+     "31:6"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "31:7",
+     "31:13"
+    ]
+   ]
+  },
+  "HAAZINU": {
+   "hebcal": "Ha'azinu",
+   "titre": {
+    "he": "האזינו",
+    "fr": "Haazinou",
+    "en": "Ha'azinu"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "32:1",
+     "32:3"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "32:4",
+     "32:6"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "32:7",
+     "32:12"
+    ]
+   ]
+  },
+  "VZOS_HABERACHA": {
+   "hebcal": "Vezot Haberakhah",
+   "titre": {
+    "he": "וזאת הברכה",
+    "fr": "Vézot haBérakha",
+    "en": "Vezot Haberakhah"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "33:1",
+     "33:7"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "33:8",
+     "33:12"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "33:13",
+     "33:17"
+    ]
+   ]
+  },
+  "VAYAKHEL_PEKUDEI": {
+   "hebcal": "Vayakhel-Pekudei",
+   "titre": {
+    "he": "ויקהל פקודי",
+    "fr": "Vayakhel-Pekoudé",
+    "en": "Vayakhel-Pekudei"
+   },
+   "semaine": [
+    [
+     "1",
+     "Exodus",
+     "35:1",
+     "35:3"
+    ],
+    [
+     "2",
+     "Exodus",
+     "35:4",
+     "35:10"
+    ],
+    [
+     "3",
+     "Exodus",
+     "35:11",
+     "35:20"
+    ]
+   ]
+  },
+  "TAZRIA_METZORA": {
+   "hebcal": "Tazria-Metzora",
+   "titre": {
+    "he": "תזריע מצרע",
+    "fr": "Tazria-Metsora",
+    "en": "Tazria-Metzora"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "12:1",
+     "12:4"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "12:5",
+     "12:8"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "13:1",
+     "13:5"
+    ]
+   ]
+  },
+  "ACHREI_MOS_KEDOSHIM": {
+   "hebcal": "Achrei Mot-Kedoshim",
+   "titre": {
+    "he": "אחרי מות קדושים",
+    "fr": "A’haré mot-Kedochim",
+    "en": "Achrei Mot-Kedoshim"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "16:1",
+     "16:6"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "16:7",
+     "16:11"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "16:12",
+     "16:17"
+    ]
+   ]
+  },
+  "BEHAR_BECHUKOSAI": {
+   "hebcal": "Behar-Bechukotai",
+   "titre": {
+    "he": "בהר בחקתי",
+    "fr": "Behar-Be’houkotaï",
+    "en": "Behar-Bechukotai"
+   },
+   "semaine": [
+    [
+     "1",
+     "Leviticus",
+     "25:1",
+     "25:3"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "25:4",
+     "25:7"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "25:8",
+     "25:13"
+    ]
+   ]
+  },
+  "CHUKAS_BALAK": {
+   "hebcal": "Chukat-Balak",
+   "titre": {
+    "he": "חוקת בלק",
+    "fr": "’Houkat-Balak",
+    "en": "Chukat-Balak"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "19:1",
+     "19:6"
+    ],
+    [
+     "2",
+     "Numbers",
+     "19:7",
+     "19:9"
+    ],
+    [
+     "3",
+     "Numbers",
+     "19:10",
+     "19:17"
+    ]
+   ]
+  },
+  "MATOS_MASEI": {
+   "hebcal": "Matot-Masei",
+   "titre": {
+    "he": "מטות מסעי",
+    "fr": "Matot-Masé",
+    "en": "Matot-Masei"
+   },
+   "semaine": [
+    [
+     "1",
+     "Numbers",
+     "30:2",
+     "30:9"
+    ],
+    [
+     "2",
+     "Numbers",
+     "30:10",
+     "30:13"
+    ],
+    [
+     "3",
+     "Numbers",
+     "30:14",
+     "30:17"
+    ]
+   ]
+  },
+  "NITZAVIM_VAYEILECH": {
+   "hebcal": "Nitzavim-Vayeilech",
+   "titre": {
+    "he": "נצבים וילך",
+    "fr": "Nitsavim-Vayélekh",
+    "en": "Nitzavim-Vayeilech"
+   },
+   "semaine": [
+    [
+     "1",
+     "Deuteronomy",
+     "29:9",
+     "29:11"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "29:12",
+     "29:14"
+    ],
+    [
+     "3",
+     "Deuteronomy",
+     "29:15",
+     "29:28"
+    ]
+   ]
+  }
+ },
+ "lectures": {
+  "Rosh Chodesh": {
+   "titre": {
+    "he": "ראש חודש",
+    "fr": "Roch ’Hodech",
+    "en": "Rosh Chodesh"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "28:1",
+     "28:3"
+    ],
+    [
+     "2",
+     "Numbers",
+     "28:3",
+     "28:5"
+    ],
+    [
+     "3",
+     "Numbers",
+     "28:6",
+     "28:10"
+    ],
+    [
+     "4",
+     "Numbers",
+     "28:11",
+     "28:15"
+    ]
+   ]
+  },
+  "Pesach II (CH''M)": {
+   "titre": {
+    "he": "חול המועד פסח",
+    "fr": "’Hol hamoèd Pessa’h",
+    "en": "Chol HaMoed Pesach"
+   },
+   "alyot": [
+    [
+     "1",
+     "Leviticus",
+     "22:26",
+     "23:8"
+    ],
+    [
+     "2",
+     "Leviticus",
+     "23:9",
+     "23:14"
+    ],
+    [
+     "3",
+     "Leviticus",
+     "23:15",
+     "23:44"
+    ],
+    [
+     "4",
+     "Numbers",
+     "28:19",
+     "28:25"
+    ]
+   ]
+  },
+  "Pesach Chol ha-Moed Day 1": {
+   "titre": {
+    "he": "חול המועד פסח",
+    "fr": "’Hol hamoèd Pessa’h",
+    "en": "Chol HaMoed Pesach"
+   },
+   "alyot": [
+    [
+     "1",
+     "Exodus",
+     "13:1",
+     "13:4"
+    ],
+    [
+     "2",
+     "Exodus",
+     "13:5",
+     "13:10"
+    ],
+    [
+     "3",
+     "Exodus",
+     "13:11",
+     "13:16"
+    ],
+    [
+     "4",
+     "Numbers",
+     "28:19",
+     "28:25"
+    ]
+   ]
+  },
+  "Pesach Chol ha-Moed Day 2": {
+   "titre": {
+    "he": "חול המועד פסח",
+    "fr": "’Hol hamoèd Pessa’h",
+    "en": "Chol HaMoed Pesach"
+   },
+   "alyot": [
+    [
+     "1",
+     "Exodus",
+     "22:24",
+     "22:26"
+    ],
+    [
+     "2",
+     "Exodus",
+     "22:27",
+     "23:5"
+    ],
+    [
+     "3",
+     "Exodus",
+     "23:6",
+     "23:19"
+    ],
+    [
+     "4",
+     "Numbers",
+     "28:19",
+     "28:25"
+    ]
+   ]
+  },
+  "Pesach Chol ha-Moed Day 3": {
+   "titre": {
+    "he": "חול המועד פסח",
+    "fr": "’Hol hamoèd Pessa’h",
+    "en": "Chol HaMoed Pesach"
+   },
+   "alyot": [
+    [
+     "1",
+     "Exodus",
+     "34:1",
+     "34:10"
+    ],
+    [
+     "2",
+     "Exodus",
+     "34:11",
+     "34:17"
+    ],
+    [
+     "3",
+     "Exodus",
+     "34:18",
+     "34:26"
+    ],
+    [
+     "4",
+     "Numbers",
+     "28:19",
+     "28:25"
+    ]
+   ]
+  },
+  "Pesach Chol ha-Moed Day 4": {
+   "titre": {
+    "he": "חול המועד פסח",
+    "fr": "’Hol hamoèd Pessa’h",
+    "en": "Chol HaMoed Pesach"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "9:1",
+     "9:5"
+    ],
+    [
+     "2",
+     "Numbers",
+     "9:6",
+     "9:8"
+    ],
+    [
+     "3",
+     "Numbers",
+     "9:9",
+     "9:14"
+    ],
+    [
+     "4",
+     "Numbers",
+     "28:19",
+     "28:25"
+    ]
+   ]
+  },
+  "Fast Day (Morning)": {
+   "titre": {
+    "he": "צום גדליה",
+    "fr": "Jeûne de Guedalia",
+    "en": "Tzom Gedaliah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Exodus",
+     "32:11",
+     "32:14"
+    ],
+    [
+     "2",
+     "Exodus",
+     "34:1",
+     "34:3"
+    ],
+    [
+     "3",
+     "Exodus",
+     "34:4",
+     "34:10"
+    ]
+   ]
+  },
+  "Fast Day (Afternoon)": {
+   "titre": {
+    "he": "צום גדליה",
+    "fr": "Jeûne de Guedalia",
+    "en": "Tzom Gedaliah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Exodus",
+     "32:11",
+     "32:14"
+    ],
+    [
+     "2",
+     "Exodus",
+     "34:1",
+     "34:3"
+    ],
+    [
+     "M",
+     "Exodus",
+     "34:4",
+     "34:10"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Exodus",
+     "32:11",
+     "32:14"
+    ],
+    [
+     "2",
+     "Exodus",
+     "34:1",
+     "34:3"
+    ],
+    [
+     "3",
+     "Exodus",
+     "34:4",
+     "34:10"
+    ]
+   ]
+  },
+  "Tzom Gedaliah": {
+   "titre": {
+    "he": "צום גדליה",
+    "fr": "Jeûne de Guedalia",
+    "en": "Tzom Gedaliah"
+   },
+   "alias": "Fast Day (Morning)"
+  },
+  "Tzom Gedaliah (Mincha)": {
+   "titre": {
+    "he": "צום גדליה",
+    "fr": "Jeûne de Guedalia",
+    "en": "Tzom Gedaliah"
+   },
+   "alias": "Fast Day (Afternoon)"
+  },
+  "Asara B'Tevet": {
+   "titre": {
+    "he": "עשרה בטבת",
+    "fr": "Jeûne du 10 Tévet",
+    "en": "Asara B'Tevet"
+   },
+   "alias": "Fast Day (Morning)"
+  },
+  "Asara B'Tevet (Mincha)": {
+   "titre": {
+    "he": "עשרה בטבת",
+    "fr": "Jeûne du 10 Tévet",
+    "en": "Asara B'Tevet"
+   },
+   "alias": "Fast Day (Afternoon)"
+  },
+  "Ta'anit Esther": {
+   "titre": {
+    "he": "תענית אסתר",
+    "fr": "Jeûne d’Esther",
+    "en": "Ta'anit Esther"
+   },
+   "alias": "Fast Day (Morning)"
+  },
+  "Ta'anit Esther (Mincha)": {
+   "titre": {
+    "he": "תענית אסתר",
+    "fr": "Jeûne d’Esther",
+    "en": "Ta'anit Esther"
+   },
+   "alias": "Fast Day (Afternoon)"
+  },
+  "Tzom Tammuz": {
+   "titre": {
+    "he": "שבעה עשר בתמוז",
+    "fr": "Jeûne du 17 Tamouz",
+    "en": "Tzom Tammuz"
+   },
+   "alias": "Fast Day (Morning)"
+  },
+  "Tzom Tammuz (Mincha)": {
+   "titre": {
+    "he": "שבעה עשר בתמוז",
+    "fr": "Jeûne du 17 Tamouz",
+    "en": "Tzom Tammuz"
+   },
+   "alias": "Fast Day (Afternoon)"
+  },
+  "Tish'a B'Av": {
+   "titre": {
+    "he": "תשעה באב",
+    "fr": "Ticha bèAv",
+    "en": "Tish'a B'Av"
+   },
+   "alyot": [
+    [
+     "1",
+     "Deuteronomy",
+     "4:25",
+     "4:29"
+    ],
+    [
+     "2",
+     "Deuteronomy",
+     "4:30",
+     "4:35"
+    ],
+    [
+     "M",
+     "Deuteronomy",
+     "4:36",
+     "4:40"
+    ]
+   ]
+  },
+  "Tish'a B'Av (Mincha)": {
+   "titre": {
+    "he": "תשעה באב",
+    "fr": "Ticha bèAv",
+    "en": "Tish'a B'Av"
+   },
+   "alias": "Fast Day (Afternoon)",
+   "alyot_edot": [
+    [
+     "1",
+     "Exodus",
+     "32:11",
+     "32:14"
+    ],
+    [
+     "2",
+     "Exodus",
+     "34:1",
+     "34:3"
+    ],
+    [
+     "M",
+     "Exodus",
+     "34:4",
+     "34:10"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 1": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:17",
+     "29:19"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:17",
+     "29:22"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "29:17",
+     "29:19"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:17",
+     "29:22"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 2": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:20",
+     "29:25"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:20",
+     "29:25"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 3": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:23",
+     "29:28"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:23",
+     "29:28"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 4": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:26",
+     "29:31"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:26",
+     "29:31"
+    ]
+   ]
+  },
+  "Sukkot Final Day (Hoshana Raba)": {
+   "titre": {
+    "he": "הושענא רבה",
+    "fr": "Hochaana Rabba",
+    "en": "Hoshana Raba"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:29",
+     "29:34"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:29",
+     "29:34"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 1 (Israel)": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:17",
+     "29:19"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:17",
+     "29:19"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:17",
+     "29:19"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:17",
+     "29:19"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 2 (Israel)": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:20",
+     "29:22"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 3 (Israel)": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:23",
+     "29:25"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 4 (Israel)": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:26",
+     "29:28"
+    ]
+   ]
+  },
+  "Sukkot Chol ha-Moed Day 5 (Israel)": {
+   "titre": {
+    "he": "חול המועד סוכות",
+    "fr": "’Hol hamoèd Souccot",
+    "en": "Chol HaMoed Sukkot"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:29",
+     "29:31"
+    ]
+   ]
+  },
+  "Sukkot Final Day (Hoshana Raba) (Israel)": {
+   "titre": {
+    "he": "הושענא רבה",
+    "fr": "Hochaana Rabba",
+    "en": "Hoshana Raba"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ],
+    [
+     "2",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ],
+    [
+     "3",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ],
+    [
+     "4",
+     "Numbers",
+     "29:32",
+     "29:34"
+    ]
+   ]
+  },
+  "Chanukah Day 1": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "7:1",
+     "7:11"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:12",
+     "7:14"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:15",
+     "7:17"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "6:22",
+     "7:3"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:4",
+     "7:11"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:12",
+     "7:17"
+    ]
+   ]
+  },
+  "Chanukah Day 2": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "7:18",
+     "7:20"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:21",
+     "7:23"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:24",
+     "7:29"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "7:18",
+     "7:20"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:21",
+     "7:23"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:18",
+     "7:23"
+    ]
+   ]
+  },
+  "Chanukah Day 3": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "7:24",
+     "7:26"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:27",
+     "7:29"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:30",
+     "7:35"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "7:24",
+     "7:26"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:27",
+     "7:29"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:24",
+     "7:29"
+    ]
+   ]
+  },
+  "Chanukah Day 4": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "7:30",
+     "7:32"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:33",
+     "7:35"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:36",
+     "7:41"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "7:30",
+     "7:32"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:33",
+     "7:35"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:30",
+     "7:35"
+    ]
+   ]
+  },
+  "Chanukah Day 5": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "7:36",
+     "7:38"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:39",
+     "7:41"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:42",
+     "7:47"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "7:36",
+     "7:38"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:39",
+     "7:41"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:36",
+     "7:41"
+    ]
+   ]
+  },
+  "Chanukah Day 6": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "28:1",
+     "28:5"
+    ],
+    [
+     "2",
+     "Numbers",
+     "28:6",
+     "28:10"
+    ],
+    [
+     "3",
+     "Numbers",
+     "28:11",
+     "28:15"
+    ],
+    [
+     "4",
+     "Numbers",
+     "7:42",
+     "7:47"
+    ]
+   ]
+  },
+  "Chanukah Day 7": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "7:48",
+     "7:50"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:51",
+     "7:53"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:54",
+     "7:59"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "7:48",
+     "7:50"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:51",
+     "7:53"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:48",
+     "7:53"
+    ]
+   ]
+  },
+  "Chanukah Day 8": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "7:54",
+     "7:56"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:57",
+     "7:59"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:60",
+     "8:4"
+    ]
+   ],
+   "alyot_edot": [
+    [
+     "1",
+     "Numbers",
+     "7:54",
+     "7:56"
+    ],
+    [
+     "2",
+     "Numbers",
+     "7:57",
+     "7:59"
+    ],
+    [
+     "3",
+     "Numbers",
+     "7:54",
+     "8:4"
+    ]
+   ]
+  },
+  "Chanukah Day 7 (on Rosh Chodesh)": {
+   "titre": {
+    "he": "חנוכה",
+    "fr": "’Hanouka",
+    "en": "Chanukah"
+   },
+   "alyot": [
+    [
+     "1",
+     "Numbers",
+     "28:1",
+     "28:5"
+    ],
+    [
+     "2",
+     "Numbers",
+     "28:6",
+     "28:10"
+    ],
+    [
+     "3",
+     "Numbers",
+     "28:11",
+     "28:15"
+    ],
+    [
+     "4",
+     "Numbers",
+     "7:48",
+     "7:53"
+    ]
+   ]
+  },
+  "Purim": {
+   "titre": {
+    "he": "פורים",
+    "fr": "Pourim",
+    "en": "Purim"
+   },
+   "alyot": [
+    [
+     "1",
+     "Exodus",
+     "17:8",
+     "17:10"
+    ],
+    [
+     "2",
+     "Exodus",
+     "17:11",
+     "17:13"
+    ],
+    [
+     "3",
+     "Exodus",
+     "17:14",
+     "17:16"
+    ]
+   ]
+  },
+  "Shushan Purim": {
+   "titre": {
+    "he": "פורים בירושלים (שושן פורים)",
+    "fr": "Pourim à Jérusalem (Chouchan Pourim)",
+    "en": "Purim in Jerusalem (Shushan Purim)"
+   },
+   "alyot": [
+    [
+     "1",
+     "Exodus",
+     "17:8",
+     "17:10"
+    ],
+    [
+     "2",
+     "Exodus",
+     "17:11",
+     "17:13"
+    ],
+    [
+     "3",
+     "Exodus",
+     "17:14",
+     "17:16"
+    ]
+   ]
+  }
+ }
+}

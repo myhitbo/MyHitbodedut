@@ -14,6 +14,34 @@ sont des décisions, pas des oublis.
 
 ---
 
+## Les ajouts du siddour en deux catégories (26/11/2026)
+
+Demande du propriétaire : « pour les ajouts dépendant des zmanim comme Chabbat, Soukkot, 'Hanouka, Barekh
+Alénou, etc., les enlever complètement hormis lorsque nécessaire. Pour les ajouts dépendant d'une occasion
+(Brit, invité, etc.), laisse-les repliés mais visibles. » La règle du 10/10, « un ajout hors du jour est
+replié, jamais retiré », est remplacée, sur Android et sur le web (l'iOS suivra) :
+
+- **Un ajout du calendrier** (ce que l'application calcule : Chabbat, Roch 'Hodech, fêtes, 'Hanouka, Pourim,
+  jeûnes, dix jours, saisons, Ta'hanoun, Chir chel yom, lecture de la Torah, omer…) ne s'affiche que le jour où il
+  se dit ; les autres jours, il est retiré, sans bandeau. Dans un ajout du jour, seule la ligne du jour se lit ;
+  une variante enchâssée fausse est retirée, et pendant les dix jours la formule du jour remplace l'ordinaire
+  (« עושה השלום », « לעילא ולעילא », complétés dans les Kaddich où ils manquaient).
+- **Un ajout d'occasion** (que l'application ne peut pas connaître : minyan, qui prie seul, brit mila, invité,
+  maison endeuillée, Chéva bérakhot, zimoun, malade, subsistance, Mi chébérakh, HaGomel…) reste replié, et se
+  déplie d'un toucher ; déplié, il ne montre que ses lignes du jour.
+- **Les réponses du propriétaire (Q1-Q15)** : « Pas de Ta'hanoun aujourd'hui » dans la barre de lecture (Q1) ;
+  l'Anénou de l'officiant sous « Avec minyan » les jours de jeûne public, celui du particulier replié sous
+  « Jeûne individuel » les autres jours (Q2) ; le voyageur pour טל ומטר du 7 'Hechvan au 4 ou 5 décembre (Q3) ;
+  « Sans minyan » pour qui prie seul (Q4) ; les consignes d'oubli repliées les seuls jours de leur ajout (Q5) ;
+  au Birkat haMazon et à Méèn chaloch, entre le coucher du soleil et la sortie des étoiles (sans lieu : 16 h-minuit)
+  et le soir qui suit, les ajouts du jour voisin repliés (Q6) ; « Israël ou diaspora ? » demandé quand le statut
+  n'est pas confirmé et que le texte en dépend (Q7) ; pas d'interrupteur de secours (Q9) ; le Ledavid des Edot
+  replié hors d'Eloul (Q10), dès le 30 Av dans les trois rites (Q13) ; les formes de l'homme et de la femme selon
+  צדיק / צדקת, le seul compte de l'omer du soir (Q12) ; les usages datés repliés le seul jour dit (Q14) ; les
+  textes d'occasion absents, repris de Sefaria (Q15, `tools/siddur_occasions_ajouts.py`).
+- Outils : `tools/siddur_annotations.py` (gardes « quand », « replie_hors », « par »), puis
+  `tools/libelles_construction.py`. Tests : `CategoriesSiddurTest`, `web/test/categories.test.mjs`.
+
 ## Refonte de la navigation (13/11/2026)
 
 Demandée le 12/11 : « redesigner l'app en proposant des changements d'emplacement, de
@@ -781,7 +809,8 @@ fixes.
    LGPL : la GPL de Hebcal obligerait à publier toute l'application.
 2. Le lieu : une ville choisie à la main, plus un GPS facultatif.
 3. Le siddour met en évidence les ajouts du jour et replie les autres
-   derrière une flèche.
+   derrière une flèche. *26/11 : remplacé — un ajout du calendrier hors de son
+   jour est retiré ; seuls ceux d'une occasion restent repliés (voir en tête).*
 4. Le profil des zmanim et les coutumes de Ta'hanoun sont marqués « à
    valider par un Rav ». *29/10 : vérifiés selon le propriétaire ; toutes
    les mentions « à valider / demander à un Rav » sont retirées (zmanim,

@@ -783,7 +783,7 @@
     <string name="reglage_tahanoun_tichri_sans">Pas dit jusqu’à Roch ’Hodech ’Hechvan</string>
     <string name="reglage_sans_tahanoun_jour">Pas de Ta’hanoun aujourd’hui</string>
     <string name="reglage_sans_tahanoun_jour_non">Non · pour une maison en deuil, une brit mila ou un ’hatan, pour ce jour seulement</string>
-    <string name="reglage_sans_tahanoun_jour_oui">Oui, aujourd’hui seulement : le Ta’hanoun est replié dans le siddour</string>
+    <string name="reglage_sans_tahanoun_jour_oui">Oui, aujourd’hui seulement : le Ta’hanoun est retiré du siddour</string>
     <string name="zman_alot">Alot hacha’har</string>
     <string name="zman_misheyakir">Michéyakir</string>
     <string name="zman_netz">Lever du soleil (Nets)</string>
@@ -948,7 +948,7 @@
     <string name="siddur_aujourdhui">Aujourd’hui</string>
     <string name="siddur_pas_aujourdhui">Pas aujourd’hui · toucher pour lire</string>
     <string name="siddur_replier">Replier</string>
-    <string name="siddur_jour_ajouts">Ajouts du %1$s (%2$s), indicatifs : le texte et ses consignes font foi.</string>
+    <string name="siddur_jour_ajouts">Ajouts du %1$s (%2$s) : ceux d’un autre jour sont retirés, ceux d’une occasion repliés ; le texte et ses consignes font foi.</string>
     <string name="fete_erev_pessah">Veille de Pessa’h</string>
     <string name="fete_pessah">Pessa’h</string>
     <string name="fete_hol_hamoed_pessah">’Hol hamoèd Pessa’h</string>
@@ -1613,7 +1613,7 @@
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">Règles de confidentialité</string>
     <string name="settings_licences">Sources et licences</string>
-    <string name="licences_texte">Textes\nLes textes hébreux (siddour, Tehilim, Tikoun, livres, sources) viennent d’éditions du domaine public, notamment Sefaria, Torat Emet, tanach.us et rabenubook, ou sont repris avec l’accord de leurs auteurs ; l’édition et la licence de chacun sont déclarées dans les fichiers de l’application.\nYalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef : texte de Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilloulot : Wikipédia hébreu (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik et HaMéir LaArets avec leur accord.\n\nTraductions\nLes traductions françaises et anglaises sont faites par ordinateur et n’ont pas été relues : l’hébreu fait foi. Celles du Yalkout Yossef sont partielles, sous la même licence que le texte. Pour les Tehilim, le Tikoun, Esther et Chir HaChirim : Bible du Rabbinat (1899) et JPS (1917), domaine public.\n\nPolices\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew et Varela Round, Secular One, Rubik, Heebo et Bellefair (versions de l’app), sous licence SIL OFL 1.1.\n\nDonnées\nVilles : GeoNames (CC BY 4.0). Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms : Wikidata (CC0). Routes des vols : adsbdb.com.\n\nCalendrier et zmanim\nKosherJava (LGPL 2.1), directement ou par son portage JavaScript. L’application est livrée avec le texte de la licence ; le code source de l’application est disponible sur demande écrite à myhitbodedut26@gmail.com.</string>
+    <string name="licences_texte">Textes\nLes textes hébreux (siddour, Tehilim, Tikoun, livres, sources) viennent d’éditions du domaine public, notamment Sefaria, Torat Emet, tanach.us et rabenubook, ou sont repris avec l’accord de leurs auteurs ; l’édition et la licence de chacun sont déclarées dans les fichiers de l’application.\nYalkout Yossef – Kitsour Choul’han Aroukh, du Rav Yitzhak Yosef : texte de Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilloulot : Wikipédia hébreu (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik et HaMéir LaArets avec leur accord.\n\nTraductions\nLes traductions françaises et anglaises sont faites par ordinateur et n’ont pas été relues : l’hébreu fait foi. Celles du Yalkout Yossef sont partielles, sous la même licence que le texte. Pour les Tehilim, le Tikoun, Esther et Chir HaChirim : Bible du Rabbinat (1899) et JPS (1917), domaine public.\n\nPolices\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew et Varela Round, Secular One, Rubik, Heebo et Bellefair (versions de l’app), sous licence SIL OFL 1.1.\n\nDonnées\nVilles : GeoNames (CC BY 4.0). Aéroports : OurAirports (domaine public) ; fuseaux : timezone-boundary-builder (ODbL, © contributeurs OpenStreetMap) ; noms : Wikidata (CC0). Routes des vols : adsbdb.com.\n\nLecture de la Torah\nDécoupage des montées : @hebcal/leyning (© 2020 hebcal, licence BSD à 2 clauses, dont le texte est livré avec l’application). Texte cantillé de la Torah : « Tanach with Ta’amei Hamikra » (tanach.us, codex de Leningrad, domaine public).\n\nCalendrier et zmanim\nKosherJava (LGPL 2.1), directement ou par son portage JavaScript. L’application est livrée avec le texte de la licence ; le code source de l’application est disponible sur demande écrite à myhitbodedut26@gmail.com.</string>
     <string name="licences_android">\n\nBibliothèques de l’application Android\nLecture des codes-barres : ZXing (Apache 2.0). AndroidX et Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
@@ -1795,4 +1795,36 @@
     <string name="session_suite_non">Non, terminer</string>
     <string name="channel_suite">Continuer la hitbodedout</string>
     <string name="channel_suite_description">La question posée 10 secondes avant la fin d’une hitbodedout minutée.</string>
+
+    <!-- 26/11 : les ajouts du siddour en deux catégories (calendrier, occasion) -->
+    <string name="siddur_region_question">Israël ou diaspora ? Ce texte en dépend aujourd’hui : touchez pour répondre.</string>
+    <string name="siddur_region_titre">Vous habitez en Israël ou en diaspora ?</string>
+    <string name="lecture_tahanoun_oui">pas de Ta’hanoun aujourd’hui</string>
+    <string name="lecture_tahanoun_non">Ta’hanoun selon le calendrier</string>
+    <string name="ajout_sans_minyan">Sans minyan</string>
+    <string name="ajout_jeune_individuel">Jeûne individuel</string>
+    <string name="ajout_usage">Selon l’usage</string>
+    <string name="ajout_roch_hodech_usage">Roch ’Hodech, selon l’usage</string>
+    <string name="ajout_israel_usage">En Israël, selon l’usage</string>
+    <string name="ajout_occasion">Occasion</string>
+    <string name="ajout_malade">Pour un malade</string>
+    <string name="ajout_subsistance">Pour la subsistance</string>
+    <string name="ajout_homme">Pour un homme</string>
+    <string name="ajout_femme">Pour une femme</string>
+    <string name="ajout_jour_megila">Le matin</string>
+    <string name="ajout_brit_mila">Repas de brit mila</string>
+    <string name="ajout_hagomel">HaGomel</string>
+    <string name="ajout_bar_mitsva">Bar mitsva</string>
+    <string name="ajout_mi_cheberakh_oleh">Mi chébérakh pour qui monte à la Torah</string>
+    <string name="ajout_mi_cheberakh_malade">Mi chébérakh pour un malade</string>
+    <string name="ajout_mi_cheberakh_yoledet">Mi chébérakh pour une accouchée</string>
+    <string name="ajout_magdol">Les jours de « מגדול »</string>
+    <string name="ajout_israel">En Israël</string>
+    <string name="ajout_yamim_noraim">Roch Hachana et Kippour</string>
+    <!-- La lecture de la Torah du jour (26/11, LectureTorah) -->
+    <string name="lecture_titre">Lecture : %1$s, %2$s</string>
+    <plurals name="lecture_montees">
+        <item quantity="one">%d montée</item>
+        <item quantity="other">%d montées</item>
+    </plurals>
 </resources>

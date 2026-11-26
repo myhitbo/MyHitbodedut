@@ -854,13 +854,15 @@ class SettingsActivity : AppCompatActivity() {
     /**
      * Sources et licences (audit du 12/11, TLIVRES-09, TPLAYDOCS-13) : d'où viennent les textes et les
      * traductions, les polices, les données, puis le texte des licences livrées avec l'application
-     * (LGPL 2.1 de KosherJava, Apache 2.0 de ZXing, AndroidX et Material).
+     * (LGPL 2.1 de KosherJava, Apache 2.0 de ZXing, AndroidX et Material, BSD 2 d'@hebcal/leyning).
      */
     private fun montrerLicences() {
         fun asset(nom: String) = runCatching { assets.open("licences/$nom").bufferedReader().use { it.readText() } }.getOrDefault("")
         val texte = getString(R.string.licences_texte) + getString(R.string.licences_android) +
             "\n\n— LGPL 2.1 —\n\n" + asset("LGPL-2.1-KosherJava.txt") +
-            "\n\n— Apache 2.0 —\n\n" + asset("Apache-2.0-ZXing.txt")
+            "\n\n— Apache 2.0 —\n\n" + asset("Apache-2.0-ZXing.txt") +
+            // La lecture de la Torah (26/11) : le découpage d'@hebcal/leyning, sous licence BSD à 2 clauses.
+            "\n\n— BSD 2-Clause (@hebcal/leyning) —\n\n" + asset("BSD-2-hebcal-leyning.txt")
         val vue = TextView(this).apply {
             this.text = texte
             textSize = 14f
