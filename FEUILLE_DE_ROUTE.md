@@ -264,6 +264,59 @@ qu'elles ne portent pas sur les mêmes ayants droit :
 | « j'ai aussi ces droits-là » — en réponse à une question posée sur ces cinq titres précisément | Ishay Ribo, Motty Steinmetz, MBD, Shmuel | Nafshi, Ata Zocher, Halev Sheli, un quatrième titre Ribo, Give Me One Prayer |
 | les envois suivants, sous la même déclaration | Shneor Lerer (Chabad Melodies), *Tzama with orchestra* | rangés dans `musique/`, hors APK |
 
+**Déclarations du 26/11**, consignées dans les mots du propriétaire :
+
+| déclaration du 26/11 | porte sur | forme de l'accord | morceaux |
+|---|---|---|---|
+| « J'ai eu son autorisation à l'oral du Yenuka » | le Yanuka | **orale** — aucun écrit | les 10 `yanuka_*`, confirmés un par un le même jour comme étant bien du Yanuka (aucun n'est d'Ianir) |
+| « j'ai eu son autorisation explicite », puis « לרר m'a confirmé tous ses sons » | Shneor Lerer | **écrite** : courriel du 21/11, conservé hors dépôt. La confirmation « tous ses morceaux » est déclarée ; sa forme n'a pas été précisée | dix morceaux : les sept `*_lerer`, plus `ani_maamin`, `anim_zemirot` et `nigun_abaal_shem_tov_for_babies`, devenus `lerer_*`. Neuf sont vérifiés contre les extraits officiels de son catalogue (même enregistrement) ; `vehi_sheamda_piano_shneor_lerer` n'y figure pas et ne lui est attribué que par le nom du fichier reçu |
+
+Le courriel de Shneor Lerer pose des conditions : son nom à côté de la
+musique ; l'application reste gratuite ; pas de téléchargement des fichiers ;
+il reste propriétaire des niggounim et peut retirer son accord à tout
+moment ; le prévenir de tout changement, et en reparler si l'application
+devient payante. Il attend une courte confirmation par courriel.
+
+Trois choses que ces déclarations ne règlent pas, notées pour ne pas les
+perdre :
+
+1. **Un accord oral ne se produit pas à la demande.** `PUBLICATION_PLAY_STORE.md`
+   § 3.2 exige un écrit pour tout morceau livré sur Play, et `yanuka_nigoun_3`
+   y est livré sous la mention « à conserver par écrit ». Cet écrit n'existe
+   pas. Un simple message du Yanuka ou de son entourage suffirait.
+2. **« Pas de téléchargement des fichiers »** (בלי הורדה של הקבצים). Le
+   propriétaire en a précisé le sens le 26/11 : l'utilisateur ne doit pas
+   pouvoir télécharger la musique, seulement l'écouter dans l'application.
+   Vérifié le même jour : l'application Android ne partage ni n'exporte
+   aucun morceau (elle ne partage que du texte et des images), et le site
+   les joue par un lecteur sans commandes ni lien vers les fichiers. Ce qui
+   reste vrai hors de l'application : les fichiers ont une adresse directe
+   sur le site et sont dans ce dépôt, qui est public. On ne les obtient pas
+   par l'application, mais qui les cherche les trouve.
+   Le propriétaire remettra le dépôt en privé une fois la publication sur
+   le Play Store et l'App Store terminée (`play/A_FAIRE.md` § 7).
+3. **Le reste du catalogue de Shneor Lerer.** Le propriétaire a demandé
+   « tout Lerer, cherche sur internet ». Une vingtaine de sorties manquent,
+   et elles n'ont pas pu être récupérées : il n'existe pas de téléchargement
+   officiel, YouTube refuse les requêtes de l'environnement de travail, et
+   contourner ce refus n'est pas permis. Lui-même propose d'envoyer ses MP3
+   sur demande ; iTunes en vend dix-neuf sur vingt.
+
+**Décisions du 26/11**, prises par le propriétaire à qui chaque question a
+été posée avec ses conséquences :
+
+| question | décision | ce qui a été fait |
+|---|---|---|
+| quoi ajouter | « Tout Lerer, cherche sur internet » | les dix morceaux déjà dans le dépôt entrent dans l'application ; les autres attendent leurs fichiers (point 3) |
+| le poids : sortir les 30 sans-titre, ou relever le plafond | « Relever le plafond » | 150 → 230 Mo ; l'audio de la version GitHub est à 224,2 Mo sur 75 morceaux |
+| le Yanuka, accord oral : version GitHub seule, ou Play et site aussi | « Play et site aussi » | ses neuf autres niggounim rejoignent `yanuka_nigoun_3` dans la version Play et le site : 42 morceaux, 139,4 Mo |
+
+J'avais recommandé l'inverse sur les deux derniers points — sortir les
+sans-titre, et garder le Yanuka hors de Play tant qu'il n'y a pas d'écrit.
+C'est son projet et son appel ; le désaccord est écrit ici pour la même
+raison que les précédents. Le point 1 ci-dessus reste ouvert ; le point 2
+est tenu, au sens que le propriétaire donne à la condition.
+
 La seconde a été demandée avant d'ajouter quoi que ce soit : ces cinq-là sont
 des enregistrements commerciaux d'artistes sous label, hors du périmètre de la
 première déclaration. Les livrer dans un APK distribué est une rediffusion, et

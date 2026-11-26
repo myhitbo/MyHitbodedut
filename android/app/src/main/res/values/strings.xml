@@ -386,11 +386,6 @@
     <string name="track_ianir_hakol_milfanekha" translatable="false">HaKol milfanekha — Ianir</string>
     <string name="track_ianir_kabbalat_chabbat">Niggoun de Kabbalat Chabbat (live) — Ianir</string>
     <string name="track_ianir_bessarabie">Niggoun de Bessarabie — Ianir</string>
-
-    <!-- En reserve : ces morceaux sont dans musique/, hors de l'APK.
-         Leurs titres restent ici pour ne pas etre perdus au retour. -->
-    <string name="track_niggoun_08">Niggoun 08</string>
-    <string name="track_shmuel_one_prayer" translatable="false">Give Me One Prayer — Shmuel</string>
     <string name="track_yanuka_a_part_of_me" translatable="false">A Part of Me — The Yanuka’s Melodies</string>
     <string name="track_yanuka_anticipation" translatable="false">Anticipation — The Yanuka’s Melodies</string>
     <string name="track_yanuka_harping_his_praise" translatable="false">Harping His Praise — The Yanuka’s Melodies</string>
@@ -400,6 +395,21 @@
     <string name="track_yanuka_the_king_will_return" translatable="false">The King Will Return — The Yanuka’s Melodies</string>
     <string name="track_yanuka_the_truth_will_rise" translatable="false">The Truth Will Rise — The Yanuka’s Melodies</string>
     <string name="track_yanuka_yearning" translatable="false">Yearning — The Yanuka’s Melodies</string>
+    <string name="track_nigunim_for_neshama_shneor_lerer" translatable="false">Nigunim For Neshama — Shneor Lerer</string>
+    <string name="track_chabad_shabbos_shneor_lerer" translatable="false">Chabad Melodies For Shabbos — Shneor Lerer</string>
+    <string name="track_chabad_yamim_noraim_shneor_lerer" translatable="false">Chabad Melodies For Yamim Noraim — Shneor Lerer</string>
+    <string name="track_relaxing_chabad_melodies_shneor_lerer" translatable="false">Relaxing Chabad Melodies — Shneor Lerer</string>
+    <string name="track_tzomo_lecho_s_lerer" translatable="false">Tzomo Lecho — Shneor Lerer</string>
+    <string name="track_vehi_sheamda_s_lerer" translatable="false">Vehi Sheamda — Shneor Lerer</string>
+    <string name="track_vehi_sheamda_piano_shneor_lerer" translatable="false">Vehi Sheamda (piano) — Shneor Lerer</string>
+    <string name="track_lerer_anim_zemirot" translatable="false">Anim Zemirot — Shneor Lerer feat. Shua Katzman</string>
+    <string name="track_lerer_ani_maamin" translatable="false">Ani Maamin — Shneor Lerer feat. דור אסרף</string>
+    <string name="track_lerer_nigun_abaal_shem_tov_for_babies" translatable="false">Nigun Abaal Shem Tov for Babies — Shneor Lerer</string>
+
+    <!-- En reserve : ces morceaux sont dans musique/, hors de l'APK.
+         Leurs titres restent ici pour ne pas etre perdus au retour. -->
+    <string name="track_niggoun_08">Niggoun 08</string>
+    <string name="track_shmuel_one_prayer" translatable="false">Give Me One Prayer — Shmuel</string>
     <!-- fin des morceaux -->
     <string name="music_open_library">Ouvrir la bibliothèque musicale</string>
     <string name="app_version">Version %1$s (%2$d) · %3$s</string>

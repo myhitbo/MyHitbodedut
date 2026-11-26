@@ -29,7 +29,7 @@ Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
 | Règles de confidentialité en ligne | 16/11 | https://myhitbodedut.pages.dev/confidentialite.html#en (« Last updated: 16 November 2026 ») |
 | Clé d'envoi et secrets `PLAY_*` | 15/11 | flux *Vérification des secrets* vert ; empreinte ci-dessous |
 | Compte développeur **organisation** | 16/11 | HACHIVEINOU LÉTORATEKHA, n° 8221232760929604341 |
-| Droits sur la musique | 16/11 | la version Play livre 23 morceaux (`MusiquePlay.kt`) |
+| Droits sur la musique | 26/11 | la version Play livre 42 morceaux (`MusiquePlay.kt`) : 19 ajoutés le 26/11, dix de Shneor Lerer (accord écrit) et neuf du Yanuka (accord **oral** : écrit à obtenir, `PUBLICATION_PLAY_STORE.md` § 3.2) |
 | Fiche en-US et iw-IL, 8 visuels par langue | 17/11 | `play/fiche/`, `play/visuels/` |
 | Recette sur émulateurs, Android 13 à 16 | 22/11 | ci-dessous |
 | Recette des corrections du 23/11, Android 13 à 16 | 23/11 | sans faute, y compris sur le code de `play-7` : ci-dessous |
@@ -310,3 +310,22 @@ Décidé le 17/11 : la page de dons viendra avec la version Play. Il faudra :
    dans le navigateur, jamais dans l'application ; jamais le paiement de Google
    Play pour un don. Avoir les statuts de l'association sous la main au cas où
    l'examen de Google demande la preuve du caractère non lucratif.
+
+## 7. Remettre les dépôts en privé (après la publication)
+
+Décidé le 26/11 : le propriétaire remettra le dépôt en privé dès que la
+publication sur le Play Store et l'App Store sera terminée. Les fichiers audio
+des artistes ne seront alors plus à la portée de qui les cherche sur GitHub
+(`PUBLICATION_PLAY_STORE.md` § 3.2, condition de Shneor Lerer). À faire ce
+jour-là, dans les réglages de chaque dépôt (Settings → General → Danger Zone →
+Change visibility) :
+
+1. `myhitbo/MyHitbodedut`, et aussi `myhitbo/myhitbodedut-web` : c'est la copie
+   du site, elle contient les mêmes fichiers `musique/*.m4a`.
+2. Savoir ce que ça change : l'APK de la release GitHub ne se télécharge plus
+   sans compte autorisé (le lien direct du README cesse de marcher), et GitHub
+   Actions retrouve son quota de minutes des dépôts privés — celui qui avait
+   arrêté les constructions le 11/10.
+3. Ce que ça ne change pas : le site continue de servir les morceaux à leur
+   adresse directe, et ce qui a été copié pendant que le dépôt était public
+   l'est resté.
