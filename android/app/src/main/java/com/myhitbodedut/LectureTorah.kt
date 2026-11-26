@@ -44,7 +44,7 @@ object LectureTorah {
         val haftara: List<Passage>,
     )
 
-    /** « Genèse 32:4–13 », « Isaïe 61:10–63:9 » : un passage dans la langue [langue] (les livres de [d]). */
+    /** « Berèchit 32:4–13 », « Yechayahou 61:10–63:9 » : un passage dans la langue [langue] (les livres de [d]). */
     fun reference(d: Donnees, livre: String, debut: String, fin: String, langue: String): String {
         val nom = d.livres[livre]?.forLanguage(langue) ?: livre
         val (c1, v1) = debut.split(":")
@@ -73,7 +73,7 @@ object LectureTorah {
         val parachiot: Map<String, Entree>,
         val lectures: Map<String, Entree>,
         val montees: Map<String, LocalizedText>,
-        /** Les noms des livres (« Genesis » → בראשית, Genèse, Genesis), pour nommer un passage. */
+        /** Les noms des livres (« Genesis » → בראשית, Berèchit, Bereshit), pour nommer un passage. */
         val livres: Map<String, LocalizedText> = emptyMap(),
     )
 

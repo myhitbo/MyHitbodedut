@@ -127,6 +127,13 @@ class LectureSiddurTest {
         assertEquals("parasha:VAYISHLACH", mardi.lecture.cle)
         assertEquals(8, mardi.lecture.montees.size)
         assertEquals("Obadiah", mardi.lecture.haftara.single().livre)
+        // Les noms hébreux, écrits à la manière de la langue (« Ovadia, Shmuel ») : « Haftara : Ovadia 1:1–21 ».
+        val h = mardi.lecture.haftara.single()
+        assertEquals("Ovadia 1:1–21", LectureTorah.reference(d, h.livre, h.debut, h.fin, "fr"))
+        assertEquals("Berèchit 32:4–13", LectureTorah.reference(d, "Genesis", "32:4", "32:13", "fr"))
+        assertEquals("Bereshit 32:4–13", LectureTorah.reference(d, "Genesis", "32:4", "32:13", "en"))
+        assertEquals("Shmuel I 20:18–42", LectureTorah.reference(d, "I Samuel", "20:18", "20:42", "en"))
+        assertEquals("עובדיה 1:1–21", LectureTorah.reference(d, h.livre, h.debut, h.fin, "es"))
         // Le Chabbat même : la sienne.
         assertEquals(mardi, semaine("2026-11-28"))
         // La semaine avant Souccot (Souccot un Chabbat, puis Chemini Atsérèt un Chabbat) et celle de Sim'hat Torah : Berèchit.

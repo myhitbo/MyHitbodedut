@@ -87,8 +87,12 @@ test('9 Av, le matin et à Min\'ha, selon le rite ; plus de repère qui la décr
   }
   // « שובה ישראל », puis Mikha 7:18-20 (Edot), sous leur nom traduit.
   const edot = lecturesDe(deroule('edot', 'minha', '2026-07-23'))[0][0];
-  assert.deepEqual(edot.haftara.map((p) => reference(donnees, p.livre, p.debut, p.fin)), ['Osée 14:2–10', 'Michée 7:18–20']);
+  assert.deepEqual(edot.haftara.map((p) => reference(donnees, p.livre, p.debut, p.fin)), ['Hochéa 14:2–10', 'Mikha 7:18–20']);
   assert.equal(reference(donnees, 'Hosea', '14:2', '14:10', (t) => t.he), 'הושע 14:2–10');
+  // Les noms hébreux écrits à la manière de la langue (« Ovadia, Shmuel ») : jamais Abdias ni Obadiah.
+  assert.equal(reference(donnees, 'Hosea', '14:2', '14:10', (t) => t.en), 'Hoshea 14:2–10');
+  assert.deepEqual(['Genesis', 'Obadiah', 'I Samuel', 'II Kings', 'Isaiah'].map((l) => [donnees.livres[l].fr, donnees.livres[l].en]),
+    [['Berèchit', 'Bereshit'], ['Ovadia', 'Ovadia'], ['Chmouel I', 'Shmuel I'], ['Melakhim II', 'Melachim II'], ['Yechayahou', 'Yeshayahu']]);
 });
 
 test('un jeûne public à Min\'ha : Edot sans haftara, Ashkenaz et Sfard avec « דרשו »', () => {

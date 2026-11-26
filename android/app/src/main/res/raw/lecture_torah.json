@@ -21,83 +21,83 @@
  "livres": {
   "Genesis": {
    "he": "בראשית",
-   "fr": "Genèse",
-   "en": "Genesis"
+   "fr": "Berèchit",
+   "en": "Bereshit"
   },
   "Exodus": {
    "he": "שמות",
-   "fr": "Exode",
-   "en": "Exodus"
+   "fr": "Chemot",
+   "en": "Shemot"
   },
   "Leviticus": {
    "he": "ויקרא",
-   "fr": "Lévitique",
-   "en": "Leviticus"
+   "fr": "Vayikra",
+   "en": "Vayikra"
   },
   "Numbers": {
    "he": "במדבר",
-   "fr": "Nombres",
-   "en": "Numbers"
+   "fr": "Bamidbar",
+   "en": "Bamidbar"
   },
   "Deuteronomy": {
    "he": "דברים",
-   "fr": "Deutéronome",
-   "en": "Deuteronomy"
+   "fr": "Devarim",
+   "en": "Devarim"
   },
   "Joshua": {
    "he": "יהושע",
-   "fr": "Josué",
-   "en": "Joshua"
+   "fr": "Yehochoua",
+   "en": "Yehoshua"
   },
   "Judges": {
    "he": "שופטים",
-   "fr": "Juges",
-   "en": "Judges"
+   "fr": "Choftim",
+   "en": "Shoftim"
   },
   "I Samuel": {
    "he": "שמואל א",
-   "fr": "I Samuel",
-   "en": "I Samuel"
+   "fr": "Chmouel I",
+   "en": "Shmuel I"
   },
   "II Samuel": {
    "he": "שמואל ב",
-   "fr": "II Samuel",
-   "en": "II Samuel"
+   "fr": "Chmouel II",
+   "en": "Shmuel II"
   },
   "I Kings": {
    "he": "מלכים א",
-   "fr": "I Rois",
-   "en": "I Kings"
+   "fr": "Melakhim I",
+   "en": "Melachim I"
   },
   "II Kings": {
    "he": "מלכים ב",
-   "fr": "II Rois",
-   "en": "II Kings"
+   "fr": "Melakhim II",
+   "en": "Melachim II"
   },
   "Isaiah": {
    "he": "ישעיהו",
-   "fr": "Isaïe",
-   "en": "Isaiah"
+   "fr": "Yechayahou",
+   "en": "Yeshayahu"
   },
   "Jeremiah": {
    "he": "ירמיהו",
-   "fr": "Jérémie",
-   "en": "Jeremiah"
+   "fr": "Yirmeyahou",
+   "en": "Yirmiyahu"
   },
   "Ezekiel": {
    "he": "יחזקאל",
-   "fr": "Ézéchiel",
-   "en": "Ezekiel"
+   "fr": "Ye’hezkel",
+   "en": "Yechezkel"
   },
   "Hosea": {
    "he": "הושע",
-   "fr": "Osée",
-   "en": "Hosea"
+   "fr": "Hochéa",
+   "en": "Hoshea"
   },
   "Joel": {
    "he": "יואל",
-   "fr": "Joël",
-   "en": "Joel"
+   "fr": "Yoël",
+   "en": "Yoel"
   },
   "Amos": {
    "he": "עמוס",
@@ -106,32 +106,32 @@
   },
   "Obadiah": {
    "he": "עובדיה",
-   "fr": "Abdias",
-   "en": "Obadiah"
+   "fr": "Ovadia",
+   "en": "Ovadia"
   },
   "Jonah": {
    "he": "יונה",
-   "fr": "Jonas",
-   "en": "Jonah"
+   "fr": "Yona",
+   "en": "Yona"
   },
   "Micah": {
    "he": "מיכה",
-   "fr": "Michée",
-   "en": "Micah"
+   "fr": "Mikha",
+   "en": "Micha"
   },
   "Habakkuk": {
    "he": "חבקוק",
-   "fr": "Habacuc",
-   "en": "Habakkuk"
+   "fr": "’Habakouk",
+   "en": "Chavakuk"
   },
   "Zechariah": {
    "he": "זכריה",
-   "fr": "Zacharie",
-   "en": "Zechariah"
+   "fr": "Zekharia",
+   "en": "Zecharya"
   },
   "Malachi": {
    "he": "מלאכי",
-   "fr": "Malachie",
+   "fr": "Malakhi",
    "en": "Malachi"
   }
  },

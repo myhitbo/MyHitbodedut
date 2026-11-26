@@ -327,7 +327,7 @@ export function chnayimMikra(hebreu, targoum, uneFois = false) {
   ]);
 }
 
-/** « Genèse 32:4–13 » (LectureTorah.reference) : [nom] traduit le nom du livre ({ he, fr, en } → texte). */
+/** « Berèchit 32:4–13 » (LectureTorah.reference) : [nom] traduit le nom du livre ({ he, fr, en } → texte). */
 export function reference(donnees, livre, debut, fin, nom = (t) => t.fr) {
   const l = donnees.livres?.[livre];
   const [c1, v1] = debut.split(':');

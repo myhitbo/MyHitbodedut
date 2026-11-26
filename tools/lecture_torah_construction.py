@@ -271,21 +271,27 @@ def T(he, fr, en):
     return {"he": NFC(he), "fr": fr, "en": en}
 
 
+# Les noms des livres : les noms hébreux, écrits à la manière de chaque langue (demande du 26/11 : « Mets les noms en
+# hébreu écrits en français, en anglais en fonction du mode, ex. Ovadia, Shmuel ») ; en français comme ailleurs dans
+# l'application (ש « ch », ח « ’h » : Chmouel I, Yechayahou, Hochéa de Reference.kt ; Berèchit, Chemot… des parachiot),
+# en anglais comme les parachiot d'hebcal (Bereshit, Shemot, Vayishlach). L'espagnol et l'arabe tunisien prennent
+# l'hébreu, comme les noms des parachiot (LocalizedText.forLanguage).
 LIVRES = {
-    "Genesis": T("בראשית", "Genèse", "Genesis"), "Exodus": T("שמות", "Exode", "Exodus"),
-    "Leviticus": T("ויקרא", "Lévitique", "Leviticus"), "Numbers": T("במדבר", "Nombres", "Numbers"),
-    "Deuteronomy": T("דברים", "Deutéronome", "Deuteronomy"), "Joshua": T("יהושע", "Josué", "Joshua"),
-    "Judges": T("שופטים", "Juges", "Judges"), "I Samuel": T("שמואל א", "I Samuel", "I Samuel"),
-    "II Samuel": T("שמואל ב", "II Samuel", "II Samuel"), "I Kings": T("מלכים א", "I Rois", "I Kings"),
-    "II Kings": T("מלכים ב", "II Rois", "II Kings"), "Isaiah": T("ישעיהו", "Isaïe", "Isaiah"),
-    "Jeremiah": T("ירמיהו", "Jérémie", "Jeremiah"), "Ezekiel": T("יחזקאל", "Ézéchiel", "Ezekiel"),
-    "Hosea": T("הושע", "Osée", "Hosea"), "Joel": T("יואל", "Joël", "Joel"), "Amos": T("עמוס", "Amos", "Amos"),
-    "Obadiah": T("עובדיה", "Abdias", "Obadiah"), "Jonah": T("יונה", "Jonas", "Jonah"),
-    "Micah": T("מיכה", "Michée", "Micah"), "Nahum": T("נחום", "Nahoum", "Nahum"),
-    "Habakkuk": T("חבקוק", "Habacuc", "Habakkuk"), "Zephaniah": T("צפניה", "Sophonie", "Zephaniah"),
-    "Haggai": T("חגי", "Aggée", "Haggai"), "Zechariah": T("זכריה", "Zacharie", "Zechariah"),
-    "Malachi": T("מלאכי", "Malachie", "Malachi"),
+    "Genesis": T("בראשית", "Berèchit", "Bereshit"), "Exodus": T("שמות", "Chemot", "Shemot"),
+    "Leviticus": T("ויקרא", "Vayikra", "Vayikra"), "Numbers": T("במדבר", "Bamidbar", "Bamidbar"),
+    "Deuteronomy": T("דברים", "Devarim", "Devarim"), "Joshua": T("יהושע", "Yehochoua", "Yehoshua"),
+    "Judges": T("שופטים", "Choftim", "Shoftim"), "I Samuel": T("שמואל א", "Chmouel I", "Shmuel I"),
+    "II Samuel": T("שמואל ב", "Chmouel II", "Shmuel II"), "I Kings": T("מלכים א", "Melakhim I", "Melachim I"),
+    "II Kings": T("מלכים ב", "Melakhim II", "Melachim II"), "Isaiah": T("ישעיהו", "Yechayahou", "Yeshayahu"),
+    "Jeremiah": T("ירמיהו", "Yirmeyahou", "Yirmiyahu"), "Ezekiel": T("יחזקאל", "Ye’hezkel", "Yechezkel"),
+    "Hosea": T("הושע", "Hochéa", "Hoshea"), "Joel": T("יואל", "Yoël", "Yoel"), "Amos": T("עמוס", "Amos", "Amos"),
+    "Obadiah": T("עובדיה", "Ovadia", "Ovadia"), "Jonah": T("יונה", "Yona", "Yona"),
+    "Micah": T("מיכה", "Mikha", "Micha"), "Nahum": T("נחום", "Na’houm", "Nachum"),
+    "Habakkuk": T("חבקוק", "’Habakouk", "Chavakuk"), "Zephaniah": T("צפניה", "Tsefania", "Tzefanya"),
+    "Haggai": T("חגי", "’Haggaï", "Chaggai"), "Zechariah": T("זכריה", "Zekharia", "Zecharya"),
+    "Malachi": T("מלאכי", "Malakhi", "Malachi"),
 }
+
 
 # Les montées. « 3_israel » : le troisième d'une lecture de trois (lundi, jeudi, Chabbat à Min'ha…).
 MONTEES = {

@@ -2422,7 +2422,7 @@ function chargeLecture() {
   return null;
 }
 
-/** Le nom d'un passage dans la langue de l'interface : « Genèse 32:4–13 » (LectureTorah.reference). */
+/** Le nom d'un passage dans la langue de l'interface : « Berèchit 32:4–13 » (LectureTorah.reference). */
 const referenceLecture = (p) => lectureTorah.m.reference(lectureTorah.donnees, p.livre, p.debut, p.fin, titreTexte);
 
 /**
