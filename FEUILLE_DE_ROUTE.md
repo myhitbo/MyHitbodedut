@@ -293,6 +293,8 @@ perdre :
    reste vrai hors de l'application : les fichiers ont une adresse directe
    sur le site et sont dans ce dépôt, qui est public. On ne les obtient pas
    par l'application, mais qui les cherche les trouve.
+   Le propriétaire remettra le dépôt en privé une fois la publication sur
+   le Play Store et l'App Store terminée (`play/A_FAIRE.md` § 7).
 3. **Le reste du catalogue de Shneor Lerer.** Le propriétaire a demandé
    « tout Lerer, cherche sur internet ». Une vingtaine de sorties manquent,
    et elles n'ont pas pu être récupérées : il n'existe pas de téléchargement
