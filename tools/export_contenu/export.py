@@ -41,7 +41,7 @@ EXCLUES = re.compile(r"^(divulgation_|permission_battery|permission_overlay)")
 COMPTES = {
     "textes par rite": 38, "psaumes": 150, "versets": 2527, "psaumes du Tikoun": 10,
     "textes de 'hizouk": 171, "livres": 12, "hilloulot": 3966, "villes": 51,
-    "aéroports": 3226, "morceaux": 23,
+    "aéroports": 3226, "morceaux": 42,
 }
 
 # Licence et mention de chaque fichier produit (PORTAGE.md § 4.1 et § 6) : un fichier sans
