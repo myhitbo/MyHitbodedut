@@ -1,0 +1,2023 @@
+{
+ "_meta": {
+  "livre": "chnayim_mikra (android/app/src/main/livres/livres.json → res/raw/livre_chnayim_mikra.json ; site : data/livres/chnayim_mikra.json)",
+  "date": "26/11/2026",
+  "outil": "tools/chnayim_mikra/construction.py (--verifie relit chaque citation à sa source)",
+  "regle": "Chaque « citation » est le texte exact de la source lue (sans balises) ; « passage_resume » est le passage sur lequel repose un résumé, pour les œuvres protégées, qui ne sont pas reproduites dans l'application.",
+  "rites": {
+   "tous": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "sefarade": [
+    "edot"
+   ],
+   "ashkenaze": [
+    "ashkenaz",
+    "sefard"
+   ]
+  },
+  "editions": {
+   "ber": {
+    "titre": "Talmud Bavli, Berakhot 8a-b (texte cité par le Kaf ha'Haïm 285:1)",
+    "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+    "licence": "Public Domain",
+    "verifie_aussi": "Wikisource Talmud Bavli (Sefaria, CC-BY-SA), Berakhot 8a:30 et 8b:1, lu le 26/11/2026"
+   },
+   "sa": {
+    "titre": "Choul'han Aroukh, Ora'h 'Haïm",
+    "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+    "licence": "Public Domain"
+   },
+   "rema": {
+    "titre": "Rema (gloses du Choul'han Aroukh), Ora'h 'Haïm",
+    "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+    "licence": "Public Domain"
+   },
+   "mb": {
+    "titre": "Michna Beroura",
+    "edition": "On Your Way",
+    "licence": "Public Domain"
+   },
+   "kh": {
+    "titre": "Kaf ha'Haïm, Ora'h 'Haïm",
+    "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+    "licence": "Public Domain"
+   },
+   "ksa": {
+    "titre": "Kitsour Choul'han Aroukh",
+    "edition": "Torat Emet 357",
+    "licence": "Public Domain"
+   },
+   "bih": {
+    "titre": "Ben Ich 'Haï, Halakhot",
+    "edition": "Ben Ish Hai -- Wikisource",
+    "licence": "Public Domain"
+   },
+   "rambam": {
+    "titre": "Rambam, Michné Torah, Hilkhot Tefila",
+    "edition": "Torat Emet 370",
+    "licence": "Public Domain"
+   },
+   "sahr": {
+    "titre": "Choul'han Aroukh haRav, Ora'h 'Haïm",
+    "edition": "Kehot Publication Society",
+    "licence": "CC-BY-NC",
+    "note": "Texte de 1814 ; saisie de Kehot sous CC-BY-NC : courtes citations sans vocalisation, créditées en tête du livre ; application gratuite, sans publicité ni achat."
+   },
+   "kyy": {
+    "titre": "Kitsour Choul'han Aroukh Yalkout Yossef, Rav Yitzhak Yosef chlita",
+    "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+    "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)"
+   },
+   "hid": {
+    "titre": "Hidabroot, « שאל את הרב »",
+    "edition": "hidabroot.org",
+    "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée"
+   },
+   "kav": {
+    "titre": "Kav haHalakha haSefaradi (קו ההלכה הספרדי)",
+    "edition": "kavhalacha.co.il",
+    "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée"
+   },
+   "malka": {
+    "titre": "Beit hora'a « Halakha lema'assé » du Rav Ofir Malka (הלכה למעשה)",
+    "edition": "hl5047.co.il",
+    "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée"
+   }
+  },
+  "non_retenus": [
+   "Garçons (mineurs) : aucune source lue ne traite de leur obligation ou de leur éducation à Chnayim mikra.",
+   "Parachiot jumelées : aucune source lue n'en parle pour Chnayim mikra (le Choul'han Aroukh 284:7 ne traite que de la haftara publique).",
+   "Chabbat qui tombe un Yom Tov : quelle paracha lire cette semaine-là n'est dit explicitement par aucune source lue ; seule la règle « pas de Chnayim mikra pour la lecture de Yom Tov » (285:7) est retenue.",
+   "Rav Binyamin 'Hota : ses réponses sur Chnayim mikra sont en vidéo (Kikar haChabbat) et en enregistrements (podcast) ; aucune réponse écrite trouvée, rien n'en est tiré.",
+   "Rav Ofir Malka lui-même : aucune réponse écrite de sa main trouvée ; les deux réponses retenues sont celles des rabbanim de son beit hora'a (hl5047.co.il)."
+  ]
+ },
+ "halakhot": [
+  {
+   "id": "chm-01",
+   "section": 1,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "ber",
+     "reference": "Berakhot 8a-b",
+     "reference_he": "ברכות ח ע״א–ע״ב, בלשון כף החיים רפ״ה, אות א׳",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:1",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A1?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A1?lang=he",
+     "citation": "לעולם ישלים אדם פרשיותיו עם הצבור שנים מקרא ואחד תרגום ואפי' עטרות ודיבון שכל המשלים פרשיותיו עם הצבור מאריכין לו ימיו ושנותיו"
+    },
+    {
+     "source": "sa",
+     "reference": "Choul’han Aroukh O.H. 285:1",
+     "reference_he": "שולחן ערוך או״ח רפ״ה, א׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:1",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A1?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A1?lang=he",
+     "citation": "אע\"פ שאדם שומע כל התורה כולה כל שבת בצבור חייב לקרות לעצמו בכל שבוע פרשת אותו שבוע שנים מקרא ואחד תרגום אפילו עטרות ודיבון"
+    }
+   ]
+  },
+  {
+   "id": "chm-02",
+   "section": 1,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:12",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״ב",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יב",
+     "citation": "אשה פטורה מלקרוא בכל שבת שנים מקרא ואחד תרגום"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 262097",
+     "reference_he": "הידברות, ״האם גם נשים חייבות בשניים מקרא ואחד תרגום?״, הרב הלל מאירס, י׳ אדר ב׳ התשע״ט, hidabroot.org/question/262097",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/262097",
+     "auteur": "Hillel Meirs",
+     "titre": "האם גם נשים חייבות בשניים מקרא ואחד תרגום?",
+     "date": "17/03/2019",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "לא חייבות",
+     "passage_resume": "לא חייבות. מקורות: שו\"ת משנה הלכות חלק ו' (סימן ס) וספר חזון עובדיה שבת חלק א' (עמוד שכח)."
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 253987",
+     "reference_he": "הידברות, ״האם חולה יכול לשמוע שניים מקרא ואחד תרגום מאשתו?״, הרב הלל מאירס, כ״ב תשרי התשע״ט, hidabroot.org/question/253987",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/253987",
+     "auteur": "Hillel Meirs",
+     "titre": "האם חולה יכול לשמוע שניים מקרא ואחד תרגום מאשתו?",
+     "date": "01/10/2018",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "נראה שאשתו לא יכולה להוציא אותו ידי חובת שניים מקרא ואחד תרגום כיוון שהיא לא חייבת בזה כלל"
+    }
+   ]
+  },
+  {
+   "id": "chm-03",
+   "section": 2,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "sa",
+     "reference": "Choul’han Aroukh O.H. 285:3",
+     "reference_he": "שולחן ערוך או״ח רפ״ה, ג׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:3",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A3?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A3?lang=he",
+     "citation": "מיום ראשון ואילך חשיב עם הצבור"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:1",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק א׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:1",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A1?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A1?lang=he",
+     "citation": "היינו שלא יקדים לקרות קודם אותו שבוע וגם לא יאחר"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:7",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ז׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:7",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A7?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A7?lang=he",
+     "citation": "כיון שמתחילין במנחתא דשבתא לקרות פרשת שבוע הבא נחשב שוב הקורא כקורא עם הציבור וא\"כ מה שכתב המחבר מיום ראשון ואילך לאו דוקא הוא"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:8",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ח׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:8",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A8?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A8?lang=he",
+     "citation": "וכן בספר מעשה רב כתב בהנהגת הגר\"א שהיה נוהג תיכף אחר התפלה בכל יום לקרוא מקצת מהסדרה שנים מקרא ואחד תרגום ומסיים בע\"ש"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:6",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ו׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:6",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A6?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A6?lang=he",
+     "citation": "אבל מן הדין אין צריך לקרות כל הפרשה שנים מקרא ואחד תרגום בפעם אחת"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 221007",
+     "reference_he": "הידברות, ״הלכה לגבי קריאת שניים מקרא ואחד תרגום״, הרב הלל מאירס, כ״ה טבת התשע״ז, hidabroot.org/question/221007",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/221007",
+     "auteur": "Hillel Meirs",
+     "titre": "הלכה לגבי קריאת שניים מקרא ואחד תרגום",
+     "date": "23/01/2017",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "אפשר להתחיל לקרוא שניים מקרא ואחד תרגום ממנחה של שבת",
+     "passage_resume": "אפשר להתחיל לקרוא שניים מקרא ואחד תרגום ממנחה של שבת (ראה שלחן ערוך אורח חיים סימן רפה סעיף ג ומשנה ברורה סק\"ז). וניתן גם לחלק את הקריאה לימי השבוע, ולקרוא כל יום חלק מפרשת השבוע"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 354260",
+     "reference_he": "הידברות, ״שניים מקרא״, הרב בנימין שמואלי, כ״ז אב התשפ״ה, hidabroot.org/question/354260",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/354260",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "שניים מקרא",
+     "date": "21/08/2025",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "אפשר לומר את התרגום בנפרד מקריאת החומש"
+    }
+   ]
+  },
+  {
+   "id": "chm-04",
+   "section": 2,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "ksa",
+     "reference": "Kitsour Choul’han Aroukh 72:11",
+     "reference_he": "קיצור שולחן ערוך ע״ב, י״א",
+     "edition": "Torat Emet 357",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kitzur Shulchan Arukh 72:11",
+     "sefaria_version": "Torat Emet 357",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kitzur%20Shulchan%20Arukh%2072%3A11?version=hebrew%7CTorat%20Emet%20357&return_format=text_only",
+     "page": "https://www.sefaria.org/Kitzur_Shulchan_Arukh_72%3A11?lang=he",
+     "citation": "אֲבָל הַמִּצְוָה מִן הַמֻּבְחָר הִיא לִקְרֹתָהּ בְּעֶרֶב שַׁבָּת אַחַר חֲצוֹת הַיּוֹם"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:8",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ח׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:8",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A8?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A8?lang=he",
+     "citation": "כמה אחרונים כתבו דמן המובחר הוא לקרותה בע\"ש ועיין בשע\"ת ובספר מטה יהודה כתב דאם הוא קורא מתחלת השבוע והלאה הוא ג\"כ בכלל מצוה מן המובחר"
+    }
+   ]
+  },
+  {
+   "id": "chm-05",
+   "section": 2,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:24",
+     "reference_he": "כף החיים רפ״ה, אות כ״ד",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:24",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A24?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A24?lang=he",
+     "citation": "רבינו האר\"י ז\"ל יום הששי תכף ומיד אחר תפלת שחרית היה הולך למקום שיש ס\"ת וקורא שמו\"ת"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:24",
+     "reference_he": "כף החיים רפ״ה, אות כ״ד",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:24",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A24?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A24?lang=he",
+     "citation": "ומנהג החסידים ואנשי מעשה לקרות אותה בבוקר אחר סיום תפלת שחרית בעודנו מעוטף בציצית ותפילין"
+    },
+    {
+     "source": "bih",
+     "reference": "Ben Ich ’Haï, 2e année, Lekh Lekha §11",
+     "reference_he": "בן איש חי, שנה ב׳, לך לך, אות י״א",
+     "edition": "Ben Ish Hai -- Wikisource",
+     "licence": "Public Domain",
+     "sefaria_ref": "Ben Ish Hai, Halachot 2nd Year, Lech Lecha 11",
+     "sefaria_version": "Ben Ish Hai -- Wikisource",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Ben%20Ish%20Hai%2C%20Halachot%202nd%20Year%2C%20Lech%20Lecha%2011?version=hebrew%7CBen%20Ish%20Hai%20--%20Wikisource&return_format=text_only",
+     "page": "https://www.sefaria.org/Ben_Ish_Hai%2C_Halachot_2nd_Year%2C_Lech_Lecha_11?lang=he",
+     "citation": "גם צריך עוד הכנה בדיבור ביום הששי בעצמו - לקרות הפרשה כולה שנים מקרא ואחד תרגום"
+    },
+    {
+     "source": "bih",
+     "reference": "Ben Ich ’Haï, 2e année, Lekh Lekha §1",
+     "reference_he": "בן איש חי, שנה ב׳, לך לך, אות א׳",
+     "edition": "Ben Ish Hai -- Wikisource",
+     "licence": "Public Domain",
+     "sefaria_ref": "Ben Ish Hai, Halachot 2nd Year, Lech Lecha 1",
+     "sefaria_version": "Ben Ish Hai -- Wikisource",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Ben%20Ish%20Hai%2C%20Halachot%202nd%20Year%2C%20Lech%20Lecha%201?version=hebrew%7CBen%20Ish%20Hai%20--%20Wikisource&return_format=text_only",
+     "page": "https://www.sefaria.org/Ben_Ish_Hai%2C_Halachot_2nd_Year%2C_Lech_Lecha_1?lang=he",
+     "citation": "ואם ירצה לצאת קודם שיקרא שניים מקרא ואחד תרגום, כדי שילך לקנות במהרה, רשאי, ואח\"כ יקרא בביתו"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:8",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ח׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ח",
+     "citation": "ומכל מקום, מי ששעתו דחוקה לו ואינו יכול לנהוג כן, בודאי שיכול לקרוא שמו״ת החל מיום ראשון, וכפסק מרן השלחן ערוך"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 354076",
+     "reference_he": "הידברות, ״קריאת שניים מקרא ואחד תרגום״, הרב בנימין שמואלי, י״ד אב התשפ״ה, hidabroot.org/question/354076",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/354076",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "קריאת שניים מקרא ואחד תרגום",
+     "date": "08/08/2025",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "האם יש מניעה ללמוד שנים מקרא ללא תפילין [...] שני הדברים אפשריים ללא כל חשש."
+    }
+   ]
+  },
+  {
+   "id": "chm-06",
+   "section": 2,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "sa",
+     "reference": "Choul’han Aroukh O.H. 285:4",
+     "reference_he": "שולחן ערוך או״ח רפ״ה, ד׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:4",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A4?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A4?lang=he",
+     "citation": "מצוה מן המובחר שישלים אותה קודם שיאכל בשבת ואם לא השלים קודם אכילה ישלים אחר אכילה עד המנחה וי\"א עד רביעי בשבת וי\"א עד שמיני עצרת"
+    },
+    {
+     "source": "rema",
+     "reference": "Rema O.H. 285:4",
+     "reference_he": "רמ״א או״ח רפ״ה, ד׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:4",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A4?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A4?lang=he",
+     "citation": "(דהיינו בשמחת תורה שאז משלימים הצבור)"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:11",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״א",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:11",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A11?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A11?lang=he",
+     "citation": "דג' ימים הראשונים שייכין עדיין קצת לשבת שעבר"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:13",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ג",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:13",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A13?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A13?lang=he",
+     "citation": "ויש לו לקרות אז שנים מקרא ואחד תרגום ודלא כאותן שקורין מקרא לחוד"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:28",
+     "reference_he": "כף החיים רפ״ה, אות כ״ח",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:28",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A28?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A28?lang=he",
+     "citation": "ובאבודרהם כתב דטוב להשלימה שמו\"ת בעשרת ימי תשובה"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 301252",
+     "reference_he": "הידברות, ״לגבי שניים מקרא ואחד תרגום״, הרב בנימין שמואלי, י׳ אדר א׳ התשפ״ב, hidabroot.org/question/301252",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/301252",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "לגבי שניים מקרא ואחד תרגום",
+     "date": "11/02/2022",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "בדיעבד אפשר להשלים גם ביום ראשון ולהרבה דיעות גם עד יום שלישי. בדיעבד ישלים עד לשמחתת ורה."
+    }
+   ]
+  },
+  {
+   "id": "chm-07",
+   "section": 2,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:9",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ט׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:9",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A9?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A9?lang=he",
+     "citation": "ומ\"מ פשוט דאין לעכב מחמת זה האכילה עד אחר חצות"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:9",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ט׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:9",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A9?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A9?lang=he",
+     "citation": "ולכתחלה מהנכון אם לא קרא שנים מקרא ואחד תרגום בע\"ש להשכים בשבת בבקר ולקרא השמו\"ת קודם הליכתו לבהכ\"נ"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:12",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ב",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:12",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A12?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A12?lang=he",
+     "citation": "אבל לכתחלה לכו\"ע לא יאחר יותר מיום השבת"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:5",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ה׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:5",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A5?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A5?lang=he",
+     "citation": "וטוב לחוש לדבריהם שמי שעבר ולא השלים בזמנה ישלים עד סוף יום ג' ואם לא השלים יש לו להשלים עד שמחת תורה"
+    }
+   ]
+  },
+  {
+   "id": "chm-08",
+   "section": 2,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:5",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ה׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ה",
+     "citation": "ומכל מקום פשוט שאין לעכב מחמת זה האכילה עד חצות. ואם לא השלים קודם האכילה, ישלים אחר האכילה עד זמן מנחה. ובדיעבד עד רביעי בשבת, ויש אומרים עד שמיני עצרת"
+    },
+    {
+     "source": "bih",
+     "reference": "Ben Ich ’Haï, 2e année, Lekh Lekha §11",
+     "reference_he": "בן איש חי, שנה ב׳, לך לך, אות י״א",
+     "edition": "Ben Ish Hai -- Wikisource",
+     "licence": "Public Domain",
+     "sefaria_ref": "Ben Ish Hai, Halachot 2nd Year, Lech Lecha 11",
+     "sefaria_version": "Ben Ish Hai -- Wikisource",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Ben%20Ish%20Hai%2C%20Halachot%202nd%20Year%2C%20Lech%20Lecha%2011?version=hebrew%7CBen%20Ish%20Hai%20--%20Wikisource&return_format=text_only",
+     "page": "https://www.sefaria.org/Ben_Ish_Hai%2C_Halachot_2nd_Year%2C_Lech_Lecha_11?lang=he",
+     "citation": "ואם נאנס ולא קרא הפרשה שנים מקרא ואחד תרגום ביום ששי, יקראנה שנים מקרא ואחד תרגום ביום שבת אחר התפילה קודם קידוש שבת"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:3",
+     "reference_he": "כף החיים רפ״ה, אות ג׳",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:3",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A3?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A3?lang=he",
+     "citation": "זולת אם אירע לו שום אונס גדול מאד שאז היה קורא הפ' שמו\"ת אחר סיום תפלת שחרית דיום שבת קודם סעודת שחרית כמו שצוה רבינו הקדוש לבנו ולא כמו אותם הקורים אותה באמצע תפלת שחרית דשבת"
+    }
+   ]
+  },
+  {
+   "id": "chm-09",
+   "section": 2,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:9",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ט׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ט",
+     "citation": "מי שזמנו דחוק, מותר לו לקרוא שנים מקרא ואחד תרגום בליל שבת"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:1",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, א׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if א",
+     "citation": "ואם עוסק בתורה שיש עמה כתיבת חידושי תורה ופסקי הלכה, יכול לקרוא בליל שבת שנים מקרא ואחד תרגום"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:14",
+     "reference_he": "כף החיים רפ״ה, אות י״ד",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:14",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A14?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A14?lang=he",
+     "citation": "אין לקרות הפ' שמו\"ת באשמורת אור הששי קודם שיאיר היום כ\"י כתבו גורי האר\"י ז\"ל שאין לקרות תרגום בלילה"
+    },
+    {
+     "source": "kav",
+     "reference": "Kav haHalakha haSefaradi (Rav O. Azoulay, 13/01/2023)",
+     "reference_he": "קו ההלכה הספרדי, ״האם מותר לקרוא שניים מקרא ואחד תרגום בלילה?״, הרב אושרי אזולאי, כ׳ טבת התשפ״ג (kavhalacha.co.il)",
+     "edition": "kavhalacha.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://kavhalacha.co.il/%D7%90%D7%A7%D7%98%D7%95%D7%90%D7%9C%D7%99%D7%94-%D7%91%D7%94%D7%9C%D7%9B%D7%94/%D7%94%D7%9C%D7%9B%D7%95%D7%AA-%D7%9E%D7%A2%D7%A0%D7%99%D7%99%D7%A0%D7%95%D7%AA/%D7%9E%D7%94-%D7%93%D7%99%D7%A0%D7%94-%D7%A9%D7%9C-%D7%97%D7%9C%D7%94-%D7%97%D7%AA%D7%95%D7%9B%D7%94-%D7%A9%D7%94%D7%99%D7%AA%D7%94-%D7%A2%D7%9C-%D7%A9%D7%95%D7%9C%D7%97%D7%9F-%D7%A9%D7%A0%D7%90%D7%9B%D7%9C-%D7%91%D7%95-%D7%91%D7%A9%D7%A8%D7%99,-%D7%94%D7%90%D7%9D-%D7%A0%D7%99%D7%AA%D7%9F-%D7%9C%D7%90%D7%9B%D7%95%D7%9C-%D7%9E%D7%9E%D7%A0%D7%94-%D7%A2%D7%9D-%D7%97%D7%9C%D7%91%D7%99-2",
+     "auteur": "Rav Ochri Azoulay",
+     "titre": "האם מותר לקרוא שניים מקרא ואחד תרגום בלילה?",
+     "date": "13/01/2023",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "וכל זה הוא ע\"פ הקבלה אבל ע\"פ הפשט אין מניעה ללמוד מקרא בלילה",
+     "passage_resume": "ולכן להלכה, אפשר לקרוא ב' מקרא ואחד תרגום בלילה כאשר קוראים יחד עם זה מעט מדברי המפרשים כרש\"י וכדו'. ואם ממילא אדם לא ילמד אם לא יקרא שניים מקרא, ואינו יודע ללמוד רש\"י או אחד ממפרשי התורה, יש להורות לו לכתחילה שיכול לקרוא אף ללא מפרשים"
+    },
+    {
+     "source": "malka",
+     "reference": "Halakha lema’assé (Rav O. Malka), question 142",
+     "reference_he": "בית ההוראה ״הלכה למעשה״ של הרב אופיר מלכא, ״פרשת וזאת הברכה בתיקון קורא אחד״, הרב מנשה מורנו, 12.10.2025, hl5047.co.il/questions/142",
+     "edition": "hl5047.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://hl5047.co.il/questions/142",
+     "auteur": "Rav Menaché Moreno",
+     "titre": "פרשת וזאת הברכה בתיקון קורא אחד",
+     "date": "12/10/2025",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "ותו דיותר נכון לקרא שמו\"ת ביום ולא בלילה"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 303250",
+     "reference_he": "הידברות, ״פרשות השבוע, שניים מקרא ואחד תרגום״, הרב בנימין שמואלי, י׳ ניסן התשפ״ב, hidabroot.org/question/303250",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/303250",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "פרשות השבוע, שניים מקרא ואחד תרגום",
+     "date": "11/04/2022",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "אין קוראים מתחילת הלילה עד חצות"
+    }
+   ]
+  },
+  {
+   "id": "chm-10",
+   "section": 3,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:6",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ו׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:6",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A6?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A6?lang=he",
+     "citation": "לא יקרא פסוק המאוחר קודם המוקדם אלא יקרא כסדר. לא יקרא התרגום תחלה ואח\"כ מקרא אלא יקרא לכתחלה שנים מקרא מקודם ואח\"כ תרגום"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:6",
+     "reference_he": "כף החיים רפ״ה, אות ו׳",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:6",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A6?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A6?lang=he",
+     "citation": "לא יקרא אחד מקרא ואח\"כ תרגום ואח\"כ מקרא אלא שנים מקרא וא' תרגום"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:15",
+     "reference_he": "כף החיים רפ״ה, אות ט״ו",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:15",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A15?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A15?lang=he",
+     "citation": "אם טעה ודילג פסוק אחר וקרא איזה פסוקים ואח\"כ נזכר צריך לחזור ולקרות פסוק המדולג וגם מה שקרא אחריו כדי שיהיו כסדר"
+    },
+    {
+     "source": "bih",
+     "reference": "Ben Ich ’Haï, 2e année, Lekh Lekha §11",
+     "reference_he": "בן איש חי, שנה ב׳, לך לך, אות י״א",
+     "edition": "Ben Ish Hai -- Wikisource",
+     "licence": "Public Domain",
+     "sefaria_ref": "Ben Ish Hai, Halachot 2nd Year, Lech Lecha 11",
+     "sefaria_version": "Ben Ish Hai -- Wikisource",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Ben%20Ish%20Hai%2C%20Halachot%202nd%20Year%2C%20Lech%20Lecha%2011?version=hebrew%7CBen%20Ish%20Hai%20--%20Wikisource&return_format=text_only",
+     "page": "https://www.sefaria.org/Ben_Ish_Hai%2C_Halachot_2nd_Year%2C_Lech_Lecha_11?lang=he",
+     "citation": "ואחר שסיים הפרשה יכפול פסוק האחרון, ואין צריך לכפול גם התרגום שלו"
+    },
+    {
+     "source": "ksa",
+     "reference": "Kitsour Choul’han Aroukh 72:11",
+     "reference_he": "קיצור שולחן ערוך ע״ב, י״א",
+     "edition": "Torat Emet 357",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kitzur Shulchan Arukh 72:11",
+     "sefaria_version": "Torat Emet 357",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kitzur%20Shulchan%20Arukh%2072%3A11?version=hebrew%7CTorat%20Emet%20357&return_format=text_only",
+     "page": "https://www.sefaria.org/Kitzur_Shulchan_Arukh_72%3A11?lang=he",
+     "citation": "וּבַגְּמָר יֵשׁ לוֹמַר אַחַר הַתַּרְגּוּם פָּסוּק אֶחָד בַּתּוֹרָה, כְּדֵי לְסַיֵּם בַּתּוֹרָה"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:3",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ג׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:3",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A3?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A3?lang=he",
+     "citation": "ופסוק האחרון טוב לכופלו ולחזור ולאמרו כדי לסיים בתורה"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:33",
+     "reference_he": "כף החיים רפ״ה, אות ל״ג",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:33",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A33?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A33?lang=he",
+     "citation": "אחר שגמר כל הפ' שמו\"ת יקרא פסוק אחרון פ\"ג מקרא לבד כדי להשלים במקרא"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 299490",
+     "reference_he": "הידברות, ״איך לקרוא שניים מקרא אחד תרגום?״, הרב בנימין שמואלי, ט׳ טבת התשפ״ב, hidabroot.org/question/299490",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/299490",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "איך לקרוא שניים מקרא אחד תרגום?",
+     "date": "13/12/2021",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "יכול",
+     "passage_resume": "רציתי לשאול אם אני יכול לקרוא פעם אחת את הפרשה, ואז לקרוא פסוק אחד ואז תרגום,עוד פסוק ותרגום וככה הלאה? [...] 1. יכול."
+    }
+   ]
+  },
+  {
+   "id": "chm-11",
+   "section": 3,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:2",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ב׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:2",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A2?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A2?lang=he",
+     "citation": "י\"א שיקרא כל פסוק ב\"פ ותרגום עליו וי\"א שיקרא כל פרשה ב\"פ ואח\"כ התרגום"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:2",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ב׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:2",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A2?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A2?lang=he",
+     "citation": "ודעביד כמר עביד ודעביד כמר עביד"
+    },
+    {
+     "source": "ksa",
+     "reference": "Kitsour Choul’han Aroukh 72:11",
+     "reference_he": "קיצור שולחן ערוך ע״ב, י״א",
+     "edition": "Torat Emet 357",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kitzur Shulchan Arukh 72:11",
+     "sefaria_version": "Torat Emet 357",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kitzur%20Shulchan%20Arukh%2072%3A11?version=hebrew%7CTorat%20Emet%20357&return_format=text_only",
+     "page": "https://www.sefaria.org/Kitzur_Shulchan_Arukh_72%3A11?lang=he",
+     "citation": "וְיֵשׁ לִקְרוֹת כָּל פָּרָשָׁה, דְּהַיְנוּ פְּתוּחָה אוֹ סְתוּמָה, שְׁנֵי פְּעָמִים, וְאַחַר כָּךְ הַתַּרְגּוּם עָלֶיהָ, (כֵּן הִסְכִּים הַגָּאוֹן הָרַב רַבִּי אֵלִיָהוּ מִוִילְנָא זֵכֶר צַדִּיק לִבְרָכָה) וַאֲפִלּוּ הַפָּרָשָׁה מְסַיֶּמֶת בְּאֶמְצַע פָּסוּק, יַפְסִיק שָׁם"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:3",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ג׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:3",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A3?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A3?lang=he",
+     "citation": "ויש נוהגין לקרות כל פסוק ב' פעמים והתרגום עליו מיד ומנהג זה נכון יותר"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:3",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ג׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:3",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A3?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A3?lang=he",
+     "citation": "(אבל מן הדין יכול לקרות שנים מקרא ואחד תרגום בכל ענין שירצה)"
+    }
+   ]
+  },
+  {
+   "id": "chm-12",
+   "section": 3,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:3",
+     "reference_he": "כף החיים רפ״ה, אות ג׳",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:3",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A3?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A3?lang=he",
+     "citation": "וכן היה עושה בכל פסוק ופסוק עד שמשלים הפרשה"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:4",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ד׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ד",
+     "citation": "על פי דברי המקובלים צריך לקרוא את הפרשה כל פסוק ופסוק שנים מקרא ואחד תרגום, עד סיום כל הפרשה, בהמשך אחד"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:4",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ד׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ד",
+     "citation": "ובאופן כזה גם כשמגיע לפסוק שמע ישראל, רשאי לקרוא שנים מקרא ואחד תרגום"
+    },
+    {
+     "source": "kav",
+     "reference": "Kav haHalakha haSefaradi (Rav Y. Achkenazi, 13/07/2017)",
+     "reference_he": "קו ההלכה הספרדי, ״הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום״, הרב ירון אשכנזי, י״ט תמוז התשע״ז (kavhalacha.co.il)",
+     "edition": "kavhalacha.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://kavhalacha.co.il/%D7%90%D7%A7%D7%98%D7%95%D7%90%D7%9C%D7%99%D7%94-%D7%91%D7%94%D7%9C%D7%9B%D7%94/%D7%9E%D7%90%D7%92%D7%A8-%D7%94%D7%94%D7%9C%D7%9B%D7%95%D7%AA/%D7%A7%D7%A8%D7%99%D7%90%D7%AA-%D7%94%D7%AA%D7%95%D7%A8%D7%94/2017-05-30-05-42-86",
+     "auteur": "Rav Yaron Achkenazi",
+     "titre": "הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום",
+     "date": "13/07/2017",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "ומכל מקום אין זה מעכב להלכה",
+     "passage_resume": "הנה על פי דברי רבינו האר\"י ז\"ל, יש לקרות שנים מקרא ואחד תרגום כל פסוק עם תרגומו בפני עצמו, ולא להניח התרגום עד סיום הפרשה כולה, וכן הוא בספר האשכול (הלכות שני וחמישי סימן ב'), ומכל מקום אין זה מעכב להלכה"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 354076",
+     "reference_he": "הידברות, ״קריאת שניים מקרא ואחד תרגום״, הרב בנימין שמואלי, י״ד אב התשפ״ה, hidabroot.org/question/354076",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/354076",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "קריאת שניים מקרא ואחד תרגום",
+     "date": "08/08/2025",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "שני הדברים אפשריים ללא כל חשש",
+     "passage_resume": "האם יש מניעה לחזור על פרשת שמע פעמיים הן לאלו שקוראים פרשה פרשה והן לאלו שקוראים פסוק פסוק [...] שני הדברים אפשריים ללא כל חשש."
+    }
+   ]
+  },
+  {
+   "id": "chm-13",
+   "section": 3,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "rambam",
+     "reference": "Rambam, Hilkhot Tefila 13:25",
+     "reference_he": "רמב״ם, הלכות תפילה י״ג, כ״ה",
+     "edition": "Torat Emet 370",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishneh Torah, Prayer and the Priestly Blessing 13:25",
+     "sefaria_version": "Torat Emet 370",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishneh%20Torah%2C%20Prayer%20and%20the%20Priestly%20Blessing%2013%3A25?version=hebrew%7CTorat%20Emet%20370&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishneh_Torah%2C_Prayer_and_the_Priestly_Blessing_13%3A25?lang=he",
+     "citation": "וּפָסוּק שֶׁאֵין בּוֹ תַּרְגּוּם קוֹרְאֵהוּ שָׁלֹשׁ פְּעָמִים"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:3",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ג׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:3",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A3?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A3?lang=he",
+     "citation": "ר\"ל אע\"פ שאין בו תרגום וה\"ה ראובן ושמעון וכי\"ב צריך לקרותו ג\"פ ויש מחמירין דבעטרות ודיבן שיש בו תרגום ירושלמי צריך לקרות שם התרגום"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:18",
+     "reference_he": "כף החיים רפ״ה, אות י״ח",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:18",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A18?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A18?lang=he",
+     "citation": "וכן הוא מנהג העולם שאין קורין ג\"פ מקרא רק לפסוק שאין בו תרגום כלל כמו ראובן ושמעון וכדומה אבל לפסוק שיש בו תרגום כגון ברכת כהנים ועטרות ודיבון אין קורין כ\"א שמו\"ת לבד"
+    },
+    {
+     "source": "kav",
+     "reference": "Kav haHalakha haSefaradi (Rav Y. Achkenazi, 07/06/2017)",
+     "reference_he": "קו ההלכה הספרדי, ״הלכה יומית - הרב ירון אשכנזי - המשך דיני הפטרה וחיוב לומר שניים מקרא״, הרב ירון אשכנזי, י״ג סיון התשע״ז (kavhalacha.co.il)",
+     "edition": "kavhalacha.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://kavhalacha.co.il/%D7%90%D7%A7%D7%98%D7%95%D7%90%D7%9C%D7%99%D7%94-%D7%91%D7%94%D7%9C%D7%9B%D7%94/%D7%9E%D7%90%D7%92%D7%A8-%D7%94%D7%94%D7%9C%D7%9B%D7%95%D7%AA/%D7%A7%D7%A8%D7%99%D7%90%D7%AA-%D7%94%D7%AA%D7%95%D7%A8%D7%94/2017-05-30-05-42-81",
+     "auteur": "Rav Yaron Achkenazi",
+     "titre": "הלכה יומית - הרב ירון אשכנזי - המשך דיני הפטרה וחיוב לומר שניים מקרא",
+     "date": "07/06/2017",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "ומרן השלחן ערוך פסק כדעת הרמב,,ם שיקרא ג' פעמים עטרות ודיבון ואינו צריך לקרוא בפעם השלישית את התרגום ירושלמי."
+    }
+   ]
+  },
+  {
+   "id": "chm-14",
+   "section": 3,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:6",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ו׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:6",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A6?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A6?lang=he",
+     "citation": "אם אפשר לו שלא יפסיק בשמו\"ת על שום דבר הוא טוב ויפה מאד וכן ראיתי מהמדקדקים עושין כן וכן ראוי לבעל נפש לעשות"
+    },
+    {
+     "source": "ksa",
+     "reference": "Kitsour Choul’han Aroukh 72:11",
+     "reference_he": "קיצור שולחן ערוך ע״ב, י״א",
+     "edition": "Torat Emet 357",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kitzur Shulchan Arukh 72:11",
+     "sefaria_version": "Torat Emet 357",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kitzur%20Shulchan%20Arukh%2072%3A11?version=hebrew%7CTorat%20Emet%20357&return_format=text_only",
+     "page": "https://www.sefaria.org/Kitzur_Shulchan_Arukh_72%3A11?lang=he",
+     "citation": "וְטוֹב שֶׁלֹּא יַפְסִיק בְּשִׂיחָה בֵּין הַקְּרִיאָה"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:6",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ו׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:6",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A6?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A6?lang=he",
+     "citation": "ויש נוהגין לגמור כולה ערב שבת שחרית אחר התפלה ושלא להפסיק כלל באמצע שנים מקרא ואחד תרגום אפילו בדבור"
+    }
+   ]
+  },
+  {
+   "id": "chm-15",
+   "section": 3,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:6",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ו׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ו",
+     "citation": "אף על פי שמדין התלמוד אין איסור להפסיק בדברים באמצע קריאת שנים מקרא ואחד תרגום, מכל מקום כבר נתבאר שעל פי הקבלה אין להפסיק כלל באמצע קריאתם"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:6",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ו׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ו",
+     "citation": "זולת אם הוא צמא למים, שרשאי לברך ולשתות, וכן לברך ברכת בורא נפשות רבות"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:7",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ז׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ז",
+     "citation": "מותר לו להפסיק בין פסוק לפסוק להשיב לשואלו דבר הלכה"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:15",
+     "reference_he": "כף החיים רפ״ה, אות ט״ו",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:15",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A15?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A15?lang=he",
+     "citation": "וכתבו חכמי המקובלים שלא להפסיק בקריאת שמו\"ת בשום דבר רק יקרא הכל בפעם אחת במעמד אחד"
+    },
+    {
+     "source": "kav",
+     "reference": "Kav haHalakha haSefaradi (Rav Y. Achkenazi, 13/07/2017)",
+     "reference_he": "קו ההלכה הספרדי, ״הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום״, הרב ירון אשכנזי, י״ט תמוז התשע״ז (kavhalacha.co.il)",
+     "edition": "kavhalacha.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://kavhalacha.co.il/%D7%90%D7%A7%D7%98%D7%95%D7%90%D7%9C%D7%99%D7%94-%D7%91%D7%94%D7%9C%D7%9B%D7%94/%D7%9E%D7%90%D7%92%D7%A8-%D7%94%D7%94%D7%9C%D7%9B%D7%95%D7%AA/%D7%A7%D7%A8%D7%99%D7%90%D7%AA-%D7%94%D7%AA%D7%95%D7%A8%D7%94/2017-05-30-05-42-86",
+     "auteur": "Rav Yaron Achkenazi",
+     "titre": "הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום",
+     "date": "13/07/2017",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "מי שהתחיל לקרוא שנים מקרא ואחד תרגום אחר תפלת שחרית, ובאמצע קריאתו נתבקש לקרוא לפני הקהל איזה דבר הלכה, רשאי להפסיק מקריאתו, ולזכות את הרבים בקריאת דבר הלכה."
+    }
+   ]
+  },
+  {
+   "id": "chm-16",
+   "section": 4,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "sa",
+     "reference": "Choul’han Aroukh O.H. 285:2",
+     "reference_he": "שולחן ערוך או״ח רפ״ה, ב׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:2",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A2?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A2?lang=he",
+     "citation": "אם למד הפרשה בפירוש רש\"י חשוב כמו תרגום וירא שמים יקרא תרגום וגם פרש\"י"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 299490",
+     "reference_he": "הידברות, ״איך לקרוא שניים מקרא אחד תרגום?״, הרב בנימין שמואלי, ט׳ טבת התשפ״ב, hidabroot.org/question/299490",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/299490",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "איך לקרוא שניים מקרא אחד תרגום?",
+     "date": "13/12/2021",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "מעיקר הדין יוצאים אבל מבואר בשולחן ערוך שיש לעשות את שניהם",
+     "passage_resume": "2. מעיקר הדין יוצאים אבל מבואר בשולחן ערוך שיש לעשות את שניהם. בפסוקים שאין רש\"י יש לחזור על הפסוק שלושה פעמים."
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 262007",
+     "reference_he": "הידברות, ״הלכות שניים מקרא ואחד תרגום״, הרב הלל מאירס, ז׳ אדר ב׳ התשע״ט, hidabroot.org/question/262007",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/262007",
+     "auteur": "Hillel Meirs",
+     "titre": "הלכות שניים מקרא ואחד תרגום",
+     "date": "14/03/2019",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "והסביר המשנה ברורה (סק\"ו) כי התרגום יש לו מעלה שניתן בסיני וגם הוא מפרש כל מילה ומילה. ופירוש רש\"י יש לו מעלה שהוא מפרש את העניין על פי מדרשי חז\"ל יותר מהתרגום."
+    }
+   ]
+  },
+  {
+   "id": "chm-17",
+   "section": 4,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:4",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ד׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:4",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A4?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A4?lang=he",
+     "citation": "אבל אם קראה בשאר לעז שהוא מפרש רק את המלות לחוד לא יצא י\"ח במקום תרגום לפי שהתרגום מפרש כמה דברים שאין להבין מתוך המקרא"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:5",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ה׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:5",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A5?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A5?lang=he",
+     "citation": "ואותן פסוקים שאין עליהם פירש\"י יקרא אותן ג\"פ. מי שאינו בר הכי שיבין את פירש\"י ראוי לקרות בפירוש התורה שיש בלשון אשכנז בזמנינו כגון ספר צאינה וראינה וכיוצא בו המבארים את הפרשה ע\"פ פירש\"י ושאר חכמינו ז\"ל הבנוים על יסוד התלמוד"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:6",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ו׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:6",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A6?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A6?lang=he",
+     "citation": "ובאמת כן ראוי לנהוג לכל אדם שילמוד בכל שבוע הסדרה עם פירש\"י לבד התרגום"
+    },
+    {
+     "source": "ksa",
+     "reference": "Kitsour Choul’han Aroukh 72:11",
+     "reference_he": "קיצור שולחן ערוך ע״ב, י״א",
+     "edition": "Torat Emet 357",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kitzur Shulchan Arukh 72:11",
+     "sefaria_version": "Torat Emet 357",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kitzur%20Shulchan%20Arukh%2072%3A11?version=hebrew%7CTorat%20Emet%20357&return_format=text_only",
+     "page": "https://www.sefaria.org/Kitzur_Shulchan_Arukh_72%3A11?lang=he",
+     "citation": "גַּם יֵשׁ לוֹ לְכָל יְרֵא שָׁמַיִם, לִלְמוֹד פֵּרוּשׁ רַשִׁ\"י עַל הַסִּדְרָה, וְאִם לָאו בַּר הָכִי הוּא יִלְמַד פֵּרוּשׁ אַשְׁכְּנַזִי (לוֹעֲזִי) עַל הַסִּדְרָה, כְּגוֹן סֵפֶר \"צְאֶינָה וּרְאֶינָה\" וְכַדּוֹמֶה, שֶׁיָּבִין עִנְיַן הַסִּדְרָה"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:2",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ב׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:2",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A2?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A2?lang=he",
+     "citation": "ומכל מקום כל ירא שמים יש לו לקרות התרגום וגם פירוש רש\"י ומי שאינו מבין פירוש רש\"י יש לו לקרות בפירוש התורה שבלשון לע\"ז שמבין"
+    }
+   ]
+  },
+  {
+   "id": "chm-18",
+   "section": 4,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:3",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ג׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ג",
+     "citation": "אף מי שאינו מבין כל כך את שפת התרגום, עליו לקרוא את הפרשה שנים מקרא ואחד תרגום. וירא שמים יקרא גם תרגום וגם פירוש רש״י על הפרשה"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:22",
+     "reference_he": "כף החיים רפ״ה, אות כ״ב",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:22",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A22?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A22?lang=he",
+     "citation": "אבל לפי מ\"ש חכמי האמת יש קפידא בתרגום ולכן אם אין לו שהות ללמוד שניהם ילמוד תרגום"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:22",
+     "reference_he": "כף החיים רפ״ה, אות כ״ב",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:22",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A22?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A22?lang=he",
+     "citation": "ומיהו אם הולך בדרך ואין לו כ\"א מקרא ורש\"י אז יש לסמוך על המתירין ויקרא ב\"פ מקרא ואחד פרש\"י"
+    },
+    {
+     "source": "kav",
+     "reference": "Kav haHalakha haSefaradi (Rav Y. Achkenazi, 13/07/2017)",
+     "reference_he": "קו ההלכה הספרדי, ״הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום״, הרב ירון אשכנזי, י״ט תמוז התשע״ז (kavhalacha.co.il)",
+     "edition": "kavhalacha.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://kavhalacha.co.il/%D7%90%D7%A7%D7%98%D7%95%D7%90%D7%9C%D7%99%D7%94-%D7%91%D7%94%D7%9C%D7%9B%D7%94/%D7%9E%D7%90%D7%92%D7%A8-%D7%94%D7%94%D7%9C%D7%9B%D7%95%D7%AA/%D7%A7%D7%A8%D7%99%D7%90%D7%AA-%D7%94%D7%AA%D7%95%D7%A8%D7%94/2017-05-30-05-42-86",
+     "auteur": "Rav Yaron Achkenazi",
+     "titre": "הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום",
+     "date": "13/07/2017",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "אף מי שאינו מבין כל כך את שפת התרגום, עליו לקרוא את הפרשה שנים מקרא ואחד תרגום. וירא שמים יקרא גם תרגום וגם פירוש רש\"י על הפרשה."
+    }
+   ]
+  },
+  {
+   "id": "chm-19",
+   "section": 4,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:6",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ו׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:6",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A6?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A6?lang=he",
+     "citation": "מי שאין בידו תרגום רק החומש לבד יש לו יקרא שני פעמים מקרא ואח\"כ כשיזדמן לו תרגום יאמר"
+    },
+    {
+     "source": "ksa",
+     "reference": "Kitsour Choul’han Aroukh 72:11",
+     "reference_he": "קיצור שולחן ערוך ע״ב, י״א",
+     "edition": "Torat Emet 357",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kitzur Shulchan Arukh 72:11",
+     "sefaria_version": "Torat Emet 357",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kitzur%20Shulchan%20Arukh%2072%3A11?version=hebrew%7CTorat%20Emet%20357&return_format=text_only",
+     "page": "https://www.sefaria.org/Kitzur_Shulchan_Arukh_72%3A11?lang=he",
+     "citation": "וּמִי שֶׁהוּא בַּדֶּרֶךְ וְאֵין לוֹ רַק חֻמָּשׁ בְּלִי תַּרְגּוּם, יִקְרָא שְׁתֵּי פְּעָמִים מִקְרָא. וּכְשֶׁיָּבוֹא לְמָקוֹם שֶׁיִּהְיֶה לוֹ תַּרְגּוּם, יִקְרָא הַתַּרְגּוּם"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:6",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ו׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:6",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A6?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A6?lang=he",
+     "citation": "ואם אין לו תרגום יקרא מקרא ב' פעמים ואח\"כ כשיהיה לו תרגום יקראנו"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:16",
+     "reference_he": "כף החיים רפ״ה, אות ט״ז",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:16",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A16?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A16?lang=he",
+     "citation": "ול\"נ דכדי להשלים פרשיותיו עם הצבור יש לקרות ג\"פ מקרא כמו הפסוקים שאין להם תרגום כיון דלא אפשר ליה בענין אחר ואח\"כ כשיגיע לישוב אם אפשר חוזר לקרות שמו\"ת"
+    }
+   ]
+  },
+  {
+   "id": "chm-20",
+   "section": 5,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:14",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״ד",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יד",
+     "citation": "אולם גם מי שאינו יודע לקרוא את הפרשה עם הטעמים, חייב בקריאת הפרשה שנים מקרא ואחד תרגום. וחובה קדושה על ההורים והמלמדים ללמד את בני ישראל בטעמי המקרא"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:17",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ז",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:17",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A17?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A17?lang=he",
+     "citation": "מכאן שניגון הטעמים אינו מעכב לגבי שמו\"ת"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 15385",
+     "reference_he": "הידברות, ״שניים מקרא ואחד תרגום וטעמים״, הרב בנימין שמואלי, כ״ה אדר א׳ התשע״ד, hidabroot.org/question/15385",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/15385",
+     "auteur": "Binyamin Chmouéli",
+     "titre": "שניים מקרא ואחד תרגום וטעמים",
+     "date": "25/02/2014",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "ולכתחילה יש לקראה בטעמיה, אבל מי שאינו בקי בטעמים יקראנה ללא טעמים"
+    }
+   ]
+  },
+  {
+   "id": "chm-21",
+   "section": 5,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:14",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״ד",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יד",
+     "citation": "פסוקי המקרא צריך לקוראם בטעמי המקרא, והתרגום בלי טעמים, בדוקא"
+    },
+    {
+     "source": "bih",
+     "reference": "Ben Ich ’Haï, 2e année, Lekh Lekha §11",
+     "reference_he": "בן איש חי, שנה ב׳, לך לך, אות י״א",
+     "edition": "Ben Ish Hai -- Wikisource",
+     "licence": "Public Domain",
+     "sefaria_ref": "Ben Ish Hai, Halachot 2nd Year, Lech Lecha 11",
+     "sefaria_version": "Ben Ish Hai -- Wikisource",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Ben%20Ish%20Hai%2C%20Halachot%202nd%20Year%2C%20Lech%20Lecha%2011?version=hebrew%7CBen%20Ish%20Hai%20--%20Wikisource&return_format=text_only",
+     "page": "https://www.sefaria.org/Ben_Ish_Hai%2C_Halachot_2nd_Year%2C_Lech_Lecha_11?lang=he",
+     "citation": "ואין קוראים התרגום בטעמים, כנזכר בשער טעמי המצוות"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:12",
+     "reference_he": "כף החיים רפ״ה, אות י״ב",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:12",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A12?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A12?lang=he",
+     "citation": "התרגום א\"צ לקרות בטעמים. כ\"כ רבינו מהרח\"ו ז\"ל שקבל מרבינו האר\"י ז\"ל"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:12",
+     "reference_he": "כף החיים רפ״ה, אות י״ב",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:12",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A12?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A12?lang=he",
+     "citation": "ושם מפורש דהתרגום צריך לקרותו בלא טעמים דוקא ויש קפידא בזה"
+    }
+   ]
+  },
+  {
+   "id": "chm-22",
+   "section": 5,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:2",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ב׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:2",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A2?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A2?lang=he",
+     "citation": "מי שהוא בקי בטעם ובנקודות בע\"פ טוב להדר לקרות בס\"ת גופא"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:4",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ד׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:4",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A4?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A4?lang=he",
+     "citation": "מי שהוא רגיל בפסקי טעמים בעל פה טוב שיקרא שנים מקרא בספר תורה כשר"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:17",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״ז",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יז",
+     "citation": "מי שבקי בקריאת הפרשה בטעמי המקרא והנקודות כראוי, מצוה מן המובחר לקרוא שנים מקרא מתוך ספר תורה, ויקרא התרגום מתוך החומש"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:17",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״ז",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יז",
+     "citation": "אולם אם אינו בקי מוטב שיקראנה מתוך חומש שיש בו הטעמים והנקודות, ולא יקראנה קריאה משובשת בספר תורה. ופשוט שאין לו לברך על קריאתה"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:7",
+     "reference_he": "כף החיים רפ״ה, אות ז׳",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:7",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A7?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A7?lang=he",
+     "citation": "ואם אינו בקי יותר טוב שיקרא בחומש שמו\"ת ממה שיקרא בס\"ת קריאה משובשת"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:7",
+     "reference_he": "כף החיים רפ״ה, אות ז׳",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:7",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A7?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A7?lang=he",
+     "citation": "ואף אם הוא בקי וקורא בס\"ת אין לברך בה\"ת שלא נתקנה אלא בצבור"
+    },
+    {
+     "source": "malka",
+     "reference": "Halakha lema’assé (Rav O. Malka), question 484",
+     "reference_he": "בית ההוראה ״הלכה למעשה״ של הרב אופיר מלכא, ״מכשיר אלקטרוני עם ספרי קודש״, הרב עמנואל מולקנדוב, 22.09.2026, hl5047.co.il/questions/484",
+     "edition": "hl5047.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://hl5047.co.il/questions/484",
+     "auteur": "Rav Emmanuel Molkandov",
+     "titre": "מכשיר אלקטרוני עם ספרי קודש",
+     "date": "22/09/2026",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "זה נקרא כלומד מספר לענין זה",
+     "passage_resume": "2) כהמשך לשאלה הקודמת האם מותר ללמוד במכשיר תורה שבכתב ולהעביר שניים מקרא ואחד תרגום? [...] לגבי 1 ו 2 אין כ\"כ נ\"מ בשאלות הנ\"ל. אבל אם חשוב לך - זה נקרא כלומד מספר לענין זה."
+    }
+   ]
+  },
+  {
+   "id": "chm-23",
+   "section": 6,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:2",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק ב׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:2",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A2?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A2?lang=he",
+     "citation": "אבל לא יקרא אחד מקרא ואחד תרגום ויכוין לשמוע מהש\"ץ אלא צריך לקרות ב\"פ מקרא חוץ ממה ששמע מהש\"ץ אם לא שקרא אז ג\"כ בפיו"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:8",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ח׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:8",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A8?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A8?lang=he",
+     "citation": "ויש אומרים שיוצא ידי חובתו בשמיעת הקריאה מהש\"ץ אם שמע כל הפרשה בבירור ודי שיקרא עוד פעם אחת עם תרגום"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:8",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ח׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:8",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A8?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A8?lang=he",
+     "citation": "ובשעת הדחק יש לסמוך על סברא הראשונה"
+    },
+    {
+     "source": "hid",
+     "reference": "Hidabroot, question 262007",
+     "reference_he": "הידברות, ״הלכות שניים מקרא ואחד תרגום״, הרב הלל מאירס, ז׳ אדר ב׳ התשע״ט, hidabroot.org/question/262007",
+     "edition": "hidabroot.org",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://www.hidabroot.org/question/262007",
+     "auteur": "Hillel Meirs",
+     "titre": "הלכות שניים מקרא ואחד תרגום",
+     "date": "14/03/2019",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "אם הוא קורא בפיו עם הבעל קורא זה עולה לו"
+    }
+   ]
+  },
+  {
+   "id": "chm-24",
+   "section": 6,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:10",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if י",
+     "citation": "נכון להורות לו שיקרא בלחש את כל הפרשה עם השליח צבור הקורא בתורה, פסוק בפסוק, ושוב יחזור ויקראנה פעם שניה בביתו, ואחר כך יקרא פעם אחת את כל התרגום, ויצא ידי חובתו"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:10",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if י",
+     "citation": "וכן השליח צבור הקורא בתורה, רשאי לקרות הפרשה בהכנתה לפחות פעם אחת מתחלתה ועד סופה, ופעם שניה כשקורא אותה בצבור, ואחר כך יקרא התרגום של כל הפרשה פעם אחת ויוצא ידי חובה"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:10",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if י",
+     "citation": "אבל אין לסמוך על מה ששומע קריאת הפרשה מהשליח צבור"
+    }
+   ]
+  },
+  {
+   "id": "chm-25",
+   "section": 6,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "sa",
+     "reference": "Choul’han Aroukh O.H. 285:5",
+     "reference_he": "שולחן ערוך או״ח רפ״ה, ה׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:5",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A5?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A5?lang=he",
+     "citation": "יכול לקרות הפרשה שנים מקרא ואחד תרגום בשעת קריאת התורה"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:14",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ד",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:14",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A14?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A14?lang=he",
+     "citation": "הביא בשם השל\"ה שמחמיר בזה אלא הכל צריכין לשמוע הקריאה מפי הש\"ץ וכן הוא דעת הגר\"א"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:14",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ד",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:14",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A14?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A14?lang=he",
+     "citation": "ומ\"מ נראה דלקרוא בלחש מלה במלה עם הש\"ץ אין להחמיר בזה כיון שמכוין אז גם לשמוע כל תיבה מפי הש\"ץ"
+    }
+   ]
+  },
+  {
+   "id": "chm-26",
+   "section": 6,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:31",
+     "reference_he": "כף החיים רפ״ה, אות ל״א",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:31",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A31?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A31?lang=he",
+     "citation": "ובקשל\"ה דף פ\"א ע\"ב כתב דהעושים כן לא יפה עושין כי מן הראוי לשמוע מן הש\"ץ"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:31",
+     "reference_he": "כף החיים רפ״ה, אות ל״א",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:31",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A31?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A31?lang=he",
+     "citation": "והכי נקטינן ודלא כמ\"ש בב\"י ובד\"מ. יפ\"ל או' ז'"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:11",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״א",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יא",
+     "citation": "אם השליח צבור מאריך בטעמים בקריאתו בתורה באופן שיכול היחיד להספיק לקרוא אז שנים מקרא ואחד תרגום, בעת קריאת התורה, רשאי לעשות כן, ויוצא ידי חובה"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:11",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״א",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יא",
+     "citation": "ומכל מקום הנכון הוא שבכל הפרשיות ראוי למדקדק בדרכיו לכוין דעתו ולשמוע קריאת התורה מפי השליח צבור"
+    }
+   ]
+  },
+  {
+   "id": "chm-27",
+   "section": 7,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "rema",
+     "reference": "Rema O.H. 285:7",
+     "reference_he": "רמ״א או״ח רפ״ה, ז׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:7",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A7?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A7?lang=he",
+     "citation": "וכן אין צריך לקרות ההפטרות (מרדכי ה\"ק) ומכל מקום נהגו לקרות ההפטרה"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:19",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ט",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:19",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A19?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A19?lang=he",
+     "citation": "טעם המנהג שמא יקראוהו למחר למפטיר ויהא בקי ורגיל בה"
+    },
+    {
+     "source": "ksa",
+     "reference": "Kitsour Choul’han Aroukh 72:11",
+     "reference_he": "קיצור שולחן ערוך ע״ב, י״א",
+     "edition": "Torat Emet 357",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kitzur Shulchan Arukh 72:11",
+     "sefaria_version": "Torat Emet 357",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kitzur%20Shulchan%20Arukh%2072%3A11?version=hebrew%7CTorat%20Emet%20357&return_format=text_only",
+     "page": "https://www.sefaria.org/Kitzur_Shulchan_Arukh_72%3A11?lang=he",
+     "citation": "וְנוֹהֲגִין לִקְרוֹת גַּם הַהַפְטָרָה"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:2",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ב׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ב",
+     "citation": "הקורא את הפרשה שנים מקרא ואחד תרגום, מן הדין אין צריך לקרוא את ההפטרה. ומכל מקום נהגו לקרוא גם את ההפטרה [פעם אחת]"
+    },
+    {
+     "source": "kav",
+     "reference": "Kav haHalakha haSefaradi (Rav Y. Achkenazi, 13/07/2017)",
+     "reference_he": "קו ההלכה הספרדי, ״הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום״, הרב ירון אשכנזי, י״ט תמוז התשע״ז (kavhalacha.co.il)",
+     "edition": "kavhalacha.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://kavhalacha.co.il/%D7%90%D7%A7%D7%98%D7%95%D7%90%D7%9C%D7%99%D7%94-%D7%91%D7%94%D7%9C%D7%9B%D7%94/%D7%9E%D7%90%D7%92%D7%A8-%D7%94%D7%94%D7%9C%D7%9B%D7%95%D7%AA/%D7%A7%D7%A8%D7%99%D7%90%D7%AA-%D7%94%D7%AA%D7%95%D7%A8%D7%94/2017-05-30-05-42-86",
+     "auteur": "Rav Yaron Achkenazi",
+     "titre": "הלכה יומית - הרב ירון אשכנזי - שנים מקרא ואחד תרגום",
+     "date": "13/07/2017",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "passage_resume": "הקורא את הפרשה שנים מקרא ואחד תרגום, מן הדין אינו צריך לקרוא את ההפטרה. ומכל מקום נהגו לקרוא גם את ההפטרה [פעם אחת]."
+    }
+   ]
+  },
+  {
+   "id": "chm-28",
+   "section": 7,
+   "rite": "sefarade",
+   "rites_app": [
+    "edot"
+   ],
+   "references": [
+    {
+     "source": "bih",
+     "reference": "Ben Ich ’Haï, 2e année, Lekh Lekha §11",
+     "reference_he": "בן איש חי, שנה ב׳, לך לך, אות י״א",
+     "edition": "Ben Ish Hai -- Wikisource",
+     "licence": "Public Domain",
+     "sefaria_ref": "Ben Ish Hai, Halachot 2nd Year, Lech Lecha 11",
+     "sefaria_version": "Ben Ish Hai -- Wikisource",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Ben%20Ish%20Hai%2C%20Halachot%202nd%20Year%2C%20Lech%20Lecha%2011?version=hebrew%7CBen%20Ish%20Hai%20--%20Wikisource&return_format=text_only",
+     "page": "https://www.sefaria.org/Ben_Ish_Hai%2C_Halachot_2nd_Year%2C_Lech_Lecha_11?lang=he",
+     "citation": "ואם חל שבת בראש חודש, או \"שקלים\" ו\"זכור\" ו\"פרה\" ו\"החודש\", צריך לומר ההפטרה של שנים מקרא ואחד תרגום, הפטרת השבוע הן אם קורא השנים מקרא ואחד תרגום ביום ששי, הן אם קוראה ביום שבת עצמו"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:36",
+     "reference_he": "כף החיים רפ״ה, אות ל״ו",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:36",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A36?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A36?lang=he",
+     "citation": "ואני נוהג בשבת שיש הפטרה מחודשת כגון הפטרת שבת של ר\"ח או שבת שלפני ר\"ח או של חנוכה ושל ד' פרשיות לחזור עם הפרשה הפטרת השבוע וביום שבת לקרוא המחודשת עם המפטיר"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:36",
+     "reference_he": "כף החיים רפ״ה, אות ל״ו",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:36",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A36?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A36?lang=he",
+     "citation": "וכן עמא דבר"
+    }
+   ]
+  },
+  {
+   "id": "chm-29",
+   "section": 7,
+   "rite": "ashkenaze",
+   "rites_app": [
+    "ashkenaz",
+    "sefard"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:20",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק כ׳",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:20",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A20?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A20?lang=he",
+     "citation": "ובד' פרשיות יקרא הפטרה דד' פרשיות"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:10",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, י׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:10",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A10?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A10?lang=he",
+     "citation": "ובד' פרשיות יש לו לקרות הפטרה של ד' פרשיות שמפטירין אותה בבית הכנסת ולא הפטרה של פרשת השבוע וכן בשבת ראש חודש ומחר חדש ושבת חנוכה"
+    }
+   ]
+  },
+  {
+   "id": "chm-30",
+   "section": 7,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "sa",
+     "reference": "Choul’han Aroukh O.H. 285:7",
+     "reference_he": "שולחן ערוך או״ח רפ״ה, ז׳",
+     "edition": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "licence": "Public Domain",
+     "sefaria_ref": "Shulchan Arukh, Orach Chayim 285:7",
+     "sefaria_version": "Maginei Eretz: Shulchan Aruch Orach Chaim, Lemberg, 1893",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A7?version=hebrew%7CMaginei%20Eretz%3A%20Shulchan%20Aruch%20Orach%20Chaim%2C%20Lemberg%2C%201893&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim_285%3A7?lang=he",
+     "citation": "אין צריך לקרות פרשת יו\"ט"
+    },
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:18",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ח",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:18",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A18?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A18?lang=he",
+     "citation": "ר\"ל שאין צריך לקרות לעצמו שמו\"ת דהא כבר קרא כל התורה מדי שבת בשבתו"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:13",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״ג",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יג",
+     "citation": "אין צריך לקרוא את הפרשה שנים מקרא ואחד תרגום בימים טובים"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:9",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ט׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:9",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A9?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A9?lang=he",
+     "citation": "אין צריך לקרות פרשת יו\"ט לעצמו בערב יו\"ט שהרי כבר קרא או יקרא פרשה זו בשבתה"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:35",
+     "reference_he": "כף החיים רפ״ה, אות ל״ה",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:35",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A35?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A35?lang=he",
+     "citation": "וה\"ה פרשת של חו\"ה א\"צ להשלים. כנה\"ג בהגב\"י. וכללא נקטינן בכל מקום שקוראין מה שכבר קראו בסדר הפרשיות א\"צ לחזור ולקרות"
+    }
+   ]
+  },
+  {
+   "id": "chm-31",
+   "section": 7,
+   "rite": "tous",
+   "rites_app": [
+    "edot",
+    "sefard",
+    "ashkenaz"
+   ],
+   "references": [
+    {
+     "source": "mb",
+     "reference": "Michna Beroura 285:18",
+     "reference_he": "משנה ברורה רפ״ה, ס״ק י״ח",
+     "edition": "On Your Way",
+     "licence": "Public Domain",
+     "sefaria_ref": "Mishnah Berurah 285:18",
+     "sefaria_version": "On Your Way",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Mishnah%20Berurah%20285%3A18?version=hebrew%7COn%20Your%20Way&return_format=text_only",
+     "page": "https://www.sefaria.org/Mishnah_Berurah_285%3A18?lang=he",
+     "citation": "וביום הו\"ר יקרא שמו\"ת פרשת וזאת הברכה ואם קרא ביום שמ\"ע לא הפסיד"
+    },
+    {
+     "source": "kh",
+     "reference": "Kaf ha’Haïm 285:29",
+     "reference_he": "כף החיים רפ״ה, אות כ״ט",
+     "edition": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "licence": "Public Domain",
+     "sefaria_ref": "Kaf HaChayim on Shulchan Arukh, Orach Chayim 285:29",
+     "sefaria_version": "Kaf Hachayim, Orach Chayim vol. I-IV, Jerusalem 1910-1933",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Kaf%20HaChayim%20on%20Shulchan%20Arukh%2C%20Orach%20Chayim%20285%3A29?version=hebrew%7CKaf%20Hachayim%2C%20Orach%20Chayim%20vol.%20I-IV%2C%20Jerusalem%201910-1933&return_format=text_only",
+     "page": "https://www.sefaria.org/Kaf_HaChayim_on_Shulchan_Arukh%2C_Orach_Chayim_285%3A29?lang=he",
+     "citation": "ביום הו\"ר יקרא פ' וזאת הברכה שמו\"ת"
+    },
+    {
+     "source": "sahr",
+     "reference": "Choul’han Aroukh haRav O.H. 285:9",
+     "reference_he": "שולחן ערוך הרב או״ח רפ״ה, ט׳",
+     "edition": "Kehot Publication Society",
+     "licence": "CC-BY-NC",
+     "sefaria_ref": "Shulchan Arukh HaRav, Orach Chayim 285:9",
+     "sefaria_version": "Kehot Publication Society",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Shulchan%20Arukh%20HaRav%2C%20Orach%20Chayim%20285%3A9?version=hebrew%7CKehot%20Publication%20Society&return_format=text_only",
+     "page": "https://www.sefaria.org/Shulchan_Arukh_HaRav%2C_Orach_Chayim_285%3A9?lang=he",
+     "citation": "ומכל מקום בערב שמחת תורה יקרא פרשת וזאת הברכה שנים מקרא ואחד תרגום שעכשיו הוא זמנה"
+    },
+    {
+     "source": "bih",
+     "reference": "Ben Ich ’Haï, 1re année, Vezot haBerakha §15",
+     "reference_he": "בן איש חי, שנה א׳, וזאת הברכה, אות ט״ו",
+     "edition": "Ben Ish Hai -- Wikisource",
+     "licence": "Public Domain",
+     "sefaria_ref": "Ben Ish Hai, Halachot 1st Year, V'Zot HaBerachah 15",
+     "sefaria_version": "Ben Ish Hai -- Wikisource",
+     "lu_via": "https://www.sefaria.org/api/v3/texts/Ben%20Ish%20Hai%2C%20Halachot%201st%20Year%2C%20V%27Zot%20HaBerachah%2015?version=hebrew%7CBen%20Ish%20Hai%20--%20Wikisource&return_format=text_only",
+     "page": "https://www.sefaria.org/Ben_Ish_Hai%2C_Halachot_1st_Year%2C_V%27Zot_HaBerachah_15?lang=he",
+     "citation": "שנים מקרא ואחד תרגום של פרשת וזאת הברכה יקראנה ביום הו\"ר ולא ביום ש\"ע מפני התרגום, ואם שכח ולא קראה ביום הו\"ר יקראנה ביום ש\"ע אחר מנחה"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:19",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, י״ט",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if יט",
+     "citation": "פרשת ״וזאת הברכה״ יש לקרוא שנים מקרא ואחד תרגום ביום הושענא רבה, ואם שכח לקרוא בהושענא רבה, יקרא בשמיני עצרת קודם שחרית, או יחד עם השליח צבור"
+    },
+    {
+     "source": "kyy",
+     "reference": "Kitsour Yalkout Yossef 285:9",
+     "reference_he": "ילקוט יוסף, קיצור שולחן ערוך רפ״ה, ט׳",
+     "edition": "Torat Emet, mahadoura 5767 — la copie de l'application (livre_yalkut_yosef_kitsour.json, section « סימן רפה »)",
+     "licence": "CC BY-NC-SA 2.5 ; licence reçue par le propriétaire, crédit « הרב יצחק יוסף שליט״א » (19/10/2026)",
+     "lu_via": "android/app/src/main/res/raw/livre_yalkut_yosef_kitsour.json, section « סימן רפה - לקרוא הפרשה ב' מקרא וא' תרגום », se'if ט",
+     "citation": "וכן מותר לקרוא פרשת וזאת הברכה בליל שמחת תורה"
+    },
+    {
+     "source": "malka",
+     "reference": "Halakha lema’assé (Rav O. Malka), question 142",
+     "reference_he": "בית ההוראה ״הלכה למעשה״ של הרב אופיר מלכא, ״פרשת וזאת הברכה בתיקון קורא אחד״, הרב מנשה מורנו, 12.10.2025, hl5047.co.il/questions/142",
+     "edition": "hl5047.co.il",
+     "licence": "Tous droits réservés : résumé et référence, au plus une courte phrase citée",
+     "url": "https://hl5047.co.il/questions/142",
+     "auteur": "Rav Menaché Moreno",
+     "titre": "פרשת וזאת הברכה בתיקון קורא אחד",
+     "date": "12/10/2025",
+     "nature": "paraphrase avec référence (œuvre protégée)",
+     "citation": "אפשר, אך יותר טוב לקרא כל פסוק שמו\"ת",
+     "passage_resume": "האם אפשר לכתחילה להחשיב פרשת וזאת הברכה שקורים בתוך התיקון לאחד מקרא ? [...] אפשר, אך יותר טוב לקרא כל פסוק שמו\"ת כמש\"כ כה\"ח בסימן רפה' ע\"פ האר\"י, וכ\"ה בברכ\"י. ותו דיותר נכון לקרא שמו\"ת ביום ולא בלילה, כמש\"כ מחב\"ר וכה\"ח הנ\"ל."
+    }
+   ]
+  }
+ ]
+}

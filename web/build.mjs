@@ -128,7 +128,8 @@ for (const nom of ['chizuk.json', 'bibliotheque.json', 'tikkun_haklali.json', 't
   const table = { _meta: livres._meta, groupes: livres.groupes, textes: [] };
   for (const t of livres.textes) {
     if (!/^[a-z0-9_]+$/.test(t.id)) throw new Error(`Identifiant de livre inattendu : ${t.id}`);
-    const { sections, ...entete } = t;
+    // Le « _meta » propre à un livre (sources et licences, 26/11) reste hors de la table, comme dans livres_titres.json.
+    const { sections, _meta, ...entete } = t;
     table.textes.push({ ...entete, chapitres: sections.length });
     writeFileSync(join(DIST, 'data', 'livres', `${t.id}.json`), JSON.stringify({ id: t.id, sections }));
   }

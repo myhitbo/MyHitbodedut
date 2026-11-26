@@ -53,7 +53,8 @@ class LivresTest {
     fun `les livres sont la, chapitre par chapitre`() {
         assertEquals(
             listOf("guide_hitbodedut", "likoutei_etsot", "sefer_hamidot", "likoutei_moharan", "hichtapkhout", "kokhvei_or",
-                "tefila_lishlomo", "meguilat_esther", "chir_hachirim", "nichmat", "perek_chira", "yalkut_yosef_kitsour"),
+                "tefila_lishlomo", "meguilat_esther", "chir_hachirim", "nichmat", "perek_chira", "yalkut_yosef_kitsour",
+                "chnayim_mikra"),
             livres.textes.map { it.id },
         )
         // Le nombre de chapitres de chaque livre, tel que l'imprime son édition (13/10).
@@ -61,6 +62,8 @@ class LivresTest {
             "chir_hachirim" to 8, "nichmat" to 1, "perek_chira" to 7,
             // Les 1 048 simanim du Kitsour Yalkut Yosef, le crédit en tête du premier (19/10).
             "yalkut_yosef_kitsour" to 1048,
+            // Les halakhot de Chnayim mikra : une introduction et sept chapitres (26/11).
+            "chnayim_mikra" to 8,
             // Le guide du propriétaire, un chapitre par partie ; les dix feuillets du Yanuka (19/10).
             "guide_hitbodedut" to 18, "tefila_lishlomo" to 10)
         chapitres.forEach { (id, n) -> assertEquals(id, n, livres.texte(id)!!.sections.size) }

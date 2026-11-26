@@ -330,6 +330,9 @@ reproduction, **traduction**, diffusion dans l'application et sur le site.
 | Hilloulot : biographies de MyTzadik (2 213, YETEV 4 LTD) et de המאיר לארץ (133), reprises mot pour mot | Accord déclaré le 12/10, aucun écrit au dépôt | **Écrit à obtenir** et à conserver. Biographie d'adar-9 (réserve expresse de l'institut de Stefanesti : pas d'usage sans accord écrit) : à retirer, ou obtenir cet accord. Aux 11-8 et 2-16 : retirer la ligne de crédit des photos, que l'application ne reprend pas |
 | Hilloulot : החכם היומי, Hidabroot | Faits et liens seulement | Aucune |
 | Ben Ish 'Haï (Wikisource via Sefaria) | Domaine public | Aucune |
+| Livre « Chnayim mikra : les halakhot » (26/11) : Choul'han Aroukh et Rema, Michna Beroura, Kaf ha'Haïm, Kitsour Choul'han Aroukh, Ben Ich 'Haï, Rambam (via Sefaria) ; Kitsour Yalkout Yossef (même édition que le livre) | Domaine public ; Yalkout Yossef : comme ci-dessus | Aucune (sources et citations exactes : `tools/chnayim_mikra/sources.json`) |
+| Même livre : Choul'han Aroukh haRav, saisie Kehot Publication Society (via Sefaria) | **CC BY-NC** : courtes citations sans vocalisation | Crédit en tête du livre ; application gratuite, comme pour le Yalkout Yossef |
+| Même livre : réponses de Hidabroot, de Kav haHalakha haSefaradi et du beit hora'a « Halakha lema'assé » (Rav Ofir Malka) | Tous droits réservés | Rien n'est reproduit : résumé, référence (auteur, titre, date, adresse), une courte phrase citée au plus |
 | Villes (GeoNames) | CC BY 4.0, attribution au pied des écrans Zmanim, Calendrier et Boussole | OK — vérifié |
 | Polices (6 × OFL) | `assets/licences/` | OK — vérifié |
 | KosherJava 2.5.0 (zmanim, Android) et kosher-zmanim (site) | **LGPL 2.1** | Texte dans `assets/licences/LGPL-2.1-KosherJava.txt`, affiché dans Réglages › Sources et licences ; source du code de l'application sur demande écrite (LGPL § 6) — à remplacer par l'adresse publique tant que le dépôt reste public |

@@ -38,9 +38,17 @@ def decoupe(livres=None):
     for t in livres["textes"]:
         if not t["id"].replace("_", "").isalnum() or t["id"] != t["id"].lower():
             raise ValueError(f"Identifiant de livre inattendu : {t['id']}")
-        entete = {k: v for k, v in t.items() if k != "sections"}
+        # Le « _meta » propre à un livre (26/11, chnayim_mikra : ses sources et licences) rejoint
+        # celui de son fichier, ses sources à la suite des sources communes ; l'index ne le porte pas.
+        entete = {k: v for k, v in t.items() if k not in ("sections", "_meta")}
         index["textes"].append(dict(entete, sections=[], chapitres=len(t["sections"])))
-        ecrire(os.path.join(RAW, f"livre_{t['id']}.json"), dict(tete, textes=[t]))
+        tete_livre = tete
+        if t.get("_meta"):
+            meta = dict(tete["_meta"])
+            for k, v in t["_meta"].items():
+                meta[k] = meta.get(k, []) + v if k == "sources" else v
+            tete_livre = dict(tete, _meta=meta)
+        ecrire(os.path.join(RAW, f"livre_{t['id']}.json"), dict(tete_livre, textes=[t]))
     ecrire(os.path.join(RAW, "livres_titres.json"), index)
     # Un livre retiré de la source ne laisse pas son fichier derrière lui.
     ids = {t["id"] for t in livres["textes"]}

@@ -19,5 +19,7 @@ object LivresBruts {
         "nichmat" to R.raw.livre_nichmat,
         "perek_chira" to R.raw.livre_perek_chira,
         "yalkut_yosef_kitsour" to R.raw.livre_yalkut_yosef_kitsour,
+        // Les halakhot de Chnayim mikra (26/11, tools/chnayim_mikra/construction.py).
+        "chnayim_mikra" to R.raw.livre_chnayim_mikra,
     )
 }
