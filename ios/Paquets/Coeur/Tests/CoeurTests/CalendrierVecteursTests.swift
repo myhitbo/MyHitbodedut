@@ -171,6 +171,19 @@ struct CalendrierVecteursTests {
             let jour = CalendrierJuif.jourDeLaPriere(t.texte(0), date: d, heure: t.entier(1), apresSortie: t.booleen(2))
             #expect(jour.jourJulien - d.jourJulien == t.entier(3), "\(t)")
         }
+        // Le jour voisin du Birkat haMazon et de Méèn chaloch (26/11, Q6), un vendredi.
+        let voisin = try #require(v.tableau("jourVoisin"))
+        #expect(voisin.count == 5 * 24 * 9)
+        let vendredi = JourCivil.du("2026-11-20")
+        for k in voisin.indices {
+            let t = try #require(voisin.tableau(k))
+            let coucher: Bool? = t.estNul(2) ? nil : t.booleen(2)
+            let sortie: Bool? = t.estNul(3) ? nil : t.booleen(3)
+            let rendu = CalendrierJuif.jourVoisin(t.texte(0), date: vendredi, heure: t.entier(1), apresCoucher: coucher,
+                                                  apresSortie: sortie).map { $0.jourJulien - vendredi.jourJulien }
+            let attendu: Int? = t.estNul(4) ? nil : t.entier(4)
+            #expect(rendu == attendu, "\(t)")
+        }
         let nuit = try #require(v.tableau("nuit"))
         for k in nuit.indices {
             let t = try #require(nuit.tableau(k))
