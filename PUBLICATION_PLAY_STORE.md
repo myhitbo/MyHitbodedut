@@ -291,8 +291,11 @@ version GitHub, qui est elle aussi une diffusion.
   déclaré étendu à tous ses morceaux. Il couvre l'intégration dans
   l'application, à trois conditions : son nom à côté de la musique
   (il est dans chaque titre), application gratuite, pas de téléchargement
-  des fichiers. La dernière n'est **pas réglée** : le dépôt est public et
-  le site sert l'audio en fichiers statiques, comme pour les autres
+  des fichiers. La dernière veut dire, précise le propriétaire, que
+  l'utilisateur ne peut pas télécharger la musique mais seulement l'écouter
+  dans l'application : c'est le cas, ni l'application ni le site n'offrent
+  de téléchargement (vérifié le 26/11). Les fichiers gardent une adresse
+  directe sur le site et sont dans le dépôt public, comme ceux des autres
   artistes. Dix morceaux livrés ; le reste de son catalogue (une vingtaine
   de sorties) n'a pas pu être récupéré en ligne et attend ses fichiers.
 - **Le plafond de poids** passe de 150 à 230 Mo (`MusicFilesTest`), sur

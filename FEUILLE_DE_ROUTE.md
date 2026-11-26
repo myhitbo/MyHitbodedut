@@ -284,10 +284,15 @@ perdre :
    § 3.2 exige un écrit pour tout morceau livré sur Play, et `yanuka_nigoun_3`
    y est livré sous la mention « à conserver par écrit ». Cet écrit n'existe
    pas. Un simple message du Yanuka ou de son entourage suffirait.
-2. **« Pas de téléchargement des fichiers ».** Le dépôt est public : les MP3
-   de Shneor Lerer rangés dans `musique/` sont téléchargeables par n'importe
-   qui, et le site sert l'audio en fichiers statiques. À régler avant de lui
-   confirmer cette condition.
+2. **« Pas de téléchargement des fichiers »** (בלי הורדה של הקבצים). Le
+   propriétaire en a précisé le sens le 26/11 : l'utilisateur ne doit pas
+   pouvoir télécharger la musique, seulement l'écouter dans l'application.
+   Vérifié le même jour : l'application Android ne partage ni n'exporte
+   aucun morceau (elle ne partage que du texte et des images), et le site
+   les joue par un lecteur sans commandes ni lien vers les fichiers. Ce qui
+   reste vrai hors de l'application : les fichiers ont une adresse directe
+   sur le site et sont dans ce dépôt, qui est public. On ne les obtient pas
+   par l'application, mais qui les cherche les trouve.
 3. **Le reste du catalogue de Shneor Lerer.** Le propriétaire a demandé
    « tout Lerer, cherche sur internet ». Une vingtaine de sorties manquent,
    et elles n'ont pas pu être récupérées : il n'existe pas de téléchargement
@@ -307,7 +312,8 @@ perdre :
 J'avais recommandé l'inverse sur les deux derniers points — sortir les
 sans-titre, et garder le Yanuka hors de Play tant qu'il n'y a pas d'écrit.
 C'est son projet et son appel ; le désaccord est écrit ici pour la même
-raison que les précédents. Les points 1 et 2 ci-dessus restent ouverts.
+raison que les précédents. Le point 1 ci-dessus reste ouvert ; le point 2
+est tenu, au sens que le propriétaire donne à la condition.
 
 La seconde a été demandée avant d'ajouter quoi que ce soit : ces cinq-là sont
 des enregistrements commerciaux d'artistes sous label, hors du périmètre de la
