@@ -95,7 +95,7 @@ prochain échange, quand les autres auront un nom.
 | `yosef_karduner` | 6,6 Mo |
 | `niggoun_08`, `niggoun_09`, `niggoun_16` *(3 sans titre)* | 27,4 Mo |
 
-**35 morceaux, 197,6 Mo.** L'APK est à 82,1 Mo d'audio sur 32 morceaux.
+**35 morceaux, 197,6 Mo.** L'APK est à 61,4 Mo d'audio sur 23 morceaux.
 
 > Cet inventaire est régénéré depuis les fichiers, pas tenu à la main.
 
@@ -124,3 +124,11 @@ Shneor Lerer s'ajoute aux noms déjà couverts par les déclarations du
 propriétaire (Rav Arush et le Yanuka ; puis Ishay Ribo, Motty Steinmetz, MBD
 et Shmuel). Il est noté ici parce que le registre ne vaut que s'il est tenu à
 jour — voir `FEUILLE_DE_ROUTE.md`.
+
+**Depuis le 26/11** : l'accord de Shneor Lerer est écrit (courriel du 21/11,
+conservé hors dépôt) et déclaré étendu à tous ses morceaux — son nom à côté
+de la musique, application gratuite, pas de téléchargement des fichiers.
+Dix fichiers d'ici sont de lui : les sept `*_lerer`, plus `ani_maamin`,
+`anim_zemirot` et `nigun_abaal_shem_tov_for_babies`. L'accord du Yanuka est
+**oral** ; les neuf `yanuka_*` d'ici ont été confirmés un par un comme étant
+bien de lui.

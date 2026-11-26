@@ -253,7 +253,7 @@ droits ; l'autorisation d'Ishay Ribo et de MBD n'a pas été demandée. D'où, *
 
 | Morceau livré | Version Play | Version GitHub |
 | --- | --- | --- |
-| `yanuka_nigoun_3` — ניגון — הינוקא (3) | **Livré** (accord du Yanuka, à conserver par écrit) | Livré |
+| `yanuka_nigoun_3` — ניגון — הינוקא (3) | **Livré** (accord du Yanuka — **oral** d'après la déclaration du 26/11 : l'écrit reste à obtenir, voir plus bas) | Livré |
 | `niggoun_01` … `niggoun_33` (30 fichiers) | **Retirés** tant que la provenance n'est pas établie | Livrés |
 | `hamelech_basade` — המלך בשדה | **Livré** — déclaré libre de droits par le propriétaire (29/10) ; voir la réserve ci-dessous | Livré |
 | `ribo_sans_titre` — Ishay Ribo | **Retiré** — autorisation non demandée (29/10), comme pour MBD | Retiré partout le 29/10 (application et site) |
@@ -275,6 +275,22 @@ ils entrent dans l'app, version Play comprise, et dans la version web.
 **Ishay Ribo, MBD, Motty Steinmetz, Shmuel** : autorisation non demandée.
 Hors de la version Play ; le propriétaire décide de leur place dans la
 version GitHub, qui est elle aussi une diffusion.
+
+**Déclarations du 26/11** (registre : `FEUILLE_DE_ROUTE.md`, « Musique — qui
+a autorisé quoi »). Aucun morceau n'a changé de place ce jour-là.
+
+- **Le Yanuka : accord oral.** L'exigence ci-dessus demande un écrit à
+  produire à la première demande de Google ; un accord oral n'y répond pas.
+  `yanuka_nigoun_3` reste livré sur décision du propriétaire, et l'écrit est
+  **à obtenir** (un message suffit). Les neuf autres `yanuka_*` sont dans
+  `musique/` ; sans écrit, leur place est la version GitHub, pas Play ni le
+  site.
+- **Shneor Lerer : accord écrit** (courriel du 21/11, conservé hors dépôt),
+  déclaré étendu à tous ses morceaux. Il couvre l'intégration dans
+  l'application, à trois conditions : son nom à côté de la musique,
+  application gratuite, pas de téléchargement des fichiers. La dernière est
+  à regarder avant toute livraison : le dépôt est public et le site sert
+  l'audio en fichiers statiques. Ses dix morceaux sont dans `musique/`.
 
 Audio de la version Play : 23 morceaux depuis le 16/11 (Yanuka 1, המלך בשדה 1,
 Noam Shpayer 8, Ianir 13 ; 26 et environ 70 Mo avant le retrait de trois

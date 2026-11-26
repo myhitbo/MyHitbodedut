@@ -264,6 +264,35 @@ qu'elles ne portent pas sur les mêmes ayants droit :
 | « j'ai aussi ces droits-là » — en réponse à une question posée sur ces cinq titres précisément | Ishay Ribo, Motty Steinmetz, MBD, Shmuel | Nafshi, Ata Zocher, Halev Sheli, un quatrième titre Ribo, Give Me One Prayer |
 | les envois suivants, sous la même déclaration | Shneor Lerer (Chabad Melodies), *Tzama with orchestra* | rangés dans `musique/`, hors APK |
 
+**Déclarations du 26/11**, consignées dans les mots du propriétaire :
+
+| déclaration du 26/11 | porte sur | forme de l'accord | morceaux |
+|---|---|---|---|
+| « J'ai eu son autorisation à l'oral du Yenuka » | le Yanuka | **orale** — aucun écrit | les 10 `yanuka_*`, confirmés un par un le même jour comme étant bien du Yanuka (aucun n'est d'Ianir) |
+| « j'ai eu son autorisation explicite », puis « לרר m'a confirmé tous ses sons » | Shneor Lerer | **écrite** : courriel du 21/11, conservé hors dépôt. La confirmation « tous ses morceaux » est déclarée ; sa forme n'a pas été précisée | les 10 fichiers de `musique/` qui sont de lui : les sept `*_lerer`, plus `ani_maamin`, `anim_zemirot` et `nigun_abaal_shem_tov_for_babies` (rattachés par le titre et la durée) |
+
+Le courriel de Shneor Lerer pose des conditions : son nom à côté de la
+musique ; l'application reste gratuite ; pas de téléchargement des fichiers ;
+il reste propriétaire des niggounim et peut retirer son accord à tout
+moment ; le prévenir de tout changement, et en reparler si l'application
+devient payante. Il attend une courte confirmation par courriel.
+
+Trois choses que ces déclarations ne règlent pas, notées pour ne pas les
+perdre :
+
+1. **Un accord oral ne se produit pas à la demande.** `PUBLICATION_PLAY_STORE.md`
+   § 3.2 exige un écrit pour tout morceau livré sur Play, et `yanuka_nigoun_3`
+   y est livré sous la mention « à conserver par écrit ». Cet écrit n'existe
+   pas. Un simple message du Yanuka ou de son entourage suffirait.
+2. **« Pas de téléchargement des fichiers ».** Le dépôt est public : les MP3
+   de Shneor Lerer rangés dans `musique/` sont téléchargeables par n'importe
+   qui, et le site sert l'audio en fichiers statiques. À régler avant de lui
+   confirmer cette condition.
+3. **Aucun morceau n'est entré dans l'application le 26/11.** Les dix de
+   Lerer et les neuf du Yanuka encore dans `musique/` pèsent environ 77 Mo en
+   AAC ; l'APK GitHub est à 146,2 Mo pour un plafond de 150. Y faire entrer
+   quoi que ce soit demande une décision du propriétaire sur le poids.
+
 La seconde a été demandée avant d'ajouter quoi que ce soit : ces cinq-là sont
 des enregistrements commerciaux d'artistes sous label, hors du périmètre de la
 première déclaration. Les livrer dans un APK distribué est une rediffusion, et
