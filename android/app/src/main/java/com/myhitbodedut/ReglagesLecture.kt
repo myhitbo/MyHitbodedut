@@ -41,6 +41,9 @@ import kotlin.math.roundToInt
  * de la barre, barré quand il est actif ; le même réglage que l'écran des zmanim (Store.sansTahanounLe),
  * pour le jour du texte affiché seulement.
  *
+ * Chnayim mikra (26/11) : dans le texte « Lecture de la Torah », un bouton « ×2 » / « ×1 » : le texte hébreu
+ * deux fois avant le Targoum (par défaut), ou une fois (Store.lectureHebreuUneFois).
+ *
  * Le défilement automatique (16/11, DefilementAuto) : un bouton de la barre fait monter le
  * texte tout seul ; pendant qu'il défile, une petite commande remplace la pastille :
  * moins vite, la vitesse, plus vite, arrêter. Toucher le texte l'arrête aussi.
@@ -57,6 +60,8 @@ class ReglagesLecture private constructor(
     private val auDessusDe: View?,
     /** Le jour du texte pour « Pas de Ta'hanoun aujourd'hui » (Q1) ; null : pas de bouton. */
     private val sansTahanoun: (() -> java.time.LocalDate)?,
+    /** Le bouton de Chnayim mikra (l'hébreu deux fois ou une). */
+    private val chnayimMikra: Boolean,
     private val surChangement: () -> Unit,
 ) {
     private val contexte: Context = activite
@@ -71,7 +76,8 @@ class ReglagesLecture private constructor(
      */
     private val bouton: Int = run {
         val largeur = contexte.resources.displayMetrics.widthPixels / densite
-        val nombre = 6 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0) + (if (sansTahanoun != null) 1 else 0)
+        val nombre = 6 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0) + (if (sansTahanoun != null) 1 else 0) +
+            (if (chnayimMikra) 1 else 0)
         (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(28, 48)
     }
 
@@ -102,6 +108,9 @@ class ReglagesLecture private constructor(
 
     /** « תחנון », barré quand « Pas de Ta'hanoun aujourd'hui » est actif pour le jour du texte (Q1). */
     private val tahanoun = TextView(contexte)
+
+    /** « ×2 » ou « ×1 » : le texte hébreu deux fois ou une avant le Targoum. */
+    private val fois = TextView(contexte)
 
     private val barre = LinearLayout(contexte).apply {
         orientation = LinearLayout.HORIZONTAL
@@ -207,6 +216,19 @@ class ReglagesLecture private constructor(
             setOnClickListener {
                 val jour = sansTahanoun.invoke()
                 Store.setSansTahanounLe(contexte, jour, !Store.sansTahanounLe(contexte, jour))
+                montrerEtat()
+                surChangement()
+            }
+        })
+        if (chnayimMikra) barre.addView(fois.apply {
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
+            gravity = Gravity.CENTER
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(surAccent)
+            contentDescription = contexte.getString(R.string.reglage_chnayim_mikra)
+            setOnClickListener {
+                Store.setLectureHebreuUneFois(contexte, !Store.lectureHebreuUneFois(contexte))
                 montrerEtat()
                 surChangement()
             }
@@ -355,6 +377,11 @@ class ReglagesLecture private constructor(
                 setColor(ColorUtils.setAlphaComponent(surAccent, 0x40))
             } else null
             ViewCompat.setStateDescription(tahanoun, contexte.getString(if (sans) R.string.lecture_tahanoun_oui else R.string.lecture_tahanoun_non))
+        }
+        if (chnayimMikra) {
+            val uneFois = Store.lectureHebreuUneFois(contexte)
+            fois.text = if (uneFois) "×1" else "×2"
+            ViewCompat.setStateDescription(fois, contexte.getString(if (uneFois) R.string.lecture_hebreu_une_fois else R.string.lecture_hebreu_deux_fois))
         }
     }
 
@@ -537,6 +564,7 @@ class ReglagesLecture private constructor(
             auDessusDe: View? = null,
             gardeSaPlace: Boolean = false,
             sansTahanoun: (() -> java.time.LocalDate)? = null,
+            chnayimMikra: Boolean = false,
             surChangement: () -> Unit,
         ): ReglagesLecture {
             // Une vue qui défile garde sa place quand les lettres grandissent ou que les langues
@@ -555,7 +583,7 @@ class ReglagesLecture private constructor(
                     }
                 }
             }
-            val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, sansTahanoun, garderPlace)
+            val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, sansTahanoun, chnayimMikra, garderPlace)
             reglages.defilementAuto = DefilementAuto(activite, defilement) { reglages.surDefilement(it) }
             reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement)
             if (defilement is RecyclerView) reglages.suivreListe(defilement) else reglages.suivreDefilement(defilement)

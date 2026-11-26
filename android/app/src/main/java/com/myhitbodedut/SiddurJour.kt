@@ -186,21 +186,26 @@ object SiddurJour {
          */
         data class Lecture(val cle: String, val lecture: LectureTorah.Lecture, val ouvert: Boolean, val haftara: Boolean = false) : Ligne()
 
-        /** Un passage d'une lecture ouverte : une montée ([montee], son libellé) ou un morceau de haftara (null). */
-        data class Passage(val montee: LectureTorah.Montee?, val passage: LectureTorah.Passage) : Ligne()
+        /**
+         * Un passage d'une lecture ouverte : une montée ([montee], son libellé) ou un morceau de haftara (null).
+         * [targoum] : Chnayim mikra véé'had targoum (le texte « Lecture de la Torah ») : chaque verset deux fois (ou une,
+         * selon le réglage), puis le Targoum Onkelos.
+         */
+        data class Passage(val montee: LectureTorah.Montee?, val passage: LectureTorah.Passage, val targoum: Boolean = false) : Ligne()
     }
 
     /**
      * Les lignes de [lectures] (26/11) : pour chacune, son bandeau replié (clé « [prefixe]:k ») et, ouverte, ses
      * montées ; puis, si elle en a une, sa haftara repliée à part (« [prefixe]:k:h »). Dans la lecture de
-     * Cha'harit, de Min'ha d'un jeûne, et dans le texte « Lecture de la Torah ».
+     * Cha'harit, de Min'ha d'un jeûne, et dans le texte « Lecture de la Torah » ([targoum] : ses montées avec le
+     * Targoum, pas sa haftara).
      */
-    fun lignesLecture(lectures: List<LectureTorah.Lecture>, prefixe: String, ouverts: Set<String>): List<Ligne> = buildList {
+    fun lignesLecture(lectures: List<LectureTorah.Lecture>, prefixe: String, ouverts: Set<String>, targoum: Boolean = false): List<Ligne> = buildList {
         lectures.forEachIndexed { k, l ->
             val cle = "$prefixe:$k"
             add(Ligne.Lecture(cle, l, cle in ouverts))
             if (cle in ouverts) {
-                l.montees.forEach { m -> add(Ligne.Passage(m, LectureTorah.Passage(m.livre, m.debut, m.fin))) }
+                l.montees.forEach { m -> add(Ligne.Passage(m, LectureTorah.Passage(m.livre, m.debut, m.fin), targoum)) }
                 add(Ligne.Fin(cle))
             }
             if (l.haftara.isNotEmpty()) {

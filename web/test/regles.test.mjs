@@ -312,7 +312,8 @@ test('un fichier de sauvegarde Android se relit, et l’export garde le même fo
   assert.equal(exporte.format, 'myhitbodedut');
   // Version 2 (audit du 12/11, FDONNEES-01) : le noussa'h et les réglages de lecture s'ajoutent aux réglages d'Android 1.
   assert.equal(exporte.version, 2);
-  const v2 = ['siddur_nusah', 'lecture_echelle', 'lecture_police', 'lecture_sombre', 'lecture_masquee', 'in_israel_manuel'];
+  // Chnayim mikra (26/11) : l'hébreu une fois avant le Targoum, gardé comme les autres réglages de lecture.
+  const v2 = ['siddur_nusah', 'lecture_echelle', 'lecture_police', 'lecture_sombre', 'lecture_masquee', 'in_israel_manuel', 'lecture_hebreu_une_fois'];
   assert.deepEqual(Object.keys(exporte.settings).sort(), [...Object.keys(android.settings), ...v2].sort());
   // Ce que l'iPhone ne sait pas régler repart tel qu'il est arrivé.
   assert.deepEqual([exporte.settings.window_start, exporte.settings.reminder_enabled], [360, true]);

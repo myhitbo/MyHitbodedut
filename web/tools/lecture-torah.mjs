@@ -26,7 +26,7 @@ export function decoupeTexte(texte) {
   const sortie = {};
   for (const [livre, chapitres] of Object.entries(texte.livres)) {
     if (!/^[A-Za-z ]+$/.test(livre)) throw new Error(`Livre inattendu : ${livre}`);
-    sortie[fichierLivre(livre)] = { livre, chapitres, paragraphes: texte.paragraphes[livre] ?? {} };
+    sortie[fichierLivre(livre)] = { livre, chapitres, paragraphes: texte.paragraphes?.[livre] ?? {} };
   }
   return sortie;
 }

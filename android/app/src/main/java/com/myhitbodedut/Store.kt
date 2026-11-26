@@ -97,6 +97,7 @@ object Store {
     private const val KEY_CALENDRIER_CIVIL = "calendrier_civil"
     private const val KEY_LECTURE_ECHELLE = "lecture_echelle"
     private const val KEY_LECTURE_SOMBRE = "lecture_sombre"
+    private const val KEY_LECTURE_HEBREU_UNE_FOIS = "lecture_hebreu_une_fois"
     private const val KEY_LECTURE_POLICE = "lecture_police"
     private const val KEY_LECTURE_DEFILEMENT_VITESSE = "lecture_defilement_vitesse"
     /** Les langues d'un texte à lire (04/11) : « he », « fr », « en », « he+fr », « he+en », « fr+en ». */
@@ -972,6 +973,13 @@ object Store {
         prefs(context).edit().putBoolean(KEY_LECTURE_SOMBRE, sombre).apply()
     }
 
+    /** Chnayim mikra (26/11) : le texte hébreu une seule fois avant le Targoum, au lieu de deux (par défaut). */
+    fun lectureHebreuUneFois(context: Context): Boolean = prefs(context).getBoolean(KEY_LECTURE_HEBREU_UNE_FOIS, false)
+
+    fun setLectureHebreuUneFois(context: Context, uneFois: Boolean) {
+        prefs(context).edit().putBoolean(KEY_LECTURE_HEBREU_UNE_FOIS, uneFois).apply()
+    }
+
     /**
      * Le bouton de lecture masqué tout à fait (demande du 04/10) : il ne
      * revient que par un appui long sur le texte, ou par l'action
@@ -1838,6 +1846,7 @@ object Store {
             .put("lecture_echelle", lectureEchelle(context).toDouble())
             .put("lecture_police", lecturePolice(context).cle)
             .put("lecture_sombre", lectureSombre(context))
+            .put("lecture_hebreu_une_fois", lectureHebreuUneFois(context))
             .put("lecture_masquee", lectureMasquee(context))
             .put("lecture_ecran_allume", lectureEcranAllume(context))
         lectureLangues(context)?.let { settings.put("lecture_langues", it) }
@@ -2021,6 +2030,7 @@ object Store {
             PoliceHebraique.Police.entries.firstOrNull { it.cle == settings.optString("lecture_police") }?.let { setLecturePolice(context, it) }
             LanguesTexte.Mode.entries.firstOrNull { it.cle == settings.optString("lecture_langues") }?.let { setLectureLangues(context, it.cle) }
             if (settings.has("lecture_sombre")) setLectureSombre(context, settings.optBoolean("lecture_sombre"))
+            if (settings.has("lecture_hebreu_une_fois")) setLectureHebreuUneFois(context, settings.optBoolean("lecture_hebreu_une_fois"))
             if (settings.has("lecture_masquee")) setLectureMasquee(context, settings.optBoolean("lecture_masquee"))
             if (settings.has("lecture_ecran_allume")) setLectureEcranAllume(context, settings.optBoolean("lecture_ecran_allume", true))
         }

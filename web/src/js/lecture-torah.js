@@ -10,7 +10,7 @@
 
 import { JewishCalendar } from '../vendor/kosher-zmanim-0.9.0.min.js';
 import { ajouteJours } from './calendrier.js';
-import { calendrier } from './calendrier-juif.js';
+import { calendrier, jour as jourJuif } from './calendrier-juif.js';
 import { PARSHIOT } from './halakha.js';
 
 const NISSAN = 1, SIVAN = 3, AV = 5, TISHREI = 7;
@@ -282,18 +282,49 @@ export function lectures(donnees, iso, office, { enIsrael = false, mukafChoma = 
 }
 
 /**
- * Le texte « Lecture de la Torah » (26/11, D1 ; LectureTorah.programme) : les lectures du jour [iso], Cha'harit et
- * Min'ha, Chabbat et Yom tov compris ; un jour sans lecture, la Cha'harit du prochain jour de lecture qui ne soit pas
- * celle d'un lundi ou d'un jeudi (le début de la paracha du Chabbat qui vient : c'est le Chabbat qu'on montre).
- * { date, aujourdhui, offices: [[office, lectures]] }.
+ * Ce que montre le texte « Lecture de la Torah » (LectureTorah.parachaSemaine ; demande du 26/11 : « Pas de Yom Tov,
+ * on ne lit pas chnayim mikra pour Yom Tov ») : la paracha de la semaine, pour Chnayim mikra véé'had targoum, celle
+ * du Chabbat qui vient ([iso] même si c'est Chabbat), avec ses montées, son maftir et sa haftara (ceux d'un Chabbat
+ * spécial qui garde sa paracha restent). Un Chabbat de Yom tov ou de 'Hol hamoed n'a pas de paracha : la suivante.
+ * { date, lecture }.
  */
-export function programme(donnees, iso, options = {}) {
-  const offices = OFFICES.map((o) => [o, lectures(donnees, iso, o, options)]).filter(([, l]) => l.length);
-  if (offices.length) return { date: iso, aujourdhui: true, offices };
-  for (let j = ajouteJours(iso, 1); ; j = ajouteJours(j, 1)) {
-    const l = lectures(donnees, j, 'chaharit', options);
-    if (l.length && !l.some((x) => x.cle.startsWith('semaine:'))) return { date: j, aujourdhui: false, offices: [['chaharit', l]] };
-  }
+export function parachaSemaine(donnees, iso, options = {}) {
+  const il = !!options.enIsrael;
+  const muk = !!options.mukafChoma && il;
+  let j = chabbatSuivant(iso);
+  while (!cal(j, il, muk).getParsha()) j = ajouteJours(j, 7);
+  const [lecture] = lectures(donnees, j, 'chaharit', options);
+  return { date: j, lecture };
+}
+
+/** Le jour [j] (calendrier-juif.js, jour) a-t-il une lecture à l'office de semaine [office] ? Jamais Chabbat ni Yom tov. */
+export function litDansLOffice(j, office) {
+  if (j.chome) return false;
+  if (office === 'chaharit') return j.conditions.has('kriat_hatorah');
+  if (office === 'minha') return j.conditions.has('jeune');
+  return false;
+}
+
+/**
+ * La lecture d'un office de semaine du siddour, à sa place (LectureTorah.lecturesOffice) : à Cha'harit les jours où
+ * l'on lit, à Min'ha les jours de jeûne ; jamais un Chabbat ni un Yom tov (le siddour n'en a pas l'office).
+ */
+export function lecturesOffice(donnees, iso, office, options = {}) {
+  const j = jourJuif(iso, !!options.enIsrael, !!options.mukafChoma);
+  return litDansLOffice(j, office) ? lectures(donnees, iso, office, options) : [];
+}
+
+/**
+ * Chnayim mikra véé'had targoum (LectureTorah.chnayimMikra) : verset par verset, l'hébreu deux fois ([uneFois] :
+ * une), puis le Targoum Onkelos. [hebreu], [targoum] : les versets d'un passage (versets()), alignés.
+ * [{ c, v, t, targoum }].
+ */
+export function chnayimMikra(hebreu, targoum, uneFois = false) {
+  if (hebreu.length !== targoum.length || hebreu.some((x, k) => x.c !== targoum[k].c || x.v !== targoum[k].v)) throw new Error('Targoum non aligné');
+  return hebreu.flatMap((x, k) => [
+    ...Array.from({ length: uneFois ? 1 : 2 }, () => ({ c: x.c, v: x.v, t: x.t, targoum: false })),
+    { c: x.c, v: x.v, t: targoum[k].t, targoum: true },
+  ]);
 }
 
 /** « Genèse 32:4–13 » (LectureTorah.reference) : [nom] traduit le nom du livre ({ he, fr, en } → texte). */
@@ -338,4 +369,15 @@ export function chargeDonnees(lire = (u) => fetch(u).then((r) => r.json())) {
 export function chargeLivre(livre, lire = (u) => fetch(u).then((r) => r.json())) {
   if (!livres.has(livre)) livres.set(livre, lire(`data/lecture_torah/${fichierLivre(livre)}.json`));
   return livres.get(livre);
+}
+
+const targoums = new Map();
+
+/**
+ * Le Targoum Onkelos d'un livre de la Torah, à la demande (data/lecture_torah/targoum/<livre>.json, découpé par
+ * build.mjs dans lecture_torah_targoum.json) : seulement dans le texte « Lecture de la Torah ».
+ */
+export function chargeTargoum(livre, lire = (u) => fetch(u).then((r) => r.json())) {
+  if (!targoums.has(livre)) targoums.set(livre, lire(`data/lecture_torah/targoum/${fichierLivre(livre)}.json`));
+  return targoums.get(livre);
 }

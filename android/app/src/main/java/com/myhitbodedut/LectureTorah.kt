@@ -385,31 +385,46 @@ object LectureTorah {
     val TITRE = LocalizedText("קְרִיאַת הַתּוֹרָה", "Lecture de la Torah", "Torah reading")
 
     /**
-     * Ce que montre le texte « Lecture de la Torah » : les lectures de [date] (Cha'harit, Min'ha), Chabbat et Yom tov
-     * compris ; un jour sans lecture, la Cha'harit du prochain jour de lecture ([aujourdhui] faux, [date] ce jour-là),
-     * le plus souvent le Chabbat qui vient : la lecture de lundi ou de jeudi, qui n'est que le début de sa paracha, est
-     * passée ; une fête, Roch 'Hodech ou un jeûne qui tombe avant ne l'est pas.
+     * Ce que montre le texte « Lecture de la Torah » (demande du 26/11 : « Pas de Yom Tov, on ne lit pas chnayim
+     * mikra pour Yom Tov ») : la paracha de la semaine, pour Chnayim mikra véé'had targoum. C'est la paracha lue le
+     * Chabbat qui vient ([date] même si c'est Chabbat), avec ses montées, son maftir et sa haftara (ceux d'un Chabbat
+     * spécial qui garde sa paracha restent : Chekalim, Zakhor, Roch 'Hodech, 'Hanouka…). Un Chabbat de Yom tov ou de
+     * 'Hol hamoed n'a pas de paracha : la suivante, au Chabbat qui en a une ([date] de ce Chabbat). Deux parachiot
+     * jointes : les deux, en une lecture. Jamais une lecture de fête, ni celle d'un lundi, d'un jeudi ou d'un jeûne.
      */
-    data class Programme(val date: LocalDate, val aujourdhui: Boolean, val offices: List<Pair<String, List<Lecture>>>)
+    data class ParachaSemaine(val date: LocalDate, val lecture: Lecture)
 
-    fun programme(d: Donnees, date: LocalDate, enIsrael: Boolean, mukafChoma: Boolean = false, nusah: String = "edot"): Programme {
-        val offices = OFFICES.map { it to lectures(d, date, it, enIsrael, mukafChoma, nusah) }.filter { it.second.isNotEmpty() }
-        if (offices.isNotEmpty()) return Programme(date, true, offices)
-        var j = date.plusDays(1)
-        while (true) {
-            val l = lectures(d, j, CHAHARIT, enIsrael, mukafChoma, nusah)
-            if (l.isNotEmpty() && l.none { it.cle.startsWith("semaine:") }) return Programme(j, false, listOf(CHAHARIT to l))
-            j = j.plusDays(1)
-        }
+    fun parachaSemaine(d: Donnees, date: LocalDate, enIsrael: Boolean, mukafChoma: Boolean = false, nusah: String = "edot"): ParachaSemaine {
+        var j = chabbatSuivant(date)
+        while (cal(j, enIsrael, mukafChoma && enIsrael).parshah == JewishCalendar.Parsha.NONE) j = j.plusDays(7)
+        return ParachaSemaine(j, lectures(d, j, CHAHARIT, enIsrael, mukafChoma, nusah).single())
+    }
+
+    /**
+     * La lecture d'un office de semaine du siddour, à sa place (26/11) : à Cha'harit les jours où l'on lit
+     * ([CalendrierJuif.C.KRIAT_HATORAH] : lundi, jeudi, Roch 'Hodech, 'Hol hamoed, 'Hanouka, Pourim, jeûnes), à Min'ha
+     * les jours de jeûne ; jamais un Chabbat ni un Yom tov (le siddour n'en a pas l'office : « Pas de Yom Tov »).
+     */
+    fun lecturesOffice(d: Donnees, date: LocalDate, office: String, enIsrael: Boolean, mukafChoma: Boolean = false, nusah: String = "edot"): List<Lecture> =
+        if (litDansLOffice(CalendrierJuif.jour(date, enIsrael, mukafChoma), office)) lectures(d, date, office, enIsrael, mukafChoma, nusah) else emptyList()
+
+    /** Le jour [j] a-t-il une lecture à l'office de semaine [office] (sans lire les données) ? */
+    fun litDansLOffice(j: CalendrierJuif.Jour, office: String): Boolean = !j.chome && when (office) {
+        CHAHARIT -> CalendrierJuif.C.KRIAT_HATORAH in j.conditions
+        MINHA -> CalendrierJuif.C.JEUNE in j.conditions
+        else -> false
     }
 
     // --- Le texte ---------------------------------------------------------------------------------------
 
-    /** lecture_torah_texte.json : les versets lus, livre par livre. */
+    /**
+     * lecture_torah_texte.json : les versets lus, livre par livre ; lecture_torah_targoum.json, le Targoum Onkelos
+     * (tools/lecture_torah_targoum.py), de même forme et de même versification, sans marques de paragraphe.
+     */
     class Texte(json: String) {
         private val o = JSONObject(json)
         private val livres = o.getJSONObject("livres")
-        private val paragraphes = o.getJSONObject("paragraphes")
+        private val paragraphes = o.optJSONObject("paragraphes") ?: JSONObject()
 
         fun versets(p: Passage): List<Verset> = versets(p.livre, p.debut, p.fin)
 
@@ -429,6 +444,21 @@ object LectureTorah {
         }
     }
 
+    /** Une ligne de Chnayim mikra : un verset en hébreu ([targoum] faux) ou en araméen. */
+    data class LigneMikra(val chapitre: Int, val verset: Int, val texte: String, val targoum: Boolean)
+
+    /**
+     * Chnayim mikra véé'had targoum (26/11) : verset par verset, le texte hébreu deux fois ([uneFois] : une), puis le
+     * Targoum Onkelos du même verset. [hebreu] et [targoum] : les versets d'un même passage, alignés (même
+     * versification, tools/lecture_torah_targoum.py).
+     */
+    fun chnayimMikra(hebreu: List<Verset>, targoum: List<Verset>, uneFois: Boolean = false): List<LigneMikra> {
+        require(hebreu.map { it.chapitre to it.verset } == targoum.map { it.chapitre to it.verset }) { "Targoum non aligné" }
+        return hebreu.zip(targoum).flatMap { (h, t) ->
+            List(if (uneFois) 1 else 2) { LigneMikra(h.chapitre, h.verset, h.texte, false) } + LigneMikra(t.chapitre, t.verset, t.texte, true)
+        }
+    }
+
     // --- Les ressources ----------------------------------------------------------------------------------
 
     @Volatile
@@ -436,6 +466,9 @@ object LectureTorah {
 
     @Volatile
     private var texteLu: Texte? = null
+
+    @Volatile
+    private var targoumLu: Texte? = null
 
     /** Les lectures (117 ko), lues une fois par processus. */
     fun donnees(context: Context): Donnees =
@@ -450,5 +483,14 @@ object LectureTorah {
     fun texte(context: Context): Texte =
         texteLu ?: synchronized(this) {
             texteLu ?: Texte(Json.readRaw(context.applicationContext, R.raw.lecture_torah_texte)).also { texteLu = it }
+        }
+
+    /** Le Targoum s'il est déjà lu. */
+    fun targoumEnMemoire(): Texte? = targoumLu
+
+    /** Le Targoum Onkelos (1,3 Mo), pour Chnayim mikra : hors du fil principal, une fois par processus. */
+    fun targoum(context: Context): Texte =
+        targoumLu ?: synchronized(this) {
+            targoumLu ?: Texte(Json.readRaw(context.applicationContext, R.raw.lecture_torah_targoum)).also { targoumLu = it }
         }
 }

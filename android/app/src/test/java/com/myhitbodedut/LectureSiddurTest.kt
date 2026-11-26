@@ -3,6 +3,7 @@ package com.myhitbodedut
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.json.JSONObject
 import org.junit.Test
 import java.io.File
 import java.time.LocalDate
@@ -21,7 +22,7 @@ class LectureSiddurTest {
         val date = LocalDate.parse(iso)
         val texte = siddurs.getValue(nusah).texte(office)!!
         val annotations = SiddurJour.parse(annotationsJson, nusah).getValue(office)
-        val lectures = LectureTorah.lectures(d, date, office, il, false, nusah)
+        val lectures = LectureTorah.lecturesOffice(d, date, office, il, false, nusah)
         return SiddurJour.lignes(texte, annotations, CalendrierJuif.jour(date, il).conditions, ouverts, nusah, il, lectures = lectures)
     }
 
@@ -103,31 +104,67 @@ class LectureSiddurTest {
     }
 
     @Test
-    fun `le texte « Lecture de la Torah », Chabbat matin et Minha, Chemini Atseret, un jour sans lecture`() {
-        // Chabbat 28/11/2026 : Vayichla'h le matin (sept montées et le maftir, haftara), le début de Vayéchev à Min'ha.
-        val chabbat = LectureTorah.programme(d, LocalDate.parse("2026-11-28"), false, false, "edot")
-        assertTrue(chabbat.aujourdhui)
-        assertEquals(listOf(LectureTorah.CHAHARIT, LectureTorah.MINHA), chabbat.offices.map { it.first })
-        assertEquals("parasha:VAYISHLACH", chabbat.offices[0].second.single().cle)
-        assertEquals("Obadiah", chabbat.offices[0].second.single().haftara.single().livre)
-        assertEquals("semaine:VAYESHEV", chabbat.offices[1].second.single().cle)
-        val l = SiddurJour.lignesLecture(chabbat.offices[0].second, "lecture:chaharit:2026-11-28", emptySet())
-        assertEquals(listOf(false, true), l.filterIsInstance<SiddurJour.Ligne.Lecture>().map { it.haftara })
-        // Chemini Atsérèt un Chabbat (03/10/2026) : Sim'hat Torah en Israël, Chemini Atsérèt en diaspora.
-        val il = LectureTorah.programme(d, LocalDate.parse("2026-10-03"), true, false, "ashkenaz")
-        val dia = LectureTorah.programme(d, LocalDate.parse("2026-10-03"), false, false, "ashkenaz")
-        assertEquals("Simchat Torah (on Shabbat)", il.offices[0].second.single().cle)
-        assertEquals("Shmini Atzeret (on Shabbat)", dia.offices[0].second.single().cle)
-        assertTrue(il != dia) // la question Israël ou diaspora est posée tant que le statut n'est pas confirmé
-        // Un mardi sans lecture (24/11/2026) : la paracha du Chabbat qui vient, avec sa date (la lecture de jeudi n'est
-        // que son début) ; un lundi a la sienne.
-        val mardi = LectureTorah.programme(d, LocalDate.parse("2026-11-24"), false, false, "edot")
-        assertFalse(mardi.aujourdhui)
+    fun `pas de Yom tov ni de Chabbat dans les offices de semaine, le reste garde sa lecture`() {
+        // Le siddour n'a pas l'office de Chabbat ni de Yom tov : leur lecture n'y vient jamais (« Pas de Yom Tov »).
+        for (nusah in LectureTorah.NUSAH) {
+            for (iso in listOf("2026-11-28", "2026-04-02", "2026-10-03")) assertTrue("$nusah $iso", lecturesDe(lignes(nusah, "chaharit", iso)).isEmpty())
+            assertTrue(nusah, lecturesDe(lignes(nusah, "minha", "2026-09-21")).isEmpty()) // Kippour
+            // 'Hol hamoed, 'Hanouka : la lecture reste.
+            assertEquals("Pesach Chol ha-Moed Day 1", lecturesDe(lignes(nusah, "chaharit", "2026-04-05")).single().lecture.cle)
+            assertEquals("Chanukah Day 3", lecturesDe(lignes(nusah, "chaharit", "2026-12-07")).single().lecture.cle)
+        }
+        val jour = CalendrierJuif.jour(LocalDate.parse("2026-11-28"), false)
+        assertTrue(CalendrierJuif.C.KRIAT_HATORAH in jour.conditions && !LectureTorah.litDansLOffice(jour, LectureTorah.CHAHARIT))
+    }
+
+    private fun semaine(iso: String, il: Boolean = false, nusah: String = "edot") = LectureTorah.parachaSemaine(d, LocalDate.parse(iso), il, false, nusah)
+
+    @Test
+    fun `le texte « Lecture de la Torah », la paracha de la semaine, jamais une lecture de Yom tov`() {
+        // Un mardi (24/11/2026) : la paracha du Chabbat qui vient, ses sept montées, le maftir et la haftara.
+        val mardi = semaine("2026-11-24")
         assertEquals(LocalDate.parse("2026-11-28"), mardi.date)
-        assertEquals("parasha:VAYISHLACH", mardi.offices.single().second.single().cle)
-        assertTrue(LectureTorah.programme(d, LocalDate.parse("2026-11-23"), false, false, "edot").aujourdhui)
-        // Un dimanche avant Roch 'Hodech Kislev (mardi 10/11/2026) : celui-ci d'abord, la lecture de lundi passée.
-        assertEquals("Rosh Chodesh", LectureTorah.programme(d, LocalDate.parse("2026-11-08"), false, false, "edot").offices.single().second.single().cle)
+        assertEquals("parasha:VAYISHLACH", mardi.lecture.cle)
+        assertEquals(8, mardi.lecture.montees.size)
+        assertEquals("Obadiah", mardi.lecture.haftara.single().livre)
+        // Le Chabbat même : la sienne.
+        assertEquals(mardi, semaine("2026-11-28"))
+        // La semaine avant Souccot (Souccot un Chabbat, puis Chemini Atsérèt un Chabbat) et celle de Sim'hat Torah : Berèchit.
+        for (il in listOf(true, false)) assertEquals(LocalDate.parse("2026-10-10"), semaine("2026-09-22", il).date)
+        assertEquals("Berèchit", semaine("2026-10-04").lecture.titre.fr)
+        assertTrue(semaine("2026-10-04").lecture.cle.startsWith("parasha:BERESHIS"))
+        // Avant Pessa'h 5786 : le Chabbat de 'Hol hamoed n'a pas de paracha, Chemini le 11/04.
+        assertEquals(LocalDate.parse("2026-04-11") to "parasha:SHMINI", semaine("2026-03-31", nusah = "ashkenaz").let { it.date to it.lecture.cle })
+        // 5789 : le 8e jour de Pessa'h un Chabbat en diaspora ; Chemini dès le 07/04 en Israël, le 14/04 en diaspora.
+        assertEquals(LocalDate.parse("2029-04-07"), semaine("2029-04-03", true, "ashkenaz").date)
+        assertEquals(LocalDate.parse("2029-04-14"), semaine("2029-04-03", false, "ashkenaz").date)
+        assertTrue(semaine("2029-04-03", false, "ashkenaz").lecture.cle.startsWith("parasha:SHMINI"))
+        // Deux parachiot jointes : Matot-Masé (31/07/2027), une lecture.
+        val jointes = semaine("2027-07-27", nusah = "ashkenaz")
+        assertEquals("parasha:MATOS_MASEI", jointes.lecture.cle)
+        assertEquals("Matot-Masé", jointes.lecture.titre.fr)
+        assertEquals("30:2" to "36:13", jointes.lecture.montees.first().debut to jointes.lecture.montees[6].fin)
+        // Chabbat Chekalim (Vayakhel, 06/03/2027) : son maftir et sa haftara restent.
+        for (nusah in LectureTorah.NUSAH) {
+            val chekalim = semaine("2027-03-02", nusah = nusah).lecture
+            assertTrue(nusah, chekalim.cle.startsWith("parasha:VAYAKHEL+Shabbat Shekalim"))
+            assertEquals("30:11", chekalim.montees.last().debut)
+            assertEquals("II Kings", chekalim.haftara.first().livre)
+            assertTrue(chekalim.raisons.isNotEmpty())
+        }
+        // Jamais une fête ni un jour de semaine, dans tout un cycle.
+        var j = LocalDate.parse("2026-09-01")
+        while (j < LocalDate.parse("2027-10-01")) {
+            for (il in listOf(true, false)) {
+                val p = semaine(j.toString(), il)
+                assertTrue("$j", p.lecture.cle.startsWith("parasha:") && p.date.dayOfWeek == java.time.DayOfWeek.SATURDAY && !p.date.isBefore(j))
+            }
+            j = j.plusDays(1)
+        }
+        // Ses lignes : les montées avec le Targoum, pas la haftara.
+        val l = SiddurJour.lignesLecture(listOf(mardi.lecture), "lecture:semaine:2026-11-28", setOf("lecture:semaine:2026-11-28:0", "lecture:semaine:2026-11-28:0:h"), targoum = true)
+        val passages = l.filterIsInstance<SiddurJour.Ligne.Passage>()
+        assertEquals(List(8) { true } + false, passages.map { it.targoum })
         // Le titre : « Lecture de la Torah », en tête des textes de certains moments, dans les trois nusah.
         assertEquals("Lecture de la Torah", LectureTorah.TITRE.fr)
         val liste = File("src/main/java/com/myhitbodedut/SiddurActivity.kt").readText()
@@ -135,23 +172,75 @@ class LectureSiddurTest {
         siddurs.values.forEach { s -> assertTrue(s.groupes.any { it.cle == "moments" }) }
     }
 
+    private val texte = LectureTorah.Texte(File("src/main/res/raw/lecture_torah_texte.json").readText())
+    private val targoum = LectureTorah.Texte(File("src/main/res/raw/lecture_torah_targoum.json").readText())
+
+    @Test
+    fun `Chnayim mikra, l hebreu deux fois puis le Targoum, ou une fois selon le reglage`() {
+        val p = LectureTorah.Passage("Genesis", "32:4", "32:6")
+        val deux = LectureTorah.chnayimMikra(texte.versets(p), targoum.versets(p))
+        assertEquals(listOf(4, 4, 4, 5, 5, 5, 6, 6, 6), deux.map { it.verset })
+        assertEquals(listOf(false, false, true, false, false, true, false, false, true), deux.map { it.targoum })
+        assertEquals(texte.versets(p)[0].texte, deux[0].texte)
+        assertEquals(deux[0], deux[1])
+        assertEquals(targoum.versets(p)[0].texte, deux[2].texte)
+        assertTrue(deux[2].texte.startsWith("וּשְׁלַח יַעֲקֹב אִזְגַּדִּין"))
+        val une = LectureTorah.chnayimMikra(texte.versets(p), targoum.versets(p), uneFois = true)
+        assertEquals(listOf(false, true, false, true, false, true), une.map { it.targoum })
+        // Le réglage : gardé avec les autres réglages de lecture, deux fois par défaut ; le bouton du texte seul.
+        val store = File("src/main/java/com/myhitbodedut/Store.kt").readText()
+        assertTrue(store.contains("getBoolean(KEY_LECTURE_HEBREU_UNE_FOIS, false)") && store.contains(".put(\"lecture_hebreu_une_fois\""))
+        val activite = File("src/main/java/com/myhitbodedut/SiddurLectureActivity.kt").readText()
+        assertTrue(activite.contains("chnayimMikra = !livre && id == LectureTorah.ID_TEXTE"))
+        assertTrue(activite.contains("Store.lectureHebreuUneFois(this@SiddurLectureActivity)"))
+    }
+
+    @Test
+    fun `le Targoum Onkelos, meme versification que le texte, cinq livres, domaine public`() {
+        val t = JSONObject(File("src/main/res/raw/lecture_torah_targoum.json").readText())
+        val h = JSONObject(File("src/main/res/raw/lecture_torah_texte.json").readText()).getJSONObject("livres")
+        val livres = t.getJSONObject("livres")
+        assertEquals(setOf("Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy"), livres.keys().asSequence().toSet())
+        var versets = 0
+        for (livre in livres.keys()) {
+            val a = livres.getJSONObject(livre)
+            val b = h.getJSONObject(livre)
+            assertEquals(livre, b.length(), a.length())
+            for (c in a.keys()) {
+                assertEquals("$livre $c", b.getJSONArray(c).length(), a.getJSONArray(c).length())
+                versets += a.getJSONArray(c).length()
+            }
+        }
+        assertEquals(5847, versets)
+        // Bamidbar 25:19 rendu à son verset ; la licence et la source dans _meta et l'écran des licences.
+        assertEquals("וַהֲוָה בָּתַר מוֹתָנָא׃", livres.getJSONObject("Numbers").getJSONArray("25").getString(18))
+        assertEquals("Public Domain", t.getJSONObject("_meta").getString("licence"))
+        for (dossier in listOf("values", "values-en", "values-iw", "values-es", "values-ar-rTN")) {
+            assertTrue(dossier, File("src/main/res/$dossier/strings.xml").readText().contains("toratemetfreeware.com"))
+        }
+    }
+
     @Test
     fun `la question Israel ou diaspora tient compte de la lecture`() {
-        // Le 9 Tichri n'a pas de lecture ; le 23 Tichri (dimanche 04/10/2026) : Sim'hat Torah en diaspora, rien en Israël.
-        val date = LocalDate.parse("2026-10-04")
+        // Dimanche 27/09/2026 (17 Tichri) : 'Hol hamoed en Israël, sa lecture ; second jour de Souccot en diaspora (Yom tov,
+        // rien dans l'office de semaine).
+        val date = LocalDate.parse("2026-09-27")
+        assertEquals("Sukkot Chol ha-Moed Day 1 (Israel)", LectureTorah.lecturesOffice(d, date, "chaharit", true).single().cle)
+        assertTrue(LectureTorah.lecturesOffice(d, date, "chaharit", false).isEmpty())
         val texte = siddurs.getValue("edot").texte("chaharit")!!
         val annotations = SiddurJour.parse(annotationsJson, "edot").getValue("chaharit")
         val israel = CalendrierJuif.jour(date, true).conditions
         val diaspora = CalendrierJuif.jour(date, false).conditions
         assertTrue(SiddurJour.dependDeLaRegion(texte, annotations, israel, diaspora, "edot",
-            lecturesIsrael = LectureTorah.lectures(d, date, "chaharit", true), lecturesDiaspora = LectureTorah.lectures(d, date, "chaharit", false)))
+            lecturesIsrael = LectureTorah.lecturesOffice(d, date, "chaharit", true), lecturesDiaspora = LectureTorah.lecturesOffice(d, date, "chaharit", false)))
     }
 
     @Test
     fun `les chaines de la lecture dans les cinq langues, et la licence d'hebcal`() {
         for (dossier in listOf("values", "values-en", "values-iw", "values-es", "values-ar-rTN")) {
             val xml = File("src/main/res/$dossier/strings.xml").readText()
-            for (cle in listOf("lecture_titre", "lecture_haftara", "lecture_prochaine", "lecture_jour")) assertTrue("$dossier $cle", xml.contains("name=\"$cle\""))
+            for (cle in listOf("lecture_titre", "lecture_haftara", "lecture_paracha_semaine", "lecture_paracha_chabbat", "reglage_chnayim_mikra",
+                    "lecture_hebreu_deux_fois", "lecture_hebreu_une_fois")) assertTrue("$dossier $cle", xml.contains("name=\"$cle\""))
             assertTrue(dossier, xml.contains("<plurals name=\"lecture_montees\">"))
             assertTrue(dossier, xml.contains("@hebcal/leyning") && xml.contains("BSD") && xml.contains("Tanach with Ta’amei Hamikra"))
         }

@@ -52,6 +52,9 @@ class SiddurLectureActivity : AppCompatActivity() {
      */
     private object QuestionRegion
 
+    /** L'en-tête du texte « Lecture de la Torah » : « Paracha de la semaine : Vayichla'h », puis le Chabbat et sa date. */
+    private data class EnTete(val titre: String, val detail: String)
+
     /** Le jour hébreu du texte affiché, pour « Pas de Ta'hanoun aujourd'hui » de la barre de lecture (Q1). */
     private var dateTahanoun: LocalDate = LocalDate.now()
 
@@ -95,7 +98,9 @@ class SiddurLectureActivity : AppCompatActivity() {
         }
         // « Pas de Ta'hanoun aujourd'hui » dans la barre (26/11, Q1) : à Cha'harit et à Min'ha, le même réglage que les zmanim.
         val avecTahanoun = !livre && id in setOf("chaharit", "minha")
-        ReglagesLecture.installer(this, liste, avecNusah = !livre, sansTahanoun = if (avecTahanoun) ({ dateTahanoun }) else null) {
+        // Chnayim mikra (26/11) : dans le texte « Lecture de la Torah », l'hébreu deux fois ou une avant le Targoum.
+        ReglagesLecture.installer(this, liste, avecNusah = !livre, sansTahanoun = if (avecTahanoun) ({ dateTahanoun }) else null,
+            chnayimMikra = !livre && id == LectureTorah.ID_TEXTE) {
             // Même nusah : on garde sa place ; un autre nusah n'a pas les mêmes paragraphes.
             afficher(garderPlace = recueil().nusah == nusahAffiche)
         }
@@ -342,23 +347,26 @@ class SiddurLectureActivity : AppCompatActivity() {
         val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
             listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
         val nusah = Store.siddurNusah(this).cle
-        // La lecture de la Torah du jour (26/11) : à Cha'harit les jours de lecture, à Min'ha les jours de jeûne ; les
-        // données (117 ko) ne sont lues que ces jours-là, le texte (2,2 Mo) hors du fil principal, quand on déplie.
-        val avecLecture = !livre && ((id == "chaharit" && CalendrierJuif.C.KRIAT_HATORAH in jour.conditions) ||
-            (id == "minha" && CalendrierJuif.C.JEUNE in jour.conditions))
+        // La lecture de la Torah du jour (26/11) : à Cha'harit les jours de lecture, à Min'ha les jours de jeûne, jamais un
+        // Chabbat ni un Yom tov (LectureTorah.lecturesOffice) ; les données (117 ko) ne sont lues que ces jours-là, le
+        // texte (2,2 Mo) hors du fil principal, quand on déplie.
+        val avecLecture = !livre && (LectureTorah.litDansLOffice(jourPour(true), id) || LectureTorah.litDansLOffice(jourPour(false), id))
         fun lecturesPour(enIsrael: Boolean) = if (!avecLecture) emptyList()
-            else LectureTorah.lectures(LectureTorah.donnees(this), dateJour, id, enIsrael, Store.mukafChoma(this), nusah)
+            else LectureTorah.lecturesOffice(LectureTorah.donnees(this), dateJour, id, enIsrael, Store.mukafChoma(this), nusah)
         // Israël ou diaspora non confirmé (26/11, Q7) : demandé quand le texte en dépend aujourd'hui.
         val question = if (!livre && annotations.isNotEmpty() && !Store.regionConfirmee(this) && SiddurJour.dependDeLaRegion(
                 texte, annotations, Store.conditionsDuJour(this, jourPour(true)), Store.conditionsDuJour(this, jourPour(false)), nusah,
                 Store.sansTahanounFinTichri(this), Store.hemisphereSud(this), voisinPour(true), voisinPour(false),
                 lecturesPour(true), lecturesPour(false))) listOf(QuestionRegion) else emptyList()
-        val lignes: List<Any> = if (lectureSeule) lignesLectureSeule(dateJour, israel, nusah, siddur) else
+        val lignes: List<Any> = if (lectureSeule) lignesLectureSeule(dateJour, israel, nusah) else
             sansTraduction + partielle + auto + note + question + SiddurJour.lignes(texte, annotations,
             Store.conditionsDuJour(this, jour), ouverts, nusah, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this), voisinPour(israel),
             lecturesPour(israel))
         // Une lecture dépliée : son texte se lit hors du fil principal, puis l'écran se redessine (26/11).
-        if (lignes.any { it is SiddurJour.Ligne.Passage } && LectureTorah.texteEnMemoire() == null) demanderTexteLecture()
+        // Chnayim mikra : le Targoum aussi (1,3 Mo).
+        val avecTargoum = lignes.any { it is SiddurJour.Ligne.Passage && it.targoum }
+        if ((lignes.any { it is SiddurJour.Ligne.Passage } && LectureTorah.texteEnMemoire() == null) ||
+            (avecTargoum && LectureTorah.targoumEnMemoire() == null)) demanderTexteLecture(avecTargoum)
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager
         val place = gestion.findFirstVisibleItemPosition()
@@ -564,43 +572,40 @@ class SiddurLectureActivity : AppCompatActivity() {
     }
 
     /**
-     * Le texte « Lecture de la Torah » (26/11, D1) : les lectures du jour, Cha'harit et Min'ha, Chabbat et Yom tov
-     * compris, chacune repliée ; un jour sans lecture, la Cha'harit du prochain jour de lecture, avec sa date. La question
-     * Israël ou diaspora, quand le statut n'est pas confirmé et que les lectures en dépendent.
+     * Le texte « Lecture de la Torah » (26/11) : la paracha de la semaine, pour Chnayim mikra véé'had targoum
+     * (LectureTorah.parachaSemaine) : jamais une lecture de Yom tov. En tête, son nom et la date de son Chabbat ; la
+     * question Israël ou diaspora, quand le statut n'est pas confirmé et que la paracha en dépend ; puis la paracha
+     * repliée par montée (chaque verset deux fois, ou une, puis le Targoum Onkelos), et sa haftara repliée à part.
      */
-    private fun lignesLectureSeule(date: LocalDate, israel: Boolean, nusah: String, siddur: Siddur): List<Any> {
+    private fun lignesLectureSeule(date: LocalDate, israel: Boolean, nusah: String): List<Any> {
         val d = LectureTorah.donnees(this)
         val muk = Store.mukafChoma(this)
-        val p = LectureTorah.programme(d, date, israel, muk, nusah)
+        val p = LectureTorah.parachaSemaine(d, date, israel, muk, nusah)
         val langue = ChizukCard.language(this)
         val region = getString(if (israel) R.string.region_israel else R.string.region_diaspora)
-        val jourP = CalendrierJuif.jour(p.date, israel, muk)
+        val civile = p.date.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.LONG)
+            .withLocale(java.util.Locale.forLanguageTag(langue)))
         return buildList {
-            add(Note(getString(R.string.lecture_jour, CalendrierJuif.jour(date, israel, muk).dateHebraique, region)))
+            add(EnTete(getString(R.string.lecture_paracha_semaine, p.lecture.titre.forLanguage(langue)),
+                getString(R.string.lecture_paracha_chabbat, civile, CalendrierJuif.jour(p.date, israel, muk).dateHebraique, region)))
             if (!Store.regionConfirmee(this@SiddurLectureActivity) &&
-                LectureTorah.programme(d, date, true, muk, nusah) != LectureTorah.programme(d, date, false, muk, nusah)) add(QuestionRegion)
-            if (!p.aujourdhui) {
-                val civile = p.date.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.FULL)
-                    .withLocale(java.util.Locale.forLanguageTag(langue)))
-                add(Note(getString(R.string.lecture_prochaine, "$civile · ${jourP.dateHebraique}")))
-            }
-            for ((office, lectures) in p.offices) {
-                val t = siddur.texte(office)?.titre ?: LocalizedText(office, office, office)
-                add(SiddurJour.Ligne.Titre(t.he, t.fr, t.en))
-                addAll(SiddurJour.lignesLecture(lectures, "lecture:$office:${p.date}", ouverts))
-            }
+                LectureTorah.parachaSemaine(d, date, true, muk, nusah) != LectureTorah.parachaSemaine(d, date, false, muk, nusah)) add(QuestionRegion)
+            addAll(SiddurJour.lignesLecture(listOf(p.lecture), "lecture:semaine:${p.date}", ouverts, targoum = true))
         }
     }
 
     /** Le texte des lectures n'est pas encore lu : lu une fois, hors du fil principal, puis l'écran se redessine. */
     private var lectureEnChargement = false
 
-    private fun demanderTexteLecture() {
+    private fun demanderTexteLecture(targoum: Boolean) {
         if (lectureEnChargement) return
         lectureEnChargement = true
         val contexte = applicationContext
         Thread {
-            runCatching { LectureTorah.texte(contexte) }
+            runCatching {
+                LectureTorah.texte(contexte)
+                if (targoum) LectureTorah.targoum(contexte)
+            }
             runOnUiThread {
                 lectureEnChargement = false
                 if (!isFinishing && !isDestroyed) afficher(garderPlace = true)
@@ -638,6 +643,39 @@ class SiddurLectureActivity : AppCompatActivity() {
                 val d = length
                 append(getString(R.string.lecture_chargement))
                 setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                return@apply
+            }
+            if (ligne.targoum) {
+                // Chnayim mikra : chaque verset deux fois (ou une), puis le Targoum, plus petit, de la couleur discrète.
+                val targoum = LectureTorah.targoumEnMemoire()
+                if (targoum == null) {
+                    val d = length
+                    append(getString(R.string.lecture_chargement))
+                    setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    return@apply
+                }
+                val lignesMikra = LectureTorah.chnayimMikra(texte.versets(p), targoum.versets(p), Store.lectureHebreuUneFois(this@SiddurLectureActivity))
+                lignesMikra.forEachIndexed { k, m ->
+                    val n = length
+                    append("${m.verset}\u00A0")
+                    setSpan(android.text.style.RelativeSizeSpan(0.55f), n, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    setSpan(android.text.style.ForegroundColorSpan(rendu.discret), n, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    val d = length
+                    append(m.texte)
+                    if (m.targoum) {
+                        setSpan(android.text.style.RelativeSizeSpan(0.84f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    }
+                    if (k < lignesMikra.size - 1) {
+                        append("\n")
+                        // Entre deux versets, un demi-blanc.
+                        if (m.targoum) {
+                            val b = length
+                            append("\u00A0\n")
+                            setSpan(android.text.style.RelativeSizeSpan(0.45f), b, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        }
+                    }
+                }
                 return@apply
             }
             texte.versets(p).forEach { v ->
@@ -760,6 +798,24 @@ class SiddurLectureActivity : AppCompatActivity() {
                     text = ligne.texte
                     textSize = 12f
                     setTextColor(rendu.discret)
+                }
+                is EnTete -> vue.apply {
+                    // « Paracha de la semaine : Vayichla'h », puis le Chabbat, sa date hébraïque, la région.
+                    layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                    textDirection = View.TEXT_DIRECTION_LOCALE
+                    setPadding(dp(16), dp(12), dp(16), dp(8))
+                    text = android.text.SpannableStringBuilder(ligne.titre).apply {
+                        setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        setSpan(android.text.style.ForegroundColorSpan(rendu.titre), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        append("\n")
+                        val d = length
+                        append(ligne.detail)
+                        setSpan(android.text.style.RelativeSizeSpan(0.72f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    }
+                    textSize = 18f
+                    setTextColor(rendu.texte)
+                    setLineSpacing(dp(4).toFloat(), 1f)
                 }
                 is SiddurJour.Ligne.Titre -> vue.apply {
                     PoliceHebraique.appliquer(this)
