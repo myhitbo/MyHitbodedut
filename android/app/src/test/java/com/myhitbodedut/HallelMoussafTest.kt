@@ -125,7 +125,8 @@ class HallelMoussafTest {
     @Test
     fun `edot - ulekhaparat pecha jusqu a adar II`() {
         val nissan = lignes(Nusah.EDOT, "moussaf_rosh_hodech", "2027-04-08")
-        assertTrue(nissan.any { it is SiddurJour.Ligne.Replie && it.condition == C.EMBOLISMIQUE_AVANT_NISSAN })
+        // 26/11 (Q8) : la variante est retirée du texte, sans ligne repliée.
+        assertTrue(nissan.none { it is SiddurJour.Ligne.Replie && it.condition == C.EMBOLISMIQUE_AVANT_NISSAN })
         assertFalse(clair(nissan, "ולכפרת פשע"))
         assertTrue(clair(lignes(Nusah.EDOT, "moussaf_rosh_hodech", "2026-11-11"), "ולכפרת פשע"))
     }
@@ -137,11 +138,11 @@ class HallelMoussafTest {
         assertTrue(clair(moussaf, "ברכי נפשי את יהוה"))
         assertFalse("ajout_rappel_psaume_hanouka_apres_moussaf" in rappels(moussaf))
         assertTrue("ajout_rappel_psaume_hanouka_apres_moussaf" in rappels(lignes(Nusah.EDOT, "moussaf_rosh_hodech", "2025-12-21")))
-        // Le Chir chel yom : le psaume 30 replié à Roch 'Hodech Tévèt, en clair les autres jours de 'Hanouka.
+        // Le Chir chel yom : le psaume 30 retiré à Roch 'Hodech Tévèt (26/11), en clair les autres jours de 'Hanouka.
         val ps30 = { l: List<SiddurJour.Ligne> -> l.any { it is SiddurJour.Ligne.Etiquette && it.condition == C.HANOUKA_HORS_ROCH_HODECH } }
         assertTrue(ps30(lignes(Nusah.EDOT, "chaharit", "2025-12-17")))
         assertFalse(ps30(lignes(Nusah.EDOT, "chaharit", "2025-12-21")))
-        assertTrue(lignes(Nusah.EDOT, "chaharit", "2025-12-21").any { it is SiddurJour.Ligne.Replie && it.condition == C.HANOUKA_HORS_ROCH_HODECH })
+        assertTrue(lignes(Nusah.EDOT, "chaharit", "2025-12-21").none { it is SiddurJour.Ligne.Replie && it.condition == C.HANOUKA_HORS_ROCH_HODECH })
     }
 
     /** Le Kaddich autour de Moussaf, Roch 'Hodech en semaine : pas de תתקבל après ובא לציון (Edot), demi-Kaddich avant Moussaf. */

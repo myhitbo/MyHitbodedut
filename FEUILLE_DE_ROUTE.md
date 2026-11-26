@@ -14,6 +14,34 @@ sont des décisions, pas des oublis.
 
 ---
 
+## Les ajouts du siddour en deux catégories (26/11/2026)
+
+Demande du propriétaire : « pour les ajouts dépendant des zmanim comme Chabbat, Soukkot, 'Hanouka, Barekh
+Alénou, etc., les enlever complètement hormis lorsque nécessaire. Pour les ajouts dépendant d'une occasion
+(Brit, invité, etc.), laisse-les repliés mais visibles. » La règle du 10/10, « un ajout hors du jour est
+replié, jamais retiré », est remplacée, sur Android et sur le web (l'iOS suivra) :
+
+- **Un ajout du calendrier** (ce que l'application calcule : Chabbat, Roch 'Hodech, fêtes, 'Hanouka, Pourim,
+  jeûnes, dix jours, saisons, Ta'hanoun, Chir chel yom, lecture de la Torah, omer…) ne s'affiche que le jour où il
+  se dit ; les autres jours, il est retiré, sans bandeau. Dans un ajout du jour, seule la ligne du jour se lit ;
+  une variante enchâssée fausse est retirée, et pendant les dix jours la formule du jour remplace l'ordinaire
+  (« עושה השלום », « לעילא ולעילא », complétés dans les Kaddich où ils manquaient).
+- **Un ajout d'occasion** (que l'application ne peut pas connaître : minyan, qui prie seul, brit mila, invité,
+  maison endeuillée, Chéva bérakhot, zimoun, malade, subsistance, Mi chébérakh, HaGomel…) reste replié, et se
+  déplie d'un toucher ; déplié, il ne montre que ses lignes du jour.
+- **Les réponses du propriétaire (Q1-Q15)** : « Pas de Ta'hanoun aujourd'hui » dans la barre de lecture (Q1) ;
+  l'Anénou de l'officiant sous « Avec minyan » les jours de jeûne public, celui du particulier replié sous
+  « Jeûne individuel » les autres jours (Q2) ; le voyageur pour טל ומטר du 7 'Hechvan au 4 ou 5 décembre (Q3) ;
+  « Sans minyan » pour qui prie seul (Q4) ; les consignes d'oubli repliées les seuls jours de leur ajout (Q5) ;
+  au Birkat haMazon et à Méèn chaloch, entre le coucher du soleil et la sortie des étoiles (sans lieu : 16 h-minuit)
+  et le soir qui suit, les ajouts du jour voisin repliés (Q6) ; « Israël ou diaspora ? » demandé quand le statut
+  n'est pas confirmé et que le texte en dépend (Q7) ; pas d'interrupteur de secours (Q9) ; le Ledavid des Edot
+  replié hors d'Eloul (Q10), dès le 30 Av dans les trois rites (Q13) ; les formes de l'homme et de la femme selon
+  צדיק / צדקת, le seul compte de l'omer du soir (Q12) ; les usages datés repliés le seul jour dit (Q14) ; les
+  textes d'occasion absents, repris de Sefaria (Q15, `tools/siddur_occasions_ajouts.py`).
+- Outils : `tools/siddur_annotations.py` (gardes « quand », « replie_hors », « par »), puis
+  `tools/libelles_construction.py`. Tests : `CategoriesSiddurTest`, `web/test/categories.test.mjs`.
+
 ## Refonte de la navigation (13/11/2026)
 
 Demandée le 12/11 : « redesigner l'app en proposant des changements d'emplacement, de
@@ -263,6 +291,59 @@ qu'elles ne portent pas sur les mêmes ayants droit :
 | « tout ce qui est de Rav Arush et Yanuka, j'ai obtenu les autorisations légales des ayants droit » | le Yanuka | les 10 niggounim |
 | « j'ai aussi ces droits-là » — en réponse à une question posée sur ces cinq titres précisément | Ishay Ribo, Motty Steinmetz, MBD, Shmuel | Nafshi, Ata Zocher, Halev Sheli, un quatrième titre Ribo, Give Me One Prayer |
 | les envois suivants, sous la même déclaration | Shneor Lerer (Chabad Melodies), *Tzama with orchestra* | rangés dans `musique/`, hors APK |
+
+**Déclarations du 26/11**, consignées dans les mots du propriétaire :
+
+| déclaration du 26/11 | porte sur | forme de l'accord | morceaux |
+|---|---|---|---|
+| « J'ai eu son autorisation à l'oral du Yenuka » | le Yanuka | **orale** — aucun écrit | les 10 `yanuka_*`, confirmés un par un le même jour comme étant bien du Yanuka (aucun n'est d'Ianir) |
+| « j'ai eu son autorisation explicite », puis « לרר m'a confirmé tous ses sons » | Shneor Lerer | **écrite** : courriel du 21/11, conservé hors dépôt. La confirmation « tous ses morceaux » est déclarée ; sa forme n'a pas été précisée | dix morceaux : les sept `*_lerer`, plus `ani_maamin`, `anim_zemirot` et `nigun_abaal_shem_tov_for_babies`, devenus `lerer_*`. Neuf sont vérifiés contre les extraits officiels de son catalogue (même enregistrement) ; `vehi_sheamda_piano_shneor_lerer` n'y figure pas et ne lui est attribué que par le nom du fichier reçu |
+
+Le courriel de Shneor Lerer pose des conditions : son nom à côté de la
+musique ; l'application reste gratuite ; pas de téléchargement des fichiers ;
+il reste propriétaire des niggounim et peut retirer son accord à tout
+moment ; le prévenir de tout changement, et en reparler si l'application
+devient payante. Il attend une courte confirmation par courriel.
+
+Trois choses que ces déclarations ne règlent pas, notées pour ne pas les
+perdre :
+
+1. **Un accord oral ne se produit pas à la demande.** `PUBLICATION_PLAY_STORE.md`
+   § 3.2 exige un écrit pour tout morceau livré sur Play, et `yanuka_nigoun_3`
+   y est livré sous la mention « à conserver par écrit ». Cet écrit n'existe
+   pas. Un simple message du Yanuka ou de son entourage suffirait.
+2. **« Pas de téléchargement des fichiers »** (בלי הורדה של הקבצים). Le
+   propriétaire en a précisé le sens le 26/11 : l'utilisateur ne doit pas
+   pouvoir télécharger la musique, seulement l'écouter dans l'application.
+   Vérifié le même jour : l'application Android ne partage ni n'exporte
+   aucun morceau (elle ne partage que du texte et des images), et le site
+   les joue par un lecteur sans commandes ni lien vers les fichiers. Ce qui
+   reste vrai hors de l'application : les fichiers ont une adresse directe
+   sur le site et sont dans ce dépôt, qui est public. On ne les obtient pas
+   par l'application, mais qui les cherche les trouve.
+   Le propriétaire remettra le dépôt en privé une fois la publication sur
+   le Play Store et l'App Store terminée (`play/A_FAIRE.md` § 7).
+3. **Le reste du catalogue de Shneor Lerer.** Le propriétaire a demandé
+   « tout Lerer, cherche sur internet ». Une vingtaine de sorties manquent,
+   et elles n'ont pas pu être récupérées : il n'existe pas de téléchargement
+   officiel, YouTube refuse les requêtes de l'environnement de travail, et
+   contourner ce refus n'est pas permis. Lui-même propose d'envoyer ses MP3
+   sur demande ; iTunes en vend dix-neuf sur vingt.
+
+**Décisions du 26/11**, prises par le propriétaire à qui chaque question a
+été posée avec ses conséquences :
+
+| question | décision | ce qui a été fait |
+|---|---|---|
+| quoi ajouter | « Tout Lerer, cherche sur internet » | les dix morceaux déjà dans le dépôt entrent dans l'application ; les autres attendent leurs fichiers (point 3) |
+| le poids : sortir les 30 sans-titre, ou relever le plafond | « Relever le plafond » | 150 → 230 Mo ; l'audio de la version GitHub est à 224,2 Mo sur 75 morceaux |
+| le Yanuka, accord oral : version GitHub seule, ou Play et site aussi | « Play et site aussi » | ses neuf autres niggounim rejoignent `yanuka_nigoun_3` dans la version Play et le site : 42 morceaux, 139,4 Mo |
+
+J'avais recommandé l'inverse sur les deux derniers points — sortir les
+sans-titre, et garder le Yanuka hors de Play tant qu'il n'y a pas d'écrit.
+C'est son projet et son appel ; le désaccord est écrit ici pour la même
+raison que les précédents. Le point 1 ci-dessus reste ouvert ; le point 2
+est tenu, au sens que le propriétaire donne à la condition.
 
 La seconde a été demandée avant d'ajouter quoi que ce soit : ces cinq-là sont
 des enregistrements commerciaux d'artistes sous label, hors du périmètre de la
@@ -781,7 +862,8 @@ fixes.
    LGPL : la GPL de Hebcal obligerait à publier toute l'application.
 2. Le lieu : une ville choisie à la main, plus un GPS facultatif.
 3. Le siddour met en évidence les ajouts du jour et replie les autres
-   derrière une flèche.
+   derrière une flèche. *26/11 : remplacé — un ajout du calendrier hors de son
+   jour est retiré ; seuls ceux d'une occasion restent repliés (voir en tête).*
 4. Le profil des zmanim et les coutumes de Ta'hanoun sont marqués « à
    valider par un Rav ». *29/10 : vérifiés selon le propriétaire ; toutes
    les mentions « à valider / demander à un Rav » sont retirées (zmanim,

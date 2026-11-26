@@ -37,9 +37,14 @@ import kotlin.math.roundToInt
  * rien : un appui long sur le texte le fait revenir, ce que dit une barre
  * en bas de l'écran au moment où on le masque.
  *
+ * « Pas de Ta'hanoun aujourd'hui » (26/11, Q1) : au siddour, à Cha'harit et à Min'ha, un bouton « תחנון »
+ * de la barre, barré quand il est actif ; le même réglage que l'écran des zmanim (Store.sansTahanounLe),
+ * pour le jour du texte affiché seulement.
+ *
  * Le défilement automatique (16/11, DefilementAuto) : un bouton de la barre fait monter le
  * texte tout seul ; pendant qu'il défile, une petite commande remplace la pastille :
- * moins vite, la vitesse, plus vite, arrêter. Toucher le texte l'arrête aussi.
+ * moins vite, la vitesse, plus vite, arrêter. Toucher le texte l'arrête aussi, où que le
+ * doigt se pose (l'indicateur de défilement, par-dessus le texte, voit passer l'appui).
  *
  * Les réglages valent pour tous les écrans de lecture (Store) ; chaque
  * écran redessine son texte dans surChangement, ou laisse [appliquer]
@@ -51,6 +56,8 @@ class ReglagesLecture private constructor(
     private val avecNuit: Boolean,
     private val avecLangues: Boolean,
     private val auDessusDe: View?,
+    /** Le jour du texte pour « Pas de Ta'hanoun aujourd'hui » (Q1) ; null : pas de bouton. */
+    private val sansTahanoun: (() -> java.time.LocalDate)?,
     private val surChangement: () -> Unit,
 ) {
     private val contexte: Context = activite
@@ -65,8 +72,8 @@ class ReglagesLecture private constructor(
      */
     private val bouton: Int = run {
         val largeur = contexte.resources.displayMetrics.widthPixels / densite
-        val nombre = 6 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0)
-        (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(30, 48)
+        val nombre = 6 + (if (avecNusah) 1 else 0) + (if (avecNuit) 1 else 0) + (if (avecLangues) 1 else 0) + (if (sansTahanoun != null) 1 else 0)
+        (((largeur - 24 - 48 - 18 - 12) / nombre).toInt()).coerceIn(28, 48)
     }
 
     private val accent = Apparence.couleur(contexte, R.color.brand)
@@ -93,6 +100,9 @@ class ReglagesLecture private constructor(
 
     private val pourcent = TextView(contexte)
     private val lune = ImageView(contexte)
+
+    /** « תחנון », barré quand « Pas de Ta'hanoun aujourd'hui » est actif pour le jour du texte (Q1). */
+    private val tahanoun = TextView(contexte)
 
     private val barre = LinearLayout(contexte).apply {
         orientation = LinearLayout.HORIZONTAL
@@ -187,6 +197,21 @@ class ReglagesLecture private constructor(
             setOnClickListener { choisirLangues(it) }
         })
         if (avecNusah) barre.addView(icone(R.drawable.ic_lecture_nusah, R.string.siddur_choose) { choisirNusah(it) })
+        if (sansTahanoun != null) barre.addView(tahanoun.apply {
+            layoutParams = LinearLayout.LayoutParams(dp(bouton), dp(48))
+            gravity = Gravity.CENTER
+            text = "תחנון"
+            textSize = 11f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(surAccent)
+            contentDescription = contexte.getString(R.string.reglage_sans_tahanoun_jour)
+            setOnClickListener {
+                val jour = sansTahanoun.invoke()
+                Store.setSansTahanounLe(contexte, jour, !Store.sansTahanounLe(contexte, jour))
+                montrerEtat()
+                surChangement()
+            }
+        })
         barre.addView(icone(R.drawable.ic_lecture_defiler, R.string.lecture_defiler) { defilementAuto?.demarrer() })
         barre.addView(filet())
         barre.addView(icone(R.drawable.ic_lecture_masquer, R.string.lecture_masquer) { masquer() })
@@ -296,7 +321,10 @@ class ReglagesLecture private constructor(
         }
     }
 
-    /** Un toucher posé sur le texte arrête le défilement : on reprend la main. */
+    /**
+     * Un toucher posé sur le texte arrête le défilement : on reprend la main. Vu par l'indicateur,
+     * par-dessus le texte, avant toute vue du texte qui le prendrait pour elle ([installer]).
+     */
     private fun arreterAuToucher(e: MotionEvent) {
         if (e.actionMasked == MotionEvent.ACTION_DOWN) defilementAuto?.arreter()
     }
@@ -321,6 +349,16 @@ class ReglagesLecture private constructor(
         } else null
         if (android.os.Build.VERSION.SDK_INT >= 30) {
             lune.stateDescription = contexte.getString(if (nuit) R.string.lecture_nuit_oui else R.string.lecture_nuit_non)
+        }
+        sansTahanoun?.let { jour ->
+            val sans = Store.sansTahanounLe(contexte, jour())
+            tahanoun.paintFlags = if (sans) tahanoun.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            else tahanoun.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            tahanoun.background = if (sans) GradientDrawable().apply {
+                cornerRadius = dp(12).toFloat()
+                setColor(ColorUtils.setAlphaComponent(surAccent, 0x40))
+            } else null
+            ViewCompat.setStateDescription(tahanoun, contexte.getString(if (sans) R.string.lecture_tahanoun_oui else R.string.lecture_tahanoun_non))
         }
     }
 
@@ -441,7 +479,6 @@ class ReglagesLecture private constructor(
 
     /** Pour un texte qui prend lui-même les touchers (les versets des Tehilim) : il les montre ici. */
     fun toucher(e: MotionEvent) {
-        arreterAuToucher(e)
         toucher.onTouchEvent(e)
     }
 
@@ -454,7 +491,6 @@ class ReglagesLecture private constructor(
         })
         liste.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                arreterAuToucher(e)
                 toucher.onTouchEvent(e)
                 return false
             }
@@ -470,7 +506,6 @@ class ReglagesLecture private constructor(
         // Le texte ne prend pas les touchers : ils arrivent à la vue qui défile,
         // qui les laisse passer (false) après les avoir montrés au détecteur.
         defilement.setOnTouchListener { _, e ->
-            arreterAuToucher(e)
             toucher.onTouchEvent(e)
             false
         }
@@ -502,6 +537,7 @@ class ReglagesLecture private constructor(
             avecLangues: Boolean = true,
             auDessusDe: View? = null,
             gardeSaPlace: Boolean = false,
+            sansTahanoun: (() -> java.time.LocalDate)? = null,
             surChangement: () -> Unit,
         ): ReglagesLecture {
             // Une vue qui défile garde sa place quand les lettres grandissent ou que les langues
@@ -520,9 +556,11 @@ class ReglagesLecture private constructor(
                     }
                 }
             }
-            val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, garderPlace)
+            val reglages = ReglagesLecture(activite, avecNusah, avecNuit, avecLangues, auDessusDe, sansTahanoun, garderPlace)
             reglages.defilementAuto = DefilementAuto(activite, defilement) { reglages.surDefilement(it) }
-            reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement)
+            reglages.indicateur = IndicateurDefilement.poser(activite.findViewById(android.R.id.content), defilement).apply {
+                surToucher = { reglages.arreterAuToucher(it) }
+            }
             if (defilement is RecyclerView) reglages.suivreListe(defilement) else reglages.suivreDefilement(defilement)
             // De quoi lire la fin du texte au-dessus de la barre ouverte.
             val d = activite.resources.displayMetrics.density

@@ -136,7 +136,8 @@ export function jour(iso, enIsrael, mukafChoma = false) {
   const adar1415 = (mois === JewishDate.ADAR || mois === JewishDate.ADAR_II) && quantieme >= 14 && quantieme <= 15;
   si(!(regles.isRoshChodesh() || regles.isChanukah() || adar1415 || festinJerusalem || regles.isTishaBav() || regles.isAssurBemelacha() || regles.isCholHamoed() ||
     index === JewishCalendar.EREV_PESACH || index === JewishCalendar.EREV_YOM_KIPPUR), 'lamnatseah');
-  si(mois === JewishDate.ELUL || (mois === JewishDate.TISHREI && quantieme <= 21), 'ledavid');
+  // Dès le 30 Av, premier jour de Roch 'Hodech Eloul (26/11, CalendrierJuif.C.LEDAVID).
+  si(mois === JewishDate.ELUL || (mois === JewishDate.AV && quantieme === 30) || (mois === JewishDate.TISHREI && quantieme <= 21), 'ledavid');
   si(regles.isAseresYemeiTeshuva() || (mois === JewishDate.TISHREI && quantieme === 21), 'techouva_hochaana');
   const yomTov = regles.isYomTovAssurBemelacha();
   si(yomTov, 'yom_tov');
@@ -202,6 +203,13 @@ export function jour(iso, enIsrael, mukafChoma = false) {
     || mois === JewishDate.NISSAN || regles.getDayOfOmer() > 0 || (enIsrael && regles.getJewishYear() % 7 === 0)), 'tikoun_rahel');
   // Un repère sans condition (audit du 16/11, CalendrierJuif.C.TOUJOURS) : une indication fixe du siddour.
   c.add('toujours');
+  // Les catégories du 26/11 (CalendrierJuif.C.VOYAGEUR_TAL_OUMATAR…) : Israël et la diaspora diffèrent pour
+  // « ותן טל ומטר » ; Chabbat ou « יעלה ויבוא » ; Roch Hachana ou Kippour ; le compte de l'omer du soir.
+  si(T.isVeseinTalUmatarRecited(calendrier(iso, true, false, mukafChoma)) !== T.isVeseinTalUmatarRecited(calendrier(iso, false, false, mukafChoma)),
+    'voyageur_tal_oumatar');
+  si(c.has(C.CHABBAT) || c.has(C.YAALE_VEYAVO), 'retse_ou_yaale');
+  si(regles.isRoshHashana() || regles.isYomKippur(), 'yamim_noraim');
+  si(regles.getDayOfOmer() > 0, `omer_${regles.getDayOfOmer()}`);
 
   const fetes = [];
   const fete = FETES.get(affiche.getYomTovIndex());
@@ -300,12 +308,28 @@ export function reperes(iso, enIsrael, nusah) {
  */
 export function jourDeLaPriere(texte, iso, heures, apresSortie = false) {
   // Tikoun 'hatsot avant minuit : la nuit du lendemain ; à midi (Bein hamétsarim), le jour même (audit du 16/11).
-  const soir = texte === 'arvit' || texte === 'chema_coucher' ? heures >= 12 : texte === 'tikoun_hatsot' ? heures >= 18 : texte !== 'minha' && apresSortie;
+  // Le compte de l'omer, avec Arvit (26/11, Q12 : le compte du soir).
+  const soir = texte === 'arvit' || texte === 'chema_coucher' || texte === 'sefirat_haomer' ? heures >= 12
+    : texte === 'tikoun_hatsot' ? heures >= 18 : texte !== 'minha' && apresSortie;
   if (soir) {
     const [a, m, j] = iso.split('-').map(Number);
     return new Date(Date.UTC(a, m - 1, j + 1, 12)).toISOString().slice(0, 10);
   }
   return iso;
+}
+
+/**
+ * Le jour voisin du Birkat haMazon et de Méèn chaloch (CalendrierJuif.jourVoisin, 26/11, Q6) : entre le coucher
+ * du soleil et la sortie des étoiles, le lendemain ; après la sortie des étoiles et jusqu'à minuit, le jour
+ * civil (celui qui finit) ; sans lieu (null), de 16 h à minuit, le lendemain. null sinon.
+ */
+export function jourVoisin(texte, iso, heures, apresCoucher, apresSortie) {
+  if (texte !== 'birkat_hamazon' && texte !== 'meen_chaloch') return null;
+  const lendemain = () => { const [a, m, j] = iso.split('-').map(Number); return new Date(Date.UTC(a, m - 1, j + 1, 12)).toISOString().slice(0, 10); };
+  if (apresSortie === true) return iso;
+  if (apresCoucher === true) return lendemain();
+  if (apresCoucher == null && apresSortie == null && heures >= 16) return lendemain();
+  return null;
 }
 
 /**

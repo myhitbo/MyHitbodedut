@@ -1192,6 +1192,393 @@ def main():
         regler({"version_app": ("string", "classique")})
     etape("30 ciel de nuit", s28n)
 
+    # Le ciel du moment sur toute la page du Jour, et ses petites animations (24/11, CielPage,
+    # CielVivant). Les animations du systeme, coupees pour tout le parcours, sont retablies le
+    # temps de ces etapes : chaque ciel anime est pris deux fois, a six secondes d'ecart (le halo
+    # est alors au creux de son souffle, les nuages ont avance de 18 dp, les etoiles ont change
+    # d'eclat), et en rafale pour un petit film. Les heures sans lieu choisi (CielDuJour.parHeure) : aube 6 h 30, jour 12 h,
+    # coucher 18 h 30, nuit 21 h 30.
+    PHASES_CIEL = (("aube", "0630"), ("jour", "1200"), ("coucher", "1830"), ("nuit", "2130"))
+
+    def animations(actives):
+        for k in ("window_animation_scale", "transition_animation_scale", "animator_duration_scale"):
+            sh(f"settings put global {k} {1 if actives else 0}")
+
+    def cadence(nom, secondes=10):
+        """Les images que l'application dessine en [secondes] (dumpsys gfxinfo) : le ciel anime en
+        demande une toutes les 50 ms au plus, soit 200 en dix secondes ; immobile, presque aucune."""
+        sh(f"dumpsys gfxinfo {PKG} reset")
+        pause(secondes)
+        stats = sh(f"dumpsys gfxinfo {PKG}")
+        garde = [l.strip() for l in stats.splitlines() if any(m in l for m in ("Total frames", "Janky frames", "50th percentile", "90th percentile"))]
+        log(f"  cadence {nom} ({secondes} s) :", " | ".join(garde))
+        with open(os.path.join(OUT, f"{nom}-cadence.txt"), "w") as f:
+            f.write(f"{secondes} s\n" + "\n".join(garde) + "\n\n" + stats)
+
+    def rafale(nom, images=16, ecart=0.3):
+        """Des captures a la suite (une toutes les 0,7 s environ), pour en faire un petit film :
+        sur l'emulateur, screenrecord ne recoit plus d'image apres deux secondes, alors que
+        l'application dessine bien ses 20 images par seconde (cadence, 24/11)."""
+        for i in range(images):
+            png = adb("exec-out", "screencap", "-p", binary=True)
+            with open(os.path.join(OUT, f"{nom}-{i:02d}.png"), "wb") as f:
+                f.write(png)
+            pause(ecart)
+        log(f"  rafale {nom} : {images} images")
+
+    def jour_du_ciel(prefixe, langues, modes, deux_fois, palette=None):
+        for lg in langues:
+            for mode in modes:
+                regler({"apparence_mode": ("string", mode), "langue_app": ("string", lg), "version_app": ("string", "classique"), **(palette or {})})
+                langue(lg)
+                for phase, heure in PHASES_CIEL:
+                    log("  date :", sh(f"date 1124{heure}2026.00").strip())
+                    lancer(attente=6)
+                    capture(f"{prefixe}-{lg}-{mode}-{phase}", attente=0.5)
+                    if deux_fois:
+                        capture(f"{prefixe}-{lg}-{mode}-{phase}-t6", attente=6.0)
+
+    def s31():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            jour_du_ciel("31", ("fr",), ("clair", "sombre"), True)
+            jour_du_ciel("31", ("he",), ("clair", "sombre"), False)
+            # Le bas de la page : la couleur du bas du ciel continue sous la barre de depart.
+            regler({"apparence_mode": ("string", "sombre"), "langue_app": ("string", "fr")})
+            langue("fr")
+            sh("date 112406302026.00")
+            lancer(attente=6)
+            defiler(True)
+            capture("31-fr-sombre-aube-bas", attente=1.0)
+            # La nuit puis le jour en theme sombre (ce que le proprietaire voit chaque jour) : la cadence
+            # de dessin, puis une rafale de captures pour un petit film.
+            for phase, heure in (("nuit", "2130"), ("jour", "1200")):
+                sh(f"date 1124{heure}2026.00")
+                lancer(attente=6)
+                cadence(f"31-{phase}")
+                rafale(f"31-rafale-{phase}")
+            # Animations coupees, puis economie de batterie : le ciel immobile, identique a six secondes d'ecart.
+            sh("date 112421302026.00")
+            animations(False)
+            lancer(attente=6)
+            cadence("31-nuit-immobile")
+            capture("31-fr-sombre-nuit-immobile", attente=0.5)
+            capture("31-fr-sombre-nuit-immobile-t6", attente=6.0)
+            animations(True)
+            sh("cmd battery unplug")
+            sh("settings put global low_power 1")
+            lancer(attente=6)
+            cadence("31-nuit-economie")
+            capture("31-fr-sombre-nuit-economie", attente=0.5)
+            capture("31-fr-sombre-nuit-economie-t6", attente=6.0)
+            sh("settings put global low_power 0")
+            sh("cmd battery reset")
+        finally:
+            animations(False)
+            regler({"apparence_mode": ("string", "auto"), "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("31 ciel du Jour", s31)
+
+    # Le meme ciel sur un petit telephone, texte agrandi (480x854, 240 dpi, police 1,3) : les quatre
+    # phases en francais et en hebreu, clair et sombre. Pas de geste apres le changement de taille.
+    def s32():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            sh("settings put system font_scale 1.3")
+            appliquer_taille("480x854", 240, False)
+            pause(4)
+            jour_du_ciel("32-petit", ("fr", "he"), ("clair", "sombre"), False)
+        finally:
+            animations(False)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            regler({"apparence_mode": ("string", "auto"), "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("32 ciel du Jour sur petit ecran", s32)
+
+    # Les paysages des accueils Serenite (avec son nuage ou son voile) et Instant, animes.
+    def s33():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            for version in ("serenite", "instant"):
+                regler({"version_app": ("string", version), "langue_app": ("string", "fr")})
+                langue("fr")
+                for phase, heure in PHASES_CIEL:
+                    if version == "instant" and phase in ("aube", "coucher"):
+                        continue
+                    sh(f"date 1124{heure}2026.00")
+                    lancer(attente=6)
+                    if phase in ("jour", "nuit"):
+                        cadence(f"33-{version}-{phase}")
+                    capture(f"33-{version}-{phase}", attente=0.5)
+                    capture(f"33-{version}-{phase}-t6", attente=6.0)
+            sh("date 112412002026.00")
+            regler({"version_app": ("string", "serenite")})
+            lancer(attente=6)
+            rafale("33-rafale-serenite-jour")
+        finally:
+            animations(False)
+            regler({"version_app": ("string", "classique")})
+    etape("33 paysages animes", s33)
+
+    # Le ciel avec les couleurs du telephone du proprietaire (captures du 24/11 : fond bleu nuit,
+    # boutons turquoise) : « Fond bleu » et « Boutons turquoise », en hebreu, clair et sombre, sur le
+    # petit telephone au texte agrandi puis sur le Pixel 6, avec le bas de la page en sombre.
+    BLEU_TURQUOISE = {"apparence_fond": ("string", "bleu"), "apparence_accent": ("string", "turquoise")}
+
+    def s34():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            sh("settings put system font_scale 1.3")
+            appliquer_taille("480x854", 240, False)
+            pause(4)
+            jour_du_ciel("34-petit-bleu", ("he",), ("sombre", "clair"), False, BLEU_TURQUOISE)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            pause(4)
+            jour_du_ciel("34-pixel6-bleu", ("he",), ("sombre", "clair"), False, BLEU_TURQUOISE)
+            regler({"apparence_mode": ("string", "sombre"), **BLEU_TURQUOISE})
+            sh("date 112414592026.00")
+            lancer(attente=6)
+            capture("34-pixel6-bleu-he-sombre-1459", attente=0.5)
+            defiler(True)
+            capture("34-pixel6-bleu-he-sombre-1459-bas", attente=1.0)
+        finally:
+            animations(False)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            regler({"apparence_mode": ("string", "auto"), "apparence_fond": ("string", "vert"), "apparence_accent": ("string", "vert"),
+                    "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("34 ciel du Jour, fond bleu et boutons turquoise", s34)
+
+    # Le ciel continu (24/11) : une journee simulee, sans lieu (le soleil moyen de Soleil.parHeure :
+    # leve a 6 h 30, couche a 18 h 30, ±50°), aux hauteurs −20, −12, −4, 0, +3, +10 et +40° le matin
+    # puis le soir ; avec les couleurs du telephone du proprietaire (fond bleu, boutons turquoise),
+    # en hebreu, sombre et clair, sur le Pixel 6 puis sur le petit telephone au texte agrandi. Puis
+    # une journee en accelere (une capture toutes les 20 minutes, de 4 h a 21 h), une rafale a
+    # l'heure doree, et les paysages de Serenite et d'Instant.
+    HEURES_CIEL = (("m-20", "0456"), ("m-12", "0534"), ("m-04", "0612"), ("m+00", "0630"), ("m+03", "0644"),
+                   ("m+10", "0716"), ("m+40", "1002"), ("s+40", "1458"), ("s+10", "1744"), ("s+03", "1816"),
+                   ("s+00", "1830"), ("s-04", "1848"), ("s-12", "1926"), ("s-20", "2004"))
+
+    def s35():
+        sh("settings put global auto_time 0")
+        animations(True)
+        try:
+            for taille in ("pixel6", "petit"):
+                if taille == "petit":
+                    sh("settings put system font_scale 1.3")
+                    appliquer_taille("480x854", 240, False)
+                    pause(4)
+                for mode in ("sombre", "clair"):
+                    regler({"apparence_mode": ("string", mode), "langue_app": ("string", "he"), "version_app": ("string", "classique"), **BLEU_TURQUOISE})
+                    langue("he")
+                    for nom, heure in HEURES_CIEL:
+                        sh(f"date 1124{heure}2026.00")
+                        lancer(attente=5)
+                        capture(f"35-{taille}-{mode}-{nom}", attente=0.3)
+                if taille == "petit":
+                    sh("settings put system font_scale 1.0")
+                    appliquer_taille(None, None, False)
+                    pause(4)
+            # La journee en accelere, en sombre sur le Pixel 6 : des captures seules, sans l'arbre de l'ecran.
+            regler({"apparence_mode": ("string", "sombre"), "langue_app": ("string", "he"), **BLEU_TURQUOISE})
+            langue("he")
+            for i, minute in enumerate(range(4 * 60, 21 * 60 + 1, 20)):
+                sh(f"date 1124{minute // 60:02d}{minute % 60:02d}2026.00")
+                lancer(attente=3.5)
+                png = adb("exec-out", "screencap", "-p", binary=True)
+                with open(os.path.join(OUT, f"35-journee-{i:02d}-{minute // 60:02d}{minute % 60:02d}.png"), "wb") as f:
+                    f.write(png)
+            # L'heure doree en temps reel : les rayons qui tournent, le halo, les nuages eclaires.
+            sh("date 112406462026.00")
+            lancer(attente=5)
+            rafale("35-rafale-doree")
+            for version, heure in (("serenite", "0644"), ("serenite", "1926"), ("instant", "1002"), ("instant", "2004")):
+                regler({"version_app": ("string", version)})
+                sh(f"date 1124{heure}2026.00")
+                lancer(attente=6)
+                capture(f"35-{version}-{heure}", attente=0.5)
+        finally:
+            animations(False)
+            sh("settings put system font_scale 1.0")
+            appliquer_taille(None, None, False)
+            regler({"apparence_mode": ("string", "auto"), "apparence_fond": ("string", "vert"), "apparence_accent": ("string", "vert"),
+                    "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+            langue("fr")
+    etape("35 ciel continu", s35)
+
+    # Le defilement automatique des textes (verification du 24/11) : il part de la barre de lecture,
+    # monte a la vitesse choisie (mesuree sur deux captures), change de vitesse en marche, garde la
+    # vitesse d'un ecran et d'un lancement a l'autre, attend quand une autre fenetre passe devant,
+    # garde l'ecran allume, et s'arrete au bouton, au toucher du texte (meme sur une carte qui prend
+    # le toucher pour elle) et au bout du texte ; la barre et la commande en hebreu.
+    def s36():
+        regler({"lecture_sombre": ("boolean", "false"), "lecture_masquee": ("boolean", "false"),
+                "lecture_echelle": ("float", "1.0"), "lecture_defilement_vitesse": ("int", 3),
+                "langue_app": ("string", "fr")})
+        langue("fr")
+        log("  densite :", densite_ecran())
+
+        # Le siddour (une liste recyclee) : vitesse 3, puis 10, puis 1 ; le bouton d'arret.
+        activite("SiddurLectureActivity", "--es id chaharit")
+        pause(2.0)
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        capture("36a-siddour-barre", ok=icone is not None)
+        if icone is None:
+            return
+        touches = touches_commande(icone)
+        log("  commande :", touches)
+        lancer_defilement(icone)
+        photo("36b-siddour-commande-vitesse-3")
+        comparer_vitesse("siddour, vitesse 3", vitesse_mesuree(4.0), vitesse_attendue(3))
+        taper(touches["plus"], 7)
+        photo("36c-siddour-vitesse-10")
+        # A 325 px/s, la seule duree d'une capture brute (deux secondes et demie) suffit.
+        comparer_vitesse("siddour, vitesse 10", vitesse_mesuree(0.0), vitesse_attendue(10))
+        taper(touches["moins"], 12)
+        photo("36d-siddour-vitesse-1")
+        comparer_vitesse("siddour, vitesse 1 (douze fois moins)", vitesse_mesuree(4.0), vitesse_attendue(1))
+        taper(touches["arret"])
+        pause(1.0)
+        if not immobile():
+            faute("defilement siddour : le bouton d'arret ne l'arrete pas")
+        if trouver(desc="Réglages de lecture") is None or trouver(desc="Arrêter le défilement") is not None:
+            faute("defilement siddour : la pastille n'est pas revenue a l'arret")
+        capture("36e-siddour-arrete")
+        gardee = vitesse_gardee()
+        log("  vitesse gardee :", gardee)
+        if gardee != 1:
+            faute(f"defilement : vitesse gardee {gardee} au lieu de 1")
+
+        # Les Tehilim, application relancee : la vitesse 1 est restee ; une fenetre devant le met en
+        # attente ; un doigt sur un verset (qui garde l'appui long des marque-pages) l'arrete.
+        arreter()
+        activite("TehilimLectureActivity", "--ei debut 119 --ei fin 119")
+        pause(2.0)
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        if icone is None:
+            capture("36f-tehilim", ok=False)
+            return
+        touches = touches_commande(icone)
+        lancer_defilement(icone)
+        photo("36f-tehilim-vitesse-1-gardee")
+        comparer_vitesse("Tehilim, vitesse 1 gardee", vitesse_mesuree(3.0), vitesse_attendue(1))
+        taper(touches["plus"], 2)
+        # Pas de mesure ici : le bandeau des Tehilim se replie a ce moment-la et fait monter le texte
+        # de sa hauteur (68 px/s mesures au lieu de 31, run 45405775442) ; la vitesse 3 se mesure apres le volet.
+        pause(3.0)
+        # Le volet des notifications devant : rien ne bouge tant qu'il est la, puis le texte repart.
+        avant = ecran_brut()
+        sh("cmd statusbar expand-notifications")
+        pause(4.0)
+        sh("cmd statusbar collapse")
+        pause(0.3)
+        apres = ecran_brut()
+        if avant and apres:
+            d = montee(avant, apres, int(H * 0.35))
+            attendu = vitesse_attendue(3) * (apres[0] - avant[0])
+            log(f"  volet ouvert {apres[0] - avant[0]:.1f} s : le texte a monte de {d} px ({attendu:.0f} sans attente)")
+            if d is None or d > attendu * 0.5:
+                faute(f"defilement Tehilim : il a continue derriere le volet ({d} px)")
+        comparer_vitesse("Tehilim, reprise apres le volet", vitesse_mesuree(3.0), vitesse_attendue(3))
+        sh(f"input tap {W // 2} {int(H * 0.40)}")
+        pause(1.0)
+        if not immobile():
+            faute("defilement Tehilim : un doigt sur un verset ne l'arrete pas")
+        capture("36g-tehilim-arrete-au-toucher")
+        if trouver(desc="Arrêter le défilement") is not None:
+            faute("defilement Tehilim : la commande reste apres le toucher")
+
+        # Le bout du texte : presque en bas, a la vitesse 10, il s'arrete seul ; la fin se lit au-dessus
+        # de la pastille revenue.
+        for _ in range(30):
+            sh(f"input swipe {W // 2} {int(H * 0.8)} {W // 2} {int(H * 0.2)} 60")
+        pause(1.5)
+        sh(f"input swipe {W // 2} {int(H * 0.35)} {W // 2} {int(H * 0.75)} 300")
+        pause(1.5)
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        if icone is not None:
+            touches = touches_commande(icone)
+            lancer_defilement(icone)
+            taper(touches["plus"], 7)
+            if not attendre_arret(25):
+                faute("defilement Tehilim : il ne s'arrete pas au bout du texte")
+            pause(1.0)
+            capture("36h-tehilim-fin-du-texte")
+            if trouver(desc="Réglages de lecture") is None:
+                faute("defilement Tehilim : pas de pastille au bout du texte")
+            # Revenu a 3 pour la suite.
+            regler({"lecture_defilement_vitesse": ("int", 3)})
+
+        # Les hilloulot : pas de VeilleLecture, et des cartes qui prennent le toucher.
+        activite("HilloulotActivity")
+        pause(2.5)
+        # Deux cartes depliees : le texte depasse alors l'ecran.
+        for _ in range(2):
+            toucher(desc="Lire la suite", contains=True, attente=1.5)
+        sh(f"input swipe {W // 2} {int(H * 0.30)} {W // 2} {int(H * 0.75)} 200")
+        pause(1.0)
+        allume_avant = ecran_garde_allume("HilloulotActivity")
+        icone = preparer_defilement("Réglages de lecture", "Défilement automatique")
+        racine = dump()
+        carte = None
+        for n in (racine.iter("node") if racine is not None else []):
+            b = bornes(n)
+            if b and n.get("clickable") == "true" and H * 0.30 < (b[1] + b[3]) / 2 < H * 0.60 \
+                    and (b[3] - b[1]) > 120 and ("Lire la suite" in (n.get("content-desc") or "")
+                                                 or "Réduire" in (n.get("content-desc") or "")):
+                carte = b
+                break
+        log("  carte a toucher :", carte, "| ecran allume avant :", allume_avant)
+        if icone is None or carte is None:
+            capture("36i-hilloulot", ok=False)
+            return
+        lancer_defilement(icone)
+        t0 = time.time()
+        allume = ecran_garde_allume("HilloulotActivity")
+        photo("36i-hilloulot-defile")
+        if allume is None:
+            faute("defilement hilloulot : drapeau de la fenetre non lu")
+        elif not allume:
+            faute("defilement hilloulot : l'ecran n'est pas garde allume pendant qu'il defile")
+        # La carte a monte depuis le depart (une seconde avant t0) : on la suit, le temps du toucher compris.
+        y = int((carte[1] + carte[3]) / 2 - vitesse_attendue(3) * (time.time() - t0 + 1.4))
+        log(f"  toucher de la carte a y={y}")
+        sh(f"input tap {W // 2} {y}")
+        pause(1.0)
+        if not immobile():
+            faute("defilement hilloulot : un doigt sur une carte ne l'arrete pas")
+        capture("36j-hilloulot-arrete-sur-une-carte")
+        log("  ecran allume apres l'arret :", ecran_garde_allume("HilloulotActivity"))
+
+        # En hebreu, lettres a 150 % : la barre, la commande, la vitesse en lignes ; le bouton d'arret.
+        regler({"lecture_echelle": ("float", "1.5")})
+        langue("he")
+        activite("SiddurLectureActivity", "--es id chaharit")
+        pause(2.0)
+        icone = preparer_defilement("הגדרות קריאה", "גלילה אוטומטית")
+        capture("36k-he-barre", ok=icone is not None)
+        if icone is not None:
+            touches = touches_commande(icone)
+            lancer_defilement(icone)
+            photo("36l-he-commande")
+            comparer_vitesse("hebreu, vitesse 3 a 150 %", vitesse_mesuree(4.0), vitesse_attendue(3, 1.5))
+            taper(touches["arret"])
+            pause(1.0)
+            if not immobile():
+                faute("defilement hebreu : le bouton d'arret ne l'arrete pas")
+            if trouver(desc="הגדרות קריאה") is None:
+                faute("defilement hebreu : la pastille n'est pas revenue a l'arret")
+        regler({"lecture_echelle": ("float", "1.0"), "lecture_defilement_vitesse": ("int", 3)})
+        langue("fr")
+    etape("36 defilement automatique", s36)
+
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
 
@@ -1256,6 +1643,182 @@ def faute(texte):
     """Une faute de mise en page : dans le bilan, et tout de suite au journal."""
     FAUTES.append(texte)
     log("  FAUTE : " + texte)
+
+
+# --- Le defilement automatique (verification du 24/11) ---------------------------------
+# Pendant que le texte defile, uiautomator ne lit pas l'ecran : il attend un ecran immobile (une
+# seconde sans evenement d'accessibilite), et chaque pas en envoie un. On mesure donc sur des
+# captures brutes, et on touche la commande a des places deduites de la barre depliee, lue avant.
+
+def ecran_brut():
+    """L'instant, puis l'ecran en pixels : screencap sans -p (un en-tete de 12 ou 16 octets, puis RGBA)."""
+    t = time.time()
+    b = adb("exec-out", "screencap", binary=True, timeout=60)
+    if len(b) < 16:
+        return None
+    w, h = int.from_bytes(b[0:4], "little"), int.from_bytes(b[4:8], "little")
+    entete = len(b) - w * h * 4
+    if w <= 0 or h <= 0 or entete not in (12, 16):
+        log(f"  screencap brut illisible ({len(b)} octets, {w}x{h})")
+        return None
+    return t, w, h, b[entete:]
+
+
+def empreintes(image):
+    """Une empreinte par ligne de pixels, prise entre 10 et 80 % de la largeur (ni les marges, ni le
+    niveau de lecture du bord droit) ; None pour une ligne presque unie, qui irait avec toute autre."""
+    _, w, h, px = image
+    x0, x1 = int(w * 0.10), int(w * 0.80)
+    lignes = []
+    for y in range(h):
+        rangee = px[(y * w + x0) * 4:(y * w + x1) * 4:12]  # le rouge d'un pixel sur trois
+        lignes.append(hash(rangee) if len(set(rangee)) > 2 else None)
+    return lignes
+
+
+def montee(avant, apres, plus_loin):
+    """De combien de pixels le texte est monte entre deux images : l'ecart d pour lequel le plus de
+    lignes de « apres » (entre 25 et 60 % de la hauteur) valent celles de « avant » d plus bas.
+    None si rien ne s'accorde assez. Le bandeau du haut qui se replie pendant la mesure deplace une
+    partie du texte de plus : un tiers des lignes suffit (run 45403918238, 46 a 50 % au bon ecart)."""
+    a, b = empreintes(avant), empreintes(apres)
+    h = len(a)
+    bas = int(h * 0.60)
+    lignes = [y for y in range(int(h * 0.25), bas) if b[y] is not None]
+    if len(lignes) < 20:
+        log(f"  trop peu de lignes de texte pour mesurer ({len(lignes)})")
+        return None
+    meilleur, score = None, 0
+    for d in range(0, max(1, min(plus_loin, h - bas))):
+        n = sum(1 for y in lignes if a[y + d] == b[y])
+        if n > score:
+            meilleur, score = d, n
+    if score < len(lignes) * 0.3:
+        log(f"  ecart incertain : {score}/{len(lignes)} lignes pour {meilleur} px")
+        return None
+    return meilleur
+
+
+def vitesse_mesuree(duree):
+    """Les pixels par seconde dont le texte monte, sur deux captures brutes a « duree » secondes."""
+    a = ecran_brut()
+    pause(duree)
+    b = ecran_brut()
+    if not a or not b:
+        return None
+    d = montee(a, b, int(a[2] * 0.40))
+    return None if d is None else d / max(0.1, b[0] - a[0])
+
+
+def densite_ecran():
+    m = re.search(r"(\d+)\s*$", sh("wm density").strip())
+    return int(m.group(1)) / 160.0 if m else 2.625
+
+
+def vitesse_attendue(niveau, echelle=1.0):
+    """DefilementAuto.vitesse : 6 dp par seconde fois 1,4^(n-1), fois la taille des lettres, en pixels."""
+    return 6 * 1.4 ** (niveau - 1) * echelle * densite_ecran()
+
+
+def comparer_vitesse(quoi, mesuree, attendue):
+    if mesuree is None:
+        faute(f"defilement {quoi} : vitesse non mesuree")
+        return
+    ecart = abs(mesuree - attendue) / attendue
+    log(f"  vitesse {quoi} : {mesuree:.1f} px/s mesures, {attendue:.1f} attendus ({ecart:.0%} d'ecart)")
+    if ecart > 0.35:
+        faute(f"defilement {quoi} : {mesuree:.1f} px/s au lieu de {attendue:.1f}")
+
+
+def immobile(duree=1.5):
+    """Vrai si le texte n'a pas bouge pendant « duree » secondes."""
+    a = ecran_brut()
+    pause(duree)
+    b = ecran_brut()
+    if not a or not b:
+        return None
+    return montee(a, b, 80) == 0
+
+
+def attendre_arret(au_plus):
+    fin = time.time() + au_plus
+    while time.time() < fin:
+        if immobile(1.0):
+            return True
+    return False
+
+
+def photo(nom):
+    """Une capture sans lire l'ecran (uiautomator ne le lit pas pendant le defilement)."""
+    png = adb("exec-out", "screencap", "-p", binary=True)
+    chemin = os.path.join(OUT, nom + ".png")
+    with open(chemin, "wb") as f:
+        f.write(png)
+    log(f"  capture {chemin} ({len(png)} octets)")
+
+
+def touches_commande(icone_defiler):
+    """Les centres de « moins vite », « plus vite » et « arreter » de la commande du defilement, d'apres
+    le bouton du defilement dans la barre depliee (ReglagesLecture) : la commande a le bas et la hauteur
+    de la barre, elle est centree, et elle aligne 4 dp, « − » (48), la vitesse (40), « + » (48), un filet
+    (1 + 2 x 4), l'icone d'arret (de la largeur de celles de la barre), 4 dp."""
+    x1, y1, x2, y2 = icone_defiler
+    d = densite_ecran()
+
+    def dp(v):
+        return int(v * d + 0.5)
+    icone = x2 - x1
+    largeur = dp(4) + dp(48) + dp(40) + dp(48) + dp(1) + 2 * dp(4) + icone + dp(4)
+    gauche = (W - largeur) // 2
+    y = (y1 + y2) // 2
+    return {
+        "moins": (gauche + dp(4) + dp(48) // 2, y),
+        "plus": (gauche + dp(4) + dp(48) + dp(40) + dp(48) // 2, y),
+        "arret": (gauche + dp(4) + dp(48) + dp(40) + dp(48) + dp(1) + 2 * dp(4) + icone // 2, y),
+    }
+
+
+def taper(xy, fois=1, attente=0.35):
+    for _ in range(fois):
+        sh(f"input tap {xy[0]} {xy[1]}")
+        pause(attente)
+
+
+def vitesse_gardee():
+    m = re.search(r'name="lecture_defilement_vitesse" value="(-?\d+)"', lire_prefs())
+    return int(m.group(1)) if m else None
+
+
+def ecran_garde_allume(classe):
+    """Le drapeau KEEP_SCREEN_ON de la fenetre de l'activite « classe » (dumpsys window), None si introuvable."""
+    sortie = sh("dumpsys window windows", timeout=60)
+    nom = f"{PKG}/com.myhitbodedut.{classe}"
+    blocs = [b for b in re.split(r"\n\s*Window #\d+ ", sortie) if nom in b.split("\n", 1)[0]]
+    if not blocs:
+        log(f"  fenetre de {classe} introuvable ; focus :",
+            [l.strip() for l in sortie.splitlines() if "Focus" in l][:4])
+        return None
+    bloc = blocs[0]
+    fl = re.search(r"\bfl=([A-Z_0-9 ]+)", bloc)
+    log("  fenetre", bloc.split("\n", 1)[0][:100], "| fl=", fl.group(1).strip() if fl else "?")
+    return "KEEP_SCREEN_ON" in bloc
+
+
+def preparer_defilement(desc_reglages, desc_defiler):
+    """Deplie la barre et rend la place du bouton du defilement, sans le toucher encore."""
+    if not toucher(desc=desc_reglages, attente=1.2):
+        return None
+    b = trouver(desc=desc_defiler)
+    if b is None:
+        journal_ecran("bouton du defilement introuvable")
+    return b
+
+
+def lancer_defilement(icone):
+    x, y = (icone[0] + icone[2]) // 2, (icone[1] + icone[3]) // 2
+    log(f"  defilement lance ({x},{y})")
+    sh(f"input tap {x} {y}")
+    pause(1.0)
 
 # Chaque activite de l'application (AndroidManifest.xml), avec ce qu'il lui
 # faut pour s'ouvrir sur un contenu reel.

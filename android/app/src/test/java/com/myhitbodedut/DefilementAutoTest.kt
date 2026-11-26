@@ -61,12 +61,32 @@ class DefilementAutoTest {
         val barre = File("src/main/java/com/myhitbodedut/ReglagesLecture.kt").readText()
         assertTrue(barre.contains("DefilementAuto(activite, defilement)"))
         assertTrue(barre.contains("R.drawable.ic_lecture_defiler, R.string.lecture_defiler"))
-        // Toucher le texte arrête le défilement, dans une liste comme dans une vue qui défile.
-        assertEquals(3, Regex("arreterAuToucher\\(e\\)").findAll(barre).count())
-        listOf("values", "values-en", "values-iw").forEach { d ->
+        // Toucher le texte arrête le défilement, dans une liste comme dans une vue qui défile : l'appui est
+        // vu par l'indicateur, posé par-dessus le texte, avant qu'une vue du texte le prenne (24/11).
+        assertTrue(barre.contains("surToucher = { reglages.arreterAuToucher(it) }"))
+        val indicateur = File("src/main/java/com/myhitbodedut/IndicateurDefilement.kt").readText()
+        val voit = indicateur.substringAfter("override fun dispatchTouchEvent(").substringBefore("\n    }")
+        assertTrue(voit, voit.contains("surToucher?.invoke(event)") && voit.trimEnd().endsWith("return false"))
+        listOf("values", "values-en", "values-iw", "values-es", "values-ar-rTN").forEach { d ->
             val textes = File("src/main/res/$d/strings.xml").readText()
             listOf("lecture_defiler", "lecture_defiler_pause", "lecture_vitesse", "lecture_plus_vite", "lecture_moins_vite")
                 .forEach { assertTrue("$d : $it", textes.contains("name=\"$it\"")) }
         }
+        // Les six écrans qui posent la barre, donc le défilement.
+        listOf("SiddurLectureActivity", "TehilimLectureActivity", "TikkunFlowActivity", "LibraryEntryActivity",
+            "HalakhaActivity", "HilloulotActivity").forEach {
+            assertTrue(it, File("src/main/java/com/myhitbodedut/$it.kt").readText().contains("ReglagesLecture.installer("))
+        }
+    }
+
+    @Test
+    fun `l ecran reste allume tant qu il defile, sur chaque ecran de lecture`() {
+        // La halakha et les hilloulot n'ont pas VeilleLecture, que les réglages peuvent aussi couper : le téléphone
+        // s'éteignait en plein défilement. La vue qui défile garde l'écran allumé, du départ à l'arrêt (24/11).
+        val source = File("src/main/java/com/myhitbodedut/DefilementAuto.kt").readText()
+        val demarrer = source.substringAfter("fun demarrer()").substringBefore("\n    }")
+        val arreter = source.substringAfter("fun arreter()").substringBefore("\n    }")
+        assertTrue(demarrer, demarrer.contains("defilement.keepScreenOn = true"))
+        assertTrue(arreter, arreter.contains("defilement.keepScreenOn = false"))
     }
 }

@@ -15,6 +15,13 @@ import kotlin.math.pow
  * le texte ne fasse pas lire plus vite. Les mêmes règles valent sur le site, le Nokia et l'iPhone.
  *
  * Il s'arrête de lui-même au bout du texte, quand on touche le texte, et quand l'écran s'en va.
+ *
+ * L'écran reste allumé tant qu'il défile (vérification du 24/11) : par la vue qui défile elle-même
+ * (keepScreenOn), sur tous les écrans de lecture. VeilleLecture ne suffisait pas : la halakha et les
+ * hilloulot n'en ont pas, et elle ne fait rien quand « Garder l'écran allumé » est coupé ; le
+ * téléphone s'éteignait alors au bout de trente secondes, en plein défilement. keepScreenOn s'ajoute
+ * au drapeau de la fenêtre que pose VeilleLecture sans y toucher, et ne compte que pour une vue à
+ * l'écran.
  */
 class DefilementAuto(
     private val activite: Activity,
@@ -44,6 +51,7 @@ class DefilementAuto(
         dernier = 0L
         reste = 0f
         dernierReveil = SystemClock.uptimeMillis()
+        defilement.keepScreenOn = true
         surEtat(true)
         choreographe.postFrameCallback(image)
     }
@@ -53,6 +61,7 @@ class DefilementAuto(
         actif = false
         choreographe.removeFrameCallback(image)
         defilement.removeCallbacks(attente)
+        defilement.keepScreenOn = false
         surEtat(false)
     }
 
@@ -76,7 +85,8 @@ class DefilementAuto(
             if (!defilement.canScrollVertically(1)) return arreter()
         }
         dernier = maintenant
-        // L'écran reste allumé (VeilleLecture) : défiler, c'est lire, même sans toucher l'écran.
+        // Défiler, c'est lire, même sans toucher l'écran : VeilleLecture repart pour dix minutes à chaque
+        // minute de défilement, pour que l'écran reste allumé après l'arrêt, le temps de finir la page.
         if (maintenant - dernierReveil >= REVEIL_MS) {
             dernierReveil = maintenant
             activite.onUserInteraction()

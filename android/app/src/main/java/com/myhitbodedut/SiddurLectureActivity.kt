@@ -36,14 +36,24 @@ import java.time.LocalTime
  * trait à son début) ou le démarque ; le bouton 🔖 liste ceux du texte et y
  * conduit ; la Bibliothèque les reprend tous (MarquesPages, RepriseFavoris).
  *
- * Les ajouts du jour (10/10) : mis en évidence, avec leur nom ; les autres
- * repliés en une ligne, qu'un toucher ouvre et referme (SiddurJour, qui
- * construit les lignes et que les tests vérifient sur la JVM).
+ * Les ajouts du jour (10/10) : mis en évidence, avec leur nom. Depuis le
+ * 26/11, ceux du calendrier hors de leur jour sont retirés ; ceux d'une
+ * occasion repliés en une ligne, qu'un toucher ouvre et referme (SiddurJour,
+ * qui construit les lignes et que les tests vérifient sur la JVM).
  */
 class SiddurLectureActivity : AppCompatActivity() {
 
     /** La note du jour en tête : la date hébraïque qui décide des ajouts. */
     private data class Note(val texte: String)
+
+    /**
+     * La question du statut (26/11, Q7) : Israël ou diaspora n'est pas confirmé, et le texte en dépend
+     * aujourd'hui ; un toucher la pose, la réponse est gardée (Store.setInIsrael, manuel).
+     */
+    private object QuestionRegion
+
+    /** Le jour hébreu du texte affiché, pour « Pas de Ta'hanoun aujourd'hui » de la barre de lecture (Q1). */
+    private var dateTahanoun: LocalDate = LocalDate.now()
 
     /** Le pied d'un ajout déplié (19/10) : « Replier », pour ne pas remonter le chercher. */
     private data class Pied(val cle: String)
@@ -83,7 +93,9 @@ class SiddurLectureActivity : AppCompatActivity() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) = suivre()
             })
         }
-        ReglagesLecture.installer(this, liste, avecNusah = !livre) {
+        // « Pas de Ta'hanoun aujourd'hui » dans la barre (26/11, Q1) : à Cha'harit et à Min'ha, le même réglage que les zmanim.
+        val avecTahanoun = !livre && id in setOf("chaharit", "minha")
+        ReglagesLecture.installer(this, liste, avecNusah = !livre, sansTahanoun = if (avecTahanoun) ({ dateTahanoun }) else null) {
             // Même nusah : on garde sa place ; un autre nusah n'a pas les mêmes paragraphes.
             afficher(garderPlace = recueil().nusah == nusahAffiche)
         }
@@ -292,18 +304,22 @@ class SiddurLectureActivity : AppCompatActivity() {
         // Le jour hébreu de cette prière : Arvit, l'après-midi, est déjà celui de demain.
         val israel = Store.inIsrael(this)
         // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
-        val apresSortie = Store.lieuZmanim(this)?.let { lieu ->
-            Zmanim.jour(lieu, LocalDate.now(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
-        } ?: false
-        val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
-            Store.mukafChoma(this)).let { j ->
-            // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
-            val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now(), Store.siddurNusah(this).cle) }
-            val maintenant = java.time.Instant.now()
-            val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
-            val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }
-            if (CalendrierJuif.nuit(LocalTime.now(), sortie, aube)) j.copy(conditions = j.conditions + CalendrierJuif.C.NUIT) else j
-        }
+        val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now(), Store.siddurNusah(this).cle) }
+        val maintenant = java.time.Instant.now()
+        val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
+        val coucher = zmanim?.firstOrNull { it.cle == "chkia" }?.instant?.let { !maintenant.isBefore(it) }
+        val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }
+        val dateJour = CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), sortie ?: false)
+        dateTahanoun = dateJour
+        // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
+        val nuit = CalendrierJuif.nuit(LocalTime.now(), sortie, aube)
+        fun jourPour(enIsrael: Boolean) = CalendrierJuif.jour(dateJour, enIsrael, Store.mukafChoma(this))
+            .let { j -> if (nuit) j.copy(conditions = j.conditions + CalendrierJuif.C.NUIT) else j }
+        val jour = jourPour(israel)
+        // Le soir, au Birkat haMazon et à Méèn chaloch (26/11, Q6) : les ajouts du jour voisin restent repliés.
+        val dateVoisin = CalendrierJuif.jourVoisin(id, LocalDate.now(), LocalTime.now(), coucher, sortie)
+        fun voisinPour(enIsrael: Boolean): Set<String> =
+            dateVoisin?.let { Store.conditionsDuJour(this, CalendrierJuif.jour(it, enIsrael, Store.mukafChoma(this))) } ?: emptySet()
         val annotations = if (livre) emptyList() else Data.ajouts(this)[id].orEmpty()
         // Un texte qui n'a que des notes de l'application (audit du 16/11) n'a pas d'ajouts du jour.
         val note = (if (annotations.all { it.sorte == SiddurJour.Sorte.NOTE }) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
@@ -323,8 +339,23 @@ class SiddurLectureActivity : AppCompatActivity() {
         // Une traduction automatique affichée : on dit qu'elle n'est pas relue, l'hébreu fait foi (COUV-05).
         val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
             listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
-        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, Store.conditionsDuJour(this, jour), ouverts,
-            Store.siddurNusah(this).cle, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this))
+        val nusah = Store.siddurNusah(this).cle
+        // La lecture de la Torah du jour (26/11) : à Cha'harit les jours de lecture, à Min'ha les jours de jeûne, jamais un
+        // Chabbat ni un Yom tov (LectureTorah.lecturesOffice) ; les données (43 ko) ne sont lues que ces jours-là, le
+        // texte (0,6 Mo) hors du fil principal, quand on déplie.
+        val avecLecture = !livre && (LectureTorah.litDansLOffice(jourPour(true), id) || LectureTorah.litDansLOffice(jourPour(false), id))
+        fun lecturesPour(enIsrael: Boolean) = if (!avecLecture) emptyList()
+            else LectureTorah.lecturesOffice(LectureTorah.donnees(this), dateJour, id, enIsrael, Store.mukafChoma(this), nusah)
+        // Israël ou diaspora non confirmé (26/11, Q7) : demandé quand le texte en dépend aujourd'hui.
+        val question = if (!livre && annotations.isNotEmpty() && !Store.regionConfirmee(this) && SiddurJour.dependDeLaRegion(
+                texte, annotations, Store.conditionsDuJour(this, jourPour(true)), Store.conditionsDuJour(this, jourPour(false)), nusah,
+                Store.sansTahanounFinTichri(this), Store.hemisphereSud(this), voisinPour(true), voisinPour(false),
+                lecturesPour(true), lecturesPour(false))) listOf(QuestionRegion) else emptyList()
+        val lignes: List<Any> = sansTraduction + partielle + auto + note + question + SiddurJour.lignes(texte, annotations,
+            Store.conditionsDuJour(this, jour), ouverts, nusah, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this), voisinPour(israel),
+            lecturesPour(israel))
+        // Une lecture dépliée : son texte se lit hors du fil principal, puis l'écran se redessine (26/11).
+        if (lignes.any { it is SiddurJour.Ligne.Passage } && LectureTorah.texteEnMemoire() == null) demanderTexteLecture()
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager
         val place = gestion.findFirstVisibleItemPosition()
@@ -501,9 +532,6 @@ class SiddurLectureActivity : AppCompatActivity() {
     /** Un libellé (clé de chaîne) dans la langue de l'application. */
     private fun nom(libelle: String): String = Libelles.res(libelle)?.let { getString(it) } ?: libelle
 
-    /** Les ajouts qui ne sont jamais « du jour » : on dit « toucher pour lire », pas « pas aujourd'hui ». */
-    private val jamaisDuJour = setOf(CalendrierJuif.C.MINYAN, CalendrierJuif.C.BEIT_AVEL, CalendrierJuif.C.OUBLI, CalendrierJuif.C.CHEVA_BERAKHOT, CalendrierJuif.C.ZIMUN, CalendrierJuif.C.FACULTATIF)
-
     /** Le chevron d'un repli, tourné d'un quart de tour quand l'ajout est ouvert ; [haut] : vers le haut. */
     private fun chevron(couleur: Int, ouvert: Boolean, haut: Boolean = false): android.graphics.drawable.RotateDrawable {
         val rtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
@@ -530,6 +558,71 @@ class SiddurLectureActivity : AppCompatActivity() {
         return android.graphics.drawable.LayerDrawable(arrayOf(forme)).apply {
             setLayerInset(0, dp(8), if (haut) marge else 0, dp(8), if (bas) marge else 0)
         }
+    }
+
+    /** Le texte des lectures n'est pas encore lu : lu une fois, hors du fil principal, puis l'écran se redessine. */
+    private var lectureEnChargement = false
+
+    private fun demanderTexteLecture() {
+        if (lectureEnChargement) return
+        lectureEnChargement = true
+        val contexte = applicationContext
+        Thread {
+            runCatching { LectureTorah.texte(contexte) }
+            runOnUiThread {
+                lectureEnChargement = false
+                if (!isFinishing && !isDestroyed) afficher(garderPlace = true)
+            }
+        }.start()
+    }
+
+    /** Le bandeau d'une lecture repliée : « Lecture : Vayichla'h, 3 montées ». */
+    private fun titreLecture(ligne: SiddurJour.Ligne.Lecture): String {
+        val l = ligne.lecture
+        val n = l.montees.size
+        return getString(R.string.lecture_titre, l.titre.forLanguage(ChizukCard.language(this)), resources.getQuantityString(R.plurals.lecture_montees, n, n))
+    }
+
+    /** Une montée ouverte : son libellé et sa référence, puis ses versets numérotés, un paragraphe à chaque פ. */
+    private fun textePassage(ligne: SiddurJour.Ligne.Passage, rendu: ReglagesLecture.Rendu): CharSequence {
+        val langue = ChizukCard.language(this)
+        val m = ligne.montee
+        val entete = m.libelle.forLanguage(langue) + " · " + LectureTorah.reference(LectureTorah.donnees(this), m.livre, m.debut, m.fin, langue)
+        val texte = LectureTorah.texteEnMemoire()
+        return android.text.SpannableStringBuilder().apply {
+            append(entete)
+            setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(android.text.style.RelativeSizeSpan(0.62f), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(android.text.style.ForegroundColorSpan(rendu.titre), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            append("\n")
+            if (texte == null) {
+                val d = length
+                append(getString(R.string.lecture_chargement))
+                setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                return@apply
+            }
+            texte.versets(m).forEach { v ->
+                val d = length
+                append("${v.verset}\u00A0")
+                setSpan(android.text.style.RelativeSizeSpan(0.55f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                append(v.texte)
+                append(if (v.fin == "פ") "\n" else " ")
+            }
+            while (isNotEmpty() && (last() == '\n' || last() == ' ')) delete(length - 1, length)
+        }
+    }
+
+    /** Israël ou diaspora (26/11, Q7) : la réponse confirme le statut, gardé comme s'il était choisi dans les réglages. */
+    private fun questionRegion() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.siddur_region_titre)
+            .setItems(arrayOf(getString(R.string.region_israel), getString(R.string.region_diaspora))) { _, k ->
+                Store.setInIsrael(this, k == 0, manuel = true)
+                afficher(garderPlace = true)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun basculer(cle: String) {
@@ -603,7 +696,24 @@ class SiddurLectureActivity : AppCompatActivity() {
                 setLineSpacing(0f, 1f)
                 typeface = android.graphics.Typeface.DEFAULT
             }
+            // Lu une fois ici (lint RecyclerView : la position ne se garde pas dans les lambdas).
+            val dansLePanneau = position in dansPanneau
             when (val ligne = lignes[position]) {
+                is QuestionRegion -> vue.apply {
+                    // Israël ou diaspora ? (26/11, Q7) : une carte, un toucher pose la question.
+                    layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                    textDirection = View.TEXT_DIRECTION_LOCALE
+                    text = getString(R.string.siddur_region_question)
+                    textSize = 15f
+                    setTypeface(typeface, android.graphics.Typeface.BOLD)
+                    setTextColor(rendu.titre)
+                    background = panneau(fondFerme, haut = true, bas = true, trait = traitFerme, marge = dp(6))
+                    setPadding(dp(24), dp(16), dp(24), dp(16))
+                    minHeight = dp(56)
+                    gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+                    contentDescription = text
+                    setOnClickListener { questionRegion() }
+                }
                 is Note -> vue.apply {
                     layoutDirection = View.LAYOUT_DIRECTION_LOCALE
                     textDirection = View.TEXT_DIRECTION_LOCALE
@@ -737,10 +847,11 @@ class SiddurLectureActivity : AppCompatActivity() {
                     // Le bandeau d'un ajout replié (19/10) : son nom, et dessous ce qu'un toucher fait.
                     layoutDirection = View.LAYOUT_DIRECTION_LOCALE
                     textDirection = View.TEXT_DIRECTION_LOCALE
+                    // Une occasion : « toucher pour lire » ; un ajout du calendrier gardé replié (26/11) : « pas aujourd'hui ».
                     val etat = getString(when {
                         ligne.ouvert -> R.string.siddur_replier
-                        ligne.condition in jamaisDuJour -> R.string.siddur_toucher_lire
-                        else -> R.string.siddur_pas_aujourdhui
+                        ligne.pasAujourdhui -> R.string.siddur_pas_aujourdhui
+                        else -> R.string.siddur_toucher_lire
                     })
                     val titre = nom(ligne.libelle)
                     text = android.text.SpannableStringBuilder(titre).apply {
@@ -775,6 +886,43 @@ class SiddurLectureActivity : AppCompatActivity() {
                             })
                         }.start()
                     }
+                }
+                is SiddurJour.Ligne.Lecture -> vue.apply {
+                    // La lecture de la Torah du jour (26/11) : repliée comme un ajout, « Lecture : Vayétsé, 3 montées ».
+                    layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                    textDirection = View.TEXT_DIRECTION_LOCALE
+                    val etat = getString(if (ligne.ouvert) R.string.siddur_replier else R.string.siddur_toucher_lire)
+                    val titre = titreLecture(ligne)
+                    text = android.text.SpannableStringBuilder(titre).apply {
+                        setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        append("\n")
+                        val d = length
+                        append(etat)
+                        setSpan(android.text.style.RelativeSizeSpan(0.82f), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        setSpan(android.text.style.ForegroundColorSpan(rendu.discret), d, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    }
+                    textSize = 15f
+                    setTextColor(rendu.texte)
+                    setLineSpacing(dp(2).toFloat(), 1f)
+                    gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+                    background = if (ligne.ouvert) panneau(fondOuvert, haut = true, bas = false, marge = dp(6))
+                    else panneau(fondFerme, haut = true, bas = true, trait = traitFerme, marge = dp(6))
+                    setPadding(dp(24), dp(18), dp(24), dp(if (ligne.ouvert) 12 else 18))
+                    minHeight = dp(64)
+                    setCompoundDrawablesRelative(chevron(rendu.titre, ligne.ouvert), null, null, null)
+                    compoundDrawablePadding = dp(14)
+                    contentDescription = "$titre, $etat"
+                    setOnClickListener { basculer(ligne.cle) }
+                }
+                is SiddurJour.Ligne.Passage -> vue.apply {
+                    // Un passage déplié : la montée et sa référence, puis le texte cantillé (teamim), dans le panneau.
+                    PoliceHebraique.appliquer(this)
+                    text = textePassage(ligne, rendu)
+                    textSize = 19f * e
+                    setLineSpacing(dp(8).toFloat() * e, 1f)
+                    setTextColor(rendu.texte)
+                    setPadding(dp(24), dp(14), dp(24), dp(18))
+                    if (dansLePanneau) background = panneau(voile, haut = false, bas = false)
                 }
                 is SiddurJour.Ligne.Seul -> vue.apply {
                     // Qui prie seul (19/10) : une carte à part, jamais repliée ; la consigne petite, la braïta en grand.
@@ -823,7 +971,7 @@ class SiddurLectureActivity : AppCompatActivity() {
                     setOnClickListener {
                         basculer(ligne.cle)
                         // Replié depuis le bas : on revient à son bandeau s'il est passé au-dessus de l'écran.
-                        val i = lignesAffichees.indexOfFirst { it is SiddurJour.Ligne.Replie && it.cle == ligne.cle }
+                        val i = lignesAffichees.indexOfFirst { (it is SiddurJour.Ligne.Replie && it.cle == ligne.cle) || (it is SiddurJour.Ligne.Lecture && it.cle == ligne.cle) }
                         val gestion = liste.layoutManager as LinearLayoutManager
                         if (i >= 0 && i < gestion.findFirstVisibleItemPosition()) liste.post { liste.smoothScrollToPosition(i) }
                     }

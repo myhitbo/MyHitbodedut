@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { jour } from '../src/js/calendrier-juif.js';
-import { conditionsPour, index, plan } from '../src/js/siddur-jour.js';
+import { conditionsPour, enClair, index, plan, texteDuJour } from '../src/js/siddur-jour.js';
 
 const RAW = '../../android/app/src/main/res/raw/';
 const lis = (f) => JSON.parse(readFileSync(new URL(RAW + f, import.meta.url), 'utf8'));
@@ -18,7 +18,7 @@ function visibles(nusah, id, iso) {
   const idx = index(annotations[nusah][id]);
   const sortie = [];
   texte.sections.forEach((s, si) => {
-    for (const p of plan(s, si, idx, c)) if (p.etat !== 'replie') p.blocs.forEach((i) => s.blocs[i].t && sortie.push(nu(s.blocs[i].t)));
+    for (const i of enClair(s, si, idx, c)) if (s.blocs[i].t) sortie.push(nu(texteDuJour(s.blocs[i].t, idx.indices.get(`${si}:${i}`) ?? [], c)));
   });
   return sortie;
 }
@@ -84,7 +84,7 @@ test('TSIDDUR-17 : Havdala Edot, la ligne de \'Hol hamoèd de Pessa\'h ne se lit
   assert.equal(nb(visibles('edot', 'havdala', '2026-11-14'), /חוה.{0,3}מ פסח ושמחנו/), 0);
 });
 
-test('Discret (12/11) : « שעשה לי כל צרכי » en clair sans étiquette, replié le 9 Av ; la fin du Kaddich après le Hallel repliée à \'Hanouka', () => {
+test('Discret (12/11) : « שעשה לי כל צרכי » en clair sans étiquette, retiré le 9 Av ; la fin du Kaddich après le Hallel retirée à \'Hanouka (26/11)', () => {
   const etats = (nusah, id, iso, motif) => {
     const texte = siddur[nusah].textes.find((t) => t.id === id);
     const c = conditionsPour(nusah, false, jour(iso, false).conditions);
@@ -96,8 +96,8 @@ test('Discret (12/11) : « שעשה לי כל צרכי » en clair sans étiquet
   assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-11-12', /שעשה לי כל ?צרכי/), ['libre']);
   assert.deepEqual(etats('edot', 'birkot_hachahar', '2026-07-23', /שעשה לי כל ?צרכי/), ['libre']);
   assert.deepEqual(etats('sefard', 'birkot_hachahar', '2026-11-12', /שעשה לי כל ?צרכי/), ['ordinaire']);
-  assert.deepEqual(etats('sefard', 'birkot_hachahar', '2026-07-23', /שעשה לי כל ?צרכי/), ['replie']);
-  assert.deepEqual(etats('sefard', 'chaharit', '2026-09-21', /שעשה לי כל ?צרכי/), ['replie']);
+  assert.deepEqual(etats('sefard', 'birkot_hachahar', '2026-07-23', /שעשה לי כל ?צרכי/), ['retire']);
+  assert.deepEqual(etats('sefard', 'chaharit', '2026-09-21', /שעשה לי כל ?צרכי/), ['retire']);
   assert.deepEqual([...new Set(etats('edot', 'hallel', '2026-11-11', /^תתקבל/))], ['ordinaire']);
-  assert.deepEqual([...new Set(etats('edot', 'hallel', '2026-12-07', /^תתקבל/))], ['replie']);
+  assert.deepEqual([...new Set(etats('edot', 'hallel', '2026-12-07', /^תתקבל/))], ['retire']);
 });

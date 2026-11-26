@@ -741,7 +741,7 @@
     <string name="reglage_tahanoun_tichri_sans">ما يتقالش لين روش حودش حشفان</string>
     <string name="reglage_sans_tahanoun_jour">ما فمّاش تحنون اليوم</string>
     <string name="reglage_sans_tahanoun_jour_non">لا · لدار فيها عزاء، بريت ميلا ولّا حتان، للنهار هذا برك</string>
-    <string name="reglage_sans_tahanoun_jour_oui">إيه، اليوم برك: التحنون مطوي في السيدور</string>
+    <string name="reglage_sans_tahanoun_jour_oui">إيه، اليوم برك: التحنون منحّى من السيدور</string>
     <string name="zman_alot">علوت هشحر</string>
     <string name="zman_misheyakir">مشيّكير</string>
     <string name="zman_netz">طلوع الشمس (نتس)</string>
@@ -906,7 +906,7 @@
     <string name="siddur_aujourdhui">اليوم</string>
     <string name="siddur_pas_aujourdhui">موش اليوم · إنقر باش تقرا</string>
     <string name="siddur_replier">سكّر</string>
-    <string name="siddur_jour_ajouts">زيادات %1$s (%2$s)، للتوجيه برك: النصّ والتعليمات متاعو هوما المرجع.</string>
+    <string name="siddur_jour_ajouts">زيادات %1$s (%2$s): متاع نهار آخر منحّاة، ومتاع مناسبة مطوية؛ النصّ والتعليمات متاعو هوما المرجع.</string>
     <string name="fete_erev_pessah">عشيّة پيسح</string>
     <string name="fete_pessah">پيسح</string>
     <string name="fete_hol_hamoed_pessah">حول هموعيد پيسح</string>
@@ -1648,7 +1648,7 @@
     <string name="divulgation_pas_maintenant">موش توّة</string>
     <string name="settings_confidentialite">سياسة الخصوصيّة</string>
     <string name="settings_licences">المصادر والرخص</string>
-    <string name="licences_texte">النصوص\nالنصوص العبريّة (السيدور، تهيليم، التيقون، الكتب، المصادر) جاية من طبعات في الملك العام، خاصّة Sefaria، توراة إيمت، tanach.us وrabenubook، ولّا مأخوذة بموافقة أصحابها؛ الطبعة والرخصة متاع كلّ واحد مكتوبين في ملفّات التطبيقة.\nيلقوط يوسف – قيتسور شولحان عاروخ، متاع الراڤ يتسحاق يوسف: نصّ من توراة إيمت، CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nالهيلولوت: ويكيپيديا العبريّة (CC BY-SA 4.0)، توراة إيمت (CC BY-NC-SA 2.5)، MyTzadik وهمئير لأرتس بموافقتهم.\n\nالترجمات\nالترجمات بالفرنساوي والنڨليزي معمولة بالكمبيوتر وما تراجعتش: العبري هو المرجع. متاع يلقوط يوسف جزئيّة، تحت نفس رخصة النصّ. لتهيليم، التيقون، إستير وشير هشيريم: توراة الحاخاميّة (1899) وJPS (1917)، ملك عام.\n\nالخطوط\nDavid Libre، Frank Ruhl Libre، Miriam Libre، Noto Rashi Hebrew، Noto Serif Hebrew وVarela Round، تحت رخصة SIL OFL 1.1.\n\nالبيانات\nالمدن: GeoNames (CC BY 4.0). المطارات: OurAirports (ملك عام)؛ المناطق الزمنيّة: timezone-boundary-builder (ODbL، © مساهمي OpenStreetMap)؛ الأسامي: Wikidata (CC0). طرق الرحلات: adsbdb.com.\n\nالرزنامة والزمانيم\nKosherJava (LGPL 2.1)، مباشرة ولّا بالنسخة متاعو في JavaScript. التطبيقة جاية مع نصّ الرخصة؛ الكود المصدري متاع التطبيقة متوفّر بطلب مكتوب على myhitbodedut26@gmail.com.</string>
+    <string name="licences_texte">النصوص\nالنصوص العبريّة (السيدور، تهيليم، التيقون، الكتب، المصادر) جاية من طبعات في الملك العام، خاصّة Sefaria، توراة إيمت، tanach.us وrabenubook، ولّا مأخوذة بموافقة أصحابها؛ الطبعة والرخصة متاع كلّ واحد مكتوبين في ملفّات التطبيقة.\nيلقوط يوسف – قيتسور شولحان عاروخ، متاع الراڤ يتسحاق يوسف: نصّ من توراة إيمت، CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nالهيلولوت: ويكيپيديا العبريّة (CC BY-SA 4.0)، توراة إيمت (CC BY-NC-SA 2.5)، MyTzadik وهمئير لأرتس بموافقتهم.\n\nالترجمات\nالترجمات بالفرنساوي والنڨليزي معمولة بالكمبيوتر وما تراجعتش: العبري هو المرجع. متاع يلقوط يوسف جزئيّة، تحت نفس رخصة النصّ. لتهيليم، التيقون، إستير وشير هشيريم: توراة الحاخاميّة (1899) وJPS (1917)، ملك عام.\n\nالخطوط\nDavid Libre، Frank Ruhl Libre، Miriam Libre، Noto Rashi Hebrew، Noto Serif Hebrew وVarela Round، تحت رخصة SIL OFL 1.1.\n\nالبيانات\nالمدن: GeoNames (CC BY 4.0). المطارات: OurAirports (ملك عام)؛ المناطق الزمنيّة: timezone-boundary-builder (ODbL، © مساهمي OpenStreetMap)؛ الأسامي: Wikidata (CC0). طرق الرحلات: adsbdb.com.\n\nقراية التوراة\nتقسيم الطلعات: ‎@hebcal/leyning (© 2020 hebcal، رخصة BSD بجوج بنود، والنصّ متاعها موجود مع التطبيق). نصّ التوراة بالطعاميم: «Tanach with Ta’amei Hamikra» (tanach.us، مخطوطة لينينغراد، ملك عام).\n\nالرزنامة والزمانيم\nKosherJava (LGPL 2.1)، مباشرة ولّا بالنسخة متاعو في JavaScript. التطبيقة جاية مع نصّ الرخصة؛ الكود المصدري متاع التطبيقة متوفّر بطلب مكتوب على myhitbodedut26@gmail.com.</string>
     <string name="licences_android">\n\nمكتبات تطبيقة Android\nقراية الكودات-بار: ZXing (Apache 2.0). AndroidX وMaterial Components (Apache 2.0).</string>
     <string name="vol_en_ligne_aide">مطفيين بالأساس: حتّى شي ما يخرج من التليفون. كي تشعلهم، يقعدو شاعلين لين تطفيهم. وقتها المكبّرة 🔍 تبعث نومرو الرحلة برك لـ adsbdb.com؛ «الموقع المباشر» يبعث لـ OpenSky Network منطقة بقريب 10° دايرة بالموقع المقدّر متاع الطيّارة. الخدمات هذي يشوفو الأدريسة IP متاعك.</string>
     <string name="vol_en_ligne_aide_route">مطفيين بالأساس: حتّى شي ما يخرج من التليفون. كي تشعلهم، يقعدو شاعلين لين تطفيهم. وقتها المكبّرة 🔍 تبعث نومرو الرحلة برك لـ adsbdb.com باش تعمّر الوصول. الخدمة هذي تشوف الأدريسة IP متاعك.</string>
@@ -1815,4 +1815,40 @@
     <string name="session_suite_non">لا، نوفّي</string>
     <string name="channel_suite">نكمّلو الهتبوديدوت</string>
     <string name="channel_suite_description">السؤال اللي يجي 10 ثواني قبل آخر هتبوديدوت بوقت محدّد.</string>
+
+    <!-- 26/11 : les ajouts du siddour en deux catégories (calendrier, occasion) -->
+    <string name="siddur_region_question">إسرائيل ولّا الشتات؟ النصّ هذا يتبدّل اليوم حسب الجواب: إنقر باش تجاوب.</string>
+    <string name="siddur_region_titre">تسكن في إسرائيل ولّا في الشتات؟</string>
+    <string name="lecture_tahanoun_oui">ما فمّاش تحنون اليوم</string>
+    <string name="lecture_tahanoun_non">التحنون حسب الرزنامة</string>
+    <string name="ajout_sans_minyan">بلا منيان</string>
+    <string name="ajout_jeune_individuel">صيام فردي</string>
+    <string name="ajout_usage">حسب العادة</string>
+    <string name="ajout_roch_hodech_usage">روش حودش، حسب العادة</string>
+    <string name="ajout_israel_usage">في إسرائيل، حسب العادة</string>
+    <string name="ajout_occasion">مناسبة</string>
+    <string name="ajout_malade">على مريض</string>
+    <string name="ajout_subsistance">على الرزق</string>
+    <string name="ajout_homme">للراجل</string>
+    <string name="ajout_femme">للمرا</string>
+    <string name="ajout_jour_megila">في الصباح</string>
+    <string name="ajout_brit_mila">عشاء بريت ميلا</string>
+    <string name="ajout_hagomel">هاغومل</string>
+    <string name="ajout_bar_mitsva">بار ميتسفا</string>
+    <string name="ajout_mi_cheberakh_oleh">مي شبيرخ للي يطلع للتوراة</string>
+    <string name="ajout_mi_cheberakh_malade">مي شبيرخ على مريض</string>
+    <string name="ajout_mi_cheberakh_yoledet">مي شبيرخ للنفساء</string>
+    <string name="ajout_magdol">النهارات متاع «מגדול»</string>
+    <string name="ajout_israel">في إسرائيل</string>
+    <string name="ajout_yamim_noraim">روش هشانا ويوم كيبور</string>
+    <!-- La lecture de la Torah du jour (26/11, LectureTorah) -->
+    <string name="lecture_titre">القراية: %1$s، %2$s</string>
+    <plurals name="lecture_montees">
+        <item quantity="zero">بلا طلعة</item>
+        <item quantity="one">طلعة وحدة</item>
+        <item quantity="two">زوز طلعات</item>
+        <item quantity="few">%d طلعات</item>
+        <item quantity="many">%d طلعة</item>
+        <item quantity="other">%d طلعة</item>
+    </plurals>
 </resources>

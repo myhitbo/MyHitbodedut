@@ -4,18 +4,23 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { jour } from '../src/js/calendrier-juif.js';
 import { ajouts } from '../src/js/jour-affiche.js';
-import { avecSansTahanoun, conditionsPour, vrai } from '../src/js/siddur-jour.js';
+import { avecSansTahanoun, conditionsPour, decision, vrai } from '../src/js/siddur-jour.js';
 
 const annotations = JSON.parse(readFileSync(new URL('../../android/app/src/main/res/raw/siddur_annotations.json', import.meta.url), 'utf8'));
 const conditions = (nusah, iso, israel = false) => conditionsPour(nusah, israel, jour(iso, israel).conditions);
 
-/** « replie » (groupe hors du jour), « hors » (variante estompée dans un groupe du jour) ou « du_jour ». */
+/**
+ * L'état d'un bloc (règle du 26/11, siddur-jour.js decision) : « retire » (groupe du calendrier hors du jour, ou garde
+ * fausse), « replie » (occasion, usage du jour), « hors » (ligne d'un autre jour dans un groupe du jour, retirée elle
+ * aussi) ou « du_jour ».
+ */
 function etat(nusah, texte, s, b, iso, israel = false) {
   const a = annotations[nusah][texte].find((e) => e.sorte === 'bloc' && e.s === s && e.b === b);
   assert.ok(a, `${nusah}/${texte} ${s}.${b}`);
   const c = conditions(nusah, iso, israel);
-  if (!vrai(a.racine, c)) return 'replie';
-  return vrai(a.si, c) ? 'du_jour' : 'hors';
+  const d = decision(a, a.racine, c);
+  if (d.etat === 'retire' || d.etat === 'replie') return d.etat;
+  return vrai(a.si, c) || a.si === a.racine ? 'du_jour' : 'hors';
 }
 
 test('אל ארך אפים suit למנצח : dit le lundi de Tou biChvat, pas à Roch \'Hodech (MB 131:35)', () => {
@@ -31,9 +36,14 @@ test('אל ארך אפים suit למנצח : dit le lundi de Tou biChvat, pas à
 });
 
 test('Ashkenaz : Vidouï et ה׳ אלהי ישראל seulement le lundi et le jeudi (MB 134:1)', () => {
-  for (const b of [2, 7, 73, 83]) {
+  for (const b of [73, 83]) {
     assert.equal(etat('ashkenaz', 'chaharit', 4, b, '2025-11-17'), 'du_jour', `${b} lundi`);
-    assert.equal(etat('ashkenaz', 'chaharit', 4, b, '2025-11-18'), 'replie', `${b} mardi`);
+    assert.equal(etat('ashkenaz', 'chaharit', 4, b, '2025-11-18'), 'retire', `${b} mardi`);
+  }
+  // Le Vidouï d'avant Avinou malkénou, « selon l'usage » (26/11, Q14) : replié le lundi, retiré le mardi.
+  for (const b of [2, 7]) {
+    assert.equal(etat('ashkenaz', 'chaharit', 4, b, '2025-11-17'), 'replie', `${b} lundi`);
+    assert.equal(etat('ashkenaz', 'chaharit', 4, b, '2025-11-18'), 'retire', `${b} mardi`);
   }
   // Le Ps 6 et שומר ישראל : tous les jours de Ta'hanoun.
   for (const b of [72, 84, 88]) assert.equal(etat('ashkenaz', 'chaharit', 4, b, '2025-11-18'), 'du_jour', `${b} mardi`);

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { jour } from '../src/js/calendrier-juif.js';
 import { ajouts } from '../src/js/jour-affiche.js';
-import { conditionsPour, index, plan } from '../src/js/siddur-jour.js';
+import { conditionsPour, enClair, index, plan, texteDuJour } from '../src/js/siddur-jour.js';
 
 const RAW = '../../android/app/src/main/res/raw/';
 const lis = (f) => JSON.parse(readFileSync(new URL(RAW + f, import.meta.url), 'utf8'));
@@ -20,8 +20,10 @@ function visibles(nusah, id, iso, consignes = false) {
   const idx = index(annotations[nusah][id]);
   const sortie = [];
   texte.sections.forEach((s, si) => {
-    for (const p of plan(s, si, idx, c)) {
-      if (p.etat !== 'replie') p.blocs.forEach((i) => (s.blocs[i].t || (consignes && s.blocs[i].c)) && sortie.push(nu(s.blocs[i].t || s.blocs[i].c)));
+    // 26/11 : les blocs en clair, dans leur texte du jour (variantes fausses retirées).
+    for (const i of enClair(s, si, idx, c)) {
+      const b = s.blocs[i];
+      if (b.t || (consignes && b.c)) sortie.push(nu(texteDuJour(b.t ?? b.c, idx.indices.get(`${si}:${i}`) ?? [], c)));
     }
   });
   return sortie;
@@ -39,7 +41,9 @@ test('Edot : la conclusion « העונה לעמו ישראל » suit l\'Anénou 
   for (const id of ['chaharit', 'minha']) {
     const a = annotes('edot', id, /העונה לעמו ישראל בעת צרה/);
     assert.equal(a.length, 1, id);
-    assert.equal(a[0].a.libelle, 'ajout_anenou_officiant', id);
+    // 26/11 (Q2) : sous « Avec minyan », les jours de jeûne public seulement.
+    assert.equal(a[0].a.si, 'minyan', id);
+    assert.equal(a[0].a.quand, 'jeune', id);
     assert.equal(nb(visibles('edot', id, '2025-11-18'), /העונה לעמו ישראל בעת צרה/), 0, id);
   }
 });

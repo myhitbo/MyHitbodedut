@@ -282,6 +282,11 @@ export function creeStore(stockage, { maintenant = () => new Date(), fuseau, sur
      */
     regionProposee: () => { const v = get('region_proposee', null); return typeof v === 'boolean' ? v : null; },
     /**
+     * Le statut est-il confirmé (Store.regionConfirmee, 26/11, Q7) : choisi à la main, ou réglé par un lieu sans
+     * question en attente. Sinon, le siddour le demande quand un texte en dépend.
+     */
+    regionConfirmee: () => store.inIsraelManuel() || (store.lieu() !== null && store.regionProposee() === null),
+    /**
      * Le lieu des zmanim (10/10) : { nom, latitude, longitude, altitude,
      * fuseau, ville } ; null tant que rien n'est choisi. Il reste dans le
      * navigateur.

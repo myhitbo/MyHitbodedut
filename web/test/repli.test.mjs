@@ -21,11 +21,13 @@ test('les conditions déduites du 19/10', () => {
   assert.ok(!c('2026-10-19').has('beit_avel') && !c('2026-10-19').has('oubli'));
 });
 
-test('Barekhi nafchi (Edot, Arvit) replié hors de la veille de Roch \'Hodech', () => {
+test('Barekhi nafchi (Edot, Arvit), selon l\'usage : replié le soir de Roch \'Hodech, retiré les autres (26/11, Q14)', () => {
   const a = annotations.edot.arvit.find((e) => e.empreinte.startsWith('ברכי'));
-  assert.equal(a.si, 'roch_hodech');
-  assert.ok(!vrai(a.racine, c('2026-10-19')));
-  assert.ok(vrai(a.racine, c('2026-10-11')));
+  assert.equal(a.si, 'usage');
+  assert.equal(a.quand, 'roch_hodech');
+  assert.equal(a.libelle, 'ajout_roch_hodech_usage');
+  assert.ok(!vrai(a.quand, c('2026-10-19')));
+  assert.ok(vrai(a.quand, c('2026-10-11')));
   for (const nusah of ['sefard', 'ashkenaz']) {
     const r = annotations[nusah].chaharit.filter((e) => e.si === 'roch_hodech' && e.empreinte.includes('ברכי נפשי'));
     assert.ok(r.length > 0, nusah);
@@ -68,7 +70,9 @@ test('Birkat haMazon : psaumes d\'avant repliés ; bénédictions et הרחמן 
       if (!b.t || !nu(b.t).startsWith('הרחמן')) return;
       const e = notes.get(i);
       const table = e?.racine === 'facultatif' && /^ajout_harahaman_(maison|invite)$/.test(e.libelle);
-      assert.ok(!e || table || ['chabbat', 'roch_hodech', 'roch_hachana', 'soukkot', 'moed', 'yom_tov', 'cheva_berakhot', 'oubli', 'pourim_triple_festin'].includes(e.racine), `${nusah} : הרחמן ${i} sous ${e?.racine}`);
+      // Les הרחמן de la brit mila (26/11, Q15) : une occasion, repliée.
+      const brit = e?.racine === 'occasion' && e.libelle === 'ajout_brit_mila';
+      assert.ok(!e || table || brit || ['chabbat', 'roch_hodech', 'roch_hachana', 'soukkot', 'moed', 'yom_tov', 'cheva_berakhot', 'oubli', 'pourim_triple_festin'].includes(e.racine), `${nusah} : הרחמן ${i} sous ${e?.racine}`);
     });
     // Les הרחמן de la table (22/11) : la bénédiction de l'invité, repliée dans les trois ; Sfard et
     // Ashkenaz, aussi celles de la table de son père ou de la sienne, mais pas « אותנו ואת כל אשר לנו ».

@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         // redimensionnée) pendant la présentation en ouvrait une seconde.
         if (savedInstanceState == null) showOnboardingOnce()
         wireActions()
+        suivreCiel()
         // L'écran d'ouverture choisi dans les réglages (14/10) : Textes s'ouvre sur place, Zmanim par-dessus.
         val ouverture = Store.ouverture(this)
         wireTabs(savedInstanceState?.getInt(ETAT_ONGLET, R.id.nav_today)
@@ -140,6 +141,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         findViewById<View>(R.id.texts_scroll).visibility = if (onglet == R.id.nav_texts) View.VISIBLE else View.GONE
         findViewById<View>(R.id.chemin_scroll).visibility = if (onglet == R.id.nav_journal) View.VISIBLE else View.GONE
         retourAujourdhui.isEnabled = onglet != R.id.nav_today
+        fondBarreDepart()
     }
 
     // --- Le volet de la séance ------------------------------------------------
@@ -221,17 +223,26 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
         findViewById<View>(R.id.hero_plate).postDelayed(veilleCiel, CIEL_MS)
+        gardeCiel.reprendre()
     }
 
     override fun onPause() {
         findViewById<View>(R.id.hero_plate).removeCallbacks(veilleCiel)
+        gardeCiel.suspendre()
         super.onPause()
     }
 
-    // --- Le ciel du Jour (étape 3, 14/11) ---------------------------------------
+    // --- Le ciel du Jour (étape 3, 14/11 ; sur toute la page depuis le 24/11) ----------------
 
-    /** La fenêtre au creux des anneaux : le ciel du moment, quand la plaque montre le hassid. */
-    private val cielDessin by lazy { CielDessin(CielDuJour.maintenant(this)) }
+    /**
+     * Le ciel du moment en fond de tout le Jour (CielPage), et non plus dans la plaque du hassid :
+     * « s'affiche dans l'arrière-plan de la première page sur toute la page, pas dans le logo dans
+     * les anneaux » (le propriétaire, 24/11).
+     */
+    private val cielPage by lazy { CielPage(resources.displayMetrics.density) }
+
+    /** Ses petites animations (CielVivant) : seulement quand le téléphone les permet et que l'accueil est devant. */
+    private val gardeCiel = GardeCiel(this) { cielPage.anime = it }
 
     /** L'accueil resté ouvert passe de l'aube au jour, du coucher à la nuit, sans attendre un retour. */
     private val veilleCiel = object : Runnable {
@@ -242,23 +253,86 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     }
 
     /**
-     * Le ciel du moment (CielDuJour) : dans la plaque, sur le haut du Jour (un voile de sa
-     * couleur, qui s'efface vers le bas et défile avec la page), et devant la date hébraïque.
+     * Le ciel du moment : en fond de tout le Jour (CielPage, ciel continu d'après la hauteur du
+     * soleil, CielContinu, teintes adaptées au thème par TeintesCiel pour que chaque texte reste
+     * lisible), son sol sous la barre de départ quand le Jour est devant, et l'icône de sa phase
+     * (CielDuJour) devant la date hébraïque. Avec la palette « Contraste élevé », pas
+     * de ciel : on l'a choisie pour le plus fort contraste, le papier uni reste.
      */
     private fun renderCiel() {
         val phase = CielDuJour.maintenant(this)
-        cielDessin.phase = phase
-        if (face == Plaque.Face.HASSID) findViewById<View>(R.id.hero_plate).background = cielDessin
-        val d = resources.displayMetrics.density
-        val voile = android.graphics.drawable.GradientDrawable(
-            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
-            intArrayOf(androidx.core.graphics.ColorUtils.setAlphaComponent(CielDuJour.PALETTES.getValue(phase).voile, VOILE_ALPHA), android.graphics.Color.TRANSPARENT))
-        findViewById<android.view.ViewGroup>(R.id.main_scroll).getChildAt(0).background =
-            android.graphics.drawable.LayerDrawable(arrayOf(voile)).apply {
-                setLayerGravity(0, android.view.Gravity.TOP or android.view.Gravity.FILL_HORIZONTAL)
-                setLayerHeight(0, (VOILE_DP * d).toInt())
-            }
+        val scroll = findViewById<android.widget.ScrollView>(R.id.main_scroll)
+        if (Store.fond(this) == Apparence.Fond.CONTRASTE) {
+            scroll.background = null
+        } else {
+            val sombre = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+            // Le ciel continu (24/11) : la hauteur du vrai soleil au lieu choisi, revue chaque minute (veilleCiel).
+            val etat = CielDuJour.etat(this)
+            cielPage.regler(etat, TeintesCiel.pourCiel(etat.hauteur, etat.matin, sombre, encresDuJour(), Apparence.couleur(this, R.color.paper)), sombre)
+            if (scroll.background !== cielPage) scroll.background = cielPage
+        }
+        fondBarreDepart()
         findViewById<TextView>(R.id.nav_zmanim).setCompoundDrawablesRelativeWithIntrinsicBounds(CielDuJour.icone(phase), 0, R.drawable.ic_chevron, 0)
+    }
+
+    /**
+     * Les encres posées sur le ciel du Jour et le contraste qu'elles y gardent, ceux de
+     * PaletteTest : le titre (7:1), le texte secondaire, l'accent (palier, boutons-liens) et les
+     * légendes des anneaux (4,5:1).
+     */
+    private fun encresDuJour(): List<TeintesCiel.Encre> = listOf(
+        TeintesCiel.Encre(Apparence.couleur(this, R.color.ink), 7.0),
+        TeintesCiel.Encre(Apparence.couleur(this, R.color.muted), 4.5),
+        TeintesCiel.Encre(Apparence.couleur(this, R.color.brand), 4.5),
+        TeintesCiel.Encre(getColor(R.color.ring_week_text), 4.5),
+        TeintesCiel.Encre(getColor(R.color.ring_streak_text), 4.5),
+    )
+
+    /** La barre de départ prend la couleur du sol, au pied des collines, quand le Jour est devant ; le papier ailleurs. */
+    private fun fondBarreDepart() {
+        val scroll = findViewById<View>(R.id.main_scroll)
+        val jour = scroll.visibility == View.VISIBLE
+        val ciel = scroll.background === cielPage
+        findViewById<View>(R.id.depart_barre).setBackgroundColor(
+            cielPage.teintes?.collinePres?.takeIf { jour && ciel } ?: Apparence.couleur(this, R.color.paper))
+    }
+
+    /**
+     * Le ciel monte avec la page, et sait où sont les anneaux et les textes : l'astre se pose à
+     * côté des anneaux, aucune étoile sous un texte. Revu à chaque mise en page du Jour.
+     */
+    private fun suivreCiel() {
+        val scroll = findViewById<android.widget.ScrollView>(R.id.main_scroll)
+        scroll.setOnScrollChangeListener { _, _, y, _, _ -> cielPage.defilement = y }
+        scroll.viewTreeObserver.addOnGlobalLayoutListener { if (scroll.isShown) placerCiel(scroll) }
+    }
+
+    private fun placerCiel(scroll: android.widget.ScrollView) {
+        val contenu = scroll.getChildAt(0) as? android.view.ViewGroup ?: return
+        val zones = ArrayList<PlanCiel.Zone>()
+        val cadre = android.graphics.Rect()
+        fun zone(v: View): PlanCiel.Zone {
+            cadre.set(0, 0, v.width, v.height)
+            contenu.offsetDescendantRectToMyCoords(v, cadre)
+            return PlanCiel.Zone((cadre.left + contenu.left).toFloat(), (cadre.top + contenu.top).toFloat(),
+                (cadre.right + contenu.left).toFloat(), (cadre.bottom + contenu.top).toFloat())
+        }
+        val anneaux = findViewById<View>(R.id.week_gauge)
+        fun parcourir(g: android.view.ViewGroup) {
+            for (i in 0 until g.childCount) {
+                val v = g.getChildAt(i)
+                if (v.visibility != View.VISIBLE || v === anneaux) continue
+                when {
+                    v is android.view.ViewGroup && v.background == null -> parcourir(v)
+                    // Un texte, une icône, une carte, une case de la semaine : ce qu'on lit ou touche.
+                    v is TextView || v is ImageView || v.background != null -> zones += zone(v)
+                    v is android.view.ViewGroup -> parcourir(v)
+                }
+            }
+        }
+        parcourir(contenu)
+        cielPage.placer((anneaux.parent as? View)?.let(::zone), zones)
     }
 
     /**
@@ -716,15 +790,14 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
             hassid.visibility = View.VISIBLE
             chiffres.visibility = View.GONE
             plaque.contentDescription = getString(R.string.rings_character_hint)
-            // Le hassid se tient dans le ciel du moment (14/11).
-            plaque.background = cielDessin
         } else {
             hassid.visibility = View.INVISIBLE
             chiffres.visibility = View.VISIBLE
-            // Les chiffres gardent le disque clair : ils s'y lisent mieux que sur un ciel.
-            plaque.setBackgroundResource(R.drawable.bg_gauge_plate)
             remplirFace(vers)
         }
+        // Le disque clair, sous le hassid comme sous les chiffres : le ciel est passé derrière toute
+        // la page (24/11). Clair de nuit aussi, les illustrations sont dessinées pour un fond clair.
+        plaque.setBackgroundResource(R.drawable.bg_gauge_plate)
         findViewById<AnneauxView>(R.id.week_gauge).mettreEnAvant(vers.anneau)
     }
 
@@ -1220,10 +1293,6 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
         /** Le ciel du Jour se revoit chaque minute tant que l'accueil est devant. */
         private const val CIEL_MS = 60_000L
-
-        /** Le voile du ciel sur le haut du Jour : sa hauteur, et son opacité au plus haut (30 %). */
-        private const val VOILE_DP = 420
-        private const val VOILE_ALPHA = 0x4D
 
         /** L'onglet affiché, pour qu'une rotation ne ramène pas à « Aujourd'hui ». */
         private const val ETAT_ONGLET = "onglet"
