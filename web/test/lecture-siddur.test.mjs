@@ -82,11 +82,12 @@ test('Roch \'Hodech et \'Hanouka à Roch \'Hodech Tevet : quatre montées', () =
   }
 });
 
-test('9 Av, le matin et à Min\'ha, une seule lecture ; plus de repère qui la décrivait', () => {
+test('9 Av, le matin et à Min\'ha, une seule lecture, le troisième maftir ; plus de repère qui la décrivait', () => {
   for (const nusah of NUSAH) {
     const matin = lecturesDe(deroule(nusah, 'chaharit', '2026-07-23'));
     assert.deepEqual(matin.map((l) => l.map((x) => x.cle)), [["Tish'a B'Av"]], nusah);
     assert.deepEqual(matin[0][0].montees.map((m) => m.debut), ['4:25', '4:30', '4:36']);
+    assert.equal(matin[0][0].montees[2].libelle.fr, 'Maftir', nusah);
     const minha = lecturesDe(deroule(nusah, 'minha', '2026-07-23'));
     assert.deepEqual(minha.map((l) => l.map((x) => x.cle)), [["Tish'a B'Av (Mincha)"]], nusah);
     // Le troisième : maftir, dans les trois rites ce jour-là.

@@ -227,6 +227,8 @@ test('9 Av, matin et Min\'ha (5786, jeudi 23/07/2026), et le 10 Tévet (5787)', 
   assert.equal(m.cle, "Tish'a B'Av");
   assert.equal(passages(m), 'Deuteronomy 4:25-4:29, Deuteronomy 4:30-4:35, Deuteronomy 4:36-4:40');
   assert.equal(passages(une('2026-07-23', { nusah: 'edot' })), passages(m));
+  // Le troisième est maftir dans les trois rites (Choul'han Aroukh O.H. 559:4).
+  for (const nusah of ['edot', 'sefard', 'ashkenaz']) assert.deepEqual(une('2026-07-23', { nusah }).montees.map((x) => x.libelle.fr), ['Cohen', 'Lévi', 'Maftir'], nusah);
   assert.equal(une('2026-07-23', {}, 'minha').titre.fr, 'Ticha bèAv');
   assert.equal(passages(une('2026-07-23', {}, 'minha')), 'Exodus 32:11-32:14, Exodus 34:1-34:3, Exodus 34:4-34:10');
   // Le 10 Tévet (dimanche 20/12/2026) : le matin et à Min'ha.

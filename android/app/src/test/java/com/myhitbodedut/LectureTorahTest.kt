@@ -74,6 +74,8 @@ class LectureTorahTest {
         assertEquals("Maftir", une("2026-12-20", office = LectureTorah.MINHA).montees[2].libelle.fr)
         assertEquals("Israël", une("2026-12-20", nusah = "edot", office = LectureTorah.MINHA).montees[2].libelle.fr)
         assertEquals("Maftir", une("2026-07-23", nusah = "edot", office = LectureTorah.MINHA).montees[2].libelle.fr)
+        // 9 Av au matin : maftir dans les trois rites (Choul'han Aroukh O.H. 559:4).
+        for (nusah in LectureTorah.NUSAH) assertEquals(nusah, "Maftir", une("2026-07-23", nusah = nusah).montees[2].libelle.fr)
         // Pourim à Jérusalem le 15, ailleurs le 14.
         assertEquals("Shushan Purim", une("2027-03-24", il = true, muk = true).cle)
         assertTrue(LectureTorah.lectures(d, LocalDate.parse("2027-03-23"), LectureTorah.CHAHARIT, true, true, "edot").isEmpty())

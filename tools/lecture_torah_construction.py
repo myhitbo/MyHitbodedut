@@ -268,7 +268,7 @@ LIVRES = {
 
 
 # Les montées. « 3_israel » : le troisième d'une lecture de trois (lundi, jeudi, jeûnes…) ; « M » : le troisième
-# monté de Min'ha d'un jeûne, maftir chez Ashkenaz et Sfard, et le 9 Av chez les Edot.
+# monté du 9 Av au matin, et de Min'ha d'un jeûne chez Ashkenaz et Sfard (le 9 Av aussi chez les Edot).
 MONTEES = {
     "1": T("כהן", "Cohen", "Kohen"),
     "2": T("לוי", "Lévi", "Levi"),
@@ -400,7 +400,10 @@ def construit(aliyot, fetes, numverses):
     for c in ("Tzom Gedaliah", "Asara B'Tevet", "Ta'anit Esther", "Tzom Tammuz"):
         alias(c, TITRES[c], "Fast Day (Morning)")
         alias(f"{c} (Mincha)", TITRES[c], "Fast Day (Afternoon)")
-    fete("Tish'a B'Av", TITRES["Tish'a B'Av"])
+    # 9 Av au matin : le troisième monté est maftir dans les trois rites (Choul'han Aroukh O.H. 559:4, « ומפטירין אסוף
+    # אסיפם ») ; hebcal le nomme « 3 ». L'application suit ce qui se fait à la synagogue.
+    e = fete("Tish'a B'Av", TITRES["Tish'a B'Av"])
+    e["alyot"] = [m if m[0] != "3" else ["M"] + m[1:] for m in e["alyot"]]
     # Min'ha du 9 Av, Edot : maftir (Kitsour Yalkout Yossef 550:40 et 559:10, « והמנהג להפטיר בתשעה באב גם בשחרית
     # וגם במנחה ») ; Ashkenaz de même, comme aux autres jeûnes.
     alias("Tish'a B'Av (Mincha)", TITRES["Tish'a B'Av"], "Fast Day (Afternoon)",

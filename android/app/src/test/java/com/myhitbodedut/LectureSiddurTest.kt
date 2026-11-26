@@ -85,6 +85,8 @@ class LectureSiddurTest {
             val matin = lecturesDe(lignes(nusah, "chaharit", "2026-07-23")).single()
             assertEquals("Tish'a B'Av", matin.lecture.cle)
             assertEquals(listOf("4:25", "4:30", "4:36"), matin.lecture.montees.map { it.debut })
+            // Le matin aussi, le troisième est maftir dans les trois rites (Choul'han Aroukh O.H. 559:4).
+            assertEquals(nusah, "Maftir", matin.lecture.montees[2].libelle.fr)
             val minha = lignes(nusah, "minha", "2026-07-23")
             val l = lecturesDe(minha).single()
             assertEquals("Tish'a B'Av (Mincha)", l.lecture.cle)
