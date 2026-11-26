@@ -277,7 +277,9 @@ struct StoreTests {
             case "unmarkToday":
                 Store.unmarkToday(journal: &journal, reglages: &reglages, aujourdhui: Store.today(millis: millis, fuseau: fuseau))
             case "beginSession":
-                Store.beginSession(reglages: &reglages, minutes: o.minutes ?? 0, millis: millis)
+                // L'oracle n'a pas d'horloge monotone (-1), et android.jar docile lit 0 démarrage.
+                Store.beginSession(reglages: &reglages, minutes: o.minutes ?? 0, millis: millis,
+                                   monotone: HorlogeMonotone(millis: -1, demarrage: 0))
             case "endSession", "cloreSeance":
                 let close = Store.endSession(reglages: &reglages, millis: millis, fuseau: fuseau)
                 if o.op == "cloreSeance" {

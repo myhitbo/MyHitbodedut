@@ -1,7 +1,7 @@
 // L'heure qu'il est, pour le code d'Android exécuté par l'oracle : figée, et réglée par chaque générateur.
 // build.gradle.kts réécrit les classes de l'app compilées (com/myhitbodedut) pour que leurs appels à
 // LocalDate.now(), LocalDateTime.now(), LocalTime.now(), ZonedDateTime.now(), Instant.now(), YearMonth.now(),
-// System.currentTimeMillis(), ZoneId.systemDefault() et TimeZone.getDefault() arrivent ici. Sans cela,
+// System.currentTimeMillis(), ZoneId.systemDefault(), TimeZone.getDefault() et SystemClock.elapsedRealtime() arrivent ici. Sans cela,
 // Store.streak, currentWeek, inWindow ou importJson répondraient selon le jour où l'on lance l'oracle.
 // VecteursIos.kt remet l'horloge au défaut avant chaque générateur.
 
@@ -62,4 +62,10 @@ object Horloge {
     @JvmStatic fun maintenantZone(zone: ZoneId): ZonedDateTime = instantFige.atZone(zone)
     @JvmStatic fun moisCourant(): YearMonth = YearMonth.from(aujourdhui())
     @JvmStatic fun moisCourant(zone: ZoneId): YearMonth = YearMonth.from(aujourdhui(zone))
+
+    /**
+     * SystemClock.elapsedRealtime : -1, pas d'horloge monotone sur la JVM. SessionRule.maintenant revient alors à
+     * l'heure murale, celle que les générateurs règlent (Store.maintenantSeance, décision du 24/11).
+     */
+    @JvmStatic fun depuisDemarrage(): Long = -1L
 }

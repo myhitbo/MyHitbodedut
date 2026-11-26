@@ -52,8 +52,8 @@
   {
    "chemin": "Ressources/Catalogue/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
-   "octets": 1464132,
-   "sha256": "63962dbd75106af0f56cf3c4d3913ccf2141435c4103ce31f58fd77bc9a3ec55",
+   "octets": 1488037,
+   "sha256": "1b40ece5dba56f1f3c53cc122c54fd9ace4b567befc5bf1f91e849c1bbf709c1",
    "licence": "propre à l'app",
    "mention": ""
   },
@@ -68,8 +68,8 @@
   {
    "chemin": "Ressources/Chaines/Localizable.xcstrings",
    "source": "android/app/src/main/res/values*/strings.xml",
-   "octets": 1470405,
-   "sha256": "036d458899fc310cd22f1accfe0ea836331fe78b2ab5309af8b5ba4e3b2665a4",
+   "octets": 1494223,
+   "sha256": "5eb1d8285e366b3790f7d50382cba45378902daee8b451b1c4d85607716a5913",
    "licence": "propre à l'app",
    "mention": ""
   },
@@ -12484,8 +12484,8 @@
   {
    "chemin": "Ressources/Contenu/siddur_annotations.json",
    "source": "android/app/src/main/res/raw/siddur_annotations.json",
-   "octets": 503919,
-   "sha256": "49962eafdc3ca67c4e9d959ec705d53cc84dbe5e76bf3138affa22050edd5bb0",
+   "octets": 507130,
+   "sha256": "534f324c8b2e633960527f71b5e405a356fe5c62f0c562e495407544808f28ae",
    "licence": "dérivé des siddourim",
    "mention": "dérivé des trois siddourim"
   },
@@ -12541,7 +12541,7 @@
    "chemin": "Ressources/Contenu/villes.json",
    "source": "android/app/src/main/res/raw/villes.json",
    "octets": 12090,
-   "sha256": "59547112391b449d6cf79cfa77e2bc791b60ced10a82306a543a751f556fc325",
+   "sha256": "15bd9425cd2b211f1aada57c05692c0f6aee7bf75329b44f3c88f5e1ee7c9d68",
    "licence": "CC-BY 4.0",
    "mention": "GeoNames"
   },

@@ -64,6 +64,11 @@ public enum Store {
     private static let cleDebut = "session_started_at"
     private static let cleFin = "session_ends_at"
     private static let cleDuree = "session_target"
+    // Le temps réellement écoulé et « Continuer ? » (24/11).
+    private static let cleDebutMonotone = "session_started_mono"
+    private static let cleDemarrage = "session_boot"
+    private static let clePas = "session_pas"
+    private static let cleSuite = "session_suite_etat"
     private static let cleTikkunJour = "tikkun_day"
     private static let cleTikkunFaits = "tikkun_done"
     static let cleTikkunJournal = "tikkun_journal"
@@ -404,9 +409,11 @@ public enum Store {
         entier(reglages, cleDuree, 0)
     }
 
-    public static func isSessionRunning(reglages: Reglages, millis: Int64) -> Bool {
+    /// La séance court-elle ? `monotone` : l'horloge de la séance (décision du 24/11) ; absente, l'heure murale.
+    public static func isSessionRunning(reglages: Reglages, millis: Int64, monotone: HorlogeMonotone = .absente) -> Bool {
         SessionRule.enCours(debutMillis: sessionStartedAt(reglages: reglages), finMillis: sessionEndsAt(reglages: reglages),
-                            duree: sessionTarget(reglages: reglages), maintenant: millis)
+                            duree: sessionTarget(reglages: reglages),
+                            maintenant: maintenantSeance(reglages: reglages, millis: millis, monotone: monotone))
     }
 
     /// Une séance sans durée, que seul le geste de l'arrêter termine.
@@ -414,25 +421,91 @@ public enum Store {
         SessionRule.estOuverte(debutMillis: sessionStartedAt(reglages: reglages), duree: sessionTarget(reglages: reglages))
     }
 
-    public static func sessionElapsedMinutes(reglages: Reglages, millis: Int64) -> Int {
-        SessionRule.minutesEcoulees(debutMillis: sessionStartedAt(reglages: reglages), maintenant: millis)
+    public static func sessionElapsedMinutes(reglages: Reglages, millis: Int64, monotone: HorlogeMonotone = .absente) -> Int {
+        SessionRule.minutesEcoulees(debutMillis: sessionStartedAt(reglages: reglages),
+                                    maintenant: maintenantSeance(reglages: reglages, millis: millis, monotone: monotone))
     }
 
-    /// Commence une séance à `millis` ; une durée nulle (ou négative) l'ouvre : rien n'est inscrit comme fin.
-    public static func beginSession(reglages: inout Reglages, minutes: Int, millis: Int64) {
+    /// Commence une séance à `millis` ; une durée nulle (ou négative) l'ouvre : rien n'est inscrit comme fin. L'horloge
+    /// monotone du début est retenue avec elle (décision du 24/11), la durée choisie (celle que « même durée »
+    /// rajoute) et la question « Continuer ? » pas encore posée.
+    public static func beginSession(reglages: inout Reglages, minutes: Int, millis: Int64,
+                                    monotone: HorlogeMonotone = .absente) {
         let ouverte = minutes <= SessionRule.ouverte
         pose(&reglages, cleDebut, JSON.entier(millis))
         pose(&reglages, cleFin, JSON.entier(ouverte ? 0 : millis &+ Int64(minutes) &* 60_000))
         pose(&reglages, cleDuree, JSON.entier(Int64(ouverte ? SessionRule.ouverte : minutes)))
+        pose(&reglages, cleDebutMonotone, JSON.entier(monotone.millis))
+        pose(&reglages, cleDemarrage, JSON.entier(Int64(monotone.demarrage)))
+        pose(&reglages, clePas, JSON.entier(Int64(ouverte ? SessionRule.ouverte : minutes)))
+        pose(&reglages, cleSuite, JSON.entier(Int64(suiteAucune)))
+    }
+
+    /// « Maintenant » pour la séance en cours, à l'abri d'un changement d'heure du téléphone (décision du 24/11, voir
+    /// SessionRule.maintenant) : toutes les mesures de la séance passent par là. `millis` est l'heure murale.
+    public static func maintenantSeance(reglages: Reglages, millis: Int64, monotone: HorlogeMonotone) -> Int64 {
+        SessionRule.maintenant(debutMur: sessionStartedAt(reglages: reglages),
+                               debutMonotone: long(reglages, cleDebutMonotone, -1),
+                               demarrageDebut: entier(reglages, cleDemarrage, -1),
+                               murActuel: millis, monotoneActuel: monotone.millis, demarrageActuel: monotone.demarrage)
+    }
+
+    /// La fin de la séance sur l'horloge murale d'aujourd'hui (Store.sessionFinMurale), pour ce que le système programme
+    /// à une heure murale : la notification de fin, la question « Continuer ? », l'alarme. 0 sans fin.
+    public static func sessionFinMurale(reglages: Reglages, millis: Int64, monotone: HorlogeMonotone) -> Int64 {
+        let fin = sessionEndsAt(reglages: reglages)
+        if fin <= 0 { return 0 }
+        return millis &+ (fin &- maintenantSeance(reglages: reglages, millis: millis, monotone: monotone))
+    }
+
+    /// La durée choisie au départ de la séance : celle que « même durée » rajoute.
+    public static func sessionPas(reglages: Reglages) -> Int {
+        entier(reglages, clePas, sessionTarget(reglages: reglages))
+    }
+
+    /// La question « Continuer ? » de l'étape en cours : pas encore posée, posée et sans réponse, répondue « non ».
+    public static let suiteAucune = 0
+    public static let suitePosee = 1
+    public static let suiteNon = 2
+
+    public static func suiteEtat(reglages: Reglages) -> Int {
+        entier(reglages, cleSuite, suiteAucune)
+    }
+
+    public static func setSuiteEtat(reglages: inout Reglages, _ etat: Int) {
+        pose(&reglages, cleSuite, JSON.entier(Int64(etat)))
+    }
+
+    /// Prolonge la séance en cours (« Continuer ? », 24/11) : de `minutes` après la fin prévue, ou sans fin si `minutes`
+    /// vaut SessionRule.ouverte. La question revient avant la nouvelle fin.
+    public static func prolongerSession(reglages: inout Reglages, minutes: Int, millis: Int64, monotone: HorlogeMonotone) {
+        guard hasSessionRecord(reglages: reglages) else { return }
+        pose(&reglages, cleSuite, JSON.entier(Int64(suiteAucune)))
+        if minutes <= SessionRule.ouverte {
+            pose(&reglages, cleFin, JSON.entier(0))
+            pose(&reglages, cleDuree, JSON.entier(Int64(SessionRule.ouverte)))
+        } else {
+            let fin = SessionRule.finProlongee(fin: sessionEndsAt(reglages: reglages),
+                                               maintenant: maintenantSeance(reglages: reglages, millis: millis,
+                                                                            monotone: monotone),
+                                               minutes: minutes)
+            pose(&reglages, cleFin, JSON.entier(fin))
+            pose(&reglages, cleDuree,
+                 JSON.entier(Int64(Int32(truncatingIfNeeded: (fin &- sessionStartedAt(reglages: reglages)) / 60_000))))
+        }
     }
 
     /// Termine la séance : les minutes à inscrire (SessionRule.minutesAInscrire), et le jour où elle a
     /// commencé, jamais dans l'avenir : une horloge reculée après le début ne doit pas inscrire une journée
     /// à venir. Comme Android, le plus petit des deux jours est pris sur leur écriture ISO.
     @discardableResult
-    public static func endSession(reglages: inout Reglages, millis: Int64, fuseau: Fuseau) -> SeanceClose {
+    public static func endSession(reglages: inout Reglages, millis: Int64, fuseau: Fuseau,
+                                  monotone: HorlogeMonotone = .absente) -> SeanceClose {
         let debut = sessionStartedAt(reglages: reglages)
-        let minutes = SessionRule.minutesAInscrire(debutMillis: debut, finMillis: sessionEndsAt(reglages: reglages), maintenant: millis)
+        // Les minutes sur l'horloge de la séance (24/11) ; le jour, sur l'heure murale.
+        let minutes = SessionRule.minutesAInscrire(debutMillis: debut, finMillis: sessionEndsAt(reglages: reglages),
+                                                   maintenant: maintenantSeance(reglages: reglages, millis: millis,
+                                                                                monotone: monotone))
         let aujourdhui = fuseau.jour(millis: millis)
         var date = aujourdhui
         if debut > 0 {
@@ -445,6 +518,10 @@ public enum Store {
         pose(&reglages, cleDebut, nil)
         pose(&reglages, cleFin, nil)
         pose(&reglages, cleDuree, nil)
+        pose(&reglages, cleDebutMonotone, nil)
+        pose(&reglages, cleDemarrage, nil)
+        pose(&reglages, clePas, nil)
+        pose(&reglages, cleSuite, nil)
         return SeanceClose(minutes: minutes, date: date)
     }
 
@@ -730,4 +807,21 @@ public enum Store {
         }
         return nil
     }
+}
+
+/// L'horloge de la séance (décision du 24/11, Store.maintenantSeance) : le temps depuis le démarrage du téléphone,
+/// sommeil compris, en millisecondes (SystemClock.elapsedRealtime d'Android), et le démarrage qu'il compte
+/// (Settings.Global.BOOT_COUNT ; sur iOS, une empreinte de la session de démarrage). -1 : inconnu, la séance se
+/// mesure alors à l'heure murale, comme avant.
+public struct HorlogeMonotone: Sendable, Hashable {
+    public let millis: Int64
+    public let demarrage: Int
+
+    public init(millis: Int64, demarrage: Int) {
+        self.millis = millis
+        self.demarrage = demarrage
+    }
+
+    /// Ni horloge monotone ni démarrage connus.
+    public static let absente = HorlogeMonotone(millis: -1, demarrage: -1)
 }

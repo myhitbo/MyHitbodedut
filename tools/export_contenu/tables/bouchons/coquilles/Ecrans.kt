@@ -23,10 +23,16 @@ object BuildConfig {
     const val OPENSKY_DIRECT = false
 }
 
-class MainActivity : Activity()
+class MainActivity : Activity() {
+    companion object {
+        /** L'accueil ouvert du dehors (notification, vignette) : MainActivity.kt, relecture du 23/11. */
+        fun depuisDehors(context: Context): Intent = Intent(context, MainActivity::class.java)
+    }
+}
 class SereniteActivity : Activity()
 class BentoActivity : Activity()
 class PileActivity : Activity()
+class InstantActivity : Activity()
 
 /** BlockerView.kt : l'écran de garde, dont les règles ne nomment que les modes. */
 enum class BlockerMode { PROMPT, SESSION_RUNNING, PREVIEW }

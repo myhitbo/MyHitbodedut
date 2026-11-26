@@ -100,6 +100,36 @@ public enum SessionRule {
         return finMillis <= maintenant
     }
 
+    // MARK: Le temps de la séance et « Continuer ? » (24/11)
+
+    /// « Maintenant » pour une séance (décision du 24/11) : le début, plus le temps réellement écoulé depuis, mesuré
+    /// sur l'horloge du téléphone qui ne recule ni n'avance jamais (le temps depuis le démarrage, sommeil compris).
+    /// Changer l'heure, de fuseau ou passer à l'heure d'hiver pendant une séance ne la raccourcit ni ne l'allonge
+    /// plus. Après un redémarrage cette horloge repart de zéro : on revient à l'heure murale, comme quand l'une des
+    /// deux mesures du début manque (-1).
+    public static func maintenant(debutMur: Int64, debutMonotone: Int64, demarrageDebut: Int,
+                                  murActuel: Int64, monotoneActuel: Int64, demarrageActuel: Int) -> Int64 {
+        if debutMur > 0 && debutMonotone >= 0 && demarrageDebut >= 0 && demarrageDebut == demarrageActuel
+            && monotoneActuel >= debutMonotone {
+            return debutMur &+ (monotoneActuel &- debutMonotone)
+        }
+        return murActuel
+    }
+
+    /// La question « Continuer ? » arrive dix secondes avant la fin (demande du 24/11).
+    public static let avantFinSuiteMs: Int64 = 10_000
+
+    /// Faut-il poser maintenant la question « Continuer ? » ? Une fois par étape, séance minutée seulement.
+    public static func questionDue(fin: Int64, maintenant: Int64, activee: Bool, dejaPosee: Bool) -> Bool {
+        activee && !dejaPosee && fin > 0 && maintenant < fin && fin &- maintenant <= avantFinSuiteMs
+    }
+
+    /// La nouvelle fin d'une séance prolongée de `minutes` : à partir de la fin prévue, et jamais d'un instant déjà
+    /// passé (une réponse donnée après la fin repart de maintenant).
+    public static func finProlongee(fin: Int64, maintenant: Int64, minutes: Int) -> Int64 {
+        max(fin, maintenant) &+ Int64(minutes) &* minute
+    }
+
     /// Les minutes restantes, arrondies au supérieur : « 1 min » doit s'afficher jusqu'à la toute
     /// fin, pas disparaître à 59 secondes.
     public static func minutesRestantes(finMillis: Int64, maintenant: Int64) -> Int {

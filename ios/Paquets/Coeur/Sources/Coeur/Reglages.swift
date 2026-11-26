@@ -474,6 +474,14 @@ public struct Reglages: Sendable, Equatable {
         poseBooleen("hide_countdown", hidden)
     }
 
+    /// « Me demander 10 s avant la fin si je continue » (24/11, Store.proposerSuite) : allumé par défaut. Il se choisit
+    /// sur l'écran de séance, avant de commencer ; hors de la sauvegarde, comme sur Android.
+    public var proposerSuite: Bool { booleen("proposer_suite", true) }
+
+    public mutating func setProposerSuite(_ oui: Bool) {
+        poseBooleen("proposer_suite", oui)
+    }
+
     /// Les quatre temps de Likoutei Moharan II, 25 affichés pendant la séance : éteint par défaut.
     public var guidedHitbodedut: Bool { booleen("guided_hitbodedut", false) }
 

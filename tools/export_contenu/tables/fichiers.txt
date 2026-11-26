@@ -3,6 +3,7 @@
 Adresse
 Aeration
 Aeroports
+Alarme
 Ambiance
 Anneaux
 Apparence
@@ -12,6 +13,7 @@ CalendrierJuif
 CarteEmbarquement
 ChabbatAlerte
 Character
+Chiffres
 Chizuk
 ChizukBag
 ChizukCard

@@ -335,6 +335,9 @@ val versHorloge: Map<String, String> = mapOf(
     "java/lang/System.currentTimeMillis()J" to "millis",
     "java/time/ZoneId.systemDefault()Ljava/time/ZoneId;" to "zone",
     "java/util/TimeZone.getDefault()Ljava/util/TimeZone;" to "fuseau",
+    // L'horloge qui ne recule jamais (Store.maintenantSeance, décision du 24/11) : native dans android.jar, elle
+    // ne se rend pas docile. Horloge la dit absente (-1) : la séance se mesure alors à l'heure murale figée.
+    "android/os/SystemClock.elapsedRealtime()J" to "depuisDemarrage",
     // Le format d'heure du téléphone (Store.formatHeure, FACCUEIL-26) : android.jar docile rendrait null.
     "android/text/format/DateFormat.getTimeFormat(Landroid/content/Context;)Ljava/text/DateFormat;" to "formatHeureTelephone",
 )

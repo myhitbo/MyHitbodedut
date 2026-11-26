@@ -7,7 +7,7 @@
 /// Les libellés nommés par clé (« fete_pessah », « ajout_yaale_veyavo », « zman_alot »).
 public enum Libelles {
 
-    /// La clé, puis le nom de sa chaîne, dans l'ordre d'Android (192 clés). Recopiée par
+    /// La clé, puis le nom de sa chaîne, dans l'ordre d'Android (194 clés). Recopiée par
     /// programme de Libelles.kt ; les tests la comparent entrée par entrée à `interface_a.json`.
     static let table: [(cle: String, chaine: String)] = [
         ("ajout_al_hanissim", "ajout_al_hanissim"),
@@ -46,6 +46,8 @@ public enum Libelles {
         ("ajout_hallel_partiel_sans_berakha", "ajout_hallel_partiel_sans_berakha"),
         ("ajout_hanouka_hors_roch_hodech", "ajout_hanouka_hors_roch_hodech"),
         ("ajout_hanouka_sans_moussaf", "ajout_hanouka_sans_moussaf"),
+        ("ajout_harahaman_invite", "ajout_harahaman_invite"),
+        ("ajout_harahaman_maison", "ajout_harahaman_maison"),
         ("ajout_havdala_bessamim", "ajout_havdala_bessamim"),
         ("ajout_havdala_coupe", "ajout_havdala_coupe"),
         ("ajout_havdala_ner", "ajout_havdala_ner"),

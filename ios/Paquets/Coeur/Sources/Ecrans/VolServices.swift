@@ -313,7 +313,8 @@ public enum VolNotifications {
 /// Le vol calculé et ses rappels, gardés dans les réglages sous les clés d'Android (Store.vol, Store.setVol,
 /// Store.volRappels, Store.setVolRappels), que `Reglages` (Coeur) ne lit pas encore : le numéro, les codes IATA,
 /// les instants en millisecondes, le relevé (latitude et longitude écrites comme `Double.toString`, instant,
-/// source « GPS » ou « DIRECT »), les rappels une ligne chacun, « TYPE|instant|prière|limite|omer ».
+/// source « GPS » ou « DIRECT »), les rappels une ligne chacun, « TYPE|instant|prière|limite|omer|chema|chemaCle|chemaAutre »
+/// (les trois derniers depuis la relecture du 23/11 ; les lignes à cinq champs d'un vol gardé avant se lisent encore).
 public enum VolStockage {
 
     static let numero = "vol_numero"
@@ -376,27 +377,41 @@ public enum VolStockage {
     /// Les rappels du vol gardé (Store.volRappels) ; une ligne illisible est sautée.
     public static func rappels(_ reglages: Reglages) -> [VolRappels.Rappel] {
         guard let texte = chaine(reglages.brut, rappelsCle) else { return [] }
+        return rappelsDe(texte)
+    }
+
+    /// Store.volRappelsDe : une ligne de cinq champs (un vol gardé avant le 23/11) ou de huit ; les trois derniers
+    /// sont la fin du Chema du rite, sa clé et celle de l'autre avis. Une ligne d'un autre nombre de champs est sautée.
+    public static func rappelsDe(_ texte: String) -> [VolRappels.Rappel] {
         var res: [VolRappels.Rappel] = []
         for ligne in texte.split(separator: "\n", omittingEmptySubsequences: false) {
             let c = ligne.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
-            guard c.count == 5 else { continue }
+            guard c.count == 5 || c.count == 8 else { continue }
             guard let type = VolRappels.Genre.allCases.first(where: { nomKotlin($0) == c[0] }) else { continue }
             guard let t = Int64(c[1]) else { continue }
+            func instant(_ i: Int) -> Int64? { i < c.count ? Int64(c[i]) : nil }
+            let cle: String? = c.count > 6 && !c[6].isEmpty ? c[6] : nil
             res.append(VolRappels.Rappel(type: type, instant: t, priere: c[2].isEmpty ? nil : c[2],
-                                         limite: Int64(c[3]), omer: Int(c[4]) ?? 0))
+                                         limite: instant(3), omer: Int(c[4]) ?? 0,
+                                         chema: instant(5), chemaCle: cle, chemaAutre: instant(7)))
         }
         return res
+    }
+
+    /// Store.volRappelsEnTexte : une ligne par rappel, huit champs.
+    public static func rappelsEnTexte(_ rappels: [VolRappels.Rappel]) -> String {
+        rappels.map { (r: VolRappels.Rappel) -> String in
+            func texte(_ t: Int64?) -> String { t.map { String($0) } ?? "" }
+            let champs: [String] = [nomKotlin(r.type), String(r.instant), r.priere ?? "", texte(r.limite), String(r.omer),
+                                    texte(r.chema), r.chemaCle ?? "", texte(r.chemaAutre)]
+            return champs.joined(separator: "|")
+        }.joined(separator: "\n")
     }
 
     /// Les réglages avec ces rappels (Store.setVolRappels).
     public static func avecRappels(_ reglages: Reglages, _ rappels: [VolRappels.Rappel]) -> Reglages {
         var brut = reglages.brut
-        let lignes = rappels.map { (r: VolRappels.Rappel) -> String in
-            let limite: String = r.limite.map { String($0) } ?? ""
-            let champs: [String] = [nomKotlin(r.type), String(r.instant), r.priere ?? "", limite, String(r.omer)]
-            return champs.joined(separator: "|")
-        }
-        brut[rappelsCle] = .chaine(lignes.joined(separator: "\n"))
+        brut[rappelsCle] = .chaine(rappelsEnTexte(rappels))
         return Reglages(brut: brut)
     }
 

@@ -641,11 +641,47 @@ struct VolModeleTests {
                        VolRappels.Rappel(type: .omer, instant: 1_800, omer: 12)]
         let avec = VolStockage.avecRappels(reglages, rappels)
         let ecrits = avec.brut["vol_rappels"]
-        #expect(ecrits == JSON.chaine("TEFILAT_HADEREKH|1300|minha|1900|0\nOMER|1800|||12"))
+        #expect(ecrits == JSON.chaine("TEFILAT_HADEREKH|1300|minha|1900|0|||\nOMER|1800|||12|||"))
         #expect(VolStockage.rappels(avec) == rappels)
         let efface = VolStockage.avecPlan(avec, nil)
         #expect(!efface.brut.a("vol_rappels"))
         #expect(VolStockage.plan(efface, VolDepot.aeroports) == nil)
+    }
+
+    /// VolRappelsTest d'Android (relecture du 23/11) : la notification relit les rappels gardés. Les trois champs du
+    /// Chema n'y étaient pas écrits : elle annonçait pour fin du Chema l'heure du rappel lui-même, toujours « selon le
+    /// Gra », et « — » pour l'autre avis.
+    @Test func lesRappelsGardesGardentLaFinDuChemaSonRiteEtLAutreAvis() throws {
+        let chema = VolRappels.Rappel(type: .chemaFin, instant: 1_000, priere: "chaharit", limite: 2_000,
+                                      chema: 3_000, chemaCle: "szks_mga", chemaAutre: 4_000)
+        let omer = VolRappels.Rappel(type: .omer, instant: 5_000, omer: 12)
+        #expect(VolStockage.rappelsDe(VolStockage.rappelsEnTexte([chema, omer])) == [chema, omer])
+        // Les rappels d'un vol calculé gardent tout à travers l'enregistrement.
+        func instant(_ iata: String, _ jour: String, _ h: Int, _ m: Int) throws -> (Vol.Aeroport, Int64) {
+            let aeroport = try #require(Aeroports.parIata(VolDepot.aeroports, iata))
+            let j = try #require(JourCivil(iso: jour))
+            let t = try #require(Vol.instant(DateHeure(j, heure: h, minute: m), aeroport))
+            return (aeroport, t)
+        }
+        let trajets = [
+            (try instant("TLV", "2026-11-10", 12, 30), try instant("JFK", "2026-11-10", 17, 45)),
+            (try instant("JFK", "2026-11-10", 23, 0), try instant("TLV", "2026-11-11", 16, 40)),
+            (try instant("TLV", "2026-11-10", 23, 0), try instant("EZE", "2026-11-11", 9, 20)),
+        ]
+        var avecChema = 0
+        for (depart, arrivee) in trajets {
+            let calcul = Vol.calculer(Vol.Plan(numero: "TEST", depart: depart.0, arrivee: arrivee.0,
+                                               decollage: depart.1, atterrissage: arrivee.1))
+            for nusah in [Nusah?.none, .edot] {
+                let calcules = VolRappels.rappels(calcul, enIsrael: false, nusah: nusah)
+                #expect(VolStockage.rappelsDe(VolStockage.rappelsEnTexte(calcules)) == calcules)
+                avecChema += calcules.filter { $0.chema != nil && $0.chemaCle != nil }.count
+            }
+        }
+        #expect(avecChema > 0, "aucun trajet de test ne porte la fin du Chema")
+        // Une ligne d'un vol gardé avant (cinq champs) se lit encore ; une ligne abîmée est écartée.
+        #expect(VolStockage.rappelsDe("OMER|5000|||12") == [omer])
+        #expect(VolStockage.rappelsDe("OMER|5000|||12|x").isEmpty)
     }
 
     @Test func lesTextesDeVolActivity() throws {
