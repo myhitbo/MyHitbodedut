@@ -45,6 +45,15 @@ class SiddurLectureActivity : AppCompatActivity() {
     /** La note du jour en tête : la date hébraïque qui décide des ajouts. */
     private data class Note(val texte: String)
 
+    /**
+     * La question du statut (26/11, Q7) : Israël ou diaspora n'est pas confirmé, et le texte en dépend
+     * aujourd'hui ; un toucher la pose, la réponse est gardée (Store.setInIsrael, manuel).
+     */
+    private object QuestionRegion
+
+    /** Le jour hébreu du texte affiché, pour « Pas de Ta'hanoun aujourd'hui » de la barre de lecture (Q1). */
+    private var dateTahanoun: LocalDate = LocalDate.now()
+
     /** Le pied d'un ajout déplié (19/10) : « Replier », pour ne pas remonter le chercher. */
     private data class Pied(val cle: String)
 
@@ -83,7 +92,9 @@ class SiddurLectureActivity : AppCompatActivity() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) = suivre()
             })
         }
-        ReglagesLecture.installer(this, liste, avecNusah = !livre) {
+        // « Pas de Ta'hanoun aujourd'hui » dans la barre (26/11, Q1) : à Cha'harit et à Min'ha, le même réglage que les zmanim.
+        val avecTahanoun = !livre && id in setOf("chaharit", "minha")
+        ReglagesLecture.installer(this, liste, avecNusah = !livre, sansTahanoun = if (avecTahanoun) ({ dateTahanoun }) else null) {
             // Même nusah : on garde sa place ; un autre nusah n'a pas les mêmes paragraphes.
             afficher(garderPlace = recueil().nusah == nusahAffiche)
         }
@@ -292,18 +303,22 @@ class SiddurLectureActivity : AppCompatActivity() {
         // Le jour hébreu de cette prière : Arvit, l'après-midi, est déjà celui de demain.
         val israel = Store.inIsrael(this)
         // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
-        val apresSortie = Store.lieuZmanim(this)?.let { lieu ->
-            Zmanim.jour(lieu, LocalDate.now(), Store.siddurNusah(this).cle).firstOrNull { it.cle == "tset" }?.instant?.let { !java.time.Instant.now().isBefore(it) }
-        } ?: false
-        val jour = CalendrierJuif.jour(CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), apresSortie), israel,
-            Store.mukafChoma(this)).let { j ->
-            // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
-            val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now(), Store.siddurNusah(this).cle) }
-            val maintenant = java.time.Instant.now()
-            val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
-            val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }
-            if (CalendrierJuif.nuit(LocalTime.now(), sortie, aube)) j.copy(conditions = j.conditions + CalendrierJuif.C.NUIT) else j
-        }
+        val zmanim = Store.lieuZmanim(this)?.let { Zmanim.jour(it, LocalDate.now(), Store.siddurNusah(this).cle) }
+        val maintenant = java.time.Instant.now()
+        val sortie = zmanim?.firstOrNull { it.cle == "tset" }?.instant?.let { !maintenant.isBefore(it) }
+        val coucher = zmanim?.firstOrNull { it.cle == "chkia" }?.instant?.let { !maintenant.isBefore(it) }
+        val aube = zmanim?.firstOrNull { it.cle == "alot" }?.instant?.let { maintenant.isBefore(it) }
+        val dateJour = CalendrierJuif.jourDeLaPriere(id, LocalDate.now(), LocalTime.now(), sortie ?: false)
+        dateTahanoun = dateJour
+        // La nuit (audit du 16/11) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
+        val nuit = CalendrierJuif.nuit(LocalTime.now(), sortie, aube)
+        fun jourPour(enIsrael: Boolean) = CalendrierJuif.jour(dateJour, enIsrael, Store.mukafChoma(this))
+            .let { j -> if (nuit) j.copy(conditions = j.conditions + CalendrierJuif.C.NUIT) else j }
+        val jour = jourPour(israel)
+        // Le soir, au Birkat haMazon et à Méèn chaloch (26/11, Q6) : les ajouts du jour voisin restent repliés.
+        val dateVoisin = CalendrierJuif.jourVoisin(id, LocalDate.now(), LocalTime.now(), coucher, sortie)
+        fun voisinPour(enIsrael: Boolean): Set<String> =
+            dateVoisin?.let { Store.conditionsDuJour(this, CalendrierJuif.jour(it, enIsrael, Store.mukafChoma(this))) } ?: emptySet()
         val annotations = if (livre) emptyList() else Data.ajouts(this)[id].orEmpty()
         // Un texte qui n'a que des notes de l'application (audit du 16/11) n'a pas d'ajouts du jour.
         val note = (if (annotations.all { it.sorte == SiddurJour.Sorte.NOTE }) emptyList() else listOf(Note(getString(R.string.siddur_jour_ajouts,
@@ -323,8 +338,13 @@ class SiddurLectureActivity : AppCompatActivity() {
         // Une traduction automatique affichée : on dit qu'elle n'est pas relue, l'hébreu fait foi (COUV-05).
         val auto = if (livre && traduit && texte.traductionAuto && langues.langues.any { it != "he" })
             listOf(Note(getString(R.string.lecture_traduction_auto))) else emptyList()
-        val lignes: List<Any> = sansTraduction + partielle + auto + note + SiddurJour.lignes(texte, annotations, Store.conditionsDuJour(this, jour), ouverts,
-            Store.siddurNusah(this).cle, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this))
+        val nusah = Store.siddurNusah(this).cle
+        // Israël ou diaspora non confirmé (26/11, Q7) : demandé quand le texte en dépend aujourd'hui.
+        val question = if (!livre && annotations.isNotEmpty() && !Store.regionConfirmee(this) && SiddurJour.dependDeLaRegion(
+                texte, annotations, Store.conditionsDuJour(this, jourPour(true)), Store.conditionsDuJour(this, jourPour(false)), nusah,
+                Store.sansTahanounFinTichri(this), Store.hemisphereSud(this), voisinPour(true), voisinPour(false))) listOf(QuestionRegion) else emptyList()
+        val lignes: List<Any> = sansTraduction + partielle + auto + note + question + SiddurJour.lignes(texte, annotations,
+            Store.conditionsDuJour(this, jour), ouverts, nusah, israel, Store.sansTahanounFinTichri(this), Store.hemisphereSud(this), voisinPour(israel))
         val rendu = ReglagesLecture.rendu(this)
         val gestion = liste.layoutManager as LinearLayoutManager
         val place = gestion.findFirstVisibleItemPosition()
@@ -501,9 +521,6 @@ class SiddurLectureActivity : AppCompatActivity() {
     /** Un libellé (clé de chaîne) dans la langue de l'application. */
     private fun nom(libelle: String): String = Libelles.res(libelle)?.let { getString(it) } ?: libelle
 
-    /** Les ajouts qui ne sont jamais « du jour » : on dit « toucher pour lire », pas « pas aujourd'hui ». */
-    private val jamaisDuJour = setOf(CalendrierJuif.C.MINYAN, CalendrierJuif.C.BEIT_AVEL, CalendrierJuif.C.OUBLI, CalendrierJuif.C.CHEVA_BERAKHOT, CalendrierJuif.C.ZIMUN, CalendrierJuif.C.FACULTATIF)
-
     /** Le chevron d'un repli, tourné d'un quart de tour quand l'ajout est ouvert ; [haut] : vers le haut. */
     private fun chevron(couleur: Int, ouvert: Boolean, haut: Boolean = false): android.graphics.drawable.RotateDrawable {
         val rtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
@@ -530,6 +547,18 @@ class SiddurLectureActivity : AppCompatActivity() {
         return android.graphics.drawable.LayerDrawable(arrayOf(forme)).apply {
             setLayerInset(0, dp(8), if (haut) marge else 0, dp(8), if (bas) marge else 0)
         }
+    }
+
+    /** Israël ou diaspora (26/11, Q7) : la réponse confirme le statut, gardé comme s'il était choisi dans les réglages. */
+    private fun questionRegion() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.siddur_region_titre)
+            .setItems(arrayOf(getString(R.string.region_israel), getString(R.string.region_diaspora))) { _, k ->
+                Store.setInIsrael(this, k == 0, manuel = true)
+                afficher(garderPlace = true)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun basculer(cle: String) {
@@ -604,6 +633,21 @@ class SiddurLectureActivity : AppCompatActivity() {
                 typeface = android.graphics.Typeface.DEFAULT
             }
             when (val ligne = lignes[position]) {
+                is QuestionRegion -> vue.apply {
+                    // Israël ou diaspora ? (26/11, Q7) : une carte, un toucher pose la question.
+                    layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                    textDirection = View.TEXT_DIRECTION_LOCALE
+                    text = getString(R.string.siddur_region_question)
+                    textSize = 15f
+                    setTypeface(typeface, android.graphics.Typeface.BOLD)
+                    setTextColor(rendu.titre)
+                    background = panneau(fondFerme, haut = true, bas = true, trait = traitFerme, marge = dp(6))
+                    setPadding(dp(24), dp(16), dp(24), dp(16))
+                    minHeight = dp(56)
+                    gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
+                    contentDescription = text
+                    setOnClickListener { questionRegion() }
+                }
                 is Note -> vue.apply {
                     layoutDirection = View.LAYOUT_DIRECTION_LOCALE
                     textDirection = View.TEXT_DIRECTION_LOCALE
@@ -737,10 +781,11 @@ class SiddurLectureActivity : AppCompatActivity() {
                     // Le bandeau d'un ajout replié (19/10) : son nom, et dessous ce qu'un toucher fait.
                     layoutDirection = View.LAYOUT_DIRECTION_LOCALE
                     textDirection = View.TEXT_DIRECTION_LOCALE
+                    // Une occasion : « toucher pour lire » ; un ajout du calendrier gardé replié (26/11) : « pas aujourd'hui ».
                     val etat = getString(when {
                         ligne.ouvert -> R.string.siddur_replier
-                        ligne.condition in jamaisDuJour -> R.string.siddur_toucher_lire
-                        else -> R.string.siddur_pas_aujourdhui
+                        ligne.pasAujourdhui -> R.string.siddur_pas_aujourdhui
+                        else -> R.string.siddur_toucher_lire
                     })
                     val titre = nom(ligne.libelle)
                     text = android.text.SpannableStringBuilder(titre).apply {

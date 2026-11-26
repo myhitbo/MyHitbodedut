@@ -114,6 +114,55 @@ INDICES = [
 ]
 
 
+def variantes_dix_jours(brut, x):
+    """
+    Les variantes des dix jours enchâssées dans un bloc (« (בעשי״ת וּלְעֵלָּא מִכָּל) », « המלך הקדוש ») :
+    (condition, {texte, retire}). Le passage brut à retirer hors du jour (demande du 28/10) est apparié
+    dans l'ordre du texte, et seulement si les deux comptes s'accordent.
+    """
+    retraits = sorted((m.start(), m.group(0)) for r in RETIRE for m in re.finditer(r, brut))
+    trouves = sorted((m.start(), c, m.group(1).strip(" ,.")) for motif, c in INDICES
+                     for m in re.finditer(motif, x) if m.group(1).strip(" ,."))
+    apparie = len(retraits) == len(trouves)
+    sortie = []
+    for k, (_, c, variante) in enumerate(trouves):
+        extra = {"texte": variante}
+        if apparie:
+            extra["retire"] = retraits[k][1]
+            # La variante exacte est dans le brut (« הַשָּׁלוֹם » seul, pas la suite).
+            interne = re.match(r"<small>\s*(?:<small>[^<]*</small>|בעשרת ימי תשובה [^<:]*:)([^<]*)</small>", extra["retire"])
+            if interne and nu(interne.group(1)).strip(" ,.:"):
+                extra["texte"] = nu(interne.group(1)).strip(" ,.:")
+        sortie.append((c, extra))
+    return sortie
+
+
+# Les catégories du 26/11 (« les ajouts dépendant des zmanim… enlevés complètement hormis lorsque nécessaire ;
+# ceux d'une occasion, repliés mais visibles »). Une condition d'occasion n'est jamais vraie : ce qu'elle porte
+# reste replié, et se déplie d'un toucher (SiddurJour.OCCASIONS, siddur-jour.js OCCASIONS).
+SANS_MINYAN = "sans_minyan"
+USAGE = "usage"
+OCCASION = "occasion"
+OCCASIONS = ("minyan", SANS_MINYAN, "beit_avel", "oubli", "cheva_berakhot", "zimun", "facultatif", USAGE, OCCASION)
+# La consigne qui ouvre les הרחמן de la brit mila (tools/siddur_occasions_ajouts.py, source Sfard).
+BRIT_MILA_CONSIGNE = "סדר הרחמן לסעודת ברית מילה"
+
+
+def magdil(brut, nusah):
+    """
+    « מגדיל » / « מגדול » à la fin du Birkat (26/11, Q8) : (condition, {texte, retire, par}). Une variante
+    retire son passage le jour où sa condition est fausse, et met « par » à sa place.
+    """
+    if nusah == "edot":
+        m = re.search(r"מַגְדִּיל \(<small>ביום שמתפללים מוסף[^<]*</small> (מִגְדּ[^)]*)\)", brut)
+        return [("!magdol", {"texte": "מִגְדּוֹל", "retire": m.group(0), "par": m.group(1)})] if m else []
+    m = re.search(r"(מַגְדִּיל [^(]*?)( \(<small>בשבת וביו״ט אומר:</small> (מִגְדּוֹל [^)]*)\))", brut)
+    if not m:
+        return []
+    return [("!magdol", {"texte": "מִגְדּוֹל", "retire": m.group(1) + m.group(2), "par": m.group(3)}),
+            ("magdol", {"texte": "מַגְדִּיל", "retire": m.group(2), "par": ""})]
+
+
 # « וּלְכַפָּרַת פָּשַׁע » au Moussaf de Roch 'Hodech (vérification du 28/10) : année embolismique
 # seulement, jusqu'à Roch 'Hodech Adar II inclus ; plus à partir de Nissan. Sfard, Ashkenaz : la
 # consigne de leur siddour, « עד חודש ניסן ». Edot (audit du 16/11) : le Yalkut Yosef, référence
@@ -293,7 +342,11 @@ def annoter(texte_id, sections, nusah):
                 note("bloc", si, k, "tefilin", {"libelle": "ajout_sauf_tefilin", "discret": True})
             continue
         elif titre == "ספירת העומר":
-            cond = "omer"
+            # L'omer à Arvit (Sfard, Ashkenaz) : la section entière les soirs de l'omer, retirée les autres ;
+            # dedans, le seul compte du soir (26/11, Q12 : « seulement le compte du soir »), SiddurJour « omer_N ».
+            for k, c in jours_omer(sec["blocs"]):
+                note("bloc", si, k, c or "omer", {"force": "omer"})
+            continue
         # La lecture de la Torah (15/10) : un seul groupe, replié les jours sans lecture ;
         # dedans, ce qui ne se dit qu'avec Ta'hanoun, ou que lundi et jeudi, en variante.
         elif titre == "קריאת התורה" and office == "chaharit":
@@ -463,6 +516,83 @@ def annoter(texte_id, sections, nusah):
         bi = fin_tahanoun
         while bi < n:
             x = txt[bi]
+            # --- 26/11 (« les ajouts en deux catégories ») : ce qui n'était pas annoté ---------------
+            # Qui prie seul (Q4) : « יחיד אומר: אל מלך נאמן » (Sfard, Ashkenaz), replié sous « Sans minyan ».
+            if cons[bi] and bi not in pris and x == "יחיד אומר" and bi + 1 < n and not cons[bi + 1] \
+                    and commence(txt[bi + 1], "אל מלך נאמן"):
+                prend(bi, SANS_MINYAN)
+                prend(bi + 1, SANS_MINYAN)
+                bi += 2
+                continue
+            if not cons[bi] and bi not in pris and re.fullmatch(r"\(יחיד אומר: אל מלך נאמן:? ?\)", x):
+                prend(bi, SANS_MINYAN)
+                bi += 1
+                continue
+            # La prière pour un malade dans רפאנו, et pour la subsistance avant כי אתה שומע (Sfard,
+            # Ashkenaz ; Q12) : une occasion, repliée ; la consigne et sa prière.
+            if cons[bi] and bi not in pris and bi + 1 < n and not cons[bi + 1] and (
+                    x.startswith("מי שרוצה להתפלל על החולה") or x.startswith("* תפלה שיתפלל על מזונו")
+                    or x.startswith("תפלה שיתפלל על מזונו")):
+                lib = "ajout_malade" if "החולה" in x else "ajout_subsistance"
+                prend(bi, OCCASION, lib)
+                prend(bi + 1, OCCASION, lib)
+                bi += 2
+                continue
+            # Les bénédictions de l'homme et de la femme (Q12) : selon le réglage צדיק / צדקת (« homme »,
+            # « femme », SiddurJour) ; sans réglage, les deux. « האיש מברך » / « נשים אומרות » : leur consigne.
+            if texte_id in ("birkot_hachahar", "chaharit") and bi not in pris:
+                if not cons[bi] and commence(x, "ברוך אתה יהוה אלהינו מלך העולם שלא עשני אשה"):
+                    if bi > 0 and cons[bi - 1] and txt[bi - 1].startswith("האיש מברך") and bi - 1 not in pris:
+                        prend_discret(bi - 1, "!femme", "ajout_homme")
+                    prend_discret(bi, "!femme", "ajout_homme")
+                    bi += 1
+                    continue
+                if cons[bi] and (x.startswith("נשים אומרות") or x.startswith("האשה מברכת")) and bi + 1 < n and not cons[bi + 1]:
+                    prend_discret(bi, "!homme", "ajout_femme")
+                    prend_discret(bi + 1, "!homme", "ajout_femme")
+                    bi += 2
+                    continue
+                if not cons[bi] and re.match(r"\(? ?נשים אומרות:", x):
+                    prend_discret(bi, "!homme", "ajout_femme")
+                    bi += 1
+                    continue
+            # « יש שאין אומרים 'יהי רצון' בשבת ויום טוב » (Sfard, Ashkenaz ; Q14) : la consigne, le Chabbat
+            # et le Yom tov seulement ; ces jours-là, la prière se replie (selon l'usage), en clair les autres.
+            if office == "chaharit" and cons[bi] and bi not in pris and x.startswith("יש שאין אומרים 'יהי רצון׳ בשבת") \
+                    and bi + 1 < n and not cons[bi + 1]:
+                extra = {"force": "!chome", "libelle": "ajout_usage", "discret": True, "replie_hors": True,
+                         "libelle_hors": "ajout_usage"}
+                for k, c in ((bi, "chome"), (bi + 1, "!chome")):
+                    pris.add(k)
+                    note("bloc", si, k, c, extra)
+                bi += 2
+                continue
+            # « בשבת ממשיכים מזמור השמים מספרים » (Edot, Hodou) : une consigne du Chabbat, ce jour-là seulement.
+            if office == "chaharit" and cons[bi] and bi not in pris and x.startswith("בשבת ממשיכים"):
+                prend_discret(bi, "chabbat", "ajout_chabbat")
+                bi += 1
+                continue
+            # La Méguila du matin (Sfard, Ashkenaz) : « בשחרית מתחילין שושנת יעקב », pas la nuit.
+            if texte_id == "megila" and cons[bi] and bi not in pris and x.startswith("בשחרית מתחילין"):
+                prend_discret(bi, "!nuit", "ajout_jour_megila")
+                bi += 1
+                continue
+            # Le psaume 121 à Arvit en Israël (Sfard, « יש נוהגים » ; Q14) : replié en Israël, retiré ailleurs.
+            if texte_id == "arvit" and cons[bi] and bi not in pris and x.startswith("בתפילת ערבית בארץ ישראל יש נוהגים") \
+                    and bi + 1 < n and not cons[bi + 1]:
+                for k in (bi, bi + 1):
+                    pris.add(k)
+                    note("bloc", si, k, USAGE, {"quand": "israel", "libelle": "ajout_israel_usage"})
+                bi += 2
+                continue
+            # Les הרחמן de la brit mila (Q15, tools/siddur_occasions_ajouts.py) : la consigne et ses הרחמן.
+            if texte_id == "birkat_hamazon" and cons[bi] and bi not in pris and x.startswith(BRIT_MILA_CONSIGNE[:24]):
+                j = bi
+                while j < n and (j == bi or (not cons[j] and commence(txt[j], "הרחמן"))):
+                    prend(j, OCCASION, "ajout_brit_mila")
+                    j += 1
+                bi = j
+                continue
             # --- Audit du 12/11 (TSIDDUR-03, -05, -07) : la suite du Ta'hanoun, le Hallel Edot ---
             # Lundi et jeudi (Sfard) : « בשני וחמישי יאמר והוא רחום. בשאר ימים שאומרים בהם תחנון
             # יאמר שומר ישראל » ; la consigne vaut tous les jours de Ta'hanoun, « והוא רחום » et
@@ -536,7 +666,8 @@ def annoter(texte_id, sections, nusah):
                 continue
             if cons[bi] and x.startswith('אם שכח לומר "רצה"'):
                 j = bi
-                while j < n and (j == bi or not commence(txt[j], "ברוך אתה יהוה אלהינו מלך העולם לעד")):
+                while j < n and (j == bi or not commence(txt[j], "ברוך אתה יהוה אלהינו מלך העולם לעד")) \
+                        and not (cons[j] and txt[j].startswith("בבית האבל")):
                     prend(j, "oubli")
                     j += 1
                 bi = j
@@ -735,7 +866,9 @@ def annoter(texte_id, sections, nusah):
             if texte_id == "birkat_hamazon" and cons[bi] and (
                     x.startswith("שלושה שאכלו כאחד חייבין בזימון") or x.startswith("אם המסובים שלושה")):
                 fin = bi
-                while fin < n and not (not cons[fin] and commence(txt[fin], "ברוך אתה")):
+                # Le zimoun de la maison endeuillée (Edot, 26/11, tools/siddur_occasions_ajouts.py) a son propre repli.
+                while fin < n and not (not cons[fin] and commence(txt[fin], "ברוך אתה")) \
+                        and not (cons[fin] and txt[fin].startswith("בבית האבל")):
                     fin += 1
                 # La consigne qui annonce la première bénédiction (Ashkenaz : « ברכה זו משה
                 # רבינו… תקנה ») est à elle, pas au zimoun.
@@ -754,7 +887,14 @@ def annoter(texte_id, sections, nusah):
                     j += 1
                 bi = j
                 continue
-            # La maison endeuillée : jamais un jour du calendrier, toujours replié (dépliable).
+            # La maison endeuillée : jamais un jour du calendrier, toujours replié (dépliable). Au Birkat (Edot, 26/11,
+            # tools/siddur_occasions_ajouts.py) : sa consigne et ce qu'elle annonce, le zimoun (trois blocs) ou un bloc.
+            if texte_id == "birkat_hamazon" and cons[bi] and x.startswith("בבית האבל"):
+                fin = min(n, bi + 1 + (3 if "הזימון" in x else 1))
+                for j in range(bi, fin):
+                    prend(j, "beit_avel")
+                bi = fin
+                continue
             if cons[bi] and x.startswith("בבית האבל"):
                 j = bi
                 while j < n and (j == bi or not cons[j] or txt[j] == "(קדיש יתום)"
@@ -1062,31 +1202,17 @@ def annoter(texte_id, sections, nusah):
                 # permanent sous la bénédiction ; l'heure n'est pas une condition du jour.
                 if texte_id == "chema_coucher" and nusah != "edot" and commence(x, "ברוך אתה יהוה אלהינו מלך העולם המפיל"):
                     note("indice", si, bi, "!minyan", {"texte": HAMAPIL_APRES_AUBE})
-                retraits = sorted((m.start(), m.group(0)) for r in RETIRE for m in re.finditer(r, brut))
-                trouves = sorted((m.start(), c, m.group(1).strip(" ,.")) for motif, c in INDICES
-                                 for m in re.finditer(motif, x) if m.group(1).strip(" ,."))
-                # Le passage brut à replier hors du jour (demande du 28/10) : apparié dans
-                # l'ordre du texte, et seulement si les deux comptes s'accordent.
-                apparie = len(retraits) == len(trouves)
-                for k, (_, c, variante) in enumerate(trouves):
-                    extra = {"texte": variante}
-                    if apparie:
-                        extra["retire"] = retraits[k][1]
-                        # La variante exacte est dans le brut (« הַשָּׁלוֹם » seul, pas la suite).
-                        interne = re.match(r"<small>\s*(?:<small>[^<]*</small>|בעשרת ימי תשובה [^<:]*:)([^<]*)</small>", extra["retire"])
-                        if interne and nu(interne.group(1)).strip(" ,.:"):
-                            extra["texte"] = nu(interne.group(1)).strip(" ,.:")
+                for c, extra in variantes_dix_jours(brut, x):
                     note("indice", si, bi, c, extra)
-                # « מגדול » pour « מגדיל » à la fin du Birkat (12/11) : Edot, « ביום שמתפללים מוסף » ;
-                # Ashkenaz, « בשבת וביו״ט ». Un repère du jour, rien de replié ; une condition par jour
-                # de Moussaf (Chabbat, Roch 'Hodech, fêtes et 'Hol hamoed, Yom tov). Motsaé Chabbat,
-                # que les Edot nomment aussi, n'est pas un jour du calendrier : il n'est pas repéré.
-                if texte_id == "birkat_hamazon" and re.search(r"\( ?(ביום שמתפללים מוסף|בשבת וביו״ט)[^:]*: ?מגדול", x):
-                    # Ashkenaz et Sfard, aussi Roch 'Hodech (audit du 16/11 : Michna Beroura 189:5 ; Choul'han
-                    # Aroukh haRav 189:7), que la consigne imprimée ne nomme pas : une note le dit (NOTES).
-                    jours = ("chabbat", "roch_hodech", "moed", "yom_tov") if "מוסף" in x else ("chabbat", "yom_tov", "roch_hodech")
-                    for c in jours:
-                        note("indice", si, bi, c, {"texte": "מִגְדּוֹל"})
+                # « מגדול » pour « מגדיל » à la fin du Birkat (12/11) : Edot, « ביום שמתפללים מוסף, במוצ״ש, בסעודת
+                # פורים ובסעודת מילה » ; Sfard et Ashkenaz, « בשבת וביו״ט », et Roch 'Hodech (audit du 16/11 : Michna
+                # Beroura 189:5 ; Choul'han Aroukh haRav 189:7), que la consigne imprimée ne nomme pas (une note le dit).
+                # 26/11 (Q8, « seule la bonne formule ») : les jours de « מגדול » (clé « magdol », SiddurJour.conditionsPour),
+                # « מגדול » seul ; les autres jours, « מגדיל » seul en Sfard et en Ashkenaz ; en Edot, la consigne reste,
+                # puisqu'un repas de brit mila, que l'application ne connaît pas, dit aussi « מגדול ».
+                if texte_id == "birkat_hamazon":
+                    for c, extra in magdil(sec["blocs"][bi].get("t", ""), nusah):
+                        note("indice", si, bi, c, extra)
                 if re.fullmatch(r"בקיץ: מוריד הטל\. בחורף: משיב הרוח ומוריד הגשם\.?", x):
                     brut = sec["blocs"][bi]["t"]
                     k = brut.index("<small>בחורף")
@@ -1104,6 +1230,8 @@ def annoter(texte_id, sections, nusah):
     reperes(texte_id, sections, nusah, sortie, note)
     if office or texte_id in TEXTES_MINYAN:
         double_annotation(texte_id, sections, nusah, sortie)
+    # 26/11 : les catégories (gardes, Anénou, voyageur, variantes enchâssées…).
+    categories(texte_id, sections, nusah, sortie, note)
     # La passe « minyan » ajoute ses blocs après les autres : grouper veut l'ordre du texte.
     sortie.sort(key=lambda e: (e["s"], e.get("b", -1)))
     grouper(sortie)
@@ -1390,6 +1518,267 @@ def minyan(txt, cons, pris, prend):
 TEXTES_MINYAN = ("arvit", "moussaf_rosh_hodech", "hallel", "birkat_halevana")
 
 
+# --- 26/11 : les ajouts en deux catégories ----------------------------------------------------------
+# Le jour de l'omer d'un bloc : Sfard, Ashkenaz, « ט״ז ניסן 1. היום יום אחד… » ; Edot, la date en
+# consigne (« ט״ז ניסן »), puis le compte et la séfira, l'une après l'autre.
+OMER_JOUR = re.compile(r"^\S+ (?:ניסן|אייר|סיון) (\d+)\.")
+OMER_DATE = re.compile(r"^\S+ (?:ניסן|אייר|סיון):?$")
+
+
+def jours_omer(blocs):
+    """(bloc, « omer_N » ou None) de chaque bloc : None avant le premier jour et après le dernier."""
+    txt = [nu(b.get("t") or b.get("c")) for b in blocs]
+    sortie = []
+    jour = 0
+    reste = 0
+    for k, x in enumerate(txt):
+        m = OMER_JOUR.match(x) if "t" in blocs[k] else None
+        if m:
+            sortie.append((k, f"omer_{int(m.group(1))}"))
+            continue
+        if "c" in blocs[k] and OMER_DATE.match(x):
+            jour += 1
+            reste = 2
+            sortie.append((k, f"omer_{jour}"))
+            continue
+        if reste:
+            reste -= 1
+            sortie.append((k, f"omer_{jour}"))
+            continue
+        sortie.append((k, None))
+    jours = [c for _, c in sortie if c]
+    assert len(set(jours)) in (0, 49), f"omer : {len(set(jours))} jours"
+    return sortie
+
+
+def omer_texte(sections, nusah):
+    """
+    Le compte de l'omer, texte à part (26/11, Q12) : le seul compte du soir les soirs de l'omer ; hors de
+    l'omer, les quarante-neuf jours restent repliés, dépliables (texte ouvert depuis la liste : Q9).
+    """
+    sortie = []
+    for si, sec in enumerate(sections):
+        for k, c in jours_omer(sec["blocs"]):
+            if c:
+                sortie.append(_repere(sections, si, k, c, {"force": "omer", "discret": True, "replie_hors": True}))
+    grouper(sortie)
+    for e in sortie:
+        e.pop("_force", None)
+    return sortie
+
+
+# Les consignes d'oubli (26/11, Q5) : repliées seulement les jours où se dit l'ajout qu'elles concernent (« quand »),
+# et le soir qui suit pour le Birkat haMazon (SiddurJour, le jour voisin) ; retirées les autres jours. « בכל השנה אם
+# אמר המלך המשפט » vaut toute l'année : sans « quand ».
+GARDES_OUBLI = [
+    (r"^בכל השנה", None),
+    (r"משיב הרוח", "machiv_harouah"),
+    (r"טל ומטר", "tal_oumatar"),
+    (r"יעלה ויבא", "yaale_veyavo"),
+    (r"על הנסים", "al_hanissim"),
+    (r"בין ראש השנה ליום הכפורים|זכרנו|מי כמוך|האל הקדוש|וכתוב|בספר חיים", "asseret_yemei_techouva"),
+]
+
+# Les lignes d'un jour dans les bénédictions de qui a oublié רצה ou יעלה ויבא (Birkat haMazon, Q11) : la
+# consigne (Sfard, Ashkenaz) ou le début de la ligne (Edot), et le jour.
+LIGNES_OUBLI = [
+    (r"^בשבת אומר", "chabbat"), (r"^בראש חודש שחל בשבת", "chabbat_roch_hodech"), (r"^בראש חודש", "roch_hodech_chol"),
+    (r"^ביו״ט שחל בשבת", "yom_tov_chabbat"), (r"^ביו״ט אומר", "yom_tov"), (r"^בחול המועד", "hol_hamoed"),
+    (r"^בראש השנה שחל בשבת", "roch_hachana_chabbat"), (r"^בראש השנה", "roch_hachana"),
+    (r"^לשבת", "chabbat"), (r"^לראש חודש", "roch_hodech"), (r"^לראש השנה", "roch_hachana"), (r"^לשלש רגלים", "moed"),
+]
+
+# Les Mi chébérakh de la lecture (Q15, tools/siddur_occasions_ajouts.py), HaGomel et ברוך שפטרני : une occasion
+# dans la lecture de la Torah, repliée à part dans son groupe (« et »).
+OCCASIONS_LECTURE = [
+    (r"^מי שברך לעולה לתורה", "ajout_mi_cheberakh_oleh"),
+    (r"^מי שברך לחולה", "ajout_mi_cheberakh_malade"),
+    (r"^מי שברך ליולדת", "ajout_mi_cheberakh_yoledet"),
+    (r"^ארבעה צריכים להודות|^ברכת הגומל", "ajout_hagomel"),
+    (r"^ברכת ברוך שפטרני|^מי שהגיע בנו", "ajout_bar_mitsva"),
+]
+
+
+def variante(brut, motif, cond, par="", texte=None):
+    """Une variante enchâssée (26/11) : le passage brut [motif] retiré le jour où [cond] est fausse."""
+    m = re.search(motif, brut)
+    if not m:
+        return None
+    e = {"retire": m.group(0), "texte": texte or nu(m.group(0)).strip(" ()")}
+    if par:
+        e["par"] = par
+    return cond, e
+
+
+def categories(texte_id, sections, nusah, sortie, note):
+    """
+    26/11 : ce qui dépend du calendrier est retiré hors de son jour (SiddurJour), ce qui dépend d'une occasion
+    reste replié. Ici, ce que les règles d'annoter() ne disaient pas : les gardes (« quand ») des consignes
+    d'oubli et des usages datés, l'Anénou (Q2), le voyageur (Q3), le Ledavid des Edot (Q10), les lignes d'un
+    jour dans un ajout d'occasion (Q11), les formes de l'homme et de la femme (Q12), les variantes enchâssées
+    oubliées (Q8), et les occasions de la lecture de la Torah (Q15).
+    """
+    blocs_annotes = {(e["s"], e["b"]): e for e in sortie if e["sorte"] == "bloc"}
+    indexes = {(e["s"], e["b"]) for e in sortie if e["sorte"] == "indice"}
+
+    def texte(si, bi):
+        b = sections[si]["blocs"][bi]
+        return nu(b.get("t") or b.get("c")).replace("''", "״")
+
+    def indice(si, bi, cond, extra):
+        note("indice", si, bi, cond, extra)
+        indexes.add((si, bi))
+
+    for (si, bi), e in sorted(blocs_annotes.items()):
+        x = texte(si, bi)
+        lib = e.get("libelle")
+        # Q5 : la garde d'une consigne d'oubli.
+        if e["si"] == "oubli":
+            if texte_id == "birkat_hamazon":
+                e["force"] = "oubli"
+            garde = next((g for motif, g in GARDES_OUBLI if re.search(motif, x)), None)
+            if texte_id == "birkat_hamazon" and (x.startswith("דיני שכחה") or re.match(r"^(אם )?שכח לומר ״?\"?רצה", x)):
+                garde = "retse_ou_yaale"
+            elif garde is None and texte_id == "birkat_hamazon":
+                # Les lignes d'un groupe d'oubli du Birkat suivent la garde de sa première consigne.
+                avant = blocs_annotes.get((si, bi - 1))
+                garde = avant.get("quand") if avant is not None and avant.get("force") == "oubli" else None
+            if garde:
+                e["quand"] = garde
+            # Q11 : dans le groupe déplié, les lignes du jour seulement.
+            if texte_id == "birkat_hamazon":
+                jour = next((c for motif, c in LIGNES_OUBLI if re.search(motif, x)), None)
+                if jour is None and "t" in sections[si]["blocs"][bi]:
+                    avant = blocs_annotes.get((si, bi - 1))
+                    if avant is not None and avant["si"] != "oubli" and "c" in sections[si]["blocs"][bi - 1]:
+                        jour = avant["si"]
+                if jour:
+                    e["si"] = jour
+        # Q2 : l'Anénou de l'officiant, les jours de jeûne public, sous « Avec minyan ».
+        elif lib == "ajout_anenou_officiant":
+            e["quand"], e["si"] = e["si"], "minyan"
+            del e["libelle"]
+        # Q2 : celui du particulier, en clair les jours de jeûne public, replié sous « Jeûne individuel » les autres.
+        elif lib == "ajout_anenou_particulier":
+            e["replie_hors"], e["libelle_hors"] = True, "ajout_jeune_individuel"
+            if texte_id == "arvit":
+                # Edot, Arvit : la version des trois jeûnes, avec celle du 9 Av (TSIDDUR-17), en un groupe :
+                # le soir du 9 Av, celle du 9 Av seule ; les autres soirs, les deux, repliées.
+                e["force"] = "ticha_beav"
+                if e["si"] == "facultatif":
+                    e["si"] = "!ticha_beav"
+        # Q3 : le voyageur, seulement quand Israël et la diaspora diffèrent pour טל ומטר.
+        elif lib == "ajout_voyageur_tal_oumatar":
+            e["quand"] = "voyageur_tal_oumatar"
+        # Q14 : les usages liés à un jour, repliés ce jour-là, retirés les autres.
+        elif lib == "ajout_lundi_jeudi_usage":
+            e["quand"], e["si"] = e["si"], USAGE
+        elif e["si"] == "roch_hodech" and (x.startswith("בליל ראש חודש יש") or x.startswith("יש נוהגין לומר בר״ח אחר הלל") or (
+                (si, bi - 1) in blocs_annotes and blocs_annotes[(si, bi - 1)].get("libelle") == "ajout_roch_hodech_usage")):
+            e["quand"], e["si"], e["libelle"] = "roch_hodech", USAGE, "ajout_roch_hodech_usage"
+        # Q10 : le Ledavid des Edot, que le 'Hida dit toute l'année : replié, non retiré, hors d'Eloul et de Tichri.
+        elif lib == "ajout_ledavid" and nusah == "edot":
+            e["replie_hors"] = True
+        # Q11 : la maison endeuillée de Sfard, le psaume 49 les jours de Ta'hanoun, le psaume 16 les autres.
+        if e["si"] == "beit_avel" and OFFICE.get(texte_id):
+            t = "tahanoun_" + OFFICE[texte_id]
+            if x.startswith("בבית האבל") and "בימים שיש בהם תחנון" in x:
+                e["_beit_avel"] = t
+            elif x.startswith("ובימים שאין בהם תחנון"):
+                e["_beit_avel"] = "!" + t
+            else:
+                avant = blocs_annotes.get((si, bi - 1))
+                if avant is not None and avant.get("_beit_avel") and "et" not in e:
+                    e["_beit_avel"] = avant["_beit_avel"]
+    avec_tahanoun = {f["s"] for f in blocs_annotes.values() if "_beit_avel" in f}
+    for e in blocs_annotes.values():
+        if e["si"] == "beit_avel" and e["s"] in avec_tahanoun:
+            e["force"] = "beit_avel"
+        if "_beit_avel" in e:
+            e["si"] = e.pop("_beit_avel")
+            e["force"] = "beit_avel"
+    # Ce qui ne se dit qu'en Ta'hanoun dans un office (maison endeuillée, ci-dessus) se lit avec son groupe.
+    # Les occasions de la lecture de la Torah (Q15) : HaGomel, ברוך שפטרני, les Mi chébérakh.
+    for si, sec in enumerate(sections):
+        if nu(sec["titre"]) not in ("קריאת התורה",) or texte_id != "chaharit":
+            continue
+        courant = None
+        for bi, b in enumerate(sec["blocs"]):
+            x = texte(si, bi)
+            lib = next((l for motif, l in OCCASIONS_LECTURE if re.search(motif, x)), None) if "c" in b else None
+            if lib:
+                courant = lib
+            elif courant and "c" in b and not re.match(r"^(לזכר|לנקבה|ליולדת|והקהל עונים)", x):
+                courant = None
+            elif courant and "t" in b and commence(x, "יתגדל"):
+                courant = None
+            if courant and (si, bi) in blocs_annotes:
+                blocs_annotes[(si, bi)]["et"], blocs_annotes[(si, bi)]["et_libelle"] = OCCASION, courant
+            if (courant == "ajout_hagomel" and "t" in b and "מי שגמלך" in x) or (
+                    courant == "ajout_bar_mitsva" and "t" in b and x.startswith("ברוך שפטרני")):
+                courant = None
+    # Edot, Arvit du motsaé Chabbat : « לפני "שובה" יש נוהגים לומר בקשה זו » et la bakasha, selon l'usage (Q14).
+    for (si, bi), e in blocs_annotes.items():
+        if texte_id == "arvit" and texte(si, bi).startswith('לפני "שובה" יש נוהגים'):
+            for k in (bi, bi + 1):
+                if (si, k) in blocs_annotes:
+                    blocs_annotes[(si, k)]["et"], blocs_annotes[(si, k)]["et_libelle"] = USAGE, "ajout_usage"
+    # Les variantes enchâssées (Q8, Q11, Q12) : dans tout bloc, annoté ou non.
+    for si, sec in enumerate(sections):
+        for bi, b in enumerate(sec["blocs"]):
+            if "t" not in b:
+                continue
+            brut, x = b["t"], texte(si, bi)
+            # Q8 : les variantes du Kaddich des dix jours dans un ajout (Ledavid, maison endeuillée…), que la passe
+            # des blocs libres ne voyait pas.
+            if (si, bi) in blocs_annotes and (si, bi) not in indexes:
+                for c, extra in variantes_dix_jours(brut, x):
+                    if "retire" in extra:
+                        indice(si, bi, c, extra)
+            v = []
+            # Q12 : la forme de la femme, ou celle de l'homme (Edot, Birkot hacha'har).
+            if texte_id == "birkot_hachahar" and nusah == "edot":
+                m = re.search(r"<b>(מוֹדֶה)</b> (<small>האשה אומרת: (מוֹדָה)</small>)", brut)
+                if m:
+                    v.append(("!femme", {"retire": m.group(0), "par": f"<b>{m.group(3)}</b>", "texte": "מוֹדָה"}))
+                    v.append(("!homme", {"retire": " " + m.group(2), "texte": "מוֹדֶה"}))
+                m = re.search(r"(\S+): <small>האשה אומרת: <b>(\S+)</b></small>", brut)
+                if m:
+                    v.append(("!femme", {"retire": m.group(0), "par": m.group(2) + ":", "texte": nu(m.group(2))}))
+                    v.append(("!homme", {"retire": " <small>האשה אומרת: <b>" + m.group(2) + "</b></small>", "texte": nu(m.group(1))}))
+            # Q8 : le sceau « מלך אוהב צדקה ומשפט » pendant les dix jours, quand le siddour ne donne ensuite que
+            # « בעשי״ת יסיים: המלך המשפט » (Ashkenaz, Cha'harit et Min'ha) : « המלך המשפט » à sa place.
+            if bi + 1 < len(sec["blocs"]) and re.fullmatch(r"ברוך אתה יהוה מלך או?הב צדקה ומשפט:?", x) \
+                    and (si, bi) not in blocs_annotes and "t" in sec["blocs"][bi + 1]:
+                suite = re.search(r"</small>\s*(הַמֶּ\S*לֶךְ הַמִּשְׁפָּט)", sec["blocs"][bi + 1]["t"])
+                m = re.search(r"מֶ\S*לֶךְ אֹהֵב צְדָקָה וּמִשְׁפָּט", brut)
+                if suite and m:
+                    v.append(("!asseret_yemei_techouva", {"retire": m.group(0), "par": suite.group(1), "texte": "המלך המשפט"}))
+            # Q11 : le zimoun (Edot) : « בשבת », « ביו״ט », « בסוכה », chacun son jour.
+            if texte_id == "birkat_hamazon":
+                for motif, c in ((r" ?\(<small>בשבת</small>[^)]*\)", "chabbat"), (r" ?\(<small>ביו״ט</small>[^)]*\)", "yom_tov"),
+                                 (r" ?\(<small>בסוכה</small>[^)]*\)", "soukkot")):
+                    r = variante(brut, motif, c)
+                    if r:
+                        v.append(r)
+            # Q14 : « די באתרא (בא״י קדישא) הדין » (Sfard, Moussaf) : « קדישא » en Israël seulement.
+            m = re.search(r" <small>\(בא״י (קַדִּישָׁא)\)</small>", brut)
+            if m:
+                v.append(("israel", {"retire": m.group(0), "texte": "קדישא"}))
+                v.append(("!israel", {"retire": m.group(0), "par": " " + m.group(1), "texte": "קדישא"}))
+            # Q11 : dans les Mi chébérakh (Q15), le Chabbat, le Yom tov, les fêtes, Roch Hachana et Kippour.
+            e = blocs_annotes.get((si, bi))
+            if e is not None and e.get("et") == OCCASION and str(e.get("et_libelle", "")).startswith("ajout_mi_cheberakh"):
+                for motif, c in ((r" ?\(?<small>\(?ליו״ט [^<]*</small>\)?", "moed"), (r" ?\(?<small>\(?לר״ה ויו״כ [^<]*</small>\)?", "yamim_noraim"),
+                                 (r" ?\(<small>בשבת</small>[^)]*\)\.?", "chabbat"), (r" ?\(<small>ביו״ט</small>[^)]*\),?", "yom_tov"),
+                                 (" " + motif_brut("ולכבוד השבת"), "chabbat")):
+                    r = variante(brut, motif, c)
+                    if r:
+                        v.append(r)
+            for c, extra in v:
+                indice(si, bi, c, extra)
+
+
 def double_annotation(texte_id, sections, nusah, sortie):
     """
     Audit du 16/11 : un bloc d'un groupe du jour peut aussi demander autre chose (« et ») : le
@@ -1652,7 +2041,7 @@ def grouper(annotations):
             precedent = e
             continue
         if precedent and precedent["s"] == e["s"] and precedent["b"] + 1 == e["b"] \
-                and e.get("libelle") == precedent.get("libelle") \
+                and e.get("libelle") == precedent.get("libelle") and e.get("quand") == precedent.get("quand") \
                 and (e["si"] == precedent["racine"] or e["si"] in SOUS.get(precedent["racine"], ())):
             e["g"], e["racine"] = precedent["g"], precedent["racine"]
         else:
@@ -1809,14 +2198,20 @@ def chema_coucher_sfard(sections, nusah):
 
 
 # Les textes annotés à la main, hors des règles générales d'annoter() (audit du 16/11).
-SPECIAUX = {"tikoun_hatsot": tikoun_hatsot, "chema_coucher": chema_coucher_sfard}
+SPECIAUX = {"tikoun_hatsot": tikoun_hatsot, "chema_coucher": chema_coucher_sfard, "sefirat_haomer": omer_texte}
 
 
 def main():
     racine = {"_meta": {
         "outil": "tools/siddur_annotations.py",
         "conditions": "clés de CalendrierJuif.C (KosherJava) ; « ! » : la clé fausse",
-        "regle": "les textes ne sont pas modifiés ; un ajout hors du jour est replié, jamais retiré",
+        "regle": ("les textes ne sont pas modifiés ; un ajout du calendrier (les zmanim, que l'application calcule) "
+                  "ne s'affiche que le jour où il se dit, et il est retiré les autres jours ; un ajout d'occasion "
+                  "(brit, invité, minyan, maison endeuillée…), que l'application ne peut pas connaître, reste replié "
+                  "mais visible (26/11)"),
+        "occasions": "conditions jamais vraies, toujours repliées : " + ", ".join(OCCASIONS),
+        "quand": "la garde d'un ajout d'occasion : fausse, il est retiré (consignes d'oubli, usages datés, voyageur)",
+        "replie_hors": "un ajout du calendrier gardé replié hors de son jour au lieu d'être retiré (Ledavid des Edot, Anénou du particulier, omer)",
         "a_valider": "indicatif : le texte et ses consignes font foi",
     }}
     for nusah in ("edot", "sefard", "ashkenaz"):

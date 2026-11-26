@@ -13,8 +13,8 @@ import { DanseMesure, SessionRule } from './seance.js';
 import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
-import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, cleGuechemFin, dansIsrael, jour as jourJuif, jourDeLaPriere, levana, nuit as nuitDuLieu, periodeSansMusique, rappelsTefila, reperes as reperesDuJour, usageLevana } from './calendrier-juif.js';
-import { avecSansTahanoun, conditionsPour, index as indexAjouts, libelleJour, plan as planSection, segments as segmentsAjout, vrai as ajoutVrai } from './siddur-jour.js';
+import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, cleGuechemFin, dansIsrael, jour as jourJuif, jourDeLaPriere, jourVoisin, levana, nuit as nuitDuLieu, periodeSansMusique, rappelsTefila, reperes as reperesDuJour, usageLevana } from './calendrier-juif.js';
+import { avecAdresse, avecSansTahanoun, conditionsPour, index as indexAjouts, libelleJour, plan as planSection, segments as segmentsAjout, signature as signatureAjouts, texteDuJour, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
 import { distanceKm } from './direction.js';
@@ -1314,8 +1314,8 @@ function ramenerLecture() {
   rendreEtViser('.lecture-barre button');
 }
 
-function reglagesLecture({ avecNusah, sansNuit = false }) {
-  optionsLecture = { avecNusah, sansNuit };
+function reglagesLecture({ avecNusah, sansNuit = false, sansTahanoun = null }) {
+  optionsLecture = { avecNusah, sansNuit, sansTahanoun };
   // Pendant le défilement automatique, sa commande remplace la barre (et la pastille).
   if (defilAuto) return commandeDefilement();
   if (store.lectureMasquee()) return null;
@@ -1359,6 +1359,13 @@ function reglagesLecture({ avecNusah, sansNuit = false }) {
         class: 'lecture-nusah-bouton', 'aria-haspopup': 'menu', 'aria-expanded': String(choixNusahOuvert),
         onclick: () => { choixNusahOuvert = !choixNusahOuvert; rendreEtViser(choixNusahOuvert ? '.lecture-nusah [aria-checked="true"]' : '.lecture-nusah-bouton'); },
       }, tr.t('siddur_choose')) : null,
+      // « Pas de Ta'hanoun aujourd'hui » (26/11, Q1 ; ReglagesLecture) : à Cha'harit et à Min'ha, le réglage des zmanim,
+      // pour le jour du texte ; « תחנון » barré quand il est actif.
+      sansTahanoun ? bouton({
+        class: 'lecture-tahanoun', lang: 'he', dir: 'rtl', 'aria-pressed': String(store.sansTahanounLe(sansTahanoun)),
+        'aria-label': tl('reglage_sans_tahanoun_jour'), title: tl(store.sansTahanounLe(sansTahanoun) ? 'lecture_tahanoun_oui' : 'lecture_tahanoun_non'),
+        onclick: () => { store.setSansTahanounLe(sansTahanoun, !store.sansTahanounLe(sansTahanoun)); rendreEtViser('.lecture-tahanoun'); },
+      }, 'תחנון') : null,
       // Le défilement automatique (16/11) : il part sans rien fermer ; sa commande prend la place de la barre.
       bouton({ class: 'icone-bouton lecture-defiler', 'aria-label': tl('lecture_defiler'), 'aria-pressed': 'false', onclick: demarreDefilement }, icone('lecture')),
       separateur(),
@@ -1372,7 +1379,7 @@ function reglagesLecture({ avecNusah, sansNuit = false }) {
 // quitter l'écran, toucher le texte, ou arriver au bout l'arrête. (À ne pas confondre avec
 // dataset.defilementAuto, le défilement posé par un écran, plus bas.)
 let defilAuto = null; // { ecran, reste, dernier, image, vitesse, verrou }
-let optionsLecture = { avecNusah: false, sansNuit: false };
+let optionsLecture = { avecNusah: false, sansNuit: false, sansTahanoun: null };
 
 /** Le texte qui défile : celui de l'écran de lecture affiché. */
 function defileLu() {
@@ -1484,9 +1491,9 @@ for (const evt of ['touchstart', 'wheel', 'pointerdown', 'keydown']) document.ad
  * Un écran de lecture de texte saint : le texte à la taille choisie, de
  * nuit si demandé, et le bouton de lecture au-dessus du pied d'écran.
  */
-function ecranLu(titre, contenu, { avecNusah = false, pied = null, bande = null, entete = null } = {}) {
+function ecranLu(titre, contenu, { avecNusah = false, pied = null, bande = null, entete = null, sansTahanoun = null } = {}) {
   const defile = h('div', { class: 'defile' }, contenu);
-  const ctrl = reglagesLecture({ avecNusah });
+  const ctrl = reglagesLecture({ avecNusah, sansTahanoun });
   // Le niveau de lecture (IndicateurDefilement.kt, 28/10) : un trait fin au bord droit, montré pendant le défilement.
   const curseur = h('div', { class: 'niveau-curseur' });
   const niveau = h('div', { class: 'niveau', 'aria-hidden': 'true' }, curseur);
@@ -1702,14 +1709,26 @@ function ecranPriere() {
   // Après la sortie des étoiles du lieu, les autres textes relèvent aussi de demain (28/10).
   const lieuSortie = store.lieu();
   const isoMaintenant = jourLieu(maintenant);
-  const tset = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant : null;
-  const jourDuTexte = jourJuif(jourDeLaPriere(x.id, isoMaintenant, heureLieu(maintenant).heures, !!tset && maintenant >= tset), store.inIsrael(), mukafChoma());
+  const zmanimLieu = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant, store.siddurNusah()) : [];
+  const instant = (cle) => zmanimLieu.find((z) => z.cle === cle)?.instant ?? null;
+  const tset = instant('tset');
+  const chkia = instant('chkia');
+  const alot = instant('alot');
+  const heures = heureLieu(maintenant).heures;
+  const isoTexte = jourDeLaPriere(x.id, isoMaintenant, heures, !!tset && maintenant >= tset);
   // La nuit (audit du 16/11, CalendrierJuif.nuit) : la Méguila n'a pas les mêmes bénédictions le soir et le matin.
-  const alot = lieuSortie ? zmanimDuJour(lieuSortie, isoMaintenant, store.siddurNusah()).find((z) => z.cle === 'alot')?.instant : null;
-  if (nuitDuLieu(heureLieu(maintenant).heures, tset ? maintenant >= tset : null, alot ? maintenant < alot : null)) jourDuTexte.conditions.add('nuit');
+  const nuit = nuitDuLieu(heures, tset ? maintenant >= tset : null, alot ? maintenant < alot : null);
+  const jourPour = (israel) => { const j = jourJuif(isoTexte, israel, mukafChoma()); if (nuit) j.conditions.add('nuit'); return j; };
+  const jourDuTexte = jourPour(store.inIsrael());
   const nusah = store.siddurNusah();
-  const c = conditionsPour(nusah, store.inIsrael(), avecSansTahanoun(jourDuTexte.conditions, store.sansTahanounLe(jourDuTexte.date)),
-    store.sansTahanounFinTichri(), hemisphereSud());
+  // Les conditions d'un jour pour la lecture (Store.conditionsDuJour) : « Pas de Ta'hanoun aujourd'hui », צדיק / צדקת (26/11).
+  const duJour = (j) => avecAdresse(avecSansTahanoun(j.conditions, store.sansTahanounLe(j.date)), store.adresse());
+  const pour = (israel, conditions) => conditionsPour(nusah, israel, conditions, store.sansTahanounFinTichri(), hemisphereSud());
+  // Le soir, au Birkat haMazon et à Méèn chaloch (26/11, Q6, CalendrierJuif.jourVoisin) : les ajouts du jour voisin restent repliés.
+  const isoVoisin = jourVoisin(x.id, isoMaintenant, heures, chkia ? maintenant >= chkia : null, tset ? maintenant >= tset : null);
+  const voisinPour = (israel) => (isoVoisin ? pour(israel, duJour(jourJuif(isoVoisin, israel, mukafChoma()))) : new Set());
+  const c = pour(store.inIsrael(), duJour(jourDuTexte));
+  const cv = voisinPour(store.inIsrael());
   const nom = (a, condition) => tr.t(libelleJour(a.libelle, condition, nusah, c));
   // Marque-pages (15/10, SiddurLectureActivity) : un appui long sur un paragraphe le marque ou le démarque.
   const cleMarque = `${livre ? 'l' : 's'}:${x.id}`;
@@ -1750,11 +1769,14 @@ function ecranPriere() {
   // « Aujourd'hui · הַלֵּל › » : le texte à dire là ce jour-là, ouvert d'un geste ; rien hors du jour.
   // Qui prie seul (19/10) : une carte à part, jamais repliée, après Barekhou.
   // Les notes de l'application (audit du 16/11, SiddurJour.Sorte.NOTE) : même carte, leur étiquette propre.
-  const seuls = (si, i) => (idx.seuls.get(`${si}:${i}`) ?? []).filter((a) => ajoutVrai(a.si, c)).map((a) =>
-    h('div', { class: 'seul-carte', lang: 'he', dir: 'rtl' },
+  // Qui prie seul (26/11, Q4) : la carte, repliée sous « Sans minyan ».
+  const seuls = (si, i) => (idx.seuls.get(`${si}:${i}`) ?? []).filter((a) => a.sorte === 'seul' || ajoutVrai(a.si, c)).map((a) => {
+    const carte = h('div', { class: 'seul-carte', lang: 'he', dir: 'rtl' },
       h('p', { class: 'seul-etiquette' }, tr.t(a.sorte === 'note' ? 'siddur_note' : 'siddur_seul')),
       a.consigne ? h('p', { class: 'seul-consigne' }, a.consigne) : null,
-      h('p', { class: a.consigne ? 'seul-texte' : 'seul-consigne' }, a.texte)));
+      h('p', { class: a.consigne ? 'seul-texte' : 'seul-consigne' }, a.texte));
+    return a.sorte === 'seul' ? ajout(tr.t('ajout_sans_minyan'), false, [carte]) : carte;
+  });
   const renvois = (si, i) => (idx.renvois.get(`${si}:${i ?? ''}`) ?? []).filter((a) => ajoutVrai(a.si, c)).map((a) => {
     // Un rappel sans texte cible (audit du 16/11 : Moussaf de Chabbat Roch 'Hodech, de 'Hol hamoed…) : SiddurJour.Ligne.Rappel.
     if (!a.cible && a.libelle) return h('p', { class: 'indice-jour rappel-jour' }, `${tr.t('siddur_aujourdhui')} · ${tr.t(a.libelle)}`);
@@ -1762,50 +1784,54 @@ function ecranPriere() {
     return cible ? h('button', { type: 'button', class: 'renvoi-jour', lang: 'he', dir: 'rtl', onclick: () => ouvrirRenvoi(x.id, cible.id) },
       `${tr.t('siddur_aujourdhui')} · ${cible.titre.he}  ›`) : null;
   });
-  // Une variante enchâssée hors du jour (המלך הקדוש, מוריד הטל…) : retirée du paragraphe,
-  // repliée dessous (28/10, SiddurJour.lignes). Celle du jour se lit dans le texte même.
-  const avecIndices = (s, si, i) => {
-    const tous = idx.indices.get(`${si}:${i}`) ?? [];
-    const hors = tous.filter((a) => a.retire && !ajoutVrai(a.si, c));
+  // Une variante enchâssée hors du jour (המלך הקדוש, מוריד הטל…) : retirée du paragraphe, ou remplacée, sans repli
+  // (26/11, Q8 : « seule la bonne formule » ; SiddurJour.texteDuJour). Celle du jour se lit dans le texte même.
+  const texteDu = (s, si, i) => {
     const brut = s.blocs[i].t ?? s.blocs[i].c;
-    const reduit = hors.length ? hors.reduce((t, a) => t.replace(a.retire, ''), brut).trim() : brut;
-    // Une fois chacune : « מגדול » vaut le Chabbat comme Roch 'Hodech (12/11).
-    const du = tous.filter((a) => !a.retire && ajoutVrai(a.si, c)).filter((a, k, l) => l.findIndex((y) => y.texte === a.texte) === k);
-    const pli = hors.length && reduit !== brut
-      ? ajout(nom(hors[0], hors[0].si), false, hors.map((a) => h('p', { class: 'priere hors-jour', lang: 'he', dir: 'rtl' }, a.texte)), hors[0].si) : null;
-    // Une indication fixe (audit du 16/11, « fixe ») : sans « Aujourd'hui : ».
-    return [paragraphe(s, i, reduit !== brut ? reduit : undefined), pli, ...du.map((a) => h('p', { class: 'indice-jour' },
-      a.fixe ? null : h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, a.texte))), ...renvois(si, i)];
+    const t = texteDuJour(brut, idx.indices.get(`${si}:${i}`) ?? [], c, cv);
+    return t !== brut ? t : undefined;
   };
+  // « Aujourd'hui : … » sous un bloc, pour une variante qu'on ne sait pas retirer ; une fois chacune (12/11). Une
+  // indication fixe (audit du 16/11, « fixe ») : sans « Aujourd'hui : ».
+  const reperesDu = (si, i) => (idx.indices.get(`${si}:${i}`) ?? []).filter((a) => !a.retire && ajoutVrai(a.si, c))
+    .filter((a, k, l) => l.findIndex((y) => y.texte === a.texte) === k)
+    .map((a) => h('p', { class: 'indice-jour' }, a.fixe ? null : h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, a.texte)));
+  const avecIndices = (s, si, i) => [paragraphe(s, i, texteDu(s, si, i)), ...reperesDu(si, i), ...renvois(si, i)];
   // Le corps d'une section, sans son titre : construit d'un coup pour une prière, à la demande pour un livre.
   const corpsDe = (s, si) => {
     const corps = [];
-    for (const partie of planSection(s, si, idx, c)) {
+    for (const partie of planSection(s, si, idx, c, cv)) {
       const a = partie.annotation;
       const dernier = partie.blocs[partie.blocs.length - 1];
       if (!a) { corps.push(...avecIndices(s, si, dernier).filter(Boolean), ...seuls(si, dernier)); continue; }
-      // Une section entière, ou un groupe : dans un groupe du jour, la variante d'un autre jour reste lisible, estompée.
       const groupe = a.sorte === 'bloc';
-      const para = (i) => {
-        const p = paragraphe(s, i);
-        if (groupe && !ajoutVrai(idx.blocs.get(`${si}:${i}`).si, c)) p.classList.add('hors-jour');
-        return p;
-      };
-      // La double annotation (audit du 16/11, segments) : un bloc dont le « et » est faux (minyan, « תתקבל »
-      // le 9 Av) se replie à part dans son groupe ; un groupe lu garde ses repères du jour.
-      const lu = partie.etat !== 'replie';
-      const membres = !groupe ? partie.blocs.map(para) : segmentsAjout(partie.blocs, si, idx, c).flatMap((g) => g.et
-        ? [ajout(tr.t(g.libelle), false, g.blocs.map((i) => { const p = paragraphe(s, i); p.classList.add('hors-jour'); return p; }), g.et.replace(/^!/, ''))]
-        : g.blocs.flatMap((i) => [para(i), ...(lu ? (idx.indices.get(`${si}:${i}`) ?? []).filter((x) => !x.retire && ajoutVrai(x.si, c))
-          .map((x) => h('p', { class: 'indice-jour' }, x.fixe ? null : h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, x.texte))) : [])]));
-      // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage discret (12/11,
-      // SiddurJour.Annotation.discret) : tel quel quand il se dit, sans étiquette.
-      if (partie.etat === 'ordinaire') corps.push(...membres);
-      else corps.push(ajout(nom(a, partie.racine), partie.etat === 'du_jour', membres, partie.racine));
+      if (partie.etat !== 'retire') {
+        // Les membres lus ce jour-là (26/11, Q8, Q11) ; dans un repli « pas aujourd'hui », estompés.
+        const para = (i) => {
+          const p = paragraphe(s, i, texteDu(s, si, i));
+          if (partie.etat === 'replie' && partie.pasAujourdhui) p.classList.add('hors-jour');
+          return p;
+        };
+        // La double annotation (audit du 16/11, segments) : un bloc dont le « et » est faux se replie à part si c'est une
+        // occasion (minyan, Mi chébérakh) ou le jour voisin, et disparaît sinon ; un groupe lu garde ses repères du jour.
+        const lu = partie.etat !== 'replie';
+        const membres = !groupe ? partie.lus.map(para) : segmentsAjout(partie.lus, si, idx, c, cv).flatMap((g) => g.et
+          ? [ajout(tr.t(g.libelle), false, g.blocs.map((i) => { const p = paragraphe(s, i, texteDu(s, si, i)); p.classList.add('hors-jour'); return p; }), g.pasAujourdhui)]
+          : g.blocs.flatMap((i) => [para(i), ...(lu ? reperesDu(si, i) : [])]));
+        // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage discret (12/11) : tel quel.
+        if (partie.etat === 'ordinaire') corps.push(...membres);
+        else corps.push(ajout(partie.libelle ? tr.t(partie.libelle) : nom(a, partie.racine), partie.etat === 'du_jour', membres, partie.pasAujourdhui));
+      }
       if (groupe) corps.push(...seuls(si, dernier));
     }
     return [...corps, ...renvois(si)];
   };
+  const demandeRegion = !livre && annotations?.some((a) => a.sorte !== 'note') && !store.regionConfirmee()
+    && signatureAjouts(x, idx, pour(true, duJour(jourPour(true))), voisinPour(true)) !== signatureAjouts(x, idx, pour(false, duJour(jourPour(false))), voisinPour(false));
+  // Une section sans rien à lire ce jour-là (26/11) : tous ses ajouts retirés, ni renvoi ni note.
+  const sectionVide = (s, si) => planSection(s, si, idx, c, cv).every((p) => p.etat === 'retire'
+    && !(idx.seuls.get(`${si}:${p.blocs[p.blocs.length - 1]}`) ?? []).some((a) => a.sorte === 'seul' || ajoutVrai(a.si, c)))
+    && !(idx.renvois.get(`${si}:`) ?? []).some((a) => ajoutVrai(a.si, c));
   // Un livre sans traduction, quand on en a demandé une (04/11) : on le dit, l'hébreu reste.
   const traduitIci = x.sections.some((s) => s.blocs.some((b) => b.fr || b.en));
   // Le siddour aussi : ses prières et ses consignes ne sont pas traduites, et il le dit (COUV-02).
@@ -1825,11 +1851,16 @@ function ecranPriere() {
     // Une traduction automatique affichée : non relue, l'hébreu fait foi (COUV-05).
     traductionPartielle ? h('p', { class: 'indice' }, tl('lecture_traduction_partielle', chapitresTraduits, x.sections.length)) : null,
     traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
+    // Israël ou diaspora non confirmé (26/11, Q7 ; SiddurLectureActivity.QuestionRegion) : demandé quand le texte en dépend.
+    demandeRegion ? h('button', { type: 'button', class: 'question-region', onclick: () => choisirDans(tr.t('siddur_region_titre'),
+      [tr.t('region_israel'), tr.t('region_diaspora')], -1, (k) => { store.setInIsrael(k === 0, true); rendre(); }) }, tr.t('siddur_region_question')) : null,
     annotations?.some((a) => a.sorte !== 'note') ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
     // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
     !livre && OFFICES.includes(x.id) && jourDuTexte.chome ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_semaine_chabbat')) : null,
     ...x.sections.flatMap((s, si) => {
+      // Une section dont tout est retiré ce jour-là perd aussi son titre (26/11, SiddurJour.lignes).
+      if (!livre && sectionVide(s, si)) return [];
       // Le titre traduit (04/11), sous l'hébreu ou à sa place.
       const titres = s.titre ? LanguesTexte.textes(languesLecture(), s.titre, s.titre_fr, s.titre_en) : [];
       const t = plusieurs && s.titre ? h('h2', { class: 'psaume-titre', lang: titres[0][0], dir: titres[0][0] === 'he' ? 'rtl' : 'ltr' }, titres[0][1],
@@ -1853,7 +1884,8 @@ function ecranPriere() {
     }));
   const bande = titres.length > 1 ? bandeSignets(titres) : null;
   const etiquettes = [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, titreTexte(x.nusah ?? recueil._meta.nusah)].filter(Boolean);
-  const ecran = ecranLu(x.titre.he, contenu, { avecNusah: !livre, bande: bande?.nav, entete: bandeauPriere(x.titre.he, etiquettes, livre ? null : horairePriere(x.id)) });
+  const ecran = ecranLu(x.titre.he, contenu, { avecNusah: !livre, bande: bande?.nav, entete: bandeauPriere(x.titre.he, etiquettes, livre ? null : horairePriere(x.id)),
+    sansTahanoun: !livre && ['chaharit', 'minha'].includes(x.id) ? jourDuTexte.date : null });
   bande?.suivre(ecran.querySelector('.defile'));
   // Favori et reprise de lecture (14/10, RepriseFavoris.kt) : « s:id » ou « l:id ».
   const cle = `${livre ? 'l' : 's'}:${x.id}`;
@@ -2296,17 +2328,19 @@ function chargeAnnotations() {
 
 /**
  * Un ajout lié au jour, sous son [nom] déjà traduit. S'il s'applique : mis en
- * évidence. Sinon : replié en une ligne ; la flèche l'ouvre et le referme.
- * Rien n'est jamais retiré : l'annotation n'est qu'indicative.
+ * évidence. Sinon : replié en une ligne ; la flèche l'ouvre et le referme. Depuis
+ * le 26/11, un ajout du calendrier hors de son jour n'arrive pas ici (retiré) ;
+ * replié, c'est une occasion (« toucher pour lire »), ou un ajout du calendrier
+ * gardé replié ([pasAujourdhui] : « pas aujourd'hui · toucher pour lire »).
  */
-function ajout(nom, applique, blocs, cond = '') {
+function ajout(nom, applique, blocs, pasAujourdhui = false) {
   if (applique) {
     return h('div', { class: 'ajout du-jour' },
       h('p', { class: 'ajout-etiquette' }, h('span', { class: 'ajout-pastille' }, tr.t('siddur_aujourdhui')), h('span', {}, nom)), blocs);
   }
   // Le bandeau (19/10) : le nom de l'ajout, dessous ce qu'un toucher fait ; déplié, un panneau
   // qui s'ouvre en glissant, fermé en bas par « Replier ».
-  const ferme = tr.t(JAMAIS_DU_JOUR.has(cond) ? 'siddur_toucher_lire' : 'siddur_pas_aujourdhui');
+  const ferme = tr.t(pasAujourdhui ? 'siddur_pas_aujourdhui' : 'siddur_toucher_lire');
   const corps = h('div', { class: 'ajout-corps', hidden: true }, blocs);
   const bouton = h('button', { type: 'button', class: 'replie-bouton', 'aria-expanded': 'false' },
     h('span', { class: 'replie-icone', 'aria-hidden': 'true' }, icone('replier')),
@@ -2335,9 +2369,6 @@ function ajout(nom, applique, blocs, cond = '') {
   bas.addEventListener('click', () => basculer(true));
   return boite;
 }
-
-/** Les ajouts qui ne sont jamais « du jour » : « toucher pour lire », pas « pas aujourd'hui ». */
-const JAMAIS_DU_JOUR = new Set(['minyan', 'beit_avel', 'oubli', 'cheva_berakhot', 'zimun', 'facultatif']);
 
 /**
  * La bande de signets en tête de la lecture (demande du 10/10, comme

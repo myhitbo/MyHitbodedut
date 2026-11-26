@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { jour } from '../src/js/calendrier-juif.js';
-import { conditionsPour, index, plan, vrai } from '../src/js/siddur-jour.js';
+import { conditionsPour, enClair, index, plan, segments, texteDuJour, vrai } from '../src/js/siddur-jour.js';
 
 const RAW = '../../android/app/src/main/res/raw/';
 const lis = (f) => JSON.parse(readFileSync(new URL(RAW + f, import.meta.url), 'utf8'));
@@ -23,11 +23,11 @@ function clair(nusah, id, iso, passage, israel = false) {
   const texte = siddur[nusah].textes.find((t) => t.id === id);
   const k = conditionsPour(nusah, israel, c(iso, israel));
   const idx = index(annotations[nusah][id]);
-  return texte.sections.some((s, si) => plan(s, si, idx, k).some((p) => p.etat !== 'replie' && p.blocs.some((i) => {
+  // 26/11 : en clair, dans son texte du jour (enClair, texteDuJour).
+  return texte.sections.some((s, si) => enClair(s, si, idx, k).some((i) => {
     const b = s.blocs[i];
-    const a = idx.blocs.get(`${si}:${i}`);
-    return b.t && plat(b.t).includes(plat(passage)) && (!a || vrai(a.si, k));
-  })));
+    return b.t && plat(texteDuJour(b.t, idx.indices.get(`${si}:${i}`) ?? [], k)).includes(plat(passage));
+  }));
 }
 
 /**
@@ -39,6 +39,18 @@ function avecMinyan(nusah, id, iso, passage, israel = false) {
   const k = conditionsPour(nusah, israel, c(iso, israel));
   const idx = index(annotations[nusah][id]);
   return texte.sections.some((s, si) => plan(s, si, idx, k).some((p) => p.racine === 'minyan' && p.blocs.some((i) => s.blocs[i].t && plat(s.blocs[i].t).includes(plat(passage)))));
+}
+
+/**
+ * Le passage se dit ce jour-là (26/11) : en clair, ou replié sous le minyan dans un ajout du jour (double annotation) ;
+ * ni retiré, ni d'un autre jour.
+ */
+function present(nusah, id, iso, passage, israel = false) {
+  const texte = siddur[nusah].textes.find((t) => t.id === id);
+  const k = conditionsPour(nusah, israel, c(iso, israel));
+  const idx = index(annotations[nusah][id]);
+  return texte.sections.some((s, si) => plan(s, si, idx, k).some((p) => p.etat !== 'retire'
+    && (p.annotation?.sorte === 'bloc' ? segments(p.lus, si, idx, k).flatMap((g) => g.blocs) : p.lus).some((i) => s.blocs[i].t && plat(s.blocs[i].t).includes(plat(passage)))));
 }
 
 test('conditions déduites : Roch \'Hodech en semaine, \'Hol hamoèd, \'Hanouka sans Moussaf, soir du Séder, Hallel partiel', () => {
@@ -71,8 +83,9 @@ test('\'Hol hamoèd : le Moussaf de la fête signalé, pas celui de Roch \'Hodec
 
 test('Kaddich du Hallel : תתקבל tout jour de Moussaf, demi-Kaddich à \'Hanouka sans Moussaf, Ashkenaz compris', () => {
   for (const n of ['edot', 'sefard', 'ashkenaz']) {
-    for (const d of ['2025-12-20', '2025-12-21', '2026-12-05', '2026-10-12']) assert.ok(clair(n, 'hallel', d, 'תתקבל'), `${n} ${d}`);
-    assert.ok(!clair(n, 'hallel', '2025-12-17', 'תתקבל'), n);
+    // תתקבל demande le minyan (double annotation) : présent, replié sous « Avec minyan » ; retiré à 'Hanouka sans Moussaf (26/11).
+    for (const d of ['2025-12-20', '2025-12-21', '2026-12-05', '2026-10-12']) assert.ok(present(n, 'hallel', d, 'תתקבל'), `${n} ${d}`);
+    assert.ok(!present(n, 'hallel', '2025-12-17', 'תתקבל'), n);
     // Le demi-Kaddich, sous le minyan (audit du 16/11, structure des offices).
     assert.ok(avecMinyan(n, 'hallel', '2025-12-17', 'יתגדל ויתקדש שמה רבא'), n);
   }

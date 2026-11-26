@@ -144,20 +144,27 @@ class BerakhotAuditTest {
         val pessah = c("2026-04-02")
         val replis = lignes(Nusah.ASHKENAZ, "birkat_hamazon", pessah).filterIsInstance<SiddurJour.Ligne.Replie>().map { it.cle }.toSet()
         val ouvert = lignes(Nusah.ASHKENAZ, "birkat_hamazon", pessah, replis)
-        fun style(p: String) = ouvert.filterIsInstance<SiddurJour.Ligne.Bloc>().first { plat(it.bloc.texte).contains(plat(p)) }.style
+        fun style(p: String) = ouvert.filterIsInstance<SiddurJour.Ligne.Bloc>().firstOrNull { plat(it.bloc.texte).contains(plat(p)) }?.style
         assertEquals(SiddurJour.Style.NORMAL, style("שיר המעלות בשוב"))
-        assertEquals(SiddurJour.Style.HORS, style("על נהרות בבל"))
+        // 26/11, Q11 : dans le repli déplié, le seul psaume du jour ; celui des jours de Ta'hanoun n'y est pas.
+        assertEquals(null, style("על נהרות בבל"))
         assertTrue(notes(ouvert).any { "״שיר המעלות בשוב״" in it })
         assertTrue(notes(lignes(Nusah.ASHKENAZ, "birkat_hamazon", c("2026-11-16"))).any { "״על נהרות בבל״" in it })
     }
 
-    /** « מגדול » à Roch 'Hodech en Ashkenaz et en Sfard (Michna Beroura 189:5 ; Choul'han Aroukh haRav 189:7). */
+    /**
+     * « מגדול » à Roch 'Hodech en Ashkenaz et en Sfard (Michna Beroura 189:5 ; Choul'han Aroukh haRav 189:7) : depuis
+     * le 26/11 (Q8), dans le texte même, à la place de « מגדיל » ; un jour ordinaire, « מגדיל » seul.
+     */
     @Test
     fun `birkat - migdol a roch hodech`() {
         for (n in listOf(Nusah.ASHKENAZ, Nusah.SEFARD)) {
             val l = lignes(n, "birkat_hamazon", c("2026-12-10"))
-            assertTrue(n.cle, l.any { it is SiddurJour.Ligne.Indice && plat(it.texte) == "מגדול" })
+            val blocs = l.filterIsInstance<SiddurJour.Ligne.Bloc>().map { plat(it.bloc.texte) }
+            assertTrue(n.cle, blocs.any { "מגדולישועות" in it } && blocs.none { "מגדילישועות" in it })
             assertTrue(n.cle, notes(l).any { "מגדול" in it })
+            val ordinaire = lignes(n, "birkat_hamazon", c("2026-11-17")).filterIsInstance<SiddurJour.Ligne.Bloc>().map { plat(it.bloc.texte) }
+            assertTrue(n.cle, ordinaire.any { "מגדילישועות" in it } && ordinaire.none { "מגדולישועות" in it })
         }
     }
 
