@@ -236,6 +236,13 @@ final class AuditAccessibiliteTests: XCTestCase {
         if ecran == "fete" && d.sorte == "contraste" {
             return "écran voilé sous la fiche d'un trophée (caché à VoiceOver) ; la fiche a les couleurs des cartes"
         }
+        // Le même écran voilé, que l'audit voit à travers le voile sans élément qui le porte : c'est voulu, il est caché
+        // à VoiceOver sous la fiche (`feteDesTrophees`). Relevé une fois (run 45818387513, simulateur lent : l'audit du
+        // Jour et de la fête n'y finissait pas à temps), jamais avant.
+        if ecran == "fete" && d.sorte == "élément" && d.compact.contains("inaccessible text") && d.cadre == nil
+            && d.libelle.isEmpty {
+            return "texte de l'écran voilé sous la fiche d'un trophée, caché à VoiceOver à dessein"
+        }
         // Le titre de la carte-paysage de Sérénité : blanc, sur le voile sombre du bas de la carte (0xE614111F) posé
         // sur la colline proche, d'une seule couleur à toute heure. Relevé à chaque audit depuis le paysage continu
         // (25/11, runs 45530323926, 45538900389 et 45547024927), jamais avant ; sur les captures de ces passages, le
