@@ -695,6 +695,12 @@ public final class ReglagesModele {
         Libelle(reglages.ouverture.libelle)
     }
 
+    /// « Écran d'ouverture » ne se montre que sur Classique : seul son accueil lit ce réglage (MainActivity.onCreate) ;
+    /// sur les autres versions il s'affichait, s'enregistrait et ne faisait rien (relecture du 23/11).
+    public var ouvertureVisible: Bool {
+        VersionApp.courante(reglages) == .classique
+    }
+
     /// L'icône qui va avec l'adresse et l'accent choisis (IconeLanceur.alias), sous le nom des icônes de rechange
     /// d'iOS (« Icone_f_bleu ») ; nil pour l'icône principale (le hassid sur le vert).
     public var iconeProposee: String? {

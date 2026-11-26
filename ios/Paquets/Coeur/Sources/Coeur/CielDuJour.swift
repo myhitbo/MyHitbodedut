@@ -45,10 +45,12 @@ public enum CielDuJour {
 
     /// Le ciel de `maintenant` au `lieu` (ses zmanim du jour civil du lieu) ; sans lieu, l'heure de `maintenant`
     /// (`CielDuJour.maintenant`). `maintenant` est déjà dans le fuseau du lieu quand il y en a un.
-    public static func phase(maintenant: DateHeureZonee, lieu: Zmanim.Lieu?) -> Phase {
+    /// `nusah` : le profil du rite (relecture du 23/11), comme l'écran des zmanim et les vignettes ; sans lui, les Edot
+    /// lisaient ici un tsét à 8,5° et ailleurs le leur.
+    public static func phase(maintenant: DateHeureZonee, lieu: Zmanim.Lieu?, nusah: Nusah? = nil) -> Phase {
         guard let lieu else { return phase(maintenant: maintenant, alot: nil, lever: nil, chkia: nil, tset: nil) }
         var z: [String: Int64] = [:]
-        for zman in Zmanim.jour(lieu: lieu, date: maintenant.jour) {
+        for zman in Zmanim.jour(lieu: lieu, date: maintenant.jour, nusah: nusah) {
             if let instant = zman.instant {
                 z[zman.cle] = Kotlin.versLong((instant.timeIntervalSince1970 * 1000).rounded())
             }
@@ -60,7 +62,7 @@ public enum CielDuJour {
     /// réglé (`Soleil`, NOAA), sinon le soleil moyen de l'heure du téléphone (`Soleil.parHeure`) ; et le jour du mois
     /// hébreu affiché (il bascule à tsét, comme la vignette), qui donne la lune. `maintenant` est déjà dans le fuseau
     /// du lieu quand il y en a un (CielDuJour.etat).
-    public static func etat(maintenant: DateHeureZonee, lieu: Zmanim.Lieu?, enIsrael: Bool) -> EtatCiel {
+    public static func etat(maintenant: DateHeureZonee, lieu: Zmanim.Lieu?, enIsrael: Bool, nusah: Nusah? = nil) -> EtatCiel {
         let position: Soleil.Position
         if let lieu {
             position = Soleil.position(millis: maintenant.millis, latitude: lieu.latitude, longitude: lieu.longitude)
@@ -68,7 +70,7 @@ public enum CielDuJour {
             position = Soleil.parHeure(Double(maintenant.civile.millisDuJour) / 3_600_000)
         }
         var tset: DateHeureZonee? = nil
-        if let lieu, let instant = Zmanim.jour(lieu: lieu, date: maintenant.jour).first(where: { $0.cle == "tset" })?
+        if let lieu, let instant = Zmanim.jour(lieu: lieu, date: maintenant.jour, nusah: nusah).first(where: { $0.cle == "tset" })?
             .instant {
             tset = DateHeureZonee(millis: Kotlin.versLong((instant.timeIntervalSince1970 * 1000).rounded()),
                                   fuseau: maintenant.fuseau)

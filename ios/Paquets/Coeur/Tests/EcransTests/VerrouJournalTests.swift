@@ -221,7 +221,9 @@ struct VerrouJournalTests {
 
     // MARK: Les accueils des versions (AccueilVersion.kt, SereniteActivity.semaine)
 
-    @Test func lesAccueilsTaisentLesNotesQuandLeVerrouEstActif() throws {
+    /// Décision du 24/11 : les accueils ne montrent plus jamais le texte d'une note, verrou ou non ; seulement qu'elle
+    /// existe (un accueil se voit dans les captures d'écran et l'aperçu des applications récentes).
+    @Test func lesAccueilsTaisentLesNotesVerrouOuNon() throws {
         let jour = try Self.jour("2026-11-16")
         var journal = Journal()
         journal.addSession(minutes: 12, date: jour)
@@ -230,15 +232,11 @@ struct VerrouJournalTests {
         let horloge = HorlogeFixe(DateHeure(jour, heure: 10), fuseau: .utc)
         let accueil = AccueilVersionModele(magasin: b.magasin, contenus: ContenusApp(lecteur: { _ in nil }),
                                            horloge: horloge, langue: "fr")
-        #expect(accueil.donnees.derniereNote?.texte == "Une ligne")
-        #expect(accueil.serenite.jours.first?.note == "Une ligne")
+        #expect(accueil.donnees.derniereNote == VersionNote(date: jour, minutes: 12, ecrite: true))
+        #expect(accueil.serenite.jours.first?.noteEcrite == true)
         accueil.verrou = b.verrou
-        let note = try #require(accueil.donnees.derniereNote)
-        #expect(note.texte == nil)
-        #expect(note.minutes == 12)
-        #expect(accueil.serenite.jours.first?.note == nil)
-        b.code.ecranProtege = false
-        #expect(accueil.donnees.derniereNote?.texte == "Une ligne")
+        #expect(accueil.donnees.derniereNote == VersionNote(date: jour, minutes: 12, ecrite: true))
+        #expect(accueil.serenite.jours.first?.noteEcrite == true)
     }
 
     // MARK: L'export et l'interrupteur des réglages

@@ -24,10 +24,10 @@ ICI=$(cd "$(dirname "$0")" && pwd)
 # Les écrans de Captures.swift, dans l'ordre ; les passes secondaires n'en prennent qu'une partie.
 ECRANS_TOUS="presentation jour depart seance bravo note livres siddour lecteur livre chapitres tehilim tikkun tefilot
 bibliotheque source halakha hilloulot recherche chizuk conseils chemin journal parcours trophees reglages version zmanim
-vol musique apercu applications dedicace journal-barriere serenite bento pile fete bilan calendrier boussole rappels
+vol musique apercu applications dedicace journal-barriere serenite bento instant pile fete bilan calendrier boussole rappels
 ajout-temps"
 ECRANS_COURTS="jour depart seance bravo livres lecteur chapitres tehilim recherche chemin journal trophees reglages zmanim vol
-musique calendrier boussole rappels serenite apercu"
+musique calendrier boussole rappels serenite instant apercu"
 # Le ciel du Jour et de Sérénité à heure fixe (Captures.swift, heuresDuCiel), seulement quand on les demande (l'entrée
 # « ecrans ») : ils passent alors aussi en sombre, en grand et sur l'iPad.
 CIEL="m-20 m-12 m-04 m+00 m+03 m+10 m+40 s+40 s+10 s+03 s+00 s-04 s-12 s-20"

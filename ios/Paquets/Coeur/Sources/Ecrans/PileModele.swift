@@ -62,9 +62,9 @@ public struct PileJournal: Sendable, Hashable {
     /// Le jour de la dernière note et sa durée, que la vue joint par « , » ; nil : « Rien d'écrit encore… ».
     public let jour: VersionTexte?
     public let duree: Libelle?
-    /// La note, ou « Sans note. » (atténué).
-    public let texte: VersionTexte?
-    public let ecrite: Bool
+    /// « Une note, à lire dans le journal », ou « Sans note. » (atténués) : le texte de la note reste dans le journal
+    /// (décision du 24/11) ; nil sans journée.
+    public let texte: Libelle?
 }
 
 /// Ce que montre l'accueil Pile.
@@ -109,10 +109,9 @@ extension AccueilVersionModele {
         let journal: PileJournal
         if let n = d.derniereNote {
             journal = PileJournal(jour: d.jour(n.date), duree: DonneesAccueil.duree(n.minutes),
-                                  texte: n.texte.map { .brut($0) } ?? .libelle(Libelle("version_note_sans_texte")),
-                                  ecrite: n.texte != nil)
+                                  texte: Libelle(n.ecrite ? "version_note_ecrite" : "version_note_sans_texte"))
         } else {
-            journal = PileJournal(jour: nil, duree: nil, texte: nil, ecrite: false)
+            journal = PileJournal(jour: nil, duree: nil, texte: nil)
         }
         return PileEcran(ligneDate: d.ligneDate,
                          position: Libelle("pile_position", .entier(page + 1), .entier(AccueilVersionModele.nombreDeCartes)),

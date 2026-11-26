@@ -134,6 +134,8 @@ struct CielVivantTests {
                 avecCiel.insert(String(f.dropLast(".swift".count)))
             }
         }
-        #expect(avecCiel == ["CielPageVue", "CielVivantVue", "AccueilVue", "SereniteVue"])
+        // L'accueil Instant pose le paysage de Sérénité sous sa carte du ciel (InstantActivity, 17/11) : un accueil,
+        // pas un texte qu'on lit.
+        #expect(avecCiel == ["CielPageVue", "CielVivantVue", "AccueilVue", "SereniteVue", "InstantVue"])
     }
 }

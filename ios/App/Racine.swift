@@ -161,6 +161,8 @@ struct Racine: View {
                         destination(ecran)
                     }
             }
+            // Un trophée neuf ouvre sa fiche ici aussi, comme au Classique (relecture du 23/11).
+            .feteDesTrophees(app.accueilVersion.fete)
         }
     }
 

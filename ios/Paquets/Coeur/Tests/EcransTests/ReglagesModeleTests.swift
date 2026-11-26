@@ -67,6 +67,17 @@ struct ReglagesModeleTests {
 
     // MARK: Les valeurs montrées
 
+    /// Relecture du 23/11 : « Écran d'ouverture », que seul l'accueil Classique lit, ne se montre plus ailleurs.
+    @Test func lEcranDOuvertureNeSeMontreQueSurClassique() throws {
+        #expect(try fabriquer().modele.ouvertureVisible)
+        for version in VersionApp.allCases {
+            var r = Reglages()
+            r.setVersionApp(version)
+            let visible = try fabriquer(Enregistrement(reglages: r)).modele.ouvertureVisible
+            #expect(visible == (version == .classique), "\(version)")
+        }
+    }
+
     @Test func lesValeursParDefautSontCellesDAndroid() throws {
         let m = try fabriquer().modele
         #expect(m.adresse == Libelle("adresse_none"))

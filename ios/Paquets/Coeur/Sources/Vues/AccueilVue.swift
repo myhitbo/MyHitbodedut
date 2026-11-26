@@ -1169,7 +1169,7 @@ private struct AccueilBoite: View {
 // MARK: - Le bilan de la semaine
 
 /// Le bilan de la semaine écoulée (MainActivity.bilanDeLaSemaine), une fois par semaine.
-private struct AccueilBilanVue: View {
+struct AccueilBilanVue: View {
     let bilan: AccueilBilan
     let fermer: @MainActor () -> Void
     @Environment(\.traducteur) private var traducteur

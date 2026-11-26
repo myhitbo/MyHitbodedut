@@ -3,16 +3,16 @@ import Testing
 import Coeur
 @testable import Ecrans
 
-/// Le choix de la version (ChoixVersionActivity.kt) : quatre cartes, la version actuelle cochée, un choix retenu, et
+/// Le choix de la version (ChoixVersionActivity.kt) : cinq cartes, la version actuelle cochée, un choix retenu, et
 /// le retour sans choix qui garde Classique au premier lancement.
 @Suite("Modèle du choix de la version")
 @MainActor
 struct ChoixVersionModeleTests {
 
-    @Test func quatreCartesClassiqueCochee() {
+    @Test func cinqCartesClassiqueCochee() {
         let m = ChoixVersionModele(magasin: Magasin.enMemoire())
         let versions = m.cartes.map(\.version)
-        #expect(versions == [.classique, .serenite, .bento, .pile])
+        #expect(versions == [.classique, .serenite, .bento, .instant, .pile])
         let cochees = m.cartes.filter(\.choisie).map(\.version)
         #expect(cochees == [.classique])
         let apercus = m.cartes.map(\.apercu)
@@ -26,7 +26,7 @@ struct ChoixVersionModeleTests {
         try await m.choisir(.serenite)
         #expect(magasin.reglages.versionApp == .serenite)
         #expect(m.ferme)
-        // Les quatre accueils sont portés : l'app montre aussitôt celui qui est choisi.
+        // Les cinq accueils sont portés : l'app montre aussitôt celui qui est choisi.
         #expect(VersionApp.accueil(magasin.reglages) == .serenite)
         let cochees = m.cartes.filter(\.choisie).map(\.version)
         #expect(cochees == [.serenite])

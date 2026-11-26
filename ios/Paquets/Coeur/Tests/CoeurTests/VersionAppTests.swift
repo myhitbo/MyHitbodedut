@@ -18,7 +18,7 @@ struct VersionAppTests {
         let inconnue = VersionApp.parse("inconnue")
         #expect(inconnue == nil)
         let cles = VersionApp.allCases.map(\.cle)
-        #expect(cles == ["classique", "serenite", "bento", "pile"])
+        #expect(cles == ["classique", "serenite", "bento", "instant", "pile"])
     }
 
     @Test func leReglageEtLaVersionCourante() throws {
@@ -47,6 +47,6 @@ struct VersionAppTests {
             #expect(langues == ["ar", "en", "es", "fr", "he"], "\(cle)")
         }
         let apercus = VersionApp.allCases.map { $0.apercu.count }
-        #expect(apercus == [3, 3, 3, 3])
+        #expect(apercus == [3, 3, 3, 3, 3])
     }
 }

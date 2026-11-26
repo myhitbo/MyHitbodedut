@@ -212,7 +212,7 @@ struct BentoVue: View {
                     .font(VersionPolice.heebo(13))
                     .foregroundStyle(Bento.bleuDoux)
                     .lignesAuPlus(2)
-                Text(z.valeur, traducteur: traducteur)
+                Text(verbatim: VersionEcrit.chaine(z.valeur, traducteur))
                     .font(VersionPolice.heebo(z.compte ? 26 : 20, .black))
                     .foregroundStyle(Bento.bleuEncre)
                     .uneLigne(retrecie: 0.7)
@@ -227,7 +227,7 @@ struct BentoVue: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: z.accessibilite.map { traducteur.texte($0) }.joined(separator: ", ")))
+        .accessibilityLabel(Text(verbatim: z.accessibilite.map { VersionEcrit.chaine($0, traducteur) }.joined(separator: ", ")))
         .accessibilityAddTraits(.isButton)
     }
 
@@ -280,9 +280,10 @@ struct BentoVue: View {
                     .font(VersionPolice.heebo(13))
                     .foregroundStyle(Bento.doux)
                     .lignesAuPlus(1)
-                Text(verbatim: VersionEcrit.chaine(j.texte, traducteur))
+                // Le texte de la note reste dans le journal (décision du 24/11).
+                Text(j.texte, traducteur: traducteur)
                     .font(VersionPolice.heebo(15))
-                    .foregroundStyle(j.ecrite ? Bento.encre : Bento.doux)
+                    .foregroundStyle(Bento.doux)
                     .lignesAuPlus(3)
             }
         }

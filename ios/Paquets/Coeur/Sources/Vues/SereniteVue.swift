@@ -142,7 +142,8 @@ struct SereniteVue: View {
                     .font(VersionPolice.bellefair(24))
                     .foregroundStyle(k.texte)
                     .padding(.top, 4)
-                Text(verbatim: z.heure + " · " + traducteur.texte(z.dans))
+                // Le soir, le dernier repère du jour : son heure seule, sans compte à rebours.
+                Text(verbatim: z.dans.map { z.heure + " · " + traducteur.texte($0) } ?? z.heure)
                     .tailleSp(15, relativeA: VersionPolice.style(15))
                     .monospacedDigit()
                     .foregroundStyle(k.texte2)
@@ -176,11 +177,11 @@ struct SereniteVue: View {
                             .tailleSp(15, relativeA: VersionPolice.style(15))
                             .foregroundStyle(k.texte2)
                     }
-                    if let note = jour.note {
-                        Text(verbatim: note)
+                    // Le texte de la note reste dans le journal (décision du 24/11).
+                    if jour.noteEcrite {
+                        Text(Libelle("version_note_ecrite"), traducteur: traducteur)
                             .tailleSp(14, relativeA: VersionPolice.style(14))
                             .foregroundStyle(k.texte2)
-                            .lignesAuPlus(1)
                     }
                 }
                 .accessibilityElement(children: .combine)
@@ -419,12 +420,15 @@ private struct SereniteCartePaysage: View {
 /// Animé (`CielVivantHorloge`) : les étoiles scintillent et dérivent d'un rien, le halo respire, un nuage qui prend
 /// la lumière du moment passe dans le haut du ciel, loin du texte. Immobile (« Réduire les animations », Économie
 /// d'énergie, écran quitté) : la peinture d'avant ces animations, sans nuage. Il ne se retourne pas en hébreu, comme
-/// le dessin d'Android ; décoratif, VoiceOver ne le voit pas.
+/// le dessin d'Android ; décoratif, VoiceOver ne le voit pas. L'accueil Instant pose le même paysage sous sa carte du
+/// ciel, sans nuage ni arc (AccueilVersion.paysage()) : l'astre garde les places des quatre ciels peints d'avant.
 struct SereniteCiel: View {
     let ciel: EtatCiel
+    var nuages = true
+    var arc = true
 
     var body: some View {
-        let paysage = PaysageCiel(etat: ciel, nuages: true, arc: true)
+        let paysage = PaysageCiel(etat: ciel, nuages: nuages, arc: arc)
         // Le nuage, peint une fois en images dans la lumière du moment (CielImages).
         let largeurNuage = PlanCiel.tailles[0].largeur
         let hauteurNuage = PlanCiel.tailles[0].hauteur

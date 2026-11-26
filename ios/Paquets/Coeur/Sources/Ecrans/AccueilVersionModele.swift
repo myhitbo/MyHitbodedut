@@ -2,14 +2,14 @@ import Foundation
 import Observation
 import Coeur
 
-// Les accueils des versions autres que Classique (AccueilVersion.kt d'Android, 17/11) : Sérénité, Bento et Pile,
-// tirés des maquettes du propriétaire. Chacun dessine la même journée à sa manière et ouvre les mêmes écrans
+// Les accueils des versions autres que Classique (AccueilVersion.kt d'Android, 17/11) : Sérénité, Bento, Instant et
+// Pile, tirés des maquettes du propriétaire. Chacun dessine la même journée à sa manière et ouvre les mêmes écrans
 // (séance, zmanim, textes, journal, réglages) ; le journal, la série, les réglages et la barrière sont les mêmes.
 //
 // Ce fichier tient ce qu'ils partagent : les données lues d'un coup (`DonneesAccueil`), les gestes communs
 // (`AccueilVersion.commencerSeance`, `ouvrirZmanim`…) et ce que l'accueil fait à chaque retour (la présentation,
-// le bravo en attente). Ce que chaque version montre en plus est dans SereniteModele.swift, BentoModele.swift et
-// PileModele.swift ; les vues, dans Vues.
+// le bravo en attente, la fiche d'un trophée neuf, le bilan de la semaine). Ce que chaque version montre en plus est
+// dans SereniteModele.swift, BentoModele.swift, InstantModele.swift et PileModele.swift ; les vues, dans Vues.
 
 // MARK: Les textes
 
@@ -40,11 +40,13 @@ public struct VersionPensee: Sendable, Hashable {
     public let reference: String
 }
 
-/// La dernière journée faite ou notée (DonneesAccueil.NoteAffichee) ; `texte` nil : pas de note.
+/// La dernière journée faite ou notée (DonneesAccueil.NoteAffichee), sans le texte de sa note : un accueil se voit dans
+/// les captures d'écran et l'aperçu des applications récentes, que l'écran du journal cache (décision du 24/11).
+/// `ecrite` dit seulement qu'une note existe.
 public struct VersionNote: Sendable, Hashable {
     public let date: JourCivil
     public let minutes: Int
-    public let texte: String?
+    public let ecrite: Bool
 }
 
 /// Les données d'un accueil de version, lues d'un coup (DonneesAccueil.lire) : ce que les maquettes montrent. Chaque
@@ -111,11 +113,25 @@ public struct DonneesAccueil: Sendable, Hashable {
         return Libelle("version_commencer", .libelle(DonneesAccueil.duree(objectifMinutes)))
     }
 
-    /// « dans 1 h 12 » jusqu'au zman (DonneesAccueil.dans), jamais négatif.
+    /// Le soir, quand les zmanim du jour sont passés, `prochain` est nil alors qu'un lieu est choisi : on montre alors
+    /// le dernier repère du jour (la sortie des étoiles) et son heure, sans compte à rebours. Nil aussi sans lieu :
+    /// c'est le seul cas où l'on propose d'en choisir un (recette du 22/11 : Bento, Instant et Sérénité affichaient
+    /// « Choisir un lieu » chaque soir, lieu choisi ou non).
+    public var dernierDuJour: VersionZman? {
+        prochain == nil ? zmanim.last : nil
+    }
+
+    /// « dans 1 h 12 » jusqu'au zman (DonneesAccueil.dans), jamais « dans 0 min ».
     public func dans(_ z: VersionZman) -> Libelle {
-        let minutes = max((z.instant - maintenant) / 60_000, 0)
+        let minutes = DonneesAccueil.minutesAvant(maintenant: maintenant, instant: z.instant)
         if minutes < 60 { return Libelle("version_dans_min", .entier(Int(minutes))) }
         return Libelle("version_dans_h", .entier(Int(minutes / 60)), .entier(Int(minutes % 60)))
+    }
+
+    /// Les minutes entières jusqu'à `instant`, jamais moins d'une (DonneesAccueil.minutesAvant) : dans la dernière
+    /// minute avant un zman, les accueils annonçaient « dans 0 min » (recette du 22/11). Millisecondes Unix.
+    public static func minutesAvant(maintenant: Int64, instant: Int64) -> Int64 {
+        max((instant &- maintenant) / 60_000, 1)
     }
 
     /// « Aujourd'hui », « Hier », sinon la date (DonneesAccueil.jour).
@@ -171,6 +187,9 @@ public final class AccueilVersionModele {
     /// Bento : à la première ouverture, chaque rangée de tuiles entre 80 ms après la précédente, en 500 ms, de 10 pt
     /// plus bas (jamais avec « Réduire les animations »).
     nonisolated public static let ecartCascade = 80
+    /// Instant : la jauge de la semaine se remplit en 900 ms, les barres des sept jours poussent en 700 ms.
+    nonisolated public static let dureeJauge = 900
+    nonisolated public static let dureeBarres = 700
 
     private let magasin: Magasin
     private let contenus: ContenusApp
@@ -187,14 +206,16 @@ public final class AccueilVersionModele {
     /// soleil moyen, sans lieu ; nil : le vrai soleil du lieu, maintenant.
     public var heureDuCiel: Double? = nil
 
-    /// Le verrou du journal, posé par l'app (AccueilVersion.kt : `VerrouJournal.actif`) : actif, la dernière note et les
-    /// derniers jours de Sérénité ne montrent pas le texte du journal.
+    /// Le verrou du journal, posé par l'app (VerrouJournal.actif). Depuis le 24/11 aucun accueil de version ne montre le
+    /// texte d'une note, verrou ou non : il reste pour l'app, qui le passe aux écrans ouverts d'ici.
     public var verrou: VerrouJournal? = nil
 
-    /// Le texte du journal se cache.
-    var journalCache: Bool {
-        verrou?.actif == true
-    }
+    /// La fiche d'un trophée neuf et la phrase d'un palier, comme au Classique (relecture du 23/11 : sans elle, un
+    /// trophée gagné ici n'était jamais fêté). La racine la pose par-dessus l'accueil (`feteDesTrophees`).
+    public let fete: TropheeFeteModele
+
+    /// Le bilan de la semaine écoulée, à montrer une fois (décision du 24/11 : sur tous les accueils) ; nil sinon.
+    public private(set) var bilan: AccueilBilan? = nil
 
     private var bibliotheque: Bibliotheque? = nil
     private var dejaApparu = false
@@ -216,6 +237,7 @@ public final class AccueilVersionModele {
         self.horloge = horloge
         self.langue = ChizukCard.language(langue)
         self.systeme = systeme
+        fete = TropheeFeteModele(magasin: magasin, horloge: horloge)
     }
 
     /// La version que l'app montre (VersionApp.courante) : Classique tant qu'aucune n'est choisie.
@@ -227,7 +249,7 @@ public final class AccueilVersionModele {
     /// Bento jamais. La racine en tire le mode de l'écran, pour que la barre d'état reste lisible.
     public var fondSombre: Bool {
         switch version {
-        case .pile: return true
+        case .pile, .instant: return true
         case .serenite:
             let phase = ciel
             return !(phase == .jour || phase == .aube)
@@ -243,7 +265,9 @@ public final class AccueilVersionModele {
     // MARK: Le retour sur l'accueil
 
     /// onCreate puis onResume d'AccueilVersion : la présentation tant qu'elle n'a pas été vue, les services, le texte
-    /// du jour, puis le bravo en attente. Une écriture refusée ne l'arrête pas.
+    /// du jour, puis le bravo en attente ; s'il n'y en a pas, la fiche d'un trophée neuf (comme au Classique), puis le
+    /// bilan de la semaine (décision du 24/11). Un bravo qui attend passe d'abord : la fiche et le bilan viennent au
+    /// retour. Une écriture refusée ne l'arrête pas.
     public func apparaitre() async {
         if !dejaApparu {
             dejaApparu = true
@@ -251,8 +275,17 @@ public final class AccueilVersionModele {
         }
         await systeme?.appliquerEtat()
         if bibliotheque == nil { bibliotheque = try? await contenus.bibliotheque() }
-        await celebrationEnAttente()
+        let bravo = await celebrationEnAttente()
+        if !bravo {
+            try? await fete.passer()
+            if bilan == nil, let b = await AccueilBilan.aMontrer(magasin: magasin, horloge: horloge) { bilan = b }
+        }
         await systeme?.rafraichirVignettes()
+    }
+
+    /// Le bilan a été lu (« Continuer »).
+    public func fermerBilan() {
+        bilan = nil
     }
 
     /// L'écran en tête de `routes` est ouvert.
@@ -312,7 +345,9 @@ public final class AccueilVersionModele {
         let lieu = reglages.lieuZmanim
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
         let maintenant = DateHeureZonee(millis: horloge.maintenant, fuseau: zone)
-        let jour = lieu.map { Zmanim.jour(lieu: $0, date: maintenant.jour) } ?? []
+        // Le profil du rite, comme l'écran des zmanim, les vignettes et l'accueil Classique : sans lui, les Edot (rite
+        // par défaut) lisaient ici un tsét à 8,5° et ailleurs le leur (relecture du 23/11).
+        let jour = lieu.map { Zmanim.jour(lieu: $0, date: maintenant.jour, nusah: reglages.siddurNusah) } ?? []
         var tset: DateHeureZonee? = nil
         if let instant = jour.first(where: { $0.cle == "tset" })?.instant {
             tset = DateHeureZonee(millis: AccueilVersionModele.millis(instant), fuseau: zone)
@@ -360,18 +395,14 @@ public final class AccueilVersionModele {
         Store.isSessionRunning(reglages: magasin.reglages, millis: horloge.maintenant)
     }
 
-    /// Le paragraphe du jour (SourceDuJour) : l'hébreu, et la traduction de la langue de l'app — l'anglais pour
-    /// l'anglais, rien pour l'hébreu, sinon le français, à défaut l'anglais. nil tant que la bibliothèque n'est pas lue.
+    /// Le paragraphe du jour (SourceDuJour) : l'hébreu, et la traduction des langues de lecture (LanguesTexte), comme
+    /// la carte du Classique : en espagnol et en arabe tunisien l'hébreu seul, et non plus le français ; un choix
+    /// « hébreu seul » est respecté (relecture du 23/11). nil tant que la bibliothèque n'est pas lue.
     private func pensee(_ jour: JourCivil) -> VersionPensee? {
         guard let bibliotheque, let p = SourceDuJour.choix(bibliotheque, jour) else { return nil }
         let fr = p.indice < p.source.paragraphesFr.count ? p.source.paragraphesFr[p.indice] : nil
         let en = p.indice < p.source.paragraphesEn.count ? p.source.paragraphesEn[p.indice] : nil
-        let traduction: String?
-        switch langue {
-        case "en": traduction = en
-        case "he": traduction = nil
-        default: traduction = fr ?? en
-        }
+        let traduction = LanguesTexte.textes(modeLangues, p.texte, fr, en).first { $0.langue != "he" }?.texte
         return VersionPensee(
             hebreu: PoliceHebraique.masque(SourceDuJour.extrait(SourceDuJour.sansBalises(p.texte), max: 420),
                                            police: police),
@@ -379,7 +410,14 @@ public final class AccueilVersionModele {
             reference: Reference.localise(p.source.ref, langue))
     }
 
-    /// La journée la plus récente faite ou notée ; sa note si elle en a une.
+    /// Les langues de lecture : le choix enregistré, sinon celles de la langue de l'app (LanguesTexte.mode).
+    private var modeLangues: LanguesTexte.Mode {
+        let r = magasin.reglages
+        if let cle = r.lectureLangues, let mode = LanguesTexte.Mode(rawValue: cle) { return mode }
+        return LanguesTexte.defaut(langue)
+    }
+
+    /// La journée la plus récente faite ou notée ; si elle a une note, seulement qu'elle existe.
     private var derniereNote: VersionNote? {
         let journal = magasin.journal
         var plusRecente: (JourCivil, Journee)? = nil
@@ -388,7 +426,7 @@ public final class AccueilVersionModele {
             plusRecente = (date, r)
         }
         guard let (date, r) = plusRecente else { return nil }
-        return VersionNote(date: date, minutes: r.minutes, texte: r.note.estBlanc || journalCache ? nil : r.note)
+        return VersionNote(date: date, minutes: r.minutes, ecrite: !r.note.estBlanc)
     }
 
     /// Les trois dernières journées faites, de la plus récente à la plus ancienne (Sérénité, « Vos derniers jours »).
@@ -404,6 +442,10 @@ public final class AccueilVersionModele {
         magasin.reglages
     }
 
+    var journal: Journal {
+        magasin.journal
+    }
+
     /// Le ciel du moment (CielDuJour.maintenant), d'après les zmanim du lieu ; sans lieu, l'heure du téléphone.
     var ciel: CielDuJour.Phase {
         if let heureDuCiel {
@@ -412,7 +454,8 @@ public final class AccueilVersionModele {
         }
         let lieu = magasin.reglages.lieuZmanim
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
-        return CielDuJour.phase(maintenant: DateHeureZonee(millis: horloge.maintenant, fuseau: zone), lieu: lieu)
+        return CielDuJour.phase(maintenant: DateHeureZonee(millis: horloge.maintenant, fuseau: zone), lieu: lieu,
+                                nusah: magasin.reglages.siddurNusah)
     }
 
     /// Le ciel continu de la carte-paysage (24/11, CielDuJour.etat, AccueilVersion.paysage) : la hauteur du vrai
@@ -424,7 +467,8 @@ public final class AccueilVersionModele {
         let lieu = reglages.lieuZmanim
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
         return CielDuJour.etat(maintenant: DateHeureZonee(millis: horloge.maintenant, fuseau: zone), lieu: lieu,
-                               enIsrael: reglages.inIsrael(fuseauTelephone: horloge.fuseau.identifiant))
+                               enIsrael: reglages.inIsrael(fuseauTelephone: horloge.fuseau.identifiant),
+                               nusah: reglages.siddurNusah)
     }
 
     /// Le réglage de la musique de la séance, tel que les accueils le nomment : l'ambiance choisie, et le morceau
@@ -439,14 +483,16 @@ public final class AccueilVersionModele {
         }
     }
 
-    /// CelebrationActivity.showIfPending : le bravo en attente est pris, et son écran s'ouvre.
-    private func celebrationEnAttente() async {
+    /// CelebrationActivity.showIfPending : le bravo en attente est pris, et son écran s'ouvre. Vrai s'il y en avait un.
+    @discardableResult
+    private func celebrationEnAttente() async -> Bool {
         var copie = magasin.reglages
-        guard let celebration = copie.takePendingCelebration() else { return }
+        guard let celebration = copie.takePendingCelebration() else { return false }
         routes.append(.celebration(minutes: celebration.minutes, dateNote: celebration.dateNote))
         // Une écriture refusée garde le changement en mémoire : le bravo est pris quand même.
         let sans = copie
         try? await magasin.modifierReglages { $0 = sans }
+        return true
     }
 
     nonisolated static func millis(_ instant: Date) -> Int64 {

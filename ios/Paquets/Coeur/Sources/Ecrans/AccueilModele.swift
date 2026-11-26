@@ -235,7 +235,7 @@ public final class AccueilModele {
             let minutes = Kotlin.versInt(heureDuCiel * 60)
             return CielDuJour.parHeure(heure: minutes / 60, minute: minutes % 60)
         }
-        return CielDuJour.phase(maintenant: maintenant, lieu: lieu)
+        return CielDuJour.phase(maintenant: maintenant, lieu: lieu, nusah: reglages.siddurNusah)
     }
 
     /// Le ciel continu du Jour (24/11, CielDuJour.etat) : la hauteur du vrai soleil au lieu des zmanim (sinon le
@@ -246,7 +246,7 @@ public final class AccueilModele {
         let lieu = reglages.lieuZmanim
         let zone = lieu.flatMap { Fuseau($0.fuseau) } ?? horloge.fuseau
         return CielDuJour.etat(maintenant: DateHeureZonee(millis: horloge.maintenant, fuseau: zone), lieu: lieu,
-                               enIsrael: enIsrael)
+                               enIsrael: enIsrael, nusah: reglages.siddurNusah)
     }
 
     /// La date hébraïque touchée : le ciel (zmanim, calendrier, hilloulot, boussole).
@@ -1144,37 +1144,10 @@ public final class AccueilModele {
         }
     }
 
-    /// Le bilan de la semaine écoulée : à la première ouverture de la semaine, une fois.
+    /// Le bilan de la semaine écoulée : à la première ouverture de la semaine, une fois (BilanSemaineVue.montrerSiDu,
+    /// partagé avec les accueils des versions depuis le 24/11).
     private func bilanDeLaSemaine() async {
-        let jour = aujourdhui
-        let debut = BilanSemaine.debutSemaine(jour).plus(jours: -7)
-        if let vu = reglages.bilanVu, vu.egalUnites(debut.iso) { return }
-        let journal = magasin.journal
-        let minutes = Store.bilan(journal: journal, reglages: reglages, aujourdhui: jour,
-                                  fuseauTelephone: fuseauTelephone).minutes
-        let dates = Store.datesTrophees(journal: journal, reglages: reglages, fuseauTelephone: fuseauTelephone)
-        guard let b = BilanSemaine.precedente(jour, minutes: minutes, dates: dates) else {
-            let iso = debut.iso
-            try? await magasin.modifierReglages { $0.setBilanVu(iso) }
-            return
-        }
-        let iso = b.debut.iso
-        try? await magasin.modifierReglages { $0.setBilanVu(iso) }
-        let p = pratique
-        let faits = Trophees.chemin.filter { Trophees.gagne(p, $0) }
-        let trophees = b.trophees.prefix(6).map { (t: Trophees.Niveau) -> AccueilBilanTrophee in
-            AccueilBilanTrophee(niveau: t, forme: t.famille.forme,
-                                metal: Trophees.grade((faits.firstIndex(of: t) ?? -1) + 1),
-                                icone: t.famille.icone, description: TropheeTextes.description(t))
-        }
-        bilan = AccueilBilan(
-            debut: b.debut, titre: Libelle("bilan_titre"),
-            minutes: Libelle("bilan_minutes", .libelle(Store.formatDuration(b.minutes)),
-                             .libelle(Libelle.pluriel("palier_n_jours", quantite: b.jours, .entier(b.jours)))),
-            plus: b.ecart > 0 && b.precedente > 0 ? Libelle("bilan_plus", .libelle(Store.formatDuration(b.ecart))) : nil,
-            record: b.record ? Libelle("bilan_record") : nil,
-            titreTrophees: b.trophees.isEmpty ? nil : Libelle("bilan_trophees"),
-            trophees: trophees, bouton: Libelle("celebration_continue"))
+        if let b = await AccueilBilan.aMontrer(magasin: magasin, horloge: horloge) { bilan = b }
     }
 
     /// CelebrationActivity.showIfPending : le bravo en attente est pris, et son écran s'ouvre.

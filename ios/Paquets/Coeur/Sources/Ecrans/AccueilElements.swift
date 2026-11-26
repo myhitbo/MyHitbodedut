@@ -316,6 +316,46 @@ public struct AccueilBilan: Sendable, Hashable {
     public let bouton: Libelle
 }
 
+extension AccueilBilan {
+    /// Le bilan de la semaine écoulée, à montrer une fois (BilanSemaineVue.montrerSiDu) : à la première ouverture de la
+    /// semaine, sur l'accueil Classique comme sur ceux des versions (décision du 24/11). La semaine est retenue comme
+    /// vue dès qu'elle est lue ; nil si elle l'était déjà ou n'a rien à résumer.
+    @MainActor
+    public static func aMontrer(magasin: Magasin, horloge: any Horloge) async -> AccueilBilan? {
+        let reglages = magasin.reglages
+        let jour = horloge.aujourdhui
+        let fuseauTelephone = horloge.fuseau.identifiant
+        let debut = BilanSemaine.debutSemaine(jour).plus(jours: -7)
+        if let vu = reglages.bilanVu, vu.egalUnites(debut.iso) { return nil }
+        let journal = magasin.journal
+        let minutes = Store.bilan(journal: journal, reglages: reglages, aujourdhui: jour,
+                                  fuseauTelephone: fuseauTelephone).minutes
+        let dates = Store.datesTrophees(journal: journal, reglages: reglages, fuseauTelephone: fuseauTelephone)
+        guard let b = BilanSemaine.precedente(jour, minutes: minutes, dates: dates) else {
+            let iso = debut.iso
+            try? await magasin.modifierReglages { $0.setBilanVu(iso) }
+            return nil
+        }
+        let iso = b.debut.iso
+        try? await magasin.modifierReglages { $0.setBilanVu(iso) }
+        let p = Store.pratique(journal: journal, reglages: reglages, aujourdhui: jour, fuseauTelephone: fuseauTelephone)
+        let faits = Trophees.chemin.filter { Trophees.gagne(p, $0) }
+        let trophees = b.trophees.prefix(6).map { (t: Trophees.Niveau) -> AccueilBilanTrophee in
+            AccueilBilanTrophee(niveau: t, forme: t.famille.forme,
+                                metal: Trophees.grade((faits.firstIndex(of: t) ?? -1) + 1),
+                                icone: t.famille.icone, description: TropheeTextes.description(t))
+        }
+        return AccueilBilan(
+            debut: b.debut, titre: Libelle("bilan_titre"),
+            minutes: Libelle("bilan_minutes", .libelle(Store.formatDuration(b.minutes)),
+                             .libelle(Libelle.pluriel("palier_n_jours", quantite: b.jours, .entier(b.jours)))),
+            plus: b.ecart > 0 && b.precedente > 0 ? Libelle("bilan_plus", .libelle(Store.formatDuration(b.ecart))) : nil,
+            record: b.record ? Libelle("bilan_record") : nil,
+            titreTrophees: b.trophees.isEmpty ? nil : Libelle("bilan_trophees"),
+            trophees: trophees, bouton: Libelle("celebration_continue"))
+    }
+}
+
 // MARK: Les dialogues
 
 /// À quoi sert une durée choisie.

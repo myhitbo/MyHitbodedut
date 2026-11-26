@@ -6,21 +6,24 @@ import Coeur
 // silhouette du hassid ; dessous, le 'hizouk, le prochain zman et les derniers jours. Quatre onglets en bas :
 // Aujourd'hui, Zmanim, Textes, Journal. Titres en Bellefair.
 
-/// Une ligne de « Vos derniers jours » : le jour, sa durée, sa note (une ligne).
+/// Une ligne de « Vos derniers jours » : le jour, sa durée, et « Une note, à lire dans le journal » s'il en a une. Le
+/// texte de la note reste dans le journal : un accueil se voit dans les captures d'écran et l'aperçu des applications
+/// récentes (décision du 24/11).
 public struct SereniteJour: Sendable, Hashable, Identifiable {
     public let date: JourCivil
     public let jour: VersionTexte
     public let duree: Libelle
-    public let note: String?
+    public let noteEcrite: Bool
 
     public var id: JourCivil { date }
 }
 
-/// Le prochain zman de la carte des zmanim : son nom, puis « 16:42 · dans 1 h 12 ».
+/// Le prochain zman de la carte des zmanim : son nom, puis « 16:42 · dans 1 h 12 ». Le soir, zmanim du jour passés, le
+/// dernier repère et son heure seule (`dans` nil, DonneesAccueil.dernierDuJour).
 public struct SereniteZman: Sendable, Hashable {
     public let nom: Libelle
     public let heure: String
-    public let dans: Libelle
+    public let dans: Libelle?
 }
 
 /// Les quatre onglets du bas (SereniteActivity.dessinerOnglets) : Aujourd'hui est l'écran même.
@@ -67,7 +70,7 @@ public struct SereniteEcran: Sendable, Hashable {
     public let pensee: VersionPensee?
     /// « Zmanim · Jérusalem », ou « Zmanim » sans lieu.
     public let titreZmanim: Libelle
-    /// Le prochain zman ; nil : « Choisissez un lieu… ».
+    /// Le prochain zman, ou le soir le dernier du jour ; nil : sans lieu, « Choisissez un lieu… ».
     public let prochain: SereniteZman?
     /// Les trois dernières journées faites ; vide : « Rien d'écrit encore… ».
     public let jours: [SereniteJour]
@@ -94,9 +97,10 @@ extension AccueilVersionModele {
         let titreCarte = d.faite && !d.enCours
             ? Libelle("serenite_titre", .libelle(DonneesAccueil.duree(d.minutesAujourdhui))) : objectif
         let prochain = d.prochain.map { z in SereniteZman(nom: z.nom, heure: z.heure, dans: d.dans(z)) }
+            ?? d.dernierDuJour.map { z in SereniteZman(nom: z.nom, heure: z.heure, dans: nil) }
         let jours = derniersJours(3).map { (date, r) in
             SereniteJour(date: date, jour: d.jour(date), duree: DonneesAccueil.duree(r.minutes),
-                         note: r.note.estBlanc || journalCache ? nil : r.note)
+                         noteEcrite: !r.note.estBlanc)
         }
         let initiale = d.prenom.first.map { String($0).uppercased() }
         return SereniteEcran(

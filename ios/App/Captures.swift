@@ -21,8 +21,8 @@ enum Captures {
         "presentation", "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre",
         "chapitres", "tehilim", "tikkun", "tefilot", "bibliotheque", "source", "halakha", "hilloulot", "recherche",
         "chizuk", "conseils", "chemin", "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol",
-        "musique", "apercu", "applications", "dedicace", "journal-barriere", "serenite", "bento", "pile", "fete",
-        "bilan", "calendrier", "boussole", "rappels", "ajout-temps",
+        "musique", "apercu", "applications", "dedicace", "journal-barriere", "serenite", "bento", "instant", "pile",
+        "fete", "bilan", "calendrier", "boussole", "rappels", "ajout-temps",
     ]
 
     /// Un écran de lecture suivi de « -barre » (« halakha-barre », « source-barre », « lecteur-barre »…) : le même,
@@ -82,7 +82,7 @@ enum Captures {
             // Le bilan de la semaine passée, pas encore lu.
             enregistrement.reglages.setBilanVu("")
         case let autre?:
-            // Les autres accueils (Sérénité, Bento, Pile) : la version choisie ; Sérénité aussi pour son ciel à heure
+            // Les autres accueils (Sérénité, Bento, Instant, Pile) : la version choisie ; Sérénité aussi pour son ciel à heure
             // fixe (« serenite-m+03 »).
             let version = cielAHeure(autre)?.ecran ?? autre
             if let version = VersionApp(rawValue: version) { enregistrement.reglages.setVersionApp(version) }

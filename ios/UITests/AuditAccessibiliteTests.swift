@@ -14,8 +14,8 @@ final class AuditAccessibiliteTests: XCTestCase {
         "jour", "depart", "seance", "bravo", "note", "livres", "siddour", "lecteur", "livre", "chapitres", "tehilim",
         "tikkun", "tefilot", "bibliotheque", "source", "halakha", "hilloulot", "recherche", "chizuk", "conseils",
         "chemin", "journal", "parcours", "trophees", "reglages", "version", "zmanim", "vol", "musique", "apercu",
-        "applications", "dedicace", "journal-barriere", "serenite", "bento", "pile", "fete", "bilan", "calendrier",
-        "boussole", "rappels", "ajout-temps", "presentation",
+        "applications", "dedicace", "journal-barriere", "serenite", "bento", "instant", "pile", "fete", "bilan",
+        "calendrier", "boussole", "rappels", "ajout-temps", "presentation",
     ]
 
     /// Les sortes de défaut, une à une et dans cet ordre : l'audit entier d'un écran chargé n'avait pas fini à temps

@@ -217,11 +217,10 @@ struct PileVue: View {
                     .foregroundStyle(Pile.jrEncre)
                     .padding(.top, 14)
                 if let texte = j.texte {
-                    Text(verbatim: VersionEcrit.chaine(texte, traducteur))
+                    // Le texte de la note reste dans le journal (décision du 24/11).
+                    Text(texte, traducteur: traducteur)
                         .font(VersionPolice.rubik(16))
-                        .foregroundStyle(j.ecrite ? Pile.jrEncre : Pile.jrDouce)
-                        .lineSpacing(4)
-                        .lignesAuPlus(9)
+                        .foregroundStyle(Pile.jrDouce)
                         .padding(.top, 10)
                 }
             } else {

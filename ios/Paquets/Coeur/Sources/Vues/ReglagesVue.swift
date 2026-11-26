@@ -195,8 +195,10 @@ public struct ReglagesVue: View {
             }
             interrupteur("settings_grand_texte", .grandTexte)
             interrupteur("settings_ecran_allume", .ecranAllume)
-            ligne("settings_ouverture", valeur: Text(modele.ouverture, traducteur: traducteur)) {
-                modele.dialogue = .choix(.ouverture)
+            if modele.ouvertureVisible {
+                ligne("settings_ouverture", valeur: Text(modele.ouverture, traducteur: traducteur)) {
+                    modele.dialogue = .choix(.ouverture)
+                }
             }
             if !modele.iconeAJour {
                 Button {

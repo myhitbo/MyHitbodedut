@@ -3,17 +3,20 @@ import SwiftUI
 import Coeur
 import Ecrans
 
-/// L'accueil d'une version autre que Classique (VersionApp.kt, AccueilVersion.kt) : Sérénité, Bento ou Pile, selon le
-/// réglage « version_app ». La racine de l'app le pose à la place des trois onglets, comme Android ouvre l'activité
+/// L'accueil d'une version autre que Classique (VersionApp.kt, AccueilVersion.kt) : Sérénité, Bento, Instant ou Pile,
+/// selon le réglage « version_app ». La racine de l'app le pose à la place des trois onglets, comme Android ouvre l'activité
 /// de la version à la place de MainActivity : chaque version a ses propres entrées vers les mêmes écrans.
 ///
 /// La vue ne décide rien : elle lit `AccueilVersionModele` (testé sous Linux) ; les écrans qu'il demande (`routes`)
 /// sont ouverts par la racine. Chaque retour au premier plan relit tout (onResume) ; ce qui dépend de l'heure (le
-/// prochain zman, le ciel) se relit aussi chaque minute.
+/// prochain zman, le ciel) se relit aussi chaque minute. Comme au Classique, le bilan de la semaine s'ouvre en feuille
+/// (décision du 24/11) et la phrase d'un palier neuf passe en bandeau ; la fiche d'un trophée neuf est posée par la
+/// racine par-dessus l'accueil (`feteDesTrophees`).
 public struct AccueilVersionVue: View {
     private let modele: AccueilVersionModele
     @Environment(\.accessibilityReduceMotion) private var reduire
     @Environment(\.scenePhase) private var phase
+    @Environment(\.traducteur) private var traducteur
 
     public init(modele: AccueilVersionModele) {
         self.modele = modele
@@ -24,11 +27,30 @@ public struct AccueilVersionVue: View {
             switch modele.version {
             case .serenite: SereniteVue(modele: modele)
             case .bento: BentoVue(modele: modele)
+            case .instant: InstantVue(modele: modele)
             case .pile: PileVue(modele: modele)
             case .classique: Color.clear
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: Binding(get: { modele.bilan != nil }, set: { if !$0 { modele.fermerBilan() } })) {
+            if let bilan = modele.bilan {
+                AccueilBilanVue(bilan: bilan) { modele.fermerBilan() }
+                    .hauteursDeFeuille([.medium])
+            }
+        }
+        // Un palier neuf : sa phrase en bandeau, un Toast long d'Android (3,5 s) (Celebrations.ecran).
+        .overlay(alignment: .bottom) {
+            if let palier = modele.fete.palier {
+                AccueilMessage(texte: Text(palier, traducteur: traducteur))
+                    .padding(.bottom, 96)
+                    .transition(.opacity)
+            }
+        }
+        .task(id: modele.fete.palier) {
+            guard modele.fete.palier != nil else { return }
+            if await AccueilAttente.ms(3_500) { modele.fete.palierMontre() }
+        }
         .onAppear {
             modele.reduireAnimations = reduire
             Task { await modele.apparaitre() }
@@ -42,7 +64,7 @@ public struct AccueilVersionVue: View {
     }
 }
 
-// MARK: - Ce que partagent les trois accueils (VueVersion.kt)
+// MARK: - Ce que partagent les accueils des versions (VueVersion.kt)
 
 /// Les couleurs des versions : fixes, choisies avec les maquettes (chaque version a son ambiance, de jour comme de
 /// nuit ; les réglages Fond et Boutons valent pour Classique). En ARGB, comme Android les écrit.

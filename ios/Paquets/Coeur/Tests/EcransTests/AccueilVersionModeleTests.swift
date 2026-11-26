@@ -3,9 +3,11 @@ import Testing
 import Coeur
 @testable import Ecrans
 
-/// Les accueils des versions (AccueilVersion.kt, SereniteActivity.kt, BentoActivity.kt, PileActivity.kt) : les
-/// données lues d'un coup (DonneesAccueil.lire), ce que chaque version en montre, et les gestes communs. Restent au
-/// test d'interface : le paysage peint, les animations (cascade, anneau, égaliseur, retournement), les polices.
+/// Les accueils des versions (AccueilVersion.kt, SereniteActivity.kt, BentoActivity.kt, InstantActivity.kt,
+/// PileActivity.kt) : les données lues d'un coup (DonneesAccueil.lire), ce que chaque version en montre, et les gestes
+/// communs. Avec AccueilProchainTest, AccueilSoirTest, AccueilNoteTest et BilanPartoutTest d'Android (22-24/11). Restent
+/// au test d'interface : le paysage peint, les animations (cascade, anneau, égaliseur, retournement, jauge, barres), les
+/// polices.
 @Suite("Modèle des accueils des versions")
 @MainActor
 struct AccueilVersionModeleTests {
@@ -68,8 +70,28 @@ struct AccueilVersionModeleTests {
         #expect(d.dans(z) == Libelle("version_dans_h", .entier(1), .entier(12)))
         let proche = VersionZman(cle: "chkia", nom: Libelle("zman_chkia"), heure: "", instant: d.maintenant + 5 * 60_000 + 59_000)
         #expect(d.dans(proche) == Libelle("version_dans_min", .entier(5)))
+        // Jamais « dans 0 min » (recette du 22/11) : la dernière minute, et l'heure passée, disent une minute.
         let passe = VersionZman(cle: "netz", nom: Libelle("zman_netz"), heure: "", instant: d.maintenant - 60_000)
-        #expect(d.dans(passe) == Libelle("version_dans_min", .entier(0)))
+        #expect(d.dans(passe) == Libelle("version_dans_min", .entier(1)))
+        let derniere = VersionZman(cle: "chkia", nom: Libelle("zman_chkia"), heure: "", instant: d.maintenant + 20_000)
+        #expect(d.dans(derniere) == Libelle("version_dans_min", .entier(1)))
+    }
+
+    /// AccueilProchainTest d'Android : les minutes entières jusqu'au zman, jamais moins d'une.
+    @Test func lesMinutesJusquAuZmanJamaisZero() {
+        func a(_ h: Int, _ m: Int, _ sec: Int = 0) -> Int64 {
+            Int64(((h * 60 + m) * 60 + sec) * 1000)
+        }
+        // Les minutes entières, comme avant.
+        #expect(DonneesAccueil.minutesAvant(maintenant: a(10, 32, 30), instant: a(10, 40)) == 7)
+        #expect(DonneesAccueil.minutesAvant(maintenant: a(10, 32), instant: a(10, 40)) == 8)
+        #expect(DonneesAccueil.minutesAvant(maintenant: a(9, 28), instant: a(10, 40)) == 72)
+        // Dans la dernière minute, une minute, jamais zéro.
+        #expect(DonneesAccueil.minutesAvant(maintenant: a(10, 39, 1), instant: a(10, 40)) == 1)
+        #expect(DonneesAccueil.minutesAvant(maintenant: a(10, 39, 59), instant: a(10, 40)) == 1)
+        #expect(DonneesAccueil.minutesAvant(maintenant: a(10, 38, 30), instant: a(10, 40)) == 1)
+        // Un écran resté ouvert après l'heure : pas de minutes négatives.
+        #expect(DonneesAccueil.minutesAvant(maintenant: a(10, 45), instant: a(10, 40)) == 1)
     }
 
     @Test func sansLieuNiPrenom() throws {
@@ -146,11 +168,26 @@ struct AccueilVersionModeleTests {
         let n = try #require(try banc(j).modele.donnees.derniereNote)
         #expect(n.date == (try Self.jour("2026-11-14")))
         #expect(n.minutes == 10)
-        #expect(n.texte == nil)
+        #expect(!n.ecrite)
+        // Décision du 24/11 (AccueilNoteTest) : seulement qu'une note existe, jamais son texte.
         let avecNote = try Self.journal([("2026-11-12", 25)], notes: [("2026-11-15", "  Une ligne  ")])
         let m = try #require(try banc(avecNote).modele.donnees.derniereNote)
         #expect(m.date == (try Self.jour("2026-11-15")))
-        #expect(m.texte == "  Une ligne  ")
+        #expect(m.ecrite)
+        #expect(m == VersionNote(date: try Self.jour("2026-11-15"), minutes: 0, ecrite: true))
+    }
+
+    /// AccueilNoteTest d'Android : aucun des quatre accueils n'écrit le texte d'une note, chacun dit qu'elle existe.
+    @Test func aucunAccueilNEcritLeTexteDUneNote() throws {
+        let j = try Self.journal([("2026-11-15", 12), (Self.lundi, 20)], notes: [(Self.lundi, "Secret du jour")])
+        let m = try banc(j).modele
+        let ecrite = Libelle("version_note_ecrite")
+        #expect(m.bento.journal.texte == ecrite)
+        #expect(m.pile.journal.texte == ecrite)
+        #expect(m.instant.journal.noteEcrite)
+        #expect(m.serenite.jours.first?.noteEcrite == true)
+        let tout = "\(m.bento)\(m.pile)\(m.instant)\(m.serenite)\(m.donnees)"
+        #expect(!tout.contains("Secret du jour"))
     }
 
     @Test func lesGestesCommuns() throws {
@@ -203,6 +240,20 @@ struct AccueilVersionModeleTests {
         let he = try banc(langue: "he").modele
         await he.apparaitre()
         #expect(he.donnees.pensee?.traduction == nil)
+        // Les langues de lecture (relecture du 23/11) : en espagnol et en arabe tunisien l'hébreu seul, et non plus
+        // le français ; un choix « hébreu seul » est respecté.
+        for langue in ["es", "ar"] {
+            let m = try banc(langue: langue).modele
+            await m.apparaitre()
+            #expect(m.donnees.pensee != nil)
+            #expect(m.donnees.pensee?.traduction == nil, "\(langue)")
+        }
+        var seul = Reglages()
+        seul.setLectureLangues(LanguesTexte.Mode.he.rawValue)
+        let hebreuSeul = try banc(Journal(), seul, langue: "fr").modele
+        await hebreuSeul.apparaitre()
+        #expect(hebreuSeul.donnees.pensee != nil)
+        #expect(hebreuSeul.donnees.pensee?.traduction == nil)
         let en = try banc(langue: "en").modele
         await en.apparaitre()
         let fr = try banc(langue: "fr").modele
@@ -250,7 +301,7 @@ struct AccueilVersionModeleTests {
         #expect(s.initiale == "R")
         // Les trois dernières journées faites ; la note seule n'en est pas une.
         #expect(s.jours.map(\.date) == [try Self.jour(Self.lundi), try Self.jour("2026-11-15"), try Self.jour("2026-11-13")])
-        #expect(s.jours.map(\.note) == [nil, "Une ligne", nil])
+        #expect(s.jours.map(\.noteEcrite) == [false, true, false])
         #expect(s.jours.first?.jour == .libelle(Libelle("version_aujourdhui")))
         #expect(s.jours[1].duree == DonneesAccueil.duree(12))
     }
@@ -314,14 +365,13 @@ struct AccueilVersionModeleTests {
         #expect(e.serie.jours == Libelle.pluriel("bento_jours", quantite: 0))
         #expect(e.serie.barres == [false, false, false, false, false, false, false])
         #expect(e.zmanim.etiquette == Libelle("pile_zmanim"))
-        #expect(e.zmanim.valeur == Libelle("version_choisir_lieu"))
+        #expect(e.zmanim.valeur == .libelle(Libelle("version_choisir_lieu")))
         #expect(!e.zmanim.compte)
         #expect(e.zmanim.chkia == nil)
         // Ni ambiance ni musique : « Musique », « Silence », et rien ne danse.
         #expect(e.ambiance == BentoAmbiance(etiquette: Libelle("bento_musique"),
                                             nom: .libelle(Libelle("ambiance_silence")), joue: false))
-        #expect(e.journal == BentoJournal(quand: nil, duree: nil, texte: .libelle(Libelle("version_ecrire_note")),
-                                          ecrite: false))
+        #expect(e.journal == BentoJournal(quand: nil, duree: nil, texte: Libelle("version_ecrire_note")))
     }
 
     @Test func bentoUneSemaineCommencee() throws {
@@ -344,17 +394,16 @@ struct AccueilVersionModeleTests {
         #expect(e.serie.accessibilite == Libelle.pluriel("version_serie", quantite: 2, .entier(2)))
         let z = try #require(d.prochain)
         #expect(e.zmanim.etiquette == z.nom)
-        #expect(e.zmanim.valeur == d.dans(z))
+        #expect(e.zmanim.valeur == .libelle(d.dans(z)))
         #expect(e.zmanim.compte)
         #expect(e.zmanim.chkia?.cle == "chkia")
-        #expect(e.zmanim.accessibilite == [Libelle("version_prochain", .libelle(z.nom)), d.dans(z)])
+        #expect(e.zmanim.accessibilite == [.libelle(Libelle("version_prochain", .libelle(z.nom))), .libelle(d.dans(z))])
         #expect(e.ambiance.etiquette == Libelle("bento_ambiance"))
         #expect(e.ambiance.nom == .libelle(Libelle("ambiance_mer")))
         #expect(e.ambiance.joue)
         #expect(e.journal.quand == .libelle(Libelle("version_aujourdhui")))
         #expect(e.journal.duree == DonneesAccueil.duree(20))
-        #expect(e.journal.texte == .brut("Bien"))
-        #expect(e.journal.ecrite)
+        #expect(e.journal.texte == Libelle("version_note_ecrite"))
     }
 
     // MARK: Pile
@@ -374,7 +423,7 @@ struct AccueilVersionModeleTests {
         #expect(e.zmanim.etiquette == Libelle("pile_zmanim"))
         #expect(e.zmanim.zmanim.isEmpty)
         #expect(e.zmanim.prochain == nil)
-        #expect(e.journal == PileJournal(jour: nil, duree: nil, texte: nil, ecrite: false))
+        #expect(e.journal == PileJournal(jour: nil, duree: nil, texte: nil))
         m.choisirPage(2)
         #expect(m.pile.position == Libelle("pile_position", .entier(3), .entier(4)))
         m.choisirPage(9)
@@ -392,8 +441,7 @@ struct AccueilVersionModeleTests {
         #expect(e.hitbodedout.bouton == Libelle("version_encore"))
         #expect(e.journal.jour == .libelle(Libelle("version_aujourdhui")))
         #expect(e.journal.duree == DonneesAccueil.duree(20))
-        #expect(e.journal.texte == .libelle(Libelle("version_note_sans_texte")))
-        #expect(!e.journal.ecrite)
+        #expect(e.journal.texte == Libelle("version_note_sans_texte"))
     }
 
     @Test func pileLeHizoukSeRetourne() async throws {
@@ -455,5 +503,160 @@ struct AccueilVersionModeleTests {
         let soir = try banc(heure: 21)
         try await soir.magasin.modifierReglages { $0.setVersionApp(.serenite) }
         #expect(soir.modele.fondSombre)
+        // Instant : un tableau de bord sombre, de jour comme de nuit.
+        try await b.magasin.modifierReglages { $0.setVersionApp(.instant) }
+        #expect(b.modele.version == .instant)
+        #expect(b.modele.fondSombre)
+    }
+
+    // MARK: Le soir (AccueilSoirTest)
+
+    /// Le soir, zmanim du jour passés et un lieu choisi : le dernier repère du jour et son heure, sans compte à
+    /// rebours ; « Choisir un lieu » ne reste que sans lieu (recette du 22/11).
+    @Test func leSoirLeDernierRepereDuJourEtSonHeure() throws {
+        var r = Reglages()
+        r.setLieuZmanim(Self.jerusalem, ville: nil, maintenant: 0)
+        let b = try banc(Journal(), r, heure: 23, minute: 30)
+        let d = b.modele.donnees
+        #expect(d.prochain == nil)
+        let soir = try #require(d.dernierDuJour)
+        #expect(soir.cle == "tset")
+        #expect(soir == d.zmanim.last)
+        // Sérénité, Bento et Instant le montrent.
+        #expect(b.modele.serenite.prochain == SereniteZman(nom: soir.nom, heure: soir.heure, dans: nil))
+        let bento = b.modele.bento.zmanim
+        #expect(bento.etiquette == soir.nom)
+        #expect(bento.valeur == .brut(soir.heure))
+        #expect(bento.accessibilite == [.libelle(soir.nom), .brut(soir.heure)])
+        #expect(b.modele.instant.zmanim.ligne == [.libelle(soir.nom), .brut(soir.heure)])
+        // En journée, le prochain zman, et rien d'autre.
+        let jour = try banc(Journal(), r, heure: 10).modele.donnees
+        #expect(jour.prochain != nil)
+        #expect(jour.dernierDuJour == nil)
+        // Sans lieu, rien à montrer : on propose d'en choisir un.
+        let sans = try banc(heure: 23, minute: 30).modele
+        #expect(sans.donnees.dernierDuJour == nil)
+        #expect(sans.serenite.prochain == nil)
+        #expect(sans.bento.zmanim.valeur == .libelle(Libelle("version_choisir_lieu")))
+        #expect(sans.instant.zmanim.ligne == [.libelle(Libelle("version_choisir_lieu"))])
+        #expect(sans.instant.zmanim.accessibilite == [.libelle(Libelle("version_sans_lieu"))])
+    }
+
+    /// Le profil du rite (relecture du 23/11) : les zmanim des accueils sont ceux de l'écran des zmanim.
+    @Test func lesZmanimSuiventLeRite() throws {
+        for nusah in Nusah.allCases {
+            var r = Reglages()
+            r.setLieuZmanim(Self.jerusalem, ville: nil, maintenant: 0)
+            r.setSiddurNusah(nusah)
+            let d = try banc(Journal(), r).modele.donnees
+            let attendu = Zmanim.jour(lieu: Self.jerusalem, date: try Self.jour(Self.lundi), nusah: nusah)
+                .first { $0.cle == "tset" }?.instant
+            let tset = try #require(d.zmanim.first { $0.cle == "tset" })
+            #expect(tset.instant == attendu.map(AccueilVersionModele.millis), "\(nusah)")
+        }
+    }
+
+    // MARK: Instant
+
+    @Test func instantSansRien() throws {
+        let e = try banc().modele.instant
+        #expect(e.dateCivile == .date(try Self.jour(Self.lundi)))
+        #expect(e.titre == Libelle("instant_titre"))
+        #expect(e.bouton == Libelle("version_commencer", .libelle(DonneesAccueil.duree(15))))
+        #expect(!e.enCours)
+        #expect(e.semaineFaits == 0)
+        #expect(e.fraction == 0)
+        #expect(e.serie == 0)
+        #expect(e.joursSerie == Libelle.pluriel("bento_jours", quantite: 0))
+        #expect(e.total == Libelle("instant_total", .libelle(DonneesAccueil.duree(0))))
+        #expect(e.zmanim.reperes.isEmpty)
+        #expect(e.minutes.minutes == [0, 0, 0, 0, 0, 0, 0])
+        #expect(e.minutes.moyenne == 0)
+        #expect(e.minutes.echelle == 15)
+        #expect(e.minutes.jours.last == (try Self.jour(Self.lundi)))
+        #expect(e.minutes.jours.first == (try Self.jour("2026-11-10")))
+        #expect(e.pensee == nil)
+        #expect(e.journal == InstantJournal(jour: nil, duree: nil, noteEcrite: false))
+    }
+
+    @Test func instantUneSemaineEtSesMinutes() throws {
+        // Le jeudi 12 (25 min), le vendredi 13 (rien), le dimanche 15 (30) et le lundi 16 (20) : trois jours faits.
+        let j = try Self.journal([("2026-11-12", 25), ("2026-11-15", 30), (Self.lundi, 20)],
+                                 notes: [(Self.lundi, "Merci")])
+        var r = Reglages()
+        r.setLieuZmanim(Self.jerusalem, ville: nil, maintenant: 0)
+        let b = try banc(j, r)
+        let e = b.modele.instant
+        let d = b.modele.donnees
+        #expect(e.titre == Libelle("serenite_faite"))
+        #expect(e.bouton == Libelle("version_encore"))
+        #expect(e.dateHebraique == d.dateHebraique)
+        #expect(e.semaineFaits == d.semaineFaits)
+        #expect(e.fraction == Double(d.semaineFaits) / Double(d.semaineDus))
+        #expect(e.accessibiliteSemaine == Libelle("version_semaine", .entier(d.semaineFaits), .entier(d.semaineDus)))
+        #expect(e.serie == 2)
+        #expect(e.total == Libelle("instant_total", .libelle(DonneesAccueil.duree(75))))
+        // Du mardi 10 au lundi 16 ; la moyenne des jours faits, tronquée : 75 / 3 = 25.
+        #expect(e.minutes.minutes == [0, 0, 25, 0, 0, 30, 20])
+        #expect(e.minutes.moyenne == 25)
+        #expect(e.minutes.echelle == 30)
+        #expect(e.minutes.total == DonneesAccueil.duree(75))
+        #expect(e.minutes.libelleMoyenne == Libelle("instant_moyenne", .libelle(DonneesAccueil.duree(25))))
+        // Les zmanim en petit : le prochain, son heure, le temps qui reste ; les cinq repères en nom court.
+        let z = try #require(d.prochain)
+        #expect(e.zmanim.ligne == [.libelle(Libelle("version_prochain", .libelle(z.nom))), .brut(z.heure),
+                                   .libelle(d.dans(z))])
+        #expect(e.zmanim.accessibilite == [.libelle(Libelle("version_prochain", .libelle(z.nom))), .brut(z.heure)])
+        #expect(e.zmanim.reperes.map(\.nom) == [Libelle("instant_z_netz"), Libelle("instant_z_chatsot"),
+                                                Libelle("instant_z_minha"), Libelle("instant_z_chkia"),
+                                                Libelle("instant_z_tset")])
+        #expect(e.zmanim.reperes.map(\.heure) == d.zmanim.map(\.heure))
+        #expect(e.journal == InstantJournal(jour: .libelle(Libelle("version_aujourdhui")),
+                                            duree: DonneesAccueil.duree(20), noteEcrite: true))
+        // Une moyenne tronquée comme `toInt()` de Kotlin : (10 + 11) / 2 = 10,5 → 10.
+        let impair = try banc(try Self.journal([("2026-11-14", 10), ("2026-11-15", 11)])).modele.instant.minutes
+        #expect(impair.moyenne == 10)
+    }
+
+    @Test func instantEnCours() throws {
+        var r = Reglages()
+        let date = try Self.jour(Self.lundi)
+        Store.beginSession(reglages: &r, minutes: 15, millis: Fuseau.utc.millis(DateHeure(date, heure: 9, minute: 55)))
+        let e = try banc(Journal(), r).modele.instant
+        #expect(e.enCours)
+        #expect(e.bouton == Libelle("version_reprendre"))
+    }
+
+    // MARK: La fiche d'un trophée neuf et le bilan de la semaine, sur tous les accueils
+
+    /// Relecture du 23/11 : un trophée neuf ouvre sa fiche ici aussi ; décision du 24/11 (BilanPartoutTest) : le bilan
+    /// de la semaine s'ouvre sur tous les accueils, une fois par semaine. Un bravo qui attend passe d'abord.
+    @Test func laFicheDuTropheeEtLeBilanDeLaSemaine() async throws {
+        // La semaine du dimanche 8 au samedi 14 : trois jours faits.
+        let j = try Self.journal([("2026-11-09", 20), ("2026-11-10", 25), ("2026-11-11", 30)])
+        var bravo = Reglages()
+        bravo.setPendingCelebration(minutes: 30, dateNote: "2026-11-11")
+        // Aucun trophée vu encore (une liste vide, et non absente : absente, rien n'est neuf au premier passage).
+        bravo.setTropheesVus([])
+        let b = try banc(j, bravo)
+        let m = b.modele
+        await m.apparaitre()
+        // Le bravo d'abord : ni fiche ni bilan.
+        #expect(m.routes == [.celebration(minutes: 30, dateNote: "2026-11-11")])
+        #expect(m.fete.fiches.isEmpty)
+        #expect(m.bilan == nil)
+        // Au retour : la fiche du premier trophée, puis le bilan.
+        m.routeOuverte()
+        await m.apparaitre()
+        #expect(!m.fete.fiches.isEmpty)
+        let bilan = try #require(m.bilan)
+        #expect(bilan.debut == (try Self.jour("2026-11-08")))
+        #expect(bilan.titre == Libelle("bilan_titre"))
+        #expect(b.magasin.reglages.bilanVu == "2026-11-08")
+        m.fermerBilan()
+        #expect(m.bilan == nil)
+        // Une fois par semaine : il ne revient pas.
+        await m.apparaitre()
+        #expect(m.bilan == nil)
     }
 }
