@@ -126,7 +126,9 @@ class BentoActivity : AccueilVersion() {
 
     /** Une tuile : arrondie, qui s'enfonce un peu sous le doigt (maquette : 0,97 en 160 ms). */
     private fun tuile(fond: Int, hauteur: Int, description: String, action: (View) -> Unit): FrameLayout = FrameLayout(this).apply {
-        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(hauteur)).apply { topMargin = dp(10) }
+        // Le texte agrandi du système (jusqu'à 1,5) agrandit les tuiles d'autant : rien ne se chevauche.
+        val echelle = resources.configuration.fontScale.coerceIn(1f, 1.5f)
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp((hauteur * echelle).toInt())).apply { topMargin = dp(10) }
         background = VueVersion.fond(context, 24, fond)
         clipToOutline = true
         setPadding(dp(18), dp(16), dp(18), dp(16))
@@ -170,12 +172,23 @@ class BentoActivity : AccueilVersion() {
             layoutParams = FrameLayout.LayoutParams(dp(130), dp(180), Gravity.END or Gravity.BOTTOM).apply { setMargins(0, 0, -dp(14), -dp(16)) }
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         })
-        addView(Anneau(context, d.semaineFaits, d.semaineDus, heeboGras).apply {
-            layoutParams = FrameLayout.LayoutParams(dp(72), dp(72), Gravity.START or Gravity.TOP)
-            contentDescription = getString(R.string.version_semaine, d.semaineFaits, d.semaineDus)
-        })
+        // Une seule colonne, l'anneau en haut et le texte en bas, séparés par un ressort : sur un
+        // écran étroit (320 dp) le titre passe sur deux lignes, et la tuile grandit au lieu de
+        // faire chevaucher l'anneau et le titre (petits écrans, 17/11).
+        layoutParams = (layoutParams as LinearLayout.LayoutParams).apply {
+            minimumHeight = height
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
+        }
         addView(VueVersion.colonne(context).apply {
-            layoutParams = FrameLayout.LayoutParams(dp(210), ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.START or Gravity.BOTTOM)
+            layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            addView(Anneau(context, d.semaineFaits, d.semaineDus, heeboGras).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(72), dp(72))
+                contentDescription = getString(R.string.version_semaine, d.semaineFaits, d.semaineDus)
+            })
+            addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 0, 1f).apply { topMargin = dp(12) } })
+            addView(VueVersion.colonne(context).apply {
+            // La place à gauche du hassid (130 dp, débordant de 14) : le titre ne passe plus dessous.
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginEnd = dp(104) }
             addView(VueVersion.texte(context,
                 if (d.faite) getString(R.string.bento_faite, DonneesAccueil.duree(context, d.minutesAujourdhui)) else getString(R.string.bento_hitbo_titre),
                 22f, BLANC, heeboGras))
@@ -184,12 +197,17 @@ class BentoActivity : AccueilVersion() {
                 when {
                     enCours -> getString(R.string.version_reprendre)
                     d.faite -> getString(R.string.version_encore)
+                    // Texte agrandi ou écran étroit : « Commencer » seul, la durée ne tenait plus sur la ligne.
+                    resources.configuration.fontScale > 1.15f || resources.configuration.screenWidthDp < 360 -> getString(R.string.version_commencer_court)
                     else -> getString(R.string.version_commencer, DonneesAccueil.duree(context, d.objectifMinutes))
                 }, 15f, VERT, heeboGras, haut = 10).apply {
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
                 background = VueVersion.fond(context, 21, CITRON)
                 minHeight = dp(42)
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(dp(18), 0, dp(18), 0)
+            })
             })
         })
     }
@@ -207,15 +225,24 @@ class BentoActivity : AccueilVersion() {
 
     private fun tuileZmanim(d: DonneesAccueil): View {
         val z = d.prochain
-        val description = z?.let { getString(R.string.version_prochain, it.nom) + ", " + d.dans(this, it) } ?: getString(R.string.pile_zmanim)
+        // Le soir, zmanim du jour passés : le dernier repère et son heure (DonneesAccueil.dernierDuJour).
+        val soir = d.dernierDuJour
+        val description = when {
+            z != null -> getString(R.string.version_prochain, z.nom) + ", " + d.dans(this, z)
+            soir != null -> soir.nom + ", " + soir.heure
+            else -> getString(R.string.pile_zmanim)
+        }
         return tuile(BLEU_FOND, 150, description) { v -> ouvrirDepuis(v, Intent(this, ZmanimActivity::class.java)) }.apply {
             addView(VueVersion.colonne(context).apply {
-                if (z == null) {
-                    addView(VueVersion.texte(context, getString(R.string.pile_zmanim), 13f, BLEU_DOUX, heebo))
-                    addView(VueVersion.texte(context, getString(R.string.version_choisir_lieu), 20f, BLEU_ENCRE, heeboNoir, haut = 4))
-                } else {
+                if (z != null) {
                     addView(VueVersion.texte(context, z.nom, 13f, BLEU_DOUX, heebo).apply { maxLines = 2 })
                     addView(VueVersion.texte(context, d.dans(context, z), 26f, BLEU_ENCRE, heeboNoir, haut = 4).apply { includeFontPadding = false })
+                } else if (soir != null) {
+                    addView(VueVersion.texte(context, soir.nom, 13f, BLEU_DOUX, heebo).apply { maxLines = 2 })
+                    addView(VueVersion.texte(context, soir.heure, 26f, BLEU_ENCRE, heeboNoir, haut = 4).apply { includeFontPadding = false })
+                } else {
+                    addView(VueVersion.texte(context, getString(R.string.pile_zmanim), 13f, BLEU_DOUX, heebo))
+                    addView(VueVersion.texte(context, getString(R.string.version_choisir_lieu), 20f, BLEU_ENCRE, heeboNoir, haut = 4))
                 }
             })
             d.zmanim.lastOrNull { it.cle == "chkia" }?.let { c ->
@@ -267,7 +294,8 @@ class BentoActivity : AccueilVersion() {
                 if (n == null) getString(R.string.pile_journal)
                 else getString(R.string.bento_journal_quand, DonneesAccueil.jour(context, n.date).lowercase(), DonneesAccueil.duree(context, n.minutes)),
                 13f, DOUX, heebo).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
-            addView(VueVersion.texte(context, n?.texte ?: getString(R.string.version_ecrire_note), 15f, if (n?.texte != null) ENCRE else DOUX, heebo, haut = 4).apply {
+            addView(VueVersion.texte(context, getString(if (n?.ecrite == true) R.string.version_note_ecrite else R.string.version_ecrire_note),
+                15f, DOUX, heebo, haut = 4).apply {
                 maxLines = 3
                 ellipsize = android.text.TextUtils.TruncateAt.END
             })

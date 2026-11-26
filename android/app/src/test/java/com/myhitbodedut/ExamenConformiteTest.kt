@@ -132,7 +132,8 @@ class ExamenConformiteTest {
     /** Constat 12 : sans application Fichiers, ouvrir le sélecteur fermait l'application. */
     @Test
     fun `le selecteur de fichiers est toujours garde`() {
-        val contrat = Regex("""val (\w+) =\s*registerForActivityResult\(ActivityResultContracts\.(OpenDocument|CreateDocument|OpenMultipleDocuments|OpenDocumentTree|GetContent)\b""")
+        // « object : » : un contrat précisé sur place (les seuls fichiers du téléphone, MusicActivity, 23/11) compte aussi.
+        val contrat = Regex("""val (\w+) =\s*registerForActivityResult\((?:object : )?ActivityResultContracts\.(OpenDocument|CreateDocument|OpenMultipleDocuments|OpenDocumentTree|GetContent)\b""")
         var lanceurs = 0
         File("src/main/java/com/myhitbodedut").listFiles { f -> f.extension == "kt" }!!.forEach { f ->
             val texte = code(f.name)

@@ -142,6 +142,11 @@ object Store {
     private const val KEY_SESSION_TARGET = "session_target"
     private const val KEY_SESSION_START = "session_started_at"
     private const val KEY_SESSION_THEME = "session_theme"
+    private const val KEY_SESSION_START_MONO = "session_started_mono"
+    private const val KEY_SESSION_BOOT = "session_boot"
+    private const val KEY_SESSION_PAS = "session_pas"
+    private const val KEY_SESSION_SUITE = "session_suite_etat"
+    private const val KEY_PROPOSER_SUITE = "proposer_suite"
     private const val KEY_HIDE_COUNTDOWN = "hide_countdown"
     private const val KEY_JOURNAL_VERROU = "journal_verrou"
     private const val KEY_GUIDED = "guided_hitbodedut"
@@ -211,12 +216,39 @@ object Store {
 
     // --- Journées -----------------------------------------------------------
 
+    /*
+     * La dernière lecture du journal, gardée tant que son texte ne change pas.
+     * L'accueil appelait days() des dizaines de fois à chaque retour, et chaque
+     * appel réanalysait tout l'historique : l'application ralentissait à mesure
+     * qu'on s'en servait (check-up du 11/11). La clé est le texte lui-même, que
+     * SharedPreferences rend tel quel tant que rien ne l'a réécrit. Un journal
+     * illisible n'est jamais gardé : sa copie de secours doit toujours être faite.
+     */
+    @Volatile private var joursBrut: String? = null
+    @Volatile private var joursAnciens: Set<String>? = null
+    @Volatile private var joursLus: Map<String, DayRecord>? = null
+
     /** Lit la carte des journées, en reprenant l'ancien format s'il existe encore. */
     fun days(context: Context): Map<String, DayRecord> {
-        val result = linkedMapOf<String, DayRecord>()
         // Fichier du journal d'abord, puis reprise de l'ancien emplacement.
         val raw = journalPrefs(context).getString(KEY_DAYS, null)
             ?: prefs(context).getString(KEY_DAYS, null)
+        val anciens = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
+        val memoire = joursLus
+        if (memoire != null && raw == joursBrut && anciens == joursAnciens) return memoire
+        var lisible = true
+        val lus = lireJours(context, raw, anciens) { lisible = false }
+        if (lisible) {
+            joursLus = null
+            joursBrut = raw
+            joursAnciens = HashSet(anciens)
+            joursLus = lus
+        }
+        return lus
+    }
+
+    private fun lireJours(context: Context, raw: String?, legacy: Set<String>, illisible: () -> Unit): Map<String, DayRecord> {
+        val result = linkedMapOf<String, DayRecord>()
         if (raw != null) {
             runCatching {
                 val root = JSONObject(raw)
@@ -235,6 +267,7 @@ object Store {
                     )
                 }
             }.onFailure {
+                illisible()
                 // Illisible : on en garde une copie avant que la prochaine
                 // écriture ne le remplace par la seule journée du jour.
                 val p = journalPrefs(context)
@@ -242,11 +275,11 @@ object Store {
             }
         }
         // Reprise des jours validés par les versions précédentes.
-        val legacy = prefs(context).getStringSet(KEY_LEGACY_DONE, emptySet()) ?: emptySet()
         legacy.forEach { date ->
             if (!result.containsKey(date)) result[date] = DayRecord(date, 0, "")
         }
-        return result
+        // Partagée entre les appels : personne ne doit pouvoir la modifier.
+        return java.util.Collections.unmodifiableMap(result)
     }
 
     private fun writeDays(context: Context, days: Map<String, DayRecord>) {
@@ -488,8 +521,11 @@ object Store {
         val lat = p.getString(KEY_LIEU_LAT, null)?.toDoubleOrNull() ?: return null
         val lon = p.getString(KEY_LIEU_LON, null)?.toDoubleOrNull() ?: return null
         val fuseau = p.getString(KEY_LIEU_FUSEAU, null) ?: return null
+        // Un identifiant de fuseau que ce téléphone ne connaît pas (sauvegarde reprise sur un appareil
+        // plus ancien, « Europe/Kyiv » avant Android 10) est ramené à un fuseau qu'il connaît : tout
+        // ce qui lit le lieu reçoit un identifiant utilisable (Zmanim.fuseau, relecture du 23/11).
         return Zmanim.Lieu(p.getString(KEY_LIEU_NOM, "").orEmpty(), lat, lon,
-            p.getString(KEY_LIEU_ALT, null)?.toDoubleOrNull() ?: 0.0, fuseau)
+            p.getString(KEY_LIEU_ALT, null)?.toDoubleOrNull() ?: 0.0, Zmanim.fuseau(fuseau).id)
     }
 
     /** Quand le lieu a été enregistré (millisecondes), 0 s'il date d'avant le 02/11. */
@@ -643,21 +679,36 @@ object Store {
         prefs(context).edit().putBoolean(KEY_VOL_RAPPELS_ACTIFS, actifs).apply()
     }
 
-    /** Les rappels du vol enregistré, une ligne par rappel : « TYPE|instant|prière|limite|omer » (millisecondes). */
-    fun volRappels(context: Context): List<VolRappels.Rappel> =
-        prefs(context).getString(KEY_VOL_RAPPELS, "").orEmpty().lines().mapNotNull { ligne ->
+    /**
+     * Les rappels du vol enregistré, une ligne par rappel (millisecondes) :
+     * « TYPE|instant|prière|limite|omer|chema|chemaCle|chemaAutre ».
+     *
+     * Les trois derniers champs (la fin du Chema du rite, sa clé, celle de l'autre avis, audit du
+     * 16/11) n'étaient pas écrits : la notification, qui relit les rappels d'ici, annonçait pour
+     * fin du Chema l'heure du rappel lui-même, trente minutes trop tôt, toujours « selon le Gra »,
+     * et « — » pour l'autre avis (relecture du 23/11). Les lignes à cinq champs d'un vol
+     * enregistré avant se lisent encore.
+     */
+    fun volRappels(context: Context): List<VolRappels.Rappel> = volRappelsDe(prefs(context).getString(KEY_VOL_RAPPELS, "").orEmpty())
+
+    fun volRappelsDe(texte: String): List<VolRappels.Rappel> =
+        texte.lines().mapNotNull { ligne ->
             val c = ligne.split("|")
-            if (c.size != 5) return@mapNotNull null
+            if (c.size != 5 && c.size != 8) return@mapNotNull null
             val type = runCatching { VolRappels.Type.valueOf(c[0]) }.getOrNull() ?: return@mapNotNull null
             val t = c[1].toLongOrNull() ?: return@mapNotNull null
-            VolRappels.Rappel(type, java.time.Instant.ofEpochMilli(t), c[2].ifEmpty { null },
-                c[3].toLongOrNull()?.let(java.time.Instant::ofEpochMilli), c[4].toIntOrNull() ?: 0)
+            fun instant(i: Int) = c.getOrNull(i)?.toLongOrNull()?.let(java.time.Instant::ofEpochMilli)
+            VolRappels.Rappel(type, java.time.Instant.ofEpochMilli(t), c[2].ifEmpty { null }, instant(3), c[4].toIntOrNull() ?: 0,
+                chema = instant(5), chemaCle = c.getOrNull(6)?.ifEmpty { null }, chemaAutre = instant(7))
         }
 
+    fun volRappelsEnTexte(rappels: List<VolRappels.Rappel>): String = rappels.joinToString("\n") { r ->
+        "${r.type.name}|${r.instant.toEpochMilli()}|${r.priere.orEmpty()}|${r.limite?.toEpochMilli() ?: ""}|${r.omer}" +
+            "|${r.chema?.toEpochMilli() ?: ""}|${r.chemaCle.orEmpty()}|${r.chemaAutre?.toEpochMilli() ?: ""}"
+    }
+
     fun setVolRappels(context: Context, rappels: List<VolRappels.Rappel>) {
-        prefs(context).edit().putString(KEY_VOL_RAPPELS, rappels.joinToString("\n") { r ->
-            "${r.type.name}|${r.instant.toEpochMilli()}|${r.priere.orEmpty()}|${r.limite?.toEpochMilli() ?: ""}|${r.omer}"
-        }).apply()
+        prefs(context).edit().putString(KEY_VOL_RAPPELS, volRappelsEnTexte(rappels)).apply()
     }
 
     /** L'instant du dernier rappel montré : un rappel n'est pas montré deux fois. */
@@ -1308,15 +1359,75 @@ object Store {
         sessionStartedAt(context),
         sessionEndsAt(context),
         sessionTarget(context),
-        System.currentTimeMillis()
+        maintenantSeance(context)
     )
+
+    /** Le nombre de démarrages du téléphone ; -1 s'il ne se lit pas. */
+    private fun demarrages(context: Context): Int =
+        runCatching { android.provider.Settings.Global.getInt(context.contentResolver, android.provider.Settings.Global.BOOT_COUNT, -1) }.getOrDefault(-1)
+
+    /**
+     * « Maintenant » pour la séance en cours, à l'abri d'un changement d'heure du téléphone
+     * (décision du 24/11, voir SessionRule.maintenant). Toutes les mesures de la séance passent par là.
+     */
+    fun maintenantSeance(context: Context): Long {
+        val p = prefs(context)
+        return SessionRule.maintenant(
+            p.getLong(KEY_SESSION_START, 0L), p.getLong(KEY_SESSION_START_MONO, -1L), p.getInt(KEY_SESSION_BOOT, -1),
+            System.currentTimeMillis(), android.os.SystemClock.elapsedRealtime(), demarrages(context),
+        )
+    }
+
+    /** La fin de la séance sur l'horloge murale d'aujourd'hui, pour une alarme d'Android. */
+    fun sessionFinMurale(context: Context): Long {
+        val fin = sessionEndsAt(context)
+        return if (fin <= 0L) 0L else System.currentTimeMillis() + (fin - maintenantSeance(context))
+    }
+
+    /** La durée choisie au départ de la séance : celle que « même durée » rajoute. */
+    fun sessionPas(context: Context): Int = prefs(context).getInt(KEY_SESSION_PAS, sessionTarget(context))
+
+    /** Proposer « Continuer ? » dix secondes avant la fin (24/11) ; allumé par défaut. */
+    fun proposerSuite(context: Context): Boolean = prefs(context).getBoolean(KEY_PROPOSER_SUITE, true)
+
+    fun setProposerSuite(context: Context, oui: Boolean) {
+        prefs(context).edit().putBoolean(KEY_PROPOSER_SUITE, oui).apply()
+    }
+
+    /** La question « Continuer ? » de l'étape en cours : 0 pas encore posée, 1 posée et sans réponse, 2 répondue « non ». */
+    fun suiteEtat(context: Context): Int = prefs(context).getInt(KEY_SESSION_SUITE, SUITE_AUCUNE)
+
+    fun setSuiteEtat(context: Context, etat: Int) {
+        prefs(context).edit().putInt(KEY_SESSION_SUITE, etat).apply()
+    }
+
+    const val SUITE_AUCUNE = 0
+    const val SUITE_POSEE = 1
+    const val SUITE_NON = 2
+
+    /**
+     * Prolonge la séance en cours (« Continuer ? », 24/11) : de [minutes] après la fin prévue,
+     * ou sans fin si [minutes] vaut SessionRule.OUVERTE. La question revient avant la nouvelle fin.
+     */
+    fun prolongerSession(context: Context, minutes: Int) {
+        if (!hasSessionRecord(context)) return
+        val e = prefs(context).edit().putInt(KEY_SESSION_SUITE, SUITE_AUCUNE)
+        if (minutes <= SessionRule.OUVERTE) {
+            e.putLong(KEY_SESSION_END, 0L).putInt(KEY_SESSION_TARGET, SessionRule.OUVERTE)
+        } else {
+            val fin = SessionRule.finProlongee(sessionEndsAt(context), maintenantSeance(context), minutes)
+            e.putLong(KEY_SESSION_END, fin)
+                .putInt(KEY_SESSION_TARGET, ((fin - sessionStartedAt(context)) / 60_000L).toInt())
+        }
+        e.apply()
+    }
 
     /** Une séance sans durée, que seul le geste de l'arrêter termine. */
     fun isSessionOpen(context: Context): Boolean =
         SessionRule.estOuverte(sessionStartedAt(context), sessionTarget(context))
 
     fun sessionElapsedMinutes(context: Context): Int =
-        SessionRule.minutesEcoulees(sessionStartedAt(context), System.currentTimeMillis())
+        SessionRule.minutesEcoulees(sessionStartedAt(context), maintenantSeance(context))
 
     /**
      * Le sujet de la séance en cours, ou null — il est facultatif, et
@@ -1342,6 +1453,10 @@ object Store {
             .putLong(KEY_SESSION_START, now)
             .putLong(KEY_SESSION_END, if (ouverte) 0L else now + minutes * 60_000L)
             .putInt(KEY_SESSION_TARGET, if (ouverte) SessionRule.OUVERTE else minutes)
+            .putLong(KEY_SESSION_START_MONO, android.os.SystemClock.elapsedRealtime())
+            .putInt(KEY_SESSION_BOOT, demarrages(context))
+            .putInt(KEY_SESSION_PAS, if (ouverte) SessionRule.OUVERTE else minutes)
+            .putInt(KEY_SESSION_SUITE, SUITE_AUCUNE)
             .apply()
     }
 
@@ -1354,7 +1469,7 @@ object Store {
     fun endSession(context: Context): SeanceClose {
         val started = sessionStartedAt(context)
         val minutes = SessionRule.minutesAInscrire(
-            started, sessionEndsAt(context), System.currentTimeMillis()
+            started, sessionEndsAt(context), maintenantSeance(context)
         )
         // Jamais dans l'avenir : une horloge reculée après le début ne doit
         // pas inscrire une journée à venir.
@@ -1363,6 +1478,10 @@ object Store {
             .remove(KEY_SESSION_START)
             .remove(KEY_SESSION_END)
             .remove(KEY_SESSION_TARGET)
+            .remove(KEY_SESSION_START_MONO)
+            .remove(KEY_SESSION_BOOT)
+            .remove(KEY_SESSION_PAS)
+            .remove(KEY_SESSION_SUITE)
             .apply()
         return SeanceClose(minutes, date)
     }

@@ -1,6 +1,5 @@
 package com.myhitbodedut
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,11 +25,6 @@ object VolAlerte {
     /** Un rappel déclenché avec un peu de retard (Android regroupe les alarmes) s'affiche encore ; au-delà, il est passé. */
     private const val TOLERANCE_MS = 20 * 60_000L
 
-    private fun intent(context: Context): PendingIntent = PendingIntent.getBroadcast(
-        context, REQUETE, Intent(context, VolAlerteReceiver::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
-
     /** Garde les rappels d'un vol calculé et programme le prochain ; une liste vide les efface. */
     fun enregistrer(context: Context, rappels: List<VolRappels.Rappel>) {
         Store.setVolRappels(context, rappels)
@@ -38,14 +32,12 @@ object VolAlerte {
     }
 
     fun programmer(context: Context) {
-        val alarmes = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pending = intent(context)
-        alarmes.cancel(pending)
+        Alarme.annuler(context, REQUETE, VolAlerteReceiver::class.java)
         if (!Store.volRappelsActifs(context)) return
         val maintenant = System.currentTimeMillis()
         val vu = Store.volRappelVu(context)
         val prochain = Store.volRappels(context).map { it.instant.toEpochMilli() }.filter { it > vu && it > maintenant - TOLERANCE_MS }.minOrNull() ?: return
-        runCatching { alarmes.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, prochain.coerceAtLeast(maintenant), pending) }
+        Alarme.poser(context, REQUETE, VolAlerteReceiver::class.java, prochain.coerceAtLeast(maintenant))
     }
 
     /** L'étiquette de notification d'un rappel : son type et sa prière, pour que deux rappels dus d'un coup ne s'écrasent pas. */
@@ -73,7 +65,7 @@ object VolAlerte {
 
     /** Le titre et le texte d'un rappel ; [plan] donne les heures des deux aéroports. */
     fun textes(c: Context, r: VolRappels.Rappel, plan: Vol.Plan?): Pair<String, String> {
-        val locale = Locale.forLanguageTag(ChizukCard.language(c))
+        val locale = Chiffres.locale(ChizukCard.language(c))
         val heure = { t: Instant -> plan?.let { deuxHeures(it, t, locale) } ?: t.toString() }
         return when (r.type) {
             VolRappels.Type.TEFILAT_HADEREKH -> c.getString(R.string.vol_rappel_derekh_titre) to

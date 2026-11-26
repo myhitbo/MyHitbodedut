@@ -1,6 +1,5 @@
 package com.myhitbodedut
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -26,7 +25,7 @@ import java.time.LocalTime
  */
 object Reminder {
 
-    private const val REQUEST = 100
+    const val REQUEST = 100
 
     const val ACTION_START = "com.myhitbodedut.REMINDER_START"
     const val ACTION_SNOOZE = "com.myhitbodedut.REMINDER_SNOOZE"
@@ -34,17 +33,8 @@ object Reminder {
     /** Report demandé depuis la notification. */
     const val SNOOZE_MINUTES = 30
 
-    private fun intent(context: Context): PendingIntent = PendingIntent.getBroadcast(
-        context,
-        REQUEST,
-        Intent(context, ReminderReceiver::class.java),
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
-
     fun reschedule(context: Context) {
-        val alarms = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pending = intent(context)
-        alarms.cancel(pending)
+        Alarme.annuler(context, REQUEST, ReminderReceiver::class.java)
         if (!Store.reminderEnabled(context)) return
 
         val maintenant = System.currentTimeMillis()
@@ -58,12 +48,11 @@ object Reminder {
         if (reporte > maintenant && (quand == null || reporte < quand)) quand = reporte
 
         if (quand == null) return
-        runCatching { alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, quand, pending) }
+        Alarme.poser(context, REQUEST, ReminderReceiver::class.java, quand)
     }
 
     fun cancel(context: Context) {
-        val alarms = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarms.cancel(intent(context))
+        Alarme.annuler(context, REQUEST, ReminderReceiver::class.java)
         Store.setReminderSnoozedUntil(context, 0L)
     }
 
@@ -113,6 +102,10 @@ class ReminderReceiver : BroadcastReceiver() {
             }
         }
 
+        // La seconde des deux alarmes du même rappel (Alarme) : la première l'a
+        // déjà montré et a posé le suivant.
+        if (!Alarme.aTraiter(context, Reminder.REQUEST)) return
+
         // Le report est consommé : sans cela, il repousserait chaque rappel.
         Store.setReminderSnoozedUntil(context, 0L)
 
@@ -156,7 +149,7 @@ class ReminderReceiver : BroadcastReceiver() {
 
         val ouvrir = PendingIntent.getActivity(
             context, REQUETE_OUVRIR,
-            Intent(context, MainActivity::class.java),
+            MainActivity.depuisDehors(context),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         // « Commencer » ouvre l'écran de séance lui-même. Passer par un

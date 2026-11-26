@@ -574,7 +574,7 @@
     <string name="onboarding_texts">Des textes pour prier</string>
     <string name="onboarding_texts_body">Le Tikoun HaKlali, les Tehilim, le siddour, les Tefilot classées par sujet, des sources sur la hitbodedout et des conseils pour la hitbodedout, à ouvrir quand vous voulez.</string>
     <string name="onboarding_yours">À votre façon</string>
-    <string name="onboarding_yours_body">Dans les réglages : la langue (français, anglais ou hébreu), les couleurs de l’écran, votre prénom et la durée habituelle d’une hitbodedout. La musique a sa propre section.</string>
+    <string name="onboarding_yours_body">Dans les réglages : la langue, les couleurs de l’écran, votre prénom et la durée habituelle d’une hitbodedout. La musique a sa propre section.</string>
     <string name="onboarding_gate">Le matin, avant tout le reste</string>
     <string name="onboarding_gate_body">Choisissez les applications qui attendront votre hitbodedout : en ouvrant l’une d’elles, vous verrez d’abord « Avez-vous fait votre hitbodedout ? ». Ce mode se règle dans les Réglages et se coupe quand vous voulez.</string>
     <string name="onboarding_adresse">Comment vous appeler ?</string>
@@ -888,6 +888,8 @@
     <string name="ajout_zimun">Zimoun (à trois convives ou plus)</string>
     <string name="ajout_facultatif">Usage, non obligatoire</string>
     <string name="ajout_facultatif_avant">Avant le Birkat : psaumes d’usage (non obligatoires)</string>
+    <string name="ajout_harahaman_invite">HaRa’hamane de l’invité, pour son hôte</string>
+    <string name="ajout_harahaman_maison">HaRa’hamane de la maison : à la table de son père, ou à la sienne</string>
     <string name="ajout_facultatif_apres">HaRa’hamane et fin : d’usage (non obligatoires)</string>
     <string name="ajout_embolismique">Année embolismique (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">Maison endeuillée</string>
@@ -1704,6 +1706,7 @@
     <string name="version_reprendre">Revenir à la hitbodedout</string>
     <string name="version_encore">Encore une hitbodedout</string>
     <string name="version_commencer">Commencer · %1$s</string>
+    <string name="version_commencer_court">Commencer</string>
     <string name="version_preparer">Durée, sujet, musique</string>
     <string name="version_chargement">Chargement du texte du jour…</string>
     <string name="version_plus_de_textes">Plus de ’hizouk</string>
@@ -1713,6 +1716,7 @@
     <string name="version_tous_zmanim">Tous les zmanim</string>
     <string name="version_journal_vide">Rien d’écrit encore. Après une hitbodedout, une ligne suffit.</string>
     <string name="version_note_sans_texte">Sans note.</string>
+    <string name="version_note_ecrite">Une note, à lire dans le journal.</string>
     <string name="version_ecrire_note">Écrire la note du jour</string>
     <string name="version_tout_journal">Tout le journal</string>
     <string name="version_parcours">Mon parcours</string>
@@ -1763,4 +1767,32 @@
     <string name="serenite_lire">Lire</string>
     <string name="serenite_tout_voir">Tout voir</string>
     <string name="serenite_cette_semaine">Vos derniers jours</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_instant">Instant</string>
+    <string name="version_instant_desc">Un tableau de bord sombre : le ciel réel du moment avec les zmanim en petit, une jauge de la semaine, vos minutes en barres.</string>
+    <string name="instant_titre">Votre hitbodedout du jour</string>
+    <string name="instant_z_netz">Nets</string>
+    <string name="instant_z_chatsot">’Hatsot</string>
+    <string name="instant_z_minha">Min’ha</string>
+    <string name="instant_z_chkia">Chkia</string>
+    <string name="instant_z_tset">Tset</string>
+    <string name="instant_semaine">Semaine</string>
+    <string name="instant_cette_semaine">jours faits</string>
+    <string name="instant_serie">Série</string>
+    <string name="instant_total">%1$s au total</string>
+    <string name="instant_minutes">Vos 7 derniers jours</string>
+    <string name="instant_moyenne">Moyenne des jours faits : %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">Me demander 10 s avant la fin si je continue</string>
+    <string name="session_suite_titre">Continuer la hitbodedout ?</string>
+    <string name="session_suite_texte">Elle se termine dans 10 secondes. Sans réponse, elle s’arrête et s’inscrit au journal.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">Sans fin</string>
+    <string name="session_suite_non_court">Non</string>
+    <string name="session_suite_oui_plus">Oui, %1$s de plus</string>
+    <string name="session_suite_oui_sans_fin">Oui, sans fin</string>
+    <string name="session_suite_non">Non, terminer</string>
+    <string name="channel_suite">Continuer la hitbodedout</string>
+    <string name="channel_suite_description">La question posée 10 secondes avant la fin d’une hitbodedout minutée.</string>
 </resources>

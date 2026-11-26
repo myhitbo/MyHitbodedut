@@ -37,7 +37,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="6"
         android:textColor="?attr/mhMuted"
         android:textSize="14sp"
+        android:visibility="gone" />
+
+    <!-- Une longue note se replie à six lignes (check-up du 11/11). -->
+    <TextView
+        android:id="@+id/entry_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical|start"
+        android:background="?attr/selectableItemBackground"
+        android:text="@string/hilloula_lire_plus"
+        android:textColor="?attr/mhBrand"
+        android:textSize="14sp"
+        android:textStyle="bold"
         android:visibility="gone" />
 </LinearLayout>

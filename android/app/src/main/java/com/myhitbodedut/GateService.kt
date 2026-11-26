@@ -6,14 +6,17 @@ import android.app.PendingIntent
 import android.app.Service
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.PowerManager
 import android.os.SystemClock
 import android.view.Gravity
 import android.view.WindowManager
@@ -44,12 +47,34 @@ class GateService : Service() {
     private var protegeesMemo: Set<String> = emptySet()
     private var protegeesLues = 0L
 
+    /**
+     * Le rythme suit l'état (check-up du 11/11) : on interrogeait le système
+     * toutes les 900 ms toute la journée, même barrière désarmée et écran
+     * éteint. Désormais : 900 ms seulement quand la barrière est armée et
+     * l'écran allumé, 15 s sinon ; écran éteint, la boucle s'arrête et
+     * reprend à l'allumage (GateRythme).
+     */
     private val tick = object : Runnable {
         override fun run() {
-            evaluate()
-            handler.postDelayed(this, POLL_MS)
+            val armee = evaluate()
+            val delai = GateRythme.delai(armee = armee, ecranAllume = ecranAllume(), relanceAllumage = ecouteEcran) ?: return
+            handler.postDelayed(this, delai)
         }
     }
+
+    private fun ecranAllume(): Boolean =
+        runCatching { getSystemService(PowerManager::class.java).isInteractive }.getOrDefault(true)
+
+    /** Écran rallumé ou déverrouillé : reprendre aussitôt, sans attendre le tour suivant. */
+    private val ecran = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            handler.removeCallbacks(tick)
+            if (intent.action != Intent.ACTION_SCREEN_OFF) handler.post(tick)
+        }
+    }
+
+    /** L'allumage est écouté : la boucle peut s'arrêter écran éteint. */
+    private var ecouteEcran = false
 
     override fun onCreate() {
         super.onCreate()
@@ -57,6 +82,16 @@ class GateService : Service() {
         demarrage = false
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         Notifications.ensureChannels(this)
+        // Annonces du système (protégées) : elles arrivent aussi à un récepteur non exporté.
+        ecouteEcran = runCatching {
+            val filtre = IntentFilter().apply {
+                addAction(Intent.ACTION_SCREEN_ON)
+                addAction(Intent.ACTION_SCREEN_OFF)
+                addAction(Intent.ACTION_USER_PRESENT)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) registerReceiver(ecran, filtre, RECEIVER_NOT_EXPORTED)
+            else registerReceiver(ecran, filtre)
+        }.isSuccess
     }
 
     /**
@@ -87,6 +122,8 @@ class GateService : Service() {
 
     override fun onDestroy() {
         handler.removeCallbacks(tick)
+        if (ecouteEcran) runCatching { unregisterReceiver(ecran) }
+        ecouteEcran = false
         hideOverlay()
         enMarche = false
         super.onDestroy()
@@ -96,8 +133,9 @@ class GateService : Service() {
 
     // --- Boucle de décision -------------------------------------------------
 
-    private fun evaluate() {
-        if (previewing) return
+    /** Vrai quand la barrière est armée : il faut alors guetter de près. */
+    private fun evaluate(): Boolean {
+        if (previewing) return false
         // Un seul état par tour, pour la notification comme pour l'écran : ils ne peuvent
         // plus se contredire (13/11, TFRUX-02 : « Hors de la fenêtre » pendant un blocage).
         val etat = GateStatus.evaluate(this)
@@ -106,7 +144,7 @@ class GateService : Service() {
         val mode = GateRule.ecran(etat)
         if (mode == null) {
             hideOverlay()
-            return
+            return false
         }
 
         if (GateRule.retenue(readForegroundPackage(), packageName, Store.blockedApps(this), ::protegees)) {
@@ -114,6 +152,7 @@ class GateService : Service() {
         } else {
             hideOverlay()
         }
+        return true
     }
 
     /**
@@ -278,7 +317,7 @@ class GateService : Service() {
         val open = PendingIntent.getActivity(
             this,
             0,
-            Intent(this, MainActivity::class.java),
+            MainActivity.depuisDehors(this),
             PendingIntent.FLAG_IMMUTABLE
         )
         return Notification.Builder(this, Notifications.CHANNEL_GATE)
@@ -292,7 +331,6 @@ class GateService : Service() {
     }
 
     companion object {
-        private const val POLL_MS = 900L
         private const val QUERY_BACKFILL_MS = 60_000L
         private const val QUERY_OVERLAP_MS = 2_000L
         private const val PROTEGEES_MS = 60_000L

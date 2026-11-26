@@ -28,11 +28,11 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | --- | --- |
 | Hitbodedout | Séance minutée en service de premier plan, sujet facultatif, hitbodedout guidée, « je ne sais pas quoi dire », journal, parcours, paliers et trophées, célébration |
 | Barrière du matin | `GateService` + `BlockerView` sur les applications choisies (`AppPickerActivity`), fenêtre horaire, report, Shabbat / fête |
-| Musique | 26 morceaux livrés dans la version Play (§ 3.2), morceaux ajoutés par le sélecteur de fichiers, lecture écran éteint |
+| Musique | 23 morceaux livrés dans la version Play (§ 3.2 ; 26 avant le 16/11), morceaux ajoutés par le sélecteur de fichiers, lecture écran éteint |
 | Textes | Siddour, Tehilim, Tikoun haKlali, Likoutei Tefilot par sujet, 'hizouk, bibliothèque, livres, Halakha (Yalkout Yossef), hilloulot, recherche globale |
 | Calendrier | Zmanim (KosherJava), calendrier hébraïque, Birkat haLevana, alerte « Chabbat dans 3 h », boussole vers Jérusalem |
 | Vol | Zmanim et prières en vol, rappels (Tefilat haDerekh, Omer), **route d'un numéro de vol (adsbdb)** ; le suivi en direct (OpenSky) n'est pas dans la version Play tant qu'il n'y a pas de relais (§ 3.1) |
-| Système | 5 widgets (zmanim ×3, boussole, série), rappels quotidiens, « Ne pas déranger » pendant la séance, partage d'un jour en image, sauvegarde JSON, 3 langues (fr, en, he) |
+| Système | 5 widgets (zmanim ×3, boussole, série), rappels quotidiens, « Ne pas déranger » pendant la séance, partage d'un jour en image, sauvegarde JSON, 5 langues (fr, en, he ; es et ar-TN depuis le 17/11), 5 versions de l'accueil |
 
 **Hors périmètre** :
 
@@ -52,13 +52,13 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 
 | Élément | Valeur dans le dépôt | Exigence Play | Statut |
 | --- | --- | --- | --- |
-| `targetSdk` | **36** depuis le 29/10 (était 35) | **36** pour toute nouvelle app depuis le 31/08/2026 ; prolongation possible jusqu'au 01/11/2026 seulement | **Fait** — compilé et testé ; reste l'essai sur appareil (§ 2.1) |
+| `targetSdk` | **36** depuis le 29/10 (était 35) | **36** pour toute nouvelle app depuis le 31/08/2026 ; prolongation possible jusqu'au 01/11/2026 seulement | **Fait** — compilé et testé ; recette sur émulateurs Android 13 à 16 le 22/11 (§ 2.1) ; reste l'essai sur un vrai téléphone |
 | `compileSdk` | 36, avec le plugin Android 8.11.1 (était 8.7.3) | ≥ `targetSdk` | **Fait** |
 | `minSdk` | 26 | aucune contrainte | OK |
-| Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB 1.0 signé par la clé d'envoi le 15/11 : 89,1 Mo avec les 26 morceaux de `MusiquePlay.kt` (28,5 Mo le 29/10 avec 3 morceaux) |
+| Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB 1.0 signé par la clé d'envoi le 15/11 : 89,1 Mo avec les 26 morceaux de `MusiquePlay.kt` (28,5 Mo le 29/10 avec 3 morceaux) ; `play-3` du 17/11 (versionCode 4, version 1.3) : 80,7 Mo avec 23 morceaux, contrôlé le 22/11 (signature, manifeste, contenu) |
 | Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play : 26 morceaux, environ 70 Mo d'audio (état du 03/11) ; version GitHub : 56 morceaux, environ 146 Mo ; le site ne livre que les 26 de la version Play (§ 3.2) | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
 | Bibliothèques natives | aucune `.so` | page mémoire 16 Ko exigée pour les `.so` ciblant API 35+ | Sans objet — vérifié |
-| Signature | clé de dev pour GitHub ; `play.yml` exige la clé d'envoi (secrets `PLAY_*`) et refuse un AAB signé par la clé de dev | clé d'envoi privée + Play App Signing | **Reste à faire par le propriétaire** : créer la clé et les secrets (§ 5.1, § 5.2) |
+| Signature | clé de dev pour GitHub ; `play.yml` exige la clé d'envoi (secrets `PLAY_*`) et refuse un AAB signé par la clé de dev | clé d'envoi privée + Play App Signing | **Fait le 15/11** : clé d'envoi créée, secrets `PLAY_*` posés (§ 5.1, § 5.2) ; empreinte dans `play/A_FAIRE.md` |
 | `versionCode` | `1 + github.run_number` | strictement croissant | OK, à garder |
 | R8 / réduction | activés en release | — | OK ; garder le fichier de correspondance (§ 5.4) |
 | Écran de relecture | masqué hors `BuildConfig.DEBUG` | pas de fonction cachée en production | OK — vérifié |
@@ -96,10 +96,18 @@ liste déjà notée dans la feuille de route (proposition 12) :
 - **Grands écrans** : rien à faire, l'application ne verrouille aucune
   orientation.
 
-**Pas encore vérifié** : le rendu sur un appareil ou un émulateur Android 16.
-Aucun émulateur n'était disponible ; c'est le premier point de la recette du
-§ 8, avec un œil sur chaque écran (titres sous la barre d'état ? boutons
-sous la barre de gestes ? clavier qui cache un champ ?).
+**Vérifié le 22/11 sur émulateurs** (flux *QA Android (émulateurs)*,
+`.github/captures/recette.py`) : la construction Play publiée (release, R8)
+sous Android 13, 14, 15 et 16, chaque capture regardée. Aucun plantage ; aucun
+titre sous la barre d'état, aucun bouton sous la barre de navigation, aucun
+champ caché par le clavier ; les deux services au premier plan sous leurs
+types déclarés ; la barrière qui repart seule après un vrai redémarrage, sur
+les quatre versions ; le chemin de la note aux examinateurs sans faute. Six
+défauts trouvés et corrigés (séance, accueil couché, présentation, accueils
+le soir, « dans 0 min », accueil Instant qui arrêtait les émulateurs
+Android 15 et 16) : `play/A_FAIRE.md`. **Reste** : un vrai téléphone — le
+son, la veille profonde, les surcouches Samsung et Xiaomi, l'accueil Instant
+sous Android 15 ou 16 (§ 8).
 
 **Critère d'acceptation** : `./gradlew -Pplay=true testFullDebugUnitTest
 bundleFullRelease` passe (vrai le 29/10), et la recette du § 8 passe sur
@@ -411,8 +419,10 @@ la branche fusionnée sur `main` et le site remis en ligne par `web.yml` (Cloudf
 **Hébergement (tranché le 13/11) : Cloudflare Pages**, projet `myhitbodedut`,
 gratuit, public, adresse indépendante du nom du compte GitHub (l'ancienne
 `hil123.github.io/…` est morte depuis le changement de nom en `myhitbo`).
-`web.yml` déploie `web/dist` avec `wrangler pages deploy` ; le dépôt
-`myhitbodedut-web` n'est plus alimenté et peut être archivé. Secrets du dépôt
+`web.yml` déploie `web/dist` avec `wrangler pages deploy`, puis en pousse une
+copie dans le dépôt `myhitbodedut-web` (depuis le 22/11, secret
+`WEB_DEPLOY_TOKEN` : jeton à accès fin sur ce dépôt, *Contents* en écriture ;
+sans lui la copie est sautée, le site reste en ligne). Secrets du dépôt
 `myhitbo/MyHitbodedut` : `CLOUDFLARE_API_TOKEN` (jeton d'API, permission
 *Account → Cloudflare Pages → Edit*) et `CLOUDFLARE_ACCOUNT_ID`. L'adresse est
 la même dans `CelebrationActivity.LIEN_WEB`, `web/src/js/app.js` et
@@ -615,7 +625,7 @@ l'application garde ses trois langues.
 | --- | --- | --- |
 | Titre | 30 caractères, **un par langue** | he : `MyHitbodedut – התבודדות` (23) · en : `MyHitbodedut – Hitbodedut` (25) *(tranché le 29/10)* |
 | Description courte | 80 caractères | **Rédigée le 12/11** : `play/fiche/en-US/short_description.txt` (77, avec « התבודדות ») · `play/fiche/iw-IL/short_description.txt` (75) |
-| Description complète | 4 000 caractères | **Rédigée le 12/11, reprise le 14/11** : `play/fiche/<langue>/full_description.txt` (en : 2 705, he : 2 084). La pratique · la hitbodedout (durées de 5 min à 1 h 30, sujet, niggoun, « chaque minute s'ajoute à votre journée et à votre parcours ») · le journal · la barrière du matin (argument de 6.7, **y compris pendant toute hitbodedout en cours**) · textes (avec « traduction automatique, non relue : l'hébreu fait foi ») · zmanim, calendrier, boussole · widgets · vie privée (journal sur le téléphone, un seul service de vol facultatif) · attribution |
+| Description complète | 4 000 caractères | **Rédigée le 12/11, reprise le 14/11 ; le 23/11, la dernière ligne nomme les cinq langues de l'interface** : `play/fiche/<langue>/full_description.txt` (en : 2 731, he : 2 110). La pratique · la hitbodedout (durées de 5 min à 1 h 30, sujet, niggoun, « chaque minute s'ajoute à votre journée et à votre parcours ») · le journal · la barrière du matin (argument de 6.7, **y compris pendant toute hitbodedout en cours**) · textes (avec « traduction automatique, non relue : l'hébreu fait foi ») · zmanim, calendrier, boussole · widgets · vie privée (journal sur le téléphone, un seul service de vol facultatif) · attribution |
 
 **Ce que la fiche ne doit pas promettre** (audit du 12/11, TPLAYDOCS-08) : ni
 « la journée validée par le temps vraiment passé » (une journée se déclare
@@ -684,21 +694,31 @@ libellés exacts de `values-en/strings.xml` : elle est dans
 **`play/CONSOLE.md` § 3.2**, seul exemplaire à tenir à jour. Le chemin qu'elle
 décrit, tel que l'application l'affiche :
 
-1. premier lancement : « Skip » ferme la présentation ;
-2. barre du bas → **Settings** → carte **Where “I am with Hashem” stands** → bouton **Preview the
-   “I am with Hashem” screen now** (`action_preview_gate`) ;
+1. premier lancement : « Skip » ferme la présentation, puis l'écran **Choose
+   your version** → **Classic** ;
+2. sur le Jour (**Today**), l'icône à curseurs en haut à droite
+   (**Settings**) → carte **Where “I am with Hashem” stands** → bouton
+   **Preview the “I am with Hashem” screen now** (`action_preview_gate`) ;
 3. la première fois, la fenêtre de divulgation **Display over other apps** →
    **Continue** → accorder l'accès dans Android → revenir et toucher le bouton
    de nouveau ;
 4. l'écran de garde s'affiche à toute heure avec le bandeau **PREVIEW, NO
    EFFECT** ;
-5. pour la voir agir : carte **Permissions** → **Grant** (deux
-   accès) ; carte **I am with Hashem** → interrupteur, **Choose apps**,
-   **“I am with Hashem” hours** autour de l'heure courante ; puis ouvrir l'application
-   choisie. Chabbat et Yom Tov : la barrière se tait par défaut (carte
-   **Rhythm**).
+5. pour la voir agir : carte **Permissions** → **Grant** (**Usage access**,
+   et **Display over other apps** s'il n'est pas déjà accordé) ; carte **I am
+   with Hashem** → interrupteur (Android demande alors les notifications),
+   **Choose apps**, **“I am with Hashem” hours** autour de l'heure courante
+   (6 h – 11 h par défaut) ; puis ouvrir l'application choisie. Chabbat et
+   Yom Tov : la barrière se tait par défaut (carte **Rhythm**).
 
 Si un de ces libellés change dans `values-en`, la note change avec lui.
+
+**Reprise le 22/11** : depuis la refonte de l'accueil (13/11) les réglages ne
+sont plus dans la barre du bas, et depuis les cinq versions de l'application
+(17/11) le premier lancement passe par le choix de la version. La note
+corrigée est rejouée mot pour mot par la passe `examinateur` de
+`.github/captures/recette.py`, sur une application neuve, sous Android 13 à
+16 : chaque libellé y est cherché à l'écran.
 
 ### 7.4 Catégorie et coordonnées
 
@@ -737,7 +757,11 @@ local) :
       les trois langues
 - [ ] Les 5 widgets (zmanim ×3, boussole, série) posés et mis à jour
 - [ ] Export / import JSON entre l'édition GitHub et l'édition Play
-- [ ] Trois langues dans l'app, droite-à-gauche en hébreu
+- [ ] Cinq langues dans l'app (fr, en, he, es, ar-TN), droite-à-gauche en hébreu et en arabe
+- [ ] Les cinq versions de l'accueil ouvertes chacune une fois (Réglages ›
+      Version de l'app) : Instant sur un téléphone Android 15 ou 16 (sur
+      émulateur, son paysage arrêtait l'appareil virtuel avant le 22/11) ;
+      Bento, Instant et Sérénité le soir, après la sortie des étoiles
 - [ ] Tablette, fenêtre libre, Chromebook (écran tactile non requis)
 - [ ] Pré-lancement Play Console (rapport automatique) : aucun plantage,
       aucun avertissement d'accessibilité bloquant

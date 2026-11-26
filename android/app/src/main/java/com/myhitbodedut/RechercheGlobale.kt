@@ -34,8 +34,10 @@ object RechercheGlobale {
     private val BLANCS = Regex("\\s+")
 
     /** Un extrait d'une quarantaine de caractères autour de la trouvaille, dans le texte sans voyelles. */
-    fun extrait(texte: String, q: String): String {
-        val t = nu(texte)
+    fun extrait(texte: String, q: String): String = extraitNu(nu(texte), q)
+
+    /** [extrait], sur un texte déjà passé par [nu] (l'index des livres, 24/11). */
+    fun extraitNu(t: String, q: String): String {
         val i = t.indexOf(q).coerceAtLeast(0)
         val debut = (i - 30).coerceAtLeast(0)
         return (if (debut > 0) "…" else "") + t.substring(debut, (i + q.length + 50).coerceAtMost(t.length)).trim() + (if (i + q.length + 50 < t.length) "…" else "")
@@ -84,6 +86,8 @@ object RechercheGlobale {
         texte: String, langue: String, siddur: Siddur, livres: Siddur?,
         yalkut: YalkutYosef.Livre?, benIshHai: Halakha.Livre?, hilloulot: Map<String, List<Hilloulot.Hilloula>>?,
         portee: Portee = Portee.TOUT, annule: () -> Boolean = { false },
+        /** Les livres cherchés dans leur index (IndexLivres, 24/11), à la place de [livres] relus. */
+        livresIndexes: ((String) -> List<Resultat>)? = null,
     ): List<Resultat> {
         val q = nu(texte.trim())
         if (q.length < 2) return emptyList()
@@ -91,7 +95,10 @@ object RechercheGlobale {
         return buildList {
             if (Sorte.SIDDOUR in s) addAll(dansRecueil(siddur, q, Sorte.SIDDOUR, langue, annule))
             if (annule()) return@buildList
-            if (Sorte.LIVRE in s) livres?.let { addAll(dansRecueil(it, q, Sorte.LIVRE, langue, annule)) }
+            if (Sorte.LIVRE in s) {
+                if (livres != null) addAll(dansRecueil(livres, q, Sorte.LIVRE, langue, annule))
+                else livresIndexes?.let { addAll(it(q)) }
+            }
             if (annule()) return@buildList
             if (Sorte.HALAKHA in s) yalkut?.let { y -> addAll(YalkutYosef.recherche(y, texte).take(PAR_SORTE).map { Resultat(Sorte.HALAKHA, texte, YalkutYosef.source(it), extrait(it.texte, q)) }) }
             if (Sorte.HALAKHA in s) benIshHai?.let { b -> addAll(Halakha.recherche(b, texte).take(PAR_SORTE).map { Resultat(Sorte.HALAKHA, texte, HalakhaActivity.source(it), extrait(it.texte, q)) }) }

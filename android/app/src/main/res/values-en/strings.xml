@@ -480,7 +480,7 @@
     <string name="onboarding_texts">Texts to pray with</string>
     <string name="onboarding_texts_body">Tikkun HaKlali, Tehillim, the siddur, Tefilot sorted by subject, sources on hitbodedut and tips for hitbodedut, ready whenever you are.</string>
     <string name="onboarding_yours">Your way</string>
-    <string name="onboarding_yours_body">In Settings: the language (French, English or Hebrew), the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
+    <string name="onboarding_yours_body">In Settings: the language, the screen colors, your first name and your usual hitbodedut length. Music has its own section.</string>
     <string name="onboarding_gate">In the morning, before everything else</string>
     <string name="onboarding_gate_body">Choose the apps that will wait for your hitbodedut: when you open one of them, you will first see “Have you done your hitbodedut?”. This mode is set up in Settings and can be turned off whenever you like.</string>
     <string name="onboarding_adresse">What should we call you?</string>
@@ -838,6 +838,8 @@
     <string name="ajout_zimun">Zimun (three or more who ate together)</string>
     <string name="ajout_facultatif">Custom, not required</string>
     <string name="ajout_facultatif_avant">Psalms before Birkat HaMazon (custom, not required)</string>
+    <string name="ajout_harahaman_invite">HaRachaman of the guest, for the host</string>
+    <string name="ajout_harahaman_maison">HaRachaman for the household: at one’s father’s table, or one’s own</string>
     <string name="ajout_facultatif_apres">HaRachaman and closing (custom, not required)</string>
     <string name="ajout_embolismique">Leap year (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">House of mourning</string>
@@ -1643,6 +1645,7 @@
     <string name="version_reprendre">Back to the hitbodedut</string>
     <string name="version_encore">Another hitbodedut</string>
     <string name="version_commencer">Start · %1$s</string>
+    <string name="version_commencer_court">Start</string>
     <string name="version_preparer">Length, topic, music</string>
     <string name="version_chargement">Loading today’s text…</string>
     <string name="version_plus_de_textes">More chizuk</string>
@@ -1652,6 +1655,7 @@
     <string name="version_tous_zmanim">All zmanim</string>
     <string name="version_journal_vide">Nothing written yet. After a hitbodedut, one line is enough.</string>
     <string name="version_note_sans_texte">No note.</string>
+    <string name="version_note_ecrite">A note, to read in your journal.</string>
     <string name="version_ecrire_note">Write today’s note</string>
     <string name="version_tout_journal">The whole journal</string>
     <string name="version_parcours">My journey</string>
@@ -1702,4 +1706,32 @@
     <string name="serenite_lire">Read</string>
     <string name="serenite_tout_voir">See all</string>
     <string name="serenite_cette_semaine">Your last days</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_instant">Instant</string>
+    <string name="version_instant_desc">A dark dashboard: the real sky of the moment with discreet zmanim, a week gauge, your minutes as bars.</string>
+    <string name="instant_titre">Today’s hitbodedut</string>
+    <string name="instant_z_netz">Netz</string>
+    <string name="instant_z_chatsot">Chatzot</string>
+    <string name="instant_z_minha">Mincha</string>
+    <string name="instant_z_chkia">Shkia</string>
+    <string name="instant_z_tset">Tzeit</string>
+    <string name="instant_semaine">Week</string>
+    <string name="instant_cette_semaine">days done</string>
+    <string name="instant_serie">Streak</string>
+    <string name="instant_total">%1$s in total</string>
+    <string name="instant_minutes">Your last 7 days</string>
+    <string name="instant_moyenne">Average on days done: %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">Ask me 10 s before the end whether to continue</string>
+    <string name="session_suite_titre">Continue the hitbodedut?</string>
+    <string name="session_suite_texte">It ends in 10 seconds. Without an answer, it stops and is saved to your journal.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">No end</string>
+    <string name="session_suite_non_court">No</string>
+    <string name="session_suite_oui_plus">Yes, %1$s more</string>
+    <string name="session_suite_oui_sans_fin">Yes, with no end</string>
+    <string name="session_suite_non">No, finish</string>
+    <string name="channel_suite">Continue the hitbodedut</string>
+    <string name="channel_suite_description">The question asked 10 seconds before a timed hitbodedut ends.</string>
 </resources>

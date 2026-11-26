@@ -60,6 +60,12 @@ abstract class AccueilVersion : AppCompatActivity(), NoteDialog.Hote {
         }
         dessiner()
         if (!NoteDialog.ouverte(this)) CelebrationActivity.showIfPending(this)
+        // Un trophée neuf ouvre sa fiche ici aussi, comme au Classique (MainActivity.renderPaliers) :
+        // sans cela il n'était jamais fêté, et un retour au Classique les ouvrait tous à la suite
+        // (relecture du 23/11). Tant qu'un bravo attend, il passe d'abord ; la fiche vient au retour.
+        if (!Store.hasPendingCelebration(this)) Celebrations.ecran(this)
+        // Le bilan de la semaine, comme au Classique (décision du 24/11) ; un bravo qui attend passe d'abord.
+        if (!NoteDialog.ouverte(this) && !Store.hasPendingCelebration(this)) BilanSemaineVue.montrerSiDu(this)
         StreakWidget.refresh(this)
         ZmanimWidget.refresh(this)
         choixLieu.rafraichirSiBesoin()
@@ -125,17 +131,38 @@ data class DonneesAccueil(
     val derniereNote: NoteAffichee?,
 ) {
     data class ZmanAffiche(val cle: String, val nom: String, val heure: String, val instant: ZonedDateTime)
+
+    /**
+     * Le soir, quand les zmanim du jour sont passés, [prochain] est null alors qu'un lieu est
+     * choisi : on montre alors le dernier repère du jour (la sortie des étoiles) et son heure,
+     * sans compte à rebours. Null aussi sans lieu : c'est le seul cas où l'on propose d'en
+     * choisir un. Recette du 22/11 : Bento, Instant et Sérénité affichaient « Choisir un lieu »
+     * chaque soir, lieu choisi ou non.
+     */
+    val dernierDuJour: ZmanAffiche? get() = if (prochain == null) zmanim.lastOrNull() else null
     data class PenseeAffichee(val hebreu: String, val traduction: String?, val reference: String)
-    data class NoteAffichee(val date: LocalDate, val minutes: Int, val texte: String?)
+    /**
+     * La dernière journée du journal, sans le texte de sa note : un accueil se voit dans les
+     * captures d'écran et l'aperçu des applications récentes, que l'écran du journal interdit
+     * (décision du 24/11). [ecrite] dit seulement qu'une note existe.
+     */
+    data class NoteAffichee(val date: LocalDate, val minutes: Int, val ecrite: Boolean)
 
     /** « dans 1 h 12 » jusqu'au prochain zman. */
     fun dans(context: Context, z: ZmanAffiche, maintenant: ZonedDateTime = ZonedDateTime.now(z.instant.zone)): String {
-        val minutes = java.time.Duration.between(maintenant, z.instant).toMinutes().coerceAtLeast(0)
+        val minutes = minutesAvant(maintenant, z.instant)
         return if (minutes < 60) context.getString(R.string.version_dans_min, minutes)
         else context.getString(R.string.version_dans_h, minutes / 60, minutes % 60)
     }
 
     companion object {
+        /**
+         * Les minutes entières jusqu'à [instant], jamais moins d'une : dans la dernière minute
+         * avant un zman, les accueils annonçaient « dans 0 min » (recette du 22/11).
+         */
+        fun minutesAvant(maintenant: ZonedDateTime, instant: ZonedDateTime): Long =
+            java.time.Duration.between(maintenant, instant).toMinutes().coerceAtLeast(1)
+
         /** Les zmanim qu'un accueil montre en bref, dans l'ordre du jour. */
         val REPERES = listOf("netz", "chatsot", "minha_ketana", "chkia", "tset")
 
@@ -144,7 +171,9 @@ data class DonneesAccueil(
             val lieu = runCatching { Store.lieuZmanim(c) }.getOrNull()
             val fuseau = lieu?.fuseau?.let { runCatching { ZoneId.of(it) }.getOrNull() } ?: ZoneId.systemDefault()
             val maintenant = ZonedDateTime.now(fuseau)
-            val jour = lieu?.let { l -> runCatching { Zmanim.jour(l, maintenant.toLocalDate()) }.getOrNull() }.orEmpty()
+            // Le profil du rite, comme l'écran des zmanim, les vignettes et l'accueil Classique : sans lui, les
+            // Edot (rite par défaut) lisaient ici un tsét à 8,5° et ailleurs le leur (relecture du 23/11).
+            val jour = lieu?.let { l -> runCatching { Zmanim.jour(l, maintenant.toLocalDate(), Store.siddurNusah(c).cle) }.getOrNull() }.orEmpty()
             val tset = jour.firstOrNull { it.cle == "tset" }?.local
             val hebraique = runCatching {
                 CalendrierJuif.jour(ZmanimVignette.jourHebreuAffiche(maintenant, tset), Store.inIsrael(c)).dateHebraique
@@ -159,22 +188,23 @@ data class DonneesAccueil(
             // l'accueil se redessine quand elle est faite.
             val pensee = if (!Data.pret) null else runCatching {
                 val p = SourceDuJour.choix(Data.library(c), LocalDate.now()) ?: return@runCatching null
-                val traduction = when (ChizukCard.language(c)) {
-                    "en" -> p.source.paragraphesEn.getOrNull(p.indice)
-                    "he" -> null
-                    else -> p.source.paragraphesFr.getOrNull(p.indice) ?: p.source.paragraphesEn.getOrNull(p.indice)
-                }
+                // Les langues de lecture (LanguesTexte), comme la carte du Classique : en espagnol et en
+                // arabe tunisien l'hébreu seul, et non plus le français ; un choix « hébreu seul » est
+                // respecté (relecture du 23/11).
+                val traduction = LanguesTexte.textes(
+                    LanguesTexte.mode(c), p.texte,
+                    p.source.paragraphesFr.getOrNull(p.indice), p.source.paragraphesEn.getOrNull(p.indice),
+                ).firstOrNull { it.first != "he" }?.second
                 PenseeAffichee(
                     SourceDuJour.extrait(SourceDuJour.sansBalises(p.texte), 420),
                     traduction?.let { SourceDuJour.extrait(SourceDuJour.sansBalises(it), 420) },
                     Reference.localise(c, p.source.ref),
                 )
             }.getOrNull()
-            val verrou = VerrouJournal.actif(c)
             val note = Store.days(c).values
                 .filter { it.faite || it.note.isNotBlank() }
                 .maxByOrNull { it.date }
-                ?.let { r -> NoteAffichee(Store.parse(r.date), r.minutes, r.note.takeIf { it.isNotBlank() && !verrou }) }
+                ?.let { r -> NoteAffichee(Store.parse(r.date), r.minutes, r.note.isNotBlank()) }
             return DonneesAccueil(
                 prenom = Store.firstName(c),
                 dateCivile = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMMM", langue(c)))

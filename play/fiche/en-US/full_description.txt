@@ -29,6 +29,6 @@ ZMANIM AND CALENDAR
 PRIVACY
 No account, no ads, no analytics. Your journal stays on your phone. The app connects to the Internet only if you ask it to look up the route of a flight number; that number is then sent to adsbdb.com, and nothing else.
 
-Free, with no purchases. Interface in English, Hebrew and French.
+Free, with no purchases. Interface in English, Hebrew, French, Spanish and Tunisian Arabic.
 
 Flight routes: adsbdb.com (data by David J. Taylor and Jim Mason).

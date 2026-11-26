@@ -156,19 +156,25 @@ class AmbiancePlayer {
     }
 
     private fun jouer(pcm: ShortArray, volume: Int) {
-        val t = AudioTrack.Builder()
-            .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
-            .setAudioFormat(AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_16BIT).setSampleRate(AmbianceSynth.TAUX).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
-            .setTransferMode(AudioTrack.MODE_STATIC)
-            .setBufferSizeInBytes(pcm.size * 2)
-            .build()
+        // La création dans le même garde-fou que la lecture (relecture du 23/11) : build() lève une
+        // exception quand le système refuse la piste (mémoire audio d'un téléphone modeste), et sur ce
+        // fil sans filet elle faisait tomber l'application — à chaque reprise de la séance. Le silence
+        // vaut mieux.
+        var t: AudioTrack? = null
         runCatching {
-            t.write(pcm, 0, pcm.size)
-            t.setLoopPoints(0, pcm.size, -1)
-            t.setVolume(volume / 100f * 0.8f)
-            t.play()
-            piste = t
-        }.onFailure { t.release() }
+            val piste = AudioTrack.Builder()
+                .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                .setAudioFormat(AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_16BIT).setSampleRate(AmbianceSynth.TAUX).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
+                .setTransferMode(AudioTrack.MODE_STATIC)
+                .setBufferSizeInBytes(pcm.size * 2)
+                .build()
+            t = piste
+            piste.write(pcm, 0, pcm.size)
+            piste.setLoopPoints(0, pcm.size, -1)
+            piste.setVolume(volume / 100f * 0.8f)
+            piste.play()
+            this.piste = piste
+        }.onFailure { runCatching { t?.release() } }
     }
 
     @Synchronized

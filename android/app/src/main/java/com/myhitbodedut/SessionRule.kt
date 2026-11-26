@@ -118,6 +118,35 @@ object SessionRule {
     fun finSilencieuse(avantTerme: Boolean, masque: Boolean, sonnerieAudible: Boolean): Boolean =
         avantTerme || (masque && sonnerieAudible)
 
+    /**
+     * « Maintenant » pour une seance (decision du 24/11) : le debut, plus le temps reellement
+     * ecoule depuis, mesure sur l'horloge du telephone qui ne recule ni n'avance jamais
+     * (temps depuis le demarrage). Changer l'heure, de fuseau ou passer a l'heure d'hiver
+     * pendant une seance ne la raccourcit ni ne l'allonge plus. Apres un redemarrage cette
+     * horloge repart de zero : on revient a l'heure murale.
+     */
+    fun maintenant(
+        debutMur: Long, debutMonotone: Long, demarrageDebut: Int,
+        murActuel: Long, monotoneActuel: Long, demarrageActuel: Int,
+    ): Long =
+        if (debutMur > 0L && debutMonotone >= 0L && demarrageDebut >= 0 &&
+            demarrageDebut == demarrageActuel && monotoneActuel >= debutMonotone
+        ) debutMur + (monotoneActuel - debutMonotone) else murActuel
+
+    /** La question « Continuer ? » arrive dix secondes avant la fin (demande du 24/11). */
+    const val AVANT_FIN_SUITE_MS = 10_000L
+
+    /** Faut-il poser maintenant la question « Continuer ? » ? Une fois par etape, seance minutee seulement. */
+    fun questionDue(fin: Long, maintenant: Long, activee: Boolean, dejaPosee: Boolean): Boolean =
+        activee && !dejaPosee && fin > 0L && maintenant < fin && fin - maintenant <= AVANT_FIN_SUITE_MS
+
+    /**
+     * La nouvelle fin d'une seance prolongee de [minutes] : a partir de la fin prevue, et jamais
+     * d'un instant deja passe (une reponse donnee apres la fin repart de maintenant).
+     */
+    fun finProlongee(fin: Long, maintenant: Long, minutes: Int): Long =
+        maxOf(fin, maintenant) + minutes * 60_000L
+
     /** La plus longue seance qu'on puisse choisir ; une seance ouverte s'y arrete aussi. */
     const val PLAFOND_OUVERTE = 240
 

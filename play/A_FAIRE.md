@@ -1,86 +1,312 @@
 # Publier sur Google Play — ce qui reste à faire, dans l'ordre
 
-État au 14/11/2026. L'application, la fiche et les déclarations sont prêtes.
-Il reste les gestes que seul le propriétaire peut faire : comptes, paiement,
-secrets, écrits. Le détail de chaque formulaire est dans `play/CONSOLE.md`, le
-pourquoi dans `PUBLICATION_PLAY_STORE.md`.
+État au 24/11/2026. L'application, la fiche, les déclarations, la page des
+règles de confidentialité, la clé d'envoi, le compte et la vidéo sont prêts.
+Il reste les gestes que seul le propriétaire peut faire, presque tous dans la
+Play Console, depuis un ordinateur. Le détail de chaque formulaire est dans
+`play/CONSOLE.md`, le pourquoi dans `PUBLICATION_PLAY_STORE.md`.
 
-## 1. Mettre en ligne les règles de confidentialité (≈ 15 min)
+## Publier aujourd'hui : ce qui est possible
 
-Google exige une page publique avant tout envoi.
+- **Envoyer l'application à Google aujourd'hui : oui**, si le compte n'attend
+  plus de vérification (§ 2). Tout le reste est prêt ; il faut compter deux à
+  trois heures de saisie (§ 3 à § 5).
+- **La voir sur le Play Store aujourd'hui : non.** Une première version passe
+  par l'examen de Google, qui annonce jusqu'à sept jours, parfois plus pour un
+  compte neuf, et qu'on ne peut pas accélérer. La barrière du matin (affichage
+  par-dessus les autres applications, accès aux données d'utilisation) est de
+  celles que l'examen regarde de près.
+- **L'installer depuis Play aujourd'hui, par un lien : oui**, sur la piste de
+  test interne (jusqu'à 100 testeurs invités) : la version y arrive en quelques
+  minutes, le lien peut mettre quelques heures la première fois.
+- Tout nouvel envoi pendant l'examen remet l'application en fin de file : on
+  envoie une fois, la bonne version.
 
-1. Compte Cloudflare (gratuit) → *My Profile → API Tokens → Create Token*,
-   permission *Account → Cloudflare Pages → Edit*. Noter aussi l'*Account ID*
-   (colonne de droite du tableau de bord).
-2. GitHub → `myhitbo/MyHitbodedut` → *Settings → Secrets and variables →
-   Actions* : créer `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`.
-3. Fusionner la PR « Prêt pour Google Play » dans `main`. Le flux *Web*
-   publie le site.
-4. Depuis un téléphone, ouvrir
-   https://myhitbodedut.pages.dev/confidentialite.html#en et vérifier la date
-   « Last updated: 16 November 2026 » et la phrase « never queries OpenSky
-   Network ». Si le nom `myhitbodedut` est déjà pris sur pages.dev : voir
-   `PUBLICATION_PLAY_STORE.md` § 6.1.
+## Ce qui est fait
 
-## 2. Ranger la clé d'envoi (≈ 10 min)
+| Quoi | Depuis | Où le vérifier |
+| --- | --- | --- |
+| Règles de confidentialité en ligne | 16/11 | https://myhitbodedut.pages.dev/confidentialite.html#en (« Last updated: 16 November 2026 ») |
+| Clé d'envoi et secrets `PLAY_*` | 15/11 | flux *Vérification des secrets* vert ; empreinte ci-dessous |
+| Compte développeur **organisation** | 16/11 | HACHIVEINOU LÉTORATEKHA, n° 8221232760929604341 |
+| Droits sur la musique | 16/11 | la version Play livre 23 morceaux (`MusiquePlay.kt`) |
+| Fiche en-US et iw-IL, 8 visuels par langue | 17/11 | `play/fiche/`, `play/visuels/` |
+| Recette sur émulateurs, Android 13 à 16 | 22/11 | ci-dessous |
+| Recette des corrections du 23/11, Android 13 à 16 | 23/11 | sans faute, y compris sur le code de `play-7` : ci-dessous |
+| Six corrections trouvées par la recette | 22/11 | PR #50 « Recette avant Google Play », reprise dans la branche du 23/11 (§ 1) |
+| PR #48, #49 et #50 réunies, relecture du code, vingt et une corrections | 23/11 | branche `ccr-95e5794e-1ej68l` ; ci-dessous |
+| Décisions du 24/11 et « Continuer ? » | 24/11 | PR « Décisions du 24/11 », **à fusionner** ; ci-dessous |
+| AAB signé `play-7` (versionCode 8, version 1.7) | 23/11 | code de `main` au 24/11, **sans** les décisions du 24/11 ni « Continuer ? » : à remplacer par l'AAB construit après la fusion (§ 1). **Ne pas envoyer** `play-3` (17/11, aucune correction), `play-4` et `play-5` (23/11, construits avant la contre-relecture), ni `play-6` (23/11, construit sur `main` : les trois PR, mais **aucune** des corrections du 23/11, dont les trois plantages) |
+| Note aux examinateurs, rejouée mot pour mot | 22/11 | `play/CONSOLE.md` § 3.2 |
+| Vidéo des services de premier plan | 22/11 | `MyHitbodedut-foreground-services.mp4`, `play/CONSOLE.md` § 3.9 |
 
-La clé d'envoi `upload-myhitbodedut.jks` (alias `upload`) et son mot de passe
-ont été remis à part, hors du dépôt. Empreinte SHA-256 du certificat :
+Empreinte SHA-256 du certificat d'envoi (`upload-myhitbodedut.jks`, alias
+`upload`), à comparer à celle que la Play Console affichera :
 `E8:61:C4:49:2C:AE:8D:A3:59:6A:27:1E:C1:AB:DD:45:3D:2B:67:EA:9F:4B:30:58:60:BE:56:90:30:77:67:B3`.
+La clé et son mot de passe restent à deux endroits hors ligne, jamais dans le
+dépôt. Avec *Play App Signing*, une clé d'envoi perdue se remplace sur demande
+à Google.
 
-1. Les copier à deux endroits hors ligne (clé USB, gestionnaire de mots de
-   passe). Ne jamais les mettre dans le dépôt.
-2. Secrets GitHub, pour que le flux *Play* construise les versions suivantes :
-   `PLAY_KEYSTORE_BASE64` (contenu du fichier `PLAY_KEYSTORE_BASE64.txt`
-   remis avec la clé), `PLAY_KEYSTORE_PASSWORD` et `PLAY_KEY_PASSWORD` (le mot
-   de passe), `PLAY_KEY_ALIAS` = `upload`.
+### La relecture du 23/11
 
-Avec *Play App Signing*, une clé d'envoi perdue se remplace sur demande à
-Google ; la clé de signature finale reste chez Google.
+Les PR #48 (check-up du 11/11), #49 (rond du hassid, הרחמן) et #50 (recette)
+sont réunies sur la branche `ccr-95e5794e-1ej68l`, sans conflit, et
+fusionnées dans `main` le même jour. Le code a
+ensuite été relu en quatre passes (services et arrière-plan ; données et
+réglages ; accueils et séance ; vol, lieu, zmanim et textes), à la recherche
+de ce qu'un parcours d'émulateur ne voit pas. Chaque constat a été vérifié
+dans le code avant d'être corrigé. Sur la construction Play : 939 tests,
+lint sans erreur ; 353 tests du site.
 
-## 3. Compte développeur (1 à 3 jours, côté Google)
+Trois plantages :
 
-**Fait le 16/11** : compte **organisation** au nom de l'association
-HACHIVEINOU LÉTORATEKHA (n° 8221232760929604341). Reste, `play/CONSOLE.md`
-§ 1 : finir les vérifications que la console demande (D-U-N-S, téléphone,
-site), statut de commerçant (*Non-trader* pour une association qui publie
-gratuitement : déclaration juridique de l'association). Nom public du
-développeur : « MyHitbodedut Team ».
+1. **Ouman et Kiev, Android 8 et 9** : leur fuseau portait un nom récent
+   (`Europe/Kyiv`) que ces téléphones ne connaissent pas. L'écran des zmanim
+   tombait au choix de la ville, puis l'application à chaque lancement.
+2. **Appareil sans vignettes** (Chromebook, Android Go) : l'accueil tombait à
+   chaque retour.
+3. **Ambiance sonore** sur un téléphone à faible mémoire audio : l'application
+   tombait, puis à chaque reprise de la séance.
 
-## 4. Créer l'application et envoyer la première version (≈ 2 h)
+Vie privée :
 
-Suivre `play/CONSOLE.md` § 2 à § 5 : contenu de l'application, fiche en-US et
-iw-IL, visuels de `play/visuels/en-US` et `play/visuels/iw-IL`.
+4. **Verrou du journal** : le carnet du bravo préremplissait la page du jour
+   (note, gratitude, humeur) sans demander le code.
+5. Plantage du verrou après une demande de code restée sans réponse.
 
-Première version : `MyHitbodedut-1.0-play.aab` (versionCode 1, versionName
-1.0), remise avec `mapping-1.0.txt`. Le flux *Play* produira ensuite le
-versionCode 2, 3, … sans collision.
+Comportement :
 
-Vidéo à tourner pour la déclaration des services de premier plan
-(`play/CONSOLE.md` § 3.9) : une séance lancée, écran verrouillé, la
-notification ; puis l'écran « Je suis avec Hachem » sur une application
-choisie.
+6. Accueils Sérénité, Bento, Instant et Pile : les zmanim ignoraient le profil
+   du rite (Edot par défaut) ; « tsét » n'avait pas la même heure que sur
+   l'écran des zmanim et les vignettes.
+7. Ces accueils montraient la traduction française en espagnol et en arabe
+   tunisien, et ignoraient le choix « hébreu seul ».
+8. Un trophée gagné n'y ouvrait jamais sa fiche.
+9. Le réglage « Écran d'ouverture », sans effet hors du Classique, ne s'y
+   montre plus.
+10. Chaque toucher d'une notification ou de la vignette de la série posait un
+    accueil de plus sur ceux déjà ouverts.
+11. La note d'une ancienne séance se reproposait à chaque retour depuis les
+    Récents.
+12. Rappels en vol : la notification de la fin du Chema donnait une heure
+    trente minutes trop tôt, toujours « selon le Gra ».
+13. Vol : « arrivée estimée » se perdait à la rotation de l'écran.
+14. Vol : un long billet collé figeait l'écran pendant sa lecture.
+15. Séance : si le système tue l'application avant la fin, « Ne pas déranger »
+    restait allumé jusqu'à la prochaine ouverture. Une alarme au terme prévu
+    clôt maintenant la séance et le rétablit.
+16. « Tout effacer » pendant une séance laissait la musique tourner.
+17. Après « Tout effacer », un téléphone dans une langue non livrée passait en
+    français jusqu'au redémarrage.
+18. Musique ajoutée : le sélecteur ne propose plus que les fichiers du
+    téléphone (un fichier resté dans un nuage figeait l'écran à l'écoute).
+19. « Mon parcours » relisait tout le journal une fois par jour d'historique.
+20. Le partage du grade pouvait faire tomber l'écran (cache plein).
+21. Fiche Play : elle annonçait trois langues ; l'application en parle cinq.
 
-## 5. Les écrits sur la musique — **réglé le 16/11**
+Ces corrections ont ensuite été relues par un relecteur qui ne les avait pas
+écrites, à la recherche de ce qu'elles auraient cassé. Il n'a trouvé ni
+plantage ni perte de données, et trois retouches à faire, faites dans
+`play-7` :
 
-`PUBLICATION_PLAY_STORE.md` § 3.2. Trois morceaux livrés n'ont pas
-d'accord écrit complet au dossier : « Eshet 'Hayil » et « Arba Bavot » (duos
-avec Or Shpayer) et « Zemer bichva'hin (titre incertain) ». Soit une annexe
-signée (titres, compositeurs, autorisation « distribution publique gratuite
-dans une application mobile, via Google Play, monde entier »), soit les
-retirer de la version Play (`MusiquePlay.kt` → `MusiqueHorsPlay.kt`).
+- la correction 4 fermait la page du carnet en pleine saisie quand l'écran du
+  bravo était recréé (passage au thème sombre, taille du texte, application
+  tuée en arrière-plan), journal verrouillé : ce qui était tapé restait au
+  brouillon, sans être enregistré. La page se décide maintenant une fois par
+  bravo ;
+- la correction 10 valait aussi pour l'icône, sur les accueils Sérénité,
+  Bento, Instant et Pile : quand l'application avait été ouverte par une
+  notification, toucher l'icône fermait l'écran en cours (une saisie de vol
+  non enregistrée avec lui). Elle ne vaut plus que pour les notifications et
+  la vignette ;
+- la correction 15 annonçait un trophée dans la langue du téléphone, et non
+  celle de l'application, avant Android 13.
 
-**Fait le 16/11 : retirés de la version Play** (et donc du site). La version
-Play livre 23 morceaux. Un écrit signé les fera revenir : remettre le fichier
-dans `main/res/raw`, la ligne dans `MusiquePlay.kt` et le nom dans
-`MusicFilesTest`.
+Relevé sans être corrigé le 23/11, **tranché par le propriétaire le 24/11 et
+fait** (PR « Décisions du 24/11 ») :
 
-## 6. Test interne puis production
+- Les accueils Sérénité, Bento, Instant et Pile affichaient le texte de la
+  dernière note : il paraissait dans les captures d'écran et l'aperçu des
+  applications récentes. **Ils ne montrent plus que l'existence d'une note**
+  (« Une note, à lire dans le journal »).
+- Le bilan de la semaine ne s'ouvrait que sur l'accueil Classique : **il
+  s'ouvre sur tous les accueils**.
+- En arabe, quelques nombres pouvaient s'écrire en chiffres arabes orientaux :
+  **toujours 0 à 9** (boussole, vol, Tehilim, chemin, lune).
+- La recherche dans tous les livres relisait 28 Mo de textes à chaque requête :
+  **elle lit un index écrit une fois par version** ; mêmes résultats.
+- La durée d'une séance suivait l'horloge du téléphone : **elle se mesure sur
+  le temps réellement écoulé** ; changer l'heure ne la change plus.
+
+### « Continuer ? » à la fin d'une séance (demande du 24/11)
+
+Sur toutes les versions de l'accueil (l'écran de séance leur est commun) :
+une option avant de commencer, allumée par défaut, « Me demander 10 s avant
+la fin si je continue ». Dix secondes avant la fin d'une séance minutée, une
+notification propose **+ 5 min**, **+ la même durée** ou **sans fin** ; sur
+l'écran de séance, la même question avec aussi **Non, terminer**. Sans
+réponse, la séance va à son terme et s'inscrit comme avant. Prolongée, elle
+s'inscrit pour toute sa durée, et la question revient avant la nouvelle fin.
+
+Ce qui reste à voir sur un vrai téléphone : que la notification s'entende
+quand la séance a mis le téléphone en « Ne pas déranger » (Android ne laisse
+passer la question que si l'application a l'accès à ce mode, celui-là même
+que l'option « Ne pas déranger » de la séance demande).
+
+### La recette du 23/11
+
+Les corrections du jour sont passées sur émulateurs, dans la construction
+Play telle qu'elle est publiée, par le même parcours que la veille :
+
+- **avant la contre-relecture** (exécution n° 38 du flux *QA Android*) :
+  Android 13, 14, 15 et 16 ; le chemin de l'examinateur, les cinq accueils, la
+  séance et la barrière sur les quatre ; le redémarrage sur Android 13 et 16 ;
+  tous les écrans en français (14) et en arabe tunisien (15) ; la présentation
+  (13). 474 captures ;
+- **sur le code de `play-7`** (exécution n° 39) : le chemin de l'examinateur,
+  les cinq accueils et la séance, sur Android 13 et 16. 114 captures.
+
+**Aucun plantage, aucun « l'application ne répond pas », aucune faute relevée
+par les contrôles automatiques**, sur aucune des six cibles. Les accueils
+touchés et l'écran de fin de séance ont été regardés à l'œil. Les bilans sont
+sur les branches `claude/qa-api33-relecture` à `claude/qa-api36-relecture`,
+`claude/qa-api33-contre` et `claude/qa-api36-contre` (`journal.txt`,
+`plantages.txt` ; un `fautes.txt` n'existe que s'il y a une faute).
+
+Ce que cette recette ne voit pas : Android 8 à 12 (les émulateurs du flux
+commencent à Android 13), donc ni le plantage d'Ouman et de Kiev ni la langue
+des notifications avant Android 13, vérifiés par les tests et à la lecture du
+code seulement ; et tout ce que la recette du 22/11 ne remplace pas non plus
+(ci-dessous).
+
+### La recette du 22/11
+
+La construction Play telle qu'elle est publiée (release, R8, `-Pplay=true`) a
+été passée sur des émulateurs Android 13, 14, 15 et 16 par
+`.github/captures/recette.py` (flux *QA Android (émulateurs)*), chaque capture
+regardée ; puis rejouée en entier sur le code corrigé de la PR #50 :
+11 émulateurs, 2 053 captures, les contrôles automatiques sur chaque écran et,
+à l'œil, tout ce que les corrections touchent.
+
+- **Aucun plantage, aucun « l'application ne répond pas »**, sur aucune version.
+- **Le chemin de l'examinateur** (application neuve, en anglais) : sans faute
+  sur les quatre versions.
+- **La séance** : le service tourne au premier plan sous les deux types
+  déclarés (usage spécial et lecture de média), écran éteint compris.
+- **La barrière** : l'écran de garde se pose sur l'application choisie, la
+  touche retour ne le contourne pas, le report le retire, il ne se pose ni
+  sur les Réglages d'Android ni sur le Téléphone ; après un **vrai
+  redémarrage**, le service repart seul et retient encore, sur les quatre
+  versions.
+- **Les écrans** : français, hébreu, espagnol, arabe tunisien ; clair et
+  sombre ; navigation par gestes et à trois boutons ; téléphone couché,
+  tablette debout et couchée, pliant ; les cinq versions de l'application, de
+  jour et le soir.
+
+Six défauts trouvés, corrigés dans la PR #50 « Recette avant Google Play »,
+tests à l'appui :
+
+1. **Séance** : « Une question » coupé au milieu du mot sous « Commencer
+   simplement ».
+2. **Accueil Classique, écran couché** : la colonne de l'en-tête réduite à
+   150 dp, le titre coupé lettre par lettre, les anneaux sous le pli.
+3. **Présentation** : elle annonçait trois langues ; l'application en parle
+   cinq.
+4. **Accueils Bento, Instant et Sérénité, chaque soir** : après le dernier zman
+   du jour ils proposaient « Choisir un lieu », lieu choisi ou non. Ils
+   montrent maintenant le dernier repère du jour et son heure.
+5. **Accueils Pile, Bento, Instant et Sérénité** : dans la dernière minute avant
+   un zman ils annonçaient « dans 0 min ».
+6. **Accueil Instant, Android 15 et 16** : à l'ouverture de l'écran, debout,
+   l'émulateur lui-même s'arrêtait — pas l'application : aucun plantage dans
+   ses journaux, c'est le programme de l'émulateur qui disparaissait. Quatorze
+   essais ont isolé la cause : les dégradés du paysage du ciel, peints à
+   chaque trame par le rendu logiciel d'OpenGL. Le paysage est maintenant
+   peint une seule fois dans une image ; l'accueil Instant s'ouvre sur les
+   quatre versions d'Android, debout, couché, sur tablette, de jour et de
+   nuit.
+
+**Aucune n'est dans `play-3`.** La sixième suffit à ne pas l'envoyer tel
+quel : le premier lancement propose les cinq versions de l'application, et les
+tests de Google peuvent passer par des appareils virtuels (Firebase Test Lab,
+qui fait tourner le rapport de pré-lancement, en propose). Elles sont toutes
+dans `play-7`.
+
+Ce que la recette ne remplace pas : un vrai téléphone — le son, la veille
+profonde, les surcouches Samsung et Xiaomi qui arrêtent les services — et,
+pour le point 6, l'accueil Instant vu une fois sur un téléphone Android 15 ou
+16 (*Réglages › Version de l'app › Instant*) : un émulateur qui s'arrête ne
+dit rien d'un vrai processeur graphique, dans un sens comme dans l'autre.
+
+## 1. Fusionner et reconstruire le paquet (≈ 20 min)
+
+Les PR #48 à #51 sont dans `main` depuis le 24/11 ; `play-7` est construit
+sur ce code. Les décisions du 24/11 et « Continuer ? » sont dans la PR
+« Décisions du 24/11 ».
+
+1. **Fusionner la PR « Décisions du 24/11 »** dans `main`.
+2. GitHub → *Actions → Play → Run workflow* sur `main`. Le flux refait les
+   tests, signe avec la clé d'envoi et dépose l'artefact `play-N` :
+   `MyHitbodedut-N.aab` et `mapping-N.txt`. **C'est ce paquet-là qu'on
+   envoie**, plus `play-7`. Un artefact se garde 30 jours.
+
+Pour reconstruire plus tard : *Actions → Play → Run workflow* sur `main`,
+une fois cette branche fusionnée. Le numéro de version suit celui de
+l'exécution ; ne jamais renvoyer un versionCode déjà envoyé à Google.
+
+## 2. Finir le compte (côté Google, 1 à 3 jours)
+
+`play/CONSOLE.md` § 1 : les vérifications que la console demande encore
+(D-U-N-S, téléphone, site de l'organisation), et le statut de commerçant —
+*Non-trader* pour une association qui publie gratuitement, hors de toute
+activité commerciale : c'est une déclaration juridique de l'association. Nom
+public du développeur : « MyHitbodedut Team ».
+
+## 3. Mettre la vidéo en ligne (≈ 5 min, possible depuis le téléphone)
+
+Le fichier est sur la branche `claude/video-play` du dépôt (GitHub → branche
+`claude/video-play` → `MyHitbodedut-foreground-services.mp4` → *Download*).
+YouTube → *Créer → Importer une vidéo* → `MyHitbodedut-foreground-services.mp4`,
+visibilité **Non répertoriée**, « pas conçue pour les enfants ». Titre et
+description : `play/CONSOLE.md` § 3.9. Garder le lien : il va dans les deux
+déclarations de service.
+
+## 4. Créer l'application et tout saisir (≈ 2 h, sur un ordinateur)
+
+Suivre `play/CONSOLE.md` § 2 à § 5, dans l'ordre : création, contenu de
+l'application (règles de confidentialité, note aux examinateurs, publicités,
+classification, public, sécurité des données, identifiant publicitaire,
+services de premier plan avec le lien de la vidéo, position exacte), fiche
+en-US et iw-IL, visuels, catégorie.
+
+Avec Chrome ouvert sur la Play Console et l'extension Claude connectée, une
+session Claude peut remplir ces formulaires avec le propriétaire, écran par
+écran ; l'envoi pour examen reste son geste.
+
+## 5. Test interne, vrais téléphones, production
 
 Compte **organisation** : pas de test fermé obligatoire (ni 12 testeurs, ni
-14 jours). Piste de test interne, recette, puis production directement
-(`play/CONSOLE.md` § 6).
+14 jours).
 
-Sur la piste interne, passer la recette sur de vrais téléphones
-(`PUBLICATION_PLAY_STORE.md` § 8), en particulier la barrière du matin sur un
-Samsung et un Xiaomi.
+1. *Internal testing* : envoyer l'AAB, puis `mapping-N.txt`
+   (`play/CONSOLE.md` § 6).
+2. Installer **depuis Play** sur de vrais téléphones et passer la recette de
+   `PUBLICATION_PLAY_STORE.md` § 8 — en premier la barrière du matin et la
+   séance écran éteint sur un Samsung et un Xiaomi, la musique qu'on entend,
+   et l'accueil Instant sur un Android 15 ou 16.
+3. Lire le rapport de pré-lancement de la console (plantages, accessibilité).
+4. *Production* : tous les pays, déploiement progressif à 20 %, *Send changes
+   for review*.
+
+## 6. Dons (plus tard, avec la version Play)
+
+Décidé le 17/11 : la page de dons viendra avec la version Play. Il faudra :
+
+1. HelloAsso : l'association s'inscrit avec son numéro RNA, ajoute son IBAN, fait
+   vérifier le compte (pièce d'identité du président, statuts), puis crée un
+   « Formulaire de don » (« Soutenir MyHitbodedut »). Garder le lien du formulaire.
+2. Site : page `don.html` (fr, en, he) avec le bouton vers ce lien.
+3. Application : bouton « Soutenir l'app » dans les Réglages, qui ouvre la page
+   dans le navigateur, jamais dans l'application ; jamais le paiement de Google
+   Play pour un don. Avoir les statuts de l'association sous la main au cas où
+   l'examen de Google demande la preuve du caractère non lucratif.

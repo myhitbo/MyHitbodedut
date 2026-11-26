@@ -164,7 +164,9 @@ object ZmanimVignette {
 
     /** Toutes les vignettes posées, des trois tailles ; puis le prochain changement programmé. */
     fun rafraichir(context: Context) {
-        val manager = AppWidgetManager.getInstance(context)
+        // Null sur un appareil sans vignettes (Chromebook, Android Go) : l'accueil, qui appelle ceci à
+        // chaque retour, tombait. StreakWidget et BoussoleWidget s'en gardaient déjà (relecture du 23/11).
+        val manager = AppWidgetManager.getInstance(context) ?: return
         val c = LangueApp.envelopper(context)
         var posees = 0
         for ((classe, taille) in listOf(ZmanimPetitWidget::class.java to Taille.PETITE, ZmanimWidget::class.java to Taille.MOYENNE,

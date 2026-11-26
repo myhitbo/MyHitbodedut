@@ -492,7 +492,7 @@
     <string name="onboarding_texts">טקסטים לתפילה</string>
     <string name="onboarding_texts_body">התיקון הכללי, תהילים, הסידור, תפילות לפי נושא, מקורות על ההתבודדות ועצות להתבודדות, זמינים מתי שרוצים.</string>
     <string name="onboarding_yours">בדרך שלכם</string>
-    <string name="onboarding_yours_body">בהגדרות: השפה (צרפתית, אנגלית או עברית), צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
+    <string name="onboarding_yours_body">בהגדרות: השפה, צבעי המסך, השם הפרטי ומשך ההתבודדות הרגיל. למוזיקה יש מסך משלה.</string>
     <string name="onboarding_gate">מחסום הבוקר</string>
     <string name="onboarding_gate_body">אם תרצו, האפליקציות שתבחרו ימתינו להתבודדות שלכם: בשעות שתקבעו, מסך ישאל קודם אם היא כבר נעשתה. מפעילים בהגדרות, ואפשר לכבות בכל רגע.</string>
     <string name="onboarding_adresse">איך לפנות אליכם?</string>
@@ -854,6 +854,8 @@
     <string name="ajout_zimun">זימון</string>
     <string name="ajout_facultatif">מנהג, לא חובה</string>
     <string name="ajout_facultatif_avant">מזמורים לפני ברכת המזון (מנהג, לא חובה)</string>
+    <string name="ajout_harahaman_invite">הרחמן של האורח, לבעל הבית</string>
+    <string name="ajout_harahaman_maison">הרחמן של בני הבית: על שלחן אביו, או על שלחן עצמו</string>
     <string name="ajout_facultatif_apres">הרחמן וסיום (מנהג, לא חובה)</string>
     <string name="ajout_embolismique">שנה מעוברת (וּלְכַפָּרַת פֶּשַׁע)</string>
     <string name="ajout_beit_avel">בית האבל</string>
@@ -1687,6 +1689,7 @@
     <string name="version_reprendre">חזרה להתבודדות</string>
     <string name="version_encore">עוד התבודדות</string>
     <string name="version_commencer">להתחיל · %1$s</string>
+    <string name="version_commencer_court">להתחיל</string>
     <string name="version_preparer">משך, נושא, מוזיקה</string>
     <string name="version_chargement">טוען את הטקסט היומי…</string>
     <string name="version_plus_de_textes">עוד חיזוק</string>
@@ -1696,6 +1699,7 @@
     <string name="version_tous_zmanim">כל הזמנים</string>
     <string name="version_journal_vide">עדיין לא נכתב דבר. אחרי התבודדות, שורה אחת מספיקה.</string>
     <string name="version_note_sans_texte">ללא הערה.</string>
+    <string name="version_note_ecrite">יש הערה, לקריאה ביומן.</string>
     <string name="version_ecrire_note">לכתוב את הערת היום</string>
     <string name="version_tout_journal">כל היומן</string>
     <string name="version_parcours">המסלול שלי</string>
@@ -1748,4 +1752,32 @@
     <string name="serenite_lire">לקרוא</string>
     <string name="serenite_tout_voir">הכול</string>
     <string name="serenite_cette_semaine">הימים האחרונים שלכם</string>
+
+    <!-- Version Instant (VersionApp, 17/11). -->
+    <string name="version_instant">רגע</string>
+    <string name="version_instant_desc">לוח כהה: השמיים של הרגע עם הזמנים בקטן, מד שבועי, הדקות שלכם בעמודות.</string>
+    <string name="instant_titre">ההתבודדות של היום</string>
+    <string name="instant_z_netz">נץ</string>
+    <string name="instant_z_chatsot">חצות</string>
+    <string name="instant_z_minha">מנחה</string>
+    <string name="instant_z_chkia">שקיעה</string>
+    <string name="instant_z_tset">צאת</string>
+    <string name="instant_semaine">שבוע</string>
+    <string name="instant_cette_semaine">ימים שנעשו</string>
+    <string name="instant_serie">רצף</string>
+    <string name="instant_total">%1$s בסך הכול</string>
+    <string name="instant_minutes">7 הימים האחרונים שלכם</string>
+    <string name="instant_moyenne">ממוצע בימים שנעשו: %1$s</string>
+    <!-- « Continuer ? » dix secondes avant la fin d’une séance (24/11). -->
+    <string name="session_suite_option">לשאול אותי 10 שניות לפני הסוף אם להמשיך</string>
+    <string name="session_suite_titre">להמשיך את ההתבודדות?</string>
+    <string name="session_suite_texte">היא מסתיימת בעוד 10 שניות. בלי תשובה, היא נעצרת ונרשמת ביומן.</string>
+    <string name="session_suite_plus">+ %1$s</string>
+    <string name="session_suite_sans_fin">בלי סוף</string>
+    <string name="session_suite_non_court">לא</string>
+    <string name="session_suite_oui_plus">כן, עוד %1$s</string>
+    <string name="session_suite_oui_sans_fin">כן, בלי סוף</string>
+    <string name="session_suite_non">לא, לסיים</string>
+    <string name="channel_suite">להמשיך את ההתבודדות</string>
+    <string name="channel_suite_description">השאלה שנשאלת 10 שניות לפני סוף התבודדות עם זמן קבוע.</string>
 </resources>

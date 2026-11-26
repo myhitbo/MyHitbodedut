@@ -67,7 +67,10 @@ class NoteDialog : DialogFragment() {
                 text = e
                 textSize = 26f
                 gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(0, (44 * density).toInt(), 1f)
+                // Hauteur minimale plutôt que fixe : en grande police, les
+                // visages étaient rognés (check-up du 11/11).
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                minHeight = (48 * density).toInt()
                 contentDescription = activity.getString(R.string.journal_humeur_n, i + 1)
                 setOnClickListener {
                     poser(if (valeur == i + 1) 0 else i + 1)
@@ -126,14 +129,22 @@ class NoteDialog : DialogFragment() {
         champGratitude = EditText(activity).apply {
             filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
             setHint(R.string.journal_gratitude_hint)
-            setSingleLine()
+            // Jusqu'à 200 caractères : sur une seule ligne, ni l'indice ni la
+            // réponse ne se relisaient (check-up du 11/11).
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            minLines = 1
+            maxLines = 3
             sansApprentissage(this, verrou)
         }
         // La seconde question de fin (19/10) : une chose à travailler.
         champTravail = EditText(activity).apply {
             filters = arrayOf(android.text.InputFilter.LengthFilter(JournalPlus.GRATITUDE_MAX))
             setHint(R.string.journal_travail_hint)
-            setSingleLine()
+            // Jusqu'à 200 caractères : sur une seule ligne, ni l'indice ni la
+            // réponse ne se relisaient (check-up du 11/11).
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            minLines = 1
+            maxLines = 3
             sansApprentissage(this, verrou)
         }
 
@@ -286,7 +297,7 @@ class NoteDialog : DialogFragment() {
         }
 
         /** Le jour a déjà du texte, enregistré ou en brouillon : c'est lui que le verrou garde. */
-        private fun dejaEcrit(activity: FragmentActivity, date: String): Boolean {
+        fun dejaEcrit(activity: android.content.Context, date: String): Boolean {
             val plus = JournalPlus.lire(activity, date)
             return Store.record(activity, date)?.note.orEmpty().isNotBlank() || NoteBrouillon.lire(activity, date) != null ||
                 plus.gratitude.isNotBlank() || plus.travail.isNotBlank() || plus.avant != 0 || plus.apres != 0

@@ -83,14 +83,21 @@ export function pour(livre, iso, enIsrael) {
   return choix(livre, PARSHIOT[p], semaine, jc.getJewishYear(), Math.max(0, jc.getDayOfChanukah()));
 }
 
+// Le livre mis à plat une seule fois (check-up du 11/11) : chaque frappe le renormalisait en entier.
+const aPlat = new WeakMap();
 export function recherche(livre, texte) {
   const nu = (t) => t.replace(/[־׀]/g, ' ').replace(/[֑-ׇ"'״׳]/g, '');
   const q = nu(texte.trim());
   if (q.length < 2) return [];
-  const tout = Object.keys(livre.annees).sort().flatMap((a) => Object.values(livre.annees[a])
-    .flatMap((s) => s.h.map((t, i) => ({ texte: t, numero: i + 1, section: s.he, annee: Number(a) }))));
-  if (livre.hanouka) tout.push(...livre.hanouka.h.map((t, i) => ({ texte: t, numero: i + 1, section: livre.hanouka.he, annee: 1 })));
-  return tout.filter((x) => nu(x.texte).includes(q));
+  let tout = aPlat.get(livre);
+  if (!tout) {
+    const liste = Object.keys(livre.annees).sort().flatMap((a) => Object.values(livre.annees[a])
+      .flatMap((s) => s.h.map((t, i) => ({ texte: t, numero: i + 1, section: s.he, annee: Number(a) }))));
+    if (livre.hanouka) liste.push(...livre.hanouka.h.map((t, i) => ({ texte: t, numero: i + 1, section: livre.hanouka.he, annee: 1 })));
+    tout = liste.map((x) => ({ x, n: nu(x.texte) }));
+    aPlat.set(livre, tout);
+  }
+  return tout.filter((e) => e.n.includes(q)).map((e) => ({ ...e.x }));
 }
 
 /** « בן איש חי · שנה ראשונה · לך לך · אות א » */

@@ -29,8 +29,16 @@ class MusicActivity : AppCompatActivity() {
     private var preview: MusicPlayer? = null
     private var previewingId: String? = null
 
+    /**
+     * Des fichiers présents sur le téléphone seulement (EXTRA_LOCAL_ONLY, relecture du 23/11) : un
+     * morceau resté dans un nuage (Drive, OneDrive…) se téléchargeait à chaque écoute, sur le fil de
+     * l'écran, qui se figeait le temps du transfert — et ne jouait pas du tout sans réseau.
+     */
     private val pickAudio =
-        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        registerForActivityResult(object : ActivityResultContracts.OpenDocument() {
+            override fun createIntent(context: android.content.Context, input: Array<String>): android.content.Intent =
+                super.createIntent(context, input).putExtra(android.content.Intent.EXTRA_LOCAL_ONLY, true)
+        }) { uri ->
             if (uri != null) addTrack(uri)
         }
 

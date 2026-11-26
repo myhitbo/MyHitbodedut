@@ -120,6 +120,9 @@ class VolActivity : AppCompatActivity() {
             arrivee = savedInstanceState.getString(ETAT_ARRIVEE)?.let { Aeroports.parIata(aeroports, it) }
             decollage = savedInstanceState.getString(ETAT_DECOLLAGE)?.let(LocalDateTime::parse)
             atterrissage = savedInstanceState.getString(ETAT_ATTERRISSAGE)?.let(LocalDateTime::parse)
+            // Gardé lui aussi (relecture du 23/11) : après une rotation, « Calculer » enregistrait
+            // l'atterrissage estimé d'après la distance comme l'heure du billet.
+            arriveeEstimee = savedInstanceState.getBoolean(ETAT_ESTIMEE, Store.volArriveeEstimee(this))
         } else if (enregistre != null) {
             numero = enregistre.numero
             depart = enregistre.depart
@@ -144,6 +147,7 @@ class VolActivity : AppCompatActivity() {
         outState.putString(ETAT_ARRIVEE, arrivee?.iata)
         outState.putString(ETAT_DECOLLAGE, decollage?.toString())
         outState.putString(ETAT_ATTERRISSAGE, atterrissage?.toString())
+        outState.putBoolean(ETAT_ESTIMEE, arriveeEstimee)
     }
 
     override fun onResume() {
@@ -163,7 +167,7 @@ class VolActivity : AppCompatActivity() {
     }
 
     private val contenu get() = findViewById<LinearLayout>(R.id.vol_contenu)
-    private val locale get() = Locale.forLanguageTag(ChizukCard.language(this))
+    private val locale get() = Chiffres.locale(ChizukCard.language(this))
 
     /** Le formulaire rouvert pour modifier le vol calculé ; replié en résumé sinon (29/10). */
     private var modifier = false
@@ -1330,5 +1334,6 @@ class VolActivity : AppCompatActivity() {
         const val ETAT_ARRIVEE = "vol_arrivee"
         const val ETAT_DECOLLAGE = "vol_decollage"
         const val ETAT_ATTERRISSAGE = "vol_atterrissage"
+        const val ETAT_ESTIMEE = "vol_arrivee_estimee"
     }
 }

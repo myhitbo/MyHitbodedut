@@ -99,7 +99,8 @@ class PaliersActivity : AppCompatActivity() {
                 minHeight = dp(48)
                 setPadding(dp(16), 0, dp(16), 0)
                 foreground = ondulation()
-                setOnClickListener { partager(grade, n) }
+                // Comme le partage d'un jour (VueJour) : un cache plein ou illisible ne fait pas tomber l'écran.
+                setOnClickListener { runCatching { partager(grade, n) } }
                 layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                     gravity = Gravity.CENTER_HORIZONTAL; topMargin = dp(4)
                 }

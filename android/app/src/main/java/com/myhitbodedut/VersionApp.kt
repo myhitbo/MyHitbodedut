@@ -33,6 +33,8 @@ enum class VersionApp(
         intArrayOf(0xFF14111F.toInt(), 0xFF4E3486.toInt(), 0xFFF2C6A0.toInt())),
     BENTO("bento", R.string.version_bento, R.string.version_bento_desc, BentoActivity::class.java,
         intArrayOf(0xFFF2F2EF.toInt(), 0xFF123B30.toInt(), 0xFFD9F56B.toInt())),
+    INSTANT("instant", R.string.version_instant, R.string.version_instant_desc, InstantActivity::class.java,
+        intArrayOf(0xFF141414.toInt(), 0xFF232323.toInt(), 0xFFC2D67A.toInt())),
     PILE("pile", R.string.version_pile, R.string.version_pile_desc, PileActivity::class.java,
         intArrayOf(0xFF1D1B2E.toInt(), 0xFF0E4D52.toInt(), 0xFF7FE7D9.toInt()));
 
@@ -48,7 +50,19 @@ enum class VersionApp(
          */
         fun rediriger(activite: Activity): Boolean {
             val cible = courante(activite).accueil ?: return false
-            activite.startActivity(Intent(activite, cible).apply { activite.intent?.extras?.let(::putExtras) })
+            // CLEAR_TOP, depuis une notification ou une vignette : l'accueil de cette version déjà
+            // ouvert dans la tâche est repris à neuf, avec l'intention reçue, au lieu d'en recevoir
+            // un second par-dessus (relecture du 23/11). Pas depuis l'icône : sur une tâche ouverte
+            // par une notification, Android repose MainActivity au-dessus de l'écran en cours, et
+            // CLEAR_TOP aurait fermé cet écran — une saisie en cours avec lui.
+            val recue = activite.intent
+            val icone = recue?.action == Intent.ACTION_MAIN && recue.hasCategory(Intent.CATEGORY_LAUNCHER)
+            activite.startActivity(
+                Intent(activite, cible).apply {
+                    if (!icone) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    recue?.extras?.let(::putExtras)
+                }
+            )
             activite.overridePendingTransition(0, 0)
             activite.finish()
             return true

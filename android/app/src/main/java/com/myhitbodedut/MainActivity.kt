@@ -1,5 +1,6 @@
 package com.myhitbodedut
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -43,6 +44,13 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Rouverte depuis les Récents : Android rejoue l'intention d'origine, extras compris, et la
+        // note d'une ancienne séance se reproposait à chaque fois (comme SessionActivity.lireDemande).
+        if (intent != null && intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) intent.removeExtra(EXTRA_ASK_NOTE)
+        // L'accueil est ouvert aux autres applications (lanceur) : le jour demandé est une date, ou rien.
+        intent?.getStringExtra(EXTRA_ASK_NOTE)?.let { jour ->
+            if (runCatching { java.time.LocalDate.parse(jour) }.isFailure) intent.removeExtra(EXTRA_ASK_NOTE)
+        }
         // Une autre version que Classique est choisie (VersionApp, 17/11) : son accueil prend la place.
         if (VersionApp.rediriger(this)) return
         setContentView(R.layout.activity_main)
@@ -530,7 +538,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
     private fun renderChemin() {
         val total = Store.totalMinutes(this)
         val faites = Store.joursFaits(this).size
-        val langue = resources.configuration.locales[0]
+        val langue = Chiffres.locale(resources.configuration.locales[0])
         findViewById<TextView>(R.id.chemin_serie).text = String.format(langue, "%d", Store.streak(this))
         findViewById<TextView>(R.id.chemin_meilleure).text = String.format(langue, "%d", Store.meilleureSerie(this))
         findViewById<TextView>(R.id.chemin_total).text = Store.formatDuration(this, total)
@@ -794,44 +802,7 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
         }
         // Un palier ou un trophée neuf : des étincelles du grade (16/10, animation E).
         Celebrations.ecran(this)
-        bilanDeLaSemaine()
-    }
-
-    /** Le bilan de la semaine écoulée (16/10, point 7) : à la première ouverture de la semaine, une fois. */
-    private fun bilanDeLaSemaine() {
-        // Rien à calculer quand le bilan de cette semaine a déjà été montré.
-        val debut = BilanSemaine.debutSemaine(java.time.LocalDate.now()).minusDays(7)
-        if (Store.bilanVu(this) == debut.toString()) return
-        val minutes = Store.bilan(this).minutes
-        val b = BilanSemaine.precedente(java.time.LocalDate.now(), minutes, Store.datesTrophees(this))
-        if (b == null) { Store.setBilanVu(this, debut.toString()); return }
-        Store.setBilanVu(this, b.debut.toString())
-        val d = resources.displayMetrics.density
-        val vue = android.widget.LinearLayout(this).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding((24 * d).toInt(), (8 * d).toInt(), (24 * d).toInt(), 0)
-            addView(VueJour.texte(context, getString(R.string.bilan_minutes, Store.formatDuration(context, b.minutes),
-                resources.getQuantityString(R.plurals.palier_n_jours, b.jours, b.jours)), 17f, R.color.ink, gras = true))
-            if (b.ecart > 0 && b.precedente > 0) addView(VueJour.texte(context, getString(R.string.bilan_plus, Store.formatDuration(context, b.ecart)), 15f, R.color.muted, haut = 6))
-            if (b.record) addView(VueJour.texte(context, getString(R.string.bilan_record), 15f, R.color.brand, gras = true, haut = 6))
-            if (b.trophees.isNotEmpty()) {
-                addView(VueJour.texte(context, getString(R.string.bilan_trophees), 15f, R.color.muted, haut = 10))
-                // La pratique lue une fois, pas une fois par niveau (04/11).
-                val pratique = Store.pratique(context)
-                val faits = Trophees.chemin.filter { Trophees.gagne(pratique, it) }
-                addView(android.widget.LinearLayout(context).apply {
-                    orientation = android.widget.LinearLayout.HORIZONTAL
-                    b.trophees.take(6).forEach { t ->
-                        addView(View(context).apply {
-                            background = TropheeDessin(context, t.famille.forme, Trophees.grade(faits.indexOf(t) + 1), t.famille.icone)
-                            contentDescription = TropheesVue.description(context, t.famille, t.seuil)
-                        }, android.widget.LinearLayout.LayoutParams((40 * d).toInt(), (40 * d).toInt()).apply { marginEnd = (6 * d).toInt() })
-                    }
-                })
-            }
-        }
-        com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle(R.string.bilan_titre).setView(vue)
-            .setPositiveButton(R.string.celebration_continue, null).show()
+        BilanSemaineVue.montrerSiDu(this)
     }
 
     /** Le compteur qui fait monter le chiffre de la face ; arrêté quand la face change. */
@@ -1138,17 +1109,27 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
      * Petit écran et texte du système agrandi (15/10) : les lignes de l'en-tête et de la
      * légende s'allongent, et la jauge de 136dp repoussait encore « Commencer » sous les
      * onglets (capture 480x854, police 1,3). La jauge descend alors à 96dp.
+     *
+     * 22/11 (capture 480x854) : à 96dp, le hassid tenait dans 16dp de large, et la plaque
+     * (marge 24dp) cachait l'anneau du jour (30dp d'anneaux). « Commencer » vit désormais
+     * dans la barre fixe (13/11) : la jauge remonte à 136dp, les anneaux s'affinent (6dp,
+     * écarts de 2dp), la plaque s'arrête juste à l'intérieur, et son retrait suit sa taille.
      */
     private fun jaugeCompacte() {
         val c = resources.configuration
         if (c.fontScale <= 1.1f || c.screenHeightDp >= 640 || c.orientation != android.content.res.Configuration.ORIENTATION_PORTRAIT) return
         val d = resources.displayMetrics.density
-        val cadre = findViewById<View>(R.id.week_gauge).parent as View
+        val anneaux = findViewById<AnneauxView>(R.id.week_gauge)
+        anneaux.geometrie = AnneauxDessin.Geometrie(epaisseur = 6f * d, ecart = 2f * d)
+        val cadre = anneaux.parent as View
         cadre.layoutParams = (cadre.layoutParams as android.view.ViewGroup.MarginLayoutParams).apply {
-            width = (96 * d).toInt(); height = (96 * d).toInt(); topMargin = (2 * d).toInt()
+            width = (136 * d).toInt(); height = (136 * d).toInt(); topMargin = (8 * d).toInt()
         }
+        // Les anneaux (22dp) et 2dp d'air ; le trait mis en avant (x1,3) n'y entre pas.
+        val marge = (anneaux.geometrie.largeur + 2 * d).toInt()
         findViewById<View>(R.id.hero_plate).apply {
-            layoutParams = (layoutParams as android.view.ViewGroup.MarginLayoutParams).apply { setMargins((24 * d).toInt(), (24 * d).toInt(), (24 * d).toInt(), (24 * d).toInt()) }
+            layoutParams = (layoutParams as android.view.ViewGroup.MarginLayoutParams).apply { setMargins(marge, marge, marge, marge) }
+            setPadding((8 * d).toInt(), (6 * d).toInt(), (8 * d).toInt(), (2 * d).toInt())
         }
     }
 
@@ -1225,6 +1206,14 @@ class MainActivity : AppCompatActivity(), NoteDialog.Hote {
 
         /** Le jour de la séance dont la note est proposée (AAAA-MM-JJ). */
         const val EXTRA_ASK_NOTE = "ask_note"
+
+        /**
+         * L'accueil ouvert depuis une notification ou une vignette (relecture du 23/11). Sans
+         * CLEAR_TOP, chaque toucher posait un accueil de plus sur ceux de la tâche déjà ouverte :
+         * la touche retour ramenait alors à un second accueil, ou à l'écran de séance resté dessous.
+         */
+        fun depuisDehors(context: Context): Intent = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         /** Survit à une rotation ou au redimensionnement d'une fenêtre. */
         private const val ETAT_RELANCE = "relance_tiree"

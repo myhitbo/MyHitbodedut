@@ -273,19 +273,41 @@ def lancer(attente=4.0):
         toucher(rid="onboarding_skip")
 
 
-def lire_prefs():
-    return adb("exec-out", "run-as", PKG, "cat", PREFS, binary=True).decode("utf-8", "replace")
+DEBOGABLE = True
+JOURNAL = "shared_prefs/myhitbodedut-journal.xml"
 
 
-def ecrire_prefs(contenu):
-    sh(f"run-as {PKG} mkdir -p shared_prefs")
-    adb("shell", f"run-as {PKG} sh -c 'cat > {PREFS}'", input=contenu.encode("utf-8"))
+def dossier_app():
+    return f"/data/data/{PKG}"
 
 
-def regler(valeurs):
+def lire_prefs(fichier=None):
+    fichier = fichier or PREFS
+    if DEBOGABLE:
+        return adb("exec-out", "run-as", PKG, "cat", fichier, binary=True).decode("utf-8", "replace")
+    return adb("exec-out", "cat", f"{dossier_app()}/{fichier}", binary=True).decode("utf-8", "replace")
+
+
+def ecrire_prefs(contenu, fichier=None):
+    """Sur l'edition publiee (release, non debogable : recette du 22/11), run-as est refuse.
+    On ecrit alors en root, puis on rend le fichier a l'application (proprietaire et contexte
+    SELinux), sans quoi elle ne le lit pas."""
+    fichier = fichier or PREFS
+    if DEBOGABLE:
+        sh(f"run-as {PKG} mkdir -p shared_prefs")
+        adb("shell", f"run-as {PKG} sh -c 'cat > {fichier}'", input=contenu.encode("utf-8"))
+        return
+    d = dossier_app()
+    sh(f"mkdir -p {d}/shared_prefs")
+    adb("shell", f"cat > {d}/{fichier}", input=contenu.encode("utf-8"))
+    proprio = sh(f"stat -c %u:%g {d}").strip()
+    sh(f"chown -R {proprio} {d}/shared_prefs && chmod 771 {d}/shared_prefs && chmod 660 {d}/{fichier} && restorecon -R {d}/shared_prefs")
+
+
+def regler(valeurs, fichier=None):
     """Ecrit des preferences (application arretee). valeurs : nom -> (type, valeur)."""
     arreter()
-    xml = lire_prefs()
+    xml = lire_prefs(fichier)
     if "<map" not in xml:
         xml = "<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<map>\n</map>\n"
     for nom, (typ, val) in valeurs.items():
@@ -296,8 +318,8 @@ def regler(valeurs):
         else:
             ligne = f'    <{typ} name="{nom}" value="{val}" />'
         xml = xml.replace("</map>", ligne + "\n</map>")
-    ecrire_prefs(xml)
-    log("  preferences :", lire_prefs().replace("\n", " ")[:600])
+    ecrire_prefs(xml, fichier)
+    log("  preferences :", lire_prefs(fichier).replace("\n", " ")[:600])
 
 
 def langue(etiquette):
@@ -357,8 +379,9 @@ def ouvrir_priere(fr=True):
 
 # --- Le parcours -----------------------------------------------------------
 
-def main():
-    global PKG, ROOT, W, H
+def racine_adb():
+    """Le paquet, l'ecran, root : avant tout parcours."""
+    global PKG, ROOT, W, H, DEBOGABLE
     PKG = paquet()
     log("paquet :", PKG)
     W, H = taille_ecran()
@@ -369,16 +392,26 @@ def main():
     adb("wait-for-device")
     ROOT = sh("id -u").strip() == "0"
     log("root :", ROOT)
+    DEBOGABLE = "uid=" in sh(f"run-as {PKG} id")
+    log("debogable :", DEBOGABLE)
 
+
+def initialiser(langue_app="fr"):
+    """La presentation passee, la version Classique, la langue : l'etat de depart des parcours."""
     for perm in ("android.permission.POST_NOTIFICATIONS",):
         sh(f"pm grant {PKG} {perm}")
     # Pas de presentation au premier lancement (Store.KEY_ONBOARDED, Onboarding.VERSION = 2).
     # La version Classique (VersionApp, 17/11) : sans elle, l'ecran du choix de la version couvre l'accueil.
-    regler({"onboarded_version": ("int", 2), "langue_app": ("string", "fr"), "version_app": ("string", "classique")})
+    regler({"onboarded_version": ("int", 2), "langue_app": ("string", langue_app), "version_app": ("string", "classique")})
     # Un premier lancement, puis la langue : posee avant, elle n'etait pas
     # gardee et l'application s'ouvrait en anglais.
     lancer()
-    langue("fr")
+    langue(langue_app)
+
+
+def main():
+    racine_adb()
+    initialiser()
 
     # Sur demande (CAPTURES_TAILLES_SEULES=1) : le seul passage des tailles,
     # deux fois plus court que le parcours entier.
@@ -951,7 +984,7 @@ def main():
             brut = _json.dumps(jours).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
             xml = ("<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n<map>\n"
                    f"    <string name=\"days\">{brut}</string>\n</map>\n")
-            adb("shell", f"run-as {PKG} sh -c 'cat > shared_prefs/myhitbodedut-journal.xml'", input=xml.encode("utf-8"))
+            ecrire_prefs(xml, JOURNAL)
 
         def fermer_trophees(code):
             # Le journal de demonstration fait gagner des trophees : leurs fenetres s'ouvrent
@@ -1084,6 +1117,10 @@ def main():
         pause(1.5)
 
     def s28():
+        # En plein jour d'abord (17/11) : deux fois, l'emulateur s'est arrete le soir en ouvrant
+        # un accueil au ciel dessine ; le ciel de nuit est essaye a part, en dernier (s28 nuit).
+        sh("settings put global auto_time 0")
+        log("  date :", sh("date 111712002026.00").strip())
         activite("ChoixVersionActivity")
         capture("28-choix-version")
         retour()
@@ -1103,6 +1140,11 @@ def main():
         capture("28-bento-1")
         defiler(True)
         capture("28-bento-2-bas")
+        regler({"version_app": ("string", "instant")})
+        lancer(attente=6)
+        capture("28-instant-1")
+        defiler(True)
+        capture("28-instant-2-bas")
         regler({"version_app": ("string", "serenite")})
         lancer(attente=6)
         capture("28-serenite-1")
@@ -1110,6 +1152,45 @@ def main():
         capture("28-serenite-2-bas")
         regler({"version_app": ("string", "classique")})
     etape("28 versions de l'app", s28)
+
+
+    # Les versions sur un petit telephone (480x854, 240 dpi), puis avec le texte du systeme
+    # agrandi (17/11) : chaque accueil, sans texte ecrase, et son bouton principal entier a l'ecran.
+    def s29():
+        for nom, echelle in (("petit", "1.0"), ("petit-gros-texte", "1.3")):
+            sh("settings put system font_scale " + echelle)
+            appliquer_taille("480x854", 240, False)
+            sh("date 111712002026.00")
+            pause(4)
+            activite("ChoixVersionActivity")
+            serre(nom, "choix-version")
+            capture(f"29-{nom}-choix-version")
+            retour()
+            for version, bouton in (("serenite", "Modifier"), ("bento", "Commencer"), ("instant", "Commencer"), ("pile", "Commencer")):
+                regler({"version_app": ("string", version)})
+                lancer(attente=6)
+                serre(nom, version)
+                b = trouver(text=bouton, contains=True)
+                if not b or b[3] > H or b[1] < 0:
+                    faute(f"{nom} {version} : « {bouton} » pas entierement a l'ecran ({b}, ecran {W}x{H})")
+                capture(f"29-{nom}-{version}")
+                # Pas de geste ici : deux fois, l'emulateur s'est arrete au premier defilement
+                # apres le changement de taille et de densite (17/11). Le haut de chaque accueil,
+                # avec son bouton principal, est ce qui compte sur un petit ecran.
+        sh("settings put system font_scale 1.0")
+        appliquer_taille(None, None, False)
+        regler({"version_app": ("string", "classique")})
+        log("  fautes des petits ecrans :", [f for f in FAUTES if f.startswith("petit")])
+    etape("29 versions sur petit ecran", s29)
+
+    def s28n():
+        log("  date :", sh("date 111721302026.00").strip())
+        for version in ("instant", "serenite"):
+            regler({"version_app": ("string", version)})
+            lancer(attente=6)
+            capture(f"28n-{version}-nuit")
+        regler({"version_app": ("string", "classique")})
+    etape("30 ciel de nuit", s28n)
 
     log("\ncaptures :", sorted(os.listdir(OUT)))
 
