@@ -456,13 +456,16 @@ public final class SeanceModele {
         }
     }
 
-    /// Le chiffre à l'instant `maintenant` (millisecondes Unix) : « mm:ss » restant ou écoulé, jamais négatif ;
-    /// nil à l'arrêt (le chiffre est alors `decompte`, une durée) et sous un décompte masqué.
+    /// Le chiffre à l'instant `maintenant` (millisecondes Unix, l'heure murale de l'écran qui se redessine) :
+    /// « mm:ss » restant ou écoulé, jamais négatif, mesuré sur l'horloge de la séance (décision du 24/11 : un
+    /// changement d'heure ne le change pas) ; nil à l'arrêt (le chiffre est alors `decompte`, une durée) et sous un
+    /// décompte masqué.
     public func texteDecompte(a maintenant: Int64) -> String? {
+        let t = seance.surLaSeance(maintenant)
         switch decompte {
         case .duree, .masque: return nil
-        case .reste(let fin): return SeanceModele.minutesSecondes(max(fin &- maintenant, 0))
-        case .ecoule(let debut): return SeanceModele.minutesSecondes(max(maintenant &- debut, 0))
+        case .reste(let fin): return SeanceModele.minutesSecondes(max(fin &- t, 0))
+        case .ecoule(let debut): return SeanceModele.minutesSecondes(max(t &- debut, 0))
         }
     }
 
@@ -554,6 +557,35 @@ public final class SeanceModele {
     }
 
     public var libelleDureeReglable: Libelle { Libelle("duration_custom") }
+
+    /// « Me demander 10 s avant la fin si je continue » (24/11) : l'option se choisit avant de commencer, allumée par
+    /// défaut ; elle se cache avec les durées pendant la séance.
+    public var libelleSuite: Libelle { Libelle("session_suite_option") }
+    public var proposerSuite: Bool { magasin.reglages.proposerSuite }
+
+    public func choisirProposerSuite(_ oui: Bool) async throws {
+        try await magasin.modifierReglages { $0.setProposerSuite(oui) }
+    }
+
+    /// « Continuer la hitbodedout ? », posée dix secondes avant la fin et sans réponse : le titre, puis les quatre
+    /// réponses (la notification n'en porte que trois) ; nil sinon. Elle disparaît si l'on répond dans la
+    /// notification, ou à la fin.
+    public var questionSuite: [SeanceReponseSuite]? {
+        seance.questionSuite
+    }
+
+    public var titreQuestionSuite: Libelle { Libelle("session_suite_titre") }
+
+    /// Une réponse à « Continuer ? » : oui, de tant de minutes, ou non (`minutes` nil) ; fermée sans choix, comme
+    /// « Non », la séance va à son terme.
+    public func repondreSuite(_ minutes: Int?) async throws {
+        if let minutes {
+            try await seance.continuer(minutes: minutes)
+        } else {
+            try await seance.nePasContinuer()
+        }
+        await actualiser()
+    }
     public var libelleSansDuree: Libelle { Libelle("session_open") }
     /// Le champ de la durée réglable : son indication, et son texte de départ (la durée habituelle, tout
     /// sélectionné).

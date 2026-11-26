@@ -8,19 +8,33 @@ import Coeur
 final class SeanceHorlogeReglable: Horloge {
     let fuseau: Fuseau
     private let instant: Mutex<Int64>
+    /// L'horloge monotone (le temps depuis le démarrage), si l'essai en veut une.
+    private let depuisDemarrage: Mutex<Int64?>
 
-    init(_ dateHeure: DateHeure, fuseau: Fuseau = .utc) {
+    init(_ dateHeure: DateHeure, fuseau: Fuseau = .utc, monotone: Bool = false) {
         self.fuseau = fuseau
         instant = Mutex(fuseau.millis(dateHeure))
+        depuisDemarrage = Mutex(monotone ? 3_600_000 : nil)
     }
 
     var maintenant: Int64 {
         instant.withLock { $0 }
     }
 
+    var monotone: HorlogeMonotone {
+        depuisDemarrage.withLock { $0 }.map { HorlogeMonotone(millis: $0, demarrage: 12) } ?? .absente
+    }
+
+    /// Le temps passe : l'heure murale et l'horloge monotone avancent ensemble.
     func avancer(heures: Int64 = 0, minutes: Int64 = 0, secondes: Int64 = 0) {
         let pas = ((heures * 60 + minutes) * 60 + secondes) * 1_000
         instant.withLock { $0 += pas }
+        depuisDemarrage.withLock { if let t = $0 { $0 = t + pas } }
+    }
+
+    /// L'heure du téléphone change (heure d'hiver, voyage, réglage à la main) : seule l'heure murale bouge.
+    func changerHeure(minutes: Int64) {
+        instant.withLock { $0 += minutes * 60_000 }
     }
 }
 
@@ -57,11 +71,12 @@ struct SeanceEnCoursTests {
     }
 
     private static func banc(_ dateHeure: DateHeure, fuseau: Fuseau = .utc,
-                             reglages: Reglages = Reglages(), journal: Journal = Journal()) -> Banc {
+                             reglages: Reglages = Reglages(), journal: Journal = Journal(),
+                             monotone: Bool = false) -> Banc {
         let enregistrement = Enregistrement(journal: journal, reglages: reglages)
         let persistance = PersistanceEnMemoire(enregistrement)
         let magasin = Magasin(persistance: persistance, enregistrement: enregistrement)
-        let horloge = SeanceHorlogeReglable(dateHeure, fuseau: fuseau)
+        let horloge = SeanceHorlogeReglable(dateHeure, fuseau: fuseau, monotone: monotone)
         let musique = SeanceFausseMusique()
         let activite = FausseActiviteEnDirect()
         let son = FauxLecteurSon()
@@ -73,6 +88,135 @@ struct SeanceEnCoursTests {
     /// Le même magasin, repris par un processus neuf (l'app tuée puis relancée) : rien ne suit plus la séance.
     private static func relance(_ banc: Banc) -> SeanceEnCours {
         SeanceEnCours(magasin: banc.magasin, horloge: banc.horloge, musique: banc.musique, activite: banc.activite)
+    }
+
+    // MARK: « Continuer ? » (24/11) et l'horloge de la séance
+
+    /// La question tombe dix secondes avant la fin, une fois ; « Oui, 5 min de plus » repart de la fin prévue, la Live
+    /// Activity et l'alarme suivent ; la séance prolongée s'inscrit pour toute sa durée.
+    @Test func continuerCinqMinutesDePlus() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        let b = Self.banc(DateHeure(jour, heure: 10))
+        let minuterie = FausseMinuterie()
+        var r = b.magasin.reglages
+        MinuterieReglage.poser(true, dans: &r)
+        let avecAlarme = r
+        try await b.magasin.modifierReglages { $0 = avecAlarme }
+        let seance = SeanceEnCours(magasin: b.magasin, horloge: b.horloge, activite: b.activite, minuterie: minuterie)
+        let debut = b.horloge.maintenant
+        try await seance.commencer(minutes: 15)
+        #expect(Store.sessionPas(reglages: b.magasin.reglages) == 15)
+        #expect(seance.questionSuite == nil)
+        // Onze secondes avant la fin : pas encore.
+        b.horloge.avancer(minutes: 14, secondes: 49)
+        try await seance.actualiser()
+        #expect(seance.questionSuite == nil)
+        #expect(Store.suiteEtat(reglages: b.magasin.reglages) == Store.suiteAucune)
+        // Dix secondes avant : posée, avec ses quatre réponses.
+        b.horloge.avancer(secondes: 1)
+        try await seance.actualiser()
+        #expect(Store.suiteEtat(reglages: b.magasin.reglages) == Store.suitePosee)
+        let reponses = try #require(seance.questionSuite)
+        #expect(reponses.map(\.minutes) == [5, 15, SessionRule.ouverte, nil])
+        #expect(reponses.map(\.libelle) == [
+            Libelle("session_suite_oui_plus", .libelle(Store.formatDuration(5))),
+            Libelle("session_suite_oui_plus", .libelle(Store.formatDuration(15))),
+            Libelle("session_suite_oui_sans_fin"), Libelle("session_suite_non")])
+        // Oui, 5 minutes de plus.
+        try await seance.continuer(minutes: 5)
+        #expect(seance.fin == debut + 20 * 60_000)
+        #expect(seance.duree == 20)
+        #expect(seance.questionSuite == nil)
+        #expect(seance.reponsesSuite == 1)
+        #expect(Store.suiteEtat(reglages: b.magasin.reglages) == Store.suiteAucune)
+        let montree = await b.activite.seance
+        #expect(montree?.fin == debut + 20 * 60_000)
+        #expect(await minuterie.posee == debut + 20 * 60_000)
+        // La question revient avant la nouvelle fin ; sans réponse, la séance va à son terme et s'inscrit en entier.
+        b.horloge.avancer(minutes: 5)
+        try await seance.actualiser()
+        #expect(seance.questionSuite != nil)
+        b.horloge.avancer(secondes: 10)
+        try await seance.actualiser()
+        #expect(!seance.enCours)
+        #expect(b.magasin.journal.record(jour)?.minutes == 20)
+    }
+
+    /// « Oui, sans fin » : la séance devient ouverte ; « Non » : la question ne revient pas, la séance va à son terme.
+    @Test func continuerSansFinOuNon() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        let b = Self.banc(DateHeure(jour, heure: 10))
+        try await b.seance.commencer(minutes: 5)
+        b.horloge.avancer(minutes: 4, secondes: 55)
+        try await b.seance.actualiser()
+        // Une durée de 5 minutes : pas de « même durée » en double.
+        #expect(b.seance.questionSuite?.map(\.minutes) == [5, SessionRule.ouverte, nil])
+        try await b.seance.continuer(minutes: SessionRule.ouverte)
+        #expect(b.seance.ouverte)
+        #expect(b.seance.fin == 0)
+        b.horloge.avancer(minutes: 20)
+        try await b.seance.actualiser()
+        #expect(b.seance.enCours)
+        #expect(b.seance.questionSuite == nil)
+        try await b.seance.terminer()
+        #expect(b.magasin.journal.record(jour)?.minutes == 24)
+
+        let n = Self.banc(DateHeure(jour, heure: 12))
+        try await n.seance.commencer(minutes: 10)
+        n.horloge.avancer(minutes: 9, secondes: 52)
+        try await n.seance.actualiser()
+        try await n.seance.nePasContinuer()
+        #expect(Store.suiteEtat(reglages: n.magasin.reglages) == Store.suiteNon)
+        #expect(n.seance.questionSuite == nil)
+        n.horloge.avancer(secondes: 4)
+        try await n.seance.actualiser()
+        #expect(n.seance.questionSuite == nil)
+        n.horloge.avancer(secondes: 4)
+        try await n.seance.actualiser()
+        #expect(n.magasin.journal.record(jour)?.minutes == 10)
+    }
+
+    /// L'option éteinte, aucune question ; une réponse arrivée après la fin ne prolonge rien.
+    @Test func sansOptionPasDeQuestionEtUneReponseTardiveNeProlongePas() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        var r = Reglages()
+        r.setProposerSuite(false)
+        let b = Self.banc(DateHeure(jour, heure: 10), reglages: r)
+        try await b.seance.commencer(minutes: 10)
+        b.horloge.avancer(minutes: 9, secondes: 55)
+        try await b.seance.actualiser()
+        #expect(b.seance.questionSuite == nil)
+        #expect(Store.suiteEtat(reglages: b.magasin.reglages) == Store.suiteAucune)
+        // Après la fin, sans tour entre-temps : la réponse ne prolonge pas, la séance s'inscrit pour sa durée.
+        b.horloge.avancer(minutes: 1)
+        try await b.seance.continuer(minutes: 5)
+        #expect(b.seance.fin == b.seance.debut + 10 * 60_000)
+        try await b.seance.actualiser()
+        #expect(b.magasin.journal.record(jour)?.minutes == 10)
+    }
+
+    /// Décision du 24/11 : l'heure du téléphone recule d'une heure en pleine séance ; elle dure toujours ses vingt
+    /// minutes réelles, sur l'écran, la Live Activity et au journal.
+    @Test func lHeureDuTelephoneChangeLaSeanceNon() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        let b = Self.banc(DateHeure(jour, heure: 10), monotone: true)
+        try await b.seance.commencer(minutes: 20)
+        let debut = b.seance.debut
+        b.horloge.avancer(minutes: 10)
+        b.horloge.changerHeure(minutes: -60)
+        try await b.seance.actualiser()
+        #expect(b.seance.enCours)
+        #expect(b.seance.maintenantSeance == debut + 10 * 60_000)
+        #expect(b.seance.texteEnCours == Libelle("session_remaining", .libelle(Store.formatDuration(10))))
+        // La fin, à l'heure murale nouvelle : dans dix minutes.
+        #expect(b.seance.murale(b.seance.fin) == b.horloge.maintenant + 10 * 60_000)
+        b.horloge.avancer(minutes: 9, secondes: 59)
+        try await b.seance.actualiser()
+        #expect(b.seance.enCours)
+        b.horloge.avancer(secondes: 1)
+        try await b.seance.actualiser()
+        #expect(!b.seance.enCours)
+        #expect(b.magasin.journal.record(jour)?.minutes == 20)
     }
 
     // MARK: Une séance qui va à son terme

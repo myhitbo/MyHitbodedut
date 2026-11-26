@@ -17,6 +17,8 @@ import Coeur
 // Ce que fait ReminderReceiver à l'affichage se fait ici au passage suivant : un trophée tout proche annoncé par
 // une notification parue est noté parmi les trophées signalés (`trophees_proches_signales`), pour n'être dit qu'une
 // fois. « Plus tard » reporte le rappel de 30 minutes (Reminder.snooze), « Commencer » ouvre la séance lancée.
+// « Continuer ? » (24/11) porte ses réponses (+ 5 min, + la même durée, sans fin, non) : la séance les reçoit
+// (`SeanceEnCours.continuer`, `nePasContinuer`), sans ouvrir l'app.
 
 // MARK: Ce que reçoit le centre de notifications
 
@@ -28,20 +30,26 @@ public struct DemandeNotification: Sendable, Hashable, Identifiable {
     public let titre: Libelle
     /// Le texte, puis la seconde ligne s'il y en a une (jointes par un retour à la ligne, comme sur Android).
     public let lignes: [Libelle]
-    /// La catégorie qui porte les boutons « Commencer » et « Plus tard » ; nil sans bouton.
+    /// La catégorie qui porte les boutons (« Commencer » et « Plus tard », ou les réponses de « Continuer ? ») ; nil
+    /// sans bouton.
     public let categorie: String?
     /// Ce qu'ouvre un toucher sur la notification.
     public let lien: LienApp
     /// La clé du trophée tout proche qu'elle annonce (« famille:rang »).
     public let trophee: String?
+    /// Les réponses de « Continuer ? » (NotificationPlanifiee.continuer), en minutes ; vide pour les autres.
+    public let continuer: [Int]
 
     public var id: String { identifiant }
 
     /// La catégorie des rappels de hitbodedout : « Commencer », « Plus tard » (ReminderReceiver.build).
     public static let categorieRappel = "rappel"
+    /// Le début du nom des catégories de « Continuer ? », une par suite de réponses (le bouton de la même durée dit
+    /// sa durée) : « seance_suite_5_20_0 ».
+    public static let prefixeSuite = "seance_suite_"
 
     public init(identifiant: String, instant: Int64, titre: Libelle, lignes: [Libelle], categorie: String?,
-                lien: LienApp, trophee: String?) {
+                lien: LienApp, trophee: String?, continuer: [Int] = []) {
         self.identifiant = identifiant
         self.instant = instant
         self.titre = titre
@@ -49,16 +57,43 @@ public struct DemandeNotification: Sendable, Hashable, Identifiable {
         self.categorie = categorie
         self.lien = lien
         self.trophee = trophee
+        self.continuer = continuer
+    }
+
+    /// La catégorie de ces réponses à « Continuer ? ».
+    public static func categorieSuite(_ reponses: [Int]) -> String {
+        prefixeSuite + reponses.map { String($0) }.joined(separator: "_")
+    }
+
+    /// L'identifiant du bouton d'une réponse : « suite_plus_5 », « suite_sans_fin », « suite_non ».
+    public static func actionSuite(_ minutes: Int) -> String {
+        if minutes == PlanNotifications.non { return "suite_non" }
+        if minutes <= SessionRule.ouverte { return "suite_sans_fin" }
+        return "suite_plus_" + String(minutes)
+    }
+
+    /// Le texte du bouton : « + 5 min », « Sans fin », « Non ».
+    public static func libelleSuite(_ minutes: Int) -> Libelle {
+        if minutes == PlanNotifications.non { return Libelle("session_suite_non_court") }
+        if minutes <= SessionRule.ouverte { return Libelle("session_suite_sans_fin") }
+        return Libelle("session_suite_plus", .libelle(Store.formatDuration(minutes)))
     }
 
     /// La demande d'une notification du plan : le texte du siddour qu'elle ouvre (LevanaAlerteReceiver,
     /// VolAlerte.texteSiddur), sinon le Jour.
     public init(_ planifiee: NotificationPlanifiee) {
+        let categorie: String?
+        if !planifiee.continuer.isEmpty {
+            categorie = DemandeNotification.categorieSuite(planifiee.continuer)
+        } else {
+            categorie = planifiee.actions.isEmpty ? nil : DemandeNotification.categorieRappel
+        }
+        // « Continuer ? » touchée : l'écran de séance (SessionService.poserQuestion, `ouvrir`).
+        let lien: LienApp = !planifiee.continuer.isEmpty ? .seance(demarrer: false)
+            : planifiee.texteSiddur.map { LienApp.siddour($0) } ?? .accueil
         self.init(identifiant: planifiee.identifiant, instant: planifiee.instant, titre: planifiee.titre,
                   lignes: [planifiee.texte] + (planifiee.suite.map { [$0] } ?? []),
-                  categorie: planifiee.actions.isEmpty ? nil : DemandeNotification.categorieRappel,
-                  lien: planifiee.texteSiddur.map { LienApp.siddour($0) } ?? .accueil,
-                  trophee: planifiee.trophee)
+                  categorie: categorie, lien: lien, trophee: planifiee.trophee, continuer: planifiee.continuer)
     }
 }
 
@@ -68,6 +103,10 @@ public enum ReponseNotification: Sendable, Hashable {
     case ouvrir(LienApp)
     /// « Plus tard » : le rappel revient dans 30 minutes.
     case reporter
+    /// « Continuer ? » : oui, de tant de minutes (`SessionRule.ouverte` : sans fin).
+    case continuer(Int)
+    /// « Continuer ? » : non, la séance va à son terme.
+    case nePasContinuer
     /// La notification a été écartée : rien.
     case rien
 }
@@ -137,7 +176,7 @@ public actor FauxCentreNotifications: CentreNotifications {
 public final class PlanificateurNotifications: PresentationRappels, VolRetraitNotifications {
 
     /// Les débuts d'identifiants des notifications du plan (PlanNotifications) : seules celles-là sont retirées.
-    public nonisolated static let prefixes = ["rappel-", "fin-seance-", "chabbat-", "levana-", "vol-"]
+    public nonisolated static let prefixes = ["rappel-", "fin-seance-", "suite-seance-", "chabbat-", "levana-", "vol-"]
 
     private let magasin: Magasin
     private let horloge: any Horloge
@@ -179,7 +218,7 @@ public final class PlanificateurNotifications: PresentationRappels, VolRetraitNo
             fuseau: horloge.fuseau,
             horaires: { lieu, jour in PlanNotifications.horairesCalcules(lieu, jour) },
             allumage: { lieu, jour, minutes in PlanNotifications.allumageCalcule(lieu, jour, minutes) },
-            heureVol: heureVol)
+            heureVol: heureVol, monotone: horloge.monotone)
         let demandes = liste.map(DemandeNotification.init)
         let gardes = Set(demandes.map(\.identifiant))
         let perimees = await centre.enAttente().filter { PlanificateurNotifications.possede($0) && !gardes.contains($0) }
@@ -213,6 +252,12 @@ public final class PlanificateurNotifications: PresentationRappels, VolRetraitNo
         await centre.retirerParues(prefixe: "rappel-")
     }
 
+    /// « Continuer ? » a reçu sa réponse, ou la séance est finie : la question parue n'a plus d'objet
+    /// (SessionService.retirerQuestion).
+    public func retirerQuestionParue() async {
+        await centre.retirerParues(prefixe: "suite-seance-")
+    }
+
     /// Ce qu'une réponse à une notification demande : « Commencer » ouvre la séance lancée, « Plus tard » reporte,
     /// un toucher ouvre ce que la notification porte (le Jour sans rien) ; écartée, rien.
     public nonisolated static func reponse(action: String, lien: LienApp?) -> ReponseNotification {
@@ -220,7 +265,13 @@ public final class PlanificateurNotifications: PresentationRappels, VolRetraitNo
         case NotificationPlanifiee.Action.commencer.rawValue: return .ouvrir(.seance(demarrer: true))
         case NotificationPlanifiee.Action.plusTard.rawValue: return .reporter
         case actionEcartee: return .rien
-        default: return .ouvrir(lien ?? .accueil)
+        case DemandeNotification.actionSuite(PlanNotifications.non): return .nePasContinuer
+        case DemandeNotification.actionSuite(SessionRule.ouverte): return .continuer(SessionRule.ouverte)
+        default:
+            if action.hasPrefix("suite_plus_"), let minutes = Int(action.dropFirst("suite_plus_".count)), minutes > 0 {
+                return .continuer(minutes)
+            }
+            return .ouvrir(lien ?? .accueil)
         }
     }
 

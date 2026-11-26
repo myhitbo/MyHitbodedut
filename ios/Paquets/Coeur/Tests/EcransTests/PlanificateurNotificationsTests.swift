@@ -148,7 +148,33 @@ struct PlanificateurNotificationsTests {
                                                    lien: nil) == .ouvrir(.accueil))
         #expect(PlanificateurNotifications.possede("rappel-reporte-12"))
         #expect(PlanificateurNotifications.possede("vol-0-OMER-5"))
+        #expect(PlanificateurNotifications.possede("suite-seance-1791977400000"))
         #expect(!PlanificateurNotifications.possede("celebration"))
+    }
+
+    /// « Continuer ? » (24/11) : chaque bouton dit ses minutes ; la catégorie, la suite des réponses ; toucher la
+    /// notification ouvre l'écran de séance.
+    @Test func lesReponsesAContinuer() {
+        #expect(PlanificateurNotifications.reponse(action: "suite_plus_5", lien: nil) == .continuer(5))
+        #expect(PlanificateurNotifications.reponse(action: "suite_plus_45", lien: nil) == .continuer(45))
+        #expect(PlanificateurNotifications.reponse(action: "suite_sans_fin", lien: nil) == .continuer(SessionRule.ouverte))
+        #expect(PlanificateurNotifications.reponse(action: "suite_non", lien: nil) == .nePasContinuer)
+        #expect(PlanificateurNotifications.reponse(action: "suite_plus_x", lien: nil) == .ouvrir(.accueil))
+        for minutes in [5, 45, SessionRule.ouverte, PlanNotifications.non] {
+            let action = DemandeNotification.actionSuite(minutes)
+            let attendue: ReponseNotification = minutes == PlanNotifications.non ? .nePasContinuer : .continuer(minutes)
+            #expect(PlanificateurNotifications.reponse(action: action, lien: nil) == attendue, "\(minutes)")
+        }
+        #expect(DemandeNotification.libelleSuite(5) == Libelle("session_suite_plus", .libelle(Store.formatDuration(5))))
+        #expect(DemandeNotification.libelleSuite(SessionRule.ouverte) == Libelle("session_suite_sans_fin"))
+        #expect(DemandeNotification.libelleSuite(PlanNotifications.non) == Libelle("session_suite_non_court"))
+        let question = NotificationPlanifiee(identifiant: "suite-seance-1", instant: 1, titre: Libelle("session_suite_titre"),
+                                             texte: Libelle("session_suite_texte"), categorie: .seance,
+                                             continuer: [5, 20, SessionRule.ouverte])
+        let demande = DemandeNotification(question)
+        #expect(demande.categorie == "seance_suite_5_20_0")
+        #expect(demande.continuer == [5, 20, SessionRule.ouverte])
+        #expect(demande.lien == .seance(demarrer: false))
     }
 
     // MARK: Les adresses

@@ -13,6 +13,9 @@ import WidgetKit
 // avec les adresses « myhitbodedut:// » des widgets et de la Live Activity. Puis ce que les réglages, la
 // présentation, l'ajout de temps et le vol font repasser : le planificateur et les widgets.
 
+// « Continuer la hitbodedout ? » (24/11) : la question programmée dix secondes avant la fin d'une séance minutée porte
+// ses réponses (+ 5 min, + la même durée, sans fin, non) ; elles agissent sans ouvrir l'app (`SuiteDeSeance`).
+
 // MARK: Le centre de notifications
 
 /// `UNUserNotificationCenter` pour le planificateur : les textes, des `Libelle`, se résolvent dans la langue de l'app
@@ -25,8 +28,9 @@ struct CentreNotificationsSysteme: CentreNotifications {
     static let cleTrophee = "trophee"
 
     /// Les boutons du rappel de hitbodedout (ReminderReceiver.build) : « Commencer » ouvre la séance lancée,
-    /// « Plus tard » reporte de 30 minutes sans ouvrir l'app.
-    static func enregistrerCategories(_ traducteur: Traducteur) {
+    /// « Plus tard » reporte de 30 minutes sans ouvrir l'app. Puis ceux de « Continuer ? » pour ces suites de réponses
+    /// (une catégorie par suite : le bouton de la même durée dit sa durée), qui agissent sans ouvrir l'app.
+    static func enregistrerCategories(_ traducteur: Traducteur, suites: Set<[Int]> = []) {
         let commencer = UNNotificationAction(identifier: NotificationPlanifiee.Action.commencer.rawValue,
                                              title: traducteur.texte(Libelle(NotificationPlanifiee.Action.commencer.libelle)),
                                              options: [.foreground])
@@ -35,7 +39,16 @@ struct CentreNotificationsSysteme: CentreNotifications {
                                             options: [])
         let rappel = UNNotificationCategory(identifier: DemandeNotification.categorieRappel, actions: [commencer, plusTard],
                                             intentIdentifiers: [], options: [])
-        UNUserNotificationCenter.current().setNotificationCategories([rappel])
+        var categories: Set<UNNotificationCategory> = [rappel]
+        for reponses in suites {
+            let boutons = reponses.map { minutes in
+                UNNotificationAction(identifier: DemandeNotification.actionSuite(minutes),
+                                     title: traducteur.texte(DemandeNotification.libelleSuite(minutes)), options: [])
+            }
+            categories.insert(UNNotificationCategory(identifier: DemandeNotification.categorieSuite(reponses),
+                                                     actions: boutons, intentIdentifiers: [], options: []))
+        }
+        UNUserNotificationCenter.current().setNotificationCategories(categories)
     }
 
     func enAttente() async -> [String] {
@@ -51,6 +64,9 @@ struct CentreNotificationsSysteme: CentreNotifications {
     func poser(_ demandes: [DemandeNotification]) async {
         let centre = UNUserNotificationCenter.current()
         let maintenant = Date().timeIntervalSince1970
+        // Les boutons de « Continuer ? » de cette séance, enregistrés avant la question qui les porte.
+        let suites = Set(demandes.map(\.continuer).filter { !$0.isEmpty })
+        if !suites.isEmpty { CentreNotificationsSysteme.enregistrerCategories(traducteur, suites: suites) }
         for demande in demandes {
             let contenu = UNMutableNotificationContent()
             contenu.title = traducteur.texte(demande.titre)
@@ -148,12 +164,18 @@ final class DelegueNotifications: NSObject, UNUserNotificationCenterDelegate, Se
         let action = response.actionIdentifier
         let adresse = response.notification.request.content.userInfo[CentreNotificationsSysteme.cleLien] as? String
         let geste = PlanificateurNotifications.reponse(action: action, lien: adresse.flatMap { LienApp(texte: $0) })
-        // « Plus tard » n'ouvre pas l'app : iOS la réveille en arrière-plan, sans écran pour vider l'aiguillage.
-        if geste == .reporter {
+        // « Plus tard » et les réponses de « Continuer ? » n'ouvrent pas l'app : iOS la réveille en arrière-plan, sans
+        // écran pour vider l'aiguillage.
+        switch geste {
+        case .reporter:
             await ReportDuRappel.reporter()
-            return
+        case .continuer(let minutes):
+            await SuiteDeSeance.repondre(minutes)
+        case .nePasContinuer:
+            await SuiteDeSeance.repondre(nil)
+        default:
+            await Aiguillage.commun.recevoir(geste)
         }
-        await Aiguillage.commun.recevoir(geste)
     }
 }
 
@@ -178,6 +200,48 @@ enum ReportDuRappel {
                                                        aeroports: VolModele.lireAeroports(lecteur: lecteur),
                                                        formats: .langue(traducteur.langue))
         try? await planificateur.reporter()
+    }
+}
+
+/// Une réponse à « Continuer la hitbodedout ? » (SessionService ACTION_SUITE, ACTION_SUITE_NON) : par la séance de
+/// l'app si elle est là, sinon sur les fichiers, l'app réveillée pour l'occasion — la Live Activity et l'alarme suivent
+/// la nouvelle fin. Puis le planificateur déplace la notification de fin et la question, et la question parue se
+/// retire.
+@MainActor
+enum SuiteDeSeance {
+    /// La séance et le planificateur de l'app, posés par `ModelesApp.charger`.
+    static weak var seance: SeanceEnCours?
+    static weak var planificateur: PlanificateurNotifications?
+
+    /// `minutes` : oui, de tant de minutes (`SessionRule.ouverte` : sans fin) ; nil : non.
+    static func repondre(_ minutes: Int?) async {
+        if let seance, let planificateur {
+            await repondre(minutes, seance: seance, planificateur: planificateur)
+            return
+        }
+        guard let magasin = try? await Magasin.charger(PersistanceFichiers(dossier: DossierApp.app)) else { return }
+        let paquet = Bundle.main.bundleURL
+        let traducteur = MyHitbodedutApp.traducteur(paquet: paquet)
+        let horloge = HorlogeSysteme()
+        let seance = SeanceEnCours(magasin: magasin, horloge: horloge, activite: ActiviteSysteme(traducteur: traducteur),
+                                   minuterie: MinuterieAlarmes(traducteur: traducteur))
+        let lecteur = ContenusApp.lecteur(dossier: paquet.appending(path: "Contenu"))
+        let planificateur = PlanificateurNotifications(magasin: magasin, horloge: horloge,
+                                                       centre: CentreNotificationsSysteme(traducteur: traducteur),
+                                                       aeroports: VolModele.lireAeroports(lecteur: lecteur),
+                                                       formats: .langue(traducteur.langue))
+        await repondre(minutes, seance: seance, planificateur: planificateur)
+    }
+
+    private static func repondre(_ minutes: Int?, seance: SeanceEnCours,
+                                 planificateur: PlanificateurNotifications) async {
+        if let minutes {
+            try? await seance.continuer(minutes: minutes)
+        } else {
+            try? await seance.nePasContinuer()
+        }
+        await planificateur.retirerQuestionParue()
+        await planificateur.replanifier()
     }
 }
 

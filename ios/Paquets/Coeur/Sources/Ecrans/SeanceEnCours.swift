@@ -23,7 +23,18 @@ import Coeur
 // (`Notificateur`). Chacun est facultatif : sans lui, la séance s'inscrit pareil.
 //
 // La « minuterie système » (MinuterieSeance.swift, propre à iOS) : une alarme d'AlarmKit posée au début d'une séance
-// minutée, retirée par « Terminer maintenant » et « Abandonner », laissée sonner au terme.
+// minutée, retirée par « Terminer maintenant » et « Abandonner », laissée sonner au terme, déplacée quand la séance est
+// prolongée.
+//
+// Le temps d'une séance (décision du 24/11, Store.maintenantSeance) : le début, plus le temps réellement écoulé sur
+// l'horloge du téléphone qui ne recule jamais (`Horloge.monotone`) ; changer l'heure, le fuseau ou passer à l'heure
+// d'hiver pendant une séance ne la raccourcit ni ne l'allonge plus. Ce que le système programme à une heure murale (la
+// Live Activity, l'alarme) reçoit la fin ramenée à l'heure murale (`murale`).
+//
+// « Continuer ? » (demande du 24/11) : dix secondes avant la fin d'une séance minutée, l'option allumée, la question
+// est posée (`actualiser` la note posée, l'écran la montre ; la notification, le planificateur la programme d'avance) ;
+// `continuer(minutes:)` prolonge de 5 minutes, de la même durée ou sans fin, `nePasContinuer()` la laisse aller à son
+// terme. Sans réponse, elle va à son terme et s'inscrit comme avant.
 //
 // Restent ailleurs : la notification de fin, que pose le planificateur des notifications (PlanNotifications.finDeSeance,
 // `PlanificateurNotifications`) quand l'app le fait repasser au début et à la fin d'une séance, le widget de la série
@@ -114,6 +125,9 @@ public final class SeanceEnCours {
     public private(set) var inscriptions = 0
     /// L'alarme de la minuterie système est posée pour la séance en cours : à son terme, elle sonne seule.
     public private(set) var alarmePosee = false
+    /// Monte à chaque réponse à « Continuer ? » (prolongée ou non) : l'app refait passer le planificateur, qui déplace
+    /// la notification de fin et la question.
+    public private(set) var reponsesSuite = 0
 
     public init(magasin: Magasin, horloge: any Horloge, musique: (any SeanceMusique)? = nil,
                 activite: (any ActiviteEnDirect)? = nil, son: (any LecteurSon)? = nil,
@@ -137,7 +151,32 @@ public final class SeanceEnCours {
     /// Elle court, ici et maintenant : une séance ouverte jusqu'à ce qu'on l'arrête, une séance minutée
     /// jusqu'à son terme.
     public var enCours: Bool {
-        Store.isSessionRunning(reglages: magasin.reglages, millis: horloge.maintenant)
+        Store.isSessionRunning(reglages: magasin.reglages, millis: horloge.maintenant, monotone: horloge.monotone)
+    }
+
+    /// « Maintenant » pour la séance (Store.maintenantSeance) : à l'abri d'un changement d'heure du téléphone.
+    public var maintenantSeance: Int64 {
+        Store.maintenantSeance(reglages: magasin.reglages, millis: horloge.maintenant, monotone: horloge.monotone)
+    }
+
+    /// Un instant de la séance (son début, sa fin) ramené à l'heure murale d'aujourd'hui, pour ce que le système
+    /// programme à une heure murale (Store.sessionFinMurale).
+    public func murale(_ instant: Int64) -> Int64 {
+        horloge.maintenant &+ (instant &- maintenantSeance)
+    }
+
+    /// Une heure murale (celle de l'écran qui se redessine) ramenée sur l'horloge de la séance.
+    public func surLaSeance(_ mur: Int64) -> Int64 {
+        mur &+ (maintenantSeance &- horloge.maintenant)
+    }
+
+    /// « Continuer la hitbodedout ? », posée et sans réponse (Store.suiteEtat, SUITE_POSEE) : les réponses de l'écran,
+    /// dans l'ordre (SessionActivity.questionSuite) ; nil sinon, et pour une séance sans durée.
+    public var questionSuite: [SeanceReponseSuite]? {
+        let reglages = magasin.reglages
+        guard Store.suiteEtat(reglages: reglages) == Store.suitePosee, !Store.isSessionOpen(reglages: reglages),
+              enCours else { return nil }
+        return SeanceReponseSuite.ecran(pas: Store.sessionPas(reglages: reglages))
     }
 
     /// Son début, en millisecondes Unix ; 0 sans séance.
@@ -179,11 +218,11 @@ public final class SeanceEnCours {
         case .masque:
             return Libelle("session_running_hidden")
         case .ecoule:
-            let minutes = Store.sessionElapsedMinutes(reglages: reglages, millis: maintenant)
+            let minutes = Store.sessionElapsedMinutes(reglages: reglages, millis: maintenant, monotone: horloge.monotone)
             return Libelle("session_elapsed", .libelle(Store.formatDuration(minutes)))
         case .reste:
             let minutes = SessionRule.minutesRestantes(finMillis: Store.sessionEndsAt(reglages: reglages),
-                                                       maintenant: maintenant)
+                                                       maintenant: maintenantSeance)
             return Libelle("session_remaining", .libelle(Store.formatDuration(minutes)))
         }
     }
@@ -203,6 +242,7 @@ public final class SeanceEnCours {
     /// lancée (la musique et la Live Activity suivent quand même).
     public func commencer(minutes: Int) async throws {
         let maintenant = horloge.maintenant
+        let monotone = horloge.monotone
         let fuseau = horloge.fuseau
         var reglages = magasin.reglages
         var journal = magasin.journal
@@ -211,16 +251,17 @@ public final class SeanceEnCours {
         if Store.hasSessionRecord(reglages: reglages) {
             let echue = SessionRule.estEchue(debutMillis: Store.sessionStartedAt(reglages: reglages),
                                              finMillis: Store.sessionEndsAt(reglages: reglages),
-                                             duree: Store.sessionTarget(reglages: reglages), maintenant: maintenant)
+                                             duree: Store.sessionTarget(reglages: reglages),
+                                             maintenant: maintenantSeance)
             let theme = SeanceSujet.lire(reglages)
-            let close = Store.endSession(reglages: &reglages, millis: maintenant, fuseau: fuseau)
+            let close = Store.endSession(reglages: &reglages, millis: maintenant, fuseau: fuseau, monotone: monotone)
             if echue || close.minutes > 0 {
                 annonce = SeanceEnCours.inscrire(close, theme: theme, journal: &journal, reglages: &reglages,
                                                  maintenant: maintenant, fuseau: fuseau)
                 inscrite = true
             }
         }
-        Store.beginSession(reglages: &reglages, minutes: minutes, millis: maintenant)
+        Store.beginSession(reglages: &reglages, minutes: minutes, millis: maintenant, monotone: monotone)
         let erreur = await ecrire(journal: inscrite ? journal : nil, reglages: reglages)
         if inscrite { inscriptions += 1 }
         await armer()
@@ -238,7 +279,7 @@ public final class SeanceEnCours {
     /// « Abandonner » (ACTION_CANCEL) : la séance s'efface, rien n'est inscrit, aucun bravo n'attend.
     public func abandonner() async throws {
         var reglages = magasin.reglages
-        Store.endSession(reglages: &reglages, millis: horloge.maintenant, fuseau: horloge.fuseau)
+        Store.endSession(reglages: &reglages, millis: horloge.maintenant, fuseau: horloge.fuseau, monotone: horloge.monotone)
         let erreur = await ecrire(journal: nil, reglages: reglages)
         await desarmer()
         await arreter()
@@ -253,8 +294,51 @@ public final class SeanceEnCours {
             try await reconcilier()
             return
         }
-        if Store.isSessionRunning(reglages: magasin.reglages, millis: horloge.maintenant) { return }
+        let reglages = magasin.reglages
+        if Store.isSessionRunning(reglages: reglages, millis: horloge.maintenant, monotone: horloge.monotone) {
+            // « Continuer ? » dix secondes avant la fin (SessionService.refresh) : posée une fois par étape.
+            if SessionRule.questionDue(fin: Store.sessionEndsAt(reglages: reglages), maintenant: maintenantSeance,
+                                       activee: reglages.proposerSuite,
+                                       dejaPosee: Store.suiteEtat(reglages: reglages) != Store.suiteAucune) {
+                var posee = reglages
+                Store.setSuiteEtat(reglages: &posee, Store.suitePosee)
+                let nouveaux = posee
+                try await magasin.modifierReglages { $0 = nouveaux }
+            }
+            return
+        }
         try await finir(precoce: false)
+    }
+
+    // MARK: « Continuer ? »
+
+    /// « Oui » (ACTION_SUITE) : la séance en cours est prolongée de `minutes` après sa fin prévue (jamais d'un instant
+    /// passé), ou sans fin pour `SessionRule.ouverte` ; la question reviendra avant la nouvelle fin. L'alarme de la
+    /// minuterie système et la Live Activity suivent la nouvelle fin. Une séance qui ne court plus n'est pas touchée :
+    /// elle va à son terme et s'inscrit.
+    public func continuer(minutes: Int) async throws {
+        var reglages = magasin.reglages
+        guard minutes >= SessionRule.ouverte,
+              Store.isSessionRunning(reglages: reglages, millis: horloge.maintenant, monotone: horloge.monotone)
+        else { return }
+        Store.prolongerSession(reglages: &reglages, minutes: minutes, millis: horloge.maintenant,
+                               monotone: horloge.monotone)
+        let nouveaux = reglages
+        try await magasin.modifierReglages { $0 = nouveaux }
+        reponsesSuite += 1
+        await rearmer()
+        await montrer()
+    }
+
+    /// « Non, terminer » (ACTION_SUITE_NON), ou la question fermée sans réponse : la séance va à son terme et s'inscrit,
+    /// comme sans réponse ; la question ne revient pas.
+    public func nePasContinuer() async throws {
+        var reglages = magasin.reglages
+        guard Store.hasSessionRecord(reglages: reglages) else { return }
+        Store.setSuiteEtat(reglages: &reglages, Store.suiteNon)
+        let nouveaux = reglages
+        try await magasin.modifierReglages { $0 = nouveaux }
+        reponsesSuite += 1
     }
 
     /// Reprend une séance restée inscrite sans personne pour la suivre (l'app tuée, le téléphone redémarré ;
@@ -268,13 +352,13 @@ public final class SeanceEnCours {
         var reglages = magasin.reglages
         let echue = SessionRule.estEchue(debutMillis: Store.sessionStartedAt(reglages: reglages),
                                          finMillis: Store.sessionEndsAt(reglages: reglages),
-                                         duree: Store.sessionTarget(reglages: reglages), maintenant: maintenant)
+                                         duree: Store.sessionTarget(reglages: reglages), maintenant: maintenantSeance)
         guard echue else {
             await demarrer()
             return
         }
         let theme = SeanceSujet.lire(reglages)
-        let close = Store.endSession(reglages: &reglages, millis: maintenant, fuseau: fuseau)
+        let close = Store.endSession(reglages: &reglages, millis: maintenant, fuseau: fuseau, monotone: horloge.monotone)
         var journal = magasin.journal
         let inscrite = close.minutes > 0
         let annonce: Celebrations.Annonce?
@@ -299,6 +383,7 @@ public final class SeanceEnCours {
     /// celui qui arrête lui-même n'a pas besoin qu'on le lui apprenne.
     private func finir(precoce: Bool) async throws {
         let maintenant = horloge.maintenant
+        let surLaSeance = maintenantSeance
         let fuseau = horloge.fuseau
         var reglages = magasin.reglages
         guard Store.hasSessionRecord(reglages: reglages) else {
@@ -308,7 +393,7 @@ public final class SeanceEnCours {
         let finPrevue = Store.sessionEndsAt(reglages: reglages)
         // Le sujet se lit AVANT la clôture.
         let theme = SeanceSujet.lire(reglages)
-        let close = Store.endSession(reglages: &reglages, millis: maintenant, fuseau: fuseau)
+        let close = Store.endSession(reglages: &reglages, millis: maintenant, fuseau: fuseau, monotone: horloge.monotone)
         var journal = magasin.journal
         let inscrite = close.minutes > 0 || !precoce
         let annonce: Celebrations.Annonce?
@@ -328,7 +413,7 @@ public final class SeanceEnCours {
             alarmePosee = false
         }
         if !precoce && !alarme && reglages.hideCountdown && finPrevue > 0
-            && maintenant &- finPrevue <= SeanceEnCours.retardSonMax {
+            && surLaSeance &- finPrevue <= SeanceEnCours.retardSonMax {
             await sonner()
         }
         await annoncer(annonce, maintenant: maintenant)
@@ -362,22 +447,28 @@ public final class SeanceEnCours {
     /// 240 minutes où elle sera close), puis la musique et l'ambiance.
     private func demarrer() async {
         suivie = true
+        await montrer()
+        await musique?.commencerSeance()
+    }
+
+    /// La Live Activity montre la séance, à l'heure murale : son début, sa fin prévue (sans durée, le plafond de
+    /// 240 minutes où elle sera close). Déjà posée, elle est mise à jour (une séance prolongée).
+    private func montrer() async {
+        guard let activite else { return }
         let reglages = magasin.reglages
         let debut = Store.sessionStartedAt(reglages: reglages)
         var finMontree = Store.sessionEndsAt(reglages: reglages)
         if finMontree <= 0 {
             finMontree = debut &+ Int64(SessionRule.plafondOuverte) &* 60_000
         }
-        if let activite {
-            let affichee = SeanceAffichee(debut: debut, fin: finMontree, compteur: Store.sessionCounter(reglages: reglages),
-                                          ouverte: Store.isSessionOpen(reglages: reglages))
-            do {
-                try await activite.commencer(affichee)
-            } catch {
-                // Sans Live Activity (refusée dans les réglages d'iOS), la séance court pareil.
-            }
+        let affichee = SeanceAffichee(debut: murale(debut), fin: murale(finMontree),
+                                      compteur: Store.sessionCounter(reglages: reglages),
+                                      ouverte: Store.isSessionOpen(reglages: reglages))
+        do {
+            try await activite.commencer(affichee)
+        } catch {
+            // Sans Live Activity (refusée dans les réglages d'iOS), la séance court pareil.
         }
-        await musique?.commencerSeance()
     }
 
     /// La minuterie système : l'alarme d'une séance précédente est retirée, puis, le réglage allumé, une séance minutée
@@ -391,8 +482,17 @@ public final class SeanceEnCours {
         }
         let fin = Store.sessionEndsAt(reglages: reglages)
         guard MinuterieReglage.lire(reglages), Store.sessionTarget(reglages: reglages) > 0,
-              fin > horloge.maintenant else { return }
-        alarmePosee = await minuterie.poser(fin: fin, titre: MinuterieModele.titreAlarme)
+              fin > maintenantSeance else { return }
+        alarmePosee = await minuterie.poser(fin: murale(fin), titre: MinuterieModele.titreAlarme)
+    }
+
+    /// La séance prolongée : l'alarme d'avant est retirée (même posée par une vie d'avant de l'app), puis la nouvelle
+    /// fin a la sienne ; sans fin, aucune.
+    private func rearmer() async {
+        guard let minuterie, MinuterieReglage.lire(magasin.reglages) || alarmePosee else { return }
+        await minuterie.retirer()
+        alarmePosee = false
+        await armer()
     }
 
     /// L'alarme de la séance est retirée (« Terminer maintenant », « Abandonner »).
@@ -446,5 +546,28 @@ public final class SeanceEnCours {
             }
         }
         return erreur
+    }
+}
+
+/// Une réponse à « Continuer la hitbodedout ? » (24/11), en minutes : 5 de plus, la même durée encore, sans fin
+/// (`SessionRule.ouverte`), ou non (`nil`).
+public struct SeanceReponseSuite: Sendable, Hashable, Identifiable {
+    /// Les minutes de plus ; `SessionRule.ouverte` : sans fin ; nil : « Non, terminer ».
+    public let minutes: Int?
+    public let libelle: Libelle
+
+    public var id: Int { minutes ?? -1 }
+
+    /// Les quatre réponses de l'écran (SessionActivity.questionSuite) : « Oui, 5 min de plus », « Oui, 20 min de
+    /// plus » si la durée choisie n'est pas de 5, « Oui, sans fin », « Non, terminer ».
+    public static func ecran(pas: Int) -> [SeanceReponseSuite] {
+        var choix = [SeanceReponseSuite(minutes: 5, libelle: Libelle("session_suite_oui_plus", .libelle(Store.formatDuration(5))))]
+        if pas > 0 && pas != 5 {
+            choix.append(SeanceReponseSuite(minutes: pas,
+                                            libelle: Libelle("session_suite_oui_plus", .libelle(Store.formatDuration(pas)))))
+        }
+        choix.append(SeanceReponseSuite(minutes: SessionRule.ouverte, libelle: Libelle("session_suite_oui_sans_fin")))
+        choix.append(SeanceReponseSuite(minutes: nil, libelle: Libelle("session_suite_non")))
+        return choix
     }
 }

@@ -149,6 +149,9 @@ final class ModelesApp {
         DossierApp.retenirLangue(traducteur.langue)
         let planificateur = modeles.planificateur
         ReportDuRappel.planificateur = planificateur
+        // Les réponses de « Continuer ? » données dans la notification (24/11).
+        SuiteDeSeance.seance = seance
+        SuiteDeSeance.planificateur = planificateur
         Task { await planificateur.replanifier() }
         return modeles
     }

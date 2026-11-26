@@ -236,3 +236,127 @@ struct SessionCounterTests {
         }
     }
 }
+
+/// SeanceSuiteTest d'Android (24/11) : dix secondes avant la fin d'une séance minutée, « Continuer ? » — 5 minutes de
+/// plus, la même durée, ou sans fin ; sinon elle s'arrête et s'inscrit. Et décision du 24/11 : la durée d'une séance ne
+/// suit plus l'heure du téléphone. Restent à Android ses lectures des sources (SessionService, SessionActivity,
+/// BlockerView, SessionFilet) et des mises en page ; les libellés y sont vérifiés dans les cinq langues du catalogue.
+@Suite("Séance : « Continuer ? » et l'horloge de la séance")
+struct SeanceSuiteTests {
+    private let minute: Int64 = 60_000
+
+    // MARK: La question
+
+    @Test func laQuestionTombeDansLesDixDernieresSecondesPasAvant() {
+        let fin: Int64 = 1_000_000
+        #expect(!SessionRule.questionDue(fin: fin, maintenant: fin - 10_001, activee: true, dejaPosee: false))
+        #expect(SessionRule.questionDue(fin: fin, maintenant: fin - 10_000, activee: true, dejaPosee: false))
+        #expect(SessionRule.questionDue(fin: fin, maintenant: fin - 1, activee: true, dejaPosee: false))
+        #expect(!SessionRule.questionDue(fin: fin, maintenant: fin, activee: true, dejaPosee: false), "après la fin")
+    }
+
+    @Test func uneSeuleFoisJamaisSiLOptionEstEteinteJamaisSansFin() {
+        let fin: Int64 = 1_000_000
+        #expect(!SessionRule.questionDue(fin: fin, maintenant: fin - 5_000, activee: true, dejaPosee: true))
+        #expect(!SessionRule.questionDue(fin: fin, maintenant: fin - 5_000, activee: false, dejaPosee: false))
+        #expect(!SessionRule.questionDue(fin: 0, maintenant: 5_000, activee: true, dejaPosee: false), "séance ouverte")
+    }
+
+    @Test func ouiRepartDeLaFinPrevueJamaisDUnInstantPasse() {
+        let fin = 100 * minute
+        #expect(SessionRule.finProlongee(fin: fin, maintenant: fin - 8_000, minutes: 5) == fin + 5 * minute)
+        #expect(SessionRule.finProlongee(fin: fin, maintenant: fin - 8_000, minutes: 15) == fin + 15 * minute)
+        // Répondu en retard, après la fin : 5 minutes à partir de maintenant.
+        #expect(SessionRule.finProlongee(fin: fin, maintenant: fin + 30_000, minutes: 5) == fin + 30_000 + 5 * minute)
+    }
+
+    /// Prolongée, la séance s'inscrit pour toute sa durée, pas seulement la première étape.
+    @Test func uneSeanceProlongeeCompteToutesSesMinutes() {
+        let debut = 10 * minute
+        let fin = SessionRule.finProlongee(fin: debut + 15 * minute, maintenant: debut + 15 * minute - 8_000, minutes: 15)
+        #expect(SessionRule.minutesAInscrire(debutMillis: debut, finMillis: fin, maintenant: fin + 5_000) == 30)
+    }
+
+    // MARK: L'horloge
+
+    @Test func lHeureDuTelephoneChangeLaSeanceNon() {
+        let debutMur: Int64 = 1_700_000_000_000
+        let debutMono: Int64 = 50_000
+        // Dix minutes réellement passées ; l'horloge murale a reculé d'une heure (heure d'hiver).
+        let m = SessionRule.maintenant(debutMur: debutMur, debutMonotone: debutMono, demarrageDebut: 7,
+                                       murActuel: debutMur + 10 * minute - 60 * minute,
+                                       monotoneActuel: debutMono + 10 * minute, demarrageActuel: 7)
+        #expect(m == debutMur + 10 * minute)
+        // Avancée d'une heure (voyage) : toujours dix minutes.
+        let n = SessionRule.maintenant(debutMur: debutMur, debutMonotone: debutMono, demarrageDebut: 7,
+                                       murActuel: debutMur + 70 * minute, monotoneActuel: debutMono + 10 * minute,
+                                       demarrageActuel: 7)
+        #expect(n == debutMur + 10 * minute)
+    }
+
+    @Test func apresUnRedemarrageLHeureMurale() {
+        let debutMur: Int64 = 1_700_000_000_000
+        let mur = debutMur + 20 * minute
+        #expect(SessionRule.maintenant(debutMur: debutMur, debutMonotone: 50_000, demarrageDebut: 7, murActuel: mur,
+                                       monotoneActuel: 3_000, demarrageActuel: 8) == mur)
+        // Démarrage illisible, ou séance d'avant la mise à jour : l'heure murale aussi.
+        #expect(SessionRule.maintenant(debutMur: debutMur, debutMonotone: 50_000, demarrageDebut: -1, murActuel: mur,
+                                       monotoneActuel: 60_000, demarrageActuel: -1) == mur)
+        #expect(SessionRule.maintenant(debutMur: debutMur, debutMonotone: -1, demarrageDebut: 7, murActuel: mur,
+                                       monotoneActuel: 60_000, demarrageActuel: 7) == mur)
+    }
+
+    /// Store : la séance commencée retient son horloge, se mesure sur elle, et se prolonge (Store.prolongerSession).
+    @Test func leStoreMesureEtProlongeLaSeance() {
+        let debutMur: Int64 = 1_700_000_000_000
+        var r = Reglages()
+        Store.beginSession(reglages: &r, minutes: 20, millis: debutMur, monotone: HorlogeMonotone(millis: 50_000, demarrage: 7))
+        #expect(Store.sessionPas(reglages: r) == 20)
+        #expect(Store.suiteEtat(reglages: r) == Store.suiteAucune)
+        // Dix minutes passées, l'horloge murale reculée d'une heure : la séance court, il lui reste dix minutes.
+        let mur = debutMur + 10 * minute - 60 * minute
+        let mono = HorlogeMonotone(millis: 50_000 + 10 * minute, demarrage: 7)
+        #expect(Store.maintenantSeance(reglages: r, millis: mur, monotone: mono) == debutMur + 10 * minute)
+        #expect(Store.isSessionRunning(reglages: r, millis: mur, monotone: mono))
+        #expect(Store.sessionElapsedMinutes(reglages: r, millis: mur, monotone: mono) == 10)
+        #expect(Store.sessionFinMurale(reglages: r, millis: mur, monotone: mono) == mur + 10 * minute)
+        // Oui, la même durée : 20 minutes de plus après la fin prévue ; la question reviendra.
+        Store.setSuiteEtat(reglages: &r, Store.suitePosee)
+        Store.prolongerSession(reglages: &r, minutes: 20, millis: mur, monotone: mono)
+        #expect(Store.sessionEndsAt(reglages: r) == debutMur + 40 * minute)
+        #expect(Store.sessionTarget(reglages: r) == 40)
+        #expect(Store.sessionPas(reglages: r) == 20)
+        #expect(Store.suiteEtat(reglages: r) == Store.suiteAucune)
+        // Oui, sans fin : une séance ouverte.
+        Store.prolongerSession(reglages: &r, minutes: SessionRule.ouverte, millis: mur, monotone: mono)
+        #expect(Store.isSessionOpen(reglages: r))
+        #expect(Store.sessionEndsAt(reglages: r) == 0)
+        // Close, plus rien de la séance ne reste.
+        let close = Store.endSession(reglages: &r, millis: mur, fuseau: .utc, monotone: mono)
+        #expect(close.minutes == 10)
+        for cle in ["session_started_mono", "session_boot", "session_pas", "session_suite_etat"] {
+            #expect(r.brut[cle] == nil, "\(cle)")
+        }
+        // Sans séance, rien à prolonger.
+        Store.prolongerSession(reglages: &r, minutes: 5, millis: mur, monotone: mono)
+        #expect(!Store.hasSessionRecord(reglages: r))
+    }
+
+    @Test func lOptionEstAllumeeParDefautEtSesLibellesSontDansLesCinqLangues() throws {
+        var r = Reglages()
+        #expect(r.proposerSuite)
+        r.setProposerSuite(false)
+        #expect(!r.proposerSuite)
+        #expect(r.brut["proposer_suite"] == .booleen(false))
+        let cles = ["session_suite_option", "session_suite_titre", "session_suite_texte", "session_suite_plus",
+                    "session_suite_sans_fin", "session_suite_non_court", "session_suite_oui_plus",
+                    "session_suite_oui_sans_fin", "session_suite_non"]
+        let catalogue = try Catalogue.lire()
+        for langue in Catalogue.langues {
+            let chaines = catalogue.simples(langue)
+            for cle in cles {
+                #expect(chaines[cle] != nil, "\(langue) : « \(cle) » manquant")
+            }
+        }
+    }
+}

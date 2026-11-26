@@ -111,6 +111,38 @@ struct SeanceModeleTests {
         #expect(carte.image == "char_open_arms")
     }
 
+    /// « Continuer ? » sur l'écran (SessionActivity.questionSuite, 24/11) : l'option avant de commencer, la question
+    /// dix secondes avant la fin avec ses quatre réponses, et le chiffre qui repart après « Oui ».
+    @Test func continuerSurLEcranDeSeance() async throws {
+        let jour = try SeanceOutils.jour("2026-11-16")
+        let b = Self.banc(DateHeure(jour, heure: 10))
+        await b.modele.ouvrir()
+        #expect(b.modele.libelleSuite == Libelle("session_suite_option"))
+        #expect(b.modele.proposerSuite)
+        try await b.modele.choisirProposerSuite(false)
+        #expect(!b.magasin.reglages.proposerSuite)
+        try await b.modele.choisirProposerSuite(true)
+        try await b.modele.commencer(minutes: 10)
+        b.horloge.avancer(minutes: 9, secondes: 51)
+        await b.modele.actualiser()
+        #expect(b.modele.titreQuestionSuite == Libelle("session_suite_titre"))
+        let reponses = try #require(b.modele.questionSuite)
+        #expect(reponses.map(\.minutes) == [5, 10, SessionRule.ouverte, nil])
+        try await b.modele.repondreSuite(10)
+        #expect(b.modele.questionSuite == nil)
+        #expect(b.modele.texteDecompte(a: b.horloge.maintenant) == "10:09")
+        #expect(b.modele.legende == Libelle("session_target", .libelle(Self.duree(20))))
+        // « Non, terminer » la prochaine fois : elle va à son terme.
+        b.horloge.avancer(minutes: 10)
+        await b.modele.actualiser()
+        try await b.modele.repondreSuite(nil)
+        #expect(b.modele.questionSuite == nil)
+        b.horloge.avancer(secondes: 9)
+        await b.modele.actualiser()
+        #expect(!b.modele.enCours)
+        #expect(b.magasin.journal.record(jour)?.minutes == 20)
+    }
+
     @Test func rouvrirNeTirePasUnAutreMot() async throws {
         let jour = try SeanceOutils.jour("2026-11-16")
         let b = Self.banc(DateHeure(jour, heure: 10))

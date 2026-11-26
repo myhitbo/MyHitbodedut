@@ -122,7 +122,8 @@ struct PlanNotificationsTests {
         for c in NotificationPlanifiee.Categorie.allCases { somme += c.part }
         #expect(somme == PlanNotifications.limite)
         let parts = NotificationPlanifiee.Categorie.allCases.map { $0.part }
-        #expect(parts == [30, 4, 6, 14, 2])
+        // La séance tient trois places depuis « Continuer ? » (24/11) : la fin, la question, le rappel reporté.
+        #expect(parts == [30, 4, 6, 14, 3])
     }
 
     @Test func jamaisPlusDe64QuelsQueSoientLesReglages() {
@@ -262,12 +263,75 @@ struct PlanNotificationsTests {
         let premiers = Self.rappelsSeuls(plan).prefix(1).map { $0.instant }
         let neufHeures = [Self.a("2026-10-14", 21)]
         #expect(premiers == neufHeures)
-        let seance = plan.first { $0.categorie == .seance }
+        let seance = plan.first { $0.identifiant.hasPrefix("fin-seance-") }
         let fin = try #require(seance)
         let finAttendue = Self.a("2026-10-14", 13, 30)
         #expect(fin.instant == finAttendue)
         #expect(fin.titre == Libelle("session_done_title"))
         #expect(fin.texte == Libelle("session_done_text", .libelle(Libelle("duration_minutes", .entier(45)))))
+        // « Continuer ? » dix secondes avant (24/11), avec ses trois réponses : 5 min, la même durée, sans fin.
+        let question = try #require(plan.first { $0.identifiant.hasPrefix("suite-seance-") })
+        #expect(question.instant == finAttendue - 10_000)
+        #expect(question.categorie == .seance)
+        #expect(question.titre == Libelle("session_suite_titre"))
+        #expect(question.texte == Libelle("session_suite_texte"))
+        #expect(question.continuer == [5, 45, SessionRule.ouverte])
+        #expect(question.identifiant == "suite-seance-" + String(finAttendue))
+    }
+
+    /// « Continuer ? » (SessionService.poserQuestion, 24/11) : posée seulement pour une séance minutée, l'option
+    /// allumée, pas encore posée ni répondue, et tant que son instant est à venir ; « Non » quand la durée choisie
+    /// est de 5 minutes (la même durée ferait double emploi).
+    @Test func laQuestionContinuerDixSecondesAvantLaFin() throws {
+        let maintenant = Self.a("2026-10-14", 12, 50)
+        var r = Self.reglages(heures: [])
+        Store.beginSession(reglages: &r, minutes: 5, millis: Self.a("2026-10-14", 12, 48))
+        let fin = Self.a("2026-10-14", 12, 53)
+        let q = try #require(PlanNotifications.questionSuite(reglages: r, maintenant: maintenant))
+        #expect(q.instant == fin - 10_000)
+        #expect(q.continuer == [5, SessionRule.ouverte, PlanNotifications.non])
+        // L'option éteinte : rien.
+        var sans = r
+        sans.setProposerSuite(false)
+        #expect(PlanNotifications.questionSuite(reglages: sans, maintenant: maintenant) == nil)
+        // Déjà posée (par l'écran) ou répondue « non » : rien.
+        for etat in [Store.suitePosee, Store.suiteNon] {
+            var deja = r
+            Store.setSuiteEtat(reglages: &deja, etat)
+            #expect(PlanNotifications.questionSuite(reglages: deja, maintenant: maintenant) == nil, "\(etat)")
+        }
+        // Dans les dix dernières secondes, ou après : elle ne se repose pas.
+        #expect(PlanNotifications.questionSuite(reglages: r, maintenant: fin - 10_000) == nil)
+        #expect(PlanNotifications.questionSuite(reglages: r, maintenant: fin + 1) == nil)
+        // Une séance sans durée, ou pas de séance : rien.
+        var ouverte = Self.reglages(heures: [])
+        Store.beginSession(reglages: &ouverte, minutes: 0, millis: maintenant)
+        #expect(PlanNotifications.questionSuite(reglages: ouverte, maintenant: maintenant) == nil)
+        #expect(PlanNotifications.questionSuite(reglages: Self.reglages(heures: []), maintenant: maintenant) == nil)
+        // Prolongée : une nouvelle fin, un nouvel identifiant, la question revient avant elle.
+        var prolongee = r
+        Store.setSuiteEtat(reglages: &prolongee, Store.suitePosee)
+        Store.prolongerSession(reglages: &prolongee, minutes: 5, millis: fin - 5_000, monotone: .absente)
+        let encore = try #require(PlanNotifications.questionSuite(reglages: prolongee, maintenant: fin - 5_000))
+        #expect(encore.instant == fin + 5 * 60_000 - 10_000)
+        #expect(encore.identifiant != q.identifiant)
+    }
+
+    /// Décision du 24/11 : l'heure du téléphone a changé pendant la séance ; la fin et la question tombent à l'heure
+    /// murale d'aujourd'hui, après le temps réellement restant.
+    @Test func laFinSuitLHorlogeDeLaSeance() throws {
+        let debut = Self.a("2026-10-14", 12)
+        var r = Self.reglages(heures: [])
+        Store.beginSession(reglages: &r, minutes: 30, millis: debut, monotone: HorlogeMonotone(millis: 1_000, demarrage: 3))
+        // Dix minutes réellement passées, l'heure du téléphone avancée d'une heure.
+        let mur = debut + 70 * 60_000
+        let mono = HorlogeMonotone(millis: 1_000 + 10 * 60_000, demarrage: 3)
+        let fin = try #require(PlanNotifications.finDeSeance(reglages: r, maintenant: mur, monotone: mono))
+        #expect(fin.instant == mur + 20 * 60_000)
+        let q = try #require(PlanNotifications.questionSuite(reglages: r, maintenant: mur, monotone: mono))
+        #expect(q.instant == mur + 20 * 60_000 - 10_000)
+        // Sans l'horloge de la séance, l'heure murale : la fin serait passée.
+        #expect(PlanNotifications.finDeSeance(reglages: r, maintenant: mur) == nil)
     }
 
     @Test func uneSeanceOuverteTaitTousLesRappels() {

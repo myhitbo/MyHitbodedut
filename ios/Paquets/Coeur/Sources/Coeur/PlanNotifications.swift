@@ -18,7 +18,7 @@ public struct NotificationPlanifiee: Sendable, Hashable {
         case levana
         /// Les rappels du vol (VolRappels.kt, VolAlerte.kt).
         case vol
-        /// La fin de la séance et le rappel reporté (« Plus tard »).
+        /// La fin de la séance, « Continuer ? » dix secondes avant (24/11) et le rappel reporté (« Plus tard »).
         case seance
 
         /// Le nombre de notifications que la catégorie peut tenir en attente.
@@ -28,7 +28,7 @@ public struct NotificationPlanifiee: Sendable, Hashable {
             case .chabbat: return 4
             case .levana: return 6
             case .vol: return 14
-            case .seance: return 2
+            case .seance: return 3
             }
         }
 
@@ -75,9 +75,14 @@ public struct NotificationPlanifiee: Sendable, Hashable {
     /// Le texte du siddour que la notification ouvre quand on la touche (LevanaAlerteReceiver : Birkat haLevana ;
     /// VolAlerte.texteSiddur pour le vol) ; nil : l'accueil de l'app.
     public let texteSiddur: String?
+    /// « Continuer la hitbodedout ? » (24/11) : les boutons de la question, en minutes de plus, dans l'ordre
+    /// (SessionService.poserQuestion) — 5, la durée choisie, `SessionRule.ouverte` (sans fin), `PlanNotifications.non`
+    /// (« Non ») ; vide pour les autres. Toucher la notification ouvre l'écran de séance.
+    public let continuer: [Int]
 
     public init(identifiant: String, instant: Int64, titre: Libelle, texte: Libelle, suite: Libelle? = nil,
-                categorie: Categorie, actions: [Action] = [], trophee: String? = nil, texteSiddur: String? = nil) {
+                categorie: Categorie, actions: [Action] = [], trophee: String? = nil, texteSiddur: String? = nil,
+                continuer: [Int] = []) {
         self.identifiant = identifiant
         self.instant = instant
         self.titre = titre
@@ -87,6 +92,7 @@ public struct NotificationPlanifiee: Sendable, Hashable {
         self.actions = actions
         self.trophee = trophee
         self.texteSiddur = texteSiddur
+        self.continuer = continuer
     }
 }
 
@@ -110,7 +116,7 @@ public enum PlanNotifications {
     /// Les notifications qu'une app peut tenir en attente sur iOS.
     public static let limite = 64
     /// Ce que les parts laissent libre.
-    public static let marge = 8
+    public static let marge = 7
     /// Les jours civils de rappels programmés d'avance, aujourd'hui compris : dix jours à trois heures par jour
     /// remplissent la part des rappels ; avec plus d'heures, la part coupe avant.
     public static let joursRappels = 10
@@ -129,18 +135,21 @@ public enum PlanNotifications {
 
     /// Le plan, avec les zmanim de `Zmanim` et les heures du vol écrites comme `Instant.toString()`.
     public static func planifier(reglages: Reglages, journal: Journal, volRappels: [VolRappels.Rappel],
-                                 maintenant: Int64, fuseau: Fuseau) -> [NotificationPlanifiee] {
+                                 maintenant: Int64, fuseau: Fuseau,
+                                 monotone: HorlogeMonotone = .absente) -> [NotificationPlanifiee] {
         planifier(reglages: reglages, journal: journal, volRappels: volRappels, maintenant: maintenant, fuseau: fuseau,
                   horaires: { lieu, jour in horairesCalcules(lieu, jour) },
                   allumage: { lieu, jour, minutes in allumageCalcule(lieu, jour, minutes) },
-                  heureVol: { t in instantTexte(t) })
+                  heureVol: { t in instantTexte(t) }, monotone: monotone)
     }
 
     /// Le plan : chaque catégorie dans sa part, les premières dans le temps gardées, le tout trié par instant
     /// (puis catégorie, puis identifiant). `heureVol` écrit une heure du vol dans un texte (VolAlerte.deuxHeures).
+    /// `monotone` : l'horloge de la séance (décision du 24/11), qui ramène sa fin à l'heure murale.
     public static func planifier(reglages: Reglages, journal: Journal, volRappels: [VolRappels.Rappel],
                                  maintenant: Int64, fuseau: Fuseau, horaires: Horaires, allumage: Allumage,
-                                 heureVol: (Int64) -> String) -> [NotificationPlanifiee] {
+                                 heureVol: (Int64) -> String,
+                                 monotone: HorlogeMonotone = .absente) -> [NotificationPlanifiee] {
         let chaine = withoutActuallyEscaping(allumage) { allumage in
             rappels(reglages: reglages, journal: journal, maintenant: maintenant, fuseau: fuseau,
                     nombre: NotificationPlanifiee.Categorie.rappel.part, allumage: allumage)
@@ -148,8 +157,11 @@ public enum PlanNotifications {
         var liste: [NotificationPlanifiee] = []
         liste.append(contentsOf: chaine.filter { $0.categorie == .rappel }.prefix(NotificationPlanifiee.Categorie.rappel.part))
         var seance = chaine.filter { $0.categorie == .seance }
-        if let fin = finDeSeance(reglages: reglages, maintenant: maintenant) {
+        if let fin = finDeSeance(reglages: reglages, maintenant: maintenant, monotone: monotone) {
             seance.append(fin)
+        }
+        if let question = questionSuite(reglages: reglages, maintenant: maintenant, monotone: monotone) {
+            seance.append(question)
         }
         liste.append(contentsOf: trie(seance).prefix(NotificationPlanifiee.Categorie.seance.part))
         liste.append(contentsOf: aAnnoncer(chabbat(reglages: reglages, maintenant: maintenant, fuseau: fuseau, allumage: allumage),
@@ -259,16 +271,46 @@ public enum PlanNotifications {
     // MARK: La fin de la séance (SessionService.notifyCompleted)
 
     /// Le signal de fin d'une séance minutée en cours, à l'heure de sa fin (PORTAGE.md § 2.2.1) ; nil pour une
-    /// séance ouverte, close ou sans séance.
-    public static func finDeSeance(reglages: Reglages, maintenant: Int64) -> NotificationPlanifiee? {
+    /// séance ouverte, close ou sans séance. La fin est ramenée à l'heure murale (Store.sessionFinMurale, 24/11).
+    public static func finDeSeance(reglages: Reglages, maintenant: Int64,
+                                   monotone: HorlogeMonotone = .absente) -> NotificationPlanifiee? {
         let debut = Store.sessionStartedAt(reglages: reglages)
-        let fin = Store.sessionEndsAt(reglages: reglages)
+        let finSeance = Store.sessionEndsAt(reglages: reglages)
+        let fin = Store.sessionFinMurale(reglages: reglages, millis: maintenant, monotone: monotone)
         let duree = Store.sessionTarget(reglages: reglages)
         guard debut > 0, duree > 0, fin > maintenant else { return nil }
-        return NotificationPlanifiee(identifiant: "fin-seance-" + String(fin), instant: fin,
+        return NotificationPlanifiee(identifiant: "fin-seance-" + String(finSeance), instant: fin,
                                   titre: Libelle("session_done_title"),
                                   texte: Libelle("session_done_text", .libelle(Store.formatDuration(duree))),
                                   categorie: .seance)
+    }
+
+    // MARK: « Continuer ? » (SessionService.poserQuestion, 24/11)
+
+    /// Le bouton « Non » de la question, parmi ses minutes (`NotificationPlanifiee.continuer`).
+    public static let non = -1
+
+    /// « Continuer la hitbodedout ? », dix secondes avant la fin d'une séance minutée, l'option allumée et la question
+    /// pas encore posée pour cette étape ; nil sinon, et une fois l'instant passé (posée alors par l'écran de séance,
+    /// elle ne se repose pas). Trois réponses tiennent dans la notification : 5 minutes de plus, la même durée encore,
+    /// sans fin ; « Non » quand la durée choisie est de 5 minutes (ou inconnue). Sans réponse, la séance va à son
+    /// terme et s'inscrit comme d'habitude. Prolongée, elle a une nouvelle fin, donc un nouvel identifiant.
+    public static func questionSuite(reglages: Reglages, maintenant: Int64,
+                                     monotone: HorlogeMonotone = .absente) -> NotificationPlanifiee? {
+        guard reglages.proposerSuite, Store.hasSessionRecord(reglages: reglages),
+              Store.sessionTarget(reglages: reglages) > 0,
+              Store.suiteEtat(reglages: reglages) == Store.suiteAucune else { return nil }
+        let fin = Store.sessionFinMurale(reglages: reglages, millis: maintenant, monotone: monotone)
+        let instant = fin &- SessionRule.avantFinSuiteMs
+        guard fin > 0, instant > maintenant else { return nil }
+        let pas = Store.sessionPas(reglages: reglages)
+        var reponses = [5]
+        if pas > 0 && pas != 5 { reponses.append(pas) }
+        reponses.append(SessionRule.ouverte)
+        if pas <= 0 || pas == 5 { reponses.append(non) }
+        return NotificationPlanifiee(identifiant: "suite-seance-" + String(Store.sessionEndsAt(reglages: reglages)),
+                                     instant: instant, titre: Libelle("session_suite_titre"),
+                                     texte: Libelle("session_suite_texte"), categorie: .seance, continuer: reponses)
     }
 
     // MARK: « Chabbat dans 3 h » (ChabbatAlerte.kt)

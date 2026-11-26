@@ -112,6 +112,19 @@ public struct SeanceVue: View {
             SeanceBoite(modele: modele, dialogue: dialogue)
                 .hauteursDeFeuille([.medium, .large])
         }
+        // « Continuer la hitbodedout ? » dix secondes avant la fin (24/11) : ses quatre réponses ; fermée sans choix,
+        // comme « Non », la séance va à son terme. Elle se ferme d'elle-même si l'on répond dans la notification.
+        .confirmationDialog(Text(modele.titreQuestionSuite, traducteur: traducteur),
+                            isPresented: Binding(get: { modele.questionSuite != nil }, set: { _ in }),
+                            titleVisibility: .visible) {
+            ForEach(modele.questionSuite ?? []) { reponse in
+                Button(role: reponse.minutes == nil ? .cancel : nil) {
+                    Task { try? await modele.repondreSuite(reponse.minutes) }
+                } label: {
+                    Text(reponse.libelle, traducteur: traducteur)
+                }
+            }
+        }
         .sheet(item: Bindable(modele).noteLiee) { route in
             if case .note(let jour) = route {
                 SeanceNote(modele: fabriqueNote(jour)) { modele.fermerRoute() }
@@ -205,6 +218,16 @@ public struct SeanceVue: View {
                 }
                 .buttonStyle(.secondaire)
             }
+            // « Continuer ? » dix secondes avant la fin (24/11) : l'option se choisit avant de commencer.
+            Toggle(isOn: Binding(get: { modele.proposerSuite },
+                                 set: { oui in Task { try? await modele.choisirProposerSuite(oui) } })) {
+                Text(modele.libelleSuite, traducteur: traducteur)
+                    .font(.subheadline)
+                    .foregroundStyle(Teinte(.brand))
+            }
+            .tint(Teinte(.brand))
+            .frame(minHeight: 48)
+            .padding(.horizontal, 12)
             let simplement = modele.libellesSimplement
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
                 ForEach(Array(simplement.enumerated()), id: \.offset) { rang, libelle in

@@ -44,17 +44,32 @@ struct GestesExterieurs: ViewModifier {
                     break
                 }
             }
-            // Une séance commencée tait les rappels et pose sa notification de fin ; close, elle allonge la série.
-            .onChange(of: app.seance.suivie) { _, _ in replanifier() }
+            // Une séance commencée tait les rappels et pose sa notification de fin ; close, elle allonge la série, et
+            // « Continuer ? » parue n'a plus d'objet.
+            .onChange(of: app.seance.suivie) { _, suivie in
+                if !suivie { retirerQuestion() }
+                replanifier()
+            }
             .onChange(of: app.seance.inscriptions) { _, _ in
+                retirerQuestion()
                 replanifier()
                 RafraichissementWidgets.redessiner()
+            }
+            // « Continuer ? » a sa réponse (sur l'écran de séance) : la question parue se retire, la fin se déplace.
+            .onChange(of: app.seance.reponsesSuite) { _, _ in
+                retirerQuestion()
+                replanifier()
             }
     }
 
     private func replanifier() {
         let planificateur = app.planificateur
         Task { await planificateur.replanifier() }
+    }
+
+    private func retirerQuestion() {
+        let planificateur = app.planificateur
+        Task { await planificateur.retirerQuestionParue() }
     }
 
     /// Les gestes en attente, un à un : un écran ouvert, « Plus tard », « Terminer maintenant ».
@@ -69,6 +84,10 @@ struct GestesExterieurs: ViewModifier {
             case .reporter:
                 let planificateur = app.planificateur
                 Task { try? await planificateur.reporter() }
+            case .continuer(let minutes):
+                Task { await SuiteDeSeance.repondre(minutes) }
+            case .nePasContinuer:
+                Task { await SuiteDeSeance.repondre(nil) }
             case .rien:
                 break
             }
