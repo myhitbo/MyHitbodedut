@@ -114,6 +114,30 @@ enum VersionPolice {
     }
 }
 
+/// La taille du texte du système, comme le `fontScale` d'Android (1 à la taille par défaut, jamais moins) : les
+/// petits écrans des versions (17/11) se jugent à la hauteur de l'écran divisée par elle.
+enum VersionEchelle {
+    static func texte(_ taille: DynamicTypeSize) -> Double {
+        switch taille {
+        case .xSmall, .small, .medium, .large: 1
+        case .xLarge: 1.12
+        case .xxLarge: 1.24
+        case .xxxLarge: 1.35
+        case .accessibility1: 1.65
+        case .accessibility2: 1.94
+        case .accessibility3: 2.35
+        case .accessibility4: 2.76
+        default: 3.12
+        }
+    }
+
+    /// Un petit écran (PileActivity.petit : un 480x854, 569 dp de haut) ou un texte agrandi qui le rend aussi serré :
+    /// moins de 680 points de haut, divisés par la taille du texte.
+    static func petit(hauteur: CGFloat, _ taille: DynamicTypeSize) -> Bool {
+        hauteur > 0 && Double(hauteur) / texte(taille) < 680
+    }
+}
+
 /// Les textes des versions, écrits dans la langue de l'app.
 enum VersionEcrit {
     static func chaine(_ t: VersionTexte, _ traducteur: Traducteur) -> String {

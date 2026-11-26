@@ -204,7 +204,8 @@ enum HalakhaDateCivile {
         let format = DateFormatter()
         format.calendar = calendrier
         format.timeZone = .gmt
-        format.locale = Locale(identifier: langue)
+        // En arabe, des chiffres 0 à 9 (Chiffres.locale, décision du 24/11).
+        format.locale = Traducteur.localeDesChiffres(langue)
         format.dateFormat = "EEEE d MMMM yyyy"
         return format.string(from: date)
     }

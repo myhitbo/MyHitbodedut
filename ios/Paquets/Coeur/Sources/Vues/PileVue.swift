@@ -11,6 +11,12 @@ import Ecrans
 struct PileVue: View {
     let modele: AccueilVersionModele
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var tailleTexte
+    /// La hauteur de l'écran de l'accueil : un petit écran (ou un texte agrandi qui le rend aussi serré) prend des
+    /// titres plus petits et laisse le hassid (PileActivity.petit, 17/11).
+    @State private var hauteur: CGFloat = 0
+
+    private var petit: Bool { VersionEchelle.petit(hauteur: hauteur, tailleTexte) }
 
     var body: some View {
         let e = modele.pile
@@ -31,6 +37,11 @@ struct PileVue: View {
         .padding(.top, 12)
         .padding(.bottom, 16)
         .background(Pile.fond.ignoresSafeArea())
+        .onGeometryChange(for: CGFloat.self) { geometrie in
+            geometrie.size.height
+        } action: { valeur in
+            hauteur = valeur
+        }
     }
 
     // MARK: L'en-tête
@@ -42,7 +53,7 @@ struct PileVue: View {
                     .font(VersionPolice.rubik(14))
                     .foregroundStyle(Pile.encreDouce)
                 Text(Libelle("pile_titre"), traducteur: traducteur)
-                    .font(VersionPolice.secular(30))
+                    .font(VersionPolice.secular(petit ? 24 : 30))
                     .foregroundStyle(Pile.encre)
                     .accessibilityAddTraits(.isHeader)
             }
@@ -119,8 +130,10 @@ struct PileVue: View {
     private func carteHitbodedout(_ h: PileHitbodedout) -> some View {
         carte(0xFF136067, 0xFF0B3236) {
             etiquette(Libelle("pile_hitbodedout"), Pile.hitboAccent)
+            // Plus petit sur un petit écran : en 28 le titre prenait trois lignes et poussait « Commencer » sous le bord
+            // de la carte (480x854, 17/11).
             Text(h.titre, traducteur: traducteur)
-                .font(VersionPolice.secular(28))
+                .font(VersionPolice.secular(petit ? 22 : 28))
                 .foregroundStyle(Pile.hitboEncre)
                 .padding(.top, 14)
             Text(h.serie, traducteur: traducteur)
@@ -142,10 +155,14 @@ struct PileVue: View {
             }
             .padding(.top, 14)
             .accessibilityHidden(true)
-            // Le hassid occupe le milieu de la carte : il accueille, ou se réjouit quand c'est fait.
-            Illustration(decorative: h.image)
-                .frame(maxWidth: .infinity, minHeight: 90, maxHeight: .infinity)
-                .padding(.top, 12)
+            // Le hassid occupe le milieu de la carte : il accueille, ou se réjouit quand c'est fait. Borné en hauteur, et
+            // absent sur un petit écran, où il poussait « Commencer » hors de vue (480x854, 17/11).
+            if !petit {
+                Illustration(decorative: h.image)
+                    .frame(maxWidth: .infinity, minHeight: 90, maxHeight: 200)
+                    .frame(maxHeight: .infinity)
+                    .padding(.top, 12)
+            }
             VersionBouton(libelle: Text(h.bouton, traducteur: traducteur), fond: Pile.hitboAccent,
                           encre: Pile.hitboBoutonEncre, police: VersionPolice.rubik(16, .semibold)) {
                 modele.commencerSeance()

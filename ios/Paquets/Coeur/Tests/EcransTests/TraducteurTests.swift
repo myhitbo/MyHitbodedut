@@ -132,6 +132,29 @@ struct TraducteurTests {
         #expect(refusees == [false, false, false, false])
     }
 
+    /// ChiffresTest d'Android (décision du 24/11) : en arabe, les dates et les nombres que l'app écrit sont en chiffres
+    /// 0 à 9 ; la région reste ; les autres langues ne changent pas.
+    @Test func enArabeDesChiffresDeZeroANeuf() {
+        let arabesOrientaux = Set("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹")
+        for langue in ["ar", "ar-TN", "ar_TN"] {
+            let l = Traducteur.localeDesChiffres(langue)
+            #expect(l.region?.identifier == "TN", "\(langue)")
+            let format = DateFormatter()
+            format.locale = l
+            format.timeZone = TimeZone(secondsFromGMT: 0)
+            format.dateFormat = "d MMMM yyyy"
+            let ecrit = format.string(from: Date(timeIntervalSince1970: 1_795_000_000))
+            #expect(!ecrit.contains(where: arabesOrientaux.contains), "\(langue) : \(ecrit)")
+            #expect(ecrit.contains("2026"), "\(langue) : \(ecrit)")
+            let nombre = NumberFormatter()
+            nombre.locale = l
+            #expect(nombre.string(from: 2985) == "2985" || nombre.string(from: 2985)?.contains(where: arabesOrientaux.contains) == false)
+        }
+        for langue in ["fr", "en", "he", "es"] {
+            #expect(Traducteur.localeDesChiffres(langue).identifier == langue)
+        }
+    }
+
     /// L'arabe est l'arabe de Tunisie, de droite à gauche comme l'hébreu.
     @Test func laLocalisationEtLeSensDEcriture() {
         let identifiants = Traducteur.langues.map(Traducteur.identifiantLocale)

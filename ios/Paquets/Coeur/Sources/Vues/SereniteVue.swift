@@ -12,6 +12,18 @@ struct SereniteVue: View {
     let modele: AccueilVersionModele
     @Environment(\.traducteur) private var traducteur
     @Environment(\.dynamicTypeSize) private var tailleTexte
+    /// La hauteur de l'écran de l'accueil : la carte-paysage en prend la moitié (17/11).
+    @State private var hauteur: CGFloat = 0
+
+    /// La moitié de l'écran, entre 300 et 380 points, agrandie avec le texte du système (jusqu'à 1,4), sans dépasser la
+    /// hauteur visible sous l'en-tête et au-dessus des onglets (SereniteActivity.cartePaysage, petits écrans du 17/11) ;
+    /// 380 tant que l'écran n'est pas mesuré.
+    private var hauteurCarte: CGFloat {
+        guard hauteur > 0 else { return 380 }
+        let echelle = min(max(VersionEchelle.texte(tailleTexte), 1), 1.4)
+        let moitie = min(max(Double(hauteur) / 2, 300), 380) * echelle
+        return CGFloat(min(moitie, max(Double(hauteur) - 200, 280)))
+    }
 
     var body: some View {
         let e = modele.serenite
@@ -20,7 +32,7 @@ struct SereniteVue: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     entete(e, k)
-                    SereniteCartePaysage(modele: modele, ecran: e)
+                    SereniteCartePaysage(modele: modele, ecran: e, hauteurCarte: hauteurCarte)
                         .padding(.top, 18)
                     // Sur l'iPad, deux colonnes (DeuxColonnes) sous le paysage : le hizouk et le zman, les derniers
                     // jours à côté.
@@ -39,6 +51,11 @@ struct SereniteVue: View {
             onglets(k)
         }
         .background(k.fond.ignoresSafeArea())
+        .onGeometryChange(for: CGFloat.self) { geometrie in
+            geometrie.size.height
+        } action: { valeur in
+            hauteur = valeur
+        }
     }
 
     // MARK: En-tête
@@ -282,12 +299,15 @@ struct SerenitePalette {
 
 // MARK: - La carte-paysage
 
-/// La grande carte (380 pt, coins de 32) : le paysage du ciel du moment, la silhouette du hassid, le voile du bas
+/// La grande carte (la moitié de l'écran, de 300 à 380 pt ; coins de 32) : le paysage du ciel du moment, la silhouette
+/// du hassid, le voile du bas
 /// sous le texte, le bouton rond ; « Modifier » en haut, du côté de la fin de ligne. Toucher la carte commence la
 /// séance (ou y revient) ; « Modifier » ouvre la préparation.
 private struct SereniteCartePaysage: View {
     let modele: AccueilVersionModele
     let ecran: SereniteEcran
+    /// La hauteur de la carte, avant que le texte agrandi ne la pousse (SereniteVue.hauteurCarte).
+    let hauteurCarte: CGFloat
     @Environment(\.traducteur) private var traducteur
     /// La hauteur du bloc de texte, qui grandit avec Dynamic Type : elle décide du voile et de la silhouette.
     @State private var hauteurTexte: CGFloat = 0
@@ -305,7 +325,7 @@ private struct SereniteCartePaysage: View {
     /// Le voile du bas : 190 pt à la taille de la maquette ; plus haut quand le texte grandit, pour que l'étiquette du
     /// haut reste sur du sombre et pas sur le ciel clair du jour, sans jamais agrandir la carte à lui seul.
     private var hauteurVoile: CGFloat {
-        min(max(190, basTexte + 91), max(380, basTexte))
+        min(max(190, basTexte + 91), max(hauteurCarte, basTexte))
     }
 
     /// Le fondu du voile, du transparent au sombre : 190 pt quand le voile garde sa hauteur ; quand il monte, assez
@@ -362,8 +382,8 @@ private struct SereniteCartePaysage: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                         .accessibilityHidden(true)
                 }
-                // 380 de haut ; plus haute si le texte grandit (Dynamic Type), pour ne pas le couper.
-                .frame(minHeight: 380)
+                // La moitié de l'écran ; plus haute si le texte grandit (Dynamic Type), pour ne pas le couper.
+                .frame(minHeight: hauteurCarte)
                 .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
                 .contentShape(RoundedRectangle(cornerRadius: 32, style: .continuous))

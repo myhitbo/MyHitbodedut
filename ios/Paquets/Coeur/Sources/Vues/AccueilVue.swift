@@ -351,7 +351,8 @@ enum AccueilDate {
         let format = DateFormatter()
         format.calendar = calendrier
         format.timeZone = .gmt
-        format.locale = Locale(identifier: Traducteur.identifiantLocale(langue))
+        // En arabe, des chiffres 0 à 9 (Chiffres.locale, décision du 24/11).
+        format.locale = Traducteur.localeDesChiffres(langue)
         if let motif {
             format.dateFormat = motif
         } else {

@@ -113,6 +113,13 @@ public struct DonneesAccueil: Sendable, Hashable {
         return Libelle("version_commencer", .libelle(DonneesAccueil.duree(objectifMinutes)))
     }
 
+    /// Le même, « Commencer » seul quand la durée ne tient plus sur la ligne (Bento, texte agrandi ou écran étroit,
+    /// 17/11).
+    public var libelleCommencerCourt: Libelle {
+        if enCours || faite { return libelleCommencer }
+        return Libelle("version_commencer_court")
+    }
+
     /// Le soir, quand les zmanim du jour sont passés, `prochain` est nil alors qu'un lieu est choisi : on montre alors
     /// le dernier repère du jour (la sortie des étoiles) et son heure, sans compte à rebours. Nil aussi sans lieu :
     /// c'est le seul cas où l'on propose d'en choisir un (recette du 22/11 : Bento, Instant et Sérénité affichaient

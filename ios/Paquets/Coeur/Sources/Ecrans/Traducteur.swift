@@ -124,6 +124,17 @@ public struct Traducteur: Sendable {
         langue == "ar" ? "ar-TN" : langue
     }
 
+    /// La locale des nombres et des dates que l'app écrit elle-même (Chiffres.locale, décision du 24/11) : en arabe,
+    /// toujours les chiffres 0 à 9, comme le reste de l'interface — l'arabe sans région (« ar ») s'écrit en chiffres
+    /// arabes orientaux (٠١٢٣), l'arabe de Tunisie en 0 à 9 ; la région reste. Les autres langues ne changent pas.
+    public static func localeDesChiffres(_ langue: String) -> Locale {
+        let minuscule = langue.lowercased()
+        if minuscule == "ar" || minuscule.hasPrefix("ar-") || minuscule.hasPrefix("ar_") {
+            return Locale(identifier: "ar_TN@numbers=latn")
+        }
+        return Locale(identifier: identifiantLocale(langue))
+    }
+
     /// L'hébreu et l'arabe s'écrivent de droite à gauche : l'app entière se retourne (`\.layoutDirection`).
     public static func deDroiteAGauche(_ langue: String) -> Bool {
         langue == "he" || langue == "ar"

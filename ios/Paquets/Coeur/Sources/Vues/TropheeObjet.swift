@@ -220,7 +220,8 @@ enum TropheeDate {
         let format = DateFormatter()
         format.calendar = calendrier
         format.timeZone = .gmt
-        format.locale = Locale(identifier: langue)
+        // En arabe, des chiffres 0 à 9 (Chiffres.locale, décision du 24/11).
+        format.locale = Traducteur.localeDesChiffres(langue)
         format.dateStyle = .long
         format.timeStyle = .none
         return format.string(from: date)

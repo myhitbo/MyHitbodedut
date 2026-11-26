@@ -12,6 +12,8 @@ public struct BentoHitbodedout: Sendable, Hashable {
     public let titre: Libelle
     /// « Commencer · 15 min », « Encore une hitbodedout », « Revenir à la hitbodedout ».
     public let bouton: Libelle
+    /// « Commencer » seul, pour un texte agrandi ou un écran étroit (17/11).
+    public let boutonCourt: Libelle
     /// L'anneau : « 4/6 » au centre, l'arc de 0 à 1 (0 sans jour dû).
     public let faits: Int
     public let dus: Int
@@ -90,7 +92,8 @@ extension AccueilVersionModele {
         let hitbo = BentoHitbodedout(
             titre: d.faite ? Libelle("bento_faite", .libelle(DonneesAccueil.duree(d.minutesAujourdhui)))
                 : Libelle("bento_hitbo_titre"),
-            bouton: d.libelleCommencer, faits: d.semaineFaits, dus: d.semaineDus, fraction: fraction,
+            bouton: d.libelleCommencer, boutonCourt: d.libelleCommencerCourt, faits: d.semaineFaits,
+            dus: d.semaineDus, fraction: fraction,
             accessibiliteAnneau: d.libelleSemaine, accessibilite: Libelle("pile_hitbodedout"))
         let serie = BentoSerie(nombre: d.serie, jours: Libelle.pluriel("bento_jours", quantite: d.serie),
                                barres: d.semaine.map(\.done), accessibilite: d.libelleSerie)

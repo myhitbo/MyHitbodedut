@@ -358,6 +358,8 @@ struct AccueilVersionModeleTests {
         #expect(e.titre == Libelle("pile_titre"))
         #expect(e.hitbodedout.titre == Libelle("bento_hitbo_titre"))
         #expect(e.hitbodedout.bouton == Libelle("version_commencer", .libelle(DonneesAccueil.duree(15))))
+        // « Commencer » seul pour un texte agrandi ou un écran étroit (17/11).
+        #expect(e.hitbodedout.boutonCourt == Libelle("version_commencer_court"))
         #expect(e.hitbodedout.faits == 0)
         #expect(e.hitbodedout.fraction == 0)
         #expect(e.hitbodedout.accessibilite == Libelle("pile_hitbodedout"))
@@ -385,6 +387,7 @@ struct AccueilVersionModeleTests {
         let d = b.modele.donnees
         #expect(e.hitbodedout.titre == Libelle("bento_faite", .libelle(DonneesAccueil.duree(20))))
         #expect(e.hitbodedout.bouton == Libelle("version_encore"))
+        #expect(e.hitbodedout.boutonCourt == Libelle("version_encore"))
         #expect(e.hitbodedout.faits == 2)
         #expect(e.hitbodedout.dus == d.semaineDus)
         #expect(e.hitbodedout.fraction == Double(2) / Double(d.semaineDus))

@@ -350,33 +350,49 @@ private struct InstantJauge: View {
     }
 }
 
-/// Les graduations de la jauge, à une part de leur remplissage : `part` s'anime de 0 à 1.
-private struct InstantGraduations: View, Animatable {
+/// Les graduations de la jauge, à une part de leur remplissage (`part` s'anime de 0 à 1) : les faites (orangé)
+/// par-dessus toutes les autres (gris).
+private struct InstantGraduations: View {
     let fraction: Double
-    var part: Double
+    let part: Double
 
-    var animatableData: Double {
+    var body: some View {
+        let trait = StrokeStyle(lineWidth: 3, lineCap: .round)
+        ZStack {
+            InstantTraits(fraction: fraction, part: part, faites: false)
+                .stroke(Instant.graduation, style: trait)
+            InstantTraits(fraction: fraction, part: part, faites: true)
+                .stroke(Instant.orange, style: trait)
+        }
+    }
+}
+
+/// Les 37 traits de la jauge en demi-cercle : ceux qui sont faits à cette part du remplissage, ou les autres.
+private struct InstantTraits: Shape {
+    var fraction: Double
+    var part: Double
+    let faites: Bool
+
+    nonisolated var animatableData: Double {
         get { part }
         set { part = newValue }
     }
 
-    var body: some View {
-        Canvas { c, taille in
-            let n = 36
-            let cx = Double(taille.width) / 2
-            let cy = Double(taille.height) - 4
-            let r1 = min(Double(taille.width) / 2, Double(taille.height)) - 6
-            let r2 = r1 - 14
-            for i in 0...n {
-                let a = Double.pi * (1 - Double(i) / Double(n))
-                var trait = Path()
-                trait.move(to: CGPoint(x: cx + r2 * cos(a), y: cy - r2 * sin(a)))
-                trait.addLine(to: CGPoint(x: cx + r1 * cos(a), y: cy - r1 * sin(a)))
-                let faite = fraction > 0 && Double(i) / Double(n) <= fraction * part
-                c.stroke(trait, with: .color(faite ? Instant.orange : Instant.graduation),
-                         style: StrokeStyle(lineWidth: 3, lineCap: .round))
-            }
+    nonisolated func path(in r: CGRect) -> Path {
+        var traits = Path()
+        let n = 36
+        let cx = Double(r.midX)
+        let cy = Double(r.maxY) - 4
+        let r1 = min(Double(r.width) / 2, Double(r.height)) - 6
+        let r2 = r1 - 14
+        for i in 0...n {
+            let faite = fraction > 0 && Double(i) / Double(n) <= fraction * part
+            guard faite == faites else { continue }
+            let a = Double.pi * (1 - Double(i) / Double(n))
+            traits.move(to: CGPoint(x: cx + r2 * cos(a), y: cy - r2 * sin(a)))
+            traits.addLine(to: CGPoint(x: cx + r1 * cos(a), y: cy - r1 * sin(a)))
         }
+        return traits
     }
 }
 

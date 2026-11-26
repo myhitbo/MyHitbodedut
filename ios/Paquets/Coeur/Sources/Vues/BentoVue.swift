@@ -13,6 +13,9 @@ struct BentoVue: View {
     let modele: AccueilVersionModele
     @Environment(\.traducteur) private var traducteur
     @Environment(\.accessibilityReduceMotion) private var reduire
+    @Environment(\.dynamicTypeSize) private var tailleTexte
+    /// La largeur de l'accueil : sous 360 points, « Commencer » seul (480x854, 17/11).
+    @State private var largeur: CGFloat = 0
     /// Les rangées entrées : à la première ouverture, elles paraissent l'une après l'autre ; toutes ensuite.
     @State private var entrees = -1
     @State private var cascadeFaite = false
@@ -43,6 +46,11 @@ struct BentoVue: View {
             recherche
         }
         .background(Bento.fond.ignoresSafeArea())
+        .onGeometryChange(for: CGFloat.self) { geometrie in
+            geometrie.size.width
+        } action: { valeur in
+            largeur = valeur
+        }
         .onAppear {
             // Les tuiles entrent en cascade à la première ouverture seulement (maquette : +80 ms chacune).
             guard !cascadeFaite else { return }
@@ -170,7 +178,9 @@ struct BentoVue: View {
                 Text(h.titre, traducteur: traducteur)
                     .font(VersionPolice.heebo(22, .bold))
                     .foregroundStyle(Bento.blanc)
-                Text(h.bouton, traducteur: traducteur)
+                // Texte agrandi ou écran étroit : « Commencer » seul, la durée ne tenait plus sur la ligne (17/11).
+                Text(VersionEchelle.texte(tailleTexte) > 1.15 || (largeur > 0 && largeur < 360) ? h.boutonCourt : h.bouton,
+                     traducteur: traducteur)
                     .font(VersionPolice.heebo(15, .bold))
                     .foregroundStyle(Bento.vert)
                     .padding(.horizontal, 18)

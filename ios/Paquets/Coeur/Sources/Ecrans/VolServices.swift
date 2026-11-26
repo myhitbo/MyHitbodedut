@@ -498,7 +498,8 @@ public struct VolFormats: Sendable {
     /// Une heure civile écrite selon `motif` dans `langue` : lue comme une heure UTC, écrite en UTC.
     private static func motif(_ motif: String, _ langue: String, _ civile: DateHeure) -> String {
         let format = DateFormatter()
-        format.locale = Locale(identifier: langue)
+        // En arabe, des chiffres 0 à 9 (Chiffres.locale, décision du 24/11).
+        format.locale = Traducteur.localeDesChiffres(langue)
         format.timeZone = TimeZone(secondsFromGMT: 0)
         format.dateFormat = motif
         let millis = Fuseau.utc.millis(civile)
