@@ -285,8 +285,9 @@ private struct InstantCarteCiel: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 18)
-            // Sous le titre et la date, un voile de plus que celui de la carte : sur le ciel clair de midi, le petit
-            // texte blanc garde 4,5:1 (le voile d'Android seul s'éclaircit vers le milieu de la carte).
+            .frame(maxWidth: .infinity, alignment: .leading)
+            // Sous le titre et la date, un voile de plus que celui de la carte, sur toute sa largeur : sur le ciel clair
+            // de midi, le petit texte blanc garde 4,5:1 (le voile d'Android seul s'éclaircit vers le milieu de la carte).
             .background(alignment: .top) { InstantCarteCiel.voile(haut: true) }
             Spacer(minLength: 20)
             Button {
