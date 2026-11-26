@@ -12,11 +12,15 @@ struct PileVue: View {
     let modele: AccueilVersionModele
     @Environment(\.traducteur) private var traducteur
     @Environment(\.dynamicTypeSize) private var tailleTexte
-    /// La hauteur de l'écran de l'accueil : un petit écran (ou un texte agrandi qui le rend aussi serré) prend des
-    /// titres plus petits et laisse le hassid (PileActivity.petit, 17/11).
+    /// La hauteur de l'écran de l'accueil : un petit écran prend des titres plus petits ; un petit écran, ou un texte
+    /// agrandi qui le rend aussi serré, laisse le hassid (PileActivity.petit, 17/11).
     @State private var hauteur: CGFloat = 0
 
     private var petit: Bool { VersionEchelle.petit(hauteur: hauteur, tailleTexte) }
+
+    /// Les titres ne se règlent que sur la hauteur de l'écran : sur la taille du texte aussi, ils grandiraient moins
+    /// que lui (l'audit d'accessibilité le relève : « Dynamic Type en partie »).
+    private var petitEcran: Bool { VersionEchelle.petit(hauteur: hauteur, .large) }
 
     var body: some View {
         let e = modele.pile
@@ -53,7 +57,7 @@ struct PileVue: View {
                     .font(VersionPolice.rubik(14))
                     .foregroundStyle(Pile.encreDouce)
                 Text(Libelle("pile_titre"), traducteur: traducteur)
-                    .font(VersionPolice.secular(petit ? 24 : 30))
+                    .font(VersionPolice.secular(petitEcran ? 24 : 30))
                     .foregroundStyle(Pile.encre)
                     .accessibilityAddTraits(.isHeader)
             }
@@ -133,7 +137,7 @@ struct PileVue: View {
             // Plus petit sur un petit écran : en 28 le titre prenait trois lignes et poussait « Commencer » sous le bord
             // de la carte (480x854, 17/11).
             Text(h.titre, traducteur: traducteur)
-                .font(VersionPolice.secular(petit ? 22 : 28))
+                .font(VersionPolice.secular(petitEcran ? 22 : 28))
                 .foregroundStyle(Pile.hitboEncre)
                 .padding(.top, 14)
             Text(h.serie, traducteur: traducteur)

@@ -303,7 +303,9 @@ private struct InstantCarteCiel: View {
                         Text(verbatim: ecran.zmanim.reperes.map { traducteur.texte($0.nom) + " " + $0.heure }
                             .joined(separator: "   "))
                             .tailleSp(11, relativeA: VersionPolice.style(11))
-                            .foregroundStyle(VersionCouleur.argb(0xB3FFFFFF))
+                            // Un gris clair plein plutôt que le blanc à 70 % d'Android : l'audit d'accessibilité
+                            // mesure mal un texte transparent sur un paysage.
+                            .foregroundStyle(VersionCouleur.argb(0xFFD0D0D0))
                             .monospacedDigit()
                             .lignesAuPlus(2)
                     }
