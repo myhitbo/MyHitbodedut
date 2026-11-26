@@ -41,7 +41,32 @@ EXCLUES = re.compile(r"^(divulgation_|permission_battery|permission_overlay)")
 COMPTES = {
     "textes par rite": 38, "psaumes": 150, "versets": 2527, "psaumes du Tikoun": 10,
     "textes de 'hizouk": 171, "livres": 12, "hilloulot": 3966, "villes": 51,
-    "aéroports": 3226, "morceaux": 42,
+    "aéroports": 3226, "morceaux": 23,
+}
+
+# Les morceaux de MusiquePlay.kt qu'iOS ne livre pas encore (26/11, PR 53) : avec eux l'app passerait de 156 à
+# 241 Mo, au-delà des 200 Mo (PORTAGE.md § 4.3) ; en attente de la décision du propriétaire. Même liste que
+# MusiquePlay.horsIOS (Swift), que les tests comparent à musique.json.
+HORS_IOS = {
+    "yanuka_a_part_of_me",
+    "yanuka_anticipation",
+    "yanuka_harping_his_praise",
+    "yanuka_listening_to_the_heart",
+    "yanuka_shlomo_yehuda",
+    "yanuka_shlomo_yehuda_2",
+    "yanuka_the_king_will_return",
+    "yanuka_the_truth_will_rise",
+    "yanuka_yearning",
+    "nigunim_for_neshama_shneor_lerer",
+    "chabad_shabbos_shneor_lerer",
+    "chabad_yamim_noraim_shneor_lerer",
+    "relaxing_chabad_melodies_shneor_lerer",
+    "tzomo_lecho_s_lerer",
+    "vehi_sheamda_s_lerer",
+    "vehi_sheamda_piano_shneor_lerer",
+    "lerer_anim_zemirot",
+    "lerer_ani_maamin",
+    "lerer_nigun_abaal_shem_tov_for_babies",
 }
 
 # Licence et mention de chaque fichier produit (PORTAGE.md § 4.1 et § 6) : un fichier sans
@@ -266,7 +291,7 @@ class Export:
     def musique(self):
         kt = ANDROID / "java" / "com" / "myhitbodedut" / "MusiquePlay.kt"
         motif = re.compile(r'Bundled\("([a-z0-9_]+)", R\.raw\.\1, R\.string\.(track_[a-z0-9_]+)\)')
-        morceaux = [{"id": i, "titre": t} for i, t in motif.findall(kt.read_text(encoding="utf-8"))]
+        morceaux = [{"id": i, "titre": t} for i, t in motif.findall(kt.read_text(encoding="utf-8")) if i not in HORS_IOS]
         if not morceaux:
             raise SystemExit("aucun morceau trouvé dans MusiquePlay.kt")
         for m in morceaux:

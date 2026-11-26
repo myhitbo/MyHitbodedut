@@ -134,7 +134,7 @@ struct ContenusAppTests {
         let premiere = villes.first?.nom.fr
         #expect(premiere == "Jérusalem")
         let morceaux = try await Self.contenus.musique()
-        #expect(morceaux.count == 42)  // trois retirés le 16/11 sur Android, sans accord écrit ; dix-neuf entrés le 26/11 (PR 53)
+        #expect(morceaux.count == 23)  // trois retirés le 16/11 sur Android, sans accord écrit ; MusiquePlay.horsIOS (26/11)
         let premier = morceaux.first?.id
         #expect(premier == "hamelech_basade")
         let palettes = try await Self.contenus.palettes()

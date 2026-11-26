@@ -1059,12 +1059,12 @@ Aucun de ces points n'est un avis juridique : ce sont des lectures, comme dans l
 
 ### 6.1 Musique
 
-iOS livre **la liste de la version Play**, et elle seule (`MusiquePlay.kt`, 42 morceaux depuis le 26/11, 140 Mo). Il n'existe pas d'équivalent de l'édition GitHub : TestFlight est aussi une distribution par Apple.
+iOS livre **la liste de la version Play**, et elle seule (`MusiquePlay.kt`), moins les dix-neuf morceaux entrés le 26/11 (PR 53), que `MusiquePlay.horsIOS` et `HORS_IOS` de l'export tiennent à l'écart : avec eux l'app passait de 156 à 241 Mo, au-delà des 200 Mo du § 4.3 ; le propriétaire décide (moins de morceaux, Background Assets, ou le seuil relevé). 23 morceaux livrés. Il n'existe pas d'équivalent de l'édition GitHub : TestFlight est aussi une distribution par Apple.
 
 | Morceaux | Base du droit (d'après le dépôt) | Avant l'App Store |
 | --- | --- | --- |
-| `yanuka_nigoun_3`, et depuis le 26/11 (PR 53) neuf autres `yanuka_*` | accord du Yanuka, déclaré (oral) | l'avoir par écrit, toutes plateformes |
-| dix morceaux de Shneor Lerer (26/11, PR 53) | accord écrit du 21/11 : son nom à côté de la musique, application gratuite, pas de téléchargement des fichiers | vérifier qu'il vaut pour l'App Store |
+| `yanuka_nigoun_3` ; neuf autres `yanuka_*` sur Android depuis le 26/11 (PR 53), pas encore sur iOS (poids) | accord du Yanuka, déclaré (oral) | l'avoir par écrit, toutes plateformes |
+| dix morceaux de Shneor Lerer : sur Android depuis le 26/11 (PR 53), pas encore sur iOS (poids) | accord écrit du 21/11 : son nom à côté de la musique, application gratuite, pas de téléchargement des fichiers | vérifier qu'il vaut pour l'App Store |
 | `shpayer_*` (10), `ianir_*` (14) | accord écrit du 29/10 de נעם שפייר et יניר קילינסקי, « toutes leurs musiques » | vérifier qu'il n'est pas limité à Google Play |
 | `hamelech_basade` | « déclaré libre de droits » | la réserve du cahier des charges demeure : une mélodie peut être libre et son **enregistrement** ne pas l'être ; noter l'interprète, la source, la date |
 | 30 niggounim sans titre, Ishay Ribo, MBD, Motty Steinmetz, Shmuel | provenance inconnue ou autorisation non demandée | **absents d'iOS** ; l'utilisateur peut ajouter ses propres fichiers |

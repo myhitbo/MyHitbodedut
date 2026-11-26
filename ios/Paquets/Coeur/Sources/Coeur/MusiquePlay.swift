@@ -1,8 +1,7 @@
 // Les morceaux que la version Play livre (MusiquePlay.kt) : la seule liste qu'iOS livre, la liste « hors
 // Play » étant vide pour elle (src/musique_play/MusiqueHorsPlay.kt, PUBLICATION_PLAY_STORE.md § 3.2). La table
 // est recopiée par programme du Kotlin, dans le même ordre : les nouveaux vont en fin de liste, le
-// morceau par défaut ne change pas (26/11 : neuf niggounim du Yanuka et dix morceaux de Shneor Lerer, PR 53). Les
-// ressources d'Android y sont nommées : `rawRes` est le nom du
+// morceau par défaut ne change pas. Les ressources d'Android y sont nommées : `rawRes` est le nom du
 // fichier livré (`Musique/<rawRes>.m4a` dans musique.json), `titleRes` la clé de son titre.
 
 /// Les morceaux livrés avec l'application.
@@ -23,7 +22,21 @@ public enum MusiquePlay {
         }
     }
 
-    /// MORCEAUX, dans l'ordre du Kotlin : le premier est le morceau par défaut.
+    /// Les morceaux de la liste Play qu'iOS ne livre pas encore (26/11, PR 53 : neuf niggounim du Yanuka et dix
+    /// morceaux de Shneor Lerer) : l'app passerait de 156 à 241 Mo, au-delà des 200 Mo que l'iPhone fait confirmer
+    /// hors Wi-Fi (PORTAGE.md § 4.3, critère de la tâche 29). En attente de la décision du propriétaire (moins de
+    /// morceaux, ressources téléchargeables à la demande, ou le seuil relevé). L'export les saute
+    /// (tools/export_contenu/export.py, HORS_IOS) ; `morceaux` est la liste d'Android sans eux, dans son ordre.
+    public static let horsIOS: [String] = [
+        "yanuka_a_part_of_me", "yanuka_anticipation", "yanuka_harping_his_praise", "yanuka_listening_to_the_heart",
+        "yanuka_shlomo_yehuda", "yanuka_shlomo_yehuda_2", "yanuka_the_king_will_return",
+        "yanuka_the_truth_will_rise", "yanuka_yearning", "nigunim_for_neshama_shneor_lerer",
+        "chabad_shabbos_shneor_lerer", "chabad_yamim_noraim_shneor_lerer", "relaxing_chabad_melodies_shneor_lerer",
+        "tzomo_lecho_s_lerer", "vehi_sheamda_s_lerer", "vehi_sheamda_piano_shneor_lerer", "lerer_anim_zemirot",
+        "lerer_ani_maamin", "lerer_nigun_abaal_shem_tov_for_babies",
+    ]
+
+    /// MORCEAUX, dans l'ordre du Kotlin, sans `horsIOS` : le premier est le morceau par défaut.
     public static let morceaux: [Bundled] = [
         Bundled(id: "hamelech_basade", rawRes: "hamelech_basade", titleRes: "track_hamelech_basade"),
         Bundled(id: "yanuka_nigoun_3", rawRes: "yanuka_nigoun_3", titleRes: "track_yanuka_nigoun_3"),
@@ -48,24 +61,5 @@ public enum MusiquePlay {
         Bundled(id: "ianir_hakol_milfanekha", rawRes: "ianir_hakol_milfanekha", titleRes: "track_ianir_hakol_milfanekha"),
         Bundled(id: "ianir_kabbalat_chabbat", rawRes: "ianir_kabbalat_chabbat", titleRes: "track_ianir_kabbalat_chabbat"),
         Bundled(id: "ianir_bessarabie", rawRes: "ianir_bessarabie", titleRes: "track_ianir_bessarabie"),
-        Bundled(id: "yanuka_a_part_of_me", rawRes: "yanuka_a_part_of_me", titleRes: "track_yanuka_a_part_of_me"),
-        Bundled(id: "yanuka_anticipation", rawRes: "yanuka_anticipation", titleRes: "track_yanuka_anticipation"),
-        Bundled(id: "yanuka_harping_his_praise", rawRes: "yanuka_harping_his_praise", titleRes: "track_yanuka_harping_his_praise"),
-        Bundled(id: "yanuka_listening_to_the_heart", rawRes: "yanuka_listening_to_the_heart", titleRes: "track_yanuka_listening_to_the_heart"),
-        Bundled(id: "yanuka_shlomo_yehuda", rawRes: "yanuka_shlomo_yehuda", titleRes: "track_yanuka_shlomo_yehuda"),
-        Bundled(id: "yanuka_shlomo_yehuda_2", rawRes: "yanuka_shlomo_yehuda_2", titleRes: "track_yanuka_shlomo_yehuda_2"),
-        Bundled(id: "yanuka_the_king_will_return", rawRes: "yanuka_the_king_will_return", titleRes: "track_yanuka_the_king_will_return"),
-        Bundled(id: "yanuka_the_truth_will_rise", rawRes: "yanuka_the_truth_will_rise", titleRes: "track_yanuka_the_truth_will_rise"),
-        Bundled(id: "yanuka_yearning", rawRes: "yanuka_yearning", titleRes: "track_yanuka_yearning"),
-        Bundled(id: "nigunim_for_neshama_shneor_lerer", rawRes: "nigunim_for_neshama_shneor_lerer", titleRes: "track_nigunim_for_neshama_shneor_lerer"),
-        Bundled(id: "chabad_shabbos_shneor_lerer", rawRes: "chabad_shabbos_shneor_lerer", titleRes: "track_chabad_shabbos_shneor_lerer"),
-        Bundled(id: "chabad_yamim_noraim_shneor_lerer", rawRes: "chabad_yamim_noraim_shneor_lerer", titleRes: "track_chabad_yamim_noraim_shneor_lerer"),
-        Bundled(id: "relaxing_chabad_melodies_shneor_lerer", rawRes: "relaxing_chabad_melodies_shneor_lerer", titleRes: "track_relaxing_chabad_melodies_shneor_lerer"),
-        Bundled(id: "tzomo_lecho_s_lerer", rawRes: "tzomo_lecho_s_lerer", titleRes: "track_tzomo_lecho_s_lerer"),
-        Bundled(id: "vehi_sheamda_s_lerer", rawRes: "vehi_sheamda_s_lerer", titleRes: "track_vehi_sheamda_s_lerer"),
-        Bundled(id: "vehi_sheamda_piano_shneor_lerer", rawRes: "vehi_sheamda_piano_shneor_lerer", titleRes: "track_vehi_sheamda_piano_shneor_lerer"),
-        Bundled(id: "lerer_anim_zemirot", rawRes: "lerer_anim_zemirot", titleRes: "track_lerer_anim_zemirot"),
-        Bundled(id: "lerer_ani_maamin", rawRes: "lerer_ani_maamin", titleRes: "track_lerer_ani_maamin"),
-        Bundled(id: "lerer_nigun_abaal_shem_tov_for_babies", rawRes: "lerer_nigun_abaal_shem_tov_for_babies", titleRes: "track_lerer_nigun_abaal_shem_tov_for_babies"),
     ]
 }

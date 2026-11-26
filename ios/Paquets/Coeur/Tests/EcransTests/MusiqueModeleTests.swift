@@ -204,10 +204,10 @@ struct MusiqueModeleTests {
 
     // MARK: La bibliothèque
 
-    @Test func lesQuaranteDeuxMorceauxLivresLePremierChoisi() async throws {
+    @Test func lesVingtTroisMorceauxLivresLePremierChoisi() async throws {
         let b = try await banc()
         let lignes = b.modele.lignes
-        #expect(lignes.count == 42)
+        #expect(lignes.count == 23)
         let ids = lignes.map { $0.id }
         let attendus = MusiquePlay.morceaux.map { $0.id }
         #expect(ids == attendus)
@@ -371,7 +371,7 @@ struct MusiqueModeleTests {
         let copiee = await stockage.existe(reference)
         #expect(copiee)
         let lignes = b.modele.lignes
-        #expect(lignes.count == 43)
+        #expect(lignes.count == 24)
         let derniere = try #require(lignes.last)
         #expect(derniere.id == reference)
         #expect(derniere.titre == MusicLibrary.Titre.nom("Nigoun du soir"))
@@ -383,7 +383,7 @@ struct MusiqueModeleTests {
         // Le relancement : un magasin relu du même disque, le même dossier de copies.
         let relance = try await banc(persistance: b.persistance, stockage: stockage)
         let relues = relance.modele.lignes
-        #expect(relues.count == 43)
+        #expect(relues.count == 24)
         let retrouvee = try #require(relues.last)
         #expect(retrouvee.id == reference)
         #expect(retrouvee.titre == MusicLibrary.Titre.nom("Nigoun du soir"))
@@ -405,7 +405,7 @@ struct MusiqueModeleTests {
         let source = URL(fileURLWithPath: "/Fichiers/Nigoun.mp3")
         await b.modele.ajouter(source)
         await b.modele.ajouter(source)
-        #expect(b.modele.lignes.count == 43)
+        #expect(b.modele.lignes.count == 24)
     }
 
     @Test func uneCopieRefuseeLeDitEtNAjouteRien() async throws {
@@ -414,7 +414,7 @@ struct MusiqueModeleTests {
         let b = try await banc(stockage: stockage)
         await b.modele.ajouter(URL(fileURLWithPath: "/Fichiers/Nigoun.m4a"))
         #expect(b.modele.message == Libelle("music_add_failed"))
-        #expect(b.modele.lignes.count == 42)
+        #expect(b.modele.lignes.count == 23)
         #expect(b.magasin.reglages.musicTrackId == nil)
         b.modele.effacerMessage()
         b.modele.ajoutImpossible()
@@ -436,7 +436,7 @@ struct MusiqueModeleTests {
         #expect(dialogue.libelleNeutre == Libelle("music_remove"))
         #expect(dialogue.indication == MusicLibrary.Titre.nom("Nigoun"))
         await b.modele.actionNeutreRenommage()
-        #expect(b.modele.lignes.count == 42)
+        #expect(b.modele.lignes.count == 23)
         let existe = await stockage.existe(reference)
         #expect(!existe)
         let supprimees = await stockage.supprimees

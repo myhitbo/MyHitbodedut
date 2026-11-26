@@ -103,8 +103,10 @@ struct MusicLibraryTests {
         let b = try bibliotheque()
         let catalogue = try Catalogue.lire()
         let tous = MusicLibrary.all(MusicLibrary.Etat())
-        #expect(tous.count == b.titresLivres.count)
-        for (rang, ligne) in b.titresLivres.enumerated() where rang < tous.count {
+        // Ceux qu'iOS ne livre pas encore (MusiquePlay.horsIOS, 26/11) n'y sont pas.
+        let titresLivres = b.titresLivres.filter { ligne in !MusiquePlay.horsIOS.contains { pareil($0, ligne[0]) } }
+        #expect(tous.count == titresLivres.count)
+        for (rang, ligne) in titresLivres.enumerated() where rang < tous.count {
             let m = tous[rang]
             #expect(pareil(m.id, ligne[0]), "rang \(rang) : \(m.id)")
             let attendu = MusicLibrary.Titre.libelle(Libelle(MusiquePlay.morceaux[rang].titleRes))
@@ -122,8 +124,10 @@ struct MusicLibraryTests {
             let e = etat(c)
             // La liste : les livrés dans l'ordre de MusiquePlay, puis les ajoutés.
             let tous = MusicLibrary.all(e)
-            #expect(tous.count == c.tous.count, "cas \(n) : \(tous.count) morceaux")
-            for (rang, attendu) in c.tous.enumerated() where rang < tous.count {
+            // Ceux qu'iOS ne livre pas encore (MusiquePlay.horsIOS, 26/11) n'y sont pas.
+            let attendus = c.tous.filter { !(MusiquePlay.horsIOS.contains($0.id) && $0.livre) }
+            #expect(tous.count == attendus.count, "cas \(n) : \(tous.count) morceaux")
+            for (rang, attendu) in attendus.enumerated() where rang < tous.count {
                 let m = tous[rang]
                 #expect(pareil(m.id, attendu.id), "cas \(n), rang \(rang) : \(m.id)")
                 #expect(m.isBundled == attendu.livre, "cas \(n), \(attendu.id)")

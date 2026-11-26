@@ -23,8 +23,12 @@ struct MusiquePlayTests {
         return try JSONDecoder().decode(Fichier.self, from: donnees).musique
     }
 
+    /// La liste d'Android sans les morceaux qu'iOS ne livre pas encore (`horsIOS`, 26/11), chacun bien dans la liste.
     @Test func laTableEstCelleDAndroidDansLeMemeOrdre() throws {
-        let attendus = try vecteurs()
+        let android = try vecteurs()
+        let ids = android.map(\.id)
+        for id in MusiquePlay.horsIOS { #expect(ids.contains(id), "\(id) n'est plus dans MusiquePlay.kt") }
+        let attendus = android.filter { !MusiquePlay.horsIOS.contains($0.id) }
         let table = MusiquePlay.morceaux
         #expect(table.count == attendus.count)
         for (rang, attendu) in attendus.enumerated() where rang < table.count {

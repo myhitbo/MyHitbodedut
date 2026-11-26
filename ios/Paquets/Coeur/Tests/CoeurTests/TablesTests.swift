@@ -50,7 +50,7 @@ struct TablesTests {
             "compagnies": SaisieVol.compagnies.count,
             "contourIsrael": TerritoireIsrael.contour.count,
             "polices": PoliceHebraique.Police.allCases.count,
-            "morceaux": MusiquePlay.morceaux.count,
+            "morceaux": MusiquePlay.morceaux.count + MusiquePlay.horsIOS.count,
             "tikkun": Tikkun.ordre.count,
         ]
         for cle in swift.keys.sorted() {
@@ -400,8 +400,10 @@ struct TablesTests {
             #expect(absents == a.absents, "\(a.cle) : les signes masqués")
         }
 
-        #expect(MusiquePlay.morceaux.count == v.musique.count)
-        for (i, a) in v.musique.enumerated() where i < MusiquePlay.morceaux.count {
+        // La liste d'Android sans ce qu'iOS ne livre pas encore (MusiquePlay.horsIOS, 26/11).
+        let musique = v.musique.filter { !MusiquePlay.horsIOS.contains($0.id) }
+        #expect(MusiquePlay.morceaux.count == musique.count)
+        for (i, a) in musique.enumerated() where i < MusiquePlay.morceaux.count {
             let m = MusiquePlay.morceaux[i]
             #expect(m.id == a.id, "morceau \(i)")
             #expect(m.rawRes == a.rawRes, "\(a.id)")

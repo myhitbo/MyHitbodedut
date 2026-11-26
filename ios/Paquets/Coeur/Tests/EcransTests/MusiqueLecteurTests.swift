@@ -146,10 +146,10 @@ struct MusiqueLecteurTests {
 
     @Test func suivantApresLeDernierRevientAuPremier() async {
         var reglages = Reglages()
-        reglages.setMusicTrackId("lerer_nigun_abaal_shem_tov_for_babies")
+        reglages.setMusicTrackId("ianir_bessarabie")
         let b = banc(reglages)
         await b.lecteur.commencerSeance()
-        #expect(maintenant(b) == "lerer_nigun_abaal_shem_tov_for_babies")
+        #expect(maintenant(b) == "ianir_bessarabie")
         await b.lecteur.suivant()
         #expect(maintenant(b) == "hamelech_basade")
     }
@@ -163,7 +163,7 @@ struct MusiqueLecteurTests {
         let dernier = ids.last
         #expect(maintenant(b) == dernier)
         let joues = await b.sortie.joues
-        #expect(joues == [livre("hamelech_basade"), livre("lerer_nigun_abaal_shem_tov_for_babies")])
+        #expect(joues == [livre("hamelech_basade"), livre("ianir_bessarabie")])
     }
 
     @Test func precedentApresTroisSecondesReprendLeMorceau() async {

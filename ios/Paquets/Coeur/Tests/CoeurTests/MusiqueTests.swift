@@ -146,8 +146,7 @@ struct MusiqueTests {
     /// Ce que la version Play livre, et rien d'autre (29/10) : Yanuka, המלך בשדה, נעם שפייר et
     /// יניר קילינסקי (Ianir), § 3.2. Liste écrite en entier : chaque morceau ajouté passe par ici. Retirés
     /// le 16/11 sur Android, faute d'accord écrit complet : « Eshet 'Hayil », « Arba Bavot », « Zemer
-    /// bichva'hin » (passés dans la version GitHub seulement). Entrés le 26/11 (PR 53), sur décision du propriétaire :
-    /// neuf autres niggounim du Yanuka (accord déclaré oral) et dix morceaux de Shneor Lerer (accord écrit du 21/11).
+    /// bichva'hin » (passés dans la version GitHub seulement).
     @Test func lAppNeLivreQueLesMorceauxAutorises() throws {
         let autorises = [
             "hamelech_basade",
@@ -157,13 +156,7 @@ struct MusiqueTests {
             "shpayer_afilou", "shpayer_beyond", "shpayer_esh_kamanche",
             "shpayer_hithadshout", "shpayer_kenout", "shpayer_ki_hine_kahomer", "shpayer_pnima", "shpayer_tunnels_end",
             "yanuka_nigoun_3",
-            "yanuka_a_part_of_me", "yanuka_anticipation", "yanuka_harping_his_praise", "yanuka_listening_to_the_heart",
-            "yanuka_shlomo_yehuda", "yanuka_shlomo_yehuda_2", "yanuka_the_king_will_return", "yanuka_the_truth_will_rise",
-            "yanuka_yearning",
-            "nigunim_for_neshama_shneor_lerer", "chabad_shabbos_shneor_lerer", "chabad_yamim_noraim_shneor_lerer",
-            "relaxing_chabad_melodies_shneor_lerer", "tzomo_lecho_s_lerer", "vehi_sheamda_s_lerer",
-            "vehi_sheamda_piano_shneor_lerer", "lerer_anim_zemirot", "lerer_ani_maamin", "lerer_nigun_abaal_shem_tov_for_babies",
-        ].sorted()
+        ]
         let declares = try morceaux().map(\.id).sorted(), livres = try embarques().map(nom).sorted()
         #expect(declares == autorises, "n'y mettre qu'un morceau dont la diffusion publique est établie")
         #expect(livres == autorises)
