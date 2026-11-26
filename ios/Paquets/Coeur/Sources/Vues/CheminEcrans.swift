@@ -118,16 +118,20 @@ private struct JournalRangee: View {
     let ligne: JournalLigne
     let ouvrir: @MainActor () -> Void
     @Environment(\.traducteur) private var traducteur
+    @Environment(\.dynamicTypeSize) private var taille
     @State private var deplie = false
     @State private var tronquee = false
+
+    /// Repliée jusqu'à la taille ordinaire du texte ; au-delà, entière, comme tout texte de l'app (`lignesAuPlus`).
+    private var repliee: Bool { !deplie && !taille.agrandie }
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 2) {
             Button(action: ouvrir) {
-                JournalLigneVue(ligne: ligne, lignes: deplie ? nil : JournalRangee.lignesRepliees) { tronquee = $0 }
+                JournalLigneVue(ligne: ligne, lignes: repliee ? JournalRangee.lignesRepliees : nil) { tronquee = $0 }
             }
             .buttonStyle(.plain)
-            if deplie || tronquee {
+            if deplie || (repliee && tronquee) {
                 Button {
                     deplie.toggle()
                 } label: {

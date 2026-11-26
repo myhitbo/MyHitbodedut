@@ -264,7 +264,7 @@ private struct InstantCarteCiel: View {
                 if let hebraique = ecran.dateHebraique {
                     Text(verbatim: hebraique)
                         .tailleSp(14, relativeA: VersionPolice.style(14))
-                        .foregroundStyle(VersionCouleur.argb(0xDDFFFFFF))
+                        .foregroundStyle(Color.white)
                         .padding(.top, 2)
                 }
                 Button {
@@ -285,6 +285,9 @@ private struct InstantCarteCiel: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 18)
+            // Sous le titre et la date, un voile de plus que celui de la carte : sur le ciel clair de midi, le petit
+            // texte blanc garde 4,5:1 (le voile d'Android seul s'éclaircit vers le milieu de la carte).
+            .background(alignment: .top) { InstantCarteCiel.voile(haut: true) }
             Spacer(minLength: 20)
             Button {
                 modele.ouvrirZmanim()
@@ -307,6 +310,8 @@ private struct InstantCarteCiel: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 16)
+                // Le même voile sous les zmanim, quand le texte agrandi les fait monter sur le ciel.
+                .background(alignment: .bottom) { InstantCarteCiel.voile(haut: false) }
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -316,6 +321,7 @@ private struct InstantCarteCiel: View {
             .accessibilityAddTraits(.isButton)
         }
         .frame(maxWidth: .infinity, minHeight: 300, alignment: .topLeading)
+        .clipped()
         .background {
             ZStack {
                 // Le ciel continu suit le vrai soleil : revu chaque minute (AccueilVersion.veilleCiel).
@@ -328,6 +334,18 @@ private struct InstantCarteCiel: View {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+    }
+
+    /// Un voile noir à 40 % sous un bloc de texte, qui s'efface sur 32 points au-delà de lui (vers le milieu de la
+    /// carte), par-dessus celui de toute la carte.
+    static func voile(haut: Bool) -> some View {
+        LinearGradient(stops: [Gradient.Stop(color: Color.black.opacity(0.4), location: 0),
+                               Gradient.Stop(color: Color.black.opacity(0.4), location: 0.7),
+                               Gradient.Stop(color: Color.black.opacity(0), location: 1)],
+                       startPoint: haut ? .top : .bottom, endPoint: haut ? .bottom : .top)
+            .padding(haut ? .bottom : .top, -32)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
     }
 }
 
