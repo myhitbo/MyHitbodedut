@@ -196,6 +196,8 @@ struct VersionBouton: View {
     let encre: Color
     let police: Font
     var trait = false
+    /// Au trait : le fond plein sous le trait (la couleur de la carte), pour qu'il ne soit pas transparent ; nil, rien.
+    var remplissage: Color? = nil
     let action: @MainActor () -> Void
 
     var body: some View {
@@ -209,7 +211,8 @@ struct VersionBouton: View {
                 .frame(maxWidth: .infinity, minHeight: 52)
                 .background {
                     if trait {
-                        Capsule().strokeBorder(fond, lineWidth: 1)
+                        Capsule().fill(remplissage ?? Color.clear)
+                            .overlay(Capsule().strokeBorder(fond, lineWidth: 1))
                     } else {
                         Capsule().fill(fond)
                     }

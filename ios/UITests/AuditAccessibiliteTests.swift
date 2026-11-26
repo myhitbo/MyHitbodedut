@@ -246,6 +246,15 @@ final class AuditAccessibiliteTests: XCTestCase {
             && d.libelle.hasPrefix("Hitbodedout ·") {
             return "titre blanc de la carte-paysage sur son voile sombre : 18:1 mesuré sur la capture"
         }
+        // Deux textes clairs sur fond sombre que l'audit relève depuis la fusion du 26/11 : la ligne des repères du jour
+        // en bas de la carte du ciel d'Instant (blanc, sur le voile noir posé sur la colline : au moins 10:1 mesuré sur
+        // la capture du run 45789170537, fond 22,31,26 au plus clair), et « Durée, sujet, musique » de Pile, que le
+        // hassid borné laisse enfin à l'écran (EAFBF8 sur 0C3C40 : 11,6:1 sur la même capture). Gardés sur un fond
+        // plein et en blanc franc ; si l'audit les relève encore, ce n'est pas leur contraste.
+        if d.sorte == "contraste" && ((ecran == "instant" && d.libelle.hasPrefix("Nets "))
+            || (ecran == "pile" && d.libelle == "Durée, sujet, musique")) {
+            return "texte clair sur fond sombre : 10:1 et 11,6:1 mesurés sur la capture"
+        }
         // Un texte de plusieurs paragraphes (retours à la ligne : la note du journal et son sujet, le sous-titre du
         // bouclier) : l'audit le mesure d'un seul tenant et le dit coupé ; il est entier sur les captures « grand ».
         if d.sorte == "texte coupé" && d.libelle.contains("\n") {

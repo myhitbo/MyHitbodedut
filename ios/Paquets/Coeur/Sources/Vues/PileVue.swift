@@ -172,8 +172,11 @@ struct PileVue: View {
                 modele.commencerSeance()
             }
             .padding(.top, 24)
+            // Au trait, sur un fond plein de la couleur du bas de la carte : maintenant que le hassid borné laisse le
+            // bouton à l'écran, l'audit le mesure, et le jugeait sur un fond transparent.
             VersionBouton(libelle: Text(Libelle("version_preparer"), traducteur: traducteur), fond: Pile.hitboDouce,
-                          encre: Pile.hitboEncre, police: VersionPolice.rubik(16), trait: true) {
+                          encre: Pile.hitboEncre, police: VersionPolice.rubik(16), trait: true,
+                          remplissage: VersionCouleur.argb(0xFF0B3236)) {
                 modele.preparerSeance()
             }
             .padding(.top, 10)
