@@ -28,7 +28,7 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | --- | --- |
 | Hitbodedout | Séance minutée en service de premier plan, sujet facultatif, hitbodedout guidée, « je ne sais pas quoi dire », journal, parcours, paliers et trophées, célébration |
 | Barrière du matin | `GateService` + `BlockerView` sur les applications choisies (`AppPickerActivity`), fenêtre horaire, report, Shabbat / fête |
-| Musique | 23 morceaux livrés dans la version Play (§ 3.2 ; 26 avant le 16/11), morceaux ajoutés par le sélecteur de fichiers, lecture écran éteint |
+| Musique | 42 morceaux livrés dans la version Play depuis le 26/11 (§ 3.2 ; 23 du 16/11 au 26/11, 26 avant), morceaux ajoutés par le sélecteur de fichiers, lecture écran éteint |
 | Textes | Siddour, Tehilim, Tikoun haKlali, Likoutei Tefilot par sujet, 'hizouk, bibliothèque, livres, Halakha (Yalkout Yossef), hilloulot, recherche globale |
 | Calendrier | Zmanim (KosherJava), calendrier hébraïque, Birkat haLevana, alerte « Chabbat dans 3 h », boussole vers Jérusalem |
 | Vol | Zmanim et prières en vol, rappels (Tefilat haDerekh, Omer), **route d'un numéro de vol (adsbdb)** ; le suivi en direct (OpenSky) n'est pas dans la version Play tant qu'il n'y a pas de relais (§ 3.1) |
@@ -56,7 +56,7 @@ comprise, et ce qu'elle contient (vérifié, `AndroidManifest.xml` et
 | `compileSdk` | 36, avec le plugin Android 8.11.1 (était 8.7.3) | ≥ `targetSdk` | **Fait** |
 | `minSdk` | 26 | aucune contrainte | OK |
 | Format | APK pour GitHub ; **AAB** pour Play (`-Pplay=true bundleFullRelease`, flux `play.yml`) | **AAB** obligatoire pour une nouvelle app | **Fait** — AAB 1.0 signé par la clé d'envoi le 15/11 : 89,1 Mo avec les 26 morceaux de `MusiquePlay.kt` (28,5 Mo le 29/10 avec 3 morceaux) ; `play-3` du 17/11 (versionCode 4, version 1.3) : 80,7 Mo avec 23 morceaux, contrôlé le 22/11 (signature, manifeste, contenu) |
-| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play : 26 morceaux, environ 70 Mo d'audio (état du 03/11) ; version GitHub : 56 morceaux, environ 146 Mo ; le site ne livre que les 26 de la version Play (§ 3.2) | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
+| Taille | `res/raw` ≈ 110 Mo (82 Mo d'audio AAC pour la version GitHub, 30 Mo de JSON) ; version Play : 26 morceaux, environ 70 Mo d'audio (état du 03/11) ; version GitHub : 56 morceaux, environ 146 Mo ; le site ne livre que les 26 de la version Play (§ 3.2). **Depuis le 26/11** : version Play et site, 42 morceaux, 139,4 Mo d'audio ; version GitHub, 75 morceaux, 224,2 Mo | Module de base ≤ 500 Mo compressés ; au-delà de 200 Mo, avertissement non bloquant en données mobiles | OK — vérifié |
 | Bibliothèques natives | aucune `.so` | page mémoire 16 Ko exigée pour les `.so` ciblant API 35+ | Sans objet — vérifié |
 | Signature | clé de dev pour GitHub ; `play.yml` exige la clé d'envoi (secrets `PLAY_*`) et refuse un AAB signé par la clé de dev | clé d'envoi privée + Play App Signing | **Fait le 15/11** : clé d'envoi créée, secrets `PLAY_*` posés (§ 5.1, § 5.2) ; empreinte dans `play/A_FAIRE.md` |
 | `versionCode` | `1 + github.run_number` | strictement croissant | OK, à garder |
@@ -228,7 +228,7 @@ confidentialité le décrivent (§ 6.1).
 
 ### 3.2 Droits sur la musique livrée **(bloquant à la revue)**
 
-56 morceaux sont embarqués dans la version GitHub (146 Mo en tout ; 26 dans la version Play et le site, environ 70 Mo), dont des enregistrements du Yanuka, d'Ishay Ribo,
+75 morceaux sont embarqués dans la version GitHub depuis le 26/11 (224,2 Mo en tout ; 42 dans la version Play et le site, 139,4 Mo — 56 et 146 Mo auparavant), dont des enregistrements du Yanuka, d'Ishay Ribo,
 Motty Steinmetz, MBD (feuille de route, lignes 242–243). Les autorisations
 sont **déclarées** par le propriétaire (« j'ai obtenu les autorisations
 légales des ayants droit »), mais aucun écrit n'est dans le dépôt.
@@ -253,7 +253,9 @@ droits ; l'autorisation d'Ishay Ribo et de MBD n'a pas été demandée. D'où, *
 
 | Morceau livré | Version Play | Version GitHub |
 | --- | --- | --- |
-| `yanuka_nigoun_3` — ניגון — הינוקא (3) | **Livré** (accord du Yanuka, à conserver par écrit) | Livré |
+| `yanuka_nigoun_3` — ניגון — הינוקא (3) | **Livré** (accord du Yanuka — **oral** d'après la déclaration du 26/11 : l'écrit reste à obtenir, voir plus bas) | Livré |
+| `yanuka_*` (9 autres niggounim du Yanuka) | **Livrés le 26/11**, sur décision du propriétaire, sous le même accord oral : l'écrit reste à obtenir | Livrés, ainsi que dans la version web |
+| Shneor Lerer — 10 morceaux (les sept `*_lerer` et les trois `lerer_*`) | **Livrés le 26/11** (accord écrit du 21/11, déclaré étendu à tous ses morceaux ; son nom figure dans chaque titre) | Livrés, ainsi que dans la version web |
 | `niggoun_01` … `niggoun_33` (30 fichiers) | **Retirés** tant que la provenance n'est pas établie | Livrés |
 | `hamelech_basade` — המלך בשדה | **Livré** — déclaré libre de droits par le propriétaire (29/10) ; voir la réserve ci-dessous | Livré |
 | `ribo_sans_titre` — Ishay Ribo | **Retiré** — autorisation non demandée (29/10), comme pour MBD | Retiré partout le 29/10 (application et site) |
@@ -276,10 +278,35 @@ ils entrent dans l'app, version Play comprise, et dans la version web.
 Hors de la version Play ; le propriétaire décide de leur place dans la
 version GitHub, qui est elle aussi une diffusion.
 
-Audio de la version Play : 23 morceaux depuis le 16/11 (Yanuka 1, המלך בשדה 1,
+**Déclarations et décisions du 26/11** (registre : `FEUILLE_DE_ROUTE.md`,
+« Musique — qui a autorisé quoi »).
+
+- **Le Yanuka : accord oral.** L'exigence ci-dessus demande un écrit à
+  produire à la première demande de Google ; un accord oral n'y répond pas.
+  Le propriétaire, à qui la question a été posée dans ces termes, a décidé
+  de livrer quand même ses neuf autres niggounim sur Play et sur le site,
+  comme `yanuka_nigoun_3`. L'écrit reste **à obtenir** (un message suffit) :
+  c'est lui qui répondrait à une réclamation.
+- **Shneor Lerer : accord écrit** (courriel du 21/11, conservé hors dépôt),
+  déclaré étendu à tous ses morceaux. Il couvre l'intégration dans
+  l'application, à trois conditions : son nom à côté de la musique
+  (il est dans chaque titre), application gratuite, pas de téléchargement
+  des fichiers. La dernière veut dire, précise le propriétaire, que
+  l'utilisateur ne peut pas télécharger la musique mais seulement l'écouter
+  dans l'application : c'est le cas, ni l'application ni le site n'offrent
+  de téléchargement (vérifié le 26/11). Les fichiers gardent une adresse
+  directe sur le site et sont dans le dépôt public, comme ceux des autres
+  artistes. Dix morceaux livrés ; le reste de son catalogue (une vingtaine
+  de sorties) n'a pas pu être récupéré en ligne et attend ses fichiers.
+- **Le plafond de poids** passe de 150 à 230 Mo (`MusicFilesTest`), sur
+  décision du propriétaire.
+
+Audio de la version Play : 42 morceaux et 139,4 Mo depuis le 26/11 (Yanuka 10,
+המלך בשדה 1, Noam Shpayer 8, Ianir 13, Shneor Lerer 10), contre 75 morceaux et
+224,2 Mo pour GitHub. Auparavant : 23 morceaux depuis le 16/11 (Yanuka 1, המלך בשדה 1,
 Noam Shpayer 8, Ianir 13 ; 26 et environ 70 Mo avant le retrait de trois
 morceaux), contre 56 morceaux et environ 146 Mo pour GitHub (état du 03/11 ; `tools/inventaire_musique.py`) ; le site
-livre les mêmes 26 que Play (règle du 13/11 ci-dessous). Un morceau
+livre les mêmes morceaux que Play (règle du 13/11 ci-dessous). Un morceau
 retiré revient par simple mise à jour dès que son écrit existe ; si un
 niggoun s'avère être du Yanuka, il rentre sous le même accord. Pour cela, il
 faut retrouver les titres hébreux d'origine (fichiers sources reçus le
