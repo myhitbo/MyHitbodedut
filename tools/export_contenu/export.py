@@ -52,6 +52,12 @@ LICENCES = [
      "Torat Emet 357 et Daat (domaine public), Shaliehsaboo (CC0), Metsudah 1981 (CC-BY), "
      "Wikipédia hébreu (CC BY-SA)"),
     (r"Contenu/siddur_annotations\.json", "dérivé des siddourim", "dérivé des trois siddourim"),
+    # La lecture de la Torah des offices de semaine (26/11) : la licence BSD d'hebcal est livrée dans le `_meta` du
+    # fichier des lectures, que l'app embarque.
+    (r"Contenu/lecture_torah\.json", "BSD 2-Clause",
+     "découpage des montées : @hebcal/leyning 10.1.0 (© 2020 hebcal, BSD 2-Clause, texte de la licence dans _meta)"),
+    (r"Contenu/lecture_torah_texte\.json", "domaine public",
+     "Tanach with Ta'amei Hamikra, tanach.us (codex de Leningrad)"),
     (r"Contenu/tehilim\.json", "domaine public", "tanach.us, Bible du Rabbinat 1899, JPS 1917"),
     (r"Contenu/tikkun_haklali\.json", "domaine public ; liturgie fournie par le propriétaire",
      "psaumes du domaine public ; liturgie fournie par le propriétaire"),

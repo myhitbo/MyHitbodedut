@@ -39,6 +39,7 @@ Json
 Langue
 Langues
 LanguesTexte
+LectureTorah
 Levana
 LevanaAlerte
 Libelles
