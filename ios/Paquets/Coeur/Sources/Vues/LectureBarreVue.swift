@@ -4,9 +4,10 @@ import Coeur
 import Ecrans
 
 // Le bouton de lecture (ReglagesLecture.kt) : la pastille « Aa », ou la barre dépliée (A−, %, A+, lune, police,
-// langues, nusah, défilement automatique, masquer, replier), en bas au centre, par-dessus le texte ; au-dessus,
-// tant que le texte défile tout seul, la commande de vitesse (DefilementAutoVue.swift). Ce qui se montre et ce que fait
-// chaque toucher est dans LectureModele ; la vue pose les boutons, toujours de gauche à droite (A− à gauche).
+// langues, nusah, « תחנון » à Cha'harit et à Min'ha, défilement automatique, masquer, replier), en bas au centre,
+// par-dessus le texte ; au-dessus, tant que le texte défile tout seul, la commande de vitesse (DefilementAutoVue.swift).
+// Ce qui se montre et ce que fait chaque toucher est dans LectureModele ; la vue pose les boutons, toujours de gauche à
+// droite (A− à gauche).
 
 /// La pastille ou la barre ; rien quand le bouton est masqué.
 struct LectureBouton: View {
@@ -36,10 +37,11 @@ struct LectureBouton: View {
         .animation(sansAnimation ? nil : .easeOut(duration: 0.18), value: modele.defilementAuto.commandeVisible)
     }
 
-    /// `(largeur − 24 − 48 − 18 − 12) / n`, borné de 30 à 44 ; n : les boutons de taille fixe de la barre.
+    /// `(largeur − 24 − 48 − 18 − 12) / n`, borné de 28 à 44 (28 depuis le bouton « תחנון », 26/11) ; n : les boutons de
+    /// taille fixe de la barre.
     private var cote: CGFloat {
-        let nombre: CGFloat = modele.avecNusah ? 10 : 9
-        return min(44, max(30, ((largeur - 102) / nombre).rounded(.down)))
+        let nombre: CGFloat = (modele.avecNusah ? 10 : 9) + (modele.avecTahanoun ? 1 : 0)
+        return min(44, max(28, ((largeur - 102) / nombre).rounded(.down)))
     }
 
     /// « Aa » : la barre se déplie. Effacée en descendant dans le texte : transparente, un peu plus bas, et
@@ -210,6 +212,36 @@ private struct LectureBarre: View {
             .menuIndicator(.hidden)
             .accessibilityLabel(nom("siddur_choose"))
         }
+        if modele.avecTahanoun {
+            tahanoun
+        }
+    }
+
+    /// « Pas de Ta'hanoun aujourd'hui » (26/11, Q1) : « תחנון », barré et sur un fond clair quand il est actif pour le jour
+    /// du texte ; le même réglage que l'écran des zmanim.
+    private var tahanoun: some View {
+        let sans = modele.sansTahanoun
+        return Button {
+            let modele = self.modele
+            SiddourTache.lancer { try await modele.basculerTahanoun() }
+        } label: {
+            Text(verbatim: "\u{05EA}\u{05D7}\u{05E0}\u{05D5}\u{05DF}")
+                .font(Font.caption.bold())
+                .strikethrough(sans)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .frame(width: cote, height: 44)
+                .background {
+                    if sans {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Teinte(.onBrand).opacity(0.25))
+                    }
+                }
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(nom("reglage_sans_tahanoun_jour"))
+        .accessibilityValue(Text(modele.etatTahanoun, traducteur: traducteur))
     }
 
     /// Un choix d'un menu (PopupMenu à coche d'Android) : son nom, coché s'il est choisi.

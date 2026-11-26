@@ -65,6 +65,21 @@ public struct LectureVue: View {
         .sheet(isPresented: $modele.feuilleChapitres) {
             LectureFeuilleChapitres(modele: modele)
         }
+        // Israël ou diaspora ? (26/11, Q7) : la réponse confirme le statut, gardé comme s'il était choisi dans les
+        // réglages ; le système ajoute « Annuler ».
+        .confirmationDialog(Text(Libelle("siddur_region_titre"), traducteur: traducteur),
+                            isPresented: $modele.questionRegionOuverte, titleVisibility: .visible) {
+            Button {
+                repondreRegion(israel: true)
+            } label: {
+                Text(Libelle("region_israel"), traducteur: traducteur)
+            }
+            Button {
+                repondreRegion(israel: false)
+            } label: {
+                Text(Libelle("region_diaspora"), traducteur: traducteur)
+            }
+        }
         // onCreate : une seule fois (le modèle ignore les appels suivants) ; onRestart à chaque retour.
         .task { await modele.charger() }
         .onAppear { modele.revenir() }
@@ -82,6 +97,11 @@ public struct LectureVue: View {
         }
         // L'écran allumé pendant qu'on lit, dix minutes après le dernier toucher (FLECTURE-01).
         .veilleDeLecture(modele.veille, defilant: modele.defilementAuto.actif)
+    }
+
+    private func repondreRegion(israel: Bool) {
+        let modele = self.modele
+        SiddourTache.lancer { try await modele.repondreRegion(israel: israel) }
     }
 
     /// onPause : la place est gardée.

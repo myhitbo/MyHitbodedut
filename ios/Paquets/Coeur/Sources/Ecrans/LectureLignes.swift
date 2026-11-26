@@ -44,6 +44,47 @@ public enum LectureContenu: Sendable, Equatable {
     case seul(LectureSeul)
     /// Le pied d'un ajout déplié : « Replier », pour ne pas remonter le chercher. `cle` : celle du repli.
     case pied(cle: String)
+    /// Israël ou diaspora ? (26/11, Q7) : le statut n'est pas confirmé et le texte en dépend aujourd'hui ; une carte,
+    /// dans le sens de la langue de l'app, qu'un toucher change en question (`LectureModele.questionRegionOuverte`).
+    case questionRegion(Libelle)
+    /// La lecture de la Torah du jour (26/11), repliée comme un ajout : « Lecture : Vayichla'h, 3 montées ».
+    case lecture(LectureTorahBandeau)
+    /// Une montée d'une lecture dépliée : son libellé et sa référence, puis ses versets cantillés.
+    case passage(LectureTorahPassage)
+}
+
+/// Le bandeau d'une lecture de la Torah (SiddurJour.Ligne.Lecture) : un toucher l'ouvre ou la referme.
+public struct LectureTorahBandeau: Sendable, Equatable {
+    public let cle: String
+    /// « Lecture : Vayichla'h, 3 montées » (lecture_titre, lecture_montees), en gras.
+    public let titre: Libelle
+    /// Dessous, à 0,82 et discret : « Replier » ouverte, « Toucher pour lire » sinon.
+    public let etat: Libelle
+    public let ouvert: Bool
+}
+
+/// Un verset d'une lecture : son numéro, petit et discret, puis son texte ; `finDeParagraphe` : un « פ » le clôt, le
+/// verset suivant commence une ligne.
+public struct LectureTorahVerset: Sendable, Equatable {
+    public let numero: Int
+    /// Le texte vocalisé et cantillé (qere), masqué pour la police.
+    public let texte: String
+    public let finDeParagraphe: Bool
+}
+
+/// Une montée dépliée (SiddurJour.Ligne.Passage).
+public struct LectureTorahPassage: Sendable, Equatable {
+    /// « Cohen · Berèchit 32:4–6 », dans la langue de l'app : gras, à 0,62, couleur des titres.
+    public let entete: String
+    /// Les versets ; nil tant que le texte se lit (« Chargement… », lecture_chargement).
+    public let versets: [LectureTorahVerset]?
+    /// Dans le panneau de sa lecture dépliée (voile de la couleur des titres).
+    public let dansPanneau: Bool
+
+    /// Le texte suivi, pour la lecture d'écran : les versets bout à bout, sans leurs numéros.
+    public var texteSuivi: String {
+        (versets ?? []).map { $0.texte }.joined(separator: " ")
+    }
 }
 
 /// Le titre d'une section (SiddurJour.Ligne.Titre).
@@ -112,8 +153,8 @@ public struct LectureRepli: Sendable, Equatable {
     public let cle: String
     /// Son nom (« Ya'alé véyavo »), en gras.
     public let nom: Libelle
-    /// Dessous, à 0,82 et discret : « Replier » ouvert, « Toucher pour lire » pour ce qui n'est jamais du jour,
-    /// « Pas aujourd'hui · toucher pour lire » sinon.
+    /// Dessous, à 0,82 et discret : « Replier » ouvert, « Toucher pour lire » pour une occasion, « Pas aujourd'hui ·
+    /// toucher pour lire » pour un ajout du calendrier gardé replié hors de son jour (26/11).
     public let etat: Libelle
     /// Déplié : le chevron tourné d'un quart de tour, le panneau ouvert vers le bas.
     public let ouvert: Bool
@@ -134,14 +175,17 @@ public struct LectureSeul: Sendable, Equatable {
     }
 }
 
+/// Ce que les lignes d'une lecture de la Torah demandent (26/11) : ses données, son texte s'il est lu, la langue de
+/// l'app.
+struct LectureTorahRendu {
+    let donnees: LectureTorah.Donnees
+    /// nil tant que le texte (0,6 Mo) se lit : les montées dépliées disent « Chargement… ».
+    let texte: LectureTorah.Texte?
+    let langue: String
+}
+
 /// La construction des lignes, sans état : jugée par les tests sur les siddourim exportés.
 enum LectureLignes {
-
-    /// Les conditions qui ne sont jamais « du jour » : on dit « toucher pour lire », pas « pas aujourd'hui ».
-    static let jamaisDuJour: [String] = [
-        CalendrierJuif.C.minyan, CalendrierJuif.C.beitAvel, CalendrierJuif.C.oubli,
-        CalendrierJuif.C.chevaBerakhot, CalendrierJuif.C.zimun, CalendrierJuif.C.facultatif,
-    ]
 
     /// La place (section, paragraphe) de chaque ligne `.bloc`, nil pour les autres : son origine dans le texte,
     /// que SiddurJour.lignes donne (FLECTURE-08 ; Android la retrouve par l'identité du paragraphe).
@@ -155,9 +199,11 @@ enum LectureLignes {
 
     /// Les lignes du lecteur. `notes` : celles de tête ; `marques` : les places marquées de ce texte ;
     /// `titreDe` : le titre hébreu d'un texte du recueil, pour les renvois (nil s'il n'existe pas).
+    /// `question` : la carte « Israël ou diaspora ? » après les notes (26/11) ; `torah` : de quoi nommer et lire les
+    /// lectures de la Torah.
     static func lignes(texte: SiddurTexte, annotations: [SiddurJour.Annotation], jour: [SiddurJour.Ligne],
-                       notes: [(id: String, libelle: Libelle)], marques: Set<LecturePlace>,
-                       langues: LanguesTexte.Mode, police: PoliceHebraique.Police,
+                       notes: [(id: String, libelle: Libelle)], question: Libelle? = nil, marques: Set<LecturePlace>,
+                       langues: LanguesTexte.Mode, police: PoliceHebraique.Police, torah: LectureTorahRendu? = nil,
                        titreDe: (String) -> String?) -> [LectureLigne] {
         let lesPlaces = LectureLignes.places(texte, annotations, jour)
         let plusieurs = texte.sections.count > 1
@@ -173,6 +219,7 @@ enum LectureLignes {
         for note in notes {
             ajouter("note:" + note.id, .note(note.libelle))
         }
+        if let question { ajouter("question:region", .questionRegion(question)) }
         // Les lignes sans place propre prennent celle de la dernière ligne ancrée, et un rang.
         var ancre = "debut"
         var rangs: [String: Int] = [:]
@@ -218,22 +265,51 @@ enum LectureLignes {
                     etiquette: Libelle(note ? "siddur_note" : "siddur_seul"),
                     consigne: consigne.map { PoliceHebraique.masque($0, police: police) },
                     texte: PoliceHebraique.masque(texteSeul, police: police))))
-            case .replie(let cle, let condition, let estOuvert, let libelle):
+            case .replie(let cle, _, let estOuvert, let libelle, let pasAujourdhui):
                 ajouter("replie:" + cle, .replie(LectureRepli(cle: cle, nom: Libelle(libelle),
-                                                              etat: etat(condition: condition, ouvert: estOuvert),
+                                                              etat: etat(ouvert: estOuvert, pasAujourdhui: pasAujourdhui),
                                                               ouvert: estOuvert)))
             case .fin(let cle):
                 ajouter("pied:" + cle, .pied(cle: cle))
+            case .lecture(let cle, let lecture, let estOuvert):
+                ajouter("replie:" + cle, .lecture(LectureTorahBandeau(
+                    cle: cle, titre: titreLecture(lecture, langue: torah?.langue ?? "fr"),
+                    etat: Libelle(estOuvert ? "siddur_replier" : "siddur_toucher_lire"), ouvert: estOuvert)))
+            case .passage(let montee):
+                ajouter(idRelatif("passage"), .passage(passage(montee, torah: torah, police: police, dansPanneau: panneau)))
             }
         }
         return sortie
     }
 
-    /// Ce qu'un toucher fait au bandeau d'un ajout : le replier, le lire (jamais du jour), ou le lire bien qu'il
-    /// ne soit pas d'aujourd'hui.
-    static func etat(condition: String, ouvert: Bool) -> Libelle {
+    /// Ce qu'un toucher fait au bandeau d'un ajout : le replier, le lire bien qu'il ne soit pas d'aujourd'hui (un ajout
+    /// du calendrier gardé replié, 26/11), ou le lire (une occasion).
+    static func etat(ouvert: Bool, pasAujourdhui: Bool) -> Libelle {
         if ouvert { return Libelle("siddur_replier") }
-        if jamaisDuJour.contains(where: { $0.egalUnites(condition) }) { return Libelle("siddur_toucher_lire") }
-        return Libelle("siddur_pas_aujourdhui")
+        return Libelle(pasAujourdhui ? "siddur_pas_aujourdhui" : "siddur_toucher_lire")
+    }
+
+    /// Le bandeau d'une lecture : « Lecture : Vayichla'h, 3 montées » (SiddurLectureActivity.titreLecture).
+    static func titreLecture(_ l: LectureTorah.Lecture, langue: String) -> Libelle {
+        let n = l.montees.count
+        return Libelle("lecture_titre", .texte(l.titre.pour(langue)),
+                       .libelle(Libelle.pluriel("lecture_montees", quantite: n, .entier(n))))
+    }
+
+    /// Une montée dépliée : « Cohen · Berèchit 32:4–6 », puis ses versets (SiddurLectureActivity.textePassage) ; sans
+    /// le texte, « Chargement… ». Un verset illisible (le texte ne l'a pas) laisse la montée sans versets plutôt que
+    /// d'arrêter l'écran.
+    static func passage(_ m: LectureTorah.Montee, torah: LectureTorahRendu?, police: PoliceHebraique.Police,
+                        dansPanneau: Bool) -> LectureTorahPassage {
+        let langue = torah?.langue ?? "fr"
+        let reference = torah.map { LectureTorah.reference($0.donnees, livre: m.livre, debut: m.debut, fin: m.fin, langue: langue) }
+            ?? m.livre + " " + m.debut + "\u{2013}" + m.fin
+        let entete = m.libelle.pour(langue) + " \u{00B7} " + reference
+        guard let texte = torah?.texte else { return LectureTorahPassage(entete: entete, versets: nil, dansPanneau: dansPanneau) }
+        let versets = ((try? texte.versets(m)) ?? []).map { v in
+            LectureTorahVerset(numero: v.verset, texte: PoliceHebraique.masque(v.texte, police: police),
+                          finDeParagraphe: v.fin == "\u{05E4}")
+        }
+        return LectureTorahPassage(entete: entete, versets: versets, dansPanneau: dansPanneau)
     }
 }
