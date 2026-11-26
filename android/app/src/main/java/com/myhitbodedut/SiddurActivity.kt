@@ -88,7 +88,12 @@ class SiddurActivity : AppCompatActivity() {
 
         siddur.groupes.forEach { groupe ->
             liste.addView(entete(groupe.titre.he, groupe.titre.forLanguage(langue).takeIf { it != groupe.titre.he }))
-            liste.addView(carte(siddur.du(groupe.cle).map { texte ->
+            // « Lecture de la Torah » (26/11, D1) en tête des textes de certains moments, dans les trois nusah : les
+            // lectures du jour, ou la prochaine (LectureTorah.programme).
+            val lecture = if (groupe.cle != "moments") emptyList() else listOf(LectureTorah.TITRE.let { t ->
+                ligne(t.he, t.forLanguage(langue).takeIf { it != t.he }.orEmpty()) { SiddurLectureActivity.ouvrir(this, LectureTorah.ID_TEXTE) }
+            })
+            liste.addView(carte(lecture + siddur.du(groupe.cle).map { texte ->
                 val traduction = texte.titre.forLanguage(langue).takeIf { it != texte.titre.he }
                 // Un texte absent des sources de ce nusah, emprunté à un autre, le dit.
                 val detail = listOfNotNull(traduction, texte.emprunt?.forLanguage(langue)).joinToString(" · ")

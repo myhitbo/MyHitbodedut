@@ -185,15 +185,27 @@ export function index(annotations = []) {
   const renvois = new Map();
   // Qui prie seul (19/10) : la braïta à la place de Barekhou, après tel bloc (« s:b »).
   const seuls = new Map();
+  // La place de la lecture de la Torah du jour (26/11, SiddurJour.Sorte.LECTURE), après tel bloc (« s:b »).
+  const lectures = new Map();
   for (const a of annotations) {
     if (a.sorte === 'section') sections.set(a.s, a);
+    else if (a.sorte === 'lecture') lectures.set(`${a.s}:${a.b}`, a);
     else if (a.sorte === 'bloc') blocs.set(`${a.s}:${a.b}`, a);
     // Les notes de l'application (audit du 16/11) suivent leur bloc comme les cartes « seul ».
     else if (a.sorte === 'seul' || a.sorte === 'note') seuls.set(`${a.s}:${a.b}`, [...(seuls.get(`${a.s}:${a.b}`) ?? []), a]);
     else if (a.sorte === 'renvoi') renvois.set(`${a.s}:${a.b ?? ''}`, [...(renvois.get(`${a.s}:${a.b ?? ''}`) ?? []), a]);
     else indices.set(`${a.s}:${a.b}`, [...(indices.get(`${a.s}:${a.b}`) ?? []), a]);
   }
-  return { sections, blocs, indices, renvois, seuls };
+  return { sections, blocs, indices, renvois, seuls, lectures };
+}
+
+/**
+ * La place de la lecture du jour après le bloc [i] de la section [si] (26/11, SiddurJour.lignes) : son annotation le
+ * jour où elle vaut (« kriat_hatorah » à Cha'harit, « jeune » à Min'ha), sinon null.
+ */
+export function placeLecture(idx, si, i, conditions) {
+  const a = idx.lectures?.get(`${si}:${i}`);
+  return a && vrai(a.si, conditions) ? a : null;
 }
 
 /**

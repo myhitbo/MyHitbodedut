@@ -27,7 +27,8 @@ object SiddurJour {
      * NOTE (audit du 16/11) : une note de l'application sous un bloc, quand sa condition vaut ;
      * jamais repliée, elle ne touche pas au texte du siddour (« ! » + une clé jamais du jour : toujours).
      */
-    enum class Sorte { BLOC, SECTION, INDICE, RENVOI, SEUL, NOTE }
+    /** LECTURE (26/11) : la place de la lecture de la Torah du jour, après le bloc (LectureTorah). */
+    enum class Sorte { BLOC, SECTION, INDICE, RENVOI, SEUL, NOTE, LECTURE }
 
     data class Annotation(
         val sorte: Sorte,
@@ -74,6 +75,8 @@ object SiddurJour {
         val libelleHors: String? = null,
         /** Pour une variante enchâssée : ce qui remplace [retire] le jour où elle est fausse (« מגדול », « מוֹדָה »). */
         val par: String? = null,
+        /** Pour la place d'une lecture (26/11) : son office, « chaharit » ou « minha ». */
+        val office: String? = null,
     )
 
     /** Les annotations d'un nusah, par identifiant de texte. */
@@ -88,6 +91,7 @@ object SiddurJour {
                         "renvoi" -> Sorte.RENVOI
                         "seul" -> Sorte.SEUL
                         "note" -> Sorte.NOTE
+                        "lecture" -> Sorte.LECTURE
                         else -> Sorte.BLOC
                     },
                     section = a.getInt("s"),
@@ -109,6 +113,7 @@ object SiddurJour {
                     replieHors = a.optBoolean("replie_hors", false),
                     libelleHors = a.optString("libelle_hors", "").ifBlank { null },
                     par = if (a.has("par")) a.getString("par") else null,
+                    office = a.optString("office", "").ifBlank { null },
                 )
             }
         }
@@ -174,6 +179,39 @@ object SiddurJour {
          * imbriqués compris (une double annotation dans un groupe ouvert) : l'écran y met « Replier ».
          */
         data class Fin(val cle: String) : Ligne()
+
+        /**
+         * La lecture de la Torah du jour (26/11), repliée sous « Lecture : Vayétsé, 3 montées » ; [haftara] : le
+         * bandeau de sa haftara, replié de même. Ouverte, ses passages suivent ([Passage]), puis la [Fin].
+         */
+        data class Lecture(val cle: String, val lecture: LectureTorah.Lecture, val ouvert: Boolean, val haftara: Boolean = false) : Ligne()
+
+        /** Un passage d'une lecture ouverte : une montée ([montee], son libellé) ou un morceau de haftara (null). */
+        data class Passage(val montee: LectureTorah.Montee?, val passage: LectureTorah.Passage) : Ligne()
+    }
+
+    /**
+     * Les lignes de [lectures] (26/11) : pour chacune, son bandeau replié (clé « [prefixe]:k ») et, ouverte, ses
+     * montées ; puis, si elle en a une, sa haftara repliée à part (« [prefixe]:k:h »). Dans la lecture de
+     * Cha'harit, de Min'ha d'un jeûne, et dans le texte « Lecture de la Torah ».
+     */
+    fun lignesLecture(lectures: List<LectureTorah.Lecture>, prefixe: String, ouverts: Set<String>): List<Ligne> = buildList {
+        lectures.forEachIndexed { k, l ->
+            val cle = "$prefixe:$k"
+            add(Ligne.Lecture(cle, l, cle in ouverts))
+            if (cle in ouverts) {
+                l.montees.forEach { m -> add(Ligne.Passage(m, LectureTorah.Passage(m.livre, m.debut, m.fin))) }
+                add(Ligne.Fin(cle))
+            }
+            if (l.haftara.isNotEmpty()) {
+                val h = "$cle:h"
+                add(Ligne.Lecture(h, l, h in ouverts, haftara = true))
+                if (h in ouverts) {
+                    l.haftara.forEach { add(Ligne.Passage(null, it)) }
+                    add(Ligne.Fin(h))
+                }
+            }
+        }
     }
 
     /** L'état d'un ajout ce jour-là (26/11) : mis en évidence, tel quel, replié, ou retiré. */
@@ -233,6 +271,7 @@ object SiddurJour {
         sansTahanounFinTichri: Boolean = nusah == "edot",
         sud: Boolean = false,
         voisin: Set<String> = emptySet(),
+        lectures: List<LectureTorah.Lecture> = emptyList(),
     ): List<Ligne> {
         val conditions = conditionsPour(nusah, enIsrael, conditionsDuJour, sansTahanounFinTichri, sud)
         val autre = if (voisin.isEmpty()) emptySet() else conditionsPour(nusah, enIsrael, voisin, sansTahanounFinTichri, sud)
@@ -247,7 +286,11 @@ object SiddurJour {
         // Les notes de l'application (audit du 16/11) suivent leur bloc ; les cartes « seul », repliées (Q4).
         val seuls = annotations.filter { it.texte != null && (it.sorte == Sorte.SEUL || (it.sorte == Sorte.NOTE && vrai(it.condition, conditions))) }
             .groupBy { it.section to it.bloc }
+        // La place de la lecture du jour (26/11) : après son bloc, le jour où elle vaut, si l'office a une lecture.
+        val places = annotations.filter { it.sorte == Sorte.LECTURE }.associateBy { it.section to it.bloc!! }
         val sortie = mutableListOf<Ligne>()
+        fun lire(si: Int, bi: Int) = places[si to bi]?.takeIf { lectures.isNotEmpty() && vrai(it.condition, conditions) }
+            ?.let { sortie += lignesLecture(lectures, "lecture:${it.office ?: "office"}", ouverts) }
         fun du(si: Int, bi: Int, b: SiddurBloc) = texteDuJour(b, indices[si to bi].orEmpty(), conditions, autre)
         fun reperes(si: Int, bi: Int) = indices[si to bi].orEmpty()
             .filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
@@ -279,9 +322,9 @@ object SiddurJour {
                 when (d.etat) {
                     Etat.DU_JOUR -> {
                         sortie += Ligne.Etiquette(section.condition, nom(section, section.condition))
-                        s.blocs.forEachIndexed { bi, b -> sortie += Ligne.Bloc(du(si, bi, b), Style.DU_JOUR, b) }
+                        s.blocs.forEachIndexed { bi, b -> sortie += Ligne.Bloc(du(si, bi, b), Style.DU_JOUR, b); lire(si, bi) }
                     }
-                    Etat.ORDINAIRE -> s.blocs.forEachIndexed { bi, b -> sortie += Ligne.Bloc(du(si, bi, b), Style.NORMAL, b) }
+                    Etat.ORDINAIRE -> s.blocs.forEachIndexed { bi, b -> sortie += Ligne.Bloc(du(si, bi, b), Style.NORMAL, b); lire(si, bi) }
                     Etat.REPLIE -> {
                         val cle = "§$si"
                         sortie += Ligne.Replie(cle, section.condition, cle in ouverts, d.libelle ?: nom(section, section.condition), d.pasAujourdhui)
@@ -305,6 +348,7 @@ object SiddurJour {
                     // Le texte du jour se lit dans le bloc même ; « Aujourd'hui : … » ne reste que pour les variantes
                     // qu'on ne sait pas retirer. Une fois chacune : « מגדול » vaut le Chabbat comme Roch 'Hodech (12/11).
                     reperes(si, i)
+                    lire(si, i)
                     seul(si, i)
                     renvoyer(si, i)
                     i++
@@ -330,7 +374,10 @@ object SiddurJour {
                         val et = m.et
                         if (et == null || vrai(et, conditions)) {
                             sortie += Ligne.Bloc(du(si, m.bloc!!, b), style, b)
-                            if (avecReperes) reperes(si, m.bloc)
+                            if (avecReperes) {
+                                reperes(si, m.bloc)
+                                lire(si, m.bloc)
+                            }
                             k++
                             continue
                         }
@@ -379,8 +426,9 @@ object SiddurJour {
         texte: SiddurTexte, annotations: List<Annotation>, israel: Set<String>, diaspora: Set<String>,
         nusah: String, sansTahanounFinTichri: Boolean = nusah == "edot", sud: Boolean = false,
         voisinIsrael: Set<String> = emptySet(), voisinDiaspora: Set<String> = emptySet(),
-    ): Boolean = lignes(texte, annotations, israel, emptySet(), nusah, true, sansTahanounFinTichri, sud, voisinIsrael) !=
-        lignes(texte, annotations, diaspora, emptySet(), nusah, false, sansTahanounFinTichri, sud, voisinDiaspora)
+        lecturesIsrael: List<LectureTorah.Lecture> = emptyList(), lecturesDiaspora: List<LectureTorah.Lecture> = emptyList(),
+    ): Boolean = lignes(texte, annotations, israel, emptySet(), nusah, true, sansTahanounFinTichri, sud, voisinIsrael, lecturesIsrael) !=
+        lignes(texte, annotations, diaspora, emptySet(), nusah, false, sansTahanounFinTichri, sud, voisinDiaspora, lecturesDiaspora)
 
     /**
      * Les places de [lignes] qui se lisent dans le panneau d'un repli déplié : entre un [Ligne.Replie]
@@ -397,6 +445,7 @@ object SiddurJour {
             }
             if (ouverts.isNotEmpty()) dedans += k
             if (l is Ligne.Replie && l.ouvert) ouverts.addLast(l.cle)
+            if (l is Ligne.Lecture && l.ouvert) ouverts.addLast(l.cle)
         }
         return dedans
     }

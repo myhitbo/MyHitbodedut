@@ -1562,7 +1562,7 @@
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">Privacy policy</string>
     <string name="settings_licences">Sources and licences</string>
-    <string name="licences_texte">Texts\nThe Hebrew texts (siddur, Tehillim, Tikkun, books, sources) come from public-domain editions, notably Sefaria, Torat Emet, tanach.us and rabenubook, or are used with their authors’ permission; each edition and its licence are declared in the app’s data files.\nYalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef: text from Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilulot: Hebrew Wikipedia (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik and HaMeir LaArets with their permission.\n\nTranslations\nThe French and English translations are machine-made and unreviewed: the Hebrew prevails. Those of Yalkut Yosef are partial, under the same licence as the text. For Tehillim, the Tikkun, Esther and Song of Songs: Bible du Rabbinat (1899) and JPS (1917), public domain.\n\nFonts\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew and Varela Round, Secular One, Rubik, Heebo and Bellefair (app versions), under the SIL OFL 1.1 licence.\n\nData\nCities: GeoNames (CC BY 4.0). Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); names: Wikidata (CC0). Flight routes: adsbdb.com.\n\nCalendar and zmanim\nKosherJava (LGPL 2.1), directly or through its JavaScript port. The app ships with the licence text; the app’s source code is available on written request to myhitbodedut26@gmail.com.</string>
+    <string name="licences_texte">Texts\nThe Hebrew texts (siddur, Tehillim, Tikkun, books, sources) come from public-domain editions, notably Sefaria, Torat Emet, tanach.us and rabenubook, or are used with their authors’ permission; each edition and its licence are declared in the app’s data files.\nYalkut Yosef – Kitzur Shulchan Aruch, by Rav Yitzchak Yosef: text from Torat Emet, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nHilulot: Hebrew Wikipedia (CC BY-SA 4.0), Torat Emet (CC BY-NC-SA 2.5), MyTzadik and HaMeir LaArets with their permission.\n\nTranslations\nThe French and English translations are machine-made and unreviewed: the Hebrew prevails. Those of Yalkut Yosef are partial, under the same licence as the text. For Tehillim, the Tikkun, Esther and Song of Songs: Bible du Rabbinat (1899) and JPS (1917), public domain.\n\nFonts\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew and Varela Round, Secular One, Rubik, Heebo and Bellefair (app versions), under the SIL OFL 1.1 licence.\n\nData\nCities: GeoNames (CC BY 4.0). Airports: OurAirports (public domain); time zones: timezone-boundary-builder (ODbL, © OpenStreetMap contributors); names: Wikidata (CC0). Flight routes: adsbdb.com.\n\nTorah reading\nAliyot and haftarot: @hebcal/leyning (© 2020 hebcal, BSD 2-Clause licence, whose text ships with the app). Cantillated text: “Tanach with Ta’amei Hamikra” (tanach.us, Leningrad Codex, public domain).\n\nCalendar and zmanim\nKosherJava (LGPL 2.1), directly or through its JavaScript port. The app ships with the licence text; the app’s source code is available on written request to myhitbodedut26@gmail.com.</string>
     <string name="licences_android">\n\nLibraries of the Android app\nBarcode reading: ZXing (Apache 2.0). AndroidX and Material Components (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
@@ -1760,4 +1760,13 @@
     <string name="ajout_magdol">Days of “מגדול”</string>
     <string name="ajout_israel">In Israel</string>
     <string name="ajout_yamim_noraim">Rosh Hashanah and Yom Kippur</string>
+    <!-- La lecture de la Torah du jour (26/11, LectureTorah) -->
+    <string name="lecture_titre">Reading: %1$s, %2$s</string>
+    <plurals name="lecture_montees">
+        <item quantity="one">%d aliyah</item>
+        <item quantity="other">%d aliyot</item>
+    </plurals>
+    <string name="lecture_haftara">Haftarah: %s</string>
+    <string name="lecture_prochaine">No reading today. Next: %s</string>
+    <string name="lecture_jour">Readings for %1$s (%2$s); the Chumash text prevails.</string>
 </resources>

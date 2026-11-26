@@ -20,6 +20,10 @@ const LUNDI = 2, JEUDI = 5, CHABBAT = 7;
 export const OFFICES = ['chaharit', 'minha'];
 export const NUSAH = ['edot', 'sefard', 'ashkenaz'];
 
+/** Le texte « Lecture de la Torah » du siddour (26/11, D1) : sa clé et son titre (LectureTorah.ID_TEXTE, TITRE). */
+export const ID_TEXTE = 'lecture_torah';
+export const TITRE = { he: 'קְרִיאַת הַתּוֹרָה', fr: 'Lecture de la Torah', en: 'Torah reading' };
+
 const cal = (iso, il, muk) => calendrier(iso, il, false, muk);
 
 /** L'énumération Parsha de kosher-zmanim, Chabbatot spéciaux compris (SHKALIM = 62 … NACHAMU = 70). */
@@ -275,6 +279,30 @@ export function lectures(donnees, iso, office, { enIsrael = false, mukafChoma = 
   if (cle) return [fete(donnees, cle, nusah)];
   if (jour === LUNDI || jour === JEUDI) return [semaine(donnees, parachaDeLaSemaine(chabbatSuivant(iso), il))];
   return [];
+}
+
+/**
+ * Le texte « Lecture de la Torah » (26/11, D1 ; LectureTorah.programme) : les lectures du jour [iso], Cha'harit et
+ * Min'ha, Chabbat et Yom tov compris ; un jour sans lecture, la Cha'harit du prochain jour de lecture qui ne soit pas
+ * celle d'un lundi ou d'un jeudi (le début de la paracha du Chabbat qui vient : c'est le Chabbat qu'on montre).
+ * { date, aujourdhui, offices: [[office, lectures]] }.
+ */
+export function programme(donnees, iso, options = {}) {
+  const offices = OFFICES.map((o) => [o, lectures(donnees, iso, o, options)]).filter(([, l]) => l.length);
+  if (offices.length) return { date: iso, aujourdhui: true, offices };
+  for (let j = ajouteJours(iso, 1); ; j = ajouteJours(j, 1)) {
+    const l = lectures(donnees, j, 'chaharit', options);
+    if (l.length && !l.some((x) => x.cle.startsWith('semaine:'))) return { date: j, aujourdhui: false, offices: [['chaharit', l]] };
+  }
+}
+
+/** « Genèse 32:4–13 » (LectureTorah.reference) : [nom] traduit le nom du livre ({ he, fr, en } → texte). */
+export function reference(donnees, livre, debut, fin, nom = (t) => t.fr) {
+  const l = donnees.livres?.[livre];
+  const [c1, v1] = debut.split(':');
+  const [c2, v2] = fin.split(':');
+  const plage = debut === fin ? debut : c1 === c2 ? `${c1}:${v1}–${v2}` : `${debut}–${fin}`;
+  return `${l ? nom(l) : livre} ${plage}`;
 }
 
 // --- Le texte ----------------------------------------------------------------------------------

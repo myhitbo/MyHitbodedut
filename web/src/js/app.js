@@ -14,7 +14,7 @@ import { creeStore, memoire, repriseValable } from './store.js';
 import { avisAccueil } from './avis.js';
 import { ajouteJours, heureDans, isoDans, isoLocal } from './calendrier.js';
 import { JERUSALEM_GEONAMES, RAPPELS_TEFILA, USAGES_LEVANA, aJerusalem, calendrier, cleGuechemFin, dansIsrael, jour as jourJuif, jourDeLaPriere, jourVoisin, levana, nuit as nuitDuLieu, periodeSansMusique, rappelsTefila, reperes as reperesDuJour, usageLevana } from './calendrier-juif.js';
-import { avecAdresse, avecSansTahanoun, conditionsPour, index as indexAjouts, libelleJour, plan as planSection, segments as segmentsAjout, signature as signatureAjouts, texteDuJour, vrai as ajoutVrai } from './siddur-jour.js';
+import { avecAdresse, avecSansTahanoun, conditionsPour, index as indexAjouts, libelleJour, placeLecture, plan as planSection, segments as segmentsAjout, signature as signatureAjouts, texteDuJour, vrai as ajoutVrai } from './siddur-jour.js';
 import { Dedicace, JournalPlus } from './regles.js';
 import { aerer } from './aeration.js';
 import { distanceKm } from './direction.js';
@@ -1680,17 +1680,66 @@ function ecranSiddur() {
         tuileLivre(tr.t('siddur_tikkun_he'), tr.t('tikkun_title'), 'char_torah', () => ouvrir('tikkun'))),
       ...(pret ? siddur.groupes.flatMap((g) => [
         enteteGroupe(g.titre.he, titreTexte(g.titre)),
-        h('div', { class: 'carte carte-sections' }, siddur.textes.filter((x) => x.groupe === g.cle).map((x) =>
+        h('div', { class: 'carte carte-sections' },
+          // La lecture de la Torah du jour (26/11, D1), en tête des textes de certains moments, dans les trois nusah.
+          g.cle === 'moments' ? ligneHebreu(LECTURE_TORAH.titre.he, titreTexte(LECTURE_TORAH.titre) !== LECTURE_TORAH.titre.he ? titreTexte(LECTURE_TORAH.titre) : '',
+            () => { priere = LECTURE_TORAH.id; ouvrir('priere'); }) : null,
+          siddur.textes.filter((x) => x.groupe === g.cle).map((x) =>
           // Un texte absent des sources de ce nusah, emprunté à un autre, le dit.
-          ligneHebreu(x.titre.he, [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, x.nusah ? titreTexte(x.nusah) : null].filter(Boolean).join(' · '),
-            () => { priere = x.id; ouvrir('priere'); }))),
+            ligneHebreu(x.titre.he, [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, x.nusah ? titreTexte(x.nusah) : null].filter(Boolean).join(' · '),
+              () => { priere = x.id; ouvrir('priere'); }))),
       ]) : []),
       // Les seules mentions que les licences demandent (CC-BY du siddour Metsudah, Wikipédia), sans Sefaria.
       pret && mentionsObligatoires(siddur._meta.sources).length
         ? h('p', { class: 'indice sources' }, tr.t('siddur_sources', mentionsObligatoires(siddur._meta.sources).join(' ; '))) : null)));
 }
 
+/** Israël ou diaspora non confirmé (26/11, Q7 ; SiddurLectureActivity.QuestionRegion) : la réponse confirme le statut. */
+function questionRegionSiddour() {
+  return h('button', { type: 'button', class: 'question-region', onclick: () => choisirDans(tr.t('siddur_region_titre'),
+    [tr.t('region_israel'), tr.t('region_diaspora')], -1, (k) => { store.setInIsrael(k === 0, true); rendre(); }) }, tr.t('siddur_region_question'));
+}
+
+/**
+ * Le texte « Lecture de la Torah » (26/11, D1 ; SiddurLectureActivity.lignesLectureSeule) : les lectures du jour,
+ * Cha'harit et Min'ha, Chabbat et Yom tov compris, chacune repliée sous le titre de son office, puis sa haftara ; un
+ * jour sans lecture, celle du prochain jour de lecture (le plus souvent le Chabbat qui vient), avec sa date. La question
+ * Israël ou diaspora, tant que le statut n'est pas confirmé et que les lectures en dépendent.
+ */
+function ecranLectureTorah() {
+  const titre = LECTURE_TORAH.titre;
+  const lecture = chargeLecture();
+  if (!chargeSiddur() || !lecture) return h('div', { class: 'ecran', 'data-attente': '' }, barre(titreTexte(titre)), h('div', { class: 'defile' }));
+  const { m, donnees } = lecture;
+  const maintenant = new Date();
+  const lieu = store.lieu();
+  const isoMaintenant = jourLieu(maintenant);
+  const tset = lieu ? zmanimDuJour(lieu, isoMaintenant, store.siddurNusah()).find((z) => z.cle === 'tset')?.instant ?? null : null;
+  // Après la sortie des étoiles, les lectures de demain, comme Cha'harit.
+  const iso = jourDeLaPriere(LECTURE_TORAH.id, isoMaintenant, heureLieu(maintenant).heures, !!tset && maintenant >= tset);
+  const israel = store.inIsrael();
+  const options = (il) => ({ enIsrael: il, mukafChoma: mukafChoma(), nusah: store.siddurNusah() });
+  const p = m.programme(donnees, iso, options(israel));
+  const depend = !store.regionConfirmee() && JSON.stringify(m.programme(donnees, iso, options(true))) !== JSON.stringify(m.programme(donnees, iso, options(false)));
+  const titreOffice = (office) => {
+    const t = siddur.textes.find((y) => y.id === office)?.titre ?? { he: office };
+    const l = LanguesTexte.textes(languesLecture(), t.he, t.fr, t.en);
+    return h('h2', { class: 'psaume-titre', lang: l[0][0], dir: l[0][0] === 'he' ? 'rtl' : 'ltr' }, l[0][1],
+      ...l.slice(1).map(([langue, texte]) => h('span', { class: 'titre-traduit', lang: langue, dir: 'ltr' }, texte)));
+  };
+  const contenu = h('div', { class: 'contenu lecture siddour lecture-seule' },
+    h('p', { class: 'indice note-ajouts' }, tr.t('lecture_jour', jourJuif(iso, israel, mukafChoma()).dateHebraique, tr.t(israel ? 'region_israel' : 'region_diaspora'))),
+    depend ? questionRegionSiddour() : null,
+    p.aujourdhui ? null : h('p', { class: 'indice note-ajouts lecture-prochaine' },
+      tr.t('lecture_prochaine', `${dateCivile(p.date)} · ${jourJuif(p.date, israel, mukafChoma()).dateHebraique}`)),
+    ...p.offices.flatMap(([office, l]) => [titreOffice(office), ...boitesLecture(l)]));
+  const etiquette = titreTexte(titre) !== titre.he ? [titreTexte(titre)] : [];
+  return ecranLu(titre.he, contenu, { avecNusah: true, entete: bandeauPriere(titre.he, etiquette, null) });
+}
+
 function ecranPriere() {
+  // Le texte « Lecture de la Torah » (26/11, D1) : les lectures du jour, pas des paragraphes du siddour.
+  if (priere === LECTURE_TORAH.id) return ecranLectureTorah();
   // Un livre de la bibliothèque (« livre:likoutei_etsot », 12/10) se lit comme une prière, sans nusah ni ajouts.
   const livre = priere?.startsWith('livre:') ?? false;
   const pret = livre ? chargeLivre(priere.slice(6)) : chargeSiddur();
@@ -1729,6 +1778,13 @@ function ecranPriere() {
   const voisinPour = (israel) => (isoVoisin ? pour(israel, duJour(jourJuif(isoVoisin, israel, mukafChoma()))) : new Set());
   const c = pour(store.inIsrael(), duJour(jourDuTexte));
   const cv = voisinPour(store.inIsrael());
+  // La lecture de la Torah du jour (26/11) : à Cha'harit les jours de lecture, à Min'ha les jours de jeûne, repliée à sa
+  // place (SiddurJour.Sorte.LECTURE), puis sa haftara ; le module et ses données ne se lisent que ces jours-là.
+  const avecLecture = !livre && ((x.id === 'chaharit' && jourDuTexte.conditions.has('kriat_hatorah')) || (x.id === 'minha' && jourDuTexte.conditions.has('jeune')));
+  const lecture = avecLecture ? chargeLecture() : null;
+  const lecturesPour = (israel) => (lecture ? lecture.m.lectures(lecture.donnees, isoTexte, x.id, { enIsrael: israel, mukafChoma: mukafChoma(), nusah }) : []);
+  const lecturesDuJour = lecturesPour(store.inIsrael());
+  const lectureApres = (si, i) => (lecturesDuJour.length && placeLecture(idx, si, i, c) ? boitesLecture(lecturesDuJour) : []);
   const nom = (a, condition) => tr.t(libelleJour(a.libelle, condition, nusah, c));
   // Marque-pages (15/10, SiddurLectureActivity) : un appui long sur un paragraphe le marque ou le démarque.
   const cleMarque = `${livre ? 'l' : 's'}:${x.id}`;
@@ -1796,7 +1852,7 @@ function ecranPriere() {
   const reperesDu = (si, i) => (idx.indices.get(`${si}:${i}`) ?? []).filter((a) => !a.retire && ajoutVrai(a.si, c))
     .filter((a, k, l) => l.findIndex((y) => y.texte === a.texte) === k)
     .map((a) => h('p', { class: 'indice-jour' }, a.fixe ? null : h('span', {}, `${tr.t('siddur_aujourdhui')} : `), h('span', { lang: 'he', dir: 'rtl' }, a.texte)));
-  const avecIndices = (s, si, i) => [paragraphe(s, i, texteDu(s, si, i)), ...reperesDu(si, i), ...renvois(si, i)];
+  const avecIndices = (s, si, i) => [paragraphe(s, i, texteDu(s, si, i)), ...reperesDu(si, i), ...lectureApres(si, i), ...renvois(si, i)];
   // Le corps d'une section, sans son titre : construit d'un coup pour une prière, à la demande pour un livre.
   const corpsDe = (s, si) => {
     const corps = [];
@@ -1815,9 +1871,9 @@ function ecranPriere() {
         // La double annotation (audit du 16/11, segments) : un bloc dont le « et » est faux se replie à part si c'est une
         // occasion (minyan, Mi chébérakh) ou le jour voisin, et disparaît sinon ; un groupe lu garde ses repères du jour.
         const lu = partie.etat !== 'replie';
-        const membres = !groupe ? partie.lus.map(para) : segmentsAjout(partie.lus, si, idx, c, cv).flatMap((g) => g.et
+        const membres = !groupe ? partie.lus.flatMap((i) => [para(i), ...(lu ? lectureApres(si, i) : [])]) : segmentsAjout(partie.lus, si, idx, c, cv).flatMap((g) => g.et
           ? [ajout(tr.t(g.libelle), false, g.blocs.map((i) => { const p = paragraphe(s, i, texteDu(s, si, i)); p.classList.add('hors-jour'); return p; }), g.pasAujourdhui)]
-          : g.blocs.flatMap((i) => [para(i), ...(lu ? reperesDu(si, i) : [])]));
+          : g.blocs.flatMap((i) => [para(i), ...(lu ? [...reperesDu(si, i), ...lectureApres(si, i)] : [])]));
         // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage discret (12/11) : tel quel.
         if (partie.etat === 'ordinaire') corps.push(...membres);
         else corps.push(ajout(partie.libelle ? tr.t(partie.libelle) : nom(a, partie.racine), partie.etat === 'du_jour', membres, partie.pasAujourdhui));
@@ -1827,7 +1883,9 @@ function ecranPriere() {
     return [...corps, ...renvois(si)];
   };
   const demandeRegion = !livre && annotations?.some((a) => a.sorte !== 'note') && !store.regionConfirmee()
-    && signatureAjouts(x, idx, pour(true, duJour(jourPour(true))), voisinPour(true)) !== signatureAjouts(x, idx, pour(false, duJour(jourPour(false))), voisinPour(false));
+    && (signatureAjouts(x, idx, pour(true, duJour(jourPour(true))), voisinPour(true)) !== signatureAjouts(x, idx, pour(false, duJour(jourPour(false))), voisinPour(false))
+      // Sa lecture aussi (Chemini Atsérèt, Sim'hat Torah, le second jour de fête en diaspora).
+      || JSON.stringify(lecturesPour(true)) !== JSON.stringify(lecturesPour(false)));
   // Une section sans rien à lire ce jour-là (26/11) : tous ses ajouts retirés, ni renvoi ni note.
   const sectionVide = (s, si) => planSection(s, si, idx, c, cv).every((p) => p.etat === 'retire'
     && !(idx.seuls.get(`${si}:${p.blocs[p.blocs.length - 1]}`) ?? []).some((a) => a.sorte === 'seul' || ajoutVrai(a.si, c)))
@@ -1852,8 +1910,7 @@ function ecranPriere() {
     traductionPartielle ? h('p', { class: 'indice' }, tl('lecture_traduction_partielle', chapitresTraduits, x.sections.length)) : null,
     traductionAuto ? h('p', { class: 'indice' }, tl('lecture_traduction_auto')) : null,
     // Israël ou diaspora non confirmé (26/11, Q7 ; SiddurLectureActivity.QuestionRegion) : demandé quand le texte en dépend.
-    demandeRegion ? h('button', { type: 'button', class: 'question-region', onclick: () => choisirDans(tr.t('siddur_region_titre'),
-      [tr.t('region_israel'), tr.t('region_diaspora')], -1, (k) => { store.setInIsrael(k === 0, true); rendre(); }) }, tr.t('siddur_region_question')) : null,
+    demandeRegion ? questionRegionSiddour() : null,
     annotations?.some((a) => a.sorte !== 'note') ? h('p', { class: 'indice note-ajouts' }, tr.t('siddur_jour_ajouts', jourDuTexte.dateHebraique,
       tr.t(store.inIsrael() ? 'region_israel' : 'region_diaspora'))) : null,
     // Un office de semaine un Chabbat ou un Yom tov : le siddour le dit (audit du 16/11).
@@ -2326,6 +2383,80 @@ function chargeAnnotations() {
   return false;
 }
 
+// --- La lecture de la Torah du jour (26/11, LectureTorah.kt) ----------------------------------------
+// Le module et ses données (117 ko) ne se lisent que les jours où un office a une lecture, ou au texte « Lecture de
+// la Torah » ; le texte, un livre à la fois, quand on déplie une lecture (lecture-torah.js, chargeLivre).
+// La clé et le titre du texte, ceux de lecture-torah.js (ID_TEXTE, TITRE) : la liste du siddour n'a pas à charger le module.
+const LECTURE_TORAH = { id: 'lecture_torah', titre: { he: 'קְרִיאַת הַתּוֹרָה', fr: 'Lecture de la Torah', en: 'Torah reading' } };
+let lectureTorah = null;
+let lectureDemandee = false;
+/** Les livres déjà lus (« Genesis » → { chapitres, paragraphes }) : déplier une seconde fois ne fait plus attendre. */
+const livresLecture = new Map();
+
+/** { m, donnees } une fois le module et les données arrivés (l'écran se redessine alors), null en attendant. */
+function chargeLecture() {
+  if (lectureTorah) return lectureTorah;
+  if (!lectureDemandee) {
+    lectureDemandee = true;
+    import('./lecture-torah.js').then(async (m) => { lectureTorah = { m, donnees: await m.chargeDonnees() }; rendre(); })
+      .catch(() => { lectureDemandee = false; });
+  }
+  return null;
+}
+
+/** Le nom d'un passage dans la langue de l'interface : « Genèse 32:4–13 » (LectureTorah.reference). */
+const referenceLecture = (p) => lectureTorah.m.reference(lectureTorah.donnees, p.livre, p.debut, p.fin, titreTexte);
+
+/**
+ * Les lectures d'un office, chacune repliée (SiddurJour.lignesLecture) : « Lecture : Vayichla'h, 3 montées », ses
+ * montées dépliées ; puis sa haftara, repliée à part.
+ */
+function boitesLecture(lectures) {
+  return lectures.flatMap((l) => {
+    const n = l.montees.length;
+    const titre = [tr.t('lecture_titre', titreTexte(l.titre), tr.p('lecture_montees', n)), ...l.raisons.map(titreTexte)].join(' · ');
+    const boites = [boiteLecture(titre, l.montees.map((m) => ({ libelle: titreTexte(m.libelle), passage: m })))];
+    if (l.haftara.length) {
+      boites.push(boiteLecture(tr.t('lecture_haftara', l.haftara.map(referenceLecture).join(' ; ')), l.haftara.map((p) => ({ libelle: null, passage: p }))));
+    }
+    return boites;
+  });
+}
+
+/** Une lecture repliée ; dépliée la première fois, ses livres se lisent, puis ses passages s'écrivent. */
+function boiteLecture(titre, passages) {
+  const { m } = lectureTorah;
+  const attente = (cle) => h('p', { class: 'lecture-attente' }, tr.t(cle));
+  const zone = h('div', { class: 'lecture-passages' }, attente('lecture_chargement'));
+  const noms = [...new Set(passages.map((x) => x.passage.livre))];
+  const ecrire = () => zone.replaceChildren(...passages.flatMap((x) => passageLu(x, livresLecture.get(x.passage.livre))));
+  let demande = false;
+  const remplir = () => {
+    if (demande) return;
+    demande = true;
+    // Déjà lus : écrits avant que le panneau s'ouvre, à sa vraie hauteur.
+    if (noms.every((l) => livresLecture.has(l))) { ecrire(); return; }
+    Promise.all(noms.map((l) => m.chargeLivre(l).then((t) => livresLecture.set(l, t)))).then(ecrire)
+      .catch(() => { demande = false; zone.replaceChildren(attente('livres_echec_web')); });
+  };
+  const boite = ajout(titre, false, [zone], false, { avantOuvrir: remplir });
+  boite.classList.add('lecture-torah');
+  return boite;
+}
+
+/** Un passage : la montée et sa référence, puis ses versets numérotés, un paragraphe à chaque « פ » (textePassage). */
+function passageLu({ libelle, passage: p }, texte) {
+  const sortie = [h('p', { class: 'lecture-reference' }, [libelle, referenceLecture(p)].filter(Boolean).join(' · '))];
+  let courant = null;
+  for (const v of lectureTorah.m.versets(p.livre, p.debut, p.fin, texte)) {
+    courant ??= h('p', { class: 'priere lecture-versets', lang: 'he', dir: 'rtl' });
+    courant.append(h('span', { class: 'lecture-numero' }, String(v.v)), '\u00a0', v.t, ' ');
+    if (v.fin === 'פ') { sortie.push(courant); courant = null; }
+  }
+  if (courant) sortie.push(courant);
+  return sortie;
+}
+
 /**
  * Un ajout lié au jour, sous son [nom] déjà traduit. S'il s'applique : mis en
  * évidence. Sinon : replié en une ligne ; la flèche l'ouvre et le referme. Depuis
@@ -2333,7 +2464,7 @@ function chargeAnnotations() {
  * replié, c'est une occasion (« toucher pour lire »), ou un ajout du calendrier
  * gardé replié ([pasAujourdhui] : « pas aujourd'hui · toucher pour lire »).
  */
-function ajout(nom, applique, blocs, pasAujourdhui = false) {
+function ajout(nom, applique, blocs, pasAujourdhui = false, { avantOuvrir = null } = {}) {
   if (applique) {
     return h('div', { class: 'ajout du-jour' },
       h('p', { class: 'ajout-etiquette' }, h('span', { class: 'ajout-pastille' }, tr.t('siddur_aujourdhui')), h('span', {}, nom)), blocs);
@@ -2355,6 +2486,8 @@ function ajout(nom, applique, blocs, pasAujourdhui = false) {
     bouton.querySelector('.replie-etat').textContent = ouvrir ? tr.t('siddur_replier') : ferme;
     corps.getAnimations?.().forEach((x) => x.cancel());
     if (ouvrir) {
+      // La lecture de la Torah (26/11) : son texte s'écrit à la première ouverture.
+      avantOuvrir?.();
       corps.hidden = false;
       if (!sansMouvement() && corps.animate) corps.animate([{ height: '0px', opacity: 0 }, { height: `${corps.scrollHeight}px`, opacity: 1 }],
         { duration: Math.min(520, 220 + corps.scrollHeight / 12), easing: 'cubic-bezier(.2,.7,.2,1)' });

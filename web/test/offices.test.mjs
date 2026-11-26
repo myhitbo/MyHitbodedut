@@ -99,14 +99,13 @@ test('Téfilin : pas à \'Hol hamoed chez les Edot ni en Israël ; sans bénédi
   assert.deepEqual(etats('ashkenaz', 'chaharit', '2026-11-18', /להתעטף בציצית/), ['ordinaire']);
 });
 
-test('Min\'ha des jeûnes : la lecture de la Torah annoncée ; la haftara selon le rite', () => {
+test('Min\'ha des jeûnes : la place de la lecture de la Torah (26/11), à la place des repères qui l\'annonçaient', () => {
+  // La haftara selon le rite : web/test/lecture-siddur.test.mjs.
   for (const nusah of ['edot', 'sefard', 'ashkenaz']) {
-    assert.ok(indices(nusah, 'minha', '2025-12-30').some((t) => t.includes('ויחל')), nusah);
-    assert.ok(!indices(nusah, 'minha', '2026-11-18').some((t) => t.includes('ויחל')), nusah);
-    assert.equal(indices(nusah, 'minha', '2025-12-30').some((t) => t.includes('דרשו')), nusah !== 'edot', nusah);
+    const places = annotations[nusah].minha.filter((e) => e.sorte === 'lecture');
+    assert.deepEqual(places.map((e) => [e.si, e.office]), [['jeune', 'minha']], nusah);
+    assert.ok(!indices(nusah, 'minha', '2025-12-30').some((t) => t.includes('ויחל') || t.includes('דרשו') || t.includes('שובה ישראל')), nusah);
   }
-  assert.ok(indices('edot', 'minha', '2026-07-23').some((t) => t.includes('שובה ישראל')));
-  assert.ok(!indices('edot', 'minha', '2025-12-30').some((t) => t.includes('שובה ישראל')));
 });
 
 test('Cha\'harit du 9 Av : « ואני זאת בריתי » retiré ; פטום הקטורת (Ashkenaz) replié', () => {

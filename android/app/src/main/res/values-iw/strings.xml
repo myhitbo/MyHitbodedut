@@ -1606,7 +1606,7 @@
     <!-- Le lien vers la page publique des règles de confidentialité (31/10, SettingsActivity). -->
     <string name="settings_confidentialite">מדיניות פרטיות</string>
     <string name="settings_licences">מקורות ורישיונות</string>
-    <string name="licences_texte">טקסטים\nהטקסטים העבריים (סידור, תהילים, התיקון, ספרים ומקורות) לקוחים ממהדורות שהן נחלת הכלל, ובהן ספריא, תורת אמת, tanach.us ו־rabenubook, או מובאים ברשות מחבריהם; המהדורה והרישיון של כל טקסט מצוינים בקובצי היישום.\nילקוט יוסף – קיצור שולחן ערוך, מאת הרב יצחק יוסף: הטקסט מאתר תורת אמת, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nהילולות: ויקיפדיה העברית (CC BY-SA 4.0), תורת אמת (CC BY-NC-SA 2.5), MyTzadik ו״המאיר לארץ״ ברשותם.\n\nתרגומים\nהתרגומים לצרפתית ולאנגלית נעשו במחשב ולא נבדקו; הנוסח העברי הוא הקובע. תרגומי ילקוט יוסף חלקיים, ובאותו רישיון כמו הטקסט. בתהילים, בתיקון, במגילת אסתר ובשיר השירים: תרגום הרבנות (1899) ו־JPS (1917), נחלת הכלל.\n\nגופנים\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew ו־Varela Round, Secular One, Rubik, Heebo ו־Bellefair (גרסאות האפליקציה), ברישיון SIL OFL 1.1.\n\nנתונים\nערים: GeoNames‏ (CC BY 4.0). שדות תעופה: OurAirports (נחלת הכלל); אזורי זמן: timezone-boundary-builder (ODbL,‏ © תורמי OpenStreetMap); שמות: Wikidata‏ (CC0). מסלולי טיסה: adsbdb.com.\n\nלוח שנה וזמנים\nKosherJava‏ (LGPL 2.1), במישרין או דרך הגרסה שלה ב־JavaScript. נוסח הרישיון מצורף ליישום; קוד המקור של היישום זמין בבקשה בכתב אל myhitbodedut26@gmail.com.</string>
+    <string name="licences_texte">טקסטים\nהטקסטים העבריים (סידור, תהילים, התיקון, ספרים ומקורות) לקוחים ממהדורות שהן נחלת הכלל, ובהן ספריא, תורת אמת, tanach.us ו־rabenubook, או מובאים ברשות מחבריהם; המהדורה והרישיון של כל טקסט מצוינים בקובצי היישום.\nילקוט יוסף – קיצור שולחן ערוך, מאת הרב יצחק יוסף: הטקסט מאתר תורת אמת, CC BY-NC-SA 2.5 (creativecommons.org/licenses/by-nc-sa/2.5).\nהילולות: ויקיפדיה העברית (CC BY-SA 4.0), תורת אמת (CC BY-NC-SA 2.5), MyTzadik ו״המאיר לארץ״ ברשותם.\n\nתרגומים\nהתרגומים לצרפתית ולאנגלית נעשו במחשב ולא נבדקו; הנוסח העברי הוא הקובע. תרגומי ילקוט יוסף חלקיים, ובאותו רישיון כמו הטקסט. בתהילים, בתיקון, במגילת אסתר ובשיר השירים: תרגום הרבנות (1899) ו־JPS (1917), נחלת הכלל.\n\nגופנים\nDavid Libre, Frank Ruhl Libre, Miriam Libre, Noto Rashi Hebrew, Noto Serif Hebrew ו־Varela Round, Secular One, Rubik, Heebo ו־Bellefair (גרסאות האפליקציה), ברישיון SIL OFL 1.1.\n\nנתונים\nערים: GeoNames‏ (CC BY 4.0). שדות תעופה: OurAirports (נחלת הכלל); אזורי זמן: timezone-boundary-builder (ODbL,‏ © תורמי OpenStreetMap); שמות: Wikidata‏ (CC0). מסלולי טיסה: adsbdb.com.\n\nקריאת התורה\nחלוקת העליות וההפטרות: ‎@hebcal/leyning (© 2020 hebcal, רישיון BSD בן שני סעיפים, שנוסחו מצורף ליישומון). הנוסח בטעמים: „Tanach with Ta’amei Hamikra” (tanach.us, כתב יד לנינגרד, נחלת הכלל).\n\nלוח שנה וזמנים\nKosherJava‏ (LGPL 2.1), במישרין או דרך הגרסה שלה ב־JavaScript. נוסח הרישיון מצורף ליישום; קוד המקור של היישום זמין בבקשה בכתב אל myhitbodedut26@gmail.com.</string>
     <string name="licences_android">\n\nספריות של יישום האנדרואיד\nקריאת ברקודים: ZXing‏ (Apache 2.0). AndroidX ו־Material Components‏ (Apache 2.0).</string>
 
     <!-- Sous l’interrupteur des services en ligne, dans le formulaire du vol (02/11, VolActivity). -->
@@ -1806,4 +1806,14 @@
     <string name="ajout_magdol">ימים שאומרים בהם „מגדול“</string>
     <string name="ajout_israel">בארץ ישראל</string>
     <string name="ajout_yamim_noraim">ראש השנה ויום הכיפורים</string>
+    <!-- La lecture de la Torah du jour (26/11, LectureTorah) -->
+    <string name="lecture_titre">קריאה: %1$s, %2$s</string>
+    <plurals name="lecture_montees">
+        <item quantity="one">עולה אחד</item>
+        <item quantity="two">שני עולים</item>
+        <item quantity="other">%d עולים</item>
+    </plurals>
+    <string name="lecture_haftara">הפטרה: %s</string>
+    <string name="lecture_prochaine">אין קריאה היום. הקריאה הבאה: %s</string>
+    <string name="lecture_jour">קריאות ליום %1$s (%2$s); נוסח החומש קובע.</string>
 </resources>

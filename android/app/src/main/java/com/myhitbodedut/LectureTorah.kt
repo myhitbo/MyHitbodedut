@@ -44,6 +44,19 @@ object LectureTorah {
         val haftara: List<Passage>,
     )
 
+    /** « Genèse 32:4–13 », « Isaïe 61:10–63:9 » : un passage dans la langue [langue] (les livres de [d]). */
+    fun reference(d: Donnees, livre: String, debut: String, fin: String, langue: String): String {
+        val nom = d.livres[livre]?.forLanguage(langue) ?: livre
+        val (c1, v1) = debut.split(":")
+        val (c2, v2) = fin.split(":")
+        val plage = when {
+            debut == fin -> debut
+            c1 == c2 -> "$c1:$v1–$v2"
+            else -> "$debut–$fin"
+        }
+        return "$nom $plage"
+    }
+
     /** [fin] : « פ » ou « ס » quand le verset clôt un paragraphe. */
     data class Verset(val chapitre: Int, val verset: Int, val texte: String, val fin: String?)
 
@@ -60,6 +73,8 @@ object LectureTorah {
         val parachiot: Map<String, Entree>,
         val lectures: Map<String, Entree>,
         val montees: Map<String, LocalizedText>,
+        /** Les noms des livres (« Genesis » → בראשית, Genèse, Genesis), pour nommer un passage. */
+        val livres: Map<String, LocalizedText> = emptyMap(),
     )
 
     fun parse(json: String): Donnees {
@@ -79,10 +94,12 @@ object LectureTorah {
         }
         fun entrees(t: JSONObject) = t.keys().asSequence().associateWith { entree(t.getJSONObject(it)) }
         val m = o.getJSONObject("montees")
+        val l = o.getJSONObject("livres")
         return Donnees(
             parachiot = entrees(o.getJSONObject("parachiot")),
             lectures = entrees(o.getJSONObject("lectures")),
             montees = m.keys().asSequence().associateWith { LocalizedText.parse(m.getJSONObject(it)) },
+            livres = l.keys().asSequence().associateWith { LocalizedText.parse(l.getJSONObject(it)) },
         )
     }
 
@@ -359,6 +376,33 @@ object LectureTorah {
         return emptyList()
     }
 
+    // --- Le texte « Lecture de la Torah » (26/11, D1) -------------------------------------------------------
+
+    /** L'identifiant du texte « Lecture de la Torah » de la liste du siddour (groupe « Pour certains moments »). */
+    const val ID_TEXTE = "lecture_torah"
+
+    /** Son titre, dans les trois langues des titres du siddour. */
+    val TITRE = LocalizedText("קְרִיאַת הַתּוֹרָה", "Lecture de la Torah", "Torah reading")
+
+    /**
+     * Ce que montre le texte « Lecture de la Torah » : les lectures de [date] (Cha'harit, Min'ha), Chabbat et Yom tov
+     * compris ; un jour sans lecture, la Cha'harit du prochain jour de lecture ([aujourdhui] faux, [date] ce jour-là),
+     * le plus souvent le Chabbat qui vient : la lecture de lundi ou de jeudi, qui n'est que le début de sa paracha, est
+     * passée ; une fête, Roch 'Hodech ou un jeûne qui tombe avant ne l'est pas.
+     */
+    data class Programme(val date: LocalDate, val aujourdhui: Boolean, val offices: List<Pair<String, List<Lecture>>>)
+
+    fun programme(d: Donnees, date: LocalDate, enIsrael: Boolean, mukafChoma: Boolean = false, nusah: String = "edot"): Programme {
+        val offices = OFFICES.map { it to lectures(d, date, it, enIsrael, mukafChoma, nusah) }.filter { it.second.isNotEmpty() }
+        if (offices.isNotEmpty()) return Programme(date, true, offices)
+        var j = date.plusDays(1)
+        while (true) {
+            val l = lectures(d, j, CHAHARIT, enIsrael, mukafChoma, nusah)
+            if (l.isNotEmpty() && l.none { it.cle.startsWith("semaine:") }) return Programme(j, false, listOf(CHAHARIT to l))
+            j = j.plusDays(1)
+        }
+    }
+
     // --- Le texte ---------------------------------------------------------------------------------------
 
     /** lecture_torah_texte.json : les versets lus, livre par livre. */
@@ -398,6 +442,9 @@ object LectureTorah {
         donneesLues ?: synchronized(this) {
             donneesLues ?: parse(Json.readRaw(context.applicationContext, R.raw.lecture_torah)).also { donneesLues = it }
         }
+
+    /** Le texte s'il est déjà lu, sans le lire : l'écran le demande hors du fil principal sinon. */
+    fun texteEnMemoire(): Texte? = texteLu
 
     /** Le texte (2,2 Mo) : hors du fil principal, une fois par processus. */
     fun texte(context: Context): Texte =

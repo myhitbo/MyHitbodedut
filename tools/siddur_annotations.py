@@ -21,6 +21,8 @@ Trois sortes d'annotations :
                   qu'un bloc demande en plus de son groupe (minyan, occasion…).
   - « section » : une section entière (Ta'hanoun, Barekhi nafchi…),
                   même traitement.
+  - « lecture » : la place de la lecture de la Torah du jour (26/11, LectureTorah.kt) : après ce bloc, les
+                  jours où la condition vaut, la lecture de l'office (« office ») repliée, puis sa haftara.
   - « indice »  : un bloc qui mêle le texte de tous les jours et une
                   variante (« בעשרת ימי תשובה אומרים: המלך הקדוש ») : le passage
                   « retire » disparaît le jour où la condition est fausse,
@@ -219,12 +221,6 @@ def passage(brut, debut, fin):
 TEFILIN_SANS_BERAKHA = "בחול המועד מניחים תפילין בלי ברכה (משנה ברורה ל״א:ח)"
 HAMAPIL_APRES_AUBE = ("אחר עלות השחר אומרים „המפיל“ בלי שם ומלכות; ואם מסתפק שמא לא יישן – לא יברך "
                       "(ביאור הלכה רל״ט)")
-KRIAT_TAANIT = "בתענית ציבור, אחר חצי קדיש: הוצאת ספר תורה – „ויחל“ (שמות ל״ב:י״א–י״ד; ל״ד:א׳–י׳), שלושה עולים"
-# Ashkenaz, haftara « דרשו » aussi à Min'ha du 9 Av (Rema O.H. 566:1 ; Kitsour Choul'han Aroukh 124:19) :
-# l'audit du 16/11 proposait « שובה ישראל » dans les trois rites, ce qui n'est l'usage que des Edot ; écarté.
-KRIAT_TAANIT_ACHKENAZ = KRIAT_TAANIT + ", והמפטיר מפטיר „דרשו“ (ישעיה נ״ה:ו׳–נ״ו:ח׳). הברכות – בקריאת התורה של שחרית"
-KRIAT_TAANIT_EDOT = KRIAT_TAANIT + ". הברכות – בקריאת התורה של שחרית; בשאר התעניות אין מפטירים (ילקוט יוסף תק״נ:מ)"
-HAFTARA_TICHA_BEAV_EDOT = "בתשעה באב מפטירים במנחה „שובה ישראל“ (הושע י״ד:ב׳)"
 KADDICH_MOTSAE_ACHKENAZ = "כאן אומר החזן סוף הקדיש השלם: „תתקבל“, „יהא שלמא“, „עושה שלום“ (לעיל, אחר העמידה)"
 KADDICH_TICHA_BEAV_ACHKENAZ = "כאן אומר החזן קדיש שלם בלא „תתקבל“ (רמ״א תקנ״ט:ד)"
 TEFILIN_MINHA_TICHA_BEAV = "בתשעה באב מתעטפים בטלית ומניחים תפילין במנחה (שולחן ערוך תקנ״ה:א)"
@@ -251,13 +247,12 @@ def reperes(texte_id, sections, nusah, sortie, note):
     if texte_id == "minha":
         # La lecture de la Torah des jeûnes publics, entre Achré (et le demi-Kaddich) et l'Amida (Choul'han
         # Aroukh O.H. 566:1 et Rema ; Kitsour Yalkut Yosef 550:39-40).
+        # Depuis le 26/11, la lecture elle-même (« lecture », LectureTorah.kt) : « ויחל », trois montées, et la haftara
+        # selon le rite (Ashkenaz et Sfard « דרשו », Rema 566:1 ; Edot à Min'ha du 9 Av seulement, « שובה ישראל »,
+        # Kitsour Yalkout Yossef 550:40), repliée à cette place ; les repères qui la décrivaient sont retirés.
         k = libre(0, premier_annote(0))
         if k is not None:
-            if nusah == "edot":
-                note("indice", 0, k, "jeune", {"texte": KRIAT_TAANIT_EDOT})
-                note("indice", 0, k, "ticha_beav", {"texte": HAFTARA_TICHA_BEAV_EDOT})
-            else:
-                note("indice", 0, k, "jeune", {"texte": KRIAT_TAANIT_ACHKENAZ})
+            note("lecture", 0, k, "jeune", {"office": "minha"})
             if nusah == "ashkenaz":
                 note("indice", 0, k, "ticha_beav", {"texte": TEFILIN_MINHA_TICHA_BEAV})
         # Ashkenaz : le second לדוד ה׳ אורי, après Min'ha selon la Michna Beroura (581:2, Maté Efraïm 581:6).
@@ -385,6 +380,11 @@ def annoter(texte_id, sections, nusah):
                     note("bloc", si, bi, mode, {"force": "kriat_hatorah"})
                     continue
                 note("bloc", si, bi, mode, {"force": "kriat_hatorah"})
+                # La lecture du jour (26/11, LectureTorah.kt) : après la bénédiction qui la suit (« אשר נתן לנו תורת
+                # אמת »), avant les Mi chébérakh et le reste, repliée par office (lecture, puis haftara).
+                if bi > 0 and "c" in sec["blocs"][bi - 1] and re.search(r"(אחר|לאחר) הקריאה", nu(sec["blocs"][bi - 1]["c"])) \
+                        and x.startswith("ברוך אתה"):
+                    note("lecture", si, bi, "kriat_hatorah", {"office": "chaharit"})
                 if reste is not None:
                     reste -= 1
                     if reste == 0:
