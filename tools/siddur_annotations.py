@@ -6,22 +6,33 @@ sont pas touchés ; ce fichier les désigne par (texte, section, bloc), avec le
 début du bloc comme empreinte, pour qu'un siddour reconstruit qui aurait
 bougé fasse échouer les tests au lieu de mettre en évidence le mauvais bloc.
 
+La règle du 26/11 (demande du propriétaire, réponses Q1-Q15), qui remplace celle du 10/10 (« replié,
+jamais retiré ») : un ajout du calendrier ne s'affiche que le jour où il se dit, retiré sans bandeau les
+autres jours ; un ajout d'occasion (condition de OCCASIONS, jamais vraie : minyan, sans_minyan, beit_avel,
+oubli, cheva_berakhot, zimun, facultatif, usage, occasion) reste replié mais visible. SiddurJour.kt et
+siddur-jour.js en tirent la lecture ; ce fichier ne fait que désigner les passages.
+
 Trois sortes d'annotations :
   - « bloc »    : un ajout entier. S'il s'applique ce jour-là, il est mis en
-                  évidence ; sinon il est replié, et une flèche le rouvre.
-  - « section » : une section entière (Ta'hanoun, omer, motsaé Chabbat…),
+                  évidence ; sinon il est retiré, ou replié si c'est une occasion.
+                  « quand » : la garde d'une occasion (fausse, retirée) ;
+                  « replie_hors » (et « libelle_hors ») : un ajout du calendrier
+                  gardé replié hors de son jour (Q2, Q10, l'omer) ; « et » : ce
+                  qu'un bloc demande en plus de son groupe (minyan, occasion…).
+  - « section » : une section entière (Ta'hanoun, Barekhi nafchi…),
                   même traitement.
   - « indice »  : un bloc qui mêle le texte de tous les jours et une
-                  variante (« בעשרת ימי תשובה אומרים: המלך הקדוש »). Rien
-                  n'est replié : quand la variante s'applique, un repère
-                  « Aujourd'hui : המלך הקדוש » s'affiche sous le bloc.
+                  variante (« בעשרת ימי תשובה אומרים: המלך הקדוש ») : le passage
+                  « retire » disparaît le jour où la condition est fausse,
+                  remplacé par « par » s'il y en a un (Q8 : la seule bonne
+                  formule) ; sans « retire », un repère « Aujourd'hui : … ».
 
 Un bloc dont le libellé est « ajout_autres_jours » (audit du 12/11, TSIDDUR-06) est le texte
 ordinaire qu'une formule du jour remplace (« האל הקדוש » pendant les dix jours, « בונה
 ירושלים » à Min'ha du 9 Av) : sa condition est niée ; quand il se dit, il s'affiche tel quel,
-sans étiquette ; le jour où il est remplacé, il est replié. Un bloc « discret » (12/11 : « שעשה
-לי כל צרכי », la fin du Kaddich après le Hallel) se dit presque tous les jours : même traitement,
-mais sous son libellé propre (« Sauf à 'Hanouka »).
+sans étiquette ; le jour où il est remplacé, il est retiré (26/11). Un bloc « discret » (12/11 :
+« שעשה לי כל צרכי », la fin du Kaddich après le Hallel) se dit presque tous les jours : même
+traitement, retiré les rares jours où il ne se dit pas.
 
 Aucune règle de calendrier n'est écrite ici. Chaque annotation renvoie à une
 clé de condition (CalendrierJuif.C), calculée par KosherJava ; l'outil ne
@@ -41,8 +52,9 @@ import sys
 
 RACINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 RAW = os.path.join(RACINE, "android", "app", "src", "main", "res", "raw")
+# Le Kaddich à part (26/11, Q8) : ses variantes des dix jours.
 TEXTES = ["chaharit", "minha", "arvit", "birkat_hamazon", "meen_chaloch", "moussaf_rosh_hodech", "havdala", "hallel",
-          "birkot_hachahar", "chema_coucher", "megila", "birkat_halevana"]
+          "birkot_hachahar", "chema_coucher", "megila", "birkat_halevana", "kaddich"]
 
 # Les consignes d'oubli (12/11) : « טעה ולא אמר… », « אם שכח… », « אם לא אמר… », ce qu'on fait si l'on
 # s'est trompé. « כל שלא אמר אמת ויציב… לא יצא » n'en est pas une : c'est l'obligation même.
@@ -774,8 +786,10 @@ def annoter(texte_id, sections, nusah):
                     x.startswith("ביום שאין אומרים בו תחנון מדלגים למנצח")
                     or x.startswith("בימים שאין אומרים תחנון אין אומרים תפלה לדוד")
                     or x.startswith("ביום שאין אומרים תחנון אין אומרים זה")):
-                prend(bi, "tahanoun_" + office)
-                prend(bi + 1, "tahanoun_" + office)
+                # Le Ta'hanoun du calendrier (26/11, Q1) : « Pas de Ta'hanoun aujourd'hui » ne retire que le Ta'hanoun,
+                # pas למנצח ni ce qui suit l'office (SiddurJour.conditionsPour, « tahanoun_…_calendrier »).
+                prend(bi, "tahanoun_" + office + "_calendrier")
+                prend(bi + 1, "tahanoun_" + office + "_calendrier")
                 j = bi + 2
                 if "גם בית יעקב אין אומרים" in x and j < n and not cons[j] and commence(txt[j], "בית יעקב"):
                     prend(j, "lamnatseah")
@@ -1610,6 +1624,51 @@ def variante(brut, motif, cond, par="", texte=None):
     return cond, e
 
 
+# Pendant les dix jours, la formule du jour seule (26/11, Q8) : la variante enchâssée prend la place de la formule
+# ordinaire qu'elle remplace. (le texte de la variante sans voyelles, la formule ordinaire, avant ou après elle).
+ORDINAIRES_DIX_JOURS = [
+    ("ולעלא מכל", "מן כל", "apres"),           # Sfard, Kaddich : « לְעֵלָּא (בעשי״ת וּלְעֵלָּא מִכָּל) מִן כָּל »
+    ("לעלא לעלא מכל", "לעלא מן כל", "avant"),  # Ashkenaz, Kaddich : « לְעֵלָּא מִן־כָּל־ (בעשי״ת לְעֵלָּא לְעֵלָּא מִכָּל) »
+    ("השלום", "שלום", None),                    # « עושה שלום (בעשי״ת השלום) », « עשה (בעשי״ת השלום) שלום »
+    ("המלך הקדוש", "האל הקדוש", "avant"),       # Edot, la troisième bénédiction
+    ("המלך המשפט", "מלך אוהב צדקה ומשפט", "avant"),  # Edot, la onzième
+    ("המלך", "האל", "avant"),                   # Ashkenaz, Moussaf : « הָאֵל <small>בעשי״ת הַמֶּלֶךְ</small> הַקָּדושׁ »
+]
+
+
+def forme_dix_jours(brut, retire):
+    """
+    Le passage brut à remplacer pendant les dix jours (la formule ordinaire et la variante avec son annonce) et ce
+    qui le remplace (la variante seule, vocalisée) ; None pour une variante qui ne fait qu'ajouter (Edot : זכרנו,
+    מי כמוך, וכתוב, בספר חיים : l'annonce reste, le texte de tous les jours aussi).
+    """
+    k = brut.find(retire)
+    if k < 0:
+        return None
+    interne = re.sub(r"</?small>", "", retire)
+    interne = re.sub(r"^\s*\(?\s*(בעשרת ימי תשובה (?:אומרים|אומר|מסיימים)?:?|בעשי״ת)\s*", "", interne)
+    interne = re.sub(r"\s*\)?\s*$", "", interne)
+    variante = nu(interne).rstrip(":").strip()
+    for v, ordinaire, sens in ORDINAIRES_DIX_JOURS:
+        if variante != v:
+            continue
+        motif = motif_brut(ordinaire) + r"[:]?"
+        avant = re.search(r"(" + motif + r")(\s*)$", brut[:k])
+        apres = re.match(r"(\s*)(" + motif + r")", brut[k + len(retire):])
+        if sens in (None, "avant") and avant:
+            debut = k - len(avant.group(0))
+            fin = k + len(retire)
+            # La ponctuation de la formule ordinaire (« הָאֵל הַקָּדוֹשׁ: ») reste après la variante.
+            ponct = ":" if avant.group(1).endswith(":") and not interne.rstrip().endswith(":") else ""
+            return brut[debut:fin], interne.strip() + ponct
+        if sens in (None, "apres") and apres:
+            debut = k
+            fin = k + len(retire) + len(apres.group(0))
+            espace = " " if retire.startswith(" ") else ""
+            return brut[debut:fin], espace + interne.strip()
+    return None
+
+
 def categories(texte_id, sections, nusah, sortie, note):
     """
     26/11 : ce qui dépend du calendrier est retiré hors de son jour (SiddurJour), ce qui dépend d'une occasion
@@ -1738,10 +1797,10 @@ def categories(texte_id, sections, nusah, sortie, note):
             v = []
             # Q12 : la forme de la femme, ou celle de l'homme (Edot, Birkot hacha'har).
             if texte_id == "birkot_hachahar" and nusah == "edot":
-                m = re.search(r"<b>(מוֹדֶה)</b> (<small>האשה אומרת: (מוֹדָה)</small>)", brut)
+                m = re.search(r"(<b>)?(מוֹדֶה)(</b>)? (<small>(?:האשה אומרת: |\(<small>האשה אומרת</small> )(מוֹדָה)\)?</small>)", brut)
                 if m:
-                    v.append(("!femme", {"retire": m.group(0), "par": f"<b>{m.group(3)}</b>", "texte": "מוֹדָה"}))
-                    v.append(("!homme", {"retire": " " + m.group(2), "texte": "מוֹדֶה"}))
+                    v.append(("!femme", {"retire": m.group(0), "par": f"{m.group(1) or ''}{m.group(5)}{m.group(3) or ''}", "texte": "מוֹדָה"}))
+                    v.append(("!homme", {"retire": " " + m.group(4), "texte": "מוֹדֶה"}))
                 m = re.search(r"(\S+): <small>האשה אומרת: <b>(\S+)</b></small>", brut)
                 if m:
                     v.append(("!femme", {"retire": m.group(0), "par": m.group(2) + ":", "texte": nu(m.group(2))}))
@@ -1754,6 +1813,27 @@ def categories(texte_id, sections, nusah, sortie, note):
                 m = re.search(r"מֶ\S*לֶךְ אֹהֵב צְדָקָה וּמִשְׁפָּט", brut)
                 if suite and m:
                     v.append(("!asseret_yemei_techouva", {"retire": m.group(0), "par": suite.group(1), "texte": "המלך המשפט"}))
+            # Q8 : le sceau de la Kedoucha de l'officiant (Ashkenaz, Cha'harit et Min'ha), suivi dans le même bloc de
+            # « <small>בעשי״ת מסיים: בָּרוּךְ… הַמֶּלֶךְ הַקָּדוֹשׁ:</small> », que les motifs des variantes ne voyaient pas :
+            # la bénédiction des dix jours seule ces jours-là, celle de tous les jours les autres.
+            m = re.search("(" + motif_brut("ברוך אתה") + r"\s*\S+\s*" + motif_brut("האל הקדוש") + r":?)\s*(<small>בעשי״ת מסיים:\s*([^<]+)</small>)", brut)
+            if m and (si, bi) not in indexes:
+                v.append(("asseret_yemei_techouva", {"retire": brut[m.end(1):m.end(2)], "texte": "המלך הקדוש"}))
+                v.append(("!asseret_yemei_techouva", {"retire": m.group(0), "par": m.group(3).strip(), "texte": "המלך הקדוש"}))
+            # Q8 : le Kaddich à part de l'Ashkenaz (Daat) : « <small>בעשי״ת: לְעֵלָּא לְעֵלָּא מִכָּל</small> » après
+            # « בִּרְכָתָא », « <small>בעשי״ת: הַשָּׁלום</small> » après « שָׁלוֹם ».
+            m = re.search(r" <small>בעשי״ת: ([^<]+)</small>", brut) if texte_id == "kaddich" else None
+            if m and (si, bi) not in indexes:
+                variante_ = m.group(1).strip()
+                v.append(("asseret_yemei_techouva", {"retire": m.group(0), "texte": nu(variante_)}))
+                if nu(variante_) == "השלום":
+                    o = re.search("(" + motif_brut("שלום") + r")$", brut[:m.start()])
+                    if o:
+                        v.append(("!asseret_yemei_techouva", {"retire": brut[o.start():m.end()], "par": variante_, "texte": "השלום"}))
+                elif nu(variante_) == "לעלא לעלא מכל":
+                    o = re.search(motif_brut("לעלא מן כל") + r"(\s+\S+)$", brut[:m.start()])
+                    if o:
+                        v.append(("!asseret_yemei_techouva", {"retire": brut[o.start():m.end()], "par": variante_ + o.group(1), "texte": nu(variante_)}))
             # Q11 : le zimoun (Edot) : « בשבת », « ביו״ט », « בסוכה », chacun son jour.
             if texte_id == "birkat_hamazon":
                 for motif, c in ((r" ?\(<small>בשבת</small>[^)]*\)", "chabbat"), (r" ?\(<small>ביו״ט</small>[^)]*\)", "yom_tov"),
@@ -1777,6 +1857,14 @@ def categories(texte_id, sections, nusah, sortie, note):
                         v.append(r)
             for c, extra in v:
                 indice(si, bi, c, extra)
+    # Q8 : pendant les dix jours, la formule du jour à la place de la formule ordinaire (« עושה השלום »).
+    for e in [e for e in sortie if e["sorte"] == "indice" and e["si"] == "asseret_yemei_techouva" and e.get("retire")]:
+        forme = forme_dix_jours(sections[e["s"]]["blocs"][e["b"]]["t"], e["retire"])
+        if forme:
+            # L'espace que le passage emporte avec lui (« <small>בעשי״ת הַמֶּלֶךְ</small> ») revient après la variante.
+            fin = re.search(r"\s*$", forme[0]).group(0)
+            par = forme[1] if forme[1].endswith(fin) else forme[1] + fin
+            indice(e["s"], e["b"], "!asseret_yemei_techouva", {"retire": forme[0], "par": par, "texte": nu(forme[1])})
 
 
 def double_annotation(texte_id, sections, nusah, sortie):

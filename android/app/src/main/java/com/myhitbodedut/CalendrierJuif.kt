@@ -265,6 +265,9 @@ object CalendrierJuif {
         const val FEMME = "femme"
         /** Les occasions du 26/11, jamais du jour (SiddurJour.OCCASIONS) : qui prie seul, un usage, une occasion. */
         const val SANS_MINYAN = "sans_minyan"
+        /** Le Ta'hanoun du calendrier, avant « Pas de Ta'hanoun aujourd'hui » (SiddurJour.conditionsPour, Q1). */
+        const val TAHANOUN_CHAHARIT_CALENDRIER = "tahanoun_chaharit_calendrier"
+        const val TAHANOUN_MINHA_CALENDRIER = "tahanoun_minha_calendrier"
         const val USAGE = "usage"
         const val OCCASION = "occasion"
         val DERIVEES = listOf(AVINOU_MALKENOU, AVINOU_MALKENOU_MINHA, KRIAT_HATORAH) + JOURS_SEMAINE +
@@ -277,7 +280,8 @@ object CalendrierJuif {
                 MIZMOR_LETODA, YOM_TOV_SEMAINE, LEIL_HASEDER, LENDEMAIN_ROCH_HODECH, CHOME, VIHI_NOAM, VEATA_KADOCH, TEFILIN,
                 TEFILIN_SANS_BERAKHA, VIDUI_COUCHER, NUIT, POURIM_TRIPLE_VENDREDI, HAVDALA_NER, HAVDALA_BESSAMIM,
                 LENDEMAIN_TICHA_BEAV_DIMANCHE, LENDEMAIN_AJOUTS, BEIN_HAMETSARIM, TIKOUN_RAHEL, TOUJOURS,
-                VOYAGEUR_TAL_OUMATAR, RETSE_OU_YAALE, YAMIM_NORAIM, ISRAEL, MAGDOL, HOMME, FEMME, SANS_MINYAN, USAGE, OCCASION) + OMER_JOURS
+                VOYAGEUR_TAL_OUMATAR, RETSE_OU_YAALE, YAMIM_NORAIM, ISRAEL, MAGDOL, HOMME, FEMME, SANS_MINYAN, USAGE, OCCASION,
+                TAHANOUN_CHAHARIT_CALENDRIER, TAHANOUN_MINHA_CALENDRIER) + OMER_JOURS
     }
 
     /**
@@ -648,9 +652,9 @@ object CalendrierJuif {
      * Les autres textes (bénédictions du repas, Havdala…) passent au jour
      * suivant à la sortie des étoiles du lieu, quand on le connaît
      * ([apresSortie]) : samedi soir, Birkat haMazon n'a plus רצה en évidence
-     * (demande du 28/10) ; il reste ouvrable à la main pour qui a commencé
-     * son repas pendant Chabbat. Min'ha garde le jour civil. Sans lieu, le
-     * jour civil.
+     * (demande du 28/10) ; il reste replié pour qui a commencé son repas
+     * pendant Chabbat (26/11, [jourVoisin]). Min'ha garde le jour civil. Sans
+     * lieu, le jour civil.
      */
     fun jourDeLaPriere(texte: String, date: LocalDate, heure: LocalTime, apresSortie: Boolean = false): LocalDate = when (texte) {
         // Le compte de l'omer se fait le soir, avec Arvit (26/11, Q12 : le compte du soir).

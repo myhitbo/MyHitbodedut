@@ -30,6 +30,25 @@
     "texte": "מוֹדֶה"
    },
    {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!femme",
+    "b": 5,
+    "empreinte": "אלהי , נשמה שנתת בי טהורה, אתה בראתה, את",
+    "retire": "מוֹדֶה <small>(<small>האשה אומרת</small> מוֹדָה)</small>",
+    "par": "מוֹדָה",
+    "texte": "מוֹדָה"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!homme",
+    "b": 5,
+    "empreinte": "אלהי , נשמה שנתת בי טהורה, אתה בראתה, את",
+    "retire": " <small>(<small>האשה אומרת</small> מוֹדָה)</small>",
+    "texte": "מוֹדֶה"
+   },
+   {
     "sorte": "bloc",
     "s": 1,
     "si": "ticha_beav_kippour",
@@ -398,6 +417,16 @@
     "retire": "<small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַקָּדוֹשׁ:</small>"
    },
    {
+    "sorte": "indice",
+    "s": 9,
+    "si": "!asseret_yemei_techouva",
+    "b": 9,
+    "empreinte": "אתה קדוש ושמך קדוש, וקדושים בכליום יהללו",
+    "retire": "הָאֵל הַקָּדוֹשׁ: <small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַקָּדוֹשׁ:</small>",
+    "par": "הַמֶּלֶךְ הַקָּדוֹשׁ:",
+    "texte": "המלך הקדוש:"
+   },
+   {
     "sorte": "bloc",
     "s": 9,
     "si": "oubli",
@@ -502,6 +531,16 @@
     "empreinte": "השיבה שופטינו כבראשונה, ויועצינו כבתחלה,",
     "texte": "המלך המשפט",
     "retire": "<small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַמִּשְׁפָּט:</small>"
+   },
+   {
+    "sorte": "indice",
+    "s": 9,
+    "si": "!asseret_yemei_techouva",
+    "b": 26,
+    "empreinte": "השיבה שופטינו כבראשונה, ויועצינו כבתחלה,",
+    "retire": "מֶֽלֶךְ אוֹהֵב צְדָקָה וּמִשְׁפָּט: <small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַמִּשְׁפָּט:</small>",
+    "par": "הַמֶּלֶךְ הַמִּשְׁפָּט:",
+    "texte": "המלך המשפט:"
    },
    {
     "sorte": "bloc",
@@ -863,6 +902,16 @@
     "empreinte": "עשה שלום בעשרת ימי תשובה אומר: השלום במר",
     "texte": "השלום",
     "retire": "<small><small>בעשרת ימי תשובה אומר:</small> הַשָּׁלוֹם</small>"
+   },
+   {
+    "sorte": "indice",
+    "s": 9,
+    "si": "!asseret_yemei_techouva",
+    "b": 79,
+    "empreinte": "עשה שלום בעשרת ימי תשובה אומר: השלום במר",
+    "retire": "שָׁלוֹם <small><small>בעשרת ימי תשובה אומר:</small> הַשָּׁלוֹם</small>",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -1679,20 +1728,20 @@
    {
     "sorte": "bloc",
     "s": 12,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 3,
     "empreinte": "ביום שאין אומרים בו תחנון מדלגים למנצח",
     "g": 34,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "bloc",
     "s": 12,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 4,
     "empreinte": "למנצח (תהילים כ׳:א׳-ג׳) מזמור לדוד יענך ",
     "g": 34,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "indice",
@@ -1770,20 +1819,20 @@
    {
     "sorte": "bloc",
     "s": 14,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 0,
     "empreinte": "בימים שאין אומרים תחנון אין אומרים תפלה ",
     "g": 37,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "bloc",
     "s": 14,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 1,
     "empreinte": "תפלה (תהלים פו) לדוד הטהיהוה אזנך ענני כ",
     "g": 37,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "bloc",
@@ -2282,6 +2331,16 @@
     "retire": "<small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַקָּדוֹשׁ:</small>"
    },
    {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "אתה קדוש ושמך קדוש, וקדושים בכליום יהללו",
+    "retire": "הָאֵל הַקָּדוֹשׁ: <small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַקָּדוֹשׁ:</small>",
+    "par": "הַמֶּלֶךְ הַקָּדוֹשׁ:",
+    "texte": "המלך הקדוש:"
+   },
+   {
     "sorte": "bloc",
     "s": 1,
     "si": "oubli",
@@ -2386,6 +2445,16 @@
     "empreinte": "השיבה שופטינו כבראשונה, ויועצינו כבתחלה,",
     "texte": "המלך המשפט",
     "retire": "<small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַמִּשְׁפָּט:</small>"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 25,
+    "empreinte": "השיבה שופטינו כבראשונה, ויועצינו כבתחלה,",
+    "retire": "מֶֽלֶךְ אוֹהֵב צְדָקָה וּמִשְׁפָּט: <small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַמִּשְׁפָּט:</small>",
+    "par": "הַמֶּלֶךְ הַמִּשְׁפָּט:",
+    "texte": "המלך המשפט:"
    },
    {
     "sorte": "bloc",
@@ -2757,6 +2826,16 @@
     "empreinte": "עשה שלום בעשרת ימי תשובה אומר: השלום במר",
     "texte": "השלום",
     "retire": "<small>בעשרת ימי תשובה אומר: הַשָּׁלוֹם</small> "
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 76,
+    "empreinte": "עשה שלום בעשרת ימי תשובה אומר: השלום במר",
+    "retire": "שָׁלוֹם <small>בעשרת ימי תשובה אומר: הַשָּׁלוֹם</small> ",
+    "par": "הַשָּׁלוֹם ",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -3433,6 +3512,16 @@
     "retire": "<small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַקָּדוֹשׁ:</small>"
    },
    {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "אתה קדוש ושמך קדוש, וקדושים בכליום יהללו",
+    "retire": "הָאֵל הַקָּדוֹשׁ: <small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַקָּדוֹשׁ:</small>",
+    "par": "הַמֶּלֶךְ הַקָּדוֹשׁ:",
+    "texte": "המלך הקדוש:"
+   },
+   {
     "sorte": "bloc",
     "s": 2,
     "si": "oubli",
@@ -3525,6 +3614,16 @@
     "empreinte": "השיבה שופטינו כבראשונה, ויועצינו כבתחלה,",
     "texte": "המלך המשפט",
     "retire": "<small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַמִּשְׁפָּט:</small>"
+   },
+   {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 23,
+    "empreinte": "השיבה שופטינו כבראשונה, ויועצינו כבתחלה,",
+    "retire": "מֶֽלֶךְ אוֹהֵב צְדָקָה וּמִשְׁפָּט: <small><small>בעשרת ימי תשובה אומרים:</small> הַמֶּלֶךְ הַמִּשְׁפָּט:</small>",
+    "par": "הַמֶּלֶךְ הַמִּשְׁפָּט:",
+    "texte": "המלך המשפט:"
    },
    {
     "sorte": "bloc",
@@ -3724,6 +3823,16 @@
     "empreinte": "עשה שלום בעשרת ימי תשובה אומר: השלום במר",
     "texte": "השלום",
     "retire": "<small><small>בעשרת ימי תשובה אומר:</small> הַשָּׁלוֹם</small>"
+   },
+   {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 58,
+    "empreinte": "עשה שלום בעשרת ימי תשובה אומר: השלום במר",
+    "retire": "שָׁלוֹם <small><small>בעשרת ימי תשובה אומר:</small> הַשָּׁלוֹם</small>",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -7590,20 +7699,20 @@
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 2,
     "empreinte": "ביום שאין אומרים תחנון אין אומרים זה:",
     "g": 3,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "bloc",
     "s": 2,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 3,
     "empreinte": "רבונו של עולם כמו שכבש אברהם אבינו את רח",
     "g": 3,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "bloc",
@@ -7686,6 +7795,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 4,
+    "si": "!asseret_yemei_techouva",
+    "b": 5,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 4,
     "si": "minyan",
@@ -7720,6 +7839,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא בר",
     "g": 6,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 4,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא בר",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -7814,6 +7943,16 @@
     "empreinte": "לעלא ( בעשי״ת ולעלא מכל) מן כל ברכתא ושי",
     "g": 9,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "לעלא ( בעשי״ת ולעלא מכל) מן כל ברכתא ושי",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -8550,6 +8689,16 @@
     "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
     "texte": "השלום",
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 8,
+    "si": "!asseret_yemei_techouva",
+    "b": 124,
+    "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
+    "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם) שָׁלוֹם",
+    "par": " הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "section",
@@ -9332,6 +9481,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 11,
+    "si": "!asseret_yemei_techouva",
+    "b": 29,
+    "empreinte": "לעלא ( בעשי״ת ולעלא מכל) מן כל ברכתא ושי",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 12,
     "si": "el_erekh_apayim",
@@ -9974,6 +10133,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 13,
+    "si": "!asseret_yemei_techouva",
+    "b": 19,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 13,
     "si": "minyan",
@@ -10008,6 +10177,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 48,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 13,
+    "si": "!asseret_yemei_techouva",
+    "b": 22,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -10075,20 +10254,20 @@
    {
     "sorte": "bloc",
     "s": 14,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 0,
     "empreinte": "בימים שאין אומרים תחנון אין אומרים תפלה ",
     "g": 50,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "bloc",
     "s": 14,
-    "si": "tahanoun_chaharit",
+    "si": "tahanoun_chaharit_calendrier",
     "b": 1,
     "empreinte": "תפלה לדוד הטהיהוה אזנך ענני כיעני ואביון",
     "g": 50,
-    "racine": "tahanoun_chaharit"
+    "racine": "tahanoun_chaharit_calendrier"
    },
    {
     "sorte": "bloc",
@@ -10424,6 +10603,16 @@
     "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל)"
    },
    {
+    "sorte": "indice",
+    "s": 17,
+    "si": "!asseret_yemei_techouva",
+    "b": 10,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 17,
     "si": "beit_avel",
@@ -10451,6 +10640,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "texte": "השלום",
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 17,
+    "si": "!asseret_yemei_techouva",
+    "b": 12,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -10498,6 +10697,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 18,
+    "si": "!asseret_yemei_techouva",
+    "b": 14,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 18,
     "si": "minyan",
@@ -10532,6 +10741,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא בר",
     "g": 60,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 18,
+    "si": "!asseret_yemei_techouva",
+    "b": 17,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא בר",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -10572,6 +10791,16 @@
    {
     "sorte": "indice",
     "s": 19,
+    "si": "!asseret_yemei_techouva",
+    "b": 7,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
+    "sorte": "indice",
+    "s": 19,
     "si": "asseret_yemei_techouva",
     "b": 8,
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
@@ -10586,6 +10815,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 61,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 19,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "seul",
@@ -10688,6 +10927,16 @@
     "empreinte": "לעלא ( בעשי״ת ולעלא מכל) מן כל ברכתא ושי",
     "g": 0,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 27,
+    "empreinte": "לעלא ( בעשי״ת ולעלא מכל) מן כל ברכתא ושי",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -11408,6 +11657,16 @@
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
    },
    {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 127,
+    "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
+    "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם) שָׁלוֹם",
+    "par": " הַשָּׁלוֹם",
+    "texte": "השלום"
+   },
+   {
     "sorte": "section",
     "s": 2,
     "si": "tahanoun_minha",
@@ -11999,6 +12258,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 4,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 4,
     "si": "minyan",
@@ -12033,6 +12302,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 32,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 4,
+    "si": "!asseret_yemei_techouva",
+    "b": 11,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -12071,6 +12350,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 5,
+    "si": "!asseret_yemei_techouva",
+    "b": 5,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 5,
     "si": "minyan",
@@ -12096,6 +12385,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 33,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 5,
+    "si": "!asseret_yemei_techouva",
+    "b": 7,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -12242,6 +12541,16 @@
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
     "g": 2,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 32,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -12659,6 +12968,16 @@
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
    },
    {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 95,
+    "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
+    "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם) שָׁלוֹם",
+    "par": " הַשָּׁלוֹם",
+    "texte": "השלום"
+   },
+   {
     "sorte": "bloc",
     "s": 1,
     "si": "minyan",
@@ -12693,6 +13012,16 @@
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
     "g": 26,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 100,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -12787,6 +13116,16 @@
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
     "g": 28,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 109,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -12891,6 +13230,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 119,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 1,
     "si": "minyan",
@@ -12946,6 +13295,16 @@
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
     "texte": "ולעלא מכל",
     "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל)"
+   },
+   {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 2,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -13059,6 +13418,16 @@
     "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל)"
    },
    {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 13,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 2,
     "si": "!ticha_beav",
@@ -13153,6 +13522,16 @@
     "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
     "texte": "ולעלא מכל",
     "retire": " (<small>בעשי״ת</small> וּלְעֵלָּא מִכָּל)"
+   },
+   {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 22,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְעֵלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְעֵלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -15331,6 +15710,16 @@
    {
     "sorte": "indice",
     "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 22,
+    "empreinte": "יתגדל ויתקדש שמה רבא. בעלמא די ברא כרעות",
+    "retire": " <small>(בעשי״ת וּלְעֵלָּא מִכָּל)</small> מִן כָּל",
+    "par": " וּלְעֵלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
     "si": "asseret_yemei_techouva",
     "b": 23,
     "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
@@ -15443,6 +15832,16 @@
     "empreinte": "יתגדל ויתקדש שמה רבא. בעלמא די ברא כרעות",
     "g": 3,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 29,
+    "empreinte": "יתגדל ויתקדש שמה רבא. בעלמא די ברא כרעות",
+    "retire": " <small>(בעשי״ת וּלְעֵלָּא מִכָּל)</small> מִן כָּל",
+    "par": " וּלְעֵלָּא מִכָּל",
+    "texte": "ולעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -15626,6 +16025,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 39,
+    "empreinte": "יתגדל ויתקדש שמה רבא. בעלמא די ברא כרעות",
+    "retire": " <small>(בעשי״ת וּלְעֵלָּא מִכָּל)</small> מִן כָּל",
+    "par": " וּלְעֵלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 0,
     "si": "minyan",
@@ -15742,6 +16151,46 @@
     "empreinte": "יהא שלמא רבא מן שמיא וחיים טובים עלינו ו",
     "g": 6,
     "racine": "minyan"
+   }
+  ],
+  "kaddich": [
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "asseret_yemei_techouva",
+    "b": 2,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "texte": "ולעלא מכל",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל)"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 2,
+    "empreinte": "יתברך וישתבח ויתפאר ויתרומם ויתנשא ויתהד",
+    "retire": " (<small>בעשי״ת</small> וּלְ֒עֵֽלָּא מִכָּל) מִן כָּל",
+    "par": " וּלְ֒עֵֽלָּא מִכָּל",
+    "texte": "ולעלא מכל"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "asseret_yemei_techouva",
+    "b": 3,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "texte": "השלום",
+    "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 3,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    }
   ],
   "keshet": [
@@ -17044,6 +17493,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 151,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 0,
     "si": "minyan",
@@ -17078,6 +17537,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 7,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 154,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -17134,6 +17603,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 1,
     "si": "minyan",
@@ -17159,6 +17638,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 8,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -17262,6 +17751,16 @@
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
     "g": 11,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 44,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -17567,6 +18066,25 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 3,
+    "si": "asseret_yemei_techouva",
+    "b": 35,
+    "empreinte": "לדור ודור נגיד גדלך ולנצח נצחים קדשתך נק",
+    "retire": " <small>בעשי״ת מסיים: בָּרוּךְ אַתָּה יְהֹוָה הַמֶּֽלֶךְ הַקָּדוֹשׁ:</small>",
+    "texte": "המלך הקדוש"
+   },
+   {
+    "sorte": "indice",
+    "s": 3,
+    "si": "!asseret_yemei_techouva",
+    "b": 35,
+    "empreinte": "לדור ודור נגיד גדלך ולנצח נצחים קדשתך נק",
+    "retire": "בָּרוּךְ אַתָּה יְהֹוָה הָאֵל הַקָּדוֹשׁ: <small>בעשי״ת מסיים: בָּרוּךְ אַתָּה יְהֹוָה הַמֶּֽלֶךְ הַקָּדוֹשׁ:</small>",
+    "par": "בָּרוּךְ אַתָּה יְהֹוָה הַמֶּֽלֶךְ הַקָּדוֹשׁ:",
+    "texte": "המלך הקדוש"
+   },
+   {
     "sorte": "bloc",
     "s": 3,
     "si": "minyan",
@@ -17863,6 +18381,16 @@
     "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
     "texte": "השלום",
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 3,
+    "si": "!asseret_yemei_techouva",
+    "b": 92,
+    "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
+    "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם) שָׁלוֹם",
+    "par": " הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -18747,6 +19275,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 4,
+    "si": "!asseret_yemei_techouva",
+    "b": 94,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 5,
     "si": "el_erekh_apayim",
@@ -19178,6 +19716,16 @@
     "retire": " (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)"
    },
    {
+    "sorte": "indice",
+    "s": 5,
+    "si": "!asseret_yemei_techouva",
+    "b": 40,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 5,
     "si": "kriat_hatorah",
@@ -19386,6 +19934,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 18,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 6,
     "si": "minyan",
@@ -19422,6 +19980,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 52,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 21,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -19478,6 +20046,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 28,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 6,
     "si": "minyan",
@@ -19503,6 +20081,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 53,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 30,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -19816,6 +20404,16 @@
     "retire": " (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)"
    },
    {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 64,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 6,
     "si": "ledavid",
@@ -19843,6 +20441,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "texte": "השלום",
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 66,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -19932,6 +20540,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 78,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 6,
     "si": "minyan",
@@ -19966,6 +20584,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 63,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 6,
+    "si": "!asseret_yemei_techouva",
+    "b": 81,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -20139,6 +20767,16 @@
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
     "g": 0,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -20388,6 +21026,25 @@
     "empreinte": "לדור ודור נגיד גדלך ולנצח נצחים קדשתך נק",
     "g": 11,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "asseret_yemei_techouva",
+    "b": 36,
+    "empreinte": "לדור ודור נגיד גדלך ולנצח נצחים קדשתך נק",
+    "retire": " <small>בעשי״ת מסיים: בָּרוּךְ אַתָּה יְהֹוָה הַמֶּֽלֶךְ הַקָּדוֹשׁ:</small>",
+    "texte": "המלך הקדוש"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 36,
+    "empreinte": "לדור ודור נגיד גדלך ולנצח נצחים קדשתך נק",
+    "retire": "בָּרוּךְ אַתָּה יְהֹוָה הָאֵל הַקָּדוֹשׁ: <small>בעשי״ת מסיים: בָּרוּךְ אַתָּה יְהֹוָה הַמֶּֽלֶךְ הַקָּדוֹשׁ:</small>",
+    "par": "בָּרוּךְ אַתָּה יְהֹוָה הַמֶּֽלֶךְ הַקָּדוֹשׁ:",
+    "texte": "המלך הקדוש"
    },
    {
     "sorte": "bloc",
@@ -20737,6 +21394,16 @@
     "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
     "texte": "השלום",
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 1,
+    "si": "!asseret_yemei_techouva",
+    "b": 97,
+    "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
+    "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם) שָׁלוֹם",
+    "par": " הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -21333,6 +22000,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 64,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 2,
     "si": "minyan",
@@ -21367,6 +22044,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 36,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 67,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "indice",
@@ -21431,6 +22118,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 3,
+    "si": "!asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 3,
     "si": "minyan",
@@ -21456,6 +22153,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 37,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 3,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    }
   ],
   "arvit": [
@@ -21575,6 +22282,16 @@
     "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
     "g": 2,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 28,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
    },
    {
     "sorte": "bloc",
@@ -21877,6 +22594,16 @@
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
    },
    {
+    "sorte": "indice",
+    "s": 3,
+    "si": "!asseret_yemei_techouva",
+    "b": 65,
+    "empreinte": "עשה ( בעשי״ת השלום) שלום במרומיו הוא יעש",
+    "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם) שָׁלוֹם",
+    "par": " הַשָּׁלוֹם",
+    "texte": "השלום"
+   },
+   {
     "sorte": "bloc",
     "s": 4,
     "si": "minyan",
@@ -21931,6 +22658,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 4,
+    "si": "!asseret_yemei_techouva",
+    "b": 5,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 4,
     "si": "minyan",
@@ -21971,6 +22708,16 @@
     "et_libelle": "ajout_autres_jours",
     "g": 27,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 4,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -22727,6 +23474,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 8,
+    "si": "!asseret_yemei_techouva",
+    "b": 4,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 8,
     "si": "minyan",
@@ -22752,6 +23509,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "g": 31,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 8,
+    "si": "!asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "bloc",
@@ -22831,6 +23598,16 @@
     "retire": " (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)"
    },
    {
+    "sorte": "indice",
+    "s": 9,
+    "si": "!asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 9,
     "si": "ledavid",
@@ -22858,6 +23635,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "texte": "השלום",
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 9,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    },
    {
     "sorte": "seul",
@@ -24489,6 +25276,16 @@
     "racine": "minyan"
    },
    {
+    "sorte": "indice",
+    "s": 8,
+    "si": "!asseret_yemei_techouva",
+    "b": 5,
+    "empreinte": "לעלא מןכל ( בעשי״ת לעלא לעלא מכל) ברכתא ",
+    "retire": "לְעֵֽלָּא מִן־כָּל־ (<small>בעשי״ת</small> לְעֵֽלָּא לְעֵֽלָּא מִכָּל)",
+    "par": "לְעֵֽלָּא לְעֵֽלָּא מִכָּל",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
     "sorte": "bloc",
     "s": 8,
     "si": "kaddich_complet_hallel",
@@ -24532,6 +25329,16 @@
     "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
     "texte": "השלום",
     "retire": " (<small>בעשי״ת</small> הַשָּׁלוֹם)"
+   },
+   {
+    "sorte": "indice",
+    "s": 8,
+    "si": "!asseret_yemei_techouva",
+    "b": 9,
+    "empreinte": "עושה שלום ( בעשי״ת השלום) במרומיו הוא יע",
+    "retire": "שָׁלוֹם (<small>בעשי״ת</small> הַשָּׁלוֹם)",
+    "par": "הַשָּׁלוֹם",
+    "texte": "השלום"
    }
   ],
   "moussaf_rosh_hodech": [
@@ -24642,6 +25449,16 @@
     "empreinte": "ברוך אתה יהוה האל בעשי״ת המלך הקדוש:",
     "g": 2,
     "racine": "minyan"
+   },
+   {
+    "sorte": "indice",
+    "s": 2,
+    "si": "!asseret_yemei_techouva",
+    "b": 8,
+    "empreinte": "ברוך אתה יהוה האל בעשי״ת המלך הקדוש:",
+    "retire": "הָאֵל <small>בעשי״ת הַמֶּלֶךְ</small> ",
+    "par": "הַמֶּלֶךְ ",
+    "texte": "המלך"
    },
    {
     "sorte": "indice",
@@ -24894,6 +25711,46 @@
     "empreinte": "הקהל - אדיר במרום שוכן בגבורה אתה שלום ו",
     "g": 5,
     "racine": "minyan"
+   }
+  ],
+  "kaddich": [
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "asseret_yemei_techouva",
+    "b": 4,
+    "empreinte": "לעלא מן כל ברכתא בעשי״ת: לעלא לעלא מכל ו",
+    "retire": " <small>בעשי״ת: לְעֵלָּא לְעֵלָּא מִכָּל</small>",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 4,
+    "empreinte": "לעלא מן כל ברכתא בעשי״ת: לעלא לעלא מכל ו",
+    "retire": "לְעֵלָּא מִן כָּל בִּרְכָתָא <small>בעשי״ת: לְעֵלָּא לְעֵלָּא מִכָּל</small>",
+    "par": "לְעֵלָּא לְעֵלָּא מִכָּל בִּרְכָתָא",
+    "texte": "לעלא לעלא מכל"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "עושה שלום בעשי״ת: השלום במרומיו הוא יעשה",
+    "retire": " <small>בעשי״ת: הַשָּׁלום</small>",
+    "texte": "השלום"
+   },
+   {
+    "sorte": "indice",
+    "s": 0,
+    "si": "!asseret_yemei_techouva",
+    "b": 6,
+    "empreinte": "עושה שלום בעשי״ת: השלום במרומיו הוא יעשה",
+    "retire": "שָׁלוֹם <small>בעשי״ת: הַשָּׁלום</small>",
+    "par": "הַשָּׁלום",
+    "texte": "השלום"
    }
   ],
   "birkat_hailanot": [

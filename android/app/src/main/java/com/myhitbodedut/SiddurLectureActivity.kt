@@ -36,9 +36,10 @@ import java.time.LocalTime
  * trait à son début) ou le démarque ; le bouton 🔖 liste ceux du texte et y
  * conduit ; la Bibliothèque les reprend tous (MarquesPages, RepriseFavoris).
  *
- * Les ajouts du jour (10/10) : mis en évidence, avec leur nom ; les autres
- * repliés en une ligne, qu'un toucher ouvre et referme (SiddurJour, qui
- * construit les lignes et que les tests vérifient sur la JVM).
+ * Les ajouts du jour (10/10) : mis en évidence, avec leur nom. Depuis le
+ * 26/11, ceux du calendrier hors de leur jour sont retirés ; ceux d'une
+ * occasion repliés en une ligne, qu'un toucher ouvre et referme (SiddurJour,
+ * qui construit les lignes et que les tests vérifient sur la JVM).
  */
 class SiddurLectureActivity : AppCompatActivity() {
 

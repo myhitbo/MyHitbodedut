@@ -55,6 +55,9 @@ export function conditionsPour(nusah, enIsrael, conditions, sansTahanounFinTichr
   if (nusah === 'ashkenaz' && c.has('pourim_triple_hors_jerusalem')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
   // Edot : pas de Vidouï à Min'ha du 13 Iyar, veille de Pessa'h chéni (Kitsour Yalkout Yossef 131:38 ; audit du 16/11).
   if (nusah === 'edot' && c.has('veille_pessah_cheni')) c.delete('tahanoun_minha');
+  // Le Ta'hanoun du calendrier, avant le réglage ponctuel (26/11, Q1 ; SiddurJour.conditionsPour).
+  if (c.has('tahanoun_chaharit')) c.add('tahanoun_chaharit_calendrier');
+  if (c.has('tahanoun_minha')) c.add('tahanoun_minha_calendrier');
   // « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel : deuil, brit, 'hatan ; Choul'han Aroukh O.H. 131:4 ; audit du 16/11).
   if (c.has('sans_tahanoun_ponctuel')) for (const k of ['tahanoun_chaharit', 'tahanoun_minha', 'lundi_jeudi']) c.delete(k);
   if (avinouMalkenou(conditions)) c.add('avinou_malkenou');
@@ -123,6 +126,7 @@ export const DERIVEES = ['avinou_malkenou', 'avinou_malkenou_minha', 'kriat_hato
   'tikoun_rahel', 'toujours',
   // 26/11 (les deux catégories).
   'voyageur_tal_oumatar', 'retse_ou_yaale', 'yamim_noraim', 'israel', 'magdol', 'homme', 'femme', 'sans_minyan', 'usage', 'occasion',
+  'tahanoun_chaharit_calendrier', 'tahanoun_minha_calendrier',
   ...Array.from({ length: 49 }, (_, k) => `omer_${k + 1}`)];
 
 /**

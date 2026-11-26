@@ -1702,7 +1702,7 @@ function ecranPriere() {
   const plusieurs = x.sections.length > 1;
   const sousTitre = [titreTexte(x.titre) !== x.titre.he ? titreTexte(x.titre) : null, titreTexte(x.nusah ?? recueil._meta.nusah)].filter(Boolean).join(' · ');
   const titres = [];
-  // Les ajouts du jour (10/10) : mis en évidence ; les autres, repliés.
+  // Les ajouts du jour (10/10) : mis en évidence ; ceux du calendrier hors du jour, retirés ; ceux d'une occasion, repliés (26/11).
   const annotations = !livre && chargeAnnotations() ? annotationsSiddur[store.siddurNusah()]?.[x.id] : null;
   const idx = indexAjouts(annotations ?? []);
   const maintenant = new Date();

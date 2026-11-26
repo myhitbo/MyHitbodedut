@@ -438,6 +438,10 @@ object SiddurJour {
         // Edot : pas de Vidouï à Min'ha du 13 Iyar, veille de Pessa'h chéni (Kitsour Yalkout Yossef 131:38 ; audit du
         // 16/11) ; KosherJava le fait dire (« Halakha Beroura », dont l'auteur s'est rétracté).
         if (nusah == "edot" && CalendrierJuif.C.VEILLE_PESSAH_CHENI in c) c = c - CalendrierJuif.C.TAHANOUN_MINHA
+        // Le Ta'hanoun du calendrier et des coutumes, avant le réglage ponctuel (26/11, Q1) : ce que le siddour ne dit
+        // pas sans Ta'hanoun (למנצח Edot, תפלה לדוד, « רבונו של עולם » Sfard) reste quand on choisit de l'omettre.
+        if (CalendrierJuif.C.TAHANOUN_CHAHARIT in c) c = c + CalendrierJuif.C.TAHANOUN_CHAHARIT_CALENDRIER
+        if (CalendrierJuif.C.TAHANOUN_MINHA in c) c = c + CalendrierJuif.C.TAHANOUN_MINHA_CALENDRIER
         // « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel, audit du 16/11) : maison en deuil, brit mila, 'hatan
         // (Choul'han Aroukh O.H. 131:4). למנצח et Avinou malkénou restent (Rema 602:1 pour la mila).
         if (CalendrierJuif.C.SANS_TAHANOUN_PONCTUEL in c) {
