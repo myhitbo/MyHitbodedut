@@ -156,8 +156,9 @@ détail. Le lieu est une ville de la liste (GeoNames) ou la position du
 téléphone.
 
 Dans le siddour, les ajouts du jour sont mis en évidence (Ya'alé véyavo, Al
-hanissim, Tal oumatar, Anénou, Ta'hanoun…). Les autres sont repliés derrière
-une flèche, jamais retirés.
+hanissim, Tal oumatar, Anénou, Ta'hanoun…). Depuis le 26/11, un ajout du
+calendrier hors de son jour est retiré ; un ajout d'occasion (minyan, brit,
+invité, maison endeuillée…) reste replié derrière une flèche.
 
 Moteurs, méthodes, sources, limites, tests et maintenance : **ZMANIM.md**.
 

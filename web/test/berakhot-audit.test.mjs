@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { jour, jourDeLaPriere } from '../src/js/calendrier-juif.js';
-import { index, plan, vrai } from '../src/js/siddur-jour.js';
+import { enClair, index, plan, vrai } from '../src/js/siddur-jour.js';
 
 const annotations = JSON.parse(readFileSync(new URL('../../android/app/src/main/res/raw/siddur_annotations.json', import.meta.url), 'utf8'));
 const siddur = (n) => JSON.parse(readFileSync(new URL(`../../android/app/src/main/res/raw/siddur_${n}.json`, import.meta.url), 'utf8'));
@@ -29,11 +29,11 @@ test('le lendemain d\'un jour d\'ajouts, bein hamétsarim', () => {
   assert.ok(!c('2026-07-01').has('bein_hametsarim') && !c('2026-07-25').has('bein_hametsarim'));
 });
 
-test('Havdala Edot, le samedi soir du 9 Av : la coupe et les bessamim repliés, la flamme en clair', () => {
+test('Havdala Edot, le samedi soir du 9 Av : la coupe et les bessamim retirés (26/11), la flamme en clair', () => {
   const texte = siddur('edot').textes.find((t) => t.id === 'havdala');
   const idx = index(annotations.edot.havdala);
   const cond = c('2025-08-03');
-  const clair = plan(texte.sections[0], 0, idx, cond).filter((p) => p.etat !== 'replie').flatMap((p) => p.blocs)
+  const clair = enClair(texte.sections[0], 0, idx, cond)
     .map((i) => texte.sections[0].blocs[i]).filter((b) => b.t).map((b) => nu(b.t));
   assert.ok(clair.some((x) => x.includes('מאורי האש')));
   assert.ok(!clair.some((x) => x.includes('בורא פרי הגפן') || x.includes('בשמים') || x.includes('המבדיל')));

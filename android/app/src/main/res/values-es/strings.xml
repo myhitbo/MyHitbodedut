@@ -693,7 +693,7 @@
     <string name="reglage_tahanoun_tichri_sans">No se dice hasta Rosh Jódesh Jeshván</string>
     <string name="reglage_sans_tahanoun_jour">Sin Tajanún hoy</string>
     <string name="reglage_sans_tahanoun_jour_non">No · para una casa de duelo, un brit milá o un jatán, solo por este día</string>
-    <string name="reglage_sans_tahanoun_jour_oui">Sí, solo hoy: el Tajanún queda plegado en el sidur</string>
+    <string name="reglage_sans_tahanoun_jour_oui">Sí, solo hoy: el Tajanún se quita del sidur</string>
     <string name="zman_alot">Alot hashájar</string>
     <string name="zman_misheyakir">Misheyakir</string>
     <string name="zman_netz">Salida del sol (Netz)</string>
@@ -858,7 +858,7 @@
     <string name="siddur_aujourdhui">Hoy</string>
     <string name="siddur_pas_aujourdhui">Hoy no · toca para leer</string>
     <string name="siddur_replier">Contraer</string>
-    <string name="siddur_jour_ajouts">Agregados del %1$s (%2$s), como orientación: el texto y sus indicaciones prevalecen.</string>
+    <string name="siddur_jour_ajouts">Agregados del %1$s (%2$s): los de otro día se quitan, los de una ocasión quedan plegados; el texto y sus indicaciones prevalecen.</string>
     <string name="fete_erev_pessah">Víspera de Pésaj</string>
     <string name="fete_pessah">Pésaj</string>
     <string name="fete_hol_hamoed_pessah">Jol hamoed Pésaj</string>
@@ -1680,4 +1680,30 @@
     <string name="session_suite_non">No, terminar</string>
     <string name="channel_suite">Continuar la hitbodedut</string>
     <string name="channel_suite_description">La pregunta que llega 10 segundos antes del final de una hitbodedut con tiempo.</string>
+
+    <!-- 26/11 : les ajouts du siddour en deux catégories (calendrier, occasion) -->
+    <string name="siddur_region_question">¿Israel o diáspora? Este texto depende de ello hoy: toca para responder.</string>
+    <string name="siddur_region_titre">¿Vives en Israel o en la diáspora?</string>
+    <string name="lecture_tahanoun_oui">sin Tajanún hoy</string>
+    <string name="lecture_tahanoun_non">Tajanún según el calendario</string>
+    <string name="ajout_sans_minyan">Sin minián</string>
+    <string name="ajout_jeune_individuel">Ayuno individual</string>
+    <string name="ajout_usage">Según la costumbre</string>
+    <string name="ajout_roch_hodech_usage">Rosh Jódesh, según la costumbre</string>
+    <string name="ajout_israel_usage">En Israel, según la costumbre</string>
+    <string name="ajout_occasion">Ocasión</string>
+    <string name="ajout_malade">Por un enfermo</string>
+    <string name="ajout_subsistance">Por el sustento</string>
+    <string name="ajout_homme">Para un hombre</string>
+    <string name="ajout_femme">Para una mujer</string>
+    <string name="ajout_jour_megila">Por la mañana</string>
+    <string name="ajout_brit_mila">Comida de brit milá</string>
+    <string name="ajout_hagomel">HaGomel</string>
+    <string name="ajout_bar_mitsva">Bar mitzvá</string>
+    <string name="ajout_mi_cheberakh_oleh">Mi sheberaj para quien sube a la Torá</string>
+    <string name="ajout_mi_cheberakh_malade">Mi sheberaj por un enfermo</string>
+    <string name="ajout_mi_cheberakh_yoledet">Mi sheberaj para una parturienta</string>
+    <string name="ajout_magdol">Días de «מגדול»</string>
+    <string name="ajout_israel">En Israel</string>
+    <string name="ajout_yamim_noraim">Rosh Hashaná y Yom Kipur</string>
 </resources>

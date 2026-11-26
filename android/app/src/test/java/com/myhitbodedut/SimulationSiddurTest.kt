@@ -17,11 +17,13 @@ import java.time.LocalDate
  * en diaspora, en Israël, à Jérusalem (Pourim le 15) et, pour les Edot, dans l'hémisphère sud ;
  * dans les trois noussa'h.
  *
- * Deux vérifications :
- * - rien n'est jamais retiré : tous les replis ouverts, chaque bloc du texte revient ;
+ * Deux vérifications (règle du 26/11) :
+ * - rien ne se perd : tous les replis ouverts, chaque bloc du texte revient, sauf ceux d'un ajout du
+ *   calendrier hors de son jour (ou d'une ligne d'un autre jour dans un ajout, d'une occasion sans sa garde),
+ *   seuls à être retirés ;
  * - chaque passage lié à un moment se lit en clair le jour où il se dit, et seulement ce
- *   jour-là (replié, ou estompé dans un ajout du jour), et ce qui se dit tous les jours
- *   n'est jamais replié (« הרחמן », la fin de Modim, « עושה שלום »).
+ *   jour-là, et ce qui se dit tous les jours n'est jamais retiré ni replié (« הרחמן », la fin de
+ *   Modim, « עושה שלום »).
  */
 class SimulationSiddurTest {
 
@@ -189,10 +191,24 @@ class SimulationSiddurTest {
                     cles = plus
                     tout = SiddurJour.lignes(texte, ann, conditions, cles, n.cle, lieu.israel, sud = lieu.sud)
                 }
-                val vus = tout.filterIsInstance<SiddurJour.Ligne.Bloc>().map { it.bloc }
-                if (vus.size != texte.sections.sumOf { it.blocs.size } ||
-                    texte.sections.any { s -> s.blocs.any { b -> vus.none { it === b } } }) {
-                    ecarts += "${n.cle} $id ${lieu.nom} : un bloc manque, replis ouverts"
+                // 26/11 : un bloc absent, tous les replis ouverts, doit l'être par une raison du calendrier : sa garde,
+                // sa racine (hors occasion), sa propre ligne d'un autre jour, ou son « et » (hors occasion), faux ce jour-là.
+                val vus = java.util.Collections.newSetFromMap(java.util.IdentityHashMap<SiddurBloc, Boolean>())
+                tout.filterIsInstance<SiddurJour.Ligne.Bloc>().forEach { vus += it.origine }
+                val blocsAnn = ann.filter { it.sorte == SiddurJour.Sorte.BLOC }.associateBy { it.section to it.bloc!! }
+                val sectionsAnn = ann.filter { it.sorte == SiddurJour.Sorte.SECTION }.associateBy { it.section }
+                texte.sections.forEachIndexed { si, sec ->
+                    sec.blocs.forEachIndexed { bi, b ->
+                        if (b in vus) return@forEachIndexed
+                        val a = blocsAnn[si to bi] ?: sectionsAnn[si]
+                        val racine = a?.racine ?: a?.condition
+                        val raison = a != null && racine != null && (
+                            (a.quand != null && !SiddurJour.vrai(a.quand!!, c)) ||
+                                (racine !in SiddurJour.OCCASIONS && !SiddurJour.vrai(racine, c) && !a.replieHors) ||
+                                (a.condition != racine && !SiddurJour.vrai(a.condition, c)) ||
+                                (a.et != null && a.et !in SiddurJour.OCCASIONS && !SiddurJour.vrai(a.et!!, c)))
+                        if (!raison) ecarts += "${n.cle} $id ${lieu.nom} : le bloc $si:$bi manque, replis ouverts"
+                    }
                 }
                 if (lignes.any { it is SiddurJour.Ligne.Bloc && it.bloc.consigne && oubli.containsMatchIn(SiddurJour.empreinte(it.bloc.texte)) }) {
                     ecarts += "${n.cle} $id ${lieu.nom} : consigne d'oubli en clair"
@@ -217,17 +233,24 @@ class SimulationSiddurTest {
         return ecarts to verifications
     }
 
-    /** « מגדול » à la fin du Birkat (12/11) : les jours de Moussaf en Edot, Chabbat et Yom tov en Ashkenaz et en Sfard ; une fois. */
+    /**
+     * « מגדול » à la fin du Birkat (12/11) : les jours de Moussaf en Edot (et Pourim, leur consigne), Chabbat, Yom tov
+     * et Roch 'Hodech en Ashkenaz et en Sfard (Michna Beroura 189:5 ; Choul'han Aroukh haRav 189:7). Depuis le 26/11
+     * (Q8), dans le texte même, seul ; les autres jours, « מגדיל » seul en Sfard et en Ashkenaz, la consigne en Edot
+     * (la brit mila, occasion, dit aussi « מגדול »).
+     */
     @Test
     fun `migdol les jours dits, une seule fois`() {
-        // Audit du 16/11 : Roch 'Hodech aussi en Ashkenaz et en Sfard (Michna Beroura 189:5 ; Choul'han Aroukh haRav 189:7).
-        val jours = mapOf(Nusah.EDOT to setOf(C.CHABBAT, C.ROCH_HODECH, C.MOED, C.YOM_TOV), Nusah.ASHKENAZ to setOf(C.CHABBAT, C.YOM_TOV, C.ROCH_HODECH),
+        val jours = mapOf(Nusah.EDOT to setOf(C.CHABBAT, C.ROCH_HODECH, C.MOED, C.YOM_TOV, C.POURIM), Nusah.ASHKENAZ to setOf(C.CHABBAT, C.YOM_TOV, C.ROCH_HODECH),
             Nusah.SEFARD to setOf(C.CHABBAT, C.YOM_TOV, C.ROCH_HODECH))
         for ((n, cles) in jours) for (date in this.jours) for (israel in listOf(false, true)) {
             val c = jour(date, israel).conditions
             val l = SiddurJour.lignes(siddurs.getValue(n).texte("birkat_hamazon")!!, annotations.getValue(n).getValue("birkat_hamazon"), c, nusah = n.cle, enIsrael = israel)
-            val migdol = l.count { it is SiddurJour.Ligne.Indice && plat(it.texte) == "מגדול" }
-            assertEquals("${n.cle} $date ${if (israel) "Israël" else "diaspora"}", if (cles.any { it in c }) 1 else 0, migdol)
+            val fin = l.filterIsInstance<SiddurJour.Ligne.Bloc>().map { plat(it.bloc.texte) }.single { "ישועותמלכו" in it }
+            val lieu = "${n.cle} $date ${if (israel) "Israël" else "diaspora"}"
+            if (cles.any { it in c }) assertTrue(lieu, "מגדול" in fin && "מגדיל" !in fin)
+            else assertTrue(lieu, "מגדיל" in fin && (n == Nusah.EDOT || "מגדול" !in fin))
+            assertTrue(lieu, l.none { it is SiddurJour.Ligne.Indice && plat(it.texte) == "מגדול" })
         }
     }
 
@@ -271,7 +294,9 @@ class SimulationSiddurTest {
     fun `chaque condition de repli change avec les jours`() {
         // « nuit » (audit du 16/11) dépend de l'heure, pas du jour : la lecture la pose (CalendrierJuif.nuit).
         // « toujours » (audit du 16/11) : une indication fixe, vraie par construction.
-        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL, C.NUIT, C.TOUJOURS)
+        // Les occasions du 26/11 (qui prie seul, usage, occasion) et le réglage צדיק / צדקת (homme, femme) non plus.
+        val jamais = setOf(C.MINYAN, C.OUBLI, C.CHEVA_BERAKHOT, C.ZIMUN, C.FACULTATIF, C.BEIT_AVEL, C.NUIT, C.TOUJOURS,
+            C.SANS_MINYAN, C.USAGE, C.OCCASION, C.HOMME, C.FEMME)
         val vues = mutableMapOf<String, MutableSet<Boolean>>()
         for (lieu in lieux) for (date in jours) {
             val jour = jour(date, lieu.israel, lieu.muree)
@@ -287,16 +312,16 @@ class SimulationSiddurTest {
         assertTrue("Conditions figées : $figees", figees.isEmpty())
     }
 
-    /** « Discret » (12/11) : « שעשה לי כל צרכי » en clair sans étiquette d'ordinaire, replié le 9 Av (Sfard depuis l'audit du 16/11). */
+    /** « Discret » (12/11) : « שעשה לי כל צרכי » en clair sans étiquette d'ordinaire, retiré le 9 Av (Sfard ; 26/11). */
     @Test
-    fun `discret - en clair sans etiquette, replie le jour sans`() {
+    fun `discret - en clair sans etiquette, retire le jour sans`() {
         val texte = siddurs.getValue(Nusah.SEFARD).texte("birkot_hachahar")!!
         val ann = annotations.getValue(Nusah.SEFARD).getValue("birkot_hachahar")
         val ordinaire = SiddurJour.lignes(texte, ann, CalendrierJuif.jour(LocalDate.parse("2026-11-12"), false).conditions)
         assertTrue(ordinaire.none { it is SiddurJour.Ligne.Etiquette })
         assertTrue(ordinaire.any { it is SiddurJour.Ligne.Bloc && it.style == SiddurJour.Style.NORMAL && plat(it.bloc.texte).contains(plat("שעשה לי כל צרכי")) })
         val av = SiddurJour.lignes(texte, ann, CalendrierJuif.jour(LocalDate.parse("2026-07-23"), false).conditions)
-        assertTrue(av.any { it is SiddurJour.Ligne.Replie && it.libelle == "ajout_sauf_ticha_beav_kippour" })
+        assertTrue(av.none { it is SiddurJour.Ligne.Replie && it.libelle == "ajout_sauf_ticha_beav_kippour" })
         assertTrue(av.none { it is SiddurJour.Ligne.Bloc && plat(it.bloc.texte).contains(plat("שעשה לי כל צרכי")) })
         // Edot (audit du 16/11, Yalkut Yosef 46:12) : en clair le 9 Av ; la consigne du Ben Ich 'Haï y paraît sous l'avis du Yalkut Yosef.
         val edot = SiddurJour.lignes(siddurs.getValue(Nusah.EDOT).texte("birkot_hachahar")!!,

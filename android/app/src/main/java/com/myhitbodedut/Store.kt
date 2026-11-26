@@ -608,6 +608,14 @@ object Store {
         else -> null
     }
 
+    /**
+     * Le statut Israël ou diaspora est-il confirmé (26/11, Q7) ? Choisi à la main (réglages, question d'un
+     * lieu, question du siddour), ou réglé par un lieu sans question en attente. Déduit du seul fuseau, ou
+     * contredit par le lieu : non, et le siddour le demande quand un texte en dépend.
+     */
+    fun regionConfirmee(context: Context): Boolean =
+        inIsraelManuel(context) || (lieuZmanim(context) != null && regionProposee(context) == null)
+
     fun setRegionProposee(context: Context, valeur: Boolean?) {
         prefs(context).edit().apply {
             if (valeur == null) remove(KEY_REGION_PROPOSEE) else putString(KEY_REGION_PROPOSEE, if (valeur) "israel" else "diaspora")
@@ -782,9 +790,12 @@ object Store {
         prefs(context).edit().apply { if (sans) putString(KEY_SANS_TAHANOUN_JOUR, date.toString()) else remove(KEY_SANS_TAHANOUN_JOUR) }.apply()
     }
 
-    /** Les conditions d'un jour, avec « Pas de Ta'hanoun aujourd'hui » si on l'a choisi pour ce jour-là. */
+    /**
+     * Les conditions d'un jour, avec « Pas de Ta'hanoun aujourd'hui » si on l'a choisi pour ce jour-là, et le
+     * réglage צדיק / צדקת (26/11, Q12) : seule la forme de l'homme ou de la femme se lit ; sans réglage, les deux.
+     */
     fun conditionsDuJour(context: Context, jour: CalendrierJuif.Jour): Set<String> =
-        SiddurJour.avecSansTahanoun(jour.conditions, sansTahanounLe(context, jour.date))
+        SiddurJour.avecAdresse(SiddurJour.avecSansTahanoun(jour.conditions, sansTahanounLe(context, jour.date)), adresse(context)?.cle)
 
     /** Le calendrier s'ouvre sur le mois hébreu ; le mois civil est au choix. */
     fun calendrierCivil(context: Context): Boolean = prefs(context).getBoolean(KEY_CALENDRIER_CIVIL, false)

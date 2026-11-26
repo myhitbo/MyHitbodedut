@@ -749,7 +749,7 @@
     <string name="reglage_tahanoun_tichri_sans">אין אומרים עד ראש חודש חשון</string>
     <string name="reglage_sans_tahanoun_jour">אין תחנון היום</string>
     <string name="reglage_sans_tahanoun_jour_non">כבוי · לבית האבל, לברית מילה או לחתן, להיום בלבד</string>
-    <string name="reglage_sans_tahanoun_jour_oui">פעיל, להיום בלבד: התחנון מקופל בסידור</string>
+    <string name="reglage_sans_tahanoun_jour_oui">פעיל, להיום בלבד: התחנון מוסר מהסידור</string>
     <string name="zman_alot">עלות השחר</string>
     <string name="zman_misheyakir">משיכיר</string>
     <string name="zman_netz">הנץ החמה</string>
@@ -914,7 +914,7 @@
     <string name="siddur_aujourdhui">היום</string>
     <string name="siddur_pas_aujourdhui">לא היום · הקשה לקריאה</string>
     <string name="siddur_replier">קיפול</string>
-    <string name="siddur_jour_ajouts">תוספות ליום %1$s (%2$s), להכוונה בלבד: הנוסח וההוראות שבו קובעים.</string>
+    <string name="siddur_jour_ajouts">תוספות ליום %1$s (%2$s): של יום אחר הוסרו, של אירוע מקופלות; הנוסח וההוראות שבו קובעים.</string>
     <string name="fete_erev_pessah">ערב פסח</string>
     <string name="fete_pessah">פסח</string>
     <string name="fete_hol_hamoed_pessah">חול המועד פסח</string>
@@ -1780,4 +1780,30 @@
     <string name="session_suite_non">לא, לסיים</string>
     <string name="channel_suite">להמשיך את ההתבודדות</string>
     <string name="channel_suite_description">השאלה שנשאלת 10 שניות לפני סוף התבודדות עם זמן קבוע.</string>
+
+    <!-- 26/11 : les ajouts du siddour en deux catégories (calendrier, occasion) -->
+    <string name="siddur_region_question">ארץ ישראל או חוץ לארץ? הנוסח תלוי בזה היום: הקשה כדי לענות.</string>
+    <string name="siddur_region_titre">האם מקום מגוריך בארץ ישראל או בחוץ לארץ?</string>
+    <string name="lecture_tahanoun_oui">אין תחנון היום</string>
+    <string name="lecture_tahanoun_non">תחנון לפי הלוח</string>
+    <string name="ajout_sans_minyan">בלי מניין</string>
+    <string name="ajout_jeune_individuel">תענית יחיד</string>
+    <string name="ajout_usage">לפי המנהג</string>
+    <string name="ajout_roch_hodech_usage">ראש חודש, לפי המנהג</string>
+    <string name="ajout_israel_usage">בארץ ישראל, לפי המנהג</string>
+    <string name="ajout_occasion">אירוע</string>
+    <string name="ajout_malade">על חולה</string>
+    <string name="ajout_subsistance">על הפרנסה</string>
+    <string name="ajout_homme">לאיש</string>
+    <string name="ajout_femme">לאישה</string>
+    <string name="ajout_jour_megila">בבוקר</string>
+    <string name="ajout_brit_mila">סעודת ברית מילה</string>
+    <string name="ajout_hagomel">ברכת הגומל</string>
+    <string name="ajout_bar_mitsva">בר מצווה</string>
+    <string name="ajout_mi_cheberakh_oleh">מי שברך לעולה לתורה</string>
+    <string name="ajout_mi_cheberakh_malade">מי שברך לחולה</string>
+    <string name="ajout_mi_cheberakh_yoledet">מי שברך ליולדת</string>
+    <string name="ajout_magdol">ימים שאומרים בהם „מגדול“</string>
+    <string name="ajout_israel">בארץ ישראל</string>
+    <string name="ajout_yamim_noraim">ראש השנה ויום הכיפורים</string>
 </resources>

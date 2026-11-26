@@ -41,8 +41,9 @@ class InsertionsAmidaTest {
         for (id in listOf("chaharit", "minha")) {
             val a = annotes(Nusah.EDOT, id, "העונה לעמו ישראל בעת צרה")
             assertEquals(id, 1, a.size)
-            assertEquals(id, "ajout_anenou_officiant", a[0].first.libelle)
-            assertEquals(id, "jeune", a[0].first.condition)
+            // 26/11 (Q2) : l'Anénou de l'officiant, les jours de jeûne public seulement, sous « Avec minyan ».
+            assertEquals(id, "minyan", a[0].first.condition)
+            assertEquals(id, "jeune", a[0].first.quand)
             assertEquals(id, 0, nb(visibles(Nusah.EDOT, id, "2025-11-18"), "העונה לעמו ישראל בעת צרה"))
         }
     }

@@ -741,7 +741,7 @@
     <string name="reglage_tahanoun_tichri_sans">ما يتقالش لين روش حودش حشفان</string>
     <string name="reglage_sans_tahanoun_jour">ما فمّاش تحنون اليوم</string>
     <string name="reglage_sans_tahanoun_jour_non">لا · لدار فيها عزاء، بريت ميلا ولّا حتان، للنهار هذا برك</string>
-    <string name="reglage_sans_tahanoun_jour_oui">إيه، اليوم برك: التحنون مطوي في السيدور</string>
+    <string name="reglage_sans_tahanoun_jour_oui">إيه، اليوم برك: التحنون منحّى من السيدور</string>
     <string name="zman_alot">علوت هشحر</string>
     <string name="zman_misheyakir">مشيّكير</string>
     <string name="zman_netz">طلوع الشمس (نتس)</string>
@@ -906,7 +906,7 @@
     <string name="siddur_aujourdhui">اليوم</string>
     <string name="siddur_pas_aujourdhui">موش اليوم · إنقر باش تقرا</string>
     <string name="siddur_replier">سكّر</string>
-    <string name="siddur_jour_ajouts">زيادات %1$s (%2$s)، للتوجيه برك: النصّ والتعليمات متاعو هوما المرجع.</string>
+    <string name="siddur_jour_ajouts">زيادات %1$s (%2$s): متاع نهار آخر منحّاة، ومتاع مناسبة مطوية؛ النصّ والتعليمات متاعو هوما المرجع.</string>
     <string name="fete_erev_pessah">عشيّة پيسح</string>
     <string name="fete_pessah">پيسح</string>
     <string name="fete_hol_hamoed_pessah">حول هموعيد پيسح</string>
@@ -1815,4 +1815,30 @@
     <string name="session_suite_non">لا، نوفّي</string>
     <string name="channel_suite">نكمّلو الهتبوديدوت</string>
     <string name="channel_suite_description">السؤال اللي يجي 10 ثواني قبل آخر هتبوديدوت بوقت محدّد.</string>
+
+    <!-- 26/11 : les ajouts du siddour en deux catégories (calendrier, occasion) -->
+    <string name="siddur_region_question">إسرائيل ولّا الشتات؟ النصّ هذا يتبدّل اليوم حسب الجواب: إنقر باش تجاوب.</string>
+    <string name="siddur_region_titre">تسكن في إسرائيل ولّا في الشتات؟</string>
+    <string name="lecture_tahanoun_oui">ما فمّاش تحنون اليوم</string>
+    <string name="lecture_tahanoun_non">التحنون حسب الرزنامة</string>
+    <string name="ajout_sans_minyan">بلا منيان</string>
+    <string name="ajout_jeune_individuel">صيام فردي</string>
+    <string name="ajout_usage">حسب العادة</string>
+    <string name="ajout_roch_hodech_usage">روش حودش، حسب العادة</string>
+    <string name="ajout_israel_usage">في إسرائيل، حسب العادة</string>
+    <string name="ajout_occasion">مناسبة</string>
+    <string name="ajout_malade">على مريض</string>
+    <string name="ajout_subsistance">على الرزق</string>
+    <string name="ajout_homme">للراجل</string>
+    <string name="ajout_femme">للمرا</string>
+    <string name="ajout_jour_megila">في الصباح</string>
+    <string name="ajout_brit_mila">عشاء بريت ميلا</string>
+    <string name="ajout_hagomel">هاغومل</string>
+    <string name="ajout_bar_mitsva">بار ميتسفا</string>
+    <string name="ajout_mi_cheberakh_oleh">مي شبيرخ للي يطلع للتوراة</string>
+    <string name="ajout_mi_cheberakh_malade">مي شبيرخ على مريض</string>
+    <string name="ajout_mi_cheberakh_yoledet">مي شبيرخ للنفساء</string>
+    <string name="ajout_magdol">النهارات متاع «מגדול»</string>
+    <string name="ajout_israel">في إسرائيل</string>
+    <string name="ajout_yamim_noraim">روش هشانا ويوم كيبور</string>
 </resources>

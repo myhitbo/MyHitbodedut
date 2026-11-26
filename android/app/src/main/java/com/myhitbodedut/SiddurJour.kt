@@ -4,8 +4,18 @@ import org.json.JSONObject
 
 /**
  * Ce que le jour change à la lecture du siddour (demande du 10/10) : les
- * ajouts du jour mis en évidence, les autres repliés derrière une flèche,
- * jamais retirés. Les annotations viennent de res/raw/siddur_annotations.json
+ * ajouts du jour mis en évidence. Depuis le 26/11 (« les ajouts dépendant des
+ * zmanim… enlevés complètement hormis lorsque nécessaire ; ceux d'une occasion,
+ * repliés mais visibles »), deux catégories :
+ *  - un ajout du calendrier, que l'application calcule (Chabbat, Roch 'Hodech,
+ *    'Hanouka, Barekh alénou, Ta'hanoun…), ne s'affiche que le jour où il se dit ;
+ *    les autres jours, il est retiré, sans bandeau replié ;
+ *  - un ajout d'occasion, que l'application ne peut pas connaître (minyan, brit,
+ *    invité, maison endeuillée, oubli…), reste replié, et se déplie d'un toucher.
+ * Quelques exceptions, voulues par le propriétaire, restent repliées au lieu d'être
+ * retirées : le soir, au Birkat haMazon, les ajouts du jour voisin (Q6) ; le Ledavid
+ * des Edot hors d'Eloul (Q10) ; l'Anénou du particulier hors des jeûnes publics (Q2).
+ * Les annotations viennent de res/raw/siddur_annotations.json
  * (tools/siddur_annotations.py) ; les conditions, de CalendrierJuif.
  *
  * Pas d'Android ici : testable sur la machine virtuelle seule. Le même code
@@ -54,6 +64,16 @@ object SiddurJour {
         val etLibelle: String? = null,
         /** Une indication fixe du siddour (audit du 16/11) : affichée telle quelle, sans « Aujourd'hui : ». */
         val fixe: Boolean = false,
+        /**
+         * La garde d'un ajout d'occasion (26/11) : fausse, il est retiré ; vraie, il reste replié. Les consignes
+         * d'oubli (Q5 : « מוריד הגשם » l'hiver seulement), les usages datés (Q14), le voyageur (Q3).
+         */
+        val quand: String? = null,
+        /** Un ajout du calendrier gardé replié hors de son jour au lieu d'être retiré (Q2, Q10, l'omer), sous [libelleHors]. */
+        val replieHors: Boolean = false,
+        val libelleHors: String? = null,
+        /** Pour une variante enchâssée : ce qui remplace [retire] le jour où elle est fausse (« מגדול », « מוֹדָה »). */
+        val par: String? = null,
     )
 
     /** Les annotations d'un nusah, par identifiant de texte. */
@@ -85,6 +105,10 @@ object SiddurJour {
                     et = a.optString("et", "").ifBlank { null },
                     etLibelle = a.optString("et_libelle", "").ifBlank { null },
                     fixe = a.optBoolean("fixe", false),
+                    quand = a.optString("quand", "").ifBlank { null },
+                    replieHors = a.optBoolean("replie_hors", false),
+                    libelleHors = a.optString("libelle_hors", "").ifBlank { null },
+                    par = if (a.has("par")) a.getString("par") else null,
                 )
             }
         }
@@ -100,6 +124,15 @@ object SiddurJour {
      * se replie sous « Les autres jours ».
      */
     const val AUTRES_JOURS = "ajout_autres_jours"
+
+    /**
+     * Les conditions d'occasion (26/11), jamais vraies : ce qu'elles portent reste replié, dépliable. Les mêmes
+     * que tools/siddur_annotations.py (OCCASIONS) et siddur-jour.js.
+     */
+    val OCCASIONS = setOf("minyan", "sans_minyan", "beit_avel", "oubli", "cheva_berakhot", "zimun", "facultatif", "usage", "occasion")
+
+    /** Qui prie seul (Q4) : les cartes « seul » et « יחיד אומר », sous « Sans minyan ». */
+    const val SANS_MINYAN = "sans_minyan"
 
     /** Une ligne de la lecture, le jour donné. */
     sealed class Ligne {
@@ -129,8 +162,12 @@ object SiddurJour {
         /** Qui prie seul (19/10) : la braïta à la place de Barekhou, ou où la dire ; [consigne] avant. */
         data class Seul(val texte: String, val consigne: String?, val note: Boolean = false) : Ligne()
 
-        /** Un ajout hors du jour, replié ; [ouvert] quand on l'a déplié. */
-        data class Replie(val cle: String, val condition: String, val ouvert: Boolean, val libelle: String) : Ligne()
+        /**
+         * Un ajout replié ; [ouvert] quand on l'a déplié. [pasAujourdhui] : un ajout du calendrier gardé replié
+         * hors de son jour (« Pas aujourd'hui · toucher pour lire ») ; sinon une occasion (« Toucher pour lire »).
+         */
+        data class Replie(val cle: String, val condition: String, val ouvert: Boolean, val libelle: String,
+                          val pasAujourdhui: Boolean = false) : Ligne()
 
         /**
          * La fin d'un repli déplié ([cle] : celle de son [Replie]), après tout ce qu'il contient, replis
@@ -139,13 +176,52 @@ object SiddurJour {
         data class Fin(val cle: String) : Ligne()
     }
 
+    /** L'état d'un ajout ce jour-là (26/11) : mis en évidence, tel quel, replié, ou retiré. */
+    enum class Etat { DU_JOUR, ORDINAIRE, REPLIE, RETIRE }
+
+    /** [etat], et pour un repli : « pas aujourd'hui » (un ajout du calendrier) ou une occasion, son libellé, tous ses membres. */
+    data class Decision(val etat: Etat, val pasAujourdhui: Boolean = false, val libelle: String? = null, val tous: Boolean = false)
+
     /**
-     * Les lignes d'un texte le jour où valent [conditions]. Un ajout du jour
-     * est précédé de son étiquette ; un ajout hors du jour tient en une ligne
-     * repliée, et ses blocs suivent si sa clé est dans [ouverts]. Dans un ajout
-     * du jour, une variante d'un autre jour (« בחוה״מ פסח » un Roch 'Hodech)
-     * reste lisible, estompée. Le texte ordinaire qu'une formule du jour
-     * remplace ([AUTRES_JOURS]) reste tel quel, et se replie ce jour-là.
+     * Ce qu'on fait d'un ajout ([a], la condition [racine] de son groupe) le jour où valent [conditions] ; [voisin] :
+     * les conditions du jour voisin au Birkat haMazon le soir (Q6), vide sinon.
+     *  - sa garde ([Annotation.quand]) fausse, ce jour et au voisin : retiré ;
+     *  - une occasion : replié ;
+     *  - du jour : mis en évidence, ou tel quel (texte ordinaire, passage « discret ») ;
+     *  - du jour voisin : replié, « pas aujourd'hui » ;
+     *  - [Annotation.replieHors] : replié, tous ses membres dépliables ;
+     *  - sinon : retiré.
+     */
+    fun decision(a: Annotation, racine: String, conditions: Set<String>, voisin: Set<String> = emptySet()): Decision {
+        fun voisinVrai(c: String) = voisin.isNotEmpty() && vrai(c, voisin)
+        val q = a.quand
+        if (q != null && !vrai(q, conditions) && !voisinVrai(q)) return Decision(Etat.RETIRE)
+        if (racine in OCCASIONS) return Decision(Etat.REPLIE)
+        if (vrai(racine, conditions)) return Decision(if (a.libelle == AUTRES_JOURS || a.discret) Etat.ORDINAIRE else Etat.DU_JOUR)
+        if (voisinVrai(racine)) return Decision(Etat.REPLIE, pasAujourdhui = true)
+        if (a.replieHors) return Decision(Etat.REPLIE, pasAujourdhui = a.libelleHors == null, libelle = a.libelleHors, tous = true)
+        return Decision(Etat.RETIRE)
+    }
+
+    /**
+     * Le texte d'un bloc ce jour-là (26/11, Q8) : chaque variante enchâssée fausse ([Annotation.retire]) en est
+     * retirée, ou remplacée ([Annotation.par]) ; celle d'un jour voisin (Q6) reste. Sans changement, le bloc
+     * lui-même (les marque-pages le cherchent par identité).
+     */
+    fun texteDuJour(bloc: SiddurBloc, indices: List<Annotation>, conditions: Set<String>, voisin: Set<String> = emptySet()): SiddurBloc {
+        val faux = indices.filter { it.retire != null && !vrai(it.condition, conditions) && !(voisin.isNotEmpty() && vrai(it.condition, voisin)) }
+        if (faux.isEmpty()) return bloc
+        val reduit = faux.fold(bloc.texte) { t, v -> t.replaceFirst(v.retire!!, v.par ?: "") }.trim()
+        return if (reduit != bloc.texte) bloc.copy(texte = reduit) else bloc
+    }
+
+    /**
+     * Les lignes d'un texte le jour où valent [conditionsDuJour] (règle du 26/11, voir l'en-tête) : un ajout du
+     * jour est précédé de son étiquette, et seules ses lignes du jour s'y lisent (« seule la bonne formule ») ;
+     * un ajout du calendrier hors de son jour est retiré ; une occasion tient en une ligne repliée, et ses blocs
+     * (ceux qui valent ce jour-là, Q11) suivent si sa clé est dans [ouverts]. [voisin] : les conditions du jour
+     * voisin (CalendrierJuif.jourVoisin), dont les ajouts restent repliés au lieu d'être retirés (Q6).
+     * Une section dont tout est retiré perd aussi son titre.
      */
     fun lignes(
         texte: SiddurTexte,
@@ -156,8 +232,11 @@ object SiddurJour {
         enIsrael: Boolean = false,
         sansTahanounFinTichri: Boolean = nusah == "edot",
         sud: Boolean = false,
+        voisin: Set<String> = emptySet(),
     ): List<Ligne> {
         val conditions = conditionsPour(nusah, enIsrael, conditionsDuJour, sansTahanounFinTichri, sud)
+        val autre = if (voisin.isEmpty()) emptySet() else conditionsPour(nusah, enIsrael, voisin, sansTahanounFinTichri, sud)
+        fun voisinVrai(c: String) = autre.isNotEmpty() && vrai(c, autre)
         fun nom(a: Annotation, condition: String) = libelleJour(a.libelle, condition, nusah, conditions)
         val sections = annotations.filter { it.sorte == Sorte.SECTION }.associateBy { it.section }
         val blocs = annotations.filter { it.sorte == Sorte.BLOC }.associateBy { it.section to it.bloc!! }
@@ -165,61 +244,67 @@ object SiddurJour {
         // Les renvois du jour seulement : hors du jour, rien (le texte renvoyé n'est pas d'ici).
         val renvois = annotations.filter { it.sorte == Sorte.RENVOI && (it.cible != null || it.libelle != null) && vrai(it.condition, conditions) }
             .groupBy { it.section to it.bloc }
-        // Les notes de l'application (audit du 16/11) suivent leur bloc comme les cartes « seul ».
-        val seuls = annotations.filter { (it.sorte == Sorte.SEUL || it.sorte == Sorte.NOTE) && it.texte != null && vrai(it.condition, conditions) }
+        // Les notes de l'application (audit du 16/11) suivent leur bloc ; les cartes « seul », repliées (Q4).
+        val seuls = annotations.filter { it.texte != null && (it.sorte == Sorte.SEUL || (it.sorte == Sorte.NOTE && vrai(it.condition, conditions))) }
             .groupBy { it.section to it.bloc }
         val sortie = mutableListOf<Ligne>()
-        fun seul(si: Int, bi: Int) = seuls[si to bi].orEmpty().forEach { sortie += Ligne.Seul(it.texte!!, it.consigne, it.sorte == Sorte.NOTE) }
+        fun du(si: Int, bi: Int, b: SiddurBloc) = texteDuJour(b, indices[si to bi].orEmpty(), conditions, autre)
+        fun reperes(si: Int, bi: Int) = indices[si to bi].orEmpty()
+            .filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
+            .distinctBy { it.texte }.forEach { sortie += Ligne.Indice(it.texte!!, it.fixe) }
+        fun seul(si: Int, bi: Int) = seuls[si to bi].orEmpty().forEachIndexed { k, it ->
+            if (it.sorte == Sorte.NOTE) {
+                sortie += Ligne.Seul(it.texte!!, it.consigne, true)
+                return@forEachIndexed
+            }
+            // Qui prie seul (26/11, Q4) : la braïta, repliée sous « Sans minyan ».
+            val cle = "seul:$si:$bi:$k"
+            sortie += Ligne.Replie(cle, SANS_MINYAN, cle in ouverts, "ajout_sans_minyan")
+            if (cle in ouverts) {
+                sortie += Ligne.Seul(it.texte!!, it.consigne)
+                sortie += Ligne.Fin(cle)
+            }
+        }
         fun renvoyer(si: Int, bi: Int?) = renvois[si to bi].orEmpty().forEach {
             sortie += if (it.cible != null) Ligne.Renvoi(it.condition, it.cible) else Ligne.Rappel(it.condition, it.libelle!!)
         }
         texte.sections.forEachIndexed { si, s ->
-            // Une section seule porte déjà le nom du texte : pas de titre répété.
-            if (texte.sections.size > 1 && s.titre.isNotBlank()) sortie += Ligne.Titre(s.titre, s.titreFr, s.titreEn)
+            // Une section seule porte déjà le nom du texte : pas de titre répété ; une section vide ce jour-là non plus.
+            val debut = sortie.size
+            val titre = s.titre.isNotBlank() && texte.sections.size > 1
+            if (titre) sortie += Ligne.Titre(s.titre, s.titreFr, s.titreEn)
             val section = sections[si]
             if (section != null) {
-                if (vrai(section.condition, conditions)) {
-                    sortie += Ligne.Etiquette(section.condition, nom(section, section.condition))
-                    s.blocs.forEach { sortie += Ligne.Bloc(it, Style.DU_JOUR) }
-                } else {
-                    val cle = "§$si"
-                    sortie += Ligne.Replie(cle, section.condition, cle in ouverts, nom(section, section.condition))
-                    if (cle in ouverts) {
-                        s.blocs.forEach { sortie += Ligne.Bloc(it, Style.HORS) }
-                        sortie += Ligne.Fin(cle)
+                val d = decision(section, section.condition, conditions, autre)
+                when (d.etat) {
+                    Etat.DU_JOUR -> {
+                        sortie += Ligne.Etiquette(section.condition, nom(section, section.condition))
+                        s.blocs.forEachIndexed { bi, b -> sortie += Ligne.Bloc(du(si, bi, b), Style.DU_JOUR, b) }
                     }
+                    Etat.ORDINAIRE -> s.blocs.forEachIndexed { bi, b -> sortie += Ligne.Bloc(du(si, bi, b), Style.NORMAL, b) }
+                    Etat.REPLIE -> {
+                        val cle = "§$si"
+                        sortie += Ligne.Replie(cle, section.condition, cle in ouverts, d.libelle ?: nom(section, section.condition), d.pasAujourdhui)
+                        if (cle in ouverts) {
+                            s.blocs.forEachIndexed { bi, b -> sortie += Ligne.Bloc(du(si, bi, b), Style.HORS, b) }
+                            sortie += Ligne.Fin(cle)
+                        }
+                    }
+                    Etat.RETIRE -> Unit
                 }
                 renvoyer(si, null)
+                if (titre && sortie.size == debut + 1) sortie.removeAt(debut)
                 return@forEachIndexed
             }
             var i = 0
             while (i < s.blocs.size) {
                 val a = blocs[si to i]
                 if (a == null) {
-                    // Une variante enchâssée hors du jour (המלך הקדוש, מוריד הטל…) : retirée du
-                    // bloc, et une ligne repliée la rend d'un geste (demande du 28/10).
-                    val ind = indices[si to i].orEmpty()
-                    val horsJour = ind.filter { it.retire != null && !vrai(it.condition, conditions) }
-                    val cleVariante = "v$si:$i"
-                    val ouverte = cleVariante in ouverts
-                    var bloc = s.blocs[i]
-                    // Sans variante hors du jour, le bloc reste lui-même (12/11) : une copie rognée de ses
-                    // espaces n'était plus retrouvée par les marque-pages, qui le cherchent par identité.
-                    if (!ouverte && horsJour.isNotEmpty()) {
-                        val reduit = horsJour.fold(bloc.texte) { t, v -> t.replaceFirst(v.retire!!, "") }.trim()
-                        if (reduit != bloc.texte) bloc = bloc.copy(texte = reduit)
-                    }
-                    sortie += Ligne.Bloc(bloc, Style.NORMAL, s.blocs[i])
-                    // Le texte du jour se lit dans le bloc même ; l'ancien « Aujourd'hui : … » ne
-                    // reste que pour les variantes qu'on ne sait pas replier.
-                    // Une fois chacune : « מגדול » vaut le Chabbat comme Roch 'Hodech (12/11).
-                    ind.filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
-                        .distinctBy { it.texte }.forEach { sortie += Ligne.Indice(it.texte!!, it.fixe) }
-                    if (horsJour.isNotEmpty() && (ouverte || bloc !== s.blocs[i])) {
-                        val v = horsJour.first()
-                        sortie += Ligne.Replie(cleVariante, v.condition, ouverte, nom(v, v.condition))
-                        if (ouverte) sortie += Ligne.Fin(cleVariante)
-                    }
+                    // Une variante enchâssée hors du jour (המלך הקדוש, מוריד הטל…) : retirée du bloc, sans repli (Q8).
+                    sortie += Ligne.Bloc(du(si, i, s.blocs[i]), Style.NORMAL, s.blocs[i])
+                    // Le texte du jour se lit dans le bloc même ; « Aujourd'hui : … » ne reste que pour les variantes
+                    // qu'on ne sait pas retirer. Une fois chacune : « מגדול » vaut le Chabbat comme Roch 'Hodech (12/11).
+                    reperes(si, i)
                     seul(si, i)
                     renvoyer(si, i)
                     i++
@@ -231,55 +316,71 @@ object SiddurJour {
                     i++
                 }
                 val racine = a.racine ?: a.condition
-                // Le texte ordinaire qu'une formule du jour remplace (TSIDDUR-06), ou un passage
-                // « discret » (12/11) : le jour dit, tel quel, sans étiquette.
-                // La double annotation (audit du 16/11) : dans le groupe, un bloc dont le « et » est faux (le
-                // minyan, « תתקבל » le 9 Av) se replie à part, avec ses voisins de même « et » ; un groupe lu
-                // garde aussi ses repères du jour (« Aujourd'hui : … »).
-                fun membresLus(style: (Annotation) -> Style, reperes: Boolean) {
+                val d = decision(a, racine, conditions, autre)
+                // Les membres qui se lisent ce jour-là (Q8, Q11) : ceux de la racine, et les variantes vraies (ou du
+                // jour voisin) ; replié hors du jour (Q2, Q10), tous.
+                val lus = membres.filter { (_, m) -> d.tous || m.condition == racine || vrai(m.condition, conditions) || voisinVrai(m.condition) }
+                // La double annotation (audit du 16/11) : dans le groupe, un bloc dont le « et » est faux se replie à part
+                // si c'est une occasion (le minyan, un Mi chébérakh) ou le jour voisin ; il est retiré sinon (« תתקבל » le
+                // 9 Av). Un groupe lu garde ses repères du jour (« Aujourd'hui : … »).
+                fun membresLus(style: Style, avecReperes: Boolean) {
                     var k = 0
-                    while (k < membres.size) {
-                        val (b, m) = membres[k]
+                    while (k < lus.size) {
+                        val (b, m) = lus[k]
                         val et = m.et
                         if (et == null || vrai(et, conditions)) {
-                            sortie += Ligne.Bloc(b, style(m))
-                            if (reperes) indices[si to m.bloc!!].orEmpty()
-                                .filter { it.texte != null && it.retire == null && vrai(it.condition, conditions) }
-                                .distinctBy { it.texte }.forEach { sortie += Ligne.Indice(it.texte!!, it.fixe) }
+                            sortie += Ligne.Bloc(du(si, m.bloc!!, b), style, b)
+                            if (avecReperes) reperes(si, m.bloc)
                             k++
                             continue
                         }
-                        val suite = membres.drop(k).takeWhile { it.second.et == et }
-                        val cle = "$si:${a.groupe}:${m.bloc}"
-                        sortie += Ligne.Replie(cle, et, cle in ouverts, m.etLibelle ?: libelle(et))
-                        if (cle in ouverts) {
-                            suite.forEach { (sb, _) -> sortie += Ligne.Bloc(sb, Style.HORS) }
-                            sortie += Ligne.Fin(cle)
+                        val suite = lus.drop(k).takeWhile { it.second.et == et && it.second.etLibelle == m.etLibelle }
+                        if (et in OCCASIONS || voisinVrai(et)) {
+                            val cle = "$si:${a.groupe}:${m.bloc}"
+                            sortie += Ligne.Replie(cle, et, cle in ouverts, m.etLibelle ?: libelle(et), et !in OCCASIONS)
+                            if (cle in ouverts) {
+                                suite.forEach { (sb, sm) -> sortie += Ligne.Bloc(du(si, sm.bloc!!, sb), Style.HORS, sb) }
+                                sortie += Ligne.Fin(cle)
+                            }
                         }
                         k += suite.size
                     }
                 }
-                if (vrai(racine, conditions) && (a.libelle == AUTRES_JOURS || a.discret)) {
-                    membresLus({ Style.NORMAL }, true)
-                } else if (vrai(racine, conditions)) {
-                    sortie += Ligne.Etiquette(racine, nom(a, racine))
-                    membresLus({ m -> if (vrai(m.condition, conditions)) Style.DU_JOUR else Style.HORS }, true)
-                } else {
-                    val cle = "$si:${a.groupe}"
-                    sortie += Ligne.Replie(cle, racine, cle in ouverts, nom(a, racine))
-                    // Ouvert, un groupe replié distingue ses membres comme le web (audit du 16/11 : dans les
-                    // psaumes d'avant le Birkat, celui du jour se lit en clair, l'autre estompé).
-                    if (cle in ouverts) {
-                        membresLus({ m -> if (vrai(m.condition, conditions)) Style.NORMAL else Style.HORS }, false)
-                        sortie += Ligne.Fin(cle)
+                when (d.etat) {
+                    Etat.ORDINAIRE -> membresLus(Style.NORMAL, true)
+                    Etat.DU_JOUR -> {
+                        sortie += Ligne.Etiquette(racine, nom(a, racine))
+                        membresLus(Style.DU_JOUR, true)
                     }
+                    Etat.REPLIE -> if (lus.isNotEmpty()) {
+                        val cle = "$si:${a.groupe}"
+                        sortie += Ligne.Replie(cle, racine, cle in ouverts, d.libelle ?: nom(a, racine), d.pasAujourdhui)
+                        if (cle in ouverts) {
+                            membresLus(if (d.pasAujourdhui) Style.HORS else Style.NORMAL, false)
+                            sortie += Ligne.Fin(cle)
+                        }
+                    }
+                    Etat.RETIRE -> Unit
                 }
                 seul(si, i - 1)
             }
             renvoyer(si, null)
+            if (titre && sortie.size == debut + 1) sortie.removeAt(debut)
         }
         return sortie
     }
+
+    /**
+     * Le texte dépend-il aujourd'hui du statut Israël ou diaspora (26/11, Q7) ? Ses lignes, calculées pour les
+     * deux, diffèrent : deuxième jour de fête, Isrou 'hag, début de « ותן טל ומטר », מוריד הטל ashkénaze…
+     * [israel], [diaspora] : les conditions du jour pour chacun (CalendrierJuif.jour).
+     */
+    fun dependDeLaRegion(
+        texte: SiddurTexte, annotations: List<Annotation>, israel: Set<String>, diaspora: Set<String>,
+        nusah: String, sansTahanounFinTichri: Boolean = nusah == "edot", sud: Boolean = false,
+        voisinIsrael: Set<String> = emptySet(), voisinDiaspora: Set<String> = emptySet(),
+    ): Boolean = lignes(texte, annotations, israel, emptySet(), nusah, true, sansTahanounFinTichri, sud, voisinIsrael) !=
+        lignes(texte, annotations, diaspora, emptySet(), nusah, false, sansTahanounFinTichri, sud, voisinDiaspora)
 
     /**
      * Les places de [lignes] qui se lisent dans le panneau d'un repli déplié : entre un [Ligne.Replie]
@@ -337,6 +438,10 @@ object SiddurJour {
         // Edot : pas de Vidouï à Min'ha du 13 Iyar, veille de Pessa'h chéni (Kitsour Yalkout Yossef 131:38 ; audit du
         // 16/11) ; KosherJava le fait dire (« Halakha Beroura », dont l'auteur s'est rétracté).
         if (nusah == "edot" && CalendrierJuif.C.VEILLE_PESSAH_CHENI in c) c = c - CalendrierJuif.C.TAHANOUN_MINHA
+        // Le Ta'hanoun du calendrier et des coutumes, avant le réglage ponctuel (26/11, Q1) : ce que le siddour ne dit
+        // pas sans Ta'hanoun (למנצח Edot, תפלה לדוד, « רבונו של עולם » Sfard) reste quand on choisit de l'omettre.
+        if (CalendrierJuif.C.TAHANOUN_CHAHARIT in c) c = c + CalendrierJuif.C.TAHANOUN_CHAHARIT_CALENDRIER
+        if (CalendrierJuif.C.TAHANOUN_MINHA in c) c = c + CalendrierJuif.C.TAHANOUN_MINHA_CALENDRIER
         // « Pas de Ta'hanoun aujourd'hui » (réglage ponctuel, audit du 16/11) : maison en deuil, brit mila, 'hatan
         // (Choul'han Aroukh O.H. 131:4). למנצח et Avinou malkénou restent (Rema 602:1 pour la mila).
         if (CalendrierJuif.C.SANS_TAHANOUN_PONCTUEL in c) {
@@ -352,6 +457,15 @@ object SiddurJour {
         if (avinouMalkenou(conditions) && minha && !vendredi) {
             c = c + CalendrierJuif.C.AVINOU_MALKENOU_MINHA
         }
+        // 26/11 : en Israël (le psaume 121 d'Arvit Sfard, « בא״י קדישא ») ; « מגדול » à la fin du Birkat (Q8) :
+        // Edot, les jours de Moussaf, la nuit du motsaé Chabbat et Pourim (la consigne de leur siddour ; la brit mila,
+        // occasion, garde la consigne) ; Sfard et Ashkenaz, Chabbat, Yom tov et Roch 'Hodech (Michna Beroura 189:5).
+        val k = CalendrierJuif.C
+        if (enIsrael) c = c + k.ISRAEL
+        val magdol = if (nusah == "edot") listOf(k.CHABBAT, k.ROCH_HODECH, k.MOED, k.YOM_TOV, k.POURIM).any { it in c } ||
+            (k.MOTSAE_CHABBAT in c && k.NUIT in c)
+        else listOf(k.CHABBAT, k.YOM_TOV, k.ROCH_HODECH).any { it in c }
+        if (magdol) c = c + k.MAGDOL
         return c + ajoutsOffices(nusah, enIsrael, c)
     }
 
@@ -429,6 +543,13 @@ object SiddurJour {
     fun avecSansTahanoun(conditions: Set<String>, sansTahanoun: Boolean): Set<String> =
         if (sansTahanoun) conditions + CalendrierJuif.C.SANS_TAHANOUN_PONCTUEL else conditions
 
+    /** [conditions], avec le réglage צדיק / צדקת ([adresse] : « m », « f » ou null ; 26/11, Q12). */
+    fun avecAdresse(conditions: Set<String>, adresse: String?): Set<String> = when (adresse) {
+        "m" -> conditions + CalendrierJuif.C.HOMME
+        "f" -> conditions + CalendrierJuif.C.FEMME
+        else -> conditions
+    }
+
     fun vrai(condition: String, conditions: Set<String>): Boolean =
         if (condition.startsWith("!")) condition.drop(1) !in conditions else condition in conditions
 
@@ -447,6 +568,8 @@ object SiddurJour {
             // « אומרים כאן הלל » : le Hallel, complet ou non selon le jour.
             c == "hallel" -> "ajout_hallel_annonce"
             c.startsWith("embolismique") -> "ajout_embolismique"
+            // Le compte d'un soir de l'omer (26/11) : « Compte de l'omer ».
+            c.startsWith("omer_") -> "ajout_omer"
             c in setOf("pessah", "soukkot", "chavouot", "roch_hachana", "chemini_atseret", "hanouka", "pourim") -> "fete_$c"
             else -> "ajout_$c"
         }
